@@ -10,11 +10,13 @@
 #include <ReactCommon/RuntimeExecutor.h>
 #include <react/renderer/consistency/ShadowTreeRevisionConsistencyManager.h>
 #include <react/renderer/runtimescheduler/RuntimeSchedulerClock.h>
+#include <react/renderer/runtimescheduler/SchedulerPriorityUtils.h>
 #include <react/renderer/runtimescheduler/Task.h>
 
 namespace facebook::react {
 
 using RuntimeSchedulerRenderingUpdate = std::function<void()>;
+using RuntimeSchedulerTimeout = std::chrono::milliseconds;
 
 // This is a temporary abstract class for RuntimeScheduler forks to implement
 // (and use them interchangeably).
@@ -29,6 +31,14 @@ class RuntimeSchedulerBase {
   virtual std::shared_ptr<Task> scheduleTask(
       SchedulerPriority priority,
       RawCallback&& callback) noexcept = 0;
+  virtual std::shared_ptr<Task> scheduleIdleTask(
+      jsi::Function&& callback,
+      RuntimeSchedulerTimeout timeout = timeoutForSchedulerPriority(
+          SchedulerPriority::IdlePriority)) noexcept = 0;
+  virtual std::shared_ptr<Task> scheduleIdleTask(
+      RawCallback&& callback,
+      RuntimeSchedulerTimeout timeout = timeoutForSchedulerPriority(
+          SchedulerPriority::IdlePriority)) noexcept = 0;
   virtual void cancelTask(Task& task) noexcept = 0;
   virtual bool getShouldYield() const noexcept = 0;
   virtual SchedulerPriority getCurrentPriorityLevel() const noexcept = 0;
@@ -85,6 +95,16 @@ class RuntimeScheduler final : RuntimeSchedulerBase {
   std::shared_ptr<Task> scheduleTask(
       SchedulerPriority priority,
       RawCallback&& callback) noexcept override;
+
+  std::shared_ptr<Task> scheduleIdleTask(
+      jsi::Function&& callback,
+      RuntimeSchedulerTimeout timeout = timeoutForSchedulerPriority(
+          SchedulerPriority::IdlePriority)) noexcept override;
+
+  std::shared_ptr<Task> scheduleIdleTask(
+      RawCallback&& callback,
+      RuntimeSchedulerTimeout timeout = timeoutForSchedulerPriority(
+          SchedulerPriority::IdlePriority)) noexcept override;
 
   /*
    * Cancelled task will never be executed.

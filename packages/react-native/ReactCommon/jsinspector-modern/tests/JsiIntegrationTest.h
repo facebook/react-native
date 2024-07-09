@@ -8,7 +8,6 @@
 #pragma once
 
 #include <folly/dynamic.h>
-#include <folly/executors/QueuedImmediateExecutor.h>
 #include <folly/json.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
@@ -42,15 +41,15 @@ namespace facebook::react::jsinspector_modern {
  * for a particular engine, plus exposes access to a RuntimeExecutor (based on
  * the provided folly::Executor) and the corresponding jsi::Runtime.
  */
-template <typename EngineAdapter>
-class JsiIntegrationPortableTest : public ::testing::Test,
-                                   private HostTargetDelegate {
-  folly::QueuedImmediateExecutor immediateExecutor_;
-
+template <typename EngineAdapter, typename Executor>
+class JsiIntegrationPortableTestBase : public ::testing::Test,
+                                       private HostTargetDelegate {
  protected:
-  JsiIntegrationPortableTest()
+  Executor executor_;
+
+  JsiIntegrationPortableTestBase()
       : inspectorFlagsGuard_{EngineAdapter::getInspectorFlagOverrides()},
-        engineAdapter_{immediateExecutor_} {}
+        engineAdapter_{executor_} {}
 
   void SetUp() override {
     // NOTE: Using SetUp() so we can call virtual methods like
@@ -63,7 +62,7 @@ class JsiIntegrationPortableTest : public ::testing::Test,
     loadMainBundle();
   }
 
-  ~JsiIntegrationPortableTest() override {
+  ~JsiIntegrationPortableTestBase() override {
     toPage_.reset();
     if (runtimeTarget_) {
       EXPECT_TRUE(instance_);
@@ -91,9 +90,7 @@ class JsiIntegrationPortableTest : public ::testing::Test,
 
   void connect() {
     ASSERT_FALSE(toPage_) << "Can only connect once in a JSI integration test.";
-    toPage_ = page_->connect(
-        remoteConnections_.make_unique(),
-        {.integrationName = "JsiIntegrationTest"});
+    toPage_ = page_->connect(remoteConnections_.make_unique());
 
     using namespace ::testing;
     // Default to ignoring console messages originating inside the backend.
@@ -120,7 +117,7 @@ class JsiIntegrationPortableTest : public ::testing::Test,
       instance_ = nullptr;
     }
     // Recreate the engine (e.g. to wipe any state in the inner jsi::Runtime)
-    engineAdapter_.emplace(immediateExecutor_);
+    engineAdapter_.emplace(executor_);
     instance_ = &page_->registerInstance(instanceTargetDelegate_);
     setupRuntimeBeforeRegistration(engineAdapter_->getRuntime());
     runtimeTarget_ = &instance_->registerRuntime(
@@ -135,7 +132,7 @@ class JsiIntegrationPortableTest : public ::testing::Test,
   }
 
   VoidExecutor inspectorExecutor_ = [this](auto callback) {
-    immediateExecutor_.add(callback);
+    executor_.add(callback);
   };
 
   jsi::Value eval(std::string_view code) {
@@ -178,6 +175,10 @@ class JsiIntegrationPortableTest : public ::testing::Test,
 
  private:
   // HostTargetDelegate methods
+
+  HostTargetMetadata getMetadata() override {
+    return {.integrationName = "JsiIntegrationTest"};
+  }
 
   void onReload(const PageReloadRequest& request) override {
     (void)request;

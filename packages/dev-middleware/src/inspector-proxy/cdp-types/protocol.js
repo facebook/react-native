@@ -11,17 +11,19 @@
 
 // Adapted from https://github.com/ChromeDevTools/devtools-protocol/blob/master/types/protocol.d.ts
 
+import type {JSONSerializable} from '../types';
+
 type integer = number;
 
 export interface Debugger {
-  GetScriptSourceParams: $ReadOnly<{
+  GetScriptSourceParams: {
     /**
      * Id of the script to get source for.
      */
     scriptId: string,
-  }>;
+  };
 
-  GetScriptSourceResult: $ReadOnly<{
+  GetScriptSourceResult: {
     /**
      * Script source (empty in case of Wasm bytecode).
      */
@@ -31,9 +33,9 @@ export interface Debugger {
      * Wasm bytecode. (Encoded as a base64 string when passed over JSON)
      */
     bytecode?: string,
-  }>;
+  };
 
-  SetBreakpointByUrlParams: $ReadOnly<{
+  SetBreakpointByUrlParams: {
     /**
      * Line number to set breakpoint at.
      */
@@ -65,9 +67,9 @@ export interface Debugger {
      * breakpoint if this expression evaluates to true.
      */
     condition?: string,
-  }>;
+  };
 
-  ScriptParsedEvent: $ReadOnly<{
+  ScriptParsedEvent: {
     /**
      * Identifier of the script parsed.
      */
@@ -82,12 +84,12 @@ export interface Debugger {
      * URL of source map associated with script (if any).
      */
     sourceMapURL: string,
-  }>;
+  };
 }
 
 export type Events = {
   'Debugger.scriptParsed': Debugger['ScriptParsedEvent'],
-  [method: string]: mixed,
+  [method: string]: JSONSerializable,
 };
 
 export type Commands = {
@@ -100,7 +102,7 @@ export type Commands = {
     resultType: void,
   },
   [method: string]: {
-    paramsType: mixed,
-    resultType: mixed,
+    paramsType: JSONSerializable,
+    resultType: JSONSerializable,
   },
 };

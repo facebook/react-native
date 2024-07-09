@@ -58,17 +58,15 @@ public interface DevSupportManager : JSExceptionHandler {
 
   public fun stopInspector()
 
-  public fun onNewReactContextCreated(reactContext: ReactContext?)
+  public fun onNewReactContextCreated(reactContext: ReactContext)
 
-  public fun onReactInstanceDestroyed(reactContext: ReactContext?)
+  public fun onReactInstanceDestroyed(reactContext: ReactContext)
 
   public fun hasUpToDateJSBundleInCache(): Boolean
 
   public fun reloadSettings()
 
   public fun handleReloadJS()
-
-  public fun reloadJSFromServer(bundleURL: String)
 
   public fun reloadJSFromServer(bundleURL: String, callback: BundleLoadCallback)
 

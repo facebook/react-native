@@ -17,6 +17,7 @@ require_relative './cocoapods/local_podspec_patch.rb'
 require_relative './cocoapods/runtime.rb'
 require_relative './cocoapods/helpers.rb'
 require_relative './cocoapods/privacy_manifest_utils.rb'
+require_relative './cocoapods/spm.rb'
 # Importing to expose use_native_modules!
 require_relative './cocoapods/autolinking.rb'
 
@@ -122,6 +123,7 @@ def use_react_native! (
   pod 'React-featureflags', :path => "#{prefix}/ReactCommon/react/featureflags"
   pod 'React-featureflagsnativemodule', :path => "#{prefix}/ReactCommon/react/nativemodule/featureflags"
   pod 'React-microtasksnativemodule', :path => "#{prefix}/ReactCommon/react/nativemodule/microtasks"
+  pod 'React-idlecallbacksnativemodule', :path => "#{prefix}/ReactCommon/react/nativemodule/idlecallbacks"
   pod 'React-domnativemodule', :path => "#{prefix}/ReactCommon/react/nativemodule/dom"
   pod 'React-defaultsnativemodule', :path => "#{prefix}/ReactCommon/react/nativemodule/defaults"
   pod 'React-Mapbuffer', :path => "#{prefix}/ReactCommon"
@@ -241,6 +243,18 @@ def install_modules_dependencies(spec, new_arch_enabled: NewArchitectureHelper.n
   NewArchitectureHelper.install_modules_dependencies(spec, new_arch_enabled, folly_config[:version])
 end
 
+
+# This function can be used by library developer to declare a SwiftPackageManager dependency.
+#
+# Parameters:
+# - spec: The spec the Swift Package Manager dependency has to be added to
+# - url: The URL of the Swift Package Manager dependency
+# - requirement: The version requirement of the Swift Package Manager dependency (eg. ` {kind: 'upToNextMajorVersion', minimumVersion: '5.9.1'},`)
+# - products: The product/target of the Swift Package Manager dependency (eg. AlamofireDynamic)
+def spm_dependency(spec, url:, requirement:, products:)
+  SPM.dependency(spec, url: url, requirement: requirement, products: products)
+end
+
 # It returns the default flags.
 # deprecated.
 def get_default_flags()
@@ -285,13 +299,18 @@ def react_native_post_install(
 
   ReactNativePodsUtils.fix_library_search_paths(installer)
   ReactNativePodsUtils.update_search_paths(installer)
-  ReactNativePodsUtils.set_use_hermes_build_setting(installer, hermes_enabled)
-  ReactNativePodsUtils.set_node_modules_user_settings(installer, react_native_path)
+  ReactNativePodsUtils.set_build_setting(installer, build_setting: "USE_HERMES", value: hermes_enabled)
+  ReactNativePodsUtils.set_build_setting(installer, build_setting: "REACT_NATIVE_PATH", value: File.join("${PODS_ROOT}", "..", react_native_path))
+  ReactNativePodsUtils.set_build_setting(installer, build_setting: "SWIFT_ACTIVE_COMPILATION_CONDITIONS", value: ['$(inherited)', 'DEBUG'], config_name: "Debug")
+
   ReactNativePodsUtils.set_ccache_compiler_and_linker_build_settings(installer, react_native_path, ccache_enabled)
-  ReactNativePodsUtils.apply_xcode_15_patch(installer)
+  if Environment.new().ruby_platform().include?('darwin')
+    ReactNativePodsUtils.apply_xcode_15_patch(installer)
+  end
   ReactNativePodsUtils.updateOSDeploymentTarget(installer)
   ReactNativePodsUtils.set_dynamic_frameworks_flags(installer)
   ReactNativePodsUtils.add_ndebug_flag_to_pods_in_release(installer)
+  SPM.apply_on_post_install(installer)
 
   if privacy_file_aggregation_enabled
     PrivacyManifestUtils.add_aggregated_privacy_manifest(installer)

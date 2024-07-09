@@ -24,7 +24,6 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
-import com.facebook.yoga.YogaConstants;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -190,9 +189,9 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
         ViewProps.BORDER_BOTTOM_RIGHT_RADIUS,
         ViewProps.BORDER_BOTTOM_LEFT_RADIUS
       },
-      defaultFloat = YogaConstants.UNDEFINED)
+      defaultFloat = Float.NaN)
   public void setBorderRadius(ReactImageView view, int index, float borderRadius) {
-    if (!YogaConstants.isUndefined(borderRadius)) {
+    if (!Float.isNaN(borderRadius)) {
       borderRadius = PixelUtil.toPixelFromDIP(borderRadius);
     }
 
@@ -221,6 +220,14 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
       view.setResizeMethod(ImageResizeMethod.AUTO);
       FLog.w(ReactConstants.TAG, "Invalid resize method: '" + resizeMethod + "'");
     }
+  }
+
+  @ReactProp(name = "resizeMultiplier")
+  public void setResizeMultiplier(ReactImageView view, float resizeMultiplier) {
+    if (resizeMultiplier < 0.01f) {
+      FLog.w(ReactConstants.TAG, "Invalid resize multiplier: '" + resizeMultiplier + "'");
+    }
+    view.setResizeMultiplier(resizeMultiplier);
   }
 
   @ReactProp(name = "tintColor", customType = "Color")

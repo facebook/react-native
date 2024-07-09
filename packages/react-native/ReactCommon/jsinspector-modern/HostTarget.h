@@ -36,6 +36,15 @@ class HostAgent;
 class HostCommandSender;
 class HostTarget;
 
+struct HostTargetMetadata {
+  std::optional<std::string> appDisplayName;
+  std::optional<std::string> appIdentifier;
+  std::optional<std::string> deviceName;
+  std::optional<std::string> integrationName;
+  std::optional<std::string> platform;
+  std::optional<std::string> reactNativeVersion;
+};
+
 /**
  * Receives events from a HostTarget. This is a shared interface that each
  * React Native platform needs to implement in order to integrate with the
@@ -84,6 +93,12 @@ class HostTargetDelegate {
   };
 
   virtual ~HostTargetDelegate();
+
+  /**
+   * Returns a metadata object describing the host. This is called on an
+   * initial response to @cdp ReactNativeApplication.enable.
+   */
+  virtual HostTargetMetadata getMetadata() = 0;
 
   /**
    * Called when the debugger requests a reload of the page. This is called on
@@ -150,10 +165,6 @@ class HostTargetController final {
 class JSINSPECTOR_EXPORT HostTarget
     : public EnableExecutorFromThis<HostTarget> {
  public:
-  struct SessionMetadata {
-    std::optional<std::string> integrationName;
-  };
-
   /**
    * Constructs a new HostTarget.
    * \param delegate The HostTargetDelegate that will
@@ -185,8 +196,7 @@ class JSINSPECTOR_EXPORT HostTarget
    * destructor execute.
    */
   std::unique_ptr<ILocalConnection> connect(
-      std::unique_ptr<IRemoteConnection> connectionToFrontend,
-      SessionMetadata sessionMetadata = {});
+      std::unique_ptr<IRemoteConnection> connectionToFrontend);
 
   /**
    * Registers an instance with this HostTarget.
@@ -246,5 +256,7 @@ class JSINSPECTOR_EXPORT HostTarget
   // HostAgent itself doesn't).
   friend class HostTargetController;
 };
+
+folly::dynamic hostMetadataToDynamic(const HostTargetMetadata& metadata);
 
 } // namespace facebook::react::jsinspector_modern

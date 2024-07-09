@@ -16,9 +16,16 @@ const LogBoxInspectorStackFrame =
   require('../LogBoxInspectorStackFrame').default;
 const React = require('react');
 
+// Mock `LogBoxButton` because we are interested in snapshotting the behavior
+// of `LogBoxInspectorStackFrame`, not `LogBoxButton`.
+jest.mock('../LogBoxButton', () => ({
+  __esModule: true,
+  default: 'LogBoxButton',
+}));
+
 describe('LogBoxInspectorStackFrame', () => {
-  it('should render stack frame', () => {
-    const output = render.shallowRender(
+  it('should render stack frame', async () => {
+    const output = await render.create(
       <LogBoxInspectorStackFrame
         onPress={() => {}}
         frame={{
@@ -34,8 +41,8 @@ describe('LogBoxInspectorStackFrame', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render stack frame without press feedback', () => {
-    const output = render.shallowRender(
+  it('should render stack frame without press feedback', async () => {
+    const output = await render.create(
       <LogBoxInspectorStackFrame
         frame={{
           column: 1,
@@ -51,8 +58,8 @@ describe('LogBoxInspectorStackFrame', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render collapsed stack frame with dimmed text', () => {
-    const output = render.shallowRender(
+  it('should render collapsed stack frame with dimmed text', async () => {
+    const output = await render.create(
       <LogBoxInspectorStackFrame
         onPress={() => {}}
         frame={{

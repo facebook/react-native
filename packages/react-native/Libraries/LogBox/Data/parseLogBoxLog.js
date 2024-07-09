@@ -93,6 +93,15 @@ const RE_BABEL_CODE_FRAME_MARKER_PATTERN = new RegExp(
   'm',
 );
 
+export function hasComponentStack(args: $ReadOnlyArray<mixed>): boolean {
+  for (const arg of args) {
+    if (typeof arg === 'string' && isComponentStack(arg)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 export type ExtendedExceptionData = ExceptionData & {
   isComponentError: boolean,
   ...
@@ -435,13 +444,25 @@ export function parseLogBoxException(
   };
 }
 
+export function withoutANSIColorStyles(message: mixed): mixed {
+  if (typeof message !== 'string') {
+    return message;
+  }
+
+  return message.replace(
+    // eslint-disable-next-line no-control-regex
+    /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g,
+    '',
+  );
+}
+
 export function parseLogBoxLog(args: $ReadOnlyArray<mixed>): {|
   componentStack: ComponentStack,
   componentStackType: ComponentStackType,
   category: Category,
   message: Message,
 |} {
-  const message = args[0];
+  const message = withoutANSIColorStyles(args[0]);
   let argsWithoutComponentStack: Array<mixed> = [];
   let componentStack: ComponentStack = [];
   let componentStackType = 'legacy';
@@ -462,7 +483,7 @@ export function parseLogBoxLog(args: $ReadOnlyArray<mixed>): {|
     }
   }
 
-  if (componentStack.length === 0) {
+  if (componentStack.length === 0 && argsWithoutComponentStack.length === 0) {
     // Try finding the component stack elsewhere.
     for (const arg of args) {
       if (typeof arg === 'string' && isComponentStack(arg)) {

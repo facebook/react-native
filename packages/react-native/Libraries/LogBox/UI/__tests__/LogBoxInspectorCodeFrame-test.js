@@ -15,17 +15,36 @@ const render = require('../../../../jest/renderer');
 const LogBoxInspectorCodeFrame = require('../LogBoxInspectorCodeFrame').default;
 const React = require('react');
 
+// Mock child components because we are interested in snapshotting the behavior
+// of `LogBoxInspectorCodeFrame`, not its children.
+jest.mock('../../../Components/ScrollView/ScrollView', () => ({
+  __esModule: true,
+  default: 'ScrollView',
+}));
+jest.mock('../AnsiHighlight', () => ({
+  __esModule: true,
+  default: 'Ansi',
+}));
+jest.mock('../LogBoxButton', () => ({
+  __esModule: true,
+  default: 'LogBoxButton',
+}));
+jest.mock('../LogBoxInspectorSection', () => ({
+  __esModule: true,
+  default: 'LogBoxInspectorSection',
+}));
+
 describe('LogBoxInspectorCodeFrame', () => {
-  it('should render null for no code frame', () => {
-    const output = render.shallowRender(
+  it('should render null for no code frame', async () => {
+    const output = await render.create(
       <LogBoxInspectorCodeFrame codeFrame={null} />,
     );
 
     expect(output).toMatchSnapshot();
   });
 
-  it('should render a code frame', () => {
-    const output = render.shallowRender(
+  it('should render a code frame', async () => {
+    const output = await render.create(
       <LogBoxInspectorCodeFrame
         codeFrame={{
           fileName: '/path/to/RKJSModules/Apps/CrashReact/CrashReactApp.js',
@@ -42,8 +61,8 @@ describe('LogBoxInspectorCodeFrame', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render a code frame without a location', () => {
-    const output = render.shallowRender(
+  it('should render a code frame without a location', async () => {
+    const output = await render.create(
       <LogBoxInspectorCodeFrame
         codeFrame={{
           fileName: '/path/to/RKJSModules/Apps/CrashReact/CrashReactApp.js',

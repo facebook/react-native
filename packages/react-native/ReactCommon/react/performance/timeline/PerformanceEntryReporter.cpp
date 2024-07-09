@@ -11,7 +11,7 @@
 
 namespace facebook::react {
 
-std::shared_ptr<PerformanceEntryReporter>
+std::shared_ptr<PerformanceEntryReporter>&
 PerformanceEntryReporter::getInstance() {
   static auto instance = std::make_shared<PerformanceEntryReporter>();
   return instance;

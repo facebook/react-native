@@ -231,11 +231,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
                     "phasedRegistrationNames",
                     MapBuilder.of("bubbled", "onEndEditing", "captured", "onEndEditingCapture")))
             .put(
-                "topTextInput",
-                MapBuilder.of(
-                    "phasedRegistrationNames",
-                    MapBuilder.of("bubbled", "onTextInput", "captured", "onTextInputCapture")))
-            .put(
                 "topFocus",
                 MapBuilder.of(
                     "phasedRegistrationNames",
@@ -656,14 +651,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
   @ReactProp(name = "contextMenuHidden", defaultBoolean = false)
   public void setContextMenuHidden(ReactEditText view, boolean contextMenuHidden) {
-    final boolean _contextMenuHidden = contextMenuHidden;
-    view.setOnLongClickListener(
-        new View.OnLongClickListener() {
-          public boolean onLongClick(View v) {
-            return _contextMenuHidden;
-          }
-          ;
-        });
+    view.setContextMenuHidden(contextMenuHidden);
   }
 
   @ReactProp(name = "selectTextOnFocus", defaultBoolean = false)
@@ -969,9 +957,9 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         ViewProps.BORDER_BOTTOM_RIGHT_RADIUS,
         ViewProps.BORDER_BOTTOM_LEFT_RADIUS
       },
-      defaultFloat = YogaConstants.UNDEFINED)
+      defaultFloat = Float.NaN)
   public void setBorderRadius(ReactEditText view, int index, float borderRadius) {
-    if (!YogaConstants.isUndefined(borderRadius)) {
+    if (!Float.isNaN(borderRadius)) {
       borderRadius = PixelUtil.toPixelFromDIP(borderRadius);
     }
 
@@ -1019,9 +1007,9 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         ViewProps.BORDER_TOP_WIDTH,
         ViewProps.BORDER_BOTTOM_WIDTH,
       },
-      defaultFloat = YogaConstants.UNDEFINED)
+      defaultFloat = Float.NaN)
   public void setBorderWidth(ReactEditText view, int index, float width) {
-    if (!YogaConstants.isUndefined(width)) {
+    if (!Float.isNaN(width)) {
       width = PixelUtil.toPixelFromDIP(width);
     }
     view.setBorderWidth(SPACING_TYPES[index], width);
@@ -1041,6 +1029,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         color == null ? YogaConstants.UNDEFINED : (float) ((int) color & 0x00FFFFFF);
     float alphaComponent = color == null ? YogaConstants.UNDEFINED : (float) ((int) color >>> 24);
     view.setBorderColor(SPACING_TYPES[index], rgbComponent, alphaComponent);
+  }
+
+  @ReactProp(name = "overflow")
+  public void setOverflow(ReactEditText view, @Nullable String overflow) {
+    view.setOverflow(overflow);
   }
 
   @Override
@@ -1120,17 +1113,12 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       }
 
       // The event that contains the event counter and updates it must be sent first.
-      // TODO: t7936714 merge these events
       mEventDispatcher.dispatchEvent(
           new ReactTextChangedEvent(
               mSurfaceId,
               mEditText.getId(),
               s.toString(),
               mEditText.incrementAndGetEventCounter()));
-
-      mEventDispatcher.dispatchEvent(
-          new ReactTextInputEvent(
-              mSurfaceId, mEditText.getId(), newText, oldText, start, start + before));
     }
 
     @Override

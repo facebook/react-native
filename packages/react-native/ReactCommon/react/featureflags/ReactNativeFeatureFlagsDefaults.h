@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ea2440da83ee9eddc3fce3e7e69935b2>>
+ * @generated SignedSource<<323a9038f19970da37a6cbca9d5f119b>>
  */
 
 /**
@@ -35,7 +35,7 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return true;
   }
 
-  bool androidEnablePendingFabricTransactions() override {
+  bool allowRecursiveCommitsWithSynchronousMountOnAndroid() override {
     return false;
   }
 
@@ -71,7 +71,19 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool fixMountedFlagAndFixPreallocationClone() override {
+  bool fixIncorrectScrollViewStateUpdateOnAndroid() override {
+    return false;
+  }
+
+  bool fixMappingOfEventPrioritiesBetweenFabricAndReact() override {
+    return false;
+  }
+
+  bool fixMissedFabricStateUpdatesOnAndroid() override {
+    return false;
+  }
+
+  bool fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak() override {
     return false;
   }
 
@@ -79,11 +91,11 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool inspectorEnableCxxInspectorPackagerConnection() override {
+  bool fuseboxEnabledDebug() override {
     return false;
   }
 
-  bool inspectorEnableModernCDPRegistry() override {
+  bool fuseboxEnabledRelease() override {
     return false;
   }
 
@@ -92,6 +104,14 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool preventDoubleTextMeasure() override {
+    return true;
+  }
+
+  bool setAndroidLayoutDirection() override {
+    return true;
+  }
+
+  bool useImmediateExecutorInAndroidBridgeless() override {
     return false;
   }
 
@@ -100,6 +120,14 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool useNativeViewConfigsInBridgelessMode() override {
+    return false;
+  }
+
+  bool useRuntimeShadowNodeReferenceUpdate() override {
+    return false;
+  }
+
+  bool useRuntimeShadowNodeReferenceUpdateOnLayout() override {
     return false;
   }
 

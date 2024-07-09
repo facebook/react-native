@@ -8,6 +8,8 @@
  * @flow strict-local
  */
 
+'use client';
+
 /**
  * Sets up global variables typical in most JavaScript environments.
  *

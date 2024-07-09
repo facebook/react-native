@@ -41,6 +41,9 @@ public class FileReaderModule extends NativeFileReaderModuleSpec {
       promise.reject(
           new IllegalStateException("Could not get BlobModule from ReactApplicationContext"));
       return;
+    } else if (blob == null) {
+      promise.reject(ERROR_INVALID_BLOB, "The specified blob is null");
+      return;
     }
 
     byte[] bytes =
@@ -65,6 +68,9 @@ public class FileReaderModule extends NativeFileReaderModuleSpec {
     if (blobModule == null) {
       promise.reject(
           new IllegalStateException("Could not get BlobModule from ReactApplicationContext"));
+      return;
+    } else if (blob == null) {
+      promise.reject(ERROR_INVALID_BLOB, "The specified blob is null");
       return;
     }
 

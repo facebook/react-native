@@ -21,7 +21,7 @@ public class ReactQueueConfigurationSpec {
   private final MessageQueueThreadSpec mNativeModulesQueueThreadSpec;
   private final MessageQueueThreadSpec mJSQueueThreadSpec;
 
-  private ReactQueueConfigurationSpec(
+  public ReactQueueConfigurationSpec(
       MessageQueueThreadSpec nativeModulesQueueThreadSpec,
       MessageQueueThreadSpec jsQueueThreadSpec) {
     mNativeModulesQueueThreadSpec = nativeModulesQueueThreadSpec;
@@ -41,11 +41,9 @@ public class ReactQueueConfigurationSpec {
   }
 
   public static ReactQueueConfigurationSpec createDefault() {
-    MessageQueueThreadSpec spec = MessageQueueThreadSpec.newBackgroundThreadSpec("native_modules");
-    return builder()
-        .setJSQueueThreadSpec(MessageQueueThreadSpec.newBackgroundThreadSpec("js"))
-        .setNativeModulesQueueThreadSpec(spec)
-        .build();
+    return new ReactQueueConfigurationSpec(
+        MessageQueueThreadSpec.newBackgroundThreadSpec("native_modules"),
+        MessageQueueThreadSpec.newBackgroundThreadSpec("js"));
   }
 
   public static class Builder {

@@ -10,6 +10,7 @@ package com.facebook.react.views.textinput;
 import static com.facebook.react.uimanager.UIManagerHelper.getReactContext;
 
 import android.content.Context;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
@@ -117,6 +118,7 @@ public class ReactEditText extends AppCompatEditText {
   private int mFontWeight = ReactConstants.UNSET;
   private int mFontStyle = ReactConstants.UNSET;
   private boolean mAutoFocus = false;
+  private boolean mContextMenuHidden = false;
   private boolean mDidAttachToWindow = false;
   private @Nullable String mPlaceholder = null;
 
@@ -190,6 +192,9 @@ public class ReactEditText extends AppCompatEditText {
            */
           @Override
           public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            if (mContextMenuHidden) {
+              return false;
+            }
             menu.removeItem(android.R.id.pasteAsPlainText);
             return true;
           }
@@ -1120,6 +1125,10 @@ public class ReactEditText extends AppCompatEditText {
     mAutoFocus = autoFocus;
   }
 
+  public void setContextMenuHidden(boolean contextMenuHidden) {
+    mContextMenuHidden = contextMenuHidden;
+  }
+
   protected void applyTextAttributes() {
     // In general, the `getEffective*` functions return `Float.NaN` if the
     // property hasn't been set.
@@ -1224,6 +1233,16 @@ public class ReactEditText extends AppCompatEditText {
 
   void setEventDispatcher(@Nullable EventDispatcher eventDispatcher) {
     mEventDispatcher = eventDispatcher;
+  }
+
+  public void setOverflow(@Nullable String overflow) {
+    mReactBackgroundManager.setOverflow(overflow);
+  }
+
+  @Override
+  public void onDraw(Canvas canvas) {
+    mReactBackgroundManager.maybeClipToPaddingBox(canvas);
+    super.onDraw(canvas);
   }
 
   /**

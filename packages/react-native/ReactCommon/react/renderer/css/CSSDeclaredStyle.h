@@ -14,8 +14,8 @@
 #include <vector>
 
 #include <react/debug/react_native_assert.h>
-#include <react/renderer/css/CSSParser.h>
 #include <react/renderer/css/CSSProperties.h>
+#include <react/renderer/css/CSSValueParser.h>
 
 namespace facebook::react {
 

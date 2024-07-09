@@ -284,7 +284,7 @@ static NSURL *serverRootWithHostPort(NSString *hostPort, NSString *scheme)
     [[NSURLQueryItem alloc] initWithName:@"runModule" value:runModule ? @"true" : @"false"],
   ];
   auto &inspectorFlags = facebook::react::jsinspector_modern::InspectorFlags::getInstance();
-  if (inspectorFlags.getEnableModernCDPRegistry()) {
+  if (inspectorFlags.getFuseboxEnabled()) {
     queryItems = [queryItems arrayByAddingObject:[[NSURLQueryItem alloc] initWithName:@"excludeSource" value:@"true"]];
     queryItems = [queryItems arrayByAddingObject:[[NSURLQueryItem alloc] initWithName:@"sourcePaths"
                                                                                 value:@"url-server"]];

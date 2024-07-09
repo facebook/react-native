@@ -89,14 +89,28 @@ function getNpmInfo(buildType /*: BuildType */) /*: NpmInfo */ {
   }
 
   if (buildType === 'release') {
-    if (process.env.CIRCLE_TAG == null) {
+    let versionTag /*: string*/ = '';
+    if (process.env.CIRCLE_TAG != null && process.env.CIRCLE_TAG !== '') {
+      versionTag = process.env.CIRCLE_TAG;
+    } else if (
+      process.env.GITHUB_REF != null &&
+      process.env.GITHUB_REF.includes('/tags/') &&
+      process.env.GITHUB_REF_NAME != null &&
+      process.env.GITHUB_REF_NAME !== ''
+    ) {
+      // GITHUB_REF contains the fully qualified ref, for example refs/tags/v0.75.0-rc.0
+      // GITHUB_REF_NAME contains the short name, for example v0.75.0-rc.0
+      versionTag = process.env.GITHUB_REF_NAME;
+    }
+
+    if (versionTag === '') {
       throw new Error(
-        'CIRCLE_TAG is not set for release. This should only be run in CircleCI. See https://circleci.com/docs/variables/ for how CIRCLE_TAG is set.',
+        'No version tag found in CI. It looks like this script is running in release mode, but the CIRCLE_TAG or the GITHUB_REF_NAME are missing.',
       );
     }
 
     const {version, major, minor, patch, prerelease} = parseVersion(
-      process.env.CIRCLE_TAG,
+      versionTag,
       buildType,
     );
 
@@ -155,36 +169,6 @@ function publishPackage(
     : {cwd: packagePath};
 
   return exec(`npm publish${tagsFlag}${otpFlag}${accessFlag}`, options);
-}
-
-/**
- * `package` is an object form of package.json
- * `dependencies` is a map of dependency to version string
- *
- * This replaces both dependencies and devDependencies in package.json
- */
-function applyPackageVersions(
-  originalPackageJson /*: PackageJSON */,
-  packageVersions /*: {[string]: string} */,
-) /*: PackageJSON */ {
-  const packageJson = {...originalPackageJson};
-
-  for (const name of Object.keys(packageVersions)) {
-    if (
-      packageJson.dependencies != null &&
-      packageJson.dependencies[name] != null
-    ) {
-      packageJson.dependencies[name] = packageVersions[name];
-    }
-
-    if (
-      packageJson.devDependencies != null &&
-      packageJson.devDependencies[name] != null
-    ) {
-      packageJson.devDependencies[name] = packageVersions[name];
-    }
-  }
-  return packageJson;
 }
 
 /**
@@ -257,7 +241,6 @@ function getVersionsBySpec(
 }
 
 module.exports = {
-  applyPackageVersions,
   getNpmInfo,
   getVersionsBySpec,
   publishPackage,

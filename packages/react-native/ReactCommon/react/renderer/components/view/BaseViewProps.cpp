@@ -150,6 +150,14 @@ BaseViewProps::BaseViewProps(
                                                        "cursor",
                                                        sourceProps.cursor,
                                                        {})),
+      boxShadow(
+          CoreFeatures::enablePropIteratorSetter ? sourceProps.boxShadow
+                                                 : convertRawProp(
+                                                       context,
+                                                       rawProps,
+                                                       "experimental_boxShadow",
+                                                       sourceProps.boxShadow,
+                                                       {})),
       filter(
           CoreFeatures::enablePropIteratorSetter ? sourceProps.filter
                                                  : convertRawProp(
@@ -158,6 +166,15 @@ BaseViewProps::BaseViewProps(
                                                        "experimental_filter",
                                                        sourceProps.filter,
                                                        {})),
+      mixBlendMode(
+          CoreFeatures::enablePropIteratorSetter
+              ? sourceProps.mixBlendMode
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "experimental_mixBlendMode",
+                    sourceProps.mixBlendMode,
+                    {})),
       transform(
           CoreFeatures::enablePropIteratorSetter ? sourceProps.transform
                                                  : convertRawProp(
@@ -458,21 +475,36 @@ BorderMetrics BaseViewProps::resolveBorderMetrics(
 
 Transform BaseViewProps::resolveTransform(
     const LayoutMetrics& layoutMetrics) const {
-  float viewWidth = layoutMetrics.frame.size.width;
-  float viewHeight = layoutMetrics.frame.size.height;
-  if (!transformOrigin.isSet() || (viewWidth == 0 && viewHeight == 0)) {
-    return transform;
+  const auto& frameSize = layoutMetrics.frame.size;
+  auto transformMatrix = Transform{};
+  if (frameSize.width == 0 && frameSize.height == 0) {
+    return transformMatrix;
   }
-  std::array<float, 3> translateOffsets =
-      getTranslateForTransformOrigin(viewWidth, viewHeight, transformOrigin);
-  auto newTransform = Transform::Translate(
-      translateOffsets[0], translateOffsets[1], translateOffsets[2]);
-  newTransform = newTransform * transform;
-  newTransform =
-      newTransform *
-      Transform::Translate(
-          -translateOffsets[0], -translateOffsets[1], -translateOffsets[2]);
-  return newTransform;
+
+  // transform is matrix
+  if (transform.operations.size() == 1 &&
+      transform.operations[0].type == TransformOperationType::Arbitrary) {
+    transformMatrix = transform;
+  } else {
+    for (const auto& operation : transform.operations) {
+      transformMatrix = transformMatrix *
+          Transform::FromTransformOperation(
+                            operation, layoutMetrics.frame.size);
+    }
+  }
+
+  if (transformOrigin.isSet()) {
+    std::array<float, 3> translateOffsets = getTranslateForTransformOrigin(
+        frameSize.width, frameSize.height, transformOrigin);
+    transformMatrix =
+        Transform::Translate(
+            translateOffsets[0], translateOffsets[1], translateOffsets[2]) *
+        transformMatrix *
+        Transform::Translate(
+            -translateOffsets[0], -translateOffsets[1], -translateOffsets[2]);
+  }
+
+  return transformMatrix;
 }
 
 bool BaseViewProps::getClipsContentToBounds() const {

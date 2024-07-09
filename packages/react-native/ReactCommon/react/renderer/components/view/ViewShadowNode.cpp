@@ -61,12 +61,12 @@ void ViewShadowNode::initialize() noexcept {
       viewProps.accessibilityViewIsModal ||
       viewProps.importantForAccessibility != ImportantForAccessibility::Auto ||
       viewProps.removeClippedSubviews || viewProps.cursor != Cursor::Auto ||
-      !viewProps.filter.empty() ||
+      !viewProps.filter.empty() || !viewProps.mixBlendMode.empty() ||
       HostPlatformViewTraitsInitializer::formsStackingContext(viewProps);
 
   bool formsView = formsStackingContext ||
       isColorMeaningful(viewProps.backgroundColor) || hasBorder() ||
-      !viewProps.testId.empty() ||
+      !viewProps.testId.empty() || !viewProps.boxShadow.empty() ||
       HostPlatformViewTraitsInitializer::formsView(viewProps);
 
   if (formsView) {

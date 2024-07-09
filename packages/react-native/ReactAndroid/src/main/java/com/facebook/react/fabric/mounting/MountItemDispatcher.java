@@ -117,6 +117,11 @@ public class MountItemDispatcher {
       } finally {
         mInDispatch = false;
       }
+
+      // We call didDispatchMountItems regardless of whether we actually dispatched anything, since
+      // NativeAnimatedModule relies on this for executing any animations that may have been
+      // scheduled
+      mItemDispatchListener.didDispatchMountItems();
     } else {
       final boolean didDispatchItems;
       try {
@@ -221,7 +226,7 @@ public class MountItemDispatcher {
     if (viewCommandMountItemsToDispatch != null) {
       Systrace.beginSection(
           Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
-          "FabricUIManager::mountViews viewCommandMountItems");
+          "MountItemDispatcher::mountViews viewCommandMountItems");
       for (DispatchCommandMountItem command : viewCommandMountItemsToDispatch) {
         if (ENABLE_FABRIC_LOGS) {
           printMountItem(command, "dispatchMountItems: Executing viewCommandMountItem");
@@ -263,7 +268,7 @@ public class MountItemDispatcher {
     Collection<MountItem> preMountItemsToDispatch = getAndResetPreMountItems();
     if (preMountItemsToDispatch != null) {
       Systrace.beginSection(
-          Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricUIManager::mountViews preMountItems");
+          Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "MountItemDispatcher::mountViews preMountItems");
       for (MountItem preMountItem : preMountItemsToDispatch) {
         if (ENABLE_FABRIC_LOGS) {
           printMountItem(preMountItem, "dispatchMountItems: Executing preMountItem");
@@ -277,7 +282,7 @@ public class MountItemDispatcher {
     if (mountItemsToDispatch != null) {
       Systrace.beginSection(
           Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
-          "FabricUIManager::mountViews mountItems to execute");
+          "MountItemDispatcher::mountViews mountItems to execute");
 
       long batchedExecutionStartTime = SystemClock.uptimeMillis();
 
@@ -314,11 +319,11 @@ public class MountItemDispatcher {
         }
       }
       mBatchedExecutionTime += SystemClock.uptimeMillis() - batchedExecutionStartTime;
+
+      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     }
 
     mItemDispatchListener.didMountItems(mountItemsToDispatch);
-
-    Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
 
     return true;
   }
@@ -337,7 +342,8 @@ public class MountItemDispatcher {
       return;
     }
 
-    Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricUIManager::premountViews");
+    Systrace.beginSection(
+        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "MountItemDispatcher::premountViews");
 
     // dispatchPreMountItems cannot be reentrant, but we want to prevent dispatchMountItems from
     // reentering during dispatchPreMountItems

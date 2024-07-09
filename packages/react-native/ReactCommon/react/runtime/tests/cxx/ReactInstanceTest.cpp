@@ -18,6 +18,7 @@
 #include <react/runtime/ReactInstance.h>
 
 using ::testing::_;
+using ::testing::HasSubstr;
 using ::testing::SaveArg;
 
 namespace facebook::react {
@@ -293,12 +294,12 @@ TEST_F(ReactInstanceTest, testSetImmediateWithInvalidArgs) {
   EXPECT_EQ(
       getErrorMessage("setImmediate();"),
       "setImmediate must be called with at least one argument (a function to call)");
-  EXPECT_EQ(
-      getErrorMessage("setImmediate('invalid');"),
-      "The first argument to setImmediate must be a function.");
-  EXPECT_EQ(
-      getErrorMessage("setImmediate({});"),
-      "The first argument to setImmediate must be a function.");
+
+  eval("setImmediate('invalid');");
+  expectNoError();
+
+  eval("setImmediate({});");
+  expectNoError();
 }
 
 TEST_F(ReactInstanceTest, testClearImmediate) {
@@ -419,12 +420,12 @@ TEST_F(ReactInstanceTest, testSetTimeoutWithInvalidArgs) {
   EXPECT_EQ(
       getErrorMessage("setTimeout();"),
       "setTimeout must be called with at least one argument (the function to call).");
-  EXPECT_EQ(
-      getErrorMessage("setTimeout('invalid');"),
-      "The first argument to setTimeout must be a function.");
-  EXPECT_EQ(
-      getErrorMessage("setTimeout(() => {}, 'invalid');"),
-      "The second argument to setTimeout must be a number or undefined.");
+
+  eval("setTimeout('invalid');");
+  expectNoError();
+
+  eval("setTimeout(() => {}, 'invalid');");
+  expectNoError();
 }
 
 TEST_F(ReactInstanceTest, testClearTimeout) {
@@ -801,9 +802,10 @@ TEST_F(ReactInstanceTest, testCallFunctionOnModule_invalidModule) {
   instance_->callFunctionOnModule("invalidModule", "method", std::move(args));
   step();
   expectError();
-  EXPECT_EQ(
+  EXPECT_THAT(
       getLastErrorMessage(),
-      "Failed to call into JavaScript module method invalidModule.method(). Module has not been registered as callable. Registered callable JavaScript modules (n = 0):. Did you forget to call `RN$registerCallableModule`?");
+      HasSubstr(
+          "Failed to call into JavaScript module method invalidModule.method()"));
 }
 
 TEST_F(ReactInstanceTest, testCallFunctionOnModule_undefinedMethod) {
@@ -820,7 +822,7 @@ RN$registerCallableModule('foo', () => module);
   expectError();
   EXPECT_EQ(
       getLastErrorMessage(),
-      "Failed to call into JavaScript module method foo.invalidMethod. Module exists, but the method is undefined.");
+      "getPropertyAsObject: property 'invalidMethod' is undefined, expected an Object");
 }
 
 TEST_F(ReactInstanceTest, testCallFunctionOnModule_invalidMethod) {

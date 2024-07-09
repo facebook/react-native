@@ -19,23 +19,3 @@ exports[`<SafeAreaView /> should render as expected: should deep render when not
   </View>
 </RCTSafeAreaView>
 `;
-
-exports[`<SafeAreaView /> should render as expected: should shallow render as <SafeAreaView /> when mocked 1`] = `
-<RCTSafeAreaView>
-  <View>
-    <Text>
-      Hello World!
-    </Text>
-  </View>
-</RCTSafeAreaView>
-`;
-
-exports[`<SafeAreaView /> should render as expected: should shallow render as <SafeAreaView /> when not mocked 1`] = `
-<RCTSafeAreaView>
-  <View>
-    <Text>
-      Hello World!
-    </Text>
-  </View>
-</RCTSafeAreaView>
-`;

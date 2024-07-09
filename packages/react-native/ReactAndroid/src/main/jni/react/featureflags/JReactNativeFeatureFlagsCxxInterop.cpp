@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<70cc98f74b676cb12f4e510b88d551aa>>
+ * @generated SignedSource<<2e4bde6040e04475ee137722c9d2df24>>
  */
 
 /**
@@ -51,9 +51,9 @@ class ReactNativeFeatureFlagsProviderHolder
     return method(javaProvider_);
   }
 
-  bool androidEnablePendingFabricTransactions() override {
+  bool allowRecursiveCommitsWithSynchronousMountOnAndroid() override {
     static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("androidEnablePendingFabricTransactions");
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("allowRecursiveCommitsWithSynchronousMountOnAndroid");
     return method(javaProvider_);
   }
 
@@ -105,9 +105,27 @@ class ReactNativeFeatureFlagsProviderHolder
     return method(javaProvider_);
   }
 
-  bool fixMountedFlagAndFixPreallocationClone() override {
+  bool fixIncorrectScrollViewStateUpdateOnAndroid() override {
     static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("fixMountedFlagAndFixPreallocationClone");
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("fixIncorrectScrollViewStateUpdateOnAndroid");
+    return method(javaProvider_);
+  }
+
+  bool fixMappingOfEventPrioritiesBetweenFabricAndReact() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("fixMappingOfEventPrioritiesBetweenFabricAndReact");
+    return method(javaProvider_);
+  }
+
+  bool fixMissedFabricStateUpdatesOnAndroid() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("fixMissedFabricStateUpdatesOnAndroid");
+    return method(javaProvider_);
+  }
+
+  bool fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak");
     return method(javaProvider_);
   }
 
@@ -117,15 +135,15 @@ class ReactNativeFeatureFlagsProviderHolder
     return method(javaProvider_);
   }
 
-  bool inspectorEnableCxxInspectorPackagerConnection() override {
+  bool fuseboxEnabledDebug() override {
     static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("inspectorEnableCxxInspectorPackagerConnection");
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("fuseboxEnabledDebug");
     return method(javaProvider_);
   }
 
-  bool inspectorEnableModernCDPRegistry() override {
+  bool fuseboxEnabledRelease() override {
     static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("inspectorEnableModernCDPRegistry");
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("fuseboxEnabledRelease");
     return method(javaProvider_);
   }
 
@@ -141,6 +159,18 @@ class ReactNativeFeatureFlagsProviderHolder
     return method(javaProvider_);
   }
 
+  bool setAndroidLayoutDirection() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("setAndroidLayoutDirection");
+    return method(javaProvider_);
+  }
+
+  bool useImmediateExecutorInAndroidBridgeless() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useImmediateExecutorInAndroidBridgeless");
+    return method(javaProvider_);
+  }
+
   bool useModernRuntimeScheduler() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useModernRuntimeScheduler");
@@ -150,6 +180,18 @@ class ReactNativeFeatureFlagsProviderHolder
   bool useNativeViewConfigsInBridgelessMode() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useNativeViewConfigsInBridgelessMode");
+    return method(javaProvider_);
+  }
+
+  bool useRuntimeShadowNodeReferenceUpdate() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useRuntimeShadowNodeReferenceUpdate");
+    return method(javaProvider_);
+  }
+
+  bool useRuntimeShadowNodeReferenceUpdateOnLayout() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useRuntimeShadowNodeReferenceUpdateOnLayout");
     return method(javaProvider_);
   }
 
@@ -173,9 +215,9 @@ bool JReactNativeFeatureFlagsCxxInterop::allowCollapsableChildren(
   return ReactNativeFeatureFlags::allowCollapsableChildren();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::androidEnablePendingFabricTransactions(
+bool JReactNativeFeatureFlagsCxxInterop::allowRecursiveCommitsWithSynchronousMountOnAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::androidEnablePendingFabricTransactions();
+  return ReactNativeFeatureFlags::allowRecursiveCommitsWithSynchronousMountOnAndroid();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::batchRenderingUpdatesInEventLoop(
@@ -218,9 +260,24 @@ bool JReactNativeFeatureFlagsCxxInterop::enableUIConsistency(
   return ReactNativeFeatureFlags::enableUIConsistency();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::fixMountedFlagAndFixPreallocationClone(
+bool JReactNativeFeatureFlagsCxxInterop::fixIncorrectScrollViewStateUpdateOnAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::fixMountedFlagAndFixPreallocationClone();
+  return ReactNativeFeatureFlags::fixIncorrectScrollViewStateUpdateOnAndroid();
+}
+
+bool JReactNativeFeatureFlagsCxxInterop::fixMappingOfEventPrioritiesBetweenFabricAndReact(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact();
+}
+
+bool JReactNativeFeatureFlagsCxxInterop::fixMissedFabricStateUpdatesOnAndroid(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::fixMissedFabricStateUpdatesOnAndroid();
+}
+
+bool JReactNativeFeatureFlagsCxxInterop::fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::forceBatchingMountItemsOnAndroid(
@@ -228,14 +285,14 @@ bool JReactNativeFeatureFlagsCxxInterop::forceBatchingMountItemsOnAndroid(
   return ReactNativeFeatureFlags::forceBatchingMountItemsOnAndroid();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::inspectorEnableCxxInspectorPackagerConnection(
+bool JReactNativeFeatureFlagsCxxInterop::fuseboxEnabledDebug(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::inspectorEnableCxxInspectorPackagerConnection();
+  return ReactNativeFeatureFlags::fuseboxEnabledDebug();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::inspectorEnableModernCDPRegistry(
+bool JReactNativeFeatureFlagsCxxInterop::fuseboxEnabledRelease(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::inspectorEnableModernCDPRegistry();
+  return ReactNativeFeatureFlags::fuseboxEnabledRelease();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::lazyAnimationCallbacks(
@@ -248,6 +305,16 @@ bool JReactNativeFeatureFlagsCxxInterop::preventDoubleTextMeasure(
   return ReactNativeFeatureFlags::preventDoubleTextMeasure();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::setAndroidLayoutDirection(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::setAndroidLayoutDirection();
+}
+
+bool JReactNativeFeatureFlagsCxxInterop::useImmediateExecutorInAndroidBridgeless(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::useImmediateExecutorInAndroidBridgeless();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::useModernRuntimeScheduler(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::useModernRuntimeScheduler();
@@ -256,6 +323,16 @@ bool JReactNativeFeatureFlagsCxxInterop::useModernRuntimeScheduler(
 bool JReactNativeFeatureFlagsCxxInterop::useNativeViewConfigsInBridgelessMode(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::useNativeViewConfigsInBridgelessMode();
+}
+
+bool JReactNativeFeatureFlagsCxxInterop::useRuntimeShadowNodeReferenceUpdate(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::useRuntimeShadowNodeReferenceUpdate();
+}
+
+bool JReactNativeFeatureFlagsCxxInterop::useRuntimeShadowNodeReferenceUpdateOnLayout(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::useRuntimeShadowNodeReferenceUpdateOnLayout();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::useStateAlignmentMechanism(
@@ -287,8 +364,8 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
         "allowCollapsableChildren",
         JReactNativeFeatureFlagsCxxInterop::allowCollapsableChildren),
       makeNativeMethod(
-        "androidEnablePendingFabricTransactions",
-        JReactNativeFeatureFlagsCxxInterop::androidEnablePendingFabricTransactions),
+        "allowRecursiveCommitsWithSynchronousMountOnAndroid",
+        JReactNativeFeatureFlagsCxxInterop::allowRecursiveCommitsWithSynchronousMountOnAndroid),
       makeNativeMethod(
         "batchRenderingUpdatesInEventLoop",
         JReactNativeFeatureFlagsCxxInterop::batchRenderingUpdatesInEventLoop),
@@ -314,17 +391,26 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
         "enableUIConsistency",
         JReactNativeFeatureFlagsCxxInterop::enableUIConsistency),
       makeNativeMethod(
-        "fixMountedFlagAndFixPreallocationClone",
-        JReactNativeFeatureFlagsCxxInterop::fixMountedFlagAndFixPreallocationClone),
+        "fixIncorrectScrollViewStateUpdateOnAndroid",
+        JReactNativeFeatureFlagsCxxInterop::fixIncorrectScrollViewStateUpdateOnAndroid),
+      makeNativeMethod(
+        "fixMappingOfEventPrioritiesBetweenFabricAndReact",
+        JReactNativeFeatureFlagsCxxInterop::fixMappingOfEventPrioritiesBetweenFabricAndReact),
+      makeNativeMethod(
+        "fixMissedFabricStateUpdatesOnAndroid",
+        JReactNativeFeatureFlagsCxxInterop::fixMissedFabricStateUpdatesOnAndroid),
+      makeNativeMethod(
+        "fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak",
+        JReactNativeFeatureFlagsCxxInterop::fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak),
       makeNativeMethod(
         "forceBatchingMountItemsOnAndroid",
         JReactNativeFeatureFlagsCxxInterop::forceBatchingMountItemsOnAndroid),
       makeNativeMethod(
-        "inspectorEnableCxxInspectorPackagerConnection",
-        JReactNativeFeatureFlagsCxxInterop::inspectorEnableCxxInspectorPackagerConnection),
+        "fuseboxEnabledDebug",
+        JReactNativeFeatureFlagsCxxInterop::fuseboxEnabledDebug),
       makeNativeMethod(
-        "inspectorEnableModernCDPRegistry",
-        JReactNativeFeatureFlagsCxxInterop::inspectorEnableModernCDPRegistry),
+        "fuseboxEnabledRelease",
+        JReactNativeFeatureFlagsCxxInterop::fuseboxEnabledRelease),
       makeNativeMethod(
         "lazyAnimationCallbacks",
         JReactNativeFeatureFlagsCxxInterop::lazyAnimationCallbacks),
@@ -332,11 +418,23 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
         "preventDoubleTextMeasure",
         JReactNativeFeatureFlagsCxxInterop::preventDoubleTextMeasure),
       makeNativeMethod(
+        "setAndroidLayoutDirection",
+        JReactNativeFeatureFlagsCxxInterop::setAndroidLayoutDirection),
+      makeNativeMethod(
+        "useImmediateExecutorInAndroidBridgeless",
+        JReactNativeFeatureFlagsCxxInterop::useImmediateExecutorInAndroidBridgeless),
+      makeNativeMethod(
         "useModernRuntimeScheduler",
         JReactNativeFeatureFlagsCxxInterop::useModernRuntimeScheduler),
       makeNativeMethod(
         "useNativeViewConfigsInBridgelessMode",
         JReactNativeFeatureFlagsCxxInterop::useNativeViewConfigsInBridgelessMode),
+      makeNativeMethod(
+        "useRuntimeShadowNodeReferenceUpdate",
+        JReactNativeFeatureFlagsCxxInterop::useRuntimeShadowNodeReferenceUpdate),
+      makeNativeMethod(
+        "useRuntimeShadowNodeReferenceUpdateOnLayout",
+        JReactNativeFeatureFlagsCxxInterop::useRuntimeShadowNodeReferenceUpdateOnLayout),
       makeNativeMethod(
         "useStateAlignmentMechanism",
         JReactNativeFeatureFlagsCxxInterop::useStateAlignmentMechanism),

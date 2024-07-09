@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<22d2fc7d575d13cf21c782f5f5192580>>
+ * @generated SignedSource<<5436af4d7f25024a57ef557827a02ecb>>
  * @flow strict-local
  */
 
@@ -25,7 +25,7 @@ import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboMod
 export interface Spec extends TurboModule {
   +commonTestFlag?: () => boolean;
   +allowCollapsableChildren?: () => boolean;
-  +androidEnablePendingFabricTransactions?: () => boolean;
+  +allowRecursiveCommitsWithSynchronousMountOnAndroid?: () => boolean;
   +batchRenderingUpdatesInEventLoop?: () => boolean;
   +destroyFabricSurfacesInReactInstanceManager?: () => boolean;
   +enableBackgroundExecutor?: () => boolean;
@@ -34,14 +34,21 @@ export interface Spec extends TurboModule {
   +enableMicrotasks?: () => boolean;
   +enableSynchronousStateUpdates?: () => boolean;
   +enableUIConsistency?: () => boolean;
-  +fixMountedFlagAndFixPreallocationClone?: () => boolean;
+  +fixIncorrectScrollViewStateUpdateOnAndroid?: () => boolean;
+  +fixMappingOfEventPrioritiesBetweenFabricAndReact?: () => boolean;
+  +fixMissedFabricStateUpdatesOnAndroid?: () => boolean;
+  +fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak?: () => boolean;
   +forceBatchingMountItemsOnAndroid?: () => boolean;
-  +inspectorEnableCxxInspectorPackagerConnection?: () => boolean;
-  +inspectorEnableModernCDPRegistry?: () => boolean;
+  +fuseboxEnabledDebug?: () => boolean;
+  +fuseboxEnabledRelease?: () => boolean;
   +lazyAnimationCallbacks?: () => boolean;
   +preventDoubleTextMeasure?: () => boolean;
+  +setAndroidLayoutDirection?: () => boolean;
+  +useImmediateExecutorInAndroidBridgeless?: () => boolean;
   +useModernRuntimeScheduler?: () => boolean;
   +useNativeViewConfigsInBridgelessMode?: () => boolean;
+  +useRuntimeShadowNodeReferenceUpdate?: () => boolean;
+  +useRuntimeShadowNodeReferenceUpdateOnLayout?: () => boolean;
   +useStateAlignmentMechanism?: () => boolean;
 }
 

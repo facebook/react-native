@@ -109,6 +109,10 @@ class HermesJSRuntime : public JSRuntime {
     return *targetDelegate_;
   }
 
+  void unstable_initializeOnJsThread() override {
+    runtime_->registerForProfiling();
+  }
+
  private:
   std::shared_ptr<HermesRuntime> runtime_;
   std::optional<jsinspector_modern::HermesRuntimeTargetDelegate>
@@ -150,7 +154,7 @@ std::unique_ptr<JSRuntime> HermesInstance::createJSRuntime(
 
 #ifdef HERMES_ENABLE_DEBUGGER
   auto& inspectorFlags = jsinspector_modern::InspectorFlags::getInstance();
-  if (!inspectorFlags.getEnableModernCDPRegistry()) {
+  if (!inspectorFlags.getFuseboxEnabled()) {
     std::unique_ptr<DecoratedRuntime> decoratedRuntime =
         std::make_unique<DecoratedRuntime>(
             std::move(hermesRuntime), msgQueueThread);

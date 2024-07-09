@@ -95,6 +95,7 @@
 
 - (void)viewDidLoad
 {
+  [super viewDidLoad];
   self.view.backgroundColor = [UIColor blackColor];
 
   const CGFloat buttonHeight = 60;

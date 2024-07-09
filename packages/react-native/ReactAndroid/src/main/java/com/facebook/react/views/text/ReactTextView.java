@@ -382,6 +382,8 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
       setText(getSpanned());
     }
 
+    mReactBackgroundManager.maybeClipToPaddingBox(canvas);
+
     super.onDraw(canvas);
   }
 
@@ -740,5 +742,9 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     if (!Float.isNaN(mLetterSpacing)) {
       super.setLetterSpacing(mLetterSpacing);
     }
+  }
+
+  public void setOverflow(@Nullable String overflow) {
+    mReactBackgroundManager.setOverflow(overflow);
   }
 }

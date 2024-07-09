@@ -21,6 +21,7 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.common.assets.ReactFontManager
 import com.facebook.react.config.ReactFeatureFlags
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.load
+import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.unstable_loadFusebox
 import com.facebook.react.defaults.DefaultReactHost
 import com.facebook.react.defaults.DefaultReactNativeHost
 import com.facebook.react.module.model.ReactModuleInfo
@@ -136,6 +137,10 @@ class RNTesterApplication : Application(), ReactApplication {
     ReactFontManager.getInstance().addCustomFont(this, "Rubik", R.font.rubik)
     super.onCreate()
     SoLoader.init(this, /* native exopackage */ false)
+
+    // [Experiment] Enable the new debugger stack (codename Fusebox)
+    unstable_loadFusebox(BuildConfig.IS_NEW_ARCHITECTURE_ENABLED)
+
     if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
       load()
     }

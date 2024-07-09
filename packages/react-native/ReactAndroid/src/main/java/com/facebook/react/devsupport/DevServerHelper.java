@@ -7,9 +7,10 @@
 
 package com.facebook.react.devsupport;
 
+import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.provider.Settings;
+import android.provider.Settings.Secure;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
@@ -104,6 +105,7 @@ public class DevServerHelper {
   private final OkHttpClient mClient;
   private final BundleDownloader mBundleDownloader;
   private final PackagerStatusCheck mPackagerStatusCheck;
+  private final Context mApplicationContext;
   private final String mPackageName;
 
   private @Nullable JSPackagerClient mPackagerClient;
@@ -111,7 +113,7 @@ public class DevServerHelper {
 
   public DevServerHelper(
       DeveloperSettings developerSettings,
-      String packageName,
+      Context applicationContext,
       PackagerConnectionSettings packagerConnectionSettings) {
     mSettings = developerSettings;
     mPackagerConnectionSettings = packagerConnectionSettings;
@@ -123,7 +125,8 @@ public class DevServerHelper {
             .build();
     mBundleDownloader = new BundleDownloader(mClient);
     mPackagerStatusCheck = new PackagerStatusCheck(mClient);
-    mPackageName = packageName;
+    mApplicationContext = applicationContext;
+    mPackageName = applicationContext.getPackageName();
   }
 
   public void openPackagerConnection(
@@ -210,7 +213,7 @@ public class DevServerHelper {
     new AsyncTask<Void, Void, Void>() {
       @Override
       protected Void doInBackground(Void... params) {
-        if (InspectorFlags.getEnableCxxInspectorPackagerConnection()) {
+        if (InspectorFlags.getFuseboxEnabled()) {
           mInspectorPackagerConnection =
               new CxxInspectorPackagerConnection(getInspectorDeviceUrl(), mPackageName);
         } else {
@@ -301,7 +304,8 @@ public class DevServerHelper {
     // * randomly generated when the user first sets up the device and should remain constant for
     // the lifetime of the user's device (API level < 26).
     // [Source: Android docs]
-    String androidId = Settings.Secure.ANDROID_ID;
+    String androidId =
+        Secure.getString(mApplicationContext.getContentResolver(), Secure.ANDROID_ID);
 
     String rawDeviceId =
         String.format(
@@ -309,7 +313,7 @@ public class DevServerHelper {
             "android-%s-%s-%s",
             packageName,
             androidId,
-            InspectorFlags.getEnableModernCDPRegistry() ? "fusebox" : "legacy");
+            InspectorFlags.getFuseboxEnabled() ? "fusebox" : "legacy");
 
     return getSHA256(rawDeviceId);
   }
@@ -393,9 +397,7 @@ public class DevServerHelper {
             mPackageName,
             modulesOnly ? "true" : "false",
             runModule ? "true" : "false")
-        + (InspectorFlags.getEnableModernCDPRegistry()
-            ? "&excludeSource=true&sourcePaths=url-server"
-            : "");
+        + (InspectorFlags.getFuseboxEnabled() ? "&excludeSource=true&sourcePaths=url-server" : "");
   }
 
   private String createBundleURL(String mainModuleID, BundleType type) {

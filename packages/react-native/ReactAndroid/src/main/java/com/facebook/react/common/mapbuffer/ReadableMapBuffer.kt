@@ -226,19 +226,23 @@ public class ReadableMapBuffer : MapBuffer {
 
   override fun toString(): String {
     val builder = StringBuilder("{")
-    for (entry in this) {
-      val key = entry.key
-      builder.append(key)
-      builder.append('=')
-      when (entry.type) {
-        MapBuffer.DataType.BOOL -> builder.append(entry.booleanValue)
-        MapBuffer.DataType.INT -> builder.append(entry.intValue)
-        MapBuffer.DataType.LONG -> builder.append(entry.longValue)
-        MapBuffer.DataType.DOUBLE -> builder.append(entry.doubleValue)
-        MapBuffer.DataType.STRING -> builder.append(entry.stringValue)
-        MapBuffer.DataType.MAP -> builder.append(entry.mapBufferValue.toString())
+    joinTo(builder) { entry ->
+      StringBuilder().apply {
+        append(entry.key)
+        append('=')
+        when (entry.type) {
+          MapBuffer.DataType.BOOL -> append(entry.booleanValue)
+          MapBuffer.DataType.INT -> append(entry.intValue)
+          MapBuffer.DataType.LONG -> append(entry.longValue)
+          MapBuffer.DataType.DOUBLE -> append(entry.doubleValue)
+          MapBuffer.DataType.STRING -> {
+            append('"')
+            append(entry.stringValue)
+            append('"')
+          }
+          MapBuffer.DataType.MAP -> append(entry.mapBufferValue.toString())
+        }
       }
-      builder.append(',')
     }
     builder.append('}')
     return builder.toString()

@@ -10,8 +10,6 @@
 #import <React/RCTAnimationUtils.h>
 #import <React/RCTConvert.h>
 
-static NSRegularExpression *regex;
-
 typedef NS_ENUM(NSInteger, RCTInterpolationOutputType) {
   RCTInterpolationOutputNumber,
   RCTInterpolationOutputColor,

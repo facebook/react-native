@@ -202,4 +202,21 @@ TEST(CSSTokenizer, invalid_values) {
       CSSToken{CSSTokenType::EndOfFile});
 }
 
+TEST(CSSTokenizer, hash_values) {
+  EXPECT_TOKENS(
+      "#Ff03BC",
+      CSSToken{CSSTokenType::Hash, "Ff03BC"},
+      CSSToken{CSSTokenType::EndOfFile});
+
+  EXPECT_TOKENS(
+      "#identifier",
+      CSSToken{CSSTokenType::Hash, "identifier"},
+      CSSToken{CSSTokenType::EndOfFile});
+
+  EXPECT_TOKENS(
+      "#*",
+      CSSToken{CSSTokenType::Delim, "#"},
+      CSSToken{CSSTokenType::Delim, "*"},
+      CSSToken{CSSTokenType::EndOfFile});
+}
 } // namespace facebook::react

@@ -81,7 +81,13 @@ internal class BoxShadowDrawable(
     }
 
     with(canvas) {
-      clipOutPath(background.borderBoxPath())
+      val borderBoxPath = background.getBorderBoxPath()
+      if (borderBoxPath != null) {
+        clipOutPath(borderBoxPath)
+      } else {
+        clipOutRect(background.getBorderBoxRect())
+      }
+
       drawRenderNode(renderNode)
     }
   }

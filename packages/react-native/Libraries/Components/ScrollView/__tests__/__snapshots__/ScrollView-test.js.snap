@@ -34,7 +34,6 @@ exports[`ScrollView renders its children: should deep render when not mocked (pl
   onTouchMove={[Function]}
   onTouchStart={[Function]}
   pagingEnabled={false}
-  scrollViewRef={null}
   sendMomentumEvents={false}
   snapToEnd={true}
   snapToStart={true}
@@ -64,24 +63,4 @@ exports[`ScrollView renders its children: should deep render when not mocked (pl
     </View>
   </RCTScrollContentView>
 </RCTScrollView>
-`;
-
-exports[`ScrollView renders its children: should shallow render as <ScrollView /> when mocked 1`] = `
-<ScrollView>
-  <View>
-    <Text>
-      Hello World!
-    </Text>
-  </View>
-</ScrollView>
-`;
-
-exports[`ScrollView renders its children: should shallow render as <ScrollView /> when not mocked 1`] = `
-<ScrollView>
-  <View>
-    <Text>
-      Hello World!
-    </Text>
-  </View>
-</ScrollView>
 `;

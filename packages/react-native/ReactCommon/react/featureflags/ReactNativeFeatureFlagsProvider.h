@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0f88f63dfcb4b3ca71c010bc24efd56c>>
+ * @generated SignedSource<<bc66fbce7a26dbfe5c2df9a0151f6b57>>
  */
 
 /**
@@ -27,7 +27,7 @@ class ReactNativeFeatureFlagsProvider {
 
   virtual bool commonTestFlag() = 0;
   virtual bool allowCollapsableChildren() = 0;
-  virtual bool androidEnablePendingFabricTransactions() = 0;
+  virtual bool allowRecursiveCommitsWithSynchronousMountOnAndroid() = 0;
   virtual bool batchRenderingUpdatesInEventLoop() = 0;
   virtual bool destroyFabricSurfacesInReactInstanceManager() = 0;
   virtual bool enableBackgroundExecutor() = 0;
@@ -36,14 +36,21 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool enableMicrotasks() = 0;
   virtual bool enableSynchronousStateUpdates() = 0;
   virtual bool enableUIConsistency() = 0;
-  virtual bool fixMountedFlagAndFixPreallocationClone() = 0;
+  virtual bool fixIncorrectScrollViewStateUpdateOnAndroid() = 0;
+  virtual bool fixMappingOfEventPrioritiesBetweenFabricAndReact() = 0;
+  virtual bool fixMissedFabricStateUpdatesOnAndroid() = 0;
+  virtual bool fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak() = 0;
   virtual bool forceBatchingMountItemsOnAndroid() = 0;
-  virtual bool inspectorEnableCxxInspectorPackagerConnection() = 0;
-  virtual bool inspectorEnableModernCDPRegistry() = 0;
+  virtual bool fuseboxEnabledDebug() = 0;
+  virtual bool fuseboxEnabledRelease() = 0;
   virtual bool lazyAnimationCallbacks() = 0;
   virtual bool preventDoubleTextMeasure() = 0;
+  virtual bool setAndroidLayoutDirection() = 0;
+  virtual bool useImmediateExecutorInAndroidBridgeless() = 0;
   virtual bool useModernRuntimeScheduler() = 0;
   virtual bool useNativeViewConfigsInBridgelessMode() = 0;
+  virtual bool useRuntimeShadowNodeReferenceUpdate() = 0;
+  virtual bool useRuntimeShadowNodeReferenceUpdateOnLayout() = 0;
   virtual bool useStateAlignmentMechanism() = 0;
 };
 

@@ -84,12 +84,9 @@ final class PreAllocateViewMountItem implements MountItem {
     if (IS_DEVELOPMENT_ENVIRONMENT) {
       result
           .append(" props: ")
-          .append(mProps != null ? mProps : "<null>")
+          .append(mProps != null ? mProps.toString() : "<null>")
           .append(" state: ")
-          .append(
-              mStateWrapper != null && mStateWrapper.getStateData() != null
-                  ? mStateWrapper.getStateData().toString()
-                  : "<null>");
+          .append(mStateWrapper != null ? mStateWrapper.toString() : "<null>");
     }
 
     return result.toString();

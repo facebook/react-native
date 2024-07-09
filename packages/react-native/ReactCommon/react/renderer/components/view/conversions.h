@@ -15,7 +15,9 @@
 #include <react/renderer/core/LayoutMetrics.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/RawProps.h>
+#include <react/renderer/graphics/BoxShadow.h>
 #include <react/renderer/graphics/Filter.h>
+#include <react/renderer/graphics/PlatformColorParser.h>
 #include <react/renderer/graphics/Transform.h>
 #include <react/renderer/graphics/ValueUnit.h>
 #include <stdlib.h>
@@ -188,8 +190,7 @@ inline void fromRawValue(
     result = yoga::Direction::RTL;
     return;
   }
-  LOG(ERROR) << "Could not parse Direction:" << stringValue;
-  react_native_expect(false);
+  LOG(ERROR) << "Could not parse yoga::Direction: " << stringValue;
 }
 
 inline void fromRawValue(
@@ -218,8 +219,7 @@ inline void fromRawValue(
     result = yoga::FlexDirection::RowReverse;
     return;
   }
-  LOG(ERROR) << "Could not parse yoga::FlexDirection:" << stringValue;
-  react_native_expect(false);
+  LOG(ERROR) << "Could not parse yoga::FlexDirection: " << stringValue;
 }
 
 inline void fromRawValue(
@@ -256,8 +256,7 @@ inline void fromRawValue(
     result = yoga::Justify::SpaceEvenly;
     return;
   }
-  LOG(ERROR) << "Could not parse yoga::Justify:" << stringValue;
-  react_native_expect(false);
+  LOG(ERROR) << "Could not parse yoga::Justify: " << stringValue;
 }
 
 inline void fromRawValue(
@@ -306,7 +305,7 @@ inline void fromRawValue(
     result = yoga::Align::SpaceEvenly;
     return;
   }
-  LOG(ERROR) << "Could not parse yoga::Align:" << stringValue;
+  LOG(ERROR) << "Could not parse yoga::Align: " << stringValue;
   react_native_expect(false);
 }
 
@@ -332,8 +331,7 @@ inline void fromRawValue(
     result = yoga::PositionType::Absolute;
     return;
   }
-  LOG(ERROR) << "Could not parse yoga::PositionType:" << stringValue;
-  react_native_expect(false);
+  LOG(ERROR) << "Could not parse yoga::PositionType: " << stringValue;
 }
 
 inline void fromRawValue(
@@ -358,8 +356,7 @@ inline void fromRawValue(
     result = yoga::Wrap::WrapReverse;
     return;
   }
-  LOG(ERROR) << "Could not parse yoga::Wrap:" << stringValue;
-  react_native_expect(false);
+  LOG(ERROR) << "Could not parse yoga::Wrap: " << stringValue;
 }
 
 inline void fromRawValue(
@@ -406,8 +403,7 @@ inline void fromRawValue(
     result = yoga::Display::None;
     return;
   }
-  LOG(ERROR) << "Could not parse yoga::Display:" << stringValue;
-  react_native_expect(false);
+  LOG(ERROR) << "Could not parse yoga::Display: " << stringValue;
 }
 
 inline void fromRawValue(
@@ -481,88 +477,6 @@ inline Float toRadians(
 }
 
 inline void fromRawValue(
-    const PropsParserContext& context,
-    const RawValue& value,
-    Transform& result) {
-  auto transformMatrix = Transform{};
-  react_native_expect(value.hasType<std::vector<RawValue>>());
-  if (!value.hasType<std::vector<RawValue>>()) {
-    result = transformMatrix;
-    return;
-  }
-
-  auto configurations = static_cast<std::vector<RawValue>>(value);
-  for (const auto& configuration : configurations) {
-    if (!configuration.hasType<std::unordered_map<std::string, RawValue>>()) {
-      // TODO: The following checks have to be removed after codegen is shipped.
-      // See T45151459.
-      continue;
-    }
-
-    auto configurationPair =
-        static_cast<std::unordered_map<std::string, RawValue>>(configuration);
-    auto pair = configurationPair.begin();
-    auto operation = pair->first;
-    auto& parameters = pair->second;
-
-    if (operation == "matrix") {
-      react_native_expect(parameters.hasType<std::vector<Float>>());
-      auto numbers = (std::vector<Float>)parameters;
-      react_native_expect(numbers.size() == transformMatrix.matrix.size());
-      auto i = 0;
-      for (auto number : numbers) {
-        transformMatrix.matrix[i++] = number;
-      }
-      transformMatrix.operations.push_back(
-          TransformOperation{TransformOperationType::Arbitrary, 0, 0, 0});
-    } else if (operation == "perspective") {
-      transformMatrix =
-          transformMatrix * Transform::Perspective((Float)parameters);
-    } else if (operation == "rotateX") {
-      transformMatrix = transformMatrix *
-          Transform::Rotate(toRadians(parameters, 0.0f), 0, 0);
-    } else if (operation == "rotateY") {
-      transformMatrix = transformMatrix *
-          Transform::Rotate(0, toRadians(parameters, 0.0f), 0);
-    } else if (operation == "rotateZ" || operation == "rotate") {
-      transformMatrix = transformMatrix *
-          Transform::Rotate(0, 0, toRadians(parameters, 0.0f));
-    } else if (operation == "scale") {
-      auto number = (Float)parameters;
-      transformMatrix =
-          transformMatrix * Transform::Scale(number, number, number);
-    } else if (operation == "scaleX") {
-      transformMatrix =
-          transformMatrix * Transform::Scale((Float)parameters, 1, 1);
-    } else if (operation == "scaleY") {
-      transformMatrix =
-          transformMatrix * Transform::Scale(1, (Float)parameters, 1);
-    } else if (operation == "scaleZ") {
-      transformMatrix =
-          transformMatrix * Transform::Scale(1, 1, (Float)parameters);
-    } else if (operation == "translate") {
-      auto numbers = (std::vector<Float>)parameters;
-      transformMatrix = transformMatrix *
-          Transform::Translate(numbers.at(0), numbers.at(1), 0);
-    } else if (operation == "translateX") {
-      transformMatrix =
-          transformMatrix * Transform::Translate((Float)parameters, 0, 0);
-    } else if (operation == "translateY") {
-      transformMatrix =
-          transformMatrix * Transform::Translate(0, (Float)parameters, 0);
-    } else if (operation == "skewX") {
-      transformMatrix =
-          transformMatrix * Transform::Skew(toRadians(parameters, 0.0f), 0);
-    } else if (operation == "skewY") {
-      transformMatrix =
-          transformMatrix * Transform::Skew(0, toRadians(parameters, 0.0f));
-    }
-  }
-
-  result = transformMatrix;
-}
-
-inline void fromRawValue(
     const PropsParserContext& /*context*/,
     const RawValue& value,
     ValueUnit& result) {
@@ -589,6 +503,125 @@ inline void fromRawValue(
   }
 
   result = valueUnit;
+}
+
+inline void fromRawValue(
+    const PropsParserContext& context,
+    const RawValue& value,
+    Transform& result) {
+  auto transformMatrix = Transform{};
+  react_native_expect(value.hasType<std::vector<RawValue>>());
+  if (!value.hasType<std::vector<RawValue>>()) {
+    result = transformMatrix;
+    return;
+  }
+
+  auto configurations = static_cast<std::vector<RawValue>>(value);
+  for (const auto& configuration : configurations) {
+    if (!configuration.hasType<std::unordered_map<std::string, RawValue>>()) {
+      // TODO: The following checks have to be removed after codegen is shipped.
+      // See T45151459.
+      continue;
+    }
+
+    auto configurationPair =
+        static_cast<std::unordered_map<std::string, RawValue>>(configuration);
+    auto pair = configurationPair.begin();
+    auto operation = pair->first;
+    auto& parameters = pair->second;
+    auto Zero = ValueUnit(0, UnitType::Point);
+    auto One = ValueUnit(1, UnitType::Point);
+
+    if (operation == "matrix") {
+      react_native_expect(parameters.hasType<std::vector<Float>>());
+      auto numbers = (std::vector<Float>)parameters;
+      react_native_expect(numbers.size() == transformMatrix.matrix.size());
+      auto i = 0;
+      for (auto number : numbers) {
+        transformMatrix.matrix[i++] = number;
+      }
+      transformMatrix.operations.push_back(TransformOperation{
+          TransformOperationType::Arbitrary, Zero, Zero, Zero});
+    } else if (operation == "perspective") {
+      transformMatrix.operations.push_back(TransformOperation{
+          TransformOperationType::Perspective,
+          ValueUnit((Float)parameters, UnitType::Point),
+          Zero,
+          Zero});
+    } else if (operation == "rotateX") {
+      transformMatrix.operations.push_back(TransformOperation{
+          TransformOperationType::Rotate,
+          ValueUnit(toRadians(parameters, 0.0f), UnitType::Point),
+          Zero,
+          Zero});
+    } else if (operation == "rotateY") {
+      transformMatrix.operations.push_back(TransformOperation{
+          TransformOperationType::Rotate,
+          Zero,
+          ValueUnit(toRadians(parameters, 0.0f), UnitType::Point),
+          Zero});
+    } else if (operation == "rotateZ" || operation == "rotate") {
+      transformMatrix.operations.push_back(TransformOperation{
+          TransformOperationType::Rotate,
+          Zero,
+          Zero,
+          ValueUnit(toRadians(parameters, 0.0f), UnitType::Point)});
+    } else if (operation == "scale") {
+      auto number = ValueUnit((Float)parameters, UnitType::Point);
+      transformMatrix.operations.push_back(TransformOperation{
+          TransformOperationType::Scale, number, number, number});
+    } else if (operation == "scaleX") {
+      transformMatrix.operations.push_back(TransformOperation{
+          TransformOperationType::Scale,
+          ValueUnit((Float)parameters, UnitType::Point),
+          One,
+          One});
+    } else if (operation == "scaleY") {
+      transformMatrix.operations.push_back(TransformOperation{
+          TransformOperationType::Scale,
+          One,
+          ValueUnit((Float)parameters, UnitType::Point),
+          One});
+    } else if (operation == "scaleZ") {
+      transformMatrix.operations.push_back(TransformOperation{
+          TransformOperationType::Scale,
+          One,
+          One,
+          ValueUnit((Float)parameters, UnitType::Point)});
+    } else if (operation == "translate") {
+      auto numbers = (std::vector<RawValue>)parameters;
+      ValueUnit valueX;
+      fromRawValue(context, numbers.at(0), valueX);
+      ValueUnit valueY;
+      fromRawValue(context, numbers.at(1), valueY);
+      transformMatrix.operations.push_back(TransformOperation{
+          TransformOperationType::Translate, valueX, valueY, Zero});
+    } else if (operation == "translateX") {
+      ValueUnit valueX;
+      fromRawValue(context, parameters, valueX);
+      transformMatrix.operations.push_back(TransformOperation{
+          TransformOperationType::Translate, valueX, Zero, Zero});
+    } else if (operation == "translateY") {
+      ValueUnit valueY;
+      fromRawValue(context, parameters, valueY);
+      transformMatrix.operations.push_back(TransformOperation{
+          TransformOperationType::Translate, Zero, valueY, Zero});
+    } else if (operation == "skewX") {
+      transformMatrix.operations.push_back(TransformOperation{
+          TransformOperationType::Skew,
+          ValueUnit(toRadians(parameters, 0.0f), UnitType::Point),
+          Zero,
+          Zero});
+    } else if (operation == "skewY") {
+      transformMatrix.operations.push_back(TransformOperation{
+          TransformOperationType::Skew,
+          Zero,
+          ValueUnit(toRadians(parameters, 0.0f), UnitType::Point),
+          Zero});
+    }
+  }
+
+  result = transformMatrix;
 }
 
 inline void fromRawValue(
@@ -728,12 +761,148 @@ inline void fromRawValue(
     return;
   }
   auto stringValue = (std::string)value;
+  if (stringValue == "alias") {
+    result = Cursor::Alias;
+    return;
+  }
+  if (stringValue == "all-scroll") {
+    result = Cursor::AllScroll;
+    return;
+  }
   if (stringValue == "auto") {
     result = Cursor::Auto;
     return;
   }
+  if (stringValue == "cell") {
+    result = Cursor::Cell;
+    return;
+  }
+  if (stringValue == "col-resize") {
+    result = Cursor::ColResize;
+    return;
+  }
+  if (stringValue == "context-menu") {
+    result = Cursor::ContextMenu;
+    return;
+  }
+  if (stringValue == "copy") {
+    result = Cursor::Copy;
+    return;
+  }
+  if (stringValue == "crosshair") {
+    result = Cursor::Crosshair;
+    return;
+  }
+  if (stringValue == "default") {
+    result = Cursor::Default;
+    return;
+  }
+  if (stringValue == "e-resize") {
+    result = Cursor::EResize;
+    return;
+  }
+  if (stringValue == "ew-resize") {
+    result = Cursor::EWResize;
+    return;
+  }
+  if (stringValue == "grab") {
+    result = Cursor::Grab;
+    return;
+  }
+  if (stringValue == "grabbing") {
+    result = Cursor::Grabbing;
+    return;
+  }
+  if (stringValue == "help") {
+    result = Cursor::Help;
+    return;
+  }
+  if (stringValue == "move") {
+    result = Cursor::Move;
+    return;
+  }
+  if (stringValue == "n-resize") {
+    result = Cursor::NResize;
+    return;
+  }
+  if (stringValue == "ne-resize") {
+    result = Cursor::NEResize;
+    return;
+  }
+  if (stringValue == "nesw-resize") {
+    result = Cursor::NESWResize;
+    return;
+  }
+  if (stringValue == "ns-resize") {
+    result = Cursor::NSResize;
+    return;
+  }
+  if (stringValue == "nw-resize") {
+    result = Cursor::NWResize;
+    return;
+  }
+  if (stringValue == "nwse-resize") {
+    result = Cursor::NWSEResize;
+    return;
+  }
+  if (stringValue == "no-drop") {
+    result = Cursor::NoDrop;
+    return;
+  }
+  if (stringValue == "none") {
+    result = Cursor::None;
+    return;
+  }
+  if (stringValue == "not-allowed") {
+    result = Cursor::NotAllowed;
+    return;
+  }
   if (stringValue == "pointer") {
     result = Cursor::Pointer;
+    return;
+  }
+  if (stringValue == "progress") {
+    result = Cursor::Progress;
+    return;
+  }
+  if (stringValue == "row-resize") {
+    result = Cursor::RowResize;
+    return;
+  }
+  if (stringValue == "s-resize") {
+    result = Cursor::SResize;
+    return;
+  }
+  if (stringValue == "se-resize") {
+    result = Cursor::SEResize;
+    return;
+  }
+  if (stringValue == "sw-resize") {
+    result = Cursor::SWResize;
+    return;
+  }
+  if (stringValue == "text") {
+    result = Cursor::Text;
+    return;
+  }
+  if (stringValue == "url") {
+    result = Cursor::Url;
+    return;
+  }
+  if (stringValue == "w-resize") {
+    result = Cursor::WResize;
+    return;
+  }
+  if (stringValue == "wait") {
+    result = Cursor::Wait;
+    return;
+  }
+  if (stringValue == "zoom-in") {
+    result = Cursor::ZoomIn;
+    return;
+  }
+  if (stringValue == "zoom-out") {
+    result = Cursor::ZoomOut;
     return;
   }
   LOG(ERROR) << "Could not parse Cursor:" << stringValue;
@@ -762,6 +931,102 @@ inline void fromRawValue(
   react_native_expect(false);
 }
 
+inline void fromRawValue(
+    const PropsParserContext& context,
+    const RawValue& value,
+    std::vector<BoxShadow>& result) {
+  react_native_expect(value.hasType<std::vector<RawValue>>());
+  if (!value.hasType<std::vector<RawValue>>()) {
+    result = {};
+    return;
+  }
+
+  std::vector<BoxShadow> boxShadows{};
+  auto rawBoxShadows = static_cast<std::vector<RawValue>>(value);
+  for (const auto& rawBoxShadow : rawBoxShadows) {
+    bool isMap =
+        rawBoxShadow.hasType<std::unordered_map<std::string, RawValue>>();
+    react_native_expect(isMap);
+    if (!isMap) {
+      // If any box shadow is malformed then we should not apply any of them
+      // which is the web behavior.
+      result = {};
+      return;
+    }
+
+    auto rawBoxShadowMap =
+        static_cast<std::unordered_map<std::string, RawValue>>(rawBoxShadow);
+    BoxShadow boxShadow{};
+    auto offsetX = rawBoxShadowMap.find("offsetX");
+    react_native_expect(offsetX != rawBoxShadowMap.end());
+    if (offsetX == rawBoxShadowMap.end()) {
+      result = {};
+      return;
+    }
+    react_native_expect(offsetX->second.hasType<Float>());
+    if (!offsetX->second.hasType<Float>()) {
+      result = {};
+      return;
+    }
+    boxShadow.offsetX = (Float)offsetX->second;
+
+    auto offsetY = rawBoxShadowMap.find("offsetY");
+    react_native_expect(offsetY != rawBoxShadowMap.end());
+    if (offsetY == rawBoxShadowMap.end()) {
+      result = {};
+      return;
+    }
+    react_native_expect(offsetY->second.hasType<Float>());
+    if (!offsetY->second.hasType<Float>()) {
+      result = {};
+      return;
+    }
+    boxShadow.offsetY = (Float)offsetY->second;
+
+    auto blurRadius = rawBoxShadowMap.find("blurRadius");
+    if (blurRadius != rawBoxShadowMap.end()) {
+      react_native_expect(blurRadius->second.hasType<Float>());
+      if (!blurRadius->second.hasType<Float>()) {
+        result = {};
+        return;
+      }
+      boxShadow.blurRadius = (Float)blurRadius->second;
+    }
+
+    auto spreadRadius = rawBoxShadowMap.find("spreadRadius");
+    if (spreadRadius != rawBoxShadowMap.end()) {
+      react_native_expect(spreadRadius->second.hasType<Float>());
+      if (!spreadRadius->second.hasType<Float>()) {
+        result = {};
+        return;
+      }
+      boxShadow.spreadRadius = (Float)spreadRadius->second;
+    }
+
+    auto inset = rawBoxShadowMap.find("inset");
+    if (inset != rawBoxShadowMap.end()) {
+      react_native_expect(inset->second.hasType<bool>());
+      if (!inset->second.hasType<bool>()) {
+        result = {};
+        return;
+      }
+      boxShadow.inset = (bool)inset->second;
+    }
+
+    auto color = rawBoxShadowMap.find("color");
+    if (color != rawBoxShadowMap.end()) {
+      fromRawValue(
+          context.contextContainer,
+          context.surfaceId,
+          color->second,
+          boxShadow.color);
+    }
+
+    boxShadows.push_back(boxShadow);
+  }
+
+  result = boxShadows;
+}
 inline void fromRawValue(
     const PropsParserContext& /*context*/,
     const RawValue& value,
@@ -796,7 +1061,7 @@ inline void fromRawValue(
       filter.push_back(filterPrimitive);
     } catch (const std::exception& e) {
       LOG(ERROR) << "Could not parse FilterPrimitive: " << e.what();
-      filter = {};
+      result = {};
       return;
     }
   }

@@ -89,7 +89,7 @@ class PerformanceEntryReporter {
   // the same thread.
   // TODO: Consider passing it as a parameter to the corresponding modules at
   // creation time instead of having the singleton.
-  static std::shared_ptr<PerformanceEntryReporter> getInstance();
+  static std::shared_ptr<PerformanceEntryReporter>& getInstance();
 
   struct PopPendingEntriesResult {
     std::vector<PerformanceEntry> entries;

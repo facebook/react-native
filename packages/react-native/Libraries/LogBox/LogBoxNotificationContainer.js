@@ -36,6 +36,10 @@ export function _LogBoxNotificationContainer(props: Props): React.Node {
   };
 
   function openLog(log: LogBoxLog) {
+    if (log.onNotificationPress) {
+      log.onNotificationPress();
+      return;
+    }
     let index = logs.length - 1;
 
     // Stop at zero because if we don't find any log, we'll open the first log.

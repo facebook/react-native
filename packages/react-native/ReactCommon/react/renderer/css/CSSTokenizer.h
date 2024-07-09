@@ -43,6 +43,14 @@ class CSSTokenizer {
         return consumeCharacter(CSSTokenType::OpenParen);
       case ')':
         return consumeCharacter(CSSTokenType::CloseParen);
+      case '[':
+        return consumeCharacter(CSSTokenType::OpenSquare);
+      case ']':
+        return consumeCharacter(CSSTokenType::CloseSquare);
+      case '{':
+        return consumeCharacter(CSSTokenType::OpenCurly);
+      case '}':
+        return consumeCharacter(CSSTokenType::CloseCurly);
       case ',':
         return consumeCharacter(CSSTokenType::Comma);
       case '+':
@@ -50,6 +58,12 @@ class CSSTokenizer {
       case '.':
         if (wouldStartNumber()) {
           return consumeNumeric();
+        } else {
+          return consumeDelim();
+        }
+      case '#':
+        if (isIdent(peek(1))) {
+          return consumeHash();
         } else {
           return consumeDelim();
         }
@@ -215,6 +229,14 @@ class CSSTokenizer {
     }
 
     return {CSSTokenType::Ident, consumeRunningValue()};
+  }
+
+  constexpr CSSToken consumeHash() {
+    // https://www.w3.org/TR/css-syntax-3/#consume-token (U+0023 NUMBER SIGN)
+    advance();
+    consumeRunningValue();
+
+    return {CSSTokenType::Hash, consumeIdentSequence().stringValue()};
   }
 
   constexpr std::string_view consumeRunningValue() {

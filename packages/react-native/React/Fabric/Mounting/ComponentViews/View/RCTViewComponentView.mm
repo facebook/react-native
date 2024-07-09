@@ -13,6 +13,7 @@
 
 #import <React/RCTAssert.h>
 #import <React/RCTBorderDrawing.h>
+#import <React/RCTBoxShadow.h>
 #import <React/RCTConversions.h>
 #import <React/RCTLocalizedString.h>
 #import <react/renderer/components/view/ViewComponentDescriptor.h>
@@ -29,6 +30,7 @@ using namespace facebook::react;
 @implementation RCTViewComponentView {
   UIColor *_backgroundColor;
   __weak CALayer *_borderLayer;
+  CALayer *_boxShadowLayer;
   CALayer *_filterLayer;
   BOOL _needsInvalidateLayer;
   BOOL _isJSResponder;
@@ -394,6 +396,11 @@ using namespace facebook::react;
     _needsInvalidateLayer = YES;
   }
 
+  // `boxShadow`
+  if (oldViewProps.boxShadow != newViewProps.boxShadow) {
+    _needsInvalidateLayer = YES;
+  }
+
   _needsInvalidateLayer = _needsInvalidateLayer || needsInvalidateLayer;
 
   _props = std::static_pointer_cast<const ViewProps>(props);
@@ -421,7 +428,8 @@ using namespace facebook::react;
     _contentView.frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
   }
 
-  if (_props->transformOrigin.isSet()) {
+  if ((_props->transformOrigin.isSet() || _props->transform.operations.size() > 0) &&
+      layoutMetrics.frame.size != oldLayoutMetrics.frame.size) {
     auto newTransform = _props->resolveTransform(layoutMetrics);
     self.layer.transform = RCTCATransform3DFromTransformMatrix(newTransform);
   }
@@ -639,8 +647,9 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
           // iOS draws borders in front of the content whereas CSS draws them behind
           // the content. For this reason, only use iOS border drawing when clipping
           // or when the border is hidden.
-          borderMetrics.borderWidths.left == 0 ||
-          colorComponentsFromColor(borderMetrics.borderColors.left).alpha == 0 || self.clipsToBounds);
+          borderMetrics.borderWidths.left == 0 || self.clipsToBounds ||
+          (colorComponentsFromColor(borderMetrics.borderColors.left).alpha == 0 &&
+           (*borderMetrics.borderColors.left).getUIColor() != nullptr));
 
   CGColorRef backgroundColor = [_backgroundColor resolvedColorWithTraitCollection:self.traitCollection].CGColor;
 
@@ -758,6 +767,19 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     // add
     _filterLayer.zPosition = CGFLOAT_MAX;
     [self.layer addSublayer:_filterLayer];
+  }
+
+  _boxShadowLayer = nil;
+  if (!_props->boxShadow.empty()) {
+    _boxShadowLayer = [CALayer layer];
+    [self.layer addSublayer:_boxShadowLayer];
+    _boxShadowLayer.zPosition = CGFLOAT_MIN;
+    _boxShadowLayer.frame = RCTGetBoundingRect(_props->boxShadow, self.layer.frame.size);
+
+    UIImage *boxShadowImage =
+        RCTGetBoxShadowImage(_props->boxShadow, RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii), layer);
+
+    _boxShadowLayer.contents = (id)boxShadowImage.CGImage;
   }
 }
 

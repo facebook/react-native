@@ -171,15 +171,14 @@ RCT_EXPORT_MODULE()
 - (UIView *)container
 {
   if (!_container) {
-    CGSize statusBarSize = RCTSharedApplication().statusBarFrame.size;
-    CGFloat statusBarHeight = statusBarSize.height;
-    _container = [[UIView alloc] initWithFrame:CGRectMake(10, statusBarHeight, 180, RCTPerfMonitorBarHeight)];
+    UIEdgeInsets safeInsets = RCTKeyWindow().safeAreaInsets;
+
+    _container =
+        [[UIView alloc] initWithFrame:CGRectMake(safeInsets.left, safeInsets.top, 180, RCTPerfMonitorBarHeight)];
     _container.layer.borderWidth = 2;
     _container.layer.borderColor = [UIColor lightGrayColor].CGColor;
     [_container addGestureRecognizer:self.gestureRecognizer];
     [_container addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tap)]];
-
-    _container.backgroundColor = [UIColor whiteColor];
 
     _container.backgroundColor = [UIColor systemBackgroundColor];
   }
@@ -298,8 +297,7 @@ RCT_EXPORT_MODULE()
 
   [self updateStats];
 
-  UIWindow *window = RCTSharedApplication().delegate.window;
-  [window addSubview:self.container];
+  [RCTKeyWindow() addSubview:self.container];
 
   _uiDisplayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(threadUpdate:)];
   [_uiDisplayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
@@ -450,7 +448,9 @@ RCT_EXPORT_MODULE()
 {
   [self loadPerformanceLoggerData];
   if (CGRectIsEmpty(_storedMonitorFrame)) {
-    _storedMonitorFrame = CGRectMake(0, 20, self.container.window.frame.size.width, RCTPerfMonitorExpandHeight);
+    UIEdgeInsets safeInsets = RCTKeyWindow().safeAreaInsets;
+    _storedMonitorFrame =
+        CGRectMake(safeInsets.left, safeInsets.top, self.container.window.frame.size.width, RCTPerfMonitorExpandHeight);
     [self.container addSubview:self.metrics];
   } else {
     [_metrics reloadData];

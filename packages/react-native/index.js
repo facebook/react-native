@@ -9,6 +9,7 @@
  */
 
 'use strict';
+'use client';
 
 // APIs
 import typeof ActionSheetIOS from './Libraries/ActionSheetIOS/ActionSheetIOS';

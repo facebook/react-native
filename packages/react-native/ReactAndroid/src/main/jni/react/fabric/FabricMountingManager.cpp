@@ -63,7 +63,9 @@ static inline int getIntBufferSizeForType(CppMountItem::Type mountItemType) {
     case CppMountItem::Type::UpdatePadding:
       return 5; // tag, top, left, bottom, right
     case CppMountItem::Type::UpdateLayout:
-      return 7; // tag, parentTag, x, y, w, h, DisplayType
+      return ReactNativeFeatureFlags::setAndroidLayoutDirection()
+          ? 8 // tag, parentTag, x, y, w, h, DisplayType, LayoutDirection
+          : 7; // tag, parentTag, x, y, w, h, DisplayType
     case CppMountItem::Type::UpdateOverflowInset:
       return 5; // tag, left, top, right, bottom
     case CppMountItem::Undefined:
@@ -496,7 +498,7 @@ void FabricMountingManager::executeMount(
   int intBufferPosition = 0;
   int objBufferPosition = 0;
   int prevMountItemType = -1;
-  jint temp[7];
+  jint temp[8];
   for (int i = 0; i < cppCommonMountItems.size(); i++) {
     const auto& mountItem = cppCommonMountItems[i];
     const auto& mountItemType = mountItem.type;
@@ -538,7 +540,7 @@ void FabricMountingManager::executeMount(
       if (mountItem.newChildShadowView.state != nullptr) {
         javaStateWrapper = StateWrapperImpl::newObjectJavaArgs();
         StateWrapperImpl* cStateWrapper = cthis(javaStateWrapper);
-        cStateWrapper->state_ = mountItem.newChildShadowView.state;
+        cStateWrapper->setState(mountItem.newChildShadowView.state);
       }
 
       // Do not hold a reference to javaEventEmitter from the C++ side.
@@ -613,7 +615,7 @@ void FabricMountingManager::executeMount(
       if (state != nullptr) {
         javaStateWrapper = StateWrapperImpl::newObjectJavaArgs();
         StateWrapperImpl* cStateWrapper = cthis(javaStateWrapper);
-        cStateWrapper->state_ = state;
+        cStateWrapper->setState(state);
       }
 
       (*objBufferArray)[objBufferPosition++] =
@@ -656,7 +658,7 @@ void FabricMountingManager::executeMount(
         intBufferPosition);
 
     for (const auto& mountItem : cppUpdateLayoutMountItems) {
-      auto layoutMetrics = mountItem.newChildShadowView.layoutMetrics;
+      const auto& layoutMetrics = mountItem.newChildShadowView.layoutMetrics;
       auto pointScaleFactor = layoutMetrics.pointScaleFactor;
       auto frame = layoutMetrics.frame;
 
@@ -664,8 +666,8 @@ void FabricMountingManager::executeMount(
       int y = round(scale(frame.origin.y, pointScaleFactor));
       int w = round(scale(frame.size.width, pointScaleFactor));
       int h = round(scale(frame.size.height, pointScaleFactor));
-      int displayType =
-          toInt(mountItem.newChildShadowView.layoutMetrics.displayType);
+      int displayType = toInt(layoutMetrics.displayType);
+      int layoutDirection = toInt(layoutMetrics.layoutDirection);
 
       temp[0] = mountItem.newChildShadowView.tag;
       temp[1] = mountItem.parentShadowView.tag;
@@ -674,8 +676,15 @@ void FabricMountingManager::executeMount(
       temp[4] = w;
       temp[5] = h;
       temp[6] = displayType;
-      env->SetIntArrayRegion(intBufferArray, intBufferPosition, 7, temp);
-      intBufferPosition += 7;
+
+      if (ReactNativeFeatureFlags::setAndroidLayoutDirection()) {
+        temp[7] = layoutDirection;
+        env->SetIntArrayRegion(intBufferArray, intBufferPosition, 8, temp);
+        intBufferPosition += 8;
+      } else {
+        env->SetIntArrayRegion(intBufferArray, intBufferPosition, 7, temp);
+        intBufferPosition += 7;
+      }
     }
   }
   if (!cppUpdateOverflowInsetMountItems.empty()) {
@@ -775,8 +784,19 @@ void FabricMountingManager::executeMount(
   env->DeleteLocalRef(intBufferArray);
 }
 
-void FabricMountingManager::preallocateShadowView(
+void FabricMountingManager::maybePreallocateShadowView(
     const ShadowNode& shadowNode) {
+  if (!shadowNode.getTraits().check(ShadowNodeTraits::Trait::FormsView)) {
+    return;
+  }
+  static thread_local bool onMainThread = isOnMainThread();
+  if (onMainThread) {
+    // View preallocation is not beneficial when rendering on the main thread
+    return;
+  }
+
+  SystraceSection section("FabricMountingManager::preallocateShadowView");
+
   {
     std::lock_guard lock(allocatedViewsMutex_);
     auto allocatedViewsIterator =
@@ -808,7 +828,7 @@ void FabricMountingManager::preallocateShadowView(
   if (shadowView.state != nullptr) {
     javaStateWrapper = StateWrapperImpl::newObjectJavaArgs();
     StateWrapperImpl* cStateWrapper = cthis(javaStateWrapper);
-    cStateWrapper->state_ = shadowView.state;
+    cStateWrapper->setState(shadowView.state);
   }
 
   // Do not hold a reference to javaEventEmitter from the C++ side.
@@ -829,27 +849,11 @@ void FabricMountingManager::preallocateShadowView(
       isLayoutableShadowNode);
 }
 
-void FabricMountingManager::updatePreallocatedShadowNode(
-    const ShadowNode& shadowNode) {
-  if (ReactNativeFeatureFlags::fixMountedFlagAndFixPreallocationClone()) {
-    // When batched rendering is enabled, React may do
-    // multiple commits in a row but only the last one is mounted.
-    // View preallocation does not account for this scenario and
-    // a prop update may be dropped because view is marked as preallocated.
-    // To work around this, we can detect when a view was cloned with different
-    // props, and remove the view from `allocatedViewRegistry_`.
-    std::lock_guard lock(allocatedViewsMutex_);
-    auto allocatedViewsIterator =
-        allocatedViewRegistry_.find(shadowNode.getSurfaceId());
-    if (allocatedViewsIterator == allocatedViewRegistry_.end()) {
-      // The surface does not exist, nothing to do.
-      return;
-    }
-    auto& allocatedViews = allocatedViewsIterator->second;
-    if (allocatedViews.find(shadowNode.getTag()) != allocatedViews.end()) {
-      allocatedViews.erase(shadowNode.getTag());
-    }
-  }
+bool FabricMountingManager::isOnMainThread() {
+  static auto isOnMainThread =
+      JFabricUIManager::javaClassStatic()->getMethod<jboolean()>(
+          "isOnMainThread");
+  return isOnMainThread(javaUIManager_);
 }
 
 void FabricMountingManager::dispatchCommand(

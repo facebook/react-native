@@ -14,12 +14,12 @@ import android.graphics.Point
 import android.view.View
 import android.view.ViewGroup
 import android.widget.OverScroller
-import androidx.core.view.ViewCompat
 import com.facebook.common.logging.FLog
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.WritableNativeMap
 import com.facebook.react.common.ReactConstants
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.uimanager.PixelUtil.toDIPFromPixel
 import com.facebook.react.uimanager.StateWrapper
 import com.facebook.react.uimanager.UIManagerHelper
@@ -250,7 +250,9 @@ public object ReactScrollViewHelper {
     if (scrollY != y) {
       scrollView.startFlingAnimator(scrollY, y)
     }
-    updateFabricScrollState<T>(scrollView, x, y)
+    if (ReactNativeFeatureFlags.fixIncorrectScrollViewStateUpdateOnAndroid()) {
+      updateFabricScrollState<T>(scrollView, x, y)
+    }
   }
 
   /** Get current position or position after current animation finishes, if any. */
@@ -434,10 +436,7 @@ public object ReactScrollViewHelper {
     scroller.setFriction(1.0f - scrollState.decelerationRate)
 
     // predict where a fling would end up so we can scroll to the nearest snap offset
-    val width =
-        (scrollView.width -
-            ViewCompat.getPaddingStart(scrollView) -
-            ViewCompat.getPaddingEnd(scrollView))
+    val width = scrollView.width - scrollView.getPaddingStart() - scrollView.getPaddingEnd()
     val height = scrollView.height - scrollView.paddingBottom - scrollView.paddingTop
     val finalAnimatedPositionScroll = scrollState.finalAnimatedPositionScroll
     scroller.fling(

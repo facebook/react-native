@@ -63,10 +63,15 @@ void ScrollViewShadowNode::layout(LayoutContext layoutContext) {
   updateStateIfNeeded();
 }
 
-Point ScrollViewShadowNode::getContentOriginOffset() const {
+Point ScrollViewShadowNode::getContentOriginOffset(
+    bool includeTransform) const {
   auto stateData = getStateData();
   auto contentOffset = stateData.contentOffset;
-  return {-contentOffset.x, -contentOffset.y + stateData.scrollAwayPaddingTop};
-}
+  auto transform = includeTransform ? getTransform() : Transform::Identity();
+  auto result =
+      transform * Vector{-contentOffset.x, -contentOffset.y, 0.0f, 1.0f};
 
+  return {
+      result.x, result.y + static_cast<float>(stateData.scrollAwayPaddingTop)};
+}
 } // namespace facebook::react

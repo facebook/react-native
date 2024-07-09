@@ -23,4 +23,5 @@ target_link_libraries(jsinspector
         glog
         react_featureflags
         runtimeexecutor
+        reactperflogger
 )

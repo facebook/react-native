@@ -201,6 +201,8 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
 
   NSTextStorage *textStorage = [[NSTextStorage alloc] initWithAttributedString:attributedString];
 
+  RCTApplyBaselineOffset(textStorage);
+
   [textStorage addLayoutManager:layoutManager];
 
   if (paragraphAttributes.adjustsFontSizeToFit) {

@@ -7,6 +7,7 @@
 
 package com.facebook.react.uimanager.drawable;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -24,6 +25,8 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.core.graphics.ColorUtils;
+import androidx.core.util.Preconditions;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.uimanager.FloatUtil;
@@ -48,6 +51,7 @@ import java.util.Objects;
  * have a rectangular borders we allocate {@code mBorderWidthResult} and similar. When only
  * background color is set we won't allocate any extra/unnecessary objects.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class CSSBackgroundDrawable extends Drawable {
 
   private static final int DEFAULT_BORDER_COLOR = Color.BLACK;
@@ -119,7 +123,9 @@ public class CSSBackgroundDrawable extends Drawable {
   private BorderRadiusStyle mBorderRadius = new BorderRadiusStyle();
   private ComputedBorderRadius mComputedBorderRadius = new ComputedBorderRadius();
   private final Context mContext;
-  private int mLayoutDirection;
+
+  // Should be removed after migrating to Android layout direction.
+  private int mLayoutDirectionOverride = -1;
 
   public CSSBackgroundDrawable(Context context) {
     mContext = context;
@@ -163,6 +169,19 @@ public class CSSBackgroundDrawable extends Drawable {
     // do nothing
   }
 
+  @Deprecated
+  public void setLayoutDirectionOverride(int layoutDirection) {
+    if (mLayoutDirectionOverride != layoutDirection) {
+      mLayoutDirectionOverride = layoutDirection;
+    }
+  }
+
+  @Override
+  @SuppressLint("WrongConstant")
+  public int getLayoutDirection() {
+    return mLayoutDirectionOverride == -1 ? super.getLayoutDirection() : mLayoutDirectionOverride;
+  }
+
   @Override
   public int getOpacity() {
     return (Color.alpha(mColor) * mAlpha) >> 8;
@@ -174,7 +193,7 @@ public class CSSBackgroundDrawable extends Drawable {
     if (hasRoundedBorders()) {
       updatePath();
 
-      outline.setConvexPath(mPathForBorderRadiusOutline);
+      outline.setConvexPath(Preconditions.checkNotNull(mPathForBorderRadiusOutline));
     } else {
       outline.setRect(getBounds());
     }
@@ -292,38 +311,44 @@ public class CSSBackgroundDrawable extends Drawable {
     invalidateSelf();
   }
 
-  /** Similar to Drawable.getLayoutDirection, but available in APIs < 23. */
-  public int getResolvedLayoutDirection() {
-    return mLayoutDirection;
-  }
-
-  /** Similar to Drawable.setLayoutDirection, but available in APIs < 23. */
-  public boolean setResolvedLayoutDirection(int layoutDirection) {
-    if (mLayoutDirection != layoutDirection) {
-      mLayoutDirection = layoutDirection;
-      return onResolvedLayoutDirectionChanged(layoutDirection);
-    }
-    return false;
-  }
-
-  /** Similar to Drawable.onLayoutDirectionChanged, but available in APIs < 23. */
-  public boolean onResolvedLayoutDirectionChanged(int layoutDirection) {
-    return false;
-  }
-
   @VisibleForTesting
   public int getColor() {
     return mColor;
   }
 
-  public Path borderBoxPath() {
-    updatePath();
-    return mOuterClipPathForBorderRadius;
+  public @Nullable Path getBorderBoxPath() {
+    if (hasRoundedBorders()) {
+      updatePath();
+      return new Path(Preconditions.checkNotNull(mOuterClipPathForBorderRadius));
+    }
+
+    return null;
   }
 
-  public Path paddingBoxPath() {
-    updatePath();
-    return mInnerClipPathForBorderRadius;
+  public RectF getBorderBoxRect() {
+    return new RectF(getBounds());
+  }
+
+  public @Nullable Path getPaddingBoxPath() {
+    if (hasRoundedBorders()) {
+      updatePath();
+      return new Path(Preconditions.checkNotNull(mInnerClipPathForBorderRadius));
+    }
+
+    return null;
+  }
+
+  public RectF getPaddingBoxRect() {
+    @Nullable RectF insets = getDirectionAwareBorderInsets();
+    if (insets == null) {
+      return new RectF(0, 0, getBounds().width(), getBounds().height());
+    }
+
+    return new RectF(
+        insets.left,
+        insets.top,
+        getBounds().width() - insets.right,
+        getBounds().height() - insets.bottom);
   }
 
   private void drawRoundedBackgroundWithBorders(Canvas canvas) {
@@ -331,14 +356,14 @@ public class CSSBackgroundDrawable extends Drawable {
     canvas.save();
 
     // Clip outer border
-    canvas.clipPath(mOuterClipPathForBorderRadius, Region.Op.INTERSECT);
+    canvas.clipPath(Preconditions.checkNotNull(mOuterClipPathForBorderRadius), Region.Op.INTERSECT);
 
     // Draws the View without its border first (with background color fill)
     int useColor = ColorUtils.setAlphaComponent(mColor, getOpacity());
     if (Color.alpha(useColor) != 0) { // color is not transparent
       mPaint.setColor(useColor);
       mPaint.setStyle(Paint.Style.FILL);
-      canvas.drawPath(mBackgroundColorRenderPath, mPaint);
+      canvas.drawPath(Preconditions.checkNotNull(mBackgroundColorRenderPath), mPaint);
     }
 
     final RectF borderWidth = getDirectionAwareBorderInsets();
@@ -382,7 +407,7 @@ public class CSSBackgroundDrawable extends Drawable {
           mPaint.setColor(multiplyColorAlpha(borderColor, mAlpha));
           mPaint.setStyle(Paint.Style.STROKE);
           mPaint.setStrokeWidth(fullBorderWidth);
-          canvas.drawPath(mCenterDrawPath, mPaint);
+          canvas.drawPath(Preconditions.checkNotNull(mCenterDrawPath), mPaint);
         }
       }
       // In the case of uneven border widths/colors draw quadrilateral in each direction
@@ -390,9 +415,10 @@ public class CSSBackgroundDrawable extends Drawable {
         mPaint.setStyle(Paint.Style.FILL);
 
         // Clip inner border
-        canvas.clipPath(mInnerClipPathForBorderRadius, Region.Op.DIFFERENCE);
+        canvas.clipPath(
+            Preconditions.checkNotNull(mInnerClipPathForBorderRadius), Region.Op.DIFFERENCE);
 
-        final boolean isRTL = getResolvedLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
+        final boolean isRTL = getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
         int colorStart = getBorderColor(Spacing.START);
         int colorEnd = getBorderColor(Spacing.END);
 
@@ -430,20 +456,27 @@ public class CSSBackgroundDrawable extends Drawable {
           }
         }
 
-        final float left = mOuterClipTempRectForBorderRadius.left;
-        final float right = mOuterClipTempRectForBorderRadius.right;
-        final float top = mOuterClipTempRectForBorderRadius.top;
-        final float bottom = mOuterClipTempRectForBorderRadius.bottom;
+        final RectF outerClipTempRect =
+            Preconditions.checkNotNull(mOuterClipTempRectForBorderRadius);
+        final float left = outerClipTempRect.left;
+        final float right = outerClipTempRect.right;
+        final float top = outerClipTempRect.top;
+        final float bottom = outerClipTempRect.bottom;
+
+        final PointF innerTopLeftCorner = Preconditions.checkNotNull(mInnerTopLeftCorner);
+        final PointF innerTopRightCorner = Preconditions.checkNotNull(mInnerTopRightCorner);
+        final PointF innerBottomLeftCorner = Preconditions.checkNotNull(mInnerBottomLeftCorner);
+        final PointF innerBottomRightCorner = Preconditions.checkNotNull(mInnerBottomRightCorner);
 
         // mGapBetweenPaths is used to close the gap between the diagonal
         // edges of the quadrilaterals on adjacent sides of the rectangle
         if (borderWidth.left > 0) {
           final float x1 = left;
           final float y1 = top - mGapBetweenPaths;
-          final float x2 = mInnerTopLeftCorner.x;
-          final float y2 = mInnerTopLeftCorner.y - mGapBetweenPaths;
-          final float x3 = mInnerBottomLeftCorner.x;
-          final float y3 = mInnerBottomLeftCorner.y + mGapBetweenPaths;
+          final float x2 = innerTopLeftCorner.x;
+          final float y2 = innerTopLeftCorner.y - mGapBetweenPaths;
+          final float x3 = innerBottomLeftCorner.x;
+          final float y3 = innerBottomLeftCorner.y + mGapBetweenPaths;
           final float x4 = left;
           final float y4 = bottom + mGapBetweenPaths;
 
@@ -453,10 +486,10 @@ public class CSSBackgroundDrawable extends Drawable {
         if (borderWidth.top > 0) {
           final float x1 = left - mGapBetweenPaths;
           final float y1 = top;
-          final float x2 = mInnerTopLeftCorner.x - mGapBetweenPaths;
-          final float y2 = mInnerTopLeftCorner.y;
-          final float x3 = mInnerTopRightCorner.x + mGapBetweenPaths;
-          final float y3 = mInnerTopRightCorner.y;
+          final float x2 = innerTopLeftCorner.x - mGapBetweenPaths;
+          final float y2 = innerTopLeftCorner.y;
+          final float x3 = innerTopRightCorner.x + mGapBetweenPaths;
+          final float y3 = innerTopRightCorner.y;
           final float x4 = right + mGapBetweenPaths;
           final float y4 = top;
 
@@ -466,10 +499,10 @@ public class CSSBackgroundDrawable extends Drawable {
         if (borderWidth.right > 0) {
           final float x1 = right;
           final float y1 = top - mGapBetweenPaths;
-          final float x2 = mInnerTopRightCorner.x;
-          final float y2 = mInnerTopRightCorner.y - mGapBetweenPaths;
-          final float x3 = mInnerBottomRightCorner.x;
-          final float y3 = mInnerBottomRightCorner.y + mGapBetweenPaths;
+          final float x2 = innerTopRightCorner.x;
+          final float y2 = innerTopRightCorner.y - mGapBetweenPaths;
+          final float x3 = innerBottomRightCorner.x;
+          final float y3 = innerBottomRightCorner.y + mGapBetweenPaths;
           final float x4 = right;
           final float y4 = bottom + mGapBetweenPaths;
 
@@ -479,10 +512,10 @@ public class CSSBackgroundDrawable extends Drawable {
         if (borderWidth.bottom > 0) {
           final float x1 = left - mGapBetweenPaths;
           final float y1 = bottom;
-          final float x2 = mInnerBottomLeftCorner.x - mGapBetweenPaths;
-          final float y2 = mInnerBottomLeftCorner.y;
-          final float x3 = mInnerBottomRightCorner.x + mGapBetweenPaths;
-          final float y3 = mInnerBottomRightCorner.y;
+          final float x2 = innerBottomLeftCorner.x - mGapBetweenPaths;
+          final float y2 = innerBottomLeftCorner.y;
+          final float x3 = innerBottomRightCorner.x + mGapBetweenPaths;
+          final float y3 = innerBottomRightCorner.y;
           final float x4 = right + mGapBetweenPaths;
           final float y4 = bottom;
 
@@ -591,7 +624,7 @@ public class CSSBackgroundDrawable extends Drawable {
 
     mComputedBorderRadius =
         mBorderRadius.resolve(
-            mLayoutDirection,
+            getLayoutDirection(),
             mContext,
             mOuterClipTempRectForBorderRadius.width(),
             mOuterClipTempRectForBorderRadius.height());
@@ -1080,7 +1113,7 @@ public class CSSBackgroundDrawable extends Drawable {
         colorTop = colorBlockStart;
       }
 
-      final boolean isRTL = getResolvedLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
+      final boolean isRTL = getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
       int colorStart = getBorderColor(Spacing.START);
       int colorEnd = getBorderColor(Spacing.END);
 
@@ -1305,7 +1338,7 @@ public class CSSBackgroundDrawable extends Drawable {
     float borderRightWidth = getBorderWidthOrDefaultTo(borderWidth, Spacing.RIGHT);
 
     if (mBorderWidth != null) {
-      final boolean isRTL = getResolvedLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
+      final boolean isRTL = getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
       float borderStartWidth = mBorderWidth.getRaw(Spacing.START);
       float borderEndWidth = mBorderWidth.getRaw(Spacing.END);
 

@@ -27,13 +27,15 @@ template <
     const char* concreteComponentName,
     typename ViewPropsT = ViewProps,
     typename ViewEventEmitterT = ViewEventEmitter,
-    typename... Ts>
+    typename StateDataT = StateData,
+    bool usesMapBufferForStateData = false>
 class ConcreteViewShadowNode : public ConcreteShadowNode<
                                    concreteComponentName,
                                    YogaLayoutableShadowNode,
                                    ViewPropsT,
                                    ViewEventEmitterT,
-                                   Ts...> {
+                                   StateDataT,
+                                   usesMapBufferForStateData> {
   static_assert(
       std::is_base_of<ViewProps, ViewPropsT>::value,
       "ViewPropsT must be a descendant of ViewProps");
@@ -50,7 +52,8 @@ class ConcreteViewShadowNode : public ConcreteShadowNode<
       YogaLayoutableShadowNode,
       ViewPropsT,
       ViewEventEmitterT,
-      Ts...>;
+      StateDataT,
+      usesMapBufferForStateData>;
 
   ConcreteViewShadowNode(
       const ShadowNodeFragment& fragment,
