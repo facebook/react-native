@@ -7,6 +7,7 @@
 
 package com.facebook.react.views.modal
 
+import ModalEventManager
 import android.content.DialogInterface.OnShowListener
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.common.MapBuilder
@@ -29,6 +30,8 @@ import com.facebook.react.views.modal.ReactModalHostView.OnRequestCloseListener
 public class ReactModalHostManager :
     ViewGroupManager<ReactModalHostView>(), ModalHostViewManagerInterface<ReactModalHostView> {
   private val delegate: ViewManagerDelegate<ReactModalHostView> = ModalHostViewManagerDelegate(this)
+
+  private val modalEventManager = ModalEventManager
 
   public override fun getName(): String = REACT_CLASS
 
@@ -100,10 +103,12 @@ public class ReactModalHostManager :
     val dispatcher = UIManagerHelper.getEventDispatcherForReactTag(reactContext, view.id)
     if (dispatcher != null) {
       view.onRequestCloseListener = OnRequestCloseListener {
+        modalEventManager.onModalRequestClose(it, view.id)
         dispatcher.dispatchEvent(
             RequestCloseEvent(UIManagerHelper.getSurfaceId(reactContext), view.id))
       }
       view.onShowListener = OnShowListener {
+        modalEventManager.onModalOpen(it, view.id)
         dispatcher.dispatchEvent(ShowEvent(UIManagerHelper.getSurfaceId(reactContext), view.id))
       }
       view.eventDispatcher = dispatcher
@@ -142,6 +147,12 @@ public class ReactModalHostManager :
   }
 
   public override fun getDelegate(): ViewManagerDelegate<ReactModalHostView> = delegate
+
+
+  public override fun initialize() {
+    super.initialize()
+    modalEventManager.removeAllListeners()
+  }
 
   public companion object {
     public const val REACT_CLASS: String = "RCTModalHostView"
