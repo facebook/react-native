@@ -15,6 +15,7 @@ import android.graphics.RenderNode
 import android.graphics.drawable.Drawable
 import androidx.annotation.RequiresApi
 import com.facebook.common.logging.FLog
+import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.uimanager.FilterHelper
 import com.facebook.react.uimanager.LengthPercentage
 import com.facebook.react.uimanager.LengthPercentageType
@@ -32,6 +33,7 @@ private const val BLUR_RADIUS_SIGMA_SCALE = 0.5f
 
 /** Draws an outer-box shadow https://www.w3.org/TR/css-backgrounds-3/#shadow-shape */
 @RequiresApi(31)
+@OptIn(UnstableReactNativeAPI::class)
 internal class BoxShadowDrawable(
     context: Context,
     private val background: CSSBackgroundDrawable,

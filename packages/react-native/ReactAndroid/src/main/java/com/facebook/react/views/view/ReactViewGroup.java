@@ -305,8 +305,8 @@ public class ReactViewGroup extends ViewGroup
     getOrCreateReactViewBackground().setBorderWidth(position, width);
   }
 
-  public void setBorderColor(int position, float rgb, float alpha) {
-    getOrCreateReactViewBackground().setBorderColor(position, rgb, alpha);
+  public void setBorderColor(int position, @Nullable Integer color) {
+    getOrCreateReactViewBackground().setBorderColor(position, color);
   }
 
   /**
