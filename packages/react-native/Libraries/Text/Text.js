@@ -228,7 +228,7 @@ const TextLegacy: React.AbstractComponent<
     const overrideStyle = null;
     if (typeof processedStyle.fontWeight === 'number') {
       overrideStyle = overrideStyle || {};
-      processedStyle.fontWeight = processedStyle.fontWeight.toString();
+      overrideStyle.fontWeight = processedStyle.fontWeight.toString();
     }
 
     if (processedStyle.userSelect != null) {
@@ -244,7 +244,7 @@ const TextLegacy: React.AbstractComponent<
       overrideStyle.verticalAlign = undefined;
     }
     
-    if (overriteStyle != null) {
+    if (overrideStyle != null) {
       processedStyle = {...processedStyle, ...overrideStyle};
     }
   }
