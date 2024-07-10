@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9e8a8beb3d769dbf5067ea8f7f7e083a>>
+ * @generated SignedSource<<e7aaf58d91c8e25685f2a3ec5ca171a9>>
  */
 
 /**
@@ -57,12 +57,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun destroyFabricSurfacesInReactInstanceManager(): Boolean = accessor.destroyFabricSurfacesInReactInstanceManager()
-
-  /**
-   * Enables the use of a background executor to compute layout and commit updates on Fabric (this system is deprecated and should not be used).
-   */
-  @JvmStatic
-  public fun enableBackgroundExecutor(): Boolean = accessor.enableBackgroundExecutor()
 
   /**
    * Clean yoga node when <TextInput /> does not change.

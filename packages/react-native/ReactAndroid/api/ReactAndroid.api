@@ -534,9 +534,6 @@ public class com/facebook/react/bridge/AssertionException : java/lang/RuntimeExc
 	public fun <init> (Ljava/lang/String;)V
 }
 
-public class com/facebook/react/bridge/BackgroundExecutor {
-}
-
 public class com/facebook/react/bridge/BaseActivityEventListener : com/facebook/react/bridge/ActivityEventListener {
 	public fun <init> ()V
 	public fun onActivityResult (IILandroid/content/Intent;)V
