@@ -146,20 +146,18 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
                                          truncatedGlyphRangeInLineFragmentForGlyphAtIndex:glyphRange.location];
 
                                      if (truncatedRange.location != NSNotFound) {
-                                       // Remove all attributes for truncated range
-                                       [textStorage setAttributes:nil range:truncatedRange];
-                                       if (truncatedRange.location - 1 >= 0) {
-                                         // Keep the same style of the character that precedes it
-                                         [textStorage
-                                             enumerateAttributesInRange:NSMakeRange(truncatedRange.location - 1, 1)
-                                                                options:0
-                                                             usingBlock:^(
-                                                                 NSDictionary<NSAttributedStringKey, id>
-                                                                     *_Nonnull attrs,
-                                                                 NSRange range,
-                                                                 BOOL *_Nonnull stop) {
-                                                               [textStorage addAttributes:attrs range:truncatedRange];
-                                                             }];
+                                       // Remove color attributes for truncated range
+                                       for (NSAttributedStringKey key in
+                                            @[ NSForegroundColorAttributeName, NSBackgroundColorAttributeName ]) {
+                                         [textStorage removeAttribute:key range:truncatedRange];
+                                         if (truncatedRange.location >= 1) {
+                                           id attribute = [textStorage attribute:key
+                                                                         atIndex:truncatedRange.location - 1
+                                                                  effectiveRange:nil];
+                                           if (attribute) {
+                                             [textStorage addAttribute:key value:attribute range:truncatedRange];
+                                           }
+                                         }
                                        }
                                      }
                                    }
