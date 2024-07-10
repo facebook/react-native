@@ -32,14 +32,15 @@ abstract class ReactSettingsExtension @Inject constructor(val settings: Settings
    * is loading all the discovered libraries.
    *
    * @param command The command to execute to get the autolinking configuration. Default is
-   *   `npx @react-native-community/cli config`.
+   *   `npx @react-native-community/cli config --platform android`.
    * @param workingDirectory The directory where the command should be executed.
    * @param lockFiles The list of lock files to check for changes (if lockfiles are not changed, the
    *   command will not be executed).
    */
   @JvmOverloads
   public fun autolinkLibrariesFromCommand(
-      command: List<String> = listOf("npx", "@react-native-community/cli", "config"),
+      command: List<String> =
+          listOf("npx", "@react-native-community/cli", "config", "--platform", "android"),
       workingDirectory: File? = settings.layout.rootDirectory.dir("../").asFile,
       lockFiles: FileCollection =
           settings.layout.rootDirectory
