@@ -8,7 +8,10 @@
 package com.facebook.react.views.text;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.Layout;
@@ -384,7 +387,17 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
 
     mReactBackgroundManager.maybeClipToPaddingBox(canvas);
 
-    super.onDraw(canvas);
+    if (mClipRect) {
+      super.onDraw(canvas);
+    } else {
+      if (mCanvas == null || mBitmap == null) {
+        return;
+      }
+
+      mCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
+      super.onDraw(mCanvas);
+      canvas.drawBitmap(mBitmap, 0, 0, null);
+    }
   }
 
   public void setText(ReactTextUpdate update) {
@@ -746,5 +759,53 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
 
   public void setOverflow(@Nullable String overflow) {
     mReactBackgroundManager.setOverflow(overflow);
+    setClipRect(!"visible".equals(overflow));
+  }
+
+  private class OverflowingCanvas extends Canvas {
+
+    public OverflowingCanvas(Bitmap bitmap) {
+      super(bitmap);
+    }
+
+    @Override
+    public boolean clipRect(float left, float top, float right, float bottom) {
+      return true;
+    }
+  }
+
+  private boolean mClipRect = true;
+  private Bitmap mBitmap;
+  private OverflowingCanvas mCanvas;
+
+  private void setClipRect(boolean clipRect) {
+    if (mClipRect != clipRect) {
+      mClipRect = clipRect;
+      int width = this.getWidth();
+      int height = this.getHeight();
+      if (!mClipRect && width > 0 && height > 0) {
+        createOverflowingCanvas(width, height);
+        this.invalidate();
+      } else {
+        mBitmap = null;
+        mCanvas = null;
+        this.invalidate();
+      }
+    }
+  }
+
+  private void createOverflowingCanvas(int width, int height) {
+    mBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+    mCanvas = new OverflowingCanvas(mBitmap);
+  }
+
+  @Override
+  protected void onSizeChanged(final int width, final int height,
+                               final int oldwidth, final int oldheight) {
+    if (!mClipRect && (width != oldwidth || height != oldheight) && width > 0 && height > 0) {
+      createOverflowingCanvas(width, height);
+    }
+
+    super.onSizeChanged(width, height, oldwidth, oldheight);
   }
 }
