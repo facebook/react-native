@@ -145,18 +145,16 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
                                      NSRange truncatedRange = [layoutManager
                                          truncatedGlyphRangeInLineFragmentForGlyphAtIndex:glyphRange.location];
 
-                                     if (truncatedRange.location != NSNotFound) {
+                                     if (truncatedRange.location != NSNotFound && truncatedRange.location >= 1) {
                                        // Remove color attributes for truncated range
                                        for (NSAttributedStringKey key in
                                             @[ NSForegroundColorAttributeName, NSBackgroundColorAttributeName ]) {
                                          [textStorage removeAttribute:key range:truncatedRange];
-                                         if (truncatedRange.location >= 1) {
-                                           id attribute = [textStorage attribute:key
-                                                                         atIndex:truncatedRange.location - 1
-                                                                  effectiveRange:nil];
-                                           if (attribute) {
-                                             [textStorage addAttribute:key value:attribute range:truncatedRange];
-                                           }
+                                         id attribute = [textStorage attribute:key
+                                                                       atIndex:truncatedRange.location - 1
+                                                                effectiveRange:nil];
+                                         if (attribute) {
+                                           [textStorage addAttribute:key value:attribute range:truncatedRange];
                                          }
                                        }
                                      }
