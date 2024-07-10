@@ -57,63 +57,49 @@ bool canUseCachedMeasurement(
     const float marginColumn,
     const yoga::Config* const config) {
   if ((yoga::isDefined(lastComputedHeight) && lastComputedHeight < 0) ||
-      ((yoga::isDefined(lastComputedWidth)) && lastComputedWidth < 0)) {
+      (yoga::isDefined(lastComputedWidth) && lastComputedWidth < 0)) {
     return false;
   }
 
   const float pointScaleFactor = config->getPointScaleFactor();
-
   bool useRoundedComparison = config != nullptr && pointScaleFactor != 0;
-  const float effectiveWidth = useRoundedComparison
-      ? roundValueToPixelGrid(availableWidth, pointScaleFactor, false, false)
-      : availableWidth;
-  const float effectiveHeight = useRoundedComparison
-      ? roundValueToPixelGrid(availableHeight, pointScaleFactor, false, false)
-      : availableHeight;
-  const float effectiveLastWidth = useRoundedComparison
-      ? roundValueToPixelGrid(
-            lastAvailableWidth, pointScaleFactor, false, false)
-      : lastAvailableWidth;
-  const float effectiveLastHeight = useRoundedComparison
-      ? roundValueToPixelGrid(
-            lastAvailableHeight, pointScaleFactor, false, false)
-      : lastAvailableHeight;
+
+  auto roundIfNeeded = [&](float value) {
+    return useRoundedComparison
+        ? roundValueToPixelGrid(value, pointScaleFactor, false, false)
+        : value;
+  };
+
+  const float effectiveWidth = roundIfNeeded(availableWidth);
+  const float effectiveHeight = roundIfNeeded(availableHeight);
+  const float effectiveLastWidth = roundIfNeeded(lastAvailableWidth);
+  const float effectiveLastHeight = roundIfNeeded(lastAvailableHeight);
 
   const bool hasSameWidthSpec = lastWidthMode == widthMode &&
       yoga::inexactEquals(effectiveLastWidth, effectiveWidth);
   const bool hasSameHeightSpec = lastHeightMode == heightMode &&
       yoga::inexactEquals(effectiveLastHeight, effectiveHeight);
 
+  const float adjustedWidth = availableWidth - marginRow;
+  const float adjustedHeight = availableHeight - marginColumn;
+
   const bool widthIsCompatible =
       hasSameWidthSpec ||
       sizeIsExactAndMatchesOldMeasuredSize(
-          widthMode, availableWidth - marginRow, lastComputedWidth) ||
+          widthMode, adjustedWidth, lastComputedWidth) ||
       oldSizeIsMaxContentAndStillFits(
-          widthMode,
-          availableWidth - marginRow,
-          lastWidthMode,
-          lastComputedWidth) ||
+          widthMode, adjustedWidth, lastWidthMode, lastComputedWidth) ||
       newSizeIsStricterAndStillValid(
-          widthMode,
-          availableWidth - marginRow,
-          lastWidthMode,
-          lastAvailableWidth,
-          lastComputedWidth);
+          widthMode, adjustedWidth, lastWidthMode, lastAvailableWidth, lastComputedWidth);
 
-  const bool heightIsCompatible = hasSameHeightSpec ||
+  const bool heightIsCompatible =
+      hasSameHeightSpec ||
       sizeIsExactAndMatchesOldMeasuredSize(
-                                      heightMode,
-                                      availableHeight - marginColumn,
-                                      lastComputedHeight) ||
-      oldSizeIsMaxContentAndStillFits(heightMode,
-                                      availableHeight - marginColumn,
-                                      lastHeightMode,
-                                      lastComputedHeight) ||
-      newSizeIsStricterAndStillValid(heightMode,
-                                     availableHeight - marginColumn,
-                                     lastHeightMode,
-                                     lastAvailableHeight,
-                                     lastComputedHeight);
+          heightMode, adjustedHeight, lastComputedHeight) ||
+      oldSizeIsMaxContentAndStillFits(
+          heightMode, adjustedHeight, lastHeightMode, lastComputedHeight) ||
+      newSizeIsStricterAndStillValid(
+          heightMode, adjustedHeight, lastHeightMode, lastAvailableHeight, lastComputedHeight);
 
   return widthIsCompatible && heightIsCompatible;
 }
