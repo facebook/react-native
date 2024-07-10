@@ -1,0 +1,40 @@
+name: build-hermesc-apple
+description: This action builds hermesc for Apple platforms
+inputs:
+  HERMES_WS_DIR:
+    required: true
+    description: The hermes dir we need to use to setup the workspace
+  HERMES_VERSION:
+    required: True
+    description: The version of Hermes
+  REACT_NATIVE_VERSION:
+    required: True
+    description: The version of Hermes
+runs:
+  using: composite
+  steps:
+    - name: Restore Hermes workspace
+      uses: ./.github/actions/restore-hermes-workspace
+    - name: Hermes apple cache
+      uses: actions/cache/restore@v4.0.0
+      with:
+        path: ./packages/react-native/sdks/hermes/build_host_hermesc
+        key: v2-hermesc-apple-${{ inputs.HERMES_VERSION }}-${{ inputs.REACT_NATIVE_VERSION }}
+    - name: Build HermesC Apple
+      shell: bash
+      run: |
+        cd ./packages/react-native/sdks/hermes || exit 1
+        . ./utils/build-apple-framework.sh
+        build_host_hermesc_if_needed
+    - name: Upload HermesC Artifact
+      uses: actions/upload-artifact@v4.3.1
+      with:
+        name: hermesc-apple
+        path: ./packages/react-native/sdks/hermes/build_host_hermesc
+    - name: Cache hermesc apple
+      uses: actions/cache/save@v4.0.0
+      if: ${{ github.ref == 'refs/heads/main' || contains(github.ref, '-stable') }} # To avoid that the cache explode.
+      with:
+        path: ./packages/react-native/sdks/hermes/build_host_hermesc
+        key: v2-hermesc-apple-${{ inputs.HERMES_VERSION }}-${{ inputs.REACT_NATIVE_VERSION }}
+        enableCrossOsArchive: true
