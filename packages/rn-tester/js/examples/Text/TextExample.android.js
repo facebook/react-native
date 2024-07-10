@@ -962,6 +962,59 @@ function TextBaseLineLayoutExample(props: {}): React.Node {
   );
 }
 
+function OversizedGlyphChevron() {
+  return (
+    <View
+      style={{
+        position: 'absolute',
+        width: 0,
+        height: 0,
+        borderLeftWidth: 10,
+        borderRightWidth: 10,
+        borderBottomWidth: 10,
+        borderLeftColor: 'transparent',
+        borderRightColor: 'transparent',
+        borderBottomColor: 'red',
+        bottom: 10,
+        left: -5,
+      }}
+    />
+  );
+}
+function OversizedGlyphExample() {
+  return (
+    <View>
+      <View>
+        <Text
+          style={{
+            fontFamily: 'notoserif',
+            fontStyle: 'italic',
+            fontWeight: '900',
+            fontSize: 100,
+            paddingLeft: 5,
+          }}>
+          E is cut
+        </Text>
+        <OversizedGlyphChevron />
+      </View>
+      <View>
+        <Text
+          style={{
+            fontFamily: 'notoserif',
+            fontStyle: 'italic',
+            fontWeight: '900',
+            fontSize: 100,
+            paddingLeft: 5,
+            overflow: 'visible',
+          }}>
+          E is not cut
+        </Text>
+        <OversizedGlyphChevron />
+      </View>
+    </View>
+  );
+}
+
 const examples = [
   {
     title: 'Dynamic Font Size Adjustment',
@@ -1361,6 +1414,13 @@ const examples = [
           </Text>
         </View>
       );
+    },
+  },
+  {
+    title: 'Oversized glyph clipping example (left edge)',
+    name: 'oversizedGlyph',
+    render: function (): React.Node {
+      return <OversizedGlyphExample />;
     },
   },
   TextInlineViewsExample,
