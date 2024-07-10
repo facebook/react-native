@@ -29,6 +29,9 @@ struct Color {
   std::shared_ptr<void> getUIColor() const {
     return uiColor_;
   }
+
+  float getChannel(int channelId) const;
+
   ColorComponents getColorComponents() const {
     float ratio = 255;
     int32_t primitiveColor = getColor();
@@ -59,12 +62,40 @@ namespace HostPlatformColor {
 NO_DESTROY static const facebook::react::Color UndefinedColor = Color(nullptr);
 } // namespace HostPlatformColor
 
+inline Color
+hostPlatformColorFromRGBA(uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+  float ratio = 255;
+  const auto colorComponents = ColorComponents{
+      .red = r / ratio,
+      .green = g / ratio,
+      .blue = b / ratio,
+      .alpha = a / ratio,
+  };
+  return Color(colorComponents);
+}
+
 inline Color hostPlatformColorFromComponents(ColorComponents components) {
   return Color(components);
 }
 
 inline ColorComponents colorComponentsFromHostPlatformColor(Color color) {
   return color.getColorComponents();
+}
+
+inline float alphaFromHostPlatformColor(Color color) {
+  return color.getChannel(3) * 255;
+}
+
+inline float redFromHostPlatformColor(Color color) {
+  return color.getChannel(0) * 255;
+}
+
+inline float greenFromHostPlatformColor(Color color) {
+  return color.getChannel(1) * 255;
+}
+
+inline float blueFromHostPlatformColor(Color color) {
+  return color.getChannel(2) * 255;
 }
 
 } // namespace facebook::react
