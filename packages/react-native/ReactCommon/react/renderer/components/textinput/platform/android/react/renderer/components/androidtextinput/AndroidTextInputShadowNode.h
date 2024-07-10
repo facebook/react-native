@@ -34,6 +34,7 @@ class AndroidTextInputShadowNode final
   static ShadowNodeTraits BaseTraits() {
     auto traits = ConcreteViewShadowNode::BaseTraits();
     traits.set(ShadowNodeTraits::Trait::LeafYogaNode);
+    traits.set(ShadowNodeTraits::Trait::BaselineYogaNode);
     return traits;
   }
 
@@ -64,6 +65,8 @@ class AndroidTextInputShadowNode final
       const LayoutContext& layoutContext,
       const LayoutConstraints& layoutConstraints) const override;
   void layout(LayoutContext layoutContext) override;
+
+  Float baseline(const LayoutContext& layoutContext, Size size) const override;
 
  private:
   ContextContainer* contextContainer_{};

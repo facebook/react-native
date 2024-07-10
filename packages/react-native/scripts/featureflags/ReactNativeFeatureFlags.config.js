@@ -59,6 +59,11 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'When enabled, ReactInstanceManager will clean up Fabric surfaces on destroy().',
     },
+    enableAlignItemsBaselineOnFabricIOS: {
+      defaultValue: true,
+      description:
+        'Kill-switch to turn off support for aling-items:baseline on Fabric iOS.',
+    },
     enableCleanTextInputYogaNode: {
       defaultValue: false,
       description: 'Clean yoga node when <TextInput /> does not change.',

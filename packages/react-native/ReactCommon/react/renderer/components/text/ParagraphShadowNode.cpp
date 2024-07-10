@@ -163,6 +163,32 @@ Size ParagraphShadowNode::measureContent(
       .size;
 }
 
+Float ParagraphShadowNode::baseline(
+    const LayoutContext& layoutContext,
+    Size size) const {
+  auto layoutMetrics = getLayoutMetrics();
+  auto layoutConstraints =
+      LayoutConstraints{size, size, layoutMetrics.layoutDirection};
+  auto content =
+      getContentWithMeasuredAttachments(layoutContext, layoutConstraints);
+  auto attributedString = content.attributedString;
+
+  if (attributedString.isEmpty()) {
+    // Note: `zero-width space` is insufficient in some cases (e.g. when we need
+    // to measure the "height" of the font).
+    // TODO T67606511: We will redefine the measurement of empty strings as part
+    // of T67606511
+    auto string = BaseTextShadowNode::getEmptyPlaceholder();
+    auto textAttributes = TextAttributes::defaultTextAttributes();
+    textAttributes.fontSizeMultiplier = layoutContext.fontSizeMultiplier;
+    textAttributes.apply(getConcreteProps().textAttributes);
+    attributedString.appendFragment({string, textAttributes, {}});
+  }
+
+  return textLayoutManager_->baseline(
+      attributedString, getConcreteProps().paragraphAttributes, size);
+}
+
 void ParagraphShadowNode::layout(LayoutContext layoutContext) {
   ensureUnsealed();
 

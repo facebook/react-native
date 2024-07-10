@@ -81,6 +81,11 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
         YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector);
   }
 
+  if (getTraits().check(ShadowNodeTraits::Trait::BaselineYogaNode)) {
+    yogaNode_.setBaselineFunc(
+        YogaLayoutableShadowNode::yogaNodeBaselineCallbackConnector);
+  }
+
   updateYogaProps();
   updateYogaChildren();
 
@@ -843,6 +848,22 @@ YGSize YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector(
 
   return YGSize{
       yogaFloatFromFloat(size.width), yogaFloatFromFloat(size.height)};
+}
+
+float YogaLayoutableShadowNode::yogaNodeBaselineCallbackConnector(
+    YGNodeConstRef yogaNode,
+    float width,
+    float height) {
+  SystraceSection s(
+      "YogaLayoutableShadowNode::yogaNodeBaselineCallbackConnector");
+
+  auto& shadowNode = shadowNodeFromContext(yogaNode);
+  auto baseline = shadowNode.baseline(
+      threadLocalLayoutContext,
+      {.width = floatFromYogaFloat(width),
+       .height = floatFromYogaFloat(height)});
+
+  return yogaFloatFromFloat(baseline);
 }
 
 YogaLayoutableShadowNode& YogaLayoutableShadowNode::shadowNodeFromContext(

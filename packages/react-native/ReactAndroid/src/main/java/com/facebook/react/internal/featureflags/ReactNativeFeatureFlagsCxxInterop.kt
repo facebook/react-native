@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<317e652e32f680ed7cfa4989a8133dad>>
+ * @generated SignedSource<<2602dcd923a97419bfc2086d59ef9e90>>
  */
 
 /**
@@ -37,6 +37,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun batchRenderingUpdatesInEventLoop(): Boolean
 
   @DoNotStrip @JvmStatic public external fun destroyFabricSurfacesInReactInstanceManager(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun enableAlignItemsBaselineOnFabricIOS(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableCleanTextInputYogaNode(): Boolean
 

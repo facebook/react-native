@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8457544cbbdc11e26d6b0aeff95a77d7>>
+ * @generated SignedSource<<6e1d8221c96bcf5ac6ac2e2a5ac673f1>>
  */
 
 /**
@@ -36,6 +36,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool allowRecursiveCommitsWithSynchronousMountOnAndroid();
   bool batchRenderingUpdatesInEventLoop();
   bool destroyFabricSurfacesInReactInstanceManager();
+  bool enableAlignItemsBaselineOnFabricIOS();
   bool enableCleanTextInputYogaNode();
   bool enableGranularShadowTreeStateReconciliation();
   bool enableMicrotasks();
@@ -68,13 +69,14 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 27> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 28> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> allowCollapsableChildren_;
   std::atomic<std::optional<bool>> allowRecursiveCommitsWithSynchronousMountOnAndroid_;
   std::atomic<std::optional<bool>> batchRenderingUpdatesInEventLoop_;
   std::atomic<std::optional<bool>> destroyFabricSurfacesInReactInstanceManager_;
+  std::atomic<std::optional<bool>> enableAlignItemsBaselineOnFabricIOS_;
   std::atomic<std::optional<bool>> enableCleanTextInputYogaNode_;
   std::atomic<std::optional<bool>> enableGranularShadowTreeStateReconciliation_;
   std::atomic<std::optional<bool>> enableMicrotasks_;

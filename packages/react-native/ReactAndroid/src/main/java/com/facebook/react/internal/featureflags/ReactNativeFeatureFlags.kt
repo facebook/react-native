@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e7aaf58d91c8e25685f2a3ec5ca171a9>>
+ * @generated SignedSource<<8443301e7625595b6ca21901da0ccb88>>
  */
 
 /**
@@ -57,6 +57,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun destroyFabricSurfacesInReactInstanceManager(): Boolean = accessor.destroyFabricSurfacesInReactInstanceManager()
+
+  /**
+   * Kill-switch to turn off support for aling-items:baseline on Fabric iOS.
+   */
+  @JvmStatic
+  public fun enableAlignItemsBaselineOnFabricIOS(): Boolean = accessor.enableAlignItemsBaselineOnFabricIOS()
 
   /**
    * Clean yoga node when <TextInput /> does not change.

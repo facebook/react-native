@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<37f8ec65fb26fc58260a5846ab933098>>
+ * @generated SignedSource<<9e3b9014578cec97635c2bd8d3c7add3>>
  */
 
 /**
@@ -43,6 +43,9 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool destroyFabricSurfacesInReactInstanceManager(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
+  static bool enableAlignItemsBaselineOnFabricIOS(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool enableCleanTextInputYogaNode(

@@ -308,9 +308,6 @@ class TextBaseLineLayoutExample extends React.Component<{}, mixed> {
           {marker}
         </View>
 
-        {/* iOS-only because it relies on inline views being able to size to content.
-         * Android's implementation requires that a width and height be specified
-         * on the inline view. */}
         <Text style={subtitleStyle}>{'Interleaving <View> and <Text>:'}</Text>
         <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
           {marker}
@@ -345,6 +342,23 @@ class TextBaseLineLayoutExample extends React.Component<{}, mixed> {
             </View>{' '}
             , ante arcu vestibulum ligula, et scelerisque diam.
           </Text>
+        </View>
+
+        <Text style={subtitleStyle}>{'Multi-line <Text> alignment'}</Text>
+        <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
+          <View style={{width: 50, height: 50, backgroundColor: 'gray'}} />
+          <View style={{width: 125, backgroundColor: '#eee'}}>
+            <Text style={{fontSize: 15}}>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+              eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            </Text>
+          </View>
+          <View style={{width: 125, backgroundColor: '#eee'}}>
+            <Text style={{fontSize: 10}}>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+              eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            </Text>
+          </View>
         </View>
 
         <Text style={subtitleStyle}>{'<TextInput/>:'}</Text>

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3d3e82742a1ab405f385ec1d4716b744>>
+ * @generated SignedSource<<369a48d28c8d2650d721954cb50eea29>>
  */
 
 /**
@@ -60,6 +60,11 @@ bool NativeReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop(
 bool NativeReactNativeFeatureFlags::destroyFabricSurfacesInReactInstanceManager(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::destroyFabricSurfacesInReactInstanceManager();
+}
+
+bool NativeReactNativeFeatureFlags::enableAlignItemsBaselineOnFabricIOS(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableAlignItemsBaselineOnFabricIOS();
 }
 
 bool NativeReactNativeFeatureFlags::enableCleanTextInputYogaNode(

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<241d9d028d103ce587a886521af41fa8>>
+ * @generated SignedSource<<8f367ce041b58945348d0f0648adeca3>>
  */
 
 /**
@@ -61,6 +61,11 @@ class ReactNativeFeatureFlags {
    * When enabled, ReactInstanceManager will clean up Fabric surfaces on destroy().
    */
   RN_EXPORT static bool destroyFabricSurfacesInReactInstanceManager();
+
+  /**
+   * Kill-switch to turn off support for aling-items:baseline on Fabric iOS.
+   */
+  RN_EXPORT static bool enableAlignItemsBaselineOnFabricIOS();
 
   /**
    * Clean yoga node when <TextInput /> does not change.

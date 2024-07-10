@@ -218,6 +218,26 @@ Size AndroidTextInputShadowNode::measureContent(
       .size;
 }
 
+Float AndroidTextInputShadowNode::baseline(
+    const LayoutContext& layoutContext,
+    Size size) const {
+  AttributedString attributedString = getMostRecentAttributedString();
+
+  if (attributedString.isEmpty()) {
+    attributedString = getPlaceholderAttributedString();
+  }
+
+  // Yoga expects a baseline relative to the Node's border-box edge instead of
+  // the content, so we need to adjust by the padding and border widths, which
+  // have already been set by the time of baseline alignment
+  auto top = YGNodeLayoutGetBorder(&yogaNode_, YGEdgeTop) +
+      YGNodeLayoutGetPadding(&yogaNode_, YGEdgeTop);
+
+  return textLayoutManager_->baseline(
+             attributedString, getConcreteProps().paragraphAttributes, size) +
+      top;
+}
+
 void AndroidTextInputShadowNode::layout(LayoutContext layoutContext) {
   updateStateIfNeeded();
   ConcreteViewShadowNode::layout(layoutContext);

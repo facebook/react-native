@@ -46,6 +46,15 @@ class TextLayoutManager {
       Size size) const;
 
   /*
+   * Calculates baseline of `attributedString` using native text rendering
+   * infrastructure.
+   */
+  Float baseline(
+      AttributedString attributedString,
+      ParagraphAttributes paragraphAttributes,
+      Size size) const;
+
+  /*
    * Returns an opaque pointer to platform-specific TextLayoutManager.
    * Is used on a native views layer to delegate text rendering to the manager.
    */
@@ -53,7 +62,8 @@ class TextLayoutManager {
 
  private:
   std::shared_ptr<void> self_;
-  TextMeasureCache measureCache_{};
+  TextMeasureCache textMeasureCache_{};
+  LineMeasureCache lineMeasureCache_{};
 };
 
 } // namespace facebook::react

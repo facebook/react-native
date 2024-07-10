@@ -164,6 +164,10 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
       YGMeasureMode widthMode,
       float height,
       YGMeasureMode heightMode);
+  static float yogaNodeBaselineCallbackConnector(
+      YGNodeConstRef yogaNode,
+      float width,
+      float height);
   static YogaLayoutableShadowNode& shadowNodeFromContext(
       YGNodeConstRef yogaNode);
 

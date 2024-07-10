@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ff7cf1b21321c180c2a5d8bdb81a85bc>>
+ * @generated SignedSource<<77188afc2fdd7ef693abfd5e02354efc>>
  */
 
 /**
@@ -45,6 +45,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
 
   bool destroyFabricSurfacesInReactInstanceManager() override {
     return false;
+  }
+
+  bool enableAlignItemsBaselineOnFabricIOS() override {
+    return true;
   }
 
   bool enableCleanTextInputYogaNode() override {

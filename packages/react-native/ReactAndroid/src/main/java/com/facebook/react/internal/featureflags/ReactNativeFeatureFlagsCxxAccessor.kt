@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<bd5baae4bc2e8a619f99dea15766e803>>
+ * @generated SignedSource<<27c99bbe01b2b8999c6fa44be28f62d3>>
  */
 
 /**
@@ -25,6 +25,7 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
   private var allowRecursiveCommitsWithSynchronousMountOnAndroidCache: Boolean? = null
   private var batchRenderingUpdatesInEventLoopCache: Boolean? = null
   private var destroyFabricSurfacesInReactInstanceManagerCache: Boolean? = null
+  private var enableAlignItemsBaselineOnFabricIOSCache: Boolean? = null
   private var enableCleanTextInputYogaNodeCache: Boolean? = null
   private var enableGranularShadowTreeStateReconciliationCache: Boolean? = null
   private var enableMicrotasksCache: Boolean? = null
@@ -89,6 +90,15 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.destroyFabricSurfacesInReactInstanceManager()
       destroyFabricSurfacesInReactInstanceManagerCache = cached
+    }
+    return cached
+  }
+
+  override fun enableAlignItemsBaselineOnFabricIOS(): Boolean {
+    var cached = enableAlignItemsBaselineOnFabricIOSCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.enableAlignItemsBaselineOnFabricIOS()
+      enableAlignItemsBaselineOnFabricIOSCache = cached
     }
     return cached
   }

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4faca2a942651f80d6ec51640c89c962>>
+ * @generated SignedSource<<6db4a73cfea277087512de2dbf0433d4>>
  * @flow strict-local
  */
 
@@ -46,6 +46,7 @@ export type ReactNativeFeatureFlags = {
   allowRecursiveCommitsWithSynchronousMountOnAndroid: Getter<boolean>,
   batchRenderingUpdatesInEventLoop: Getter<boolean>,
   destroyFabricSurfacesInReactInstanceManager: Getter<boolean>,
+  enableAlignItemsBaselineOnFabricIOS: Getter<boolean>,
   enableCleanTextInputYogaNode: Getter<boolean>,
   enableGranularShadowTreeStateReconciliation: Getter<boolean>,
   enableMicrotasks: Getter<boolean>,
@@ -135,6 +136,10 @@ export const batchRenderingUpdatesInEventLoop: Getter<boolean> = createNativeFla
  * When enabled, ReactInstanceManager will clean up Fabric surfaces on destroy().
  */
 export const destroyFabricSurfacesInReactInstanceManager: Getter<boolean> = createNativeFlagGetter('destroyFabricSurfacesInReactInstanceManager', false);
+/**
+ * Kill-switch to turn off support for aling-items:baseline on Fabric iOS.
+ */
+export const enableAlignItemsBaselineOnFabricIOS: Getter<boolean> = createNativeFlagGetter('enableAlignItemsBaselineOnFabricIOS', true);
 /**
  * Clean yoga node when <TextInput /> does not change.
  */

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<03c48c7281afa746734af581d6a17aa3>>
+ * @generated SignedSource<<3cb2d3e59dadfa27214c024780a664df>>
  */
 
 /**
@@ -66,6 +66,12 @@ class ReactNativeFeatureFlagsProviderHolder
   bool destroyFabricSurfacesInReactInstanceManager() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("destroyFabricSurfacesInReactInstanceManager");
+    return method(javaProvider_);
+  }
+
+  bool enableAlignItemsBaselineOnFabricIOS() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableAlignItemsBaselineOnFabricIOS");
     return method(javaProvider_);
   }
 
@@ -230,6 +236,11 @@ bool JReactNativeFeatureFlagsCxxInterop::destroyFabricSurfacesInReactInstanceMan
   return ReactNativeFeatureFlags::destroyFabricSurfacesInReactInstanceManager();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::enableAlignItemsBaselineOnFabricIOS(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableAlignItemsBaselineOnFabricIOS();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::enableCleanTextInputYogaNode(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableCleanTextInputYogaNode();
@@ -372,6 +383,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "destroyFabricSurfacesInReactInstanceManager",
         JReactNativeFeatureFlagsCxxInterop::destroyFabricSurfacesInReactInstanceManager),
+      makeNativeMethod(
+        "enableAlignItemsBaselineOnFabricIOS",
+        JReactNativeFeatureFlagsCxxInterop::enableAlignItemsBaselineOnFabricIOS),
       makeNativeMethod(
         "enableCleanTextInputYogaNode",
         JReactNativeFeatureFlagsCxxInterop::enableCleanTextInputYogaNode),
