@@ -83,22 +83,7 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
 
   NSRange glyphRange = [layoutManager glyphRangeForTextContainer:textContainer];
 
-  if (paragraphAttributes.maximumNumberOfLines > 0) {
-    NSRange characterRange = [layoutManager characterRangeForGlyphRange:glyphRange actualGlyphRange:NULL];
-
-    [textStorage enumerateAttribute:NSBackgroundColorAttributeName
-                            inRange:characterRange
-                            options:0
-                         usingBlock:^(id _Nullable value, NSRange range, BOOL *_Nonnull stop) {
-                           NSRange truncatedRange =
-                               [layoutManager truncatedGlyphRangeInLineFragmentForGlyphAtIndex:range.location];
-
-                           // Remove background color if glyphs is truncated
-                           if (truncatedRange.location != NSNotFound && range.location >= truncatedRange.location) {
-                             [textStorage removeAttribute:NSBackgroundColorAttributeName range:range];
-                           }
-                         }];
-  }
+  [self processTruncatedAttributedText:textStorage textContainer:textContainer layoutManager:layoutManager];
 
   [layoutManager drawBackgroundForGlyphRange:glyphRange atPoint:frame.origin];
   [layoutManager drawGlyphsForGlyphRange:glyphRange atPoint:frame.origin];
@@ -137,6 +122,59 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
                 }];
 
     block(highlightPath);
+  }
+}
+
+- (void)processTruncatedAttributedText:(NSTextStorage *)textStorage
+                         textContainer:(NSTextContainer *)textContainer
+                         layoutManager:(NSLayoutManager *)layoutManager
+{
+  if (textContainer.maximumNumberOfLines > 0) {
+    [layoutManager ensureLayoutForTextContainer:textContainer];
+    NSRange glyphRange = [layoutManager glyphRangeForTextContainer:textContainer];
+    __block int line = 0;
+    [layoutManager
+        enumerateLineFragmentsForGlyphRange:glyphRange
+                                 usingBlock:^(
+                                     CGRect rect,
+                                     CGRect usedRect,
+                                     NSTextContainer *_Nonnull textContainer,
+                                     NSRange glyphRange,
+                                     BOOL *_Nonnull stop) {
+                                   if (line == textContainer.maximumNumberOfLines - 1) {
+                                     NSRange truncatedRange = [layoutManager
+                                         truncatedGlyphRangeInLineFragmentForGlyphAtIndex:glyphRange.location];
+
+                                     if (truncatedRange.location != NSNotFound) {
+                                       // Remove all attributes for truncated range
+                                       [textStorage
+                                           enumerateAttributesInRange:truncatedRange
+                                                              options:0
+                                                           usingBlock:^(
+                                                               NSDictionary<NSAttributedStringKey, id> *_Nonnull attrs,
+                                                               NSRange range,
+                                                               BOOL *_Nonnull stop) {
+                                                             for (NSAttributedStringKey key in attrs) {
+                                                               [textStorage removeAttribute:key range:range];
+                                                             }
+                                                           }];
+                                       if (truncatedRange.location - 1 >= 0) {
+                                         // Keep the same style of the character that precedes it
+                                         [textStorage
+                                             enumerateAttributesInRange:NSMakeRange(truncatedRange.location - 1, 1)
+                                                                options:0
+                                                             usingBlock:^(
+                                                                 NSDictionary<NSAttributedStringKey, id>
+                                                                     *_Nonnull attrs,
+                                                                 NSRange range,
+                                                                 BOOL *_Nonnull stop) {
+                                                               [textStorage addAttributes:attrs range:truncatedRange];
+                                                             }];
+                                       }
+                                     }
+                                   }
+                                   line++;
+                                 }];
   }
 }
 
