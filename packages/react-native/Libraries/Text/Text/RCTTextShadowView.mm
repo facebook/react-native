@@ -268,17 +268,7 @@
 
                                      if (truncatedRange.location != NSNotFound) {
                                        // Remove all attributes for truncated range
-                                       [textStorage
-                                           enumerateAttributesInRange:truncatedRange
-                                                              options:0
-                                                           usingBlock:^(
-                                                               NSDictionary<NSAttributedStringKey, id> *_Nonnull attrs,
-                                                               NSRange range,
-                                                               BOOL *_Nonnull stop) {
-                                                             for (NSAttributedStringKey key in attrs) {
-                                                               [textStorage removeAttribute:key range:range];
-                                                             }
-                                                           }];
+                                       [textStorage setAttributes:nil range:truncatedRange];
                                        if (truncatedRange.location - 1 >= 0) {
                                          // Keep the same style of the character that precedes it
                                          [textStorage
