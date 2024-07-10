@@ -259,12 +259,12 @@
                                  usingBlock:^(
                                      CGRect rect,
                                      CGRect usedRect,
-                                     NSTextContainer *_Nonnull textContainer,
-                                     NSRange glyphRange,
+                                     NSTextContainer *_Nonnull _,
+                                     NSRange lineGlyphRange,
                                      BOOL *_Nonnull stop) {
                                    if (line == textContainer.maximumNumberOfLines - 1) {
                                      NSRange truncatedRange = [layoutManager
-                                         truncatedGlyphRangeInLineFragmentForGlyphAtIndex:glyphRange.location];
+                                         truncatedGlyphRangeInLineFragmentForGlyphAtIndex:lineGlyphRange.location];
 
                                      if (truncatedRange.location != NSNotFound && truncatedRange.location >= 1) {
                                        // Remove color attributes for truncated range
