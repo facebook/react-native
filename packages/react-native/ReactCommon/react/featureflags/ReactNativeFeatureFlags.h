@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8f367ce041b58945348d0f0648adeca3>>
+ * @generated SignedSource<<23be95f7408c79af1fd3bcf2264e090e>>
  */
 
 /**
@@ -161,6 +161,11 @@ class ReactNativeFeatureFlags {
    * When enabled, the native view configs are used in bridgeless mode.
    */
   RN_EXPORT static bool useNativeViewConfigsInBridgelessMode();
+
+  /**
+   * Use shared background drawing code for ReactImageView instead of using Fresco to manipulate the bitmap
+   */
+  RN_EXPORT static bool useNewReactImageViewBackgroundDrawing();
 
   /**
    * When enabled, cloning shadow nodes within react native will update the reference held by the current JS fiber tree.

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8443301e7625595b6ca21901da0ccb88>>
+ * @generated SignedSource<<1d1d0baedbff895efac06ca80704e623>>
  */
 
 /**
@@ -177,6 +177,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun useNativeViewConfigsInBridgelessMode(): Boolean = accessor.useNativeViewConfigsInBridgelessMode()
+
+  /**
+   * Use shared background drawing code for ReactImageView instead of using Fresco to manipulate the bitmap
+   */
+  @JvmStatic
+  public fun useNewReactImageViewBackgroundDrawing(): Boolean = accessor.useNewReactImageViewBackgroundDrawing()
 
   /**
    * When enabled, cloning shadow nodes within react native will update the reference held by the current JS fiber tree.

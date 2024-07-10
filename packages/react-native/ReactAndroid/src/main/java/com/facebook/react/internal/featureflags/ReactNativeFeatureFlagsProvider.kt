@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1b1165f9b93f140f5e01561ec6e16be2>>
+ * @generated SignedSource<<97bfdc70b1f08507fbdc1639c7be3e0e>>
  */
 
 /**
@@ -72,6 +72,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun useModernRuntimeScheduler(): Boolean
 
   @DoNotStrip public fun useNativeViewConfigsInBridgelessMode(): Boolean
+
+  @DoNotStrip public fun useNewReactImageViewBackgroundDrawing(): Boolean
 
   @DoNotStrip public fun useRuntimeShadowNodeReferenceUpdate(): Boolean
 

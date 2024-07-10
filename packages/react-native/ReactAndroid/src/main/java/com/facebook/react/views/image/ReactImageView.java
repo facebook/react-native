@@ -46,9 +46,11 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.config.ReactFeatureFlags;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.modules.fresco.ReactNetworkImageRequest;
 import com.facebook.react.uimanager.FloatUtil;
 import com.facebook.react.uimanager.PixelUtil;
+import com.facebook.react.uimanager.Spacing;
 import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.util.RNLog;
@@ -56,6 +58,7 @@ import com.facebook.react.views.imagehelper.ImageSource;
 import com.facebook.react.views.imagehelper.MultiSourceHelper;
 import com.facebook.react.views.imagehelper.MultiSourceHelper.MultiSourceResult;
 import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper;
+import com.facebook.react.views.view.ReactViewBackgroundManager;
 import com.facebook.yoga.YogaConstants;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -135,6 +138,7 @@ public class ReactImageView extends GenericDraweeView {
   private boolean mProgressiveRenderingEnabled;
   private ReadableMap mHeaders;
   private float mResizeMultiplier = 1.0f;
+  private ReactViewBackgroundManager mReactBackgroundManager;
 
   // We can't specify rounding in XML, so have to do so here
   private static GenericDraweeHierarchy buildHierarchy(Context context) {
@@ -154,6 +158,8 @@ public class ReactImageView extends GenericDraweeView {
     mDraweeControllerBuilder = draweeControllerBuilder;
     mGlobalImageLoadListener = globalImageLoadListener;
     mCallerContext = callerContext;
+    mReactBackgroundManager = new ReactViewBackgroundManager(this);
+    mReactBackgroundManager.setOverflow("hidden");
     // Workaround Android bug where ImageView visibility is not propagated to the Drawable, so you
     // have to manually update visibility. Will be resolved once we move to VitoView.
     setLegacyVisibilityHandlingEnabled(true);
@@ -234,7 +240,9 @@ public class ReactImageView extends GenericDraweeView {
 
   @Override
   public void setBackgroundColor(int backgroundColor) {
-    if (mBackgroundColor != backgroundColor) {
+    if (ReactNativeFeatureFlags.useNewReactImageViewBackgroundDrawing()) {
+      mReactBackgroundManager.setBackgroundColor(backgroundColor);
+    } else if (mBackgroundColor != backgroundColor) {
       mBackgroundColor = backgroundColor;
       mBackgroundImageDrawable = new RoundedColorDrawable(backgroundColor);
       mIsDirty = true;
@@ -242,7 +250,9 @@ public class ReactImageView extends GenericDraweeView {
   }
 
   public void setBorderColor(int borderColor) {
-    if (mBorderColor != borderColor) {
+    if (ReactNativeFeatureFlags.useNewReactImageViewBackgroundDrawing()) {
+      mReactBackgroundManager.setBorderColor(Spacing.ALL, borderColor);
+    } else if (mBorderColor != borderColor) {
       mBorderColor = borderColor;
       mIsDirty = true;
     }
@@ -257,28 +267,36 @@ public class ReactImageView extends GenericDraweeView {
 
   public void setBorderWidth(float borderWidth) {
     float newBorderWidth = PixelUtil.toPixelFromDIP(borderWidth);
-    if (!FloatUtil.floatsEqual(mBorderWidth, newBorderWidth)) {
+    if (ReactNativeFeatureFlags.useNewReactImageViewBackgroundDrawing()) {
+      mReactBackgroundManager.setBorderWidth(Spacing.ALL, newBorderWidth);
+    } else if (!FloatUtil.floatsEqual(mBorderWidth, newBorderWidth)) {
       mBorderWidth = newBorderWidth;
       mIsDirty = true;
     }
   }
 
   public void setBorderRadius(float borderRadius) {
-    if (!FloatUtil.floatsEqual(mBorderRadius, borderRadius)) {
+    if (ReactNativeFeatureFlags.useNewReactImageViewBackgroundDrawing()) {
+      mReactBackgroundManager.setBorderRadius(borderRadius);
+    } else if (!FloatUtil.floatsEqual(mBorderRadius, borderRadius)) {
       mBorderRadius = borderRadius;
       mIsDirty = true;
     }
   }
 
   public void setBorderRadius(float borderRadius, int position) {
-    if (mBorderCornerRadii == null) {
-      mBorderCornerRadii = new float[4];
-      Arrays.fill(mBorderCornerRadii, YogaConstants.UNDEFINED);
-    }
+    if (ReactNativeFeatureFlags.useNewReactImageViewBackgroundDrawing()) {
+      mReactBackgroundManager.setBorderRadius(borderRadius, position + 1);
+    } else {
+      if (mBorderCornerRadii == null) {
+        mBorderCornerRadii = new float[4];
+        Arrays.fill(mBorderCornerRadii, YogaConstants.UNDEFINED);
+      }
 
-    if (!FloatUtil.floatsEqual(mBorderCornerRadii[position], borderRadius)) {
-      mBorderCornerRadii[position] = borderRadius;
-      mIsDirty = true;
+      if (!FloatUtil.floatsEqual(mBorderCornerRadii[position], borderRadius)) {
+        mBorderCornerRadii[position] = borderRadius;
+        mIsDirty = true;
+      }
     }
   }
 
@@ -570,6 +588,14 @@ public class ReactImageView extends GenericDraweeView {
   @Override
   public boolean hasOverlappingRendering() {
     return mBackgroundImageDrawable != null || super.hasOverlappingRendering();
+  }
+
+  @Override
+  public void onDraw(Canvas canvas) {
+    if (ReactNativeFeatureFlags.useNewReactImageViewBackgroundDrawing()) {
+      mReactBackgroundManager.maybeClipToPaddingBox(canvas);
+    }
+    super.onDraw(canvas);
   }
 
   private boolean hasMultipleSources() {
