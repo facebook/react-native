@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<53a55d7cae6f18a4192f28a6f44b0c3b>>
+ * @generated SignedSource<<a3ee4e4eae374959d5211897be02b983>>
  */
 
 /**
@@ -32,8 +32,6 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun batchRenderingUpdatesInEventLoop(): Boolean
 
   @DoNotStrip public fun destroyFabricSurfacesInReactInstanceManager(): Boolean
-
-  @DoNotStrip public fun enableBackgroundExecutor(): Boolean
 
   @DoNotStrip public fun enableCleanTextInputYogaNode(): Boolean
 

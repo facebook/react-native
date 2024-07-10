@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ee2d7923b7407f81c25368750ccd06fe>>
+ * @generated SignedSource<<241d9d028d103ce587a886521af41fa8>>
  */
 
 /**
@@ -61,11 +61,6 @@ class ReactNativeFeatureFlags {
    * When enabled, ReactInstanceManager will clean up Fabric surfaces on destroy().
    */
   RN_EXPORT static bool destroyFabricSurfacesInReactInstanceManager();
-
-  /**
-   * Enables the use of a background executor to compute layout and commit updates on Fabric (this system is deprecated and should not be used).
-   */
-  RN_EXPORT static bool enableBackgroundExecutor();
 
   /**
    * Clean yoga node when <TextInput /> does not change.
