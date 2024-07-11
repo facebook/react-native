@@ -6466,6 +6466,7 @@ public final class com/facebook/react/views/imagehelper/ResourceDrawableIdHelper
 }
 
 public final class com/facebook/react/views/imagehelper/ResourceDrawableIdHelper$Companion {
+	public final fun DEPRECATED$getInstance ()Lcom/facebook/react/views/imagehelper/ResourceDrawableIdHelper;
 	public final fun getInstance ()Lcom/facebook/react/views/imagehelper/ResourceDrawableIdHelper;
 }
 
