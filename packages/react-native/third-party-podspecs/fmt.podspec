@@ -15,7 +15,7 @@ Pod::Spec.new do |spec|
     :tag => "9.1.0"
   }
   spec.pod_target_xcconfig = {
-    "CLANG_CXX_LANGUAGE_STANDARD" => "c++20",
+    "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
   }
   spec.platforms = min_supported_versions
   spec.libraries = "c++"

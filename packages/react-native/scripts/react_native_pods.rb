@@ -262,6 +262,10 @@ def get_folly_config()
   return Helpers::Constants.folly_config
 end
 
+def rct_cxx_language_standard()
+  return Helpers::Constants.cxx_language_standard
+end
+
 # Function that executes after React Native has been installed to configure some flags and build settings.
 #
 # Parameters
