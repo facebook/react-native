@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6e1d8221c96bcf5ac6ac2e2a5ac673f1>>
+ * @generated SignedSource<<5acc28ce2f095550c1c5302198257a82>>
  */
 
 /**
@@ -56,6 +56,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool useImmediateExecutorInAndroidBridgeless();
   bool useModernRuntimeScheduler();
   bool useNativeViewConfigsInBridgelessMode();
+  bool useNewReactImageViewBackgroundDrawing();
   bool useRuntimeShadowNodeReferenceUpdate();
   bool useRuntimeShadowNodeReferenceUpdateOnLayout();
   bool useStateAlignmentMechanism();
@@ -69,7 +70,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 28> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 29> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> allowCollapsableChildren_;
@@ -96,6 +97,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> useImmediateExecutorInAndroidBridgeless_;
   std::atomic<std::optional<bool>> useModernRuntimeScheduler_;
   std::atomic<std::optional<bool>> useNativeViewConfigsInBridgelessMode_;
+  std::atomic<std::optional<bool>> useNewReactImageViewBackgroundDrawing_;
   std::atomic<std::optional<bool>> useRuntimeShadowNodeReferenceUpdate_;
   std::atomic<std::optional<bool>> useRuntimeShadowNodeReferenceUpdateOnLayout_;
   std::atomic<std::optional<bool>> useStateAlignmentMechanism_;

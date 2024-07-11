@@ -157,6 +157,11 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'When enabled, the native view configs are used in bridgeless mode.',
     },
+    useNewReactImageViewBackgroundDrawing: {
+      defaultValue: false,
+      description:
+        'Use shared background drawing code for ReactImageView instead of using Fresco to manipulate the bitmap',
+    },
     useRuntimeShadowNodeReferenceUpdate: {
       defaultValue: false,
       description:

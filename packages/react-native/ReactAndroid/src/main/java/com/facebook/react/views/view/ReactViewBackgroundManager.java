@@ -115,8 +115,8 @@ public class ReactViewBackgroundManager {
   }
 
   /**
-   * Sets the canvas clipping region to exclude any area below or outide of borders if "overflow" is
-   * set to clip to padding box.
+   * Sets the canvas clipping region to exclude any area below or outside of borders if "overflow"
+   * is set to clip to padding box.
    */
   public void maybeClipToPaddingBox(Canvas canvas) {
     if (mOverflow == Overflow.VISIBLE) {

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ffcb3d17adea4a1b95421862210665df>>
+ * @generated SignedSource<<c83fd5db30d49b7292c35b7a06ea311c>>
  */
 
 /**
@@ -49,6 +49,7 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var useImmediateExecutorInAndroidBridgelessCache: Boolean? = null
   private var useModernRuntimeSchedulerCache: Boolean? = null
   private var useNativeViewConfigsInBridgelessModeCache: Boolean? = null
+  private var useNewReactImageViewBackgroundDrawingCache: Boolean? = null
   private var useRuntimeShadowNodeReferenceUpdateCache: Boolean? = null
   private var useRuntimeShadowNodeReferenceUpdateOnLayoutCache: Boolean? = null
   private var useStateAlignmentMechanismCache: Boolean? = null
@@ -299,6 +300,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.useNativeViewConfigsInBridgelessMode()
       accessedFeatureFlags.add("useNativeViewConfigsInBridgelessMode")
       useNativeViewConfigsInBridgelessModeCache = cached
+    }
+    return cached
+  }
+
+  override fun useNewReactImageViewBackgroundDrawing(): Boolean {
+    var cached = useNewReactImageViewBackgroundDrawingCache
+    if (cached == null) {
+      cached = currentProvider.useNewReactImageViewBackgroundDrawing()
+      accessedFeatureFlags.add("useNewReactImageViewBackgroundDrawing")
+      useNewReactImageViewBackgroundDrawingCache = cached
     }
     return cached
   }

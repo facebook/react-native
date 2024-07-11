@@ -6402,6 +6402,7 @@ public class com/facebook/react/views/image/ReactImageView : com/facebook/drawee
 	public fun getImageSource ()Lcom/facebook/react/views/imagehelper/ImageSource;
 	public fun hasOverlappingRendering ()Z
 	public fun maybeUpdateView ()V
+	public fun onDraw (Landroid/graphics/Canvas;)V
 	protected fun onSizeChanged (IIII)V
 	public fun setBackgroundColor (I)V
 	public fun setBlurRadius (F)V
