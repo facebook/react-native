@@ -195,7 +195,12 @@ public class ReactViewGroup extends ViewGroup
 
   @Override
   protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-    // No-op since UIManagerModule handles actually laying out children.
+    // If the size or position of the view has changed it may intersect different children than
+    // before. If "removeClippedSubviews" is set, we must re-evaluate intersection to render newly
+    // visible children, and remove those no longer visible.
+    if (changed && mRemoveClippedSubviews) {
+      updateClippingRect();
+    }
   }
 
   @Override
@@ -480,14 +485,6 @@ public class ReactViewGroup extends ViewGroup
   @Override
   public boolean getChildVisibleRect(View child, Rect r, android.graphics.Point offset) {
     return super.getChildVisibleRect(child, r, offset);
-  }
-
-  @Override
-  protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-    super.onSizeChanged(w, h, oldw, oldh);
-    if (mRemoveClippedSubviews) {
-      updateClippingRect();
-    }
   }
 
   @Override
