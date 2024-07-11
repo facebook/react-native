@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6db4a73cfea277087512de2dbf0433d4>>
+ * @generated SignedSource<<56452b5997dd7cfad82dea683789a712>>
  * @flow strict-local
  */
 
@@ -61,7 +61,6 @@ export type ReactNativeFeatureFlags = {
   fuseboxEnabledDebug: Getter<boolean>,
   fuseboxEnabledRelease: Getter<boolean>,
   lazyAnimationCallbacks: Getter<boolean>,
-  preventDoubleTextMeasure: Getter<boolean>,
   setAndroidLayoutDirection: Getter<boolean>,
   useImmediateExecutorInAndroidBridgeless: Getter<boolean>,
   useModernRuntimeScheduler: Getter<boolean>,
@@ -196,10 +195,6 @@ export const fuseboxEnabledRelease: Getter<boolean> = createNativeFlagGetter('fu
  * Only enqueue Choreographer calls if there is an ongoing animation, instead of enqueueing every frame.
  */
 export const lazyAnimationCallbacks: Getter<boolean> = createNativeFlagGetter('lazyAnimationCallbacks', false);
-/**
- * When enabled, ParagraphShadowNode will no longer call measure twice.
- */
-export const preventDoubleTextMeasure: Getter<boolean> = createNativeFlagGetter('preventDoubleTextMeasure', true);
 /**
  * Propagate layout direction to Android views.
  */

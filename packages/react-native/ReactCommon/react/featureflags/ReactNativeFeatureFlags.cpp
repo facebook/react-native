@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<08c9a03b2c6960cc548c41a126073300>>
+ * @generated SignedSource<<41d71b9ee1e7cbd86642f8ae9ece251e>>
  */
 
 /**
@@ -99,10 +99,6 @@ bool ReactNativeFeatureFlags::fuseboxEnabledRelease() {
 
 bool ReactNativeFeatureFlags::lazyAnimationCallbacks() {
   return getAccessor().lazyAnimationCallbacks();
-}
-
-bool ReactNativeFeatureFlags::preventDoubleTextMeasure() {
-  return getAccessor().preventDoubleTextMeasure();
 }
 
 bool ReactNativeFeatureFlags::setAndroidLayoutDirection() {

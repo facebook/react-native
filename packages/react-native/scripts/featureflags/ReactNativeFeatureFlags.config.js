@@ -133,11 +133,6 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'Only enqueue Choreographer calls if there is an ongoing animation, instead of enqueueing every frame.',
     },
-    preventDoubleTextMeasure: {
-      defaultValue: true,
-      description:
-        'When enabled, ParagraphShadowNode will no longer call measure twice.',
-    },
     setAndroidLayoutDirection: {
       defaultValue: true,
       description: 'Propagate layout direction to Android views.',

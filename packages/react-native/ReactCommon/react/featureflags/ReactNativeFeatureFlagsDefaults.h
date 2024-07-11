@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<77188afc2fdd7ef693abfd5e02354efc>>
+ * @generated SignedSource<<a781613b0452bd8407db9fbe3393f0f6>>
  */
 
 /**
@@ -105,10 +105,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
 
   bool lazyAnimationCallbacks() override {
     return false;
-  }
-
-  bool preventDoubleTextMeasure() override {
-    return true;
   }
 
   bool setAndroidLayoutDirection() override {

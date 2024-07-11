@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8443301e7625595b6ca21901da0ccb88>>
+ * @generated SignedSource<<a3987ccb2790e770ecf2f5235f4251c8>>
  */
 
 /**
@@ -147,12 +147,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun lazyAnimationCallbacks(): Boolean = accessor.lazyAnimationCallbacks()
-
-  /**
-   * When enabled, ParagraphShadowNode will no longer call measure twice.
-   */
-  @JvmStatic
-  public fun preventDoubleTextMeasure(): Boolean = accessor.preventDoubleTextMeasure()
 
   /**
    * Propagate layout direction to Android views.

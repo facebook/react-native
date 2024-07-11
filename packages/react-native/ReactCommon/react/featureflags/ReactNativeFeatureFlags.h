@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8f367ce041b58945348d0f0648adeca3>>
+ * @generated SignedSource<<5fd10fd80549413ca032910f3cbf9394>>
  */
 
 /**
@@ -136,11 +136,6 @@ class ReactNativeFeatureFlags {
    * Only enqueue Choreographer calls if there is an ongoing animation, instead of enqueueing every frame.
    */
   RN_EXPORT static bool lazyAnimationCallbacks();
-
-  /**
-   * When enabled, ParagraphShadowNode will no longer call measure twice.
-   */
-  RN_EXPORT static bool preventDoubleTextMeasure();
 
   /**
    * Propagate layout direction to Android views.

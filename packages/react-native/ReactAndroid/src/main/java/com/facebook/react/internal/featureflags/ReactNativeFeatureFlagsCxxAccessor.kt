@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<27c99bbe01b2b8999c6fa44be28f62d3>>
+ * @generated SignedSource<<b9d33f024db44c5763643040d126427a>>
  */
 
 /**
@@ -40,7 +40,6 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
   private var fuseboxEnabledDebugCache: Boolean? = null
   private var fuseboxEnabledReleaseCache: Boolean? = null
   private var lazyAnimationCallbacksCache: Boolean? = null
-  private var preventDoubleTextMeasureCache: Boolean? = null
   private var setAndroidLayoutDirectionCache: Boolean? = null
   private var useImmediateExecutorInAndroidBridgelessCache: Boolean? = null
   private var useModernRuntimeSchedulerCache: Boolean? = null
@@ -225,15 +224,6 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.lazyAnimationCallbacks()
       lazyAnimationCallbacksCache = cached
-    }
-    return cached
-  }
-
-  override fun preventDoubleTextMeasure(): Boolean {
-    var cached = preventDoubleTextMeasureCache
-    if (cached == null) {
-      cached = ReactNativeFeatureFlagsCxxInterop.preventDoubleTextMeasure()
-      preventDoubleTextMeasureCache = cached
     }
     return cached
   }

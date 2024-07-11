@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6e1d8221c96bcf5ac6ac2e2a5ac673f1>>
+ * @generated SignedSource<<9576ea08627816c24c66ca8a7a75853f>>
  */
 
 /**
@@ -51,7 +51,6 @@ class ReactNativeFeatureFlagsAccessor {
   bool fuseboxEnabledDebug();
   bool fuseboxEnabledRelease();
   bool lazyAnimationCallbacks();
-  bool preventDoubleTextMeasure();
   bool setAndroidLayoutDirection();
   bool useImmediateExecutorInAndroidBridgeless();
   bool useModernRuntimeScheduler();
@@ -69,7 +68,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 28> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 27> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> allowCollapsableChildren_;
@@ -91,7 +90,6 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> fuseboxEnabledDebug_;
   std::atomic<std::optional<bool>> fuseboxEnabledRelease_;
   std::atomic<std::optional<bool>> lazyAnimationCallbacks_;
-  std::atomic<std::optional<bool>> preventDoubleTextMeasure_;
   std::atomic<std::optional<bool>> setAndroidLayoutDirection_;
   std::atomic<std::optional<bool>> useImmediateExecutorInAndroidBridgeless_;
   std::atomic<std::optional<bool>> useModernRuntimeScheduler_;
