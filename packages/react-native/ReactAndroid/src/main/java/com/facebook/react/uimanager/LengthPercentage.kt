@@ -25,7 +25,7 @@ public class LengthPercentage(
   public companion object {
     @JvmStatic
     public fun setFromDynamic(dynamic: Dynamic): LengthPercentage? {
-      return when (dynamic.getType()) {
+      return when (dynamic.type) {
         ReadableType.Number -> {
           val value = dynamic.asDouble()
           if (value >= 0f) {
@@ -54,7 +54,7 @@ public class LengthPercentage(
           }
         }
         else -> {
-          FLog.w(ReactConstants.TAG, "Unsupported type for radius property: ${dynamic.getType()}")
+          FLog.w(ReactConstants.TAG, "Unsupported type for radius property: ${dynamic.type}")
           null
         }
       }
