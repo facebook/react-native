@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1c3b8179bf67dd9d44c8d2e29bf752b6>>
+ * @generated SignedSource<<345d27de837a248fbfd5e299754097f0>>
  */
 
 /**
@@ -130,6 +130,11 @@ bool NativeReactNativeFeatureFlags::fuseboxEnabledDebug(
 bool NativeReactNativeFeatureFlags::fuseboxEnabledRelease(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::fuseboxEnabledRelease();
+}
+
+bool NativeReactNativeFeatureFlags::initEagerTurboModulesOnNativeModulesQueueAndroid(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::initEagerTurboModulesOnNativeModulesQueueAndroid();
 }
 
 bool NativeReactNativeFeatureFlags::lazyAnimationCallbacks(

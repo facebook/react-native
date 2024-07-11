@@ -289,12 +289,21 @@ final class ReactInstance {
   }
 
   void initializeEagerTurboModules() {
-    Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "initializeEagerTurboModules");
-    // Eagerly initialize TurboModules
-    for (String moduleName : mTurboModuleManager.getEagerInitModuleNames()) {
-      mTurboModuleManager.getModule(moduleName);
+    Runnable task =
+        () -> {
+          Systrace.beginSection(
+              Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "initializeEagerTurboModules");
+          // Eagerly initialize TurboModules
+          for (String moduleName : mTurboModuleManager.getEagerInitModuleNames()) {
+            mTurboModuleManager.getModule(moduleName);
+          }
+          Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+        };
+    if (ReactNativeFeatureFlags.initEagerTurboModulesOnNativeModulesQueueAndroid()) {
+      mQueueConfiguration.getNativeModulesQueueThread().runOnQueue(task);
+    } else {
+      task.run();
     }
-    Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
   }
 
   private static synchronized void loadLibraryIfNeeded() {
@@ -309,10 +318,10 @@ final class ReactInstance {
   }
 
   private class ReactJsExceptionHandlerImpl implements ReactJsExceptionHandler {
-    private final MessageQueueThread mNativemodulesmessagequeuethread;
+    private final MessageQueueThread mMessageQueueThread;
 
     ReactJsExceptionHandlerImpl(MessageQueueThread nativeModulesMessageQueueThread) {
-      this.mNativemodulesmessagequeuethread = nativeModulesMessageQueueThread;
+      mMessageQueueThread = nativeModulesMessageQueueThread;
     }
 
     @Override
@@ -320,7 +329,7 @@ final class ReactInstance {
       JavaOnlyMap data = StackTraceHelper.convertParsedError(error);
 
       // Simulate async native module method call
-      mNativemodulesmessagequeuethread.runOnQueue(
+      mMessageQueueThread.runOnQueue(
           () -> {
             NativeExceptionsManagerSpec exceptionsManager =
                 (NativeExceptionsManagerSpec)

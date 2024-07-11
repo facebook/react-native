@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<61e7f1b2647d1e9c9583079b5e7fb166>>
+ * @generated SignedSource<<efcfd22319cacb3060f6e86601faa912>>
  */
 
 /**
@@ -141,6 +141,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun fuseboxEnabledRelease(): Boolean = accessor.fuseboxEnabledRelease()
+
+  /**
+   * Construct modules that requires eager init on the dedicate native modules thread
+   */
+  @JvmStatic
+  public fun initEagerTurboModulesOnNativeModulesQueueAndroid(): Boolean = accessor.initEagerTurboModulesOnNativeModulesQueueAndroid()
 
   /**
    * Only enqueue Choreographer calls if there is an ongoing animation, instead of enqueueing every frame.

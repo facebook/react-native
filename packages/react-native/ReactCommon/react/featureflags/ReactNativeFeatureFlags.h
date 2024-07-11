@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<52ba90db8208aec0eca2de2c9155246a>>
+ * @generated SignedSource<<627fb0dc656780d46131fad9bf87efa8>>
  */
 
 /**
@@ -131,6 +131,11 @@ class ReactNativeFeatureFlags {
    * Flag determining if the React Native DevTools (Fusebox) CDP backend should be enabled in release builds. This flag is global and should not be changed across React Host lifetimes.
    */
   RN_EXPORT static bool fuseboxEnabledRelease();
+
+  /**
+   * Construct modules that requires eager init on the dedicate native modules thread
+   */
+  RN_EXPORT static bool initEagerTurboModulesOnNativeModulesQueueAndroid();
 
   /**
    * Only enqueue Choreographer calls if there is an ongoing animation, instead of enqueueing every frame.
