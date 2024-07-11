@@ -38,10 +38,10 @@ Pod::Spec.new do |s|
   s.source                 = source
   s.source_files           = "reactperflogger/*.{cpp,h}", "fusebox/*.{cpp,h}"
   s.header_dir             = "reactperflogger"
-  s.pod_target_xcconfig    = { "CLANG_CXX_LANGUAGE_STANDARD" => "c++20" }
+  s.pod_target_xcconfig    = { "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard() }
   s.compiler_flags         = folly_compiler_flags
   s.pod_target_xcconfig    = {
-    "CLANG_CXX_LANGUAGE_STANDARD" => "c++20",
+    "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
     "HEADER_SEARCH_PATHS" => header_search_paths.join(' '),
   }
 
