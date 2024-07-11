@@ -87,7 +87,12 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
           if (isFabricNode) {
             // Call `scheduleUpdate` to synchronise Fiber and Shadow tree.
             // Must not be called in Paper.
-            scheduleUpdate();
+            if (useNativePropsInFabric) {
+              // $FlowFixMe[incompatible-use]
+              instance.setNativeProps(node.__getAnimatedValue());
+            } else {
+              scheduleUpdate();
+            }
           }
           return;
         }
