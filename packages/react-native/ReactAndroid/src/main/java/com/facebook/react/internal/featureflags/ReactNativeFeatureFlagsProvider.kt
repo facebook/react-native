@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<16ba68de9b22ddc66208f9ef60f017d9>>
+ * @generated SignedSource<<60d71718bb4be3be613ffa20ea953324>>
  */
 
 /**
@@ -60,6 +60,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun fuseboxEnabledDebug(): Boolean
 
   @DoNotStrip public fun fuseboxEnabledRelease(): Boolean
+
+  @DoNotStrip public fun initEagerTurboModulesOnNativeModulesQueueAndroid(): Boolean
 
   @DoNotStrip public fun lazyAnimationCallbacks(): Boolean
 

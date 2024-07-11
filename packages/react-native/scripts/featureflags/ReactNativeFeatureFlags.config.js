@@ -128,6 +128,11 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'Flag determining if the React Native DevTools (Fusebox) CDP backend should be enabled in release builds. This flag is global and should not be changed across React Host lifetimes.',
     },
+    initEagerTurboModulesOnNativeModulesQueueAndroid: {
+      defaultValue: false,
+      description:
+        'Construct modules that requires eager init on the dedicate native modules thread',
+    },
     lazyAnimationCallbacks: {
       defaultValue: false,
       description:

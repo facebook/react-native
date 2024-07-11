@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d43732e02660cb00e0f0acfc2b8ca29f>>
+ * @generated SignedSource<<d656596790eb80bd7533f514e14180c8>>
  */
 
 /**
@@ -39,6 +39,7 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
   private var forceBatchingMountItemsOnAndroidCache: Boolean? = null
   private var fuseboxEnabledDebugCache: Boolean? = null
   private var fuseboxEnabledReleaseCache: Boolean? = null
+  private var initEagerTurboModulesOnNativeModulesQueueAndroidCache: Boolean? = null
   private var lazyAnimationCallbacksCache: Boolean? = null
   private var setAndroidLayoutDirectionCache: Boolean? = null
   private var useImmediateExecutorInAndroidBridgelessCache: Boolean? = null
@@ -216,6 +217,15 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.fuseboxEnabledRelease()
       fuseboxEnabledReleaseCache = cached
+    }
+    return cached
+  }
+
+  override fun initEagerTurboModulesOnNativeModulesQueueAndroid(): Boolean {
+    var cached = initEagerTurboModulesOnNativeModulesQueueAndroidCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.initEagerTurboModulesOnNativeModulesQueueAndroid()
+      initEagerTurboModulesOnNativeModulesQueueAndroidCache = cached
     }
     return cached
   }

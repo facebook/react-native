@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<21ccc4daa6d8c02f29e4bbd4c9a75e49>>
+ * @generated SignedSource<<c52c8d53c3d17a1d0f35322aa591bebf>>
  */
 
 /**
@@ -50,6 +50,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool forceBatchingMountItemsOnAndroid();
   bool fuseboxEnabledDebug();
   bool fuseboxEnabledRelease();
+  bool initEagerTurboModulesOnNativeModulesQueueAndroid();
   bool lazyAnimationCallbacks();
   bool setAndroidLayoutDirection();
   bool useImmediateExecutorInAndroidBridgeless();
@@ -69,7 +70,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 28> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 29> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> allowCollapsableChildren_;
@@ -90,6 +91,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> forceBatchingMountItemsOnAndroid_;
   std::atomic<std::optional<bool>> fuseboxEnabledDebug_;
   std::atomic<std::optional<bool>> fuseboxEnabledRelease_;
+  std::atomic<std::optional<bool>> initEagerTurboModulesOnNativeModulesQueueAndroid_;
   std::atomic<std::optional<bool>> lazyAnimationCallbacks_;
   std::atomic<std::optional<bool>> setAndroidLayoutDirection_;
   std::atomic<std::optional<bool>> useImmediateExecutorInAndroidBridgeless_;

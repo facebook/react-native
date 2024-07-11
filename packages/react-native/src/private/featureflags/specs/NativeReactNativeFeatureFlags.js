@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4f001bdc6d2161ead95635785f387abe>>
+ * @generated SignedSource<<44f6fe8269f1b8d2039668e67bca9839>>
  * @flow strict-local
  */
 
@@ -42,6 +42,7 @@ export interface Spec extends TurboModule {
   +forceBatchingMountItemsOnAndroid?: () => boolean;
   +fuseboxEnabledDebug?: () => boolean;
   +fuseboxEnabledRelease?: () => boolean;
+  +initEagerTurboModulesOnNativeModulesQueueAndroid?: () => boolean;
   +lazyAnimationCallbacks?: () => boolean;
   +setAndroidLayoutDirection?: () => boolean;
   +useImmediateExecutorInAndroidBridgeless?: () => boolean;
