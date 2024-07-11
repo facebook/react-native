@@ -106,7 +106,10 @@ public interface CatalystInstance : MemoryPressureListener, JSInstance, JSBundle
    * Returns a hybrid object that contains a pointer to a JS CallInvoker, which is used to schedule
    * work on the JS Thread. Required for TurboModuleManager initialization.
    */
-  @get:Deprecated("") public val jSCallInvokerHolder: CallInvokerHolder
+  @get:Deprecated("Use ReactContext.getJSCallInvokerHolder instead")
+  @Suppress("INAPPLICABLE_JVM_NAME")
+  @get:JvmName("getJSCallInvokerHolder") // This is needed to keep backward compatibility
+  public val jsCallInvokerHolder: CallInvokerHolder
 
   /**
    * Returns a hybrid object that contains a pointer to a NativeMethodCallInvoker, which is used to
