@@ -108,11 +108,6 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'Enables a fix to prevent the possibility of state updates in Fabric being missed due to race conditions with previous state updates.',
     },
-    fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak: {
-      defaultValue: false,
-      description:
-        'Fixes a leak in SurfaceMountingManager.mRemoveDeleteTreeUIFrameCallback',
-    },
     forceBatchingMountItemsOnAndroid: {
       defaultValue: false,
       description:

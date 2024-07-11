@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1bea72c406359550598787ea5da29b17>>
+ * @generated SignedSource<<a26a8a821a11fcde6e71dda68b61e9f1>>
  */
 
 /**
@@ -79,10 +79,6 @@ bool ReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact()
 
 bool ReactNativeFeatureFlags::fixMissedFabricStateUpdatesOnAndroid() {
   return getAccessor().fixMissedFabricStateUpdatesOnAndroid();
-}
-
-bool ReactNativeFeatureFlags::fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak() {
-  return getAccessor().fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak();
 }
 
 bool ReactNativeFeatureFlags::forceBatchingMountItemsOnAndroid() {

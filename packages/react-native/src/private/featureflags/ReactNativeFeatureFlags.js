@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3ee4e03eae552b81423262351ee2a494>>
+ * @generated SignedSource<<07014a208bbac8efec4d01b7f09c6910>>
  * @flow strict-local
  */
 
@@ -56,7 +56,6 @@ export type ReactNativeFeatureFlags = {
   fixIncorrectScrollViewStateUpdateOnAndroid: Getter<boolean>,
   fixMappingOfEventPrioritiesBetweenFabricAndReact: Getter<boolean>,
   fixMissedFabricStateUpdatesOnAndroid: Getter<boolean>,
-  fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak: Getter<boolean>,
   forceBatchingMountItemsOnAndroid: Getter<boolean>,
   fuseboxEnabledDebug: Getter<boolean>,
   fuseboxEnabledRelease: Getter<boolean>,
@@ -177,10 +176,6 @@ export const fixMappingOfEventPrioritiesBetweenFabricAndReact: Getter<boolean> =
  * Enables a fix to prevent the possibility of state updates in Fabric being missed due to race conditions with previous state updates.
  */
 export const fixMissedFabricStateUpdatesOnAndroid: Getter<boolean> = createNativeFlagGetter('fixMissedFabricStateUpdatesOnAndroid', false);
-/**
- * Fixes a leak in SurfaceMountingManager.mRemoveDeleteTreeUIFrameCallback
- */
-export const fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak: Getter<boolean> = createNativeFlagGetter('fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak', false);
 /**
  * Forces the mounting layer on Android to always batch mount items instead of dispatching them immediately. This might fix some crashes related to synchronous state updates, where some views dispatch state updates during mount.
  */

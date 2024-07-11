@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<97de4303f4682dff2e159390db982010>>
+ * @generated SignedSource<<63cb1200d25489b5cc9fcfa0061eccd0>>
  */
 
 /**
@@ -39,7 +39,6 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var fixIncorrectScrollViewStateUpdateOnAndroidCache: Boolean? = null
   private var fixMappingOfEventPrioritiesBetweenFabricAndReactCache: Boolean? = null
   private var fixMissedFabricStateUpdatesOnAndroidCache: Boolean? = null
-  private var fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeakCache: Boolean? = null
   private var forceBatchingMountItemsOnAndroidCache: Boolean? = null
   private var fuseboxEnabledDebugCache: Boolean? = null
   private var fuseboxEnabledReleaseCache: Boolean? = null
@@ -200,16 +199,6 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.fixMissedFabricStateUpdatesOnAndroid()
       accessedFeatureFlags.add("fixMissedFabricStateUpdatesOnAndroid")
       fixMissedFabricStateUpdatesOnAndroidCache = cached
-    }
-    return cached
-  }
-
-  override fun fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak(): Boolean {
-    var cached = fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeakCache
-    if (cached == null) {
-      cached = currentProvider.fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak()
-      accessedFeatureFlags.add("fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak")
-      fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeakCache = cached
     }
     return cached
   }

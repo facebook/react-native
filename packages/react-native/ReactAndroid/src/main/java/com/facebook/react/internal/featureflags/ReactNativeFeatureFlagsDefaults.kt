@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<54256999bd721723c1e7a95669311490>>
+ * @generated SignedSource<<ea19295997ce3b9bdebcc37989d53096>>
  */
 
 /**
@@ -52,8 +52,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean = false
 
   override fun fixMissedFabricStateUpdatesOnAndroid(): Boolean = false
-
-  override fun fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak(): Boolean = false
 
   override fun forceBatchingMountItemsOnAndroid(): Boolean = false
 

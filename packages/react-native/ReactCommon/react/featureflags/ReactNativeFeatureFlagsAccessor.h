@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c52c8d53c3d17a1d0f35322aa591bebf>>
+ * @generated SignedSource<<086584dd69b004ee0f083b76d6368f84>>
  */
 
 /**
@@ -46,7 +46,6 @@ class ReactNativeFeatureFlagsAccessor {
   bool fixIncorrectScrollViewStateUpdateOnAndroid();
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact();
   bool fixMissedFabricStateUpdatesOnAndroid();
-  bool fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak();
   bool forceBatchingMountItemsOnAndroid();
   bool fuseboxEnabledDebug();
   bool fuseboxEnabledRelease();
@@ -70,7 +69,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 29> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 28> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> allowCollapsableChildren_;
@@ -87,7 +86,6 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> fixIncorrectScrollViewStateUpdateOnAndroid_;
   std::atomic<std::optional<bool>> fixMappingOfEventPrioritiesBetweenFabricAndReact_;
   std::atomic<std::optional<bool>> fixMissedFabricStateUpdatesOnAndroid_;
-  std::atomic<std::optional<bool>> fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak_;
   std::atomic<std::optional<bool>> forceBatchingMountItemsOnAndroid_;
   std::atomic<std::optional<bool>> fuseboxEnabledDebug_;
   std::atomic<std::optional<bool>> fuseboxEnabledRelease_;

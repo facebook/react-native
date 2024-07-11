@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0a287c69e07600efe13acfcf8bd29f0d>>
+ * @generated SignedSource<<9389654cf7ca12851a1af307656c807b>>
  */
 
 /**
@@ -126,12 +126,6 @@ class ReactNativeFeatureFlagsProviderHolder
   bool fixMissedFabricStateUpdatesOnAndroid() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("fixMissedFabricStateUpdatesOnAndroid");
-    return method(javaProvider_);
-  }
-
-  bool fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak");
     return method(javaProvider_);
   }
 
@@ -292,11 +286,6 @@ bool JReactNativeFeatureFlagsCxxInterop::fixMissedFabricStateUpdatesOnAndroid(
   return ReactNativeFeatureFlags::fixMissedFabricStateUpdatesOnAndroid();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::forceBatchingMountItemsOnAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::forceBatchingMountItemsOnAndroid();
@@ -424,9 +413,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "fixMissedFabricStateUpdatesOnAndroid",
         JReactNativeFeatureFlagsCxxInterop::fixMissedFabricStateUpdatesOnAndroid),
-      makeNativeMethod(
-        "fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak",
-        JReactNativeFeatureFlagsCxxInterop::fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak),
       makeNativeMethod(
         "forceBatchingMountItemsOnAndroid",
         JReactNativeFeatureFlagsCxxInterop::forceBatchingMountItemsOnAndroid),

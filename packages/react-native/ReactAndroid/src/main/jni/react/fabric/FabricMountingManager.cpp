@@ -287,7 +287,7 @@ void FabricMountingManager::executeMount(
           break;
         }
         case ShadowViewMutation::Remove: {
-          if (!isVirtual && !mutation.isRedundantOperation) {
+          if (!isVirtual) {
             cppCommonMountItems.push_back(CppMountItem::RemoveMountItem(
                 parentShadowView, oldChildShadowView, index));
           }
@@ -302,10 +302,8 @@ void FabricMountingManager::executeMount(
           break;
         }
         case ShadowViewMutation::Delete: {
-          if (!mutation.isRedundantOperation) {
-            cppDeleteMountItems.push_back(
-                CppMountItem::DeleteMountItem(oldChildShadowView));
-          }
+          cppDeleteMountItems.push_back(
+              CppMountItem::DeleteMountItem(oldChildShadowView));
           break;
         }
         case ShadowViewMutation::Update: {

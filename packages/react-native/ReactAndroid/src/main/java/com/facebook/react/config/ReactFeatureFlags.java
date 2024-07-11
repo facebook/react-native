@@ -76,11 +76,6 @@ public class ReactFeatureFlags {
    */
   public static boolean enableCppPropsIteratorSetter = false;
 
-  /**
-   * Allow Differentiator.cpp and FabricMountingManager.cpp to generate a RemoveDeleteTree mega-op.
-   */
-  public static boolean enableRemoveDeleteTreeInstruction = false;
-
   /** When enabled, rawProps in Props will not include Yoga specific props. */
   public static boolean excludeYogaFromRawProps = false;
 
