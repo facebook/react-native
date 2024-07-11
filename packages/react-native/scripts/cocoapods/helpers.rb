@@ -51,5 +51,9 @@ module Helpers
                 :compiler_flags => '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -DFOLLY_HAVE_CLOCK_GETTIME=1 -Wno-comma -Wno-shorten-64-to-32'
             }
         end
+
+        def self.cxx_language_standard
+            return "c++20"
+        end
     end
 end
