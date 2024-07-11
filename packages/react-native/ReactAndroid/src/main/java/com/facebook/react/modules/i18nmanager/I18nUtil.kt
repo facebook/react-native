@@ -86,5 +86,16 @@ public class I18nUtil private constructor() {
     private const val KEY_FOR_PREFS_FORCERTL = "RCTI18nUtil_forceRTL"
     private const val KEY_FOR_PERFS_MAKE_RTL_FLIP_LEFT_AND_RIGHT_STYLES =
         "RCTI18nUtil_makeRTLFlipLeftAndRightStyles"
+
+    /**
+     * We're just re-adding this to reduce a breaking change for libraries in React Native 0.75.
+     *
+     * @deprecated Use instance instead
+     */
+    @Deprecated(
+        "Use .instance instead, this API is only for backward compat", ReplaceWith("instance"))
+    @JvmName(
+        "DEPRECATED\$getInstance") // We intentionally don't want to expose this accessor to Java.
+    public fun getInstance(): I18nUtil = instance
   }
 }
