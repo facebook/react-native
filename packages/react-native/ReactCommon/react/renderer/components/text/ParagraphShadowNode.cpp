@@ -10,7 +10,6 @@
 #include <cmath>
 
 #include <react/debug/react_native_assert.h>
-#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/attributedstring/AttributedStringBox.h>
 #include <react/renderer/components/view/ViewShadowNode.h>
 #include <react/renderer/components/view/conversions.h>
@@ -206,14 +205,6 @@ void ParagraphShadowNode::layout(LayoutContext layoutContext) {
   textLayoutContext.pointScaleFactor = layoutContext.pointScaleFactor;
   auto measurement = TextMeasurement{};
 
-  if (!ReactNativeFeatureFlags::preventDoubleTextMeasure()) {
-    measurement = textLayoutManager_->measure(
-        AttributedStringBox{content.attributedString},
-        content.paragraphAttributes,
-        textLayoutContext,
-        layoutConstraints);
-  }
-
   if (getConcreteProps().onTextLayout) {
     auto linesMeasurements = textLayoutManager_->measureLines(
         content.attributedString, content.paragraphAttributes, size);
@@ -225,14 +216,12 @@ void ParagraphShadowNode::layout(LayoutContext layoutContext) {
     return;
   }
 
-  if (ReactNativeFeatureFlags::preventDoubleTextMeasure()) {
-    // Only measure if attachments are not empty.
-    measurement = textLayoutManager_->measure(
-        AttributedStringBox{content.attributedString},
-        content.paragraphAttributes,
-        textLayoutContext,
-        layoutConstraints);
-  }
+  // Only measure if attachments are not empty.
+  measurement = textLayoutManager_->measure(
+      AttributedStringBox{content.attributedString},
+      content.paragraphAttributes,
+      textLayoutContext,
+      layoutConstraints);
 
   //  Iterating on attachments, we clone shadow nodes and moving
   //  `paragraphShadowNode` that represents clones of `this` object.

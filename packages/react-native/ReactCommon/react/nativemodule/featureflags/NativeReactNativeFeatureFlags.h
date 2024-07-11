@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<29e51528919b581ce90770ca1b183c82>>
+ * @generated SignedSource<<fe86485dda04a792c697e9b1982376b3>>
  */
 
 /**
@@ -74,8 +74,6 @@ class NativeReactNativeFeatureFlags
   bool fuseboxEnabledRelease(jsi::Runtime& runtime);
 
   bool lazyAnimationCallbacks(jsi::Runtime& runtime);
-
-  bool preventDoubleTextMeasure(jsi::Runtime& runtime);
 
   bool setAndroidLayoutDirection(jsi::Runtime& runtime);
 
