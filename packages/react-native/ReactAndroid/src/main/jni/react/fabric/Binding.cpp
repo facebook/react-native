@@ -400,10 +400,6 @@ void Binding::installFabricUIManager(
   CoreFeatures::excludeYogaFromRawProps =
       getFeatureFlagValue("excludeYogaFromRawProps");
 
-  // RemoveDelete mega-op
-  ShadowViewMutation::PlatformSupportsRemoveDeleteTreeInstruction =
-      getFeatureFlagValue("enableRemoveDeleteTreeInstruction");
-
   auto toolbox = SchedulerToolbox{};
   toolbox.contextContainer = contextContainer;
   toolbox.componentRegistryFactory = componentsRegistry->buildRegistryFunction;

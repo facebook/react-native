@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<627fb0dc656780d46131fad9bf87efa8>>
+ * @generated SignedSource<<b095e4240d21711ac9818a71cd9b56cb>>
  */
 
 /**
@@ -111,11 +111,6 @@ class ReactNativeFeatureFlags {
    * Enables a fix to prevent the possibility of state updates in Fabric being missed due to race conditions with previous state updates.
    */
   RN_EXPORT static bool fixMissedFabricStateUpdatesOnAndroid();
-
-  /**
-   * Fixes a leak in SurfaceMountingManager.mRemoveDeleteTreeUIFrameCallback
-   */
-  RN_EXPORT static bool fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak();
 
   /**
    * Forces the mounting layer on Android to always batch mount items instead of dispatching them immediately. This might fix some crashes related to synchronous state updates, where some views dispatch state updates during mount.
