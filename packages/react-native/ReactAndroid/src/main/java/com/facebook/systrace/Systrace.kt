@@ -8,6 +8,7 @@
 package com.facebook.systrace
 
 import androidx.tracing.Trace
+import kotlin.text.StringBuilder
 
 /**
  * Systrace stub that mostly does nothing but delegates to Trace for beginning/ending sections. The
@@ -33,6 +34,28 @@ public object Systrace {
   @JvmStatic
   public fun beginSection(tag: Long, sectionName: String) {
     Trace.beginSection(sectionName)
+  }
+
+  @JvmStatic
+  public fun beginSection(tag: Long, sectionName: String, args: Array<String>, argsLength: Int) {
+    Trace.beginSection(sectionName + "|" + convertArgsToText(args, argsLength))
+  }
+
+  private fun convertArgsToText(args: Array<String>, argsLength: Int): String {
+    val argsText: StringBuilder = StringBuilder()
+    var ii = 1
+    while (ii < argsLength) {
+      val key = args[ii - 1]
+      val value = args[ii]
+      argsText.append(key)
+      argsText.append('=')
+      argsText.append(value)
+      if (ii < argsLength - 1) {
+        argsText.append(';')
+      }
+      ii += 2
+    }
+    return argsText.toString()
   }
 
   @JvmStatic
