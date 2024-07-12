@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9389654cf7ca12851a1af307656c807b>>
+ * @generated SignedSource<<61b408d16b81cca09f270c0a059166a4>>
  */
 
 /**
@@ -156,6 +156,12 @@ class ReactNativeFeatureFlagsProviderHolder
   bool lazyAnimationCallbacks() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("lazyAnimationCallbacks");
+    return method(javaProvider_);
+  }
+
+  bool loadVectorDrawablesOnImages() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("loadVectorDrawablesOnImages");
     return method(javaProvider_);
   }
 
@@ -311,6 +317,11 @@ bool JReactNativeFeatureFlagsCxxInterop::lazyAnimationCallbacks(
   return ReactNativeFeatureFlags::lazyAnimationCallbacks();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::loadVectorDrawablesOnImages(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::loadVectorDrawablesOnImages();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::setAndroidLayoutDirection(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::setAndroidLayoutDirection();
@@ -428,6 +439,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "lazyAnimationCallbacks",
         JReactNativeFeatureFlagsCxxInterop::lazyAnimationCallbacks),
+      makeNativeMethod(
+        "loadVectorDrawablesOnImages",
+        JReactNativeFeatureFlagsCxxInterop::loadVectorDrawablesOnImages),
       makeNativeMethod(
         "setAndroidLayoutDirection",
         JReactNativeFeatureFlagsCxxInterop::setAndroidLayoutDirection),

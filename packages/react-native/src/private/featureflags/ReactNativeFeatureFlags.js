@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<07014a208bbac8efec4d01b7f09c6910>>
+ * @generated SignedSource<<c055f71a8ef290f08cbd8027dd68678b>>
  * @flow strict-local
  */
 
@@ -61,6 +61,7 @@ export type ReactNativeFeatureFlags = {
   fuseboxEnabledRelease: Getter<boolean>,
   initEagerTurboModulesOnNativeModulesQueueAndroid: Getter<boolean>,
   lazyAnimationCallbacks: Getter<boolean>,
+  loadVectorDrawablesOnImages: Getter<boolean>,
   setAndroidLayoutDirection: Getter<boolean>,
   useImmediateExecutorInAndroidBridgeless: Getter<boolean>,
   useModernRuntimeScheduler: Getter<boolean>,
@@ -196,6 +197,10 @@ export const initEagerTurboModulesOnNativeModulesQueueAndroid: Getter<boolean> =
  * Only enqueue Choreographer calls if there is an ongoing animation, instead of enqueueing every frame.
  */
 export const lazyAnimationCallbacks: Getter<boolean> = createNativeFlagGetter('lazyAnimationCallbacks', false);
+/**
+ * Adds support for loading vector drawable assets in the Image component (only on Android)
+ */
+export const loadVectorDrawablesOnImages: Getter<boolean> = createNativeFlagGetter('loadVectorDrawablesOnImages', false);
 /**
  * Propagate layout direction to Android views.
  */

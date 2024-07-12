@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<aa56a814cd34c4bee4d5f22f665a718f>>
+ * @generated SignedSource<<b9831738df35c18c28fc5a914fa01de0>>
  */
 
 /**
@@ -135,6 +135,11 @@ bool NativeReactNativeFeatureFlags::initEagerTurboModulesOnNativeModulesQueueAnd
 bool NativeReactNativeFeatureFlags::lazyAnimationCallbacks(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::lazyAnimationCallbacks();
+}
+
+bool NativeReactNativeFeatureFlags::loadVectorDrawablesOnImages(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::loadVectorDrawablesOnImages();
 }
 
 bool NativeReactNativeFeatureFlags::setAndroidLayoutDirection(

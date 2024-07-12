@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<588266c6ec144651b7fdc84b77b490e7>>
+ * @generated SignedSource<<77a3249e264ca893ce8f998d424cb3db>>
  */
 
 /**
@@ -62,6 +62,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun initEagerTurboModulesOnNativeModulesQueueAndroid(): Boolean
 
   @DoNotStrip public fun lazyAnimationCallbacks(): Boolean
+
+  @DoNotStrip public fun loadVectorDrawablesOnImages(): Boolean
 
   @DoNotStrip public fun setAndroidLayoutDirection(): Boolean
 
