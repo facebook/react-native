@@ -332,6 +332,71 @@ TEST_P(RuntimeSchedulerTest, scheduleTwoTasksWithDifferentPriorities) {
   EXPECT_EQ(hostFunctionCallCount_, 2);
 }
 
+TEST_P(RuntimeSchedulerTest, scheduleTwoTasksWithAllPriorities) {
+  uint idlePriorityTaskCallOrder = 0;
+  auto idlePriTask = createHostFunctionFromLambda(
+      [this, &idlePriorityTaskCallOrder](bool /*unused*/) {
+        idlePriorityTaskCallOrder = hostFunctionCallCount_;
+        return jsi::Value::undefined();
+      });
+
+  uint lowPriorityTaskCallOrder = 0;
+  auto lowPriTask = createHostFunctionFromLambda(
+      [this, &lowPriorityTaskCallOrder](bool /*unused*/) {
+        lowPriorityTaskCallOrder = hostFunctionCallCount_;
+        return jsi::Value::undefined();
+      });
+
+  uint normalPriorityTaskCallOrder = 0;
+  auto normalPriTask = createHostFunctionFromLambda(
+      [this, &normalPriorityTaskCallOrder](bool /*unused*/) {
+        normalPriorityTaskCallOrder = hostFunctionCallCount_;
+        return jsi::Value::undefined();
+      });
+
+  uint userBlockingPriorityTaskCallOrder = 0;
+  auto userBlockingPriTask = createHostFunctionFromLambda(
+      [this, &userBlockingPriorityTaskCallOrder](bool /*unused*/) {
+        userBlockingPriorityTaskCallOrder = hostFunctionCallCount_;
+        return jsi::Value::undefined();
+      });
+
+  uint immediatePriorityTaskCallOrder = 0;
+  auto immediatePriTask = createHostFunctionFromLambda(
+      [this, &immediatePriorityTaskCallOrder](bool /*unused*/) {
+        immediatePriorityTaskCallOrder = hostFunctionCallCount_;
+        return jsi::Value::undefined();
+      });
+
+  runtimeScheduler_->scheduleTask(
+      SchedulerPriority::IdlePriority, std::move(idlePriTask));
+  runtimeScheduler_->scheduleTask(
+      SchedulerPriority::LowPriority, std::move(lowPriTask));
+  runtimeScheduler_->scheduleTask(
+      SchedulerPriority::NormalPriority, std::move(normalPriTask));
+  runtimeScheduler_->scheduleTask(
+      SchedulerPriority::UserBlockingPriority, std::move(userBlockingPriTask));
+  runtimeScheduler_->scheduleTask(
+      SchedulerPriority::ImmediatePriority, std::move(immediatePriTask));
+
+  EXPECT_EQ(idlePriorityTaskCallOrder, 0);
+  EXPECT_EQ(lowPriorityTaskCallOrder, 0);
+  EXPECT_EQ(normalPriorityTaskCallOrder, 0);
+  EXPECT_EQ(userBlockingPriorityTaskCallOrder, 0);
+  EXPECT_EQ(immediatePriorityTaskCallOrder, 0);
+  EXPECT_EQ(stubQueue_->size(), 1);
+
+  stubQueue_->tick();
+
+  EXPECT_EQ(idlePriorityTaskCallOrder, 5);
+  EXPECT_EQ(lowPriorityTaskCallOrder, 4);
+  EXPECT_EQ(normalPriorityTaskCallOrder, 3);
+  EXPECT_EQ(userBlockingPriorityTaskCallOrder, 2);
+  EXPECT_EQ(immediatePriorityTaskCallOrder, 1);
+  EXPECT_EQ(stubQueue_->size(), 0);
+  EXPECT_EQ(hostFunctionCallCount_, 5);
+}
+
 TEST_P(RuntimeSchedulerTest, cancelTask) {
   bool didRunTask = false;
   auto callback = createHostFunctionFromLambda([&didRunTask](bool /*unused*/) {
