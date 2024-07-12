@@ -111,40 +111,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4.1.1
-      - name: Install dependencies
-        run: |
-          sudo apt update
-          sudo apt install -y git openssh-client cmake build-essential \
-              libreadline-dev libicu-dev jq zip python3
-      - name: Restore Hermes workspace
-        uses: ./.github/actions/restore-hermes-workspace
-      - name: Linux cache
-        uses: actions/cache@v4.0.0
+      - name: Build HermesC Linux
+        uses: ./.github/actions/build-hermesc-linux
         with:
-          key: v1-hermes-${{ github.job }}-linux-${{ needs.prepare_hermes_workspace.outputs.hermes-version }}-${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
-          path: |
-            /tmp/hermes/linux64-bin/
-            /tmp/hermes/hermes/destroot/
-      - name: Set up workspace
-        run: |
-          mkdir -p /tmp/hermes/linux64-bin
-      - name: Build HermesC for Linux
-        run: |
-          if [ -f /tmp/hermes/linux64-bin/hermesc ]; then
-            echo 'Skipping; Clean "/tmp/hermes/linux64-bin" to rebuild.'
-          else
-            cd /tmp/hermes
-            cmake -S hermes -B build -DHERMES_STATIC_LINK=ON -DCMAKE_BUILD_TYPE=Release -DHERMES_ENABLE_TEST_SUITE=OFF \
-              -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=True -DCMAKE_CXX_FLAGS=-s -DCMAKE_C_FLAGS=-s \
-              -DCMAKE_EXE_LINKER_FLAGS="-Wl,--whole-archive -lpthread -Wl,--no-whole-archive"
-            cmake --build build --target hermesc -j 4
-            cp /tmp/hermes/build/bin/hermesc /tmp/hermes/linux64-bin/.
-          fi
-      - name: Upload linux artifacts
-        uses: actions/upload-artifact@v4.3.0
-        with:
-          name: hermes-linux-bin
-          path: /tmp/hermes/linux64-bin
+          HERMES_VERSION: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
+          REACT_NATIVE_VERSION: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
 
   build_hermesc_windows:
     runs-on: windows-2019
