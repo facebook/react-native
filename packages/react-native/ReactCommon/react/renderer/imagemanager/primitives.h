@@ -24,6 +24,8 @@ class ImageSource {
   std::string bundle{};
   Float scale{3};
   Size size{0};
+  std::unordered_map<std::string, std::string> headers{}; // Add headers field
+
 
   bool operator==(const ImageSource& rhs) const {
     return std::tie(this->type, this->uri) == std::tie(rhs.type, rhs.uri);
