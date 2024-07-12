@@ -109,8 +109,11 @@ inline static NSURLRequest *NSURLRequestFromImageSource(const facebook::react::I
   request.cachePolicy = ...;
   request.allHTTPHeaderFields = ...;
   */
- for (const auto &header : imageSource.headers) {
-  [request setValue:[NSString stringWithUTF8String:header.second.c_str()] forHTTPHeaderField:[NSString stringWithUTF8String:header.first.c_str()]];
+  // Set headers
+  for (const auto &header : imageSource.headers) {
+    [request setValue:[NSString stringWithUTF8String:header.second.c_str()]
+   forHTTPHeaderField:[NSString stringWithUTF8String:header.first.c_str()]];
   }
+
   return [request copy];
 }

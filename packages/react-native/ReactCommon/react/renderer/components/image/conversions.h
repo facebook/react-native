@@ -81,13 +81,15 @@ inline void fromRawValue(
     }
 
     if (items.find("headers") != items.end() &&
-            items.at("headers").hasType<std::unordered_map<std::string, RawValue>>()) {
-          auto headers = (std::unordered_map<std::string, RawValue>)items.at("headers");
-          for (const auto &header : headers) {
-            if (header.second.hasType<std::string>()) {
-              result.headers[header.first] = (std::string)header.second;
-            }
-    }
+        items.at("headers").hasType<std::unordered_map<std::string, RawValue>>()) {
+      auto headers = (std::unordered_map<std::string, RawValue>)items.at("headers");
+      for (const auto &header : headers) {
+        if (header.second.hasType<std::string>()) {
+          result.headers[header.first] = (std::string)header.second;
+        }
+      }
+      // Add a debug log to print the headers
+      LOG(INFO) << "Parsed headers: " << result.headers.size();
     }
     return;
   }
