@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<63cb1200d25489b5cc9fcfa0061eccd0>>
+ * @generated SignedSource<<f81b71950924d0e555b9173c2a98655f>>
  */
 
 /**
@@ -44,6 +44,7 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var fuseboxEnabledReleaseCache: Boolean? = null
   private var initEagerTurboModulesOnNativeModulesQueueAndroidCache: Boolean? = null
   private var lazyAnimationCallbacksCache: Boolean? = null
+  private var loadVectorDrawablesOnImagesCache: Boolean? = null
   private var setAndroidLayoutDirectionCache: Boolean? = null
   private var useImmediateExecutorInAndroidBridgelessCache: Boolean? = null
   private var useModernRuntimeSchedulerCache: Boolean? = null
@@ -249,6 +250,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.lazyAnimationCallbacks()
       accessedFeatureFlags.add("lazyAnimationCallbacks")
       lazyAnimationCallbacksCache = cached
+    }
+    return cached
+  }
+
+  override fun loadVectorDrawablesOnImages(): Boolean {
+    var cached = loadVectorDrawablesOnImagesCache
+    if (cached == null) {
+      cached = currentProvider.loadVectorDrawablesOnImages()
+      accessedFeatureFlags.add("loadVectorDrawablesOnImages")
+      loadVectorDrawablesOnImagesCache = cached
     }
     return cached
   }

@@ -133,6 +133,11 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'Only enqueue Choreographer calls if there is an ongoing animation, instead of enqueueing every frame.',
     },
+    loadVectorDrawablesOnImages: {
+      defaultValue: false,
+      description:
+        'Adds support for loading vector drawable assets in the Image component (only on Android)',
+    },
     setAndroidLayoutDirection: {
       defaultValue: true,
       description: 'Propagate layout direction to Android views.',

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9f31fa21b0dd908ec53d1586c0bd271d>>
+ * @generated SignedSource<<f347d3eae685a0888e834ec8ffffa20e>>
  */
 
 /**
@@ -147,6 +147,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun lazyAnimationCallbacks(): Boolean = accessor.lazyAnimationCallbacks()
+
+  /**
+   * Adds support for loading vector drawable assets in the Image component (only on Android)
+   */
+  @JvmStatic
+  public fun loadVectorDrawablesOnImages(): Boolean = accessor.loadVectorDrawablesOnImages()
 
   /**
    * Propagate layout direction to Android views.

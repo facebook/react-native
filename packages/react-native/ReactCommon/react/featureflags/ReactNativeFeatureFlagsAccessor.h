@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<086584dd69b004ee0f083b76d6368f84>>
+ * @generated SignedSource<<514f185e84b4e4253727009281717dd8>>
  */
 
 /**
@@ -51,6 +51,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool fuseboxEnabledRelease();
   bool initEagerTurboModulesOnNativeModulesQueueAndroid();
   bool lazyAnimationCallbacks();
+  bool loadVectorDrawablesOnImages();
   bool setAndroidLayoutDirection();
   bool useImmediateExecutorInAndroidBridgeless();
   bool useModernRuntimeScheduler();
@@ -69,7 +70,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 28> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 29> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> allowCollapsableChildren_;
@@ -91,6 +92,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> fuseboxEnabledRelease_;
   std::atomic<std::optional<bool>> initEagerTurboModulesOnNativeModulesQueueAndroid_;
   std::atomic<std::optional<bool>> lazyAnimationCallbacks_;
+  std::atomic<std::optional<bool>> loadVectorDrawablesOnImages_;
   std::atomic<std::optional<bool>> setAndroidLayoutDirection_;
   std::atomic<std::optional<bool>> useImmediateExecutorInAndroidBridgeless_;
   std::atomic<std::optional<bool>> useModernRuntimeScheduler_;

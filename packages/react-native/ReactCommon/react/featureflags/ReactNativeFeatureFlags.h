@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b095e4240d21711ac9818a71cd9b56cb>>
+ * @generated SignedSource<<a03bd61ef6b064d7f46a02478b8582e3>>
  */
 
 /**
@@ -136,6 +136,11 @@ class ReactNativeFeatureFlags {
    * Only enqueue Choreographer calls if there is an ongoing animation, instead of enqueueing every frame.
    */
   RN_EXPORT static bool lazyAnimationCallbacks();
+
+  /**
+   * Adds support for loading vector drawable assets in the Image component (only on Android)
+   */
+  RN_EXPORT static bool loadVectorDrawablesOnImages();
 
   /**
    * Propagate layout direction to Android views.
