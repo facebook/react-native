@@ -211,6 +211,11 @@ const definitions: FeatureFlagDefinitions = {
       defaultValue: true,
       description: 'Enables use of setNativeProps in JS driven animations.',
     },
+    usePassiveEffectsForAnimations: {
+      defaultValue: false,
+      description:
+        'Enable a variant of useAnimatedPropsLifecycle hook that constructs the animation graph in passive effect instead of layout effect',
+    },
     useRefsForTextInputState: {
       defaultValue: false,
       description:
