@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<514f185e84b4e4253727009281717dd8>>
+ * @generated SignedSource<<4a5a507ce51e3058803ce2237f482dc4>>
  */
 
 /**
@@ -40,6 +40,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableCleanTextInputYogaNode();
   bool enableGranularShadowTreeStateReconciliation();
   bool enableMicrotasks();
+  bool enablePropsUpdateReconciliationAndroid();
   bool enableSynchronousStateUpdates();
   bool enableUIConsistency();
   bool fetchImagesInViewPreallocation();
@@ -70,7 +71,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 29> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 30> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> allowCollapsableChildren_;
@@ -81,6 +82,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableCleanTextInputYogaNode_;
   std::atomic<std::optional<bool>> enableGranularShadowTreeStateReconciliation_;
   std::atomic<std::optional<bool>> enableMicrotasks_;
+  std::atomic<std::optional<bool>> enablePropsUpdateReconciliationAndroid_;
   std::atomic<std::optional<bool>> enableSynchronousStateUpdates_;
   std::atomic<std::optional<bool>> enableUIConsistency_;
   std::atomic<std::optional<bool>> fetchImagesInViewPreallocation_;

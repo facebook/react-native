@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f347d3eae685a0888e834ec8ffffa20e>>
+ * @generated SignedSource<<298c05e5b7384384b5fcdd851a298738>>
  */
 
 /**
@@ -81,6 +81,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableMicrotasks(): Boolean = accessor.enableMicrotasks()
+
+  /**
+   * When enabled, Android will receive prop updates based on the differences between the last rendered shadow node and the last committed shadow node.
+   */
+  @JvmStatic
+  public fun enablePropsUpdateReconciliationAndroid(): Boolean = accessor.enablePropsUpdateReconciliationAndroid()
 
   /**
    * Dispatches state updates synchronously in Fabric (e.g.: updates the scroll position in the shadow tree synchronously from the main thread).
