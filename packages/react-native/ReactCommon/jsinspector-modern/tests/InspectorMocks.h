@@ -127,6 +127,12 @@ class MockHostTargetDelegate : public HostTargetDelegate {
       onSetPausedInDebuggerMessage,
       (const OverlaySetPausedInDebuggerMessageRequest& request),
       (override));
+  MOCK_METHOD(
+      void,
+      loadNetworkResource,
+      (const LoadNetworkResourceRequest& params,
+       ScopedExecutor<NetworkRequestListener> executor),
+      (override));
 };
 
 class MockInstanceTargetDelegate : public InstanceTargetDelegate {};

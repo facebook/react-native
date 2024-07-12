@@ -134,6 +134,19 @@ class JSINSPECTOR_EXPORT IInspector : public IDestructible {
       std::weak_ptr<IPageStatusListener> listener) = 0;
 };
 
+class NotImplementedException : public std::exception {
+ public:
+  explicit NotImplementedException(std::string message)
+      : msg_(std::move(message)) {}
+
+  const char* what() const noexcept override {
+    return msg_.c_str();
+  }
+
+ private:
+  std::string msg_;
+};
+
 /// getInspectorInstance retrieves the singleton inspector that tracks all
 /// debuggable pages in this process.
 extern IInspector& getInspectorInstance();

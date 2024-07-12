@@ -29,7 +29,8 @@ class HostTargetSession {
   explicit HostTargetSession(
       std::unique_ptr<IRemoteConnection> remote,
       HostTargetController& targetController,
-      HostTargetMetadata hostMetadata)
+      HostTargetMetadata hostMetadata,
+      VoidExecutor executor)
       : remote_(std::make_shared<RAIIRemoteConnection>(std::move(remote))),
         frontendChannel_(
             [remoteWeak = std::weak_ptr(remote_)](std::string_view message) {
@@ -41,7 +42,8 @@ class HostTargetSession {
             frontendChannel_,
             targetController,
             std::move(hostMetadata),
-            state_) {}
+            state_,
+            executor) {}
 
   /**
    * Called by CallbackLocalConnection to send a message to this Session's
@@ -62,13 +64,20 @@ class HostTargetSession {
       return;
     }
 
-    // Catch exceptions that may arise from accessing dynamic params during
-    // request handling.
     try {
       hostAgent_.handleRequest(request);
-    } catch (const cdp::TypeError& e) {
+    }
+    // Catch exceptions that may arise from accessing dynamic params during
+    // request handling.
+    catch (const cdp::TypeError& e) {
       frontendChannel_(
           cdp::jsonError(request.id, cdp::ErrorCode::InvalidRequest, e.what()));
+      return;
+    }
+    // Catch exceptions for unrecognised or partially implemented CDP methods.
+    catch (const NotImplementedException& e) {
+      frontendChannel_(
+          cdp::jsonError(request.id, cdp::ErrorCode::MethodNotFound, e.what()));
       return;
     }
   }
@@ -148,7 +157,10 @@ HostTarget::HostTarget(HostTargetDelegate& delegate)
 std::unique_ptr<ILocalConnection> HostTarget::connect(
     std::unique_ptr<IRemoteConnection> connectionToFrontend) {
   auto session = std::make_shared<HostTargetSession>(
-      std::move(connectionToFrontend), controller_, delegate_.getMetadata());
+      std::move(connectionToFrontend),
+      controller_,
+      delegate_.getMetadata(),
+      makeVoidExecutor(executorFromThis()));
   session->setCurrentInstance(currentInstance_.get());
   sessions_.insert(std::weak_ptr(session));
   return std::make_unique<CallbackLocalConnection>(
