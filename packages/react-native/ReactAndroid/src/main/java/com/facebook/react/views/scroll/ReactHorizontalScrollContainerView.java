@@ -37,6 +37,21 @@ public class ReactHorizontalScrollContainerView extends ReactViewGroup {
   }
 
   @Override
+  public void setRemoveClippedSubviews(boolean removeClippedSubviews) {
+    // Clipping doesn't work well for horizontal scroll views in RTL mode - in both
+    // Fabric and non-Fabric - especially with TextInputs. The behavior you could see
+    // is TextInputs being blurred immediately after being focused. So, for now,
+    // it's easier to just disable this for these specific RTL views.
+    // TODO T86027499: support `setRemoveClippedSubviews` in RTL mode
+    if (getLayoutDirection() == LAYOUT_DIRECTION_RTL) {
+      super.setRemoveClippedSubviews(false);
+      return;
+    }
+
+    super.setRemoveClippedSubviews(removeClippedSubviews);
+  }
+
+  @Override
   protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
     if (getLayoutDirection() == LAYOUT_DIRECTION_RTL) {
       // When the layout direction is RTL, we expect Yoga to give us a layout
