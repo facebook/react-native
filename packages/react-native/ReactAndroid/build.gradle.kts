@@ -111,6 +111,22 @@ val preparePrefab by
                       Pair("../ReactCommon/react/renderer/graphics/platform/android/", ""),
                   )),
               PrefabPreprocessingEntry(
+                  "react_render_consistency",
+                  Pair(
+                      "../ReactCommon/react/renderer/consistency/", "react/renderer/consistency/")),
+              PrefabPreprocessingEntry(
+                  "react_featureflags",
+                  Pair("../ReactCommon/react/featureflags/", "react/featureflags/")),
+              PrefabPreprocessingEntry(
+                  "react_performance_timeline",
+                  Pair(
+                      "../ReactCommon/react/performance/timeline/", "react/performance/timeline/")),
+              PrefabPreprocessingEntry(
+                  "react_render_observers_events",
+                  Pair(
+                      "../ReactCommon/react/renderer/observers/events/",
+                      "react/renderer/observers/events/")),
+              PrefabPreprocessingEntry(
                   "rrc_root",
                   Pair(
                       "../ReactCommon/react/renderer/components/root/",
@@ -693,6 +709,18 @@ android {
     }
     create("react_render_graphics") {
       headers = File(prefabHeadersDir, "react_render_graphics").absolutePath
+    }
+    create("react_render_consistency") {
+      headers = File(prefabHeadersDir, "react_render_consistency").absolutePath
+    }
+    create("react_featureflags") {
+      headers = File(prefabHeadersDir, "react_featureflags").absolutePath
+    }
+    create("react_performance_timeline") {
+      headers = File(prefabHeadersDir, "react_performance_timeline").absolutePath
+    }
+    create("react_render_observers_events") {
+      headers = File(prefabHeadersDir, "react_render_observers_events").absolutePath
     }
     create("rrc_image") { headers = File(prefabHeadersDir, "rrc_image").absolutePath }
     create("rrc_root") { headers = File(prefabHeadersDir, "rrc_root").absolutePath }
