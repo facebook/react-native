@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c055f71a8ef290f08cbd8027dd68678b>>
+ * @generated SignedSource<<e309dc08faf6e94d31af64535246ff11>>
  * @flow strict-local
  */
 
@@ -50,6 +50,7 @@ export type ReactNativeFeatureFlags = {
   enableCleanTextInputYogaNode: Getter<boolean>,
   enableGranularShadowTreeStateReconciliation: Getter<boolean>,
   enableMicrotasks: Getter<boolean>,
+  enablePropsUpdateReconciliationAndroid: Getter<boolean>,
   enableSynchronousStateUpdates: Getter<boolean>,
   enableUIConsistency: Getter<boolean>,
   fetchImagesInViewPreallocation: Getter<boolean>,
@@ -153,6 +154,10 @@ export const enableGranularShadowTreeStateReconciliation: Getter<boolean> = crea
  * Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).
  */
 export const enableMicrotasks: Getter<boolean> = createNativeFlagGetter('enableMicrotasks', false);
+/**
+ * When enabled, Android will receive prop updates based on the differences between the last rendered shadow node and the last committed shadow node.
+ */
+export const enablePropsUpdateReconciliationAndroid: Getter<boolean> = createNativeFlagGetter('enablePropsUpdateReconciliationAndroid', false);
 /**
  * Dispatches state updates synchronously in Fabric (e.g.: updates the scroll position in the shadow tree synchronously from the main thread).
  */

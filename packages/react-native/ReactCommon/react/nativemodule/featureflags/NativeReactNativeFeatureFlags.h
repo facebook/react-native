@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4f72e159b344f68fc39649f929f2b6f1>>
+ * @generated SignedSource<<8710006663b0aff28f447405b26562dd>>
  */
 
 /**
@@ -52,6 +52,8 @@ class NativeReactNativeFeatureFlags
   bool enableGranularShadowTreeStateReconciliation(jsi::Runtime& runtime);
 
   bool enableMicrotasks(jsi::Runtime& runtime);
+
+  bool enablePropsUpdateReconciliationAndroid(jsi::Runtime& runtime);
 
   bool enableSynchronousStateUpdates(jsi::Runtime& runtime);
 

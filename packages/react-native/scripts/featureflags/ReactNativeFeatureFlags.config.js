@@ -78,6 +78,11 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).',
     },
+    enablePropsUpdateReconciliationAndroid: {
+      defaultValue: false,
+      description:
+        'When enabled, Android will receive prop updates based on the differences between the last rendered shadow node and the last committed shadow node.',
+    },
     enableSynchronousStateUpdates: {
       defaultValue: false,
       description:
