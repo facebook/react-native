@@ -388,7 +388,14 @@ using namespace facebook::react;
 
   // `testId`
   if (oldViewProps.testId != newViewProps.testId) {
-    self.accessibilityIdentifier = RCTNSStringFromString(newViewProps.testId);
+    SEL setAccessibilityIdentifierSelector = @selector(setAccessibilityIdentifier:);
+    NSString *identifier = RCTNSStringFromString(newViewProps.testId);
+    if ([self.accessibilityElement respondsToSelector:setAccessibilityIdentifierSelector]) {
+      UIView *accessibilityView = (UIView *)self.accessibilityElement;
+      accessibilityView.accessibilityIdentifier = identifier;
+    } else {
+      self.accessibilityIdentifier = identifier;
+    }
   }
 
   // `filter`
