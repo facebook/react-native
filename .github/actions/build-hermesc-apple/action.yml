@@ -9,7 +9,7 @@ inputs:
     description: The version of Hermes
   REACT_NATIVE_VERSION:
     required: True
-    description: The version of Hermes
+    description: The version of React Native
 runs:
   using: composite
   steps:
