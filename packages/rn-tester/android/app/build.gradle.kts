@@ -147,6 +147,11 @@ android {
     java.srcDirs(
         "$reactNativeDirPath/ReactCommon/react/nativemodule/samples/platform/android",
     )
+    res.setSrcDirs(
+        listOf(
+            "src/main/res",
+            "src/main/public_res",
+        ))
   }
 }
 

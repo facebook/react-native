@@ -12,6 +12,8 @@
 
 import type {LayoutEvent} from 'react-native/Libraries/Types/CoreEventTypes';
 
+import * as ReactNativeFeatureFlags from 'react-native/src/private/featureflags/ReactNativeFeatureFlags';
+
 const ImageCapInsetsExample = require('./ImageCapInsetsExample');
 const React = require('react');
 const {
@@ -609,9 +611,13 @@ class VectorDrawableExample extends React.Component<
   VectorDrawableExampleProps,
   VectorDrawableExampleState,
 > {
+  state: VectorDrawableExampleState = {};
+
   render(): React.Node {
+    const isEnabled = ReactNativeFeatureFlags.loadVectorDrawablesOnImages();
     return (
       <View style={styles.flex}>
+        <Text>Enabled: {isEnabled ? 'true' : 'false'}</Text>
         <Image source={{uri: 'ic_android'}} style={{height: 64, width: 64}} />
       </View>
     );
