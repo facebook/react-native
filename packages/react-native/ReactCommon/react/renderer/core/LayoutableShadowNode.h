@@ -122,7 +122,7 @@ class LayoutableShadowNode : public ShadowNode {
    * Returns offset which is applied to children's origin in
    * `LayoutableShadowNode::getRelativeLayoutMetrics` and
    * `LayoutableShadowNode::findNodeAtPoint`.
-   * i`ncludeTransform` is a flag to include the transform in the offset. This
+   * `includeTransform` is a flag to include the transform in the offset. This
    * is a rare case but needed for case where transform is involved for e.g. in
    * ScrollView.
    */
