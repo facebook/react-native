@@ -116,10 +116,10 @@ class ReactNativePodsUtils
             projects.each do |project|
                 project.build_configurations.each do |config|
                     # Using the un-qualified names means you can swap in different implementations, for example ccache
-                    config.build_settings["CC"] = config.build_settings["CC"] ? config.build_settings["CC"].gsub(/#{Regexp.escape(ccache_clang_sh)}/, '') : ""
-                    config.build_settings["LD"] = config.build_settings["LD"] ? config.build_settings["LD"].gsub(/#{Regexp.escape(ccache_clang_sh)}/, "") : ""
-                    config.build_settings["CXX"] = config.build_settings["CXX"] ? config.build_settings["CXX"].gsub(/#{Regexp.escape(ccache_clangpp_sh)}/, "") : ""
-                    config.build_settings["LDPLUSPLUS"] = config.build_settings["LDPLUSPLUS"] ? config.build_settings["LDPLUSPLUS"].gsub(/#{Regexp.escape(ccache_clangpp_sh)}/, "") : ""
+                    config.build_settings["CC"] = config.build_settings["CC"].gsub(/#{Regexp.escape(ccache_clang_sh)}/, '') if config.build_settings["CC"]
+                    config.build_settings["LD"] = config.build_settings["LD"].gsub(/#{Regexp.escape(ccache_clang_sh)}/, "") if config.build_settings["LD"]
+                    config.build_settings["CXX"] = config.build_settings["CXX"].gsub(/#{Regexp.escape(ccache_clangpp_sh)}/, "") if config.build_settings["CXX"]
+                    config.build_settings["LDPLUSPLUS"] = config.build_settings["LDPLUSPLUS"].gsub(/#{Regexp.escape(ccache_clangpp_sh)}/, "") if config.build_settings["LDPLUSPLUS"]
                 end
 
                 project.save()
