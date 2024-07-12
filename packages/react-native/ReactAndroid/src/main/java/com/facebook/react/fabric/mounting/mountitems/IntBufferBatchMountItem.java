@@ -95,9 +95,13 @@ final class IntBufferBatchMountItem implements BatchMountItem {
       int type = rawType & ~INSTRUCTION_FLAG_MULTIPLE;
       int numInstructions = ((rawType & INSTRUCTION_FLAG_MULTIPLE) != 0 ? mIntBuffer[i++] : 1);
 
+      String[] args = {"numInstructions", String.valueOf(numInstructions)};
+
       Systrace.beginSection(
           Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
-          "IntBufferBatchMountItem::mountInstructions::" + nameForInstructionString(type));
+          "IntBufferBatchMountItem::mountInstructions::" + nameForInstructionString(type),
+          args,
+          args.length);
       for (int k = 0; k < numInstructions; k++) {
         if (type == INSTRUCTION_CREATE) {
           String componentName = getFabricComponentName((String) mObjBuffer[j++]);
