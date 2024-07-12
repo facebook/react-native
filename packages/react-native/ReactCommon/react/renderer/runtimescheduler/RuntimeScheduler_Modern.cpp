@@ -24,7 +24,7 @@ std::chrono::milliseconds getResolvedTimeoutForIdleTask(
           timeoutForSchedulerPriority(SchedulerPriority::IdlePriority)
       ? timeoutForSchedulerPriority(SchedulerPriority::LowPriority) +
           customTimeout
-      : timeoutForSchedulerPriority(SchedulerPriority::IdlePriority);
+      : customTimeout;
 }
 } // namespace
 
