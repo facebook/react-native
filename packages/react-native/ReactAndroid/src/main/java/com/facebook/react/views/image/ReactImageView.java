@@ -496,6 +496,17 @@ public class ReactImageView extends GenericDraweeView {
             ? mFadeDurationMs
             : mImageSource.isResource() ? 0 : REMOTE_IMAGE_FADE_DURATION_MS);
 
+    Drawable drawable = getDrawableIfUnsupported(mImageSource);
+    if (drawable != null) {
+      maybeUpdateViewFromDrawable(drawable);
+    } else {
+      maybeUpdateViewFromRequest(doResize);
+    }
+
+    mIsDirty = false;
+  }
+
+  private void maybeUpdateViewFromRequest(boolean doResize) {
     List<Postprocessor> postprocessors = new LinkedList<>();
     if (mIterativeBoxBlurPostProcessor != null) {
       postprocessors.add(mIterativeBoxBlurPostProcessor);
@@ -553,15 +564,43 @@ public class ReactImageView extends GenericDraweeView {
     }
 
     if (mDownloadListener != null) {
-      hierarchy.setProgressBarImage(mDownloadListener);
+      getHierarchy().setProgressBarImage(mDownloadListener);
     }
 
     setController(mDraweeControllerBuilder.build());
-    mIsDirty = false;
 
     // Reset again so the DraweeControllerBuilder clears all it's references. Otherwise, this causes
     // a memory leak.
     mDraweeControllerBuilder.reset();
+  }
+
+  private void maybeUpdateViewFromDrawable(Drawable drawable) {
+    final boolean shouldNotify = mDownloadListener != null;
+    final EventDispatcher mEventDispatcher =
+        shouldNotify
+            ? UIManagerHelper.getEventDispatcherForReactTag((ReactContext) getContext(), getId())
+            : null;
+
+    if (mEventDispatcher != null) {
+      mEventDispatcher.dispatchEvent(
+          ImageLoadEvent.createLoadStartEvent(
+              UIManagerHelper.getSurfaceId(ReactImageView.this), getId()));
+    }
+
+    getHierarchy().setImage(drawable, 1, false);
+
+    if (mEventDispatcher != null) {
+      mEventDispatcher.dispatchEvent(
+          ImageLoadEvent.createLoadEvent(
+              UIManagerHelper.getSurfaceId(ReactImageView.this),
+              getId(),
+              mImageSource.getSource(),
+              getWidth(),
+              getHeight()));
+      mEventDispatcher.dispatchEvent(
+          ImageLoadEvent.createLoadEndEvent(
+              UIManagerHelper.getSurfaceId(ReactImageView.this), getId()));
+    }
   }
 
   // VisibleForTesting
@@ -633,6 +672,30 @@ public class ReactImageView extends GenericDraweeView {
     } else {
       return false;
     }
+  }
+
+  /**
+   * Checks if the provided ImageSource should not be requested through Fresco and instead loaded
+   * directly from the resources table. Fresco explicitly does not support a number of drawable
+   * types like VectorDrawable but they can still be mounted in the image hierarchy.
+   *
+   * @param imageSource
+   * @return drawable resource if Fresco cannot load the image, null otherwise
+   */
+  private @Nullable Drawable getDrawableIfUnsupported(ImageSource imageSource) {
+    if (!ReactNativeFeatureFlags.loadVectorDrawablesOnImages()) {
+      return null;
+    }
+    String resourceName = imageSource.getSource();
+    if (!imageSource.isResource() || resourceName == null) {
+      return null;
+    }
+    ResourceDrawableIdHelper drawableHelper = ResourceDrawableIdHelper.getInstance();
+    boolean isVectorDrawable = drawableHelper.isVectorDrawable(getContext(), resourceName);
+    if (!isVectorDrawable) {
+      return null;
+    }
+    return drawableHelper.getResourceDrawable(getContext(), resourceName);
   }
 
   @Nullable

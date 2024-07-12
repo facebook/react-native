@@ -601,6 +601,23 @@ class OnPartialLoadExample extends React.Component<
   }
 }
 
+type VectorDrawableExampleState = {||};
+
+type VectorDrawableExampleProps = $ReadOnly<{||}>;
+
+class VectorDrawableExample extends React.Component<
+  VectorDrawableExampleProps,
+  VectorDrawableExampleState,
+> {
+  render(): React.Node {
+    return (
+      <View style={styles.flex}>
+        <Image source={{uri: 'ic_android'}} style={{height: 64, width: 64}} />
+      </View>
+    );
+  }
+}
+
 const fullImage: ImageSource = {
   uri: IMAGE2,
 };
@@ -1510,5 +1527,14 @@ exports.examples = [
       return <OnPartialLoadExample />;
     },
     platform: 'ios',
+  },
+  {
+    title: 'Vector Drawable',
+    description:
+      'Demonstrating an example of loading a vector drawable asset by name',
+    render: function (): React.Node {
+      return <VectorDrawableExample />;
+    },
+    platform: 'android',
   },
 ];
