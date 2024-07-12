@@ -239,7 +239,7 @@ public class ReactEditText extends AppCompatEditText {
   @Override
   protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
     onContentSizeChange();
-    if (mSelectTextOnFocus) {
+    if (mSelectTextOnFocus && isFocused()) {
       // Explicitly call this method to select text when layout is drawn
       selectAll();
       // Prevent text on being selected for next layout pass
