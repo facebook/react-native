@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<03b78dd68d80c74a7be56aef64daf1e1>>
+ * @generated SignedSource<<5eff2e46b755c3d363ec5635831bf492>>
  */
 
 /**
@@ -29,6 +29,7 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
   private var enableCleanTextInputYogaNodeCache: Boolean? = null
   private var enableGranularShadowTreeStateReconciliationCache: Boolean? = null
   private var enableMicrotasksCache: Boolean? = null
+  private var enablePropsUpdateReconciliationAndroidCache: Boolean? = null
   private var enableSynchronousStateUpdatesCache: Boolean? = null
   private var enableUIConsistencyCache: Boolean? = null
   private var fetchImagesInViewPreallocationCache: Boolean? = null
@@ -127,6 +128,15 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enableMicrotasks()
       enableMicrotasksCache = cached
+    }
+    return cached
+  }
+
+  override fun enablePropsUpdateReconciliationAndroid(): Boolean {
+    var cached = enablePropsUpdateReconciliationAndroidCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.enablePropsUpdateReconciliationAndroid()
+      enablePropsUpdateReconciliationAndroidCache = cached
     }
     return cached
   }

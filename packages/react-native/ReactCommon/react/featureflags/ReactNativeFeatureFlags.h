@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a03bd61ef6b064d7f46a02478b8582e3>>
+ * @generated SignedSource<<f2c4d9731984436f95d178639074664d>>
  */
 
 /**
@@ -81,6 +81,11 @@ class ReactNativeFeatureFlags {
    * Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).
    */
   RN_EXPORT static bool enableMicrotasks();
+
+  /**
+   * When enabled, Android will receive prop updates based on the differences between the last rendered shadow node and the last committed shadow node.
+   */
+  RN_EXPORT static bool enablePropsUpdateReconciliationAndroid();
 
   /**
    * Dispatches state updates synchronously in Fabric (e.g.: updates the scroll position in the shadow tree synchronously from the main thread).

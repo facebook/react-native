@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<681628bb566e851c57e2831ac8f83f4f>>
+ * @generated SignedSource<<c1eb7ad33e38430f654dd69003cf5961>>
  * @flow strict-local
  */
 
@@ -32,6 +32,7 @@ export interface Spec extends TurboModule {
   +enableCleanTextInputYogaNode?: () => boolean;
   +enableGranularShadowTreeStateReconciliation?: () => boolean;
   +enableMicrotasks?: () => boolean;
+  +enablePropsUpdateReconciliationAndroid?: () => boolean;
   +enableSynchronousStateUpdates?: () => boolean;
   +enableUIConsistency?: () => boolean;
   +fetchImagesInViewPreallocation?: () => boolean;

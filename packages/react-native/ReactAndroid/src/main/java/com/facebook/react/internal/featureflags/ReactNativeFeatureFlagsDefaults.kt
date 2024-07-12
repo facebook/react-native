@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3e0a7901e165b338871f60c22f1615a9>>
+ * @generated SignedSource<<0fa4e9e2c5f3d96f729f5822783ce86f>>
  */
 
 /**
@@ -40,6 +40,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enableGranularShadowTreeStateReconciliation(): Boolean = false
 
   override fun enableMicrotasks(): Boolean = false
+
+  override fun enablePropsUpdateReconciliationAndroid(): Boolean = false
 
   override fun enableSynchronousStateUpdates(): Boolean = false
 

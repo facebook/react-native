@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<19c9de459447304ed033bdef70cd2cdf>>
+ * @generated SignedSource<<84bc0f2c1750310a2062ba947df45104>>
  */
 
 /**
@@ -55,6 +55,10 @@ bool ReactNativeFeatureFlags::enableGranularShadowTreeStateReconciliation() {
 
 bool ReactNativeFeatureFlags::enableMicrotasks() {
   return getAccessor().enableMicrotasks();
+}
+
+bool ReactNativeFeatureFlags::enablePropsUpdateReconciliationAndroid() {
+  return getAccessor().enablePropsUpdateReconciliationAndroid();
 }
 
 bool ReactNativeFeatureFlags::enableSynchronousStateUpdates() {
