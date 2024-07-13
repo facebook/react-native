@@ -221,6 +221,11 @@ const definitions: FeatureFlagDefinitions = {
       defaultValue: true,
       description: 'Enables use of setNativeProps in JS driven animations.',
     },
+    shouldUseSetNativePropsInNativeAnimationsInFabric: {
+      defaultValue: false,
+      description:
+        'Enables use of setNativeProps in Native driven animations in Fabric.',
+    },
     useRefsForTextInputState: {
       defaultValue: false,
       description:

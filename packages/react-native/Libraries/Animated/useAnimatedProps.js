@@ -49,6 +49,8 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
   );
   const useNativePropsInFabric =
     ReactNativeFeatureFlags.shouldUseSetNativePropsInFabric();
+  const useSetNativePropsInNativeAnimationsInFabric =
+    ReactNativeFeatureFlags.shouldUseSetNativePropsInNativeAnimationsInFabric();
   useAnimatedPropsLifecycle(node);
 
   // TODO: This "effect" does three things:
@@ -87,7 +89,12 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
           if (isFabricNode) {
             // Call `scheduleUpdate` to synchronise Fiber and Shadow tree.
             // Must not be called in Paper.
-            scheduleUpdate();
+            if (useSetNativePropsInNativeAnimationsInFabric) {
+              // $FlowFixMe[incompatible-use]
+              instance.setNativeProps(node.__getAnimatedValue());
+            } else {
+              scheduleUpdate();
+            }
           }
           return;
         }
@@ -157,7 +164,12 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
         }
       };
     },
-    [props, node, useNativePropsInFabric],
+    [
+      node,
+      useNativePropsInFabric,
+      useSetNativePropsInNativeAnimationsInFabric,
+      props,
+    ],
   );
   const callbackRef = useRefEffect<TInstance>(refEffect);
 
