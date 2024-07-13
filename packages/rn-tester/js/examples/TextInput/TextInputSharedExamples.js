@@ -415,6 +415,7 @@ class TextEventsExample extends React.Component<{...}, $FlowFixMeState> {
           onKeyPress={event =>
             this.updateText('onKeyPress key: ' + event.nativeEvent.key)
           }
+          onPaste={() => this.updateText('onPaste')}
           style={styles.singleLine}
         />
         <Text style={styles.eventLabel}>

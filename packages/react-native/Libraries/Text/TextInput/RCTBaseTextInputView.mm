@@ -543,6 +543,14 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
   });
 }
 
+- (void)textInputDidPaste
+{
+  if (!_onPaste) {
+    return;
+  }
+  _onPaste(@{@"target" : self.reactTag});
+}
+
 - (void)updateLocalData
 {
   [self enforceTextAttributesIfNeeded];

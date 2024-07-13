@@ -223,6 +223,7 @@
 {
   _textWasPasted = YES;
   [super paste:sender];
+  [_textInputDelegateAdapter didPaste];
 }
 
 #pragma mark - Layout

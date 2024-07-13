@@ -85,6 +85,9 @@ const RCTTextInputViewConfig = {
     topContentSizeChange: {
       registrationName: 'onContentSizeChange',
     },
+    topPaste: {
+      registrationName: 'onPaste',
+    },
   },
   validAttributes: {
     fontSize: true,
@@ -150,6 +153,7 @@ const RCTTextInputViewConfig = {
       onSelectionChange: true,
       onContentSizeChange: true,
       onScroll: true,
+      onPaste: true,
     }),
   },
 };

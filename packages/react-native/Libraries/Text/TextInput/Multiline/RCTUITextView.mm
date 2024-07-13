@@ -173,6 +173,7 @@ static UIColor *defaultPlaceholderColor(void)
 {
   _textWasPasted = YES;
   [super paste:sender];
+  [_textInputDelegateAdapter didPaste];
 }
 
 // Turn off scroll animation to fix flaky scrolling.

@@ -109,6 +109,7 @@ public class ReactEditText extends AppCompatEditText {
   private @Nullable SelectionWatcher mSelectionWatcher;
   private @Nullable ContentSizeWatcher mContentSizeWatcher;
   private @Nullable ScrollWatcher mScrollWatcher;
+  private @Nullable PasteWatcher mPasteWatcher;
   private InternalKeyListener mKeyListener;
   private boolean mDetectScrollMovement = false;
   private boolean mOnKeyPress = false;
@@ -154,6 +155,7 @@ public class ReactEditText extends AppCompatEditText {
       mKeyListener = new InternalKeyListener();
     }
     mScrollWatcher = null;
+    mPasteWatcher = null;
     mTextAttributes = new TextAttributes();
 
     applyTextAttributes();
@@ -321,8 +323,13 @@ public class ReactEditText extends AppCompatEditText {
    */
   @Override
   public boolean onTextContextMenuItem(int id) {
-    if (id == android.R.id.paste) {
+    if (id == android.R.id.paste || id == android.R.id.pasteAsPlainText) {
       id = android.R.id.pasteAsPlainText;
+      boolean actionPerformed = super.onTextContextMenuItem(id);
+      if (mPasteWatcher != null) {
+        mPasteWatcher.onPaste();
+      }
+      return actionPerformed;
     }
     return super.onTextContextMenuItem(id);
   }
@@ -382,6 +389,10 @@ public class ReactEditText extends AppCompatEditText {
 
   public void setScrollWatcher(@Nullable ScrollWatcher scrollWatcher) {
     mScrollWatcher = scrollWatcher;
+  }
+
+  public void setPasteWatcher(@Nullable PasteWatcher pasteWatcher) {
+    mPasteWatcher = pasteWatcher;
   }
 
   /**

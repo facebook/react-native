@@ -456,6 +456,11 @@ export type NativeProps = $ReadOnly<{|
   >,
 
   /**
+   * Callback that is called when the clipboard content is pasted.
+   */
+  onPaste?: ?DirectEventHandler<$ReadOnly<{|target: Int32|}>>,
+
+  /**
    * The string that will be rendered before text input has been entered.
    */
   placeholder?: ?Stringish,
@@ -658,6 +663,9 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig = {
     topScroll: {
       registrationName: 'onScroll',
     },
+    topPaste: {
+      registrationName: 'onPaste',
+    },
   },
   validAttributes: {
     maxFontSizeMultiplier: true,
@@ -712,6 +720,7 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig = {
     textBreakStrategy: true,
     onScroll: true,
     onContentSizeChange: true,
+    onPaste: true,
     disableFullscreenUI: true,
     includeFontPadding: true,
     fontWeight: true,

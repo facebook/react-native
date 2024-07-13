@@ -802,6 +802,11 @@ export interface TextInputProps
     | undefined;
 
   /**
+   * Callback that is called when the clipboard content is pasted.
+   */
+  onPaste?: ((e: NativeSyntheticEvent<TargetedEvent>) => void) | undefined;
+
+  /**
    * The string that will be rendered before text input has been entered
    */
   placeholder?: string | undefined;

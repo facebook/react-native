@@ -404,6 +404,13 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
   }
 }
 
+- (void)textInputDidPaste
+{
+  if (_eventEmitter) {
+    static_cast<const TextInputEventEmitter &>(*_eventEmitter).onPaste();
+  }
+}
+
 #pragma mark - RCTBackedTextInputDelegate (UIScrollViewDelegate)
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView

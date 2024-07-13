@@ -172,6 +172,10 @@ void TextInputEventEmitter::onScroll(const Metrics& textInputMetrics) const {
   });
 }
 
+void TextInputEventEmitter::onPaste() const {
+  dispatchEvent("onPaste");
+}
+
 void TextInputEventEmitter::dispatchTextInputEvent(
     const std::string& name,
     const Metrics& textInputMetrics) const {
