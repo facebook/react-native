@@ -51,11 +51,11 @@ class FallbackRuntimeAgentDelegate : public RuntimeAgentDelegate {
   void sendFallbackRuntimeWarning();
 
   /**
-   * Send a simple Log.entryAdded notification with the given
-   * \param text. You must ensure that the frontend has enabled Log
-   * notifications (using Log.enable) prior to calling this function. In Chrome
-   * DevTools, the message will appear in the Console tab along with regular
-   * console messages.
+   * Send a simple Log.entryAdded notification with the given text.
+   * You must ensure that the frontend has enabled Log notifications (using
+   * Log.enable) prior to calling this function. In Chrome DevTools, the message
+   * will appear in the Console tab along with regular console messages.
+   * \param text The text to send.
    */
   void sendWarningLogEntry(std::string_view text);
 
