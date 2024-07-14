@@ -31,7 +31,7 @@ const Platform: PlatformType = {
       major: number,
       minor: number,
       patch: number,
-      prerelease: ?number,
+      prerelease: ?string,
     |},
     Version: number,
     Release: string,

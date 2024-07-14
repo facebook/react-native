@@ -67,7 +67,9 @@ public class JavaOnlyMap implements ReadableMap, WritableMap {
     return res;
   }
 
-  /** @param keysAndValues keys and values, interleaved */
+  /**
+   * @param keysAndValues keys and values, interleaved
+   */
   private JavaOnlyMap(Object... keysAndValues) {
     if (keysAndValues.length % 2 != 0) {
       throw new IllegalArgumentException("You must provide the same number of keys and values");

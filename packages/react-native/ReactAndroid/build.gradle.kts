@@ -99,8 +99,6 @@ val preparePrefab by
               PrefabPreprocessingEntry(
                   "react_newarchdefaults", Pair("src/main/jni/react/newarchdefaults", "")),
               PrefabPreprocessingEntry(
-                  "react_cxxreactpackage", Pair("src/main/jni/react/runtime/cxxreactpackage", "")),
-              PrefabPreprocessingEntry(
                   "react_render_animations",
                   Pair("../ReactCommon/react/renderer/animations/", "react/renderer/animations/")),
               PrefabPreprocessingEntry(
@@ -112,6 +110,22 @@ val preparePrefab by
                       Pair("../ReactCommon/react/renderer/graphics/", "react/renderer/graphics/"),
                       Pair("../ReactCommon/react/renderer/graphics/platform/android/", ""),
                   )),
+              PrefabPreprocessingEntry(
+                  "react_render_consistency",
+                  Pair(
+                      "../ReactCommon/react/renderer/consistency/", "react/renderer/consistency/")),
+              PrefabPreprocessingEntry(
+                  "react_featureflags",
+                  Pair("../ReactCommon/react/featureflags/", "react/featureflags/")),
+              PrefabPreprocessingEntry(
+                  "react_performance_timeline",
+                  Pair(
+                      "../ReactCommon/react/performance/timeline/", "react/performance/timeline/")),
+              PrefabPreprocessingEntry(
+                  "react_render_observers_events",
+                  Pair(
+                      "../ReactCommon/react/renderer/observers/events/",
+                      "react/renderer/observers/events/")),
               PrefabPreprocessingEntry(
                   "rrc_root",
                   Pair(
@@ -127,14 +141,24 @@ val preparePrefab by
                   )),
               PrefabPreprocessingEntry(
                   "rrc_text",
-                  Pair(
-                      "../ReactCommon/react/renderer/components/text/",
-                      "react/renderer/components/text/")),
+                  listOf(
+                      Pair(
+                          "../ReactCommon/react/renderer/components/text/",
+                          "react/renderer/components/text/"),
+                      Pair(
+                          "../ReactCommon/react/renderer/attributedstring",
+                          "react/renderer/attributedstring"),
+                  )),
               PrefabPreprocessingEntry(
                   "rrc_textinput",
-                  Pair(
-                      "../ReactCommon/react/renderer/components/textinput/",
-                      "react/renderer/components/androidtextinput/")),
+                  listOf(
+                      Pair(
+                          "../ReactCommon/react/renderer/components/textinput/",
+                          "react/renderer/components/textinput/"),
+                      Pair(
+                          "../ReactCommon/react/renderer/components/textinput/platform/android/",
+                          ""),
+                  )),
               PrefabPreprocessingEntry(
                   "rrc_legacyviewmanagerinterop",
                   Pair(
@@ -145,6 +169,8 @@ val preparePrefab by
                   "glog", Pair(File(buildDir, "third-party-ndk/glog/exported/").absolutePath, "")),
               PrefabPreprocessingEntry(
                   "fabricjni", Pair("src/main/jni/react/fabric", "react/fabric/")),
+              PrefabPreprocessingEntry(
+                  "mapbufferjni", Pair("src/main/jni/react/mapbuffer", "react/mapbuffer/")),
               PrefabPreprocessingEntry(
                   "react_render_mapbuffer",
                   Pair("../ReactCommon/react/renderer/mapbuffer/", "react/renderer/mapbuffer/")),
@@ -205,6 +231,8 @@ val preparePrefab by
                       Pair("../ReactCommon/react/debug/", "react/debug/"),
                       Pair("../ReactCommon/react/utils/", "react/utils/"),
                       Pair("src/main/jni/react/jni", "react/jni/"),
+                      // From: react_cxxreactpackage
+                      Pair("src/main/jni/react/runtime/cxxreactpackage", ""),
                   )),
               PrefabPreprocessingEntry(
                   "react_utils",
@@ -531,7 +559,6 @@ android {
         targets(
             "jsijniprofiler",
             "reactnativeblob",
-            "reactperfloggerjni",
             "bridgeless",
             "rninstance",
             "hermesinstancejni",
@@ -547,13 +574,16 @@ android {
             "react_codegen_rncore",
             "react_debug",
             "react_featureflags",
+            "react_performance_timeline",
             "react_utils",
             "react_render_componentregistry",
             "react_newarchdefaults",
-            "react_cxxreactpackage",
             "react_render_animations",
             "react_render_core",
+            "react_render_consistency",
+            "react_render_dom",
             "react_render_graphics",
+            "react_render_observers_events",
             "rrc_image",
             "rrc_root",
             "rrc_view",
@@ -563,6 +593,7 @@ android {
             "jsi",
             "glog",
             "fabricjni",
+            "mapbufferjni",
             "react_render_mapbuffer",
             "react_render_textlayoutmanager",
             "yoga",
@@ -570,6 +601,7 @@ android {
             "react_nativemodule_core",
             "react_render_imagemanager",
             "react_render_uimanager",
+            "react_render_uimanager_consistency",
             "react_render_scheduler",
             "react_render_mounting",
             "hermes_executor",
@@ -621,6 +653,7 @@ android {
         listOf(
             "src/main/res/devsupport",
             "src/main/res/shell",
+            "src/main/res/views/alert",
             "src/main/res/views/modal",
             "src/main/res/views/uimanager"))
     java.exclude("com/facebook/annotationprocessors")
@@ -669,9 +702,6 @@ android {
     create("react_newarchdefaults") {
       headers = File(prefabHeadersDir, "react_newarchdefaults").absolutePath
     }
-    create("react_cxxreactpackage") {
-      headers = File(prefabHeadersDir, "react_cxxreactpackage").absolutePath
-    }
     create("react_render_animations") {
       headers = File(prefabHeadersDir, "react_render_animations").absolutePath
     }
@@ -680,6 +710,18 @@ android {
     }
     create("react_render_graphics") {
       headers = File(prefabHeadersDir, "react_render_graphics").absolutePath
+    }
+    create("react_render_consistency") {
+      headers = File(prefabHeadersDir, "react_render_consistency").absolutePath
+    }
+    create("react_featureflags") {
+      headers = File(prefabHeadersDir, "react_featureflags").absolutePath
+    }
+    create("react_performance_timeline") {
+      headers = File(prefabHeadersDir, "react_performance_timeline").absolutePath
+    }
+    create("react_render_observers_events") {
+      headers = File(prefabHeadersDir, "react_render_observers_events").absolutePath
     }
     create("rrc_image") { headers = File(prefabHeadersDir, "rrc_image").absolutePath }
     create("rrc_root") { headers = File(prefabHeadersDir, "rrc_root").absolutePath }
@@ -692,6 +734,7 @@ android {
     create("jsi") { headers = File(prefabHeadersDir, "jsi").absolutePath }
     create("glog") { headers = File(prefabHeadersDir, "glog").absolutePath }
     create("fabricjni") { headers = File(prefabHeadersDir, "fabricjni").absolutePath }
+    create("mapbufferjni") { headers = File(prefabHeadersDir, "mapbufferjni").absolutePath }
     create("react_render_mapbuffer") {
       headers = File(prefabHeadersDir, "react_render_mapbuffer").absolutePath
     }
@@ -780,7 +823,15 @@ react {
 // module to apply the plugin to, so it's codegenDir and reactNativeDir won't be evaluated.
 if (rootProject.name == "react-native-build-from-source") {
   rootProject.extensions.getByType(PrivateReactExtension::class.java).apply {
-    codegenDir = file("$rootDir/../@react-native/codegen")
+    // We try to guess where codegen lives. Generally is inside
+    // node_modules/@react-native/codegen. If the file is not existing, we
+    // fallback to ../react-native-codegen (used for hello-world app).
+    codegenDir =
+        if (file("$rootDir/../@react-native/codegen").exists()) {
+          file("$rootDir/../@react-native/codegen")
+        } else {
+          file("$rootDir/../react-native-codegen")
+        }
     reactNativeDir = file("$rootDir")
   }
 }

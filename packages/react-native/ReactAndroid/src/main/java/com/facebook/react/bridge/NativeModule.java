@@ -12,6 +12,11 @@ import com.facebook.react.common.annotations.DeprecatedInNewArchitecture;
 import com.facebook.react.common.annotations.StableReactNativeAPI;
 import javax.annotation.Nonnull;
 
+/*
+ * IMPORTANT: Do not migrate this interface to Kotlin as you'll create a breaking change for React Native
+ * libraries written in Kotlin.
+ */
+
 /**
  * A native module whose API can be provided to JS catalyst instances. {@link NativeModule}s whose
  * implementation is written in Java should extend {@link BaseJavaModule} or {@link
@@ -27,6 +32,8 @@ public interface NativeModule {
    * @return the name of this module. This will be the name used to {@code require()} this module
    *     from javascript.
    */
+  // IMPORTANT: Do not migrate this interface to Kotlin as you'll create a breaking change
+  // for React Native libraries written in Kotlin
   @Nonnull
   String getName();
 

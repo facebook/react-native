@@ -7,16 +7,16 @@
 
 #pragma once
 
-#include <react/bridging/Convert.h>
-
-#include <ReactCommon/CallInvoker.h>
 #include <jsi/jsi.h>
+#include <react/bridging/Convert.h>
 
 #include <cstdint>
 #include <memory>
 #include <type_traits>
 
 namespace facebook::react {
+
+class CallInvoker;
 
 template <typename T, typename = void>
 struct Bridging;

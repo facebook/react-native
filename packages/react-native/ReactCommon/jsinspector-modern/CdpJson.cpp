@@ -40,8 +40,8 @@ std::string jsonError(
   }
   return folly::toJson(
       (id ? folly::dynamic::object("id", *id)
-          : folly::dynamic::object(
-                "id", nullptr))("error", std::move(dynamicError)));
+          : folly::dynamic::object("id", nullptr))(
+          "error", std::move(dynamicError)));
 }
 
 std::string jsonResult(RequestId id, const folly::dynamic& result) {
@@ -56,6 +56,17 @@ std::string jsonNotification(
     dynamicNotification("params", *params);
   }
   return folly::toJson(std::move(dynamicNotification));
+}
+
+std::string jsonRequest(
+    RequestId id,
+    std::string_view method,
+    std::optional<folly::dynamic> params) {
+  auto dynamicRequest = folly::dynamic::object("id", id)("method", method);
+  if (params) {
+    dynamicRequest("params", *params);
+  }
+  return folly::toJson(std::move(dynamicRequest));
 }
 
 } // namespace facebook::react::jsinspector_modern::cdp

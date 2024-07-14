@@ -83,6 +83,27 @@ runTests() {
       "${SKIPPED_TESTS[@]}"
 }
 
+buildForTesting() {
+  # shellcheck disable=SC1091
+  source "$ROOT/scripts/.tests.env"
+  xcodebuild build-for-testing \
+    -workspace RNTesterPods.xcworkspace \
+    -scheme RNTester \
+    -sdk iphonesimulator
+}
+
+runTestsOnly() {
+  # shellcheck disable=SC1091
+  source "$ROOT/scripts/.tests.env"
+  echo "[Testing] Running tests on $IOS_DEVICE for OS $IOS_TARGET_OS"
+  xcodebuild test \
+    -workspace RNTesterPods.xcworkspace \
+    -scheme RNTester \
+    -sdk iphonesimulator \
+    -destination "platform=iOS Simulator,name=$IOS_DEVICE,OS=$IOS_TARGET_OS" \
+      "${SKIPPED_TESTS[@]}"
+}
+
 buildProject() {
   xcodebuild build \
     -workspace RNTesterPods.xcworkspace \
@@ -133,13 +154,33 @@ main() {
     preloadBundlesRNTester
     preloadBundlesRNIntegrationTests
 
+    buildForTesting
+
     # Build and run tests.
-    if [ -x "$(command -v xcbeautify)" ]; then
-      runTests | xcbeautifyFormat && exit "${PIPESTATUS[0]}"
-    else
-      echo 'Warning: xcbeautify is not installed. Install xcbeautify to generate JUnit reports.'
-      runTests
-    fi
+    RESULT=-1
+    MAX_RETRY=3
+    for ((i=1; i<=MAX_RETRY; i++))
+    do
+      echo "Attempt #$i of running tests..."
+      if [ -x "$(command -v xcbeautify)" ]; then
+        runTests | xcbeautifyFormat && exit "${PIPESTATUS[0]}"
+        RESULT="$?"
+      else
+        echo 'Warning: xcbeautify is not installed. Install xcbeautify to generate JUnit reports.'
+        runTests
+        RESULT="$?"
+      fi
+
+      if [[ "$RESULT" == 0 ]]; then
+        # Successful tests!
+        echo "Test completed successfully!"
+        exit 0
+      fi
+    done
+
+    echo "Test Failed with code $RESULT!"
+    exit $RESULT
+
   else
     # Build without running tests.
     if [ -x "$(command -v xcbeautify)" ]; then

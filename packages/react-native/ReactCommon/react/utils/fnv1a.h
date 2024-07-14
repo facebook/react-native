@@ -27,7 +27,7 @@ constexpr uint32_t fnv1a(std::string_view string) noexcept {
 
   uint32_t hash = offset_basis;
 
-  for (auto const& c : string) {
+  for (const auto& c : string) {
     hash ^= static_cast<int8_t>(CharTransformT{}(c));
     // Using shifts and adds instead of multiplication with a prime number.
     // This is faster when compiled with optimizations.
@@ -36,6 +36,19 @@ constexpr uint32_t fnv1a(std::string_view string) noexcept {
   }
 
   return hash;
+}
+
+constexpr uint32_t fnv1aLowercase(std::string_view string) {
+  struct LowerCaseTransform {
+    constexpr char operator()(char c) const {
+      if (c >= 'A' && c <= 'Z') {
+        return c + static_cast<char>('a' - 'A');
+      }
+      return c;
+    }
+  };
+
+  return fnv1a<LowerCaseTransform>(string);
 }
 
 } // namespace facebook::react

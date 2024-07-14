@@ -21,7 +21,7 @@
 
 // Get hash at compile-time. sizeof(str) - 1 == strlen
 #define CONSTEXPR_RAW_PROPS_KEY_HASH(s)                   \
-  ([]() constexpr->RawPropsPropNameHash {                 \
+  ([]() constexpr -> RawPropsPropNameHash {               \
     CLANG_PRAGMA("clang diagnostic push")                 \
     CLANG_PRAGMA("clang diagnostic ignored \"-Wshadow\"") \
     return RAW_PROPS_KEY_HASH(s);                         \
@@ -110,15 +110,19 @@
       struct, blockStart, prefix "BlockStart" suffix, rawValue)
 
 // Rebuild a type that contains multiple fields from a single field value
-#define REBUILD_FIELD_SWITCH_CASE(                  \
-    defaults, rawValue, property, field, fieldName) \
-  case CONSTEXPR_RAW_PROPS_KEY_HASH(fieldName): {   \
-    if ((rawValue).hasValue()) {                    \
-      decltype((defaults).field) res;               \
-      fromRawValue(context, rawValue, res);         \
-      (property).field = res;                       \
-    } else {                                        \
-      (property).field = (defaults).field;          \
-    }                                               \
-    return;                                         \
+#define REBUILD_FIELD_SWITCH_CASE(                                 \
+    defaults, rawValue, property, field, fieldName)                \
+  case CONSTEXPR_RAW_PROPS_KEY_HASH(fieldName): {                  \
+    if ((rawValue).hasValue()) [[likely]] {                        \
+      try {                                                        \
+        fromRawValue(context, rawValue, (property).field);         \
+      } catch (const std::exception& e) {                          \
+        LOG(ERROR) << "Error while converting prop '" << fieldName \
+                   << "': " << e.what();                           \
+        (property).field = (defaults).field;                       \
+      }                                                            \
+    } else {                                                       \
+      (property).field = (defaults).field;                         \
+    }                                                              \
+    return;                                                        \
   }

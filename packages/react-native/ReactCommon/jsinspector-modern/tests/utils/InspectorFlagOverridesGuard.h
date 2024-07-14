@@ -9,6 +9,8 @@
 
 #include <react/featureflags/ReactNativeFeatureFlagsDefaults.h>
 
+#include <optional>
+
 namespace facebook::react::jsinspector_modern {
 
 /**
@@ -17,8 +19,7 @@ namespace facebook::react::jsinspector_modern {
 struct InspectorFlagOverrides {
   // NOTE: Keep these entries in sync with ReactNativeFeatureFlagsOverrides in
   // the implementation file.
-  bool enableCxxInspectorPackagerConnection = false;
-  bool enableModernCDPRegistry = false;
+  std::optional<bool> fuseboxEnabledDebug;
 };
 
 /**

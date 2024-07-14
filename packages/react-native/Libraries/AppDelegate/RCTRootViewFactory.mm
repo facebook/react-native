@@ -58,8 +58,22 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
                turboModuleEnabled:(BOOL)turboModuleEnabled
                 bridgelessEnabled:(BOOL)bridgelessEnabled
 {
+  return [self
+      initWithBundleURLBlock:^{
+        return bundleURL;
+      }
+              newArchEnabled:newArchEnabled
+          turboModuleEnabled:turboModuleEnabled
+           bridgelessEnabled:bridgelessEnabled];
+}
+
+- (instancetype)initWithBundleURLBlock:(RCTBundleURLBlock)bundleURLBlock
+                        newArchEnabled:(BOOL)newArchEnabled
+                    turboModuleEnabled:(BOOL)turboModuleEnabled
+                     bridgelessEnabled:(BOOL)bridgelessEnabled
+{
   if (self = [super init]) {
-    _bundleURL = bundleURL;
+    _bundleURLBlock = bundleURLBlock;
     _fabricEnabled = newArchEnabled;
     _turboModuleEnabled = turboModuleEnabled;
     _bridgelessEnabled = bridgelessEnabled;
@@ -69,7 +83,7 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
 
 @end
 
-@interface RCTRootViewFactory () <RCTContextContainerHandling> {
+@interface RCTRootViewFactory () <RCTContextContainerHandling, RCTHostDelegate> {
   std::shared_ptr<const facebook::react::ReactNativeConfig> _reactNativeConfig;
   facebook::react::ContextContainer::Shared _contextContainer;
 }
@@ -81,7 +95,6 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
 @end
 
 @implementation RCTRootViewFactory {
-  RCTHost *_reactHost;
   RCTRootViewFactoryConfiguration *_configuration;
   __weak id<RCTTurboModuleManagerDelegate> _turboModuleManagerDelegate;
 }
@@ -91,12 +104,17 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
 {
   if (self = [super init]) {
     _configuration = configuration;
-    _contextContainer = std::make_shared<facebook::react::ContextContainer const>();
-    _reactNativeConfig = std::make_shared<facebook::react::EmptyReactNativeConfig const>();
+    _contextContainer = std::make_shared<const facebook::react::ContextContainer>();
+    _reactNativeConfig = std::make_shared<const facebook::react::EmptyReactNativeConfig>();
     _contextContainer->insert("ReactNativeConfig", _reactNativeConfig);
     _turboModuleManagerDelegate = turboModuleManagerDelegate;
   }
   return self;
+}
+
+- (instancetype)initWithConfiguration:(RCTRootViewFactoryConfiguration *)configuration
+{
+  return [self initWithConfiguration:configuration andTurboModuleManagerDelegate:nil];
 }
 
 - (UIView *)viewWithModuleName:(NSString *)moduleName initialProperties:(NSDictionary *)initialProperties
@@ -123,26 +141,34 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
     RCTEnableTurboModuleInterop(YES);
     RCTEnableTurboModuleInteropBridgeProxy(YES);
 
-    [self createReactHostIfNeeded];
+    [self createReactHostIfNeeded:launchOptions];
 
-    RCTFabricSurface *surface = [_reactHost createSurfaceWithModuleName:moduleName initialProperties:initProps];
+    RCTFabricSurface *surface = [self.reactHost createSurfaceWithModuleName:moduleName initialProperties:initProps];
 
     RCTSurfaceHostingProxyRootView *surfaceHostingProxyRootView = [[RCTSurfaceHostingProxyRootView alloc]
         initWithSurface:surface
         sizeMeasureMode:RCTSurfaceSizeMeasureModeWidthExact | RCTSurfaceSizeMeasureModeHeightExact];
 
     surfaceHostingProxyRootView.backgroundColor = [UIColor systemBackgroundColor];
+    if (self->_configuration.customizeRootView != nil) {
+      self->_configuration.customizeRootView(surfaceHostingProxyRootView);
+    }
     return surfaceHostingProxyRootView;
   }
 
   [self createBridgeIfNeeded:launchOptions];
   [self createBridgeAdapterIfNeeded];
 
+  UIView *rootView;
   if (self->_configuration.createRootViewWithBridge != nil) {
-    return self->_configuration.createRootViewWithBridge(self.bridge, moduleName, initProps);
+    rootView = self->_configuration.createRootViewWithBridge(self.bridge, moduleName, initProps);
+  } else {
+    rootView = [self createRootViewWithBridge:self.bridge moduleName:moduleName initProps:initProps];
   }
-
-  return [self createRootViewWithBridge:self.bridge moduleName:moduleName initProps:initProps];
+  if (self->_configuration.customizeRootView != nil) {
+    self->_configuration.customizeRootView(rootView);
+  }
+  return rootView;
 }
 
 - (RCTBridge *)createBridgeWithDelegate:(id<RCTBridgeDelegate>)delegate launchOptions:(NSDictionary *)launchOptions
@@ -160,6 +186,26 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
   rootView.backgroundColor = [UIColor systemBackgroundColor];
 
   return rootView;
+}
+
+#pragma mark - RCTHostDelegate
+
+- (void)hostDidStart:(RCTHost *)host
+{
+  if (self->_configuration.hostDidStartBlock) {
+    self->_configuration.hostDidStartBlock(host);
+  }
+}
+
+- (void)host:(RCTHost *)host
+    didReceiveJSErrorStack:(NSArray<NSDictionary<NSString *, id> *> *)stack
+                   message:(NSString *)message
+               exceptionId:(NSUInteger)exceptionId
+                   isFatal:(BOOL)isFatal
+{
+  if (self->_configuration.hostDidReceiveJSErrorStackBlock) {
+    self->_configuration.hostDidReceiveJSErrorStackBlock(host, stack, message, exceptionId, isFatal);
+  }
 }
 
 #pragma mark - RCTCxxBridgeDelegate
@@ -207,24 +253,31 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
 
 #pragma mark - New Arch Utilities
 
-- (void)createReactHostIfNeeded
+- (void)createReactHostIfNeeded:(NSDictionary *)launchOptions
 {
-  if (_reactHost) {
+  if (self.reactHost) {
     return;
   }
+  self.reactHost = [self createReactHost:launchOptions];
+}
 
+- (RCTHost *)createReactHost:(NSDictionary *)launchOptions
+{
   __weak __typeof(self) weakSelf = self;
-  _reactHost = [[RCTHost alloc] initWithBundleURL:[self bundleURL]
-                                     hostDelegate:nil
-                       turboModuleManagerDelegate:_turboModuleManagerDelegate
-                                 jsEngineProvider:^std::shared_ptr<facebook::react::JSRuntimeFactory>() {
-                                   return [weakSelf createJSRuntimeFactory];
-                                 }];
-  [_reactHost setBundleURLProvider:^NSURL *() {
+  RCTHost *reactHost =
+      [[RCTHost alloc] initWithBundleURLProvider:self->_configuration.bundleURLBlock
+                                    hostDelegate:self
+                      turboModuleManagerDelegate:_turboModuleManagerDelegate
+                                jsEngineProvider:^std::shared_ptr<facebook::react::JSRuntimeFactory>() {
+                                  return [weakSelf createJSRuntimeFactory];
+                                }
+                                   launchOptions:launchOptions];
+  [reactHost setBundleURLProvider:^NSURL *() {
     return [weakSelf bundleURL];
   }];
-  [_reactHost setContextContainerHandler:self];
-  [_reactHost start];
+  [reactHost setContextContainerHandler:self];
+  [reactHost start];
+  return reactHost;
 }
 
 - (std::shared_ptr<facebook::react::JSRuntimeFactory>)createJSRuntimeFactory
@@ -241,14 +294,41 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
   contextContainer->insert("ReactNativeConfig", _reactNativeConfig);
 }
 
+- (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge
+{
+  if (_configuration.extraModulesForBridge != nil) {
+    return _configuration.extraModulesForBridge(bridge);
+  }
+  return nil;
+}
+
+- (NSDictionary<NSString *, Class> *)extraLazyModuleClassesForBridge:(RCTBridge *)bridge
+{
+  if (_configuration.extraLazyModuleClassesForBridge != nil) {
+    return _configuration.extraLazyModuleClassesForBridge(bridge);
+  }
+  return nil;
+}
+
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
 {
+  if (_configuration.sourceURLForBridge != nil) {
+    return _configuration.sourceURLForBridge(bridge);
+  }
   return [self bundleURL];
+}
+
+- (BOOL)bridge:(RCTBridge *)bridge didNotFindModule:(NSString *)moduleName
+{
+  if (_configuration.bridgeDidNotFindModule != nil) {
+    return _configuration.bridgeDidNotFindModule(bridge, moduleName);
+  }
+  return NO;
 }
 
 - (NSURL *)bundleURL
 {
-  return self->_configuration.bundleURL;
+  return self->_configuration.bundleURLBlock();
 }
 
 @end

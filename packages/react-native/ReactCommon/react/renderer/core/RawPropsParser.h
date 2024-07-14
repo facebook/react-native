@@ -73,15 +73,6 @@ class RawPropsParser final {
   const RawValue* at(const RawProps& rawProps, const RawPropsKey& key)
       const noexcept;
 
-  /**
-   * To be used by RawProps only. Value iterator functions.
-   */
-  void iterateOverValues(
-      const RawProps& rawProps,
-      const std::function<
-          void(RawPropsPropNameHash, const char*, RawValue const&)>& visit)
-      const;
-
   mutable std::vector<RawPropsKey> keys_{};
   mutable RawPropsKeyMap nameToIndex_{};
   mutable bool ready_{false};

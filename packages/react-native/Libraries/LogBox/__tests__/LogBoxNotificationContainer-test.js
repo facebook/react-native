@@ -18,9 +18,16 @@ const {
 } = require('../LogBoxInspectorContainer');
 const React = require('react');
 
+// Mock `LogBoxInspector` because we are interested in snapshotting the behavior
+// of `LogBoxNotificationContainer`, not `LogBoxInspector`.
+jest.mock('../UI/LogBoxInspector', () => ({
+  __esModule: true,
+  default: 'LogBoxInspector',
+}));
+
 describe('LogBoxNotificationContainer', () => {
-  it('should render inspector with logs, even when disabled', () => {
-    const output = render.shallowRender(
+  it('should render inspector with logs, even when disabled', async () => {
+    const output = await render.create(
       <LogBoxInspectorContainer
         isDisabled
         selectedLogIndex={-1}

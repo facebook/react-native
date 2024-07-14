@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<62ec63a2aebd866803cde1c1ca7d44c6>>
+ * @generated SignedSource<<298c05e5b7384384b5fcdd851a298738>>
  */
 
 /**
@@ -35,28 +35,46 @@ public object ReactNativeFeatureFlags {
   public fun commonTestFlag(): Boolean = accessor.commonTestFlag()
 
   /**
+   * Enables the differentiator to understand the "collapsableChildren" prop
+   */
+  @JvmStatic
+  public fun allowCollapsableChildren(): Boolean = accessor.allowCollapsableChildren()
+
+  /**
+   * Adds support for recursively processing commits that mount synchronously (Android only).
+   */
+  @JvmStatic
+  public fun allowRecursiveCommitsWithSynchronousMountOnAndroid(): Boolean = accessor.allowRecursiveCommitsWithSynchronousMountOnAndroid()
+
+  /**
    * When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.
    */
   @JvmStatic
   public fun batchRenderingUpdatesInEventLoop(): Boolean = accessor.batchRenderingUpdatesInEventLoop()
 
   /**
-   * Enables the use of a background executor to compute layout and commit updates on Fabric (this system is deprecated and should not be used).
+   * When enabled, ReactInstanceManager will clean up Fabric surfaces on destroy().
    */
   @JvmStatic
-  public fun enableBackgroundExecutor(): Boolean = accessor.enableBackgroundExecutor()
+  public fun destroyFabricSurfacesInReactInstanceManager(): Boolean = accessor.destroyFabricSurfacesInReactInstanceManager()
 
   /**
-   * When enabled, Fabric will use customDrawOrder in ReactViewGroup (similar to old architecture).
+   * Kill-switch to turn off support for aling-items:baseline on Fabric iOS.
    */
   @JvmStatic
-  public fun enableCustomDrawOrderFabric(): Boolean = accessor.enableCustomDrawOrderFabric()
+  public fun enableAlignItemsBaselineOnFabricIOS(): Boolean = accessor.enableAlignItemsBaselineOnFabricIOS()
 
   /**
-   * Attempt at fixing a crash related to subview clipping on Android. This is a kill switch for the fix
+   * Clean yoga node when <TextInput /> does not change.
    */
   @JvmStatic
-  public fun enableFixForClippedSubviewsCrash(): Boolean = accessor.enableFixForClippedSubviewsCrash()
+  public fun enableCleanTextInputYogaNode(): Boolean = accessor.enableCleanTextInputYogaNode()
+
+  /**
+   * When enabled, the renderer would only fail commits when they propagate state and the last commit that updated state changed before committing.
+   */
+  @JvmStatic
+  public fun enableGranularShadowTreeStateReconciliation(): Boolean = accessor.enableGranularShadowTreeStateReconciliation()
 
   /**
    * Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).
@@ -65,46 +83,130 @@ public object ReactNativeFeatureFlags {
   public fun enableMicrotasks(): Boolean = accessor.enableMicrotasks()
 
   /**
-   * Enables the notification of mount operations to mount hooks on Android.
+   * When enabled, Android will receive prop updates based on the differences between the last rendered shadow node and the last committed shadow node.
    */
   @JvmStatic
-  public fun enableMountHooksAndroid(): Boolean = accessor.enableMountHooksAndroid()
+  public fun enablePropsUpdateReconciliationAndroid(): Boolean = accessor.enablePropsUpdateReconciliationAndroid()
 
   /**
-   * Uses new, deduplicated logic for constructing Android Spannables from text fragments
+   * Dispatches state updates synchronously in Fabric (e.g.: updates the scroll position in the shadow tree synchronously from the main thread).
    */
   @JvmStatic
-  public fun enableSpannableBuildingUnification(): Boolean = accessor.enableSpannableBuildingUnification()
+  public fun enableSynchronousStateUpdates(): Boolean = accessor.enableSynchronousStateUpdates()
 
   /**
-   * Flag determining if the C++ implementation of InspectorPackagerConnection should be used instead of the per-platform one. This flag is global and should not be changed across React Host lifetimes.
+   * Ensures that JavaScript always has a consistent view of the state of the UI (e.g.: commits done in other threads are not immediately propagated to JS during its execution).
    */
   @JvmStatic
-  public fun inspectorEnableCxxInspectorPackagerConnection(): Boolean = accessor.inspectorEnableCxxInspectorPackagerConnection()
+  public fun enableUIConsistency(): Boolean = accessor.enableUIConsistency()
 
   /**
-   * Flag determining if the new Hermes CDPAgent API should be enabled in the modern CDP backend. This flag is global and should not be changed across React Host lifetimes.
+   * Start image fetching during view preallocation instead of waiting for layout pass
    */
   @JvmStatic
-  public fun inspectorEnableHermesCDPAgent(): Boolean = accessor.inspectorEnableHermesCDPAgent()
+  public fun fetchImagesInViewPreallocation(): Boolean = accessor.fetchImagesInViewPreallocation()
 
   /**
-   * Flag determining if the modern CDP backend should be enabled. This flag is global and should not be changed across React Host lifetimes.
+   * When doing a smooth scroll animation, it stops setting the state with the final scroll position in Fabric before the animation starts.
    */
   @JvmStatic
-  public fun inspectorEnableModernCDPRegistry(): Boolean = accessor.inspectorEnableModernCDPRegistry()
+  public fun fixIncorrectScrollViewStateUpdateOnAndroid(): Boolean = accessor.fixIncorrectScrollViewStateUpdateOnAndroid()
 
   /**
-   * This is a temporary flag to disable part of the mount hooks pipeline to investigate a crash.
+   * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.
    */
   @JvmStatic
-  public fun skipMountHookNotifications(): Boolean = accessor.skipMountHookNotifications()
+  public fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean = accessor.fixMappingOfEventPrioritiesBetweenFabricAndReact()
+
+  /**
+   * Enables a fix to prevent the possibility of state updates in Fabric being missed due to race conditions with previous state updates.
+   */
+  @JvmStatic
+  public fun fixMissedFabricStateUpdatesOnAndroid(): Boolean = accessor.fixMissedFabricStateUpdatesOnAndroid()
+
+  /**
+   * Forces the mounting layer on Android to always batch mount items instead of dispatching them immediately. This might fix some crashes related to synchronous state updates, where some views dispatch state updates during mount.
+   */
+  @JvmStatic
+  public fun forceBatchingMountItemsOnAndroid(): Boolean = accessor.forceBatchingMountItemsOnAndroid()
+
+  /**
+   * Flag determining if the React Native DevTools (Fusebox) CDP backend should be enabled in debug builds. This flag is global and should not be changed across React Host lifetimes.
+   */
+  @JvmStatic
+  public fun fuseboxEnabledDebug(): Boolean = accessor.fuseboxEnabledDebug()
+
+  /**
+   * Flag determining if the React Native DevTools (Fusebox) CDP backend should be enabled in release builds. This flag is global and should not be changed across React Host lifetimes.
+   */
+  @JvmStatic
+  public fun fuseboxEnabledRelease(): Boolean = accessor.fuseboxEnabledRelease()
+
+  /**
+   * Construct modules that requires eager init on the dedicate native modules thread
+   */
+  @JvmStatic
+  public fun initEagerTurboModulesOnNativeModulesQueueAndroid(): Boolean = accessor.initEagerTurboModulesOnNativeModulesQueueAndroid()
+
+  /**
+   * Only enqueue Choreographer calls if there is an ongoing animation, instead of enqueueing every frame.
+   */
+  @JvmStatic
+  public fun lazyAnimationCallbacks(): Boolean = accessor.lazyAnimationCallbacks()
+
+  /**
+   * Adds support for loading vector drawable assets in the Image component (only on Android)
+   */
+  @JvmStatic
+  public fun loadVectorDrawablesOnImages(): Boolean = accessor.loadVectorDrawablesOnImages()
+
+  /**
+   * Propagate layout direction to Android views.
+   */
+  @JvmStatic
+  public fun setAndroidLayoutDirection(): Boolean = accessor.setAndroidLayoutDirection()
+
+  /**
+   * Invoke callbacks immediately on the ReactInstance rather than going through a background thread for synchronization
+   */
+  @JvmStatic
+  public fun useImmediateExecutorInAndroidBridgeless(): Boolean = accessor.useImmediateExecutorInAndroidBridgeless()
 
   /**
    * When enabled, it uses the modern fork of RuntimeScheduler that allows scheduling tasks with priorities from any thread.
    */
   @JvmStatic
   public fun useModernRuntimeScheduler(): Boolean = accessor.useModernRuntimeScheduler()
+
+  /**
+   * When enabled, the native view configs are used in bridgeless mode.
+   */
+  @JvmStatic
+  public fun useNativeViewConfigsInBridgelessMode(): Boolean = accessor.useNativeViewConfigsInBridgelessMode()
+
+  /**
+   * Use shared background drawing code for ReactImageView instead of using Fresco to manipulate the bitmap
+   */
+  @JvmStatic
+  public fun useNewReactImageViewBackgroundDrawing(): Boolean = accessor.useNewReactImageViewBackgroundDrawing()
+
+  /**
+   * When enabled, cloning shadow nodes within react native will update the reference held by the current JS fiber tree.
+   */
+  @JvmStatic
+  public fun useRuntimeShadowNodeReferenceUpdate(): Boolean = accessor.useRuntimeShadowNodeReferenceUpdate()
+
+  /**
+   * When enabled, cloning shadow nodes during layout will update the reference held by the current JS fiber tree.
+   */
+  @JvmStatic
+  public fun useRuntimeShadowNodeReferenceUpdateOnLayout(): Boolean = accessor.useRuntimeShadowNodeReferenceUpdateOnLayout()
+
+  /**
+   * When enabled, it uses optimised state reconciliation algorithm.
+   */
+  @JvmStatic
+  public fun useStateAlignmentMechanism(): Boolean = accessor.useStateAlignmentMechanism()
 
   /**
    * Overrides the feature flags with the ones provided by the given provider

@@ -20,7 +20,7 @@
 #include "ShadowTreeRevision.h"
 
 #ifdef RN_SHADOW_TREE_INTROSPECTION
-#include <react/renderer/mounting/stubs.h>
+#include <react/renderer/mounting/stubs/stubs.h>
 #endif
 
 namespace facebook::react {
@@ -79,7 +79,7 @@ class MountingCoordinator final {
 
   const TelemetryController& getTelemetryController() const;
 
-  const ShadowTreeRevision& getBaseRevision() const;
+  ShadowTreeRevision getBaseRevision() const;
 
   /*
    * Methods from this section are meant to be used by
@@ -112,13 +112,15 @@ class MountingCoordinator final {
  private:
   const SurfaceId surfaceId_;
 
+  // Protects access to `baseRevision_`, `lastRevision_` and
+  // `mountingOverrideDelegate_`.
   mutable std::mutex mutex_;
   mutable ShadowTreeRevision baseRevision_;
   mutable std::optional<ShadowTreeRevision> lastRevision_{};
   mutable MountingTransaction::Number number_{0};
   mutable std::condition_variable signal_;
-  mutable std::weak_ptr<const MountingOverrideDelegate>
-      mountingOverrideDelegate_;
+  mutable std::vector<std::weak_ptr<const MountingOverrideDelegate>>
+      mountingOverrideDelegates_;
 
   TelemetryController telemetryController_;
 

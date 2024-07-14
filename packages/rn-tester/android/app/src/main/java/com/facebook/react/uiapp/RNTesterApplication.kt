@@ -21,10 +21,12 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.common.assets.ReactFontManager
 import com.facebook.react.config.ReactFeatureFlags
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.load
+import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.unstable_loadFusebox
 import com.facebook.react.defaults.DefaultReactHost
 import com.facebook.react.defaults.DefaultReactNativeHost
 import com.facebook.react.module.model.ReactModuleInfo
 import com.facebook.react.module.model.ReactModuleInfoProvider
+import com.facebook.react.osslibraryexample.OSSLibraryExamplePackage
 import com.facebook.react.popupmenu.PopupMenuPackage
 import com.facebook.react.shell.MainReactPackage
 import com.facebook.react.uiapp.component.MyLegacyViewManager
@@ -46,6 +48,7 @@ class RNTesterApplication : Application(), ReactApplication {
         return listOf(
             MainReactPackage(),
             PopupMenuPackage(),
+            OSSLibraryExamplePackage(),
             object : TurboReactPackage() {
               override fun getModule(
                   name: String,
@@ -111,11 +114,13 @@ class RNTesterApplication : Application(), ReactApplication {
               override fun createViewManager(
                   reactContext: ReactApplicationContext,
                   viewManagerName: String
-              ): ViewManager<*, out ReactShadowNode<*>> =
+              ): ViewManager<*, out ReactShadowNode<*>>? =
                   if (viewManagerName == "RNTMyNativeView") {
                     MyNativeViewManager()
-                  } else {
+                  } else if (viewManagerName == "RNTMyLegacyNativeView") {
                     MyLegacyViewManager(reactContext)
+                  } else {
+                    null
                   }
             })
       }
@@ -132,6 +137,10 @@ class RNTesterApplication : Application(), ReactApplication {
     ReactFontManager.getInstance().addCustomFont(this, "Rubik", R.font.rubik)
     super.onCreate()
     SoLoader.init(this, /* native exopackage */ false)
+
+    // [Experiment] Enable the new debugger stack (codename Fusebox)
+    unstable_loadFusebox(BuildConfig.IS_NEW_ARCHITECTURE_ENABLED)
+
     if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
       load()
     }

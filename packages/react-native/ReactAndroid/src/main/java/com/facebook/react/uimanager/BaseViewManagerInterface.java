@@ -48,6 +48,10 @@ public interface BaseViewManagerInterface<T extends View> {
 
   void setElevation(T view, float elevation);
 
+  void setFilter(T view, ReadableArray filter);
+
+  void setMixBlendMode(T view, String setMixBlendMode);
+
   void setShadowColor(T view, int shadowColor);
 
   void setImportantForAccessibility(T view, @Nullable String importantForAccessibility);

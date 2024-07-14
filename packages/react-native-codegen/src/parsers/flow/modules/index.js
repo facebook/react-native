@@ -22,6 +22,7 @@ import type {Parser} from '../../parser';
 import type {ParserErrorCapturer, TypeDeclarationMap} from '../../utils';
 
 const {
+  UnsupportedEnumDeclarationParserError,
   UnsupportedGenericParserError,
   UnsupportedTypeAnnotationParserError,
 } = require('../../errors');
@@ -39,6 +40,7 @@ const {
   emitPromise,
   emitRootTag,
   emitUnion,
+  translateArrayTypeAnnotation,
   typeAliasResolution,
   typeEnumResolution,
 } = require('../../parsers-primitives');
@@ -61,6 +63,20 @@ function translateTypeAnnotation(
     resolveTypeAnnotationFN(flowTypeAnnotation, types, parser);
 
   switch (typeAnnotation.type) {
+    case 'ArrayTypeAnnotation': {
+      return translateArrayTypeAnnotation(
+        hasteModuleName,
+        types,
+        aliasMap,
+        enumMap,
+        cxxOnly,
+        'Array',
+        typeAnnotation.elementType,
+        nullable,
+        translateTypeAnnotation,
+        parser,
+      );
+    }
     case 'GenericTypeAnnotation': {
       switch (parser.getTypeAnnotationName(typeAnnotation)) {
         case 'RootTag': {
@@ -227,6 +243,19 @@ function translateTypeAnnotation(
     }
     case 'EnumStringBody':
     case 'EnumNumberBody': {
+      if (
+        typeAnnotation.type === 'EnumNumberBody' &&
+        typeAnnotation.members.some(
+          m =>
+            m.type === 'EnumNumberMember' && !Number.isInteger(m.init?.value),
+        )
+      ) {
+        throw new UnsupportedEnumDeclarationParserError(
+          hasteModuleName,
+          typeAnnotation,
+          parser.language(),
+        );
+      }
       return typeEnumResolution(
         typeAnnotation,
         typeResolutionStatus,

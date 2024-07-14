@@ -42,13 +42,19 @@ class HostTargetTest : public Test {
 
   void connect() {
     ASSERT_FALSE(toPage_) << "Can only connect once in a HostTargetTest.";
-    toPage_ = page_->connect(
-        remoteConnections_.make_unique(),
-        {.integrationName = "HostTargetTest"});
+    auto conn = makeConnection();
+    toPage_ = std::move(conn.first);
+  }
+
+  std::pair<std::unique_ptr<ILocalConnection>, MockRemoteConnection&>
+  makeConnection() {
+    size_t connectionIndex = remoteConnections_.objectsVended();
+    auto toPage = page_->connect(remoteConnections_.make_unique());
 
     // We'll always get an onDisconnect call when we tear
     // down the test. Expect it in order to satisfy the strict mock.
-    EXPECT_CALL(*remoteConnections_[0], onDisconnect());
+    EXPECT_CALL(*remoteConnections_[connectionIndex], onDisconnect());
+    return {std::move(toPage), *remoteConnections_[connectionIndex]};
   }
 
   MockHostTargetDelegate hostTargetDelegate_;
@@ -155,8 +161,7 @@ TEST_F(HostTargetProtocolTest, InjectLogsToIdentifyBackend) {
       onMessage(JsonParsed(AllOf(
           AtJsonPtr("/method", "Log.entryAdded"),
           AtJsonPtr("/params/entry", Not(IsEmpty()))))))
-      .Times(2)
-      .RetiresOnSaturation();
+      .Times(AtLeast(1));
   EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
                                                "id": 1,
                                                "result": {}
@@ -205,6 +210,108 @@ TEST_F(HostTargetProtocolTest, PageReloadMethod) {
                              "scriptToEvaluateOnLoad": "alert('hello');"
                            }
                          })");
+}
+
+TEST_F(HostTargetProtocolTest, OverlaySetPausedInDebuggerMessageMethod) {
+  InSequence s;
+
+  EXPECT_CALL(
+      hostTargetDelegate_,
+      onSetPausedInDebuggerMessage(
+          Eq(HostTargetDelegate::OverlaySetPausedInDebuggerMessageRequest{
+              .message = std::nullopt})))
+      .RetiresOnSaturation();
+  EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
+                                               "id": 1,
+                                               "result": {}
+                                             })")))
+      .RetiresOnSaturation();
+  toPage_->sendMessage(R"({
+                           "id": 1,
+                           "method": "Overlay.setPausedInDebuggerMessage"
+                         })");
+
+  EXPECT_CALL(
+      hostTargetDelegate_,
+      onSetPausedInDebuggerMessage(
+          Eq(HostTargetDelegate::OverlaySetPausedInDebuggerMessageRequest{
+              .message = "Paused in debugger"})))
+      .RetiresOnSaturation();
+  EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
+                                               "id": 2,
+                                               "result": {}
+                                             })")))
+      .RetiresOnSaturation();
+  toPage_->sendMessage(R"({
+                           "id": 2,
+                           "method": "Overlay.setPausedInDebuggerMessage",
+                           "params": {
+                             "message": "Paused in debugger"
+                           }
+                         })");
+
+  // A cleanup message is sent automatically when we destroy the session.
+  EXPECT_CALL(
+      hostTargetDelegate_,
+      onSetPausedInDebuggerMessage(
+          Eq(HostTargetDelegate::OverlaySetPausedInDebuggerMessageRequest{
+              .message = std::nullopt})))
+      .RetiresOnSaturation();
+}
+
+TEST_F(HostTargetProtocolTest, OverlaySetPausedInDebuggerMultipleClients) {
+  auto [toPage2, fromPage2] = makeConnection();
+
+  InSequence s;
+
+  EXPECT_CALL(
+      hostTargetDelegate_,
+      onSetPausedInDebuggerMessage(
+          Eq(HostTargetDelegate::OverlaySetPausedInDebuggerMessageRequest{
+              .message = "Paused in debugger - client 1"})))
+      .RetiresOnSaturation();
+  EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
+                                               "id": 1,
+                                               "result": {}
+                                             })")))
+      .RetiresOnSaturation();
+  toPage_->sendMessage(R"({
+                           "id": 1,
+                           "method": "Overlay.setPausedInDebuggerMessage",
+                           "params": {
+                             "message": "Paused in debugger - client 1"
+                           }
+                         })");
+
+  EXPECT_CALL(
+      hostTargetDelegate_,
+      onSetPausedInDebuggerMessage(
+          Eq(HostTargetDelegate::OverlaySetPausedInDebuggerMessageRequest{
+              .message = "Paused in debugger - client 2"})))
+      .RetiresOnSaturation();
+  EXPECT_CALL(fromPage2, onMessage(JsonEq(R"({
+                                               "id": 1,
+                                               "result": {}
+                                             })")))
+      .RetiresOnSaturation();
+  toPage2->sendMessage(R"({
+                           "id": 1,
+                           "method": "Overlay.setPausedInDebuggerMessage",
+                           "params": {
+                             "message": "Paused in debugger - client 2"
+                           }
+                         })");
+
+  toPage2.reset();
+
+  // The cleanup message is sent exactly once.
+  EXPECT_CALL(
+      hostTargetDelegate_,
+      onSetPausedInDebuggerMessage(
+          Eq(HostTargetDelegate::OverlaySetPausedInDebuggerMessageRequest{
+              .message = std::nullopt})))
+      .Times(1)
+      .RetiresOnSaturation();
 }
 
 TEST_F(HostTargetProtocolTest, RegisterUnregisterInstanceWithoutEvents) {
@@ -471,6 +578,14 @@ TEST_F(HostTargetProtocolTest, InstanceWithNullRuntimeAgentDelegate) {
 }
 
 TEST_F(HostTargetProtocolTest, RuntimeAgentDelegateHasAccessToSessionState) {
+  // Ignore console messages originating inside the backend.
+  EXPECT_CALL(
+      fromPage(),
+      onMessage(JsonParsed(AllOf(
+          AtJsonPtr("/method", "Runtime.consoleAPICalled"),
+          AtJsonPtr("/params/context", "main#InstanceAgent")))))
+      .Times(AnyNumber());
+
   InSequence s;
 
   // Send Runtime.enable before registering the Instance (which in turns creates
@@ -513,6 +628,665 @@ TEST_F(HostTargetProtocolTest, RuntimeAgentDelegateHasAccessToSessionState) {
                          })");
 
   EXPECT_FALSE(runtimeAgentDelegates_[0]->sessionState.isRuntimeDomainEnabled);
+}
+
+TEST_F(HostTargetTest, HostCommands) {
+  // Set up expectations for the RuntimeAgentDelegate that will be created
+  // as part of the private session inside HostCommandSender.
+  EXPECT_CALL(runtimeTargetDelegate_, createAgentDelegate(_, _, _, _, _))
+      .WillOnce([this](
+                    FrontendChannel frontendChannel,
+                    SessionState& sessionState,
+                    std::unique_ptr<RuntimeAgentDelegate::ExportedState>
+                        exportedState,
+                    const ExecutionContextDescription& context,
+                    RuntimeExecutor runtimeExecutor) {
+        auto delegate = runtimeAgentDelegates_.make_unique(
+            std::move(frontendChannel),
+            sessionState,
+            std::move(exportedState),
+            context,
+            std::move(runtimeExecutor));
+        InSequence s;
+        EXPECT_CALL(
+            *delegate,
+            handleRequest(
+                Field(&cdp::PreparsedRequest::method, "Debugger.resume")))
+            .WillOnce(Return(false))
+            .RetiresOnSaturation();
+        EXPECT_CALL(
+            *delegate,
+            handleRequest(
+                Field(&cdp::PreparsedRequest::method, "Debugger.stepOver")))
+            .WillOnce(Return(false))
+            .RetiresOnSaturation();
+        return delegate;
+      })
+      .RetiresOnSaturation();
+
+  // No RuntimeAgent yet; this command is simply ignored.
+  page_->sendCommand(HostCommand::DebuggerStepOver);
+  EXPECT_FALSE(runtimeAgentDelegates_[0]);
+
+  auto& instanceTarget = page_->registerInstance(instanceTargetDelegate_);
+  auto& runtimeTarget =
+      instanceTarget.registerRuntime(runtimeTargetDelegate_, runtimeExecutor_);
+
+  page_->sendCommand(HostCommand::DebuggerResume);
+  page_->sendCommand(HostCommand::DebuggerStepOver);
+  ASSERT_TRUE(runtimeAgentDelegates_[0]);
+
+  connect();
+
+  // This is part of the HostCommandSender session.
+  ASSERT_TRUE(runtimeAgentDelegates_[0]);
+  // This is part of the session we just connect()ed to above.
+  EXPECT_TRUE(runtimeAgentDelegates_[1]);
+  // We can still send commands.
+  EXPECT_CALL(
+      *runtimeAgentDelegates_[0],
+      handleRequest(Field(&cdp::PreparsedRequest::method, "Debugger.stepOver")))
+      .WillOnce(Return(false))
+      .RetiresOnSaturation();
+  page_->sendCommand(HostCommand::DebuggerStepOver);
+
+  // NOTE: Our use of StrictMock ensures that the session doesn't receive any
+  // noise resulting from the sendCommand call ( = no
+  // runtimeAgentDelegates_[1]->handleRequest, no fromPage()->onMessage, etc).
+
+  instanceTarget.unregisterRuntime(runtimeTarget);
+  page_->unregisterInstance(instanceTarget);
+}
+
+TEST_F(HostTargetTest, NetworkLoadNetworkResourceSuccess) {
+  connect();
+
+  InSequence s;
+
+  ScopedExecutor<NetworkRequestListener> executor;
+  EXPECT_CALL(
+      hostTargetDelegate_,
+      loadNetworkResource(
+          Field(&LoadNetworkResourceRequest::url, "http://example.com"), _))
+      .Times(1)
+      .WillOnce([&executor](
+                    const LoadNetworkResourceRequest& /*params*/,
+                    ScopedExecutor<NetworkRequestListener> executorArg) {
+        // Capture the ScopedExecutor<NetworkRequestListener> to use later.
+        executor = std::move(executorArg);
+      })
+      .RetiresOnSaturation();
+
+  // Load the resource, expect a CDP response as soon as headers are received.
+  toPage_->sendMessage(R"({
+                           "id": 1,
+                           "method": "Network.loadNetworkResource",
+                           "params": {
+                             "url": "http://example.com"
+                            }
+                         })");
+
+  EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
+                                            "id": 1,
+                                            "result": {
+                                              "resource": {
+                                                "success": true,
+                                                "stream": "0",
+                                                "httpStatusCode": 200,
+                                                "headers": {
+                                                  "x-test": "foo",
+                                                  "Content-Type": "text/plain"
+                                                }
+                                              }
+                                            }
+                                          })")));
+
+  executor([](NetworkRequestListener& listener) {
+    listener.onHeaders(
+        200, Headers{{"x-test", "foo"}, {"Content-Type", "text/plain"}});
+  });
+
+  // Retrieve the first chunk of data.
+  toPage_->sendMessage(R"({
+                          "id": 2,
+                          "method": "IO.read",
+                          "params": {
+                            "handle": "0",
+                            "size": 8
+                          }
+                        })");
+
+  EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
+                                            "id": 2,
+                                            "result": {
+                                              "data": "SGVsbG8sIFc=",
+                                              "eof": false,
+                                              "base64Encoded": true
+                                            }
+                                          })")));
+
+  executor([](NetworkRequestListener& listener) {
+    listener.onData("Hello, World!");
+  });
+
+  // Retrieve the remaining data.
+  EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
+                                            "id": 3,
+                                            "result": {
+                                              "data": "b3JsZCE=",
+                                              "eof": false,
+                                              "base64Encoded": true
+                                            }
+                                          })")));
+  toPage_->sendMessage(R"({
+                          "id": 3,
+                          "method": "IO.read",
+                          "params": {
+                            "handle": "0",
+                            "size": 8
+                          }
+                        })");
+
+  // No more data - expect empty payload with eof: true.
+  EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
+                                            "id": 4,
+                                            "result": {
+                                              "data": "",
+                                              "eof": true,
+                                              "base64Encoded": true
+                                            }
+                                          })")));
+  toPage_->sendMessage(R"({
+                          "id": 4,
+                          "method": "IO.read",
+                          "params": {
+                            "handle": "0",
+                            "size": 8
+                          }
+                        })");
+
+  executor([](NetworkRequestListener& listener) { listener.onCompletion(); });
+
+  // Close the stream.
+  EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
+                                            "id": 5,
+                                            "result": {}
+                                          })")));
+  toPage_->sendMessage(R"({
+                          "id": 5,
+                          "method": "IO.close",
+                          "params": {
+                            "handle": "0"
+                          }
+                        })");
+}
+
+TEST_F(HostTargetTest, NetworkLoadNetworkResourceStreamInterrupted) {
+  connect();
+
+  InSequence s;
+
+  ScopedExecutor<NetworkRequestListener> executor;
+  EXPECT_CALL(
+      hostTargetDelegate_,
+      loadNetworkResource(
+          Field(&LoadNetworkResourceRequest::url, "http://example.com"), _))
+      .Times(1)
+      .WillOnce([&executor](
+                    const LoadNetworkResourceRequest& /*params*/,
+                    ScopedExecutor<NetworkRequestListener> executorArg) {
+        // Capture the ScopedExecutor<NetworkRequestListener> to use later.
+        executor = std::move(executorArg);
+      })
+      .RetiresOnSaturation();
+
+  // Load the resource, receiving headers succesfully.
+  toPage_->sendMessage(R"({
+                           "id": 1,
+                           "method": "Network.loadNetworkResource",
+                           "params": {
+                             "url": "http://example.com"
+                            }
+                         })");
+
+  EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
+    "id": 1,
+    "result": {
+      "resource": {
+        "success": true,
+        "stream": "0",
+        "httpStatusCode": 200,
+        "headers": {
+          "x-test": "foo"
+        }
+      }
+    }
+  })")));
+
+  executor([](NetworkRequestListener& listener) {
+    listener.onHeaders(200, Headers{{"x-test", "foo"}});
+  });
+
+  // Retrieve the first chunk of data.
+  toPage_->sendMessage(R"({
+                          "id": 2,
+                          "method": "IO.read",
+                          "params": {
+                            "handle": "0",
+                            "size": 20
+                          }
+                        })");
+
+  EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
+    "id": 2,
+    "result": {
+      "data": "VGhlIG1lYW5pbmcgb2YgbGlmZSA=",
+      "eof": false,
+      "base64Encoded": true
+    }
+  })")));
+  executor([](NetworkRequestListener& listener) {
+    listener.onData("The meaning of life is...");
+  });
+
+  // Simulate an error mid-stream, expect in-flight IO.reads to return a CDP
+  // error.
+  toPage_->sendMessage(R"({
+                          "id": 3,
+                          "method": "IO.read",
+                          "params": {
+                            "handle": "0",
+                            "size": 20
+                          }
+                        })");
+
+  EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
+    "id": 3,
+    "error": {
+      "code": -32603,
+      "message": "Connection lost"
+    }
+  })")));
+  executor([](NetworkRequestListener& listener) {
+    listener.onError("Connection lost");
+  });
+
+  // IO.close should be a successful no-op after an error.
+  EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
+    "id": 4,
+    "result": {}
+  })")));
+  toPage_->sendMessage(R"({
+                          "id": 4,
+                          "method": "IO.close",
+                          "params": {
+                            "handle": "0"
+                          }
+                        })");
+}
+
+TEST_F(HostTargetTest, NetworkLoadNetworkResource404) {
+  connect();
+
+  InSequence s;
+
+  ScopedExecutor<NetworkRequestListener> executor;
+  EXPECT_CALL(
+      hostTargetDelegate_,
+      loadNetworkResource(
+          Field(&LoadNetworkResourceRequest::url, "http://example.com/404"), _))
+      .Times(1)
+      .WillOnce([&executor](
+                    const LoadNetworkResourceRequest& /*params*/,
+                    ScopedExecutor<NetworkRequestListener> executorArg) {
+        // Capture the ScopedExecutor<NetworkRequestListener> to use later.
+        executor = std::move(executorArg);
+      })
+      .RetiresOnSaturation();
+
+  // A 404 response should trigger a CDP result with success: false, including
+  // the status code, headers, but *no* stream handle.
+  EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
+                                            "id": 1,
+                                            "result": {
+                                              "resource": {
+                                                "success": false,
+                                                "httpStatusCode": 404,
+                                                "headers": {
+                                                  "x-test": "foo"
+                                                }
+                                              }
+                                            }
+                                          })")));
+
+  toPage_->sendMessage(R"({
+                        "id": 1,
+                        "method": "Network.loadNetworkResource",
+                        "params": {
+                          "url": "http://example.com/404"
+                        }
+                      })");
+
+  executor([](NetworkRequestListener& listener) {
+    listener.onHeaders(404, Headers{{"x-test", "foo"}});
+  });
+
+  // Assuming a successful request would have assigned handle "0", verify that
+  // handle has *not* been assigned.
+  EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
+                                            "id": 2,
+                                            "error": {
+                                              "code": -32603,
+                                              "message": "Stream not found with handle 0"
+                                            }
+                                          })")));
+
+  toPage_->sendMessage(R"({
+                          "id": 2,
+                          "method": "IO.read",
+                          "params": {
+                            "handle": "0",
+                            "size": 20
+                          }
+                        })");
+}
+
+TEST_F(HostTargetTest, NetworkLoadNetworkResourceInitialNetError) {
+  connect();
+
+  InSequence s;
+
+  ScopedExecutor<NetworkRequestListener> executor;
+  EXPECT_CALL(
+      hostTargetDelegate_,
+      loadNetworkResource(
+          Field(&LoadNetworkResourceRequest::url, "http://baddomain.com"), _))
+      .Times(1)
+      .WillOnce([&executor](
+                    const LoadNetworkResourceRequest& /*params*/,
+                    ScopedExecutor<NetworkRequestListener> executorArg) {
+        // Capture the ScopedExecutor<NetworkRequestListener> to use later.
+        executor = std::move(executorArg);
+      })
+      .RetiresOnSaturation();
+
+  // Load the resource, expect a CDP resonse with no headers or status code,
+  // but with success: false and a netErrorName
+  toPage_->sendMessage(R"({
+                           "id": 1,
+                           "method": "Network.loadNetworkResource",
+                           "params": {
+                             "url": "http://baddomain.com"
+                            }
+                         })");
+
+  EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
+                                            "id": 1,
+                                            "result": {
+                                              "resource": {
+                                                "success": false,
+                                                "netErrorName": "Arbitrary error string"
+                                              }
+                                            }
+                                          })")));
+
+  executor([](NetworkRequestListener& listener) {
+    listener.onError("Arbitrary error string");
+  });
+}
+
+TEST_F(HostTargetTest, NetworkLoadNetworkResourceStreamClosed) {
+  connect();
+
+  InSequence s;
+
+  ScopedExecutor<NetworkRequestListener> executor;
+  EXPECT_CALL(
+      hostTargetDelegate_,
+      loadNetworkResource(
+          Field(&LoadNetworkResourceRequest::url, "http://example.com"), _))
+      .Times(1)
+      .WillOnce([&executor](
+                    const LoadNetworkResourceRequest& /*params*/,
+                    ScopedExecutor<NetworkRequestListener> executorArg) {
+        // Capture the ScopedExecutor<NetworkRequestListener> to use later.
+        executor = std::move(executorArg);
+      })
+      .RetiresOnSaturation();
+
+  // Load the resource, receiving headers succesfully.
+  toPage_->sendMessage(R"({
+                           "id": 1,
+                           "method": "Network.loadNetworkResource",
+                           "params": {
+                             "url": "http://example.com"
+                            }
+                         })");
+
+  EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
+    "id": 1,
+    "result": {
+      "resource": {
+        "success": true,
+        "stream": "0",
+        "httpStatusCode": 200,
+        "headers": {
+          "x-test": "foo"
+        }
+      }
+    }
+  })")));
+
+  bool cancelFunctionCalled = false;
+  executor([&cancelFunctionCalled](NetworkRequestListener& listener) {
+    listener.setCancelFunction(
+        [&cancelFunctionCalled]() { cancelFunctionCalled = true; });
+
+    listener.onHeaders(200, Headers{{"x-test", "foo"}});
+  });
+
+  // Retrieve the first chunk of data.
+  toPage_->sendMessage(R"({
+                          "id": 2,
+                          "method": "IO.read",
+                          "params": {
+                            "handle": "0",
+                            "size": 20
+                          }
+                        })");
+
+  EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
+    "id": 2,
+    "result": {
+      "data": "VGhlIG1lYW5pbmcgb2YgbGlmZSA=",
+      "eof": false,
+      "base64Encoded": true
+    }
+  })")));
+  executor([](NetworkRequestListener& listener) {
+    listener.onData("The meaning of life is...");
+  });
+
+  EXPECT_FALSE(cancelFunctionCalled);
+
+  // Simulate the client closing the stream while data is still incoming.
+
+  EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
+                                            "id": 3,
+                                            "result": {}
+                                          })")));
+
+  toPage_->sendMessage(R"({
+                          "id": 3,
+                          "method": "IO.close",
+                          "params": {
+                            "handle": "0"
+                          }
+                        })");
+
+  EXPECT_TRUE(cancelFunctionCalled);
+}
+
+TEST_F(HostTargetTest, NetworkLoadNetworkResourceAgentDisconnect) {
+  connect();
+
+  InSequence s;
+
+  ScopedExecutor<NetworkRequestListener> executor;
+  EXPECT_CALL(hostTargetDelegate_, loadNetworkResource(_, _))
+      .Times(1)
+      .WillOnce([&executor](
+                    const LoadNetworkResourceRequest& /*params*/,
+                    ScopedExecutor<NetworkRequestListener> executorArg) {
+        // Capture the ScopedExecutor<NetworkRequestListener> to use later.
+        executor = std::move(executorArg);
+      })
+      .RetiresOnSaturation();
+
+  // Load the resource, receiving headers succesfully.
+  toPage_->sendMessage(R"({
+                           "id": 1,
+                           "method": "Network.loadNetworkResource",
+                           "params": {
+                             "url": "http://example.com"
+                            }
+                         })");
+
+  EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
+    "id": 1,
+    "result": {
+      "resource": {
+        "success": true,
+        "stream": "0",
+        "httpStatusCode": 200,
+        "headers": {
+          "x-test": "foo"
+        }
+      }
+    }
+  })")));
+
+  bool cancelFunctionCalled = false;
+  executor([&cancelFunctionCalled](NetworkRequestListener& listener) {
+    listener.setCancelFunction(
+        [&cancelFunctionCalled]() { cancelFunctionCalled = true; });
+
+    listener.onHeaders(200, Headers{{"x-test", "foo"}});
+  });
+
+  EXPECT_FALSE(cancelFunctionCalled);
+
+  // Simulate the frontend disconnecting while data is still incoming.
+  toPage_->disconnect();
+
+  // Expect the destruction of the agent to notify the platform implementation
+  // that it may cancel any download.
+  EXPECT_TRUE(cancelFunctionCalled);
+
+  // The host may still hold a scoped executor, but our listener has now been
+  // destroyed because it was owned by the (disconnected) agent, so we expect
+  // a late executor call to be a) safe and b) never execute.
+  bool callbackCalledAfterDisconnect = false;
+  executor(
+      [&callbackCalledAfterDisconnect](NetworkRequestListener& /*listener*/) {
+        callbackCalledAfterDisconnect = true;
+      });
+  EXPECT_FALSE(callbackCalledAfterDisconnect);
+}
+
+TEST_F(HostTargetTest, NetworkLoadNetworkResourceNotImplementedByDelegate) {
+  connect();
+
+  InSequence s;
+
+  EXPECT_CALL(
+      hostTargetDelegate_,
+      loadNetworkResource(
+          Field(&LoadNetworkResourceRequest::url, "http://example.com"), _))
+      .Times(1)
+      .WillOnce([](const LoadNetworkResourceRequest& /*params*/,
+                   ScopedExecutor<NetworkRequestListener> /*executor*/) {
+        throw NotImplementedException(
+            "This delegate does not implement loadNetworkResource.");
+      })
+      .RetiresOnSaturation();
+
+  // The delegate's loadNetworkResource may throw immediately - verify this is
+  // handled and that we clean up.
+  EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
+                                            "id": 1,
+                                            "error": {
+                                              "code": -32601,
+                                              "message": "This delegate does not implement loadNetworkResource."
+                                            }
+                                          })")));
+
+  toPage_->sendMessage(R"({
+                           "id": 1,
+                           "method": "Network.loadNetworkResource",
+                           "params": {
+                             "url": "http://example.com"
+                            }
+                         })");
+
+  // Check no stream is retained
+  EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
+                                            "id": 2,
+                                            "error": {
+                                              "code": -32603,
+                                              "message": "Stream not found: 0"
+                                            }
+                                          })")));
+
+  toPage_->sendMessage(R"({
+                          "id": 2,
+                          "method": "IO.close",
+                          "params": {
+                            "handle": "0"
+                          }
+                        })");
+}
+
+TEST_F(HostTargetTest, NetworkLoadNetworkResource3xx) {
+  connect();
+
+  InSequence s;
+
+  ScopedExecutor<NetworkRequestListener> executor;
+  EXPECT_CALL(
+      hostTargetDelegate_,
+      loadNetworkResource(
+          Field(&LoadNetworkResourceRequest::url, "http://example.com/3xx"), _))
+      .Times(1)
+      .WillOnce([&executor](
+                    const LoadNetworkResourceRequest& /*params*/,
+                    ScopedExecutor<NetworkRequestListener> executorArg) {
+        // Capture the ScopedExecutor<NetworkRequestListener> to use later.
+        executor = std::move(executorArg);
+      })
+      .RetiresOnSaturation();
+
+  // We don't support 3xx responses, and treat them as a CDP error (as if not
+  // implemented so that the frontend may fall back.
+  toPage_->sendMessage(R"({
+                           "id": 1,
+                           "method": "Network.loadNetworkResource",
+                           "params": {
+                             "url": "http://example.com/3xx"
+                            }
+                         })");
+
+  EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
+                                            "id": 1,
+                                            "error": {
+                                              "code": -32603,
+                                              "message": "Handling of status 301 not implemented."
+                                            }
+                                          })")));
+
+  executor([](NetworkRequestListener& listener) {
+    listener.onHeaders(301, Headers{{"Location", "/new"}});
+  });
 }
 
 } // namespace facebook::react::jsinspector_modern

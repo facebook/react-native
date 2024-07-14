@@ -16,7 +16,6 @@ import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.fabric.events.EventEmitterWrapper;
 import com.facebook.react.fabric.mounting.MountingManager;
 import com.facebook.react.fabric.mounting.SurfaceMountingManager;
 import com.facebook.react.uimanager.StateWrapper;
@@ -30,7 +29,6 @@ final class PreAllocateViewMountItem implements MountItem {
   private final int mReactTag;
   private final @Nullable ReadableMap mProps;
   private final @Nullable StateWrapper mStateWrapper;
-  private final @Nullable EventEmitterWrapper mEventEmitterWrapper;
   private final boolean mIsLayoutable;
 
   PreAllocateViewMountItem(
@@ -39,13 +37,11 @@ final class PreAllocateViewMountItem implements MountItem {
       @NonNull String component,
       @Nullable ReadableMap props,
       @Nullable StateWrapper stateWrapper,
-      @Nullable EventEmitterWrapper eventEmitterWrapper,
       boolean isLayoutable) {
     mComponent = getFabricComponentName(component);
     mSurfaceId = surfaceId;
     mProps = props;
     mStateWrapper = stateWrapper;
-    mEventEmitterWrapper = eventEmitterWrapper;
     mReactTag = reactTag;
     mIsLayoutable = isLayoutable;
   }
@@ -65,7 +61,7 @@ final class PreAllocateViewMountItem implements MountItem {
       return;
     }
     surfaceMountingManager.preallocateView(
-        mComponent, mReactTag, mProps, mStateWrapper, mEventEmitterWrapper, mIsLayoutable);
+        mComponent, mReactTag, mProps, mStateWrapper, mIsLayoutable);
   }
 
   @Override
@@ -84,12 +80,9 @@ final class PreAllocateViewMountItem implements MountItem {
     if (IS_DEVELOPMENT_ENVIRONMENT) {
       result
           .append(" props: ")
-          .append(mProps != null ? mProps : "<null>")
+          .append(mProps != null ? mProps.toString() : "<null>")
           .append(" state: ")
-          .append(
-              mStateWrapper != null && mStateWrapper.getStateData() != null
-                  ? mStateWrapper.getStateData().toString()
-                  : "<null>");
+          .append(mStateWrapper != null ? mStateWrapper.toString() : "<null>");
     }
 
     return result.toString();

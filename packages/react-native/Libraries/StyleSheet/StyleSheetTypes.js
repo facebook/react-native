@@ -34,6 +34,25 @@ export type EdgeInsetsValue = {
   bottom: number,
 };
 
+export type FilterPrimitive =
+  | {brightness: number | string}
+  | {blur: number | string}
+  | {contrast: number | string}
+  | {grayscale: number | string}
+  | {'hue-rotate': number | string}
+  | {invert: number | string}
+  | {opacity: number | string}
+  | {saturate: number | string}
+  | {sepia: number | string}
+  | {'drop-shadow': DropShadowPrimitive | string};
+
+export type DropShadowPrimitive = {
+  offsetX: number | string,
+  offsetY: number | string,
+  standardDeviation?: number | string,
+  color?: ____ColorValue_Internal | number,
+};
+
 export type DimensionValue = number | string | 'auto' | AnimatedNode | null;
 export type AnimatableNumericValue = number | AnimatedNode;
 
@@ -644,9 +663,9 @@ type ____LayoutStyle_Internal = $ReadOnly<{
    * between children may be larger than the gap value.
    * See https://developer.mozilla.org/en-US/docs/Web/CSS/gap for more details.
    */
-  rowGap?: number,
-  columnGap?: number,
-  gap?: number,
+  rowGap?: number | string,
+  columnGap?: number | string,
+  gap?: number | string,
 }>;
 
 /**
@@ -690,10 +709,34 @@ export type ____ShadowStyle_Internal = $ReadOnly<{
   ...____ShadowStyle_InternalOverrides,
 }>;
 
+type ____FilterStyle_Internal = $ReadOnly<{
+  experimental_filter?: $ReadOnlyArray<FilterPrimitive>,
+}>;
+
+export type ____MixBlendMode_Internal =
+  | 'normal'
+  | 'multiply'
+  | 'screen'
+  | 'overlay'
+  | 'darken'
+  | 'lighten'
+  | 'color-dodge'
+  | 'color-burn'
+  | 'hard-light'
+  | 'soft-light'
+  | 'difference'
+  | 'exclusion'
+  | 'hue'
+  | 'saturation'
+  | 'color'
+  | 'luminosity';
+
 export type ____ViewStyle_InternalCore = $ReadOnly<{
   ...$Exact<____LayoutStyle_Internal>,
   ...$Exact<____ShadowStyle_Internal>,
   ...$Exact<____TransformStyle_Internal>,
+  ...____FilterStyle_Internal,
+  experimental_mixBlendMode?: ____MixBlendMode_Internal,
   backfaceVisibility?: 'visible' | 'hidden',
   backgroundColor?: ____ColorValue_Internal,
   borderColor?: ____ColorValue_Internal,
@@ -707,19 +750,19 @@ export type ____ViewStyle_InternalCore = $ReadOnly<{
   borderBlockColor?: ____ColorValue_Internal,
   borderBlockEndColor?: ____ColorValue_Internal,
   borderBlockStartColor?: ____ColorValue_Internal,
-  borderRadius?: AnimatableNumericValue,
-  borderBottomEndRadius?: AnimatableNumericValue,
-  borderBottomLeftRadius?: AnimatableNumericValue,
-  borderBottomRightRadius?: AnimatableNumericValue,
-  borderBottomStartRadius?: AnimatableNumericValue,
-  borderEndEndRadius?: AnimatableNumericValue,
-  borderEndStartRadius?: AnimatableNumericValue,
-  borderStartEndRadius?: AnimatableNumericValue,
-  borderStartStartRadius?: AnimatableNumericValue,
-  borderTopEndRadius?: AnimatableNumericValue,
-  borderTopLeftRadius?: AnimatableNumericValue,
-  borderTopRightRadius?: AnimatableNumericValue,
-  borderTopStartRadius?: AnimatableNumericValue,
+  borderRadius?: AnimatableNumericValue | string,
+  borderBottomEndRadius?: AnimatableNumericValue | string,
+  borderBottomLeftRadius?: AnimatableNumericValue | string,
+  borderBottomRightRadius?: AnimatableNumericValue | string,
+  borderBottomStartRadius?: AnimatableNumericValue | string,
+  borderEndEndRadius?: AnimatableNumericValue | string,
+  borderEndStartRadius?: AnimatableNumericValue | string,
+  borderStartEndRadius?: AnimatableNumericValue | string,
+  borderStartStartRadius?: AnimatableNumericValue | string,
+  borderTopEndRadius?: AnimatableNumericValue | string,
+  borderTopLeftRadius?: AnimatableNumericValue | string,
+  borderTopRightRadius?: AnimatableNumericValue | string,
+  borderTopStartRadius?: AnimatableNumericValue | string,
   borderStyle?: 'solid' | 'dotted' | 'dashed',
   borderWidth?: AnimatableNumericValue,
   borderBottomWidth?: AnimatableNumericValue,

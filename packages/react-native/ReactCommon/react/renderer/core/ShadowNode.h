@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <limits>
 #include <memory>
 #include <string>
 #include <type_traits>
@@ -25,6 +26,7 @@ namespace facebook::react {
 
 class ComponentDescriptor;
 struct ShadowNodeFragment;
+struct ShadowNodeWrapper;
 
 class ShadowNode : public Sealable,
                    public DebugStringConvertible,
@@ -100,8 +102,8 @@ class ShadowNode : public Sealable,
    */
   Unshared cloneTree(
       const ShadowNodeFamily& shadowNodeFamily,
-      const std::function<Unshared(ShadowNode const& oldShadowNode)>& callback)
-      const;
+      const std::function<Unshared(const ShadowNode& oldShadowNode)>& callback,
+      ShadowNodeTraits traits = {}) const;
 
 #pragma mark - Getters
 
@@ -161,7 +163,7 @@ class ShadowNode : public Sealable,
   virtual void replaceChild(
       const ShadowNode& oldChild,
       const Shared& newChild,
-      int32_t suggestedIndex = -1);
+      size_t suggestedIndex = std::numeric_limits<size_t>::max());
 
   /*
    * Performs all side effects associated with mounting/unmounting in one place.
@@ -171,13 +173,42 @@ class ShadowNode : public Sealable,
   void setMounted(bool mounted) const;
 
   /*
+   * Returns true if the shadow node has been promoted to be the next mounted
+   * tree.
+   */
+  bool getHasBeenPromoted() const;
+
+  /*
    * Applies the most recent state to the ShadowNode if following conditions are
    * met:
    * - ShadowNode has a state.
    * - ShadowNode has not been mounted before.
    * - ShadowNode's current state is obsolete.
+   *
+   * Returns true if the state was applied, false otherwise.
    */
-  void progressStateIfNecessary();
+  bool progressStateIfNecessary();
+
+  /*
+   * Bind the runtime reference to this `ShadowNode` with a raw pointer,
+   * allowing to update the reference to this `ShadowNode` when cloned.
+   */
+  void setRuntimeShadowNodeReference(
+      ShadowNodeWrapper* runtimeShadowNodeReference) const;
+
+  /*
+   * Transfer the runtime reference to this `ShadowNode` to a new instance,
+   * updating the reference to point to the new `ShadowNode` referencing it.
+   */
+  void transferRuntimeShadowNodeReference(
+      const Shared& destinationShadowNode) const;
+
+  /*
+   * Transfer the runtime reference based on the fragment instructions.
+   */
+  void transferRuntimeShadowNodeReference(
+      const Shared& destinationShadowNode,
+      const ShadowNodeFragment& fragment) const;
 
 #pragma mark - DebugStringConvertible
 
@@ -215,7 +246,16 @@ class ShadowNode : public Sealable,
    */
   ShadowNodeFamily::Shared family_;
 
+  /*
+   * True if shadow node will be mounted shortly in the future but for all
+   * intents and purposes it should be treated as mounted.
+   */
   mutable std::atomic<bool> hasBeenMounted_{false};
+
+  /*
+   * True if shadow node has been promoted to be the next mounted tree.
+   */
+  mutable bool hasBeenPromoted_{false};
 
   static Props::Shared propsForClonedShadowNode(
       const ShadowNode& sourceShadowNode,
@@ -227,10 +267,27 @@ class ShadowNode : public Sealable,
    * that class.
    */
   ShadowNodeTraits traits_;
+
+  /*
+   * Pointer to the runtime reference to this `ShadowNode`.
+   */
+  mutable ShadowNodeWrapper* runtimeShadowNodeReference_{};
 };
 
 static_assert(
     std::has_virtual_destructor<ShadowNode>::value,
     "ShadowNode must have a virtual destructor");
+
+struct ShadowNodeWrapper : public jsi::NativeState {
+  explicit ShadowNodeWrapper(ShadowNode::Shared shadowNode)
+      : shadowNode(std::move(shadowNode)) {}
+
+  // The below method needs to be implemented out-of-line in order for the class
+  // to have at least one "key function" (see
+  // https://itanium-cxx-abi.github.io/cxx-abi/abi.html#vague-vtable)
+  ~ShadowNodeWrapper() override;
+
+  ShadowNode::Shared shadowNode;
+};
 
 } // namespace facebook::react

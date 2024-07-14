@@ -254,16 +254,24 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
 
   float getLayoutHeight();
 
-  /** @return the x position of the corresponding view on the screen, rounded to pixels */
+  /**
+   * @return the x position of the corresponding view on the screen, rounded to pixels
+   */
   int getScreenX();
 
-  /** @return the y position of the corresponding view on the screen, rounded to pixels */
+  /**
+   * @return the y position of the corresponding view on the screen, rounded to pixels
+   */
   int getScreenY();
 
-  /** @return width corrected for rounding to pixels. */
+  /**
+   * @return width corrected for rounding to pixels.
+   */
   int getScreenWidth();
 
-  /** @return height corrected for rounding to pixels. */
+  /**
+   * @return height corrected for rounding to pixels.
+   */
   int getScreenHeight();
 
   YogaDirection getLayoutDirection();
@@ -310,9 +318,15 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
 
   void setRowGap(float rowGap);
 
+  void setRowGapPercent(float percent);
+
   void setColumnGap(float columnGap);
 
+  void setColumnGapPercent(float percent);
+
   void setGap(float gap);
+
+  void setGapPercent(float percent);
 
   void setFlexShrink(float flexShrink);
 

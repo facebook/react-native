@@ -11,7 +11,6 @@
 #include <jsi/jsi.h>
 #include <atomic>
 #include <queue>
-#include "TimerManager.h"
 
 namespace facebook::react {
 

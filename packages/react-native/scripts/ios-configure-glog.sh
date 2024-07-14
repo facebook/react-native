@@ -42,8 +42,15 @@ EOF
     patch -p1 config.sub fix_glog_0.3.5_apple_silicon.patch
 fi
 
-export CC="$(xcrun -find -sdk $PLATFORM_NAME cc) -arch $CURRENT_ARCH -isysroot $(xcrun -sdk $PLATFORM_NAME --show-sdk-path)"
-export CXX="$CC"
+XCRUN="$(which xcrun)"
+if [ -n "$XCRUN" ]; then
+  export CC="$(xcrun -find -sdk $PLATFORM_NAME cc) -arch $CURRENT_ARCH -isysroot $(xcrun -sdk $PLATFORM_NAME --show-sdk-path)"
+  export CXX="$CC"
+else
+  export CC="$CC:-$(which gcc)"
+  export CXX="$CXX:-$(which g++ || true)"
+fi
+export CXX="$CXX:-$CC"
 
 # Remove automake symlink if it exists
 if [ -h "test-driver" ]; then

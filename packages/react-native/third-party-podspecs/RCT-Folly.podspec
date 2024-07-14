@@ -41,6 +41,9 @@ Pod::Spec.new do |spec|
                       'folly/detail/FileUtilDetail.cpp',
                       'folly/detail/SplitStringSimd.cpp',
                       'folly/detail/UniqueInstance.cpp',
+                      'folly/detail/base64_detail/Base64_SSE4_2.cpp',
+                      'folly/detail/base64_detail/Base64Api.cpp',
+                      'folly/detail/base64_detail/Base64SWAR.cpp',
                       'folly/hash/SpookyHashV2.cpp',
                       'folly/lang/Assume.cpp',
                       'folly/lang/CString.cpp',
@@ -55,6 +58,7 @@ Pod::Spec.new do |spec|
                       'folly/container/*.h',
                       'folly/container/detail/*.h',
                       'folly/detail/*.h',
+                      'folly/detail/base64_detail/*.h',
                       'folly/functional/*.h',
                       'folly/hash/*.h',
                       'folly/lang/*.h',
@@ -70,6 +74,7 @@ Pod::Spec.new do |spec|
                         'folly/container/*.h',
                         'folly/container/detail/*.h',
                         'folly/detail/*.h',
+                        'folly/detail/base64_detail/*.h',
                         'folly/functional/*.h',
                         'folly/hash/*.h',
                         'folly/lang/*.h',
@@ -82,7 +87,7 @@ Pod::Spec.new do |spec|
   spec.libraries           = "c++abi" # NOTE Apple-only: Keep c++abi here due to https://github.com/react-native-community/releases/issues/251
   spec.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
                                "DEFINES_MODULE" => "YES",
-                               "CLANG_CXX_LANGUAGE_STANDARD" => "c++20",
+                               "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
                                "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)\" \"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/fmt/include\"",
                                # In dynamic framework (use_frameworks!) mode, ignore the unused and undefined boost symbols when generating the library.
                                "OTHER_LDFLAGS" => "\"-Wl,-U,_jump_fcontext\" \"-Wl,-U,_make_fcontext\""
@@ -92,6 +97,8 @@ Pod::Spec.new do |spec|
   spec.user_target_xcconfig = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\"" }
 
   spec.default_subspec = 'Default'
+
+  spec.resource_bundles = {'RCT-Folly_privacy' => 'RCT-Folly/PrivacyInfo.xcprivacy'}
 
   spec.subspec 'Default' do
     # no-op

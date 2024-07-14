@@ -13,6 +13,11 @@
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/core/State.h>
 
+#ifdef ANDROID
+#include <react/renderer/mapbuffer/MapBuffer.h>
+#include <react/renderer/mapbuffer/MapBufferBuilder.h>
+#endif
+
 namespace facebook::react {
 
 /*
@@ -21,7 +26,7 @@ namespace facebook::react {
  * state update transaction. A data object does not need to be copyable but
  * needs to be moveable.
  */
-template <typename DataT>
+template <typename DataT, bool usesMapBufferForStateData = false>
 class ConcreteState : public State {
  public:
   using Shared = std::shared_ptr<const ConcreteState>;
@@ -58,16 +63,10 @@ class ConcreteState : public State {
    * function for cases where a new value of data does not depend on an old
    * value.
    */
-  void updateState(Data&& newData, EventPriority priority) const {
-    updateState(
-        [data{std::move(newData)}](const Data& oldData) -> SharedData {
-          return std::make_shared<Data const>(data);
-        },
-        priority);
-  }
-
   void updateState(Data&& newData) const {
-    updateState(std::move(newData), EventPriority::AsynchronousBatched);
+    updateState([data{std::move(newData)}](const Data& oldData) -> SharedData {
+      return std::make_shared<const Data>(data);
+    });
   }
 
   /*
@@ -79,8 +78,7 @@ class ConcreteState : public State {
    * return `nullptr`.
    */
   void updateState(
-      std::function<StateData::Shared(const Data& oldData)> callback,
-      EventPriority priority = EventPriority::AsynchronousBatched) const {
+      std::function<StateData::Shared(const Data& oldData)> callback) const {
     auto family = family_.lock();
 
     if (!family) {
@@ -92,10 +90,10 @@ class ConcreteState : public State {
     auto stateUpdate = StateUpdate{
         family, [=](const StateData::Shared& oldData) -> StateData::Shared {
           react_native_assert(oldData);
-          return callback(*static_cast<Data const*>(oldData.get()));
+          return callback(*static_cast<const Data*>(oldData.get()));
         }};
 
-    family->dispatchRawState(std::move(stateUpdate), priority);
+    family->dispatchRawState(std::move(stateUpdate));
   }
 
 #ifdef ANDROID
@@ -108,7 +106,11 @@ class ConcreteState : public State {
   }
 
   MapBuffer getMapBuffer() const override {
-    return getData().getMapBuffer();
+    if constexpr (usesMapBufferForStateData) {
+      return getData().getMapBuffer();
+    } else {
+      return MapBufferBuilder::EMPTY();
+    }
   }
 #endif
 };

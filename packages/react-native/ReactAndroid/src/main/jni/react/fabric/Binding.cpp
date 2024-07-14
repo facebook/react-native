@@ -12,14 +12,10 @@
 #include "EventBeatManager.h"
 #include "EventEmitterWrapper.h"
 #include "FabricMountingManager.h"
-#include "JBackgroundExecutor.h"
 #include "ReactNativeConfigHolder.h"
-#include "StateWrapperImpl.h"
 #include "SurfaceHandlerBinding.h"
 
-#include <cfenv>
-#include <cmath>
-
+#include <cxxreact/SystraceSection.h>
 #include <fbjni/fbjni.h>
 #include <glog/logging.h>
 #include <jsi/JSIDynamic.h>
@@ -30,7 +26,6 @@
 #include <react/renderer/core/EventBeat.h>
 #include <react/renderer/core/EventEmitter.h>
 #include <react/renderer/core/conversions.h>
-#include <react/renderer/debug/SystraceSection.h>
 #include <react/renderer/scheduler/Scheduler.h>
 #include <react/renderer/scheduler/SchedulerDelegate.h>
 #include <react/renderer/scheduler/SchedulerToolbox.h>
@@ -95,7 +90,7 @@ void Binding::setPixelDensity(float pointScaleFactor) {
 }
 
 void Binding::driveCxxAnimations() {
-  scheduler_->animationTick();
+  getScheduler()->animationTick();
 }
 
 void Binding::reportMount(SurfaceId surfaceId) {
@@ -193,7 +188,7 @@ void Binding::startSurfaceWithConstraints(
       isRTL ? LayoutDirection::RightToLeft : LayoutDirection::LeftToRight;
 
   auto surfaceHandler = SurfaceHandler{moduleName->toStdString(), surfaceId};
-  surfaceHandler.setContextContainer(scheduler_->getContextContainer());
+  surfaceHandler.setContextContainer(scheduler->getContextContainer());
   surfaceHandler.setProps(initialProps->consume());
   surfaceHandler.constraintLayout(constraints, context);
 
@@ -386,15 +381,6 @@ void Binding::installFabricUIManager(
     }
   }
 
-  // TODO: T31905686 Create synchronous Event Beat
-  EventBeat::Factory synchronousBeatFactory =
-      [eventBeatManager, runtimeExecutor, globalJavaUiManager](
-          const EventBeat::SharedOwnerBox& ownerBox)
-      -> std::unique_ptr<EventBeat> {
-    return std::make_unique<AsyncEventBeat>(
-        ownerBox, eventBeatManager, runtimeExecutor, globalJavaUiManager);
-  };
-
   EventBeat::Factory asynchronousBeatFactory =
       [eventBeatManager, runtimeExecutor, globalJavaUiManager](
           const EventBeat::SharedOwnerBox& ownerBox)
@@ -409,20 +395,10 @@ void Binding::installFabricUIManager(
   // Keep reference to config object and cache some feature flags here
   reactNativeConfig_ = config;
 
-  contextContainer->insert(
-      "CalculateTransformedFramesEnabled",
-      getFeatureFlagValue("calculateTransformedFramesEnabled"));
-
   CoreFeatures::enablePropIteratorSetter =
       getFeatureFlagValue("enableCppPropsIteratorSetter");
-  CoreFeatures::enableClonelessStateProgression =
-      getFeatureFlagValue("enableClonelessStateProgression");
   CoreFeatures::excludeYogaFromRawProps =
       getFeatureFlagValue("excludeYogaFromRawProps");
-
-  // RemoveDelete mega-op
-  ShadowViewMutation::PlatformSupportsRemoveDeleteTreeInstruction =
-      getFeatureFlagValue("enableRemoveDeleteTreeInstruction");
 
   auto toolbox = SchedulerToolbox{};
   toolbox.contextContainer = contextContainer;
@@ -433,13 +409,7 @@ void Binding::installFabricUIManager(
   toolbox.bridgelessBindingsExecutor = std::nullopt;
   toolbox.runtimeExecutor = runtimeExecutor;
 
-  toolbox.synchronousEventBeatFactory = synchronousBeatFactory;
   toolbox.asynchronousEventBeatFactory = asynchronousBeatFactory;
-
-  if (ReactNativeFeatureFlags::enableBackgroundExecutor()) {
-    backgroundExecutor_ = JBackgroundExecutor::create("fabric_bg");
-    toolbox.backgroundExecutor = backgroundExecutor_;
-  }
 
   animationDriver_ = std::make_shared<LayoutAnimationDriver>(
       runtimeExecutor, contextContainer, this);
@@ -474,30 +444,66 @@ std::shared_ptr<FabricMountingManager> Binding::getMountingManager(
 
 void Binding::schedulerDidFinishTransaction(
     const MountingCoordinator::Shared& mountingCoordinator) {
-  auto mountingManager = getMountingManager("schedulerDidFinishTransaction");
-  if (!mountingManager) {
-    return;
-  }
-
   auto mountingTransaction = mountingCoordinator->pullTransaction();
   if (!mountingTransaction.has_value()) {
     return;
   }
-  mountingManager->executeMount(*mountingTransaction);
+
+  std::unique_lock<std::mutex> lock(pendingTransactionsMutex_);
+  auto pendingTransaction = std::find_if(
+      pendingTransactions_.begin(),
+      pendingTransactions_.end(),
+      [&](const auto& transaction) {
+        return transaction.getSurfaceId() ==
+            mountingTransaction->getSurfaceId();
+      });
+
+  if (pendingTransaction != pendingTransactions_.end()) {
+    pendingTransaction->mergeWith(std::move(*mountingTransaction));
+  } else {
+    pendingTransactions_.push_back(std::move(*mountingTransaction));
+  }
 }
 
-void Binding::schedulerDidRequestPreliminaryViewAllocation(
-    const SurfaceId surfaceId,
-    const ShadowNode& shadowNode) {
-  if (!shadowNode.getTraits().check(ShadowNodeTraits::Trait::FormsView)) {
+void Binding::schedulerShouldRenderTransactions(
+    const MountingCoordinator::Shared& mountingCoordinator) {
+  auto mountingManager =
+      getMountingManager("schedulerShouldRenderTransactions");
+  if (!mountingManager) {
     return;
   }
 
+  if (ReactNativeFeatureFlags::
+          allowRecursiveCommitsWithSynchronousMountOnAndroid()) {
+    std::vector<MountingTransaction> pendingTransactions;
+
+    {
+      // Retain the lock to access the pending transactions but not to execute
+      // the mount operations because that method can call into this method
+      // again.
+      std::unique_lock<std::mutex> lock(pendingTransactionsMutex_);
+      pendingTransactions_.swap(pendingTransactions);
+    }
+
+    for (auto& transaction : pendingTransactions) {
+      mountingManager->executeMount(transaction);
+    }
+  } else {
+    std::unique_lock<std::mutex> lock(pendingTransactionsMutex_);
+    for (auto& transaction : pendingTransactions_) {
+      mountingManager->executeMount(transaction);
+    }
+    pendingTransactions_.clear();
+  }
+}
+
+void Binding::schedulerDidRequestPreliminaryViewAllocation(
+    const ShadowNode& shadowNode) {
   auto mountingManager = getMountingManager("preallocateView");
   if (!mountingManager) {
     return;
   }
-  mountingManager->preallocateShadowView(surfaceId, ShadowView(shadowNode));
+  mountingManager->maybePreallocateShadowView(shadowNode);
 }
 
 void Binding::schedulerDidDispatchCommand(

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a8b6653bdde573c793667b6d7ce3f0dd>>
+ * @generated SignedSource<<ecad8843c7f756d7efd5100d1a111b94>>
  */
 
 /**
@@ -42,24 +42,39 @@ bool NativeReactNativeFeatureFlags::commonTestFlag(
   return ReactNativeFeatureFlags::commonTestFlag();
 }
 
+bool NativeReactNativeFeatureFlags::allowCollapsableChildren(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::allowCollapsableChildren();
+}
+
+bool NativeReactNativeFeatureFlags::allowRecursiveCommitsWithSynchronousMountOnAndroid(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::allowRecursiveCommitsWithSynchronousMountOnAndroid();
+}
+
 bool NativeReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop();
 }
 
-bool NativeReactNativeFeatureFlags::enableBackgroundExecutor(
+bool NativeReactNativeFeatureFlags::destroyFabricSurfacesInReactInstanceManager(
     jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::enableBackgroundExecutor();
+  return ReactNativeFeatureFlags::destroyFabricSurfacesInReactInstanceManager();
 }
 
-bool NativeReactNativeFeatureFlags::enableCustomDrawOrderFabric(
+bool NativeReactNativeFeatureFlags::enableAlignItemsBaselineOnFabricIOS(
     jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::enableCustomDrawOrderFabric();
+  return ReactNativeFeatureFlags::enableAlignItemsBaselineOnFabricIOS();
 }
 
-bool NativeReactNativeFeatureFlags::enableFixForClippedSubviewsCrash(
+bool NativeReactNativeFeatureFlags::enableCleanTextInputYogaNode(
     jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::enableFixForClippedSubviewsCrash();
+  return ReactNativeFeatureFlags::enableCleanTextInputYogaNode();
+}
+
+bool NativeReactNativeFeatureFlags::enableGranularShadowTreeStateReconciliation(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableGranularShadowTreeStateReconciliation();
 }
 
 bool NativeReactNativeFeatureFlags::enableMicrotasks(
@@ -67,39 +82,109 @@ bool NativeReactNativeFeatureFlags::enableMicrotasks(
   return ReactNativeFeatureFlags::enableMicrotasks();
 }
 
-bool NativeReactNativeFeatureFlags::enableMountHooksAndroid(
+bool NativeReactNativeFeatureFlags::enablePropsUpdateReconciliationAndroid(
     jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::enableMountHooksAndroid();
+  return ReactNativeFeatureFlags::enablePropsUpdateReconciliationAndroid();
 }
 
-bool NativeReactNativeFeatureFlags::enableSpannableBuildingUnification(
+bool NativeReactNativeFeatureFlags::enableSynchronousStateUpdates(
     jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::enableSpannableBuildingUnification();
+  return ReactNativeFeatureFlags::enableSynchronousStateUpdates();
 }
 
-bool NativeReactNativeFeatureFlags::inspectorEnableCxxInspectorPackagerConnection(
+bool NativeReactNativeFeatureFlags::enableUIConsistency(
     jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::inspectorEnableCxxInspectorPackagerConnection();
+  return ReactNativeFeatureFlags::enableUIConsistency();
 }
 
-bool NativeReactNativeFeatureFlags::inspectorEnableHermesCDPAgent(
+bool NativeReactNativeFeatureFlags::fetchImagesInViewPreallocation(
     jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::inspectorEnableHermesCDPAgent();
+  return ReactNativeFeatureFlags::fetchImagesInViewPreallocation();
 }
 
-bool NativeReactNativeFeatureFlags::inspectorEnableModernCDPRegistry(
+bool NativeReactNativeFeatureFlags::fixIncorrectScrollViewStateUpdateOnAndroid(
     jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::inspectorEnableModernCDPRegistry();
+  return ReactNativeFeatureFlags::fixIncorrectScrollViewStateUpdateOnAndroid();
 }
 
-bool NativeReactNativeFeatureFlags::skipMountHookNotifications(
+bool NativeReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact(
     jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::skipMountHookNotifications();
+  return ReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact();
+}
+
+bool NativeReactNativeFeatureFlags::fixMissedFabricStateUpdatesOnAndroid(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::fixMissedFabricStateUpdatesOnAndroid();
+}
+
+bool NativeReactNativeFeatureFlags::forceBatchingMountItemsOnAndroid(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::forceBatchingMountItemsOnAndroid();
+}
+
+bool NativeReactNativeFeatureFlags::fuseboxEnabledDebug(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::fuseboxEnabledDebug();
+}
+
+bool NativeReactNativeFeatureFlags::fuseboxEnabledRelease(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::fuseboxEnabledRelease();
+}
+
+bool NativeReactNativeFeatureFlags::initEagerTurboModulesOnNativeModulesQueueAndroid(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::initEagerTurboModulesOnNativeModulesQueueAndroid();
+}
+
+bool NativeReactNativeFeatureFlags::lazyAnimationCallbacks(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::lazyAnimationCallbacks();
+}
+
+bool NativeReactNativeFeatureFlags::loadVectorDrawablesOnImages(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::loadVectorDrawablesOnImages();
+}
+
+bool NativeReactNativeFeatureFlags::setAndroidLayoutDirection(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::setAndroidLayoutDirection();
+}
+
+bool NativeReactNativeFeatureFlags::useImmediateExecutorInAndroidBridgeless(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::useImmediateExecutorInAndroidBridgeless();
 }
 
 bool NativeReactNativeFeatureFlags::useModernRuntimeScheduler(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::useModernRuntimeScheduler();
+}
+
+bool NativeReactNativeFeatureFlags::useNativeViewConfigsInBridgelessMode(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::useNativeViewConfigsInBridgelessMode();
+}
+
+bool NativeReactNativeFeatureFlags::useNewReactImageViewBackgroundDrawing(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::useNewReactImageViewBackgroundDrawing();
+}
+
+bool NativeReactNativeFeatureFlags::useRuntimeShadowNodeReferenceUpdate(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::useRuntimeShadowNodeReferenceUpdate();
+}
+
+bool NativeReactNativeFeatureFlags::useRuntimeShadowNodeReferenceUpdateOnLayout(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::useRuntimeShadowNodeReferenceUpdateOnLayout();
+}
+
+bool NativeReactNativeFeatureFlags::useStateAlignmentMechanism(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::useStateAlignmentMechanism();
 }
 
 } // namespace facebook::react

@@ -37,12 +37,12 @@ Pod::Spec.new do |s|
   s.header_dir             = "react/runtime"
   s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/Headers/Private/React-Core\" \"${PODS_TARGET_SRCROOT}/../..\"",
                                 "USE_HEADERMAP" => "YES",
-                                "CLANG_CXX_LANGUAGE_STANDARD" => "c++20",
+                                "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
                                 "GCC_WARN_PEDANTIC" => "YES" }
   s.compiler_flags       = folly_compiler_flags + ' ' + boost_compiler_flags
 
   if ENV['USE_FRAMEWORKS']
-    s.header_mappings_dir     = './'
+    s.header_mappings_dir     = '../../'
     s.module_name             = 'React_RuntimeCore'
   end
 

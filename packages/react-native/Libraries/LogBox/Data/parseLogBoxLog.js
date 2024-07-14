@@ -93,6 +93,15 @@ const RE_BABEL_CODE_FRAME_MARKER_PATTERN = new RegExp(
   'm',
 );
 
+export function hasComponentStack(args: $ReadOnlyArray<mixed>): boolean {
+  for (const arg of args) {
+    if (typeof arg === 'string' && isComponentStack(arg)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 export type ExtendedExceptionData = ExceptionData & {
   isComponentError: boolean,
   ...
@@ -123,6 +132,7 @@ export type Message = $ReadOnly<{|
 |}>;
 
 export type ComponentStack = $ReadOnlyArray<CodeFrame>;
+export type ComponentStackType = 'legacy' | 'stack';
 
 const SUBSTITUTION = UTFSequence.BOM + '%s';
 
@@ -216,24 +226,29 @@ function isComponentStack(consoleArgument: string) {
   );
 }
 
-export function parseComponentStack(message: string): ComponentStack {
+export function parseComponentStack(message: string): {
+  type: ComponentStackType,
+  stack: ComponentStack,
+} {
   // In newer versions of React, the component stack is formatted as a call stack frame.
   // First try to parse the component stack as a call stack frame, and if that doesn't
   // work then we'll fallback to the old custom component stack format parsing.
   const stack = parseErrorStack(message);
   if (stack && stack.length > 0) {
-    return stack.map(frame => ({
-      content: frame.methodName,
-      collapse: frame.collapse || false,
-      fileName: frame.file == null ? 'unknown' : frame.file,
-      location: {
-        column: frame.column == null ? -1 : frame.column,
-        row: frame.lineNumber == null ? -1 : frame.lineNumber,
-      },
-    }));
+    return {
+      type: 'stack',
+      stack: stack.map(frame => ({
+        content: frame.methodName,
+        collapse: frame.collapse || false,
+        fileName: frame.file == null ? 'unknown' : frame.file,
+        location: {
+          column: frame.column == null ? -1 : frame.column,
+          row: frame.lineNumber == null ? -1 : frame.lineNumber,
+        },
+      })),
+    };
   }
-
-  return message
+  const legacyStack = message
     .split(RE_COMPONENT_STACK_LINE_GLOBAL)
     .map(s => {
       if (!s) {
@@ -262,6 +277,11 @@ export function parseComponentStack(message: string): ComponentStack {
       return null;
     })
     .filter(Boolean);
+
+  return {
+    type: 'legacy',
+    stack: legacyStack,
+  };
 }
 
 export function parseLogBoxException(
@@ -280,6 +300,7 @@ export function parseLogBoxException(
       type: 'Metro Error',
       stack: [],
       isComponentError: false,
+      componentStackType: 'legacy',
       componentStack: [],
       codeFrame: {
         fileName,
@@ -308,6 +329,7 @@ export function parseLogBoxException(
       level: 'syntax',
       stack: [],
       isComponentError: false,
+      componentStackType: 'legacy',
       componentStack: [],
       codeFrame: {
         fileName,
@@ -338,6 +360,7 @@ export function parseLogBoxException(
         level: 'syntax',
         stack: [],
         isComponentError: false,
+        componentStackType: 'legacy',
         componentStack: [],
         codeFrame: {
           fileName,
@@ -359,6 +382,7 @@ export function parseLogBoxException(
       level: 'syntax',
       stack: error.stack,
       isComponentError: error.isComponentError,
+      componentStackType: 'legacy',
       componentStack: [],
       message: {
         content: message,
@@ -371,24 +395,39 @@ export function parseLogBoxException(
 
   const componentStack = error.componentStack;
   if (error.isFatal || error.isComponentError) {
-    return {
-      level: 'fatal',
-      stack: error.stack,
-      isComponentError: error.isComponentError,
-      componentStack:
-        componentStack != null ? parseComponentStack(componentStack) : [],
-      extraData: error.extraData,
-      ...parseInterpolation([message]),
-    };
+    if (componentStack != null) {
+      const {type, stack} = parseComponentStack(componentStack);
+      return {
+        level: 'fatal',
+        stack: error.stack,
+        isComponentError: error.isComponentError,
+        componentStackType: type,
+        componentStack: stack,
+        extraData: error.extraData,
+        ...parseInterpolation([message]),
+      };
+    } else {
+      return {
+        level: 'fatal',
+        stack: error.stack,
+        isComponentError: error.isComponentError,
+        componentStackType: 'legacy',
+        componentStack: [],
+        extraData: error.extraData,
+        ...parseInterpolation([message]),
+      };
+    }
   }
 
   if (componentStack != null) {
     // It is possible that console errors have a componentStack.
+    const {type, stack} = parseComponentStack(componentStack);
     return {
       level: 'error',
       stack: error.stack,
       isComponentError: error.isComponentError,
-      componentStack: parseComponentStack(componentStack),
+      componentStackType: type,
+      componentStack: stack,
       extraData: error.extraData,
       ...parseInterpolation([message]),
     };
@@ -405,14 +444,28 @@ export function parseLogBoxException(
   };
 }
 
+export function withoutANSIColorStyles(message: mixed): mixed {
+  if (typeof message !== 'string') {
+    return message;
+  }
+
+  return message.replace(
+    // eslint-disable-next-line no-control-regex
+    /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g,
+    '',
+  );
+}
+
 export function parseLogBoxLog(args: $ReadOnlyArray<mixed>): {|
   componentStack: ComponentStack,
+  componentStackType: ComponentStackType,
   category: Category,
   message: Message,
 |} {
-  const message = args[0];
+  const message = withoutANSIColorStyles(args[0]);
   let argsWithoutComponentStack: Array<mixed> = [];
   let componentStack: ComponentStack = [];
+  let componentStackType = 'legacy';
 
   // Extract component stack from warnings like "Some warning%s".
   if (
@@ -424,11 +477,13 @@ export function parseLogBoxLog(args: $ReadOnlyArray<mixed>): {|
     if (typeof lastArg === 'string' && isComponentStack(lastArg)) {
       argsWithoutComponentStack = args.slice(0, -1);
       argsWithoutComponentStack[0] = message.slice(0, -2);
-      componentStack = parseComponentStack(lastArg);
+      const {type, stack} = parseComponentStack(lastArg);
+      componentStack = stack;
+      componentStackType = type;
     }
   }
 
-  if (componentStack.length === 0) {
+  if (componentStack.length === 0 && argsWithoutComponentStack.length === 0) {
     // Try finding the component stack elsewhere.
     for (const arg of args) {
       if (typeof arg === 'string' && isComponentStack(arg)) {
@@ -442,7 +497,9 @@ export function parseLogBoxLog(args: $ReadOnlyArray<mixed>): {|
           argsWithoutComponentStack.push(arg.slice(0, messageEndIndex));
         }
 
-        componentStack = parseComponentStack(arg);
+        const {type, stack} = parseComponentStack(arg);
+        componentStack = stack;
+        componentStackType = type;
       } else {
         argsWithoutComponentStack.push(arg);
       }
@@ -452,5 +509,6 @@ export function parseLogBoxLog(args: $ReadOnlyArray<mixed>): {|
   return {
     ...parseInterpolation(argsWithoutComponentStack),
     componentStack,
+    componentStackType,
   };
 }

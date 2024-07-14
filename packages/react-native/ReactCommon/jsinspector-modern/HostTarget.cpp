@@ -29,7 +29,8 @@ class HostTargetSession {
   explicit HostTargetSession(
       std::unique_ptr<IRemoteConnection> remote,
       HostTargetController& targetController,
-      HostTarget::SessionMetadata sessionMetadata)
+      HostTargetMetadata hostMetadata,
+      VoidExecutor executor)
       : remote_(std::make_shared<RAIIRemoteConnection>(std::move(remote))),
         frontendChannel_(
             [remoteWeak = std::weak_ptr(remote_)](std::string_view message) {
@@ -40,8 +41,9 @@ class HostTargetSession {
         hostAgent_(
             frontendChannel_,
             targetController,
-            std::move(sessionMetadata),
-            state_) {}
+            std::move(hostMetadata),
+            state_,
+            executor) {}
 
   /**
    * Called by CallbackLocalConnection to send a message to this Session's
@@ -62,13 +64,20 @@ class HostTargetSession {
       return;
     }
 
-    // Catch exceptions that may arise from accessing dynamic params during
-    // request handling.
     try {
       hostAgent_.handleRequest(request);
-    } catch (const cdp::TypeError& e) {
+    }
+    // Catch exceptions that may arise from accessing dynamic params during
+    // request handling.
+    catch (const cdp::TypeError& e) {
       frontendChannel_(
           cdp::jsonError(request.id, cdp::ErrorCode::InvalidRequest, e.what()));
+      return;
+    }
+    // Catch exceptions for unrecognised or partially implemented CDP methods.
+    catch (const NotImplementedException& e) {
+      frontendChannel_(
+          cdp::jsonError(request.id, cdp::ErrorCode::MethodNotFound, e.what()));
       return;
     }
   }
@@ -98,6 +107,41 @@ class HostTargetSession {
   HostAgent hostAgent_;
 };
 
+/**
+ * Converts HostCommands to CDP method calls and sends them over a private
+ * connection to the HostTarget.
+ */
+class HostCommandSender {
+ public:
+  explicit HostCommandSender(HostTarget& target)
+      : connection_(target.connect(std::make_unique<NullRemoteConnection>())) {}
+
+  /**
+   * Send a \c HostCommand to the HostTarget.
+   */
+  void sendCommand(HostCommand command) {
+    cdp::RequestId id = makeRequestId();
+    switch (command) {
+      case HostCommand::DebuggerResume:
+        connection_->sendMessage(cdp::jsonRequest(id, "Debugger.resume"));
+        break;
+      case HostCommand::DebuggerStepOver:
+        connection_->sendMessage(cdp::jsonRequest(id, "Debugger.stepOver"));
+        break;
+      default:
+        assert(false && "unknown HostCommand");
+    }
+  }
+
+ private:
+  cdp::RequestId makeRequestId() {
+    return nextRequestId_++;
+  }
+
+  cdp::RequestId nextRequestId_{1};
+  std::unique_ptr<ILocalConnection> connection_;
+};
+
 std::shared_ptr<HostTarget> HostTarget::create(
     HostTargetDelegate& delegate,
     VoidExecutor executor) {
@@ -111,10 +155,12 @@ HostTarget::HostTarget(HostTargetDelegate& delegate)
       executionContextManager_{std::make_shared<ExecutionContextManager>()} {}
 
 std::unique_ptr<ILocalConnection> HostTarget::connect(
-    std::unique_ptr<IRemoteConnection> connectionToFrontend,
-    SessionMetadata sessionMetadata) {
+    std::unique_ptr<IRemoteConnection> connectionToFrontend) {
   auto session = std::make_shared<HostTargetSession>(
-      std::move(connectionToFrontend), controller_, std::move(sessionMetadata));
+      std::move(connectionToFrontend),
+      controller_,
+      delegate_.getMetadata(),
+      makeVoidExecutor(executorFromThis()));
   session->setCurrentInstance(currentInstance_.get());
   sessions_.insert(std::weak_ptr(session));
   return std::make_unique<CallbackLocalConnection>(
@@ -122,6 +168,9 @@ std::unique_ptr<ILocalConnection> HostTarget::connect(
 }
 
 HostTarget::~HostTarget() {
+  // HostCommandSender owns a session, so we must release it for the assertion
+  // below to be valid.
+  commandSender_.reset();
   // Sessions are owned by InspectorPackagerConnection, not by HostTarget, but
   // they hold a HostTarget& that we must guarantee is valid.
   assert(
@@ -151,6 +200,15 @@ void HostTarget::unregisterInstance(InstanceTarget& instance) {
   currentInstance_.reset();
 }
 
+void HostTarget::sendCommand(HostCommand command) {
+  executorFromThis()([command](HostTarget& self) {
+    if (!self.commandSender_) {
+      self.commandSender_ = std::make_unique<HostCommandSender>(self);
+    }
+    self.commandSender_->sendCommand(command);
+  });
+}
+
 HostTargetController::HostTargetController(HostTarget& target)
     : target_(target) {}
 
@@ -160,6 +218,43 @@ HostTargetDelegate& HostTargetController::getDelegate() {
 
 bool HostTargetController::hasInstance() const {
   return target_.hasInstance();
+}
+
+void HostTargetController::incrementPauseOverlayCounter() {
+  ++pauseOverlayCounter_;
+}
+
+bool HostTargetController::decrementPauseOverlayCounter() {
+  assert(pauseOverlayCounter_ > 0 && "Pause overlay counter underflow");
+  if (--pauseOverlayCounter_ == 0) {
+    return false;
+  }
+  return true;
+}
+
+folly::dynamic hostMetadataToDynamic(const HostTargetMetadata& metadata) {
+  folly::dynamic result = folly::dynamic::object;
+
+  if (metadata.appDisplayName) {
+    result["appDisplayName"] = metadata.appDisplayName.value();
+  }
+  if (metadata.appIdentifier) {
+    result["appIdentifier"] = metadata.appIdentifier.value();
+  }
+  if (metadata.deviceName) {
+    result["deviceName"] = metadata.deviceName.value();
+  }
+  if (metadata.integrationName) {
+    result["integrationName"] = metadata.integrationName.value();
+  }
+  if (metadata.platform) {
+    result["platform"] = metadata.platform.value();
+  }
+  if (metadata.reactNativeVersion) {
+    result["reactNativeVersion"] = metadata.reactNativeVersion.value();
+  }
+
+  return result;
 }
 
 } // namespace facebook::react::jsinspector_modern

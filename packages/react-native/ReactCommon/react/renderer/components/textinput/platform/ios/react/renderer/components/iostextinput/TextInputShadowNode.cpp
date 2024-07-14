@@ -8,6 +8,7 @@
 #include "TextInputShadowNode.h"
 
 #include <react/debug/react_native_assert.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/attributedstring/AttributedStringBox.h>
 #include <react/renderer/attributedstring/TextAttributes.h>
 #include <react/renderer/core/LayoutConstraints.h>
@@ -18,6 +19,24 @@
 namespace facebook::react {
 
 extern const char TextInputComponentName[] = "TextInput";
+
+TextInputShadowNode::TextInputShadowNode(
+    const ShadowNode& sourceShadowNode,
+    const ShadowNodeFragment& fragment)
+    : ConcreteViewShadowNode(sourceShadowNode, fragment) {
+  auto& sourceTextInputShadowNode =
+      static_cast<const TextInputShadowNode&>(sourceShadowNode);
+
+  if (ReactNativeFeatureFlags::enableCleanTextInputYogaNode()) {
+    if (!fragment.children && !fragment.props &&
+        sourceTextInputShadowNode.getIsLayoutClean()) {
+      // This ParagraphShadowNode was cloned but did not change
+      // in a way that affects its layout. Let's mark it clean
+      // to stop Yoga from traversing it.
+      cleanLayout();
+    }
+  }
+}
 
 AttributedStringBox TextInputShadowNode::attributedStringBoxToMeasure(
     const LayoutContext& layoutContext) const {
@@ -117,9 +136,36 @@ Size TextInputShadowNode::measureContent(
           attributedStringBoxToMeasure(layoutContext),
           getConcreteProps().getEffectiveParagraphAttributes(),
           textLayoutContext,
-          layoutConstraints,
-          nullptr)
+          layoutConstraints)
       .size;
+}
+
+Float TextInputShadowNode::baseline(
+    const LayoutContext& layoutContext,
+    Size size) const {
+  auto attributedString = getAttributedString(layoutContext);
+
+  if (attributedString.isEmpty()) {
+    auto placeholderString = !getConcreteProps().placeholder.empty()
+        ? getConcreteProps().placeholder
+        : BaseTextShadowNode::getEmptyPlaceholder();
+    auto textAttributes = getConcreteProps().getEffectiveTextAttributes(
+        layoutContext.fontSizeMultiplier);
+    attributedString.appendFragment(
+        {std::move(placeholderString), textAttributes, {}});
+  }
+
+  // Yoga expects a baseline relative to the Node's border-box edge instead of
+  // the content, so we need to adjust by the padding and border widths, which
+  // have already been set by the time of baseline alignment
+  auto top = YGNodeLayoutGetBorder(&yogaNode_, YGEdgeTop) +
+      YGNodeLayoutGetPadding(&yogaNode_, YGEdgeTop);
+
+  return textLayoutManager_->baseline(
+             attributedString,
+             getConcreteProps().getEffectiveParagraphAttributes(),
+             size) +
+      top;
 }
 
 void TextInputShadowNode::layout(LayoutContext layoutContext) {

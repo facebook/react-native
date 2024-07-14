@@ -18,6 +18,7 @@ import type {
   NativeModuleEnumMap,
   NativeModuleEnumMembers,
   NativeModuleEnumMemberType,
+  NativeModuleEventEmitterShape,
   NativeModuleFunctionTypeAnnotation,
   NativeModulePropertyShape,
   NativeModuleTypeAnnotation,
@@ -28,11 +29,10 @@ import type {AliasResolver} from './Utils';
 
 const {unwrapNullable} = require('../../parsers/parsers-commons');
 const {wrapOptional} = require('../TypeUtils/Cxx');
-const {getEnumName, toSafeCppString} = require('../Utils');
+const {getEnumName, toPascalCase, toSafeCppString} = require('../Utils');
 const {indent} = require('../Utils');
 const {
   createAliasResolver,
-  getAreEnumMembersInteger,
   getModules,
   isArrayRecursiveMember,
   isDirectRecursiveMember,
@@ -65,10 +65,12 @@ public:
 const ModuleSpecClassDeclarationTemplate = ({
   hasteModuleName,
   moduleName,
+  moduleEventEmitters,
   moduleProperties,
 }: $ReadOnly<{
   hasteModuleName: string,
   moduleName: string,
+  moduleEventEmitters: EventEmitterCpp[],
   moduleProperties: string[],
 }>) => {
   return `template <typename T>
@@ -84,16 +86,20 @@ protected:
   ${hasteModuleName}CxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{${hasteModuleName}CxxSpec::kModuleName}, jsInvoker),
       delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
+${moduleEventEmitters.map(e => e.emitFunction).join('\n')}
 
 private:
   class Delegate : public ${hasteModuleName}CxxSpecJSI {
   public:
     Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      ${hasteModuleName}CxxSpecJSI(std::move(jsInvoker)), instance_(instance) {}
+      ${hasteModuleName}CxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+${moduleEventEmitters.map(e => e.registerEventEmitter).join('\n')}
+    }
 
     ${indent(moduleProperties.join('\n'), 4)}
 
   private:
+    friend class ${hasteModuleName}CxxSpec;
     T *instance_;
   };
 
@@ -212,7 +218,7 @@ function translatePrimitiveJSTypeToCpp(
 }
 
 function createStructsString(
-  moduleName: string,
+  hasteModuleName: string,
   aliasMap: NativeModuleAliasMap,
   resolveAlias: AliasResolver,
   enumMap: NativeModuleEnumMap,
@@ -222,7 +228,7 @@ function createStructsString(
     v: NamedShape<Nullable<NativeModuleBaseTypeAnnotation>>,
   ) =>
     translatePrimitiveJSTypeToCpp(
-      moduleName,
+      hasteModuleName,
       parentObjectAlias,
       v.typeAnnotation,
       false,
@@ -231,135 +237,53 @@ function createStructsString(
       enumMap,
     );
 
-  // TODO: T171006733 [Begin] Remove deprecated Cxx TMs structs after a new release.
-  return (
-    Object.keys(aliasMap)
-      .map(alias => {
-        const value = aliasMap[alias];
-        if (value.properties.length === 0) {
-          return '';
+  return Object.keys(aliasMap)
+    .map(alias => {
+      const value = aliasMap[alias];
+      if (value.properties.length === 0) {
+        return '';
+      }
+      const structName = `${hasteModuleName}${alias}`;
+      const templateParameter = value.properties.filter(
+        v =>
+          !isDirectRecursiveMember(alias, v.typeAnnotation) &&
+          !isArrayRecursiveMember(alias, v.typeAnnotation),
+      );
+      const templateParameterWithTypename = templateParameter
+        .map((v, i) => `typename P${i}`)
+        .join(', ');
+      const templateParameterWithoutTypename = templateParameter
+        .map((v, i) => `P${i}`)
+        .join(', ');
+      let i = -1;
+      const templateMemberTypes = value.properties.map(v => {
+        if (isDirectRecursiveMember(alias, v.typeAnnotation)) {
+          return `std::unique_ptr<${structName}<${templateParameterWithoutTypename}>> ${v.name}`;
+        } else if (isArrayRecursiveMember(alias, v.typeAnnotation)) {
+          const [nullable] = unwrapNullable<NativeModuleTypeAnnotation>(
+            v.typeAnnotation,
+          );
+          return (
+            (nullable
+              ? `std::optional<std::vector<${structName}<${templateParameterWithoutTypename}>>>`
+              : `std::vector<${structName}<${templateParameterWithoutTypename}>>`) +
+            ` ${v.name}`
+          );
+        } else {
+          i++;
+          return `P${i} ${v.name}`;
         }
-        const structName = `${moduleName}Base${alias}`;
-        const structNameNew = `${moduleName}${alias}`;
-        const templateParameterWithTypename = value.properties
-          .map((v, i) => `typename P${i}`)
-          .join(', ');
-        const templateParameter = value.properties
-          .map((v, i) => 'P' + i)
-          .join(', ');
-        const debugParameterConversion = value.properties
-          .map(
-            (v, i) => `  static ${getCppType(alias, v)} ${
-              v.name
-            }ToJs(jsi::Runtime &rt, P${i} value) {
+      });
+      const debugParameterConversion = value.properties
+        .map(
+          v => `  static ${getCppType(alias, v)} ${
+            v.name
+          }ToJs(jsi::Runtime &rt, decltype(types.${v.name}) value) {
     return bridging::toJs(rt, value);
   }`,
-          )
-          .join('\n\n');
-        return `
-#pragma mark - ${structName}
-
-template <${templateParameterWithTypename}>
-struct [[deprecated("Use ${structNameNew} instead.")]] ${structName} {
-${value.properties.map((v, i) => '  P' + i + ' ' + v.name).join(';\n')};
-  bool operator==(const ${structName} &other) const {
-    return ${value.properties
-      .map(v => `${v.name} == other.${v.name}`)
-      .join(' && ')};
-  }
-};
-
-template <${templateParameterWithTypename}>
-struct [[deprecated("Use ${structNameNew}Bridging instead.")]] ${structName}Bridging {
-  static ${structName}<${templateParameter}> fromJs(
-      jsi::Runtime &rt,
-      const jsi::Object &value,
-      const std::shared_ptr<CallInvoker> &jsInvoker) {
-    ${structName}<${templateParameter}> result{
-${value.properties
-  .map(
-    (v, i) =>
-      `      bridging::fromJs<P${i}>(rt, value.getProperty(rt, "${v.name}"), jsInvoker)`,
-  )
-  .join(',\n')}};
-    return result;
-  }
-
-#ifdef DEBUG
-${debugParameterConversion}
-#endif
-
-  static jsi::Object toJs(
-      jsi::Runtime &rt,
-      const ${structName}<${templateParameter}> &value,
-      const std::shared_ptr<CallInvoker> &jsInvoker) {
-    auto result = facebook::jsi::Object(rt);
-${value.properties
-  .map((v, i) => {
-    if (v.optional) {
-      return `    if (value.${v.name}) {
-      result.setProperty(rt, "${v.name}", bridging::toJs(rt, value.${v.name}.value(), jsInvoker));
-    }`;
-    } else {
-      return `    result.setProperty(rt, "${v.name}", bridging::toJs(rt, value.${v.name}, jsInvoker));`;
-    }
-  })
-  .join('\n')}
-    return result;
-  }
-};
-
-`;
-      })
-      .join('\n') +
-    // TODO: T171006733 [End] Remove deprecated Cxx TMs structs after a new release.
-    Object.keys(aliasMap)
-      .map(alias => {
-        const value = aliasMap[alias];
-        if (value.properties.length === 0) {
-          return '';
-        }
-        const structName = `${moduleName}${alias}`;
-        const templateParameter = value.properties.filter(
-          v =>
-            !isDirectRecursiveMember(alias, v.typeAnnotation) &&
-            !isArrayRecursiveMember(alias, v.typeAnnotation),
-        );
-        const templateParameterWithTypename = templateParameter
-          .map((v, i) => `typename P${i}`)
-          .join(', ');
-        const templateParameterWithoutTypename = templateParameter
-          .map((v, i) => `P${i}`)
-          .join(', ');
-        let i = -1;
-        const templateMemberTypes = value.properties.map(v => {
-          if (isDirectRecursiveMember(alias, v.typeAnnotation)) {
-            return `std::unique_ptr<${structName}<${templateParameterWithoutTypename}>> ${v.name}`;
-          } else if (isArrayRecursiveMember(alias, v.typeAnnotation)) {
-            const [nullable] = unwrapNullable<NativeModuleTypeAnnotation>(
-              v.typeAnnotation,
-            );
-            return (
-              (nullable
-                ? `std::optional<std::vector<${structName}<${templateParameterWithoutTypename}>>>`
-                : `std::vector<${structName}<${templateParameterWithoutTypename}>>`) +
-              ` ${v.name}`
-            );
-          } else {
-            i++;
-            return `P${i} ${v.name}`;
-          }
-        });
-        const debugParameterConversion = value.properties
-          .map(
-            v => `  static ${getCppType(alias, v)} ${
-              v.name
-            }ToJs(jsi::Runtime &rt, decltype(types.${v.name}) value) {
-    return bridging::toJs(rt, value);
-  }`,
-          )
-          .join('\n\n');
-        return `
+        )
+        .join('\n\n');
+      return `
 #pragma mark - ${structName}
 
 template <${templateParameterWithTypename}>
@@ -422,12 +346,11 @@ ${value.properties
 };
 
 `;
-      })
-      .join('\n')
-  );
+    })
+    .join('\n');
 }
 
-type NativeEnumMemberValueType = 'std::string' | 'int32_t' | 'float';
+type NativeEnumMemberValueType = 'std::string' | 'int32_t';
 
 const EnumTemplate = ({
   enumName,
@@ -474,24 +397,18 @@ struct Bridging<${enumName}> {
 };
 
 function generateEnum(
-  moduleName: string,
+  hasteModuleName: string,
   origEnumName: string,
   members: NativeModuleEnumMembers,
   memberType: NativeModuleEnumMemberType,
 ): string {
-  const enumName = getEnumName(moduleName, origEnumName);
+  const enumName = getEnumName(hasteModuleName, origEnumName);
 
   const nativeEnumMemberType: NativeEnumMemberValueType =
-    memberType === 'StringTypeAnnotation'
-      ? 'std::string'
-      : getAreEnumMembersInteger(members)
-      ? 'int32_t'
-      : 'float';
+    memberType === 'StringTypeAnnotation' ? 'std::string' : 'int32_t';
 
   const getMemberValueAppearance = (value: string) =>
-    memberType === 'StringTypeAnnotation'
-      ? `"${value}"`
-      : `${value}${nativeEnumMemberType === 'float' ? 'f' : ''}`;
+    memberType === 'StringTypeAnnotation' ? `"${value}"` : `${value}`;
 
   const fromCases =
     members
@@ -519,7 +436,7 @@ function generateEnum(
 
   return EnumTemplate({
     enumName,
-    values: members.map(member => member.name).join(', '),
+    values: members.map(member => toSafeCppString(member.name)).join(', '),
     fromCases,
     toCases,
     nativeEnumMemberType,
@@ -527,14 +444,14 @@ function generateEnum(
 }
 
 function createEnums(
-  moduleName: string,
+  hasteModuleName: string,
   enumMap: NativeModuleEnumMap,
   resolveAlias: AliasResolver,
 ): string {
   return Object.entries(enumMap)
     .map(([enumName, enumNode]) => {
       return generateEnum(
-        moduleName,
+        hasteModuleName,
         enumName,
         enumNode.members,
         enumNode.memberType,
@@ -545,12 +462,12 @@ function createEnums(
 }
 
 function translatePropertyToCpp(
-  moduleName: string,
+  hasteModuleName: string,
   prop: NativeModulePropertyShape,
   resolveAlias: AliasResolver,
   enumMap: NativeModuleEnumMap,
   abstract: boolean = false,
-) {
+): string {
   const [propTypeAnnotation] =
     unwrapNullable<NativeModuleFunctionTypeAnnotation>(prop.typeAnnotation);
 
@@ -560,7 +477,7 @@ function translatePropertyToCpp(
 
   const paramTypes = propTypeAnnotation.params.map(param => {
     const translatedParam = translatePrimitiveJSTypeToCpp(
-      moduleName,
+      hasteModuleName,
       null,
       param.typeAnnotation,
       param.optional,
@@ -573,7 +490,7 @@ function translatePropertyToCpp(
   });
 
   const returnType = translatePrimitiveJSTypeToCpp(
-    moduleName,
+    hasteModuleName,
     null,
     propTypeAnnotation.returnTypeAnnotation,
     false,
@@ -601,6 +518,69 @@ function translatePropertyToCpp(
 }`;
 }
 
+type EventEmitterCpp = {
+  isVoidTypeAnnotation: boolean,
+  templateName: string,
+  registerEventEmitter: string,
+  emitFunction: string,
+};
+
+function translateEventEmitterToCpp(
+  moduleName: string,
+  eventEmitter: NativeModuleEventEmitterShape,
+  resolveAlias: AliasResolver,
+  enumMap: NativeModuleEnumMap,
+): EventEmitterCpp {
+  const isVoidTypeAnnotation =
+    eventEmitter.typeAnnotation.typeAnnotation.type === 'VoidTypeAnnotation';
+  const templateName = `${toPascalCase(eventEmitter.name)}Type`;
+  const jsiType = translatePrimitiveJSTypeToCpp(
+    moduleName,
+    null,
+    eventEmitter.typeAnnotation.typeAnnotation,
+    false,
+    typeName =>
+      `Unsupported type for eventEmitter "${eventEmitter.name}" in ${moduleName}. Found: ${typeName}`,
+    resolveAlias,
+    enumMap,
+  );
+  const isArray = jsiType === 'jsi::Array';
+  return {
+    isVoidTypeAnnotation: isVoidTypeAnnotation,
+    templateName: isVoidTypeAnnotation ? `/*${templateName}*/` : templateName,
+    registerEventEmitter: `      eventEmitterMap_["${
+      eventEmitter.name
+    }"] = std::make_shared<AsyncEventEmitter<${
+      isVoidTypeAnnotation ? '' : 'jsi::Value'
+    }>>();`,
+    emitFunction: `
+  ${
+    isVoidTypeAnnotation ? '' : `template <typename ${templateName}> `
+  }void emit${toPascalCase(eventEmitter.name)}(${
+      isVoidTypeAnnotation
+        ? ''
+        : `${isArray ? `std::vector<${templateName}>` : templateName} value`
+    }) {${
+      isVoidTypeAnnotation
+        ? ''
+        : `
+    static_assert(bridging::supportsFromJs<${
+      isArray ? `std::vector<${templateName}>` : templateName
+    }, ${jsiType}>, "value cannnot be converted to ${jsiType}");`
+    }
+    static_cast<AsyncEventEmitter<${
+      isVoidTypeAnnotation ? '' : 'jsi::Value'
+    }>&>(*delegate_.eventEmitterMap_["${eventEmitter.name}"]).emit(${
+      isVoidTypeAnnotation
+        ? ''
+        : `[jsInvoker = jsInvoker_, eventValue = value](jsi::Runtime& rt) -> jsi::Value {
+      return bridging::toJs(rt, eventValue, jsInvoker);
+    }`
+    });
+  }`,
+  };
+}
+
 module.exports = {
   generate(
     libraryName: string,
@@ -612,27 +592,23 @@ module.exports = {
     const nativeModules = getModules(schema);
 
     const modules = Object.keys(nativeModules).flatMap(hasteModuleName => {
-      const {
-        aliasMap,
-        enumMap,
-        spec: {properties},
-        moduleName,
-      } = nativeModules[hasteModuleName];
+      const {aliasMap, enumMap, spec, moduleName} =
+        nativeModules[hasteModuleName];
       const resolveAlias = createAliasResolver(aliasMap);
       const structs = createStructsString(
-        moduleName,
+        hasteModuleName,
         aliasMap,
         resolveAlias,
         enumMap,
       );
-      const enums = createEnums(moduleName, enumMap, resolveAlias);
+      const enums = createEnums(hasteModuleName, enumMap, resolveAlias);
 
       return [
         ModuleClassDeclarationTemplate({
           hasteModuleName,
-          moduleProperties: properties.map(prop =>
+          moduleProperties: spec.methods.map(prop =>
             translatePropertyToCpp(
-              moduleName,
+              hasteModuleName,
               prop,
               resolveAlias,
               enumMap,
@@ -645,8 +621,21 @@ module.exports = {
         ModuleSpecClassDeclarationTemplate({
           hasteModuleName,
           moduleName,
-          moduleProperties: properties.map(prop =>
-            translatePropertyToCpp(moduleName, prop, resolveAlias, enumMap),
+          moduleEventEmitters: spec.eventEmitters.map(eventEmitter =>
+            translateEventEmitterToCpp(
+              moduleName,
+              eventEmitter,
+              resolveAlias,
+              enumMap,
+            ),
+          ),
+          moduleProperties: spec.methods.map(prop =>
+            translatePropertyToCpp(
+              hasteModuleName,
+              prop,
+              resolveAlias,
+              enumMap,
+            ),
           ),
         }),
       ];

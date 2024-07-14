@@ -17,11 +17,34 @@ namespace facebook::react {
 /**
  * An interface that represents an instance of a JS VM
  */
-class JSRuntime : public jsinspector_modern::RuntimeTargetDelegate {
+class JSRuntime {
  public:
   virtual jsi::Runtime& getRuntime() noexcept = 0;
 
   virtual ~JSRuntime() = default;
+
+  /**
+   * Get a reference to the \c RuntimeTargetDelegate owned (or implemented) by
+   * this JSRuntime. This reference must remain valid for the duration of the
+   * JSRuntime's lifetime.
+   */
+  virtual jsinspector_modern::RuntimeTargetDelegate& getRuntimeTargetDelegate();
+
+  /**
+   * Run initialize work that must happen on the runtime's JS thread. Used for
+   * initializing TLS and registering profiling.
+   *
+   * TODO T194671568 Move the runtime constructor to the JsThread
+   */
+  virtual void unstable_initializeOnJsThread() {}
+
+ private:
+  /**
+   * Initialized by \c getRuntimeTargetDelegate if not overridden, and then
+   * never changes.
+   */
+  std::optional<jsinspector_modern::FallbackRuntimeTargetDelegate>
+      runtimeTargetDelegate_;
 };
 
 /**
@@ -41,14 +64,6 @@ class JSRuntimeFactory {
 class JSIRuntimeHolder : public JSRuntime {
  public:
   jsi::Runtime& getRuntime() noexcept override;
-  std::unique_ptr<jsinspector_modern::RuntimeAgentDelegate> createAgentDelegate(
-      jsinspector_modern::FrontendChannel frontendChannel,
-      jsinspector_modern::SessionState& sessionState,
-      std::unique_ptr<jsinspector_modern::RuntimeAgentDelegate::ExportedState>
-          previouslyExportedState,
-      const jsinspector_modern::ExecutionContextDescription&
-          executionContextDescription,
-      RuntimeExecutor runtimeExecutor) override;
 
   explicit JSIRuntimeHolder(std::unique_ptr<jsi::Runtime> runtime);
 

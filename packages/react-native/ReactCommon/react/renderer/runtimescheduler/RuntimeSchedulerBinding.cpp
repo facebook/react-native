@@ -61,8 +61,9 @@ RuntimeSchedulerBinding::RuntimeSchedulerBinding(
     std::shared_ptr<RuntimeScheduler> runtimeScheduler)
     : runtimeScheduler_(std::move(runtimeScheduler)) {}
 
-bool RuntimeSchedulerBinding::getIsSynchronous() const {
-  return runtimeScheduler_->getIsSynchronous();
+std::shared_ptr<RuntimeScheduler>
+RuntimeSchedulerBinding::getRuntimeScheduler() noexcept {
+  return runtimeScheduler_;
 }
 
 jsi::Value RuntimeSchedulerBinding::get(

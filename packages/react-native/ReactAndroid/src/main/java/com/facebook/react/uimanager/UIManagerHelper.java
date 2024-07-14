@@ -36,13 +36,17 @@ public class UIManagerHelper {
   public static final int PADDING_TOP_INDEX = 2;
   public static final int PADDING_BOTTOM_INDEX = 3;
 
-  /** @return a {@link UIManager} that can handle the react tag received by parameter. */
+  /**
+   * @return a {@link UIManager} that can handle the react tag received by parameter.
+   */
   @Nullable
   public static UIManager getUIManagerForReactTag(ReactContext context, int reactTag) {
     return getUIManager(context, getUIManagerType(reactTag));
   }
 
-  /** @return a {@link UIManager} that can handle the react tag received by parameter. */
+  /**
+   * @return a {@link UIManager} that can handle the react tag received by parameter.
+   */
   @Nullable
   public static UIManager getUIManager(ReactContext context, @UIManagerType int uiManagerType) {
     return getUIManager(context, uiManagerType, true);
@@ -78,7 +82,8 @@ public class UIManagerHelper {
       ReactSoftExceptionLogger.logSoftException(
           TAG,
           new ReactNoCrashSoftException(
-              "Cannot get UIManager because the context doesn't contain an active CatalystInstance."));
+              "Cannot get UIManager because the context doesn't contain an active"
+                  + " CatalystInstance."));
       if (returnNullIfCatalystIsInactive) {
         return null;
       }

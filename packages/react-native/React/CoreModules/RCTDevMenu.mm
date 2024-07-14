@@ -396,7 +396,7 @@ RCT_EXPORT_METHOD(show)
       ? UIAlertControllerStyleActionSheet
       : UIAlertControllerStyleAlert;
 
-  NSString *devMenuType = self.bridge ? @"Bridge" : @"Bridgeless";
+  NSString *devMenuType = [self.bridge isKindOfClass:RCTBridge.class] ? @"Bridge" : @"Bridgeless";
   NSString *devMenuTitle = [NSString stringWithFormat:@"React Native Dev Menu (%@)", devMenuType];
 
   _actionSheet = [UIAlertController alertControllerWithTitle:devMenuTitle message:description preferredStyle:style];

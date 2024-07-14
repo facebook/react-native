@@ -33,7 +33,8 @@ class ReactScrollViewAccessibilityDelegate extends AccessibilityDelegateCompat {
       ReactSoftExceptionLogger.logSoftException(
           TAG,
           new AssertionException(
-              "ReactScrollViewAccessibilityDelegate should only be used with ReactScrollView or ReactHorizontalScrollView, not with class: "
+              "ReactScrollViewAccessibilityDelegate should only be used with ReactScrollView or"
+                  + " ReactHorizontalScrollView, not with class: "
                   + host.getClass().getSimpleName()));
     }
   }
@@ -47,10 +48,12 @@ class ReactScrollViewAccessibilityDelegate extends AccessibilityDelegateCompat {
       ReactSoftExceptionLogger.logSoftException(
           TAG,
           new AssertionException(
-              "ReactScrollViewAccessibilityDelegate should only be used with ReactScrollView or ReactHorizontalScrollView, not with class: "
+              "ReactScrollViewAccessibilityDelegate should only be used with ReactScrollView or"
+                  + " ReactHorizontalScrollView, not with class: "
                   + host.getClass().getSimpleName()));
     }
-  };
+  }
+  ;
 
   private void onInitializeAccessibilityEventInternal(View view, AccessibilityEvent event) {
     final ReadableMap accessibilityCollection =
@@ -154,4 +157,5 @@ class ReactScrollViewAccessibilityDelegate extends AccessibilityDelegateCompat {
       info.setScrollable(scrollView.getScrollEnabled());
     }
   }
-};
+}
+;

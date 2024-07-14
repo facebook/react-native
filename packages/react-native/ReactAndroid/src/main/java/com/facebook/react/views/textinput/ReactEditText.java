@@ -10,6 +10,7 @@ package com.facebook.react.views.textinput;
 import static com.facebook.react.uimanager.UIManagerHelper.getReactContext;
 
 import android.content.Context;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
@@ -117,7 +118,9 @@ public class ReactEditText extends AppCompatEditText {
   private int mFontWeight = ReactConstants.UNSET;
   private int mFontStyle = ReactConstants.UNSET;
   private boolean mAutoFocus = false;
+  private boolean mContextMenuHidden = false;
   private boolean mDidAttachToWindow = false;
+  private boolean mSelectTextOnFocus = false;
   private @Nullable String mPlaceholder = null;
 
   private final ReactViewBackgroundManager mReactBackgroundManager;
@@ -190,6 +193,9 @@ public class ReactEditText extends AppCompatEditText {
            */
           @Override
           public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            if (mContextMenuHidden) {
+              return false;
+            }
             menu.removeItem(android.R.id.pasteAsPlainText);
             return true;
           }
@@ -233,6 +239,12 @@ public class ReactEditText extends AppCompatEditText {
   @Override
   protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
     onContentSizeChange();
+    if (mSelectTextOnFocus && isFocused()) {
+      // Explicitly call this method to select text when layout is drawn
+      selectAll();
+      // Prevent text on being selected for next layout pass
+      mSelectTextOnFocus = false;
+    }
   }
 
   @Override
@@ -1072,8 +1084,8 @@ public class ReactEditText extends AppCompatEditText {
     mReactBackgroundManager.setBorderWidth(position, width);
   }
 
-  public void setBorderColor(int position, float color, float alpha) {
-    mReactBackgroundManager.setBorderColor(position, color, alpha);
+  public void setBorderColor(int position, @Nullable Integer color) {
+    mReactBackgroundManager.setBorderColor(position, color);
   }
 
   public int getBorderColor(int position) {
@@ -1118,6 +1130,15 @@ public class ReactEditText extends AppCompatEditText {
 
   public void setAutoFocus(boolean autoFocus) {
     mAutoFocus = autoFocus;
+  }
+
+  public void setSelectTextOnFocus(boolean selectTextOnFocus) {
+    super.setSelectAllOnFocus(selectTextOnFocus);
+    mSelectTextOnFocus = selectTextOnFocus;
+  }
+
+  public void setContextMenuHidden(boolean contextMenuHidden) {
+    mContextMenuHidden = contextMenuHidden;
   }
 
   protected void applyTextAttributes() {
@@ -1219,11 +1240,21 @@ public class ReactEditText extends AppCompatEditText {
     }
 
     addSpansFromStyleAttributes(sb);
-    TextLayoutManager.setCachedSpannabledForTag(getId(), sb);
+    TextLayoutManager.setCachedSpannableForTag(getId(), sb);
   }
 
   void setEventDispatcher(@Nullable EventDispatcher eventDispatcher) {
     mEventDispatcher = eventDispatcher;
+  }
+
+  public void setOverflow(@Nullable String overflow) {
+    mReactBackgroundManager.setOverflow(overflow);
+  }
+
+  @Override
+  public void onDraw(Canvas canvas) {
+    mReactBackgroundManager.maybeClipToPaddingBox(canvas);
+    super.onDraw(canvas);
   }
 
   /**

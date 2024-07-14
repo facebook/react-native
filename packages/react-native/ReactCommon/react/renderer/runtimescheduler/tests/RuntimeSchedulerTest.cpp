@@ -332,6 +332,71 @@ TEST_P(RuntimeSchedulerTest, scheduleTwoTasksWithDifferentPriorities) {
   EXPECT_EQ(hostFunctionCallCount_, 2);
 }
 
+TEST_P(RuntimeSchedulerTest, scheduleTwoTasksWithAllPriorities) {
+  uint idlePriorityTaskCallOrder = 0;
+  auto idlePriTask = createHostFunctionFromLambda(
+      [this, &idlePriorityTaskCallOrder](bool /*unused*/) {
+        idlePriorityTaskCallOrder = hostFunctionCallCount_;
+        return jsi::Value::undefined();
+      });
+
+  uint lowPriorityTaskCallOrder = 0;
+  auto lowPriTask = createHostFunctionFromLambda(
+      [this, &lowPriorityTaskCallOrder](bool /*unused*/) {
+        lowPriorityTaskCallOrder = hostFunctionCallCount_;
+        return jsi::Value::undefined();
+      });
+
+  uint normalPriorityTaskCallOrder = 0;
+  auto normalPriTask = createHostFunctionFromLambda(
+      [this, &normalPriorityTaskCallOrder](bool /*unused*/) {
+        normalPriorityTaskCallOrder = hostFunctionCallCount_;
+        return jsi::Value::undefined();
+      });
+
+  uint userBlockingPriorityTaskCallOrder = 0;
+  auto userBlockingPriTask = createHostFunctionFromLambda(
+      [this, &userBlockingPriorityTaskCallOrder](bool /*unused*/) {
+        userBlockingPriorityTaskCallOrder = hostFunctionCallCount_;
+        return jsi::Value::undefined();
+      });
+
+  uint immediatePriorityTaskCallOrder = 0;
+  auto immediatePriTask = createHostFunctionFromLambda(
+      [this, &immediatePriorityTaskCallOrder](bool /*unused*/) {
+        immediatePriorityTaskCallOrder = hostFunctionCallCount_;
+        return jsi::Value::undefined();
+      });
+
+  runtimeScheduler_->scheduleTask(
+      SchedulerPriority::IdlePriority, std::move(idlePriTask));
+  runtimeScheduler_->scheduleTask(
+      SchedulerPriority::LowPriority, std::move(lowPriTask));
+  runtimeScheduler_->scheduleTask(
+      SchedulerPriority::NormalPriority, std::move(normalPriTask));
+  runtimeScheduler_->scheduleTask(
+      SchedulerPriority::UserBlockingPriority, std::move(userBlockingPriTask));
+  runtimeScheduler_->scheduleTask(
+      SchedulerPriority::ImmediatePriority, std::move(immediatePriTask));
+
+  EXPECT_EQ(idlePriorityTaskCallOrder, 0);
+  EXPECT_EQ(lowPriorityTaskCallOrder, 0);
+  EXPECT_EQ(normalPriorityTaskCallOrder, 0);
+  EXPECT_EQ(userBlockingPriorityTaskCallOrder, 0);
+  EXPECT_EQ(immediatePriorityTaskCallOrder, 0);
+  EXPECT_EQ(stubQueue_->size(), 1);
+
+  stubQueue_->tick();
+
+  EXPECT_EQ(idlePriorityTaskCallOrder, 5);
+  EXPECT_EQ(lowPriorityTaskCallOrder, 4);
+  EXPECT_EQ(normalPriorityTaskCallOrder, 3);
+  EXPECT_EQ(userBlockingPriorityTaskCallOrder, 2);
+  EXPECT_EQ(immediatePriorityTaskCallOrder, 1);
+  EXPECT_EQ(stubQueue_->size(), 0);
+  EXPECT_EQ(hostFunctionCallCount_, 5);
+}
+
 TEST_P(RuntimeSchedulerTest, cancelTask) {
   bool didRunTask = false;
   auto callback = createHostFunctionFromLambda([&didRunTask](bool /*unused*/) {
@@ -364,8 +429,8 @@ TEST_P(RuntimeSchedulerTest, continuationTask) {
         jsi::PropNameID::forUtf8(*runtime_, ""),
         1,
         [&](jsi::Runtime& /*runtime*/,
-            jsi::Value const& /*unused*/,
-            jsi::Value const* /*arguments*/,
+            const jsi::Value& /*unused*/,
+            const jsi::Value* /*arguments*/,
             size_t /*unused*/) noexcept -> jsi::Value {
           didContinuationTask = true;
           return jsi::Value::undefined();
@@ -777,11 +842,9 @@ TEST_P(RuntimeSchedulerTest, basicSameThreadExecution) {
   bool didRunSynchronousTask = false;
   std::thread t1([this, &didRunSynchronousTask]() {
     runtimeScheduler_->executeNowOnTheSameThread(
-        [this, &didRunSynchronousTask](jsi::Runtime& /*rt*/) {
-          EXPECT_TRUE(runtimeScheduler_->getIsSynchronous());
+        [&didRunSynchronousTask](jsi::Runtime& /*rt*/) {
           didRunSynchronousTask = true;
         });
-    EXPECT_FALSE(runtimeScheduler_->getIsSynchronous());
   });
 
   auto hasTask = stubQueue_->waitForTask();
@@ -841,6 +904,48 @@ TEST_P(RuntimeSchedulerTest, sameThreadTaskCreatesImmediatePriorityTask) {
   EXPECT_TRUE(didRunSubsequentTask);
 
   EXPECT_EQ(stubQueue_->size(), 0);
+}
+
+TEST_P(RuntimeSchedulerTest, syncAccessReentryProtection) {
+  bool didRunFirstSyncTask = false;
+  bool didRunSecondSyncTask = false;
+  std::thread t1([this, &didRunFirstSyncTask, &didRunSecondSyncTask]() {
+    runtimeScheduler_->executeNowOnTheSameThread(
+        [this, &didRunFirstSyncTask, &didRunSecondSyncTask](
+            jsi::Runtime& /*runtime*/) {
+          didRunFirstSyncTask = true;
+          runtimeScheduler_->executeNowOnTheSameThread(
+              [&didRunSecondSyncTask](jsi::Runtime& /*runtime*/) {
+                EXPECT_FALSE(didRunSecondSyncTask);
+                didRunSecondSyncTask = true;
+              });
+
+          EXPECT_TRUE(didRunSecondSyncTask);
+        });
+  });
+
+  auto hasTask = stubQueue_->waitForTask();
+
+  EXPECT_TRUE(hasTask);
+  EXPECT_FALSE(didRunFirstSyncTask);
+  EXPECT_FALSE(didRunSecondSyncTask);
+  EXPECT_EQ(stubQueue_->size(), 1);
+
+  stubQueue_->tick();
+  t1.join();
+
+  if (GetParam()) {
+    EXPECT_EQ(stubQueue_->size(), 0);
+  } else {
+    // The legacy RuntimeScheduler always schedules a task and within the task
+    // it checks if the task queue is empty. Unlike the modern RuntimeScheduler,
+    // which bails out before scheduling a task.
+    EXPECT_EQ(stubQueue_->size(), 1);
+  }
+
+  EXPECT_TRUE(didRunFirstSyncTask);
+  EXPECT_TRUE(didRunSecondSyncTask);
+  EXPECT_FALSE(runtimeScheduler_->getShouldYield());
 }
 
 TEST_P(RuntimeSchedulerTest, sameThreadTaskCreatesLowPriorityTask) {
@@ -1013,6 +1118,52 @@ TEST_P(RuntimeSchedulerTest, modernTwoThreadsRequestAccessToTheRuntime) {
   EXPECT_TRUE(didRunSynchronousTask2);
   EXPECT_FALSE(runtimeScheduler_->getShouldYield());
   EXPECT_EQ(stubQueue_->size(), 0);
+}
+
+TEST_P(RuntimeSchedulerTest, errorInTaskShouldNotStopMicrotasks) {
+  // Only for modern runtime scheduler
+  if (!GetParam()) {
+    return;
+  }
+
+  auto microtaskRan = false;
+  auto taskRan = false;
+
+  auto callback = createHostFunctionFromLambda([&](bool /* unused */) {
+    taskRan = true;
+
+    auto microtaskCallback = jsi::Function::createFromHostFunction(
+        *runtime_,
+        jsi::PropNameID::forUtf8(*runtime_, "microtask1"),
+        3,
+        [&](jsi::Runtime& /*unused*/,
+            const jsi::Value& /*unused*/,
+            const jsi::Value* /*arguments*/,
+            size_t /*unused*/) -> jsi::Value {
+          microtaskRan = true;
+          return jsi::Value::undefined();
+        });
+
+    runtime_->queueMicrotask(microtaskCallback);
+
+    throw jsi::JSError(*runtime_, "Test error");
+
+    return jsi::Value::undefined();
+  });
+
+  runtimeScheduler_->scheduleTask(
+      SchedulerPriority::NormalPriority, std::move(callback));
+
+  EXPECT_EQ(taskRan, false);
+  EXPECT_EQ(microtaskRan, false);
+  EXPECT_EQ(stubQueue_->size(), 1);
+
+  stubQueue_->tick();
+
+  EXPECT_EQ(taskRan, 1);
+  EXPECT_EQ(microtaskRan, 1);
+  EXPECT_EQ(stubQueue_->size(), 0);
+  EXPECT_EQ(stubErrorUtils_->getReportFatalCallCount(), 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(

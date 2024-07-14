@@ -109,15 +109,15 @@ ScrollViewProps::ScrollViewProps(
                     "endDraggingSensitivityMultiplier",
                     sourceProps.endDraggingSensitivityMultiplier,
                     1)),
-      endDraggingSensitivityVelocityMultiplier(
+      enableSyncOnScroll(
           CoreFeatures::enablePropIteratorSetter
-              ? sourceProps.endDraggingSensitivityVelocityMultiplier
+              ? sourceProps.enableSyncOnScroll
               : convertRawProp(
                     context,
                     rawProps,
-                    "endDraggingSensitivityVelocityMultiplier",
-                    sourceProps.endDraggingSensitivityVelocityMultiplier,
-                    0)),
+                    "enableSyncOnScroll",
+                    sourceProps.enableSyncOnScroll,
+                    false)),
       directionalLockEnabled(
           CoreFeatures::enablePropIteratorSetter
               ? sourceProps.directionalLockEnabled
@@ -225,6 +225,23 @@ ScrollViewProps::ScrollViewProps(
                     "showsVerticalScrollIndicator",
                     sourceProps.showsVerticalScrollIndicator,
                     true)),
+      persistentScrollbar(
+          CoreFeatures::enablePropIteratorSetter
+              ? sourceProps.persistentScrollbar
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "persistentScrollbar",
+                    sourceProps.persistentScrollbar,
+                    true)),
+      horizontal(
+          CoreFeatures::enablePropIteratorSetter ? sourceProps.horizontal
+                                                 : convertRawProp(
+                                                       context,
+                                                       rawProps,
+                                                       "horizontal",
+                                                       sourceProps.horizontal,
+                                                       true)),
       scrollEventThrottle(
           CoreFeatures::enablePropIteratorSetter
               ? sourceProps.scrollEventThrottle
@@ -377,11 +394,14 @@ void ScrollViewProps::setProp(
     RAW_SET_PROP_SWITCH_CASE_BASIC(maximumZoomScale);
     RAW_SET_PROP_SWITCH_CASE_BASIC(minimumZoomScale);
     RAW_SET_PROP_SWITCH_CASE_BASIC(scrollEnabled);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(enableSyncOnScroll);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(endDraggingSensitivityMultiplier);
     RAW_SET_PROP_SWITCH_CASE_BASIC(pagingEnabled);
     RAW_SET_PROP_SWITCH_CASE_BASIC(pinchGestureEnabled);
     RAW_SET_PROP_SWITCH_CASE_BASIC(scrollsToTop);
     RAW_SET_PROP_SWITCH_CASE_BASIC(showsHorizontalScrollIndicator);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(showsVerticalScrollIndicator);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(persistentScrollbar);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(horizontal);
     RAW_SET_PROP_SWITCH_CASE_BASIC(scrollEventThrottle);
     RAW_SET_PROP_SWITCH_CASE_BASIC(zoomScale);
     RAW_SET_PROP_SWITCH_CASE_BASIC(contentInset);
@@ -487,6 +507,12 @@ SharedDebugStringConvertibleList ScrollViewProps::getDebugProps() const {
               "showsVerticalScrollIndicator",
               showsVerticalScrollIndicator,
               defaultScrollViewProps.showsVerticalScrollIndicator),
+          debugStringConvertibleItem(
+              "persistentScrollbar",
+              persistentScrollbar,
+              defaultScrollViewProps.persistentScrollbar),
+          debugStringConvertibleItem(
+              "horizontal", horizontal, defaultScrollViewProps.horizontal),
           debugStringConvertibleItem(
               "scrollEventThrottle",
               scrollEventThrottle,

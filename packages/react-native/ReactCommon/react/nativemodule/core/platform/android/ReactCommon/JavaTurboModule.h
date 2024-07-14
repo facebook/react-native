@@ -22,6 +22,12 @@ struct JTurboModule : jni::JavaClass<JTurboModule> {
       "Lcom/facebook/react/turbomodule/core/interfaces/TurboModule;";
 };
 
+struct JTurboModuleWithJSIBindings
+    : jni::JavaClass<JTurboModuleWithJSIBindings> {
+  static auto constexpr kJavaDescriptor =
+      "Lcom/facebook/react/turbomodule/core/interfaces/TurboModuleWithJSIBindings;";
+};
+
 class JSI_EXPORT JavaTurboModule : public TurboModule {
  public:
   // TODO(T65603471): Should we unify this with a Fabric abstraction?
@@ -44,6 +50,8 @@ class JSI_EXPORT JavaTurboModule : public TurboModule {
       const jsi::Value* args,
       size_t argCount,
       jmethodID& cachedMethodID);
+
+  void setEventEmitterCallback(jni::alias_ref<jobject> instance);
 
  private:
   // instance_ can be of type JTurboModule, or JNativeModule

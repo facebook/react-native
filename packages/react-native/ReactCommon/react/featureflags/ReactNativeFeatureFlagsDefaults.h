@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c63cd0b38dfa9c4d6843a4b879f8f4df>>
+ * @generated SignedSource<<4eb00950b76e497061d735f7cff04c05>>
  */
 
 /**
@@ -31,19 +31,31 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool allowCollapsableChildren() override {
+    return true;
+  }
+
+  bool allowRecursiveCommitsWithSynchronousMountOnAndroid() override {
+    return false;
+  }
+
   bool batchRenderingUpdatesInEventLoop() override {
     return false;
   }
 
-  bool enableBackgroundExecutor() override {
+  bool destroyFabricSurfacesInReactInstanceManager() override {
     return false;
   }
 
-  bool enableCustomDrawOrderFabric() override {
+  bool enableAlignItemsBaselineOnFabricIOS() override {
+    return true;
+  }
+
+  bool enableCleanTextInputYogaNode() override {
     return false;
   }
 
-  bool enableFixForClippedSubviewsCrash() override {
+  bool enableGranularShadowTreeStateReconciliation() override {
     return false;
   }
 
@@ -51,31 +63,87 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool enableMountHooksAndroid() override {
+  bool enablePropsUpdateReconciliationAndroid() override {
     return false;
   }
 
-  bool enableSpannableBuildingUnification() override {
+  bool enableSynchronousStateUpdates() override {
     return false;
   }
 
-  bool inspectorEnableCxxInspectorPackagerConnection() override {
+  bool enableUIConsistency() override {
     return false;
   }
 
-  bool inspectorEnableHermesCDPAgent() override {
+  bool fetchImagesInViewPreallocation() override {
     return false;
   }
 
-  bool inspectorEnableModernCDPRegistry() override {
+  bool fixIncorrectScrollViewStateUpdateOnAndroid() override {
     return false;
   }
 
-  bool skipMountHookNotifications() override {
+  bool fixMappingOfEventPrioritiesBetweenFabricAndReact() override {
+    return false;
+  }
+
+  bool fixMissedFabricStateUpdatesOnAndroid() override {
+    return false;
+  }
+
+  bool forceBatchingMountItemsOnAndroid() override {
+    return false;
+  }
+
+  bool fuseboxEnabledDebug() override {
+    return false;
+  }
+
+  bool fuseboxEnabledRelease() override {
+    return false;
+  }
+
+  bool initEagerTurboModulesOnNativeModulesQueueAndroid() override {
+    return false;
+  }
+
+  bool lazyAnimationCallbacks() override {
+    return false;
+  }
+
+  bool loadVectorDrawablesOnImages() override {
+    return false;
+  }
+
+  bool setAndroidLayoutDirection() override {
+    return true;
+  }
+
+  bool useImmediateExecutorInAndroidBridgeless() override {
     return false;
   }
 
   bool useModernRuntimeScheduler() override {
+    return false;
+  }
+
+  bool useNativeViewConfigsInBridgelessMode() override {
+    return false;
+  }
+
+  bool useNewReactImageViewBackgroundDrawing() override {
+    return false;
+  }
+
+  bool useRuntimeShadowNodeReferenceUpdate() override {
+    return false;
+  }
+
+  bool useRuntimeShadowNodeReferenceUpdateOnLayout() override {
+    return false;
+  }
+
+  bool useStateAlignmentMechanism() override {
     return false;
   }
 };

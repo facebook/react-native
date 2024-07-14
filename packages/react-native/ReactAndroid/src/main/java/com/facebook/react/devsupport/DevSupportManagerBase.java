@@ -57,9 +57,11 @@ import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.devsupport.interfaces.ErrorCustomizer;
 import com.facebook.react.devsupport.interfaces.ErrorType;
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
+import com.facebook.react.devsupport.interfaces.PausedInDebuggerOverlayManager;
 import com.facebook.react.devsupport.interfaces.RedBoxHandler;
 import com.facebook.react.devsupport.interfaces.StackFrame;
 import com.facebook.react.modules.core.RCTNativeAppEventEmitter;
+import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
 import com.facebook.react.packagerconnection.RequestHandler;
 import com.facebook.react.packagerconnection.Responder;
 import java.io.File;
@@ -98,6 +100,7 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
   private final File mJSSplitBundlesDir;
   private final DefaultJSExceptionHandler mDefaultJSExceptionHandler;
   private final DevLoadingViewManager mDevLoadingViewManager;
+  private final PausedInDebuggerOverlayManager mPausedInDebuggerOverlayManager;
 
   private @Nullable SurfaceDelegate mRedBoxSurfaceDelegate;
   private @Nullable AlertDialog mDevOptionsDialog;
@@ -105,7 +108,7 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
   private boolean mDevLoadingViewVisible = false;
   private int mPendingJSSplitBundleRequests = 0;
   private @Nullable ReactContext mCurrentContext;
-  private final DevInternalSettings mDevSettings;
+  private final DeveloperSettings mDevSettings;
   private boolean mIsReceiverRegistered = false;
   private boolean mIsShakeDetectorStarted = false;
   private boolean mIsDevSupportEnabled = false;
@@ -133,16 +136,15 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
       int minNumShakes,
       @Nullable Map<String, RequestHandler> customPackagerCommandHandlers,
       @Nullable SurfaceDelegateFactory surfaceDelegateFactory,
-      @Nullable DevLoadingViewManager devLoadingViewManager) {
+      @Nullable DevLoadingViewManager devLoadingViewManager,
+      @Nullable PausedInDebuggerOverlayManager pausedInDebuggerOverlayManager) {
     mReactInstanceDevHelper = reactInstanceDevHelper;
     mApplicationContext = applicationContext;
     mJSAppBundleName = packagerPathForJSBundleName;
     mDevSettings = new DevInternalSettings(applicationContext, this::reloadSettings);
     mDevServerHelper =
         new DevServerHelper(
-            mDevSettings,
-            mApplicationContext.getPackageName(),
-            mDevSettings.getPackagerConnectionSettings());
+            mDevSettings, mApplicationContext, mDevSettings.getPackagerConnectionSettings());
     mBundleDownloadListener = devBundleDownloadListener;
 
     // Prepare shake gesture detector (will be started/stopped from #reload)
@@ -190,7 +192,19 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
             ? devLoadingViewManager
             : new DefaultDevLoadingViewImplementation(reactInstanceDevHelper);
     mSurfaceDelegateFactory = surfaceDelegateFactory;
-  };
+    mPausedInDebuggerOverlayManager =
+        pausedInDebuggerOverlayManager != null
+            ? pausedInDebuggerOverlayManager
+            : new PausedInDebuggerOverlayDialogManager(
+                () -> {
+                  Activity context = mReactInstanceDevHelper.getCurrentActivity();
+                  if (context == null || context.isFinishing()) {
+                    return null;
+                  }
+                  return context;
+                });
+  }
+  ;
 
   protected abstract String getUniqueTag();
 
@@ -383,12 +397,7 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
       if (!isConnected) {
         disabledItemKeys.add(debuggerItemString);
       }
-      options.put(
-          debuggerItemString,
-          () ->
-              mDevServerHelper.openDebugger(
-                  mCurrentContext,
-                  mApplicationContext.getString(R.string.catalyst_open_debugger_error)));
+      options.put(debuggerItemString, () -> openDebugger());
     }
 
     options.put(
@@ -583,7 +592,7 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
   }
 
   @Override
-  public DevInternalSettings getDevSettings() {
+  public DeveloperSettings getDevSettings() {
     return mDevSettings;
   }
 
@@ -900,12 +909,6 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
     mLastErrorType = errorType;
   }
 
-  public void reloadJSFromServer(final String bundleURL) {
-    reloadJSFromServer(
-        bundleURL,
-        () -> UiThreadUtil.runOnUiThread(mReactInstanceDevHelper::onJSBundleLoadedFromServer));
-  }
-
   public void reloadJSFromServer(final String bundleURL, final BundleLoadCallback callback) {
     ReactMarker.logMarker(ReactMarkerConstants.DOWNLOAD_START);
 
@@ -944,6 +947,7 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
             }
             FLog.e(ReactConstants.TAG, "Unable to download JS bundle", cause);
             reportBundleLoadingFailure(cause);
+            callback.onError(cause);
           }
         },
         mJSBundleDownloadedFile,
@@ -1068,7 +1072,7 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
 
             @Override
             public void onPackagerReloadCommand() {
-              if (!InspectorFlags.getEnableModernCDPRegistry()) {
+              if (!InspectorFlags.getFuseboxEnabled()) {
                 // Disable debugger to resume the JsVM & avoid thread locks while reloading
                 mDevServerHelper.disableDebugger();
               }
@@ -1161,5 +1165,22 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
     } else {
       context.registerReceiver(receiver, filter);
     }
+  }
+
+  @Override
+  public void openDebugger() {
+    mDevServerHelper.openDebugger(
+        mCurrentContext, mApplicationContext.getString(R.string.catalyst_open_debugger_error));
+  }
+
+  @Override
+  public void showPausedInDebuggerOverlay(
+      String message, PausedInDebuggerOverlayCommandListener listener) {
+    mPausedInDebuggerOverlayManager.showPausedInDebuggerOverlay(message, listener);
+  }
+
+  @Override
+  public void hidePausedInDebuggerOverlay() {
+    mPausedInDebuggerOverlayManager.hidePausedInDebuggerOverlay();
   }
 }

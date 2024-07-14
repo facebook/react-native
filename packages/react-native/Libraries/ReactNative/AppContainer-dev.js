@@ -20,7 +20,6 @@ import View from '../Components/View/View';
 import DebuggingOverlay from '../Debugging/DebuggingOverlay';
 import useSubscribeToDebuggingOverlayRegistry from '../Debugging/useSubscribeToDebuggingOverlayRegistry';
 import RCTDeviceEventEmitter from '../EventEmitter/RCTDeviceEventEmitter';
-import ReactDevToolsOverlay from '../Inspector/ReactDevToolsOverlay';
 import LogBoxNotificationContainer from '../LogBox/LogBoxNotificationContainer';
 import StyleSheet from '../StyleSheet/StyleSheet';
 import {RootTagContext, createRootTag} from './RootTag';
@@ -64,6 +63,26 @@ const InspectorDeferred = ({
   );
 };
 
+type ReactDevToolsOverlayDeferredProps = {
+  inspectedViewRef: InspectedViewRef,
+  reactDevToolsAgent: ReactDevToolsAgent,
+};
+
+const ReactDevToolsOverlayDeferred = ({
+  inspectedViewRef,
+  reactDevToolsAgent,
+}: ReactDevToolsOverlayDeferredProps) => {
+  const ReactDevToolsOverlay =
+    require('../Inspector/ReactDevToolsOverlay').default;
+
+  return (
+    <ReactDevToolsOverlay
+      inspectedViewRef={inspectedViewRef}
+      reactDevToolsAgent={reactDevToolsAgent}
+    />
+  );
+};
+
 const AppContainer = ({
   children,
   fabric,
@@ -71,8 +90,8 @@ const AppContainer = ({
   internal_excludeInspector = false,
   internal_excludeLogBox = false,
   rootTag,
-  showArchitectureIndicator,
   WrapperComponent,
+  rootViewStyle,
 }: Props): React.Node => {
   const appContainerRootViewRef: AppContainerRootViewRef = React.useRef(null);
   const innerViewRef: InspectedViewRef = React.useRef(null);
@@ -122,7 +141,7 @@ const AppContainer = ({
       collapsable={reactDevToolsAgent == null && !shouldRenderInspector}
       pointerEvents="box-none"
       key={key}
-      style={styles.container}
+      style={rootViewStyle || styles.container}
       ref={innerViewRef}>
       {children}
     </View>
@@ -130,10 +149,7 @@ const AppContainer = ({
 
   if (WrapperComponent != null) {
     innerView = (
-      <WrapperComponent
-        initialProps={initialProps}
-        fabric={fabric === true}
-        showArchitectureIndicator={showArchitectureIndicator === true}>
+      <WrapperComponent initialProps={initialProps} fabric={fabric === true}>
         {innerView}
       </WrapperComponent>
     );
@@ -148,14 +164,14 @@ const AppContainer = ({
     <RootTagContext.Provider value={createRootTag(rootTag)}>
       <View
         ref={appContainerRootViewRef}
-        style={styles.container}
+        style={rootViewStyle || styles.container}
         pointerEvents="box-none">
         {innerView}
 
         <DebuggingOverlay ref={debuggingOverlayRef} />
 
         {reactDevToolsAgent != null && (
-          <ReactDevToolsOverlay
+          <ReactDevToolsOverlayDeferred
             inspectedViewRef={innerViewRef}
             reactDevToolsAgent={reactDevToolsAgent}
           />

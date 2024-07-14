@@ -22,18 +22,7 @@ class InspectorFlags {
   /**
    * Flag determining if the modern CDP backend should be enabled.
    */
-  bool getEnableModernCDPRegistry() const;
-
-  /**
-   * Flag determining if the C++ implementation of InspectorPackagerConnection
-   * should be used instead of the per-platform one.
-   */
-  bool getEnableCxxInspectorPackagerConnection() const;
-
-  /**
-   * Flag determining if the new Hermes CDPAgent API should be enabled.
-   */
-  bool getEnableHermesCDPAgent() const;
+  bool getFuseboxEnabled() const;
 
   /**
    * Reset flags to their upstream values. The caller must ensure any resources
@@ -42,17 +31,20 @@ class InspectorFlags {
   void dangerouslyResetFlags();
 
  private:
-  InspectorFlags();
+  struct Values {
+    bool fuseboxEnabled;
+    bool operator==(const Values&) const = default;
+  };
+
+  InspectorFlags() = default;
   InspectorFlags(const InspectorFlags&) = delete;
   InspectorFlags& operator=(const InspectorFlags&) = default;
   ~InspectorFlags() = default;
 
-  bool enableModernCDPRegistry_;
-  bool enableCxxInspectorPackagerConnection_;
-  bool enableHermesCDPAgent_;
-
+  mutable std::optional<Values> cachedValues_;
   mutable bool inconsistentFlagsStateLogged_{false};
-  void assertFlagsMatchUpstream() const;
+
+  const Values& loadFlagsAndAssertUnchanged() const;
 };
 
 } // namespace facebook::react::jsinspector_modern

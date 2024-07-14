@@ -62,8 +62,8 @@ void FallbackRuntimeAgentDelegate::sendWarningLogEntry(std::string_view text) {
               "timestamp",
               duration_cast<milliseconds>(
                   system_clock::now().time_since_epoch())
-                  .count())("source", "other")(
-              "level", "warning")("text", text))));
+                  .count())("source", "other")("level", "warning")(
+              "text", text))));
 }
 
 } // namespace facebook::react::jsinspector_modern

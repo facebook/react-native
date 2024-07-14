@@ -29,6 +29,21 @@ struct JReactHostImpl : public jni::JavaClass<JReactHostImpl> {
             "reload");
     return method(self(), reason);
   }
+
+  void setPausedInDebuggerMessage(std::optional<std::string> message) {
+    static auto method =
+        javaClassStatic()->getMethod<void(jni::local_ref<jni::JString>)>(
+            "setPausedInDebuggerMessage");
+    method(self(), message ? jni::make_jstring(*message) : nullptr);
+  }
+
+  jni::local_ref<jni::JMap<jstring, jstring>> getHostMetadata() const {
+    static auto method =
+        javaClassStatic()
+            ->getMethod<jni::local_ref<jni::JMap<jstring, jstring>>()>(
+                "getHostMetadata");
+    return method(self());
+  }
 };
 
 class JReactHostInspectorTarget
@@ -42,21 +57,29 @@ class JReactHostInspectorTarget
 
   static jni::local_ref<JReactHostInspectorTarget::jhybriddata> initHybrid(
       jni::alias_ref<JReactHostInspectorTarget::jhybridobject> jThis,
-      jni::alias_ref<JReactHostImpl::javaobject> reactHost,
-      jni::alias_ref<JExecutor::javaobject>);
+      jni::alias_ref<JReactHostImpl> reactHost,
+      jni::alias_ref<JExecutor::javaobject> javaExecutor);
 
   static void registerNatives();
-
-  void onReload(const PageReloadRequest& request) override;
+  void sendDebuggerResumeCommand();
 
   jsinspector_modern::HostTarget* getInspectorTarget();
 
+  // HostTargetDelegate methods
+  jsinspector_modern::HostTargetMetadata getMetadata() override;
+  void onReload(const PageReloadRequest& request) override;
+  void onSetPausedInDebuggerMessage(
+      const OverlaySetPausedInDebuggerMessageRequest&) override;
+
  private:
   JReactHostInspectorTarget(
-      jni::alias_ref<JReactHostImpl::javaobject> reactHostImpl,
-      jni::alias_ref<JExecutor::javaobject> executor);
-  jni::global_ref<JReactHostImpl::javaobject> javaReactHostImpl_;
-  jni::global_ref<JExecutor::javaobject> javaExecutor_;
+      jni::alias_ref<JReactHostImpl> reactHostImpl,
+      jni::alias_ref<JExecutor::javaobject> javaExecutor);
+  // This weak reference breaks the cycle between the C++ HostTarget and the
+  // Java ReactHostImpl, preventing memory leaks in apps that create multiple
+  // ReactHostImpls over time.
+  jni::global_ref<jni::JWeakReference<JReactHostImpl>> javaReactHostImpl_;
+  jsinspector_modern::VoidExecutor inspectorExecutor_;
 
   std::shared_ptr<jsinspector_modern::HostTarget> inspectorTarget_;
   std::optional<int> inspectorPageId_;

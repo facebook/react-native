@@ -25,6 +25,7 @@ import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.UIManagerListener;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.uimanager.GuardedFrameCallback;
@@ -225,6 +226,7 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
 
   private boolean mInitializedForFabric = false;
   private boolean mInitializedForNonFabric = false;
+  private boolean mEnqueuedAnimationOnFrame = false;
   private @UIManagerType int mUIManagerType = UIManagerType.DEFAULT;
   private int mNumFabricAnimations = 0;
   private int mNumNonFabricAnimations = 0;
@@ -238,23 +240,20 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
           @Override
           protected void doFrameGuarded(final long frameTimeNanos) {
             try {
+              mEnqueuedAnimationOnFrame = false;
               NativeAnimatedNodesManager nodesManager = getNodesManager();
               if (nodesManager != null && nodesManager.hasActiveAnimations()) {
                 nodesManager.runUpdates(frameTimeNanos);
               }
               // This is very unlikely to ever be hit.
-              if (nodesManager == null && mReactChoreographer == null) {
+              if (nodesManager == null || mReactChoreographer == null) {
                 return;
               }
 
-              // TODO: Would be great to avoid adding this callback in case there are no active
-              // animations and no outstanding tasks on the operations queue. Apparently frame
-              // callbacks can only be posted from the UI thread and therefore we cannot schedule
-              // them directly from other threads.
-              Assertions.assertNotNull(mReactChoreographer)
-                  .postFrameCallback(
-                      ReactChoreographer.CallbackType.NATIVE_ANIMATED_MODULE,
-                      mAnimatedFrameCallback);
+              if (!ReactNativeFeatureFlags.lazyAnimationCallbacks()
+                  || nodesManager.hasActiveAnimations()) {
+                enqueueFrameCallback();
+              }
             } catch (Exception ex) {
               throw new RuntimeException(ex);
             }
@@ -406,12 +405,16 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
     Assertions.assertNotNull(mReactChoreographer)
         .removeFrameCallback(
             ReactChoreographer.CallbackType.NATIVE_ANIMATED_MODULE, mAnimatedFrameCallback);
+    mEnqueuedAnimationOnFrame = false;
   }
 
   private void enqueueFrameCallback() {
-    Assertions.assertNotNull(mReactChoreographer)
-        .postFrameCallback(
-            ReactChoreographer.CallbackType.NATIVE_ANIMATED_MODULE, mAnimatedFrameCallback);
+    if (!mEnqueuedAnimationOnFrame) {
+      Assertions.assertNotNull(mReactChoreographer)
+          .postFrameCallback(
+              ReactChoreographer.CallbackType.NATIVE_ANIMATED_MODULE, mAnimatedFrameCallback);
+      mEnqueuedAnimationOnFrame = true;
+    }
   }
 
   @VisibleForTesting
@@ -441,7 +444,8 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
       ReactSoftExceptionLogger.logSoftException(
           NAME,
           new RuntimeException(
-              "initializeLifecycleEventListenersForViewTag could not get NativeAnimatedNodesManager"));
+              "initializeLifecycleEventListenersForViewTag could not get"
+                  + " NativeAnimatedNodesManager"));
     }
 
     // Subscribe to UIManager (Fabric or non-Fabric) lifecycle events if we haven't yet
@@ -1116,6 +1120,9 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
                       opsAndArgs.getInt(i++), opsAndArgs.getInt(i++));
                   break;
                 case OP_CODE_START_ANIMATING_NODE:
+                  if (ReactNativeFeatureFlags.lazyAnimationCallbacks()) {
+                    enqueueFrameCallback();
+                  }
                   animatedNodesManager.startAnimatingNode(
                       opsAndArgs.getInt(i++), opsAndArgs.getInt(i++), opsAndArgs.getMap(i++), null);
                   break;

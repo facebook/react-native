@@ -10,65 +10,9 @@
 #include <cmath>
 #include <string_view>
 
+#include <react/renderer/css/CSSToken.h>
+
 namespace facebook::react {
-
-/**
- * One of the tokens defined as part of
- * https://www.w3.org/TR/css-syntax-3/#tokenizer-definitions
- */
-enum class CSSTokenType {
-  Delim,
-  Dimension,
-  EndOfFile,
-  Ident,
-  Number,
-  Percentage,
-  WhiteSpace,
-};
-
-/*
- * Represents one of the syntactic CSS tokens as provided by
- * https://www.w3.org/TR/css-syntax-3/#tokenization
- */
-class CSSToken {
- public:
-  explicit constexpr CSSToken(CSSTokenType type) : type_(type) {}
-  constexpr CSSToken(CSSTokenType type, std::string_view value)
-      : type_{type}, stringValue_{value} {}
-  constexpr CSSToken(CSSTokenType type, float value)
-      : type_{type}, numericValue_{value} {}
-  constexpr CSSToken(CSSTokenType type, float value, std::string_view unit)
-      : type_{type}, numericValue_{value}, unit_{unit} {}
-
-  constexpr CSSToken(const CSSToken& other) = default;
-  constexpr CSSToken(CSSToken&& other) = default;
-  constexpr CSSToken& operator=(const CSSToken& other) = default;
-  constexpr CSSToken& operator=(CSSToken&& other) = default;
-
-  constexpr CSSTokenType type() const {
-    return type_;
-  }
-
-  constexpr std::string_view stringValue() const {
-    return stringValue_;
-  }
-
-  constexpr float numericValue() const {
-    return numericValue_;
-  }
-
-  constexpr std::string_view unit() const {
-    return unit_;
-  }
-
-  constexpr bool operator==(const CSSToken& other) const = default;
-
- private:
-  CSSTokenType type_;
-  std::string_view stringValue_;
-  float numericValue_{0.0f};
-  std::string_view unit_;
-};
 
 /**
  * A minimal tokenizer for a subset of CSS syntax.
@@ -83,42 +27,66 @@ class CSSTokenizer {
   explicit constexpr CSSTokenizer(std::string_view characters)
       : remainingCharacters_{characters} {}
 
+  /**
+   * Returns the next token according to the algorithm described in
+   * https://www.w3.org/TR/css-syntax-3/#consume-token
+   */
   constexpr CSSToken next() {
-    // https://www.w3.org/TR/css-syntax-3/#token-diagrams
     char nextChar = peek();
+
     if (isWhitespace(nextChar)) {
       return consumeWhitespace();
-    } else if (nextChar == '+') {
-      if (isDigit(peekNext())) {
-        return consumeNumeric();
-      } else {
-        return consumeDelim();
-      }
-    } else if (nextChar == '-') {
-      if (isDigit(peekNext())) {
-        return consumeNumeric();
-      } else {
-        return consumeDelim();
-      }
-    } else if (isDigit(nextChar)) {
-      return consumeNumeric();
-    } else if (isIdentStart(nextChar)) {
-      return consumeIdent();
-    } else if (nextChar == '\0') {
-      return CSSToken{CSSTokenType::EndOfFile};
-    } else {
-      return consumeDelim();
     }
+
+    switch (nextChar) {
+      case '(':
+        return consumeCharacter(CSSTokenType::OpenParen);
+      case ')':
+        return consumeCharacter(CSSTokenType::CloseParen);
+      case '[':
+        return consumeCharacter(CSSTokenType::OpenSquare);
+      case ']':
+        return consumeCharacter(CSSTokenType::CloseSquare);
+      case '{':
+        return consumeCharacter(CSSTokenType::OpenCurly);
+      case '}':
+        return consumeCharacter(CSSTokenType::CloseCurly);
+      case ',':
+        return consumeCharacter(CSSTokenType::Comma);
+      case '+':
+      case '-':
+      case '.':
+        if (wouldStartNumber()) {
+          return consumeNumeric();
+        } else {
+          return consumeDelim();
+        }
+      case '#':
+        if (isIdent(peek(1))) {
+          return consumeHash();
+        } else {
+          return consumeDelim();
+        }
+    }
+
+    if (isDigit(nextChar)) {
+      return consumeNumeric();
+    }
+
+    if (isIdentStart(nextChar)) {
+      return consumeIdentlikeToken();
+    }
+
+    if (nextChar == '\0') {
+      return CSSToken{CSSTokenType::EndOfFile};
+    }
+
+    return consumeDelim();
   }
 
  private:
-  constexpr char peek() const {
-    auto index = position_;
-    return index >= remainingCharacters_.size() ? '\0'
-                                                : remainingCharacters_[index];
-  }
-  constexpr char peekNext() const {
-    auto index = position_ + 1;
+  constexpr char peek(size_t i = 0) const {
+    auto index = position_ + i;
     return index >= remainingCharacters_.size() ? '\0'
                                                 : remainingCharacters_[index];
   }
@@ -132,6 +100,12 @@ class CSSTokenizer {
     return {CSSTokenType::Delim, consumeRunningValue()};
   }
 
+  constexpr CSSToken consumeCharacter(CSSTokenType tokenType) {
+    advance();
+    consumeRunningValue();
+    return CSSToken{tokenType};
+  }
+
   constexpr CSSToken consumeWhitespace() {
     while (isWhitespace(peek())) {
       advance();
@@ -139,6 +113,24 @@ class CSSTokenizer {
 
     consumeRunningValue();
     return CSSToken{CSSTokenType::WhiteSpace};
+  }
+
+  constexpr bool wouldStartNumber() const {
+    // https://www.w3.org/TR/css-syntax-3/#starts-with-a-number
+    if (peek() == '+' || peek() == '-') {
+      if (isDigit(peek(1))) {
+        return true;
+      }
+      if (peek(1) == '.' && isDigit(peek(2))) {
+        return true;
+      }
+    } else if (peek() == '.' && isDigit(peek(1))) {
+      return true;
+    } else if (isDigit(peek())) {
+      return true;
+    }
+
+    return false;
   }
 
   constexpr CSSToken consumeNumber() {
@@ -204,7 +196,7 @@ class CSSTokenizer {
     auto numberToken = consumeNumber();
 
     if (isIdent(peek())) {
-      auto ident = consumeIdent();
+      auto ident = consumeIdentSequence();
       return {
           CSSTokenType::Dimension,
           numberToken.numericValue(),
@@ -218,13 +210,33 @@ class CSSTokenizer {
     }
   }
 
-  constexpr CSSToken consumeIdent() {
+  constexpr CSSToken consumeIdentlikeToken() {
+    // https://www.w3.org/TR/css-syntax-3/#consume-ident-like-token
+    auto ident = consumeIdentSequence();
+    if (peek() == '(') {
+      advance();
+      consumeRunningValue();
+      return {CSSTokenType::Function, ident.stringValue()};
+    }
+
+    return ident;
+  }
+
+  constexpr CSSToken consumeIdentSequence() {
     // https://www.w3.org/TR/css-syntax-3/#consume-an-ident-sequence
     while (isIdent(peek())) {
       advance();
     }
 
     return {CSSTokenType::Ident, consumeRunningValue()};
+  }
+
+  constexpr CSSToken consumeHash() {
+    // https://www.w3.org/TR/css-syntax-3/#consume-token (U+0023 NUMBER SIGN)
+    advance();
+    consumeRunningValue();
+
+    return {CSSTokenType::Hash, consumeIdentSequence().stringValue()};
   }
 
   constexpr std::string_view consumeRunningValue() {

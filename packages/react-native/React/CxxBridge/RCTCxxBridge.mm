@@ -9,11 +9,13 @@
 #include <future>
 
 #import <React/RCTAssert.h>
+#import <React/RCTBridge+Inspector.h>
 #import <React/RCTBridge+Private.h>
 #import <React/RCTBridge.h>
 #import <React/RCTBridgeMethod.h>
 #import <React/RCTBridgeModule.h>
 #import <React/RCTBridgeModuleDecorator.h>
+#import <React/RCTCallInvoker.h>
 #import <React/RCTConstants.h>
 #import <React/RCTConvert.h>
 #import <React/RCTCxxBridgeDelegate.h>
@@ -28,6 +30,7 @@
 #import <React/RCTPerformanceLogger.h>
 #import <React/RCTProfile.h>
 #import <React/RCTRedBox.h>
+#import <React/RCTRedBoxSetEnabled.h>
 #import <React/RCTReloadCommand.h>
 #import <React/RCTTurboModuleRegistry.h>
 #import <React/RCTUtils.h>
@@ -105,7 +108,7 @@ class GetDescAdapter : public JSExecutorFactory {
   std::shared_ptr<JSExecutorFactory> factory_;
 };
 
-}
+} // namespace
 
 static void mapReactMarkerToPerformanceLogger(
     const ReactMarker::ReactMarkerId markerId,
@@ -166,7 +169,7 @@ static void registerPerformanceLoggerHooks(RCTPerformanceLogger *performanceLogg
   };
 }
 
-@interface RCTCxxBridge ()
+@interface RCTCxxBridge () <RCTModuleDataCallInvokerProvider>
 
 @property (nonatomic, weak, readonly) RCTBridge *parentBridge;
 @property (nonatomic, assign, readonly) BOOL moduleSetupComplete;
@@ -765,6 +768,7 @@ struct RCTInstanceCallback : public InstanceCallback {
                                     viewRegistry_DEPRECATED:_viewRegistry_DEPRECATED
                                               bundleManager:_bundleManager
                                           callableJSModules:_callableJSModules];
+    moduleData.callInvokerProvider = self;
     BridgeNativeModulePerfLogger::moduleDataCreateEnd([moduleName UTF8String], moduleDataId);
 
     _moduleDataByName[moduleName] = moduleData;
@@ -1084,7 +1088,8 @@ struct RCTInstanceCallback : public InstanceCallback {
 
   if (self->_valid && !self->_loading) {
     if ([error userInfo][RCTJSRawStackTraceKey]) {
-      [self.redBox showErrorMessage:[error localizedDescription] withRawStack:[error userInfo][RCTJSRawStackTraceKey]];
+      RCTRedBox *redBox = RCTRedBoxGetEnabled() ? [self.moduleRegistry moduleForName:"RedBox"] : nil;
+      [redBox showErrorMessage:[error localizedDescription] withRawStack:[error userInfo][RCTJSRawStackTraceKey]];
     }
 
     RCTFatal(error);
@@ -1099,7 +1104,7 @@ struct RCTInstanceCallback : public InstanceCallback {
 
   // Hack: once the bridge is invalidated below, it won't initialize any new native
   // modules. Initialize the redbox module now so we can still report this error.
-  RCTRedBox *redBox = [self redBox];
+  RCTRedBox *redBox = RCTRedBoxGetEnabled() ? [self.moduleRegistry moduleForName:"RedBox"] : nil;
 
   _loading = NO;
   _valid = NO;
@@ -1590,6 +1595,13 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithBundleURL
     (std::shared_ptr<NativeMethodCallInvoker>)nativeInvoker
 {
   return _reactInstance ? _reactInstance->getDecoratedNativeMethodCallInvoker(nativeInvoker) : nullptr;
+}
+
+#pragma mark - RCTModuleDataCallInvokerProvider
+
+- (RCTCallInvoker *)callInvokerForModuleData:(RCTModuleData *)moduleData
+{
+  return [[RCTCallInvoker alloc] initWithCallInvoker:self.jsCallInvoker];
 }
 
 @end

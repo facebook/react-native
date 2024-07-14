@@ -8,6 +8,7 @@
 #pragma once
 
 #include <ReactCommon/RuntimeExecutor.h>
+#include <react/renderer/consistency/ShadowTreeRevisionConsistencyManager.h>
 #include <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #include <react/renderer/runtimescheduler/RuntimeSchedulerClock.h>
 #include <react/renderer/runtimescheduler/Task.h>
@@ -21,8 +22,7 @@ class RuntimeScheduler_Legacy final : public RuntimeSchedulerBase {
  public:
   explicit RuntimeScheduler_Legacy(
       RuntimeExecutor runtimeExecutor,
-      std::function<RuntimeSchedulerTimePoint()> now =
-          RuntimeSchedulerClock::now);
+      std::function<RuntimeSchedulerTimePoint()> now);
 
   /*
    * Not copyable.
@@ -62,6 +62,24 @@ class RuntimeScheduler_Legacy final : public RuntimeSchedulerBase {
       RawCallback&& callback) noexcept override;
 
   /*
+   * Adds a JavaScript callback to the idle queue with the given timeout.
+   * Triggers workloop if needed.
+   */
+  std::shared_ptr<Task> scheduleIdleTask(
+      jsi::Function&& callback,
+      RuntimeSchedulerTimeout timeout = timeoutForSchedulerPriority(
+          SchedulerPriority::IdlePriority)) noexcept override;
+
+  /*
+   * Adds a custom callback to the idle queue with the given timeout.
+   * Triggers workloop if needed.
+   */
+  std::shared_ptr<Task> scheduleIdleTask(
+      RawCallback&& callback,
+      RuntimeSchedulerTimeout timeout = timeoutForSchedulerPriority(
+          SchedulerPriority::IdlePriority)) noexcept override;
+
+  /*
    * Cancelled task will never be executed.
    *
    * Operates on JSI object.
@@ -76,14 +94,6 @@ class RuntimeScheduler_Legacy final : public RuntimeSchedulerBase {
    * Can be called from any thread.
    */
   bool getShouldYield() const noexcept override;
-
-  /*
-   * Return value informs if the current task is executed inside synchronous
-   * block.
-   *
-   * Can be called from any thread.
-   */
-  bool getIsSynchronous() const noexcept override;
 
   /*
    * Returns value of currently executed task. Designed to be called from React.
@@ -112,6 +122,10 @@ class RuntimeScheduler_Legacy final : public RuntimeSchedulerBase {
 
   void scheduleRenderingUpdate(
       RuntimeSchedulerRenderingUpdate&& renderingUpdate) override;
+
+  void setShadowTreeRevisionConsistencyManager(
+      ShadowTreeRevisionConsistencyManager*
+          shadowTreeRevisionConsistencyManager) override;
 
  private:
   std::priority_queue<
@@ -159,6 +173,9 @@ class RuntimeScheduler_Legacy final : public RuntimeSchedulerBase {
    * This flag is set while performing work, to prevent re-entrancy.
    */
   std::atomic_bool isPerformingWork_{false};
+
+  ShadowTreeRevisionConsistencyManager* shadowTreeRevisionConsistencyManager_{
+      nullptr};
 };
 
 } // namespace facebook::react

@@ -28,7 +28,8 @@ const folly::dynamic targetCapabilitiesToDynamic(
     const InspectorTargetCapabilities& capabilities) {
   return folly::dynamic::object(
       "nativePageReloads", capabilities.nativePageReloads)(
-      "nativeSourceCodeFetching", capabilities.nativeSourceCodeFetching);
+      "nativeSourceCodeFetching", capabilities.nativeSourceCodeFetching)(
+      "prefersFuseboxFrontend", capabilities.prefersFuseboxFrontend);
 }
 
 namespace {
@@ -72,7 +73,7 @@ class InspectorImpl : public IInspector {
   };
   mutable std::mutex mutex_;
   int nextPageId_{1};
-  std::unordered_map<int, Page> pages_;
+  std::map<int, Page> pages_;
   std::list<std::weak_ptr<IPageStatusListener>> listeners_;
 };
 
@@ -108,6 +109,8 @@ int InspectorImpl::addPage(
     InspectorTargetCapabilities capabilities) {
   std::scoped_lock lock(mutex_);
 
+  // Note: getPages guarantees insertion/addition order. As an implementation
+  // detail, incrementing page IDs takes advantage of std::map's key ordering.
   int pageId = nextPageId_++;
   assert(pages_.count(pageId) == 0 && "Unexpected duplicate page ID");
   pages_.emplace(
@@ -132,6 +135,8 @@ std::vector<InspectorPageDescription> InspectorImpl::getPages() const {
   std::scoped_lock lock(mutex_);
 
   std::vector<InspectorPageDescription> inspectorPages;
+  // pages_ is a std::map keyed on an incremental id, so this is insertion
+  // ordered.
   for (auto& it : pages_) {
     inspectorPages.push_back(InspectorPageDescription(it.second));
   }

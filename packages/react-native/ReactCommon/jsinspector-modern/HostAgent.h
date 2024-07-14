@@ -7,7 +7,9 @@
 
 #pragma once
 
+#include "CdpJson.h"
 #include "HostTarget.h"
+#include "NetworkIOAgent.h"
 #include "SessionState.h"
 
 #include <jsinspector-modern/InspectorInterfaces.h>
@@ -37,14 +39,23 @@ class HostAgent final {
    * \param targetController An interface to the HostTarget that this agent is
    * attached to. The caller is responsible for ensuring that the
    * HostTargetDelegate and underlying HostTarget both outlive the agent.
-   * \param sessionMetadata Metadata about the session that created this agent.
+   * \param hostMetadata Metadata about the host that created this agent.
    * \param sessionState The state of the session that created this agent.
+   * \param exector A void executor to be used by async-aware handlers.
    */
   HostAgent(
       FrontendChannel frontendChannel,
       HostTargetController& targetController,
-      HostTarget::SessionMetadata sessionMetadata,
-      SessionState& sessionState);
+      HostTargetMetadata hostMetadata,
+      SessionState& sessionState,
+      VoidExecutor executor);
+
+  HostAgent(const HostAgent&) = delete;
+  HostAgent(HostAgent&&) = delete;
+  HostAgent& operator=(const HostAgent&) = delete;
+  HostAgent& operator=(HostAgent&&) = delete;
+
+  ~HostAgent();
 
   /**
    * Handle a CDP request. The response will be sent over the provided
@@ -62,6 +73,8 @@ class HostAgent final {
   void setCurrentInstanceAgent(std::shared_ptr<InstanceAgent> agent);
 
  private:
+  enum class FuseboxClientType { Unknown, Fusebox, NonFusebox };
+
   /**
    * Send a simple Log.entryAdded notification with the given
    * \param text. You must ensure that the frontend has enabled Log
@@ -71,18 +84,32 @@ class HostAgent final {
    * Runtime.consoleAPICalled is that the latter requires an execution context
    * ID, which does not exist at the Host level.
    */
-  void sendInfoLogEntry(std::string_view text);
+  void sendInfoLogEntry(
+      std::string_view text,
+      std::initializer_list<std::string_view> args = {});
+
+  void sendFuseboxNotice();
+  void sendNonFuseboxNotice();
+
+  /**
+   * Send a console message to the frontend, or buffer it to be sent later.
+   */
+  void sendConsoleMessage(SimpleConsoleMessage message);
 
   FrontendChannel frontendChannel_;
   HostTargetController& targetController_;
-  const HostTarget::SessionMetadata sessionMetadata_;
+  const HostTargetMetadata hostMetadata_;
   std::shared_ptr<InstanceAgent> instanceAgent_;
+  FuseboxClientType fuseboxClientType_{FuseboxClientType::Unknown};
+  bool isPausedInDebuggerOverlayVisible_{false};
 
   /**
    * A shared reference to the session's state. This is only safe to access
    * during handleRequest and other method calls on the same thread.
    */
   SessionState& sessionState_;
+
+  NetworkIOAgent networkIOAgent_;
 };
 
 } // namespace facebook::react::jsinspector_modern

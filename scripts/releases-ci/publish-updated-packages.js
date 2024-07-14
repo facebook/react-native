@@ -9,12 +9,12 @@
  * @oncall react_native
  */
 
-const {PUBLISH_PACKAGES_TAG} = require('../monorepo/constants');
 const {publishPackage} = require('../npm-utils');
 const {getPackages} = require('../utils/monorepo');
 const {parseArgs} = require('@pkgjs/parseargs');
 const {execSync} = require('child_process');
 
+const PUBLISH_PACKAGES_TAG = '#publish-packages-to-npm';
 const NPM_CONFIG_OTP = process.env.NPM_CONFIG_OTP;
 
 const config = {

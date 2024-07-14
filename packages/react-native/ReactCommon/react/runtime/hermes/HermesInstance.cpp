@@ -95,31 +95,28 @@ class DecoratedRuntime : public jsi::RuntimeDecorator<jsi::Runtime> {
 class HermesJSRuntime : public JSRuntime {
  public:
   HermesJSRuntime(std::unique_ptr<HermesRuntime> runtime)
-      : runtime_(std::move(runtime)), targetDelegate_{runtime_} {}
+      : runtime_(std::move(runtime)) {}
 
   jsi::Runtime& getRuntime() noexcept override {
     return *runtime_;
   }
 
-  std::unique_ptr<jsinspector_modern::RuntimeAgentDelegate> createAgentDelegate(
-      jsinspector_modern::FrontendChannel frontendChannel,
-      jsinspector_modern::SessionState& sessionState,
-      std::unique_ptr<jsinspector_modern::RuntimeAgentDelegate::ExportedState>
-          previouslyExportedState,
-      const jsinspector_modern::ExecutionContextDescription&
-          executionContextDescription,
-      RuntimeExecutor runtimeExecutor) override {
-    return targetDelegate_.createAgentDelegate(
-        std::move(frontendChannel),
-        sessionState,
-        std::move(previouslyExportedState),
-        executionContextDescription,
-        std::move(runtimeExecutor));
+  jsinspector_modern::RuntimeTargetDelegate& getRuntimeTargetDelegate()
+      override {
+    if (!targetDelegate_) {
+      targetDelegate_.emplace(runtime_);
+    }
+    return *targetDelegate_;
+  }
+
+  void unstable_initializeOnJsThread() override {
+    runtime_->registerForProfiling();
   }
 
  private:
   std::shared_ptr<HermesRuntime> runtime_;
-  jsinspector_modern::HermesRuntimeTargetDelegate targetDelegate_;
+  std::optional<jsinspector_modern::HermesRuntimeTargetDelegate>
+      targetDelegate_;
 };
 
 std::unique_ptr<JSRuntime> HermesInstance::createJSRuntime(
@@ -144,7 +141,6 @@ std::unique_ptr<JSRuntime> HermesInstance::createJSRuntime(
                             .withAllocInYoung(false)
                             .withRevertToYGAtTTI(true)
                             .build())
-          .withES6Proxy(false)
           .withEnableSampleProfiling(true)
           .withMicrotaskQueue(ReactNativeFeatureFlags::enableMicrotasks())
           .withVMExperimentFlags(vmExperimentFlags);
@@ -158,7 +154,7 @@ std::unique_ptr<JSRuntime> HermesInstance::createJSRuntime(
 
 #ifdef HERMES_ENABLE_DEBUGGER
   auto& inspectorFlags = jsinspector_modern::InspectorFlags::getInstance();
-  if (!inspectorFlags.getEnableModernCDPRegistry()) {
+  if (!inspectorFlags.getFuseboxEnabled()) {
     std::unique_ptr<DecoratedRuntime> decoratedRuntime =
         std::make_unique<DecoratedRuntime>(
             std::move(hermesRuntime), msgQueueThread);

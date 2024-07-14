@@ -126,8 +126,8 @@ function reportException(
 }
 
 declare var console: {
-  error: typeof console.error,
-  _errorOriginal: typeof console.error,
+  error: (...data: $ReadOnlyArray<mixed>) => void,
+  _errorOriginal: (...data: $ReadOnlyArray<mixed>) => void,
   reportErrorsAsExceptions: boolean,
   ...
 };
@@ -154,6 +154,7 @@ function handleException(e: mixed, isFatal: boolean) {
     inExceptionHandler = true;
     /* $FlowFixMe[class-object-subtyping] added when improving typing for this
      * parameters */
+    // $FlowFixMe[incompatible-call]
     reportException(error, isFatal, /*reportToConsole*/ true);
   } finally {
     inExceptionHandler = false;
@@ -225,6 +226,7 @@ function reactConsoleErrorHandler(...args) {
   reportException(
     /* $FlowFixMe[class-object-subtyping] added when improving typing for this
      * parameters */
+    // $FlowFixMe[incompatible-call]
     error,
     false, // isFatal
     false, // reportToConsole
