@@ -216,7 +216,7 @@ static jsi::JSError convertNSExceptionToJSError(jsi::Runtime &runtime, NSExcepti
  */
 static jsi::JSError convertNSDictionaryToJSError(jsi::Runtime &runtime, NSDictionary *cause)
 {
-  jsi::Value error = createJSRuntimeError(runtime, "Exception in HostFunction: " + (cause[@"message"] ? std::string([cause[@"message"] UTF8String]) : "<unknown>"));
+  jsi::Value error = createJSRuntimeError(runtime, std::string("Exception in HostFunction: ") + (cause[@"message"] ? [cause[@"message"] UTF8String] : "<unknown>"));
   error.asObject(runtime).setProperty(runtime, "cause", convertNSDictionaryToJSIObject(runtime, cause));
   return jsi::JSError(runtime, std::move(error));
 }
@@ -256,7 +256,7 @@ jsi::Value ObjCTurboModule::createPromise(jsi::Runtime &runtime, std::string met
   // JS Stack at the time when the promise is created.
   std::optional<std::string> jsInvocationStack;
   if (RCTTraceTurboModulePromiseRejections()) {
-   jsInvocationStack = createJSRuntimeError(runtime, "")
+   jsInvocationStack = createJSRuntimeError(runtime, jsi::Value::undefined())
     .asObject(runtime)
     .getProperty(runtime, "stack")
     .asString(runtime)
@@ -415,6 +415,8 @@ id ObjCTurboModule::performMethodInvocation(
          caughtException = maybeCatchException(shouldCatchException, @{
                       NSLocalizedDescriptionKey: @"Unknown Objective-C Object thrown.",
                      });
+       } @finally {
+         [retainedObjectsForInvocation removeAllObjects];
        }
     } catch (const std::exception &exception) {
       caughtException = maybeCatchException(shouldCatchException, @{
@@ -429,7 +431,6 @@ id ObjCTurboModule::performMethodInvocation(
                     NSLocalizedDescriptionKey: @"Unknown C++ exception thrown.",
                   });
     }
-    [retainedObjectsForInvocation removeAllObjects];
 
     if (caughtException) {
       if (isSync) {
