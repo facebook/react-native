@@ -759,9 +759,9 @@ TEST_F(HostTargetTest, NetworkLoadNetworkResourceSuccess) {
   EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
                                             "id": 2,
                                             "result": {
-                                              "data": "SGVsbG8sIFc=",
+                                              "data": "Hello, W",
                                               "eof": false,
-                                              "base64Encoded": true
+                                              "base64Encoded": false
                                             }
                                           })")));
 
@@ -773,7 +773,140 @@ TEST_F(HostTargetTest, NetworkLoadNetworkResourceSuccess) {
   EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
                                             "id": 3,
                                             "result": {
-                                              "data": "b3JsZCE=",
+                                              "data": "orld!",
+                                              "eof": false,
+                                              "base64Encoded": false
+                                            }
+                                          })")));
+  toPage_->sendMessage(R"({
+                          "id": 3,
+                          "method": "IO.read",
+                          "params": {
+                            "handle": "0",
+                            "size": 8
+                          }
+                        })");
+
+  // No more data - expect empty payload with eof: true.
+  EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
+                                            "id": 4,
+                                            "result": {
+                                              "data": "",
+                                              "eof": true,
+                                              "base64Encoded": false
+                                            }
+                                          })")));
+  toPage_->sendMessage(R"({
+                          "id": 4,
+                          "method": "IO.read",
+                          "params": {
+                            "handle": "0",
+                            "size": 8
+                          }
+                        })");
+
+  executor([](NetworkRequestListener& listener) { listener.onCompletion(); });
+
+  // Close the stream.
+  EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
+                                            "id": 5,
+                                            "result": {}
+                                          })")));
+  toPage_->sendMessage(R"({
+                          "id": 5,
+                          "method": "IO.close",
+                          "params": {
+                            "handle": "0"
+                          }
+                        })");
+}
+
+TEST_F(HostTargetTest, NetworkLoadNetworkResourceBinaryData) {
+  connect();
+
+  InSequence s;
+
+  ScopedExecutor<NetworkRequestListener> executor;
+  EXPECT_CALL(
+      hostTargetDelegate_,
+      loadNetworkResource(
+          Field(&LoadNetworkResourceRequest::url, "http://example.com"), _))
+      .Times(1)
+      .WillOnce([&executor](
+                    const LoadNetworkResourceRequest& /*params*/,
+                    ScopedExecutor<NetworkRequestListener> executorArg) {
+        // Capture the ScopedExecutor<NetworkRequestListener> to use later.
+        executor = std::move(executorArg);
+      })
+      .RetiresOnSaturation();
+
+  // Load the resource, expect a CDP response as soon as headers are received.
+  toPage_->sendMessage(R"({
+                           "id": 1,
+                           "method": "Network.loadNetworkResource",
+                           "params": {
+                             "url": "http://example.com"
+                            }
+                         })");
+
+  EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
+                                            "id": 1,
+                                            "result": {
+                                              "resource": {
+                                                "success": true,
+                                                "stream": "0",
+                                                "httpStatusCode": 200,
+                                                "headers": {
+                                                  "Content-Type": "application/octet-stream"
+                                                }
+                                              }
+                                            }
+                                          })")));
+
+  executor([](NetworkRequestListener& listener) {
+    // Arbitrary binary data.
+    listener.onHeaders(
+        200, Headers{{"Content-Type", "application/octet-stream"}});
+  });
+
+  // Retrieve the first chunk of data.
+  toPage_->sendMessage(R"({
+                          "id": 2,
+                          "method": "IO.read",
+                          "params": {
+                            "handle": "0",
+                            "size": 4
+                          }
+                        })");
+
+  EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
+                                            "id": 2,
+                                            "result": {
+                                              "data": "3q2+7w==",
+                                              "eof": false,
+                                              "base64Encoded": true
+                                            }
+                                          })")));
+
+  executor([](NetworkRequestListener& listener) {
+    std::array<char, 8> binaryData = {
+        '\xDE',
+        '\xAD',
+        '\xBE',
+        '\xEF',
+        '\x00',
+        '\x11',
+        '\x22',
+        '\x33',
+    };
+    listener.onData(std::string_view(binaryData.data(), binaryData.size()));
+  });
+
+  // Retrieve the remaining data.
+  EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
+                                            "id": 3,
+                                            "result": {
+                                              "data": "ABEiMw==",
                                               "eof": false,
                                               "base64Encoded": true
                                             }
@@ -783,7 +916,7 @@ TEST_F(HostTargetTest, NetworkLoadNetworkResourceSuccess) {
                           "method": "IO.read",
                           "params": {
                             "handle": "0",
-                            "size": 8
+                            "size": 4
                           }
                         })");
 
@@ -819,6 +952,83 @@ TEST_F(HostTargetTest, NetworkLoadNetworkResourceSuccess) {
                             "handle": "0"
                           }
                         })");
+}
+
+TEST_F(HostTargetTest, NetworkLoadNetworkResourceMimeIsTextContentIsNot) {
+  connect();
+
+  InSequence s;
+
+  ScopedExecutor<NetworkRequestListener> executor;
+  EXPECT_CALL(
+      hostTargetDelegate_,
+      loadNetworkResource(
+          Field(&LoadNetworkResourceRequest::url, "http://example.com"), _))
+      .Times(1)
+      .WillOnce([&executor](
+                    const LoadNetworkResourceRequest& /*params*/,
+                    ScopedExecutor<NetworkRequestListener> executorArg) {
+        // Capture the ScopedExecutor<NetworkRequestListener> to use later.
+        executor = std::move(executorArg);
+      })
+      .RetiresOnSaturation();
+
+  // Load the resource, expect a CDP response as soon as headers are received.
+  toPage_->sendMessage(R"({
+                           "id": 1,
+                           "method": "Network.loadNetworkResource",
+                           "params": {
+                             "url": "http://example.com"
+                            }
+                         })");
+
+  EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
+                                            "id": 1,
+                                            "result": {
+                                              "resource": {
+                                                "success": true,
+                                                "stream": "0",
+                                                "httpStatusCode": 200,
+                                                "headers": {
+                                                  "Content-Type": "text/plain"
+                                                }
+                                              }
+                                            }
+                                          })")));
+
+  executor([](NetworkRequestListener& listener) {
+    // Claim text/plain...
+    listener.onHeaders(200, Headers{{"Content-Type", "text/plain"}});
+  });
+
+  // Retrieve the first chunk of data.
+  toPage_->sendMessage(R"({
+                          "id": 2,
+                          "method": "IO.read",
+                          "params": {
+                            "handle": "0",
+                            "size": 4
+                          }
+                        })");
+
+  EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
+                                            "id": 2,
+                                            "error": {
+                                              "message": "Invalid UTF-8 sequence",
+                                              "code": -32603
+                                            }
+                                          })")));
+
+  executor([](NetworkRequestListener& listener) {
+    std::array<char, 4> binaryData = {
+        '\x80',
+        '\x80',
+        '\x80',
+        '\x80',
+    };
+    // Actually emit binary that cannot be represented as UTF-8.
+    listener.onData(std::string_view(binaryData.data(), binaryData.size()));
+  });
 }
 
 TEST_F(HostTargetTest, NetworkLoadNetworkResourceStreamInterrupted) {
@@ -1071,7 +1281,7 @@ TEST_F(HostTargetTest, NetworkLoadNetworkResourceStreamClosed) {
         "stream": "0",
         "httpStatusCode": 200,
         "headers": {
-          "x-test": "foo"
+          "content-type": "text/plain"
         }
       }
     }
@@ -1082,7 +1292,7 @@ TEST_F(HostTargetTest, NetworkLoadNetworkResourceStreamClosed) {
     listener.setCancelFunction(
         [&cancelFunctionCalled]() { cancelFunctionCalled = true; });
 
-    listener.onHeaders(200, Headers{{"x-test", "foo"}});
+    listener.onHeaders(200, Headers{{"content-type", "text/plain"}});
   });
 
   // Retrieve the first chunk of data.
@@ -1091,16 +1301,16 @@ TEST_F(HostTargetTest, NetworkLoadNetworkResourceStreamClosed) {
                           "method": "IO.read",
                           "params": {
                             "handle": "0",
-                            "size": 20
+                            "size": 22
                           }
                         })");
 
   EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
     "id": 2,
     "result": {
-      "data": "VGhlIG1lYW5pbmcgb2YgbGlmZSA=",
+      "data": "The meaning of life is",
       "eof": false,
-      "base64Encoded": true
+      "base64Encoded": false
     }
   })")));
   executor([](NetworkRequestListener& listener) {
