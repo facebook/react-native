@@ -1,5 +1,41 @@
 # Changelog
 
+## v0.75.0-rc.5
+
+### Breaking
+
+#### Android specific
+
+- Undo a breaking change with ResourceDrawableIdHelper.instance ([3f8340975b](https://github.com/facebook/react-native/commit/3f8340975b35767b192e3118f05d2b039676052e) by [@cortinico](https://github.com/cortinico))
+- Undo a breaking change with I18nUtil.instance ([221755c495](https://github.com/facebook/react-native/commit/221755c495ba1e8b27400ae4178c6b0085a2ace5) by [@cortinico](https://github.com/cortinico))
+- Undo breaking change for ReadableMap.entryIterator for Kotlin consumers ([b24d47a9a7](https://github.com/facebook/react-native/commit/b24d47a9a759954915629e6fa320a379cc29193d) by [@cortinico](https://github.com/cortinico))
+- Undo breaking change on Dynamic.type and Dynamic.isNull ([5e31b45fc7](https://github.com/facebook/react-native/commit/5e31b45fc7bea37ecb3703fac6b2abaccae2cbae) by [@cortinico](https://github.com/cortinico))
+- Undo breaking change on `CatalystInstance.getJsCallInvokerHolder` ([2ea9c360dc](https://github.com/facebook/react-native/commit/2ea9c360dc42a75f224e5d161163d65ef197ac24) by [@cortinico](https://github.com/cortinico))
+
+### Added
+
+#### Android specific
+
+- Expose prefabs for newly added targets ([c16761da83](https://github.com/facebook/react-native/commit/c16761da833f7081e9378349e7f29cefbfe36d4f) by [@WoLewicki](https://github.com/WoLewicki))
+
+#### iOS specific
+
+- Libraries can now declare Swift Package Manager dependencies in their .podspec with `ReactNativePodsUtils.spm_dependency` ([f903f34837](https://github.com/facebook/react-native/commit/f903f3483794f0e0e0b05ac24ab761344c319d6b) by [@mfazekas](https://github.com/mfazekas))
+
+### Fixed
+
+- Fix Platform.constants.reactNativeVersion type ([95d9cdf228](https://github.com/facebook/react-native/commit/95d9cdf228e33d5651f41ebf5e14e80962fae118) by [@NickGerleman](https://github.com/NickGerleman))
+- Fixed prioritization of idle priority tasks ([0ca3ed87f3](https://github.com/facebook/react-native/commit/0ca3ed87f3424a333c815c9d57b17f133dd19eab) by [@rubennorte](https://github.com/rubennorte))
+
+#### Android specific
+
+- If `npx react-native-community/cli config` fails or timeouts proper error is shown and built is aborted, instead of leaving and empty autolinking.json ([3782511350](https://github.com/facebook/react-native/commit/3782511350c069425ad11cdefb8c6d3f10526fc2) by [@mfazekas](https://github.com/mfazekas))
+
+#### iOS specific
+
+- Make sure to pass the RCTBridgeProxy to  ViewManagers ([d6c90cf7ed](https://github.com/facebook/react-native/commit/d6c90cf7ed80caf0fc4eb2541f3dcadc3833dd37) by [@cipolleschi](https://github.com/cipolleschi))
+- Implement shared atomic counters and replace static integers in `RCTImageLoader` and `RCTNetworkTask` that were accessed concurrently, which in some cases lead to data races. ([ffc16fc18b](https://github.com/facebook/react-native/commit/ffc16fc18bcc44d1e98d66dbbe56fb726962fb72) by [@hakonk](https://github.com/hakonk))
+
 ## v0.75.0-rc.4
 
 ### Changed
