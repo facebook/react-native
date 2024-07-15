@@ -14,14 +14,6 @@ import com.facebook.proguard.annotations.DoNotStrip
  * to developers in a redbox.
  */
 @DoNotStrip
-public open class JavascriptException(jsStackTrace: String) :
-    RuntimeException(jsStackTrace), HasJavascriptExceptionMetadata {
-  private var extraDataAsJson: String? = null
-
-  override fun getExtraDataAsJson(): String? = extraDataAsJson
-
-  public fun setExtraDataAsJson(extraDataAsJson: String?): JavascriptException {
-    this.extraDataAsJson = extraDataAsJson
-    return this
-  }
+public open class JavascriptException(jsStackTrace: String) : RuntimeException(jsStackTrace) {
+  public var extraDataAsJson: String? = null
 }

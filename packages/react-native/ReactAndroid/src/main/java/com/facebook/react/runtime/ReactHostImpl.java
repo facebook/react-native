@@ -924,14 +924,8 @@ public class ReactHostImpl implements ReactHost {
       String callingMethod, String message, @Nullable Throwable throwable) {
     final String method = "raiseSoftException(" + callingMethod + ")";
     log(method, message);
-    if (throwable != null) {
-      ReactSoftExceptionLogger.logSoftException(
-          TAG, new ReactNoCrashSoftException(method + ": " + message, throwable));
-      return;
-    }
-
     ReactSoftExceptionLogger.logSoftException(
-        TAG, new ReactNoCrashSoftException(method + ": " + message));
+        TAG, new ReactNoCrashSoftException(method + ": " + message, throwable));
   }
 
   private Executor getDefaultReactInstanceExecutor() {
