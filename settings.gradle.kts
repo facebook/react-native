@@ -37,5 +37,7 @@ plugins {
 
 configure<com.facebook.react.ReactSettingsExtension> {
   autolinkLibrariesFromCommand(
-      workingDirectory = file("packages/rn-tester/"), lockFiles = files("yarn.lock"))
+      command = listOf("/bin/sh", "./config.sh"),
+      workingDirectory = file("packages/rn-tester/"),
+      lockFiles = files("yarn.lock"))
 }

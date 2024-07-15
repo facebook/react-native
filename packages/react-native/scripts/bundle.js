@@ -12,8 +12,8 @@
 
 const {bundleCommand: bc} = require('@react-native/community-cli-plugin');
 const {execSync} = require('child_process');
-const program = require('commander');
-const {existsSync, readFileSync} = require('fs');
+const {program} = require('commander');
+const {readFileSync} = require('fs');
 const path = require('path');
 
 program.version(
@@ -63,7 +63,7 @@ if (bc.options != null) {
 }
 
 if (require.main === module) {
-  program.parse(process.argv);
+  program.allowUnknownOption().parse(process.argv);
 }
 
 module.exports = program;
