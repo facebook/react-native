@@ -31,6 +31,8 @@ import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.Role;
 import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.uimanager.common.UIManagerType;
+import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.events.PointerEventHelper;
 import com.facebook.react.uimanager.util.ReactFindViewUtil;
 import java.util.ArrayList;
@@ -190,13 +192,17 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   @Override
   @ReactProp(name = ViewProps.FILTER, customType = "Filter")
   public void setFilter(@NonNull T view, @Nullable ReadableArray filter) {
-    view.setTag(R.id.filter, filter);
+    if (ViewUtil.getUIManagerType(view) == UIManagerType.FABRIC) {
+      view.setTag(R.id.filter, filter);
+    }
   }
 
   @Override
   @ReactProp(name = ViewProps.MIX_BLEND_MODE)
   public void setMixBlendMode(@NonNull T view, @Nullable String mixBlendMode) {
-    view.setTag(R.id.mix_blend_mode, BlendModeHelper.parseMixBlendMode(mixBlendMode));
+    if (ViewUtil.getUIManagerType(view) == UIManagerType.FABRIC) {
+      view.setTag(R.id.mix_blend_mode, BlendModeHelper.parseMixBlendMode(mixBlendMode));
+    }
   }
 
   @Override
