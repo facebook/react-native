@@ -19,6 +19,7 @@ import type {
   ____ViewStyle_InternalOverrides,
 } from './private/_StyleSheetTypesOverrides';
 import type {____TransformStyle_Internal} from './private/_TransformStyle';
+import type {ColorValue} from './StyleSheet';
 
 declare export opaque type NativeColorValue;
 export type ____ColorValue_Internal = null | string | number | NativeColorValue;
@@ -51,6 +52,15 @@ export type DropShadowPrimitive = {
   offsetY: number | string,
   standardDeviation?: number | string,
   color?: ____ColorValue_Internal | number,
+};
+
+export type BoxShadowPrimitive = {
+  offsetX: number | string,
+  offsetY: number | string,
+  color?: number | ColorValue,
+  blurRadius?: number | string,
+  spreadDistance?: number | string,
+  inset?: boolean,
 };
 
 export type DimensionValue = number | string | 'auto' | AnimatedNode | null;
@@ -731,12 +741,17 @@ export type ____MixBlendMode_Internal =
   | 'color'
   | 'luminosity';
 
+type ____BoxShadowStyle_Internal = $ReadOnly<{
+  experimental_boxShadow?: $ReadOnlyArray<BoxShadowPrimitive>,
+}>;
+
 export type ____ViewStyle_InternalCore = $ReadOnly<{
   ...$Exact<____LayoutStyle_Internal>,
   ...$Exact<____ShadowStyle_Internal>,
   ...$Exact<____TransformStyle_Internal>,
   ...____FilterStyle_Internal,
   experimental_mixBlendMode?: ____MixBlendMode_Internal,
+  ...____BoxShadowStyle_Internal,
   backfaceVisibility?: 'visible' | 'hidden',
   backgroundColor?: ____ColorValue_Internal,
   borderColor?: ____ColorValue_Internal,
