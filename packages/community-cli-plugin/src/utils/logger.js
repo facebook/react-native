@@ -74,7 +74,26 @@ const enable = () => {
 
 const hasDebugMessages = (): boolean => hidden;
 
-export const logger = {
+let communityLogger;
+try {
+  const {logger} = require('@react-native-community/cli-tools');
+  logger.debug("Using @react-naive-community/cli-tools' logger");
+  communityLogger = logger;
+} catch {
+  // This is no longer a required dependency in react-native projects, but use it instead of
+  // our forked version if it's available. Fail silently otherwise.
+}
+
+type Logger = $ReadOnly<{
+  debug: (...message: Array<string>) => void,
+  error: (...message: Array<string>) => void,
+  log: (...message: Array<string>) => void,
+  info: (...message: Array<string>) => void,
+  warn: (...message: Array<string>) => void,
+  ...
+}>;
+
+export const logger: Logger = communityLogger ?? {
   success,
   info,
   warn,
@@ -87,3 +106,7 @@ export const logger = {
   disable,
   enable,
 };
+
+if (communityLogger == null) {
+  logger.debug("Using @react-native/communityu-cli-plugin's logger");
+}
