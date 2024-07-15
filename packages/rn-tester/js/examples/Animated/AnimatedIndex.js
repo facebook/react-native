@@ -22,6 +22,7 @@ import MovingBoxExample from './MovingBoxExample';
 import RotatingImagesExample from './RotatingImagesExample';
 import TransformBounceExample from './TransformBounceExample';
 import TransformStylesExample from './TransformStylesExample';
+import PressabilityWithNativeDrivers from './PressabilityWithNativeDrivers';
 
 export default ({
   framework: 'React',
@@ -45,5 +46,6 @@ export default ({
     LoopingExample,
     ContinuousInteractionsExample,
     CombineExample,
+    PressabilityWithNativeDrivers,
   ],
 }: RNTesterModule);
