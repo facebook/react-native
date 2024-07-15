@@ -81,7 +81,8 @@ internal class DevInternalSettings(applicationContext: Context, private val list
       preferences.edit().putBoolean(PREFS_REMOTE_JS_DEBUG_KEY, value).apply()
     }
 
-  @Deprecated("Legacy sampling profiler is no longer supported")
+  @Deprecated(
+      "Legacy sampling profiler is no longer supported - This field will be removed in React Native 0.77")
   override var isStartSamplingProfilerOnInit: Boolean = false
 
   // Not supported.
