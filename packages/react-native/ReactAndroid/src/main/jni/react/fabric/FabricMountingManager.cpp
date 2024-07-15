@@ -53,8 +53,6 @@ static inline int getIntBufferSizeForType(CppMountItem::Type mountItemType) {
     case CppMountItem::Type::Insert:
     case CppMountItem::Type::Remove:
       return 3; // tag, parentTag, index
-    case CppMountItem::Type::RemoveDeleteTree:
-      return 3; // tag, parentTag, index
     case CppMountItem::Type::Delete:
     case CppMountItem::Type::UpdateProps:
     case CppMountItem::Type::UpdateState:
@@ -290,14 +288,6 @@ void FabricMountingManager::executeMount(
           if (!isVirtual) {
             cppCommonMountItems.push_back(CppMountItem::RemoveMountItem(
                 parentShadowView, oldChildShadowView, index));
-          }
-          break;
-        }
-        case ShadowViewMutation::RemoveDeleteTree: {
-          if (!isVirtual) {
-            cppCommonMountItems.push_back(
-                CppMountItem::RemoveDeleteTreeMountItem(
-                    parentShadowView, oldChildShadowView, index));
           }
           break;
         }
@@ -561,12 +551,6 @@ void FabricMountingManager::executeMount(
       env->SetIntArrayRegion(intBufferArray, intBufferPosition, 3, temp);
       intBufferPosition += 3;
     } else if (mountItemType == CppMountItem::Remove) {
-      temp[0] = mountItem.oldChildShadowView.tag;
-      temp[1] = mountItem.parentShadowView.tag;
-      temp[2] = mountItem.index;
-      env->SetIntArrayRegion(intBufferArray, intBufferPosition, 3, temp);
-      intBufferPosition += 3;
-    } else if (mountItemType == CppMountItem::RemoveDeleteTree) {
       temp[0] = mountItem.oldChildShadowView.tag;
       temp[1] = mountItem.parentShadowView.tag;
       temp[2] = mountItem.index;
