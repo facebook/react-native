@@ -479,6 +479,24 @@ static NSString *RCTNormalizeAnimatedEventName(NSString *eventName)
   [self stopAnimationLoopIfNeeded];
 }
 
+- (NSSet<NSNumber *> *)getTagsOfConnectedNodesFrom:(NSNumber *)tag andEvent:(NSString *)eventName
+{
+  NSMutableSet<NSNumber *> *tags = [NSMutableSet new];
+  NSString *key = [NSString stringWithFormat:@"%@%@", tag, RCTNormalizeAnimatedEventName(eventName)];
+  NSArray<RCTEventAnimation *> *eventAnimations = _eventDrivers[key];
+  for (RCTEventAnimation *animation in eventAnimations) {
+    NSNumber *tag = [animation.valueNode nodeTag];
+    if (tag) {
+      [tags addObject:tag];
+    }
+    for (NSNumber *childNodeKey in [animation.valueNode childNodes]) {
+      [tags addObject:childNodeKey];
+    }
+  }
+
+  return tags;
+}
+
 #pragma mark-- Updates
 
 - (void)updateAnimations
