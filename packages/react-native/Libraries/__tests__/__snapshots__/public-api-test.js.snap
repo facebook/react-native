@@ -7718,12 +7718,16 @@ export type ____MixBlendMode_Internal =
   | \\"saturation\\"
   | \\"color\\"
   | \\"luminosity\\";
+type ____BackgroundStyle_Internal = $ReadOnly<{
+  background?: $ReadOnlyArray<BackgroundPrimitive> | string,
+}>;
 export type ____ViewStyle_InternalCore = $ReadOnly<{
   ...$Exact<____LayoutStyle_Internal>,
   ...$Exact<____ShadowStyle_Internal>,
   ...$Exact<____TransformStyle_Internal>,
   ...____FilterStyle_Internal,
   experimental_mixBlendMode?: ____MixBlendMode_Internal,
+  ...____BackgroundStyle_Internal,
   backfaceVisibility?: \\"visible\\" | \\"hidden\\",
   backgroundColor?: ____ColorValue_Internal,
   borderColor?: ____ColorValue_Internal,
@@ -8000,6 +8004,22 @@ exports[`public API should not change unintentionally Libraries/StyleSheet/priva
 exports[`public API should not change unintentionally Libraries/StyleSheet/processAspectRatio.js 1`] = `
 "declare function processAspectRatio(aspectRatio?: number | string): ?number;
 declare module.exports: processAspectRatio;
+"
+`;
+
+exports[`public API should not change unintentionally Libraries/StyleSheet/processBackground.js 1`] = `
+"export type BackgroundPrimitive = {
+  type: \\"linearGradient\\",
+  start: { x: number, y: number },
+  end: { x: number, y: number },
+  colorStops: $ReadOnlyArray<{
+    color: ____ColorValue_Internal,
+    position: number,
+  }>,
+};
+declare export default function processBackground(
+  background: $ReadOnlyArray<BackgroundPrimitive> | string
+): $ReadOnlyArray<BackgroundPrimitive>;
 "
 `;
 
