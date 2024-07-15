@@ -130,80 +130,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4.1.1
-      - name: Download Previous Artifacts
-        uses: actions/download-artifact@v4
+      - name: Build HermesC Windows
+        uses: ./.github/actions/build-hermesc-windows
         with:
-          name: hermes-workspace
-          path: 'D:\tmp\hermes'
-      - name: Set up workspace
-        run: |
-          mkdir -p D:\tmp\hermes\osx-bin
-          mkdir -p .\packages\react-native\sdks\hermes
-          cp -r -Force D:\tmp\hermes\hermes\* .\packages\react-native\sdks\hermes\.
-          cp -r -Force .\packages\react-native\sdks\hermes-engine\utils\* .\packages\react-native\sdks\hermes\.
-      - name: Windows cache
-        uses: actions/cache@v4.0.0
-        with:
-          key: v2-hermes-${{ github.job }}-windows-${{ needs.prepare_hermes_workspace.outputs.hermes-version }}-${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
-          path: |
-            D:\tmp\hermes\win64-bin\
-            D:\tmp\hermes\hermes\icu\
-            D:\tmp\hermes\hermes\deps\
-            D:\tmp\hermes\hermes\build_release\
-      - name: setup-msbuild
-        uses: microsoft/setup-msbuild@v1.3.2
-      - name: Set up workspace
-        run: |
-          #New-Item -ItemType Directory -ErrorAction SilentlyContinue $Env:HERMES_WS_DIR
-          New-Item -ItemType Directory -ErrorAction SilentlyContinue $Env:HERMES_WS_DIR\icu
-          New-Item -ItemType Directory -ErrorAction SilentlyContinue $Env:HERMES_WS_DIR\deps
-          New-Item -ItemType Directory -ErrorAction SilentlyContinue $Env:HERMES_WS_DIR\win64-bin
-          #New-Item -ItemType Directory -ErrorAction SilentlyContinue $Env:HERMES_WS_DIR\hermes
-          #New-Item -ItemType SymbolicLink -ErrorAction SilentlyContinue -Target tmp\hermes\hermes -Path $Env:HERMES_WS_DIR -Name hermes
-      - name: Build HermesC for Windows
-        run: |
-          if (-not(Test-Path -Path $Env:HERMES_WS_DIR\win64-bin\hermesc.exe)) {
-            choco install --no-progress cmake --version 3.14.7
-            if (-not $?) { throw "Failed to install CMake" }
-
-            cd $Env:HERMES_WS_DIR\icu
-            # If Invoke-WebRequest shows a progress bar, it will fail with
-            #   Win32 internal error "Access is denied" 0x5 occurred [...]
-            $progressPreference = 'silentlyContinue'
-            Invoke-WebRequest -Uri "$Env:ICU_URL" -OutFile "icu.zip"
-            Expand-Archive -Path "icu.zip" -DestinationPath "."
-
-            cd $Env:HERMES_WS_DIR
-            Copy-Item -Path "icu\bin64\icu*.dll" -Destination "deps"
-            # Include MSVC++ 2015 redistributables
-            Copy-Item -Path "c:\windows\system32\msvcp140.dll" -Destination "deps"
-            Copy-Item -Path "c:\windows\system32\vcruntime140.dll" -Destination "deps"
-            Copy-Item -Path "c:\windows\system32\vcruntime140_1.dll" -Destination "deps"
-
-            $Env:PATH += ";$Env:CMAKE_DIR;$Env:MSBUILD_DIR"
-            $Env:ICU_ROOT = "$Env:HERMES_WS_DIR\icu"
-
-            cmake -S hermes -B build_release -G 'Visual Studio 16 2019' -Ax64 -DCMAKE_BUILD_TYPE=Release -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=True -DHERMES_ENABLE_WIN10_ICU_FALLBACK=OFF
-            if (-not $?) { throw "Failed to configure Hermes" }
-            echo "Running windows build..."
-            cd build_release
-            cmake --build . --target hermesc --config Release
-            if (-not $?) { throw "Failed to build Hermes" }
-
-            echo "Copying hermesc.exe to win64-bin"
-            cd $Env:HERMES_WS_DIR
-            Copy-Item -Path "build_release\bin\Release\hermesc.exe" -Destination "win64-bin"
-            # Include Windows runtime dependencies
-            Copy-Item -Path "deps\*" -Destination "win64-bin"
-          }
-          else {
-              Write-Host "Skipping; Clean c:\tmp\hermes\win64-bin to rebuild."
-          }
-      - name: Upload windows artifacts
-        uses: actions/upload-artifact@v4.3.0
-        with:
-          name: hermes-win64-bin
-          path: D:\tmp\hermes\win64-bin\
+          HERMES_VERSION: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
+          REACT_NATIVE_VERSION: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
 
   build_android:
     runs-on: 8-core-ubuntu

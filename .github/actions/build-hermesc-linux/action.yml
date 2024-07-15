@@ -1,5 +1,5 @@
-name: build-hermesc-apple
-description: This action builds hermesc for Apple platforms
+name: build-hermesc-linux
+description: This action builds hermesc for linux platforms
 inputs:
   HERMES_VERSION:
     required: True
