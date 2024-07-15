@@ -34,19 +34,19 @@ inline Color hostPlatformColorFromComponents(ColorComponents components) {
       static_cast<uint8_t>(std::round(components.alpha * ratio)));
 }
 
-inline uint8_t alphaFromHostPlatformColor(Color color) {
-  return static_cast<uint8_t>((color >> 24) & 0xff);
+inline float alphaFromHostPlatformColor(Color color) {
+  return static_cast<float>((color >> 24) & 0xff);
 }
 
-inline uint8_t redFromHostPlatformColor(Color color) {
-  return static_cast<uint8_t>((color >> 16) & 0xff);
+inline float redFromHostPlatformColor(Color color) {
+  return static_cast<float>((color >> 16) & 0xff);
 }
 
-inline uint8_t greenFromHostPlatformColor(Color color) {
-  return static_cast<uint8_t>((color >> 8) & 0xff);
+inline float greenFromHostPlatformColor(Color color) {
+  return static_cast<float>((color >> 8) & 0xff);
 }
 
-inline uint8_t blueFromHostPlatformColor(Color color) {
+inline float blueFromHostPlatformColor(Color color) {
   return static_cast<uint8_t>((color >> 0) & 0xff);
 }
 
