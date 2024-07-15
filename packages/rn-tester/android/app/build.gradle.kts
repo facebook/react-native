@@ -29,7 +29,7 @@ react {
   codegenDir = file("$rootDir/node_modules/@react-native/codegen")
   //   The cli.js file which is the React Native CLI entrypoint. Default is
   // ../node_modules/react-native/cli.js
-  cliFile = file("../../../react-native/scripts/bundle.js")
+  cliFile = file("$reactNativeDirPath/cli.js")
 
   /* Variants */
   //   The list of variants to that are debuggable. For those we're going to
@@ -55,7 +55,7 @@ react {
   //
   //   A list of extra flags to pass to the 'bundle' commands.
   //   See https://github.com/react-native-community/cli/blob/main/docs/commands.md#bundle
-  extraPackagerArgs = listOf("--config-cmd", "/bin/sh config.sh")
+  // extraPackagerArgs = []
 
   /* Hermes Commands */
   //   The hermes compiler command to run. By default it is 'hermesc'

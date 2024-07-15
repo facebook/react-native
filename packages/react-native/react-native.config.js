@@ -85,8 +85,6 @@ if (ios != null) {
     projectConfig: ios.projectConfig,
     dependencyConfig: ios.dependencyConfig,
   };
-} else {
-  config.platforms.ios = {};
 }
 
 if (android != null) {
@@ -95,8 +93,6 @@ if (android != null) {
     projectConfig: android.projectConfig,
     dependencyConfig: android.dependencyConfig,
   };
-} else {
-  config.platforms.android = {};
 }
 
 module.exports = config;
