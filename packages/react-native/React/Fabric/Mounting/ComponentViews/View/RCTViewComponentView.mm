@@ -32,7 +32,6 @@ using namespace facebook::react;
   __weak CALayer *_borderLayer;
   CALayer *_boxShadowLayer;
   CALayer *_filterLayer;
-  NSMutableArray<CAGradientLayer *> *_gradientLayers;
   BOOL _needsInvalidateLayer;
   BOOL _isJSResponder;
   BOOL _removeClippedSubviews;
@@ -229,7 +228,6 @@ using namespace facebook::react;
     self.backgroundColor = RCTUIColorFromSharedColor(newViewProps.backgroundColor);
     needsInvalidateLayer = YES;
   }
-  
 
   // `shadowColor`
   if (oldViewProps.shadowColor != newViewProps.shadowColor) {
@@ -404,11 +402,6 @@ using namespace facebook::react;
   if (oldViewProps.filter != newViewProps.filter) {
     _needsInvalidateLayer = YES;
   }
-  
-  if (oldViewProps.background != newViewProps.background) {
-    _needsInvalidateLayer = YES;
-  }
-
 
   // `boxShadow`
   if (oldViewProps.boxShadow != newViewProps.boxShadow) {
@@ -419,7 +412,6 @@ using namespace facebook::react;
 
   _props = std::static_pointer_cast<const ViewProps>(props);
 }
-
 
 - (void)updateEventEmitter:(const EventEmitter::Shared &)eventEmitter
 {
@@ -769,7 +761,7 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
         self.layer.opacity *= primitive.amount;
       }
     }
-  
+
     _filterLayer = [CALayer layer];
     _filterLayer.frame = CGRectMake(0, 0, layer.frame.size.width, layer.frame.size.height);
     _filterLayer.compositingFilter = @"multiplyBlendMode";
@@ -782,58 +774,6 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     // add
     _filterLayer.zPosition = CGFLOAT_MAX;
     [self.layer addSublayer:_filterLayer];
-  }
-  
-  [self clearExistingGradientLayers];
-  auto background = _props->background;
-  if (background.empty()) {
-    return;
-  }
-  for (const auto &gradientPrimitive : background) {
-    CAGradientLayer *gradientLayer = [CAGradientLayer layer];
-    NSMutableArray *colors = [NSMutableArray array];
-    NSMutableArray *locations = [NSMutableArray array];
-    for (const auto& colorStop : gradientPrimitive.colorStops) {
-      if (colorStop.position.has_value()) {
-        auto location = @(colorStop.position.value());
-        UIColor* color = RCTUIColorFromSharedColor(colorStop.color);
-        [colors addObject:(id) color.CGColor];
-        [locations addObject:location];
-      }
-    }
-    gradientLayer.startPoint = CGPointMake(gradientPrimitive.startX, gradientPrimitive.startY);
-    gradientLayer.endPoint = CGPointMake(gradientPrimitive.endX, gradientPrimitive.endY);
-    
-    if (locations.count > 0) {
-      gradientLayer.locations = locations;
-    }
-    gradientLayer.colors = colors;
-    gradientLayer.frame = layer.bounds;
-    
-    // So that border layer is always above gradient layer
-    gradientLayer.zPosition = _borderLayer.zPosition;
-    [self.layer insertSublayer:gradientLayer atIndex:0];
-    
-    // Handle borders for gradient views
-    if (useCoreAnimationBorderRendering) {
-      gradientLayer.borderWidth = (CGFloat)borderMetrics.borderWidths.left;
-      CGColorRef borderColor = RCTCreateCGColorRefFromSharedColor(borderMetrics.borderColors.left);
-      gradientLayer.borderColor = borderColor;
-      CGColorRelease(borderColor);
-      gradientLayer.cornerRadius = (CGFloat)borderMetrics.borderRadii.topLeft;
-      gradientLayer.cornerCurve = CornerCurveFromBorderCurve(borderMetrics.borderCurves.topLeft);
-      gradientLayer.shouldRasterize = YES;
-      gradientLayer.drawsAsynchronously = YES;
-    } else {
-      CAShapeLayer* maskLayer = [CAShapeLayer layer];
-      CGPathRef path = RCTPathCreateWithRoundedRect(self.bounds, RCTGetCornerInsets(
-        RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii), 
-        UIEdgeInsetsZero), nil);
-      maskLayer.path = path;
-      CGPathRelease(path);
-      gradientLayer.mask = maskLayer;
-    }
-    [_gradientLayers addObject:gradientLayer];
   }
 
   _boxShadowLayer = nil;
@@ -848,18 +788,6 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
 
     _boxShadowLayer.contents = (id)boxShadowImage.CGImage;
   }
-}
-
-- (void)clearExistingGradientLayers
-{
-  if (_gradientLayers == nil) {
-    _gradientLayers = [NSMutableArray new];
-    return;
-  }
-  for (CAGradientLayer *gradientLayer in _gradientLayers) {
-    [gradientLayer removeFromSuperlayer];
-  }
-  [_gradientLayers removeAllObjects];
 }
 
 #pragma mark - Accessibility

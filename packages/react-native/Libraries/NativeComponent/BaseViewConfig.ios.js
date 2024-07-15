@@ -223,7 +223,6 @@ const validAttributesForNonEventProps = {
   experimental_filter: {
     process: require('../StyleSheet/processFilter').default,
   },
-  background: {process: require('../StyleSheet/processBackground').default},
   borderTopWidth: true,
   borderTopColor: {process: require('../StyleSheet/processColor').default},
   borderRightWidth: true,
