@@ -1092,6 +1092,7 @@ public class CSSBackgroundDrawable extends Drawable {
             | (borderBottom > 0 ? colorBottom : ALL_BITS_UNSET);
     return andSmear == orSmear ? andSmear : 0;
   }
+
   private void drawRectangularBackgroundWithBorders(Canvas canvas) {
     mPaint.setStyle(Paint.Style.FILL);
 

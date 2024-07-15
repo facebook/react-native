@@ -123,7 +123,7 @@ public abstract class BaseViewManagerDelegate<T extends View, U extends BaseView
         break;
       case ViewProps.BACKGROUND:
         mViewManager.setBackground(view, (ReadableArray) value);
-      break;
+        break;
       case ViewProps.TRANSFORM_ORIGIN:
         mViewManager.setTransformOrigin(view, (ReadableArray) value);
         break;
