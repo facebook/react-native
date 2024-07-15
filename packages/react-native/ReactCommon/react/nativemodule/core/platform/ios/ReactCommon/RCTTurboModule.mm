@@ -187,9 +187,14 @@ id convertJSIValueToObjCObject(jsi::Runtime &runtime, const jsi::Value &value, s
   throw std::runtime_error("Unsupported jsi::Value kind");
 }
 
-static jsi::Value createJSRuntimeError(jsi::Runtime &runtime, const std::string &message)
-{
-  return runtime.global().getPropertyAsFunction(runtime, "Error").call(runtime, message);
+jsi::Value createJSRuntimeError(jsi::Runtime& runtime, jsi::Value&& message) {
+  return runtime.global()
+    .getPropertyAsFunction(runtime, "Error")
+    .call(runtime, std::move(message));
+}
+
+jsi::Value createJSRuntimeError(jsi::Runtime& runtime, const std::string& message) {
+  return createJSRuntimeError(runtime, jsi::String::createFromUtf8(runtime, message));
 }
 
 /**
@@ -228,7 +233,7 @@ static jsi::Value convertJSErrorDetailsToJSRuntimeError(jsi::Runtime &runtime, N
 {
   NSString *message = jsErrorDetails[@"message"];
 
-  auto jsError = createJSRuntimeError(runtime, [message UTF8String]);
+  auto jsError = createJSRuntimeError(runtime, std::string([message UTF8String]));
   jsError.asObject(runtime).setProperty(runtime, "cause", convertObjCObjectToJSIValue(runtime, jsErrorDetails));
 
   if (jsInvocationStack.has_value()) {
@@ -352,7 +357,17 @@ static NSError * maybeCatchException(
     if ([causeOrError isKindOfClass:[NSDictionary class]]) {
       return [[NSError alloc] initWithDomain:RCTErrorDomain code:-1 userInfo:causeOrError];
     }
-    
+
+    if ([causeOrError isKindOfClass:[NSException class]]) {
+      NSException *exception = (NSException *)causeOrError;
+      return [[NSError alloc] initWithDomain:RCTErrorDomain code:-1 userInfo:@{
+        @"name": exception.name,
+        NSLocalizedDescriptionKey: exception.reason,
+        @"stackSymbols": exception.callStackSymbols,
+        @"stackReturnAddresses": exception.callStackReturnAddresses,
+      }];
+    }
+
     // This should never happen, to avoid consequent errors, we wrapp the unknown value in NSError.
     return [[NSError alloc] initWithDomain:RCTErrorDomain code:-1 userInfo:@{ @"unknown": causeOrError }];
 }
@@ -398,13 +413,7 @@ id ObjCTurboModule::performMethodInvocation(
       @try {
         [inv invokeWithTarget:strongModule];
        } @catch (NSException *exception) {
-         caughtException = maybeCatchException(
-                     shouldCatchException, @{
-                       @"name": exception.name,
-                       NSLocalizedDescriptionKey: exception.reason,
-                       @"stackSymbols": exception.callStackSymbols,
-                       @"stackReturnAddresses": exception.callStackReturnAddresses,
-                     });
+         caughtException = maybeCatchException(shouldCatchException, exception);
        } @catch (NSError *error) {
          caughtException = maybeCatchException(shouldCatchException, error);
        } @catch (NSString *errorMessage) {
