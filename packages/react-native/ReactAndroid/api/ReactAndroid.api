@@ -5531,6 +5531,7 @@ public final class com/facebook/react/uimanager/common/ViewUtil {
 	public static final field NO_SURFACE_ID I
 	public static final fun getUIManagerType (I)I
 	public static final fun getUIManagerType (II)I
+	public static final fun getUIManagerType (Landroid/view/View;)I
 	public static final fun isRootTag (I)Z
 }
 

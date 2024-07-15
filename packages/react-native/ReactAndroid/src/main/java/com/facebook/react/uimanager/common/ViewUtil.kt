@@ -7,6 +7,8 @@
 
 package com.facebook.react.uimanager.common
 
+import android.view.View
+
 public object ViewUtil {
 
   public const val NO_SURFACE_ID: Int = -1
@@ -25,6 +27,12 @@ public object ViewUtil {
       } else {
         UIManagerType.DEFAULT
       }
+
+  /**
+   * Overload for {@link #getUIManagerType(int)} that uses the view's id to determine if it
+   * originated from Fabric
+   */
+  @JvmStatic @UIManagerType public fun getUIManagerType(view: View): Int = getUIManagerType(view.id)
 
   /**
    * Version of getUIManagerType that uses both surfaceId and viewTag heuristics
