@@ -53,17 +53,6 @@ struct ShadowViewMutation final {
       int index);
 
   /*
-   * Creates and returns a `RemoveDelete` mutation.
-   * This is a signal to (for supported platforms)
-   * remove and delete an entire subtree with a single
-   * instruction.
-   */
-  static ShadowViewMutation RemoveDeleteTreeMutation(
-      ShadowView parentShadowView,
-      ShadowView childShadowView,
-      int index);
-
-  /*
    * Creates and returns an `Update` mutation.
    */
   static ShadowViewMutation UpdateMutation(
@@ -79,7 +68,6 @@ struct ShadowViewMutation final {
     Insert = 4,
     Remove = 8,
     Update = 16,
-    RemoveDeleteTree = 32
   };
 
 #pragma mark - Fields

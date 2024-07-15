@@ -57,19 +57,6 @@ ShadowViewMutation ShadowViewMutation::RemoveMutation(
   };
 }
 
-ShadowViewMutation ShadowViewMutation::RemoveDeleteTreeMutation(
-    ShadowView parentShadowView,
-    ShadowView childShadowView,
-    int index) {
-  return {
-      /* .type = */ RemoveDeleteTree,
-      /* .parentShadowView = */ std::move(parentShadowView),
-      /* .oldChildShadowView = */ std::move(childShadowView),
-      /* .newChildShadowView = */ {},
-      /* .index = */ index,
-  };
-}
-
 ShadowViewMutation ShadowViewMutation::UpdateMutation(
     ShadowView oldChildShadowView,
     ShadowView newChildShadowView,
@@ -125,8 +112,6 @@ std::string getDebugName(const ShadowViewMutation& mutation) {
       return "Remove";
     case ShadowViewMutation::Update:
       return "Update";
-    case ShadowViewMutation::RemoveDeleteTree:
-      return "RemoveDeleteTree";
   }
 }
 
