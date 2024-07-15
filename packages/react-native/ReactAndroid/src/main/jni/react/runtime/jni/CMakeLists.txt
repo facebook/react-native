@@ -24,6 +24,7 @@ target_link_libraries(
         rninstance
         fabricjni
         react_featureflagsjni
+        react_render_runtimescheduler
         turbomodulejsijni
         fb
         jsi
