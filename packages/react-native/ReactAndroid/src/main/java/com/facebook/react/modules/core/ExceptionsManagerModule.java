@@ -62,8 +62,9 @@ public class ExceptionsManagerModule extends NativeExceptionsManagerSpec {
 
     String extraDataAsJson = ExceptionDataHelper.getExtraDataAsJson(data);
     if (isFatal) {
-      throw new JavascriptException(JSStackTrace.format(message, stack))
-          .setExtraDataAsJson(extraDataAsJson);
+      JavascriptException ex = new JavascriptException(JSStackTrace.format(message, stack));
+      ex.setExtraDataAsJson(extraDataAsJson);
+      throw ex;
     } else {
       FLog.e(ReactConstants.TAG, JSStackTrace.format(message, stack));
       if (extraDataAsJson != null) {
