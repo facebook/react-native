@@ -34,11 +34,4 @@ Pod::Spec.new do |s|
   s.header_dir             = "reactperflogger"
   s.pod_target_xcconfig    = { "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard() }
   s.compiler_flags         = folly_compiler_flags
-  s.pod_target_xcconfig    = {
-    "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
-    "HEADER_SEARCH_PATHS" => header_search_paths.join(' '),
-  }
-
-  s.dependency "RCT-Folly", folly_version
-  s.dependency "DoubleConversion"
 end
