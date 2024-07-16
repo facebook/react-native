@@ -6,8 +6,8 @@
  */
 
 #include "NetworkIOAgent.h"
-#include <folly/base64.h>
 #include <utility>
+#include "Base64.h"
 #include "Utf8.h"
 
 namespace facebook::react::jsinspector_modern {
@@ -218,8 +218,7 @@ class Stream : public NetworkRequestListener,
       output = std::string(buffer.begin(), buffer.begin() + buffer.size());
     } else {
       // Encode the slice as a base64 string.
-      output =
-          folly::base64Encode(std::string_view(buffer.data(), buffer.size()));
+      output = base64Encode(std::string_view(buffer.data(), buffer.size()));
     }
 
     return IOReadResult{
