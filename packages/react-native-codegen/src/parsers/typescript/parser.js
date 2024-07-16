@@ -290,7 +290,7 @@ class TypeScriptParser implements Parser {
     return properties.map(prop => {
       return {
         name: prop.key.name,
-        optional: true,
+        optional: prop?.optional ?? false,
         typeAnnotation: typeScriptTranslateTypeAnnotation(
           hasteModuleName,
           prop.typeAnnotation.typeAnnotation,

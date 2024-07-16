@@ -2354,7 +2354,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_PA
                 'properties': [
                   {
                     'name': 'a',
-                    'optional': true,
+                    'optional': false,
                     'typeAnnotation': {
                       'type': 'StringTypeAnnotation'
                     }
@@ -2389,7 +2389,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_PA
                     'properties': [
                       {
                         'name': 'a',
-                        'optional': true,
+                        'optional': false,
                         'typeAnnotation': {
                           'type': 'StringTypeAnnotation'
                         }
@@ -2463,7 +2463,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_PA
                     'properties': [
                       {
                         'name': 'a',
-                        'optional': true,
+                        'optional': false,
                         'typeAnnotation': {
                           'type': 'StringTypeAnnotation'
                         }
@@ -2486,7 +2486,7 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_PA
                     'properties': [
                       {
                         'name': 'a',
-                        'optional': true,
+                        'optional': false,
                         'typeAnnotation': {
                           'type': 'StringTypeAnnotation'
                         }
