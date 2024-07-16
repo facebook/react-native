@@ -7,11 +7,22 @@
 
 #include "NetworkIOAgent.h"
 #include <folly/base64.h>
+#include <utility>
+#include "Utf8.h"
 
 namespace facebook::react::jsinspector_modern {
 
 static constexpr long DEFAULT_BYTES_PER_READ =
     1048576; // 1MB (Chrome v112 default)
+
+// https://github.com/chromium/chromium/blob/128.0.6593.1/content/browser/devtools/devtools_io_context.cc#L71-L73
+static constexpr std::array kTextMIMETypePrefixes{
+    "text/",
+    "application/x-javascript",
+    "application/json",
+    "application/xml",
+    "application/javascript" // Not in Chromium but emitted by Metro
+};
 
 namespace {
 
@@ -103,6 +114,17 @@ class Stream : public NetworkRequestListener,
   }
 
   void onHeaders(int httpStatusCode, const Headers& headers) override {
+    // Find content-type through case-insensitive search of headers.
+    for (const auto& [name, value] : headers) {
+      std::string lowerName = name;
+      std::transform(
+          lowerName.begin(), lowerName.end(), lowerName.begin(), ::tolower);
+      if (lowerName == "content-type") {
+        isText_ = isTextMimeType(value);
+        break;
+      };
+    }
+
     // If we've already seen an error, the initial callback as already been
     // called with it.
     if (initCb_) {
@@ -181,16 +203,43 @@ class Stream : public NetworkRequestListener,
     std::vector<char> buffer(maxBytesToRead);
     data_.read(buffer.data(), maxBytesToRead);
     auto bytesRead = data_.gcount();
+    std::string output;
+
     buffer.resize(bytesRead);
+    if (isText_) {
+      auto originalSize = buffer.size();
+      // Maybe resize to drop the last 1-3 bytes so that buffer is valid.
+      truncateToValidUTF8(buffer);
+      if (buffer.size() < originalSize) {
+        // Rewind the stream so that the next read starts from the start of
+        // the code point we're removing from this chunk.
+        data_.seekg(buffer.size() - originalSize, std::ios_base::cur);
+      }
+      output = std::string(buffer.begin(), buffer.begin() + buffer.size());
+    } else {
+      // Encode the slice as a base64 string.
+      output =
+          folly::base64Encode(std::string_view(buffer.data(), buffer.size()));
+    }
+
     return IOReadResult{
-        .data =
-            folly::base64Encode(std::string_view(buffer.data(), buffer.size())),
-        .eof = bytesRead == 0 && completed_,
-        // TODO: Support UTF-8 string responses
-        .base64Encoded = true};
+        .data = output,
+        .eof = output.length() == 0 && completed_,
+        .base64Encoded = !isText_};
+  }
+
+  // https://github.com/chromium/chromium/blob/128.0.6593.1/content/browser/devtools/devtools_io_context.cc#L70-L80
+  static bool isTextMimeType(const std::string& mimeType) {
+    for (auto& kTextMIMETypePrefix : kTextMIMETypePrefixes) {
+      if (mimeType.starts_with(kTextMIMETypePrefix)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   bool completed_{false};
+  bool isText_{false};
   std::optional<std::string> error_;
   std::stringstream data_;
   long bytesReceived_{0};
@@ -338,8 +387,13 @@ void NetworkIOAgent::handleIoRead(const cdp::PreparsedRequest& req) {
   } else {
     it->second->read(
         size ? *size : DEFAULT_BYTES_PER_READ,
-        [requestId, frontendChannel = frontendChannel_](auto resultOrError) {
+        [requestId,
+         frontendChannel = frontendChannel_,
+         streamId,
+         streamsWeak = std::weak_ptr(streams_)](auto resultOrError) {
           if (auto* error = std::get_if<IOReadError>(&resultOrError)) {
+            // NB: Chrome DevTools calls IO.close after a read error, so any
+            // continuing download or retained data is cleaned up at that point.
             frontendChannel(cdp::jsonError(
                 requestId, cdp::ErrorCode::InternalError, *error));
           } else if (auto* result = std::get_if<IOReadResult>(&resultOrError)) {
