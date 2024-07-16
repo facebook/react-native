@@ -17,3 +17,4 @@ runs:
         cache-write-only: ${{ (github.ref == 'refs/heads/main' || contains(github.ref, '-stable')) && inputs.cache-read-only != 'true' }}
         # Temporarily disabling to try resolve a cache cleanup failure
         # gradle-home-cache-cleanup: true
+        add-job-summary-as-pr-comment: on-failure
