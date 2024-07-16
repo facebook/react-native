@@ -20,6 +20,7 @@
 #import <react/renderer/components/view/ViewEventEmitter.h>
 #import <react/renderer/components/view/ViewProps.h>
 #import <react/renderer/components/view/accessibilityPropsConversions.h>
+#import <react/renderer/graphics/BlendMode.h>
 
 #ifdef RCT_DYNAMIC_FRAMEWORKS
 #import <React/RCTComponentViewFactory.h>
@@ -403,6 +404,11 @@ using namespace facebook::react;
     _needsInvalidateLayer = YES;
   }
 
+  // `mixBlendMode`
+  if (oldViewProps.mixBlendMode != newViewProps.mixBlendMode) {
+    _needsInvalidateLayer = YES;
+  }
+
   // `boxShadow`
   if (oldViewProps.boxShadow != newViewProps.boxShadow) {
     _needsInvalidateLayer = YES;
@@ -774,6 +780,57 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     // add
     _filterLayer.zPosition = CGFLOAT_MAX;
     [self.layer addSublayer:_filterLayer];
+  }
+
+  switch (_props->mixBlendMode) {
+    case BlendMode::Multiply:
+      layer.compositingFilter = @"multiplyBlendMode";
+      break;
+    case BlendMode::Screen:
+      layer.compositingFilter = @"screenBlendMode";
+      break;
+    case BlendMode::Overlay:
+      layer.compositingFilter = @"overlayBlendMode";
+      break;
+    case BlendMode::Darken:
+      layer.compositingFilter = @"darkenBlendMode";
+      break;
+    case BlendMode::Lighten:
+      layer.compositingFilter = @"lightenBlendMode";
+      break;
+    case BlendMode::ColorDodge:
+      layer.compositingFilter = @"colorDodgeBlendMode";
+      break;
+    case BlendMode::ColorBurn:
+      layer.compositingFilter = @"colorBurnBlendMode";
+      break;
+    case BlendMode::HardLight:
+      layer.compositingFilter = @"hardLightBlendMode";
+      break;
+    case BlendMode::SoftLight:
+      layer.compositingFilter = @"softLightBlendMode";
+      break;
+    case BlendMode::Difference:
+      layer.compositingFilter = @"differenceBlendMode";
+      break;
+    case BlendMode::Exclusion:
+      layer.compositingFilter = @"exclusionBlendMode";
+      break;
+    case BlendMode::Hue:
+      layer.compositingFilter = @"hueBlendMode";
+      break;
+    case BlendMode::Saturation:
+      layer.compositingFilter = @"saturationBlendMode";
+      break;
+    case BlendMode::Color:
+      layer.compositingFilter = @"colorBlendMode";
+      break;
+    case BlendMode::Luminosity:
+      layer.compositingFilter = @"luminosityBlendMode";
+      break;
+    case BlendMode::Normal:
+      layer.compositingFilter = nil;
+      break;
   }
 
   _boxShadowLayer = nil;

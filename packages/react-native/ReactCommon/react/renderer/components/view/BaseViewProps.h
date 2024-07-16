@@ -13,6 +13,7 @@
 #include <react/renderer/core/LayoutMetrics.h>
 #include <react/renderer/core/Props.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/graphics/BlendMode.h>
 #include <react/renderer/graphics/BoxShadow.h>
 #include <react/renderer/graphics/Color.h>
 #include <react/renderer/graphics/Filter.h>
@@ -63,7 +64,7 @@ class BaseViewProps : public YogaStylableProps, public AccessibilityProps {
   std::vector<FilterPrimitive> filter{};
 
   // MixBlendMode
-  std::string mixBlendMode;
+  BlendMode mixBlendMode;
 
   // Transform
   Transform transform{};

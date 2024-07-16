@@ -15,6 +15,7 @@
 #include <react/renderer/core/LayoutMetrics.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/RawProps.h>
+#include <react/renderer/graphics/BlendMode.h>
 #include <react/renderer/graphics/BoxShadow.h>
 #include <react/renderer/graphics/Filter.h>
 #include <react/renderer/graphics/PlatformColorParser.h>
@@ -1067,6 +1068,27 @@ inline void fromRawValue(
   }
 
   result = filter;
+}
+
+inline void fromRawValue(
+    const PropsParserContext& /*context*/,
+    const RawValue& value,
+    BlendMode& result) {
+  react_native_expect(value.hasType<std::string>());
+  result = BlendMode::Normal;
+  if (!value.hasType<std::string>()) {
+    return;
+  }
+
+  auto rawBlendMode = static_cast<std::string>(value);
+  std::optional<BlendMode> blendMode = blendModeFromString(rawBlendMode);
+
+  if (!blendMode) {
+    LOG(ERROR) << "Could not parse blend mode: " << rawBlendMode;
+    return;
+  }
+
+  result = blendMode.value();
 }
 
 template <size_t N>
