@@ -226,50 +226,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4.1.1
-      - name: Setup git safe folders
-        run: git config --global --add safe.directory '*'
-      - name: Setup node.js
-        uses: ./.github/actions/setup-node
-      - name: Install dependencies
-        run: yarn install --non-interactive
-      - name: Set React Native Version
-        run: node ./scripts/releases/set-rn-artifacts-version.js --build-type ${{ needs.set_release_type.outputs.RELEASE_TYPE }}
-      - name: Setup gradle
-        uses: ./.github/actions/setup-gradle
+      - name: Build Android
+        uses: ./.github/actions/build-android
         with:
-          cache-read-only: "false"
-      - name: Build and publish all the Android Artifacts to /tmp/maven-local
-        run: |
-          # By default we only build ARM64 to save time/resources. For release/nightlies/prealpha, we override this value to build all archs.
-          if [[ "${{ needs.set_release_type.outputs.RELEASE_TYPE }}" == "dry-run" ]]; then
-            export ORG_GRADLE_PROJECT_reactNativeArchitectures="arm64-v8a"
-          else
-            export ORG_GRADLE_PROJECT_reactNativeArchitectures="armeabi-v7a,arm64-v8a,x86,x86_64"
-          fi
-          ./gradlew publishAllToMavenTempLocal build -PenableWarningsAsErrors=true
-        shell: bash
-      - name: Upload Maven Artifacts
-        uses: actions/upload-artifact@v4.3.1
-        with:
-          name: maven-local-build-android
-          path: /tmp/maven-local
-      - name: Upload test results
-        if: ${{ always() }}
-        uses: actions/upload-artifact@v4.3.0
-        with:
-          name: build-android-results
-          compression-level: 1
-          path: |
-            packages/react-native-gradle-plugin/react-native-gradle-plugin/build/reports
-            packages/react-native-gradle-plugin/settings-plugin/build/reports
-            packages/react-native/ReactAndroid/build/reports
-      - name: Upload RNTester APK
-        if: ${{ always() }}
-        uses: actions/upload-artifact@v4.3.0
-        with:
-          name: rntester-apk
-          path: packages/rn-tester/android/app/build/outputs/apk/
-          compression-level: 0
+          RELEASE_TYPE: ${{ needs.set_release_type.outputs.RELEASE_TYPE }}
 
   build_npm_package:
     runs-on: 8-core-ubuntu
