@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<152472a7f8698f0f45ed2d909532d84d>>
+ * @generated SignedSource<<55c6569e1732443a2ad13c9b5f158462>>
  * @flow strict-local
  */
 
@@ -35,6 +35,7 @@ export type ReactNativeFeatureFlagsJsOnly = {
   shouldUseRemoveClippedSubviewsAsDefaultOnIOS: Getter<boolean>,
   shouldUseSetNativePropsInFabric: Getter<boolean>,
   shouldUseSetNativePropsInNativeAnimationsInFabric: Getter<boolean>,
+  usePassiveEffectsForAnimations: Getter<boolean>,
   useRefsForTextInputState: Getter<boolean>,
 };
 
@@ -118,6 +119,11 @@ export const shouldUseSetNativePropsInFabric: Getter<boolean> = createJavaScript
  * Enables use of setNativeProps in Native driven animations in Fabric.
  */
 export const shouldUseSetNativePropsInNativeAnimationsInFabric: Getter<boolean> = createJavaScriptFlagGetter('shouldUseSetNativePropsInNativeAnimationsInFabric', false);
+
+/**
+ * Enable a variant of useAnimatedPropsLifecycle hook that constructs the animation graph in passive effect instead of layout effect
+ */
+export const usePassiveEffectsForAnimations: Getter<boolean> = createJavaScriptFlagGetter('usePassiveEffectsForAnimations', false);
 
 /**
  * Enable a variant of TextInput that moves some state to refs to avoid unnecessary re-renders
