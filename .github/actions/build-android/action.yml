@@ -1,7 +1,7 @@
 name: build-android
 description: This action builds android
 inputs:
-  RELEASE_TYPE:
+  release-type:
     required: true
     description: The type of release we are building. It could be nightly, release or dry-run
 runs:
@@ -17,7 +17,7 @@ runs:
       run: yarn install --non-interactive
     - name: Set React Native Version
       shell: bash
-      run: node ./scripts/releases/set-rn-artifacts-version.js --build-type ${{ inputs.RELEASE_TYPE }}
+      run: node ./scripts/releases/set-rn-artifacts-version.js --build-type ${{ inputs.release-type }}
     - name: Setup gradle
       uses: ./.github/actions/setup-gradle
       with:
@@ -26,7 +26,7 @@ runs:
       shell: bash
       run: |
         # By default we only build ARM64 to save time/resources. For release/nightlies/prealpha, we override this value to build all archs.
-        if [[ "${{ inputs.RELEASE_TYPE }}" == "dry-run" ]]; then
+        if [[ "${{ inputs.release-type }}" == "dry-run" ]]; then
           export ORG_GRADLE_PROJECT_reactNativeArchitectures="arm64-v8a"
         else
           export ORG_GRADLE_PROJECT_reactNativeArchitectures="armeabi-v7a,arm64-v8a,x86,x86_64"
