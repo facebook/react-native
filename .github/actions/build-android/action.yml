@@ -33,13 +33,13 @@ runs:
         fi
         ./gradlew publishAllToMavenTempLocal build -PenableWarningsAsErrors=true
     - name: Upload Maven Artifacts
-      uses: actions/upload-artifact@v4.3.1
+      uses: actions/upload-artifact@v4
       with:
         name: maven-local-build-android
         path: /tmp/maven-local
     - name: Upload test results
       if: ${{ always() }}
-      uses: actions/upload-artifact@v4.3.0
+      uses: actions/upload-artifact@v4
       with:
         name: build-android-results
         compression-level: 1
@@ -49,7 +49,7 @@ runs:
           packages/react-native/ReactAndroid/build/reports
     - name: Upload RNTester APK
       if: ${{ always() }}
-      uses: actions/upload-artifact@v4.3.0
+      uses: actions/upload-artifact@v4
       with:
         name: rntester-apk
         path: packages/rn-tester/android/app/build/outputs/apk/
