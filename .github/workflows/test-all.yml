@@ -370,12 +370,12 @@ jobs:
         working-directory: /tmp
         run: zip -r maven-local.zip maven-local
       - name: Upload Maven Artifacts
-        uses: actions/upload-artifact@v4.3.1
+        uses: actions/upload-artifact@v4
         with:
           name: maven-local
           path: /tmp/maven-local.zip
       - name: Upload npm logs
-        uses: actions/upload-artifact@v4.3.1
+        uses: actions/upload-artifact@v4
         with:
           name: npm-logs
           path: ~/.npm/_logs
@@ -389,7 +389,7 @@ jobs:
 
           echo $FILENAME > build/react-native-package-version
       - name: Upload release package
-        uses: actions/upload-artifact@v4.3.1
+        uses: actions/upload-artifact@v4
         if: needs.set_release_type.outputs.RELEASE_TYPE == 'dry-run'
         with:
           name: react-native-package
@@ -479,7 +479,7 @@ jobs:
           echo "Projects folder:"
           du -hs ./packages/*
       - name: Upload artifact
-        uses: actions/upload-artifact@v4.3.1
+        uses: actions/upload-artifact@v4
         with:
           name: helloworld-apk-${{ matrix.flavor }}-${{ matrix.architecture }}-${{ matrix.jsengine }}
           path: ./packages/helloworld/android/app/build/outputs/apk/
