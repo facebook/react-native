@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f2c4d9731984436f95d178639074664d>>
+ * @generated SignedSource<<f9c32a7245be31e900aa51f2b93a61d4>>
  */
 
 /**
@@ -56,6 +56,11 @@ class ReactNativeFeatureFlags {
    * When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.
    */
   RN_EXPORT static bool batchRenderingUpdatesInEventLoop();
+
+  /**
+   * When enabled, insert of views on Android will be moved from the beginning of the IntBufferBatchMountItem to be after layout updates.
+   */
+  RN_EXPORT static bool changeOrderOfMountingInstructionsOnAndroid();
 
   /**
    * When enabled, ReactInstanceManager will clean up Fabric surfaces on destroy().

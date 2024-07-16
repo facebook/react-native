@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0fa4e9e2c5f3d96f729f5822783ce86f>>
+ * @generated SignedSource<<1f8a830a3dec9278f4cd387bb706864e>>
  */
 
 /**
@@ -30,6 +30,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun allowRecursiveCommitsWithSynchronousMountOnAndroid(): Boolean = false
 
   override fun batchRenderingUpdatesInEventLoop(): Boolean = false
+
+  override fun changeOrderOfMountingInstructionsOnAndroid(): Boolean = false
 
   override fun destroyFabricSurfacesInReactInstanceManager(): Boolean = false
 

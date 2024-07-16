@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ecad8843c7f756d7efd5100d1a111b94>>
+ * @generated SignedSource<<8458b6146882bfab11157e94eaaf9967>>
  */
 
 /**
@@ -55,6 +55,11 @@ bool NativeReactNativeFeatureFlags::allowRecursiveCommitsWithSynchronousMountOnA
 bool NativeReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop();
+}
+
+bool NativeReactNativeFeatureFlags::changeOrderOfMountingInstructionsOnAndroid(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::changeOrderOfMountingInstructionsOnAndroid();
 }
 
 bool NativeReactNativeFeatureFlags::destroyFabricSurfacesInReactInstanceManager(

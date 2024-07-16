@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4eb00950b76e497061d735f7cff04c05>>
+ * @generated SignedSource<<d375536eb37dcdadbaacd2e6612a8598>>
  */
 
 /**
@@ -40,6 +40,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool batchRenderingUpdatesInEventLoop() override {
+    return false;
+  }
+
+  bool changeOrderOfMountingInstructionsOnAndroid() override {
     return false;
   }
 
