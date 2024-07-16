@@ -68,7 +68,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   }
 
   @Override
-  protected T prepareToRecycleView(@NonNull ThemedReactContext reactContext, T view) {
+  protected @Nullable T prepareToRecycleView(@NonNull ThemedReactContext reactContext, T view) {
     // Reset tags
     view.setTag(null);
     view.setTag(R.id.pointer_events, null);
@@ -95,13 +95,21 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     setTransformProperty(view, null, null);
 
     // RenderNode params not covered by setTransformProperty above
-    view.resetPivot();
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+      view.resetPivot();
+    } else {
+      // no way of resetting pivot, or knowing whether it is set
+      return null;
+    }
     view.setTop(0);
     view.setBottom(0);
     view.setLeft(0);
     view.setRight(0);
     view.setElevation(0);
-    view.setAnimationMatrix(null);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+      // failsafe - should already be set to null when animation finishes
+      view.setAnimationMatrix(null);
+    }
 
     view.setTag(R.id.transform, null);
     view.setTag(R.id.transform_origin, null);
