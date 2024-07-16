@@ -47,10 +47,31 @@ runs:
           packages/react-native-gradle-plugin/react-native-gradle-plugin/build/reports
           packages/react-native-gradle-plugin/settings-plugin/build/reports
           packages/react-native/ReactAndroid/build/reports
-    - name: Upload RNTester APK
+    - name: Upload RNTester APK - hermes-debug
       if: ${{ always() }}
       uses: actions/upload-artifact@v4
       with:
-        name: rntester-apk
-        path: packages/rn-tester/android/app/build/outputs/apk/
+        name: rntester-hermes-debug
+        path: packages/rn-tester/android/app/build/outputs/apk/hermes/debug/
+        compression-level: 0
+    - name: Upload RNTester APK - hermes-release
+      if: ${{ always() }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: rntester-hermes-release
+        path: packages/rn-tester/android/app/build/outputs/apk/hermes/release/
+        compression-level: 0
+    - name: Upload RNTester APK - jsc-debug
+      if: ${{ always() }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: rntester-jsc-debug
+        path: packages/rn-tester/android/app/build/outputs/apk/jsc/debug/
+        compression-level: 0
+    - name: Upload RNTester APK - jsc-release
+      if: ${{ always() }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: rntester-jsc-release
+        path: packages/rn-tester/android/app/build/outputs/apk/jsc/release/
         compression-level: 0
