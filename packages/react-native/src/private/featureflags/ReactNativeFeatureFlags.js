@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<55c6569e1732443a2ad13c9b5f158462>>
+ * @generated SignedSource<<443034310c104784714bb59761335f77>>
  * @flow strict-local
  */
 
@@ -47,6 +47,7 @@ export type ReactNativeFeatureFlags = {
   allowCollapsableChildren: Getter<boolean>,
   allowRecursiveCommitsWithSynchronousMountOnAndroid: Getter<boolean>,
   batchRenderingUpdatesInEventLoop: Getter<boolean>,
+  changeOrderOfMountingInstructionsOnAndroid: Getter<boolean>,
   destroyFabricSurfacesInReactInstanceManager: Getter<boolean>,
   enableAlignItemsBaselineOnFabricIOS: Getter<boolean>,
   enableCleanTextInputYogaNode: Getter<boolean>,
@@ -146,6 +147,10 @@ export const allowRecursiveCommitsWithSynchronousMountOnAndroid: Getter<boolean>
  * When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.
  */
 export const batchRenderingUpdatesInEventLoop: Getter<boolean> = createNativeFlagGetter('batchRenderingUpdatesInEventLoop', false);
+/**
+ * When enabled, insert of views on Android will be moved from the beginning of the IntBufferBatchMountItem to be after layout updates.
+ */
+export const changeOrderOfMountingInstructionsOnAndroid: Getter<boolean> = createNativeFlagGetter('changeOrderOfMountingInstructionsOnAndroid', false);
 /**
  * When enabled, ReactInstanceManager will clean up Fabric surfaces on destroy().
  */

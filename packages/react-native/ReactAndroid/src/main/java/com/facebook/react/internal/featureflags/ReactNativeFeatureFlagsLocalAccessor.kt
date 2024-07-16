@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<105ab999064160753e636f86edfc00a2>>
+ * @generated SignedSource<<0b90fde158e97c4cad711c3ab832f067>>
  */
 
 /**
@@ -28,6 +28,7 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var allowCollapsableChildrenCache: Boolean? = null
   private var allowRecursiveCommitsWithSynchronousMountOnAndroidCache: Boolean? = null
   private var batchRenderingUpdatesInEventLoopCache: Boolean? = null
+  private var changeOrderOfMountingInstructionsOnAndroidCache: Boolean? = null
   private var destroyFabricSurfacesInReactInstanceManagerCache: Boolean? = null
   private var enableAlignItemsBaselineOnFabricIOSCache: Boolean? = null
   private var enableCleanTextInputYogaNodeCache: Boolean? = null
@@ -91,6 +92,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.batchRenderingUpdatesInEventLoop()
       accessedFeatureFlags.add("batchRenderingUpdatesInEventLoop")
       batchRenderingUpdatesInEventLoopCache = cached
+    }
+    return cached
+  }
+
+  override fun changeOrderOfMountingInstructionsOnAndroid(): Boolean {
+    var cached = changeOrderOfMountingInstructionsOnAndroidCache
+    if (cached == null) {
+      cached = currentProvider.changeOrderOfMountingInstructionsOnAndroid()
+      accessedFeatureFlags.add("changeOrderOfMountingInstructionsOnAndroid")
+      changeOrderOfMountingInstructionsOnAndroidCache = cached
     }
     return cached
   }
