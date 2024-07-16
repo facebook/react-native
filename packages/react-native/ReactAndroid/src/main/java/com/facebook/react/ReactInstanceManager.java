@@ -465,7 +465,6 @@ public class ReactInstanceManager {
 
     if (mUseDeveloperSupport && mJSMainModulePath != null) {
       final DeveloperSettings devSettings = mDevSupportManager.getDevSettings();
-
       if (!Systrace.isTracing(TRACE_TAG_REACT_APPS | TRACE_TAG_REACT_JS_VM_CALLS)) {
         if (mBundleLoader == null) {
           mDevSupportManager.handleReloadJS();
@@ -476,6 +475,11 @@ public class ReactInstanceManager {
                 public void onPackagerStatusFetched(final boolean packagerIsRunning) {
                   UiThreadUtil.runOnUiThread(
                       () -> {
+                        // ReactInstanceManager is no longer valid, ignore callback
+                        if (mInstanceManagerInvalidated) {
+                          return;
+                        }
+
                         if (packagerIsRunning) {
                           mDevSupportManager.handleReloadJS();
                         } else if (mDevSupportManager.hasUpToDateJSBundleInCache()
