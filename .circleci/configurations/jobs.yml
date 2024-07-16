@@ -1068,18 +1068,8 @@ jobs:
                     export ORG_GRADLE_PROJECT_reactNativeArchitectures="armeabi-v7a,arm64-v8a,x86,x86_64"
                   fi
                   node ./scripts/releases-ci/publish-npm.js -t << parameters.release_type >>
-
-      - run:
-          name: Zip Maven Artifacts from /tmp/maven-local
-          command: zip -r /tmp/maven-local.zip /tmp/maven-local
-      - store_artifacts:
-          path: /tmp/maven-local.zip
       - store_artifacts:
           path: /root/.npm/_logs
-      - persist_to_workspace:
-          root: /tmp
-          paths:
-            - maven-local
 
       # START: Dry-run
       # Provide a react-native package for this commit as a Circle CI release artifact.

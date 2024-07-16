@@ -280,14 +280,6 @@ jobs:
           echo "GRADLE_OPTS = $GRADLE_OPTS"
           export ORG_GRADLE_PROJECT_reactNativeArchitectures="armeabi-v7a,arm64-v8a,x86,x86_64"
           node ./scripts/releases-ci/publish-npm.js -t nightly
-      - name: Zip Maven Artifacts from /tmp/maven-local
-        working-directory: /tmp
-        run: zip -r maven-local.zip maven-local
-      - name: Upload Maven Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: maven-local
-          path: /tmp/maven-local.zip
       - name: Upload npm logs
         uses: actions/upload-artifact@v4
         with:
