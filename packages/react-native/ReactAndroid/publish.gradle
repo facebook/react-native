@@ -71,12 +71,12 @@ publishing {
     }
 
     if (signingKey && signingPwd) {
-        logger.info("PGP Key found - Signing enabled")
+        logger.lifecycle("PGP Key found - Signing enabled")
         signing {
             useInMemoryPgpKeys(signingKey, signingPwd)
             sign(publishing.publications.release)
         }
     } else {
-        logger.info("Signing disabled as the PGP key was not found")
+        logger.lifecycle("Signing disabled as the PGP key was not found")
     }
 }
