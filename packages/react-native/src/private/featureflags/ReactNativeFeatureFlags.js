@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<443034310c104784714bb59761335f77>>
+ * @generated SignedSource<<412289b5c998b3ae03d8b842704523ba>>
  * @flow strict-local
  */
 
@@ -206,7 +206,7 @@ export const forceBatchingMountItemsOnAndroid: Getter<boolean> = createNativeFla
 /**
  * Flag determining if the React Native DevTools (Fusebox) CDP backend should be enabled in debug builds. This flag is global and should not be changed across React Host lifetimes.
  */
-export const fuseboxEnabledDebug: Getter<boolean> = createNativeFlagGetter('fuseboxEnabledDebug', false);
+export const fuseboxEnabledDebug: Getter<boolean> = createNativeFlagGetter('fuseboxEnabledDebug', true);
 /**
  * Flag determining if the React Native DevTools (Fusebox) CDP backend should be enabled in release builds. This flag is global and should not be changed across React Host lifetimes.
  */

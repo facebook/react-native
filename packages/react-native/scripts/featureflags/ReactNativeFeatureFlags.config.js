@@ -124,7 +124,7 @@ const definitions: FeatureFlagDefinitions = {
         'Forces the mounting layer on Android to always batch mount items instead of dispatching them immediately. This might fix some crashes related to synchronous state updates, where some views dispatch state updates during mount.',
     },
     fuseboxEnabledDebug: {
-      defaultValue: false,
+      defaultValue: true,
       description:
         'Flag determining if the React Native DevTools (Fusebox) CDP backend should be enabled in debug builds. This flag is global and should not be changed across React Host lifetimes.',
     },
