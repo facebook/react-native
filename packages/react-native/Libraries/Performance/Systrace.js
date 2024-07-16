@@ -122,7 +122,7 @@ export function counterEvent(eventName: EventName, value: number): void {
   }
 }
 
-if (__DEV__) {
+if (__DEV__ || true) {
   const Systrace: SystraceModule = {
     isEnabled,
     setEnabled,
