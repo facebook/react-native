@@ -473,6 +473,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
     RCTExecuteOnMainQueue(^{
       onInitialBundleLoad();
     });
+    _onInitialBundleLoad = nil;
   }
 }
 
