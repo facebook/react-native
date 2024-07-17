@@ -368,6 +368,15 @@ static NSString *RCTNormalizeAnimatedEventName(NSString *eventName)
     [drivers addObject:driver];
     _eventDrivers[key] = drivers;
   }
+
+  // Handle onScrollEnded special events.
+  // These are triggered when the user stops dragging or when the
+  // scroll view stops decelerating after the user swiped
+  // The goal is to use this event to force a resync of the Shadow Tree
+  // with the Native tree
+  if ([eventName isEqualToString:@"onScroll"]) {
+    [self addAnimatedEventToView:viewTag eventName:@"onScrollEnded" eventMapping:eventMapping];
+  }
 }
 
 - (void)removeAnimatedEventFromView:(NSNumber *)viewTag
