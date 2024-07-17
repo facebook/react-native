@@ -469,8 +469,10 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   [[NSNotificationCenter defaultCenter] postNotificationName:@"RCTInstanceDidLoadBundle" object:nil];
 
   if (_onInitialBundleLoad) {
-    _onInitialBundleLoad();
-    _onInitialBundleLoad = nil;
+    auto onInitialBundleLoad = _onInitialBundleLoad;
+    RCTExecuteOnMainQueue(^{
+      onInitialBundleLoad();
+    });
   }
 }
 
