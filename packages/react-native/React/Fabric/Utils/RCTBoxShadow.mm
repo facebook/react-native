@@ -14,11 +14,11 @@
 
 using namespace facebook::react;
 // See https://drafts.csswg.org/css-backgrounds/#shadow-shape
-static CGFloat adjustedCornerRadius(CGFloat cornerRadius, CGFloat spreadRadius)
+static CGFloat adjustedCornerRadius(CGFloat cornerRadius, CGFloat spreadDistance)
 {
-  CGFloat adjustment = spreadRadius;
-  if (cornerRadius < abs(spreadRadius)) {
-    const CGFloat r = cornerRadius / (CGFloat)abs(spreadRadius);
+  CGFloat adjustment = spreadDistance;
+  if (cornerRadius < abs(spreadDistance)) {
+    const CGFloat r = cornerRadius / (CGFloat)abs(spreadDistance);
     const CGFloat p = (CGFloat)pow(r - 1.0, 3.0);
     adjustment *= 1.0 + p;
   }
@@ -26,13 +26,13 @@ static CGFloat adjustedCornerRadius(CGFloat cornerRadius, CGFloat spreadRadius)
   return fmax(cornerRadius + adjustment, 0);
 }
 
-static RCTCornerRadii cornerRadiiForBoxShadow(RCTCornerRadii cornerRadii, CGFloat spreadRadius)
+static RCTCornerRadii cornerRadiiForBoxShadow(RCTCornerRadii cornerRadii, CGFloat spreadDistance)
 {
   return {
-      adjustedCornerRadius(cornerRadii.topLeft, spreadRadius),
-      adjustedCornerRadius(cornerRadii.topRight, spreadRadius),
-      adjustedCornerRadius(cornerRadii.bottomLeft, spreadRadius),
-      adjustedCornerRadius(cornerRadii.bottomRight, spreadRadius)};
+      adjustedCornerRadius(cornerRadii.topLeft, spreadDistance),
+      adjustedCornerRadius(cornerRadii.topRight, spreadDistance),
+      adjustedCornerRadius(cornerRadii.bottomLeft, spreadDistance),
+      adjustedCornerRadius(cornerRadii.bottomRight, spreadDistance)};
 }
 
 // Returns the smallest CGRect that will contain all shadows and the layer itself.
@@ -46,13 +46,13 @@ CGRect RCTGetBoundingRect(std::vector<BoxShadow> boxShadows, CGSize layerSize)
   CGFloat largestY = layerSize.height;
   for (const auto &boxShadow : boxShadows) {
     if (!boxShadow.inset) {
-      CGFloat negativeXExtent = boxShadow.offsetX - boxShadow.spreadRadius - boxShadow.blurRadius;
+      CGFloat negativeXExtent = boxShadow.offsetX - boxShadow.spreadDistance - boxShadow.blurRadius;
       smallestX = MIN(smallestX, negativeXExtent);
-      CGFloat negativeYExtent = boxShadow.offsetY - boxShadow.spreadRadius - boxShadow.blurRadius;
+      CGFloat negativeYExtent = boxShadow.offsetY - boxShadow.spreadDistance - boxShadow.blurRadius;
       smallestY = MIN(smallestY, negativeYExtent);
-      CGFloat positiveXExtent = boxShadow.offsetX + boxShadow.spreadRadius + boxShadow.blurRadius + layerSize.width;
+      CGFloat positiveXExtent = boxShadow.offsetX + boxShadow.spreadDistance + boxShadow.blurRadius + layerSize.width;
       largestX = MAX(largestX, positiveXExtent);
-      CGFloat positiveYExtent = boxShadow.offsetY + boxShadow.spreadRadius + boxShadow.blurRadius + layerSize.height;
+      CGFloat positiveYExtent = boxShadow.offsetY + boxShadow.spreadDistance + boxShadow.blurRadius + layerSize.height;
       largestY = MAX(largestY, positiveYExtent);
     }
   }
@@ -102,16 +102,16 @@ static void renderOutsetShadows(
     CGFloat offsetX = it->offsetX;
     CGFloat offsetY = it->offsetY;
     CGFloat blurRadius = it->blurRadius;
-    CGFloat spreadRadius = it->spreadRadius;
+    CGFloat spreadDistance = it->spreadDistance;
     CGColorRef color = RCTUIColorFromSharedColor(it->color).CGColor;
 
     // First, define the shadow rect. This is the rect that will be filled
     // and _cast_ the shadow. As a result, the size does not incorporate
     // the blur radius since this rect is not the shadow itself.
     const RCTCornerInsets shadowRectCornerInsets =
-        RCTGetCornerInsets(cornerRadiiForBoxShadow(cornerRadii, spreadRadius), UIEdgeInsetsZero);
+        RCTGetCornerInsets(cornerRadiiForBoxShadow(cornerRadii, spreadDistance), UIEdgeInsetsZero);
     CGSize shadowRectSize =
-        CGSizeMake(layer.bounds.size.width + 2 * spreadRadius, layer.bounds.size.height + 2 * spreadRadius);
+        CGSizeMake(layer.bounds.size.width + 2 * spreadDistance, layer.bounds.size.height + 2 * spreadDistance);
     // Ensure this is drawn offscreen and will not show in the image
     CGRect shadowRect = CGRectMake(-shadowRectSize.width, 0, shadowRectSize.width, shadowRectSize.height);
     CGPathRef shadowRectPath = RCTPathCreateWithRoundedRect(shadowRect, shadowRectCornerInsets, nil);
@@ -125,8 +125,8 @@ static void renderOutsetShadows(
     CGContextSetShadowWithColor(
         context,
         CGSizeMake(
-            offsetX - boundingRect.origin.x - spreadRadius - shadowRect.origin.x,
-            offsetY - boundingRect.origin.y - spreadRadius),
+            offsetX - boundingRect.origin.x - spreadDistance - shadowRect.origin.x,
+            offsetY - boundingRect.origin.y - spreadDistance),
         blurRadius,
         color);
 
@@ -208,7 +208,7 @@ static void renderInsetShadows(
     CGFloat offsetX = it->offsetX;
     CGFloat offsetY = it->offsetY;
     CGFloat blurRadius = it->blurRadius;
-    CGFloat spreadRadius = it->spreadRadius;
+    CGFloat spreadDistance = it->spreadDistance;
     CGColorRef color = RCTUIColorFromSharedColor(it->color).CGColor;
 
     // Second, create the two offscreen rects we will use to create the correct
@@ -221,17 +221,17 @@ static void renderInsetShadows(
     CGSize shadowRectSize =
         CGSizeMake(layer.bounds.size.width + 2 * blurRadius, layer.bounds.size.height + 2 * blurRadius);
     CGSize clearRegionSize =
-        CGSizeMake(layer.bounds.size.width - 2 * spreadRadius, layer.bounds.size.height - 2 * spreadRadius);
+        CGSizeMake(layer.bounds.size.width - 2 * spreadDistance, layer.bounds.size.height - 2 * spreadDistance);
     CGRect shadowRect = CGRectMake(
-        -fmax(shadowRectSize.width, clearRegionSize.width + offsetX + blurRadius + spreadRadius),
+        -fmax(shadowRectSize.width, clearRegionSize.width + offsetX + blurRadius + spreadDistance),
         0,
         shadowRectSize.width,
         shadowRectSize.height);
     CGContextAddRect(context, shadowRect);
 
     CGRect clearRegionRect = CGRectMake(
-        shadowRect.origin.x + offsetX + blurRadius + spreadRadius,
-        shadowRect.origin.y + offsetY + blurRadius + spreadRadius,
+        shadowRect.origin.x + offsetX + blurRadius + spreadDistance,
+        shadowRect.origin.y + offsetY + blurRadius + spreadDistance,
         clearRegionSize.width,
         clearRegionSize.height);
     CGContextAddRect(context, clearRegionRect);
