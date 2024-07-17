@@ -24,6 +24,7 @@ const {
 const {parseArgs} = require('@pkgjs/parseargs');
 const chalk = require('chalk');
 const {execSync} = require('child_process');
+const {popd, pushd} = require('shelljs');
 const fs = require('fs');
 const path = require('path');
 
@@ -31,6 +32,7 @@ const config = {
   options: {
     projectName: {type: 'string'},
     directory: {type: 'string'},
+    currentBranch: {type: 'string'},
     verbose: {type: 'boolean', default: false},
     help: {type: 'boolean'},
   },
@@ -59,6 +61,7 @@ async function main() {
 
   Options:
     --projectName             The name of the new React Native project.
+    --currentBranch           The current branch to checkout.
     --directory               The absolute path to the target project directory.
     --pathToLocalReactNative  The absolute path to the local react-native package.
     --verbose                 Print additional output. Default: false.
@@ -77,9 +80,10 @@ async function initNewProjectFromSource(
   {
     projectName,
     directory,
+    currentBranch,
     pathToLocalReactNative = null,
     verbose = false,
-  } /*: {projectName: string, directory: string, pathToLocalReactNative?: ?string, verbose?: boolean} */,
+  } /*: {projectName: string, directory: string, currentBranch: string, pathToLocalReactNative?: ?string, verbose?: boolean} */,
 ) {
   console.log('Starting local npm proxy (Verdaccio)');
   const verdaccioPid = setupVerdaccio();
@@ -92,12 +96,15 @@ async function initNewProjectFromSource(
     });
     console.log('\nDone ✅');
 
-    console.log('Publishing packages to local npm proxy\n');
     const packages = await getPackages({
       includeReactNative: false,
       includePrivate: false,
     });
 
+    // packages are updated in a lockstep, let's get the version of the first one
+    const version = packages[Object.keys(packages)[0]].packageJson.version;
+
+    console.log('Publishing packages to local npm proxy\n');
     for (const {path: packagePath, packageJson} of Object.values(packages)) {
       const desc = `${packageJson.name} (${path.relative(
         REPO_ROOT,
@@ -117,11 +124,17 @@ async function initNewProjectFromSource(
     }
     console.log('\nDone ✅');
 
+    const pathToTemplate = _prepareTemplate(
+      version,
+      pathToLocalReactNative,
+      currentBranch,
+    );
+
     console.log('Running react-native init without install');
     execSync(
       `npx @react-native-community/cli@next init ${projectName} \
         --directory ${directory} \
-        --version 0.75.0-rc.2 \
+        --template file://${pathToTemplate} \
         --verbose \
         --pm npm \
         --skip-install`,
@@ -132,9 +145,6 @@ async function initNewProjectFromSource(
       },
     );
     console.log('\nDone ✅');
-
-    _updateScopedPackages(packages, directory);
-    _updateReactNativeInTemplateIfNeeded(pathToLocalReactNative, directory);
 
     console.log('Installing project dependencies');
     await installProjectUsingProxy(directory);
@@ -177,14 +187,11 @@ async function installProjectUsingProxy(cwd /*: string */) {
 function _updateScopedPackages(
   packages /*: ProjectInfo */,
   directory /*: string */,
+  version /*: string */,
 ) {
   console.log(
     'Updating the scoped packagesto match the version published in Verdaccio',
   );
-
-  // Packages are updated in a lockstep and all with the same version.
-  // Pick the version from the first package
-  const version = packages[Object.keys(packages)[0]].packageJson.version;
 
   // Update scoped packages which starts with @react-native
   const appPackageJsonPath = path.join(directory, 'package.json');
@@ -208,25 +215,59 @@ function _updateScopedPackages(
   console.log('Done ✅');
 }
 
-function _updateReactNativeInTemplateIfNeeded(
-  pathToLocalReactNative /*: ?string */,
-  directory /*: string */,
+function _prepareTemplate(
+  version /*: string */,
+  pathToLocalReactNative /*: ?string*/,
+  currentBranch /*: string*/,
 ) {
-  if (pathToLocalReactNative != null) {
-    console.log('Updating the template version to local react-native');
-    // Update template version.
-    const appPackageJsonPath = path.join(directory, 'package.json');
-    const appPackageJson = JSON.parse(
-      fs.readFileSync(appPackageJsonPath, 'utf8'),
-    );
-    appPackageJson.dependencies['react-native'] =
-      `file:${pathToLocalReactNative}`;
-    fs.writeFileSync(
-      appPackageJsonPath,
-      JSON.stringify(appPackageJson, null, 2),
-    );
-    console.log('Done ✅');
+  console.log('Prepare template locally');
+
+  const templateCloneBaseFolder = '/tmp/react-native-tmp/template';
+  execSync(`rm -rf ${templateCloneBaseFolder}`);
+
+  const templateCloneFolder = path.join(templateCloneBaseFolder, 'template');
+
+  execSync(
+    `git clone https://github.com/react-native-community/template ${templateCloneBaseFolder}`,
+  );
+
+  pushd(templateCloneBaseFolder);
+
+  execSync(`git checkout ${currentBranch}`);
+
+  pushd('template');
+
+  // read the package.json
+  const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+
+  // and update the dependencies and devDependencies of packages scoped as @react-native
+  // to the version passed as parameter
+  for (const [key, _] of Object.entries(packageJson.dependencies)) {
+    if (key.startsWith('@react-native')) {
+      packageJson.dependencies[key] = version;
+    }
   }
+
+  for (const [key, _] of Object.entries(packageJson.devDependencies)) {
+    if (key.startsWith('@react-native')) {
+      packageJson.devDependencies[key] = version;
+    }
+  }
+
+  if (pathToLocalReactNative != null) {
+    packageJson.dependencies['react-native'] = `file:${pathToLocalReactNative}`;
+  }
+
+  // write the package.json to disk
+  fs.writeFileSync('package.json', JSON.stringify(packageJson, null, 2));
+
+  popd();
+  const templateTgz = execSync(`npm pack`).toString().trim();
+
+  popd();
+
+  console.log('Done ✅');
+  return path.join(templateCloneBaseFolder, templateTgz);
 }
 
 module.exports = {
