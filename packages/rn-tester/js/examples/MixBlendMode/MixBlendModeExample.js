@@ -13,14 +13,12 @@ import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 
 import React from 'react';
-import {useState} from 'react';
 import {
-  Button,
   Image,
   ImageBackground,
   StyleSheet,
-  View,
   Text,
+  View,
 } from 'react-native';
 
 type Props = $ReadOnly<{

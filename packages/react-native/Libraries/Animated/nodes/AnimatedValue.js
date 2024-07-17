@@ -49,7 +49,7 @@ const NativeAnimatedAPI = NativeAnimatedHelper.API;
  * transform which can receive values from multiple parents.
  */
 export function flushValue(rootNode: AnimatedNode): void {
-  const leaves = new Set<{update: () => void, ...}>();
+  const leaves = new Set<{update:() => void, ...}>();
   function findAnimatedStyles(node: AnimatedNode) {
     // $FlowFixMe[prop-missing]
     if (typeof node.update === 'function') {
