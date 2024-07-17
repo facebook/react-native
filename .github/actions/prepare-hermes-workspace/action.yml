@@ -7,9 +7,6 @@ inputs:
   HERMES_VERSION_FILE:
     required: true
     description: the path to the file that will contain the hermes version
-  BUILD_FROM_SOURCE:
-    description: Whether we need to build from source or not
-    default: true
 outputs:
   hermes-version:
     description: the version of Hermes tied to this run
