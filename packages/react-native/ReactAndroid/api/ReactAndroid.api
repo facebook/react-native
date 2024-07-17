@@ -476,6 +476,7 @@ public class com/facebook/react/animated/NativeAnimatedModule : com/facebook/fbr
 	public fun stopAnimation (D)V
 	public fun stopListeningToAnimatedNodeValue (D)V
 	public fun updateAnimatedNodeConfig (DLcom/facebook/react/bridge/ReadableMap;)V
+	public fun userDrivenScrollEnded (I)V
 	public fun willDispatchViewUpdates (Lcom/facebook/react/bridge/UIManager;)V
 	public fun willMountItems (Lcom/facebook/react/bridge/UIManager;)V
 }

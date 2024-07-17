@@ -32,10 +32,12 @@ import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.EventDispatcherListener;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Queue;
+import java.util.Set;
 
 /**
  * This is the main class that coordinates how native animated JS implementation drives UI changes.
@@ -545,6 +547,11 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
     EventAnimationDriver eventDriver =
         new EventAnimationDriver(eventName, viewTag, pathList, (ValueAnimatedNode) node);
     mEventDrivers.add(eventDriver);
+
+    if (eventName.equals("topScroll")) {
+      // Handle the custom topScrollEnded event sent by the ScrollViews when the user stops dragging
+      addAnimatedEventToView(viewTag, "topScrollEnded", eventMapping);
+    }
   }
 
   @UiThread
@@ -687,6 +694,28 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
         mReactApplicationContext.emitDeviceEvent("onNativeAnimatedModuleAnimationFinished", events);
       }
     }
+  }
+
+  Set<Integer> getTagsOfConnectedNodes(int tag, String eventName) {
+    Set<Integer> tags = new HashSet<>();
+
+    // Filter only relevant animation drivers
+    ListIterator<EventAnimationDriver> it = mEventDrivers.listIterator();
+    while (it.hasNext()) {
+      EventAnimationDriver driver = it.next();
+      if (driver != null) {
+        if (eventName.equals(driver.mEventName) && tag == driver.mViewTag) {
+          tags.add(driver.mViewTag);
+          if (driver.mValueNode != null && driver.mValueNode.mChildren != null) {
+            for (AnimatedNode node : driver.mValueNode.mChildren) {
+              tags.add(node.mTag);
+            }
+          }
+        }
+      }
+    }
+
+    return tags;
   }
 
   @UiThread
