@@ -14,7 +14,7 @@
 const {
   createHermesPrebuiltArtifactsTarball,
 } = require('../../../packages/react-native/scripts/hermes/hermes-utils');
-const {echo, env, exec, exit, popd, pushd, test} = require('shelljs');
+const {echo, exec, exit, popd, pushd, test} = require('shelljs');
 
 /*::
 type BuildType = 'dry-run' | 'release' | 'nightly' | 'prealpha';
