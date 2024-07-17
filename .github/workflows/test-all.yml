@@ -46,9 +46,9 @@ jobs:
         id: prepare-hermes-workspace
         uses: ./.github/actions/prepare-hermes-workspace
         with:
-          HERMES_WS_DIR: ${{ env.HERMES_WS_DIR }}
-          HERMES_VERSION_FILE: ${{ env.HERMES_VERSION_FILE }}
-          BUILD_FROM_SOURCE: ${{ env.BUILD_FROM_SOURCE }}
+          hermes-ws-dir: ${{ env.HERMES_WS_DIR }}
+          hermes-version-file: ${{ env.HERMES_VERSION_FILE }}
+          build-from-source: ${{ env.BUILD_FROM_SOURCE }}
 
   build_hermesc_apple:
     runs-on: macos-13
@@ -61,9 +61,8 @@ jobs:
       - name: Build HermesC Apple
         uses: ./.github/actions/build-hermesc-apple
         with:
-          HERMES_WS_DIR: ${{ env.HERMES_WS_DIR }}
-          HERMES_VERSION: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
-          REACT_NATIVE_VERSION: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
+          hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
+          react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
 
   build_apple_slices_hermes:
     runs-on: macos-14
@@ -86,10 +85,10 @@ jobs:
       - name: Build Slice
         uses: ./.github/actions/build-apple-slices-hermes
         with:
-          FLAVOR: ${{ matrix.flavor }}
-          SLICE: ${{ matrix.slice}}
-          HERMES_VERSION: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
-          REACT_NATIVE_VERSION: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
+          flavor: ${{ matrix.flavor }}
+          slice: ${{ matrix.slice}}
+          hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
+          react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
 
   build_hermes_macos:
     runs-on: macos-13
@@ -108,9 +107,9 @@ jobs:
       - name: Build Hermes MacOS
         uses: ./.github/actions/build-hermes-macos
         with:
-          HERMES_VERSION: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
-          REACT_NATIVE_VERSION: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
-          FLAVOR: ${{ matrix.flavor }}
+          hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
+          react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
+          flavor: ${{ matrix.flavor }}
 
   test_ios_rntester_ruby_3_2_0:
     runs-on: macos-13
@@ -190,8 +189,8 @@ jobs:
       - name: Build HermesC Linux
         uses: ./.github/actions/build-hermesc-linux
         with:
-          HERMES_VERSION: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
-          REACT_NATIVE_VERSION: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
+          hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
+          react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
 
   build_hermesc_windows:
     runs-on: windows-2019
@@ -209,9 +208,8 @@ jobs:
       - name: Build HermesC Windows
         uses: ./.github/actions/build-hermesc-windows
         with:
-          HERMES_VERSION: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
-          REACT_NATIVE_VERSION: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
-
+          hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
+          react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
   build_android:
     runs-on: 8-core-ubuntu
     needs: [set_release_type]
@@ -228,7 +226,7 @@ jobs:
       - name: Build Android
         uses: ./.github/actions/build-android
         with:
-          RELEASE_TYPE: ${{ needs.set_release_type.outputs.RELEASE_TYPE }}
+          release-type: ${{ needs.set_release_type.outputs.RELEASE_TYPE }}
 
   build_npm_package:
     runs-on: 8-core-ubuntu
