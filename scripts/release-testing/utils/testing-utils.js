@@ -230,11 +230,6 @@ async function downloadArtifacts(
   console.info(`Unzipping into ${mavenLocalPath}`);
   exec(`unzip -oq ${mavenLocalZipPath} -d ${mavenLocalPath}`);
 
-  // Github Actions are zipping a zip. Needs to move it to the right place and unzip it again
-  exec(`rm -rf ${mavenLocalZipPath}`);
-  exec(`mv ${mavenLocalPath}/maven-local.zip ${mavenLocalZipPath}`);
-  exec(`unzip -oq ${mavenLocalZipPath} -d ${mavenLocalPath}`);
-
   console.info('\n[Download] Hermes');
   ciArtifacts.downloadArtifact(hermesURLZip, hermesPathZip);
   exec(`unzip ${hermesPathZip} -d ${ciArtifacts.baseTmpPath()}/hermes`);

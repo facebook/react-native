@@ -155,27 +155,18 @@ async function testRNTesterAndroid(
     // Github Actions zips all the APKs in a single archive
     console.info('Start Downloading APK');
     const rntesterAPKURL =
-      await ciArtifacts.artifactURLForHermesRNTesterAPK(emulatorArch);
+      argv.hermes === true
+        ? await ciArtifacts.artifactURLForHermesRNTesterAPK(emulatorArch)
+        : await ciArtifacts.artifactURLForJSCRNTesterAPK(emulatorArch);
+
     ciArtifacts.downloadArtifact(rntesterAPKURL, downloadPath);
     const unzipFolder = path.join(ciArtifacts.baseTmpPath(), 'rntester-apks');
     exec(`rm -rf ${unzipFolder}`);
     exec(`unzip ${downloadPath} -d ${unzipFolder}`);
-    let apkPath;
-    if (argv.hermes === true) {
-      apkPath = path.join(
-        unzipFolder,
-        'hermes',
-        'release',
-        `app-hermes-${emulatorArch}-release.apk`,
-      );
-    } else {
-      apkPath = path.join(
-        unzipFolder,
-        'jsc',
-        'release',
-        `app-jsc-${emulatorArch}-release.apk`,
-      );
-    }
+    let apkPath = path.join(
+      unzipFolder,
+      `app-${argv.hermes === true ? 'hermes' : 'jsc'}-${emulatorArch}-release.apk`,
+    );
 
     exec(`adb install ${apkPath}`);
   } else {
@@ -295,14 +286,9 @@ async function testRNTestProject(
 
   cd('RNTestProject');
 
-  // When using CircleCI artifacts, the CI will zip maven local into a
-  // /tmp/maven-local subfolder struct.
-  // When we generate the project manually, there is no such structure.
-  const expandedMavenLocal =
-    ciArtifacts == null ? mavenLocalPath : `${mavenLocalPath}/maven-local`;
   // need to do this here so that Android will be properly setup either way
   exec(
-    `echo "react.internal.mavenLocalRepo=${expandedMavenLocal}" >> android/gradle.properties`,
+    `echo "react.internal.mavenLocalRepo=${mavenLocalPath}" >> android/gradle.properties`,
   );
 
   // Only build the simulator architecture. CI is however generating only that one.
