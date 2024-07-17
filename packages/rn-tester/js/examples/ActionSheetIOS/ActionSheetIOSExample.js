@@ -11,6 +11,7 @@
 'use strict';
 
 import type {NativeMethods} from 'react-native/Libraries/Renderer/shims/ReactNativeTypes';
+
 import {RNTesterThemeContext} from '../../components/RNTesterTheme';
 
 const ScreenshotManager = require('../../../NativeModuleExample/NativeScreenshotManager');

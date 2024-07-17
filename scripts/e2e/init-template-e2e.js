@@ -192,12 +192,12 @@ function _updateScopedPackages(
     fs.readFileSync(appPackageJsonPath, 'utf8'),
   );
 
-  for (const [key, _] of Object.entries(appPackageJson.dependencies)) {
+  for (const key of Object.keys(appPackageJson.dependencies)) {
     if (key.startsWith('@react-native')) {
       appPackageJson.dependencies[key] = version;
     }
   }
-  for (const [key, _] of Object.entries(appPackageJson.devDependencies)) {
+  for (const key of Object.keys(appPackageJson.devDependencies)) {
     if (key.startsWith('@react-native')) {
       appPackageJson.devDependencies[key] = version;
     }

@@ -15,7 +15,6 @@ const translate = require('flow-api-translator');
 const {promises: fs} = require('fs');
 const glob = require('glob');
 const {transform} = require('hermes-transform');
-const os = require('os');
 const path = require('path');
 
 const PACKAGE_ROOT = path.resolve(__dirname, '../../');
