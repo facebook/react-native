@@ -7688,12 +7688,12 @@ export type FilterPrimitive =
   | { blur: number | string }
   | { contrast: number | string }
   | { grayscale: number | string }
-  | { \\"hue-rotate\\": number | string }
+  | { hueRotate: number | string }
   | { invert: number | string }
   | { opacity: number | string }
   | { saturate: number | string }
   | { sepia: number | string }
-  | { \\"drop-shadow\\": DropShadowPrimitive | string };
+  | { dropShadow: DropShadowPrimitive | string };
 export type DropShadowPrimitive = {
   offsetX: number | string,
   offsetY: number | string,
@@ -8049,12 +8049,12 @@ exports[`public API should not change unintentionally Libraries/StyleSheet/proce
   | { blur: number }
   | { contrast: number }
   | { grayscale: number }
-  | { \\"hue-rotate\\": number }
+  | { hueRotate: number }
   | { invert: number }
   | { opacity: number }
   | { saturate: number }
   | { sepia: number }
-  | { \\"drop-shadow\\": ParsedDropShadow };
+  | { dropShadow: ParsedDropShadow };
 type ParsedDropShadow = {
   offsetX: number,
   offsetY: number,
