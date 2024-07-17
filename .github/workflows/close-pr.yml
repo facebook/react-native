@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/github-script@v6
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.REACT_NATIVE_BOT_GITHUB_TOKEN }}
           script: |
             if(!context.payload.commits || !context.payload.commits.length) return;
             const sha = context.payload.commits[0].id;
