@@ -61,7 +61,7 @@ class BaseViewProps : public YogaStylableProps, public AccessibilityProps {
   std::vector<BoxShadow> boxShadow{};
 
   // Filter
-  std::vector<FilterPrimitive> filter{};
+  std::vector<FilterFunction> filter{};
 
   // MixBlendMode
   BlendMode mixBlendMode;

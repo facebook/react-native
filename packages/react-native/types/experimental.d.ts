@@ -36,7 +36,7 @@ import {
   BlendMode,
   BoxShadowPrimitive,
   DimensionValue,
-  FilterPrimitive,
+  FilterFunction,
 } from 'react-native/Libraries/StyleSheet/StyleSheetTypes';
 
 export {};
@@ -150,7 +150,7 @@ declare module '.' {
 
   export interface ViewStyle {
     experimental_boxShadow?: BoxShadowPrimitive | undefined;
-    experimental_filter?: ReadonlyArray<FilterPrimitive> | undefined;
+    experimental_filter?: ReadonlyArray<FilterFunction> | undefined;
     experimental_mixBlendMode?: BlendMode | undefined;
   }
 }

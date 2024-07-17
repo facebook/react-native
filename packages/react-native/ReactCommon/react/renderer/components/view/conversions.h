@@ -1031,14 +1031,14 @@ inline void fromRawValue(
 inline void fromRawValue(
     const PropsParserContext& /*context*/,
     const RawValue& value,
-    std::vector<FilterPrimitive>& result) {
+    std::vector<FilterFunction>& result) {
   react_native_expect(value.hasType<std::vector<RawValue>>());
   if (!value.hasType<std::vector<RawValue>>()) {
     result = {};
     return;
   }
 
-  std::vector<FilterPrimitive> filter{};
+  std::vector<FilterFunction> filter{};
   auto rawFilter = static_cast<std::vector<RawValue>>(value);
   for (const auto& rawFilterPrimitive : rawFilter) {
     bool isMap =
@@ -1054,14 +1054,14 @@ inline void fromRawValue(
     auto rawFilterPrimitiveMap =
         static_cast<std::unordered_map<std::string, RawValue>>(
             rawFilterPrimitive);
-    FilterPrimitive filterPrimitive{};
+    FilterFunction filterFunction{};
     try {
-      filterPrimitive.type =
+      filterFunction.type =
           filterTypeFromString(rawFilterPrimitiveMap.begin()->first);
-      filterPrimitive.amount = (float)rawFilterPrimitiveMap.begin()->second;
-      filter.push_back(filterPrimitive);
+      filterFunction.amount = (float)rawFilterPrimitiveMap.begin()->second;
+      filter.push_back(std::move(filterFunction));
     } catch (const std::exception& e) {
-      LOG(ERROR) << "Could not parse FilterPrimitive: " << e.what();
+      LOG(ERROR) << "Could not parse FilterFunction: " << e.what();
       result = {};
       return;
     }
