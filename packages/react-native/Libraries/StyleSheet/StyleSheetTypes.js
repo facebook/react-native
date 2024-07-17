@@ -695,12 +695,12 @@ export type FilterPrimitive =
   | {blur: number | string}
   | {contrast: number | string}
   | {grayscale: number | string}
-  | {'hue-rotate': number | string}
+  | {hueRotate: number | string}
   | {invert: number | string}
   | {opacity: number | string}
   | {saturate: number | string}
   | {sepia: number | string}
-  | {'drop-shadow': DropShadowPrimitive | string};
+  | {dropShadow: DropShadowPrimitive | string};
 
 export type DropShadowPrimitive = {
   offsetX: number | string,

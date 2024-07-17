@@ -21,12 +21,12 @@ type ParsedFilter =
   | {blur: number}
   | {contrast: number}
   | {grayscale: number}
-  | {'hue-rotate': number}
+  | {hueRotate: number}
   | {invert: number}
   | {opacity: number}
   | {saturate: number}
   | {sepia: number}
-  | {'drop-shadow': ParsedDropShadow};
+  | {dropShadow: ParsedDropShadow};
 
 type ParsedDropShadow = {
   offsetX: number,
@@ -49,17 +49,23 @@ export default function processFilter(
       if (filterName === 'drop-shadow') {
         const dropShadow = parseDropShadow(matches[2]);
         if (dropShadow != null) {
-          result.push({'drop-shadow': dropShadow});
+          result.push({dropShadow});
         } else {
           return [];
         }
       } else {
-        const amount = _getFilterAmount(filterName, matches[2]);
+        const camelizedName =
+          filterName === 'drop-shadow'
+            ? 'dropShadow'
+            : filterName === 'hue-rotate'
+              ? 'hueRotate'
+              : filterName;
+        const amount = _getFilterAmount(camelizedName, matches[2]);
 
         if (amount != null) {
           const filterPrimitive = {};
           // $FlowFixMe The key will be the correct one but flow can't see that.
-          filterPrimitive[filterName] = amount;
+          filterPrimitive[camelizedName] = amount;
           // $FlowFixMe The key will be the correct one but flow can't see that.
           result.push(filterPrimitive);
         } else {
@@ -73,13 +79,13 @@ export default function processFilter(
   } else {
     for (const filterPrimitive of filter) {
       const [filterName, filterValue] = Object.entries(filterPrimitive)[0];
-      if (filterName === 'drop-shadow') {
+      if (filterName === 'dropShadow') {
         // $FlowFixMe
         const dropShadow = parseDropShadow(filterValue);
         if (dropShadow == null) {
           return [];
         }
-        result.push({'drop-shadow': dropShadow});
+        result.push({dropShadow});
       } else {
         const amount = _getFilterAmount(filterName, filterValue);
 
@@ -125,7 +131,7 @@ function _getFilterAmount(filterName: string, filterArgs: mixed): ?number {
   switch (filterName) {
     // Hue rotate takes some angle that can have a unit and can be
     // negative. Additionally, 0 with no unit is allowed.
-    case 'hue-rotate':
+    case 'hueRotate':
       if (filterArgAsNumber === 0) {
         return 0;
       }

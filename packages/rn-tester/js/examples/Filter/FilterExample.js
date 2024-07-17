@@ -174,13 +174,13 @@ exports.examples = [
   },
   {
     title: 'Hue Rotate',
-    description: 'hue-rotate(-90deg)',
-    name: 'hue-rotate',
+    description: 'hueRotate(-90deg)',
+    name: 'hueRotate',
     platform: 'android',
     render(): React.Node {
       return (
         <StaticViewAndImage
-          style={{experimental_filter: [{'hue-rotate': '-90deg'}]}}
+          style={{experimental_filter: [{hueRotate: '-90deg'}]}}
         />
       );
     },
@@ -219,7 +219,7 @@ exports.examples = [
       return (
         <StaticViewAndImage
           style={{
-            experimental_filter: [{'drop-shadow': '30px 10px 4px #4444dd'}],
+            experimental_filter: [{dropShadow: '30px 10px 4px #4444dd'}],
           }}
           testID="filter-test-drop-shadow"
           imageSource={alphaHotdog}

@@ -39,12 +39,11 @@ internal object FilterHelper {
             "grayscale" -> createGrayscaleEffect((filter.value as Double).toFloat(), chainedEffects)
             "sepia" -> createSepiaEffect((filter.value as Double).toFloat(), chainedEffects)
             "saturate" -> createSaturateEffect((filter.value as Double).toFloat(), chainedEffects)
-            "hue-rotate" ->
-                createHueRotateEffect((filter.value as Double).toFloat(), chainedEffects)
+            "hueRotate" -> createHueRotateEffect((filter.value as Double).toFloat(), chainedEffects)
             "invert" -> createInvertEffect((filter.value as Double).toFloat(), chainedEffects)
             "blur" -> createBlurEffect((filter.value as Double).toFloat(), chainedEffects)
             "opacity" -> createOpacityEffect((filter.value as Double).toFloat(), chainedEffects)
-            "drop-shadow" ->
+            "dropShadow" ->
                 parseAndCreateDropShadowEffect(filter.value as ReadableMap, chainedEffects)
             else -> throw IllegalArgumentException("Invalid filter name: $filterName")
           }
@@ -69,7 +68,7 @@ internal object FilterHelper {
             "grayscale" -> createGrayscaleColorMatrix(amount)
             "sepia" -> createSepiaColorMatrix(amount)
             "saturate" -> createSaturateColorMatrix(amount)
-            "hue-rotate" -> createHueRotateColorMatrix(amount)
+            "hueRotate" -> createHueRotateColorMatrix(amount)
             "invert" -> createInvertColorMatrix(amount)
             "opacity" -> createOpacityColorMatrix(amount)
             else -> throw IllegalArgumentException("Invalid color matrix filter: $filterName")
