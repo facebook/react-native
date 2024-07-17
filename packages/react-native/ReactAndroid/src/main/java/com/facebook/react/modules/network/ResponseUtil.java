@@ -8,16 +8,20 @@
 package com.facebook.react.modules.network;
 
 import androidx.annotation.Nullable;
+
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
+
 import java.net.SocketTimeoutException;
 
-/** Util methods to send network responses to JS. */
+/**
+ * Util methods to send network responses to JS.
+ */
 public class ResponseUtil {
   public static void onDataSend(
-      @Nullable ReactApplicationContext reactContext, int requestId, long progress, long total) {
+    @Nullable ReactApplicationContext reactContext, int requestId, long progress, long total) {
     WritableArray args = Arguments.createArray();
     args.pushInt(requestId);
     args.pushInt((int) progress);
@@ -28,11 +32,11 @@ public class ResponseUtil {
   }
 
   public static void onIncrementalDataReceived(
-      @Nullable ReactApplicationContext reactContext,
-      int requestId,
-      String data,
-      long progress,
-      long total) {
+    @Nullable ReactApplicationContext reactContext,
+    int requestId,
+    String data,
+    long progress,
+    long total) {
     WritableArray args = Arguments.createArray();
     args.pushInt(requestId);
     args.pushString(data);
@@ -45,7 +49,7 @@ public class ResponseUtil {
   }
 
   public static void onDataReceivedProgress(
-      @Nullable ReactApplicationContext reactContext, int requestId, long progress, long total) {
+    @Nullable ReactApplicationContext reactContext, int requestId, long progress, long total) {
     WritableArray args = Arguments.createArray();
     args.pushInt(requestId);
     args.pushInt((int) progress);
@@ -57,7 +61,7 @@ public class ResponseUtil {
   }
 
   public static void onDataReceived(
-      @Nullable ReactApplicationContext reactContext, int requestId, String data) {
+    @Nullable ReactApplicationContext reactContext, int requestId, String data) {
     WritableArray args = Arguments.createArray();
     args.pushInt(requestId);
     args.pushString(data);
@@ -68,7 +72,7 @@ public class ResponseUtil {
   }
 
   public static void onDataReceived(
-      @Nullable ReactApplicationContext reactContext, int requestId, WritableMap data) {
+    @Nullable ReactApplicationContext reactContext, int requestId, WritableMap data) {
     WritableArray args = Arguments.createArray();
     args.pushInt(requestId);
     args.pushMap(data);
@@ -79,14 +83,15 @@ public class ResponseUtil {
   }
 
   public static void onRequestError(
-      @Nullable ReactApplicationContext reactContext, int requestId, String error, Throwable e) {
+    @Nullable ReactApplicationContext reactContext, int requestId, String error, Throwable e) {
     WritableArray args = Arguments.createArray();
     args.pushInt(requestId);
     args.pushString(error);
 
-    if ((e != null) && (e.getClass() == SocketTimeoutException.class)) {
-      args.pushBoolean(true); // last argument is a time out boolean
+    if (e instanceof SocketTimeoutException || (e instanceof InterruptedIOException && "timeout".equalsIgnoreCase(error))) {
+      args.pushBoolean(true);
     }
+
 
     if (reactContext != null) {
       reactContext.emitDeviceEvent("didCompleteNetworkResponse", args);
@@ -94,7 +99,7 @@ public class ResponseUtil {
   }
 
   public static void onRequestSuccess(
-      @Nullable ReactApplicationContext reactContext, int requestId) {
+    @Nullable ReactApplicationContext reactContext, int requestId) {
     WritableArray args = Arguments.createArray();
     args.pushInt(requestId);
     args.pushNull();
@@ -105,11 +110,11 @@ public class ResponseUtil {
   }
 
   public static void onResponseReceived(
-      @Nullable ReactApplicationContext reactContext,
-      int requestId,
-      int statusCode,
-      WritableMap headers,
-      String url) {
+    @Nullable ReactApplicationContext reactContext,
+    int requestId,
+    int statusCode,
+    WritableMap headers,
+    String url) {
     WritableArray args = Arguments.createArray();
     args.pushInt(requestId);
     args.pushInt(statusCode);
