@@ -32,7 +32,12 @@
  * Either the import or the reference only needs to appear once, anywhere in the project.
  */
 
-import {DimensionValue} from 'react-native/Libraries/StyleSheet/StyleSheetTypes';
+import {
+  BlendMode,
+  BoxShadowPrimitive,
+  DimensionValue,
+  FilterPrimitive,
+} from 'react-native/Libraries/StyleSheet/StyleSheetTypes';
 
 export {};
 
@@ -141,5 +146,11 @@ declare module '.' {
      * React Native code which may rely on incorrect behavior ('classic').
      */
     experimental_layoutConformance?: 'strict' | 'classic' | undefined;
+  }
+
+  export interface ViewStyle {
+    experimental_boxShadow?: BoxShadowPrimitive | undefined;
+    experimental_filter?: ReadonlyArray<FilterPrimitive> | undefined;
+    experimental_mixBlendMode?: BlendMode | undefined;
   }
 }
