@@ -461,6 +461,65 @@ fun enableWarningsAsErrors(): Boolean {
   return value?.toString()?.toBoolean() ?: false
 }
 
+val packageReactNdkLibsForBuck by
+    tasks.registering(Copy::class) {
+      dependsOn("mergeDebugNativeLibs")
+      // Shared libraries (.so) are copied from the merged_native_libs folder instead
+      from("$buildDir/intermediates/merged_native_libs/debug/out/lib/")
+      exclude("**/libjsc.so")
+      exclude("**/libhermes.so")
+      into("src/main/jni/prebuilt/lib")
+    }
+
+// Derivative of the packageReactNdkDebugLibsForBuck task, appends "debug" to the "into" dir
+val packageReactNdkDebugLibsForDiscord by
+    tasks.registering(Copy::class) {
+      dependsOn("mergeDebugNativeLibs")
+      // Shared libraries (.so) are copied from the merged_native_libs folder instead
+      from("$buildDir/intermediates/merged_native_libs/debug/out/lib/")
+      exclude("**/libjsc.so")
+      exclude("**/libhermes.so")
+      into("src/main/jni/prebuilt/lib/debug")
+    }
+
+// Derivative of the packageReactNdkReleaseLibsForBuck task, appends "release" to the "into" dir
+val packageReactNdkReleaseLibsForDiscord by
+    tasks.registering(Copy::class) {
+        dependsOn("mergeReleaseNativeLibs")
+        // Shared libraries (.so) are copied from the merged_native_libs folder instead
+        from("$buildDir/intermediates/merged_native_libs/release/out/lib/")
+        exclude("**/libjsc.so")
+        exclude("**/libhermes.so")
+        into("src/main/jni/prebuilt/lib/release")
+    }
+
+val createReactNdkLibraryZipArchiveForDiscord by
+    tasks.registering(Zip::class) {
+        // This dependsOn tasks gets all our *.so files into the src/main/jni/prebuilt/lib directory
+        dependsOn("packageReactNdkDebugLibsForDiscord")
+        dependsOn("packageReactNdkReleaseLibsForDiscord")
+
+        // A searchable self-documenting name for the build process, but its final packaged name will end up being react-native-{version}.zip
+        archiveFileName.set("ReactNativeLibrariesForDiscord.zip")
+        from(layout.projectDirectory.dir("src/main/jni/prebuilt")) {
+            // Get all *.so files in the prebuilt directory
+            include("**/*.so")
+            val fileCopyAction = object: Action<FileCopyDetails> {
+                override fun execute(fcd: FileCopyDetails) {
+                    // Trim down each file's directory to just include the "lib/{debug/release}/{architecture}" part
+                    val relativeFileName = RelativePath(true, *fcd.relativePath.segments.takeLast(4).toTypedArray())
+                    fcd.relativePath = relativeFileName
+                }
+            }
+            eachFile(fileCopyAction)
+            // Removes empty dirs resulting from the eachFile directory remapping above
+            includeEmptyDirs = false
+        }
+
+        // Place this .zip right into our ReactAndroid directory
+        destinationDirectory.set(layout.projectDirectory)
+    }
+
 repositories {
   // Normally RNGP will set repositories for all modules,
   // but when consumed from source, we need to re-declare
@@ -696,5 +755,15 @@ apply(from = "./publish.gradle")
 // Please note that the original coordinates, `react-native`, have been voided
 // as they caused https://github.com/facebook/react-native/issues/35210
 publishing {
-  publications { getByName("release", MavenPublication::class) { artifactId = "react-android" } }
+  publications {
+    getByName("release", MavenPublication::class) {
+      artifactId = "react-android"
+    }
+    create<MavenPublication>("libZip") {
+      groupId = "com.facebook.react"
+      version = "test"
+      artifactId = "discord-rn-libs"
+      artifact(tasks.named("createReactNdkLibraryZipArchiveForDiscord").get())
+    }
+  }
 }

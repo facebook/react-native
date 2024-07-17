@@ -68,6 +68,10 @@ publishing {
             name = "mavenTempLocal"
             url = mavenTempLocalUrl
         }
+        maven {
+            name = "discord"
+            url = uri("gcs://discord-maven")
+        }
     }
 
     if (signingKey && signingPwd) {
