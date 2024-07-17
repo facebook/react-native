@@ -35,7 +35,6 @@ jobs:
     env:
       HERMES_WS_DIR: /tmp/hermes
       HERMES_VERSION_FILE: packages/react-native/sdks/.hermesversion
-      BUILD_FROM_SOURCE: true
     outputs:
       react-native-version: ${{ steps.prepare-hermes-workspace.outputs.react-native-version }}
       hermes-version: ${{ steps.prepare-hermes-workspace.outputs.hermes-version }}
@@ -48,7 +47,6 @@ jobs:
         with:
           hermes-ws-dir: ${{ env.HERMES_WS_DIR }}
           hermes-version-file: ${{ env.HERMES_VERSION_FILE }}
-          build-from-source: ${{ env.BUILD_FROM_SOURCE }}
 
   build_hermesc_apple:
     runs-on: macos-13

@@ -24,7 +24,6 @@ jobs:
     env:
       HERMES_WS_DIR: /tmp/hermes
       HERMES_VERSION_FILE: packages/react-native/sdks/.hermesversion
-      BUILD_FROM_SOURCE: true
     outputs:
       react-native-version: ${{ steps.prepare-hermes-workspace.outputs.react-native-version }}
       hermes-version: ${{ steps.prepare-hermes-workspace.outputs.hermes-version }}
