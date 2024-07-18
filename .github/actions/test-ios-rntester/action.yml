@@ -28,6 +28,7 @@ inputs:
   react-native-version:
     description: The version of react-native
     required: true
+
 runs:
   using: composite
   steps:
@@ -139,11 +140,6 @@ runs:
       with:
         name: xcresults
         path: /Users/distiller/Library/Developer/Xcode/xcresults.tar.gz
-    - name: Report bundle size
-      if: ${{ inputs.run-unit-tests == 'true' }}
-      uses: ./.github/actions/report-bundle-size
-      with:
-        platform: ios
     - name: Store test results
       if: ${{ inputs.run-unit-tests == 'true' }}
       uses: actions/upload-artifact@v4

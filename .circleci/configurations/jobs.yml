@@ -177,9 +177,6 @@ jobs:
                 name: Build & Test React Native using Gradle
                 command: ./gradlew build -PenableWarningsAsErrors=true
 
-      - report_bundle_size:
-          platform: android
-
       - store_test_results:
           path: ~/react-native/packages/gradle-plugin/react-native-gradle-plugin/build/test-results
       - store_test_results:
