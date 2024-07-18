@@ -7,6 +7,9 @@
 
 package com.facebook.react.views.textinput;
 
+import androidx.annotation.Nullable;
+import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.events.Event;
 
@@ -34,5 +37,12 @@ class ReactTextInputPasteEvent extends Event<ReactTextInputPasteEvent> {
   @Override
   public boolean canCoalesce() {
     return false;
+  }
+
+  @Nullable
+  @Override
+  protected WritableMap getEventData() {
+    WritableMap eventData = Arguments.createMap();
+    return eventData;
   }
 }
