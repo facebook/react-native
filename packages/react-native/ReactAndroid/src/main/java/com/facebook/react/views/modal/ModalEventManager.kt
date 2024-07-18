@@ -16,7 +16,7 @@ public object ModalEventManager {
 
   public fun onModalRequestClose(dialog: DialogInterface?, viewTag: Int) {
     for (listener in listeners) {
-      listener.onModalOpen(dialog, viewTag)
+      listener.onModalRequestClose(dialog, viewTag)
     }
   }
 
