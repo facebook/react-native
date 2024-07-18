@@ -65,7 +65,7 @@ std::shared_ptr<Task> RuntimeScheduler::scheduleIdleTask(
   return runtimeSchedulerImpl_->scheduleIdleTask(std::move(callback), timeout);
 }
 
-bool RuntimeScheduler::getShouldYield() const noexcept {
+bool RuntimeScheduler::getShouldYield() noexcept {
   return runtimeSchedulerImpl_->getShouldYield();
 }
 

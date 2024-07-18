@@ -1232,6 +1232,87 @@ TEST_P(RuntimeSchedulerTest, reportsLongTasks) {
   EXPECT_EQ(pendingEntries.entries[0].duration, 50);
 }
 
+TEST_P(RuntimeSchedulerTest, reportsLongTasksWithYielding) {
+  // Only for modern runtime scheduler
+  if (!GetParam()) {
+    return;
+  }
+
+  bool didRunTask1 = false;
+  stubClock_->setTimePoint(10ms);
+
+  auto callback1 = createHostFunctionFromLambda([&](bool /* unused */) {
+    // The task executes for 80ms, but all the interval between getShouldYield
+    // are shorter than 50ms
+    didRunTask1 = true;
+
+    stubClock_->advanceTimeBy(20ms);
+
+    runtimeScheduler_->getShouldYield();
+
+    stubClock_->advanceTimeBy(20ms);
+
+    runtimeScheduler_->getShouldYield();
+
+    stubClock_->advanceTimeBy(20ms);
+
+    runtimeScheduler_->getShouldYield();
+
+    stubClock_->advanceTimeBy(20ms);
+
+    return jsi::Value::undefined();
+  });
+
+  runtimeScheduler_->scheduleTask(
+      SchedulerPriority::NormalPriority, std::move(callback1));
+
+  stubQueue_->tick();
+
+  EXPECT_EQ(didRunTask1, 1);
+  EXPECT_EQ(stubQueue_->size(), 0);
+  auto pendingEntries = performanceEntryReporter_->popPendingEntries();
+  EXPECT_EQ(pendingEntries.entries.size(), 0);
+
+  bool didRunTask2 = false;
+  stubClock_->setTimePoint(100ms);
+
+  auto callback2 = createHostFunctionFromLambda([&](bool /* unused */) {
+    // The task executes for 100ms, and one of the intervals is longer than 50.
+    didRunTask2 = true;
+
+    stubClock_->advanceTimeBy(20ms);
+
+    runtimeScheduler_->getShouldYield();
+
+    // Long period!
+    stubClock_->advanceTimeBy(60ms);
+
+    runtimeScheduler_->getShouldYield();
+
+    stubClock_->advanceTimeBy(20ms);
+
+    runtimeScheduler_->getShouldYield();
+
+    stubClock_->advanceTimeBy(20ms);
+
+    return jsi::Value::undefined();
+  });
+
+  runtimeScheduler_->scheduleTask(
+      SchedulerPriority::NormalPriority, std::move(callback2));
+
+  stubQueue_->tick();
+
+  EXPECT_EQ(didRunTask2, 1);
+  EXPECT_EQ(stubQueue_->size(), 0);
+  pendingEntries = performanceEntryReporter_->popPendingEntries();
+  EXPECT_EQ(pendingEntries.entries.size(), 1);
+  EXPECT_EQ(
+      pendingEntries.entries[0].entryType, PerformanceEntryType::LONGTASK);
+  EXPECT_EQ(pendingEntries.entries[0].startTime, 100);
+  EXPECT_EQ(pendingEntries.entries[0].duration, 120);
+}
+
 INSTANTIATE_TEST_SUITE_P(
     UseModernRuntimeScheduler,
     RuntimeSchedulerTest,
