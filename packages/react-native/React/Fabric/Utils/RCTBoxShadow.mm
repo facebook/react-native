@@ -140,7 +140,6 @@ static void renderOutsetShadows(
     CGContextFillPath(context);
 
     CGPathRelease(shadowRectPath);
-    CGColorRelease(color);
     CGContextRestoreGState(context);
   }
   // Lastly, clear out the region inside the view so that the shadows do
@@ -255,7 +254,6 @@ static void renderInsetShadows(
     CGContextSetFillColorWithColor(context, [UIColor blackColor].CGColor);
     CGContextEOFillPath(context);
 
-    CGColorRelease(color);
     CGContextRestoreGState(context);
   }
 
