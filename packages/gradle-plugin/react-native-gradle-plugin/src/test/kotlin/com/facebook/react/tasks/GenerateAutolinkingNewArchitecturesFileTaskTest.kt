@@ -139,10 +139,12 @@ class GenerateAutolinkingNewArchitecturesFileTaskTest {
       
       add_subdirectory(./a/directory/ aPackage_autolinked_build)
       add_subdirectory(./another/directory/ anotherPackage_autolinked_build)
+      add_subdirectory(./another/directory/cxx/ anotherPackage_cxxmodule_autolinked_build)
       
       set(AUTOLINKED_LIBRARIES
         react_codegen_aPackage
         react_codegen_anotherPackage
+      another_cxxModule
       )
     """
             .trimIndent(),
@@ -212,6 +214,8 @@ class GenerateAutolinkingNewArchitecturesFileTaskTest {
       #include "autolinking.h"
       #include <aPackage.h>
       #include <anotherPackage.h>
+      #include <react/renderer/components/anotherPackage/ComponentDescriptors.h>
+      #include <AnotherCxxModule.h>
 
       namespace facebook {
       namespace react {
@@ -229,12 +233,14 @@ class GenerateAutolinkingNewArchitecturesFileTaskTest {
       }
 
       std::shared_ptr<TurboModule> autolinking_cxxModuleProvider(const std::string moduleName, const std::shared_ptr<CallInvoker>& jsInvoker) {
-
+      if (moduleName == AnotherCxxModule::kModuleName) {
+      return std::make_shared<AnotherCxxModule>(jsInvoker);
+      }
         return nullptr;
       }
 
       void autolinking_registerProviders(std::shared_ptr<ComponentDescriptorProviderRegistry const> providerRegistry) {
-
+      providerRegistry->add(concreteComponentDescriptorProvider<AnotherPackageComponentDescriptor>());
         return;
       }
 
@@ -262,7 +268,10 @@ class GenerateAutolinkingNewArchitecturesFileTaskTest {
               packageInstance = "new AnotherPackage()",
               buildTypes = emptyList(),
               libraryName = "anotherPackage",
-              componentDescriptors = emptyList(),
+              componentDescriptors = listOf("AnotherPackageComponentDescriptor"),
               cmakeListsPath = "./another/directory/CMakeLists.txt",
+              cxxModuleCMakeListsPath = "./another/directory/cxx/CMakeLists.txt",
+              cxxModuleHeaderName = "AnotherCxxModule",
+              cxxModuleCMakeListsModuleName = "another_cxxModule",
           ))
 }
