@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <react/timing/primitives.h>
 #include "BoundedConsumableBuffer.h"
 
 #include <array>
@@ -19,8 +20,6 @@
 #include <unordered_set>
 
 namespace facebook::react {
-
-using DOMHighResTimeStamp = double;
 
 using PerformanceEntryInteractionId = uint32_t;
 

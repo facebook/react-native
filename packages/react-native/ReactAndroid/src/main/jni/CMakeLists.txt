@@ -115,6 +115,7 @@ add_react_common_subdir(jserrorhandler)
 add_react_common_subdir(react/runtime)
 add_react_common_subdir(react/runtime/hermes)
 add_react_common_subdir(react/runtime/nativeviewconfig)
+add_react_common_subdir(react/timing)
 
 # ReactAndroid JNI targets
 add_react_build_subdir(generated/source/codegen/jni)
