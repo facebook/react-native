@@ -1,4 +1,10 @@
 version: 2.1
+workflows:
+  version: 2
+  stub:
+    jobs:
+      - circleci-stub
+
 jobs:
   circleci-stub:
     docker:
