@@ -1,0 +1,66 @@
+Reaccionar nativo
+Aprenda una vez, escriba en cualquier lugar:
+cree aplicaciones móviles con React.
+
+React Native se publica bajo la licencia MIT. Estado actual de la compilación de CircleCI. Versión actual del paquete npm. ¡PR bienvenidos! Sigue a @reactnative
+
+Primeros pasos · Conozca los conceptos básicos · Presente · Contribuya · Comunidad · Soporte
+React Native lleva el marco de interfaz de usuario declarativo de React a iOS y Android. Con React Native, puedes usar controles de interfaz de usuario nativos y tener acceso completo a la plataforma nativa.
+
+Declarativo. React facilita la creación de interfaces de usuario interactivas. Las vistas declarativas hacen que el código sea más predecible y más fácil de depurar.
+Basado en componentes. Cree componentes encapsulados que administren su estado y luego compóngalos para crear interfaces de usuario complejas.
+Velocidad de desarrollador. Vea los cambios locales en segundos. Los cambios en el código JavaScript se pueden volver a cargar en tiempo real sin tener que volver a generar la aplicación nativa.
+Portabilidad. Reutilización de código en iOS, Android y otras plataformas .
+React Native es desarrollado y respaldado por muchas empresas y colaboradores individuales. Obtenga más información en nuestra descripción general del ecosistema .
+
+Contenido
+Requisitos
+Creando tu primera aplicación React Native
+Documentación
+Actualizando
+Cómo contribuir
+Código de conducta
+Licencia
+📋 Requisitos
+Las aplicaciones React Native pueden tener como destino iOS 13.4 y Android 6.0 (API 23) o versiones posteriores. Puedes usar Windows, macOS o Linux como sistema operativo de desarrollo, aunque la creación y ejecución de aplicaciones iOS está limitada a macOS. Se pueden usar herramientas como Expo para solucionar este problema.
+
+🎉 Creando tu primera aplicación React Native
+Sigue la guía de introducción . La forma recomendada de instalar React Native depende de tu proyecto. Aquí puedes encontrar guías breves para los escenarios más comunes:
+
+Probando React Native
+Creando una nueva aplicación
+Cómo agregar React Native a una aplicación existente
+📖 Documentación
+La documentación completa de React Native se puede encontrar en nuestro sitio web .
+
+La documentación de React Native analiza los componentes, las API y los temas específicos de React Native. Para obtener más documentación sobre la API de React que comparten React Native y React DOM, consulta la documentación de React .
+
+La fuente de la documentación y el sitio web de React Native está alojada en un repositorio separado, @facebook/react-native-website .
+
+🚀 Actualización
+Actualizar a nuevas versiones de React Native puede brindarte acceso a más API, vistas, herramientas para desarrolladores y otras ventajas. Consulta la Guía de actualización para obtener instrucciones.
+
+Las versiones de React Native se analizan en este repositorio de discusión .
+
+👏 Cómo contribuir
+El objetivo principal de este repositorio es seguir desarrollando el núcleo de React Native. Queremos que contribuir a este proyecto sea lo más fácil y transparente posible, y agradecemos a la comunidad por contribuir con correcciones de errores y mejoras. Sigue leyendo para saber cómo puedes participar en la mejora de React Native.
+
+Código de conducta
+Facebook ha adoptado un Código de conducta que esperamos que cumplan los participantes del proyecto. Lee el texto completo para saber qué acciones se tolerarán y cuáles no.
+
+Guía de colaboración
+Lea nuestra Guía de contribución para conocer nuestro proceso de desarrollo, cómo proponer correcciones de errores y mejoras, y cómo crear y probar sus cambios en React Native.
+
+Hoja de ruta de código abierto
+Puede obtener más información sobre nuestra visión para React Native en la Hoja de ruta .
+
+Buenos primeros números
+Contamos con una lista de buenos primeros números que contienen errores de alcance relativamente limitado. Este es un excelente lugar para comenzar, ganar experiencia y familiarizarse con nuestro proceso de contribución.
+
+Discusiones
+Las discusiones y propuestas más amplias se discuten en @react-native-community/discussions-and-proposals .
+
+📄 Licencia
+React Native tiene licencia MIT, como se encuentra en el archivo LICENSE .
+
+La documentación de React Native tiene licencia Creative Commons, como se encuentra en el archivo LICENSE-docs .
