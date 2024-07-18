@@ -7,7 +7,6 @@
 
 package com.facebook.react.views.modal
 
-import ModalEventManager
 import android.content.DialogInterface.OnShowListener
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.common.MapBuilder
@@ -149,8 +148,8 @@ public class ReactModalHostManager :
   public override fun getDelegate(): ViewManagerDelegate<ReactModalHostView> = delegate
 
 
-  public override fun initialize() {
-    super.initialize()
+  public override fun invalidate() {
+    super.invalidate()
     modalEventManager.removeAllListeners()
   }
 

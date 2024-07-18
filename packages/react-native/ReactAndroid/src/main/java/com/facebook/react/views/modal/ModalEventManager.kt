@@ -1,5 +1,6 @@
+package com.facebook.react.views.modal;
+
 import android.content.DialogInterface
-import com.facebook.react.views.modal.ModalCallback
 
 public object ModalEventManager {
   private val listeners: MutableList<ModalCallback> = mutableListOf()
