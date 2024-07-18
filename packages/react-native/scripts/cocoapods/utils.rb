@@ -630,6 +630,7 @@ class ReactNativePodsUtils
             "React-perflogger",
             "React-rncore",
             "React-runtimeexecutor",
+            "React-timing",
             "ReactCommon",
             "Yoga",
             "boost",

@@ -12,6 +12,7 @@
 #include <folly/Conv.h>
 #include <jsinspector-modern/ReactCdp.h>
 
+#include <react/timing/primitives.h>
 #include <chrono>
 
 namespace facebook::react {
@@ -26,13 +27,7 @@ std::string JSExecutor::getSyntheticBundlePath(
 }
 
 double JSExecutor::performanceNow() {
-  auto time = std::chrono::steady_clock::now();
-  auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(
-                      time.time_since_epoch())
-                      .count();
-
-  constexpr double NANOSECONDS_IN_MILLISECOND = 1000000.0;
-  return duration / NANOSECONDS_IN_MILLISECOND;
+  return chronoToDOMHighResTimeStamp(std::chrono::steady_clock::now());
 }
 
 jsinspector_modern::RuntimeTargetDelegate&
