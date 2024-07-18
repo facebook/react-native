@@ -13,7 +13,7 @@ import android.graphics.Typeface
 import android.text.TextPaint
 import android.text.style.MetricAffectingSpan
 import com.facebook.react.common.ReactConstants
-import com.facebook.react.common.assets.ReactFontManager
+import com.facebook.react.views.text.ReactFontManager
 import com.facebook.react.views.text.ReactTypefaceUtils
 
 /**

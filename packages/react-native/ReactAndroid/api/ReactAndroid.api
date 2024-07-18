@@ -1738,36 +1738,20 @@ public final class com/facebook/react/common/SystemClock {
 	public static final fun uptimeMillis ()J
 }
 
-public final class com/facebook/react/common/assets/ReactFontManager {
-	public static final field Companion Lcom/facebook/react/common/assets/ReactFontManager$Companion;
-	public fun <init> ()V
-	public final fun addCustomFont (Landroid/content/Context;Ljava/lang/String;I)V
-	public final fun addCustomFont (Ljava/lang/String;Landroid/graphics/Typeface;)V
-	public static final fun getInstance ()Lcom/facebook/react/common/assets/ReactFontManager;
-	public final fun getTypeface (Ljava/lang/String;IILandroid/content/res/AssetManager;)Landroid/graphics/Typeface;
-	public final fun getTypeface (Ljava/lang/String;ILandroid/content/res/AssetManager;)Landroid/graphics/Typeface;
-	public final fun getTypeface (Ljava/lang/String;IZLandroid/content/res/AssetManager;)Landroid/graphics/Typeface;
-	public final fun getTypeface (Ljava/lang/String;Lcom/facebook/react/common/assets/ReactFontManager$TypefaceStyle;Landroid/content/res/AssetManager;)Landroid/graphics/Typeface;
-	public final fun setTypeface (Ljava/lang/String;ILandroid/graphics/Typeface;)V
+public abstract interface annotation class com/facebook/react/common/annotations/DeprecatedInNewArchitecture : java/lang/annotation/Annotation {
+	public abstract fun message ()Ljava/lang/String;
 }
 
-public final class com/facebook/react/common/assets/ReactFontManager$Companion {
-	public final fun getInstance ()Lcom/facebook/react/common/assets/ReactFontManager;
+public abstract interface annotation class com/facebook/react/common/annotations/FrameworkAPI : java/lang/annotation/Annotation {
 }
 
-public final class com/facebook/react/common/assets/ReactFontManager$TypefaceStyle {
-	public static final field BOLD I
-	public static final field Companion Lcom/facebook/react/common/assets/ReactFontManager$TypefaceStyle$Companion;
-	public static final field NORMAL I
-	public fun <init> (I)V
-	public fun <init> (II)V
-	public synthetic fun <init> (IIILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public fun <init> (IZ)V
-	public final fun apply (Landroid/graphics/Typeface;)Landroid/graphics/Typeface;
-	public final fun getNearestStyle ()I
+public abstract interface annotation class com/facebook/react/common/annotations/StableReactNativeAPI : java/lang/annotation/Annotation {
 }
 
-public final class com/facebook/react/common/assets/ReactFontManager$TypefaceStyle$Companion {
+public abstract interface annotation class com/facebook/react/common/annotations/UnstableReactNativeAPI : java/lang/annotation/Annotation {
+}
+
+public abstract interface annotation class com/facebook/react/common/annotations/VisibleForTesting : java/lang/annotation/Annotation {
 }
 
 public final class com/facebook/react/common/build/ReactBuildConfig {
