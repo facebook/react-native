@@ -21,6 +21,7 @@ export const RawPerformanceEntryTypeValues = {
   MARK: 1,
   MEASURE: 2,
   EVENT: 3,
+  LONGTASK: 4,
 };
 
 export function rawToPerformanceEntry(
@@ -55,6 +56,8 @@ export function rawToPerformanceEntryType(
       return 'measure';
     case RawPerformanceEntryTypeValues.EVENT:
       return 'event';
+    case RawPerformanceEntryTypeValues.LONGTASK:
+      return 'longtask';
     default:
       throw new TypeError(
         `rawToPerformanceEntryType: unexpected performance entry type received: ${type}`,
@@ -72,6 +75,8 @@ export function performanceEntryTypeToRaw(
       return RawPerformanceEntryTypeValues.MEASURE;
     case 'event':
       return RawPerformanceEntryTypeValues.EVENT;
+    case 'longtask':
+      return RawPerformanceEntryTypeValues.LONGTASK;
     default:
       // Verify exhaustive check with Flow
       (type: empty);

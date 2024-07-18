@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0b90fde158e97c4cad711c3ab832f067>>
+ * @generated SignedSource<<96ed168a0e80e78d1d6f96374f045eca>>
  */
 
 /**
@@ -33,6 +33,7 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var enableAlignItemsBaselineOnFabricIOSCache: Boolean? = null
   private var enableCleanTextInputYogaNodeCache: Boolean? = null
   private var enableGranularShadowTreeStateReconciliationCache: Boolean? = null
+  private var enableLongTaskAPICache: Boolean? = null
   private var enableMicrotasksCache: Boolean? = null
   private var enablePropsUpdateReconciliationAndroidCache: Boolean? = null
   private var enableSynchronousStateUpdatesCache: Boolean? = null
@@ -142,6 +143,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.enableGranularShadowTreeStateReconciliation()
       accessedFeatureFlags.add("enableGranularShadowTreeStateReconciliation")
       enableGranularShadowTreeStateReconciliationCache = cached
+    }
+    return cached
+  }
+
+  override fun enableLongTaskAPI(): Boolean {
+    var cached = enableLongTaskAPICache
+    if (cached == null) {
+      cached = currentProvider.enableLongTaskAPI()
+      accessedFeatureFlags.add("enableLongTaskAPI")
+      enableLongTaskAPICache = cached
     }
     return cached
   }

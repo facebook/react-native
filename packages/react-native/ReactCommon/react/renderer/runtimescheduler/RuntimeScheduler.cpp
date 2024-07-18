@@ -102,4 +102,10 @@ void RuntimeScheduler::setShadowTreeRevisionConsistencyManager(
       shadowTreeRevisionConsistencyManager);
 }
 
+void RuntimeScheduler::setPerformanceEntryReporter(
+    PerformanceEntryReporter* performanceEntryReporter) {
+  return runtimeSchedulerImpl_->setPerformanceEntryReporter(
+      performanceEntryReporter);
+}
+
 } // namespace facebook::react

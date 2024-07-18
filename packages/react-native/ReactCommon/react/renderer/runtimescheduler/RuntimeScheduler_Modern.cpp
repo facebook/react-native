@@ -12,6 +12,7 @@
 #include <cxxreact/SystraceSection.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/consistency/ScopedShadowTreeRevisionLock.h>
+#include <react/timing/primitives.h>
 #include <react/utils/OnScopeExit.h>
 #include <utility>
 
@@ -217,6 +218,11 @@ void RuntimeScheduler_Modern::setShadowTreeRevisionConsistencyManager(
   shadowTreeRevisionConsistencyManager_ = shadowTreeRevisionConsistencyManager;
 }
 
+void RuntimeScheduler_Modern::setPerformanceEntryReporter(
+    PerformanceEntryReporter* performanceEntryReporter) {
+  performanceEntryReporter_ = performanceEntryReporter;
+}
+
 #pragma mark - Private
 
 void RuntimeScheduler_Modern::scheduleTask(std::shared_ptr<Task> task) {
@@ -300,7 +306,7 @@ std::shared_ptr<Task> RuntimeScheduler_Modern::selectTask(
 void RuntimeScheduler_Modern::runEventLoopTick(
     jsi::Runtime& runtime,
     Task& task,
-    RuntimeSchedulerTimePoint currentTime) {
+    RuntimeSchedulerTimePoint taskStartTime) {
   SystraceSection s("RuntimeScheduler::runEventLoopTick");
 
   currentTask_ = &task;
@@ -310,7 +316,7 @@ void RuntimeScheduler_Modern::runEventLoopTick(
     ScopedShadowTreeRevisionLock revisionLock(
         shadowTreeRevisionConsistencyManager_);
 
-    auto didUserCallbackTimeout = task.expirationTime <= currentTime;
+    auto didUserCallbackTimeout = task.expirationTime <= taskStartTime;
     executeTask(runtime, task, didUserCallbackTimeout);
 
     if (ReactNativeFeatureFlags::enableMicrotasks()) {
@@ -321,6 +327,11 @@ void RuntimeScheduler_Modern::runEventLoopTick(
     if (ReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop()) {
       // "Update the rendering" step.
       updateRendering();
+    }
+
+    if (ReactNativeFeatureFlags::enableLongTaskAPI()) {
+      auto taskEndTime = now_();
+      reportLongTasks(task, taskStartTime, taskEndTime);
     }
   }
 
@@ -405,6 +416,22 @@ void RuntimeScheduler_Modern::performMicrotaskCheckpoint(
 
   if (retries == kRetriesBound) {
     throw std::runtime_error("Hits microtasks retries bound.");
+  }
+}
+
+void RuntimeScheduler_Modern::reportLongTasks(
+    const Task& /*task*/,
+    RuntimeSchedulerTimePoint startTime,
+    RuntimeSchedulerTimePoint endTime) {
+  auto reporter = performanceEntryReporter_;
+  if (reporter == nullptr) {
+    return;
+  }
+
+  auto durationMs = chronoToDOMHighResTimeStamp(endTime - startTime);
+  if (durationMs >= LONG_TASK_DURATION_THRESHOLD_MS) {
+    auto startTimeMs = chronoToDOMHighResTimeStamp(startTime);
+    reporter->logLongTaskEntry(startTimeMs, durationMs);
   }
 }
 
