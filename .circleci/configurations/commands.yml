@@ -157,17 +157,6 @@ commands:
             - packages/react-native/ReactAndroid/build/third-party-ndk
           key: *gradle_cache_key
 
-  report_bundle_size:
-    parameters:
-      platform:
-        description: Target platform
-        type: enum
-        enum: ["android", "ios"]
-    steps:
-      - run:
-          name: Report size of RNTester.app (analysis-bot)
-          command: GITHUB_TOKEN="$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A""$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B" scripts/circleci/report-bundle-size.sh << parameters.platform >> || true
-
   setup_hermes_version:
     steps:
       - run:
@@ -558,7 +547,5 @@ commands:
             tar -zcvf xcresults.tar.gz $XCRESULT_PATH
       - store_artifacts_if_needed:
           path: /Users/distiller/Library/Developer/Xcode/xcresults.tar.gz
-      - report_bundle_size:
-          platform: ios
       - store_test_results:
           path: ./reports/junit

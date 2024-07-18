@@ -208,6 +208,7 @@ jobs:
         with:
           hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
           react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
+
   build_android:
     runs-on: 8-core-ubuntu
     needs: [set_release_type]
