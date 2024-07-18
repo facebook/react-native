@@ -8,6 +8,7 @@
 #pragma once
 
 #include <ReactCommon/RuntimeExecutor.h>
+#include <react/performance/timeline/PerformanceEntryReporter.h>
 #include <react/renderer/consistency/ShadowTreeRevisionConsistencyManager.h>
 #include <react/renderer/runtimescheduler/RuntimeSchedulerClock.h>
 #include <react/renderer/runtimescheduler/SchedulerPriorityUtils.h>
@@ -48,6 +49,8 @@ class RuntimeSchedulerBase {
       RuntimeSchedulerRenderingUpdate&& renderingUpdate) = 0;
   virtual void setShadowTreeRevisionConsistencyManager(
       ShadowTreeRevisionConsistencyManager* provider) = 0;
+  virtual void setPerformanceEntryReporter(
+      PerformanceEntryReporter* reporter) = 0;
 };
 
 // This is a proxy for RuntimeScheduler implementation, which will be selected
@@ -153,6 +156,8 @@ class RuntimeScheduler final : RuntimeSchedulerBase {
   void setShadowTreeRevisionConsistencyManager(
       ShadowTreeRevisionConsistencyManager*
           shadowTreeRevisionConsistencyManager) override;
+
+  void setPerformanceEntryReporter(PerformanceEntryReporter* reporter) override;
 
  private:
   // Actual implementation, stored as a unique pointer to simplify memory

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<55fa16b3333fb8e2820a078c68850f91>>
+ * @generated SignedSource<<13469640e36f5985531f872b28ff0c30>>
  */
 
 /**
@@ -40,6 +40,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun enableCleanTextInputYogaNode(): Boolean
 
   @DoNotStrip public fun enableGranularShadowTreeStateReconciliation(): Boolean
+
+  @DoNotStrip public fun enableLongTaskAPI(): Boolean
 
   @DoNotStrip public fun enableMicrotasks(): Boolean
 

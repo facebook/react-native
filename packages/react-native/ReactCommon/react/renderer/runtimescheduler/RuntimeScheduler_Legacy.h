@@ -127,6 +127,9 @@ class RuntimeScheduler_Legacy final : public RuntimeSchedulerBase {
       ShadowTreeRevisionConsistencyManager*
           shadowTreeRevisionConsistencyManager) override;
 
+  void setPerformanceEntryReporter(
+      PerformanceEntryReporter* performanceEntryReporter) override;
+
  private:
   std::priority_queue<
       std::shared_ptr<Task>,

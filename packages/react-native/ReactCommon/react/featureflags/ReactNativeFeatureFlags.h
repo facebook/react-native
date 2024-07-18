@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f9c32a7245be31e900aa51f2b93a61d4>>
+ * @generated SignedSource<<5b0c518e45a5c98814c8151870aed591>>
  */
 
 /**
@@ -81,6 +81,11 @@ class ReactNativeFeatureFlags {
    * When enabled, the renderer would only fail commits when they propagate state and the last commit that updated state changed before committing.
    */
   RN_EXPORT static bool enableGranularShadowTreeStateReconciliation();
+
+  /**
+   * Enables the reporting of long tasks through `PerformanceObserver`. Only works if the event loop is enabled.
+   */
+  RN_EXPORT static bool enableLongTaskAPI();
 
   /**
    * Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).

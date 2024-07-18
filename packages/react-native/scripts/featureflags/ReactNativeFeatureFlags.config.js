@@ -78,6 +78,11 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'When enabled, the renderer would only fail commits when they propagate state and the last commit that updated state changed before committing.',
     },
+    enableLongTaskAPI: {
+      defaultValue: false,
+      description:
+        'Enables the reporting of long tasks through `PerformanceObserver`. Only works if the event loop is enabled.',
+    },
     enableMicrotasks: {
       defaultValue: false,
       description:

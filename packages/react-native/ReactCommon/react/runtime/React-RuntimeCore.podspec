@@ -53,6 +53,7 @@ Pod::Spec.new do |s|
   s.dependency "glog"
   s.dependency "React-jsi"
   s.dependency "React-jserrorhandler"
+  s.dependency "React-performancetimeline"
   s.dependency "React-runtimescheduler"
   s.dependency "React-utils"
   s.dependency "React-featureflags"
