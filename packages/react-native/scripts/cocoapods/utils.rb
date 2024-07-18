@@ -244,7 +244,18 @@ class ReactNativePodsUtils
         end
 
         if !file_manager.exist?("#{file_path}.local")
-            node_binary = `command -v node`
+            # When installing pods with a yarn alias, yarn creates a fake yarn and node executables
+            # in a temporary folder.
+            # Using `type -a` we are able to retrieve all the paths of an executable and we can
+            # exclude the temporary ones.
+            # see https://github.com/facebook/react-native/issues/43285 for more info
+            node_binary = `type -a node`.split("\n").map { |path|
+                path.gsub!("node is ", "")
+            }.select { |b|
+                return !b.start_with?("/var")
+            }
+
+            node_binary = node_binary[0]
             system("echo 'export NODE_BINARY=#{node_binary}' > #{file_path}.local")
         end
     end
