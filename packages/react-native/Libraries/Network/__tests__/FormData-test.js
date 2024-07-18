@@ -130,4 +130,46 @@ describe('FormData', function () {
 
     expect(formData.getAll('file').length).toBe(0);
   });
+
+  it('should overwrite values based on the given key', function () {
+    formData.set('username', 'Chris');
+    formData.set('username', 'Bob');
+
+    expect(formData.getAll('username').length).toBe(1);
+
+    expect(formData.getAll('username')).toMatchObject(['Bob']);
+  });
+
+  it('should delete values based on the given key', function () {
+    formData.append('username', 'Chris');
+    formData.append('username', 'Bob');
+
+    expect(formData.getAll('username').length).toBe(2);
+
+    formData.delete('username');
+
+    expect(formData.getAll('username').length).toBe(0);
+  });
+
+  it('should return the correct entries', function () {
+    formData.append('username', 'Chris');
+    formData.append('username', 'Bob');
+
+    formData.append('photo', {
+      uri: 'arbitrary/path',
+      type: 'image/jpeg',
+      name: 'photo.jpg',
+    });
+
+    const expectedPart = {
+      url: 'arbitrary/path',
+      type: 'image/jpeg',
+      name: 'photo.jpg',
+    };
+
+    const entries = formData.entries();
+    expect(entries.next().value).toMatchObject(['username', 'Chris']);
+    expect(entries.next().value).toMatchObject(['username', 'Bob']);
+    expect(entries.next().value).toMatchObject(['photo', expectedPart]);
+  });
 });
