@@ -994,14 +994,14 @@ inline void fromRawValue(
       boxShadow.blurRadius = (Float)blurRadius->second;
     }
 
-    auto spreadRadius = rawBoxShadowMap.find("spreadRadius");
-    if (spreadRadius != rawBoxShadowMap.end()) {
-      react_native_expect(spreadRadius->second.hasType<Float>());
-      if (!spreadRadius->second.hasType<Float>()) {
+    auto spreadDistance = rawBoxShadowMap.find("spreadDistance");
+    if (spreadDistance != rawBoxShadowMap.end()) {
+      react_native_expect(spreadDistance->second.hasType<Float>());
+      if (!spreadDistance->second.hasType<Float>()) {
         result = {};
         return;
       }
-      boxShadow.spreadRadius = (Float)spreadRadius->second;
+      boxShadow.spreadDistance = (Float)spreadDistance->second;
     }
 
     auto inset = rawBoxShadowMap.find("inset");
