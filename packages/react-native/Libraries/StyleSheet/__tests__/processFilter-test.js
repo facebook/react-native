@@ -11,7 +11,7 @@
 
 'use strict';
 
-import type {FilterPrimitive} from '../StyleSheetTypes';
+import type {FilterFunction} from '../StyleSheetTypes';
 
 import processColor from '../processColor';
 
@@ -165,7 +165,7 @@ function testStandardFilter(filter: string): void {
 function testNumericFilter(
   filter: string,
   value: number,
-  expected: Array<FilterPrimitive>,
+  expected: Array<FilterFunction>,
 ): void {
   const filterObject = createFilterPrimitive(filter, value);
   const filterString = filter + '(' + value.toString() + ')';
@@ -182,7 +182,7 @@ function testUnitFilter(
   filter: string,
   value: number,
   unit: string,
-  expected: Array<FilterPrimitive>,
+  expected: Array<FilterFunction>,
 ): void {
   const unitAmount = value + unit;
   const filterObject = createFilterPrimitive(filter, unitAmount);
@@ -199,7 +199,7 @@ function testUnitFilter(
 function createFilterPrimitive(
   filter: string,
   value: number | string,
-): FilterPrimitive {
+): FilterFunction {
   switch (filter) {
     case 'brightness':
       return {brightness: value};

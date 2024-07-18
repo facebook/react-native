@@ -28,8 +28,8 @@ enum class FilterType {
   DropShadow
 };
 
-struct FilterPrimitive {
-  bool operator==(const FilterPrimitive& other) const = default;
+struct FilterFunction {
+  bool operator==(const FilterFunction& other) const = default;
 
   FilterType type;
   Float amount;

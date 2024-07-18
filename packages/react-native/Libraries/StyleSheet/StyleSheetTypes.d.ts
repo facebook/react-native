@@ -227,7 +227,7 @@ export interface TransformsStyle {
   translateY?: AnimatableNumericValue | undefined;
 }
 
-export type FilterPrimitive =
+export type FilterFunction =
   | {brightness: number | string}
   | {blur: number | string}
   | {contrast: number | string}

@@ -7683,7 +7683,7 @@ export type ____ShadowStyle_Internal = $ReadOnly<{
   ...____ShadowStyle_InternalCore,
   ...____ShadowStyle_InternalOverrides,
 }>;
-export type FilterPrimitive =
+export type FilterFunction =
   | { brightness: number | string }
   | { blur: number | string }
   | { contrast: number | string }
@@ -7768,7 +7768,7 @@ export type ____ViewStyle_InternalCore = $ReadOnly<{
   pointerEvents?: \\"auto\\" | \\"none\\" | \\"box-none\\" | \\"box-only\\",
   cursor?: CursorValue,
   experimental_boxShadow?: $ReadOnlyArray<BoxShadowPrimitive>,
-  experimental_filter?: $ReadOnlyArray<FilterPrimitive>,
+  experimental_filter?: $ReadOnlyArray<FilterFunction>,
   experimental_mixBlendMode?: ____BlendMode_Internal,
 }>;
 export type ____ViewStyle_Internal = $ReadOnly<{
@@ -8062,7 +8062,7 @@ type ParsedDropShadow = {
   color?: ColorValue,
 };
 declare export default function processFilter(
-  filter: $ReadOnlyArray<FilterPrimitive> | string
+  filter: $ReadOnlyArray<FilterFunction> | string
 ): $ReadOnlyArray<ParsedFilter>;
 "
 `;

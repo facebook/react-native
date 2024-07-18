@@ -690,7 +690,7 @@ export type ____ShadowStyle_Internal = $ReadOnly<{
   ...____ShadowStyle_InternalOverrides,
 }>;
 
-export type FilterPrimitive =
+export type FilterFunction =
   | {brightness: number | string}
   | {blur: number | string}
   | {contrast: number | string}
@@ -779,7 +779,7 @@ export type ____ViewStyle_InternalCore = $ReadOnly<{
   pointerEvents?: 'auto' | 'none' | 'box-none' | 'box-only',
   cursor?: CursorValue,
   experimental_boxShadow?: $ReadOnlyArray<BoxShadowPrimitive>,
-  experimental_filter?: $ReadOnlyArray<FilterPrimitive>,
+  experimental_filter?: $ReadOnlyArray<FilterFunction>,
   experimental_mixBlendMode?: ____BlendMode_Internal,
 }>;
 

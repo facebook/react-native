@@ -12,7 +12,7 @@
 'use strict';
 
 import type {ColorValue} from './StyleSheet';
-import type {DropShadowPrimitive, FilterPrimitive} from './StyleSheetTypes';
+import type {DropShadowPrimitive, FilterFunction} from './StyleSheetTypes';
 
 import processColor from './processColor';
 
@@ -36,7 +36,7 @@ type ParsedDropShadow = {
 };
 
 export default function processFilter(
-  filter: $ReadOnlyArray<FilterPrimitive> | string,
+  filter: $ReadOnlyArray<FilterFunction> | string,
 ): $ReadOnlyArray<ParsedFilter> {
   let result: Array<ParsedFilter> = [];
   if (typeof filter === 'string') {
@@ -63,11 +63,11 @@ export default function processFilter(
         const amount = _getFilterAmount(camelizedName, matches[2]);
 
         if (amount != null) {
-          const filterPrimitive = {};
+          const filterFunction = {};
           // $FlowFixMe The key will be the correct one but flow can't see that.
-          filterPrimitive[camelizedName] = amount;
+          filterFunction[camelizedName] = amount;
           // $FlowFixMe The key will be the correct one but flow can't see that.
-          result.push(filterPrimitive);
+          result.push(filterFunction);
         } else {
           // If any primitive is invalid then apply none of the filters. This is how
           // web works and makes it clear that something is wrong becuase no
@@ -77,8 +77,8 @@ export default function processFilter(
       }
     }
   } else {
-    for (const filterPrimitive of filter) {
-      const [filterName, filterValue] = Object.entries(filterPrimitive)[0];
+    for (const filterFunction of filter) {
+      const [filterName, filterValue] = Object.entries(filterFunction)[0];
       if (filterName === 'dropShadow') {
         // $FlowFixMe
         const dropShadow = parseDropShadow(filterValue);
