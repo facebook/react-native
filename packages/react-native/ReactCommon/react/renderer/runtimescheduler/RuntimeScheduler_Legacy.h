@@ -93,7 +93,7 @@ class RuntimeScheduler_Legacy final : public RuntimeSchedulerBase {
    *
    * Can be called from any thread.
    */
-  bool getShouldYield() const noexcept override;
+  bool getShouldYield() noexcept override;
 
   /*
    * Returns value of currently executed task. Designed to be called from React.

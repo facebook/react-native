@@ -118,8 +118,12 @@ std::shared_ptr<Task> RuntimeScheduler_Modern::scheduleIdleTask(
   return task;
 }
 
-bool RuntimeScheduler_Modern::getShouldYield() const noexcept {
+bool RuntimeScheduler_Modern::getShouldYield() noexcept {
   std::shared_lock lock(schedulingMutex_);
+
+  if (ReactNativeFeatureFlags::enableLongTaskAPI()) {
+    markYieldingOpportunity(now_());
+  }
 
   return syncTaskRequests_ > 0 ||
       (!taskQueue_.empty() && taskQueue_.top().get() != currentTask_);
@@ -309,30 +313,35 @@ void RuntimeScheduler_Modern::runEventLoopTick(
     RuntimeSchedulerTimePoint taskStartTime) {
   SystraceSection s("RuntimeScheduler::runEventLoopTick");
 
+  ScopedShadowTreeRevisionLock revisionLock(
+      shadowTreeRevisionConsistencyManager_);
+
   currentTask_ = &task;
   currentPriority_ = task.priority;
 
-  {
-    ScopedShadowTreeRevisionLock revisionLock(
-        shadowTreeRevisionConsistencyManager_);
+  if (ReactNativeFeatureFlags::enableLongTaskAPI()) {
+    lastYieldingOpportunity_ = taskStartTime;
+    longestPeriodWithoutYieldingOpportunity_ =
+        std::chrono::milliseconds::zero();
+  }
 
-    auto didUserCallbackTimeout = task.expirationTime <= taskStartTime;
-    executeTask(runtime, task, didUserCallbackTimeout);
+  auto didUserCallbackTimeout = task.expirationTime <= taskStartTime;
+  executeTask(runtime, task, didUserCallbackTimeout);
 
-    if (ReactNativeFeatureFlags::enableMicrotasks()) {
-      // "Perform a microtask checkpoint" step.
-      performMicrotaskCheckpoint(runtime);
-    }
+  if (ReactNativeFeatureFlags::enableMicrotasks()) {
+    // "Perform a microtask checkpoint" step.
+    performMicrotaskCheckpoint(runtime);
+  }
 
-    if (ReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop()) {
-      // "Update the rendering" step.
-      updateRendering();
-    }
+  if (ReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop()) {
+    // "Update the rendering" step.
+    updateRendering();
+  }
 
-    if (ReactNativeFeatureFlags::enableLongTaskAPI()) {
-      auto taskEndTime = now_();
-      reportLongTasks(task, taskStartTime, taskEndTime);
-    }
+  if (ReactNativeFeatureFlags::enableLongTaskAPI()) {
+    auto taskEndTime = now_();
+    markYieldingOpportunity(taskEndTime);
+    reportLongTasks(task, taskStartTime, taskEndTime);
   }
 
   currentTask_ = nullptr;
@@ -428,11 +437,22 @@ void RuntimeScheduler_Modern::reportLongTasks(
     return;
   }
 
-  auto durationMs = chronoToDOMHighResTimeStamp(endTime - startTime);
-  if (durationMs >= LONG_TASK_DURATION_THRESHOLD_MS) {
+  auto checkedDurationMs =
+      chronoToDOMHighResTimeStamp(longestPeriodWithoutYieldingOpportunity_);
+  if (checkedDurationMs >= LONG_TASK_DURATION_THRESHOLD_MS) {
+    auto durationMs = chronoToDOMHighResTimeStamp(endTime - startTime);
     auto startTimeMs = chronoToDOMHighResTimeStamp(startTime);
     reporter->logLongTaskEntry(startTimeMs, durationMs);
   }
+}
+
+void RuntimeScheduler_Modern::markYieldingOpportunity(
+    RuntimeSchedulerTimePoint currentTime) {
+  auto currentPeriod = currentTime - lastYieldingOpportunity_;
+  if (currentPeriod > longestPeriodWithoutYieldingOpportunity_) {
+    longestPeriodWithoutYieldingOpportunity_ = currentPeriod;
+  }
+  lastYieldingOpportunity_ = currentTime;
 }
 
 } // namespace facebook::react

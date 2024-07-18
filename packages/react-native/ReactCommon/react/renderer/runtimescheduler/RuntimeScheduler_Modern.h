@@ -102,7 +102,7 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
    *
    * Can be called from any thread.
    */
-  bool getShouldYield() const noexcept override;
+  bool getShouldYield() noexcept override;
 
   /*
    * Returns value of currently executed task. Designed to be called from React.
@@ -157,6 +157,10 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
       taskQueue_;
 
   Task* currentTask_{};
+  RuntimeSchedulerTimePoint lastYieldingOpportunity_;
+  RuntimeSchedulerDuration longestPeriodWithoutYieldingOpportunity_{};
+
+  void markYieldingOpportunity(RuntimeSchedulerTimePoint currentTime);
 
   /**
    * This protects the access to `taskQueue_` and `isevent loopScheduled_`.

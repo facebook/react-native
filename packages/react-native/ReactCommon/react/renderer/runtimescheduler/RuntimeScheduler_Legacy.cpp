@@ -98,7 +98,7 @@ std::shared_ptr<Task> RuntimeScheduler_Legacy::scheduleIdleTask(
   return nullptr;
 }
 
-bool RuntimeScheduler_Legacy::getShouldYield() const noexcept {
+bool RuntimeScheduler_Legacy::getShouldYield() noexcept {
   return runtimeAccessRequests_ > 0;
 }
 
