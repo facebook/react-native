@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2dda5cec029bcd7bb62e428f4b4557f5>>
+ * @generated SignedSource<<3fa1a97be20aa80ef7a1e1595bee0dac>>
  */
 
 /**
@@ -81,6 +81,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableGranularShadowTreeStateReconciliation(): Boolean = accessor.enableGranularShadowTreeStateReconciliation()
+
+  /**
+   * Enables the reporting of long tasks through `PerformanceObserver`. Only works if the event loop is enabled.
+   */
+  @JvmStatic
+  public fun enableLongTaskAPI(): Boolean = accessor.enableLongTaskAPI()
 
   /**
    * Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).

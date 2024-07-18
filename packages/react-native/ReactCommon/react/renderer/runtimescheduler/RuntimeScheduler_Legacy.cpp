@@ -188,6 +188,11 @@ void RuntimeScheduler_Legacy::setShadowTreeRevisionConsistencyManager(
   shadowTreeRevisionConsistencyManager_ = shadowTreeRevisionConsistencyManager;
 }
 
+void RuntimeScheduler_Legacy::setPerformanceEntryReporter(
+    PerformanceEntryReporter* /*performanceEntryReporter*/) {
+  // No-op in the legacy scheduler
+}
+
 #pragma mark - Private
 
 void RuntimeScheduler_Legacy::scheduleWorkLoopIfNecessary() {

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<412289b5c998b3ae03d8b842704523ba>>
+ * @generated SignedSource<<7421319910b210753a1eddcf079aa151>>
  * @flow strict-local
  */
 
@@ -52,6 +52,7 @@ export type ReactNativeFeatureFlags = {
   enableAlignItemsBaselineOnFabricIOS: Getter<boolean>,
   enableCleanTextInputYogaNode: Getter<boolean>,
   enableGranularShadowTreeStateReconciliation: Getter<boolean>,
+  enableLongTaskAPI: Getter<boolean>,
   enableMicrotasks: Getter<boolean>,
   enablePropsUpdateReconciliationAndroid: Getter<boolean>,
   enableSynchronousStateUpdates: Getter<boolean>,
@@ -167,6 +168,10 @@ export const enableCleanTextInputYogaNode: Getter<boolean> = createNativeFlagGet
  * When enabled, the renderer would only fail commits when they propagate state and the last commit that updated state changed before committing.
  */
 export const enableGranularShadowTreeStateReconciliation: Getter<boolean> = createNativeFlagGetter('enableGranularShadowTreeStateReconciliation', false);
+/**
+ * Enables the reporting of long tasks through `PerformanceObserver`. Only works if the event loop is enabled.
+ */
+export const enableLongTaskAPI: Getter<boolean> = createNativeFlagGetter('enableLongTaskAPI', false);
 /**
  * Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).
  */
