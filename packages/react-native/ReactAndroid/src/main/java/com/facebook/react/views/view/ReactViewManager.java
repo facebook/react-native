@@ -64,13 +64,13 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
   }
 
   @Override
-  protected ReactViewGroup prepareToRecycleView(
+  protected @Nullable ReactViewGroup prepareToRecycleView(
       @NonNull ThemedReactContext reactContext, ReactViewGroup view) {
     // BaseViewManager
-    super.prepareToRecycleView(reactContext, view);
-
-    view.recycleView();
-
+    ReactViewGroup preparedView = super.prepareToRecycleView(reactContext, view);
+    if (preparedView != null) {
+      preparedView.recycleView();
+    }
     return view;
   }
 

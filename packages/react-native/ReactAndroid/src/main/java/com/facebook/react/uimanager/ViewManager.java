@@ -226,16 +226,20 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
     int surfaceId = themedReactContext.getSurfaceId();
     @Nullable Stack<T> recyclableViews = getRecyclableViewStack(surfaceId);
     if (recyclableViews != null) {
-      recyclableViews.push(prepareToRecycleView(themedReactContext, view));
+      T recyclableView = prepareToRecycleView(themedReactContext, view);
+      if (recyclableView != null) {
+        recyclableViews.push(recyclableView);
+      }
     }
   }
 
   /**
    * Called when a View is removed from the hierarchy. This should be used to reset any properties.
+   *
+   * @return {@code view} if it was properly recycled, or {@code null} if it could not be recycled
    */
-  protected T prepareToRecycleView(@NonNull ThemedReactContext reactContext, @NonNull T view) {
-    return view;
-  }
+  protected abstract @Nullable T prepareToRecycleView(
+      @NonNull ThemedReactContext reactContext, @NonNull T view);
 
   /** Called when a View is going to be reused. */
   protected T recycleView(@NonNull ThemedReactContext reactContext, @NonNull T view) {

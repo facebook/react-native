@@ -110,6 +110,8 @@ class ReactPropForShadowNodeSpecTest {
 
       override fun createViewInstance(reactContext: ThemedReactContext): View = View(null)
 
+      override fun prepareToRecycleView(reactContext: ThemedReactContext, view: View): View? = null
+
       override fun updateExtraData(root: View, extraData: Any?) = Unit
     }
   }
