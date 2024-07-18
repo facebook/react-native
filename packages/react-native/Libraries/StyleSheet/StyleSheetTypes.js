@@ -34,25 +34,6 @@ export type EdgeInsetsValue = {
   bottom: number,
 };
 
-export type FilterPrimitive =
-  | {brightness: number | string}
-  | {blur: number | string}
-  | {contrast: number | string}
-  | {grayscale: number | string}
-  | {'hue-rotate': number | string}
-  | {invert: number | string}
-  | {opacity: number | string}
-  | {saturate: number | string}
-  | {sepia: number | string}
-  | {'drop-shadow': DropShadowPrimitive | string};
-
-export type DropShadowPrimitive = {
-  offsetX: number | string,
-  offsetY: number | string,
-  standardDeviation?: number | string,
-  color?: ____ColorValue_Internal | number,
-};
-
 export type DimensionValue = number | string | 'auto' | AnimatedNode | null;
 export type AnimatableNumericValue = number | AnimatedNode;
 
@@ -709,11 +690,35 @@ export type ____ShadowStyle_Internal = $ReadOnly<{
   ...____ShadowStyle_InternalOverrides,
 }>;
 
-type ____FilterStyle_Internal = $ReadOnly<{
-  experimental_filter?: $ReadOnlyArray<FilterPrimitive>,
-}>;
+export type FilterPrimitive =
+  | {brightness: number | string}
+  | {blur: number | string}
+  | {contrast: number | string}
+  | {grayscale: number | string}
+  | {'hue-rotate': number | string}
+  | {invert: number | string}
+  | {opacity: number | string}
+  | {saturate: number | string}
+  | {sepia: number | string}
+  | {'drop-shadow': DropShadowPrimitive | string};
 
-export type ____MixBlendMode_Internal =
+export type DropShadowPrimitive = {
+  offsetX: number | string,
+  offsetY: number | string,
+  standardDeviation?: number | string,
+  color?: ____ColorValue_Internal,
+};
+
+export type BoxShadowPrimitive = {
+  offsetX: number | string,
+  offsetY: number | string,
+  color?: ____ColorValue_Internal,
+  blurRadius?: number | string,
+  spreadDistance?: number | string,
+  inset?: boolean,
+};
+
+type ____BlendMode_Internal =
   | 'normal'
   | 'multiply'
   | 'screen'
@@ -735,8 +740,6 @@ export type ____ViewStyle_InternalCore = $ReadOnly<{
   ...$Exact<____LayoutStyle_Internal>,
   ...$Exact<____ShadowStyle_Internal>,
   ...$Exact<____TransformStyle_Internal>,
-  ...____FilterStyle_Internal,
-  experimental_mixBlendMode?: ____MixBlendMode_Internal,
   backfaceVisibility?: 'visible' | 'hidden',
   backgroundColor?: ____ColorValue_Internal,
   borderColor?: ____ColorValue_Internal,
@@ -775,6 +778,9 @@ export type ____ViewStyle_InternalCore = $ReadOnly<{
   elevation?: number,
   pointerEvents?: 'auto' | 'none' | 'box-none' | 'box-only',
   cursor?: CursorValue,
+  experimental_boxShadow?: $ReadOnlyArray<BoxShadowPrimitive>,
+  experimental_filter?: $ReadOnlyArray<FilterPrimitive>,
+  experimental_mixBlendMode?: ____BlendMode_Internal,
 }>;
 
 export type ____ViewStyle_Internal = $ReadOnly<{
