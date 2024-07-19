@@ -62,9 +62,6 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
           borderRadius: true,
           nestedScrollEnabled: true,
           scrollEventThrottle: true,
-          scrollIndicatorInsets: {
-            diff: require('../../Utilities/differ/insetsDiffer'),
-          },
           borderStyle: true,
           borderRightColor: {
             process: require('../../StyleSheet/processColor').default,
