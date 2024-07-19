@@ -1,0 +1,16 @@
+name: Update node modules cache
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  update_node_modules_cache:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install yarn dependencies and update cache
+        uses: ./.github/actions/yarn-install-with-cache
+        with:
+          update-cache: "true"

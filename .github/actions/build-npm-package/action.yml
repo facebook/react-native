@@ -103,8 +103,7 @@ runs:
     - name: Setup gradle
       uses: ./.github/actions/setup-gradle
     - name: Install dependencies
-      shell: bash
-      run: yarn install --non-interactive
+      uses: ./.github/actions/yarn-install-with-cache
     - name: Build packages
       shell: bash
       run: yarn build

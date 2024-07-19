@@ -69,8 +69,7 @@ runs:
 
     - name: Yarn- Install Dependencies
       if: ${{ steps.meaningful-cache.outputs.HERMES_CACHED != 'true' }}
-      shell: bash
-      run: yarn install --non-interactive
+      uses: ./.github/actions/yarn-install-with-cache
 
     - name: Download Hermes tarball
       if: ${{ steps.meaningful-cache.outputs.HERMES_CACHED != 'true' }}

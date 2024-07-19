@@ -13,8 +13,7 @@ runs:
       with:
         node-version: ${{ inputs.node-version }}
     - name: Yarn install
-      shell: bash
-      run: yarn install --non-interactive
+      uses: ./.github/actions/yarn-install-with-cache
     - name: Run Tests - JavaScript Tests
       shell: bash
       run: node ./scripts/run-ci-javascript-tests.js --maxWorkers 2
