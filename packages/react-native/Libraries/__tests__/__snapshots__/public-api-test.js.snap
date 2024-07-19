@@ -8875,7 +8875,7 @@ exports[`public API should not change unintentionally Libraries/StyleSheet/proce
   inset?: boolean,
 };
 declare export default function processBoxShadow(
-  rawBoxShadows: $ReadOnlyArray<BoxShadowPrimitive> | string
+  rawBoxShadows: ?($ReadOnlyArray<BoxShadowPrimitive> | string)
 ): Array<ParsedBoxShadow>;
 "
 `;
@@ -8916,7 +8916,7 @@ type ParsedDropShadow = {
   color?: ColorValue,
 };
 declare export default function processFilter(
-  filter: $ReadOnlyArray<FilterFunction> | string
+  filter: ?($ReadOnlyArray<FilterFunction> | string)
 ): $ReadOnlyArray<ParsedFilter>;
 "
 `;

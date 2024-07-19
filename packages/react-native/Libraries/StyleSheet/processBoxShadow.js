@@ -24,9 +24,12 @@ export type ParsedBoxShadow = {
 };
 
 export default function processBoxShadow(
-  rawBoxShadows: $ReadOnlyArray<BoxShadowPrimitive> | string,
+  rawBoxShadows: ?($ReadOnlyArray<BoxShadowPrimitive> | string),
 ): Array<ParsedBoxShadow> {
   const result: Array<ParsedBoxShadow> = [];
+  if (rawBoxShadows == null) {
+    return result;
+  }
 
   const boxShadowList =
     typeof rawBoxShadows === 'string'
