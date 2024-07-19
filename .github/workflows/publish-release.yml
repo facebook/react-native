@@ -181,7 +181,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4.1.1
       - name: Build and Publish NPM PAckage
-        uses: ./.actions//build-npm-package
+        uses: ./.github/actions/build-npm-package
         with:
           hermes-ws-dir: ${{ env.HERMES_WS_DIR }}
           release-type: ${{ needs.set_release_type.outputs.RELEASE_TYPE }}

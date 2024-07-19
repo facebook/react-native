@@ -1,11 +1,10 @@
 name: Nightly
 
 on:
-    workflow_dispatch:
-    # nightly build @ 2:15 AM UTC
-    schedule:
-     - cron: '15 2 * * *'
-
+  workflow_dispatch:
+  # nightly build @ 2:15 AM UTC
+  schedule:
+    - cron: "15 2 * * *"
 
 jobs:
   set_release_type:
@@ -157,12 +156,20 @@ jobs:
 
   build_npm_package:
     runs-on: 8-core-ubuntu
-    needs: [set_release_type, prepare_hermes_workspace, build_hermes_macos, build_hermesc_linux, build_hermesc_windows,build_android]
+    needs:
+      [
+        set_release_type,
+        prepare_hermes_workspace,
+        build_hermes_macos,
+        build_hermesc_linux,
+        build_hermesc_windows,
+        build_android,
+      ]
     container:
       image: reactnativecommunity/react-native-android:latest
       env:
         TERM: "dumb"
-        GRADLE_OPTS: '-Dorg.gradle.daemon=false'
+        GRADLE_OPTS: "-Dorg.gradle.daemon=false"
         # By default we only build ARM64 to save time/resources. For release/nightlies/prealpha, we override this value to build all archs.
         ORG_GRADLE_PROJECT_reactNativeArchitectures: "arm64-v8a"
     env:
@@ -176,7 +183,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4.1.1
       - name: Build and Publish NPM PAckage
-        uses: ./.actions/build-npm-package
+        uses: ./.github/actions/build-npm-package
         with:
           hermes-ws-dir: ${{ env.HERMES_WS_DIR }}
           release-type: ${{ needs.set_release_type.outputs.RELEASE_TYPE }}
