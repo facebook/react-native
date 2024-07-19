@@ -110,6 +110,7 @@ describe('View compat with web', () => {
           ]
         }
         accessibilityLiveRegion="polite"
+        accessibilitySetSize={5}
         accessibilityState={
           Object {
             "busy": true,
@@ -157,7 +158,6 @@ describe('View compat with web', () => {
         aria-rowcount={5}
         aria-rowindex={3}
         aria-rowspan={3}
-        aria-setsize={5}
         aria-sort="ascending"
         importantForAccessibility="no-hide-descendants"
         role="main"

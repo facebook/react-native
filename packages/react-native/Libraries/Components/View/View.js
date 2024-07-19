@@ -33,6 +33,7 @@ const View: React.AbstractComponent<
       accessibilityLabel,
       accessibilityLabelledBy,
       accessibilityLiveRegion,
+      accessibilitySetSize,
       accessibilityState,
       accessibilityValue,
       'aria-busy': ariaBusy,
@@ -44,6 +45,7 @@ const View: React.AbstractComponent<
       'aria-labelledby': ariaLabelledBy,
       'aria-live': ariaLive,
       'aria-selected': ariaSelected,
+      'aria-setsize': ariaSetSize,
       'aria-valuemax': ariaValueMax,
       'aria-valuemin': ariaValueMin,
       'aria-valuenow': ariaValueNow,
@@ -102,6 +104,7 @@ const View: React.AbstractComponent<
         }
         accessibilityLabel={ariaLabel ?? accessibilityLabel}
         focusable={tabIndex !== undefined ? !tabIndex : focusable}
+        accessibilitySetSize={ariaSetSize ?? accessibilitySetSize}
         accessibilityState={_accessibilityState}
         accessibilityElementsHidden={ariaHidden ?? accessibilityElementsHidden}
         accessibilityLabelledBy={_accessibilityLabelledBy}
