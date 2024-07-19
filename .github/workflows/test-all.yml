@@ -40,7 +40,7 @@ jobs:
       hermes-version: ${{ steps.prepare-hermes-workspace.outputs.hermes-version }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4
       - name: Prepare Hermes Workspace
         id: prepare-hermes-workspace
         uses: ./.github/actions/prepare-hermes-workspace
@@ -55,7 +55,7 @@ jobs:
       HERMES_WS_DIR: /tmp/hermes
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4
       - name: Build HermesC Apple
         uses: ./.github/actions/build-hermesc-apple
         with:
@@ -79,7 +79,7 @@ jobs:
         slice: [macosx, iphoneos, iphonesimulator, catalyst, xros, xrsimulator]
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4
       - name: Build Slice
         uses: ./.github/actions/build-apple-slices-hermes
         with:
@@ -101,7 +101,7 @@ jobs:
         flavor: [Debug, Release]
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4
       - name: Build Hermes MacOS
         uses: ./.github/actions/build-hermes-macos
         with:
@@ -118,7 +118,7 @@ jobs:
       HERMES_TARBALL_ARTIFACTS_DIR: /tmp/hermes/hermes-runtime-darwin
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4
       - name: Run it
         uses: ./.github/actions/test-ios-rntester
         with:
@@ -140,7 +140,7 @@ jobs:
         jsengine: [Hermes, JSC]
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4
       - name: Run it
         uses: ./.github/actions/test-ios-rntester
         with:
@@ -164,7 +164,7 @@ jobs:
         architecture: [NewArch, OldArch]
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4
       - name: Run it
         uses: ./.github/actions/test-ios-rntester
         with:
@@ -183,7 +183,7 @@ jobs:
       HERMES_TARBALL_ARTIFACTS_DIR: /tmp/hermes/hermes-runtime-darwin
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4
       - name: Build HermesC Linux
         uses: ./.github/actions/build-hermesc-linux
         with:
@@ -202,7 +202,7 @@ jobs:
       CMAKE_DIR: 'C:\Program Files\CMake\bin'
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4
       - name: Build HermesC Windows
         uses: ./.github/actions/build-hermesc-windows
         with:
@@ -221,7 +221,7 @@ jobs:
         ORG_GRADLE_PROJECT_SIGNING_KEY: ${{ secrets.ORG_GRADLE_PROJECT_SIGNING_KEY }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4
       - name: Build Android
         uses: ./.github/actions/build-android
         with:
@@ -247,13 +247,12 @@ jobs:
       HERMES_WS_DIR: /tmp/hermes
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4
       - name: Build NPM Package
         uses: ./.github/actions/build-npm-package
         with:
           hermes-ws-dir: ${{ env.HERMES_WS_DIR }}
           release-type: ${{ needs.set_release_type.outputs.RELEASE_TYPE }}
-
 
   test_android_helloworld:
     runs-on: 4-core-ubuntu
@@ -277,7 +276,7 @@ jobs:
         jsengine: [Hermes, JSC]
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4
       - name: Setup git safe folders
         run: git config --global --add safe.directory '*'
       - name: Cache setup
@@ -347,7 +346,7 @@ jobs:
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4
       - uses: ./.github/actions/test-ios-helloworld
         with:
           ruby-version: 3.2.0
@@ -375,7 +374,7 @@ jobs:
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4
       - uses: ./.github/actions/test-ios-helloworld
         with:
           flavor: ${{ matrix.flavor }}
@@ -392,7 +391,7 @@ jobs:
         node-version: ["20", "18"]
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4
       - name: Test JS
         uses: ./.github/actions/test-js
         with:
@@ -404,7 +403,7 @@ jobs:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4
       - name: Run all the Linters
         uses: ./.github/actions/lint
         with:
