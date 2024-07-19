@@ -13,7 +13,7 @@ runs:
     - name: Restore Hermes workspace
       uses: ./.github/actions/restore-hermes-workspace
     - name: Hermes apple cache
-      uses: actions/cache/restore@v4.0.0
+      uses: actions/cache/restore@v4
       with:
         path: ./packages/react-native/sdks/hermes/build_host_hermesc
         key: v2-hermesc-apple-${{ inputs.hermes-version }}-${{ inputs.react-native-version }}
@@ -29,7 +29,7 @@ runs:
         name: hermesc-apple
         path: ./packages/react-native/sdks/hermes/build_host_hermesc
     - name: Cache hermesc apple
-      uses: actions/cache/save@v4.0.0
+      uses: actions/cache/save@v4
       if: ${{ github.ref == 'refs/heads/main' || contains(github.ref, '-stable') }} # To avoid that the cache explode.
       with:
         path: ./packages/react-native/sdks/hermes/build_host_hermesc

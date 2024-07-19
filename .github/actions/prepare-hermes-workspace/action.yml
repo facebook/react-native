@@ -48,7 +48,7 @@ runs:
 
     - name: Cache hermes workspace
       id: restore-hermes
-      uses: actions/cache/restore@v4.0.0
+      uses: actions/cache/restore@v4
       with:
         path: |
           /tmp/hermes/download/
@@ -91,7 +91,7 @@ runs:
           /tmp/hermes/hermes/
 
     - name: Cache hermes workspace
-      uses: actions/cache/save@v4.0.0
+      uses: actions/cache/save@v4
       if: ${{ github.ref == 'refs/heads/main' }} # To avoid that the cache explode.
       with:
         path: |

@@ -14,6 +14,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Use Node.js 18
-        uses: actions/setup-node@v4.0.0
+        uses: actions/setup-node@v4
       - name: Trim the cache
         run: node scripts/clean-gha-cache.js

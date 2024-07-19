@@ -23,7 +23,7 @@ runs:
         cp -r -Force D:\tmp\hermes\hermes\* .\packages\react-native\sdks\hermes\.
         cp -r -Force .\packages\react-native\sdks\hermes-engine\utils\* .\packages\react-native\sdks\hermes\.
     - name: Windows cache
-      uses: actions/cache@v4.0.0
+      uses: actions/cache@v4
       with:
         key: v2-hermes-${{ github.job }}-windows-${{ inputs.hermes-version }}-${{ inputs.react-native-version }}
         path: |
