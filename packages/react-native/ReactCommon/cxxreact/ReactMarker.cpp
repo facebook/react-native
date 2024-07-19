@@ -16,7 +16,6 @@ namespace ReactMarker {
 #pragma clang diagnostic ignored "-Wglobal-constructors"
 #endif
 
-LogTaggedMarker logTaggedMarkerImpl = nullptr;
 LogTaggedMarker logTaggedMarkerBridgelessImpl = nullptr;
 
 #if __clang__

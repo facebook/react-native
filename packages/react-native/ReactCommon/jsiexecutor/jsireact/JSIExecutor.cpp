@@ -140,7 +140,7 @@ void JSIExecutor::initializeRuntime() {
     runtimeInstaller_(*runtime_);
   }
 
-  bool hasLogger(ReactMarker::logTaggedMarkerImpl);
+  bool hasLogger(ReactMarker::getLogTaggedMarkerImpl());
   if (hasLogger) {
     ReactMarker::logMarker(ReactMarker::CREATE_REACT_CONTEXT_STOP);
   }
@@ -151,7 +151,7 @@ void JSIExecutor::loadBundle(
     std::string sourceURL) {
   SystraceSection s("JSIExecutor::loadBundle");
 
-  bool hasLogger(ReactMarker::logTaggedMarkerImpl);
+  bool hasLogger(ReactMarker::getLogTaggedMarkerImpl());
   std::string scriptName = simpleBasename(sourceURL);
   if (hasLogger) {
     ReactMarker::logTaggedMarker(

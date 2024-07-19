@@ -67,7 +67,7 @@ void JSINativeModules::reset() {
 std::optional<Object> JSINativeModules::createModule(
     Runtime& rt,
     const std::string& name) {
-  bool hasLogger(ReactMarker::logTaggedMarkerImpl);
+  bool hasLogger(ReactMarker::getLogTaggedMarkerImpl());
   if (hasLogger) {
     ReactMarker::logTaggedMarker(
         ReactMarker::NATIVE_MODULE_SETUP_START, name.c_str());

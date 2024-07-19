@@ -163,10 +163,11 @@ static void mapReactMarkerToPerformanceLogger(
 static void registerPerformanceLoggerHooks(RCTPerformanceLogger *performanceLogger)
 {
   __weak RCTPerformanceLogger *weakPerformanceLogger = performanceLogger;
-  ReactMarker::logTaggedMarkerImpl = [weakPerformanceLogger](
+  ReactMarker::LogTaggedMarker newMarker = [weakPerformanceLogger](
                                          const ReactMarker::ReactMarkerId markerId, const char *tag) {
     mapReactMarkerToPerformanceLogger(markerId, weakPerformanceLogger, tag);
   };
+  ReactMarker::setLogTaggedMarkerImpl(newMarker);
 }
 
 @interface RCTCxxBridge () <RCTModuleDataCallInvokerProvider>
