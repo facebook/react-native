@@ -66,12 +66,12 @@ async function main() {
   should not be committed.
 
   Options:
-    --projectName             The name of the new React Native project (only for init).
-    --currentBranch           The current branch to checkout (only for init).
-    --directory               The absolute path to the target project directory (only for init).
+    --projectName             The name of the new React Native project.
+    --currentBranch           The current branch to checkout.
+    --directory               The absolute path to the target project directory.
     --pathToLocalReactNative  The absolute path to the local react-native package.
     --verbose                 Print additional output. Default: false.
-    --useHelloWorld           Use the hello-world package instead of the init command
+    --useHelloWorld           Use the hello-world package instead of the init command. Default: false
     `);
     return;
   }
@@ -85,13 +85,13 @@ async function main() {
 
 async function initNewProjectFromSource(
   {
-    projectName = null,
-    directory = null,
-    currentBranch = null,
+    projectName,
+    directory,
+    currentBranch,
     pathToLocalReactNative,
     verbose = false,
     useHelloWorld = false,
-  } /*: {projectName?: ?string, directory?: ?string, currentBranch?: ?string, pathToLocalReactNative: string, verbose?: boolean, useHelloWorld?: boolean} */,
+  } /*: {projectName: string, directory: string, currentBranch: string, pathToLocalReactNative: string, verbose?: boolean, useHelloWorld?: boolean} */,
 ) {
   console.log('Starting local npm proxy (Verdaccio)');
   const verdaccioPid = setupVerdaccio();
@@ -137,23 +137,6 @@ async function initNewProjectFromSource(
       _prepareHelloWorld(version, pathToLocalReactNative);
       directory = path.join(PACKAGES_DIR, 'helloworld');
     } else {
-      if (!directory) {
-        throw new Error(
-          'Please provide a directory where project needs to be created',
-        );
-      }
-
-      if (!currentBranch) {
-        throw new Error(
-          'Please provide the current branch (e.g. `0.75-stable`), it is needed to init a new project from the /template repository',
-        );
-      }
-      if (!projectName) {
-        throw new Error(
-          'Please provide the project name (e.g. `MyAwesomeProject`), it is needed to init a new project',
-        );
-      }
-
       const pathToTemplate = _prepareTemplate(
         version,
         pathToLocalReactNative,
@@ -188,7 +171,7 @@ async function initNewProjectFromSource(
   } finally {
     console.log(`Cleanup: Killing Verdaccio process (PID: ${verdaccioPid})`);
     try {
-      execSync(`kill -9 ${verdaccioPid}`);
+      execSync(`kill ${verdaccioPid} || kill -9 ${verdaccioPid}`);
       execSync('killall verdaccio');
       console.log('Done ✅');
     } catch {
@@ -233,12 +216,12 @@ function _prepareHelloWorld(
 
   // and update the dependencies and devDependencies of packages scoped as @react-native
   // to the version passed as parameter
-  for (const [key] of Object.entries(packageJson.dependencies)) {
+  for (const key of Object.keys(packageJson.dependencies)) {
     if (key.startsWith('@react-native')) {
       packageJson.dependencies[key] = version;
     }
   }
-  for (const [key] of Object.entries(packageJson.devDependencies)) {
+  for (const key of Object.keys(packageJson.devDependencies)) {
     if (key.startsWith('@react-native')) {
       packageJson.devDependencies[key] = version;
     }
@@ -276,13 +259,13 @@ function _prepareTemplate(
 
   // and update the dependencies and devDependencies of packages scoped as @react-native
   // to the version passed as parameter
-  for (const [key] of Object.entries(packageJson.dependencies)) {
+  for (const key of Object.keys(packageJson.dependencies)) {
     if (key.startsWith('@react-native')) {
       packageJson.dependencies[key] = version;
     }
   }
 
-  for (const [key] of Object.entries(packageJson.devDependencies)) {
+  for (const key of Object.keys(packageJson.devDependencies)) {
     if (key.startsWith('@react-native')) {
       packageJson.devDependencies[key] = version;
     }
