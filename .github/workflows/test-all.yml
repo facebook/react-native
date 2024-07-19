@@ -291,9 +291,8 @@ jobs:
           path: /tmp/maven-local
       - name: Setup gradle
         uses: ./.github/actions/setup-gradle
-      - name: Run yarn
-        shell: bash
-        run: yarn install --non-interactive
+      - name: Run yarn install
+        uses: ./.github/actions/yarn-install-with-cache
       - name: Prepare the Helloworld application
         shell: bash
         run: node ./scripts/e2e/init-project-e2e.js --useHelloWorld --pathToLocalReactNative "$GITHUB_WORKSPACE/build/$(cat build/react-native-package-version)"

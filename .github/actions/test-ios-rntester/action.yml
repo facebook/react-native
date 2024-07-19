@@ -37,8 +37,7 @@ runs:
     - name: Setup node.js
       uses: ./.github/actions/setup-node
     - name: Run yarn
-      shell: bash
-      run: yarn install --non-interactive
+      uses: ./.github/actions/yarn-install-with-cache
     - name: Download Hermes
       uses: actions/download-artifact@v4
       with:
