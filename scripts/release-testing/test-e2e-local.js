@@ -18,7 +18,7 @@
  */
 
 const {REPO_ROOT} = require('../consts');
-const {initNewProjectFromSource} = require('../e2e/init-template-e2e');
+const {initNewProjectFromSource} = require('../e2e/init-project-e2e');
 const {
   checkPackagerRunning,
   launchPackagerInSeparateWindow,
@@ -27,7 +27,6 @@ const {
   setupGHAArtifacts,
 } = require('./utils/testing-utils');
 const chalk = require('chalk');
-const debug = require('debug')('test-e2e-local');
 const fs = require('fs');
 const path = require('path');
 const {cd, exec, popd, pushd, pwd, sed} = require('shelljs');
@@ -271,7 +270,7 @@ async function testRNTestProject(
     }
   }
 
-  const currentBranch = exec(`git rev-parse --abbrev-ref HEAD`)
+  const currentBranch = exec('git rev-parse --abbrev-ref HEAD')
     .toString()
     .trim();
 

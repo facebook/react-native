@@ -14,7 +14,7 @@
 /*:: import type {ProjectInfo} from '../utils/monorepo'; */
 
 const {retry} = require('../circleci/retry');
-const {REPO_ROOT} = require('../consts');
+const {PACKAGES_DIR, REPO_ROOT} = require('../consts');
 const {getPackages} = require('../utils/monorepo');
 const {
   VERDACCIO_SERVER_URL,
@@ -24,16 +24,18 @@ const {
 const {parseArgs} = require('@pkgjs/parseargs');
 const chalk = require('chalk');
 const {execSync} = require('child_process');
-const {popd, pushd} = require('shelljs');
 const fs = require('fs');
 const path = require('path');
+const {popd, pushd} = require('shelljs');
 
 const config = {
   options: {
     projectName: {type: 'string'},
     directory: {type: 'string'},
     currentBranch: {type: 'string'},
+    pathToLocalReactNative: {type: 'string'},
     verbose: {type: 'boolean', default: false},
+    useHelloWorld: {type: 'boolean', default: false},
     help: {type: 'boolean'},
   },
 };
@@ -45,16 +47,20 @@ async function main() {
 
   if (help) {
     console.log(`
-  Usage: node ./scripts/e2e/init-template-e2e.js [OPTIONS]
+  Usage: node ./scripts/e2e/init-project-e2e.js [OPTIONS]
 
-  Bootstraps and runs \`react-native init\`, using the currently checked out
+  Bootstraps a React Native project, using the currently checked out
   repository as the source of truth for the react-native package and
   dependencies.
 
   - Configures and starts a local npm proxy (Verdaccio).
   - Builds and publishes all in-repo dependencies to the local npm proxy.
-  - Runs \`react-native init\` with the local npm proxy configured.
+  - Runs either \`react-native init\` or uses packages/hello-world/ with the local
+    npm proxy configured.
   - Does NOT install CocoaPods dependencies.
+
+  This script works with either "npx @react-native-community/cli init" or
+  by preparing the packages/hello-world/ app to be built.
 
   Note: This script will mutate the contents of some package files, which
   should not be committed.
@@ -65,6 +71,7 @@ async function main() {
     --directory               The absolute path to the target project directory.
     --pathToLocalReactNative  The absolute path to the local react-native package.
     --verbose                 Print additional output. Default: false.
+    --useHelloWorld           Use the hello-world package instead of the init command. Default: false
     `);
     return;
   }
@@ -81,9 +88,10 @@ async function initNewProjectFromSource(
     projectName,
     directory,
     currentBranch,
-    pathToLocalReactNative = null,
+    pathToLocalReactNative,
     verbose = false,
-  } /*: {projectName: string, directory: string, currentBranch: string, pathToLocalReactNative?: ?string, verbose?: boolean} */,
+    useHelloWorld = false,
+  } /*: {projectName: string, directory: string, currentBranch: string, pathToLocalReactNative: string, verbose?: boolean, useHelloWorld?: boolean} */,
 ) {
   console.log('Starting local npm proxy (Verdaccio)');
   const verdaccioPid = setupVerdaccio();
@@ -124,26 +132,34 @@ async function initNewProjectFromSource(
     }
     console.log('\nDone ✅');
 
-    const pathToTemplate = _prepareTemplate(
-      version,
-      pathToLocalReactNative,
-      currentBranch,
-    );
+    if (useHelloWorld) {
+      console.log('Preparing packages/helloworld/ to be built');
+      _prepareHelloWorld(version, pathToLocalReactNative);
+      directory = path.join(PACKAGES_DIR, 'helloworld');
+    } else {
+      const pathToTemplate = _prepareTemplate(
+        version,
+        pathToLocalReactNative,
+        currentBranch,
+      );
 
-    console.log('Running react-native init without install');
-    execSync(
-      `npx @react-native-community/cli@next init ${projectName} \
-        --directory ${directory} \
-        --template file://${pathToTemplate} \
-        --verbose \
-        --pm npm \
-        --skip-install`,
-      {
-        // Avoid loading packages/react-native/react-native.config.js
-        cwd: REPO_ROOT,
-        stdio: 'inherit',
-      },
-    );
+      console.log(
+        'Running @react-native-community/cli@next init without install',
+      );
+      execSync(
+        `npx @react-native-community/cli@next init ${projectName} \
+          --directory ${directory} \
+          --template file://${pathToTemplate} \
+          --verbose \
+          --pm npm \
+          --skip-install`,
+        {
+          // Avoid loading packages/react-native/react-native.config.js
+          cwd: REPO_ROOT,
+          stdio: 'inherit',
+        },
+      );
+    }
     console.log('\nDone ✅');
 
     console.log('Installing project dependencies');
@@ -155,7 +171,8 @@ async function initNewProjectFromSource(
   } finally {
     console.log(`Cleanup: Killing Verdaccio process (PID: ${verdaccioPid})`);
     try {
-      execSync(`kill -9 ${verdaccioPid}`);
+      execSync(`kill ${verdaccioPid} || kill -9 ${verdaccioPid}`);
+      execSync('killall verdaccio');
       console.log('Done ✅');
     } catch {
       console.warn('Failed to kill Verdaccio process');
@@ -173,6 +190,9 @@ async function installProjectUsingProxy(cwd /*: string */) {
   };
 
   // TODO(huntie): Review pre-existing retry limit
+  console.log(
+    `Running 'npm install --registry ${VERDACCIO_SERVER_URL}' inside ${cwd}`,
+  );
   const success = await retry('npm', execOptions, 3, 500, [
     'install',
     '--registry',
@@ -184,35 +204,34 @@ async function installProjectUsingProxy(cwd /*: string */) {
   }
 }
 
-function _updateScopedPackages(
-  packages /*: ProjectInfo */,
-  directory /*: string */,
+function _prepareHelloWorld(
   version /*: string */,
+  pathToLocalReactNative /*: ?string*/,
 ) {
-  console.log(
-    'Updating the scoped packagesto match the version published in Verdaccio',
+  const helloworldDir = path.join(PACKAGES_DIR, 'helloworld');
+  const helloworldPackageJson = path.join(helloworldDir, 'package.json');
+  const packageJson = JSON.parse(
+    fs.readFileSync(helloworldPackageJson, 'utf8'),
   );
 
-  // Update scoped packages which starts with @react-native
-  const appPackageJsonPath = path.join(directory, 'package.json');
-  const appPackageJson = JSON.parse(
-    fs.readFileSync(appPackageJsonPath, 'utf8'),
-  );
-
-  for (const key of Object.keys(appPackageJson.dependencies)) {
+  // and update the dependencies and devDependencies of packages scoped as @react-native
+  // to the version passed as parameter
+  for (const key of Object.keys(packageJson.dependencies)) {
     if (key.startsWith('@react-native')) {
-      appPackageJson.dependencies[key] = version;
+      packageJson.dependencies[key] = version;
     }
   }
-  for (const key of Object.keys(appPackageJson.devDependencies)) {
+  for (const key of Object.keys(packageJson.devDependencies)) {
     if (key.startsWith('@react-native')) {
-      appPackageJson.devDependencies[key] = version;
+      packageJson.devDependencies[key] = version;
     }
   }
+  if (pathToLocalReactNative != null) {
+    packageJson.dependencies['react-native'] = `file:${pathToLocalReactNative}`;
+  }
 
-  fs.writeFileSync(appPackageJsonPath, JSON.stringify(appPackageJson, null, 2));
-
-  console.log('Done ✅');
+  // write the package.json to disk
+  fs.writeFileSync(helloworldPackageJson, JSON.stringify(packageJson, null, 2));
 }
 
 function _prepareTemplate(
@@ -224,8 +243,6 @@ function _prepareTemplate(
 
   const templateCloneBaseFolder = '/tmp/react-native-tmp/template';
   execSync(`rm -rf ${templateCloneBaseFolder}`);
-
-  const templateCloneFolder = path.join(templateCloneBaseFolder, 'template');
 
   execSync(
     `git clone https://github.com/react-native-community/template ${templateCloneBaseFolder}`,
@@ -242,13 +259,13 @@ function _prepareTemplate(
 
   // and update the dependencies and devDependencies of packages scoped as @react-native
   // to the version passed as parameter
-  for (const [key, _] of Object.entries(packageJson.dependencies)) {
+  for (const key of Object.keys(packageJson.dependencies)) {
     if (key.startsWith('@react-native')) {
       packageJson.dependencies[key] = version;
     }
   }
 
-  for (const [key, _] of Object.entries(packageJson.devDependencies)) {
+  for (const key of Object.keys(packageJson.devDependencies)) {
     if (key.startsWith('@react-native')) {
       packageJson.devDependencies[key] = version;
     }
@@ -262,7 +279,7 @@ function _prepareTemplate(
   fs.writeFileSync('package.json', JSON.stringify(packageJson, null, 2));
 
   popd();
-  const templateTgz = execSync(`npm pack`).toString().trim();
+  const templateTgz = execSync('npm pack').toString().trim();
 
   popd();
 

@@ -36,7 +36,8 @@
   },
   "workspaces": [
     "packages/*",
-    "tools/*"
+    "tools/*",
+    "!packages/helloworld"
   ],
   "devDependencies": {
     "@babel/core": "^7.20.0",
