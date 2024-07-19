@@ -273,7 +273,6 @@ export type BlendMode =
   | 'color'
   | 'luminosity';
 
-
 export type BackgroundImagePrimitive = {
   type: 'linearGradient';
   start: {x: number; y: number};
