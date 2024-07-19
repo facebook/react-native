@@ -287,6 +287,16 @@ void PerformanceEntryReporter::logEventEntry(
        .interactionId = interactionId});
 }
 
+void PerformanceEntryReporter::logLongTaskEntry(
+    DOMHighResTimeStamp startTime,
+    DOMHighResTimeStamp duration) {
+  logEntry(
+      {.name = std::string{"self"},
+       .entryType = PerformanceEntryType::LONGTASK,
+       .startTime = startTime,
+       .duration = duration});
+}
+
 void PerformanceEntryReporter::scheduleFlushBuffer() {
   if (callback_) {
     callback_();

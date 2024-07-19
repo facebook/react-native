@@ -37,6 +37,10 @@ class ReactPropConstantsTest {
       error("This method should not be executed as a part of this test")
     }
 
+    override fun prepareToRecycleView(reactContext: ThemedReactContext, view: View): View? {
+      error("This method should not be executed as a part of this test")
+    }
+
     override fun getShadowNodeClass(): Class<out ReactShadowNode<*>> {
       return ReactShadowNode::class.java
     }

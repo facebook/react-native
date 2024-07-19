@@ -10,7 +10,7 @@
 
 import * as React from 'react';
 
-const {create, update, unmount} = require('../../../jest/renderer');
+const {create, unmount, update} = require('../../../jest/renderer');
 const {PlatformColor} = require('../../StyleSheet/PlatformColorValueTypes');
 let Animated = require('../Animated').default;
 const AnimatedProps = require('../nodes/AnimatedProps').default;

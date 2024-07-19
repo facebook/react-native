@@ -166,20 +166,18 @@ class LoadNetworkResourceDelegate {
    * Called by NetworkIOAgent on handling a
    * `Network.loadNetworkResource` CDP request. Platform implementations should
    * override this to perform a network request of the given URL, and use
-   * listener's callbacks (on any thread) on receipt of headers, data chunks,
+   * listener's callbacks (via the executor) on receipt of headers, data chunks,
    * and errors.
    *
    * \param params A LoadNetworkResourceRequest, including the url.
-   * \param listener The listener to call on headers, data chunks, and errors.
-   * Implementations must ensure that they retain a shared_ptr to listener for
-   * as long as its callbacks may be called, and should release it once the
-   * network request is complete or cancelled. Implementations *should* call
-   * listener->setCancelFunction() to provide a lambda that can be called to
-   * abort any in-flight network operation that is no longer needed.
+   * \param executor A listener-scoped executor used by the delegate to execute
+   * listener callbacks on headers, data chunks, and errors. Implementations
+   * *should* call listener->setCancelFunction() to provide a lambda that can be
+   * called to abort any in-flight network operation that is no longer needed.
    */
   virtual void loadNetworkResource(
-      const LoadNetworkResourceRequest& /*params*/,
-      ScopedExecutor<NetworkRequestListener> /*executor*/) = 0;
+      [[maybe_unused]] const LoadNetworkResourceRequest& params,
+      [[maybe_unused]] ScopedExecutor<NetworkRequestListener> executor) = 0;
 };
 
 /**

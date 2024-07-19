@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<62aabd2b094847e3165f0127720cd38e>>
+ * @generated SignedSource<<21fa85ad4854cc37f3699a3adcb15813>>
  */
 
 /**
@@ -29,10 +29,12 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool allowCollapsableChildren() = 0;
   virtual bool allowRecursiveCommitsWithSynchronousMountOnAndroid() = 0;
   virtual bool batchRenderingUpdatesInEventLoop() = 0;
+  virtual bool changeOrderOfMountingInstructionsOnAndroid() = 0;
   virtual bool destroyFabricSurfacesInReactInstanceManager() = 0;
   virtual bool enableAlignItemsBaselineOnFabricIOS() = 0;
   virtual bool enableCleanTextInputYogaNode() = 0;
   virtual bool enableGranularShadowTreeStateReconciliation() = 0;
+  virtual bool enableLongTaskAPI() = 0;
   virtual bool enableMicrotasks() = 0;
   virtual bool enablePropsUpdateReconciliationAndroid() = 0;
   virtual bool enableSynchronousStateUpdates() = 0;

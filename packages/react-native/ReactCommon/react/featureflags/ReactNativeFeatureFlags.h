@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f2c4d9731984436f95d178639074664d>>
+ * @generated SignedSource<<5b0c518e45a5c98814c8151870aed591>>
  */
 
 /**
@@ -58,6 +58,11 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool batchRenderingUpdatesInEventLoop();
 
   /**
+   * When enabled, insert of views on Android will be moved from the beginning of the IntBufferBatchMountItem to be after layout updates.
+   */
+  RN_EXPORT static bool changeOrderOfMountingInstructionsOnAndroid();
+
+  /**
    * When enabled, ReactInstanceManager will clean up Fabric surfaces on destroy().
    */
   RN_EXPORT static bool destroyFabricSurfacesInReactInstanceManager();
@@ -76,6 +81,11 @@ class ReactNativeFeatureFlags {
    * When enabled, the renderer would only fail commits when they propagate state and the last commit that updated state changed before committing.
    */
   RN_EXPORT static bool enableGranularShadowTreeStateReconciliation();
+
+  /**
+   * Enables the reporting of long tasks through `PerformanceObserver`. Only works if the event loop is enabled.
+   */
+  RN_EXPORT static bool enableLongTaskAPI();
 
   /**
    * Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).

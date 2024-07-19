@@ -34,11 +34,6 @@ struct CppMountItem final {
       const ShadowView& shadowView,
       int index);
 
-  static CppMountItem RemoveDeleteTreeMountItem(
-      const ShadowView& parentView,
-      const ShadowView& shadowView,
-      int index);
-
   static CppMountItem UpdatePropsMountItem(
       const ShadowView& oldShadowView,
       const ShadowView& newShadowView);
@@ -70,8 +65,7 @@ struct CppMountItem final {
     UpdateLayout = 128,
     UpdateEventEmitter = 256,
     UpdatePadding = 512,
-    UpdateOverflowInset = 1024,
-    RemoveDeleteTree = 2048
+    UpdateOverflowInset = 1024
   };
 
 #pragma mark - Fields

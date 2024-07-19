@@ -15,7 +15,6 @@ const translate = require('flow-api-translator');
 const {promises: fs} = require('fs');
 const glob = require('glob');
 const {transform} = require('hermes-transform');
-const os = require('os');
 const path = require('path');
 
 const PACKAGE_ROOT = path.resolve(__dirname, '../../');
@@ -31,29 +30,29 @@ const IGNORE_PATTERNS = [
 // review your changes before adding new entries.
 const FILES_WITH_KNOWN_ERRORS = new Set([
   'Libraries/Blob/FileReader.js',
-  'Libraries/Components/DrawerAndroid/DrawerLayoutAndroid.android.js',
-  'Libraries/Components/Keyboard/KeyboardAvoidingView.js',
-  'Libraries/Components/RefreshControl/RefreshControl.js',
-  'Libraries/Components/ScrollView/ScrollView.js',
-  'Libraries/Components/StatusBar/StatusBar.js',
-  'Libraries/Components/StaticRenderer.js',
-  'Libraries/Components/Touchable/TouchableNativeFeedback.js',
-  'Libraries/Components/UnimplementedViews/UnimplementedView.js',
-  'Libraries/Image/ImageBackground.js',
-  'Libraries/Inspector/ElementProperties.js',
-  'Libraries/Inspector/BorderBox.js',
-  'Libraries/Inspector/BoxInspector.js',
-  'Libraries/Inspector/InspectorPanel.js',
-  'Libraries/Inspector/NetworkOverlay.js',
-  'Libraries/Inspector/PerformanceOverlay.js',
-  'Libraries/Inspector/StyleInspector.js',
-  'Libraries/Inspector/ElementBox.js',
-  'Libraries/Lists/FlatList.js',
-  'Libraries/Lists/SectionList.js',
-  'Libraries/LogBox/LogBoxInspectorContainer.js',
-  'Libraries/Modal/Modal.js',
   'Libraries/Network/XMLHttpRequest.js',
   'Libraries/WebSocket/WebSocket.js',
+
+  // Parse errors introduced in hermes-parser 0.23.0:  Error: Comment location overlaps with node location
+  'Libraries/Core/checkNativeVersion.js',
+  'Libraries/Core/InitializeCore.js',
+  'Libraries/Core/polyfillPromise.js',
+  'Libraries/Core/setUpAlert.js',
+  'Libraries/Core/setUpBatchedBridge.js',
+  'Libraries/Core/setUpDeveloperTools.js',
+  'Libraries/Core/setUpErrorHandling.js',
+  'Libraries/Core/setUpGlobals.js',
+  'Libraries/Core/setUpIntersectionObserver.js',
+  'Libraries/Core/setUpMutationObserver.js',
+  'Libraries/Core/setUpNavigator.js',
+  'Libraries/Core/setUpPerformance.js',
+  'Libraries/Core/setUpPerformanceObserver.js',
+  'Libraries/Core/setUpReactDevTools.js',
+  'Libraries/Core/setUpReactRefresh.js',
+  'Libraries/Core/setUpRegeneratorRuntime.js',
+  'Libraries/Core/setUpTimers.js',
+  'Libraries/Core/setUpXHR.js',
+  'Libraries/ReactPrivate/ReactNativePrivateInitializeCore.js',
 ]);
 
 const sourceFiles = [

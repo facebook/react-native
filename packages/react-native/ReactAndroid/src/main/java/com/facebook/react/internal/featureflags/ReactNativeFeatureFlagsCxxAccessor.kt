@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5eff2e46b755c3d363ec5635831bf492>>
+ * @generated SignedSource<<89b4a679d8121ece9291dd55c46567ad>>
  */
 
 /**
@@ -24,10 +24,12 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
   private var allowCollapsableChildrenCache: Boolean? = null
   private var allowRecursiveCommitsWithSynchronousMountOnAndroidCache: Boolean? = null
   private var batchRenderingUpdatesInEventLoopCache: Boolean? = null
+  private var changeOrderOfMountingInstructionsOnAndroidCache: Boolean? = null
   private var destroyFabricSurfacesInReactInstanceManagerCache: Boolean? = null
   private var enableAlignItemsBaselineOnFabricIOSCache: Boolean? = null
   private var enableCleanTextInputYogaNodeCache: Boolean? = null
   private var enableGranularShadowTreeStateReconciliationCache: Boolean? = null
+  private var enableLongTaskAPICache: Boolean? = null
   private var enableMicrotasksCache: Boolean? = null
   private var enablePropsUpdateReconciliationAndroidCache: Boolean? = null
   private var enableSynchronousStateUpdatesCache: Boolean? = null
@@ -87,6 +89,15 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
     return cached
   }
 
+  override fun changeOrderOfMountingInstructionsOnAndroid(): Boolean {
+    var cached = changeOrderOfMountingInstructionsOnAndroidCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.changeOrderOfMountingInstructionsOnAndroid()
+      changeOrderOfMountingInstructionsOnAndroidCache = cached
+    }
+    return cached
+  }
+
   override fun destroyFabricSurfacesInReactInstanceManager(): Boolean {
     var cached = destroyFabricSurfacesInReactInstanceManagerCache
     if (cached == null) {
@@ -119,6 +130,15 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enableGranularShadowTreeStateReconciliation()
       enableGranularShadowTreeStateReconciliationCache = cached
+    }
+    return cached
+  }
+
+  override fun enableLongTaskAPI(): Boolean {
+    var cached = enableLongTaskAPICache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.enableLongTaskAPI()
+      enableLongTaskAPICache = cached
     }
     return cached
   }

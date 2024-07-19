@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4a5a507ce51e3058803ce2237f482dc4>>
+ * @generated SignedSource<<6f05e241733069ee1bacf671365d8390>>
  */
 
 /**
@@ -35,10 +35,12 @@ class ReactNativeFeatureFlagsAccessor {
   bool allowCollapsableChildren();
   bool allowRecursiveCommitsWithSynchronousMountOnAndroid();
   bool batchRenderingUpdatesInEventLoop();
+  bool changeOrderOfMountingInstructionsOnAndroid();
   bool destroyFabricSurfacesInReactInstanceManager();
   bool enableAlignItemsBaselineOnFabricIOS();
   bool enableCleanTextInputYogaNode();
   bool enableGranularShadowTreeStateReconciliation();
+  bool enableLongTaskAPI();
   bool enableMicrotasks();
   bool enablePropsUpdateReconciliationAndroid();
   bool enableSynchronousStateUpdates();
@@ -71,16 +73,18 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 30> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 32> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> allowCollapsableChildren_;
   std::atomic<std::optional<bool>> allowRecursiveCommitsWithSynchronousMountOnAndroid_;
   std::atomic<std::optional<bool>> batchRenderingUpdatesInEventLoop_;
+  std::atomic<std::optional<bool>> changeOrderOfMountingInstructionsOnAndroid_;
   std::atomic<std::optional<bool>> destroyFabricSurfacesInReactInstanceManager_;
   std::atomic<std::optional<bool>> enableAlignItemsBaselineOnFabricIOS_;
   std::atomic<std::optional<bool>> enableCleanTextInputYogaNode_;
   std::atomic<std::optional<bool>> enableGranularShadowTreeStateReconciliation_;
+  std::atomic<std::optional<bool>> enableLongTaskAPI_;
   std::atomic<std::optional<bool>> enableMicrotasks_;
   std::atomic<std::optional<bool>> enablePropsUpdateReconciliationAndroid_;
   std::atomic<std::optional<bool>> enableSynchronousStateUpdates_;

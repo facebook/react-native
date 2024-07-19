@@ -113,6 +113,7 @@ export default class EventEmitter<TEventToArgsMap: {...}>
       // Copy `registrations` to take a snapshot when we invoke `emit`, in case
       // registrations are added or removed when listeners are invoked.
       for (const registration of Array.from(registrations)) {
+        // $FlowFixMe[incompatible-call]
         registration.listener.apply(registration.context, args);
       }
     }

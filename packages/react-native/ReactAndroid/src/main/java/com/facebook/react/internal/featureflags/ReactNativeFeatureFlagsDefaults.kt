@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0fa4e9e2c5f3d96f729f5822783ce86f>>
+ * @generated SignedSource<<a42ecd51ef7f12eb8758dbd029a2d67b>>
  */
 
 /**
@@ -31,6 +31,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun batchRenderingUpdatesInEventLoop(): Boolean = false
 
+  override fun changeOrderOfMountingInstructionsOnAndroid(): Boolean = false
+
   override fun destroyFabricSurfacesInReactInstanceManager(): Boolean = false
 
   override fun enableAlignItemsBaselineOnFabricIOS(): Boolean = true
@@ -38,6 +40,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enableCleanTextInputYogaNode(): Boolean = false
 
   override fun enableGranularShadowTreeStateReconciliation(): Boolean = false
+
+  override fun enableLongTaskAPI(): Boolean = false
 
   override fun enableMicrotasks(): Boolean = false
 
@@ -57,7 +61,7 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun forceBatchingMountItemsOnAndroid(): Boolean = false
 
-  override fun fuseboxEnabledDebug(): Boolean = false
+  override fun fuseboxEnabledDebug(): Boolean = true
 
   override fun fuseboxEnabledRelease(): Boolean = false
 

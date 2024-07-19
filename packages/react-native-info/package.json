@@ -17,10 +17,10 @@
     "directory": "packages/react-native-info"
   },
   "dependencies": {
-    "@react-native-community/cli-config": "^13.6.4",
-    "@react-native-community/cli-platform-apple": "^13.6.4",
-    "@react-native-community/cli-tools": "^13.6.4",
-    "@react-native-community/cli-types": "^13.6.4",
+    "@react-native-community/cli-config": "14.0.0",
+    "@react-native-community/cli-platform-apple": "14.0.0",
+    "@react-native-community/cli-tools": "14.0.0",
+    "@react-native-community/cli-types": "14.0.0",
     "commander": "^12.0.0",
     "fs-extra": "^11.2.0",
     "yaml": "^2.4.1"

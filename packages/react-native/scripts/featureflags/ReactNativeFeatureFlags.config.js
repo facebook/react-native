@@ -54,6 +54,11 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.',
     },
+    changeOrderOfMountingInstructionsOnAndroid: {
+      defaultValue: false,
+      description:
+        'When enabled, insert of views on Android will be moved from the beginning of the IntBufferBatchMountItem to be after layout updates.',
+    },
     destroyFabricSurfacesInReactInstanceManager: {
       defaultValue: false,
       description:
@@ -72,6 +77,11 @@ const definitions: FeatureFlagDefinitions = {
       defaultValue: false,
       description:
         'When enabled, the renderer would only fail commits when they propagate state and the last commit that updated state changed before committing.',
+    },
+    enableLongTaskAPI: {
+      defaultValue: false,
+      description:
+        'Enables the reporting of long tasks through `PerformanceObserver`. Only works if the event loop is enabled.',
     },
     enableMicrotasks: {
       defaultValue: false,
@@ -119,7 +129,7 @@ const definitions: FeatureFlagDefinitions = {
         'Forces the mounting layer on Android to always batch mount items instead of dispatching them immediately. This might fix some crashes related to synchronous state updates, where some views dispatch state updates during mount.',
     },
     fuseboxEnabledDebug: {
-      defaultValue: false,
+      defaultValue: true,
       description:
         'Flag determining if the React Native DevTools (Fusebox) CDP backend should be enabled in debug builds. This flag is global and should not be changed across React Host lifetimes.',
     },
@@ -225,6 +235,11 @@ const definitions: FeatureFlagDefinitions = {
       defaultValue: false,
       description:
         'Enables use of setNativeProps in Native driven animations in Fabric.',
+    },
+    usePassiveEffectsForAnimations: {
+      defaultValue: false,
+      description:
+        'Enable a variant of useAnimatedPropsLifecycle hook that constructs the animation graph in passive effect instead of layout effect',
     },
     useRefsForTextInputState: {
       defaultValue: false,

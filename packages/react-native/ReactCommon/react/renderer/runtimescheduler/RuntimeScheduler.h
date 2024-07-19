@@ -8,6 +8,7 @@
 #pragma once
 
 #include <ReactCommon/RuntimeExecutor.h>
+#include <react/performance/timeline/PerformanceEntryReporter.h>
 #include <react/renderer/consistency/ShadowTreeRevisionConsistencyManager.h>
 #include <react/renderer/runtimescheduler/RuntimeSchedulerClock.h>
 #include <react/renderer/runtimescheduler/SchedulerPriorityUtils.h>
@@ -40,7 +41,7 @@ class RuntimeSchedulerBase {
       RuntimeSchedulerTimeout timeout = timeoutForSchedulerPriority(
           SchedulerPriority::IdlePriority)) noexcept = 0;
   virtual void cancelTask(Task& task) noexcept = 0;
-  virtual bool getShouldYield() const noexcept = 0;
+  virtual bool getShouldYield() noexcept = 0;
   virtual SchedulerPriority getCurrentPriorityLevel() const noexcept = 0;
   virtual RuntimeSchedulerTimePoint now() const noexcept = 0;
   virtual void callExpiredTasks(jsi::Runtime& runtime) = 0;
@@ -48,6 +49,8 @@ class RuntimeSchedulerBase {
       RuntimeSchedulerRenderingUpdate&& renderingUpdate) = 0;
   virtual void setShadowTreeRevisionConsistencyManager(
       ShadowTreeRevisionConsistencyManager* provider) = 0;
+  virtual void setPerformanceEntryReporter(
+      PerformanceEntryReporter* reporter) = 0;
 };
 
 // This is a proxy for RuntimeScheduler implementation, which will be selected
@@ -120,7 +123,7 @@ class RuntimeScheduler final : RuntimeSchedulerBase {
    *
    * Can be called from any thread.
    */
-  bool getShouldYield() const noexcept override;
+  bool getShouldYield() noexcept override;
 
   /*
    * Returns value of currently executed task. Designed to be called from React.
@@ -153,6 +156,8 @@ class RuntimeScheduler final : RuntimeSchedulerBase {
   void setShadowTreeRevisionConsistencyManager(
       ShadowTreeRevisionConsistencyManager*
           shadowTreeRevisionConsistencyManager) override;
+
+  void setPerformanceEntryReporter(PerformanceEntryReporter* reporter) override;
 
  private:
   // Actual implementation, stored as a unique pointer to simplify memory

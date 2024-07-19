@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<84bc0f2c1750310a2062ba947df45104>>
+ * @generated SignedSource<<ce0749b4f2ccf11b420cb9762012c02b>>
  */
 
 /**
@@ -37,6 +37,10 @@ bool ReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop() {
   return getAccessor().batchRenderingUpdatesInEventLoop();
 }
 
+bool ReactNativeFeatureFlags::changeOrderOfMountingInstructionsOnAndroid() {
+  return getAccessor().changeOrderOfMountingInstructionsOnAndroid();
+}
+
 bool ReactNativeFeatureFlags::destroyFabricSurfacesInReactInstanceManager() {
   return getAccessor().destroyFabricSurfacesInReactInstanceManager();
 }
@@ -51,6 +55,10 @@ bool ReactNativeFeatureFlags::enableCleanTextInputYogaNode() {
 
 bool ReactNativeFeatureFlags::enableGranularShadowTreeStateReconciliation() {
   return getAccessor().enableGranularShadowTreeStateReconciliation();
+}
+
+bool ReactNativeFeatureFlags::enableLongTaskAPI() {
+  return getAccessor().enableLongTaskAPI();
 }
 
 bool ReactNativeFeatureFlags::enableMicrotasks() {

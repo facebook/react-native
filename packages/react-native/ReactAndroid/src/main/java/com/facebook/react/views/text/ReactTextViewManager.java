@@ -61,17 +61,16 @@ public class ReactTextViewManager
   }
 
   @Override
-  protected ReactTextView prepareToRecycleView(
+  protected @Nullable ReactTextView prepareToRecycleView(
       @NonNull ThemedReactContext reactContext, ReactTextView view) {
     // BaseViewManager
-    super.prepareToRecycleView(reactContext, view);
-
-    // Resets background and borders
-    view.recycleView();
-
-    // Defaults from ReactTextAnchorViewManager
-    setSelectionColor(view, null);
-
+    ReactTextView preparedView = super.prepareToRecycleView(reactContext, view);
+    if (preparedView != null) {
+      // Resets background and borders
+      preparedView.recycleView();
+      // Defaults from ReactTextAnchorViewManager
+      setSelectionColor(preparedView, null);
+    }
     return view;
   }
 

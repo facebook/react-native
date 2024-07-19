@@ -56,7 +56,12 @@ void flushSample(
     uint64_t start,
     uint64_t end) {
   auto track = getPerfettoWebPerfTrack("JS Sampling");
+  size_t i = 0;
   for (const auto& frame : stack) {
+    if (++i >= 50) {
+      // Limit
+      break;
+    }
     std::string name = frame["name"].asString();
     TRACE_EVENT_BEGIN(
         "react-native", perfetto::DynamicString{name}, track, start);

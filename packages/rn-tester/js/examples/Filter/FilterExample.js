@@ -15,12 +15,18 @@ import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 import React from 'react';
 import {Image, StyleSheet, Text, View} from 'react-native';
 
+const alphaHotdog = require('../../assets/alpha-hotdog.png');
 const hotdog = require('../../assets/hotdog.jpg');
 
 type Props = $ReadOnly<{
   style: ViewStyleProp,
   testID?: string,
+  imageSource?: number,
 }>;
+
+const defaultProps = {
+  imageSource: hotdog,
+};
 
 function StaticViewAndImage(props: Props): React.Node {
   return (
@@ -40,12 +46,21 @@ function StaticViewAndImage(props: Props): React.Node {
         </View>
       </View>
       <View style={styles.container}>
-        <Image source={hotdog} style={[props.style, styles.commonImage]} />
-        <Image source={hotdog} style={styles.commonImage} />
+        <Image
+          source={props.imageSource}
+          style={[props.style, styles.commonImage]}
+          resizeMode="contain"
+        />
+        <Image
+          source={props.imageSource}
+          style={styles.commonImage}
+          resizeMode="contain"
+        />
       </View>
     </>
   );
 }
+StaticViewAndImage.defaultProps = defaultProps;
 
 function StaticViewAndImageWithState(props: Props): React.Node {
   const [s, setS] = React.useState(true);
@@ -159,13 +174,13 @@ exports.examples = [
   },
   {
     title: 'Hue Rotate',
-    description: 'hue-rotate(-90deg)',
-    name: 'hue-rotate',
+    description: 'hueRotate(-90deg)',
+    name: 'hueRotate',
     platform: 'android',
     render(): React.Node {
       return (
         <StaticViewAndImage
-          style={{experimental_filter: [{'hue-rotate': '-90deg'}]}}
+          style={{experimental_filter: [{hueRotate: '-90deg'}]}}
         />
       );
     },
@@ -191,6 +206,23 @@ exports.examples = [
         <StaticViewAndImage
           style={{experimental_filter: [{blur: 10}]}}
           testID="filter-test-blur"
+        />
+      );
+    },
+  },
+  {
+    title: 'Drop Shadow',
+    description: 'drop-shadow(30px 10px 4px #4444dd)',
+    name: 'drop-shadow',
+    platform: 'android',
+    render(): React.Node {
+      return (
+        <StaticViewAndImage
+          style={{
+            experimental_filter: [{dropShadow: '30px 10px 4px #4444dd'}],
+          }}
+          testID="filter-test-drop-shadow"
+          imageSource={alphaHotdog}
         />
       );
     },

@@ -22,8 +22,6 @@
     "dist"
   ],
   "dependencies": {
-    "@react-native-community/cli-server-api": "14.0.0-alpha.11",
-    "@react-native-community/cli-tools": "14.0.0-alpha.11",
     "@react-native/dev-middleware": "0.76.0-main",
     "@react-native/metro-babel-transformer": "0.76.0-main",
     "chalk": "^4.0.0",
@@ -36,6 +34,14 @@
   },
   "devDependencies": {
     "metro-resolver": "^0.80.3"
+  },
+  "peerDependencies": {
+    "@react-native-community/cli-server-api": "*"
+  },
+  "peerDependenciesMeta": {
+    "@react-native-community/cli-server-api": {
+      "optional": true
+    }
   },
   "engines": {
     "node": ">=18"
