@@ -60,7 +60,7 @@ const reactNativeRepo = 'https://api.github.com/repos/facebook/react-native/';
 const reactNativeActionsURL = `${reactNativeRepo}actions/runs`;
 
 async function _getActionRunsOnBranch() /*: Promise<WorkflowRuns> */ {
-  const url = `${reactNativeActionsURL}?branch=${branch}`;
+  const url = `${reactNativeActionsURL}?branch=${branch}&per_page=100`;
   const options = {
     method: 'GET',
     headers: ciHeaders,
@@ -123,7 +123,17 @@ async function initialize(
 
   const testAllWorkflow = (await _getActionRunsOnBranch()).workflow_runs
     .filter(w => w.name === 'Test All')
-    .sort((a, b) => (a.created_at > b.created_at ? -1 : 1))[0];
+    .sort(
+      (a, b) =>
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+    )[0];
+
+  console.warn(
+    `\nUsing workflow created at ${testAllWorkflow.created_at} with id ${testAllWorkflow.id}`,
+  );
+  console.warn(
+    `See it at: https://github.com/facebook/react-native/actions/runs/${testAllWorkflow.id}\n`,
+  );
 
   artifacts = await _getArtifacts(testAllWorkflow.id);
 }
