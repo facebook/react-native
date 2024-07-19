@@ -27,7 +27,7 @@ Pod::Spec.new do |s|
   s.source                 = source
   s.source_files           = "react/config/*.{m,mm,cpp,h}"
   s.header_dir             = "react/config"
-  s.pod_target_xcconfig    = { "CLANG_CXX_LANGUAGE_STANDARD" => "c++20" }
+  s.pod_target_xcconfig    = { "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard() }
 
   if ENV['USE_FRAMEWORKS']
     s.header_mappings_dir     = './'

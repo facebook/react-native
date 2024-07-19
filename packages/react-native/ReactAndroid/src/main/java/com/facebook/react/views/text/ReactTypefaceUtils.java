@@ -13,6 +13,7 @@ import android.text.TextUtils;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.assets.ReactFontManager;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +46,7 @@ public class ReactTypefaceUtils {
           return 900;
       }
     }
-    return ReactFontManager.TypefaceStyle.UNSET;
+    return ReactConstants.UNSET;
   }
 
   public static int parseFontStyle(@Nullable String fontStyleString) {
@@ -57,7 +58,7 @@ public class ReactTypefaceUtils {
         return Typeface.NORMAL;
       }
     }
-    return ReactFontManager.TypefaceStyle.UNSET;
+    return ReactConstants.UNSET;
   }
 
   public static @Nullable String parseFontVariant(@Nullable ReadableArray fontVariantArray) {

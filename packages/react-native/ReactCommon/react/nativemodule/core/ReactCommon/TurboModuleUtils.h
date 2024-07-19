@@ -11,9 +11,8 @@
 #include <string>
 
 #include <jsi/jsi.h>
-
-#include <ReactCommon/CallInvoker.h>
-#include <ReactCommon/CallbackWrapper.h>
+#include <react/bridging/CallbackWrapper.h>
+#include <react/bridging/LongLivedObject.h>
 
 namespace facebook::react {
 
@@ -26,7 +25,6 @@ struct Promise : public LongLivedObject {
   void resolve(const jsi::Value& result);
   void reject(const std::string& error);
 
-  jsi::Runtime& runtime_;
   jsi::Function resolve_;
   jsi::Function reject_;
 };

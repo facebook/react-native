@@ -30,21 +30,22 @@ void RCTImageResponseObserverProxy::didReceiveImage(const ImageResponse &imageRe
   });
 }
 
-void RCTImageResponseObserverProxy::didReceiveProgress(float progress) const
+void RCTImageResponseObserverProxy::didReceiveProgress(float progress, int64_t loaded, int64_t total) const
 {
   auto this_ = this;
   id<RCTImageResponseDelegate> delegate = delegate_;
   RCTExecuteOnMainQueue(^{
-    [delegate didReceiveProgress:progress fromObserver:this_];
+    [delegate didReceiveProgress:progress loaded:loaded total:total fromObserver:this_];
   });
 }
 
-void RCTImageResponseObserverProxy::didReceiveFailure() const
+void RCTImageResponseObserverProxy::didReceiveFailure(const ImageLoadError &errorResponse) const
 {
   auto this_ = this;
+  NSError *error = (NSError *)unwrapManagedObject(errorResponse.getError());
   id<RCTImageResponseDelegate> delegate = delegate_;
   RCTExecuteOnMainQueue(^{
-    [delegate didReceiveFailureFromObserver:this_];
+    [delegate didReceiveFailure:error fromObserver:this_];
   });
 }
 

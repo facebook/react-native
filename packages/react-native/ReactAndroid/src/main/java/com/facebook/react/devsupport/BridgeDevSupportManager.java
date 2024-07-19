@@ -8,17 +8,14 @@
 package com.facebook.react.devsupport;
 
 import android.content.Context;
-import android.widget.Toast;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.debug.holder.PrinterHolder;
 import com.facebook.debug.tags.ReactDebugOverlayTags;
 import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.R;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.JavaJSExecutor;
-import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.bridge.UiThreadUtil;
@@ -27,11 +24,10 @@ import com.facebook.react.common.SurfaceDelegateFactory;
 import com.facebook.react.common.futures.SimpleSettableFuture;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.DevLoadingViewManager;
-import com.facebook.react.devsupport.interfaces.DevOptionHandler;
 import com.facebook.react.devsupport.interfaces.DevSplitBundleCallback;
+import com.facebook.react.devsupport.interfaces.PausedInDebuggerOverlayManager;
 import com.facebook.react.devsupport.interfaces.RedBoxHandler;
 import com.facebook.react.packagerconnection.RequestHandler;
-import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -61,8 +57,6 @@ import java.util.concurrent.TimeoutException;
  */
 public final class BridgeDevSupportManager extends DevSupportManagerBase {
   private boolean mIsSamplingProfilerEnabled = false;
-  private ReactInstanceDevHelper mReactInstanceManagerHelper;
-  private @Nullable DevLoadingViewManager mDevLoadingViewManager;
 
   public BridgeDevSupportManager(
       Context applicationContext,
@@ -74,7 +68,8 @@ public final class BridgeDevSupportManager extends DevSupportManagerBase {
       int minNumShakes,
       @Nullable Map<String, RequestHandler> customPackagerCommandHandlers,
       @Nullable SurfaceDelegateFactory surfaceDelegateFactory,
-      @Nullable DevLoadingViewManager devLoadingViewManager) {
+      @Nullable DevLoadingViewManager devLoadingViewManager,
+      @Nullable PausedInDebuggerOverlayManager pausedInDebuggerOverlayManager) {
     super(
         applicationContext,
         reactInstanceManagerHelper,
@@ -85,29 +80,8 @@ public final class BridgeDevSupportManager extends DevSupportManagerBase {
         minNumShakes,
         customPackagerCommandHandlers,
         surfaceDelegateFactory,
-        devLoadingViewManager);
-
-    if (getDevSettings().isStartSamplingProfilerOnInit()) {
-      // Only start the profiler. If its already running, there is an error
-      if (!mIsSamplingProfilerEnabled) {
-        toggleJSSamplingProfiler();
-      } else {
-        Toast.makeText(
-                applicationContext,
-                "JS Sampling Profiler was already running, so did not start the sampling profiler",
-                Toast.LENGTH_LONG)
-            .show();
-      }
-    }
-
-    addCustomDevOption(
-        applicationContext.getString(R.string.catalyst_sample_profiler_toggle),
-        new DevOptionHandler() {
-          @Override
-          public void onOptionSelected() {
-            toggleJSSamplingProfiler();
-          }
-        });
+        devLoadingViewManager,
+        pausedInDebuggerOverlayManager);
   }
 
   @Override
@@ -208,53 +182,11 @@ public final class BridgeDevSupportManager extends DevSupportManagerBase {
       String bundleURL =
           getDevServerHelper()
               .getDevServerBundleURL(Assertions.assertNotNull(getJSAppBundleName()));
-      reloadJSFromServer(bundleURL);
-    }
-  }
-
-  /** Starts of stops the sampling profiler */
-  private void toggleJSSamplingProfiler() {
-    JavaScriptExecutorFactory javaScriptExecutorFactory =
-        getReactInstanceDevHelper().getJavaScriptExecutorFactory();
-    if (!mIsSamplingProfilerEnabled) {
-      try {
-        javaScriptExecutorFactory.startSamplingProfiler();
-        Toast.makeText(getApplicationContext(), "Starting Sampling Profiler", Toast.LENGTH_SHORT)
-            .show();
-      } catch (UnsupportedOperationException e) {
-        Toast.makeText(
-                getApplicationContext(),
-                javaScriptExecutorFactory.toString() + " does not support Sampling Profiler",
-                Toast.LENGTH_LONG)
-            .show();
-      } finally {
-        mIsSamplingProfilerEnabled = true;
-      }
-    } else {
-      try {
-        final String outputPath =
-            File.createTempFile(
-                    "sampling-profiler-trace", ".cpuprofile", getApplicationContext().getCacheDir())
-                .getPath();
-        javaScriptExecutorFactory.stopSamplingProfiler(outputPath);
-        Toast.makeText(
-                getApplicationContext(),
-                "Saved results from Profiler to " + outputPath,
-                Toast.LENGTH_LONG)
-            .show();
-      } catch (IOException e) {
-        FLog.e(
-            ReactConstants.TAG,
-            "Could not create temporary file for saving results from Sampling Profiler");
-      } catch (UnsupportedOperationException e) {
-        Toast.makeText(
-                getApplicationContext(),
-                javaScriptExecutorFactory.toString() + "does not support Sampling Profiler",
-                Toast.LENGTH_LONG)
-            .show();
-      } finally {
-        mIsSamplingProfilerEnabled = false;
-      }
+      reloadJSFromServer(
+          bundleURL,
+          () ->
+              UiThreadUtil.runOnUiThread(
+                  () -> getReactInstanceDevHelper().onJSBundleLoadedFromServer()));
     }
   }
 }

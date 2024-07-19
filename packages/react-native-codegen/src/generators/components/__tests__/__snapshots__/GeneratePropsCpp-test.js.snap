@@ -33,7 +33,7 @@ ArrayPropsNativeComponentProps::ArrayPropsNativeComponentProps(
     srcs(convertRawProp(context, rawProps, \\"srcs\\", sourceProps.srcs, {})),
     points(convertRawProp(context, rawProps, \\"points\\", sourceProps.points, {})),
     dimensions(convertRawProp(context, rawProps, \\"dimensions\\", sourceProps.dimensions, {})),
-    sizes(convertRawProp(context, rawProps, \\"sizes\\", sourceProps.sizes, {static_cast<ArrayPropsNativeComponentSizesMask>(ArrayPropsNativeComponentSizes::Small)})),
+    sizes(convertRawProp(context, rawProps, \\"sizes\\", ArrayPropsNativeComponentSizesMaskWrapped{ .value = sourceProps.sizes }, {static_cast<ArrayPropsNativeComponentSizesMask>(ArrayPropsNativeComponentSizes::Small)}).value),
     object(convertRawProp(context, rawProps, \\"object\\", sourceProps.object, {})),
     array(convertRawProp(context, rawProps, \\"array\\", sourceProps.array, {})),
     arrayOfArrayOfObject(convertRawProp(context, rawProps, \\"arrayOfArrayOfObject\\", sourceProps.arrayOfArrayOfObject, {}))

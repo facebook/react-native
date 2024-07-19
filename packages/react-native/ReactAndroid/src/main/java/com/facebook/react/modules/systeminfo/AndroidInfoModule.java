@@ -18,8 +18,8 @@ import androidx.annotation.Nullable;
 import com.facebook.fbreact.specs.NativePlatformConstantsAndroidSpec;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.common.build.ReactBuildConfig;
-import com.facebook.react.internal.turbomodule.core.interfaces.TurboModule;
 import com.facebook.react.module.annotations.ReactModule;
+import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import java.util.HashMap;
 import java.util.Map;
 

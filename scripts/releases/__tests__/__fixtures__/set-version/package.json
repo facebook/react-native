@@ -1,0 +1,8 @@
+{
+  "name": "@react-native/monorepo",
+  "private": true,
+  "version": "1000.0.0",
+  "devDependencies": {
+    "@monorepo/pkg-c": "0.0.1"
+  }
+}

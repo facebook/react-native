@@ -8,18 +8,34 @@
 package com.facebook.react.uimanager;
 
 import android.view.View;
+import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
+import com.facebook.react.bridge.UiThreadUtil;
 
 /** Interface providing children management API for view managers of classes extending ViewGroup. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public interface IViewGroupManager<T extends View> extends IViewManagerWithChildren {
 
   /** Adds a child view into the parent at the index specified as a parameter */
   void addView(T parent, View child, int index);
 
-  /** @return child of the parent view at the index specified as a parameter. */
+  /**
+   * @return child of the parent view at the index specified as a parameter.
+   */
+  @Nullable
   View getChildAt(T parent, int index);
 
   /** Removes View from the parent View at the index specified as a parameter. */
   void removeViewAt(T parent, int index);
+
+  /** Remove all child views from the parent View. */
+  default void removeAllViews(T parent) {
+    UiThreadUtil.assertOnUiThread();
+
+    for (int i = getChildCount(parent) - 1; i >= 0; i--) {
+      removeViewAt(parent, i);
+    }
+  }
 
   /** Return the amount of children contained by the view specified as a parameter. */
   int getChildCount(T parent);

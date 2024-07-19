@@ -38,11 +38,14 @@ class RuntimeSchedulerBinding : public jsi::HostObject {
       jsi::Runtime& runtime);
 
   /*
+   * Returns shared pointer to RuntimeScheduler for use in native modules
+   */
+  std::shared_ptr<RuntimeScheduler> getRuntimeScheduler() noexcept;
+
+  /*
    * `jsi::HostObject` specific overloads.
    */
   jsi::Value get(jsi::Runtime& runtime, const jsi::PropNameID& name) override;
-
-  bool getIsSynchronous() const;
 
  private:
   std::shared_ptr<RuntimeScheduler> runtimeScheduler_;

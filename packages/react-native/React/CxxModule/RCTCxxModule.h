@@ -13,7 +13,7 @@
 
 namespace facebook::xplat::module {
 class CxxModule;
-} // namespace facebook::react::module
+} // namespace facebook::xplat::module
 
 /**
  * Subclass RCTCxxModule to use cross-platform CxxModule on iOS.

@@ -52,6 +52,9 @@ struct FlexLine {
   // The index of the first item beyond the current line.
   const size_t endOfLineIndex{0};
 
+  // Number of edges along the line flow with an auto margin.
+  const size_t numberOfAutoMargins{0};
+
   // Layout information about the line computed in steps after line-breaking
   FlexLineRunningLayout layout{};
 };
@@ -63,7 +66,7 @@ struct FlexLine {
 // computedFlexBasis properly computed(To do this use
 // computeFlexBasisForChildren function).
 FlexLine calculateFlexLine(
-    yoga::Node* const node,
+    yoga::Node* node,
     Direction ownerDirection,
     float mainAxisownerSize,
     float availableInnerWidth,

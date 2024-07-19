@@ -17,7 +17,7 @@ import org.robolectric.annotation.Implements
 @Implements(SoLoader::class)
 class ShadowSoLoader {
   companion object {
-    @JvmStatic @Implementation fun init(context: Context?, flags: Int) {}
+    @JvmStatic @Implementation fun init(context: Context?, flags: Int) = Unit
 
     @JvmStatic @Implementation fun loadLibrary(shortName: String?): Boolean = true
   }

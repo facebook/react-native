@@ -8,10 +8,12 @@
  * @format
  */
 
+import composeStyles from '../../src/private/core/composeStyles';
 import View from '../Components/View/View';
 import useMergeRefs from '../Utilities/useMergeRefs';
 import useAnimatedProps from './useAnimatedProps';
 import * as React from 'react';
+import {useMemo} from 'react';
 
 // $FlowFixMe[deprecated-type]
 export type AnimatedProps<Props: {...}> = $ObjMap<
@@ -44,14 +46,18 @@ export default function createAnimatedComponent<TProps: {...}, TInstance>(
       // without these passthrough values.
       // $FlowFixMe[prop-missing]
       const {passthroughAnimatedPropExplicitValues, style} = reducedProps;
-      const {style: passthroughStyle, ...passthroughProps} =
-        passthroughAnimatedPropExplicitValues ?? {};
-      const mergedStyle = {...style, ...passthroughStyle};
+      const passthroughStyle = passthroughAnimatedPropExplicitValues?.style;
+      const mergedStyle = useMemo(
+        () => composeStyles(style, passthroughStyle),
+        [passthroughStyle, style],
+      );
 
+      // NOTE: It is important that `passthroughAnimatedPropExplicitValues` is
+      // spread after `reducedProps` but before `style`.
       return (
         <Component
           {...reducedProps}
-          {...passthroughProps}
+          {...passthroughAnimatedPropExplicitValues}
           style={mergedStyle}
           ref={ref}
         />

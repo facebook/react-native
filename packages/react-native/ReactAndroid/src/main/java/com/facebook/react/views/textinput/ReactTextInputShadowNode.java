@@ -36,7 +36,7 @@ import com.facebook.yoga.YogaNode;
 public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
     implements YogaMeasureFunction {
 
-  private int mMostRecentEventCount = UNSET;
+  private int mMostRecentEventCount = ReactConstants.UNSET;
   private @Nullable EditText mInternalEditText;
   private @Nullable ReactTextInputLocalData mLocalData;
 
@@ -108,7 +108,7 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
     } else {
       editText.setTextSize(TypedValue.COMPLEX_UNIT_PX, mTextAttributes.getEffectiveFontSize());
 
-      if (mNumberOfLines != UNSET) {
+      if (mNumberOfLines != ReactConstants.UNSET) {
         editText.setLines(mNumberOfLines);
       }
 
@@ -191,7 +191,7 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
   public void onCollectExtraUpdates(UIViewOperationQueue uiViewOperationQueue) {
     super.onCollectExtraUpdates(uiViewOperationQueue);
 
-    if (mMostRecentEventCount != UNSET) {
+    if (mMostRecentEventCount != ReactConstants.UNSET) {
       ReactTextUpdate reactTextUpdate =
           new ReactTextUpdate(
               spannedFromShadowNode(

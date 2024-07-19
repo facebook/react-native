@@ -12,7 +12,10 @@ import type {ViewProps} from '../Components/View/ViewPropTypes';
 import type {RootTag} from '../ReactNative/RootTag';
 import type {DirectEventHandler} from '../Types/CodegenTypes';
 
+import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
+import {type EventSubscription} from '../vendor/emitter/EventEmitter';
 import ModalInjection from './ModalInjection';
+import NativeModalManager from './NativeModalManager';
 import RCTModalHostView from './RCTModalHostViewNativeComponent';
 import {VirtualizedListContextResetter} from '@react-native/virtualized-lists';
 
@@ -22,13 +25,33 @@ const AppContainer = require('../ReactNative/AppContainer');
 const I18nManager = require('../ReactNative/I18nManager');
 const {RootTagContext} = require('../ReactNative/RootTag');
 const StyleSheet = require('../StyleSheet/StyleSheet');
+const Platform = require('../Utilities/Platform');
 const React = require('react');
+
+type ModalEventDefinitions = {
+  modalDismissed: [{modalID: number}],
+};
+
+const ModalEventEmitter =
+  Platform.OS === 'ios' && NativeModalManager != null
+    ? new NativeEventEmitter<ModalEventDefinitions>(
+        // T88715063: NativeEventEmitter only used this parameter on iOS. Now it uses it on all platforms, so this code was modified automatically to preserve its behavior
+        // If you want to use the native module on other platforms, please remove this condition and test its behavior
+        Platform.OS !== 'ios' ? null : NativeModalManager,
+      )
+    : null;
 
 /**
  * The Modal component is a simple way to present content above an enclosing view.
  *
  * See https://reactnative.dev/docs/modal
  */
+
+// In order to route onDismiss callbacks, we need to uniquely identifier each
+// <Modal> on screen. There can be different ones, either nested or as siblings.
+// We cannot pass the onDismiss callback to native as the view will be
+// destroyed before the callback is fired.
+let uniqueModalIdentifier = 0;
 
 type OrientationChangeEvent = $ReadOnly<{|
   orientation: 'portrait' | 'landscape',
@@ -136,10 +159,6 @@ export type Props = $ReadOnly<{|
   onOrientationChange?: ?DirectEventHandler<OrientationChangeEvent>,
 |}>;
 
-type State = {|
-  isRendering: boolean,
-|};
-
 function confirmProps(props: Props) {
   if (__DEV__) {
     if (
@@ -154,6 +173,12 @@ function confirmProps(props: Props) {
   }
 }
 
+// Create a state to track whether the Modal is rendering or not.
+// This is the only prop that controls whether the modal is rendered or not.
+type State = {
+  isRendered: boolean,
+};
+
 class Modal extends React.Component<Props, State> {
   static defaultProps: {|hardwareAccelerated: boolean, visible: boolean|} = {
     visible: true,
@@ -162,27 +187,64 @@ class Modal extends React.Component<Props, State> {
 
   static contextType: React.Context<RootTag> = RootTagContext;
 
+  _identifier: number;
+  _eventSubscription: ?EventSubscription;
+
   constructor(props: Props) {
     super(props);
-    this.state = {
-      isRendering: props.visible === true,
-    };
     if (__DEV__) {
       confirmProps(props);
+    }
+    this._identifier = uniqueModalIdentifier++;
+    this.state = {
+      isRendered: props.visible === true,
+    };
+  }
+
+  componentDidMount() {
+    // 'modalDismissed' is for the old renderer in iOS only
+    if (ModalEventEmitter) {
+      this._eventSubscription = ModalEventEmitter.addListener(
+        'modalDismissed',
+        event => {
+          this.setState({isRendered: false}, () => {
+            if (event.modalID === this._identifier && this.props.onDismiss) {
+              this.props.onDismiss();
+            }
+          });
+        },
+      );
+    }
+  }
+
+  componentWillUnmount() {
+    this.setState({isRendered: false});
+    if (this._eventSubscription) {
+      this._eventSubscription.remove();
     }
   }
 
   componentDidUpdate(prevProps: Props) {
-    if (prevProps.visible !== true && this.props.visible === true) {
-      this.setState({isRendering: true});
+    if (prevProps.visible === false && this.props.visible === true) {
+      this.setState({isRendered: true});
     }
+
     if (__DEV__) {
       confirmProps(this.props);
     }
   }
 
+  // Helper function to encapsulate platform specific logic to show or not the Modal.
+  _shouldShowModal(): boolean {
+    if (Platform.OS === 'ios') {
+      return this.props.visible === true || this.state.isRendered === true;
+    }
+
+    return this.props.visible === true;
+  }
+
   render(): React.Node {
-    if (this.props.visible !== true && !this.state.isRendering) {
+    if (!this._shouldShowModal()) {
       return null;
     }
 
@@ -207,6 +269,17 @@ class Modal extends React.Component<Props, State> {
       this.props.children
     );
 
+    const onDismiss = () => {
+      // OnDismiss is implemented on iOS only.
+      if (Platform.OS === 'ios') {
+        this.setState({isRendered: false}, () => {
+          if (this.props.onDismiss) {
+            this.props.onDismiss();
+          }
+        });
+      }
+    };
+
     return (
       <RCTModalHostView
         animationType={animationType}
@@ -215,15 +288,10 @@ class Modal extends React.Component<Props, State> {
         hardwareAccelerated={this.props.hardwareAccelerated}
         onRequestClose={this.props.onRequestClose}
         onShow={this.props.onShow}
-        onDismiss={() => {
-          this.setState({isRendering: false}, () => {
-            if (this.props.onDismiss) {
-              this.props.onDismiss();
-            }
-          });
-        }}
+        onDismiss={onDismiss}
         visible={this.props.visible}
         statusBarTranslucent={this.props.statusBarTranslucent}
+        identifier={this._identifier}
         style={styles.modal}
         // $FlowFixMe[method-unbinding] added when improving typing for this parameters
         onStartShouldSetResponder={this._shouldSetResponder}

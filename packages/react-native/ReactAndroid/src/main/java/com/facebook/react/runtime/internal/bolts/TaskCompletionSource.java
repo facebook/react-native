@@ -28,7 +28,9 @@ public class TaskCompletionSource<TResult> {
     task = new Task<>();
   }
 
-  /** @return the Task associated with this TaskCompletionSource. */
+  /**
+   * @return the Task associated with this TaskCompletionSource.
+   */
   public @NonNull Task<TResult> getTask() {
     return task;
   }

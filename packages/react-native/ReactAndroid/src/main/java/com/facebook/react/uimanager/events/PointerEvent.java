@@ -102,7 +102,8 @@ public class PointerEvent extends Event<PointerEvent> {
       ReactSoftExceptionLogger.logSoftException(
           TAG,
           new IllegalStateException(
-              "Cannot dispatch a Pointer that has no MotionEvent; the PointerEvehas been recycled"));
+              "Cannot dispatch a Pointer that has no MotionEvent; the PointerEvehas been"
+                  + " recycled"));
       return;
     }
     if (mPointersEventData == null) {
@@ -308,7 +309,8 @@ public class PointerEvent extends Event<PointerEvent> {
       ReactSoftExceptionLogger.logSoftException(
           TAG,
           new IllegalStateException(
-              "Cannot dispatch a Pointer that has no MotionEvent; the PointerEvehas been recycled"));
+              "Cannot dispatch a Pointer that has no MotionEvent; the PointerEvehas been"
+                  + " recycled"));
       return;
     }
 

@@ -8,6 +8,8 @@
 package com.facebook.react.views.text;
 
 import android.view.View;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.ThemedReactContext;
@@ -30,6 +32,12 @@ public class ReactRawTextManager extends ViewManager<View, ReactRawTextShadowNod
   @Override
   public ReactTextView createViewInstance(ThemedReactContext context) {
     throw new IllegalStateException("Attempt to create a native view for RCTRawText");
+  }
+
+  @Override
+  protected @Nullable View prepareToRecycleView(
+      @NonNull ThemedReactContext reactContext, @NonNull View view) {
+    throw new IllegalStateException("Attempt to recycle a native view for RCTRawText");
   }
 
   @Override

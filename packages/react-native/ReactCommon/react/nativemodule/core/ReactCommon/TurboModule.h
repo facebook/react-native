@@ -7,12 +7,14 @@
 
 #pragma once
 
+#include <memory>
 #include <string>
 #include <unordered_map>
 
 #include <jsi/jsi.h>
 
 #include <ReactCommon/CallInvoker.h>
+#include <react/bridging/EventEmitter.h>
 
 namespace facebook::react {
 
@@ -30,6 +32,13 @@ enum TurboModuleMethodValueKind {
   FunctionKind,
   PromiseKind,
 };
+
+/**
+ * Determines TurboModuleMethodValueKind based on the jsi::Value type.
+ */
+TurboModuleMethodValueKind getTurboModuleMethodValueKind(
+    jsi::Runtime& rt,
+    const jsi::Value* value);
 
 class TurboCxxModule;
 class TurboModuleBinding;
@@ -82,6 +91,8 @@ class JSI_EXPORT TurboModule : public facebook::jsi::HostObject {
         size_t count);
   };
   std::unordered_map<std::string, MethodMetadata> methodMap_;
+  std::unordered_map<std::string, std::shared_ptr<IAsyncEventEmitter>>
+      eventEmitterMap_;
 
   using ArgFactory =
       std::function<void(jsi::Runtime& runtime, std::vector<jsi::Value>& args)>;
@@ -99,20 +110,25 @@ class JSI_EXPORT TurboModule : public facebook::jsi::HostObject {
    *  });
    */
   void emitDeviceEvent(
-      jsi::Runtime& runtime,
       const std::string& eventName,
       ArgFactory argFactory = nullptr);
+
+  // Backwards compatibility version
+  void emitDeviceEvent(
+      jsi::Runtime& /*runtime*/,
+
+      const std::string& eventName,
+      ArgFactory argFactory = nullptr) {
+    emitDeviceEvent(eventName, std::move(argFactory));
+  }
 
   virtual jsi::Value create(
       jsi::Runtime& runtime,
       const jsi::PropNameID& propName) {
     std::string propNameUtf8 = propName.utf8(runtime);
-    auto p = methodMap_.find(propNameUtf8);
-    if (p == methodMap_.end()) {
-      // Method was not found, let JS decide what to do.
-      return facebook::jsi::Value::undefined();
-    } else {
-      const MethodMetadata& meta = p->second;
+    if (auto methodIter = methodMap_.find(propNameUtf8);
+        methodIter != methodMap_.end()) {
+      const MethodMetadata& meta = methodIter->second;
       return jsi::Function::createFromHostFunction(
           runtime,
           propName,
@@ -122,7 +138,12 @@ class JSI_EXPORT TurboModule : public facebook::jsi::HostObject {
               [[maybe_unused]] const jsi::Value& thisVal,
               const jsi::Value* args,
               size_t count) { return meta.invoker(rt, *this, args, count); });
+    } else if (auto eventEmitterIter = eventEmitterMap_.find(propNameUtf8);
+               eventEmitterIter != eventEmitterMap_.end()) {
+      return eventEmitterIter->second->get(runtime, jsInvoker_);
     }
+    // Neither Method nor EventEmitter were not found, let JS decide what to do.
+    return facebook::jsi::Value::undefined();
   }
 
  private:

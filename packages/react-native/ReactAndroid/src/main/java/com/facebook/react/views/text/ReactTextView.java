@@ -7,9 +7,8 @@
 
 package com.facebook.react.views.text;
 
-import static com.facebook.react.views.text.TextAttributeProps.UNSET;
-
 import android.content.Context;
+import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.Layout;
@@ -42,7 +41,11 @@ import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewDefaults;
 import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.common.ViewUtil;
+import com.facebook.react.views.text.internal.span.ReactTagSpan;
+import com.facebook.react.views.text.internal.span.TextInlineImageSpan;
+import com.facebook.react.views.text.internal.span.TextInlineViewPlaceholderSpan;
 import com.facebook.react.views.view.ReactViewBackgroundManager;
+import com.facebook.yoga.YogaMeasureMode;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -60,10 +63,12 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   private TextUtils.TruncateAt mEllipsizeLocation;
   private boolean mAdjustsFontSizeToFit;
   private float mFontSize;
+  private float mMinimumFontSize;
   private float mLetterSpacing;
   private int mLinkifyMaskType;
   private boolean mNotifyOnInlineViewLayout;
   private boolean mTextIsSelectable;
+  private boolean mShouldAdjustSpannableFontSize;
 
   private ReactViewBackgroundManager mReactBackgroundManager;
   private Spannable mSpanned;
@@ -91,8 +96,10 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     mLinkifyMaskType = 0;
     mNotifyOnInlineViewLayout = false;
     mTextIsSelectable = false;
+    mShouldAdjustSpannableFontSize = false;
     mEllipsizeLocation = TextUtils.TruncateAt.END;
     mFontSize = Float.NaN;
+    mMinimumFontSize = Float.NaN;
     mLetterSpacing = 0.f;
 
     mSpanned = null;
@@ -354,6 +361,32 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     }
   }
 
+  @Override
+  protected void onDraw(Canvas canvas) {
+    if (mAdjustsFontSizeToFit && getSpanned() != null && mShouldAdjustSpannableFontSize) {
+      mShouldAdjustSpannableFontSize = false;
+      TextLayoutManager.adjustSpannableFontToFit(
+          getSpanned(),
+          getWidth(),
+          YogaMeasureMode.EXACTLY,
+          getHeight(),
+          YogaMeasureMode.EXACTLY,
+          mMinimumFontSize,
+          mNumberOfLines,
+          getIncludeFontPadding(),
+          getBreakStrategy(),
+          getHyphenationFrequency(),
+          // always passing ALIGN_NORMAL here should be fine, since this method doesn't depend on
+          // how exacly lines are aligned, just their width
+          Layout.Alignment.ALIGN_NORMAL);
+      setText(getSpanned());
+    }
+
+    mReactBackgroundManager.maybeClipToPaddingBox(canvas);
+
+    super.onDraw(canvas);
+  }
+
   public void setText(ReactTextUpdate update) {
     mContainsImages = update.containsImages();
     // Android's TextView crashes when it tries to relayout if LayoutParams are
@@ -376,10 +409,10 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     // In Fabric padding is set by the update of Layout Metrics and not as part of the "setText"
     // operation
     // TODO T56559197: remove this condition when we migrate 100% to Fabric
-    if (paddingLeft != UNSET
-        && paddingTop != UNSET
-        && paddingRight != UNSET
-        && paddingBottom != UNSET) {
+    if (paddingLeft != ReactConstants.UNSET
+        && paddingTop != ReactConstants.UNSET
+        && paddingRight != ReactConstants.UNSET
+        && paddingBottom != ReactConstants.UNSET) {
 
       setPadding(
           (int) Math.floor(paddingLeft),
@@ -574,6 +607,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   public void setNumberOfLines(int numberOfLines) {
     mNumberOfLines = numberOfLines == 0 ? ViewDefaults.NUMBER_OF_LINES : numberOfLines;
     setMaxLines(mNumberOfLines);
+    mShouldAdjustSpannableFontSize = true;
   }
 
   public void setAdjustFontSizeToFit(boolean adjustsFontSizeToFit) {
@@ -587,6 +621,29 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
             : (float) Math.ceil(PixelUtil.toPixelFromDIP(fontSize));
 
     applyTextAttributes();
+  }
+
+  public void setMinimumFontSize(float minimumFontSize) {
+    mMinimumFontSize = minimumFontSize;
+    mShouldAdjustSpannableFontSize = true;
+  }
+
+  @Override
+  public void setIncludeFontPadding(boolean includepad) {
+    super.setIncludeFontPadding(includepad);
+    mShouldAdjustSpannableFontSize = true;
+  }
+
+  @Override
+  public void setBreakStrategy(int breakStrategy) {
+    super.setBreakStrategy(breakStrategy);
+    mShouldAdjustSpannableFontSize = true;
+  }
+
+  @Override
+  public void setHyphenationFrequency(int hyphenationFrequency) {
+    super.setHyphenationFrequency(hyphenationFrequency);
+    mShouldAdjustSpannableFontSize = true;
   }
 
   public void setLetterSpacing(float letterSpacing) {
@@ -629,8 +686,8 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     mReactBackgroundManager.setBorderWidth(position, width);
   }
 
-  public void setBorderColor(int position, float color, float alpha) {
-    mReactBackgroundManager.setBorderColor(position, color, alpha);
+  public void setBorderColor(int position, @Nullable Integer color) {
+    mReactBackgroundManager.setBorderColor(position, color);
   }
 
   public void setBorderRadius(float borderRadius) {
@@ -647,6 +704,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
 
   public void setSpanned(Spannable spanned) {
     mSpanned = spanned;
+    mShouldAdjustSpannableFontSize = true;
   }
 
   public Spannable getSpanned() {
@@ -684,5 +742,9 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     if (!Float.isNaN(mLetterSpacing)) {
       super.setLetterSpacing(mLetterSpacing);
     }
+  }
+
+  public void setOverflow(@Nullable String overflow) {
+    mReactBackgroundManager.setOverflow(overflow);
   }
 }

@@ -11,7 +11,7 @@ package com.facebook.react
  * JavaScriptCore first and fail if it is not available. [.HERMES] will load Hermes first and fail
  * if it is not available.
  */
-enum class JSEngineResolutionAlgorithm {
+public enum class JSEngineResolutionAlgorithm {
   JSC,
   HERMES
 }

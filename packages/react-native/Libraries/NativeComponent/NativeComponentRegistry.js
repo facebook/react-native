@@ -11,6 +11,7 @@
 import type {
   HostComponent,
   PartialViewConfig,
+  ViewConfig,
 } from '../Renderer/shims/ReactNativeTypes';
 
 import getNativeComponentAttributes from '../ReactNative/getNativeComponentAttributes';
@@ -60,21 +61,34 @@ export function get<Config>(
       verify: false,
     };
 
-    let viewConfig;
+    let viewConfig: ViewConfig;
     if (native) {
-      viewConfig = getNativeComponentAttributes(name);
+      viewConfig =
+        getNativeComponentAttributes(name) ??
+        createViewConfig(viewConfigProvider());
     } else {
-      viewConfig = createViewConfig(viewConfigProvider());
-      if (viewConfig == null) {
-        viewConfig = getNativeComponentAttributes(name);
-      }
+      viewConfig =
+        createViewConfig(viewConfigProvider()) ??
+        getNativeComponentAttributes(name);
     }
+
+    invariant(
+      viewConfig != null,
+      'NativeComponentRegistry.get: both static and native view config are missing for native component "%s".',
+      name,
+    );
 
     if (verify) {
       const nativeViewConfig = native
         ? viewConfig
         : getNativeComponentAttributes(name);
-      const staticViewConfig = native
+
+      if (nativeViewConfig == null) {
+        // Defer to static view config if native view config is missing.
+        return viewConfig;
+      }
+
+      const staticViewConfig: ViewConfig = native
         ? createViewConfig(viewConfigProvider())
         : viewConfig;
 

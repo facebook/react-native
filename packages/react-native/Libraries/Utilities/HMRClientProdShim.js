@@ -25,6 +25,7 @@ const HMRClientProdShim: HMRClientNativeInterface = {
   disable() {},
   registerBundle() {},
   log() {},
+  unstable_notifyFuseboxConsoleEnabled() {},
 };
 
 module.exports = HMRClientProdShim;

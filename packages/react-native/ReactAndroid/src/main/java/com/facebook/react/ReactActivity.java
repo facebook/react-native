@@ -65,6 +65,14 @@ public abstract class ReactActivity extends AppCompatActivity
     mDelegate.onDestroy();
   }
 
+  public @Nullable ReactDelegate getReactDelegate() {
+    return mDelegate.getReactDelegate();
+  }
+
+  public ReactActivityDelegate getReactActivityDelegate() {
+    return mDelegate;
+  }
+
   @Override
   public void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
@@ -106,6 +114,12 @@ public abstract class ReactActivity extends AppCompatActivity
   }
 
   @Override
+  public void onUserLeaveHint() {
+    super.onUserLeaveHint();
+    mDelegate.onUserLeaveHint();
+  }
+
+  @Override
   public void requestPermissions(
       String[] permissions, int requestCode, PermissionListener listener) {
     mDelegate.requestPermissions(permissions, requestCode, listener);
@@ -114,6 +128,7 @@ public abstract class ReactActivity extends AppCompatActivity
   @Override
   public void onRequestPermissionsResult(
       int requestCode, @NotNull String[] permissions, @NotNull int[] grantResults) {
+    super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     mDelegate.onRequestPermissionsResult(requestCode, permissions, grantResults);
   }
 

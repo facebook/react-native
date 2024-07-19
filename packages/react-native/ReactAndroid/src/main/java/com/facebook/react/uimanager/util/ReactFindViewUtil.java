@@ -10,6 +10,7 @@ package com.facebook.react.uimanager.util;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.R;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,6 +20,7 @@ import java.util.Map;
 import java.util.Set;
 
 /** Finds views in React Native view hierarchies */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ReactFindViewUtil {
 
   private static final List<OnViewFoundListener> mOnViewFoundListeners = new ArrayList<>();

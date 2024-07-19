@@ -41,7 +41,10 @@ class IntersectionObserver {
   // https://w3c.github.io/IntersectionObserver/#update-intersection-observations-algo
   std::optional<IntersectionObserverEntry> updateIntersectionObservation(
       const RootShadowNode& rootShadowNode,
-      double mountTime);
+      double time);
+
+  std::optional<IntersectionObserverEntry>
+  updateIntersectionObservationForSurfaceUnmount(double time);
 
   IntersectionObserverObserverId getIntersectionObserverId() const {
     return intersectionObserverId_;
@@ -63,12 +66,12 @@ class IntersectionObserver {
       const Rect& targetBoundingRect,
       const Rect& intersectionRect,
       Float threshold,
-      double mountTime);
+      double time);
 
   std::optional<IntersectionObserverEntry> setNotIntersectingState(
       const Rect& rootBoundingRect,
       const Rect& targetBoundingRect,
-      double mountTime);
+      double time);
 
   IntersectionObserverObserverId intersectionObserverId_;
   ShadowNode::Shared targetShadowNode_;

@@ -7,6 +7,8 @@
 
 package com.facebook.react.bridge;
 
+import javax.annotation.Nullable;
+
 /**
  * Extends RuntimeException so that it may be caught by a {@link ReactSoftExceptionListener}. Any
  * {@link ReactSoftExceptionListener} that catches a ReactNoCrashSoftException should log it only
@@ -21,7 +23,7 @@ public class ReactNoCrashSoftException extends RuntimeException {
     super(e);
   }
 
-  public ReactNoCrashSoftException(String m, Throwable e) {
+  public ReactNoCrashSoftException(String m, @Nullable Throwable e) {
     super(m, e);
   }
 }

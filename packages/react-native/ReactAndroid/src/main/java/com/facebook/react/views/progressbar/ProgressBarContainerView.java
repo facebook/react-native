@@ -15,13 +15,15 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 
 /**
  * Controls an enclosing ProgressBar. Exists so that the ProgressBar can be recreated if the style
  * would change.
  */
-/* package */ class ProgressBarContainerView extends FrameLayout {
+/* package */ @Nullsafe(Nullsafe.Mode.LOCAL)
+class ProgressBarContainerView extends FrameLayout {
   private static final int MAX_PROGRESS = 1000;
 
   private @Nullable Integer mColor;
@@ -46,7 +48,7 @@ import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
   }
 
   public void setColor(@Nullable Integer color) {
-    this.mColor = color;
+    mColor = color;
   }
 
   public void setIndeterminate(boolean indeterminate) {

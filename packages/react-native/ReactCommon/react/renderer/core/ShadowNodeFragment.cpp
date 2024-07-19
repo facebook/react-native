@@ -31,15 +31,4 @@ const State::Shared& ShadowNodeFragment::statePlaceholder() {
   return instance;
 }
 
-using Value = ShadowNodeFragment::Value;
-
-Value::Value(const ShadowNodeFragment& fragment)
-    : props(fragment.props),
-      children(fragment.children),
-      state(fragment.state) {}
-
-Value::operator ShadowNodeFragment() const {
-  return ShadowNodeFragment{props, children, state};
-}
-
 } // namespace facebook::react

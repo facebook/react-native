@@ -23,7 +23,6 @@ import com.facebook.react.uimanager.ViewDefaults;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
-import com.facebook.yoga.YogaConstants;
 
 /**
  * Abstract class for anchor {@code <Text>}-ish spannable views, such as {@link TextView} or {@link
@@ -137,9 +136,9 @@ public abstract class ReactTextAnchorViewManager<T extends View, C extends React
         ViewProps.BORDER_BOTTOM_RIGHT_RADIUS,
         ViewProps.BORDER_BOTTOM_LEFT_RADIUS
       },
-      defaultFloat = YogaConstants.UNDEFINED)
+      defaultFloat = Float.NaN)
   public void setBorderRadius(ReactTextView view, int index, float borderRadius) {
-    if (!YogaConstants.isUndefined(borderRadius)) {
+    if (!Float.isNaN(borderRadius)) {
       borderRadius = PixelUtil.toPixelFromDIP(borderRadius);
     }
 
@@ -163,9 +162,9 @@ public abstract class ReactTextAnchorViewManager<T extends View, C extends React
         ViewProps.BORDER_TOP_WIDTH,
         ViewProps.BORDER_BOTTOM_WIDTH,
       },
-      defaultFloat = YogaConstants.UNDEFINED)
+      defaultFloat = Float.NaN)
   public void setBorderWidth(ReactTextView view, int index, float width) {
-    if (!YogaConstants.isUndefined(width)) {
+    if (!Float.isNaN(width)) {
       width = PixelUtil.toPixelFromDIP(width);
     }
     view.setBorderWidth(SPACING_TYPES[index], width);
@@ -180,11 +179,8 @@ public abstract class ReactTextAnchorViewManager<T extends View, C extends React
         "borderBottomColor"
       },
       customType = "Color")
-  public void setBorderColor(ReactTextView view, int index, Integer color) {
-    float rgbComponent =
-        color == null ? YogaConstants.UNDEFINED : (float) ((int) color & 0x00FFFFFF);
-    float alphaComponent = color == null ? YogaConstants.UNDEFINED : (float) ((int) color >>> 24);
-    view.setBorderColor(SPACING_TYPES[index], rgbComponent, alphaComponent);
+  public void setBorderColor(ReactTextView view, int index, @Nullable Integer color) {
+    view.setBorderColor(SPACING_TYPES[index], color);
   }
 
   @ReactProp(name = ViewProps.INCLUDE_FONT_PADDING, defaultBoolean = true)

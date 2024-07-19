@@ -17,12 +17,11 @@ namespace facebook::yoga {
 
 enum class ExperimentalFeature : uint8_t {
   WebFlexBasis = YGExperimentalFeatureWebFlexBasis,
-  AbsolutePercentageAgainstPaddingEdge = YGExperimentalFeatureAbsolutePercentageAgainstPaddingEdge,
 };
 
 template <>
 constexpr int32_t ordinalCount<ExperimentalFeature>() {
-  return 2;
+  return 1;
 }
 
 constexpr ExperimentalFeature scopedEnum(YGExperimentalFeature unscoped) {

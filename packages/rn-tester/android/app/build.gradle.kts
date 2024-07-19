@@ -61,6 +61,8 @@ react {
   //   The hermes compiler command to run. By default it is 'hermesc'
   hermesCommand = "$reactNativeDirPath/ReactAndroid/hermes-engine/build/hermes/bin/hermesc"
   enableHermesOnlyInVariants = listOf("hermesDebug", "hermesRelease")
+
+  autolinkLibrariesWithApp()
 }
 
 /** Run Proguard to shrink the Java bytecode in release builds. */
@@ -145,6 +147,11 @@ android {
     java.srcDirs(
         "$reactNativeDirPath/ReactCommon/react/nativemodule/samples/platform/android",
     )
+    res.setSrcDirs(
+        listOf(
+            "src/main/res",
+            "src/main/public_res",
+        ))
   }
 }
 
@@ -195,5 +202,11 @@ afterEvaluate {
   // we can actually invoke it. It's built by the ReactAndroid:buildCodegenCLI task.
   tasks
       .getByName("generateCodegenSchemaFromJavaScript")
+      .dependsOn(":packages:react-native:ReactAndroid:buildCodegenCLI")
+  tasks
+      .getByName("createBundleJscReleaseJsAndAssets")
+      .dependsOn(":packages:react-native:ReactAndroid:buildCodegenCLI")
+  tasks
+      .getByName("createBundleHermesReleaseJsAndAssets")
       .dependsOn(":packages:react-native:ReactAndroid:buildCodegenCLI")
 }

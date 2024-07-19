@@ -8,12 +8,6 @@
  * @format
  */
 
-import type {TurboModule} from '../TurboModule/RCTExport';
-
-import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
-
-export interface Spec extends TurboModule {
-  +captureComplete: (path: string, error: ?string) => void;
-}
-
-export default (TurboModuleRegistry.get<Spec>('JSCHeapCapture'): ?Spec);
+export * from '../../src/private/specs/modules/NativeJSCHeapCapture';
+import NativeJSCHeapCapture from '../../src/private/specs/modules/NativeJSCHeapCapture';
+export default NativeJSCHeapCapture;

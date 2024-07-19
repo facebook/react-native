@@ -86,7 +86,7 @@ void RawPropsKeyMap::reindex() noexcept {
     }
   }
 
-  for (auto j = length; j < buckets_.size(); j++) {
+  for (size_t j = length; j < buckets_.size(); j++) {
     buckets_[j] = static_cast<RawPropsPropNameLength>(items_.size());
   }
 }

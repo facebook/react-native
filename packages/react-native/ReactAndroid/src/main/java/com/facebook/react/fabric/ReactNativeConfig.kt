@@ -19,36 +19,36 @@ import com.facebook.proguard.annotations.DoNotStrip
  * This is a wrapper for the ReactNativeConfig object in C++
  */
 @DoNotStrip
-interface ReactNativeConfig {
+public interface ReactNativeConfig {
   /**
    * Get a boolean param by string name. Default should be false.
    *
    * @param param The string name of the parameter being requested.
    */
-  @DoNotStrip fun getBool(param: String): Boolean
+  @DoNotStrip public fun getBool(param: String): Boolean
 
   /**
    * Get a Long param by string name. Default should be 0.
    *
    * @param param The string name of the parameter being requested.
    */
-  @DoNotStrip fun getInt64(param: String): Long
+  @DoNotStrip public fun getInt64(param: String): Long
 
   /**
    * Get a string param by string name. Default should be "", empty string.
    *
    * @param param The string name of the parameter being requested.
    */
-  @DoNotStrip fun getString(param: String): String
+  @DoNotStrip public fun getString(param: String): String
 
   /**
    * Get a double param by string name. Default should be 0.
    *
    * @param param The string name of the parameter being requested.
    */
-  @DoNotStrip fun getDouble(param: String): Double
+  @DoNotStrip public fun getDouble(param: String): Double
 
-  companion object {
-    @JvmField val DEFAULT_CONFIG: ReactNativeConfig = EmptyReactNativeConfig()
+  public companion object {
+    @JvmField public val DEFAULT_CONFIG: ReactNativeConfig = EmptyReactNativeConfig()
   }
 }

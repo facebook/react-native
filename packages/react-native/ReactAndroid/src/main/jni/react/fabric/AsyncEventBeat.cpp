@@ -38,12 +38,12 @@ void AsyncEventBeat::tick() const {
   isBeatCallbackScheduled_ = true;
 
   runtimeExecutor_([this, ownerBox = ownerBox_](jsi::Runtime& runtime) {
-    isBeatCallbackScheduled_ = false;
     auto owner = ownerBox->owner.lock();
     if (!owner) {
       return;
     }
 
+    isBeatCallbackScheduled_ = false;
     if (beatCallback_) {
       beatCallback_(runtime);
     }

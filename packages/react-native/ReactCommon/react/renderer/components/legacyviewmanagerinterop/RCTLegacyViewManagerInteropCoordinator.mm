@@ -147,31 +147,6 @@ using namespace facebook::react;
   }
 }
 
-- (void)addViewToRegistry:(UIView *)view withTag:(NSInteger)tag
-{
-  [self _addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
-    if ([viewRegistry objectForKey:@(tag)] != NULL) {
-      return;
-    }
-    NSMutableDictionary<NSNumber *, UIView *> *mutableViewRegistry =
-        (NSMutableDictionary<NSNumber *, UIView *> *)viewRegistry;
-    [mutableViewRegistry setObject:view forKey:@(tag)];
-  }];
-}
-
-- (void)removeViewFromRegistryWithTag:(NSInteger)tag
-{
-  [self _addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
-    if ([viewRegistry objectForKey:@(tag)] == NULL) {
-      return;
-    }
-
-    NSMutableDictionary<NSNumber *, UIView *> *mutableViewRegistry =
-        (NSMutableDictionary<NSNumber *, UIView *> *)viewRegistry;
-    [mutableViewRegistry removeObjectForKey:@(tag)];
-  }];
-}
-
 #pragma mark - Private
 - (void)_handleCommandsOnBridge:(id<RCTBridgeMethod>)method withArgs:(NSArray *)newArgs
 {

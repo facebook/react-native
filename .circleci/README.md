@@ -63,7 +63,6 @@ These workflows are:
 * `testAll.yml` => runs all the possible tests. This workflow is executed on main and on PRs which change set touches both iOS and Android
 * `testAndroid.yml` => runs all the build steps and Android tests. This is used on changes that happens on the Android codebase and infra (`ReactAndroid` folder)
 * `testIOS.yml` => runs all the build steps and iOS tests. This is used on changes that happens on the iOS codebase and infra (`React` folder)
-* `testE2E.yml` => runs the E2E tests. As of today, E2E tests can be triggered if the commit message contains the `#run-e2e-tests` tag.
 * `testJS.yml` => For all the changes that do not touch native/platform code, we only run JS tests.
 
 Notice that if there are changes on files that do not represents code (for example `.md` files like this one or the `Changelog`) we don't run any CI.

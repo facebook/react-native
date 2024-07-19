@@ -14,6 +14,7 @@ export type ViewGeneratorFunction = (libraryName: string, schema: SchemaType) =>
 
 type LibraryGeneratorNames =
     | 'generateComponentDescriptorH'
+    | 'generateComponentDescriptorCpp'
     | 'generateComponentHObjCpp'
     | 'generateEventEmitterCpp'
     | 'generateEventEmitterH'

@@ -9,11 +9,13 @@ package com.facebook.react.uimanager;
 
 import androidx.annotation.Nullable;
 import androidx.core.util.Pools;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.Event;
 
 /** Event used to notify JS component about changes of its position or dimensions */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class OnLayoutEvent extends Event<OnLayoutEvent> {
 
   private static final Pools.SynchronizedPool<OnLayoutEvent> EVENTS_POOL =

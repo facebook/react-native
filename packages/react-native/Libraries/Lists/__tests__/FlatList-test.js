@@ -10,13 +10,13 @@
 
 'use strict';
 
+const {create} = require('../../../jest/renderer');
 const FlatList = require('../FlatList');
 const React = require('react');
-const ReactTestRenderer = require('react-test-renderer');
 
 describe('FlatList', () => {
-  it('renders simple list', () => {
-    const component = ReactTestRenderer.create(
+  it('renders simple list', async () => {
+    const component = await create(
       <FlatList
         data={[{key: 'i1'}, {key: 'i2'}, {key: 'i3'}]}
         renderItem={({item}) => <item value={item.key} />}
@@ -24,8 +24,8 @@ describe('FlatList', () => {
     );
     expect(component).toMatchSnapshot();
   });
-  it('renders simple list (multiple columns)', () => {
-    const component = ReactTestRenderer.create(
+  it('renders simple list (multiple columns)', async () => {
+    const component = await create(
       <FlatList
         data={[{key: 'i1'}, {key: 'i2'}, {key: 'i3'}]}
         renderItem={({item}) => <item value={item.key} />}
@@ -34,11 +34,11 @@ describe('FlatList', () => {
     );
     expect(component).toMatchSnapshot();
   });
-  it('renders simple list using ListItemComponent', () => {
+  it('renders simple list using ListItemComponent', async () => {
     function ListItemComponent({item}) {
       return <item value={item.key} />;
     }
-    const component = ReactTestRenderer.create(
+    const component = await create(
       <FlatList
         data={[{key: 'i1'}, {key: 'i2'}, {key: 'i3'}]}
         ListItemComponent={ListItemComponent}
@@ -46,11 +46,11 @@ describe('FlatList', () => {
     );
     expect(component).toMatchSnapshot();
   });
-  it('renders simple list using ListItemComponent (multiple columns)', () => {
+  it('renders simple list using ListItemComponent (multiple columns)', async () => {
     function ListItemComponent({item}) {
       return <item value={item.key} />;
     }
-    const component = ReactTestRenderer.create(
+    const component = await create(
       <FlatList
         data={[{key: 'i1'}, {key: 'i2'}, {key: 'i3'}]}
         ListItemComponent={ListItemComponent}
@@ -59,14 +59,14 @@ describe('FlatList', () => {
     );
     expect(component).toMatchSnapshot();
   });
-  it('renders empty list', () => {
-    const component = ReactTestRenderer.create(
+  it('renders empty list', async () => {
+    const component = await create(
       <FlatList data={[]} renderItem={({item}) => <item value={item.key} />} />,
     );
     expect(component).toMatchSnapshot();
   });
-  it('renders null list', () => {
-    const component = ReactTestRenderer.create(
+  it('renders null list', async () => {
+    const component = await create(
       <FlatList
         data={undefined}
         renderItem={({item}) => <item value={item.key} />}
@@ -74,8 +74,8 @@ describe('FlatList', () => {
     );
     expect(component).toMatchSnapshot();
   });
-  it('renders all the bells and whistles', () => {
-    const component = ReactTestRenderer.create(
+  it('renders all the bells and whistles', async () => {
+    const component = await create(
       <FlatList
         ItemSeparatorComponent={() => <separator />}
         ListEmptyComponent={() => <empty />}
@@ -92,13 +92,13 @@ describe('FlatList', () => {
     );
     expect(component).toMatchSnapshot();
   });
-  it('getNativeScrollRef for case where it returns a native view', () => {
+  it('getNativeScrollRef for case where it returns a native view', async () => {
     jest.resetModules();
     jest.unmock('../../Components/ScrollView/ScrollView');
 
     const listRef = React.createRef(null);
 
-    ReactTestRenderer.create(
+    await create(
       <FlatList
         data={[{key: 'outer0'}, {key: 'outer1'}]}
         renderItem={outerInfo => (
@@ -125,7 +125,7 @@ describe('FlatList', () => {
     expect(scrollRef.measureInWindow).toBeInstanceOf(jest.fn().constructor);
   });
 
-  it('getNativeScrollRef for case where it returns a native scroll view', () => {
+  it('getNativeScrollRef for case where it returns a native scroll view', async () => {
     jest.resetModules();
     jest.unmock('../../Components/ScrollView/ScrollView');
 
@@ -134,7 +134,7 @@ describe('FlatList', () => {
     }
     const listRef = React.createRef(null);
 
-    ReactTestRenderer.create(
+    await create(
       <FlatList
         data={[{key: 'i4'}, {key: 'i2'}, {key: 'i3'}]}
         ListItemComponent={ListItemComponent}
@@ -152,7 +152,7 @@ describe('FlatList', () => {
     expect(scrollRef.measureInWindow).toBeInstanceOf(jest.fn().constructor);
   });
 
-  it('calls renderItem for all data items', () => {
+  it('calls renderItem for all data items', async () => {
     const data = [
       {key: 'i1'},
       null,
@@ -164,15 +164,13 @@ describe('FlatList', () => {
     ];
 
     const renderItemInOneColumn = jest.fn();
-    ReactTestRenderer.create(
-      <FlatList data={data} renderItem={renderItemInOneColumn} />,
-    );
+    await create(<FlatList data={data} renderItem={renderItemInOneColumn} />);
 
     expect(renderItemInOneColumn).toHaveBeenCalledTimes(7);
 
     const renderItemInThreeColumns = jest.fn();
 
-    ReactTestRenderer.create(
+    await create(
       <FlatList
         data={data}
         renderItem={renderItemInThreeColumns}
@@ -182,7 +180,7 @@ describe('FlatList', () => {
 
     expect(renderItemInThreeColumns).toHaveBeenCalledTimes(7);
   });
-  it('renders array-like data', () => {
+  it('renders array-like data', async () => {
     const arrayLike = {
       length: 3,
       0: {key: 'i1'},
@@ -190,7 +188,7 @@ describe('FlatList', () => {
       2: {key: 'i3'},
     };
 
-    const component = ReactTestRenderer.create(
+    const component = await create(
       <FlatList
         data={arrayLike}
         renderItem={({item}) => <item value={item.key} />}
@@ -198,8 +196,8 @@ describe('FlatList', () => {
     );
     expect(component).toMatchSnapshot();
   });
-  it('ignores invalid data', () => {
-    const component = ReactTestRenderer.create(
+  it('ignores invalid data', async () => {
+    const component = await create(
       <FlatList
         data={123456}
         renderItem={({item}) => <item value={item.key} />}

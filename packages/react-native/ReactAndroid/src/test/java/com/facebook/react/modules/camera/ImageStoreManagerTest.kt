@@ -71,8 +71,7 @@ class ImageStoreManagerTest {
   }
 
   private fun invokeConversion(inputStream: InputStream): String {
-    return ImageStoreManager(reactApplicationContext)
-        .convertInputStreamToBase64OutputStream(inputStream)
+    return ImageStoreManager.convertInputStreamToBase64OutputStream(inputStream)
   }
 
   private fun generateRandomByteString(length: Int): ByteArray {

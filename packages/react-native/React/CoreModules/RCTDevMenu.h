@@ -98,6 +98,8 @@ typedef NSString * (^RCTDevMenuItemTitleBlock)(void);
  */
 + (instancetype)buttonItemWithTitleBlock:(RCTDevMenuItemTitleBlock)titleBlock handler:(dispatch_block_t)handler;
 
+@property (nonatomic, assign, getter=isDisabled) BOOL disabled;
+
 @end
 
 /**

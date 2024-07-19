@@ -33,7 +33,7 @@ Pod::Spec.new do |s|
   s.source_files         = "jsireact/*.{cpp,h}"
   s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
   s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/fmt/include\"",
-                               "CLANG_CXX_LANGUAGE_STANDARD" => "c++20" }
+                               "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard() }
   s.header_dir             = "jsireact"
 
   s.dependency "React-cxxreact", version
@@ -43,6 +43,7 @@ Pod::Spec.new do |s|
   s.dependency "DoubleConversion"
   s.dependency "fmt", "9.1.0"
   s.dependency "glog"
+  add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')
 
   if ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == "1"
     s.dependency 'hermes-engine'

@@ -29,17 +29,10 @@ class TextShadowNode : public ConcreteShadowNode<
  public:
   static ShadowNodeTraits BaseTraits() {
     auto traits = ConcreteShadowNode::BaseTraits();
-
 #ifdef ANDROID
     traits.set(ShadowNodeTraits::Trait::FormsView);
 #endif
-    traits.set(IdentifierTrait());
-
     return traits;
-  }
-
-  static ShadowNodeTraits::Trait IdentifierTrait() {
-    return ShadowNodeTraits::Trait::Text;
   }
 
   using ConcreteShadowNode::ConcreteShadowNode;

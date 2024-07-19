@@ -12,7 +12,6 @@ import android.content.Context
 import android.view.View
 import com.facebook.react.bridge.NativeMap
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
-import com.facebook.react.fabric.ComponentFactory
 import com.facebook.react.interfaces.fabric.SurfaceHandler
 import com.facebook.react.runtime.internal.bolts.Task
 import com.facebook.react.uimanager.events.EventDispatcher
@@ -34,7 +33,6 @@ import org.robolectric.shadows.ShadowInstrumentation
 @OptIn(UnstableReactNativeAPI::class)
 @Config(shadows = [ShadowSoLoader::class])
 class ReactSurfaceTest {
-  private lateinit var reactHostDelegate: ReactHostDelegate
   private lateinit var eventDispatcher: EventDispatcher
   private lateinit var reactHost: ReactHostImpl
   private lateinit var context: Context
@@ -43,12 +41,9 @@ class ReactSurfaceTest {
 
   @Before
   fun setUp() {
-    reactHostDelegate = mock(ReactHostDelegate::class.java)
     eventDispatcher = mock(EventDispatcher::class.java)
     context = Robolectric.buildActivity(Activity::class.java).create().get()
-    val componentFactory = Mockito.mock(ComponentFactory::class.java)
-    reactHost =
-        Mockito.spy(ReactHostImpl(context, reactHostDelegate, componentFactory, false, {}, false))
+    reactHost = Mockito.mock(ReactHostImpl::class.java)
     Mockito.doAnswer(mockedStartSurface())
         .`when`(reactHost)
         .startSurface(ArgumentMatchers.any(ReactSurfaceImpl::class.java))

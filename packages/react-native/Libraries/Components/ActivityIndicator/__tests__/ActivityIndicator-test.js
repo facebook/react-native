@@ -21,8 +21,8 @@ describe('<ActivityIndicator />', () => {
     expect(ActivityIndicator.displayName).toBe('ActivityIndicator');
   });
 
-  it('should render as expected', () => {
-    ReactNativeTestTools.expectRendersMatchingSnapshot(
+  it('should render as expected', async () => {
+    await ReactNativeTestTools.expectRendersMatchingSnapshot(
       'ActivityIndicator',
       () => <ActivityIndicator size="large" color="#0000ff" />,
       () => {

@@ -35,7 +35,7 @@ ShadowNode::Unshared ComponentBuilder::build(
   auto constShadowNode = componentDescriptor.createShadowNode(
       ShadowNodeFragment{
           elementFragment.props,
-          std::make_shared<ShadowNode::ListOfShared const>(children),
+          std::make_shared<const ShadowNode::ListOfShared>(children),
           initialState},
       family);
 

@@ -8,23 +8,6 @@
  * @format
  */
 
-import type {TurboModule} from '../TurboModule/RCTExport';
-
-import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
-
-export interface Spec extends TurboModule {
-  +getInitialURL: () => Promise<string>;
-  +canOpenURL: (url: string) => Promise<boolean>;
-  +openURL: (url: string) => Promise<void>;
-  +openSettings: () => Promise<void>;
-  +sendIntent: (
-    action: string,
-    extras: ?Array<{
-      key: string,
-      value: string | number | boolean, // TODO(T67672788): Union types are not type safe
-      ...
-    }>,
-  ) => Promise<void>;
-}
-
-export default (TurboModuleRegistry.get<Spec>('IntentAndroid'): ?Spec);
+export * from '../../src/private/specs/modules/NativeIntentAndroid';
+import NativeIntentAndroid from '../../src/private/specs/modules/NativeIntentAndroid';
+export default NativeIntentAndroid;

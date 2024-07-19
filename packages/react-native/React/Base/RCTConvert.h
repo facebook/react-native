@@ -11,11 +11,21 @@
 #import <React/RCTAnimationType.h>
 #import <React/RCTBorderCurve.h>
 #import <React/RCTBorderStyle.h>
+#import <React/RCTCursor.h>
 #import <React/RCTDefines.h>
 #import <React/RCTLog.h>
 #import <React/RCTPointerEvents.h>
 #import <React/RCTTextDecorationLineType.h>
 #import <yoga/Yoga.h>
+
+typedef NS_ENUM(NSInteger, RCTColorSpace) {
+  RCTColorSpaceSRGB,
+  RCTColorSpaceDisplayP3,
+};
+
+// Change the default color space
+RCTColorSpace RCTGetDefaultColorSpace(void);
+RCT_EXTERN void RCTSetDefaultColorSpace(RCTColorSpace colorSpace);
 
 /**
  * This class provides a collection of conversion functions for mapping
@@ -70,15 +80,15 @@ typedef NSURL RCTFileURL;
 + (UIReturnKeyType)UIReturnKeyType:(id)json;
 + (UIUserInterfaceStyle)UIUserInterfaceStyle:(id)json API_AVAILABLE(ios(12));
 + (UIInterfaceOrientationMask)UIInterfaceOrientationMask:(NSString *)orientation;
++ (UIModalPresentationStyle)UIModalPresentationStyle:(id)json;
 
 #if !TARGET_OS_TV
 + (UIDataDetectorTypes)UIDataDetectorTypes:(id)json;
 #endif
 
 + (UIViewContentMode)UIViewContentMode:(id)json;
-#if !TARGET_OS_TV
-+ (UIBarStyle)UIBarStyle:(id)json __deprecated;
-#endif
+
++ (RCTCursor)RCTCursor:(id)json;
 
 + (CGFloat)CGFloat:(id)json;
 + (CGPoint)CGPoint:(id)json;
@@ -91,6 +101,13 @@ typedef NSURL RCTFileURL;
 
 + (CGAffineTransform)CGAffineTransform:(id)json;
 
++ (UIColor *)UIColorWithRed:(CGFloat)red green:(CGFloat)green blue:(CGFloat)blue alpha:(CGFloat)alpha;
++ (UIColor *)UIColorWithRed:(CGFloat)red
+                      green:(CGFloat)green
+                       blue:(CGFloat)blue
+                      alpha:(CGFloat)alpha
+              andColorSpace:(RCTColorSpace)colorSpace;
++ (RCTColorSpace)RCTColorSpaceFromString:(NSString *)colorSpace;
 + (UIColor *)UIColor:(id)json;
 + (CGColorRef)CGColor:(id)json CF_RETURNS_NOT_RETAINED;
 

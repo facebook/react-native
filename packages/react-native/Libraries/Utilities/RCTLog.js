@@ -38,6 +38,7 @@ const RCTLog = {
 
   // Log to console regardless of nativeLoggingHook
   logToConsole(level: string, ...args: Array<mixed>): void {
+    // $FlowFixMe[invalid-computed-prop]
     const logFn = levelsMap[level];
     invariant(
       logFn,

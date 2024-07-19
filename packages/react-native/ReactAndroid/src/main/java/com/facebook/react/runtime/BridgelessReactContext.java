@@ -8,22 +8,25 @@
 package com.facebook.react.runtime;
 
 import android.content.Context;
+import android.util.Log;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.CatalystInstance;
+import com.facebook.react.bridge.JavaScriptContextHolder;
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.JavaScriptModuleRegistry;
 import com.facebook.react.bridge.NativeArray;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactNoCrashBridgeNotAllowedSoftException;
-import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.WritableNativeArray;
+import com.facebook.react.common.annotations.FrameworkAPI;
+import com.facebook.react.common.annotations.UnstableReactNativeAPI;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
+import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.EventDispatcherProvider;
 import java.lang.reflect.InvocationHandler;
@@ -80,17 +83,36 @@ class BridgelessReactContext extends ReactApplicationContext implements EventDis
 
   @Override
   public CatalystInstance getCatalystInstance() {
-    ReactSoftExceptionLogger.logSoftExceptionVerbose(
+    Log.w(
         TAG,
-        new ReactNoCrashBridgeNotAllowedSoftException(
-            "getCatalystInstance() cannot be called when the bridge is disabled"));
-    throw new UnsupportedOperationException("There is no Catalyst instance in bridgeless mode.");
+        "[WARNING] Bridgeless doesn't support CatalystInstance. Accessing an API that's not part of"
+            + " the new architecture is not encouraged usage.");
+    return new BridgelessCatalystInstance(mReactHost);
+  }
+
+  @Deprecated
+  @Override
+  public boolean hasActiveCatalystInstance() {
+    return hasActiveReactInstance();
   }
 
   @Override
   public boolean hasActiveReactInstance() {
     return mReactHost.isInstanceInitialized();
   }
+
+  @Override
+  public boolean hasCatalystInstance() {
+    return false;
+  }
+
+  @Override
+  public boolean hasReactInstance() {
+    return mReactHost.isInstanceInitialized();
+  }
+
+  @Override
+  public void destroy() {}
 
   DevSupportManager getDevSupportManager() {
     return mReactHost.getDevSupportManager();
@@ -126,6 +148,8 @@ class BridgelessReactContext extends ReactApplicationContext implements EventDis
         && mInteropModuleRegistry.shouldReturnInteropModule(jsInterface)) {
       return mInteropModuleRegistry.getInteropModule(jsInterface);
     }
+
+    // TODO T189052462: ReactContext caches JavaScriptModule instances
     JavaScriptModule interfaceProxy =
         (JavaScriptModule)
             Proxy.newProxyInstance(
@@ -133,6 +157,13 @@ class BridgelessReactContext extends ReactApplicationContext implements EventDis
                 new Class[] {jsInterface},
                 new BridgelessJSModuleInvocationHandler(mReactHost, jsInterface));
     return (T) interfaceProxy;
+  }
+
+  /** Shortcut RCTDeviceEventEmitter.emit since it's frequently used */
+  @Override
+  public void emitDeviceEvent(String eventName, @Nullable Object args) {
+    mReactHost.callFunctionOnModule(
+        "RCTDeviceEventEmitter", "emit", Arguments.fromJavaArgs(new Object[] {eventName, args}));
   }
 
   @Override
@@ -151,8 +182,25 @@ class BridgelessReactContext extends ReactApplicationContext implements EventDis
   }
 
   @Override
+  public @Nullable NativeModule getNativeModule(String name) {
+    return mReactHost.getNativeModule(name);
+  }
+
+  @Override
+  @FrameworkAPI
+  @UnstableReactNativeAPI
+  public @Nullable JavaScriptContextHolder getJavaScriptContextHolder() {
+    return mReactHost.getJavaScriptContextHolder();
+  }
+
+  @Override
   public void handleException(Exception e) {
     mReactHost.handleHostException(e);
+  }
+
+  @Override
+  public @Nullable CallInvokerHolder getJSCallInvokerHolder() {
+    return mReactHost.getJSCallInvokerHolder();
   }
 
   DefaultHardwareBackBtnHandler getDefaultHardwareBackBtnHandler() {

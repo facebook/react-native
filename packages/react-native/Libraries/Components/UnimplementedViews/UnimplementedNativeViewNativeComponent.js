@@ -8,19 +8,6 @@
  * @flow strict-local
  */
 
-import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
-import type {WithDefault} from '../../Types/CodegenTypes';
-import type {ViewProps} from '../View/ViewPropTypes';
-
-import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
-
-type NativeProps = $ReadOnly<{|
-  ...ViewProps,
-  name?: WithDefault<string, ''>,
-|}>;
-
-// NOTE: This component is not implemented in paper
-// Do not require this file in paper builds
-export default (codegenNativeComponent<NativeProps>(
-  'UnimplementedNativeView',
-): HostComponent<NativeProps>);
+export * from '../../../src/private/specs/components/UnimplementedNativeViewNativeComponent';
+import UnimplementedNativeViewNativeComponent from '../../../src/private/specs/components/UnimplementedNativeViewNativeComponent';
+export default UnimplementedNativeViewNativeComponent;

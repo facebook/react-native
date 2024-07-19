@@ -45,7 +45,7 @@ Pod::Spec.new do |s|
   s.header_dir             = "react/renderer/debug"
   s.exclude_files          = "tests"
   s.pod_target_xcconfig    = {
-    "CLANG_CXX_LANGUAGE_STANDARD" => "c++20",
+    "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
     "HEADER_SEARCH_PATHS" => header_search_paths.join(' '),
     "DEFINES_MODULE" => "YES"
   }

@@ -10,11 +10,13 @@ package com.facebook.react.views.swiperefresh;
 import android.view.MotionEvent;
 import android.view.ViewConfiguration;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.events.NativeGestureUtil;
 
 /** Basic extension of {@link SwipeRefreshLayout} with ReactNative-specific functionality. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ReactSwipeRefreshLayout extends SwipeRefreshLayout {
 
   private static final float DEFAULT_CIRCLE_TARGET = 64;

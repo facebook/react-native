@@ -230,6 +230,78 @@ class ZIndexExample extends React.Component<
   };
 }
 
+function PositionStaticZIndexExample(): React.Node {
+  return (
+    <View
+      testID="view-test-zindex-with-static"
+      style={{backgroundColor: 'yellow', flexDirection: 'row'}}>
+      <View
+        style={{
+          backgroundColor: 'red',
+          width: 100,
+          height: 100,
+          position: 'relative',
+          left: 10,
+        }}>
+        <View
+          style={{
+            backgroundColor: 'purple',
+            width: 50,
+            height: 50,
+            top: 30,
+            left: 65,
+            position: 'relative',
+          }}
+        />
+      </View>
+      <View
+        style={{
+          backgroundColor: 'blue',
+          width: 100,
+          height: 100,
+          zIndex: 100,
+          position: 'static',
+        }}>
+        <View
+          style={{
+            backgroundColor: 'orange',
+            width: 50,
+            height: 50,
+            top: 10,
+            position: 'relative',
+          }}
+        />
+        <View
+          style={{
+            backgroundColor: 'brown',
+            width: 50,
+            height: 50,
+            position: 'static',
+          }}>
+          <View
+            style={{
+              backgroundColor: 'black',
+              width: 25,
+              height: 25,
+              top: -10,
+              position: 'relative',
+            }}
+          />
+        </View>
+      </View>
+      <View
+        style={{
+          backgroundColor: 'green',
+          width: 100,
+          height: 100,
+          position: 'relative',
+          left: -20,
+        }}
+      />
+    </View>
+  );
+}
+
 class DisplayNoneStyle extends React.Component<
   $ReadOnly<{||}>,
   {|
@@ -576,6 +648,96 @@ export default ({
       },
     },
     {
+      title: 'Rounded Borders (Percentages)',
+      name: 'rounded-borders-percentages',
+      render(): React.Node {
+        return (
+          <View
+            testID="view-test-rounded-borders-percentages"
+            style={{flexDirection: 'row', flexWrap: 'wrap'}}>
+            <View
+              style={{
+                width: 50,
+                height: 50,
+                borderRadius: '50%',
+                borderWidth: 1,
+                marginRight: 10,
+              }}
+            />
+            <View
+              style={{
+                width: 50,
+                height: 50,
+                borderRadius: '50%',
+                borderWidth: 10,
+                marginRight: 10,
+              }}
+            />
+            <View
+              style={{
+                width: 50,
+                height: 50,
+                borderTopLeftRadius: '10%',
+                borderTopRightRadius: '20%',
+                borderBottomRightRadius: '50%',
+                borderBottomLeftRadius: '100%',
+                borderWidth: 1,
+                marginRight: 10,
+              }}
+            />
+            <View
+              style={{
+                width: 50,
+                height: 50,
+                borderTopLeftRadius: '10%',
+                borderTopRightRadius: '20%',
+                borderBottomRightRadius: '50%',
+                borderBottomLeftRadius: '100%',
+                borderWidth: 10,
+                marginRight: 10,
+              }}
+            />
+            <View
+              style={{
+                width: 50,
+                height: 50,
+                borderLeftWidth: 6,
+                borderTopWidth: 6,
+                borderTopLeftRadius: '40%',
+              }}
+            />
+            <View
+              style={{
+                width: 50,
+                height: 50,
+                borderRightWidth: 6,
+                borderTopWidth: 6,
+                borderTopRightRadius: '40%',
+              }}
+            />
+            <View
+              style={{
+                width: 50,
+                height: 50,
+                borderBottomWidth: 6,
+                borderLeftWidth: 6,
+                borderBottomLeftRadius: '40%',
+              }}
+            />
+            <View
+              style={{
+                width: 50,
+                height: 50,
+                borderBottomWidth: 6,
+                borderRightWidth: 6,
+                borderBottomRightRadius: '40%',
+              }}
+            />
+          </View>
+        );
+      },
+    },
+    {
       title: 'Overflow',
       name: 'overflow',
       render(): React.Node {
@@ -662,6 +824,11 @@ export default ({
       render(): React.Node {
         return <ZIndexExample />;
       },
+    },
+    {
+      title: 'ZIndex With Static',
+      name: 'zindex-with-static',
+      render: PositionStaticZIndexExample,
     },
     {
       title: '`display: none` style',
@@ -765,19 +932,19 @@ export default ({
       name: 'insets',
       render(): React.Node {
         return (
-          <View testID="view-test-insets" style={{rowGap: 10}}>
-            <View style={{position: 'relative', height: 50, borderWidth: 1}}>
+          <View testID="view-test-insets" style={{rowGap: 5}}>
+            <View style={{position: 'relative', height: 40, borderWidth: 1}}>
               <View
                 style={{
                   backgroundColor: '#527FE4',
                   padding: 5,
                   position: 'absolute',
-                  inset: 10,
+                  inset: 5,
                 }}>
-                <Text style={{fontSize: 11}}>inset 10</Text>
+                <Text style={{fontSize: 11}}>inset 5</Text>
               </View>
             </View>
-            <View style={{position: 'relative', height: 50, borderWidth: 1}}>
+            <View style={{position: 'relative', height: 40, borderWidth: 1}}>
               <View
                 style={{
                   backgroundColor: '#527FE4',
@@ -788,7 +955,7 @@ export default ({
                 <Text style={{fontSize: 11}}>insetBlock 5</Text>
               </View>
             </View>
-            <View style={{position: 'relative', height: 50, borderWidth: 1}}>
+            <View style={{position: 'relative', height: 40, borderWidth: 1}}>
               <View
                 style={{
                   backgroundColor: '#527FE4',
@@ -799,7 +966,7 @@ export default ({
                 <Text style={{fontSize: 11}}>insetBlockEnd 5</Text>
               </View>
             </View>
-            <View style={{position: 'relative', height: 50, borderWidth: 1}}>
+            <View style={{position: 'relative', height: 40, borderWidth: 1}}>
               <View
                 style={{
                   backgroundColor: '#527FE4',
@@ -810,7 +977,7 @@ export default ({
                 <Text style={{fontSize: 11}}>insetBlockStart 5</Text>
               </View>
             </View>
-            <View style={{position: 'relative', height: 50, borderWidth: 1}}>
+            <View style={{position: 'relative', height: 40, borderWidth: 1}}>
               <View
                 style={{
                   backgroundColor: '#527FE4',
@@ -821,7 +988,7 @@ export default ({
                 <Text style={{fontSize: 11}}>insetInline 5</Text>
               </View>
             </View>
-            <View style={{position: 'relative', height: 50, borderWidth: 1}}>
+            <View style={{position: 'relative', height: 40, borderWidth: 1}}>
               <View
                 style={{
                   backgroundColor: '#527FE4',
@@ -832,7 +999,7 @@ export default ({
                 <Text style={{fontSize: 11}}>insetInlineEnd 5</Text>
               </View>
             </View>
-            <View style={{position: 'relative', height: 50, borderWidth: 1}}>
+            <View style={{position: 'relative', height: 40, borderWidth: 1}}>
               <View
                 style={{
                   backgroundColor: '#527FE4',

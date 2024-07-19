@@ -7,15 +7,16 @@
 
 #import "RCTScheduler.h"
 
+#import <cxxreact/SystraceSection.h>
 #import <react/renderer/animations/LayoutAnimationDriver.h>
 #import <react/renderer/componentregistry/ComponentDescriptorFactory.h>
-#import <react/renderer/debug/SystraceSection.h>
 #import <react/renderer/scheduler/Scheduler.h>
 #import <react/renderer/scheduler/SchedulerDelegate.h>
 #import <react/utils/RunLoopObserver.h>
 
 #import <React/RCTFollyConvert.h>
 
+#import "PlatformRunLoopObserver.h"
 #import "RCTConversions.h"
 
 using namespace facebook::react;
@@ -30,7 +31,13 @@ class SchedulerDelegateProxy : public SchedulerDelegate {
     [scheduler.delegate schedulerDidFinishTransaction:mountingCoordinator];
   }
 
-  void schedulerDidRequestPreliminaryViewAllocation(SurfaceId surfaceId, const ShadowNode &shadowNode) override
+  void schedulerShouldRenderTransactions(const MountingCoordinator::Shared &mountingCoordinator) override
+  {
+    RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
+    [scheduler.delegate schedulerShouldRenderTransactions:mountingCoordinator];
+  }
+
+  void schedulerDidRequestPreliminaryViewAllocation(const ShadowNode &shadowNode) override
   {
     // Does nothing.
     // This delegate method is not currently used on iOS.
@@ -115,8 +122,10 @@ class LayoutAnimationDelegateProxy : public LayoutAnimationStatusDelegate, publi
       _layoutAnimationDelegateProxy = std::make_shared<LayoutAnimationDelegateProxy>((__bridge void *)self);
       _animationDriver = std::make_shared<LayoutAnimationDriver>(
           toolbox.runtimeExecutor, toolbox.contextContainer, _layoutAnimationDelegateProxy.get());
-      _uiRunLoopObserver =
-          toolbox.mainRunLoopObserverFactory(RunLoopObserver::Activity::BeforeWaiting, _layoutAnimationDelegateProxy);
+
+      _uiRunLoopObserver = std::make_unique<MainRunLoopObserver>(
+          RunLoopObserver::Activity::BeforeWaiting, _layoutAnimationDelegateProxy);
+
       _uiRunLoopObserver->setDelegate(_layoutAnimationDelegateProxy.get());
     }
 

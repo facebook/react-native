@@ -10,6 +10,7 @@ package com.facebook.react.views.textinput;
 import static com.facebook.react.uimanager.UIManagerHelper.getReactContext;
 
 import android.content.Context;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
@@ -46,25 +47,26 @@ import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
+import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate;
 import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
-import com.facebook.react.views.text.CustomLetterSpacingSpan;
-import com.facebook.react.views.text.CustomLineHeightSpan;
-import com.facebook.react.views.text.CustomStyleSpan;
-import com.facebook.react.views.text.ReactAbsoluteSizeSpan;
-import com.facebook.react.views.text.ReactBackgroundColorSpan;
-import com.facebook.react.views.text.ReactForegroundColorSpan;
-import com.facebook.react.views.text.ReactSpan;
-import com.facebook.react.views.text.ReactStrikethroughSpan;
 import com.facebook.react.views.text.ReactTextUpdate;
 import com.facebook.react.views.text.ReactTypefaceUtils;
-import com.facebook.react.views.text.ReactUnderlineSpan;
 import com.facebook.react.views.text.TextAttributes;
-import com.facebook.react.views.text.TextInlineImageSpan;
 import com.facebook.react.views.text.TextLayoutManager;
+import com.facebook.react.views.text.internal.span.CustomLetterSpacingSpan;
+import com.facebook.react.views.text.internal.span.CustomLineHeightSpan;
+import com.facebook.react.views.text.internal.span.CustomStyleSpan;
+import com.facebook.react.views.text.internal.span.ReactAbsoluteSizeSpan;
+import com.facebook.react.views.text.internal.span.ReactBackgroundColorSpan;
+import com.facebook.react.views.text.internal.span.ReactForegroundColorSpan;
+import com.facebook.react.views.text.internal.span.ReactSpan;
+import com.facebook.react.views.text.internal.span.ReactStrikethroughSpan;
+import com.facebook.react.views.text.internal.span.ReactUnderlineSpan;
+import com.facebook.react.views.text.internal.span.TextInlineImageSpan;
 import com.facebook.react.views.view.ReactViewBackgroundManager;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -82,6 +84,7 @@ import java.util.Objects;
  * VisibleForTesting from {@link TextInputEventsTestCase}.
  */
 public class ReactEditText extends AppCompatEditText {
+
   private final InputMethodManager mInputMethodManager;
   private final String TAG = ReactEditText.class.getSimpleName();
   public static final boolean DEBUG_MODE = ReactBuildConfig.DEBUG && false;
@@ -95,8 +98,6 @@ public class ReactEditText extends AppCompatEditText {
 
   /** A count of events sent to JS or C++. */
   protected int mNativeEventCount;
-
-  private static final int UNSET = -1;
 
   private @Nullable ArrayList<TextWatcher> mListeners;
   private @Nullable TextWatcherDelegator mTextWatcherDelegator;
@@ -114,10 +115,12 @@ public class ReactEditText extends AppCompatEditText {
   private TextAttributes mTextAttributes;
   private boolean mTypefaceDirty = false;
   private @Nullable String mFontFamily = null;
-  private int mFontWeight = UNSET;
-  private int mFontStyle = UNSET;
+  private int mFontWeight = ReactConstants.UNSET;
+  private int mFontStyle = ReactConstants.UNSET;
   private boolean mAutoFocus = false;
+  private boolean mContextMenuHidden = false;
   private boolean mDidAttachToWindow = false;
+  private boolean mSelectTextOnFocus = false;
   private @Nullable String mPlaceholder = null;
 
   private final ReactViewBackgroundManager mReactBackgroundManager;
@@ -190,6 +193,9 @@ public class ReactEditText extends AppCompatEditText {
            */
           @Override
           public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            if (mContextMenuHidden) {
+              return false;
+            }
             menu.removeItem(android.R.id.pasteAsPlainText);
             return true;
           }
@@ -233,6 +239,12 @@ public class ReactEditText extends AppCompatEditText {
   @Override
   protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
     onContentSizeChange();
+    if (mSelectTextOnFocus && isFocused()) {
+      // Explicitly call this method to select text when layout is drawn
+      selectAll();
+      // Prevent text on being selected for next layout pass
+      mSelectTextOnFocus = false;
+    }
   }
 
   @Override
@@ -269,6 +281,12 @@ public class ReactEditText extends AppCompatEditText {
       return true;
     }
     return super.onKeyUp(keyCode, event);
+  }
+
+  @Override
+  public void setLineHeight(int lineHeight) {
+    mTextAttributes.setLineHeight(lineHeight);
+    // We don't call super.setLineHeight() because LineHeight is fully managed by ReactNative
   }
 
   @Override
@@ -379,7 +397,7 @@ public class ReactEditText extends AppCompatEditText {
       return;
     }
 
-    if (start != UNSET && end != UNSET) {
+    if (start != ReactConstants.UNSET && end != ReactConstants.UNSET) {
       // clamp selection values for safety
       start = clampToTextLength(start);
       end = clampToTextLength(end);
@@ -588,8 +606,8 @@ public class ReactEditText extends AppCompatEditText {
 
     // Match behavior of CustomStyleSpan and enable SUBPIXEL_TEXT_FLAG when setting anything
     // nonstandard
-    if (mFontStyle != UNSET
-        || mFontWeight != UNSET
+    if (mFontStyle != ReactConstants.UNSET
+        || mFontWeight != ReactConstants.UNSET
         || mFontFamily != null
         || getFontFeatureSettings() != null) {
       setPaintFlags(getPaintFlags() | Paint.SUBPIXEL_TEXT_FLAG);
@@ -819,8 +837,8 @@ public class ReactEditText extends AppCompatEditText {
           new CustomLetterSpacingSpan(effectiveLetterSpacing), 0, workingText.length(), spanFlags);
     }
 
-    if (mFontStyle != UNSET
-        || mFontWeight != UNSET
+    if (mFontStyle != ReactConstants.UNSET
+        || mFontWeight != ReactConstants.UNSET
         || mFontFamily != null
         || getFontFeatureSettings() != null) {
       workingText.setSpan(
@@ -1066,8 +1084,8 @@ public class ReactEditText extends AppCompatEditText {
     mReactBackgroundManager.setBorderWidth(position, width);
   }
 
-  public void setBorderColor(int position, float color, float alpha) {
-    mReactBackgroundManager.setBorderColor(position, color, alpha);
+  public void setBorderColor(int position, @Nullable Integer color) {
+    mReactBackgroundManager.setBorderColor(position, color);
   }
 
   public int getBorderColor(int position) {
@@ -1112,6 +1130,15 @@ public class ReactEditText extends AppCompatEditText {
 
   public void setAutoFocus(boolean autoFocus) {
     mAutoFocus = autoFocus;
+  }
+
+  public void setSelectTextOnFocus(boolean selectTextOnFocus) {
+    super.setSelectAllOnFocus(selectTextOnFocus);
+    mSelectTextOnFocus = selectTextOnFocus;
+  }
+
+  public void setContextMenuHidden(boolean contextMenuHidden) {
+    mContextMenuHidden = contextMenuHidden;
   }
 
   protected void applyTextAttributes() {
@@ -1213,11 +1240,21 @@ public class ReactEditText extends AppCompatEditText {
     }
 
     addSpansFromStyleAttributes(sb);
-    TextLayoutManager.setCachedSpannabledForTag(getId(), sb);
+    TextLayoutManager.setCachedSpannableForTag(getId(), sb);
   }
 
   void setEventDispatcher(@Nullable EventDispatcher eventDispatcher) {
     mEventDispatcher = eventDispatcher;
+  }
+
+  public void setOverflow(@Nullable String overflow) {
+    mReactBackgroundManager.setOverflow(overflow);
+  }
+
+  @Override
+  public void onDraw(Canvas canvas) {
+    mReactBackgroundManager.maybeClipToPaddingBox(canvas);
+    super.onDraw(canvas);
   }
 
   /**
@@ -1225,6 +1262,7 @@ public class ReactEditText extends AppCompatEditText {
    * changed by the user, and not explicitly set by JS.
    */
   private class TextWatcherDelegator implements TextWatcher {
+
     @Override
     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
       if (!mIsSettingTextFromJS && mListeners != null) {

@@ -93,7 +93,8 @@ public class ReactModuleSpecProcessor extends ProcessorBase {
         reactModuleList = typeElement.getAnnotation(ReactModuleList.class);
       } catch (Exception ex) {
         throw new RuntimeException(
-            "Could not load classes set in @ReactModuleList.nativeModules. Check that they exist and are imported correctly on class: "
+            "Could not load classes set in @ReactModuleList.nativeModules. Check that they exist"
+                + " and are imported correctly on class: "
                 + typeElement.getQualifiedName(),
             ex);
       }
@@ -161,13 +162,13 @@ public class ReactModuleSpecProcessor extends ProcessorBase {
       builder.addStatement("$T map = new $T()", MAP_TYPE, INSTANTIATED_MAP_TYPE);
 
       String turboModuleInterfaceCanonicalName =
-          "com.facebook.react.internal.turbomodule.core.interfaces.TurboModule";
+          "com.facebook.react.turbomodule.core.interfaces.TurboModule";
       TypeMirror turboModuleInterface =
           mElements.getTypeElement(turboModuleInterfaceCanonicalName).asType();
 
       if (turboModuleInterface == null) {
         throw new RuntimeException(
-            "com.facebook.react.internal.turbomodule.core.interfaces.TurboModule interface not found.");
+            "com.facebook.react.turbomodule.core.interfaces.TurboModule interface not found.");
       }
 
       for (String nativeModule : nativeModules) {

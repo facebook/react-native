@@ -38,13 +38,13 @@
 
 - (void)loadView
 {
-  [super loadView];
+  self.view = [UIView new];
   [_touchHandler attachToView:self.view];
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle
 {
-  return [RCTSharedApplication() statusBarStyle];
+  return [RCTUIStatusBarManager() statusBarStyle];
 }
 
 - (void)viewDidDisappear:(BOOL)animated
@@ -55,14 +55,14 @@
 
 - (BOOL)prefersStatusBarHidden
 {
-  return [RCTSharedApplication() isStatusBarHidden];
+  return [RCTUIStatusBarManager() isStatusBarHidden];
 }
 
 #if RCT_DEV
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
   UIInterfaceOrientationMask appSupportedOrientationsMask =
-      [RCTSharedApplication() supportedInterfaceOrientationsForWindow:[RCTSharedApplication() keyWindow]];
+      [RCTSharedApplication() supportedInterfaceOrientationsForWindow:RCTKeyWindow()];
   if (!(_supportedInterfaceOrientations & appSupportedOrientationsMask)) {
     RCTLogError(
         @"Modal was presented with 0x%x orientations mask but the application only supports 0x%x."

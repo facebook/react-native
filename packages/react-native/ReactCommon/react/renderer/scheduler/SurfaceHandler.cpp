@@ -7,8 +7,8 @@
 
 #include "SurfaceHandler.h"
 
+#include <cxxreact/SystraceSection.h>
 #include <react/debug/react_native_assert.h>
-#include <react/renderer/debug/SystraceSection.h>
 #include <react/renderer/uimanager/UIManager.h>
 
 namespace facebook::react {

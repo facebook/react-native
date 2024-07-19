@@ -24,7 +24,7 @@ TEST(DynamicPropsUtilitiesTest, handleNestedObjects) {
   map2["style"] = dynamic::object("backgroundColor", "blue")("color", "black");
   map2["height"] = 100;
 
-  auto result = mergeDynamicProps(map1, map2);
+  auto result = mergeDynamicProps(map1, map2, NullValueStrategy::Override);
 
   EXPECT_TRUE(result["style"].isObject());
   EXPECT_TRUE(result["style"]["backgroundColor"].isString());
@@ -42,25 +42,39 @@ TEST(DynamicPropsUtilitiesTest, handleEmptyObject) {
   dynamic map2 = dynamic::object;
   map2["height"] = 100;
 
-  auto result = mergeDynamicProps(map1, map2);
+  auto result = mergeDynamicProps(map1, map2, NullValueStrategy::Override);
 
   EXPECT_TRUE(result["height"].isInt());
   EXPECT_EQ(result["height"], 100);
 
-  result = mergeDynamicProps(map1, map2);
+  result = mergeDynamicProps(map1, map2, NullValueStrategy::Override);
 
   EXPECT_TRUE(result["height"].isInt());
   EXPECT_EQ(result["height"], 100);
 }
 
-TEST(DynamicPropsUtilitiesTest, handleNull) {
+TEST(DynamicPropsUtilitiesTest, handleNullValue) {
   dynamic map1 = dynamic::object;
   map1["height"] = 100;
 
   dynamic map2 = dynamic::object;
   map2["height"] = nullptr;
 
-  auto result = mergeDynamicProps(map1, map2);
+  auto result = mergeDynamicProps(map1, map2, NullValueStrategy::Override);
 
   EXPECT_TRUE(result["height"].isNull());
+}
+
+TEST(DynamicPropsUtilitiesTest, testNullValueStrategyIgnore) {
+  dynamic map1 = dynamic::object;
+  map1["height"] = 100;
+
+  dynamic map2 = dynamic::object;
+  map2["width"] = 200;
+  map2["height"] = 101;
+
+  auto result = mergeDynamicProps(map1, map2, NullValueStrategy::Ignore);
+
+  EXPECT_EQ(result["height"], 101);
+  EXPECT_TRUE(result["width"].isNull());
 }

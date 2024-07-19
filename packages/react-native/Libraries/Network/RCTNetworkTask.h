@@ -35,7 +35,7 @@ typedef NS_ENUM(NSInteger, RCTNetworkTaskStatus) {
 @property (nonatomic, copy) RCTURLRequestResponseBlock responseBlock;
 @property (nonatomic, copy) RCTURLRequestProgressBlock uploadProgressBlock;
 
-@property (nonatomic, readonly) RCTNetworkTaskStatus status;
+@property (atomic, readonly) RCTNetworkTaskStatus status;
 
 - (instancetype)initWithRequest:(NSURLRequest *)request
                         handler:(id<RCTURLRequestHandler>)handler

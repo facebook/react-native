@@ -337,6 +337,8 @@ class TypeScriptParser implements Parser {
 
   convertKeywordToTypeAnnotation(keyword: string): string {
     switch (keyword) {
+      case 'TSArrayType':
+        return 'ArrayTypeAnnotation';
       case 'TSBooleanKeyword':
         return 'BooleanTypeAnnotation';
       case 'TSNumberKeyword':
@@ -345,6 +347,8 @@ class TypeScriptParser implements Parser {
         return 'VoidTypeAnnotation';
       case 'TSStringKeyword':
         return 'StringTypeAnnotation';
+      case 'TSTypeLiteral':
+        return 'ObjectTypeAnnotation';
       case 'TSUnknownKeyword':
         return 'MixedTypeAnnotation';
     }

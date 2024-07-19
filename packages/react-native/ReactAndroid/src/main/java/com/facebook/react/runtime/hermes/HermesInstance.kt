@@ -13,12 +13,12 @@ import com.facebook.react.fabric.ReactNativeConfig
 import com.facebook.react.runtime.JSRuntimeFactory
 import com.facebook.soloader.SoLoader
 
-class HermesInstance constructor(reactNativeConfig: ReactNativeConfig?) :
+public class HermesInstance(reactNativeConfig: ReactNativeConfig?) :
     JSRuntimeFactory(initHybrid(reactNativeConfig as Any?)) {
 
-  constructor() : this(null)
+  public constructor() : this(null)
 
-  companion object {
+  public companion object {
     @JvmStatic @DoNotStrip protected external fun initHybrid(reactNativeConfig: Any?): HybridData
 
     init {

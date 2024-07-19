@@ -21,17 +21,14 @@ const AppContainer = ({
   fabric,
   initialProps,
   rootTag,
-  showArchitectureIndicator,
   WrapperComponent,
+  rootViewStyle,
 }: Props): React.Node => {
   let innerView = children;
 
   if (WrapperComponent != null) {
     innerView = (
-      <WrapperComponent
-        initialProps={initialProps}
-        fabric={fabric === true}
-        showArchitectureIndicator={showArchitectureIndicator === true}>
+      <WrapperComponent initialProps={initialProps} fabric={fabric === true}>
         {innerView}
       </WrapperComponent>
     );
@@ -39,7 +36,7 @@ const AppContainer = ({
 
   return (
     <RootTagContext.Provider value={createRootTag(rootTag)}>
-      <View style={styles.root} pointerEvents="box-none">
+      <View style={rootViewStyle || styles.root} pointerEvents="box-none">
         {innerView}
       </View>
     </RootTagContext.Provider>

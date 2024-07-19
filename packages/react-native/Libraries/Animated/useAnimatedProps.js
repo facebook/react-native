@@ -10,8 +10,8 @@
 
 'use strict';
 
+import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNativeFeatureFlags';
 import {isPublicInstance as isFabricPublicInstance} from '../ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstanceUtils';
-import ReactNativeFeatureFlags from '../ReactNative/ReactNativeFeatureFlags';
 import useRefEffect from '../Utilities/useRefEffect';
 import {AnimatedEvent} from './AnimatedEvent';
 import NativeAnimatedHelper from './NativeAnimatedHelper';
@@ -37,6 +37,7 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
 ): [ReducedProps<TProps>, CallbackRef<TInstance | null>] {
   const [, scheduleUpdate] = useReducer<number, void>(count => count + 1, 0);
   const onUpdateRef = useRef<?() => void>(null);
+  const timerRef = useRef<TimeoutID | null>(null);
 
   // TODO: Only invalidate `node` if animated props or `style` change. In the
   // previous implementation, we permitted `style` to override props with the
@@ -48,6 +49,14 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
   );
   const useNativePropsInFabric =
     ReactNativeFeatureFlags.shouldUseSetNativePropsInFabric();
+  const useSetNativePropsInNativeAnimationsInFabric =
+    ReactNativeFeatureFlags.shouldUseSetNativePropsInNativeAnimationsInFabric();
+
+  const useAnimatedPropsLifecycle =
+    ReactNativeFeatureFlags.usePassiveEffectsForAnimations()
+      ? useAnimatedPropsLifecycle_passiveEffects
+      : useAnimatedPropsLifecycle_layoutEffects;
+
   useAnimatedPropsLifecycle(node);
 
   // TODO: This "effect" does three things:
@@ -73,27 +82,79 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
       // every animation frame. When using the native driver, this callback is
       // called when the animation completes.
       onUpdateRef.current = () => {
+        if (process.env.NODE_ENV === 'test') {
+          // Check 1: this is a test.
+          // call `scheduleUpdate` to bypass use of setNativeProps.
+          return scheduleUpdate();
+        }
+
+        const isFabricNode = isFabricInstance(instance);
+        if (node.__isNative) {
+          // Check 2: this is an animation driven by native.
+          // In native driven animations, this callback is only called once the animation completes.
+          if (isFabricNode) {
+            // Call `scheduleUpdate` to synchronise Fiber and Shadow tree.
+            // Must not be called in Paper.
+            if (useSetNativePropsInNativeAnimationsInFabric) {
+              // $FlowFixMe[incompatible-use]
+              instance.setNativeProps(node.__getAnimatedValue());
+            } else {
+              scheduleUpdate();
+            }
+          }
+          return;
+        }
+
         if (
-          process.env.NODE_ENV === 'test' ||
           typeof instance !== 'object' ||
-          typeof instance?.setNativeProps !== 'function' ||
-          (isFabricInstance(instance) && !useNativePropsInFabric)
+          typeof instance?.setNativeProps !== 'function'
         ) {
-          // Schedule an update for this component to update `reducedProps`,
-          // but do not compute it immediately. If a parent also updated, we
-          // need to merge those new props in before updating.
-          scheduleUpdate();
-        } else if (!node.__isNative) {
+          // Check 3: the instance does not support setNativeProps. Call `scheduleUpdate`.
+          return scheduleUpdate();
+        }
+
+        if (!isFabricNode) {
+          // Check 4: this is a paper instance, call setNativeProps.
           // $FlowIgnore[not-a-function] - Assume it's still a function.
           // $FlowFixMe[incompatible-use]
-          instance.setNativeProps(node.__getAnimatedValue());
+          return instance.setNativeProps(node.__getAnimatedValue());
         }
+
+        if (!useNativePropsInFabric) {
+          // Check 5: setNativeProps are disabled.
+          return scheduleUpdate();
+        }
+
+        // This is a Fabric instance and setNativeProps is supported.
+
+        // $FlowIgnore[not-a-function] - Assume it's still a function.
+        // $FlowFixMe[incompatible-use]
+        instance.setNativeProps(node.__getAnimatedValue());
+
+        // Keeping state of Fiber tree and Shadow tree in sync.
+        //
+        // This is done by calling `scheduleUpdate` which will trigger a commit.
+        // However, React commit is not fast enough to drive animations.
+        // This is where setNativeProps comes in handy but the state between
+        // Fiber tree and Shadow tree needs to be kept in sync.
+        // The goal is to call `scheduleUpdate` as little as possible to maintain
+        // performance but frequently enough to keep state in sync.
+        // Debounce is set to 48ms, which is 3 * the duration of a frame.
+        // 3 frames was the highest value where flickering state was not observed.
+        if (timerRef.current != null) {
+          clearTimeout(timerRef.current);
+        }
+        timerRef.current = setTimeout(() => {
+          timerRef.current = null;
+          scheduleUpdate();
+        }, 48);
       };
 
       const target = getEventTarget(instance);
       const events = [];
 
       for (const propName in props) {
+        // $FlowFixMe[invalid-computed-prop]
         const propValue = props[propName];
         if (propValue instanceof AnimatedEvent && propValue.__isNative) {
           propValue.__attach(target, propName);
@@ -109,7 +170,12 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
         }
       };
     },
-    [props, node, useNativePropsInFabric],
+    [
+      node,
+      useNativePropsInFabric,
+      useSetNativePropsInNativeAnimationsInFabric,
+      props,
+    ],
   );
   const callbackRef = useRefEffect<TInstance>(refEffect);
 
@@ -134,7 +200,7 @@ function reduceAnimatedProps<TProps>(
  * nodes. So in order to optimize this, we avoid detaching until the next attach
  * unless we are unmounting.
  */
-function useAnimatedPropsLifecycle(node: AnimatedProps): void {
+function useAnimatedPropsLifecycle_layoutEffects(node: AnimatedProps): void {
   const prevNodeRef = useRef<?AnimatedProps>(null);
   const isUnmountingRef = useRef<boolean>(false);
 
@@ -153,6 +219,53 @@ function useAnimatedPropsLifecycle(node: AnimatedProps): void {
   }, []);
 
   useLayoutEffect(() => {
+    node.__attach();
+    if (prevNodeRef.current != null) {
+      const prevNode = prevNodeRef.current;
+      // TODO: Stop restoring default values (unless `reset` is called).
+      prevNode.__restoreDefaultValues();
+      prevNode.__detach();
+      prevNodeRef.current = null;
+    }
+    return () => {
+      if (isUnmountingRef.current) {
+        // NOTE: Do not restore default values on unmount, see D18197735.
+        node.__detach();
+      } else {
+        prevNodeRef.current = node;
+      }
+    };
+  }, [node]);
+}
+
+/**
+ * Manages the lifecycle of the supplied `AnimatedProps` by invoking `__attach`
+ * and `__detach`. However, this is more complicated because `AnimatedProps`
+ * uses reference counting to determine when to recursively detach its children
+ * nodes. So in order to optimize this, we avoid detaching until the next attach
+ * unless we are unmounting.
+ *
+ * NOTE: unlike `useAnimatedPropsLifecycle_layoutEffects`, this version uses passive effects to setup animation graph.
+ */
+function useAnimatedPropsLifecycle_passiveEffects(node: AnimatedProps): void {
+  const prevNodeRef = useRef<?AnimatedProps>(null);
+  const isUnmountingRef = useRef<boolean>(false);
+
+  useEffect(() => {
+    // It is ok for multiple components to call `flushQueue` because it noops
+    // if the queue is empty. When multiple animated components are mounted at
+    // the same time. Only first component flushes the queue and the others will noop.
+    NativeAnimatedHelper.API.flushQueue();
+  });
+
+  useEffect(() => {
+    isUnmountingRef.current = false;
+    return () => {
+      isUnmountingRef.current = true;
+    };
+  }, []);
+
+  useEffect(() => {
     node.__attach();
     if (prevNodeRef.current != null) {
       const prevNode = prevNodeRef.current;

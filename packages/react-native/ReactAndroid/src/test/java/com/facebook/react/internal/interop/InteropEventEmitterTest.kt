@@ -5,10 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+@file:Suppress("DEPRECATION") // We want to use RCTEventEmitter for interop purposes
+
 package com.facebook.react.internal.interop
 
+import com.facebook.react.bridge.BridgeReactContext
+import com.facebook.react.bridge.JavaOnlyArray
 import com.facebook.react.bridge.JavaOnlyMap
-import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContext
 import com.facebook.testutils.fakes.FakeEventDispatcher
 import org.junit.Assert.assertEquals
@@ -26,7 +29,7 @@ class InteropEventEmitterTest {
 
   @Before
   fun setup() {
-    reactContext = ReactApplicationContext(RuntimeEnvironment.getApplication())
+    reactContext = BridgeReactContext(RuntimeEnvironment.getApplication())
     eventDispatcher = FakeEventDispatcher()
   }
 
@@ -50,8 +53,8 @@ class InteropEventEmitterTest {
 
     eventEmitter.receiveEvent(42, "onTest", eventData)
 
-    val event = eventDispatcher.getRecordedDispatchedEvents().get(0) as InteropEvent
-    val dispatchedEventData = event.getEventData()
+    val event = eventDispatcher.getRecordedDispatchedEvents()[0] as InteropEvent
+    val dispatchedEventData = event.eventData
     assertNotNull(dispatchedEventData)
     assertEquals("indigo", dispatchedEventData!!.getString("color"))
   }
@@ -59,6 +62,6 @@ class InteropEventEmitterTest {
   @Test(expected = java.lang.UnsupportedOperationException::class)
   fun receiveTouches_isNotSupported() {
     val eventEmitter = InteropEventEmitter(reactContext)
-    eventEmitter.receiveTouches("a touch", null, null)
+    eventEmitter.receiveTouches("a touch", JavaOnlyArray.of(), JavaOnlyArray.of())
   }
 }

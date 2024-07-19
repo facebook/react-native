@@ -30,17 +30,3 @@ exports[`<ActivityIndicator /> should render as expected: should deep render whe
   />
 </View>
 `;
-
-exports[`<ActivityIndicator /> should render as expected: should shallow render as <ActivityIndicator /> when mocked 1`] = `
-<ActivityIndicator
-  color="#0000ff"
-  size="large"
-/>
-`;
-
-exports[`<ActivityIndicator /> should render as expected: should shallow render as <ActivityIndicator /> when not mocked 1`] = `
-<ActivityIndicator
-  color="#0000ff"
-  size="large"
-/>
-`;

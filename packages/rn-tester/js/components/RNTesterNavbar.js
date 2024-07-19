@@ -37,7 +37,12 @@ const NavbarButton = ({
         style={iconStyle}
         source={isActive ? activeImage : inactiveImage}
       />
-      <Text style={isActive ? styles.activeText : styles.inactiveText}>
+      <Text
+        style={{
+          color: isActive
+            ? theme.NavBarLabelActiveColor
+            : theme.NavBarLabelInactiveColor,
+        }}>
         {label}
       </Text>
     </View>
@@ -57,8 +62,8 @@ const ComponentTab = ({
     testID="components-tab"
     label="Components"
     handlePress={() => handleNavBarPress({screen: 'components'})}
-    activeImage={require('./../assets/bottom-nav-components-icon-active.png')}
-    inactiveImage={require('./../assets/bottom-nav-components-icon-inactive.png')}
+    activeImage={theme.NavBarComponentsActiveIcon}
+    inactiveImage={theme.NavBarComponentsInactiveIcon}
     isActive={isComponentActive}
     theme={theme}
     iconStyle={styles.componentIcon}
@@ -78,8 +83,8 @@ const APITab = ({
     testID="apis-tab"
     label="APIs"
     handlePress={() => handleNavBarPress({screen: 'apis'})}
-    activeImage={require('./../assets/bottom-nav-apis-icon-active.png')}
-    inactiveImage={require('./../assets/bottom-nav-apis-icon-inactive.png')}
+    activeImage={theme.NavBarAPIsActiveIcon}
+    inactiveImage={theme.NavBarAPIsInactiveIcon}
     isActive={isAPIActive}
     theme={theme}
     iconStyle={styles.apiIcon}
@@ -156,12 +161,6 @@ const styles = StyleSheet.create({
     width: 30,
     height: 20,
     alignSelf: 'center',
-  },
-  activeText: {
-    color: '#5E5F62',
-  },
-  inactiveText: {
-    color: '#B1B4BA',
   },
   activeBar: {
     borderTopWidth: 2,

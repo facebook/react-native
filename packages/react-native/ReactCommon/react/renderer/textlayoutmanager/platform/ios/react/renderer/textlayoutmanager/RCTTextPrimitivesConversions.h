@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#include <react/renderer/graphics/RCTPlatformColorUtils.h>
 #include <react/renderer/textlayoutmanager/RCTFontProperties.h>
 #include <react/renderer/textlayoutmanager/RCTFontUtils.h>
 
@@ -94,24 +95,8 @@ inline static NSUnderlineStyle RCTNSUnderlineStyleFromTextDecorationStyle(
   }
 }
 
-inline static UIColor *RCTUIColorFromSharedColor(const facebook::react::SharedColor &sharedColor)
+// TODO: this file has some duplicates method, we can remove it
+inline static UIColor *_Nullable RCTUIColorFromSharedColor(const facebook::react::SharedColor &sharedColor)
 {
-  if (!sharedColor) {
-    return nil;
-  }
-
-  if (*facebook::react::clearColor() == *sharedColor) {
-    return [UIColor clearColor];
-  }
-
-  if (*facebook::react::blackColor() == *sharedColor) {
-    return [UIColor blackColor];
-  }
-
-  if (*facebook::react::whiteColor() == *sharedColor) {
-    return [UIColor whiteColor];
-  }
-
-  auto components = facebook::react::colorComponentsFromColor(sharedColor);
-  return [UIColor colorWithRed:components.red green:components.green blue:components.blue alpha:components.alpha];
+  return RCTPlatformColorFromColor(*sharedColor);
 }

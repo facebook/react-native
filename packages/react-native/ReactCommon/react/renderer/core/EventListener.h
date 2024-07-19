@@ -30,7 +30,7 @@ class EventListenerContainer {
    */
   bool willDispatchEvent(const RawEvent& event);
 
-  void addListener(const std::shared_ptr<const EventListener>& listener);
+  void addListener(std::shared_ptr<const EventListener> listener);
   void removeListener(const std::shared_ptr<const EventListener>& listener);
 
  private:

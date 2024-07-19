@@ -26,7 +26,7 @@ public class InteropModuleRegistry {
   private final HashMap<Class, Object> supportedModules;
 
   public InteropModuleRegistry() {
-    this.supportedModules = new HashMap<>();
+    supportedModules = new HashMap<>();
   }
 
   public <T extends JavaScriptModule> boolean shouldReturnInteropModule(Class<T> requestedModule) {

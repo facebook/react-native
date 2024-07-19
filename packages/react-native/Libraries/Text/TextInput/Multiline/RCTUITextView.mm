@@ -163,6 +163,12 @@ static UIColor *defaultPlaceholderColor(void)
   [super setSelectedTextRange:selectedTextRange];
 }
 
+// After restoring the previous cursor position, we manually trigger the scroll to the new cursor position (PR 38679).
+- (void)scrollRangeToVisible:(NSRange)range
+{
+  [super scrollRangeToVisible:range];
+}
+
 - (void)paste:(id)sender
 {
   _textWasPasted = YES;
@@ -259,6 +265,19 @@ static UIColor *defaultPlaceholderColor(void)
   }
 
   return [super canPerformAction:action withSender:sender];
+}
+
+- (void)buildMenuWithBuilder:(id<UIMenuBuilder>)builder
+{
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 170000
+  if (@available(iOS 17.0, *)) {
+    if (_contextMenuHidden) {
+      [builder removeMenuForIdentifier:UIMenuAutoFill];
+    }
+  }
+#endif
+
+  [super buildMenuWithBuilder:builder];
 }
 
 #pragma mark - Dictation

@@ -24,8 +24,8 @@
 
   self.modalInPresentation = YES;
 
-  _preferredStatusBarStyle = [RCTSharedApplication() statusBarStyle];
-  _preferredStatusBarHidden = [RCTSharedApplication() isStatusBarHidden];
+  _preferredStatusBarStyle = [RCTUIStatusBarManager() statusBarStyle];
+  _preferredStatusBarHidden = [RCTUIStatusBarManager() isStatusBarHidden];
 
   return self;
 }
@@ -54,7 +54,7 @@
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
   UIInterfaceOrientationMask appSupportedOrientationsMask =
-      [RCTSharedApplication() supportedInterfaceOrientationsForWindow:[RCTSharedApplication() keyWindow]];
+      [RCTSharedApplication() supportedInterfaceOrientationsForWindow:RCTKeyWindow()];
   if (!(_supportedInterfaceOrientations & appSupportedOrientationsMask)) {
     RCTLogError(
         @"Modal was presented with 0x%x orientations mask but the application only supports 0x%x."

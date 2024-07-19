@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:layoutDirection="ltr"
+    android:orientation="horizontal"
+    tools:ignore="MissingDefaultResource"
+    >
+
+    <TextView
+        android:id="@+id/paused_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingStart="14dp"
+        android:text=""
+        android:textColor="@android:color/black"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        />
+
+    <ImageButton
+        android:id="@+id/resume_button"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="@drawable/ripple_effect"
+        android:clickable="true"
+        android:focusable="true"
+        android:paddingVertical="8dp"
+        android:src="@drawable/ic_resume"
+        />
+</LinearLayout>

@@ -8,45 +8,6 @@
  * @format
  */
 
-import type {TurboModule} from '../TurboModule/RCTExport';
-
-import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
-
-type Options = {|
-  +offset: {|
-    +x: number,
-    +y: number,
-  |},
-  +size: {|
-    +width: number,
-    +height: number,
-  |},
-  +displaySize?: ?{|
-    +width: number,
-    +height: number,
-  |},
-  /**
-   * Enum with potential values:
-   *  - cover
-   *  - contain
-   *  - stretch
-   *  - center
-   *  - repeat
-   */
-  +resizeMode?: ?string,
-  +allowExternalStorage?: boolean,
-|};
-
-export interface Spec extends TurboModule {
-  +getConstants: () => {||};
-  +cropImage: (
-    uri: string,
-    cropData: Options,
-    successCallback: (uri: string) => void,
-    errorCallback: (error: string) => void,
-  ) => void;
-}
-
-export default (TurboModuleRegistry.getEnforcing<Spec>(
-  'ImageEditingManager',
-): Spec);
+export * from '../../src/private/specs/modules/NativeImageEditor';
+import NativeImageEditor from '../../src/private/specs/modules/NativeImageEditor';
+export default NativeImageEditor;

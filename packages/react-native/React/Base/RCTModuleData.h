@@ -12,12 +12,20 @@
 @protocol RCTBridgeMethod;
 @protocol RCTBridgeModule;
 @class RCTBridge;
+@class RCTModuleData;
 @class RCTModuleRegistry;
 @class RCTViewRegistry;
 @class RCTBundleManager;
 @class RCTCallableJSModules;
+@class RCTCallInvoker;
 
 typedef id<RCTBridgeModule> (^RCTBridgeModuleProvider)(void);
+
+@protocol RCTModuleDataCallInvokerProvider <NSObject>
+
+- (RCTCallInvoker *)callInvokerForModuleData:(RCTModuleData *)moduleData;
+
+@end
 
 @interface RCTModuleData : NSObject <RCTInvalidating>
 
@@ -27,14 +35,6 @@ typedef id<RCTBridgeModule> (^RCTBridgeModuleProvider)(void);
             viewRegistry_DEPRECATED:(RCTViewRegistry *)viewRegistry_DEPRECATED
                       bundleManager:(RCTBundleManager *)bundleManager
                   callableJSModules:(RCTCallableJSModules *)callableJSModules;
-
-- (instancetype)initWithModuleClass:(Class)moduleClass
-                     moduleProvider:(RCTBridgeModuleProvider)moduleProvider
-                             bridge:(RCTBridge *)bridge
-                     moduleRegistry:(RCTModuleRegistry *)moduleRegistry
-            viewRegistry_DEPRECATED:(RCTViewRegistry *)viewRegistry_DEPRECATED
-                      bundleManager:(RCTBundleManager *)bundleManager
-                  callableJSModules:(RCTCallableJSModules *)callableJSModules NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithModuleInstance:(id<RCTBridgeModule>)instance
                                 bridge:(RCTBridge *)bridge
@@ -109,5 +109,7 @@ typedef id<RCTBridgeModule> (^RCTBridgeModuleProvider)(void);
  * -partialBatchDidFlush.
  */
 @property (nonatomic, assign, readonly) BOOL implementsPartialBatchDidFlush;
+
+@property (nonatomic, weak, readwrite) id<RCTModuleDataCallInvokerProvider> callInvokerProvider;
 
 @end

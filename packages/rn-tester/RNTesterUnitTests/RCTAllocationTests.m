@@ -16,7 +16,7 @@
 
 @interface AllocationTestModule : NSObject <RCTBridgeModule, RCTInvalidating>
 
-@property (nonatomic, assign, getter=isValid) BOOL valid;
+@property (atomic, assign, getter=isValid) BOOL valid;
 
 @end
 
@@ -27,14 +27,14 @@ RCT_EXPORT_MODULE();
 - (instancetype)init
 {
   if ((self = [super init])) {
-    _valid = YES;
+    self.valid = YES;
   }
   return self;
 }
 
 - (void)invalidate
 {
-  _valid = NO;
+  self.valid = NO;
 }
 
 RCT_EXPORT_METHOD(test

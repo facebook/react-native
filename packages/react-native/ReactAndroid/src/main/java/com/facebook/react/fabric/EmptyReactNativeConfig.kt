@@ -15,7 +15,7 @@ import com.facebook.proguard.annotations.DoNotStripAny
  * stored.
  */
 @DoNotStripAny
-class EmptyReactNativeConfig : ReactNativeConfig {
+public class EmptyReactNativeConfig : ReactNativeConfig {
   private val mHybridData: HybridData = initHybrid()
 
   private external fun initHybrid(): HybridData
@@ -28,7 +28,7 @@ class EmptyReactNativeConfig : ReactNativeConfig {
 
   external override fun getDouble(param: String): Double
 
-  companion object {
+  private companion object {
     init {
       FabricSoLoader.staticInit()
     }

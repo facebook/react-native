@@ -8,6 +8,7 @@
  * @flow
  */
 
+import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
 import type {IPerformanceLogger} from '../Utilities/createPerformanceLogger';
 
 import GlobalPerformanceLogger from '../Utilities/GlobalPerformanceLogger';
@@ -32,8 +33,8 @@ export default function renderApplication<Props: Object>(
   initialProps: Props,
   rootTag: any,
   WrapperComponent?: ?React.ComponentType<any>,
+  rootViewStyle?: ?ViewStyleProp,
   fabric?: boolean,
-  showArchitectureIndicator?: boolean,
   scopedPerformanceLogger?: IPerformanceLogger,
   isLogBox?: boolean,
   debugName?: string,
@@ -50,8 +51,8 @@ export default function renderApplication<Props: Object>(
       <AppContainer
         rootTag={rootTag}
         fabric={fabric}
-        showArchitectureIndicator={showArchitectureIndicator}
         WrapperComponent={WrapperComponent}
+        rootViewStyle={rootViewStyle}
         initialProps={initialProps ?? Object.freeze({})}
         internal_excludeLogBox={isLogBox}>
         <RootComponent {...initialProps} rootTag={rootTag} />
@@ -83,16 +84,13 @@ export default function renderApplication<Props: Object>(
     );
   }
 
-  if (fabric && !useConcurrentRoot) {
-    console.warn(
-      'Using Fabric without concurrent root is deprecated. Please enable concurrent root for this application.',
-    );
-  }
+  // We want to have concurrentRoot always enabled when you're on Fabric.
+  const useConcurrentRootOverride = fabric;
 
   performanceLogger.startTimespan('renderApplication_React_render');
   performanceLogger.setExtra(
     'usedReactConcurrentRoot',
-    useConcurrentRoot ? '1' : '0',
+    useConcurrentRootOverride ? '1' : '0',
   );
   performanceLogger.setExtra('usedReactFabric', fabric ? '1' : '0');
   performanceLogger.setExtra(
@@ -103,7 +101,7 @@ export default function renderApplication<Props: Object>(
     element: renderable,
     rootTag,
     useFabric: Boolean(fabric),
-    useConcurrentRoot: Boolean(useConcurrentRoot),
+    useConcurrentRoot: Boolean(useConcurrentRootOverride),
   });
   performanceLogger.stopTimespan('renderApplication_React_render');
 }

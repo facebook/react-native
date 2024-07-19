@@ -12,32 +12,32 @@ import javax.annotation.concurrent.ThreadSafe
 
 /** Represents a Java variant of the surface, its status and inner data required to display it. */
 @ThreadSafe
-interface SurfaceHandler {
+public interface SurfaceHandler {
 
   /**
    * Provides current surface id. Id should be updated after each call to {@link
    * SurfaceHandler#stop}
    */
-  val surfaceId: Int
+  public val surfaceId: Int
 
-  val isRunning: Boolean
+  public val isRunning: Boolean
 
-  val moduleName: String
+  public val moduleName: String
 
   /** Starts the surface if the surface is not running */
-  fun start()
+  public fun start()
 
   /** Stops the surface if it is currently running */
-  fun stop()
+  public fun stop()
 
-  fun setProps(props: NativeMap)
+  public fun setProps(props: NativeMap)
 
   /**
    * Updates current surface id. Id should be updated after each call to {@link SurfaceHandler#stop}
    */
-  fun setSurfaceId(surfaceId: Int)
+  public fun setSurfaceId(surfaceId: Int)
 
-  fun setLayoutConstraints(
+  public fun setLayoutConstraints(
       widthMeasureSpec: Int,
       heightMeasureSpec: Int,
       offsetX: Int,
@@ -47,5 +47,5 @@ interface SurfaceHandler {
       pixelDensity: Float
   )
 
-  fun setMountable(mountable: Boolean)
+  public fun setMountable(mountable: Boolean)
 }

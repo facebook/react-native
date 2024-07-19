@@ -43,13 +43,12 @@ void AsynchronousEventBeat::induce() const {
   isBeatCallbackScheduled_ = true;
 
   runtimeExecutor_([this, weakOwner](jsi::Runtime& runtime) {
-    isBeatCallbackScheduled_ = false;
-
     auto owner = weakOwner.lock();
     if (!owner) {
       return;
     }
 
+    isBeatCallbackScheduled_ = false;
     if (beatCallback_) {
       beatCallback_(runtime);
     }

@@ -15,13 +15,13 @@ BridgelessNativeMethodCallInvoker::BridgelessNativeMethodCallInvoker(
 
 void BridgelessNativeMethodCallInvoker::invokeAsync(
     const std::string& methodName,
-    std::function<void()>&& func) noexcept {
+    NativeMethodCallFunc&& func) noexcept {
   messageQueueThread_->runOnQueue(std::move(func));
 }
 
 void BridgelessNativeMethodCallInvoker::invokeSync(
     const std::string& methodName,
-    std::function<void()>&& func) {
+    NativeMethodCallFunc&& func) {
   messageQueueThread_->runOnQueueSync(std::move(func));
 }
 

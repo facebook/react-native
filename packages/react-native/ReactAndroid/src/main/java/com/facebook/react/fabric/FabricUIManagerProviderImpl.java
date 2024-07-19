@@ -10,6 +10,8 @@ package com.facebook.react.fabric;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.RuntimeExecutor;
+import com.facebook.react.bridge.RuntimeScheduler;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.UIManagerProvider;
 import com.facebook.react.fabric.events.EventBeatManager;
@@ -49,13 +51,22 @@ public class FabricUIManagerProviderImpl implements UIManagerProvider {
 
     CatalystInstance catalystInstance = reactApplicationContext.getCatalystInstance();
 
-    binding.register(
-        catalystInstance.getRuntimeExecutor(),
-        catalystInstance.getRuntimeScheduler(),
-        fabricUIManager,
-        eventBeatManager,
-        mComponentFactory,
-        mConfig);
+    RuntimeExecutor runtimeExecutor = catalystInstance.getRuntimeExecutor();
+    RuntimeScheduler runtimeScheduler = catalystInstance.getRuntimeScheduler();
+
+    if (runtimeExecutor != null && runtimeScheduler != null) {
+      binding.register(
+          runtimeExecutor,
+          runtimeScheduler,
+          fabricUIManager,
+          eventBeatManager,
+          mComponentFactory,
+          mConfig);
+    } else {
+      throw new IllegalStateException(
+          "Unable to register FabricUIManager with CatalystInstance, runtimeExecutor and"
+              + " runtimeScheduler must not be null");
+    }
 
     Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);

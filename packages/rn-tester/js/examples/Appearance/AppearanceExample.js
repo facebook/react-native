@@ -96,40 +96,41 @@ const ColorShowcase = (props: {themeName: string}) => (
           <Text style={{fontWeight: '700', color: theme.LabelColor}}>
             {props.themeName}
           </Text>
-          {Object.keys(theme).map(key => (
-            <View style={{flexDirection: 'row'}} key={key}>
-              <View
-                style={{
-                  width: 50,
-                  height: 50,
-                  paddingHorizontal: 8,
-                  paddingVertical: 2,
-                  backgroundColor: theme[key],
-                }}
-              />
-              <View>
-                <Text
-                  style={{
-                    paddingHorizontal: 16,
-                    paddingVertical: 2,
-                    color: theme.LabelColor,
-                    fontWeight: '600',
-                  }}>
-                  {key}
-                </Text>
-                <Text
-                  style={{
-                    paddingHorizontal: 16,
-                    paddingVertical: 2,
-                    color: theme.LabelColor,
-                  }}>
-                  {typeof theme[key] === 'string'
-                    ? theme[key]
-                    : JSON.stringify(theme[key])}
-                </Text>
-              </View>
-            </View>
-          ))}
+          {Object.keys(theme).map(
+            key =>
+              typeof theme[key] === 'string' && (
+                <View style={{flexDirection: 'row'}} key={key}>
+                  <View
+                    style={{
+                      width: 50,
+                      height: 50,
+                      paddingHorizontal: 8,
+                      paddingVertical: 2,
+                      backgroundColor: theme[key],
+                    }}
+                  />
+                  <View>
+                    <Text
+                      style={{
+                        paddingHorizontal: 16,
+                        paddingVertical: 2,
+                        color: theme.LabelColor,
+                        fontWeight: '600',
+                      }}>
+                      {key}
+                    </Text>
+                    <Text
+                      style={{
+                        paddingHorizontal: 16,
+                        paddingVertical: 2,
+                        color: theme.LabelColor,
+                      }}>
+                      {theme[key]}
+                    </Text>
+                  </View>
+                </View>
+              ),
+          )}
         </View>
       );
     }}

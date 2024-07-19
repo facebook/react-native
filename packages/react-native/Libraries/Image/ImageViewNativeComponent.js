@@ -50,6 +50,7 @@ interface NativeCommands {
   +setIsVisible_EXPERIMENTAL: (
     viewRef: ElementRef<HostComponent<mixed>>,
     isVisible: boolean,
+    time: number,
   ) => void;
 }
 
@@ -82,13 +83,14 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
         validAttributes: {
           blurRadius: true,
           internal_analyticTag: true,
+          resizeMethod: true,
           resizeMode: true,
+          resizeMultiplier: true,
           tintColor: {
             process: require('../StyleSheet/processColor').default,
           },
           borderBottomLeftRadius: true,
           borderTopLeftRadius: true,
-          resizeMethod: true,
           src: true,
           // NOTE: New Architecture expects this to be called `source`,
           // regardless of the platform, therefore propagate it as well.

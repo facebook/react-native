@@ -45,7 +45,8 @@ public class ReactMarker {
 
   public interface MarkerListener {
     void logMarker(ReactMarkerConstants name, @Nullable String tag, int instanceKey);
-  };
+  }
+  ;
 
   // This is for verbose, Fabric-only logging
   // In the future we can deprecate the old logMarker API and
@@ -61,7 +62,8 @@ public class ReactMarker {
         int counter) {
       logFabricMarker(name, tag, instanceKey, timestamp);
     }
-  };
+  }
+  ;
 
   // Use a list instead of a set here because we expect the number of listeners
   // to be very small, and we want listeners to be called in a deterministic

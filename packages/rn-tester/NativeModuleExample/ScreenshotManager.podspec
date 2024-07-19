@@ -21,6 +21,7 @@ Pod::Spec.new do |s|
 
   s.source_files    = "**/*.{h,m,mm,swift}"
   s.requires_arc    = true
+  s.framework = ["UIKit", "CoreGraphics"]
 
   install_modules_dependencies(s)
 end

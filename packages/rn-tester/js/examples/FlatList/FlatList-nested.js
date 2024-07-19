@@ -116,11 +116,19 @@ function NestedListExample(): React.Node {
       </Text>
       <Text style={styles.debugText}>
         <Text style={styles.debugTextHeader}>Inner Viewable:{'\n'}</Text>
-        {inner.viewableItems.sort((a, b) => a - b).join(', ')}
+        {
+          // $FlowFixMe[react-rule-hook-mutation]
+          // $FlowFixMe[missing-local-annot]
+          inner.viewableItems.sort((a, b) => a - b).join(', ')
+        }
       </Text>
       <Text style={styles.debugText}>
         <Text style={styles.debugTextHeader}>Inner Rendered:{'\n'}</Text>
-        {inner.renderedItems.sort((a, b) => a - b).join(', ')}
+        {
+          // $FlowFixMe[react-rule-hook-mutation]
+          // $FlowFixMe[missing-local-annot]
+          inner.renderedItems.sort((a, b) => a - b).join(', ')
+        }
       </Text>
 
       <FlatList

@@ -8,6 +8,7 @@
 package com.facebook.react.views.text
 
 import android.graphics.Paint
+import com.facebook.react.views.text.internal.span.CustomLineHeightSpan
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith

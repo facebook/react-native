@@ -17,7 +17,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import {ScrollView, StyleSheet, Text, View} from 'react-native';
+import {Button, ScrollView, StyleSheet, Text, View} from 'react-native';
 
 export const name = 'IntersectionObserver MDN Example';
 export const title = name;
@@ -33,25 +33,35 @@ export function render(): React.Node {
  */
 function IntersectionObserverMDNExample(): React.Node {
   const theme = useContext(RNTesterThemeContext);
+  const [showMargin, setShowMargin] = useState(true);
 
   return (
     <ScrollView>
+      <Button
+        title={`Click to ${showMargin ? 'remove' : 'add'} margin`}
+        onPress={() => {
+          setShowMargin(show => !show);
+        }}
+      />
       <Text style={[styles.scrollDownText, {color: theme.LabelColor}]}>
         ↓↓ Scroll down ↓↓
       </Text>
-      <ListItem thresholds={buildThresholdList(100)} />
-      <ListItem thresholds={[0.5]} initialValue={0.49} />
-      <ListItem thresholds={buildThresholdList(10)} />
-      <ListItem thresholds={buildThresholdList(4)} />
+      {showMargin ? <View style={styles.margin} /> : null}
+      <ListItem position={1} thresholds={buildThresholdList(100)} />
+      <ListItem position={2} thresholds={[0.5]} initialValue={0.49} />
+      <ListItem position={3} thresholds={buildThresholdList(10)} />
+      <ListItem position={4} thresholds={buildThresholdList(4)} />
     </ScrollView>
   );
 }
 
 function ListItem(props: {
+  position: number,
   thresholds: Array<number>,
   initialValue?: number,
 }): React.Node {
   const itemRef = useRef<?ElementRef<typeof View>>(null);
+  const intersectionRatioRef = useRef(0);
   const [intersectionRatio, setIntersectionRatio] = useState(
     props.initialValue ?? 0,
   );
@@ -65,6 +75,22 @@ function ListItem(props: {
     const intersectionObserver = new IntersectionObserver(
       entries => {
         entries.forEach(entry => {
+          if (
+            intersectionRatioRef.current === 0 &&
+            entry.intersectionRatio > 0
+          ) {
+            console.log(
+              `Card #${props.position} switched to intersecting (according to thresholds)`,
+            );
+          } else if (
+            intersectionRatioRef.current !== 0 &&
+            entry.intersectionRatio === 0
+          ) {
+            console.log(
+              `Card #${props.position} switched to NOT intersecting (according to thresholds)`,
+            );
+          }
+          intersectionRatioRef.current = entry.intersectionRatio;
           setIntersectionRatio(entry.intersectionRatio);
         });
       },
@@ -77,7 +103,7 @@ function ListItem(props: {
     return () => {
       intersectionObserver.disconnect();
     };
-  }, [props.thresholds]);
+  }, [props.position, props.thresholds]);
 
   return (
     <View style={styles.item} ref={itemRef}>
@@ -128,6 +154,9 @@ const styles = StyleSheet.create({
   scrollDownText: {
     textAlign: 'center',
     fontSize: 20,
+    marginTop: 20,
+  },
+  margin: {
     marginBottom: 700,
   },
   item: {

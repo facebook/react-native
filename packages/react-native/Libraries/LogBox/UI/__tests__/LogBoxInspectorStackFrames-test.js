@@ -17,8 +17,14 @@ import LogBoxInspectorStackFrames, {
 
 const render = require('../../../../jest/renderer');
 const LogBoxLog = require('../../Data/LogBoxLog').default;
-const {} = require('../LogBoxInspectorStackFrames');
 const React = require('react');
+
+// Mock `LogBoxInspectorSection` because we are interested in snapshotting the
+// behavior of `LogBoxInspectorStackFrames`, not `LogBoxInspectorSection`.
+jest.mock('../LogBoxInspectorSection', () => ({
+  __esModule: true,
+  default: 'LogBoxInspectorSection',
+}));
 
 const createLogWithFrames = (collapsedOptions: Array<?boolean>) => {
   return new LogBoxLog({
@@ -44,9 +50,9 @@ const createCollapsedFrames = (collapsedOptions: Array<?boolean>) => {
   }));
 };
 
-describe('LogBoxInspectorStackFrame', () => {
-  it('should render stack frames with 1 frame collapsed', () => {
-    const output = render.shallowRender(
+describe('LogBoxInspectorStackFrames', () => {
+  it('should render stack frames with 1 frame collapsed', async () => {
+    const output = await render.create(
       <LogBoxInspectorStackFrames
         onRetry={() => {}}
         log={createLogWithFrames([false, true])}
@@ -56,8 +62,8 @@ describe('LogBoxInspectorStackFrame', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render null for empty stack frames', () => {
-    const output = render.shallowRender(
+  it('should render null for empty stack frames', async () => {
+    const output = await render.create(
       <LogBoxInspectorStackFrames
         onRetry={() => {}}
         log={createLogWithFrames([])}

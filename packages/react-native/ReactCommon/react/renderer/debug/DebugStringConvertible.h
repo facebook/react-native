@@ -140,32 +140,32 @@ std::string toString(const std::optional<T>& value) {
  * types.
  */
 template <typename T>
-std::string getDebugName(T const& object) {
+std::string getDebugName(const T& object) {
   return "Node";
 }
 
 template <typename T>
-std::string getDebugValue(T const& object) {
+std::string getDebugValue(const T& object) {
   return "";
 }
 
 template <typename T>
 std::vector<T> getDebugChildren(
-    T const& object,
+    const T& object,
     DebugStringConvertibleOptions options) {
   return {};
 }
 
 template <typename T>
 std::vector<T> getDebugProps(
-    T const& object,
+    const T& object,
     DebugStringConvertibleOptions options) {
   return {};
 }
 
 template <typename T>
 std::string getDebugPropsDescription(
-    T const& object,
+    const T& object,
     DebugStringConvertibleOptions options) {
   if (options.depth >= options.maximumDepth) {
     return "";
@@ -195,7 +195,7 @@ std::string getDebugPropsDescription(
 
 template <typename T>
 std::string getDebugChildrenDescription(
-    T const& object,
+    const T& object,
     DebugStringConvertibleOptions options) {
   if (options.depth >= options.maximumDepth) {
     return "";
@@ -219,7 +219,7 @@ std::string getDebugChildrenDescription(
 
 template <typename T>
 std::string getDebugDescription(
-    T const& object,
+    const T& object,
     DebugStringConvertibleOptions options) {
   auto nameString = getDebugName(object);
   auto valueString = getDebugValue(object);
@@ -360,7 +360,7 @@ inline std::string getDebugDescription(
 // `std::unique_ptr<T>`
 template <typename T>
 inline std::string getDebugDescription(
-    const std::unique_ptr<T const>& pointer,
+    const std::unique_ptr<const T>& pointer,
     DebugStringConvertibleOptions options) {
   return getDebugDescription((void*)pointer.get(), options) + "(unique)";
 }

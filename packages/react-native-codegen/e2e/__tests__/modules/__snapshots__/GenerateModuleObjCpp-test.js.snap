@@ -17,6 +17,11 @@ exports[`GenerateModuleObjCpp can generate a header file NativeModule specs 1`] 
 #ifndef __cplusplus
 #error This file must be compiled as Obj-C++. If you are importing it, you must change your file extension to .mm.
 #endif
+
+// Avoid multiple includes of RNCodegenModuleFixtures symbols
+#ifndef RNCodegenModuleFixtures_H
+#define RNCodegenModuleFixtures_H
+
 #import <Foundation/Foundation.h>
 #import <RCTRequired/RCTRequired.h>
 #import <RCTTypeSafety/RCTConvertHelpers.h>
@@ -37,6 +42,16 @@ exports[`GenerateModuleObjCpp can generate a header file NativeModule specs 1`] 
                                          b:(NSArray *)b;
 
 @end
+
+@interface NativeArrayTurboModuleSpecBase : NSObject {
+@protected
+facebook::react::EventEmitterCallback _eventEmitterCallback;
+}
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+
+
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativeArrayTurboModule'
@@ -53,6 +68,16 @@ namespace facebook::react {
 - (NSNumber *)getBooleanWithAlias:(BOOL)arg;
 
 @end
+
+@interface NativeBooleanTurboModuleSpecBase : NSObject {
+@protected
+facebook::react::EventEmitterCallback _eventEmitterCallback;
+}
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+
+
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativeBooleanTurboModule'
@@ -69,6 +94,16 @@ namespace facebook::react {
 - (void)getValueWithCallbackWithAlias:(RCTResponseSenderBlock)c;
 
 @end
+
+@interface NativeCallbackTurboModuleSpecBase : NSObject {
+@protected
+facebook::react::EventEmitterCallback _eventEmitterCallback;
+}
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+
+
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativeCallbackTurboModule'
@@ -100,7 +135,7 @@ namespace JS {
       NSString *regular() const;
       NSString *str() const;
       double num() const;
-      double fraction() const;
+      NSString *lowerCase() const;
 
       StateTypeWithEnums(NSDictionary *const v) : _v(v) {}
     private:
@@ -117,14 +152,24 @@ namespace JS {
 - (NSString *)getStatusRegular:(JS::NativeEnumTurboModule::StateType &)statusProp;
 - (NSString *)getStatusStr:(JS::NativeEnumTurboModule::StateType &)statusProp;
 - (NSNumber *)getStatusNum:(JS::NativeEnumTurboModule::StateType &)statusProp;
-- (NSNumber *)getStatusFraction:(JS::NativeEnumTurboModule::StateType &)statusProp;
+- (NSString *)getStatusLowerCase:(JS::NativeEnumTurboModule::StateType &)statusProp;
 - (NSDictionary *)getStateType:(NSString *)a
                              b:(NSString *)b
                              c:(double)c
-                             d:(double)d;
+                             d:(NSString *)d;
 - (NSDictionary *)getStateTypeWithEnums:(JS::NativeEnumTurboModule::StateTypeWithEnums &)paramOfTypeWithEnums;
 
 @end
+
+@interface NativeEnumTurboModuleSpecBase : NSObject {
+@protected
+facebook::react::EventEmitterCallback _eventEmitterCallback;
+}
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+
+
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativeEnumTurboModule'
@@ -146,6 +191,16 @@ namespace facebook::react {
                      reject:(RCTPromiseRejectBlock)reject;
 
 @end
+
+@interface NativeNullableTurboModuleSpecBase : NSObject {
+@protected
+facebook::react::EventEmitterCallback _eventEmitterCallback;
+}
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+
+
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativeNullableTurboModule'
@@ -162,6 +217,16 @@ namespace facebook::react {
 - (NSNumber *)getNumberWithAlias:(double)arg;
 
 @end
+
+@interface NativeNumberTurboModuleSpecBase : NSObject {
+@protected
+facebook::react::EventEmitterCallback _eventEmitterCallback;
+}
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+
+
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativeNumberTurboModule'
@@ -331,6 +396,16 @@ namespace JS {
 - (facebook::react::ModuleConstants<JS::NativeObjectTurboModule::Constants::Builder>)getConstants;
 
 @end
+
+@interface NativeObjectTurboModuleSpecBase : NSObject {
+@protected
+facebook::react::EventEmitterCallback _eventEmitterCallback;
+}
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+
+
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativeObjectTurboModule'
@@ -463,6 +538,16 @@ namespace JS {
 - (facebook::react::ModuleConstants<JS::NativeOptionalObjectTurboModule::Constants::Builder>)getConstants;
 
 @end
+
+@interface NativeOptionalObjectTurboModuleSpecBase : NSObject {
+@protected
+facebook::react::EventEmitterCallback _eventEmitterCallback;
+}
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+
+
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativeOptionalObjectTurboModule'
@@ -529,6 +614,16 @@ namespace JS {
                              value2:(JS::NativePartialAnnotationTurboModule::SpecGetPartialPartialValue2 &)value2;
 
 @end
+
+@interface NativePartialAnnotationTurboModuleSpecBase : NSObject {
+@protected
+facebook::react::EventEmitterCallback _eventEmitterCallback;
+}
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+
+
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativePartialAnnotationTurboModule'
@@ -549,6 +644,16 @@ namespace facebook::react {
                               reject:(RCTPromiseRejectBlock)reject;
 
 @end
+
+@interface NativePromiseTurboModuleSpecBase : NSObject {
+@protected
+facebook::react::EventEmitterCallback _eventEmitterCallback;
+}
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+
+
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativePromiseTurboModule'
@@ -639,6 +744,16 @@ getValuegetValuegetValuegetValuegetValuey:(NSString *)getValuegetValuegetValuege
 - (facebook::react::ModuleConstants<JS::NativeSampleTurboModule::Constants::Builder>)getConstants;
 
 @end
+
+@interface NativeSampleTurboModuleSpecBase : NSObject {
+@protected
+facebook::react::EventEmitterCallback _eventEmitterCallback;
+}
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+
+
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativeSampleTurboModule'
@@ -727,6 +842,16 @@ namespace JS {
 - (facebook::react::ModuleConstants<JS::NativeSampleTurboModuleArrays::Constants::Builder>)getConstants;
 
 @end
+
+@interface NativeSampleTurboModuleArraysSpecBase : NSObject {
+@protected
+facebook::react::EventEmitterCallback _eventEmitterCallback;
+}
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+
+
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativeSampleTurboModuleArrays'
@@ -817,6 +942,16 @@ namespace JS {
 - (facebook::react::ModuleConstants<JS::NativeSampleTurboModuleNullable::Constants::Builder>)getConstants;
 
 @end
+
+@interface NativeSampleTurboModuleNullableSpecBase : NSObject {
+@protected
+facebook::react::EventEmitterCallback _eventEmitterCallback;
+}
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+
+
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativeSampleTurboModuleNullable'
@@ -907,6 +1042,16 @@ namespace JS {
 - (facebook::react::ModuleConstants<JS::NativeSampleTurboModuleNullableAndOptional::Constants::Builder>)getConstants;
 
 @end
+
+@interface NativeSampleTurboModuleNullableAndOptionalSpecBase : NSObject {
+@protected
+facebook::react::EventEmitterCallback _eventEmitterCallback;
+}
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+
+
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativeSampleTurboModuleNullableAndOptional'
@@ -997,6 +1142,16 @@ namespace JS {
 - (facebook::react::ModuleConstants<JS::NativeSampleTurboModuleOptional::Constants::Builder>)getConstants;
 
 @end
+
+@interface NativeSampleTurboModuleOptionalSpecBase : NSObject {
+@protected
+facebook::react::EventEmitterCallback _eventEmitterCallback;
+}
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+
+
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativeSampleTurboModuleOptional'
@@ -1013,6 +1168,16 @@ namespace facebook::react {
 - (NSString *)getStringWithAlias:(NSString *)arg;
 
 @end
+
+@interface NativeStringTurboModuleSpecBase : NSObject {
+@protected
+facebook::react::EventEmitterCallback _eventEmitterCallback;
+}
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+
+
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativeStringTurboModule'
@@ -1050,10 +1215,10 @@ inline double JS::NativeEnumTurboModule::StateTypeWithEnums::num() const
   id const p = _v[@\\"num\\"];
   return RCTBridgingToDouble(p);
 }
-inline double JS::NativeEnumTurboModule::StateTypeWithEnums::fraction() const
+inline NSString *JS::NativeEnumTurboModule::StateTypeWithEnums::lowerCase() const
 {
-  id const p = _v[@\\"fraction\\"];
-  return RCTBridgingToDouble(p);
+  id const p = _v[@\\"lowerCase\\"];
+  return RCTBridgingToString(p);
 }
 
 
@@ -1341,6 +1506,7 @@ inline JS::NativeSampleTurboModuleOptional::Constants::Builder::Builder(Constant
   return i.unsafeRawValue();
 }) {}
 
+#endif // RNCodegenModuleFixtures_H
 "
 `;
 
@@ -1361,6 +1527,11 @@ exports[`GenerateModuleObjCpp can generate a header file NativeModule specs with
 #ifndef __cplusplus
 #error This file must be compiled as Obj-C++. If you are importing it, you must change your file extension to .mm.
 #endif
+
+// Avoid multiple includes of RNCodegenModuleFixtures symbols
+#ifndef RNCodegenModuleFixtures_H
+#define RNCodegenModuleFixtures_H
+
 #import <Foundation/Foundation.h>
 #import <RCTRequired/RCTRequired.h>
 #import <RCTTypeSafety/RCTConvertHelpers.h>
@@ -1383,6 +1554,16 @@ NS_ASSUME_NONNULL_BEGIN
                                          b:(NSArray *)b;
 
 @end
+
+@interface NativeArrayTurboModuleSpecBase : NSObject {
+@protected
+facebook::react::EventEmitterCallback _eventEmitterCallback;
+}
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+
+
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativeArrayTurboModule'
@@ -1399,6 +1580,16 @@ namespace facebook::react {
 - (NSNumber *)getBooleanWithAlias:(BOOL)arg;
 
 @end
+
+@interface NativeBooleanTurboModuleSpecBase : NSObject {
+@protected
+facebook::react::EventEmitterCallback _eventEmitterCallback;
+}
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+
+
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativeBooleanTurboModule'
@@ -1415,6 +1606,16 @@ namespace facebook::react {
 - (void)getValueWithCallbackWithAlias:(RCTResponseSenderBlock)c;
 
 @end
+
+@interface NativeCallbackTurboModuleSpecBase : NSObject {
+@protected
+facebook::react::EventEmitterCallback _eventEmitterCallback;
+}
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+
+
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativeCallbackTurboModule'
@@ -1446,7 +1647,7 @@ namespace JS {
       NSString *regular() const;
       NSString *str() const;
       double num() const;
-      double fraction() const;
+      NSString *lowerCase() const;
 
       StateTypeWithEnums(NSDictionary *const v) : _v(v) {}
     private:
@@ -1463,14 +1664,24 @@ namespace JS {
 - (NSString *)getStatusRegular:(JS::NativeEnumTurboModule::StateType &)statusProp;
 - (NSString *)getStatusStr:(JS::NativeEnumTurboModule::StateType &)statusProp;
 - (NSNumber *)getStatusNum:(JS::NativeEnumTurboModule::StateType &)statusProp;
-- (NSNumber *)getStatusFraction:(JS::NativeEnumTurboModule::StateType &)statusProp;
+- (NSString *)getStatusLowerCase:(JS::NativeEnumTurboModule::StateType &)statusProp;
 - (NSDictionary *)getStateType:(NSString *)a
                              b:(NSString *)b
                              c:(double)c
-                             d:(double)d;
+                             d:(NSString *)d;
 - (NSDictionary *)getStateTypeWithEnums:(JS::NativeEnumTurboModule::StateTypeWithEnums &)paramOfTypeWithEnums;
 
 @end
+
+@interface NativeEnumTurboModuleSpecBase : NSObject {
+@protected
+facebook::react::EventEmitterCallback _eventEmitterCallback;
+}
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+
+
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativeEnumTurboModule'
@@ -1492,6 +1703,16 @@ namespace facebook::react {
                      reject:(RCTPromiseRejectBlock)reject;
 
 @end
+
+@interface NativeNullableTurboModuleSpecBase : NSObject {
+@protected
+facebook::react::EventEmitterCallback _eventEmitterCallback;
+}
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+
+
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativeNullableTurboModule'
@@ -1508,6 +1729,16 @@ namespace facebook::react {
 - (NSNumber *)getNumberWithAlias:(double)arg;
 
 @end
+
+@interface NativeNumberTurboModuleSpecBase : NSObject {
+@protected
+facebook::react::EventEmitterCallback _eventEmitterCallback;
+}
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+
+
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativeNumberTurboModule'
@@ -1677,6 +1908,16 @@ namespace JS {
 - (facebook::react::ModuleConstants<JS::NativeObjectTurboModule::Constants::Builder>)getConstants;
 
 @end
+
+@interface NativeObjectTurboModuleSpecBase : NSObject {
+@protected
+facebook::react::EventEmitterCallback _eventEmitterCallback;
+}
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+
+
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativeObjectTurboModule'
@@ -1809,6 +2050,16 @@ namespace JS {
 - (facebook::react::ModuleConstants<JS::NativeOptionalObjectTurboModule::Constants::Builder>)getConstants;
 
 @end
+
+@interface NativeOptionalObjectTurboModuleSpecBase : NSObject {
+@protected
+facebook::react::EventEmitterCallback _eventEmitterCallback;
+}
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+
+
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativeOptionalObjectTurboModule'
@@ -1875,6 +2126,16 @@ namespace JS {
                              value2:(JS::NativePartialAnnotationTurboModule::SpecGetPartialPartialValue2 &)value2;
 
 @end
+
+@interface NativePartialAnnotationTurboModuleSpecBase : NSObject {
+@protected
+facebook::react::EventEmitterCallback _eventEmitterCallback;
+}
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+
+
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativePartialAnnotationTurboModule'
@@ -1895,6 +2156,16 @@ namespace facebook::react {
                               reject:(RCTPromiseRejectBlock)reject;
 
 @end
+
+@interface NativePromiseTurboModuleSpecBase : NSObject {
+@protected
+facebook::react::EventEmitterCallback _eventEmitterCallback;
+}
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+
+
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativePromiseTurboModule'
@@ -1985,6 +2256,16 @@ getValuegetValuegetValuegetValuegetValuey:(NSString *)getValuegetValuegetValuege
 - (facebook::react::ModuleConstants<JS::NativeSampleTurboModule::Constants::Builder>)getConstants;
 
 @end
+
+@interface NativeSampleTurboModuleSpecBase : NSObject {
+@protected
+facebook::react::EventEmitterCallback _eventEmitterCallback;
+}
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+
+
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativeSampleTurboModule'
@@ -2073,6 +2354,16 @@ namespace JS {
 - (facebook::react::ModuleConstants<JS::NativeSampleTurboModuleArrays::Constants::Builder>)getConstants;
 
 @end
+
+@interface NativeSampleTurboModuleArraysSpecBase : NSObject {
+@protected
+facebook::react::EventEmitterCallback _eventEmitterCallback;
+}
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+
+
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativeSampleTurboModuleArrays'
@@ -2163,6 +2454,16 @@ namespace JS {
 - (facebook::react::ModuleConstants<JS::NativeSampleTurboModuleNullable::Constants::Builder>)getConstants;
 
 @end
+
+@interface NativeSampleTurboModuleNullableSpecBase : NSObject {
+@protected
+facebook::react::EventEmitterCallback _eventEmitterCallback;
+}
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+
+
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativeSampleTurboModuleNullable'
@@ -2253,6 +2554,16 @@ namespace JS {
 - (facebook::react::ModuleConstants<JS::NativeSampleTurboModuleNullableAndOptional::Constants::Builder>)getConstants;
 
 @end
+
+@interface NativeSampleTurboModuleNullableAndOptionalSpecBase : NSObject {
+@protected
+facebook::react::EventEmitterCallback _eventEmitterCallback;
+}
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+
+
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativeSampleTurboModuleNullableAndOptional'
@@ -2343,6 +2654,16 @@ namespace JS {
 - (facebook::react::ModuleConstants<JS::NativeSampleTurboModuleOptional::Constants::Builder>)getConstants;
 
 @end
+
+@interface NativeSampleTurboModuleOptionalSpecBase : NSObject {
+@protected
+facebook::react::EventEmitterCallback _eventEmitterCallback;
+}
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+
+
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativeSampleTurboModuleOptional'
@@ -2359,6 +2680,16 @@ namespace facebook::react {
 - (NSString *)getStringWithAlias:(NSString *)arg;
 
 @end
+
+@interface NativeStringTurboModuleSpecBase : NSObject {
+@protected
+facebook::react::EventEmitterCallback _eventEmitterCallback;
+}
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+
+
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module 'NativeStringTurboModule'
@@ -2396,10 +2727,10 @@ inline double JS::NativeEnumTurboModule::StateTypeWithEnums::num() const
   id const p = _v[@\\"num\\"];
   return RCTBridgingToDouble(p);
 }
-inline double JS::NativeEnumTurboModule::StateTypeWithEnums::fraction() const
+inline NSString *JS::NativeEnumTurboModule::StateTypeWithEnums::lowerCase() const
 {
-  id const p = _v[@\\"fraction\\"];
-  return RCTBridgingToDouble(p);
+  id const p = _v[@\\"lowerCase\\"];
+  return RCTBridgingToString(p);
 }
 
 
@@ -2688,6 +3019,7 @@ inline JS::NativeSampleTurboModuleOptional::Constants::Builder::Builder(Constant
 }) {}
 
 NS_ASSUME_NONNULL_END
+#endif // RNCodegenModuleFixtures_H
 "
 `;
 
@@ -2706,6 +3038,16 @@ exports[`GenerateModuleObjCpp can generate an implementation file NativeModule s
  */
 
 #import \\"RNCodegenModuleFixtures.h\\"
+
+
+@implementation NativeArrayTurboModuleSpecBase
+
+
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper
+{
+  _eventEmitterCallback = std::move(eventEmitterCallbackWrapper->_eventEmitterCallback);
+}
+@end
 
 
 namespace facebook::react {
@@ -2736,6 +3078,16 @@ namespace facebook::react {
   }
 } // namespace facebook::react
 
+@implementation NativeBooleanTurboModuleSpecBase
+
+
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper
+{
+  _eventEmitterCallback = std::move(eventEmitterCallbackWrapper->_eventEmitterCallback);
+}
+@end
+
+
 namespace facebook::react {
   
     static facebook::jsi::Value __hostFunction_NativeBooleanTurboModuleSpecJSI_getBoolean(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
@@ -2757,6 +3109,16 @@ namespace facebook::react {
   }
 } // namespace facebook::react
 
+@implementation NativeCallbackTurboModuleSpecBase
+
+
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper
+{
+  _eventEmitterCallback = std::move(eventEmitterCallbackWrapper->_eventEmitterCallback);
+}
+@end
+
+
 namespace facebook::react {
   
     static facebook::jsi::Value __hostFunction_NativeCallbackTurboModuleSpecJSI_getValueWithCallback(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
@@ -2777,6 +3139,16 @@ namespace facebook::react {
         
   }
 } // namespace facebook::react
+
+@implementation NativeEnumTurboModuleSpecBase
+
+
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper
+{
+  _eventEmitterCallback = std::move(eventEmitterCallbackWrapper->_eventEmitterCallback);
+}
+@end
+
 @implementation RCTCxxConvert (NativeEnumTurboModule_StateType)
 + (RCTManagedPointer *)JS_NativeEnumTurboModule_StateType:(id)json
 {
@@ -2803,8 +3175,8 @@ namespace facebook::react {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, NumberKind, \\"getStatusNum\\", @selector(getStatusNum:), args, count);
     }
 
-    static facebook::jsi::Value __hostFunction_NativeEnumTurboModuleSpecJSI_getStatusFraction(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, NumberKind, \\"getStatusFraction\\", @selector(getStatusFraction:), args, count);
+    static facebook::jsi::Value __hostFunction_NativeEnumTurboModuleSpecJSI_getStatusLowerCase(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, StringKind, \\"getStatusLowerCase\\", @selector(getStatusLowerCase:), args, count);
     }
 
     static facebook::jsi::Value __hostFunction_NativeEnumTurboModuleSpecJSI_getStateType(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
@@ -2827,8 +3199,8 @@ namespace facebook::react {
         methodMap_[\\"getStatusNum\\"] = MethodMetadata {1, __hostFunction_NativeEnumTurboModuleSpecJSI_getStatusNum};
         setMethodArgConversionSelector(@\\"getStatusNum\\", 0, @\\"JS_NativeEnumTurboModule_StateType:\\");
         
-        methodMap_[\\"getStatusFraction\\"] = MethodMetadata {1, __hostFunction_NativeEnumTurboModuleSpecJSI_getStatusFraction};
-        setMethodArgConversionSelector(@\\"getStatusFraction\\", 0, @\\"JS_NativeEnumTurboModule_StateType:\\");
+        methodMap_[\\"getStatusLowerCase\\"] = MethodMetadata {1, __hostFunction_NativeEnumTurboModuleSpecJSI_getStatusLowerCase};
+        setMethodArgConversionSelector(@\\"getStatusLowerCase\\", 0, @\\"JS_NativeEnumTurboModule_StateType:\\");
         
         methodMap_[\\"getStateType\\"] = MethodMetadata {4, __hostFunction_NativeEnumTurboModuleSpecJSI_getStateType};
         
@@ -2837,6 +3209,16 @@ namespace facebook::react {
         setMethodArgConversionSelector(@\\"getStateTypeWithEnums\\", 0, @\\"JS_NativeEnumTurboModule_StateTypeWithEnums:\\");
   }
 } // namespace facebook::react
+
+@implementation NativeNullableTurboModuleSpecBase
+
+
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper
+{
+  _eventEmitterCallback = std::move(eventEmitterCallbackWrapper->_eventEmitterCallback);
+}
+@end
+
 
 namespace facebook::react {
   
@@ -2887,6 +3269,16 @@ namespace facebook::react {
   }
 } // namespace facebook::react
 
+@implementation NativeNumberTurboModuleSpecBase
+
+
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper
+{
+  _eventEmitterCallback = std::move(eventEmitterCallbackWrapper->_eventEmitterCallback);
+}
+@end
+
+
 namespace facebook::react {
   
     static facebook::jsi::Value __hostFunction_NativeNumberTurboModuleSpecJSI_getNumber(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
@@ -2907,6 +3299,16 @@ namespace facebook::react {
         
   }
 } // namespace facebook::react
+
+@implementation NativeObjectTurboModuleSpecBase
+
+
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper
+{
+  _eventEmitterCallback = std::move(eventEmitterCallbackWrapper->_eventEmitterCallback);
+}
+@end
+
 @implementation RCTCxxConvert (NativeObjectTurboModule_SpecDifficultObjectAE)
 + (RCTManagedPointer *)JS_NativeObjectTurboModule_SpecDifficultObjectAE:(id)json
 {
@@ -2961,6 +3363,16 @@ namespace facebook::react {
   }
 } // namespace facebook::react
 
+@implementation NativeOptionalObjectTurboModuleSpecBase
+
+
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper
+{
+  _eventEmitterCallback = std::move(eventEmitterCallbackWrapper->_eventEmitterCallback);
+}
+@end
+
+
 namespace facebook::react {
   
     static facebook::jsi::Value __hostFunction_NativeOptionalObjectTurboModuleSpecJSI_getConstants(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
@@ -2974,6 +3386,16 @@ namespace facebook::react {
         
   }
 } // namespace facebook::react
+
+@implementation NativePartialAnnotationTurboModuleSpecBase
+
+
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper
+{
+  _eventEmitterCallback = std::move(eventEmitterCallbackWrapper->_eventEmitterCallback);
+}
+@end
+
 @implementation RCTCxxConvert (NativePartialAnnotationTurboModule_SpecGetSomeObjFromPartialSomeObjValue)
 + (RCTManagedPointer *)JS_NativePartialAnnotationTurboModule_SpecGetSomeObjFromPartialSomeObjValue:(id)json
 {
@@ -3028,6 +3450,16 @@ namespace facebook::react {
   }
 } // namespace facebook::react
 
+@implementation NativePromiseTurboModuleSpecBase
+
+
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper
+{
+  _eventEmitterCallback = std::move(eventEmitterCallbackWrapper->_eventEmitterCallback);
+}
+@end
+
+
 namespace facebook::react {
   
     static facebook::jsi::Value __hostFunction_NativePromiseTurboModuleSpecJSI_getValueWithPromise(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
@@ -3048,6 +3480,16 @@ namespace facebook::react {
         
   }
 } // namespace facebook::react
+
+@implementation NativeSampleTurboModuleSpecBase
+
+
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper
+{
+  _eventEmitterCallback = std::move(eventEmitterCallbackWrapper->_eventEmitterCallback);
+}
+@end
+
 @implementation RCTCxxConvert (NativeSampleTurboModule_SpecGetObjectShapeArg)
 + (RCTManagedPointer *)JS_NativeSampleTurboModule_SpecGetObjectShapeArg:(id)json
 {
@@ -3158,6 +3600,16 @@ namespace facebook::react {
   }
 } // namespace facebook::react
 
+@implementation NativeSampleTurboModuleArraysSpecBase
+
+
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper
+{
+  _eventEmitterCallback = std::move(eventEmitterCallbackWrapper->_eventEmitterCallback);
+}
+@end
+
+
 namespace facebook::react {
   
     static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleArraysSpecJSI_voidFunc(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
@@ -3255,6 +3707,16 @@ namespace facebook::react {
         
   }
 } // namespace facebook::react
+
+@implementation NativeSampleTurboModuleNullableSpecBase
+
+
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper
+{
+  _eventEmitterCallback = std::move(eventEmitterCallbackWrapper->_eventEmitterCallback);
+}
+@end
+
 @implementation RCTCxxConvert (NativeSampleTurboModuleNullable_SpecGetObjectShapeArg)
 + (RCTManagedPointer *)JS_NativeSampleTurboModuleNullable_SpecGetObjectShapeArg:(id)json
 {
@@ -3364,6 +3826,16 @@ namespace facebook::react {
         
   }
 } // namespace facebook::react
+
+@implementation NativeSampleTurboModuleNullableAndOptionalSpecBase
+
+
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper
+{
+  _eventEmitterCallback = std::move(eventEmitterCallbackWrapper->_eventEmitterCallback);
+}
+@end
+
 @implementation RCTCxxConvert (NativeSampleTurboModuleNullableAndOptional_SpecGetObjectShapeArg)
 + (RCTManagedPointer *)JS_NativeSampleTurboModuleNullableAndOptional_SpecGetObjectShapeArg:(id)json
 {
@@ -3473,6 +3945,16 @@ namespace facebook::react {
         
   }
 } // namespace facebook::react
+
+@implementation NativeSampleTurboModuleOptionalSpecBase
+
+
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper
+{
+  _eventEmitterCallback = std::move(eventEmitterCallbackWrapper->_eventEmitterCallback);
+}
+@end
+
 @implementation RCTCxxConvert (NativeSampleTurboModuleOptional_SpecGetObjectShapeArg)
 + (RCTManagedPointer *)JS_NativeSampleTurboModuleOptional_SpecGetObjectShapeArg:(id)json
 {
@@ -3582,6 +4064,16 @@ namespace facebook::react {
         
   }
 } // namespace facebook::react
+
+@implementation NativeStringTurboModuleSpecBase
+
+
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper
+{
+  _eventEmitterCallback = std::move(eventEmitterCallbackWrapper->_eventEmitterCallback);
+}
+@end
+
 
 namespace facebook::react {
   

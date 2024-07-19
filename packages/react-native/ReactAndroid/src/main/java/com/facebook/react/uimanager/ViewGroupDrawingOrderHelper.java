@@ -11,12 +11,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.common.ReactConstants;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
 /** Helper to handle implementing ViewGroups with custom drawing order based on z-index. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ViewGroupDrawingOrderHelper {
   private final ViewGroup mViewGroup;
   private int mNumberOfChildrenWithZIndex = 0;

@@ -173,12 +173,23 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
 - (void)RCT_handleKeyCommand:(NSString *)input flags:(UIKeyModifierFlags)modifierFlags
 {
+  // In Bridgeless mode we might incur in some concurrency issues
+  // where the React Native instance is invalidated while iterating on the
+  // list of available commands.
+  // That will cleanup the set while iterating, which is a not allowed mutation.
+  // To work around that, we store the commands that we need to execute in a separate
+  // array, local to this function call, so we don't incur in concurrency issues
+  NSMutableArray<RCTKeyCommand *> *commandsToExecute = [NSMutableArray new];
   for (RCTKeyCommand *command in [RCTKeyCommands sharedInstance].commands) {
     if ([command matchesInput:input flags:modifierFlags]) {
       if (command.block) {
-        command.block(nil);
+        [commandsToExecute addObject:command];
       }
     }
+  }
+
+  for (RCTKeyCommand *command in commandsToExecute) {
+    command.block(nil);
   }
 }
 

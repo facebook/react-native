@@ -7,10 +7,8 @@
 
 package com.facebook.react.defaults
 
-import android.os.Bundle
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
-import com.facebook.react.ReactRootView
 
 /**
  * A utility class that allows you to simplify the setup of a [ReactActivityDelegate] for new apps
@@ -21,7 +19,7 @@ import com.facebook.react.ReactRootView
  *
  * @param fabricEnabled Whether Fabric should be enabled for the RootView of this Activity.
  */
-open class DefaultReactActivityDelegate(
+public open class DefaultReactActivityDelegate(
     activity: ReactActivity,
     mainComponentName: String,
     private val fabricEnabled: Boolean = false,
@@ -35,7 +33,7 @@ open class DefaultReactActivityDelegate(
       level = DeprecationLevel.WARNING,
       replaceWith =
           ReplaceWith("DefaultReactActivityDelegate(activity, mainComponentName, fabricEnabled)"))
-  constructor(
+  public constructor(
       activity: ReactActivity,
       mainComponentName: String,
       fabricEnabled: Boolean,
@@ -43,10 +41,4 @@ open class DefaultReactActivityDelegate(
   ) : this(activity, mainComponentName, fabricEnabled)
 
   override fun isFabricEnabled(): Boolean = fabricEnabled
-
-  override fun createRootView(): ReactRootView =
-      ReactRootView(context).apply { setIsFabric(fabricEnabled) }
-
-  override fun createRootView(bundle: Bundle?): ReactRootView =
-      ReactRootView(context).apply { setIsFabric(fabricEnabled) }
 }

@@ -87,6 +87,44 @@ describe('extractLibrariesFromJSON', () => {
   });
 });
 
+describe('extractSupportedApplePlatforms', () => {
+  it('extracts platforms when podspec specifies object of platforms', () => {
+    const myDependency = 'test-library';
+    const myDependencyPath = path.join(
+      __dirname,
+      `../__test_fixtures__/${myDependency}`,
+    );
+    let platforms = underTest._extractSupportedApplePlatforms(
+      myDependency,
+      myDependencyPath,
+    );
+    expect(platforms).toEqual({
+      ios: true,
+      macos: true,
+      tvos: false,
+      visionos: true,
+    });
+  });
+
+  it('extracts platforms when podspec specifies platforms separately', () => {
+    const myDependency = 'test-library-2';
+    const myDependencyPath = path.join(
+      __dirname,
+      `../__test_fixtures__/${myDependency}`,
+    );
+    let platforms = underTest._extractSupportedApplePlatforms(
+      myDependency,
+      myDependencyPath,
+    );
+    expect(platforms).toEqual({
+      ios: true,
+      macos: true,
+      tvos: true,
+      visionos: false,
+    });
+  });
+});
+
 describe('delete empty files and folders', () => {
   beforeEach(() => {
     jest.resetModules();

@@ -41,9 +41,8 @@ RCT_EXPORT_MODULE();
 
     AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
 
-    _rootView = [[RCTRootView alloc] initWithBridge:appDelegate.bridge
-                                         moduleName:@"SetPropertiesExampleApp"
-                                  initialProperties:@{@"color" : @"beige"}];
+    _rootView = (RCTRootView *)[appDelegate.rootViewFactory viewWithModuleName:@"SetPropertiesExampleApp"
+                                                             initialProperties:@{@"color" : @"beige"}];
 
     _button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     [_button setTitle:@"Native Button" forState:UIControlStateNormal];
@@ -72,7 +71,11 @@ RCT_EXPORT_MODULE();
 - (void)changeColor
 {
   _beige = !_beige;
-  [_rootView setAppProperties:@{@"color" : _beige ? @"beige" : @"purple"}];
+
+  NSMutableDictionary *newProperties = [_rootView.appProperties mutableCopy];
+  newProperties[@"color"] = _beige ? @"beige" : @"purple";
+
+  [_rootView setAppProperties:newProperties];
 }
 
 - (NSArray<UIView<RCTComponent> *> *)reactSubviews

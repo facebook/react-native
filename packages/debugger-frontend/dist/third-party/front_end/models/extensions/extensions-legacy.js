@@ -1,1 +1,0 @@
-import*as n from"./extensions.js";self.Extensions=self.Extensions||{},Extensions=Extensions||{},Extensions.ExtensionSidebarPane=n.ExtensionPanel.ExtensionSidebarPane,Extensions.ExtensionServer=n.ExtensionServer.ExtensionServer,Extensions.ExtensionServer.Events=n.ExtensionServer.Events,Extensions.ExtensionStatus=n.ExtensionServer.ExtensionStatus;

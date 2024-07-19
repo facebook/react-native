@@ -315,6 +315,8 @@ const sequence = function (
         current++;
 
         if (current === animations.length) {
+          // if the start is called, even without a reset, it should start from the beginning
+          current = 0;
           callback && callback(result);
           return;
         }

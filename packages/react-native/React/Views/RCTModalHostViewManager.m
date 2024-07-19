@@ -10,23 +10,9 @@
 #import "RCTBridge.h"
 #import "RCTModalHostView.h"
 #import "RCTModalHostViewController.h"
+#import "RCTModalManager.h"
 #import "RCTShadowView.h"
 #import "RCTUtils.h"
-
-@implementation RCTConvert (RCTModalHostView)
-
-RCT_ENUM_CONVERTER(
-    UIModalPresentationStyle,
-    (@{
-      @"fullScreen" : @(UIModalPresentationFullScreen),
-      @"pageSheet" : @(UIModalPresentationPageSheet),
-      @"formSheet" : @(UIModalPresentationFormSheet),
-      @"overFullScreen" : @(UIModalPresentationOverFullScreen),
-    }),
-    UIModalPresentationFullScreen,
-    integerValue)
-
-@end
 
 @interface RCTModalHostShadowView : RCTShadowView
 
@@ -90,15 +76,20 @@ RCT_EXPORT_MODULE()
                     animated:(BOOL)animated
 {
   dispatch_block_t completionBlock = ^{
-    if (modalHostView.onDismiss) {
-      modalHostView.onDismiss(nil);
+    if (modalHostView.identifier) {
+      [[self.bridge moduleForClass:[RCTModalManager class]] modalDismissed:modalHostView.identifier];
     }
   };
   dispatch_async(dispatch_get_main_queue(), ^{
     if (self->_dismissalBlock) {
       self->_dismissalBlock([modalHostView reactViewController], viewController, animated, completionBlock);
-    } else {
+    } else if (viewController.presentingViewController) {
       [viewController.presentingViewController dismissViewControllerAnimated:animated completion:completionBlock];
+    } else {
+      // Make sure to call the completion block in case the presenting view controller is nil
+      // In an internal app we have a use case where a modal presents another view without bein dismissed
+      // This, somehow, invalidate the presenting view controller and the modal remains always visible.
+      completionBlock();
     }
   });
 }
@@ -123,10 +114,13 @@ RCT_EXPORT_VIEW_PROPERTY(statusBarTranslucent, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(hardwareAccelerated, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(animated, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(onShow, RCTDirectEventBlock)
-RCT_EXPORT_VIEW_PROPERTY(onDismiss, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(identifier, NSNumber)
 RCT_EXPORT_VIEW_PROPERTY(supportedOrientations, NSArray)
 RCT_EXPORT_VIEW_PROPERTY(onOrientationChange, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(visible, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(onRequestClose, RCTDirectEventBlock)
+
+// Fabric only
+RCT_EXPORT_VIEW_PROPERTY(onDismiss, RCTDirectEventBlock)
 
 @end

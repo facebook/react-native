@@ -14,6 +14,7 @@ import type AnimatedValue from 'react-native/Libraries/Animated/nodes/AnimatedVa
 
 import RNTConfigurationBlock from '../../components/RNTConfigurationBlock';
 import RNTesterButton from '../../components/RNTesterButton';
+import {RNTesterThemeContext} from '../../components/RNTesterTheme';
 import ToggleNativeDriver from './utils/ToggleNativeDriver';
 import * as React from 'react';
 import {
@@ -152,11 +153,14 @@ function ComposingExampleItem({
   const animation = React.useRef(
     compositeAnimation(xTranslations.current, useNativeDriver),
   );
+  const theme = React.useContext(RNTesterThemeContext);
 
   return (
     <View style={styles.itemContainer}>
-      <Text style={styles.itemTitle}>{title}</Text>
-      <Text>{description}</Text>
+      <Text style={[styles.itemTitle, {color: theme.SecondaryLabelColor}]}>
+        {title}
+      </Text>
+      <Text style={{color: theme.SecondaryLabelColor}}>{description}</Text>
       <View style={styles.boxesContainer}>
         {boxIndexes.map(boxIndex => {
           const translateX = xTranslations.current[boxIndex].interpolate({

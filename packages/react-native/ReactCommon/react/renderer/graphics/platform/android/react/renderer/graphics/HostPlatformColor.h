@@ -19,6 +19,11 @@ static const facebook::react::Color UndefinedColor =
     std::numeric_limits<facebook::react::Color>::max();
 }
 
+inline Color
+hostPlatformColorFromRGBA(uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+  return (a & 0xff) << 24 | (r & 0xff) << 16 | (g & 0xff) << 8 | (b & 0xff);
+}
+
 inline Color hostPlatformColorFromComponents(ColorComponents components) {
   float ratio = 255;
   return ((int)round(components.alpha * ratio) & 0xff) << 24 |
@@ -34,6 +39,22 @@ inline ColorComponents colorComponentsFromHostPlatformColor(Color color) {
       (float)((color >> 8) & 0xff) / ratio,
       (float)((color >> 0) & 0xff) / ratio,
       (float)((color >> 24) & 0xff) / ratio};
+}
+
+inline float alphaFromHostPlatformColor(Color color) {
+  return static_cast<float>((color >> 24) & 0xff);
+}
+
+inline float redFromHostPlatformColor(Color color) {
+  return static_cast<float>((color >> 16) & 0xff);
+}
+
+inline float greenFromHostPlatformColor(Color color) {
+  return static_cast<float>((color >> 8) & 0xff);
+}
+
+inline float blueFromHostPlatformColor(Color color) {
+  return static_cast<uint8_t>((color >> 0) & 0xff);
 }
 
 } // namespace facebook::react

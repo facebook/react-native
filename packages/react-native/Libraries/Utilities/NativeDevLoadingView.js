@@ -8,17 +8,6 @@
  * @format
  */
 
-import type {TurboModule} from '../TurboModule/RCTExport';
-
-import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
-
-export interface Spec extends TurboModule {
-  +showMessage: (
-    message: string,
-    withColor: ?number,
-    withBackgroundColor: ?number,
-  ) => void;
-  +hide: () => void;
-}
-
-export default (TurboModuleRegistry.get<Spec>('DevLoadingView'): ?Spec);
+export * from '../../src/private/specs/modules/NativeDevLoadingView';
+import NativeDevLoadingView from '../../src/private/specs/modules/NativeDevLoadingView';
+export default NativeDevLoadingView;

@@ -16,7 +16,10 @@ module.exports = (moduleName, instanceMethods, isESModule) => {
   const React = require('react');
 
   const SuperClass =
-    typeof RealComponent === 'function' ? RealComponent : React.Component;
+    typeof RealComponent === 'function' &&
+    RealComponent.prototype.constructor instanceof React.Component
+      ? RealComponent
+      : React.Component;
 
   const name =
     RealComponent.displayName ||
@@ -49,6 +52,13 @@ module.exports = (moduleName, instanceMethods, isESModule) => {
       return React.createElement(nameWithoutPrefix, props, this.props.children);
     }
   };
+
+  Object.defineProperty(Component, 'name', {
+    value: name,
+    writable: false,
+    enumerable: false,
+    configurable: true,
+  });
 
   Component.displayName = nameWithoutPrefix;
 

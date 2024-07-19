@@ -59,10 +59,6 @@ class Props : public virtual Sealable, public virtual DebugStringConvertible {
 
 #ifdef ANDROID
   folly::dynamic rawProps = folly::dynamic::object();
-
-  virtual void propsDiffMapBuffer(
-      const Props* oldProps,
-      MapBufferBuilder& builder) const;
 #endif
 
  protected:

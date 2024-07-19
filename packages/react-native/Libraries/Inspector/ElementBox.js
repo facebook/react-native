@@ -20,10 +20,9 @@ const React = require('react');
 
 class ElementBox extends React.Component<$FlowFixMeProps> {
   render(): React.Node {
-    // $FlowFixMe[underconstrained-implicit-instantiation]
     const style = flattenStyle(this.props.style) || {};
-    let margin = resolveBoxStyle('margin', style);
-    let padding = resolveBoxStyle('padding', style);
+    let margin: ?$ReadOnly<Style> = resolveBoxStyle('margin', style);
+    let padding: ?$ReadOnly<Style> = resolveBoxStyle('padding', style);
 
     const frameStyle = {...this.props.frame};
     const contentStyle: {width: number, height: number} = {
@@ -122,13 +121,17 @@ function resolveSizeInPlace(
   direction: string,
   dimension: string,
 ) {
+  // $FlowFixMe[invalid-computed-prop]
   if (style[direction] !== null && typeof style[direction] === 'string') {
     if (style[direction].indexOf('%') !== -1) {
       // $FlowFixMe[prop-missing]
       style[direction] =
+        // $FlowFixMe[invalid-computed-prop]
         (parseFloat(style[direction]) / 100.0) *
+        // $FlowFixMe[invalid-computed-prop]
         Dimensions.get('window')[dimension];
     }
+    // $FlowFixMe[invalid-computed-prop]
     if (style[direction] === 'auto') {
       // Ignore auto sizing in frame drawing due to complexity of correctly rendering this
       // $FlowFixMe[prop-missing]

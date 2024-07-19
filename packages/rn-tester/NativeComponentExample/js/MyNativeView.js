@@ -88,7 +88,7 @@ function getTextFor(measureStruct: MeasureStruct): string {
 
 // This is an example component that migrates to use the new architecture.
 export default function MyNativeView(props: {}): React.Node {
-  const containerRef = useRef<typeof View | null>(null);
+  const containerRef = useRef<React.ElementRef<typeof View> | null>(null);
   const ref = useRef<React.ElementRef<MyNativeViewType> | null>(null);
   const legacyRef = useRef<React.ElementRef<MyLegacyViewType> | null>(null);
   const [opacity, setOpacity] = useState(1.0);
@@ -118,6 +118,9 @@ export default function MyNativeView(props: {}): React.Node {
           console.log(event.nativeEvent.strings);
           console.log(event.nativeEvent.latLons);
           console.log(event.nativeEvent.multiArrays);
+        }}
+        onLegacyStyleEvent={event => {
+          console.log(event.nativeEvent.string);
         }}
       />
       <Text style={{color: 'red'}}>Legacy View</Text>
@@ -218,7 +221,15 @@ export default function MyNativeView(props: {}): React.Node {
           }
         }}
       />
-
+      <Button
+        title="Fire Legacy Style Event"
+        onPress={() => {
+          RNTMyNativeViewCommands.fireLagacyStyleEvent(
+            // $FlowFixMe[incompatible-call]
+            ref.current,
+          );
+        }}
+      />
       <Text style={{color: 'green', textAlign: 'center'}}>
         &gt; Interop Layer Measurements &lt;
       </Text>

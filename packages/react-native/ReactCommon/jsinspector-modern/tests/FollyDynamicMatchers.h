@@ -19,7 +19,7 @@ namespace folly_dynamic_matchers_utils {
 std::string as_string(std::string value);
 std::string as_string(folly::dynamic value);
 std::string explain_error(
-    folly::dynamic::json_pointer_resolution_error<folly::dynamic const> error);
+    folly::dynamic::json_pointer_resolution_error<const folly::dynamic> error);
 
 } // namespace folly_dynamic_matchers_utils
 
@@ -75,6 +75,33 @@ MATCHER_P2(
   *result_listener << "has no value at " << jsonPointer << " because of error: "
                    << explain_error(resolved_ptr.error());
   return false;
+}
+
+/**
+ * A higher-order matcher that applies an inner matcher to the string value of
+ * a folly::dynamic.
+ */
+MATCHER_P(
+    DynamicString,
+    innerMatcher,
+    std::string{"string value "} +
+        testing::DescribeMatcher<std::string>(innerMatcher, negation)) {
+  using namespace ::testing;
+  using namespace folly_dynamic_matchers_utils;
+  if (!arg.isString()) {
+    *result_listener << "is not a string";
+    return false;
+  }
+  return ExplainMatchResult(innerMatcher, arg.getString(), result_listener);
+}
+
+/**
+ * A user-defined literal for constructing a folly::dynamic from a JSON
+ * string. Not technically specific to GMock, but convenient to have in a test
+ * suite.
+ */
+inline folly::dynamic operator""_json(const char* s, size_t n) {
+  return folly::parseJson(std::string{s, n});
 }
 
 } // namespace facebook

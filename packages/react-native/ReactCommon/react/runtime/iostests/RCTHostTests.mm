@@ -58,7 +58,8 @@ static ShimRCTInstance *shimmedRCTInstance;
                      turboModuleManagerDelegate:OCMProtocolMock(@protocol(RCTTurboModuleManagerDelegate))
                                jsEngineProvider:^std::shared_ptr<facebook::react::JSRuntimeFactory>() {
                                  return std::make_shared<facebook::react::RCTHermesInstance>();
-                               }];
+                               }
+                                  launchOptions:nil];
 }
 
 - (void)tearDown

@@ -43,7 +43,7 @@ class CodegenUtils
         # This podspec file should only be create once in the session/pod install.
         # This happens when multiple targets are calling use_react_native!.
         if @@REACT_CODEGEN_PODSPEC_GENERATED
-          Pod::UI.puts "[Codegen] Skipping React-Codegen podspec generation."
+          Pod::UI.puts "[Codegen] Skipping ReactCodegen podspec generation."
           return
         end
 
@@ -51,7 +51,7 @@ class CodegenUtils
         output_dir = "#{relative_installation_root}/#{codegen_output_dir}"
         Pod::Executable.execute_command("mkdir", ["-p", output_dir]);
 
-        podspec_path = file_manager.join(output_dir, 'React-Codegen.podspec.json')
+        podspec_path = file_manager.join(output_dir, 'ReactCodegen.podspec.json')
         Pod::UI.puts "[Codegen] Generating #{podspec_path}"
 
         file_manager.open(podspec_path, 'w') do |f|
@@ -62,7 +62,7 @@ class CodegenUtils
         @@REACT_CODEGEN_PODSPEC_GENERATED = true
     end
 
-    # It generates the podspec object that represents the `React-Codegen.podspec` file
+    # It generates the podspec object that represents the `ReactCodegen.podspec` file
     #
     # Parameters
     # - package_json_file: the path to the `package.json`, required to extract the proper React Native version
@@ -81,7 +81,7 @@ class CodegenUtils
           "\"$(PODS_ROOT)/RCT-Folly\"",
           "\"$(PODS_ROOT)/DoubleConversion\"",
           "\"$(PODS_ROOT)/fmt/include\"",
-          "\"${PODS_ROOT}/Headers/Public/React-Codegen/react/renderer/components\"",
+          "\"${PODS_ROOT}/Headers/Public/ReactCodegen/react/renderer/components\"",
           "\"$(PODS_ROOT)/Headers/Private/React-Fabric\"",
           "\"$(PODS_ROOT)/Headers/Private/React-RCTFabric\"",
           "\"$(PODS_ROOT)/Headers/Private/Yoga\"",
@@ -101,13 +101,14 @@ class CodegenUtils
             .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-debug", "React_debug", []))
             .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-rendererdebug", "React_rendererdebug", []))
             .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-utils", "React_utils", []))
+            .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-featureflags", "React_featureflags", []))
             .each { |search_path|
               header_search_paths << "\"#{search_path}\""
             }
         end
 
         spec = {
-          'name' => "React-Codegen",
+          'name' => "ReactCodegen",
           'version' => version,
           'summary' => 'Temp pod for generated files for React Native',
           'homepage' => 'https://facebook.com/',
@@ -140,6 +141,7 @@ class CodegenUtils
             'React-FabricImage': [],
             'React-debug': [],
             'React-utils': [],
+            'React-featureflags': [],
           }
         }
 
@@ -154,7 +156,7 @@ class CodegenUtils
         end
 
         if script_phases
-          Pod::UI.puts "[Codegen] Adding script_phases to React-Codegen."
+          Pod::UI.puts "[Codegen] Adding script_phases to ReactCodegen."
           spec[:'script_phases'] = script_phases
         end
 
@@ -296,7 +298,7 @@ class CodegenUtils
       Pod::UI.warn '[Codegen] warn: using experimental new codegen integration'
       relative_installation_root = Pod::Config.instance.installation_root.relative_path_from(Pathname.pwd)
 
-      # Generate React-Codegen podspec here to add the script phases.
+      # Generate ReactCodegen podspec here to add the script phases.
       script_phases = codegen_utils.get_react_codegen_script_phases(
         app_path,
         :fabric_enabled => fabric_enabled,

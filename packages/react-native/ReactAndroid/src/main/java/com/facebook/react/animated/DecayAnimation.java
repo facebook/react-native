@@ -7,12 +7,14 @@
 
 package com.facebook.react.animated;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.ReadableMap;
 
 /**
  * Implementation of {@link AnimationDriver} providing support for decay animations. The
  * implementation is copied from the JS version in {@code AnimatedImplementation.js}.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 class DecayAnimation extends AnimationDriver {
 
   private final double mVelocity;

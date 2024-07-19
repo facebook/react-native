@@ -68,8 +68,11 @@ const _getKeyAndValueFromCSSTransform: (
     | $TEMPORARY$string<'translateX'>
     | $TEMPORARY$string<'translateY'>,
   args: string,
-) => {key: string, value?: number[] | number | string} = (key, args) => {
-  const argsWithUnitsRegex = new RegExp(/([+-]?\d+(\.\d+)?)([a-zA-Z]+)?/g);
+) => {key: string, value?: Array<string | number> | number | string} = (
+  key,
+  args,
+) => {
+  const argsWithUnitsRegex = new RegExp(/([+-]?\d+(\.\d+)?)([a-zA-Z]+|%)?/g);
 
   switch (key) {
     case 'matrix':
@@ -88,7 +91,11 @@ const _getKeyAndValueFromCSSTransform: (
           missingUnitOfMeasurement = true;
         }
 
-        parsedArgs.push(value);
+        if (unitOfMeasurement === '%') {
+          parsedArgs.push(`${value}%`);
+        } else {
+          parsedArgs.push(value);
+        }
       }
 
       if (__DEV__) {
@@ -256,6 +263,14 @@ function _validateTransform(
       break;
     case 'translateX':
     case 'translateY':
+      invariant(
+        typeof value === 'number' ||
+          (typeof value === 'string' && value.endsWith('%')),
+        'Transform with key of "%s" must be number or a percentage. Passed value: %s.',
+        key,
+        stringifySafe(transformation),
+      );
+      break;
     case 'scale':
     case 'scaleX':
     case 'scaleY':

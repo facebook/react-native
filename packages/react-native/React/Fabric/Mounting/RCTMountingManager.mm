@@ -14,11 +14,11 @@
 #import <React/RCTFollyConvert.h>
 #import <React/RCTLog.h>
 #import <React/RCTUtils.h>
+#import <cxxreact/SystraceSection.h>
 #import <react/config/ReactNativeConfig.h>
 #import <react/renderer/components/root/RootShadowNode.h>
 #import <react/renderer/core/LayoutableShadowNode.h>
 #import <react/renderer/core/RawProps.h>
-#import <react/renderer/debug/SystraceSection.h>
 #import <react/renderer/mounting/TelemetryController.h>
 #import <react/utils/CoreFeatures.h>
 
@@ -99,11 +99,6 @@ static void RCTPerformMountInstructions(
         auto &oldChildViewDescriptor = [registry componentViewDescriptorWithTag:oldChildShadowView.tag];
         auto &parentViewDescriptor = [registry componentViewDescriptorWithTag:parentShadowView.tag];
         [parentViewDescriptor.view unmountChildComponentView:oldChildViewDescriptor.view index:mutation.index];
-        break;
-      }
-
-      case ShadowViewMutation::RemoveDeleteTree: {
-        // TODO - not supported yet
         break;
       }
 

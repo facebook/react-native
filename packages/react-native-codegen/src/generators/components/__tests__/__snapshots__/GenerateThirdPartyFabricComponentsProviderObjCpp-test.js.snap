@@ -71,7 +71,8 @@ Class<RCTComponentViewProtocol> RCTThirdPartyFabricComponentsProvider(const char
     {\\"MultiComponent1NativeComponent\\", MultiComponent1NativeComponentCls}, // TWO_COMPONENTS_SAME_FILE,
     {\\"MultiComponent2NativeComponent\\", MultiComponent2NativeComponentCls}, // TWO_COMPONENTS_SAME_FILE
 
-    {\\"MultiFile1NativeComponent\\", MultiFile1NativeComponentCls}, // TWO_COMPONENTS_DIFFERENT_FILES,
+    {\\"MultiFile1NativeComponent\\", MultiFile1NativeComponentCls}, // TWO_COMPONENTS_DIFFERENT_FILES
+
     {\\"MultiFile2NativeComponent\\", MultiFile2NativeComponentCls}, // TWO_COMPONENTS_DIFFERENT_FILES
 
     {\\"CommandNativeComponent\\", CommandNativeComponentCls}, // COMMANDS

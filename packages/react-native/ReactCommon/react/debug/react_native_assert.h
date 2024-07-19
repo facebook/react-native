@@ -18,6 +18,8 @@
 // For recoverable conditions that can be violated by user mistake (e.g. JS
 // code passes an unexpected prop value), consider react_native_expect instead.
 
+#pragma once
+
 #include "flags.h"
 
 #undef react_native_assert

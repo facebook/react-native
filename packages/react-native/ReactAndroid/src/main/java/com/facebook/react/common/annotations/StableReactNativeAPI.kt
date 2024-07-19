@@ -10,4 +10,4 @@ package com.facebook.react.common.annotations
 /** This API is stable and is likely not to change in the New Architecture of React Native. */
 @Retention(AnnotationRetention.SOURCE)
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY)
-annotation class StableReactNativeAPI
+public annotation class StableReactNativeAPI

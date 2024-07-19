@@ -114,6 +114,13 @@ const bundleCommand: Command = {
       description: 'Path to the CLI configuration file',
       parse: (val: string): string => path.resolve(val),
     },
+    {
+      name: '--resolver-option <string...>',
+      description:
+        'Custom resolver options of the form key=value. URL-encoded. May be specified multiple times.',
+      parse: (val: string, previous: Array<string> = []): Array<string> =>
+        previous.concat([val]),
+    },
   ],
 };
 

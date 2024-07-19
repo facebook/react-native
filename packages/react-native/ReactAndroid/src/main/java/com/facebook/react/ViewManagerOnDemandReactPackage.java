@@ -18,6 +18,7 @@ public interface ViewManagerOnDemandReactPackage {
    * Typically, this is ViewManager.getName().
    */
   Collection<String> getViewManagerNames(ReactApplicationContext reactContext);
+
   /**
    * Creates and returns a ViewManager with a specific name {@param viewManagerName}. It's up to an
    * implementing package how to interpret the name.

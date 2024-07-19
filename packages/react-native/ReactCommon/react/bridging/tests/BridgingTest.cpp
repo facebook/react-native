@@ -123,7 +123,7 @@ TEST_F(BridgingTest, hostObjectTest) {
   struct TestHostObject : public jsi::HostObject {
     jsi::Value get(jsi::Runtime& rt, const jsi::PropNameID& name) override {
       if (name.utf8(rt) == "test") {
-        return jsi::Value(1);
+        return {1};
       }
       return jsi::Value::undefined();
     }
@@ -158,6 +158,13 @@ TEST_F(BridgingTest, arrayTest) {
 
   EXPECT_EQ(
       vec, bridging::fromJs<std::vector<std::string>>(rt, array, invoker));
+  auto arr = bridging::fromJs<std::array<std::string, 2>>(rt, array, invoker);
+  EXPECT_EQ(vec[0], arr[0]);
+  EXPECT_EQ(vec[1], arr[1]);
+  auto pair =
+      bridging::fromJs<std::pair<std::string, std::string>>(rt, array, invoker);
+  EXPECT_EQ(vec[0], pair.first);
+  EXPECT_EQ(vec[1], pair.second);
 
   EXPECT_EQ(vec.size(), bridging::toJs(rt, vec, invoker).size(rt));
   for (size_t i = 0; i < vec.size(); i++) {
@@ -172,11 +179,20 @@ TEST_F(BridgingTest, arrayTest) {
   EXPECT_EQ(2, bridging::toJs(rt, std::make_pair(1, "2"), invoker).size(rt));
   EXPECT_EQ(2, bridging::toJs(rt, std::make_tuple(1, "2"), invoker).size(rt));
   EXPECT_EQ(2, bridging::toJs(rt, std::array<int, 2>{1, 2}, invoker).size(rt));
+  EXPECT_EQ(
+      2,
+      bridging::toJs(rt, std::array<std::string, 2>{"1", "2"}, invoker)
+          .size(rt));
   EXPECT_EQ(2, bridging::toJs(rt, std::deque<int>{1, 2}, invoker).size(rt));
   EXPECT_EQ(2, bridging::toJs(rt, std::list<int>{1, 2}, invoker).size(rt));
   EXPECT_EQ(
       2,
       bridging::toJs(rt, std::initializer_list<int>{1, 2}, invoker).size(rt));
+
+  std::vector<std::array<std::string, 2>> headers{
+      {"foo", "bar"}, {"baz", "qux"}};
+  auto jsiHeaders = bridging::toJs(rt, headers, invoker);
+  EXPECT_EQ(headers.size(), jsiHeaders.size(rt));
 }
 
 TEST_F(BridgingTest, functionTest) {
@@ -300,7 +316,7 @@ TEST_F(BridgingTest, asyncCallbackInvalidation) {
       [](jsi::Runtime& rt, jsi::Function& f) { f.call(rt, "hello"); });
 
   // LongLivedObjectCollection goes away before callback is executed
-  LongLivedObjectCollection::get().clear();
+  LongLivedObjectCollection::get(rt).clear();
 
   flushQueue();
 
@@ -410,6 +426,116 @@ TEST_F(BridgingTest, promiseTest) {
   EXPECT_NO_THROW(promise.reject("ignored"));
 }
 
+using EventType = std::vector<std::string>;
+using EventSubscriptionsWithLastEvent =
+    std::vector<std::pair<jsi::Object, std::shared_ptr<EventType>>>;
+
+namespace {
+
+template <typename EventType>
+void addEventSubscription(
+    jsi::Runtime& rt,
+    const AsyncEventEmitter<EventType>& eventEmitter,
+    EventSubscriptionsWithLastEvent& eventSubscriptionsWithListener,
+    const std::shared_ptr<TestCallInvoker>& invoker) {
+  auto eventEmitterJs = bridging::toJs(rt, eventEmitter, invoker);
+  auto lastEvent = std::make_shared<EventType>();
+  auto listenJs = bridging::toJs(
+      rt,
+      [lastEvent = lastEvent](const EventType& event) { *lastEvent = event; },
+      invoker);
+  eventSubscriptionsWithListener.emplace_back(std::make_pair(
+      jsi::Object(eventEmitterJs.asFunction(rt)
+                      .callWithThis(rt, eventEmitterJs, listenJs)
+                      .asObject(rt)),
+      std::move(lastEvent)));
+}
+
+} // namespace
+
+TEST_F(BridgingTest, eventEmitterTest) {
+  EventSubscriptionsWithLastEvent eventSubscriptionsWithListener;
+
+  AsyncEventEmitter<EventType> eventEmitter;
+  EXPECT_NO_THROW(eventEmitter.emit({"one", "two", "three"}));
+  EXPECT_EQ(0, eventSubscriptionsWithListener.size());
+
+  // register 3 JavaScript listeners to the event emitter
+  for (int i = 0; i < 3; ++i) {
+    addEventSubscription<EventType>(
+        rt, eventEmitter, eventSubscriptionsWithListener, invoker);
+  }
+
+  EXPECT_TRUE(eventEmitter.state_->listeners.contains(0));
+  EXPECT_TRUE(eventEmitter.state_->listeners.contains(1));
+  EXPECT_TRUE(eventEmitter.state_->listeners.contains(2));
+
+  // emit with args
+  EXPECT_NO_THROW(eventEmitter.emit({"four", "five", "six"}));
+  flushQueue();
+
+  // verify all listeners received the event
+  for (const auto& [_, lastEvent] : eventSubscriptionsWithListener) {
+    EXPECT_EQ(3, lastEvent->size());
+    EXPECT_EQ("four", lastEvent->at(0));
+    EXPECT_EQ("five", lastEvent->at(1));
+    EXPECT_EQ("six", lastEvent->at(2));
+  }
+
+  // Remove 2nd eventSubscriptions
+  eventSubscriptionsWithListener[1]
+      .first.getPropertyAsFunction(rt, "remove")
+      .callWithThis(rt, eventSubscriptionsWithListener[1].first);
+  eventSubscriptionsWithListener.erase(
+      eventSubscriptionsWithListener.begin() + 1);
+
+  // Add 4th and 5th eventSubscriptions
+  addEventSubscription<EventType>(
+      rt, eventEmitter, eventSubscriptionsWithListener, invoker);
+  addEventSubscription<EventType>(
+      rt, eventEmitter, eventSubscriptionsWithListener, invoker);
+
+  EXPECT_TRUE(eventEmitter.state_->listeners.contains(0));
+  EXPECT_FALSE(eventEmitter.state_->listeners.contains(1));
+  EXPECT_TRUE(eventEmitter.state_->listeners.contains(2));
+  EXPECT_TRUE(eventEmitter.state_->listeners.contains(3));
+  EXPECT_TRUE(eventEmitter.state_->listeners.contains(4));
+
+  // Emit more events
+  EXPECT_NO_THROW(eventEmitter.emit({"seven", "eight", "nine"}));
+  flushQueue();
+
+  for (const auto& [_, lastEvent] : eventSubscriptionsWithListener) {
+    EXPECT_EQ(3, lastEvent->size());
+    EXPECT_EQ("seven", lastEvent->at(0));
+    EXPECT_EQ("eight", lastEvent->at(1));
+    EXPECT_EQ("nine", lastEvent->at(2));
+  }
+
+  // clean-up the event subscriptions
+  for (const auto& [eventSubscription, _] : eventSubscriptionsWithListener) {
+    eventSubscription.getPropertyAsFunction(rt, "remove")
+        .callWithThis(rt, eventSubscription);
+  }
+  flushQueue();
+
+  // Emit with function
+  EXPECT_NO_THROW(eventEmitter.emit(
+      [jsInvoker = invoker,
+       value = {"ten", "eleven", "twelve"}](jsi::Runtime& rt) -> jsi::Value {
+        return bridging::toJs(rt, value, jsInvoker);
+      }));
+  flushQueue();
+
+  // no new data as listeners had been removed
+  for (const auto& [_, lastEvent] : eventSubscriptionsWithListener) {
+    EXPECT_EQ(3, lastEvent->size());
+    EXPECT_EQ("seven", lastEvent->at(0));
+    EXPECT_EQ("eight", lastEvent->at(1));
+    EXPECT_EQ("nine", lastEvent->at(2));
+  }
+}
+
 TEST_F(BridgingTest, optionalTest) {
   EXPECT_EQ(
       1, bridging::fromJs<std::optional<int>>(rt, jsi::Value(1), invoker));
@@ -468,6 +594,12 @@ TEST_F(BridgingTest, supportTest) {
   EXPECT_TRUE((bridging::supportsFromJs<std::set<int>, jsi::Array&>));
   EXPECT_TRUE((bridging::supportsFromJs<std::vector<int>, jsi::Array>));
   EXPECT_TRUE((bridging::supportsFromJs<std::vector<int>, jsi::Array&>));
+  EXPECT_TRUE((
+      bridging::
+          supportsFromJs<std::vector<std::array<std::string, 2>>, jsi::Array>));
+  EXPECT_TRUE((bridging::supportsFromJs<
+               std::vector<std::array<std::string, 2>>,
+               jsi::Array&>));
   EXPECT_TRUE(
       (bridging::supportsFromJs<std::map<std::string, int>, jsi::Object>));
   EXPECT_TRUE(

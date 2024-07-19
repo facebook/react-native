@@ -7,6 +7,8 @@
 
 #import "RCTCxxInspectorPackagerConnectionDelegate.h"
 
+#if RCT_DEV || RCT_REMOTE_PROFILE
+
 #import <dispatch/dispatch.h>
 
 namespace facebook::react::jsinspector_modern {
@@ -42,3 +44,5 @@ void RCTCxxInspectorPackagerConnectionDelegate::scheduleCallback(
   });
 }
 } // namespace facebook::react::jsinspector_modern
+
+#endif

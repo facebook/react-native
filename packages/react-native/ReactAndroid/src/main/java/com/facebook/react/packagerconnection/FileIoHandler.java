@@ -12,6 +12,7 @@ import android.os.Looper;
 import android.util.Base64;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
+import com.facebook.infer.annotation.Nullsafe;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -20,6 +21,7 @@ import java.util.Iterator;
 import java.util.Map;
 import org.json.JSONObject;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class FileIoHandler implements Runnable {
   private static final String TAG = JSPackagerClient.class.getSimpleName();
   private static final long FILE_TTL = 30 * 1000;
@@ -51,7 +53,8 @@ public class FileIoHandler implements Runnable {
     public void close() throws IOException {
       mStream.close();
     }
-  };
+  }
+  ;
 
   private int mNextHandle;
   private final Handler mHandler;
@@ -104,12 +107,12 @@ public class FileIoHandler implements Runnable {
                 if (!(params instanceof Number)) {
                   throw new Exception("params must be a file handle");
                 }
-                TtlFileInputStream stream = mOpenFiles.get((int) params);
+                TtlFileInputStream stream = mOpenFiles.get(params);
                 if (stream == null) {
                   throw new Exception("invalid file handle, it might have timed out");
                 }
 
-                mOpenFiles.remove((int) params);
+                mOpenFiles.remove(params);
                 stream.close();
                 responder.respond("");
               } catch (Exception e) {

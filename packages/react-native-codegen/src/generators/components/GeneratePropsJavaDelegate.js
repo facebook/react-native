@@ -74,7 +74,7 @@ const PropSetterTemplate = ({propCases}: {propCases: string}) =>
 const CommandsTemplate = ({commandCases}: {commandCases: string}) =>
   `
   @Override
-  public void receiveCommand(T view, String commandName, ReadableArray args) {
+  public void receiveCommand(T view, String commandName, @Nullable ReadableArray args) {
     switch (commandName) {
       ${commandCases}
     }

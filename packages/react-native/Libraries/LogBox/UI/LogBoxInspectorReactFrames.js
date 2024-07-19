@@ -50,24 +50,27 @@ function getPrettyFileName(path: string) {
 }
 function LogBoxInspectorReactFrames(props: Props): React.Node {
   const [collapsed, setCollapsed] = React.useState(true);
-  if (props.log.componentStack == null || props.log.componentStack.length < 1) {
+  if (
+    props.log.getAvailableComponentStack() == null ||
+    props.log.getAvailableComponentStack().length < 1
+  ) {
     return null;
   }
 
   function getStackList() {
     if (collapsed) {
-      return props.log.componentStack.slice(0, 3);
+      return props.log.getAvailableComponentStack().slice(0, 3);
     } else {
-      return props.log.componentStack;
+      return props.log.getAvailableComponentStack();
     }
   }
 
   function getCollapseMessage() {
-    if (props.log.componentStack.length <= 3) {
+    if (props.log.getAvailableComponentStack().length <= 3) {
       return;
     }
 
-    const count = props.log.componentStack.length - 3;
+    const count = props.log.getAvailableComponentStack().length - 3;
     if (collapsed) {
       return `See ${count} more components`;
     } else {

@@ -294,7 +294,7 @@ export const __INTERNAL_VIEW_CONFIG = {
   uiViewClassName: 'EventPropsNativeComponentView',
 
   bubblingEventTypes: {
-    paperDirectName: {
+    topPaperDirectName: {
       phasedRegistrationNames: {
         captured: 'onChangeCapture',
         bubbled: 'onChange',
@@ -308,7 +308,7 @@ export const __INTERNAL_VIEW_CONFIG = {
       },
     },
 
-    paperBubblingName: {
+    topPaperBubblingName: {
       phasedRegistrationNames: {
         captured: 'onEventBubblingWithPaperNameCapture',
         bubbled: 'onEventBubblingWithPaperName',
@@ -321,11 +321,11 @@ export const __INTERNAL_VIEW_CONFIG = {
       registrationName: 'onEventDirect',
     },
 
-    paperDirectName: {
+    topPaperDirectName: {
       registrationName: 'onEventDirectWithPaperName',
     },
 
-    paperBubblingName: {
+    topPaperBubblingName: {
       registrationName: 'onOrientationChange',
     },
   },

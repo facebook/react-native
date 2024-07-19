@@ -6,7 +6,7 @@
  */
 
 #include "BufferedRuntimeExecutor.h"
-#include <cxxreact/MessageQueueThread.h>
+
 #include <algorithm>
 
 namespace facebook::react {

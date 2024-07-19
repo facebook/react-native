@@ -8,6 +8,8 @@
  * @flow strict-local
  */
 
+'use client';
+
 /**
  * Sets up global variables typical in most JavaScript environments.
  *
@@ -27,7 +29,7 @@
 const start = Date.now();
 
 require('./setUpGlobals');
-require('./setUpDOM');
+require('../../src/private/core/setUpDOM');
 require('./setUpPerformance');
 require('./setUpErrorHandling');
 require('./polyfillPromise');

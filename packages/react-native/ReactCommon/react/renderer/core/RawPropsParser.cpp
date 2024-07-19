@@ -45,23 +45,23 @@ const RawValue* RawPropsParser::at(
     return nullptr;
   }
 
-  // Normally, keys are looked up in-order. For performance we can simply
-  // increment this key counter, and if the key is equal to the key at the next
-  // index, there's no need to do any lookups. However, it's possible for keys
-  // to be accessed out-of-order or multiple times, in which case we start
-  // searching again from index 0.
-  // To prevent infinite loops (which can occur if you look up a key that
-  // doesn't exist) we keep track of whether or not we've already looped around,
-  // and log and return nullptr if so. However, we ONLY do this in debug mode,
-  // where you're more likely to look up a nonexistent key as part of debugging.
-  // You can (and must) ensure infinite loops are not possible in production by:
-  // (1) constructing all props objects without conditionals, or (2) if there
-  // are conditionals, ensure that in the parsing setup case, the Props
-  // constructor will access _all_ possible props. To ensure this performance
-  // optimization is utilized, always access props in the same order every time.
-  // This is trivial if you have a simple Props constructor, but difficult or
-  // impossible if you have a shared sub-prop Struct that is used by multiple
-  // parent Props.
+// Normally, keys are looked up in-order. For performance we can simply
+// increment this key counter, and if the key is equal to the key at the next
+// index, there's no need to do any lookups. However, it's possible for keys
+// to be accessed out-of-order or multiple times, in which case we start
+// searching again from index 0.
+// To prevent infinite loops (which can occur if you look up a key that
+// doesn't exist) we keep track of whether or not we've already looped around,
+// and log and return nullptr if so. However, we ONLY do this in debug mode,
+// where you're more likely to look up a nonexistent key as part of debugging.
+// You can (and must) ensure infinite loops are not possible in production by:
+// (1) constructing all props objects without conditionals, or (2) if there
+// are conditionals, ensure that in the parsing setup case, the Props
+// constructor will access _all_ possible props. To ensure this performance
+// optimization is utilized, always access props in the same order every time.
+// This is trivial if you have a simple Props constructor, but difficult or
+// impossible if you have a shared sub-prop Struct that is used by multiple
+// parent Props.
 #ifdef REACT_NATIVE_DEBUG
   bool resetLoop = false;
 #endif
@@ -125,10 +125,7 @@ void RawPropsParser::preparse(const RawProps& rawProps) const noexcept {
 
       for (size_t i = 0; i < count; i++) {
         auto nameValue = names.getValueAtIndex(runtime, i).getString(runtime);
-        auto value = object.getProperty(runtime, nameValue);
-
         auto name = nameValue.utf8(runtime);
-
         auto keyIndex = nameToIndex_.at(
             name.data(), static_cast<RawPropsPropNameLength>(name.size()));
 
@@ -137,6 +134,8 @@ void RawPropsParser::preparse(const RawProps& rawProps) const noexcept {
         }
 
         rawProps.keyIndexToValueIndex_[keyIndex] = valueIndex;
+
+        auto value = object.getProperty(runtime, nameValue);
         rawProps.values_.push_back(
             RawValue(jsi::dynamicFromValue(runtime, value)));
         valueIndex++;
@@ -162,59 +161,6 @@ void RawPropsParser::preparse(const RawProps& rawProps) const noexcept {
         rawProps.keyIndexToValueIndex_[keyIndex] = valueIndex;
         rawProps.values_.push_back(RawValue{pair.second});
         valueIndex++;
-      }
-      break;
-    }
-  }
-}
-
-/**
- * To be used by RawProps only. Value iterator functions.
- */
-void RawPropsParser::iterateOverValues(
-    const RawProps& rawProps,
-    const std::function<
-        void(RawPropsPropNameHash, const char*, RawValue const&)>& visit)
-    const {
-  switch (rawProps.mode_) {
-    case RawProps::Mode::Empty:
-      return;
-
-    case RawProps::Mode::JSI: {
-      auto& runtime = *rawProps.runtime_;
-      if (!rawProps.value_.isObject()) {
-        LOG(ERROR) << "Preparse props: rawProps value is not object";
-      }
-      react_native_assert(rawProps.value_.isObject());
-      auto object = rawProps.value_.asObject(runtime);
-
-      auto names = object.getPropertyNames(runtime);
-      auto count = names.size(runtime);
-
-      for (size_t i = 0; i < count; i++) {
-        auto nameValue = names.getValueAtIndex(runtime, i).getString(runtime);
-        auto value = object.getProperty(runtime, nameValue);
-
-        auto name = nameValue.utf8(runtime);
-
-        auto nameHash = RAW_PROPS_KEY_HASH(name);
-        auto rawValue = RawValue(jsi::dynamicFromValue(runtime, value));
-
-        visit(nameHash, name.c_str(), rawValue);
-      }
-
-      break;
-    }
-
-    case RawProps::Mode::Dynamic: {
-      const auto& dynamic = rawProps.dynamic_;
-
-      for (const auto& pair : dynamic.items()) {
-        auto name = pair.first.getString();
-
-        auto nameHash = RAW_PROPS_KEY_HASH(name);
-        auto rawValue = RawValue{pair.second};
-        visit(nameHash, name.c_str(), rawValue);
       }
       break;
     }

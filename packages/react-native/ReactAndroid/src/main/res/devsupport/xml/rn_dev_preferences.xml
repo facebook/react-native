@@ -33,11 +33,5 @@
         android:summary="Debug server host &amp; port for downloading JS bundle or communicating with JS debugger. With this setting empty launcher should work fine when running on emulator (or genymotion) and connection to debug server running on emulator's host."
         android:defaultValue=""
         />
-    <CheckBoxPreference
-        android:key="start_sampling_profiler_on_init"
-        android:title="Start Sampling Profiler on init"
-        android:summary="If true the Sampling Profiler will start on initialization of JS. Useful for profiling startup of the app. Reload JS or restart the app after changing this setting."
-        android:defaultValue="0"
-        />
   </PreferenceCategory>
 </PreferenceScreen>

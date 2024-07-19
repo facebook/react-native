@@ -8,12 +8,14 @@
 package com.facebook.react.views.scroll;
 
 import android.os.SystemClock;
+import com.facebook.infer.annotation.Nullsafe;
 
 /**
  * Android has a bug where onScrollChanged is called twice per frame with the same params during
  * flings. We hack around that here by trying to detect that duplicate call and not dispatch it. See
  * https://code.google.com/p/android/issues/detail?id=39473
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class OnScrollDispatchHelper {
 
   private static final int MIN_EVENT_SEPARATION_MS = 10;
@@ -47,10 +49,10 @@ public class OnScrollDispatchHelper {
   }
 
   public float getXFlingVelocity() {
-    return this.mXFlingVelocity;
+    return mXFlingVelocity;
   }
 
   public float getYFlingVelocity() {
-    return this.mYFlingVelocity;
+    return mYFlingVelocity;
   }
 }

@@ -44,11 +44,11 @@ exports[`LogBoxNotification should render log 1`] = `
         }
       }
     >
-      <CountBadge
+      <LogBoxNotificationCountBadge
         count={1}
         level="warn"
       />
-      <Message
+      <LogBoxNotificationMessage
         message={
           Object {
             "content": "Some kind of message",
@@ -56,7 +56,7 @@ exports[`LogBoxNotification should render log 1`] = `
           }
         }
       />
-      <DismissButton
+      <LogBoxNotificationDismissButton
         onPress={[Function]}
       />
     </View>

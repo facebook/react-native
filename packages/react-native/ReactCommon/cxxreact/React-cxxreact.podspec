@@ -36,22 +36,25 @@ Pod::Spec.new do |s|
   s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
   s.pod_target_xcconfig    = {
     "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/fmt/include\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-debug/React_debug.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-runtimeexecutor/React_runtimeexecutor.framework/Headers\"",
-    "CLANG_CXX_LANGUAGE_STANDARD" => "c++20"
+    "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard()
   }
   s.header_dir             = "cxxreact"
 
-  s.dependency "boost", "1.83.0"
+  s.dependency "boost"
   s.dependency "DoubleConversion"
   s.dependency "fmt", "9.1.0"
   s.dependency "RCT-Folly", folly_version
   s.dependency "glog"
-  s.dependency "React-jsinspector", version
+  add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')
   s.dependency "React-callinvoker", version
   s.dependency "React-runtimeexecutor", version
   s.dependency "React-perflogger", version
   s.dependency "React-jsi", version
   s.dependency "React-logger", version
   s.dependency "React-debug", version
+  s.dependency "React-timing", version
+
+  s.resource_bundles = {'React-cxxreact_privacy' => 'PrivacyInfo.xcprivacy'}
 
   if ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == "1"
     s.dependency 'hermes-engine'

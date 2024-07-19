@@ -8,6 +8,7 @@
  * @format
  */
 
+import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
 import type {RootTag} from '../Types/RootTagTypes';
 import type {IPerformanceLogger} from '../Utilities/createPerformanceLogger';
 import type {DisplayModeType} from './DisplayMode';
@@ -60,6 +61,7 @@ export type Registry = {
 export type WrapperComponentProvider = (
   appParameters: Object,
 ) => React$ComponentType<any>;
+export type RootViewStyleProvider = (appParameters: Object) => ViewStyleProp;
 
 const runnables: Runnables = {};
 let runCount = 1;
@@ -70,7 +72,7 @@ let componentProviderInstrumentationHook: ComponentProviderInstrumentationHook =
   (component: ComponentProvider) => component();
 
 let wrapperComponentProvider: ?WrapperComponentProvider;
-let showArchitectureIndicator = false;
+let rootViewStyleProvider: ?RootViewStyleProvider;
 
 /**
  * `AppRegistry` is the JavaScript entry point to running all React Native apps.
@@ -82,8 +84,8 @@ const AppRegistry = {
     wrapperComponentProvider = provider;
   },
 
-  enableArchitectureIndicator(enabled: boolean): void {
-    showArchitectureIndicator = enabled;
+  setRootViewStyleProvider(provider: RootViewStyleProvider) {
+    rootViewStyleProvider = provider;
   },
 
   registerConfig(config: Array<AppConfig>): void {
@@ -130,8 +132,8 @@ const AppRegistry = {
         appParameters.initialProps,
         appParameters.rootTag,
         wrapperComponentProvider && wrapperComponentProvider(appParameters),
+        rootViewStyleProvider && rootViewStyleProvider(appParameters),
         appParameters.fabric,
-        showArchitectureIndicator,
         scopedPerformanceLogger,
         appKey === 'LogBox', // is logbox
         appKey,
@@ -196,10 +198,8 @@ const AppRegistry = {
     displayMode?: number,
   ): void {
     if (appKey !== 'LogBox') {
-      const logParams = __DEV__
-        ? '" with ' + JSON.stringify(appParameters)
-        : '';
-      const msg = 'Running "' + appKey + logParams;
+      const logParams = __DEV__ ? ` with ${JSON.stringify(appParameters)}` : '';
+      const msg = `Running "${appKey}"${logParams}`;
       infoLog(msg);
       BugReporting.addSource(
         'AppRegistry.runApplication' + runCount++,

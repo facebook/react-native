@@ -20,13 +20,6 @@ const RNTesterPage = require('../../components/RNTesterPage');
 const React = require('react');
 const {PanResponder, StyleSheet, View} = require('react-native');
 
-type CircleStyles = {
-  backgroundColor?: string,
-  left?: number,
-  top?: number,
-  ...
-};
-
 const CIRCLE_SIZE = 80;
 
 type Props = $ReadOnly<{||}>;
@@ -39,7 +32,6 @@ type State = {|
 class PanResponderExample extends React.Component<Props, State> {
   _previousLeft: number = 20;
   _previousTop: number = 84;
-  _circleStyles: {|style: CircleStyles|} = {style: {}};
   circle: ?React.ElementRef<typeof View> = null;
 
   state: State = {
@@ -147,7 +139,7 @@ exports.description =
 exports.examples = [
   {
     title: 'Basic gesture handling',
-    render: function (): React.Element<typeof PanResponderExample> {
+    render(): React.Element<typeof PanResponderExample> {
       return <PanResponderExample />;
     },
   },

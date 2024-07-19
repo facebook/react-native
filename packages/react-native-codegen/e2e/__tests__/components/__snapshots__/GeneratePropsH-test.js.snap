@@ -28,6 +28,10 @@ namespace facebook::react {
 
 using ArrayPropsNativeComponentViewSizesMask = uint32_t;
 
+struct ArrayPropsNativeComponentViewSizesMaskWrapped {
+  ArrayPropsNativeComponentViewSizesMask value;
+};
+
 enum class ArrayPropsNativeComponentViewSizes: ArrayPropsNativeComponentViewSizesMask {
   Small = 1 << 0,
   Large = 1 << 1
@@ -51,29 +55,29 @@ constexpr void operator|=(
   lhs = lhs | static_cast<ArrayPropsNativeComponentViewSizesMask>(rhs);
 }
 
-static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ArrayPropsNativeComponentViewSizesMask &result) {
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ArrayPropsNativeComponentViewSizesMaskWrapped &wrapped) {
   auto items = std::vector<std::string>{value};
   for (const auto &item : items) {
     if (item == \\"small\\") {
-      result |= ArrayPropsNativeComponentViewSizes::Small;
+      wrapped.value |= ArrayPropsNativeComponentViewSizes::Small;
       continue;
     }
     if (item == \\"large\\") {
-      result |= ArrayPropsNativeComponentViewSizes::Large;
+      wrapped.value |= ArrayPropsNativeComponentViewSizes::Large;
       continue;
     }
     abort();
   }
 }
 
-static inline std::string toString(const ArrayPropsNativeComponentViewSizesMask &value) {
+static inline std::string toString(const ArrayPropsNativeComponentViewSizesMaskWrapped &wrapped) {
     auto result = std::string{};
     auto separator = std::string{\\", \\"};
 
-    if (value & ArrayPropsNativeComponentViewSizes::Small) {
+    if (wrapped.value & ArrayPropsNativeComponentViewSizes::Small) {
       result += \\"small\\" + separator;
     }
-    if (value & ArrayPropsNativeComponentViewSizes::Large) {
+    if (wrapped.value & ArrayPropsNativeComponentViewSizes::Large) {
       result += \\"large\\" + separator;
     }
     if (!result.empty()) {
@@ -82,7 +86,7 @@ static inline std::string toString(const ArrayPropsNativeComponentViewSizesMask 
     return result;
 }
 struct ArrayPropsNativeComponentViewObjectStruct {
-  std::string prop;
+  std::string prop{};
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ArrayPropsNativeComponentViewObjectStruct &result) {
@@ -109,8 +113,8 @@ static inline void fromRawValue(const PropsParserContext& context, const RawValu
 
 
 struct ArrayPropsNativeComponentViewArrayOfObjectsStruct {
-  Float prop1;
-  int prop2;
+  Float prop1{0.0};
+  int prop2{0};
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ArrayPropsNativeComponentViewArrayOfObjectsStruct &result) {
@@ -756,12 +760,12 @@ static inline std::string toString(const ObjectPropsNativeComponentIntEnumProp &
   }
 }
 struct ObjectPropsNativeComponentObjectPropStruct {
-  std::string stringProp;
-  bool booleanProp;
-  Float floatProp;
-  int intProp;
-  ObjectPropsNativeComponentStringEnumProp stringEnumProp;
-  ObjectPropsNativeComponentIntEnumProp intEnumProp;
+  std::string stringProp{\\"\\"};
+  bool booleanProp{false};
+  Float floatProp{0.0};
+  int intProp{0};
+  ObjectPropsNativeComponentStringEnumProp stringEnumProp{ObjectPropsNativeComponentStringEnumProp::Small};
+  ObjectPropsNativeComponentIntEnumProp intEnumProp{ObjectPropsNativeComponentIntEnumProp::IntEnumProp0};
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsNativeComponentObjectPropStruct &result) {
@@ -798,7 +802,7 @@ static inline std::string toString(const ObjectPropsNativeComponentObjectPropStr
 }
 
 struct ObjectPropsNativeComponentObjectArrayPropStruct {
-  std::vector<std::string> array;
+  std::vector<std::string> array{};
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsNativeComponentObjectArrayPropStruct &result) {
@@ -815,9 +819,9 @@ static inline std::string toString(const ObjectPropsNativeComponentObjectArrayPr
 }
 
 struct ObjectPropsNativeComponentObjectPrimitiveRequiredPropStruct {
-  ImageSource image;
-  SharedColor color;
-  Point point;
+  ImageSource image{};
+  SharedColor color{};
+  Point point{};
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsNativeComponentObjectPrimitiveRequiredPropStruct &result) {

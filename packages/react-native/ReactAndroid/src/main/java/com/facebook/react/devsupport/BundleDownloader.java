@@ -24,6 +24,7 @@ import okhttp3.Headers;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 import okio.Buffer;
 import okio.BufferedSource;
 import okio.Okio;
@@ -105,7 +106,6 @@ public class BundleDownloader {
       final String bundleURL,
       final @Nullable BundleInfo bundleInfo,
       Request.Builder requestBuilder) {
-
     final Request request =
         requestBuilder.url(bundleURL).addHeader("Accept", "multipart/mixed").build();
     mDownloadBundleFromURLCall = Assertions.assertNotNull(mClient.newCall(request));
@@ -129,33 +129,34 @@ public class BundleDownloader {
 
           @Override
           public void onResponse(Call call, final Response response) throws IOException {
-            // ignore callback if call was cancelled
-            if (mDownloadBundleFromURLCall == null || mDownloadBundleFromURLCall.isCanceled()) {
-              mDownloadBundleFromURLCall = null;
-              return;
-            }
-            mDownloadBundleFromURLCall = null;
-
-            final String url = response.request().url().toString();
-
-            // Make sure the result is a multipart response and parse the boundary.
-            String contentType = response.header("content-type");
-            Pattern regex = Pattern.compile("multipart/mixed;.*boundary=\"([^\"]+)\"");
-            Matcher match = regex.matcher(contentType);
             try (Response r = response) {
+              // ignore callback if call was cancelled
+              if (mDownloadBundleFromURLCall == null || mDownloadBundleFromURLCall.isCanceled()) {
+                mDownloadBundleFromURLCall = null;
+                return;
+              }
+              mDownloadBundleFromURLCall = null;
+
+              final String url = response.request().url().toString();
+              // Make sure the result is a multipart response and parse the boundary.
+              String contentType = response.header("content-type");
+              Pattern regex = Pattern.compile("multipart/mixed;.*boundary=\"([^\"]+)\"");
+              Matcher match = regex.matcher(contentType);
               if (match.find()) {
                 processMultipartResponse(url, r, match.group(1), outputFile, bundleInfo, callback);
               } else {
                 // In case the server doesn't support multipart/mixed responses, fallback to normal
                 // download.
-                processBundleResult(
-                    url,
-                    r.code(),
-                    r.headers(),
-                    Okio.buffer(r.body().source()),
-                    outputFile,
-                    bundleInfo,
-                    callback);
+                try (ResponseBody body = r.body()) {
+                  processBundleResult(
+                      url,
+                      r.code(),
+                      r.headers(),
+                      r.body().source(),
+                      outputFile,
+                      bundleInfo,
+                      callback);
+                }
               }
             }
           }

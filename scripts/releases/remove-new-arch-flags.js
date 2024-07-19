@@ -101,7 +101,9 @@ function flipNewArchFlagForAndroid(
 }
 // ===============
 
-module.exports = removeNewArchFlags;
+module.exports = {
+  removeNewArchFlags,
+};
 
 if (require.main === module) {
   removeNewArchFlags();

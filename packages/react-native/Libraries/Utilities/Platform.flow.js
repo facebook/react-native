@@ -32,7 +32,7 @@ type IOSPlatform = {
       major: number,
       minor: number,
       patch: number,
-      prerelease: ?number,
+      prerelease: ?string,
     |},
     systemName: string,
     isMacCatalyst?: boolean,
@@ -65,7 +65,7 @@ type AndroidPlatform = {
       major: number,
       minor: number,
       patch: number,
-      prerelease: ?number,
+      prerelease: ?string,
     |},
     Version: number,
     Release: string,
@@ -79,6 +79,8 @@ type AndroidPlatform = {
   |},
   // $FlowFixMe[unsafe-getters-setters]
   get isTV(): boolean,
+  // $FlowFixMe[unsafe-getters-setters]
+  get isVision(): boolean,
   // $FlowFixMe[unsafe-getters-setters]
   get isTesting(): boolean,
   // $FlowFixMe[unsafe-getters-setters]

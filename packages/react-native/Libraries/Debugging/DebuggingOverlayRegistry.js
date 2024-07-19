@@ -9,8 +9,8 @@
  * @oncall react_native
  */
 
-import type ReactNativeElement from '../DOM/Nodes/ReactNativeElement';
-import type ReadOnlyElement from '../DOM/Nodes/ReadOnlyElement';
+import type ReactNativeElement from '../../src/private/webapis/dom/nodes/ReactNativeElement';
+import type ReadOnlyElement from '../../src/private/webapis/dom/nodes/ReadOnlyElement';
 import type {
   AppContainerRootViewRef,
   DebuggingOverlayRef,
@@ -62,9 +62,9 @@ class DebuggingOverlayRegistry {
   constructor() {
     if (reactDevToolsHook?.reactDevtoolsAgent != null) {
       this.#onReactDevToolsAgentAttached(reactDevToolsHook.reactDevtoolsAgent);
-      return;
     }
 
+    // There could be cases when frontend is disconnected and then connected again for the same React Native runtime.
     reactDevToolsHook?.on?.(
       'react-devtools',
       this.#onReactDevToolsAgentAttached,
@@ -230,7 +230,7 @@ class DebuggingOverlayRegistry {
 
       // Lazy import to avoid dependency cycle.
       const ReactNativeElementClass =
-        require('../DOM/Nodes/ReactNativeElement').default;
+        require('../../src/private/webapis/dom/nodes/ReactNativeElement').default;
       if (publicInstance instanceof ReactNativeElementClass) {
         modernNodesUpdates.push({
           id: instanceReactTag,
@@ -371,7 +371,7 @@ class DebuggingOverlayRegistry {
 
     // Lazy import to avoid dependency cycle.
     const ReactNativeElementClass =
-      require('../DOM/Nodes/ReactNativeElement').default;
+      require('../../src/private/webapis/dom/nodes/ReactNativeElement').default;
 
     const reactNativeElements: Array<ReactNativeElement> = [];
     const legacyPublicInstances: Array<NativeMethods> = [];

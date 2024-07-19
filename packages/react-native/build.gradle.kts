@@ -16,3 +16,5 @@ plugins {
   alias(libs.plugins.download) apply false
   alias(libs.plugins.kotlin.android) apply false
 }
+
+buildscript { dependencies { classpath("com.facebook.react:react-native-gradle-plugin") } }

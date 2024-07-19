@@ -8,31 +8,6 @@
  * @format
  */
 
-import type {TurboModule} from '../../TurboModule/RCTExport';
-
-import * as TurboModuleRegistry from '../../TurboModule/TurboModuleRegistry';
-
-export interface Spec extends TurboModule {
-  +getConstants: () => {|
-    SHORT: number,
-    LONG: number,
-    TOP: number,
-    BOTTOM: number,
-    CENTER: number,
-  |};
-  +show: (message: string, duration: number) => void;
-  +showWithGravity: (
-    message: string,
-    duration: number,
-    gravity: number,
-  ) => void;
-  +showWithGravityAndOffset: (
-    message: string,
-    duration: number,
-    gravity: number,
-    xOffset: number,
-    yOffset: number,
-  ) => void;
-}
-
-export default (TurboModuleRegistry.getEnforcing<Spec>('ToastAndroid'): Spec);
+export * from '../../../src/private/specs/modules/NativeToastAndroid';
+import NativeToastAndroid from '../../../src/private/specs/modules/NativeToastAndroid';
+export default NativeToastAndroid;

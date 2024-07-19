@@ -177,7 +177,7 @@ public class UIImplementation {
    *
    * @return The num of root view
    */
-  private int getRootViewNum() {
+  public int getRootViewNum() {
     return mOperationsQueue.getNativeViewHierarchyManager().getRootViewNum();
   }
 
@@ -589,12 +589,6 @@ public class UIImplementation {
 
   /** Invoked at the end of the transaction to commit any updates to the node hierarchy. */
   public void dispatchViewUpdates(int batchId) {
-    if (getRootViewNum() <= 0) {
-      // If there are no RootViews registered, there will be no View updates to dispatch.
-      // This is a hack to prevent this from being called when Fabric is used everywhere.
-      // This should no longer be necessary in Bridgeless Mode.
-      return;
-    }
     SystraceMessage.beginSection(
             Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "UIImplementation.dispatchViewUpdates")
         .arg("batchId", batchId)
@@ -745,29 +739,6 @@ public class UIImplementation {
     }
 
     mOperationsQueue.enqueueDispatchCommand(reactTag, commandId, commandArgs);
-  }
-
-  /**
-   * Show a PopupMenu.
-   *
-   * @param reactTag the tag of the anchor view (the PopupMenu is displayed next to this view); this
-   *     needs to be the tag of a native view (shadow views can not be anchors)
-   * @param items the menu items as an array of strings
-   * @param error will be called if there is an error displaying the menu
-   * @param success will be called with the position of the selected item as the first argument, or
-   *     no arguments if the menu is dismissed
-   */
-  public void showPopupMenu(int reactTag, ReadableArray items, Callback error, Callback success) {
-    boolean viewExists = checkOrAssertViewExists(reactTag, "showPopupMenu");
-    if (!viewExists) {
-      return;
-    }
-
-    mOperationsQueue.enqueueShowPopupMenu(reactTag, items, error, success);
-  }
-
-  public void dismissPopupMenu() {
-    mOperationsQueue.enqueueDismissPopupMenu();
   }
 
   public void sendAccessibilityEvent(int tag, int eventType) {

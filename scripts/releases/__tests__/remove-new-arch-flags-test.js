@@ -8,7 +8,7 @@
  * @oncall react-native
  */
 
-const removeNewArchFlags = require('../remove-new-arch-flags');
+const {removeNewArchFlags} = require('../remove-new-arch-flags');
 const {
   expectedGradlePropertiesFile,
   expectedReactNativePodsFile,

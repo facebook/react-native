@@ -9,7 +9,7 @@
 
 #include <algorithm>
 
-#include <rncore.h>
+#include <react/nativemodule/defaults/DefaultTurboModules.h>
 
 namespace facebook::react {
 
@@ -67,9 +67,13 @@ std::shared_ptr<TurboModule> DefaultTurboModuleManagerDelegate::getTurboModule(
 
   auto moduleProvider = DefaultTurboModuleManagerDelegate::cxxModuleProvider;
   if (moduleProvider) {
-    return moduleProvider(name, jsInvoker);
+    auto module = moduleProvider(name, jsInvoker);
+    if (module) {
+      return module;
+    }
   }
-  return nullptr;
+
+  return DefaultTurboModules::getTurboModule(name, jsInvoker);
 }
 
 std::shared_ptr<TurboModule> DefaultTurboModuleManagerDelegate::getTurboModule(
@@ -81,7 +85,8 @@ std::shared_ptr<TurboModule> DefaultTurboModuleManagerDelegate::getTurboModule(
       return resolvedModule;
     }
   }
-  return rncore_ModuleProvider(name, params);
+
+  return nullptr;
 }
 
 } // namespace facebook::react

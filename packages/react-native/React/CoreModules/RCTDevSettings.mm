@@ -10,6 +10,7 @@
 #import <objc/runtime.h>
 
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
+#import <React/RCTBridge+Inspector.h>
 #import <React/RCTBridge+Private.h>
 #import <React/RCTBridgeModule.h>
 #import <React/RCTConstants.h>
@@ -157,6 +158,11 @@ RCT_EXPORT_MODULE()
   return NO;
 }
 
+- (BOOL)_isBridgeMode
+{
+  return [self.bridge isKindOfClass:[RCTBridge class]];
+}
+
 - (instancetype)initWithDataSource:(id<RCTDevSettingsDataSource>)dataSource
 {
   if (self = [super init]) {
@@ -177,7 +183,7 @@ RCT_EXPORT_MODULE()
 - (void)initialize
 {
 #if RCT_DEV_SETTINGS_ENABLE_PACKAGER_CONNECTION
-  if (self.bridge) {
+  if ([self _isBridgeMode]) {
     RCTBridge *__weak weakBridge = self.bridge;
     _bridgeExecutorOverrideToken = [[RCTPackagerConnection sharedPackagerConnection]
         addNotificationHandler:^(id params) {
@@ -208,7 +214,7 @@ RCT_EXPORT_MODULE()
 #endif
 
 #if RCT_ENABLE_INSPECTOR
-  if (self.bridge) {
+  if ([self _isBridgeMode]) {
     // We need this dispatch to the main thread because the bridge is not yet
     // finished with its initialisation. By the time it relinquishes control of
     // the main thread, this operation can be performed.
@@ -249,7 +255,7 @@ RCT_EXPORT_MODULE()
 {
   [super invalidate];
 #if RCT_DEV_SETTINGS_ENABLE_PACKAGER_CONNECTION
-  if (self.bridge) {
+  if ([self _isBridgeMode]) {
     [[RCTPackagerConnection sharedPackagerConnection] removeHandler:_bridgeExecutorOverrideToken];
   }
 
@@ -280,7 +286,7 @@ RCT_EXPORT_MODULE()
 - (BOOL)isDeviceDebuggingAvailable
 {
 #if RCT_ENABLE_INSPECTOR
-  if (self.bridge) {
+  if ([self _isBridgeMode]) {
     return self.bridge.isInspectable;
   } else {
     return self.isInspectable;
@@ -495,6 +501,15 @@ RCT_EXPORT_METHOD(addMenuItem : (NSString *)title)
   }
 }
 
+RCT_EXPORT_METHOD(openDebugger)
+{
+#if RCT_ENABLE_INSPECTOR
+  [RCTInspectorDevServerHelper
+          openDebugger:self.bundleManager.bundleURL
+      withErrorMessage:@"Failed to open debugger. Please check that the dev server is running and reload the app."];
+#endif
+}
+
 #pragma mark - Internal
 
 /**
@@ -600,6 +615,9 @@ RCT_EXPORT_METHOD(addMenuItem : (NSString *)title)
 {
 }
 - (void)setupHMRClientWithAdditionalBundleURL:(NSURL *)bundleURL
+{
+}
+- (void)openDebugger
 {
 }
 - (void)addMenuItem:(NSString *)title

@@ -24,6 +24,7 @@
       "identifier" : "13B07F861A680F5B00A75B9A",
       "name" : "RNTester"
     },
+    "testRepetitionMode" : "retryOnFailure",
     "undefinedBehaviorSanitizerEnabled" : true
   },
   "testTargets" : [

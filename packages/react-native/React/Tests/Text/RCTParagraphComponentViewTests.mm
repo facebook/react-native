@@ -35,50 +35,50 @@
 using namespace facebook;
 using namespace facebook::react;
 
-//┌──    RootShadowNode    ─────────────────────────────┐
-//│                                                     │
-//│┌─── ParagraphShadowNodeA ─────────────────────────┐ │
-//││ ┌─AA(AAA) ─────────┐ ┌─AB(ABA) ─┐ ┌─AC(ACA)────┐ │ │
-//││ │ Please check out │ │ Facebook │ │    and     │ │ │
-//││ └──────────────────┘ └──────────┘ └────────────┘ │ │
-//││ ┌─AD(ADA) ──┐ ┌──AE(AEA) ──────────────────────┐ │ │
-//││ │ Instagram │ │    for a full description.     │ │ │
-//││ └───────────┘ └────────────────────────────────┘ │ │
-//│└──────────────────────────────────────────────────┘ │
-//│                                                     │
-//│                                                     │
-//│┌── ParagraphShadowNodeB ──────────────────────────┐ │
-//││ ┌───BA(BAA) ───────────────────────────────────┐ │ │
-//││ │   Lorem ipsum dolor sit amet, consectetur    │ │ │
-//││ │ adipiscing elit. Maecenas ut risus et sapien │ │ │
-//││ │   bibendum volutpat. Nulla facilisi. Cras    │ │ │
-//││ │         imperdiet gravida tincidunt.         │ │ │
-//││ └──────────────────────────────────────────────┘ │ │
-//││ ┌─BB(BBA) ─────────────────────────────────────┐ │ │
-//││ │  In tempor, tellus et vestibulum venenatis,  │ │ │
-//││ │  lorem nunc eleifend lectus, a consectetur   │ │ │
-//││ │             magna augue at arcu.             │ │ │
-//││ └──────────────────────────────────────────────┘ │ │
-//│└──────────────────────────────────────────────────┘ │
-//│                                                     │
-//│┌── ParagraphShadowNodeC ──────────────────────────┐ │
-//││  ┌─CA(CAA) ────────┐                             │ │
-//││  │   Lorem ipsum   │                             │ │
-//││  └─────────────────┘                             │ │
-//││ ┌─CB(CBA) ─────────────────────────────────────┐ │ │
-//││ │ dolor sit amet, consectetur adipiscing elit. │ │ │
-//││ │Maecenas ut risus et sapien bibendum volutpat.│ │ │
-//││ │    Nulla facilisi. Cras imperdiet gravida    │ │ │
-//││ │  tincidunt. In tempor, tellus et vestibulum  │ │ │
-//││ │   venenatis, lorem nunc eleifend lectus, a   │ │ │
-//││ │       consectetur magna augue at arcu.       │ │ │
-//││ └──────────────────────────────────────────────┘ │ │
-//││ ┌─CC(CCA) ────────┐                              │ │
-//││ │    See Less     │                              │ │
-//││ └─────────────────┘                              │ │
-//│└──────────────────────────────────────────────────┘ │
-//│                                                     │
-//└─────────────────────────────────────────────────────┘
+// ┌──    RootShadowNode    ─────────────────────────────┐
+// │                                                     │
+// │┌─── ParagraphShadowNodeA ─────────────────────────┐ │
+// ││ ┌─AA(AAA) ─────────┐ ┌─AB(ABA) ─┐ ┌─AC(ACA)────┐ │ │
+// ││ │ Please check out │ │ Facebook │ │    and     │ │ │
+// ││ └──────────────────┘ └──────────┘ └────────────┘ │ │
+// ││ ┌─AD(ADA) ──┐ ┌──AE(AEA) ──────────────────────┐ │ │
+// ││ │ Instagram │ │    for a full description.     │ │ │
+// ││ └───────────┘ └────────────────────────────────┘ │ │
+// │└──────────────────────────────────────────────────┘ │
+// │                                                     │
+// │                                                     │
+// │┌── ParagraphShadowNodeB ──────────────────────────┐ │
+// ││ ┌───BA(BAA) ───────────────────────────────────┐ │ │
+// ││ │   Lorem ipsum dolor sit amet, consectetur    │ │ │
+// ││ │ adipiscing elit. Maecenas ut risus et sapien │ │ │
+// ││ │   bibendum volutpat. Nulla facilisi. Cras    │ │ │
+// ││ │         imperdiet gravida tincidunt.         │ │ │
+// ││ └──────────────────────────────────────────────┘ │ │
+// ││ ┌─BB(BBA) ─────────────────────────────────────┐ │ │
+// ││ │  In tempor, tellus et vestibulum venenatis,  │ │ │
+// ││ │  lorem nunc eleifend lectus, a consectetur   │ │ │
+// ││ │             magna augue at arcu.             │ │ │
+// ││ └──────────────────────────────────────────────┘ │ │
+// │└──────────────────────────────────────────────────┘ │
+// │                                                     │
+// │┌── ParagraphShadowNodeC ──────────────────────────┐ │
+// ││  ┌─CA(CAA) ────────┐                             │ │
+// ││  │   Lorem ipsum   │                             │ │
+// ││  └─────────────────┘                             │ │
+// ││ ┌─CB(CBA) ─────────────────────────────────────┐ │ │
+// ││ │ dolor sit amet, consectetur adipiscing elit. │ │ │
+// ││ │Maecenas ut risus et sapien bibendum volutpat.│ │ │
+// ││ │    Nulla facilisi. Cras imperdiet gravida    │ │ │
+// ││ │  tincidunt. In tempor, tellus et vestibulum  │ │ │
+// ││ │   venenatis, lorem nunc eleifend lectus, a   │ │ │
+// ││ │       consectetur magna augue at arcu.       │ │ │
+// ││ └──────────────────────────────────────────────┘ │ │
+// ││ ┌─CC(CCA) ────────┐                              │ │
+// ││ │    See Less     │                              │ │
+// ││ └─────────────────┘                              │ │
+// │└──────────────────────────────────────────────────┘ │
+// │                                                     │
+// └─────────────────────────────────────────────────────┘
 
 @implementation RCTParagraphComponentAccessibilityProviderTests {
   std::shared_ptr<ComponentBuilder> builder_;
@@ -316,7 +316,7 @@ static ParagraphShadowNode::ConcreteState::Shared stateWithShadowNode(
     std::shared_ptr<ParagraphShadowNode> paragraphShadowNode)
 {
   auto sharedState =
-      std::static_pointer_cast<ParagraphShadowNode::ConcreteState const>(paragraphShadowNode->getState());
+      std::static_pointer_cast<const ParagraphShadowNode::ConcreteState>(paragraphShadowNode->getState());
   return sharedState;
 }
 

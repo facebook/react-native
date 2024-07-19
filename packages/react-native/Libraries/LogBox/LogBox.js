@@ -13,6 +13,7 @@ import type {ExtendedExceptionData} from './Data/parseLogBoxLog';
 
 import Platform from '../Utilities/Platform';
 import RCTLog from '../Utilities/RCTLog';
+import {hasComponentStack} from './Data/parseLogBoxLog';
 
 export type {LogData, ExtendedExceptionData, IgnorePattern};
 
@@ -150,7 +151,8 @@ if (__DEV__) {
 
     try {
       if (!isRCTLogAdviceWarning(...args)) {
-        const {category, message, componentStack} = parseLogBoxLog(args);
+        const {category, message, componentStack, componentStackType} =
+          parseLogBoxLog(args);
 
         if (!LogBoxData.isMessageIgnored(message.content)) {
           LogBoxData.addLog({
@@ -158,6 +160,7 @@ if (__DEV__) {
             category,
             message,
             componentStack,
+            componentStackType,
           });
         }
       }
@@ -176,11 +179,19 @@ if (__DEV__) {
     }
 
     try {
-      if (!isWarningModuleWarning(...args)) {
-        // Only show LogBox for the 'warning' module, otherwise pass through.
+      if (!isWarningModuleWarning(...args) && !hasComponentStack(args)) {
+        // Only show LogBox for the 'warning' module, or React errors with
+        // component stacks, otherwise pass the error through.u
+        //
         // By passing through, this will get picked up by the React console override,
         // potentially adding the component stack. React then passes it back to the
         // React Native ExceptionsManager, which reports it to LogBox as an error.
+        //
+        // Ideally, we refactor all RN error handling so that LogBox patching
+        // errors is not necessary, and they are reported the same as a framework.
+        // The blocker to this is that the ExceptionManager console.error override
+        // strigifys all of the args before passing it through to LogBox, which
+        // would lose all of the interpolation information.
         //
         // The 'warning' module needs to be handled here because React internally calls
         // `console.error('Warning: ')` with the component stack already included.
@@ -190,20 +201,25 @@ if (__DEV__) {
 
       const format = args[0].replace('Warning: ', '');
       const filterResult = LogBoxData.checkWarningFilter(format);
-      if (filterResult.suppressCompletely) {
-        return;
-      }
-
       let level = 'error';
-      if (filterResult.suppressDialog_LEGACY === true) {
-        level = 'warn';
-      } else if (filterResult.forceDialogImmediately === true) {
-        level = 'fatal'; // Do not downgrade. These are real bugs with same severity as throws.
+      if (filterResult.monitorEvent !== 'warning_unhandled') {
+        if (filterResult.suppressCompletely) {
+          return;
+        }
+
+        if (filterResult.suppressDialog_LEGACY === true) {
+          level = 'warn';
+        } else if (filterResult.forceDialogImmediately === true) {
+          level = 'fatal'; // Do not downgrade. These are real bugs with same severity as throws.
+        }
       }
 
       // Unfortunately, we need to add the Warning: prefix back for downstream dependencies.
+      // Downstream, we check for this prefix to know that LogBox already handled it, so
+      // it doesn't get reported back to LogBox. It's an absolute mess.
       args[0] = `Warning: ${filterResult.finalFormat}`;
-      const {category, message, componentStack} = parseLogBoxLog(args);
+      const {category, message, componentStack, componentStackType} =
+        parseLogBoxLog(args);
 
       // Interpolate the message so they are formatted for adb and other CLIs.
       // This is different than the message.content above because it includes component stacks.
@@ -216,6 +232,7 @@ if (__DEV__) {
           category,
           message,
           componentStack,
+          componentStackType,
         });
       }
     } catch (err) {

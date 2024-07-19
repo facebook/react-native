@@ -1,0 +1,6 @@
+{
+    "ignorePatterns": ["dist/**"],
+    "rules": {
+        "sort-keys": 2
+    }
+}

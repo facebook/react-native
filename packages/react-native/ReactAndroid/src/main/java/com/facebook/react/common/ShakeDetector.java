@@ -13,9 +13,11 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Nullsafe;
 import java.util.concurrent.TimeUnit;
 
 /** Listens for the user shaking their phone. Allocation-less once it starts listening. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ShakeDetector implements SensorEventListener {
   // Collect sensor data in this interval (nanoseconds)
   private static final long MIN_TIME_BETWEEN_SAMPLES_NS =

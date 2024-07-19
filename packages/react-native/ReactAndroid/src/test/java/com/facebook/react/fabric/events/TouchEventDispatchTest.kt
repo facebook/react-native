@@ -11,10 +11,18 @@ import android.util.DisplayMetrics
 import android.view.MotionEvent
 import android.view.MotionEvent.PointerCoords
 import android.view.MotionEvent.PointerProperties
-import com.facebook.react.bridge.*
+import com.facebook.react.bridge.Arguments
+import com.facebook.react.bridge.JavaOnlyArray
+import com.facebook.react.bridge.JavaOnlyMap
+import com.facebook.react.bridge.ReactTestHelper
+import com.facebook.react.bridge.ReadableMap
+import com.facebook.react.bridge.WritableArray
+import com.facebook.react.bridge.WritableMap
 import com.facebook.react.fabric.FabricUIManager
+import com.facebook.react.modules.core.ReactChoreographer
 import com.facebook.react.uimanager.DisplayMetricsHolder
 import com.facebook.react.uimanager.ViewManagerRegistry
+import com.facebook.react.uimanager.events.EventDispatcher
 import com.facebook.react.uimanager.events.TouchEvent
 import com.facebook.react.uimanager.events.TouchEventCoalescingKeyHelper
 import com.facebook.react.uimanager.events.TouchEventType
@@ -28,12 +36,12 @@ import org.junit.runner.RunWith
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.*
 import org.mockito.MockedStatic
+import org.mockito.Mockito.mock
 import org.mockito.Mockito.mockStatic
 import org.mockito.Mockito.spy
 import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
@@ -452,9 +460,10 @@ class TouchEventDispatchTest {
                       buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 3f, GESTURE_START_TIME, 0),
                       buildGesture(SURFACE_ID, TARGET_VIEW_ID, 2f, 1f, GESTURE_START_TIME, 1))))
 
-  private lateinit var eventEmitter: FabricEventEmitter
+  private lateinit var eventDispatcher: EventDispatcher
   private lateinit var uiManager: FabricUIManager
   private lateinit var arguments: MockedStatic<Arguments>
+  private lateinit var reactChoreographer: MockedStatic<ReactChoreographer>
 
   @Before
   fun setUp() {
@@ -469,24 +478,33 @@ class TouchEventDispatchTest {
 
     // We use a real FabricUIManager here as it's harder to mock with both static and non-static
     // methods.
-    val reactContext = ReactApplicationContext(RuntimeEnvironment.getApplication())
+    val reactContext = ReactTestHelper.createCatalystContextForTest()
     val viewManagerRegistry = ViewManagerRegistry(emptyList())
     val batchEventDispatchedListener = FakeBatchEventDispatchedListener()
     uiManager =
         spy(FabricUIManager(reactContext, viewManagerRegistry, batchEventDispatchedListener))
+    uiManager.initialize()
 
-    eventEmitter = FabricEventEmitter(uiManager)
+    eventDispatcher = uiManager.getEventDispatcher()
+
+    // Ignore scheduled choreographer work
+    val reactChoreographerMock = mock(ReactChoreographer::class.java)
+    reactChoreographer = mockStatic(ReactChoreographer::class.java)
+    reactChoreographer
+        .`when`<ReactChoreographer> { ReactChoreographer.getInstance() }
+        .thenReturn(reactChoreographerMock)
   }
 
   @After
   fun tearDown() {
     arguments.close()
+    reactChoreographer.close()
   }
 
   @Test
   fun testFabric_startMoveEnd() {
     for (event in startMoveEndSequence) {
-      event.dispatchModern(eventEmitter)
+      eventDispatcher.dispatchEvent(event)
     }
     val argument = ArgumentCaptor.forClass(WritableMap::class.java)
     verify(uiManager, times(4))
@@ -497,7 +515,7 @@ class TouchEventDispatchTest {
   @Test
   fun testFabric_startMoveCancel() {
     for (event in startMoveCancelSequence) {
-      event.dispatchModern(eventEmitter)
+      eventDispatcher.dispatchEvent(event)
     }
     val argument = ArgumentCaptor.forClass(WritableMap::class.java)
     verify(uiManager, times(6))
@@ -508,7 +526,7 @@ class TouchEventDispatchTest {
   @Test
   fun testFabric_startPointerUpCancel() {
     for (event in startPointerMoveUpSequence) {
-      event.dispatchModern(eventEmitter)
+      eventDispatcher.dispatchEvent(event)
     }
     val argument = ArgumentCaptor.forClass(WritableMap::class.java)
     verify(uiManager, times(6))

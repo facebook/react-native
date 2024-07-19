@@ -10,10 +10,17 @@ package com.facebook.react.uimanager;
 import android.app.Activity;
 import android.content.Context;
 import androidx.annotation.Nullable;
+import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.CatalystInstance;
+import com.facebook.react.bridge.JavaScriptContextHolder;
+import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.LifecycleEventListener;
+import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.UIManager;
+import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder;
+import java.util.Collection;
 
 /**
  * Wraps {@link ReactContext} with the base {@link Context} passed into the constructor. It provides
@@ -46,10 +53,7 @@ public class ThemedReactContext extends ReactContext {
       @Nullable String moduleName,
       int surfaceId) {
     super(base);
-    if (reactApplicationContext.hasCatalystInstance()) {
-      initializeWithInstance(reactApplicationContext.getCatalystInstance());
-    }
-    initializeInteropModules(reactApplicationContext);
+    initializeFromOther(reactApplicationContext);
     mReactApplicationContext = reactApplicationContext;
     mModuleName = moduleName;
     mSurfaceId = surfaceId;
@@ -73,6 +77,64 @@ public class ThemedReactContext extends ReactContext {
   @Override
   public @Nullable Activity getCurrentActivity() {
     return mReactApplicationContext.getCurrentActivity();
+  }
+
+  @Override
+  public <T extends JavaScriptModule> T getJSModule(Class<T> jsInterface) {
+    return mReactApplicationContext.getJSModule(jsInterface);
+  }
+
+  @Override
+  public <T extends NativeModule> boolean hasNativeModule(Class<T> nativeModuleInterface) {
+    return mReactApplicationContext.hasNativeModule(nativeModuleInterface);
+  }
+
+  @Override
+  public Collection<NativeModule> getNativeModules() {
+    return mReactApplicationContext.getNativeModules();
+  }
+
+  @Nullable
+  @Override
+  public <T extends NativeModule> T getNativeModule(Class<T> nativeModuleInterface) {
+    return mReactApplicationContext.getNativeModule(nativeModuleInterface);
+  }
+
+  @Nullable
+  @Override
+  public NativeModule getNativeModule(String moduleName) {
+    return mReactApplicationContext.getNativeModule(moduleName);
+  }
+
+  @Override
+  public CatalystInstance getCatalystInstance() {
+    return mReactApplicationContext.getCatalystInstance();
+  }
+
+  @Deprecated
+  @Override
+  public boolean hasActiveCatalystInstance() {
+    return mReactApplicationContext.hasActiveCatalystInstance();
+  }
+
+  @Override
+  public boolean hasActiveReactInstance() {
+    return mReactApplicationContext.hasActiveCatalystInstance();
+  }
+
+  @Override
+  public boolean hasCatalystInstance() {
+    return mReactApplicationContext.hasCatalystInstance();
+  }
+
+  @Override
+  public boolean hasReactInstance() {
+    return mReactApplicationContext.hasReactInstance();
+  }
+
+  @Override
+  public void destroy() {
+    mReactApplicationContext.destroy();
   }
 
   /**
@@ -104,15 +166,41 @@ public class ThemedReactContext extends ReactContext {
   }
 
   @Override
+  public void handleException(Exception e) {
+    mReactApplicationContext.handleException(e);
+  }
+
+  @Deprecated
+  @Override
   public boolean isBridgeless() {
     return mReactApplicationContext.isBridgeless();
   }
 
+  @Nullable
+  @Override
+  public JavaScriptContextHolder getJavaScriptContextHolder() {
+    return mReactApplicationContext.getJavaScriptContextHolder();
+  }
+
+  @Nullable
+  @Override
+  public CallInvokerHolder getJSCallInvokerHolder() {
+    return mReactApplicationContext.getJSCallInvokerHolder();
+  }
+
   @Override
   public UIManager getFabricUIManager() {
-    if (isBridgeless()) {
-      return mReactApplicationContext.getFabricUIManager();
-    }
-    return super.getFabricUIManager();
+    return mReactApplicationContext.getFabricUIManager();
+  }
+
+  @Nullable
+  @Override
+  public String getSourceURL() {
+    return mReactApplicationContext.getSourceURL();
+  }
+
+  @Override
+  public void registerSegment(int segmentId, String path, Callback callback) {
+    mReactApplicationContext.registerSegment(segmentId, path, callback);
   }
 }

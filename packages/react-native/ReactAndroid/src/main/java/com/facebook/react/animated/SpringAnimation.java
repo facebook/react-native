@@ -7,6 +7,7 @@
 
 package com.facebook.react.animated;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.ReadableMap;
 
 /**
@@ -14,7 +15,8 @@ import com.facebook.react.bridge.ReadableMap;
  * implementation has been copied from android implementation of Rebound library (see <a
  * href="http://facebook.github.io/rebound/">http://facebook.github.io/rebound/</a>)
  */
-/*package*/ class SpringAnimation extends AnimationDriver {
+/*package*/ @Nullsafe(Nullsafe.Mode.LOCAL)
+class SpringAnimation extends AnimationDriver {
 
   // maximum amount of time to simulate per physics iteration in seconds (4 frames at 60 FPS)
   private static final double MAX_DELTA_TIME_SEC = 0.064;

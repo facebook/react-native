@@ -19,9 +19,7 @@ class JInspectorFlags : public jni::JavaClass<JInspectorFlags> {
   static constexpr auto kJavaDescriptor =
       "Lcom/facebook/react/devsupport/InspectorFlags;";
 
-  static bool getEnableModernCDPRegistry(jni::alias_ref<jclass>);
-
-  static bool getEnableCxxInspectorPackagerConnection(jni::alias_ref<jclass>);
+  static bool getFuseboxEnabled(jni::alias_ref<jclass>);
 
   static void registerNatives();
 

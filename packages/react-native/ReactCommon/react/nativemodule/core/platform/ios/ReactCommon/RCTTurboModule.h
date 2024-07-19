@@ -7,8 +7,6 @@
 
 #pragma once
 
-#import <memory>
-
 #import <Foundation/Foundation.h>
 
 #import <React/RCTBridge.h>
@@ -16,6 +14,8 @@
 #import <React/RCTModuleMethod.h>
 #import <ReactCommon/CallInvoker.h>
 #import <ReactCommon/TurboModule.h>
+#import <functional>
+#import <memory>
 #import <string>
 #import <unordered_map>
 
@@ -27,11 +27,20 @@ namespace facebook::react {
 
 class CallbackWrapper;
 class Instance;
+using EventEmitterCallback = std::function<void(const std::string &, id)>;
 
 namespace TurboModuleConvertUtils {
 jsi::Value convertObjCObjectToJSIValue(jsi::Runtime &runtime, id value);
 id convertJSIValueToObjCObject(jsi::Runtime &runtime, const jsi::Value &value, std::shared_ptr<CallInvoker> jsInvoker);
-}
+} // namespace TurboModuleConvertUtils
+
+template <>
+struct Bridging<id> {
+  static jsi::Value toJs(jsi::Runtime &rt, const id &value)
+  {
+    return TurboModuleConvertUtils::convertObjCObjectToJSIValue(rt, value);
+  }
+};
 
 /**
  * ObjC++ specific TurboModule base class.
@@ -63,6 +72,8 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
 
  protected:
   void setMethodArgConversionSelector(NSString *methodName, size_t argIndex, NSString *fnName);
+
+  void setEventEmitterCallback(EventEmitterCallback eventEmitterCallback);
 
   /**
    * Why is this virtual?
@@ -154,9 +165,17 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
 
 } // namespace facebook::react
 
+@interface EventEmitterCallbackWrapper : NSObject {
+ @public
+  facebook::react::EventEmitterCallback _eventEmitterCallback;
+}
+@end
+
 @protocol RCTTurboModule <NSObject>
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
     (const facebook::react::ObjCTurboModule::InitParams &)params;
+@optional
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
 @end
 
 /**

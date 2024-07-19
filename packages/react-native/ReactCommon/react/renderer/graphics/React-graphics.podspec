@@ -28,6 +28,8 @@ Pod::Spec.new do |s|
     "\"$(PODS_ROOT)/boost\"",
     "\"$(PODS_TARGET_SRCROOT)/../../../\"",
     "\"$(PODS_ROOT)/RCT-Folly\"",
+    "\"$(PODS_ROOT)/DoubleConversion\"",
+    "\"$(PODS_ROOT)/fmt/include\""
   ]
 
   s.name                   = "React-graphics"
@@ -42,8 +44,10 @@ Pod::Spec.new do |s|
   s.source_files           = source_files
   s.exclude_files          = "tests",
                              "platform/android",
-                             "platform/cxx"
+                             "platform/cxx",
+                             "platform/windows",
   s.header_dir             = "react/renderer/graphics"
+  s.framework = "UIKit"
 
   if ENV['USE_FRAMEWORKS']
     s.module_name            = "React_graphics"
@@ -54,10 +58,13 @@ Pod::Spec.new do |s|
   s.pod_target_xcconfig  = { "USE_HEADERMAP" => "NO",
                              "HEADER_SEARCH_PATHS" => header_search_paths.join(" "),
                              "DEFINES_MODULE" => "YES",
-                             "CLANG_CXX_LANGUAGE_STANDARD" => "c++20" }
+                             "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard() }
 
   s.dependency "glog"
   s.dependency "RCT-Folly/Fabric", folly_version
-  s.dependency "React-Core/Default", version
+  s.dependency "React-jsi"
+  s.dependency "React-jsiexecutor"
   s.dependency "React-utils"
+  s.dependency "DoubleConversion"
+  s.dependency "fmt", "9.1.0"
 end

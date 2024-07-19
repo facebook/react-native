@@ -48,10 +48,10 @@ inline static NSURL *NSURLFromImageSource(const facebook::react::ImageSource &im
 {
   // `NSURL` has a history of crashing with bad input, so let's be safe.
   @try {
-    NSString *urlString = [NSString stringWithCString:imageSource.uri.c_str() encoding:NSASCIIStringEncoding];
+    NSString *urlString = [NSString stringWithUTF8String:imageSource.uri.c_str()];
 
     if (!imageSource.bundle.empty()) {
-      NSString *bundle = [NSString stringWithCString:imageSource.bundle.c_str() encoding:NSASCIIStringEncoding];
+      NSString *bundle = [NSString stringWithUTF8String:imageSource.bundle.c_str()];
       urlString = [NSString stringWithFormat:@"%@.bundle/%@", bundle, urlString];
     }
 
@@ -109,6 +109,13 @@ inline static NSURLRequest *NSURLRequestFromImageSource(const facebook::react::I
   request.cachePolicy = ...;
   request.allHTTPHeaderFields = ...;
   */
+  for (const auto &header : imageSource.headers) {
+    NSString *key = [NSString stringWithUTF8String:header.first.c_str()];
+    NSString *value = [NSString stringWithUTF8String:header.second.c_str()];
+    if (key != NULL && value != NULL) {
+      [request setValue:value forHTTPHeaderField:key];
+    }
+  }
 
   return [request copy];
 }

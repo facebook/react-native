@@ -21,13 +21,13 @@ namespace facebook::react {
  * Note: Most of the fields are `const &` references (essentially just raw
  * pointers) which means that the Fragment does not copy/store them nor
  * retain ownership of them.
- * Use `ShadowNodeFragment::Value` (see below) to create an owning copy of the
- * fragment content to store or pass the data asynchronously.
  */
 struct ShadowNodeFragment {
   const Props::Shared& props = propsPlaceholder();
   const ShadowNode::SharedListOfShared& children = childrenPlaceholder();
   const State::Shared& state = statePlaceholder();
+  const ShadowNodeTraits traits = {};
+  const bool runtimeShadowNodeReference = true;
 
   /*
    * Placeholders.
@@ -37,28 +37,6 @@ struct ShadowNodeFragment {
   static const Props::Shared& propsPlaceholder();
   static const ShadowNode::SharedListOfShared& childrenPlaceholder();
   static const State::Shared& statePlaceholder();
-
-  /*
-   * `ShadowNodeFragment` is not owning data-structure, it only stores raw
-   * pointers to the data. `ShadowNodeFragment::Value` is a convenient owning
-   * counterpart of that.
-   */
-  class Value final {
-   public:
-    /*
-     * Creates an object with given `ShadowNodeFragment`.
-     */
-    Value(const ShadowNodeFragment& fragment);
-
-    /*
-     * Creates a `ShadowNodeFragment` from the object.
-     */
-    explicit operator ShadowNodeFragment() const;
-
-    Props::Shared props;
-    ShadowNode::SharedListOfShared children;
-    State::Shared state;
-  };
 };
 
 } // namespace facebook::react

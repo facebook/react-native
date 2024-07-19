@@ -11,6 +11,7 @@ import android.view.MotionEvent;
 import android.view.ViewGroup;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.TouchEvent;
@@ -22,6 +23,7 @@ import com.facebook.react.uimanager.events.TouchEventType;
  * need to call handleTouchEvent from onTouchEvent and onInterceptTouchEvent. It will correctly find
  * the right view to handle the touch and also dispatch the appropriate event to JS
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class JSTouchDispatcher {
 
   private int mTargetTag = -1;
@@ -59,8 +61,9 @@ public class JSTouchDispatcher {
    * Main catalyst view is responsible for collecting and sending touch events to JS. This method
    * reacts for an incoming android native touch events ({@link MotionEvent}) and calls into {@link
    * com.facebook.react.uimanager.events.EventDispatcher} when appropriate. It uses {@link
-   * com.facebook.react.uimanager.TouchTargetHelper#findTouchTargetView} helper method for figuring
-   * out a react view ID in the case of ACTION_DOWN event (when the gesture starts).
+   * com.facebook.react.uimanager.TouchTargetHelper#findTargetTagAndCoordinatesForTouch} helper
+   * method for figuring out a react view ID in the case of ACTION_DOWN event (when the gesture
+   * starts).
    */
   public void handleTouchEvent(MotionEvent ev, EventDispatcher eventDispatcher) {
     int action = ev.getAction() & MotionEvent.ACTION_MASK;

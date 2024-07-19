@@ -219,6 +219,13 @@ const validAttributesForNonEventProps = {
   borderStyle: true,
   hitSlop: {diff: require('../Utilities/differ/insetsDiffer')},
   collapsable: true,
+  collapsableChildren: true,
+  experimental_filter: {
+    process: require('../StyleSheet/processFilter').default,
+  },
+  experimental_boxShadow: {
+    process: require('../StyleSheet/processBoxShadow').default,
+  },
 
   borderTopWidth: true,
   borderTopColor: {process: require('../StyleSheet/processColor').default},
@@ -373,6 +380,7 @@ const validAttributesForEventProps = ConditionallyIgnoredEventHandlers({
 
   // Pointer events
   onClick: true,
+  onClickCapture: true,
   onPointerUp: true,
   onPointerDown: true,
   onPointerCancel: true,

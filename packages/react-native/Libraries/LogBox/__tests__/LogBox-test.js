@@ -132,6 +132,102 @@ describe('LogBox', () => {
     expect(LogBoxData.checkWarningFilter).not.toBeCalled();
   });
 
+  it('registers react errors with the formatting from filter', () => {
+    jest.mock('../Data/LogBoxData');
+
+    mockFilterResult({
+      finalFormat: 'Custom format',
+    });
+
+    LogBox.install();
+
+    console.error(
+      'Each child in a list should have a unique key %s',
+      '\n    at Text (/path/to/Component:30:175)\n    at DoesNotUseKey',
+    );
+    expect(LogBoxData.addLog).toBeCalledWith(
+      expect.objectContaining({
+        message: {content: 'Warning: Custom format', substitutions: []},
+        category: 'Warning: Custom format',
+      }),
+    );
+    expect(LogBoxData.checkWarningFilter).toBeCalledWith(
+      'Each child in a list should have a unique key %s',
+    );
+  });
+
+  it('registers errors with component stack as errors by default', () => {
+    jest.mock('../Data/LogBoxData');
+
+    mockFilterResult({});
+
+    LogBox.install();
+
+    console.error(
+      'HIT %s',
+      '\n    at Text (/path/to/Component:30:175)\n    at DoesNotUseKey',
+    );
+    expect(LogBoxData.addLog).toBeCalledWith(
+      expect.objectContaining({level: 'error'}),
+    );
+    expect(LogBoxData.checkWarningFilter).toBeCalledWith('HIT %s');
+  });
+
+  it('registers errors with component stack as errors by default if not found in warning filter', () => {
+    jest.mock('../Data/LogBoxData');
+
+    mockFilterResult({
+      monitorEvent: 'warning_unhandled',
+    });
+
+    LogBox.install();
+
+    console.error(
+      'HIT %s',
+      '\n    at Text (/path/to/Component:30:175)\n    at DoesNotUseKey',
+    );
+    expect(LogBoxData.addLog).toBeCalledWith(
+      expect.objectContaining({level: 'error'}),
+    );
+    expect(LogBoxData.checkWarningFilter).toBeCalledWith('HIT %s');
+  });
+
+  it('registers errors with component stack with legacy suppression as warning', () => {
+    jest.mock('../Data/LogBoxData');
+
+    mockFilterResult({
+      suppressDialog_LEGACY: true,
+    });
+
+    LogBox.install();
+
+    console.error(
+      'Legacy warn %s',
+      '\n    at Text (/path/to/Component:30:175)\n    at DoesNotUseKey',
+    );
+    expect(LogBoxData.addLog).toBeCalledWith(
+      expect.objectContaining({level: 'warn'}),
+    );
+  });
+
+  it('registers errors with component stack and a forced dialog as fatals', () => {
+    jest.mock('../Data/LogBoxData');
+
+    mockFilterResult({
+      forceDialogImmediately: true,
+    });
+
+    LogBox.install();
+
+    console.error(
+      'Fatal %s',
+      '\n    at Text (/path/to/Component:30:175)\n    at DoesNotUseKey',
+    );
+    expect(LogBoxData.addLog).toBeCalledWith(
+      expect.objectContaining({level: 'fatal'}),
+    );
+  });
+
   it('registers warning module errors with the formatting from filter', () => {
     jest.mock('../Data/LogBoxData');
 
@@ -270,6 +366,7 @@ describe('LogBox', () => {
     expect(LogBoxData.addLog).toBeCalledWith({
       category: '﻿%s ...',
       componentStack: [],
+      componentStackType: 'legacy',
       level: 'warn',
       message: {
         content: '(ADVICE) ...',
@@ -302,6 +399,7 @@ describe('LogBox', () => {
       category: 'test',
       message: {content: 'Some warning', substitutions: []},
       componentStack: [],
+      componentStackType: null,
     });
 
     expect(LogBoxData.addLog).not.toHaveBeenCalled();

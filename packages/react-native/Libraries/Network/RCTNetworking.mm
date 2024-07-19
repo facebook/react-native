@@ -365,6 +365,12 @@ RCT_EXPORT_MODULE()
                                       forHTTPHeaderField:@"Content-Length"];
                                 }
 
+                                // NSRequest default cache policy violate on `If-None-Match`, should allow the request
+                                // to get 304 from server.
+                                if (request.allHTTPHeaderFields[@"If-None-Match"]) {
+                                  request.cachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
+                                }
+
                                 dispatch_async([self requestQueue], ^{
                                   block(request);
                                 });

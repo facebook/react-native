@@ -8,29 +8,6 @@
  * @format
  */
 
-import type {TurboModule} from '../../TurboModule/RCTExport';
-
-import * as TurboModuleRegistry from '../../TurboModule/TurboModuleRegistry';
-
-export type SourceCodeConstants = {|
-  scriptURL: string,
-|};
-
-export interface Spec extends TurboModule {
-  +getConstants: () => SourceCodeConstants;
-}
-
-const NativeModule = TurboModuleRegistry.getEnforcing<Spec>('SourceCode');
-let constants = null;
-
-const NativeSourceCode = {
-  getConstants(): SourceCodeConstants {
-    if (constants == null) {
-      constants = NativeModule.getConstants();
-    }
-
-    return constants;
-  },
-};
-
+export * from '../../../src/private/specs/modules/NativeSourceCode';
+import NativeSourceCode from '../../../src/private/specs/modules/NativeSourceCode';
 export default NativeSourceCode;

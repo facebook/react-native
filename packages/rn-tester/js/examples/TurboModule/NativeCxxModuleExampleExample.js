@@ -9,6 +9,7 @@
  */
 
 import type {RootTag} from 'react-native/Libraries/ReactNative/RootTag';
+import type {EventSubscription} from 'react-native/Libraries/vendor/emitter/EventEmitter';
 
 import NativeCxxModuleExample, {
   EnumInt,
@@ -38,6 +39,7 @@ type State = {|
 
 type Examples =
   | 'callback'
+  | 'callbackWithSubscription'
   | 'getArray'
   | 'getBool'
   | 'getConstants'
@@ -71,6 +73,7 @@ type ErrorExamples =
 
 class NativeCxxModuleExampleExample extends React.Component<{||}, State> {
   static contextType: React$Context<RootTag> = RootTagContext;
+  eventSubscriptions: EventSubscription[] = [];
 
   state: State = {
     testResults: {},
@@ -165,7 +168,7 @@ class NativeCxxModuleExampleExample extends React.Component<{||}, State> {
       DeviceEventEmitter.addListener(CUSTOM_EVENT_TYPE, (...args) => {
         this._setResult(
           'emitDeviceEvent',
-          `${CUSTOM_EVENT_TYPE}(${args.map(s => `${s}`).join(', ')})`,
+          `${CUSTOM_EVENT_TYPE}(${args.map(s => (typeof s === 'object' ? JSON.stringify(s) : s)).join(', ')})`,
         );
       });
       NativeCxxModuleExample?.emitCustomDeviceEvent(CUSTOM_EVENT_TYPE);
@@ -221,7 +224,7 @@ class NativeCxxModuleExampleExample extends React.Component<{||}, State> {
   };
 
   _setResult(
-    name: string | Examples,
+    name: Examples | ErrorExamples,
     result:
       | $FlowFixMe
       | void
@@ -261,6 +264,32 @@ class NativeCxxModuleExampleExample extends React.Component<{||}, State> {
         'Cannot load this example because TurboModule is not configured.',
       );
     }
+    if (NativeCxxModuleExample) {
+      this.eventSubscriptions.push(
+        NativeCxxModuleExample.onPress(value => console.log('onPress: ()')),
+      );
+      this.eventSubscriptions.push(
+        NativeCxxModuleExample.onClick(value =>
+          console.log(`onClick: (${value})`),
+        ),
+      );
+      this.eventSubscriptions.push(
+        NativeCxxModuleExample.onChange(value =>
+          console.log(`onChange: ${JSON.stringify(value)})`),
+        ),
+      );
+      this.eventSubscriptions.push(
+        NativeCxxModuleExample.onSubmit(value =>
+          console.log(`onSubmit: (${JSON.stringify(value)})`),
+        ),
+      );
+    }
+  }
+
+  componentWillUnmount() {
+    for (const subscription of this.eventSubscriptions) {
+      subscription.remove();
+    }
   }
 
   render(): React.Node {
@@ -271,6 +300,7 @@ class NativeCxxModuleExampleExample extends React.Component<{||}, State> {
             style={[styles.column, styles.button]}
             onPress={() =>
               Object.keys(this._tests).forEach(item =>
+                // $FlowFixMe
                 this._setResult(item, this._tests[item]()),
               )
             }>

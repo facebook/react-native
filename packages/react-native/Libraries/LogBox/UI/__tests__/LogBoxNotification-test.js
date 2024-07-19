@@ -16,6 +16,25 @@ const LogBoxLog = require('../../Data/LogBoxLog').default;
 const LogBoxNotification = require('../LogBoxNotification').default;
 const React = require('react');
 
+// Mock child components because we are interested in snapshotting the behavior
+// of `LogBoxNotification`, not its children.
+jest.mock('../LogBoxButton', () => ({
+  __esModule: true,
+  default: 'LogBoxButton',
+}));
+jest.mock('../LogBoxNotificationCountBadge', () => ({
+  __esModule: true,
+  default: 'LogBoxNotificationCountBadge',
+}));
+jest.mock('../LogBoxNotificationDismissButton', () => ({
+  __esModule: true,
+  default: 'LogBoxNotificationDismissButton',
+}));
+jest.mock('../LogBoxNotificationMessage', () => ({
+  __esModule: true,
+  default: 'LogBoxNotificationMessage',
+}));
+
 const log = new LogBoxLog({
   level: 'warn',
   isComponentError: false,
@@ -29,8 +48,8 @@ const log = new LogBoxLog({
 });
 
 describe('LogBoxNotification', () => {
-  it('should render log', () => {
-    const output = render.shallowRender(
+  it('should render log', async () => {
+    const output = await render.create(
       <LogBoxNotification
         log={log}
         totalLogCount={1}

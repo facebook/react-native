@@ -69,8 +69,7 @@ TEST_F(BridgingTest, callFromJsTest) {
   then.callWithThis(
       rt,
       promise,
-      bridging::toJs(
-          rt, [&](std::string res) { result = res; }, invoker));
+      bridging::toJs(rt, [&](std::string res) { result = res; }, invoker));
 
   flushQueue();
   EXPECT_EQ("hi"s, result);
@@ -84,8 +83,7 @@ TEST_F(BridgingTest, callFromJsTest) {
           .utf8(rt));
 
   bool called = false;
-  func = bridging::toJs(
-      rt, [&] { called = true; }, invoker);
+  func = bridging::toJs(rt, [&] { called = true; }, invoker);
 
   bridging::callFromJs<void>(
       rt, &TestClass::callAsync, invoker, &instance, func);

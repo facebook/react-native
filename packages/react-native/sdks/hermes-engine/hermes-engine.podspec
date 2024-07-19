@@ -24,7 +24,7 @@ Pod::Spec.new do |spec|
   spec.license     = package['license']
   spec.author      = "Facebook"
   spec.source      = source
-  spec.platforms   = { :osx => "10.13", :ios => "13.4" }
+  spec.platforms   = { :osx => "10.13", :ios => "13.4", :visionos => "1.0" }
 
   spec.preserve_paths      = '**/*.*'
   spec.source_files        = ''
@@ -44,6 +44,7 @@ Pod::Spec.new do |spec|
       ss.source_files = "destroot/include/hermes/**/*.h"
       ss.header_mappings_dir = "destroot/include"
       ss.ios.vendored_frameworks = "destroot/Library/Frameworks/universal/hermes.xcframework"
+      ss.visionos.vendored_frameworks = "destroot/Library/Frameworks/universal/hermes.xcframework"
       ss.osx.vendored_frameworks = "destroot/Library/Frameworks/macosx/hermes.framework"
     end
 
@@ -79,6 +80,12 @@ Pod::Spec.new do |spec|
       ss.header_dir = 'hermes'
     end
 
+    spec.subspec 'cdp' do |ss|
+      ss.source_files = ''
+      ss.public_header_files = 'API/hermes/cdp/*.h'
+      ss.header_dir = 'hermes/cdp'
+    end
+
     spec.subspec 'inspector' do |ss|
       ss.source_files = ''
       ss.public_header_files = 'API/hermes/inspector/*.h'
@@ -107,7 +114,7 @@ Pod::Spec.new do |spec|
       'HERMES_CLI_PATH' => "#{hermesc_path}/bin/hermesc"
     }
 
-    spec.prepare_command = ". #{react_native_path}/sdks/hermes-engine/utils/create-dummy-hermes-xcframework.sh"
+    spec.prepare_command = ". '#{react_native_path}/sdks/hermes-engine/utils/create-dummy-hermes-xcframework.sh'"
 
     # This podspec is also run in CI to build Hermes without using Pod install
     # and sometimes CI fails because `Pod::Executable` does not exist if it is not run with Pod Install.
