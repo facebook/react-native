@@ -817,6 +817,9 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
   @Nullable
   public ReactContext getCurrentReactContext() {
+    if (mReactInstanceManager == null) {
+      return null;
+    }
     return mReactInstanceManager.getCurrentReactContext();
   }
 
