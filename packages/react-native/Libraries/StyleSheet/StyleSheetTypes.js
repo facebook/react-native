@@ -11,7 +11,7 @@
 'use strict';
 
 import type AnimatedNode from '../Animated/nodes/AnimatedNode';
-import type {BackgroundPrimitive} from '../StyleSheet/processBackground';
+import type {BackgroundImagePrimitive} from '../StyleSheet/processBackgroundImage';
 import type {
   ____DangerouslyImpreciseStyle_InternalOverrides,
   ____ImageStyle_InternalOverrides,
@@ -731,8 +731,11 @@ export type ____MixBlendMode_Internal =
   | 'saturation'
   | 'color'
   | 'luminosity';
+
 type ____BackgroundStyle_Internal = $ReadOnly<{
-  background?: $ReadOnlyArray<BackgroundPrimitive> | string,
+  experimental_backgroundImage?:
+    | $ReadOnlyArray<BackgroundImagePrimitive>
+    | string,
 }>;
 
 export type ____ViewStyle_InternalCore = $ReadOnly<{

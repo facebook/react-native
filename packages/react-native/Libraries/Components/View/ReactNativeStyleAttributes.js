@@ -11,7 +11,7 @@
 import type {AnyAttributeType} from '../../Renderer/shims/ReactNativeTypes';
 
 import processAspectRatio from '../../StyleSheet/processAspectRatio';
-import processBackground from '../../StyleSheet/processBackground';
+import processBackgroundImage from '../../StyleSheet/processBackgroundImage';
 import processColor from '../../StyleSheet/processColor';
 import processFilter from '../../StyleSheet/processFilter';
 import processFontVariant from '../../StyleSheet/processFontVariant';
@@ -129,7 +129,7 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   /**
    * Linear Gradient
    */
-  background: {process: processBackground},
+  experimental_backgroundImage: {process: processBackgroundImage},
 
   /**
    * View

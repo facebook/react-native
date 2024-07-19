@@ -7719,7 +7719,9 @@ export type ____MixBlendMode_Internal =
   | \\"color\\"
   | \\"luminosity\\";
 type ____BackgroundStyle_Internal = $ReadOnly<{
-  background?: $ReadOnlyArray<BackgroundPrimitive> | string,
+  experimental_backgroundImage?:
+    | $ReadOnlyArray<BackgroundImagePrimitive>
+    | string,
 }>;
 export type ____ViewStyle_InternalCore = $ReadOnly<{
   ...$Exact<____LayoutStyle_Internal>,
@@ -8007,8 +8009,8 @@ declare module.exports: processAspectRatio;
 "
 `;
 
-exports[`public API should not change unintentionally Libraries/StyleSheet/processBackground.js 1`] = `
-"export type BackgroundPrimitive = {
+exports[`public API should not change unintentionally Libraries/StyleSheet/processBackgroundImage.js 1`] = `
+"export type BackgroundImagePrimitive = {
   type: \\"linearGradient\\",
   start: { x: number, y: number },
   end: { x: number, y: number },
@@ -8017,9 +8019,9 @@ exports[`public API should not change unintentionally Libraries/StyleSheet/proce
     position: number,
   }>,
 };
-declare export default function processBackground(
-  background: $ReadOnlyArray<BackgroundPrimitive> | string
-): $ReadOnlyArray<BackgroundPrimitive>;
+declare export default function processBackgroundImage(
+  backgroundImage: $ReadOnlyArray<BackgroundImagePrimitive> | string
+): $ReadOnlyArray<BackgroundImagePrimitive>;
 "
 `;
 

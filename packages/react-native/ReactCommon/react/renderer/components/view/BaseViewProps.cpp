@@ -166,13 +166,13 @@ BaseViewProps::BaseViewProps(
                                                        "experimental_filter",
                                                        sourceProps.filter,
                                                        {})),
-      background(
-          CoreFeatures::enablePropIteratorSetter ? sourceProps.background
+      backgroundImage(
+          CoreFeatures::enablePropIteratorSetter ? sourceProps.backgroundImage
                                            : convertRawProp(
                                                  context,
                                                  rawProps,
-                                                 "background",
-                                                 sourceProps.background,
+                                                 "experimental_backgroundImage",
+                                                 sourceProps.backgroundImage,
                                                  {})),
       mixBlendMode(
           CoreFeatures::enablePropIteratorSetter

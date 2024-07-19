@@ -23,7 +23,7 @@ export type FilterPrimitive =
   | {sepia: number | string}
   | {'drop-shadow': DropShadowPrimitive | string};
 
-export type BackgroundPrimitive = {
+export type BackgroundImagePrimitive = {
   type: 'linearGradient';
   start: {x: number; y: number};
   end: {x: number; y: number};
@@ -262,7 +262,6 @@ export interface TransformsStyle {
 export interface ViewStyle extends FlexStyle, ShadowStyleIOS, TransformsStyle {
   backfaceVisibility?: 'visible' | 'hidden' | undefined;
   backgroundColor?: ColorValue | undefined;
-  background?: Array<BackgroundPrimitive> | string | undefined;
   borderBlockColor?: ColorValue | undefined;
   borderBlockEndColor?: ColorValue | undefined;
   borderBlockStartColor?: ColorValue | undefined;

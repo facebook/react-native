@@ -89,12 +89,12 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
     }
   }
 
-  @ReactProp(name = ViewProps.BACKGROUND)
-  public void setBackground(ReactViewGroup view, @Nullable ReadableArray background) {
-    if (background != null && background.size() > 0) {
-      CSSGradient[] cssGradients = new CSSGradient[background.size()];
-      for (int i = 0; i < background.size(); i++) {
-        ReadableMap gradientMap = background.getMap(i);
+  @ReactProp(name = ViewProps.BACKGROUND_IMAGE)
+  public void setBackgroundImage(ReactViewGroup view, @Nullable ReadableArray backgroundImage) {
+    if (backgroundImage != null && backgroundImage.size() > 0) {
+      CSSGradient[] cssGradients = new CSSGradient[backgroundImage.size()];
+      for (int i = 0; i < backgroundImage.size(); i++) {
+        ReadableMap gradientMap = backgroundImage.getMap(i);
         cssGradients[i] = new CSSGradient(gradientMap);
       }
       view.setGradients(cssGradients);

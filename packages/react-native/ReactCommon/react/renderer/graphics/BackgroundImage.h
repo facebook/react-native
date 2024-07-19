@@ -12,14 +12,15 @@ struct ColorStop {
   SharedColor color;
   std::optional<Float> position;
 };
-enum class BackgroundType {
+
+enum class BackgroundImageType {
   LinearGradient,
 };
 
-struct BackgroundPrimitive {
-  bool operator==(const BackgroundPrimitive& other) const = default;
+struct BackgroundImagePrimitive {
+  bool operator==(const BackgroundImagePrimitive& other) const = default;
 
-  BackgroundType type;
+  BackgroundImageType type;
   Float startX;
   Float startY;
   Float endX;
@@ -27,9 +28,9 @@ struct BackgroundPrimitive {
   std::vector<ColorStop> colorStops;
 };
 
-inline BackgroundType gradientTypeFromString(const std::string& gradientType) {
+inline BackgroundImageType gradientTypeFromString(const std::string& gradientType) {
   if (gradientType == "linearGradient") {
-    return BackgroundType::LinearGradient;
+    return BackgroundImageType::LinearGradient;
   } else {
     throw std::invalid_argument(std::string(gradientType));
   }

@@ -62,7 +62,7 @@ void ViewShadowNode::initialize() noexcept {
       viewProps.importantForAccessibility != ImportantForAccessibility::Auto ||
       viewProps.removeClippedSubviews || viewProps.cursor != Cursor::Auto ||
       !viewProps.filter.empty() || !viewProps.mixBlendMode.empty() ||
-      !viewProps.background.empty() ||
+      !viewProps.backgroundImage.empty() ||
       HostPlatformViewTraitsInitializer::formsStackingContext(viewProps);
 
   bool formsView = formsStackingContext ||

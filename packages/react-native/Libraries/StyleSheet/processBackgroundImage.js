@@ -26,7 +26,7 @@ const TO_BOTTOM_START_END_POINTS = {
   end: {x: 0.5, y: 1},
 };
 
-export type BackgroundPrimitive = {
+export type BackgroundImagePrimitive = {
   type: 'linearGradient',
   start: {x: number, y: number},
   end: {x: number, y: number},
@@ -36,14 +36,14 @@ export type BackgroundPrimitive = {
   }>,
 };
 
-export default function processBackground(
-  background: $ReadOnlyArray<BackgroundPrimitive> | string,
-): $ReadOnlyArray<BackgroundPrimitive> {
-  if (typeof background === 'string') {
-    const parsedBackground = parseCSSLinearGradient(background);
-    return parsedBackground;
-  } else if (Array.isArray(background)) {
-    const parsedBackground = background.map(bg => {
+export default function processBackgroundImage(
+  backgroundImage: $ReadOnlyArray<BackgroundImagePrimitive> | string,
+): $ReadOnlyArray<BackgroundImagePrimitive> {
+  if (typeof backgroundImage === 'string') {
+    const parsedBackgroundImage = parseCSSLinearGradient(backgroundImage);
+    return parsedBackgroundImage;
+  } else if (Array.isArray(backgroundImage)) {
+    const parsedBackgroundImage = backgroundImage.map(bg => {
       return {
         type: bg.type,
         start: bg.start,
@@ -57,7 +57,7 @@ export default function processBackground(
         }),
       };
     });
-    return parsedBackground;
+    return parsedBackgroundImage;
   }
 
   return [];
@@ -65,7 +65,7 @@ export default function processBackground(
 
 function parseCSSLinearGradient(
   cssString: string,
-): $ReadOnlyArray<BackgroundPrimitive> {
+): $ReadOnlyArray<BackgroundImagePrimitive> {
   const gradients = [];
   let match;
 

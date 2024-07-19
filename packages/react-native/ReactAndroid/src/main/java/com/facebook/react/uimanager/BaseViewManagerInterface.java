@@ -76,7 +76,7 @@ public interface BaseViewManagerInterface<T extends View> {
 
   void setTransform(T view, @Nullable ReadableArray matrix);
 
-  void setBackground(T view, @Nullable ReadableArray matrix);
+  void setBackgroundImage(T view, @Nullable ReadableArray backgroundImage);
 
   void setTransformOrigin(T view, @Nullable ReadableArray transformOrigin);
 

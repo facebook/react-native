@@ -481,7 +481,8 @@ export default ({
           <View
             testID="view-test-linear-gradient"
             style={{
-              background: 'linear-gradient(#e66465, #9198e5);',
+              experimental_backgroundImage:
+                'linear-gradient(#e66465, #9198e5);',
               width: 100,
               height: 100,
             }}

@@ -10,14 +10,14 @@
 
 'use strict';
 
-import processBackground from '../processBackground';
+import processBackgroundImage from '../processBackgroundImage';
 
 const processColor = require('../processColor').default;
 
-describe('processBackground', () => {
+describe('processBackgroundImage', () => {
   it('should process a simple linear gradient string', () => {
     const input = 'linear-gradient(to right, red, blue)';
-    const result = processBackground(input);
+    const result = processBackgroundImage(input);
     expect(result).toEqual([
       {
         type: 'linearGradient',
@@ -33,7 +33,7 @@ describe('processBackground', () => {
 
   it('should process a linear gradient with angle', () => {
     const input = 'linear-gradient(45deg, red, blue)';
-    const result = processBackground(input);
+    const result = processBackgroundImage(input);
     expect(result[0].type).toBe('linearGradient');
     expect(result[0].start.x).toBeCloseTo(0.146447, 5);
     expect(result[0].start.y).toBeCloseTo(0.853553, 5);
@@ -48,7 +48,7 @@ describe('processBackground', () => {
   it('should process multiple linear gradients', () => {
     const input =
       'linear-gradient(to right, red, blue), linear-gradient(to bottom, green, yellow)';
-    const result = processBackground(input);
+    const result = processBackgroundImage(input);
     expect(result).toHaveLength(2);
     expect(result[0].start).toEqual({x: 0, y: 0.5});
     expect(result[0].end).toEqual({x: 1, y: 0.5});
@@ -58,7 +58,7 @@ describe('processBackground', () => {
 
   it('should process a linear gradient with multiple color stops', () => {
     const input = 'linear-gradient(to right, red 0%, green 50%, blue 100%)';
-    const result = processBackground(input);
+    const result = processBackgroundImage(input);
     expect(result[0].colorStops).toEqual([
       {color: processColor('red'), position: 0},
       {color: processColor('green'), position: 0.5},
@@ -69,7 +69,7 @@ describe('processBackground', () => {
   it('should process a linear gradient with rgba colors', () => {
     const input =
       'linear-gradient(to right, rgba(255,0,0,0.5), rgba(0,0,255,0.8))';
-    const result = processBackground(input);
+    const result = processBackgroundImage(input);
     expect(result[0].colorStops).toEqual([
       {color: processColor('rgba(255,0,0,0.5)'), position: 0},
       {color: processColor('rgba(0,0,255,0.8)'), position: 1},
@@ -78,7 +78,7 @@ describe('processBackground', () => {
 
   it('should process a linear gradient with hsl colors', () => {
     const input = `linear-gradient(hsl(330, 100%, 45.1%), hsl(0, 100%, 50%))`;
-    const result = processBackground(input);
+    const result = processBackgroundImage(input);
     expect(result[0].colorStops).toEqual([
       {color: processColor('hsl(330, 100%, 45.1%)'), position: 0},
       {color: processColor('hsl(0, 100%, 50%)'), position: 1},
@@ -87,7 +87,7 @@ describe('processBackground', () => {
 
   it('should process a linear gradient without direction', () => {
     const input = 'linear-gradient(#e66465, #9198e5)';
-    const result = processBackground(input);
+    const result = processBackgroundImage(input);
     expect(result[0].colorStops).toEqual([
       {color: processColor('#e66465'), position: 0},
       {color: processColor('#9198e5'), position: 1},
@@ -98,7 +98,7 @@ describe('processBackground', () => {
     const input = `linear-gradient(to right , 
     rgba(255,0,0,0.5), rgba(0,0,255,0.8)),
               linear-gradient(to bottom , rgba(255,0,0,0.9)  , rgba(0,0,255,0.2)  )`;
-    const result = processBackground(input);
+    const result = processBackgroundImage(input);
     expect(result).toHaveLength(2);
     expect(result[0].start).toEqual({x: 0, y: 0.5});
     expect(result[0].end).toEqual({x: 1, y: 0.5});
@@ -126,7 +126,7 @@ describe('processBackground', () => {
         ],
       },
     ];
-    const result = processBackground(input);
+    const result = processBackgroundImage(input);
     expect(result).toEqual([
       {
         type: 'linearGradient',
