@@ -220,6 +220,17 @@ static inline float scale(Float value, Float pointScaleFactor) {
 jni::local_ref<jobject> FabricMountingManager::getProps(
     const ShadowView& oldShadowView,
     const ShadowView& newShadowView) {
+  auto componentName = newShadowView.componentName;
+  // We calculate the diffing between the props of the last mounted ShadowTree
+  // and the Props of the latest commited ShadowTree). ONLY for <View>
+  // components when the "enablePropsUpdateReconciliationAndroid" feature flag
+  // is enabled.
+  if (ReactNativeFeatureFlags::enablePropsUpdateReconciliationAndroid() &&
+      strcmp(componentName, "View") == 0) {
+    const Props* oldProps = oldShadowView.props.get();
+    auto diffProps = newShadowView.props->getDiffProps(oldProps);
+    return ReadableNativeMap::newObjectCxxArgs(diffProps);
+  }
   return ReadableNativeMap::newObjectCxxArgs(newShadowView.props->rawProps);
 }
 
