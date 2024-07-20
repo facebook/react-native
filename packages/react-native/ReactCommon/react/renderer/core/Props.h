@@ -59,6 +59,11 @@ class Props : public virtual Sealable, public virtual DebugStringConvertible {
 
 #ifdef ANDROID
   folly::dynamic rawProps = folly::dynamic::object();
+
+  virtual folly::dynamic getDiffProps(const Props* prevProps) const {
+    return folly::dynamic::object();
+  }
+
 #endif
 
  protected:
