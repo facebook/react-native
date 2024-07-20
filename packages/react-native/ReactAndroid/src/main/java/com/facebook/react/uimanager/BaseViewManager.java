@@ -221,7 +221,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   }
 
   @Override
-  @ReactProp(name = ViewProps.BACKGROUND_IMAGE)
+  @ReactProp(name = ViewProps.BACKGROUND_IMAGE, customType = "BackgroundImage")
   public void setBackgroundImage(@NonNull T view, @Nullable ReadableArray backgroundImage) {
     logUnsupportedPropertyWarning(ViewProps.BACKGROUND_IMAGE);
   }

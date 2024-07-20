@@ -91,7 +91,7 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
     }
   }
 
-  @ReactProp(name = ViewProps.BACKGROUND_IMAGE)
+  @ReactProp(name = ViewProps.BACKGROUND_IMAGE, customType = "BackgroundImage")
   public void setBackgroundImage(ReactViewGroup view, @Nullable ReadableArray backgroundImage) {
     if (ViewUtil.getUIManagerType(view) == UIManagerType.FABRIC) {
       if (backgroundImage != null && backgroundImage.size() > 0) {
