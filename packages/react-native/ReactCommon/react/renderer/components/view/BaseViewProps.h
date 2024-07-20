@@ -96,6 +96,7 @@ class BaseViewProps : public YogaStylableProps, public AccessibilityProps {
 
 #pragma mark - Convenience Methods
 
+  CascadedBorderWidths getBorderWidths() const;
   BorderMetrics resolveBorderMetrics(const LayoutMetrics& layoutMetrics) const;
   Transform resolveTransform(const LayoutMetrics& layoutMetrics) const;
   bool getClipsContentToBounds() const;
