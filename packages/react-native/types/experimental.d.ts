@@ -152,7 +152,7 @@ declare module '.' {
   export interface ViewStyle {
     experimental_boxShadow?: BoxShadowPrimitive | undefined;
     experimental_filter?: ReadonlyArray<FilterFunction> | undefined;
-    experimental_BackgroundImage?:
+    experimental_backgroundImage?:
       | ReadonlyArray<BackgroundImagePrimitive>
       | string
       | undefined;
