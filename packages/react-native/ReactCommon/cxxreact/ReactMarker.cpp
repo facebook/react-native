@@ -17,6 +17,8 @@ namespace ReactMarker {
 #endif
 
 LogTaggedMarker logTaggedMarkerBridgelessImpl = nullptr;
+LogTaggedMarker LogTaggedMarkerWrapper::logTaggedMarkerImpl = nullptr;
+std::shared_mutex LogTaggedMarkerWrapper::logTaggedMarkerImplMutex;
 
 #if __clang__
 #pragma clang diagnostic pop
@@ -27,7 +29,7 @@ void logMarker(const ReactMarkerId markerId) {
 }
 
 void logTaggedMarker(const ReactMarkerId markerId, const char* tag) {
-  logTaggedMarkerImpl(markerId, tag);
+  LogTaggedMarkerWrapper::getLogTaggedMarkerImpl()(markerId, tag);
 }
 
 void logMarkerBridgeless(const ReactMarkerId markerId) {
