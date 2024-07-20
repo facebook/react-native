@@ -16,7 +16,7 @@ namespace facebook::react {
 void JReactMarker::setLogPerfMarkerIfNeeded() {
   static std::once_flag flag{};
   std::call_once(flag, []() {
-    ReactMarker::logTaggedMarkerImpl = JReactMarker::logPerfMarker;
+    ReactMarker::LogTaggedMarkerWrapper::setLogTaggedMarkerImpl(JReactMarker::logPerfMarker);
     ReactMarker::logTaggedMarkerBridgelessImpl =
         JReactMarker::logPerfMarkerBridgeless;
   });
