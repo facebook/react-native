@@ -222,8 +222,8 @@
 - (void)paste:(id)sender
 {
   _textWasPasted = YES;
-  [super paste:sender];
   [_textInputDelegateAdapter didPaste];
+  [super paste:sender];
 }
 
 #pragma mark - Layout

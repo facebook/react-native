@@ -325,11 +325,9 @@ public class ReactEditText extends AppCompatEditText {
   public boolean onTextContextMenuItem(int id) {
     if (id == android.R.id.paste || id == android.R.id.pasteAsPlainText) {
       id = android.R.id.pasteAsPlainText;
-      boolean actionPerformed = super.onTextContextMenuItem(id);
       if (mPasteWatcher != null) {
         mPasteWatcher.onPaste();
       }
-      return actionPerformed;
     }
     return super.onTextContextMenuItem(id);
   }
