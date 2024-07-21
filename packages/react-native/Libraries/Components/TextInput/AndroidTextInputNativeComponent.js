@@ -456,7 +456,7 @@ export type NativeProps = $ReadOnly<{|
   >,
 
   /**
-   * Callback that is called when the clipboard content is pasted.
+   * Invoked when the user performs the paste action.
    */
   onPaste?: ?DirectEventHandler<$ReadOnly<{|target: Int32|}>>,
 

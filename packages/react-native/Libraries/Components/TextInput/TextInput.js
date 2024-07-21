@@ -812,7 +812,7 @@ export type Props = $ReadOnly<{|
   onScroll?: ?(e: ScrollEvent) => mixed,
 
   /**
-   * Callback that is called when the clipboard content is pasted.
+   * Invoked when the user performs the paste action.
    */
   onPaste?: ?(e: TargetEvent) => mixed,
 
