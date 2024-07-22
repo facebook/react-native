@@ -84,10 +84,4 @@ public class ReactFeatureFlags {
    * of Promise rejection and tracing the cause.
    */
   public static boolean traceTurboModulePromiseRejections = ReactBuildConfig.DEBUG;
-
-  /**
-   * Enables auto rejecting promises from Turbo Modules method calls. If native error occurs Promise
-   * in JS will be rejected (The JS error will include native stack)
-   */
-  public static boolean rejectTurboModulePromiseOnNativeError = true;
 }
