@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d201dcea30257e1fe545f0c795f4127a>>
+ * @generated SignedSource<<7fbe53bfb2b06cdae8b1590c9131edbb>>
  */
 
 /**
@@ -52,6 +52,7 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
   private var useModernRuntimeSchedulerCache: Boolean? = null
   private var useNativeViewConfigsInBridgelessModeCache: Boolean? = null
   private var useNewReactImageViewBackgroundDrawingCache: Boolean? = null
+  private var useOptimisedViewPreallocationOnAndroidCache: Boolean? = null
   private var useRuntimeShadowNodeReferenceUpdateCache: Boolean? = null
   private var useRuntimeShadowNodeReferenceUpdateOnLayoutCache: Boolean? = null
   private var useStateAlignmentMechanismCache: Boolean? = null
@@ -340,6 +341,15 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.useNewReactImageViewBackgroundDrawing()
       useNewReactImageViewBackgroundDrawingCache = cached
+    }
+    return cached
+  }
+
+  override fun useOptimisedViewPreallocationOnAndroid(): Boolean {
+    var cached = useOptimisedViewPreallocationOnAndroidCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.useOptimisedViewPreallocationOnAndroid()
+      useOptimisedViewPreallocationOnAndroidCache = cached
     }
     return cached
   }

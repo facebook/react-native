@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<08bf79de492959b1c8df2e3267077c0a>>
+ * @generated SignedSource<<f824b1ee49adf7a82fd2821b7ac0d140>>
  */
 
 /**
@@ -195,6 +195,11 @@ bool NativeReactNativeFeatureFlags::useNativeViewConfigsInBridgelessMode(
 bool NativeReactNativeFeatureFlags::useNewReactImageViewBackgroundDrawing(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::useNewReactImageViewBackgroundDrawing();
+}
+
+bool NativeReactNativeFeatureFlags::useOptimisedViewPreallocationOnAndroid(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::useOptimisedViewPreallocationOnAndroid();
 }
 
 bool NativeReactNativeFeatureFlags::useRuntimeShadowNodeReferenceUpdate(

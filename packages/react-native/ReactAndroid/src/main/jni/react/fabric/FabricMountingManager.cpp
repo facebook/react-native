@@ -835,34 +835,62 @@ void FabricMountingManager::executeMount(
   env->DeleteLocalRef(intBufferArray);
 }
 
-void FabricMountingManager::maybePreallocateShadowView(
+void FabricMountingManager::drainPreallocateViewsQueue() {
+  std::vector<ShadowView> shadowViews;
+
+  {
+    std::lock_guard lock(preallocateMutex_);
+    std::swap(shadowViews, preallocatedViewsQueue_);
+  }
+
+  for (const auto& shadowView : shadowViews) {
+    preallocateShadowView(shadowView);
+  }
+}
+
+void FabricMountingManager::maybePreallocateShadowNode(
     const ShadowNode& shadowNode) {
   if (!shadowNode.getTraits().check(ShadowNodeTraits::Trait::FormsView)) {
     return;
   }
+
   static thread_local bool onMainThread = isOnMainThread();
   if (onMainThread) {
     // View preallocation is not beneficial when rendering on the main thread
     return;
   }
 
+  auto shadowView = ShadowView(shadowNode);
+
+  if (ReactNativeFeatureFlags::useOptimisedViewPreallocationOnAndroid()) {
+    // Optimised implementation where FabricUIManager.preallocateView is called
+    // from the main thread.
+    std::lock_guard lock(preallocateMutex_);
+    preallocatedViewsQueue_.push_back(std::move(shadowView));
+  } else {
+    // Old implementation where FabricUIManager.preallocateView is called
+    // immediatelly.
+    preallocateShadowView(shadowView);
+  }
+}
+
+void FabricMountingManager::preallocateShadowView(
+    const ShadowView& shadowView) {
   SystraceSection section("FabricMountingManager::preallocateShadowView");
 
   {
     std::lock_guard lock(allocatedViewsMutex_);
     auto allocatedViewsIterator =
-        allocatedViewRegistry_.find(shadowNode.getSurfaceId());
+        allocatedViewRegistry_.find(shadowView.surfaceId);
     if (allocatedViewsIterator == allocatedViewRegistry_.end()) {
       return;
     }
     auto& allocatedViews = allocatedViewsIterator->second;
-    if (allocatedViews.find(shadowNode.getTag()) != allocatedViews.end()) {
+    if (allocatedViews.find(shadowView.tag) != allocatedViews.end()) {
       return;
     }
-    allocatedViews.insert(shadowNode.getTag());
+    allocatedViews.insert(shadowView.tag);
   }
-
-  auto shadowView = ShadowView(shadowNode);
 
   bool isLayoutableShadowNode = shadowView.layoutMetrics != EmptyLayoutMetrics;
 
@@ -887,7 +915,7 @@ void FabricMountingManager::maybePreallocateShadowView(
 
   preallocateView(
       javaUIManager_,
-      shadowNode.getSurfaceId(),
+      shadowView.surfaceId,
       shadowView.tag,
       component.get(),
       props.get(),

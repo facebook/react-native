@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3ddf6ec6b530797e56609a4ee37dc4fc>>
+ * @generated SignedSource<<1f55fc80f2d20514a341988b4f938ac5>>
  * @flow strict-local
  */
 
@@ -75,6 +75,7 @@ export type ReactNativeFeatureFlags = {
   useModernRuntimeScheduler: Getter<boolean>,
   useNativeViewConfigsInBridgelessMode: Getter<boolean>,
   useNewReactImageViewBackgroundDrawing: Getter<boolean>,
+  useOptimisedViewPreallocationOnAndroid: Getter<boolean>,
   useRuntimeShadowNodeReferenceUpdate: Getter<boolean>,
   useRuntimeShadowNodeReferenceUpdateOnLayout: Getter<boolean>,
   useStateAlignmentMechanism: Getter<boolean>,
@@ -263,6 +264,10 @@ export const useNativeViewConfigsInBridgelessMode: Getter<boolean> = createNativ
  * Use shared background drawing code for ReactImageView instead of using Fresco to manipulate the bitmap
  */
 export const useNewReactImageViewBackgroundDrawing: Getter<boolean> = createNativeFlagGetter('useNewReactImageViewBackgroundDrawing', false);
+/**
+ * Moves more of the work in view preallocation to the main thread to free up JS thread.
+ */
+export const useOptimisedViewPreallocationOnAndroid: Getter<boolean> = createNativeFlagGetter('useOptimisedViewPreallocationOnAndroid', false);
 /**
  * When enabled, cloning shadow nodes within react native will update the reference held by the current JS fiber tree.
  */

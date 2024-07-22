@@ -192,6 +192,11 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'Use shared background drawing code for ReactImageView instead of using Fresco to manipulate the bitmap',
     },
+    useOptimisedViewPreallocationOnAndroid: {
+      defaultValue: false,
+      description:
+        'Moves more of the work in view preallocation to the main thread to free up JS thread.',
+    },
     useRuntimeShadowNodeReferenceUpdate: {
       defaultValue: false,
       description:
