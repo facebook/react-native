@@ -8,6 +8,10 @@ on:
       - main
       - "*-stable"
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true # cancel previous runs
+
 jobs:
   set_release_type:
     runs-on: ubuntu-latest
