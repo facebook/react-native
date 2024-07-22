@@ -11,7 +11,7 @@ Pod::Spec.new do |spec|
   spec.summary = 'Efficient binary-decimal and decimal-binary conversion routines for IEEE doubles'
   spec.authors = 'Google'
   spec.prepare_command = 'mv src double-conversion'
-  spec.source = { :git => 'https://github.com/google/double-conversion.git',
+  spec.source = { :git => ENV['DOUBLE_CONVERSION_GIT_URL'] || 'https://github.com/google/double-conversion.git',
                   :tag => "v#{spec.version}" }
   spec.module_name = 'DoubleConversion'
   spec.header_dir = 'double-conversion'

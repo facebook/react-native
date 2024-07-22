@@ -11,7 +11,7 @@ Pod::Spec.new do |spec|
   spec.summary = "{fmt} is an open-source formatting library for C++. It can be used as a safe and fast alternative to (s)printf and iostreams."
   spec.authors = "The fmt contributors"
   spec.source = {
-    :git => "https://github.com/fmtlib/fmt.git",
+    :git => ENV['FMT_GIT_URL'] || "https://github.com/fmtlib/fmt.git",
     :tag => "9.1.0"
   }
   spec.pod_target_xcconfig = {
