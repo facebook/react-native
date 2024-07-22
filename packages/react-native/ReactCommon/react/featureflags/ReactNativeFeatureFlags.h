@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9a8e9432a444aaa9d997a91a77e17fa9>>
+ * @generated SignedSource<<b7ca52cd4fe82dcbc65f071a0792a885>>
  */
 
 /**
@@ -116,6 +116,11 @@ class ReactNativeFeatureFlags {
    * Ensures that JavaScript always has a consistent view of the state of the UI (e.g.: commits done in other threads are not immediately propagated to JS during its execution).
    */
   RN_EXPORT static bool enableUIConsistency();
+
+  /**
+   * When enabled, rawProps in Props will not include Yoga specific props.
+   */
+  RN_EXPORT static bool excludeYogaFromRawProps();
 
   /**
    * Start image fetching during view preallocation instead of waiting for layout pass

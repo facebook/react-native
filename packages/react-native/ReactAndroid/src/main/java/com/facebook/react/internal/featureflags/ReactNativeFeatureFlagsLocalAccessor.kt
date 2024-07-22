@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<58cd9d65067ed758ecad65ad22737b6c>>
+ * @generated SignedSource<<0a1e1cdc3861ba113ce05a80f989fdc5>>
  */
 
 /**
@@ -40,6 +40,7 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var enablePropsUpdateReconciliationAndroidCache: Boolean? = null
   private var enableSynchronousStateUpdatesCache: Boolean? = null
   private var enableUIConsistencyCache: Boolean? = null
+  private var excludeYogaFromRawPropsCache: Boolean? = null
   private var fetchImagesInViewPreallocationCache: Boolean? = null
   private var fixIncorrectScrollViewStateUpdateOnAndroidCache: Boolean? = null
   private var fixMappingOfEventPrioritiesBetweenFabricAndReactCache: Boolean? = null
@@ -215,6 +216,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.enableUIConsistency()
       accessedFeatureFlags.add("enableUIConsistency")
       enableUIConsistencyCache = cached
+    }
+    return cached
+  }
+
+  override fun excludeYogaFromRawProps(): Boolean {
+    var cached = excludeYogaFromRawPropsCache
+    if (cached == null) {
+      cached = currentProvider.excludeYogaFromRawProps()
+      accessedFeatureFlags.add("excludeYogaFromRawProps")
+      excludeYogaFromRawPropsCache = cached
     }
     return cached
   }

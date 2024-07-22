@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<74d986b082e44be1b358d5442f4d133d>>
+ * @generated SignedSource<<0a9e1aa23c685e58456bb80f8ee9ef10>>
  */
 
 /**
@@ -123,6 +123,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableUIConsistency(): Boolean = accessor.enableUIConsistency()
+
+  /**
+   * When enabled, rawProps in Props will not include Yoga specific props.
+   */
+  @JvmStatic
+  public fun excludeYogaFromRawProps(): Boolean = accessor.excludeYogaFromRawProps()
 
   /**
    * Start image fetching during view preallocation instead of waiting for layout pass

@@ -398,7 +398,7 @@ void Binding::installFabricUIManager(
   CoreFeatures::enablePropIteratorSetter =
       getFeatureFlagValue("enableCppPropsIteratorSetter");
   CoreFeatures::excludeYogaFromRawProps =
-      getFeatureFlagValue("excludeYogaFromRawProps");
+      ReactNativeFeatureFlags::excludeYogaFromRawProps();
 
   auto toolbox = SchedulerToolbox{};
   toolbox.contextContainer = contextContainer;

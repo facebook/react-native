@@ -113,6 +113,11 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'Ensures that JavaScript always has a consistent view of the state of the UI (e.g.: commits done in other threads are not immediately propagated to JS during its execution).',
     },
+    excludeYogaFromRawProps: {
+      defaultValue: false,
+      description:
+        'When enabled, rawProps in Props will not include Yoga specific props.',
+    },
     fetchImagesInViewPreallocation: {
       defaultValue: false,
       description:
