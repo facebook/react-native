@@ -39,7 +39,7 @@ const std::string TRACK_PREFIX = "Track:";
 const std::string DEFAULT_TRACK_NAME = "Web Performance";
 const std::string CUSTOM_TRACK_NAME_PREFIX = "Web Performance: ";
 
-std::tuple<perfetto::Track, std::string_view> parsePerfettoTrack(
+std::tuple<std::string, std::string_view> parsePerfettoTrack(
     const std::string& name) {
   // Until there's a standard way to pass through track information, parse it
   // manually, e.g., "Track:Foo:Event name"
@@ -58,7 +58,7 @@ std::tuple<perfetto::Track, std::string_view> parsePerfettoTrack(
   }
 
   auto& trackNameRef = trackName.has_value() ? *trackName : DEFAULT_TRACK_NAME;
-  return std::make_tuple(getPerfettoWebPerfTrack(trackNameRef), eventName);
+  return std::make_tuple(trackNameRef, eventName);
 }
 
 #endif
@@ -82,11 +82,11 @@ void NativePerformance::mark(
     double startTime) {
 #ifdef WITH_PERFETTO
   if (TRACE_EVENT_CATEGORY_ENABLED("react-native")) {
-    auto [track, eventName] = parsePerfettoTrack(name);
+    auto [trackName, eventName] = parsePerfettoTrack(name);
     TRACE_EVENT_INSTANT(
         "react-native",
         perfetto::DynamicString(eventName.data(), eventName.size()),
-        track,
+        getPerfettoWebPerfTrackSync(trackName),
         performanceNowToPerfettoTraceTime(startTime));
   }
 #endif
@@ -105,7 +105,8 @@ void NativePerformance::measure(
   if (TRACE_EVENT_CATEGORY_ENABLED("react-native")) {
     // TODO T190600850 support startMark/endMark
     if (!startMark && !endMark) {
-      auto [track, eventName] = parsePerfettoTrack(name);
+      auto [trackName, eventName] = parsePerfettoTrack(name);
+      auto track = getPerfettoWebPerfTrackAsync(trackName);
       TRACE_EVENT_BEGIN(
           "react-native",
           perfetto::DynamicString(eventName.data(), eventName.size()),
