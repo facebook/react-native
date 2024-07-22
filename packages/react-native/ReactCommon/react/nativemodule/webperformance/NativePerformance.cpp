@@ -37,6 +37,7 @@ namespace {
 
 const std::string TRACK_PREFIX = "Track:";
 const std::string DEFAULT_TRACK_NAME = "Web Performance";
+const std::string CUSTOM_TRACK_NAME_PREFIX = "Web Performance: ";
 
 std::tuple<perfetto::Track, std::string_view> parsePerfettoTrack(
     const std::string& name) {
@@ -48,8 +49,10 @@ std::tuple<perfetto::Track, std::string_view> parsePerfettoTrack(
   if (name.starts_with(TRACK_PREFIX)) {
     const auto trackNameDelimiter = name.find(':', TRACK_PREFIX.length());
     if (trackNameDelimiter != std::string::npos) {
-      trackName = name.substr(
-          TRACK_PREFIX.length(), trackNameDelimiter - TRACK_PREFIX.length());
+      trackName = CUSTOM_TRACK_NAME_PREFIX +
+          name.substr(
+              TRACK_PREFIX.length(),
+              trackNameDelimiter - TRACK_PREFIX.length());
       eventName = std::string_view(name).substr(trackNameDelimiter + 1);
     }
   }
