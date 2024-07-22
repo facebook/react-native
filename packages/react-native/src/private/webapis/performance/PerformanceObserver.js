@@ -8,7 +8,10 @@
  * @flow strict
  */
 
-import type {HighResTimeStamp, PerformanceEntryType} from './PerformanceEntry';
+import type {
+  DOMHighResTimeStamp,
+  PerformanceEntryType,
+} from './PerformanceEntry';
 
 import warnOnce from '../../../../Libraries/Utilities/warnOnce';
 import {PerformanceEntry} from './PerformanceEntry';
@@ -66,7 +69,7 @@ export type PerformanceObserverInit =
     }
   | {
       type: PerformanceEntryType,
-      durationThreshold?: HighResTimeStamp,
+      durationThreshold?: DOMHighResTimeStamp,
     };
 
 type PerformanceObserverConfig = {|
