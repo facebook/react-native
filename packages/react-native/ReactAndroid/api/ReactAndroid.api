@@ -6176,20 +6176,27 @@ public final class com/facebook/react/views/debuggingoverlay/TraceUpdate {
 	public final fun getRectangle ()Landroid/graphics/RectF;
 }
 
-public class com/facebook/react/views/drawer/ReactDrawerLayoutManager : com/facebook/react/uimanager/ViewGroupManager, com/facebook/react/viewmanagers/AndroidDrawerLayoutManagerInterface {
+public final class com/facebook/react/views/drawer/ReactDrawerLayout : androidx/drawerlayout/widget/DrawerLayout {
+	public fun <init> (Lcom/facebook/react/bridge/ReactContext;)V
+	public fun onInterceptTouchEvent (Landroid/view/MotionEvent;)Z
+	public fun onTouchEvent (Landroid/view/MotionEvent;)Z
+}
+
+public final class com/facebook/react/views/drawer/ReactDrawerLayoutManager : com/facebook/react/uimanager/ViewGroupManager, com/facebook/react/viewmanagers/AndroidDrawerLayoutManagerInterface {
 	public static final field CLOSE_DRAWER I
+	public static final field COMMAND_CLOSE_DRAWER Ljava/lang/String;
+	public static final field COMMAND_OPEN_DRAWER Ljava/lang/String;
+	public static final field Companion Lcom/facebook/react/views/drawer/ReactDrawerLayoutManager$Companion;
 	public static final field OPEN_DRAWER I
 	public static final field REACT_CLASS Ljava/lang/String;
 	public fun <init> ()V
-	protected synthetic fun addEventEmitters (Lcom/facebook/react/uimanager/ThemedReactContext;Landroid/view/View;)V
-	protected fun addEventEmitters (Lcom/facebook/react/uimanager/ThemedReactContext;Lcom/facebook/react/views/drawer/ReactDrawerLayout;)V
+	public synthetic fun addEventEmitters (Lcom/facebook/react/uimanager/ThemedReactContext;Landroid/view/View;)V
 	public synthetic fun addView (Landroid/view/View;Landroid/view/View;I)V
 	public synthetic fun addView (Landroid/view/ViewGroup;Landroid/view/View;I)V
 	public fun addView (Lcom/facebook/react/views/drawer/ReactDrawerLayout;Landroid/view/View;I)V
 	public synthetic fun closeDrawer (Landroid/view/View;)V
 	public fun closeDrawer (Lcom/facebook/react/views/drawer/ReactDrawerLayout;)V
-	protected synthetic fun createViewInstance (Lcom/facebook/react/uimanager/ThemedReactContext;)Landroid/view/View;
-	protected fun createViewInstance (Lcom/facebook/react/uimanager/ThemedReactContext;)Lcom/facebook/react/views/drawer/ReactDrawerLayout;
+	public synthetic fun createViewInstance (Lcom/facebook/react/uimanager/ThemedReactContext;)Landroid/view/View;
 	public fun getCommandsMap ()Ljava/util/Map;
 	public fun getDelegate ()Lcom/facebook/react/uimanager/ViewManagerDelegate;
 	public fun getExportedCustomDirectEventTypeConstants ()Ljava/util/Map;
@@ -6207,10 +6214,10 @@ public class com/facebook/react/views/drawer/ReactDrawerLayoutManager : com/face
 	public synthetic fun setDrawerLockMode (Landroid/view/View;Ljava/lang/String;)V
 	public fun setDrawerLockMode (Lcom/facebook/react/views/drawer/ReactDrawerLayout;Ljava/lang/String;)V
 	public synthetic fun setDrawerPosition (Landroid/view/View;Ljava/lang/String;)V
-	public fun setDrawerPosition (Lcom/facebook/react/views/drawer/ReactDrawerLayout;Lcom/facebook/react/bridge/Dynamic;)V
+	public final fun setDrawerPosition (Lcom/facebook/react/views/drawer/ReactDrawerLayout;Lcom/facebook/react/bridge/Dynamic;)V
 	public fun setDrawerPosition (Lcom/facebook/react/views/drawer/ReactDrawerLayout;Ljava/lang/String;)V
 	public synthetic fun setDrawerWidth (Landroid/view/View;Ljava/lang/Float;)V
-	public fun setDrawerWidth (Lcom/facebook/react/views/drawer/ReactDrawerLayout;F)V
+	public final fun setDrawerWidth (Lcom/facebook/react/views/drawer/ReactDrawerLayout;F)V
 	public fun setDrawerWidth (Lcom/facebook/react/views/drawer/ReactDrawerLayout;Ljava/lang/Float;)V
 	public synthetic fun setElevation (Landroid/view/View;F)V
 	public fun setElevation (Lcom/facebook/react/views/drawer/ReactDrawerLayout;F)V
@@ -6227,12 +6234,7 @@ public class com/facebook/react/views/drawer/ReactDrawerLayoutManager$$PropsSett
 	public fun setProperty (Lcom/facebook/react/views/drawer/ReactDrawerLayoutManager;Lcom/facebook/react/views/drawer/ReactDrawerLayout;Ljava/lang/String;Ljava/lang/Object;)V
 }
 
-public class com/facebook/react/views/drawer/ReactDrawerLayoutManager$DrawerEventEmitter : androidx/drawerlayout/widget/DrawerLayout$DrawerListener {
-	public fun <init> (Landroidx/drawerlayout/widget/DrawerLayout;Lcom/facebook/react/uimanager/events/EventDispatcher;)V
-	public fun onDrawerClosed (Landroid/view/View;)V
-	public fun onDrawerOpened (Landroid/view/View;)V
-	public fun onDrawerSlide (Landroid/view/View;F)V
-	public fun onDrawerStateChanged (I)V
+public final class com/facebook/react/views/drawer/ReactDrawerLayoutManager$Companion {
 }
 
 public final class com/facebook/react/views/drawer/events/DrawerClosedEvent : com/facebook/react/uimanager/events/Event {
