@@ -638,7 +638,8 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
 
     const renderProp = (info: RenderItemProps<ItemT>) => {
       if (cols > 1) {
-        const {item, index} = info;
+        const { item, index } = info;
+        const keyExtractor = this.props.keyExtractor ?? defaultKeyExtractor;
         invariant(
           Array.isArray(item),
           'Expected array of items with numColumns > 1',
@@ -646,6 +647,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
         return (
           <View style={StyleSheet.compose(styles.row, columnWrapperStyle)}>
             {item.map((it, kk) => {
+              const key = keyExtractor(it, index * cols + kk);
               const element = render({
                 // $FlowFixMe[incompatible-call]
                 item: it,
@@ -653,7 +655,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
                 separators: info.separators,
               });
               return element != null ? (
-                <React.Fragment key={kk}>{element}</React.Fragment>
+                <React.Fragment key={key}>{element}</React.Fragment>
               ) : null;
             })}
           </View>
