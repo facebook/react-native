@@ -14,9 +14,9 @@ import type {
   RawPerformanceEntryType,
 } from './specs/NativePerformanceObserver';
 
+import {PerformanceEventTiming} from './EventTiming';
 import {PerformanceLongTaskTiming} from './LongTasks';
 import {PerformanceEntry} from './PerformanceEntry';
-import PerformanceEventTiming from './PerformanceEventTiming';
 import {PerformanceMark, PerformanceMeasure} from './UserTiming';
 
 export const RawPerformanceEntryTypeValues = {
