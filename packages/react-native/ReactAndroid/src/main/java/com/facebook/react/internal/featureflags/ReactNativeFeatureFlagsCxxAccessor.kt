@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<89b4a679d8121ece9291dd55c46567ad>>
+ * @generated SignedSource<<a80c0d6190fe0222bfdd4a39d7116908>>
  */
 
 /**
@@ -25,6 +25,7 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
   private var allowRecursiveCommitsWithSynchronousMountOnAndroidCache: Boolean? = null
   private var batchRenderingUpdatesInEventLoopCache: Boolean? = null
   private var changeOrderOfMountingInstructionsOnAndroidCache: Boolean? = null
+  private var completeReactInstanceCreationOnBgThreadOnAndroidCache: Boolean? = null
   private var destroyFabricSurfacesInReactInstanceManagerCache: Boolean? = null
   private var enableAlignItemsBaselineOnFabricIOSCache: Boolean? = null
   private var enableCleanTextInputYogaNodeCache: Boolean? = null
@@ -94,6 +95,15 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.changeOrderOfMountingInstructionsOnAndroid()
       changeOrderOfMountingInstructionsOnAndroidCache = cached
+    }
+    return cached
+  }
+
+  override fun completeReactInstanceCreationOnBgThreadOnAndroid(): Boolean {
+    var cached = completeReactInstanceCreationOnBgThreadOnAndroidCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.completeReactInstanceCreationOnBgThreadOnAndroid()
+      completeReactInstanceCreationOnBgThreadOnAndroidCache = cached
     }
     return cached
   }

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5b0c518e45a5c98814c8151870aed591>>
+ * @generated SignedSource<<64e825121244867e1ee6b1b8e54158f2>>
  */
 
 /**
@@ -61,6 +61,11 @@ class ReactNativeFeatureFlags {
    * When enabled, insert of views on Android will be moved from the beginning of the IntBufferBatchMountItem to be after layout updates.
    */
   RN_EXPORT static bool changeOrderOfMountingInstructionsOnAndroid();
+
+  /**
+   * Do not wait for a main-thread dispatch to complete init to start executing work on the JS thread on Android
+   */
+  RN_EXPORT static bool completeReactInstanceCreationOnBgThreadOnAndroid();
 
   /**
    * When enabled, ReactInstanceManager will clean up Fabric surfaces on destroy().

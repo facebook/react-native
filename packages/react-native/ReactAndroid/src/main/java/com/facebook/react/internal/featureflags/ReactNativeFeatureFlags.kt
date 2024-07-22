@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3fa1a97be20aa80ef7a1e1595bee0dac>>
+ * @generated SignedSource<<687c29d850df9a857749d06c54cbddb7>>
  */
 
 /**
@@ -57,6 +57,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun changeOrderOfMountingInstructionsOnAndroid(): Boolean = accessor.changeOrderOfMountingInstructionsOnAndroid()
+
+  /**
+   * Do not wait for a main-thread dispatch to complete init to start executing work on the JS thread on Android
+   */
+  @JvmStatic
+  public fun completeReactInstanceCreationOnBgThreadOnAndroid(): Boolean = accessor.completeReactInstanceCreationOnBgThreadOnAndroid()
 
   /**
    * When enabled, ReactInstanceManager will clean up Fabric surfaces on destroy().

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<36ba8783cdd7ccb5d745dffb978d13ec>>
+ * @generated SignedSource<<6514becef3f2e550d7de6d089a2400db>>
  */
 
 /**
@@ -44,6 +44,8 @@ class NativeReactNativeFeatureFlags
   bool batchRenderingUpdatesInEventLoop(jsi::Runtime& runtime);
 
   bool changeOrderOfMountingInstructionsOnAndroid(jsi::Runtime& runtime);
+
+  bool completeReactInstanceCreationOnBgThreadOnAndroid(jsi::Runtime& runtime);
 
   bool destroyFabricSurfacesInReactInstanceManager(jsi::Runtime& runtime);
 

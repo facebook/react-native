@@ -59,6 +59,11 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'When enabled, insert of views on Android will be moved from the beginning of the IntBufferBatchMountItem to be after layout updates.',
     },
+    completeReactInstanceCreationOnBgThreadOnAndroid: {
+      defaultValue: false,
+      description:
+        'Do not wait for a main-thread dispatch to complete init to start executing work on the JS thread on Android',
+    },
     destroyFabricSurfacesInReactInstanceManager: {
       defaultValue: false,
       description:

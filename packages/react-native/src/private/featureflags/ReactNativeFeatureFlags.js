@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7421319910b210753a1eddcf079aa151>>
+ * @generated SignedSource<<34a6877ad6f40b5a43a833a66b5591ae>>
  * @flow strict-local
  */
 
@@ -48,6 +48,7 @@ export type ReactNativeFeatureFlags = {
   allowRecursiveCommitsWithSynchronousMountOnAndroid: Getter<boolean>,
   batchRenderingUpdatesInEventLoop: Getter<boolean>,
   changeOrderOfMountingInstructionsOnAndroid: Getter<boolean>,
+  completeReactInstanceCreationOnBgThreadOnAndroid: Getter<boolean>,
   destroyFabricSurfacesInReactInstanceManager: Getter<boolean>,
   enableAlignItemsBaselineOnFabricIOS: Getter<boolean>,
   enableCleanTextInputYogaNode: Getter<boolean>,
@@ -152,6 +153,10 @@ export const batchRenderingUpdatesInEventLoop: Getter<boolean> = createNativeFla
  * When enabled, insert of views on Android will be moved from the beginning of the IntBufferBatchMountItem to be after layout updates.
  */
 export const changeOrderOfMountingInstructionsOnAndroid: Getter<boolean> = createNativeFlagGetter('changeOrderOfMountingInstructionsOnAndroid', false);
+/**
+ * Do not wait for a main-thread dispatch to complete init to start executing work on the JS thread on Android
+ */
+export const completeReactInstanceCreationOnBgThreadOnAndroid: Getter<boolean> = createNativeFlagGetter('completeReactInstanceCreationOnBgThreadOnAndroid', false);
 /**
  * When enabled, ReactInstanceManager will clean up Fabric surfaces on destroy().
  */

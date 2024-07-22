@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<96ed168a0e80e78d1d6f96374f045eca>>
+ * @generated SignedSource<<bf73788f1e8314232f880108b8a7c671>>
  */
 
 /**
@@ -29,6 +29,7 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var allowRecursiveCommitsWithSynchronousMountOnAndroidCache: Boolean? = null
   private var batchRenderingUpdatesInEventLoopCache: Boolean? = null
   private var changeOrderOfMountingInstructionsOnAndroidCache: Boolean? = null
+  private var completeReactInstanceCreationOnBgThreadOnAndroidCache: Boolean? = null
   private var destroyFabricSurfacesInReactInstanceManagerCache: Boolean? = null
   private var enableAlignItemsBaselineOnFabricIOSCache: Boolean? = null
   private var enableCleanTextInputYogaNodeCache: Boolean? = null
@@ -103,6 +104,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.changeOrderOfMountingInstructionsOnAndroid()
       accessedFeatureFlags.add("changeOrderOfMountingInstructionsOnAndroid")
       changeOrderOfMountingInstructionsOnAndroidCache = cached
+    }
+    return cached
+  }
+
+  override fun completeReactInstanceCreationOnBgThreadOnAndroid(): Boolean {
+    var cached = completeReactInstanceCreationOnBgThreadOnAndroidCache
+    if (cached == null) {
+      cached = currentProvider.completeReactInstanceCreationOnBgThreadOnAndroid()
+      accessedFeatureFlags.add("completeReactInstanceCreationOnBgThreadOnAndroid")
+      completeReactInstanceCreationOnBgThreadOnAndroidCache = cached
     }
     return cached
   }
