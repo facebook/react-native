@@ -75,12 +75,6 @@ bool traceTurboModulePromiseRejections() {
   return traceRejections;
 }
 
-bool rejectTurboModulePromiseOnNativeError() {
-  static bool rejectOnError =
-      getFeatureFlagBoolValue("rejectTurboModulePromiseOnNativeError");
-  return rejectOnError;
-}
-
 struct JNIArgs {
   JNIArgs(size_t count) : args(count) {}
   JNIArgs(const JNIArgs&) = delete;
@@ -900,12 +894,10 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
                   throw jsi::JSError(runtime, "Incorrect number of arguments");
                 }
 
-                if (rejectTurboModulePromiseOnNativeError()) {
-                  nativeRejectCallback = AsyncCallback(
-                      runtime,
-                      args[1].getObject(runtime).getFunction(runtime),
-                      jsInvoker_);
-                }
+                nativeRejectCallback = AsyncCallback(
+                    runtime,
+                    args[1].getObject(runtime).getFunction(runtime),
+                    jsInvoker_);
 
                 auto resolve = createJavaCallback(
                     runtime,
@@ -975,7 +967,7 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
             try {
               FACEBOOK_JNI_THROW_PENDING_EXCEPTION();
             } catch (...) {
-              if (rejectTurboModulePromiseOnNativeError() && rejectCallback) {
+              if (rejectCallback) {
                 auto exception = std::current_exception();
                 rejectWithException(
                     *rejectCallback, exception, jsInvocationStack);
