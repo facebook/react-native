@@ -626,10 +626,10 @@ class UtilsTests < Test::Unit::TestCase
     end
 
     # ==================================== #
-    # Test - Set USE_HERMES Build Setting #
+    # Test - Set build setting             #
     # ==================================== #
 
-    def test_setUseHermesBuildSetting_addTheUserSetting
+    def test_setBuildSetting_addTheUserSetting
         # Arrange
         react_native_path = "react_native/node_modules"
         user_project_mock = prepare_empty_user_project_mock()
@@ -639,23 +639,23 @@ class UtilsTests < Test::Unit::TestCase
         ])
 
         # Act
-        ReactNativePodsUtils.set_use_hermes_build_setting(installer, false)
+        ReactNativePodsUtils.set_build_setting(installer, build_setting: "TEST_SETTING", value: ["Test"])
 
         # Assert
         user_project_mock.build_configurations.each do |config|
-            assert_equal(config.build_settings["USE_HERMES"], false)
+            assert_equal(config.build_settings["TEST_SETTING"], ["Test"])
         end
 
         assert_equal(user_project_mock.save_invocation_count, 1)
         assert_equal(pods_projects_mock.save_invocation_count, 1)
-        assert_equal(Pod::UI.collected_messages, ["Setting USE_HERMES build settings"])
+        assert_equal(Pod::UI.collected_messages, ["Setting TEST_SETTING build settings"])
     end
 
     # ==================================== #
-    # Test - Set Node_Modules User Setting #
+    # Test - Set build setting (Debug)     #
     # ==================================== #
 
-    def test_setNodeModulesUserSettings_addTheUserSetting
+    def test_setBuildSettingDebug_addTheUserSetting
         # Arrange
         react_native_path = "react_native/node_modules"
         user_project_mock = prepare_empty_user_project_mock()
@@ -665,16 +665,18 @@ class UtilsTests < Test::Unit::TestCase
         ])
 
         # Act
-        ReactNativePodsUtils.set_node_modules_user_settings(installer, react_native_path)
+        ReactNativePodsUtils.set_build_setting(installer, build_setting: "TEST_SETTING", value: ["Test"], config_name: "Debug")
 
         # Assert
         user_project_mock.build_configurations.each do |config|
-            assert_equal(config.build_settings["REACT_NATIVE_PATH"], "${PODS_ROOT}/../#{react_native_path}")
+            if config.name == "Debug" then
+                assert_equal(config.build_settings["TEST_SETTING"], ["Test"])
+            end
         end
 
         assert_equal(user_project_mock.save_invocation_count, 1)
         assert_equal(pods_projects_mock.save_invocation_count, 1)
-        assert_equal(Pod::UI.collected_messages, ["Setting REACT_NATIVE build settings"])
+        assert_equal(Pod::UI.collected_messages, ["Setting TEST_SETTING build settings"])
     end
 
     # =================================== #

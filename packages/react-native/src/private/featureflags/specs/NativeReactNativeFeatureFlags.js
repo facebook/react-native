@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<22d2fc7d575d13cf21c782f5f5192580>>
+ * @generated SignedSource<<29f4ec3c941708dc99dd38adac52d6dc>>
  * @flow strict-local
  */
 
@@ -25,23 +25,35 @@ import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboMod
 export interface Spec extends TurboModule {
   +commonTestFlag?: () => boolean;
   +allowCollapsableChildren?: () => boolean;
-  +androidEnablePendingFabricTransactions?: () => boolean;
+  +allowRecursiveCommitsWithSynchronousMountOnAndroid?: () => boolean;
   +batchRenderingUpdatesInEventLoop?: () => boolean;
+  +changeOrderOfMountingInstructionsOnAndroid?: () => boolean;
   +destroyFabricSurfacesInReactInstanceManager?: () => boolean;
-  +enableBackgroundExecutor?: () => boolean;
+  +enableAlignItemsBaselineOnFabricIOS?: () => boolean;
   +enableCleanTextInputYogaNode?: () => boolean;
   +enableGranularShadowTreeStateReconciliation?: () => boolean;
+  +enableLongTaskAPI?: () => boolean;
   +enableMicrotasks?: () => boolean;
+  +enablePropsUpdateReconciliationAndroid?: () => boolean;
   +enableSynchronousStateUpdates?: () => boolean;
   +enableUIConsistency?: () => boolean;
-  +fixMountedFlagAndFixPreallocationClone?: () => boolean;
+  +fetchImagesInViewPreallocation?: () => boolean;
+  +fixIncorrectScrollViewStateUpdateOnAndroid?: () => boolean;
+  +fixMappingOfEventPrioritiesBetweenFabricAndReact?: () => boolean;
+  +fixMissedFabricStateUpdatesOnAndroid?: () => boolean;
   +forceBatchingMountItemsOnAndroid?: () => boolean;
-  +inspectorEnableCxxInspectorPackagerConnection?: () => boolean;
-  +inspectorEnableModernCDPRegistry?: () => boolean;
+  +fuseboxEnabledDebug?: () => boolean;
+  +fuseboxEnabledRelease?: () => boolean;
+  +initEagerTurboModulesOnNativeModulesQueueAndroid?: () => boolean;
   +lazyAnimationCallbacks?: () => boolean;
-  +preventDoubleTextMeasure?: () => boolean;
+  +loadVectorDrawablesOnImages?: () => boolean;
+  +setAndroidLayoutDirection?: () => boolean;
+  +useImmediateExecutorInAndroidBridgeless?: () => boolean;
   +useModernRuntimeScheduler?: () => boolean;
   +useNativeViewConfigsInBridgelessMode?: () => boolean;
+  +useNewReactImageViewBackgroundDrawing?: () => boolean;
+  +useRuntimeShadowNodeReferenceUpdate?: () => boolean;
+  +useRuntimeShadowNodeReferenceUpdateOnLayout?: () => boolean;
   +useStateAlignmentMechanism?: () => boolean;
 }
 

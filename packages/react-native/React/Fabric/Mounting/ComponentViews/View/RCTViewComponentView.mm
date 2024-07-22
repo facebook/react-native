@@ -13,12 +13,14 @@
 
 #import <React/RCTAssert.h>
 #import <React/RCTBorderDrawing.h>
+#import <React/RCTBoxShadow.h>
 #import <React/RCTConversions.h>
 #import <React/RCTLocalizedString.h>
 #import <react/renderer/components/view/ViewComponentDescriptor.h>
 #import <react/renderer/components/view/ViewEventEmitter.h>
 #import <react/renderer/components/view/ViewProps.h>
 #import <react/renderer/components/view/accessibilityPropsConversions.h>
+#import <react/renderer/graphics/BlendMode.h>
 
 #ifdef RCT_DYNAMIC_FRAMEWORKS
 #import <React/RCTComponentViewFactory.h>
@@ -29,6 +31,7 @@ using namespace facebook::react;
 @implementation RCTViewComponentView {
   UIColor *_backgroundColor;
   __weak CALayer *_borderLayer;
+  CALayer *_boxShadowLayer;
   CALayer *_filterLayer;
   BOOL _needsInvalidateLayer;
   BOOL _isJSResponder;
@@ -386,11 +389,28 @@ using namespace facebook::react;
 
   // `testId`
   if (oldViewProps.testId != newViewProps.testId) {
-    self.accessibilityIdentifier = RCTNSStringFromString(newViewProps.testId);
+    SEL setAccessibilityIdentifierSelector = @selector(setAccessibilityIdentifier:);
+    NSString *identifier = RCTNSStringFromString(newViewProps.testId);
+    if ([self.accessibilityElement respondsToSelector:setAccessibilityIdentifierSelector]) {
+      UIView *accessibilityView = (UIView *)self.accessibilityElement;
+      accessibilityView.accessibilityIdentifier = identifier;
+    } else {
+      self.accessibilityIdentifier = identifier;
+    }
   }
 
   // `filter`
   if (oldViewProps.filter != newViewProps.filter) {
+    _needsInvalidateLayer = YES;
+  }
+
+  // `mixBlendMode`
+  if (oldViewProps.mixBlendMode != newViewProps.mixBlendMode) {
+    _needsInvalidateLayer = YES;
+  }
+
+  // `boxShadow`
+  if (oldViewProps.boxShadow != newViewProps.boxShadow) {
     _needsInvalidateLayer = YES;
   }
 
@@ -421,7 +441,8 @@ using namespace facebook::react;
     _contentView.frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
   }
 
-  if (_props->transformOrigin.isSet()) {
+  if ((_props->transformOrigin.isSet() || _props->transform.operations.size() > 0) &&
+      layoutMetrics.frame.size != oldLayoutMetrics.frame.size) {
     auto newTransform = _props->resolveTransform(layoutMetrics);
     self.layer.transform = RCTCATransform3DFromTransformMatrix(newTransform);
   }
@@ -634,13 +655,13 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
   const bool useCoreAnimationBorderRendering =
       borderMetrics.borderColors.isUniform() && borderMetrics.borderWidths.isUniform() &&
       borderMetrics.borderStyles.isUniform() && borderMetrics.borderRadii.isUniform() &&
-      borderMetrics.borderStyles.left == BorderStyle::Solid &&
       (
           // iOS draws borders in front of the content whereas CSS draws them behind
           // the content. For this reason, only use iOS border drawing when clipping
           // or when the border is hidden.
-          borderMetrics.borderWidths.left == 0 ||
-          colorComponentsFromColor(borderMetrics.borderColors.left).alpha == 0 || self.clipsToBounds);
+          borderMetrics.borderWidths.left == 0 || self.clipsToBounds ||
+          (colorComponentsFromColor(borderMetrics.borderColors.left).alpha == 0 &&
+           (*borderMetrics.borderColors.left).getUIColor() != nullptr));
 
   CGColorRef backgroundColor = [_backgroundColor resolvedColorWithTraitCollection:self.traitCollection].CGColor;
 
@@ -758,6 +779,70 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     // add
     _filterLayer.zPosition = CGFLOAT_MAX;
     [self.layer addSublayer:_filterLayer];
+  }
+
+  switch (_props->mixBlendMode) {
+    case BlendMode::Multiply:
+      layer.compositingFilter = @"multiplyBlendMode";
+      break;
+    case BlendMode::Screen:
+      layer.compositingFilter = @"screenBlendMode";
+      break;
+    case BlendMode::Overlay:
+      layer.compositingFilter = @"overlayBlendMode";
+      break;
+    case BlendMode::Darken:
+      layer.compositingFilter = @"darkenBlendMode";
+      break;
+    case BlendMode::Lighten:
+      layer.compositingFilter = @"lightenBlendMode";
+      break;
+    case BlendMode::ColorDodge:
+      layer.compositingFilter = @"colorDodgeBlendMode";
+      break;
+    case BlendMode::ColorBurn:
+      layer.compositingFilter = @"colorBurnBlendMode";
+      break;
+    case BlendMode::HardLight:
+      layer.compositingFilter = @"hardLightBlendMode";
+      break;
+    case BlendMode::SoftLight:
+      layer.compositingFilter = @"softLightBlendMode";
+      break;
+    case BlendMode::Difference:
+      layer.compositingFilter = @"differenceBlendMode";
+      break;
+    case BlendMode::Exclusion:
+      layer.compositingFilter = @"exclusionBlendMode";
+      break;
+    case BlendMode::Hue:
+      layer.compositingFilter = @"hueBlendMode";
+      break;
+    case BlendMode::Saturation:
+      layer.compositingFilter = @"saturationBlendMode";
+      break;
+    case BlendMode::Color:
+      layer.compositingFilter = @"colorBlendMode";
+      break;
+    case BlendMode::Luminosity:
+      layer.compositingFilter = @"luminosityBlendMode";
+      break;
+    case BlendMode::Normal:
+      layer.compositingFilter = nil;
+      break;
+  }
+
+  _boxShadowLayer = nil;
+  if (!_props->boxShadow.empty()) {
+    _boxShadowLayer = [CALayer layer];
+    [self.layer addSublayer:_boxShadowLayer];
+    _boxShadowLayer.zPosition = CGFLOAT_MIN;
+    _boxShadowLayer.frame = RCTGetBoundingRect(_props->boxShadow, self.layer.frame.size);
+
+    UIImage *boxShadowImage =
+        RCTGetBoxShadowImage(_props->boxShadow, RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii), layer);
+
+    _boxShadowLayer.contents = (id)boxShadowImage.CGImage;
   }
 }
 

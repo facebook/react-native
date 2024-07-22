@@ -12,6 +12,7 @@ import android.os.Build;
 import android.text.Spannable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import com.facebook.common.logging.FLog;
 import com.facebook.react.R;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.annotations.VisibleForTesting;
@@ -22,6 +23,7 @@ import com.facebook.react.uimanager.ReactAccessibilityDelegate;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.ThemedReactContext;
+import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.views.text.internal.span.ReactClickableSpan;
 import com.facebook.react.views.text.internal.span.TextInlineImageSpan;
 import com.facebook.yoga.YogaMeasureMode;
@@ -36,6 +38,8 @@ import java.util.Map;
 public class ReactTextViewManager
     extends ReactTextAnchorViewManager<ReactTextView, ReactTextShadowNode>
     implements IViewManagerWithChildren {
+
+  private static final String TAG = "ReactTextViewManager";
 
   private static final short TX_STATE_KEY_ATTRIBUTED_STRING = 0;
   private static final short TX_STATE_KEY_PARAGRAPH_ATTRIBUTES = 1;
@@ -57,17 +61,16 @@ public class ReactTextViewManager
   }
 
   @Override
-  protected ReactTextView prepareToRecycleView(
+  protected @Nullable ReactTextView prepareToRecycleView(
       @NonNull ThemedReactContext reactContext, ReactTextView view) {
     // BaseViewManager
-    super.prepareToRecycleView(reactContext, view);
-
-    // Resets background and borders
-    view.recycleView();
-
-    // Defaults from ReactTextAnchorViewManager
-    setSelectionColor(view, null);
-
+    ReactTextView preparedView = super.prepareToRecycleView(reactContext, view);
+    if (preparedView != null) {
+      // Resets background and borders
+      preparedView.recycleView();
+      // Defaults from ReactTextAnchorViewManager
+      setSelectionColor(preparedView, null);
+    }
     return view;
   }
 
@@ -149,9 +152,18 @@ public class ReactTextViewManager
             view.getContext(), attributedString, mReactTextViewManagerCallback);
     view.setSpanned(spanned);
 
-    float minimumFontSize =
-        (float) paragraphAttributes.getDouble(TextLayoutManager.PA_KEY_MINIMUM_FONT_SIZE);
-    view.setMinimumFontSize(minimumFontSize);
+    try {
+      float minimumFontSize =
+          (float) paragraphAttributes.getDouble(TextLayoutManager.PA_KEY_MINIMUM_FONT_SIZE);
+      view.setMinimumFontSize(minimumFontSize);
+    } catch (IllegalArgumentException e) {
+      // T190482857: We see rare crash with MapBuffer without PA_KEY_MINIMUM_FONT_SIZE entry
+      FLog.e(
+          TAG,
+          "Paragraph Attributes: %s",
+          paragraphAttributes != null ? paragraphAttributes.toString() : "<empty>");
+      throw e;
+    }
 
     int textBreakStrategy =
         TextAttributeProps.getTextBreakStrategy(
@@ -207,5 +219,10 @@ public class ReactTextViewManager
   @Override
   public void setPadding(ReactTextView view, int left, int top, int right, int bottom) {
     view.setPadding(left, top, right, bottom);
+  }
+
+  @ReactProp(name = "overflow")
+  public void setOverflow(ReactTextView view, @Nullable String overflow) {
+    view.setOverflow(overflow);
   }
 }

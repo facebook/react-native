@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<acbc14ea4c336f7e8e3c9e2252b57e77>>
+ * @generated SignedSource<<36ba8783cdd7ccb5d745dffb978d13ec>>
  */
 
 /**
@@ -39,39 +39,63 @@ class NativeReactNativeFeatureFlags
 
   bool allowCollapsableChildren(jsi::Runtime& runtime);
 
-  bool androidEnablePendingFabricTransactions(jsi::Runtime& runtime);
+  bool allowRecursiveCommitsWithSynchronousMountOnAndroid(jsi::Runtime& runtime);
 
   bool batchRenderingUpdatesInEventLoop(jsi::Runtime& runtime);
 
+  bool changeOrderOfMountingInstructionsOnAndroid(jsi::Runtime& runtime);
+
   bool destroyFabricSurfacesInReactInstanceManager(jsi::Runtime& runtime);
 
-  bool enableBackgroundExecutor(jsi::Runtime& runtime);
+  bool enableAlignItemsBaselineOnFabricIOS(jsi::Runtime& runtime);
 
   bool enableCleanTextInputYogaNode(jsi::Runtime& runtime);
 
   bool enableGranularShadowTreeStateReconciliation(jsi::Runtime& runtime);
 
+  bool enableLongTaskAPI(jsi::Runtime& runtime);
+
   bool enableMicrotasks(jsi::Runtime& runtime);
+
+  bool enablePropsUpdateReconciliationAndroid(jsi::Runtime& runtime);
 
   bool enableSynchronousStateUpdates(jsi::Runtime& runtime);
 
   bool enableUIConsistency(jsi::Runtime& runtime);
 
-  bool fixMountedFlagAndFixPreallocationClone(jsi::Runtime& runtime);
+  bool fetchImagesInViewPreallocation(jsi::Runtime& runtime);
+
+  bool fixIncorrectScrollViewStateUpdateOnAndroid(jsi::Runtime& runtime);
+
+  bool fixMappingOfEventPrioritiesBetweenFabricAndReact(jsi::Runtime& runtime);
+
+  bool fixMissedFabricStateUpdatesOnAndroid(jsi::Runtime& runtime);
 
   bool forceBatchingMountItemsOnAndroid(jsi::Runtime& runtime);
 
-  bool inspectorEnableCxxInspectorPackagerConnection(jsi::Runtime& runtime);
+  bool fuseboxEnabledDebug(jsi::Runtime& runtime);
 
-  bool inspectorEnableModernCDPRegistry(jsi::Runtime& runtime);
+  bool fuseboxEnabledRelease(jsi::Runtime& runtime);
+
+  bool initEagerTurboModulesOnNativeModulesQueueAndroid(jsi::Runtime& runtime);
 
   bool lazyAnimationCallbacks(jsi::Runtime& runtime);
 
-  bool preventDoubleTextMeasure(jsi::Runtime& runtime);
+  bool loadVectorDrawablesOnImages(jsi::Runtime& runtime);
+
+  bool setAndroidLayoutDirection(jsi::Runtime& runtime);
+
+  bool useImmediateExecutorInAndroidBridgeless(jsi::Runtime& runtime);
 
   bool useModernRuntimeScheduler(jsi::Runtime& runtime);
 
   bool useNativeViewConfigsInBridgelessMode(jsi::Runtime& runtime);
+
+  bool useNewReactImageViewBackgroundDrawing(jsi::Runtime& runtime);
+
+  bool useRuntimeShadowNodeReferenceUpdate(jsi::Runtime& runtime);
+
+  bool useRuntimeShadowNodeReferenceUpdateOnLayout(jsi::Runtime& runtime);
 
   bool useStateAlignmentMechanism(jsi::Runtime& runtime);
 };

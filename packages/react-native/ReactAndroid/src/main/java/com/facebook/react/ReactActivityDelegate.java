@@ -138,6 +138,12 @@ public class ReactActivityDelegate {
     getPlainActivity().setContentView(mReactDelegate.getReactRootView());
   }
 
+  public void onUserLeaveHint() {
+    if (mReactDelegate != null) {
+      mReactDelegate.onUserLeaveHint();
+    }
+  }
+
   public void onPause() {
     mReactDelegate.onHostPause();
   }

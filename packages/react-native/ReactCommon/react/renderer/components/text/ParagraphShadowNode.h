@@ -29,7 +29,8 @@ class ParagraphShadowNode final : public ConcreteViewShadowNode<
                                       ParagraphComponentName,
                                       ParagraphProps,
                                       ParagraphEventEmitter,
-                                      ParagraphState>,
+                                      ParagraphState,
+                                      /* usesMapBufferForStateData */ true>,
                                   public BaseTextShadowNode {
  public:
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
@@ -42,6 +43,7 @@ class ParagraphShadowNode final : public ConcreteViewShadowNode<
     auto traits = ConcreteViewShadowNode::BaseTraits();
     traits.set(ShadowNodeTraits::Trait::LeafYogaNode);
     traits.set(ShadowNodeTraits::Trait::MeasurableYogaNode);
+    traits.set(ShadowNodeTraits::Trait::BaselineYogaNode);
 
 #ifdef ANDROID
     // Unsetting `FormsStackingContext` trait is essential on Android where we
@@ -67,6 +69,8 @@ class ParagraphShadowNode final : public ConcreteViewShadowNode<
   Size measureContent(
       const LayoutContext& layoutContext,
       const LayoutConstraints& layoutConstraints) const override;
+
+  Float baseline(const LayoutContext& layoutContext, Size size) const override;
 
   /*
    * Internal representation of the nested content of the node in a format

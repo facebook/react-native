@@ -16,12 +16,13 @@ import typeof TerminalReporter from 'metro/src/lib/TerminalReporter';
 
 import isDevServerRunning from '../../utils/isDevServerRunning';
 import loadMetroConfig from '../../utils/loadMetroConfig';
+import {logger} from '../../utils/logger';
+import * as version from '../../utils/version';
 import attachKeyHandlers from './attachKeyHandlers';
 import {
   createDevServerMiddleware,
   indexPageMiddleware,
 } from '@react-native-community/cli-server-api';
-import {logger, version} from '@react-native-community/cli-tools';
 import {createDevMiddleware} from '@react-native/dev-middleware';
 import chalk from 'chalk';
 import Metro from 'metro';
@@ -34,7 +35,7 @@ export type StartCommandArgs = {
   cert?: string,
   customLogReporterPath?: string,
   experimentalDebugger: boolean,
-  host: string,
+  host?: string,
   https?: boolean,
   maxWorkers?: number,
   key?: string,
@@ -57,19 +58,20 @@ async function runServer(
   const metroConfig = await loadMetroConfig(ctx, {
     config: args.config,
     maxWorkers: args.maxWorkers,
-    port: args.port ?? 8081,
+    port: args.port,
     resetCache: args.resetCache,
     watchFolders: args.watchFolders,
     projectRoot: args.projectRoot,
     sourceExts: args.sourceExts,
   });
+  const hostname = args.host?.length ? args.host : 'localhost';
   const {
     projectRoot,
     server: {port},
     watchFolders,
   } = metroConfig;
   const protocol = args.https === true ? 'https' : 'http';
-  const devServerUrl = url.format({protocol, hostname: args.host, port});
+  const devServerUrl = url.format({protocol, hostname, port});
 
   logger.info(`Welcome to React Native v${ctx.reactNativeVersion}`);
 
@@ -103,7 +105,7 @@ async function runServer(
     messageSocketEndpoint,
     eventsSocketEndpoint,
   } = createDevServerMiddleware({
-    host: args.host,
+    host: hostname,
     port,
     watchFolders,
   });

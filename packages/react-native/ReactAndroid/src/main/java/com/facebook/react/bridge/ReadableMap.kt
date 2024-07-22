@@ -16,6 +16,8 @@ import kotlin.collections.Map
  * Kotlin.
  */
 public interface ReadableMap {
+  public val entryIterator: Iterator<Map.Entry<String, Any>>
+
   public fun getArray(name: String): ReadableArray?
 
   public fun getBoolean(name: String): Boolean
@@ -23,8 +25,6 @@ public interface ReadableMap {
   public fun getDouble(name: String): Double
 
   public fun getDynamic(name: String): Dynamic
-
-  public fun getEntryIterator(): Iterator<Map.Entry<String, Any>>
 
   public fun getInt(name: String): Int
 

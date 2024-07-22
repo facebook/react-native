@@ -90,15 +90,29 @@ class BridgelessReactContext extends ReactApplicationContext implements EventDis
     return new BridgelessCatalystInstance(mReactHost);
   }
 
+  @Deprecated
+  @Override
+  public boolean hasActiveCatalystInstance() {
+    return hasActiveReactInstance();
+  }
+
   @Override
   public boolean hasActiveReactInstance() {
     return mReactHost.isInstanceInitialized();
   }
 
   @Override
+  public boolean hasCatalystInstance() {
+    return false;
+  }
+
+  @Override
   public boolean hasReactInstance() {
     return mReactHost.isInstanceInitialized();
   }
+
+  @Override
+  public void destroy() {}
 
   DevSupportManager getDevSupportManager() {
     return mReactHost.getDevSupportManager();
@@ -134,6 +148,8 @@ class BridgelessReactContext extends ReactApplicationContext implements EventDis
         && mInteropModuleRegistry.shouldReturnInteropModule(jsInterface)) {
       return mInteropModuleRegistry.getInteropModule(jsInterface);
     }
+
+    // TODO T189052462: ReactContext caches JavaScriptModule instances
     JavaScriptModule interfaceProxy =
         (JavaScriptModule)
             Proxy.newProxyInstance(
@@ -141,6 +157,13 @@ class BridgelessReactContext extends ReactApplicationContext implements EventDis
                 new Class[] {jsInterface},
                 new BridgelessJSModuleInvocationHandler(mReactHost, jsInterface));
     return (T) interfaceProxy;
+  }
+
+  /** Shortcut RCTDeviceEventEmitter.emit since it's frequently used */
+  @Override
+  public void emitDeviceEvent(String eventName, @Nullable Object args) {
+    mReactHost.callFunctionOnModule(
+        "RCTDeviceEventEmitter", "emit", Arguments.fromJavaArgs(new Object[] {eventName, args}));
   }
 
   @Override
@@ -156,6 +179,11 @@ class BridgelessReactContext extends ReactApplicationContext implements EventDis
   @Override
   public @Nullable <T extends NativeModule> T getNativeModule(Class<T> nativeModuleInterface) {
     return mReactHost.getNativeModule(nativeModuleInterface);
+  }
+
+  @Override
+  public @Nullable NativeModule getNativeModule(String name) {
+    return mReactHost.getNativeModule(name);
   }
 
   @Override

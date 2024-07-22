@@ -8,5 +8,7 @@
 package com.facebook.react.devsupport.interfaces
 
 public fun interface BundleLoadCallback {
-  public fun onSuccess()
+  public fun onSuccess(): Unit
+
+  public fun onError(cause: Exception): Unit = Unit
 }

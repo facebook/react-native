@@ -11,6 +11,7 @@
 
 import type {AssetData} from 'metro/src/Assets';
 
+import {logger} from '../../utils/logger';
 import {
   cleanAssetCatalog,
   getImageSet,
@@ -20,7 +21,6 @@ import {
 import filterPlatformAssetScales from './filterPlatformAssetScales';
 import getAssetDestPathAndroid from './getAssetDestPathAndroid';
 import getAssetDestPathIOS from './getAssetDestPathIOS';
-import {logger} from '@react-native-community/cli-tools';
 import fs from 'fs';
 import path from 'path';
 
@@ -111,7 +111,9 @@ function copyAll(filesToCopy: CopiedFiles) {
       } else {
         // queue.length === 0 is checked in previous branch, so this is string
         const src = queue.shift();
+        // $FlowFixMe[incompatible-type]
         const dest = filesToCopy[src];
+        // $FlowFixMe[incompatible-call]
         copy(src, dest, copyNext);
       }
     };

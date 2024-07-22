@@ -15,6 +15,7 @@ import type {MethodSerializationOutput} from './serializeMethod';
 
 const {createAliasResolver, getModules} = require('../Utils');
 const {serializeStruct} = require('./header/serializeStruct');
+const {EventEmitterHeaderTemplate} = require('./serializeEventEmitter');
 const {serializeMethod} = require('./serializeMethod');
 const {serializeModuleSource} = require('./source/serializeModule');
 const {StructCollector} = require('./StructCollector');
@@ -24,10 +25,12 @@ type FilesOutput = Map<string, string>;
 const ModuleDeclarationTemplate = ({
   hasteModuleName,
   structDeclarations,
+  eventEmitters,
   protocolMethods,
 }: $ReadOnly<{
   hasteModuleName: string,
   structDeclarations: string,
+  eventEmitters: string,
   protocolMethods: string,
 }>) => `${structDeclarations}
 @protocol ${hasteModuleName}Spec <RCTBridgeModule, RCTTurboModule>
@@ -35,6 +38,16 @@ const ModuleDeclarationTemplate = ({
 ${protocolMethods}
 
 @end
+
+@interface ${hasteModuleName}SpecBase : NSObject {
+@protected
+facebook::react::EventEmitterCallback _eventEmitterCallback;
+}
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
+
+${eventEmitters}
+@end
+
 namespace facebook::react {
   /**
    * ObjC++ class for module '${hasteModuleName}'
@@ -142,11 +155,8 @@ module.exports = {
 
     const hasteModuleNames: Array<string> = Object.keys(nativeModules).sort();
     for (const hasteModuleName of hasteModuleNames) {
-      const {
-        aliasMap,
-        excludedPlatforms,
-        spec: {properties},
-      } = nativeModules[hasteModuleName];
+      const {aliasMap, excludedPlatforms, spec} =
+        nativeModules[hasteModuleName];
       if (excludedPlatforms != null && excludedPlatforms.includes('iOS')) {
         continue;
       }
@@ -169,10 +179,10 @@ module.exports = {
        * Note: As we serialize NativeModule methods, we insert structs into
        * StructCollector, as we encounter them.
        */
-      properties
+      spec.methods
         .filter(property => property.name !== 'getConstants')
         .forEach(serializeProperty);
-      properties
+      spec.methods
         .filter(property => property.name === 'getConstants')
         .forEach(serializeProperty);
 
@@ -190,6 +200,9 @@ module.exports = {
         ModuleDeclarationTemplate({
           hasteModuleName: hasteModuleName,
           structDeclarations: structStrs.join('\n'),
+          eventEmitters: spec.eventEmitters
+            .map(eventEmitter => EventEmitterHeaderTemplate(eventEmitter))
+            .join('\n'),
           protocolMethods: methodSerializations
             .map(({protocolMethod}) => protocolMethod)
             .join('\n'),
@@ -202,6 +215,8 @@ module.exports = {
         serializeModuleSource(
           hasteModuleName,
           generatedStructs,
+          hasteModuleName,
+          spec.eventEmitters,
           methodSerializations.filter(
             ({selector}) => selector !== '@selector(constantsToExport)',
           ),

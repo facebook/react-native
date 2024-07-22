@@ -19,6 +19,7 @@ import com.facebook.react.bridge.JavaOnlyMap
 import com.facebook.react.bridge.ReactTestHelper.createMockCatalystInstance
 import com.facebook.react.bridge.WritableArray
 import com.facebook.react.bridge.WritableMap
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.uimanager.DisplayMetricsHolder
 import com.facebook.react.uimanager.ReactStylesDiffMap
 import com.facebook.react.uimanager.ThemedReactContext
@@ -37,7 +38,13 @@ import org.mockito.Mockito.mockStatic
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 
-/** Verify that [ScalingUtils] properties are being applied correctly by [ReactImageManager]. */
+/**
+ * Verify that [ScalingUtils] properties are being applied correctly by [ReactImageManager].
+ *
+ * TODO T195191609: The border rendering tests rely on introspecting Fresco tree, which is no longer
+ * relevant when "useNewReactImageViewBackgroundDrawing" is enabled. These should be replaced by
+ * screenshot tests over the existing RNTester examples.
+ */
 @RunWith(RobolectricTestRunner::class)
 class ReactImagePropertyTest {
 
@@ -46,6 +53,7 @@ class ReactImagePropertyTest {
   private lateinit var themeContext: ThemedReactContext
   private lateinit var arguments: MockedStatic<Arguments>
   private lateinit var rnLog: MockedStatic<RNLog>
+  private lateinit var featureFlags: MockedStatic<ReactNativeFeatureFlags>
 
   @Before
   fun setup() {
@@ -55,6 +63,12 @@ class ReactImagePropertyTest {
 
     rnLog = mockStatic(RNLog::class.java)
     rnLog.`when`<Boolean> { RNLog.w(any(), anyString()) }.thenAnswer {}
+
+    // Avoid trying to load ReactNativeFeatureFlags JNI library
+    featureFlags = mockStatic(ReactNativeFeatureFlags::class.java)
+    featureFlags
+        .`when`<Boolean> { ReactNativeFeatureFlags.useNewReactImageViewBackgroundDrawing() }
+        .thenAnswer { false }
 
     SoLoader.setInTestMode()
     context = BridgeReactContext(RuntimeEnvironment.getApplication())
@@ -70,6 +84,7 @@ class ReactImagePropertyTest {
     DisplayMetricsHolder.setWindowDisplayMetrics(null)
     arguments.close()
     rnLog.close()
+    featureFlags.close()
   }
 
   private fun buildStyles(vararg keysAndValues: Any?): ReactStylesDiffMap {

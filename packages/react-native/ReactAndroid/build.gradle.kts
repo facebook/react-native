@@ -111,6 +111,22 @@ val preparePrefab by
                       Pair("../ReactCommon/react/renderer/graphics/platform/android/", ""),
                   )),
               PrefabPreprocessingEntry(
+                  "react_render_consistency",
+                  Pair(
+                      "../ReactCommon/react/renderer/consistency/", "react/renderer/consistency/")),
+              PrefabPreprocessingEntry(
+                  "react_featureflags",
+                  Pair("../ReactCommon/react/featureflags/", "react/featureflags/")),
+              PrefabPreprocessingEntry(
+                  "react_performance_timeline",
+                  Pair(
+                      "../ReactCommon/react/performance/timeline/", "react/performance/timeline/")),
+              PrefabPreprocessingEntry(
+                  "react_render_observers_events",
+                  Pair(
+                      "../ReactCommon/react/renderer/observers/events/",
+                      "react/renderer/observers/events/")),
+              PrefabPreprocessingEntry(
                   "rrc_root",
                   Pair(
                       "../ReactCommon/react/renderer/components/root/",
@@ -153,6 +169,8 @@ val preparePrefab by
                   "glog", Pair(File(buildDir, "third-party-ndk/glog/exported/").absolutePath, "")),
               PrefabPreprocessingEntry(
                   "fabricjni", Pair("src/main/jni/react/fabric", "react/fabric/")),
+              PrefabPreprocessingEntry(
+                  "mapbufferjni", Pair("src/main/jni/react/mapbuffer", "react/mapbuffer/")),
               PrefabPreprocessingEntry(
                   "react_render_mapbuffer",
                   Pair("../ReactCommon/react/renderer/mapbuffer/", "react/renderer/mapbuffer/")),
@@ -575,6 +593,7 @@ android {
             "jsi",
             "glog",
             "fabricjni",
+            "mapbufferjni",
             "react_render_mapbuffer",
             "react_render_textlayoutmanager",
             "yoga",
@@ -634,6 +653,7 @@ android {
         listOf(
             "src/main/res/devsupport",
             "src/main/res/shell",
+            "src/main/res/views/alert",
             "src/main/res/views/modal",
             "src/main/res/views/uimanager"))
     java.exclude("com/facebook/annotationprocessors")
@@ -691,6 +711,18 @@ android {
     create("react_render_graphics") {
       headers = File(prefabHeadersDir, "react_render_graphics").absolutePath
     }
+    create("react_render_consistency") {
+      headers = File(prefabHeadersDir, "react_render_consistency").absolutePath
+    }
+    create("react_featureflags") {
+      headers = File(prefabHeadersDir, "react_featureflags").absolutePath
+    }
+    create("react_performance_timeline") {
+      headers = File(prefabHeadersDir, "react_performance_timeline").absolutePath
+    }
+    create("react_render_observers_events") {
+      headers = File(prefabHeadersDir, "react_render_observers_events").absolutePath
+    }
     create("rrc_image") { headers = File(prefabHeadersDir, "rrc_image").absolutePath }
     create("rrc_root") { headers = File(prefabHeadersDir, "rrc_root").absolutePath }
     create("rrc_view") { headers = File(prefabHeadersDir, "rrc_view").absolutePath }
@@ -702,6 +734,7 @@ android {
     create("jsi") { headers = File(prefabHeadersDir, "jsi").absolutePath }
     create("glog") { headers = File(prefabHeadersDir, "glog").absolutePath }
     create("fabricjni") { headers = File(prefabHeadersDir, "fabricjni").absolutePath }
+    create("mapbufferjni") { headers = File(prefabHeadersDir, "mapbufferjni").absolutePath }
     create("react_render_mapbuffer") {
       headers = File(prefabHeadersDir, "react_render_mapbuffer").absolutePath
     }
@@ -790,7 +823,15 @@ react {
 // module to apply the plugin to, so it's codegenDir and reactNativeDir won't be evaluated.
 if (rootProject.name == "react-native-build-from-source") {
   rootProject.extensions.getByType(PrivateReactExtension::class.java).apply {
-    codegenDir = file("$rootDir/../@react-native/codegen")
+    // We try to guess where codegen lives. Generally is inside
+    // node_modules/@react-native/codegen. If the file is not existing, we
+    // fallback to ../react-native-codegen (used for hello-world app).
+    codegenDir =
+        if (file("$rootDir/../@react-native/codegen").exists()) {
+          file("$rootDir/../@react-native/codegen")
+        } else {
+          file("$rootDir/../react-native-codegen")
+        }
     reactNativeDir = file("$rootDir")
   }
 }

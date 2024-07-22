@@ -16,7 +16,5 @@ public object InspectorFlags {
     DevSupportSoLoader.staticInit()
   }
 
-  @DoNotStrip @JvmStatic public external fun getEnableModernCDPRegistry(): Boolean
-
-  @DoNotStrip @JvmStatic public external fun getEnableCxxInspectorPackagerConnection(): Boolean
+  @DoNotStrip @JvmStatic public external fun getFuseboxEnabled(): Boolean
 }

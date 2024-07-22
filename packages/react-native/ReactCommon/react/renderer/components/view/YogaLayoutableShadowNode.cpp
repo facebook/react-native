@@ -10,6 +10,7 @@
 #include <logger/react_native_log.h>
 #include <react/debug/flags.h>
 #include <react/debug/react_native_assert.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/components/view/ViewShadowNode.h>
 #include <react/renderer/components/view/conversions.h>
@@ -78,6 +79,11 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
 
     yogaNode_.setMeasureFunc(
         YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector);
+  }
+
+  if (getTraits().check(ShadowNodeTraits::Trait::BaselineYogaNode)) {
+    yogaNode_.setBaselineFunc(
+        YogaLayoutableShadowNode::yogaNodeBaselineCallbackConnector);
   }
 
   updateYogaProps();
@@ -210,6 +216,11 @@ void YogaLayoutableShadowNode::adoptYogaChild(size_t index) {
     // The child is owned by some other node, we need to clone that.
     // TODO: At this point, React has wrong reference to the node. (T138668036)
     auto clonedChildNode = childNode.clone({});
+
+    if (ReactNativeFeatureFlags::
+            useRuntimeShadowNodeReferenceUpdateOnLayout()) {
+      childNode.transferRuntimeShadowNodeReference(clonedChildNode);
+    }
 
     // Replace the child node with a newly cloned one in the children list.
     replaceChild(childNode, clonedChildNode, index);
@@ -517,6 +528,10 @@ YogaLayoutableShadowNode& YogaLayoutableShadowNode::cloneChildInPlace(
       {ShadowNodeFragment::propsPlaceholder(),
        ShadowNodeFragment::childrenPlaceholder(),
        childNode.getState()});
+
+  if (ReactNativeFeatureFlags::useRuntimeShadowNodeReferenceUpdateOnLayout()) {
+    childNode.transferRuntimeShadowNodeReference(clonedChildNode);
+  }
 
   replaceChild(childNode, clonedChildNode, layoutableChildIndex);
   return static_cast<YogaLayoutableShadowNode&>(*clonedChildNode);
@@ -833,6 +848,22 @@ YGSize YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector(
 
   return YGSize{
       yogaFloatFromFloat(size.width), yogaFloatFromFloat(size.height)};
+}
+
+float YogaLayoutableShadowNode::yogaNodeBaselineCallbackConnector(
+    YGNodeConstRef yogaNode,
+    float width,
+    float height) {
+  SystraceSection s(
+      "YogaLayoutableShadowNode::yogaNodeBaselineCallbackConnector");
+
+  auto& shadowNode = shadowNodeFromContext(yogaNode);
+  auto baseline = shadowNode.baseline(
+      threadLocalLayoutContext,
+      {.width = floatFromYogaFloat(width),
+       .height = floatFromYogaFloat(height)});
+
+  return yogaFloatFromFloat(baseline);
 }
 
 YogaLayoutableShadowNode& YogaLayoutableShadowNode::shadowNodeFromContext(

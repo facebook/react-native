@@ -66,7 +66,6 @@ import com.facebook.react.fabric.mounting.mountitems.DispatchCommandMountItem;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
 import com.facebook.react.fabric.mounting.mountitems.MountItemFactory;
 import com.facebook.react.interfaces.fabric.SurfaceHandler;
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.internal.interop.InteropEventEmitter;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
@@ -214,14 +213,7 @@ public class FabricUIManager
         public void executeItems(Queue<MountItem> items) {
           // This executor can be technically accessed before the dispatcher is created,
           // but if that happens, something is terribly wrong
-          if (ReactNativeFeatureFlags.forceBatchingMountItemsOnAndroid()) {
-            for (MountItem mountItem : items) {
-              mMountItemDispatcher.addMountItem(mountItem);
-            }
-            mMountItemDispatcher.tryDispatchMountItems();
-          } else {
-            mMountItemDispatcher.dispatchMountItems(items);
-          }
+          mMountItemDispatcher.dispatchMountItems(items);
         }
       };
 
@@ -758,7 +750,6 @@ public class FabricUIManager
       final String componentName,
       @Nullable Object props,
       @Nullable Object stateWrapper,
-      @Nullable Object eventEmitterWrapper,
       boolean isLayoutable) {
 
     mMountItemDispatcher.addPreAllocateMountItem(
@@ -768,17 +759,27 @@ public class FabricUIManager
             componentName,
             (ReadableMap) props,
             (StateWrapper) stateWrapper,
-            (EventEmitterWrapper) eventEmitterWrapper,
             isLayoutable));
+  }
+
+  @SuppressLint("NotInvokedPrivateMethod")
+  @SuppressWarnings("unused")
+  @AnyThread
+  @ThreadConfined(ANY)
+  private boolean isOnMainThread() {
+    return UiThreadUtil.isOnUiThread();
   }
 
   @SuppressWarnings("unused")
   @AnyThread
   @ThreadConfined(ANY)
   private MountItem createIntBufferBatchMountItem(
-      int rootTag, int[] intBuffer, Object[] objBuffer, int commitNumber) {
+      int rootTag, @Nullable int[] intBuffer, @Nullable Object[] objBuffer, int commitNumber) {
     return MountItemFactory.createIntBufferBatchMountItem(
-        rootTag, intBuffer, objBuffer, commitNumber);
+        rootTag,
+        intBuffer == null ? new int[0] : intBuffer,
+        objBuffer == null ? new Object[0] : objBuffer,
+        commitNumber);
   }
 
   /**

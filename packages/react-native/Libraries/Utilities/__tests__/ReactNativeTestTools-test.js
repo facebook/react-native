@@ -9,6 +9,7 @@
  * @oncall react_native
  */
 
+import {create} from '../../../jest/renderer';
 import TextInput from '../../Components/TextInput/TextInput';
 import TouchableWithoutFeedback from '../../Components/Touchable/TouchableWithoutFeedback';
 import View from '../../Components/View/View';
@@ -16,17 +17,15 @@ import Text from '../../Text/Text';
 import {byTestID, byTextMatching, enter, tap} from '../ReactNativeTestTools';
 import * as React from 'react';
 
-const ReactTestRenderer = require('react-test-renderer');
-
 describe('ReactNativeTestTools', () => {
   const ExampleNull = () => null;
 
-  it('matches byTestID()', () => {
-    const renderSimple = ReactTestRenderer.create(<ExampleNull testID="foo" />);
+  it('matches byTestID()', async () => {
+    const renderSimple = await create(<ExampleNull testID="foo" />);
     const foo = renderSimple.root.find(byTestID('foo'));
     expect(foo).toEqual(renderSimple.root);
 
-    const renderNested = ReactTestRenderer.create(
+    const renderNested = await create(
       <View testID="bar">
         <View testID="baz" />
         <ExampleNull testID="bing">
@@ -43,16 +42,16 @@ describe('ReactNativeTestTools', () => {
     expect(renderNested.root.findAll(byTestID('impossible'))).toHaveLength(0);
   });
 
-  it('matches byTextMatching()', () => {
+  it('matches byTextMatching()', async () => {
     const hasFooText = byTextMatching(/foo/);
     const hasBarText = byTextMatching(/bar/);
-    const renderSimple = ReactTestRenderer.create(<Text>foobarbaz</Text>);
+    const renderSimple = await create(<Text>foobarbaz</Text>);
     const foo = renderSimple.root.find(hasFooText);
     expect(foo).toEqual(renderSimple.root);
     expect(foo.type).toEqual(Text);
     expect(foo.props.children).toEqual('foobarbaz');
 
-    const renderNested = ReactTestRenderer.create(
+    const renderNested = await create(
       <Text>
         foozy
         <Text>woobar</Text>
@@ -72,9 +71,9 @@ describe('ReactNativeTestTools', () => {
     expect(barAllShallow).toHaveLength(1);
   });
 
-  it('interacts via tap()', () => {
+  it('interacts via tap()', async () => {
     const touchFn = jest.fn();
-    const renderTouch = ReactTestRenderer.create(
+    const renderTouch = await create(
       <TouchableWithoutFeedback onPress={touchFn}>
         <ExampleNull />
       </TouchableWithoutFeedback>,
@@ -84,15 +83,15 @@ describe('ReactNativeTestTools', () => {
 
     // example of tapping <Text />
     const textFn = jest.fn();
-    const renderText = ReactTestRenderer.create(<Text onPress={textFn} />);
+    const renderText = await create(<Text onPress={textFn} />);
     tap(renderText.root);
     expect(textFn).toBeCalled();
   });
 
-  it('interacts via enter()', () => {
+  it('interacts via enter()', async () => {
     const changeFn = jest.fn();
     const changeTextFn = jest.fn();
-    const renderInput = ReactTestRenderer.create(
+    const renderInput = await create(
       <View>
         <TextInput onChange={changeFn} onChangeText={changeTextFn} />
       </View>,

@@ -12,9 +12,11 @@
 
 import type {RNTesterModule} from '../../types/RNTesterTypes';
 
+import hotdog from '../../assets/hotdog.jpg';
 import * as React from 'react';
 import {
   DynamicColorIOS,
+  Image,
   Platform,
   PlatformColor,
   StyleSheet,
@@ -126,9 +128,9 @@ const styles = StyleSheet.create({
   },
   border9Percentages: {
     borderWidth: 10,
-    borderTopLeftRadius: '10%',
-    borderBottomRightRadius: '20%',
-    borderColor: 'black',
+    borderTopLeftRadius: '20%',
+    borderBottomRightRadius: '10%',
+    borderColor: 'red',
   },
   border10: {
     borderWidth: 10,
@@ -141,9 +143,9 @@ const styles = StyleSheet.create({
   border10Percentages: {
     borderWidth: 10,
     backgroundColor: 'white',
-    borderTopLeftRadius: '10%',
-    borderBottomRightRadius: '20%',
-    borderColor: 'black',
+    borderTopLeftRadius: '20%',
+    borderBottomRightRadius: '10%',
+    borderColor: 'red',
     elevation: 10,
   },
   border11: {
@@ -213,6 +215,23 @@ const styles = StyleSheet.create({
       Platform.OS === 'ios'
         ? DynamicColorIOS({light: 'magenta', dark: 'cyan'})
         : 'black',
+  },
+  borderWithoutClipping: {
+    borderWidth: 10,
+    overflow: 'visible',
+  },
+  borderWithClipping: {
+    borderWidth: 10,
+    overflow: 'hidden',
+  },
+  borderWithClippingAndRadius: {
+    borderWidth: 10,
+    borderRadius: 30,
+    overflow: 'hidden',
+  },
+  hotdog: {
+    width: 100,
+    height: 100,
   },
 });
 
@@ -359,7 +378,7 @@ export default ({
     },
     {
       title: 'Corner Radii (Percentages)',
-      name: 'corner-radii',
+      name: 'corner-radii-percentages',
       description: 'borderTopLeftRadius & borderBottomRightRadius',
       render: function (): React.Node {
         return (
@@ -386,7 +405,7 @@ export default ({
     },
     {
       title: 'Corner Radii / Elevation (Percentages)',
-      name: 'corner-radii-elevation',
+      name: 'corner-radii-elevation-percentages',
       description: 'borderTopLeftRadius & borderBottomRightRadius & elevation',
       platform: 'android',
       render: function (): React.Node {
@@ -474,6 +493,51 @@ export default ({
             testID="border-test-dynamic-color-ios"
             style={[styles.box, styles.border16]}
           />
+        );
+      },
+    },
+    {
+      title: 'Child without clipping',
+      name: 'child-no-clipping',
+      description:
+        '"overflow: visible" will cause child content to show above borders',
+      render: function (): React.Node {
+        return (
+          <View
+            testID="border-test-child-no-clipping"
+            style={[styles.box, styles.borderWithoutClipping]}>
+            <Image source={hotdog} style={styles.hotdog} />
+          </View>
+        );
+      },
+    },
+    {
+      title: 'Child clipping',
+      name: 'child-clipping',
+      description:
+        '"overflow: hidden" will cause child content to be clipped to borders',
+      render: function (): React.Node {
+        return (
+          <View
+            testID="border-test-child-clipping"
+            style={[styles.box, styles.borderWithClipping]}>
+            <Image source={hotdog} style={styles.hotdog} />
+          </View>
+        );
+      },
+    },
+    {
+      title: 'Child clipping with radius',
+      name: 'child-clipping-radius',
+      description:
+        '"overflow: hidden" will cause child content to be clipped to rounded corners',
+      render: function (): React.Node {
+        return (
+          <View
+            testID="border-test-child-clipping-radius"
+            style={[styles.box, styles.borderWithClippingAndRadius]}>
+            <Image source={hotdog} style={styles.hotdog} />
+          </View>
         );
       },
     },

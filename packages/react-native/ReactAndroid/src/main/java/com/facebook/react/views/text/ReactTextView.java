@@ -382,6 +382,8 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
       setText(getSpanned());
     }
 
+    mReactBackgroundManager.maybeClipToPaddingBox(canvas);
+
     super.onDraw(canvas);
   }
 
@@ -684,8 +686,8 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     mReactBackgroundManager.setBorderWidth(position, width);
   }
 
-  public void setBorderColor(int position, float color, float alpha) {
-    mReactBackgroundManager.setBorderColor(position, color, alpha);
+  public void setBorderColor(int position, @Nullable Integer color) {
+    mReactBackgroundManager.setBorderColor(position, color);
   }
 
   public void setBorderRadius(float borderRadius) {
@@ -740,5 +742,9 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     if (!Float.isNaN(mLetterSpacing)) {
       super.setLetterSpacing(mLetterSpacing);
     }
+  }
+
+  public void setOverflow(@Nullable String overflow) {
+    mReactBackgroundManager.setOverflow(overflow);
   }
 }

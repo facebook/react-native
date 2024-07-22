@@ -810,18 +810,6 @@ const textInputExamples: Array<RNTesterModuleExample> = [
     },
   },
   {
-    title: 'showSoftInputOnFocus',
-    render: function (): React.Node {
-      return (
-        <View>
-          <WithLabel label="showSoftInputOnFocus: false">
-            <ExampleTextInput showSoftInputOnFocus={false} />
-          </WithLabel>
-        </View>
-      );
-    },
-  },
-  {
     title: 'Line Break Strategy',
     render: function (): React.Node {
       const lineBreakStrategy = ['none', 'standard', 'hangul-word', 'push-out'];

@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <folly/executors/QueuedImmediateExecutor.h>
 #include "JsiIntegrationTest.h"
 
 #include "engines/JsiIntegrationTestHermesEngineAdapter.h"
@@ -44,12 +45,13 @@ struct Params {
 /**
  * A test fixture for the Console API.
  */
-class ConsoleApiTest
-    : public JsiIntegrationPortableTest<JsiIntegrationTestHermesEngineAdapter>,
-      public WithParamInterface<Params> {
+class ConsoleApiTest : public JsiIntegrationPortableTestBase<
+                           JsiIntegrationTestHermesEngineAdapter,
+                           folly::QueuedImmediateExecutor>,
+                       public WithParamInterface<Params> {
  protected:
   void SetUp() override {
-    JsiIntegrationPortableTest::SetUp();
+    JsiIntegrationPortableTestBase::SetUp();
     connect();
     EXPECT_CALL(
         fromPage(),
@@ -81,13 +83,39 @@ class ConsoleApiTest
     if (!GetParam().runtimeEnabledAtStart) {
       enableRuntimeDomain();
     }
-    JsiIntegrationPortableTest::TearDown();
+    JsiIntegrationPortableTestBase::TearDown();
   }
 
+  /**
+   * Expect a console API call to be reported with parameters matching \param
+   * paramsMatcher.
+   */
   void expectConsoleApiCall(Matcher<folly::dynamic> paramsMatcher) {
     if (runtimeEnabled_) {
       expectConsoleApiCallImpl(std::move(paramsMatcher));
     } else {
+      expectedConsoleApiCalls_.emplace_back(paramsMatcher);
+    }
+  }
+
+  /**
+   * Expect a console API call to be reported with parameters matching \param
+   * paramsMatcher, only if the Runtime domain is currently enabled ( = the call
+   * is reported in real time).
+   */
+  void expectConsoleApiCallImmediate(Matcher<folly::dynamic> paramsMatcher) {
+    if (runtimeEnabled_) {
+      expectConsoleApiCallImpl(std::move(paramsMatcher));
+    }
+  }
+
+  /**
+   * Expect a console API call to be reported with parameters matching \param
+   * paramsMatcher, only if the Runtime domain is currently disabled ( = the
+   * call will be buffered and reported later upon enabling the domain).
+   */
+  void expectConsoleApiCallBuffered(Matcher<folly::dynamic> paramsMatcher) {
+    if (!runtimeEnabled_) {
       expectedConsoleApiCalls_.emplace_back(paramsMatcher);
     }
   }
@@ -756,6 +784,19 @@ TEST_P(ConsoleApiTest, testConsoleLogTwice) {
   expectConsoleApiCall(AllOf(
       AtJsonPtr("/type", "log"), AtJsonPtr("/args/0/value", "hello again")));
   eval("console.log('hello again');");
+}
+
+TEST_P(ConsoleApiTest, testConsoleLogWithObjectPreview) {
+  InSequence s;
+  expectConsoleApiCallImmediate(AllOf(
+      AtJsonPtr("/type", "log"),
+      AtJsonPtr("/args/0/preview/type", "object"),
+      AtJsonPtr("/args/0/preview/overflow", false),
+      AtJsonPtr("/args/0/preview/properties/0/name", "string"),
+      AtJsonPtr("/args/0/preview/properties/0/type", "string"),
+      AtJsonPtr("/args/0/preview/properties/0/value", "hello")));
+  expectConsoleApiCallBuffered(AllOf(AtJsonPtr("/type", "log")));
+  eval("console.log({ string: 'hello' });");
 }
 
 static const auto paramValues = testing::Values(

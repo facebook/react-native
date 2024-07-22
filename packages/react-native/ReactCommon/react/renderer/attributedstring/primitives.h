@@ -80,6 +80,13 @@ enum class TextAlignment {
   Justified // Fully-justified. The last line in a paragraph is natural-aligned.
 };
 
+enum class TextAlignmentVertical {
+  Auto,
+  Top,
+  Bottom,
+  Center,
+};
+
 enum class WritingDirection {
   Natural, // Determines direction using the Unicode Bidi Algorithm rules P2 and
            // P3.

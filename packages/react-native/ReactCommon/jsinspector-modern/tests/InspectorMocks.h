@@ -118,11 +118,20 @@ class MockInspectorPackagerConnectionDelegate
 class MockHostTargetDelegate : public HostTargetDelegate {
  public:
   // HostTargetDelegate methods
+  HostTargetMetadata getMetadata() override {
+    return {.integrationName = "MockHostTargetDelegate"};
+  }
   MOCK_METHOD(void, onReload, (const PageReloadRequest& request), (override));
   MOCK_METHOD(
       void,
       onSetPausedInDebuggerMessage,
       (const OverlaySetPausedInDebuggerMessageRequest& request),
+      (override));
+  MOCK_METHOD(
+      void,
+      loadNetworkResource,
+      (const LoadNetworkResourceRequest& params,
+       ScopedExecutor<NetworkRequestListener> executor),
       (override));
 };
 

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<34806c87ad1769ee08a5322994b0bb1b>>
+ * @generated SignedSource<<98bd8f4b2b262ac3e75897da515706f5>>
  */
 
 /**
@@ -32,39 +32,63 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun allowCollapsableChildren(): Boolean
 
-  @DoNotStrip @JvmStatic public external fun androidEnablePendingFabricTransactions(): Boolean
+  @DoNotStrip @JvmStatic public external fun allowRecursiveCommitsWithSynchronousMountOnAndroid(): Boolean
 
   @DoNotStrip @JvmStatic public external fun batchRenderingUpdatesInEventLoop(): Boolean
 
+  @DoNotStrip @JvmStatic public external fun changeOrderOfMountingInstructionsOnAndroid(): Boolean
+
   @DoNotStrip @JvmStatic public external fun destroyFabricSurfacesInReactInstanceManager(): Boolean
 
-  @DoNotStrip @JvmStatic public external fun enableBackgroundExecutor(): Boolean
+  @DoNotStrip @JvmStatic public external fun enableAlignItemsBaselineOnFabricIOS(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableCleanTextInputYogaNode(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableGranularShadowTreeStateReconciliation(): Boolean
 
+  @DoNotStrip @JvmStatic public external fun enableLongTaskAPI(): Boolean
+
   @DoNotStrip @JvmStatic public external fun enableMicrotasks(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun enablePropsUpdateReconciliationAndroid(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableSynchronousStateUpdates(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableUIConsistency(): Boolean
 
-  @DoNotStrip @JvmStatic public external fun fixMountedFlagAndFixPreallocationClone(): Boolean
+  @DoNotStrip @JvmStatic public external fun fetchImagesInViewPreallocation(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun fixIncorrectScrollViewStateUpdateOnAndroid(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun fixMissedFabricStateUpdatesOnAndroid(): Boolean
 
   @DoNotStrip @JvmStatic public external fun forceBatchingMountItemsOnAndroid(): Boolean
 
-  @DoNotStrip @JvmStatic public external fun inspectorEnableCxxInspectorPackagerConnection(): Boolean
+  @DoNotStrip @JvmStatic public external fun fuseboxEnabledDebug(): Boolean
 
-  @DoNotStrip @JvmStatic public external fun inspectorEnableModernCDPRegistry(): Boolean
+  @DoNotStrip @JvmStatic public external fun fuseboxEnabledRelease(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun initEagerTurboModulesOnNativeModulesQueueAndroid(): Boolean
 
   @DoNotStrip @JvmStatic public external fun lazyAnimationCallbacks(): Boolean
 
-  @DoNotStrip @JvmStatic public external fun preventDoubleTextMeasure(): Boolean
+  @DoNotStrip @JvmStatic public external fun loadVectorDrawablesOnImages(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun setAndroidLayoutDirection(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun useImmediateExecutorInAndroidBridgeless(): Boolean
 
   @DoNotStrip @JvmStatic public external fun useModernRuntimeScheduler(): Boolean
 
   @DoNotStrip @JvmStatic public external fun useNativeViewConfigsInBridgelessMode(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun useNewReactImageViewBackgroundDrawing(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun useRuntimeShadowNodeReferenceUpdate(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun useRuntimeShadowNodeReferenceUpdateOnLayout(): Boolean
 
   @DoNotStrip @JvmStatic public external fun useStateAlignmentMechanism(): Boolean
 

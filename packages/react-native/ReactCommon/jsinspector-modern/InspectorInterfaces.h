@@ -109,7 +109,11 @@ class JSINSPECTOR_EXPORT IInspector : public IDestructible {
   /// debuggable pages.
   virtual void removePage(int pageId) = 0;
 
-  /// getPages is called by the client to list all debuggable pages.
+  /**
+   * Called by the client to retrieve all debuggable pages.
+   * \returns A vector of page descriptions in the order in which they were
+   * added with \c addPage.
+   */
   virtual std::vector<InspectorPageDescription> getPages() const = 0;
 
   /**
@@ -128,6 +132,19 @@ class JSINSPECTOR_EXPORT IInspector : public IDestructible {
    */
   virtual void registerPageStatusListener(
       std::weak_ptr<IPageStatusListener> listener) = 0;
+};
+
+class NotImplementedException : public std::exception {
+ public:
+  explicit NotImplementedException(std::string message)
+      : msg_(std::move(message)) {}
+
+  const char* what() const noexcept override {
+    return msg_.c_str();
+  }
+
+ private:
+  std::string msg_;
 };
 
 /// getInspectorInstance retrieves the singleton inspector that tracks all

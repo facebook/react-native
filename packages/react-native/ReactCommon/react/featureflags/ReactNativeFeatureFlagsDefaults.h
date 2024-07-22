@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ea2440da83ee9eddc3fce3e7e69935b2>>
+ * @generated SignedSource<<c6b9aaa642199af1c7669d78054b061d>>
  */
 
 /**
@@ -35,7 +35,7 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return true;
   }
 
-  bool androidEnablePendingFabricTransactions() override {
+  bool allowRecursiveCommitsWithSynchronousMountOnAndroid() override {
     return false;
   }
 
@@ -43,12 +43,16 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool changeOrderOfMountingInstructionsOnAndroid() override {
+    return false;
+  }
+
   bool destroyFabricSurfacesInReactInstanceManager() override {
     return false;
   }
 
-  bool enableBackgroundExecutor() override {
-    return false;
+  bool enableAlignItemsBaselineOnFabricIOS() override {
+    return true;
   }
 
   bool enableCleanTextInputYogaNode() override {
@@ -59,7 +63,15 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool enableLongTaskAPI() override {
+    return false;
+  }
+
   bool enableMicrotasks() override {
+    return false;
+  }
+
+  bool enablePropsUpdateReconciliationAndroid() override {
     return false;
   }
 
@@ -71,7 +83,19 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool fixMountedFlagAndFixPreallocationClone() override {
+  bool fetchImagesInViewPreallocation() override {
+    return false;
+  }
+
+  bool fixIncorrectScrollViewStateUpdateOnAndroid() override {
+    return false;
+  }
+
+  bool fixMappingOfEventPrioritiesBetweenFabricAndReact() override {
+    return false;
+  }
+
+  bool fixMissedFabricStateUpdatesOnAndroid() override {
     return false;
   }
 
@@ -79,11 +103,15 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool inspectorEnableCxxInspectorPackagerConnection() override {
+  bool fuseboxEnabledDebug() override {
+    return true;
+  }
+
+  bool fuseboxEnabledRelease() override {
     return false;
   }
 
-  bool inspectorEnableModernCDPRegistry() override {
+  bool initEagerTurboModulesOnNativeModulesQueueAndroid() override {
     return false;
   }
 
@@ -91,7 +119,15 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool preventDoubleTextMeasure() override {
+  bool loadVectorDrawablesOnImages() override {
+    return false;
+  }
+
+  bool setAndroidLayoutDirection() override {
+    return true;
+  }
+
+  bool useImmediateExecutorInAndroidBridgeless() override {
     return false;
   }
 
@@ -100,6 +136,18 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool useNativeViewConfigsInBridgelessMode() override {
+    return false;
+  }
+
+  bool useNewReactImageViewBackgroundDrawing() override {
+    return false;
+  }
+
+  bool useRuntimeShadowNodeReferenceUpdate() override {
+    return false;
+  }
+
+  bool useRuntimeShadowNodeReferenceUpdateOnLayout() override {
     return false;
   }
 

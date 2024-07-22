@@ -27,6 +27,7 @@ enum class CSSValueType : uint8_t {
   Percentage,
   Ratio,
   Angle,
+  Color,
 };
 
 /**
@@ -79,6 +80,13 @@ struct CSSRatio {
  */
 struct CSSAngle {
   float degrees{};
+};
+
+struct CSSColor {
+  uint8_t r{};
+  uint8_t g{};
+  uint8_t b{};
+  uint8_t a{};
 };
 
 } // namespace facebook::react

@@ -92,7 +92,44 @@ enum class BorderCurve : uint8_t { Circular, Continuous };
 
 enum class BorderStyle : uint8_t { Solid, Dotted, Dashed };
 
-enum class Cursor : uint8_t { Auto, Pointer };
+enum class Cursor : uint8_t {
+  Auto,
+  Alias,
+  AllScroll,
+  Cell,
+  ColResize,
+  ContextMenu,
+  Copy,
+  Crosshair,
+  Default,
+  EResize,
+  EWResize,
+  Grab,
+  Grabbing,
+  Help,
+  Move,
+  NEResize,
+  NESWResize,
+  NResize,
+  NSResize,
+  NWResize,
+  NWSEResize,
+  NoDrop,
+  None,
+  NotAllowed,
+  Pointer,
+  Progress,
+  RowResize,
+  SResize,
+  SEResize,
+  SWResize,
+  Text,
+  Url,
+  WResize,
+  Wait,
+  ZoomIn,
+  ZoomOut,
+};
 
 enum class LayoutConformance : uint8_t { Undefined, Classic, Strict };
 

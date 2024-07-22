@@ -33,7 +33,7 @@ Pod::Spec.new do |s|
   s.source                 = source
   s.source_files           = "*.{cpp,h}"
   s.header_dir             = "react/nativemodule/defaults"
-  s.pod_target_xcconfig    = { "CLANG_CXX_LANGUAGE_STANDARD" => "c++20",
+  s.pod_target_xcconfig    = { "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
                                "HEADER_SEARCH_PATHS" => header_search_paths.join(' '),
                                "DEFINES_MODULE" => "YES" }
 
@@ -47,4 +47,5 @@ Pod::Spec.new do |s|
   s.dependency "React-domnativemodule"
   s.dependency "React-featureflagsnativemodule"
   s.dependency "React-microtasksnativemodule"
+  s.dependency "React-idlecallbacksnativemodule"
 end

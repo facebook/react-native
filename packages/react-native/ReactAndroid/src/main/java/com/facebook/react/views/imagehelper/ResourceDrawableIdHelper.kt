@@ -8,10 +8,12 @@
 package com.facebook.react.views.imagehelper
 
 import android.content.Context
+import android.content.res.Resources
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import androidx.core.content.res.ResourcesCompat
 import javax.annotation.concurrent.ThreadSafe
+import org.xmlpull.v1.XmlPullParser
 
 /** Helper class for obtaining information about local images. */
 @ThreadSafe
@@ -61,11 +63,54 @@ public class ResourceDrawableIdHelper private constructor() {
     }
   }
 
+  public fun isVectorDrawable(context: Context, name: String): Boolean {
+    return getOpeningXmlTag(context, name) == "vector"
+  }
+
+  /**
+   * If the provided resource name is a valid drawable resource and is an XML file, returns the root
+   * XML tag. Skips over the versioning/encoding header. Non-XML files and malformed XML files
+   * return null.
+   *
+   * For example, a vector drawable file would return "vector".
+   */
+  private fun getOpeningXmlTag(context: Context, name: String): String? {
+    val resId = getResourceDrawableId(context, name).takeIf { it > 0 } ?: return null
+    return try {
+      val xmlParser = context.resources.getXml(resId)
+      xmlParser.use {
+        var parentTag: String? = null
+        var eventType = xmlParser.eventType
+        while (eventType != XmlPullParser.END_DOCUMENT) {
+          if (eventType == XmlPullParser.START_TAG) {
+            parentTag = xmlParser.name
+            break
+          }
+          eventType = xmlParser.next()
+        }
+        parentTag
+      }
+    } catch (e: Resources.NotFoundException) {
+      // Drawable image is not an XML file
+      null
+    }
+  }
+
   public companion object {
     private const val LOCAL_RESOURCE_SCHEME = "res"
     private val resourceDrawableIdHelper: ResourceDrawableIdHelper = ResourceDrawableIdHelper()
     @JvmStatic
     public val instance: ResourceDrawableIdHelper
       get() = resourceDrawableIdHelper
+
+    /**
+     * We're just re-adding this to reduce a breaking change for libraries in React Native 0.75.
+     *
+     * @deprecated Use instance instead
+     */
+    @Deprecated("Use .instance instead, this API is for backward compat", ReplaceWith("instance"))
+    @JvmName(
+        "DEPRECATED\$getInstance") // We intentionally don't want to expose this accessor to Java.
+    public fun getInstance(): ResourceDrawableIdHelper = instance
   }
 }

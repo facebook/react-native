@@ -19,7 +19,13 @@ end
 folly_config = get_folly_config()
 folly_compiler_flags = folly_config[:compiler_flags]
 folly_version = folly_config[:version]
-boost_compiler_flags = '-Wno-documentation'
+
+header_search_paths = [
+  "\"$(PODS_TARGET_SRCROOT)/..\"",
+  "\"$(PODS_ROOT)/RCT-Folly\"",
+  "\"$(PODS_ROOT)/DoubleConversion\"",
+  "\"$(PODS_ROOT)/fmt/include\""
+]
 
 Pod::Spec.new do |s|
   s.name                   = "React-perflogger"
@@ -30,7 +36,15 @@ Pod::Spec.new do |s|
   s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = min_supported_versions
   s.source                 = source
-  s.source_files           = "**/*.{cpp,h}"
+  s.source_files           = "reactperflogger/*.{cpp,h}", "fusebox/*.{cpp,h}"
   s.header_dir             = "reactperflogger"
-  s.pod_target_xcconfig    = { "CLANG_CXX_LANGUAGE_STANDARD" => "c++20" }
+  s.pod_target_xcconfig    = { "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard() }
+  s.compiler_flags         = folly_compiler_flags
+  s.pod_target_xcconfig    = {
+    "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
+    "HEADER_SEARCH_PATHS" => header_search_paths.join(' '),
+  }
+
+  s.dependency "RCT-Folly", folly_version
+  s.dependency "DoubleConversion"
 end

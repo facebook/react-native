@@ -434,10 +434,8 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
     if (mShouldLogContentAppeared) {
       mShouldLogContentAppeared = false;
-
-      if (mJSModuleName != null) {
-        ReactMarker.logMarker(ReactMarkerConstants.CONTENT_APPEARED, mJSModuleName, mRootViewTag);
-      }
+      String jsModuleName = getJSModuleName();
+      ReactMarker.logMarker(ReactMarkerConstants.CONTENT_APPEARED, jsModuleName, mRootViewTag);
     }
   }
 
@@ -819,6 +817,9 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
   @Nullable
   public ReactContext getCurrentReactContext() {
+    if (mReactInstanceManager == null) {
+      return null;
+    }
     return mReactInstanceManager.getCurrentReactContext();
   }
 

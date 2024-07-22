@@ -212,18 +212,6 @@ int ShadowNode::getOrderIndex() const {
   return orderIndex_;
 }
 
-void ShadowNode::markPromotedRecursively() const {
-  if (hasBeenPromoted_) {
-    return;
-  }
-
-  hasBeenPromoted_ = true;
-
-  for (const auto& child : *children_) {
-    child->markPromotedRecursively();
-  }
-}
-
 void ShadowNode::sealRecursive() const {
   if (getSealed()) {
     return;
@@ -301,18 +289,11 @@ void ShadowNode::setMounted(bool mounted) const {
 }
 
 bool ShadowNode::getHasBeenPromoted() const {
-  auto hasBeenPromoted =
-      ReactNativeFeatureFlags::fixMountedFlagAndFixPreallocationClone()
-      ? hasBeenPromoted_
-      : hasBeenMounted_.load();
-  return hasBeenPromoted;
+  return hasBeenMounted_.load();
 }
 
 bool ShadowNode::progressStateIfNecessary() {
-  auto hasBeenPromoted =
-      ReactNativeFeatureFlags::fixMountedFlagAndFixPreallocationClone()
-      ? hasBeenPromoted_
-      : hasBeenMounted_.load();
+  auto hasBeenPromoted = hasBeenMounted_.load();
   if (!hasBeenPromoted && state_) {
     ensureUnsealed();
     auto mostRecentState = family_->getMostRecentStateIfObsolete(*state_);
@@ -326,6 +307,31 @@ bool ShadowNode::progressStateIfNecessary() {
     }
   }
   return false;
+}
+
+void ShadowNode::setRuntimeShadowNodeReference(
+    const std::shared_ptr<ShadowNodeWrapper>& runtimeShadowNodeReference)
+    const {
+  runtimeShadowNodeReference_ = runtimeShadowNodeReference;
+}
+
+void ShadowNode::transferRuntimeShadowNodeReference(
+    const Shared& destinationShadowNode) const {
+  destinationShadowNode->runtimeShadowNodeReference_ =
+      runtimeShadowNodeReference_;
+
+  if (auto reference = runtimeShadowNodeReference_.lock()) {
+    reference->shadowNode = destinationShadowNode;
+  }
+}
+
+void ShadowNode::transferRuntimeShadowNodeReference(
+    const Shared& destinationShadowNode,
+    const ShadowNodeFragment& fragment) const {
+  if (fragment.runtimeShadowNodeReference &&
+      ReactNativeFeatureFlags::useRuntimeShadowNodeReferenceUpdate()) {
+    transferRuntimeShadowNodeReference(destinationShadowNode);
+  }
 }
 
 const ShadowNodeFamily& ShadowNode::getFamily() const {
@@ -404,5 +410,11 @@ SharedDebugStringConvertibleList ShadowNode::getDebugProps() const {
           debugStringConvertibleItem("tag", folly::to<std::string>(getTag()))};
 }
 #endif
+
+// Explicitly define destructors here, as they have to exist in order to act as
+// a "key function" for the ShadowNodeWrapper class -- this allows for RTTI to
+// work properly across dynamic library boundaries (i.e. dynamic_cast that is
+// used by getNativeState method)
+ShadowNodeWrapper::~ShadowNodeWrapper() = default;
 
 } // namespace facebook::react

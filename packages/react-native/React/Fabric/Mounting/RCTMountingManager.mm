@@ -102,11 +102,6 @@ static void RCTPerformMountInstructions(
         break;
       }
 
-      case ShadowViewMutation::RemoveDeleteTree: {
-        // TODO - not supported yet
-        break;
-      }
-
       case ShadowViewMutation::Update: {
         auto &oldChildShadowView = mutation.oldChildShadowView;
         auto &newChildShadowView = mutation.newChildShadowView;

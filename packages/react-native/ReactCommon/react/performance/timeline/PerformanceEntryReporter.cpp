@@ -11,7 +11,7 @@
 
 namespace facebook::react {
 
-std::shared_ptr<PerformanceEntryReporter>
+std::shared_ptr<PerformanceEntryReporter>&
 PerformanceEntryReporter::getInstance() {
   static auto instance = std::make_shared<PerformanceEntryReporter>();
   return instance;
@@ -285,6 +285,16 @@ void PerformanceEntryReporter::logEventEntry(
        .processingStart = processingStart,
        .processingEnd = processingEnd,
        .interactionId = interactionId});
+}
+
+void PerformanceEntryReporter::logLongTaskEntry(
+    DOMHighResTimeStamp startTime,
+    DOMHighResTimeStamp duration) {
+  logEntry(
+      {.name = std::string{"self"},
+       .entryType = PerformanceEntryType::LONGTASK,
+       .startTime = startTime,
+       .duration = duration});
 }
 
 void PerformanceEntryReporter::scheduleFlushBuffer() {

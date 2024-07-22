@@ -7,7 +7,7 @@
 
 #include <gtest/gtest.h>
 #include <react/renderer/css/CSSDeclaredStyle.h>
-#include <react/renderer/css/CSSParser.h>
+#include <react/renderer/css/CSSSyntaxParser.h>
 
 namespace facebook::react {
 

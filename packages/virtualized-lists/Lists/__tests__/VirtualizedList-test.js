@@ -17,50 +17,61 @@ import {act, create} from 'react-test-renderer';
 
 jest.useFakeTimers();
 
+const skipTestSilenceLinter = it.skip;
+
 describe('VirtualizedList', () => {
-  it('renders simple list', () => {
-    const component = create(
-      <VirtualizedList
-        data={[{key: 'i1'}, {key: 'i2'}, {key: 'i3'}]}
-        renderItem={({item}) => <item value={item.key} />}
-        getItem={(data, index) => data[index]}
-        getItemCount={data => data.length}
-      />,
-    );
+  it('renders simple list', async () => {
+    let component;
+    await act(() => {
+      component = create(
+        <VirtualizedList
+          data={[{key: 'i1'}, {key: 'i2'}, {key: 'i3'}]}
+          renderItem={({item}) => <item value={item.key} />}
+          getItem={(data, index) => data[index]}
+          getItemCount={data => data.length}
+        />,
+      );
+    });
     expect(component).toMatchSnapshot();
   });
 
-  it('renders simple list using ListItemComponent', () => {
+  it('renders simple list using ListItemComponent', async () => {
     function ListItemComponent({item}) {
       return <item value={item.key} />;
     }
-    const component = create(
-      <VirtualizedList
-        data={[{key: 'i1'}, {key: 'i2'}, {key: 'i3'}]}
-        ListItemComponent={ListItemComponent}
-        getItem={(data, index) => data[index]}
-        getItemCount={data => data.length}
-      />,
-    );
+    let component;
+    await act(() => {
+      component = create(
+        <VirtualizedList
+          data={[{key: 'i1'}, {key: 'i2'}, {key: 'i3'}]}
+          ListItemComponent={ListItemComponent}
+          getItem={(data, index) => data[index]}
+          getItemCount={data => data.length}
+        />,
+      );
+    });
     expect(component).toMatchSnapshot();
   });
 
-  it('warns if both renderItem or ListItemComponent are specified. Uses ListItemComponent', () => {
+  it('warns if both renderItem or ListItemComponent are specified. Uses ListItemComponent', async () => {
     jest.spyOn(console, 'warn').mockImplementationOnce(() => {});
     function ListItemComponent({item}) {
       return <item value={item.key} testID={`${item.key}-ListItemComponent`} />;
     }
-    const component = create(
-      <VirtualizedList
-        data={[{key: 'i1'}]}
-        ListItemComponent={ListItemComponent}
-        renderItem={({item}) => (
-          <item value={item.key} testID={`${item.key}-renderItem`} />
-        )}
-        getItem={(data, index) => data[index]}
-        getItemCount={data => data.length}
-      />,
-    );
+    let component;
+    await act(() => {
+      component = create(
+        <VirtualizedList
+          data={[{key: 'i1'}]}
+          ListItemComponent={ListItemComponent}
+          renderItem={({item}) => (
+            <item value={item.key} testID={`${item.key}-renderItem`} />
+          )}
+          getItem={(data, index) => data[index]}
+          getItemCount={data => data.length}
+        />,
+      );
+    });
 
     expect(console.warn).toBeCalledWith(
       'VirtualizedList: Both ListItemComponent and renderItem props are present. ListItemComponent will take precedence over renderItem.',
@@ -97,29 +108,35 @@ describe('VirtualizedList', () => {
     console.error.mockRestore();
   });
 
-  it('renders empty list', () => {
-    const component = create(
-      <VirtualizedList
-        data={[]}
-        renderItem={({item}) => <item value={item.key} />}
-        getItem={(data, index) => data[index]}
-        getItemCount={data => data.length}
-      />,
-    );
+  it('renders empty list', async () => {
+    let component;
+    await act(() => {
+      component = create(
+        <VirtualizedList
+          data={[]}
+          renderItem={({item}) => <item value={item.key} />}
+          getItem={(data, index) => data[index]}
+          getItemCount={data => data.length}
+        />,
+      );
+    });
     expect(component).toMatchSnapshot();
   });
 
-  it('renders empty list after batch', () => {
-    const component = create(
-      <VirtualizedList
-        data={[]}
-        renderItem={({item}) => <item value={item.key} />}
-        getItem={(data, index) => data[index]}
-        getItemCount={data => data.length}
-      />,
-    );
+  it('renders empty list after batch', async () => {
+    let component;
+    await act(() => {
+      component = create(
+        <VirtualizedList
+          data={[]}
+          renderItem={({item}) => <item value={item.key} />}
+          getItem={(data, index) => data[index]}
+          getItemCount={data => data.length}
+        />,
+      );
+    });
 
-    act(() => {
+    await act(() => {
       simulateLayout(component, {
         viewport: {width: 10, height: 50},
         content: {width: 10, height: 200},
@@ -131,148 +148,177 @@ describe('VirtualizedList', () => {
     expect(component).toMatchSnapshot();
   });
 
-  it('renders null list', () => {
-    const component = create(
-      <VirtualizedList
-        data={undefined}
-        renderItem={({item}) => <item value={item.key} />}
-        getItem={(data, index) => data[index]}
-        getItemCount={data => 0}
-      />,
-    );
+  it('renders null list', async () => {
+    let component;
+    await act(() => {
+      component = create(
+        <VirtualizedList
+          data={undefined}
+          renderItem={({item}) => <item value={item.key} />}
+          getItem={(data, index) => data[index]}
+          getItemCount={data => 0}
+        />,
+      );
+    });
     expect(component).toMatchSnapshot();
   });
 
-  it('scrollToEnd works with null list', () => {
+  it('scrollToEnd works with null list', async () => {
     const listRef = React.createRef(null);
-    create(
-      <VirtualizedList
-        data={undefined}
-        renderItem={({item}) => <item value={item.key} />}
-        getItem={(data, index) => data[index]}
-        getItemCount={data => 0}
-        ref={listRef}
-      />,
-    );
+    await act(() => {
+      create(
+        <VirtualizedList
+          data={undefined}
+          renderItem={({item}) => <item value={item.key} />}
+          getItem={(data, index) => data[index]}
+          getItemCount={data => 0}
+          ref={listRef}
+        />,
+      );
+    });
     listRef.current.scrollToEnd();
   });
 
-  it('renders empty list with empty component', () => {
-    const component = create(
-      <VirtualizedList
-        data={[]}
-        ListEmptyComponent={() => <empty />}
-        ListFooterComponent={() => <footer />}
-        ListHeaderComponent={() => <header />}
-        getItem={(data, index) => data[index]}
-        getItemCount={data => data.length}
-        renderItem={({item}) => <item value={item.key} />}
-      />,
-    );
+  it('renders empty list with empty component', async () => {
+    let component;
+    await act(() => {
+      component = create(
+        <VirtualizedList
+          data={[]}
+          ListEmptyComponent={() => <empty />}
+          ListFooterComponent={() => <footer />}
+          ListHeaderComponent={() => <header />}
+          getItem={(data, index) => data[index]}
+          getItemCount={data => data.length}
+          renderItem={({item}) => <item value={item.key} />}
+        />,
+      );
+    });
     expect(component).toMatchSnapshot();
   });
 
-  it('renders list with empty component', () => {
-    const component = create(
-      <VirtualizedList
-        data={[{key: 'hello'}]}
-        ListEmptyComponent={() => <empty />}
-        getItem={(data, index) => data[index]}
-        getItemCount={data => data.length}
-        renderItem={({item}) => <item value={item.key} />}
-      />,
-    );
+  it('renders list with empty component', async () => {
+    let component;
+    await act(() => {
+      component = create(
+        <VirtualizedList
+          data={[{key: 'hello'}]}
+          ListEmptyComponent={() => <empty />}
+          getItem={(data, index) => data[index]}
+          getItemCount={data => data.length}
+          renderItem={({item}) => <item value={item.key} />}
+        />,
+      );
+    });
     expect(component).toMatchSnapshot();
   });
 
-  it('renders all the bells and whistles', () => {
-    const component = create(
-      <VirtualizedList
-        ItemSeparatorComponent={() => <separator />}
-        ListEmptyComponent={() => <empty />}
-        ListFooterComponent={() => <footer />}
-        ListHeaderComponent={() => <header />}
-        data={new Array(5).fill().map((_, ii) => ({id: String(ii)}))}
-        getItem={(data, index) => data[index]}
-        getItemCount={data => data.length}
-        getItemLayout={({index}) => ({length: 50, offset: index * 50})}
-        inverted={true}
-        keyExtractor={(item, index) => item.id}
-        onRefresh={jest.fn()}
-        refreshing={false}
-        renderItem={({item}) => <item value={item.id} />}
-      />,
-    );
+  it('renders all the bells and whistles', async () => {
+    let component;
+    await act(() => {
+      component = create(
+        <VirtualizedList
+          ItemSeparatorComponent={() => <separator />}
+          ListEmptyComponent={() => <empty />}
+          ListFooterComponent={() => <footer />}
+          ListHeaderComponent={() => <header />}
+          data={new Array(5).fill().map((_, ii) => ({id: String(ii)}))}
+          getItem={(data, index) => data[index]}
+          getItemCount={data => data.length}
+          getItemLayout={({index}) => ({length: 50, offset: index * 50})}
+          inverted={true}
+          keyExtractor={(item, index) => item.id}
+          onRefresh={jest.fn()}
+          refreshing={false}
+          renderItem={({item}) => <item value={item.id} />}
+        />,
+      );
+    });
     expect(component).toMatchSnapshot();
   });
 
-  it('test getItem functionality where data is not an Array', () => {
-    const component = create(
-      <VirtualizedList
-        data={new Map([['id_0', {key: 'item_0'}]])}
-        getItem={(data, index) => data.get('id_' + index)}
-        getItemCount={(data: Map) => data.size}
-        renderItem={({item}) => <item value={item.key} />}
-      />,
-    );
+  it('test getItem functionality where data is not an Array', async () => {
+    let component;
+    await act(() => {
+      component = create(
+        <VirtualizedList
+          data={new Map([['id_0', {key: 'item_0'}]])}
+          getItem={(data, index) => data.get('id_' + index)}
+          getItemCount={(data: Map) => data.size}
+          renderItem={({item}) => <item value={item.key} />}
+        />,
+      );
+    });
     expect(component).toMatchSnapshot();
   });
 
-  it('handles separators correctly', () => {
+  it('handles separators correctly', async () => {
     const infos = [];
-    const component = create(
-      <VirtualizedList
-        ItemSeparatorComponent={props => <separator {...props} />}
-        data={[{key: 'i0'}, {key: 'i1'}, {key: 'i2'}]}
-        renderItem={info => {
-          infos.push(info);
-          return <item title={info.item.key} />;
-        }}
-        getItem={(data, index) => data[index]}
-        getItemCount={data => data.length}
-      />,
-    );
+    let component;
+    await act(() => {
+      component = create(
+        <VirtualizedList
+          ItemSeparatorComponent={props => <separator {...props} />}
+          data={[{key: 'i0'}, {key: 'i1'}, {key: 'i2'}]}
+          renderItem={info => {
+            infos.push(info);
+            return <item title={info.item.key} />;
+          }}
+          getItem={(data, index) => data[index]}
+          getItemCount={data => data.length}
+        />,
+      );
+    });
     expect(component).toMatchSnapshot();
-    infos[1].separators.highlight();
+    await act(() => {
+      infos[1].separators.highlight();
+    });
     expect(component).toMatchSnapshot();
-    infos[2].separators.updateProps('leading', {press: true});
+    await act(() => {
+      infos[2].separators.updateProps('leading', {press: true});
+    });
     expect(component).toMatchSnapshot();
-    infos[1].separators.unhighlight();
+    await act(() => {
+      infos[1].separators.unhighlight();
+    });
   });
 
-  it('handles nested lists', () => {
-    const component = create(
-      <VirtualizedList
-        data={[{key: 'outer0'}, {key: 'outer1'}]}
-        renderItem={outerInfo => (
-          <VirtualizedList
-            data={[
-              {key: outerInfo.item.key + ':inner0'},
-              {key: outerInfo.item.key + ':inner1'},
-            ]}
-            horizontal={outerInfo.item.key === 'outer1'}
-            renderItem={innerInfo => {
-              return <item title={innerInfo.item.key} />;
-            }}
-            getItem={(data, index) => data[index]}
-            getItemCount={data => data.length}
-          />
-        )}
-        getItem={(data, index) => data[index]}
-        getItemCount={data => data.length}
-      />,
-    );
+  it('handles nested lists', async () => {
+    let component;
+    await act(() => {
+      component = create(
+        <VirtualizedList
+          data={[{key: 'outer0'}, {key: 'outer1'}]}
+          renderItem={outerInfo => (
+            <VirtualizedList
+              data={[
+                {key: outerInfo.item.key + ':inner0'},
+                {key: outerInfo.item.key + ':inner1'},
+              ]}
+              horizontal={outerInfo.item.key === 'outer1'}
+              renderItem={innerInfo => {
+                return <item title={innerInfo.item.key} />;
+              }}
+              getItem={(data, index) => data[index]}
+              getItemCount={data => data.length}
+            />
+          )}
+          getItem={(data, index) => data[index]}
+          getItemCount={data => data.length}
+        />,
+      );
+    });
     expect(component).toMatchSnapshot();
   });
 
-  it('handles nested list in ListEmptyComponent', () => {
+  it('handles nested list in ListEmptyComponent', async () => {
     const ListEmptyComponent = (
       <VirtualizedList {...baseItemProps(generateItems(1))} />
     );
 
     let component;
 
-    act(() => {
+    await act(() => {
       component = create(
         <VirtualizedList
           {...baseItemProps([])}
@@ -281,7 +327,7 @@ describe('VirtualizedList', () => {
       );
     });
 
-    act(() => {
+    await act(() => {
       component.update(
         <VirtualizedList
           {...baseItemProps(generateItems(5))}
@@ -291,7 +337,7 @@ describe('VirtualizedList', () => {
     });
   });
 
-  it('returns the viewableItems correctly in the onViewableItemsChanged callback after changing the data', () => {
+  it('returns the viewableItems correctly in the onViewableItemsChanged callback after changing the data', async () => {
     const ITEM_HEIGHT = 800;
     let data = [{key: 'i1'}, {key: 'i2'}, {key: 'i3'}];
     const nativeEvent = {
@@ -315,7 +361,10 @@ describe('VirtualizedList', () => {
       onViewableItemsChanged,
     };
 
-    const component = create(<VirtualizedList {...props} />);
+    let component;
+    await act(() => {
+      component = create(<VirtualizedList {...props} />);
+    });
 
     const instance = component.getInstance();
 
@@ -332,14 +381,19 @@ describe('VirtualizedList', () => {
       }),
     );
     data = [{key: 'i4'}, ...data];
-    component.update(<VirtualizedList {...props} data={data} />);
 
-    instance._onScroll({
-      timeStamp: 2000,
-      nativeEvent: {
-        ...nativeEvent,
-        contentOffset: {y: 100, x: 0},
-      },
+    await act(() => {
+      component.update(<VirtualizedList {...props} data={data} />);
+    });
+
+    await act(() => {
+      instance._onScroll({
+        timeStamp: 2000,
+        nativeEvent: {
+          ...nativeEvent,
+          contentOffset: {y: 100, x: 0},
+        },
+      });
     });
 
     expect(onViewableItemsChanged).toHaveBeenCalledTimes(2);
@@ -350,18 +404,20 @@ describe('VirtualizedList', () => {
     );
   });
 
-  it('getScrollRef for case where it returns a ScrollView', () => {
+  it('getScrollRef for case where it returns a ScrollView', async () => {
     const listRef = React.createRef(null);
 
-    create(
-      <VirtualizedList
-        data={[{key: 'i1'}, {key: 'i2'}, {key: 'i3'}]}
-        renderItem={({item}) => <item value={item.key} />}
-        getItem={(data, index) => data[index]}
-        getItemCount={data => data.length}
-        ref={listRef}
-      />,
-    );
+    await act(() => {
+      create(
+        <VirtualizedList
+          data={[{key: 'i1'}, {key: 'i2'}, {key: 'i3'}]}
+          renderItem={({item}) => <item value={item.key} />}
+          getItem={(data, index) => data[index]}
+          getItemCount={data => data.length}
+          ref={listRef}
+        />,
+      );
+    });
 
     const scrollRef = listRef.current.getScrollRef();
 
@@ -370,30 +426,32 @@ describe('VirtualizedList', () => {
     expect(scrollRef.scrollTo).toBeInstanceOf(jest.fn().constructor);
   });
 
-  it('getScrollRef for case where it returns a View', () => {
+  it('getScrollRef for case where it returns a View', async () => {
     const listRef = React.createRef(null);
 
-    create(
-      <VirtualizedList
-        data={[{key: 'outer0'}, {key: 'outer1'}]}
-        renderItem={outerInfo => (
-          <VirtualizedList
-            data={[
-              {key: outerInfo.item.key + ':inner0'},
-              {key: outerInfo.item.key + ':inner1'},
-            ]}
-            renderItem={innerInfo => {
-              return <item title={innerInfo.item.key} />;
-            }}
-            getItem={(data, index) => data[index]}
-            getItemCount={data => data.length}
-            ref={listRef}
-          />
-        )}
-        getItem={(data, index) => data[index]}
-        getItemCount={data => data.length}
-      />,
-    );
+    await act(() => {
+      create(
+        <VirtualizedList
+          data={[{key: 'outer0'}, {key: 'outer1'}]}
+          renderItem={outerInfo => (
+            <VirtualizedList
+              data={[
+                {key: outerInfo.item.key + ':inner0'},
+                {key: outerInfo.item.key + ':inner1'},
+              ]}
+              renderItem={innerInfo => {
+                return <item title={innerInfo.item.key} />;
+              }}
+              getItem={(data, index) => data[index]}
+              getItemCount={data => data.length}
+              ref={listRef}
+            />
+          )}
+          getItem={(data, index) => data[index]}
+          getItemCount={data => data.length}
+        />,
+      );
+    });
     const scrollRef = listRef.current.getScrollRef();
 
     // This is checking if the ref acts like a host component. If we had an
@@ -403,7 +461,83 @@ describe('VirtualizedList', () => {
     expect(scrollRef.measureInWindow).toBeInstanceOf(jest.fn().constructor);
   });
 
-  it('calls onStartReached when near the start', () => {
+  // TODO: Revisit this test case after upgrading to React 19.
+  skipTestSilenceLinter(
+    'calls onStartReached when near the start',
+    async () => {
+      const ITEM_HEIGHT = 40;
+      const layout = {width: 300, height: 600};
+      let data = Array(40)
+        .fill()
+        .map((_, index) => ({key: `key-${index}`}));
+      const onStartReached = jest.fn();
+      const props = {
+        data,
+        initialNumToRender: 10,
+        onStartReachedThreshold: 1,
+        windowSize: 10,
+        renderItem: ({item}) => <item value={item.key} />,
+        getItem: (items, index) => items[index],
+        getItemCount: items => items.length,
+        getItemLayout: (items, index) => ({
+          length: ITEM_HEIGHT,
+          offset: ITEM_HEIGHT * index,
+          index,
+        }),
+        onStartReached,
+        initialScrollIndex: data.length - 1,
+      };
+      let component;
+      await act(() => {
+        component = create(<VirtualizedList {...props} />);
+      });
+
+      const instance = component.getInstance();
+
+      await act(async () => {
+        instance._onLayout({nativeEvent: {layout, zoomScale: 1}});
+        instance._onContentSizeChange(300, data.length * ITEM_HEIGHT);
+
+        // Make sure onStartReached is not called initially when initialScrollIndex is set.
+        await jest.runAllTimersAsync();
+      });
+      expect(onStartReached).not.toHaveBeenCalled();
+
+      await act(async () => {
+        // Scroll for a small amount and make sure onStartReached is not called.
+        instance._onScroll({
+          timeStamp: 1000,
+          nativeEvent: {
+            contentOffset: {y: (data.length - 2) * ITEM_HEIGHT, x: 0},
+            layoutMeasurement: layout,
+            contentSize: {...layout, height: data.length * ITEM_HEIGHT},
+            zoomScale: 1,
+            contentInset: {right: 0, top: 0, left: 0, bottom: 0},
+          },
+        });
+        await jest.runAllTimersAsync();
+      });
+      expect(onStartReached).not.toHaveBeenCalled();
+
+      await act(async () => {
+        // Scroll to start and make sure onStartReached is called.
+        instance._onScroll({
+          timeStamp: 1000,
+          nativeEvent: {
+            contentOffset: {y: 0, x: 0},
+            layoutMeasurement: layout,
+            contentSize: {...layout, height: data.length * ITEM_HEIGHT},
+            zoomScale: 1,
+            contentInset: {right: 0, top: 0, left: 0, bottom: 0},
+          },
+        });
+        await jest.runAllTimersAsync();
+      });
+      expect(onStartReached).toHaveBeenCalled();
+    },
+  );
+
+  it('calls onStartReached initially', async () => {
     const ITEM_HEIGHT = 40;
     const layout = {width: 300, height: 600};
     let data = Array(40)
@@ -424,84 +558,26 @@ describe('VirtualizedList', () => {
         index,
       }),
       onStartReached,
-      initialScrollIndex: data.length - 1,
     };
 
-    const component = create(<VirtualizedList {...props} />);
+    let component;
+    await act(() => {
+      component = create(<VirtualizedList {...props} />);
+    });
 
     const instance = component.getInstance();
 
-    instance._onLayout({nativeEvent: {layout, zoomScale: 1}});
-    instance._onContentSizeChange(300, data.length * ITEM_HEIGHT);
+    await act(() => {
+      instance._onLayout({nativeEvent: {layout, zoomScale: 1}});
+      instance._onContentSizeChange(300, data.length * ITEM_HEIGHT);
 
-    // Make sure onStartReached is not called initially when initialScrollIndex is set.
-    performAllBatches();
-    expect(onStartReached).not.toHaveBeenCalled();
-
-    // Scroll for a small amount and make sure onStartReached is not called.
-    instance._onScroll({
-      timeStamp: 1000,
-      nativeEvent: {
-        contentOffset: {y: (data.length - 2) * ITEM_HEIGHT, x: 0},
-        layoutMeasurement: layout,
-        contentSize: {...layout, height: data.length * ITEM_HEIGHT},
-        zoomScale: 1,
-        contentInset: {right: 0, top: 0, left: 0, bottom: 0},
-      },
+      performAllBatches();
     });
-    performAllBatches();
-    expect(onStartReached).not.toHaveBeenCalled();
 
-    // Scroll to start and make sure onStartReached is called.
-    instance._onScroll({
-      timeStamp: 1000,
-      nativeEvent: {
-        contentOffset: {y: 0, x: 0},
-        layoutMeasurement: layout,
-        contentSize: {...layout, height: data.length * ITEM_HEIGHT},
-        zoomScale: 1,
-        contentInset: {right: 0, top: 0, left: 0, bottom: 0},
-      },
-    });
-    performAllBatches();
     expect(onStartReached).toHaveBeenCalled();
   });
 
-  it('calls onStartReached initially', () => {
-    const ITEM_HEIGHT = 40;
-    const layout = {width: 300, height: 600};
-    let data = Array(40)
-      .fill()
-      .map((_, index) => ({key: `key-${index}`}));
-    const onStartReached = jest.fn();
-    const props = {
-      data,
-      initialNumToRender: 10,
-      onStartReachedThreshold: 1,
-      windowSize: 10,
-      renderItem: ({item}) => <item value={item.key} />,
-      getItem: (items, index) => items[index],
-      getItemCount: items => items.length,
-      getItemLayout: (items, index) => ({
-        length: ITEM_HEIGHT,
-        offset: ITEM_HEIGHT * index,
-        index,
-      }),
-      onStartReached,
-    };
-
-    const component = create(<VirtualizedList {...props} />);
-
-    const instance = component.getInstance();
-
-    instance._onLayout({nativeEvent: {layout, zoomScale: 1}});
-    instance._onContentSizeChange(300, data.length * ITEM_HEIGHT);
-
-    performAllBatches();
-    expect(onStartReached).toHaveBeenCalled();
-  });
-
-  it('calls onEndReached when near the end', () => {
+  it('calls onEndReached when near the end', async () => {
     const ITEM_HEIGHT = 40;
     const layout = {width: 300, height: 600};
     let data = Array(40)
@@ -524,47 +600,55 @@ describe('VirtualizedList', () => {
       onEndReached,
     };
 
-    const component = create(<VirtualizedList {...props} />);
-
+    let component;
+    await act(() => {
+      component = create(<VirtualizedList {...props} />);
+    });
     const instance = component.getInstance();
 
-    instance._onLayout({nativeEvent: {layout, zoomScale: 1}});
-    instance._onContentSizeChange(300, data.length * ITEM_HEIGHT);
+    await act(() => {
+      instance._onLayout({nativeEvent: {layout, zoomScale: 1}});
+      instance._onContentSizeChange(300, data.length * ITEM_HEIGHT);
 
-    // Make sure onEndReached is not called initially.
-    performAllBatches();
+      // Make sure onEndReached is not called initially.
+      performAllBatches();
+    });
     expect(onEndReached).not.toHaveBeenCalled();
 
-    // Scroll for a small amount and make sure onEndReached is not called.
-    instance._onScroll({
-      timeStamp: 1000,
-      nativeEvent: {
-        contentOffset: {y: ITEM_HEIGHT, x: 0},
-        layoutMeasurement: layout,
-        contentSize: {...layout, height: data.length * ITEM_HEIGHT},
-        zoomScale: 1,
-        contentInset: {right: 0, top: 0, left: 0, bottom: 0},
-      },
+    await act(() => {
+      // Scroll for a small amount and make sure onEndReached is not called.
+      instance._onScroll({
+        timeStamp: 1000,
+        nativeEvent: {
+          contentOffset: {y: ITEM_HEIGHT, x: 0},
+          layoutMeasurement: layout,
+          contentSize: {...layout, height: data.length * ITEM_HEIGHT},
+          zoomScale: 1,
+          contentInset: {right: 0, top: 0, left: 0, bottom: 0},
+        },
+      });
+      performAllBatches();
     });
-    performAllBatches();
     expect(onEndReached).not.toHaveBeenCalled();
 
-    // Scroll to end and make sure onEndReached is called.
-    instance._onScroll({
-      timeStamp: 1000,
-      nativeEvent: {
-        contentOffset: {y: data.length * ITEM_HEIGHT, x: 0},
-        layoutMeasurement: layout,
-        contentSize: {...layout, height: data.length * ITEM_HEIGHT},
-        zoomScale: 1,
-        contentInset: {right: 0, top: 0, left: 0, bottom: 0},
-      },
+    await act(() => {
+      // Scroll to end and make sure onEndReached is called.
+      instance._onScroll({
+        timeStamp: 1000,
+        nativeEvent: {
+          contentOffset: {y: data.length * ITEM_HEIGHT, x: 0},
+          layoutMeasurement: layout,
+          contentSize: {...layout, height: data.length * ITEM_HEIGHT},
+          zoomScale: 1,
+          contentInset: {right: 0, top: 0, left: 0, bottom: 0},
+        },
+      });
+      performAllBatches();
     });
-    performAllBatches();
     expect(onEndReached).toHaveBeenCalled();
   });
 
-  it('does not call onEndReached when onContentSizeChange happens after onLayout', () => {
+  it('does not call onEndReached when onContentSizeChange happens after onLayout', async () => {
     const ITEM_HEIGHT = 40;
     const layout = {width: 300, height: 600};
     let data = Array(20)
@@ -587,46 +671,57 @@ describe('VirtualizedList', () => {
       onEndReached,
     };
 
-    const component = create(<VirtualizedList {...props} />);
+    let component;
+    await act(() => {
+      component = create(<VirtualizedList {...props} />);
+    });
 
     const instance = component.getInstance();
 
-    instance._onLayout({nativeEvent: {layout, zoomScale: 1}});
-
+    await act(() => {
+      instance._onLayout({nativeEvent: {layout, zoomScale: 1}});
+    });
     const initialContentHeight = props.initialNumToRender * ITEM_HEIGHT;
 
-    // We want to test the unusual case of onContentSizeChange firing after
-    // onLayout, which can cause https://github.com/facebook/react-native/issues/16067
-    instance._onContentSizeChange(300, initialContentHeight);
-    instance._onContentSizeChange(300, data.length * ITEM_HEIGHT);
-    performAllBatches();
+    await act(() => {
+      // We want to test the unusual case of onContentSizeChange firing after
+      // onLayout, which can cause https://github.com/facebook/react-native/issues/16067
+      instance._onContentSizeChange(300, initialContentHeight);
+      instance._onContentSizeChange(300, data.length * ITEM_HEIGHT);
+      performAllBatches();
+    });
 
     expect(onEndReached).not.toHaveBeenCalled();
 
-    instance._onScroll({
-      timeStamp: 1000,
-      nativeEvent: {
-        contentOffset: {y: initialContentHeight, x: 0},
-        layoutMeasurement: layout,
-        contentSize: {...layout, height: data.length * ITEM_HEIGHT},
-        zoomScale: 1,
-        contentInset: {right: 0, top: 0, left: 0, bottom: 0},
-      },
+    await act(() => {
+      instance._onScroll({
+        timeStamp: 1000,
+        nativeEvent: {
+          contentOffset: {y: initialContentHeight, x: 0},
+          layoutMeasurement: layout,
+          contentSize: {...layout, height: data.length * ITEM_HEIGHT},
+          zoomScale: 1,
+          contentInset: {right: 0, top: 0, left: 0, bottom: 0},
+        },
+      });
+      performAllBatches();
     });
-    performAllBatches();
 
     expect(onEndReached).toHaveBeenCalled();
   });
 
-  it('throws if using scrollToIndex with index less than 0', () => {
-    const component = create(
-      <VirtualizedList
-        data={[{key: 'i1'}, {key: 'i2'}, {key: 'i3'}]}
-        renderItem={({item}) => <item value={item.key} />}
-        getItem={(data, index) => data[index]}
-        getItemCount={data => data.length}
-      />,
-    );
+  it('throws if using scrollToIndex with index less than 0', async () => {
+    let component;
+    await act(() => {
+      component = create(
+        <VirtualizedList
+          data={[{key: 'i1'}, {key: 'i2'}, {key: 'i3'}]}
+          renderItem={({item}) => <item value={item.key} />}
+          getItem={(data, index) => data[index]}
+          getItemCount={data => data.length}
+        />,
+      );
+    });
     const instance = component.getInstance();
 
     expect(() => instance.scrollToIndex({index: -1})).toThrow(
@@ -634,15 +729,18 @@ describe('VirtualizedList', () => {
     );
   });
 
-  it('throws if using scrollToIndex when item length is less than 1', () => {
-    const component = create(
-      <VirtualizedList
-        data={[]}
-        renderItem={({item}) => <item value={item.key} />}
-        getItem={(data, index) => data[index]}
-        getItemCount={data => data.length}
-      />,
-    );
+  it('throws if using scrollToIndex when item length is less than 1', async () => {
+    let component;
+    await act(() => {
+      component = create(
+        <VirtualizedList
+          data={[]}
+          renderItem={({item}) => <item value={item.key} />}
+          getItem={(data, index) => data[index]}
+          getItemCount={data => data.length}
+        />,
+      );
+    });
     const instance = component.getInstance();
 
     expect(() => instance.scrollToIndex({index: 1})).toThrow(
@@ -650,15 +748,18 @@ describe('VirtualizedList', () => {
     );
   });
 
-  it('throws if using scrollToIndex when requested index is bigger than or equal to item length', () => {
-    const component = create(
-      <VirtualizedList
-        data={[{key: 'i1'}, {key: 'i2'}, {key: 'i3'}]}
-        renderItem={({item}) => <item value={item.key} />}
-        getItem={(data, index) => data[index]}
-        getItemCount={data => data.length}
-      />,
-    );
+  it('throws if using scrollToIndex when requested index is bigger than or equal to item length', async () => {
+    let component;
+    await act(() => {
+      component = create(
+        <VirtualizedList
+          data={[{key: 'i1'}, {key: 'i2'}, {key: 'i3'}]}
+          renderItem={({item}) => <item value={item.key} />}
+          getItem={(data, index) => data[index]}
+          getItemCount={data => data.length}
+        />,
+      );
+    });
     const instance = component.getInstance();
 
     expect(() => instance.scrollToIndex({index: 3})).toThrow(
@@ -666,68 +767,74 @@ describe('VirtualizedList', () => {
     );
   });
 
-  it('forwards correct stickyHeaderIndices when all in initial render window', () => {
+  it('forwards correct stickyHeaderIndices when all in initial render window', async () => {
     const items = generateItemsStickyEveryN(10, 3);
     const ITEM_HEIGHT = 10;
 
-    const component = create(
-      <VirtualizedList
-        initialNumToRender={10}
-        {...baseItemProps(items)}
-        {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
-      />,
-    );
-
+    let component;
+    await act(() => {
+      component = create(
+        <VirtualizedList
+          initialNumToRender={10}
+          {...baseItemProps(items)}
+          {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+        />,
+      );
+    });
     // The initial render is specified to be the length of items provided.
     // Expect that all sticky items (1 every 3) are passed to the underlying
     // scrollview.
     expect(component).toMatchSnapshot();
   });
 
-  it('forwards correct stickyHeaderIndices when ListHeaderComponent present', () => {
+  it('forwards correct stickyHeaderIndices when ListHeaderComponent present', async () => {
     const items = generateItemsStickyEveryN(10, 3);
     const ITEM_HEIGHT = 10;
 
-    const component = create(
-      <VirtualizedList
-        ListHeaderComponent={() => React.createElement('Header')}
-        initialNumToRender={10}
-        {...baseItemProps(items)}
-        {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
-      />,
-    );
-
+    let component;
+    await act(() => {
+      component = create(
+        <VirtualizedList
+          ListHeaderComponent={() => React.createElement('Header')}
+          initialNumToRender={10}
+          {...baseItemProps(items)}
+          {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+        />,
+      );
+    });
     // The initial render is specified to be the length of items provided.
     // Expect that all sticky items (1 every 3) are passed to the underlying
     // scrollview, indices offset by 1 to account for the header component.
     expect(component).toMatchSnapshot();
   });
 
-  it('forwards correct stickyHeaderIndices when partially in initial render window', () => {
+  it('forwards correct stickyHeaderIndices when partially in initial render window', async () => {
     const items = generateItemsStickyEveryN(10, 3);
 
     const ITEM_HEIGHT = 10;
 
-    const component = create(
-      <VirtualizedList
-        initialNumToRender={5}
-        {...baseItemProps(items)}
-        {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
-      />,
-    );
-
+    let component;
+    await act(() => {
+      component = create(
+        <VirtualizedList
+          initialNumToRender={5}
+          {...baseItemProps(items)}
+          {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+        />,
+      );
+    });
     // The initial render is specified to be half the length of items provided.
     // Expect that all sticky items of index < 5 are passed to the underlying
     // scrollview.
     expect(component).toMatchSnapshot();
   });
 
-  it('renders sticky headers in viewport on batched render', () => {
+  it('renders sticky headers in viewport on batched render', async () => {
     const items = generateItemsStickyEveryN(10, 3);
     const ITEM_HEIGHT = 10;
 
     let component;
-    act(() => {
+    await act(() => {
       component = create(
         <VirtualizedList
           initialNumToRender={1}
@@ -738,7 +845,7 @@ describe('VirtualizedList', () => {
       );
     });
 
-    act(() => {
+    await act(() => {
       simulateLayout(component, {
         viewport: {width: 10, height: 50},
         content: {width: 10, height: 100},
@@ -752,12 +859,12 @@ describe('VirtualizedList', () => {
     expect(component).toMatchSnapshot();
   });
 
-  it('keeps sticky headers above viewport visualized', () => {
+  it('keeps sticky headers above viewport visualized', async () => {
     const items = generateItemsStickyEveryN(20, 3);
     const ITEM_HEIGHT = 10;
 
     let component;
-    act(() => {
+    await act(() => {
       component = create(
         <VirtualizedList
           initialNumToRender={1}
@@ -768,7 +875,7 @@ describe('VirtualizedList', () => {
       );
     });
 
-    act(() => {
+    await act(() => {
       simulateLayout(component, {
         viewport: {width: 10, height: 50},
         content: {width: 10, height: 200},
@@ -776,7 +883,7 @@ describe('VirtualizedList', () => {
       performAllBatches();
     });
 
-    act(() => {
+    await act(() => {
       simulateScroll(component, {x: 0, y: 150});
       performAllBatches();
     });
@@ -791,12 +898,12 @@ describe('VirtualizedList', () => {
   });
 });
 
-it('unmounts sticky headers moved below viewport', () => {
+it('unmounts sticky headers moved below viewport', async () => {
   const items = generateItemsStickyEveryN(20, 3);
   const ITEM_HEIGHT = 10;
 
   let component;
-  act(() => {
+  await act(() => {
     component = create(
       <VirtualizedList
         initialNumToRender={1}
@@ -807,7 +914,7 @@ it('unmounts sticky headers moved below viewport', () => {
     );
   });
 
-  act(() => {
+  await act(() => {
     simulateLayout(component, {
       viewport: {width: 10, height: 50},
       content: {width: 10, height: 200},
@@ -815,12 +922,12 @@ it('unmounts sticky headers moved below viewport', () => {
     performAllBatches();
   });
 
-  act(() => {
+  await act(() => {
     simulateScroll(component, {x: 0, y: 150});
     performAllBatches();
   });
 
-  act(() => {
+  await act(() => {
     simulateScroll(component, {x: 0, y: 0});
     performAllBatches();
   });
@@ -831,24 +938,27 @@ it('unmounts sticky headers moved below viewport', () => {
   expect(component).toMatchSnapshot();
 });
 
-it('gracefully handles negative initialScrollIndex', () => {
+it('gracefully handles negative initialScrollIndex', async () => {
   const items = generateItems(10);
   const ITEM_HEIGHT = 10;
 
   const mockWarn = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
-  const component = create(
-    <VirtualizedList
-      initialScrollIndex={-1}
-      initialNumToRender={4}
-      {...baseItemProps(items)}
-      {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
-    />,
-  );
+  let component;
+  await act(() => {
+    component = create(
+      <VirtualizedList
+        initialScrollIndex={-1}
+        initialNumToRender={4}
+        {...baseItemProps(items)}
+        {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+      />,
+    );
+  });
 
   expect(mockWarn).toHaveBeenCalledTimes(1);
 
-  act(() => {
+  await act(() => {
     simulateLayout(component, {
       viewport: {width: 10, height: 50},
       content: {width: 10, height: 100},
@@ -861,7 +971,7 @@ it('gracefully handles negative initialScrollIndex', () => {
   mockWarn.mockRestore();
 });
 
-it('gracefully handles too large initialScrollIndex', () => {
+it('gracefully handles too large initialScrollIndex', async () => {
   const items = generateItems(10);
   const ITEM_HEIGHT = 10;
 
@@ -869,20 +979,23 @@ it('gracefully handles too large initialScrollIndex', () => {
 
   const mockWarn = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
-  const component = create(
-    <VirtualizedList
-      ref={listRef}
-      initialScrollIndex={15}
-      initialNumToRender={4}
-      {...baseItemProps(items)}
-      {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
-    />,
-  );
+  let component;
+  await act(() => {
+    component = create(
+      <VirtualizedList
+        ref={listRef}
+        initialScrollIndex={15}
+        initialNumToRender={4}
+        {...baseItemProps(items)}
+        {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+      />,
+    );
+  });
 
   expect(mockWarn).toHaveBeenCalledTimes(1);
   listRef.current.scrollToEnd = jest.fn();
 
-  act(() => {
+  await act(() => {
     simulateLayout(component, {
       viewport: {width: 10, height: 50},
       content: {width: 10, height: 100},
@@ -898,42 +1011,48 @@ it('gracefully handles too large initialScrollIndex', () => {
   });
 });
 
-it('renders offset cells in initial render when initialScrollIndex set', () => {
+it('renders offset cells in initial render when initialScrollIndex set', async () => {
   const items = generateItems(10);
   const ITEM_HEIGHT = 10;
 
-  const component = create(
-    <VirtualizedList
-      initialScrollIndex={4}
-      initialNumToRender={4}
-      {...baseItemProps(items)}
-      {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
-    />,
-  );
+  let component;
+  await act(() => {
+    component = create(
+      <VirtualizedList
+        initialScrollIndex={4}
+        initialNumToRender={4}
+        {...baseItemProps(items)}
+        {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+      />,
+    );
+  });
 
   // Check that the first render respects initialScrollIndex
   expect(component).toMatchSnapshot();
 });
 
-it('scrolls after content sizing with integer initialScrollIndex', () => {
+it('scrolls after content sizing with integer initialScrollIndex', async () => {
   const items = generateItems(10);
   const ITEM_HEIGHT = 10;
 
   const listRef = React.createRef(null);
 
-  const component = create(
-    <VirtualizedList
-      initialScrollIndex={1}
-      initialNumToRender={4}
-      ref={listRef}
-      {...baseItemProps(items)}
-      {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
-    />,
-  );
+  let component;
+  await act(() => {
+    component = create(
+      <VirtualizedList
+        initialScrollIndex={1}
+        initialNumToRender={4}
+        ref={listRef}
+        {...baseItemProps(items)}
+        {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+      />,
+    );
+  });
 
   const {scrollTo} = listRef.current.getScrollRef();
 
-  act(() => {
+  await act(() => {
     simulateLayout(component, {
       viewport: {width: 10, height: 50},
       content: {width: 10, height: 200},
@@ -944,25 +1063,28 @@ it('scrolls after content sizing with integer initialScrollIndex', () => {
   expect(scrollTo).toHaveBeenLastCalledWith({y: 10, animated: false});
 });
 
-it('scrolls after content sizing with near-zero initialScrollIndex', () => {
+it('scrolls after content sizing with near-zero initialScrollIndex', async () => {
   const items = generateItems(10);
   const ITEM_HEIGHT = 10;
 
   const listRef = React.createRef(null);
 
-  const component = create(
-    <VirtualizedList
-      initialScrollIndex={0.0001}
-      initialNumToRender={4}
-      ref={listRef}
-      {...baseItemProps(items)}
-      {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
-    />,
-  );
+  let component;
+  await act(() => {
+    component = create(
+      <VirtualizedList
+        initialScrollIndex={0.0001}
+        initialNumToRender={4}
+        ref={listRef}
+        {...baseItemProps(items)}
+        {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+      />,
+    );
+  });
 
   const {scrollTo} = listRef.current.getScrollRef();
 
-  act(() => {
+  await act(() => {
     simulateLayout(component, {
       viewport: {width: 10, height: 50},
       content: {width: 10, height: 200},
@@ -973,25 +1095,28 @@ it('scrolls after content sizing with near-zero initialScrollIndex', () => {
   expect(scrollTo).toHaveBeenLastCalledWith({y: 0.001, animated: false});
 });
 
-it('scrolls after content sizing with near-end initialScrollIndex', () => {
+it('scrolls after content sizing with near-end initialScrollIndex', async () => {
   const items = generateItems(10);
   const ITEM_HEIGHT = 10;
 
   const listRef = React.createRef(null);
 
-  const component = create(
-    <VirtualizedList
-      initialScrollIndex={9.9999}
-      initialNumToRender={4}
-      ref={listRef}
-      {...baseItemProps(items)}
-      {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
-    />,
-  );
+  let component;
+  await act(() => {
+    component = create(
+      <VirtualizedList
+        initialScrollIndex={9.9999}
+        initialNumToRender={4}
+        ref={listRef}
+        {...baseItemProps(items)}
+        {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+      />,
+    );
+  });
 
   const {scrollTo} = listRef.current.getScrollRef();
 
-  act(() => {
+  await act(() => {
     simulateLayout(component, {
       viewport: {width: 10, height: 50},
       content: {width: 10, height: 200},
@@ -1002,7 +1127,7 @@ it('scrolls after content sizing with near-end initialScrollIndex', () => {
   expect(scrollTo).toHaveBeenLastCalledWith({y: 99.999, animated: false});
 });
 
-it('scrolls after content sizing with fractional initialScrollIndex (getItemLayout())', () => {
+it('scrolls after content sizing with fractional initialScrollIndex (getItemLayout())', async () => {
   const items = generateItems(10);
   const itemHeights = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
   const getItemLayout = (_, index) => ({
@@ -1013,19 +1138,22 @@ it('scrolls after content sizing with fractional initialScrollIndex (getItemLayo
 
   const listRef = React.createRef(null);
 
-  const component = create(
-    <VirtualizedList
-      initialScrollIndex={1.5}
-      initialNumToRender={4}
-      ref={listRef}
-      getItemLayout={getItemLayout}
-      {...baseItemProps(items)}
-    />,
-  );
+  let component;
+  await act(() => {
+    component = create(
+      <VirtualizedList
+        initialScrollIndex={1.5}
+        initialNumToRender={4}
+        ref={listRef}
+        getItemLayout={getItemLayout}
+        {...baseItemProps(items)}
+      />,
+    );
+  });
 
   const {scrollTo} = listRef.current.getScrollRef();
 
-  act(() => {
+  await act(() => {
     simulateLayout(component, {
       viewport: {width: 10, height: 50},
       content: {width: 10, height: 200},
@@ -1036,22 +1164,25 @@ it('scrolls after content sizing with fractional initialScrollIndex (getItemLayo
   expect(scrollTo).toHaveBeenLastCalledWith({y: 2.0, animated: false});
 });
 
-it('scrolls after content sizing with fractional initialScrollIndex (cached layout)', () => {
+it('scrolls after content sizing with fractional initialScrollIndex (cached layout)', async () => {
   const items = generateItems(10);
   const listRef = React.createRef(null);
 
-  const component = create(
-    <VirtualizedList
-      initialScrollIndex={1.5}
-      initialNumToRender={4}
-      ref={listRef}
-      {...baseItemProps(items)}
-    />,
-  );
+  let component;
+  await act(() => {
+    component = create(
+      <VirtualizedList
+        initialScrollIndex={1.5}
+        initialNumToRender={4}
+        ref={listRef}
+        {...baseItemProps(items)}
+      />,
+    );
+  });
 
   const {scrollTo} = listRef.current.getScrollRef();
 
-  act(() => {
+  await act(() => {
     let y = 0;
     for (let i = 0; i < 10; ++i) {
       const height = i + 1;
@@ -1074,22 +1205,25 @@ it('scrolls after content sizing with fractional initialScrollIndex (cached layo
   expect(scrollTo).toHaveBeenLastCalledWith({y: 2.0, animated: false});
 });
 
-it('scrolls after content sizing with fractional initialScrollIndex (layout estimation)', () => {
+it('scrolls after content sizing with fractional initialScrollIndex (layout estimation)', async () => {
   const items = generateItems(10);
   const listRef = React.createRef(null);
 
-  const component = create(
-    <VirtualizedList
-      initialScrollIndex={1.5}
-      initialNumToRender={4}
-      ref={listRef}
-      {...baseItemProps(items)}
-    />,
-  );
+  let component;
+  await act(() => {
+    component = create(
+      <VirtualizedList
+        initialScrollIndex={1.5}
+        initialNumToRender={4}
+        ref={listRef}
+        {...baseItemProps(items)}
+      />,
+    );
+  });
 
   const {scrollTo} = listRef.current.getScrollRef();
 
-  act(() => {
+  await act(() => {
     let y = 0;
     for (let i = 5; i < 10; ++i) {
       const height = i + 1;
@@ -1112,47 +1246,53 @@ it('scrolls after content sizing with fractional initialScrollIndex (layout esti
   expect(scrollTo).toHaveBeenLastCalledWith({y: 12, animated: false});
 });
 
-it('initially renders nothing when initialNumToRender is 0', () => {
+it('initially renders nothing when initialNumToRender is 0', async () => {
   const items = generateItems(10);
   const ITEM_HEIGHT = 10;
 
-  const component = create(
-    <VirtualizedList
-      initialNumToRender={0}
-      {...baseItemProps(items)}
-      {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
-    />,
-  );
+  let component;
+  await act(() => {
+    component = create(
+      <VirtualizedList
+        initialNumToRender={0}
+        {...baseItemProps(items)}
+        {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+      />,
+    );
+  });
 
   // Only a spacer should be present (a single item is present in the legacy
   // implementation)
   expect(component).toMatchSnapshot();
 });
 
-it('does not over-render when there is less than initialNumToRender cells', () => {
+it('does not over-render when there is less than initialNumToRender cells', async () => {
   const items = generateItems(10);
   const ITEM_HEIGHT = 10;
 
-  const component = create(
-    <VirtualizedList
-      initialScrollIndex={4}
-      initialNumToRender={20}
-      {...baseItemProps(items)}
-      {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
-    />,
-  );
+  let component;
+  await act(() => {
+    component = create(
+      <VirtualizedList
+        initialScrollIndex={4}
+        initialNumToRender={20}
+        {...baseItemProps(items)}
+        {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+      />,
+    );
+  });
 
   // Check that the first render clamps to the last item when intialNumToRender
   // goes over it.
   expect(component).toMatchSnapshot();
 });
 
-it('retains intitial render if initialScrollIndex == 0', () => {
+it('retains intitial render if initialScrollIndex == 0', async () => {
   const items = generateItems(20);
   const ITEM_HEIGHT = 10;
 
   let component;
-  act(() => {
+  await act(() => {
     component = create(
       <VirtualizedList
         initialNumToRender={5}
@@ -1164,7 +1304,7 @@ it('retains intitial render if initialScrollIndex == 0', () => {
     );
   });
 
-  act(() => {
+  await act(() => {
     simulateLayout(component, {
       viewport: {width: 10, height: 50},
       content: {width: 10, height: 200},
@@ -1172,7 +1312,7 @@ it('retains intitial render if initialScrollIndex == 0', () => {
     performAllBatches();
   });
 
-  act(() => {
+  await act(() => {
     simulateScroll(component, {x: 0, y: 150});
     performAllBatches();
   });
@@ -1183,12 +1323,12 @@ it('retains intitial render if initialScrollIndex == 0', () => {
   expect(component).toMatchSnapshot();
 });
 
-it('discards intitial render if initialScrollIndex != 0', () => {
+it('discards intitial render if initialScrollIndex != 0', async () => {
   const items = generateItems(20);
   const ITEM_HEIGHT = 10;
 
   let component;
-  act(() => {
+  await act(() => {
     component = create(
       <VirtualizedList
         initialScrollIndex={5}
@@ -1200,7 +1340,7 @@ it('discards intitial render if initialScrollIndex != 0', () => {
     );
   });
 
-  act(() => {
+  await act(() => {
     simulateLayout(component, {
       viewport: {width: 10, height: 50},
       content: {width: 10, height: 200},
@@ -1208,7 +1348,7 @@ it('discards intitial render if initialScrollIndex != 0', () => {
     performAllBatches();
   });
 
-  act(() => {
+  await act(() => {
     simulateScroll(component, {x: 0, y: 150});
     performAllBatches();
   });
@@ -1218,7 +1358,7 @@ it('discards intitial render if initialScrollIndex != 0', () => {
   expect(component).toMatchSnapshot();
 });
 
-it('expands render area by maxToRenderPerBatch on tick', () => {
+it('expands render area by maxToRenderPerBatch on tick', async () => {
   const items = generateItems(20);
   const ITEM_HEIGHT = 10;
 
@@ -1228,7 +1368,7 @@ it('expands render area by maxToRenderPerBatch on tick', () => {
   };
 
   let component;
-  act(() => {
+  await act(() => {
     component = create(
       <VirtualizedList
         {...baseItemProps(items)}
@@ -1238,7 +1378,7 @@ it('expands render area by maxToRenderPerBatch on tick', () => {
     );
   });
 
-  act(() => {
+  await act(() => {
     simulateLayout(component, {
       viewport: {width: 10, height: 50},
       content: {width: 10, height: 200},
@@ -1254,13 +1394,13 @@ it('expands render area by maxToRenderPerBatch on tick', () => {
   expect(component).toMatchSnapshot();
 });
 
-it('does not adjust render area until content area layed out', () => {
+it('does not adjust render area until content area layed out', async () => {
   const items = generateItems(20);
   const ITEM_HEIGHT = 10;
 
   let component;
 
-  act(() => {
+  await act(() => {
     component = create(
       <VirtualizedList
         initialNumToRender={5}
@@ -1271,7 +1411,7 @@ it('does not adjust render area until content area layed out', () => {
     );
   });
 
-  act(() => {
+  await act(() => {
     simulateViewportLayout(component, {width: 10, height: 50});
     performAllBatches();
   });
@@ -1282,13 +1422,13 @@ it('does not adjust render area until content area layed out', () => {
   expect(component).toMatchSnapshot();
 });
 
-it('does not move render area when initialScrollIndex is > 0 and offset not yet known', () => {
+it('does not move render area when initialScrollIndex is > 0 and offset not yet known', async () => {
   const items = generateItems(20);
   const ITEM_HEIGHT = 10;
 
   let component;
 
-  act(() => {
+  await act(() => {
     component = create(
       <VirtualizedList
         initialNumToRender={5}
@@ -1300,7 +1440,7 @@ it('does not move render area when initialScrollIndex is > 0 and offset not yet 
     );
   });
 
-  act(() => {
+  await act(() => {
     simulateLayout(component, {
       viewport: {width: 10, height: 50},
       content: {width: 10, height: 100},
@@ -1313,14 +1453,14 @@ it('does not move render area when initialScrollIndex is > 0 and offset not yet 
   expect(component).toMatchSnapshot();
 });
 
-it('clamps render area when items removed for initialScrollIndex > 0 and scroller position not yet known', () => {
+it('clamps render area when items removed for initialScrollIndex > 0 and scroller position not yet known', async () => {
   const items = generateItems(20);
   const lessItems = generateItems(15);
   const ITEM_HEIGHT = 10;
 
   let component;
 
-  act(() => {
+  await act(() => {
     component = create(
       <VirtualizedList
         initialNumToRender={5}
@@ -1332,7 +1472,7 @@ it('clamps render area when items removed for initialScrollIndex > 0 and scrolle
     );
   });
 
-  act(() => {
+  await act(() => {
     component.update(
       <VirtualizedList
         initialNumToRender={5}
@@ -1344,7 +1484,7 @@ it('clamps render area when items removed for initialScrollIndex > 0 and scrolle
     );
   });
 
-  act(() => {
+  await act(() => {
     simulateLayout(component, {
       viewport: {width: 10, height: 50},
       content: {width: 10, height: 100},
@@ -1356,12 +1496,12 @@ it('clamps render area when items removed for initialScrollIndex > 0 and scrolle
   expect(component).toMatchSnapshot();
 });
 
-it('adjusts render area with non-zero initialScrollIndex', () => {
+it('adjusts render area with non-zero initialScrollIndex', async () => {
   const items = generateItems(20);
   const ITEM_HEIGHT = 10;
 
   let component;
-  act(() => {
+  await act(() => {
     component = create(
       <VirtualizedList
         initialNumToRender={5}
@@ -1374,7 +1514,7 @@ it('adjusts render area with non-zero initialScrollIndex', () => {
     );
   });
 
-  act(() => {
+  await act(() => {
     simulateLayout(component, {
       viewport: {width: 10, height: 50},
       content: {width: 10, height: 200},
@@ -1391,12 +1531,12 @@ it('adjusts render area with non-zero initialScrollIndex', () => {
   expect(component).toMatchSnapshot();
 });
 
-it('renders new items when data is updated with non-zero initialScrollIndex', () => {
+it('renders new items when data is updated with non-zero initialScrollIndex', async () => {
   const items = generateItems(2);
   const ITEM_HEIGHT = 10;
 
   let component;
-  act(() => {
+  await act(() => {
     component = create(
       <VirtualizedList
         initialNumToRender={5}
@@ -1409,7 +1549,7 @@ it('renders new items when data is updated with non-zero initialScrollIndex', ()
     );
   });
 
-  act(() => {
+  await act(() => {
     simulateLayout(component, {
       viewport: {width: 10, height: 20},
       content: {width: 10, height: 20},
@@ -1419,7 +1559,7 @@ it('renders new items when data is updated with non-zero initialScrollIndex', ()
 
   const newItems = generateItems(4);
 
-  act(() => {
+  await act(() => {
     component.update(
       <VirtualizedList
         initialNumToRender={5}
@@ -1432,7 +1572,7 @@ it('renders new items when data is updated with non-zero initialScrollIndex', ()
     );
   });
 
-  act(() => {
+  await act(() => {
     performAllBatches();
   });
 
@@ -1440,31 +1580,33 @@ it('renders new items when data is updated with non-zero initialScrollIndex', ()
   expect(component).toMatchSnapshot();
 });
 
-it('renders initialNumToRender cells when virtualization disabled', () => {
+it('renders initialNumToRender cells when virtualization disabled', async () => {
   const items = generateItems(10);
   const ITEM_HEIGHT = 10;
 
-  const component = create(
-    <VirtualizedList
-      initialNumToRender={5}
-      initialScrollIndex={1}
-      disableVirtualization
-      {...baseItemProps(items)}
-      {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
-    />,
-  );
-
+  let component;
+  await act(() => {
+    component = create(
+      <VirtualizedList
+        initialNumToRender={5}
+        initialScrollIndex={1}
+        disableVirtualization
+        {...baseItemProps(items)}
+        {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+      />,
+    );
+  });
   // We should render initialNumToRender items with no spacers on initial render
   // when virtualization is disabled
   expect(component).toMatchSnapshot();
 });
 
-it('renders no spacers up to initialScrollIndex on first render when virtualization disabled', () => {
+it('renders no spacers up to initialScrollIndex on first render when virtualization disabled', async () => {
   const items = generateItems(10);
   const ITEM_HEIGHT = 10;
 
   let component;
-  act(() => {
+  await act(() => {
     component = create(
       <VirtualizedList
         initialNumToRender={2}
@@ -1483,12 +1625,12 @@ it('renders no spacers up to initialScrollIndex on first render when virtualizat
   expect(component).toMatchSnapshot();
 });
 
-it('expands first in viewport to render up to maxToRenderPerBatch on initial render', () => {
+it('expands first in viewport to render up to maxToRenderPerBatch on initial render', async () => {
   const items = generateItems(10);
   const ITEM_HEIGHT = 10;
 
   let component;
-  act(() => {
+  await act(() => {
     component = create(
       <VirtualizedList
         initialNumToRender={2}
@@ -1506,12 +1648,12 @@ it('expands first in viewport to render up to maxToRenderPerBatch on initial ren
   expect(component).toMatchSnapshot();
 });
 
-it('renders items before initialScrollIndex on first batch tick when virtualization disabled', () => {
+it('renders items before initialScrollIndex on first batch tick when virtualization disabled', async () => {
   const items = generateItems(10);
   const ITEM_HEIGHT = 10;
 
   let component;
-  act(() => {
+  await act(() => {
     component = create(
       <VirtualizedList
         initialNumToRender={1}
@@ -1524,7 +1666,7 @@ it('renders items before initialScrollIndex on first batch tick when virtualizat
     );
   });
 
-  act(() => {
+  await act(() => {
     simulateLayout(component, {
       viewport: {width: 10, height: 50},
       content: {width: 10, height: 100},
@@ -1540,12 +1682,12 @@ it('renders items before initialScrollIndex on first batch tick when virtualizat
   expect(component).toMatchSnapshot();
 });
 
-it('eventually renders all items when virtualization disabled', () => {
+it('eventually renders all items when virtualization disabled', async () => {
   const items = generateItems(10);
   const ITEM_HEIGHT = 10;
 
   let component;
-  act(() => {
+  await act(() => {
     component = create(
       <VirtualizedList
         initialNumToRender={5}
@@ -1559,7 +1701,7 @@ it('eventually renders all items when virtualization disabled', () => {
     );
   });
 
-  act(() => {
+  await act(() => {
     simulateLayout(component, {
       viewport: {width: 10, height: 50},
       content: {width: 10, height: 100},
@@ -1572,12 +1714,12 @@ it('eventually renders all items when virtualization disabled', () => {
   expect(component).toMatchSnapshot();
 });
 
-it('retains initial render region when an item is appended', () => {
+it('retains initial render region when an item is appended', async () => {
   const items = generateItems(10);
   const ITEM_HEIGHT = 10;
 
   let component;
-  act(() => {
+  await act(() => {
     component = create(
       <VirtualizedList
         initialNumToRender={3}
@@ -1587,7 +1729,7 @@ it('retains initial render region when an item is appended', () => {
     );
   });
 
-  act(() => {
+  await act(() => {
     component.update(
       <VirtualizedList
         initialNumToRender={3}
@@ -1604,12 +1746,63 @@ it('retains initial render region when an item is appended', () => {
   expect(component).toMatchSnapshot();
 });
 
-it('retains batch render region when an item is appended', () => {
+// TODO: Revisit this test case after upgrading to React 19.
+skipTestSilenceLinter(
+  'retains batch render region when an item is appended',
+  async () => {
+    const items = generateItems(10);
+    const ITEM_HEIGHT = 10;
+
+    let component;
+    await act(() => {
+      component = create(
+        <VirtualizedList
+          initialNumToRender={1}
+          maxToRenderPerBatch={1}
+          {...baseItemProps(items)}
+          {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+        />,
+      );
+    });
+
+    await act(() => {
+      simulateLayout(component, {
+        viewport: {width: 10, height: 50},
+        content: {width: 10, height: 100},
+      });
+      performAllBatches();
+    });
+
+    await act(async () => {
+      await jest.runAllTimersAsync();
+    });
+
+    await act(() => {
+      component.update(
+        <VirtualizedList
+          initialNumToRender={1}
+          maxToRenderPerBatch={1}
+          {...baseItemProps(items)}
+          {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+          data={generateItems(11)}
+        />,
+      );
+    });
+
+    // Adding an item to the list after batch render should keep the existing
+    // rendered items rendered. We batch render 10 items, then add an 11th. Expect
+    // the first ten items to be present, with a spacer for the 11th until the
+    // next batch render.
+    expect(component).toMatchSnapshot();
+  },
+);
+
+it('constrains batch render region when an item is removed', async () => {
   const items = generateItems(10);
   const ITEM_HEIGHT = 10;
 
   let component;
-  act(() => {
+  await act(() => {
     component = create(
       <VirtualizedList
         initialNumToRender={1}
@@ -1620,7 +1813,7 @@ it('retains batch render region when an item is appended', () => {
     );
   });
 
-  act(() => {
+  await act(() => {
     simulateLayout(component, {
       viewport: {width: 10, height: 50},
       content: {width: 10, height: 100},
@@ -1628,52 +1821,7 @@ it('retains batch render region when an item is appended', () => {
     performAllBatches();
   });
 
-  jest.runAllTimers();
-
-  act(() => {
-    component.update(
-      <VirtualizedList
-        initialNumToRender={1}
-        maxToRenderPerBatch={1}
-        {...baseItemProps(items)}
-        {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
-        data={generateItems(11)}
-      />,
-    );
-  });
-
-  // Adding an item to the list after batch render should keep the existing
-  // rendered items rendered. We batch render 10 items, then add an 11th. Expect
-  // the first ten items to be present, with a spacer for the 11th until the
-  // next batch render.
-  expect(component).toMatchSnapshot();
-});
-
-it('constrains batch render region when an item is removed', () => {
-  const items = generateItems(10);
-  const ITEM_HEIGHT = 10;
-
-  let component;
-  act(() => {
-    component = create(
-      <VirtualizedList
-        initialNumToRender={1}
-        maxToRenderPerBatch={1}
-        {...baseItemProps(items)}
-        {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
-      />,
-    );
-  });
-
-  act(() => {
-    simulateLayout(component, {
-      viewport: {width: 10, height: 50},
-      content: {width: 10, height: 100},
-    });
-    performAllBatches();
-  });
-
-  act(() => {
+  await act(() => {
     component.update(
       <VirtualizedList
         initialNumToRender={1}
@@ -1691,12 +1839,15 @@ it('constrains batch render region when an item is removed', () => {
   expect(component).toMatchSnapshot();
 });
 
-it('renders a zero-height tail spacer on initial render if getItemLayout not defined', () => {
+it('renders a zero-height tail spacer on initial render if getItemLayout not defined', async () => {
   const items = generateItems(10);
 
-  const component = create(
-    <VirtualizedList initialNumToRender={3} {...baseItemProps(items)} />,
-  );
+  let component;
+  await act(() => {
+    component = create(
+      <VirtualizedList initialNumToRender={3} {...baseItemProps(items)} />,
+    );
+  });
 
   // Do not add space for out-of-viewport content on initial render when we do
   // not yet know how large it should be (no getItemLayout and cell onLayout not
@@ -1704,11 +1855,11 @@ it('renders a zero-height tail spacer on initial render if getItemLayout not def
   expect(component).toMatchSnapshot();
 });
 
-it('renders zero-height tail spacer on batch render if cells not yet measured and getItemLayout not defined', () => {
+it('renders zero-height tail spacer on batch render if cells not yet measured and getItemLayout not defined', async () => {
   const items = generateItems(10);
 
   let component;
-  act(() => {
+  await act(() => {
     component = create(
       <VirtualizedList
         initialNumToRender={3}
@@ -1719,7 +1870,7 @@ it('renders zero-height tail spacer on batch render if cells not yet measured an
     );
   });
 
-  act(() => {
+  await act(() => {
     simulateLayout(component, {
       viewport: {width: 10, height: 50},
       content: {width: 10, height: 200},
@@ -1733,11 +1884,11 @@ it('renders zero-height tail spacer on batch render if cells not yet measured an
   expect(component).toMatchSnapshot();
 });
 
-it('renders tail spacer up to last measured index if getItemLayout not defined', () => {
+it('renders tail spacer up to last measured index if getItemLayout not defined', async () => {
   const items = generateItems(10);
 
   let component;
-  act(() => {
+  await act(() => {
     component = create(
       <VirtualizedList
         initialNumToRender={3}
@@ -1748,7 +1899,7 @@ it('renders tail spacer up to last measured index if getItemLayout not defined',
     );
   });
 
-  act(() => {
+  await act(() => {
     const LAST_MEASURED_CELL = 6;
     for (let i = 0; i <= LAST_MEASURED_CELL; ++i) {
       simulateCellLayout(component, items, i, {
@@ -1773,11 +1924,11 @@ it('renders tail spacer up to last measured index if getItemLayout not defined',
   expect(component).toMatchSnapshot();
 });
 
-it('renders tail spacer up to last measured with irregular layout when getItemLayout undefined', () => {
+it('renders tail spacer up to last measured with irregular layout when getItemLayout undefined', async () => {
   const items = generateItems(10);
 
   let component;
-  act(() => {
+  await act(() => {
     component = create(
       <VirtualizedList
         initialNumToRender={3}
@@ -1788,7 +1939,7 @@ it('renders tail spacer up to last measured with irregular layout when getItemLa
     );
   });
 
-  act(() => {
+  await act(() => {
     const LAST_MEASURED_CELL = 6;
 
     let currentY = 0;
@@ -1816,11 +1967,11 @@ it('renders tail spacer up to last measured with irregular layout when getItemLa
   expect(component).toMatchSnapshot();
 });
 
-it('renders full tail spacer if all cells measured', () => {
+it('renders full tail spacer if all cells measured', async () => {
   const items = generateItems(10);
 
   let component;
-  act(() => {
+  await act(() => {
     component = create(
       <VirtualizedList
         initialNumToRender={3}
@@ -1831,7 +1982,7 @@ it('renders full tail spacer if all cells measured', () => {
     );
   });
 
-  act(() => {
+  await act(() => {
     const LAST_MEASURED_CELL = 9;
     for (let i = 0; i <= LAST_MEASURED_CELL; ++i) {
       simulateCellLayout(component, items, i, {
@@ -1854,12 +2005,12 @@ it('renders full tail spacer if all cells measured', () => {
   expect(component).toMatchSnapshot();
 });
 
-it('renders windowSize derived region at top', () => {
+it('renders windowSize derived region at top', async () => {
   const items = generateItems(10);
   const ITEM_HEIGHT = 10;
 
   let component;
-  act(() => {
+  await act(() => {
     component = create(
       <VirtualizedList
         initialNumToRender={1}
@@ -1871,7 +2022,7 @@ it('renders windowSize derived region at top', () => {
     );
   });
 
-  act(() => {
+  await act(() => {
     simulateLayout(component, {
       viewport: {width: 10, height: 20},
       content: {width: 10, height: 100},
@@ -1879,7 +2030,9 @@ it('renders windowSize derived region at top', () => {
     performAllBatches();
   });
 
-  jest.runAllTimers();
+  await act(() => {
+    jest.runAllTimers();
+  });
   // A windowSize of 3 means that we should render a viewport's worth of content
   // above and below the current. A 20 dip viewport at the top of the list means
   // we should render the top 4 10-dip items (for the current viewport, and
@@ -1887,12 +2040,12 @@ it('renders windowSize derived region at top', () => {
   expect(component).toMatchSnapshot();
 });
 
-it('renders windowSize derived region in middle', () => {
+it('renders windowSize derived region in middle', async () => {
   const items = generateItems(10);
   const ITEM_HEIGHT = 10;
 
   let component;
-  act(() => {
+  await act(() => {
     component = create(
       <VirtualizedList
         initialNumToRender={1}
@@ -1904,7 +2057,7 @@ it('renders windowSize derived region in middle', () => {
     );
   });
 
-  act(() => {
+  await act(() => {
     simulateLayout(component, {
       viewport: {width: 10, height: 20},
       content: {width: 10, height: 100},
@@ -1912,12 +2065,18 @@ it('renders windowSize derived region in middle', () => {
     performAllBatches();
   });
 
-  act(() => {
+  await act(() => {
     simulateScroll(component, {x: 0, y: 50});
+  });
+
+  await act(() => {
     performAllBatches();
   });
 
-  jest.runAllTimers();
+  await act(() => {
+    jest.runAllTimers();
+  });
+
   // A windowSize of 3 means that we should render a viewport's worth of content
   // above and below the current. A 20 dip viewport in the top of the list means
   // we should render the 6 10-dip items (for the current viewport, 20 dip above
@@ -1926,12 +2085,12 @@ it('renders windowSize derived region in middle', () => {
   expect(component).toMatchSnapshot();
 });
 
-it('renders windowSize derived region at bottom', () => {
+it('renders windowSize derived region at bottom', async () => {
   const items = generateItems(10);
   const ITEM_HEIGHT = 10;
 
   let component;
-  act(() => {
+  await act(() => {
     component = create(
       <VirtualizedList
         initialNumToRender={1}
@@ -1943,19 +2102,25 @@ it('renders windowSize derived region at bottom', () => {
     );
   });
 
-  act(() => {
+  await act(() => {
     simulateLayout(component, {
       viewport: {width: 10, height: 20},
       content: {width: 10, height: 100},
     });
     performAllBatches();
   });
-  act(() => {
+  await act(() => {
     simulateScroll(component, {x: 0, y: 80});
+  });
+
+  await act(() => {
     performAllBatches();
   });
 
-  jest.runAllTimers();
+  await act(() => {
+    jest.runAllTimers();
+  });
+
   // A windowSize of 3 means that we should render a viewport's worth of content
   // above and below the current. A 20 dip viewport at the bottom of the list
   // means we should render the bottom 4 10-dip items (for the current viewport,
@@ -1964,27 +2129,32 @@ it('renders windowSize derived region at bottom', () => {
   expect(component).toMatchSnapshot();
 });
 
-it('calls _onCellLayout properly', () => {
+it('calls _onCellLayout properly', async () => {
   const items = [{key: 'i1'}, {key: 'i2'}, {key: 'i3'}];
   const mock = jest.fn();
-  const component = create(
-    <VirtualizedList
-      data={items}
-      renderItem={({item}) => <item value={item.key} />}
-      getItem={(data, index) => data[index]}
-      getItemCount={data => data.length}
-    />,
-  );
+  let component;
+  await act(() => {
+    component = create(
+      <VirtualizedList
+        data={items}
+        renderItem={({item}) => <item value={item.key} />}
+        getItem={(data, index) => data[index]}
+        getItemCount={data => data.length}
+      />,
+    );
+  });
   const virtualList: VirtualizedList = component.getInstance();
   virtualList._onCellLayout = mock;
-  component.update(
-    <VirtualizedList
-      data={[...items, {key: 'i4'}]}
-      renderItem={({item}) => <item value={item.key} />}
-      getItem={(data, index) => data[index]}
-      getItemCount={data => data.length}
-    />,
-  );
+  await act(() => {
+    component.update(
+      <VirtualizedList
+        data={[...items, {key: 'i4'}]}
+        renderItem={({item}) => <item value={item.key} />}
+        getItem={(data, index) => data[index]}
+        getItemCount={data => data.length}
+      />,
+    );
+  });
   const cell = virtualList._cellRefs.i4;
   const event = {
     nativeEvent: {layout: {x: 0, y: 0, width: 50, height: 50}, zoomScale: 1},
@@ -1994,12 +2164,12 @@ it('calls _onCellLayout properly', () => {
   expect(mock).not.toHaveBeenCalledWith(event, 'i3', 2);
 });
 
-it('keeps viewport below last focused rendered', () => {
+it('keeps viewport below last focused rendered', async () => {
   const items = generateItems(20);
   const ITEM_HEIGHT = 10;
 
   let component;
-  act(() => {
+  await act(() => {
     component = create(
       <VirtualizedList
         initialNumToRender={1}
@@ -2010,7 +2180,7 @@ it('keeps viewport below last focused rendered', () => {
     );
   });
 
-  act(() => {
+  await act(() => {
     simulateLayout(component, {
       viewport: {width: 10, height: 50},
       content: {width: 10, height: 200},
@@ -2019,11 +2189,11 @@ it('keeps viewport below last focused rendered', () => {
     performAllBatches();
   });
 
-  act(() => {
+  await act(() => {
     component.getInstance()._onCellFocusCapture(3);
   });
 
-  act(() => {
+  await act(() => {
     simulateScroll(component, {x: 0, y: 150});
     performAllBatches();
   });
@@ -2032,12 +2202,12 @@ it('keeps viewport below last focused rendered', () => {
   expect(component).toMatchSnapshot();
 });
 
-it('virtualizes away last focused item if focus changes to a new cell', () => {
+it('virtualizes away last focused item if focus changes to a new cell', async () => {
   const items = generateItems(20);
   const ITEM_HEIGHT = 10;
 
   let component;
-  act(() => {
+  await act(() => {
     component = create(
       <VirtualizedList
         initialNumToRender={1}
@@ -2048,7 +2218,7 @@ it('virtualizes away last focused item if focus changes to a new cell', () => {
     );
   });
 
-  act(() => {
+  await act(() => {
     simulateLayout(component, {
       viewport: {width: 10, height: 50},
       content: {width: 10, height: 200},
@@ -2057,16 +2227,16 @@ it('virtualizes away last focused item if focus changes to a new cell', () => {
     performAllBatches();
   });
 
-  act(() => {
+  await act(() => {
     component.getInstance()._onCellFocusCapture(3);
   });
 
-  act(() => {
+  await act(() => {
     simulateScroll(component, {x: 0, y: 150});
     performAllBatches();
   });
 
-  act(() => {
+  await act(() => {
     component.getInstance()._onCellFocusCapture(17);
   });
 
@@ -2075,12 +2245,12 @@ it('virtualizes away last focused item if focus changes to a new cell', () => {
   expect(component).toMatchSnapshot();
 });
 
-it('keeps viewport above last focused rendered', () => {
+it('keeps viewport above last focused rendered', async () => {
   const items = generateItems(20);
   const ITEM_HEIGHT = 10;
 
   let component;
-  act(() => {
+  await act(() => {
     component = create(
       <VirtualizedList
         initialNumToRender={1}
@@ -2091,7 +2261,7 @@ it('keeps viewport above last focused rendered', () => {
     );
   });
 
-  act(() => {
+  await act(() => {
     simulateLayout(component, {
       viewport: {width: 10, height: 50},
       content: {width: 10, height: 200},
@@ -2100,20 +2270,20 @@ it('keeps viewport above last focused rendered', () => {
     performAllBatches();
   });
 
-  act(() => {
+  await act(() => {
     component.getInstance()._onCellFocusCapture(3);
   });
 
-  act(() => {
+  await act(() => {
     simulateScroll(component, {x: 0, y: 150});
     performAllBatches();
   });
 
-  act(() => {
+  await act(() => {
     component.getInstance()._onCellFocusCapture(17);
   });
 
-  act(() => {
+  await act(() => {
     simulateScroll(component, {x: 0, y: 0});
     performAllBatches();
   });
@@ -2122,12 +2292,12 @@ it('keeps viewport above last focused rendered', () => {
   expect(component).toMatchSnapshot();
 });
 
-it('virtualizes away last focused index if item removed', () => {
+it('virtualizes away last focused index if item removed', async () => {
   const items = generateItems(20);
   const ITEM_HEIGHT = 10;
 
   let component;
-  act(() => {
+  await act(() => {
     component = create(
       <VirtualizedList
         initialNumToRender={1}
@@ -2138,7 +2308,7 @@ it('virtualizes away last focused index if item removed', () => {
     );
   });
 
-  act(() => {
+  await act(() => {
     simulateLayout(component, {
       viewport: {width: 10, height: 50},
       content: {width: 10, height: 200},
@@ -2147,17 +2317,17 @@ it('virtualizes away last focused index if item removed', () => {
     performAllBatches();
   });
 
-  act(() => {
+  await act(() => {
     component.getInstance()._onCellFocusCapture(3);
   });
 
-  act(() => {
+  await act(() => {
     simulateScroll(component, {x: 0, y: 150});
     performAllBatches();
   });
 
   const itemsWithoutFocused = [...items.slice(0, 3), ...items.slice(4)];
-  act(() => {
+  await act(() => {
     component.update(
       <VirtualizedList
         initialNumToRender={1}
@@ -2172,12 +2342,12 @@ it('virtualizes away last focused index if item removed', () => {
   expect(component).toMatchSnapshot();
 });
 
-it('handles maintainVisibleContentPosition', () => {
+it('handles maintainVisibleContentPosition', async () => {
   const items = generateItems(20);
   const ITEM_HEIGHT = 10;
 
   let component;
-  act(() => {
+  await act(() => {
     component = create(
       <VirtualizedList
         initialNumToRender={1}
@@ -2189,7 +2359,7 @@ it('handles maintainVisibleContentPosition', () => {
     );
   });
 
-  act(() => {
+  await act(() => {
     simulateLayout(component, {
       viewport: {width: 10, height: 50},
       content: {width: 10, height: items.length * ITEM_HEIGHT},
@@ -2203,7 +2373,7 @@ it('handles maintainVisibleContentPosition', () => {
 
   // Add new items at the start of the list to trigger the maintainVisibleContentPosition adjustment.
   const newItems = [...generateItems(10, items.length), ...items];
-  act(() => {
+  await act(() => {
     component.update(
       <VirtualizedList
         initialNumToRender={1}
@@ -2219,7 +2389,7 @@ it('handles maintainVisibleContentPosition', () => {
   expect(component).toMatchSnapshot();
 
   // Simulate scroll adjustment from native maintainVisibleContentPosition.
-  act(() => {
+  await act(() => {
     simulateContentLayout(component, {
       width: 10,
       height: newItems.length * ITEM_HEIGHT,
@@ -2232,13 +2402,13 @@ it('handles maintainVisibleContentPosition', () => {
   expect(component).toMatchSnapshot();
 });
 
-it('handles maintainVisibleContentPosition when anchor moves before minIndexForVisible', () => {
+it('handles maintainVisibleContentPosition when anchor moves before minIndexForVisible', async () => {
   const items = generateItems(20);
   const ITEM_HEIGHT = 10;
 
   // Render a list with `minIndexForVisible: 1`
   let component;
-  act(() => {
+  await act(() => {
     component = create(
       <VirtualizedList
         initialNumToRender={1}
@@ -2250,7 +2420,7 @@ it('handles maintainVisibleContentPosition when anchor moves before minIndexForV
     );
   });
 
-  act(() => {
+  await act(() => {
     simulateLayout(component, {
       viewport: {width: 10, height: 50},
       content: {width: 10, height: items.length * ITEM_HEIGHT},
@@ -2264,7 +2434,7 @@ it('handles maintainVisibleContentPosition when anchor moves before minIndexForV
   // Remove the first item to shift the previous anchor to be before
   // `minIndexForVisible`.
   const [, ...restItems] = items;
-  act(() => {
+  await act(() => {
     component.update(
       <VirtualizedList
         initialNumToRender={1}

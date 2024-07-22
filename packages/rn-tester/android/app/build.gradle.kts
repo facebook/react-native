@@ -62,9 +62,7 @@ react {
   hermesCommand = "$reactNativeDirPath/ReactAndroid/hermes-engine/build/hermes/bin/hermesc"
   enableHermesOnlyInVariants = listOf("hermesDebug", "hermesRelease")
 
-  /* Autolinking */
-  //   The location of the monorepo lockfiles to `config` is cached correctly.
-  autolinkLockFiles = files("$rootDir/yarn.lock")
+  autolinkLibrariesWithApp()
 }
 
 /** Run Proguard to shrink the Java bytecode in release builds. */
@@ -149,14 +147,17 @@ android {
     java.srcDirs(
         "$reactNativeDirPath/ReactCommon/react/nativemodule/samples/platform/android",
     )
+    res.setSrcDirs(
+        listOf(
+            "src/main/res",
+            "src/main/public_res",
+        ))
   }
 }
 
 dependencies {
   // Build React Native from source
   implementation(project(":packages:react-native:ReactAndroid"))
-  implementation(project(":packages:react-native-popup-menu-android:android"))
-  implementation(project(":packages:react-native-test-library:android"))
 
   // Consume Hermes as built from source only for the Hermes variant.
   "hermesImplementation"(project(":packages:react-native:ReactAndroid:hermes-engine"))
@@ -201,5 +202,11 @@ afterEvaluate {
   // we can actually invoke it. It's built by the ReactAndroid:buildCodegenCLI task.
   tasks
       .getByName("generateCodegenSchemaFromJavaScript")
+      .dependsOn(":packages:react-native:ReactAndroid:buildCodegenCLI")
+  tasks
+      .getByName("createBundleJscReleaseJsAndAssets")
+      .dependsOn(":packages:react-native:ReactAndroid:buildCodegenCLI")
+  tasks
+      .getByName("createBundleHermesReleaseJsAndAssets")
       .dependsOn(":packages:react-native:ReactAndroid:buildCodegenCLI")
 }

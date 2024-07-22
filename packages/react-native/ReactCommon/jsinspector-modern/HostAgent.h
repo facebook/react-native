@@ -7,7 +7,9 @@
 
 #pragma once
 
+#include "CdpJson.h"
 #include "HostTarget.h"
+#include "NetworkIOAgent.h"
 #include "SessionState.h"
 
 #include <jsinspector-modern/InspectorInterfaces.h>
@@ -37,14 +39,16 @@ class HostAgent final {
    * \param targetController An interface to the HostTarget that this agent is
    * attached to. The caller is responsible for ensuring that the
    * HostTargetDelegate and underlying HostTarget both outlive the agent.
-   * \param sessionMetadata Metadata about the session that created this agent.
+   * \param hostMetadata Metadata about the host that created this agent.
    * \param sessionState The state of the session that created this agent.
+   * \param executor A void executor to be used by async-aware handlers.
    */
   HostAgent(
       FrontendChannel frontendChannel,
       HostTargetController& targetController,
-      HostTarget::SessionMetadata sessionMetadata,
-      SessionState& sessionState);
+      HostTargetMetadata hostMetadata,
+      SessionState& sessionState,
+      VoidExecutor executor);
 
   HostAgent(const HostAgent&) = delete;
   HostAgent(HostAgent&&) = delete;
@@ -94,7 +98,7 @@ class HostAgent final {
 
   FrontendChannel frontendChannel_;
   HostTargetController& targetController_;
-  const HostTarget::SessionMetadata sessionMetadata_;
+  const HostTargetMetadata hostMetadata_;
   std::shared_ptr<InstanceAgent> instanceAgent_;
   FuseboxClientType fuseboxClientType_{FuseboxClientType::Unknown};
   bool isPausedInDebuggerOverlayVisible_{false};
@@ -104,6 +108,8 @@ class HostAgent final {
    * during handleRequest and other method calls on the same thread.
    */
   SessionState& sessionState_;
+
+  NetworkIOAgent networkIOAgent_;
 };
 
 } // namespace facebook::react::jsinspector_modern

@@ -70,7 +70,6 @@ import com.facebook.react.views.text.TextAttributeProps;
 import com.facebook.react.views.text.TextLayoutManager;
 import com.facebook.react.views.text.TextTransform;
 import com.facebook.react.views.text.internal.span.TextInlineImageSpan;
-import com.facebook.yoga.YogaConstants;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -230,11 +229,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
                 MapBuilder.of(
                     "phasedRegistrationNames",
                     MapBuilder.of("bubbled", "onEndEditing", "captured", "onEndEditingCapture")))
-            .put(
-                "topTextInput",
-                MapBuilder.of(
-                    "phasedRegistrationNames",
-                    MapBuilder.of("bubbled", "onTextInput", "captured", "onTextInputCapture")))
             .put(
                 "topFocus",
                 MapBuilder.of(
@@ -656,19 +650,12 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
   @ReactProp(name = "contextMenuHidden", defaultBoolean = false)
   public void setContextMenuHidden(ReactEditText view, boolean contextMenuHidden) {
-    final boolean _contextMenuHidden = contextMenuHidden;
-    view.setOnLongClickListener(
-        new View.OnLongClickListener() {
-          public boolean onLongClick(View v) {
-            return _contextMenuHidden;
-          }
-          ;
-        });
+    view.setContextMenuHidden(contextMenuHidden);
   }
 
   @ReactProp(name = "selectTextOnFocus", defaultBoolean = false)
   public void setSelectTextOnFocus(ReactEditText view, boolean selectTextOnFocus) {
-    view.setSelectAllOnFocus(selectTextOnFocus);
+    view.setSelectTextOnFocus(selectTextOnFocus);
   }
 
   @ReactProp(name = ViewProps.COLOR, customType = "Color")
@@ -714,16 +701,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     if (underlineColor == null) {
       drawableToMutate.clearColorFilter();
     } else {
-      // fixes underlineColor transparent not working on API 21
-      // re-sets the TextInput underlineColor https://bit.ly/3M4alr6
-      if (Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP) {
-        int bottomBorderColor = view.getBorderColor(Spacing.BOTTOM);
-        setBorderColor(view, Spacing.START, underlineColor);
-        drawableToMutate.setColorFilter(underlineColor, PorterDuff.Mode.SRC_IN);
-        setBorderColor(view, Spacing.START, bottomBorderColor);
-      } else {
-        drawableToMutate.setColorFilter(underlineColor, PorterDuff.Mode.SRC_IN);
-      }
+      drawableToMutate.setColorFilter(underlineColor, PorterDuff.Mode.SRC_IN);
     }
   }
 
@@ -969,9 +947,9 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         ViewProps.BORDER_BOTTOM_RIGHT_RADIUS,
         ViewProps.BORDER_BOTTOM_LEFT_RADIUS
       },
-      defaultFloat = YogaConstants.UNDEFINED)
+      defaultFloat = Float.NaN)
   public void setBorderRadius(ReactEditText view, int index, float borderRadius) {
-    if (!YogaConstants.isUndefined(borderRadius)) {
+    if (!Float.isNaN(borderRadius)) {
       borderRadius = PixelUtil.toPixelFromDIP(borderRadius);
     }
 
@@ -1019,9 +997,9 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         ViewProps.BORDER_TOP_WIDTH,
         ViewProps.BORDER_BOTTOM_WIDTH,
       },
-      defaultFloat = YogaConstants.UNDEFINED)
+      defaultFloat = Float.NaN)
   public void setBorderWidth(ReactEditText view, int index, float width) {
-    if (!YogaConstants.isUndefined(width)) {
+    if (!Float.isNaN(width)) {
       width = PixelUtil.toPixelFromDIP(width);
     }
     view.setBorderWidth(SPACING_TYPES[index], width);
@@ -1036,11 +1014,13 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         "borderBottomColor"
       },
       customType = "Color")
-  public void setBorderColor(ReactEditText view, int index, Integer color) {
-    float rgbComponent =
-        color == null ? YogaConstants.UNDEFINED : (float) ((int) color & 0x00FFFFFF);
-    float alphaComponent = color == null ? YogaConstants.UNDEFINED : (float) ((int) color >>> 24);
-    view.setBorderColor(SPACING_TYPES[index], rgbComponent, alphaComponent);
+  public void setBorderColor(ReactEditText view, int index, @Nullable Integer color) {
+    view.setBorderColor(SPACING_TYPES[index], color);
+  }
+
+  @ReactProp(name = "overflow")
+  public void setOverflow(ReactEditText view, @Nullable String overflow) {
+    view.setOverflow(overflow);
   }
 
   @Override
@@ -1120,17 +1100,12 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       }
 
       // The event that contains the event counter and updates it must be sent first.
-      // TODO: t7936714 merge these events
       mEventDispatcher.dispatchEvent(
           new ReactTextChangedEvent(
               mSurfaceId,
               mEditText.getId(),
               s.toString(),
               mEditText.incrementAndGetEventCounter()));
-
-      mEventDispatcher.dispatchEvent(
-          new ReactTextInputEvent(
-              mSurfaceId, mEditText.getId(), newText, oldText, start, start + before));
     }
 
     @Override

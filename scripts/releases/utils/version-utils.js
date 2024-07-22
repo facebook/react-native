@@ -62,6 +62,7 @@ function parseVersion(
 
 function validateBuildType(
   buildType /*: string */,
+  // $FlowFixMe[incompatible-type-guard]
 ) /*: buildType is BuildType */ {
   const validBuildTypes = new Set([
     'release',

@@ -51,8 +51,8 @@ Scheduler::Scheduler(
   eventPerformanceLogger_ =
       std::make_shared<EventPerformanceLogger>(performanceEntryReporter_);
 
-  auto uiManager = std::make_shared<UIManager>(
-      runtimeExecutor_, schedulerToolbox.backgroundExecutor, contextContainer_);
+  auto uiManager =
+      std::make_shared<UIManager>(runtimeExecutor_, contextContainer_);
   auto eventOwnerBox = std::make_shared<EventBeat::OwnerBox>();
   eventOwnerBox->owner = eventDispatcher_;
 
@@ -310,19 +310,8 @@ void Scheduler::uiManagerDidFinishTransaction(
 }
 
 void Scheduler::uiManagerDidCreateShadowNode(const ShadowNode& shadowNode) {
-  SystraceSection s("Scheduler::uiManagerDidCreateShadowNode");
-
   if (delegate_ != nullptr) {
     delegate_->schedulerDidRequestPreliminaryViewAllocation(shadowNode);
-  }
-}
-
-void Scheduler::uiManagerDidCloneShadowNodeWithNewProps(
-    const ShadowNode& shadowNode) {
-  SystraceSection s("Scheduler::uiManagerDidCreateShadowNode");
-
-  if (delegate_ != nullptr) {
-    delegate_->schedulerDidRequestUpdateToPreallocatedView(shadowNode);
   }
 }
 
@@ -375,9 +364,9 @@ std::shared_ptr<UIManager> Scheduler::getUIManager() const {
 }
 
 void Scheduler::addEventListener(
-    const std::shared_ptr<const EventListener>& listener) {
+    std::shared_ptr<const EventListener> listener) {
   if (eventDispatcher_->has_value()) {
-    eventDispatcher_->value().addListener(listener);
+    eventDispatcher_->value().addListener(std::move(listener));
   }
 }
 

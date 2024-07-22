@@ -89,7 +89,8 @@ Size measureAndroidComponent(
 TextLayoutManager::TextLayoutManager(
     const ContextContainer::Shared& contextContainer)
     : contextContainer_(contextContainer),
-      measureCache_(kSimpleThreadSafeCacheSizeCap) {}
+      textMeasureCache_(kSimpleThreadSafeCacheSizeCap),
+      lineMeasureCache_(kSimpleThreadSafeCacheSizeCap) {}
 
 void* TextLayoutManager::getNativeTextLayoutManager() const {
   return self_;
@@ -102,7 +103,7 @@ TextMeasurement TextLayoutManager::measure(
     LayoutConstraints layoutConstraints) const {
   auto& attributedString = attributedStringBox.getValue();
 
-  auto measurement = measureCache_.get(
+  auto measurement = textMeasureCache_.get(
       {attributedString, paragraphAttributes, layoutConstraints},
       [&](const TextMeasureCacheKey& /*key*/) {
         auto telemetry = TransactionTelemetry::threadLocalTelemetry();
@@ -164,41 +165,61 @@ LinesMeasurements TextLayoutManager::measureLines(
     const AttributedString& attributedString,
     const ParagraphAttributes& paragraphAttributes,
     Size size) const {
-  const jni::global_ref<jobject>& fabricUIManager =
-      contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
-  static auto measureLines =
-      jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
-          ->getMethod<NativeArray::javaobject(
-              JReadableMapBuffer::javaobject,
-              JReadableMapBuffer::javaobject,
-              jfloat,
-              jfloat)>("measureLines");
+  auto lineMeasurements = lineMeasureCache_.get(
+      {attributedString, paragraphAttributes, size},
+      [&](const LineMeasureCacheKey& /*key*/) {
+        const jni::global_ref<jobject>& fabricUIManager =
+            contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
+        static auto measureLines =
+            jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
+                ->getMethod<NativeArray::javaobject(
+                    JReadableMapBuffer::javaobject,
+                    JReadableMapBuffer::javaobject,
+                    jfloat,
+                    jfloat)>("measureLines");
 
-  auto attributedStringMB =
-      JReadableMapBuffer::createWithContents(toMapBuffer(attributedString));
-  auto paragraphAttributesMB =
-      JReadableMapBuffer::createWithContents(toMapBuffer(paragraphAttributes));
+        auto attributedStringMB = JReadableMapBuffer::createWithContents(
+            toMapBuffer(attributedString));
+        auto paragraphAttributesMB = JReadableMapBuffer::createWithContents(
+            toMapBuffer(paragraphAttributes));
 
-  auto array = measureLines(
-      fabricUIManager,
-      attributedStringMB.get(),
-      paragraphAttributesMB.get(),
-      size.width,
-      size.height);
+        auto array = measureLines(
+            fabricUIManager,
+            attributedStringMB.get(),
+            paragraphAttributesMB.get(),
+            size.width,
+            size.height);
 
-  auto dynamicArray = cthis(array)->consume();
-  LinesMeasurements lineMeasurements;
-  lineMeasurements.reserve(dynamicArray.size());
+        auto dynamicArray = cthis(array)->consume();
+        LinesMeasurements lineMeasurements;
+        lineMeasurements.reserve(dynamicArray.size());
 
-  for (const auto& data : dynamicArray) {
-    lineMeasurements.push_back(LineMeasurement(data));
-  }
+        for (const auto& data : dynamicArray) {
+          lineMeasurements.push_back(LineMeasurement(data));
+        }
 
-  // Explicitly release smart pointers to free up space faster in JNI tables
-  attributedStringMB.reset();
-  paragraphAttributesMB.reset();
+        // Explicitly release smart pointers to free up space faster in JNI
+        // tables
+        attributedStringMB.reset();
+        paragraphAttributesMB.reset();
+
+        return lineMeasurements;
+      });
 
   return lineMeasurements;
+}
+
+Float TextLayoutManager::baseline(
+    AttributedString attributedString,
+    ParagraphAttributes paragraphAttributes,
+    Size size) const {
+  auto lines = this->measureLines(attributedString, paragraphAttributes, size);
+
+  if (!lines.empty()) {
+    return lines[0].ascender;
+  } else {
+    return 0;
+  }
 }
 
 TextMeasurement TextLayoutManager::doMeasure(

@@ -96,12 +96,19 @@ static jsi::Value __hostFunction_NativeEnumTurboModuleCxxSpecJSI_getStatusNum(js
     count <= 0 ? throw jsi::JSError(rt, \\"Expected argument in position 0 to be passed\\") : args[0].asObject(rt)
   );
 }
+static jsi::Value __hostFunction_NativeEnumTurboModuleCxxSpecJSI_getStatusLowerCase(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+  return static_cast<NativeEnumTurboModuleCxxSpecJSI *>(&turboModule)->getStatusLowerCase(
+    rt,
+    count <= 0 ? throw jsi::JSError(rt, \\"Expected argument in position 0 to be passed\\") : args[0].asObject(rt)
+  );
+}
 static jsi::Value __hostFunction_NativeEnumTurboModuleCxxSpecJSI_getStateType(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
   return static_cast<NativeEnumTurboModuleCxxSpecJSI *>(&turboModule)->getStateType(
     rt,
     count <= 0 ? throw jsi::JSError(rt, \\"Expected argument in position 0 to be passed\\") : args[0].asString(rt),
     count <= 1 ? throw jsi::JSError(rt, \\"Expected argument in position 1 to be passed\\") : args[1].asString(rt),
-    count <= 2 ? throw jsi::JSError(rt, \\"Expected argument in position 2 to be passed\\") : args[2].asNumber()
+    count <= 2 ? throw jsi::JSError(rt, \\"Expected argument in position 2 to be passed\\") : args[2].asNumber(),
+    count <= 3 ? throw jsi::JSError(rt, \\"Expected argument in position 3 to be passed\\") : args[3].asString(rt)
   );
 }
 static jsi::Value __hostFunction_NativeEnumTurboModuleCxxSpecJSI_getStateTypeWithEnums(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
@@ -116,7 +123,8 @@ NativeEnumTurboModuleCxxSpecJSI::NativeEnumTurboModuleCxxSpecJSI(std::shared_ptr
   methodMap_[\\"getStatusRegular\\"] = MethodMetadata {1, __hostFunction_NativeEnumTurboModuleCxxSpecJSI_getStatusRegular};
   methodMap_[\\"getStatusStr\\"] = MethodMetadata {1, __hostFunction_NativeEnumTurboModuleCxxSpecJSI_getStatusStr};
   methodMap_[\\"getStatusNum\\"] = MethodMetadata {1, __hostFunction_NativeEnumTurboModuleCxxSpecJSI_getStatusNum};
-  methodMap_[\\"getStateType\\"] = MethodMetadata {3, __hostFunction_NativeEnumTurboModuleCxxSpecJSI_getStateType};
+  methodMap_[\\"getStatusLowerCase\\"] = MethodMetadata {1, __hostFunction_NativeEnumTurboModuleCxxSpecJSI_getStatusLowerCase};
+  methodMap_[\\"getStateType\\"] = MethodMetadata {4, __hostFunction_NativeEnumTurboModuleCxxSpecJSI_getStateType};
   methodMap_[\\"getStateTypeWithEnums\\"] = MethodMetadata {1, __hostFunction_NativeEnumTurboModuleCxxSpecJSI_getStateTypeWithEnums};
 }
 static jsi::Value __hostFunction_NativeNullableTurboModuleCxxSpecJSI_getBool(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
@@ -909,12 +917,19 @@ static jsi::Value __hostFunction_NativeEnumTurboModuleCxxSpecJSI_getStatusNum(js
     count <= 0 ? throw jsi::JSError(rt, \\"Expected argument in position 0 to be passed\\") : args[0].asObject(rt)
   );
 }
+static jsi::Value __hostFunction_NativeEnumTurboModuleCxxSpecJSI_getStatusLowerCase(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+  return static_cast<NativeEnumTurboModuleCxxSpecJSI *>(&turboModule)->getStatusLowerCase(
+    rt,
+    count <= 0 ? throw jsi::JSError(rt, \\"Expected argument in position 0 to be passed\\") : args[0].asObject(rt)
+  );
+}
 static jsi::Value __hostFunction_NativeEnumTurboModuleCxxSpecJSI_getStateType(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
   return static_cast<NativeEnumTurboModuleCxxSpecJSI *>(&turboModule)->getStateType(
     rt,
     count <= 0 ? throw jsi::JSError(rt, \\"Expected argument in position 0 to be passed\\") : args[0].asString(rt),
     count <= 1 ? throw jsi::JSError(rt, \\"Expected argument in position 1 to be passed\\") : args[1].asString(rt),
-    count <= 2 ? throw jsi::JSError(rt, \\"Expected argument in position 2 to be passed\\") : args[2].asNumber()
+    count <= 2 ? throw jsi::JSError(rt, \\"Expected argument in position 2 to be passed\\") : args[2].asNumber(),
+    count <= 3 ? throw jsi::JSError(rt, \\"Expected argument in position 3 to be passed\\") : args[3].asString(rt)
   );
 }
 static jsi::Value __hostFunction_NativeEnumTurboModuleCxxSpecJSI_getStateTypeWithEnums(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
@@ -929,7 +944,8 @@ NativeEnumTurboModuleCxxSpecJSI::NativeEnumTurboModuleCxxSpecJSI(std::shared_ptr
   methodMap_[\\"getStatusRegular\\"] = MethodMetadata {1, __hostFunction_NativeEnumTurboModuleCxxSpecJSI_getStatusRegular};
   methodMap_[\\"getStatusStr\\"] = MethodMetadata {1, __hostFunction_NativeEnumTurboModuleCxxSpecJSI_getStatusStr};
   methodMap_[\\"getStatusNum\\"] = MethodMetadata {1, __hostFunction_NativeEnumTurboModuleCxxSpecJSI_getStatusNum};
-  methodMap_[\\"getStateType\\"] = MethodMetadata {3, __hostFunction_NativeEnumTurboModuleCxxSpecJSI_getStateType};
+  methodMap_[\\"getStatusLowerCase\\"] = MethodMetadata {1, __hostFunction_NativeEnumTurboModuleCxxSpecJSI_getStatusLowerCase};
+  methodMap_[\\"getStateType\\"] = MethodMetadata {4, __hostFunction_NativeEnumTurboModuleCxxSpecJSI_getStateType};
   methodMap_[\\"getStateTypeWithEnums\\"] = MethodMetadata {1, __hostFunction_NativeEnumTurboModuleCxxSpecJSI_getStateTypeWithEnums};
 }
 static jsi::Value __hostFunction_NativeNullableTurboModuleCxxSpecJSI_getBool(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {

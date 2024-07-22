@@ -5,9 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @noformat
- * @flow strict
  * @nolint
- * @generated SignedSource<<c41f61379973354629ee7bf55ba92541>>
+ * @flow strict
+ * @generated SignedSource<<4405023a5d82ddc01db31d8eb46a7aa0>>
  */
 
 import type {ElementRef, ElementType, Element, AbstractComponent} from 'react';
@@ -86,6 +86,7 @@ export type ViewConfig = $ReadOnly<{
     }>,
     ...
   }>,
+  supportsRawText?: boolean,
   uiViewClassName: string,
   validAttributes: AttributeConfiguration,
 }>;
@@ -93,6 +94,7 @@ export type ViewConfig = $ReadOnly<{
 export type PartialViewConfig = $ReadOnly<{
   bubblingEventTypes?: $PropertyType<ViewConfig, 'bubblingEventTypes'>,
   directEventTypes?: $PropertyType<ViewConfig, 'directEventTypes'>,
+  supportsRawText?: boolean,
   uiViewClassName: string,
   validAttributes?: PartialAttributeConfiguration,
 }>;

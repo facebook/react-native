@@ -110,10 +110,12 @@ add_react_common_subdir(react/nativemodule/defaults)
 add_react_common_subdir(react/nativemodule/dom)
 add_react_common_subdir(react/nativemodule/featureflags)
 add_react_common_subdir(react/nativemodule/microtasks)
+add_react_common_subdir(react/nativemodule/idlecallbacks)
 add_react_common_subdir(jserrorhandler)
 add_react_common_subdir(react/runtime)
 add_react_common_subdir(react/runtime/hermes)
 add_react_common_subdir(react/runtime/nativeviewconfig)
+add_react_common_subdir(react/timing)
 
 # ReactAndroid JNI targets
 add_react_build_subdir(generated/source/codegen/jni)
@@ -146,14 +148,9 @@ add_executable(reactnative_unittest
   ${REACT_COMMON_DIR}/cxxreact/tests/RecoverableErrorTest.cpp
   ${REACT_COMMON_DIR}/react/bridging/tests/BridgingTest.cpp
   ${REACT_COMMON_DIR}/react/renderer/attributedstring/tests/AttributedStringBoxTest.cpp
-  ${REACT_COMMON_DIR}/react/renderer/attributedstring/tests/AttributedStringTest.cpp
-  ${REACT_COMMON_DIR}/react/renderer/attributedstring/tests/ParagraphAttributesTest.cpp
-  ${REACT_COMMON_DIR}/react/renderer/attributedstring/tests/TextAttributesTest.cpp
   ${REACT_COMMON_DIR}/react/renderer/components/image/tests/ImageTest.cpp
   ${REACT_COMMON_DIR}/react/renderer/components/root/tests/RootShadowNodeTest.cpp
   ${REACT_COMMON_DIR}/react/renderer/components/scrollview/tests/ScrollViewTest.cpp
-  ${REACT_COMMON_DIR}/react/renderer/components/text/tests/ParagraphLocalDataTest.cpp
-  ${REACT_COMMON_DIR}/react/renderer/components/text/tests/TextTest.cpp
   ${REACT_COMMON_DIR}/react/renderer/components/view/tests/LayoutTest.cpp
   ${REACT_COMMON_DIR}/react/renderer/components/view/tests/ViewTest.cpp
   ${REACT_COMMON_DIR}/react/renderer/core/tests/DynamicPropsUtilitiesTest.cpp

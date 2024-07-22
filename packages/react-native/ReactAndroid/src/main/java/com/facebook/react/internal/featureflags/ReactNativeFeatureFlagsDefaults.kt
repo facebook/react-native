@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e6a248df3e57d36319d9a32bd49dfa5a>>
+ * @generated SignedSource<<a42ecd51ef7f12eb8758dbd029a2d67b>>
  */
 
 /**
@@ -27,39 +27,63 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun allowCollapsableChildren(): Boolean = true
 
-  override fun androidEnablePendingFabricTransactions(): Boolean = false
+  override fun allowRecursiveCommitsWithSynchronousMountOnAndroid(): Boolean = false
 
   override fun batchRenderingUpdatesInEventLoop(): Boolean = false
 
+  override fun changeOrderOfMountingInstructionsOnAndroid(): Boolean = false
+
   override fun destroyFabricSurfacesInReactInstanceManager(): Boolean = false
 
-  override fun enableBackgroundExecutor(): Boolean = false
+  override fun enableAlignItemsBaselineOnFabricIOS(): Boolean = true
 
   override fun enableCleanTextInputYogaNode(): Boolean = false
 
   override fun enableGranularShadowTreeStateReconciliation(): Boolean = false
 
+  override fun enableLongTaskAPI(): Boolean = false
+
   override fun enableMicrotasks(): Boolean = false
+
+  override fun enablePropsUpdateReconciliationAndroid(): Boolean = false
 
   override fun enableSynchronousStateUpdates(): Boolean = false
 
   override fun enableUIConsistency(): Boolean = false
 
-  override fun fixMountedFlagAndFixPreallocationClone(): Boolean = false
+  override fun fetchImagesInViewPreallocation(): Boolean = false
+
+  override fun fixIncorrectScrollViewStateUpdateOnAndroid(): Boolean = false
+
+  override fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean = false
+
+  override fun fixMissedFabricStateUpdatesOnAndroid(): Boolean = false
 
   override fun forceBatchingMountItemsOnAndroid(): Boolean = false
 
-  override fun inspectorEnableCxxInspectorPackagerConnection(): Boolean = false
+  override fun fuseboxEnabledDebug(): Boolean = true
 
-  override fun inspectorEnableModernCDPRegistry(): Boolean = false
+  override fun fuseboxEnabledRelease(): Boolean = false
+
+  override fun initEagerTurboModulesOnNativeModulesQueueAndroid(): Boolean = false
 
   override fun lazyAnimationCallbacks(): Boolean = false
 
-  override fun preventDoubleTextMeasure(): Boolean = false
+  override fun loadVectorDrawablesOnImages(): Boolean = false
+
+  override fun setAndroidLayoutDirection(): Boolean = true
+
+  override fun useImmediateExecutorInAndroidBridgeless(): Boolean = false
 
   override fun useModernRuntimeScheduler(): Boolean = false
 
   override fun useNativeViewConfigsInBridgelessMode(): Boolean = false
+
+  override fun useNewReactImageViewBackgroundDrawing(): Boolean = false
+
+  override fun useRuntimeShadowNodeReferenceUpdate(): Boolean = false
+
+  override fun useRuntimeShadowNodeReferenceUpdateOnLayout(): Boolean = false
 
   override fun useStateAlignmentMechanism(): Boolean = false
 }
