@@ -16,3 +16,51 @@ polyfillGlobal(
     require('../../src/private/webapis/performance/PerformanceObserver')
       .default,
 );
+
+polyfillGlobal(
+  'PerformanceObserverEntryList',
+  () =>
+    require('../../src/private/webapis/performance/PerformanceObserver')
+      .PerformanceObserverEntryList,
+);
+
+polyfillGlobal(
+  'PerformanceEntry',
+  () =>
+    require('../../src/private/webapis/performance/PerformanceEntry')
+      .PerformanceEntry,
+);
+
+polyfillGlobal(
+  'PerformanceMark',
+  () =>
+    require('../../src/private/webapis/performance/UserTiming').PerformanceMark,
+);
+
+polyfillGlobal(
+  'PerformanceMeasure',
+  () =>
+    require('../../src/private/webapis/performance/UserTiming')
+      .PerformanceMeasure,
+);
+
+polyfillGlobal(
+  'PerformanceEventTiming',
+  () =>
+    require('../../src/private/webapis/performance/EventTiming')
+      .PerformanceEventTiming,
+);
+
+polyfillGlobal(
+  'TaskAttributionTiming',
+  () =>
+    require('../../src/private/webapis/performance/LongTasks')
+      .TaskAttributionTiming,
+);
+
+polyfillGlobal(
+  'PerformanceLongTaskTiming',
+  () =>
+    require('../../src/private/webapis/performance/LongTasks')
+      .PerformanceLongTaskTiming,
+);
