@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8efce8efb9cc312512b8736ed0073b30>>
+ * @generated SignedSource<<b0e927861b19d02b77609527f6290d07>>
  */
 
 /**
@@ -66,6 +66,12 @@ class ReactNativeFeatureFlagsProviderHolder
   bool changeOrderOfMountingInstructionsOnAndroid() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("changeOrderOfMountingInstructionsOnAndroid");
+    return method(javaProvider_);
+  }
+
+  bool completeReactInstanceCreationOnBgThreadOnAndroid() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("completeReactInstanceCreationOnBgThreadOnAndroid");
     return method(javaProvider_);
   }
 
@@ -260,6 +266,11 @@ bool JReactNativeFeatureFlagsCxxInterop::changeOrderOfMountingInstructionsOnAndr
   return ReactNativeFeatureFlags::changeOrderOfMountingInstructionsOnAndroid();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::completeReactInstanceCreationOnBgThreadOnAndroid(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::completeReactInstanceCreationOnBgThreadOnAndroid();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::destroyFabricSurfacesInReactInstanceManager(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::destroyFabricSurfacesInReactInstanceManager();
@@ -427,6 +438,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "changeOrderOfMountingInstructionsOnAndroid",
         JReactNativeFeatureFlagsCxxInterop::changeOrderOfMountingInstructionsOnAndroid),
+      makeNativeMethod(
+        "completeReactInstanceCreationOnBgThreadOnAndroid",
+        JReactNativeFeatureFlagsCxxInterop::completeReactInstanceCreationOnBgThreadOnAndroid),
       makeNativeMethod(
         "destroyFabricSurfacesInReactInstanceManager",
         JReactNativeFeatureFlagsCxxInterop::destroyFabricSurfacesInReactInstanceManager),

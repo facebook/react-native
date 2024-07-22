@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ce0749b4f2ccf11b420cb9762012c02b>>
+ * @generated SignedSource<<38c8d62457ec2b8c6333131c68dd4935>>
  */
 
 /**
@@ -39,6 +39,10 @@ bool ReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop() {
 
 bool ReactNativeFeatureFlags::changeOrderOfMountingInstructionsOnAndroid() {
   return getAccessor().changeOrderOfMountingInstructionsOnAndroid();
+}
+
+bool ReactNativeFeatureFlags::completeReactInstanceCreationOnBgThreadOnAndroid() {
+  return getAccessor().completeReactInstanceCreationOnBgThreadOnAndroid();
 }
 
 bool ReactNativeFeatureFlags::destroyFabricSurfacesInReactInstanceManager() {
