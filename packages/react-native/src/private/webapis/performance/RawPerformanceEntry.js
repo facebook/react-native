@@ -14,6 +14,7 @@ import type {
   RawPerformanceEntryType,
 } from './specs/NativePerformanceObserver';
 
+import {PerformanceLongTaskTiming} from './LongTasks';
 import {PerformanceEntry} from './PerformanceEntry';
 import PerformanceEventTiming from './PerformanceEventTiming';
 import {PerformanceMark, PerformanceMeasure} from './UserTiming';
@@ -36,6 +37,13 @@ export function rawToPerformanceEntry(
       processingStart: entry.processingStart,
       processingEnd: entry.processingEnd,
       interactionId: entry.interactionId,
+    });
+  } else if (entry.entryType === RawPerformanceEntryTypeValues.LONGTASK) {
+    return new PerformanceLongTaskTiming({
+      name: entry.name,
+      entryType: rawToPerformanceEntryType(entry.entryType),
+      startTime: entry.startTime,
+      duration: entry.duration,
     });
   } else if (entry.entryType === RawPerformanceEntryTypeValues.MARK) {
     return new PerformanceMark(entry.name, {
