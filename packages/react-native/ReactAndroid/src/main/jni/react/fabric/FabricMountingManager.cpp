@@ -190,7 +190,8 @@ static inline void writeIntBufferTypePreamble(
 
 // TODO: this method will be removed when binding for components are code-gen
 jni::local_ref<jstring> getPlatformComponentName(const ShadowView& shadowView) {
-  static std::string scrollViewComponentName = std::string("ScrollView");
+  constexpr static std::string_view scrollViewComponentName = "ScrollView";
+
   if (scrollViewComponentName == shadowView.componentName) {
     const auto& newViewProps =
         static_cast<const ScrollViewProps&>(*shadowView.props);
