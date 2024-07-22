@@ -142,6 +142,8 @@ struct Transform {
    */
   static Transform Skew(Float x, Float y);
 
+  bool inv();
+
   /*
    * Returns a transform that rotates by `angle` radians along the given axis.
    */
@@ -188,6 +190,10 @@ struct Transform {
   Transform operator*(const Transform& rhs) const;
 
   Rect applyWithCenter(const Rect& rect, const Point& center) const;
+
+  Point applyWithRect(const Point& point, const Rect& rect) const;
+    
+  Point applyWithCenter(const Point& point, const Point& center) const;
 
   /**
    * Convert to folly::dynamic.

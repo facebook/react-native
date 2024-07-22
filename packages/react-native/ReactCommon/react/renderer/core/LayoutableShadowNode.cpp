@@ -262,8 +262,17 @@ ShadowNode::Shared LayoutableShadowNode::findNodeAtPoint(
   }
 
   auto frame = layoutableShadowNode->getLayoutMetrics().frame;
-  auto transformedFrame = frame * layoutableShadowNode->getTransform();
-  auto isPointInside = transformedFrame.containsPoint(point);
+  auto currentTransform = layoutableShadowNode->getTransform();
+
+  bool isInverted = currentTransform.inv();
+    
+  Point transformedPoint = point;
+  
+  if (isInverted) {
+      transformedPoint = currentTransform.applyWithRect(transformedPoint, frame);
+  }
+
+  auto isPointInside = frame.containsPoint(transformedPoint);
 
   if (!isPointInside) {
     return nullptr;
@@ -271,7 +280,7 @@ ShadowNode::Shared LayoutableShadowNode::findNodeAtPoint(
     return node;
   }
 
-  auto newPoint = point - transformedFrame.origin -
+  auto newPoint = transformedPoint - frame.origin -
       layoutableShadowNode->getContentOriginOffset(false);
 
   auto sortedChildren = node->getChildren();
