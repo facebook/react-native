@@ -312,6 +312,7 @@ public class ReactViewGroup extends ViewGroup
   /**
    * @deprecated Use {@link #setBorderRadius(BorderRadiusProp, Float)} instead.
    */
+  @Deprecated(since = "0.75.0", forRemoval = true)
   public void setBorderRadius(float borderRadius) {
     CSSBackgroundDrawable backgroundDrawable = getOrCreateReactViewBackground();
     backgroundDrawable.setRadius(borderRadius);
@@ -320,6 +321,7 @@ public class ReactViewGroup extends ViewGroup
   /**
    * @deprecated Use {@link #setBorderRadius(BorderRadiusProp, Float)} instead.
    */
+  @Deprecated(since = "0.75.0", forRemoval = true)
   public void setBorderRadius(float borderRadius, int position) {
     CSSBackgroundDrawable backgroundDrawable = getOrCreateReactViewBackground();
     backgroundDrawable.setRadius(borderRadius, position);
