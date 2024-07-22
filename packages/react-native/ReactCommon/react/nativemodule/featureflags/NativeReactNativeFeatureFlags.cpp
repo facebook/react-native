@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<601dcb3b536fc5452b51049c96383139>>
+ * @generated SignedSource<<8f5a7c45dad6a49355e0823bb6e16b3e>>
  */
 
 /**
@@ -80,6 +80,11 @@ bool NativeReactNativeFeatureFlags::enableAlignItemsBaselineOnFabricIOS(
 bool NativeReactNativeFeatureFlags::enableCleanTextInputYogaNode(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableCleanTextInputYogaNode();
+}
+
+bool NativeReactNativeFeatureFlags::enableFabricRendererExclusively(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableFabricRendererExclusively();
 }
 
 bool NativeReactNativeFeatureFlags::enableGranularShadowTreeStateReconciliation(

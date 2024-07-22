@@ -78,6 +78,11 @@ const definitions: FeatureFlagDefinitions = {
       defaultValue: false,
       description: 'Clean yoga node when <TextInput /> does not change.',
     },
+    enableFabricRendererExclusively: {
+      defaultValue: false,
+      description:
+        'When the app is completely migrated to Fabric, set this flag to true to disable parts of Paper infrastructure that are not needed anymore but consume memory and CPU. Specifically, UIViewOperationQueue and EventDispatcherImpl will no longer work as they will not subscribe to ReactChoreographer for updates.',
+    },
     enableGranularShadowTreeStateReconciliation: {
       defaultValue: false,
       description:
