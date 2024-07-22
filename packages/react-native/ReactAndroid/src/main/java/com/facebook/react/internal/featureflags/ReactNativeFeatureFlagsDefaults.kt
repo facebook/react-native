@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<841edbe102ebbd78040892cf76f79bba>>
+ * @generated SignedSource<<6763616cc6266115d83a59f2aa957662>>
  */
 
 /**
@@ -54,6 +54,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enableSynchronousStateUpdates(): Boolean = false
 
   override fun enableUIConsistency(): Boolean = false
+
+  override fun excludeYogaFromRawProps(): Boolean = false
 
   override fun fetchImagesInViewPreallocation(): Boolean = false
 

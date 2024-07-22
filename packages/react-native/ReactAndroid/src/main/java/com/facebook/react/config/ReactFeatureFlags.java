@@ -76,9 +76,6 @@ public class ReactFeatureFlags {
    */
   public static boolean enableCppPropsIteratorSetter = false;
 
-  /** When enabled, rawProps in Props will not include Yoga specific props. */
-  public static boolean excludeYogaFromRawProps = false;
-
   /**
    * Enables storing js caller stack when creating promise in native module. This is useful in case
    * of Promise rejection and tracing the cause.
