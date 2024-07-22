@@ -14,8 +14,8 @@ import type {
 } from './PerformanceEntry';
 
 import warnOnce from '../../../../Libraries/Utilities/warnOnce';
+import {PerformanceEventTiming} from './EventTiming';
 import {PerformanceEntry} from './PerformanceEntry';
-import PerformanceEventTiming from './PerformanceEventTiming';
 import {
   performanceEntryTypeToRaw,
   rawToPerformanceEntry,

@@ -18,7 +18,7 @@ import type {PerformanceEntryList} from './PerformanceObserver';
 import type {DetailType, PerformanceMarkOptions} from './UserTiming';
 
 import warnOnce from '../../../../Libraries/Utilities/warnOnce';
-import EventCounts from './EventCounts';
+import {EventCounts} from './EventTiming';
 import MemoryInfo from './MemoryInfo';
 import {ALWAYS_LOGGED_ENTRY_TYPES} from './PerformanceEntry';
 import {warnNoNativePerformanceObserver} from './PerformanceObserver';
