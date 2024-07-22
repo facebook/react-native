@@ -10,7 +10,7 @@ package com.facebook.react.utils
 import com.facebook.react.utils.KotlinStdlibCompatUtils.lowercaseCompat
 import java.io.File
 
-internal object Os {
+object Os {
 
   fun isWindows(): Boolean =
       System.getProperty("os.name")?.lowercaseCompat()?.contains("windows") ?: false
