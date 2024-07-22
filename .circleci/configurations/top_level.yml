@@ -59,7 +59,7 @@ references:
   #        Dependency Anchors
   # -------------------------
   dependency_versions:
-    xcode_version: &xcode_version "15.0.1"
+    xcode_version: &xcode_version "15.2"
     nodelts_image: &nodelts_image "cimg/node:20.2.0"
     nodeprevlts_image: &nodeprevlts_image "cimg/node:18.12.1"
     nodelts_browser_image: &nodelts_browser_image "cimg/node:20.2.0-browsers"

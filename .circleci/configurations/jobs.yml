@@ -786,9 +786,6 @@ jobs:
       - HERMES_WS_DIR: *hermes_workspace_root
       - HERMES_TARBALL_ARTIFACTS_DIR: *hermes_tarball_artifacts_dir
       - HERMES_OSXBIN_ARTIFACTS_DIR: *hermes_osxbin_artifacts_dir
-      - IOS_DEPLOYMENT_TARGET: "13.4"
-      - XROS_DEPLOYMENT_TARGET: "1.0"
-      - MACOSX_DEPLOYMENT_TARGET: "10.15"
     steps:
       - *attach_hermes_workspace
       - stop_job_if_apple_artifacts_are_there:
@@ -823,6 +820,23 @@ jobs:
             else
               echo "[HERMES] Building Hermes for iOS: $SLICE"
               BUILD_TYPE="<< parameters.flavor >>" ./utils/build-ios-framework.sh "$SLICE"
+            fi
+
+            if [[ "$SLICE" == "macosx" ]]; then
+              export MACOSX_DEPLOYMENT_TARGET="10.15"
+              echo "[HERMES] Building Hermes for MacOS"
+              BUILD_TYPE="<< parameters.flavor >>" ./utils/build-mac-framework.sh
+              unset MACOSX_DEPLOYMENT_TARGET
+            elif [[ "$SLICE" == "xros" ]] || [[ "$SLICE" == "xrsimulator" ]]; then
+              export XROS_DEPLOYMENT_TARGET="1.0"
+              echo "[HERMES] Building Hermes for XR: $SLICE"
+              BUILD_TYPE="<< parameters.flavor >>" ./utils/build-ios-framework.sh "$SLICE"
+              unset XROS_DEPLOYMENT_TARGET
+            elif [[ "$SLICE" == "iphoneos" ]] || [[ "$SLICE" == "iphonesimulator" ]] || [[ "$SLICE" == "catalyst" ]] ; then
+              export IOS_DEPLOYMENT_TARGET="13.4"
+              echo "[HERMES] Building Hermes for iOS: $SLICE"
+              BUILD_TYPE="<< parameters.flavor >>" ./utils/build-ios-framework.sh "$SLICE"
+              unset IOS_DEPLOYMENT_TARGET
             fi
             unset RELEASE_VERSION
 
@@ -1131,6 +1145,11 @@ jobs:
       - run:
           name: Creating release commit
           command: |
+            # I'm seeing failures in automatically detect the email for the
+            # agent that should push the commit.
+            git config --global user.name "Distiller"
+            git config --global user.email "distiller@circleci.com"
+
             git commit -a -m "Release << parameters.version >>" -m "#publish-packages-to-npm&<< parameters.tag >>"
             git tag -a "v<< parameters.version >>" -m "v<< parameters.version >>"
             env GIT_PAGER=cat git show HEAD
