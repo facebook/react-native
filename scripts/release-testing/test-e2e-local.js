@@ -166,15 +166,15 @@ async function testRNTesterAndroid(
       apkPath = path.join(
         unzipFolder,
         'hermes',
-        'release',
-        `app-hermes-${emulatorArch}-release.apk`,
+        'debug',
+        `app-hermes-${emulatorArch}-debug.apk`,
       );
     } else {
       apkPath = path.join(
         unzipFolder,
         'jsc',
-        'release',
-        `app-jsc-${emulatorArch}-release.apk`,
+        'debug',
+        `app-jsc-${emulatorArch}-debug.apk`,
       );
     }
 
