@@ -786,6 +786,9 @@ jobs:
       - HERMES_WS_DIR: *hermes_workspace_root
       - HERMES_TARBALL_ARTIFACTS_DIR: *hermes_tarball_artifacts_dir
       - HERMES_OSXBIN_ARTIFACTS_DIR: *hermes_osxbin_artifacts_dir
+      - XROS_DEPLOYMENT_TARGET: "1.0"
+      - MACOSX_DEPLOYMENT_TARGET: "10.15"
+      - IPHONEOS_DEPLOYMENT_TARGET: "13.4"
     steps:
       - *attach_hermes_workspace
       - stop_job_if_apple_artifacts_are_there:
