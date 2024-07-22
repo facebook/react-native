@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<bf73788f1e8314232f880108b8a7c671>>
+ * @generated SignedSource<<58cd9d65067ed758ecad65ad22737b6c>>
  */
 
 /**
@@ -33,6 +33,7 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var destroyFabricSurfacesInReactInstanceManagerCache: Boolean? = null
   private var enableAlignItemsBaselineOnFabricIOSCache: Boolean? = null
   private var enableCleanTextInputYogaNodeCache: Boolean? = null
+  private var enableFabricRendererExclusivelyCache: Boolean? = null
   private var enableGranularShadowTreeStateReconciliationCache: Boolean? = null
   private var enableLongTaskAPICache: Boolean? = null
   private var enableMicrotasksCache: Boolean? = null
@@ -144,6 +145,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.enableCleanTextInputYogaNode()
       accessedFeatureFlags.add("enableCleanTextInputYogaNode")
       enableCleanTextInputYogaNodeCache = cached
+    }
+    return cached
+  }
+
+  override fun enableFabricRendererExclusively(): Boolean {
+    var cached = enableFabricRendererExclusivelyCache
+    if (cached == null) {
+      cached = currentProvider.enableFabricRendererExclusively()
+      accessedFeatureFlags.add("enableFabricRendererExclusively")
+      enableFabricRendererExclusivelyCache = cached
     }
     return cached
   }
