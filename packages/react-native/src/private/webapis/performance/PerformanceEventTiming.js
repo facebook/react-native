@@ -8,29 +8,34 @@
  * @flow strict
  */
 
-import type {HighResTimeStamp, PerformanceEntryJSON} from './PerformanceEntry';
+// flowlint unsafe-getters-setters:off
+
+import type {
+  DOMHighResTimeStamp,
+  PerformanceEntryJSON,
+} from './PerformanceEntry';
 
 import {PerformanceEntry} from './PerformanceEntry';
 
 export type PerformanceEventTimingJSON = {
   ...PerformanceEntryJSON,
-  processingStart: HighResTimeStamp,
-  processingEnd: HighResTimeStamp,
+  processingStart: DOMHighResTimeStamp,
+  processingEnd: DOMHighResTimeStamp,
   interactionId: number,
   ...
 };
 
 export default class PerformanceEventTiming extends PerformanceEntry {
-  processingStart: HighResTimeStamp;
-  processingEnd: HighResTimeStamp;
-  interactionId: number;
+  #processingStart: DOMHighResTimeStamp;
+  #processingEnd: DOMHighResTimeStamp;
+  #interactionId: number;
 
   constructor(init: {
     name: string,
-    startTime?: HighResTimeStamp,
-    duration?: HighResTimeStamp,
-    processingStart?: HighResTimeStamp,
-    processingEnd?: HighResTimeStamp,
+    startTime?: DOMHighResTimeStamp,
+    duration?: DOMHighResTimeStamp,
+    processingStart?: DOMHighResTimeStamp,
+    processingEnd?: DOMHighResTimeStamp,
     interactionId?: number,
   }) {
     super({
@@ -39,17 +44,29 @@ export default class PerformanceEventTiming extends PerformanceEntry {
       startTime: init.startTime ?? 0,
       duration: init.duration ?? 0,
     });
-    this.processingStart = init.processingStart ?? 0;
-    this.processingEnd = init.processingEnd ?? 0;
-    this.interactionId = init.interactionId ?? 0;
+    this.#processingStart = init.processingStart ?? 0;
+    this.#processingEnd = init.processingEnd ?? 0;
+    this.#interactionId = init.interactionId ?? 0;
+  }
+
+  get processingStart(): DOMHighResTimeStamp {
+    return this.#processingStart;
+  }
+
+  get processingEnd(): DOMHighResTimeStamp {
+    return this.#processingEnd;
+  }
+
+  get interactionId(): number {
+    return this.#interactionId;
   }
 
   toJSON(): PerformanceEventTimingJSON {
     return {
       ...super.toJSON(),
-      processingStart: this.processingStart,
-      processingEnd: this.processingEnd,
-      interactionId: this.interactionId,
+      processingStart: this.#processingStart,
+      processingEnd: this.#processingEnd,
+      interactionId: this.#interactionId,
     };
   }
 }
