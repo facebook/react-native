@@ -139,6 +139,7 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
   /**
    * @deprecated Use {@link #setBorderRadius(ReactViewGroup, int, Dynamic)} instead.
    */
+  @Deprecated(since = "0.75.0", forRemoval = true)
   public void setBorderRadius(ReactViewGroup view, int index, float borderRadius) {
     setBorderRadius(view, index, new DynamicFromObject(borderRadius));
   }
