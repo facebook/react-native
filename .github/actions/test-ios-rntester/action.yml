@@ -28,6 +28,10 @@ inputs:
   react-native-version:
     description: The version of react-native
     required: true
+  run-e2e-tests:
+    description: Whether we want to run E2E tests or not
+    required: false
+    default: false
 
 runs:
   using: composite
@@ -114,17 +118,73 @@ runs:
         bundle install
         bundle exec pod install
     - name: Build RNTester
-      if: ${{ inputs.run-unit-tests != 'true' }}
+      if: ${{ inputs.run-unit-tests != 'true' && inputs.run-e2e-tests == 'false' }}
       shell: bash
       run: |
         xcodebuild build \
           -workspace packages/rn-tester/RNTesterPods.xcworkspace \
           -scheme RNTester \
           -sdk iphonesimulator
+    - name: Build RNTester (E2E Tests)
+      shell: bash
+      if: ${{ inputs.run-e2e-tests == 'true' }}
+      run: |
+        xcrun xcodebuild \
+          -scheme "RNTester" \
+          -workspace packages/rn-tester/RNTesterPods.xcworkspace \
+          -configuration "Release" \
+          -sdk "iphonesimulator" \
+          -destination "generic/platform=iOS Simulator" \
+          -derivedDataPath "/tmp/RNTesterBuild"
+
+          echo "Print path to *.app file"
+          find "/tmp/RNTesterBuild" -type d -name "*.app"
     - name: "Run Tests: iOS Unit and Integration Tests"
       if: ${{ inputs.run-unit-tests == 'true' }}
       shell: bash
       run: yarn test-ios
+    # E2E Tests: TODO - Factor out in an action
+    - name: Installing Maestro
+      if: ${{ inputs.run-e2e-tests == 'true' }}
+      shell: bash
+      run: curl -Ls "https://get.maestro.mobile.dev" | bash
+    - name: Installing Maestro dependencies
+      if: ${{ inputs.run-e2e-tests == 'true' }}
+      shell: bash
+      run: |
+        brew tap facebook/fb
+        brew install facebook/fb/idb-companion
+    - name: Run tests
+      if: ${{ inputs.run-e2e-tests == 'true' }}
+      env:
+        APP_PATH: "/tmp/RNTesterBuild/Build/Products/Release-iphonesimulator/RNTester.app"
+                  # ^^^ change this path to your *.app file
+      run: |
+        echo "Launching iOS Simulator"
+        xcrun simctl boot "iPhone 15 Pro"
+
+        echo "Installing app on Simulator"
+        xcrun simctl install booted "${{ env.APP_PATH }}"
+
+        echo "Start video record"
+        xcrun simctl io booted recordVideo video_record.mov & echo $! > video_record.pid
+
+        echo "Running tests with Maestro"
+        export MAESTRO_DRIVER_STARTUP_TIMEOUT=60000 # setting 60 seconds
+        $HOME/.maestro/bin/maestro test packages/rn-tester/.maestro/ --format junit
+    - name: Stop video record
+      if: always()
+      run: kill -SIGINT $(cat video_record.pid)
+    - name: Store video record
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: e2e_ios_report
+        path: |
+          video_record.mov
+          report.xml
+    # End E2E tests
+
     - name: Zip Derived data folder
       if: ${{ inputs.run-unit-tests == 'true' }}
       shell: bash

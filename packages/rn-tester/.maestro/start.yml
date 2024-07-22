@@ -1,0 +1,11 @@
+appId: com.meta.RNTester.localDevelopment
+---
+- launchApp
+- assertVisible: "Components"
+- scrollUntilVisible:
+    element:
+      id: "Layout Events"
+    direction: DOWN
+    speed: 60
+- tapOn:
+    id: "Layout Events"
