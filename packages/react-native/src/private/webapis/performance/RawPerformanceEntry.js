@@ -16,6 +16,7 @@ import type {
 
 import {PerformanceEntry} from './PerformanceEntry';
 import PerformanceEventTiming from './PerformanceEventTiming';
+import {PerformanceMark, PerformanceMeasure} from './UserTiming';
 
 export const RawPerformanceEntryTypeValues = {
   MARK: 1,
@@ -35,6 +36,15 @@ export function rawToPerformanceEntry(
       processingStart: entry.processingStart,
       processingEnd: entry.processingEnd,
       interactionId: entry.interactionId,
+    });
+  } else if (entry.entryType === RawPerformanceEntryTypeValues.MARK) {
+    return new PerformanceMark(entry.name, {
+      startTime: entry.startTime,
+    });
+  } else if (entry.entryType === RawPerformanceEntryTypeValues.MEASURE) {
+    return new PerformanceMeasure(entry.name, {
+      startTime: entry.startTime,
+      duration: entry.duration,
     });
   } else {
     return new PerformanceEntry({
