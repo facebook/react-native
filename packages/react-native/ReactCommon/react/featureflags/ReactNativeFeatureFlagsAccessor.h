@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8efbce21aeb4cd838f324264514b3e68>>
+ * @generated SignedSource<<c1230df8d1603fb6738dd634ab041a02>>
  */
 
 /**
@@ -45,6 +45,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableLongTaskAPI();
   bool enableMicrotasks();
   bool enablePropsUpdateReconciliationAndroid();
+  bool enableReportEventPaintTime();
   bool enableSynchronousStateUpdates();
   bool enableUIConsistency();
   bool excludeYogaFromRawProps();
@@ -77,7 +78,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 36> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 37> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> allowCollapsableChildren_;
@@ -93,6 +94,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableLongTaskAPI_;
   std::atomic<std::optional<bool>> enableMicrotasks_;
   std::atomic<std::optional<bool>> enablePropsUpdateReconciliationAndroid_;
+  std::atomic<std::optional<bool>> enableReportEventPaintTime_;
   std::atomic<std::optional<bool>> enableSynchronousStateUpdates_;
   std::atomic<std::optional<bool>> enableUIConsistency_;
   std::atomic<std::optional<bool>> excludeYogaFromRawProps_;

@@ -25,10 +25,6 @@ class CoreFeatures {
 
   // When enabled, rawProps in Props will not include Yoga specific props.
   static bool excludeYogaFromRawProps;
-
-  // Report paint time inside the Event Timing API implementation
-  // (PerformanceObserver).
-  static bool enableReportEventPaintTime;
 };
 
 } // namespace facebook::react
