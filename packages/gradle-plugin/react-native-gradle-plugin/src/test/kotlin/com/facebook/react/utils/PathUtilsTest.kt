@@ -14,7 +14,7 @@ import com.facebook.react.tests.OsRule
 import com.facebook.react.tests.WithOs
 import java.io.File
 import org.gradle.testfixtures.ProjectBuilder
-import org.junit.Assert.*
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assume.assumeTrue
 import org.junit.Rule
 import org.junit.Test
@@ -33,7 +33,7 @@ class PathUtilsTest {
 
     val actual = detectedEntryFile(extension)
 
-    assertEquals(expected, actual)
+    assertThat(expected).isEqualTo(actual)
   }
 
   @Test
@@ -44,7 +44,7 @@ class PathUtilsTest {
 
     val actual = detectedEntryFile(extension)
 
-    assertEquals(File(tempFolder.root, "index.android.js"), actual)
+		assertThat(File(tempFolder.root, "index.android.js")).isEqualTo(actual)
   }
 
   @Test
@@ -54,7 +54,7 @@ class PathUtilsTest {
 
     val actual = detectedEntryFile(extension)
 
-    assertEquals(File(tempFolder.root, "index.js"), actual)
+    assertThat(File(tempFolder.root, "index.js")).isEqualTo(actual)
   }
 
   @Test
@@ -68,7 +68,7 @@ class PathUtilsTest {
 
     val actual = detectedEntryFile(extension, envVariable)
 
-    assertEquals(expected, actual)
+    assertThat(expected).isEqualTo(actual)
   }
 
   @Test
@@ -80,7 +80,7 @@ class PathUtilsTest {
 
     val actual = detectedCliFile(extension)
 
-    assertEquals(cliFile, actual)
+    assertThat(cliFile).isEqualTo(actual)
   }
 
   @Test
@@ -96,7 +96,7 @@ class PathUtilsTest {
 
     val actual = detectedCliFile(extension)
 
-    assertEquals("<!-- nothing to see here -->", actual.readText())
+    assertThat("<!-- nothing to see here -->").isEqualTo(actual.readText())
   }
 
   @Test(expected = IllegalStateException::class)
@@ -114,28 +114,28 @@ class PathUtilsTest {
 
   @Test
   fun projectPathToLibraryName_withSimplePath() {
-    assertEquals("SampleSpec", projectPathToLibraryName(":sample"))
+    assertThat("SampleSpec").isEqualTo(projectPathToLibraryName(":sample"))
   }
 
   @Test
   fun projectPathToLibraryName_withComplexPath() {
-    assertEquals("SampleAndroidAppSpec", projectPathToLibraryName(":sample:android:app"))
+    assertThat("SampleAndroidAppSpec").isEqualTo(projectPathToLibraryName(":sample:android:app"))
   }
 
   @Test
   fun projectPathToLibraryName_withKebabCase() {
-    assertEquals("SampleAndroidAppSpec", projectPathToLibraryName("sample-android-app"))
+    assertThat("SampleAndroidAppSpec").isEqualTo(projectPathToLibraryName("sample-android-app"))
   }
 
   @Test
   fun projectPathToLibraryName_withDotsAndUnderscores() {
-    assertEquals("SampleAndroidAppSpec", projectPathToLibraryName("sample_android.app"))
+    assertThat("SampleAndroidAppSpec").isEqualTo(projectPathToLibraryName("sample_android.app"))
   }
 
   @Test
   fun detectOSAwareHermesCommand_withProvidedCommand() {
-    assertEquals(
-        "./my-home/hermes", detectOSAwareHermesCommand(tempFolder.root, "./my-home/hermes"))
+    assertThat(
+        "./my-home/hermes").isEqualTo(detectOSAwareHermesCommand(tempFolder.root, "./my-home/hermes"))
   }
 
   @Test
@@ -149,7 +149,7 @@ class PathUtilsTest {
         tempFolder.newFile(
             "node_modules/react-native/ReactAndroid/hermes-engine/build/hermes/bin/hermesc")
 
-    assertEquals(expected.toString(), detectOSAwareHermesCommand(tempFolder.root, ""))
+    assertThat(expected.toString()).isEqualTo(detectOSAwareHermesCommand(tempFolder.root, ""))
   }
 
   @Test
@@ -158,7 +158,7 @@ class PathUtilsTest {
     tempFolder.newFolder("node_modules/react-native/sdks/hermesc/osx-bin/")
     val expected = tempFolder.newFile("node_modules/react-native/sdks/hermesc/osx-bin/hermesc")
 
-    assertEquals(expected.toString(), detectOSAwareHermesCommand(tempFolder.root, ""))
+    assertThat(expected.toString()).isEqualTo(detectOSAwareHermesCommand(tempFolder.root, ""))
   }
 
   @Test(expected = IllegalStateException::class)
@@ -175,8 +175,8 @@ class PathUtilsTest {
     tempFolder.newFolder("node_modules/react-native/sdks/hermesc/osx-bin/")
     tempFolder.newFile("node_modules/react-native/sdks/hermesc/osx-bin/hermesc")
 
-    assertEquals(
-        "./my-home/hermes", detectOSAwareHermesCommand(tempFolder.root, "./my-home/hermes"))
+    assertThat(
+        "./my-home/hermes").isEqualTo(detectOSAwareHermesCommand(tempFolder.root, "./my-home/hermes"))
   }
 
   @Test
@@ -193,51 +193,51 @@ class PathUtilsTest {
     tempFolder.newFolder("node_modules/react-native/sdks/hermesc/osx-bin/")
     tempFolder.newFile("node_modules/react-native/sdks/hermesc/osx-bin/hermesc")
 
-    assertEquals(expected.toString(), detectOSAwareHermesCommand(tempFolder.root, ""))
+    assertThat(expected.toString()).isEqualTo(detectOSAwareHermesCommand(tempFolder.root, ""))
   }
 
   @Test
   fun getBuiltHermescFile_withoutOverride() {
-    assertEquals(
+    assertThat(
         File(
             tempFolder.root,
-            "node_modules/react-native/ReactAndroid/hermes-engine/build/hermes/bin/hermesc"),
+            "node_modules/react-native/ReactAndroid/hermes-engine/build/hermes/bin/hermesc")).isEqualTo(
         getBuiltHermescFile(tempFolder.root, ""))
   }
 
   @Test
   @WithOs(OS.WIN)
   fun getBuiltHermescFile_onWindows_withoutOverride() {
-    assertEquals(
+    assertThat(
         File(
             tempFolder.root,
-            "node_modules/react-native/ReactAndroid/hermes-engine/build/hermes/bin/hermesc.exe"),
+            "node_modules/react-native/ReactAndroid/hermes-engine/build/hermes/bin/hermesc.exe")).isEqualTo(
         getBuiltHermescFile(tempFolder.root, ""))
   }
 
   @Test
   fun getBuiltHermescFile_withOverride() {
-    assertEquals(
-        File("/home/circleci/hermes/build/bin/hermesc"),
+    assertThat(
+        File("/home/circleci/hermes/build/bin/hermesc")).isEqualTo(
         getBuiltHermescFile(tempFolder.root, "/home/circleci/hermes"))
   }
 
   @Test
   @WithOs(OS.WIN)
   fun getHermesCBin_onWindows_returnsHermescExe() {
-    assertEquals("hermesc.exe", getHermesCBin())
+    assertThat("hermesc.exe").isEqualTo(getHermesCBin())
   }
 
   @Test
   @WithOs(OS.LINUX)
   fun getHermesCBin_onLinux_returnsHermesc() {
-    assertEquals("hermesc", getHermesCBin())
+    assertThat("hermesc").isEqualTo(getHermesCBin())
   }
 
   @Test
   @WithOs(OS.MAC)
   fun getHermesCBin_onMac_returnsHermesc() {
-    assertEquals("hermesc", getHermesCBin())
+    assertThat("hermesc").isEqualTo(getHermesCBin())
   }
 
   @Test
@@ -250,7 +250,7 @@ class PathUtilsTest {
     project.plugins.apply("com.facebook.react")
     val extension = project.extensions.getByType(ReactExtension::class.java)
 
-    assertEquals(project.file("../package.json"), findPackageJsonFile(project, extension.root))
+    assertThat(project.file("../package.json")).isEqualTo(findPackageJsonFile(project, extension.root))
   }
 
   @Test
@@ -264,7 +264,7 @@ class PathUtilsTest {
     val extension =
         project.extensions.getByType(ReactExtension::class.java).apply { root.set(moduleFolder) }
 
-    assertEquals(localFile, findPackageJsonFile(project, extension.root))
+    assertThat(localFile).isEqualTo(findPackageJsonFile(project, extension.root))
   }
 
   @Test
@@ -278,7 +278,7 @@ class PathUtilsTest {
 
     val actual = readPackageJsonFile(project, extension.root)
 
-    assertNull(actual)
+    assertThat(actual).isNull()
   }
 
   @Test
@@ -293,8 +293,8 @@ class PathUtilsTest {
 
     val actual = readPackageJsonFile(project, extension.root)
 
-    assertNotNull(actual)
-    assertNull(actual!!.codegenConfig)
+    assertThat(actual).isNotNull()
+    assertThat(actual!!.codegenConfig).isNull()
   }
 
   @Test
@@ -319,7 +319,7 @@ class PathUtilsTest {
 
     val actual = readPackageJsonFile(project, extension.root)
 
-    assertNotNull(actual)
-    assertNotNull(actual!!.codegenConfig)
+    assertThat(actual).isNotNull()
+    assertThat(actual!!.codegenConfig).isNotNull()
   }
 }

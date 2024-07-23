@@ -7,38 +7,38 @@
 
 package com.facebook.react.model
 
-import org.junit.Assert.assertEquals
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
 class ModelAutolinkingDependenciesJsonTest {
 
   @Test
   fun nameCleansed_withoutScope() {
-    assertEquals("name", ModelAutolinkingDependenciesJson("", "name", null).nameCleansed)
-    assertEquals(
-        "react_native", ModelAutolinkingDependenciesJson("", "react~native", null).nameCleansed)
-    assertEquals(
-        "react_native", ModelAutolinkingDependenciesJson("", "react*native", null).nameCleansed)
-    assertEquals(
-        "react_native", ModelAutolinkingDependenciesJson("", "react!native", null).nameCleansed)
-    assertEquals(
-        "react_native", ModelAutolinkingDependenciesJson("", "react'native", null).nameCleansed)
-    assertEquals(
-        "react_native", ModelAutolinkingDependenciesJson("", "react(native", null).nameCleansed)
-    assertEquals(
-        "react_native", ModelAutolinkingDependenciesJson("", "react)native", null).nameCleansed)
-    assertEquals(
-        "react_native",
+    assertThat("name").isEqualTo(ModelAutolinkingDependenciesJson("", "name", null).nameCleansed)
+    assertThat(
+        "react_native").isEqualTo(ModelAutolinkingDependenciesJson("", "react~native", null).nameCleansed)
+    assertThat(
+        "react_native").isEqualTo(ModelAutolinkingDependenciesJson("", "react*native", null).nameCleansed)
+    assertThat(
+        "react_native").isEqualTo(ModelAutolinkingDependenciesJson("", "react!native", null).nameCleansed)
+    assertThat(
+        "react_native").isEqualTo(ModelAutolinkingDependenciesJson("", "react'native", null).nameCleansed)
+    assertThat(
+        "react_native").isEqualTo(ModelAutolinkingDependenciesJson("", "react(native", null).nameCleansed)
+    assertThat(
+        "react_native").isEqualTo(ModelAutolinkingDependenciesJson("", "react)native", null).nameCleansed)
+    assertThat(
+        "react_native").isEqualTo(
         ModelAutolinkingDependenciesJson("", "react~*!'()native", null).nameCleansed)
   }
 
   @Test
   fun nameCleansed_withScope() {
-    assertEquals(
-        "react-native_package",
+    assertThat(
+        "react-native_package").isEqualTo(
         ModelAutolinkingDependenciesJson("", "@react-native/package", null).nameCleansed)
-    assertEquals(
-        "this_is_a_more_complicated_example_of_weird_packages",
+    assertThat(
+        "this_is_a_more_complicated_example_of_weird_packages").isEqualTo(
         ModelAutolinkingDependenciesJson(
                 "", "@this*is~a(more)complicated/example!of~weird)packages", null)
             .nameCleansed)

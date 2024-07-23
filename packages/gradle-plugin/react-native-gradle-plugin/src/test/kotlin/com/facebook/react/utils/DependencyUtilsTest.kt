@@ -17,7 +17,7 @@ import com.facebook.react.utils.DependencyUtils.readVersionAndGroupStrings
 import java.net.URI
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository
 import org.gradle.testfixtures.ProjectBuilder
-import org.junit.Assert.*
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
@@ -35,10 +35,10 @@ class DependencyUtilsTest {
 
     configureRepositories(project, tempFolder.root)
 
-    assertNotNull(
+    assertThat(
         project.repositories.firstOrNull {
           it is MavenArtifactRepository && it.url == localMavenURI
-        })
+        }).isNotNull()
   }
 
   @Test
@@ -48,10 +48,10 @@ class DependencyUtilsTest {
 
     configureRepositories(project, tempFolder.root)
 
-    assertNotNull(
+    assertThat(
         project.repositories.firstOrNull {
           it is MavenArtifactRepository && it.url == repositoryURI
-        })
+        }).isNotNull()
   }
 
   @Test
@@ -64,10 +64,10 @@ class DependencyUtilsTest {
 
     configureRepositories(project, reactNativeDir)
 
-    assertNotNull(
+    assertThat(
         project.repositories.firstOrNull {
           it is MavenArtifactRepository && it.url == repositoryURI
-        })
+        }).isNotNull()
   }
 
   @Test
@@ -77,10 +77,10 @@ class DependencyUtilsTest {
 
     configureRepositories(project, tempFolder.root)
 
-    assertNotNull(
+    assertThat(
         project.repositories.firstOrNull {
           it is MavenArtifactRepository && it.url == repositoryURI
-        })
+        }).isNotNull()
   }
 
   @Test
@@ -90,10 +90,10 @@ class DependencyUtilsTest {
 
     configureRepositories(project, tempFolder.root)
 
-    assertNotNull(
+    assertThat(
         project.repositories.firstOrNull {
           it is MavenArtifactRepository && it.url == repositoryURI
-        })
+        }).isNotNull()
   }
 
   @Test
@@ -103,10 +103,10 @@ class DependencyUtilsTest {
 
     configureRepositories(project, tempFolder.root)
 
-    assertNotNull(
+    assertThat(
         project.repositories.firstOrNull {
           it is MavenArtifactRepository && it.url == repositoryURI
-        })
+        }).isNotNull()
   }
 
   @Test
@@ -127,7 +127,7 @@ class DependencyUtilsTest {
         project.repositories.indexOfFirst {
           it is MavenArtifactRepository && it.url == mavenCentralURI
         }
-    assertTrue(indexOfLocalRepo < indexOfMavenCentral)
+    assertThat(indexOfLocalRepo < indexOfMavenCentral).isTrue()
   }
 
   @Test
@@ -146,7 +146,7 @@ class DependencyUtilsTest {
         project.repositories.indexOfFirst {
           it is MavenArtifactRepository && it.url == mavenCentralURI
         }
-    assertTrue(indexOfSnapshotRepo < indexOfMavenCentral)
+    assertThat(indexOfSnapshotRepo < indexOfMavenCentral).isTrue()
   }
 
   @Test
@@ -158,14 +158,14 @@ class DependencyUtilsTest {
 
     configureRepositories(appProject, tempFolder.root)
 
-    assertNotNull(
+    assertThat(
         appProject.repositories.firstOrNull {
           it is MavenArtifactRepository && it.url == repositoryURI
-        })
-    assertNotNull(
+        }).isNotNull()
+    assertThat(
         libProject.repositories.firstOrNull {
           it is MavenArtifactRepository && it.url == repositoryURI
-        })
+        }).isNotNull()
   }
 
   @Test
@@ -184,8 +184,7 @@ class DependencyUtilsTest {
 
     // We need to make sure we have Maven Central defined twice, one by the library,
     // and another is the override by RNGP.
-    assertEquals(
-        2,
+    assertThat(2).isEqualTo(
         libProject.repositories.count { it is MavenArtifactRepository && it.url == repositoryURI })
   }
 
@@ -195,7 +194,7 @@ class DependencyUtilsTest {
 
     configureDependencies(project, "")
 
-    assertTrue(project.configurations.first().resolutionStrategy.forcedModules.isEmpty())
+    assertThat(project.configurations.first().resolutionStrategy.forcedModules.isEmpty()).isTrue()
   }
 
   @Test
@@ -205,8 +204,8 @@ class DependencyUtilsTest {
     configureDependencies(project, "1.2.3")
 
     val forcedModules = project.configurations.first().resolutionStrategy.forcedModules
-    assertTrue(forcedModules.any { it.toString() == "com.facebook.react:react-android:1.2.3" })
-    assertTrue(forcedModules.any { it.toString() == "com.facebook.react:hermes-android:1.2.3" })
+    assertThat(forcedModules.any { it.toString() == "com.facebook.react:react-android:1.2.3" }).isTrue()
+    assertThat(forcedModules.any { it.toString() == "com.facebook.react:hermes-android:1.2.3" }).isTrue()
   }
 
   @Test
@@ -221,10 +220,10 @@ class DependencyUtilsTest {
 
     val appForcedModules = appProject.configurations.first().resolutionStrategy.forcedModules
     val libForcedModules = libProject.configurations.first().resolutionStrategy.forcedModules
-    assertTrue(appForcedModules.any { it.toString() == "com.facebook.react:react-android:1.2.3" })
-    assertTrue(appForcedModules.any { it.toString() == "com.facebook.react:hermes-android:1.2.3" })
-    assertTrue(libForcedModules.any { it.toString() == "com.facebook.react:react-android:1.2.3" })
-    assertTrue(libForcedModules.any { it.toString() == "com.facebook.react:hermes-android:1.2.3" })
+    assertThat(appForcedModules.any { it.toString() == "com.facebook.react:react-android:1.2.3" }).isTrue()
+    assertThat(appForcedModules.any { it.toString() == "com.facebook.react:hermes-android:1.2.3" }).isTrue()
+    assertThat(libForcedModules.any { it.toString() == "com.facebook.react:react-android:1.2.3" }).isTrue()
+    assertThat(libForcedModules.any { it.toString() == "com.facebook.react:hermes-android:1.2.3" }).isTrue()
   }
 
   @Test
@@ -239,25 +238,25 @@ class DependencyUtilsTest {
 
     val appForcedModules = appProject.configurations.first().resolutionStrategy.forcedModules
     val libForcedModules = libProject.configurations.first().resolutionStrategy.forcedModules
-    assertTrue(appForcedModules.any { it.toString() == "io.github.test:react-android:1.2.3" })
-    assertTrue(appForcedModules.any { it.toString() == "io.github.test:hermes-android:1.2.3" })
-    assertTrue(libForcedModules.any { it.toString() == "io.github.test:react-android:1.2.3" })
-    assertTrue(libForcedModules.any { it.toString() == "io.github.test:hermes-android:1.2.3" })
+    assertThat(appForcedModules.any { it.toString() == "io.github.test:react-android:1.2.3" }).isTrue()
+    assertThat(appForcedModules.any { it.toString() == "io.github.test:hermes-android:1.2.3" }).isTrue()
+    assertThat(libForcedModules.any { it.toString() == "io.github.test:react-android:1.2.3" }).isTrue()
+    assertThat(libForcedModules.any { it.toString() == "io.github.test:hermes-android:1.2.3" }).isTrue()
   }
 
   @Test
   fun getDependencySubstitutions_withDefaultGroup_substitutesCorrectly() {
     val dependencySubstitutions = getDependencySubstitutions("0.42.0")
 
-    assertEquals(dependencySubstitutions[0].first, "com.facebook.react:react-native")
-    assertEquals(dependencySubstitutions[0].second, "com.facebook.react:react-android:0.42.0")
-    assertEquals(
-        dependencySubstitutions[0].third,
+    assertThat(dependencySubstitutions[0].first).isEqualTo("com.facebook.react:react-native")
+    assertThat(dependencySubstitutions[0].second).isEqualTo("com.facebook.react:react-android:0.42.0")
+    assertThat(
+        dependencySubstitutions[0].third).isEqualTo(
         "The react-native artifact was deprecated in favor of react-android due to https://github.com/facebook/react-native/issues/35210.")
-    assertEquals(dependencySubstitutions[1].first, "com.facebook.react:hermes-engine")
-    assertEquals(dependencySubstitutions[1].second, "com.facebook.react:hermes-android:0.42.0")
-    assertEquals(
-        dependencySubstitutions[1].third,
+    assertThat(dependencySubstitutions[1].first).isEqualTo("com.facebook.react:hermes-engine")
+    assertThat(dependencySubstitutions[1].second).isEqualTo("com.facebook.react:hermes-android:0.42.0")
+    assertThat(
+        dependencySubstitutions[1].third).isEqualTo(
         "The hermes-engine artifact was deprecated in favor of hermes-android due to https://github.com/facebook/react-native/issues/35210.")
   }
 
@@ -265,25 +264,25 @@ class DependencyUtilsTest {
   fun getDependencySubstitutions_withCustomGroup_substitutesCorrectly() {
     val dependencySubstitutions = getDependencySubstitutions("0.42.0", "io.github.test")
 
-    assertEquals(dependencySubstitutions[0].first, "com.facebook.react:react-native")
-    assertEquals(dependencySubstitutions[0].second, "io.github.test:react-android:0.42.0")
-    assertEquals(
-        dependencySubstitutions[0].third,
+    assertThat(dependencySubstitutions[0].first).isEqualTo("com.facebook.react:react-native")
+    assertThat(dependencySubstitutions[0].second).isEqualTo("io.github.test:react-android:0.42.0")
+    assertThat(
+        dependencySubstitutions[0].third).isEqualTo(
         "The react-native artifact was deprecated in favor of react-android due to https://github.com/facebook/react-native/issues/35210.")
-    assertEquals(dependencySubstitutions[1].first, "com.facebook.react:hermes-engine")
-    assertEquals(dependencySubstitutions[1].second, "io.github.test:hermes-android:0.42.0")
-    assertEquals(
-        dependencySubstitutions[1].third,
+    assertThat(dependencySubstitutions[1].first).isEqualTo("com.facebook.react:hermes-engine")
+    assertThat(dependencySubstitutions[1].second).isEqualTo("io.github.test:hermes-android:0.42.0")
+    assertThat(
+        dependencySubstitutions[1].third).isEqualTo(
         "The hermes-engine artifact was deprecated in favor of hermes-android due to https://github.com/facebook/react-native/issues/35210.")
-    assertEquals(dependencySubstitutions[2].first, "com.facebook.react:react-android")
-    assertEquals(dependencySubstitutions[2].second, "io.github.test:react-android:0.42.0")
-    assertEquals(
-        dependencySubstitutions[2].third,
+    assertThat(dependencySubstitutions[2].first).isEqualTo("com.facebook.react:react-android")
+    assertThat(dependencySubstitutions[2].second).isEqualTo("io.github.test:react-android:0.42.0")
+    assertThat(
+        dependencySubstitutions[2].third).isEqualTo(
         "The react-android dependency was modified to use the correct Maven group.")
-    assertEquals(dependencySubstitutions[3].first, "com.facebook.react:hermes-android")
-    assertEquals(dependencySubstitutions[3].second, "io.github.test:hermes-android:0.42.0")
-    assertEquals(
-        dependencySubstitutions[3].third,
+    assertThat(dependencySubstitutions[3].first).isEqualTo("com.facebook.react:hermes-android")
+    assertThat(dependencySubstitutions[3].second).isEqualTo("io.github.test:hermes-android:0.42.0")
+    assertThat(
+        dependencySubstitutions[3].third).isEqualTo(
         "The hermes-android dependency was modified to use the correct Maven group.")
   }
 
@@ -301,7 +300,7 @@ class DependencyUtilsTest {
 
     val versionString = readVersionAndGroupStrings(propertiesFile).first
 
-    assertEquals("1000.0.0", versionString)
+    assertThat("1000.0.0").isEqualTo(versionString)
   }
 
   @Test
@@ -318,7 +317,7 @@ class DependencyUtilsTest {
 
     val versionString = readVersionAndGroupStrings(propertiesFile).first
 
-    assertEquals("0.0.0-20221101-2019-cfe811ab1-SNAPSHOT", versionString)
+    assertThat("0.0.0-20221101-2019-cfe811ab1-SNAPSHOT").isEqualTo(versionString)
   }
 
   @Test
@@ -333,7 +332,7 @@ class DependencyUtilsTest {
         }
 
     val versionString = readVersionAndGroupStrings(propertiesFile).first
-    assertEquals("", versionString)
+    assertThat("").isEqualTo(versionString)
   }
 
   @Test
@@ -349,7 +348,7 @@ class DependencyUtilsTest {
         }
 
     val versionString = readVersionAndGroupStrings(propertiesFile).first
-    assertEquals("", versionString)
+    assertThat("").isEqualTo(versionString)
   }
 
   @Test
@@ -366,7 +365,7 @@ class DependencyUtilsTest {
 
     val groupString = readVersionAndGroupStrings(propertiesFile).second
 
-    assertEquals("io.github.test", groupString)
+    assertThat("io.github.test").isEqualTo(groupString)
   }
 
   @Test
@@ -382,7 +381,7 @@ class DependencyUtilsTest {
 
     val groupString = readVersionAndGroupStrings(propertiesFile).second
 
-    assertEquals("com.facebook.react", groupString)
+    assertThat("com.facebook.react").isEqualTo(groupString)
   }
 
   @Test
@@ -390,7 +389,7 @@ class DependencyUtilsTest {
     val process = createProject()
     val mavenRepo = process.mavenRepoFromUrl("https://hello.world")
 
-    assertEquals(URI.create("https://hello.world"), mavenRepo.url)
+    assertThat(URI.create("https://hello.world")).isEqualTo(mavenRepo.url)
   }
 
   @Test
@@ -399,6 +398,6 @@ class DependencyUtilsTest {
     val repoFolder = tempFolder.newFolder("maven-repo")
     val mavenRepo = process.mavenRepoFromURI(repoFolder.toURI())
 
-    assertEquals(repoFolder.toURI(), mavenRepo.url)
+    assertThat(repoFolder.toURI()).isEqualTo(mavenRepo.url)
   }
 }
