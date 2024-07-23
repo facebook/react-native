@@ -286,6 +286,99 @@ val preparePrefab by
                   "jsinspector",
                   Pair("../ReactCommon/jsinspector-modern/", "jsinspector-modern/"),
               ),
+              PrefabPreprocessingEntry(
+                  "reactnative",
+                  listOf(
+                      // glog
+                      Pair(File(buildDir, "third-party-ndk/glog/exported/").absolutePath, ""),
+                      // jsi
+                      Pair("../ReactCommon/jsi/", ""),
+                      // react_codegen_rncore
+                      Pair(File(buildDir, "generated/source/codegen/jni/").absolutePath, ""),
+                      // react_debug
+                      Pair("../ReactCommon/react/debug/", "react/debug/"),
+                      // react_render_componentregistry
+                      Pair(
+                          "../ReactCommon/react/renderer/componentregistry/",
+                          "react/renderer/componentregistry/"),
+                      // react_render_core
+                      Pair("../ReactCommon/react/renderer/core/", "react/renderer/core/"),
+                      // react_render_debug
+                      Pair("../ReactCommon/react/renderer/debug/", "react/renderer/debug/"),
+                      // react_render_graphics
+                      Pair("../ReactCommon/react/renderer/graphics/", "react/renderer/graphics/"),
+                      Pair("../ReactCommon/react/renderer/graphics/platform/android/", ""),
+                      // react_render_imagemanager
+                      Pair(
+                          "../ReactCommon/react/renderer/imagemanager/",
+                          "react/renderer/imagemanager/"),
+                      Pair("../ReactCommon/react/renderer/imagemanager/platform/cxx/", ""),
+                      // react_render_mapbuffer
+                      Pair("../ReactCommon/react/renderer/mapbuffer/", "react/renderer/mapbuffer/"),
+                      // react_utils
+                      Pair("../ReactCommon/react/utils/", "react/utils/"),
+                      // rrc_image
+                      Pair(
+                          "../ReactCommon/react/renderer/components/image/",
+                          "react/renderer/components/image/"),
+                      // rrc_legacyviewmanagerinterop
+                      Pair(
+                          "../ReactCommon/react/renderer/components/legacyviewmanagerinterop/",
+                          "react/renderer/components/legacyviewmanagerinterop/"),
+                      // rrc_view
+                      Pair(
+                          "../ReactCommon/react/renderer/components/view/",
+                          "react/renderer/components/view/"),
+                      Pair("../ReactCommon/react/renderer/components/view/platform/android/", ""),
+                      // runtimeexecutor
+                      Pair("../ReactCommon/runtimeexecutor/", ""),
+                      // react_render_textlayoutmanager
+                      Pair(
+                          "../ReactCommon/react/renderer/textlayoutmanager/",
+                          "react/renderer/textlayoutmanager/"),
+                      Pair("../ReactCommon/react/renderer/textlayoutmanager/platform/android/", ""),
+                      // rrc_text
+                      Pair(
+                          "../ReactCommon/react/renderer/components/text/",
+                          "react/renderer/components/text/"),
+                      Pair(
+                          "../ReactCommon/react/renderer/attributedstring",
+                          "react/renderer/attributedstring"),
+                      // rrc_textinput
+                      Pair(
+                          "../ReactCommon/react/renderer/components/textinput/",
+                          "react/renderer/components/textinput/"),
+                      Pair(
+                          "../ReactCommon/react/renderer/components/textinput/platform/android/",
+                          ""),
+                      // react_nativemodule_core
+                      Pair(File(buildDir, "third-party-ndk/boost/boost_1_83_0/").absolutePath, ""),
+                      Pair(File(buildDir, "third-party-ndk/double-conversion/").absolutePath, ""),
+                      Pair(File(buildDir, "third-party-ndk/fmt/include/").absolutePath, ""),
+                      Pair(File(buildDir, "third-party-ndk/folly/").absolutePath, ""),
+                      Pair("../ReactCommon/callinvoker/", ""),
+                      Pair("../ReactCommon/cxxreact/", "cxxreact/"),
+                      Pair("../ReactCommon/react/bridging/", "react/bridging/"),
+                      Pair("../ReactCommon/react/config/", "react/config/"),
+                      Pair("../ReactCommon/react/nativemodule/core/", ""),
+                      Pair("../ReactCommon/react/nativemodule/core/platform/android/", ""),
+                      Pair(
+                          "../ReactCommon/react/renderer/components/root/",
+                          "react/renderer/components/root/"),
+                      Pair("../ReactCommon/react/renderer/debug/", "react/renderer/debug/"),
+                      Pair(
+                          "../ReactCommon/react/renderer/leakchecker/",
+                          "react/renderer/leakchecker/"),
+                      Pair("../ReactCommon/react/renderer/mounting/", "react/renderer/mounting/"),
+                      Pair(
+                          "../ReactCommon/react/renderer/runtimescheduler/",
+                          "react/renderer/runtimescheduler/"),
+                      Pair("../ReactCommon/react/renderer/scheduler/", "react/renderer/scheduler/"),
+                      Pair("../ReactCommon/react/renderer/telemetry/", "react/renderer/telemetry/"),
+                      Pair("../ReactCommon/react/renderer/uimanager/", "react/renderer/uimanager/"),
+                      Pair("../ReactCommon/react/utils/", "react/utils/"),
+                      Pair("src/main/jni/react/jni", "react/jni/"),
+                  )),
           ))
       outputDir.set(prefabHeadersDir)
     }
@@ -607,7 +700,8 @@ android {
             "react_render_mounting",
             "hermes_executor",
             "jscexecutor",
-            "jsinspector")
+            "jsinspector",
+            "reactnative")
       }
     }
     ndk { abiFilters.addAll(reactNativeArchitectures()) }
@@ -762,6 +856,7 @@ android {
     create("hermes_executor") { headers = File(prefabHeadersDir, "hermes_executor").absolutePath }
     create("jscexecutor") { headers = File(prefabHeadersDir, "jscexecutor").absolutePath }
     create("jsinspector") { headers = File(prefabHeadersDir, "jsinspector").absolutePath }
+    create("reactnative") { headers = File(prefabHeadersDir, "reactnative").absolutePath }
   }
 
   publishing {
