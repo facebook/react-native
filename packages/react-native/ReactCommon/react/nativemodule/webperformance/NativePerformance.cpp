@@ -36,7 +36,7 @@ namespace {
 #ifdef WITH_PERFETTO
 
 const std::string TRACK_PREFIX = "Track:";
-const std::string DEFAULT_TRACK_NAME = "Web Performance";
+const std::string DEFAULT_TRACK_NAME = "Web Performance: Timings";
 const std::string CUSTOM_TRACK_NAME_PREFIX = "Web Performance: ";
 
 std::tuple<std::string, std::string_view> parsePerfettoTrack(
