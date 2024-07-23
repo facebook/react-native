@@ -58,29 +58,32 @@ ReactInstance::ReactInstance(
     }
 
     if (auto jsThread = weakJsThread.lock()) {
-      jsThread->runOnQueue(
-          [weakRuntime, weakTimerManager, callback = std::move(callback)]() {
-            auto runtime = weakRuntime.lock();
-            if (!runtime) {
-              return;
-            }
+      jsThread->runOnQueue([weakJsErrorHander,
+                            weakRuntime,
+                            weakTimerManager,
+                            callback = std::move(callback)]() {
+        auto jsErrorHandler = weakJsErrorHander.lock();
+        auto runtime = weakRuntime.lock();
+        if (!runtime || !jsErrorHandler) {
+          return;
+        }
 
-            jsi::Runtime& jsiRuntime = runtime->getRuntime();
-            SystraceSection s("ReactInstance::_runtimeExecutor[Callback]");
-            try {
-              callback(jsiRuntime);
+        jsi::Runtime& jsiRuntime = runtime->getRuntime();
+        SystraceSection s("ReactInstance::_runtimeExecutor[Callback]");
+        try {
+          callback(jsiRuntime);
 
-              // If we have first-class support for microtasks,
-              // they would've been called as part of the previous callback.
-              if (!ReactNativeFeatureFlags::enableMicrotasks()) {
-                if (auto timerManager = weakTimerManager.lock()) {
-                  timerManager->callReactNativeMicrotasks(jsiRuntime);
-                }
-              }
-            } catch (jsi::JSError& originalError) {
-              handleJSError(jsiRuntime, originalError, true);
+          // If we have first-class support for microtasks,
+          // they would've been called as part of the previous callback.
+          if (!ReactNativeFeatureFlags::enableMicrotasks()) {
+            if (auto timerManager = weakTimerManager.lock()) {
+              timerManager->callReactNativeMicrotasks(jsiRuntime);
             }
-          });
+          }
+        } catch (jsi::JSError& originalError) {
+          jsErrorHandler->handleFatalError(jsiRuntime, originalError);
+        }
+      });
     }
   };
 
@@ -118,7 +121,25 @@ ReactInstance::ReactInstance(
         };
   }
 
-  runtimeScheduler_ = std::make_shared<RuntimeScheduler>(runtimeExecutor);
+  runtimeScheduler_ = std::make_shared<RuntimeScheduler>(
+      runtimeExecutor,
+      RuntimeSchedulerClock::now,
+      [weakJsErrorHandler = std::weak_ptr(jsErrorHandler_)](
+          jsi::Runtime& runtime, jsi::JSError& error) {
+        auto jsErrorHandler = weakJsErrorHandler.lock();
+        if (!jsErrorHandler) {
+          return;
+        }
+        jsErrorHandler->handleFatalError(runtime, error);
+      },
+      [weakJsErrorHandler = std::weak_ptr(jsErrorHandler_)](
+          jsi::Runtime& runtime, jsi::JSError& error) {
+        auto jsErrorHandler = weakJsErrorHandler.lock();
+        if (!jsErrorHandler) {
+          return;
+        }
+        jsErrorHandler->handleFatalError(runtime, error);
+      });
   runtimeScheduler_->setPerformanceEntryReporter(
       // FIXME: Move creation of PerformanceEntryReporter to here and guarantee
       // that its lifetime is the same as the runtime.
@@ -212,6 +233,9 @@ void ReactInstance::loadScript(
           }
 
           runtime.evaluateJavaScript(buffer, sourceURL);
+          if (!jsErrorHandler_->hasHandledFatalError()) {
+            jsErrorHandler_->useJSPipeline();
+          }
           if (hasLogger) {
             ReactMarker::logTaggedMarkerBridgeless(
                 ReactMarker::RUN_JS_BUNDLE_STOP, scriptName.c_str());

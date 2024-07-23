@@ -6,6 +6,7 @@
  */
 
 #include "JsErrorHandler.h"
+#include <cxxreact/ErrorUtils.h>
 #include <regex>
 #include <sstream>
 #include <string>
@@ -96,16 +97,28 @@ JsErrorHandler::JsErrorHandler(JsErrorHandler::OnJsError onJsError)
 
 JsErrorHandler::~JsErrorHandler() {}
 
-void JsErrorHandler::handleFatalError(const jsi::JSError& error) {
+void JsErrorHandler::handleFatalError(
+    jsi::Runtime& runtime,
+    jsi::JSError& error) {
   // TODO: Current error parsing works and is stable. Can investigate using
   // REGEX_HERMES to get additional Hermes data, though it requires JS setup.
   _hasHandledFatalError = true;
+
+  if (_useJSPipeline) {
+    handleJSError(runtime, error, true);
+    return;
+  }
+  // This is a hacky way to get Hermes stack trace.
   ParsedError parsedError = parseErrorStack(error, true, false);
   _onJsError(parsedError);
 }
 
 bool JsErrorHandler::hasHandledFatalError() {
   return _hasHandledFatalError;
+}
+
+void JsErrorHandler::useJSPipeline() {
+  _useJSPipeline = true;
 }
 
 } // namespace facebook::react
