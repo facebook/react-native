@@ -1,0 +1,38 @@
+name: Maestro E2E Android
+description: Runs E2E Tests on iOS using Maestro
+inputs:
+  app-path:
+    required: true
+    description: The path to the .apk file
+  app-id:
+    required: true
+    description: The id of the app to test
+  jsengine:
+    required: true
+    description: The js engine we are using
+runs:
+  using: composite
+  steps:
+    - name: Installing Maestro
+      shell: bash
+      run: curl -Ls "https://get.maestro.mobile.dev" | bash
+    - name: Enable KVM group perms
+      shell: bash
+      run: |
+        echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+        sudo udevadm control --reload-rules
+        sudo udevadm trigger --name-match=kvm
+    - name: Install Maestro and run e2e tests
+      uses: reactivecircus/android-emulator-runner@v2
+      with:
+        api-level: 24
+        arch: arm64-v8a
+        script: |
+          adb install "${{ inputs.app-path }}"
+          $HOME/.maestro/bin/maestro test packages/rn-tester/.maestro/ --format junit -e APP_ID=${{ inputs.app-id }}
+    - name: Store tests result
+      uses: actions/upload-artifact@v3
+      with:
+        name: e2e_android_report_${{ inputs.jsengine }}
+        path: |
+          report.xml

@@ -201,6 +201,12 @@ jobs:
           hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
           react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
           run-e2e-tests: "true"
+      - name: Run E2E Tests
+        uses: ./.github/actions/maestro-ios
+        with:
+          app-path: "/tmp/RNTesterBuild/Build/Products/Release-iphonesimulator/RNTester.app"
+          app-id: com.meta.RNTester.localDevelopment
+          jsengine: ${{ matrix.jsengine }}
 
   build_hermesc_linux:
     runs-on: ubuntu-latest
@@ -253,6 +259,37 @@ jobs:
         uses: ./.github/actions/build-android
         with:
           release-type: ${{ needs.set_release_type.outputs.RELEASE_TYPE }}
+
+  test_android_rntester_e2e:
+    runs-on: 8-core-ubuntu
+    needs: [build_android]
+    container:
+      image: reactnativecommunity/react-native-android:latest
+      env:
+        TERM: "dumb"
+        GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+    strategy:
+      fail-fast: false
+      matrix:
+        jsengine: [hermes, jsc]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup node.js
+        uses: ./.github/actions/setup-node
+      - name: Install node dependencies
+        uses: ./.github/actions/yarn-install-with-cache
+      - name: Download APK
+        uses: actions/download-artifact@v4
+        with:
+          name: rntester-${{ matrix.jsengine }}-release
+          path: ./packages/rn-tester/android/app/build/outputs/apk/${{ matrix.jsengine }}/release/
+      - name: Run E2E Tests
+        uses: ./.github/actions/maestro-android
+        with:
+          app-path: ./packages/rn-tester/android/app/build/outputs/apk/${{ matrix.jsengine }}/release/
+          app-id: com.facebook.react.uiapp
+          jsengine: ${{ matrix.jsengine }}
 
   build_npm_package:
     runs-on: 8-core-ubuntu

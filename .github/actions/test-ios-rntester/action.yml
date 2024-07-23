@@ -143,49 +143,6 @@ runs:
       if: ${{ inputs.run-unit-tests == 'true' }}
       shell: bash
       run: yarn test-ios
-    # E2E Tests: TODO - Factor out in an action
-    - name: Installing Maestro
-      if: ${{ inputs.run-e2e-tests == 'true' }}
-      shell: bash
-      run: curl -Ls "https://get.maestro.mobile.dev" | bash
-    - name: Installing Maestro dependencies
-      if: ${{ inputs.run-e2e-tests == 'true' }}
-      shell: bash
-      run: |
-        brew tap facebook/fb
-        brew install facebook/fb/idb-companion
-    - name: Run tests
-      if: ${{ inputs.run-e2e-tests == 'true' }}
-      shell: bash
-      env:
-        APP_PATH: "/tmp/RNTesterBuild/Build/Products/Release-iphonesimulator/RNTester.app"
-                  # ^^^ change this path to your *.app file
-      run: |
-        echo "Launching iOS Simulator"
-        xcrun simctl boot "iPhone 15 Pro"
-
-        echo "Installing app on Simulator"
-        xcrun simctl install booted "${{ env.APP_PATH }}"
-
-        echo "Start video record"
-        xcrun simctl io booted recordVideo video_record.mov & echo $! > video_record.pid
-
-        echo "Running tests with Maestro"
-        export MAESTRO_DRIVER_STARTUP_TIMEOUT=60000 # setting 60 seconds
-        $HOME/.maestro/bin/maestro test packages/rn-tester/.maestro/ --format junit -e APP_ID=com.meta.RNTester.localDevelopment
-    - name: Stop video record
-      if: always()
-      shell: bash
-      run: kill -SIGINT $(cat video_record.pid)
-    - name: Store video record
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: e2e_ios_report
-        path: |
-          video_record.mov
-          report.xml
-    # End E2E tests
 
     - name: Zip Derived data folder
       if: ${{ inputs.run-unit-tests == 'true' }}

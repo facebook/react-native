@@ -4,8 +4,8 @@ appId: ${APP_ID} # iOS: com.meta.RNTester.localDevelopment | Android: com.facebo
 - assertVisible: "Components"
 - scrollUntilVisible:
     element:
-      id: "Layout Events"
+      id: "Modal"
     direction: DOWN
     speed: 60
 - tapOn:
-    id: "Layout Events"
+    id: "Modal"
