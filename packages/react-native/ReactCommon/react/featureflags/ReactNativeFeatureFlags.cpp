@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9018edcc813f79df51c2417214b428c0>>
+ * @generated SignedSource<<541ad52f8b28ce4f72da4ce00cc7ba0e>>
  */
 
 /**
@@ -147,6 +147,10 @@ bool ReactNativeFeatureFlags::useNativeViewConfigsInBridgelessMode() {
 
 bool ReactNativeFeatureFlags::useNewReactImageViewBackgroundDrawing() {
   return getAccessor().useNewReactImageViewBackgroundDrawing();
+}
+
+bool ReactNativeFeatureFlags::useOptimisedViewPreallocationOnAndroid() {
+  return getAccessor().useOptimisedViewPreallocationOnAndroid();
 }
 
 bool ReactNativeFeatureFlags::useRuntimeShadowNodeReferenceUpdate() {

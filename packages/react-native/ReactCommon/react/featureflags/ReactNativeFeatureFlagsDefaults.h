@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<71de31447eb8cbc20c817ce5e8e6f8b1>>
+ * @generated SignedSource<<f81d116e79fc7397ddc767ee3e458bd6>>
  */
 
 /**
@@ -152,6 +152,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool useNewReactImageViewBackgroundDrawing() override {
+    return false;
+  }
+
+  bool useOptimisedViewPreallocationOnAndroid() override {
     return false;
   }
 

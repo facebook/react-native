@@ -32,7 +32,13 @@ class FabricMountingManager final {
 
   void onSurfaceStop(SurfaceId surfaceId);
 
-  void maybePreallocateShadowView(const ShadowNode& shadowNode);
+  void maybePreallocateShadowNode(const ShadowNode& shadowNode);
+
+  /*
+   * Drains preallocatedViewsQueue_ by calling preallocateShadowView on each
+   * item in the queue. Can be called by any thread.
+   */
+  void drainPreallocateViewsQueue();
 
   void executeMount(const MountingTransaction& transaction);
 
@@ -61,6 +67,16 @@ class FabricMountingManager final {
 
   std::recursive_mutex commitMutex_;
 
+  /*
+   * Protects preallocatedViewsQueue_.
+   */
+  std::mutex preallocateMutex_;
+
+  /*
+   * A queue of views to be preallocated on the Java side.
+   */
+  std::vector<ShadowView> preallocatedViewsQueue_{};
+
   std::unordered_map<SurfaceId, std::unordered_set<Tag>>
       allocatedViewRegistry_{};
   std::recursive_mutex allocatedViewsMutex_;
@@ -68,6 +84,12 @@ class FabricMountingManager final {
   jni::local_ref<jobject> getProps(
       const ShadowView& oldShadowView,
       const ShadowView& newShadowView);
+
+  /*
+   * Calls FabricUIManager.preallocateView() on the Java side if view needs to
+   * be preallocated.
+   */
+  void preallocateShadowView(const ShadowView& shadowView);
 };
 
 } // namespace facebook::react

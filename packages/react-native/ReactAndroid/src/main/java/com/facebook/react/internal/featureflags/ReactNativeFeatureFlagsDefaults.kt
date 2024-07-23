@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6763616cc6266115d83a59f2aa957662>>
+ * @generated SignedSource<<fcab38c9de5314e55ff64584b9221b9c>>
  */
 
 /**
@@ -86,6 +86,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun useNativeViewConfigsInBridgelessMode(): Boolean = false
 
   override fun useNewReactImageViewBackgroundDrawing(): Boolean = false
+
+  override fun useOptimisedViewPreallocationOnAndroid(): Boolean = false
 
   override fun useRuntimeShadowNodeReferenceUpdate(): Boolean = false
 

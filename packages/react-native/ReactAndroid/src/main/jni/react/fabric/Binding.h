@@ -125,6 +125,9 @@ class Binding : public jni::HybridClass<Binding, JBinding>,
   void setPixelDensity(float pointScaleFactor);
 
   void driveCxxAnimations();
+
+  void drainPreallocateViewsQueue();
+
   void reportMount(SurfaceId surfaceId);
 
   void uninstallFabricUIManager();

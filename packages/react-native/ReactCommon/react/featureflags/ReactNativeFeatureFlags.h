@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b7ca52cd4fe82dcbc65f071a0792a885>>
+ * @generated SignedSource<<8d5e69e5a5bab6f48008f2b68f1a3126>>
  */
 
 /**
@@ -196,6 +196,11 @@ class ReactNativeFeatureFlags {
    * Use shared background drawing code for ReactImageView instead of using Fresco to manipulate the bitmap
    */
   RN_EXPORT static bool useNewReactImageViewBackgroundDrawing();
+
+  /**
+   * Moves more of the work in view preallocation to the main thread to free up JS thread.
+   */
+  RN_EXPORT static bool useOptimisedViewPreallocationOnAndroid();
 
   /**
    * When enabled, cloning shadow nodes within react native will update the reference held by the current JS fiber tree.

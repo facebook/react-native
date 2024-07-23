@@ -2492,6 +2492,7 @@ public abstract interface class com/facebook/react/devsupport/interfaces/StackFr
 }
 
 public abstract interface class com/facebook/react/fabric/Binding {
+	public abstract fun drainPreallocateViewsQueue ()V
 	public abstract fun driveCxxAnimations ()V
 	public abstract fun getInspectorDataForInstance (Lcom/facebook/react/fabric/events/EventEmitterWrapper;)Lcom/facebook/react/bridge/ReadableNativeMap;
 	public abstract fun register (Lcom/facebook/react/bridge/RuntimeExecutor;Lcom/facebook/react/bridge/RuntimeScheduler;Lcom/facebook/react/fabric/FabricUIManager;Lcom/facebook/react/fabric/events/EventBeatManager;Lcom/facebook/react/fabric/ComponentFactory;Lcom/facebook/react/fabric/ReactNativeConfig;)V
@@ -2508,6 +2509,7 @@ public abstract interface class com/facebook/react/fabric/Binding {
 
 public final class com/facebook/react/fabric/BindingImpl : com/facebook/react/fabric/Binding {
 	public fun <init> ()V
+	public fun drainPreallocateViewsQueue ()V
 	public fun driveCxxAnimations ()V
 	public fun getInspectorDataForInstance (Lcom/facebook/react/fabric/events/EventEmitterWrapper;)Lcom/facebook/react/bridge/ReadableNativeMap;
 	public fun register (Lcom/facebook/react/bridge/RuntimeExecutor;Lcom/facebook/react/bridge/RuntimeScheduler;Lcom/facebook/react/fabric/FabricUIManager;Lcom/facebook/react/fabric/events/EventBeatManager;Lcom/facebook/react/fabric/ComponentFactory;Lcom/facebook/react/fabric/ReactNativeConfig;)V

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5f09364e48d037c932428c0486290730>>
+ * @generated SignedSource<<0ee6343505e52cde7930a31ab5c8218a>>
  * @flow strict-local
  */
 
@@ -55,6 +55,7 @@ export interface Spec extends TurboModule {
   +useModernRuntimeScheduler?: () => boolean;
   +useNativeViewConfigsInBridgelessMode?: () => boolean;
   +useNewReactImageViewBackgroundDrawing?: () => boolean;
+  +useOptimisedViewPreallocationOnAndroid?: () => boolean;
   +useRuntimeShadowNodeReferenceUpdate?: () => boolean;
   +useRuntimeShadowNodeReferenceUpdateOnLayout?: () => boolean;
   +useStateAlignmentMechanism?: () => boolean;
