@@ -44,19 +44,16 @@ export default function attachKeyHandlers({
   };
 
   const onPress = async (key: string) => {
-    switch (key) {
+    switch (key.toLowerCase()) {
       case 'r':
-      case 'R':
         logger.info('Reloading connected app(s)...');
         messageSocket.broadcast('reload', null);
         break;
       case 'd':
-      case 'D':
         logger.info('Opening Dev Menu...');
         messageSocket.broadcast('devMenu', null);
         break;
       case 'i':
-      case 'I':
         logger.info('Opening app on iOS...');
         execa(
           'npx',
@@ -69,7 +66,6 @@ export default function attachKeyHandlers({
         ).stdout?.pipe(process.stdout);
         break;
       case 'a':
-      case 'A':
         logger.info('Opening app on Android...');
         execa(
           'npx',
@@ -82,7 +78,6 @@ export default function attachKeyHandlers({
         ).stdout?.pipe(process.stdout);
         break;
       case 'j':
-      case 'J':
         if (!experimentalDebuggerFrontend) {
           return;
         }
