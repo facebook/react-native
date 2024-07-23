@@ -9,14 +9,15 @@ package com.facebook.react.utils
 
 import com.facebook.react.tests.createProject
 import com.facebook.react.utils.BackwardCompatUtils.configureBackwardCompatibilityReactMap
-import org.junit.Assert.assertTrue
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
 
 class BackwardCompatUtilsTest {
 
-  @get:Rule val tempFolder = TemporaryFolder()
+  @get:Rule
+  val tempFolder = TemporaryFolder()
 
   @Test
   fun configureBackwardCompatibilityReactMap_addsEmptyReactMap() {
@@ -24,9 +25,9 @@ class BackwardCompatUtilsTest {
 
     configureBackwardCompatibilityReactMap(project)
 
-    assertTrue(project.extensions.extraProperties.has("react"))
+    assertThat(project.extensions.extraProperties.has("react")).isTrue()
     @Suppress("UNCHECKED_CAST")
-    assertTrue((project.extensions.extraProperties.get("react") as Map<String, Any?>).isEmpty())
+    assertThat((project.extensions.extraProperties.get("react") as Map<String, Any?>).isEmpty()).isTrue()
   }
 
   @Test
@@ -36,8 +37,8 @@ class BackwardCompatUtilsTest {
 
     configureBackwardCompatibilityReactMap(project)
 
-    assertTrue(project.extensions.extraProperties.has("react"))
+    assertThat(project.extensions.extraProperties.has("react")).isTrue()
     @Suppress("UNCHECKED_CAST")
-    assertTrue((project.extensions.extraProperties.get("react") as Map<String, Any?>).isEmpty())
+    assertThat((project.extensions.extraProperties.get("react") as Map<String, Any?>).isEmpty()).isTrue()
   }
 }
