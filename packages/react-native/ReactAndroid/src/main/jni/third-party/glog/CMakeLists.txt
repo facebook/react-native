@@ -17,7 +17,7 @@ add_compile_options(
 )
 
 add_library(glog
-        SHARED
+        STATIC
         glog-0.3.5/src/demangle.cc
         glog-0.3.5/src/logging.cc
         glog-0.3.5/src/raw_logging.cc

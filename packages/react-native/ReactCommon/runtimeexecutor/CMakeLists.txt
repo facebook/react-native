@@ -15,7 +15,7 @@ add_compile_options(
 
 file(GLOB_RECURSE runtimeexecutor_SRC CONFIGURE_DEPENDS *.cpp *.h)
 
-add_library(runtimeexecutor SHARED ${runtimeexecutor_SRC})
+add_library(runtimeexecutor OBJECT ${runtimeexecutor_SRC})
 
 target_include_directories(runtimeexecutor PUBLIC .)
 
