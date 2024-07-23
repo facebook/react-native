@@ -38,6 +38,7 @@ dependencies {
   implementation(libs.javapoet)
 
   testImplementation(libs.junit)
+  testImplementation(project(":shared-testutil"))
 }
 
 // We intentionally don't build for Java 17 as users will see a cryptic bytecode version

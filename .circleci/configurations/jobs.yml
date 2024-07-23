@@ -153,6 +153,7 @@ jobs:
             - packages/gradle-plugin/react-native-gradle-plugin/build/
             - packages/gradle-plugin/settings-plugin/build/
             - packages/gradle-plugin/shared/build/
+            - packages/gradle-plugin/shared-testutil/build/
             - packages/react-native-codegen/lib/
 
   # -------------------------
