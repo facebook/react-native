@@ -39,7 +39,7 @@ executors:
   reactnativeios-lts:
     <<: *defaults
     macos:
-      xcode: '14.3.1'
+      xcode: '15.1'
     resource_class: macos.m1.medium.gen1
     environment:
       - RCT_BUILD_HERMES_FROM_SOURCE: true
