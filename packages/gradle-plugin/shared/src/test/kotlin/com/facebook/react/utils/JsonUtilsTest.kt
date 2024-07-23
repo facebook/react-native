@@ -8,20 +8,21 @@
 package com.facebook.react.utils
 
 import org.intellij.lang.annotations.Language
-import org.junit.Assert.*
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
 
 class JsonUtilsTest {
 
-  @get:Rule val tempFolder = TemporaryFolder()
+  @get:Rule
+  val tempFolder = TemporaryFolder()
 
   @Test
   fun fromPackageJson_withInvalidJson_returnsNull() {
     val invalidJson = createJsonFile("""¯\_(ツ)_/¯""")
 
-    assertNull(JsonUtils.fromPackageJson(invalidJson))
+    assertThat(JsonUtils.fromPackageJson(invalidJson)).isNull()
   }
 
   @Test
@@ -30,15 +31,15 @@ class JsonUtilsTest {
 
     val parsed = JsonUtils.fromPackageJson(invalidJson)
 
-    assertNotNull(parsed)
-    assertNull(parsed?.codegenConfig)
+    assertThat(parsed).isNotNull()
+    assertThat(parsed?.codegenConfig).isNull()
   }
 
   @Test
   fun fromPackageJson_withOldJsonConfig_returnsAnEmptyLibrary() {
     val oldJsonConfig =
-        createJsonFile(
-            """
+      createJsonFile(
+        """
       {
         "name": "yet another npm package",
         "codegenConfig": {
@@ -52,20 +53,21 @@ class JsonUtilsTest {
         }
       }
       """
-                .trimIndent())
+          .trimIndent()
+      )
 
     val parsed = JsonUtils.fromPackageJson(oldJsonConfig)!!
 
-    assertNull(parsed.codegenConfig?.name)
-    assertNull(parsed.codegenConfig?.jsSrcsDir)
-    assertNull(parsed.codegenConfig?.android)
+    assertThat(parsed.codegenConfig?.name).isNull()
+    assertThat(parsed.codegenConfig?.jsSrcsDir).isNull()
+    assertThat(parsed.codegenConfig?.android).isNull()
   }
 
   @Test
   fun fromPackageJson_withValidJson_parsesCorrectly() {
     val validJson =
-        createJsonFile(
-            """
+      createJsonFile(
+        """
       {
         "name": "yet another npm package",
         "codegenConfig": {
@@ -80,20 +82,21 @@ class JsonUtilsTest {
         }
       }
       """
-                .trimIndent())
+          .trimIndent()
+      )
 
     val parsed = JsonUtils.fromPackageJson(validJson)!!
 
-    assertEquals("an awesome library", parsed.codegenConfig!!.name)
-    assertEquals("../js/", parsed.codegenConfig!!.jsSrcsDir)
-    assertEquals("com.awesome.library", parsed.codegenConfig!!.android!!.javaPackageName)
+    assertThat("an awesome library").isEqualTo(parsed.codegenConfig!!.name)
+    assertThat("../js/").isEqualTo(parsed.codegenConfig!!.jsSrcsDir)
+    assertThat("com.awesome.library").isEqualTo(parsed.codegenConfig!!.android!!.javaPackageName)
   }
 
   @Test
   fun fromReactNativePackageJson_withInvalidJson_returnsNull() {
     val invalidJson = createJsonFile("""¯\_(ツ)_/¯""")
 
-    assertNull(JsonUtils.fromPackageJson(invalidJson))
+    assertThat(JsonUtils.fromPackageJson(invalidJson)).isNull()
   }
 
   @Test
@@ -102,52 +105,54 @@ class JsonUtilsTest {
 
     val parsed = JsonUtils.fromPackageJson(invalidJson)
 
-    assertNotNull(parsed)
-    assertNull(parsed?.version)
+    assertThat(parsed).isNotNull()
+    assertThat(parsed?.version).isNull()
   }
 
   @Test
   fun fromReactNativePackageJson_withValidJson_parsesJsonCorrectly() {
     val validJson =
-        createJsonFile(
-            """
+      createJsonFile(
+        """
       {
         "version": "1000.0.0"
       }
       """
-                .trimIndent())
+          .trimIndent()
+      )
     val parsed = JsonUtils.fromPackageJson(validJson)!!
 
-    assertEquals("1000.0.0", parsed.version)
+    assertThat("1000.0.0").isEqualTo(parsed.version)
   }
 
   @Test
   fun fromAutolinkingConfigJson_withInvalidJson_returnsNull() {
     val invalidJson = createJsonFile("""¯\_(ツ)_/¯""")
 
-    assertNull(JsonUtils.fromAutolinkingConfigJson(invalidJson))
+    assertThat(JsonUtils.fromAutolinkingConfigJson(invalidJson)).isNull()
   }
 
   @Test
   fun fromAutolinkingConfigJson_withSimpleJson_returnsIt() {
     val validJson =
-        createJsonFile(
-            """
+      createJsonFile(
+        """
       {
         "reactNativeVersion": "1000.0.0"
       }
       """
-                .trimIndent())
+          .trimIndent()
+      )
     val parsed = JsonUtils.fromAutolinkingConfigJson(validJson)!!
 
-    assertEquals("1000.0.0", parsed.reactNativeVersion)
+    assertThat("1000.0.0").isEqualTo(parsed.reactNativeVersion)
   }
 
   @Test
   fun fromAutolinkingConfigJson_withProjectSpecified_canParseIt() {
     val validJson =
-        createJsonFile(
-            """
+      createJsonFile(
+        """
       {
         "reactNativeVersion": "1000.0.0",
         "project": {
@@ -173,23 +178,24 @@ class JsonUtilsTest {
         }
       }
       """
-                .trimIndent())
+          .trimIndent()
+      )
     val parsed = JsonUtils.fromAutolinkingConfigJson(validJson)!!
 
-    assertEquals("./packages/rn-tester", parsed.project!!.android!!.sourceDir)
-    assertEquals("RN-Tester", parsed.project!!.android!!.appName)
-    assertEquals("com.facebook.react.uiapp", parsed.project!!.android!!.packageName)
-    assertEquals("com.facebook.react.uiapp", parsed.project!!.android!!.applicationId)
-    assertEquals(".RNTesterActivity", parsed.project!!.android!!.mainActivity)
-    assertEquals("--mode HermesDebug", parsed.project!!.android!!.watchModeCommandParams!![0])
-    assertEquals("implementation", parsed.project!!.android!!.dependencyConfiguration)
+    assertThat("./packages/rn-tester").isEqualTo(parsed.project!!.android!!.sourceDir)
+    assertThat("RN-Tester").isEqualTo(parsed.project!!.android!!.appName)
+    assertThat("com.facebook.react.uiapp").isEqualTo(parsed.project!!.android!!.packageName)
+    assertThat("com.facebook.react.uiapp").isEqualTo(parsed.project!!.android!!.applicationId)
+    assertThat(".RNTesterActivity").isEqualTo(parsed.project!!.android!!.mainActivity)
+    assertThat("--mode HermesDebug").isEqualTo(parsed.project!!.android!!.watchModeCommandParams!![0])
+    assertThat("implementation").isEqualTo(parsed.project!!.android!!.dependencyConfiguration)
   }
 
   @Test
   fun fromAutolinkingConfigJson_withDependenciesSpecified_canParseIt() {
     val validJson =
-        createJsonFile(
-            """
+      createJsonFile(
+        """
       {
         "reactNativeVersion": "1000.0.0",
         "dependencies": {
@@ -224,88 +230,37 @@ class JsonUtilsTest {
         }
       }
       """
-                .trimIndent())
+          .trimIndent()
+      )
     val parsed = JsonUtils.fromAutolinkingConfigJson(validJson)!!
 
-    assertEquals(
-        "./node_modules/@react-native/oss-library-example",
-        parsed.dependencies!!["@react-native/oss-library-example"]!!.root)
-    assertEquals(
-        "@react-native/oss-library-example",
-        parsed.dependencies!!["@react-native/oss-library-example"]!!.name)
-    assertEquals(
-        "react-native_oss-library-example",
-        parsed.dependencies!!["@react-native/oss-library-example"]!!.nameCleansed)
-    assertEquals(
-        "./node_modules/@react-native/oss-library-example/android",
-        parsed.dependencies!!["@react-native/oss-library-example"]!!
-            .platforms!!
-            .android!!
-            .sourceDir)
-    assertEquals(
-        "import com.facebook.react.osslibraryexample.OSSLibraryExamplePackage;",
-        parsed.dependencies!!["@react-native/oss-library-example"]!!
-            .platforms!!
-            .android!!
-            .packageImportPath)
-    assertEquals(
-        "new OSSLibraryExamplePackage()",
-        parsed.dependencies!!["@react-native/oss-library-example"]!!
-            .platforms!!
-            .android!!
-            .packageInstance)
-    assertEquals(
-        listOf("staging", "debug", "release"),
-        parsed.dependencies!!["@react-native/oss-library-example"]!!
-            .platforms!!
-            .android!!
-            .buildTypes)
-    assertEquals(
-        "OSSLibraryExampleSpec",
-        parsed.dependencies!!["@react-native/oss-library-example"]!!
-            .platforms!!
-            .android!!
-            .libraryName)
-    assertEquals(
-        listOf("SampleNativeComponentComponentDescriptor"),
-        parsed.dependencies!!["@react-native/oss-library-example"]!!
-            .platforms!!
-            .android!!
-            .componentDescriptors)
-    assertEquals(
-        "./node_modules/@react-native/oss-library-example/android/build/generated/source/codegen/jni/CMakeLists.txt",
-        parsed.dependencies!!["@react-native/oss-library-example"]!!
-            .platforms!!
-            .android!!
-            .cmakeListsPath)
-    assertNull(
-        parsed.dependencies!!["@react-native/oss-library-example"]!!
-            .platforms!!
-            .android!!
-            .cxxModuleHeaderName)
-    assertNull(
-        parsed.dependencies!!["@react-native/oss-library-example"]!!
-            .platforms!!
-            .android!!
-            .cxxModuleCMakeListsPath)
-    assertNull(
-        parsed.dependencies!!["@react-native/oss-library-example"]!!
-            .platforms!!
-            .android!!
-            .cxxModuleCMakeListsModuleName)
-    assertEquals(
-        "implementation",
-        parsed.dependencies!!["@react-native/oss-library-example"]!!
-            .platforms!!
-            .android!!
-            .dependencyConfiguration)
-    assertFalse(
-        parsed.dependencies!!["@react-native/oss-library-example"]!!
-            .platforms!!
-            .android!!
-            .isPureCxxDependency!!)
+    assertThat("./node_modules/@react-native/oss-library-example").isEqualTo(parsed.dependencies!!["@react-native/oss-library-example"]!!.root)
+    assertThat("@react-native/oss-library-example").isEqualTo(parsed.dependencies!!["@react-native/oss-library-example"]!!.name)
+    assertThat("react-native_oss-library-example").isEqualTo(parsed.dependencies!!["@react-native/oss-library-example"]!!.nameCleansed)
+    assertThat("./node_modules/@react-native/oss-library-example/android").isEqualTo(parsed.dependencies!!["@react-native/oss-library-example"]!!.platforms!!.android!!.sourceDir)
+    assertThat("import com.facebook.react.osslibraryexample.OSSLibraryExamplePackage;").isEqualTo(
+      parsed.dependencies!!["@react-native/oss-library-example"]!!.platforms!!.android!!.packageImportPath
+    )
+    assertThat("new OSSLibraryExamplePackage()").isEqualTo(parsed.dependencies!!["@react-native/oss-library-example"]!!.platforms!!.android!!.packageInstance)
+    assertThat(
+      listOf(
+        "staging",
+        "debug",
+        "release"
+      )
+    ).isEqualTo(parsed.dependencies!!["@react-native/oss-library-example"]!!.platforms!!.android!!.buildTypes)
+    assertThat("OSSLibraryExampleSpec").isEqualTo(parsed.dependencies!!["@react-native/oss-library-example"]!!.platforms!!.android!!.libraryName)
+    assertThat(listOf("SampleNativeComponentComponentDescriptor")).isEqualTo(parsed.dependencies!!["@react-native/oss-library-example"]!!.platforms!!.android!!.componentDescriptors)
+    assertThat("./node_modules/@react-native/oss-library-example/android/build/generated/source/codegen/jni/CMakeLists.txt").isEqualTo(
+      parsed.dependencies!!["@react-native/oss-library-example"]!!.platforms!!.android!!.cmakeListsPath
+    )
+    assertThat(parsed.dependencies!!["@react-native/oss-library-example"]!!.platforms!!.android!!.cxxModuleHeaderName).isNull()
+    assertThat(parsed.dependencies!!["@react-native/oss-library-example"]!!.platforms!!.android!!.cxxModuleCMakeListsPath).isNull()
+    assertThat(parsed.dependencies!!["@react-native/oss-library-example"]!!.platforms!!.android!!.cxxModuleCMakeListsModuleName).isNull()
+    assertThat("implementation").isEqualTo(parsed.dependencies!!["@react-native/oss-library-example"]!!.platforms!!.android!!.dependencyConfiguration)
+    assertThat(parsed.dependencies!!["@react-native/oss-library-example"]!!.platforms!!.android!!.isPureCxxDependency!!).isFalse()
   }
 
   private fun createJsonFile(@Language("JSON") input: String) =
-      tempFolder.newFile().apply { writeText(input) }
+    tempFolder.newFile().apply { writeText(input) }
 }
