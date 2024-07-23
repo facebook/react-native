@@ -140,6 +140,34 @@ add_react_android_subdir(src/main/jni/react/runtime/hermes/jni)
 add_react_android_subdir(src/main/jni/react/runtime/jsc/jni)
 add_react_android_subdir(src/main/jni/react/devsupport)
 
+# libreactnative.so Dependency
+#
+# The React Native Android Library (the .aar) should expose headers only via this target.
+# This is needed in order to reduce the number of .so files that we ship in the final library
+add_library(reactnative SHARED OnLoad.cpp)
+target_link_libraries(reactnative
+        folly_runtime
+        glog
+        jsi
+        react_codegen_rncore
+        react_debug
+        react_nativemodule_core
+        react_render_componentregistry
+        react_render_core
+        react_render_debug
+        react_render_graphics
+        react_render_imagemanager
+        react_render_mapbuffer
+        react_render_textlayoutmanager
+        react_utils
+        rrc_image
+        rrc_legacyviewmanagerinterop
+        rrc_text
+        rrc_textinput
+        rrc_view
+        runtimeexecutor
+)
+
 # GTest dependencies
 add_executable(reactnative_unittest
   ${REACT_COMMON_DIR}/cxxreact/tests/jsarg_helpers.cpp
