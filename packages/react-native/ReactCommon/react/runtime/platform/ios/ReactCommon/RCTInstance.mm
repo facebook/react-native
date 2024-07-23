@@ -393,6 +393,15 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   }
 }
 
+- (void)callFunctionOnBufferedRumtimeExecutor:(std::function<void(facebook::jsi::Runtime &)> &&)executor
+{
+  self->_reactInstance->getBufferedRuntimeExecutor()([=](jsi::Runtime &runtime) {
+    if (executor) {
+      executor(runtime);
+    }
+  });
+}
+
 - (void)handleBundleLoadingError:(NSError *)error
 {
   if (!_valid) {
@@ -469,10 +478,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   [[NSNotificationCenter defaultCenter] postNotificationName:@"RCTInstanceDidLoadBundle" object:nil];
 
   if (_onInitialBundleLoad) {
-    auto onInitialBundleLoad = _onInitialBundleLoad;
-    RCTExecuteOnMainQueue(^{
-      onInitialBundleLoad();
-    });
+    _onInitialBundleLoad();
     _onInitialBundleLoad = nil;
   }
 }
