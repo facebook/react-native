@@ -21,5 +21,6 @@ target_include_directories(react_render_observers_events PUBLIC ${REACT_COMMON_D
 target_link_libraries(react_render_observers_events
         react_performance_timeline
         react_render_core
+        react_featureflags
         react_render_uimanager
         react_utils)

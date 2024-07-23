@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<541ad52f8b28ce4f72da4ce00cc7ba0e>>
+ * @generated SignedSource<<bab53ba585938b3bf458dbe0874931f8>>
  */
 
 /**
@@ -75,6 +75,10 @@ bool ReactNativeFeatureFlags::enableMicrotasks() {
 
 bool ReactNativeFeatureFlags::enablePropsUpdateReconciliationAndroid() {
   return getAccessor().enablePropsUpdateReconciliationAndroid();
+}
+
+bool ReactNativeFeatureFlags::enableReportEventPaintTime() {
+  return getAccessor().enableReportEventPaintTime();
 }
 
 bool ReactNativeFeatureFlags::enableSynchronousStateUpdates() {
