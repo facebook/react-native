@@ -42,10 +42,10 @@ const DEFAULT_REGISTRY_HOST =
 const HEAD = '1000.0.0';
 
 // We're going to deprecate the `init` command proxying requests to @react-native-community/cli transparently
-// on September 30th, 2024 or 0.76 (whichever arrives first). This is part of work to decouple of community CLI from React Native core.
+// on December 31th, 2024 or 0.76 (whichever arrives first). This is part of work to decouple of community CLI from React Native core.
 //
 // See https://github.com/react-native-community/discussions-and-proposals/blob/main/proposals/0759-react-native-frameworks.md
-const CLI_DEPRECATION_DATE = new Date('2024-09-30');
+const CLI_DEPRECATION_DATE = new Date('2024-12-31');
 
 async function getLatestVersion(registryHost = DEFAULT_REGISTRY_HOST) {
   return new Promise((res, rej) => {
@@ -119,7 +119,7 @@ function warnWithDeprecated() {
   }
 
   console.warn(`
-${chalk.yellow('🚨')}️ The \`init\` command is deprecated.
+🚨️ The \`init\` command is deprecated.
 
 - Switch to ${chalk.dim('npx @react-native-community/cli init')} for the identical behavior.
 - Refer to the documentation for information about alternative tools: ${chalk.dim('https://reactnative.dev/docs/getting-started')}`);
