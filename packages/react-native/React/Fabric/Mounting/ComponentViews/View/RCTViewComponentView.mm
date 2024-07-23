@@ -832,6 +832,7 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
       break;
   }
 
+  [_boxShadowLayer removeFromSuperlayer];
   _boxShadowLayer = nil;
   if (!_props->boxShadow.empty()) {
     _boxShadowLayer = [CALayer layer];
