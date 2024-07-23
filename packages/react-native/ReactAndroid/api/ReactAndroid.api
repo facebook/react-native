@@ -6576,6 +6576,11 @@ public abstract interface class com/facebook/react/views/modal/ReactModalHostVie
 	public abstract fun onRequestClose (Landroid/content/DialogInterface;)V
 }
 
+public final class com/facebook/react/views/progressbar/ProgressBarContainerView : android/widget/FrameLayout {
+	public static final field MAX_PROGRESS I
+	public fun <init> (Landroid/content/Context;)V
+}
+
 public final class com/facebook/react/views/progressbar/ProgressBarShadowNode : com/facebook/react/uimanager/LayoutShadowNode, com/facebook/yoga/YogaMeasureFunction {
 	public fun <init> ()V
 	public final fun getStyle ()Ljava/lang/String;
@@ -6590,20 +6595,17 @@ public class com/facebook/react/views/progressbar/ProgressBarShadowNode$$PropsSe
 	public fun setProperty (Lcom/facebook/react/views/progressbar/ProgressBarShadowNode;Ljava/lang/String;Ljava/lang/Object;)V
 }
 
-public class com/facebook/react/views/progressbar/ReactProgressBarViewManager : com/facebook/react/uimanager/BaseViewManager, com/facebook/react/viewmanagers/AndroidProgressBarManagerInterface {
+public final class com/facebook/react/views/progressbar/ReactProgressBarViewManager : com/facebook/react/uimanager/BaseViewManager, com/facebook/react/viewmanagers/AndroidProgressBarManagerInterface {
+	public static final field Companion Lcom/facebook/react/views/progressbar/ReactProgressBarViewManager$Companion;
 	public static final field REACT_CLASS Ljava/lang/String;
 	public fun <init> ()V
-	public static fun createProgressBar (Landroid/content/Context;I)Landroid/widget/ProgressBar;
 	public synthetic fun createShadowNodeInstance ()Lcom/facebook/react/uimanager/ReactShadowNode;
 	public fun createShadowNodeInstance ()Lcom/facebook/react/views/progressbar/ProgressBarShadowNode;
-	protected synthetic fun createViewInstance (Lcom/facebook/react/uimanager/ThemedReactContext;)Landroid/view/View;
-	protected fun createViewInstance (Lcom/facebook/react/uimanager/ThemedReactContext;)Lcom/facebook/react/views/progressbar/ProgressBarContainerView;
-	protected fun getDelegate ()Lcom/facebook/react/uimanager/ViewManagerDelegate;
+	public synthetic fun createViewInstance (Lcom/facebook/react/uimanager/ThemedReactContext;)Landroid/view/View;
 	public fun getName ()Ljava/lang/String;
 	public fun getShadowNodeClass ()Ljava/lang/Class;
 	public fun measure (Landroid/content/Context;Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/ReadableMap;FLcom/facebook/yoga/YogaMeasureMode;FLcom/facebook/yoga/YogaMeasureMode;[F)J
-	protected synthetic fun onAfterUpdateTransaction (Landroid/view/View;)V
-	protected fun onAfterUpdateTransaction (Lcom/facebook/react/views/progressbar/ProgressBarContainerView;)V
+	public synthetic fun onAfterUpdateTransaction (Landroid/view/View;)V
 	public synthetic fun setAnimating (Landroid/view/View;Z)V
 	public fun setAnimating (Lcom/facebook/react/views/progressbar/ProgressBarContainerView;Z)V
 	public synthetic fun setColor (Landroid/view/View;Ljava/lang/Integer;)V
@@ -6627,6 +6629,10 @@ public class com/facebook/react/views/progressbar/ReactProgressBarViewManager$$P
 	public fun getProperties (Ljava/util/Map;)V
 	public synthetic fun setProperty (Lcom/facebook/react/uimanager/ViewManager;Landroid/view/View;Ljava/lang/String;Ljava/lang/Object;)V
 	public fun setProperty (Lcom/facebook/react/views/progressbar/ReactProgressBarViewManager;Lcom/facebook/react/views/progressbar/ProgressBarContainerView;Ljava/lang/String;Ljava/lang/Object;)V
+}
+
+public final class com/facebook/react/views/progressbar/ReactProgressBarViewManager$Companion {
+	public final fun createProgressBar (Landroid/content/Context;I)Landroid/widget/ProgressBar;
 }
 
 public abstract interface class com/facebook/react/views/scroll/FpsListener {
