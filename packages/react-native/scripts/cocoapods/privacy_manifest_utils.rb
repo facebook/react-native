@@ -7,7 +7,7 @@ module PrivacyManifestUtils
     def self.add_aggregated_privacy_manifest(installer)
         user_project = get_user_project_from(installer)
         targets = get_application_targets(user_project)
-        file_path = get_privacyinfo_file_path(user_project)
+        file_path = get_privacyinfo_file_path(user_project, targets)
 
         privacy_info = read_privacyinfo_file(file_path) || {
             "NSPrivacyCollectedDataTypes" => [],
