@@ -10,12 +10,10 @@ package com.facebook.react
 import com.facebook.react.ReactSettingsExtension.Companion.checkAndUpdateLockfiles
 import com.facebook.react.ReactSettingsExtension.Companion.computeSha256
 import com.facebook.react.ReactSettingsExtension.Companion.getLibrariesToAutolink
-import groovy.test.GroovyTestCase.assertEquals
 import java.io.File
+import org.assertj.core.api.Assertions.assertThat
 import org.gradle.testfixtures.ProjectBuilder
 import org.intellij.lang.annotations.Language
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
@@ -34,10 +32,8 @@ class ReactSettingsExtensionTest {
       }
       """
                 .trimIndent())
-
-    assertEquals(
-        "838aa9a72a16fdd55b0d49b510a82e264a30f59333b5fdd97c7798a29146f6a8",
-        computeSha256(validFile))
+    assertThat(computeSha256(validFile))
+        .isEqualTo("838aa9a72a16fdd55b0d49b510a82e264a30f59333b5fdd97c7798a29146f6a8")
   }
 
   @Test
@@ -52,7 +48,7 @@ class ReactSettingsExtensionTest {
                 .trimIndent())
 
     val map = getLibrariesToAutolink(validJsonFile)
-    assertEquals(0, map.keys.size)
+    assertThat(map.keys).isEmpty()
   }
 
   @Test
@@ -97,11 +93,9 @@ class ReactSettingsExtensionTest {
                 .trimIndent())
 
     val map = getLibrariesToAutolink(validJsonFile)
-    assertEquals(1, map.keys.size)
-    assertTrue(":react-native_oss-library-example" in map.keys)
-    assertEquals(
-        File("./node_modules/@react-native/oss-library-example/android"),
-        map[":react-native_oss-library-example"])
+    assertThat(map.keys).containsExactly(":react-native_oss-library-example")
+    assertThat(map[":react-native_oss-library-example"])
+        .isEqualTo(File("./node_modules/@react-native/oss-library-example/android"))
   }
 
   @Test
@@ -130,14 +124,14 @@ class ReactSettingsExtensionTest {
                 .trimIndent())
 
     val map = getLibrariesToAutolink(validJsonFile)
-    assertEquals(0, map.keys.size)
+    assertThat(map.keys).isEmpty()
   }
 
   @Test
   fun checkAndUpdateLockfiles_withNothingToCheck_returnsFalse() {
     val project = ProjectBuilder.builder().build()
     val noFiles = project.files()
-    assertFalse(checkAndUpdateLockfiles(noFiles, tempFolder.root))
+    assertThat(checkAndUpdateLockfiles(noFiles, tempFolder.root)).isFalse()
   }
 
   @Test
@@ -147,11 +141,10 @@ class ReactSettingsExtensionTest {
     tempFolder.newFile("yarn.lock").apply { writeText("I'm a lockfile") }
     val lockfileCollection = project.files("yarn.lock")
 
-    assertTrue(checkAndUpdateLockfiles(lockfileCollection, buildFolder))
-    assertTrue(File(buildFolder, "yarn.lock.sha").exists())
-    assertEquals(
-        "76046b72442ee7eb130627e56c3db7c9907eef4913b17ad130335edc0eb702a8",
-        File(buildFolder, "yarn.lock.sha").readText())
+    assertThat(checkAndUpdateLockfiles(lockfileCollection, buildFolder)).isTrue()
+    assertThat(File(buildFolder, "yarn.lock.sha").exists()).isTrue()
+    assertThat(File(buildFolder, "yarn.lock.sha").readText())
+        .isEqualTo("76046b72442ee7eb130627e56c3db7c9907eef4913b17ad130335edc0eb702a8")
   }
 
   @Test
@@ -164,11 +157,10 @@ class ReactSettingsExtensionTest {
     tempFolder.newFile("yarn.lock").apply { writeText("I'm a lockfile") }
     val lockfileCollection = project.files("yarn.lock")
 
-    assertTrue(checkAndUpdateLockfiles(lockfileCollection, buildFolder))
-    assertTrue(File(buildFolder, "yarn.lock.sha").exists())
-    assertEquals(
-        "76046b72442ee7eb130627e56c3db7c9907eef4913b17ad130335edc0eb702a8",
-        File(buildFolder, "yarn.lock.sha").readText())
+    assertThat(checkAndUpdateLockfiles(lockfileCollection, buildFolder)).isTrue()
+    assertThat(File(buildFolder, "yarn.lock.sha").exists()).isTrue()
+    assertThat(File(buildFolder, "yarn.lock.sha").readText())
+        .isEqualTo("76046b72442ee7eb130627e56c3db7c9907eef4913b17ad130335edc0eb702a8")
   }
 
   @Test
@@ -182,11 +174,10 @@ class ReactSettingsExtensionTest {
     tempFolder.newFile("yarn.lock").apply { writeText("I'm a lockfile") }
     val lockfileCollection = project.files("yarn.lock")
 
-    assertFalse(checkAndUpdateLockfiles(lockfileCollection, buildFolder))
-    assertTrue(File(buildFolder, "yarn.lock.sha").exists())
-    assertEquals(
-        "76046b72442ee7eb130627e56c3db7c9907eef4913b17ad130335edc0eb702a8",
-        File(buildFolder, "yarn.lock.sha").readText())
+    assertThat(checkAndUpdateLockfiles(lockfileCollection, buildFolder)).isFalse()
+    assertThat(File(buildFolder, "yarn.lock.sha").exists()).isTrue()
+    assertThat(File(buildFolder, "yarn.lock.sha").readText())
+        .isEqualTo("76046b72442ee7eb130627e56c3db7c9907eef4913b17ad130335edc0eb702a8")
   }
 
   @Test
@@ -200,15 +191,13 @@ class ReactSettingsExtensionTest {
     tempFolder.newFile("package-lock.json").apply { writeText("and I'm another lockfile") }
     val lockfileCollection = project.files("yarn.lock", "package-lock.json")
 
-    assertTrue(checkAndUpdateLockfiles(lockfileCollection, buildFolder))
-    assertTrue(File(buildFolder, "yarn.lock.sha").exists())
-    assertTrue(File(buildFolder, "package-lock.json.sha").exists())
-    assertEquals(
-        "76046b72442ee7eb130627e56c3db7c9907eef4913b17ad130335edc0eb702a8",
-        File(buildFolder, "yarn.lock.sha").readText())
-    assertEquals(
-        "9be5bca432b81becf4f54451aea021add68376330581eaa93ab9a0b3e4e29a3b",
-        File(buildFolder, "package-lock.json.sha").readText())
+    assertThat(checkAndUpdateLockfiles(lockfileCollection, buildFolder)).isTrue()
+    assertThat(File(buildFolder, "yarn.lock.sha").exists()).isTrue()
+    assertThat(File(buildFolder, "package-lock.json.sha").exists()).isTrue()
+    assertThat(File(buildFolder, "yarn.lock.sha").readText())
+        .isEqualTo("76046b72442ee7eb130627e56c3db7c9907eef4913b17ad130335edc0eb702a8")
+    assertThat(File(buildFolder, "package-lock.json.sha").readText())
+        .isEqualTo("9be5bca432b81becf4f54451aea021add68376330581eaa93ab9a0b3e4e29a3b")
   }
 
   @Test
@@ -225,15 +214,13 @@ class ReactSettingsExtensionTest {
     tempFolder.newFile("package-lock.json").apply { writeText("and I'm another lockfile") }
     val lockfileCollection = project.files("yarn.lock", "package-lock.json")
 
-    assertFalse(checkAndUpdateLockfiles(lockfileCollection, buildFolder))
-    assertTrue(File(buildFolder, "yarn.lock.sha").exists())
-    assertTrue(File(buildFolder, "package-lock.json.sha").exists())
-    assertEquals(
-        "76046b72442ee7eb130627e56c3db7c9907eef4913b17ad130335edc0eb702a8",
-        File(buildFolder, "yarn.lock.sha").readText())
-    assertEquals(
-        "9be5bca432b81becf4f54451aea021add68376330581eaa93ab9a0b3e4e29a3b",
-        File(buildFolder, "package-lock.json.sha").readText())
+    assertThat(checkAndUpdateLockfiles(lockfileCollection, buildFolder)).isFalse()
+    assertThat(File(buildFolder, "yarn.lock.sha").exists()).isTrue()
+    assertThat(File(buildFolder, "package-lock.json.sha").exists()).isTrue()
+    assertThat(File(buildFolder, "yarn.lock.sha").readText())
+        .isEqualTo("76046b72442ee7eb130627e56c3db7c9907eef4913b17ad130335edc0eb702a8")
+    assertThat(File(buildFolder, "package-lock.json.sha").readText())
+        .isEqualTo("9be5bca432b81becf4f54451aea021add68376330581eaa93ab9a0b3e4e29a3b")
   }
 
   private fun createJsonFile(@Language("JSON") input: String) =
