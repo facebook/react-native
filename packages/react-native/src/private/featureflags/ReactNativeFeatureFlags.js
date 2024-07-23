@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1f55fc80f2d20514a341988b4f938ac5>>
+ * @generated SignedSource<<f734c5d2afd065af224c5051ac3e737f>>
  * @flow strict-local
  */
 
@@ -57,6 +57,7 @@ export type ReactNativeFeatureFlags = {
   enableLongTaskAPI: Getter<boolean>,
   enableMicrotasks: Getter<boolean>,
   enablePropsUpdateReconciliationAndroid: Getter<boolean>,
+  enableReportEventPaintTime: Getter<boolean>,
   enableSynchronousStateUpdates: Getter<boolean>,
   enableUIConsistency: Getter<boolean>,
   excludeYogaFromRawProps: Getter<boolean>,
@@ -192,6 +193,10 @@ export const enableMicrotasks: Getter<boolean> = createNativeFlagGetter('enableM
  * When enabled, Android will receive prop updates based on the differences between the last rendered shadow node and the last committed shadow node.
  */
 export const enablePropsUpdateReconciliationAndroid: Getter<boolean> = createNativeFlagGetter('enablePropsUpdateReconciliationAndroid', false);
+/**
+ * Report paint time inside the Event Timing API implementation (PerformanceObserver).
+ */
+export const enableReportEventPaintTime: Getter<boolean> = createNativeFlagGetter('enableReportEventPaintTime', false);
 /**
  * Dispatches state updates synchronously in Fabric (e.g.: updates the scroll position in the shadow tree synchronously from the main thread).
  */

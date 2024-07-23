@@ -103,6 +103,11 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'When enabled, Android will receive prop updates based on the differences between the last rendered shadow node and the last committed shadow node.',
     },
+    enableReportEventPaintTime: {
+      defaultValue: false,
+      description:
+        'Report paint time inside the Event Timing API implementation (PerformanceObserver).',
+    },
     enableSynchronousStateUpdates: {
       defaultValue: false,
       description:

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0ee6343505e52cde7930a31ab5c8218a>>
+ * @generated SignedSource<<b190bdb77d71a851ab40661eedccac05>>
  * @flow strict-local
  */
 
@@ -37,6 +37,7 @@ export interface Spec extends TurboModule {
   +enableLongTaskAPI?: () => boolean;
   +enableMicrotasks?: () => boolean;
   +enablePropsUpdateReconciliationAndroid?: () => boolean;
+  +enableReportEventPaintTime?: () => boolean;
   +enableSynchronousStateUpdates?: () => boolean;
   +enableUIConsistency?: () => boolean;
   +excludeYogaFromRawProps?: () => boolean;
