@@ -29,10 +29,6 @@ const IGNORE_PATTERNS = [
 // Exclude list for files that fail to parse under flow-api-translator. Please
 // review your changes before adding new entries.
 const FILES_WITH_KNOWN_ERRORS = new Set([
-  'Libraries/Blob/FileReader.js',
-  'Libraries/Network/XMLHttpRequest.js',
-  'Libraries/WebSocket/WebSocket.js',
-
   // Parse errors introduced in hermes-parser 0.23.0:  Error: Comment location overlaps with node location
   'Libraries/Core/checkNativeVersion.js',
   'Libraries/Core/InitializeCore.js',
@@ -84,13 +80,15 @@ describe('public API', () => {
           success = true;
         } catch (e) {
           if (!FILES_WITH_KNOWN_ERRORS.has(file)) {
-            console.error('Unable to parse file:', file, '\n' + e);
+            throw new Error(
+              'Unable to parse file: ' + file + '\n\n' + e.message,
+            );
           }
         } finally {
           if (success && FILES_WITH_KNOWN_ERRORS.has(file)) {
-            console.error(
-              'Expected parse error, please remove file exclude from FILES_WITH_KNOWN_ERRORS:',
-              file,
+            throw new Error(
+              'Expected parse error, please remove file exclude from FILES_WITH_KNOWN_ERRORS: ' +
+                file,
             );
           }
         }
