@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f575a3be140027853eed31d9e05b5189>>
+ * @generated SignedSource<<75a955f9378acf4e962712aa92dfbc56>>
  */
 
 /**
@@ -147,6 +147,10 @@ bool ReactNativeFeatureFlags::loadVectorDrawablesOnImages() {
 
 bool ReactNativeFeatureFlags::setAndroidLayoutDirection() {
   return getAccessor().setAndroidLayoutDirection();
+}
+
+bool ReactNativeFeatureFlags::unstable_enableTurboModuleSyncVoidMethods() {
+  return getAccessor().unstable_enableTurboModuleSyncVoidMethods();
 }
 
 bool ReactNativeFeatureFlags::useImmediateExecutorInAndroidBridgeless() {

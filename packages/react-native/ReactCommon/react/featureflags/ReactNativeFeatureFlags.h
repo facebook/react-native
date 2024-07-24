@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<68ab23eddb62baec7ae67ecc77d7300c>>
+ * @generated SignedSource<<5d54c5495ab58db2782b031cf15120fd>>
  */
 
 /**
@@ -196,6 +196,11 @@ class ReactNativeFeatureFlags {
    * Propagate layout direction to Android views.
    */
   RN_EXPORT static bool setAndroidLayoutDirection();
+
+  /**
+   * By default, native module methods that return void run asynchronously. This flag will make execution of void methods in TurboModules stay on the JS thread.
+   */
+  RN_EXPORT static bool unstable_enableTurboModuleSyncVoidMethods();
 
   /**
    * Invoke callbacks immediately on the ReactInstance rather than going through a background thread for synchronization

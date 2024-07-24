@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b88ddf7b0377d8979d028245594d9bbb>>
+ * @generated SignedSource<<6007531e1defe168f05bc0012107a3aa>>
  */
 
 /**
@@ -63,6 +63,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool lazyAnimationCallbacks();
   bool loadVectorDrawablesOnImages();
   bool setAndroidLayoutDirection();
+  bool unstable_enableTurboModuleSyncVoidMethods();
   bool useImmediateExecutorInAndroidBridgeless();
   bool useModernRuntimeScheduler();
   bool useNativeViewConfigsInBridgelessMode();
@@ -81,7 +82,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 40> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 41> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> allowCollapsableChildren_;
@@ -115,6 +116,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> lazyAnimationCallbacks_;
   std::atomic<std::optional<bool>> loadVectorDrawablesOnImages_;
   std::atomic<std::optional<bool>> setAndroidLayoutDirection_;
+  std::atomic<std::optional<bool>> unstable_enableTurboModuleSyncVoidMethods_;
   std::atomic<std::optional<bool>> useImmediateExecutorInAndroidBridgeless_;
   std::atomic<std::optional<bool>> useModernRuntimeScheduler_;
   std::atomic<std::optional<bool>> useNativeViewConfigsInBridgelessMode_;
