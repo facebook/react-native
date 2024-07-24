@@ -17,7 +17,7 @@ class DefaultNewArchitectureEntryPointTest {
     val (isValid, _) =
         DefaultNewArchitectureEntryPoint.isConfigurationValid(
             turboModulesEnabled = false, fabricEnabled = false, bridgelessEnabled = false)
-    assertThat(isValid).isEqualTo(true)
+    assertThat(isValid).isTrue()
   }
 
   @Test
@@ -25,7 +25,7 @@ class DefaultNewArchitectureEntryPointTest {
     val (isValid, _) =
         DefaultNewArchitectureEntryPoint.isConfigurationValid(
             turboModulesEnabled = true, fabricEnabled = true, bridgelessEnabled = false)
-    assertThat(isValid).isEqualTo(true)
+    assertThat(isValid).isTrue()
   }
 
   @Test
@@ -33,7 +33,7 @@ class DefaultNewArchitectureEntryPointTest {
     val (isValid, _) =
         DefaultNewArchitectureEntryPoint.isConfigurationValid(
             turboModulesEnabled = true, fabricEnabled = false, bridgelessEnabled = false)
-    assertThat(isValid).isEqualTo(true)
+    assertThat(isValid).isTrue()
   }
 
   @Test
@@ -41,7 +41,7 @@ class DefaultNewArchitectureEntryPointTest {
     val (isValid, _) =
         DefaultNewArchitectureEntryPoint.isConfigurationValid(
             turboModulesEnabled = true, fabricEnabled = true, bridgelessEnabled = true)
-    assertThat(isValid).isEqualTo(true)
+    assertThat(isValid).isTrue()
   }
 
   @Test
@@ -49,7 +49,7 @@ class DefaultNewArchitectureEntryPointTest {
     val (isValid, errorMessage) =
         DefaultNewArchitectureEntryPoint.isConfigurationValid(
             turboModulesEnabled = false, fabricEnabled = true, bridgelessEnabled = false)
-    assertThat(isValid).isEqualTo(false)
+    assertThat(isValid).isFalse()
     assertThat(errorMessage)
       .isEqualTo("fabricEnabled=true requires turboModulesEnabled=true (is now false) - Please update your DefaultNewArchitectureEntryPoint.load() parameters.")
   }
@@ -59,7 +59,7 @@ class DefaultNewArchitectureEntryPointTest {
     val (isValid, errorMessage) =
         DefaultNewArchitectureEntryPoint.isConfigurationValid(
             turboModulesEnabled = false, fabricEnabled = true, bridgelessEnabled = true)
-    assertThat(isValid).isEqualTo(false)
+    assertThat(isValid).isFalse()
     assertThat(errorMessage)
       .isEqualTo("fabricEnabled=true requires turboModulesEnabled=true (is now false) - Please update your DefaultNewArchitectureEntryPoint.load() parameters.")
   }
@@ -69,7 +69,7 @@ class DefaultNewArchitectureEntryPointTest {
     val (isValid, errorMessage) =
         DefaultNewArchitectureEntryPoint.isConfigurationValid(
             turboModulesEnabled = true, fabricEnabled = false, bridgelessEnabled = true)
-    assertThat(isValid).isEqualTo(false)
+    assertThat(isValid).isFalse()
     assertThat(errorMessage)
       .isEqualTo("bridgelessEnabled=true requires (turboModulesEnabled=true AND fabricEnabled=true) - Please update your DefaultNewArchitectureEntryPoint.load() parameters.")
   }
