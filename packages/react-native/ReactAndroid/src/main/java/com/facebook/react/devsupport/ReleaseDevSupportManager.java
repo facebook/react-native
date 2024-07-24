@@ -211,4 +211,7 @@ public class ReleaseDevSupportManager implements DevSupportManager {
 
   @Override
   public void hidePausedInDebuggerOverlay() {}
+
+  @Override
+  public void setAdditionalOptionForPackager(String name, String value) {}
 }
