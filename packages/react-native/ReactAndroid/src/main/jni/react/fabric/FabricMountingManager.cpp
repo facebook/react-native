@@ -19,7 +19,6 @@
 #include <react/renderer/mounting/MountingTransaction.h>
 #include <react/renderer/mounting/ShadowView.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
-#include <react/utils/CoreFeatures.h>
 
 #include <fbjni/fbjni.h>
 #include <glog/logging.h>

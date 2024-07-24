@@ -12,7 +12,6 @@
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/performance/timeline/PerformanceEntryReporter.h>
 #include <react/renderer/uimanager/UIManagerBinding.h>
-#include <react/utils/CoreFeatures.h>
 
 #include "Plugins.h"
 

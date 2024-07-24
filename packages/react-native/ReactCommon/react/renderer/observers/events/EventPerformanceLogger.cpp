@@ -8,7 +8,6 @@
 #include "EventPerformanceLogger.h"
 
 #include <react/featureflags/ReactNativeFeatureFlags.h>
-#include <react/utils/CoreFeatures.h>
 #include <unordered_map>
 
 namespace facebook::react {

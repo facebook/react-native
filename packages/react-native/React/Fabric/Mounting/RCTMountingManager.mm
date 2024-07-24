@@ -20,7 +20,6 @@
 #import <react/renderer/core/LayoutableShadowNode.h>
 #import <react/renderer/core/RawProps.h>
 #import <react/renderer/mounting/TelemetryController.h>
-#import <react/utils/CoreFeatures.h>
 
 #import <React/RCTComponentViewProtocol.h>
 #import <React/RCTComponentViewRegistry.h>
