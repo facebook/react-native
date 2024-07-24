@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<bd744fbaf219b4ca7e8825c5767d9c68>>
+ * @generated SignedSource<<fb82dfb059a684192d8217f33c868341>>
  */
 
 /**
@@ -101,6 +101,11 @@ class ReactNativeFeatureFlags {
    * When the app is completely migrated to Fabric, set this flag to true to disable parts of Paper infrastructure that are not needed anymore but consume memory and CPU. Specifically, UIViewOperationQueue and EventDispatcherImpl will no longer work as they will not subscribe to ReactChoreographer for updates.
    */
   RN_EXPORT static bool enableFabricRendererExclusively();
+
+  /**
+   * When enabled, RCTScrollViewComponentView will trigger ShadowTree state updates for all changes in scroll position.
+   */
+  RN_EXPORT static bool enableGranularScrollViewStateUpdatesIOS();
 
   /**
    * When enabled, the renderer would only fail commits when they propagate state and the last commit that updated state changed before committing.

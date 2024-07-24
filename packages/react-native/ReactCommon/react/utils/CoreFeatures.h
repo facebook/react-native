@@ -16,9 +16,6 @@ namespace facebook::react {
  */
 class CoreFeatures {
  public:
-  // When enabled, RCTScrollViewComponentView will trigger ShadowTree state
-  // updates for all changes in scroll position.
-  static bool enableGranularScrollViewStateUpdatesIOS;
 };
 
 } // namespace facebook::react
