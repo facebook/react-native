@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e4c14208f7b7ac3b8853bdfcb214d539>>
+ * @generated SignedSource<<0bdc35fcf3521d277577a04e735bbea0>>
  */
 
 /**
@@ -85,6 +85,11 @@ bool NativeReactNativeFeatureFlags::enableCleanTextInputYogaNode(
 bool NativeReactNativeFeatureFlags::enableCppPropsIteratorSetter(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableCppPropsIteratorSetter();
+}
+
+bool NativeReactNativeFeatureFlags::enableEagerRootViewAttachment(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableEagerRootViewAttachment();
 }
 
 bool NativeReactNativeFeatureFlags::enableFabricRendererExclusively(

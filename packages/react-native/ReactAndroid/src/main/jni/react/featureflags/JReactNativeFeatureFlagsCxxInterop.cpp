@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<00ef50e03be5e5d48b6e44f2fb6598f1>>
+ * @generated SignedSource<<660161211213965108b57e2a9f6259a2>>
  */
 
 /**
@@ -96,6 +96,12 @@ class ReactNativeFeatureFlagsProviderHolder
   bool enableCppPropsIteratorSetter() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableCppPropsIteratorSetter");
+    return method(javaProvider_);
+  }
+
+  bool enableEagerRootViewAttachment() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableEagerRootViewAttachment");
     return method(javaProvider_);
   }
 
@@ -321,6 +327,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableCppPropsIteratorSetter(
   return ReactNativeFeatureFlags::enableCppPropsIteratorSetter();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::enableEagerRootViewAttachment(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableEagerRootViewAttachment();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::enableFabricRendererExclusively(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableFabricRendererExclusively();
@@ -508,6 +519,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableCppPropsIteratorSetter",
         JReactNativeFeatureFlagsCxxInterop::enableCppPropsIteratorSetter),
+      makeNativeMethod(
+        "enableEagerRootViewAttachment",
+        JReactNativeFeatureFlagsCxxInterop::enableEagerRootViewAttachment),
       makeNativeMethod(
         "enableFabricRendererExclusively",
         JReactNativeFeatureFlagsCxxInterop::enableFabricRendererExclusively),
