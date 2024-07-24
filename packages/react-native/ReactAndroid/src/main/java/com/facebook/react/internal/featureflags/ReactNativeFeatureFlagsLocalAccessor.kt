@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2c8c7631df17f3fe403f17ecf91a2db9>>
+ * @generated SignedSource<<612f1c90153b6e51af016bdff9f0d686>>
  */
 
 /**
@@ -56,6 +56,7 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var lazyAnimationCallbacksCache: Boolean? = null
   private var loadVectorDrawablesOnImagesCache: Boolean? = null
   private var setAndroidLayoutDirectionCache: Boolean? = null
+  private var unstable_enableTurboModuleSyncVoidMethodsCache: Boolean? = null
   private var useImmediateExecutorInAndroidBridgelessCache: Boolean? = null
   private var useModernRuntimeSchedulerCache: Boolean? = null
   private var useNativeViewConfigsInBridgelessModeCache: Boolean? = null
@@ -381,6 +382,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.setAndroidLayoutDirection()
       accessedFeatureFlags.add("setAndroidLayoutDirection")
       setAndroidLayoutDirectionCache = cached
+    }
+    return cached
+  }
+
+  override fun unstable_enableTurboModuleSyncVoidMethods(): Boolean {
+    var cached = unstable_enableTurboModuleSyncVoidMethodsCache
+    if (cached == null) {
+      cached = currentProvider.unstable_enableTurboModuleSyncVoidMethods()
+      accessedFeatureFlags.add("unstable_enableTurboModuleSyncVoidMethods")
+      unstable_enableTurboModuleSyncVoidMethodsCache = cached
     }
     return cached
   }

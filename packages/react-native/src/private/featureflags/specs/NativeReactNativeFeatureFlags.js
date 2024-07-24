@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<05e9386191a93bc040cf46e840bff82c>>
+ * @generated SignedSource<<4f3ca5c493c112be982868cb44638d63>>
  * @flow strict-local
  */
 
@@ -55,6 +55,7 @@ export interface Spec extends TurboModule {
   +lazyAnimationCallbacks?: () => boolean;
   +loadVectorDrawablesOnImages?: () => boolean;
   +setAndroidLayoutDirection?: () => boolean;
+  +unstable_enableTurboModuleSyncVoidMethods?: () => boolean;
   +useImmediateExecutorInAndroidBridgeless?: () => boolean;
   +useModernRuntimeScheduler?: () => boolean;
   +useNativeViewConfigsInBridgelessMode?: () => boolean;
