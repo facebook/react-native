@@ -22,7 +22,9 @@ class RuntimeScheduler_Legacy final : public RuntimeSchedulerBase {
  public:
   explicit RuntimeScheduler_Legacy(
       RuntimeExecutor runtimeExecutor,
-      std::function<RuntimeSchedulerTimePoint()> now);
+      std::function<RuntimeSchedulerTimePoint()> now,
+      RuntimeSchedulerErrorHandler onTaskError,
+      RuntimeSchedulerErrorHandler onMicrotaskError);
 
   /*
    * Not copyable.
@@ -179,6 +181,9 @@ class RuntimeScheduler_Legacy final : public RuntimeSchedulerBase {
 
   ShadowTreeRevisionConsistencyManager* shadowTreeRevisionConsistencyManager_{
       nullptr};
+
+  RuntimeSchedulerErrorHandler onTaskError_;
+  RuntimeSchedulerErrorHandler onMicrotaskError_;
 };
 
 } // namespace facebook::react
