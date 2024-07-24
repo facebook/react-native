@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<69a25ed7eeef862c36cca83e3427a02c>>
+ * @generated SignedSource<<cd02f2b98c4d82ff848ad0ff43231e49>>
  */
 
 /**
@@ -30,6 +30,7 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
   private var enableAlignItemsBaselineOnFabricIOSCache: Boolean? = null
   private var enableCleanTextInputYogaNodeCache: Boolean? = null
   private var enableCppPropsIteratorSetterCache: Boolean? = null
+  private var enableEagerRootViewAttachmentCache: Boolean? = null
   private var enableFabricRendererExclusivelyCache: Boolean? = null
   private var enableGranularShadowTreeStateReconciliationCache: Boolean? = null
   private var enableLongTaskAPICache: Boolean? = null
@@ -145,6 +146,15 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enableCppPropsIteratorSetter()
       enableCppPropsIteratorSetterCache = cached
+    }
+    return cached
+  }
+
+  override fun enableEagerRootViewAttachment(): Boolean {
+    var cached = enableEagerRootViewAttachmentCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.enableEagerRootViewAttachment()
+      enableEagerRootViewAttachmentCache = cached
     }
     return cached
   }

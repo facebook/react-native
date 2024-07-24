@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<25bc2ffc52d72f7c3e9d27df84064dfd>>
+ * @generated SignedSource<<1418d767deb27993bb7bc71bc39ee5aa>>
  * @flow strict-local
  */
 
@@ -33,6 +33,7 @@ export interface Spec extends TurboModule {
   +enableAlignItemsBaselineOnFabricIOS?: () => boolean;
   +enableCleanTextInputYogaNode?: () => boolean;
   +enableCppPropsIteratorSetter?: () => boolean;
+  +enableEagerRootViewAttachment?: () => boolean;
   +enableFabricRendererExclusively?: () => boolean;
   +enableGranularShadowTreeStateReconciliation?: () => boolean;
   +enableLongTaskAPI?: () => boolean;

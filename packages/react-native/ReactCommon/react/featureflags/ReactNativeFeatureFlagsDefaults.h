@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6a9582b7fbe439986b1d0b9bbdb790df>>
+ * @generated SignedSource<<60396b72b61d3798a6bd3387ba0de242>>
  */
 
 /**
@@ -64,6 +64,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableCppPropsIteratorSetter() override {
+    return false;
+  }
+
+  bool enableEagerRootViewAttachment() override {
     return false;
   }
 

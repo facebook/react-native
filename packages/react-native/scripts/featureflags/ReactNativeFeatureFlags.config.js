@@ -83,6 +83,11 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'Enable prop iterator setter-style construction of Props in C++ (this flag is not used in Java).',
     },
+    enableEagerRootViewAttachment: {
+      defaultValue: false,
+      description:
+        'Feature flag to configure eager attachment of the root view/initialisation of the JS code.',
+    },
     enableFabricRendererExclusively: {
       defaultValue: false,
       description:
