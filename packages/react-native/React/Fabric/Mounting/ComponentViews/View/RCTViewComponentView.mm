@@ -401,7 +401,7 @@ using namespace facebook::react;
 
   // `filter`
   if (oldViewProps.filter != newViewProps.filter) {
-    _needsInvalidateLayer = YES;
+    needsInvalidateLayer = YES;
   }
 
   // `mixBlendMode`
@@ -460,7 +460,7 @@ using namespace facebook::react;
 
   // `boxShadow`
   if (oldViewProps.boxShadow != newViewProps.boxShadow) {
-    _needsInvalidateLayer = YES;
+    needsInvalidateLayer = YES;
   }
 
   _needsInvalidateLayer = _needsInvalidateLayer || needsInvalidateLayer;
