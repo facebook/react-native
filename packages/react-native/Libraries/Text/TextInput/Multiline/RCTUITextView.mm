@@ -13,6 +13,8 @@
 #import <React/RCTBackedTextInputDelegateAdapter.h>
 #import <React/RCTTextAttributes.h>
 
+#import <UIKit/UIKit.h>
+
 @implementation RCTUITextView {
   UILabel *_placeholderView;
   UITextView *_detachedTextView;
@@ -172,7 +174,8 @@ static UIColor *defaultPlaceholderColor(void)
 - (void)paste:(id)sender
 {
   _textWasPasted = YES;
-  [_textInputDelegateAdapter didPaste];
+  UIPasteboard *clipboard = [UIPasteboard generalPasteboard];
+  [_textInputDelegateAdapter didPaste:@"text/plain" withData:clipboard.string];
   [super paste:sender];
 }
 

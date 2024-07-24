@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)skipNextTextInputDidChangeSelectionEventWithTextRange:(UITextRange *)textRange;
 - (void)selectedTextRangeWasSet;
-- (void)didPaste;
+- (void)didPaste:(NSString *)type withData:(NSString *)data;
 
 @end
 
@@ -31,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithTextView:(UITextView<RCTBackedTextInputViewProtocol> *)backedTextInputView;
 
 - (void)skipNextTextInputDidChangeSelectionEventWithTextRange:(UITextRange *)textRange;
-- (void)didPaste;
+- (void)didPaste:(NSString *)type withData:(NSString *)data;
 
 @end
 

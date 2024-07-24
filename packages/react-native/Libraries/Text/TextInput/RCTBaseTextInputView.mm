@@ -543,12 +543,24 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
   });
 }
 
-- (void)textInputDidPaste
+- (void)textInputDidPaste:(NSString *)type withData:(NSString *)data
 {
   if (!_onPaste) {
     return;
   }
-  _onPaste(@{@"target" : self.reactTag});
+
+  NSMutableArray *items = [NSMutableArray new];
+  [items addObject:@{
+    @"type" : type,
+    @"data" : data,
+  }];
+
+  NSDictionary *payload = @{
+    @"target" : self.reactTag,
+    @"items" : items,
+  };
+
+  _onPaste(payload);
 }
 
 - (void)updateLocalData

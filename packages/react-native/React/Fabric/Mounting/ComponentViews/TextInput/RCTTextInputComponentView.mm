@@ -404,10 +404,10 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
   }
 }
 
-- (void)textInputDidPaste
+- (void)textInputDidPaste:(NSString *)type withData:(NSString *)data
 {
   if (_eventEmitter) {
-    static_cast<const TextInputEventEmitter &>(*_eventEmitter).onPaste();
+    static_cast<const TextInputEventEmitter &>(*_eventEmitter).onPaste(std::string([type UTF8String]), std::string([data UTF8String]));
   }
 }
 

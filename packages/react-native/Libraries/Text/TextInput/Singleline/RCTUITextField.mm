@@ -12,6 +12,8 @@
 #import <React/RCTUtils.h>
 #import <React/UIView+React.h>
 
+#import <UIKit/UIKit.h>
+
 @implementation RCTUITextField {
   RCTBackedTextFieldDelegateAdapter *_textInputDelegateAdapter;
   NSDictionary<NSAttributedStringKey, id> *_defaultTextAttributes;
@@ -222,7 +224,8 @@
 - (void)paste:(id)sender
 {
   _textWasPasted = YES;
-  [_textInputDelegateAdapter didPaste];
+  UIPasteboard *clipboard = [UIPasteboard generalPasteboard];
+  [_textInputDelegateAdapter didPaste:@"text/plain" withData:clipboard.string];
   [super paste:sender];
 }
 

@@ -172,8 +172,17 @@ void TextInputEventEmitter::onScroll(const Metrics& textInputMetrics) const {
   });
 }
 
-void TextInputEventEmitter::onPaste() const {
-  dispatchEvent("onPaste");
+void TextInputEventEmitter::onPaste(const std::string& type, const std::string& data) const {
+  dispatchEvent("onPaste", [type, data](jsi::Runtime& runtime) {
+    auto payload = jsi::Object(runtime);
+    auto items = jsi::Array(runtime, 1);
+    auto item = jsi::Object(runtime);
+    item.setProperty(runtime, "type", type);
+    item.setProperty(runtime, "data", data);
+    items.setValueAtIndex(runtime, 0, item);
+    payload.setProperty(runtime, "items", items);
+    return payload;
+  });
 }
 
 void TextInputEventEmitter::dispatchTextInputEvent(
