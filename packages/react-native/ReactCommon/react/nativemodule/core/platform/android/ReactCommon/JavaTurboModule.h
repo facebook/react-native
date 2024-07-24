@@ -13,6 +13,7 @@
 #include <ReactCommon/TurboModule.h>
 #include <jsi/jsi.h>
 #include <react/bridging/CallbackWrapper.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/jni/JCallback.h>
 
 namespace facebook::react {
