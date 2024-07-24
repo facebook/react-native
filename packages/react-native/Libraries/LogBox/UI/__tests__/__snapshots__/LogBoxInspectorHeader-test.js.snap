@@ -1,11 +1,16 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`LogBoxInspectorHeader should render both buttons for two total 1`] = `
-<RCTSafeAreaView
+<View
   style={
-    Object {
-      "backgroundColor": "rgba(250, 186, 48, 1)",
-    }
+    Array [
+      Object {
+        "paddingTop": 40,
+      },
+      Object {
+        "backgroundColor": "rgba(250, 186, 48, 1)",
+      },
+    ]
   }
 >
   <View
@@ -60,15 +65,20 @@ exports[`LogBoxInspectorHeader should render both buttons for two total 1`] = `
       onPress={[Function]}
     />
   </View>
-</RCTSafeAreaView>
+</View>
 `;
 
 exports[`LogBoxInspectorHeader should render no buttons for one total 1`] = `
-<RCTSafeAreaView
+<View
   style={
-    Object {
-      "backgroundColor": "rgba(250, 186, 48, 1)",
-    }
+    Array [
+      Object {
+        "paddingTop": 40,
+      },
+      Object {
+        "backgroundColor": "rgba(250, 186, 48, 1)",
+      },
+    ]
   }
 >
   <View
@@ -123,15 +133,20 @@ exports[`LogBoxInspectorHeader should render no buttons for one total 1`] = `
       onPress={[Function]}
     />
   </View>
-</RCTSafeAreaView>
+</View>
 `;
 
 exports[`LogBoxInspectorHeader should render syntax error header 1`] = `
-<RCTSafeAreaView
+<View
   style={
-    Object {
-      "backgroundColor": "rgba(243, 83, 105, 1)",
-    }
+    Array [
+      Object {
+        "paddingTop": 40,
+      },
+      Object {
+        "backgroundColor": "rgba(243, 83, 105, 1)",
+      },
+    ]
   }
 >
   <View
@@ -166,15 +181,20 @@ exports[`LogBoxInspectorHeader should render syntax error header 1`] = `
       </Text>
     </View>
   </View>
-</RCTSafeAreaView>
+</View>
 `;
 
 exports[`LogBoxInspectorHeader should render two buttons for three or more total 1`] = `
-<RCTSafeAreaView
+<View
   style={
-    Object {
-      "backgroundColor": "rgba(250, 186, 48, 1)",
-    }
+    Array [
+      Object {
+        "paddingTop": 40,
+      },
+      Object {
+        "backgroundColor": "rgba(250, 186, 48, 1)",
+      },
+    ]
   }
 >
   <View
@@ -229,5 +249,5 @@ exports[`LogBoxInspectorHeader should render two buttons for three or more total
       onPress={[Function]}
     />
   </View>
-</RCTSafeAreaView>
+</View>
 `;
