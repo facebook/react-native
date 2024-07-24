@@ -141,12 +141,6 @@ void EventPerformanceLogger::onEventProcessingEnd(EventTag tag) {
     auto& entry = it->second;
     entry.processingEndTime = timeStamp;
 
-    if (ReactNativeFeatureFlags::enableReportEventPaintTime()) {
-      // If reporting paint time, don't send the entry just yet and wait for the
-      // mount hook callback to be called
-      return;
-    }
-
     const auto& name = entry.name;
 
     performanceEntryReporter->logEventEntry(
@@ -163,10 +157,6 @@ void EventPerformanceLogger::onEventProcessingEnd(EventTag tag) {
 void EventPerformanceLogger::shadowTreeDidMount(
     const RootShadowNode::Shared& /*rootShadowNode*/,
     double mountTime) noexcept {
-  if (!ReactNativeFeatureFlags::enableReportEventPaintTime()) {
-    return;
-  }
-
   auto performanceEntryReporter = performanceEntryReporter_.lock();
   if (performanceEntryReporter == nullptr) {
     return;

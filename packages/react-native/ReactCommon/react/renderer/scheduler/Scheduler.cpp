@@ -151,10 +151,6 @@ Scheduler::Scheduler(
   removeOutstandingSurfacesOnDestruction_ = reactNativeConfig_->getBool(
       "react_fabric:remove_outstanding_surfaces_on_destruction_ios");
 #endif
-
-  if (ReactNativeFeatureFlags::enableReportEventPaintTime()) {
-    uiManager->registerMountHook(*eventPerformanceLogger_);
-  }
 }
 
 Scheduler::~Scheduler() {
