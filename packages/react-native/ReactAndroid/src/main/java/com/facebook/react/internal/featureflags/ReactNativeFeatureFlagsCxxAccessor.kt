@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2a8d5ca8a0ac46b4d3177cb8b12ad7ac>>
+ * @generated SignedSource<<69a25ed7eeef862c36cca83e3427a02c>>
  */
 
 /**
@@ -29,6 +29,7 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
   private var destroyFabricSurfacesInReactInstanceManagerCache: Boolean? = null
   private var enableAlignItemsBaselineOnFabricIOSCache: Boolean? = null
   private var enableCleanTextInputYogaNodeCache: Boolean? = null
+  private var enableCppPropsIteratorSetterCache: Boolean? = null
   private var enableFabricRendererExclusivelyCache: Boolean? = null
   private var enableGranularShadowTreeStateReconciliationCache: Boolean? = null
   private var enableLongTaskAPICache: Boolean? = null
@@ -135,6 +136,15 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enableCleanTextInputYogaNode()
       enableCleanTextInputYogaNodeCache = cached
+    }
+    return cached
+  }
+
+  override fun enableCppPropsIteratorSetter(): Boolean {
+    var cached = enableCppPropsIteratorSetterCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.enableCppPropsIteratorSetter()
+      enableCppPropsIteratorSetterCache = cached
     }
     return cached
   }
