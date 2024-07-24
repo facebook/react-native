@@ -10,6 +10,9 @@ inputs:
   jsengine:
     required: true
     description: The js engine we are using
+  maestro-flow:
+    required: true
+    description: the folder that contains the maestro tests
 runs:
   using: composite
   steps:
@@ -52,9 +55,9 @@ runs:
         xcrun simctl launch $UDID ${{ inputs.app-id }}
 
         echo "Running tests with Maestro"
-        echo '$HOME/.maestro/bin/maestro --udid=$UDID test packages/rn-tester/.maestro/ --format junit -e APP_ID=${{ inputs.app-id }}'
+        echo '$HOME/.maestro/bin/maestro --udid=$UDID test ${{ inputs.maestro-flow }} --format junit -e APP_ID=${{ inputs.app-id }}'
         export MAESTRO_DRIVER_STARTUP_TIMEOUT=1200000 # 20 min. CI is extremely slow
-        $HOME/.maestro/bin/maestro --udid=$UDID test packages/rn-tester/.maestro/ --format junit -e APP_ID=${{ inputs.app-id }} --debug-output /tmp/MaestroLogs
+        $HOME/.maestro/bin/maestro --udid=$UDID test ${{ inputs.maestro-flow }} --format junit -e APP_ID=${{ inputs.app-id }} --debug-output /tmp/MaestroLogs
     - name: Stop video record
       if: always()
       shell: bash

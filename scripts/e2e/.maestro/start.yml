@@ -1,0 +1,3 @@
+appId: ${APP_ID} # iOS: org.reactjs.native.example.RNTestProject  | Android: com.rntestproject
+- launchApp
+- assertVisible: "Step One"
