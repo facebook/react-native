@@ -370,6 +370,66 @@ void ReactInstance::initializeRuntime(
 
     defineReadOnlyGlobal(
         runtime,
+        "RN$notifyOfFatalError",
+        jsi::Function::createFromHostFunction(
+            runtime,
+            jsi::PropNameID::forAscii(runtime, "notifyOfFatalError"),
+            2,
+            [jsErrorHandler = jsErrorHandler_](
+                jsi::Runtime& runtime,
+                const jsi::Value& /*unused*/,
+                const jsi::Value* args,
+                size_t count) {
+              jsErrorHandler->notifyOfFatalError();
+              return jsi::Value::undefined();
+            }));
+
+    defineReadOnlyGlobal(
+        runtime,
+        "RN$isJSPipelineEnabled",
+        jsi::Function::createFromHostFunction(
+            runtime,
+            jsi::PropNameID::forAscii(runtime, "isJSPipelineEnabled"),
+            2,
+            [jsErrorHandler = jsErrorHandler_](
+                jsi::Runtime& runtime,
+                const jsi::Value& /*unused*/,
+                const jsi::Value* args,
+                size_t count) {
+              return jsi::Value(jsErrorHandler->isJSPipelineEnabled());
+              ;
+            }));
+
+    defineReadOnlyGlobal(
+        runtime,
+        "RN$handleFatalError",
+        jsi::Function::createFromHostFunction(
+            runtime,
+            jsi::PropNameID::forAscii(runtime, "handleFatalError"),
+            2,
+            [jsErrorHandler = jsErrorHandler_](
+                jsi::Runtime& runtime,
+                const jsi::Value& /*unused*/,
+                const jsi::Value* args,
+                size_t count) {
+              if (count != 1) {
+                throw jsi::JSError(
+                    runtime, "handleFatalError requires exactly 1 arguments");
+              }
+
+              if (args[0].isObject() || args[0].isString()) {
+                auto jsError = jsi::JSError(
+                    runtime,
+                    args[0].isObject() ? jsi::Value(args[0].asObject(runtime))
+                                       : jsi::Value(args[0].asString(runtime)));
+                jsErrorHandler->handleFatalError(runtime, jsError);
+              }
+
+              return jsi::Value::undefined();
+            }));
+
+    defineReadOnlyGlobal(
+        runtime,
         "RN$registerCallableModule",
         jsi::Function::createFromHostFunction(
             runtime,
