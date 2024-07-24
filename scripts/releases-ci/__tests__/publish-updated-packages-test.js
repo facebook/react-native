@@ -43,9 +43,7 @@ describe('publishUpdatedPackages', () => {
           throw new Error();
       }
     });
-    const consoleError = jest
-      .spyOn(console, 'error')
-      .mockImplementation(() => {});
+    jest.spyOn(console, 'error').mockImplementation(() => {});
 
     let message = '';
     try {
