@@ -110,7 +110,7 @@ public class FabricUIManager
   // development environment. DO NOT ENABLE THIS ON PRODUCTION OR YOU WILL BE FIRED!
   public static final boolean IS_DEVELOPMENT_ENVIRONMENT = false && ReactBuildConfig.DEBUG;
   public static final boolean ENABLE_FABRIC_LOGS =
-      ReactFeatureFlags.enableFabricLogs
+      ReactNativeFeatureFlags.enableFabricLogs()
           || PrinterHolder.getPrinter()
               .shouldDisplayLogMessage(ReactDebugOverlayTags.FABRIC_UI_MANAGER);
   public static final boolean ENABLE_FABRIC_PERF_LOGS = ENABLE_FABRIC_LOGS || false;

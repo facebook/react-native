@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<014809e1e317ad6007c79e81ae5a471d>>
+ * @generated SignedSource<<2c8c7631df17f3fe403f17ecf91a2db9>>
  */
 
 /**
@@ -35,6 +35,7 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var enableCleanTextInputYogaNodeCache: Boolean? = null
   private var enableCppPropsIteratorSetterCache: Boolean? = null
   private var enableEagerRootViewAttachmentCache: Boolean? = null
+  private var enableFabricLogsCache: Boolean? = null
   private var enableFabricRendererExclusivelyCache: Boolean? = null
   private var enableGranularShadowTreeStateReconciliationCache: Boolean? = null
   private var enableLongTaskAPICache: Boolean? = null
@@ -170,6 +171,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.enableEagerRootViewAttachment()
       accessedFeatureFlags.add("enableEagerRootViewAttachment")
       enableEagerRootViewAttachmentCache = cached
+    }
+    return cached
+  }
+
+  override fun enableFabricLogs(): Boolean {
+    var cached = enableFabricLogsCache
+    if (cached == null) {
+      cached = currentProvider.enableFabricLogs()
+      accessedFeatureFlags.add("enableFabricLogs")
+      enableFabricLogsCache = cached
     }
     return cached
   }
