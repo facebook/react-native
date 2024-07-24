@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c1230df8d1603fb6738dd634ab041a02>>
+ * @generated SignedSource<<453e124e320822c6a5db6bb675f12e44>>
  */
 
 /**
@@ -40,6 +40,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool destroyFabricSurfacesInReactInstanceManager();
   bool enableAlignItemsBaselineOnFabricIOS();
   bool enableCleanTextInputYogaNode();
+  bool enableCppPropsIteratorSetter();
   bool enableFabricRendererExclusively();
   bool enableGranularShadowTreeStateReconciliation();
   bool enableLongTaskAPI();
@@ -78,7 +79,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 37> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 38> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> allowCollapsableChildren_;
@@ -89,6 +90,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> destroyFabricSurfacesInReactInstanceManager_;
   std::atomic<std::optional<bool>> enableAlignItemsBaselineOnFabricIOS_;
   std::atomic<std::optional<bool>> enableCleanTextInputYogaNode_;
+  std::atomic<std::optional<bool>> enableCppPropsIteratorSetter_;
   std::atomic<std::optional<bool>> enableFabricRendererExclusively_;
   std::atomic<std::optional<bool>> enableGranularShadowTreeStateReconciliation_;
   std::atomic<std::optional<bool>> enableLongTaskAPI_;

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ca939ab47fa68fbb5acf5ea34481def9>>
+ * @generated SignedSource<<b9456d0a4bc079bd3fc13a8880da42c5>>
  */
 
 /**
@@ -81,6 +81,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableCleanTextInputYogaNode(): Boolean = accessor.enableCleanTextInputYogaNode()
+
+  /**
+   * Enable prop iterator setter-style construction of Props in C++ (this flag is not used in Java).
+   */
+  @JvmStatic
+  public fun enableCppPropsIteratorSetter(): Boolean = accessor.enableCppPropsIteratorSetter()
 
   /**
    * When the app is completely migrated to Fabric, set this flag to true to disable parts of Paper infrastructure that are not needed anymore but consume memory and CPU. Specifically, UIViewOperationQueue and EventDispatcherImpl will no longer work as they will not subscribe to ReactChoreographer for updates.
