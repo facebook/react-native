@@ -66,7 +66,6 @@ target_compile_options(${CMAKE_PROJECT_NAME}
 find_package(ReactAndroid REQUIRED CONFIG)
 add_library(fabricjni ALIAS ReactAndroid::fabricjni)
 add_library(jsi ALIAS ReactAndroid::jsi)
-add_library(react_codegen_rncore ALIAS ReactAndroid::react_codegen_rncore)
 add_library(mapbufferjni ALIAS ReactAndroid::mapbufferjni)
 add_library(react_render_mapbuffer ALIAS ReactAndroid::react_render_mapbuffer)
 add_library(react_render_textlayoutmanager ALIAS ReactAndroid::react_render_textlayoutmanager)
@@ -83,7 +82,6 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         mapbufferjni                        # prefab ready
         fbjni                               # via 3rd party prefab
         jsi                                 # prefab ready
-        react_codegen_rncore                # prefab ready
         react_newarchdefaults               # prefab ready
         reactnative                         # prefab ready
         turbomodulejsijni                   # prefab ready
@@ -94,7 +92,6 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
 # such as the folly flags or others.
 add_library(common_flags INTERFACE)
 target_compile_options(common_flags INTERFACE ${folly_FLAGS})
-target_link_libraries(ReactAndroid::react_codegen_rncore INTERFACE common_flags)
 
 # If project is on RN CLI v9, then we can use the following lines to link against the autolinked 3rd party libraries.
 if(EXISTS ${PROJECT_BUILD_DIR}/generated/autolinking/src/main/jni/Android-autolinking.cmake)
