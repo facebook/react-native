@@ -19,6 +19,7 @@
 #import <react/renderer/components/scrollview/ScrollViewState.h>
 #import <react/renderer/components/scrollview/conversions.h>
 
+#include <react/utils/CoreFeatures.h>
 #import "RCTConversions.h"
 #import "RCTCustomPullToRefreshViewProtocol.h"
 #import "RCTEnhancedScrollView.h"
