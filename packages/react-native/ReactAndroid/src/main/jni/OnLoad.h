@@ -5,10 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "OnLoad.h"
 #include <fbjni/fbjni.h>
 
-JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void*) {
-  return facebook::jni::initialize(
-      vm, [] { facebook::react::OnLoad_react_newarchdefaults(); });
+namespace facebook {
+namespace react {
+JNIEXPORT void OnLoad_react_newarchdefaults();
 }
+} // namespace facebook

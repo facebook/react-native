@@ -22,7 +22,7 @@ endif(CCACHE_FOUND)
 
 # Make sure every shared lib includes a .note.gnu.build-id header
 add_link_options(-Wl,--build-id)
-add_compile_options(-Wall -Werror -std=c++20)
+add_compile_options(-Wall -Werror -std=c++20 -DREACT_NATIVE_OPEN_SOURCE)
 
 function(add_react_android_subdir relative_path)
   add_subdirectory(${REACT_ANDROID_DIR}/${relative_path} ReactAndroid/${relative_path})
@@ -158,6 +158,7 @@ add_library(reactnative
           $<TARGET_OBJECTS:react_nativemodule_featureflags>
           $<TARGET_OBJECTS:react_nativemodule_idlecallbacks>
           $<TARGET_OBJECTS:react_nativemodule_microtasks>
+          $<TARGET_OBJECTS:react_newarchdefaults>
           $<TARGET_OBJECTS:react_render_attributedstring>
           $<TARGET_OBJECTS:react_render_componentregistry>
           $<TARGET_OBJECTS:react_render_consistency>
@@ -185,6 +186,7 @@ add_library(reactnative
 )
 target_link_libraries(reactnative PUBLIC
         double-conversion
+        fabricjni
         fbjni
         folly_runtime
         glog
@@ -206,6 +208,7 @@ target_include_directories(reactnative
         $<TARGET_PROPERTY:react_nativemodule_idlecallbacks,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_nativemodule_featureflags,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_nativemodule_microtasks,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:react_newarchdefaults,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_render_attributedstring,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_render_componentregistry,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_render_consistency,INTERFACE_INCLUDE_DIRECTORIES>
