@@ -21,7 +21,7 @@ internal class ModulusAnimatedNode(
   override public fun update() {
     val animatedNode = nativeAnimatedNodesManager.getNodeById(inputNode)
     if (animatedNode is ValueAnimatedNode) {
-      val animatedNodeValue = animatedNode.value
+      val animatedNodeValue = animatedNode.mValue
       mValue = (animatedNodeValue % modulus + modulus) % modulus
     } else {
       throw JSApplicationCausedNativeException(
