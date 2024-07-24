@@ -870,7 +870,7 @@ function PasteboardTextInput() {
         <Text>{"Data: " + data}</Text>
       )}
       {isImage && (
-        <Image source={{uri: data}} style={{width: "100%", height: 300}} />
+        <Image source={{uri: data}} style={{width: "100%", height: 300}} resizeMode='contain' />
       )}
     </View>
   );
