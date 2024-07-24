@@ -8,10 +8,7 @@
 package com.facebook.react.uimanager
 
 import com.facebook.react.common.MapBuilder
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNotNull
-import org.junit.Assert.assertTrue
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
 class UIManagerModuleConstantsHelperTest {
@@ -24,7 +21,7 @@ class UIManagerModuleConstantsHelperTest {
   fun normalizeEventTypes_withEmptyMap_doesNothing() {
     val emptyMap: Map<String, Any?> = MapBuilder.builder<String, Any?>().build()
     UIManagerModuleConstantsHelper.normalizeEventTypes(emptyMap)
-    assertTrue(emptyMap.isEmpty())
+    assertThat(emptyMap.isEmpty()).isTrue()
   }
 
   @Test
@@ -32,8 +29,7 @@ class UIManagerModuleConstantsHelperTest {
     val onClickMap: Map<String, String> =
         MapBuilder.builder<String, String>().put("onClick", "¯\\_(ツ)_/¯").build()
     UIManagerModuleConstantsHelper.normalizeEventTypes(onClickMap)
-    assertTrue(onClickMap.containsKey("topClick"))
-    assertTrue(onClickMap.containsKey("onClick"))
+    assertThat(onClickMap).containsKeys("topClick", "onClick")
   }
 
   @Test
@@ -41,8 +37,7 @@ class UIManagerModuleConstantsHelperTest {
     val onClickMap: Map<String, String> =
         MapBuilder.builder<String, String>().put("topOnClick", "¯\\_(ツ)_/¯").build()
     UIManagerModuleConstantsHelper.normalizeEventTypes(onClickMap)
-    assertTrue(onClickMap.containsKey("topOnClick"))
-    assertFalse(onClickMap.containsKey("onClick"))
+    assertThat(onClickMap).containsKey("topOnClick").doesNotContainKey("onClick")
   }
 
   @Suppress("UNCHECKED_CAST")
@@ -58,21 +53,21 @@ class UIManagerModuleConstantsHelperTest {
                         "bubbled", "onColorChanged", "captured", "onColorChangedCapture")))
             .build()
     UIManagerModuleConstantsHelper.normalizeEventTypes(nestedObjects)
-    assertTrue(nestedObjects.containsKey("topColorChanged"))
+    assertThat(nestedObjects).containsKey("topColorChanged")
     var innerMap = nestedObjects["topColorChanged"] as? Map<String, Any?>
-    assertNotNull(innerMap)
-    assertTrue(innerMap!!.containsKey("phasedRegistrationNames"))
+    assertThat(innerMap).isNotNull()
+    assertThat(innerMap).containsKey("phasedRegistrationNames")
     var innerInnerMap = innerMap.get("phasedRegistrationNames") as? Map<String, Any?>
-    assertNotNull(innerInnerMap)
-    assertEquals("onColorChanged", innerInnerMap!!.get("bubbled"))
-    assertEquals("onColorChangedCapture", innerInnerMap.get("captured"))
-    assertTrue(nestedObjects.containsKey("onColorChanged"))
+    assertThat(innerInnerMap).isNotNull()
+    assertThat("onColorChanged").isEqualTo(innerInnerMap!!.get("bubbled"))
+    assertThat("onColorChangedCapture").isEqualTo(innerInnerMap.get("captured"))
+    assertThat(nestedObjects).containsKey("onColorChanged")
     innerMap = nestedObjects.get("topColorChanged") as? Map<String, Any?>
-    assertNotNull(innerMap)
-    assertTrue(innerMap!!.containsKey("phasedRegistrationNames"))
+    assertThat(innerMap).isNotNull()
+    assertThat(innerMap).containsKey("phasedRegistrationNames")
     innerInnerMap = innerMap.get("phasedRegistrationNames") as? Map<String, Any?>
-    assertNotNull(innerInnerMap)
-    assertEquals("onColorChanged", innerInnerMap!!.get("bubbled"))
-    assertEquals("onColorChangedCapture", innerInnerMap.get("captured"))
+    assertThat(innerInnerMap).isNotNull()
+    assertThat("onColorChanged").isEqualTo(innerInnerMap!!.get("bubbled"))
+    assertThat("onColorChangedCapture").isEqualTo(innerInnerMap!!.get("captured"))
   }
 }
