@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<db02f3c0f04f2f4adb96310314901996>>
+ * @generated SignedSource<<099095e81c5e38dc4a8fe71e4566b5e4>>
  */
 
 /**
@@ -60,6 +60,8 @@ class NativeReactNativeFeatureFlags
   bool enableFabricLogs(jsi::Runtime& runtime);
 
   bool enableFabricRendererExclusively(jsi::Runtime& runtime);
+
+  bool enableGranularScrollViewStateUpdatesIOS(jsi::Runtime& runtime);
 
   bool enableGranularShadowTreeStateReconciliation(jsi::Runtime& runtime);
 

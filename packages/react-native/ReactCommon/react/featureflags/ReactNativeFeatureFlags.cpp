@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<fc990d89982314febeb85bf3ebc2d6f5>>
+ * @generated SignedSource<<2b872353f06665054445ac161319c5ee>>
  */
 
 /**
@@ -71,6 +71,10 @@ bool ReactNativeFeatureFlags::enableFabricLogs() {
 
 bool ReactNativeFeatureFlags::enableFabricRendererExclusively() {
   return getAccessor().enableFabricRendererExclusively();
+}
+
+bool ReactNativeFeatureFlags::enableGranularScrollViewStateUpdatesIOS() {
+  return getAccessor().enableGranularScrollViewStateUpdatesIOS();
 }
 
 bool ReactNativeFeatureFlags::enableGranularShadowTreeStateReconciliation() {
