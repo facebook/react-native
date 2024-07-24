@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ee9a37fe938afc1a2891050a7e1ad782>>
+ * @generated SignedSource<<6f7470cf3c854255c0321d118a4620b0>>
  */
 
 /**
@@ -93,6 +93,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableEagerRootViewAttachment(): Boolean = accessor.enableEagerRootViewAttachment()
+
+  /**
+   * This feature flag enables logs for Fabric.
+   */
+  @JvmStatic
+  public fun enableFabricLogs(): Boolean = accessor.enableFabricLogs()
 
   /**
    * When the app is completely migrated to Fabric, set this flag to true to disable parts of Paper infrastructure that are not needed anymore but consume memory and CPU. Specifically, UIViewOperationQueue and EventDispatcherImpl will no longer work as they will not subscribe to ReactChoreographer for updates.
