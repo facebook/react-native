@@ -78,6 +78,11 @@ const definitions: FeatureFlagDefinitions = {
       defaultValue: false,
       description: 'Clean yoga node when <TextInput /> does not change.',
     },
+    enableCppPropsIteratorSetter: {
+      defaultValue: false,
+      description:
+        'Enable prop iterator setter-style construction of Props in C++ (this flag is not used in Java).',
+    },
     enableFabricRendererExclusively: {
       defaultValue: false,
       description:
