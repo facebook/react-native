@@ -265,6 +265,7 @@ public class CSSBackgroundDrawable extends Drawable {
   /**
    * @deprecated Use {@link #setBorderRadius(BorderRadiusProp, LengthPercentage)} instead.
    */
+  @Deprecated(since = "0.75.0", forRemoval = true)
   public void setRadius(float radius) {
     @Nullable Float boxedRadius = Float.isNaN(radius) ? null : Float.valueOf(radius);
     if (boxedRadius == null) {
@@ -279,6 +280,7 @@ public class CSSBackgroundDrawable extends Drawable {
   /**
    * @deprecated Use {@link #setBorderRadius(BorderRadiusProp, LengthPercentage)} instead.
    */
+  @Deprecated(since = "0.75.0", forRemoval = true)
   public void setRadius(float radius, int position) {
     @Nullable Float boxedRadius = Float.isNaN(radius) ? null : Float.valueOf(radius);
 

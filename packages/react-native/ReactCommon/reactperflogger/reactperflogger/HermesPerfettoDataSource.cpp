@@ -55,8 +55,13 @@ void flushSample(
     const std::vector<folly::dynamic>& stack,
     uint64_t start,
     uint64_t end) {
-  auto track = getPerfettoWebPerfTrack("JS Sampling");
+  auto track = getPerfettoWebPerfTrackSync("JS Sampling");
+  size_t i = 0;
   for (const auto& frame : stack) {
+    if (++i >= 50) {
+      // Limit
+      break;
+    }
     std::string name = frame["name"].asString();
     TRACE_EVENT_BEGIN(
         "react-native", perfetto::DynamicString{name}, track, start);
@@ -98,7 +103,7 @@ void HermesPerfettoDataSource::OnStart(const StartArgs&) {
   TRACE_EVENT_INSTANT(
       "react-native",
       perfetto::DynamicString{"Profiling Started"},
-      getPerfettoWebPerfTrack("JS Sampling"),
+      getPerfettoWebPerfTrackSync("JS Sampling"),
       performanceNowToPerfettoTraceTime(0));
 }
 

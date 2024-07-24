@@ -20,7 +20,7 @@
 #include <jsireact/JSIExecutor.h>
 #include <react/jni/JRuntimeExecutor.h>
 #include <react/jni/JSLogging.h>
-#include <react/runtime/BridgelessJSCallInvoker.h>
+#include <react/renderer/runtimescheduler/RuntimeSchedulerCallInvoker.h>
 #include <react/runtime/BridgelessNativeMethodCallInvoker.h>
 #include "JavaTimerRegistry.h"
 
@@ -91,8 +91,8 @@ JReactInstance::JReactInstance(
 
   auto unbufferedRuntimeExecutor = instance_->getUnbufferedRuntimeExecutor();
   // Set up the JS and native modules call invokers (for TurboModules)
-  auto jsInvoker =
-      std::make_unique<BridgelessJSCallInvoker>(unbufferedRuntimeExecutor);
+  auto jsInvoker = std::make_unique<RuntimeSchedulerCallInvoker>(
+      instance_->getRuntimeScheduler());
   jsCallInvokerHolder_ = jni::make_global(
       CallInvokerHolder::newObjectCxxArgs(std::move(jsInvoker)));
   auto nativeMethodCallInvoker =

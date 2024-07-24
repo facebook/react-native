@@ -54,6 +54,16 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.',
     },
+    changeOrderOfMountingInstructionsOnAndroid: {
+      defaultValue: false,
+      description:
+        'When enabled, insert of views on Android will be moved from the beginning of the IntBufferBatchMountItem to be after layout updates.',
+    },
+    completeReactInstanceCreationOnBgThreadOnAndroid: {
+      defaultValue: false,
+      description:
+        'Do not wait for a main-thread dispatch to complete init to start executing work on the JS thread on Android',
+    },
     destroyFabricSurfacesInReactInstanceManager: {
       defaultValue: false,
       description:
@@ -68,10 +78,20 @@ const definitions: FeatureFlagDefinitions = {
       defaultValue: false,
       description: 'Clean yoga node when <TextInput /> does not change.',
     },
+    enableFabricRendererExclusively: {
+      defaultValue: false,
+      description:
+        'When the app is completely migrated to Fabric, set this flag to true to disable parts of Paper infrastructure that are not needed anymore but consume memory and CPU. Specifically, UIViewOperationQueue and EventDispatcherImpl will no longer work as they will not subscribe to ReactChoreographer for updates.',
+    },
     enableGranularShadowTreeStateReconciliation: {
       defaultValue: false,
       description:
         'When enabled, the renderer would only fail commits when they propagate state and the last commit that updated state changed before committing.',
+    },
+    enableLongTaskAPI: {
+      defaultValue: false,
+      description:
+        'Enables the reporting of long tasks through `PerformanceObserver`. Only works if the event loop is enabled.',
     },
     enableMicrotasks: {
       defaultValue: false,
@@ -83,6 +103,11 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'When enabled, Android will receive prop updates based on the differences between the last rendered shadow node and the last committed shadow node.',
     },
+    enableReportEventPaintTime: {
+      defaultValue: false,
+      description:
+        'Report paint time inside the Event Timing API implementation (PerformanceObserver).',
+    },
     enableSynchronousStateUpdates: {
       defaultValue: false,
       description:
@@ -92,6 +117,11 @@ const definitions: FeatureFlagDefinitions = {
       defaultValue: false,
       description:
         'Ensures that JavaScript always has a consistent view of the state of the UI (e.g.: commits done in other threads are not immediately propagated to JS during its execution).',
+    },
+    excludeYogaFromRawProps: {
+      defaultValue: false,
+      description:
+        'When enabled, rawProps in Props will not include Yoga specific props.',
     },
     fetchImagesInViewPreallocation: {
       defaultValue: false,
@@ -119,7 +149,7 @@ const definitions: FeatureFlagDefinitions = {
         'Forces the mounting layer on Android to always batch mount items instead of dispatching them immediately. This might fix some crashes related to synchronous state updates, where some views dispatch state updates during mount.',
     },
     fuseboxEnabledDebug: {
-      defaultValue: false,
+      defaultValue: true,
       description:
         'Flag determining if the React Native DevTools (Fusebox) CDP backend should be enabled in debug builds. This flag is global and should not be changed across React Host lifetimes.',
     },
@@ -166,6 +196,11 @@ const definitions: FeatureFlagDefinitions = {
       defaultValue: false,
       description:
         'Use shared background drawing code for ReactImageView instead of using Fresco to manipulate the bitmap',
+    },
+    useOptimisedViewPreallocationOnAndroid: {
+      defaultValue: false,
+      description:
+        'Moves more of the work in view preallocation to the main thread to free up JS thread.',
     },
     useRuntimeShadowNodeReferenceUpdate: {
       defaultValue: false,
@@ -220,6 +255,16 @@ const definitions: FeatureFlagDefinitions = {
     shouldUseSetNativePropsInFabric: {
       defaultValue: true,
       description: 'Enables use of setNativeProps in JS driven animations.',
+    },
+    shouldUseSetNativePropsInNativeAnimationsInFabric: {
+      defaultValue: false,
+      description:
+        'Enables use of setNativeProps in Native driven animations in Fabric.',
+    },
+    usePassiveEffectsForAnimations: {
+      defaultValue: false,
+      description:
+        'Enable a variant of useAnimatedPropsLifecycle hook that constructs the animation graph in passive effect instead of layout effect',
     },
     useRefsForTextInputState: {
       defaultValue: false,

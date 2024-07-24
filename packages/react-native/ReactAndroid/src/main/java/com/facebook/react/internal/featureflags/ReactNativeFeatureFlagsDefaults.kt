@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0fa4e9e2c5f3d96f729f5822783ce86f>>
+ * @generated SignedSource<<abdee8d0b85b0d9940207b9cbe6d3f78>>
  */
 
 /**
@@ -31,21 +31,33 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun batchRenderingUpdatesInEventLoop(): Boolean = false
 
+  override fun changeOrderOfMountingInstructionsOnAndroid(): Boolean = false
+
+  override fun completeReactInstanceCreationOnBgThreadOnAndroid(): Boolean = false
+
   override fun destroyFabricSurfacesInReactInstanceManager(): Boolean = false
 
   override fun enableAlignItemsBaselineOnFabricIOS(): Boolean = true
 
   override fun enableCleanTextInputYogaNode(): Boolean = false
 
+  override fun enableFabricRendererExclusively(): Boolean = false
+
   override fun enableGranularShadowTreeStateReconciliation(): Boolean = false
+
+  override fun enableLongTaskAPI(): Boolean = false
 
   override fun enableMicrotasks(): Boolean = false
 
   override fun enablePropsUpdateReconciliationAndroid(): Boolean = false
 
+  override fun enableReportEventPaintTime(): Boolean = false
+
   override fun enableSynchronousStateUpdates(): Boolean = false
 
   override fun enableUIConsistency(): Boolean = false
+
+  override fun excludeYogaFromRawProps(): Boolean = false
 
   override fun fetchImagesInViewPreallocation(): Boolean = false
 
@@ -57,7 +69,7 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun forceBatchingMountItemsOnAndroid(): Boolean = false
 
-  override fun fuseboxEnabledDebug(): Boolean = false
+  override fun fuseboxEnabledDebug(): Boolean = true
 
   override fun fuseboxEnabledRelease(): Boolean = false
 
@@ -76,6 +88,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun useNativeViewConfigsInBridgelessMode(): Boolean = false
 
   override fun useNewReactImageViewBackgroundDrawing(): Boolean = false
+
+  override fun useOptimisedViewPreallocationOnAndroid(): Boolean = false
 
   override fun useRuntimeShadowNodeReferenceUpdate(): Boolean = false
 

@@ -8,14 +8,16 @@
  * @flow strict
  */
 
-export type HighResTimeStamp = number;
-export type PerformanceEntryType = 'mark' | 'measure' | 'event';
+// flowlint unsafe-getters-setters:off
+
+export type DOMHighResTimeStamp = number;
+export type PerformanceEntryType = 'mark' | 'measure' | 'event' | 'longtask';
 
 export type PerformanceEntryJSON = {
   name: string,
   entryType: PerformanceEntryType,
-  startTime: HighResTimeStamp,
-  duration: HighResTimeStamp,
+  startTime: DOMHighResTimeStamp,
+  duration: DOMHighResTimeStamp,
   ...
 };
 
@@ -25,29 +27,45 @@ export const ALWAYS_LOGGED_ENTRY_TYPES: $ReadOnlyArray<PerformanceEntryType> = [
 ];
 
 export class PerformanceEntry {
-  name: string;
-  entryType: PerformanceEntryType;
-  startTime: HighResTimeStamp;
-  duration: HighResTimeStamp;
+  #name: string;
+  #entryType: PerformanceEntryType;
+  #startTime: DOMHighResTimeStamp;
+  #duration: DOMHighResTimeStamp;
 
   constructor(init: {
     name: string,
     entryType: PerformanceEntryType,
-    startTime: HighResTimeStamp,
-    duration: HighResTimeStamp,
+    startTime: DOMHighResTimeStamp,
+    duration: DOMHighResTimeStamp,
   }) {
-    this.name = init.name;
-    this.entryType = init.entryType;
-    this.startTime = init.startTime;
-    this.duration = init.duration;
+    this.#name = init.name;
+    this.#entryType = init.entryType;
+    this.#startTime = init.startTime;
+    this.#duration = init.duration;
+  }
+
+  get name(): string {
+    return this.#name;
+  }
+
+  get entryType(): PerformanceEntryType {
+    return this.#entryType;
+  }
+
+  get startTime(): DOMHighResTimeStamp {
+    return this.#startTime;
+  }
+
+  get duration(): DOMHighResTimeStamp {
+    return this.#duration;
   }
 
   toJSON(): PerformanceEntryJSON {
     return {
-      name: this.name,
-      entryType: this.entryType,
-      startTime: this.startTime,
-      duration: this.duration,
+      name: this.#name,
+      entryType: this.#entryType,
+      startTime: this.#startTime,
+      duration: this.#duration,
     };
   }
 }

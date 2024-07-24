@@ -11,6 +11,7 @@
 
 import type {AssetData} from 'metro/src/Assets';
 
+import {logger} from '../../utils/logger';
 import {
   cleanAssetCatalog,
   getImageSet,
@@ -20,7 +21,6 @@ import {
 import filterPlatformAssetScales from './filterPlatformAssetScales';
 import getAssetDestPathAndroid from './getAssetDestPathAndroid';
 import getAssetDestPathIOS from './getAssetDestPathIOS';
-import {logger} from '@react-native-community/cli-tools';
 import fs from 'fs';
 import path from 'path';
 

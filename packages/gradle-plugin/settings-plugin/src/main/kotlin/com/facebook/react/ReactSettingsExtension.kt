@@ -8,6 +8,7 @@
 package com.facebook.react
 
 import com.facebook.react.utils.JsonUtils
+import com.facebook.react.utils.windowsAwareCommandLine
 import java.io.File
 import java.math.BigInteger
 import java.security.MessageDigest
@@ -25,6 +26,11 @@ abstract class ReactSettingsExtension @Inject constructor(val settings: Settings
   private val outputFolder =
       settings.layout.rootDirectory.file("build/generated/autolinking/").asFile
 
+  private val defaultConfigCommand: List<String> =
+      windowsAwareCommandLine(listOf("npx", "@react-native-community/cli", "config")).map {
+        it.toString()
+      }
+
   /**
    * Utility function to autolink libraries using an external command as source of truth.
    *
@@ -39,12 +45,12 @@ abstract class ReactSettingsExtension @Inject constructor(val settings: Settings
    */
   @JvmOverloads
   public fun autolinkLibrariesFromCommand(
-      command: List<String> = listOf("npx", "@react-native-community/cli", "config"),
+      command: List<String> = defaultConfigCommand,
       workingDirectory: File? = settings.layout.rootDirectory.dir("../").asFile,
       lockFiles: FileCollection =
           settings.layout.rootDirectory
               .dir("../")
-              .files("yarn.lock", "package-lock.json", "package.json")
+              .files("yarn.lock", "package-lock.json", "package.json", "react-native.config.js")
   ) {
     outputFile.parentFile.mkdirs()
     val lockFilesChanged = checkAndUpdateLockfiles(lockFiles, outputFolder)

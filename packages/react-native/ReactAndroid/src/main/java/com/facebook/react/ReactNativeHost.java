@@ -50,7 +50,7 @@ public abstract class ReactNativeHost {
    * lifecycle. The ReactInstanceManager will be invalidated during {@link #clear()}, and may not be
    * used again afterwards.
    */
-  public ReactInstanceManager getReactInstanceManager() {
+  public synchronized ReactInstanceManager getReactInstanceManager() {
     if (mReactInstanceManager == null) {
       ReactMarker.logMarker(ReactMarkerConstants.INIT_REACT_RUNTIME_START);
       ReactMarker.logMarker(ReactMarkerConstants.GET_REACT_INSTANCE_MANAGER_START);
@@ -65,7 +65,7 @@ public abstract class ReactNativeHost {
    * {@link #getReactInstanceManager()} has been called at least once since this object was created
    * or {@link #clear()} was called.
    */
-  public boolean hasInstance() {
+  public synchronized boolean hasInstance() {
     return mReactInstanceManager != null;
   }
 
@@ -73,7 +73,7 @@ public abstract class ReactNativeHost {
    * Destroy the current instance and invalidate the internal ReactInstanceManager, reclaiming its
    * resources and preventing it from being reused.
    */
-  public void clear() {
+  public synchronized void clear() {
     if (mReactInstanceManager != null) {
       mReactInstanceManager.invalidate();
       mReactInstanceManager = null;

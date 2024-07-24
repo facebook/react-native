@@ -12,7 +12,7 @@
 import type {Config} from '@react-native-community/cli-types';
 
 import {KeyPressHandler} from '../../utils/KeyPressHandler';
-import {logger} from '@react-native-community/cli-tools';
+import {logger} from '../../utils/logger';
 import chalk from 'chalk';
 import execa from 'execa';
 import fetch from 'node-fetch';
@@ -44,7 +44,7 @@ export default function attachKeyHandlers({
   };
 
   const onPress = async (key: string) => {
-    switch (key) {
+    switch (key.toLowerCase()) {
       case 'r':
         logger.info('Reloading connected app(s)...');
         messageSocket.broadcast('reload', null);

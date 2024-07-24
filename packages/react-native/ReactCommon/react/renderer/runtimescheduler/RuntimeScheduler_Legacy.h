@@ -22,7 +22,9 @@ class RuntimeScheduler_Legacy final : public RuntimeSchedulerBase {
  public:
   explicit RuntimeScheduler_Legacy(
       RuntimeExecutor runtimeExecutor,
-      std::function<RuntimeSchedulerTimePoint()> now);
+      std::function<RuntimeSchedulerTimePoint()> now,
+      RuntimeSchedulerErrorHandler onTaskError,
+      RuntimeSchedulerErrorHandler onMicrotaskError);
 
   /*
    * Not copyable.
@@ -93,7 +95,7 @@ class RuntimeScheduler_Legacy final : public RuntimeSchedulerBase {
    *
    * Can be called from any thread.
    */
-  bool getShouldYield() const noexcept override;
+  bool getShouldYield() noexcept override;
 
   /*
    * Returns value of currently executed task. Designed to be called from React.
@@ -126,6 +128,9 @@ class RuntimeScheduler_Legacy final : public RuntimeSchedulerBase {
   void setShadowTreeRevisionConsistencyManager(
       ShadowTreeRevisionConsistencyManager*
           shadowTreeRevisionConsistencyManager) override;
+
+  void setPerformanceEntryReporter(
+      PerformanceEntryReporter* performanceEntryReporter) override;
 
  private:
   std::priority_queue<
@@ -176,6 +181,9 @@ class RuntimeScheduler_Legacy final : public RuntimeSchedulerBase {
 
   ShadowTreeRevisionConsistencyManager* shadowTreeRevisionConsistencyManager_{
       nullptr};
+
+  RuntimeSchedulerErrorHandler onTaskError_;
+  RuntimeSchedulerErrorHandler onMicrotaskError_;
 };
 
 } // namespace facebook::react

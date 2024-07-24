@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<105ab999064160753e636f86edfc00a2>>
+ * @generated SignedSource<<82f6d4eda4011bee81810af366f5d677>>
  */
 
 /**
@@ -28,14 +28,20 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var allowCollapsableChildrenCache: Boolean? = null
   private var allowRecursiveCommitsWithSynchronousMountOnAndroidCache: Boolean? = null
   private var batchRenderingUpdatesInEventLoopCache: Boolean? = null
+  private var changeOrderOfMountingInstructionsOnAndroidCache: Boolean? = null
+  private var completeReactInstanceCreationOnBgThreadOnAndroidCache: Boolean? = null
   private var destroyFabricSurfacesInReactInstanceManagerCache: Boolean? = null
   private var enableAlignItemsBaselineOnFabricIOSCache: Boolean? = null
   private var enableCleanTextInputYogaNodeCache: Boolean? = null
+  private var enableFabricRendererExclusivelyCache: Boolean? = null
   private var enableGranularShadowTreeStateReconciliationCache: Boolean? = null
+  private var enableLongTaskAPICache: Boolean? = null
   private var enableMicrotasksCache: Boolean? = null
   private var enablePropsUpdateReconciliationAndroidCache: Boolean? = null
+  private var enableReportEventPaintTimeCache: Boolean? = null
   private var enableSynchronousStateUpdatesCache: Boolean? = null
   private var enableUIConsistencyCache: Boolean? = null
+  private var excludeYogaFromRawPropsCache: Boolean? = null
   private var fetchImagesInViewPreallocationCache: Boolean? = null
   private var fixIncorrectScrollViewStateUpdateOnAndroidCache: Boolean? = null
   private var fixMappingOfEventPrioritiesBetweenFabricAndReactCache: Boolean? = null
@@ -51,6 +57,7 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var useModernRuntimeSchedulerCache: Boolean? = null
   private var useNativeViewConfigsInBridgelessModeCache: Boolean? = null
   private var useNewReactImageViewBackgroundDrawingCache: Boolean? = null
+  private var useOptimisedViewPreallocationOnAndroidCache: Boolean? = null
   private var useRuntimeShadowNodeReferenceUpdateCache: Boolean? = null
   private var useRuntimeShadowNodeReferenceUpdateOnLayoutCache: Boolean? = null
   private var useStateAlignmentMechanismCache: Boolean? = null
@@ -95,6 +102,26 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
     return cached
   }
 
+  override fun changeOrderOfMountingInstructionsOnAndroid(): Boolean {
+    var cached = changeOrderOfMountingInstructionsOnAndroidCache
+    if (cached == null) {
+      cached = currentProvider.changeOrderOfMountingInstructionsOnAndroid()
+      accessedFeatureFlags.add("changeOrderOfMountingInstructionsOnAndroid")
+      changeOrderOfMountingInstructionsOnAndroidCache = cached
+    }
+    return cached
+  }
+
+  override fun completeReactInstanceCreationOnBgThreadOnAndroid(): Boolean {
+    var cached = completeReactInstanceCreationOnBgThreadOnAndroidCache
+    if (cached == null) {
+      cached = currentProvider.completeReactInstanceCreationOnBgThreadOnAndroid()
+      accessedFeatureFlags.add("completeReactInstanceCreationOnBgThreadOnAndroid")
+      completeReactInstanceCreationOnBgThreadOnAndroidCache = cached
+    }
+    return cached
+  }
+
   override fun destroyFabricSurfacesInReactInstanceManager(): Boolean {
     var cached = destroyFabricSurfacesInReactInstanceManagerCache
     if (cached == null) {
@@ -125,12 +152,32 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
     return cached
   }
 
+  override fun enableFabricRendererExclusively(): Boolean {
+    var cached = enableFabricRendererExclusivelyCache
+    if (cached == null) {
+      cached = currentProvider.enableFabricRendererExclusively()
+      accessedFeatureFlags.add("enableFabricRendererExclusively")
+      enableFabricRendererExclusivelyCache = cached
+    }
+    return cached
+  }
+
   override fun enableGranularShadowTreeStateReconciliation(): Boolean {
     var cached = enableGranularShadowTreeStateReconciliationCache
     if (cached == null) {
       cached = currentProvider.enableGranularShadowTreeStateReconciliation()
       accessedFeatureFlags.add("enableGranularShadowTreeStateReconciliation")
       enableGranularShadowTreeStateReconciliationCache = cached
+    }
+    return cached
+  }
+
+  override fun enableLongTaskAPI(): Boolean {
+    var cached = enableLongTaskAPICache
+    if (cached == null) {
+      cached = currentProvider.enableLongTaskAPI()
+      accessedFeatureFlags.add("enableLongTaskAPI")
+      enableLongTaskAPICache = cached
     }
     return cached
   }
@@ -155,6 +202,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
     return cached
   }
 
+  override fun enableReportEventPaintTime(): Boolean {
+    var cached = enableReportEventPaintTimeCache
+    if (cached == null) {
+      cached = currentProvider.enableReportEventPaintTime()
+      accessedFeatureFlags.add("enableReportEventPaintTime")
+      enableReportEventPaintTimeCache = cached
+    }
+    return cached
+  }
+
   override fun enableSynchronousStateUpdates(): Boolean {
     var cached = enableSynchronousStateUpdatesCache
     if (cached == null) {
@@ -171,6 +228,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.enableUIConsistency()
       accessedFeatureFlags.add("enableUIConsistency")
       enableUIConsistencyCache = cached
+    }
+    return cached
+  }
+
+  override fun excludeYogaFromRawProps(): Boolean {
+    var cached = excludeYogaFromRawPropsCache
+    if (cached == null) {
+      cached = currentProvider.excludeYogaFromRawProps()
+      accessedFeatureFlags.add("excludeYogaFromRawProps")
+      excludeYogaFromRawPropsCache = cached
     }
     return cached
   }
@@ -321,6 +388,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.useNewReactImageViewBackgroundDrawing()
       accessedFeatureFlags.add("useNewReactImageViewBackgroundDrawing")
       useNewReactImageViewBackgroundDrawingCache = cached
+    }
+    return cached
+  }
+
+  override fun useOptimisedViewPreallocationOnAndroid(): Boolean {
+    var cached = useOptimisedViewPreallocationOnAndroidCache
+    if (cached == null) {
+      cached = currentProvider.useOptimisedViewPreallocationOnAndroid()
+      accessedFeatureFlags.add("useOptimisedViewPreallocationOnAndroid")
+      useOptimisedViewPreallocationOnAndroidCache = cached
     }
     return cached
   }

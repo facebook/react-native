@@ -133,6 +133,15 @@ int32_t Color::getColor() const
 {
   return ColorFromUIColor(uiColor_);
 }
+
+float Color::getChannel(int channelId) const
+{
+  CGFloat rgba[4];
+  UIColor *color = (__bridge UIColor *)getUIColor().get();
+  [color getRed:&rgba[0] green:&rgba[1] blue:&rgba[2] alpha:&rgba[3]];
+  return static_cast<float>(rgba[channelId]);
+}
+
 } // namespace facebook::react
 
 NS_ASSUME_NONNULL_END

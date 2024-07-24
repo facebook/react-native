@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f2c4d9731984436f95d178639074664d>>
+ * @generated SignedSource<<55d6c0f7ab8abe8411194235ab362cd2>>
  */
 
 /**
@@ -58,6 +58,16 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool batchRenderingUpdatesInEventLoop();
 
   /**
+   * When enabled, insert of views on Android will be moved from the beginning of the IntBufferBatchMountItem to be after layout updates.
+   */
+  RN_EXPORT static bool changeOrderOfMountingInstructionsOnAndroid();
+
+  /**
+   * Do not wait for a main-thread dispatch to complete init to start executing work on the JS thread on Android
+   */
+  RN_EXPORT static bool completeReactInstanceCreationOnBgThreadOnAndroid();
+
+  /**
    * When enabled, ReactInstanceManager will clean up Fabric surfaces on destroy().
    */
   RN_EXPORT static bool destroyFabricSurfacesInReactInstanceManager();
@@ -73,9 +83,19 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableCleanTextInputYogaNode();
 
   /**
+   * When the app is completely migrated to Fabric, set this flag to true to disable parts of Paper infrastructure that are not needed anymore but consume memory and CPU. Specifically, UIViewOperationQueue and EventDispatcherImpl will no longer work as they will not subscribe to ReactChoreographer for updates.
+   */
+  RN_EXPORT static bool enableFabricRendererExclusively();
+
+  /**
    * When enabled, the renderer would only fail commits when they propagate state and the last commit that updated state changed before committing.
    */
   RN_EXPORT static bool enableGranularShadowTreeStateReconciliation();
+
+  /**
+   * Enables the reporting of long tasks through `PerformanceObserver`. Only works if the event loop is enabled.
+   */
+  RN_EXPORT static bool enableLongTaskAPI();
 
   /**
    * Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).
@@ -88,6 +108,11 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enablePropsUpdateReconciliationAndroid();
 
   /**
+   * Report paint time inside the Event Timing API implementation (PerformanceObserver).
+   */
+  RN_EXPORT static bool enableReportEventPaintTime();
+
+  /**
    * Dispatches state updates synchronously in Fabric (e.g.: updates the scroll position in the shadow tree synchronously from the main thread).
    */
   RN_EXPORT static bool enableSynchronousStateUpdates();
@@ -96,6 +121,11 @@ class ReactNativeFeatureFlags {
    * Ensures that JavaScript always has a consistent view of the state of the UI (e.g.: commits done in other threads are not immediately propagated to JS during its execution).
    */
   RN_EXPORT static bool enableUIConsistency();
+
+  /**
+   * When enabled, rawProps in Props will not include Yoga specific props.
+   */
+  RN_EXPORT static bool excludeYogaFromRawProps();
 
   /**
    * Start image fetching during view preallocation instead of waiting for layout pass
@@ -171,6 +201,11 @@ class ReactNativeFeatureFlags {
    * Use shared background drawing code for ReactImageView instead of using Fresco to manipulate the bitmap
    */
   RN_EXPORT static bool useNewReactImageViewBackgroundDrawing();
+
+  /**
+   * Moves more of the work in view preallocation to the main thread to free up JS thread.
+   */
+  RN_EXPORT static bool useOptimisedViewPreallocationOnAndroid();
 
   /**
    * When enabled, cloning shadow nodes within react native will update the reference held by the current JS fiber tree.

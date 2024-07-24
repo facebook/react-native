@@ -151,6 +151,7 @@ public class AlertFragment extends DialogFragment implements DialogInterface.OnC
    *
    * @deprecated non-AppCompat dialogs are deprecated and will be removed in a future version.
    */
+  @Deprecated(since = "0.75.0", forRemoval = true)
   private static Dialog createAppDialog(
       Context activityContext, Bundle arguments, DialogInterface.OnClickListener fragment) {
     android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(activityContext);

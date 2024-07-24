@@ -76,26 +76,9 @@ public class ReactFeatureFlags {
    */
   public static boolean enableCppPropsIteratorSetter = false;
 
-  /** When enabled, rawProps in Props will not include Yoga specific props. */
-  public static boolean excludeYogaFromRawProps = false;
-
   /**
    * Enables storing js caller stack when creating promise in native module. This is useful in case
    * of Promise rejection and tracing the cause.
    */
   public static boolean traceTurboModulePromiseRejections = ReactBuildConfig.DEBUG;
-
-  /**
-   * Enables auto rejecting promises from Turbo Modules method calls. If native error occurs Promise
-   * in JS will be rejected (The JS error will include native stack)
-   */
-  public static boolean rejectTurboModulePromiseOnNativeError = true;
-
-  /*
-   * When the app is completely migrated to Fabric, set this flag to true to
-   * disable parts of Paper infrastructure that are not needed anymore but consume
-   * memory and CPU. Specifically, UIViewOperationQueue and EventDispatcherImpl will no
-   * longer work as they won't subscribe to ReactChoreographer for updates.
-   */
-  public static boolean enableFabricRendererExclusively = false;
 }

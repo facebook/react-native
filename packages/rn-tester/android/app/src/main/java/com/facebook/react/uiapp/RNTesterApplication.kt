@@ -19,7 +19,6 @@ import com.facebook.react.ViewManagerOnDemandReactPackage
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.common.assets.ReactFontManager
-import com.facebook.react.config.ReactFeatureFlags
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.load
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.unstable_loadFusebox
 import com.facebook.react.defaults.DefaultReactHost
@@ -54,8 +53,7 @@ class RNTesterApplication : Application(), ReactApplication {
                   name: String,
                   reactContext: ReactApplicationContext
               ): NativeModule? {
-                @Suppress("DEPRECATION")
-                if (!ReactFeatureFlags.useTurboModules) {
+                if (!isNewArchEnabled) {
                   return null
                 }
                 if (SampleTurboModule.NAME == name) {
@@ -72,27 +70,24 @@ class RNTesterApplication : Application(), ReactApplication {
               // modules.
               override fun getReactModuleInfoProvider(): ReactModuleInfoProvider =
                   ReactModuleInfoProvider {
-                    @Suppress("DEPRECATION")
-                    if (ReactFeatureFlags.useTurboModules) {
+                    if (isNewArchEnabled) {
                       mapOf(
                           SampleTurboModule.NAME to
                               ReactModuleInfo(
                                   SampleTurboModule.NAME,
                                   "SampleTurboModule",
-                                  false, // canOverrideExistingModule
-                                  false, // needsEagerInit
-                                  false, // isCxxModule
-                                  true // isTurboModule
-                                  ),
+                                  _canOverrideExistingModule = false,
+                                  _needsEagerInit = false,
+                                  isCxxModule = false,
+                                  isTurboModule = true),
                           SampleLegacyModule.NAME to
                               ReactModuleInfo(
                                   SampleLegacyModule.NAME,
                                   "SampleLegacyModule",
-                                  false, // canOverrideExistingModule
-                                  false, // needsEagerInit
-                                  false, // isCxxModule
-                                  false // isTurboModule
-                                  ))
+                                  _canOverrideExistingModule = false,
+                                  _needsEagerInit = false,
+                                  isCxxModule = false,
+                                  isTurboModule = false))
                     } else {
                       emptyMap()
                     }
@@ -115,12 +110,10 @@ class RNTesterApplication : Application(), ReactApplication {
                   reactContext: ReactApplicationContext,
                   viewManagerName: String
               ): ViewManager<*, out ReactShadowNode<*>>? =
-                  if (viewManagerName == "RNTMyNativeView") {
-                    MyNativeViewManager()
-                  } else if (viewManagerName == "RNTMyLegacyNativeView") {
-                    MyLegacyViewManager(reactContext)
-                  } else {
-                    null
+                  when (viewManagerName) {
+                    "RNTMyNativeView" -> MyNativeViewManager()
+                    "RNTMyLegacyNativeView" -> MyLegacyViewManager(reactContext)
+                    else -> null
                   }
             })
       }

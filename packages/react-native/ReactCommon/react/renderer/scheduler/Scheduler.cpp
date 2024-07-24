@@ -151,10 +151,7 @@ Scheduler::Scheduler(
       "react_fabric:remove_outstanding_surfaces_on_destruction_ios");
 #endif
 
-  CoreFeatures::enableReportEventPaintTime = reactNativeConfig_->getBool(
-      "rn_responsiveness_performance:enable_paint_time_reporting");
-
-  if (CoreFeatures::enableReportEventPaintTime) {
+  if (ReactNativeFeatureFlags::enableReportEventPaintTime()) {
     uiManager->registerMountHook(*eventPerformanceLogger_);
   }
 }

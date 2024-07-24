@@ -16,12 +16,13 @@ import typeof TerminalReporter from 'metro/src/lib/TerminalReporter';
 
 import isDevServerRunning from '../../utils/isDevServerRunning';
 import loadMetroConfig from '../../utils/loadMetroConfig';
+import {logger} from '../../utils/logger';
+import * as version from '../../utils/version';
 import attachKeyHandlers from './attachKeyHandlers';
 import {
   createDevServerMiddleware,
   indexPageMiddleware,
 } from '@react-native-community/cli-server-api';
-import {logger, version} from '@react-native-community/cli-tools';
 import {createDevMiddleware} from '@react-native/dev-middleware';
 import chalk from 'chalk';
 import Metro from 'metro';

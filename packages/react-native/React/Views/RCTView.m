@@ -804,7 +804,7 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x)
   const RCTBorderColors borderColors = [self borderColorsWithTraitCollection:self.traitCollection];
 
   BOOL useIOSBorderRendering = RCTCornerRadiiAreEqual(cornerRadii) && RCTBorderInsetsAreEqual(borderInsets) &&
-      RCTBorderColorsAreEqual(borderColors) && _borderStyle == RCTBorderStyleSolid &&
+      RCTBorderColorsAreEqual(borderColors) &&
 
       // iOS draws borders in front of the content whereas CSS draws them behind
       // the content. For this reason, only use iOS border drawing when clipping

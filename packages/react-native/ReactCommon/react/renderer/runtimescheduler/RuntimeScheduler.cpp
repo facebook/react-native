@@ -19,23 +19,35 @@ namespace facebook::react {
 namespace {
 std::unique_ptr<RuntimeSchedulerBase> getRuntimeSchedulerImplementation(
     RuntimeExecutor runtimeExecutor,
-    std::function<RuntimeSchedulerTimePoint()> now) {
+    std::function<RuntimeSchedulerTimePoint()> now,
+    RuntimeSchedulerErrorHandler onTaskError,
+    RuntimeSchedulerErrorHandler onMicrotaskError) {
   if (ReactNativeFeatureFlags::useModernRuntimeScheduler()) {
     return std::make_unique<RuntimeScheduler_Modern>(
-        std::move(runtimeExecutor), std::move(now));
+        std::move(runtimeExecutor),
+        std::move(now),
+        std::move(onTaskError),
+        std::move(onMicrotaskError));
   } else {
     return std::make_unique<RuntimeScheduler_Legacy>(
-        std::move(runtimeExecutor), std::move(now));
+        std::move(runtimeExecutor),
+        std::move(now),
+        std::move(onTaskError),
+        std::move(onMicrotaskError));
   }
 }
 } // namespace
 
 RuntimeScheduler::RuntimeScheduler(
     RuntimeExecutor runtimeExecutor,
-    std::function<RuntimeSchedulerTimePoint()> now)
+    std::function<RuntimeSchedulerTimePoint()> now,
+    RuntimeSchedulerErrorHandler onTaskError,
+    RuntimeSchedulerErrorHandler onMicrotaskError)
     : runtimeSchedulerImpl_(getRuntimeSchedulerImplementation(
           std::move(runtimeExecutor),
-          std::move(now))) {}
+          std::move(now),
+          std::move(onTaskError),
+          std::move(onMicrotaskError))) {}
 
 void RuntimeScheduler::scheduleWork(RawCallback&& callback) noexcept {
   return runtimeSchedulerImpl_->scheduleWork(std::move(callback));
@@ -65,7 +77,7 @@ std::shared_ptr<Task> RuntimeScheduler::scheduleIdleTask(
   return runtimeSchedulerImpl_->scheduleIdleTask(std::move(callback), timeout);
 }
 
-bool RuntimeScheduler::getShouldYield() const noexcept {
+bool RuntimeScheduler::getShouldYield() noexcept {
   return runtimeSchedulerImpl_->getShouldYield();
 }
 
@@ -100,6 +112,12 @@ void RuntimeScheduler::setShadowTreeRevisionConsistencyManager(
         shadowTreeRevisionConsistencyManager) {
   return runtimeSchedulerImpl_->setShadowTreeRevisionConsistencyManager(
       shadowTreeRevisionConsistencyManager);
+}
+
+void RuntimeScheduler::setPerformanceEntryReporter(
+    PerformanceEntryReporter* performanceEntryReporter) {
+  return runtimeSchedulerImpl_->setPerformanceEntryReporter(
+      performanceEntryReporter);
 }
 
 } // namespace facebook::react

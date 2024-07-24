@@ -369,8 +369,8 @@ void RuntimeTarget::installConsoleHandler() {
         };
 
     /**
-     * Call \param innerFn and forward any arguments to the original console
-     * method named \param methodName, if possible.
+     * Call innerFn and forward any arguments to the original console method
+     * named methodName, if possible.
      */
     auto forwardToOriginalConsole = [originalConsole](
                                         const char* methodName,

@@ -8,10 +8,10 @@
 #include "RuntimeScheduler_Modern.h"
 #include "SchedulerPriorityUtils.h"
 
-#include <cxxreact/ErrorUtils.h>
 #include <cxxreact/SystraceSection.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/consistency/ScopedShadowTreeRevisionLock.h>
+#include <react/timing/primitives.h>
 #include <react/utils/OnScopeExit.h>
 #include <utility>
 
@@ -32,8 +32,13 @@ std::chrono::milliseconds getResolvedTimeoutForIdleTask(
 
 RuntimeScheduler_Modern::RuntimeScheduler_Modern(
     RuntimeExecutor runtimeExecutor,
-    std::function<RuntimeSchedulerTimePoint()> now)
-    : runtimeExecutor_(std::move(runtimeExecutor)), now_(std::move(now)) {}
+    std::function<RuntimeSchedulerTimePoint()> now,
+    RuntimeSchedulerErrorHandler onTaskError,
+    RuntimeSchedulerErrorHandler onMicrotaskError)
+    : runtimeExecutor_(std::move(runtimeExecutor)),
+      now_(std::move(now)),
+      onTaskError_(std::move(onTaskError)),
+      onMicrotaskError_(std::move(onMicrotaskError)) {}
 
 void RuntimeScheduler_Modern::scheduleWork(RawCallback&& callback) noexcept {
   SystraceSection s("RuntimeScheduler::scheduleWork");
@@ -117,8 +122,12 @@ std::shared_ptr<Task> RuntimeScheduler_Modern::scheduleIdleTask(
   return task;
 }
 
-bool RuntimeScheduler_Modern::getShouldYield() const noexcept {
+bool RuntimeScheduler_Modern::getShouldYield() noexcept {
   std::shared_lock lock(schedulingMutex_);
+
+  if (ReactNativeFeatureFlags::enableLongTaskAPI()) {
+    markYieldingOpportunity(now_());
+  }
 
   return syncTaskRequests_ > 0 ||
       (!taskQueue_.empty() && taskQueue_.top().get() != currentTask_);
@@ -217,6 +226,11 @@ void RuntimeScheduler_Modern::setShadowTreeRevisionConsistencyManager(
   shadowTreeRevisionConsistencyManager_ = shadowTreeRevisionConsistencyManager;
 }
 
+void RuntimeScheduler_Modern::setPerformanceEntryReporter(
+    PerformanceEntryReporter* performanceEntryReporter) {
+  performanceEntryReporter_ = performanceEntryReporter;
+}
+
 #pragma mark - Private
 
 void RuntimeScheduler_Modern::scheduleTask(std::shared_ptr<Task> task) {
@@ -300,28 +314,38 @@ std::shared_ptr<Task> RuntimeScheduler_Modern::selectTask(
 void RuntimeScheduler_Modern::runEventLoopTick(
     jsi::Runtime& runtime,
     Task& task,
-    RuntimeSchedulerTimePoint currentTime) {
+    RuntimeSchedulerTimePoint taskStartTime) {
   SystraceSection s("RuntimeScheduler::runEventLoopTick");
+
+  ScopedShadowTreeRevisionLock revisionLock(
+      shadowTreeRevisionConsistencyManager_);
 
   currentTask_ = &task;
   currentPriority_ = task.priority;
 
-  {
-    ScopedShadowTreeRevisionLock revisionLock(
-        shadowTreeRevisionConsistencyManager_);
+  if (ReactNativeFeatureFlags::enableLongTaskAPI()) {
+    lastYieldingOpportunity_ = taskStartTime;
+    longestPeriodWithoutYieldingOpportunity_ =
+        std::chrono::milliseconds::zero();
+  }
 
-    auto didUserCallbackTimeout = task.expirationTime <= currentTime;
-    executeTask(runtime, task, didUserCallbackTimeout);
+  auto didUserCallbackTimeout = task.expirationTime <= taskStartTime;
+  executeTask(runtime, task, didUserCallbackTimeout);
 
-    if (ReactNativeFeatureFlags::enableMicrotasks()) {
-      // "Perform a microtask checkpoint" step.
-      performMicrotaskCheckpoint(runtime);
-    }
+  if (ReactNativeFeatureFlags::enableMicrotasks()) {
+    // "Perform a microtask checkpoint" step.
+    performMicrotaskCheckpoint(runtime);
+  }
 
-    if (ReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop()) {
-      // "Update the rendering" step.
-      updateRendering();
-    }
+  if (ReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop()) {
+    // "Update the rendering" step.
+    updateRendering();
+  }
+
+  if (ReactNativeFeatureFlags::enableLongTaskAPI()) {
+    auto taskEndTime = now_();
+    markYieldingOpportunity(taskEndTime);
+    reportLongTasks(task, taskStartTime, taskEndTime);
   }
 
   currentTask_ = nullptr;
@@ -364,7 +388,7 @@ void RuntimeScheduler_Modern::executeTask(
       task.callback = result.getObject(runtime).getFunction(runtime);
     }
   } catch (jsi::JSError& error) {
-    handleJSError(runtime, error, true);
+    onTaskError_(runtime, error);
   }
 }
 
@@ -398,7 +422,7 @@ void RuntimeScheduler_Modern::performMicrotaskCheckpoint(
         break;
       }
     } catch (jsi::JSError& error) {
-      handleJSError(runtime, error, true);
+      onMicrotaskError_(runtime, error);
     }
     retries++;
   }
@@ -406,6 +430,33 @@ void RuntimeScheduler_Modern::performMicrotaskCheckpoint(
   if (retries == kRetriesBound) {
     throw std::runtime_error("Hits microtasks retries bound.");
   }
+}
+
+void RuntimeScheduler_Modern::reportLongTasks(
+    const Task& /*task*/,
+    RuntimeSchedulerTimePoint startTime,
+    RuntimeSchedulerTimePoint endTime) {
+  auto reporter = performanceEntryReporter_;
+  if (reporter == nullptr) {
+    return;
+  }
+
+  auto checkedDurationMs =
+      chronoToDOMHighResTimeStamp(longestPeriodWithoutYieldingOpportunity_);
+  if (checkedDurationMs >= LONG_TASK_DURATION_THRESHOLD_MS) {
+    auto durationMs = chronoToDOMHighResTimeStamp(endTime - startTime);
+    auto startTimeMs = chronoToDOMHighResTimeStamp(startTime);
+    reporter->logLongTaskEntry(startTimeMs, durationMs);
+  }
+}
+
+void RuntimeScheduler_Modern::markYieldingOpportunity(
+    RuntimeSchedulerTimePoint currentTime) {
+  auto currentPeriod = currentTime - lastYieldingOpportunity_;
+  if (currentPeriod > longestPeriodWithoutYieldingOpportunity_) {
+    longestPeriodWithoutYieldingOpportunity_ = currentPeriod;
+  }
+  lastYieldingOpportunity_ = currentTime;
 }
 
 } // namespace facebook::react
