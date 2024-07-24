@@ -31,7 +31,6 @@
 #include <react/renderer/scheduler/SchedulerToolbox.h>
 #include <react/renderer/uimanager/primitives.h>
 #include <react/utils/ContextContainer.h>
-#include <react/utils/CoreFeatures.h>
 
 namespace facebook::react {
 
@@ -391,9 +390,6 @@ void Binding::installFabricUIManager(
 
   // Keep reference to config object and cache some feature flags here
   reactNativeConfig_ = config;
-
-  CoreFeatures::enablePropIteratorSetter =
-      ReactNativeFeatureFlags::enableCppPropsIteratorSetter();
 
   auto toolbox = SchedulerToolbox{};
   toolbox.contextContainer = contextContainer;
