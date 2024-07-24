@@ -41,7 +41,7 @@ class InteropEventEmitterTest {
 
     assertThat(eventDispatcher.getRecordedDispatchedEvents()).hasSize(1)
     assertThat(eventDispatcher.getRecordedDispatchedEvents().get(0).getEventName()).isEqualTo("onTest")
-    assertThat(eventDispatcher.getRecordedDispatchedEvents().get(0)::class).isEqualTo(InteropEvent::class)
+    assertThat(eventDispatcher.getRecordedDispatchedEvents().get(0)).isInstanceOf(InteropEvent::class.java)
   }
 
   @Test
