@@ -78,65 +78,11 @@ type PerformanceObserverConfig = {|
   durationThreshold: ?number,
 |};
 
-const observerCountPerEntryType: Map<PerformanceEntryType, number> = new Map();
-const registeredObservers: Map<PerformanceObserver, PerformanceObserverConfig> =
-  new Map();
-let isOnPerformanceEntryCallbackSet: boolean = false;
-
-// This is a callback that gets scheduled and periodically called from the native side
-const onPerformanceEntry = () => {
-  if (!NativePerformanceObserver) {
-    return;
-  }
-  const entryResult = NativePerformanceObserver.popPendingEntries();
-  const rawEntries = entryResult?.entries ?? [];
-  const droppedEntriesCount = entryResult?.droppedEntriesCount;
-  if (rawEntries.length === 0) {
-    return;
-  }
-  const entries = rawEntries.map(rawToPerformanceEntry);
-  for (const [observer, observerConfig] of registeredObservers.entries()) {
-    const entriesForObserver: PerformanceEntryList = entries.filter(entry => {
-      if (!observerConfig.entryTypes.has(entry.entryType)) {
-        return false;
-      }
-
-      if (
-        entry.entryType === 'event' &&
-        observerConfig.durationThreshold != null
-      ) {
-        return entry.duration >= observerConfig.durationThreshold;
-      }
-
-      return true;
-    });
-    if (entriesForObserver.length !== 0) {
-      try {
-        observerConfig.callback(
-          new PerformanceObserverEntryList(entriesForObserver),
-          observer,
-          droppedEntriesCount,
-        );
-      } catch (error) {
-        console.error(error);
-      }
-    }
-  }
-};
-
 export function warnNoNativePerformanceObserver() {
   warnOnce(
     'missing-native-performance-observer',
     'Missing native implementation of PerformanceObserver',
   );
-}
-
-function applyDurationThresholds() {
-  const durationThresholds = Array.from(registeredObservers.values())
-    .map(observerConfig => observerConfig.durationThreshold)
-    .filter(Boolean);
-
-  return Math.min(...durationThresholds);
 }
 
 function getSupportedPerformanceEntryTypes(): $ReadOnlyArray<PerformanceEntryType> {
@@ -175,6 +121,7 @@ function getSupportedPerformanceEntryTypes(): $ReadOnlyArray<PerformanceEntryTyp
  * observer.observe({ type: "event" });
  */
 export class PerformanceObserver {
+  #nativeObserverHandle: mixed | void;
   #callback: PerformanceObserverCallback;
   #type: 'single' | 'multiple' | void;
 
@@ -200,51 +147,17 @@ export class PerformanceObserver {
       requestedEntryTypes = new Set([options.type]);
     }
 
+    if (!this.#nativeObserverHandle) {
+      this.#nativeObserverHandle = this.#createNativeObserver();
+    }
+
     // The same observer may receive multiple calls to "observe", so we need
     // to check what is new on this call vs. previous ones.
-    const currentEntryTypes = registeredObservers.get(this)?.entryTypes;
-    const nextEntryTypes = currentEntryTypes
-      ? union(requestedEntryTypes, currentEntryTypes)
-      : requestedEntryTypes;
-
-    // This `observe` call is a no-op because there are no new things to observe.
-    if (currentEntryTypes && currentEntryTypes.size === nextEntryTypes.size) {
-      return;
-    }
-
-    registeredObservers.set(this, {
-      callback: this.#callback,
+    NativePerformanceObserver.observe(this.#observerHandle, {
+      entryTypes,
       durationThreshold:
         options.type === 'event' ? options.durationThreshold : undefined,
-      entryTypes: nextEntryTypes,
     });
-
-    if (!isOnPerformanceEntryCallbackSet) {
-      NativePerformanceObserver.setOnPerformanceEntryCallback(
-        onPerformanceEntry,
-      );
-      isOnPerformanceEntryCallbackSet = true;
-    }
-
-    // We only need to start listenening to new entry types being observed in
-    // this observer.
-    const newEntryTypes = currentEntryTypes
-      ? difference(
-          new Set(requestedEntryTypes.keys()),
-          new Set(currentEntryTypes.keys()),
-        )
-      : new Set(requestedEntryTypes.keys());
-    for (const type of newEntryTypes) {
-      if (!observerCountPerEntryType.has(type)) {
-        const rawType = performanceEntryTypeToRaw(type);
-        NativePerformanceObserver.startReporting(rawType);
-      }
-      observerCountPerEntryType.set(
-        type,
-        (observerCountPerEntryType.get(type) ?? 0) + 1,
-      );
-    }
-    applyDurationThresholds();
   }
 
   disconnect(): void {
@@ -253,33 +166,18 @@ export class PerformanceObserver {
       return;
     }
 
-    const observerConfig = registeredObservers.get(this);
-    if (!observerConfig) {
+    if (!this.#nativeObserverHandle) {
       return;
     }
 
-    // Disconnect this observer
-    for (const type of observerConfig.entryTypes.keys()) {
-      const numberOfObserversForThisType =
-        observerCountPerEntryType.get(type) ?? 0;
-      if (numberOfObserversForThisType === 1) {
-        observerCountPerEntryType.delete(type);
-        NativePerformanceObserver.stopReporting(
-          performanceEntryTypeToRaw(type),
-        );
-      } else if (numberOfObserversForThisType !== 0) {
-        observerCountPerEntryType.set(type, numberOfObserversForThisType - 1);
-      }
-    }
+    NativePerformanceObserver.disconnect(this.#nativeObserverHandle);
+  }
 
-    // Disconnect all observers if this was the last one
-    registeredObservers.delete(this);
-    if (registeredObservers.size === 0) {
-      NativePerformanceObserver.setOnPerformanceEntryCallback(undefined);
-      isOnPerformanceEntryCallbackSet = false;
-    }
-
-    applyDurationThresholds();
+  #createNativeObserver() {
+    return NativePerformanceObserver.createObserver((droppedEntriesCount) => {
+      const entryList = new PerformanceObserverEntryList(NativePerformanceObserver.takeRecords(this.#observerHandle));
+      this.#callback(entryList, this, { droppedEntriesCount });
+    });
   }
 
   #validateObserveOptions(options: PerformanceObserverInit): void {
@@ -318,14 +216,6 @@ export class PerformanceObserver {
 
   static supportedEntryTypes: $ReadOnlyArray<PerformanceEntryType> =
     getSupportedPerformanceEntryTypes();
-}
-
-function union<T>(a: $ReadOnlySet<T>, b: $ReadOnlySet<T>): Set<T> {
-  return new Set([...a, ...b]);
-}
-
-function difference<T>(a: $ReadOnlySet<T>, b: $ReadOnlySet<T>): Set<T> {
-  return new Set([...a].filter(x => !b.has(x)));
 }
 
 export {PerformanceEventTiming};

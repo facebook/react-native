@@ -72,6 +72,10 @@ class PerformanceEntryReporter {
     timeStampProvider_ = std::move(provider);
   }
 
+  PerformanceObserverRegistry& getObserverRegistry() {
+    return *observerRegistry_;
+  }
+
   /**
    * User Timing Level 3 functions
    * https://w3c.github.io/user-timing/

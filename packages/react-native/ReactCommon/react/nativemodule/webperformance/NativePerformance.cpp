@@ -15,12 +15,12 @@
 #include <cxxreact/ReactMarker.h>
 #include <jsi/instrumentation.h>
 #include <react/performance/timeline/PerformanceEntryReporter.h>
-#include <reactperflogger/fusebox/FuseboxTracer.h>
 #include "NativePerformance.h"
-#include "Plugins.h"
+#include <reactperflogger/fusebox/FuseboxTracer.h>
 
 #ifdef WITH_PERFETTO
 #include <reactperflogger/ReactPerfetto.h>
+#include "Plugins.h"
 #endif
 
 std::shared_ptr<facebook::react::TurboModule> NativePerformanceModuleProvider(

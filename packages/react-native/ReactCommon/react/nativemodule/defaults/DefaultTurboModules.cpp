@@ -10,6 +10,8 @@
 #include <react/nativemodule/featureflags/NativeReactNativeFeatureFlags.h>
 #include <react/nativemodule/idlecallbacks/NativeIdleCallbacks.h>
 #include <react/nativemodule/microtasks/NativeMicrotasks.h>
+#include <react/nativemodule/webperformance/NativePerformance.h>
+#include <react/nativemodule/webperformance/NativePerformanceObserver.h>
 
 namespace facebook::react {
 
@@ -26,6 +28,14 @@ namespace facebook::react {
 
   if (name == NativeIdleCallbacks::kModuleName) {
     return std::make_shared<NativeIdleCallbacks>(jsInvoker);
+  }
+
+  if (name == NativePerformance::kModuleName) {
+    return std::make_shared<NativePerformance>(jsInvoker);
+  }
+
+  if (name == NativePerformanceObserver::kModuleName) {
+    return std::make_shared<NativePerformanceObserver>(jsInvoker);
   }
 
   if (name == NativeDOM::kModuleName) {

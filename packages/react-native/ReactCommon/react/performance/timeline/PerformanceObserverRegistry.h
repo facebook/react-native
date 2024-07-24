@@ -19,13 +19,14 @@ class PerformanceObserverRegistry {
   PerformanceObserverRegistry() = default;
 
   void addObserver(const std::weak_ptr<PerformanceObserver>& observer);
-  void removeObserver(const std::weak_ptr<PerformanceObserver>& observer);
+  void removeObserver(const std::shared_ptr<PerformanceObserver> observer);
+  void removeObserver(const PerformanceObserver& observer);
 
   void emit(const PerformanceEntry& entry);
 
  private:
   mutable std::mutex observersMutex_;
-  std::set<std::weak_ptr<PerformanceObserver>> observers_;
+  std::set<std::weak_ptr<PerformanceObserver>, std::owner_less<std::weak_ptr<PerformanceObserver>>> observers_;
 };
 
 } // namespace facebook::react

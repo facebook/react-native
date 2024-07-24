@@ -14,7 +14,14 @@ void PerformanceObserverRegistry::addObserver(const std::weak_ptr<PerformanceObs
   observers_.insert(observer);
 }
 
-void PerformanceObserverRegistry::removeObserver(const std::weak_ptr<PerformanceObserver>& observer) {
+void PerformanceObserverRegistry::removeObserver(const PerformanceObserver& observer) {
+  std::lock_guard guard{observersMutex_};
+  erase_if(observers_, [&](auto e) -> bool {
+    return !e.expired() && *e.lock() == observer;
+  });
+}
+
+void PerformanceObserverRegistry::removeObserver(const std::shared_ptr<PerformanceObserver> observer) {
   std::lock_guard guard{observersMutex_};
   observers_.erase(observer);
 }
