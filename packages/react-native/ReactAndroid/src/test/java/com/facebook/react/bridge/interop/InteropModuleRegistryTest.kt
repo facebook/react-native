@@ -80,7 +80,7 @@ class InteropModuleRegistryTest {
 
     val interopModule = underTest.getInteropModule(RCTEventEmitter::class.java)
 
-    assertThat(interopModule is FakeRCTEventEmitter).isTrue()
+    assertThat(interopModule).isInstanceOf(FakeRCTEventEmitter::class.java)
   }
 
   @Test
