@@ -9,7 +9,7 @@
 
 namespace facebook::react {
 
-PerformanceEntryPushStatus PerformanceEntryCircularBuffer::add(const facebook::react::PerformanceEntry&& entry) {
+PerformanceEntryPushStatus PerformanceEntryCircularBuffer::add(const facebook::react::PerformanceEntry& entry) {
   return entries.add(std::move(entry));
 }
 
@@ -35,7 +35,7 @@ void PerformanceEntryCircularBuffer::clear(std::string_view name) {
   entries.clear([&](const PerformanceEntry& e) { return e.name == name; });
 }
 
-PerformanceEntryPushStatus PerformanceEntryKeyedBuffer::add(const facebook::react::PerformanceEntry&& entry) {
+PerformanceEntryPushStatus PerformanceEntryKeyedBuffer::add(const facebook::react::PerformanceEntry& entry) {
   entries.add(entry);
   return PerformanceEntryPushStatus::OK;
 }

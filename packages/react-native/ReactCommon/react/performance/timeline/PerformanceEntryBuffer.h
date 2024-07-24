@@ -31,7 +31,7 @@ struct PerformanceEntryBuffer {
   explicit PerformanceEntryBuffer() = default;
   virtual ~PerformanceEntryBuffer() = default;
 
-  virtual PerformanceEntryPushStatus add(const PerformanceEntry&& entry) = 0;
+  virtual PerformanceEntryPushStatus add(const PerformanceEntry& entry) = 0;
   virtual void consume(std::vector<PerformanceEntry>& target) = 0;
   virtual size_t pendingMessagesCount() const = 0;
   virtual void getEntries(
@@ -47,7 +47,7 @@ struct PerformanceEntryCircularBuffer : public PerformanceEntryBuffer {
   explicit PerformanceEntryCircularBuffer(size_t size) : entries(size) {}
   ~PerformanceEntryCircularBuffer() override = default;
 
-  PerformanceEntryPushStatus add(const PerformanceEntry&& entry) override;
+  PerformanceEntryPushStatus add(const PerformanceEntry& entry) override;
   void consume(std::vector<PerformanceEntry>& target) override;
 
   size_t pendingMessagesCount() const override;
@@ -66,7 +66,7 @@ struct PerformanceEntryKeyedBuffer : public PerformanceEntryBuffer {
   explicit PerformanceEntryKeyedBuffer() = default;
   ~PerformanceEntryKeyedBuffer() override = default;
 
-  PerformanceEntryPushStatus add(const PerformanceEntry&& entry) override;
+  PerformanceEntryPushStatus add(const PerformanceEntry& entry) override;
   void consume(std::vector<PerformanceEntry>& target) override;
 
   size_t pendingMessagesCount() const override;

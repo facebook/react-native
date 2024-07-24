@@ -54,7 +54,7 @@ void PerformanceEntryReporter::logEntry(const PerformanceEntry& entry) {
     }
   }
 
-  observerRegistry_.emit(entry);
+  observerRegistry_->emit(entry);
 }
 
 void PerformanceEntryReporter::mark(

@@ -12,7 +12,7 @@ namespace facebook::react {
 
 PerformanceObserver::~PerformanceObserver() {
   if (auto registry = registry_.lock()) {
-    registry->removeObserver(this);
+    registry->removeObserver(*this);
   }
 }
 
@@ -46,7 +46,7 @@ PerformanceObserver::PopPendingEntriesResult
 PerformanceObserver::popPendingEntries() {
   PopPendingEntriesResult res = {
       .entries = std::vector<PerformanceEntry>(),
-      .droppedEntriesCount = droppedEntriesCount_};
+      .droppedEntriesCount = (uint32_t)droppedEntriesCount_};
 
   buffer_.consume(res.entries);
 

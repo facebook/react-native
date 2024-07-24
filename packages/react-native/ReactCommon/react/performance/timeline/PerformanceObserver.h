@@ -34,14 +34,9 @@ class PerformanceObserver {
     uint32_t droppedEntriesCount;
   };
 
-  PerformanceObserver(
-      PerformanceObserverCallback callback,
-      PerformanceEntryType type)
-      : callback_(std::move(callback)), observedTypes_({type}) {}
-  PerformanceObserver(
-      PerformanceObserverCallback callback,
-      PerformanceObserverEventFilter&& types)
-      : callback_(std::move(callback)), observedTypes_(std::move(types)) {}
+  explicit PerformanceObserver(
+      PerformanceObserverCallback&& callback)
+      : callback_(std::move(callback)) {}
 
   virtual ~PerformanceObserver();
 
@@ -67,5 +62,9 @@ class PerformanceObserver {
   size_t droppedEntriesCount_{0};
   PerformanceEntryCircularBuffer buffer_{DEFAULT_MAX_BUFFER_SIZE};
 };
+
+inline bool operator==(const PerformanceObserver& lhs, const PerformanceObserver& rhs) {
+  return &lhs == &rhs;
+}
 
 } // namespace facebook::react

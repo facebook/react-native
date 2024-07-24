@@ -14,8 +14,6 @@
 #include <react/renderer/uimanager/UIManagerBinding.h>
 #include <react/utils/CoreFeatures.h>
 
-#include "Plugins.h"
-
 std::shared_ptr<facebook::react::TurboModule>
 NativePerformanceObserverModuleProvider(
     std::shared_ptr<facebook::react::CallInvoker> jsInvoker) {
@@ -29,70 +27,76 @@ NativePerformanceObserver::NativePerformanceObserver(
     std::shared_ptr<CallInvoker> jsInvoker)
     : NativePerformanceObserverCxxSpec(std::move(jsInvoker)) {}
 
-void NativePerformanceObserver::startReporting(
-    jsi::Runtime& /*rt*/,
-    PerformanceEntryType entryType) {
-  auto reporter = PerformanceEntryReporter::getInstance();
+jsi::Object NativePerformanceObserver::createObserver(jsi::Runtime& rt, AsyncCallback<> callback) {
+  PerformanceObserverCallback cb = [callback = std::move(callback)](size_t _) -> void {
+    callback.callWithPriority(SchedulerPriority::IdlePriority);
+  };
 
-  reporter->startReporting(entryType);
+  auto observer = std::make_shared<PerformanceObserver>(std::move(cb));
+  jsi::Object observerObj {rt};
+  observerObj.setNativeState(rt, std::move(observer));
+  return observerObj;
 }
 
-void NativePerformanceObserver::stopReporting(
-    jsi::Runtime& /*rt*/,
-    PerformanceEntryType entryType) {
-  auto reporter = PerformanceEntryReporter::getInstance();
+void NativePerformanceObserver::observe(jsi::Runtime& rt, jsi::Object observerObj, jsi::Object options) {
+  auto observer =
+      std::dynamic_pointer_cast<PerformanceObserver>(observerObj.getNativeState(rt));
 
-  reporter->stopReporting(entryType);
-}
-
-void NativePerformanceObserver::setIsBuffered(
-    jsi::Runtime& /*rt*/,
-    const std::vector<PerformanceEntryType> entryTypes,
-    bool isBuffered) {
-  for (const PerformanceEntryType entryType : entryTypes) {
-    PerformanceEntryReporter::getInstance()->setAlwaysLogged(
-        entryType, isBuffered);
+  if (!observer) {
+    return;
   }
-}
 
-PerformanceEntryReporter::PopPendingEntriesResult
-NativePerformanceObserver::popPendingEntries(jsi::Runtime& /*rt*/) {
-  return PerformanceEntryReporter::getInstance()->popPendingEntries();
-}
+  std::set<int> entryTypes;
 
-void NativePerformanceObserver::setOnPerformanceEntryCallback(
-    jsi::Runtime& /*rt*/,
-    std::optional<AsyncCallback<>> callback) {
-  if (callback) {
-    PerformanceEntryReporter::getInstance()->setReportingCallback(
-        [callback = std::move(callback)]() {
-          callback->callWithPriority(SchedulerPriority::IdlePriority);
-        });
-  } else {
-    PerformanceEntryReporter::getInstance()->setReportingCallback(nullptr);
+  // observer of type multiple
+  if (options.hasProperty(rt, "entryTypes")) {
+    auto types = options.getPropertyAsObject(rt, "entryTypes").asArray(rt);
+    for (auto i = 0; i < types.size(rt); ++i) {
+      entryTypes.insert(types.getValueAtIndex(rt, i).asNumber());
+    }
   }
+  else {
+    auto buffered = options.getProperty(rt, "buffered").asBool();
+    auto type = options.getProperty(rt, "type").asNumber();
+    entryTypes.insert(type);
+    observer->setEntryBuffering(buffered);
+  }
+
+  // apply collected entryTypes into observer eventFilter
+  for (auto entryType : entryTypes) {
+    if (entryType < 0 || entryType >= NUM_PERFORMANCE_ENTRY_TYPES) {
+      continue;
+    }
+
+    observer->getEventFilter().insert(static_cast<PerformanceEntryType>(entryType));
+  }
+
+  auto& registry = PerformanceEntryReporter::getInstance()->getObserverRegistry();
+  registry.addObserver(observer);
 }
 
-void NativePerformanceObserver::logRawEntry(
-    jsi::Runtime& /*rt*/,
-    const PerformanceEntry entry) {
-  PerformanceEntryReporter::getInstance()->logEntry(entry);
+void NativePerformanceObserver::disconnect(jsi::Runtime& rt, jsi::Object observerObj) {
+  auto observer =
+      std::dynamic_pointer_cast<PerformanceObserver>(observerObj.getNativeState(rt));
+
+  if (!observer) {
+    return;
+  }
+
+  auto& registry = PerformanceEntryReporter::getInstance()->getObserverRegistry();
+  registry.removeObserver(observer);
 }
 
-std::vector<std::pair<std::string, uint32_t>>
-NativePerformanceObserver::getEventCounts(jsi::Runtime& /*rt*/) {
-  const auto& eventCounts =
-      PerformanceEntryReporter::getInstance()->getEventCounts();
-  return std::vector<std::pair<std::string, uint32_t>>(
-      eventCounts.begin(), eventCounts.end());
-}
+std::vector<PerformanceEntry> NativePerformanceObserver::takeRecords(jsi::Runtime& rt, jsi::Object observerObj) {
+  auto observer =
+      std::dynamic_pointer_cast<PerformanceObserver>(
+      observerObj.getNativeState(rt));
 
-void NativePerformanceObserver::setDurationThreshold(
-    jsi::Runtime& /*rt*/,
-    PerformanceEntryType entryType,
-    double durationThreshold) {
-  PerformanceEntryReporter::getInstance()->setDurationThreshold(
-      entryType, durationThreshold);
+  if (!observer) {
+    return {};
+  }
+
+  return observer->popPendingEntries().entries;
 }
 
 void NativePerformanceObserver::clearEntries(
