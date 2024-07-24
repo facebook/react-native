@@ -16,14 +16,6 @@ runs:
     - name: Installing Maestro
       shell: bash
       run: curl -Ls "https://get.maestro.mobile.dev" | bash
-    - name: Enable KVM group perms
-      shell: bash
-      run: |
-        sudo mkdir -p /etc/udev/rules.d/
-
-        echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
-        sudo udevadm control --reload-rules
-        sudo udevadm trigger --name-match=kvm
     - name: Run e2e tests
       uses: reactivecircus/android-emulator-runner@v2
       with:

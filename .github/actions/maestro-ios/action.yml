@@ -63,10 +63,10 @@ runs:
       if: always()
       uses: actions/upload-artifact@v4
       with:
-        name: e2e_ios_report
+        name: e2e_ios_report_${{ inputs.jsengine }}
         path: |
-          video_record_${{ inputs.jsengine }}.mov
-          report_${{ inputs.jsengine }}.xml
+          video_record.mov
+          report.xml
     - name: Store Logs
       if: failure() && steps.run-tests.outcome == 'failure'
       uses: actions/upload-artifact@v4
