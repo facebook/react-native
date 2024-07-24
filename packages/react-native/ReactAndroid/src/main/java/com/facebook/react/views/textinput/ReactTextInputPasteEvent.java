@@ -10,6 +10,7 @@ package com.facebook.react.views.textinput;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.events.Event;
 
@@ -20,13 +21,18 @@ class ReactTextInputPasteEvent extends Event<ReactTextInputPasteEvent> {
 
   private static final String EVENT_NAME = "topPaste";
 
+  private String mType;
+  private String mData;
+
   @Deprecated
-  public ReactTextInputPasteEvent(int viewId) {
-    this(ViewUtil.NO_SURFACE_ID, viewId);
+  public ReactTextInputPasteEvent(int viewId, String type, String data) {
+    this(ViewUtil.NO_SURFACE_ID, viewId, type, data);
   }
 
-  public ReactTextInputPasteEvent(int surfaceId, int viewId) {
+  public ReactTextInputPasteEvent(int surfaceId, int viewId, String type, String data) {
     super(surfaceId, viewId);
+    mType = type;
+    mData = data;
   }
 
   @Override
@@ -43,6 +49,15 @@ class ReactTextInputPasteEvent extends Event<ReactTextInputPasteEvent> {
   @Override
   protected WritableMap getEventData() {
     WritableMap eventData = Arguments.createMap();
+
+    WritableArray items = Arguments.createArray();
+    WritableMap primaryClip = Arguments.createMap();
+    primaryClip.putString("type", mType);
+    primaryClip.putString("data", mData);
+    items.pushMap(primaryClip);
+
+    eventData.putArray("items", items);
+
     return eventData;
   }
 }

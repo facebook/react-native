@@ -20,6 +20,7 @@ import * as React from 'react';
 import {useContext, useState} from 'react';
 import {
   Button,
+  Image,
   Platform,
   StyleSheet,
   Text,
@@ -415,7 +416,9 @@ class TextEventsExample extends React.Component<{...}, $FlowFixMeState> {
           onKeyPress={event =>
             this.updateText('onKeyPress key: ' + event.nativeEvent.key)
           }
-          onPaste={() => this.updateText('onPaste')}
+          onPaste={event =>
+            this.updateText('onPaste type: ' + event.nativeEvent.items[0].type)
+          }
           style={styles.singleLine}
         />
         <Text style={styles.eventLabel}>
@@ -847,6 +850,32 @@ function MultilineStyledTextInput({
   );
 }
 
+function PasteboardTextInput() {
+  const [pasteboard, setPasteboard] = useState(null);
+  const {type, data} = pasteboard?.items[0] ?? {};
+  const isText = type === "text/plain"
+  const isImage = type && type.startsWith("image/");
+
+  return (
+    <View>
+      <ExampleTextInput
+        onPaste={event => setPasteboard(event.nativeEvent)}
+        placeholder="Paste text or image"
+        multiline={true}>
+      </ExampleTextInput>
+      {type && (
+        <Text>{"Type: " + type}</Text>
+      )}
+      {isText && (
+        <Text>{"Data: " + data}</Text>
+      )}
+      {isImage && (
+        <Image source={{uri: data}} style={{width: "100%", height: 300}} />
+      )}
+    </View>
+  );
+}
+
 module.exports = ([
   {
     title: 'Auto-focus & select text on focus',
@@ -1148,6 +1177,12 @@ module.exports = ([
           </ExampleTextInput>
         </View>
       );
+    },
+  },
+  {
+    title: 'Pasteboard',
+    render: function (): React.Element<any> {
+      return <PasteboardTextInput />;
     },
   },
 ]: Array<RNTesterModuleExample>);

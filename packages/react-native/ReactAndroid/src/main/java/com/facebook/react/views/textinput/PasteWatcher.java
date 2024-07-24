@@ -13,5 +13,5 @@ package com.facebook.react.views.textinput;
  * from the EditText to JS
  */
 interface PasteWatcher {
-  public void onPaste();
+  public void onPaste(String type, String data);
 }

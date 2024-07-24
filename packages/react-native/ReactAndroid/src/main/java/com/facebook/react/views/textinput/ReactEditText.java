@@ -9,6 +9,10 @@ package com.facebook.react.views.textinput;
 
 import static com.facebook.react.uimanager.UIManagerHelper.getReactContext;
 
+import android.content.ClipboardManager;
+import android.content.ClipData;
+import android.content.ClipDescription;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -16,6 +20,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
@@ -27,6 +32,7 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.method.KeyListener;
 import android.text.method.QwertyKeyListener;
+import android.util.Base64;
 import android.util.TypedValue;
 import android.view.ActionMode;
 import android.view.Gravity;
@@ -68,6 +74,7 @@ import com.facebook.react.views.text.internal.span.ReactStrikethroughSpan;
 import com.facebook.react.views.text.internal.span.ReactUnderlineSpan;
 import com.facebook.react.views.text.internal.span.TextInlineImageSpan;
 import com.facebook.react.views.view.ReactViewBackgroundManager;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -326,7 +333,32 @@ public class ReactEditText extends AppCompatEditText {
     if (id == android.R.id.paste || id == android.R.id.pasteAsPlainText) {
       id = android.R.id.pasteAsPlainText;
       if (mPasteWatcher != null) {
-        mPasteWatcher.onPaste();
+        ClipboardManager clipboardManager =
+            (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clipData = clipboardManager.getPrimaryClip();
+        String type = null;
+        String data = null;
+        if (clipData.getDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)) {
+          type = ClipDescription.MIMETYPE_TEXT_PLAIN;
+          data = clipData.getItemAt(0).getText().toString();
+        } else {
+          Uri itemUri = clipData.getItemAt(0).getUri();
+          if (itemUri != null) {
+            ContentResolver cr = getReactContext(this).getContentResolver();
+            type = cr.getType(itemUri);
+            if (type != null) {
+              try {
+                String encodedData = Base64.encodeToString(cr.openInputStream(itemUri).readAllBytes(), Base64.DEFAULT);
+                data = "data:" + type + ";base64," + encodedData;
+              } catch (IOException e) {
+                e.printStackTrace();
+              }
+            }
+          }
+        }
+        if (type != null && data != null) {
+          mPasteWatcher.onPaste(type, data);
+        }
       }
     }
     return super.onTextContextMenuItem(id);

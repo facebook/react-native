@@ -1332,9 +1332,9 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     }
 
     @Override
-    public void onPaste() {
+    public void onPaste(String type, String data) {
       mEventDispatcher.dispatchEvent(
-          new ReactTextInputPasteEvent(mSurfaceId, mReactEditText.getId()));
+          new ReactTextInputPasteEvent(mSurfaceId, mReactEditText.getId(), type, data));
     }
   }
 
