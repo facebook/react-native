@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<feec09e7a7e10df6174fadeaf46a23af>>
+ * @generated SignedSource<<75740b5411de1de36b9c026c5dc3bf1d>>
  * @flow strict-local
  */
 
@@ -56,6 +56,7 @@ export type ReactNativeFeatureFlags = {
   enableEagerRootViewAttachment: Getter<boolean>,
   enableFabricLogs: Getter<boolean>,
   enableFabricRendererExclusively: Getter<boolean>,
+  enableGranularScrollViewStateUpdatesIOS: Getter<boolean>,
   enableGranularShadowTreeStateReconciliation: Getter<boolean>,
   enableLongTaskAPI: Getter<boolean>,
   enableMicrotasks: Getter<boolean>,
@@ -194,6 +195,10 @@ export const enableFabricLogs: Getter<boolean> = createNativeFlagGetter('enableF
  * When the app is completely migrated to Fabric, set this flag to true to disable parts of Paper infrastructure that are not needed anymore but consume memory and CPU. Specifically, UIViewOperationQueue and EventDispatcherImpl will no longer work as they will not subscribe to ReactChoreographer for updates.
  */
 export const enableFabricRendererExclusively: Getter<boolean> = createNativeFlagGetter('enableFabricRendererExclusively', false);
+/**
+ * When enabled, RCTScrollViewComponentView will trigger ShadowTree state updates for all changes in scroll position.
+ */
+export const enableGranularScrollViewStateUpdatesIOS: Getter<boolean> = createNativeFlagGetter('enableGranularScrollViewStateUpdatesIOS', false);
 /**
  * When enabled, the renderer would only fail commits when they propagate state and the last commit that updated state changed before committing.
  */

@@ -97,6 +97,11 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'When the app is completely migrated to Fabric, set this flag to true to disable parts of Paper infrastructure that are not needed anymore but consume memory and CPU. Specifically, UIViewOperationQueue and EventDispatcherImpl will no longer work as they will not subscribe to ReactChoreographer for updates.',
     },
+    enableGranularScrollViewStateUpdatesIOS: {
+      defaultValue: false,
+      description:
+        'When enabled, RCTScrollViewComponentView will trigger ShadowTree state updates for all changes in scroll position.',
+    },
     enableGranularShadowTreeStateReconciliation: {
       defaultValue: false,
       description:
