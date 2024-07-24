@@ -10,7 +10,7 @@ add_compile_options(-fexceptions -frtti -std=c++20 -Wall -DLOG_TAG=\"ReactNative
 
 file(GLOB react_newarchdefaults_SRC CONFIGURE_DEPENDS *.cpp)
 
-add_library(react_newarchdefaults SHARED ${react_newarchdefaults_SRC})
+add_library(react_newarchdefaults OBJECT ${react_newarchdefaults_SRC})
 
 target_include_directories(react_newarchdefaults PUBLIC .)
 

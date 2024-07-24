@@ -7,6 +7,7 @@
 
 package com.facebook.react.defaults
 
+import com.facebook.react.common.ReactNativeSoLoader
 import com.facebook.soloader.SoLoader
 
 internal class DefaultSoLoader {
@@ -14,7 +15,7 @@ internal class DefaultSoLoader {
     @Synchronized
     @JvmStatic
     fun maybeLoadSoLibrary() {
-      SoLoader.loadLibrary("react_newarchdefaults")
+      ReactNativeSoLoader.loadLibrary("react_newarchdefaults")
       try {
         SoLoader.loadLibrary("appmodules")
       } catch (e: UnsatisfiedLinkError) {

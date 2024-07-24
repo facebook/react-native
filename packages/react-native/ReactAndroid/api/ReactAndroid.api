@@ -1760,6 +1760,11 @@ public final class com/facebook/react/common/ReactConstants {
 	public static final field UNSET I
 }
 
+public final class com/facebook/react/common/ReactNativeSoLoader {
+	public static final field INSTANCE Lcom/facebook/react/common/ReactNativeSoLoader;
+	public static final fun loadLibrary (Ljava/lang/String;)Z
+}
+
 public class com/facebook/react/common/ShakeDetector : android/hardware/SensorEventListener {
 	public fun <init> (Lcom/facebook/react/common/ShakeDetector$ShakeListener;)V
 	public fun <init> (Lcom/facebook/react/common/ShakeDetector$ShakeListener;I)V

@@ -82,8 +82,6 @@ val preparePrefab by
               PrefabPreprocessingEntry(
                   "turbomodulejsijni", Pair("src/main/jni/react/turbomodule", "")),
               PrefabPreprocessingEntry(
-                  "react_newarchdefaults", Pair("src/main/jni/react/newarchdefaults", "")),
-              PrefabPreprocessingEntry(
                   "react_render_animations",
                   Pair("../ReactCommon/react/renderer/animations/", "react/renderer/animations/")),
               PrefabPreprocessingEntry(
@@ -244,6 +242,8 @@ val preparePrefab by
                       Pair("src/main/jni/react/turbomodule", ""),
                       // react_codegen_rncore
                       Pair(File(buildDir, "generated/source/codegen/jni/").absolutePath, ""),
+                      // react_newarchdefaults
+                      Pair("src/main/jni/react/newarchdefaults", ""),
                       // react_render_componentregistry
                       Pair(
                           "../ReactCommon/react/renderer/componentregistry/",
@@ -722,9 +722,6 @@ android {
   prefab {
     create("turbomodulejsijni") {
       headers = File(prefabHeadersDir, "turbomodulejsijni").absolutePath
-    }
-    create("react_newarchdefaults") {
-      headers = File(prefabHeadersDir, "react_newarchdefaults").absolutePath
     }
     create("react_render_animations") {
       headers = File(prefabHeadersDir, "react_render_animations").absolutePath
