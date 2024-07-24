@@ -65,7 +65,7 @@ class UIManagerModuleConstantsHelperTest {
     innerMap = nestedObjects.get("topColorChanged") as? Map<String, Any?>
     assertThat(innerMap).isNotNull()
     assertThat(innerMap).containsKey("phasedRegistrationNames")
-    innerInnerMap = innerMap.get("phasedRegistrationNames") as? Map<String, Any?>
+    innerInnerMap = innerMap!!.get("phasedRegistrationNames") as? Map<String, Any?>
     assertThat(innerInnerMap).isNotNull()
     assertThat("onColorChanged").isEqualTo(innerInnerMap!!.get("bubbled"))
     assertThat("onColorChangedCapture").isEqualTo(innerInnerMap!!.get("captured"))
