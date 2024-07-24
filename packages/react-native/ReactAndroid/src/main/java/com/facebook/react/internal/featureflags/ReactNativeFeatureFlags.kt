@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7da3cb6f175655f0995854fec4e2bdc0>>
+ * @generated SignedSource<<5c7964726373a75fab5d6473bf7d6390>>
  */
 
 /**
@@ -219,6 +219,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun setAndroidLayoutDirection(): Boolean = accessor.setAndroidLayoutDirection()
+
+  /**
+   * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.
+   */
+  @JvmStatic
+  public fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean = accessor.traceTurboModulePromiseRejectionsOnAndroid()
 
   /**
    * By default, native module methods that return void run asynchronously. This flag will make execution of void methods in TurboModules stay on the JS thread.

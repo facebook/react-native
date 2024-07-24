@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<05c68472143a28f007c9aff89e61f603>>
+ * @generated SignedSource<<feec09e7a7e10df6174fadeaf46a23af>>
  * @flow strict-local
  */
 
@@ -75,6 +75,7 @@ export type ReactNativeFeatureFlags = {
   lazyAnimationCallbacks: Getter<boolean>,
   loadVectorDrawablesOnImages: Getter<boolean>,
   setAndroidLayoutDirection: Getter<boolean>,
+  traceTurboModulePromiseRejectionsOnAndroid: Getter<boolean>,
   unstable_enableTurboModuleSyncVoidMethods: Getter<boolean>,
   useImmediateExecutorInAndroidBridgeless: Getter<boolean>,
   useModernRuntimeScheduler: Getter<boolean>,
@@ -269,6 +270,10 @@ export const loadVectorDrawablesOnImages: Getter<boolean> = createNativeFlagGett
  * Propagate layout direction to Android views.
  */
 export const setAndroidLayoutDirection: Getter<boolean> = createNativeFlagGetter('setAndroidLayoutDirection', true);
+/**
+ * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.
+ */
+export const traceTurboModulePromiseRejectionsOnAndroid: Getter<boolean> = createNativeFlagGetter('traceTurboModulePromiseRejectionsOnAndroid', false);
 /**
  * By default, native module methods that return void run asynchronously. This flag will make execution of void methods in TurboModules stay on the JS thread.
  */

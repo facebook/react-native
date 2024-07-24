@@ -59,22 +59,6 @@ JavaTurboModule::~JavaTurboModule() {
 
 namespace {
 
-constexpr auto kReactFeatureFlagsJavaDescriptor =
-    "com/facebook/react/config/ReactFeatureFlags";
-
-bool getFeatureFlagBoolValue(const char* name) {
-  static const auto reactFeatureFlagsClass =
-      facebook::jni::findClassStatic(kReactFeatureFlagsJavaDescriptor);
-  const auto field = reactFeatureFlagsClass->getStaticField<jboolean>(name);
-  return reactFeatureFlagsClass->getStaticFieldValue(field);
-}
-
-bool traceTurboModulePromiseRejections() {
-  static bool traceRejections =
-      getFeatureFlagBoolValue("traceTurboModulePromiseRejections");
-  return traceRejections;
-}
-
 struct JNIArgs {
   JNIArgs(size_t count) : args(count) {}
   JNIArgs(const JNIArgs&) = delete;
@@ -919,7 +903,8 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
 
       // JS Stack at the time when the promise is created.
       std::optional<std::string> jsInvocationStack;
-      if (traceTurboModulePromiseRejections()) {
+      if (ReactNativeFeatureFlags::
+              traceTurboModulePromiseRejectionsOnAndroid()) {
         jsInvocationStack =
             createJSRuntimeError(runtime, jsi::Value::undefined())
                 .asObject(runtime)
