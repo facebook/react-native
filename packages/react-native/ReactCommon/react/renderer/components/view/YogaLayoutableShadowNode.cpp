@@ -17,7 +17,6 @@
 #include <react/renderer/core/LayoutConstraints.h>
 #include <react/renderer/core/LayoutContext.h>
 #include <react/renderer/debug/DebugStringConvertibleItem.h>
-#include <react/utils/CoreFeatures.h>
 #include <yoga/Yoga.h>
 #include <algorithm>
 #include <limits>

@@ -21,7 +21,6 @@
 #include <react/renderer/core/graphicsConversions.h>
 #include <react/renderer/graphics/Color.h>
 #include <react/renderer/imagemanager/primitives.h>
-#include <react/utils/CoreFeatures.h>
 
 namespace facebook::react {
 
