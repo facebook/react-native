@@ -90,7 +90,7 @@ parseErrorStack(const jsi::JSError& error, bool isFatal, bool isHermes) {
 }
 
 JsErrorHandler::JsErrorHandler(JsErrorHandler::OnJsError onJsError)
-    : _onJsError(std::move(onJsError)){
+    : _onJsError(std::move(onJsError)) {
 
       };
 
@@ -99,6 +99,10 @@ JsErrorHandler::~JsErrorHandler() {}
 void JsErrorHandler::handleFatalError(
     jsi::Runtime& runtime,
     jsi::JSError& error) {
+  if (_hasHandledFatalError) {
+    return;
+  }
+
   // TODO: Current error parsing works and is stable. Can investigate using
   // REGEX_HERMES to get additional Hermes data, though it requires JS setup.
   _hasHandledFatalError = true;
