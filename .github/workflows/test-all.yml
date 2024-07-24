@@ -243,6 +243,8 @@ jobs:
         with:
           name: react-native-package
           path: /tmp/react-native-tmp
+      - name: Print /tmp folder
+        run: ls -lR /tmp/react-native-tmp
       - name: Prepare artifacts
         run: |
           unzip /tmp/react-native-tmp/react-native-package.zip -d /tmp/react-native-tmp/react-native-package
@@ -332,13 +334,8 @@ jobs:
           release-type: ${{ needs.set_release_type.outputs.RELEASE_TYPE }}
 
   test_android_rntester_e2e:
-    runs-on: macos-13
+    runs-on: ubuntu-latest
     needs: [build_android]
-    container:
-      image: reactnativecommunity/react-native-android:latest
-      env:
-        TERM: "dumb"
-        GRADLE_OPTS: "-Dorg.gradle.daemon=false"
     strategy:
       fail-fast: false
       matrix:
