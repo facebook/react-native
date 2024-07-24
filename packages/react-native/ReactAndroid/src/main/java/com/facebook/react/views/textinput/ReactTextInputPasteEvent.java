@@ -51,10 +51,10 @@ class ReactTextInputPasteEvent extends Event<ReactTextInputPasteEvent> {
     WritableMap eventData = Arguments.createMap();
 
     WritableArray items = Arguments.createArray();
-    WritableMap primaryClip = Arguments.createMap();
-    primaryClip.putString("type", mType);
-    primaryClip.putString("data", mData);
-    items.pushMap(primaryClip);
+    WritableMap item = Arguments.createMap();
+    item.putString("type", mType);
+    item.putString("data", mData);
+    items.pushMap(item);
 
     eventData.putArray("items", items);
 
