@@ -61,9 +61,6 @@ public class ReactFeatureFlags {
   /** This feature flag enables logs for Fabric */
   public static boolean enableFabricLogs = false;
 
-  /** Feature flag to configure eager attachment of the root view/initialisation of the JS code */
-  public static boolean enableEagerRootViewAttachment = false;
-
   public static boolean dispatchPointerEvents = false;
 
   /**
