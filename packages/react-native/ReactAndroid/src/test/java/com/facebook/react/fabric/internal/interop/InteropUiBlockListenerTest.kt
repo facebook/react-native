@@ -20,8 +20,8 @@ class InteropUiBlockListenerTest {
     val underTest = InteropUIBlockListener()
     underTest.prependUIBlock {}
 
-    assertThat(underTest.beforeUIBlocks.size).isEqualTo(1)
-    assertThat(underTest.afterUIBlocks.size).isEqualTo(0)
+    assertThat(underTest.beforeUIBlocks).hasSize(1)
+    assertThat(underTest.afterUIBlocks).hasSize(0)
   }
 
   @Test
@@ -29,8 +29,8 @@ class InteropUiBlockListenerTest {
     val underTest = InteropUIBlockListener()
     underTest.addUIBlock {}
 
-    assertThat(underTest.beforeUIBlocks.size).isEqualTo(0)
-    assertThat(underTest.afterUIBlocks.size).isEqualTo(1)
+    assertThat(underTest.beforeUIBlocks).hasSize(0)
+    assertThat(underTest.afterUIBlocks).hasSize(1)
   }
 
   @Test
@@ -41,8 +41,8 @@ class InteropUiBlockListenerTest {
 
     underTest.willMountItems(FakeUIManager())
 
-    assertThat(underTest.beforeUIBlocks.size).isEqualTo(0)
-    assertThat(underTest.afterUIBlocks.size).isEqualTo(1)
+    assertThat(underTest.beforeUIBlocks).hasSize(0)
+    assertThat(underTest.afterUIBlocks).hasSize(1)
   }
 
   @Test
@@ -53,8 +53,8 @@ class InteropUiBlockListenerTest {
 
     underTest.willDispatchViewUpdates(FakeUIManager())
 
-    assertThat(underTest.beforeUIBlocks.size).isEqualTo(0)
-    assertThat(underTest.afterUIBlocks.size).isEqualTo(1)
+    assertThat(underTest.beforeUIBlocks).hasSize(0)
+    assertThat(underTest.afterUIBlocks).hasSize(1)
   }
 
   @Test
@@ -65,8 +65,8 @@ class InteropUiBlockListenerTest {
 
     underTest.didMountItems(FakeUIManager())
 
-    assertThat(underTest.beforeUIBlocks.size).isEqualTo(1)
-    assertThat(underTest.afterUIBlocks.size).isEqualTo(0)
+    assertThat(underTest.beforeUIBlocks).hasSize(1)
+    assertThat(underTest.afterUIBlocks).hasSize(0)
   }
 
   @Test
@@ -77,8 +77,8 @@ class InteropUiBlockListenerTest {
 
     underTest.didDispatchMountItems(FakeUIManager())
 
-    assertThat(underTest.beforeUIBlocks.size).isEqualTo(1)
-    assertThat(underTest.afterUIBlocks.size).isEqualTo(0)
+    assertThat(underTest.beforeUIBlocks).hasSize(1)
+    assertThat(underTest.afterUIBlocks).hasSize(0)
   }
 
   @Test
