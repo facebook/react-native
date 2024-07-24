@@ -191,6 +191,11 @@ const definitions: FeatureFlagDefinitions = {
       defaultValue: true,
       description: 'Propagate layout direction to Android views.',
     },
+    traceTurboModulePromiseRejectionsOnAndroid: {
+      defaultValue: false,
+      description:
+        'Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.',
+    },
     unstable_enableTurboModuleSyncVoidMethods: {
       defaultValue: false,
       description:
