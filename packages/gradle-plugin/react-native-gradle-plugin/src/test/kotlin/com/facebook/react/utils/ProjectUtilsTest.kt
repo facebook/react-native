@@ -303,8 +303,8 @@ class ProjectUtilsTest {
     project.extensions.extraProperties.set("reactNativeArchitectures", "x86")
 
     val archs = project.getReactNativeArchitectures()
-    assertThat(1).isEqualTo(archs.size)
-    assertThat("x86").isEqualTo(archs[0])
+    assertThat(archs.size).isEqualTo(1)
+    assertThat(archs[0]).isEqualTo("x86")
   }
 
   @Test
@@ -314,11 +314,11 @@ class ProjectUtilsTest {
         "reactNativeArchitectures", "armeabi-v7a,arm64-v8a,x86,x86_64")
 
     val archs = project.getReactNativeArchitectures()
-    assertThat(4).isEqualTo(archs.size)
-    assertThat("armeabi-v7a").isEqualTo(archs[0])
-    assertThat("arm64-v8a").isEqualTo(archs[1])
-    assertThat("x86").isEqualTo(archs[2])
-    assertThat("x86_64").isEqualTo(archs[3])
+    assertThat(archs.size).isEqualTo(4)
+    assertThat(archs[0]).isEqualTo("armeabi-v7a")
+    assertThat(archs[1]).isEqualTo("arm64-v8a")
+    assertThat(archs[2]).isEqualTo("x86")
+    assertThat(archs[3]).isEqualTo("x86_64")
   }
 
   @Test

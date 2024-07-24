@@ -17,42 +17,42 @@ class KotlinStdlibCompatUtilsTest {
 
   @Test
   fun lowercaseCompat_withEmptyString() {
-    assertThat("").isEqualTo("".lowercaseCompat())
+    assertThat("".lowercaseCompat()).isEqualTo("")
   }
 
   @Test
   fun lowercaseCompat_withLowercaseString() {
-    assertThat("frodo").isEqualTo("frodo".lowercaseCompat())
+    assertThat("frodo".lowercaseCompat()).isEqualTo("frodo")
   }
 
   @Test
   fun lowercaseCompat_withTitlecaseString() {
-    assertThat("frodo").isEqualTo("Frodo".lowercaseCompat())
+    assertThat("Frodo".lowercaseCompat()).isEqualTo("frodo")
   }
 
   @Test
   fun lowercaseCompat_withUppercaseString() {
-    assertThat("frodo").isEqualTo("FRODO".lowercaseCompat())
+    assertThat("FRODO".lowercaseCompat()).isEqualTo("frodo")
   }
 
   @Test
   fun capitalizeCompat_withEmptyString() {
-    assertThat("").isEqualTo("".capitalizeCompat())
+    assertThat("".capitalizeCompat()).isEqualTo("")
   }
 
   @Test
   fun capitalizeCompat_withLowercaseString() {
-    assertThat("Bilbo").isEqualTo("bilbo".capitalizeCompat())
+    assertThat("bilbo".capitalizeCompat()).isEqualTo("Bilbo")
   }
 
   @Test
   fun capitalizeCompat_withTitlecaseString() {
-    assertThat("Bilbo").isEqualTo("Bilbo".capitalizeCompat())
+    assertThat("Bilbo".capitalizeCompat()).isEqualTo("Bilbo")
   }
 
   @Test
   fun capitalizeCompat_withUppercaseString() {
-    assertThat("BILBO").isEqualTo("BILBO".capitalizeCompat())
+    assertThat("BILBO".capitalizeCompat()).isEqualTo("BILBO")
   }
 
   @Test

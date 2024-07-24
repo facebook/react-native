@@ -14,33 +14,24 @@ class ModelAutolinkingDependenciesJsonTest {
 
   @Test
   fun nameCleansed_withoutScope() {
-    assertThat("name").isEqualTo(ModelAutolinkingDependenciesJson("", "name", null).nameCleansed)
-    assertThat(
-        "react_native").isEqualTo(ModelAutolinkingDependenciesJson("", "react~native", null).nameCleansed)
-    assertThat(
-        "react_native").isEqualTo(ModelAutolinkingDependenciesJson("", "react*native", null).nameCleansed)
-    assertThat(
-        "react_native").isEqualTo(ModelAutolinkingDependenciesJson("", "react!native", null).nameCleansed)
-    assertThat(
-        "react_native").isEqualTo(ModelAutolinkingDependenciesJson("", "react'native", null).nameCleansed)
-    assertThat(
-        "react_native").isEqualTo(ModelAutolinkingDependenciesJson("", "react(native", null).nameCleansed)
-    assertThat(
-        "react_native").isEqualTo(ModelAutolinkingDependenciesJson("", "react)native", null).nameCleansed)
-    assertThat(
-        "react_native").isEqualTo(
-        ModelAutolinkingDependenciesJson("", "react~*!'()native", null).nameCleansed)
+    assertThat(ModelAutolinkingDependenciesJson("", "name", null).nameCleansed).isEqualTo("name")
+    assertThat(ModelAutolinkingDependenciesJson("", "react~native", null).nameCleansed).isEqualTo("react_native")
+    assertThat(ModelAutolinkingDependenciesJson("", "react*native", null).nameCleansed).isEqualTo("react_native")
+    assertThat(ModelAutolinkingDependenciesJson("", "react!native", null).nameCleansed).isEqualTo("react_native")
+    assertThat(ModelAutolinkingDependenciesJson("", "react'native", null).nameCleansed).isEqualTo("react_native")
+    assertThat(ModelAutolinkingDependenciesJson("", "react(native", null).nameCleansed).isEqualTo("react_native")
+    assertThat(ModelAutolinkingDependenciesJson("", "react)native", null).nameCleansed).isEqualTo("react_native")
+    assertThat(ModelAutolinkingDependenciesJson("", "react~*!'()native", null).nameCleansed).isEqualTo("react_native")
   }
 
   @Test
   fun nameCleansed_withScope() {
     assertThat(
-        "react-native_package").isEqualTo(
-        ModelAutolinkingDependenciesJson("", "@react-native/package", null).nameCleansed)
+			ModelAutolinkingDependenciesJson("", "@react-native/package", null).nameCleansed).isEqualTo(
+				"react-native_package")
     assertThat(
-        "this_is_a_more_complicated_example_of_weird_packages").isEqualTo(
-        ModelAutolinkingDependenciesJson(
-                "", "@this*is~a(more)complicated/example!of~weird)packages", null)
-            .nameCleansed)
+			ModelAutolinkingDependenciesJson(
+				"", "@this*is~a(more)complicated/example!of~weird)packages", null).nameCleansed).isEqualTo(
+					"this_is_a_more_complicated_example_of_weird_packages")
   }
 }
