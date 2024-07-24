@@ -46,14 +46,14 @@ runs:
         open -a simulator
 
         echo "Start video record"
-        xcrun simctl io booted recordVideo video_record.mov & echo $! > video_record.pid
+        xcrun simctl io booted recordVideo video_record.mov & echo $! > video_record_${{ inputs.jsengine }}.pid
 
         echo "Launch the app"
         xcrun simctl launch $UDID ${{ inputs.app-id }}
 
         echo "Running tests with Maestro"
         echo '$HOME/.maestro/bin/maestro --udid=$UDID test packages/rn-tester/.maestro/ --format junit -e APP_ID=${{ inputs.app-id }}'
-        export MAESTRO_DRIVER_STARTUP_TIMEOUT=600000 # 10 min. CI is extremely slow
+        export MAESTRO_DRIVER_STARTUP_TIMEOUT=1200000 # 20 min. CI is extremely slow
         $HOME/.maestro/bin/maestro --udid=$UDID test packages/rn-tester/.maestro/ --format junit -e APP_ID=${{ inputs.app-id }} --debug-output /tmp/MaestroLogs
     - name: Stop video record
       if: always()

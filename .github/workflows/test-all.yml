@@ -261,7 +261,7 @@ jobs:
           release-type: ${{ needs.set_release_type.outputs.RELEASE_TYPE }}
 
   test_android_rntester_e2e:
-    runs-on: 8-core-ubuntu
+    runs-on: ubuntu-latest
     needs: [build_android]
     container:
       image: reactnativecommunity/react-native-android:latest

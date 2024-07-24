@@ -22,17 +22,23 @@ runs:
         echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
         sudo udevadm control --reload-rules
         sudo udevadm trigger --name-match=kvm
-    - name: Install Maestro and run e2e tests
+    - name: Run e2e tests
       uses: reactivecircus/android-emulator-runner@v2
       with:
         api-level: 24
-        arch: arm64-v8a
+        arch: x86
         script: |
           adb install "${{ inputs.app-path }}"
-          $HOME/.maestro/bin/maestro test packages/rn-tester/.maestro/ --format junit -e APP_ID=${{ inputs.app-id }}
+          $HOME/.maestro/bin/maestro test packages/rn-tester/.maestro/ --format junit -e APP_ID=${{ inputs.app-id }} --debug-output /tmp/MaestroLogs
     - name: Store tests result
       uses: actions/upload-artifact@v3
       with:
         name: e2e_android_report_${{ inputs.jsengine }}
         path: |
           report.xml
+    - name: Store Logs
+      if: failure() && steps.run-tests.outcome == 'failure'
+      uses: actions/upload-artifact@v4
+      with:
+        name: maestro-logs-android-${{ inputs.jsengine }}
+        path: /tmp/MaestroLogs
