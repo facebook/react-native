@@ -45,7 +45,7 @@ runs:
         echo "Bring simulator in foreground"
         open -a simulator
 
-        echo "Start video record"
+        echo "Start video record using pid: video_record_${{ inputs.jsengine }}.pid"
         xcrun simctl io booted recordVideo video_record.mov & echo $! > video_record_${{ inputs.jsengine }}.pid
 
         echo "Launch the app"
@@ -58,7 +58,7 @@ runs:
     - name: Stop video record
       if: always()
       shell: bash
-      run: kill -SIGINT $(cat video_record.pid)
+      run: kill -SIGINT $(cat video_record_${{ inputs.jsengine }}.pid)
     - name: Store video record
       if: always()
       uses: actions/upload-artifact@v4
