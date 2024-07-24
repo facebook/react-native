@@ -299,6 +299,7 @@ add_executable(reactnative_unittest
   hermes-engine::libhermes
   hermes_inspector_modern
   jsi
+  mapbufferjni
   react_cxxreact
   react_codegen_rncore
   react_debug

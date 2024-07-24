@@ -10,5 +10,6 @@
 namespace facebook {
 namespace react {
 JNIEXPORT void OnLoad_react_newarchdefaults();
-}
+JNIEXPORT void OnLoad_mapbufferjni();
+} // namespace react
 } // namespace facebook

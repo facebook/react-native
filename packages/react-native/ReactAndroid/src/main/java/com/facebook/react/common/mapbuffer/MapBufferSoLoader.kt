@@ -9,8 +9,8 @@ package com.facebook.react.common.mapbuffer
 
 import com.facebook.react.bridge.ReactMarker
 import com.facebook.react.bridge.ReactMarkerConstants
+import com.facebook.react.common.ReactNativeSoLoader
 import com.facebook.react.common.annotations.StableReactNativeAPI
-import com.facebook.soloader.SoLoader
 import com.facebook.systrace.Systrace
 
 @StableReactNativeAPI
@@ -28,7 +28,7 @@ public object MapBufferSoLoader {
         Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
         "ReadableMapBufferSoLoader.staticInit::load:mapbufferjni")
     ReactMarker.logMarker(ReactMarkerConstants.LOAD_REACT_NATIVE_MAPBUFFER_SO_FILE_START)
-    SoLoader.loadLibrary("mapbufferjni")
+    ReactNativeSoLoader.loadLibrary("mapbufferjni")
     ReactMarker.logMarker(ReactMarkerConstants.LOAD_REACT_NATIVE_MAPBUFFER_SO_FILE_END)
     Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE)
   }

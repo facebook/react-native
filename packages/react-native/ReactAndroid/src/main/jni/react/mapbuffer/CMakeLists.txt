@@ -11,7 +11,7 @@ add_compile_options(-fexceptions -frtti -std=c++20 -Wall -DLOG_TAG=\"Fabric\")
 file(GLOB mapbuffer_SRC CONFIGURE_DEPENDS
         ${CMAKE_CURRENT_SOURCE_DIR}/react/common/mapbuffer/*.cpp)
 
-add_library(mapbufferjni SHARED ${mapbuffer_SRC})
+add_library(mapbufferjni OBJECT ${mapbuffer_SRC})
 
 target_include_directories(mapbufferjni
         PUBLIC

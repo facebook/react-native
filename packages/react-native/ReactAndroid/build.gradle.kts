@@ -118,8 +118,6 @@ val preparePrefab by
               PrefabPreprocessingEntry(
                   "fabricjni", Pair("src/main/jni/react/fabric", "react/fabric/")),
               PrefabPreprocessingEntry(
-                  "mapbufferjni", Pair("src/main/jni/react/mapbuffer", "react/mapbuffer/")),
-              PrefabPreprocessingEntry(
                   "react_render_mapbuffer",
                   Pair("../ReactCommon/react/renderer/mapbuffer/", "react/renderer/mapbuffer/")),
               PrefabPreprocessingEntry(
@@ -264,6 +262,8 @@ val preparePrefab by
                       Pair("../ReactCommon/react/renderer/imagemanager/platform/cxx/", ""),
                       // react_render_mapbuffer
                       Pair("../ReactCommon/react/renderer/mapbuffer/", "react/renderer/mapbuffer/"),
+                      // mapbufferjni
+                      Pair("src/main/jni/react/mapbuffer", "react/mapbuffer/"),
                       // react_utils
                       Pair("../ReactCommon/react/utils/", "react/utils/"),
                       // rrc_image
@@ -632,7 +632,6 @@ android {
             "rrc_root",
             "jsi",
             "fabricjni",
-            "mapbufferjni",
             "react_render_mapbuffer",
             "react_render_textlayoutmanager",
             "yoga",
@@ -748,7 +747,6 @@ android {
     create("rrc_root") { headers = File(prefabHeadersDir, "rrc_root").absolutePath }
     create("jsi") { headers = File(prefabHeadersDir, "jsi").absolutePath }
     create("fabricjni") { headers = File(prefabHeadersDir, "fabricjni").absolutePath }
-    create("mapbufferjni") { headers = File(prefabHeadersDir, "mapbufferjni").absolutePath }
     create("react_render_mapbuffer") {
       headers = File(prefabHeadersDir, "react_render_mapbuffer").absolutePath
     }

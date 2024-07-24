@@ -10,7 +10,17 @@
 #include "JReadableMapBuffer.h"
 #include "JWritableMapBuffer.h"
 
+namespace facebook {
+namespace react {
+JNIEXPORT void OnLoad_mapbufferjni() {
+  facebook::react::JReadableMapBuffer::registerNatives();
+}
+} // namespace react
+} // namespace facebook
+
+#ifndef REACT_NATIVE_OPEN_SOURCE
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void*) {
   return facebook::jni::initialize(
-      vm, [] { facebook::react::JReadableMapBuffer::registerNatives(); });
+      vm, [] { facebook::react::OnLoad_mapbufferjni(); });
 }
+#endif

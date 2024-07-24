@@ -9,6 +9,8 @@
 #include <fbjni/fbjni.h>
 
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void*) {
-  return facebook::jni::initialize(
-      vm, [] { facebook::react::OnLoad_react_newarchdefaults(); });
+  return facebook::jni::initialize(vm, [] {
+    facebook::react::OnLoad_mapbufferjni();
+    facebook::react::OnLoad_react_newarchdefaults();
+  });
 }
