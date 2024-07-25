@@ -6646,11 +6646,11 @@ public abstract interface class com/facebook/react/views/scroll/FpsListener {
 	public abstract fun isEnabled ()Z
 }
 
-public class com/facebook/react/views/scroll/OnScrollDispatchHelper {
+public final class com/facebook/react/views/scroll/OnScrollDispatchHelper {
 	public fun <init> ()V
-	public fun getXFlingVelocity ()F
-	public fun getYFlingVelocity ()F
-	public fun onScrollChanged (II)Z
+	public final fun getXFlingVelocity ()F
+	public final fun getYFlingVelocity ()F
+	public final fun onScrollChanged (II)Z
 }
 
 public class com/facebook/react/views/scroll/ReactHorizontalScrollContainerView : com/facebook/react/views/view/ReactViewGroup {
