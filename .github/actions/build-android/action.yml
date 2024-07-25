@@ -17,10 +17,20 @@ runs:
     - name: Set React Native Version
       shell: bash
       run: node ./scripts/releases/set-rn-artifacts-version.js --build-type ${{ inputs.release-type }}
+    - name: Show ccache stats
+      shell: bash
+      run: ccache -s
     - name: Setup gradle
       uses: ./.github/actions/setup-gradle
       with:
         cache-read-only: "false"
+    - name: Restore Android ccache
+      uses: actions/cache/restore@v4
+      with:
+        path: .ccache
+        key: v1-ccache-android-${{ github.job }}
+        restore-keys: |
+          v1-ccache-android-
     - name: Build and publish all the Android Artifacts to /tmp/maven-local
       shell: bash
       run: |
@@ -37,6 +47,15 @@ runs:
           TASKS="publishAllToMavenTempLocal publishAndroidToSonatype build"
         fi
         ./gradlew $TASKS -PenableWarningsAsErrors=true
+    - name: Save Android ccache
+      if: ${{ github.ref == 'refs/heads/main' || contains(github.ref, '-stable') }}
+      uses: actions/cache/save@v4
+      with:
+        path: .ccache
+        key: v1-ccache-android-${{ github.sha }}
+    - name: Show ccache stats
+      shell: bash
+      run: ccache -s
     - name: Upload Maven Artifacts
       uses: actions/upload-artifact@v4
       with:
