@@ -276,11 +276,8 @@ jobs:
           maestro-flow: ./scripts/e2e/.maestro/
 
   test_e2e_android_templateapp:
-    runs-on: macos-13
+    runs-on: ubuntu-latest
     needs: build_npm_package
-    env:
-      HERMES_WS_DIR: /tmp/hermes
-      HERMES_TARBALL_ARTIFACTS_DIR: /tmp/hermes/hermes-runtime-darwin
     continue-on-error: true
     strategy:
       fail-fast: false

@@ -45,10 +45,10 @@ runs:
           echo "Start testing ${{ inputs.maestro-flow }}"
           $HOME/.maestro/bin/maestro test ${{ inputs.maestro-flow }} --format junit -e APP_ID=${{ inputs.app-id }} --debug-output /tmp/MaestroLogs
 
-          echo "Stop recording"
-          name="video-recording.mp4"
+          NAME="video-recording.mp4"
+          echo "Stop recording. Saving to $NAME"
           adb pull /sdcard/screen.mp4
-          mv screen.mp4 $name
+          mv screen.mp4 "$NAME"
     - name: Store tests result
       uses: actions/upload-artifact@v3
       with:
