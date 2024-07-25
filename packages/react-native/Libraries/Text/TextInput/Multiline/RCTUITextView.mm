@@ -175,8 +175,48 @@ static UIColor *defaultPlaceholderColor(void)
 {
   _textWasPasted = YES;
   UIPasteboard *clipboard = [UIPasteboard generalPasteboard];
-  [_textInputDelegateAdapter didPaste:@"text/plain" withData:clipboard.string];
-  [super paste:sender];
+  if (clipboard.hasImages) {
+    NSArray *clipboardTypes = [clipboard pasteboardTypes];
+    if ([clipboardTypes containsObject:@"com.compuserve.gif"]) {
+      NSString *type = @"image/gif";
+      NSString *encodedData = [[clipboard dataForPasteboardType:@"com.compuserve.gif"] base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
+      NSString *data = [NSString stringWithFormat:@"data:%@;base64,%@", type, encodedData];
+      [_textInputDelegateAdapter didPaste:type withData:data];
+    } else if ([clipboardTypes containsObject:@"public.png"]) {
+      NSString *type = @"image/png";
+      NSString *encodedData = [[clipboard dataForPasteboardType:@"public.png"] base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
+      NSString *data = [NSString stringWithFormat:@"data:%@;base64,%@", type, encodedData];
+      [_textInputDelegateAdapter didPaste:type withData:data];
+    } else if ([clipboardTypes containsObject:@"public.jpeg"]) {
+      NSString *type = @"image/jpeg";
+      NSString *encodedData = [[clipboard dataForPasteboardType:@"public.jpeg"] base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
+      NSString *data = [NSString stringWithFormat:@"data:%@;base64,%@", type, encodedData];
+      [_textInputDelegateAdapter didPaste:type withData:data];
+    } else if ([clipboardTypes containsObject:@"org.webmproject.webp"]) {
+      NSString *type = @"image/webp";
+      NSString *encodedData = [[clipboard dataForPasteboardType:@"org.webmproject.webp"] base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
+      NSString *data = [NSString stringWithFormat:@"data:%@;base64,%@", type, encodedData];
+      [_textInputDelegateAdapter didPaste:type withData:data];
+    } else if ([clipboardTypes containsObject:@"public.tiff"]) {
+      NSString *type = @"image/tiff";
+      NSString *encodedData = [[clipboard dataForPasteboardType:@"public.tiff"] base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
+      NSString *data = [NSString stringWithFormat:@"data:%@;base64,%@", type, encodedData];
+      [_textInputDelegateAdapter didPaste:type withData:data];
+    } else if ([clipboardTypes containsObject:@"com.microsoft.bmp"]) {
+      NSString *type = @"image/bmp";
+      NSString *encodedData = [[clipboard dataForPasteboardType:@"com.microsoft.bmp"] base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
+      NSString *data = [NSString stringWithFormat:@"data:%@;base64,%@", type, encodedData];
+      [_textInputDelegateAdapter didPaste:type withData:data];
+    } else if ([clipboardTypes containsObject:@"public.svg-image"]) {
+      NSString *type = @"image/svg+xml";
+      NSString *encodedData = [[clipboard dataForPasteboardType:@"public.svg-image"] base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
+      NSString *data = [NSString stringWithFormat:@"data:%@;base64,%@", type, encodedData];
+      [_textInputDelegateAdapter didPaste:type withData:data];
+    }
+  } else {
+    [_textInputDelegateAdapter didPaste:@"text/plain" withData:clipboard.string];
+    [super paste:sender];
+  }
 }
 
 // Turn off scroll animation to fix flaky scrolling.
@@ -266,6 +306,10 @@ static UIColor *defaultPlaceholderColor(void)
 {
   if (_contextMenuHidden) {
     return NO;
+  }
+
+  if (action == @selector(paste:) && [UIPasteboard generalPasteboard].hasImages) {
+    return YES;
   }
 
   return [super canPerformAction:action withSender:sender];
