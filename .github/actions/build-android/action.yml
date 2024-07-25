@@ -24,7 +24,7 @@ runs:
     - name: Restore Android ccache
       uses: actions/cache/restore@v4
       with:
-        path: .ccache
+        path: /github/home/.cache/ccache
         key: v1-ccache-android-${{ github.job }}-${{ github.sha }}
         restore-keys: |
           v1-ccache-android-${{ github.job }}-
@@ -49,7 +49,7 @@ runs:
       if: ${{ github.ref == 'refs/heads/main' || contains(github.ref, '-stable') }}
       uses: actions/cache/save@v4
       with:
-        path: .ccache
+        path: /github/home/.cache/ccache
         key: v1-ccache-android-${{ github.job }}-${{ github.sha }}
     - name: Show ccache stats
       shell: bash
