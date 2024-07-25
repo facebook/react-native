@@ -28,8 +28,9 @@ runs:
       uses: actions/cache/restore@v4
       with:
         path: .ccache
-        key: v1-ccache-android-${{ github.job }}
+        key: v1-ccache-android-${{ github.job }}-${{ github.sha }}
         restore-keys: |
+          v1-ccache-android-${{ github.job }}-
           v1-ccache-android-
     - name: Build and publish all the Android Artifacts to /tmp/maven-local
       shell: bash
@@ -52,7 +53,7 @@ runs:
       uses: actions/cache/save@v4
       with:
         path: .ccache
-        key: v1-ccache-android-${{ github.sha }}
+        key: v1-ccache-android-${{ github.job }}-${{ github.sha }}
     - name: Show ccache stats
       shell: bash
       run: ccache -s
