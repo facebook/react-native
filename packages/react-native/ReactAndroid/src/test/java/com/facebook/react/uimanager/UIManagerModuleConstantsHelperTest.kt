@@ -68,6 +68,6 @@ class UIManagerModuleConstantsHelperTest {
     innerInnerMap = innerMap!!.get("phasedRegistrationNames") as? Map<String, Any?>
     assertThat(innerInnerMap).isNotNull()
     assertThat("onColorChanged").isEqualTo(innerInnerMap!!.get("bubbled"))
-    assertThat("onColorChangedCapture").isEqualTo(innerInnerMap!!.get("captured"))
+    assertThat("onColorChangedCapture").isEqualTo(innerInnerMap.get("captured"))
   }
 }
