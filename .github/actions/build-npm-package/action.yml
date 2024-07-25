@@ -14,9 +14,6 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Setup git safe folders
-      shell: bash
-      run: git config --global --add safe.directory '*'
     - name: Create /tmp/hermes/osx-bin directory
       shell: bash
       run: mkdir -p /tmp/hermes/osx-bin
