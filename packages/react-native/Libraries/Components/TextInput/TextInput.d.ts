@@ -255,6 +255,9 @@ export interface TextInputIOSProps {
    *  - `'birthdateDay'` (iOS 17+)
    *  - `'birthdateMonth'` (iOS 17+)
    *  - `'birthdateYear'` (iOS 17+)
+   *  - `'dateTime'` (iOS 15+)
+   *  - `'flightNumber'` (iOS 15+)
+   *  - `'shipmentTrackingNumber'` (iOS 15+)
    *
    */
   textContentType?:
@@ -299,6 +302,9 @@ export interface TextInputIOSProps {
     | 'birthdateDay'
     | 'birthdateMonth'
     | 'birthdateYear'
+    | 'dateTime'
+    | 'flightNumber'
+    | 'shipmentTrackingNumber'
     | undefined;
 
   /**
