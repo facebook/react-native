@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c3bc009f093106875e5901c796a279b6>>
+ * @generated SignedSource<<3837dde4571d8da810192d1a6ed9931f>>
  */
 
 /**
@@ -91,6 +91,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun loadVectorDrawablesOnImages(): Boolean
 
   @DoNotStrip @JvmStatic public external fun setAndroidLayoutDirection(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean
 
   @DoNotStrip @JvmStatic public external fun unstable_enableTurboModuleSyncVoidMethods(): Boolean
 
