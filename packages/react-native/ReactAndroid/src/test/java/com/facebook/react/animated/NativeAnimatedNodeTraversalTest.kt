@@ -164,6 +164,40 @@ class NativeAnimatedNodeTraversalTest {
   }
 
   @Test
+  fun testFramesAnimationWithFinalFrameBeingDifferentFromToValue() {
+    createSimpleAnimatedViewWithOpacity()
+
+    val frames: JavaOnlyArray = JavaOnlyArray.of(0.0, 0.5, 1.0, 0.5, 0.0)
+
+    val animationCallback: Callback = mock(Callback::class.java)
+    nativeAnimatedNodesManager.startAnimatingNode(
+        1,
+        1,
+        JavaOnlyMap.of("type", "frames", "frames", frames, "toValue", 1.0, "iterations", 2),
+        animationCallback)
+
+    val stylesCaptor: ArgumentCaptor<ReadableMap> = ArgumentCaptor.forClass(ReadableMap::class.java)
+
+    for (iteration in 1..2) {
+      for (i in 0 until frames.size()) {
+        reset(uiManagerMock)
+        nativeAnimatedNodesManager.runUpdates(nextFrameTime())
+        verify(uiManagerMock).synchronouslyUpdateViewOnUIThread(eq(1000), stylesCaptor.capture())
+
+        if (i < frames.size() - 1 || iteration == 1) {
+          assertThat(stylesCaptor.value.getDouble("opacity")).isEqualTo(frames.getDouble(i))
+        } else {
+          assertThat(stylesCaptor.value.getDouble("opacity")).isEqualTo(1.0)
+        }
+      }
+    }
+
+    reset(uiManagerMock)
+    nativeAnimatedNodesManager.runUpdates(nextFrameTime())
+    verifyNoMoreInteractions(uiManagerMock)
+  }
+
+  @Test
   fun testFramesAnimationLoopsFiveTimes() {
     createSimpleAnimatedViewWithOpacity()
 

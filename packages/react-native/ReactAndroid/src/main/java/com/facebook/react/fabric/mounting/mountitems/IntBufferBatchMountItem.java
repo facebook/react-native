@@ -226,7 +226,7 @@ final class IntBufferBatchMountItem implements BatchMountItem {
             int parentTag = mIntBuffer[i++];
             s.append(
                 String.format(
-                    "UPDATE LAYOUT [%d]->[%d]: x:%d y:%d w:%d h:%d displayType:%d\n",
+                    "UPDATE LAYOUT [%d]->[%d]: x:%d y:%d w:%d h:%d displayType:%d",
                     parentTag,
                     reactTag,
                     mIntBuffer[i++],
@@ -234,6 +234,10 @@ final class IntBufferBatchMountItem implements BatchMountItem {
                     mIntBuffer[i++],
                     mIntBuffer[i++],
                     mIntBuffer[i++]));
+            if (ReactNativeFeatureFlags.setAndroidLayoutDirection()) {
+              s.append(String.format(" layoutDirection:%d", mIntBuffer[i++]));
+            }
+            s.append('\n');
           } else if (type == INSTRUCTION_UPDATE_PADDING) {
             s.append(
                 String.format(
