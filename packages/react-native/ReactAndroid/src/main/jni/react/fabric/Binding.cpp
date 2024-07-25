@@ -75,16 +75,6 @@ Binding::getInspectorDataForInstance(
   return ReadableNativeMap::newObjectCxxArgs(result);
 }
 
-constexpr static auto kReactFeatureFlagsJavaDescriptor =
-    "com/facebook/react/config/ReactFeatureFlags";
-
-static bool getFeatureFlagValue(const char* name) {
-  static const auto reactFeatureFlagsClass =
-      jni::findClassStatic(kReactFeatureFlagsJavaDescriptor);
-  const auto field = reactFeatureFlagsClass->getStaticField<jboolean>(name);
-  return reactFeatureFlagsClass->getStaticFieldValue(field);
-}
-
 void Binding::setPixelDensity(float pointScaleFactor) {
   pointScaleFactor_ = pointScaleFactor;
 }
@@ -404,7 +394,7 @@ void Binding::installFabricUIManager(
   reactNativeConfig_ = config;
 
   CoreFeatures::enablePropIteratorSetter =
-      getFeatureFlagValue("enableCppPropsIteratorSetter");
+      ReactNativeFeatureFlags::enableCppPropsIteratorSetter();
   CoreFeatures::excludeYogaFromRawProps =
       ReactNativeFeatureFlags::excludeYogaFromRawProps();
 
