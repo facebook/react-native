@@ -237,7 +237,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: hermes-darwin-bin-Release
-          path: ${{ env.HERMES_TARBALL_ARTIFACTS_DIR }}
+          path: /tmp/react-native-tmp
       - name: Download React Native Package
         uses: actions/download-artifact@v4
         with:
@@ -355,7 +355,7 @@ jobs:
       - name: Run E2E Tests
         uses: ./.github/actions/maestro-android
         with:
-          app-path: ./packages/rn-tester/android/app/build/outputs/apk/${{ matrix.jsengine }}/release/rntester-${{ matrix.jsengine }}-release.apk
+          app-path: ./packages/rn-tester/android/app/build/outputs/apk/${{ matrix.jsengine }}/release/app-${{ matrix.jsengine }}-x86-release.apk
           app-id: com.facebook.react.uiapp
           jsengine: ${{ matrix.jsengine }}
 
