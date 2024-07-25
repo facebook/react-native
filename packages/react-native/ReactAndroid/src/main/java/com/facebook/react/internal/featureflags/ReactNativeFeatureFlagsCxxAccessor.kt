@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<69a25ed7eeef862c36cca83e3427a02c>>
+ * @generated SignedSource<<89f3e5d70a2257f99a6446b054c91caf>>
  */
 
 /**
@@ -31,6 +31,7 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
   private var enableCleanTextInputYogaNodeCache: Boolean? = null
   private var enableCppPropsIteratorSetterCache: Boolean? = null
   private var enableFabricRendererExclusivelyCache: Boolean? = null
+  private var enableGranularScrollViewStateUpdatesIOSCache: Boolean? = null
   private var enableGranularShadowTreeStateReconciliationCache: Boolean? = null
   private var enableLongTaskAPICache: Boolean? = null
   private var enableMicrotasksCache: Boolean? = null
@@ -154,6 +155,15 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enableFabricRendererExclusively()
       enableFabricRendererExclusivelyCache = cached
+    }
+    return cached
+  }
+
+  override fun enableGranularScrollViewStateUpdatesIOS(): Boolean {
+    var cached = enableGranularScrollViewStateUpdatesIOSCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.enableGranularScrollViewStateUpdatesIOS()
+      enableGranularScrollViewStateUpdatesIOSCache = cached
     }
     return cached
   }

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<00ef50e03be5e5d48b6e44f2fb6598f1>>
+ * @generated SignedSource<<40d29cb73bc0c81f27a789d4899ed2db>>
  */
 
 /**
@@ -102,6 +102,12 @@ class ReactNativeFeatureFlagsProviderHolder
   bool enableFabricRendererExclusively() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableFabricRendererExclusively");
+    return method(javaProvider_);
+  }
+
+  bool enableGranularScrollViewStateUpdatesIOS() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableGranularScrollViewStateUpdatesIOS");
     return method(javaProvider_);
   }
 
@@ -326,6 +332,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableFabricRendererExclusively(
   return ReactNativeFeatureFlags::enableFabricRendererExclusively();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::enableGranularScrollViewStateUpdatesIOS(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableGranularScrollViewStateUpdatesIOS();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::enableGranularShadowTreeStateReconciliation(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableGranularShadowTreeStateReconciliation();
@@ -511,6 +522,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableFabricRendererExclusively",
         JReactNativeFeatureFlagsCxxInterop::enableFabricRendererExclusively),
+      makeNativeMethod(
+        "enableGranularScrollViewStateUpdatesIOS",
+        JReactNativeFeatureFlagsCxxInterop::enableGranularScrollViewStateUpdatesIOS),
       makeNativeMethod(
         "enableGranularShadowTreeStateReconciliation",
         JReactNativeFeatureFlagsCxxInterop::enableGranularShadowTreeStateReconciliation),

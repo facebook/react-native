@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<453e124e320822c6a5db6bb675f12e44>>
+ * @generated SignedSource<<2e95f6eac598eabdc4dc04090c8f7999>>
  */
 
 /**
@@ -42,6 +42,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableCleanTextInputYogaNode();
   bool enableCppPropsIteratorSetter();
   bool enableFabricRendererExclusively();
+  bool enableGranularScrollViewStateUpdatesIOS();
   bool enableGranularShadowTreeStateReconciliation();
   bool enableLongTaskAPI();
   bool enableMicrotasks();
@@ -79,7 +80,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 38> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 39> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> allowCollapsableChildren_;
@@ -92,6 +93,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableCleanTextInputYogaNode_;
   std::atomic<std::optional<bool>> enableCppPropsIteratorSetter_;
   std::atomic<std::optional<bool>> enableFabricRendererExclusively_;
+  std::atomic<std::optional<bool>> enableGranularScrollViewStateUpdatesIOS_;
   std::atomic<std::optional<bool>> enableGranularShadowTreeStateReconciliation_;
   std::atomic<std::optional<bool>> enableLongTaskAPI_;
   std::atomic<std::optional<bool>> enableMicrotasks_;

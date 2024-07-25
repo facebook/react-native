@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b9456d0a4bc079bd3fc13a8880da42c5>>
+ * @generated SignedSource<<71450cabe95057a4d46c33e19e6ec076>>
  */
 
 /**
@@ -93,6 +93,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableFabricRendererExclusively(): Boolean = accessor.enableFabricRendererExclusively()
+
+  /**
+   * When enabled, RCTScrollViewComponentView will trigger ShadowTree state updates for all changes in scroll position.
+   */
+  @JvmStatic
+  public fun enableGranularScrollViewStateUpdatesIOS(): Boolean = accessor.enableGranularScrollViewStateUpdatesIOS()
 
   /**
    * When enabled, the renderer would only fail commits when they propagate state and the last commit that updated state changed before committing.

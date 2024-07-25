@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e4c14208f7b7ac3b8853bdfcb214d539>>
+ * @generated SignedSource<<0409dd1ed38ef41526152d3998c9e867>>
  */
 
 /**
@@ -90,6 +90,11 @@ bool NativeReactNativeFeatureFlags::enableCppPropsIteratorSetter(
 bool NativeReactNativeFeatureFlags::enableFabricRendererExclusively(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableFabricRendererExclusively();
+}
+
+bool NativeReactNativeFeatureFlags::enableGranularScrollViewStateUpdatesIOS(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableGranularScrollViewStateUpdatesIOS();
 }
 
 bool NativeReactNativeFeatureFlags::enableGranularShadowTreeStateReconciliation(

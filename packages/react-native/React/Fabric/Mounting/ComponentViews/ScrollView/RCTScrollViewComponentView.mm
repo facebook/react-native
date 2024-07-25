@@ -12,6 +12,7 @@
 #import <React/RCTConstants.h>
 #import <React/RCTScrollEvent.h>
 
+#import <react/featureflags/ReactNativeFeatureFlags.h>
 #import <react/renderer/components/scrollview/RCTComponentViewHelpers.h>
 #import <react/renderer/components/scrollview/ScrollViewComponentDescriptor.h>
 #import <react/renderer/components/scrollview/ScrollViewEventEmitter.h>
@@ -501,7 +502,7 @@ RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrollView, NSInt
       });
     }
   } else {
-    if (!_isUserTriggeredScrolling || CoreFeatures::enableGranularScrollViewStateUpdatesIOS) {
+    if (!_isUserTriggeredScrolling || ReactNativeFeatureFlags::enableGranularScrollViewStateUpdatesIOS()) {
       [self _updateStateWithContentOffset];
     }
 

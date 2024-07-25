@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<efd1d7733e0bf09ef94cc27baaf1524b>>
+ * @generated SignedSource<<c56017b76c1560373be7caeda0ffe466>>
  */
 
 /**
@@ -35,6 +35,7 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var enableCleanTextInputYogaNodeCache: Boolean? = null
   private var enableCppPropsIteratorSetterCache: Boolean? = null
   private var enableFabricRendererExclusivelyCache: Boolean? = null
+  private var enableGranularScrollViewStateUpdatesIOSCache: Boolean? = null
   private var enableGranularShadowTreeStateReconciliationCache: Boolean? = null
   private var enableLongTaskAPICache: Boolean? = null
   private var enableMicrotasksCache: Boolean? = null
@@ -169,6 +170,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.enableFabricRendererExclusively()
       accessedFeatureFlags.add("enableFabricRendererExclusively")
       enableFabricRendererExclusivelyCache = cached
+    }
+    return cached
+  }
+
+  override fun enableGranularScrollViewStateUpdatesIOS(): Boolean {
+    var cached = enableGranularScrollViewStateUpdatesIOSCache
+    if (cached == null) {
+      cached = currentProvider.enableGranularScrollViewStateUpdatesIOS()
+      accessedFeatureFlags.add("enableGranularScrollViewStateUpdatesIOS")
+      enableGranularScrollViewStateUpdatesIOSCache = cached
     }
     return cached
   }
