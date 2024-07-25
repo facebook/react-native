@@ -10,6 +10,9 @@ inputs:
   jsengine:
     required: true
     description: The js engine we are using
+  maestro-flow:
+    required: true
+    description: the folder that contains the maestro tests
 runs:
   using: composite
   steps:
@@ -34,16 +37,16 @@ runs:
         arch: x86
         script: |
           adb install "${{ inputs.app-path }}"
-          $HOME/.maestro/bin/maestro test packages/rn-tester/.maestro/ --format junit -e APP_ID=${{ inputs.app-id }} --debug-output /tmp/MaestroLogs
+          $HOME/.maestro/bin/maestro test ${{ inputs.maestro-flow }} --format junit -e APP_ID=${{ inputs.app-id }} --debug-output /tmp/MaestroLogs
     - name: Store tests result
       uses: actions/upload-artifact@v3
       with:
-        name: e2e_android_report_${{ inputs.jsengine }}
+        name: e2e_android_${{ inputs.app-id }}_report_${{ inputs.jsengine }}
         path: |
           report.xml
     - name: Store Logs
       if: failure() && steps.run-tests.outcome == 'failure'
       uses: actions/upload-artifact@v4
       with:
-        name: maestro-logs-android-${{ inputs.jsengine }}
+        name: maestro-logs-android-${{ inputs.app-id }}-${{ inputs.jsengine }}
         path: /tmp/MaestroLogs
