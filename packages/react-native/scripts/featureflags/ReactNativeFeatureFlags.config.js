@@ -242,6 +242,11 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'Function used to enable / disabled Layout Animations in React Native.',
     },
+    shouldSkipStateUpdatesForLoopingAnimations: {
+      defaultValue: false,
+      description:
+        'If the animation is within Animated.loop, we do not send state updates to React.',
+    },
     shouldUseAnimatedObjectForTransform: {
       defaultValue: false,
       description:
