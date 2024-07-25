@@ -8,8 +8,7 @@
 package com.facebook.react.utils
 
 import com.facebook.react.utils.NdkConfiguratorUtils.getPackagingOptionsForVariant
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
 class NdkConfiguratorUtilsTest {
@@ -18,29 +17,29 @@ class NdkConfiguratorUtilsTest {
   fun getPackagingOptionsForVariant_withHermesEnabled() {
     val (excludes, includes) = getPackagingOptionsForVariant(hermesEnabled = true)
 
-    assertTrue("**/libjsc.so" in excludes)
-    assertTrue("**/libjscexecutor.so" in excludes)
-    assertFalse("**/libjsc.so" in includes)
-    assertFalse("**/libjscexecutor.so" in includes)
+    assertThat("**/libjsc.so" in excludes).isTrue()
+    assertThat("**/libjscexecutor.so" in excludes).isTrue()
+    assertThat("**/libjsc.so" in includes).isFalse()
+    assertThat("**/libjscexecutor.so" in includes).isFalse()
 
-    assertTrue("**/libhermes.so" in includes)
-    assertTrue("**/libhermes_executor.so" in includes)
-    assertFalse("**/libhermes.so" in excludes)
-    assertFalse("**/libhermes_executor.so" in excludes)
+    assertThat("**/libhermes.so" in includes).isTrue()
+    assertThat("**/libhermes_executor.so" in includes).isTrue()
+    assertThat("**/libhermes.so" in excludes).isFalse()
+    assertThat("**/libhermes_executor.so" in excludes).isFalse()
   }
 
   @Test
   fun getPackagingOptionsForVariant_withHermesDisabled() {
     val (excludes, includes) = getPackagingOptionsForVariant(hermesEnabled = false)
 
-    assertTrue("**/libhermes.so" in excludes)
-    assertTrue("**/libhermes_executor.so" in excludes)
-    assertFalse("**/libhermes.so" in includes)
-    assertFalse("**/libhermes_executor.so" in includes)
+    assertThat("**/libhermes.so" in excludes).isTrue()
+    assertThat("**/libhermes_executor.so" in excludes).isTrue()
+    assertThat("**/libhermes.so" in includes).isFalse()
+    assertThat("**/libhermes_executor.so" in includes).isFalse()
 
-    assertTrue("**/libjsc.so" in includes)
-    assertTrue("**/libjscexecutor.so" in includes)
-    assertFalse("**/libjsc.so" in excludes)
-    assertFalse("**/libjscexecutor.so" in excludes)
+    assertThat("**/libjsc.so" in includes).isTrue()
+    assertThat("**/libjscexecutor.so" in includes).isTrue()
+    assertThat("**/libjsc.so" in excludes).isFalse()
+    assertThat("**/libjscexecutor.so" in excludes).isFalse()
   }
 }
