@@ -15,6 +15,7 @@ import com.facebook.react.bridge.ModuleSpec;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.config.ReactFeatureFlags;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.internal.turbomodule.core.TurboModuleManagerDelegate;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.module.model.ReactModuleInfo;
@@ -40,7 +41,7 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
           && ReactFeatureFlags.unstable_useTurboModuleInterop;
 
   private final boolean mEnableTurboModuleSyncVoidMethods =
-      ReactFeatureFlags.unstable_enableTurboModuleSyncVoidMethods;
+      ReactNativeFeatureFlags.unstable_enableTurboModuleSyncVoidMethods();
 
   // Lazy Props
   private List<ReactPackage> mPackages;
