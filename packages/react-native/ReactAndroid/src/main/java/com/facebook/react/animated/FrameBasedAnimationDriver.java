@@ -71,6 +71,7 @@ class FrameBasedAnimationDriver extends AnimationDriver {
         mFromValue = mAnimatedValue.mValue;
       }
     }
+
     long timeFromStartMillis = (frameTimeNanos - mStartFrameTimeNanos) / 1000000;
     int frameIndex = (int) Math.round(timeFromStartMillis / FRAME_TIME_MILLIS);
     if (frameIndex < 0) {
@@ -92,13 +93,17 @@ class FrameBasedAnimationDriver extends AnimationDriver {
       // nothing to do here
       return;
     }
+
     double nextValue;
     if (frameIndex >= mFrames.length - 1) {
-      nextValue = mToValue;
-      if (mIterations == -1 || mCurrentLoop < mIterations) { // looping animation, return to start
+      if (mIterations == -1 || mCurrentLoop < mIterations) {
+        // Use last frame value, just in case it's different from mToValue
+        nextValue = mFromValue + mFrames[mFrames.length - 1] * (mToValue - mFromValue);
         mStartFrameTimeNanos = -1;
         mCurrentLoop++;
-      } else { // animation has completed, no more frames left
+      } else {
+        // animation has completed, no more frames left
+        nextValue = mToValue;
         mHasFinished = true;
       }
     } else {
