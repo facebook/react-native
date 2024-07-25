@@ -8,7 +8,7 @@
 package com.facebook.react.utils
 
 import java.io.File
-import org.junit.Assert.*
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
@@ -25,8 +25,8 @@ class FileUtilsTest {
 
     fileToMove.moveTo(destFile)
 
-    assertEquals("42", destFile.readText())
-    assertFalse(fileToMove.exists())
+    assertThat(destFile.readText()).isEqualTo("42")
+    assertThat(fileToMove.exists()).isFalse()
   }
 
   @Test
@@ -39,7 +39,7 @@ class FileUtilsTest {
 
     subFolder.recreateDir()
 
-    assertTrue(subFolder.exists())
-    assertEquals(0, subFolder.listFiles()?.size)
+    assertThat(subFolder.exists()).isTrue()
+    assertThat(subFolder.listFiles()?.size).isEqualTo(0)
   }
 }
