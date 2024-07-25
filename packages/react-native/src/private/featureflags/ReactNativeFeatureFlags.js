@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7b6dc4c71480ae13068d50ec32aacde1>>
+ * @generated SignedSource<<d9d34263970ee71c3dc1e5298f03586f>>
  * @flow strict-local
  */
 
@@ -55,6 +55,7 @@ export type ReactNativeFeatureFlags = {
   enableCleanTextInputYogaNode: Getter<boolean>,
   enableCppPropsIteratorSetter: Getter<boolean>,
   enableEagerRootViewAttachment: Getter<boolean>,
+  enableFabricLogs: Getter<boolean>,
   enableFabricRendererExclusively: Getter<boolean>,
   enableGranularShadowTreeStateReconciliation: Getter<boolean>,
   enableLongTaskAPI: Getter<boolean>,
@@ -189,6 +190,10 @@ export const enableCppPropsIteratorSetter: Getter<boolean> = createNativeFlagGet
  * Feature flag to configure eager attachment of the root view/initialisation of the JS code.
  */
 export const enableEagerRootViewAttachment: Getter<boolean> = createNativeFlagGetter('enableEagerRootViewAttachment', false);
+/**
+ * This feature flag enables logs for Fabric.
+ */
+export const enableFabricLogs: Getter<boolean> = createNativeFlagGetter('enableFabricLogs', false);
 /**
  * When the app is completely migrated to Fabric, set this flag to true to disable parts of Paper infrastructure that are not needed anymore but consume memory and CPU. Specifically, UIViewOperationQueue and EventDispatcherImpl will no longer work as they will not subscribe to ReactChoreographer for updates.
  */
