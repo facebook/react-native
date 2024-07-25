@@ -998,11 +998,13 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
       return;
     }
 
-    UiThreadUtil.runOnUiThread(
-        () -> {
-          mDevSettings.setRemoteJSDebugEnabled(isRemoteJSDebugEnabled);
-          handleReloadJS();
-        });
+    if (mDevSettings.isRemoteJSDebugEnabled() != isRemoteJSDebugEnabled) {
+      UiThreadUtil.runOnUiThread(
+          () -> {
+            mDevSettings.setRemoteJSDebugEnabled(isRemoteJSDebugEnabled);
+            handleReloadJS();
+          });
+    }
   }
 
   @Override
