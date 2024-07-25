@@ -15,7 +15,8 @@ import org.junit.rules.TemporaryFolder
 
 class AgpConfiguratorUtilsTest {
 
-  @get:Rule val tempFolder = TemporaryFolder()
+  @get:Rule
+  val tempFolder = TemporaryFolder()
 
   @Test
   fun getPackageNameFromManifest_withEmptyFile_returnsNull() {
@@ -30,15 +31,16 @@ class AgpConfiguratorUtilsTest {
   fun getPackageNameFromManifest_withMissingPackage_returnsNull() {
     val mainFolder = tempFolder.newFolder("awesome-module/src/main/")
     val manifest =
-        File(mainFolder, "AndroidManifest.xml").apply {
-          writeText(
-              // language=xml
-              """
+      File(mainFolder, "AndroidManifest.xml").apply {
+        writeText(
+          // language=xml
+          """
           <manifest xmlns:android="http://schemas.android.com/apk/res/android">
           </manifest>
           """
-                  .trimIndent())
-        }
+            .trimIndent()
+        )
+      }
 
     val actual = getPackageNameFromManifest(manifest)
     assertThat(actual).isNull()
@@ -48,15 +50,16 @@ class AgpConfiguratorUtilsTest {
   fun getPackageNameFromManifest_withPackage_returnsPackage() {
     val mainFolder = tempFolder.newFolder("awesome-module/src/main/")
     val manifest =
-        File(mainFolder, "AndroidManifest.xml").apply {
-          writeText(
-              // language=xml
-              """
+      File(mainFolder, "AndroidManifest.xml").apply {
+        writeText(
+          // language=xml
+          """
           <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.facebook.react" >
           </manifest>
           """
-                  .trimIndent())
-        }
+            .trimIndent()
+        )
+      }
 
     val actual = getPackageNameFromManifest(manifest)
     assertThat(actual).isNotNull()

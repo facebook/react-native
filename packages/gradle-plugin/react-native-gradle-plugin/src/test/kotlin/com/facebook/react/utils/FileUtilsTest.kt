@@ -15,7 +15,8 @@ import org.junit.rules.TemporaryFolder
 
 class FileUtilsTest {
 
-  @get:Rule val tempFolder = TemporaryFolder()
+  @get:Rule
+  val tempFolder = TemporaryFolder()
 
   @Test
   fun moveTo_movesCorrectly() {
@@ -25,8 +26,8 @@ class FileUtilsTest {
 
     fileToMove.moveTo(destFile)
 
-    assertThat(destFile.readText()).isEqualTo("42")
-    assertThat(fileToMove.exists()).isFalse()
+    assertThat(destFile).hasContent("42")
+    assertThat(fileToMove).doesNotExist()
   }
 
   @Test

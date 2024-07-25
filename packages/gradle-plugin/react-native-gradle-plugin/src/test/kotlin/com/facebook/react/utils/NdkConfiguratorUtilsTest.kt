@@ -17,29 +17,21 @@ class NdkConfiguratorUtilsTest {
   fun getPackagingOptionsForVariant_withHermesEnabled() {
     val (excludes, includes) = getPackagingOptionsForVariant(hermesEnabled = true)
 
-    assertThat("**/libjsc.so" in excludes).isTrue()
-    assertThat("**/libjscexecutor.so" in excludes).isTrue()
-    assertThat("**/libjsc.so" in includes).isFalse()
-    assertThat("**/libjscexecutor.so" in includes).isFalse()
+    assertThat(excludes).containsExactly("**/libjsc.so", "**/libjscexecutor.so")
+    assertThat(includes).doesNotContain("**/libjsc.so", "**/libjscexecutor.so")
 
-    assertThat("**/libhermes.so" in includes).isTrue()
-    assertThat("**/libhermes_executor.so" in includes).isTrue()
-    assertThat("**/libhermes.so" in excludes).isFalse()
-    assertThat("**/libhermes_executor.so" in excludes).isFalse()
+    assertThat(includes).containsExactly("**/libhermes.so", "**/libhermes_executor.so")
+    assertThat(excludes).doesNotContain("**/libhermes.so", "**/libhermes_executor.so")
   }
 
   @Test
   fun getPackagingOptionsForVariant_withHermesDisabled() {
     val (excludes, includes) = getPackagingOptionsForVariant(hermesEnabled = false)
 
-    assertThat("**/libhermes.so" in excludes).isTrue()
-    assertThat("**/libhermes_executor.so" in excludes).isTrue()
-    assertThat("**/libhermes.so" in includes).isFalse()
-    assertThat("**/libhermes_executor.so" in includes).isFalse()
+    assertThat(excludes).containsExactly("**/libhermes.so", "**/libhermes_executor.so")
+    assertThat(includes).doesNotContain("**/libhermes.so", "**/libhermes_executor.so")
 
-    assertThat("**/libjsc.so" in includes).isTrue()
-    assertThat("**/libjscexecutor.so" in includes).isTrue()
-    assertThat("**/libjsc.so" in excludes).isFalse()
-    assertThat("**/libjscexecutor.so" in excludes).isFalse()
+    assertThat(includes).containsExactly("**/libjsc.so", "**/libjscexecutor.so")
+    assertThat(excludes).doesNotContain("**/libjsc.so", "**/libjscexecutor.so")
   }
 }
