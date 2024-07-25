@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b914ca36b2ab729f1262384d83b684b7>>
+ * @generated SignedSource<<38499cbd868f32bdf6eec331dc57a7ff>>
  * @flow strict-local
  */
 
@@ -53,6 +53,7 @@ export type ReactNativeFeatureFlags = {
   destroyFabricSurfacesInReactInstanceManager: Getter<boolean>,
   enableAlignItemsBaselineOnFabricIOS: Getter<boolean>,
   enableCleanTextInputYogaNode: Getter<boolean>,
+  enableCppPropsIteratorSetter: Getter<boolean>,
   enableFabricRendererExclusively: Getter<boolean>,
   enableGranularShadowTreeStateReconciliation: Getter<boolean>,
   enableLongTaskAPI: Getter<boolean>,
@@ -179,6 +180,10 @@ export const enableAlignItemsBaselineOnFabricIOS: Getter<boolean> = createNative
  * Clean yoga node when <TextInput /> does not change.
  */
 export const enableCleanTextInputYogaNode: Getter<boolean> = createNativeFlagGetter('enableCleanTextInputYogaNode', false);
+/**
+ * Enable prop iterator setter-style construction of Props in C++ (this flag is not used in Java).
+ */
+export const enableCppPropsIteratorSetter: Getter<boolean> = createNativeFlagGetter('enableCppPropsIteratorSetter', false);
 /**
  * When the app is completely migrated to Fabric, set this flag to true to disable parts of Paper infrastructure that are not needed anymore but consume memory and CPU. Specifically, UIViewOperationQueue and EventDispatcherImpl will no longer work as they will not subscribe to ReactChoreographer for updates.
  */

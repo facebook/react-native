@@ -16,9 +16,6 @@ namespace facebook::react {
  */
 class CoreFeatures {
  public:
-  // Specifies whether the iterator-style prop parsing is enabled.
-  static bool enablePropIteratorSetter;
-
   // When enabled, RCTScrollViewComponentView will trigger ShadowTree state
   // updates for all changes in scroll position.
   static bool enableGranularScrollViewStateUpdatesIOS;

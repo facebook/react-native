@@ -72,11 +72,6 @@ public class ReactFeatureFlags {
   public static boolean enableViewRecycling = false;
 
   /**
-   * Enable prop iterator setter-style construction of Props in C++ (this flag is not used in Java).
-   */
-  public static boolean enableCppPropsIteratorSetter = false;
-
-  /**
    * Enables storing js caller stack when creating promise in native module. This is useful in case
    * of Promise rejection and tracing the cause.
    */
