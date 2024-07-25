@@ -58,9 +58,6 @@ public class ReactFeatureFlags {
    */
   public static boolean enableBridgelessArchitecture = false;
 
-  /** This feature flag enables logs for Fabric */
-  public static boolean enableFabricLogs = false;
-
   public static boolean dispatchPointerEvents = false;
 
   /**
