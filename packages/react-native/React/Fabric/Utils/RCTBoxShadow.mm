@@ -183,15 +183,10 @@ static void renderInsetShadows(
 
   // First, create a clipping area so we only draw within the view's bounds.
   // If we do not do this, blur artifacts will show up outside the view.
-  CGMutablePathRef outerPath = CGPathCreateMutable();
-  CGPathMoveToPoint(outerPath, nil, 0, 0);
-  CGPathAddLineToPoint(outerPath, nil, boundingRect.size.width, 0);
-  CGPathAddLineToPoint(outerPath, nil, boundingRect.size.width, boundingRect.size.height);
-  CGPathAddLineToPoint(outerPath, nil, 0, boundingRect.size.height);
-  CGPathCloseSubpath(outerPath);
+  CGRect outerClippingRect = CGRectMake(0, 0, boundingRect.size.width, boundingRect.size.height);
   // Add the path twice so we only draw inside the view with the EO crop rule
-  CGContextAddPath(context, outerPath);
-  CGContextAddPath(context, outerPath);
+  CGContextAddRect(context, outerClippingRect);
+  CGContextAddRect(context, outerClippingRect);
   const RCTCornerInsets cornerInsetsForLayer =
       RCTGetCornerInsets(cornerRadiiForBoxShadow(cornerRadii, 0), UIEdgeInsetsZero);
   CGPathRef layerPath = RCTPathCreateWithRoundedRect(
