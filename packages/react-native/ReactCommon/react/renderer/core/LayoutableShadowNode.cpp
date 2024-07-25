@@ -260,12 +260,13 @@ ShadowNode::Shared LayoutableShadowNode::findNodeAtPoint(
       !layoutableShadowNode->canChildrenBeTouchTarget()) {
     return nullptr;
   }
-
-  auto frame = layoutableShadowNode->getLayoutMetrics().frame;
+  
+  auto layoutMetrics = layoutableShadowNode->getLayoutMetrics();
+  auto frame = layoutMetrics.frame;
+  auto overflow = layoutMetrics.overflowInset;
+  
   auto currentTransform = layoutableShadowNode->getTransform();
-
   bool isInverted = currentTransform.inv();
-    
   Point transformedPoint = point;
   
   if (isInverted) {
@@ -273,17 +274,20 @@ ShadowNode::Shared LayoutableShadowNode::findNodeAtPoint(
   }
 
   auto isPointInside = frame.containsPoint(transformedPoint);
-
-  if (!isPointInside) {
-    return nullptr;
-  } else if (!layoutableShadowNode->canChildrenBeTouchTarget()) {
-    return node;
+    
+  if (isPointInside && !layoutableShadowNode->canChildrenBeTouchTarget()) {
+     return node;
   }
 
   auto newPoint = transformedPoint - frame.origin -
       layoutableShadowNode->getContentOriginOffset(false);
 
   auto sortedChildren = node->getChildren();
+    
+  if (!isPointInside && (sortedChildren.size() == 0 || overflow.isZero())) {
+      return nullptr;
+  }
+    
   std::stable_sort(
       sortedChildren.begin(),
       sortedChildren.end(),
@@ -293,12 +297,18 @@ ShadowNode::Shared LayoutableShadowNode::findNodeAtPoint(
 
   for (auto it = sortedChildren.rbegin(); it != sortedChildren.rend(); it++) {
     const auto& childShadowNode = *it;
-    auto hitView = findNodeAtPoint(childShadowNode, newPoint);
-    if (hitView) {
-      return hitView;
-    }
+      auto hitSubview = findNodeAtPoint(childShadowNode, newPoint);
+    
+      if (hitSubview) {
+          return hitSubview;
+      }
   }
-  return layoutableShadowNode->canBeTouchTarget() ? node : nullptr;
+    
+  if (layoutableShadowNode->canBeTouchTarget() && isPointInside) {
+      return node;
+  }
+    
+  return nullptr;
 }
 
 #if RN_DEBUG_STRING_CONVERTIBLE

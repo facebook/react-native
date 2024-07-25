@@ -39,6 +39,10 @@ struct RectangleEdges {
     return left == top && left == right && left == bottom;
   }
 
+  bool isZero() const noexcept {
+    return left == 0 && top == 0 && right == 0 && bottom == 0;
+  } 
+
   static const RectangleEdges<T> ZERO;
 };
 
