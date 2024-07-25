@@ -11,6 +11,7 @@ import android.app.Activity;
 import android.util.Pair;
 import android.view.View;
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.DefaultJSExceptionHandler;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
@@ -31,6 +32,7 @@ import java.io.File;
  * A dummy implementation of {@link DevSupportManager} to be used in production mode where
  * development features aren't needed.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ReleaseDevSupportManager implements DevSupportManager {
 
   private final DefaultJSExceptionHandler mDefaultJSExceptionHandler;
@@ -40,24 +42,27 @@ public class ReleaseDevSupportManager implements DevSupportManager {
   }
 
   @Override
-  public void showNewJavaError(String message, Throwable e) {}
+  public void showNewJavaError(@Nullable String message, @Nullable Throwable e) {}
 
   @Override
-  public void addCustomDevOption(String optionName, DevOptionHandler optionHandler) {}
+  public void addCustomDevOption(
+      @Nullable String optionName, @Nullable DevOptionHandler optionHandler) {}
 
   @Override
-  public void showNewJSError(String message, ReadableArray details, int errorCookie) {}
+  public void showNewJSError(
+      @Nullable String message, @Nullable ReadableArray details, int errorCookie) {}
 
   @Override
-  public @Nullable View createRootView(String appKey) {
+  public @Nullable View createRootView(@Nullable String appKey) {
     return null;
   }
 
   @Override
-  public void destroyRootView(View rootView) {}
+  public void destroyRootView(@Nullable View rootView) {}
 
   @Override
-  public void updateJSError(String message, ReadableArray details, int errorCookie) {}
+  public void updateJSError(
+      @Nullable String message, @Nullable ReadableArray details, int errorCookie) {}
 
   @Override
   public void hideRedboxDialog() {}
@@ -92,12 +97,12 @@ public class ReleaseDevSupportManager implements DevSupportManager {
   }
 
   @Override
-  public DeveloperSettings getDevSettings() {
+  public @Nullable DeveloperSettings getDevSettings() {
     return null;
   }
 
   @Override
-  public RedBoxHandler getRedBoxHandler() {
+  public @Nullable RedBoxHandler getRedBoxHandler() {
     return null;
   }
 
@@ -108,22 +113,22 @@ public class ReleaseDevSupportManager implements DevSupportManager {
   public void onReactInstanceDestroyed(ReactContext reactContext) {}
 
   @Override
-  public String getSourceMapUrl() {
+  public @Nullable String getSourceMapUrl() {
     return null;
   }
 
   @Override
-  public String getSourceUrl() {
+  public @Nullable String getSourceUrl() {
     return null;
   }
 
   @Override
-  public String getJSBundleURLForRemoteDebugging() {
+  public @Nullable String getJSBundleURLForRemoteDebugging() {
     return null;
   }
 
   @Override
-  public String getDownloadedJSBundleFile() {
+  public @Nullable String getDownloadedJSBundleFile() {
     return null;
   }
 
@@ -151,7 +156,7 @@ public class ReleaseDevSupportManager implements DevSupportManager {
 
   @Override
   public @Nullable File downloadBundleResourceFromUrlSync(
-      final String resourceURL, final File outputFile) {
+      final String resourceURL, @Nullable final File outputFile) {
     return null;
   }
 
@@ -176,16 +181,17 @@ public class ReleaseDevSupportManager implements DevSupportManager {
   }
 
   @Override
-  public void registerErrorCustomizer(ErrorCustomizer errorCustomizer) {}
+  public void registerErrorCustomizer(@Nullable ErrorCustomizer errorCustomizer) {}
 
   @Override
-  public Pair<String, StackFrame[]> processErrorCustomizers(Pair<String, StackFrame[]> errorInfo) {
+  public @Nullable Pair<String, StackFrame[]> processErrorCustomizers(
+      @Nullable Pair<String, StackFrame[]> errorInfo) {
     return errorInfo;
   }
 
   @Override
   public void setPackagerLocationCustomizer(
-      DevSupportManager.PackagerLocationCustomizer packagerLocationCustomizer) {}
+      @Nullable DevSupportManager.PackagerLocationCustomizer packagerLocationCustomizer) {}
 
   @Override
   public void handleException(Exception e) {
@@ -198,7 +204,7 @@ public class ReleaseDevSupportManager implements DevSupportManager {
   }
 
   @Override
-  public @Nullable SurfaceDelegate createSurfaceDelegate(String moduleName) {
+  public @Nullable SurfaceDelegate createSurfaceDelegate(@Nullable String moduleName) {
     return null;
   }
 
