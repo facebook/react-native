@@ -281,8 +281,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Setup git safe folders
-        run: git config --global --add safe.directory '*'
       - name: Download npm package artifact
         uses: actions/download-artifact@v4.1.3
         with:
