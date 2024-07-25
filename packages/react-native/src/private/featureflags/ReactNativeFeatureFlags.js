@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f734c5d2afd065af224c5051ac3e737f>>
+ * @generated SignedSource<<b914ca36b2ab729f1262384d83b684b7>>
  * @flow strict-local
  */
 
@@ -31,6 +31,7 @@ export type ReactNativeFeatureFlagsJsOnly = {
   animatedShouldUseSingleOp: Getter<boolean>,
   enableAccessToHostTreeInFabric: Getter<boolean>,
   isLayoutAnimationEnabled: Getter<boolean>,
+  shouldSkipStateUpdatesForLoopingAnimations: Getter<boolean>,
   shouldUseAnimatedObjectForTransform: Getter<boolean>,
   shouldUseRemoveClippedSubviewsAsDefaultOnIOS: Getter<boolean>,
   shouldUseSetNativePropsInFabric: Getter<boolean>,
@@ -106,6 +107,11 @@ export const enableAccessToHostTreeInFabric: Getter<boolean> = createJavaScriptF
  * Function used to enable / disabled Layout Animations in React Native.
  */
 export const isLayoutAnimationEnabled: Getter<boolean> = createJavaScriptFlagGetter('isLayoutAnimationEnabled', true);
+
+/**
+ * If the animation is within Animated.loop, we do not send state updates to React.
+ */
+export const shouldSkipStateUpdatesForLoopingAnimations: Getter<boolean> = createJavaScriptFlagGetter('shouldSkipStateUpdatesForLoopingAnimations', false);
 
 /**
  * Enables use of AnimatedObject for animating transform values.

@@ -153,7 +153,7 @@ declare export class AnimatedEvent {
 
 exports[`public API should not change unintentionally Libraries/Animated/AnimatedImplementation.js 1`] = `
 "export type CompositeAnimation = {
-  start: (callback?: ?EndCallback) => void,
+  start: (callback?: ?EndCallback, isLooping?: boolean) => void,
   stop: () => void,
   reset: () => void,
   _startNativeLoop: (iterations?: number) => void,
@@ -521,12 +521,14 @@ export type AnimationConfig = {
   platformConfig?: PlatformConfig,
   onComplete?: ?EndCallback,
   iterations?: number,
+  isLooping?: boolean,
 };
 declare export default class Animation {
   __active: boolean;
   __isInteraction: boolean;
   __onEnd: ?EndCallback;
   __iterations: number;
+  __isLooping: ?boolean;
   _nativeId: number;
   start(
     fromValue: number,
