@@ -247,11 +247,9 @@ jobs:
         run: ls -lR /tmp/react-native-tmp
       - name: Prepare artifacts
         run: |
-          unzip /tmp/react-native-tmp/react-native-package.zip -d /tmp/react-native-tmp/react-native-package
           REACT_NATIVE_PKG=$(find /tmp/react-native-tmp -type f -name "*.tgz")
           echo "React Native tgs is $REACT_NATIVE_PKG"
 
-          unzip ${{ env.HERMES_TARBALL_ARTIFACTS_DIR }}/hermes-darwin-bin-Release.zip -d ${{ env.HERMES_TARBALL_ARTIFACTS_DIR }}
           HERMES_PATH=$(find /tmp/react-native-tmp -type f -name "*.tar.gz")
           echo "Hermes path is $HERMES_PATH"
 
@@ -333,7 +331,7 @@ jobs:
         with:
           release-type: ${{ needs.set_release_type.outputs.RELEASE_TYPE }}
 
-  test_android_rntester_e2e:
+  test_e2e_android_rntester:
     runs-on: ubuntu-latest
     needs: [build_android]
     strategy:
@@ -352,10 +350,12 @@ jobs:
         with:
           name: rntester-${{ matrix.jsengine }}-release
           path: ./packages/rn-tester/android/app/build/outputs/apk/${{ matrix.jsengine }}/release/
+      - name: Print folder structure
+        run: ls -lR ./packages/rn-tester/android/app/build/outputs/apk/${{ matrix.jsengine }}/release/
       - name: Run E2E Tests
         uses: ./.github/actions/maestro-android
         with:
-          app-path: ./packages/rn-tester/android/app/build/outputs/apk/${{ matrix.jsengine }}/release/
+          app-path: ./packages/rn-tester/android/app/build/outputs/apk/${{ matrix.jsengine }}/release/rntester-${{ matrix.jsengine }}-release.apk
           app-id: com.facebook.react.uiapp
           jsengine: ${{ matrix.jsengine }}
 

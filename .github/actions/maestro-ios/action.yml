@@ -56,7 +56,7 @@ runs:
 
         echo "Running tests with Maestro"
         echo '$HOME/.maestro/bin/maestro --udid=$UDID test ${{ inputs.maestro-flow }} --format junit -e APP_ID=${{ inputs.app-id }}'
-        export MAESTRO_DRIVER_STARTUP_TIMEOUT=1200000 # 20 min. CI is extremely slow
+        export MAESTRO_DRIVER_STARTUP_TIMEOUT=1500000 # 25 min. CI is extremely slow
         $HOME/.maestro/bin/maestro --udid=$UDID test ${{ inputs.maestro-flow }} --format junit -e APP_ID=${{ inputs.app-id }} --debug-output /tmp/MaestroLogs
     - name: Stop video record
       if: always()
