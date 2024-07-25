@@ -186,6 +186,11 @@ const definitions: FeatureFlagDefinitions = {
       defaultValue: true,
       description: 'Propagate layout direction to Android views.',
     },
+    unstable_enableTurboModuleSyncVoidMethods: {
+      defaultValue: false,
+      description:
+        'By default, native module methods that return void run asynchronously. This flag will make execution of void methods in TurboModules stay on the JS thread.',
+    },
     useImmediateExecutorInAndroidBridgeless: {
       defaultValue: false,
       description:

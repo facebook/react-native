@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e29946a5c00345f6c1a0cb5e17f4f3c8>>
+ * @generated SignedSource<<c3fbce5c1da5f657b8f773e93e4816e0>>
  */
 
 /**
@@ -225,6 +225,12 @@ class ReactNativeFeatureFlagsProviderHolder
     return method(javaProvider_);
   }
 
+  bool unstable_enableTurboModuleSyncVoidMethods() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("unstable_enableTurboModuleSyncVoidMethods");
+    return method(javaProvider_);
+  }
+
   bool useImmediateExecutorInAndroidBridgeless() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useImmediateExecutorInAndroidBridgeless");
@@ -432,6 +438,11 @@ bool JReactNativeFeatureFlagsCxxInterop::setAndroidLayoutDirection(
   return ReactNativeFeatureFlags::setAndroidLayoutDirection();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::unstable_enableTurboModuleSyncVoidMethods(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::unstable_enableTurboModuleSyncVoidMethods();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::useImmediateExecutorInAndroidBridgeless(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::useImmediateExecutorInAndroidBridgeless();
@@ -582,6 +593,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "setAndroidLayoutDirection",
         JReactNativeFeatureFlagsCxxInterop::setAndroidLayoutDirection),
+      makeNativeMethod(
+        "unstable_enableTurboModuleSyncVoidMethods",
+        JReactNativeFeatureFlagsCxxInterop::unstable_enableTurboModuleSyncVoidMethods),
       makeNativeMethod(
         "useImmediateExecutorInAndroidBridgeless",
         JReactNativeFeatureFlagsCxxInterop::useImmediateExecutorInAndroidBridgeless),

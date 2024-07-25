@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7ca22089819af4c6b2ee4c9835900e13>>
+ * @generated SignedSource<<2a4bfbe98349abedd1d37d43e02a83c6>>
  */
 
 /**
@@ -213,6 +213,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun setAndroidLayoutDirection(): Boolean = accessor.setAndroidLayoutDirection()
+
+  /**
+   * By default, native module methods that return void run asynchronously. This flag will make execution of void methods in TurboModules stay on the JS thread.
+   */
+  @JvmStatic
+  public fun unstable_enableTurboModuleSyncVoidMethods(): Boolean = accessor.unstable_enableTurboModuleSyncVoidMethods()
 
   /**
    * Invoke callbacks immediately on the ReactInstance rather than going through a background thread for synchronization

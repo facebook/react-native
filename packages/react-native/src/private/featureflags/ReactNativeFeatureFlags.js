@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<cc12f2b5e32612458fe46f816e4bb984>>
+ * @generated SignedSource<<561e4188b595c8b642acc3699cbde3c7>>
  * @flow strict-local
  */
 
@@ -75,6 +75,7 @@ export type ReactNativeFeatureFlags = {
   lazyAnimationCallbacks: Getter<boolean>,
   loadVectorDrawablesOnImages: Getter<boolean>,
   setAndroidLayoutDirection: Getter<boolean>,
+  unstable_enableTurboModuleSyncVoidMethods: Getter<boolean>,
   useImmediateExecutorInAndroidBridgeless: Getter<boolean>,
   useModernRuntimeScheduler: Getter<boolean>,
   useNativeViewConfigsInBridgelessMode: Getter<boolean>,
@@ -269,6 +270,10 @@ export const loadVectorDrawablesOnImages: Getter<boolean> = createNativeFlagGett
  * Propagate layout direction to Android views.
  */
 export const setAndroidLayoutDirection: Getter<boolean> = createNativeFlagGetter('setAndroidLayoutDirection', true);
+/**
+ * By default, native module methods that return void run asynchronously. This flag will make execution of void methods in TurboModules stay on the JS thread.
+ */
+export const unstable_enableTurboModuleSyncVoidMethods: Getter<boolean> = createNativeFlagGetter('unstable_enableTurboModuleSyncVoidMethods', false);
 /**
  * Invoke callbacks immediately on the ReactInstance rather than going through a background thread for synchronization
  */

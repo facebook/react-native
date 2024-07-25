@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<94eb0822f94b0eeb7c4f0e3a1949c72a>>
+ * @generated SignedSource<<5ba3d5874b849fb9d721cdab314ae8e3>>
  */
 
 /**
@@ -96,6 +96,8 @@ class NativeReactNativeFeatureFlags
   bool loadVectorDrawablesOnImages(jsi::Runtime& runtime);
 
   bool setAndroidLayoutDirection(jsi::Runtime& runtime);
+
+  bool unstable_enableTurboModuleSyncVoidMethods(jsi::Runtime& runtime);
 
   bool useImmediateExecutorInAndroidBridgeless(jsi::Runtime& runtime);
 

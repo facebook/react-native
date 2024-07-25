@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0ad2fbdec24b34b8e8297a9afb4227e0>>
+ * @generated SignedSource<<aaba14346141fac6609b2a6030cc6101>>
  */
 
 /**
@@ -84,6 +84,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun loadVectorDrawablesOnImages(): Boolean = false
 
   override fun setAndroidLayoutDirection(): Boolean = true
+
+  override fun unstable_enableTurboModuleSyncVoidMethods(): Boolean = false
 
   override fun useImmediateExecutorInAndroidBridgeless(): Boolean = false
 

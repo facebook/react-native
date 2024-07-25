@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<399f0247ea2f5d7539b1d98067ebff1d>>
+ * @generated SignedSource<<7666ee77d3f0f7922587f0021c69afd2>>
  */
 
 /**
@@ -121,6 +121,9 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool setAndroidLayoutDirection(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
+  static bool unstable_enableTurboModuleSyncVoidMethods(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool useImmediateExecutorInAndroidBridgeless(
