@@ -39,7 +39,7 @@ class FileUtilsTest {
 
     subFolder.recreateDir()
 
-    assertThat(subFolder).exists();
-    assertThat(subFolder.listFiles()).hasSize(0);
+    assertThat(subFolder).exists()
+    assertThat(subFolder.listFiles()).hasSize(0)
   }
 }
