@@ -24,6 +24,7 @@ import com.facebook.react.bridge.ReactTestHelper
 import com.facebook.react.bridge.WritableArray
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.common.SystemClock
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.uimanager.DisplayMetricsHolder
 import com.facebook.react.uimanager.UIManagerModule
 import com.facebook.react.uimanager.events.Event
@@ -54,8 +55,16 @@ class RootViewTest {
   private lateinit var arguments: MockedStatic<Arguments>
   private lateinit var systemClock: MockedStatic<SystemClock>
 
+  private lateinit var featureFlags: MockedStatic<ReactNativeFeatureFlags>
+
   @Before
   fun setUp() {
+    // Avoid trying to load ReactNativeFeatureFlags JNI library
+    featureFlags = mockStatic(ReactNativeFeatureFlags::class.java)
+    featureFlags
+        .`when`<Boolean> { ReactNativeFeatureFlags.enableEagerRootViewAttachment() }
+        .thenAnswer { false }
+
     arguments = Mockito.mockStatic(Arguments::class.java)
     arguments.`when`<WritableArray> { Arguments.createArray() }.thenAnswer { JavaOnlyArray() }
     arguments.`when`<WritableMap> { Arguments.createMap() }.thenAnswer { JavaOnlyMap() }
@@ -78,6 +87,7 @@ class RootViewTest {
   fun tearDown() {
     systemClock.close()
     arguments.close()
+    featureFlags.close()
   }
 
   @Test

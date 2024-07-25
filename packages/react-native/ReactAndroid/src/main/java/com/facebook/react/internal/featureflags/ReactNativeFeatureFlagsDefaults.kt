@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c1a45b092d303bd11f1716bba383fd5e>>
+ * @generated SignedSource<<2be6ec9809dd084f61210efc9be5b492>>
  */
 
 /**
@@ -42,6 +42,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enableCleanTextInputYogaNode(): Boolean = false
 
   override fun enableCppPropsIteratorSetter(): Boolean = false
+
+  override fun enableEagerRootViewAttachment(): Boolean = false
 
   override fun enableFabricRendererExclusively(): Boolean = false
 
