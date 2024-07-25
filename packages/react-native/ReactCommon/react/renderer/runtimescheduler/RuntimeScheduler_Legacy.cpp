@@ -8,6 +8,7 @@
 #include "RuntimeScheduler_Legacy.h"
 #include "SchedulerPriorityUtils.h"
 
+#include <cxxreact/ErrorUtils.h>
 #include <cxxreact/SystraceSection.h>
 #include <react/renderer/consistency/ScopedShadowTreeRevisionLock.h>
 #include <utility>
@@ -18,13 +19,8 @@ namespace facebook::react {
 
 RuntimeScheduler_Legacy::RuntimeScheduler_Legacy(
     RuntimeExecutor runtimeExecutor,
-    std::function<RuntimeSchedulerTimePoint()> now,
-    RuntimeSchedulerErrorHandler onTaskError,
-    RuntimeSchedulerErrorHandler onMicrotaskError)
-    : runtimeExecutor_(std::move(runtimeExecutor)),
-      now_(std::move(now)),
-      onTaskError_(std::move(onTaskError)),
-      onMicrotaskError_(std::move(onMicrotaskError)) {}
+    std::function<RuntimeSchedulerTimePoint()> now)
+    : runtimeExecutor_(std::move(runtimeExecutor)), now_(std::move(now)) {}
 
 void RuntimeScheduler_Legacy::scheduleWork(RawCallback&& callback) noexcept {
   SystraceSection s("RuntimeScheduler::scheduleWork");
@@ -171,7 +167,7 @@ void RuntimeScheduler_Legacy::callExpiredTasks(jsi::Runtime& runtime) {
       executeTask(runtime, topPriorityTask, didUserCallbackTimeout);
     }
   } catch (jsi::JSError& error) {
-    onTaskError_(runtime, error);
+    handleJSError(runtime, error, true);
   }
 
   currentPriority_ = previousPriority;
@@ -228,7 +224,7 @@ void RuntimeScheduler_Legacy::startWorkLoop(jsi::Runtime& runtime) {
       executeTask(runtime, topPriorityTask, didUserCallbackTimeout);
     }
   } catch (jsi::JSError& error) {
-    onTaskError_(runtime, error);
+    handleJSError(runtime, error, true);
   }
 
   currentPriority_ = previousPriority;

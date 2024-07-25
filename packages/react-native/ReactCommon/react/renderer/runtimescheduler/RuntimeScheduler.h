@@ -8,7 +8,6 @@
 #pragma once
 
 #include <ReactCommon/RuntimeExecutor.h>
-#include <cxxreact/ErrorUtils.h>
 #include <react/performance/timeline/PerformanceEntryReporter.h>
 #include <react/renderer/consistency/ShadowTreeRevisionConsistencyManager.h>
 #include <react/renderer/runtimescheduler/RuntimeSchedulerClock.h>
@@ -19,9 +18,6 @@ namespace facebook::react {
 
 using RuntimeSchedulerRenderingUpdate = std::function<void()>;
 using RuntimeSchedulerTimeout = std::chrono::milliseconds;
-
-using RuntimeSchedulerErrorHandler =
-    std::function<void(jsi::Runtime& runtime, jsi::JSError& error)>;
 
 // This is a temporary abstract class for RuntimeScheduler forks to implement
 // (and use them interchangeably).
@@ -64,15 +60,7 @@ class RuntimeScheduler final : RuntimeSchedulerBase {
   explicit RuntimeScheduler(
       RuntimeExecutor runtimeExecutor,
       std::function<RuntimeSchedulerTimePoint()> now =
-          RuntimeSchedulerClock::now,
-      RuntimeSchedulerErrorHandler onTaskError =
-          [](jsi::Runtime& runtime, jsi::JSError& error) {
-            handleJSError(runtime, error, true);
-          },
-      RuntimeSchedulerErrorHandler onMicrotaskError =
-          [](jsi::Runtime& runtime, jsi::JSError& error) {
-            handleJSError(runtime, error, true);
-          });
+          RuntimeSchedulerClock::now);
 
   /*
    * Not copyable.

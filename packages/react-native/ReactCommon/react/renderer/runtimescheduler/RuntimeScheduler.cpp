@@ -19,35 +19,23 @@ namespace facebook::react {
 namespace {
 std::unique_ptr<RuntimeSchedulerBase> getRuntimeSchedulerImplementation(
     RuntimeExecutor runtimeExecutor,
-    std::function<RuntimeSchedulerTimePoint()> now,
-    RuntimeSchedulerErrorHandler onTaskError,
-    RuntimeSchedulerErrorHandler onMicrotaskError) {
+    std::function<RuntimeSchedulerTimePoint()> now) {
   if (ReactNativeFeatureFlags::useModernRuntimeScheduler()) {
     return std::make_unique<RuntimeScheduler_Modern>(
-        std::move(runtimeExecutor),
-        std::move(now),
-        std::move(onTaskError),
-        std::move(onMicrotaskError));
+        std::move(runtimeExecutor), std::move(now));
   } else {
     return std::make_unique<RuntimeScheduler_Legacy>(
-        std::move(runtimeExecutor),
-        std::move(now),
-        std::move(onTaskError),
-        std::move(onMicrotaskError));
+        std::move(runtimeExecutor), std::move(now));
   }
 }
 } // namespace
 
 RuntimeScheduler::RuntimeScheduler(
     RuntimeExecutor runtimeExecutor,
-    std::function<RuntimeSchedulerTimePoint()> now,
-    RuntimeSchedulerErrorHandler onTaskError,
-    RuntimeSchedulerErrorHandler onMicrotaskError)
+    std::function<RuntimeSchedulerTimePoint()> now)
     : runtimeSchedulerImpl_(getRuntimeSchedulerImplementation(
           std::move(runtimeExecutor),
-          std::move(now),
-          std::move(onTaskError),
-          std::move(onMicrotaskError))) {}
+          std::move(now))) {}
 
 void RuntimeScheduler::scheduleWork(RawCallback&& callback) noexcept {
   return runtimeSchedulerImpl_->scheduleWork(std::move(callback));
