@@ -985,7 +985,9 @@ public class FabricUIManager
       return;
     }
 
-    EventEmitterWrapper eventEmitter = mMountingManager.getEventEmitter(surfaceId, reactTag);
+    SurfaceMountingManager surfaceMountingManager = mMountingManager.getSurfaceMountingManager(surfaceId, reactTag);
+    EventEmitterWrapper eventEmitter = surfaceMountingManager == null ? null : surfaceMountingManager.getEventEmitter(reactTag);
+
     if (eventEmitter == null) {
       if (mMountingManager.getViewExists(reactTag)) {
         // The view is preallocated and created. However, it hasn't been mounted yet. We will have
@@ -1013,6 +1015,11 @@ public class FabricUIManager
       } else {
         eventEmitter.dispatch(eventName, params, eventCategory);
       }
+    }
+
+    if (eventName == "topTouchEnd") {
+      // remove/destroy cached event emitter
+      surfaceMountingManager.removeCachedEventEmitter(reactTag);
     }
   }
 

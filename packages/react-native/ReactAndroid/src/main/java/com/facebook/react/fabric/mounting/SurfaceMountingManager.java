@@ -68,6 +68,8 @@ public class SurfaceMountingManager {
   // These are all non-null, until StopSurface is called
   private ConcurrentHashMap<Integer, ViewState> mTagToViewState =
       new ConcurrentHashMap<>(); // any thread
+  private ConcurrentHashMap<Integer, EventEmitterWrapper> mTagToEventEmitterCache =
+      new ConcurrentHashMap<>();
   private Queue<MountItem> mOnViewAttachMountItems = new ArrayDeque<>();
   private JSResponderHandler mJSResponderHandler;
   private ViewManagerRegistry mViewManagerRegistry;
@@ -992,6 +994,16 @@ public class SurfaceMountingManager {
     mJSResponderHandler.setJSResponder(initialReactTag, view.getParent());
   }
 
+  public void removeCachedEventEmitter(int reactTag) {
+    ViewState viewState = getNullableViewState(reactTag);
+    if (viewState == null) {
+      // There is no active view state, so we can destroy the event emitter
+      mTagToEventEmitterCache.get(reactTag).destroy();
+    }
+
+    mTagToEventEmitterCache.remove(reactTag);
+  }
+
   @UiThread
   private void onViewStateDeleted(ViewState viewState) {
     // Destroy state immediately instead of waiting for Java GC.
@@ -1003,7 +1015,7 @@ public class SurfaceMountingManager {
     // Destroy EventEmitterWrapper immediately instead of waiting for Java GC.
     // Notably, this is also required to ensure that the EventEmitterWrapper is deallocated
     // before the JS VM is deallocated, since it holds onto a JSI::Pointer.
-    if (viewState.mEventEmitter != null) {
+    if (viewState.mEventEmitter != null && mTagToEventEmitterCache.get(viewState.mReactTag) == null) {
       viewState.mEventEmitter.destroy();
       viewState.mEventEmitter = null;
     }
@@ -1061,11 +1073,22 @@ public class SurfaceMountingManager {
     createViewUnsafe(componentName, reactTag, props, stateWrapper, null, isLayoutable);
   }
 
-  @AnyThread
+   @AnyThread
   @ThreadConfined(ANY)
   public @Nullable EventEmitterWrapper getEventEmitter(int reactTag) {
+    EventEmitterWrapper eventEmitter = getNullableEventEmitter(reactTag);
+    if (eventEmitter != null) {
+      return eventEmitter;
+    }
+
     ViewState viewState = getNullableViewState(reactTag);
-    return viewState == null ? null : viewState.mEventEmitter;
+
+    if (viewState != null) {
+      setCachedEventEmitter(reactTag, viewState.mEventEmitter);
+      return viewState.mEventEmitter;
+    }
+
+    return null;
   }
 
   @UiThread
@@ -1094,6 +1117,23 @@ public class SurfaceMountingManager {
       return null;
     }
     return viewStates.get(tag);
+  }
+
+  private @Nullable EventEmitterWrapper getNullableEventEmitter(int tag) {
+    ConcurrentHashMap<Integer, EventEmitterWrapper> eventEmitterCache = mTagToEventEmitterCache;
+    if (eventEmitterCache == null) {
+      return null;
+    }
+    return eventEmitterCache.get(tag);
+  }
+
+  private void setCachedEventEmitter(int tag, EventEmitterWrapper eventEmitter) {
+    ConcurrentHashMap<Integer, EventEmitterWrapper> eventEmitterCache = mTagToEventEmitterCache;
+    if (eventEmitterCache == null || eventEmitterCache.contains(tag)) {
+      return;
+    }
+
+    eventEmitterCache.put(tag, eventEmitter);
   }
 
   @SuppressWarnings("unchecked") // prevents unchecked conversion warn of the <ViewGroup> type

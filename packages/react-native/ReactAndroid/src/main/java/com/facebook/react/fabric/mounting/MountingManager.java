@@ -329,11 +329,16 @@ public class MountingManager {
 
   @AnyThread
   @ThreadConfined(ANY)
+  public @Nullable SurfaceMountingManager getSurfaceMountingManager(int surfaceId, int reactTag) {
+      return (surfaceId == ViewUtil.NO_SURFACE_ID
+        ? getSurfaceManagerForView(reactTag)
+        : getSurfaceManager(surfaceId));
+  }
+
+  @AnyThread
+  @ThreadConfined(ANY)
   public @Nullable EventEmitterWrapper getEventEmitter(int surfaceId, int reactTag) {
-    SurfaceMountingManager surfaceMountingManager =
-        (surfaceId == ViewUtil.NO_SURFACE_ID
-            ? getSurfaceManagerForView(reactTag)
-            : getSurfaceManager(surfaceId));
+    SurfaceMountingManager surfaceMountingManager = getSurfaceMountingManager(surfaceId, reactTag);
     if (surfaceMountingManager == null) {
       return null;
     }
