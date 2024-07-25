@@ -10,6 +10,5 @@
 namespace facebook::react {
 
 bool CoreFeatures::enableGranularScrollViewStateUpdatesIOS = false;
-bool CoreFeatures::excludeYogaFromRawProps = false;
 
 } // namespace facebook::react
