@@ -785,7 +785,7 @@ Rect YogaLayoutableShadowNode::getContentBounds() const {
 }
 
 /*static*/ void YogaLayoutableShadowNode::filterRawProps(RawProps& rawProps) {
-  if (CoreFeatures::excludeYogaFromRawProps) {
+  if (ReactNativeFeatureFlags::excludeYogaFromRawProps()) {
     // TODO: this shouldn't live in RawProps
     rawProps.filterYogaStylePropsInDynamicConversion();
   }
