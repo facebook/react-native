@@ -10,7 +10,7 @@ file(GLOB react_codegen_SRCS CONFIGURE_DEPENDS *.cpp react/renderer/components/O
 
 add_library(
   react_codegen_OSSLibraryExampleSpec
-  SHARED
+  OBJECT
   ${react_codegen_SRCS}
 )
 

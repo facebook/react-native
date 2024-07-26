@@ -10,7 +10,7 @@ file(GLOB react_codegen_SRCS CONFIGURE_DEPENDS *.cpp react/renderer/components/R
 
 add_library(
   react_codegen_ReactPopupMenuAndroidSpecs
-  SHARED
+  OBJECT
   ${react_codegen_SRCS}
 )
 
