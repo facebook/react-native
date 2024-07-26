@@ -9,6 +9,7 @@ package com.facebook.react.views.image;
 
 import android.graphics.Color;
 import android.graphics.PorterDuff.Mode;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.drawee.backends.pipeline.Fresco;
@@ -17,13 +18,19 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.module.annotations.ReactModule;
+import com.facebook.react.uimanager.BackgroundStyleApplicator;
+import com.facebook.react.uimanager.LengthPercentage;
+import com.facebook.react.uimanager.LengthPercentageType;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
+import com.facebook.react.uimanager.style.BorderRadiusProp;
+import com.facebook.react.uimanager.style.LogicalEdge;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -160,10 +167,14 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
 
   @ReactProp(name = "borderColor", customType = "Color")
   public void setBorderColor(ReactImageView view, @Nullable Integer borderColor) {
-    if (borderColor == null) {
-      view.setBorderColor(Color.TRANSPARENT);
+    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
+      BackgroundStyleApplicator.setBorderColor(view, LogicalEdge.ALL, borderColor);
     } else {
-      view.setBorderColor(borderColor);
+      if (borderColor == null) {
+        view.setBorderColor(Color.TRANSPARENT);
+      } else {
+        view.setBorderColor(borderColor);
+      }
     }
   }
 
@@ -178,7 +189,11 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
 
   @ReactProp(name = "borderWidth")
   public void setBorderWidth(ReactImageView view, float borderWidth) {
-    view.setBorderWidth(borderWidth);
+    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
+      BackgroundStyleApplicator.setBorderWidth(view, LogicalEdge.ALL, borderWidth);
+    } else {
+      view.setBorderWidth(borderWidth);
+    }
   }
 
   @ReactPropGroup(
@@ -191,14 +206,21 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
       },
       defaultFloat = Float.NaN)
   public void setBorderRadius(ReactImageView view, int index, float borderRadius) {
-    if (!Float.isNaN(borderRadius)) {
-      borderRadius = PixelUtil.toPixelFromDIP(borderRadius);
-    }
-
-    if (index == 0) {
-      view.setBorderRadius(borderRadius);
+    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
+      BackgroundStyleApplicator.setBorderRadius(
+          view,
+          BorderRadiusProp.values()[index],
+          new LengthPercentage(PixelUtil.toPixelFromDIP(borderRadius), LengthPercentageType.POINT));
     } else {
-      view.setBorderRadius(borderRadius, index - 1);
+      if (!Float.isNaN(borderRadius)) {
+        borderRadius = PixelUtil.toPixelFromDIP(borderRadius);
+      }
+
+      if (index == 0) {
+        view.setBorderRadius(borderRadius);
+      } else {
+        view.setBorderRadius(borderRadius, index - 1);
+      }
     }
   }
 
@@ -257,6 +279,15 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
   @ReactProp(name = "headers")
   public void setHeaders(ReactImageView view, ReadableMap headers) {
     view.setHeaders(headers);
+  }
+
+  @Override
+  public void setBackgroundColor(ReactImageView view, int backgroundColor) {
+    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
+      BackgroundStyleApplicator.setBackgroundColor(view, backgroundColor);
+    } else {
+      super.setBackgroundColor(view, backgroundColor);
+    }
   }
 
   @Override
