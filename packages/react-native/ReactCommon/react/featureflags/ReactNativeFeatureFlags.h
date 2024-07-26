@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<472ce3164f375d7423de27e7ce087154>>
+ * @generated SignedSource<<1c223366e6a23e1b48b412419a27e578>>
  */
 
 /**
@@ -196,6 +196,11 @@ class ReactNativeFeatureFlags {
    * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.
    */
   RN_EXPORT static bool traceTurboModulePromiseRejectionsOnAndroid();
+
+  /**
+   * Should this application enable the Fabric Interop Layer for Android? If yes, the application will behave so that it can accept non-Fabric components and render them on Fabric. This toggle is controlling extra logic such as custom event dispatching that are needed for the Fabric Interop Layer to work correctly.
+   */
+  RN_EXPORT static bool unstable_useFabricInterop();
 
   /**
    * Invoke callbacks immediately on the ReactInstance rather than going through a background thread for synchronization

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<011cef222a4b62d4f32f83c12e8c668d>>
+ * @generated SignedSource<<aeefc4f103894e13bf865d8618f2981f>>
  */
 
 /**
@@ -56,6 +56,7 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var loadVectorDrawablesOnImagesCache: Boolean? = null
   private var setAndroidLayoutDirectionCache: Boolean? = null
   private var traceTurboModulePromiseRejectionsOnAndroidCache: Boolean? = null
+  private var unstable_useFabricInteropCache: Boolean? = null
   private var useImmediateExecutorInAndroidBridgelessCache: Boolean? = null
   private var useModernRuntimeSchedulerCache: Boolean? = null
   private var useNativeViewConfigsInBridgelessModeCache: Boolean? = null
@@ -381,6 +382,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.traceTurboModulePromiseRejectionsOnAndroid()
       accessedFeatureFlags.add("traceTurboModulePromiseRejectionsOnAndroid")
       traceTurboModulePromiseRejectionsOnAndroidCache = cached
+    }
+    return cached
+  }
+
+  override fun unstable_useFabricInterop(): Boolean {
+    var cached = unstable_useFabricInteropCache
+    if (cached == null) {
+      cached = currentProvider.unstable_useFabricInterop()
+      accessedFeatureFlags.add("unstable_useFabricInterop")
+      unstable_useFabricInteropCache = cached
     }
     return cached
   }

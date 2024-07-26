@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6d479ce1aa175e496cff747e82968505>>
+ * @generated SignedSource<<b8dd8a453c7c149c77fa5a8a531ddefe>>
  * @flow strict-local
  */
 
@@ -76,6 +76,7 @@ export type ReactNativeFeatureFlags = {
   loadVectorDrawablesOnImages: Getter<boolean>,
   setAndroidLayoutDirection: Getter<boolean>,
   traceTurboModulePromiseRejectionsOnAndroid: Getter<boolean>,
+  unstable_useFabricInterop: Getter<boolean>,
   useImmediateExecutorInAndroidBridgeless: Getter<boolean>,
   useModernRuntimeScheduler: Getter<boolean>,
   useNativeViewConfigsInBridgelessMode: Getter<boolean>,
@@ -274,6 +275,10 @@ export const setAndroidLayoutDirection: Getter<boolean> = createNativeFlagGetter
  * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.
  */
 export const traceTurboModulePromiseRejectionsOnAndroid: Getter<boolean> = createNativeFlagGetter('traceTurboModulePromiseRejectionsOnAndroid', false);
+/**
+ * Should this application enable the Fabric Interop Layer for Android? If yes, the application will behave so that it can accept non-Fabric components and render them on Fabric. This toggle is controlling extra logic such as custom event dispatching that are needed for the Fabric Interop Layer to work correctly.
+ */
+export const unstable_useFabricInterop: Getter<boolean> = createNativeFlagGetter('unstable_useFabricInterop', false);
 /**
  * Invoke callbacks immediately on the ReactInstance rather than going through a background thread for synchronization
  */

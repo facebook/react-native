@@ -11,6 +11,7 @@ import android.app.Activity
 import android.content.Context
 import com.facebook.react.bridge.WritableNativeArray
 import com.facebook.react.fabric.FabricUIManager
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.uimanager.UIManagerModule
 import com.facebook.testutils.shadows.ShadowArguments
 import com.facebook.testutils.shadows.ShadowNativeArray
@@ -21,6 +22,8 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers
+import org.mockito.MockedStatic
+import org.mockito.Mockito.*
 import org.mockito.Mockito.doReturn
 import org.mockito.Mockito.eq
 import org.mockito.Mockito.mock
@@ -38,9 +41,15 @@ class BridgelessReactContextTest {
   private lateinit var context: Context
   private lateinit var reactHost: ReactHostImpl
   private lateinit var bridgelessReactContext: BridgelessReactContext
+  private lateinit var featureFlags: MockedStatic<ReactNativeFeatureFlags>
 
   @Before
   fun setUp() {
+    // Avoid trying to load ReactNativeFeatureFlags JNI library
+    featureFlags = mockStatic(ReactNativeFeatureFlags::class.java)
+    featureFlags
+        .`when`<Boolean> { ReactNativeFeatureFlags.unstable_useFabricInterop() }
+        .thenAnswer { false }
     context = Robolectric.buildActivity(Activity::class.java).create().get()
     reactHost = mock(ReactHostImpl::class.java)
     bridgelessReactContext = BridgelessReactContext(context, reactHost)

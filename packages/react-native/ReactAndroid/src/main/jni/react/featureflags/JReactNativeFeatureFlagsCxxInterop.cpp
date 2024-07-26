@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<37dcbc2bb469e025a04a512eb49061f9>>
+ * @generated SignedSource<<d2dbd82d66b67494cc341b64e5bd4c11>>
  */
 
 /**
@@ -231,6 +231,12 @@ class ReactNativeFeatureFlagsProviderHolder
     return method(javaProvider_);
   }
 
+  bool unstable_useFabricInterop() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("unstable_useFabricInterop");
+    return method(javaProvider_);
+  }
+
   bool useImmediateExecutorInAndroidBridgeless() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useImmediateExecutorInAndroidBridgeless");
@@ -443,6 +449,11 @@ bool JReactNativeFeatureFlagsCxxInterop::traceTurboModulePromiseRejectionsOnAndr
   return ReactNativeFeatureFlags::traceTurboModulePromiseRejectionsOnAndroid();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::unstable_useFabricInterop(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::unstable_useFabricInterop();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::useImmediateExecutorInAndroidBridgeless(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::useImmediateExecutorInAndroidBridgeless();
@@ -596,6 +607,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "traceTurboModulePromiseRejectionsOnAndroid",
         JReactNativeFeatureFlagsCxxInterop::traceTurboModulePromiseRejectionsOnAndroid),
+      makeNativeMethod(
+        "unstable_useFabricInterop",
+        JReactNativeFeatureFlagsCxxInterop::unstable_useFabricInterop),
       makeNativeMethod(
         "useImmediateExecutorInAndroidBridgeless",
         JReactNativeFeatureFlagsCxxInterop::useImmediateExecutorInAndroidBridgeless),
