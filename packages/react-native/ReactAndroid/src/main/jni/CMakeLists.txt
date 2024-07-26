@@ -150,9 +150,11 @@ add_library(reactnative
           $<TARGET_OBJECTS:logger>
           $<TARGET_OBJECTS:react_bridging>
           $<TARGET_OBJECTS:react_debug>
+          $<TARGET_OBJECTS:react_featureflags>
           $<TARGET_OBJECTS:react_nativemodule_core>
           $<TARGET_OBJECTS:react_render_attributedstring>
           $<TARGET_OBJECTS:react_render_componentregistry>
+          $<TARGET_OBJECTS:react_render_consistency>
           $<TARGET_OBJECTS:react_render_core>
           $<TARGET_OBJECTS:react_render_debug>
           $<TARGET_OBJECTS:react_render_dom>
@@ -190,9 +192,11 @@ target_include_directories(reactnative
         PUBLIC
         $<TARGET_PROPERTY:react_bridging,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_debug,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:react_featureflags,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_nativemodule_core,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_render_attributedstring,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_render_componentregistry,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:react_render_consistency,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_render_core,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_render_debug,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_render_dom,INTERFACE_INCLUDE_DIRECTORIES>
