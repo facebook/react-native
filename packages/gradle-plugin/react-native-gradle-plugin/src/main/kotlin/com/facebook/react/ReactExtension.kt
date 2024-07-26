@@ -185,15 +185,17 @@ abstract class ReactExtension @Inject constructor(val project: Project) {
       val model = JsonUtils.fromAutolinkingConfigJson(inputFile)
       val result = mutableListOf<Pair<String, String>>()
       model?.dependencies?.values?.forEach { deps ->
-        val nameCleansed = deps.nameCleansed
-        val dependencyConfiguration = deps.platforms?.android?.dependencyConfiguration
-        val buildTypes = deps.platforms?.android?.buildTypes ?: emptyList()
-        if (buildTypes.isEmpty()) {
-          result.add((dependencyConfiguration ?: "implementation") to ":$nameCleansed")
-        } else {
-          buildTypes.forEach { buildType ->
-            result.add(
-                (dependencyConfiguration ?: "${buildType}Implementation") to ":$nameCleansed")
+        if(deps.platforms?.android !== null) {
+          val nameCleansed = deps.nameCleansed
+          val dependencyConfiguration = deps.platforms?.android?.dependencyConfiguration
+          val buildTypes = deps.platforms?.android?.buildTypes ?: emptyList()
+          if (buildTypes.isEmpty()) {
+              result.add((dependencyConfiguration ?: "implementation") to ":$nameCleansed")
+          } else {
+              buildTypes.forEach { buildType ->
+                  result.add(
+                      (dependencyConfiguration ?: "${buildType}Implementation") to ":$nameCleansed")
+              }
           }
         }
       }
