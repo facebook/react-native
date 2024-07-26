@@ -117,6 +117,10 @@ const HMRClient: HMRClientNativeInterface = {
       }
       return;
     }
+
+    // Account for multiple versions of pretty-format inside of a monorepo.
+    const prettyFormatFunc = typeof prettyFormat === 'function' ? prettyFormat : prettyFormat.default;
+
     try {
       hmrClient.send(
         JSON.stringify({
@@ -126,7 +130,7 @@ const HMRClient: HMRClientNativeInterface = {
           data: data.map(item =>
             typeof item === 'string'
               ? item
-              : prettyFormat(item, {
+              : prettyFormatFunc(item, {
                   escapeString: true,
                   highlight: true,
                   maxDepth: 3,
