@@ -1860,17 +1860,17 @@ public class com/facebook/react/common/build/ReactBuildConfig {
 	public fun <init> ()V
 }
 
-public class com/facebook/react/common/futures/SimpleSettableFuture : java/util/concurrent/Future {
+public final class com/facebook/react/common/futures/SimpleSettableFuture : java/util/concurrent/Future {
 	public fun <init> ()V
 	public fun cancel (Z)Z
 	public fun get ()Ljava/lang/Object;
 	public fun get (JLjava/util/concurrent/TimeUnit;)Ljava/lang/Object;
-	public fun getOrThrow ()Ljava/lang/Object;
-	public fun getOrThrow (JLjava/util/concurrent/TimeUnit;)Ljava/lang/Object;
+	public final fun getOrThrow ()Ljava/lang/Object;
+	public final fun getOrThrow (JLjava/util/concurrent/TimeUnit;)Ljava/lang/Object;
 	public fun isCancelled ()Z
 	public fun isDone ()Z
-	public fun set (Ljava/lang/Object;)V
-	public fun setException (Ljava/lang/Exception;)V
+	public final fun set (Ljava/lang/Object;)V
+	public final fun setException (Ljava/lang/Exception;)V
 }
 
 public abstract interface class com/facebook/react/common/mapbuffer/MapBuffer : java/lang/Iterable, kotlin/jvm/internal/markers/KMappedMarker {
