@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
@@ -27,6 +28,7 @@ import com.facebook.react.uimanager.annotations.ReactPropGroup;
 import java.util.HashMap;
 import java.util.Map;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @ReactModule(name = ReactImageManager.REACT_CLASS)
 public class ReactImageManager extends SimpleViewManager<ReactImageView> {
 
@@ -96,6 +98,7 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
   /**
    * @deprecated use {@link ReactCallerContextFactory} instead
    */
+  @Nullable
   @Deprecated
   public Object getCallerContext() {
     return mCallerContext;

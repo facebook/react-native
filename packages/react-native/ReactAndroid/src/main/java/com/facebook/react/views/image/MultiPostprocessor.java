@@ -8,17 +8,21 @@
 package com.facebook.react.views.image;
 
 import android.graphics.Bitmap;
+import androidx.annotation.Nullable;
 import com.facebook.cache.common.CacheKey;
 import com.facebook.cache.common.MultiCacheKey;
 import com.facebook.common.references.CloseableReference;
 import com.facebook.imagepipeline.bitmaps.PlatformBitmapFactory;
 import com.facebook.imagepipeline.request.Postprocessor;
+import com.facebook.infer.annotation.Nullsafe;
 import java.util.LinkedList;
 import java.util.List;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class MultiPostprocessor implements Postprocessor {
   private final List<Postprocessor> mPostprocessors;
 
+  @Nullable
   public static Postprocessor from(List<Postprocessor> postprocessors) {
     switch (postprocessors.size()) {
       case 0:
@@ -52,7 +56,10 @@ public class MultiPostprocessor implements Postprocessor {
   public CacheKey getPostprocessorCacheKey() {
     LinkedList<CacheKey> keys = new LinkedList<>();
     for (Postprocessor p : mPostprocessors) {
-      keys.push(p.getPostprocessorCacheKey());
+      CacheKey key = p.getPostprocessorCacheKey();
+      if (key != null) {
+        keys.add(key);
+      }
     }
     return new MultiCacheKey(keys);
   }
@@ -60,7 +67,7 @@ public class MultiPostprocessor implements Postprocessor {
   @Override
   public CloseableReference<Bitmap> process(
       Bitmap sourceBitmap, PlatformBitmapFactory bitmapFactory) {
-    CloseableReference<Bitmap> prevBitmap = null, nextBitmap = null;
+    @Nullable CloseableReference<Bitmap> prevBitmap = null, nextBitmap = null;
 
     try {
       for (Postprocessor p : mPostprocessors) {
@@ -68,7 +75,13 @@ public class MultiPostprocessor implements Postprocessor {
         CloseableReference.closeSafely(prevBitmap);
         prevBitmap = nextBitmap.clone();
       }
-      return nextBitmap.clone();
+      if (nextBitmap == null) {
+        throw new IllegalStateException(
+            "MultiPostprocessor returned null bitmap - Number of Postprocessors: "
+                + mPostprocessors.size());
+      } else {
+        return nextBitmap.clone();
+      }
     } finally {
       CloseableReference.closeSafely(nextBitmap);
     }
