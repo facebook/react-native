@@ -15,7 +15,7 @@ add_compile_options(
         -DLOG_TAG=\"ReactNative\")
 
 file(GLOB react_nativemodule_idlecallbacks_SRC CONFIGURE_DEPENDS *.cpp)
-add_library(react_nativemodule_idlecallbacks STATIC ${react_nativemodule_idlecallbacks_SRC})
+add_library(react_nativemodule_idlecallbacks OBJECT ${react_nativemodule_idlecallbacks_SRC})
 
 target_include_directories(react_nativemodule_idlecallbacks PUBLIC ${REACT_COMMON_DIR})
 

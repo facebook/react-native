@@ -149,9 +149,15 @@ add_library(reactnative
           OnLoad.cpp
           $<TARGET_OBJECTS:logger>
           $<TARGET_OBJECTS:react_bridging>
+          $<TARGET_OBJECTS:react_codegen_rncore>
           $<TARGET_OBJECTS:react_debug>
           $<TARGET_OBJECTS:react_featureflags>
           $<TARGET_OBJECTS:react_nativemodule_core>
+          $<TARGET_OBJECTS:react_nativemodule_dom>
+          $<TARGET_OBJECTS:react_nativemodule_defaults>
+          $<TARGET_OBJECTS:react_nativemodule_featureflags>
+          $<TARGET_OBJECTS:react_nativemodule_idlecallbacks>
+          $<TARGET_OBJECTS:react_nativemodule_microtasks>
           $<TARGET_OBJECTS:react_render_attributedstring>
           $<TARGET_OBJECTS:react_render_componentregistry>
           $<TARGET_OBJECTS:react_render_consistency>
@@ -191,9 +197,15 @@ target_link_libraries(reactnative PUBLIC
 target_include_directories(reactnative
         PUBLIC
         $<TARGET_PROPERTY:react_bridging,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:react_codegen_rncore,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_debug,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_featureflags,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_nativemodule_core,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:react_nativemodule_dom,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:react_nativemodule_defaults,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:react_nativemodule_idlecallbacks,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:react_nativemodule_featureflags,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:react_nativemodule_microtasks,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_render_attributedstring,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_render_componentregistry,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_render_consistency,INTERFACE_INCLUDE_DIRECTORIES>
@@ -291,13 +303,18 @@ add_executable(reactnative_unittest
   react_render_attributedstring
   react_render_core
   react_render_debug
+  react_render_dom
   react_render_element
   react_render_graphics
   react_render_mapbuffer
   react_render_mounting
+  react_render_telemetry
   react_render_textlayoutmanager
   react_render_uimanager
+  react_render_uimanager_consistency
   react_utils
+  rrc_legacyviewmanagerinterop
+  rrc_root
   rrc_modal
   rrc_scrollview
   rrc_text
