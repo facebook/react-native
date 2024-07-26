@@ -3969,6 +3969,22 @@ public abstract interface class com/facebook/react/turbomodule/core/interfaces/T
 	public abstract fun getBindingsInstaller ()Lcom/facebook/react/turbomodule/core/interfaces/BindingsInstallerHolder;
 }
 
+public final class com/facebook/react/uimanager/BackgroundStyleApplicator {
+	public static final field INSTANCE Lcom/facebook/react/uimanager/BackgroundStyleApplicator;
+	public static final fun clipToPaddingBox (Landroid/view/View;Landroid/graphics/Canvas;)V
+	public static final fun getBackgroundColor (Landroid/view/View;)Ljava/lang/Integer;
+	public static final fun getBorderColor (Landroid/view/View;Lcom/facebook/react/uimanager/style/LogicalEdge;)Ljava/lang/Integer;
+	public static final fun getBorderRadius (Landroid/view/View;Lcom/facebook/react/uimanager/style/BorderRadiusProp;)Lcom/facebook/react/uimanager/LengthPercentage;
+	public static final fun getBorderStyle (Landroid/view/View;)Lcom/facebook/react/uimanager/style/BorderStyle;
+	public static final fun getBorderWidth (Landroid/view/View;Lcom/facebook/react/uimanager/style/LogicalEdge;)Ljava/lang/Float;
+	public static final fun setBackgroundColor (Landroid/view/View;Ljava/lang/Integer;)V
+	public static final fun setBorderColor (Landroid/view/View;Lcom/facebook/react/uimanager/style/LogicalEdge;Ljava/lang/Integer;)V
+	public static final fun setBorderRadius (Landroid/view/View;Lcom/facebook/react/uimanager/style/BorderRadiusProp;Lcom/facebook/react/uimanager/LengthPercentage;)V
+	public static final fun setBorderStyle (Landroid/view/View;Lcom/facebook/react/uimanager/style/BorderStyle;)V
+	public static final fun setBorderWidth (Landroid/view/View;Lcom/facebook/react/uimanager/style/LogicalEdge;Ljava/lang/Float;)V
+	public static final fun setShadows (Landroid/view/View;Ljava/util/List;)V
+}
+
 public abstract class com/facebook/react/uimanager/BaseViewManager : com/facebook/react/uimanager/ViewManager, android/view/View$OnLayoutChangeListener, com/facebook/react/uimanager/BaseViewManagerInterface {
 	public fun <init> ()V
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
