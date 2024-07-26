@@ -6472,10 +6472,13 @@ public class com/facebook/react/views/image/ReactImageManager : com/facebook/rea
 	protected synthetic fun onAfterUpdateTransaction (Landroid/view/View;)V
 	protected fun onAfterUpdateTransaction (Lcom/facebook/react/views/image/ReactImageView;)V
 	public fun setAccessible (Lcom/facebook/react/views/image/ReactImageView;Z)V
+	public synthetic fun setBackgroundColor (Landroid/view/View;I)V
+	public fun setBackgroundColor (Lcom/facebook/react/views/image/ReactImageView;I)V
 	public fun setBlurRadius (Lcom/facebook/react/views/image/ReactImageView;F)V
 	public fun setBorderColor (Lcom/facebook/react/views/image/ReactImageView;Ljava/lang/Integer;)V
 	public fun setBorderRadius (Lcom/facebook/react/views/image/ReactImageView;IF)V
 	public fun setBorderWidth (Lcom/facebook/react/views/image/ReactImageView;F)V
+	public fun setBoxShadow (Lcom/facebook/react/views/image/ReactImageView;Lcom/facebook/react/bridge/ReadableArray;)V
 	public fun setDefaultSource (Lcom/facebook/react/views/image/ReactImageView;Ljava/lang/String;)V
 	public fun setFadeDuration (Lcom/facebook/react/views/image/ReactImageView;I)V
 	public fun setHeaders (Lcom/facebook/react/views/image/ReactImageView;Lcom/facebook/react/bridge/ReadableMap;)V

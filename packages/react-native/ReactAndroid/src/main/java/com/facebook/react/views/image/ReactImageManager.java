@@ -9,7 +9,7 @@ package com.facebook.react.views.image;
 
 import android.graphics.Color;
 import android.graphics.PorterDuff.Mode;
-import androidx.annotation.NonNull;
+import android.os.Build;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.drawee.backends.pipeline.Fresco;
@@ -30,7 +30,9 @@ import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
 import com.facebook.react.uimanager.style.BorderRadiusProp;
+import com.facebook.react.uimanager.style.BoxShadow;
 import com.facebook.react.uimanager.style.LogicalEdge;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -279,6 +281,20 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
   @ReactProp(name = "headers")
   public void setHeaders(ReactImageView view, ReadableMap headers) {
     view.setHeaders(headers);
+  }
+
+  @ReactProp(name = "experimental_boxShadow")
+  public void setBoxShadow(ReactImageView view, ReadableArray shadows) {
+    if (Build.VERSION.SDK_INT < 31) {
+      FLog.w(REACT_CLASS, "boxShadow requires Android API 31 or higher");
+    } else if (ReactNativeFeatureFlags.useNewReactImageViewBackgroundDrawing()
+        && ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
+      ArrayList<BoxShadow> shadowStyles = new ArrayList<>();
+      for (int i = 0; i < shadows.size(); i++) {
+        shadowStyles.add(BoxShadow.parse(shadows.getMap(i)));
+      }
+      BackgroundStyleApplicator.setShadows(view, shadowStyles);
+    }
   }
 
   @Override
