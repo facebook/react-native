@@ -9,7 +9,6 @@ package com.facebook.react.views.view;
 
 import android.graphics.Rect;
 import android.view.View;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.Dynamic;
@@ -65,7 +64,7 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
 
   @Override
   protected @Nullable ReactViewGroup prepareToRecycleView(
-      @NonNull ThemedReactContext reactContext, ReactViewGroup view) {
+      ThemedReactContext reactContext, ReactViewGroup view) {
     // BaseViewManager
     ReactViewGroup preparedView = super.prepareToRecycleView(reactContext, view);
     if (preparedView != null) {
@@ -302,13 +301,13 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
   }
 
   @Override
-  public void setOpacity(@NonNull ReactViewGroup view, float opacity) {
+  public void setOpacity(ReactViewGroup view, float opacity) {
     view.setOpacityIfPossible(opacity);
   }
 
   @Override
   protected void setTransformProperty(
-      @NonNull ReactViewGroup view,
+      ReactViewGroup view,
       @Nullable ReadableArray transforms,
       @Nullable ReadableArray transformOrigin) {
     super.setTransformProperty(view, transforms, transformOrigin);
