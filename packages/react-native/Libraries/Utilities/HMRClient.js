@@ -126,7 +126,7 @@ const HMRClient: HMRClientNativeInterface = {
           data: data.map(item =>
             typeof item === 'string'
               ? item
-              : prettyFormat(item, {
+              : prettyFormat.format(item, {
                   escapeString: true,
                   highlight: true,
                   maxDepth: 3,
