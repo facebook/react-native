@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<82f6d4eda4011bee81810af366f5d677>>
+ * @generated SignedSource<<54b74f1ba5e46b981b9b4e9a0b6c8dc0>>
  */
 
 /**
@@ -32,6 +32,7 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var completeReactInstanceCreationOnBgThreadOnAndroidCache: Boolean? = null
   private var destroyFabricSurfacesInReactInstanceManagerCache: Boolean? = null
   private var enableAlignItemsBaselineOnFabricIOSCache: Boolean? = null
+  private var enableBackgroundStyleApplicatorCache: Boolean? = null
   private var enableCleanTextInputYogaNodeCache: Boolean? = null
   private var enableFabricRendererExclusivelyCache: Boolean? = null
   private var enableGranularShadowTreeStateReconciliationCache: Boolean? = null
@@ -138,6 +139,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.enableAlignItemsBaselineOnFabricIOS()
       accessedFeatureFlags.add("enableAlignItemsBaselineOnFabricIOS")
       enableAlignItemsBaselineOnFabricIOSCache = cached
+    }
+    return cached
+  }
+
+  override fun enableBackgroundStyleApplicator(): Boolean {
+    var cached = enableBackgroundStyleApplicatorCache
+    if (cached == null) {
+      cached = currentProvider.enableBackgroundStyleApplicator()
+      accessedFeatureFlags.add("enableBackgroundStyleApplicator")
+      enableBackgroundStyleApplicatorCache = cached
     }
     return cached
   }
