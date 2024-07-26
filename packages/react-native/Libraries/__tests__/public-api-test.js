@@ -21,6 +21,8 @@ const PACKAGE_ROOT = path.resolve(__dirname, '../../');
 const JS_FILES_PATTERN = 'Libraries/**/*.{js,flow}';
 const IGNORE_PATTERNS = [
   '**/__{tests,mocks,fixtures,flowtests}__/**',
+  '**/*.android.js',
+  '**/*.ios.js',
   '**/*.fb.js',
   '**/*.macos.js',
   '**/*.windows.js',
