@@ -5563,11 +5563,9 @@ public class com/facebook/react/uimanager/events/BlackHoleEventDispatcher : com/
 	public fun unregisterEventEmitter (I)V
 }
 
-public class com/facebook/react/uimanager/events/ContentSizeChangeEvent : com/facebook/react/uimanager/events/Event {
-	public static final field EVENT_NAME Ljava/lang/String;
+public final class com/facebook/react/uimanager/events/ContentSizeChangeEvent : com/facebook/react/uimanager/events/Event {
 	public fun <init> (III)V
 	public fun <init> (IIII)V
-	protected fun getEventData ()Lcom/facebook/react/bridge/WritableMap;
 	public fun getEventName ()Ljava/lang/String;
 }
 
