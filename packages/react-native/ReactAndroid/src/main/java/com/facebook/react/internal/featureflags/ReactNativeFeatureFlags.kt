@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ca939ab47fa68fbb5acf5ea34481def9>>
+ * @generated SignedSource<<d00002000e9117592286a80a11b8b1f8>>
  */
 
 /**
@@ -75,6 +75,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableAlignItemsBaselineOnFabricIOS(): Boolean = accessor.enableAlignItemsBaselineOnFabricIOS()
+
+  /**
+   * Use BackgroundStyleApplicator in place of other background/border drawing code
+   */
+  @JvmStatic
+  public fun enableBackgroundStyleApplicator(): Boolean = accessor.enableBackgroundStyleApplicator()
 
   /**
    * Clean yoga node when <TextInput /> does not change.

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b914ca36b2ab729f1262384d83b684b7>>
+ * @generated SignedSource<<5d49b9dc97e6b57012a1a3284ef7b628>>
  * @flow strict-local
  */
 
@@ -52,6 +52,7 @@ export type ReactNativeFeatureFlags = {
   completeReactInstanceCreationOnBgThreadOnAndroid: Getter<boolean>,
   destroyFabricSurfacesInReactInstanceManager: Getter<boolean>,
   enableAlignItemsBaselineOnFabricIOS: Getter<boolean>,
+  enableBackgroundStyleApplicator: Getter<boolean>,
   enableCleanTextInputYogaNode: Getter<boolean>,
   enableFabricRendererExclusively: Getter<boolean>,
   enableGranularShadowTreeStateReconciliation: Getter<boolean>,
@@ -175,6 +176,10 @@ export const destroyFabricSurfacesInReactInstanceManager: Getter<boolean> = crea
  * Kill-switch to turn off support for aling-items:baseline on Fabric iOS.
  */
 export const enableAlignItemsBaselineOnFabricIOS: Getter<boolean> = createNativeFlagGetter('enableAlignItemsBaselineOnFabricIOS', true);
+/**
+ * Use BackgroundStyleApplicator in place of other background/border drawing code
+ */
+export const enableBackgroundStyleApplicator: Getter<boolean> = createNativeFlagGetter('enableBackgroundStyleApplicator', false);
 /**
  * Clean yoga node when <TextInput /> does not change.
  */
