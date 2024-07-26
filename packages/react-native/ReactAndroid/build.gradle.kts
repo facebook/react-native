@@ -81,22 +81,10 @@ val preparePrefab by
       input.set(
           listOf(
               PrefabPreprocessingEntry(
-                  "react_render_debug",
-                  Pair("../ReactCommon/react/renderer/debug/", "react/renderer/debug/")),
-              PrefabPreprocessingEntry(
                   "turbomodulejsijni", Pair("src/main/jni/react/turbomodule", "")),
-              PrefabPreprocessingEntry(
-                  "runtimeexecutor", Pair("../ReactCommon/runtimeexecutor/", "")),
               PrefabPreprocessingEntry(
                   "react_codegen_rncore",
                   Pair(File(buildDir, "generated/source/codegen/jni/").absolutePath, "")),
-              PrefabPreprocessingEntry(
-                  "react_debug", Pair("../ReactCommon/react/debug/", "react/debug/")),
-              PrefabPreprocessingEntry(
-                  "react_render_componentregistry",
-                  Pair(
-                      "../ReactCommon/react/renderer/componentregistry/",
-                      "react/renderer/componentregistry/")),
               PrefabPreprocessingEntry(
                   "react_newarchdefaults", Pair("src/main/jni/react/newarchdefaults", "")),
               PrefabPreprocessingEntry(
@@ -132,42 +120,7 @@ val preparePrefab by
                   Pair(
                       "../ReactCommon/react/renderer/components/root/",
                       "react/renderer/components/root/")),
-              PrefabPreprocessingEntry(
-                  "rrc_view",
-                  listOf(
-                      Pair(
-                          "../ReactCommon/react/renderer/components/view/",
-                          "react/renderer/components/view/"),
-                      Pair("../ReactCommon/react/renderer/components/view/platform/android/", ""),
-                  )),
-              PrefabPreprocessingEntry(
-                  "rrc_text",
-                  listOf(
-                      Pair(
-                          "../ReactCommon/react/renderer/components/text/",
-                          "react/renderer/components/text/"),
-                      Pair(
-                          "../ReactCommon/react/renderer/attributedstring",
-                          "react/renderer/attributedstring"),
-                  )),
-              PrefabPreprocessingEntry(
-                  "rrc_textinput",
-                  listOf(
-                      Pair(
-                          "../ReactCommon/react/renderer/components/textinput/",
-                          "react/renderer/components/textinput/"),
-                      Pair(
-                          "../ReactCommon/react/renderer/components/textinput/platform/android/",
-                          ""),
-                  )),
-              PrefabPreprocessingEntry(
-                  "rrc_legacyviewmanagerinterop",
-                  Pair(
-                      "../ReactCommon/react/renderer/components/legacyviewmanagerinterop/",
-                      "react/renderer/components/legacyviewmanagerinterop/")),
               PrefabPreprocessingEntry("jsi", Pair("../ReactCommon/jsi/", "")),
-              PrefabPreprocessingEntry(
-                  "glog", Pair(File(buildDir, "third-party-ndk/glog/exported/").absolutePath, "")),
               PrefabPreprocessingEntry(
                   "fabricjni", Pair("src/main/jni/react/fabric", "react/fabric/")),
               PrefabPreprocessingEntry(
@@ -291,12 +244,10 @@ val preparePrefab by
                   listOf(
                       // glog
                       Pair(File(buildDir, "third-party-ndk/glog/exported/").absolutePath, ""),
-                      // jsi
-                      Pair("../ReactCommon/jsi/", ""),
+                      // turbomodulejsijni
+                      Pair("src/main/jni/react/turbomodule", ""),
                       // react_codegen_rncore
                       Pair(File(buildDir, "generated/source/codegen/jni/").absolutePath, ""),
-                      // react_debug
-                      Pair("../ReactCommon/react/debug/", "react/debug/"),
                       // react_render_componentregistry
                       Pair(
                           "../ReactCommon/react/renderer/componentregistry/",
@@ -321,10 +272,6 @@ val preparePrefab by
                       Pair(
                           "../ReactCommon/react/renderer/components/image/",
                           "react/renderer/components/image/"),
-                      // rrc_legacyviewmanagerinterop
-                      Pair(
-                          "../ReactCommon/react/renderer/components/legacyviewmanagerinterop/",
-                          "react/renderer/components/legacyviewmanagerinterop/"),
                       // rrc_view
                       Pair(
                           "../ReactCommon/react/renderer/components/view/",
@@ -356,6 +303,7 @@ val preparePrefab by
                       Pair(File(buildDir, "third-party-ndk/double-conversion/").absolutePath, ""),
                       Pair(File(buildDir, "third-party-ndk/fmt/include/").absolutePath, ""),
                       Pair(File(buildDir, "third-party-ndk/folly/").absolutePath, ""),
+                      Pair(File(buildDir, "third-party-ndk/glog/exported/").absolutePath, ""),
                       Pair("../ReactCommon/callinvoker/", ""),
                       Pair("../ReactCommon/cxxreact/", "cxxreact/"),
                       Pair("../ReactCommon/react/bridging/", "react/bridging/"),
@@ -363,12 +311,17 @@ val preparePrefab by
                       Pair("../ReactCommon/react/nativemodule/core/", ""),
                       Pair("../ReactCommon/react/nativemodule/core/platform/android/", ""),
                       Pair(
+                          "../ReactCommon/react/renderer/componentregistry/",
+                          "react/renderer/componentregistry/"),
+                      Pair(
                           "../ReactCommon/react/renderer/components/root/",
                           "react/renderer/components/root/"),
+                      Pair("../ReactCommon/react/renderer/core/", "react/renderer/core/"),
                       Pair("../ReactCommon/react/renderer/debug/", "react/renderer/debug/"),
                       Pair(
                           "../ReactCommon/react/renderer/leakchecker/",
                           "react/renderer/leakchecker/"),
+                      Pair("../ReactCommon/react/renderer/mapbuffer/", "react/renderer/mapbuffer/"),
                       Pair("../ReactCommon/react/renderer/mounting/", "react/renderer/mounting/"),
                       Pair(
                           "../ReactCommon/react/renderer/runtimescheduler/",
@@ -376,8 +329,11 @@ val preparePrefab by
                       Pair("../ReactCommon/react/renderer/scheduler/", "react/renderer/scheduler/"),
                       Pair("../ReactCommon/react/renderer/telemetry/", "react/renderer/telemetry/"),
                       Pair("../ReactCommon/react/renderer/uimanager/", "react/renderer/uimanager/"),
+                      Pair("../ReactCommon/react/debug/", "react/debug/"),
                       Pair("../ReactCommon/react/utils/", "react/utils/"),
                       Pair("src/main/jni/react/jni", "react/jni/"),
+                      // react_cxxreactpackage
+                      Pair("src/main/jni/react/runtime/cxxreactpackage", ""),
                   )),
           ))
       outputDir.set(prefabHeadersDir)
@@ -659,43 +615,31 @@ android {
             "uimanagerjni",
             "jscinstance",
             "react_devsupportjni",
+            "react_render_core",
             // prefab targets
             "reactnativejni",
-            "react_render_debug",
             "turbomodulejsijni",
-            "runtimeexecutor",
-            "react_featureflagsjni",
             "react_codegen_rncore",
-            "react_debug",
+            "react_featureflagsjni",
             "react_featureflags",
             "react_performance_timeline",
             "react_utils",
             "react_render_componentregistry",
             "react_newarchdefaults",
             "react_render_animations",
-            "react_render_core",
             "react_render_consistency",
             "react_render_dom",
             "react_render_graphics",
             "react_render_observers_events",
             "rrc_image",
             "rrc_root",
-            "rrc_view",
-            "rrc_text",
-            "rrc_textinput",
-            "rrc_legacyviewmanagerinterop",
             "jsi",
-            "glog",
             "fabricjni",
             "mapbufferjni",
             "react_render_mapbuffer",
             "react_render_textlayoutmanager",
             "yoga",
-            "folly_runtime",
-            "react_nativemodule_core",
-            "react_render_imagemanager",
             "react_render_uimanager",
-            "react_render_uimanager_consistency",
             "react_render_scheduler",
             "react_render_mounting",
             "hermes_executor",
@@ -778,23 +722,14 @@ android {
   }
 
   prefab {
-    create("react_render_debug") {
-      headers = File(prefabHeadersDir, "react_render_debug").absolutePath
-    }
     create("turbomodulejsijni") {
       headers = File(prefabHeadersDir, "turbomodulejsijni").absolutePath
     }
-    create("runtimeexecutor") { headers = File(prefabHeadersDir, "runtimeexecutor").absolutePath }
-    create("react_codegen_rncore") {
-      headers = File(prefabHeadersDir, "react_codegen_rncore").absolutePath
-    }
-    create("react_debug") { headers = File(prefabHeadersDir, "react_debug").absolutePath }
-    create("react_utils") { headers = File(prefabHeadersDir, "react_utils").absolutePath }
-    create("react_render_componentregistry") {
-      headers = File(prefabHeadersDir, "react_render_componentregistry").absolutePath
-    }
     create("react_newarchdefaults") {
       headers = File(prefabHeadersDir, "react_newarchdefaults").absolutePath
+    }
+    create("react_codegen_rncore") {
+      headers = File(prefabHeadersDir, "react_codegen_rncore").absolutePath
     }
     create("react_render_animations") {
       headers = File(prefabHeadersDir, "react_render_animations").absolutePath
@@ -819,14 +754,7 @@ android {
     }
     create("rrc_image") { headers = File(prefabHeadersDir, "rrc_image").absolutePath }
     create("rrc_root") { headers = File(prefabHeadersDir, "rrc_root").absolutePath }
-    create("rrc_view") { headers = File(prefabHeadersDir, "rrc_view").absolutePath }
-    create("rrc_text") { headers = File(prefabHeadersDir, "rrc_text").absolutePath }
-    create("rrc_textinput") { headers = File(prefabHeadersDir, "rrc_textinput").absolutePath }
-    create("rrc_legacyviewmanagerinterop") {
-      headers = File(prefabHeadersDir, "rrc_legacyviewmanagerinterop").absolutePath
-    }
     create("jsi") { headers = File(prefabHeadersDir, "jsi").absolutePath }
-    create("glog") { headers = File(prefabHeadersDir, "glog").absolutePath }
     create("fabricjni") { headers = File(prefabHeadersDir, "fabricjni").absolutePath }
     create("mapbufferjni") { headers = File(prefabHeadersDir, "mapbufferjni").absolutePath }
     create("react_render_mapbuffer") {
@@ -836,13 +764,6 @@ android {
       headers = File(prefabHeadersDir, "react_render_textlayoutmanager").absolutePath
     }
     create("yoga") { headers = File(prefabHeadersDir, "yoga").absolutePath }
-    create("folly_runtime") { headers = File(prefabHeadersDir, "folly_runtime").absolutePath }
-    create("react_nativemodule_core") {
-      headers = File(prefabHeadersDir, "react_nativemodule_core").absolutePath
-    }
-    create("react_render_imagemanager") {
-      headers = File(prefabHeadersDir, "react_render_imagemanager").absolutePath
-    }
     create("react_render_uimanager") {
       headers = File(prefabHeadersDir, "react_render_uimanager").absolutePath
     }
