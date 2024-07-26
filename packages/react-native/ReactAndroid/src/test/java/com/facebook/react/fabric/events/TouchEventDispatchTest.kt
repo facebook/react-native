@@ -19,6 +19,7 @@ import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.WritableArray
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.fabric.FabricUIManager
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.modules.core.ReactChoreographer
 import com.facebook.react.uimanager.DisplayMetricsHolder
 import com.facebook.react.uimanager.ViewManagerRegistry
@@ -76,6 +77,8 @@ class TouchEventDispatchTest {
               pointerId = 0,
               pointerIds = intArrayOf(0),
               pointerCoords = arrayOf(pointerCoords(1f, 3f))))
+
+  private lateinit var featureFlags: MockedStatic<ReactNativeFeatureFlags>
 
   /** Expected values for [startMoveEndSequence] */
   private val startMoveEndExpectedSequence =
@@ -467,6 +470,10 @@ class TouchEventDispatchTest {
 
   @Before
   fun setUp() {
+    // Avoid trying to load ReactNativeFeatureFlags JNI library
+    featureFlags = mockStatic(ReactNativeFeatureFlags::class.java)
+    featureFlags.`when`<Boolean> { ReactNativeFeatureFlags.enableFabricLogs() }.thenAnswer { false }
+
     arguments = mockStatic(Arguments::class.java)
     arguments.`when`<WritableArray> { Arguments.createArray() }.thenAnswer { JavaOnlyArray() }
     arguments.`when`<WritableMap> { Arguments.createMap() }.thenAnswer { JavaOnlyMap() }
@@ -499,6 +506,7 @@ class TouchEventDispatchTest {
   fun tearDown() {
     arguments.close()
     reactChoreographer.close()
+    featureFlags.close()
   }
 
   @Test
