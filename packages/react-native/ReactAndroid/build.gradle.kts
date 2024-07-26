@@ -83,9 +83,6 @@ val preparePrefab by
               PrefabPreprocessingEntry(
                   "turbomodulejsijni", Pair("src/main/jni/react/turbomodule", "")),
               PrefabPreprocessingEntry(
-                  "react_codegen_rncore",
-                  Pair(File(buildDir, "generated/source/codegen/jni/").absolutePath, "")),
-              PrefabPreprocessingEntry(
                   "react_newarchdefaults", Pair("src/main/jni/react/newarchdefaults", "")),
               PrefabPreprocessingEntry(
                   "react_render_animations",
@@ -254,6 +251,8 @@ val preparePrefab by
                           "react/renderer/componentregistry/"),
                       // react_render_core
                       Pair("../ReactCommon/react/renderer/core/", "react/renderer/core/"),
+                      // react_debug
+                      Pair("../ReactCommon/react/debug/", "react/debug/"),
                       // react_render_debug
                       Pair("../ReactCommon/react/renderer/debug/", "react/renderer/debug/"),
                       // react_render_graphics
@@ -619,7 +618,6 @@ android {
             // prefab targets
             "reactnativejni",
             "turbomodulejsijni",
-            "react_codegen_rncore",
             "react_featureflagsjni",
             "react_featureflags",
             "react_performance_timeline",
@@ -727,9 +725,6 @@ android {
     }
     create("react_newarchdefaults") {
       headers = File(prefabHeadersDir, "react_newarchdefaults").absolutePath
-    }
-    create("react_codegen_rncore") {
-      headers = File(prefabHeadersDir, "react_codegen_rncore").absolutePath
     }
     create("react_render_animations") {
       headers = File(prefabHeadersDir, "react_render_animations").absolutePath
