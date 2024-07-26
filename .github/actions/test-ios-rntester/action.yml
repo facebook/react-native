@@ -28,6 +28,10 @@ inputs:
   react-native-version:
     description: The version of react-native
     required: true
+  run-e2e-tests:
+    description: Whether we want to run E2E tests or not
+    required: false
+    default: false
 
 runs:
   using: composite
@@ -114,17 +118,32 @@ runs:
         bundle install
         bundle exec pod install
     - name: Build RNTester
-      if: ${{ inputs.run-unit-tests != 'true' }}
+      if: ${{ inputs.run-unit-tests != 'true' && inputs.run-e2e-tests == 'false' }}
       shell: bash
       run: |
         xcodebuild build \
           -workspace packages/rn-tester/RNTesterPods.xcworkspace \
           -scheme RNTester \
           -sdk iphonesimulator
+    - name: Build RNTester (E2E Tests)
+      shell: bash
+      if: ${{ inputs.run-e2e-tests == 'true' }}
+      run: |
+        xcrun xcodebuild \
+          -scheme "RNTester" \
+          -workspace packages/rn-tester/RNTesterPods.xcworkspace \
+          -configuration "Release" \
+          -sdk "iphonesimulator" \
+          -destination "generic/platform=iOS Simulator" \
+          -derivedDataPath "/tmp/RNTesterBuild"
+
+          echo "Print path to *.app file"
+          find "/tmp/RNTesterBuild" -type d -name "*.app"
     - name: "Run Tests: iOS Unit and Integration Tests"
       if: ${{ inputs.run-unit-tests == 'true' }}
       shell: bash
       run: yarn test-ios
+
     - name: Zip Derived data folder
       if: ${{ inputs.run-unit-tests == 'true' }}
       shell: bash
