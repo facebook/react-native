@@ -265,6 +265,35 @@ jobs:
         with:
           release-type: ${{ needs.set_release_type.outputs.RELEASE_TYPE }}
 
+  test_e2e_android_rntester:
+    runs-on: ubuntu-latest
+    needs: [build_android]
+    strategy:
+      fail-fast: false
+      matrix:
+        jsengine: [hermes, jsc]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup node.js
+        uses: ./.github/actions/setup-node
+      - name: Install node dependencies
+        uses: ./.github/actions/yarn-install-with-cache
+      - name: Download APK
+        uses: actions/download-artifact@v4
+        with:
+          name: rntester-${{ matrix.jsengine }}-release
+          path: ./packages/rn-tester/android/app/build/outputs/apk/${{ matrix.jsengine }}/release/
+      - name: Print folder structure
+        run: ls -lR ./packages/rn-tester/android/app/build/outputs/apk/${{ matrix.jsengine }}/release/
+      - name: Run E2E Tests
+        uses: ./.github/actions/maestro-android
+        with:
+          app-path: ./packages/rn-tester/android/app/build/outputs/apk/${{ matrix.jsengine }}/release/app-${{ matrix.jsengine }}-x86-release.apk
+          app-id: com.facebook.react.uiapp
+          jsengine: ${{ matrix.jsengine }}
+          maestro-flow: ./packages/rn-tester/.maestro/
+
   build_npm_package:
     runs-on: 8-core-ubuntu
     needs:
