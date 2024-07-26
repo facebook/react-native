@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.uimanager;
+package com.facebook.react.uimanager
 
 public interface IViewManagerWithChildren {
   /**
@@ -16,5 +16,5 @@ public interface IViewManagerWithChildren {
    * of automatically laying out children without going through the ViewGroup's onLayout method. In
    * that case, onLayout for this View type must *not* call layout on its children.
    */
-  boolean needsCustomLayoutForChildren();
+  public fun needsCustomLayoutForChildren(): Boolean
 }
