@@ -8,7 +8,7 @@
 package com.facebook.react.modules.debug
 
 import com.facebook.react.bridge.NotThreadSafeBridgeIdleDebugListener
-import com.facebook.react.common.LongArray
+import com.facebook.react.common.LongExpandingArray
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener
 
 /**
@@ -19,10 +19,10 @@ import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugL
  */
 internal class DidJSUpdateUiDuringFrameDetector :
     NotThreadSafeBridgeIdleDebugListener, NotThreadSafeViewHierarchyUpdateDebugListener {
-  private val transitionToIdleEvents = LongArray.createWithInitialCapacity(20)
-  private val transitionToBusyEvents = LongArray.createWithInitialCapacity(20)
-  private val viewHierarchyUpdateEnqueuedEvents = LongArray.createWithInitialCapacity(20)
-  private val viewHierarchyUpdateFinishedEvents = LongArray.createWithInitialCapacity(20)
+  private val transitionToIdleEvents = LongExpandingArray.createWithInitialCapacity(20)
+  private val transitionToBusyEvents = LongExpandingArray.createWithInitialCapacity(20)
+  private val viewHierarchyUpdateEnqueuedEvents = LongExpandingArray.createWithInitialCapacity(20)
+  private val viewHierarchyUpdateFinishedEvents = LongExpandingArray.createWithInitialCapacity(20)
   @Volatile private var wasIdleAtEndOfLastFrame = true
 
   @Synchronized
@@ -109,7 +109,7 @@ internal class DidJSUpdateUiDuringFrameDetector :
 
   companion object {
     private fun hasEventBetweenTimestamps(
-        eventArray: LongArray,
+        eventArray: LongExpandingArray,
         startTime: Long,
         endTime: Long
     ): Boolean {
@@ -123,7 +123,7 @@ internal class DidJSUpdateUiDuringFrameDetector :
     }
 
     private fun getLastEventBetweenTimestamps(
-        eventArray: LongArray,
+        eventArray: LongExpandingArray,
         startTime: Long,
         endTime: Long
     ): Long {
@@ -139,7 +139,7 @@ internal class DidJSUpdateUiDuringFrameDetector :
       return lastEvent
     }
 
-    private fun cleanUp(eventArray: LongArray, endTime: Long) {
+    private fun cleanUp(eventArray: LongExpandingArray, endTime: Long) {
       val size = eventArray.size()
       var indicesToRemove = 0
       for (i in 0 until size) {

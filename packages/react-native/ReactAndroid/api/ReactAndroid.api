@@ -1732,14 +1732,20 @@ public final class com/facebook/react/common/LifecycleState : java/lang/Enum {
 	public static fun values ()[Lcom/facebook/react/common/LifecycleState;
 }
 
-public class com/facebook/react/common/LongArray {
-	public fun add (J)V
-	public static fun createWithInitialCapacity (I)Lcom/facebook/react/common/LongArray;
-	public fun dropTail (I)V
-	public fun get (I)J
-	public fun isEmpty ()Z
-	public fun set (IJ)V
-	public fun size ()I
+public final class com/facebook/react/common/LongExpandingArray {
+	public static final field Companion Lcom/facebook/react/common/LongExpandingArray$Companion;
+	public synthetic fun <init> (ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun add (J)V
+	public static final fun createWithInitialCapacity (I)Lcom/facebook/react/common/LongExpandingArray;
+	public final fun dropTail (I)V
+	public final fun get (I)J
+	public final fun isEmpty ()Z
+	public final fun set (IJ)V
+	public final fun size ()I
+}
+
+public final class com/facebook/react/common/LongExpandingArray$Companion {
+	public final fun createWithInitialCapacity (I)Lcom/facebook/react/common/LongExpandingArray;
 }
 
 public class com/facebook/react/common/MapBuilder {
