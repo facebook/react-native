@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2a8d5ca8a0ac46b4d3177cb8b12ad7ac>>
+ * @generated SignedSource<<ce8cf6803eef7df49f3cb0bcd57a292a>>
  */
 
 /**
@@ -28,6 +28,7 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
   private var completeReactInstanceCreationOnBgThreadOnAndroidCache: Boolean? = null
   private var destroyFabricSurfacesInReactInstanceManagerCache: Boolean? = null
   private var enableAlignItemsBaselineOnFabricIOSCache: Boolean? = null
+  private var enableBackgroundStyleApplicatorCache: Boolean? = null
   private var enableCleanTextInputYogaNodeCache: Boolean? = null
   private var enableFabricRendererExclusivelyCache: Boolean? = null
   private var enableGranularShadowTreeStateReconciliationCache: Boolean? = null
@@ -126,6 +127,15 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enableAlignItemsBaselineOnFabricIOS()
       enableAlignItemsBaselineOnFabricIOSCache = cached
+    }
+    return cached
+  }
+
+  override fun enableBackgroundStyleApplicator(): Boolean {
+    var cached = enableBackgroundStyleApplicatorCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.enableBackgroundStyleApplicator()
+      enableBackgroundStyleApplicatorCache = cached
     }
     return cached
   }

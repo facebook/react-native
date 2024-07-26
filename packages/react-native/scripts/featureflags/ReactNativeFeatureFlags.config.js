@@ -74,6 +74,11 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'Kill-switch to turn off support for aling-items:baseline on Fabric iOS.',
     },
+    enableBackgroundStyleApplicator: {
+      defaultValue: true,
+      description:
+        'Use BackgroundStyleApplicator in place of other background/border drawing code',
+    },
     enableCleanTextInputYogaNode: {
       defaultValue: false,
       description: 'Clean yoga node when <TextInput /> does not change.',
