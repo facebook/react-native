@@ -20,6 +20,9 @@ const invariant = require('invariant');
 const MetroHMRClient = require('metro-runtime/src/modules/HMRClient');
 const prettyFormat = require('pretty-format');
 
+// Account for multiple versions of pretty-format inside of a monorepo.
+const prettyFormatFunc = typeof prettyFormat === 'function' ? prettyFormat : prettyFormat.default;
+
 const pendingEntryPoints = [];
 let hmrClient = null;
 let hmrUnavailableReason: string | null = null;
@@ -117,9 +120,6 @@ const HMRClient: HMRClientNativeInterface = {
       }
       return;
     }
-
-    // Account for multiple versions of pretty-format inside of a monorepo.
-    const prettyFormatFunc = typeof prettyFormat === 'function' ? prettyFormat : prettyFormat.default;
 
     try {
       hmrClient.send(
