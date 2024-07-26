@@ -62,6 +62,10 @@ public object DefaultNewArchitectureEntryPoint {
             override fun fuseboxEnabledDebug(): Boolean = fuseboxEnabledDebug
 
             override fun unstable_useFabricInterop(): Boolean = fabricEnabled
+
+            override fun enableFabricLogs(): Boolean {
+              return true
+            }
           })
     }
 
