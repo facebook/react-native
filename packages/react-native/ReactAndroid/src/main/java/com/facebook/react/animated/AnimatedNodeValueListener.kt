@@ -5,9 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.animated;
+package com.facebook.react.animated
 
-/** Interface used to listen to {@link ValueAnimatedNode} updates. */
-interface AnimatedNodeValueListener {
-  void onValueUpdate(double value);
+/** Interface used to listen to [ValueAnimatedNode] updates. */
+public fun interface AnimatedNodeValueListener {
+  public fun onValueUpdate(value: Double)
 }

@@ -5,11 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.animated;
+package com.facebook.react.animated
 
-import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableMap
 
 /** Indicates that AnimatedNode is able to receive native config updates. */
-interface AnimatedNodeWithUpdateableConfig {
-  void onUpdateConfig(ReadableMap config);
+public fun interface AnimatedNodeWithUpdateableConfig {
+  public fun onUpdateConfig(config: ReadableMap?)
 }
