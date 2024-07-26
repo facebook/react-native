@@ -110,8 +110,8 @@ TEST_F(HostTargetSessionObserverTest, WorksWithMultipleConnections) {
 }
 
 TEST_F(HostTargetSessionObserverTest, CorrectlyNotifiesSubscribers) {
-  auto callback = [&](bool hasActiveSession) {
-    this->subscriptionCallback(hasActiveSession);
+  auto callback = [this](bool hasActiveSession) {
+    subscriptionCallback(hasActiveSession);
   };
   auto unsubscribe =
       HostTargetSessionObserver::getInstance().subscribe(callback);
@@ -120,14 +120,16 @@ TEST_F(HostTargetSessionObserverTest, CorrectlyNotifiesSubscribers) {
   connect();
   connect();
 
-  pageConnectionsPointers_[0]->disconnect();
   EXPECT_CALL(*this, subscriptionCallback(false)).Times(1);
+  pageConnectionsPointers_[0]->disconnect();
   pageConnectionsPointers_[1]->disconnect();
+
+  unsubscribe();
 }
 
 TEST_F(HostTargetSessionObserverTest, SupportsUnsubscribing) {
-  auto callback = [&](bool hasActiveSession) {
-    this->subscriptionCallback(hasActiveSession);
+  auto callback = [this](bool hasActiveSession) {
+    subscriptionCallback(hasActiveSession);
   };
   auto unsubscribe =
       HostTargetSessionObserver::getInstance().subscribe(callback);
