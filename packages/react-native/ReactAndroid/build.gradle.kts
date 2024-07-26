@@ -11,6 +11,7 @@ import com.facebook.react.tasks.internal.*
 import com.facebook.react.tasks.internal.utils.*
 import de.undercouch.gradle.tasks.download.Download
 import java.nio.file.Paths
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
   id("maven-publish")
@@ -656,7 +657,6 @@ android {
             "src/main/res/views/alert",
             "src/main/res/views/modal",
             "src/main/res/views/uimanager"))
-    java.exclude("com/facebook/annotationprocessors")
     java.exclude("com/facebook/react/processing")
     java.exclude("com/facebook/react/module/processing")
   }
@@ -776,6 +776,8 @@ android {
     targetSdk = libs.versions.targetSdk.get().toInt()
   }
 }
+
+tasks.withType<KotlinCompile>().configureEach { exclude("com/facebook/annotationprocessors/**") }
 
 dependencies {
   api(libs.androidx.appcompat)
