@@ -10,7 +10,6 @@ package com.facebook.react.uiapp.component
 import android.graphics.Color
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReadableArray
-import com.facebook.react.common.MapBuilder
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.SimpleViewManager
 import com.facebook.react.uimanager.ThemedReactContext
@@ -49,13 +48,14 @@ internal class MyLegacyViewManager(reactContext: ReactApplicationContext) :
   override fun getExportedViewConstants(): Map<String, Any> = mapOf("PI" to 3.14)
 
   override fun getExportedCustomBubblingEventTypeConstants(): Map<String, Any> {
-    return MapBuilder.builder<String, Any>()
-        .put(
-            "onColorChanged",
-            MapBuilder.of(
-                "phasedRegistrationNames",
-                MapBuilder.of("bubbled", "onColorChanged", "captured", "onColorChangedCapture")))
-        .build()
+    return mapOf(
+        "onColorChanged" to
+            mapOf(
+                "phasedRegistrationNames" to
+                    buildMap {
+                      put("bubbled", "onColorChanged")
+                      put("captured", "onColorChangedCapture")
+                    }))
   }
 
   override fun receiveCommand(view: MyNativeView, commandId: String, args: ReadableArray?) {
@@ -82,11 +82,11 @@ internal class MyLegacyViewManager(reactContext: ReactApplicationContext) :
     }
   }
 
-  override fun getCommandsMap(): Map<String, Int> =
-      mapOf(
-          "changeBackgroundColor" to COMMAND_CHANGE_BACKGROUND_COLOR,
-          "addOverlays" to COMMAND_ADD_OVERLAYS,
-          "removeOverlays" to COMMAND_REMOVE_OVERLAYS)
+  override fun getCommandsMap(): Map<String, Int> = buildMap {
+    put("changeBackgroundColor", COMMAND_CHANGE_BACKGROUND_COLOR)
+    put("addOverlays", COMMAND_ADD_OVERLAYS)
+    put("removeOverlays", COMMAND_REMOVE_OVERLAYS)
+  }
 
   companion object {
     const val REACT_CLASS = "RNTMyLegacyNativeView"

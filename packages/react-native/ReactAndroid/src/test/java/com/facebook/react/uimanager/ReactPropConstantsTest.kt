@@ -11,7 +11,6 @@ import android.view.View
 import com.facebook.react.bridge.BridgeReactContext
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
-import com.facebook.react.common.MapBuilder
 import com.facebook.react.uimanager.annotations.ReactProp
 import com.facebook.react.uimanager.annotations.ReactPropGroup
 import org.assertj.core.api.Assertions
@@ -95,26 +94,26 @@ class ReactPropConstantsTest {
 
     Assertions.assertThat(constants)
         .isEqualTo(
-            MapBuilder.builder<String, String>()
-                .put("boolProp", "boolean")
-                .put("intProp", "number")
-                .put("doubleProp", "number")
-                .put("floatProp", "number")
-                .put("stringProp", "String")
-                .put("boxedBoolProp", "boolean")
-                .put("boxedIntProp", "number")
-                .put("arrayProp", "Array")
-                .put("mapProp", "Map")
-                .put("floatGroupPropFirst", "number")
-                .put("floatGroupPropSecond", "number")
-                .put("intGroupPropFirst", "number")
-                .put("intGroupPropSecond", "number")
-                .put("boxedIntGroupPropFirst", "number")
-                .put("boxedIntGroupPropSecond", "number")
-                .put("customIntProp", "date")
-                .put("customBoxedIntGroupPropFirst", "color")
-                .put("customBoxedIntGroupPropSecond", "color")
-                .build())
+            buildMap<String, String> {
+              put("boolProp", "boolean")
+              put("intProp", "number")
+              put("doubleProp", "number")
+              put("floatProp", "number")
+              put("stringProp", "String")
+              put("boxedBoolProp", "boolean")
+              put("boxedIntProp", "number")
+              put("arrayProp", "Array")
+              put("mapProp", "Map")
+              put("floatGroupPropFirst", "number")
+              put("floatGroupPropSecond", "number")
+              put("intGroupPropFirst", "number")
+              put("intGroupPropSecond", "number")
+              put("boxedIntGroupPropFirst", "number")
+              put("boxedIntGroupPropSecond", "number")
+              put("customIntProp", "date")
+              put("customBoxedIntGroupPropFirst", "color")
+              put("customBoxedIntGroupPropSecond", "color")
+            })
   }
 
   companion object {

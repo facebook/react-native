@@ -7,7 +7,6 @@
 
 package com.facebook.react.uimanager
 
-import com.facebook.react.common.MapBuilder
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
@@ -19,23 +18,21 @@ class UIManagerModuleConstantsHelperTest {
 
   @Test
   fun normalizeEventTypes_withEmptyMap_doesNothing() {
-    val emptyMap: Map<String, Any?> = MapBuilder.builder<String, Any?>().build()
+    val emptyMap = mutableMapOf<String, Any?>()
     UIManagerModuleConstantsHelper.normalizeEventTypes(emptyMap)
     assertThat(emptyMap.isEmpty()).isTrue()
   }
 
   @Test
   fun normalizeEventTypes_withOnEvent_doesNormalize() {
-    val onClickMap: Map<String, String> =
-        MapBuilder.builder<String, String>().put("onClick", "¯\\_(ツ)_/¯").build()
+    val onClickMap = mutableMapOf("onClick" to "¯\\_(ツ)_/¯")
     UIManagerModuleConstantsHelper.normalizeEventTypes(onClickMap)
     assertThat(onClickMap).containsKeys("topClick", "onClick")
   }
 
   @Test
   fun normalizeEventTypes_withTopEvent_doesNormalize() {
-    val onClickMap: Map<String, String> =
-        MapBuilder.builder<String, String>().put("topOnClick", "¯\\_(ツ)_/¯").build()
+    val onClickMap = mutableMapOf("topOnClick" to "¯\\_(ツ)_/¯")
     UIManagerModuleConstantsHelper.normalizeEventTypes(onClickMap)
     assertThat(onClickMap).containsKey("topOnClick").doesNotContainKey("onClick")
   }
@@ -43,15 +40,15 @@ class UIManagerModuleConstantsHelperTest {
   @Suppress("UNCHECKED_CAST")
   @Test
   fun normalizeEventTypes_withNestedObjects_doesNotLoseThem() {
-    val nestedObjects: Map<String, Any?> =
-        MapBuilder.builder<String, Any?>()
-            .put(
-                "onColorChanged",
-                MapBuilder.of<String, Any?>(
-                    "phasedRegistrationNames",
-                    MapBuilder.of<String, String>(
-                        "bubbled", "onColorChanged", "captured", "onColorChangedCapture")))
-            .build()
+    val nestedObjects =
+        mutableMapOf(
+            "onColorChanged" to
+                mapOf(
+                    "phasedRegistrationNames" to
+                        buildMap {
+                          put("bubbled", "onColorChanged")
+                          put("captured", "onColorChangedCapture")
+                        }))
     UIManagerModuleConstantsHelper.normalizeEventTypes(nestedObjects)
     assertThat(nestedObjects).containsKey("topColorChanged")
     var innerMap = nestedObjects["topColorChanged"] as? Map<String, Any?>

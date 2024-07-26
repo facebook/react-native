@@ -10,7 +10,6 @@ package com.facebook.react.osslibraryexample
 import android.annotation.SuppressLint
 import android.graphics.Color
 import com.facebook.react.bridge.ReadableArray
-import com.facebook.react.common.MapBuilder
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.SimpleViewManager
 import com.facebook.react.uimanager.ThemedReactContext
@@ -52,19 +51,24 @@ internal class SampleNativeComponentViewManager :
   override fun getExportedViewConstants(): Map<String, Any> = mapOf("PI" to 3.14)
 
   override fun getExportedCustomBubblingEventTypeConstants(): Map<String, Any> {
-    return MapBuilder.builder<String, Any>()
-        .put(
-            "onColorChanged",
-            MapBuilder.of(
-                "phasedRegistrationNames",
-                MapBuilder.of("bubbled", "onColorChanged", "captured", "onColorChangedCapture")))
-        .put(
-            "topIntArrayChanged",
-            MapBuilder.of(
-                "phasedRegistrationNames",
-                MapBuilder.of(
-                    "bubbled", "topIntArrayChanged", "captured", "topIntArrayChangedCapture")))
-        .build()
+    return buildMap {
+      put(
+          "onColorChanged",
+          mapOf(
+              "phasedRegistrationNames" to
+                  buildMap {
+                    put("bubbled", "onColorChanged")
+                    put("captured", "onColorChangedCapture")
+                  }))
+      put(
+          "topIntArrayChanged",
+          mapOf(
+              "phasedRegistrationNames" to
+                  buildMap {
+                    put("bubbled", "topIntArrayChanged")
+                    put("captured", "topIntArrayChangedCapture")
+                  }))
+    }
   }
 
   @SuppressLint("BadMethodUse-android.view.View.setBackgroundColor")
