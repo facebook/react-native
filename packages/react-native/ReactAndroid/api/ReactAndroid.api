@@ -2059,12 +2059,16 @@ public class com/facebook/react/devsupport/BundleDownloader$BundleInfo {
 	public fun toJSONString ()Ljava/lang/String;
 }
 
-public class com/facebook/react/devsupport/DefaultDevLoadingViewImplementation : com/facebook/react/devsupport/interfaces/DevLoadingViewManager {
+public final class com/facebook/react/devsupport/DefaultDevLoadingViewImplementation : com/facebook/react/devsupport/interfaces/DevLoadingViewManager {
+	public static final field Companion Lcom/facebook/react/devsupport/DefaultDevLoadingViewImplementation$Companion;
 	public fun <init> (Lcom/facebook/react/devsupport/ReactInstanceDevHelper;)V
 	public fun hide ()V
-	public static fun setDevLoadingEnabled (Z)V
 	public fun showMessage (Ljava/lang/String;)V
 	public fun updateProgress (Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/Integer;)V
+}
+
+public final class com/facebook/react/devsupport/DefaultDevLoadingViewImplementation$Companion {
+	public final fun setDevLoadingEnabled (Z)V
 }
 
 public final class com/facebook/react/devsupport/DefaultDevSupportManagerFactory : com/facebook/react/devsupport/DevSupportManagerFactory {
