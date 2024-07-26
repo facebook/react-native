@@ -361,7 +361,6 @@ public abstract class com/facebook/react/ReactPackageTurboModuleManagerDelegate 
 	public fun getEagerInitModuleNames ()Ljava/util/List;
 	public fun getLegacyModule (Ljava/lang/String;)Lcom/facebook/react/bridge/NativeModule;
 	public fun getModule (Ljava/lang/String;)Lcom/facebook/react/turbomodule/core/interfaces/TurboModule;
-	public fun unstable_enableSyncVoidMethods ()Z
 	public fun unstable_isLegacyModuleRegistered (Ljava/lang/String;)Z
 	public fun unstable_isModuleRegistered (Ljava/lang/String;)Z
 	public fun unstable_shouldEnableLegacyModuleInterop ()Z
@@ -1970,7 +1969,6 @@ public class com/facebook/react/config/ReactFeatureFlags {
 	public static field enableFabricRenderer Z
 	public static field enableViewRecycling Z
 	public static field traceTurboModulePromiseRejections Z
-	public static field unstable_enableTurboModuleSyncVoidMethods Z
 	public static field unstable_useFabricInterop Z
 	public static field unstable_useTurboModuleInterop Z
 	public static field useTurboModules Z
