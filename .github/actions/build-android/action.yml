@@ -14,9 +14,6 @@ runs:
     - name: Set React Native Version
       shell: bash
       run: node ./scripts/releases/set-rn-artifacts-version.js --build-type ${{ inputs.release-type }}
-    - name: Show ccache stats
-      shell: bash
-      run: ccache -s
     - name: Setup gradle
       uses: ./.github/actions/setup-gradle
       with:
@@ -25,10 +22,13 @@ runs:
       uses: actions/cache/restore@v4
       with:
         path: /github/home/.cache/ccache
-        key: v1-ccache-android-${{ github.job }}-${{ github.sha }}
+        key: v1-ccache-android-${{ github.job }}-${{ github.ref }}
         restore-keys: |
           v1-ccache-android-${{ github.job }}-
           v1-ccache-android-
+    - name: Show ccache stats
+      shell: bash
+      run: ccache -s -v
     - name: Build and publish all the Android Artifacts to /tmp/maven-local
       shell: bash
       run: |
@@ -50,10 +50,10 @@ runs:
       uses: actions/cache/save@v4
       with:
         path: /github/home/.cache/ccache
-        key: v1-ccache-android-${{ github.job }}-${{ github.sha }}
+        key: v1-ccache-android-${{ github.job }}-${{ github.ref }}
     - name: Show ccache stats
       shell: bash
-      run: ccache -s
+      run: ccache -s -v
     - name: Upload Maven Artifacts
       uses: actions/upload-artifact@v4
       with:
