@@ -78,6 +78,11 @@ const definitions: FeatureFlagDefinitions = {
       defaultValue: false,
       description: 'Clean yoga node when <TextInput /> does not change.',
     },
+    enableEagerRootViewAttachment: {
+      defaultValue: false,
+      description:
+        'Feature flag to configure eager attachment of the root view/initialisation of the JS code.',
+    },
     enableFabricRendererExclusively: {
       defaultValue: false,
       description:
