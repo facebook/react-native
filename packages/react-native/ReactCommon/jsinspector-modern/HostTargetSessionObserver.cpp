@@ -62,7 +62,7 @@ std::function<void()> HostTargetSessionObserver::subscribe(
   // Since HostTargetSessionObserver is a singleton, it is expected to outlive
   // all potential subscribers
   return [this, subscriberIndexToRemove = subscriberIndex]() {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<std::mutex> lockForCallback(mutex_);
     subscribers_.erase(subscriberIndexToRemove);
   };
 }
