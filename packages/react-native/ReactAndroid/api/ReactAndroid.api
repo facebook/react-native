@@ -854,7 +854,7 @@ public abstract interface class com/facebook/react/bridge/JavaJSExecutor$Factory
 	public abstract fun create ()Lcom/facebook/react/bridge/JavaJSExecutor;
 }
 
-public class com/facebook/react/bridge/JavaJSExecutor$ProxyExecutorException : java/lang/Exception {
+public final class com/facebook/react/bridge/JavaJSExecutor$ProxyExecutorException : java/lang/Exception {
 	public fun <init> (Ljava/lang/Throwable;)V
 }
 
@@ -1042,6 +1042,11 @@ public class com/facebook/react/bridge/ObjectAlreadyConsumedException : java/lan
 
 public abstract interface class com/facebook/react/bridge/OnBatchCompleteListener {
 	public abstract fun onBatchComplete ()V
+}
+
+public abstract interface class com/facebook/react/bridge/PerformanceCounter {
+	public abstract fun getPerformanceCounters ()Ljava/util/Map;
+	public abstract fun profileNextBatch ()V
 }
 
 public abstract interface class com/facebook/react/bridge/Promise {

@@ -5,13 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.bridge;
+package com.facebook.react.bridge
+public interface PerformanceCounter {
+  public fun profileNextBatch()
 
-import java.util.Map;
-
-interface PerformanceCounter {
-
-  void profileNextBatch();
-
-  Map<String, Long> getPerformanceCounters();
+  public fun getPerformanceCounters(): MutableMap<String, Long>?
 }
