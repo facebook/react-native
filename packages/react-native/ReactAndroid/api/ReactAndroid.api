@@ -4309,7 +4309,8 @@ public class com/facebook/react/uimanager/NativeViewHierarchyManager {
 	public fun setJSResponder (IIZ)V
 	public fun setLayoutAnimationEnabled (Z)V
 	public fun updateInstanceHandle (IJ)V
-	public fun updateLayout (IIIIII)V
+	public fun updateLayout (IIIII)V
+	public fun updateLayout (IIIIIILcom/facebook/yoga/YogaDirection;)V
 	public fun updateProperties (ILcom/facebook/react/uimanager/ReactStylesDiffMap;)V
 	public fun updateViewExtraData (ILjava/lang/Object;)V
 }
@@ -5206,6 +5207,7 @@ public class com/facebook/react/uimanager/UIViewOperationQueue {
 	public fun enqueueUpdateExtraData (ILjava/lang/Object;)V
 	public fun enqueueUpdateInstanceHandle (IJ)V
 	public fun enqueueUpdateLayout (IIIIII)V
+	public fun enqueueUpdateLayout (IIIIIILcom/facebook/yoga/YogaDirection;)V
 	public fun enqueueUpdateProperties (ILjava/lang/String;Lcom/facebook/react/uimanager/ReactStylesDiffMap;)V
 	public fun getProfiledBatchPerfCounters ()Ljava/util/Map;
 	public fun isEmpty ()Z
