@@ -159,6 +159,37 @@ class ReactExtensionTest {
     assertTrue("implementation" to ":react-native_another-library-for-testing" in deps)
   }
 
+  @Test
+  fun getGradleDependenciesToApply_withiOSOnlyLibrary_returnsEmptyDepsMap() {
+    val validJsonFile =
+        createJsonFile(
+            """
+      {
+        "reactNativeVersion": "1000.0.0",
+        "dependencies": {
+          "@react-native/oss-library-example": {
+            "root": "./node_modules/@react-native/oss-library-example",
+            "name": "@react-native/oss-library-example",
+            "platforms": {
+              "ios": {
+                "podspecPath": "./node_modules/@react-native/oss-library-example/oss-library-example.podspec",
+                "version": "0.0.0",
+                "configurations": [],
+                "scriptPhases": []
+              },
+              "android": null
+            }
+          }
+        }
+      }
+      """
+                .trimIndent())
+
+    val deps = getGradleDependenciesToApply(validJsonFile)
+    assertEquals(0, deps.size)
+    assertFalse("implementation" to ":react-native_oss-library-example" in deps)
+  }
+
   private fun createJsonFile(@Language("JSON") input: String) =
       tempFolder.newFile().apply { writeText(input) }
 }
