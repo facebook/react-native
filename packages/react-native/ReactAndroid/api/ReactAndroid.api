@@ -6360,40 +6360,40 @@ public abstract interface class com/facebook/react/views/image/ReactCallerContex
 	public abstract fun getOrCreateCallerContext (Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Object;
 }
 
-public class com/facebook/react/views/image/ReactImageManager : com/facebook/react/uimanager/SimpleViewManager {
+public final class com/facebook/react/views/image/ReactImageManager : com/facebook/react/uimanager/SimpleViewManager {
+	public static final field Companion Lcom/facebook/react/views/image/ReactImageManager$Companion;
 	public static final field REACT_CLASS Ljava/lang/String;
 	public fun <init> ()V
+	public fun <init> (Lcom/facebook/drawee/controller/AbstractDraweeControllerBuilder;)V
+	public fun <init> (Lcom/facebook/drawee/controller/AbstractDraweeControllerBuilder;Lcom/facebook/react/views/image/GlobalImageLoadListener;)V
 	public fun <init> (Lcom/facebook/drawee/controller/AbstractDraweeControllerBuilder;Lcom/facebook/react/views/image/GlobalImageLoadListener;Lcom/facebook/react/views/image/ReactCallerContextFactory;)V
+	public synthetic fun <init> (Lcom/facebook/drawee/controller/AbstractDraweeControllerBuilder;Lcom/facebook/react/views/image/GlobalImageLoadListener;Lcom/facebook/react/views/image/ReactCallerContextFactory;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun <init> (Lcom/facebook/drawee/controller/AbstractDraweeControllerBuilder;Lcom/facebook/react/views/image/GlobalImageLoadListener;Ljava/lang/Object;)V
-	public fun <init> (Lcom/facebook/drawee/controller/AbstractDraweeControllerBuilder;Lcom/facebook/react/views/image/ReactCallerContextFactory;)V
 	public fun <init> (Lcom/facebook/drawee/controller/AbstractDraweeControllerBuilder;Ljava/lang/Object;)V
 	public synthetic fun createViewInstance (Lcom/facebook/react/uimanager/ThemedReactContext;)Landroid/view/View;
 	public fun createViewInstance (Lcom/facebook/react/uimanager/ThemedReactContext;)Lcom/facebook/react/views/image/ReactImageView;
-	public fun getCallerContext ()Ljava/lang/Object;
-	public fun getDraweeControllerBuilder ()Lcom/facebook/drawee/controller/AbstractDraweeControllerBuilder;
 	public fun getExportedCustomDirectEventTypeConstants ()Ljava/util/Map;
 	public fun getName ()Ljava/lang/String;
-	protected synthetic fun onAfterUpdateTransaction (Landroid/view/View;)V
-	protected fun onAfterUpdateTransaction (Lcom/facebook/react/views/image/ReactImageView;)V
-	public fun setAccessible (Lcom/facebook/react/views/image/ReactImageView;Z)V
-	public fun setBlurRadius (Lcom/facebook/react/views/image/ReactImageView;F)V
-	public fun setBorderColor (Lcom/facebook/react/views/image/ReactImageView;Ljava/lang/Integer;)V
-	public fun setBorderRadius (Lcom/facebook/react/views/image/ReactImageView;IF)V
-	public fun setBorderWidth (Lcom/facebook/react/views/image/ReactImageView;F)V
-	public fun setDefaultSource (Lcom/facebook/react/views/image/ReactImageView;Ljava/lang/String;)V
-	public fun setFadeDuration (Lcom/facebook/react/views/image/ReactImageView;I)V
-	public fun setHeaders (Lcom/facebook/react/views/image/ReactImageView;Lcom/facebook/react/bridge/ReadableMap;)V
-	public fun setInternal_AnalyticsTag (Lcom/facebook/react/views/image/ReactImageView;Ljava/lang/String;)V
-	public fun setLoadHandlersRegistered (Lcom/facebook/react/views/image/ReactImageView;Z)V
-	public fun setLoadingIndicatorSource (Lcom/facebook/react/views/image/ReactImageView;Ljava/lang/String;)V
-	public fun setOverlayColor (Lcom/facebook/react/views/image/ReactImageView;Ljava/lang/Integer;)V
-	public fun setProgressiveRenderingEnabled (Lcom/facebook/react/views/image/ReactImageView;Z)V
-	public fun setResizeMethod (Lcom/facebook/react/views/image/ReactImageView;Ljava/lang/String;)V
-	public fun setResizeMode (Lcom/facebook/react/views/image/ReactImageView;Ljava/lang/String;)V
-	public fun setResizeMultiplier (Lcom/facebook/react/views/image/ReactImageView;F)V
-	public fun setSource (Lcom/facebook/react/views/image/ReactImageView;Lcom/facebook/react/bridge/ReadableArray;)V
-	public fun setSrc (Lcom/facebook/react/views/image/ReactImageView;Lcom/facebook/react/bridge/ReadableArray;)V
-	public fun setTintColor (Lcom/facebook/react/views/image/ReactImageView;Ljava/lang/Integer;)V
+	public synthetic fun onAfterUpdateTransaction (Landroid/view/View;)V
+	public final fun setAccessible (Lcom/facebook/react/views/image/ReactImageView;Z)V
+	public final fun setBlurRadius (Lcom/facebook/react/views/image/ReactImageView;F)V
+	public final fun setBorderColor (Lcom/facebook/react/views/image/ReactImageView;Ljava/lang/Integer;)V
+	public final fun setBorderRadius (Lcom/facebook/react/views/image/ReactImageView;IF)V
+	public final fun setBorderWidth (Lcom/facebook/react/views/image/ReactImageView;F)V
+	public final fun setDefaultSource (Lcom/facebook/react/views/image/ReactImageView;Ljava/lang/String;)V
+	public final fun setFadeDuration (Lcom/facebook/react/views/image/ReactImageView;I)V
+	public final fun setHeaders (Lcom/facebook/react/views/image/ReactImageView;Lcom/facebook/react/bridge/ReadableMap;)V
+	public final fun setInternal_AnalyticsTag (Lcom/facebook/react/views/image/ReactImageView;Ljava/lang/String;)V
+	public final fun setLoadHandlersRegistered (Lcom/facebook/react/views/image/ReactImageView;Z)V
+	public final fun setLoadingIndicatorSource (Lcom/facebook/react/views/image/ReactImageView;Ljava/lang/String;)V
+	public final fun setOverlayColor (Lcom/facebook/react/views/image/ReactImageView;Ljava/lang/Integer;)V
+	public final fun setProgressiveRenderingEnabled (Lcom/facebook/react/views/image/ReactImageView;Z)V
+	public final fun setResizeMethod (Lcom/facebook/react/views/image/ReactImageView;Ljava/lang/String;)V
+	public final fun setResizeMode (Lcom/facebook/react/views/image/ReactImageView;Ljava/lang/String;)V
+	public final fun setResizeMultiplier (Lcom/facebook/react/views/image/ReactImageView;F)V
+	public final fun setSource (Lcom/facebook/react/views/image/ReactImageView;Lcom/facebook/react/bridge/ReadableArray;)V
+	public final fun setSrc (Lcom/facebook/react/views/image/ReactImageView;Lcom/facebook/react/bridge/ReadableArray;)V
+	public final fun setTintColor (Lcom/facebook/react/views/image/ReactImageView;Ljava/lang/Integer;)V
 }
 
 public class com/facebook/react/views/image/ReactImageManager$$PropsSetter : com/facebook/react/uimanager/ViewManagerPropertyUpdater$ViewManagerSetter {
@@ -6401,6 +6401,9 @@ public class com/facebook/react/views/image/ReactImageManager$$PropsSetter : com
 	public fun getProperties (Ljava/util/Map;)V
 	public synthetic fun setProperty (Lcom/facebook/react/uimanager/ViewManager;Landroid/view/View;Ljava/lang/String;Ljava/lang/Object;)V
 	public fun setProperty (Lcom/facebook/react/views/image/ReactImageManager;Lcom/facebook/react/views/image/ReactImageView;Ljava/lang/String;Ljava/lang/Object;)V
+}
+
+public final class com/facebook/react/views/image/ReactImageManager$Companion {
 }
 
 public class com/facebook/react/views/image/ReactImageView : com/facebook/drawee/view/GenericDraweeView {
