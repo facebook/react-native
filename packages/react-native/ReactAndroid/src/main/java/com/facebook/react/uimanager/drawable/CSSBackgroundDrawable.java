@@ -309,6 +309,12 @@ public class CSSBackgroundDrawable extends Drawable {
     return mBorderRadius;
   }
 
+  // Here, "inner" refers to the border radius on the inside of the border. So
+  // it ends up being the "outer" border radius inset by the respective width.
+  public float getInnerBorderRadius(float computedRadius, float borderWidth) {
+    return Math.max(computedRadius - borderWidth, 0);
+  }
+
   public ComputedBorderRadius getComputedBorderRadius() {
     return mComputedBorderRadius;
   }
@@ -640,14 +646,16 @@ public class CSSBackgroundDrawable extends Drawable {
     float bottomLeftRadius = mComputedBorderRadius.getBottomLeft();
     float bottomRightRadius = mComputedBorderRadius.getBottomRight();
 
-    final float innerTopLeftRadiusX = Math.max(topLeftRadius - borderWidth.left, 0);
-    final float innerTopLeftRadiusY = Math.max(topLeftRadius - borderWidth.top, 0);
-    final float innerTopRightRadiusX = Math.max(topRightRadius - borderWidth.right, 0);
-    final float innerTopRightRadiusY = Math.max(topRightRadius - borderWidth.top, 0);
-    final float innerBottomRightRadiusX = Math.max(bottomRightRadius - borderWidth.right, 0);
-    final float innerBottomRightRadiusY = Math.max(bottomRightRadius - borderWidth.bottom, 0);
-    final float innerBottomLeftRadiusX = Math.max(bottomLeftRadius - borderWidth.left, 0);
-    final float innerBottomLeftRadiusY = Math.max(bottomLeftRadius - borderWidth.bottom, 0);
+    final float innerTopLeftRadiusX = getInnerBorderRadius(topLeftRadius, borderWidth.left);
+    final float innerTopLeftRadiusY = getInnerBorderRadius(topLeftRadius, borderWidth.top);
+    final float innerTopRightRadiusX = getInnerBorderRadius(topRightRadius, borderWidth.right);
+    final float innerTopRightRadiusY = getInnerBorderRadius(topRightRadius, borderWidth.top);
+    final float innerBottomRightRadiusX =
+        getInnerBorderRadius(bottomRightRadius, borderWidth.right);
+    final float innerBottomRightRadiusY =
+        getInnerBorderRadius(bottomRightRadius, borderWidth.bottom);
+    final float innerBottomLeftRadiusX = getInnerBorderRadius(bottomLeftRadius, borderWidth.left);
+    final float innerBottomLeftRadiusY = getInnerBorderRadius(bottomLeftRadius, borderWidth.bottom);
 
     mInnerClipPathForBorderRadius.addRoundRect(
         mInnerClipTempRectForBorderRadius,
