@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b914ca36b2ab729f1262384d83b684b7>>
+ * @generated SignedSource<<46ea8a3a51ac64342484cc230727fca3>>
  * @flow strict-local
  */
 
@@ -258,7 +258,7 @@ export const loadVectorDrawablesOnImages: Getter<boolean> = createNativeFlagGett
 /**
  * Propagate layout direction to Android views.
  */
-export const setAndroidLayoutDirection: Getter<boolean> = createNativeFlagGetter('setAndroidLayoutDirection', true);
+export const setAndroidLayoutDirection: Getter<boolean> = createNativeFlagGetter('setAndroidLayoutDirection', false);
 /**
  * Invoke callbacks immediately on the ReactInstance rather than going through a background thread for synchronization
  */
