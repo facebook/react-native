@@ -10,8 +10,7 @@ package com.facebook.react.utils
 import com.facebook.react.tests.OS
 import com.facebook.react.tests.OsRule
 import com.facebook.react.tests.WithOs
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 
@@ -21,57 +20,57 @@ class TaskUtilsTest {
 
   @Test
   fun windowsAwareCommandLine_withEmptyInput_isEmpty() {
-    assertTrue(windowsAwareCommandLine().isEmpty())
+    assertThat(windowsAwareCommandLine().isEmpty()).isTrue()
   }
 
   @Test
   fun windowsAwareCommandLine_withList_isEqualAsVararg() {
-    assertEquals(
-        windowsAwareCommandLine(listOf("a", "b", "c")), windowsAwareCommandLine("a", "b", "c"))
+    assertThat(windowsAwareCommandLine(listOf("a", "b", "c")))
+        .isEqualTo(windowsAwareCommandLine("a", "b", "c"))
   }
 
   @Test
   @WithOs(OS.MAC)
   fun windowsAwareCommandLine_onMac_returnsTheList() {
-    assertEquals(listOf("a", "b", "c"), windowsAwareCommandLine("a", "b", "c"))
+    assertThat(listOf("a", "b", "c")).isEqualTo(windowsAwareCommandLine("a", "b", "c"))
   }
 
   @Test
   @WithOs(OS.LINUX)
   fun windowsAwareCommandLine_onLinux_returnsTheList() {
-    assertEquals(listOf("a", "b", "c"), windowsAwareCommandLine("a", "b", "c"))
+    assertThat(listOf("a", "b", "c")).isEqualTo(windowsAwareCommandLine("a", "b", "c"))
   }
 
   @Test
   @WithOs(OS.WIN)
   fun windowsAwareCommandLine_onWindows_prependsCmd() {
-    assertEquals(listOf("cmd", "/c", "a", "b", "c"), windowsAwareCommandLine("a", "b", "c"))
+    assertThat(listOf("cmd", "/c", "a", "b", "c")).isEqualTo(windowsAwareCommandLine("a", "b", "c"))
   }
 
   @Test
   @WithOs(OS.MAC)
   fun windowsAwareBashCommandLine_onMac_returnsTheList() {
-    assertEquals(
-        listOf("a", "b", "c"), windowsAwareBashCommandLine("a", "b", "c", bashWindowsHome = "abc"))
+    assertThat(listOf("a", "b", "c"))
+        .isEqualTo(windowsAwareBashCommandLine("a", "b", "c", bashWindowsHome = "abc"))
   }
 
   @Test
   @WithOs(OS.LINUX)
   fun windowsAwareBashCommandLine_onLinux_returnsTheList() {
-    assertEquals(listOf("a", "b", "c"), windowsAwareBashCommandLine("a", "b", "c"))
+    assertThat(listOf("a", "b", "c")).isEqualTo(windowsAwareBashCommandLine("a", "b", "c"))
   }
 
   @Test
   @WithOs(OS.WIN)
   fun windowsAwareBashCommandLine_onWindows_prependsBash() {
-    assertEquals(listOf("bash", "-c", "a", "b", "c"), windowsAwareBashCommandLine("a", "b", "c"))
+    assertThat(listOf("bash", "-c", "a", "b", "c"))
+        .isEqualTo(windowsAwareBashCommandLine("a", "b", "c"))
   }
 
   @Test
   @WithOs(OS.WIN)
   fun windowsAwareBashCommandLine_onWindows_prependsCustomBashPath() {
-    assertEquals(
-        listOf("/custom/bash", "-c", "a", "b", "c"),
-        windowsAwareBashCommandLine("a", "b", "c", bashWindowsHome = "/custom/bash"))
+    assertThat(listOf("/custom/bash", "-c", "a", "b", "c"))
+        .isEqualTo(windowsAwareBashCommandLine("a", "b", "c", bashWindowsHome = "/custom/bash"))
   }
 }

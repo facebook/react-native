@@ -81,18 +81,6 @@ declare export default typeof NativeAlertManager;
 "
 `;
 
-exports[`public API should not change unintentionally Libraries/Alert/RCTAlertManager.android.js 1`] = `"UNTYPED MODULE"`;
-
-exports[`public API should not change unintentionally Libraries/Alert/RCTAlertManager.ios.js 1`] = `
-"declare module.exports: {
-  alertWithArgs(
-    args: Args,
-    callback: (id: number, value: string) => void
-  ): void,
-};
-"
-`;
-
 exports[`public API should not change unintentionally Libraries/Alert/RCTAlertManager.js.flow 1`] = `
 "declare module.exports: {
   alertWithArgs(
@@ -153,7 +141,7 @@ declare export class AnimatedEvent {
 
 exports[`public API should not change unintentionally Libraries/Animated/AnimatedImplementation.js 1`] = `
 "export type CompositeAnimation = {
-  start: (callback?: ?EndCallback) => void,
+  start: (callback?: ?EndCallback, isLooping?: boolean) => void,
   stop: () => void,
   reset: () => void,
   _startNativeLoop: (iterations?: number) => void,
@@ -521,12 +509,14 @@ export type AnimationConfig = {
   platformConfig?: PlatformConfig,
   onComplete?: ?EndCallback,
   iterations?: number,
+  isLooping?: boolean,
 };
 declare export default class Animation {
   __active: boolean;
   __isInteraction: boolean;
   __onEnd: ?EndCallback;
   __iterations: number;
+  __isLooping: ?boolean;
   _nativeId: number;
   start(
     fromValue: number,
@@ -1476,6 +1466,35 @@ declare module.exports: File;
 "
 `;
 
+exports[`public API should not change unintentionally Libraries/Blob/FileReader.js 1`] = `
+"type ReadyState = 0 | 1 | 2;
+type ReaderResult = string | ArrayBuffer;
+declare class FileReader extends EventTarget {
+  static EMPTY: number;
+  static LOADING: number;
+  static DONE: number;
+  EMPTY: number;
+  LOADING: number;
+  DONE: number;
+  _readyState: ReadyState;
+  _error: ?Error;
+  _result: ?ReaderResult;
+  _aborted: boolean;
+  constructor(): void;
+  _reset(): void;
+  _setReadyState(newState: ReadyState): void;
+  readAsArrayBuffer(blob: ?Blob): void;
+  readAsDataURL(blob: ?Blob): void;
+  readAsText(blob: ?Blob, encoding: string): void;
+  abort(): void;
+  get readyState(): ReadyState;
+  get error(): ?Error;
+  get result(): ?ReaderResult;
+}
+declare module.exports: FileReader;
+"
+`;
+
 exports[`public API should not change unintentionally Libraries/Blob/NativeBlobModule.js 1`] = `
 "export * from \\"../../src/private/specs/modules/NativeBlobModule\\";
 declare export default typeof NativeBlobModule;
@@ -1601,24 +1620,6 @@ declare export default typeof NativeAccessibilityManager;
 "
 `;
 
-exports[`public API should not change unintentionally Libraries/Components/AccessibilityInfo/legacySendAccessibilityEvent.android.js 1`] = `
-"declare function legacySendAccessibilityEvent(
-  reactTag: number,
-  eventType: string
-): void;
-declare module.exports: legacySendAccessibilityEvent;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/Components/AccessibilityInfo/legacySendAccessibilityEvent.ios.js 1`] = `
-"declare function legacySendAccessibilityEvent(
-  reactTag: number,
-  eventType: string
-): void;
-declare module.exports: legacySendAccessibilityEvent;
-"
-`;
-
 exports[`public API should not change unintentionally Libraries/Components/AccessibilityInfo/legacySendAccessibilityEvent.js.flow 1`] = `
 "declare function legacySendAccessibilityEvent(
   reactTag: number,
@@ -1711,56 +1712,6 @@ declare export default typeof NativeClipboard;
 exports[`public API should not change unintentionally Libraries/Components/DrawerAndroid/AndroidDrawerLayoutNativeComponent.js 1`] = `
 "export * from \\"../../../src/private/specs/components/AndroidDrawerLayoutNativeComponent\\";
 declare export default typeof AndroidDrawerLayoutNativeComponent;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/Components/DrawerAndroid/DrawerLayoutAndroid.android.js 1`] = `
-"type DrawerStates = \\"Idle\\" | \\"Dragging\\" | \\"Settling\\";
-type DrawerSlideEvent = $ReadOnly<{|
-  offset: number,
-|}>;
-type Props = $ReadOnly<{|
-  accessibilityRole?: ?AccessibilityRole,
-  keyboardDismissMode?: ?(\\"none\\" | \\"on-drag\\"),
-  drawerBackgroundColor?: ?ColorValue,
-  drawerPosition: ?(\\"left\\" | \\"right\\"),
-  drawerWidth?: ?number,
-  drawerLockMode?: ?(\\"unlocked\\" | \\"locked-closed\\" | \\"locked-open\\"),
-  onDrawerSlide?: ?DirectEventHandler<DrawerSlideEvent>,
-  onDrawerStateChanged?: ?(state: DrawerStates) => mixed,
-  onDrawerOpen?: ?() => mixed,
-  onDrawerClose?: ?() => mixed,
-  renderNavigationView: () => React.Element<any>,
-  statusBarBackgroundColor?: ?ColorValue,
-  children?: React.Node,
-  style?: ?ViewStyleProp,
-|}>;
-type State = {|
-  drawerOpened: boolean,
-|};
-declare class DrawerLayoutAndroid extends React.Component<Props, State> {
-  static get positions(): mixed;
-  _nativeRef: $FlowFixMe;
-  state: State;
-  render(): React.Node;
-  _onDrawerSlide: $FlowFixMe;
-  _onDrawerOpen: $FlowFixMe;
-  _onDrawerClose: $FlowFixMe;
-  _onDrawerStateChanged: $FlowFixMe;
-  openDrawer(): void;
-  closeDrawer(): void;
-  blur(): void;
-  focus(): void;
-  measure(callback: MeasureOnSuccessCallback): void;
-  measureInWindow(callback: MeasureInWindowOnSuccessCallback): void;
-  measureLayout(
-    relativeToNativeNode: number,
-    onSuccess: MeasureLayoutOnSuccessCallback,
-    onFail?: () => void
-  ): void;
-  setNativeProps(nativeProps: Object): void;
-}
-declare module.exports: DrawerLayoutAndroid;
 "
 `;
 
@@ -1949,34 +1900,6 @@ declare export default function useAndroidRippleForView(
     | $ReadOnly<{| nativeBackgroundAndroid: NativeBackgroundProp |}>
     | $ReadOnly<{| nativeForegroundAndroid: NativeBackgroundProp |}>,
 |}>;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/Components/ProgressBarAndroid/ProgressBarAndroid.android.js 1`] = `
-"export type ProgressBarAndroidProps = $ReadOnly<{|
-  ...ViewProps,
-  ...
-    | {|
-        styleAttr: \\"Horizontal\\",
-        indeterminate: false,
-        progress: number,
-      |}
-    | {|
-        typeAttr:
-          | \\"Horizontal\\"
-          | \\"Normal\\"
-          | \\"Small\\"
-          | \\"Large\\"
-          | \\"Inverse\\"
-          | \\"SmallInverse\\"
-          | \\"LargeInverse\\",
-        indeterminate: true,
-      |},
-  animating?: ?boolean,
-  color?: ?ColorValue,
-  testID?: ?string,
-|}>;
-declare module.exports: typeof ProgressBarAndroidNativeComponent;
 "
 `;
 
@@ -3562,27 +3485,6 @@ declare export default typeof NativeToastAndroid;
 "
 `;
 
-exports[`public API should not change unintentionally Libraries/Components/ToastAndroid/ToastAndroid.android.js 1`] = `
-"declare const ToastAndroid: {
-  SHORT: number,
-  LONG: number,
-  TOP: number,
-  BOTTOM: number,
-  CENTER: number,
-  show: (message: string, duration: number) => void,
-  showWithGravity: (message: string, duration: number, gravity: number) => void,
-  showWithGravityAndOffset: (
-    message: string,
-    duration: number,
-    gravity: number,
-    xOffset: number,
-    yOffset: number
-  ) => void,
-};
-declare module.exports: ToastAndroid;
-"
-`;
-
 exports[`public API should not change unintentionally Libraries/Components/ToastAndroid/ToastAndroid.js 1`] = `
 "declare const ToastAndroid: {
   SHORT: number,
@@ -4620,29 +4522,6 @@ declare export default typeof useSubscribeToDebuggingOverlayRegistry;
 "
 `;
 
-exports[`public API should not change unintentionally Libraries/DevToolsSettings/DevToolsSettingsManager.android.js 1`] = `
-"declare module.exports: {
-  setConsolePatchSettings(newSettings: string): void,
-  getConsolePatchSettings(): ?string,
-  setProfilingSettings(newSettings: string): void,
-  getProfilingSettings(): ?string,
-  reload(): void,
-};
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/DevToolsSettings/DevToolsSettingsManager.ios.js 1`] = `
-"declare const DevToolsSettingsManager: {
-  setConsolePatchSettings(newConsolePatchSettings: string): void,
-  getConsolePatchSettings(): ?string,
-  setProfilingSettings(newProfilingSettings: string): void,
-  getProfilingSettings(): ?string,
-  reload(): void,
-};
-declare module.exports: DevToolsSettingsManager;
-"
-`;
-
 exports[`public API should not change unintentionally Libraries/DevToolsSettings/DevToolsSettingsManager.js.flow 1`] = `
 "declare const DevToolsSettingsManager: {
   setConsolePatchSettings(newConsolePatchSettings: string): void,
@@ -4839,18 +4718,6 @@ exports[`public API should not change unintentionally Libraries/Image/AssetUtils
 ): number;
 declare export function setUrlCacheBreaker(appendage: string): void;
 declare export function getUrlCacheBreaker(): string;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/Image/Image.android.js 1`] = `
-"declare const Image: ImageAndroid;
-declare module.exports: Image;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/Image/Image.ios.js 1`] = `
-"declare const Image: ImageIOS;
-declare module.exports: Image;
 "
 `;
 
@@ -6681,18 +6548,6 @@ declare export default typeof NativeMutationObserver;
 "
 `;
 
-exports[`public API should not change unintentionally Libraries/NativeComponent/BaseViewConfig.android.js 1`] = `
-"declare const PlatformBaseViewConfigAndroid: PartialViewConfigWithoutName;
-declare export default typeof PlatformBaseViewConfigAndroid;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/NativeComponent/BaseViewConfig.ios.js 1`] = `
-"declare const PlatformBaseViewConfigIos: PartialViewConfigWithoutName;
-declare export default typeof PlatformBaseViewConfigIos;
-"
-`;
-
 exports[`public API should not change unintentionally Libraries/NativeComponent/BaseViewConfig.js.flow 1`] = `
 "declare const PlatformBaseViewConfig: PartialViewConfigWithoutName;
 declare export default typeof PlatformBaseViewConfig;
@@ -6874,62 +6729,6 @@ declare export default typeof NativeNetworkingIOS;
 "
 `;
 
-exports[`public API should not change unintentionally Libraries/Network/RCTNetworking.android.js 1`] = `
-"declare class RCTNetworking extends NativeEventEmitter<$FlowFixMe> {
-  constructor(): void;
-  sendRequest(
-    method: string,
-    trackingName: string,
-    url: string,
-    headers: Object,
-    data: RequestBody,
-    responseType: NativeResponseType,
-    incrementalUpdates: boolean,
-    timeout: number,
-    callback: (requestId: number) => mixed,
-    withCredentials: boolean
-  ): void;
-  abortRequest(requestId: number): void;
-  clearCookies(callback: (result: boolean) => any): void;
-}
-declare export default RCTNetworking;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/Network/RCTNetworking.ios.js 1`] = `
-"type RCTNetworkingEventDefinitions = $ReadOnly<{
-  didSendNetworkData: [[number, number, number]],
-  didReceiveNetworkResponse: [[number, number, ?{ [string]: string }, ?string]],
-  didReceiveNetworkData: [[number, string]],
-  didReceiveNetworkIncrementalData: [[number, string, number, number]],
-  didReceiveNetworkDataProgress: [[number, number, number]],
-  didCompleteNetworkResponse: [[number, string, boolean]],
-}>;
-declare const RCTNetworking: {
-  addListener<K: $Keys<RCTNetworkingEventDefinitions>>(
-    eventType: K,
-    listener: (...$ElementType<RCTNetworkingEventDefinitions, K>) => mixed,
-    context?: mixed
-  ): EventSubscription,
-  sendRequest(
-    method: string,
-    trackingName: string,
-    url: string,
-    headers: { ... },
-    data: RequestBody,
-    responseType: NativeResponseType,
-    incrementalUpdates: boolean,
-    timeout: number,
-    callback: (requestId: number) => void,
-    withCredentials: boolean
-  ): void,
-  abortRequest(requestId: number): void,
-  clearCookies(callback: (result: boolean) => void): void,
-};
-declare export default typeof RCTNetworking;
-"
-`;
-
 exports[`public API should not change unintentionally Libraries/Network/RCTNetworking.js.flow 1`] = `
 "type RCTNetworkingEventDefinitions = $ReadOnly<{
   didSendNetworkData: [[number, number, number]],
@@ -6965,6 +6764,130 @@ declare export default typeof RCTNetworking;
 `;
 
 exports[`public API should not change unintentionally Libraries/Network/XHRInterceptor.js 1`] = `"UNTYPED MODULE"`;
+
+exports[`public API should not change unintentionally Libraries/Network/XMLHttpRequest.js 1`] = `
+"export type NativeResponseType = \\"base64\\" | \\"blob\\" | \\"text\\";
+export type ResponseType =
+  | \\"\\"
+  | \\"arraybuffer\\"
+  | \\"blob\\"
+  | \\"document\\"
+  | \\"json\\"
+  | \\"text\\";
+export type Response = ?Object | string;
+type XHRInterceptor = interface {
+  requestSent(id: number, url: string, method: string, headers: Object): void,
+  responseReceived(
+    id: number,
+    url: string,
+    status: number,
+    headers: Object
+  ): void,
+  dataReceived(id: number, data: string): void,
+  loadingFinished(id: number, encodedDataLength: number): void,
+  loadingFailed(id: number, error: string): void,
+};
+declare class XMLHttpRequestEventTarget extends EventTarget {
+  onload: ?Function;
+  onloadstart: ?Function;
+  onprogress: ?Function;
+  ontimeout: ?Function;
+  onerror: ?Function;
+  onabort: ?Function;
+  onloadend: ?Function;
+}
+declare class XMLHttpRequest extends EventTarget {
+  static UNSENT: number;
+  static OPENED: number;
+  static HEADERS_RECEIVED: number;
+  static LOADING: number;
+  static DONE: number;
+  static _interceptor: ?XHRInterceptor;
+  UNSENT: number;
+  OPENED: number;
+  HEADERS_RECEIVED: number;
+  LOADING: number;
+  DONE: number;
+  onload: ?Function;
+  onloadstart: ?Function;
+  onprogress: ?Function;
+  ontimeout: ?Function;
+  onerror: ?Function;
+  onabort: ?Function;
+  onloadend: ?Function;
+  onreadystatechange: ?Function;
+  readyState: number;
+  responseHeaders: ?Object;
+  status: number;
+  timeout: number;
+  responseURL: ?string;
+  withCredentials: boolean;
+  upload: XMLHttpRequestEventTarget;
+  _requestId: ?number;
+  _subscriptions: Array<EventSubscription>;
+  _aborted: boolean;
+  _cachedResponse: Response;
+  _hasError: boolean;
+  _headers: Object;
+  _lowerCaseResponseHeaders: Object;
+  _method: ?string;
+  _perfKey: ?string;
+  _responseType: ResponseType;
+  _response: string;
+  _sent: boolean;
+  _url: ?string;
+  _timedOut: boolean;
+  _trackingName: string;
+  _incrementalEvents: boolean;
+  _performanceLogger: IPerformanceLogger;
+  static setInterceptor(interceptor: ?XHRInterceptor): void;
+  constructor(): void;
+  _reset(): void;
+  get responseType(): ResponseType;
+  set responseType(responseType: ResponseType): void;
+  get responseText(): string;
+  get response(): Response;
+  __didCreateRequest(requestId: number): void;
+  __didUploadProgress(requestId: number, progress: number, total: number): void;
+  __didReceiveResponse(
+    requestId: number,
+    status: number,
+    responseHeaders: ?Object,
+    responseURL: ?string
+  ): void;
+  __didReceiveData(requestId: number, response: string): void;
+  __didReceiveIncrementalData(
+    requestId: number,
+    responseText: string,
+    progress: number,
+    total: number
+  ): void;
+  __didReceiveDataProgress(
+    requestId: number,
+    loaded: number,
+    total: number
+  ): void;
+  __didCompleteResponse(
+    requestId: number,
+    error: string,
+    timeOutError: boolean
+  ): void;
+  _clearSubscriptions(): void;
+  getAllResponseHeaders(): ?string;
+  getResponseHeader(header: string): ?string;
+  setRequestHeader(header: string, value: any): void;
+  setTrackingName(trackingName: string): XMLHttpRequest;
+  setPerformanceLogger(performanceLogger: IPerformanceLogger): XMLHttpRequest;
+  open(method: string, url: string, async: ?boolean): void;
+  send(data: any): void;
+  abort(): void;
+  setResponseHeaders(responseHeaders: ?Object): void;
+  setReadyState(newState: number): void;
+  addEventListener(type: string, listener: EventListener): void;
+}
+declare module.exports: XMLHttpRequest;
+"
+`;
 
 exports[`public API should not change unintentionally Libraries/Network/convertRequestBody.js 1`] = `
 "export type RequestBody =
@@ -8215,19 +8138,6 @@ declare export default typeof NativeSettingsManager;
 "
 `;
 
-exports[`public API should not change unintentionally Libraries/Settings/Settings.ios.js 1`] = `
-"declare const Settings: {
-  _settings: any,
-  get(key: string): mixed,
-  set(settings: Object): void,
-  watchKeys(keys: string | Array<string>, callback: Function): number,
-  clearWatch(watchId: number): void,
-  _sendObservations(body: Object): void,
-};
-declare module.exports: Settings;
-"
-`;
-
 exports[`public API should not change unintentionally Libraries/Settings/Settings.js 1`] = `
 "declare const Settings: {
   get(key: string): mixed,
@@ -8282,37 +8192,6 @@ export type EdgeInsetsOrSizeProp = RectOrSize;
 "
 `;
 
-exports[`public API should not change unintentionally Libraries/StyleSheet/PlatformColorValueTypes.android.js 1`] = `
-"declare export const PlatformColor: (...names: Array<string>) => ColorValue;
-declare export const normalizeColorObject: (
-  color: NativeColorValue
-) => ?ProcessedColorValue;
-declare export const processColorObject: (
-  color: NativeColorValue
-) => ?NativeColorValue;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/StyleSheet/PlatformColorValueTypes.ios.js 1`] = `
-"declare export const PlatformColor: (...names: Array<string>) => ColorValue;
-export type DynamicColorIOSTuplePrivate = {
-  light: ColorValue,
-  dark: ColorValue,
-  highContrastLight?: ColorValue,
-  highContrastDark?: ColorValue,
-};
-declare export const DynamicColorIOSPrivate: (
-  tuple: DynamicColorIOSTuplePrivate
-) => ColorValue;
-declare export const normalizeColorObject: (
-  color: NativeColorValue
-) => ?ProcessedColorValue;
-declare export const processColorObject: (
-  color: NativeColorValue
-) => ?NativeColorValue;
-"
-`;
-
 exports[`public API should not change unintentionally Libraries/StyleSheet/PlatformColorValueTypes.js.flow 1`] = `
 "declare export function PlatformColor(...names: Array<string>): ColorValue;
 declare export function normalizeColorObject(
@@ -8321,19 +8200,6 @@ declare export function normalizeColorObject(
 declare export function processColorObject(
   color: NativeColorValue
 ): ?NativeColorValue;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/StyleSheet/PlatformColorValueTypesIOS.ios.js 1`] = `
-"export type DynamicColorIOSTuple = {
-  light: ColorValue,
-  dark: ColorValue,
-  highContrastLight?: ColorValue,
-  highContrastDark?: ColorValue,
-};
-declare export const DynamicColorIOS: (
-  tuple: DynamicColorIOSTuple
-) => ColorValue;
 "
 `;
 
@@ -9388,43 +9254,6 @@ declare module.exports: {
 "
 `;
 
-exports[`public API should not change unintentionally Libraries/Utilities/BackHandler.android.js 1`] = `
-"type BackPressEventName = \\"backPress\\" | \\"hardwareBackPress\\";
-type TBackHandler = {|
-  +exitApp: () => void,
-  +addEventListener: (
-    eventName: BackPressEventName,
-    handler: () => ?boolean
-  ) => { remove: () => void, ... },
-  +removeEventListener: (
-    eventName: BackPressEventName,
-    handler: () => ?boolean
-  ) => void,
-|};
-declare const BackHandler: TBackHandler;
-declare module.exports: BackHandler;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/Utilities/BackHandler.ios.js 1`] = `
-"declare module.exports: $FlowFixMe;
-type BackPressEventName = \\"backPress\\" | \\"hardwareBackPress\\";
-type TBackHandler = {|
-  +exitApp: () => void,
-  +addEventListener: (
-    eventName: BackPressEventName,
-    handler: () => ?boolean
-  ) => { remove: () => void, ... },
-  +removeEventListener: (
-    eventName: BackPressEventName,
-    handler: () => ?boolean
-  ) => void,
-|};
-declare let BackHandler: TBackHandler;
-declare module.exports: BackHandler;
-"
-`;
-
 exports[`public API should not change unintentionally Libraries/Utilities/BackHandler.js.flow 1`] = `
 "type BackPressEventName = \\"backPress\\" | \\"hardwareBackPress\\";
 type TBackHandler = {|
@@ -9621,12 +9450,6 @@ declare export default typeof PixelRatio;
 "
 `;
 
-exports[`public API should not change unintentionally Libraries/Utilities/Platform.android.js 1`] = `
-"declare const Platform: PlatformType;
-declare module.exports: Platform;
-"
-`;
-
 exports[`public API should not change unintentionally Libraries/Utilities/Platform.flow.js 1`] = `
 "export type PlatformSelectSpec<T> = {
   default?: T,
@@ -9692,12 +9515,6 @@ type AndroidPlatform = {
   select: <T>(spec: PlatformSelectSpec<T>) => T,
 };
 export type Platform = IOSPlatform | AndroidPlatform;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/Utilities/Platform.ios.js 1`] = `
-"declare const Platform: PlatformType;
-declare module.exports: Platform;
 "
 `;
 
@@ -10010,6 +9827,69 @@ declare module.exports: Vibration;
 exports[`public API should not change unintentionally Libraries/WebSocket/NativeWebSocketModule.js 1`] = `
 "export * from \\"../../src/private/specs/modules/NativeWebSocketModule\\";
 declare export default typeof NativeWebSocketModule;
+"
+`;
+
+exports[`public API should not change unintentionally Libraries/WebSocket/WebSocket.js 1`] = `
+"type ArrayBufferView =
+  | Int8Array
+  | Uint8Array
+  | Uint8ClampedArray
+  | Int16Array
+  | Uint16Array
+  | Int32Array
+  | Uint32Array
+  | Float32Array
+  | Float64Array
+  | DataView;
+type BinaryType = \\"blob\\" | \\"arraybuffer\\";
+type WebSocketEventDefinitions = {
+  websocketOpen: [{ id: number, protocol: string }],
+  websocketClosed: [{ id: number, code: number, reason: string }],
+  websocketMessage: [
+    | { type: \\"binary\\", id: number, data: string }
+    | { type: \\"text\\", id: number, data: string }
+    | { type: \\"blob\\", id: number, data: BlobData },
+  ],
+  websocketFailed: [{ id: number, message: string }],
+};
+declare class WebSocket extends EventTarget {
+  static CONNECTING: number;
+  static OPEN: number;
+  static CLOSING: number;
+  static CLOSED: number;
+  CONNECTING: number;
+  OPEN: number;
+  CLOSING: number;
+  CLOSED: number;
+  _socketId: number;
+  _eventEmitter: NativeEventEmitter<WebSocketEventDefinitions>;
+  _subscriptions: Array<EventSubscription>;
+  _binaryType: ?BinaryType;
+  onclose: ?Function;
+  onerror: ?Function;
+  onmessage: ?Function;
+  onopen: ?Function;
+  bufferedAmount: number;
+  extension: ?string;
+  protocol: ?string;
+  readyState: number;
+  url: ?string;
+  constructor(
+    url: string,
+    protocols: ?string | ?Array<string>,
+    options: ?{ headers?: { origin?: string, ... }, ... }
+  ): void;
+  get binaryType(): ?BinaryType;
+  set binaryType(binaryType: BinaryType): void;
+  close(code?: number, reason?: string): void;
+  send(data: string | ArrayBuffer | ArrayBufferView | Blob): void;
+  ping(): void;
+  _close(code?: number, reason?: string): void;
+  _unregisterEvents(): void;
+  _registerEvents(): void;
+}
+declare module.exports: WebSocket;
 "
 `;
 

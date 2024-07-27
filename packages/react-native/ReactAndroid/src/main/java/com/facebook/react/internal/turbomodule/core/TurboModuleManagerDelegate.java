@@ -70,11 +70,6 @@ public abstract class TurboModuleManagerDelegate {
     return false;
   }
 
-  /* Can TurboModule methods that return void execute on the JS thread? */
-  public boolean unstable_enableSyncVoidMethods() {
-    return false;
-  }
-
   // TODO(T171231381): Consider removing this method: could we just use the static initializer
   // of derived classes instead?
   protected synchronized void maybeLoadOtherSoLibraries() {}

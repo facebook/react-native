@@ -66,6 +66,7 @@ import com.facebook.react.fabric.mounting.mountitems.DispatchCommandMountItem;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
 import com.facebook.react.fabric.mounting.mountitems.MountItemFactory;
 import com.facebook.react.interfaces.fabric.SurfaceHandler;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.internal.interop.InteropEventEmitter;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
@@ -751,7 +752,6 @@ public class FabricUIManager
       @Nullable Object props,
       @Nullable Object stateWrapper,
       boolean isLayoutable) {
-
     mMountItemDispatcher.addPreAllocateMountItem(
         MountItemFactory.createPreAllocateViewMountItem(
             rootTag,
@@ -1343,6 +1343,10 @@ public class FabricUIManager
       // the mBinding method, unless mBinding has gone away.
       if (mDriveCxxAnimations && mBinding != null) {
         mBinding.driveCxxAnimations();
+      }
+
+      if (ReactNativeFeatureFlags.useOptimisedViewPreallocationOnAndroid() && mBinding != null) {
+        mBinding.drainPreallocateViewsQueue();
       }
 
       try {

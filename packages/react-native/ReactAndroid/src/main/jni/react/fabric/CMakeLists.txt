@@ -32,6 +32,7 @@ target_link_libraries(
         react_render_componentregistry
         react_render_core
         react_render_debug
+        react_render_dom
         react_render_graphics
         react_render_imagemanager
         react_render_mapbuffer
@@ -41,6 +42,8 @@ target_link_libraries(
         react_render_telemetry
         react_render_textlayoutmanager
         react_render_uimanager
+        react_render_uimanager_consistency
+        rrc_legacyviewmanagerinterop
         react_utils
         react_config
         reactnativejni

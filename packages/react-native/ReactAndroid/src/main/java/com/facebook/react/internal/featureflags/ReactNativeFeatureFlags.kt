@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3fa1a97be20aa80ef7a1e1595bee0dac>>
+ * @generated SignedSource<<ca939ab47fa68fbb5acf5ea34481def9>>
  */
 
 /**
@@ -59,6 +59,12 @@ public object ReactNativeFeatureFlags {
   public fun changeOrderOfMountingInstructionsOnAndroid(): Boolean = accessor.changeOrderOfMountingInstructionsOnAndroid()
 
   /**
+   * Do not wait for a main-thread dispatch to complete init to start executing work on the JS thread on Android
+   */
+  @JvmStatic
+  public fun completeReactInstanceCreationOnBgThreadOnAndroid(): Boolean = accessor.completeReactInstanceCreationOnBgThreadOnAndroid()
+
+  /**
    * When enabled, ReactInstanceManager will clean up Fabric surfaces on destroy().
    */
   @JvmStatic
@@ -75,6 +81,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableCleanTextInputYogaNode(): Boolean = accessor.enableCleanTextInputYogaNode()
+
+  /**
+   * When the app is completely migrated to Fabric, set this flag to true to disable parts of Paper infrastructure that are not needed anymore but consume memory and CPU. Specifically, UIViewOperationQueue and EventDispatcherImpl will no longer work as they will not subscribe to ReactChoreographer for updates.
+   */
+  @JvmStatic
+  public fun enableFabricRendererExclusively(): Boolean = accessor.enableFabricRendererExclusively()
 
   /**
    * When enabled, the renderer would only fail commits when they propagate state and the last commit that updated state changed before committing.
@@ -101,6 +113,12 @@ public object ReactNativeFeatureFlags {
   public fun enablePropsUpdateReconciliationAndroid(): Boolean = accessor.enablePropsUpdateReconciliationAndroid()
 
   /**
+   * Report paint time inside the Event Timing API implementation (PerformanceObserver).
+   */
+  @JvmStatic
+  public fun enableReportEventPaintTime(): Boolean = accessor.enableReportEventPaintTime()
+
+  /**
    * Dispatches state updates synchronously in Fabric (e.g.: updates the scroll position in the shadow tree synchronously from the main thread).
    */
   @JvmStatic
@@ -111,6 +129,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableUIConsistency(): Boolean = accessor.enableUIConsistency()
+
+  /**
+   * When enabled, rawProps in Props will not include Yoga specific props.
+   */
+  @JvmStatic
+  public fun excludeYogaFromRawProps(): Boolean = accessor.excludeYogaFromRawProps()
 
   /**
    * Start image fetching during view preallocation instead of waiting for layout pass
@@ -201,6 +225,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun useNewReactImageViewBackgroundDrawing(): Boolean = accessor.useNewReactImageViewBackgroundDrawing()
+
+  /**
+   * Moves more of the work in view preallocation to the main thread to free up JS thread.
+   */
+  @JvmStatic
+  public fun useOptimisedViewPreallocationOnAndroid(): Boolean = accessor.useOptimisedViewPreallocationOnAndroid()
 
   /**
    * When enabled, cloning shadow nodes within react native will update the reference held by the current JS fiber tree.

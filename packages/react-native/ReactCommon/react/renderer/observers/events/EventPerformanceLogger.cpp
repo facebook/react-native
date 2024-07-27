@@ -7,6 +7,7 @@
 
 #include "EventPerformanceLogger.h"
 
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/utils/CoreFeatures.h>
 #include <unordered_map>
 
@@ -140,7 +141,7 @@ void EventPerformanceLogger::onEventProcessingEnd(EventTag tag) {
     auto& entry = it->second;
     entry.processingEndTime = timeStamp;
 
-    if (CoreFeatures::enableReportEventPaintTime) {
+    if (ReactNativeFeatureFlags::enableReportEventPaintTime()) {
       // If reporting paint time, don't send the entry just yet and wait for the
       // mount hook callback to be called
       return;
@@ -162,7 +163,7 @@ void EventPerformanceLogger::onEventProcessingEnd(EventTag tag) {
 void EventPerformanceLogger::shadowTreeDidMount(
     const RootShadowNode::Shared& /*rootShadowNode*/,
     double mountTime) noexcept {
-  if (!CoreFeatures::enableReportEventPaintTime) {
+  if (!ReactNativeFeatureFlags::enableReportEventPaintTime()) {
     return;
   }
 

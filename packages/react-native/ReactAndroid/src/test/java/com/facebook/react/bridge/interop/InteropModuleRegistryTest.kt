@@ -14,9 +14,7 @@ import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.config.ReactFeatureFlags
 import com.facebook.react.modules.core.JSTimers
 import com.facebook.react.uimanager.events.RCTEventEmitter
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNull
-import org.junit.Assert.assertTrue
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 
@@ -34,7 +32,7 @@ class InteropModuleRegistryTest {
   fun shouldReturnInteropModule_withFabricDisabled_returnsFalse() {
     ReactFeatureFlags.enableFabricRenderer = false
 
-    assertFalse(underTest.shouldReturnInteropModule(RCTEventEmitter::class.java))
+    assertThat(underTest.shouldReturnInteropModule(RCTEventEmitter::class.java)).isFalse()
   }
 
   @Test
@@ -42,7 +40,7 @@ class InteropModuleRegistryTest {
     ReactFeatureFlags.enableFabricRenderer = true
     ReactFeatureFlags.unstable_useFabricInterop = false
 
-    assertFalse(underTest.shouldReturnInteropModule(RCTEventEmitter::class.java))
+    assertThat(underTest.shouldReturnInteropModule(RCTEventEmitter::class.java)).isFalse()
   }
 
   @Test
@@ -50,7 +48,7 @@ class InteropModuleRegistryTest {
     ReactFeatureFlags.enableFabricRenderer = true
     ReactFeatureFlags.unstable_useFabricInterop = true
 
-    assertFalse(underTest.shouldReturnInteropModule(JSTimers::class.java))
+    assertThat(underTest.shouldReturnInteropModule(JSTimers::class.java)).isFalse()
   }
 
   @Test
@@ -60,7 +58,7 @@ class InteropModuleRegistryTest {
 
     underTest.registerInteropModule(RCTEventEmitter::class.java, FakeRCTEventEmitter())
 
-    assertTrue(underTest.shouldReturnInteropModule(RCTEventEmitter::class.java))
+    assertThat(underTest.shouldReturnInteropModule(RCTEventEmitter::class.java)).isTrue()
   }
 
   @Test
@@ -71,7 +69,7 @@ class InteropModuleRegistryTest {
 
     val interopModule = underTest.getInteropModule(RCTEventEmitter::class.java)
 
-    assertNull(interopModule)
+    assertThat(interopModule).isNull()
   }
 
   @Test
@@ -82,7 +80,7 @@ class InteropModuleRegistryTest {
 
     val interopModule = underTest.getInteropModule(RCTEventEmitter::class.java)
 
-    assertTrue(interopModule is FakeRCTEventEmitter)
+    assertThat(interopModule).isInstanceOf(FakeRCTEventEmitter::class.java)
   }
 
   @Test
@@ -91,6 +89,6 @@ class InteropModuleRegistryTest {
     ReactFeatureFlags.unstable_useFabricInterop = true
     val missingModule = underTest.getInteropModule(JSTimers::class.java)
 
-    assertNull(missingModule)
+    assertThat(missingModule).isNull()
   }
 }

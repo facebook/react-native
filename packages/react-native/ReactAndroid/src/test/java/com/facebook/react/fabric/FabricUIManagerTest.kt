@@ -13,7 +13,7 @@ import com.facebook.react.uimanager.ViewManagerRegistry
 import com.facebook.react.uimanager.events.BatchEventDispatchedListener
 import com.facebook.testutils.fakes.FakeBatchEventDispatchedListener
 import com.facebook.testutils.shadows.ShadowSoLoader
-import org.junit.Assert.assertEquals
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -44,7 +44,7 @@ class FabricUIManagerTest {
 
     // DispatchStringCommandMountItem is package private so we can `as` check it.
     val className = command::class.java.name.substringAfterLast(".")
-    assertEquals("DispatchStringCommandMountItem", className)
+    assertThat(className).isEqualTo("DispatchStringCommandMountItem")
   }
 
   @Test
@@ -53,6 +53,6 @@ class FabricUIManagerTest {
 
     // DispatchIntCommandMountItem is package private so we can `as` check it.
     val className = command::class.java.name.substringAfterLast(".")
-    assertEquals("DispatchIntCommandMountItem", className)
+    assertThat(className).isEqualTo("DispatchIntCommandMountItem")
   }
 }

@@ -48,6 +48,8 @@ add_library(
         ReactCommon/CompositeTurboModuleManagerDelegate.cpp
         ReactCommon/OnLoad.cpp
         ReactCommon/TurboModuleManager.cpp
+        $<TARGET_OBJECTS:logger>
+        $<TARGET_OBJECTS:react_bridging>
 )
 
 target_include_directories(

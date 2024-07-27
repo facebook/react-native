@@ -146,7 +146,6 @@ class Scheduler final : public UIManagerDelegate {
    * Temporary flags.
    */
   bool removeOutstandingSurfacesOnDestruction_{false};
-  bool reduceDeleteCreateMutationLayoutAnimation_{false};
 };
 
 } // namespace facebook::react

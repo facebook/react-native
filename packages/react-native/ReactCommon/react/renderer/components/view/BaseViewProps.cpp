@@ -440,12 +440,8 @@ static BorderRadii radiiPercentToPoint(
   };
 }
 
-BorderMetrics BaseViewProps::resolveBorderMetrics(
-    const LayoutMetrics& layoutMetrics) const {
-  auto isRTL =
-      bool{layoutMetrics.layoutDirection == LayoutDirection::RightToLeft};
-
-  auto borderWidths = CascadedBorderWidths{
+CascadedBorderWidths BaseViewProps::getBorderWidths() const {
+  return CascadedBorderWidths{
       /* .left = */ optionalFloatFromYogaValue(
           yogaStyle.border(yoga::Edge::Left)),
       /* .top = */
@@ -465,6 +461,14 @@ BorderMetrics BaseViewProps::resolveBorderMetrics(
       /* .all = */
       optionalFloatFromYogaValue(yogaStyle.border(yoga::Edge::All)),
   };
+}
+
+BorderMetrics BaseViewProps::resolveBorderMetrics(
+    const LayoutMetrics& layoutMetrics) const {
+  auto isRTL =
+      bool{layoutMetrics.layoutDirection == LayoutDirection::RightToLeft};
+
+  auto borderWidths = getBorderWidths();
 
   BorderRadii radii = radiiPercentToPoint(
       borderRadii.resolve(isRTL, ValueUnit{0.0f, UnitType::Point}),

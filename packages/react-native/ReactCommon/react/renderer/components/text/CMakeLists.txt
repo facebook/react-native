@@ -15,7 +15,7 @@ add_compile_options(
         -DLOG_TAG=\"Fabric\")
 
 file(GLOB rrc_text_SRC CONFIGURE_DEPENDS *.cpp)
-add_library(rrc_text STATIC ${rrc_text_SRC})
+add_library(rrc_text OBJECT ${rrc_text_SRC})
 
 target_include_directories(rrc_text PUBLIC ${REACT_COMMON_DIR})
 
@@ -32,7 +32,6 @@ target_link_libraries(rrc_text
         react_render_mapbuffer
         react_render_mounting
         react_render_textlayoutmanager
-        react_render_uimanager
         react_utils
         rrc_view
         yoga

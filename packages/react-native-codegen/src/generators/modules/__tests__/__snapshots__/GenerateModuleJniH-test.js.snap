@@ -46,7 +46,7 @@ file(GLOB react_codegen_SRCS CONFIGURE_DEPENDS *.cpp react/renderer/components/S
 
 add_library(
   react_codegen_SampleWithUppercaseName
-  SHARED
+  OBJECT
   \${react_codegen_SRCS}
 )
 
@@ -55,21 +55,10 @@ target_include_directories(react_codegen_SampleWithUppercaseName PUBLIC . react/
 target_link_libraries(
   react_codegen_SampleWithUppercaseName
   fbjni
-  folly_runtime
-  glog
   jsi
-  react_codegen_rncore
-  react_debug
-  react_nativemodule_core
-  react_render_componentregistry
-  react_render_core
-  react_render_debug
-  react_render_graphics
-  react_render_imagemanager
-  react_render_mapbuffer
-  react_utils
-  rrc_image
-  rrc_view
+  # We need to link different libraries based on wether we are building rncore or not, that's necessary
+  # because we want to break a circular dependency between react_codegen_rncore and reactnative
+  reactnative
   turbomodulejsijni
   yoga
 )
@@ -133,7 +122,7 @@ file(GLOB react_codegen_SRCS CONFIGURE_DEPENDS *.cpp react/renderer/components/c
 
 add_library(
   react_codegen_complex_objects
-  SHARED
+  OBJECT
   \${react_codegen_SRCS}
 )
 
@@ -142,21 +131,10 @@ target_include_directories(react_codegen_complex_objects PUBLIC . react/renderer
 target_link_libraries(
   react_codegen_complex_objects
   fbjni
-  folly_runtime
-  glog
   jsi
-  react_codegen_rncore
-  react_debug
-  react_nativemodule_core
-  react_render_componentregistry
-  react_render_core
-  react_render_debug
-  react_render_graphics
-  react_render_imagemanager
-  react_render_mapbuffer
-  react_utils
-  rrc_image
-  rrc_view
+  # We need to link different libraries based on wether we are building rncore or not, that's necessary
+  # because we want to break a circular dependency between react_codegen_rncore and reactnative
+  reactnative
   turbomodulejsijni
   yoga
 )
@@ -213,7 +191,7 @@ file(GLOB react_codegen_SRCS CONFIGURE_DEPENDS *.cpp react/renderer/components/c
 
 add_library(
   react_codegen_cxx_only_native_modules
-  SHARED
+  OBJECT
   \${react_codegen_SRCS}
 )
 
@@ -222,21 +200,10 @@ target_include_directories(react_codegen_cxx_only_native_modules PUBLIC . react/
 target_link_libraries(
   react_codegen_cxx_only_native_modules
   fbjni
-  folly_runtime
-  glog
   jsi
-  react_codegen_rncore
-  react_debug
-  react_nativemodule_core
-  react_render_componentregistry
-  react_render_core
-  react_render_debug
-  react_render_graphics
-  react_render_imagemanager
-  react_render_mapbuffer
-  react_utils
-  rrc_image
-  rrc_view
+  # We need to link different libraries based on wether we are building rncore or not, that's necessary
+  # because we want to break a circular dependency between react_codegen_rncore and reactnative
+  reactnative
   turbomodulejsijni
   yoga
 )
@@ -300,7 +267,7 @@ file(GLOB react_codegen_SRCS CONFIGURE_DEPENDS *.cpp react/renderer/components/e
 
 add_library(
   react_codegen_empty_native_modules
-  SHARED
+  OBJECT
   \${react_codegen_SRCS}
 )
 
@@ -309,21 +276,10 @@ target_include_directories(react_codegen_empty_native_modules PUBLIC . react/ren
 target_link_libraries(
   react_codegen_empty_native_modules
   fbjni
-  folly_runtime
-  glog
   jsi
-  react_codegen_rncore
-  react_debug
-  react_nativemodule_core
-  react_render_componentregistry
-  react_render_core
-  react_render_debug
-  react_render_graphics
-  react_render_imagemanager
-  react_render_mapbuffer
-  react_utils
-  rrc_image
-  rrc_view
+  # We need to link different libraries based on wether we are building rncore or not, that's necessary
+  # because we want to break a circular dependency between react_codegen_rncore and reactnative
+  reactnative
   turbomodulejsijni
   yoga
 )
@@ -387,7 +343,7 @@ file(GLOB react_codegen_SRCS CONFIGURE_DEPENDS *.cpp react/renderer/components/e
 
 add_library(
   react_codegen_event_emitter_module
-  SHARED
+  OBJECT
   \${react_codegen_SRCS}
 )
 
@@ -396,21 +352,10 @@ target_include_directories(react_codegen_event_emitter_module PUBLIC . react/ren
 target_link_libraries(
   react_codegen_event_emitter_module
   fbjni
-  folly_runtime
-  glog
   jsi
-  react_codegen_rncore
-  react_debug
-  react_nativemodule_core
-  react_render_componentregistry
-  react_render_core
-  react_render_debug
-  react_render_graphics
-  react_render_imagemanager
-  react_render_mapbuffer
-  react_utils
-  rrc_image
-  rrc_view
+  # We need to link different libraries based on wether we are building rncore or not, that's necessary
+  # because we want to break a circular dependency between react_codegen_rncore and reactnative
+  reactnative
   turbomodulejsijni
   yoga
 )
@@ -474,7 +419,7 @@ file(GLOB react_codegen_SRCS CONFIGURE_DEPENDS *.cpp react/renderer/components/n
 
 add_library(
   react_codegen_native_modules_with_type_aliases
-  SHARED
+  OBJECT
   \${react_codegen_SRCS}
 )
 
@@ -483,21 +428,10 @@ target_include_directories(react_codegen_native_modules_with_type_aliases PUBLIC
 target_link_libraries(
   react_codegen_native_modules_with_type_aliases
   fbjni
-  folly_runtime
-  glog
   jsi
-  react_codegen_rncore
-  react_debug
-  react_nativemodule_core
-  react_render_componentregistry
-  react_render_core
-  react_render_debug
-  react_render_graphics
-  react_render_imagemanager
-  react_render_mapbuffer
-  react_utils
-  rrc_image
-  rrc_view
+  # We need to link different libraries based on wether we are building rncore or not, that's necessary
+  # because we want to break a circular dependency between react_codegen_rncore and reactnative
+  reactnative
   turbomodulejsijni
   yoga
 )
@@ -569,7 +503,7 @@ file(GLOB react_codegen_SRCS CONFIGURE_DEPENDS *.cpp react/renderer/components/r
 
 add_library(
   react_codegen_real_module_example
-  SHARED
+  OBJECT
   \${react_codegen_SRCS}
 )
 
@@ -578,21 +512,10 @@ target_include_directories(react_codegen_real_module_example PUBLIC . react/rend
 target_link_libraries(
   react_codegen_real_module_example
   fbjni
-  folly_runtime
-  glog
   jsi
-  react_codegen_rncore
-  react_debug
-  react_nativemodule_core
-  react_render_componentregistry
-  react_render_core
-  react_render_debug
-  react_render_graphics
-  react_render_imagemanager
-  react_render_mapbuffer
-  react_utils
-  rrc_image
-  rrc_view
+  # We need to link different libraries based on wether we are building rncore or not, that's necessary
+  # because we want to break a circular dependency between react_codegen_rncore and reactnative
+  reactnative
   turbomodulejsijni
   yoga
 )
@@ -656,7 +579,7 @@ file(GLOB react_codegen_SRCS CONFIGURE_DEPENDS *.cpp react/renderer/components/s
 
 add_library(
   react_codegen_simple_native_modules
-  SHARED
+  OBJECT
   \${react_codegen_SRCS}
 )
 
@@ -665,21 +588,10 @@ target_include_directories(react_codegen_simple_native_modules PUBLIC . react/re
 target_link_libraries(
   react_codegen_simple_native_modules
   fbjni
-  folly_runtime
-  glog
   jsi
-  react_codegen_rncore
-  react_debug
-  react_nativemodule_core
-  react_render_componentregistry
-  react_render_core
-  react_render_debug
-  react_render_graphics
-  react_render_imagemanager
-  react_render_mapbuffer
-  react_utils
-  rrc_image
-  rrc_view
+  # We need to link different libraries based on wether we are building rncore or not, that's necessary
+  # because we want to break a circular dependency between react_codegen_rncore and reactnative
+  reactnative
   turbomodulejsijni
   yoga
 )
@@ -751,7 +663,7 @@ file(GLOB react_codegen_SRCS CONFIGURE_DEPENDS *.cpp react/renderer/components/t
 
 add_library(
   react_codegen_two_modules_different_files
-  SHARED
+  OBJECT
   \${react_codegen_SRCS}
 )
 
@@ -760,21 +672,10 @@ target_include_directories(react_codegen_two_modules_different_files PUBLIC . re
 target_link_libraries(
   react_codegen_two_modules_different_files
   fbjni
-  folly_runtime
-  glog
   jsi
-  react_codegen_rncore
-  react_debug
-  react_nativemodule_core
-  react_render_componentregistry
-  react_render_core
-  react_render_debug
-  react_render_graphics
-  react_render_imagemanager
-  react_render_mapbuffer
-  react_utils
-  rrc_image
-  rrc_view
+  # We need to link different libraries based on wether we are building rncore or not, that's necessary
+  # because we want to break a circular dependency between react_codegen_rncore and reactnative
+  reactnative
   turbomodulejsijni
   yoga
 )

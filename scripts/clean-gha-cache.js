@@ -10,6 +10,7 @@ const {execSync} = require('node:child_process');
 const CACHE_LIMIT = (10 * 1024 ** 3) * 0.9;
 // Doing this to capture node-modules- and the pre-existing node-cache-<platform>-yarn-<sha> entries
 const NODE_CACHE_KEY = 'node-';
+const NODE_CACHE_KEY_FULL = 'node-modules-';
 
 function cleanData(rawStr) {
   const now = new Date();
@@ -33,6 +34,19 @@ function cacheToString(entry) {
   return `[${hrs(entry.msSinceLastAccessed).padStart(7)}] ${mb(entry.sizeInBytes).padStart(7)} -> ${entry.key}`;
 }
 
+function cleanCache(cmd) {
+  try {
+    const msg = execSync(cmd, 'utf8');
+    return (msg.trim().length > 0) ? msg.trim() : '🪓';
+  } catch (e) {
+    // There can be race conditions between github cache cleanups and this script.
+    if (/Could not find a cache matching/.test(e.message)) {
+      return 'The cache entry no longer exists, skipping.';
+    }
+    return `Failed: '${e.message}', skipping.`;
+  }
+}
+
 function main() {
   const cacheUsage = cleanData(execSync(
     'gh cache list --sort last_accessed_at --json id,key,createdAt,lastAccessedAt,sizeInBytes --limit 1000',
@@ -51,8 +65,10 @@ function main() {
       key.startsWith(NODE_CACHE_KEY) && sizeInBytes > 1024 * 1024
     )
     .sort((a, b) => b.createdAt - a.createdAt);
-  // Leave the latest entry only
-  const keeping = nodeCacheUsage.pop();
+  // Find the oldest version of node-modules-*. It's still possible that we have legacy node-yarn-*
+  // entries if there are commits on branches of RN < 0.75-stable, so guard for this:
+  const idx = nodeCacheUsage.findLastIndex(({key}) => key.startsWith(NODE_CACHE_KEY_FULL));
+  const keeping = ((idx === -1) ? nodeCacheUsage : nodeCacheUsage.splice(idx, 1)).pop();
 
   console.log('TASK: clean up old node_modules cache entries.', keeping ? `\nkeeping ${cacheToString(keeping)}` : ' Skipping, no cache entries.');
   for (const entry of nodeCacheUsage) {
@@ -83,7 +99,7 @@ function main() {
     if (dryRun) {
       console.warn(`Skip: ${cmd}`);
     } else {
-      console.warn(`${cmd} 🪓 ${execSync(cmd, 'utf8').toString()}`);
+      console.warn(`${cmd} → ${cleanCache(cmd)}`);
     }
   }
 }

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ce0749b4f2ccf11b420cb9762012c02b>>
+ * @generated SignedSource<<bab53ba585938b3bf458dbe0874931f8>>
  */
 
 /**
@@ -41,6 +41,10 @@ bool ReactNativeFeatureFlags::changeOrderOfMountingInstructionsOnAndroid() {
   return getAccessor().changeOrderOfMountingInstructionsOnAndroid();
 }
 
+bool ReactNativeFeatureFlags::completeReactInstanceCreationOnBgThreadOnAndroid() {
+  return getAccessor().completeReactInstanceCreationOnBgThreadOnAndroid();
+}
+
 bool ReactNativeFeatureFlags::destroyFabricSurfacesInReactInstanceManager() {
   return getAccessor().destroyFabricSurfacesInReactInstanceManager();
 }
@@ -51,6 +55,10 @@ bool ReactNativeFeatureFlags::enableAlignItemsBaselineOnFabricIOS() {
 
 bool ReactNativeFeatureFlags::enableCleanTextInputYogaNode() {
   return getAccessor().enableCleanTextInputYogaNode();
+}
+
+bool ReactNativeFeatureFlags::enableFabricRendererExclusively() {
+  return getAccessor().enableFabricRendererExclusively();
 }
 
 bool ReactNativeFeatureFlags::enableGranularShadowTreeStateReconciliation() {
@@ -69,12 +77,20 @@ bool ReactNativeFeatureFlags::enablePropsUpdateReconciliationAndroid() {
   return getAccessor().enablePropsUpdateReconciliationAndroid();
 }
 
+bool ReactNativeFeatureFlags::enableReportEventPaintTime() {
+  return getAccessor().enableReportEventPaintTime();
+}
+
 bool ReactNativeFeatureFlags::enableSynchronousStateUpdates() {
   return getAccessor().enableSynchronousStateUpdates();
 }
 
 bool ReactNativeFeatureFlags::enableUIConsistency() {
   return getAccessor().enableUIConsistency();
+}
+
+bool ReactNativeFeatureFlags::excludeYogaFromRawProps() {
+  return getAccessor().excludeYogaFromRawProps();
 }
 
 bool ReactNativeFeatureFlags::fetchImagesInViewPreallocation() {
@@ -135,6 +151,10 @@ bool ReactNativeFeatureFlags::useNativeViewConfigsInBridgelessMode() {
 
 bool ReactNativeFeatureFlags::useNewReactImageViewBackgroundDrawing() {
   return getAccessor().useNewReactImageViewBackgroundDrawing();
+}
+
+bool ReactNativeFeatureFlags::useOptimisedViewPreallocationOnAndroid() {
+  return getAccessor().useOptimisedViewPreallocationOnAndroid();
 }
 
 bool ReactNativeFeatureFlags::useRuntimeShadowNodeReferenceUpdate() {

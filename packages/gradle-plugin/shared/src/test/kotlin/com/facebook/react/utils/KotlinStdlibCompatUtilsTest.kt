@@ -10,73 +10,73 @@ package com.facebook.react.utils
 import com.facebook.react.utils.KotlinStdlibCompatUtils.capitalizeCompat
 import com.facebook.react.utils.KotlinStdlibCompatUtils.lowercaseCompat
 import com.facebook.react.utils.KotlinStdlibCompatUtils.toBooleanStrictOrNullCompat
-import org.junit.Assert.assertEquals
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
 class KotlinStdlibCompatUtilsTest {
 
   @Test
   fun lowercaseCompat_withEmptyString() {
-    assertEquals("", "".lowercaseCompat())
+    assertThat("".lowercaseCompat()).isEqualTo("")
   }
 
   @Test
   fun lowercaseCompat_withLowercaseString() {
-    assertEquals("frodo", "frodo".lowercaseCompat())
+    assertThat("frodo".lowercaseCompat()).isEqualTo("frodo")
   }
 
   @Test
   fun lowercaseCompat_withTitlecaseString() {
-    assertEquals("frodo", "Frodo".lowercaseCompat())
+    assertThat("Frodo".lowercaseCompat()).isEqualTo("frodo")
   }
 
   @Test
   fun lowercaseCompat_withUppercaseString() {
-    assertEquals("frodo", "FRODO".lowercaseCompat())
+    assertThat("FRODO".lowercaseCompat()).isEqualTo("frodo")
   }
 
   @Test
   fun capitalizeCompat_withEmptyString() {
-    assertEquals("", "".capitalizeCompat())
+    assertThat("".capitalizeCompat()).isEqualTo("")
   }
 
   @Test
   fun capitalizeCompat_withLowercaseString() {
-    assertEquals("Bilbo", "bilbo".capitalizeCompat())
+    assertThat("bilbo".capitalizeCompat()).isEqualTo("Bilbo")
   }
 
   @Test
   fun capitalizeCompat_withTitlecaseString() {
-    assertEquals("Bilbo", "Bilbo".capitalizeCompat())
+    assertThat("Bilbo".capitalizeCompat()).isEqualTo("Bilbo")
   }
 
   @Test
   fun capitalizeCompat_withUppercaseString() {
-    assertEquals("BILBO", "BILBO".capitalizeCompat())
+    assertThat("BILBO".capitalizeCompat()).isEqualTo("BILBO")
   }
 
   @Test
   fun toBooleanStrictOrNullCompat_withEmptyString() {
-    assertEquals(null, "".toBooleanStrictOrNullCompat())
+    assertThat("".toBooleanStrictOrNullCompat()).isNull()
   }
 
   @Test
   fun toBooleanStrictOrNullCompat_withfalse() {
-    assertEquals(false, "false".toBooleanStrictOrNullCompat())
+    assertThat("false".toBooleanStrictOrNullCompat()).isFalse()
   }
 
   @Test
   fun toBooleanStrictOrNullCompat_withCapitalTrue_returnsNull() {
-    assertEquals(null, "True".toBooleanStrictOrNullCompat())
+    assertThat("True".toBooleanStrictOrNullCompat()).isNull()
   }
 
   @Test
   fun toBooleanStrictOrNullCompat_withCapitalFalse_returnsNull() {
-    assertEquals(null, "False".toBooleanStrictOrNullCompat())
+    assertThat("False".toBooleanStrictOrNullCompat()).isNull()
   }
 
   @Test
   fun toBooleanStrictOrNullCompat_withRandomInput_returnsNull() {
-    assertEquals(null, "maybe".toBooleanStrictOrNullCompat())
+    assertThat("maybe".toBooleanStrictOrNullCompat()).isNull()
   }
 }

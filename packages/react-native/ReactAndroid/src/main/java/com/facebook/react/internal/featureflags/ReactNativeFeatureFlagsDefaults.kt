@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a42ecd51ef7f12eb8758dbd029a2d67b>>
+ * @generated SignedSource<<abdee8d0b85b0d9940207b9cbe6d3f78>>
  */
 
 /**
@@ -33,11 +33,15 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun changeOrderOfMountingInstructionsOnAndroid(): Boolean = false
 
+  override fun completeReactInstanceCreationOnBgThreadOnAndroid(): Boolean = false
+
   override fun destroyFabricSurfacesInReactInstanceManager(): Boolean = false
 
   override fun enableAlignItemsBaselineOnFabricIOS(): Boolean = true
 
   override fun enableCleanTextInputYogaNode(): Boolean = false
+
+  override fun enableFabricRendererExclusively(): Boolean = false
 
   override fun enableGranularShadowTreeStateReconciliation(): Boolean = false
 
@@ -47,9 +51,13 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enablePropsUpdateReconciliationAndroid(): Boolean = false
 
+  override fun enableReportEventPaintTime(): Boolean = false
+
   override fun enableSynchronousStateUpdates(): Boolean = false
 
   override fun enableUIConsistency(): Boolean = false
+
+  override fun excludeYogaFromRawProps(): Boolean = false
 
   override fun fetchImagesInViewPreallocation(): Boolean = false
 
@@ -80,6 +88,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun useNativeViewConfigsInBridgelessMode(): Boolean = false
 
   override fun useNewReactImageViewBackgroundDrawing(): Boolean = false
+
+  override fun useOptimisedViewPreallocationOnAndroid(): Boolean = false
 
   override fun useRuntimeShadowNodeReferenceUpdate(): Boolean = false
 

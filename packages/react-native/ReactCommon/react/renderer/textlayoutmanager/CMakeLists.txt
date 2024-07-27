@@ -19,7 +19,7 @@ file(GLOB react_render_textlayourmanager_SRC CONFIGURE_DEPENDS
         platform/android/react/renderer/textlayoutmanager/*.cpp)
 
 add_library(react_render_textlayoutmanager
-        STATIC
+        OBJECT
         ${react_render_textlayourmanager_SRC})
 
 target_include_directories(react_render_textlayoutmanager
@@ -44,7 +44,6 @@ target_link_libraries(react_render_textlayoutmanager
         react_render_mapbuffer
         react_render_mounting
         react_render_telemetry
-        react_render_uimanager
         react_utils
         reactnativejni
         yoga

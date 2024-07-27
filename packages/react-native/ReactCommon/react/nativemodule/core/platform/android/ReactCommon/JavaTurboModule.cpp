@@ -33,8 +33,7 @@ namespace TMPL = TurboModulePerfLogger;
 JavaTurboModule::JavaTurboModule(const InitParams& params)
     : TurboModule(params.moduleName, params.jsInvoker),
       instance_(jni::make_global(params.instance)),
-      nativeMethodCallInvoker_(params.nativeMethodCallInvoker),
-      shouldVoidMethodsExecuteSync_(params.shouldVoidMethodsExecuteSync) {}
+      nativeMethodCallInvoker_(params.nativeMethodCallInvoker) {}
 
 JavaTurboModule::~JavaTurboModule() {
   /**
@@ -73,12 +72,6 @@ bool traceTurboModulePromiseRejections() {
   static bool traceRejections =
       getFeatureFlagBoolValue("traceTurboModulePromiseRejections");
   return traceRejections;
-}
-
-bool rejectTurboModulePromiseOnNativeError() {
-  static bool rejectOnError =
-      getFeatureFlagBoolValue("rejectTurboModulePromiseOnNativeError");
-  return rejectOnError;
 }
 
 struct JNIArgs {
@@ -537,9 +530,7 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
   const char* methodName = methodNameStr.c_str();
   const char* moduleName = name_.c_str();
 
-  bool isMethodSync =
-      (valueKind == VoidKind && shouldVoidMethodsExecuteSync_) ||
-      !(valueKind == VoidKind || valueKind == PromiseKind);
+  bool isMethodSync = !(valueKind == VoidKind || valueKind == PromiseKind);
 
   if (isMethodSync) {
     TMPL::syncMethodCallStart(moduleName, methodName);
@@ -819,15 +810,6 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
       return returnValue;
     }
     case VoidKind: {
-      if (shouldVoidMethodsExecuteSync_) {
-        env->CallVoidMethodA(instance, methodID, jargs.data());
-        checkJNIErrorForMethodCall();
-
-        TMPL::syncMethodCallExecutionEnd(moduleName, methodName);
-        TMPL::syncMethodCallEnd(moduleName, methodName);
-        return jsi::Value::undefined();
-      }
-
       TMPL::asyncMethodCallArgConversionEnd(moduleName, methodName);
       TMPL::asyncMethodCallDispatch(moduleName, methodName);
 
@@ -900,12 +882,10 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
                   throw jsi::JSError(runtime, "Incorrect number of arguments");
                 }
 
-                if (rejectTurboModulePromiseOnNativeError()) {
-                  nativeRejectCallback = AsyncCallback(
-                      runtime,
-                      args[1].getObject(runtime).getFunction(runtime),
-                      jsInvoker_);
-                }
+                nativeRejectCallback = AsyncCallback(
+                    runtime,
+                    args[1].getObject(runtime).getFunction(runtime),
+                    jsInvoker_);
 
                 auto resolve = createJavaCallback(
                     runtime,
@@ -975,7 +955,7 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
             try {
               FACEBOOK_JNI_THROW_PENDING_EXCEPTION();
             } catch (...) {
-              if (rejectTurboModulePromiseOnNativeError() && rejectCallback) {
+              if (rejectCallback) {
                 auto exception = std::current_exception();
                 rejectWithException(
                     *rejectCallback, exception, jsInvocationStack);

@@ -16,6 +16,8 @@ import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.modules.systeminfo.AndroidInfoHelpers;
+import java.util.HashMap;
+import java.util.Map;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public class PackagerConnectionSettings {
@@ -25,6 +27,7 @@ public class PackagerConnectionSettings {
   private final SharedPreferences mPreferences;
   private final String mPackageName;
   private final Context mAppContext;
+  private final Map<String, String> mAdditionalOptionsForPackager = new HashMap<>();
 
   public PackagerConnectionSettings(Context applicationContext) {
     mPreferences = PreferenceManager.getDefaultSharedPreferences(applicationContext);
@@ -61,5 +64,13 @@ public class PackagerConnectionSettings {
 
   public @Nullable String getPackageName() {
     return mPackageName;
+  }
+
+  public void setAdditionalOptionForPackager(String key, String value) {
+    mAdditionalOptionsForPackager.put(key, value);
+  }
+
+  public Map<String, String> getAdditionalOptionsForPackager() {
+    return mAdditionalOptionsForPackager;
   }
 }
