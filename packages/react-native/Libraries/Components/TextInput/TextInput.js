@@ -133,6 +133,18 @@ export type EditingEvent = SyntheticEvent<
   |}>,
 >;
 
+export type PasteEvent = SyntheticEvent<
+  $ReadOnly<{|
+    target: number,
+    items: $ReadOnlyArray<
+      $ReadOnly<{|
+        type: string,
+        data: string,
+      |}>,
+    >,
+  |}>,
+>;
+
 type DataDetectorTypesType =
   | 'phoneNumber'
   | 'link'
@@ -814,7 +826,7 @@ export type Props = $ReadOnly<{|
   /**
    * Invoked when the user performs the paste action.
    */
-  onPaste?: ?(e: TargetEvent) => mixed,
+  onPaste?: ?(e: PasteEvent) => mixed,
 
   /**
    * The string that will be rendered before text input has been entered.

@@ -458,7 +458,17 @@ export type NativeProps = $ReadOnly<{|
   /**
    * Invoked when the user performs the paste action.
    */
-  onPaste?: ?DirectEventHandler<$ReadOnly<{|target: Int32|}>>,
+  onPaste?: ?DirectEventHandler<
+    $ReadOnly<{|
+      target: Int32,
+      items: $ReadOnlyArray<
+        $ReadOnly<{|
+          type: string,
+          data: string,
+        |}>,
+      >,
+    |}>,
+  >,
 
   /**
    * The string that will be rendered before text input has been entered.

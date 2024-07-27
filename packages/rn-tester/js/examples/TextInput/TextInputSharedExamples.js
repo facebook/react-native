@@ -853,24 +853,24 @@ function MultilineStyledTextInput({
 function PasteboardTextInput() {
   const [pasteboard, setPasteboard] = useState(null);
   const {type, data} = pasteboard?.items[0] ?? {};
-  const isText = type === "text/plain"
-  const isImage = type && type.startsWith("image/");
+  const isText = type === 'text/plain';
+  const isImage = type && type.startsWith('image/');
 
   return (
     <View>
       <ExampleTextInput
         onPaste={event => setPasteboard(event.nativeEvent)}
         placeholder="Paste text or image"
-        multiline={true}>
-      </ExampleTextInput>
+        multiline={true}
+      />
       {type && (
-        <Text>{"Type: " + type}</Text>
+        <Text>{'Type: ' + type}</Text>
       )}
       {isText && (
-        <Text>{"Data: " + data}</Text>
+        <Text>{'Data: ' + data}</Text>
       )}
       {isImage && (
-        <Image source={{uri: data}} style={{width: "100%", height: 300}} resizeMode='contain' />
+        <Image source={{uri: data}} style={{width: '100%', height: 300}} resizeMode="contain" />
       )}
     </View>
   );
