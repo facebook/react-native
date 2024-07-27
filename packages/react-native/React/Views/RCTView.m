@@ -136,8 +136,6 @@ static NSString *RCTRecursiveAccessibilityLabel(RCTUIView *view) // [macOS]
   RCTUIColor *_backgroundColor; // [macOS]
   id<RCTEventDispatcherProtocol> _eventDispatcher; // [macOS]
 #if TARGET_OS_OSX // [macOS
-  NSTrackingArea *_trackingArea;
-  BOOL _hasMouseOver;
   BOOL _mouseDownCanMoveWindow;
 #endif // macOS]
   NSMutableDictionary<NSString *, NSDictionary *> *accessibilityActionsNameMap;
@@ -778,67 +776,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
     [self setShadow:shadow];
 }
 
-- (void)viewDidMoveToWindow
-{
-  // Subscribe to view bounds changed notification so that the view can be notified when a
-  // scroll event occurs either due to trackpad/gesture based scrolling or a scrollwheel event
-  // both of which would not cause the mouseExited to be invoked.
 
-  if ([self window] == nil) {
-    [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                    name:NSViewBoundsDidChangeNotification
-                                                  object:nil];
-  }
-  else if ([[self enclosingScrollView] contentView] != nil) {
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(viewBoundsChanged:)
-                                                 name:NSViewBoundsDidChangeNotification
-                                               object:[[self enclosingScrollView] contentView]];
-  }
-
-  [self reactViewDidMoveToWindow]; // [macOS] Github#1412
-
-  [super viewDidMoveToWindow];
-}
-
-- (void)viewBoundsChanged:(NSNotification*)__unused inNotif
-{
-  // When an enclosing scrollview is scrolled using the scrollWheel or trackpad,
-  // the mouseExited: event does not get called on the view where mouseEntered: was previously called.
-  // This creates an unnatural pairing of mouse enter and exit events and can cause problems.
-  // We therefore explicitly check for this here and handle them by calling the appropriate callbacks.
-
-  if (!_hasMouseOver && self.onMouseEnter)
-  {
-    NSPoint locationInWindow = [[self window] mouseLocationOutsideOfEventStream];
-    NSPoint locationInView = [self convertPoint:locationInWindow fromView:nil];
-
-    if (NSPointInRect(locationInView, [self bounds]))
-    {
-      _hasMouseOver = YES;
-
-      [self sendMouseEventWithBlock:self.onMouseEnter
-                       locationInfo:[self locationInfoFromDraggingLocation:locationInWindow]
-                      modifierFlags:0
-                     additionalData:nil];
-    }
-  }
-  else if (_hasMouseOver && self.onMouseLeave)
-  {
-    NSPoint locationInWindow = [[self window] mouseLocationOutsideOfEventStream];
-    NSPoint locationInView = [self convertPoint:locationInWindow fromView:nil];
-
-    if (!NSPointInRect(locationInView, [self bounds]))
-    {
-      _hasMouseOver = NO;
-
-      [self sendMouseEventWithBlock:self.onMouseLeave
-                       locationInfo:[self locationInfoFromDraggingLocation:locationInWindow]
-                      modifierFlags:0
-                     additionalData:nil];
-    }
-  }
-}
 #endif // macOS]
 
 #pragma mark - Statics for dealing with layoutGuides
@@ -1527,46 +1465,6 @@ setBorderColor() setBorderColor(Top) setBorderColor(Right) setBorderColor(Bottom
 	return [self focusable] || [super acceptsFirstResponder];
 }
 
-- (void)updateTrackingAreas
-{
-  BOOL hasMouseHoverEvent = self.onMouseEnter || self.onMouseLeave;
-  BOOL wouldRecreateIdenticalTrackingArea = hasMouseHoverEvent && _trackingArea && NSEqualRects(self.bounds, [_trackingArea rect]);
-
-  if (!wouldRecreateIdenticalTrackingArea) {
-    if (_trackingArea) {
-      [self removeTrackingArea:_trackingArea];
-    }
-
-    if (hasMouseHoverEvent) {
-      _trackingArea = [[NSTrackingArea alloc] initWithRect:self.bounds
-                                                   options:NSTrackingActiveAlways|NSTrackingMouseEnteredAndExited
-                                                     owner:self
-                                                  userInfo:nil];
-      [self addTrackingArea:_trackingArea];
-    }
-  }
-
-  [super updateTrackingAreas];
-}
-
-- (void)mouseEntered:(NSEvent *)event
-{
-  _hasMouseOver = YES;
-  [self sendMouseEventWithBlock:self.onMouseEnter
-                   locationInfo:[self locationInfoFromEvent:event]
-                  modifierFlags:event.modifierFlags
-                 additionalData:nil];
-}
-
-- (void)mouseExited:(NSEvent *)event
-{
-  _hasMouseOver = NO;
-  [self sendMouseEventWithBlock:self.onMouseLeave
-                   locationInfo:[self locationInfoFromEvent:event]
-                  modifierFlags:event.modifierFlags
-                 additionalData:nil];
-}
-
 - (BOOL)mouseDownCanMoveWindow{
 	return _mouseDownCanMoveWindow;
 }
@@ -1577,53 +1475,6 @@ setBorderColor() setBorderColor(Top) setBorderColor(Right) setBorderColor(Bottom
 
 - (BOOL)allowsVibrancy {
   return _allowsVibrancyInternal;
-}
-
-- (NSDictionary*)locationInfoFromEvent:(NSEvent*)event
-{
-  NSPoint locationInWindow = event.locationInWindow;
-  NSPoint locationInView = [self convertPoint:locationInWindow fromView:nil];
-
-  return @{@"screenX": @(locationInWindow.x),
-           @"screenY": @(locationInWindow.y),
-           @"clientX": @(locationInView.x),
-           @"clientY": @(locationInView.y)
-           };
-}
-
-- (void)sendMouseEventWithBlock:(RCTDirectEventBlock)block
-                   locationInfo:(NSDictionary*)locationInfo
-                  modifierFlags:(NSEventModifierFlags)modifierFlags
-                 additionalData:(NSDictionary*)additionalData
-{
-  if (block == nil) {
-    return;
-  }
-  
-  NSMutableDictionary *body = [NSMutableDictionary new];
-  
-  if (modifierFlags & NSEventModifierFlagShift) {
-    body[@"shiftKey"] = @YES;
-  }
-  if (modifierFlags & NSEventModifierFlagControl) {
-    body[@"ctrlKey"] = @YES;
-  }
-  if (modifierFlags & NSEventModifierFlagOption) {
-    body[@"altKey"] = @YES;
-  }
-  if (modifierFlags & NSEventModifierFlagCommand) {
-    body[@"metaKey"] = @YES;
-  }
-
-  if (locationInfo) {
-    [body addEntriesFromDictionary:locationInfo];
-  }
-
-  if (additionalData) {
-    [body addEntriesFromDictionary:additionalData];
-  }
-
-  block(body);
 }
 
 - (NSDictionary*)dataTransferInfoFromPasteboard:(NSPasteboard*)pasteboard
@@ -1702,17 +1553,6 @@ setBorderColor() setBorderColor(Top) setBorderColor(Right) setBorderColor(Bottom
   return @{@"dataTransfer": @{@"files": files,
                               @"items": items,
                               @"types": types}};
-}
-
-- (NSDictionary*)locationInfoFromDraggingLocation:(NSPoint)locationInWindow
-{
-  NSPoint locationInView = [self convertPoint:locationInWindow fromView:nil];
-
-  return @{@"screenX": @(locationInWindow.x),
-           @"screenY": @(locationInWindow.y),
-           @"clientX": @(locationInView.x),
-           @"clientY": @(locationInView.y)
-           };
 }
 
 - (NSDragOperation)draggingEntered:(id <NSDraggingInfo>)sender

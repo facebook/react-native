@@ -241,6 +241,13 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, RCTPlatformView *> *vie
  */
 - (CGRect)measureLayoutRelativeToAncestor:(RCTShadowView *)ancestor;
 
+// [macOS
+/**
+ * Returns the closest ancestor shared by this shadow view and another specified shadow view.
+ */
+- (RCTShadowView *)ancestorSharedWithShadowView:(RCTShadowView *)shadowView;
+// macOS]
+
 /**
  * Checks if the current shadow view is a descendant of the provided `ancestor`
  */

@@ -101,9 +101,20 @@ export interface TextPropsAndroid {
   android_hyphenationFrequency?: 'normal' | 'none' | 'full' | undefined;
 }
 
+// [macOS
+export interface TextPropsMacOS {
+  enableFocusRing?: boolean | undefined;
+  focusable?: boolean | undefined;
+  onMouseEnter?: ((event: MouseEvent) => void) | undefined;
+  onMouseLeave?: ((event: MouseEvent) => void) | undefined;
+  tooltip?: string | undefined;
+}
+// macOS]
+
 // https://reactnative.dev/docs/text#props
 export interface TextProps
   extends TextPropsIOS,
+    TextPropsMacOS, // [macOS]
     TextPropsAndroid,
     AccessibilityProps {
   /**

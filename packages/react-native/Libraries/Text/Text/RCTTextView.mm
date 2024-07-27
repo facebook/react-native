@@ -12,6 +12,7 @@
 #endif // [macOS]
 
 #import <React/RCTAssert.h> // [macOS]
+#import <React/RCTUIManager.h> // [macOS]
 #import <React/RCTUtils.h>
 #import <React/UIView+React.h>
 #import <React/RCTFocusChangeEvent.h> // [macOS]
@@ -62,6 +63,8 @@
 
   id<RCTEventDispatcherProtocol> _eventDispatcher; // [macOS]
   NSArray<RCTUIView *> *_Nullable _descendantViews; // [macOS]
+  NSArray<RCTVirtualTextView *> *_Nullable _virtualSubviews; // [macOS]
+  RCTUIView *_Nullable _currentHoveredSubview; // [macOS]
   NSTextStorage *_Nullable _textStorage;
   CGRect _contentFrame;
 }
@@ -99,6 +102,7 @@
     _textView.layoutManager.usesFontLeading = NO;
     _textStorage = _textView.textStorage;
     [self addSubview:_textView];
+    _currentHoveredSubview = nil;
 #endif // macOS]
     RCTUIViewSetContentModeRedraw(self); // [macOS]
   }
@@ -162,6 +166,20 @@
           contentFrame:(CGRect)contentFrame
        descendantViews:(NSArray<RCTPlatformView *> *)descendantViews // [macOS]
 {
+  // [macOS - to keep track of virtualSubviews as well
+  [self setTextStorage:textStorage
+          contentFrame:contentFrame
+       descendantViews:descendantViews
+       virtualSubviews:nil];
+}
+
+- (void)setTextStorage:(NSTextStorage *)textStorage
+          contentFrame:(CGRect)contentFrame
+       descendantViews:(NSArray<RCTPlatformView *> *)descendantViews
+       virtualSubviews:(NSArray<RCTVirtualTextView *> *)virtualSubviews
+{
+  // macOS]
+
   // This lets the textView own its text storage on macOS
   // We update and replace the text container `_textView.textStorage.attributedString` when text/layout changes
 #if !TARGET_OS_OSX // [macOS]
@@ -203,6 +221,8 @@
   for (RCTUIView *view in descendantViews) { // [macOS]
     [self addSubview:view];
   }
+
+  _virtualSubviews = virtualSubviews; // [macOS]
 
   [self setNeedsDisplay];
 }
@@ -398,6 +418,21 @@
 }
 #else // [macOS
 
+- (BOOL)hasMouseHoverEvent
+{
+  if ([super hasMouseHoverEvent]) {
+    return YES;
+  }
+
+  // We only care about virtual subviews here.
+  // Embedded views (e.g., <Text> <View /> </Text>) handle mouse hover events themselves.
+  NSUInteger indexOfChildWithMouseHoverEvent = [_virtualSubviews indexOfObjectPassingTest:^BOOL(RCTVirtualTextView *_Nonnull childView, NSUInteger idx, BOOL *_Nonnull stop) {
+    *stop = [childView hasMouseHoverEvent];
+    return *stop;
+  }];
+  return indexOfChildWithMouseHoverEvent != NSNotFound;
+}
+
 - (NSView *)hitTest:(NSPoint)point
 {
   // We will forward mouse click events to the NSTextView ourselves to prevent NSTextView from swallowing events that may be handled in JS (e.g. long press).
@@ -410,6 +445,110 @@
   BOOL isTextViewClick = (hitView && hitView == _textView) && !isMouseMoveEvent;
   
   return isTextViewClick ? self : hitView;
+}
+
+- (NSNumber *)reactTagAtMouseLocationFromEvent:(NSEvent *)event
+{
+  NSPoint locationInSelf = [self convertPoint:event.locationInWindow fromView:nil];
+  NSPoint locationInInnerTextView = [self convertPoint:locationInSelf toView:_textView]; // This is needed if the parent <Text> view has padding
+  return [self reactTagAtPoint:locationInInnerTextView];
+}
+
+- (void)mouseEntered:(NSEvent *)event
+{
+  // superclass invokes self.onMouseEnter, so do this first
+  [super mouseEntered:event];
+
+  [self updateHoveredSubviewWithEvent:event];
+}
+
+- (void)mouseExited:(NSEvent *)event
+{
+  [self updateHoveredSubviewWithEvent:event];
+
+  // superclass invokes self.onMouseLeave, so do this last
+  [super mouseExited:event];
+}
+
+- (void)mouseMoved:(NSEvent *)event
+{
+  [super mouseMoved:event];
+  [self updateHoveredSubviewWithEvent:event];
+}
+
+- (void)updateHoveredSubviewWithEvent:(NSEvent *)event
+{
+  RCTUIView *hoveredView = nil;
+
+  if ([event type] != NSEventTypeMouseExited && _virtualSubviews != nil) {
+    NSNumber *reactTagOfHoveredView = [self reactTagAtMouseLocationFromEvent:event];
+
+    if (reactTagOfHoveredView == nil) {
+      // This happens if we hover over an embedded view, which will handle its own mouse events
+      return;
+    }
+
+    if ([reactTagOfHoveredView isEqualToNumber:self.reactTag]) {
+      // We're hovering over the root Text element
+      hoveredView = self;
+    } else {
+      // Maybe we're hovering over a child Text element?
+      NSUInteger index = [_virtualSubviews indexOfObjectPassingTest:^BOOL(RCTVirtualTextView *_Nonnull view, NSUInteger idx, BOOL *_Nonnull stop) {
+        *stop = [[view reactTag] isEqualToNumber:reactTagOfHoveredView];
+        return *stop;
+      }];
+      if (index != NSNotFound) {
+        hoveredView = _virtualSubviews[index];
+      }
+    }
+  }
+
+  if (_currentHoveredSubview == hoveredView) {
+    return;
+  }
+
+  // self will always be an ancestor of any views we pass in here, so it serves as a good default option.
+  // Also, if we do set from/to nil, we have to call the relevant events on the entire subtree.
+  RCTUIManager *uiManager = [[_eventDispatcher bridge] uiManager];
+  RCTShadowView *oldShadowView = [uiManager shadowViewForReactTag:[(_currentHoveredSubview ?: self) reactTag]];
+  RCTShadowView *newShadowView = [uiManager shadowViewForReactTag:[(hoveredView ?: self) reactTag]];
+
+  // Find the common ancestor between the two shadow views
+  RCTShadowView *commonAncestor = [oldShadowView ancestorSharedWithShadowView:newShadowView];
+
+  for (RCTShadowView *exitedShadowView = oldShadowView; exitedShadowView != commonAncestor && exitedShadowView != nil; exitedShadowView = [exitedShadowView reactSuperview]) {
+    RCTPlatformView *exitedView = [uiManager viewForReactTag:[exitedShadowView reactTag]];
+    if (![exitedView isKindOfClass:[RCTUIView class]]) {
+      RCTLogError(@"Unexpected view of type %@ found in hierarchy, must be RCTUIView or subclass", [exitedView class]);
+      continue;
+    }
+
+    RCTUIView *exitedReactView = (RCTUIView *)exitedView;
+    [self sendMouseEventWithBlock:[exitedReactView onMouseLeave]
+                     locationInfo:[self locationInfoFromEvent:event]
+                    modifierFlags:event.modifierFlags
+                   additionalData:nil];
+  }
+
+  // We cache these so we can call them from outermost to innermost
+  NSMutableArray<RCTUIView *> *enteredViewHierarchy = [NSMutableArray new];
+  for (RCTShadowView *enteredShadowView = newShadowView; enteredShadowView != commonAncestor && enteredShadowView != nil; enteredShadowView = [enteredShadowView reactSuperview]) {
+    RCTPlatformView *enteredView = [uiManager viewForReactTag:[enteredShadowView reactTag]];
+    if (![enteredView isKindOfClass:[RCTUIView class]]) {
+      RCTLogError(@"Unexpected view of type %@ found in hierarchy, must be RCTUIView or subclass", [enteredView class]);
+      continue;
+    }
+
+    [enteredViewHierarchy addObject:(RCTUIView *)enteredView];
+  }
+  for (NSInteger i = [enteredViewHierarchy count] - 1; i >= 0; i--) {
+    [self sendMouseEventWithBlock:[[enteredViewHierarchy objectAtIndex:i] onMouseEnter]
+                     locationInfo:[self locationInfoFromEvent:event]
+                    modifierFlags:event.modifierFlags
+                   additionalData:nil];
+  }
+
+  _currentHoveredSubview = hoveredView;
 }
 
 - (void)rightMouseDown:(NSEvent *)event

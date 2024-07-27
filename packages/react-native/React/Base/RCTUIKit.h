@@ -123,6 +123,8 @@ NS_ASSUME_NONNULL_END
 
 #import <AppKit/AppKit.h>
 
+#import <React/RCTComponent.h>
+
 NS_ASSUME_NONNULL_BEGIN
 
 //
@@ -403,6 +405,16 @@ CGPathRef UIBezierPathCreateCGPathRef(UIBezierPath *path);
 
 - (void)setNeedsDisplay;
 
+// Methods related to mouse events
+- (BOOL)hasMouseHoverEvent;
+- (NSDictionary*)locationInfoFromDraggingLocation:(NSPoint)locationInWindow;
+- (NSDictionary*)locationInfoFromEvent:(NSEvent*)event;
+
+- (void)sendMouseEventWithBlock:(RCTDirectEventBlock)block
+                   locationInfo:(NSDictionary*)locationInfo
+                  modifierFlags:(NSEventModifierFlags)modifierFlags
+                 additionalData:(NSDictionary*)additionalData;
+
 // FUTURE: When Xcode 14 is no longer supported (CI is building with Xcode 15), we can remove this override since it's now declared on NSView
 @property BOOL clipsToBounds;
 @property (nonatomic, copy) NSColor *backgroundColor;
@@ -425,6 +437,24 @@ CGPathRef UIBezierPathCreateCGPathRef(UIBezierPath *path);
  * Specifies whether focus ring should be drawn when the view has the first responder status.
  */
 @property (nonatomic, assign) BOOL enableFocusRing;
+
+// Mouse events
+@property (nonatomic, copy) RCTDirectEventBlock onMouseEnter;
+@property (nonatomic, copy) RCTDirectEventBlock onMouseLeave;
+@property (nonatomic, copy) RCTDirectEventBlock onDragEnter;
+@property (nonatomic, copy) RCTDirectEventBlock onDragLeave;
+@property (nonatomic, copy) RCTDirectEventBlock onDrop;
+
+// Focus events
+@property (nonatomic, copy) RCTBubblingEventBlock onBlur;
+@property (nonatomic, copy) RCTBubblingEventBlock onFocus;
+
+@property (nonatomic, copy) RCTBubblingEventBlock onResponderGrant;
+@property (nonatomic, copy) RCTBubblingEventBlock onResponderMove;
+@property (nonatomic, copy) RCTBubblingEventBlock onResponderRelease;
+@property (nonatomic, copy) RCTBubblingEventBlock onResponderTerminate;
+@property (nonatomic, copy) RCTBubblingEventBlock onResponderTerminationRequest;
+@property (nonatomic, copy) RCTBubblingEventBlock onStartShouldSetResponder;
 
 @end
 

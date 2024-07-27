@@ -7,6 +7,7 @@
 
 #import <React/RCTComponent.h>
 #import <React/RCTEventDispatcher.h> // [macOS]
+#import <React/RCTVirtualTextView.h> // [macOS]
 
 #import <React/RCTUIKit.h> // [macOS]
 
@@ -21,6 +22,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setTextStorage:(NSTextStorage *)textStorage
           contentFrame:(CGRect)contentFrame
        descendantViews:(NSArray<RCTPlatformView *> *)descendantViews; // [macOS]
+
+// [macOS
+- (void)setTextStorage:(NSTextStorage *)textStorage
+          contentFrame:(CGRect)contentFrame
+       descendantViews:(NSArray<RCTPlatformView *> *)descendantViews
+       virtualSubviews:(NSArray<RCTVirtualTextView *> *_Nullable)virtualSubviews;
+// macOS]
 
 /**
  * (Experimental and unused for Paper) Pointer event handlers.

@@ -1344,6 +1344,27 @@ const examples = [
   },
   // [macOS
   {
+    title: 'Mouse hover events on nested Text elements',
+    render: function (): React.Node {
+      function mouseProps(name: string) {
+        return {
+          onMouseEnter: () => console.log(`Enter ${name}`),
+          onMouseLeave: () => console.log(`Leave ${name}`),
+        };
+      }
+
+      return (
+        <Text {...mouseProps('outer')}>
+          This is some text with{' '}
+          <Text style={{color: 'red'}} {...mouseProps('inner')}>
+            a nested element
+          </Text>{' '}
+          that tracks mouse hover events
+        </Text>
+      );
+    },
+  },
+  {
     title: 'Text components inheriting color from parent',
     render: function (): React.Node {
       return (
