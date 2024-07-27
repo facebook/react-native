@@ -12,6 +12,7 @@
 
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import type {TextStyle} from 'react-native/Libraries/StyleSheet/StyleSheet';
+import type {PasteEvent} from 'react-native/Libraries/Components/TextInput/TextInput';
 
 import RNTesterButton from '../../components/RNTesterButton';
 import {RNTesterThemeContext} from '../../components/RNTesterTheme';
@@ -851,26 +852,25 @@ function MultilineStyledTextInput({
 }
 
 function PasteboardTextInput() {
-  const [pasteboard, setPasteboard] = useState(null);
-  const {type, data} = pasteboard?.items[0] ?? {};
-  const isText = type === 'text/plain';
-  const isImage = type && type.startsWith('image/');
+  const [pasteEvent, setPasteEvent] = useState<?PasteEvent['nativeEvent']>();
+  const content = pasteEvent?.items[0];
 
   return (
     <View>
       <ExampleTextInput
-        onPaste={event => setPasteboard(event.nativeEvent)}
+        onPaste={event => setPasteEvent(event.nativeEvent)}
         placeholder="Paste text or image"
         multiline={true}
       />
-      {type && (
-        <Text>{'Type: ' + type}</Text>
-      )}
-      {isText && (
-        <Text>{'Data: ' + data}</Text>
-      )}
-      {isImage && (
-        <Image source={{uri: data}} style={{width: '100%', height: 300}} resizeMode="contain" />
+      {content && (
+        <>
+        <Text>{'Type: ' + content.type}</Text>
+        {content.type.startsWith('text/') ? (
+          <Text>{'Data: ' + content.data}</Text>
+        ) : content.type.startsWith('image/') ? (
+          <Image source={{uri: content.data}} style={{width: '100%', height: 300, borderWidth: 1, borderColor: 'lightgray'}} resizeMode="contain" />
+        ) : null}
+        </>
       )}
     </View>
   );
