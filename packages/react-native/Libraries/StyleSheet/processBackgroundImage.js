@@ -14,9 +14,9 @@ import type {____ColorValue_Internal} from './StyleSheetTypes';
 
 const processColor = require('./processColor').default;
 
-const LINEAR_GRADIENT_REGEX = /linear-gradient\s*\(((?:\([^)]*\)|[^())])*)\)/g;
+const LINEAR_GRADIENT_REGEX = /linear-gradient\s*\(((?:\([^)]*\)|[^())])*)\)/gi;
 const COLOR_STOP_REGEX =
-  /\s*((?:(?:rgba?|hsla?)\s*\([^)]+\))|#[0-9a-fA-F]+|[a-zA-Z]+)(?:\s+([0-9.]+%?))?\s*/g;
+  /\s*((?:(?:rgba?|hsla?)\s*\([^)]+\))|#[0-9a-fA-F]+|[a-zA-Z]+)(?:\s+([0-9.]+%?))?\s*/gi;
 const DIRECTION_REGEX =
   /^to\s+(?:top|bottom|left|right)(?:\s+(?:top|bottom|left|right))?/;
 const ANGLE_UNIT_REGEX = /^.*?(deg|grad|rad|turn)$/;
@@ -37,13 +37,17 @@ export type BackgroundImagePrimitive = {
 };
 
 export default function processBackgroundImage(
-  backgroundImage: $ReadOnlyArray<BackgroundImagePrimitive> | string,
+  backgroundImage: ?($ReadOnlyArray<BackgroundImagePrimitive> | string),
 ): $ReadOnlyArray<BackgroundImagePrimitive> {
+  let result: $ReadOnlyArray<BackgroundImagePrimitive> = [];
+  if (backgroundImage == null) {
+    return result;
+  }
+
   if (typeof backgroundImage === 'string') {
-    const parsedBackgroundImage = parseCSSLinearGradient(backgroundImage);
-    return parsedBackgroundImage;
+    result = parseCSSLinearGradient(backgroundImage);
   } else if (Array.isArray(backgroundImage)) {
-    const parsedBackgroundImage = backgroundImage.map(bg => {
+    result = backgroundImage.map(bg => {
       return {
         type: bg.type,
         start: bg.start,
@@ -57,10 +61,9 @@ export default function processBackgroundImage(
         }),
       };
     });
-    return parsedBackgroundImage;
   }
 
-  return [];
+  return result;
 }
 
 function parseCSSLinearGradient(
@@ -73,7 +76,7 @@ function parseCSSLinearGradient(
     const gradientContent = match[1];
     const parts = gradientContent.split(',');
     let points = TO_BOTTOM_START_END_POINTS;
-    const trimmedDirection = parts[0].trim();
+    const trimmedDirection = parts[0].trim().toLowerCase();
     if (ANGLE_UNIT_REGEX.test(trimmedDirection)) {
       points = calculateStartEndPointsFromAngle(parseAngle(trimmedDirection));
       parts.shift();
@@ -87,7 +90,7 @@ function parseCSSLinearGradient(
     let colorStopMatch;
     while ((colorStopMatch = COLOR_STOP_REGEX.exec(fullColorStopsStr))) {
       const [, color, position] = colorStopMatch;
-      const processedColor = processColor(color.trim());
+      const processedColor = processColor(color.trim().toLowerCase());
       if (processedColor != null) {
         colorStops.push({
           color: processedColor,

@@ -45,6 +45,44 @@ describe('processBackgroundImage', () => {
     ]);
   });
 
+  it('should process a linear gradient with case-insensitive angle', () => {
+    const input = 'linear-gradient(45Deg, red, blue)';
+    const result = processBackgroundImage(input);
+    expect(result[0].type).toBe('linearGradient');
+    expect(result[0].start.x).toBeCloseTo(0.146447, 5);
+    expect(result[0].start.y).toBeCloseTo(0.853553, 5);
+    expect(result[0].end.x).toBeCloseTo(0.853553, 5);
+    expect(result[0].end.y).toBeCloseTo(0.146447, 5);
+    expect(result[0].colorStops).toEqual([
+      {color: processColor('red'), position: 0},
+      {color: processColor('blue'), position: 1},
+    ]);
+  });
+
+  it('should process a linear gradient with case-insensitive direction enum', () => {
+    const input = 'linear-gradient(tO Right, red, blue)';
+    const result = processBackgroundImage(input);
+    expect(result[0].start).toEqual({x: 0, y: 0.5});
+    expect(result[0].end).toEqual({x: 1, y: 0.5});
+    expect(result[0].colorStops).toEqual([
+      {color: processColor('red'), position: 0},
+      {color: processColor('blue'), position: 1},
+    ]);
+  });
+
+  it('should process a linear gradient with case-insensitive colors', () => {
+    const input =
+      'linear-gradient(to right, Rgba(0, 0, 0, 0.5), Blue, Hsla(0, 100%, 50%, 0.5))';
+    const result = processBackgroundImage(input);
+    expect(result[0].start).toEqual({x: 0, y: 0.5});
+    expect(result[0].end).toEqual({x: 1, y: 0.5});
+    expect(result[0].colorStops).toEqual([
+      {color: processColor('rgba(0, 0, 0, 0.5)'), position: 0},
+      {color: processColor('blue'), position: 0.5},
+      {color: processColor('hsla(0, 100%, 50%, 0.5)'), position: 1},
+    ]);
+  });
+
   it('should process multiple linear gradients', () => {
     const input =
       'linear-gradient(to right, red, blue), linear-gradient(to bottom, green, yellow)';
