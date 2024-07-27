@@ -174,7 +174,7 @@ const definitions: FeatureFlagDefinitions = {
         'Adds support for loading vector drawable assets in the Image component (only on Android)',
     },
     setAndroidLayoutDirection: {
-      defaultValue: true,
+      defaultValue: false,
       description: 'Propagate layout direction to Android views.',
     },
     useImmediateExecutorInAndroidBridgeless: {
