@@ -10,17 +10,13 @@
 
 'use strict';
 
-import type {____ColorValue_Internal} from './StyleSheetTypes';
+import type {ColorValue} from './StyleSheet';
 
 const processColor = require('./processColor').default;
-
-const LINEAR_GRADIENT_REGEX = /linear-gradient\s*\(((?:\([^)]*\)|[^())])*)\)/gi;
-const COLOR_STOP_REGEX =
-  /\s*((?:(?:rgba?|hsla?)\s*\([^)]+\))|#[0-9a-fA-F]+|[a-zA-Z]+)(?:\s+([0-9.]+%?))?\s*/gi;
 const DIRECTION_REGEX =
   /^to\s+(?:top|bottom|left|right)(?:\s+(?:top|bottom|left|right))?/;
-const ANGLE_UNIT_REGEX = /^.*?(deg|grad|rad|turn)$/;
-const TRANSPARENT = 0; // rgba(0, 0, 0, 0)
+const ANGLE_UNIT_REGEX = /^([+-]?\d*\.?\d+)(deg|grad|rad|turn)$/i;
+
 const TO_BOTTOM_START_END_POINTS = {
   start: {x: 0.5, y: 0},
   end: {x: 0.5, y: 1},
@@ -31,7 +27,7 @@ export type BackgroundImagePrimitive = {
   start: {x: number, y: number},
   end: {x: number, y: number},
   colorStops: $ReadOnlyArray<{
-    color: ____ColorValue_Internal,
+    color: ColorValue,
     position: number,
   }>,
 };
@@ -47,20 +43,27 @@ export default function processBackgroundImage(
   if (typeof backgroundImage === 'string') {
     result = parseCSSLinearGradient(backgroundImage);
   } else if (Array.isArray(backgroundImage)) {
-    result = backgroundImage.map(bg => {
-      return {
-        type: bg.type,
-        start: bg.start,
-        end: bg.end,
-        colorStops: bg.colorStops.map(stop => {
-          const processedColor = processColor(stop.color) ?? TRANSPARENT;
-          return {
+    for (const bgImage of backgroundImage) {
+      const processedColorStops = [];
+      for (const stop of bgImage.colorStops) {
+        const processedColor = processColor(stop.color);
+        if (processedColor == null) {
+          // If a color is invalid, return an empty array and do not apply any gradient. Web works the same way.
+          return [];
+        } else {
+          processedColorStops.push({
             color: processedColor,
             position: stop.position,
-          };
-        }),
-      };
-    });
+          });
+        }
+      }
+      result = result.concat({
+        type: 'linearGradient',
+        start: bgImage.start,
+        end: bgImage.end,
+        colorStops: processedColorStops,
+      });
+    }
   }
 
   return result;
@@ -71,31 +74,58 @@ function parseCSSLinearGradient(
 ): $ReadOnlyArray<BackgroundImagePrimitive> {
   const gradients = [];
   let match;
+  const linearGradientRegex = /linear-gradient\s*\(((?:\([^)]*\)|[^())])*)\)/gi;
 
-  while ((match = LINEAR_GRADIENT_REGEX.exec(cssString))) {
+  while ((match = linearGradientRegex.exec(cssString))) {
     const gradientContent = match[1];
     const parts = gradientContent.split(',');
     let points = TO_BOTTOM_START_END_POINTS;
     const trimmedDirection = parts[0].trim().toLowerCase();
+    const colorStopRegex =
+      /\s*((?:(?:rgba?|hsla?)\s*\([^)]+\))|#[0-9a-fA-F]+|[a-zA-Z]+)(?:\s+([0-9.]+%?))?\s*/gi;
+
     if (ANGLE_UNIT_REGEX.test(trimmedDirection)) {
-      points = calculateStartEndPointsFromAngle(parseAngle(trimmedDirection));
-      parts.shift();
+      const angle = parseAngle(trimmedDirection);
+      if (angle != null) {
+        points = calculateStartEndPointsFromAngle(angle);
+        parts.shift();
+      } else {
+        // If an angle is invalid, return an empty array and do not apply any gradient. Same as web.
+        return [];
+      }
     } else if (DIRECTION_REGEX.test(trimmedDirection)) {
-      points = calculateStartEndPointsFromDirection(trimmedDirection);
-      parts.shift();
+      const parsedPoints =
+        calculateStartEndPointsFromDirection(trimmedDirection);
+      if (parsedPoints != null) {
+        points = parsedPoints;
+        parts.shift();
+      } else {
+        // If a direction is invalid, return an empty array and do not apply any gradient. Same as web.
+        return [];
+      }
+    } else if (!colorStopRegex.test(trimmedDirection)) {
+      // If first part is not an angle/direction or a color stop, return an empty array and do not apply any gradient. Same as web.
+      return [];
     }
+    colorStopRegex.lastIndex = 0;
 
     const colorStops = [];
     const fullColorStopsStr = parts.join(',');
     let colorStopMatch;
-    while ((colorStopMatch = COLOR_STOP_REGEX.exec(fullColorStopsStr))) {
+    while ((colorStopMatch = colorStopRegex.exec(fullColorStopsStr))) {
       const [, color, position] = colorStopMatch;
       const processedColor = processColor(color.trim().toLowerCase());
-      if (processedColor != null) {
+      if (
+        processedColor != null &&
+        (typeof position === 'undefined' || position.endsWith('%'))
+      ) {
         colorStops.push({
           color: processedColor,
           position: position ? parseFloat(position) / 100 : null,
         });
+      } else {
+        // If a color is invalid, return an empty array and do not apply any gradient. Same as web.
+        return [];
       }
     }
 
@@ -115,11 +145,14 @@ function parseCSSLinearGradient(
   return gradients;
 }
 
-function calculateStartEndPointsFromDirection(direction: string): {
+function calculateStartEndPointsFromDirection(direction: string): ?{
   start: {x: number, y: number},
   end: {x: number, y: number},
 } {
-  switch (direction) {
+  // Remove extra whitespace
+  const normalizedDirection = direction.replace(/\s+/g, ' ');
+
+  switch (normalizedDirection) {
     case 'to right':
       return {
         start: {x: 0, y: 0.5},
@@ -162,7 +195,7 @@ function calculateStartEndPointsFromDirection(direction: string): {
         end: {x: 1, y: 0},
       };
     default:
-      return TO_BOTTOM_START_END_POINTS;
+      return null;
   }
 }
 
@@ -188,13 +221,14 @@ function calculateStartEndPointsFromAngle(angleRadians: number): {
   };
 }
 
-function parseAngle(angle: string): number {
+function parseAngle(angle: string): ?number {
   const match = angle.match(ANGLE_UNIT_REGEX);
   if (!match) {
-    throw new Error(`Unsupported angle: ${angle}`);
+    return null;
   }
-  const value = match[0];
-  const unit = match[1];
+
+  const [, value, unit] = match;
+
   const numericValue = parseFloat(value);
   switch (unit) {
     case 'deg':
@@ -206,6 +240,6 @@ function parseAngle(angle: string): number {
     case 'turn':
       return numericValue * 2 * Math.PI;
     default:
-      throw new Error(`Unsupported angle unit: ${unit}`);
+      return null;
   }
 }

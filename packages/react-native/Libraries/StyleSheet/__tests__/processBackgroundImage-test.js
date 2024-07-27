@@ -31,6 +31,38 @@ describe('processBackgroundImage', () => {
     ]);
   });
 
+  it('should process a diagonal linear gradient', () => {
+    const input = 'linear-gradient(to bottom right, red, blue)';
+    const result = processBackgroundImage(input);
+    expect(result).toEqual([
+      {
+        type: 'linearGradient',
+        start: {x: 0, y: 0},
+        end: {x: 1, y: 1},
+        colorStops: [
+          {color: processColor('red'), position: 0},
+          {color: processColor('blue'), position: 1},
+        ],
+      },
+    ]);
+  });
+
+  it('should process a linear gradient with whitespaces in direction', () => {
+    const input = 'linear-gradient(to   bottom   right, red, blue)';
+    const result = processBackgroundImage(input);
+    expect(result).toEqual([
+      {
+        type: 'linearGradient',
+        start: {x: 0, y: 0},
+        end: {x: 1, y: 1},
+        colorStops: [
+          {color: processColor('red'), position: 0},
+          {color: processColor('blue'), position: 1},
+        ],
+      },
+    ]);
+  });
+
   it('should process a linear gradient with angle', () => {
     const input = 'linear-gradient(45deg, red, blue)';
     const result = processBackgroundImage(input);
@@ -150,6 +182,24 @@ describe('processBackgroundImage', () => {
       {color: processColor('rgba(255,0,0,0.9)'), position: 0},
       {color: processColor('rgba(0,0,255,0.2)'), position: 1},
     ]);
+  });
+
+  it('should return empty array for invalid color in linear gradient', () => {
+    const input = 'linear-gradient(45deg, rede, blue)';
+    const result = processBackgroundImage(input);
+    expect(result).toEqual([]);
+  });
+
+  it('should return empty array for invalid angle in linear gradient', () => {
+    const input = 'linear-gradient(45 deg, red, blue)';
+    const result = processBackgroundImage(input);
+    expect(result).toEqual([]);
+  });
+
+  it('should return empty array for invalid direction enum in linear gradient', () => {
+    const input = 'linear-gradient(to left2, red, blue)';
+    const result = processBackgroundImage(input);
+    expect(result).toEqual([]);
   });
 
   it('should process an array of BackgroundPrimitive objects', () => {
