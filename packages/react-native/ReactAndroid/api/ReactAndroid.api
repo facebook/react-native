@@ -439,6 +439,14 @@ public abstract interface class com/facebook/react/ViewManagerOnDemandReactPacka
 	public abstract fun getViewManagerNames (Lcom/facebook/react/bridge/ReactApplicationContext;)Ljava/util/Collection;
 }
 
+public abstract interface class com/facebook/react/animated/AnimatedNodeValueListener {
+	public abstract fun onValueUpdate (D)V
+}
+
+public abstract interface class com/facebook/react/animated/AnimatedNodeWithUpdateableConfig {
+	public abstract fun onUpdateConfig (Lcom/facebook/react/bridge/ReadableMap;)V
+}
+
 public class com/facebook/react/animated/NativeAnimatedModule : com/facebook/fbreact/specs/NativeAnimatedModuleSpec, com/facebook/react/bridge/LifecycleEventListener, com/facebook/react/bridge/UIManagerListener {
 	public static final field ANIMATED_MODULE_DEBUG Z
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
