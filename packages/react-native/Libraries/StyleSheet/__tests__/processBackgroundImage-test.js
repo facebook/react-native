@@ -47,6 +47,20 @@ describe('processBackgroundImage', () => {
     ]);
   });
 
+  it('should return empty array for null values', () => {
+    let result = processBackgroundImage('');
+    expect(result).toEqual([]);
+    result = processBackgroundImage(null);
+    expect(result).toEqual([]);
+    result = processBackgroundImage(undefined);
+    expect(result).toEqual([]);
+  });
+
+  it('should return empty array for invalid values', () => {
+    let result = processBackgroundImage('linear-');
+    expect(result).toEqual([]);
+  });
+
   it('should process a linear gradient with whitespaces in direction', () => {
     const input = 'linear-gradient(to   bottom   right, red, blue)';
     const result = processBackgroundImage(input);
@@ -58,6 +72,23 @@ describe('processBackgroundImage', () => {
         colorStops: [
           {color: processColor('red'), position: 0},
           {color: processColor('blue'), position: 1},
+        ],
+      },
+    ]);
+  });
+
+  it('should process a linear gradient with random whitespaces', () => {
+    const input =
+      ' linear-gradient(to   bottom   right,  red  30%,  blue  80%) ';
+    const result = processBackgroundImage(input);
+    expect(result).toEqual([
+      {
+        type: 'linearGradient',
+        start: {x: 0, y: 0},
+        end: {x: 1, y: 1},
+        colorStops: [
+          {color: processColor('red'), position: 0.3},
+          {color: processColor('blue'), position: 0.8},
         ],
       },
     ]);
@@ -116,14 +147,26 @@ describe('processBackgroundImage', () => {
   });
 
   it('should process multiple linear gradients', () => {
-    const input =
-      'linear-gradient(to right, red, blue), linear-gradient(to bottom, green, yellow)';
+    const input = `
+      linear-gradient(to right, red, blue), 
+      linear-gradient(to bottom, green, yellow)`;
     const result = processBackgroundImage(input);
     expect(result).toHaveLength(2);
+    expect(result[0].type).toEqual('linearGradient');
     expect(result[0].start).toEqual({x: 0, y: 0.5});
     expect(result[0].end).toEqual({x: 1, y: 0.5});
+    expect(result[0].colorStops).toEqual([
+      {color: processColor('red'), position: 0},
+      {color: processColor('blue'), position: 1},
+    ]);
+    expect(result[1].type).toEqual('linearGradient');
     expect(result[1].start).toEqual({x: 0.5, y: 0});
     expect(result[1].end).toEqual({x: 0.5, y: 1});
+
+    expect(result[1].colorStops).toEqual([
+      {color: processColor('green'), position: 0},
+      {color: processColor('yellow'), position: 1},
+    ]);
   });
 
   it('should process a linear gradient with multiple color stops', () => {
@@ -198,6 +241,12 @@ describe('processBackgroundImage', () => {
 
   it('should return empty array for invalid direction enum in linear gradient', () => {
     const input = 'linear-gradient(to left2, red, blue)';
+    const result = processBackgroundImage(input);
+    expect(result).toEqual([]);
+  });
+
+  it('should return empty array for invalid color stop unit', () => {
+    const input = 'linear-gradient(to left, red 5, blue)';
     const result = processBackgroundImage(input);
     expect(result).toEqual([]);
   });
