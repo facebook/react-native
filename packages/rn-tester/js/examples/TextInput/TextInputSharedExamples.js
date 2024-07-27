@@ -11,8 +11,8 @@
 'use strict';
 
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
-import type {TextStyle} from 'react-native/Libraries/StyleSheet/StyleSheet';
 import type {PasteEvent} from 'react-native/Libraries/Components/TextInput/TextInput';
+import type {TextStyle} from 'react-native/Libraries/StyleSheet/StyleSheet';
 
 import RNTesterButton from '../../components/RNTesterButton';
 import {RNTesterThemeContext} from '../../components/RNTesterTheme';
@@ -864,12 +864,21 @@ function PasteboardTextInput() {
       />
       {content && (
         <>
-        <Text>{'Type: ' + content.type}</Text>
-        {content.type.startsWith('text/') ? (
-          <Text>{'Data: ' + content.data}</Text>
-        ) : content.type.startsWith('image/') ? (
-          <Image source={{uri: content.data}} style={{width: '100%', height: 300, borderWidth: 1, borderColor: 'lightgray'}} resizeMode="contain" />
-        ) : null}
+          <Text>{'Type: ' + content.type}</Text>
+          {content.type.startsWith('text/') ? (
+            <Text>{'Data: ' + content.data}</Text>
+          ) : content.type.startsWith('image/') ? (
+            <Image
+              source={{uri: content.data}}
+              style={{
+                width: '100%',
+                height: 300,
+                borderWidth: 1,
+                borderColor: 'lightgray',
+              }}
+              resizeMode="contain"
+            />
+          ) : null}
         </>
       )}
     </View>
