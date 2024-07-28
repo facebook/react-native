@@ -221,12 +221,6 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   }
 
   @Override
-  @ReactProp(name = ViewProps.BACKGROUND_IMAGE, customType = "BackgroundImage")
-  public void setBackgroundImage(@NonNull T view, @Nullable ReadableArray backgroundImage) {
-    logUnsupportedPropertyWarning(ViewProps.BACKGROUND_IMAGE);
-  }
-
-  @Override
   @ReactProp(name = ViewProps.TRANSFORM_ORIGIN)
   public void setTransformOrigin(@NonNull T view, @Nullable ReadableArray transformOrigin) {
     view.setTag(R.id.transform_origin, transformOrigin);

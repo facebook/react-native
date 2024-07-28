@@ -121,9 +121,6 @@ public abstract class BaseViewManagerDelegate<T extends View, U extends BaseView
       case ViewProps.TRANSFORM:
         mViewManager.setTransform(view, (ReadableArray) value);
         break;
-      case ViewProps.BACKGROUND_IMAGE:
-        mViewManager.setBackgroundImage(view, (ReadableArray) value);
-        break;
       case ViewProps.TRANSFORM_ORIGIN:
         mViewManager.setTransformOrigin(view, (ReadableArray) value);
         break;
