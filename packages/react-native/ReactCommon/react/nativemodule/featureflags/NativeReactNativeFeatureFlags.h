@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d2a2abe3d484379dbcefc255dd564873>>
+ * @generated SignedSource<<8d65290176c9cb340a3974d07a73fc52>>
  */
 
 /**
@@ -98,6 +98,8 @@ class NativeReactNativeFeatureFlags
   bool setAndroidLayoutDirection(jsi::Runtime& runtime);
 
   bool traceTurboModulePromiseRejectionsOnAndroid(jsi::Runtime& runtime);
+
+  bool useFabricInterop(jsi::Runtime& runtime);
 
   bool useImmediateExecutorInAndroidBridgeless(jsi::Runtime& runtime);
 

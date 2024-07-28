@@ -38,14 +38,6 @@ public class ReactFeatureFlags {
   public static volatile boolean enableFabricRenderer = false;
 
   /**
-   * Should this application enable the Fabric Interop Layer for Android? If yes, the application
-   * will behave so that it can accept non-Fabric components and render them on Fabric. This toggle
-   * is controlling extra logic such as custom event dispatching that are needed for the Fabric
-   * Interop Layer to work correctly.
-   */
-  public static volatile boolean unstable_useFabricInterop = false;
-
-  /**
    * Feature flag to enable the new bridgeless architecture. Note: Enabling this will force enable
    * the following flags: `useTurboModules` & `enableFabricRenderer`.
    */
