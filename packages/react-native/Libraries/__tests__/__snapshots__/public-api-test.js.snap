@@ -8420,6 +8420,15 @@ export type DropShadowPrimitive = {
   standardDeviation?: number | string,
   color?: ____ColorValue_Internal,
 };
+export type GradientValue = {
+  type: \\"linearGradient\\",
+  start: { x: number, y: number },
+  end: { x: number, y: number },
+  colorStops: $ReadOnlyArray<{
+    color: ____ColorValue_Internal,
+    position: number,
+  }>,
+};
 export type BoxShadowPrimitive = {
   offsetX: number | string,
   offsetY: number | string,
@@ -8490,9 +8499,7 @@ export type ____ViewStyle_InternalCore = $ReadOnly<{
   experimental_boxShadow?: $ReadOnlyArray<BoxShadowPrimitive>,
   experimental_filter?: $ReadOnlyArray<FilterFunction>,
   experimental_mixBlendMode?: ____BlendMode_Internal,
-  experimental_backgroundImage?:
-    | $ReadOnlyArray<BackgroundImagePrimitive>
-    | string,
+  experimental_backgroundImage?: $ReadOnlyArray<GradientValue> | string,
 }>;
 export type ____ViewStyle_Internal = $ReadOnly<{
   ...____ViewStyle_InternalCore,
@@ -8735,18 +8742,18 @@ declare module.exports: processAspectRatio;
 `;
 
 exports[`public API should not change unintentionally Libraries/StyleSheet/processBackgroundImage.js 1`] = `
-"export type BackgroundImagePrimitive = {
+"type ParsedGradientValue = {
   type: \\"linearGradient\\",
   start: { x: number, y: number },
   end: { x: number, y: number },
   colorStops: $ReadOnlyArray<{
-    color: ____ColorValue_Internal,
+    color: ProcessedColorValue,
     position: number,
   }>,
 };
 declare export default function processBackgroundImage(
-  backgroundImage: $ReadOnlyArray<BackgroundImagePrimitive> | string
-): $ReadOnlyArray<BackgroundImagePrimitive>;
+  backgroundImage: ?($ReadOnlyArray<GradientValue> | string)
+): $ReadOnlyArray<ParsedGradientValue>;
 "
 `;
 

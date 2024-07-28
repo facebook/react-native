@@ -11,7 +11,6 @@
 'use strict';
 
 import type AnimatedNode from '../Animated/nodes/AnimatedNode';
-import type {BackgroundImagePrimitive} from '../StyleSheet/processBackgroundImage';
 import type {
   ____DangerouslyImpreciseStyle_InternalOverrides,
   ____ImageStyle_InternalOverrides,
@@ -710,6 +709,16 @@ export type DropShadowPrimitive = {
   color?: ____ColorValue_Internal,
 };
 
+export type GradientValue = {
+  type: 'linearGradient',
+  start: {x: number, y: number},
+  end: {x: number, y: number},
+  colorStops: $ReadOnlyArray<{
+    color: ____ColorValue_Internal,
+    position: number,
+  }>,
+};
+
 export type BoxShadowPrimitive = {
   offsetX: number | string,
   offsetY: number | string,
@@ -782,9 +791,7 @@ export type ____ViewStyle_InternalCore = $ReadOnly<{
   experimental_boxShadow?: $ReadOnlyArray<BoxShadowPrimitive>,
   experimental_filter?: $ReadOnlyArray<FilterFunction>,
   experimental_mixBlendMode?: ____BlendMode_Internal,
-  experimental_backgroundImage?:
-    | $ReadOnlyArray<BackgroundImagePrimitive>
-    | string,
+  experimental_backgroundImage?: $ReadOnlyArray<GradientValue> | string,
 }>;
 
 export type ____ViewStyle_Internal = $ReadOnly<{

@@ -179,6 +179,19 @@ describe('processBackgroundImage', () => {
     ]);
   });
 
+  it('should add color stop postion if position is not specified', () => {
+    const input =
+      'linear-gradient(to right, red, green, blue 60%, yellow, purple)';
+    const result = processBackgroundImage(input);
+    expect(result[0].colorStops).toEqual([
+      {color: processColor('red'), position: 0},
+      {color: processColor('green'), position: 0.25},
+      {color: processColor('blue'), position: 0.6},
+      {color: processColor('yellow'), position: 0.75},
+      {color: processColor('purple'), position: 1},
+    ]);
+  });
+
   it('should process a linear gradient with rgba colors', () => {
     const input =
       'linear-gradient(to right, rgba(255,0,0,0.5), rgba(0,0,255,0.8))';

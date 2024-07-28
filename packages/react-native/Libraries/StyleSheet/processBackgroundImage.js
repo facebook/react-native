@@ -5,12 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
 
-import type {ColorValue} from './StyleSheet';
+import type {ProcessedColorValue} from './processColor';
+import type {GradientValue} from './StyleSheetTypes';
 
 const processColor = require('./processColor').default;
 const DIRECTION_REGEX =
@@ -22,20 +23,20 @@ const TO_BOTTOM_START_END_POINTS = {
   end: {x: 0.5, y: 1},
 };
 
-export type BackgroundImagePrimitive = {
+type ParsedGradientValue = {
   type: 'linearGradient',
   start: {x: number, y: number},
   end: {x: number, y: number},
   colorStops: $ReadOnlyArray<{
-    color: ColorValue,
+    color: ProcessedColorValue,
     position: number,
   }>,
 };
 
 export default function processBackgroundImage(
-  backgroundImage: ?($ReadOnlyArray<BackgroundImagePrimitive> | string),
-): $ReadOnlyArray<BackgroundImagePrimitive> {
-  let result: $ReadOnlyArray<BackgroundImagePrimitive> = [];
+  backgroundImage: ?($ReadOnlyArray<GradientValue> | string),
+): $ReadOnlyArray<ParsedGradientValue> {
+  let result: $ReadOnlyArray<ParsedGradientValue> = [];
   if (backgroundImage == null) {
     return result;
   }
@@ -71,7 +72,7 @@ export default function processBackgroundImage(
 
 function parseCSSLinearGradient(
   cssString: string,
-): $ReadOnlyArray<BackgroundImagePrimitive> {
+): $ReadOnlyArray<ParsedGradientValue> {
   const gradients = [];
   let match;
   const linearGradientRegex = /linear-gradient\s*\(((?:\([^)]*\)|[^())])*)\)/gi;
@@ -124,7 +125,7 @@ function parseCSSLinearGradient(
           position: position ? parseFloat(position) / 100 : null,
         });
       } else {
-        // If a color is invalid, return an empty array and do not apply any gradient. Same as web.
+        // If a color or position is invalid, return an empty array and do not apply any gradient. Same as web.
         return [];
       }
     }
