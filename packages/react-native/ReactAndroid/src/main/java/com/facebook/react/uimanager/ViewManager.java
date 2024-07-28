@@ -17,7 +17,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.mapbuffer.MapBuffer;
-import com.facebook.react.config.ReactFeatureFlags;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.touch.JSResponderHandler;
 import com.facebook.react.touch.ReactInterceptingViewGroup;
 import com.facebook.react.uimanager.annotations.ReactProp;
@@ -56,7 +56,7 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
 
   /** Call in constructor of concrete ViewManager class to enable. */
   protected void setupViewRecycling() {
-    if (ReactFeatureFlags.enableViewRecycling) {
+    if (ReactNativeFeatureFlags.enableViewRecycling()) {
       mRecyclableViews = new HashMap<>();
     }
   }

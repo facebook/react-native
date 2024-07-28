@@ -123,6 +123,11 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'Ensures that JavaScript always has a consistent view of the state of the UI (e.g.: commits done in other threads are not immediately propagated to JS during its execution).',
     },
+    enableViewRecycling: {
+      defaultValue: false,
+      description:
+        'Enables View Recycling. When enabled, individual ViewManagers must still opt-in.',
+    },
     excludeYogaFromRawProps: {
       defaultValue: false,
       description:

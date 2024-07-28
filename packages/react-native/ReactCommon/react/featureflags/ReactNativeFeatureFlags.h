@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3eb29a1ab498802529b70d37a6c5039a>>
+ * @generated SignedSource<<f1f1483fb2daa6b17cd0f584a2fa176b>>
  */
 
 /**
@@ -126,6 +126,11 @@ class ReactNativeFeatureFlags {
    * Ensures that JavaScript always has a consistent view of the state of the UI (e.g.: commits done in other threads are not immediately propagated to JS during its execution).
    */
   RN_EXPORT static bool enableUIConsistency();
+
+  /**
+   * Enables View Recycling. When enabled, individual ViewManagers must still opt-in.
+   */
+  RN_EXPORT static bool enableViewRecycling();
 
   /**
    * When enabled, rawProps in Props will not include Yoga specific props.

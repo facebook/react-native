@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c764ec599b576cf412f62e910e82bd15>>
+ * @generated SignedSource<<d69601d7293b683559ac7482c73b916a>>
  */
 
 /**
@@ -42,6 +42,7 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var enableReportEventPaintTimeCache: Boolean? = null
   private var enableSynchronousStateUpdatesCache: Boolean? = null
   private var enableUIConsistencyCache: Boolean? = null
+  private var enableViewRecyclingCache: Boolean? = null
   private var excludeYogaFromRawPropsCache: Boolean? = null
   private var fetchImagesInViewPreallocationCache: Boolean? = null
   private var fixIncorrectScrollViewStateUpdateOnAndroidCache: Boolean? = null
@@ -239,6 +240,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.enableUIConsistency()
       accessedFeatureFlags.add("enableUIConsistency")
       enableUIConsistencyCache = cached
+    }
+    return cached
+  }
+
+  override fun enableViewRecycling(): Boolean {
+    var cached = enableViewRecyclingCache
+    if (cached == null) {
+      cached = currentProvider.enableViewRecycling()
+      accessedFeatureFlags.add("enableViewRecycling")
+      enableViewRecyclingCache = cached
     }
     return cached
   }

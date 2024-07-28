@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f62aadf628da24398ba64fdc18c78293>>
+ * @generated SignedSource<<81efbc7dc366c7ad3b6c457c2ec467ca>>
  * @flow strict-local
  */
 
@@ -62,6 +62,7 @@ export type ReactNativeFeatureFlags = {
   enableReportEventPaintTime: Getter<boolean>,
   enableSynchronousStateUpdates: Getter<boolean>,
   enableUIConsistency: Getter<boolean>,
+  enableViewRecycling: Getter<boolean>,
   excludeYogaFromRawProps: Getter<boolean>,
   fetchImagesInViewPreallocation: Getter<boolean>,
   fixIncorrectScrollViewStateUpdateOnAndroid: Getter<boolean>,
@@ -216,6 +217,10 @@ export const enableSynchronousStateUpdates: Getter<boolean> = createNativeFlagGe
  * Ensures that JavaScript always has a consistent view of the state of the UI (e.g.: commits done in other threads are not immediately propagated to JS during its execution).
  */
 export const enableUIConsistency: Getter<boolean> = createNativeFlagGetter('enableUIConsistency', false);
+/**
+ * Enables View Recycling. When enabled, individual ViewManagers must still opt-in.
+ */
+export const enableViewRecycling: Getter<boolean> = createNativeFlagGetter('enableViewRecycling', false);
 /**
  * When enabled, rawProps in Props will not include Yoga specific props.
  */

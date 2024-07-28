@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<56adda271bcc179b28ee274516621130>>
+ * @generated SignedSource<<7d5157a67f049f5a22c31a02c1dcb2ed>>
  */
 
 /**
@@ -135,6 +135,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableUIConsistency(): Boolean = accessor.enableUIConsistency()
+
+  /**
+   * Enables View Recycling. When enabled, individual ViewManagers must still opt-in.
+   */
+  @JvmStatic
+  public fun enableViewRecycling(): Boolean = accessor.enableViewRecycling()
 
   /**
    * When enabled, rawProps in Props will not include Yoga specific props.
