@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<292c8d1f77702728dd6916350038b34b>>
+ * @generated SignedSource<<416abde5c71ed1f507a466f87a353240>>
  */
 
 /**
@@ -72,6 +72,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool useRuntimeShadowNodeReferenceUpdate();
   bool useRuntimeShadowNodeReferenceUpdateOnLayout();
   bool useStateAlignmentMechanism();
+  bool useTurboModuleInterop();
 
   void override(std::unique_ptr<ReactNativeFeatureFlagsProvider> provider);
 
@@ -82,7 +83,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 41> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 42> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> allowCollapsableChildren_;
@@ -125,6 +126,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> useRuntimeShadowNodeReferenceUpdate_;
   std::atomic<std::optional<bool>> useRuntimeShadowNodeReferenceUpdateOnLayout_;
   std::atomic<std::optional<bool>> useStateAlignmentMechanism_;
+  std::atomic<std::optional<bool>> useTurboModuleInterop_;
 };
 
 } // namespace facebook::react

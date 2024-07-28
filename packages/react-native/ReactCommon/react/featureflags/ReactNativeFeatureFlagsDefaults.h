@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7f424c2da628f8b4e39053272056de77>>
+ * @generated SignedSource<<313e79efe731e50f9460af5f1640bec7>>
  */
 
 /**
@@ -188,6 +188,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool useStateAlignmentMechanism() override {
+    return false;
+  }
+
+  bool useTurboModuleInterop() override {
     return false;
   }
 };

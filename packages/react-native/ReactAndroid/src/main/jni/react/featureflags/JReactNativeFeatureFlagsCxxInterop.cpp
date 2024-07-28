@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0a159023455a26eb42e1173e533f3f3b>>
+ * @generated SignedSource<<02df28265377b446bcb6ddd2643b0046>>
  */
 
 /**
@@ -285,6 +285,12 @@ class ReactNativeFeatureFlagsProviderHolder
     return method(javaProvider_);
   }
 
+  bool useTurboModuleInterop() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useTurboModuleInterop");
+    return method(javaProvider_);
+  }
+
  private:
   jni::global_ref<jobject> javaProvider_;
 };
@@ -494,6 +500,11 @@ bool JReactNativeFeatureFlagsCxxInterop::useStateAlignmentMechanism(
   return ReactNativeFeatureFlags::useStateAlignmentMechanism();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::useTurboModuleInterop(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::useTurboModuleInterop();
+}
+
 void JReactNativeFeatureFlagsCxxInterop::override(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/,
     jni::alias_ref<jobject> provider) {
@@ -634,6 +645,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "useStateAlignmentMechanism",
         JReactNativeFeatureFlagsCxxInterop::useStateAlignmentMechanism),
+      makeNativeMethod(
+        "useTurboModuleInterop",
+        JReactNativeFeatureFlagsCxxInterop::useTurboModuleInterop),
   });
 }
 

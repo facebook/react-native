@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<352277af59c1c5b1f8fb69ea6c56c3d1>>
+ * @generated SignedSource<<28afd58334a064cf48b8a93eb9a22a33>>
  */
 
 /**
@@ -66,6 +66,7 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool useRuntimeShadowNodeReferenceUpdate() = 0;
   virtual bool useRuntimeShadowNodeReferenceUpdateOnLayout() = 0;
   virtual bool useStateAlignmentMechanism() = 0;
+  virtual bool useTurboModuleInterop() = 0;
 };
 
 } // namespace facebook::react

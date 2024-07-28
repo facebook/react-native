@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<fac931449d06db3c8f5a239f1b26e164>>
+ * @generated SignedSource<<2a851d5f14ec61936d9ecb37d7f58831>>
  * @flow strict-local
  */
 
@@ -85,6 +85,7 @@ export type ReactNativeFeatureFlags = {
   useRuntimeShadowNodeReferenceUpdate: Getter<boolean>,
   useRuntimeShadowNodeReferenceUpdateOnLayout: Getter<boolean>,
   useStateAlignmentMechanism: Getter<boolean>,
+  useTurboModuleInterop: Getter<boolean>,
 }
 
 /**
@@ -311,6 +312,10 @@ export const useRuntimeShadowNodeReferenceUpdateOnLayout: Getter<boolean> = crea
  * When enabled, it uses optimised state reconciliation algorithm.
  */
 export const useStateAlignmentMechanism: Getter<boolean> = createNativeFlagGetter('useStateAlignmentMechanism', false);
+/**
+ * In Bridgeless mode, should legacy NativeModules use the TurboModule system?
+ */
+export const useTurboModuleInterop: Getter<boolean> = createNativeFlagGetter('useTurboModuleInterop', false);
 
 /**
  * Overrides the feature flags with the provided methods.

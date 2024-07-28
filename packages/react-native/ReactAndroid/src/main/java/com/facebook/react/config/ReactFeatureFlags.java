@@ -28,9 +28,6 @@ public class ReactFeatureFlags {
    */
   public static volatile boolean useTurboModules = false;
 
-  /** In Bridgeless mode, should legacy NativeModules use the TurboModule system? */
-  public static volatile boolean unstable_useTurboModuleInterop = false;
-
   /**
    * Should this application use the new (Fabric) Renderer? If yes, all rendering in this app will
    * use Fabric instead of the legacy renderer.

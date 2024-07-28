@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b76a5cb2735eed72575281f6e974d172>>
+ * @generated SignedSource<<ddb929c7c71960064d3f32badca4c99a>>
  * @flow strict-local
  */
 
@@ -64,6 +64,7 @@ export interface Spec extends TurboModule {
   +useRuntimeShadowNodeReferenceUpdate?: () => boolean;
   +useRuntimeShadowNodeReferenceUpdateOnLayout?: () => boolean;
   +useStateAlignmentMechanism?: () => boolean;
+  +useTurboModuleInterop?: () => boolean;
 }
 
 const NativeReactNativeFeatureFlags: ?Spec = TurboModuleRegistry.get<Spec>(

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<df0acea0df716f125fa37bb166464a51>>
+ * @generated SignedSource<<3776d4da056a1745d14b7f66962380d4>>
  */
 
 /**
@@ -241,6 +241,11 @@ class ReactNativeFeatureFlags {
    * When enabled, it uses optimised state reconciliation algorithm.
    */
   RN_EXPORT static bool useStateAlignmentMechanism();
+
+  /**
+   * In Bridgeless mode, should legacy NativeModules use the TurboModule system?
+   */
+  RN_EXPORT static bool useTurboModuleInterop();
 
   /**
    * Overrides the feature flags with the ones provided by the given provider

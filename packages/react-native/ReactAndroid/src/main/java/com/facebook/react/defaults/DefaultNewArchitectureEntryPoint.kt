@@ -43,7 +43,6 @@ public object DefaultNewArchitectureEntryPoint {
     ReactFeatureFlags.useTurboModules = turboModulesEnabled
     ReactFeatureFlags.enableFabricRenderer = fabricEnabled
     ReactFeatureFlags.enableBridgelessArchitecture = bridgelessEnabled
-    ReactFeatureFlags.unstable_useTurboModuleInterop = bridgelessEnabled
     val fuseboxEnabledDebug = fuseboxEnabled
 
     if (bridgelessEnabled) {
@@ -62,6 +61,8 @@ public object DefaultNewArchitectureEntryPoint {
             override fun fuseboxEnabledDebug(): Boolean = fuseboxEnabledDebug
 
             override fun useFabricInterop(): Boolean = fabricEnabled
+
+            override fun useTurboModuleInterop(): Boolean = bridgelessEnabled
           })
     }
 
