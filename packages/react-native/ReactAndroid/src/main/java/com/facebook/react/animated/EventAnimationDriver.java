@@ -107,10 +107,10 @@ import java.util.List;
 
     String lastKey = mEventPath.get(mEventPath.size() - 1);
     if (currMap != null) {
-      mValueNode.mValue = currMap.getDouble(lastKey);
+      mValueNode.nodeValue = currMap.getDouble(lastKey);
     } else {
       int lastIndex = Integer.parseInt(lastKey);
-      mValueNode.mValue = currArray.getDouble(lastIndex);
+      mValueNode.nodeValue = currArray.getDouble(lastIndex);
     }
   }
 }

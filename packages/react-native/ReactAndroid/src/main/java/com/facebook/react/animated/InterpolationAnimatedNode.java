@@ -279,7 +279,7 @@ import java.util.regex.Pattern;
     double value = mParent.getValue();
     switch (mOutputType) {
       case Number:
-        mValue =
+        nodeValue =
             interpolate(
                 value, mInputRange, (double[]) mOutputRange, mExtrapolateLeft, mExtrapolateRight);
         break;

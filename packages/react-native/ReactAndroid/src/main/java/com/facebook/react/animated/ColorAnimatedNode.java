@@ -94,10 +94,10 @@ import com.facebook.react.views.view.ColorUtil;
     ValueAnimatedNode bNode = (ValueAnimatedNode) mNativeAnimatedNodesManager.getNodeById(mBNodeId);
     ValueAnimatedNode aNode = (ValueAnimatedNode) mNativeAnimatedNodesManager.getNodeById(mANodeId);
 
-    rNode.mValue = Color.red(color);
-    gNode.mValue = Color.green(color);
-    bNode.mValue = Color.blue(color);
-    aNode.mValue = Color.alpha(color) / 255.0;
+    rNode.nodeValue = Color.red(color);
+    gNode.nodeValue = Color.green(color);
+    bNode.nodeValue = Color.blue(color);
+    aNode.nodeValue = Color.alpha(color) / 255.0;
 
     mNativeColorApplied = true;
   }
