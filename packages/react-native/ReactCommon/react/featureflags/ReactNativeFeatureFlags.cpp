@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c6027d6238251ba90eee8fa3b6c114a6>>
+ * @generated SignedSource<<68c3ef116de269b9f7c0e6eabe738cbd>>
  */
 
 /**
@@ -147,6 +147,10 @@ bool ReactNativeFeatureFlags::setAndroidLayoutDirection() {
 
 bool ReactNativeFeatureFlags::traceTurboModulePromiseRejectionsOnAndroid() {
   return getAccessor().traceTurboModulePromiseRejectionsOnAndroid();
+}
+
+bool ReactNativeFeatureFlags::useFabricInterop() {
+  return getAccessor().useFabricInterop();
 }
 
 bool ReactNativeFeatureFlags::useImmediateExecutorInAndroidBridgeless() {

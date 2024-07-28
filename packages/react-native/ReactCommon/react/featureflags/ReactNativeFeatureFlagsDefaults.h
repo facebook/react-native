@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<94952f007dbb2908de526c4d8dc6de5f>>
+ * @generated SignedSource<<7f424c2da628f8b4e39053272056de77>>
  */
 
 /**
@@ -152,6 +152,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool traceTurboModulePromiseRejectionsOnAndroid() override {
+    return false;
+  }
+
+  bool useFabricInterop() override {
     return false;
   }
 
