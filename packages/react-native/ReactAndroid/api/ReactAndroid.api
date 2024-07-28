@@ -1983,7 +1983,6 @@ public class com/facebook/react/config/ReactFeatureFlags {
 	public static field enableCppPropsIteratorSetter Z
 	public static field enableFabricRenderer Z
 	public static field enableViewRecycling Z
-	public static field unstable_useFabricInterop Z
 	public static field unstable_useTurboModuleInterop Z
 	public static field useTurboModules Z
 	public fun <init> ()V

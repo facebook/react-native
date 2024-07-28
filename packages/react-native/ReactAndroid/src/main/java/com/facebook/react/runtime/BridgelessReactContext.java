@@ -23,8 +23,8 @@ import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.common.annotations.FrameworkAPI;
 import com.facebook.react.common.annotations.UnstableReactNativeAPI;
-import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder;
 import com.facebook.react.uimanager.events.EventDispatcher;
@@ -52,7 +52,7 @@ class BridgelessReactContext extends ReactApplicationContext implements EventDis
   BridgelessReactContext(Context context, ReactHostImpl host) {
     super(context);
     mReactHost = host;
-    if (ReactFeatureFlags.unstable_useFabricInterop) {
+    if (ReactNativeFeatureFlags.useFabricInterop()) {
       initializeInteropModules();
     }
   }
