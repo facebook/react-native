@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<28e9da83d10a5405e117db915d0e40ea>>
+ * @generated SignedSource<<472ce3164f375d7423de27e7ce087154>>
  */
 
 /**
@@ -191,6 +191,11 @@ class ReactNativeFeatureFlags {
    * Propagate layout direction to Android views.
    */
   RN_EXPORT static bool setAndroidLayoutDirection();
+
+  /**
+   * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.
+   */
+  RN_EXPORT static bool traceTurboModulePromiseRejectionsOnAndroid();
 
   /**
    * Invoke callbacks immediately on the ReactInstance rather than going through a background thread for synchronization
