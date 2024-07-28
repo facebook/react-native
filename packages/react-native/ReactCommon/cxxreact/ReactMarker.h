@@ -52,24 +52,9 @@ typedef void (*LogTaggedMarkerBridgeless)(const ReactMarkerId, const char* tag);
 #define RN_EXPORT __attribute__((visibility("default")))
 #endif
 
-class RN_EXPORT LogTaggedMarkerWrapper {
-public:
-  static inline LogTaggedMarker getLogTaggedMarkerImpl(void) {
-    std::shared_lock lock(logTaggedMarkerImplMutex);
-    return logTaggedMarkerImpl;
-  }
-
-  static inline void setLogTaggedMarkerImpl(LogTaggedMarker marker) {
-    std::unique_lock lock(logTaggedMarkerImplMutex);
-    logTaggedMarkerImpl = marker;
-  }
-
-private:
-  LogTaggedMarkerWrapper() = delete;
-  static std::shared_mutex logTaggedMarkerImplMutex;
-  static LogTaggedMarker logTaggedMarkerImpl;
-};
-
+extern RN_EXPORT std::shared_mutex logTaggedMarkerImplMutex;
+/// - important: To ensure this gets read and written to in a thread safe manner, make use of `logTaggedMarkerImplMutex`.
+extern RN_EXPORT LogTaggedMarker logTaggedMarkerImpl;
 extern RN_EXPORT LogTaggedMarker logTaggedMarkerBridgelessImpl;
 
 extern RN_EXPORT void logMarker(const ReactMarkerId markerId); // Bridge only
