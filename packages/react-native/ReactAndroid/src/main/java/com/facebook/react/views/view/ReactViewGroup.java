@@ -54,9 +54,9 @@ import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.drawable.CSSBackgroundDrawable;
-import com.facebook.react.uimanager.drawable.CSSGradient;
 import com.facebook.react.uimanager.style.BorderRadiusProp;
 import com.facebook.react.uimanager.style.ComputedBorderRadius;
+import com.facebook.react.uimanager.style.Gradient;
 
 /**
  * Backing for a React View. Has support for borders, but since borders aren't common, lazy
@@ -231,7 +231,7 @@ public class ReactViewGroup extends ViewGroup
         "This method is not supported for ReactViewGroup instances");
   }
 
-  public void setGradients(CSSGradient[] gradient) {
+  public void setGradients(Gradient[] gradient) {
     getOrCreateReactViewBackground().setGradients(gradient);
   }
 

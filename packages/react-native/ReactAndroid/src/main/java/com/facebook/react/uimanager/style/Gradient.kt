@@ -1,4 +1,11 @@
-package com.facebook.react.uimanager.drawable
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+package com.facebook.react.uimanager.style
 
 import android.graphics.LinearGradient
 import android.graphics.Rect
@@ -6,7 +13,7 @@ import android.graphics.Shader
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 
-public class CSSGradient(gradient: ReadableMap?) {
+public class Gradient(gradient: ReadableMap?) {
   private enum class GradientType {
     LINEAR_GRADIENT
   }

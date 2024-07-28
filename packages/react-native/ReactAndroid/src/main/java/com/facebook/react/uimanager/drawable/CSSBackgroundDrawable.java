@@ -40,6 +40,7 @@ import com.facebook.react.uimanager.Spacing;
 import com.facebook.react.uimanager.style.BorderRadiusProp;
 import com.facebook.react.uimanager.style.BorderRadiusStyle;
 import com.facebook.react.uimanager.style.ComputedBorderRadius;
+import com.facebook.react.uimanager.style.Gradient;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -117,7 +118,7 @@ public class CSSBackgroundDrawable extends Drawable {
   /* Used by all types of background and for drawing borders */
   private final Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
   private int mColor = Color.TRANSPARENT;
-  private CSSGradient[] mCSSGradients = null;
+  private Gradient[] mGradients = null;
   private int mAlpha = 255;
 
   // There is a small gap between the edges of adjacent paths
@@ -322,8 +323,8 @@ public class CSSBackgroundDrawable extends Drawable {
     invalidateSelf();
   }
 
-  public void setGradients(CSSGradient[] gradients) {
-    mCSSGradients = gradients;
+  public void setGradients(Gradient[] gradients) {
+    mGradients = gradients;
     invalidateSelf();
   }
 
@@ -376,7 +377,7 @@ public class CSSBackgroundDrawable extends Drawable {
 
     // Draws the View without its border first (with background color fill)
     int useColor = ColorUtils.setAlphaComponent(mColor, getOpacity());
-    if (mCSSGradients != null && mCSSGradients.length > 0) {
+    if (mGradients != null && mGradients.length > 0) {
       mPaint.setShader(getGradientShader());
       mPaint.setStyle(Paint.Style.FILL);
       canvas.drawPath(Preconditions.checkNotNull(mBackgroundColorRenderPath), mPaint);
@@ -1098,7 +1099,7 @@ public class CSSBackgroundDrawable extends Drawable {
     mPaint.setStyle(Paint.Style.FILL);
 
     int useColor = multiplyColorAlpha(mColor, mAlpha);
-    if (mCSSGradients != null && mCSSGradients.length > 0) {
+    if (mGradients != null && mGradients.length > 0) {
       mPaint.setShader(getGradientShader());
       canvas.drawRect(getBounds(), mPaint);
       mPaint.setShader(null);
@@ -1400,8 +1401,8 @@ public class CSSBackgroundDrawable extends Drawable {
 
   private Shader getGradientShader() {
     Shader compositeShader = null;
-    for (CSSGradient mCSSGradient: mCSSGradients) {
-      Shader currentShader = mCSSGradient.getShader(getBounds());
+    for (Gradient mGradient: mGradients) {
+      Shader currentShader = mGradient.getShader(getBounds());
       if (compositeShader == null) {
         compositeShader = currentShader;
       } else {
