@@ -14,10 +14,10 @@ internal class TrackingAnimatedNode(
     config: ReadableMap,
     private val nativeAnimatedNodesManager: NativeAnimatedNodesManager
 ) : AnimatedNode() {
+  private val animationConfig: JavaOnlyMap = JavaOnlyMap.deepClone(config.getMap("animationConfig"))
   private val animationId: Int = config.getInt("animationId")
   private val toValueNode: Int = config.getInt("toValue")
   private val valueNode: Int = config.getInt("value")
-  private val animationConfig: JavaOnlyMap = JavaOnlyMap.deepClone(config.getMap("animationConfig"))
 
   public override fun update() {
     val toValue = nativeAnimatedNodesManager.getNodeById(toValueNode)
