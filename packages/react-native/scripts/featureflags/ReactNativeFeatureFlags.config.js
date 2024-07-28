@@ -236,6 +236,11 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'When enabled, it uses optimised state reconciliation algorithm.',
     },
+    useTurboModuleInterop: {
+      defaultValue: false,
+      description:
+        'In Bridgeless mode, should legacy NativeModules use the TurboModule system?',
+    },
   },
 
   jsOnly: {

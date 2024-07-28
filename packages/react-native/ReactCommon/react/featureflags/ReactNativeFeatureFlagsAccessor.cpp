@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0700f7b4c74e1b761c6f4a17d49d00ef>>
+ * @generated SignedSource<<1af5fb4f769fc2a79968dcdddb748559>>
  */
 
 /**
@@ -762,6 +762,24 @@ bool ReactNativeFeatureFlagsAccessor::useStateAlignmentMechanism() {
 
     flagValue = currentProvider_->useStateAlignmentMechanism();
     useStateAlignmentMechanism_ = flagValue;
+  }
+
+  return flagValue.value();
+}
+
+bool ReactNativeFeatureFlagsAccessor::useTurboModuleInterop() {
+  auto flagValue = useTurboModuleInterop_.load();
+
+  if (!flagValue.has_value()) {
+    // This block is not exclusive but it is not necessary.
+    // If multiple threads try to initialize the feature flag, we would only
+    // be accessing the provider multiple times but the end state of this
+    // instance and the returned flag value would be the same.
+
+    markFlagAsAccessed(41, "useTurboModuleInterop");
+
+    flagValue = currentProvider_->useTurboModuleInterop();
+    useTurboModuleInterop_ = flagValue;
   }
 
   return flagValue.value();

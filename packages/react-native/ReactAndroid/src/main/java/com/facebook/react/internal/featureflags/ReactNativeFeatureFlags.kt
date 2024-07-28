@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8d7ac9ceca277ecef106c8720263555c>>
+ * @generated SignedSource<<a5a6a0b1b5b0fffc69bb03258aa9f40f>>
  */
 
 /**
@@ -273,6 +273,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun useStateAlignmentMechanism(): Boolean = accessor.useStateAlignmentMechanism()
+
+  /**
+   * In Bridgeless mode, should legacy NativeModules use the TurboModule system?
+   */
+  @JvmStatic
+  public fun useTurboModuleInterop(): Boolean = accessor.useTurboModuleInterop()
 
   /**
    * Overrides the feature flags with the ones provided by the given provider
