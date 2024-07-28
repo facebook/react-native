@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a337dfe72b528a8989731d8c45a9cda9>>
+ * @generated SignedSource<<70b0846a19542b9b3f93f9cfd7b2a837>>
  */
 
 /**
@@ -84,6 +84,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun loadVectorDrawablesOnImages(): Boolean
 
   @DoNotStrip public fun setAndroidLayoutDirection(): Boolean
+
+  @DoNotStrip public fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean
 
   @DoNotStrip public fun useImmediateExecutorInAndroidBridgeless(): Boolean
 

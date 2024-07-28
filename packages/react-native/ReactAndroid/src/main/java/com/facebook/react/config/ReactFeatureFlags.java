@@ -9,7 +9,6 @@ package com.facebook.react.config;
 
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.proguard.annotations.DoNotStripAny;
-import com.facebook.react.common.build.ReactBuildConfig;
 
 /**
  * Hi there, traveller! This configuration class is not meant to be used by end-users of RN. It
@@ -63,10 +62,4 @@ public class ReactFeatureFlags {
    * Enable prop iterator setter-style construction of Props in C++ (this flag is not used in Java).
    */
   public static boolean enableCppPropsIteratorSetter = false;
-
-  /**
-   * Enables storing js caller stack when creating promise in native module. This is useful in case
-   * of Promise rejection and tracing the cause.
-   */
-  public static boolean traceTurboModulePromiseRejections = ReactBuildConfig.DEBUG;
 }
