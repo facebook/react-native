@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8220d7b8c1eb4384f50cfc78c2d81fcf>>
+ * @generated SignedSource<<27c3bc8de913d13417d1dad3fe320f17>>
  */
 
 /**
@@ -64,6 +64,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableEagerRootViewAttachment() override {
+    return false;
+  }
+
+  bool enableFabricLogs() override {
     return false;
   }
 

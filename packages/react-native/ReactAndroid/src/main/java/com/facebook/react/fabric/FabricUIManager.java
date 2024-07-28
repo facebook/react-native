@@ -30,8 +30,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import com.facebook.common.logging.FLog;
-import com.facebook.debug.holder.PrinterHolder;
-import com.facebook.debug.tags.ReactDebugOverlayTags;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.proguard.annotations.DoNotStripAny;
 import com.facebook.react.bridge.ColorPropConverter;
@@ -109,11 +107,6 @@ public class FabricUIManager
   // The IS_DEVELOPMENT_ENVIRONMENT variable is used to log extra data when running fabric in a
   // development environment. DO NOT ENABLE THIS ON PRODUCTION OR YOU WILL BE FIRED!
   public static final boolean IS_DEVELOPMENT_ENVIRONMENT = false && ReactBuildConfig.DEBUG;
-  public static final boolean ENABLE_FABRIC_LOGS =
-      ReactFeatureFlags.enableFabricLogs
-          || PrinterHolder.getPrinter()
-              .shouldDisplayLogMessage(ReactDebugOverlayTags.FABRIC_UI_MANAGER);
-  public static final boolean ENABLE_FABRIC_PERF_LOGS = ENABLE_FABRIC_LOGS || false;
   public DevToolsReactPerfLogger mDevToolsReactPerfLogger;
 
   private static final DevToolsReactPerfLogger.DevToolsReactPerfLoggerListener FABRIC_PERF_LOGGER =
@@ -257,7 +250,7 @@ public class FabricUIManager
             mReactApplicationContext, rootView.getContext(), reactRootView.getSurfaceID(), rootTag);
     mMountingManager.startSurface(rootTag, reactContext, rootView);
     String moduleName = reactRootView.getJSModuleName();
-    if (ENABLE_FABRIC_LOGS) {
+    if (ReactNativeFeatureFlags.enableFabricLogs()) {
       FLog.d(TAG, "Starting surface for module: %s and reactTag: %d", moduleName, rootTag);
     }
     mBinding.startSurface(rootTag, moduleName, (NativeMap) initialProps);
@@ -300,7 +293,7 @@ public class FabricUIManager
     Context context = rootView.getContext();
     ThemedReactContext reactContext =
         new ThemedReactContext(mReactApplicationContext, context, moduleName, rootTag);
-    if (ENABLE_FABRIC_LOGS) {
+    if (ReactNativeFeatureFlags.enableFabricLogs()) {
       FLog.d(TAG, "Starting surface for module: %s and reactTag: %d", moduleName, rootTag);
     }
     mMountingManager.startSurface(rootTag, reactContext, rootView);
@@ -396,7 +389,7 @@ public class FabricUIManager
   public void initialize() {
     mEventDispatcher.registerEventEmitter(FABRIC, new FabricEventEmitter(this));
     mEventDispatcher.addBatchEventDispatchedListener(mBatchEventDispatchedListener);
-    if (ENABLE_FABRIC_PERF_LOGS) {
+    if (ReactNativeFeatureFlags.enableFabricLogs()) {
       mDevToolsReactPerfLogger = new DevToolsReactPerfLogger();
       mDevToolsReactPerfLogger.addDevToolsReactPerfLoggerListener(FABRIC_PERF_LOGGER);
 
@@ -728,7 +721,7 @@ public class FabricUIManager
     ReactMarker.logFabricMarker(
         ReactMarkerConstants.FABRIC_UPDATE_UI_MAIN_THREAD_START, null, commitNumber);
 
-    if (ENABLE_FABRIC_LOGS) {
+    if (ReactNativeFeatureFlags.enableFabricLogs()) {
       FLog.d(
           TAG,
           "SynchronouslyUpdateViewOnUIThread for tag %d: %s",
@@ -887,7 +880,7 @@ public class FabricUIManager
       final int offsetX,
       final int offsetY) {
 
-    if (ENABLE_FABRIC_LOGS) {
+    if (ReactNativeFeatureFlags.enableFabricLogs()) {
       FLog.d(TAG, "Updating Root Layout Specs for [%d]", surfaceId);
     }
 

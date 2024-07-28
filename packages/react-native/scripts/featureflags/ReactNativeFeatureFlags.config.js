@@ -83,6 +83,10 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'Feature flag to configure eager attachment of the root view/initialisation of the JS code.',
     },
+    enableFabricLogs: {
+      defaultValue: false,
+      description: 'This feature flag enables logs for Fabric.',
+    },
     enableFabricRendererExclusively: {
       defaultValue: false,
       description:
