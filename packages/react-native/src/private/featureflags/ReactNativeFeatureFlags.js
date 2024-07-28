@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2e46f1b21165b7f1b7ddae698ce14584>>
+ * @generated SignedSource<<cf85c1bd7c0c3716345100e0d9633e5b>>
  * @flow strict-local
  */
 
@@ -75,6 +75,7 @@ export type ReactNativeFeatureFlags = {
   lazyAnimationCallbacks: Getter<boolean>,
   loadVectorDrawablesOnImages: Getter<boolean>,
   setAndroidLayoutDirection: Getter<boolean>,
+  traceTurboModulePromiseRejectionsOnAndroid: Getter<boolean>,
   useImmediateExecutorInAndroidBridgeless: Getter<boolean>,
   useModernRuntimeScheduler: Getter<boolean>,
   useNativeViewConfigsInBridgelessMode: Getter<boolean>,
@@ -269,6 +270,10 @@ export const loadVectorDrawablesOnImages: Getter<boolean> = createNativeFlagGett
  * Propagate layout direction to Android views.
  */
 export const setAndroidLayoutDirection: Getter<boolean> = createNativeFlagGetter('setAndroidLayoutDirection', false);
+/**
+ * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.
+ */
+export const traceTurboModulePromiseRejectionsOnAndroid: Getter<boolean> = createNativeFlagGetter('traceTurboModulePromiseRejectionsOnAndroid', false);
 /**
  * Invoke callbacks immediately on the ReactInstance rather than going through a background thread for synchronization
  */

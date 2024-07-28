@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7a4bf6fd6dfb8d96f8306fd50d48bb76>>
+ * @generated SignedSource<<011cef222a4b62d4f32f83c12e8c668d>>
  */
 
 /**
@@ -55,6 +55,7 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var lazyAnimationCallbacksCache: Boolean? = null
   private var loadVectorDrawablesOnImagesCache: Boolean? = null
   private var setAndroidLayoutDirectionCache: Boolean? = null
+  private var traceTurboModulePromiseRejectionsOnAndroidCache: Boolean? = null
   private var useImmediateExecutorInAndroidBridgelessCache: Boolean? = null
   private var useModernRuntimeSchedulerCache: Boolean? = null
   private var useNativeViewConfigsInBridgelessModeCache: Boolean? = null
@@ -370,6 +371,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.setAndroidLayoutDirection()
       accessedFeatureFlags.add("setAndroidLayoutDirection")
       setAndroidLayoutDirectionCache = cached
+    }
+    return cached
+  }
+
+  override fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean {
+    var cached = traceTurboModulePromiseRejectionsOnAndroidCache
+    if (cached == null) {
+      cached = currentProvider.traceTurboModulePromiseRejectionsOnAndroid()
+      accessedFeatureFlags.add("traceTurboModulePromiseRejectionsOnAndroid")
+      traceTurboModulePromiseRejectionsOnAndroidCache = cached
     }
     return cached
   }
