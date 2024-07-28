@@ -43,6 +43,6 @@ class HeaderUtilTest {
 
   @Test
   fun nameStripRemovesExtraSymbols() {
-    assertThat(HeaderUtil.stripHeaderName(VALUE_BANNED_SYMBOLS_TEST)).isEqualTo(VALUE_BANNED_SYMBOLS_TEST);
+    assertThat(HeaderUtil.stripHeaderName(NAME_BANNED_SYMBOLS_TEST)).isEqualTo(BANNED_TEST_EXPECTED);
   }
 }
