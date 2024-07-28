@@ -49,6 +49,7 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.config.ReactFeatureFlags;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.modules.appregistry.AppRegistry;
 import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
@@ -478,7 +479,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       mReactInstanceManager.createReactContextInBackground();
       // if in this experiment, we initialize the root earlier in startReactApplication
       // instead of waiting for the initial measure
-      if (ReactFeatureFlags.enableEagerRootViewAttachment) {
+      if (ReactNativeFeatureFlags.enableEagerRootViewAttachment()) {
         if (!mWasMeasured) {
           // Ideally, those values will be used by default, but we only update them here to scope
           // this change to `enableEagerRootViewAttachment` experiment.
