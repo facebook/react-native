@@ -279,7 +279,7 @@ import java.util.regex.Pattern;
     double value = mParent.getValue();
     switch (mOutputType) {
       case Number:
-        mValue =
+        nodeValue =
             interpolate(
                 value, mInputRange, (double[]) mOutputRange, mExtrapolateLeft, mExtrapolateRight);
         break;
@@ -306,6 +306,6 @@ import java.util.regex.Pattern;
 
   @Override
   public String prettyPrint() {
-    return "InterpolationAnimatedNode[" + mTag + "] super: " + super.prettyPrint();
+    return "InterpolationAnimatedNode[" + tag + "] super: " + super.prettyPrint();
   }
 }

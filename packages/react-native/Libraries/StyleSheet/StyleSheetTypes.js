@@ -788,8 +788,8 @@ export type ____ViewStyle_InternalCore = $ReadOnly<{
   elevation?: number,
   pointerEvents?: 'auto' | 'none' | 'box-none' | 'box-only',
   cursor?: CursorValue,
-  experimental_boxShadow?: $ReadOnlyArray<BoxShadowPrimitive>,
-  experimental_filter?: $ReadOnlyArray<FilterFunction>,
+  experimental_boxShadow?: $ReadOnlyArray<BoxShadowPrimitive> | string,
+  experimental_filter?: $ReadOnlyArray<FilterFunction> | string,
   experimental_mixBlendMode?: ____BlendMode_Internal,
   experimental_backgroundImage?: $ReadOnlyArray<GradientValue> | string,
 }>;

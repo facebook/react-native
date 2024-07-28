@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ca939ab47fa68fbb5acf5ea34481def9>>
+ * @generated SignedSource<<a5a6a0b1b5b0fffc69bb03258aa9f40f>>
  */
 
 /**
@@ -81,6 +81,18 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableCleanTextInputYogaNode(): Boolean = accessor.enableCleanTextInputYogaNode()
+
+  /**
+   * Feature flag to configure eager attachment of the root view/initialisation of the JS code.
+   */
+  @JvmStatic
+  public fun enableEagerRootViewAttachment(): Boolean = accessor.enableEagerRootViewAttachment()
+
+  /**
+   * This feature flag enables logs for Fabric.
+   */
+  @JvmStatic
+  public fun enableFabricLogs(): Boolean = accessor.enableFabricLogs()
 
   /**
    * When the app is completely migrated to Fabric, set this flag to true to disable parts of Paper infrastructure that are not needed anymore but consume memory and CPU. Specifically, UIViewOperationQueue and EventDispatcherImpl will no longer work as they will not subscribe to ReactChoreographer for updates.
@@ -203,6 +215,18 @@ public object ReactNativeFeatureFlags {
   public fun setAndroidLayoutDirection(): Boolean = accessor.setAndroidLayoutDirection()
 
   /**
+   * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.
+   */
+  @JvmStatic
+  public fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean = accessor.traceTurboModulePromiseRejectionsOnAndroid()
+
+  /**
+   * Should this application enable the Fabric Interop Layer for Android? If yes, the application will behave so that it can accept non-Fabric components and render them on Fabric. This toggle is controlling extra logic such as custom event dispatching that are needed for the Fabric Interop Layer to work correctly.
+   */
+  @JvmStatic
+  public fun useFabricInterop(): Boolean = accessor.useFabricInterop()
+
+  /**
    * Invoke callbacks immediately on the ReactInstance rather than going through a background thread for synchronization
    */
   @JvmStatic
@@ -249,6 +273,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun useStateAlignmentMechanism(): Boolean = accessor.useStateAlignmentMechanism()
+
+  /**
+   * In Bridgeless mode, should legacy NativeModules use the TurboModule system?
+   */
+  @JvmStatic
+  public fun useTurboModuleInterop(): Boolean = accessor.useTurboModuleInterop()
 
   /**
    * Overrides the feature flags with the ones provided by the given provider

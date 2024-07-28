@@ -39,6 +39,7 @@ import com.facebook.react.uimanager.LengthPercentageType;
 import com.facebook.react.uimanager.Spacing;
 import com.facebook.react.uimanager.style.BorderRadiusProp;
 import com.facebook.react.uimanager.style.BorderRadiusStyle;
+import com.facebook.react.uimanager.style.BorderStyle;
 import com.facebook.react.uimanager.style.ComputedBorderRadius;
 import com.facebook.react.uimanager.style.Gradient;
 import java.util.Locale;
@@ -68,29 +69,23 @@ public class CSSBackgroundDrawable extends Drawable {
   // 0 == 0x00000000, all bits set to 0.
   private static final int ALL_BITS_UNSET = 0;
 
-  private enum BorderStyle {
-    SOLID,
-    DASHED,
-    DOTTED;
+  private static @Nullable PathEffect getPathEffect(BorderStyle style, float borderWidth) {
+    switch (style) {
+      case SOLID:
+        return null;
 
-    public static @Nullable PathEffect getPathEffect(BorderStyle style, float borderWidth) {
-      switch (style) {
-        case SOLID:
-          return null;
+      case DASHED:
+        return new DashPathEffect(
+            new float[] {borderWidth * 3, borderWidth * 3, borderWidth * 3, borderWidth * 3}, 0);
 
-        case DASHED:
-          return new DashPathEffect(
-              new float[] {borderWidth * 3, borderWidth * 3, borderWidth * 3, borderWidth * 3}, 0);
+      case DOTTED:
+        return new DashPathEffect(
+            new float[] {borderWidth, borderWidth, borderWidth, borderWidth}, 0);
 
-        case DOTTED:
-          return new DashPathEffect(
-              new float[] {borderWidth, borderWidth, borderWidth, borderWidth}, 0);
-
-        default:
-          return null;
-      }
+      default:
+        return null;
     }
-  };
+  }
 
   /* Value at Spacing.ALL index used for rounded borders, whole array used by rectangular borders */
   private @Nullable Spacing mBorderWidth;
@@ -260,11 +255,19 @@ public class CSSBackgroundDrawable extends Drawable {
   public void setBorderStyle(@Nullable String style) {
     BorderStyle borderStyle =
         style == null ? null : BorderStyle.valueOf(style.toUpperCase(Locale.US));
+    setBorderStyle(borderStyle);
+  }
+
+  public void setBorderStyle(@Nullable BorderStyle borderStyle) {
     if (mBorderStyle != borderStyle) {
       mBorderStyle = borderStyle;
       mNeedUpdatePathForBorderRadius = true;
       invalidateSelf();
     }
+  }
+
+  public @Nullable BorderStyle getBorderStyle() {
+    return mBorderStyle;
   }
 
   /**
@@ -291,6 +294,7 @@ public class CSSBackgroundDrawable extends Drawable {
 
     if (boxedRadius == null) {
       mBorderRadius.set(BorderRadiusProp.values()[position], null);
+      invalidateSelf();
     } else {
       setBorderRadius(
           BorderRadiusProp.values()[position],
@@ -312,6 +316,12 @@ public class CSSBackgroundDrawable extends Drawable {
 
   public BorderRadiusStyle getBorderRadius() {
     return mBorderRadius;
+  }
+
+  // Here, "inner" refers to the border radius on the inside of the border. So
+  // it ends up being the "outer" border radius inset by the respective width.
+  public float getInnerBorderRadius(float computedRadius, float borderWidth) {
+    return Math.max(computedRadius - borderWidth, 0);
   }
 
   public ComputedBorderRadius getComputedBorderRadius() {
@@ -655,14 +665,16 @@ public class CSSBackgroundDrawable extends Drawable {
     float bottomLeftRadius = mComputedBorderRadius.getBottomLeft();
     float bottomRightRadius = mComputedBorderRadius.getBottomRight();
 
-    final float innerTopLeftRadiusX = Math.max(topLeftRadius - borderWidth.left, 0);
-    final float innerTopLeftRadiusY = Math.max(topLeftRadius - borderWidth.top, 0);
-    final float innerTopRightRadiusX = Math.max(topRightRadius - borderWidth.right, 0);
-    final float innerTopRightRadiusY = Math.max(topRightRadius - borderWidth.top, 0);
-    final float innerBottomRightRadiusX = Math.max(bottomRightRadius - borderWidth.right, 0);
-    final float innerBottomRightRadiusY = Math.max(bottomRightRadius - borderWidth.bottom, 0);
-    final float innerBottomLeftRadiusX = Math.max(bottomLeftRadius - borderWidth.left, 0);
-    final float innerBottomLeftRadiusY = Math.max(bottomLeftRadius - borderWidth.bottom, 0);
+    final float innerTopLeftRadiusX = getInnerBorderRadius(topLeftRadius, borderWidth.left);
+    final float innerTopLeftRadiusY = getInnerBorderRadius(topLeftRadius, borderWidth.top);
+    final float innerTopRightRadiusX = getInnerBorderRadius(topRightRadius, borderWidth.right);
+    final float innerTopRightRadiusY = getInnerBorderRadius(topRightRadius, borderWidth.top);
+    final float innerBottomRightRadiusX =
+        getInnerBorderRadius(bottomRightRadius, borderWidth.right);
+    final float innerBottomRightRadiusY =
+        getInnerBorderRadius(bottomRightRadius, borderWidth.bottom);
+    final float innerBottomLeftRadiusX = getInnerBorderRadius(bottomLeftRadius, borderWidth.left);
+    final float innerBottomLeftRadiusY = getInnerBorderRadius(bottomLeftRadius, borderWidth.bottom);
 
     mInnerClipPathForBorderRadius.addRoundRect(
         mInnerClipTempRectForBorderRadius,
@@ -1027,14 +1039,23 @@ public class CSSBackgroundDrawable extends Drawable {
   }
 
   public float getBorderWidthOrDefaultTo(final float defaultValue, final int spacingType) {
-    if (mBorderWidth == null) {
+    @Nullable Float width = getBorderWidth(spacingType);
+    if (width == null) {
       return defaultValue;
+    }
+
+    return width;
+  }
+
+  public @Nullable Float getBorderWidth(int spacingType) {
+    if (mBorderWidth == null) {
+      return null;
     }
 
     final float width = mBorderWidth.getRaw(spacingType);
 
     if (Float.isNaN(width)) {
-      return defaultValue;
+      return null;
     }
 
     return width;
@@ -1044,7 +1065,7 @@ public class CSSBackgroundDrawable extends Drawable {
   private void updatePathEffect() {
     // Used for rounded border and rounded background
     PathEffect mPathEffectForBorderStyle =
-        mBorderStyle != null ? BorderStyle.getPathEffect(mBorderStyle, getFullBorderWidth()) : null;
+        mBorderStyle != null ? getPathEffect(mBorderStyle, getFullBorderWidth()) : null;
 
     mPaint.setPathEffect(mPathEffectForBorderStyle);
   }
@@ -1052,7 +1073,7 @@ public class CSSBackgroundDrawable extends Drawable {
   private void updatePathEffect(int borderWidth) {
     PathEffect pathEffectForBorderStyle = null;
     if (mBorderStyle != null) {
-      pathEffectForBorderStyle = BorderStyle.getPathEffect(mBorderStyle, borderWidth);
+      pathEffectForBorderStyle = getPathEffect(mBorderStyle, borderWidth);
     }
     mPaint.setPathEffect(pathEffectForBorderStyle);
   }

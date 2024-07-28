@@ -41,6 +41,7 @@ import com.facebook.imagepipeline.request.BasePostprocessor;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.facebook.imagepipeline.request.Postprocessor;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
@@ -68,6 +69,7 @@ import java.util.List;
  * Wrapper class around Fresco's GenericDraweeView, enabling persisting props across multiple view
  * update and consistent processing of both static and network images.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ReactImageView extends GenericDraweeView {
 
   public static final int REMOTE_IMAGE_FADE_DURATION_MS = 300;
@@ -136,7 +138,7 @@ public class ReactImageView extends GenericDraweeView {
   private @Nullable Object mCallerContext;
   private int mFadeDurationMs = -1;
   private boolean mProgressiveRenderingEnabled;
-  private ReadableMap mHeaders;
+  private @Nullable ReadableMap mHeaders = null;
   private float mResizeMultiplier = 1.0f;
   private ReactViewBackgroundManager mReactBackgroundManager;
 
@@ -182,6 +184,9 @@ public class ReactImageView extends GenericDraweeView {
             @Override
             public void onProgressChange(int loaded, int total) {
               // TODO: Somehow get image size and convert `loaded` and `total` to image bytes.
+              if (mEventDispatcher == null || mImageSource == null) {
+                return;
+              }
               mEventDispatcher.dispatchEvent(
                   ImageLoadEvent.createProgressEvent(
                       UIManagerHelper.getSurfaceId(ReactImageView.this),
@@ -193,6 +198,9 @@ public class ReactImageView extends GenericDraweeView {
 
             @Override
             public void onSubmit(String id, Object callerContext) {
+              if (mEventDispatcher == null) {
+                return;
+              }
               mEventDispatcher.dispatchEvent(
                   ImageLoadEvent.createLoadStartEvent(
                       UIManagerHelper.getSurfaceId(ReactImageView.this), getId()));
@@ -201,7 +209,7 @@ public class ReactImageView extends GenericDraweeView {
             @Override
             public void onFinalImageSet(
                 String id, @Nullable final ImageInfo imageInfo, @Nullable Animatable animatable) {
-              if (imageInfo != null) {
+              if (imageInfo != null && mEventDispatcher != null && mImageSource != null) {
                 mEventDispatcher.dispatchEvent(
                     ImageLoadEvent.createLoadEvent(
                         UIManagerHelper.getSurfaceId(ReactImageView.this),
@@ -217,6 +225,9 @@ public class ReactImageView extends GenericDraweeView {
 
             @Override
             public void onFailure(String id, Throwable throwable) {
+              if (mEventDispatcher == null) {
+                return;
+              }
               mEventDispatcher.dispatchEvent(
                   ImageLoadEvent.createErrorEvent(
                       UIManagerHelper.getSurfaceId(ReactImageView.this), getId(), throwable));
@@ -472,25 +483,27 @@ public class ReactImageView extends GenericDraweeView {
     getCornerRadii(sComputedCornerRadii);
 
     RoundingParams roundingParams = hierarchy.getRoundingParams();
-    roundingParams.setCornersRadii(
-        sComputedCornerRadii[0],
-        sComputedCornerRadii[1],
-        sComputedCornerRadii[2],
-        sComputedCornerRadii[3]);
+    if (roundingParams != null) {
+      roundingParams.setCornersRadii(
+          sComputedCornerRadii[0],
+          sComputedCornerRadii[1],
+          sComputedCornerRadii[2],
+          sComputedCornerRadii[3]);
 
-    if (mBackgroundImageDrawable != null) {
-      mBackgroundImageDrawable.setBorder(mBorderColor, mBorderWidth);
-      mBackgroundImageDrawable.setRadii(roundingParams.getCornersRadii());
-      hierarchy.setBackgroundImage(mBackgroundImageDrawable);
+      if (mBackgroundImageDrawable != null) {
+        mBackgroundImageDrawable.setBorder(mBorderColor, mBorderWidth);
+        mBackgroundImageDrawable.setRadii(roundingParams.getCornersRadii());
+        hierarchy.setBackgroundImage(mBackgroundImageDrawable);
+      }
+      roundingParams.setBorder(mBorderColor, mBorderWidth);
+      if (mOverlayColor != Color.TRANSPARENT) {
+        roundingParams.setOverlayColor(mOverlayColor);
+      } else {
+        // make sure the default rounding method is used.
+        roundingParams.setRoundingMethod(RoundingParams.RoundingMethod.BITMAP_ONLY);
+      }
+      hierarchy.setRoundingParams(roundingParams);
     }
-    roundingParams.setBorder(mBorderColor, mBorderWidth);
-    if (mOverlayColor != Color.TRANSPARENT) {
-      roundingParams.setOverlayColor(mOverlayColor);
-    } else {
-      // make sure the default rounding method is used.
-      roundingParams.setRoundingMethod(RoundingParams.RoundingMethod.BITMAP_ONLY);
-    }
-    hierarchy.setRoundingParams(roundingParams);
     hierarchy.setFadeDuration(
         mFadeDurationMs >= 0
             ? mFadeDurationMs
@@ -507,6 +520,10 @@ public class ReactImageView extends GenericDraweeView {
   }
 
   private void maybeUpdateViewFromRequest(boolean doResize) {
+    if (mImageSource == null) {
+      return;
+    }
+
     List<Postprocessor> postprocessors = new LinkedList<>();
     if (mIterativeBoxBlurPostProcessor != null) {
       postprocessors.add(mIterativeBoxBlurPostProcessor);
@@ -537,9 +554,12 @@ public class ReactImageView extends GenericDraweeView {
 
     mDraweeControllerBuilder
         .setAutoPlayAnimations(true)
-        .setCallerContext(mCallerContext)
         .setOldController(getController())
         .setImageRequest(imageRequest);
+
+    if (mCallerContext != null) {
+      mDraweeControllerBuilder.setCallerContext(mCallerContext);
+    }
 
     if (mCachedImageSource != null) {
       ImageRequest cachedImageRequest =
@@ -576,6 +596,7 @@ public class ReactImageView extends GenericDraweeView {
 
   private void maybeUpdateViewFromDrawable(Drawable drawable) {
     final boolean shouldNotify = mDownloadListener != null;
+
     final EventDispatcher mEventDispatcher =
         shouldNotify
             ? UIManagerHelper.getEventDispatcherForReactTag((ReactContext) getContext(), getId())
@@ -589,7 +610,7 @@ public class ReactImageView extends GenericDraweeView {
 
     getHierarchy().setImage(drawable, 1, false);
 
-    if (mEventDispatcher != null) {
+    if (mEventDispatcher != null && mImageSource != null) {
       mEventDispatcher.dispatchEvent(
           ImageLoadEvent.createLoadEvent(
               UIManagerHelper.getSurfaceId(ReactImageView.this),
@@ -708,7 +729,7 @@ public class ReactImageView extends GenericDraweeView {
     return new ResizeOptions(width, height);
   }
 
-  private void warnImageSource(String uri) {
+  private void warnImageSource(@Nullable String uri) {
     // TODO(T189014077): This code-path produces an infinite loop of js calls with logbox.
     // This is an issue with Fabric view preallocation, react, and LogBox. Fix.
     // The bug:

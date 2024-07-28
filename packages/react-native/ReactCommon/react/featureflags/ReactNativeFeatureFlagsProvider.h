@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<48be14c9be6da39c4acbf449d9ec8741>>
+ * @generated SignedSource<<28afd58334a064cf48b8a93eb9a22a33>>
  */
 
 /**
@@ -34,6 +34,8 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool destroyFabricSurfacesInReactInstanceManager() = 0;
   virtual bool enableAlignItemsBaselineOnFabricIOS() = 0;
   virtual bool enableCleanTextInputYogaNode() = 0;
+  virtual bool enableEagerRootViewAttachment() = 0;
+  virtual bool enableFabricLogs() = 0;
   virtual bool enableFabricRendererExclusively() = 0;
   virtual bool enableGranularShadowTreeStateReconciliation() = 0;
   virtual bool enableLongTaskAPI() = 0;
@@ -54,6 +56,8 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool lazyAnimationCallbacks() = 0;
   virtual bool loadVectorDrawablesOnImages() = 0;
   virtual bool setAndroidLayoutDirection() = 0;
+  virtual bool traceTurboModulePromiseRejectionsOnAndroid() = 0;
+  virtual bool useFabricInterop() = 0;
   virtual bool useImmediateExecutorInAndroidBridgeless() = 0;
   virtual bool useModernRuntimeScheduler() = 0;
   virtual bool useNativeViewConfigsInBridgelessMode() = 0;
@@ -62,6 +66,7 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool useRuntimeShadowNodeReferenceUpdate() = 0;
   virtual bool useRuntimeShadowNodeReferenceUpdateOnLayout() = 0;
   virtual bool useStateAlignmentMechanism() = 0;
+  virtual bool useTurboModuleInterop() = 0;
 };
 
 } // namespace facebook::react

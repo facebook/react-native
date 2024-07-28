@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<82f6d4eda4011bee81810af366f5d677>>
+ * @generated SignedSource<<81072627d7bfbf2b7918921a0e9fe106>>
  */
 
 /**
@@ -33,6 +33,8 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var destroyFabricSurfacesInReactInstanceManagerCache: Boolean? = null
   private var enableAlignItemsBaselineOnFabricIOSCache: Boolean? = null
   private var enableCleanTextInputYogaNodeCache: Boolean? = null
+  private var enableEagerRootViewAttachmentCache: Boolean? = null
+  private var enableFabricLogsCache: Boolean? = null
   private var enableFabricRendererExclusivelyCache: Boolean? = null
   private var enableGranularShadowTreeStateReconciliationCache: Boolean? = null
   private var enableLongTaskAPICache: Boolean? = null
@@ -53,6 +55,8 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var lazyAnimationCallbacksCache: Boolean? = null
   private var loadVectorDrawablesOnImagesCache: Boolean? = null
   private var setAndroidLayoutDirectionCache: Boolean? = null
+  private var traceTurboModulePromiseRejectionsOnAndroidCache: Boolean? = null
+  private var useFabricInteropCache: Boolean? = null
   private var useImmediateExecutorInAndroidBridgelessCache: Boolean? = null
   private var useModernRuntimeSchedulerCache: Boolean? = null
   private var useNativeViewConfigsInBridgelessModeCache: Boolean? = null
@@ -61,6 +65,7 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var useRuntimeShadowNodeReferenceUpdateCache: Boolean? = null
   private var useRuntimeShadowNodeReferenceUpdateOnLayoutCache: Boolean? = null
   private var useStateAlignmentMechanismCache: Boolean? = null
+  private var useTurboModuleInteropCache: Boolean? = null
 
   override fun commonTestFlag(): Boolean {
     var cached = commonTestFlagCache
@@ -148,6 +153,26 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.enableCleanTextInputYogaNode()
       accessedFeatureFlags.add("enableCleanTextInputYogaNode")
       enableCleanTextInputYogaNodeCache = cached
+    }
+    return cached
+  }
+
+  override fun enableEagerRootViewAttachment(): Boolean {
+    var cached = enableEagerRootViewAttachmentCache
+    if (cached == null) {
+      cached = currentProvider.enableEagerRootViewAttachment()
+      accessedFeatureFlags.add("enableEagerRootViewAttachment")
+      enableEagerRootViewAttachmentCache = cached
+    }
+    return cached
+  }
+
+  override fun enableFabricLogs(): Boolean {
+    var cached = enableFabricLogsCache
+    if (cached == null) {
+      cached = currentProvider.enableFabricLogs()
+      accessedFeatureFlags.add("enableFabricLogs")
+      enableFabricLogsCache = cached
     }
     return cached
   }
@@ -352,6 +377,26 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
     return cached
   }
 
+  override fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean {
+    var cached = traceTurboModulePromiseRejectionsOnAndroidCache
+    if (cached == null) {
+      cached = currentProvider.traceTurboModulePromiseRejectionsOnAndroid()
+      accessedFeatureFlags.add("traceTurboModulePromiseRejectionsOnAndroid")
+      traceTurboModulePromiseRejectionsOnAndroidCache = cached
+    }
+    return cached
+  }
+
+  override fun useFabricInterop(): Boolean {
+    var cached = useFabricInteropCache
+    if (cached == null) {
+      cached = currentProvider.useFabricInterop()
+      accessedFeatureFlags.add("useFabricInterop")
+      useFabricInteropCache = cached
+    }
+    return cached
+  }
+
   override fun useImmediateExecutorInAndroidBridgeless(): Boolean {
     var cached = useImmediateExecutorInAndroidBridgelessCache
     if (cached == null) {
@@ -428,6 +473,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.useStateAlignmentMechanism()
       accessedFeatureFlags.add("useStateAlignmentMechanism")
       useStateAlignmentMechanismCache = cached
+    }
+    return cached
+  }
+
+  override fun useTurboModuleInterop(): Boolean {
+    var cached = useTurboModuleInteropCache
+    if (cached == null) {
+      cached = currentProvider.useTurboModuleInterop()
+      accessedFeatureFlags.add("useTurboModuleInterop")
+      useTurboModuleInteropCache = cached
     }
     return cached
   }

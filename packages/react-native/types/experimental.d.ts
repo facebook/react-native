@@ -33,7 +33,7 @@
  */
 
 import {
-  BackgroundImagePrimitive,
+  GradientValue,
   BlendMode,
   BoxShadowPrimitive,
   DimensionValue,
@@ -150,12 +150,15 @@ declare module '.' {
   }
 
   export interface ViewStyle {
-    experimental_boxShadow?: BoxShadowPrimitive | undefined;
-    experimental_filter?: ReadonlyArray<FilterFunction> | undefined;
-    experimental_backgroundImage?:
-      | ReadonlyArray<BackgroundImagePrimitive>
+    experimental_boxShadow?:
+      | ReadonlyArray<BoxShadowPrimitive>
       | string
       | undefined;
+    experimental_filter?: ReadonlyArray<FilterFunction> | string | undefined;
     experimental_mixBlendMode?: BlendMode | undefined;
+    experimental_backgroundImage?:
+      | ReadonlyArray<GradientValue>
+      | string
+      | undefined;
   }
 }

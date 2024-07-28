@@ -42,9 +42,7 @@ public object DefaultNewArchitectureEntryPoint {
     }
     ReactFeatureFlags.useTurboModules = turboModulesEnabled
     ReactFeatureFlags.enableFabricRenderer = fabricEnabled
-    ReactFeatureFlags.unstable_useFabricInterop = fabricEnabled
     ReactFeatureFlags.enableBridgelessArchitecture = bridgelessEnabled
-    ReactFeatureFlags.unstable_useTurboModuleInterop = bridgelessEnabled
     val fuseboxEnabledDebug = fuseboxEnabled
 
     if (bridgelessEnabled) {
@@ -61,6 +59,10 @@ public object DefaultNewArchitectureEntryPoint {
             // We need to assign this now as we can't call ReactNativeFeatureFlags.override()
             // more than once.
             override fun fuseboxEnabledDebug(): Boolean = fuseboxEnabledDebug
+
+            override fun useFabricInterop(): Boolean = fabricEnabled
+
+            override fun useTurboModuleInterop(): Boolean = bridgelessEnabled
           })
     }
 

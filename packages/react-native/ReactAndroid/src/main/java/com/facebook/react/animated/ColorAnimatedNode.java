@@ -66,7 +66,7 @@ import com.facebook.react.views.view.ColorUtil;
   @Override
   public String prettyPrint() {
     return "ColorAnimatedNode["
-        + mTag
+        + tag
         + "]: r: "
         + mRNodeId
         + " g: "
@@ -94,10 +94,10 @@ import com.facebook.react.views.view.ColorUtil;
     ValueAnimatedNode bNode = (ValueAnimatedNode) mNativeAnimatedNodesManager.getNodeById(mBNodeId);
     ValueAnimatedNode aNode = (ValueAnimatedNode) mNativeAnimatedNodesManager.getNodeById(mANodeId);
 
-    rNode.mValue = Color.red(color);
-    gNode.mValue = Color.green(color);
-    bNode.mValue = Color.blue(color);
-    aNode.mValue = Color.alpha(color) / 255.0;
+    rNode.nodeValue = Color.red(color);
+    gNode.nodeValue = Color.green(color);
+    bNode.nodeValue = Color.blue(color);
+    aNode.nodeValue = Color.alpha(color) / 255.0;
 
     mNativeColorApplied = true;
   }
@@ -116,8 +116,8 @@ import com.facebook.react.views.view.ColorUtil;
   private static Context getContextHelper(AnimatedNode node) {
     // Search children depth-first until we get to a PropsAnimatedNode, from which we can
     // get the view and its context
-    if (node.mChildren != null) {
-      for (AnimatedNode child : node.mChildren) {
+    if (node.children != null) {
+      for (AnimatedNode child : node.children) {
         if (child instanceof PropsAnimatedNode) {
           View view = ((PropsAnimatedNode) child).getConnectedView();
           return view != null ? view.getContext() : null;

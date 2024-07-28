@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<aaf205098eaac9171aa15bc8f7bda805>>
+ * @generated SignedSource<<9ab73bca1d6379fe096c26b89495488c>>
  */
 
 /**
@@ -46,6 +46,10 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun enableCleanTextInputYogaNode(): Boolean
 
+  @DoNotStrip @JvmStatic public external fun enableEagerRootViewAttachment(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun enableFabricLogs(): Boolean
+
   @DoNotStrip @JvmStatic public external fun enableFabricRendererExclusively(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableGranularShadowTreeStateReconciliation(): Boolean
@@ -86,6 +90,10 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun setAndroidLayoutDirection(): Boolean
 
+  @DoNotStrip @JvmStatic public external fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun useFabricInterop(): Boolean
+
   @DoNotStrip @JvmStatic public external fun useImmediateExecutorInAndroidBridgeless(): Boolean
 
   @DoNotStrip @JvmStatic public external fun useModernRuntimeScheduler(): Boolean
@@ -101,6 +109,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun useRuntimeShadowNodeReferenceUpdateOnLayout(): Boolean
 
   @DoNotStrip @JvmStatic public external fun useStateAlignmentMechanism(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun useTurboModuleInterop(): Boolean
 
   @DoNotStrip @JvmStatic public external fun override(provider: Any)
 

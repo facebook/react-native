@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c1230df8d1603fb6738dd634ab041a02>>
+ * @generated SignedSource<<416abde5c71ed1f507a466f87a353240>>
  */
 
 /**
@@ -40,6 +40,8 @@ class ReactNativeFeatureFlagsAccessor {
   bool destroyFabricSurfacesInReactInstanceManager();
   bool enableAlignItemsBaselineOnFabricIOS();
   bool enableCleanTextInputYogaNode();
+  bool enableEagerRootViewAttachment();
+  bool enableFabricLogs();
   bool enableFabricRendererExclusively();
   bool enableGranularShadowTreeStateReconciliation();
   bool enableLongTaskAPI();
@@ -60,6 +62,8 @@ class ReactNativeFeatureFlagsAccessor {
   bool lazyAnimationCallbacks();
   bool loadVectorDrawablesOnImages();
   bool setAndroidLayoutDirection();
+  bool traceTurboModulePromiseRejectionsOnAndroid();
+  bool useFabricInterop();
   bool useImmediateExecutorInAndroidBridgeless();
   bool useModernRuntimeScheduler();
   bool useNativeViewConfigsInBridgelessMode();
@@ -68,6 +72,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool useRuntimeShadowNodeReferenceUpdate();
   bool useRuntimeShadowNodeReferenceUpdateOnLayout();
   bool useStateAlignmentMechanism();
+  bool useTurboModuleInterop();
 
   void override(std::unique_ptr<ReactNativeFeatureFlagsProvider> provider);
 
@@ -78,7 +83,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 37> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 42> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> allowCollapsableChildren_;
@@ -89,6 +94,8 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> destroyFabricSurfacesInReactInstanceManager_;
   std::atomic<std::optional<bool>> enableAlignItemsBaselineOnFabricIOS_;
   std::atomic<std::optional<bool>> enableCleanTextInputYogaNode_;
+  std::atomic<std::optional<bool>> enableEagerRootViewAttachment_;
+  std::atomic<std::optional<bool>> enableFabricLogs_;
   std::atomic<std::optional<bool>> enableFabricRendererExclusively_;
   std::atomic<std::optional<bool>> enableGranularShadowTreeStateReconciliation_;
   std::atomic<std::optional<bool>> enableLongTaskAPI_;
@@ -109,6 +116,8 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> lazyAnimationCallbacks_;
   std::atomic<std::optional<bool>> loadVectorDrawablesOnImages_;
   std::atomic<std::optional<bool>> setAndroidLayoutDirection_;
+  std::atomic<std::optional<bool>> traceTurboModulePromiseRejectionsOnAndroid_;
+  std::atomic<std::optional<bool>> useFabricInterop_;
   std::atomic<std::optional<bool>> useImmediateExecutorInAndroidBridgeless_;
   std::atomic<std::optional<bool>> useModernRuntimeScheduler_;
   std::atomic<std::optional<bool>> useNativeViewConfigsInBridgelessMode_;
@@ -117,6 +126,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> useRuntimeShadowNodeReferenceUpdate_;
   std::atomic<std::optional<bool>> useRuntimeShadowNodeReferenceUpdateOnLayout_;
   std::atomic<std::optional<bool>> useStateAlignmentMechanism_;
+  std::atomic<std::optional<bool>> useTurboModuleInterop_;
 };
 
 } // namespace facebook::react

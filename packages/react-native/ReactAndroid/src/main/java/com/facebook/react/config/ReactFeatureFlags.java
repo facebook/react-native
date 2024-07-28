@@ -9,7 +9,6 @@ package com.facebook.react.config;
 
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.proguard.annotations.DoNotStripAny;
-import com.facebook.react.common.build.ReactBuildConfig;
 
 /**
  * Hi there, traveller! This configuration class is not meant to be used by end-users of RN. It
@@ -29,9 +28,6 @@ public class ReactFeatureFlags {
    */
   public static volatile boolean useTurboModules = false;
 
-  /** In Bridgeless mode, should legacy NativeModules use the TurboModule system? */
-  public static volatile boolean unstable_useTurboModuleInterop = false;
-
   /**
    * Should this application use the new (Fabric) Renderer? If yes, all rendering in this app will
    * use Fabric instead of the legacy renderer.
@@ -39,24 +35,10 @@ public class ReactFeatureFlags {
   public static volatile boolean enableFabricRenderer = false;
 
   /**
-   * Should this application enable the Fabric Interop Layer for Android? If yes, the application
-   * will behave so that it can accept non-Fabric components and render them on Fabric. This toggle
-   * is controlling extra logic such as custom event dispatching that are needed for the Fabric
-   * Interop Layer to work correctly.
-   */
-  public static volatile boolean unstable_useFabricInterop = false;
-
-  /**
    * Feature flag to enable the new bridgeless architecture. Note: Enabling this will force enable
    * the following flags: `useTurboModules` & `enableFabricRenderer`.
    */
   public static boolean enableBridgelessArchitecture = false;
-
-  /** This feature flag enables logs for Fabric */
-  public static boolean enableFabricLogs = false;
-
-  /** Feature flag to configure eager attachment of the root view/initialisation of the JS code */
-  public static boolean enableEagerRootViewAttachment = false;
 
   public static boolean dispatchPointerEvents = false;
 
@@ -69,10 +51,4 @@ public class ReactFeatureFlags {
    * Enable prop iterator setter-style construction of Props in C++ (this flag is not used in Java).
    */
   public static boolean enableCppPropsIteratorSetter = false;
-
-  /**
-   * Enables storing js caller stack when creating promise in native module. This is useful in case
-   * of Promise rejection and tracing the cause.
-   */
-  public static boolean traceTurboModulePromiseRejections = ReactBuildConfig.DEBUG;
 }

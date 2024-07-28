@@ -37,9 +37,9 @@ import com.facebook.react.bridge.ReadableMap;
       if (animatedNode != null && animatedNode instanceof ValueAnimatedNode) {
         double value = ((ValueAnimatedNode) animatedNode).getValue();
         if (i == 0) {
-          mValue = value;
+          nodeValue = value;
         } else {
-          mValue -= value;
+          nodeValue -= value;
         }
       } else {
         throw new JSApplicationCausedNativeException(
@@ -51,7 +51,7 @@ import com.facebook.react.bridge.ReadableMap;
   @Override
   public String prettyPrint() {
     return "SubtractionAnimatedNode["
-        + mTag
+        + tag
         + "]: input nodes: "
         + (mInputNodes != null ? mInputNodes.toString() : "null")
         + " - super: "

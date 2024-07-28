@@ -141,11 +141,6 @@ class Scheduler final : public UIManagerDelegate {
    * Must not be nullptr.
    */
   ContextContainer::Shared contextContainer_;
-
-  /*
-   * Temporary flags.
-   */
-  bool removeOutstandingSurfacesOnDestruction_{false};
 };
 
 } // namespace facebook::react

@@ -78,6 +78,15 @@ const definitions: FeatureFlagDefinitions = {
       defaultValue: false,
       description: 'Clean yoga node when <TextInput /> does not change.',
     },
+    enableEagerRootViewAttachment: {
+      defaultValue: false,
+      description:
+        'Feature flag to configure eager attachment of the root view/initialisation of the JS code.',
+    },
+    enableFabricLogs: {
+      defaultValue: false,
+      description: 'This feature flag enables logs for Fabric.',
+    },
     enableFabricRendererExclusively: {
       defaultValue: false,
       description:
@@ -174,8 +183,18 @@ const definitions: FeatureFlagDefinitions = {
         'Adds support for loading vector drawable assets in the Image component (only on Android)',
     },
     setAndroidLayoutDirection: {
-      defaultValue: true,
+      defaultValue: false,
       description: 'Propagate layout direction to Android views.',
+    },
+    traceTurboModulePromiseRejectionsOnAndroid: {
+      defaultValue: false,
+      description:
+        'Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.',
+    },
+    useFabricInterop: {
+      defaultValue: false,
+      description:
+        'Should this application enable the Fabric Interop Layer for Android? If yes, the application will behave so that it can accept non-Fabric components and render them on Fabric. This toggle is controlling extra logic such as custom event dispatching that are needed for the Fabric Interop Layer to work correctly.',
     },
     useImmediateExecutorInAndroidBridgeless: {
       defaultValue: false,
@@ -216,6 +235,11 @@ const definitions: FeatureFlagDefinitions = {
       defaultValue: false,
       description:
         'When enabled, it uses optimised state reconciliation algorithm.',
+    },
+    useTurboModuleInterop: {
+      defaultValue: false,
+      description:
+        'In Bridgeless mode, should legacy NativeModules use the TurboModule system?',
     },
   },
 
