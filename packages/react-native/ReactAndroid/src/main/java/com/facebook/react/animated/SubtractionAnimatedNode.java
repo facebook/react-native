@@ -37,9 +37,9 @@ import com.facebook.react.bridge.ReadableMap;
       if (animatedNode != null && animatedNode instanceof ValueAnimatedNode) {
         double value = ((ValueAnimatedNode) animatedNode).getValue();
         if (i == 0) {
-          mValue = value;
+          nodeValue = value;
         } else {
-          mValue -= value;
+          nodeValue -= value;
         }
       } else {
         throw new JSApplicationCausedNativeException(

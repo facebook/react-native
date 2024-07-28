@@ -32,11 +32,11 @@ import com.facebook.react.bridge.ReadableMap;
 
   @Override
   public void update() {
-    mValue = 1;
+    nodeValue = 1;
     for (int i = 0; i < mInputNodes.length; i++) {
       AnimatedNode animatedNode = mNativeAnimatedNodesManager.getNodeById(mInputNodes[i]);
       if (animatedNode != null && animatedNode instanceof ValueAnimatedNode) {
-        mValue *= ((ValueAnimatedNode) animatedNode).getValue();
+        nodeValue *= ((ValueAnimatedNode) animatedNode).getValue();
       } else {
         throw new JSApplicationCausedNativeException(
             "Illegal node ID set as an input for Animated.multiply node");

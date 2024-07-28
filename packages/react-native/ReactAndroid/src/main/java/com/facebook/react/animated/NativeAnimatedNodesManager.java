@@ -209,7 +209,7 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
               + "] does not exist, or is not a 'value' node");
     }
     stopAnimationsForNode(node);
-    ((ValueAnimatedNode) node).mValue = value;
+    ((ValueAnimatedNode) node).nodeValue = value;
     mUpdatedNodes.put(tag, node);
   }
 
@@ -222,7 +222,7 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
               + tag
               + "] does not exist, or is not a 'value' node");
     }
-    ((ValueAnimatedNode) node).mOffset = offset;
+    ((ValueAnimatedNode) node).offset = offset;
     mUpdatedNodes.put(tag, node);
   }
 
@@ -306,7 +306,7 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
           // Invoke animation end callback with {finished: false}
           WritableMap endCallbackResponse = Arguments.createMap();
           endCallbackResponse.putBoolean("finished", false);
-          endCallbackResponse.putDouble("value", animation.mAnimatedValue.mValue);
+          endCallbackResponse.putDouble("value", animation.mAnimatedValue.nodeValue);
           animation.mEndCallback.invoke(endCallbackResponse);
         } else if (mReactApplicationContext != null) {
           // If no callback is passed in, this /may/ be an animation set up by the single-op
@@ -315,7 +315,7 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
           WritableMap params = Arguments.createMap();
           params.putInt("animationId", animation.mId);
           params.putBoolean("finished", false);
-          params.putDouble("value", animation.mAnimatedValue.mValue);
+          params.putDouble("value", animation.mAnimatedValue.nodeValue);
           if (events == null) {
             events = Arguments.createArray();
           }
@@ -344,7 +344,7 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
           // Invoke animation end callback with {finished: false}
           WritableMap endCallbackResponse = Arguments.createMap();
           endCallbackResponse.putBoolean("finished", false);
-          endCallbackResponse.putDouble("value", animation.mAnimatedValue.mValue);
+          endCallbackResponse.putDouble("value", animation.mAnimatedValue.nodeValue);
           animation.mEndCallback.invoke(endCallbackResponse);
         } else if (mReactApplicationContext != null) {
           // If no callback is passed in, this /may/ be an animation set up by the single-op
@@ -353,7 +353,7 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
           WritableMap params = Arguments.createMap();
           params.putInt("animationId", animation.mId);
           params.putBoolean("finished", false);
-          params.putDouble("value", animation.mAnimatedValue.mValue);
+          params.putDouble("value", animation.mAnimatedValue.nodeValue);
           if (events == null) {
             events = Arguments.createArray();
           }
@@ -672,7 +672,7 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
           if (animation.mEndCallback != null) {
             WritableMap endCallbackResponse = Arguments.createMap();
             endCallbackResponse.putBoolean("finished", true);
-            endCallbackResponse.putDouble("value", animation.mAnimatedValue.mValue);
+            endCallbackResponse.putDouble("value", animation.mAnimatedValue.nodeValue);
             animation.mEndCallback.invoke(endCallbackResponse);
           } else if (mReactApplicationContext != null) {
             // If no callback is passed in, this /may/ be an animation set up by the single-op
@@ -681,7 +681,7 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
             WritableMap params = Arguments.createMap();
             params.putInt("animationId", animation.mId);
             params.putBoolean("finished", true);
-            params.putDouble("value", animation.mAnimatedValue.mValue);
+            params.putDouble("value", animation.mAnimatedValue.nodeValue);
             if (events == null) {
               events = Arguments.createArray();
             }
