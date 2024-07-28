@@ -154,7 +154,7 @@ class ObjectAnimatedNode extends AnimatedNode {
   @Override
   public String prettyPrint() {
     return "ObjectAnimatedNode["
-        + mTag
+        + tag
         + "]: mConfig: "
         + (mConfig != null ? mConfig.toString() : "null");
   }

@@ -49,7 +49,7 @@ import java.util.Map;
   public void connectToView(int viewTag, UIManager uiManager) {
     if (mConnectedViewTag != -1) {
       throw new JSApplicationIllegalArgumentException(
-          "Animated node " + mTag + " is " + "already attached to a view: " + mConnectedViewTag);
+          "Animated node " + tag + " is " + "already attached to a view: " + mConnectedViewTag);
     }
     mConnectedViewTag = viewTag;
     mUIManager = uiManager;
@@ -134,7 +134,7 @@ import java.util.Map;
 
   public String prettyPrint() {
     return "PropsAnimatedNode["
-        + mTag
+        + tag
         + "] connectedViewTag: "
         + mConnectedViewTag
         + " mPropNodeMapping: "

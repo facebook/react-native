@@ -46,6 +46,6 @@ internal class DiffClampAnimatedNode(
     }
 
   override fun prettyPrint(): String =
-      "DiffClampAnimatedNode[$mTag]: InputNodeTag: $inputNodeTag min: $minValue " +
+      "DiffClampAnimatedNode[$tag]: InputNodeTag: $inputNodeTag min: $minValue " +
           "max: $maxValue lastValue: $lastValue super: ${super.prettyPrint()}"
 }

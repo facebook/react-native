@@ -86,7 +86,7 @@ import java.util.List;
   @Override
   public String prettyPrint() {
     return "TransformAnimatedNode["
-        + mTag
+        + tag
         + "]: mTransformConfigs: "
         + (mTransformConfigs != null ? mTransformConfigs.toString() : "null");
   }

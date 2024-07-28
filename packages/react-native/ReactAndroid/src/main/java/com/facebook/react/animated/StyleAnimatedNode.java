@@ -63,7 +63,7 @@ import java.util.Map;
 
   public String prettyPrint() {
     return "StyleAnimatedNode["
-        + mTag
+        + tag
         + "] mPropMapping: "
         + (mPropMapping != null ? mPropMapping.toString() : "null");
   }

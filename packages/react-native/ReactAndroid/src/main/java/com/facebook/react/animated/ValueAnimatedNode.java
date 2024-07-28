@@ -61,6 +61,6 @@ import com.facebook.react.bridge.ReadableMap;
   }
 
   public String prettyPrint() {
-    return "ValueAnimatedNode[" + mTag + "]: value: " + mValue + " offset: " + mOffset;
+    return "ValueAnimatedNode[" + tag + "]: value: " + mValue + " offset: " + mOffset;
   }
 }

@@ -42,12 +42,12 @@ import com.facebook.react.bridge.ReadableMap;
         }
         if (value == 0) {
           throw new JSApplicationCausedNativeException(
-              "Detected a division by zero in Animated.divide node with Animated ID " + mTag);
+              "Detected a division by zero in Animated.divide node with Animated ID " + tag);
         }
         mValue /= value;
       } else {
         throw new JSApplicationCausedNativeException(
-            "Illegal node ID set as an input for Animated.divide node with Animated ID " + mTag);
+            "Illegal node ID set as an input for Animated.divide node with Animated ID " + tag);
       }
     }
   }
@@ -55,7 +55,7 @@ import com.facebook.react.bridge.ReadableMap;
   @Override
   public String prettyPrint() {
     return "DivisionAnimatedNode["
-        + mTag
+        + tag
         + "]: input nodes: "
         + (mInputNodes != null ? mInputNodes.toString() : "null")
         + " - super: "
