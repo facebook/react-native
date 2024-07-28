@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<82f6d4eda4011bee81810af366f5d677>>
+ * @generated SignedSource<<c764ec599b576cf412f62e910e82bd15>>
  */
 
 /**
@@ -32,6 +32,7 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var completeReactInstanceCreationOnBgThreadOnAndroidCache: Boolean? = null
   private var destroyFabricSurfacesInReactInstanceManagerCache: Boolean? = null
   private var enableAlignItemsBaselineOnFabricIOSCache: Boolean? = null
+  private var enableBridgelessArchitectureCache: Boolean? = null
   private var enableCleanTextInputYogaNodeCache: Boolean? = null
   private var enableFabricRendererExclusivelyCache: Boolean? = null
   private var enableGranularShadowTreeStateReconciliationCache: Boolean? = null
@@ -138,6 +139,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.enableAlignItemsBaselineOnFabricIOS()
       accessedFeatureFlags.add("enableAlignItemsBaselineOnFabricIOS")
       enableAlignItemsBaselineOnFabricIOSCache = cached
+    }
+    return cached
+  }
+
+  override fun enableBridgelessArchitecture(): Boolean {
+    var cached = enableBridgelessArchitectureCache
+    if (cached == null) {
+      cached = currentProvider.enableBridgelessArchitecture()
+      accessedFeatureFlags.add("enableBridgelessArchitecture")
+      enableBridgelessArchitectureCache = cached
     }
     return cached
   }

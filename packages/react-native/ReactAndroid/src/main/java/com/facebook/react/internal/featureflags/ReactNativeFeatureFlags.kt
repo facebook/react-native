@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ca939ab47fa68fbb5acf5ea34481def9>>
+ * @generated SignedSource<<56adda271bcc179b28ee274516621130>>
  */
 
 /**
@@ -75,6 +75,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableAlignItemsBaselineOnFabricIOS(): Boolean = accessor.enableAlignItemsBaselineOnFabricIOS()
+
+  /**
+   * Enables the Bridgeless Architecture. Note: Enabling this will force enable the following flags: `useTurboModules` & `enableFabricRenderer`
+   */
+  @JvmStatic
+  public fun enableBridgelessArchitecture(): Boolean = accessor.enableBridgelessArchitecture()
 
   /**
    * Clean yoga node when <TextInput /> does not change.

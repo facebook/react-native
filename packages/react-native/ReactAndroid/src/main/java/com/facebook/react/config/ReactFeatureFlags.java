@@ -46,12 +46,6 @@ public class ReactFeatureFlags {
    */
   public static volatile boolean unstable_useFabricInterop = false;
 
-  /**
-   * Feature flag to enable the new bridgeless architecture. Note: Enabling this will force enable
-   * the following flags: `useTurboModules` & `enableFabricRenderer`.
-   */
-  public static boolean enableBridgelessArchitecture = false;
-
   /** This feature flag enables logs for Fabric */
   public static boolean enableFabricLogs = false;
 

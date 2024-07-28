@@ -454,7 +454,7 @@ public class FabricUIManager
     // responsible for initializing and deallocating EventDispatcher. StaticViewConfigs is enabled
     // only in Bridgeless for now.
     // TODO T83943316: Remove this IF once StaticViewConfigs are enabled by default
-    if (!ReactFeatureFlags.enableBridgelessArchitecture) {
+    if (!ReactNativeFeatureFlags.enableBridgelessArchitecture()) {
       mEventDispatcher.onCatalystInstanceDestroyed();
     }
   }

@@ -74,6 +74,11 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'Kill-switch to turn off support for aling-items:baseline on Fabric iOS.',
     },
+    enableBridgelessArchitecture: {
+      defaultValue: false,
+      description:
+        'Enables the Bridgeless Architecture. Note: Enabling this will force enable the following flags: `useTurboModules` & `enableFabricRenderer`',
+    },
     enableCleanTextInputYogaNode: {
       defaultValue: false,
       description: 'Clean yoga node when <TextInput /> does not change.',

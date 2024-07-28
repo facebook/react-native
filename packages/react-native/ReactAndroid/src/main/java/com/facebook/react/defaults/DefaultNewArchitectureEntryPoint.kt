@@ -43,7 +43,6 @@ public object DefaultNewArchitectureEntryPoint {
     ReactFeatureFlags.useTurboModules = turboModulesEnabled
     ReactFeatureFlags.enableFabricRenderer = fabricEnabled
     ReactFeatureFlags.unstable_useFabricInterop = fabricEnabled
-    ReactFeatureFlags.enableBridgelessArchitecture = bridgelessEnabled
     ReactFeatureFlags.unstable_useTurboModuleInterop = bridgelessEnabled
     val fuseboxEnabledDebug = fuseboxEnabled
 
@@ -53,6 +52,8 @@ public object DefaultNewArchitectureEntryPoint {
             override fun useModernRuntimeScheduler(): Boolean = true
 
             override fun enableMicrotasks(): Boolean = true
+
+            override fun enableBridgelessArchitecture(): Boolean = bridgelessEnabled
 
             override fun batchRenderingUpdatesInEventLoop(): Boolean = true
 
