@@ -79,21 +79,21 @@ class SpringAnimation extends AnimationDriver {
     long frameTimeMillis = frameTimeNanos / 1000000;
     if (!mSpringStarted) {
       if (mCurrentLoop == 0) {
-        mOriginalValue = mAnimatedValue.mValue;
+        mOriginalValue = mAnimatedValue.nodeValue;
         mCurrentLoop = 1;
       }
-      mStartValue = mCurrentState.position = mAnimatedValue.mValue;
+      mStartValue = mCurrentState.position = mAnimatedValue.nodeValue;
       mLastTime = frameTimeMillis;
       mTimeAccumulator = 0.0;
       mSpringStarted = true;
     }
     advance((frameTimeMillis - mLastTime) / 1000.0);
     mLastTime = frameTimeMillis;
-    mAnimatedValue.mValue = mCurrentState.position;
+    mAnimatedValue.nodeValue = mCurrentState.position;
     if (isAtRest()) {
       if (mIterations == -1 || mCurrentLoop < mIterations) { // looping animation, return to start
         mSpringStarted = false;
-        mAnimatedValue.mValue = mOriginalValue;
+        mAnimatedValue.nodeValue = mOriginalValue;
         mCurrentLoop++;
       } else { // animation has completed
         mHasFinished = true;

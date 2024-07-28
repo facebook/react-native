@@ -49,11 +49,11 @@ class DecayAnimation extends AnimationDriver {
       // since this is the first animation step, consider the start to be on the previous frame
       mStartFrameTimeMillis = frameTimeMillis - 16;
       if (mFromValue == mLastValue) { // first iteration, assign mFromValue based on mAnimatedValue
-        mFromValue = mAnimatedValue.mValue;
+        mFromValue = mAnimatedValue.nodeValue;
       } else { // not the first iteration, reset mAnimatedValue based on mFromValue
-        mAnimatedValue.mValue = mFromValue;
+        mAnimatedValue.nodeValue = mFromValue;
       }
-      mLastValue = mAnimatedValue.mValue;
+      mLastValue = mAnimatedValue.nodeValue;
     }
 
     final double value =
@@ -74,6 +74,6 @@ class DecayAnimation extends AnimationDriver {
     }
 
     mLastValue = value;
-    mAnimatedValue.mValue = value;
+    mAnimatedValue.nodeValue = value;
   }
 }

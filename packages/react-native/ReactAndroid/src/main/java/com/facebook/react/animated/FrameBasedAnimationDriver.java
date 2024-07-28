@@ -68,7 +68,7 @@ class FrameBasedAnimationDriver extends AnimationDriver {
       mStartFrameTimeNanos = frameTimeNanos;
       if (mCurrentLoop == 1) {
         // initiate start value when animation runs for the first time
-        mFromValue = mAnimatedValue.mValue;
+        mFromValue = mAnimatedValue.nodeValue;
       }
     }
 
@@ -109,6 +109,6 @@ class FrameBasedAnimationDriver extends AnimationDriver {
     } else {
       nextValue = mFromValue + mFrames[frameIndex] * (mToValue - mFromValue);
     }
-    mAnimatedValue.mValue = nextValue;
+    mAnimatedValue.nodeValue = nextValue;
   }
 }

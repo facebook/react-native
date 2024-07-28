@@ -37,14 +37,14 @@ import com.facebook.react.bridge.ReadableMap;
       if (animatedNode != null && animatedNode instanceof ValueAnimatedNode) {
         double value = ((ValueAnimatedNode) animatedNode).getValue();
         if (i == 0) {
-          mValue = value;
+          nodeValue = value;
           continue;
         }
         if (value == 0) {
           throw new JSApplicationCausedNativeException(
               "Detected a division by zero in Animated.divide node with Animated ID " + tag);
         }
-        mValue /= value;
+        nodeValue /= value;
       } else {
         throw new JSApplicationCausedNativeException(
             "Illegal node ID set as an input for Animated.divide node with Animated ID " + tag);
