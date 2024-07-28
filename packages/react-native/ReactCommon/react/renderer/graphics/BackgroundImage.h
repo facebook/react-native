@@ -13,14 +13,14 @@ struct ColorStop {
   std::optional<Float> position;
 };
 
-enum class BackgroundImageType {
+enum class GradientType {
   LinearGradient,
 };
 
-struct BackgroundImagePrimitive {
-  bool operator==(const BackgroundImagePrimitive& other) const = default;
+struct GradientValue {
+  bool operator==(const GradientValue& other) const = default;
 
-  BackgroundImageType type;
+  GradientType type;
   Float startX;
   Float startY;
   Float endX;
@@ -28,9 +28,9 @@ struct BackgroundImagePrimitive {
   std::vector<ColorStop> colorStops;
 };
 
-inline BackgroundImageType gradientTypeFromString(const std::string& gradientType) {
+inline GradientType gradientTypeFromString(const std::string& gradientType) {
   if (gradientType == "linearGradient") {
-    return BackgroundImageType::LinearGradient;
+    return GradientType::LinearGradient;
   } else {
     throw std::invalid_argument(std::string(gradientType));
   }
