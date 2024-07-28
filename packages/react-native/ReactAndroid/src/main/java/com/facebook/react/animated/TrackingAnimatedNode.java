@@ -37,7 +37,7 @@ import com.facebook.react.bridge.ReadableMap;
   @Override
   public String prettyPrint() {
     return "TrackingAnimatedNode["
-        + mTag
+        + tag
         + "]: animationID: "
         + mAnimationId
         + " toValueNode: "

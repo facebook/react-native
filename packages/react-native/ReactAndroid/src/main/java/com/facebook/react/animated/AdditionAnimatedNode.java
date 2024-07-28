@@ -47,7 +47,7 @@ import com.facebook.react.bridge.ReadableMap;
   @Override
   public String prettyPrint() {
     return "AdditionAnimatedNode["
-        + mTag
+        + tag
         + "]: input nodes: "
         + (mInputNodes != null ? mInputNodes.toString() : "null")
         + " - super: "

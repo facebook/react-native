@@ -306,6 +306,6 @@ import java.util.regex.Pattern;
 
   @Override
   public String prettyPrint() {
-    return "InterpolationAnimatedNode[" + mTag + "] super: " + super.prettyPrint();
+    return "InterpolationAnimatedNode[" + tag + "] super: " + super.prettyPrint();
   }
 }

@@ -30,6 +30,6 @@ internal class ModulusAnimatedNode(
   }
 
   override public fun prettyPrint(): String {
-    return "NativeAnimatedNodesManager[$mTag] inputNode: $inputNode modulus: $modulus super: ${super.prettyPrint()}"
+    return "NativeAnimatedNodesManager[$tag] inputNode: $inputNode modulus: $modulus super: ${super.prettyPrint()}"
   }
 }
