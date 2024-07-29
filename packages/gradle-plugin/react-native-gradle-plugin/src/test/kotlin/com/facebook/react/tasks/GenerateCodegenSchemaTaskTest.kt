@@ -11,7 +11,7 @@ import com.facebook.react.tests.*
 import com.facebook.react.tests.createProject
 import com.facebook.react.tests.createTestTask
 import java.io.File
-import org.junit.Assert.*
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
@@ -33,11 +33,12 @@ class GenerateCodegenSchemaTaskTest {
 
     val task = createTestTask<GenerateCodegenSchemaTask> { it.jsRootDir.set(jsRootDir) }
 
-    assertEquals(jsRootDir, task.jsInputFiles.dir)
-    assertEquals(setOf("**/*.js", "**/*.ts"), task.jsInputFiles.includes)
-    assertEquals(2, task.jsInputFiles.files.size)
-    assertEquals(
-        setOf(File(jsRootDir, "file.js"), File(jsRootDir, "file.ts")), task.jsInputFiles.files)
+    assertThat(task.jsInputFiles.dir).isEqualTo(jsRootDir)
+    assertThat(task.jsInputFiles.includes).isEqualTo(setOf("**/*.js", "**/*.ts"))
+    assertThat(task.jsInputFiles.files).hasSize(2)
+    assertThat(task.jsInputFiles.files).containsExactlyInAnyOrder(
+        File(jsRootDir, "file.js"), File(jsRootDir, "file.ts")
+    )
   }
 
   @Test
@@ -65,14 +66,10 @@ class GenerateCodegenSchemaTaskTest {
 
     val task = createTestTask<GenerateCodegenSchemaTask> { it.jsRootDir.set(jsRootDir) }
 
-    assertEquals(jsRootDir, task.jsInputFiles.dir)
-    assertEquals(
-        setOf(
-            "**/build/**/*",
-        ),
-        task.jsInputFiles.excludes)
-    assertEquals(1, task.jsInputFiles.files.size)
-    assertEquals(setOf(File(jsRootDir, "afolder/includedfile.js")), task.jsInputFiles.files)
+    assertThat(task.jsInputFiles.dir).isEqualTo(jsRootDir)
+    assertThat(task.jsInputFiles.excludes).isEqualTo(setOf("**/build/**/*"))
+    assertThat(task.jsInputFiles.files).hasSize(1)
+    assertThat(task.jsInputFiles.files).containsExactly(File(jsRootDir, "afolder/includedfile.js"))
   }
 
   @Test
@@ -81,7 +78,7 @@ class GenerateCodegenSchemaTaskTest {
 
     val task = createTestTask<GenerateCodegenSchemaTask> { it.generatedSrcDir.set(outputDir) }
 
-    assertEquals(File(outputDir, "schema.json"), task.generatedSchemaFile.get().asFile)
+    assertThat(task.generatedSchemaFile.get().asFile).isEqualTo(File(outputDir, "schema.json"))
   }
 
   @Test
@@ -91,8 +88,8 @@ class GenerateCodegenSchemaTaskTest {
           it.nodeExecutableAndArgs.set(listOf("npm", "help"))
         }
 
-    assertEquals(listOf("npm", "help"), task.nodeExecutableAndArgs.get())
-    assertTrue(task.inputs.properties.containsKey("nodeExecutableAndArgs"))
+    assertThat(task.nodeExecutableAndArgs.get()).isEqualTo(listOf("npm", "help"))
+    assertThat(task.inputs.properties).containsKey("nodeExecutableAndArgs")
   }
 
   @Test
@@ -104,8 +101,8 @@ class GenerateCodegenSchemaTaskTest {
 
     task.wipeOutputDir()
 
-    assertTrue(File(tempFolder.root, "output").exists())
-    assertEquals(0, File(tempFolder.root, "output").listFiles()?.size)
+    assertThat(File(tempFolder.root, "output").exists()).isTrue()
+    assertThat(File(tempFolder.root, "output").listFiles()).isEmpty()
   }
 
   @Test
@@ -117,8 +114,8 @@ class GenerateCodegenSchemaTaskTest {
 
     task.wipeOutputDir()
 
-    assertTrue(outputDir.exists())
-    assertEquals(0, outputDir.listFiles()?.size)
+    assertThat(outputDir.exists()).isTrue()
+    assertThat(outputDir.listFiles()).isEmpty()
   }
 
   @Test
@@ -138,7 +135,7 @@ class GenerateCodegenSchemaTaskTest {
 
     task.setupCommandLine()
 
-    assertEquals(
+    assertThat(task.commandLine.toMutableList()).isEqualTo(
         listOf(
             "node",
             "--verbose",
@@ -149,8 +146,8 @@ class GenerateCodegenSchemaTaskTest {
             "NativeSampleTurboModule",
             File(outputDir, "schema.json").toString(),
             jsRootDir.toString(),
-        ),
-        task.commandLine.toMutableList())
+        )
+    )
   }
 
   @Test
@@ -171,7 +168,7 @@ class GenerateCodegenSchemaTaskTest {
 
     task.setupCommandLine()
 
-    assertEquals(
+    assertThat(task.commandLine.toMutableList()).isEqualTo(
         listOf(
             "cmd",
             "/c",
@@ -186,7 +183,7 @@ class GenerateCodegenSchemaTaskTest {
             "NativeSampleTurboModule",
             File(outputDir, "schema.json").relativeTo(project.projectDir).path,
             jsRootDir.relativeTo(project.projectDir).path,
-        ),
-        task.commandLine.toMutableList())
+        )
+    )
   }
 }
