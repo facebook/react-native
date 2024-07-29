@@ -12,6 +12,8 @@
 
 + (CATransform3D)CATransform3D:(id)json;
 
++ (CATransform3D)CATransform3D:(id)json withWidth:(CGFloat)width height:(CGFloat)height;
+
 + (RCTTransformOrigin)RCTTransformOrigin:(id)json;
 
 @end
