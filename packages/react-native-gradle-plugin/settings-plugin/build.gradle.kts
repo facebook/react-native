@@ -40,6 +40,7 @@ dependencies {
   implementation(libs.javapoet)
 
   testImplementation(libs.junit)
+  testImplementation(project(":shared-testutil"))
 
   testRuntimeOnly(
       files(
