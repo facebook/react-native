@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3776d4da056a1745d14b7f66962380d4>>
+ * @generated SignedSource<<8be6a1e808bdf073829a7801545b2b8f>>
  */
 
 /**
@@ -76,6 +76,11 @@ class ReactNativeFeatureFlags {
    * Kill-switch to turn off support for aling-items:baseline on Fabric iOS.
    */
   RN_EXPORT static bool enableAlignItemsBaselineOnFabricIOS();
+
+  /**
+   * Use BackgroundStyleApplicator in place of other background/border drawing code
+   */
+  RN_EXPORT static bool enableBackgroundStyleApplicator();
 
   /**
    * Clean yoga node when <TextInput /> does not change.
