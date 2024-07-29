@@ -14,8 +14,7 @@ import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactTestHelper
 import com.facebook.react.bridge.WritableMap
 import com.facebook.testutils.shadows.ShadowArguments
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -57,17 +56,18 @@ class ShareModuleTest {
     shareModule.share(content, dialogTitle, promise)
 
     val chooserIntent = shadowOf(RuntimeEnvironment.getApplication()).nextStartedActivity
-    assertNotNull("Dialog was not displayed", chooserIntent)
-    assertEquals(Intent.ACTION_CHOOSER, chooserIntent.action)
-    assertEquals(dialogTitle, chooserIntent.extras?.getString(Intent.EXTRA_TITLE))
+    assertThat(chooserIntent).isNotNull()
+    assertThat(chooserIntent.action).isEqualTo(Intent.ACTION_CHOOSER)
+    assertThat(chooserIntent.extras?.getString(Intent.EXTRA_TITLE)).isEqualTo(dialogTitle)
 
     val contentIntent = chooserIntent.extras?.getParcelable(Intent.EXTRA_INTENT, Intent::class.java)
-    assertNotNull("Intent was not built correctly", contentIntent)
-    assertEquals(Intent.ACTION_SEND, contentIntent?.action)
-    assertEquals(title, contentIntent?.extras?.getString(Intent.EXTRA_SUBJECT))
-    assertEquals(message, contentIntent?.extras?.getString(Intent.EXTRA_TEXT))
+    assertThat(contentIntent).isNotNull()
+    assertThat(contentIntent?.action).isEqualTo(Intent.ACTION_SEND)
 
-    assertEquals(1, promise.resolved)
+    assertThat(contentIntent?.extras?.getString(Intent.EXTRA_SUBJECT)).isEqualTo(title)
+    assertThat(contentIntent?.extras?.getString(Intent.EXTRA_TEXT)).isEqualTo(message)
+
+    assertThat(promise.resolved).isEqualTo(1)
   }
 
   @Test
@@ -78,8 +78,8 @@ class ShareModuleTest {
 
     shareModule.share(null, dialogTitle, promise)
 
-    assertEquals(1, promise.rejected)
-    assertEquals(ShareModule.ERROR_INVALID_CONTENT, promise.errorCode)
+    assertThat(promise.rejected).isEqualTo(1)
+    assertThat(promise.errorCode).isEqualTo(ShareModule.ERROR_INVALID_CONTENT)
   }
 
   internal class SimplePromise : Promise {
