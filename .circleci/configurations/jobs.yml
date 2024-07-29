@@ -286,7 +286,10 @@ jobs:
             - packages/react-native/ReactAndroid/hermes-engine/build/
             - packages/react-native/ReactAndroid/src/main/jni/prebuilt/
             - packages/react-native-gradle-plugin/.gradle/
-            - packages/react-native-gradle-plugin/build/
+            - packages/react-native-gradle-plugin/react-native-gradle-plugin/build/
+            - packages/react-native-gradle-plugin/settings-plugin/build/
+            - packages/react-native-gradle-plugin/shared/build/
+            - packages/react-native-gradle-plugin/shared-testutil/build/
             - packages/react-native-codegen/lib/
 
   # -------------------------
