@@ -8,9 +8,9 @@
  * @format
  */
 
-import {polyfillGlobal} from '../Utilities/PolyfillFunctions';
+import {polyfillGlobal} from '../../../Libraries/Utilities/PolyfillFunctions';
 
 polyfillGlobal(
   'IntersectionObserver',
-  () => require('../IntersectionObserver/IntersectionObserver').default,
+  () => require('../webapis/intersectionobserver/IntersectionObserver').default,
 );
