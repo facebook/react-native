@@ -1,0 +1,3 @@
+build/
+react-native-gradle-plugin/build/
+settings-plugin/build/

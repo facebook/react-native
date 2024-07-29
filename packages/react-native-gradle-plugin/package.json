@@ -29,7 +29,8 @@
     "gradle",
     "gradlew",
     "gradlew.bat",
-    "src/main",
-    "README.md"
+    "README.md",
+    "react-native-gradle-plugin",
+    "settings-plugin"
   ]
 }
