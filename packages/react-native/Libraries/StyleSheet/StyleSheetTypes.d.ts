@@ -273,13 +273,13 @@ export type BlendMode =
   | 'color'
   | 'luminosity';
 
-export type BackgroundImagePrimitive = {
+export type GradientValue = {
   type: 'linearGradient';
-  start: {x: number; y: number};
-  end: {x: number; y: number};
+  // Angle or direction enums
+  direction: string | undefined;
   colorStops: Array<{
     color: ColorValue;
-    position: number;
+    position: number | undefined;
   }>;
 };
 
