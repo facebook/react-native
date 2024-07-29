@@ -23,7 +23,7 @@ folly_version = folly_config[:version]
 boost_compiler_flags = '-Wno-documentation'
 
 Pod::Spec.new do |s|
-  source_files = "**/*.{m,mm,cpp,h}"
+  source_files = "*.{m,mm,cpp,h}", "platform/ios/**/*.{mm,h}"
   header_search_paths = [
     "\"$(PODS_ROOT)/boost\"",
     "\"$(PODS_TARGET_SRCROOT)/../../../\"",
@@ -42,10 +42,6 @@ Pod::Spec.new do |s|
   s.source                 = source
   s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
   s.source_files           = source_files
-  s.exclude_files          = "tests",
-                             "platform/android",
-                             "platform/cxx",
-                             "platform/windows",
   s.header_dir             = "react/renderer/graphics"
   s.framework = "UIKit"
 
