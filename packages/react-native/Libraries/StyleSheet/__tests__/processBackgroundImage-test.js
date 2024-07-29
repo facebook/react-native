@@ -276,7 +276,7 @@ describe('processBackgroundImage', () => {
     expect(result).toEqual([]);
   });
 
-  it('should process an array of BackgroundPrimitive objects', () => {
+  it('should process an array of style objects', () => {
     const input = [
       {
         type: 'linearGradient',
