@@ -23,6 +23,9 @@ internal class CompositeBackgroundDrawable(
      */
     public val originalBackground: Drawable? = null,
 
+    /** Non-inset box shadows */
+    public val outerShadows: List<Drawable> = emptyList(),
+
     /**
      * CSS background layer and border rendering
      *
@@ -31,8 +34,8 @@ internal class CompositeBackgroundDrawable(
      */
     public val cssBackground: CSSBackgroundDrawable? = null,
 
-    /** Inner and outer box shadows */
-    public val shadows: List<Drawable> = emptyList(),
+    /** Inset box-shadows */
+    public val innerShadows: List<Drawable> = emptyList(),
 
     /** Native riplple effect (e.g. used by TouchableNativeFeedback) */
     public val nativeRipple: Drawable? = null
@@ -40,11 +43,12 @@ internal class CompositeBackgroundDrawable(
     LayerDrawable(
         listOfNotNull(
                 originalBackground,
-                cssBackground,
                 // z-ordering of user-provided shadow-list is opposite direction of LayerDrawable
                 // z-ordering
                 // https://drafts.csswg.org/css-backgrounds/#shadow-layers
-                *shadows.asReversed().toTypedArray(),
+                *outerShadows.asReversed().toTypedArray(),
+                cssBackground,
+                *innerShadows.asReversed().toTypedArray(),
                 nativeRipple)
             .toTypedArray()) {
 
@@ -58,14 +62,20 @@ internal class CompositeBackgroundDrawable(
   public fun withNewCssBackground(
       cssBackground: CSSBackgroundDrawable?
   ): CompositeBackgroundDrawable {
-    return CompositeBackgroundDrawable(originalBackground, cssBackground, shadows, nativeRipple)
+    return CompositeBackgroundDrawable(
+        originalBackground, outerShadows, cssBackground, innerShadows, nativeRipple)
   }
 
-  public fun withNewShadows(newShadows: List<Drawable>): CompositeBackgroundDrawable {
-    return CompositeBackgroundDrawable(originalBackground, cssBackground, newShadows, nativeRipple)
+  public fun withNewShadows(
+      outerShadows: List<Drawable>,
+      innerShadows: List<Drawable>
+  ): CompositeBackgroundDrawable {
+    return CompositeBackgroundDrawable(
+        originalBackground, outerShadows, cssBackground, innerShadows, nativeRipple)
   }
 
   public fun withNewNativeRipple(newRipple: Drawable?): CompositeBackgroundDrawable {
-    return CompositeBackgroundDrawable(originalBackground, cssBackground, shadows, newRipple)
+    return CompositeBackgroundDrawable(
+        originalBackground, outerShadows, cssBackground, innerShadows, newRipple)
   }
 }
