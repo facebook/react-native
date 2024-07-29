@@ -8,16 +8,16 @@
  * @format
  */
 
-import type ReactNativeElement from '../../../src/private/webapis/dom/nodes/ReactNativeElement';
-import type IntersectionObserver from '../IntersectionObserver';
+import type ReactNativeElement from '../../../dom/nodes/ReactNativeElement';
+import type IntersectionObserver from '../../IntersectionObserver';
 import type {
   NativeIntersectionObserverEntry,
   NativeIntersectionObserverObserveOptions,
   Spec,
 } from '../NativeIntersectionObserver';
 
-import {getShadowNode} from '../../../src/private/webapis/dom/nodes/ReadOnlyNode';
-import {getFabricUIManager} from '../../ReactNative/__mocks__/FabricUIManager';
+import {getFabricUIManager} from '../../../../../../Libraries/ReactNative/__mocks__/FabricUIManager';
+import {getShadowNode} from '../../../dom/nodes/ReadOnlyNode';
 import invariant from 'invariant';
 import nullthrows from 'nullthrows';
 
