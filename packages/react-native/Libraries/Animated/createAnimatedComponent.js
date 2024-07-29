@@ -8,7 +8,7 @@
  * @format
  */
 
-import composeStyles from '../../src/private/core/composeStyles';
+import composeStyles from '../../src/private/styles/composeStyles';
 import View from '../Components/View/View';
 import useMergeRefs from '../Utilities/useMergeRefs';
 import useAnimatedProps from './useAnimatedProps';
