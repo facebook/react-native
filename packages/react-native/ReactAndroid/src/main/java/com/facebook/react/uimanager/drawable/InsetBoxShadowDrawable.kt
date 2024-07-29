@@ -89,7 +89,6 @@ internal class InsetBoxShadowDrawable(
         clearRegionDrawable.layoutDirection != layoutDirection ||
         clearRegionDrawable.borderRadius != clearRegionBorderRadii ||
         clearRegionDrawable.bounds != clearRegionBounds) {
-      canvas.save()
 
       shadowPaint.colorFilter = colorFilter
       clearRegionDrawable.bounds = clearRegionBounds
@@ -100,15 +99,15 @@ internal class InsetBoxShadowDrawable(
         // We pad by the blur radius so that the edges of the blur look good and
         // the blur artifacts can bleed into the view if needed
         setPosition(Rect(bounds).apply { inset(-padding, -padding) })
-        beginRecording().let { canvas ->
+        beginRecording().let { renderNodeCanvas ->
           val borderBoxPath = clearRegionDrawable.getBorderBoxPath()
           if (borderBoxPath != null) {
-            canvas.clipOutPath(borderBoxPath)
+            renderNodeCanvas.clipOutPath(borderBoxPath)
           } else {
-            canvas.clipOutRect(clearRegionDrawable.borderBoxRect)
+            renderNodeCanvas.clipOutRect(clearRegionDrawable.borderBoxRect)
           }
 
-          canvas.drawPaint(shadowPaint)
+          renderNodeCanvas.drawPaint(shadowPaint)
           endRecording()
         }
       }
@@ -116,6 +115,8 @@ internal class InsetBoxShadowDrawable(
       // We actually draw the render node into our canvas and clip out the
       // padding
       with(canvas) {
+        save()
+
         val paddingBoxPath = background.getPaddingBoxPath()
         if (paddingBoxPath != null) {
           canvas.clipPath(paddingBoxPath)
@@ -125,9 +126,8 @@ internal class InsetBoxShadowDrawable(
         // This positions the render node properly since we padded it
         canvas.translate(padding / 2f, padding / 2f)
         drawRenderNode(renderNode)
+        restore()
       }
-
-      canvas.restore()
     }
   }
 
