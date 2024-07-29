@@ -13,7 +13,7 @@ import com.facebook.react.bridge.ReadableMap
  * Basic type of animated node that maps directly from {@code Animated.Value(x)} of Animated.js
  * library.
  */
-internal open class ValueAnimatedNode(config: ReadableMap? = null) : AnimatedNode() {
+public open class ValueAnimatedNode(config: ReadableMap? = null) : AnimatedNode() {
   @JvmField internal var nodeValue: Double = config?.getDouble("value") ?: Double.NaN
   @JvmField internal var offset: Double = config?.getDouble("offset") ?: 0.0
   private var valueListener: AnimatedNodeValueListener? = null
@@ -25,7 +25,7 @@ internal open class ValueAnimatedNode(config: ReadableMap? = null) : AnimatedNod
     return offset + nodeValue
   }
 
-  open fun getAnimatedObject(): Any? = null
+  public open fun getAnimatedObject(): Any? = null
 
   public fun flattenOffset(): Unit {
     nodeValue += offset
