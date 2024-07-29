@@ -301,6 +301,34 @@ describe('processBackgroundImage', () => {
     expect(result[0].end).toEqual({x: 0.5, y: 1});
   });
 
+  it('should process style object with direction enum', () => {
+    const input = [
+      {
+        type: 'linearGradient',
+        direction: 'to right',
+        colorStops: [{color: 'red'}, {color: 'blue'}],
+      },
+    ];
+    const result = processBackgroundImage(input);
+    expect(result[0].start).toEqual({x: 0, y: 0.5});
+    expect(result[0].end).toEqual({x: 1, y: 0.5});
+  });
+
+  it('should process style object with direction angle', () => {
+    const input = [
+      {
+        type: 'linearGradient',
+        direction: '45deg',
+        colorStops: [{color: 'red'}, {color: 'blue'}],
+      },
+    ];
+    const result = processBackgroundImage(input);
+    expect(result[0].start.x).toBeCloseTo(0.146447, 5);
+    expect(result[0].start.y).toBeCloseTo(0.853553, 5);
+    expect(result[0].end.x).toBeCloseTo(0.853553, 5);
+    expect(result[0].end.y).toBeCloseTo(0.146447, 5);
+  });
+
   it('should process an style object with mix of default and undefined stop positions', () => {
     const input = [
       {
