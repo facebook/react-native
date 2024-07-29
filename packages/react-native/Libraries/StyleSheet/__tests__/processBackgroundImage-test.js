@@ -122,6 +122,18 @@ describe('processBackgroundImage', () => {
     ]);
   });
 
+  it('linear gradient case-insensitive string', () => {
+    const input = 'LiNeAr-GradieNt(To Bottom, Red, Blue)';
+    const result = processBackgroundImage(input);
+    expect(result[0].type).toBe('linearGradient');
+    expect(result[0].start).toEqual({x: 0.5, y: 0});
+    expect(result[0].end).toEqual({x: 0.5, y: 1});
+    expect(result[0].colorStops).toEqual([
+      {color: processColor('red'), position: 0},
+      {color: processColor('blue'), position: 1},
+    ]);
+  });
+
   it('should process a linear gradient with case-insensitive direction enum', () => {
     const input = 'linear-gradient(tO Right, red, blue)';
     const result = processBackgroundImage(input);
