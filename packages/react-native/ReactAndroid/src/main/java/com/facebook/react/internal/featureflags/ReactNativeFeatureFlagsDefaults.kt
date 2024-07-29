@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f954cbf175ce33373e3ba3e471d4b25f>>
+ * @generated SignedSource<<f62151a0512b54273d1d18c40849f6a2>>
  */
 
 /**
@@ -39,7 +39,7 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableAlignItemsBaselineOnFabricIOS(): Boolean = true
 
-  override fun enableBackgroundStyleApplicator(): Boolean = false
+  override fun enableBackgroundStyleApplicator(): Boolean = true
 
   override fun enableCleanTextInputYogaNode(): Boolean = false
 

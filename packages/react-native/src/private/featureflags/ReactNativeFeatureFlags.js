@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<99fb6b4b2fef8c0c0aef3e46ed7b0632>>
+ * @generated SignedSource<<66d942305137d7997a9f2dfa878eed1f>>
  * @flow strict-local
  */
 
@@ -184,7 +184,7 @@ export const enableAlignItemsBaselineOnFabricIOS: Getter<boolean> = createNative
 /**
  * Use BackgroundStyleApplicator in place of other background/border drawing code
  */
-export const enableBackgroundStyleApplicator: Getter<boolean> = createNativeFlagGetter('enableBackgroundStyleApplicator', false);
+export const enableBackgroundStyleApplicator: Getter<boolean> = createNativeFlagGetter('enableBackgroundStyleApplicator', true);
 /**
  * Clean yoga node when <TextInput /> does not change.
  */
