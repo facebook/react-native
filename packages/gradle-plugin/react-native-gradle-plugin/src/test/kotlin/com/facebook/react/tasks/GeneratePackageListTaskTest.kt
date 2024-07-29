@@ -12,11 +12,10 @@ import com.facebook.react.model.ModelAutolinkingDependenciesJson
 import com.facebook.react.model.ModelAutolinkingDependenciesPlatformAndroidJson
 import com.facebook.react.model.ModelAutolinkingDependenciesPlatformJson
 import com.facebook.react.tests.createTestTask
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
-
-import static org.assertj.core.api.Assertions.assertThat
 
 class GeneratePackageListTaskTest {
 
