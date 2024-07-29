@@ -9,15 +9,15 @@
  * @oncall react_native
  */
 
-import type {ScrollViewNativeProps} from '../../../../Libraries/Components/ScrollView/ScrollViewNativeComponentType';
-import type {ViewProps} from '../../../../Libraries/Components/View/ViewPropTypes';
-import type {HostComponent} from '../../../../Libraries/Renderer/shims/ReactNativeTypes';
+import type {ScrollViewNativeProps} from '../../../Libraries/Components/ScrollView/ScrollViewNativeComponentType';
+import type {ViewProps} from '../../../Libraries/Components/View/ViewPropTypes';
+import type {HostComponent} from '../../../Libraries/Renderer/shims/ReactNativeTypes';
 import type {TScrollViewNativeImperativeHandle} from './useSyncOnScroll';
 
-import ScrollContentViewNativeComponent from '../../../../Libraries/Components/ScrollView/ScrollContentViewNativeComponent';
-import ScrollViewNativeComponent from '../../../../Libraries/Components/ScrollView/ScrollViewNativeComponent';
-import View from '../../../../Libraries/Components/View/View';
-import Platform from '../../../../Libraries/Utilities/Platform';
+import ScrollContentViewNativeComponent from '../../../Libraries/Components/ScrollView/ScrollContentViewNativeComponent';
+import ScrollViewNativeComponent from '../../../Libraries/Components/ScrollView/ScrollViewNativeComponent';
+import View from '../../../Libraries/Components/View/View';
+import Platform from '../../../Libraries/Utilities/Platform';
 import useSyncOnScroll from './useSyncOnScroll';
 import * as React from 'react';
 

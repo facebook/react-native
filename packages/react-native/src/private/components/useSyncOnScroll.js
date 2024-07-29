@@ -9,8 +9,8 @@
  * @oncall react_native
  */
 
-import type {ScrollViewNativeProps} from '../../../../Libraries/Components/ScrollView/ScrollViewNativeComponentType';
-import type {HostComponent} from '../../../../Libraries/Renderer/shims/ReactNativeTypes';
+import type {ScrollViewNativeProps} from '../../../Libraries/Components/ScrollView/ScrollViewNativeComponentType';
+import type {HostComponent} from '../../../Libraries/Renderer/shims/ReactNativeTypes';
 
 import * as React from 'react';
 import {useImperativeHandle, useRef, useState} from 'react';
