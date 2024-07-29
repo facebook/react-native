@@ -30,28 +30,7 @@ const IGNORE_PATTERNS = [
 
 // Exclude list for files that fail to parse under flow-api-translator. Please
 // review your changes before adding new entries.
-const FILES_WITH_KNOWN_ERRORS = new Set([
-  // Parse errors introduced in hermes-parser 0.23.0:  Error: Comment location overlaps with node location
-  'Libraries/Core/checkNativeVersion.js',
-  'Libraries/Core/InitializeCore.js',
-  'Libraries/Core/polyfillPromise.js',
-  'Libraries/Core/setUpAlert.js',
-  'Libraries/Core/setUpBatchedBridge.js',
-  'Libraries/Core/setUpDeveloperTools.js',
-  'Libraries/Core/setUpErrorHandling.js',
-  'Libraries/Core/setUpGlobals.js',
-  'Libraries/Core/setUpIntersectionObserver.js',
-  'Libraries/Core/setUpMutationObserver.js',
-  'Libraries/Core/setUpNavigator.js',
-  'Libraries/Core/setUpPerformance.js',
-  'Libraries/Core/setUpPerformanceObserver.js',
-  'Libraries/Core/setUpReactDevTools.js',
-  'Libraries/Core/setUpReactRefresh.js',
-  'Libraries/Core/setUpRegeneratorRuntime.js',
-  'Libraries/Core/setUpTimers.js',
-  'Libraries/Core/setUpXHR.js',
-  'Libraries/ReactPrivate/ReactNativePrivateInitializeCore.js',
-]);
+const FILES_WITH_KNOWN_ERRORS = new Set<string>([]);
 
 const sourceFiles = [
   'index.js',
