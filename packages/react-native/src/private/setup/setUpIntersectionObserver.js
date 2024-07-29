@@ -10,7 +10,18 @@
 
 import {polyfillGlobal} from '../../../Libraries/Utilities/PolyfillFunctions';
 
-polyfillGlobal(
-  'IntersectionObserver',
-  () => require('../webapis/intersectionobserver/IntersectionObserver').default,
-);
+let initialized = false;
+
+export default function setUpIntersectionObserver() {
+  if (initialized) {
+    return;
+  }
+
+  initialized = true;
+
+  polyfillGlobal(
+    'IntersectionObserver',
+    () =>
+      require('../webapis/intersectionobserver/IntersectionObserver').default,
+  );
+}
