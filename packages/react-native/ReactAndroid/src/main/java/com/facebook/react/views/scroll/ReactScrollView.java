@@ -39,6 +39,8 @@ import com.facebook.react.animated.NativeAnimatedModule;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
+import com.facebook.react.uimanager.BackgroundStyleApplicator;
 import com.facebook.react.uimanager.MeasureSpecAssertions;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.PointerEvents;
@@ -48,6 +50,7 @@ import com.facebook.react.uimanager.ReactOverflowViewWithInset;
 import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.events.NativeGestureUtil;
+import com.facebook.react.uimanager.style.Overflow;
 import com.facebook.react.views.scroll.ReactScrollViewHelper.HasFlingAnimator;
 import com.facebook.react.views.scroll.ReactScrollViewHelper.HasScrollEventThrottle;
 import com.facebook.react.views.scroll.ReactScrollViewHelper.HasScrollState;
@@ -90,7 +93,7 @@ public class ReactScrollView extends ScrollView
 
   private boolean mActivelyScrolling;
   private @Nullable Rect mClippingRect;
-  private @Nullable String mOverflow = ViewProps.HIDDEN;
+  private Overflow mOverflow = Overflow.SCROLL;
   private boolean mDragging;
   private boolean mPagingEnabled = false;
   private @Nullable Runnable mPostTouchRunnable;
@@ -262,7 +265,7 @@ public class ReactScrollView extends ScrollView
   }
 
   public void setOverflow(@Nullable String overflow) {
-    mOverflow = overflow;
+    mOverflow = overflow == null ? Overflow.SCROLL : Overflow.fromString(overflow);
     mReactBackgroundManager.setOverflow(overflow == null ? ViewProps.SCROLL : overflow);
   }
 
@@ -282,7 +285,7 @@ public class ReactScrollView extends ScrollView
 
   @Override
   public @Nullable String getOverflow() {
-    return mOverflow;
+    return mOverflow.toString().toLowerCase();
   }
 
   @Override
@@ -648,7 +651,13 @@ public class ReactScrollView extends ScrollView
 
   @Override
   public void onDraw(Canvas canvas) {
-    mReactBackgroundManager.maybeClipToPaddingBox(canvas);
+    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
+      if (mOverflow != Overflow.VISIBLE) {
+        BackgroundStyleApplicator.clipToPaddingBox(this, canvas);
+      }
+    } else {
+      mReactBackgroundManager.maybeClipToPaddingBox(canvas);
+    }
     super.onDraw(canvas);
   }
 
