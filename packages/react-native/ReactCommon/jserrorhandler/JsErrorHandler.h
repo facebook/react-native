@@ -32,12 +32,16 @@ class JsErrorHandler {
   explicit JsErrorHandler(OnJsError onJsError);
   ~JsErrorHandler();
 
-  void handleFatalError(const jsi::JSError& error);
+  void handleFatalError(jsi::Runtime& runtime, jsi::JSError& error);
   bool hasHandledFatalError();
+  void setJSPipelineEnabled(bool enabled);
+  bool isJSPipelineEnabled();
+  void notifyOfFatalError();
 
  private:
   OnJsError _onJsError;
-  bool _hasHandledFatalError;
+  bool _hasHandledFatalError{};
+  bool _useJSPipeline{};
 };
 
 } // namespace facebook::react
