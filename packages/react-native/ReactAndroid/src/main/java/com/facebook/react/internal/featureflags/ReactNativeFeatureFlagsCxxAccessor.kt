@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3f751d1d0f6e07cc778b3716cc9fcc3c>>
+ * @generated SignedSource<<d74eb9e449f21d012c96eed0edfb80d2>>
  */
 
 /**
@@ -28,6 +28,7 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
   private var completeReactInstanceCreationOnBgThreadOnAndroidCache: Boolean? = null
   private var destroyFabricSurfacesInReactInstanceManagerCache: Boolean? = null
   private var enableAlignItemsBaselineOnFabricIOSCache: Boolean? = null
+  private var enableBridgelessArchitectureCache: Boolean? = null
   private var enableCleanTextInputYogaNodeCache: Boolean? = null
   private var enableEagerRootViewAttachmentCache: Boolean? = null
   private var enableFabricLogsCache: Boolean? = null
@@ -131,6 +132,15 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enableAlignItemsBaselineOnFabricIOS()
       enableAlignItemsBaselineOnFabricIOSCache = cached
+    }
+    return cached
+  }
+
+  override fun enableBridgelessArchitecture(): Boolean {
+    var cached = enableBridgelessArchitectureCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.enableBridgelessArchitecture()
+      enableBridgelessArchitectureCache = cached
     }
     return cached
   }

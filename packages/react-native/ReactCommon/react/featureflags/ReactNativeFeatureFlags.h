@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3776d4da056a1745d14b7f66962380d4>>
+ * @generated SignedSource<<57a2d7dd5eb21eaea03c94a7debd36d1>>
  */
 
 /**
@@ -76,6 +76,11 @@ class ReactNativeFeatureFlags {
    * Kill-switch to turn off support for aling-items:baseline on Fabric iOS.
    */
   RN_EXPORT static bool enableAlignItemsBaselineOnFabricIOS();
+
+  /**
+   * Enables the Bridgeless Architecture. Note: Enabling this will force enable the following flags: `useTurboModules` & `enableFabricRenderer`
+   */
+  RN_EXPORT static bool enableBridgelessArchitecture();
 
   /**
    * Clean yoga node when <TextInput /> does not change.

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<fd41cef602485dd86d77f4a6a56e1ba2>>
+ * @generated SignedSource<<920a7681f9a0f0c2bfa2ce475d0b2686>>
  */
 
 /**
@@ -51,6 +51,10 @@ bool ReactNativeFeatureFlags::destroyFabricSurfacesInReactInstanceManager() {
 
 bool ReactNativeFeatureFlags::enableAlignItemsBaselineOnFabricIOS() {
   return getAccessor().enableAlignItemsBaselineOnFabricIOS();
+}
+
+bool ReactNativeFeatureFlags::enableBridgelessArchitecture() {
+  return getAccessor().enableBridgelessArchitecture();
 }
 
 bool ReactNativeFeatureFlags::enableCleanTextInputYogaNode() {

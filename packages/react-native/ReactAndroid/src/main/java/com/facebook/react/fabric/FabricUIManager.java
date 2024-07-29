@@ -50,7 +50,6 @@ import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.common.mapbuffer.ReadableMapBuffer;
-import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
 import com.facebook.react.fabric.events.FabricEventEmitter;
 import com.facebook.react.fabric.internal.interop.InteropUIBlockListener;
@@ -447,7 +446,7 @@ public class FabricUIManager
     // responsible for initializing and deallocating EventDispatcher. StaticViewConfigs is enabled
     // only in Bridgeless for now.
     // TODO T83943316: Remove this IF once StaticViewConfigs are enabled by default
-    if (!ReactFeatureFlags.enableBridgelessArchitecture) {
+    if (!ReactNativeFeatureFlags.enableBridgelessArchitecture()) {
       mEventDispatcher.onCatalystInstanceDestroyed();
     }
   }

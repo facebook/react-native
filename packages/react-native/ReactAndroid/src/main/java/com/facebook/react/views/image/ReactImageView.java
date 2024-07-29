@@ -46,7 +46,6 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.build.ReactBuildConfig;
-import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.modules.fresco.ReactNetworkImageRequest;
 import com.facebook.react.uimanager.FloatUtil;
@@ -738,7 +737,7 @@ public class ReactImageView extends GenericDraweeView {
     // 3. ReactImageView detects the null src; displays a warning in LogBox (via this code).
     // 3. LogBox renders an <Image/>, which fabric preallocates.
     // 4. Rinse and repeat.
-    if (ReactBuildConfig.DEBUG && !ReactFeatureFlags.enableBridgelessArchitecture) {
+    if (ReactBuildConfig.DEBUG && !ReactNativeFeatureFlags.enableBridgelessArchitecture()) {
       RNLog.w(
           (ReactContext) getContext(),
           "ReactImageView: Image source \"" + uri + "\" doesn't exist");

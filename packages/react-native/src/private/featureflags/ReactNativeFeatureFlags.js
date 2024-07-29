@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2a851d5f14ec61936d9ecb37d7f58831>>
+ * @generated SignedSource<<53a7394727854a689b0fcd1cb722b771>>
  * @flow strict-local
  */
 
@@ -52,6 +52,7 @@ export type ReactNativeFeatureFlags = {
   completeReactInstanceCreationOnBgThreadOnAndroid: Getter<boolean>,
   destroyFabricSurfacesInReactInstanceManager: Getter<boolean>,
   enableAlignItemsBaselineOnFabricIOS: Getter<boolean>,
+  enableBridgelessArchitecture: Getter<boolean>,
   enableCleanTextInputYogaNode: Getter<boolean>,
   enableEagerRootViewAttachment: Getter<boolean>,
   enableFabricLogs: Getter<boolean>,
@@ -180,6 +181,10 @@ export const destroyFabricSurfacesInReactInstanceManager: Getter<boolean> = crea
  * Kill-switch to turn off support for aling-items:baseline on Fabric iOS.
  */
 export const enableAlignItemsBaselineOnFabricIOS: Getter<boolean> = createNativeFlagGetter('enableAlignItemsBaselineOnFabricIOS', true);
+/**
+ * Enables the Bridgeless Architecture. Note: Enabling this will force enable the following flags: `useTurboModules` & `enableFabricRenderer`
+ */
+export const enableBridgelessArchitecture: Getter<boolean> = createNativeFlagGetter('enableBridgelessArchitecture', false);
 /**
  * Clean yoga node when <TextInput /> does not change.
  */

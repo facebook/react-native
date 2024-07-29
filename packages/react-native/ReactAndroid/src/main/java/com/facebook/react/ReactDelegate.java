@@ -20,6 +20,7 @@ import com.facebook.react.devsupport.DoubleTapReloadRecognizer;
 import com.facebook.react.devsupport.ReleaseDevSupportManager;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.interfaces.fabric.ReactSurface;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 
 /**
@@ -94,7 +95,7 @@ public class ReactDelegate {
 
   @Nullable
   private DevSupportManager getDevSupportManager() {
-    if (ReactFeatureFlags.enableBridgelessArchitecture
+    if (ReactNativeFeatureFlags.enableBridgelessArchitecture()
         && mReactHost != null
         && mReactHost.getDevSupportManager() != null) {
       return mReactHost.getDevSupportManager();
@@ -111,7 +112,7 @@ public class ReactDelegate {
       throw new ClassCastException(
           "Host Activity does not implement DefaultHardwareBackBtnHandler");
     }
-    if (ReactFeatureFlags.enableBridgelessArchitecture) {
+    if (ReactNativeFeatureFlags.enableBridgelessArchitecture()) {
       mReactHost.onHostResume(mActivity, (DefaultHardwareBackBtnHandler) mActivity);
     } else {
       if (getReactNativeHost().hasInstance()) {
@@ -123,7 +124,7 @@ public class ReactDelegate {
   }
 
   public void onUserLeaveHint() {
-    if (ReactFeatureFlags.enableBridgelessArchitecture) {
+    if (ReactNativeFeatureFlags.enableBridgelessArchitecture()) {
       mReactHost.onHostLeaveHint(mActivity);
     } else {
       if (getReactNativeHost().hasInstance()) {
@@ -133,7 +134,7 @@ public class ReactDelegate {
   }
 
   public void onHostPause() {
-    if (ReactFeatureFlags.enableBridgelessArchitecture) {
+    if (ReactNativeFeatureFlags.enableBridgelessArchitecture()) {
       mReactHost.onHostPause(mActivity);
     } else {
       if (getReactNativeHost().hasInstance()) {
@@ -143,7 +144,7 @@ public class ReactDelegate {
   }
 
   public void onHostDestroy() {
-    if (ReactFeatureFlags.enableBridgelessArchitecture) {
+    if (ReactNativeFeatureFlags.enableBridgelessArchitecture()) {
       if (mReactSurface != null) {
         mReactSurface.stop();
         mReactSurface = null;
@@ -161,7 +162,7 @@ public class ReactDelegate {
   }
 
   public boolean onBackPressed() {
-    if (ReactFeatureFlags.enableBridgelessArchitecture) {
+    if (ReactNativeFeatureFlags.enableBridgelessArchitecture()) {
       mReactHost.onBackPressed();
       return true;
     } else {
@@ -174,7 +175,7 @@ public class ReactDelegate {
   }
 
   public boolean onNewIntent(Intent intent) {
-    if (ReactFeatureFlags.enableBridgelessArchitecture) {
+    if (ReactNativeFeatureFlags.enableBridgelessArchitecture()) {
       mReactHost.onNewIntent(intent);
       return true;
     } else {
@@ -188,7 +189,7 @@ public class ReactDelegate {
 
   public void onActivityResult(
       int requestCode, int resultCode, Intent data, boolean shouldForwardToReactInstance) {
-    if (ReactFeatureFlags.enableBridgelessArchitecture) {
+    if (ReactNativeFeatureFlags.enableBridgelessArchitecture()) {
       mReactHost.onActivityResult(mActivity, requestCode, resultCode, data);
     } else {
       if (getReactNativeHost().hasInstance() && shouldForwardToReactInstance) {
@@ -200,7 +201,7 @@ public class ReactDelegate {
   }
 
   public void onWindowFocusChanged(boolean hasFocus) {
-    if (ReactFeatureFlags.enableBridgelessArchitecture) {
+    if (ReactNativeFeatureFlags.enableBridgelessArchitecture()) {
       mReactHost.onWindowFocusChange(hasFocus);
     } else {
       if (getReactNativeHost().hasInstance()) {
@@ -210,7 +211,7 @@ public class ReactDelegate {
   }
 
   public void onConfigurationChanged(Configuration newConfig) {
-    if (ReactFeatureFlags.enableBridgelessArchitecture) {
+    if (ReactNativeFeatureFlags.enableBridgelessArchitecture()) {
       mReactHost.onConfigurationChanged(Assertions.assertNotNull(mActivity));
     } else {
       if (getReactNativeHost().hasInstance()) {
@@ -222,7 +223,7 @@ public class ReactDelegate {
 
   public boolean onKeyDown(int keyCode, KeyEvent event) {
     if (keyCode == KeyEvent.KEYCODE_MEDIA_FAST_FORWARD
-        && ((ReactFeatureFlags.enableBridgelessArchitecture
+        && ((ReactNativeFeatureFlags.enableBridgelessArchitecture()
                 && mReactHost != null
                 && mReactHost.getDevSupportManager() != null)
             || (getReactNativeHost().hasInstance()
@@ -235,7 +236,7 @@ public class ReactDelegate {
 
   public boolean onKeyLongPress(int keyCode) {
     if (keyCode == KeyEvent.KEYCODE_MEDIA_FAST_FORWARD) {
-      if (ReactFeatureFlags.enableBridgelessArchitecture && mReactHost != null) {
+      if (ReactNativeFeatureFlags.enableBridgelessArchitecture() && mReactHost != null) {
         DevSupportManager devSupportManager = mReactHost.getDevSupportManager();
         // onKeyLongPress is a Dev API and not supported in RELEASE mode.
         if (devSupportManager != null && !(devSupportManager instanceof ReleaseDevSupportManager)) {
@@ -261,7 +262,7 @@ public class ReactDelegate {
     // Reload in RELEASE mode
     if (devSupportManager instanceof ReleaseDevSupportManager) {
       // Do not reload the bundle from JS as there is no bundler running in release mode.
-      if (ReactFeatureFlags.enableBridgelessArchitecture) {
+      if (ReactNativeFeatureFlags.enableBridgelessArchitecture()) {
         if (mReactHost != null) {
           mReactHost.reload("ReactDelegate.reload()");
         }
@@ -287,7 +288,7 @@ public class ReactDelegate {
 
   public void loadApp(String appKey) {
     // With Bridgeless enabled, create and start the surface
-    if (ReactFeatureFlags.enableBridgelessArchitecture) {
+    if (ReactNativeFeatureFlags.enableBridgelessArchitecture()) {
       if (mReactSurface == null) {
         // Create a ReactSurface
         mReactSurface = mReactHost.createSurface(mActivity, appKey, mLaunchOptions);
@@ -306,7 +307,7 @@ public class ReactDelegate {
   }
 
   public ReactRootView getReactRootView() {
-    if (ReactFeatureFlags.enableBridgelessArchitecture) {
+    if (ReactNativeFeatureFlags.enableBridgelessArchitecture()) {
       return (ReactRootView) mReactSurface.getView();
     } else {
       return mReactRootView;
