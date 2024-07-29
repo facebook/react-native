@@ -18,3 +18,4 @@ export type {
   CustomMessageHandlerConnection,
   CreateCustomMessageHandlerFn,
 } from './inspector-proxy/CustomMessageHandler';
+export type {PageDescription} from './inspector-proxy/types';

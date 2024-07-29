@@ -127,6 +127,7 @@ export type PageDescription = $ReadOnly<{
   reactNative: $ReadOnly<{
     logicalDeviceId: string,
     capabilities: Page['capabilities'],
+    openDebuggerPath: string,
   }>,
 }>;
 
