@@ -3569,7 +3569,7 @@ public class com/facebook/react/modules/network/TLSSocketFactory : javax/net/ssl
 	public fun getSupportedCipherSuites ()[Ljava/lang/String;
 }
 
-public class com/facebook/react/modules/permissions/PermissionsModule : com/facebook/fbreact/specs/NativePermissionsAndroidSpec, com/facebook/react/modules/core/PermissionListener {
+public final class com/facebook/react/modules/permissions/PermissionsModule : com/facebook/fbreact/specs/NativePermissionsAndroidSpec, com/facebook/react/modules/core/PermissionListener {
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
 	public fun checkPermission (Ljava/lang/String;Lcom/facebook/react/bridge/Promise;)V
 	public fun onRequestPermissionsResult (I[Ljava/lang/String;[I)Z
