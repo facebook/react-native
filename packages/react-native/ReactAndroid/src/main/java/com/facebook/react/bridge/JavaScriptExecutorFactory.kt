@@ -5,21 +5,21 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.bridge;
+package com.facebook.react.bridge
 
 public interface JavaScriptExecutorFactory {
-  JavaScriptExecutor create() throws Exception;
+  @Throws(Exception::class) public fun create(): JavaScriptExecutor
 
   /**
    * Starts the sampling profiler for this specific JavaScriptExecutor Sampling profiler is usually
-   * a singleton on the runtime, hence the method exists here and not in {@link JavaScriptExecutor}
+   * a singleton on the runtime, hence the method exists here and not in [JavaScriptExecutor]
    */
-  void startSamplingProfiler();
+  public fun startSamplingProfiler()
 
   /**
    * Stops the Sampling profile
    *
    * @param filename The filename where the results of the sampling profiler are dumped to
    */
-  void stopSamplingProfiler(String filename);
+  public fun stopSamplingProfiler(filename: String)
 }
