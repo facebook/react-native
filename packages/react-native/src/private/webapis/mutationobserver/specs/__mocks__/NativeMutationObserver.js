@@ -15,12 +15,12 @@
  * JavaScript as an integration test using only public APIs.
  */
 
-import type {NodeSet} from '../../ReactNative/FabricUIManager';
-import type {RootTag} from '../../ReactNative/RootTag';
+import type {NodeSet} from '../../../../../../Libraries/ReactNative/FabricUIManager';
+import type {RootTag} from '../../../../../../Libraries/ReactNative/RootTag';
 import type {
   InternalInstanceHandle,
   Node,
-} from '../../Renderer/shims/ReactNativeTypes';
+} from '../../../../../../Libraries/Renderer/shims/ReactNativeTypes';
 import type {
   MutationObserverId,
   NativeMutationObserverObserveOptions,
@@ -28,14 +28,14 @@ import type {
   Spec,
 } from '../NativeMutationObserver';
 
-import ReadOnlyNode from '../../../src/private/webapis/dom/nodes/ReadOnlyNode';
 import {
   type NodeMock,
   type UIManagerCommitHook,
   fromNode,
   getFabricUIManager,
   getNodeInChildSet,
-} from '../../ReactNative/__mocks__/FabricUIManager';
+} from '../../../../../../Libraries/ReactNative/__mocks__/FabricUIManager';
+import ReadOnlyNode from '../../../dom/nodes/ReadOnlyNode';
 import invariant from 'invariant';
 import nullthrows from 'nullthrows';
 
