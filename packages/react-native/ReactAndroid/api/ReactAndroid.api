@@ -6509,6 +6509,8 @@ public final class com/facebook/react/views/image/ReactImageManager : com/facebo
 	public fun getName ()Ljava/lang/String;
 	public synthetic fun onAfterUpdateTransaction (Landroid/view/View;)V
 	public final fun setAccessible (Lcom/facebook/react/views/image/ReactImageView;Z)V
+	public synthetic fun setBackgroundColor (Landroid/view/View;I)V
+	public fun setBackgroundColor (Lcom/facebook/react/views/image/ReactImageView;I)V
 	public final fun setBlurRadius (Lcom/facebook/react/views/image/ReactImageView;F)V
 	public final fun setBorderColor (Lcom/facebook/react/views/image/ReactImageView;Ljava/lang/Integer;)V
 	public final fun setBorderRadius (Lcom/facebook/react/views/image/ReactImageView;IF)V

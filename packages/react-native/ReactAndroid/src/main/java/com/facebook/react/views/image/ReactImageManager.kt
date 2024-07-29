@@ -9,6 +9,7 @@ package com.facebook.react.views.image
 
 import android.graphics.Color
 import android.graphics.PorterDuff
+import androidx.annotation.ColorInt
 import com.facebook.common.logging.FLog
 import com.facebook.drawee.backends.pipeline.Fresco
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder
@@ -16,13 +17,19 @@ import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.common.MapBuilder
 import com.facebook.react.common.ReactConstants
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.module.annotations.ReactModule
+import com.facebook.react.uimanager.BackgroundStyleApplicator
+import com.facebook.react.uimanager.LengthPercentage
+import com.facebook.react.uimanager.LengthPercentageType
 import com.facebook.react.uimanager.PixelUtil.toPixelFromDIP
 import com.facebook.react.uimanager.SimpleViewManager
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.ViewProps
 import com.facebook.react.uimanager.annotations.ReactProp
 import com.facebook.react.uimanager.annotations.ReactPropGroup
+import com.facebook.react.uimanager.style.BorderRadiusProp
+import com.facebook.react.uimanager.style.LogicalEdge
 import com.facebook.react.views.image.ImageLoadEvent.Companion.eventNameForType
 import com.facebook.react.views.image.ImageResizeMode.toScaleType
 import com.facebook.react.views.image.ImageResizeMode.toTileMode
@@ -135,10 +142,14 @@ public constructor(
 
   @ReactProp(name = "borderColor", customType = "Color")
   public fun setBorderColor(view: ReactImageView, borderColor: Int?) {
-    if (borderColor == null) {
-      view.setBorderColor(Color.TRANSPARENT)
+    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
+      BackgroundStyleApplicator.setBorderColor(view, LogicalEdge.ALL, borderColor)
     } else {
-      view.setBorderColor(borderColor)
+      if (borderColor == null) {
+        view.setBorderColor(Color.TRANSPARENT)
+      } else {
+        view.setBorderColor(borderColor)
+      }
     }
   }
 
@@ -153,7 +164,11 @@ public constructor(
 
   @ReactProp(name = "borderWidth")
   public fun setBorderWidth(view: ReactImageView, borderWidth: Float) {
-    view.setBorderWidth(borderWidth)
+    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
+      BackgroundStyleApplicator.setBorderWidth(view, LogicalEdge.ALL, borderWidth)
+    } else {
+      view.setBorderWidth(borderWidth)
+    }
   }
 
   @ReactPropGroup(
@@ -166,16 +181,23 @@ public constructor(
               ViewProps.BORDER_BOTTOM_LEFT_RADIUS],
       defaultFloat = Float.NaN)
   public fun setBorderRadius(view: ReactImageView, index: Int, borderRadius: Float) {
-    val convertedBorderRadius =
-        if (!borderRadius.isNaN()) {
-          toPixelFromDIP(borderRadius)
-        } else {
-          borderRadius
-        }
-    if (index == 0) {
-      view.setBorderRadius(convertedBorderRadius)
+    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
+      val radius =
+          if (borderRadius.isNaN()) null
+          else LengthPercentage(toPixelFromDIP(borderRadius), LengthPercentageType.POINT)
+      BackgroundStyleApplicator.setBorderRadius(view, BorderRadiusProp.values()[index], radius)
     } else {
-      view.setBorderRadius(convertedBorderRadius, index - 1)
+      val convertedBorderRadius =
+          if (!borderRadius.isNaN()) {
+            toPixelFromDIP(borderRadius)
+          } else {
+            borderRadius
+          }
+      if (index == 0) {
+        view.setBorderRadius(convertedBorderRadius)
+      } else {
+        view.setBorderRadius(convertedBorderRadius, index - 1)
+      }
     }
   }
 
@@ -236,6 +258,17 @@ public constructor(
   public fun setHeaders(view: ReactImageView, headers: ReadableMap?) {
     if (headers != null) {
       view.setHeaders(headers)
+    }
+  }
+
+  public override fun setBackgroundColor(
+      view: ReactImageView,
+      @ColorInt backgroundColor: Int
+  ): Unit {
+    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
+      BackgroundStyleApplicator.setBackgroundColor(view, backgroundColor)
+    } else {
+      super.setBackgroundColor(view, backgroundColor)
     }
   }
 
