@@ -10,13 +10,11 @@
 
 // flowlint unsafe-getters-setters:off
 
-import type ReactNativeElement from '../../src/private/webapis/dom/nodes/ReactNativeElement';
-import type ReadOnlyNode from '../../src/private/webapis/dom/nodes/ReadOnlyNode';
-import type {NativeMutationRecord} from './NativeMutationObserver';
+import type ReactNativeElement from '../dom/nodes/ReactNativeElement';
+import type ReadOnlyNode from '../dom/nodes/ReadOnlyNode';
+import type {NativeMutationRecord} from './specs/NativeMutationObserver';
 
-import NodeList, {
-  createNodeList,
-} from '../../src/private/webapis/dom/oldstylecollections/NodeList';
+import NodeList, {createNodeList} from '../dom/oldstylecollections/NodeList';
 
 export type MutationType = 'attributes' | 'characterData' | 'childList';
 
