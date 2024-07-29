@@ -281,7 +281,7 @@ class NativeAnimatedNodeTraversalTest {
   }
 
   private fun performSpringAnimationTestWithConfig(
-      config: JavaOnlyMap?,
+      config: JavaOnlyMap,
       testForCriticallyDamped: Boolean
   ) {
     createSimpleAnimatedViewWithOpacity()
