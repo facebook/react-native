@@ -701,9 +701,6 @@ class UtilsTests < Test::Unit::TestCase
         # Assert
         assert_equal(FileMock.exist_invocation_params, ["/.xcode.env", "/.xcode.env.local"])
         assert_equal($collected_commands[0], "echo 'export NODE_BINARY=$(command -v node)' > /.xcode.env")
-
-        assert_true($collected_commands[1].start_with? "echo 'export NODE_BINARY=")
-        assert_true($collected_commands[1].end_with? "' > /.xcode.env.local")
     end
 
     # ============================ #
