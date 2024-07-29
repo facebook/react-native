@@ -41,7 +41,7 @@ const FILES_WITH_KNOWN_ERRORS = new Set([
   'Libraries/Core/setUpErrorHandling.js',
   'Libraries/Core/setUpGlobals.js',
   'src/private/setup/setUpIntersectionObserver.js',
-  'Libraries/Core/setUpMutationObserver.js',
+  'src/private/setup/setUpMutationObserver.js',
   'Libraries/Core/setUpNavigator.js',
   'Libraries/Core/setUpPerformance.js',
   'Libraries/Core/setUpPerformanceObserver.js',

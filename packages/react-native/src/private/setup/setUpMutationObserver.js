@@ -8,9 +8,9 @@
  * @format
  */
 
-import {polyfillGlobal} from '../Utilities/PolyfillFunctions';
+import {polyfillGlobal} from '../../../Libraries/Utilities/PolyfillFunctions';
 
 polyfillGlobal(
   'MutationObserver',
-  () => require('../MutationObserver/MutationObserver').default,
+  () => require('../webapis/mutationobserver/MutationObserver').default,
 );
