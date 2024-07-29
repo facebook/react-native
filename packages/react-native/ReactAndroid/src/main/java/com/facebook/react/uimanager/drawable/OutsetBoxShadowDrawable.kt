@@ -75,7 +75,6 @@ internal class OutsetBoxShadowDrawable(
         shadowShapeDrawable.layoutDirection != layoutDirection ||
         shadowShapeDrawable.borderRadius != borderRadii ||
         shadowShapeDrawable.colorFilter != colorFilter) {
-      canvas.save()
       shadowShapeDrawable.bounds = shadowShapeBounds
       shadowShapeDrawable.layoutDirection = layoutDirection
       shadowShapeDrawable.borderRadius = borderRadii
@@ -89,14 +88,16 @@ internal class OutsetBoxShadowDrawable(
                   PixelUtil.toPixelFromDIP(offsetY).roundToInt())
             })
 
-        beginRecording().let { canvas ->
-          shadowShapeDrawable.draw(canvas)
+        beginRecording().let { renderNodeCanvas ->
+          shadowShapeDrawable.draw(renderNodeCanvas)
           endRecording()
         }
       }
     }
 
     with(canvas) {
+      save()
+
       val borderBoxPath = background.getBorderBoxPath()
       if (borderBoxPath != null) {
         clipOutPath(borderBoxPath)
@@ -105,8 +106,7 @@ internal class OutsetBoxShadowDrawable(
       }
 
       drawRenderNode(renderNode)
+      restore()
     }
-
-    canvas.restore()
   }
 }
