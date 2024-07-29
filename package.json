@@ -93,16 +93,13 @@
     "nullthrows": "^1.1.1",
     "prettier": "2.8.8",
     "prettier-plugin-hermes-parser": "0.24.0",
-    "react": "19.0.0-rc-fb9a90fa48-20240614",
-    "react-test-renderer": "19.0.0-rc-fb9a90fa48-20240614",
+    "react": "18.3.1",
+    "react-test-renderer": "18.3.1",
     "rimraf": "^3.0.2",
     "shelljs": "^0.8.5",
     "signedsource": "^1.0.0",
     "supports-color": "^7.1.0",
     "typescript": "5.0.4",
     "ws": "^6.2.3"
-  },
-  "resolutions": {
-    "react-is": "19.0.0-rc-fb9a90fa48-20240614"
   }
 }
