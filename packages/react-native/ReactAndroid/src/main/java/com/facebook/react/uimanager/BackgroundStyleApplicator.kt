@@ -10,9 +10,12 @@ package com.facebook.react.uimanager
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Rect
+import android.os.Build
 import android.view.View
 import androidx.annotation.ColorInt
 import androidx.annotation.RequiresApi
+import com.facebook.common.logging.FLog
+import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.uimanager.drawable.CSSBackgroundDrawable
 import com.facebook.react.uimanager.drawable.CompositeBackgroundDrawable
@@ -119,6 +122,19 @@ public object BackgroundStyleApplicator {
         }
 
     view.background = ensureCompositeBackgroundDrawable(view).withNewShadows(shadowDrawables)
+  }
+
+  @JvmStatic
+  public fun setBoxShadow(view: View, shadows: ReadableArray): Unit {
+    if (Build.VERSION.SDK_INT < 31) {
+      FLog.w("BackgroundStyleApplicator", "\"boxShadow\" requires Android 12 or later")
+    } else {
+      val shadowStyles = mutableListOf<BoxShadow>()
+      for (i in 0..<shadows.size()) {
+        shadowStyles.add(checkNotNull(BoxShadow.parse(shadows.getMap(i))))
+      }
+      BackgroundStyleApplicator.setBoxShadow(view, shadowStyles)
+    }
   }
 
   @JvmStatic

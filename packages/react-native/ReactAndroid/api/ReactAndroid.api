@@ -4008,6 +4008,7 @@ public final class com/facebook/react/uimanager/BackgroundStyleApplicator {
 	public static final fun setBorderRadius (Landroid/view/View;Lcom/facebook/react/uimanager/style/BorderRadiusProp;Lcom/facebook/react/uimanager/LengthPercentage;)V
 	public static final fun setBorderStyle (Landroid/view/View;Lcom/facebook/react/uimanager/style/BorderStyle;)V
 	public static final fun setBorderWidth (Landroid/view/View;Lcom/facebook/react/uimanager/style/LogicalEdge;Ljava/lang/Float;)V
+	public static final fun setBoxShadow (Landroid/view/View;Lcom/facebook/react/bridge/ReadableArray;)V
 	public static final fun setBoxShadow (Landroid/view/View;Ljava/util/List;)V
 }
 
@@ -5440,6 +5441,7 @@ public final class com/facebook/react/uimanager/ViewProps {
 	public static final field BORDER_WIDTH Ljava/lang/String;
 	public static final field BOTTOM Ljava/lang/String;
 	public static final field BOX_NONE Ljava/lang/String;
+	public static final field BOX_SHADOW Ljava/lang/String;
 	public static final field COLLAPSABLE Ljava/lang/String;
 	public static final field COLLAPSABLE_CHILDREN Ljava/lang/String;
 	public static final field COLOR Ljava/lang/String;
@@ -6515,6 +6517,7 @@ public final class com/facebook/react/views/image/ReactImageManager : com/facebo
 	public final fun setBorderColor (Lcom/facebook/react/views/image/ReactImageView;Ljava/lang/Integer;)V
 	public final fun setBorderRadius (Lcom/facebook/react/views/image/ReactImageView;IF)V
 	public final fun setBorderWidth (Lcom/facebook/react/views/image/ReactImageView;F)V
+	public final fun setBoxShadow (Lcom/facebook/react/views/image/ReactImageView;Lcom/facebook/react/bridge/ReadableArray;)V
 	public final fun setDefaultSource (Lcom/facebook/react/views/image/ReactImageView;Ljava/lang/String;)V
 	public final fun setFadeDuration (Lcom/facebook/react/views/image/ReactImageView;I)V
 	public final fun setHeaders (Lcom/facebook/react/views/image/ReactImageView;Lcom/facebook/react/bridge/ReadableMap;)V

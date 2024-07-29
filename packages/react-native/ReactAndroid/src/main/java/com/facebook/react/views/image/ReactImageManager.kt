@@ -261,6 +261,13 @@ public constructor(
     }
   }
 
+  @ReactProp(name = ViewProps.BOX_SHADOW, customType = "BoxShadow")
+  public fun setBoxShadow(view: ReactImageView, shadows: ReadableArray): Unit {
+    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
+      BackgroundStyleApplicator.setBoxShadow(view, shadows)
+    }
+  }
+
   public override fun setBackgroundColor(
       view: ReactImageView,
       @ColorInt backgroundColor: Int
