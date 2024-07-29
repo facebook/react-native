@@ -3,6 +3,8 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
+require_relative "../scripts/react_native_pods"
+
 boost_config = get_boost_config()
 boost_git_url = boost_config[:git]
 

@@ -3,6 +3,8 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
+require_relative "../scripts/react_native_pods"
+
 folly_config = get_folly_config()
 folly_config_file = folly_config[:config_file]
 folly_release_version = folly_config[:version]
