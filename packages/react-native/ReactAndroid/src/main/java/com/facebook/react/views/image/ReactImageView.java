@@ -49,6 +49,7 @@ import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.modules.fresco.ReactNetworkImageRequest;
+import com.facebook.react.uimanager.BackgroundStyleApplicator;
 import com.facebook.react.uimanager.FloatUtil;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.Spacing;
@@ -652,9 +653,12 @@ public class ReactImageView extends GenericDraweeView {
 
   @Override
   public void onDraw(Canvas canvas) {
-    if (ReactNativeFeatureFlags.useNewReactImageViewBackgroundDrawing()) {
+    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
+      BackgroundStyleApplicator.clipToPaddingBox(this, canvas);
+    } else if (ReactNativeFeatureFlags.useNewReactImageViewBackgroundDrawing()) {
       mReactBackgroundManager.maybeClipToPaddingBox(canvas);
     }
+
     super.onDraw(canvas);
   }
 
