@@ -114,11 +114,10 @@ exports.examples = [
             experimental_backgroundImage: [
               {
                 type: 'linearGradient',
-                start: {x: 0.5, y: 0},
-                end: {x: 0.5, y: 1},
+                direction: 'to bottom',
                 colorStops: [
-                  {color: 'purple', position: 0},
-                  {color: 'orange', position: 1},
+                  {color: 'purple', position: '0%'},
+                  {color: 'orange', position: '100%'},
                 ],
               },
             ],

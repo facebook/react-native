@@ -268,11 +268,10 @@ describe('processBackgroundImage', () => {
     const input = [
       {
         type: 'linearGradient',
-        start: {x: 0, y: 0},
-        end: {x: 1, y: 1},
+        direction: 'to bottom right',
         colorStops: [
-          {color: 'red', position: 0},
-          {color: 'blue', position: 1},
+          {color: 'red', position: '0%'},
+          {color: 'blue', position: '100%'},
         ],
       },
     ];
@@ -286,6 +285,56 @@ describe('processBackgroundImage', () => {
           {color: processColor('red'), position: 0},
           {color: processColor('blue'), position: 1},
         ],
+      },
+    ]);
+  });
+
+  it('should process an style object with default direction', () => {
+    const input = [
+      {
+        type: 'linearGradient',
+        colorStops: [{color: 'red'}, {color: 'blue'}],
+      },
+    ];
+    const result = processBackgroundImage(input);
+    expect(result[0].start).toEqual({x: 0.5, y: 0});
+    expect(result[0].end).toEqual({x: 0.5, y: 1});
+  });
+
+  it('should process an style object with mix of default and undefined stop positions', () => {
+    const input = [
+      {
+        type: 'linearGradient',
+        colorStops: [
+          {color: 'red'},
+          {color: 'blue'},
+          {color: 'green'},
+          {color: 'purple', position: '80%'},
+          {color: 'pink'},
+        ],
+      },
+    ];
+    const result = processBackgroundImage(input);
+    expect(result[0].colorStops).toEqual([
+      {
+        color: processColor('red'),
+        position: 0,
+      },
+      {
+        color: processColor('blue'),
+        position: 0.25,
+      },
+      {
+        color: processColor('green'),
+        position: 0.5,
+      },
+      {
+        color: processColor('purple'),
+        position: 0.8,
+      },
+      {
+        color: processColor('pink'),
+        position: 1,
       },
     ]);
   });

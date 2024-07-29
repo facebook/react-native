@@ -46,24 +46,64 @@ export default function processBackgroundImage(
   } else if (Array.isArray(backgroundImage)) {
     for (const bgImage of backgroundImage) {
       const processedColorStops = [];
-      for (const stop of bgImage.colorStops) {
+      for (let index = 0; index < bgImage.colorStops.length; index++) {
+        const stop = bgImage.colorStops[index];
         const processedColor = processColor(stop.color);
-        if (processedColor == null) {
-          // If a color is invalid, return an empty array and do not apply any gradient. Web works the same way.
-          return [];
+        let processedPosition: number | null = null;
+
+        // Currently we only support percentage and undefined value for color stop position.
+        if (typeof stop.position === 'undefined') {
+          processedPosition =
+            bgImage.colorStops.length === 1
+              ? 1
+              : index / (bgImage.colorStops.length - 1);
+        } else if (stop.position.endsWith('%')) {
+          processedPosition = parseFloat(stop.position) / 100;
         } else {
+          // If a color stop position is invalid, return an empty array and do not apply gradient. Same as web.
+          return [];
+        }
+
+        if (processedColor != null) {
           processedColorStops.push({
             color: processedColor,
-            position: stop.position,
+            position: processedPosition,
           });
+        } else {
+          // If a color is invalid, return an empty array and do not apply gradient. Same as web.
+          return [];
         }
       }
-      result = result.concat({
-        type: 'linearGradient',
-        start: bgImage.start,
-        end: bgImage.end,
-        colorStops: processedColorStops,
-      });
+
+      let points: {
+        start: ParsedGradientValue['start'],
+        end: ParsedGradientValue['end'],
+      } | null = null;
+
+      if (typeof bgImage.direction === 'undefined') {
+        points = TO_BOTTOM_START_END_POINTS;
+      } else if (ANGLE_UNIT_REGEX.test(bgImage.direction)) {
+        const angle = parseAngle(bgImage.direction);
+        if (angle != null) {
+          points = calculateStartEndPointsFromAngle(angle);
+        }
+      } else if (DIRECTION_REGEX.test(bgImage.direction)) {
+        const processedPoints = calculateStartEndPointsFromDirection(
+          bgImage.direction,
+        );
+        if (processedPoints != null) {
+          points = processedPoints;
+        }
+      }
+
+      if (points != null) {
+        result = result.concat({
+          type: 'linearGradient',
+          start: points.start,
+          end: points.end,
+          colorStops: processedColorStops,
+        });
+      }
     }
   }
 

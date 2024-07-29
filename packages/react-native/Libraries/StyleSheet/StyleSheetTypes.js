@@ -711,11 +711,11 @@ export type DropShadowPrimitive = {
 
 export type GradientValue = {
   type: 'linearGradient',
-  start: {x: number, y: number},
-  end: {x: number, y: number},
+  // Angle or direction enums
+  direction?: string,
   colorStops: $ReadOnlyArray<{
     color: ____ColorValue_Internal,
-    position: number,
+    position?: string,
   }>,
 };
 
