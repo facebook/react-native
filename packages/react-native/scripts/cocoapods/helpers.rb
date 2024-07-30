@@ -37,6 +37,28 @@ end
 
 module Helpers
     class Constants
+        @@boost_config = {
+            :git => "https://github.com/react-native-community/boost-for-react-native",
+        }
+
+        @@folly_config = {
+            :version => '2024.01.01.00',
+            :git => 'https://github.com/facebook/folly.git',
+            :compiler_flags => '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -DFOLLY_HAVE_CLOCK_GETTIME=1 -Wno-comma -Wno-shorten-64-to-32'
+        }
+
+        @@fmt_config = {
+            :git => "https://github.com/fmtlib/fmt.git",
+        }
+
+        @@glog_config = {
+            :git => "https://github.com/google/glog.git",
+        }
+
+        @@double_conversion_config = {
+            :git => "https://github.com/google/double-conversion.git",
+        }
+
         def self.min_ios_version_supported
             return '13.4'
         end
@@ -46,10 +68,43 @@ module Helpers
         end
 
         def self.folly_config
-            return {
-                :version => '2024.01.01.00',
-                :compiler_flags => '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -DFOLLY_HAVE_CLOCK_GETTIME=1 -Wno-comma -Wno-shorten-64-to-32'
-            }
+            return @@folly_config
+        end
+
+        def self.set_folly_config(new_folly_config)
+            @@folly_config.update(new_folly_config)
+        end
+
+        def self.boost_config
+            return @@boost_config
+        end
+
+        def self.set_boost_config(new_boost_config)
+           @@boost_config.update(new_boost_config)
+        end
+
+        def self.fmt_config
+            return @@fmt_config
+        end
+
+        def self.set_fmt_config(new_fmt_config)
+            @@fmt_config.update(new_fmt_config)
+        end
+
+        def self.glog_config
+            return @@glog_config
+        end
+
+        def self.set_glog_config(new_glog_config)
+            @@glog_config.update(new_glog_config)
+        end
+
+        def self.double_conversion_config
+            return @@double_conversion_config
+        end
+
+        def self.set_double_conversion_config(new_double_conversion_config)
+            @@double_conversion_config.update(new_double_conversion_config)
         end
 
         def self.cxx_language_standard
