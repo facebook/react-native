@@ -91,16 +91,19 @@ public object BackgroundStyleApplicator {
   @JvmStatic
   @RequiresApi(31)
   public fun setBoxShadow(view: View, shadows: List<BoxShadow>): Unit {
-    val shadowDrawables =
-        shadows.map { boxShadow ->
-          val offsetX = boxShadow.offsetX
-          val offsetY = boxShadow.offsetY
-          val color = boxShadow.color ?: Color.BLACK
-          val blurRadius = boxShadow.blurRadius ?: 0f
-          val spreadDistance = boxShadow.spreadDistance ?: 0f
-          val inset = boxShadow.inset ?: false
+    val outerShadows = mutableListOf<OutsetBoxShadowDrawable>()
+    val innerShadows = mutableListOf<InsetBoxShadowDrawable>()
 
-          if (inset) {
+    for (boxShadow in shadows) {
+      val offsetX = boxShadow.offsetX
+      val offsetY = boxShadow.offsetY
+      val color = boxShadow.color ?: Color.BLACK
+      val blurRadius = boxShadow.blurRadius ?: 0f
+      val spreadDistance = boxShadow.spreadDistance ?: 0f
+      val inset = boxShadow.inset ?: false
+
+      if (inset) {
+        innerShadows.add(
             InsetBoxShadowDrawable(
                 context = view.context,
                 background = ensureCSSBackground(view),
@@ -108,8 +111,9 @@ public object BackgroundStyleApplicator {
                 offsetX = offsetX,
                 offsetY = offsetY,
                 blurRadius = blurRadius,
-                spread = spreadDistance)
-          } else {
+                spread = spreadDistance))
+      } else {
+        outerShadows.add(
             OutsetBoxShadowDrawable(
                 context = view.context,
                 background = ensureCSSBackground(view),
@@ -117,11 +121,13 @@ public object BackgroundStyleApplicator {
                 offsetX = offsetX,
                 offsetY = offsetY,
                 blurRadius = blurRadius,
-                spread = spreadDistance)
-          }
-        }
+                spread = spreadDistance))
+      }
+    }
 
-    view.background = ensureCompositeBackgroundDrawable(view).withNewShadows(shadowDrawables)
+    view.background =
+        ensureCompositeBackgroundDrawable(view)
+            .withNewShadows(outerShadows = outerShadows, innerShadows = innerShadows)
   }
 
   @JvmStatic
@@ -165,7 +171,7 @@ public object BackgroundStyleApplicator {
       return view.background as CompositeBackgroundDrawable
     }
 
-    val compositeDrawable = CompositeBackgroundDrawable(view.background, null, emptyList(), null)
+    val compositeDrawable = CompositeBackgroundDrawable(originalBackground = view.background)
     view.background = compositeDrawable
     return compositeDrawable
   }

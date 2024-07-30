@@ -21,7 +21,6 @@ import com.facebook.react.uimanager.FilterHelper
 import com.facebook.react.uimanager.LengthPercentage
 import com.facebook.react.uimanager.LengthPercentageType
 import com.facebook.react.uimanager.PixelUtil
-import com.facebook.react.uimanager.style.BorderRadiusProp
 import com.facebook.react.uimanager.style.BorderRadiusStyle
 import kotlin.math.roundToInt
 
@@ -82,8 +81,7 @@ internal class InsetBoxShadowDrawable(
         PixelUtil.toPixelFromDIP(offsetX).roundToInt() + padding / 2,
         PixelUtil.toPixelFromDIP(offsetY).roundToInt() + padding / 2,
     )
-    val clearRegionBorderRadii =
-        getClearRegionBorderRadii(spreadExtent, background, clearRegionBounds)
+    val clearRegionBorderRadii = getClearRegionBorderRadii(spreadExtent, background)
 
     if (shadowPaint.colorFilter != colorFilter ||
         clearRegionDrawable.layoutDirection != layoutDirection ||
@@ -134,7 +132,6 @@ internal class InsetBoxShadowDrawable(
   private fun getClearRegionBorderRadii(
       spread: Int,
       background: CSSBackgroundDrawable,
-      clearRegionBounds: Rect,
   ): BorderRadiusStyle {
     val computedBorderRadii = background.computedBorderRadius
     val borderWidth = background.getDirectionAwareBorderInsets()
@@ -150,29 +147,24 @@ internal class InsetBoxShadowDrawable(
         background.getInnerBorderRadius(bottomRightRadius, borderWidth.right)
     val innerBottomLeftRadius = background.getInnerBorderRadius(bottomLeftRadius, borderWidth.left)
 
-    val innerBorderRadii = BorderRadiusStyle()
-    innerBorderRadii.set(
-        BorderRadiusProp.BORDER_TOP_LEFT_RADIUS,
-        LengthPercentage(innerTopLeftRadius, LengthPercentageType.POINT),
-    )
-    innerBorderRadii.set(
-        BorderRadiusProp.BORDER_TOP_RIGHT_RADIUS,
-        LengthPercentage(innerTopRightRadius, LengthPercentageType.POINT),
-    )
-    innerBorderRadii.set(
-        BorderRadiusProp.BORDER_BOTTOM_RIGHT_RADIUS,
-        LengthPercentage(innerBottomRightRadius, LengthPercentageType.POINT),
-    )
-    innerBorderRadii.set(
-        BorderRadiusProp.BORDER_BOTTOM_LEFT_RADIUS,
-        LengthPercentage(innerBottomLeftRadius, LengthPercentageType.POINT),
-    )
-
-    return getShadowBorderRadii(
-        -spread.toFloat(),
-        innerBorderRadii,
-        clearRegionBounds.width().toFloat(),
-        clearRegionBounds.height().toFloat(),
+    val spreadWithDirection = -spread.toFloat()
+    return BorderRadiusStyle(
+        topLeft =
+            LengthPercentage(
+                adjustRadiusForSpread(innerTopLeftRadius, spreadWithDirection),
+                LengthPercentageType.POINT),
+        topRight =
+            LengthPercentage(
+                adjustRadiusForSpread(innerTopRightRadius, spreadWithDirection),
+                LengthPercentageType.POINT),
+        bottomLeft =
+            LengthPercentage(
+                adjustRadiusForSpread(innerBottomLeftRadius, spreadWithDirection),
+                LengthPercentageType.POINT),
+        bottomRight =
+            LengthPercentage(
+                adjustRadiusForSpread(innerBottomRightRadius, spreadWithDirection),
+                LengthPercentageType.POINT),
     )
   }
 }
