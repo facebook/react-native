@@ -3156,13 +3156,18 @@ public abstract interface class com/facebook/react/modules/core/DeviceEventManag
 	public abstract fun emit (Ljava/lang/String;Ljava/lang/Object;)V
 }
 
-public class com/facebook/react/modules/core/ExceptionsManagerModule : com/facebook/fbreact/specs/NativeExceptionsManagerSpec {
+public final class com/facebook/react/modules/core/ExceptionsManagerModule : com/facebook/fbreact/specs/NativeExceptionsManagerSpec {
+	public static final field Companion Lcom/facebook/react/modules/core/ExceptionsManagerModule$Companion;
+	public static final field NAME Ljava/lang/String;
 	public fun <init> (Lcom/facebook/react/devsupport/interfaces/DevSupportManager;)V
 	public fun dismissRedbox ()V
 	public fun reportException (Lcom/facebook/react/bridge/ReadableMap;)V
 	public fun reportFatalException (Ljava/lang/String;Lcom/facebook/react/bridge/ReadableArray;D)V
 	public fun reportSoftException (Ljava/lang/String;Lcom/facebook/react/bridge/ReadableArray;D)V
 	public fun updateExceptionMessage (Ljava/lang/String;Lcom/facebook/react/bridge/ReadableArray;D)V
+}
+
+public final class com/facebook/react/modules/core/ExceptionsManagerModule$Companion {
 }
 
 public class com/facebook/react/modules/core/HeadlessJsTaskSupportModule : com/facebook/fbreact/specs/NativeHeadlessJsTaskSupportSpec {
