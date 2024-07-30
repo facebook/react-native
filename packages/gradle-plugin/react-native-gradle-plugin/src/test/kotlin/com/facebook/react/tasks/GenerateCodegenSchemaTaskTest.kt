@@ -136,7 +136,6 @@ class GenerateCodegenSchemaTaskTest {
     task.setupCommandLine()
 
     assertThat(task.commandLine).containsExactly(
-        listOf(
             "node",
             "--verbose",
             File(codegenDir, "lib/cli/combine/combine-js-to-schema-cli.js").toString(),
@@ -146,7 +145,6 @@ class GenerateCodegenSchemaTaskTest {
             "NativeSampleTurboModule",
             File(outputDir, "schema.json").toString(),
             jsRootDir.toString(),
-        )
     )
   }
 
@@ -169,7 +167,6 @@ class GenerateCodegenSchemaTaskTest {
     task.setupCommandLine()
 
     assertThat(task.commandLine).containsExactly(
-        listOf(
             "cmd",
             "/c",
             "node",
@@ -183,7 +180,6 @@ class GenerateCodegenSchemaTaskTest {
             "NativeSampleTurboModule",
             File(outputDir, "schema.json").relativeTo(project.projectDir).path,
             jsRootDir.relativeTo(project.projectDir).path,
-        )
     )
   }
 }
