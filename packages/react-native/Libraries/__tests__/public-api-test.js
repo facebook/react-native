@@ -44,7 +44,7 @@ const FILES_WITH_KNOWN_ERRORS = new Set([
   'src/private/setup/setUpMutationObserver.js',
   'Libraries/Core/setUpNavigator.js',
   'Libraries/Core/setUpPerformance.js',
-  'Libraries/Core/setUpPerformanceObserver.js',
+  'src/private/setup/setUpPerformanceObserver.js',
   'Libraries/Core/setUpReactDevTools.js',
   'Libraries/Core/setUpReactRefresh.js',
   'Libraries/Core/setUpRegeneratorRuntime.js',
