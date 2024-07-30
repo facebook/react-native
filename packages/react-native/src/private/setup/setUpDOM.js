@@ -11,8 +11,18 @@
 import DOMRect from '../webapis/dom/geometry/DOMRect';
 import DOMRectReadOnly from '../webapis/dom/geometry/DOMRectReadOnly';
 
-// $FlowExpectedError[cannot-write] The global isn't writable anywhere but here, where we define it
-global.DOMRect = DOMRect;
+let initialized = false;
 
-// $FlowExpectedError[cannot-write] The global isn't writable anywhere but here, where we define it
-global.DOMRectReadOnly = DOMRectReadOnly;
+export default function setUpDOM() {
+  if (initialized) {
+    return;
+  }
+
+  initialized = true;
+
+  // $FlowExpectedError[cannot-write] The global isn't writable anywhere but here, where we define it
+  global.DOMRect = DOMRect;
+
+  // $FlowExpectedError[cannot-write] The global isn't writable anywhere but here, where we define it
+  global.DOMRectReadOnly = DOMRectReadOnly;
+}

@@ -10,44 +10,54 @@
 
 import {polyfillGlobal} from '../../../Libraries/Utilities/PolyfillFunctions';
 
-polyfillGlobal(
-  'PerformanceObserver',
-  () => require('../webapis/performance/PerformanceObserver').default,
-);
+let initialized = false;
 
-polyfillGlobal(
-  'PerformanceObserverEntryList',
-  () =>
-    require('../webapis/performance/PerformanceObserver')
-      .PerformanceObserverEntryList,
-);
+export default function setUpPerformanceObserver() {
+  if (initialized) {
+    return;
+  }
 
-polyfillGlobal(
-  'PerformanceEntry',
-  () => require('../webapis/performance/PerformanceEntry').PerformanceEntry,
-);
+  initialized = true;
 
-polyfillGlobal(
-  'PerformanceMark',
-  () => require('../webapis/performance/UserTiming').PerformanceMark,
-);
+  polyfillGlobal(
+    'PerformanceObserver',
+    () => require('../webapis/performance/PerformanceObserver').default,
+  );
 
-polyfillGlobal(
-  'PerformanceMeasure',
-  () => require('../webapis/performance/UserTiming').PerformanceMeasure,
-);
+  polyfillGlobal(
+    'PerformanceObserverEntryList',
+    () =>
+      require('../webapis/performance/PerformanceObserver')
+        .PerformanceObserverEntryList,
+  );
 
-polyfillGlobal(
-  'PerformanceEventTiming',
-  () => require('../webapis/performance/EventTiming').PerformanceEventTiming,
-);
+  polyfillGlobal(
+    'PerformanceEntry',
+    () => require('../webapis/performance/PerformanceEntry').PerformanceEntry,
+  );
 
-polyfillGlobal(
-  'TaskAttributionTiming',
-  () => require('../webapis/performance/LongTasks').TaskAttributionTiming,
-);
+  polyfillGlobal(
+    'PerformanceMark',
+    () => require('../webapis/performance/UserTiming').PerformanceMark,
+  );
 
-polyfillGlobal(
-  'PerformanceLongTaskTiming',
-  () => require('../webapis/performance/LongTasks').PerformanceLongTaskTiming,
-);
+  polyfillGlobal(
+    'PerformanceMeasure',
+    () => require('../webapis/performance/UserTiming').PerformanceMeasure,
+  );
+
+  polyfillGlobal(
+    'PerformanceEventTiming',
+    () => require('../webapis/performance/EventTiming').PerformanceEventTiming,
+  );
+
+  polyfillGlobal(
+    'TaskAttributionTiming',
+    () => require('../webapis/performance/LongTasks').TaskAttributionTiming,
+  );
+
+  polyfillGlobal(
+    'PerformanceLongTaskTiming',
+    () => require('../webapis/performance/LongTasks').PerformanceLongTaskTiming,
+  );
+}

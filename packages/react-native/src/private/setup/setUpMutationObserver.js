@@ -10,7 +10,17 @@
 
 import {polyfillGlobal} from '../../../Libraries/Utilities/PolyfillFunctions';
 
-polyfillGlobal(
-  'MutationObserver',
-  () => require('../webapis/mutationobserver/MutationObserver').default,
-);
+let initialized = false;
+
+export default function setUpMutationObserver() {
+  if (initialized) {
+    return;
+  }
+
+  initialized = true;
+
+  polyfillGlobal(
+    'MutationObserver',
+    () => require('../webapis/mutationobserver/MutationObserver').default,
+  );
+}
