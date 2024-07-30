@@ -3170,10 +3170,15 @@ public final class com/facebook/react/modules/core/ExceptionsManagerModule : com
 public final class com/facebook/react/modules/core/ExceptionsManagerModule$Companion {
 }
 
-public class com/facebook/react/modules/core/HeadlessJsTaskSupportModule : com/facebook/fbreact/specs/NativeHeadlessJsTaskSupportSpec {
+public final class com/facebook/react/modules/core/HeadlessJsTaskSupportModule : com/facebook/fbreact/specs/NativeHeadlessJsTaskSupportSpec {
+	public static final field Companion Lcom/facebook/react/modules/core/HeadlessJsTaskSupportModule$Companion;
+	public static final field NAME Ljava/lang/String;
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
 	public fun notifyTaskFinished (D)V
 	public fun notifyTaskRetry (DLcom/facebook/react/bridge/Promise;)V
+}
+
+public final class com/facebook/react/modules/core/HeadlessJsTaskSupportModule$Companion {
 }
 
 public abstract interface class com/facebook/react/modules/core/JSTimers : com/facebook/react/bridge/JavaScriptModule {

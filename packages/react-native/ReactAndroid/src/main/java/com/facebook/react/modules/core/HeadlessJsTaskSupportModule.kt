@@ -1,0 +1,54 @@
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+package com.facebook.react.modules.core
+
+import com.facebook.common.logging.FLog
+import com.facebook.react.bridge.Promise
+import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.jstasks.HeadlessJsTaskContext
+import com.facebook.react.module.annotations.ReactModule
+
+/**
+ * Simple native module that allows JS to notify native of having completed some task work, so that
+ * it can e.g. release any resources, stop timers etc.
+ */
+@ReactModule(name = com.facebook.fbreact.specs.NativeHeadlessJsTaskSupportSpec.NAME)
+public class HeadlessJsTaskSupportModule(reactContext: ReactApplicationContext?) :
+    com.facebook.fbreact.specs.NativeHeadlessJsTaskSupportSpec(reactContext) {
+  override fun notifyTaskRetry(taskIdDouble: Double, promise: Promise) {
+    val taskId = taskIdDouble.toInt()
+    val headlessJsTaskContext = HeadlessJsTaskContext.getInstance(getReactApplicationContext())
+    if (headlessJsTaskContext.isTaskRunning(taskId)) {
+      val retryPosted = headlessJsTaskContext.retryTask(taskId)
+      promise.resolve(retryPosted)
+    } else {
+      FLog.w(
+          HeadlessJsTaskSupportModule::class.java,
+          "Tried to retry non-active task with id %d. Did it time out?",
+          taskId)
+      promise.resolve(false)
+    }
+  }
+
+  override fun notifyTaskFinished(taskIdDouble: Double) {
+    val taskId = taskIdDouble.toInt()
+    val headlessJsTaskContext = HeadlessJsTaskContext.getInstance(getReactApplicationContext())
+    if (headlessJsTaskContext.isTaskRunning(taskId)) {
+      headlessJsTaskContext.finishTask(taskId)
+    } else {
+      FLog.w(
+          HeadlessJsTaskSupportModule::class.java,
+          "Tried to finish non-active task with id %d. Did it time out?",
+          taskId)
+    }
+  }
+
+  public companion object {
+    public const val NAME: String = com.facebook.fbreact.specs.NativeHeadlessJsTaskSupportSpec.NAME
+  }
+}
