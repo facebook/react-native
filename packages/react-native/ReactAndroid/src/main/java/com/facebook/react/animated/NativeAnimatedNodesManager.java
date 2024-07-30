@@ -563,9 +563,9 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
     ListIterator<EventAnimationDriver> it = mEventDrivers.listIterator();
     while (it.hasNext()) {
       EventAnimationDriver driver = it.next();
-      if (eventName.equals(driver.mEventName)
-          && viewTag == driver.mViewTag
-          && animatedValueTag == driver.mValueNode.tag) {
+      if (eventName.equals(driver.eventName)
+          && viewTag == driver.viewTag
+          && animatedValueTag == driver.valueNode.tag) {
         it.remove();
         break;
       }
@@ -609,11 +609,11 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
       boolean foundAtLeastOneDriver = false;
       Event.EventAnimationDriverMatchSpec matchSpec = event.getEventAnimationDriverMatchSpec();
       for (EventAnimationDriver driver : mEventDrivers) {
-        if (matchSpec.match(driver.mViewTag, driver.mEventName)) {
+        if (matchSpec.match(driver.viewTag, driver.eventName)) {
           foundAtLeastOneDriver = true;
-          stopAnimationsForNode(driver.mValueNode);
+          stopAnimationsForNode(driver.valueNode);
           event.dispatchModern(driver);
-          mRunUpdateNodeList.add(driver.mValueNode);
+          mRunUpdateNodeList.add(driver.valueNode);
         }
       }
 
@@ -704,10 +704,10 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
     while (it.hasNext()) {
       EventAnimationDriver driver = it.next();
       if (driver != null) {
-        if (eventName.equals(driver.mEventName) && tag == driver.mViewTag) {
-          tags.add(driver.mViewTag);
-          if (driver.mValueNode != null && driver.mValueNode.children != null) {
-            for (AnimatedNode node : driver.mValueNode.children) {
+        if (eventName.equals(driver.eventName) && tag == driver.viewTag) {
+          tags.add(driver.viewTag);
+          if (driver.valueNode != null && driver.valueNode.children != null) {
+            for (AnimatedNode node : driver.valueNode.children) {
               tags.add(node.tag);
             }
           }
