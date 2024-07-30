@@ -5,21 +5,21 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.modules.core;
-
-import android.app.Activity;
-
+package com.facebook.react.modules.core
 /**
  * Interface used by activities to delegate permission request results. Classes implementing this
  * class will be notified whenever there's a result for a permission request.
  */
-public interface PermissionListener {
-
+public fun interface PermissionListener {
   /**
-   * Method called whenever there's a result to a permission request. It is forwarded from {@link
-   * Activity#onRequestPermissionsResult}.
+   * Method called whenever there's a result to a permission request. It is forwarded from
+   * [Activity.onRequestPermissionsResult].
    *
    * @return boolean Whether the PermissionListener can be removed.
    */
-  boolean onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults);
+  public fun onRequestPermissionsResult(
+      requestCode: Int,
+      permissions: Array<String>,
+      grantResults: IntArray
+  ): Boolean
 }
