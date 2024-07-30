@@ -25,41 +25,6 @@
 
 @class RCTRedBoxController;
 
-@interface UIButton (RCTRedBox)
-
-@property (nonatomic) RCTRedBoxButtonPressHandler rct_handler;
-
-- (void)rct_addBlock:(RCTRedBoxButtonPressHandler)handler forControlEvents:(UIControlEvents)controlEvents;
-
-@end
-
-@implementation UIButton (RCTRedBox)
-
-- (RCTRedBoxButtonPressHandler)rct_handler
-{
-  return objc_getAssociatedObject(self, @selector(rct_handler));
-}
-
-- (void)setRct_handler:(RCTRedBoxButtonPressHandler)rct_handler
-{
-  objc_setAssociatedObject(self, @selector(rct_handler), rct_handler, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-- (void)rct_callBlock
-{
-  if (self.rct_handler) {
-    self.rct_handler();
-  }
-}
-
-- (void)rct_addBlock:(RCTRedBoxButtonPressHandler)handler forControlEvents:(UIControlEvents)controlEvents
-{
-  self.rct_handler = handler;
-  [self addTarget:self action:@selector(rct_callBlock) forControlEvents:controlEvents];
-}
-
-@end
-
 @protocol RCTRedBoxControllerActionDelegate <NSObject>
 
 - (void)redBoxController:(RCTRedBoxController *)redBoxController openStackFrameInEditor:(RCTJSStackFrame *)stackFrame;
@@ -193,7 +158,7 @@
   ]];
 }
 
-- (UIButton *)redBoxButton:(NSString *)title
+- (UIButton *) redBoxButton:(NSString *)title
     accessibilityIdentifier:(NSString *)accessibilityIdentifier
                    selector:(SEL)selector
                       block:(RCTRedBoxButtonPressHandler)block
@@ -211,8 +176,6 @@
   [button setTitleColor:[UIColor colorWithWhite:1 alpha:0.5] forState:UIControlStateHighlighted];
   if (selector) {
     [button addTarget:self action:selector forControlEvents:UIControlEventTouchUpInside];
-  } else if (block) {
-    [button rct_addBlock:block forControlEvents:UIControlEventTouchUpInside];
   }
   return button;
 }
