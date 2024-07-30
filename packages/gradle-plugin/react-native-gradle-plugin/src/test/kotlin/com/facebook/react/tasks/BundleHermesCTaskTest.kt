@@ -213,7 +213,7 @@ class BundleHermesCTaskTest {
 
     val bundleCommand = task.getBundleCommand(bundleFile, sourceMapFile)
 
-    assertThat(bundleCommand[0]).isEqualTo("node")
+    assertThat(bundleCommand[0]).containsExactly("node")
     assertThat(bundleCommand[1]).isEqualTo("arg1")
     assertThat(bundleCommand[2]).isEqualTo("arg2")
     assertThat(bundleCommand[3]).isEqualTo(cliFile.absolutePath)
@@ -265,7 +265,7 @@ class BundleHermesCTaskTest {
 
     val bundleCommand = task.getBundleCommand(bundleFile, sourceMapFile)
 
-    assertThat(bundleCommand[0]).isEqualTo("cmd")
+    assertThat(bundleCommand[0]).containsExactly("cmd")
     assertThat(bundleCommand[1]).isEqualTo("/c")
     assertThat(bundleCommand[2]).isEqualTo("node")
     assertThat(bundleCommand[3]).isEqualTo("arg1")
@@ -332,7 +332,7 @@ class BundleHermesCTaskTest {
 
     val hermesCommand = task.getHermescCommand(customHermesc, bytecodeFile, bundleFile)
 
-    assertThat(hermesCommand[0]).isEqualTo(customHermesc)
+    assertThat(hermesCommand[0]).containsExactly(customHermesc)
     assertThat(hermesCommand[1]).isEqualTo("-emit-binary")
     assertThat(hermesCommand[2]).isEqualTo("-max-diagnostic-width=80")
     assertThat(hermesCommand[3]).isEqualTo("-out")
@@ -356,7 +356,7 @@ class BundleHermesCTaskTest {
 
     val hermesCommand = task.getHermescCommand(customHermesc, bytecodeFile, bundleFile)
 
-    assertThat(hermesCommand[0]).isEqualTo("cmd")
+    assertThat(hermesCommand[0]).containsExactly("cmd")
     assertThat(hermesCommand[1]).isEqualTo("/c")
     assertThat(hermesCommand[2]).isEqualTo(customHermesc)
     assertThat(hermesCommand[3]).isEqualTo("-emit-binary")
@@ -384,7 +384,7 @@ class BundleHermesCTaskTest {
     val composeSourcemapCommand =
         task.getComposeSourceMapsCommand(composeSourceMapsFile, packagerMap, compilerMap, outputMap)
 
-    assertThat(composeSourcemapCommand[0]).isEqualTo("node")
+    assertThat(composeSourcemapCommand[0]).containsExactly("node")
     assertThat(composeSourcemapCommand[1]).isEqualTo("arg1")
     assertThat(composeSourcemapCommand[2]).isEqualTo("arg2")
     assertThat(composeSourcemapCommand[3]).isEqualTo(composeSourceMapsFile.absolutePath)
@@ -412,7 +412,7 @@ class BundleHermesCTaskTest {
     val composeSourcemapCommand =
         task.getComposeSourceMapsCommand(composeSourceMapsFile, packagerMap, compilerMap, outputMap)
 
-    assertThat(composeSourcemapCommand[0]).isEqualTo("cmd")
+    assertThat(composeSourcemapCommand[0]).containsExactly("cmd")
     assertThat(composeSourcemapCommand[1]).isEqualTo("/c")
     assertThat(composeSourcemapCommand[2]).isEqualTo("node")
     assertThat(composeSourcemapCommand[3]).isEqualTo("arg1")
