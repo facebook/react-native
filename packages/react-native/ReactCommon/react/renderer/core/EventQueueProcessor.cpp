@@ -58,6 +58,8 @@ void EventQueueProcessor::flushEvents(
           case RawEvent::Category::Unspecified:
             return hasContinuousEventStarted_ ? ReactEventPriority::Continuous
                                               : ReactEventPriority::Default;
+          default:
+            return ReactEventPriority::Default;
         }
       }();
     } else {

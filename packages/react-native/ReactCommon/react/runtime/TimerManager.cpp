@@ -47,6 +47,8 @@ inline const char* getTimerSourceName(TimerSource source) {
       return "setInterval";
     case TimerSource::RequestAnimationFrame:
       return "requestAnimationFrame";
+    default:
+      return "unknown";
   }
 }
 
