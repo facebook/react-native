@@ -96,7 +96,8 @@ declare var File: {
 
 type FormDataValue =
   | string
-  | {name?: string | undefined; type?: string | undefined; uri: string};
+  | {name?: string | undefined; type?: string | undefined; uri: string}
+  | {type?: string | undefined; string: string};
 
 type FormDataPart =
   | {
