@@ -22,6 +22,7 @@ import com.facebook.react.uimanager.drawable.CompositeBackgroundDrawable
 import com.facebook.react.uimanager.drawable.InsetBoxShadowDrawable
 import com.facebook.react.uimanager.drawable.OutsetBoxShadowDrawable
 import com.facebook.react.uimanager.style.BorderRadiusProp
+import com.facebook.react.uimanager.style.BorderRadiusStyle
 import com.facebook.react.uimanager.style.BorderStyle
 import com.facebook.react.uimanager.style.BoxShadow
 import com.facebook.react.uimanager.style.LogicalEdge
@@ -74,7 +75,17 @@ public object BackgroundStyleApplicator {
       corner: BorderRadiusProp,
       // TODO: LengthPercentage silently converts from pixels to DIPs before here already
       radius: LengthPercentage?
-  ): Unit = ensureCSSBackground(view).setBorderRadius(corner, radius)
+  ): Unit {
+    ensureCSSBackground(view).setBorderRadius(corner, radius)
+
+    if (Build.VERSION.SDK_INT >= 31) {
+      getCompositeBackgroundDrawable(view)?.outerShadows?.forEach { shadow ->
+        val outsetShadow = shadow as OutsetBoxShadowDrawable
+        outsetShadow.borderRadius = outsetShadow.borderRadius ?: BorderRadiusStyle()
+        outsetShadow.borderRadius?.set(corner, radius)
+      }
+    }
+  }
 
   @JvmStatic
   public fun getBorderRadius(view: View, corner: BorderRadiusProp): LengthPercentage? =
@@ -116,7 +127,7 @@ public object BackgroundStyleApplicator {
         outerShadows.add(
             OutsetBoxShadowDrawable(
                 context = view.context,
-                background = ensureCSSBackground(view),
+                borderRadius = ensureCSSBackground(view).borderRadius,
                 shadowColor = color,
                 offsetX = offsetX,
                 offsetY = offsetY,
@@ -176,6 +187,9 @@ public object BackgroundStyleApplicator {
     return compositeDrawable
   }
 
+  private fun getCompositeBackgroundDrawable(view: View): CompositeBackgroundDrawable? =
+      view.background as? CompositeBackgroundDrawable
+
   private fun ensureCSSBackground(view: View): CSSBackgroundDrawable {
     val compositeBackgroundDrawable = ensureCompositeBackgroundDrawable(view)
     if (compositeBackgroundDrawable.cssBackground != null) {
@@ -187,10 +201,6 @@ public object BackgroundStyleApplicator {
     }
   }
 
-  private fun getCSSBackground(view: View): CSSBackgroundDrawable? {
-    if (view.background is CompositeBackgroundDrawable) {
-      return (view.background as CompositeBackgroundDrawable).cssBackground
-    }
-    return null
-  }
+  private fun getCSSBackground(view: View): CSSBackgroundDrawable? =
+      getCompositeBackgroundDrawable(view)?.cssBackground
 }
