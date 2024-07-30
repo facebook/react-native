@@ -7,49 +7,23 @@
 
 package com.facebook.react.uimanager.drawable
 
-import com.facebook.react.uimanager.LengthPercentage
-import com.facebook.react.uimanager.LengthPercentageType
-import com.facebook.react.uimanager.style.BorderRadiusProp
-import com.facebook.react.uimanager.style.BorderRadiusStyle
+import kotlin.math.abs
+import kotlin.math.pow
 
-internal fun getShadowBorderRadii(
+/**
+ * Manipulates a corner radius of the shadow-shape according to the radius of the original
+ * background, and the applied spread (negative, if inset). See algorithm at
+ * https://drafts.csswg.org/css-backgrounds/#shadow-shape
+ */
+internal fun adjustRadiusForSpread(
+    radius: Float,
     spread: Float,
-    backgroundBorderRadii: BorderRadiusStyle,
-    width: Float,
-    height: Float,
-): BorderRadiusStyle {
-  val adjustedBorderRadii = BorderRadiusStyle()
-  val borderRadiusProps = BorderRadiusProp.values()
-
-  borderRadiusProps.forEach { borderRadiusProp ->
-    val borderRadius = backgroundBorderRadii.get(borderRadiusProp)
-    adjustedBorderRadii.set(
-        borderRadiusProp,
-        if (borderRadius == null) null
-        else adjustedBorderRadius(spread, borderRadius, width, height))
-  }
-
-  return adjustedBorderRadii
-}
-
-// See https://drafts.csswg.org/css-backgrounds/#shadow-shape
-private fun adjustedBorderRadius(
-    spread: Float,
-    backgroundBorderRadius: LengthPercentage?,
-    width: Float,
-    height: Float,
-): LengthPercentage? {
-  if (backgroundBorderRadius == null) {
-    return null
-  }
-  var adjustment = spread
-  val backgroundBorderRadiusValue = backgroundBorderRadius.resolve(width, height)
-
-  if (backgroundBorderRadiusValue < Math.abs(spread)) {
-    val r = backgroundBorderRadiusValue / Math.abs(spread)
-    val p = Math.pow(r - 1.0, 3.0)
-    adjustment *= 1.0f + p.toFloat()
-  }
-
-  return LengthPercentage(backgroundBorderRadiusValue + adjustment, LengthPercentageType.POINT)
+): Float {
+  val spreadMultiplier =
+      if (radius < abs(spread)) {
+        1 + (radius / abs(spread) - 1).pow(3)
+      } else {
+        1f
+      }
+  return (radius + abs(spread) * spreadMultiplier).coerceAtLeast(0f)
 }
