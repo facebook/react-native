@@ -101,7 +101,7 @@ class GenerateCodegenSchemaTaskTest {
 
     task.wipeOutputDir()
 
-    assertThat(File(tempFolder.root, "output").exists()).isTrue()
+    assertThat(File(tempFolder.root, "output")).exists()
     assertThat(File(tempFolder.root, "output").listFiles()).isEmpty()
   }
 
@@ -135,7 +135,7 @@ class GenerateCodegenSchemaTaskTest {
 
     task.setupCommandLine()
 
-    assertThat(task.commandLine.toMutableList()).isEqualTo(
+    assertThat(task.commandLine).containsExactly(
         listOf(
             "node",
             "--verbose",
@@ -168,7 +168,7 @@ class GenerateCodegenSchemaTaskTest {
 
     task.setupCommandLine()
 
-    assertThat(task.commandLine.toMutableList()).isEqualTo(
+    assertThat(task.commandLine).containsExactly(
         listOf(
             "cmd",
             "/c",
