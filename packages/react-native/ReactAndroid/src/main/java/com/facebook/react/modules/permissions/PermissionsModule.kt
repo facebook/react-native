@@ -51,7 +51,7 @@ public class PermissionsModule(reactContext: ReactApplicationContext?) :
    * [permissionAwareActivity.shouldShowRequestPermissionRationale].
    */
   override public fun shouldShowRequestPermissionRationale(
-      permission: String?,
+      permission: String,
       promise: Promise
   ): Unit {
     try {
