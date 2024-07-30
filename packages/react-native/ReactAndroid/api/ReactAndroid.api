@@ -7190,11 +7190,14 @@ public class com/facebook/react/views/scroll/ReactScrollViewManager : com/facebo
 	public synthetic fun scrollTo (Ljava/lang/Object;Lcom/facebook/react/views/scroll/ReactScrollViewCommandHelper$ScrollToCommandData;)V
 	public fun scrollToEnd (Lcom/facebook/react/views/scroll/ReactScrollView;Lcom/facebook/react/views/scroll/ReactScrollViewCommandHelper$ScrollToEndCommandData;)V
 	public synthetic fun scrollToEnd (Ljava/lang/Object;Lcom/facebook/react/views/scroll/ReactScrollViewCommandHelper$ScrollToEndCommandData;)V
+	public synthetic fun setBackgroundColor (Landroid/view/View;I)V
+	public fun setBackgroundColor (Lcom/facebook/react/views/scroll/ReactScrollView;I)V
 	public fun setBorderColor (Lcom/facebook/react/views/scroll/ReactScrollView;ILjava/lang/Integer;)V
 	public fun setBorderRadius (Lcom/facebook/react/views/scroll/ReactScrollView;IF)V
 	public fun setBorderStyle (Lcom/facebook/react/views/scroll/ReactScrollView;Ljava/lang/String;)V
 	public fun setBorderWidth (Lcom/facebook/react/views/scroll/ReactScrollView;IF)V
 	public fun setBottomFillColor (Lcom/facebook/react/views/scroll/ReactScrollView;I)V
+	public fun setBoxShadow (Lcom/facebook/react/views/scroll/ReactScrollView;Lcom/facebook/react/bridge/ReadableArray;)V
 	public fun setContentOffset (Lcom/facebook/react/views/scroll/ReactScrollView;Lcom/facebook/react/bridge/ReadableMap;)V
 	public fun setDecelerationRate (Lcom/facebook/react/views/scroll/ReactScrollView;F)V
 	public fun setDisableIntervalMomentum (Lcom/facebook/react/views/scroll/ReactScrollView;Z)V
