@@ -35,6 +35,9 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic, strong, readonly) UIScrollView *scrollView;
 
+/** Focus area of newly-activated text input relative to the window to compare against UIKeyboardFrameBegin/End */
+@property (nonatomic, assign) CGRect firstResponderFocus;
+
 /*
  * Returns the subview of the scroll view that the component uses to mount all subcomponents into. That's useful to
  * separate component views from auxiliary views to be able to reliably implement pull-to-refresh- and RTL-related
@@ -58,5 +61,12 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RCTScrollViewComponentView (ScrollableProtocol) <RCTScrollableProtocol>
 
 @end
+
+@interface UIView (RCTScrollViewComponentView)
+
+- (void)reactUpdateResponderOffsetForScrollView:(RCTScrollViewComponentView *)scrollView;
+
+@end
+
 
 NS_ASSUME_NONNULL_END
