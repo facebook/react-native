@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b760e0d444c2376238f347133993c799>>
+ * @generated SignedSource<<71e34bc8db537e0b891b1fea9ffc3475>>
  */
 
 /**
@@ -51,6 +51,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableReportEventPaintTime();
   bool enableSynchronousStateUpdates();
   bool enableUIConsistency();
+  bool enableViewRecycling();
   bool excludeYogaFromRawProps();
   bool fetchImagesInViewPreallocation();
   bool fixIncorrectScrollViewStateUpdateOnAndroid();
@@ -84,7 +85,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 43> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 44> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> allowCollapsableChildren_;
@@ -106,6 +107,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableReportEventPaintTime_;
   std::atomic<std::optional<bool>> enableSynchronousStateUpdates_;
   std::atomic<std::optional<bool>> enableUIConsistency_;
+  std::atomic<std::optional<bool>> enableViewRecycling_;
   std::atomic<std::optional<bool>> excludeYogaFromRawProps_;
   std::atomic<std::optional<bool>> fetchImagesInViewPreallocation_;
   std::atomic<std::optional<bool>> fixIncorrectScrollViewStateUpdateOnAndroid_;

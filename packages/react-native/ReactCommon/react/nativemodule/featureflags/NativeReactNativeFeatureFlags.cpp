@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ae1383b39b294235ff0bf0447281431d>>
+ * @generated SignedSource<<b64ec98268a5f4c19e3c6edaf93e7298>>
  */
 
 /**
@@ -135,6 +135,11 @@ bool NativeReactNativeFeatureFlags::enableSynchronousStateUpdates(
 bool NativeReactNativeFeatureFlags::enableUIConsistency(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableUIConsistency();
+}
+
+bool NativeReactNativeFeatureFlags::enableViewRecycling(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableViewRecycling();
 }
 
 bool NativeReactNativeFeatureFlags::excludeYogaFromRawProps(

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4182ca268eb74ffa52295cefb2c51f50>>
+ * @generated SignedSource<<6c0276095ccff4eb927141ce3b2c5469>>
  */
 
 /**
@@ -88,6 +88,9 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool enableUIConsistency(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
+  static bool enableViewRecycling(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool excludeYogaFromRawProps(

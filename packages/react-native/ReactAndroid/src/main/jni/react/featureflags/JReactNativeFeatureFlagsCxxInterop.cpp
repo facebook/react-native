@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<107da3f94e88bcd11b94dd62a71f4556>>
+ * @generated SignedSource<<8c7af40ab6ea0f4ea88a795d5884a07b>>
  */
 
 /**
@@ -156,6 +156,12 @@ class ReactNativeFeatureFlagsProviderHolder
   bool enableUIConsistency() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableUIConsistency");
+    return method(javaProvider_);
+  }
+
+  bool enableViewRecycling() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableViewRecycling");
     return method(javaProvider_);
   }
 
@@ -401,6 +407,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableUIConsistency(
   return ReactNativeFeatureFlags::enableUIConsistency();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::enableViewRecycling(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableViewRecycling();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::excludeYogaFromRawProps(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::excludeYogaFromRawProps();
@@ -593,6 +604,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableUIConsistency",
         JReactNativeFeatureFlagsCxxInterop::enableUIConsistency),
+      makeNativeMethod(
+        "enableViewRecycling",
+        JReactNativeFeatureFlagsCxxInterop::enableViewRecycling),
       makeNativeMethod(
         "excludeYogaFromRawProps",
         JReactNativeFeatureFlagsCxxInterop::excludeYogaFromRawProps),
