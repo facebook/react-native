@@ -5,6 +5,7 @@
   "license": "MIT",
   "scripts": {
     "android": "cd packages/rn-tester && npm run android",
+    "api-extractor": "api-extractor run --local --verbose -c packages/react-native/api-extractor.json",
     "build-android": "./gradlew :packages:react-native:ReactAndroid:build",
     "build": "node ./scripts/build/build.js",
     "clang-format": "clang-format -i --glob=*/**/*.{h,cpp,m,mm}",
@@ -105,5 +106,8 @@
   },
   "resolutions": {
     "react-is": "19.0.0-rc-fb9a90fa48-20240614"
+  },
+  "dependencies": {
+    "@microsoft/api-extractor": "^7.47.3"
   }
 }
