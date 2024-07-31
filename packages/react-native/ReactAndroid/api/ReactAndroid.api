@@ -6576,34 +6576,35 @@ public class com/facebook/react/views/image/ReactImageManager$$PropsSetter : com
 public final class com/facebook/react/views/image/ReactImageManager$Companion {
 }
 
-public class com/facebook/react/views/image/ReactImageView : com/facebook/drawee/view/GenericDraweeView {
+public final class com/facebook/react/views/image/ReactImageView : com/facebook/drawee/view/GenericDraweeView {
+	public static final field Companion Lcom/facebook/react/views/image/ReactImageView$Companion;
 	public static final field REMOTE_IMAGE_FADE_DURATION_MS I
 	public fun <init> (Landroid/content/Context;Lcom/facebook/drawee/controller/AbstractDraweeControllerBuilder;Lcom/facebook/react/views/image/GlobalImageLoadListener;Ljava/lang/Object;)V
-	public fun getImageSource ()Lcom/facebook/react/views/imagehelper/ImageSource;
 	public fun hasOverlappingRendering ()Z
-	public fun maybeUpdateView ()V
+	public final fun maybeUpdateView ()V
 	public fun onDraw (Landroid/graphics/Canvas;)V
-	protected fun onSizeChanged (IIII)V
 	public fun setBackgroundColor (I)V
-	public fun setBlurRadius (F)V
-	public fun setBorderColor (I)V
-	public fun setBorderRadius (F)V
-	public fun setBorderRadius (FI)V
-	public fun setBorderWidth (F)V
-	public fun setControllerListener (Lcom/facebook/drawee/controller/ControllerListener;)V
-	public fun setDefaultSource (Ljava/lang/String;)V
-	public fun setFadeDuration (I)V
-	public fun setHeaders (Lcom/facebook/react/bridge/ReadableMap;)V
-	public fun setLoadingIndicatorSource (Ljava/lang/String;)V
-	public fun setOverlayColor (I)V
-	public fun setProgressiveRenderingEnabled (Z)V
-	public fun setResizeMethod (Lcom/facebook/react/views/image/ImageResizeMethod;)V
-	public fun setResizeMultiplier (F)V
-	public fun setScaleType (Lcom/facebook/drawee/drawable/ScalingUtils$ScaleType;)V
-	public fun setShouldNotifyLoadEvents (Z)V
-	public fun setSource (Lcom/facebook/react/bridge/ReadableArray;)V
-	public fun setTileMode (Landroid/graphics/Shader$TileMode;)V
-	public fun updateCallerContext (Ljava/lang/Object;)V
+	public final fun setBlurRadius (F)V
+	public final fun setBorderColor (I)V
+	public final fun setBorderRadius (F)V
+	public final fun setBorderRadius (FI)V
+	public final fun setBorderWidth (F)V
+	public final fun setDefaultSource (Ljava/lang/String;)V
+	public final fun setFadeDuration (I)V
+	public final fun setHeaders (Lcom/facebook/react/bridge/ReadableMap;)V
+	public final fun setLoadingIndicatorSource (Ljava/lang/String;)V
+	public final fun setOverlayColor (I)V
+	public final fun setProgressiveRenderingEnabled (Z)V
+	public final fun setResizeMethod (Lcom/facebook/react/views/image/ImageResizeMethod;)V
+	public final fun setResizeMultiplier (F)V
+	public final fun setScaleType (Lcom/facebook/drawee/drawable/ScalingUtils$ScaleType;)V
+	public final fun setShouldNotifyLoadEvents (Z)V
+	public final fun setSource (Lcom/facebook/react/bridge/ReadableArray;)V
+	public final fun setTileMode (Landroid/graphics/Shader$TileMode;)V
+	public final fun updateCallerContext (Ljava/lang/Object;)V
+}
+
+public final class com/facebook/react/views/image/ReactImageView$Companion {
 }
 
 public final class com/facebook/react/views/imagehelper/ImageSource {
