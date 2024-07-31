@@ -213,30 +213,32 @@ class BundleHermesCTaskTest {
 
     val bundleCommand = task.getBundleCommand(bundleFile, sourceMapFile)
 
-    assertThat(bundleCommand[0]).containsExactly("node")
-    assertThat(bundleCommand[1]).isEqualTo("arg1")
-    assertThat(bundleCommand[2]).isEqualTo("arg2")
-    assertThat(bundleCommand[3]).isEqualTo(cliFile.absolutePath)
-    assertThat(bundleCommand[4]).isEqualTo("bundle")
-    assertThat(bundleCommand[5]).isEqualTo("--platform")
-    assertThat(bundleCommand[6]).isEqualTo("android")
-    assertThat(bundleCommand[7]).isEqualTo("--dev")
-    assertThat(bundleCommand[8]).isEqualTo("true")
-    assertThat(bundleCommand[9]).isEqualTo("--reset-cache")
-    assertThat(bundleCommand[10]).isEqualTo("--entry-file")
-    assertThat(bundleCommand[11]).isEqualTo(entryFile.absolutePath)
-    assertThat(bundleCommand[12]).isEqualTo("--bundle-output")
-    assertThat(bundleCommand[13]).isEqualTo(bundleFile.absolutePath)
-    assertThat(bundleCommand[14]).isEqualTo("--assets-dest")
-    assertThat(bundleCommand[15]).isEqualTo(resourcesDir.absolutePath)
-    assertThat(bundleCommand[16]).isEqualTo("--sourcemap-output")
-    assertThat(bundleCommand[17]).isEqualTo(sourceMapFile.absolutePath)
-    assertThat(bundleCommand[18]).isEqualTo("--config")
-    assertThat(bundleCommand[19]).isEqualTo(bundleConfig.absolutePath)
-    assertThat(bundleCommand[20]).isEqualTo("--minify")
-    assertThat(bundleCommand[21]).isEqualTo("true")
-    assertThat(bundleCommand[22]).isEqualTo("--read-global-cache")
-    assertThat(bundleCommand[23]).isEqualTo("--verbose")
+    assertThat(bundleCommand).containsExactly(
+      "node",
+      "arg1",
+      "arg2",
+      cliFile.absolutePath,
+      "bundle",
+      "--platform",
+      "android",
+      "--dev",
+      "true",
+      "--reset-cache",
+      "--entry-file",
+      entryFile.absolutePath,
+      "--bundle-output",
+      bundleFile.absolutePath,
+      "--assets-dest",
+      resourcesDir.absolutePath,
+      "--sourcemap-output",
+      sourceMapFile.absolutePath,
+      "--config",
+      bundleConfig.absolutePath,
+      "--minify",
+      "true",
+      "--read-global-cache",
+      "--verbose"
+    )
     assertThat(bundleCommand.size).isEqualTo(24)
   }
 
@@ -265,32 +267,34 @@ class BundleHermesCTaskTest {
 
     val bundleCommand = task.getBundleCommand(bundleFile, sourceMapFile)
 
-    assertThat(bundleCommand[0]).containsExactly("cmd")
-    assertThat(bundleCommand[1]).isEqualTo("/c")
-    assertThat(bundleCommand[2]).isEqualTo("node")
-    assertThat(bundleCommand[3]).isEqualTo("arg1")
-    assertThat(bundleCommand[4]).isEqualTo("arg2")
-    assertThat(bundleCommand[5]).isEqualTo(cliFile.relativeTo(tempFolder.root).path)
-    assertThat(bundleCommand[6]).isEqualTo("bundle")
-    assertThat(bundleCommand[7]).isEqualTo("--platform")
-    assertThat(bundleCommand[8]).isEqualTo("android")
-    assertThat(bundleCommand[9]).isEqualTo("--dev")
-    assertThat(bundleCommand[10]).isEqualTo("true")
-    assertThat(bundleCommand[11]).isEqualTo("--reset-cache")
-    assertThat(bundleCommand[12]).isEqualTo("--entry-file")
-    assertThat(bundleCommand[13]).isEqualTo(entryFile.relativeTo(tempFolder.root).path)
-    assertThat(bundleCommand[14]).isEqualTo("--bundle-output")
-    assertThat(bundleCommand[15]).isEqualTo(bundleFile.relativeTo(tempFolder.root).path)
-    assertThat(bundleCommand[16]).isEqualTo("--assets-dest")
-    assertThat(bundleCommand[17]).isEqualTo(resourcesDir.relativeTo(tempFolder.root).path)
-    assertThat(bundleCommand[18]).isEqualTo("--sourcemap-output")
-    assertThat(bundleCommand[19]).isEqualTo(sourceMapFile.relativeTo(tempFolder.root).path)
-    assertThat(bundleCommand[20]).isEqualTo("--config")
-    assertThat(bundleCommand[21]).isEqualTo(bundleConfig.relativeTo(tempFolder.root).path)
-    assertThat(bundleCommand[22]).isEqualTo("--minify")
-    assertThat(bundleCommand[23]).isEqualTo("true")
-    assertThat(bundleCommand[24]).isEqualTo("--read-global-cache")
-    assertThat(bundleCommand[25]).isEqualTo("--verbose")
+    assertThat(bundleCommand).containsExactly(
+      "cmd",
+      "/c",
+      "node",
+      "arg1",
+      "arg2",
+      cliFile.relativeTo(tempFolder.root).path,
+      "bundle",
+      "--platform",
+      "android",
+      "--dev",
+      "true",
+      "--reset-cache",
+      "--entry-file",
+      entryFile.relativeTo(tempFolder.root).path,
+      "--bundle-output",
+      bundleFile.relativeTo(tempFolder.root).path,
+      "--assets-dest",
+      resourcesDir.relativeTo(tempFolder.root).path,
+      "--sourcemap-output",
+      sourceMapFile.relativeTo(tempFolder.root).path,
+      "--config",
+      bundleConfig.relativeTo(tempFolder.root).path,
+      "--minify",
+      "true",
+      "--read-global-cache",
+      "--verbose"
+    )
     assertThat(bundleCommand.size).isEqualTo(26)
   }
 
@@ -332,13 +336,15 @@ class BundleHermesCTaskTest {
 
     val hermesCommand = task.getHermescCommand(customHermesc, bytecodeFile, bundleFile)
 
-    assertThat(hermesCommand[0]).containsExactly(customHermesc)
-    assertThat(hermesCommand[1]).isEqualTo("-emit-binary")
-    assertThat(hermesCommand[2]).isEqualTo("-max-diagnostic-width=80")
-    assertThat(hermesCommand[3]).isEqualTo("-out")
-    assertThat(hermesCommand[4]).isEqualTo(bytecodeFile.absolutePath)
-    assertThat(hermesCommand[5]).isEqualTo(bundleFile.absolutePath)
-    assertThat(hermesCommand[6]).isEqualTo("my-custom-hermes-flag")
+    assertThat(hermesCommand).containsExactly(
+      customHermesc,
+      "-emit-binary",
+      "-max-diagnostic-width=80",
+      "-out",
+      bytecodeFile.absolutePath,
+      bundleFile.absolutePath,
+      "my-custom-hermes-flag"
+      )
     assertThat(hermesCommand.size).isEqualTo(7)
   }
 
@@ -356,15 +362,17 @@ class BundleHermesCTaskTest {
 
     val hermesCommand = task.getHermescCommand(customHermesc, bytecodeFile, bundleFile)
 
-    assertThat(hermesCommand[0]).containsExactly("cmd")
-    assertThat(hermesCommand[1]).isEqualTo("/c")
-    assertThat(hermesCommand[2]).isEqualTo(customHermesc)
-    assertThat(hermesCommand[3]).isEqualTo("-emit-binary")
-    assertThat(hermesCommand[4]).isEqualTo("-max-diagnostic-width=80")
-    assertThat(hermesCommand[5]).isEqualTo("-out")
-    assertThat(hermesCommand[6]).isEqualTo(bytecodeFile.relativeTo(tempFolder.root).path)
-    assertThat(hermesCommand[7]).isEqualTo(bundleFile.relativeTo(tempFolder.root).path)
-    assertThat(hermesCommand[8]).isEqualTo("my-custom-hermes-flag")
+    assertThat(hermesCommand).containsExactly(
+      "cmd",
+      "/c",
+      customHermesc,
+      "-emit-binary",
+      "-max-diagnostic-width=80",
+      "-out",
+      bytecodeFile.relativeTo(tempFolder.root).path,
+      bundleFile.relativeTo(tempFolder.root).path,
+      "my-custom-hermes-flag"
+    )
     assertThat(hermesCommand.size).isEqualTo(9)
   }
 
@@ -384,14 +392,16 @@ class BundleHermesCTaskTest {
     val composeSourcemapCommand =
         task.getComposeSourceMapsCommand(composeSourceMapsFile, packagerMap, compilerMap, outputMap)
 
-    assertThat(composeSourcemapCommand[0]).containsExactly("node")
-    assertThat(composeSourcemapCommand[1]).isEqualTo("arg1")
-    assertThat(composeSourcemapCommand[2]).isEqualTo("arg2")
-    assertThat(composeSourcemapCommand[3]).isEqualTo(composeSourceMapsFile.absolutePath)
-    assertThat(composeSourcemapCommand[4]).isEqualTo(packagerMap.absolutePath)
-    assertThat(composeSourcemapCommand[5]).isEqualTo(compilerMap.absolutePath)
-    assertThat(composeSourcemapCommand[6]).isEqualTo("-o")
-    assertThat(composeSourcemapCommand[7]).isEqualTo(outputMap.absolutePath)
+    assertThat(composeSourcemapCommand).containsExactly(
+      "node",
+      "arg1",
+      "arg2",
+      composeSourceMapsFile.absolutePath,
+      packagerMap.absolutePath,
+      compilerMap.absolutePath,
+      "-o",
+      outputMap.absolutePath
+    )
     assertThat(composeSourcemapCommand.size).isEqualTo(8)
   }
 
@@ -412,16 +422,18 @@ class BundleHermesCTaskTest {
     val composeSourcemapCommand =
         task.getComposeSourceMapsCommand(composeSourceMapsFile, packagerMap, compilerMap, outputMap)
 
-    assertThat(composeSourcemapCommand[0]).containsExactly("cmd")
-    assertThat(composeSourcemapCommand[1]).isEqualTo("/c")
-    assertThat(composeSourcemapCommand[2]).isEqualTo("node")
-    assertThat(composeSourcemapCommand[3]).isEqualTo("arg1")
-    assertThat(composeSourcemapCommand[4]).isEqualTo("arg2")
-    assertThat(composeSourcemapCommand[5]).isEqualTo(composeSourceMapsFile.relativeTo(tempFolder.root).path)
-    assertThat(composeSourcemapCommand[6]).isEqualTo(packagerMap.relativeTo(tempFolder.root).path)
-    assertThat(composeSourcemapCommand[7]).isEqualTo(compilerMap.relativeTo(tempFolder.root).path)
-    assertThat(composeSourcemapCommand[8]).isEqualTo("-o")
-    assertThat(composeSourcemapCommand[9]).isEqualTo(outputMap.relativeTo(tempFolder.root).path)
+    assertThat(composeSourcemapCommand).containsExactly(
+      "cmd",
+      "/c",
+      "node",
+      "arg1",
+      "arg2",
+      composeSourceMapsFile.relativeTo(tempFolder.root).path,
+      packagerMap.relativeTo(tempFolder.root).path,
+      compilerMap.relativeTo(tempFolder.root).path,
+      "-o",
+      outputMap.relativeTo(tempFolder.root).path
+    )
     assertThat(composeSourcemapCommand.size).isEqualTo(10)
   }
 }
