@@ -838,8 +838,11 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     _boxShadowLayer.zPosition = CGFLOAT_MIN;
     _boxShadowLayer.frame = RCTGetBoundingRect(_props->boxShadow, self.layer.frame.size);
 
-    UIImage *boxShadowImage =
-        RCTGetBoxShadowImage(_props->boxShadow, RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii), layer);
+    UIImage *boxShadowImage = RCTGetBoxShadowImage(
+        _props->boxShadow,
+        RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii),
+        RCTUIEdgeInsetsFromEdgeInsets(borderMetrics.borderWidths),
+        layer);
 
     _boxShadowLayer.contents = (id)boxShadowImage.CGImage;
   }
