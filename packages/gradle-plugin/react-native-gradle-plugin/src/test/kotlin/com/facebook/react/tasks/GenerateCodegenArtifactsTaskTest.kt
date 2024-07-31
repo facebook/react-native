@@ -11,8 +11,7 @@ import com.facebook.react.tests.*
 import com.facebook.react.tests.createProject
 import com.facebook.react.tests.createTestTask
 import java.io.File
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
+import org.assertj.Assert.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
@@ -29,7 +28,7 @@ class GenerateCodegenArtifactsTaskTest {
 
     val task = createTestTask<GenerateCodegenArtifactsTask> { it.generatedSrcDir.set(outputDir) }
 
-    assertEquals(File(outputDir, "schema.json"), task.generatedSchemaFile.get().asFile)
+    assertThat(File(outputDir, "schema.json")).isEqualTo(task.generatedSchemaFile.get().asFile)
   }
 
   @Test
@@ -38,8 +37,8 @@ class GenerateCodegenArtifactsTaskTest {
 
     val task = createTestTask<GenerateCodegenArtifactsTask> { it.generatedSrcDir.set(outputDir) }
 
-    assertEquals(File(outputDir, "java"), task.generatedJavaFiles.get().asFile)
-    assertEquals(File(outputDir, "jni"), task.generatedJniFiles.get().asFile)
+    assertThat(File(outputDir, "java")).isEqualTo(task.generatedJavaFiles.get().asFile)
+    assertThat(File(outputDir, "jni")).isEqualTo(task.generatedJniFiles.get().asFile)
   }
 
   @Test
@@ -54,12 +53,12 @@ class GenerateCodegenArtifactsTaskTest {
           it.packageJsonFile.set(packageJsonFile)
         }
 
-    assertEquals(listOf("npm", "help"), task.nodeExecutableAndArgs.get())
-    assertEquals("com.example.test", task.codegenJavaPackageName.get())
-    assertEquals("example-test", task.libraryName.get())
-    assertTrue(task.inputs.properties.containsKey("nodeExecutableAndArgs"))
-    assertTrue(task.inputs.properties.containsKey("codegenJavaPackageName"))
-    assertTrue(task.inputs.properties.containsKey("libraryName"))
+    assertThat(listOf("npm", "help")).isEqualTo(task.nodeExecutableAndArgs.get())
+    assertThat("com.example.test").isEqualTo(task.codegenJavaPackageName.get())
+    assertThat("example-test").isEqualTo(task.libraryName.get())
+    assertThat(task.inputs.properties.containsKey("nodeExecutableAndArgs")).exists()
+    assertThat(task.inputs.properties.containsKey("codegenJavaPackageName")).exists()
+    assertThat(task.inputs.properties.containsKey("libraryName")).exists()
   }
 
   @Test
@@ -77,7 +76,7 @@ class GenerateCodegenArtifactsTaskTest {
 
     task.setupCommandLine("example-test", "com.example.test")
 
-    assertEquals(
+    assertThat(
         listOf(
             "--verbose",
             File(reactNativeDir, "scripts/generate-specs-cli.js").toString(),
@@ -91,7 +90,7 @@ class GenerateCodegenArtifactsTaskTest {
             "example-test",
             "--javaPackageName",
             "com.example.test",
-        ),
+        )).isEqualTo(
         task.commandLine.toMutableList())
   }
 
@@ -111,7 +110,7 @@ class GenerateCodegenArtifactsTaskTest {
 
     task.setupCommandLine("example-test", "com.example.test")
 
-    assertEquals(
+    assertThat(
         listOf(
             "cmd",
             "/c",
@@ -129,7 +128,7 @@ class GenerateCodegenArtifactsTaskTest {
             "example-test",
             "--javaPackageName",
             "com.example.test",
-        ),
+        )).isEqualTo(
         task.commandLine.toMutableList())
   }
 
@@ -162,8 +161,8 @@ class GenerateCodegenArtifactsTaskTest {
 
     val (libraryName, javaPackageName) = task.resolveTaskParameters()
 
-    assertEquals("an-awesome-library", libraryName)
-    assertEquals("com.awesome.package", javaPackageName)
+    assertThat("an-awesome-library").isEqualTo(libraryName)
+    assertThat("com.awesome.package").isEqualTo(javaPackageName)
   }
 
   @Test
@@ -191,8 +190,8 @@ class GenerateCodegenArtifactsTaskTest {
 
     val (libraryName, javaPackageName) = task.resolveTaskParameters()
 
-    assertEquals("a-library-name-from-gradle", libraryName)
-    assertEquals("com.example.test", javaPackageName)
+    assertThat("a-library-name-from-gradle").isEqualTo(libraryName)
+    assertThat("com.example.test").isEqualTo(javaPackageName)
   }
 
   @Test
@@ -206,7 +205,7 @@ class GenerateCodegenArtifactsTaskTest {
 
     val (libraryName, javaPackageName) = task.resolveTaskParameters()
 
-    assertEquals("a-library-name-from-gradle", libraryName)
-    assertEquals("com.example.test", javaPackageName)
+    assertThat("a-library-name-from-gradle").isEqualTo(libraryName)
+    assertThat("com.example.test").isEqualTo(javaPackageName)
   }
 }
