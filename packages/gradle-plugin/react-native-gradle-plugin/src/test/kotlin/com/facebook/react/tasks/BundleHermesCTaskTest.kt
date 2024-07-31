@@ -239,7 +239,6 @@ class BundleHermesCTaskTest {
       "--read-global-cache",
       "--verbose"
     )
-    assertThat(bundleCommand.size).isEqualTo(24)
   }
 
   @Test
@@ -295,7 +294,6 @@ class BundleHermesCTaskTest {
       "--read-global-cache",
       "--verbose"
     )
-    assertThat(bundleCommand.size).isEqualTo(26)
   }
 
   @Test
@@ -345,7 +343,6 @@ class BundleHermesCTaskTest {
       bundleFile.absolutePath,
       "my-custom-hermes-flag"
       )
-    assertThat(hermesCommand.size).isEqualTo(7)
   }
 
   @Test
@@ -373,7 +370,6 @@ class BundleHermesCTaskTest {
       bundleFile.relativeTo(tempFolder.root).path,
       "my-custom-hermes-flag"
     )
-    assertThat(hermesCommand.size).isEqualTo(9)
   }
 
   @Test
@@ -402,7 +398,6 @@ class BundleHermesCTaskTest {
       "-o",
       outputMap.absolutePath
     )
-    assertThat(composeSourcemapCommand.size).isEqualTo(8)
   }
 
   @Test
@@ -434,6 +429,5 @@ class BundleHermesCTaskTest {
       "-o",
       outputMap.relativeTo(tempFolder.root).path
     )
-    assertThat(composeSourcemapCommand.size).isEqualTo(10)
   }
 }
