@@ -7548,6 +7548,12 @@ declare export function isChildPublicInstance(
   parentInstance: ReactFabricHostComponent | HostComponent<mixed>,
   childInstance: ReactFabricHostComponent | HostComponent<mixed>
 ): boolean;
+declare export function getNodeFromInternalInstanceHandle(
+  internalInstanceHandle: InternalInstanceHandle
+): ?Node;
+declare export function getPublicInstanceFromInternalInstanceHandle(
+  internalInstanceHandle: InternalInstanceHandle
+): mixed;
 "
 `;
 

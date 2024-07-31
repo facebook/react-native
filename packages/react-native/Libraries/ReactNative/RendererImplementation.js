@@ -8,7 +8,11 @@
  * @flow strict-local
  */
 
-import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
+import type {
+  HostComponent,
+  InternalInstanceHandle,
+  Node,
+} from '../Renderer/shims/ReactNativeTypes';
 import type ReactFabricHostComponent from './ReactFabricPublicInstance/ReactFabricHostComponent';
 import type {Element, ElementRef, ElementType} from 'react';
 
@@ -137,5 +141,23 @@ export function isChildPublicInstance(
   return require('../Renderer/shims/ReactNative').isChildPublicInstance(
     parentInstance,
     childInstance,
+  );
+}
+
+export function getNodeFromInternalInstanceHandle(
+  internalInstanceHandle: InternalInstanceHandle,
+): ?Node {
+  // This is only available in Fabric
+  return require('../Renderer/shims/ReactFabric').getNodeFromInternalInstanceHandle(
+    internalInstanceHandle,
+  );
+}
+
+export function getPublicInstanceFromInternalInstanceHandle(
+  internalInstanceHandle: InternalInstanceHandle,
+): mixed /*PublicInstance | PublicTextInstance | null*/ {
+  // This is only available in Fabric
+  return require('../Renderer/shims/ReactFabric').getPublicInstanceFromInternalInstanceHandle(
+    internalInstanceHandle,
   );
 }
