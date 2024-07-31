@@ -44,7 +44,9 @@ JReactHostInspectorTarget::JReactHostInspectorTarget(
           // Reject the connection.
           return nullptr;
         },
-        {.nativePageReloads = true, .prefersFuseboxFrontend = true});
+        {.nativePageReloads = true,
+         .nativeSourceCodeFetching = true,
+         .prefersFuseboxFrontend = true});
   }
 }
 
