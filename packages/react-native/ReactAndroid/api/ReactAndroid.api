@@ -3392,16 +3392,19 @@ public class com/facebook/react/modules/dialog/DialogModule : com/facebook/fbrea
 }
 
 public class com/facebook/react/modules/fresco/FrescoModule : com/facebook/react/bridge/ReactContextBaseJavaModule, com/facebook/react/bridge/LifecycleEventListener, com/facebook/react/modules/common/ModuleDataCleaner$Cleanable, com/facebook/react/turbomodule/core/interfaces/TurboModule {
-	public static final field NAME Ljava/lang/String;
+	public static final field Companion Lcom/facebook/react/modules/fresco/FrescoModule$Companion;
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
+	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;Lcom/facebook/imagepipeline/core/ImagePipeline;)V
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;Lcom/facebook/imagepipeline/core/ImagePipeline;Z)V
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;Lcom/facebook/imagepipeline/core/ImagePipeline;ZZ)V
+	public synthetic fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;Lcom/facebook/imagepipeline/core/ImagePipeline;ZZILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;Z)V
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;ZLcom/facebook/imagepipeline/core/ImagePipelineConfig;)V
+	public synthetic fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;ZLcom/facebook/imagepipeline/core/ImagePipelineConfig;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun clearSensitiveData ()V
-	public static fun getDefaultConfigBuilder (Lcom/facebook/react/bridge/ReactContext;)Lcom/facebook/imagepipeline/core/ImagePipelineConfig$Builder;
+	public static final fun getDefaultConfigBuilder (Lcom/facebook/react/bridge/ReactContext;)Lcom/facebook/imagepipeline/core/ImagePipelineConfig$Builder;
 	public fun getName ()Ljava/lang/String;
-	public static fun hasBeenInitialized ()Z
+	public static final fun hasBeenInitialized ()Z
 	public fun initialize ()V
 	public fun invalidate ()V
 	public fun onHostDestroy ()V
@@ -3409,13 +3412,22 @@ public class com/facebook/react/modules/fresco/FrescoModule : com/facebook/react
 	public fun onHostResume ()V
 }
 
-public class com/facebook/react/modules/fresco/ReactNetworkImageRequest : com/facebook/imagepipeline/request/ImageRequest {
-	protected fun <init> (Lcom/facebook/imagepipeline/request/ImageRequestBuilder;Lcom/facebook/react/bridge/ReadableMap;)V
-	public static fun fromBuilderWithHeaders (Lcom/facebook/imagepipeline/request/ImageRequestBuilder;Lcom/facebook/react/bridge/ReadableMap;)Lcom/facebook/react/modules/fresco/ReactNetworkImageRequest;
-	public fun getHeaders ()Lcom/facebook/react/bridge/ReadableMap;
+public final class com/facebook/react/modules/fresco/FrescoModule$Companion {
+	public final fun getDefaultConfigBuilder (Lcom/facebook/react/bridge/ReactContext;)Lcom/facebook/imagepipeline/core/ImagePipelineConfig$Builder;
+	public final fun hasBeenInitialized ()Z
 }
 
-public class com/facebook/react/modules/fresco/SystraceRequestListener : com/facebook/imagepipeline/listener/BaseRequestListener {
+public final class com/facebook/react/modules/fresco/ReactNetworkImageRequest : com/facebook/imagepipeline/request/ImageRequest {
+	public static final field Companion Lcom/facebook/react/modules/fresco/ReactNetworkImageRequest$Companion;
+	public synthetic fun <init> (Lcom/facebook/imagepipeline/request/ImageRequestBuilder;Lcom/facebook/react/bridge/ReadableMap;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public static final fun fromBuilderWithHeaders (Lcom/facebook/imagepipeline/request/ImageRequestBuilder;Lcom/facebook/react/bridge/ReadableMap;)Lcom/facebook/react/modules/fresco/ReactNetworkImageRequest;
+}
+
+public final class com/facebook/react/modules/fresco/ReactNetworkImageRequest$Companion {
+	public final fun fromBuilderWithHeaders (Lcom/facebook/imagepipeline/request/ImageRequestBuilder;Lcom/facebook/react/bridge/ReadableMap;)Lcom/facebook/react/modules/fresco/ReactNetworkImageRequest;
+}
+
+public final class com/facebook/react/modules/fresco/SystraceRequestListener : com/facebook/imagepipeline/listener/BaseRequestListener {
 	public fun <init> ()V
 	public fun onProducerEvent (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
 	public fun onProducerFinishWithCancellation (Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;)V
@@ -3556,6 +3568,12 @@ public class com/facebook/react/modules/network/OkHttpClientProvider {
 	public static fun createClientBuilder (Landroid/content/Context;I)Lokhttp3/OkHttpClient$Builder;
 	public static fun getOkHttpClient ()Lokhttp3/OkHttpClient;
 	public static fun setOkHttpClientFactory (Lcom/facebook/react/modules/network/OkHttpClientFactory;)V
+}
+
+public class com/facebook/react/modules/network/OkHttpCompat {
+	public fun <init> ()V
+	public static fun getCookieJarContainer (Lokhttp3/OkHttpClient;)Lcom/facebook/react/modules/network/CookieJarContainer;
+	public static fun getHeadersFromMap (Ljava/util/Map;)Lokhttp3/Headers;
 }
 
 public abstract interface class com/facebook/react/modules/network/ProgressListener {
