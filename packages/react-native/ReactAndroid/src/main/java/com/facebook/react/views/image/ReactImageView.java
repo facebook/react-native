@@ -51,10 +51,14 @@ import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.modules.fresco.ReactNetworkImageRequest;
 import com.facebook.react.uimanager.BackgroundStyleApplicator;
 import com.facebook.react.uimanager.FloatUtil;
+import com.facebook.react.uimanager.LengthPercentage;
+import com.facebook.react.uimanager.LengthPercentageType;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.Spacing;
 import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.uimanager.style.BorderRadiusProp;
+import com.facebook.react.uimanager.style.LogicalEdge;
 import com.facebook.react.util.RNLog;
 import com.facebook.react.views.imagehelper.ImageSource;
 import com.facebook.react.views.imagehelper.MultiSourceHelper;
@@ -252,7 +256,9 @@ public class ReactImageView extends GenericDraweeView {
 
   @Override
   public void setBackgroundColor(int backgroundColor) {
-    if (ReactNativeFeatureFlags.useNewReactImageViewBackgroundDrawing()) {
+    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
+      BackgroundStyleApplicator.setBackgroundColor(this, backgroundColor);
+    } else if (ReactNativeFeatureFlags.useNewReactImageViewBackgroundDrawing()) {
       mReactBackgroundManager.setBackgroundColor(backgroundColor);
     } else if (mBackgroundColor != backgroundColor) {
       mBackgroundColor = backgroundColor;
@@ -262,7 +268,9 @@ public class ReactImageView extends GenericDraweeView {
   }
 
   public void setBorderColor(int borderColor) {
-    if (ReactNativeFeatureFlags.useNewReactImageViewBackgroundDrawing()) {
+    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
+      BackgroundStyleApplicator.setBorderColor(this, LogicalEdge.ALL, borderColor);
+    } else if (ReactNativeFeatureFlags.useNewReactImageViewBackgroundDrawing()) {
       mReactBackgroundManager.setBorderColor(Spacing.ALL, borderColor);
     } else if (mBorderColor != borderColor) {
       mBorderColor = borderColor;
@@ -278,17 +286,28 @@ public class ReactImageView extends GenericDraweeView {
   }
 
   public void setBorderWidth(float borderWidth) {
-    float newBorderWidth = PixelUtil.toPixelFromDIP(borderWidth);
-    if (ReactNativeFeatureFlags.useNewReactImageViewBackgroundDrawing()) {
-      mReactBackgroundManager.setBorderWidth(Spacing.ALL, newBorderWidth);
-    } else if (!FloatUtil.floatsEqual(mBorderWidth, newBorderWidth)) {
-      mBorderWidth = newBorderWidth;
-      mIsDirty = true;
+    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
+      BackgroundStyleApplicator.setBorderWidth(this, LogicalEdge.ALL, borderWidth);
+    } else {
+      float newBorderWidth = PixelUtil.toPixelFromDIP(borderWidth);
+      if (ReactNativeFeatureFlags.useNewReactImageViewBackgroundDrawing()) {
+        mReactBackgroundManager.setBorderWidth(Spacing.ALL, newBorderWidth);
+      } else if (!FloatUtil.floatsEqual(mBorderWidth, newBorderWidth)) {
+        mBorderWidth = newBorderWidth;
+        mIsDirty = true;
+      }
     }
   }
 
   public void setBorderRadius(float borderRadius) {
-    if (ReactNativeFeatureFlags.useNewReactImageViewBackgroundDrawing()) {
+    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
+      @Nullable
+      LengthPercentage radius =
+          Float.isNaN(borderRadius)
+              ? null
+              : new LengthPercentage(borderRadius, LengthPercentageType.POINT);
+      BackgroundStyleApplicator.setBorderRadius(this, BorderRadiusProp.BORDER_RADIUS, radius);
+    } else if (ReactNativeFeatureFlags.useNewReactImageViewBackgroundDrawing()) {
       mReactBackgroundManager.setBorderRadius(borderRadius);
     } else if (!FloatUtil.floatsEqual(mBorderRadius, borderRadius)) {
       mBorderRadius = borderRadius;
@@ -297,8 +316,15 @@ public class ReactImageView extends GenericDraweeView {
   }
 
   public void setBorderRadius(float borderRadius, int position) {
-    if (ReactNativeFeatureFlags.useNewReactImageViewBackgroundDrawing()) {
-      mReactBackgroundManager.setBorderRadius(borderRadius, position + 1);
+    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
+      @Nullable
+      LengthPercentage radius =
+          Float.isNaN(borderRadius)
+              ? null
+              : new LengthPercentage(borderRadius, LengthPercentageType.POINT);
+      BackgroundStyleApplicator.setBorderRadius(this, BorderRadiusProp.values()[position], radius);
+    } else if (ReactNativeFeatureFlags.useNewReactImageViewBackgroundDrawing()) {
+      mReactBackgroundManager.setBorderRadius(borderRadius, position);
     } else {
       if (mBorderCornerRadii == null) {
         mBorderCornerRadii = new float[4];

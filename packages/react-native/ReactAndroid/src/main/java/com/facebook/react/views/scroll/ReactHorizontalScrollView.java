@@ -40,7 +40,10 @@ import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.uimanager.BackgroundStyleApplicator;
+import com.facebook.react.uimanager.LengthPercentage;
+import com.facebook.react.uimanager.LengthPercentageType;
 import com.facebook.react.uimanager.MeasureSpecAssertions;
+import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.PointerEvents;
 import com.facebook.react.uimanager.ReactClippingViewGroup;
 import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
@@ -48,6 +51,9 @@ import com.facebook.react.uimanager.ReactOverflowViewWithInset;
 import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.events.NativeGestureUtil;
+import com.facebook.react.uimanager.style.BorderRadiusProp;
+import com.facebook.react.uimanager.style.BorderStyle;
+import com.facebook.react.uimanager.style.LogicalEdge;
 import com.facebook.react.uimanager.style.Overflow;
 import com.facebook.react.views.scroll.ReactScrollViewHelper.HasFlingAnimator;
 import com.facebook.react.views.scroll.ReactScrollViewHelper.HasScrollEventThrottle;
@@ -1304,27 +1310,54 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
 
   @Override
   public void setBackgroundColor(int color) {
-    mReactBackgroundManager.setBackgroundColor(color);
+    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
+      BackgroundStyleApplicator.setBackgroundColor(this, color);
+    } else {
+      mReactBackgroundManager.setBackgroundColor(color);
+    }
   }
 
   public void setBorderWidth(int position, float width) {
-    mReactBackgroundManager.setBorderWidth(position, width);
+    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
+      BackgroundStyleApplicator.setBorderWidth(
+          this, LogicalEdge.values()[position], PixelUtil.toDIPFromPixel(width));
+    } else {
+      mReactBackgroundManager.setBorderWidth(position, width);
+    }
   }
 
   public void setBorderColor(int position, @Nullable Integer color) {
-    mReactBackgroundManager.setBorderColor(position, color);
+    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
+      BackgroundStyleApplicator.setBorderColor(this, LogicalEdge.values()[position], color);
+    } else {
+      mReactBackgroundManager.setBorderColor(position, color);
+    }
   }
 
   public void setBorderRadius(float borderRadius) {
-    mReactBackgroundManager.setBorderRadius(borderRadius);
+    setBorderRadius(borderRadius, BorderRadiusProp.BORDER_RADIUS.ordinal());
   }
 
   public void setBorderRadius(float borderRadius, int position) {
-    mReactBackgroundManager.setBorderRadius(borderRadius, position);
+    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
+      @Nullable
+      LengthPercentage radius =
+          Float.isNaN(borderRadius)
+              ? null
+              : new LengthPercentage(borderRadius, LengthPercentageType.POINT);
+      BackgroundStyleApplicator.setBorderRadius(this, BorderRadiusProp.values()[position], radius);
+    } else {
+      mReactBackgroundManager.setBorderRadius(borderRadius, position);
+    }
   }
 
   public void setBorderStyle(@Nullable String style) {
-    mReactBackgroundManager.setBorderStyle(style);
+    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
+      BackgroundStyleApplicator.setBorderStyle(
+          this, style == null ? null : BorderStyle.fromString(style));
+    } else {
+      mReactBackgroundManager.setBorderStyle(style);
+    }
   }
 
   /**
