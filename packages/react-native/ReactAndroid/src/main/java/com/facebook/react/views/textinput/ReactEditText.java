@@ -49,10 +49,13 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.build.ReactBuildConfig;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
+import com.facebook.react.uimanager.BackgroundStyleApplicator;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate;
 import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.uimanager.style.Overflow;
 import com.facebook.react.views.text.ReactTextUpdate;
 import com.facebook.react.views.text.ReactTypefaceUtils;
 import com.facebook.react.views.text.TextAttributes;
@@ -122,6 +125,7 @@ public class ReactEditText extends AppCompatEditText {
   private boolean mDidAttachToWindow = false;
   private boolean mSelectTextOnFocus = false;
   private @Nullable String mPlaceholder = null;
+  private Overflow mOverflow = Overflow.VISIBLE;
 
   private final ReactViewBackgroundManager mReactBackgroundManager;
 
@@ -1248,12 +1252,20 @@ public class ReactEditText extends AppCompatEditText {
   }
 
   public void setOverflow(@Nullable String overflow) {
+    mOverflow = overflow == null ? Overflow.VISIBLE : Overflow.fromString(overflow);
     mReactBackgroundManager.setOverflow(overflow);
   }
 
   @Override
   public void onDraw(Canvas canvas) {
-    mReactBackgroundManager.maybeClipToPaddingBox(canvas);
+    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
+      if (mOverflow != Overflow.VISIBLE) {
+        BackgroundStyleApplicator.clipToPaddingBox(this, canvas);
+      }
+    } else {
+      mReactBackgroundManager.maybeClipToPaddingBox(canvas);
+    }
+
     super.onDraw(canvas);
   }
 
