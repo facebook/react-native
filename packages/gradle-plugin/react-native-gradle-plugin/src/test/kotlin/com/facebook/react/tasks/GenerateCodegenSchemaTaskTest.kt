@@ -67,7 +67,6 @@ class GenerateCodegenSchemaTaskTest {
 
     assertThat(task.jsInputFiles.dir).isEqualTo(jsRootDir)
     assertThat(task.jsInputFiles.excludes).isEqualTo(setOf("**/build/**/*"))
-    assertThat(task.jsInputFiles.files).hasSize(1)
     assertThat(task.jsInputFiles.files).containsExactly(File(jsRootDir, "afolder/includedfile.js"))
   }
 
