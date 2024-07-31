@@ -1,5 +1,33 @@
 # Changelog
 
+## v0.75.0-rc.6
+
+### Added
+
+#### Android specific
+
+- Make `rrc_textinput` on Android a shared library ([ea8ad6457c](https://github.com/facebook/react-native/commit/ea8ad6457c0bb55d2a1150e7af6d0d20f3237006) by [@j-piasecki](https://github.com/j-piasecki))
+
+### Changed
+
+- Upgrade `react-native-community/cli` to `13.6.9` ([353d88d54e](https://github.com/facebook/react-native/commit/353d88d54ef2f78f9112c4e56e4d00405cc501b9) by [@szymonrybczak](https://github.com/szymonrybczak))
+
+### Fixed
+
+- Remove setting of process.exitCode that breaks Jest tests ([e42932cfc6](https://github.com/facebook/react-native/commit/e42932cfc6dae7fb90fa29d123be4caed89deac0) by [@douglowder](https://github.com/douglowder))
+- Allow proxying commands from react-native to react-native-community/cli with explicit warning ([9aed45a9d9](https://github.com/facebook/react-native/commit/9aed45a9d99218e7468ce2779dcbaa40cce50c83) by [@blakef](https://github.com/blakef))
+
+#### Android specific
+
+- [0.75] Fix core autolinking not working on Windows ([c8cb3d4a59](https://github.com/facebook/react-native/commit/c8cb3d4a5904a5aab7fd41bedb032a919ef0758e) by [@cortinico](https://github.com/cortinico))
+- Fix broken build of RNGP due to complex cherry-pick ([51156fd3b2](https://github.com/facebook/react-native/commit/51156fd3b2f371e598b3da284a4b1dec45c93cc8) by [@cortinico](https://github.com/cortinico))
+
+#### iOS specific
+
+- Fix error on handling privacy manifest ([c24929c5f4](https://github.com/facebook/react-native/commit/c24929c5f4c6f88878691b5f778922864bbd5683) by [@cxa](https://github.com/cxa))
+- Building of iOS project when RCTAppDelegate is used in the project ([be93092c1b](https://github.com/facebook/react-native/commit/be93092c1b8a079f74dcdc129afc3767f03b8a2e) by [@nikhiltekwani09](https://github.com/nikhiltekwani09))
+- Do not use temporary node when creating the .xcode.env.local ([8408b8bc96](https://github.com/facebook/react-native/commit/8408b8bc96db15e265ca65fce7875ee65dcfdcec) by [@cipolleschi](https://github.com/cipolleschi))
+
 ## v0.75.0-rc.4
 
 ### Changed
@@ -440,6 +468,31 @@
 - Fling][Android] Add synchronous event support ([dbc0334159](https://github.com/facebook/react-native/commit/dbc0334159a257026e3c260ab32b3a4ee2339104))
 - Use our fork of the react-native-communti/cli-platform-ios use_native_modues.rb script ([c884d19a50](https://github.com/facebook/react-native/commit/c884d19a501081ffbc4b353d751ecc3e32d6f624) by [@blakef](https://github.com/blakef))
 - Enforce Activities using ReactDelegate implement DefaultHardwareBackBtnHandler. ([a2d277f740](https://github.com/facebook/react-native/commit/a2d277f740d8ee95137d42679a1ffd872962a108) by [@javache](https://github.com/javache))
+
+## v0.74.4
+
+### Added
+
+#### Android specific
+
+- Stub com.facebook.react.settings on 0.74 ([13ea273850](https://github.com/facebook/react-native/commit/13ea2738508332785e6b0dd129a8cc6e66d7b3da) by [@cortinico](https://github.com/cortinico))
+
+#### iOS specific
+
+- Prebuilt version of Hermes for visionOS ([924fb3de9b](https://github.com/facebook/react-native/commit/924fb3de9bc9328c3315316fbb796b933be5bcbe) by [@okwasniewski](https://github.com/okwasniewski))
+
+### Fixed
+
+- Don't break script phase and codegen when coreutils installed on macOS ([e0799536ef](https://github.com/facebook/react-native/commit/e0799536ef1b68b98fb772e256d1d72424349008) by [@blakef](https://github.com/blakef))
+- Remove setting of process.exitCode that breaks Jest tests ([e42932cfc6](https://github.com/facebook/react-native/commit/e42932cfc6dae7fb90fa29d123be4caed89deac0) by [@@douglowder](https://github.com/douglowder))
+
+#### iOS specific
+
+- Make sure to pass the RCTBridgeProxy to  ViewManagers ([d6c90cf7ed](https://github.com/facebook/react-native/commit/d6c90cf7ed80caf0fc4eb2541f3dcadc3833dd37) by [@cipolleschi](https://github.com/cipolleschi))
+- Implement shared atomic counters and replace static integers in `RCTImageLoader` and `RCTNetworkTask` that were accessed concurrently, which in some cases lead to data races. ([ffc16fc18b](https://github.com/facebook/react-native/commit/ffc16fc18bcc44d1e98d66dbbe56fb726962fb72) by [@hakonk](https://github.com/hakonk))
+- Do not use temporary node when creating the .xcode.env.local ([8408b8bc96](https://github.com/facebook/react-native/commit/8408b8bc96db15e265ca65fce7875ee65dcfdcec) by [@cipolleschi](https://github.com/cipolleschi))
+- Building of iOS project when RCTAppDelegate is used in the project ([be93092c1b](https://github.com/facebook/react-native/commit/be93092c1b8a079f74dcdc129afc3767f03b8a2e) by [@nikhiltekwani09](https://github.com/nikhiltekwani09))
+- Fix error on handling privacy manifest ([e39e9c4a60](https://github.com/facebook/react-native/commit/e39e9c4a60a54d3280d8516d5891cec05d5ab793) by [@cxa](https://github.com/cxa))
 
 ## v0.74.3
 

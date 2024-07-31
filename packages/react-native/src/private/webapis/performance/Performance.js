@@ -10,15 +10,15 @@
 
 // flowlint unsafe-getters-setters:off
 
-import type {HighResTimeStamp, PerformanceEntryType} from './PerformanceEntry';
-import type {PerformanceEntryList} from './PerformanceObserver';
 import type {
-  PerformanceMarkOptions,
-  PerformanceMeasureOptions,
-} from './UserTiming';
+  DOMHighResTimeStamp,
+  PerformanceEntryType,
+} from './PerformanceEntry';
+import type {PerformanceEntryList} from './PerformanceObserver';
+import type {DetailType, PerformanceMarkOptions} from './UserTiming';
 
 import warnOnce from '../../../../Libraries/Utilities/warnOnce';
-import EventCounts from './EventCounts';
+import {EventCounts} from './EventTiming';
 import MemoryInfo from './MemoryInfo';
 import {ALWAYS_LOGGED_ENTRY_TYPES} from './PerformanceEntry';
 import {warnNoNativePerformanceObserver} from './PerformanceObserver';
@@ -37,7 +37,7 @@ declare var global: {
   +nativePerformanceNow?: ?() => number,
 };
 
-const getCurrentTimeStamp: () => HighResTimeStamp =
+const getCurrentTimeStamp: () => DOMHighResTimeStamp =
   NativePerformance?.now ?? global.nativePerformanceNow ?? (() => Date.now());
 
 // We want some of the performance entry types to be always logged,
@@ -57,6 +57,13 @@ function warnNoNativePerformance() {
     'Missing native implementation of Performance',
   );
 }
+
+export type PerformanceMeasureOptions = {
+  detail?: DetailType,
+  start?: DOMHighResTimeStamp,
+  duration?: DOMHighResTimeStamp,
+  end?: DOMHighResTimeStamp,
+};
 
 /**
  * Partial implementation of the Performance interface for RN,
@@ -195,7 +202,13 @@ export default class Performance {
       duration = options.duration ?? duration;
     }
 
-    const measure = new PerformanceMeasure(measureName, options);
+    const measure = new PerformanceMeasure(measureName, {
+      // FIXME(T196011255): this is incorrect, as we're only assigning the
+      // start/end if they're specified as a number, but not if they're
+      // specified as previous mark names.
+      startTime,
+      duration,
+    });
 
     if (NativePerformance?.measure) {
       NativePerformance.measure(
@@ -229,7 +242,7 @@ export default class Performance {
    * Returns a double, measured in milliseconds.
    * https://developer.mozilla.org/en-US/docs/Web/API/Performance/now
    */
-  now(): HighResTimeStamp {
+  now(): DOMHighResTimeStamp {
     return getCurrentTimeStamp();
   }
 

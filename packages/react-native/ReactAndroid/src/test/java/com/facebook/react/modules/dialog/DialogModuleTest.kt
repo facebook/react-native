@@ -15,8 +15,8 @@ import com.facebook.react.R
 import com.facebook.react.bridge.Callback
 import com.facebook.react.bridge.JavaOnlyMap
 import com.facebook.react.bridge.ReactApplicationContext
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.*
-import org.junit.Assert.*
 import org.junit.runner.RunWith
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.`when` as whenever
@@ -72,12 +72,13 @@ class DialogModuleTest {
 
     val fragment = getFragment()
 
-    assertFalse(fragment.isCancelable)
+    assertThat(fragment.isCancelable).isFalse()
 
     val dialog = fragment.dialog as AlertDialog
-    assertEquals("OK", dialog.getButton(DialogInterface.BUTTON_POSITIVE).text.toString())
-    assertEquals("Cancel", dialog.getButton(DialogInterface.BUTTON_NEGATIVE).text.toString())
-    assertEquals("Later", dialog.getButton(DialogInterface.BUTTON_NEUTRAL).text.toString())
+    assertThat(dialog.getButton(DialogInterface.BUTTON_POSITIVE).text.toString()).isEqualTo("OK")
+    assertThat(dialog.getButton(DialogInterface.BUTTON_NEGATIVE).text.toString())
+        .isEqualTo("Cancel")
+    assertThat(dialog.getButton(DialogInterface.BUTTON_NEUTRAL).text.toString()).isEqualTo("Later")
   }
 
   @Test
@@ -92,9 +93,9 @@ class DialogModuleTest {
     dialog.getButton(DialogInterface.BUTTON_POSITIVE).performClick()
     shadowOf(getMainLooper()).idle()
 
-    assertEquals(1, actionCallback.calls)
-    assertEquals(DialogModule.ACTION_BUTTON_CLICKED, actionCallback.args?.get(0))
-    assertEquals(DialogInterface.BUTTON_POSITIVE, actionCallback.args?.get(1))
+    assertThat(actionCallback.calls).isEqualTo(1)
+    assertThat(actionCallback.args?.get(0)).isEqualTo(DialogModule.ACTION_BUTTON_CLICKED)
+    assertThat(actionCallback.args?.get(1)).isEqualTo(DialogInterface.BUTTON_POSITIVE)
   }
 
   @Test
@@ -109,9 +110,9 @@ class DialogModuleTest {
     dialog.getButton(DialogInterface.BUTTON_NEGATIVE).performClick()
     shadowOf(getMainLooper()).idle()
 
-    assertEquals(1, actionCallback.calls)
-    assertEquals(DialogModule.ACTION_BUTTON_CLICKED, actionCallback.args?.get(0))
-    assertEquals(DialogInterface.BUTTON_NEGATIVE, actionCallback.args?.get(1))
+    assertThat(actionCallback.calls).isEqualTo(1)
+    assertThat(actionCallback.args?.get(0)).isEqualTo(DialogModule.ACTION_BUTTON_CLICKED)
+    assertThat(actionCallback.args?.get(1)).isEqualTo(DialogInterface.BUTTON_NEGATIVE)
   }
 
   @Test
@@ -126,9 +127,9 @@ class DialogModuleTest {
     dialog.getButton(DialogInterface.BUTTON_NEUTRAL).performClick()
     shadowOf(getMainLooper()).idle()
 
-    assertEquals(1, actionCallback.calls)
-    assertEquals(DialogModule.ACTION_BUTTON_CLICKED, actionCallback.args?.get(0))
-    assertEquals(DialogInterface.BUTTON_NEUTRAL, actionCallback.args?.get(1))
+    assertThat(actionCallback.calls).isEqualTo(1)
+    assertThat(actionCallback.args?.get(0)).isEqualTo(DialogModule.ACTION_BUTTON_CLICKED)
+    assertThat(actionCallback.args?.get(1)).isEqualTo(DialogInterface.BUTTON_NEUTRAL)
   }
 
   @Test
@@ -142,8 +143,8 @@ class DialogModuleTest {
     getFragment().dialog?.dismiss()
     shadowOf(getMainLooper()).idle()
 
-    assertEquals(1, actionCallback.calls)
-    assertEquals(DialogModule.ACTION_DISMISSED, actionCallback.args?.get(0))
+    assertThat(actionCallback.calls).isEqualTo(1)
+    assertThat(actionCallback.args?.get(0)).isEqualTo(DialogModule.ACTION_DISMISSED)
   }
 
   @Test
@@ -159,8 +160,8 @@ class DialogModuleTest {
     getFragment().dialog?.dismiss()
     shadowOf(getMainLooper()).idle()
 
-    assertEquals(1, actionCallback.calls)
-    assertEquals(DialogModule.ACTION_DISMISSED, actionCallback.args?.get(0))
+    assertThat(actionCallback.calls).isEqualTo(1)
+    assertThat(actionCallback.args?.get(0)).isEqualTo(DialogModule.ACTION_DISMISSED)
   }
 
   private fun setupActivity(theme: Int = APP_COMPAT_THEME) {

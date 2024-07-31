@@ -34,7 +34,7 @@ const EMPTY = 0;
 const LOADING = 1;
 const DONE = 2;
 
-class FileReader extends (EventTarget(...READER_EVENTS): any) {
+class FileReader extends (EventTarget(...READER_EVENTS): typeof EventTarget) {
   static EMPTY: number = EMPTY;
   static LOADING: number = LOADING;
   static DONE: number = DONE;

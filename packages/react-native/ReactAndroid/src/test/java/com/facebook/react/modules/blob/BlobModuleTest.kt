@@ -16,10 +16,8 @@ import com.facebook.react.bridge.WritableMap
 import java.nio.ByteBuffer
 import java.util.UUID
 import kotlin.random.Random
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
-import org.junit.Assert.assertArrayEquals
-import org.junit.Assert.assertNotNull
-import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -56,9 +54,9 @@ class BlobModuleTest {
 
   @Test
   fun testResolve() {
-    assertArrayEquals(bytes, blobModule.resolve(blobId, 0, bytes.size))
+    assertThat(blobModule.resolve(blobId, 0, bytes.size)).isEqualTo(bytes)
     val expectedRange = bytes.copyOfRange(30, bytes.size)
-    assertArrayEquals(expectedRange, blobModule.resolve(blobId, 30, bytes.size - 30))
+    assertThat(blobModule.resolve(blobId, 30, bytes.size - 30)).isEqualTo(expectedRange)
   }
 
   @Test
@@ -70,7 +68,7 @@ class BlobModuleTest {
             .appendQueryParameter("size", bytes.size.toString())
             .build()
 
-    assertArrayEquals(bytes, blobModule.resolve(uri))
+    assertThat(blobModule.resolve(uri)).isEqualTo(bytes)
   }
 
   @Test
@@ -82,16 +80,16 @@ class BlobModuleTest {
           putInt("size", bytes.size)
         }
 
-    assertArrayEquals(bytes, blobModule.resolve(blob))
+    assertThat(blobModule.resolve(blob)).isEqualTo(bytes)
   }
 
   @Test
   fun testRemove() {
-    assertNotNull(blobModule.resolve(blobId, 0, bytes.size))
+    assertThat(blobModule.resolve(blobId, 0, bytes.size)).isNotNull()
 
     blobModule.remove(blobId)
 
-    assertNull(blobModule.resolve(blobId, 0, bytes.size))
+    assertThat(blobModule.resolve(blobId, 0, bytes.size)).isNull()
   }
 
   @Test
@@ -136,15 +134,15 @@ class BlobModuleTest {
           put(stringBytes)
         }
 
-    assertArrayEquals(result, buffer.array())
+    assertThat(result).isEqualTo(buffer.array())
   }
 
   @Test
   fun testRelease() {
-    assertNotNull(blobModule.resolve(blobId, 0, bytes.size))
+    assertThat(blobModule.resolve(blobId, 0, bytes.size)).isNotNull()
 
     blobModule.release(blobId)
 
-    assertNull(blobModule.resolve(blobId, 0, bytes.size))
+    assertThat(blobModule.resolve(blobId, 0, bytes.size)).isNull()
   }
 }

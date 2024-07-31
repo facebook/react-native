@@ -23,5 +23,6 @@ target_include_directories(sampleturbomodule PUBLIC .)
 target_link_libraries(sampleturbomodule
         fbjni
         jsi
-        react_nativemodule_core
-        turbomodulejsijni)
+        turbomodulejsijni
+        reactnative
+)

@@ -21,8 +21,8 @@ internal class ModulusAnimatedNode(
   override public fun update() {
     val animatedNode = nativeAnimatedNodesManager.getNodeById(inputNode)
     if (animatedNode is ValueAnimatedNode) {
-      val animatedNodeValue = animatedNode.value
-      mValue = (animatedNodeValue % modulus + modulus) % modulus
+      val animatedNodeValue = animatedNode.getValue()
+      nodeValue = (animatedNodeValue % modulus + modulus) % modulus
     } else {
       throw JSApplicationCausedNativeException(
           "Illegal node ID set as an input for Animated.modulus node")
@@ -30,6 +30,6 @@ internal class ModulusAnimatedNode(
   }
 
   override public fun prettyPrint(): String {
-    return "NativeAnimatedNodesManager[$mTag] inputNode: $inputNode modulus: $modulus super: ${super.prettyPrint()}"
+    return "NativeAnimatedNodesManager[$tag] inputNode: $inputNode modulus: $modulus super: ${super.prettyPrint()}"
   }
 }

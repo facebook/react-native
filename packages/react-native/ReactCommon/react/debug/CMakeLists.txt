@@ -16,7 +16,7 @@ add_compile_options(
 
 
 file(GLOB react_debug_SRC CONFIGURE_DEPENDS *.cpp)
-add_library(react_debug SHARED ${react_debug_SRC})
+add_library(react_debug OBJECT ${react_debug_SRC})
 
 target_include_directories(react_debug PUBLIC ${REACT_COMMON_DIR})
 

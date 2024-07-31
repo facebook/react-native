@@ -5,15 +5,10 @@ inputs:
     description: 'The node.js version to use'
     required: false
     default: '18'
-  cache:
-    description: 'The package manager to use for caching dependencies'
-    required: false
-    default: 'yarn'
 runs:
   using: "composite"
   steps:
     - name: Setup node.js
-      uses: actions/setup-node@v4.0.0
+      uses: actions/setup-node@v4
       with:
         node-version: ${{ inputs.node-version }}
-        cache: ${{ inputs.cache }}

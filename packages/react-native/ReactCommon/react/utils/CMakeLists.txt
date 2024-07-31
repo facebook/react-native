@@ -15,7 +15,7 @@ add_compile_options(
         -DLOG_TAG=\"Fabric\")
 
 file(GLOB react_utils_SRC CONFIGURE_DEPENDS *.cpp *.mm)
-add_library(react_utils SHARED ${react_utils_SRC})
+add_library(react_utils OBJECT ${react_utils_SRC})
 
 target_include_directories(react_utils PUBLIC ${REACT_COMMON_DIR})
 

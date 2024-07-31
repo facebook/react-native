@@ -73,7 +73,7 @@ public class TurboModuleManager implements TurboModuleRegistry {
             (CallInvokerHolderImpl) jsCallInvokerHolder,
             (NativeMethodCallInvokerHolderImpl) nativeMethodCallInvokerHolder,
             delegate);
-    installJSIBindings(shouldEnableLegacyModuleInterop(), enableSyncVoidMethods());
+    installJSIBindings(shouldEnableLegacyModuleInterop());
 
     mEagerInitModuleNames =
         delegate == null ? Collections.emptyList() : delegate.getEagerInitModuleNames();
@@ -111,10 +111,6 @@ public class TurboModuleManager implements TurboModuleRegistry {
 
   private boolean shouldEnableLegacyModuleInterop() {
     return mDelegate != null && mDelegate.unstable_shouldEnableLegacyModuleInterop();
-  }
-
-  private boolean enableSyncVoidMethods() {
-    return mDelegate != null && mDelegate.unstable_enableSyncVoidMethods();
   }
 
   @Override
@@ -389,8 +385,7 @@ public class TurboModuleManager implements TurboModuleRegistry {
       NativeMethodCallInvokerHolderImpl nativeMethodCallInvoker,
       TurboModuleManagerDelegate tmmDelegate);
 
-  private native void installJSIBindings(
-      boolean shouldCreateLegacyModules, boolean enableSyncVoidMethods);
+  private native void installJSIBindings(boolean shouldCreateLegacyModules);
 
   @Override
   public void invalidate() {

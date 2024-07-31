@@ -14,8 +14,7 @@ import com.facebook.react.bridge.JavaOnlyArray
 import com.facebook.react.bridge.JavaOnlyMap
 import com.facebook.react.bridge.ReactContext
 import com.facebook.testutils.fakes.FakeEventDispatcher
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -40,9 +39,11 @@ class InteropEventEmitterTest {
 
     eventEmitter.receiveEvent(42, "onTest", null)
 
-    assertEquals(1, eventDispatcher.getRecordedDispatchedEvents().size)
-    assertEquals("onTest", eventDispatcher.getRecordedDispatchedEvents().get(0).getEventName())
-    assertEquals(InteropEvent::class, eventDispatcher.getRecordedDispatchedEvents().get(0)::class)
+    assertThat(eventDispatcher.getRecordedDispatchedEvents()).hasSize(1)
+    assertThat(eventDispatcher.getRecordedDispatchedEvents().get(0).getEventName())
+        .isEqualTo("onTest")
+    assertThat(eventDispatcher.getRecordedDispatchedEvents().get(0))
+        .isInstanceOf(InteropEvent::class.java)
   }
 
   @Test
@@ -55,8 +56,8 @@ class InteropEventEmitterTest {
 
     val event = eventDispatcher.getRecordedDispatchedEvents()[0] as InteropEvent
     val dispatchedEventData = event.eventData
-    assertNotNull(dispatchedEventData)
-    assertEquals("indigo", dispatchedEventData!!.getString("color"))
+    assertThat(dispatchedEventData).isNotNull()
+    assertThat(dispatchedEventData!!.getString("color")).isEqualTo("indigo")
   }
 
   @Test(expected = java.lang.UnsupportedOperationException::class)

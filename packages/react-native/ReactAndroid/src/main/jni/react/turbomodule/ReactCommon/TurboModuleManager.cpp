@@ -128,31 +128,27 @@ void TurboModuleManager::registerNatives() {
 
 TurboModuleProviderFunctionType TurboModuleManager::createTurboModuleProvider(
     jni::alias_ref<jhybridobject> javaPart,
-    jsi::Runtime* runtime,
-    bool enableSyncVoidMethods) {
-  return
-      [runtime, weakJavaPart = jni::make_weak(javaPart), enableSyncVoidMethods](
-          const std::string& name) -> std::shared_ptr<TurboModule> {
-        auto javaPart = weakJavaPart.lockLocal();
-        if (!javaPart) {
-          return nullptr;
-        }
+    jsi::Runtime* runtime) {
+  return [runtime, weakJavaPart = jni::make_weak(javaPart)](
+             const std::string& name) -> std::shared_ptr<TurboModule> {
+    auto javaPart = weakJavaPart.lockLocal();
+    if (!javaPart) {
+      return nullptr;
+    }
 
-        auto cxxPart = javaPart->cthis();
-        if (cxxPart == nullptr) {
-          return nullptr;
-        }
+    auto cxxPart = javaPart->cthis();
+    if (cxxPart == nullptr) {
+      return nullptr;
+    }
 
-        return cxxPart->getTurboModule(
-            javaPart, name, *runtime, enableSyncVoidMethods);
-      };
+    return cxxPart->getTurboModule(javaPart, name, *runtime);
+  };
 }
 
 std::shared_ptr<TurboModule> TurboModuleManager::getTurboModule(
     jni::alias_ref<jhybridobject> javaPart,
     const std::string& name,
-    jsi::Runtime& runtime,
-    bool enableSyncVoidMethods) {
+    jsi::Runtime& runtime) {
   const char* moduleName = name.c_str();
   TurboModulePerfLogger::moduleJSRequireBeginningStart(moduleName);
 
@@ -192,8 +188,7 @@ std::shared_ptr<TurboModule> TurboModuleManager::getTurboModule(
         .moduleName = name,
         .instance = moduleInstance,
         .jsInvoker = jsCallInvoker_,
-        .nativeMethodCallInvoker = nativeMethodCallInvoker_,
-        .shouldVoidMethodsExecuteSync = enableSyncVoidMethods};
+        .nativeMethodCallInvoker = nativeMethodCallInvoker_};
 
     auto turboModule = cxxDelegate->getTurboModule(name, params);
     if (moduleInstance->isInstanceOf(
@@ -294,8 +289,7 @@ std::shared_ptr<TurboModule> TurboModuleManager::getLegacyModule(
         .moduleName = name,
         .instance = moduleInstance,
         .jsInvoker = jsCallInvoker_,
-        .nativeMethodCallInvoker = nativeMethodCallInvoker_,
-        .shouldVoidMethodsExecuteSync = false};
+        .nativeMethodCallInvoker = nativeMethodCallInvoker_};
 
     static auto getMethodDescriptorsFromModule =
         javaPart->getClass()
@@ -326,8 +320,7 @@ std::shared_ptr<TurboModule> TurboModuleManager::getLegacyModule(
 
 void TurboModuleManager::installJSIBindings(
     jni::alias_ref<jhybridobject> javaPart,
-    bool shouldCreateLegacyModules,
-    bool enableSyncVoidMethods) {
+    bool shouldCreateLegacyModules) {
   auto cxxPart = javaPart->cthis();
   if (cxxPart == nullptr || !cxxPart->jsCallInvoker_) {
     return; // Runtime doesn't exist when attached to Chrome debugger.
@@ -335,12 +328,10 @@ void TurboModuleManager::installJSIBindings(
 
   cxxPart->runtimeExecutor_([cxxPart,
                              javaPart = jni::make_global(javaPart),
-                             shouldCreateLegacyModules,
-                             enableSyncVoidMethods](jsi::Runtime& runtime) {
+                             shouldCreateLegacyModules](jsi::Runtime& runtime) {
     TurboModuleBinding::install(
         runtime,
-        cxxPart->createTurboModuleProvider(
-            javaPart, &runtime, enableSyncVoidMethods),
+        cxxPart->createTurboModuleProvider(javaPart, &runtime),
         shouldCreateLegacyModules
             ? cxxPart->createLegacyModuleProvider(javaPart)
             : nullptr);

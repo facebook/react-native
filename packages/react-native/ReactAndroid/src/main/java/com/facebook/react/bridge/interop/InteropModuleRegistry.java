@@ -10,6 +10,7 @@ package com.facebook.react.bridge.interop;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.config.ReactFeatureFlags;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import java.util.HashMap;
 
 /**
@@ -51,6 +52,6 @@ public class InteropModuleRegistry {
   }
 
   private boolean checkReactFeatureFlagsConditions() {
-    return ReactFeatureFlags.enableFabricRenderer && ReactFeatureFlags.unstable_useFabricInterop;
+    return ReactFeatureFlags.enableFabricRenderer && ReactNativeFeatureFlags.useFabricInterop();
   }
 }

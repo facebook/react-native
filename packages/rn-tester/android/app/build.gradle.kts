@@ -84,7 +84,12 @@ fun reactNativeArchitectures(): List<String> {
   return value?.toString()?.split(",") ?: listOf("armeabi-v7a", "x86", "x86_64", "arm64-v8a")
 }
 
-repositories { maven { url = rootProject.file("node_modules/jsc-android/dist").toURI() } }
+repositories {
+  maven {
+    url = rootProject.file("node_modules/jsc-android/dist").toURI()
+    content { includeGroup("org.webkit") }
+  }
+}
 
 android {
   compileSdk = libs.versions.compileSdk.get().toInt()

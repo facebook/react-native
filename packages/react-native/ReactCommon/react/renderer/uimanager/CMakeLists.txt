@@ -16,7 +16,7 @@ add_compile_options(
         -DLOG_TAG=\"Fabric\")
 
 file(GLOB react_render_uimanager_SRC CONFIGURE_DEPENDS *.cpp)
-add_library(react_render_uimanager STATIC ${react_render_uimanager_SRC})
+add_library(react_render_uimanager OBJECT ${react_render_uimanager_SRC})
 
 target_include_directories(react_render_uimanager PUBLIC ${REACT_COMMON_DIR})
 

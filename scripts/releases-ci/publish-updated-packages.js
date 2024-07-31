@@ -47,9 +47,7 @@ async function publishUpdatedPackages() {
   try {
     commitMessage = execSync('git log -1 --pretty=%B').toString();
   } catch {
-    console.error('Failed to read Git commit message, exiting.');
-    process.exitCode = 1;
-    return;
+    throw new Error('Failed to read Git commit message, exiting.');
   }
 
   if (!commitMessage.includes(PUBLISH_PACKAGES_TAG)) {
@@ -117,8 +115,7 @@ async function publishUpdatedPackages() {
   }
 
   if (failedPackages.length) {
-    process.exitCode = 1;
-    return;
+    throw new Error(`Failed packages count = ${failedPackages.length}`);
   }
 
   console.log('Done ✅');

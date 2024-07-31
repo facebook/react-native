@@ -401,17 +401,66 @@ using namespace facebook::react;
 
   // `filter`
   if (oldViewProps.filter != newViewProps.filter) {
-    _needsInvalidateLayer = YES;
+    needsInvalidateLayer = YES;
   }
 
   // `mixBlendMode`
   if (oldViewProps.mixBlendMode != newViewProps.mixBlendMode) {
-    _needsInvalidateLayer = YES;
+    switch (newViewProps.mixBlendMode) {
+      case BlendMode::Multiply:
+        self.layer.compositingFilter = @"multiplyBlendMode";
+        break;
+      case BlendMode::Screen:
+        self.layer.compositingFilter = @"screenBlendMode";
+        break;
+      case BlendMode::Overlay:
+        self.layer.compositingFilter = @"overlayBlendMode";
+        break;
+      case BlendMode::Darken:
+        self.layer.compositingFilter = @"darkenBlendMode";
+        break;
+      case BlendMode::Lighten:
+        self.layer.compositingFilter = @"lightenBlendMode";
+        break;
+      case BlendMode::ColorDodge:
+        self.layer.compositingFilter = @"colorDodgeBlendMode";
+        break;
+      case BlendMode::ColorBurn:
+        self.layer.compositingFilter = @"colorBurnBlendMode";
+        break;
+      case BlendMode::HardLight:
+        self.layer.compositingFilter = @"hardLightBlendMode";
+        break;
+      case BlendMode::SoftLight:
+        self.layer.compositingFilter = @"softLightBlendMode";
+        break;
+      case BlendMode::Difference:
+        self.layer.compositingFilter = @"differenceBlendMode";
+        break;
+      case BlendMode::Exclusion:
+        self.layer.compositingFilter = @"exclusionBlendMode";
+        break;
+      case BlendMode::Hue:
+        self.layer.compositingFilter = @"hueBlendMode";
+        break;
+      case BlendMode::Saturation:
+        self.layer.compositingFilter = @"saturationBlendMode";
+        break;
+      case BlendMode::Color:
+        self.layer.compositingFilter = @"colorBlendMode";
+        break;
+      case BlendMode::Luminosity:
+        self.layer.compositingFilter = @"luminosityBlendMode";
+        break;
+      case BlendMode::Normal:
+        self.layer.compositingFilter = nil;
+        break;
+    }
   }
 
   // `boxShadow`
   if (oldViewProps.boxShadow != newViewProps.boxShadow) {
-    _needsInvalidateLayer = YES;
+    needsInvalidateLayer = YES;
   }
 
   _needsInvalidateLayer = _needsInvalidateLayer || needsInvalidateLayer;
@@ -781,57 +830,7 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     [self.layer addSublayer:_filterLayer];
   }
 
-  switch (_props->mixBlendMode) {
-    case BlendMode::Multiply:
-      layer.compositingFilter = @"multiplyBlendMode";
-      break;
-    case BlendMode::Screen:
-      layer.compositingFilter = @"screenBlendMode";
-      break;
-    case BlendMode::Overlay:
-      layer.compositingFilter = @"overlayBlendMode";
-      break;
-    case BlendMode::Darken:
-      layer.compositingFilter = @"darkenBlendMode";
-      break;
-    case BlendMode::Lighten:
-      layer.compositingFilter = @"lightenBlendMode";
-      break;
-    case BlendMode::ColorDodge:
-      layer.compositingFilter = @"colorDodgeBlendMode";
-      break;
-    case BlendMode::ColorBurn:
-      layer.compositingFilter = @"colorBurnBlendMode";
-      break;
-    case BlendMode::HardLight:
-      layer.compositingFilter = @"hardLightBlendMode";
-      break;
-    case BlendMode::SoftLight:
-      layer.compositingFilter = @"softLightBlendMode";
-      break;
-    case BlendMode::Difference:
-      layer.compositingFilter = @"differenceBlendMode";
-      break;
-    case BlendMode::Exclusion:
-      layer.compositingFilter = @"exclusionBlendMode";
-      break;
-    case BlendMode::Hue:
-      layer.compositingFilter = @"hueBlendMode";
-      break;
-    case BlendMode::Saturation:
-      layer.compositingFilter = @"saturationBlendMode";
-      break;
-    case BlendMode::Color:
-      layer.compositingFilter = @"colorBlendMode";
-      break;
-    case BlendMode::Luminosity:
-      layer.compositingFilter = @"luminosityBlendMode";
-      break;
-    case BlendMode::Normal:
-      layer.compositingFilter = nil;
-      break;
-  }
-
+  [_boxShadowLayer removeFromSuperlayer];
   _boxShadowLayer = nil;
   if (!_props->boxShadow.empty()) {
     _boxShadowLayer = [CALayer layer];

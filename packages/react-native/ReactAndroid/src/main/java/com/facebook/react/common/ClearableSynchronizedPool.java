@@ -8,11 +8,14 @@
 package com.facebook.react.common;
 
 import androidx.core.util.Pools;
+import com.facebook.infer.annotation.Nullsafe;
+import javax.annotation.Nullable;
 
 /**
  * Like {@link androidx.core.util.Pools.SynchronizedPool} with the option to clear the pool (e.g. on
  * memory pressure).
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ClearableSynchronizedPool<T> implements Pools.Pool<T> {
 
   private final Object[] mPool;
@@ -23,7 +26,7 @@ public class ClearableSynchronizedPool<T> implements Pools.Pool<T> {
   }
 
   @Override
-  public synchronized T acquire() {
+  public synchronized @Nullable T acquire() {
     if (mSize == 0) {
       return null;
     }

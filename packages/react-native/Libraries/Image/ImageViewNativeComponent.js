@@ -113,6 +113,9 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
           borderBottomRightRadius: true,
           borderTopRightRadius: true,
           loadingIndicatorSrc: true,
+          experimental_boxShadow: {
+            process: require('../StyleSheet/processBoxShadow').default,
+          },
         },
       }
     : {

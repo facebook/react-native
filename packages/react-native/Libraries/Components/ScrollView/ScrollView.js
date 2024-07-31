@@ -11,7 +11,7 @@
 import type {
   TScrollViewNativeComponentInstance,
   TScrollViewNativeImperativeHandle,
-} from '../../../src/private/core/components/useSyncOnScroll';
+} from '../../../src/private/components/useSyncOnScroll';
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
 import type {PointProp} from '../../StyleSheet/PointPropType';
@@ -31,11 +31,11 @@ import type {Props as ScrollViewStickyHeaderProps} from './ScrollViewStickyHeade
 import {
   HScrollContentViewNativeComponent,
   HScrollViewNativeComponent,
-} from '../../../src/private/core/components/HScrollViewNativeComponents';
+} from '../../../src/private/components/HScrollViewNativeComponents';
 import {
   VScrollContentViewNativeComponent,
   VScrollViewNativeComponent,
-} from '../../../src/private/core/components/VScrollViewNativeComponents';
+} from '../../../src/private/components/VScrollViewNativeComponents';
 import AnimatedImplementation from '../../Animated/AnimatedImplementation';
 import FrameRateLogger from '../../Interaction/FrameRateLogger';
 import {findNodeHandle} from '../../ReactNative/RendererProxy';

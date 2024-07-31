@@ -15,7 +15,8 @@
 
 void initializePerfetto();
 
-perfetto::Track getPerfettoWebPerfTrack(const std::string& trackName);
+perfetto::Track getPerfettoWebPerfTrackSync(const std::string& trackName);
+perfetto::Track getPerfettoWebPerfTrackAsync(const std::string& trackName);
 
 uint64_t performanceNowToPerfettoTraceTime(double perfNowTime);
 

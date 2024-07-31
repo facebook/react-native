@@ -16,7 +16,7 @@ add_compile_options(
 
 file(GLOB react_bridging_SRC CONFIGURE_DEPENDS *.cpp)
 
-add_library(react_bridging STATIC ${react_bridging_SRC})
+add_library(react_bridging OBJECT ${react_bridging_SRC})
 
 target_include_directories(react_bridging PUBLIC ${REACT_COMMON_DIR})
 

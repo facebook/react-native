@@ -9,7 +9,7 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 add_compile_options(-fexceptions)
 
 file(GLOB logger_SRC CONFIGURE_DEPENDS *.cpp)
-add_library(logger STATIC ${logger_SRC})
+add_library(logger OBJECT ${logger_SRC})
 
 target_include_directories(logger PUBLIC .)
 

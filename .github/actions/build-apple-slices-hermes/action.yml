@@ -21,13 +21,13 @@ runs:
     - name: Restore Hermes workspace
       uses: ./.github/actions/restore-hermes-workspace
     - name: Restore HermesC Artifact
-      uses: actions/download-artifact@v4.1.3
+      uses: actions/download-artifact@v4
       with:
         name: hermesc-apple
         path: ./packages/react-native/sdks/hermes/build_host_hermesc
     - name: Restore Slice From Cache
       id: restore-slice-cache
-      uses: actions/cache/restore@v4.0.0
+      uses: actions/cache/restore@v4
       with:
         path: ./packages/react-native/sdks/hermes/build_${{ inputs.slice }}_${{ inputs.flavor }}
         key: v4-hermes-apple-${{ inputs.hermes-version }}-${{ inputs.react-native-version }}-${{ hashfiles('packages/react-native/sdks/hermes-engine/utils/build-apple-framework.sh') }}-${{ inputs.slice }}-${{ inputs.flavor }}
@@ -92,7 +92,7 @@ runs:
         path: ./packages/react-native/sdks/hermes/build_${{ inputs.slice }}_${{ inputs.flavor }}
     - name: Save slice cache
       if: ${{ github.ref == 'refs/heads/main' || contains(github.ref, '-stable') }} # To avoid that the cache explode.
-      uses: actions/cache/save@v4.0.0
+      uses: actions/cache/save@v4
       with:
         path: ./packages/react-native/sdks/hermes/build_${{ inputs.slice }}_${{ inputs.flavor }}
         key: v4-hermes-apple-${{ inputs.hermes-version }}-${{ inputs.react-native-version }}-${{ hashfiles('packages/react-native/sdks/hermes-engine/utils/build-apple-framework.sh') }}-${{ inputs.SLICE }}-${{ inputs.FLAVOR }}

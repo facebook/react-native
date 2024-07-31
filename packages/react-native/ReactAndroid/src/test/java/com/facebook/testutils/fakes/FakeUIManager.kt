@@ -28,10 +28,6 @@ class FakeUIManager : UIManager, UIBlockViewResolver {
     TODO("Not yet implemented")
   }
 
-  override fun getPerformanceCounters(): MutableMap<String, Long> {
-    TODO("Not yet implemented")
-  }
-
   override fun <T : View?> addRootView(rootView: T, initialProps: WritableMap?): Int {
     TODO("Not yet implemented")
   }
@@ -117,4 +113,7 @@ class FakeUIManager : UIManager, UIBlockViewResolver {
   override fun invalidate() {
     TODO("Not yet implemented")
   }
+
+  override val performanceCounters: Map<String, Long>?
+    get() = null
 }

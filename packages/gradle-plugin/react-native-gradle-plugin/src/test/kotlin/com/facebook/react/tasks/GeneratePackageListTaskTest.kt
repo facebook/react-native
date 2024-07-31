@@ -12,7 +12,7 @@ import com.facebook.react.model.ModelAutolinkingDependenciesJson
 import com.facebook.react.model.ModelAutolinkingDependenciesPlatformAndroidJson
 import com.facebook.react.model.ModelAutolinkingDependenciesPlatformJson
 import com.facebook.react.tests.createTestTask
-import org.junit.Assert.assertEquals
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
@@ -24,7 +24,7 @@ class GeneratePackageListTaskTest {
   @Test
   fun generatePackageListTask_groupIsSetCorrectly() {
     val task = createTestTask<GeneratePackageListTask> {}
-    assertEquals("react", task.group)
+    assertThat(task.group).isEqualTo("react")
   }
 
   @Test
@@ -38,8 +38,8 @@ class GeneratePackageListTaskTest {
           it.autolinkInputFile.set(inputFile)
         }
 
-    assertEquals(inputFile, task.inputs.files.singleFile)
-    assertEquals(outputFolder, task.outputs.files.singleFile)
+    assertThat(task.inputs.files.singleFile).isEqualTo(inputFile)
+    assertThat(task.outputs.files.singleFile).isEqualTo(outputFolder)
   }
 
   @Test
@@ -47,7 +47,7 @@ class GeneratePackageListTaskTest {
     val task = createTestTask<GeneratePackageListTask>()
     val packageName = "com.facebook.react"
     val result = task.composePackageImports(packageName, emptyMap())
-    assertEquals("", result)
+    assertThat(result).isEqualTo("")
   }
 
   @Test
@@ -56,15 +56,15 @@ class GeneratePackageListTaskTest {
     val packageName = "com.facebook.react"
 
     val result = task.composePackageImports(packageName, testDependencies)
-    assertEquals(
-        """
+    assertThat(result)
+        .isEqualTo(
+            """
       // @react-native/a-package
       import com.facebook.react.aPackage;
       // @react-native/another-package
       import com.facebook.react.anotherPackage;
     """
-            .trimIndent(),
-        result)
+                .trimIndent())
   }
 
   @Test
@@ -72,7 +72,7 @@ class GeneratePackageListTaskTest {
     val task = createTestTask<GeneratePackageListTask>()
     val packageName = "com.facebook.react"
     val result = task.composePackageInstance(packageName, emptyMap())
-    assertEquals("", result)
+    assertThat(result).isEqualTo("")
   }
 
   @Test
@@ -81,14 +81,14 @@ class GeneratePackageListTaskTest {
     val packageName = "com.facebook.react"
 
     val result = task.composePackageInstance(packageName, testDependencies)
-    assertEquals(
-        """
+    assertThat(result)
+        .isEqualTo(
+            """
       ,
             new APackage(),
             new AnotherPackage()
     """
-            .trimIndent(),
-        result)
+                .trimIndent())
   }
 
   @Test
@@ -96,7 +96,7 @@ class GeneratePackageListTaskTest {
     val packageName = "com.facebook.react"
     val input = "com.facebook.react.aPackage"
     val output = GeneratePackageListTask.interpolateDynamicValues(input, packageName)
-    assertEquals(input, output)
+    assertThat(output).isEqualTo(input)
   }
 
   @Test
@@ -104,7 +104,7 @@ class GeneratePackageListTaskTest {
     val packageName = "com.facebook.react"
     val input = "new APackageWithR(R.string.value)"
     val output = GeneratePackageListTask.interpolateDynamicValues(input, packageName)
-    assertEquals("new APackageWithR(com.facebook.react.R.string.value)", output)
+    assertThat(output).isEqualTo("new APackageWithR(com.facebook.react.R.string.value)")
   }
 
   @Test
@@ -112,22 +112,24 @@ class GeneratePackageListTaskTest {
     val packageName = "com.facebook.react"
     val input = "new APackageWithBuildConfigInTheName(BuildConfig.VALUE)"
     val output = GeneratePackageListTask.interpolateDynamicValues(input, packageName)
-    assertEquals(
-        "new APackageWithBuildConfigInTheName(com.facebook.react.BuildConfig.VALUE)", output)
+    assertThat(output)
+        .isEqualTo("new APackageWithBuildConfigInTheName(com.facebook.react.BuildConfig.VALUE)")
   }
 
   @Test
   fun filterAndroidPackages_withNull_returnsEmpty() {
     val task = createTestTask<GeneratePackageListTask>()
     val result = task.filterAndroidPackages(null)
-    assertEquals(emptyMap<String, ModelAutolinkingDependenciesPlatformAndroidJson>(), result)
+    assertThat(result)
+        .isEqualTo(emptyMap<String, ModelAutolinkingDependenciesPlatformAndroidJson>())
   }
 
   @Test
   fun filterAndroidPackages_withEmptyObject_returnsEmpty() {
     val task = createTestTask<GeneratePackageListTask>()
     val result = task.filterAndroidPackages(ModelAutolinkingConfigJson("1000.0.0", null, null))
-    assertEquals(emptyMap<String, ModelAutolinkingDependenciesPlatformAndroidJson>(), result)
+    assertThat(result)
+        .isEqualTo(emptyMap<String, ModelAutolinkingDependenciesPlatformAndroidJson>())
   }
 
   @Test
@@ -146,7 +148,8 @@ class GeneratePackageListTaskTest {
                                 platforms =
                                     ModelAutolinkingDependenciesPlatformJson(android = null))),
                 project = null))
-    assertEquals(emptyMap<String, ModelAutolinkingDependenciesPlatformAndroidJson>(), result)
+    assertThat(result)
+        .isEqualTo(emptyMap<String, ModelAutolinkingDependenciesPlatformAndroidJson>())
   }
 
   @Test
@@ -173,8 +176,8 @@ class GeneratePackageListTaskTest {
                                 platforms =
                                     ModelAutolinkingDependenciesPlatformJson(android = android))),
                 project = null))
-    assertEquals(1, result.entries.size)
-    assertEquals(android, result["a-dependency"])
+    assertThat(result.entries.size).isEqualTo(1)
+    assertThat(result["a-dependency"]).isEqualTo(android)
   }
 
   @Test
@@ -201,7 +204,8 @@ class GeneratePackageListTaskTest {
                                 platforms =
                                     ModelAutolinkingDependenciesPlatformJson(android = android))),
                 project = null))
-    assertEquals(emptyMap<String, ModelAutolinkingDependenciesPlatformAndroidJson>(), result)
+    assertThat(result)
+        .isEqualTo(emptyMap<String, ModelAutolinkingDependenciesPlatformAndroidJson>())
   }
 
   @Test
@@ -212,8 +216,9 @@ class GeneratePackageListTaskTest {
     val instance = task.composePackageInstance(packageName, emptyMap())
     val result = task.composeFileContent(imports, instance)
     // language=java
-    assertEquals(
-        """
+    assertThat(result)
+        .isEqualTo(
+            """
     package com.facebook.react;
 
     import android.app.Application;
@@ -276,8 +281,7 @@ class GeneratePackageListTaskTest {
       }
     }
     """
-            .trimIndent(),
-        result)
+                .trimIndent())
   }
 
   @Test
@@ -288,8 +292,9 @@ class GeneratePackageListTaskTest {
     val instance = task.composePackageInstance(packageName, testDependencies)
     val result = task.composeFileContent(imports, instance)
     // language=java
-    assertEquals(
-        """
+    assertThat(result)
+        .isEqualTo(
+            """
     package com.facebook.react;
 
     import android.app.Application;
@@ -357,8 +362,7 @@ class GeneratePackageListTaskTest {
       }
     }
     """
-            .trimIndent(),
-        result)
+                .trimIndent())
   }
 
   private val testDependencies =

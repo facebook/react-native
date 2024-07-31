@@ -15,7 +15,7 @@ add_compile_options(
         -DLOG_TAG=\"Fabric\")
 
 file(GLOB react_render_graphics_SRC CONFIGURE_DEPENDS *.cpp)
-add_library(react_render_graphics SHARED ${react_render_graphics_SRC})
+add_library(react_render_graphics OBJECT ${react_render_graphics_SRC})
 
 target_include_directories(react_render_graphics
         PUBLIC

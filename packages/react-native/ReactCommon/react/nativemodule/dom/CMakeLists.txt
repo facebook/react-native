@@ -15,7 +15,11 @@ add_compile_options(
         -DLOG_TAG=\"ReactNative\")
 
 file(GLOB react_nativemodule_dom_SRC CONFIGURE_DEPENDS *.cpp)
-add_library(react_nativemodule_dom SHARED ${react_nativemodule_dom_SRC})
+add_library(react_nativemodule_dom
+        OBJECT
+            ${react_nativemodule_dom_SRC}
+            $<TARGET_OBJECTS:react_codegen_rncore>
+)
 
 target_include_directories(react_nativemodule_dom PUBLIC ${REACT_COMMON_DIR})
 

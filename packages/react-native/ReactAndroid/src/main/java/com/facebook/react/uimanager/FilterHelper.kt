@@ -86,7 +86,7 @@ internal object FilterHelper {
     for (i in 0 until filters.size()) {
       val filter = filters.getMap(i).entryIterator.next()
       val filterName = filter.key
-      if (filterName == "blur" || filterName == "drop-shadow") {
+      if (filterName == "blur" || filterName == "dropShadow") {
         return false
       }
     }

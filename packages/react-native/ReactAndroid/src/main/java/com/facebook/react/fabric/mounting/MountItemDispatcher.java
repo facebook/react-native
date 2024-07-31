@@ -8,7 +8,6 @@
 package com.facebook.react.fabric.mounting;
 
 import static com.facebook.infer.annotation.ThreadConfined.UI;
-import static com.facebook.react.fabric.FabricUIManager.ENABLE_FABRIC_LOGS;
 import static com.facebook.react.fabric.FabricUIManager.IS_DEVELOPMENT_ENVIRONMENT;
 
 import android.os.SystemClock;
@@ -228,7 +227,7 @@ public class MountItemDispatcher {
           Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
           "MountItemDispatcher::mountViews viewCommandMountItems");
       for (DispatchCommandMountItem command : viewCommandMountItemsToDispatch) {
-        if (ENABLE_FABRIC_LOGS) {
+        if (ReactNativeFeatureFlags.enableFabricLogs()) {
           printMountItem(command, "dispatchMountItems: Executing viewCommandMountItem");
         }
         try {
@@ -270,7 +269,7 @@ public class MountItemDispatcher {
       Systrace.beginSection(
           Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "MountItemDispatcher::mountViews preMountItems");
       for (MountItem preMountItem : preMountItemsToDispatch) {
-        if (ENABLE_FABRIC_LOGS) {
+        if (ReactNativeFeatureFlags.enableFabricLogs()) {
           printMountItem(preMountItem, "dispatchMountItems: Executing preMountItem");
         }
         executeOrEnqueue(preMountItem);
@@ -287,7 +286,7 @@ public class MountItemDispatcher {
       long batchedExecutionStartTime = SystemClock.uptimeMillis();
 
       for (MountItem mountItem : mountItemsToDispatch) {
-        if (ENABLE_FABRIC_LOGS) {
+        if (ReactNativeFeatureFlags.enableFabricLogs()) {
           printMountItem(mountItem, "dispatchMountItems: Executing mountItem");
         }
 
@@ -361,7 +360,7 @@ public class MountItemDispatcher {
           break;
         }
 
-        if (ENABLE_FABRIC_LOGS) {
+        if (ReactNativeFeatureFlags.enableFabricLogs()) {
           printMountItem(preMountItemToDispatch, "dispatchPreMountItems");
         }
         executeOrEnqueue(preMountItemToDispatch);
@@ -375,7 +374,7 @@ public class MountItemDispatcher {
 
   private void executeOrEnqueue(MountItem item) {
     if (mMountingManager.isWaitingForViewAttach(item.getSurfaceId())) {
-      if (ENABLE_FABRIC_LOGS) {
+      if (ReactNativeFeatureFlags.enableFabricLogs()) {
         FLog.e(
             TAG,
             "executeOrEnqueue: Item execution delayed, surface %s is not ready yet",

@@ -15,7 +15,7 @@ add_compile_options(
         -DLOG_TAG=\"Fabric\")
 
 file(GLOB rrc_root_SRC CONFIGURE_DEPENDS *.cpp)
-add_library(rrc_root STATIC ${rrc_root_SRC})
+add_library(rrc_root OBJECT ${rrc_root_SRC})
 
 target_include_directories(rrc_root PUBLIC ${REACT_COMMON_DIR})
 

@@ -67,6 +67,8 @@ public class BindingImpl : Binding {
 
   external override fun driveCxxAnimations()
 
+  external override fun drainPreallocateViewsQueue()
+
   external override fun reportMount(surfaceId: Int)
 
   external override fun getInspectorDataForInstance(

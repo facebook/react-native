@@ -52,8 +52,29 @@ describe('PerformanceObserver', () => {
     const observer = new PerformanceObserver((list, _observer) => {});
 
     expect(() =>
-      observer.observe({entryTypes: ['mark'], durationThreshold: 100}),
+      observer.observe({entryTypes: ['event', 'mark'], durationThreshold: 100}),
     ).toThrow();
+  });
+
+  it('ignores durationThreshold when used with marks or measures', async () => {
+    let entries = [];
+
+    const observer = new PerformanceObserver((list, _observer) => {
+      entries = [...entries, ...list.getEntries()];
+    });
+
+    observer.observe({type: 'measure', durationThreshold: 100});
+
+    NativePerformanceObserver.logRawEntry({
+      name: 'measure1',
+      entryType: RawPerformanceEntryTypeValues.MEASURE,
+      startTime: 0,
+      duration: 200,
+    });
+
+    await jest.runAllTicks();
+    expect(entries).toHaveLength(1);
+    expect(entries.map(e => e.name)).toStrictEqual(['measure1']);
   });
 
   it('handles durationThreshold argument as expected', async () => {
@@ -62,39 +83,43 @@ describe('PerformanceObserver', () => {
       entries = [...entries, ...list.getEntries()];
     });
 
-    observer.observe({type: 'mark', durationThreshold: 100});
+    observer.observe({type: 'event', durationThreshold: 100});
 
     NativePerformanceObserver.logRawEntry({
-      name: 'mark1',
-      entryType: RawPerformanceEntryTypeValues.MARK,
+      name: 'event1',
+      entryType: RawPerformanceEntryTypeValues.EVENT,
       startTime: 0,
       duration: 200,
     });
 
     NativePerformanceObserver.logRawEntry({
-      name: 'mark2',
-      entryType: RawPerformanceEntryTypeValues.MARK,
+      name: 'event2',
+      entryType: RawPerformanceEntryTypeValues.EVENT,
       startTime: 0,
       duration: 20,
     });
 
     NativePerformanceObserver.logRawEntry({
-      name: 'mark3',
-      entryType: RawPerformanceEntryTypeValues.MARK,
+      name: 'event3',
+      entryType: RawPerformanceEntryTypeValues.EVENT,
       startTime: 0,
       duration: 100,
     });
 
     NativePerformanceObserver.logRawEntry({
-      name: 'mark4',
-      entryType: RawPerformanceEntryTypeValues.MARK,
+      name: 'event4',
+      entryType: RawPerformanceEntryTypeValues.EVENT,
       startTime: 0,
       duration: 500,
     });
 
     await jest.runAllTicks();
     expect(entries).toHaveLength(3);
-    expect(entries.map(e => e.name)).toStrictEqual(['mark1', 'mark3', 'mark4']);
+    expect(entries.map(e => e.name)).toStrictEqual([
+      'event1',
+      'event3',
+      'event4',
+    ]);
   });
 
   it('correctly works with multiple PerformanceObservers with durationThreshold', async () => {
@@ -118,36 +143,36 @@ describe('PerformanceObserver', () => {
       entries4 = [...entries4, ...list.getEntries()];
     });
 
-    observer2.observe({type: 'mark', durationThreshold: 200});
-    observer1.observe({type: 'mark', durationThreshold: 100});
-    observer3.observe({type: 'mark', durationThreshold: 300});
-    observer3.observe({type: 'measure', durationThreshold: 500});
-    observer4.observe({entryTypes: ['mark', 'measure']});
+    observer2.observe({type: 'event', durationThreshold: 200});
+    observer1.observe({type: 'event', durationThreshold: 100});
+    observer3.observe({type: 'event', durationThreshold: 300});
+    observer3.observe({type: 'event', durationThreshold: 500});
+    observer4.observe({entryTypes: ['event']});
 
     NativePerformanceObserver.logRawEntry({
-      name: 'mark1',
-      entryType: RawPerformanceEntryTypeValues.MARK,
+      name: 'event1',
+      entryType: RawPerformanceEntryTypeValues.EVENT,
       startTime: 0,
       duration: 200,
     });
 
     NativePerformanceObserver.logRawEntry({
-      name: 'mark2',
-      entryType: RawPerformanceEntryTypeValues.MARK,
+      name: 'event2',
+      entryType: RawPerformanceEntryTypeValues.EVENT,
       startTime: 0,
       duration: 20,
     });
 
     NativePerformanceObserver.logRawEntry({
-      name: 'mark3',
-      entryType: RawPerformanceEntryTypeValues.MARK,
+      name: 'event3',
+      entryType: RawPerformanceEntryTypeValues.EVENT,
       startTime: 0,
       duration: 100,
     });
 
     NativePerformanceObserver.logRawEntry({
-      name: 'mark4',
-      entryType: RawPerformanceEntryTypeValues.MARK,
+      name: 'event4',
+      entryType: RawPerformanceEntryTypeValues.EVENT,
       startTime: 0,
       duration: 500,
     });
@@ -156,15 +181,15 @@ describe('PerformanceObserver', () => {
     observer1.disconnect();
 
     NativePerformanceObserver.logRawEntry({
-      name: 'mark5',
-      entryType: RawPerformanceEntryTypeValues.MARK,
+      name: 'event5',
+      entryType: RawPerformanceEntryTypeValues.EVENT,
       startTime: 0,
       duration: 200,
     });
 
     NativePerformanceObserver.logRawEntry({
-      name: 'mark6',
-      entryType: RawPerformanceEntryTypeValues.MARK,
+      name: 'event6',
+      entryType: RawPerformanceEntryTypeValues.EVENT,
       startTime: 0,
       duration: 300,
     });
@@ -173,8 +198,8 @@ describe('PerformanceObserver', () => {
     observer3.disconnect();
 
     NativePerformanceObserver.logRawEntry({
-      name: 'mark7',
-      entryType: RawPerformanceEntryTypeValues.MARK,
+      name: 'event7',
+      entryType: RawPerformanceEntryTypeValues.EVENT,
       startTime: 0,
       duration: 200,
     });
@@ -183,26 +208,26 @@ describe('PerformanceObserver', () => {
     observer4.disconnect();
 
     expect(entries1.map(e => e.name)).toStrictEqual([
-      'mark1',
-      'mark3',
-      'mark4',
+      'event1',
+      'event3',
+      'event4',
     ]);
     expect(entries2.map(e => e.name)).toStrictEqual([
-      'mark1',
-      'mark4',
-      'mark5',
-      'mark6',
-      'mark7',
+      'event1',
+      'event4',
+      'event5',
+      'event6',
+      'event7',
     ]);
-    expect(entries3.map(e => e.name)).toStrictEqual(['mark4', 'mark6']);
+    expect(entries3.map(e => e.name)).toStrictEqual(['event4', 'event6']);
     expect(entries4.map(e => e.name)).toStrictEqual([
-      'mark1',
-      'mark2',
-      'mark3',
-      'mark4',
-      'mark5',
-      'mark6',
-      'mark7',
+      'event1',
+      'event2',
+      'event3',
+      'event4',
+      'event5',
+      'event6',
+      'event7',
     ]);
   });
 

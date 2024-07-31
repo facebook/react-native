@@ -144,17 +144,7 @@ Scheduler::Scheduler(
   }
   uiManager_->setAnimationDelegate(animationDelegate);
 
-#ifdef ANDROID
-  removeOutstandingSurfacesOnDestruction_ = true;
-#else
-  removeOutstandingSurfacesOnDestruction_ = reactNativeConfig_->getBool(
-      "react_fabric:remove_outstanding_surfaces_on_destruction_ios");
-#endif
-
-  CoreFeatures::enableReportEventPaintTime = reactNativeConfig_->getBool(
-      "rn_responsiveness_performance:enable_paint_time_reporting");
-
-  if (CoreFeatures::enableReportEventPaintTime) {
+  if (ReactNativeFeatureFlags::enableReportEventPaintTime()) {
     uiManager->registerMountHook(*eventPerformanceLogger_);
   }
 }
@@ -206,11 +196,9 @@ Scheduler::~Scheduler() {
         surfaceId,
         [](const ShadowTree& shadowTree) { shadowTree.commitEmptyTree(); });
 
-    // Removing surfaces is gated because it acquires mutex waiting for commits
-    // in flight; in theory, it can deadlock.
-    if (removeOutstandingSurfacesOnDestruction_) {
-      uiManager_->getShadowTreeRegistry().remove(surfaceId);
-    }
+    // Removing surfaces acquires mutex waiting for commits in flight; in
+    // theory, it can deadlock.
+    uiManager_->getShadowTreeRegistry().remove(surfaceId);
   }
 }
 

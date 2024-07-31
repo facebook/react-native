@@ -19,7 +19,7 @@ runs:
     - name: Restore Hermes workspace
       uses: ./.github/actions/restore-hermes-workspace
     - name: Linux cache
-      uses: actions/cache@v4.0.0
+      uses: actions/cache@v4
       with:
         key: v1-hermes-${{ github.job }}-linux-${{ inputs.hermes-version }}-${{ inputs.react-native-version }}
         path: |

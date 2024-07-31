@@ -8,24 +8,25 @@
  * @flow strict
  */
 
-import type {HighResTimeStamp} from './PerformanceEntry';
+// flowlint unsafe-getters-setters:off
+
+import type {DOMHighResTimeStamp} from './PerformanceEntry';
 
 import {PerformanceEntry} from './PerformanceEntry';
 
-type DetailType = mixed;
+export type DetailType = mixed;
 
 export type PerformanceMarkOptions = {
   detail?: DetailType,
-  startTime?: HighResTimeStamp,
+  startTime?: DOMHighResTimeStamp,
 };
 
-export type TimeStampOrName = HighResTimeStamp | string;
+export type TimeStampOrName = DOMHighResTimeStamp | string;
 
-export type PerformanceMeasureOptions = {
+export type PerformanceMeasureInit = {
   detail?: DetailType,
-  start?: TimeStampOrName,
-  end?: TimeStampOrName,
-  duration?: HighResTimeStamp,
+  startTime?: DOMHighResTimeStamp,
+  duration?: DOMHighResTimeStamp,
 };
 
 export class PerformanceMark extends PerformanceEntry {
@@ -46,18 +47,22 @@ export class PerformanceMark extends PerformanceEntry {
 }
 
 export class PerformanceMeasure extends PerformanceEntry {
-  detail: DetailType;
+  #detail: DetailType;
 
-  constructor(measureName: string, measureOptions?: PerformanceMeasureOptions) {
+  constructor(measureName: string, measureOptions?: PerformanceMeasureInit) {
     super({
       name: measureName,
       entryType: 'measure',
-      startTime: 0,
+      startTime: measureOptions?.startTime ?? 0,
       duration: measureOptions?.duration ?? 0,
     });
 
     if (measureOptions) {
-      this.detail = measureOptions.detail;
+      this.#detail = measureOptions.detail;
     }
+  }
+
+  get detail(): DetailType {
+    return this.#detail;
   }
 }

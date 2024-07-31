@@ -49,6 +49,8 @@ public interface Binding {
 
   public fun driveCxxAnimations()
 
+  public fun drainPreallocateViewsQueue()
+
   public fun reportMount(surfaceId: Int)
 
   public fun getInspectorDataForInstance(

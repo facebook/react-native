@@ -7,6 +7,7 @@
 
 package com.facebook.react.modules.fresco;
 
+import androidx.annotation.Nullable;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.facebook.react.bridge.ReadableMap;
@@ -15,18 +16,19 @@ import com.facebook.react.bridge.ReadableMap;
 public class ReactNetworkImageRequest extends ImageRequest {
 
   /** Headers for the request */
-  private final ReadableMap mHeaders;
+  @Nullable private final ReadableMap mHeaders;
 
   public static ReactNetworkImageRequest fromBuilderWithHeaders(
-      ImageRequestBuilder builder, ReadableMap headers) {
+      ImageRequestBuilder builder, @Nullable ReadableMap headers) {
     return new ReactNetworkImageRequest(builder, headers);
   }
 
-  protected ReactNetworkImageRequest(ImageRequestBuilder builder, ReadableMap headers) {
+  protected ReactNetworkImageRequest(ImageRequestBuilder builder, @Nullable ReadableMap headers) {
     super(builder);
     mHeaders = headers;
   }
 
+  @Nullable
   public ReadableMap getHeaders() {
     return mHeaders;
   }

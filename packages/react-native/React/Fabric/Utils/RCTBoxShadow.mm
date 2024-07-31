@@ -17,6 +17,7 @@ using namespace facebook::react;
 static CGFloat adjustedCornerRadius(CGFloat cornerRadius, CGFloat spreadDistance)
 {
   CGFloat adjustment = spreadDistance;
+  (void)adjustment;
   if (cornerRadius < abs(spreadDistance)) {
     const CGFloat r = cornerRadius / (CGFloat)abs(spreadDistance);
     const CGFloat p = (CGFloat)pow(r - 1.0, 3.0);
@@ -228,12 +229,17 @@ static void renderInsetShadows(
         shadowRectSize.height);
     CGContextAddRect(context, shadowRect);
 
-    CGRect clearRegionRect = CGRectMake(
-        shadowRect.origin.x + offsetX + blurRadius + spreadDistance,
-        shadowRect.origin.y + offsetY + blurRadius + spreadDistance,
-        clearRegionSize.width,
-        clearRegionSize.height);
-    CGContextAddRect(context, clearRegionRect);
+    const RCTCornerInsets cornerInsetsForClearRegion =
+        RCTGetCornerInsets(cornerRadiiForBoxShadow(cornerRadii, -spreadDistance), UIEdgeInsetsZero);
+    CGPathRef clearRegionPath = RCTPathCreateWithRoundedRect(
+        CGRectMake(
+            shadowRect.origin.x + offsetX + blurRadius + spreadDistance,
+            shadowRect.origin.y + offsetY + blurRadius + spreadDistance,
+            clearRegionSize.width,
+            clearRegionSize.height),
+        cornerInsetsForClearRegion,
+        nil);
+    CGContextAddPath(context, clearRegionPath);
 
     // Third, set the shadow graphics state with the appropriate offset such that
     // it is positioned on top of the view. We subtract blurRadius because the

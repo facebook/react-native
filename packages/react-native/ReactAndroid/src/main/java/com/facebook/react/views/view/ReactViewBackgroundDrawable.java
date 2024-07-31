@@ -13,10 +13,12 @@ import com.facebook.react.uimanager.drawable.CSSBackgroundDrawable;
 /**
  * @deprecated Please use {@link CSSBackgroundDrawable} instead
  */
+@Deprecated(since = "0.75.0", forRemoval = true)
 public class ReactViewBackgroundDrawable extends CSSBackgroundDrawable {
   /**
    * @deprecated Please use {@link CSSBackgroundDrawable} instead
    */
+  @Deprecated(since = "0.75.0", forRemoval = true)
   public ReactViewBackgroundDrawable(Context context) {
     super(context);
   }
