@@ -780,7 +780,7 @@ jobs:
         default: "iphoneos"
         description: The Hermes Slice that this job has to build
         type: enum
-        enum: ["macosx", "iphoneos", "iphonesimulator", "catalyst", "xros", "xrsimulator"]
+        enum: ["macosx", "iphoneos", "iphonesimulator", "catalyst"]
     executor: reactnativeios
     environment:
       - HERMES_WS_DIR: *hermes_workspace_root
@@ -813,25 +813,11 @@ jobs:
               exit 0
             fi
 
-            export RELEASE_VERSION=$(cat /tmp/react-native-version)
-            if [[ "$SLICE" == "macosx" ]]; then
-              echo "[HERMES] Building Hermes for MacOS"
-              BUILD_TYPE="<< parameters.flavor >>" ./utils/build-mac-framework.sh
-            else
-              echo "[HERMES] Building Hermes for iOS: $SLICE"
-              BUILD_TYPE="<< parameters.flavor >>" ./utils/build-ios-framework.sh "$SLICE"
-            fi
-
             if [[ "$SLICE" == "macosx" ]]; then
               export MACOSX_DEPLOYMENT_TARGET="10.15"
               echo "[HERMES] Building Hermes for MacOS"
               BUILD_TYPE="<< parameters.flavor >>" ./utils/build-mac-framework.sh
               unset MACOSX_DEPLOYMENT_TARGET
-            elif [[ "$SLICE" == "xros" ]] || [[ "$SLICE" == "xrsimulator" ]]; then
-              export XROS_DEPLOYMENT_TARGET="1.0"
-              echo "[HERMES] Building Hermes for XR: $SLICE"
-              BUILD_TYPE="<< parameters.flavor >>" ./utils/build-ios-framework.sh "$SLICE"
-              unset XROS_DEPLOYMENT_TARGET
             elif [[ "$SLICE" == "iphoneos" ]] || [[ "$SLICE" == "iphonesimulator" ]] || [[ "$SLICE" == "catalyst" ]] ; then
               export IOS_DEPLOYMENT_TARGET="13.4"
               echo "[HERMES] Building Hermes for iOS: $SLICE"
@@ -898,10 +884,6 @@ jobs:
           key: << parameters.slice_base_cache_key >>-iphonesimulator-<< parameters.flavor >>
       - restore_cache:
           key: << parameters.slice_base_cache_key >>-catalyst-<< parameters.flavor >>
-      - restore_cache:
-          key: << parameters.slice_base_cache_key >>-xros-<< parameters.flavor >>
-      - restore_cache:
-          key: << parameters.slice_base_cache_key >>-xrsimulator-<< parameters.flavor >>
       - run:
           name: "Move back build folders"
           command: |
@@ -910,8 +892,6 @@ jobs:
             mv build_iphoneos_<< parameters.flavor >> build_iphoneos
             mv build_iphonesimulator_<< parameters.flavor >> build_iphonesimulator
             mv build_catalyst_<< parameters.flavor >> build_catalyst
-            mv build_xros_<< parameters.flavor >> build_xros
-            mv build_xrsimulator_<< parameters.flavor >> build_xrsimulator
       - run:
           name: "Prepare destroot folder"
           command: |
@@ -962,18 +942,13 @@ jobs:
             mkdir -p "$WORKING_DIR/catalyst"
             mkdir -p "$WORKING_DIR/iphoneos"
             mkdir -p "$WORKING_DIR/iphonesimulator"
-            mkdir -p "$WORKING_DIR/xros"
-            mkdir -p "$WORKING_DIR/xrsimulator"
 
-            cd ./packages/react-native/sdks/hermes || exit 1
 
             DSYM_FILE_PATH=API/hermes/hermes.framework.dSYM
             cp -r build_macosx/$DSYM_FILE_PATH "$WORKING_DIR/macosx/"
             cp -r build_catalyst/$DSYM_FILE_PATH "$WORKING_DIR/catalyst/"
             cp -r build_iphoneos/$DSYM_FILE_PATH "$WORKING_DIR/iphoneos/"
             cp -r build_iphonesimulator/$DSYM_FILE_PATH "$WORKING_DIR/iphonesimulator/"
-            cp -r build_xrsimulator/$DSYM_FILE_PATH "$WORKING_DIR/xrsimulator/"
-            cp -r build_xros/$DSYM_FILE_PATH "$WORKING_DIR/xros/"
 
             DEST_DIR="/tmp/hermes/dSYM/$FLAVOR"
             tar -C "$WORKING_DIR" -czvf "hermes.framework.dSYM" .
