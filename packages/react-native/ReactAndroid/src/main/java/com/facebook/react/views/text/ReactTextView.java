@@ -35,12 +35,15 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
+import com.facebook.react.uimanager.BackgroundStyleApplicator;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactCompoundView;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewDefaults;
 import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.common.ViewUtil;
+import com.facebook.react.uimanager.style.Overflow;
 import com.facebook.react.views.text.internal.span.ReactTagSpan;
 import com.facebook.react.views.text.internal.span.TextInlineImageSpan;
 import com.facebook.react.views.text.internal.span.TextInlineViewPlaceholderSpan;
@@ -69,6 +72,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   private boolean mNotifyOnInlineViewLayout;
   private boolean mTextIsSelectable;
   private boolean mShouldAdjustSpannableFontSize;
+  private Overflow mOverflow = Overflow.VISIBLE;
 
   private ReactViewBackgroundManager mReactBackgroundManager;
   private Spannable mSpanned;
@@ -382,7 +386,13 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
       setText(getSpanned());
     }
 
-    mReactBackgroundManager.maybeClipToPaddingBox(canvas);
+    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
+      if (mOverflow != Overflow.VISIBLE) {
+        BackgroundStyleApplicator.clipToPaddingBox(this, canvas);
+      }
+    } else {
+      mReactBackgroundManager.maybeClipToPaddingBox(canvas);
+    }
 
     super.onDraw(canvas);
   }
@@ -745,6 +755,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   }
 
   public void setOverflow(@Nullable String overflow) {
+    mOverflow = overflow == null ? Overflow.VISIBLE : Overflow.fromString(overflow);
     mReactBackgroundManager.setOverflow(overflow);
   }
 }
