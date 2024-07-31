@@ -1830,13 +1830,14 @@ public final class com/facebook/react/common/ReactConstants {
 	public static final field UNSET I
 }
 
-public class com/facebook/react/common/ShakeDetector : android/hardware/SensorEventListener {
+public final class com/facebook/react/common/ShakeDetector : android/hardware/SensorEventListener {
 	public fun <init> (Lcom/facebook/react/common/ShakeDetector$ShakeListener;)V
 	public fun <init> (Lcom/facebook/react/common/ShakeDetector$ShakeListener;I)V
+	public synthetic fun <init> (Lcom/facebook/react/common/ShakeDetector$ShakeListener;IILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun onAccuracyChanged (Landroid/hardware/Sensor;I)V
 	public fun onSensorChanged (Landroid/hardware/SensorEvent;)V
-	public fun start (Landroid/hardware/SensorManager;)V
-	public fun stop ()V
+	public final fun start (Landroid/hardware/SensorManager;)V
+	public final fun stop ()V
 }
 
 public abstract interface class com/facebook/react/common/ShakeDetector$ShakeListener {
