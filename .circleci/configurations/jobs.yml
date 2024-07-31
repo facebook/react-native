@@ -816,27 +816,13 @@ jobs:
             export RELEASE_VERSION=$(cat /tmp/react-native-version)
             if [[ "$SLICE" == "macosx" ]]; then
               echo "[HERMES] Building Hermes for MacOS"
-              BUILD_TYPE="<< parameters.flavor >>" ./utils/build-mac-framework.sh
-            else
-              echo "[HERMES] Building Hermes for iOS: $SLICE"
-              BUILD_TYPE="<< parameters.flavor >>" ./utils/build-ios-framework.sh "$SLICE"
-            fi
-
-            if [[ "$SLICE" == "macosx" ]]; then
-              export MACOSX_DEPLOYMENT_TARGET="10.15"
-              echo "[HERMES] Building Hermes for MacOS"
-              BUILD_TYPE="<< parameters.flavor >>" ./utils/build-mac-framework.sh
-              unset MACOSX_DEPLOYMENT_TARGET
+              BUILD_TYPE="<< parameters.flavor >>" MACOSX_DEPLOYMENT_TARGET=10.15 ./utils/build-mac-framework.sh
             elif [[ "$SLICE" == "xros" ]] || [[ "$SLICE" == "xrsimulator" ]]; then
-              export XROS_DEPLOYMENT_TARGET="1.0"
               echo "[HERMES] Building Hermes for XR: $SLICE"
-              BUILD_TYPE="<< parameters.flavor >>" ./utils/build-ios-framework.sh "$SLICE"
-              unset XROS_DEPLOYMENT_TARGET
+              BUILD_TYPE="<< parameters.flavor >>" XROS_DEPLOYMENT_TARGET=1.0 ./utils/build-ios-framework.sh "$SLICE"
             elif [[ "$SLICE" == "iphoneos" ]] || [[ "$SLICE" == "iphonesimulator" ]] || [[ "$SLICE" == "catalyst" ]] ; then
-              export IOS_DEPLOYMENT_TARGET="13.4"
               echo "[HERMES] Building Hermes for iOS: $SLICE"
-              BUILD_TYPE="<< parameters.flavor >>" ./utils/build-ios-framework.sh "$SLICE"
-              unset IOS_DEPLOYMENT_TARGET
+              BUILD_TYPE="<< parameters.flavor >>" IOS_DEPLOYMENT_TARGET=13.4 ./utils/build-ios-framework.sh "$SLICE"
             fi
             unset RELEASE_VERSION
 
