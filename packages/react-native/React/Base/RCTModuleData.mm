@@ -46,6 +46,7 @@ int32_t getUniqueId()
   RCTBundleManager *_bundleManager;
   RCTCallableJSModules *_callableJSModules;
   BOOL _isInitialized;
+  NSString *_moduleName;
 }
 
 @synthesize methods = _methods;
@@ -401,7 +402,10 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init);
 
 - (NSString *)name
 {
-  return RCTBridgeModuleNameForClass(_moduleClass);
+  if (!_moduleName) {
+    _moduleName = RCTBridgeModuleNameForClass(_moduleClass);
+  }
+  return _moduleName;
 }
 
 - (NSArray<id<RCTBridgeMethod>> *)methods
