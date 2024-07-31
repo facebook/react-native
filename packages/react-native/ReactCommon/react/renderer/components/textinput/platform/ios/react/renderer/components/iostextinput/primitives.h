@@ -188,7 +188,7 @@ class TextInputTraits final {
   bool clearTextOnFocus{false};
 
   /*
-   * iOS-only 
+   * iOS-only (inherently iOS-specific)
    * Default value: `false`.
    */
   bool disablePlaceholderScaling{false};
@@ -200,7 +200,7 @@ class TextInputTraits final {
   KeyboardType keyboardType{KeyboardType::Default};
 
   /*
-   * iOS & Android (inherently iOS-specific)
+   * iOS & Android
    * Default value: `true`.
    */
   bool showSoftInputOnFocus{true};
