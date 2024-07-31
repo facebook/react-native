@@ -8146,7 +8146,6 @@ public class com/facebook/react/views/view/ReactViewGroup : android/view/ViewGro
 	public fun requestLayout ()V
 	public fun setBackfaceVisibility (Ljava/lang/String;)V
 	public fun setBackfaceVisibilityDependantOpacity ()V
-	public fun setBackground (Landroid/graphics/drawable/Drawable;)V
 	public fun setBackgroundColor (I)V
 	public fun setBorderColor (ILjava/lang/Integer;)V
 	public fun setBorderRadius (F)V
@@ -8185,11 +8184,14 @@ public class com/facebook/react/views/view/ReactViewManager : com/facebook/react
 	public fun receiveCommand (Lcom/facebook/react/views/view/ReactViewGroup;Ljava/lang/String;Lcom/facebook/react/bridge/ReadableArray;)V
 	public fun setAccessible (Lcom/facebook/react/views/view/ReactViewGroup;Z)V
 	public fun setBackfaceVisibility (Lcom/facebook/react/views/view/ReactViewGroup;Ljava/lang/String;)V
+	public synthetic fun setBackgroundColor (Landroid/view/View;I)V
+	public fun setBackgroundColor (Lcom/facebook/react/views/view/ReactViewGroup;I)V
 	public fun setBorderColor (Lcom/facebook/react/views/view/ReactViewGroup;ILjava/lang/Integer;)V
 	public fun setBorderRadius (Lcom/facebook/react/views/view/ReactViewGroup;IF)V
 	public fun setBorderRadius (Lcom/facebook/react/views/view/ReactViewGroup;ILcom/facebook/react/bridge/Dynamic;)V
 	public fun setBorderStyle (Lcom/facebook/react/views/view/ReactViewGroup;Ljava/lang/String;)V
 	public fun setBorderWidth (Lcom/facebook/react/views/view/ReactViewGroup;IF)V
+	public fun setBoxShadow (Lcom/facebook/react/views/view/ReactViewGroup;Lcom/facebook/react/bridge/ReadableArray;)V
 	public fun setCollapsable (Lcom/facebook/react/views/view/ReactViewGroup;Z)V
 	public fun setCollapsableChildren (Lcom/facebook/react/views/view/ReactViewGroup;Z)V
 	public fun setFocusable (Lcom/facebook/react/views/view/ReactViewGroup;Z)V

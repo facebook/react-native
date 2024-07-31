@@ -45,6 +45,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     flexShrink: 1,
     padding: 4,
+    experimental_boxShadow: '0 0 5px 5px rgba(0, 0, 0, 0.6)',
   },
 });
 

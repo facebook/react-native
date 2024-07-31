@@ -37,6 +37,7 @@ import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.touch.OnInterceptTouchEventListener;
 import com.facebook.react.touch.ReactHitSlopView;
 import com.facebook.react.touch.ReactInterceptingViewGroup;
+import com.facebook.react.uimanager.BackgroundStyleApplicator;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.LengthPercentage;
 import com.facebook.react.uimanager.MeasureSpecAssertions;
@@ -50,12 +51,12 @@ import com.facebook.react.uimanager.ReactZIndexedViewGroup;
 import com.facebook.react.uimanager.RootView;
 import com.facebook.react.uimanager.RootViewUtil;
 import com.facebook.react.uimanager.ViewGroupDrawingOrderHelper;
-import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.drawable.CSSBackgroundDrawable;
 import com.facebook.react.uimanager.style.BorderRadiusProp;
 import com.facebook.react.uimanager.style.ComputedBorderRadius;
+import com.facebook.react.uimanager.style.Overflow;
 
 /**
  * Backing for a React View. Has support for borders, but since borders aren't common, lazy
@@ -122,7 +123,7 @@ public class ReactViewGroup extends ViewGroup
   private int mAllChildrenCount;
   private @Nullable Rect mClippingRect;
   private @Nullable Rect mHitSlopRect;
-  private @Nullable String mOverflow;
+  private Overflow mOverflow = Overflow.VISIBLE;
   private PointerEvents mPointerEvents;
   private @Nullable ChildrenLayoutChangeListener mChildrenLayoutChangeListener;
   private @Nullable CSSBackgroundDrawable mCSSBackgroundDrawable;
@@ -222,12 +223,6 @@ public class ReactViewGroup extends ViewGroup
     } else {
       getOrCreateReactViewBackground().setColor(color);
     }
-  }
-
-  @Override
-  public void setBackground(Drawable drawable) {
-    throw new UnsupportedOperationException(
-        "This method is not supported for ReactViewGroup instances");
   }
 
   public void setTranslucentBackgroundDrawable(@Nullable Drawable background) {
@@ -819,14 +814,23 @@ public class ReactViewGroup extends ViewGroup
     mHitSlopRect = rect;
   }
 
-  public void setOverflow(String overflow) {
-    mOverflow = overflow;
+  public void setOverflow(@Nullable String overflow) {
+    mOverflow = overflow == null ? Overflow.VISIBLE : Overflow.fromString(overflow);
     invalidate();
   }
 
   @Override
   public @Nullable String getOverflow() {
-    return mOverflow;
+    switch (mOverflow) {
+      case HIDDEN:
+        return "hidden";
+      case SCROLL:
+        return "scroll";
+      case VISIBLE:
+        return "visible";
+    }
+
+    return null;
   }
 
   @Override
@@ -852,6 +856,14 @@ public class ReactViewGroup extends ViewGroup
 
   @Override
   protected void dispatchDraw(Canvas canvas) {
+    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
+      if (mOverflow != Overflow.VISIBLE) {
+        BackgroundStyleApplicator.clipToPaddingBox(this, canvas);
+      }
+      super.dispatchDraw(canvas);
+      return;
+    }
+
     try {
       dispatchOverflowDraw(canvas);
       super.dispatchDraw(canvas);
@@ -890,69 +902,67 @@ public class ReactViewGroup extends ViewGroup
   }
 
   private void dispatchOverflowDraw(Canvas canvas) {
-    if (mOverflow != null) {
-      switch (mOverflow) {
-        case ViewProps.VISIBLE:
-          if (mPath != null) {
+    switch (mOverflow) {
+      case VISIBLE:
+        if (mPath != null) {
+          mPath.rewind();
+        }
+        break;
+      case HIDDEN:
+      case SCROLL:
+        float left = 0f;
+        float top = 0f;
+        float right = getWidth();
+        float bottom = getHeight();
+
+        boolean hasClipPath = false;
+
+        if (mCSSBackgroundDrawable != null) {
+          final RectF borderWidth = mCSSBackgroundDrawable.getDirectionAwareBorderInsets();
+
+          if (borderWidth.top > 0
+              || borderWidth.left > 0
+              || borderWidth.bottom > 0
+              || borderWidth.right > 0) {
+            left += borderWidth.left;
+            top += borderWidth.top;
+            right -= borderWidth.right;
+            bottom -= borderWidth.bottom;
+          }
+
+          final ComputedBorderRadius borderRadius =
+              mCSSBackgroundDrawable.getComputedBorderRadius();
+
+          if (borderRadius.hasRoundedBorders()) {
+            if (mPath == null) {
+              mPath = new Path();
+            }
+
             mPath.rewind();
+            mPath.addRoundRect(
+                new RectF(left, top, right, bottom),
+                new float[] {
+                  Math.max(borderRadius.getTopLeft() - borderWidth.left, 0),
+                  Math.max(borderRadius.getTopLeft() - borderWidth.top, 0),
+                  Math.max(borderRadius.getTopRight() - borderWidth.right, 0),
+                  Math.max(borderRadius.getTopRight() - borderWidth.top, 0),
+                  Math.max(borderRadius.getBottomRight() - borderWidth.right, 0),
+                  Math.max(borderRadius.getBottomRight() - borderWidth.bottom, 0),
+                  Math.max(borderRadius.getBottomLeft() - borderWidth.left, 0),
+                  Math.max(borderRadius.getBottomLeft() - borderWidth.bottom, 0),
+                },
+                Path.Direction.CW);
+            canvas.clipPath(mPath);
+            hasClipPath = true;
           }
-          break;
-        case ViewProps.HIDDEN:
-        case ViewProps.SCROLL:
-          float left = 0f;
-          float top = 0f;
-          float right = getWidth();
-          float bottom = getHeight();
+        }
 
-          boolean hasClipPath = false;
-
-          if (mCSSBackgroundDrawable != null) {
-            final RectF borderWidth = mCSSBackgroundDrawable.getDirectionAwareBorderInsets();
-
-            if (borderWidth.top > 0
-                || borderWidth.left > 0
-                || borderWidth.bottom > 0
-                || borderWidth.right > 0) {
-              left += borderWidth.left;
-              top += borderWidth.top;
-              right -= borderWidth.right;
-              bottom -= borderWidth.bottom;
-            }
-
-            final ComputedBorderRadius borderRadius =
-                mCSSBackgroundDrawable.getComputedBorderRadius();
-
-            if (borderRadius.hasRoundedBorders()) {
-              if (mPath == null) {
-                mPath = new Path();
-              }
-
-              mPath.rewind();
-              mPath.addRoundRect(
-                  new RectF(left, top, right, bottom),
-                  new float[] {
-                    Math.max(borderRadius.getTopLeft() - borderWidth.left, 0),
-                    Math.max(borderRadius.getTopLeft() - borderWidth.top, 0),
-                    Math.max(borderRadius.getTopRight() - borderWidth.right, 0),
-                    Math.max(borderRadius.getTopRight() - borderWidth.top, 0),
-                    Math.max(borderRadius.getBottomRight() - borderWidth.right, 0),
-                    Math.max(borderRadius.getBottomRight() - borderWidth.bottom, 0),
-                    Math.max(borderRadius.getBottomLeft() - borderWidth.left, 0),
-                    Math.max(borderRadius.getBottomLeft() - borderWidth.bottom, 0),
-                  },
-                  Path.Direction.CW);
-              canvas.clipPath(mPath);
-              hasClipPath = true;
-            }
-          }
-
-          if (!hasClipPath) {
-            canvas.clipRect(new RectF(left, top, right, bottom));
-          }
-          break;
-        default:
-          break;
-      }
+        if (!hasClipPath) {
+          canvas.clipRect(new RectF(left, top, right, bottom));
+        }
+        break;
+      default:
+        break;
     }
   }
 
