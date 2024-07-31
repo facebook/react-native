@@ -498,11 +498,7 @@ Size operator*(const Size& size, const Transform& transform) {
   return result;
 }
 
-bool Transform::inv() {
-  if (*this == Transform::Identity()) {
-    return true;
-  }
-
+bool Transform::getInversion(Transform& transform) {
   double inv[16], det;
   int i;
   auto m = this->matrix;
@@ -563,7 +559,7 @@ bool Transform::inv() {
   det = 1.0 / det;
 
   for (i = 0; i < 16; i++)
-    this->matrix[i] = inv[i] * det;
+    transform.matrix[i] = inv[i] * det;
 
   return true;
 }

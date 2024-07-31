@@ -142,7 +142,7 @@ struct Transform {
    */
   static Transform Skew(Float x, Float y);
 
-  bool inv();
+  bool getInversion(Transform& transform);
 
   /*
    * Returns a transform that rotates by `angle` radians along the given axis.
