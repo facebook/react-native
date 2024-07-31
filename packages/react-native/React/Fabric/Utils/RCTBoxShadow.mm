@@ -117,8 +117,8 @@ static void renderOutsetShadows(
     // the blur radius since this rect is not the shadow itself.
     const RCTCornerInsets shadowRectCornerInsets =
         RCTGetCornerInsets(cornerRadiiForBoxShadow(cornerRadii, spreadDistance), UIEdgeInsetsZero);
-    CGSize shadowRectSize =
-        CGSizeMake(layer.bounds.size.width + 2 * spreadDistance, layer.bounds.size.height + 2 * spreadDistance);
+    CGSize shadowRectSize = CGSizeMake(
+        fmax(layer.bounds.size.width + 2 * spreadDistance, 0), fmax(layer.bounds.size.height + 2 * spreadDistance, 0));
     // Ensure this is drawn offscreen and will not show in the image
     CGRect shadowRect = CGRectMake(-shadowRectSize.width, 0, shadowRectSize.width, shadowRectSize.height);
     CGPathRef shadowRectPath = RCTPathCreateWithRoundedRect(shadowRect, shadowRectCornerInsets, nil);
@@ -222,6 +222,11 @@ static void renderInsetShadows(
     // of the view.
     CGRect shadowCastingRect = CGRectInset(shadowFrame, -blurRadius, -blurRadius);
     CGRect clearRegionRect = CGRectInset(shadowFrame, spreadDistance, spreadDistance);
+    // This happens if the spread causes the height/width to be negative. A null
+    // rect breaks a lot of the logic, so lets just keep it as a point
+    if (CGRectIsNull(clearRegionRect)) {
+      clearRegionRect = CGRectMake(0, 0, 0, 0);
+    }
     CGPoint offsetToMoveOffscreen = CGPointMake(
         -fmax(
             shadowCastingRect.size.width,
