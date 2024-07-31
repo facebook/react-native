@@ -145,8 +145,7 @@ static void renderOutsetShadows(
   }
   // Lastly, clear out the region inside the view so that the shadows do
   // not cover its content
-  const RCTCornerInsets layerCornerInsets =
-      RCTGetCornerInsets(cornerRadiiForBoxShadow(cornerRadii, 0), UIEdgeInsetsZero);
+  const RCTCornerInsets layerCornerInsets = RCTGetCornerInsets(cornerRadii, UIEdgeInsetsZero);
   CGPathRef shadowPathAlignedWithLayer = RCTPathCreateWithRoundedRect(
       CGRectMake(-boundingRect.origin.x, -boundingRect.origin.y, layer.bounds.size.width, layer.bounds.size.height),
       layerCornerInsets,
@@ -187,8 +186,7 @@ static void renderInsetShadows(
   // Add the path twice so we only draw inside the view with the EO crop rule
   CGContextAddRect(context, outerClippingRect);
   CGContextAddRect(context, outerClippingRect);
-  const RCTCornerInsets cornerInsetsForLayer =
-      RCTGetCornerInsets(cornerRadiiForBoxShadow(cornerRadii, 0), UIEdgeInsetsZero);
+  const RCTCornerInsets cornerInsetsForLayer = RCTGetCornerInsets(cornerRadii, UIEdgeInsetsZero);
   CGPathRef layerPath = RCTPathCreateWithRoundedRect(
       CGRectMake(-boundingRect.origin.x, -boundingRect.origin.y, layer.bounds.size.width, layer.bounds.size.height),
       cornerInsetsForLayer,
