@@ -7975,10 +7975,13 @@ public class com/facebook/react/views/textinput/ReactTextInputManager : com/face
 	public fun setAutoCapitalize (Lcom/facebook/react/views/textinput/ReactEditText;Lcom/facebook/react/bridge/Dynamic;)V
 	public fun setAutoCorrect (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/Boolean;)V
 	public fun setAutoFocus (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
+	public synthetic fun setBackgroundColor (Landroid/view/View;I)V
+	public fun setBackgroundColor (Lcom/facebook/react/views/textinput/ReactEditText;I)V
 	public fun setBorderColor (Lcom/facebook/react/views/textinput/ReactEditText;ILjava/lang/Integer;)V
 	public fun setBorderRadius (Lcom/facebook/react/views/textinput/ReactEditText;IF)V
 	public fun setBorderStyle (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
 	public fun setBorderWidth (Lcom/facebook/react/views/textinput/ReactEditText;IF)V
+	public fun setBoxShadow (Lcom/facebook/react/views/textinput/ReactEditText;Lcom/facebook/react/bridge/ReadableArray;)V
 	public fun setCaretHidden (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
 	public fun setColor (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/Integer;)V
 	public fun setContextMenuHidden (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
