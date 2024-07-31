@@ -337,6 +337,7 @@ public class ReactHorizontalScrollViewManager extends ViewGroupManager<ReactHori
   @ReactProp(name = "overflow")
   public void setOverflow(ReactHorizontalScrollView view, @Nullable String overflow) {
     view.setOverflow(overflow);
+    invalidate();
   }
 
   @ReactProp(name = "persistentScrollbar")
