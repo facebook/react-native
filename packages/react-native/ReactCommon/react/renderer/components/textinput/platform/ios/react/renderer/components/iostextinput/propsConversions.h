@@ -105,6 +105,12 @@ static TextInputTraits convertRawProp(
       "clearTextOnFocus",
       sourceTraits.clearTextOnFocus,
       defaultTraits.clearTextOnFocus);
+  traits.disablePlaceholderScaling = convertRawProp(
+      context,
+      rawProps,
+      "disablePlaceholderScaling",
+      sourceTraits.disablePlaceholderScaling,
+      defaultTraits.disablePlaceholderScaling);
   traits.keyboardType = convertRawProp(
       context,
       rawProps,

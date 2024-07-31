@@ -141,6 +141,7 @@ const RCTTextInputViewConfig = {
     selectTextOnFocus: true,
     text: true,
     clearTextOnFocus: true,
+    disablePlaceholderScaling: true,
     showSoftInputOnFocus: true,
     autoFocus: true,
     lineBreakStrategyIOS: true,

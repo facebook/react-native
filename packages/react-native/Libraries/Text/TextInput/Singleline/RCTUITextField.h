@@ -18,6 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RCTUITextField : UITextField <RCTBackedTextInputViewProtocol>
 
 - (instancetype)initWithCoder:(NSCoder *)decoder NS_UNAVAILABLE;
+- (void)updateDisablePlaceholderScaling:(BOOL)val;
 
 @property (nonatomic, weak) id<RCTBackedTextInputDelegate> textInputDelegate;
 
@@ -33,7 +34,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign, readonly) CGFloat zoomScale;
 @property (nonatomic, assign, readonly) CGPoint contentOffset;
 @property (nonatomic, assign, readonly) UIEdgeInsets contentInset;
-
 @end
 
 NS_ASSUME_NONNULL_END

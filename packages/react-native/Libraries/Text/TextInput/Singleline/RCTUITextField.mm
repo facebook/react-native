@@ -15,6 +15,8 @@
 @implementation RCTUITextField {
   RCTBackedTextFieldDelegateAdapter *_textInputDelegateAdapter;
   NSDictionary<NSAttributedStringKey, id> *_defaultTextAttributes;
+  BOOL _disablePlaceholderScaling;
+  UILabel *_placeholderLabel;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -27,10 +29,32 @@
 
     _textInputDelegateAdapter = [[RCTBackedTextFieldDelegateAdapter alloc] initWithTextField:self];
     _scrollEnabled = YES;
+    _disablePlaceholderScaling = NO;
   }
 
   return self;
 }
+
+- (void)didAddSubview:(UIView *)subview
+{
+    [super didAddSubview:subview];
+    
+     if ([subview isKindOfClass:UILabel.class]) {
+         _placeholderLabel = (UILabel *)subview;
+         _placeholderLabel.adjustsFontSizeToFitWidth = !_disablePlaceholderScaling;
+     }
+}
+
+- (void)updateDisablePlaceholderScaling:(BOOL)val
+{
+    _disablePlaceholderScaling = val;
+    
+    if (_placeholderLabel != nil) {
+        _placeholderLabel.adjustsFontSizeToFitWidth = !_disablePlaceholderScaling;
+        [_placeholderLabel setNeedsDisplay];
+    }
+}
+
 
 - (void)_textDidChange
 {

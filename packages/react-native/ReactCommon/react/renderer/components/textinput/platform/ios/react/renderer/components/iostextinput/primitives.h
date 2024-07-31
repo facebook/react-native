@@ -188,6 +188,12 @@ class TextInputTraits final {
   bool clearTextOnFocus{false};
 
   /*
+   * iOS-only (implemented only on iOS for now)
+   * Default value: `false`.
+   */
+  bool disablePlaceholderScaling{false};
+
+  /*
    * Some values iOS- or Android-only (inherently particular-OS-specific)
    * Default value: `Default`.
    */

@@ -75,6 +75,7 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
 
     [self addSubview:_backedTextInputView];
     [self initializeReturnKeyType];
+    [self setDisablePlaceholderScaling:defaultProps->traits.disablePlaceholderScaling];
   }
 
   return self;
@@ -194,6 +195,10 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
   if (newTextInputProps.traits.showSoftInputOnFocus != oldTextInputProps.traits.showSoftInputOnFocus) {
     [self _setShowSoftInputOnFocus:newTextInputProps.traits.showSoftInputOnFocus];
   }
+    
+  if (newTextInputProps.traits.disablePlaceholderScaling != oldTextInputProps.traits.disablePlaceholderScaling) {
+      [self setDisablePlaceholderScaling:newTextInputProps.traits.disablePlaceholderScaling];
+  }
 
   // Traits `blurOnSubmit`, `clearTextOnFocus`, and `selectTextOnFocus` were omitted intentionally here
   // because they are being checked on-demand.
@@ -245,6 +250,13 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
     [self _setAttributedString:RCTNSAttributedStringFromAttributedStringBox(data.attributedStringBox)];
     _comingFromJS = NO;
   }
+}
+
+-(void)setDisablePlaceholderScaling:(BOOL)val
+{
+    if ([_backedTextInputView isKindOfClass:UITextField.class]) {
+        [(RCTUITextField *)_backedTextInputView updateDisablePlaceholderScaling:val];
+    }
 }
 
 - (void)updateLayoutMetrics:(const LayoutMetrics &)layoutMetrics
