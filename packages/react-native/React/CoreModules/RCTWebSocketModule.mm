@@ -86,7 +86,9 @@ RCT_EXPORT_METHOD(connect
   if ([options.headers() isKindOfClass:NSDictionary.class]) {
     NSDictionary *headers = (NSDictionary *)options.headers();
     [headers enumerateKeysAndObjectsUsingBlock:^(NSString *key, id value, BOOL *stop) {
-      [request addValue:[RCTConvert NSString:value] forHTTPHeaderField:key];
+      if (![value isKindOfClass:[NSNull class]]) {
+        [request addValue:[RCTConvert NSString:value] forHTTPHeaderField:key];
+      }
     }];
   }
 
