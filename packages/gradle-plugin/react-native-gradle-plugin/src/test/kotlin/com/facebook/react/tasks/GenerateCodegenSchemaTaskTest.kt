@@ -35,7 +35,6 @@ class GenerateCodegenSchemaTaskTest {
 
     assertThat(task.jsInputFiles.dir).isEqualTo(jsRootDir)
     assertThat(task.jsInputFiles.includes).isEqualTo(setOf("**/*.js", "**/*.ts"))
-    assertThat(task.jsInputFiles.files).hasSize(2)
     assertThat(task.jsInputFiles.files).containsExactlyInAnyOrder(
         File(jsRootDir, "file.js"), File(jsRootDir, "file.ts")
     )
