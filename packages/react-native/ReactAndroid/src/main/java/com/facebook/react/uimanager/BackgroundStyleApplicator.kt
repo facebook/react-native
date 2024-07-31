@@ -131,16 +131,22 @@ public object BackgroundStyleApplicator {
   }
 
   @JvmStatic
-  public fun setBoxShadow(view: View, shadows: ReadableArray): Unit {
+  public fun setBoxShadow(view: View, shadows: ReadableArray?): Unit {
     if (Build.VERSION.SDK_INT < 31) {
       FLog.w("BackgroundStyleApplicator", "\"boxShadow\" requires Android 12 or later")
-    } else {
-      val shadowStyles = mutableListOf<BoxShadow>()
-      for (i in 0..<shadows.size()) {
-        shadowStyles.add(checkNotNull(BoxShadow.parse(shadows.getMap(i))))
-      }
-      BackgroundStyleApplicator.setBoxShadow(view, shadowStyles)
+      return
     }
+
+    if (shadows == null) {
+      BackgroundStyleApplicator.setBoxShadow(view, emptyList())
+      return
+    }
+
+    val shadowStyles = mutableListOf<BoxShadow>()
+    for (i in 0..<shadows.size()) {
+      shadowStyles.add(checkNotNull(BoxShadow.parse(shadows.getMap(i))))
+    }
+    BackgroundStyleApplicator.setBoxShadow(view, shadowStyles)
   }
 
   @JvmStatic
