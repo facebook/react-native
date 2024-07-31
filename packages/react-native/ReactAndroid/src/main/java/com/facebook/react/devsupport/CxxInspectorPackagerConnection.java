@@ -12,6 +12,7 @@ import android.os.Looper;
 import androidx.annotation.Nullable;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.react.bridge.UiThreadUtil;
 import java.io.Closeable;
 import java.util.OptionalInt;
 import java.util.concurrent.TimeUnit;
@@ -102,25 +103,40 @@ import okhttp3.WebSocketListener;
               new WebSocketListener() {
                 @Override
                 public void onFailure(WebSocket _unused, Throwable t, @Nullable Response response) {
-                  @Nullable String message = t.getMessage();
-                  delegate.didFailWithError(
-                      OptionalInt.empty(), message != null ? message : "<Unknown error>");
-                  // "No further calls to this listener will be made." -OkHttp docs for
-                  // WebSocketListener.onFailure
-                  delegate.close();
+                  runOnInspectorThread(
+                      new Runnable() {
+                        public void run() {
+                          @Nullable String message = t.getMessage();
+                          delegate.didFailWithError(
+                              OptionalInt.empty(), message != null ? message : "<Unknown error>");
+                          // "No further calls to this listener will be made." -OkHttp docs for
+                          // WebSocketListener.onFailure
+                          delegate.close();
+                        }
+                      });
                 }
 
                 @Override
                 public void onMessage(WebSocket _unused, String text) {
-                  delegate.didReceiveMessage(text);
+                  runOnInspectorThread(
+                      new Runnable() {
+                        public void run() {
+                          delegate.didReceiveMessage(text);
+                        }
+                      });
                 }
 
                 @Override
                 public void onClosed(WebSocket _unused, int code, String reason) {
-                  delegate.didClose();
-                  // "No further calls to this listener will be made." -OkHttp docs for
-                  // WebSocketListener.onClosed
-                  delegate.close();
+                  runOnInspectorThread(
+                      new Runnable() {
+                        public void run() {
+                          delegate.didClose();
+                          // "No further calls to this listener will be made." -OkHttp docs for
+                          // WebSocketListener.onClosed
+                          delegate.close();
+                        }
+                      });
                 }
               });
       return new IWebSocket() {
@@ -139,6 +155,15 @@ import okhttp3.WebSocketListener;
     @DoNotStrip
     public void scheduleCallback(Runnable runnable, long delayMs) {
       mHandler.postDelayed(runnable, delayMs);
+    }
+
+    // NOTE: This relies on our use of the UI thread as the inspector thread on Android.
+    private void runOnInspectorThread(Runnable runnable) {
+      if (UiThreadUtil.isOnUiThread()) {
+        runnable.run();
+      } else {
+        UiThreadUtil.runOnUiThread(runnable);
+      }
     }
   }
 }
