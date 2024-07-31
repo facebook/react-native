@@ -84,6 +84,8 @@ import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.devsupport.DevSupportManagerFactory;
 import com.facebook.react.devsupport.InspectorFlags;
 import com.facebook.react.devsupport.ReactInstanceDevHelper;
+import com.facebook.react.devsupport.inspector.InspectorNetworkHelper;
+import com.facebook.react.devsupport.inspector.InspectorNetworkRequestListener;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.DevLoadingViewManager;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
@@ -1614,6 +1616,11 @@ public class ReactInstanceManager {
               }
             });
       }
+    }
+
+    @Override
+    public void loadNetworkResource(String url, InspectorNetworkRequestListener listener) {
+      InspectorNetworkHelper.loadNetworkResource(url, listener);
     }
   }
 
