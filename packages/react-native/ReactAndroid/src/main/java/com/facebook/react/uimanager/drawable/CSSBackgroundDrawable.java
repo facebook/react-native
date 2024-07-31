@@ -387,15 +387,17 @@ public class CSSBackgroundDrawable extends Drawable {
 
     // Draws the View without its border first (with background color fill)
     int useColor = ColorUtils.setAlphaComponent(mColor, getOpacity());
+    if (Color.alpha(useColor) != 0) {
+      mPaint.setColor(useColor);
+      mPaint.setStyle(Paint.Style.FILL);
+      canvas.drawPath(Preconditions.checkNotNull(mBackgroundColorRenderPath), mPaint);
+    }
+
     if (mGradients != null && mGradients.length > 0) {
       mPaint.setShader(getGradientShader());
       mPaint.setStyle(Paint.Style.FILL);
       canvas.drawPath(Preconditions.checkNotNull(mBackgroundColorRenderPath), mPaint);
       mPaint.setShader(null);
-    } else if (Color.alpha(useColor) != 0) {
-      mPaint.setColor(useColor);
-      mPaint.setStyle(Paint.Style.FILL);
-      canvas.drawPath(Preconditions.checkNotNull(mBackgroundColorRenderPath), mPaint);
     }
 
     final RectF borderWidth = getDirectionAwareBorderInsets();
@@ -1120,13 +1122,15 @@ public class CSSBackgroundDrawable extends Drawable {
     mPaint.setStyle(Paint.Style.FILL);
 
     int useColor = multiplyColorAlpha(mColor, mAlpha);
+    if (Color.alpha(useColor) != 0) {
+      mPaint.setColor(useColor);
+      canvas.drawRect(getBounds(), mPaint);
+    }
+    
     if (mGradients != null && mGradients.length > 0) {
       mPaint.setShader(getGradientShader());
       canvas.drawRect(getBounds(), mPaint);
       mPaint.setShader(null);
-    } else if (Color.alpha(useColor) != 0) {
-      mPaint.setColor(useColor);
-      canvas.drawRect(getBounds(), mPaint);
     }
 
     final RectF borderWidth = getDirectionAwareBorderInsets();
