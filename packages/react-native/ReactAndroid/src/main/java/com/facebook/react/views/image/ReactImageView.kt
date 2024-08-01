@@ -55,9 +55,13 @@ import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags.useNewRe
 import com.facebook.react.modules.fresco.ReactNetworkImageRequest
 import com.facebook.react.uimanager.BackgroundStyleApplicator
 import com.facebook.react.uimanager.FloatUtil.floatsEqual
+import com.facebook.react.uimanager.LengthPercentage
+import com.facebook.react.uimanager.LengthPercentageType
 import com.facebook.react.uimanager.PixelUtil.toPixelFromDIP
 import com.facebook.react.uimanager.Spacing
 import com.facebook.react.uimanager.UIManagerHelper
+import com.facebook.react.uimanager.style.BorderRadiusProp
+import com.facebook.react.uimanager.style.LogicalEdge
 import com.facebook.react.util.RNLog
 import com.facebook.react.views.image.ImageLoadEvent.Companion.createErrorEvent
 import com.facebook.react.views.image.ImageLoadEvent.Companion.createLoadEndEvent
@@ -208,7 +212,9 @@ public class ReactImageView(
   }
 
   public override fun setBackgroundColor(backgroundColor: Int) {
-    if (useNewReactImageViewBackgroundDrawing()) {
+    if (enableBackgroundStyleApplicator()) {
+      BackgroundStyleApplicator.setBackgroundColor(this, backgroundColor)
+    } else if (useNewReactImageViewBackgroundDrawing()) {
       reactBackgroundManager.backgroundColor = backgroundColor
     } else if (this.backgroundColor != backgroundColor) {
       this.backgroundColor = backgroundColor
@@ -218,7 +224,9 @@ public class ReactImageView(
   }
 
   public fun setBorderColor(borderColor: Int) {
-    if (useNewReactImageViewBackgroundDrawing()) {
+    if (enableBackgroundStyleApplicator()) {
+      BackgroundStyleApplicator.setBorderColor(this, LogicalEdge.ALL, borderColor)
+    } else if (useNewReactImageViewBackgroundDrawing()) {
       reactBackgroundManager.setBorderColor(Spacing.ALL, borderColor)
     } else if (this.borderColor != borderColor) {
       this.borderColor = borderColor
@@ -235,7 +243,9 @@ public class ReactImageView(
 
   public fun setBorderWidth(borderWidth: Float) {
     val newBorderWidth = toPixelFromDIP(borderWidth)
-    if (useNewReactImageViewBackgroundDrawing()) {
+    if (enableBackgroundStyleApplicator()) {
+      BackgroundStyleApplicator.setBorderWidth(this, LogicalEdge.ALL, borderWidth)
+    } else if (useNewReactImageViewBackgroundDrawing()) {
       reactBackgroundManager.setBorderWidth(Spacing.ALL, newBorderWidth)
     } else if (!floatsEqual(this.borderWidth, newBorderWidth)) {
       this.borderWidth = newBorderWidth
@@ -244,7 +254,12 @@ public class ReactImageView(
   }
 
   public fun setBorderRadius(borderRadius: Float) {
-    if (useNewReactImageViewBackgroundDrawing()) {
+    if (enableBackgroundStyleApplicator()) {
+      val radius =
+          if (borderRadius.isNaN()) null
+          else LengthPercentage(borderRadius, LengthPercentageType.POINT)
+      BackgroundStyleApplicator.setBorderRadius(this, BorderRadiusProp.BORDER_RADIUS, radius)
+    } else if (useNewReactImageViewBackgroundDrawing()) {
       reactBackgroundManager.setBorderRadius(borderRadius)
     } else if (!floatsEqual(this.borderRadius, borderRadius)) {
       this.borderRadius = borderRadius
@@ -253,7 +268,12 @@ public class ReactImageView(
   }
 
   public fun setBorderRadius(borderRadius: Float, position: Int) {
-    if (useNewReactImageViewBackgroundDrawing()) {
+    if (enableBackgroundStyleApplicator()) {
+      val radius =
+          if (borderRadius.isNaN()) null
+          else LengthPercentage(borderRadius, LengthPercentageType.POINT)
+      BackgroundStyleApplicator.setBorderRadius(this, BorderRadiusProp.values()[position], radius)
+    } else if (useNewReactImageViewBackgroundDrawing()) {
       reactBackgroundManager.setBorderRadius(borderRadius, position + 1)
     } else {
       if (borderCornerRadii == null) {
