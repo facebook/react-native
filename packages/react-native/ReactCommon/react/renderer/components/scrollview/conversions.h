@@ -117,6 +117,14 @@ inline void fromRawValue(
         autoscrollToTopThreshold->second,
         result.autoscrollToTopThreshold);
   }
+  auto viewOffset = map.find("viewOffset");
+  if (viewOffset != map.end()) {
+    fromRawValue(context, viewOffset->second, result.viewOffset);
+  }
+  auto viewPosition = map.find("viewPosition");
+  if (viewPosition != map.end()) {
+    fromRawValue(context, viewPosition->second, result.viewPosition);
+  }
 }
 
 inline std::string toString(const ScrollViewSnapToAlignment& value) {
@@ -174,7 +182,9 @@ inline std::string toString(
   }
   return "{minIndexForVisible: " + toString(value.value().minIndexForVisible) +
       ", autoscrollToTopThreshold: " +
-      toString(value.value().autoscrollToTopThreshold) + "}";
+      toString(value.value().autoscrollToTopThreshold) +
+      ", viewOffset: " + toString(value.value().viewOffset) +
+      ", viewPosition: " + toString(value.value().viewPosition) + "}";
 }
 
 #endif
