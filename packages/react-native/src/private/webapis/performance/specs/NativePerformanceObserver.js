@@ -30,21 +30,19 @@ export type GetPendingEntriesResult = {|
   droppedEntriesCount: number,
 |};
 
+export type PerformanceObserverInit = {
+  entryTypes: $ReadOnlyArray<string>;
+  type: number;
+  buffered: boolean;
+};
+
 export interface Spec extends TurboModule {
-  +startReporting: (entryType: RawPerformanceEntryType) => void;
-  +stopReporting: (entryType: RawPerformanceEntryType) => void;
-  +setIsBuffered: (
-    entryTypes: $ReadOnlyArray<RawPerformanceEntryType>,
-    isBuffered: boolean,
-  ) => void;
-  +popPendingEntries: () => GetPendingEntriesResult;
-  +setOnPerformanceEntryCallback: (callback?: () => void) => void;
-  +logRawEntry: (entry: RawPerformanceEntry) => void;
-  +getEventCounts: () => $ReadOnlyArray<[string, number]>;
-  +setDurationThreshold: (
-    entryType: RawPerformanceEntryType,
-    durationThreshold: number,
-  ) => void;
+  +createObserver: (callback: () => void) => mixed;
+
+  +observe: (observer: mixed, options: PerformanceObserverInit) => void;
+  +disconnect: (observer: mixed) => void;
+  +takeRecords: (observer: mixed) => $ReadOnlyArray<RawPerformanceEntry>;
+  
   +clearEntries: (
     entryType: RawPerformanceEntryType,
     entryName?: string,

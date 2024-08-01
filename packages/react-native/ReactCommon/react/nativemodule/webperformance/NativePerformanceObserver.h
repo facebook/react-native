@@ -7,7 +7,14 @@
 
 #pragma once
 
+#if __has_include("rncoreJSI.h") // Cmake headers on Android
+#include "rncoreJSI.h"
+#elif __has_include("FBReactNativeSpecJSI.h") // CocoaPod headers on Apple
+#include "FBReactNativeSpecJSI.h"
+#else
 #include <FBReactNativeSpec/FBReactNativeSpecJSI.h>
+#endif
+
 #include <react/performance/timeline/PerformanceEntryReporter.h>
 #include <optional>
 #include <string>
@@ -36,43 +43,20 @@ template <>
 struct Bridging<PerformanceEntry>
     : NativePerformanceObserverRawPerformanceEntryBridging<PerformanceEntry> {};
 
-template <>
-struct Bridging<PerformanceEntryReporter::PopPendingEntriesResult>
-    : NativePerformanceObserverGetPendingEntriesResultBridging<
-          PerformanceEntryReporter::PopPendingEntriesResult> {};
-
 #pragma mark - implementation
 
 class NativePerformanceObserver
     : public NativePerformanceObserverCxxSpec<NativePerformanceObserver> {
  public:
   NativePerformanceObserver(std::shared_ptr<CallInvoker> jsInvoker);
-
-  void startReporting(jsi::Runtime& rt, PerformanceEntryType entryType);
-
-  void stopReporting(jsi::Runtime& rt, PerformanceEntryType entryType);
-
-  void setIsBuffered(
-      jsi::Runtime& rt,
-      const std::vector<PerformanceEntryType> entryTypes,
-      bool isBuffered);
-
-  PerformanceEntryReporter::PopPendingEntriesResult popPendingEntries(
-      jsi::Runtime& rt);
-
-  void setOnPerformanceEntryCallback(
-      jsi::Runtime& rt,
-      std::optional<AsyncCallback<>> callback);
-
-  void logRawEntry(jsi::Runtime& rt, const PerformanceEntry entry);
+      
+  jsi::Object createObserver(jsi::Runtime& rt, AsyncCallback<> callback);
+  void observe(jsi::Runtime& rt, jsi::Object observer, jsi::Object options);
+  void disconnect(jsi::Runtime& rt, jsi::Object observer);
+  std::vector<PerformanceEntry> takeRecords(jsi::Runtime& rt, jsi::Object observerObj);
 
   std::vector<std::pair<std::string, uint32_t>> getEventCounts(
       jsi::Runtime& rt);
-
-  void setDurationThreshold(
-      jsi::Runtime& rt,
-      PerformanceEntryType entryType,
-      DOMHighResTimeStamp durationThreshold);
 
   void clearEntries(
       jsi::Runtime& rt,

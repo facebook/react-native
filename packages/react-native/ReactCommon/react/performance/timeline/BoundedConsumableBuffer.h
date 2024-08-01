@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <functional>
 #include <vector>
+#include "PerformanceEntry.h"
 
 namespace facebook::react {
 
@@ -31,23 +32,9 @@ constexpr size_t DEFAULT_MAX_SIZE = 1024;
 template <class T>
 class BoundedConsumableBuffer {
  public:
-  /**
-   * Status of the add/push operation for the `BoundedConsumableBuffer`
-   * container
-   */
-  enum class PushStatus {
-    // There was free space in the buffer, element was successfully pushed:
-    OK = 0,
+  using PushStatus = PerformanceEntryPushStatus;
 
-    // Element was pushed, but had to overwrite some already consumed elements:
-    OVERWRITE = 1,
-
-    // Element wasn't pushed, as buffer size limit has been reached and it's
-    // not possible to overwrite already consumed elements anymore:
-    DROP = 2,
-  };
-
-  BoundedConsumableBuffer(size_t maxSize = DEFAULT_MAX_SIZE)
+  explicit BoundedConsumableBuffer(size_t maxSize = DEFAULT_MAX_SIZE)
       : maxSize_(maxSize) {
     entries_.reserve(maxSize_);
   }
@@ -57,10 +44,10 @@ class BoundedConsumableBuffer {
    * operation, which will depend on whether the buffer reached the max allowed
    * size and how many are there unconsumed elements.
    */
-  PushStatus add(const T&& el) {
+  PushStatus add(const T& el) {
     if (entries_.size() < maxSize_) {
       // Haven't reached max buffer size yet, just add and grow the buffer
-      entries_.emplace_back(el);
+      entries_.push_back(el);
       cursorEnd_++;
       numToConsume_++;
       return PushStatus::OK;

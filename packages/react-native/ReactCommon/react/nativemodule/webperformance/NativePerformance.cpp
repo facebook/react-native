@@ -17,7 +17,10 @@
 #include <react/performance/timeline/PerformanceEntryReporter.h>
 #include <reactperflogger/fusebox/FuseboxTracer.h>
 #include "NativePerformance.h"
+
+#ifdef RN_DISABLE_OSS_PLUGIN_HEADER
 #include "Plugins.h"
+#endif
 
 #ifdef WITH_PERFETTO
 #include <reactperflogger/ReactPerfetto.h>
