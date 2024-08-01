@@ -75,7 +75,7 @@ const definitions: FeatureFlagDefinitions = {
         'Kill-switch to turn off support for aling-items:baseline on Fabric iOS.',
     },
     enableBackgroundStyleApplicator: {
-      defaultValue: false,
+      defaultValue: true,
       description:
         'Use BackgroundStyleApplicator in place of other background/border drawing code',
     },

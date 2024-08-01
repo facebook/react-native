@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0d95cb065819310058a7b088db43ec2d>>
+ * @generated SignedSource<<06d4d5356769bc25529b987aa7e0abb8>>
  */
 
 /**
@@ -60,7 +60,7 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableBackgroundStyleApplicator() override {
-    return false;
+    return true;
   }
 
   bool enableCleanTextInputYogaNode() override {
