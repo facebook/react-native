@@ -18,8 +18,8 @@ import com.facebook.react.module.annotations.ReactModule
 /** Native module for JS timer execution. Timers fire on frame boundaries. */
 @ReactModule(name = NativeTimingSpec.NAME)
 public class TimingModule(
-    reactContext: ReactApplicationContext?,
-    devSupportManager: DevSupportManager?
+    reactContext: ReactApplicationContext,
+    devSupportManager: DevSupportManager
 ) : com.facebook.fbreact.specs.NativeTimingSpec(reactContext), JavaScriptTimerExecutor {
   private val javaTimerManager: JavaTimerManager =
       JavaTimerManager(reactContext, this, ReactChoreographer.getInstance(), devSupportManager)
