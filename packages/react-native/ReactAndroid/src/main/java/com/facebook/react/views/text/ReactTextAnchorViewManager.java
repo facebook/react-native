@@ -37,7 +37,13 @@ public abstract class ReactTextAnchorViewManager<T extends View, C extends React
     extends BaseViewManager<T, C> {
 
   private static final int[] SPACING_TYPES = {
-    Spacing.ALL, Spacing.LEFT, Spacing.RIGHT, Spacing.TOP, Spacing.BOTTOM,
+    Spacing.ALL,
+    Spacing.LEFT,
+    Spacing.RIGHT,
+    Spacing.TOP,
+    Spacing.BOTTOM,
+    Spacing.START,
+    Spacing.END
   };
   private static final String TAG = "ReactTextAnchorViewManager";
 
@@ -161,6 +167,8 @@ public abstract class ReactTextAnchorViewManager<T extends View, C extends React
         ViewProps.BORDER_RIGHT_WIDTH,
         ViewProps.BORDER_TOP_WIDTH,
         ViewProps.BORDER_BOTTOM_WIDTH,
+        ViewProps.BORDER_START_WIDTH,
+        ViewProps.BORDER_END_WIDTH,
       },
       defaultFloat = Float.NaN)
   public void setBorderWidth(ReactTextView view, int index, float width) {
