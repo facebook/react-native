@@ -34,11 +34,11 @@ internal class CompositeBackgroundDrawable(
      */
     public val cssBackground: CSSBackgroundDrawable? = null,
 
+    /** TouchableNativeFeeback set selection background, like "SelectableBackground" */
+    public val feedbackUnderlay: Drawable? = null,
+
     /** Inset box-shadows */
     public val innerShadows: List<Drawable> = emptyList(),
-
-    /** Native riplple effect (e.g. used by TouchableNativeFeedback) */
-    public val nativeRipple: Drawable? = null
 ) :
     LayerDrawable(
         listOfNotNull(
@@ -48,8 +48,8 @@ internal class CompositeBackgroundDrawable(
                 // https://drafts.csswg.org/css-backgrounds/#shadow-layers
                 *outerShadows.asReversed().toTypedArray(),
                 cssBackground,
-                *innerShadows.asReversed().toTypedArray(),
-                nativeRipple)
+                feedbackUnderlay,
+                *innerShadows.asReversed().toTypedArray())
             .toTypedArray()) {
 
   init {
@@ -63,7 +63,7 @@ internal class CompositeBackgroundDrawable(
       cssBackground: CSSBackgroundDrawable?
   ): CompositeBackgroundDrawable {
     return CompositeBackgroundDrawable(
-        originalBackground, outerShadows, cssBackground, innerShadows, nativeRipple)
+        originalBackground, outerShadows, cssBackground, feedbackUnderlay, innerShadows)
   }
 
   public fun withNewShadows(
@@ -71,11 +71,11 @@ internal class CompositeBackgroundDrawable(
       innerShadows: List<Drawable>
   ): CompositeBackgroundDrawable {
     return CompositeBackgroundDrawable(
-        originalBackground, outerShadows, cssBackground, innerShadows, nativeRipple)
+        originalBackground, outerShadows, cssBackground, feedbackUnderlay, innerShadows)
   }
 
-  public fun withNewNativeRipple(newRipple: Drawable?): CompositeBackgroundDrawable {
+  public fun withNewFeedbackUnderlay(newUnderlay: Drawable?): CompositeBackgroundDrawable {
     return CompositeBackgroundDrawable(
-        originalBackground, outerShadows, cssBackground, innerShadows, newRipple)
+        originalBackground, outerShadows, cssBackground, newUnderlay, innerShadows)
   }
 }

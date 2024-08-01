@@ -10,6 +10,7 @@ package com.facebook.react.uimanager
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Rect
+import android.graphics.drawable.Drawable
 import android.os.Build
 import android.view.View
 import androidx.annotation.ColorInt
@@ -147,6 +148,11 @@ public object BackgroundStyleApplicator {
       shadowStyles.add(checkNotNull(BoxShadow.parse(shadows.getMap(i))))
     }
     BackgroundStyleApplicator.setBoxShadow(view, shadowStyles)
+  }
+
+  @JvmStatic
+  public fun setFeedbackUnderlay(view: View, drawable: Drawable?): Unit {
+    view.background = ensureCompositeBackgroundDrawable(view).withNewFeedbackUnderlay(drawable)
   }
 
   @JvmStatic

@@ -94,6 +94,9 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
           borderBlockStartColor: {
             process: require('../../StyleSheet/processColor').default,
           },
+          experimental_boxShadow: {
+            process: require('../../StyleSheet/processBoxShadow').default,
+          },
 
           focusable: true,
           overflow: true,
