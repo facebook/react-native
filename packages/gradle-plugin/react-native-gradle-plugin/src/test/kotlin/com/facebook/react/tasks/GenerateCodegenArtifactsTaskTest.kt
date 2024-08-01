@@ -56,7 +56,7 @@ class GenerateCodegenArtifactsTaskTest {
     assertThat(task.nodeExecutableAndArgs.get()).isEqualTo(listOf("npm", "help"))
     assertThat(task.codegenJavaPackageName.get()).isEqualTo("com.example.test")
     assertThat(task.libraryName.get()).isEqualTo("example-test")
-assertThat(task.inputs.properties).containsKeys(
+    assertThat(task.inputs.properties).containsKeys(
             "nodeExecutableAndArgs", "codegenJavaPackageName", "libraryName"
       )
   }
@@ -76,7 +76,7 @@ assertThat(task.inputs.properties).containsKeys(
 
     task.setupCommandLine("example-test", "com.example.test")
 
-    assertThat(task.CommandLine).containsExactly(
+    assertThat(task.commandLine).containsExactly(
             "--verbose",
             File(reactNativeDir, "scripts/generate-specs-cli.js").toString(),
             "--platform",
@@ -108,7 +108,7 @@ assertThat(task.inputs.properties).containsKeys(
 
     task.setupCommandLine("example-test", "com.example.test")
 
-    assertThat(task.CommandLine).containsExactly(
+    assertThat(task.commandLine).containsExactly(
             "cmd",
             "/c",
             "--verbose",
