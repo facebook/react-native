@@ -226,6 +226,12 @@ type IOSProps = $ReadOnly<{|
   clearTextOnFocus?: ?boolean,
 
   /**
+   * If `true`, the placeholder will not be scaled down to fit the text input
+   * @platform ios
+   */
+  disablePlaceholderScaling?: ?boolean,
+
+  /**
    * Determines the types of data converted to clickable URLs in the text input.
    * Only valid if `multiline={true}` and `editable={false}`.
    * By default no data types are detected.

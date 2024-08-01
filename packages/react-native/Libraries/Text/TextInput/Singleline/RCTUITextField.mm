@@ -15,7 +15,6 @@
 @implementation RCTUITextField {
   RCTBackedTextFieldDelegateAdapter *_textInputDelegateAdapter;
   NSDictionary<NSAttributedStringKey, id> *_defaultTextAttributes;
-  BOOL _disablePlaceholderScaling;
   UILabel *_placeholderLabel;
 }
 
