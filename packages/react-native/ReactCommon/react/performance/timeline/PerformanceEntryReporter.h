@@ -105,6 +105,7 @@ private:
 
   mutable std::mutex entriesMutex_;
   PerformanceEntryCircularBuffer eventBuffer_{MAX_BUFFER_SIZE_EVENT};
+  PerformanceEntryCircularBuffer longTaskBuffer_{MAX_BUFFER_SIZE_EVENT};
   PerformanceEntryKeyedBuffer markBuffer_;
   PerformanceEntryKeyedBuffer measureBuffer_;
 
@@ -129,6 +130,8 @@ private:
         return markBuffer_;
       case PerformanceEntryType::MEASURE:
         return measureBuffer_;
+      case PerformanceEntryType::LONGTASK:
+        return longTaskBuffer_;
       default:
         assert(0 && "Unhandled PerformanceEntryType");
     }
@@ -143,6 +146,8 @@ private:
         return markBuffer_;
       case PerformanceEntryType::MEASURE:
         return measureBuffer_;
+      case PerformanceEntryType::LONGTASK:
+        return longTaskBuffer_;
       default:
         assert(0 && "Unhandled PerformanceEntryType");
     }
