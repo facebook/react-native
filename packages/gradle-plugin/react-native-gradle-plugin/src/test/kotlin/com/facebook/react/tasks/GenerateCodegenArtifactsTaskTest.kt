@@ -56,9 +56,9 @@ class GenerateCodegenArtifactsTaskTest {
     assertThat(task.nodeExecutableAndArgs.get()).isEqualTo(listOf("npm", "help"))
     assertThat(task.codegenJavaPackageName.get()).isEqualTo("com.example.test")
     assertThat(task.libraryName.get()).isEqualTo("example-test")
-    assertThat(task.inputs.properties.containsKey("nodeExecutableAndArgs")).exists()
-    assertThat(task.inputs.properties.containsKey("codegenJavaPackageName")).exists()
-    assertThat(task.inputs.properties.containsKey("libraryName")).exists()
+assertThat(task.inputs.properties).containsKeys(
+            "nodeExecutableAndArgs", "codegenJavaPackageName", "libraryName"
+      )
   }
 
   @Test
