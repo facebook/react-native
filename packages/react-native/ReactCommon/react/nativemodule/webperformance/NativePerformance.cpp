@@ -15,12 +15,15 @@
 #include <cxxreact/ReactMarker.h>
 #include <jsi/instrumentation.h>
 #include <react/performance/timeline/PerformanceEntryReporter.h>
-#include "NativePerformance.h"
 #include <reactperflogger/fusebox/FuseboxTracer.h>
+#include "NativePerformance.h"
+
+#ifdef RN_DISABLE_OSS_PLUGIN_HEADER
+#include "Plugins.h"
+#endif
 
 #ifdef WITH_PERFETTO
 #include <reactperflogger/ReactPerfetto.h>
-#include "Plugins.h"
 #endif
 
 std::shared_ptr<facebook::react::TurboModule> NativePerformanceModuleProvider(
