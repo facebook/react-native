@@ -464,7 +464,7 @@ class TouchEventDispatchTest {
   private lateinit var eventDispatcher: EventDispatcher
   private lateinit var uiManager: FabricUIManager
   private lateinit var arguments: MockedStatic<Arguments>
-  private lateinit var reactChoreographer: MockedStatic<ReactChoreographer>
+  private var reactChoreographerOriginal: ReactChoreographer? = null
 
   @Before
   fun setUp() {
@@ -492,16 +492,13 @@ class TouchEventDispatchTest {
 
     // Ignore scheduled choreographer work
     val reactChoreographerMock = mock(ReactChoreographer::class.java)
-    reactChoreographer = mockStatic(ReactChoreographer::class.java)
-    reactChoreographer
-        .`when`<ReactChoreographer> { ReactChoreographer.getInstance() }
-        .thenReturn(reactChoreographerMock)
+    reactChoreographerOriginal = ReactChoreographer.overrideInstanceForTest(reactChoreographerMock)
   }
 
   @After
   fun tearDown() {
     arguments.close()
-    reactChoreographer.close()
+    ReactChoreographer.overrideInstanceForTest(reactChoreographerOriginal)
   }
 
   @Test
