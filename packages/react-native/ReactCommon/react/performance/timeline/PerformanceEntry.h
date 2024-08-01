@@ -10,10 +10,9 @@
 #include <string>
 #include <string_view>
 #include <unordered_set>
+#include <react/timing/primitives.h>
 
 namespace facebook::react {
-
-using DOMHighResTimeStamp = double;
 
 using PerformanceEntryInteractionId = uint32_t;
 
