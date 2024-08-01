@@ -286,9 +286,9 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
       throw new JSApplicationIllegalArgumentException(
           "startAnimatingNode: Unsupported animation type [" + animatedNodeTag + "]: " + type);
     }
-    animation.mId = animationId;
-    animation.mEndCallback = endCallback;
-    animation.mAnimatedValue = (ValueAnimatedNode) node;
+    animation.id = animationId;
+    animation.endCallback = endCallback;
+    animation.animatedValue = (ValueAnimatedNode) node;
     mActiveAnimations.put(animationId, animation);
   }
 
@@ -301,21 +301,21 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
     WritableArray events = null;
     for (int i = 0; i < mActiveAnimations.size(); i++) {
       AnimationDriver animation = mActiveAnimations.valueAt(i);
-      if (animatedNode.equals(animation.mAnimatedValue)) {
-        if (animation.mEndCallback != null) {
+      if (animatedNode.equals(animation.animatedValue)) {
+        if (animation.endCallback != null) {
           // Invoke animation end callback with {finished: false}
           WritableMap endCallbackResponse = Arguments.createMap();
           endCallbackResponse.putBoolean("finished", false);
-          endCallbackResponse.putDouble("value", animation.mAnimatedValue.nodeValue);
-          animation.mEndCallback.invoke(endCallbackResponse);
+          endCallbackResponse.putDouble("value", animation.animatedValue.nodeValue);
+          animation.endCallback.invoke(endCallbackResponse);
         } else if (mReactApplicationContext != null) {
           // If no callback is passed in, this /may/ be an animation set up by the single-op
           // instruction from JS, meaning that no jsi::functions are passed into native and
           // we communicate via RCTDeviceEventEmitter instead of callbacks.
           WritableMap params = Arguments.createMap();
-          params.putInt("animationId", animation.mId);
+          params.putInt("animationId", animation.id);
           params.putBoolean("finished", false);
-          params.putDouble("value", animation.mAnimatedValue.nodeValue);
+          params.putDouble("value", animation.animatedValue.nodeValue);
           if (events == null) {
             events = Arguments.createArray();
           }
@@ -339,21 +339,21 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
     WritableArray events = null;
     for (int i = 0; i < mActiveAnimations.size(); i++) {
       AnimationDriver animation = mActiveAnimations.valueAt(i);
-      if (animation.mId == animationId) {
-        if (animation.mEndCallback != null) {
+      if (animation.id == animationId) {
+        if (animation.endCallback != null) {
           // Invoke animation end callback with {finished: false}
           WritableMap endCallbackResponse = Arguments.createMap();
           endCallbackResponse.putBoolean("finished", false);
-          endCallbackResponse.putDouble("value", animation.mAnimatedValue.nodeValue);
-          animation.mEndCallback.invoke(endCallbackResponse);
+          endCallbackResponse.putDouble("value", animation.animatedValue.nodeValue);
+          animation.endCallback.invoke(endCallbackResponse);
         } else if (mReactApplicationContext != null) {
           // If no callback is passed in, this /may/ be an animation set up by the single-op
           // instruction from JS, meaning that no jsi::functions are passed into native and
           // we communicate via RCTDeviceEventEmitter instead of callbacks.
           WritableMap params = Arguments.createMap();
-          params.putInt("animationId", animation.mId);
+          params.putInt("animationId", animation.id);
           params.putBoolean("finished", false);
-          params.putDouble("value", animation.mAnimatedValue.nodeValue);
+          params.putDouble("value", animation.animatedValue.nodeValue);
           if (events == null) {
             events = Arguments.createArray();
           }
@@ -652,9 +652,9 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
     for (int i = 0; i < mActiveAnimations.size(); i++) {
       AnimationDriver animation = mActiveAnimations.valueAt(i);
       animation.runAnimationStep(frameTimeNanos);
-      AnimatedNode valueNode = animation.mAnimatedValue;
+      AnimatedNode valueNode = animation.animatedValue;
       mRunUpdateNodeList.add(valueNode);
-      if (animation.mHasFinished) {
+      if (animation.hasFinished) {
         hasFinishedAnimations = true;
       }
     }
@@ -668,20 +668,20 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
       WritableArray events = null;
       for (int i = mActiveAnimations.size() - 1; i >= 0; i--) {
         AnimationDriver animation = mActiveAnimations.valueAt(i);
-        if (animation.mHasFinished) {
-          if (animation.mEndCallback != null) {
+        if (animation.hasFinished) {
+          if (animation.endCallback != null) {
             WritableMap endCallbackResponse = Arguments.createMap();
             endCallbackResponse.putBoolean("finished", true);
-            endCallbackResponse.putDouble("value", animation.mAnimatedValue.nodeValue);
-            animation.mEndCallback.invoke(endCallbackResponse);
+            endCallbackResponse.putDouble("value", animation.animatedValue.nodeValue);
+            animation.endCallback.invoke(endCallbackResponse);
           } else if (mReactApplicationContext != null) {
             // If no callback is passed in, this /may/ be an animation set up by the single-op
             // instruction from JS, meaning that no jsi::functions are passed into native and
             // we communicate via RCTDeviceEventEmitter instead of callbacks.
             WritableMap params = Arguments.createMap();
-            params.putInt("animationId", animation.mId);
+            params.putInt("animationId", animation.id);
             params.putBoolean("finished", true);
-            params.putDouble("value", animation.mAnimatedValue.nodeValue);
+            params.putDouble("value", animation.animatedValue.nodeValue);
             if (events == null) {
               events = Arguments.createArray();
             }

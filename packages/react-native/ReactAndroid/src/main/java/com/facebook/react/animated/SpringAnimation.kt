@@ -55,20 +55,21 @@ internal class SpringAnimation(config: ReadableMap) : AnimationDriver() {
     displacementFromRestThreshold = config.getDouble("restDisplacementThreshold")
     overshootClampingEnabled = config.getBoolean("overshootClamping")
     iterations = if (config.hasKey("iterations")) config.getInt("iterations") else 1
-    mHasFinished = iterations == 0
+    hasFinished = iterations == 0
     currentLoop = 0
     timeAccumulator = 0.0
     springStarted = false
   }
 
   override fun runAnimationStep(frameTimeNanos: Long) {
+    val animatedValue = requireNotNull(animatedValue) { "Animated value should not be null" }
     val frameTimeMillis = frameTimeNanos / 1_000_000
     if (!springStarted) {
       if (currentLoop == 0) {
-        originalValue = mAnimatedValue.nodeValue
+        originalValue = animatedValue.nodeValue
         currentLoop = 1
       }
-      currentState.position = mAnimatedValue.nodeValue
+      currentState.position = animatedValue.nodeValue
       startValue = currentState.position
       lastTime = frameTimeMillis
       timeAccumulator = 0.0
@@ -76,14 +77,14 @@ internal class SpringAnimation(config: ReadableMap) : AnimationDriver() {
     }
     advance((frameTimeMillis - lastTime) / 1000.0)
     lastTime = frameTimeMillis
-    mAnimatedValue.nodeValue = currentState.position
+    animatedValue.nodeValue = currentState.position
     if (isAtRest) {
       if (iterations == -1 || currentLoop < iterations) { // looping animation, return to start
         springStarted = false
-        mAnimatedValue.nodeValue = originalValue
+        animatedValue.nodeValue = originalValue
         currentLoop++
       } else { // animation has completed
-        mHasFinished = true
+        hasFinished = true
       }
     }
   }

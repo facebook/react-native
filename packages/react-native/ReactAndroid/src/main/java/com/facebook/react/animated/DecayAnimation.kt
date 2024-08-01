@@ -36,20 +36,21 @@ internal class DecayAnimation(config: ReadableMap) : AnimationDriver() {
     lastValue = 0.0
     iterations = if (config.hasKey("iterations")) config.getInt("iterations") else 1
     currentLoop = 1
-    mHasFinished = iterations == 0
+    hasFinished = iterations == 0
   }
 
   public override fun runAnimationStep(frameTimeNanos: Long) {
+    val animatedValue = requireNotNull(animatedValue) { "Animated value should not be null" }
     val frameTimeMillis = frameTimeNanos / 1000000
     if (startFrameTimeMillis == -1L) {
       // since this is the first animation step, consider the start to be on the previous frame
       startFrameTimeMillis = frameTimeMillis - 16
-      if (fromValue == lastValue) { // first iteration, assign mFromValue based on mAnimatedValue
-        fromValue = mAnimatedValue.nodeValue
-      } else { // not the first iteration, reset mAnimatedValue based on mFromValue
-        mAnimatedValue.nodeValue = fromValue
+      if (fromValue == lastValue) { // first iteration, assign [fromValue] based on [animatedValue]
+        fromValue = animatedValue.nodeValue
+      } else { // not the first iteration, reset [animatedValue] based on [fromValue]
+        animatedValue.nodeValue = fromValue
       }
-      lastValue = mAnimatedValue.nodeValue
+      lastValue = animatedValue.nodeValue
     }
     val value =
         (fromValue +
@@ -57,15 +58,16 @@ internal class DecayAnimation(config: ReadableMap) : AnimationDriver() {
                 (1 - exp(-(1 - deceleration) * (frameTimeMillis - startFrameTimeMillis))))
     if (abs(lastValue - value) < 0.1) {
       if (iterations == -1 || currentLoop < iterations) { // looping animation, return to start
-        // set mStartFrameTimeMillis to -1 to reset instance variables on the next runAnimationStep
+        // set [startFrameTimeMillis] to -1 to reset instance variables on the next
+        // [runAnimationStep]
         startFrameTimeMillis = -1
         currentLoop++
       } else { // animation has completed
-        mHasFinished = true
+        hasFinished = true
         return
       }
     }
     lastValue = value
-    mAnimatedValue.nodeValue = value
+    animatedValue.nodeValue = value
   }
 }

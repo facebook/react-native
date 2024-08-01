@@ -48,16 +48,17 @@ internal class FrameBasedAnimationDriver(config: ReadableMap) : AnimationDriver(
             config.getInt("iterations")
         else 1
     currentLoop = 1
-    mHasFinished = iterations == 0
+    hasFinished = iterations == 0
     startFrameTimeNanos = -1
   }
 
   override fun runAnimationStep(frameTimeNanos: Long) {
+    val animatedValue = requireNotNull(animatedValue) { "Animated value should not be null" }
     if (startFrameTimeNanos < 0) {
       startFrameTimeNanos = frameTimeNanos
       if (currentLoop == 1) {
         // initiate start value when animation runs for the first time
-        fromValue = mAnimatedValue.nodeValue
+        fromValue = animatedValue.nodeValue
       }
     }
     val timeFromStartMillis = (frameTimeNanos - startFrameTimeNanos) / 1000000
@@ -74,7 +75,7 @@ internal class FrameBasedAnimationDriver(config: ReadableMap) : AnimationDriver(
         logCount++
       }
       return
-    } else if (mHasFinished) {
+    } else if (hasFinished) {
       // nothing to do here
       return
     }
@@ -88,12 +89,12 @@ internal class FrameBasedAnimationDriver(config: ReadableMap) : AnimationDriver(
       } else {
         // animation has completed, no more frames left
         nextValue = toValue
-        mHasFinished = true
+        hasFinished = true
       }
     } else {
       nextValue = fromValue + frames[frameIndex] * (toValue - fromValue)
     }
-    mAnimatedValue.nodeValue = nextValue
+    animatedValue.nodeValue = nextValue
   }
 
   companion object {

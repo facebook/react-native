@@ -5,28 +5,27 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.animated;
+package com.facebook.react.animated
 
-import com.facebook.react.bridge.Callback;
-import com.facebook.react.bridge.JSApplicationCausedNativeException;
-import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.Callback
+import com.facebook.react.bridge.JSApplicationCausedNativeException
+import com.facebook.react.bridge.ReadableMap
 
 /**
  * Base class for different types of animation drivers. Can be used to implement simple time-based
  * animations as well as spring based animations.
  */
-/*package*/ abstract class AnimationDriver {
-
-  /*package*/ boolean mHasFinished = false;
-  /*package*/ ValueAnimatedNode mAnimatedValue;
-  /*package*/ Callback mEndCallback;
-  /*package*/ int mId;
+internal abstract class AnimationDriver {
+  @JvmField internal var hasFinished = false
+  @JvmField internal var animatedValue: ValueAnimatedNode? = null
+  @JvmField internal var endCallback: Callback? = null
+  @JvmField internal var id = 0
 
   /**
    * This method gets called in the main animation loop with a frame time passed down from the
    * android choreographer callback.
    */
-  public abstract void runAnimationStep(long frameTimeNanos);
+  abstract fun runAnimationStep(frameTimeNanos: Long)
 
   /**
    * This method will get called when some of the configuration gets updated while the animation is
@@ -34,8 +33,8 @@ import com.facebook.react.bridge.ReadableMap;
    * transition. E.g. in case of a spring animation we want to keep the current value and speed and
    * start animating with the new properties (different destination or spring settings)
    */
-  public void resetConfig(ReadableMap config) {
-    throw new JSApplicationCausedNativeException(
-        "Animation config for " + getClass().getSimpleName() + " cannot be reset");
+  open fun resetConfig(config: ReadableMap) {
+    throw JSApplicationCausedNativeException(
+        "Animation config for ${javaClass.simpleName} cannot be reset")
   }
 }
