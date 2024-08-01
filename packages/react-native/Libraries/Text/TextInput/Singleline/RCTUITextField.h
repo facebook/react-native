@@ -18,7 +18,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RCTUITextField : UITextField <RCTBackedTextInputViewProtocol>
 
 - (instancetype)initWithCoder:(NSCoder *)decoder NS_UNAVAILABLE;
-- (void)updateDisablePlaceholderScaling:(BOOL)val;
 
 @property (nonatomic, weak) id<RCTBackedTextInputDelegate> textInputDelegate;
 

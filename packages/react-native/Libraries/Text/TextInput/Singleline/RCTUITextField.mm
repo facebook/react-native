@@ -44,9 +44,9 @@
      }
 }
 
-- (void)updateDisablePlaceholderScaling:(BOOL)val
+- (void)setDisablePlaceholderScaling:(BOOL)disablePlaceholderScaling
 {
-    _disablePlaceholderScaling = val;
+    _disablePlaceholderScaling = disablePlaceholderScaling;
     
     if (_placeholderLabel != nil) {
         _placeholderLabel.adjustsFontSizeToFitWidth = !_disablePlaceholderScaling;

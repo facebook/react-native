@@ -75,7 +75,7 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
 
     [self addSubview:_backedTextInputView];
     [self initializeReturnKeyType];
-    [self setDisablePlaceholderScaling:defaultProps->traits.disablePlaceholderScaling];
+    _backedTextInputView.disablePlaceholderScaling = defaultProps->traits.disablePlaceholderScaling;
   }
 
   return self;
@@ -197,7 +197,7 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
   }
     
   if (newTextInputProps.traits.disablePlaceholderScaling != oldTextInputProps.traits.disablePlaceholderScaling) {
-      [self setDisablePlaceholderScaling:newTextInputProps.traits.disablePlaceholderScaling];
+      _backedTextInputView.disablePlaceholderScaling = newTextInputProps.traits.disablePlaceholderScaling;
   }
 
   // Traits `blurOnSubmit`, `clearTextOnFocus`, and `selectTextOnFocus` were omitted intentionally here
@@ -250,13 +250,6 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
     [self _setAttributedString:RCTNSAttributedStringFromAttributedStringBox(data.attributedStringBox)];
     _comingFromJS = NO;
   }
-}
-
--(void)setDisablePlaceholderScaling:(BOOL)val
-{
-    if ([_backedTextInputView isKindOfClass:UITextField.class]) {
-        [(RCTUITextField *)_backedTextInputView updateDisablePlaceholderScaling:val];
-    }
 }
 
 - (void)updateLayoutMetrics:(const LayoutMetrics &)layoutMetrics

@@ -29,6 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign, getter=isEditable) BOOL editable;
 @property (nonatomic, assign) BOOL caretHidden;
 @property (nonatomic, assign) BOOL enablesReturnKeyAutomatically;
+@property (nonatomic, assign) BOOL disablePlaceholderScaling;
 @property (nonatomic, assign) UITextFieldViewMode clearButtonMode;
 @property (nonatomic, getter=isScrollEnabled) BOOL scrollEnabled;
 @property (nonatomic, strong, nullable) NSString *inputAccessoryViewID;
