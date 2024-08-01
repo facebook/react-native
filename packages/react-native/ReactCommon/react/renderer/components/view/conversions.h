@@ -15,6 +15,8 @@
 #include <react/renderer/core/LayoutMetrics.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/RawProps.h>
+#include <react/renderer/core/graphicsConversions.h>
+#include <react/renderer/graphics/BackgroundImage.h>
 #include <react/renderer/graphics/BlendMode.h>
 #include <react/renderer/graphics/BoxShadow.h>
 #include <react/renderer/graphics/Filter.h>
@@ -1089,6 +1091,97 @@ inline void fromRawValue(
   }
 
   result = blendMode.value();
+}
+
+inline void fromRawValue(
+    const PropsParserContext& context,
+    const RawValue& value,
+    std::vector<GradientValue>& result) {
+  react_native_expect(value.hasType<std::vector<RawValue>>());
+  if (!value.hasType<std::vector<RawValue>>()) {
+    result = {};
+    return;
+  }
+
+  std::vector<GradientValue> backgroundImage{};
+  auto rawBackgroundImage = static_cast<std::vector<RawValue>>(value);
+  for (const auto& rawGradientValue : rawBackgroundImage) {
+    bool isMap =
+        rawGradientValue.hasType<std::unordered_map<std::string, RawValue>>();
+    react_native_expect(isMap);
+    if (!isMap) {
+      result = {};
+      return;
+    }
+
+    auto rawGradientValueMap =
+        static_cast<std::unordered_map<std::string, RawValue>>(
+            rawGradientValue);
+    GradientValue gradientValue{};
+
+    auto typeIt = rawGradientValueMap.find("type");
+    if (typeIt != rawGradientValueMap.end() &&
+        typeIt->second.hasType<std::string>()) {
+      gradientValue.type =
+          gradientTypeFromString((std::string)(typeIt->second));
+    }
+
+    auto startIt = rawGradientValueMap.find("start");
+    if (startIt != rawGradientValueMap.end() &&
+        startIt->second.hasType<std::unordered_map<std::string, RawValue>>()) {
+      auto startPoints = static_cast<std::unordered_map<std::string, RawValue>>(
+          startIt->second);
+      auto xIt = startPoints.find("x");
+      auto yIt = startPoints.find("y");
+      if (xIt != startPoints.end() && yIt != startPoints.end() &&
+          xIt->second.hasType<Float>() && yIt->second.hasType<Float>()) {
+        gradientValue.startX = (Float)(xIt->second);
+        gradientValue.startY = (Float)(yIt->second);
+      }
+    }
+
+    auto endIt = rawGradientValueMap.find("end");
+    if (endIt != rawGradientValueMap.end() &&
+        endIt->second.hasType<std::unordered_map<std::string, RawValue>>()) {
+      auto endPoints =
+          static_cast<std::unordered_map<std::string, RawValue>>(endIt->second);
+      auto xIt = endPoints.find("x");
+      auto yIt = endPoints.find("y");
+      if (xIt != endPoints.end() && yIt != endPoints.end() &&
+          xIt->second.hasType<Float>() && yIt->second.hasType<Float>()) {
+        gradientValue.endX = (Float)(xIt->second);
+        gradientValue.endY = (Float)(yIt->second);
+      }
+    }
+
+    auto colorStopsIt = rawGradientValueMap.find("colorStops");
+    if (colorStopsIt != rawGradientValueMap.end() &&
+        colorStopsIt->second.hasType<std::vector<RawValue>>()) {
+      auto rawColorStops =
+          static_cast<std::vector<RawValue>>(colorStopsIt->second);
+
+      for (const auto& stop : rawColorStops) {
+        if (stop.hasType<std::unordered_map<std::string, RawValue>>()) {
+          auto stopMap =
+              static_cast<std::unordered_map<std::string, RawValue>>(stop);
+          auto positionIt = stopMap.find("position");
+          auto colorIt = stopMap.find("color");
+
+          if (positionIt != stopMap.end() && colorIt != stopMap.end() &&
+              positionIt->second.hasType<Float>()) {
+            ColorStop colorStop{};
+            colorStop.position = (Float)(positionIt->second);
+            fromRawValue(context, colorIt->second, colorStop.color);
+            gradientValue.colorStops.push_back(colorStop);
+          }
+        }
+      }
+    }
+
+    backgroundImage.push_back(gradientValue);
+  }
+
+  result = backgroundImage;
 }
 
 template <size_t N>

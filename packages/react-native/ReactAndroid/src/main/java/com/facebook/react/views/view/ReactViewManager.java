@@ -12,6 +12,7 @@ import android.view.View;
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.DynamicFromObject;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
@@ -33,14 +34,18 @@ import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
+import com.facebook.react.uimanager.common.UIManagerType;
+import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.style.BorderRadiusProp;
 import com.facebook.react.uimanager.style.BorderStyle;
+import com.facebook.react.uimanager.style.Gradient;
 import com.facebook.react.uimanager.style.LogicalEdge;
 import java.util.Map;
 
 /** View manager for AndroidViews (plain React Views). */
 @ReactModule(name = ReactViewManager.REACT_CLASS)
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
 
   @VisibleForTesting public static final String REACT_CLASS = ViewProps.VIEW_CLASS_NAME;
@@ -89,6 +94,22 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
       view.setFocusable(true);
       view.setFocusableInTouchMode(true);
       view.requestFocus();
+    }
+  }
+
+  @ReactProp(name = ViewProps.BACKGROUND_IMAGE, customType = "BackgroundImage")
+  public void setBackgroundImage(ReactViewGroup view, @Nullable ReadableArray backgroundImage) {
+    if (ViewUtil.getUIManagerType(view) == UIManagerType.FABRIC) {
+      if (backgroundImage != null && backgroundImage.size() > 0) {
+        Gradient[] gradients = new Gradient[backgroundImage.size()];
+        for (int i = 0; i < backgroundImage.size(); i++) {
+          ReadableMap gradientMap = backgroundImage.getMap(i);
+          gradients[i] = new Gradient(gradientMap);
+        }
+        view.setGradients(gradients);
+      } else {
+        view.setGradients(null);
+      }
     }
   }
 

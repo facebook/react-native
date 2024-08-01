@@ -709,6 +709,16 @@ export type DropShadowPrimitive = {
   color?: ____ColorValue_Internal,
 };
 
+export type GradientValue = {
+  type: 'linearGradient',
+  // Angle or direction enums
+  direction?: string,
+  colorStops: $ReadOnlyArray<{
+    color: ____ColorValue_Internal,
+    position?: string,
+  }>,
+};
+
 export type BoxShadowPrimitive = {
   offsetX: number | string,
   offsetY: number | string,
@@ -781,6 +791,7 @@ export type ____ViewStyle_InternalCore = $ReadOnly<{
   experimental_boxShadow?: $ReadOnlyArray<BoxShadowPrimitive> | string,
   experimental_filter?: $ReadOnlyArray<FilterFunction> | string,
   experimental_mixBlendMode?: ____BlendMode_Internal,
+  experimental_backgroundImage?: $ReadOnlyArray<GradientValue> | string,
 }>;
 
 export type ____ViewStyle_Internal = $ReadOnly<{

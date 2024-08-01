@@ -31,6 +31,7 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.common.annotations.UnstableReactNativeAPI;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
@@ -59,6 +60,7 @@ import com.facebook.react.uimanager.drawable.CSSBackgroundDrawable;
 import com.facebook.react.uimanager.style.BorderRadiusProp;
 import com.facebook.react.uimanager.style.BorderStyle;
 import com.facebook.react.uimanager.style.ComputedBorderRadius;
+import com.facebook.react.uimanager.style.Gradient;
 import com.facebook.react.uimanager.style.LogicalEdge;
 import com.facebook.react.uimanager.style.Overflow;
 
@@ -231,6 +233,11 @@ public class ReactViewGroup extends ViewGroup
         getOrCreateReactViewBackground().setColor(color);
       }
     }
+  }
+
+  @UnstableReactNativeAPI
+  /*package*/ void setGradients(@Nullable Gradient[] gradient) {
+    getOrCreateReactViewBackground().setGradients(gradient);
   }
 
   @Deprecated(since = "0.66.0", forRemoval = true)

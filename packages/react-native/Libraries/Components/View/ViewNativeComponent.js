@@ -102,6 +102,9 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
           overflow: true,
           backfaceVisibility: true,
           experimental_layoutConformance: true,
+          experimental_backgroundImage: {
+            process: require('../../StyleSheet/processBackgroundImage').default,
+          },
         },
       }
     : {

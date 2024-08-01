@@ -5498,6 +5498,7 @@ public final class com/facebook/react/uimanager/ViewProps {
 	public static final field ASPECT_RATIO Ljava/lang/String;
 	public static final field AUTO Ljava/lang/String;
 	public static final field BACKGROUND_COLOR Ljava/lang/String;
+	public static final field BACKGROUND_IMAGE Ljava/lang/String;
 	public static final field BORDER_BLOCK_COLOR Ljava/lang/String;
 	public static final field BORDER_BLOCK_END_COLOR Ljava/lang/String;
 	public static final field BORDER_BLOCK_START_COLOR Ljava/lang/String;
@@ -6125,6 +6126,11 @@ public final class com/facebook/react/uimanager/style/ComputedBorderRadiusProp :
 	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public static fun valueOf (Ljava/lang/String;)Lcom/facebook/react/uimanager/style/ComputedBorderRadiusProp;
 	public static fun values ()[Lcom/facebook/react/uimanager/style/ComputedBorderRadiusProp;
+}
+
+public final class com/facebook/react/uimanager/style/Gradient {
+	public fun <init> (Lcom/facebook/react/bridge/ReadableMap;)V
+	public final fun getShader (Landroid/graphics/Rect;)Landroid/graphics/Shader;
 }
 
 public abstract class com/facebook/react/uimanager/style/LogicalEdge : java/lang/Enum {
@@ -8244,6 +8250,7 @@ public class com/facebook/react/views/view/ReactViewManager : com/facebook/react
 	public fun setBackfaceVisibility (Lcom/facebook/react/views/view/ReactViewGroup;Ljava/lang/String;)V
 	public synthetic fun setBackgroundColor (Landroid/view/View;I)V
 	public fun setBackgroundColor (Lcom/facebook/react/views/view/ReactViewGroup;I)V
+	public fun setBackgroundImage (Lcom/facebook/react/views/view/ReactViewGroup;Lcom/facebook/react/bridge/ReadableArray;)V
 	public fun setBorderColor (Lcom/facebook/react/views/view/ReactViewGroup;ILjava/lang/Integer;)V
 	public fun setBorderRadius (Lcom/facebook/react/views/view/ReactViewGroup;IF)V
 	public fun setBorderRadius (Lcom/facebook/react/views/view/ReactViewGroup;ILcom/facebook/react/bridge/Dynamic;)V

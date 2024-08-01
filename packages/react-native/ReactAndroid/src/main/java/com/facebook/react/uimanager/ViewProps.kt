@@ -74,6 +74,7 @@ public object ViewProps {
   // Props that affect more than just layout
   public const val ENABLED: String = "enabled"
   public const val BACKGROUND_COLOR: String = "backgroundColor"
+  public const val BACKGROUND_IMAGE: String = "experimental_backgroundImage"
   public const val FOREGROUND_COLOR: String = "foregroundColor"
   public const val COLOR: String = "color"
   public const val FONT_SIZE: String = "fontSize"

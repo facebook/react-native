@@ -273,6 +273,16 @@ export type BlendMode =
   | 'color'
   | 'luminosity';
 
+export type GradientValue = {
+  type: 'linearGradient';
+  // Angle or direction enums
+  direction: string | undefined;
+  colorStops: Array<{
+    color: ColorValue;
+    position: number | undefined;
+  }>;
+};
+
 /**
  * @see https://reactnative.dev/docs/view#style
  */
