@@ -19,11 +19,13 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
+import android.os.Build;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStructure;
 import android.view.animation.Animation;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
@@ -886,6 +888,7 @@ public class ReactViewGroup extends ViewGroup
   @Override
   public void setOverflowInset(int left, int top, int right, int bottom) {
     mOverflowInset.set(left, top, right, bottom);
+    invalidate();
   }
 
   @Override
@@ -902,6 +905,25 @@ public class ReactViewGroup extends ViewGroup
    */
   /* package */ void updateBackgroundDrawable(@Nullable Drawable drawable) {
     super.setBackground(drawable);
+  }
+
+  @Override
+  public void draw(@NonNull Canvas canvas) {
+    // Check if the view is a stacking context (has children) if it does, do the rendering offscreen
+    // and then composite back.
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && getChildCount() > 0) {
+      Rect overflowInset = getOverflowInset();
+      canvas.saveLayer(
+          overflowInset.left,
+          overflowInset.top,
+          getWidth() + -overflowInset.right,
+          getHeight() + -overflowInset.bottom,
+          null);
+      super.draw(canvas);
+      canvas.restore();
+    } else {
+      super.draw(canvas);
+    }
   }
 
   @Override
