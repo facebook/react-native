@@ -35,13 +35,17 @@ void PerformanceEntryReporter::logEntry(const PerformanceEntry& entry) {
   if (entry.entryType == PerformanceEntryType::EVENT) {
     eventCounts_[entry.name]++;
   }
+
   {
     std::lock_guard lock(entriesMutex_);
     auto& buffer = getBuffer(entry.entryType);
 
-    if (entry.duration < buffer.durationThreshold) {
-      // The entries duration is lower than the desired reporting threshold, skip
-      return;
+
+    if (entry.entryType == PerformanceEntryType::EVENT) {
+      if (entry.duration < buffer.durationThreshold) {
+        // The entries duration is lower than the desired reporting threshold, skip
+        return;
+      }
     }
 
     auto pushResult = buffer.add(std::move(entry));
