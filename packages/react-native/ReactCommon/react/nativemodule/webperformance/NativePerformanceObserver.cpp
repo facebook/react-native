@@ -14,6 +14,10 @@
 #include <react/renderer/uimanager/UIManagerBinding.h>
 #include <react/utils/CoreFeatures.h>
 
+#ifdef RN_DISABLE_OSS_PLUGIN_HEADER
+#include "Plugins.h"
+#endif
+
 std::shared_ptr<facebook::react::TurboModule>
 NativePerformanceObserverModuleProvider(
     std::shared_ptr<facebook::react::CallInvoker> jsInvoker) {
@@ -63,6 +67,7 @@ void NativePerformanceObserver::observe(jsi::Runtime& rt, jsi::Object observerOb
   }
 
   // apply collected entryTypes into observer eventFilter
+  observer->getEventFilter().clear();
   for (auto entryType : entryTypes) {
     if (entryType < 0 || entryType >= NUM_PERFORMANCE_ENTRY_TYPES) {
       continue;
@@ -82,6 +87,7 @@ void NativePerformanceObserver::disconnect(jsi::Runtime& rt, jsi::Object observe
   if (!observer) {
     return;
   }
+  observerObj.setNativeState(rt, nullptr);
 
   auto& registry = PerformanceEntryReporter::getInstance()->getObserverRegistry();
   registry.removeObserver(observer);
