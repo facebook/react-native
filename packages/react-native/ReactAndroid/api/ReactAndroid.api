@@ -4083,6 +4083,7 @@ public final class com/facebook/react/uimanager/BackgroundStyleApplicator {
 	public static final fun getBorderRadius (Landroid/view/View;Lcom/facebook/react/uimanager/style/BorderRadiusProp;)Lcom/facebook/react/uimanager/LengthPercentage;
 	public static final fun getBorderStyle (Landroid/view/View;)Lcom/facebook/react/uimanager/style/BorderStyle;
 	public static final fun getBorderWidth (Landroid/view/View;Lcom/facebook/react/uimanager/style/LogicalEdge;)Ljava/lang/Float;
+	public static final fun reset (Landroid/view/View;)V
 	public static final fun setBackgroundColor (Landroid/view/View;Ljava/lang/Integer;)V
 	public static final fun setBorderColor (Landroid/view/View;Lcom/facebook/react/uimanager/style/LogicalEdge;Ljava/lang/Integer;)V
 	public static final fun setBorderRadius (Landroid/view/View;Lcom/facebook/react/uimanager/style/BorderRadiusProp;Lcom/facebook/react/uimanager/LengthPercentage;)V
@@ -7541,10 +7542,12 @@ public abstract class com/facebook/react/views/text/ReactTextAnchorViewManager :
 	public fun setAccessible (Lcom/facebook/react/views/text/ReactTextView;Z)V
 	public fun setAdjustFontSizeToFit (Lcom/facebook/react/views/text/ReactTextView;Z)V
 	public fun setAndroidHyphenationFrequency (Lcom/facebook/react/views/text/ReactTextView;Ljava/lang/String;)V
+	public fun setBackgroundColor (Landroid/view/View;I)V
 	public fun setBorderColor (Lcom/facebook/react/views/text/ReactTextView;ILjava/lang/Integer;)V
 	public fun setBorderRadius (Lcom/facebook/react/views/text/ReactTextView;IF)V
 	public fun setBorderStyle (Lcom/facebook/react/views/text/ReactTextView;Ljava/lang/String;)V
 	public fun setBorderWidth (Lcom/facebook/react/views/text/ReactTextView;IF)V
+	public fun setBoxShadow (Lcom/facebook/react/views/text/ReactTextView;Lcom/facebook/react/bridge/ReadableArray;)V
 	public fun setDataDetectorType (Lcom/facebook/react/views/text/ReactTextView;Ljava/lang/String;)V
 	public fun setDisabled (Lcom/facebook/react/views/text/ReactTextView;Z)V
 	public fun setEllipsizeMode (Lcom/facebook/react/views/text/ReactTextView;Ljava/lang/String;)V

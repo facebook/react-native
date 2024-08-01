@@ -172,6 +172,13 @@ public object BackgroundStyleApplicator {
     }
   }
 
+  @JvmStatic
+  public fun reset(view: View): Unit {
+    if (view.background is CompositeBackgroundDrawable) {
+      view.background = (view.background as CompositeBackgroundDrawable).originalBackground
+    }
+  }
+
   private fun ensureCompositeBackgroundDrawable(view: View): CompositeBackgroundDrawable {
     if (view.background is CompositeBackgroundDrawable) {
       return view.background as CompositeBackgroundDrawable
