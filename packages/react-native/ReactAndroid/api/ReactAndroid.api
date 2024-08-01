@@ -1795,16 +1795,6 @@ public final class com/facebook/react/common/LifecycleState : java/lang/Enum {
 	public static fun values ()[Lcom/facebook/react/common/LifecycleState;
 }
 
-public class com/facebook/react/common/LongArray {
-	public fun add (J)V
-	public static fun createWithInitialCapacity (I)Lcom/facebook/react/common/LongArray;
-	public fun dropTail (I)V
-	public fun get (I)J
-	public fun isEmpty ()Z
-	public fun set (IJ)V
-	public fun size ()I
-}
-
 public class com/facebook/react/common/MapBuilder {
 	public fun <init> ()V
 	public static fun builder ()Lcom/facebook/react/common/MapBuilder$Builder;
