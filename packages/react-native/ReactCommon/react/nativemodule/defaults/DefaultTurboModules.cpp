@@ -34,6 +34,7 @@ namespace facebook::react {
     return std::make_shared<NativePerformance>(jsInvoker);
   }
 
+  // TEMPORARY (PR only, for testing)
   if (name == NativePerformanceObserver::kModuleName) {
     return std::make_shared<NativePerformanceObserver>(jsInvoker);
   }
