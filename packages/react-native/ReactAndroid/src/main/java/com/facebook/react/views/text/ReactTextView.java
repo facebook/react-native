@@ -792,5 +792,6 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   public void setOverflow(@Nullable String overflow) {
     mOverflow = overflow == null ? Overflow.VISIBLE : Overflow.fromString(overflow);
     mReactBackgroundManager.setOverflow(overflow);
+    invalidate();
   }
 }
