@@ -83,7 +83,7 @@ class PerformanceEntryReporter {
   // https://w3c.github.io/user-timing/#mark-method
   void mark(
       const std::string& name,
-      const std::optional<double>& startTime = std::nullopt);
+      const std::optional<DOMHighResTimeStamp>& startTime = std::nullopt);
 
   // https://w3c.github.io/user-timing/#measure-method
   void measure(
