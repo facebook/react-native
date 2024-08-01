@@ -8,8 +8,6 @@
 package com.facebook.react.modules.network;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.util.Base64;
 import androidx.annotation.Nullable;
@@ -64,11 +62,7 @@ import okio.Source;
 
       if (fileContentUriStr.startsWith("data:")) {
         byte[] decodedDataUrString = Base64.decode(fileContentUriStr.split(",")[1], Base64.DEFAULT);
-        Bitmap bitMap =
-            BitmapFactory.decodeByteArray(decodedDataUrString, 0, decodedDataUrString.length);
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        bitMap.compress(Bitmap.CompressFormat.PNG, 0, bytes);
-        return new ByteArrayInputStream(bytes.toByteArray());
+        return new ByteArrayInputStream(decodedDataUrString);
       }
 
       return context.getContentResolver().openInputStream(fileContentUri);
