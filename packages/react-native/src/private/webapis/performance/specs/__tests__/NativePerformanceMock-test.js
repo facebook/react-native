@@ -9,7 +9,8 @@
  */
 
 const NativePerformanceMock = require('../__mocks__/NativePerformance').default;
-const PerformanceObserver = require('../../PerformanceObserver').default;
+const PerformanceObserver =
+  require('../../PerformanceObserver').PerformanceObserver;
 
 describe('NativePerformanceMock', () => {
   jest.mock(
