@@ -12,7 +12,7 @@
 import type {TransformVisitor} from 'hermes-transform';
 
 const translate = require('flow-api-translator');
-const {promises: fs} = require('fs');
+const {existsSync, promises: fs} = require('fs');
 const glob = require('glob');
 const {transform} = require('hermes-transform');
 const path = require('path');
@@ -47,10 +47,22 @@ describe('public API', () => {
       const source = await fs.readFile(path.join(PACKAGE_ROOT, file), 'utf-8');
 
       if (/@flow/.test(source)) {
+        // Require and use adjacent .js.flow file when source file includes an
+        // unsupported-syntax suppression
         if (source.includes('// $FlowFixMe[unsupported-syntax]')) {
-          expect(
-            'UNTYPED MODULE (unsupported-syntax suppression)',
-          ).toMatchSnapshot();
+          const flowDefPath = path.join(
+            PACKAGE_ROOT,
+            file.replace('.js', '.js.flow'),
+          );
+
+          if (!existsSync(flowDefPath)) {
+            throw new Error(
+              'Found an unsupported-syntax suppression in ' +
+                file +
+                ', meaning types cannot be parsed. Add an adjacent <module>.js.flow file to fix this!',
+            );
+          }
+
           return;
         }
 
