@@ -20,7 +20,7 @@ import {
   onCaughtError,
   onRecoverableError,
   onUncaughtError,
-} from '../Core/ErrorHandlers';
+} from '../../src/private/renderer/errorhandling/ErrorHandlers';
 import {type RootTag} from './RootTag';
 export function renderElement({
   element,
