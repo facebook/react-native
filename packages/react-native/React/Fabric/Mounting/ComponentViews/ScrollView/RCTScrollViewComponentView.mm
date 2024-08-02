@@ -154,15 +154,12 @@ RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrollView, NSInt
 
 - (void)_registerKeyboardListener
 {
+  // According to Apple docs, we don't need to explicitly unregister the observer, it's done automatically.
+  // See the Apple documentation: https://developer.apple.com/documentation/foundation/nsnotificationcenter/1413994-removeobserver?language=objc
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(_keyboardWillChangeFrame:)
                                                name:UIKeyboardWillChangeFrameNotification
                                              object:nil];
-}
-
-- (void)_unregisterKeyboardListener
-{
-  [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillChangeFrameNotification object:nil];
 }
 
 - (void)_keyboardWillChangeFrame:(NSNotification *)notification
