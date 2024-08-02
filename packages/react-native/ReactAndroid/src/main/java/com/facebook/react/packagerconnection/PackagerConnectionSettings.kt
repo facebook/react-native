@@ -5,13 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-@file:Suppress("DEPRECATION") // PreferenceManager should be migrated to androidx
-
 package com.facebook.react.packagerconnection
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.preference.PreferenceManager
+import androidx.preference.PreferenceManager
 import com.facebook.common.logging.FLog
 import com.facebook.react.modules.systeminfo.AndroidInfoHelpers
 
