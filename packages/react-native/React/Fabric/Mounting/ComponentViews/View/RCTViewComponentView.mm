@@ -865,20 +865,16 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     gradientLayer.colors = colors;
     gradientLayer.frame = layer.bounds;
     
-    // So that border layer is always above gradient layer
+    // border layer should appear above gradient layers to make sure that the border is visible
     gradientLayer.zPosition = _borderLayer.zPosition - 1;
     [self.layer addSublayer:gradientLayer];
     
     // Handle borders for gradient views
     if (useCoreAnimationBorderRendering) {
-      gradientLayer.borderWidth = (CGFloat)borderMetrics.borderWidths.left;
-      CGColorRef borderColor = RCTCreateCGColorRefFromSharedColor(borderMetrics.borderColors.left);
-      gradientLayer.borderColor = borderColor;
-      CGColorRelease(borderColor);
-      gradientLayer.cornerRadius = (CGFloat)borderMetrics.borderRadii.topLeft;
-      gradientLayer.cornerCurve = CornerCurveFromBorderCurve(borderMetrics.borderCurves.topLeft);
-      gradientLayer.shouldRasterize = YES;
-      gradientLayer.drawsAsynchronously = YES;
+      gradientLayer.borderWidth = layer.borderWidth;
+      gradientLayer.borderColor = layer.borderColor;
+      gradientLayer.cornerRadius = layer.cornerRadius;
+      gradientLayer.cornerCurve = layer.cornerCurve;
     } else {
       CAShapeLayer* maskLayer = [CAShapeLayer layer];
       CGPathRef path = RCTPathCreateWithRoundedRect(self.bounds, RCTGetCornerInsets(
