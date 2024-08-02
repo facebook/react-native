@@ -9,7 +9,7 @@ package com.facebook.react.packagerconnection
 
 import android.content.Context
 import android.content.SharedPreferences
-import androidx.preference.PreferenceManager
+import android.preference.PreferenceManager
 import com.facebook.common.logging.FLog
 import com.facebook.react.modules.systeminfo.AndroidInfoHelpers
 
