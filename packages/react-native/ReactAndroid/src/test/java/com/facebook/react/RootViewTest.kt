@@ -92,7 +92,7 @@ class RootViewTest {
     val eventEmitterModuleMock = mock(RCTEventEmitter::class.java)
     whenever(catalystInstanceMock.getNativeModule(UIManagerModule::class.java))
         .thenReturn(uiManager)
-    whenever(uiManager.eventDispatcher).thenReturn(eventDispatcher)
+    whenever(uiManager.getEventDispatcher()).thenReturn(eventDispatcher)
 
     // RootView IDs is React Native follow the 11, 21, 31, ... progression.
     val rootViewId = 11
