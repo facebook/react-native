@@ -23,8 +23,8 @@ static __weak ShimRCTInstance *weakShim = nil;
         [RCTInstance class],
         [ShimRCTInstance class],
         @selector(initWithDelegate:
-                  jsRuntimeFactory:bundleManager:turboModuleManagerDelegate:onInitialBundleLoad:moduleRegistry
-                                  :parentInspectorTarget:launchOptions:));
+                  jsRuntimeFactory:bundleManager:turboModuleManagerDelegate:moduleRegistry:parentInspectorTarget
+                                  :launchOptions:));
     RCTSwizzleInstanceSelector([RCTInstance class], [ShimRCTInstance class], @selector(invalidate));
     RCTSwizzleInstanceSelector(
         [RCTInstance class], [ShimRCTInstance class], @selector(callFunctionOnJSModule:method:args:));
@@ -39,8 +39,8 @@ static __weak ShimRCTInstance *weakShim = nil;
       [RCTInstance class],
       [ShimRCTInstance class],
       @selector(initWithDelegate:
-                jsRuntimeFactory:bundleManager:turboModuleManagerDelegate:onInitialBundleLoad:moduleRegistry
-                                :parentInspectorTarget:launchOptions:));
+                jsRuntimeFactory:bundleManager:turboModuleManagerDelegate:moduleRegistry:parentInspectorTarget
+                                :launchOptions:));
   RCTSwizzleInstanceSelector([RCTInstance class], [ShimRCTInstance class], @selector(invalidate));
   RCTSwizzleInstanceSelector(
       [RCTInstance class], [ShimRCTInstance class], @selector(callFunctionOnJSModule:method:args:));
@@ -52,7 +52,6 @@ static __weak ShimRCTInstance *weakShim = nil;
                 jsRuntimeFactory:(std::shared_ptr<facebook::react::JSRuntimeFactory>)jsRuntimeFactory
                    bundleManager:(RCTBundleManager *)bundleManager
       turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)tmmDelegate
-             onInitialBundleLoad:(RCTInstanceInitialBundleLoadCompletionBlock)onInitialBundleLoad
                   moduleRegistry:(RCTModuleRegistry *)moduleRegistry
            parentInspectorTarget:(facebook::react::jsinspector_modern::HostTarget *)parentInspectorTarget
                    launchOptions:(NSDictionary *)launchOptions
