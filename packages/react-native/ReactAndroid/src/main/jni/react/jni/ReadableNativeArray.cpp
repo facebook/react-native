@@ -6,7 +6,6 @@
  */
 
 #include "ReadableNativeArray.h"
-
 #include "ReadableNativeMap.h"
 
 using namespace facebook::jni;
@@ -31,9 +30,10 @@ local_ref<JArrayClass<jobject>> ReadableNativeArray::importArray() {
   return jarray;
 }
 
-local_ref<JArrayClass<jobject>> ReadableNativeArray::importTypeArray() {
+local_ref<JArrayClass<ReadableType::javaobject>>
+ReadableNativeArray::importTypeArray() {
   auto size = static_cast<jint>(array_.size());
-  auto jarray = JArrayClass<jobject>::newArray(size);
+  auto jarray = JArrayClass<ReadableType::javaobject>::newArray(size);
   for (jint ii = 0; ii < size; ii++) {
     (*jarray)[ii] = ReadableType::getType(array_.at(ii).type());
   }
