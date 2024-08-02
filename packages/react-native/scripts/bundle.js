@@ -12,7 +12,8 @@
 
 const {bundleCommand: bc} = require('@react-native/community-cli-plugin');
 const {execSync} = require('child_process');
-const {program} = require('commander');
+const commander = require('commander');
+const program = commander.program || commander;
 const {readFileSync} = require('fs');
 const path = require('path');
 
