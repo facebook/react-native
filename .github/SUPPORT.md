@@ -23,7 +23,7 @@ If you want to report a reproducible bug or regression in the React Native libra
 If you'd like to discuss topics related to the future of React Native, please check out the [React Native Community Discussions and Proposals](https://github.com/react-native-community/discussions-and-proposals) repository.
 
 
-## 💬 I want to talk to other React Native developers.
+## 💬 I want to talk to other React Native developers..
 
 If you want to participate in casual discussions about the use of React Native, consider participating in one of the following forums:
 
