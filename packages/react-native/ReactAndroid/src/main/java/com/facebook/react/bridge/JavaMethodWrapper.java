@@ -79,6 +79,9 @@ class JavaMethodWrapper implements JavaModuleWrapper.NativeMethod {
         @Override
         public ReadableArray extractArgument(
             JSInstance jsInstance, ReadableArray jsArguments, int atIndex) {
+          if (jsArguments.isNull(atIndex) || jsArguments.getType(atIndex) != ReadableType.Array) {
+            return null;
+          }
           return jsArguments.getArray(atIndex);
         }
       };
@@ -97,6 +100,9 @@ class JavaMethodWrapper implements JavaModuleWrapper.NativeMethod {
         @Override
         public ReadableMap extractArgument(
             JSInstance jsInstance, ReadableArray jsArguments, int atIndex) {
+          if (jsArguments.isNull(atIndex) || jsArguments.getType(atIndex) != ReadableType.Map) {
+            return null;
+          }
           return jsArguments.getMap(atIndex);
         }
       };

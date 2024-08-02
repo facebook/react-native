@@ -22,6 +22,7 @@
 #endif
 
 #include "CatalystInstanceImpl.h"
+#include "NativeMap.h"
 #include "ReadableNativeArray.h"
 
 using facebook::xplat::module::CxxModule;
