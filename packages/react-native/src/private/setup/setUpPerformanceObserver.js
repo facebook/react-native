@@ -21,7 +21,8 @@ export default function setUpPerformanceObserver() {
 
   polyfillGlobal(
     'PerformanceObserver',
-    () => require('../webapis/performance/PerformanceObserver').default,
+    () =>
+      require('../webapis/performance/PerformanceObserver').PerformanceObserver,
   );
 
   polyfillGlobal(

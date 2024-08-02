@@ -18,9 +18,10 @@ import * as React from 'react';
 import {useContext, useEffect} from 'react';
 import {Button, StyleSheet, Text, View} from 'react-native';
 import Performance from 'react-native/src/private/webapis/performance/Performance';
-import PerformanceObserver, {
+import {
   type PerformanceEntry,
   type PerformanceEventTiming,
+  PerformanceObserver,
 } from 'react-native/src/private/webapis/performance/PerformanceObserver';
 
 const {useState, useCallback} = React;
