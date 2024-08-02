@@ -8,11 +8,12 @@
  * @flow strict
  */
 
-'use strict';
+import type {ExtendedError} from '../../../../Libraries/Core/ExtendedError';
 
-import type {ExtendedError} from './ExtendedError';
-
-import {SyntheticError, handleException} from './ExceptionsManager';
+import {
+  SyntheticError,
+  handleException,
+} from '../../../../Libraries/Core/ExceptionsManager';
 
 type ErrorInfo = {
   +componentStack?: ?string,

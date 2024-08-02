@@ -4287,26 +4287,6 @@ declare module.exports: symbolicateStackTrace;
 "
 `;
 
-exports[`public API should not change unintentionally Libraries/Core/ErrorHandlers.js 1`] = `
-"type ErrorInfo = {
-  +componentStack?: ?string,
-  +errorBoundary?: ?React$Component<any, any>,
-};
-declare export function onUncaughtError(
-  errorValue: mixed,
-  errorInfo: ErrorInfo
-): void;
-declare export function onCaughtError(
-  errorValue: mixed,
-  errorInfo: ErrorInfo
-): void;
-declare export function onRecoverableError(
-  errorValue: mixed,
-  errorInfo: ErrorInfo
-): void;
-"
-`;
-
 exports[`public API should not change unintentionally Libraries/Core/ExceptionsManager.js 1`] = `
 "declare class SyntheticError extends Error {
   name: string;
