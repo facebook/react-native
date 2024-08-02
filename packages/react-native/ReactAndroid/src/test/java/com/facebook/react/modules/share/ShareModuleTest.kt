@@ -108,35 +108,35 @@ class ShareModuleTest {
       this.value = value
     }
 
-    override fun reject(code: String?, message: String?) {
+    override fun reject(code: String, message: String?) {
       reject(code, message, null, null)
     }
 
-    override fun reject(code: String?, throwable: Throwable?) {
+    override fun reject(code: String, throwable: Throwable?) {
       reject(code, null, throwable, null)
     }
 
-    override fun reject(code: String?, message: String?, throwable: Throwable?) {
+    override fun reject(code: String, message: String?, throwable: Throwable?) {
       reject(code, message, throwable, null)
     }
 
-    override fun reject(throwable: Throwable?) {
+    override fun reject(throwable: Throwable) {
       reject(null, null, throwable, null)
     }
 
-    override fun reject(throwable: Throwable?, userInfo: WritableMap?) {
+    override fun reject(throwable: Throwable, userInfo: WritableMap) {
       reject(null, null, throwable, userInfo)
     }
 
-    override fun reject(code: String?, userInfo: WritableMap) {
+    override fun reject(code: String, userInfo: WritableMap) {
       reject(code, null, null, userInfo)
     }
 
-    override fun reject(code: String?, throwable: Throwable?, userInfo: WritableMap?) {
+    override fun reject(code: String, throwable: Throwable?, userInfo: WritableMap) {
       reject(code, null, throwable, userInfo)
     }
 
-    override fun reject(code: String?, message: String?, userInfo: WritableMap) {
+    override fun reject(code: String, message: String?, userInfo: WritableMap) {
       reject(code, message, null, userInfo)
     }
 
@@ -153,7 +153,7 @@ class ShareModuleTest {
     }
 
     @Deprecated("Method deprecated")
-    override fun reject(message: String?) {
+    override fun reject(message: String) {
       reject(null, message, null, null)
     }
   }
