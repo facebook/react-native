@@ -866,8 +866,8 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     gradientLayer.frame = layer.bounds;
     
     // So that border layer is always above gradient layer
-    gradientLayer.zPosition = _borderLayer.zPosition;
-    [self.layer insertSublayer:gradientLayer atIndex:0];
+    gradientLayer.zPosition = _borderLayer.zPosition - 1;
+    [self.layer addSublayer:gradientLayer];
     
     // Handle borders for gradient views
     if (useCoreAnimationBorderRendering) {
