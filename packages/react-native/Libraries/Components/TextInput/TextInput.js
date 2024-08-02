@@ -10,6 +10,8 @@
 
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import type {
+  BlurEvent,
+  FocusEvent,
   PressEvent,
   ScrollEvent,
   SyntheticEvent,
@@ -95,15 +97,6 @@ export type ContentSizeChangeEvent = SyntheticEvent<
     |}>,
   |}>,
 >;
-
-type TargetEvent = SyntheticEvent<
-  $ReadOnly<{|
-    target: number,
-  |}>,
->;
-
-export type BlurEvent = TargetEvent;
-export type FocusEvent = TargetEvent;
 
 type Selection = $ReadOnly<{|
   start: number,
