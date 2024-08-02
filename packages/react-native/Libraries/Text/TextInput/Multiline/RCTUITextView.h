@@ -35,6 +35,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) UITextFieldViewMode clearButtonMode;
 
 @property (nonatomic, assign) BOOL caretHidden;
+@property (nonatomic, assign) CGFloat caretYOffset;
+@property (nonatomic, assign) CGFloat caretHeight;
 
 @property (nonatomic, strong, nullable) NSString *inputAccessoryViewID;
 

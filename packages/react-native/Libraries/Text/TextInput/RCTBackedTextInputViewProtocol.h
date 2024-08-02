@@ -28,6 +28,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL contextMenuHidden;
 @property (nonatomic, assign, getter=isEditable) BOOL editable;
 @property (nonatomic, assign) BOOL caretHidden;
+@property (nonatomic, assign) CGFloat caretYOffset;
+@property (nonatomic, assign) CGFloat caretHeight;
 @property (nonatomic, assign) BOOL enablesReturnKeyAutomatically;
 @property (nonatomic, assign) UITextFieldViewMode clearButtonMode;
 @property (nonatomic, getter=isScrollEnabled) BOOL scrollEnabled;
