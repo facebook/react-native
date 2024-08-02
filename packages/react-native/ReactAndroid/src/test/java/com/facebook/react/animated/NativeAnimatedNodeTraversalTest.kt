@@ -19,7 +19,6 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.WritableArray
 import com.facebook.react.bridge.WritableMap
-import com.facebook.react.common.MapBuilder
 import com.facebook.react.uimanager.UIManagerModule
 import com.facebook.react.uimanager.events.Event
 import com.facebook.react.uimanager.events.EventDispatcher
@@ -89,7 +88,7 @@ class NativeAnimatedNodeTraversalTest {
     eventDispatcherMock = mock(EventDispatcher::class.java)
     whenever(uiManagerMock.getEventDispatcher()).thenAnswer { eventDispatcherMock }
     whenever(uiManagerMock.constants).thenAnswer {
-      MapBuilder.of("customDirectEventTypes", MapBuilder.newHashMap<Any, Any>())
+      mapOf("customDirectEventTypes" to emptyMap<Any, Any>())
     }
     whenever(uiManagerMock.directEventNamesResolver).thenAnswer {
       object : UIManagerModule.CustomEventNamesResolver {
@@ -971,9 +970,8 @@ class NativeAnimatedNodeTraversalTest {
     val viewTag: Int = 1000
 
     whenever(uiManagerMock.constants).thenAnswer {
-      MapBuilder.of(
-          "customDirectEventTypes",
-          MapBuilder.of("onScroll", MapBuilder.of("registrationName", "onScroll")))
+      mapOf(
+          "customDirectEventTypes" to mapOf("onScroll" to mapOf("registrationName" to "onScroll")))
     }
 
     nativeAnimatedNodesManager = NativeAnimatedNodesManager(reactApplicationContextMock)
