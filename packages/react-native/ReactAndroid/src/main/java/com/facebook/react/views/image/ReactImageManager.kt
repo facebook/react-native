@@ -15,7 +15,6 @@ import com.facebook.drawee.backends.pipeline.Fresco
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
-import com.facebook.react.common.MapBuilder
 import com.facebook.react.common.ReactConstants
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.module.annotations.ReactModule
@@ -283,15 +282,11 @@ public constructor(
       (super.getExportedCustomDirectEventTypeConstants() ?: mutableMapOf<String, Any>()).apply {
         put(
             eventNameForType(ImageLoadEvent.ON_LOAD_START),
-            MapBuilder.of(REGISTRATION_NAME, ON_LOAD_START))
-        put(
-            eventNameForType(ImageLoadEvent.ON_PROGRESS),
-            MapBuilder.of(REGISTRATION_NAME, ON_PROGRESS))
-        put(eventNameForType(ImageLoadEvent.ON_LOAD), MapBuilder.of(REGISTRATION_NAME, ON_LOAD))
-        put(eventNameForType(ImageLoadEvent.ON_ERROR), MapBuilder.of(REGISTRATION_NAME, ON_ERROR))
-        put(
-            eventNameForType(ImageLoadEvent.ON_LOAD_END),
-            MapBuilder.of(REGISTRATION_NAME, ON_LOAD_END))
+            mapOf(REGISTRATION_NAME to ON_LOAD_START))
+        put(eventNameForType(ImageLoadEvent.ON_PROGRESS), mapOf(REGISTRATION_NAME to ON_PROGRESS))
+        put(eventNameForType(ImageLoadEvent.ON_LOAD), mapOf(REGISTRATION_NAME to ON_LOAD))
+        put(eventNameForType(ImageLoadEvent.ON_ERROR), mapOf(REGISTRATION_NAME to ON_ERROR))
+        put(eventNameForType(ImageLoadEvent.ON_LOAD_END), mapOf(REGISTRATION_NAME to ON_LOAD_END))
       }
 
   protected override fun onAfterUpdateTransaction(view: ReactImageView) {
