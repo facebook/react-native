@@ -12,7 +12,7 @@ import {RawPerformanceEntryTypeValues} from '../RawPerformanceEntry';
 
 // NOTE: Jest mocks of transitive dependencies don't appear to work with
 // ES6 module imports, therefore forced to use commonjs style imports here.
-const PerformanceObserver = require('../PerformanceObserver').default;
+const {PerformanceObserver} = require('../PerformanceObserver');
 const NativePerformanceObserver = require('../specs/NativePerformanceObserver');
 
 jest.mock(
