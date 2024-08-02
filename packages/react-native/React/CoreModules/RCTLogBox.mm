@@ -55,27 +55,15 @@ RCT_EXPORT_METHOD(show)
       }
 
       if (strongSelf->_bridgelessSurfacePresenter) {
-#if !TARGET_OS_OSX // [macOS]
         strongSelf->_view = [[RCTLogBoxView alloc] initWithWindow:RCTKeyWindow()
                                                  surfacePresenter:strongSelf->_bridgelessSurfacePresenter];
-#else // [macOS
-        strongSelf->_view = [[RCTLogBoxView alloc] initWithSurfacePresenter:strongSelf->_bridgelessSurfacePresenter];
-#endif // macOS]
         [strongSelf->_view show];
       } else if (strongSelf->_bridge && strongSelf->_bridge.valid) {
         if (strongSelf->_bridge.surfacePresenter) {
-#if !TARGET_OS_OSX // [macOS]      
           strongSelf->_view = [[RCTLogBoxView alloc] initWithWindow:RCTKeyWindow()
                                                    surfacePresenter:strongSelf->_bridge.surfacePresenter];
-#else // [macOS
-          strongSelf->_view = [[RCTLogBoxView alloc] initWithSurfacePresenter:strongSelf->_bridge.surfacePresenter];
-#endif // macOS]
         } else {
-#if !TARGET_OS_OSX // [macOS]     
           strongSelf->_view = [[RCTLogBoxView alloc] initWithWindow:RCTKeyWindow() bridge:strongSelf->_bridge];
-#else // [macOS
-          strongSelf->_view = [[RCTLogBoxView alloc] initWithBridge:self->_bridge];
-#endif // macOS]
         }
         [strongSelf->_view show];
       }

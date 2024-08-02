@@ -522,6 +522,7 @@ static RCTUIView *RCTUIViewCommonInit(RCTUIView *self)
 
 - (void)layout
 {
+  [super layout];
   if (self.window != nil) {
     [self layoutSubviews];
   }

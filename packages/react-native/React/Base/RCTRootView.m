@@ -166,20 +166,15 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 #if !TARGET_OS_OSX // [macOS]
   _loadingView.center = (CGPoint){CGRectGetMidX(self.bounds), CGRectGetMidY(self.bounds)};
 #else // [macOS
-  NSRect bounds = self.bounds;
-  NSSize loadingViewSize = _loadingView.frame.size;
-  CGFloat scale = self.window.backingScaleFactor;
-  if (scale == 0.0 && RCTRunningInTestEnvironment()) {
-    // When running in the test environment the view is not on screen.
-    // Use a scaleFactor of 1 so that the test results are machine independent.
-    scale = 1;
-  }
-  RCTAssert(scale != 0.0, @"Layout occurs before the view is in a window?");
-
-  _loadingView.frameOrigin = NSMakePoint(
-    RCTRoundPixelValue(bounds.origin.x + ((bounds.size.width - loadingViewSize.width) / 2), scale),
-    RCTRoundPixelValue(bounds.origin.y + ((bounds.size.height - loadingViewSize.height) / 2), scale)
+  CGFloat centerX = CGRectGetMidX(self.bounds);
+  CGFloat centerY = CGRectGetMidY(self.bounds);
+  NSRect newFrame = NSMakeRect(
+    centerX - _loadingView.frame.size.width / 2.0,
+    centerY - _loadingView.frame.size.height / 2.0,
+    _loadingView.frame.size.width,
+    _loadingView.frame.size.height
   );
+  _loadingView.frame = newFrame;
 #endif // macOS]
 }
 

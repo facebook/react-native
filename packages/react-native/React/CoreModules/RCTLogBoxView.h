@@ -11,31 +11,25 @@
 #import <React/RCTUIKit.h> // [macOS]
 
 #if !TARGET_OS_OSX // [macOS]
-
 @interface RCTLogBoxView : UIWindow
-
-- (instancetype)initWithFrame:(CGRect)frame;
-
-- (void)createRootViewController:(UIView *)view;
-
-- (instancetype)initWithWindow:(UIWindow *)window bridge:(RCTBridge *)bridge;
-- (instancetype)initWithWindow:(UIWindow *)window surfacePresenter:(id<RCTSurfacePresenterStub>)surfacePresenter;
-
-- (void)show;
-
-@end
-
 #else // [macOS
-
 @interface RCTLogBoxView : NSWindow
+#endif // macOS]
 
-- (instancetype)initWithSurfacePresenter:(id<RCTSurfacePresenterStub>)surfacePresenter;
-- (instancetype)initWithBridge:(RCTBridge *)bridge;
+#if !TARGET_OS_OSX // [macOS]
+- (instancetype)initWithFrame:(CGRect)frame;
+#endif // [macOS]
 
-- (void)setHidden:(BOOL)hidden;
+- (void)createRootViewController:(RCTUIView *)view; // [macOS]
+
+- (instancetype)initWithWindow:(RCTUIWindow *)window bridge:(RCTBridge *)bridge; // [macOS]
+- (instancetype)initWithWindow:(RCTUIWindow *)window surfacePresenter:(id<RCTSurfacePresenterStub>)surfacePresenter; // [macOS]
 
 - (void)show;
+#if TARGET_OS_OSX // [macOS
+- (void)setHidden:(BOOL)hidden;
+#endif // macOS]
 
 @end
 
-#endif // macOS]
+

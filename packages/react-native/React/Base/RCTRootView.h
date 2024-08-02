@@ -135,7 +135,7 @@ extern
  * with a blank screen. By default this is nil, but you can override it with
  * (for example) a UIActivityIndicatorView or a placeholder image.
  */
-@property (nonatomic, strong, nullable) RCTUIView *loadingView; // [macOS]
+@property (nonatomic, strong, nullable) RCTPlatformView *loadingView; // [macOS]
 
 /**
  * When set, any touches on the RCTRootView that are not matched up to any of the child

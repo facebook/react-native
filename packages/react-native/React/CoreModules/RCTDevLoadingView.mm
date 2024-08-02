@@ -123,7 +123,7 @@ RCT_EXPORT_MODULE()
 
     if (!self->_window && !RCTRunningInTestEnvironment()) {
 #if !TARGET_OS_OSX // [macOS]
-      UIWindow *window = RCTKeyWindow();
+      UIWindow *window = RCTKeyWindow(); // [macOS]
       CGFloat windowWidth = window.bounds.size.width;
 
       self->_window = [[UIWindow alloc] initWithWindowScene:window.windowScene];
@@ -138,8 +138,7 @@ RCT_EXPORT_MODULE()
       self->_label.font = [UIFont monospacedDigitSystemFontOfSize:12.0 weight:UIFontWeightRegular];
       self->_label.textAlignment = NSTextAlignmentCenter;
 #else // [macOS
-      NSRect screenFrame = [NSScreen mainScreen].visibleFrame;
-      self->_window = [[NSPanel alloc] initWithContentRect:NSMakeRect(screenFrame.origin.x + round((screenFrame.size.width - 375) / 2), screenFrame.size.height - 20, 375, 19)
+      self->_window = [[NSWindow alloc] initWithContentRect:NSMakeRect(0, 0, 375, 20)
                                                  styleMask:NSWindowStyleMaskBorderless
                                                    backing:NSBackingStoreBuffered
                                                      defer:YES];
@@ -153,6 +152,7 @@ RCT_EXPORT_MODULE()
       label.selectable = NO;
       label.wantsLayer = YES;
       label.layer.cornerRadius = label.frame.size.height / 3;
+      label.layer.cornerCurve = kCACornerCurveContinuous;
       self->_label = label;
       [[self->_window contentView] addSubview:label];
 #endif // macOS]
@@ -169,7 +169,7 @@ RCT_EXPORT_MODULE()
     self->_label.textColor = color;
 
     self->_label.backgroundColor = backgroundColor;
-    [self->_window orderFront:nil];
+    [RCTKeyWindow() beginSheet:self->_window completionHandler:nil];
 #endif // macOS]
   });
 
@@ -195,10 +195,10 @@ RCT_EXPORT_METHOD(hide)
 
   dispatch_async(dispatch_get_main_queue(), ^{
     self->_hiding = YES;
+#if !TARGET_OS_OSX // [macOS]
     const NSTimeInterval MIN_PRESENTED_TIME = 0.6;
     NSTimeInterval presentedTime = [[NSDate date] timeIntervalSinceDate:self->_showDate];
     NSTimeInterval delay = MAX(0, MIN_PRESENTED_TIME - presentedTime);
-#if !TARGET_OS_OSX // [macOS]
     CGRect windowFrame = self->_window.frame;
     [UIView animateWithDuration:0.25
         delay:delay
@@ -213,14 +213,7 @@ RCT_EXPORT_METHOD(hide)
           self->_hiding = false;
         }];
 #else // [macOS]
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delay * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-      [NSAnimationContext runAnimationGroup:^(__unused NSAnimationContext *context) {
-        self->_window.animator.alphaValue = 0.0;
-      } completionHandler:^{
-        [self->_window close];
-        self->_window = nil;
-      }];
-    });
+    [RCTKeyWindow() endSheet:self->_window];
 #endif // macOS]
   });
 }

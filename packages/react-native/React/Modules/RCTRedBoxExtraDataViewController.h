@@ -5,19 +5,21 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#if !TARGET_OS_OSX // [macOS]
-#import <UIKit/UIKit.h>
+#import <React/RCTUIKit.h> // [macOS]
 
 @protocol RCTRedBoxExtraDataActionDelegate <NSObject>
 - (void)reload;
 @end
 
+#if !TARGET_OS_OSX // [macOS]
 @interface RCTRedBoxExtraDataViewController : UIViewController <UITableViewDelegate, UITableViewDataSource>
+#else // [macOS
+@interface RCTRedBoxExtraDataViewController : NSViewController <NSTableViewDelegate, NSTableViewDataSource>
+#endif // macOS]
 
 @property (nonatomic, weak) id<RCTRedBoxExtraDataActionDelegate> actionDelegate;
 
 - (void)addExtraData:(NSDictionary *)data forIdentifier:(NSString *)identifier;
 
 @end
-#endif // [macOS]
 

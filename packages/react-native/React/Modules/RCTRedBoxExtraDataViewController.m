@@ -5,18 +5,25 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#if !TARGET_OS_OSX // [macOS]
+
 #import "RCTRedBoxExtraDataViewController.h"
 
+#if !TARGET_OS_OSX // [macOS]
 @interface RCTRedBoxExtraDataCell : UITableViewCell
+#else // [macOS
+@interface RCTRedBoxExtraDataCell : NSTableCellView
+#endif // macOS]
 
+#if !TARGET_OS_OSX // [macOS]
 @property (nonatomic, strong) UILabel *keyLabel;
 @property (nonatomic, strong) UILabel *valueLabel;
+#endif // macOS]
 
 @end
 
 @implementation RCTRedBoxExtraDataCell
 
+#if !TARGET_OS_OSX // [macOS]
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
   if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
@@ -52,6 +59,7 @@
   }
   return self;
 }
+#endif // [macOS]
 
 @end
 
@@ -60,13 +68,18 @@
 @end
 
 @implementation RCTRedBoxExtraDataViewController {
+#if !TARGET_OS_OSX // [macOS]
   UITableView *_tableView;
+#else // [macOS
+  NSTableView *_tableView;
+#endif // macOS]
   NSMutableArray *_extraDataTitle;
   NSMutableArray *_extraData;
 }
 
 @synthesize actionDelegate = _actionDelegate;
 
+#if !TARGET_OS_OSX // [macOS]
 - (instancetype)init
 {
   if (self = [super init]) {
@@ -199,6 +212,7 @@
 {
   return _extraDataTitle.count;
 }
+#endif // [macOS]
 
 - (void)addExtraData:(NSDictionary *)data forIdentifier:(NSString *)identifier
 {
@@ -223,6 +237,7 @@
   });
 }
 
+#if !TARGET_OS_OSX // [macOS]
 - (void)dismiss
 {
   [self dismissViewControllerAnimated:YES completion:nil];
@@ -244,6 +259,6 @@
     [UIKeyCommand keyCommandWithInput:@"r" modifierFlags:UIKeyModifierCommand action:@selector(reload)]
   ];
 }
+#endif // [macOS]
 
 @end
-#endif // [macOS]

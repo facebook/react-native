@@ -526,9 +526,11 @@ NS_ASSUME_NONNULL_END
 #if !TARGET_OS_OSX
 typedef UIApplication RCTUIApplication;
 typedef UIWindow RCTUIWindow;
+typedef UIViewController RCTUIViewController;
 #else
 typedef NSApplication RCTUIApplication;
 typedef NSWindow RCTUIWindow;
+typedef NSViewController RCTUIViewController;
 #endif
 
 //
