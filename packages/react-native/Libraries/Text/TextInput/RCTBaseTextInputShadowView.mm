@@ -296,13 +296,8 @@
   CGSize size = [_layoutManager usedRectForTextContainer:_textContainer].size;
 
   return (CGSize){
-#if !TARGET_OS_OSX // [macOS]
       MAX(minimumSize.width, MIN(RCTCeilPixelValue(size.width), maximumSize.width)),
       MAX(minimumSize.height, MIN(RCTCeilPixelValue(size.height), maximumSize.height))};
-#else // [macOS
-    MAX(minimumSize.width, MIN(RCTCeilPixelValue(size.width, [self scale]), maximumSize.width)),
-    MAX(minimumSize.height, MIN(RCTCeilPixelValue(size.height, [self scale]), maximumSize.height))};
-#endif // macOS]
 }
 
 - (CGFloat)lastBaselineForSize:(CGSize)size

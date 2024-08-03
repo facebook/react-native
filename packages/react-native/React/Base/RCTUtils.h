@@ -54,15 +54,9 @@ RCT_EXTERN CGSize RCTScreenSize(void);
 RCT_EXTERN CGSize RCTViewportSize(void);
 
 // Round float coordinates to nearest whole screen pixel (not point)
-#if !TARGET_OS_OSX // [macOS]
 RCT_EXTERN CGFloat RCTRoundPixelValue(CGFloat value);
 RCT_EXTERN CGFloat RCTCeilPixelValue(CGFloat value);
 RCT_EXTERN CGFloat RCTFloorPixelValue(CGFloat value);
-#else // [macOS
-RCT_EXTERN CGFloat RCTRoundPixelValue(CGFloat value, CGFloat scale);
-RCT_EXTERN CGFloat RCTCeilPixelValue(CGFloat value, CGFloat scale);
-RCT_EXTERN CGFloat RCTFloorPixelValue(CGFloat value, CGFloat scale);
-#endif // macOS]
 
 // Convert a size in points to pixels, rounded up to the nearest integral size
 RCT_EXTERN CGSize RCTSizeInPixels(CGSize pointSize, CGFloat scale);

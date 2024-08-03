@@ -49,12 +49,7 @@ typedef NS_ENUM(unsigned int, meta_prop_t) {
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     yogaConfig = YGConfigNew();
-#if !TARGET_OS_OSX // [macOS]
-    float pixelsInPoint = RCTScreenScale();
-#else // [macOS
-    float pixelsInPoint = 1; // Use 1x alignment for macOS until we can use backing resolution
-#endif // macOS]
-    YGConfigSetPointScaleFactor(yogaConfig, pixelsInPoint);
+    YGConfigSetPointScaleFactor(yogaConfig, RCTScreenScale());
     YGConfigSetErrata(yogaConfig, YGErrataAll);
   });
   return yogaConfig;

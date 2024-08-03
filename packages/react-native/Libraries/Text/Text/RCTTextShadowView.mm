@@ -310,19 +310,10 @@
                 UIFont *font = [textStorage attribute:NSFontAttributeName atIndex:range.location effectiveRange:nil];
 
                 CGRect frame = {
-#if !TARGET_OS_OSX // [macOS]
                     {RCTRoundPixelValue(glyphRect.origin.x),
                      RCTRoundPixelValue(
                          glyphRect.origin.y + glyphRect.size.height - attachmentSize.height + font.descender)},
-#else // [macOS
-                    {RCTRoundPixelValue(glyphRect.origin.x, [self scale]),
-                     RCTRoundPixelValue(glyphRect.origin.y + glyphRect.size.height - attachmentSize.height + font.descender, [self scale])},
-#endif // macOS]
-#if !TARGET_OS_OSX // [macOS]
                     {RCTRoundPixelValue(attachmentSize.width), RCTRoundPixelValue(attachmentSize.height)}};
-#else // [macOS
-                    {RCTRoundPixelValue(attachmentSize.width, [self scale]), RCTRoundPixelValue(attachmentSize.height, [self scale])}};
-#endif // macOS]
 
                 NSRange truncatedGlyphRange =
                     [layoutManager truncatedGlyphRangeInLineFragmentForGlyphAtIndex:range.location];
@@ -427,12 +418,7 @@ static YGSize RCTTextShadowViewMeasure(
   }
 
   size = (CGSize){
-#if !TARGET_OS_OSX // [macOS]
       MIN(RCTCeilPixelValue(size.width), maximumSize.width), MIN(RCTCeilPixelValue(size.height), maximumSize.height)};
-#else // [macOS
-      MIN(RCTCeilPixelValue(size.width, shadowTextView.scale), maximumSize.width),
-      MIN(RCTCeilPixelValue(size.height, shadowTextView.scale), maximumSize.height)};
-#endif // macOS]
 
   // Adding epsilon value illuminates problems with converting values from
   // `double` to `float`, and then rounding them to pixel grid in Yoga.

@@ -619,20 +619,8 @@
 {
   // Note: `placeholder` defines intrinsic size for `<TextInput>`.
   NSString *text = self.placeholder ?: @"";
-#if !TARGET_OS_OSX // [macOS]
   CGSize size = [text sizeWithAttributes:[self _placeholderTextAttributes]];
   size = CGSizeMake(RCTCeilPixelValue(size.width), RCTCeilPixelValue(size.height));
-#else // [macOS
-  CGSize size = [text sizeWithAttributes:@{NSFontAttributeName: self.font}];
-  CGFloat scale = _pointScaleFactor ?: self.window.backingScaleFactor;
-  if (scale == 0.0 && RCTRunningInTestEnvironment()) {
-    // When running in the test environment the view is not on screen.
-    // Use a scaleFactor of 1 so that the test results are machine independent.
-    scale = 1;
-  }
-  RCTAssert(scale != 0.0, @"Layout occurs before the view is in a window?");
-  size = CGSizeMake(RCTCeilPixelValue(size.width, scale), RCTCeilPixelValue(size.height, scale));
-#endif // macOS]
   size.width += _textContainerInset.left + _textContainerInset.right;
   size.height += _textContainerInset.top + _textContainerInset.bottom;
   // Returning size DOES contain `textContainerInset` (aka `padding`).

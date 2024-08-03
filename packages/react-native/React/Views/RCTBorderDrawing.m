@@ -52,21 +52,12 @@ RCTCornerInsets RCTGetCornerInsets(RCTCornerRadii cornerRadii, UIEdgeInsets edge
       }};
 }
 
-static UIEdgeInsets RCTRoundInsetsToPixel(
-  UIEdgeInsets edgeInsets,
-  CGFloat scaleFactor // [macOS]
-) {
-#if !TARGET_OS_OSX // [macOS]
+static UIEdgeInsets RCTRoundInsetsToPixel(UIEdgeInsets edgeInsets)
+{
   edgeInsets.top = RCTRoundPixelValue(edgeInsets.top);
   edgeInsets.bottom = RCTRoundPixelValue(edgeInsets.bottom);
   edgeInsets.left = RCTRoundPixelValue(edgeInsets.left);
   edgeInsets.right = RCTRoundPixelValue(edgeInsets.right);
-#else // [macOS
-  edgeInsets.top = RCTRoundPixelValue(edgeInsets.top, scaleFactor);
-  edgeInsets.bottom = RCTRoundPixelValue(edgeInsets.bottom, scaleFactor);
-  edgeInsets.left = RCTRoundPixelValue(edgeInsets.left, scaleFactor);
-  edgeInsets.right = RCTRoundPixelValue(edgeInsets.right, scaleFactor);
-#endif // macOS]
     return edgeInsets;
 }
 
@@ -217,7 +208,7 @@ static UIImage *RCTGetSolidBorderImage(
   // Incorrect render for borders that are not proportional to device pixel: borders get stretched and become
   // significantly bigger than expected.
   // Rdar: http://www.openradar.me/15959788
-  borderInsets = RCTRoundInsetsToPixel(borderInsets, scaleFactor); // [macOS]
+  borderInsets = RCTRoundInsetsToPixel(borderInsets);
 
   const BOOL makeStretchable =
       (borderInsets.left + cornerInsets.topLeft.width + borderInsets.right + cornerInsets.bottomRight.width <=

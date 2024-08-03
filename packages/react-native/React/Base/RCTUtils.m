@@ -377,7 +377,7 @@ CGSize RCTScreenSize(void)
   return size;
 }
 #else // [macOS
-CGFloat RCTScreenScale()
+CGFloat RCTScreenScale(void)
 {
   return [NSScreen mainScreen].backingScaleFactor;
 }
@@ -402,7 +402,6 @@ CGSize RCTViewportSize(void)
 #endif // macOS]
 }
 
-#if !TARGET_OS_OSX // [macOS]
 CGFloat RCTRoundPixelValue(CGFloat value)
 {
   CGFloat scale = RCTScreenScale();
@@ -420,22 +419,6 @@ CGFloat RCTFloorPixelValue(CGFloat value)
   CGFloat scale = RCTScreenScale();
   return floor(value * scale) / scale;
 }
-#else // [macOS
-CGFloat RCTRoundPixelValue(CGFloat value, CGFloat scale)
-{
-  return round(value * scale) / scale;
-}
-
-CGFloat RCTCeilPixelValue(CGFloat value, CGFloat scale)
-{
-  return ceil(value * scale) / scale;
-}
-
-CGFloat RCTFloorPixelValue(CGFloat value, CGFloat scale)
-{
-  return floor(value * scale) / scale;
-}
-#endif // macOS]
 
 CGSize RCTSizeInPixels(CGSize pointSize, CGFloat scale)
 {
