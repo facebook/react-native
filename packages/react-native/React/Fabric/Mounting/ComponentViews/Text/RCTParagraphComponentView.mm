@@ -47,8 +47,7 @@ using namespace facebook::react;
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
-    static const auto defaultProps = std::make_shared<const ParagraphProps>();
-    _props = defaultProps;
+    _props = ParagraphShadowNode::defaultSharedProps();
 
 #if !TARGET_OS_OSX  // [macOS]
     self.contentMode = UIViewContentModeRedraw;

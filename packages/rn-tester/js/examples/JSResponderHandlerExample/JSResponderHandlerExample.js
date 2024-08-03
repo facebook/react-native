@@ -8,11 +8,10 @@
  * @flow strict-local
  */
 
-const React = require('react');
-
-const {Text, View, StyleSheet} = require('react-native');
-
 import {PanResponder, ScrollView} from 'react-native';
+
+const React = require('react');
+const {StyleSheet, Text, View} = require('react-native');
 
 exports.displayName = 'JSResponderHandlerExample';
 exports.framework = 'React';

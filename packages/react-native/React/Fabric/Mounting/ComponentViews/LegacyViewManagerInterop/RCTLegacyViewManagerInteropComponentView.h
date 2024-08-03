@@ -21,6 +21,12 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)supportLegacyViewManagerWithName:(NSString *)componentName;
 + (void)supportLegacyViewManagersWithPrefix:(NSString *)prefix;
 
+/**
+ * This method is required for addUIBlock and to let the infra bypass the interop layer
+ * when providing views from the RCTUIManager. The interop layer should be transparent to the users.
+ */
+- (RCTPlatformView *)paperView; // [macOS]
+
 @end
 
 NS_ASSUME_NONNULL_END

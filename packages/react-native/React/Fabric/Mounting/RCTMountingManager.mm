@@ -73,7 +73,6 @@ static void RCTPerformMountInstructions(
       }
 
       case ShadowViewMutation::Insert: {
-        auto &oldChildShadowView = mutation.oldChildShadowView;
         auto &newChildShadowView = mutation.newChildShadowView;
         auto &parentShadowView = mutation.parentShadowView;
         auto &newChildViewDescriptor = [registry componentViewDescriptorWithTag:newChildShadowView.tag];
@@ -83,11 +82,11 @@ static void RCTPerformMountInstructions(
 
         RCTAssert(newChildShadowView.props, @"`newChildShadowView.props` must not be null.");
 
-        [newChildComponentView updateProps:newChildShadowView.props oldProps:oldChildShadowView.props];
+        [newChildComponentView updateProps:newChildShadowView.props oldProps:nullptr];
         [newChildComponentView updateEventEmitter:newChildShadowView.eventEmitter];
-        [newChildComponentView updateState:newChildShadowView.state oldState:oldChildShadowView.state];
+        [newChildComponentView updateState:newChildShadowView.state oldState:nullptr];
         [newChildComponentView updateLayoutMetrics:newChildShadowView.layoutMetrics
-                                  oldLayoutMetrics:oldChildShadowView.layoutMetrics];
+                                  oldLayoutMetrics:EmptyLayoutMetrics];
         [newChildComponentView finalizeUpdates:RNComponentViewUpdateMaskAll];
 
         [parentViewDescriptor.view mountChildComponentView:newChildComponentView index:mutation.index];

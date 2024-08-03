@@ -5,37 +5,36 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
-import type {RenderItemProps} from 'react-native/Libraries/Lists/VirtualizedList';
-import type {
-  ViewStyleProp,
-  TextStyle,
-} from 'react-native/Libraries/StyleSheet/StyleSheet';
 import type {
   PlatformTestResult,
   PlatformTestResultStatus,
 } from './RNTesterPlatformTestTypes';
+import type {RenderItemProps} from 'react-native/Libraries/Lists/VirtualizedList';
+import type {
+  TextStyle,
+  ViewStyleProp,
+} from 'react-native/Libraries/StyleSheet/StyleSheet';
 
 import RNTesterPlatformTestMinimizedResultView from './RNTesterPlatformTestMinimizedResultView';
 import RNTesterPlatformTestResultsText from './RNTesterPlatformTestResultsText';
-
 import * as React from 'react';
-import {useMemo, useState, useCallback} from 'react';
+import {useCallback, useMemo, useState} from 'react';
 import {
   Button,
-  Switch,
-  View,
-  Text,
-  StyleSheet,
   FlatList,
-  Modal,
-  SafeAreaView,
-  TextInput,
   KeyboardAvoidingView,
+  Modal,
   Platform,
+  SafeAreaView,
+  StyleSheet,
+  Switch,
+  Text,
+  TextInput,
   TouchableOpacity,
+  View,
 } from 'react-native';
 
 const DISPLAY_STATUS_MAPPING: {[PlatformTestResultStatus]: string} = {

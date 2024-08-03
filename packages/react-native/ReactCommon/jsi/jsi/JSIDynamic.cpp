@@ -150,7 +150,10 @@ void dynamicFromValueShallow(
 
 } // namespace
 
-folly::dynamic dynamicFromValue(Runtime& runtime, const Value& valueInput) {
+folly::dynamic dynamicFromValue(
+    Runtime& runtime,
+    const Value& valueInput,
+    std::function<bool(const std::string&)> filterObjectKeys) {
   std::vector<FromValue> stack;
   folly::dynamic ret;
 
@@ -182,13 +185,17 @@ folly::dynamic dynamicFromValue(Runtime& runtime, const Value& valueInput) {
         if (prop.isUndefined()) {
           continue;
         }
+        auto nameStr = name.utf8(runtime);
+        if (filterObjectKeys && filterObjectKeys(nameStr)) {
+          continue;
+        }
         // The JSC conversion uses JSON.stringify, which substitutes
         // null for a function, so we do the same here.  Just dropping
         // the pair might also work, but would require more testing.
         if (prop.isObject() && prop.getObject(runtime).isFunction(runtime)) {
           prop = Value::null();
         }
-        props.emplace_back(name.utf8(runtime), std::move(prop));
+        props.emplace_back(std::move(nameStr), std::move(prop));
         top.dyn->insert(props.back().first, nullptr);
       }
       for (const auto& prop : props) {

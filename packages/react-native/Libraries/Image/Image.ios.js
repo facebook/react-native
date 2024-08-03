@@ -16,7 +16,10 @@ import {createRootTag} from '../ReactNative/RootTag';
 import flattenStyle from '../StyleSheet/flattenStyle';
 import StyleSheet from '../StyleSheet/StyleSheet';
 import ImageAnalyticsTagContext from './ImageAnalyticsTagContext';
-import {unstable_getImageComponentDecorator} from './ImageInjection';
+import {
+  unstable_getImageComponentDecorator,
+  useWrapRefWithImageAttachedCallbacks,
+} from './ImageInjection';
 import {getImageSourcesFromImageProps} from './ImageSourceUtils';
 import {convertObjectFitToResizeMode} from './ImageUtils';
 import ImageViewNativeComponent from './ImageViewNativeComponent';
@@ -143,6 +146,7 @@ let BaseImage: AbstractImageIOS = React.forwardRef((props, forwardedRef) => {
     'aria-disabled': ariaDisabled,
     'aria-expanded': ariaExpanded,
     'aria-selected': ariaSelected,
+    accessibilityRole, // [macOS]
     height,
     src,
     width,
@@ -158,7 +162,7 @@ let BaseImage: AbstractImageIOS = React.forwardRef((props, forwardedRef) => {
   };
   const accessibilityLabel = props['aria-label'] ?? props.accessibilityLabel;
 
-  const accessibilityRole = props.accessibilityRole || 'image';
+  const actualRef = useWrapRefWithImageAttachedCallbacks(forwardedRef);
 
   return (
     <ImageAnalyticsTagContext.Consumer>
@@ -166,11 +170,11 @@ let BaseImage: AbstractImageIOS = React.forwardRef((props, forwardedRef) => {
         return (
           <ImageViewNativeComponent
             accessibilityState={_accessibilityState}
-            accessibilityRole={accessibilityRole} // [macOS]
+            accessibilityRole={accessibilityRole || 'image'} // [macOS]
             {...restProps}
             accessible={props.alt !== undefined ? true : props.accessible}
             accessibilityLabel={accessibilityLabel ?? props.alt}
-            ref={forwardedRef}
+            ref={actualRef}
             style={style}
             resizeMode={resizeMode}
             tintColor={tintColor}
@@ -243,12 +247,6 @@ Image.queryCache = queryCache;
  */
 // $FlowFixMe[incompatible-use] This property isn't writable but we're actually defining it here for the first time.
 Image.resolveAssetSource = resolveAssetSource;
-
-/**
- * Switch to `deprecated-react-native-prop-types` for compatibility with future
- * releases. This is deprecated and will be removed in the future.
- */
-Image.propTypes = require('deprecated-react-native-prop-types').ImagePropTypes;
 
 const styles = StyleSheet.create({
   base: {

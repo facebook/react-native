@@ -110,21 +110,13 @@ class Dimensions {
   }
 }
 
-let initialDims: ?$ReadOnly<DimensionsPayload> =
-  global.nativeExtensions &&
-  global.nativeExtensions.DeviceInfo &&
-  global.nativeExtensions.DeviceInfo.Dimensions;
-if (!initialDims) {
-  // Subscribe before calling getConstants to make sure we don't miss any updates in between.
-  RCTDeviceEventEmitter.addListener(
-    'didUpdateDimensions',
-    (update: DimensionsPayload) => {
-      Dimensions.set(update);
-    },
-  );
-  initialDims = NativeDeviceInfo.getConstants().Dimensions;
-}
-
-Dimensions.set(initialDims);
+// Subscribe before calling getConstants to make sure we don't miss any updates in between.
+RCTDeviceEventEmitter.addListener(
+  'didUpdateDimensions',
+  (update: DimensionsPayload) => {
+    Dimensions.set(update);
+  },
+);
+Dimensions.set(NativeDeviceInfo.getConstants().Dimensions);
 
 export default Dimensions;

@@ -23,6 +23,7 @@ static NSString *const kRemoteNotificationsRegistered = @"RemoteNotificationsReg
 static NSString *const kRemoteNotificationRegistrationFailed = @"RemoteNotificationRegistrationFailed";
 
 static NSString *const kErrorUnableToRequestPermissions = @"E_UNABLE_TO_REQUEST_PERMISSIONS";
+static UNNotification *kInitialNotification = nil;
 
 @interface RCTPushNotificationManager () <NativePushNotificationManagerIOSSpec>
 @property (nonatomic, strong) NSMutableDictionary *remoteNotificationCallbacks;
@@ -191,6 +192,11 @@ static NSString *RCTFormatNotificationDateFromNSDate(NSDate *date)
   return [formatter stringFromDate:date];
 }
 
+static BOOL IsNotificationRemote(UNNotification *notification)
+{
+  return [notification.request.trigger isKindOfClass:[UNPushNotificationTrigger class]];
+}
+
 RCT_EXPORT_MODULE()
 
 - (dispatch_queue_t)methodQueue
@@ -253,26 +259,41 @@ RCT_EXPORT_MODULE()
                                                     userInfo:@{@"error" : error}];
 }
 
-+ (void)didReceiveRemoteNotification:(NSDictionary *)notification
++ (void)didReceiveNotification:(UNNotification *)notification
 {
-  NSDictionary *userInfo = @{@"notification" : notification};
-  [[NSNotificationCenter defaultCenter] postNotificationName:RCTRemoteNotificationReceived
-                                                      object:self
-                                                    userInfo:userInfo];
+  BOOL const isRemoteNotification = IsNotificationRemote(notification);
+  if (isRemoteNotification) {
+    NSDictionary *userInfo = @{@"notification" : notification.request.content.userInfo};
+    [[NSNotificationCenter defaultCenter] postNotificationName:RCTRemoteNotificationReceived
+                                                        object:self
+                                                      userInfo:userInfo];
+  } else {
+    [[NSNotificationCenter defaultCenter] postNotificationName:kLocalNotificationReceived
+                                                        object:self
+                                                      userInfo:RCTFormatUNNotification(notification)];
+  }
 }
 
 #if !TARGET_OS_OSX // [macOS]
 + (void)didReceiveRemoteNotification:(NSDictionary *)notification
               fetchCompletionHandler:(RCTRemoteNotificationCallback)completionHandler
 {
-  NSDictionary *userInfo = @{@"notification" : notification, @"completionHandler" : completionHandler};
+  NSDictionary *userInfo = completionHandler
+      ? @{@"notification" : notification, @"completionHandler" : completionHandler}
+      : @{@"notification" : notification};
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTRemoteNotificationReceived
                                                       object:self
                                                     userInfo:userInfo];
 }
 #endif // [macOS]
 
++ (void)setInitialNotification:(UNNotification *)notification
+{
+  kInitialNotification = notification;
+}
+
 #if TARGET_OS_IOS // [macOS] [visionOS]
+// Deprecated
 + (void)didReceiveLocalNotification:(UILocalNotification *)notification
 {
   [[NSNotificationCenter defaultCenter] postNotificationName:kLocalNotificationReceived
@@ -290,6 +311,28 @@ RCT_EXPORT_MODULE()
                                                     userInfo:userInfo];
 }
 #endif // macOS]
+
+// Deprecated
++ (void)didReceiveRemoteNotification:(NSDictionary *)notification
+{
+  NSDictionary *userInfo = @{@"notification" : notification};
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTRemoteNotificationReceived
+                                                      object:self
+                                                    userInfo:userInfo];
+}
+
+- (void)invalidate
+{
+  [super invalidate];
+
+  kInitialNotification = nil;
+}
+
+
+- (void)dealloc
+{
+  kInitialNotification = nil;
+}
 
 - (void)handleLocalNotificationReceived:(NSNotification *)notification
 {
@@ -559,20 +602,44 @@ RCT_EXPORT_METHOD(getInitialNotification
                   : (RCTPromiseResolveBlock)resolve reject
                   : (__unused RCTPromiseRejectBlock)reject)
 {
+  // The user actioned a local or remote notification to launch the app. Notification is represented by UNNotification.
+  // Set this property in the implementation of
+  // userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler.
+  if (kInitialNotification) {
+    NSDictionary<NSString *, id> *notificationDict =
+        RCTFormatUNNotificationContent(kInitialNotification.request.content);
+    if (IsNotificationRemote(kInitialNotification)) {
+      // For backwards compatibility, remote notifications only returns a userInfo dict.
+      NSMutableDictionary<NSString *, id> *userInfoCopy = [notificationDict[@"userInfo"] mutableCopy];
+      userInfoCopy[@"remote"] = @YES;
+      resolve(userInfoCopy);
+    } else {
+      // For backwards compatibility, local notifications return the notification.
+      resolve(notificationDict);
+    }
+    return;
+  }
+
 #if TARGET_OS_IOS // [macOS] [visionOS]
-  NSMutableDictionary<NSString *, id> *initialNotification =
+  NSMutableDictionary<NSString *, id> *initialRemoteNotification =
       [self.bridge.launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey] mutableCopy];
+
+  // The user actioned a remote notification to launch the app. This is a fallback that is deprecated
+  // in the new architecture.
+  if (initialRemoteNotification) {
+    initialRemoteNotification[@"remote"] = @YES;
+    resolve(initialRemoteNotification);
+    return;
+  }
 
   UILocalNotification *initialLocalNotification =
       self.bridge.launchOptions[UIApplicationLaunchOptionsLocalNotificationKey];
 
-  if (initialNotification) {
-    initialNotification[@"remote"] = @YES;
-    resolve(initialNotification);
-  } else if (initialLocalNotification) {
+  // The user actioned a local notification to launch the app. Notification is represented by UILocalNotification. This
+  // is deprecated.
+  if (initialLocalNotification) {
     resolve(RCTFormatLocalNotification(initialLocalNotification));
-  } else {
-    resolve((id)kCFNull);
+    return;
   }
 #endif // [macOS] [visionOS]
 #if TARGET_OS_OSX // [macOS
@@ -583,6 +650,8 @@ RCT_EXPORT_METHOD(getInitialNotification
     resolve((id)kCFNull);
   }
 #endif // macOS]
+
+  resolve((id)kCFNull);
 }
 
 RCT_EXPORT_METHOD(getScheduledLocalNotifications : (RCTResponseSenderBlock)callback)

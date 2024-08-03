@@ -19,7 +19,7 @@ import com.facebook.react.module.model.ReactModuleInfo;
 import com.facebook.react.module.model.ReactModuleInfoProvider;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
-import com.facebook.react.views.traceupdateoverlay.TraceUpdateOverlayManager;
+import com.facebook.react.views.debuggingoverlay.DebuggingOverlayManager;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -36,19 +36,19 @@ import javax.inject.Provider;
     nativeModules = {
       JSCHeapCapture.class,
     })
-public class DebugCorePackage extends TurboReactPackage implements ViewManagerOnDemandReactPackage {
+/* package */
+class DebugCorePackage extends TurboReactPackage implements ViewManagerOnDemandReactPackage {
   private @Nullable Map<String, ModuleSpec> mViewManagers;
 
   public DebugCorePackage() {}
 
   @Override
-  public NativeModule getModule(String name, ReactApplicationContext reactContext) {
+  public @Nullable NativeModule getModule(String name, ReactApplicationContext reactContext) {
     switch (name) {
       case JSCHeapCapture.NAME:
         return new JSCHeapCapture(reactContext);
       default:
-        throw new IllegalArgumentException(
-            "In DebugCorePackage, could not find Native module for " + name);
+        return null;
     }
   }
 
@@ -96,8 +96,7 @@ public class DebugCorePackage extends TurboReactPackage implements ViewManagerOn
   private Map<String, ModuleSpec> getViewManagersMap() {
     if (mViewManagers == null) {
       Map<String, ModuleSpec> viewManagers = new HashMap<>();
-      appendMap(
-          viewManagers, TraceUpdateOverlayManager.REACT_CLASS, TraceUpdateOverlayManager::new);
+      appendMap(viewManagers, DebuggingOverlayManager.REACT_CLASS, DebuggingOverlayManager::new);
 
       mViewManagers = viewManagers;
     }

@@ -7,11 +7,13 @@
 
 package com.facebook.react.views.scroll;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.views.view.ReactClippingViewManager;
 
 /** View manager for {@link ReactHorizontalScrollContainerView} components. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @ReactModule(name = ReactHorizontalScrollContainerViewManager.REACT_CLASS)
 public class ReactHorizontalScrollContainerViewManager
     extends ReactClippingViewManager<ReactHorizontalScrollContainerView> {

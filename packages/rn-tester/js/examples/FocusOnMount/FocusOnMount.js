@@ -22,6 +22,7 @@ class FocusOnMountExample extends React.Component<{}> {
       const commands = UIManager.getViewManagerConfig('RCTView').Commands;
       if ('focus' in commands) {
         UIManager.dispatchViewManagerCommand(
+          // $FlowFixMe[incompatible-call]
           findNodeHandle(this.ref.current),
           UIManager.getViewManagerConfig('RCTView').Commands.focus,
           undefined,

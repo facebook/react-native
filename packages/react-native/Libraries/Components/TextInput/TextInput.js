@@ -1063,6 +1063,12 @@ export type Props = $ReadOnly<{|
   selectionColor?: ?ColorValue,
 
   /**
+   * The text selection handle color.
+   * @platform android
+   */
+  selectionHandleColor?: ?ColorValue,
+
+  /**
    * If `true`, all text will automatically be selected on focus.
    */
   selectTextOnFocus?: ?boolean,
@@ -1188,8 +1194,8 @@ const emptyFunctionThatReturnsTrue = () => true;
  *     return (
  *       <TextInput
  *         {...this.props} // Inherit any props passed to it; e.g., multiline, numberOfLines below
- *         editable = {true}
- *         maxLength = {40}
+ *         editable={true}
+ *         maxLength={40}
  *       />
  *     );
  *   }
@@ -1213,8 +1219,8 @@ const emptyFunctionThatReturnsTrue = () => true;
  *        borderBottomWidth: 1 }}
  *      >
  *        <UselessTextInput
- *          multiline = {true}
- *          numberOfLines = {4}
+ *          multiline={true}
+ *          numberOfLines={4}
  *          onChangeText={(text) => this.setState({text})}
  *          value={this.state.text}
  *        />
@@ -1269,6 +1275,9 @@ function InternalTextInput(props: Props): React.Node {
     id,
     tabIndex,
     selection: propsSelection,
+    selectionColor,
+    selectionHandleColor,
+    cursorColor,
     ...otherProps
   } = props;
 
@@ -1443,10 +1452,7 @@ function InternalTextInput(props: Props): React.Node {
     [mostRecentEventCount, viewCommands],
   );
 
-  const ref = useMergeRefs<TextInputInstance | null>(
-    setLocalRef,
-    props.forwardedRef,
-  );
+  const ref = useMergeRefs<TextInputInstance>(setLocalRef, props.forwardedRef);
 
   const _onChange = (event: ChangeEvent) => {
     const currentText = event.nativeEvent.text;
@@ -1618,8 +1624,7 @@ function InternalTextInput(props: Props): React.Node {
     };
   }
 
-  // $FlowFixMe[underconstrained-implicit-instantiation]
-  let style = flattenStyle(props.style);
+  const style = flattenStyle<TextStyleProp>(props.style);
 
   if (Platform.OS === 'ios' || Platform.OS === 'macos') {
     // [macOS]
@@ -1628,7 +1633,12 @@ function InternalTextInput(props: Props): React.Node {
         ? RCTMultilineTextInputView
         : RCTSinglelineTextInputView;
 
-    style = props.multiline === true ? [styles.multilineInput, style] : style;
+    const useMultilineDefaultStyle =
+      props.multiline === true &&
+      (style == null ||
+        (style.padding == null &&
+          style.paddingVertical == null &&
+          style.paddingTop == null));
 
     const useOnChangeSync =
       (props.unstable_onChangeSync || props.unstable_onChangeTextSync) &&
@@ -1660,7 +1670,10 @@ function InternalTextInput(props: Props): React.Node {
         onSelectionChange={_onSelectionChange}
         onSelectionChangeShouldSetResponder={emptyFunctionThatReturnsTrue}
         selection={selection}
-        style={style}
+        style={StyleSheet.compose(
+          useMultilineDefaultStyle ? styles.multilineDefault : null,
+          style,
+        )}
         text={text}
       />
     );
@@ -1678,7 +1691,15 @@ function InternalTextInput(props: Props): React.Node {
     if (childCount > 1) {
       children = <Text>{children}</Text>;
     }
-
+    // For consistency with iOS set cursor/selectionHandle color as selectionColor
+    const colorProps = {
+      selectionColor,
+      selectionHandleColor:
+        selectionHandleColor === undefined
+          ? selectionColor
+          : selectionHandleColor,
+      cursorColor: cursorColor === undefined ? selectionColor : cursorColor,
+    };
     textInput = (
       /* $FlowFixMe[prop-missing] the types for AndroidTextInput don't match up
        * exactly with the props for TextInput. This will need to get fixed */
@@ -1692,6 +1713,7 @@ function InternalTextInput(props: Props): React.Node {
         // $FlowFixMe[incompatible-type] - Figure out imperative + forward refs.
         ref={ref}
         {...otherProps}
+        {...colorProps}
         {...eventHandlers}
         accessibilityState={_accessibilityState}
         accessibilityLabelledBy={_accessibilityLabelledBy}
@@ -1902,13 +1924,6 @@ const ExportedForwardRef: React.AbstractComponent<
 
 ExportedForwardRef.displayName = 'TextInput';
 
-/**
- * Switch to `deprecated-react-native-prop-types` for compatibility with future
- * releases. This is deprecated and will be removed in the future.
- */
-ExportedForwardRef.propTypes =
-  require('deprecated-react-native-prop-types').TextInputPropTypes;
-
 // $FlowFixMe[prop-missing]
 ExportedForwardRef.State = {
   currentlyFocusedInput: TextInputState.currentlyFocusedInput,
@@ -1928,7 +1943,7 @@ export type TextInputComponentStatics = $ReadOnly<{|
 |}>;
 
 const styles = StyleSheet.create({
-  multilineInput: {
+  multilineDefault: {
     // This default top inset makes RCTMultilineTextInputView seem as close as possible
     // to single-line RCTSinglelineTextInputView defaults, using the system defaults
     // of font size 17 and a height of 31 points.

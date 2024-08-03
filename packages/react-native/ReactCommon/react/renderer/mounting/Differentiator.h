@@ -63,7 +63,7 @@ ShadowViewNodePair::NonOwningList sliceChildShadowNodeViewPairsV2(
  * Generates a list of `ShadowViewNodePair`s that represents a layer of a
  * flattened view hierarchy. This is *only* used by unit tests currently.
  */
-ShadowViewNodePair::OwningList sliceChildShadowNodeViewPairsLegacy(
+ShadowViewNodePair::OwningList sliceChildShadowNodeViewPairsForTesting(
     const ShadowNode& shadowNode);
 
 } // namespace facebook::react

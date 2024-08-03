@@ -9,8 +9,6 @@
 
 #include <memory>
 
-#ifdef WITH_INSPECTOR
-
 namespace facebook::react {
 
 namespace {
@@ -83,7 +81,8 @@ jni::global_ref<JInspector::javaobject> JInspector::instance(
 }
 
 jni::local_ref<jni::JArrayClass<JPage::javaobject>> JInspector::getPages() {
-  std::vector<jsinspector_modern::InspectorPage> pages = inspector_->getPages();
+  std::vector<jsinspector_modern::InspectorPageDescription> pages =
+      inspector_->getPages();
   auto array = jni::JArrayClass<JPage::javaobject>::newArray(pages.size());
   for (size_t i = 0; i < pages.size(); i++) {
     (*array)[i] = JPage::create(pages[i].id, pages[i].title, pages[i].vm);
@@ -111,5 +110,3 @@ void JInspector::registerNatives() {
 }
 
 } // namespace facebook::react
-
-#endif

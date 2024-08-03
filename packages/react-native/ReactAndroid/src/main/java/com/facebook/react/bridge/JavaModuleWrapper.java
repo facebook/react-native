@@ -30,6 +30,13 @@ import java.util.Map;
  */
 @DoNotStrip
 class JavaModuleWrapper {
+
+  interface NativeMethod {
+    void invoke(JSInstance jsInstance, ReadableArray parameters);
+
+    String getType();
+  }
+
   @DoNotStrip
   public static class MethodDescriptor {
     @DoNotStrip Method method;
@@ -40,7 +47,7 @@ class JavaModuleWrapper {
 
   private final JSInstance mJSInstance;
   private final ModuleHolder mModuleHolder;
-  private final ArrayList<NativeModule.NativeMethod> mMethods;
+  private final ArrayList<NativeMethod> mMethods;
   private final ArrayList<MethodDescriptor> mDescs;
 
   public JavaModuleWrapper(JSInstance jsInstance, ModuleHolder moduleHolder) {

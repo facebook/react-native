@@ -110,7 +110,10 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(RCTUIScrollView *sc
   __weak RCTUIView *_contentView; // [macOS]
 
   CGRect _prevFirstVisibleFrame;
-  __weak RCTUIView *_firstVisibleView; // [macOS]
+  __weak RCTPlatformView *_firstVisibleView; // [macOS]
+
+  CGFloat _endDraggingSensitivityMultiplier;
+  CGFloat _endDraggingSensitivityVelocityMultiplier;
 }
 
 + (RCTScrollViewComponentView *_Nullable)findScrollViewComponentViewForView:(RCTUIView *)view // [macOS]
@@ -124,8 +127,7 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(RCTUIScrollView *sc
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
-    static const auto defaultProps = std::make_shared<const ScrollViewProps>();
-    _props = defaultProps;
+    _props = ScrollViewShadowNode::defaultSharedProps();
 
     _scrollView = [[RCTEnhancedScrollView alloc] initWithFrame:self.bounds];
     _scrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
@@ -149,11 +151,9 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(RCTUIScrollView *sc
     [self.scrollViewDelegateSplitter addDelegate:self];
 #endif // [macOS]
 
-    if (CoreFeatures::disableScrollEventThrottleRequirement) {
-      _scrollEventThrottle = 0;
-    } else {
-      _scrollEventThrottle = INFINITY;
-    }
+    _scrollEventThrottle = 0;
+    _endDraggingSensitivityVelocityMultiplier = 0;
+    _endDraggingSensitivityMultiplier = 1;
   }
 
   return self;
@@ -264,6 +264,9 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(RCTUIScrollView *sc
 #endif // [macOS]
   }
 
+  _endDraggingSensitivityMultiplier = newScrollViewProps.endDraggingSensitivityMultiplier;
+  _endDraggingSensitivityVelocityMultiplier = newScrollViewProps.endDraggingSensitivityVelocityMultiplier;
+
   if (oldScrollViewProps.scrollEventThrottle != newScrollViewProps.scrollEventThrottle) {
     // Zero means "send value only once per significant logical event".
     // Prop value is in milliseconds.
@@ -319,7 +322,7 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(RCTUIScrollView *sc
     } else if (contentInsetAdjustmentBehavior == ContentInsetAdjustmentBehavior::Automatic) {
       scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentAutomatic;
     } else if (contentInsetAdjustmentBehavior == ContentInsetAdjustmentBehavior::ScrollableAxes) {
-      scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentAutomatic;
+      scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentScrollableAxes;
     } else if (contentInsetAdjustmentBehavior == ContentInsetAdjustmentBehavior::Always) {
       scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentAlways;
     }
@@ -472,12 +475,28 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(RCTUIScrollView *sc
 
 #pragma mark - UIScrollViewDelegate
 
-- (BOOL)touchesShouldCancelInContentView:(__unused RCTUIView *)view // [macOS]
+#if !TARGET_OS_OSX // [macOS]
+- (void)scrollViewWillEndDragging:(UIScrollView *)scrollView
+                     withVelocity:(CGPoint)velocity
+              targetContentOffset:(inout CGPoint *)targetContentOffset
+{
+  if (fabs(_endDraggingSensitivityMultiplier - 1) > 0.0001f ||
+      fabs(_endDraggingSensitivityVelocityMultiplier) > 0.0001f) {
+    if (targetContentOffset->y > 0) {
+      const CGFloat travel = targetContentOffset->y - scrollView.contentOffset.y;
+      targetContentOffset->y = scrollView.contentOffset.y + travel * _endDraggingSensitivityMultiplier +
+          velocity.y * _endDraggingSensitivityVelocityMultiplier;
+    }
+  }
+}
+
+- (BOOL)touchesShouldCancelInContentView:(__unused RCTPlatformView *)view // [macOS]
 {
   // Historically, `UIScrollView`s in React Native do not cancel touches
   // started on `UIControl`-based views (as normal iOS `UIScrollView`s do).
   return ![self _shouldDisableScrollInteraction];
 }
+#endif // [macOS]
 
 - (void)scrollViewDidScroll:(RCTUIScrollView *)scrollView // [macOS]
 {
@@ -512,7 +531,12 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(RCTUIScrollView *sc
 
 - (void)scrollViewDidScrollToTop:(RCTUIScrollView *)scrollView // [macOS]
 {
+  if (!_eventEmitter) {
+    return;
+  }
+
   _isUserTriggeredScrolling = NO;
+  static_cast<const ScrollViewEventEmitter &>(*_eventEmitter).onScrollToTop([self _scrollViewMetrics]);
   [self _updateStateWithContentOffset];
 }
 

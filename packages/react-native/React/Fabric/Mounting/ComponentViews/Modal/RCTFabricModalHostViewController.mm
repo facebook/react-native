@@ -46,7 +46,7 @@
 #if TARGET_OS_IOS // [visionOS]
 - (UIStatusBarStyle)preferredStatusBarStyle
 {
-  return [RCTSharedApplication() statusBarStyle];
+  return [RCTUIStatusBarManager() statusBarStyle];
 }
 #endif // [visionOS]
 
@@ -59,7 +59,7 @@
 #if TARGET_OS_IOS // [visionOS]
 - (BOOL)prefersStatusBarHidden
 {
-  return [RCTSharedApplication() isStatusBarHidden];
+  return [RCTUIStatusBarManager() isStatusBarHidden];
 }
 #endif // [visionOS]
 

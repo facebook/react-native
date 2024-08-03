@@ -8,12 +8,13 @@
  * @flow
  */
 
-'use strict'; // [macOS]
+'use strict';
+
+// [macOS]
 
 const React = require('react');
 const ReactNative = require('react-native');
-import {Platform} from 'react-native';
-const {Text, View, StyleSheet} = ReactNative;
+const {Text, View, StyleSheet, Platform} = ReactNative;
 
 class ViewFocusRingExample extends React.Component<{}> {
   render(): React.Node {

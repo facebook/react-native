@@ -288,6 +288,7 @@ export type FocusEvent = SyntheticEvent<
   |}>,
 >;
 
+// [macOS
 export type KeyEvent = SyntheticEvent<
   $ReadOnly<{|
     // Modifier keys
@@ -307,6 +308,7 @@ export type KeyEvent = SyntheticEvent<
     key: string,
   |}>,
 >;
+// macOS]
 
 export type MouseEvent = SyntheticEvent<
   $ReadOnly<{|

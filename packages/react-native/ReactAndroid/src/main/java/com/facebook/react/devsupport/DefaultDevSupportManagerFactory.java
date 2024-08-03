@@ -9,6 +9,7 @@ package com.facebook.react.devsupport;
 
 import android.content.Context;
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.common.SurfaceDelegateFactory;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.DevLoadingViewManager;
@@ -24,6 +25,7 @@ import java.util.Map;
  * class and its dependencies in release builds. If the class isn't found, {@link
  * DisabledDevSupportManager} is returned instead.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class DefaultDevSupportManagerFactory implements DevSupportManagerFactory {
 
   private static final String DEVSUPPORT_IMPL_PACKAGE = "com.facebook.react.devsupport";

@@ -5,17 +5,16 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 import type {PlatformTestComponentBaseProps} from './RNTesterPlatformTestTypes';
 
-import * as React from 'react';
-import {StyleSheet, View, Text} from 'react-native';
-
 import RNTesterPlatformTestInstructions from './RNTesterPlatformTestInstructions';
-import usePlatformTestHarness from './usePlatformTestHarness';
 import RNTesterPlatformTestResultView from './RNTesterPlatformTestResultView';
+import usePlatformTestHarness from './usePlatformTestHarness';
+import * as React from 'react';
+import {StyleSheet, Text, View} from 'react-native';
 
 type Props = $ReadOnly<{|
   title: string,

@@ -16,8 +16,7 @@ Map {
 #include <react/renderer/components/view/ViewEventEmitter.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 class ArrayPropsNativeComponentEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
@@ -25,8 +24,7 @@ class ArrayPropsNativeComponentEventEmitter : public ViewEventEmitter {
   
   
 };
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -47,8 +45,7 @@ Map {
 #include <react/renderer/components/view/ViewEventEmitter.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 class ArrayPropsNativeComponentEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
@@ -56,8 +53,7 @@ class ArrayPropsNativeComponentEventEmitter : public ViewEventEmitter {
   
   
 };
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -78,8 +74,7 @@ Map {
 #include <react/renderer/components/view/ViewEventEmitter.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 class BooleanPropNativeComponentEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
@@ -87,8 +82,7 @@ class BooleanPropNativeComponentEventEmitter : public ViewEventEmitter {
   
   
 };
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -109,8 +103,7 @@ Map {
 #include <react/renderer/components/view/ViewEventEmitter.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 class ColorPropNativeComponentEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
@@ -118,8 +111,7 @@ class ColorPropNativeComponentEventEmitter : public ViewEventEmitter {
   
   
 };
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -140,8 +132,7 @@ Map {
 #include <react/renderer/components/view/ViewEventEmitter.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 class CommandNativeComponentEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
@@ -149,8 +140,7 @@ class CommandNativeComponentEventEmitter : public ViewEventEmitter {
   
   
 };
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -171,8 +161,7 @@ Map {
 #include <react/renderer/components/view/ViewEventEmitter.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 class CommandNativeComponentEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
@@ -180,8 +169,7 @@ class CommandNativeComponentEventEmitter : public ViewEventEmitter {
   
   
 };
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -202,8 +190,7 @@ Map {
 #include <react/renderer/components/view/ViewEventEmitter.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 class DimensionPropNativeComponentEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
@@ -211,8 +198,7 @@ class DimensionPropNativeComponentEventEmitter : public ViewEventEmitter {
   
   
 };
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -233,8 +219,7 @@ Map {
 #include <react/renderer/components/view/ViewEventEmitter.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 class DoublePropNativeComponentEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
@@ -242,8 +227,7 @@ class DoublePropNativeComponentEventEmitter : public ViewEventEmitter {
   
   
 };
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -264,8 +248,7 @@ Map {
 #include <react/renderer/components/view/ViewEventEmitter.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 class EventsNestedObjectNativeComponentEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
@@ -285,8 +268,7 @@ class EventsNestedObjectNativeComponentEventEmitter : public ViewEventEmitter {
     };
   void onChange(OnChange value) const;
 };
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -307,8 +289,7 @@ Map {
 #include <react/renderer/components/view/ViewEventEmitter.h>
 #include <folly/dynamic.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 class EventsNativeComponentEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
@@ -381,8 +362,7 @@ class EventsNativeComponentEventEmitter : public ViewEventEmitter {
 
   void onEventWithMixedPropAttribute(OnEventWithMixedPropAttribute value) const;
 };
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -403,8 +383,7 @@ Map {
 #include <react/renderer/components/view/ViewEventEmitter.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 class InterfaceOnlyComponentEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
@@ -420,8 +399,7 @@ class InterfaceOnlyComponentEventEmitter : public ViewEventEmitter {
 
   void onDirectChange(OnDirectChange value) const;
 };
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -442,8 +420,7 @@ Map {
 #include <react/renderer/components/view/ViewEventEmitter.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 class ExcludedAndroidComponentEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
@@ -451,8 +428,7 @@ class ExcludedAndroidComponentEventEmitter : public ViewEventEmitter {
   
   
 };
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -473,8 +449,7 @@ Map {
 #include <react/renderer/components/view/ViewEventEmitter.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 class ExcludedAndroidIosComponentEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
@@ -482,8 +457,7 @@ class ExcludedAndroidIosComponentEventEmitter : public ViewEventEmitter {
   
   
 };
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -504,8 +478,7 @@ Map {
 #include <react/renderer/components/view/ViewEventEmitter.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 class ExcludedIosComponentEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
@@ -520,8 +493,7 @@ class MultiFileIncludedNativeComponentEventEmitter : public ViewEventEmitter {
   
   
 };
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -542,8 +514,7 @@ Map {
 #include <react/renderer/components/view/ViewEventEmitter.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 class FloatPropNativeComponentEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
@@ -551,8 +522,7 @@ class FloatPropNativeComponentEventEmitter : public ViewEventEmitter {
   
   
 };
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -573,8 +543,7 @@ Map {
 #include <react/renderer/components/view/ViewEventEmitter.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 class ImagePropNativeComponentEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
@@ -582,8 +551,7 @@ class ImagePropNativeComponentEventEmitter : public ViewEventEmitter {
   
   
 };
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -604,8 +572,7 @@ Map {
 #include <react/renderer/components/view/ViewEventEmitter.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 class InsetsPropNativeComponentEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
@@ -613,8 +580,7 @@ class InsetsPropNativeComponentEventEmitter : public ViewEventEmitter {
   
   
 };
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -635,8 +601,7 @@ Map {
 #include <react/renderer/components/view/ViewEventEmitter.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 class Int32EnumPropsNativeComponentEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
@@ -644,8 +609,7 @@ class Int32EnumPropsNativeComponentEventEmitter : public ViewEventEmitter {
   
   
 };
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -666,8 +630,7 @@ Map {
 #include <react/renderer/components/view/ViewEventEmitter.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 class IntegerPropNativeComponentEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
@@ -675,8 +638,7 @@ class IntegerPropNativeComponentEventEmitter : public ViewEventEmitter {
   
   
 };
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -697,8 +659,7 @@ Map {
 #include <react/renderer/components/view/ViewEventEmitter.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 class InterfaceOnlyComponentEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
@@ -708,8 +669,7 @@ class InterfaceOnlyComponentEventEmitter : public ViewEventEmitter {
     };
   void onChange(OnChange value) const;
 };
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -730,8 +690,7 @@ Map {
 #include <react/renderer/components/view/ViewEventEmitter.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 class MixedPropNativeComponentEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
@@ -739,8 +698,7 @@ class MixedPropNativeComponentEventEmitter : public ViewEventEmitter {
   
   
 };
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -761,8 +719,7 @@ Map {
 #include <react/renderer/components/view/ViewEventEmitter.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 class ImageColorPropNativeComponentEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
@@ -770,8 +727,7 @@ class ImageColorPropNativeComponentEventEmitter : public ViewEventEmitter {
   
   
 };
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -792,8 +748,7 @@ Map {
 #include <react/renderer/components/view/ViewEventEmitter.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 class NoPropsNoEventsComponentEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
@@ -801,8 +756,7 @@ class NoPropsNoEventsComponentEventEmitter : public ViewEventEmitter {
   
   
 };
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -823,8 +777,7 @@ Map {
 #include <react/renderer/components/view/ViewEventEmitter.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 class ObjectPropsEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
@@ -832,8 +785,7 @@ class ObjectPropsEventEmitter : public ViewEventEmitter {
   
   
 };
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -854,8 +806,7 @@ Map {
 #include <react/renderer/components/view/ViewEventEmitter.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 class PointPropNativeComponentEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
@@ -863,8 +814,7 @@ class PointPropNativeComponentEventEmitter : public ViewEventEmitter {
   
   
 };
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -885,8 +835,7 @@ Map {
 #include <react/renderer/components/view/ViewEventEmitter.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 class StringEnumPropsNativeComponentEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
@@ -894,8 +843,7 @@ class StringEnumPropsNativeComponentEventEmitter : public ViewEventEmitter {
   
   
 };
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -916,8 +864,7 @@ Map {
 #include <react/renderer/components/view/ViewEventEmitter.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 class StringPropComponentEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
@@ -925,8 +872,7 @@ class StringPropComponentEventEmitter : public ViewEventEmitter {
   
   
 };
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -947,8 +893,7 @@ Map {
 #include <react/renderer/components/view/ViewEventEmitter.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 class MultiFile1NativeComponentEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
@@ -963,8 +908,7 @@ class MultiFile2NativeComponentEventEmitter : public ViewEventEmitter {
   
   
 };
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -985,8 +929,7 @@ Map {
 #include <react/renderer/components/view/ViewEventEmitter.h>
 
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 class MultiComponent1NativeComponentEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
@@ -1001,8 +944,7 @@ class MultiComponent2NativeComponentEventEmitter : public ViewEventEmitter {
   
   
 };
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;

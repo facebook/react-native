@@ -213,7 +213,8 @@ export type CommandParamTypeAnnotation =
   | Int32TypeAnnotation
   | DoubleTypeAnnotation
   | FloatTypeAnnotation
-  | StringTypeAnnotation;
+  | StringTypeAnnotation
+  | ArrayTypeAnnotation;
 
 export type ReservedTypeAnnotation = $ReadOnly<{
   type: 'ReservedTypeAnnotation',

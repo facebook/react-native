@@ -1,7 +1,7 @@
 // @ts-check
 
-const fs = require('fs');
 const chalk = require('chalk');
+const fs = require('fs');
 const path = require('path');
 
 // Copied from `copyAndReplace` in react-native-community/cli as it's deleted in newer versions

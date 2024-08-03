@@ -8,9 +8,9 @@
  * @flow strict-local
  */
 
-import * as React from 'react';
-import {View, Text, StyleSheet, Button, Platform} from 'react-native';
 import {type RNTesterTheme} from './RNTesterTheme';
+import * as React from 'react';
+import {Button, Platform, StyleSheet, Text, View} from 'react-native';
 
 function RNTTestDetails({
   description,

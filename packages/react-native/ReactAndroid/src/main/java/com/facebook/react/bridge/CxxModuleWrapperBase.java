@@ -38,9 +38,6 @@ public class CxxModuleWrapperBase implements NativeModule {
   }
 
   @Override
-  public void onCatalystInstanceDestroy() {}
-
-  @Override
   public void invalidate() {
     mHybridData.resetNative();
   }

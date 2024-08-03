@@ -11,12 +11,14 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 
 /**
  * Class responsible for handling layout update animation, applied to view whenever a valid config
  * was supplied for the layout animation of UPDATE type.
  */
-/* package */ class LayoutUpdateAnimation extends AbstractLayoutAnimation {
+/* package */ @Nullsafe(Nullsafe.Mode.LOCAL)
+class LayoutUpdateAnimation extends AbstractLayoutAnimation {
 
   // We are currently not enabling translation GPU-accelerated animated, as it creates odd
   // artifacts with native react scrollview. This needs to be investigated.

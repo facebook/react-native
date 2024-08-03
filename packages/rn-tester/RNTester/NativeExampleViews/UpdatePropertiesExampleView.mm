@@ -85,7 +85,11 @@ RCT_EXPORT_MODULE();
 - (void)changeColor
 {
   _beige = !_beige;
-  [_rootView setAppProperties:@{@"color" : _beige ? @"beige" : @"purple"}];
+
+  NSMutableDictionary *newProperties = [_rootView.appProperties mutableCopy];
+  newProperties[@"color"] = _beige ? @"beige" : @"purple";
+
+  [_rootView setAppProperties:newProperties];
 }
 
 - (NSArray<RCTUIView<RCTComponent> *> *)reactSubviews // [macOS]

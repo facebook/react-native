@@ -11,7 +11,6 @@
 #include <cxxreact/RAMBundleRegistry.h>
 #include <fbjni/fbjni.h>
 #include <jni.h>
-#include "OnLoad.h"
 
 namespace facebook::react {
 

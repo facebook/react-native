@@ -10,22 +10,22 @@
 
 'use strict';
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+import type {TextStyle} from 'react-native/Libraries/StyleSheet/StyleSheet';
+
+import RNTesterButton from '../../components/RNTesterButton';
+import {RNTesterThemeContext} from '../../components/RNTesterTheme';
 import * as React from 'react';
 import {useContext, useState} from 'react';
 import {
   Button,
   Platform,
+  StyleSheet,
   Text,
   TextInput,
   View,
-  StyleSheet,
-  Switch, // [macOS]
 } from 'react-native';
-import type {TextStyle} from 'react-native/Libraries/StyleSheet/StyleSheet';
-
-import RNTesterButton from '../../components/RNTesterButton';
-import {RNTesterThemeContext} from '../../components/RNTesterTheme';
-import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+import {Switch} from 'react-native'; // [macOS]
 
 const styles = StyleSheet.create({
   default: {

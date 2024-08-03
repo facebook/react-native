@@ -8,11 +8,12 @@
  * @format
  */
 
-import * as React from 'react';
 import type {HostComponent} from 'react-native';
 import type {ViewProps} from 'react-native/Libraries/Components/View/ViewPropTypes';
-import {requireNativeComponent, UIManager} from 'react-native';
+
 import ReactNative from '../../../react-native/Libraries/Renderer/shims/ReactNative';
+import * as React from 'react';
+import {UIManager, requireNativeComponent} from 'react-native';
 
 type ColorChangedEvent = {
   nativeEvent: {
@@ -42,12 +43,59 @@ export function callNativeMethodToChangeBackgroundColor(
     console.log('viewRef is null');
     return;
   }
+  const reactTag = ReactNative.findNodeHandle(viewRef);
+  if (reactTag == null) {
+    console.log('reactTag is null');
+    return;
+  }
   UIManager.dispatchViewManagerCommand(
-    ReactNative.findNodeHandle(viewRef),
-    UIManager.getViewManagerConfig(
-      'RNTMyLegacyNativeView',
-    ).Commands.changeBackgroundColor.toString(),
+    reactTag,
+    UIManager.getViewManagerConfig('RNTMyLegacyNativeView').Commands
+      .changeBackgroundColor,
     [color],
+  );
+}
+
+export function callNativeMethodToAddOverlays(
+  viewRef: React.ElementRef<MyLegacyViewType> | null,
+  overlayColors: $ReadOnlyArray<string>,
+) {
+  if (!viewRef) {
+    console.log('viewRef is null');
+    return;
+  }
+  const reactTag = ReactNative.findNodeHandle(viewRef);
+  if (reactTag == null) {
+    console.log('reactTag is null');
+    return;
+  }
+
+  UIManager.dispatchViewManagerCommand(
+    reactTag,
+    UIManager.getViewManagerConfig('RNTMyLegacyNativeView').Commands
+      .addOverlays,
+    [overlayColors],
+  );
+}
+
+export function callNativeMethodToRemoveOverlays(
+  viewRef: React.ElementRef<MyLegacyViewType> | null,
+) {
+  if (!viewRef) {
+    console.log('viewRef is null');
+    return;
+  }
+  const reactTag = ReactNative.findNodeHandle(viewRef);
+  if (reactTag == null) {
+    console.log('reactTag is null');
+    return;
+  }
+
+  UIManager.dispatchViewManagerCommand(
+    reactTag,
+    UIManager.getViewManagerConfig('RNTMyLegacyNativeView').Commands
+      .removeOverlays,
+    [],
   );
 }
 

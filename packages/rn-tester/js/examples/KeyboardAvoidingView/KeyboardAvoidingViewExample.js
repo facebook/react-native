@@ -11,20 +11,19 @@
 'use strict';
 
 const React = require('react');
+const {useState} = require('react');
 const {
   Alert,
+  Button,
   KeyboardAvoidingView,
   Modal,
+  Pressable,
   StyleSheet,
   Text,
   TextInput,
-  Button,
-  Pressable,
   TouchableOpacity,
   View,
 } = require('react-native');
-
-const {useState} = require('react');
 
 const onButtonPress = () => {
   Alert.alert('Successfully Registered!');

@@ -103,7 +103,7 @@
 }
 
 #if !TARGET_OS_OSX // [macOS]
-- (BOOL)touchesShouldCancelInContentView:(RCTUIView *)view // [macOS]
+- (BOOL)touchesShouldCancelInContentView:(RCTPlatformView *)view // [macOS]
 {
   if ([_overridingDelegate respondsToSelector:@selector(touchesShouldCancelInContentView:)]) {
     return [_overridingDelegate touchesShouldCancelInContentView:view];

@@ -10,12 +10,11 @@
 
 'use strict';
 
+const {name, version: currentVersion} = require('./package.json');
+const cli = require('@react-native-community/cli');
+const chalk = require('chalk');
 const {get} = require('https');
 const {URL} = require('url');
-const chalk = require('chalk');
-const cli = require('@react-native-community/cli');
-
-const {version: currentVersion} = require('./package.json');
 
 const isNpxRuntime = process.env.npm_lifecycle_event === 'npx';
 const DEFAULT_REGISTRY_HOST =
@@ -41,7 +40,7 @@ async function getLatestVersion(registryHost = DEFAULT_REGISTRY_HOST) {
 }
 
 /**
- * npx react-native -> @react-native-comminity/cli
+ * npx react-native -> @react-native-community/cli
  *
  * Will perform a version check and warning if you're not running the latest community cli when executed using npx. If
  * you know what you're doing, you can skip this check:
@@ -67,7 +66,7 @@ async function main() {
       // Ignore errors, since it's a nice to have warning
     }
   }
-  return cli.run();
+  return cli.run(name);
 }
 
 if (require.main === module) {

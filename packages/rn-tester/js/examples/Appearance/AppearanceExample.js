@@ -8,14 +8,15 @@
  * @flow
  */
 
-import * as React from 'react';
-import {useState, useEffect} from 'react';
-import {Appearance, Text, useColorScheme, View, Button} from 'react-native';
 import type {
   AppearancePreferences,
   ColorSchemeName,
 } from 'react-native/Libraries/Utilities/NativeAppearance';
+
 import {RNTesterThemeContext, themes} from '../../components/RNTesterTheme';
+import * as React from 'react';
+import {useEffect, useState} from 'react';
+import {Appearance, Button, Text, View, useColorScheme} from 'react-native';
 
 function ColorSchemeSubscription() {
   const [colorScheme, setScheme] = useState<?ColorSchemeName | string>(

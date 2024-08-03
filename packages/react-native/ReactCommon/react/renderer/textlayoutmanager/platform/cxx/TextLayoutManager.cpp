@@ -16,6 +16,7 @@ void* TextLayoutManager::getNativeTextLayoutManager() const {
 TextMeasurement TextLayoutManager::measure(
     AttributedStringBox attributedStringBox,
     ParagraphAttributes paragraphAttributes,
+    const TextLayoutContext& /*layoutContext*/,
     LayoutConstraints layoutConstraints,
     std::shared_ptr<void>) const {
   TextMeasurement::Attachments attachments;

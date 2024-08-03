@@ -25,20 +25,15 @@ enum class Justify : uint8_t {
 };
 
 template <>
-constexpr inline int32_t ordinalCount<Justify>() {
+constexpr int32_t ordinalCount<Justify>() {
   return 6;
-} 
+}
 
-template <>
-constexpr inline int32_t bitCount<Justify>() {
-  return 3;
-} 
-
-constexpr inline Justify scopedEnum(YGJustify unscoped) {
+constexpr Justify scopedEnum(YGJustify unscoped) {
   return static_cast<Justify>(unscoped);
 }
 
-constexpr inline YGJustify unscopedEnum(Justify scoped) {
+constexpr YGJustify unscopedEnum(Justify scoped) {
   return static_cast<YGJustify>(scoped);
 }
 

@@ -76,11 +76,12 @@ class ConcreteShadowNode : public BaseShadowNodeT {
       const Props::Shared& baseProps = nullptr) {
     return std::make_shared<PropsT>(
         context,
-        baseProps ? static_cast<const PropsT&>(*baseProps) : PropsT(),
+        baseProps ? static_cast<const PropsT&>(*baseProps)
+                  : *defaultSharedProps(),
         rawProps);
   }
 
-  static SharedConcreteProps defaultSharedProps() {
+  static const SharedConcreteProps& defaultSharedProps() {
     static const SharedConcreteProps defaultSharedProps =
         std::make_shared<const PropsT>();
     return defaultSharedProps;

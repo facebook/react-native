@@ -7,10 +7,12 @@
 
 package com.facebook.react.animated;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.JSApplicationCausedNativeException;
 import com.facebook.react.bridge.ReadableMap;
 
-/*package*/ class ModulusAnimatedNode extends ValueAnimatedNode {
+/*package*/ @Nullsafe(Nullsafe.Mode.LOCAL)
+class ModulusAnimatedNode extends ValueAnimatedNode {
 
   private final NativeAnimatedNodesManager mNativeAnimatedNodesManager;
   private final int mInputNode;

@@ -8,6 +8,7 @@
 #import "RCTComponentViewFactory.h"
 
 #import <React/RCTAssert.h>
+#import <React/RCTBridge.h>
 #import <React/RCTConversions.h>
 #import <React/RCTLog.h>
 
@@ -95,6 +96,9 @@ static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char 
         (bool)class_respondsToSelector(viewClass, @selector(mountingTransactionWillMount:withSurfaceTelemetry:)),
     .observesMountingTransactionDidMount =
         (bool)class_respondsToSelector(viewClass, @selector(mountingTransactionDidMount:withSurfaceTelemetry:)),
+    .shouldBeRecycled = [viewClass respondsToSelector:@selector(shouldBeRecycled)]
+        ? (bool)[viewClass performSelector:@selector(shouldBeRecycled)]
+        : true,
   };
 #pragma clang diagnostic pop
 }
@@ -110,12 +114,11 @@ static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char 
   // when the component is registered in both Fabric and in the
   // interop layer, so they can remove that
   NSString *componentNameString = RCTNSStringFromString(name);
-  BOOL isRegisteredInInteropLayer = [RCTLegacyViewManagerInteropComponentView isSupported:componentNameString];
 
   // Fallback 1: Call provider function for component view class.
   Class<RCTComponentViewProtocol> klass = RCTComponentViewClassWithName(name.c_str());
   if (klass) {
-    [self registerComponentViewClass:klass andWarnIfNeeded:isRegisteredInInteropLayer];
+    [self registerComponentViewClass:klass];
     return YES;
   }
 
@@ -126,13 +129,14 @@ static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char 
     NSString *objcName = [NSString stringWithCString:name.c_str() encoding:NSUTF8StringEncoding];
     klass = self.thirdPartyFabricComponentsProvider.thirdPartyFabricComponents[objcName];
     if (klass) {
-      [self registerComponentViewClass:klass andWarnIfNeeded:isRegisteredInInteropLayer];
+      [self registerComponentViewClass:klass];
       return YES;
     }
   }
 
   // Fallback 3: Try to use Paper Interop.
-  if (isRegisteredInInteropLayer) {
+  // TODO(T174674274): Implement lazy loading of legacy view managers in the new architecture.
+  if (RCTFabricInteropLayerEnabled() && [RCTLegacyViewManagerInteropComponentView isSupported:componentNameString]) {
     RCTLogNewArchitectureValidation(
         RCTNotAllowedInBridgeless,
         self,
@@ -210,6 +214,7 @@ static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char 
       .view = [viewClass new],
       .observesMountingTransactionWillMount = componentViewClassDescriptor.observesMountingTransactionWillMount,
       .observesMountingTransactionDidMount = componentViewClassDescriptor.observesMountingTransactionDidMount,
+      .shouldBeRecycled = componentViewClassDescriptor.shouldBeRecycled,
   };
 }
 
@@ -219,19 +224,6 @@ static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char 
   std::shared_lock lock(_mutex);
 
   return _providerRegistry.createComponentDescriptorRegistry(parameters);
-}
-
-#pragma mark - Private
-
-- (void)registerComponentViewClass:(Class<RCTComponentViewProtocol>)componentViewClass
-                   andWarnIfNeeded:(BOOL)isRegisteredInInteropLayer
-{
-  [self registerComponentViewClass:componentViewClass];
-  if (isRegisteredInInteropLayer) {
-    RCTLogWarn(
-        @"Component with class %@ has been registered in both the New Architecture Renderer and in the Interop Layer.\nPlease remove it from the Interop Layer",
-        componentViewClass);
-  }
 }
 
 @end

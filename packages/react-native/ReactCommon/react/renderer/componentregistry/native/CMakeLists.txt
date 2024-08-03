@@ -12,11 +12,10 @@ add_compile_options(
         -std=c++20
         -Wall
         -Wpedantic
-        -Wno-gnu-zero-variadic-macro-arguments
         -DLOG_TAG=\"Fabric\")
 
 file(GLOB rrc_native_SRC CONFIGURE_DEPENDS *.cpp)
-add_library(rrc_native SHARED ${rrc_native_SRC})
+add_library(rrc_native STATIC ${rrc_native_SRC})
 
 target_include_directories(rrc_native PUBLIC ${REACT_COMMON_DIR})
 

@@ -10,13 +10,13 @@
 
 'use strict';
 
+const flowSnaps = require('../../../../src/parsers/flow/modules/__tests__/__snapshots__/module-parser-snapshot-test.js.snap');
+const tsSnaps = require('../../../../src/parsers/typescript/modules/__tests__/__snapshots__/typescript-module-parser-snapshot-test.js.snap');
+const flowFixtures = require('../../flow/modules/__test_fixtures__/fixtures.js');
+const tsFixtures = require('../../typescript/modules/__test_fixtures__/fixtures.js');
 const {compareSnaps, compareTsArraySnaps} = require('../compareSnaps.js');
 
-const flowFixtures = require('../../flow/modules/__test_fixtures__/fixtures.js');
-const flowSnaps = require('../../../../src/parsers/flow/modules/__tests__/__snapshots__/module-parser-snapshot-test.js.snap');
 const flowExtraCases = ['PROMISE_WITH_COMMONLY_USED_TYPES'];
-const tsFixtures = require('../../typescript/modules/__test_fixtures__/fixtures.js');
-const tsSnaps = require('../../../../src/parsers/typescript/modules/__tests__/__snapshots__/typescript-module-parser-snapshot-test.js.snap');
 const tsExtraCases = [
   'NATIVE_MODULE_WITH_ARRAY2_WITH_ALIAS',
   'NATIVE_MODULE_WITH_ARRAY2_WITH_UNION_AND_TOUPLE',

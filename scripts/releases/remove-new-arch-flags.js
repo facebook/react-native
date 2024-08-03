@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  * @oncall react-native
  */
@@ -101,7 +101,9 @@ function flipNewArchFlagForAndroid(
 }
 // ===============
 
-module.exports = removeNewArchFlags;
+module.exports = {
+  removeNewArchFlags,
+};
 
 if (require.main === module) {
   removeNewArchFlags();

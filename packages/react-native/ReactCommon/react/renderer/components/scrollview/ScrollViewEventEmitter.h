@@ -33,6 +33,7 @@ class ScrollViewEventEmitter : public ViewEventEmitter {
   void onScrollEndDrag(const ScrollViewMetrics& scrollViewMetrics) const;
   void onMomentumScrollBegin(const ScrollViewMetrics& scrollViewMetrics) const;
   void onMomentumScrollEnd(const ScrollViewMetrics& scrollViewMetrics) const;
+  void onScrollToTop(const ScrollViewMetrics& scrollViewMetrics) const;
 
  private:
   void dispatchScrollViewEvent(

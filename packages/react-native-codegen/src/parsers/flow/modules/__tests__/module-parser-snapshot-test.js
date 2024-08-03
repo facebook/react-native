@@ -11,10 +11,9 @@
 
 'use strict';
 
-const {FlowParser} = require('../../parser');
-
-const fixtures = require('../__test_fixtures__/fixtures.js');
 const failureFixtures = require('../__test_fixtures__/failures.js');
+const fixtures = require('../__test_fixtures__/fixtures.js');
+const {FlowParser} = require('../../parser');
 
 const flowParser = new FlowParser();
 

@@ -10,11 +10,10 @@
 
 'use strict';
 
-import * as React from 'react';
-
-import {PermissionsAndroid, StyleSheet, Text, View} from 'react-native';
-import RNTOption from '../../components/RNTOption';
 import RNTesterButton from '../../components/RNTesterButton';
+import RNTOption from '../../components/RNTOption';
+import * as React from 'react';
+import {PermissionsAndroid, StyleSheet, Text, View} from 'react-native';
 
 function PermissionsExample() {
   const [permission, setPermission] = React.useState(

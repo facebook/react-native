@@ -7,9 +7,11 @@
 
 package com.facebook.react.perflogger;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.jni.HybridData;
 import com.facebook.soloader.SoLoader;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public abstract class NativeModulePerfLogger {
   private final HybridData mHybridData;
 

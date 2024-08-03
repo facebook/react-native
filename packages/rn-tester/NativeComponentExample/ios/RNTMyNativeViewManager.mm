@@ -8,6 +8,7 @@
 #import <React/RCTLog.h>
 #import <React/RCTUIManager.h>
 #import <React/RCTViewManager.h>
+#import "UIView+ColorOverlays.h"
 
 @interface RNTMyNativeViewManager : RCTViewManager
 @end
@@ -31,22 +32,13 @@ RCT_EXPORT_METHOD(callNativeMethodToChangeBackgroundColor : (nonnull NSNumber *)
       return;
     }
 
-    unsigned rgbValue = 0;
-    NSString *colorString = [NSString stringWithCString:std::string([color UTF8String]).c_str()
-                                               encoding:[NSString defaultCStringEncoding]];
-    NSScanner *scanner = [NSScanner scannerWithString:colorString];
-    [scanner setScanLocation:1]; // bypass '#' character
-    [scanner scanHexInt:&rgbValue];
-    view.backgroundColor = [RCTUIColor colorWithRed:((rgbValue & 0xFF0000) >> 16) / 255.0 // [macOS
-                                              green:((rgbValue & 0xFF00) >> 8) / 255.0
-                                               blue:(rgbValue & 0xFF) / 255.0
-                                              alpha:1.0];
+    [view setBackgroundColorWithColorString:color];
   }];
 }
 
-- (RCTUIView *)view // [macOS]
+- (RCTPlatformView *)view // [macOS]
 {
-  return [[RCTUIView alloc] init]; // [macOS]
+  return [[RCTPlatformView alloc] init]; // [macOS]
 }
 
 @end

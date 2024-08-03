@@ -8,7 +8,7 @@
  * @format
  */
 
-import type ReactNativeElement from '../../DOM/Nodes/ReactNativeElement';
+import type ReactNativeElement from '../../../src/private/webapis/dom/nodes/ReactNativeElement';
 import type IntersectionObserver from '../IntersectionObserver';
 import type {
   NativeIntersectionObserverEntry,
@@ -16,7 +16,7 @@ import type {
   Spec,
 } from '../NativeIntersectionObserver';
 
-import {getShadowNode} from '../../DOM/Nodes/ReadOnlyNode';
+import {getShadowNode} from '../../../src/private/webapis/dom/nodes/ReadOnlyNode';
 import {getFabricUIManager} from '../../ReactNative/__mocks__/FabricUIManager';
 import invariant from 'invariant';
 import nullthrows from 'nullthrows';
@@ -96,6 +96,16 @@ const NativeIntersectionObserverMock = {
       'unexpected duplicate call to unobserve',
     );
     observations.splice(observationIndex, 1);
+
+    pendingRecords = pendingRecords.filter(
+      record =>
+        record.intersectionObserverId !== intersectionObserverId ||
+        record.targetInstanceHandle !==
+          FabricUIManagerMock.__getInstanceHandleFromNode(
+            // $FlowExpectedError[incompatible-call]
+            targetShadowNode,
+          ),
+    );
   },
   connect: (notifyIntersectionObserversCallback: () => void): void => {
     invariant(callback == null, 'unexpected call to connect');

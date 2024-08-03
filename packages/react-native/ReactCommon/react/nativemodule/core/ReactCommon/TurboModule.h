@@ -31,6 +31,13 @@ enum TurboModuleMethodValueKind {
   PromiseKind,
 };
 
+/**
+ * Determines TurboModuleMethodValueKind based on the jsi::Value type.
+ */
+TurboModuleMethodValueKind getTurboModuleMethodValueKind(
+    jsi::Runtime& rt,
+    const jsi::Value* value);
+
 class TurboCxxModule;
 class TurboModuleBinding;
 

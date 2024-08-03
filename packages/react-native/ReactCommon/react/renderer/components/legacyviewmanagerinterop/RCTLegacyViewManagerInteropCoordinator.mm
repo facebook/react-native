@@ -46,7 +46,7 @@ using namespace facebook::react;
 - (instancetype)initWithComponentData:(RCTComponentData *)componentData
                                bridge:(nullable RCTBridge *)bridge
                           bridgeProxy:(nullable RCTBridgeProxy *)bridgeProxy
-                bridgelessInteropData:(RCTBridgeModuleDecorator *)bridgelessInteropData;
+                bridgelessInteropData:(RCTBridgeModuleDecorator *)bridgelessInteropData
 {
   if (self = [super init]) {
     _componentData = componentData;
@@ -89,18 +89,19 @@ using namespace facebook::react;
   [_eventInterceptors removeObjectForKey:[NSNumber numberWithInteger:tag]];
 }
 
-- (RCTPlatformView *)createPaperViewWithTag:(NSInteger)tag; // [macOS]
+- (RCTPlatformView *)createPaperViewWithTag:(NSInteger)tag // [macOS]
 {
   RCTPlatformView *view = [_componentData createViewWithTag:[NSNumber numberWithInteger:tag] rootTag:NULL]; // [macOS]
   [_bridgelessInteropData attachInteropAPIsToModule:(id<RCTBridgeModule>)_componentData.bridgelessViewManager];
   return view;
 }
 
-- (void)setProps:(const folly::dynamic &)props forView:(RCTPlatformView *)view // [macOS]
+- (void)setProps:(NSDictionary<NSString *, id> *)props forView:(RCTPlatformView *)view // [macOS]
 {
-  if (props.isObject()) {
-    NSDictionary<NSString *, id> *convertedProps = convertFollyDynamicToId(props);
-    [_componentData setProps:convertedProps forView:view];
+  [_componentData setProps:props forView:view];
+
+  if ([view respondsToSelector:@selector(didSetProps:)]) {
+    [view performSelector:@selector(didSetProps:) withObject:[props allKeys]];
   }
 }
 
@@ -144,31 +145,6 @@ using namespace facebook::react;
   } else {
     [self _handleCommandsOnBridgeless:method withArgs:newArgs];
   }
-}
-
-- (void)addViewToRegistry:(RCTPlatformView *)view withTag:(NSInteger)tag // [macOS]
-{
-  [self _addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTPlatformView *> *viewRegistry) { // [macOS]
-    if ([viewRegistry objectForKey:@(tag)] != NULL) {
-      return;
-    }
-    NSMutableDictionary<NSNumber *, RCTPlatformView *> *mutableViewRegistry = // [macOS]
-        (NSMutableDictionary<NSNumber *, RCTPlatformView *> *)viewRegistry; // [macOS]
-    [mutableViewRegistry setObject:view forKey:@(tag)];
-  }];
-}
-
-- (void)removeViewFromRegistryWithTag:(NSInteger)tag
-{
-  [self _addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTPlatformView *> *viewRegistry) { // [macOS]
-    if ([viewRegistry objectForKey:@(tag)] == NULL) {
-      return;
-    }
-
-    NSMutableDictionary<NSNumber *, RCTPlatformView *> *mutableViewRegistry = // [macOS]
-        (NSMutableDictionary<NSNumber *, RCTPlatformView *> *)viewRegistry; // [macOS]
-    [mutableViewRegistry removeObjectForKey:@(tag)];
-  }];
 }
 
 #pragma mark - Private

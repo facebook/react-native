@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 import type {PlatformTestComponentBaseProps} from '../PlatformTest/RNTesterPlatformTestTypes';
@@ -14,7 +14,7 @@ import RNTesterPlatformTest from '../PlatformTest/RNTesterPlatformTest';
 import RNTesterPlatformTestEventRecorder from '../PlatformTest/RNTesterPlatformTestEventRecorder';
 import * as React from 'react';
 import {useCallback, useState} from 'react';
-import {View, StyleSheet} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 
 const styles = StyleSheet.create({
   a: {

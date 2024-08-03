@@ -11,9 +11,11 @@ import android.graphics.Shader;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.drawee.drawable.ScalingUtils;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.common.ReactConstants;
 
 /** Converts JS resize modes into Android-specific scale type. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ImageResizeMode {
 
   private static final String RESIZE_MODE_CONTAIN = "contain";

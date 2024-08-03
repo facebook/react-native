@@ -7,345 +7,672 @@
 
 #pragma once
 
-#include <algorithm>
 #include <array>
 #include <cstdint>
 #include <type_traits>
 
 #include <yoga/Yoga.h>
 
-#include <yoga/bits/NumericBitfield.h>
+#include <yoga/algorithm/FlexDirection.h>
 #include <yoga/enums/Align.h>
 #include <yoga/enums/Dimension.h>
 #include <yoga/enums/Direction.h>
 #include <yoga/enums/Display.h>
+#include <yoga/enums/Edge.h>
 #include <yoga/enums/FlexDirection.h>
 #include <yoga/enums/Gutter.h>
 #include <yoga/enums/Justify.h>
 #include <yoga/enums/Overflow.h>
+#include <yoga/enums/PhysicalEdge.h>
 #include <yoga/enums/PositionType.h>
+#include <yoga/enums/Unit.h>
 #include <yoga/enums/Wrap.h>
 #include <yoga/numeric/FloatOptional.h>
-#include <yoga/style/CompactValue.h>
+#include <yoga/style/StyleLength.h>
+#include <yoga/style/StyleValuePool.h>
 
 namespace facebook::yoga {
 
 class YG_EXPORT Style {
-  template <typename Enum>
-  using Values = std::array<CompactValue, ordinalCount<Enum>()>;
-
  public:
-  using Dimensions = Values<Dimension>;
-  using Edges = Values<YGEdge>;
-  using Gutters = Values<Gutter>;
+  using Length = StyleLength;
 
   static constexpr float DefaultFlexGrow = 0.0f;
   static constexpr float DefaultFlexShrink = 0.0f;
   static constexpr float WebDefaultFlexShrink = 1.0f;
 
-  template <typename T>
-  struct BitfieldRef {
-    Style& style;
-    uint8_t offset;
-    operator T() const {
-      return getEnumData<T>(style.flags, offset);
-    }
-    BitfieldRef<T>& operator=(T x) {
-      setEnumData<T>(style.flags, offset, x);
-      return *this;
-    }
-  };
-
-  template <typename T, T Style::*Prop>
-  struct Ref {
-    Style& style;
-    operator T() const {
-      return style.*Prop;
-    }
-    Ref<T, Prop>& operator=(T value) {
-      style.*Prop = value;
-      return *this;
-    }
-  };
-
-  template <typename Idx, Values<Idx> Style::*Prop>
-  struct IdxRef {
-    struct Ref {
-      Style& style;
-      Idx idx;
-      operator CompactValue() const {
-        return (style.*Prop)[idx];
-      }
-      operator YGValue() const {
-        return (style.*Prop)[idx];
-      }
-      Ref& operator=(CompactValue value) {
-        (style.*Prop)[idx] = value;
-        return *this;
-      }
-    };
-
-    Style& style;
-    IdxRef<Idx, Prop>& operator=(const Values<Idx>& values) {
-      style.*Prop = values;
-      return *this;
-    }
-    operator const Values<Idx>&() const {
-      return style.*Prop;
-    }
-    Ref operator[](Idx idx) {
-      return {style, idx};
-    }
-    CompactValue operator[](Idx idx) const {
-      return (style.*Prop)[idx];
-    }
-  };
-
-  Style() {
-    alignContent() = Align::FlexStart;
-    alignItems() = Align::Stretch;
-  }
-  ~Style() = default;
-
- private:
-  static constexpr uint8_t directionOffset = 0;
-  static constexpr uint8_t flexdirectionOffset =
-      directionOffset + minimumBitCount<Direction>();
-  static constexpr uint8_t justifyContentOffset =
-      flexdirectionOffset + minimumBitCount<FlexDirection>();
-  static constexpr uint8_t alignContentOffset =
-      justifyContentOffset + minimumBitCount<Justify>();
-  static constexpr uint8_t alignItemsOffset =
-      alignContentOffset + minimumBitCount<Align>();
-  static constexpr uint8_t alignSelfOffset =
-      alignItemsOffset + minimumBitCount<Align>();
-  static constexpr uint8_t positionTypeOffset =
-      alignSelfOffset + minimumBitCount<Align>();
-  static constexpr uint8_t flexWrapOffset =
-      positionTypeOffset + minimumBitCount<PositionType>();
-  static constexpr uint8_t overflowOffset =
-      flexWrapOffset + minimumBitCount<Wrap>();
-  static constexpr uint8_t displayOffset =
-      overflowOffset + minimumBitCount<Overflow>();
-
-  uint32_t flags = 0;
-
-  FloatOptional flex_ = {};
-  FloatOptional flexGrow_ = {};
-  FloatOptional flexShrink_ = {};
-  CompactValue flexBasis_ = CompactValue::ofAuto();
-  Edges margin_ = {};
-  Edges position_ = {};
-  Edges padding_ = {};
-  Edges border_ = {};
-  Gutters gap_ = {};
-  Dimensions dimensions_{CompactValue::ofAuto(), CompactValue::ofAuto()};
-  Dimensions minDimensions_ = {};
-  Dimensions maxDimensions_ = {};
-  // Yoga specific properties, not compatible with flexbox specification
-  FloatOptional aspectRatio_ = {};
-
- public:
-  // for library users needing a type
-  using ValueRepr = std::remove_reference<decltype(margin_[0])>::type;
-
   Direction direction() const {
-    return getEnumData<Direction>(flags, directionOffset);
+    return direction_;
   }
-  BitfieldRef<Direction> direction() {
-    return {*this, directionOffset};
+  void setDirection(Direction value) {
+    direction_ = value;
   }
 
   FlexDirection flexDirection() const {
-    return getEnumData<FlexDirection>(flags, flexdirectionOffset);
+    return flexDirection_;
   }
-  BitfieldRef<FlexDirection> flexDirection() {
-    return {*this, flexdirectionOffset};
+  void setFlexDirection(FlexDirection value) {
+    flexDirection_ = value;
   }
 
   Justify justifyContent() const {
-    return getEnumData<Justify>(flags, justifyContentOffset);
+    return justifyContent_;
   }
-  BitfieldRef<Justify> justifyContent() {
-    return {*this, justifyContentOffset};
+  void setJustifyContent(Justify value) {
+    justifyContent_ = value;
   }
 
   Align alignContent() const {
-    return getEnumData<Align>(flags, alignContentOffset);
+    return alignContent_;
   }
-  BitfieldRef<Align> alignContent() {
-    return {*this, alignContentOffset};
+  void setAlignContent(Align value) {
+    alignContent_ = value;
   }
 
   Align alignItems() const {
-    return getEnumData<Align>(flags, alignItemsOffset);
+    return alignItems_;
   }
-  BitfieldRef<Align> alignItems() {
-    return {*this, alignItemsOffset};
+  void setAlignItems(Align value) {
+    alignItems_ = value;
   }
 
   Align alignSelf() const {
-    return getEnumData<Align>(flags, alignSelfOffset);
+    return alignSelf_;
   }
-  BitfieldRef<Align> alignSelf() {
-    return {*this, alignSelfOffset};
+  void setAlignSelf(Align value) {
+    alignSelf_ = value;
   }
 
   PositionType positionType() const {
-    return getEnumData<PositionType>(flags, positionTypeOffset);
+    return positionType_;
   }
-  BitfieldRef<PositionType> positionType() {
-    return {*this, positionTypeOffset};
+  void setPositionType(PositionType value) {
+    positionType_ = value;
   }
 
   Wrap flexWrap() const {
-    return getEnumData<Wrap>(flags, flexWrapOffset);
+    return flexWrap_;
   }
-  BitfieldRef<Wrap> flexWrap() {
-    return {*this, flexWrapOffset};
+  void setFlexWrap(Wrap value) {
+    flexWrap_ = value;
   }
 
   Overflow overflow() const {
-    return getEnumData<Overflow>(flags, overflowOffset);
+    return overflow_;
   }
-  BitfieldRef<Overflow> overflow() {
-    return {*this, overflowOffset};
+  void setOverflow(Overflow value) {
+    overflow_ = value;
   }
 
   Display display() const {
-    return getEnumData<Display>(flags, displayOffset);
+    return display_;
   }
-  BitfieldRef<Display> display() {
-    return {*this, displayOffset};
+  void setDisplay(Display value) {
+    display_ = value;
   }
 
   FloatOptional flex() const {
-    return flex_;
+    return pool_.getNumber(flex_);
   }
-  Ref<FloatOptional, &Style::flex_> flex() {
-    return {*this};
+  void setFlex(FloatOptional value) {
+    pool_.store(flex_, value);
   }
 
   FloatOptional flexGrow() const {
-    return flexGrow_;
+    return pool_.getNumber(flexGrow_);
   }
-  Ref<FloatOptional, &Style::flexGrow_> flexGrow() {
-    return {*this};
+  void setFlexGrow(FloatOptional value) {
+    pool_.store(flexGrow_, value);
   }
 
   FloatOptional flexShrink() const {
-    return flexShrink_;
+    return pool_.getNumber(flexShrink_);
   }
-  Ref<FloatOptional, &Style::flexShrink_> flexShrink() {
-    return {*this};
-  }
-
-  CompactValue flexBasis() const {
-    return flexBasis_;
-  }
-  Ref<CompactValue, &Style::flexBasis_> flexBasis() {
-    return {*this};
+  void setFlexShrink(FloatOptional value) {
+    pool_.store(flexShrink_, value);
   }
 
-  const Edges& margin() const {
-    return margin_;
+  Style::Length flexBasis() const {
+    return pool_.getLength(flexBasis_);
   }
-  IdxRef<YGEdge, &Style::margin_> margin() {
-    return {*this};
-  }
-
-  const Edges& position() const {
-    return position_;
-  }
-  IdxRef<YGEdge, &Style::position_> position() {
-    return {*this};
+  void setFlexBasis(Style::Length value) {
+    pool_.store(flexBasis_, value);
   }
 
-  const Edges& padding() const {
-    return padding_;
+  Style::Length margin(Edge edge) const {
+    return pool_.getLength(margin_[yoga::to_underlying(edge)]);
   }
-  IdxRef<YGEdge, &Style::padding_> padding() {
-    return {*this};
-  }
-
-  const Edges& border() const {
-    return border_;
-  }
-  IdxRef<YGEdge, &Style::border_> border() {
-    return {*this};
+  void setMargin(Edge edge, Style::Length value) {
+    pool_.store(margin_[yoga::to_underlying(edge)], value);
   }
 
-  CompactValue gap(Gutter gutter) const {
-    return gap_[yoga::to_underlying(gutter)];
+  Style::Length position(Edge edge) const {
+    return pool_.getLength(position_[yoga::to_underlying(edge)]);
   }
-  void setGap(Gutter gutter, CompactValue value) {
-    gap_[yoga::to_underlying(gutter)] = value;
-  }
-
-  CompactValue dimension(Dimension axis) const {
-    return dimensions_[yoga::to_underlying(axis)];
-  }
-  void setDimension(Dimension axis, CompactValue value) {
-    dimensions_[yoga::to_underlying(axis)] = value;
+  void setPosition(Edge edge, Style::Length value) {
+    pool_.store(position_[yoga::to_underlying(edge)], value);
   }
 
-  CompactValue minDimension(Dimension axis) const {
-    return minDimensions_[yoga::to_underlying(axis)];
+  Style::Length padding(Edge edge) const {
+    return pool_.getLength(padding_[yoga::to_underlying(edge)]);
   }
-  void setMinDimension(Dimension axis, CompactValue value) {
-    minDimensions_[yoga::to_underlying(axis)] = value;
-  }
-
-  CompactValue maxDimension(Dimension axis) const {
-    return maxDimensions_[yoga::to_underlying(axis)];
-  }
-  void setMaxDimension(Dimension axis, CompactValue value) {
-    maxDimensions_[yoga::to_underlying(axis)] = value;
+  void setPadding(Edge edge, Style::Length value) {
+    pool_.store(padding_[yoga::to_underlying(edge)], value);
   }
 
-  // Yoga specific properties, not compatible with flexbox specification
+  Style::Length border(Edge edge) const {
+    return pool_.getLength(border_[yoga::to_underlying(edge)]);
+  }
+  void setBorder(Edge edge, Style::Length value) {
+    pool_.store(border_[yoga::to_underlying(edge)], value);
+  }
+
+  Style::Length gap(Gutter gutter) const {
+    return pool_.getLength(gap_[yoga::to_underlying(gutter)]);
+  }
+  void setGap(Gutter gutter, Style::Length value) {
+    pool_.store(gap_[yoga::to_underlying(gutter)], value);
+  }
+
+  Style::Length dimension(Dimension axis) const {
+    return pool_.getLength(dimensions_[yoga::to_underlying(axis)]);
+  }
+  void setDimension(Dimension axis, Style::Length value) {
+    pool_.store(dimensions_[yoga::to_underlying(axis)], value);
+  }
+
+  Style::Length minDimension(Dimension axis) const {
+    return pool_.getLength(minDimensions_[yoga::to_underlying(axis)]);
+  }
+  void setMinDimension(Dimension axis, Style::Length value) {
+    pool_.store(minDimensions_[yoga::to_underlying(axis)], value);
+  }
+
+  Style::Length maxDimension(Dimension axis) const {
+    return pool_.getLength(maxDimensions_[yoga::to_underlying(axis)]);
+  }
+  void setMaxDimension(Dimension axis, Style::Length value) {
+    pool_.store(maxDimensions_[yoga::to_underlying(axis)], value);
+  }
+
   FloatOptional aspectRatio() const {
-    return aspectRatio_;
+    return pool_.getNumber(aspectRatio_);
   }
-  Ref<FloatOptional, &Style::aspectRatio_> aspectRatio() {
-    return {*this};
-  }
-
-  CompactValue resolveColumnGap() const {
-    if (!gap_[yoga::to_underlying(Gutter::Column)].isUndefined()) {
-      return gap_[yoga::to_underlying(Gutter::Column)];
-    } else {
-      return gap_[yoga::to_underlying(Gutter::All)];
-    }
+  void setAspectRatio(FloatOptional value) {
+    pool_.store(aspectRatio_, value);
   }
 
-  CompactValue resolveRowGap() const {
-    if (!gap_[yoga::to_underlying(Gutter::Row)].isUndefined()) {
-      return gap_[yoga::to_underlying(Gutter::Row)];
-    } else {
-      return gap_[yoga::to_underlying(Gutter::All)];
-    }
+  bool horizontalInsetsDefined() const {
+    return position_[yoga::to_underlying(Edge::Left)].isDefined() ||
+        position_[yoga::to_underlying(Edge::Right)].isDefined() ||
+        position_[yoga::to_underlying(Edge::All)].isDefined() ||
+        position_[yoga::to_underlying(Edge::Horizontal)].isDefined() ||
+        position_[yoga::to_underlying(Edge::Start)].isDefined() ||
+        position_[yoga::to_underlying(Edge::End)].isDefined();
+  }
+
+  bool verticalInsetsDefined() const {
+    return position_[yoga::to_underlying(Edge::Top)].isDefined() ||
+        position_[yoga::to_underlying(Edge::Bottom)].isDefined() ||
+        position_[yoga::to_underlying(Edge::All)].isDefined() ||
+        position_[yoga::to_underlying(Edge::Vertical)].isDefined();
+  }
+
+  bool isFlexStartPositionDefined(FlexDirection axis, Direction direction)
+      const {
+    return computePosition(flexStartEdge(axis), direction).isDefined();
+  }
+
+  bool isInlineStartPositionDefined(FlexDirection axis, Direction direction)
+      const {
+    return computePosition(inlineStartEdge(axis, direction), direction)
+        .isDefined();
+  }
+
+  bool isFlexEndPositionDefined(FlexDirection axis, Direction direction) const {
+    return computePosition(flexEndEdge(axis), direction).isDefined();
+  }
+
+  bool isInlineEndPositionDefined(FlexDirection axis, Direction direction)
+      const {
+    return computePosition(inlineEndEdge(axis, direction), direction)
+        .isDefined();
+  }
+
+  float computeFlexStartPosition(
+      FlexDirection axis,
+      Direction direction,
+      float axisSize) const {
+    return computePosition(flexStartEdge(axis), direction)
+        .resolve(axisSize)
+        .unwrapOrDefault(0.0f);
+  }
+
+  float computeInlineStartPosition(
+      FlexDirection axis,
+      Direction direction,
+      float axisSize) const {
+    return computePosition(inlineStartEdge(axis, direction), direction)
+        .resolve(axisSize)
+        .unwrapOrDefault(0.0f);
+  }
+
+  float computeFlexEndPosition(
+      FlexDirection axis,
+      Direction direction,
+      float axisSize) const {
+    return computePosition(flexEndEdge(axis), direction)
+        .resolve(axisSize)
+        .unwrapOrDefault(0.0f);
+  }
+
+  float computeInlineEndPosition(
+      FlexDirection axis,
+      Direction direction,
+      float axisSize) const {
+    return computePosition(inlineEndEdge(axis, direction), direction)
+        .resolve(axisSize)
+        .unwrapOrDefault(0.0f);
+  }
+
+  float computeFlexStartMargin(
+      FlexDirection axis,
+      Direction direction,
+      float widthSize) const {
+    return computeMargin(flexStartEdge(axis), direction)
+        .resolve(widthSize)
+        .unwrapOrDefault(0.0f);
+  }
+
+  float computeInlineStartMargin(
+      FlexDirection axis,
+      Direction direction,
+      float widthSize) const {
+    return computeMargin(inlineStartEdge(axis, direction), direction)
+        .resolve(widthSize)
+        .unwrapOrDefault(0.0f);
+  }
+
+  float computeFlexEndMargin(
+      FlexDirection axis,
+      Direction direction,
+      float widthSize) const {
+    return computeMargin(flexEndEdge(axis), direction)
+        .resolve(widthSize)
+        .unwrapOrDefault(0.0f);
+  }
+
+  float computeInlineEndMargin(
+      FlexDirection axis,
+      Direction direction,
+      float widthSize) const {
+    return computeMargin(inlineEndEdge(axis, direction), direction)
+        .resolve(widthSize)
+        .unwrapOrDefault(0.0f);
+  }
+
+  float computeFlexStartBorder(FlexDirection axis, Direction direction) const {
+    return maxOrDefined(
+        computeBorder(flexStartEdge(axis), direction).resolve(0.0f).unwrap(),
+        0.0f);
+  }
+
+  float computeInlineStartBorder(FlexDirection axis, Direction direction)
+      const {
+    return maxOrDefined(
+        computeBorder(inlineStartEdge(axis, direction), direction)
+            .resolve(0.0f)
+            .unwrap(),
+        0.0f);
+  }
+
+  float computeFlexEndBorder(FlexDirection axis, Direction direction) const {
+    return maxOrDefined(
+        computeBorder(flexEndEdge(axis), direction).resolve(0.0f).unwrap(),
+        0.0f);
+  }
+
+  float computeInlineEndBorder(FlexDirection axis, Direction direction) const {
+    return maxOrDefined(
+        computeBorder(inlineEndEdge(axis, direction), direction)
+            .resolve(0.0f)
+            .unwrap(),
+        0.0f);
+  }
+
+  float computeFlexStartPadding(
+      FlexDirection axis,
+      Direction direction,
+      float widthSize) const {
+    return maxOrDefined(
+        computePadding(flexStartEdge(axis), direction)
+            .resolve(widthSize)
+            .unwrap(),
+        0.0f);
+  }
+
+  float computeInlineStartPadding(
+      FlexDirection axis,
+      Direction direction,
+      float widthSize) const {
+    return maxOrDefined(
+        computePadding(inlineStartEdge(axis, direction), direction)
+            .resolve(widthSize)
+            .unwrap(),
+        0.0f);
+  }
+
+  float computeFlexEndPadding(
+      FlexDirection axis,
+      Direction direction,
+      float widthSize) const {
+    return maxOrDefined(
+        computePadding(flexEndEdge(axis), direction)
+            .resolve(widthSize)
+            .unwrap(),
+        0.0f);
+  }
+
+  float computeInlineEndPadding(
+      FlexDirection axis,
+      Direction direction,
+      float widthSize) const {
+    return maxOrDefined(
+        computePadding(inlineEndEdge(axis, direction), direction)
+            .resolve(widthSize)
+            .unwrap(),
+        0.0f);
+  }
+
+  float computeInlineStartPaddingAndBorder(
+      FlexDirection axis,
+      Direction direction,
+      float widthSize) const {
+    return computeInlineStartPadding(axis, direction, widthSize) +
+        computeInlineStartBorder(axis, direction);
+  }
+
+  float computeFlexStartPaddingAndBorder(
+      FlexDirection axis,
+      Direction direction,
+      float widthSize) const {
+    return computeFlexStartPadding(axis, direction, widthSize) +
+        computeFlexStartBorder(axis, direction);
+  }
+
+  float computeInlineEndPaddingAndBorder(
+      FlexDirection axis,
+      Direction direction,
+      float widthSize) const {
+    return computeInlineEndPadding(axis, direction, widthSize) +
+        computeInlineEndBorder(axis, direction);
+  }
+
+  float computeFlexEndPaddingAndBorder(
+      FlexDirection axis,
+      Direction direction,
+      float widthSize) const {
+    return computeFlexEndPadding(axis, direction, widthSize) +
+        computeFlexEndBorder(axis, direction);
+  }
+
+  float computeBorderForAxis(FlexDirection axis) const {
+    return computeInlineStartBorder(axis, Direction::LTR) +
+        computeInlineEndBorder(axis, Direction::LTR);
+  }
+
+  float computeMarginForAxis(FlexDirection axis, float widthSize) const {
+    // The total margin for a given axis does not depend on the direction
+    // so hardcoding LTR here to avoid piping direction to this function
+    return computeInlineStartMargin(axis, Direction::LTR, widthSize) +
+        computeInlineEndMargin(axis, Direction::LTR, widthSize);
+  }
+
+  float computeGapForAxis(FlexDirection axis) const {
+    auto gap = isRow(axis) ? computeColumnGap() : computeRowGap();
+    // TODO: Validate percentage gap, and expose ability to set percentage to
+    // public API
+    return maxOrDefined(gap.resolve(0.0f /*ownerSize*/).unwrap(), 0.0f);
+  }
+
+  bool flexStartMarginIsAuto(FlexDirection axis, Direction direction) const {
+    return computeMargin(flexStartEdge(axis), direction).isAuto();
+  }
+
+  bool flexEndMarginIsAuto(FlexDirection axis, Direction direction) const {
+    return computeMargin(flexEndEdge(axis), direction).isAuto();
   }
 
   bool operator==(const Style& other) const {
-    return flags == other.flags && inexactEquals(flex_, other.flex_) &&
-        inexactEquals(flexGrow_, other.flexGrow_) &&
-        inexactEquals(flexShrink_, other.flexShrink_) &&
-        inexactEquals(flexBasis_, other.flexBasis_) &&
-        inexactEquals(margin_, other.margin_) &&
-        inexactEquals(position_, other.position_) &&
-        inexactEquals(padding_, other.padding_) &&
-        inexactEquals(border_, other.border_) &&
-        inexactEquals(gap_, other.gap_) &&
-        inexactEquals(dimensions_, other.dimensions_) &&
-        inexactEquals(minDimensions_, other.minDimensions_) &&
-        inexactEquals(maxDimensions_, other.maxDimensions_) &&
-        inexactEquals(aspectRatio_, other.aspectRatio_);
+    return direction_ == other.direction_ &&
+        flexDirection_ == other.flexDirection_ &&
+        justifyContent_ == other.justifyContent_ &&
+        alignContent_ == other.alignContent_ &&
+        alignItems_ == other.alignItems_ && alignSelf_ == other.alignSelf_ &&
+        positionType_ == other.positionType_ && flexWrap_ == other.flexWrap_ &&
+        overflow_ == other.overflow_ && display_ == other.display_ &&
+        numbersEqual(flex_, pool_, other.flex_, other.pool_) &&
+        numbersEqual(flexGrow_, pool_, other.flexGrow_, other.pool_) &&
+        numbersEqual(flexShrink_, pool_, other.flexShrink_, other.pool_) &&
+        lengthsEqual(flexBasis_, pool_, other.flexBasis_, other.pool_) &&
+        lengthsEqual(margin_, pool_, other.margin_, other.pool_) &&
+        lengthsEqual(position_, pool_, other.position_, other.pool_) &&
+        lengthsEqual(padding_, pool_, other.padding_, other.pool_) &&
+        lengthsEqual(border_, pool_, other.border_, other.pool_) &&
+        lengthsEqual(gap_, pool_, other.gap_, other.pool_) &&
+        lengthsEqual(dimensions_, pool_, other.dimensions_, other.pool_) &&
+        lengthsEqual(
+               minDimensions_, pool_, other.minDimensions_, other.pool_) &&
+        lengthsEqual(
+               maxDimensions_, pool_, other.maxDimensions_, other.pool_) &&
+        numbersEqual(aspectRatio_, pool_, other.aspectRatio_, other.pool_);
   }
 
   bool operator!=(const Style& other) const {
     return !(*this == other);
   }
+
+ private:
+  using Dimensions = std::array<StyleValueHandle, ordinalCount<Dimension>()>;
+  using Edges = std::array<StyleValueHandle, ordinalCount<Edge>()>;
+  using Gutters = std::array<StyleValueHandle, ordinalCount<Gutter>()>;
+
+  static inline bool numbersEqual(
+      const StyleValueHandle& lhsHandle,
+      const StyleValuePool& lhsPool,
+      const StyleValueHandle& rhsHandle,
+      const StyleValuePool& rhsPool) {
+    return (lhsHandle.isUndefined() && rhsHandle.isUndefined()) ||
+        (lhsPool.getNumber(lhsHandle) == rhsPool.getNumber(rhsHandle));
+  }
+
+  static inline bool lengthsEqual(
+      const StyleValueHandle& lhsHandle,
+      const StyleValuePool& lhsPool,
+      const StyleValueHandle& rhsHandle,
+      const StyleValuePool& rhsPool) {
+    return (lhsHandle.isUndefined() && rhsHandle.isUndefined()) ||
+        (lhsPool.getLength(lhsHandle) == rhsPool.getLength(rhsHandle));
+  }
+
+  template <size_t N>
+  static inline bool lengthsEqual(
+      const std::array<StyleValueHandle, N>& lhs,
+      const StyleValuePool& lhsPool,
+      const std::array<StyleValueHandle, N>& rhs,
+      const StyleValuePool& rhsPool) {
+    return std::equal(
+        lhs.begin(),
+        lhs.end(),
+        rhs.begin(),
+        rhs.end(),
+        [&](const auto& lhs, const auto& rhs) {
+          return lengthsEqual(lhs, lhsPool, rhs, rhsPool);
+        });
+  }
+
+  Style::Length computeColumnGap() const {
+    if (gap_[yoga::to_underlying(Gutter::Column)].isDefined()) {
+      return pool_.getLength(gap_[yoga::to_underlying(Gutter::Column)]);
+    } else {
+      return pool_.getLength(gap_[yoga::to_underlying(Gutter::All)]);
+    }
+  }
+
+  Style::Length computeRowGap() const {
+    if (gap_[yoga::to_underlying(Gutter::Row)].isDefined()) {
+      return pool_.getLength(gap_[yoga::to_underlying(Gutter::Row)]);
+    } else {
+      return pool_.getLength(gap_[yoga::to_underlying(Gutter::All)]);
+    }
+  }
+
+  Style::Length computeLeftEdge(const Edges& edges, Direction layoutDirection)
+      const {
+    if (layoutDirection == Direction::LTR &&
+        edges[yoga::to_underlying(Edge::Start)].isDefined()) {
+      return pool_.getLength(edges[yoga::to_underlying(Edge::Start)]);
+    } else if (
+        layoutDirection == Direction::RTL &&
+        edges[yoga::to_underlying(Edge::End)].isDefined()) {
+      return pool_.getLength(edges[yoga::to_underlying(Edge::End)]);
+    } else if (edges[yoga::to_underlying(Edge::Left)].isDefined()) {
+      return pool_.getLength(edges[yoga::to_underlying(Edge::Left)]);
+    } else if (edges[yoga::to_underlying(Edge::Horizontal)].isDefined()) {
+      return pool_.getLength(edges[yoga::to_underlying(Edge::Horizontal)]);
+    } else {
+      return pool_.getLength(edges[yoga::to_underlying(Edge::All)]);
+    }
+  }
+
+  Style::Length computeTopEdge(const Edges& edges) const {
+    if (edges[yoga::to_underlying(Edge::Top)].isDefined()) {
+      return pool_.getLength(edges[yoga::to_underlying(Edge::Top)]);
+    } else if (edges[yoga::to_underlying(Edge::Vertical)].isDefined()) {
+      return pool_.getLength(edges[yoga::to_underlying(Edge::Vertical)]);
+    } else {
+      return pool_.getLength(edges[yoga::to_underlying(Edge::All)]);
+    }
+  }
+
+  Style::Length computeRightEdge(const Edges& edges, Direction layoutDirection)
+      const {
+    if (layoutDirection == Direction::LTR &&
+        edges[yoga::to_underlying(Edge::End)].isDefined()) {
+      return pool_.getLength(edges[yoga::to_underlying(Edge::End)]);
+    } else if (
+        layoutDirection == Direction::RTL &&
+        edges[yoga::to_underlying(Edge::Start)].isDefined()) {
+      return pool_.getLength(edges[yoga::to_underlying(Edge::Start)]);
+    } else if (edges[yoga::to_underlying(Edge::Right)].isDefined()) {
+      return pool_.getLength(edges[yoga::to_underlying(Edge::Right)]);
+    } else if (edges[yoga::to_underlying(Edge::Horizontal)].isDefined()) {
+      return pool_.getLength(edges[yoga::to_underlying(Edge::Horizontal)]);
+    } else {
+      return pool_.getLength(edges[yoga::to_underlying(Edge::All)]);
+    }
+  }
+
+  Style::Length computeBottomEdge(const Edges& edges) const {
+    if (edges[yoga::to_underlying(Edge::Bottom)].isDefined()) {
+      return pool_.getLength(edges[yoga::to_underlying(Edge::Bottom)]);
+    } else if (edges[yoga::to_underlying(Edge::Vertical)].isDefined()) {
+      return pool_.getLength(edges[yoga::to_underlying(Edge::Vertical)]);
+    } else {
+      return pool_.getLength(edges[yoga::to_underlying(Edge::All)]);
+    }
+  }
+
+  Style::Length computePosition(PhysicalEdge edge, Direction direction) const {
+    switch (edge) {
+      case PhysicalEdge::Left:
+        return computeLeftEdge(position_, direction);
+      case PhysicalEdge::Top:
+        return computeTopEdge(position_);
+      case PhysicalEdge::Right:
+        return computeRightEdge(position_, direction);
+      case PhysicalEdge::Bottom:
+        return computeBottomEdge(position_);
+    }
+
+    fatalWithMessage("Invalid physical edge");
+  }
+
+  Style::Length computeMargin(PhysicalEdge edge, Direction direction) const {
+    switch (edge) {
+      case PhysicalEdge::Left:
+        return computeLeftEdge(margin_, direction);
+      case PhysicalEdge::Top:
+        return computeTopEdge(margin_);
+      case PhysicalEdge::Right:
+        return computeRightEdge(margin_, direction);
+      case PhysicalEdge::Bottom:
+        return computeBottomEdge(margin_);
+    }
+
+    fatalWithMessage("Invalid physical edge");
+  }
+
+  Style::Length computePadding(PhysicalEdge edge, Direction direction) const {
+    switch (edge) {
+      case PhysicalEdge::Left:
+        return computeLeftEdge(padding_, direction);
+      case PhysicalEdge::Top:
+        return computeTopEdge(padding_);
+      case PhysicalEdge::Right:
+        return computeRightEdge(padding_, direction);
+      case PhysicalEdge::Bottom:
+        return computeBottomEdge(padding_);
+    }
+
+    fatalWithMessage("Invalid physical edge");
+  }
+
+  Style::Length computeBorder(PhysicalEdge edge, Direction direction) const {
+    switch (edge) {
+      case PhysicalEdge::Left:
+        return computeLeftEdge(border_, direction);
+      case PhysicalEdge::Top:
+        return computeTopEdge(border_);
+      case PhysicalEdge::Right:
+        return computeRightEdge(border_, direction);
+      case PhysicalEdge::Bottom:
+        return computeBottomEdge(border_);
+    }
+
+    fatalWithMessage("Invalid physical edge");
+  }
+
+  Direction direction_ : bitCount<Direction>() = Direction::Inherit;
+  FlexDirection flexDirection_
+      : bitCount<FlexDirection>() = FlexDirection::Column;
+  Justify justifyContent_ : bitCount<Justify>() = Justify::FlexStart;
+  Align alignContent_ : bitCount<Align>() = Align::FlexStart;
+  Align alignItems_ : bitCount<Align>() = Align::Stretch;
+  Align alignSelf_ : bitCount<Align>() = Align::Auto;
+  PositionType positionType_
+      : bitCount<PositionType>() = PositionType::Relative;
+  Wrap flexWrap_ : bitCount<Wrap>() = Wrap::NoWrap;
+  Overflow overflow_ : bitCount<Overflow>() = Overflow::Visible;
+  Display display_ : bitCount<Display>() = Display::Flex;
+
+  StyleValueHandle flex_{};
+  StyleValueHandle flexGrow_{};
+  StyleValueHandle flexShrink_{};
+  StyleValueHandle flexBasis_{StyleValueHandle::ofAuto()};
+  Edges margin_{};
+  Edges position_{};
+  Edges padding_{};
+  Edges border_{};
+  Gutters gap_{};
+  Dimensions dimensions_{
+      StyleValueHandle::ofAuto(),
+      StyleValueHandle::ofAuto()};
+  Dimensions minDimensions_{};
+  Dimensions maxDimensions_{};
+  StyleValueHandle aspectRatio_{};
+
+  StyleValuePool pool_;
 };
 
 } // namespace facebook::yoga

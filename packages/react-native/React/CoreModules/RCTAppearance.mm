@@ -182,14 +182,6 @@ RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSString *, getColorScheme)
   return @[ @"appearanceChanged" ];
 }
 
-- (void)startObserving
-{
-}
-
-- (void)stopObserving
-{
-}
-
 - (void)invalidate
 {
   [super invalidate];

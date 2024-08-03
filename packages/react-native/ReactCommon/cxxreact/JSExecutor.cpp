@@ -10,6 +10,7 @@
 #include "RAMBundleRegistry.h"
 
 #include <folly/Conv.h>
+#include <jsinspector-modern/ReactCdp.h>
 
 #include <chrono>
 
@@ -32,6 +33,18 @@ double JSExecutor::performanceNow() {
 
   constexpr double NANOSECONDS_IN_MILLISECOND = 1000000.0;
   return duration / NANOSECONDS_IN_MILLISECOND;
+}
+
+std::unique_ptr<jsinspector_modern::RuntimeAgentDelegate>
+JSExecutor::createAgentDelegate(
+    jsinspector_modern::FrontendChannel frontendChannel,
+    jsinspector_modern::SessionState& sessionState,
+    std::unique_ptr<jsinspector_modern::RuntimeAgentDelegate::ExportedState>,
+    const jsinspector_modern::ExecutionContextDescription&
+        executionContextDescription) {
+  (void)executionContextDescription;
+  return std::make_unique<jsinspector_modern::FallbackRuntimeAgentDelegate>(
+      std::move(frontendChannel), sessionState, getDescription());
 }
 
 } // namespace facebook::react

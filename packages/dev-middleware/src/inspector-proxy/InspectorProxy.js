@@ -9,19 +9,20 @@
  * @oncall react_native
  */
 
+import type {EventReporter} from '../types/EventReporter';
+import type {Experiments} from '../types/Experiments';
 import type {
   JsonPagesListResponse,
   JsonVersionResponse,
   Page,
   PageDescription,
 } from './types';
-import type {EventReporter} from '../types/EventReporter';
-import type {Experiments} from '../types/Experiments';
 import type {IncomingMessage, ServerResponse} from 'http';
 
+import Device from './Device';
+import nullthrows from 'nullthrows';
 import url from 'url';
 import WS from 'ws';
-import Device from './Device';
 
 const debug = require('debug')('Metro:InspectorProxy');
 
@@ -42,20 +43,20 @@ export interface InspectorProxyQueries {
  */
 export default class InspectorProxy implements InspectorProxyQueries {
   // Root of the project used for relative to absolute source path conversion.
-  _projectRoot: string;
+  #projectRoot: string;
 
   /** The base URL to the dev server from the developer machine. */
-  _serverBaseUrl: string;
+  #serverBaseUrl: string;
 
   // Maps device ID to Device instance.
-  _devices: Map<string, Device>;
+  #devices: Map<string, Device>;
 
   // Internal counter for device IDs -- just gets incremented for each new device.
-  _deviceCounter: number = 0;
+  #deviceCounter: number = 0;
 
-  _eventReporter: ?EventReporter;
+  #eventReporter: ?EventReporter;
 
-  _experiments: Experiments;
+  #experiments: Experiments;
 
   constructor(
     projectRoot: string,
@@ -63,22 +64,22 @@ export default class InspectorProxy implements InspectorProxyQueries {
     eventReporter: ?EventReporter,
     experiments: Experiments,
   ) {
-    this._projectRoot = projectRoot;
-    this._serverBaseUrl = serverBaseUrl;
-    this._devices = new Map();
-    this._eventReporter = eventReporter;
-    this._experiments = experiments;
+    this.#projectRoot = projectRoot;
+    this.#serverBaseUrl = serverBaseUrl;
+    this.#devices = new Map();
+    this.#eventReporter = eventReporter;
+    this.#experiments = experiments;
   }
 
   getPageDescriptions(): Array<PageDescription> {
     // Build list of pages from all devices.
     let result: Array<PageDescription> = [];
-    Array.from(this._devices.entries()).forEach(([deviceId, device]) => {
+    Array.from(this.#devices.entries()).forEach(([deviceId, device]) => {
       result = result.concat(
         device
           .getPagesList()
           .map((page: Page) =>
-            this._buildPageDescription(deviceId, device, page),
+            this.#buildPageDescription(deviceId, device, page),
           ),
       );
     });
@@ -94,13 +95,14 @@ export default class InspectorProxy implements InspectorProxyQueries {
     response: ServerResponse,
     next: (?Error) => mixed,
   ) {
+    const pathname = url.parse(request.url).pathname;
     if (
-      request.url === PAGES_LIST_JSON_URL ||
-      request.url === PAGES_LIST_JSON_URL_2
+      pathname === PAGES_LIST_JSON_URL ||
+      pathname === PAGES_LIST_JSON_URL_2
     ) {
-      this._sendJsonResponse(response, this.getPageDescriptions());
-    } else if (request.url === PAGES_LIST_JSON_VERSION_URL) {
-      this._sendJsonResponse(response, {
+      this.#sendJsonResponse(response, this.getPageDescriptions());
+    } else if (pathname === PAGES_LIST_JSON_VERSION_URL) {
+      this.#sendJsonResponse(response, {
         Browser: 'Mobile JavaScript',
         'Protocol-Version': '1.1',
       });
@@ -113,19 +115,19 @@ export default class InspectorProxy implements InspectorProxyQueries {
     [path: string]: WS.Server,
   } {
     return {
-      [WS_DEVICE_URL]: this._createDeviceConnectionWSServer(),
-      [WS_DEBUGGER_URL]: this._createDebuggerConnectionWSServer(),
+      [WS_DEVICE_URL]: this.#createDeviceConnectionWSServer(),
+      [WS_DEBUGGER_URL]: this.#createDebuggerConnectionWSServer(),
     };
   }
 
   // Converts page information received from device into PageDescription object
   // that is sent to debugger.
-  _buildPageDescription(
+  #buildPageDescription(
     deviceId: string,
     device: Device,
     page: Page,
   ): PageDescription {
-    const {host, protocol} = new URL(this._serverBaseUrl);
+    const {host, protocol} = new URL(this.#serverBaseUrl);
     const webSocketScheme = protocol === 'https:' ? 'wss' : 'ws';
 
     const webSocketUrlWithoutProtocol = `${host}${WS_DEBUGGER_URL}?device=${deviceId}&page=${page.id}`;
@@ -148,12 +150,16 @@ export default class InspectorProxy implements InspectorProxyQueries {
       webSocketDebuggerUrl,
       vm: page.vm,
       deviceName: device.getName(),
+      reactNative: {
+        logicalDeviceId: deviceId,
+        capabilities: nullthrows(page.capabilities),
+      },
     };
   }
 
   // Sends object as response to HTTP request.
   // Just serializes object using JSON and sets required headers.
-  _sendJsonResponse(
+  #sendJsonResponse(
     response: ServerResponse,
     object: JsonPagesListResponse | JsonVersionResponse,
   ) {
@@ -161,7 +167,6 @@ export default class InspectorProxy implements InspectorProxyQueries {
     response.writeHead(200, {
       'Content-Type': 'application/json; charset=UTF-8',
       'Cache-Control': 'no-cache',
-      'Content-Length': data.length.toString(),
       Connection: 'close',
     });
     response.end(data);
@@ -172,7 +177,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
   // HTTP GET params.
   // For each new websocket connection we parse device and app names and create
   // new instance of Device class.
-  _createDeviceConnectionWSServer(): ws$WebSocketServer {
+  #createDeviceConnectionWSServer(): ws$WebSocketServer {
     const wss = new WS.Server({
       noServer: true,
       perMessageDeflate: true,
@@ -183,35 +188,35 @@ export default class InspectorProxy implements InspectorProxyQueries {
     // $FlowFixMe[value-as-type]
     wss.on('connection', async (socket: WS, req) => {
       try {
-        const fallbackDeviceId = String(this._deviceCounter++);
+        const fallbackDeviceId = String(this.#deviceCounter++);
 
         const query = url.parse(req.url || '', true).query || {};
         const deviceId = query.device || fallbackDeviceId;
         const deviceName = query.name || 'Unknown';
         const appName = query.app || 'Unknown';
 
-        const oldDevice = this._devices.get(deviceId);
+        const oldDevice = this.#devices.get(deviceId);
         const newDevice = new Device(
           deviceId,
           deviceName,
           appName,
           socket,
-          this._projectRoot,
-          this._eventReporter,
+          this.#projectRoot,
+          this.#eventReporter,
         );
 
         if (oldDevice) {
           oldDevice.handleDuplicateDeviceConnection(newDevice);
         }
 
-        this._devices.set(deviceId, newDevice);
+        this.#devices.set(deviceId, newDevice);
 
         debug(
           `Got new connection: name=${deviceName}, app=${appName}, device=${deviceId}`,
         );
 
         socket.on('close', () => {
-          this._devices.delete(deviceId);
+          this.#devices.delete(deviceId);
           debug(`Device ${deviceName} disconnected.`);
         });
       } catch (e) {
@@ -227,7 +232,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
   // in /json response.
   // When debugger connects we try to parse device and page IDs from the query and pass
   // websocket object to corresponding Device instance.
-  _createDebuggerConnectionWSServer(): ws$WebSocketServer {
+  #createDebuggerConnectionWSServer(): ws$WebSocketServer {
     const wss = new WS.Server({
       noServer: true,
       perMessageDeflate: false,
@@ -246,7 +251,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
           throw new Error('Incorrect URL - must provide device and page IDs');
         }
 
-        const device = this._devices.get(deviceId);
+        const device = this.#devices.get(deviceId);
         if (device == null) {
           throw new Error('Unknown device with ID ' + deviceId);
         }
@@ -257,7 +262,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
       } catch (e) {
         console.error(e);
         socket.close(INTERNAL_ERROR_CODE, e?.toString() ?? 'Unknown error');
-        this._eventReporter?.logEvent({
+        this.#eventReporter?.logEvent({
           type: 'connect_debugger_frontend',
           status: 'error',
           error: e,

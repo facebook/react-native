@@ -9,12 +9,14 @@ package com.facebook.react.devsupport;
 
 import android.os.Build;
 import android.view.WindowManager;
+import com.facebook.infer.annotation.Nullsafe;
 
 /**
  * Compatibility wrapper for apps targeting API level 26 or later. See
  * https://developer.android.com/about/versions/oreo/android-8.0-changes.html#cwt
  */
-/* package */ class WindowOverlayCompat {
+/* package */ @Nullsafe(Nullsafe.Mode.LOCAL)
+class WindowOverlayCompat {
 
   private static final int TYPE_APPLICATION_OVERLAY = 2038;
 

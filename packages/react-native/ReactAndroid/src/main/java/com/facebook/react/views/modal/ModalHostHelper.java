@@ -14,9 +14,11 @@ import android.graphics.Point;
 import android.view.Display;
 import android.view.WindowManager;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Nullsafe;
 
 /** Helper class for Modals. */
-/*package*/ class ModalHostHelper {
+/*package*/ @Nullsafe(Nullsafe.Mode.LOCAL)
+class ModalHostHelper {
 
   private static final Point MIN_POINT = new Point();
   private static final Point MAX_POINT = new Point();

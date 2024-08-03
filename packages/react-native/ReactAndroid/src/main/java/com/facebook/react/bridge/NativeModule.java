@@ -9,6 +9,7 @@ package com.facebook.react.bridge;
 
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.common.annotations.DeprecatedInNewArchitecture;
+import com.facebook.react.common.annotations.StableReactNativeAPI;
 import javax.annotation.Nonnull;
 
 /**
@@ -18,15 +19,9 @@ import javax.annotation.Nonnull;
  * not provide any Java code (so they can be reused on other platforms), and instead should register
  * themselves using {@link CxxModuleWrapper}.
  */
+@StableReactNativeAPI
 @DoNotStrip
 public interface NativeModule {
-
-  @DeprecatedInNewArchitecture
-  interface NativeMethod {
-    void invoke(JSInstance jsInstance, ReadableArray parameters);
-
-    String getType();
-  }
 
   /**
    * @return the name of this module. This will be the name used to {@code require()} this module
@@ -38,6 +33,9 @@ public interface NativeModule {
   /** This method is called after {@link ReactApplicationContext} has been created. */
   void initialize();
 
+  /** Allow NativeModule to clean up. Called before React Native instance is destroyed. */
+  void invalidate();
+
   /**
    * Return true if you intend to override some other native module that was registered e.g. as part
    * of a different package (such as the core one). Trying to override without returning true from
@@ -45,16 +43,15 @@ public interface NativeModule {
    * default all modules return false.
    */
   @DeprecatedInNewArchitecture()
-  boolean canOverrideExistingModule();
+  default boolean canOverrideExistingModule() {
+    return false;
+  }
 
   /**
    * Allow NativeModule to clean up. Called before {CatalystInstance#onHostDestroy}
    *
    * @deprecated use {@link #invalidate()} instead.
    */
-  @DeprecatedInNewArchitecture(message = "Use invalidate method instead")
-  void onCatalystInstanceDestroy();
-
-  /** Allow NativeModule to clean up. Called before React Native instance is destroyed. */
-  void invalidate();
+  @Deprecated(since = "Use invalidate method instead", forRemoval = true)
+  default void onCatalystInstanceDestroy() {}
 }

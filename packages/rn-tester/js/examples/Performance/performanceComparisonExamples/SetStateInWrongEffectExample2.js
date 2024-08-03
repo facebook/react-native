@@ -13,9 +13,9 @@
 
 import type {ItemDataType} from '../components/itemData';
 
-import * as React from 'react';
-import ItemList from '../components/ItemList';
 import {LIST_1000_ITEMS} from '../components/itemData';
+import ItemList from '../components/ItemList';
+import * as React from 'react';
 
 const {useState, useEffect} = React;
 const ItemListMemo = React.memo(ItemList);

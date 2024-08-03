@@ -7,6 +7,7 @@
 
 package com.facebook.react.common;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.proguard.annotations.DoNotStrip;
 import javax.annotation.Nullable;
 
@@ -14,6 +15,7 @@ import javax.annotation.Nullable;
  * A JS exception that was propagated to native. In debug mode, these exceptions are normally shown
  * to developers in a redbox.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @DoNotStrip
 public class JavascriptException extends RuntimeException
     implements HasJavascriptExceptionMetadata {
@@ -25,7 +27,7 @@ public class JavascriptException extends RuntimeException
   }
 
   public @Nullable String getExtraDataAsJson() {
-    return this.extraDataAsJson;
+    return extraDataAsJson;
   }
 
   public JavascriptException setExtraDataAsJson(@Nullable String extraDataAsJson) {

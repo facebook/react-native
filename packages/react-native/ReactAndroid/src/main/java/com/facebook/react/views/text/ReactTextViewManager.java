@@ -25,6 +25,8 @@ import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewProps;
+import com.facebook.react.views.text.internal.span.ReactClickableSpan;
+import com.facebook.react.views.text.internal.span.TextInlineImageSpan;
 import com.facebook.yoga.YogaMeasureMode;
 import java.util.HashMap;
 import java.util.Map;

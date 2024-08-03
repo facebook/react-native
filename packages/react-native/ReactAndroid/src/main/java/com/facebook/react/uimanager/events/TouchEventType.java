@@ -7,7 +7,10 @@
 
 package com.facebook.react.uimanager.events;
 
+import com.facebook.infer.annotation.Nullsafe;
+
 /** Touch event types that JS module RCTEventEmitter can understand */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public enum TouchEventType {
   START("topTouchStart"),
   END("topTouchEnd"),

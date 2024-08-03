@@ -70,15 +70,19 @@ RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(canCancelContentTouches, BOOL) // [macOS]
 RCT_EXPORT_VIEW_PROPERTY(centerContent, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(maintainVisibleContentPosition, NSDictionary)
 RCT_EXPORT_VIEW_PROPERTY(automaticallyAdjustContentInsets, BOOL)
-RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(automaticallyAdjustKeyboardInsets, BOOL) // [macOS]
-RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(decelerationRate, CGFloat) // [macOS]
-RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(directionalLockEnabled, BOOL) // [macOS]
-RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(indicatorStyle, UIScrollViewIndicatorStyle) // [macOS]
+#if !TARGET_OS_OSX // [macOS]
+RCT_EXPORT_VIEW_PROPERTY(automaticallyAdjustKeyboardInsets, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(decelerationRate, CGFloat)
+RCT_EXPORT_VIEW_PROPERTY(endDraggingSensitivityMultiplier, CGFloat)
+RCT_EXPORT_VIEW_PROPERTY(endDraggingSensitivityVelocityMultiplier, CGFloat)
+RCT_EXPORT_VIEW_PROPERTY(directionalLockEnabled, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(indicatorStyle, UIScrollViewIndicatorStyle)
 #if TARGET_OS_IOS // [visionOS]
-RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(keyboardDismissMode, UIScrollViewKeyboardDismissMode) // [macOS]
+RCT_EXPORT_VIEW_PROPERTY(keyboardDismissMode, UIScrollViewKeyboardDismissMode)
 #endif // [visionOS]
-RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(maximumZoomScale, CGFloat) // [macOS]
-RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(minimumZoomScale, CGFloat) // [macOS]
+#endif // [macOS]
+RCT_EXPORT_VIEW_PROPERTY(maximumZoomScale, CGFloat)
+RCT_EXPORT_VIEW_PROPERTY(minimumZoomScale, CGFloat)
 RCT_EXPORT_VIEW_PROPERTY(scrollEnabled, BOOL)
 RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(pagingEnabled, BOOL) // [macOS]
 RCT_REMAP_NOT_OSX_VIEW_PROPERTY(pinchGestureEnabled, scrollView.pinchGestureEnabled, BOOL) // [macOS]

@@ -14,20 +14,20 @@ import type {Reporter} from 'metro/src/lib/reporting';
 import type {TerminalReportableEvent} from 'metro/src/lib/TerminalReporter';
 import typeof TerminalReporter from 'metro/src/lib/TerminalReporter';
 
-import chalk from 'chalk';
-import Metro from 'metro';
-import {Terminal} from 'metro-core';
-import path from 'path';
-import {createDevMiddleware} from '@react-native/dev-middleware';
+import isDevServerRunning from '../../utils/isDevServerRunning';
+import loadMetroConfig from '../../utils/loadMetroConfig';
+import attachKeyHandlers from './attachKeyHandlers';
 import {
   createDevServerMiddleware,
   indexPageMiddleware,
 } from '@react-native-community/cli-server-api';
 import {logger, version} from '@react-native-community/cli-tools';
-
-import isDevServerRunning from '../../utils/isDevServerRunning';
-import loadMetroConfig from '../../utils/loadMetroConfig';
-import attachKeyHandlers from './attachKeyHandlers';
+import {createDevMiddleware} from '@react-native/dev-middleware';
+import chalk from 'chalk';
+import Metro from 'metro';
+import {Terminal} from 'metro-core';
+import path from 'path';
+import url from 'url';
 
 export type StartCommandArgs = {
   assetPlugins?: string[],
@@ -63,23 +63,18 @@ async function runServer(
     projectRoot: args.projectRoot,
     sourceExts: args.sourceExts,
   });
-  const host = args.host?.length ? args.host : 'localhost';
+  const hostname = args.host?.length ? args.host : 'localhost';
   const {
     projectRoot,
     server: {port},
     watchFolders,
   } = metroConfig;
-  const scheme = args.https === true ? 'https' : 'http';
-  const devServerUrl = `${scheme}://${host}:${port}`;
+  const protocol = args.https === true ? 'https' : 'http';
+  const devServerUrl = url.format({protocol, hostname, port});
 
   logger.info(`Welcome to React Native v${ctx.reactNativeVersion}`);
 
-  const serverStatus = await isDevServerRunning(
-    scheme,
-    host,
-    port,
-    projectRoot,
-  );
+  const serverStatus = await isDevServerRunning(devServerUrl, projectRoot);
 
   if (serverStatus === 'matched_server_running') {
     logger.info(
@@ -109,7 +104,7 @@ async function runServer(
     messageSocketEndpoint,
     eventsSocketEndpoint,
   } = createDevServerMiddleware({
-    host,
+    host: hostname,
     port,
     watchFolders,
   });

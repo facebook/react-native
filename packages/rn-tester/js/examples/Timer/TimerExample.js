@@ -12,8 +12,7 @@
 
 const RNTesterButton = require('../../components/RNTesterButton');
 const React = require('react');
-
-const {Alert, Platform, ToastAndroid, Text, View} = require('react-native');
+const {Alert, Platform, Text, ToastAndroid, View} = require('react-native');
 
 function burnCPU(milliseconds: number) {
   const start = global.performance.now();

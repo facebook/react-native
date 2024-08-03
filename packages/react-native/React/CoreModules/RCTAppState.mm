@@ -120,9 +120,7 @@ RCT_EXPORT_MODULE()
 
 - (void)handleMemoryWarning
 {
-  if ([self canSendEvents_DEPRECATED]) {
-    [self sendEventWithName:@"memoryWarning" body:nil];
-  }
+  [self sendEventWithName:@"memoryWarning" body:nil];
 }
 
 - (void)handleAppStateDidChange:(NSNotification *)notification
@@ -139,9 +137,7 @@ RCT_EXPORT_MODULE()
 
   if (![newState isEqualToString:_lastKnownState]) {
     _lastKnownState = newState;
-    if ([self canSendEvents_DEPRECATED]) {
-      [self sendEventWithName:@"appStateDidChange" body:@{@"app_state" : _lastKnownState}];
-    }
+    [self sendEventWithName:@"appStateDidChange" body:@{@"app_state" : _lastKnownState}];
   }
 }
 

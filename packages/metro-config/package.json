@@ -1,6 +1,6 @@
 {
   "name": "@react-native/metro-config",
-  "version": "0.73.0",
+  "version": "0.74.0",
   "description": "Metro configuration for React Native.",
   "license": "MIT",
   "repository": {
@@ -18,11 +18,17 @@
   "engines": {
     "node": ">=18"
   },
-  "exports": "./index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist"
+  ],
   "dependencies": {
-    "@react-native/js-polyfills": "^0.73.0",
-    "@react-native/metro-babel-transformer": "^0.73.11",
-    "metro-config": "0.79.1",
-    "metro-runtime": "0.79.1"
+    "@react-native/js-polyfills": "0.74.0",
+    "@react-native/metro-babel-transformer": "0.74.0",
+    "metro-config": "^0.80.3",
+    "metro-runtime": "^0.80.3"
   }
 }

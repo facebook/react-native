@@ -8,8 +8,10 @@
 package com.facebook.react.views.view;
 
 import android.view.View;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.yoga.YogaMeasureMode;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class MeasureUtil {
 
   public static int getMeasureSpec(float size, YogaMeasureMode mode) {

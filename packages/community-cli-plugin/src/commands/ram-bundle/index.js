@@ -9,12 +9,12 @@
  * @oncall react_native
  */
 
-import type {Command, Config} from '@react-native-community/cli-types';
 import type {BundleCommandArgs} from '../bundle';
+import type {Command, Config} from '@react-native-community/cli-types';
 
-import metroRamBundle from 'metro/src/shared/output/RamBundle';
 import bundleCommand from '../bundle';
 import buildBundle from '../bundle/buildBundle';
+import metroRamBundle from 'metro/src/shared/output/RamBundle';
 
 const ramBundleCommand: Command = {
   name: 'ram-bundle',

@@ -10,8 +10,8 @@
 
 'use strict';
 
-import * as React from 'react';
 import MyNativeView from '../../../NativeComponentExample/js/MyNativeView';
+import * as React from 'react';
 
 exports.title = 'New Architecture Examples';
 exports.description =

@@ -10,6 +10,7 @@
 #import <React/RCTViewManager.h>
 #import "RNTLegacyView.h"
 #import "RNTMyNativeViewComponentView.h"
+#import "UIView+ColorOverlays.h"
 
 @interface RNTMyLegacyNativeViewManager : RCTViewManager
 
@@ -40,30 +41,41 @@ RCT_CUSTOM_VIEW_PROPERTY(cornerRadius, CGFloat, RNTLegacyView)
 RCT_EXPORT_METHOD(changeBackgroundColor : (nonnull NSNumber *)reactTag color : (NSString *)color)
 {
   [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTPlatformView *> *viewRegistry) { // [macOS]
-    RCTUIView *view = viewRegistry[reactTag]; // [macOS]
-    if (!view || ![view isKindOfClass:[RNTLegacyView class]]) {
-      RCTLogError(@"Cannot find RNTLegacyView with tag #%@", reactTag);
-      return;
+    if (RCTPlatformView *view = [RNTMyLegacyNativeViewManager getViewByTag:viewRegistry reactTag:reactTag]) { // [macOS]
+      [view setBackgroundColorWithColorString:color];
     }
-
-    unsigned rgbValue = 0;
-    NSString *colorString = [NSString stringWithCString:std::string([color UTF8String]).c_str()
-                                               encoding:[NSString defaultCStringEncoding]];
-    NSScanner *scanner = [NSScanner scannerWithString:colorString];
-    [scanner setScanLocation:1]; // bypass '#' character
-    [scanner scanHexInt:&rgbValue];
-
-    // [macOS
-    RCTUIColor *newColor = [RCTUIColor colorWithRed:((rgbValue & 0xFF0000) >> 16) / 255.0
-                                              green:((rgbValue & 0xFF00) >> 8) / 255.0
-                                               blue:(rgbValue & 0xFF) / 255.0
-                                              alpha:1.0];
-    // macOS]
-    view.backgroundColor = newColor;
   }];
 }
 
-- (RCTUIView *)view // [macOS]
+RCT_EXPORT_METHOD(addOverlays : (nonnull NSNumber *)reactTag overlayColors : (NSArray *)overlayColors)
+{
+  [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTPlatformView *> *viewRegistry) { // [macOS]
+    if (RCTPlatformView *view = [RNTMyLegacyNativeViewManager getViewByTag:viewRegistry reactTag:reactTag]) { // [macOS]
+      [view addColorOverlays:overlayColors];
+    }
+  }];
+}
+
+RCT_EXPORT_METHOD(removeOverlays : (nonnull NSNumber *)reactTag)
+{
+  [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTPlatformView *> *viewRegistry) { // [macOS]
+    if (RCTPlatformView *view = [RNTMyLegacyNativeViewManager getViewByTag:viewRegistry reactTag:reactTag]) { // [macOS]
+      [view removeOverlays];
+    }
+  }];
+}
+
++ (RCTPlatformView *)getViewByTag:(NSDictionary<NSNumber *, RCTPlatformView *> *)viewRegistry reactTag:(nonnull NSNumber *)reactTag // [macOS]
+{
+  RCTPlatformView *view = viewRegistry[reactTag]; // [macOS]
+  if (!view || ![view isKindOfClass:[RNTLegacyView class]]) {
+    RCTLogError(@"Cannot find RNTLegacyView with tag #%@", reactTag);
+    return NULL;
+  }
+  return view;
+}
+
+- (RCTPlatformView *)view // [macOS]
 {
   RNTLegacyView *view = [[RNTLegacyView alloc] init];
   view.backgroundColor = RCTUIColor.redColor; // [macOS]

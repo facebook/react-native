@@ -116,8 +116,8 @@ export interface FlatListProps<ItemT> extends VirtualizedListProps<ItemT> {
    */
   onViewableItemsChanged?:
     | ((info: {
-        viewableItems: Array<ViewToken>;
-        changed: Array<ViewToken>;
+        viewableItems: Array<ViewToken<ItemT>>;
+        changed: Array<ViewToken<ItemT>>;
       }) => void)
     | null
     | undefined;

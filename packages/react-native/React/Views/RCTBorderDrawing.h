@@ -56,7 +56,7 @@ RCTPathCreateWithRoundedRect(CGRect bounds, RCTCornerInsets cornerInsets, const 
  * by inspecting the image's `capInsets`.
  *
  * `borderInsets` defines the border widths for each edge.
- * `scaleFactor` defines the backing scale factor of the device for supporting high-resolution drawing.
+ * `scaleFactor` defines the backing scale factor of the device for supporting high-resolution drawing. // [macOS]
  */
 RCT_EXTERN UIImage *RCTGetBorderImage(
     RCTBorderStyle borderStyle,

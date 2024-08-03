@@ -9,17 +9,18 @@
  */
 
 import type {RNTesterModule} from '../../types/RNTesterTypes';
-import RotatingImagesExample from './RotatingImagesExample';
+
+import ColorStylesExample from './ColorStylesExample';
+import ComposeAnimationsWithEasingExample from './ComposeAnimationsWithEasingExample';
+import ComposingExample from './ComposingExample';
 import ContinuousInteractionsExample from './ContinuousInteractionsExample';
-import LoopingExample from './LoopingExample';
-import MovingBoxExample from './MovingBoxExample';
 import EasingExample from './EasingExample';
 import FadeInViewExample from './FadeInViewExample';
-import ComposeAnimationsWithEasingExample from './ComposeAnimationsWithEasingExample';
+import LoopingExample from './LoopingExample';
+import MovingBoxExample from './MovingBoxExample';
+import RotatingImagesExample from './RotatingImagesExample';
 import TransformBounceExample from './TransformBounceExample';
-import ComposingExample from './ComposingExample';
 import TransformStylesExample from './TransformStylesExample';
-import ColorStylesExample from './ColorStylesExample';
 
 export default ({
   framework: 'React',

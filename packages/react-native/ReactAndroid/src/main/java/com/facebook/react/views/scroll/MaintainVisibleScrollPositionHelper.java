@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UIManager;
@@ -30,6 +31,7 @@ import java.lang.ref.WeakReference;
  * <p>This uses UIManager to listen to updates and capture position of items before and after
  * layout.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 class MaintainVisibleScrollPositionHelper<ScrollViewT extends ViewGroup & HasSmoothScroll>
     implements UIManagerListener {
   private final ScrollViewT mScrollView;

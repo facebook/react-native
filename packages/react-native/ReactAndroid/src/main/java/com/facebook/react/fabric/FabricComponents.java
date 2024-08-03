@@ -8,6 +8,7 @@
 package com.facebook.react.fabric;
 
 import androidx.annotation.NonNull;
+import com.facebook.infer.annotation.Nullsafe;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,6 +18,7 @@ import java.util.Map;
  * <p>TODO T97384889: remove this class when the component names are unified between JS - Android -
  * iOS - C++
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class FabricComponents {
 
   private static @NonNull final Map<String, String> sComponentNames = new HashMap<>();

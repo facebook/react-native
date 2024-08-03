@@ -647,7 +647,7 @@ public class Task<TResult> implements TaskInterface<TResult> {
     synchronized (lock) {
       completed = this.isCompleted();
       if (!completed) {
-        this.continuations.add(
+        continuations.add(
             new Continuation<TResult, Void>() {
               @Override
               public Void then(Task<TResult> task) {
@@ -704,7 +704,7 @@ public class Task<TResult> implements TaskInterface<TResult> {
     synchronized (lock) {
       completed = this.isCompleted();
       if (!completed) {
-        this.continuations.add(
+        continuations.add(
             new Continuation<TResult, Void>() {
               @Override
               public Void then(Task<TResult> task) {

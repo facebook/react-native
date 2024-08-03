@@ -16,8 +16,9 @@ else
   source[:tag] = "v#{version}"
 end
 
-folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -DFOLLY_HAVE_CLOCK_GETTIME=1 -Wno-comma -Wno-shorten-64-to-32'
-folly_version = '2023.08.07.00'
+folly_config = get_folly_config()
+folly_compiler_flags = folly_config[:compiler_flags]
+folly_version = folly_config[:version]
 
 header_search_paths = [
     "\"$(PODS_ROOT)/RCT-Folly\"",
@@ -27,8 +28,7 @@ header_search_paths = [
 ]
 
 if ENV['USE_FRAMEWORKS']
-  header_search_paths << "\"$(PODS_TARGET_SRCROOT)/../../..\"" #this is needed to allow the Renderer/Debug access its own files
-  header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-debug/React_debug.framework/Headers\""
+  header_search_paths << "\"$(PODS_TARGET_SRCROOT)/../../..\"" # this is needed to allow the Renderer/Debug access its own files
 end
 
 Pod::Spec.new do |s|
@@ -55,8 +55,8 @@ Pod::Spec.new do |s|
     s.header_mappings_dir  = "../../.."
   end
 
-  s.dependency "React-debug"
   s.dependency "RCT-Folly", folly_version
   s.dependency "DoubleConversion"
   s.dependency "fmt", "9.1.0"
+  add_dependency(s, "React-debug")
 end

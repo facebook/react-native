@@ -9,6 +9,7 @@
  */
 
 import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
+import type ReactFabricHostComponent from './ReactFabricPublicInstance/ReactFabricHostComponent';
 import type {Element, ElementRef, ElementType} from 'react';
 
 import {type RootTag} from './RootTag';
@@ -109,4 +110,14 @@ export function unstable_batchedUpdates<T>(
 
 export function isProfilingRenderer(): boolean {
   return Boolean(__DEV__);
+}
+
+export function isChildPublicInstance(
+  parentInstance: ReactFabricHostComponent | HostComponent<mixed>,
+  childInstance: ReactFabricHostComponent | HostComponent<mixed>,
+): boolean {
+  return require('../Renderer/shims/ReactNative').isChildPublicInstance(
+    parentInstance,
+    childInstance,
+  );
 }

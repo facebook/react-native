@@ -28,6 +28,7 @@ import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.OverScroller;
 import android.widget.ScrollView;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 import com.facebook.common.logging.FLog;
@@ -356,7 +357,7 @@ public class ReactScrollView extends ScrollView
   }
 
   /** Returns whether the given descendent is partially scrolled in view */
-  public boolean isPartiallyScrolledInView(View descendent) {
+  boolean isPartiallyScrolledInView(View descendent) {
     int scrollDelta = getScrollDelta(descendent);
     descendent.getDrawingRect(mTempRect);
     return scrollDelta != 0 && Math.abs(scrollDelta) < mTempRect.width();
@@ -505,7 +506,7 @@ public class ReactScrollView extends ScrollView
     Assertions.assertNotNull(mClippingRect);
 
     ReactClippingViewGroupHelper.calculateClippingRect(this, mClippingRect);
-    View contentView = getChildAt(0);
+    View contentView = getContentView();
     if (contentView instanceof ReactClippingViewGroup) {
       ((ReactClippingViewGroup) contentView).updateClippingRect();
     }
@@ -619,20 +620,16 @@ public class ReactScrollView extends ScrollView
   @Override
   public void draw(Canvas canvas) {
     if (mEndFillColor != Color.TRANSPARENT) {
-      final View content = getChildAt(0);
-      if (mEndBackground != null && content != null && content.getBottom() < getHeight()) {
-        mEndBackground.setBounds(0, content.getBottom(), getWidth(), getHeight());
+      final View contentView = getContentView();
+      if (mEndBackground != null && contentView != null && contentView.getBottom() < getHeight()) {
+        mEndBackground.setBounds(0, contentView.getBottom(), getWidth(), getHeight());
         mEndBackground.draw(canvas);
       }
     }
     getDrawingRect(mRect);
 
-    switch (mOverflow) {
-      case ViewProps.VISIBLE:
-        break;
-      default:
-        canvas.clipRect(mRect);
-        break;
+    if (!ViewProps.VISIBLE.equals(mOverflow)) {
+      canvas.clipRect(mRect);
     }
 
     super.draw(canvas);
@@ -1043,8 +1040,10 @@ public class ReactScrollView extends ScrollView
 
   @Override
   public void onChildViewRemoved(View parent, View child) {
-    mContentView.removeOnLayoutChangeListener(this);
-    mContentView = null;
+    if (mContentView != null) {
+      mContentView.removeOnLayoutChangeListener(this);
+      mContentView = null;
+    }
   }
 
   public void setContentOffset(ReadableMap value) {
@@ -1236,6 +1235,7 @@ public class ReactScrollView extends ScrollView
     DEFAULT_FLING_ANIMATOR.start();
   }
 
+  @NonNull
   @Override
   public ValueAnimator getFlingAnimator() {
     return DEFAULT_FLING_ANIMATOR;

@@ -10,6 +10,7 @@ package com.facebook.react.views.scroll;
 import androidx.annotation.Nullable;
 import androidx.core.util.Pools;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.WritableMap;
@@ -18,6 +19,7 @@ import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.events.Event;
 
 /** A event dispatched from a ScrollView scrolling. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ScrollEvent extends Event<ScrollEvent> {
   private static String TAG = ScrollEvent.class.getSimpleName();
 

@@ -11,93 +11,61 @@
 'use strict';
 
 import type {RootTag} from '../Types/RootTagTypes';
+import type {UIManagerJSInterface} from '../Types/UIManagerJSInterface';
 
 import {unstable_hasComponent} from '../NativeComponent/NativeComponentRegistryUnstable';
+import defineLazyObjectProperty from '../Utilities/defineLazyObjectProperty';
+import Platform from '../Utilities/Platform';
+import {getFabricUIManager} from './FabricUIManager';
+import nullthrows from 'nullthrows';
 
-let cachedConstants = null;
-
-const errorMessageForMethod = (methodName: string): string =>
-  "[ReactNative Architecture][JS] '" +
-  methodName +
-  "' is not available in the new React Native architecture.";
-
-function nativeViewConfigsInBridgelessModeEnabled(): boolean {
-  return global.RN$LegacyInterop_UIManager_getConstants !== undefined;
+function raiseSoftError(methodName: string, details?: string): void {
+  console.error(
+    `[ReactNative Architecture][JS] '${methodName}' is not available in the new React Native architecture.` +
+      (details ? ` ${details}` : ''),
+  );
 }
 
-function getCachedConstants(): Object {
-  if (!cachedConstants) {
-    cachedConstants = global.RN$LegacyInterop_UIManager_getConstants();
-  }
-  return cachedConstants;
-}
+const getUIManagerConstants: ?() => {[viewManagerName: string]: Object} =
+  global.RN$LegacyInterop_UIManager_getConstants;
 
-const UIManagerJS: {[string]: $FlowFixMe} = {
-  getViewManagerConfig: (viewManagerName: string): mixed => {
-    if (nativeViewConfigsInBridgelessModeEnabled()) {
-      return getCachedConstants()[viewManagerName];
-    } else {
-      console.error(
-        errorMessageForMethod('getViewManagerConfig') +
-          'Use hasViewManagerConfig instead. viewManagerName: ' +
-          viewManagerName,
-      );
-      return null;
+const getUIManagerConstantsCached = (function () {
+  let wasCalledOnce = false;
+  let result = {};
+  return (): {[viewManagerName: string]: Object} => {
+    if (!wasCalledOnce) {
+      result = nullthrows(getUIManagerConstants)();
+      wasCalledOnce = true;
     }
-  },
-  hasViewManagerConfig: (viewManagerName: string): boolean => {
-    return unstable_hasComponent(viewManagerName);
-  },
-  getConstants: (): Object => {
-    if (nativeViewConfigsInBridgelessModeEnabled()) {
-      return getCachedConstants();
-    } else {
-      console.error(errorMessageForMethod('getConstants'));
-      return null;
+    return result;
+  };
+})();
+
+const getConstantsForViewManager: ?(viewManagerName: string) => ?Object =
+  global.RN$LegacyInterop_UIManager_getConstantsForViewManager;
+
+const getDefaultEventTypes: ?() => Object =
+  global.RN$LegacyInterop_UIManager_getDefaultEventTypes;
+
+const getDefaultEventTypesCached = (function () {
+  let wasCalledOnce = false;
+  let result = null;
+  return (): Object => {
+    if (!wasCalledOnce) {
+      result = nullthrows(getDefaultEventTypes)();
+      wasCalledOnce = true;
     }
-  },
-  getConstantsForViewManager: (viewManagerName: string): Object => {
-    console.error(errorMessageForMethod('getConstantsForViewManager'));
-    return {};
-  },
-  getDefaultEventTypes: (): Array<string> => {
-    console.error(errorMessageForMethod('getDefaultEventTypes'));
-    return [];
-  },
-  lazilyLoadView: (name: string): Object => {
-    console.error(errorMessageForMethod('lazilyLoadView'));
-    return {};
-  },
-  createView: (
-    reactTag: ?number,
-    viewName: string,
-    rootTag: RootTag,
-    props: Object,
-  ): void => console.error(errorMessageForMethod('createView')),
-  updateView: (reactTag: number, viewName: string, props: Object): void =>
-    console.error(errorMessageForMethod('updateView')),
-  focus: (reactTag: ?number): void =>
-    console.error(errorMessageForMethod('focus')),
-  blur: (reactTag: ?number): void =>
-    console.error(errorMessageForMethod('blur')),
-  findSubviewIn: (
-    reactTag: ?number,
-    point: Array<number>,
-    callback: (
-      nativeViewTag: number,
-      left: number,
-      top: number,
-      width: number,
-      height: number,
-    ) => void,
-  ): void => console.error(errorMessageForMethod('findSubviewIn')),
-  dispatchViewManagerCommand: (
-    reactTag: ?number,
-    commandID: number,
-    commandArgs: ?Array<string | number | boolean>,
-  ): void => console.error(errorMessageForMethod('dispatchViewManagerCommand')),
+    return result;
+  };
+})();
+
+/**
+ * UIManager.js overrides these APIs.
+ * Pull them out from the BridgelessUIManager implementation. So, we can ignore them.
+ */
+const UIManagerJSOverridenAPIs = {
   measure: (
-    reactTag: ?number,
+    reactTag: number,
     callback: (
       left: number,
       top: number,
@@ -106,19 +74,18 @@ const UIManagerJS: {[string]: $FlowFixMe} = {
       pageX: number,
       pageY: number,
     ) => void,
-  ): void => console.error(errorMessageForMethod('measure')),
+  ): void => {
+    raiseSoftError('measure');
+  },
   measureInWindow: (
-    reactTag: ?number,
+    reactTag: number,
     callback: (x: number, y: number, width: number, height: number) => void,
-  ): void => console.error(errorMessageForMethod('measureInWindow')),
-  viewIsDescendantOf: (
-    reactTag: ?number,
-    ancestorReactTag: ?number,
-    callback: (result: Array<boolean>) => void,
-  ): void => console.error(errorMessageForMethod('viewIsDescendantOf')),
+  ): void => {
+    raiseSoftError('measureInWindow');
+  },
   measureLayout: (
-    reactTag: ?number,
-    ancestorReactTag: ?number,
+    reactTag: number,
+    ancestorReactTag: number,
     errorCallback: (error: Object) => void,
     callback: (
       left: number,
@@ -126,9 +93,11 @@ const UIManagerJS: {[string]: $FlowFixMe} = {
       width: number,
       height: number,
     ) => void,
-  ): void => console.error(errorMessageForMethod('measureLayout')),
+  ): void => {
+    raiseSoftError('measureLayout');
+  },
   measureLayoutRelativeToParent: (
-    reactTag: ?number,
+    reactTag: number,
     errorCallback: (error: Object) => void,
     callback: (
       left: number,
@@ -136,56 +105,334 @@ const UIManagerJS: {[string]: $FlowFixMe} = {
       width: number,
       height: number,
     ) => void,
-  ): void =>
-    console.error(errorMessageForMethod('measureLayoutRelativeToParent')),
-  setJSResponder: (reactTag: ?number, blockNativeResponder: boolean): void =>
-    console.error(errorMessageForMethod('setJSResponder')),
-  clearJSResponder: (): void => {}, // Don't log error here because we're aware it gets called
-  configureNextLayoutAnimation: (
-    config: Object,
-    callback: () => void,
-    errorCallback: (error: Object) => void,
-  ): void =>
-    console.error(errorMessageForMethod('configureNextLayoutAnimation')),
-  removeSubviewsFromContainerWithID: (containerID: number): void =>
-    console.error(errorMessageForMethod('removeSubviewsFromContainerWithID')),
-  replaceExistingNonRootView: (reactTag: ?number, newReactTag: ?number): void =>
-    console.error(errorMessageForMethod('replaceExistingNonRootView')),
-  setChildren: (containerTag: ?number, reactTags: Array<number>): void =>
-    console.error(errorMessageForMethod('setChildren')),
+  ): void => {
+    raiseSoftError('measureLayoutRelativeToParent');
+  },
+  dispatchViewManagerCommand: (
+    reactTag: number,
+    commandID: number,
+    commandArgs: ?Array<string | number | boolean>,
+  ): void => {
+    raiseSoftError('dispatchViewManagerCommand');
+  },
+};
+
+/**
+ * Leave Unimplemented: The only thing that called these methods was the paper renderer.
+ * In OSS, the New Architecture will just use the Fabric renderer, which uses
+ * different APIs.
+ */
+const UIManagerJSUnusedInNewArchAPIs = {
+  createView: (
+    reactTag: number,
+    viewName: string,
+    rootTag: RootTag,
+    props: Object,
+  ): void => {
+    raiseSoftError('createView');
+  },
+  updateView: (reactTag: number, viewName: string, props: Object): void => {
+    raiseSoftError('updateView');
+  },
+  setChildren: (containerTag: number, reactTags: Array<number>): void => {
+    raiseSoftError('setChildren');
+  },
   manageChildren: (
-    containerTag: ?number,
+    containerTag: number,
     moveFromIndices: Array<number>,
     moveToIndices: Array<number>,
     addChildReactTags: Array<number>,
     addAtIndices: Array<number>,
     removeAtIndices: Array<number>,
-  ): void => console.error(errorMessageForMethod('manageChildren')),
-
-  // Android only
-  setLayoutAnimationEnabledExperimental: (enabled: boolean): void => {
-    console.error(
-      errorMessageForMethod('setLayoutAnimationEnabledExperimental'),
-    );
+  ): void => {
+    raiseSoftError('manageChildren');
   },
-  // Please use AccessibilityInfo.sendAccessibilityEvent instead.
-  // See SetAccessibilityFocusExample in AccessibilityExample.js for a migration example.
-  sendAccessibilityEvent: (reactTag: ?number, eventType: number): void =>
-    console.error(errorMessageForMethod('sendAccessibilityEvent')),
-  showPopupMenu: (
-    reactTag: ?number,
-    items: Array<string>,
-    error: (error: Object) => void,
-    success: (event: string, selected?: number) => void,
-  ): void => console.error(errorMessageForMethod('showPopupMenu')),
-  dismissPopupMenu: (): void =>
-    console.error(errorMessageForMethod('dismissPopupMenu')),
+  setJSResponder: (reactTag: number, blockNativeResponder: boolean): void => {
+    raiseSoftError('setJSResponder');
+  },
+  clearJSResponder: (): void => {
+    raiseSoftError('clearJSResponder');
+  },
 };
 
-if (nativeViewConfigsInBridgelessModeEnabled()) {
-  Object.keys(getCachedConstants()).forEach(viewConfigName => {
-    UIManagerJS[viewConfigName] = getCachedConstants()[viewConfigName];
+/**
+ * Leave unimplemented: These APIs are deprecated in UIManager. We will eventually remove
+ * them from React Native.
+ */
+const UIManagerJSDeprecatedPlatformAPIs = Platform.select({
+  android: {
+    // TODO(T175424986): Remove UIManager.showPopupMenu() in React Native v0.75.
+    showPopupMenu: (
+      reactTag: number,
+      items: Array<string>,
+      error: (error: Object) => void,
+      success: (event: string, selected?: number) => void,
+    ): void => {
+      raiseSoftError(
+        'showPopupMenu',
+        'Please use the <PopupMenuAndroid /> component instead.',
+      );
+    },
+    // TODO(T175424986): Remove UIManager.dismissPopupMenu() in React Native v0.75.
+    dismissPopupMenu: (): void => {
+      raiseSoftError(
+        'dismissPopupMenu',
+        'Please use the <PopupMenuAndroid /> component instead.',
+      );
+    },
+  },
+});
+
+const UIManagerJSPlatformAPIs = Platform.select({
+  android: {
+    getConstantsForViewManager: (viewManagerName: string): ?Object => {
+      if (getConstantsForViewManager) {
+        return getConstantsForViewManager(viewManagerName);
+      }
+
+      raiseSoftError('getConstantsForViewManager');
+      return {};
+    },
+    getDefaultEventTypes: (): Array<string> => {
+      if (getDefaultEventTypes) {
+        return getDefaultEventTypesCached();
+      }
+
+      raiseSoftError('getDefaultEventTypes');
+      return [];
+    },
+    setLayoutAnimationEnabledExperimental: (enabled: boolean): void => {
+      /**
+       * Layout animations are always enabled in the New Architecture.
+       * They cannot be turned off.
+       */
+      if (!enabled) {
+        raiseSoftError(
+          'setLayoutAnimationEnabledExperimental(false)',
+          'Layout animations are always enabled in the New Architecture.',
+        );
+      }
+    },
+    sendAccessibilityEvent: (reactTag: number, eventType: number): void => {
+      // Keep this in sync with java:FabricUIManager.sendAccessibilityEventFromJS
+      // and legacySendAccessibilityEvent.android.js
+      const AccessibilityEvent = {
+        TYPE_VIEW_FOCUSED: 0x00000008,
+        TYPE_WINDOW_STATE_CHANGED: 0x00000020,
+        TYPE_VIEW_CLICKED: 0x00000001,
+        TYPE_VIEW_HOVER_ENTER: 0x00000080,
+      };
+
+      let eventName = null;
+      if (eventType === AccessibilityEvent.TYPE_VIEW_FOCUSED) {
+        eventName = 'focus';
+      } else if (eventType === AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
+        eventName = 'windowStateChange';
+      } else if (eventType === AccessibilityEvent.TYPE_VIEW_CLICKED) {
+        eventName = 'click';
+      } else if (eventType === AccessibilityEvent.TYPE_VIEW_HOVER_ENTER) {
+        eventName = 'viewHoverEnter';
+      } else {
+        console.error(
+          `sendAccessibilityEvent() dropping event: Called with unsupported eventType: ${eventType}`,
+        );
+        return;
+      }
+
+      const FabricUIManager = nullthrows(getFabricUIManager());
+      const shadowNode =
+        FabricUIManager.findShadowNodeByTag_DEPRECATED(reactTag);
+      if (!shadowNode) {
+        console.error(
+          `sendAccessibilityEvent() dropping event: Cannot find view with tag #${reactTag}`,
+        );
+        return;
+      }
+
+      FabricUIManager.sendAccessibilityEvent(shadowNode, eventName);
+    },
+  },
+  ios: {
+    /**
+     * TODO(T174674274): Implement lazy loading of legacy view managers in the new architecture.
+     *
+     * Leave this unimplemented until we implement lazy loading of legacy modules and view managers in the new architecture.
+     */
+    lazilyLoadView: (name: string): Object => {
+      raiseSoftError('lazilyLoadView');
+      return {};
+    },
+    focus: (reactTag: number): void => {
+      const FabricUIManager = nullthrows(getFabricUIManager());
+      const shadowNode =
+        FabricUIManager.findShadowNodeByTag_DEPRECATED(reactTag);
+      if (!shadowNode) {
+        console.error(`focus() noop: Cannot find view with tag #${reactTag}`);
+        return;
+      }
+      FabricUIManager.dispatchCommand(shadowNode, 'focus', []);
+    },
+    blur: (reactTag: number): void => {
+      const FabricUIManager = nullthrows(getFabricUIManager());
+      const shadowNode =
+        FabricUIManager.findShadowNodeByTag_DEPRECATED(reactTag);
+      if (!shadowNode) {
+        console.error(`blur() noop: Cannot find view with tag #${reactTag}`);
+        return;
+      }
+      FabricUIManager.dispatchCommand(shadowNode, 'blur', []);
+    },
+  },
+});
+
+const UIManagerJS: UIManagerJSInterface & {[string]: any} = {
+  ...UIManagerJSOverridenAPIs,
+  ...UIManagerJSDeprecatedPlatformAPIs,
+  ...UIManagerJSPlatformAPIs,
+  ...UIManagerJSUnusedInNewArchAPIs,
+  getViewManagerConfig: (viewManagerName: string): mixed => {
+    if (getUIManagerConstants) {
+      const constants = getUIManagerConstantsCached();
+      if (
+        !constants[viewManagerName] &&
+        UIManagerJS.getConstantsForViewManager
+      ) {
+        constants[viewManagerName] =
+          UIManagerJS.getConstantsForViewManager(viewManagerName);
+      }
+      return constants[viewManagerName];
+    } else {
+      raiseSoftError(
+        `getViewManagerConfig('${viewManagerName}')`,
+        `If '${viewManagerName}' has a ViewManager and you want to retrieve its native ViewConfig, please turn on the native ViewConfig interop layer. If you want to see if this component is registered with React Native, please call hasViewManagerConfig('${viewManagerName}') instead.`,
+      );
+      return null;
+    }
+  },
+  hasViewManagerConfig: (viewManagerName: string): boolean => {
+    return unstable_hasComponent(viewManagerName);
+  },
+  getConstants: (): Object => {
+    if (getUIManagerConstants) {
+      return getUIManagerConstantsCached();
+    } else {
+      raiseSoftError('getConstants');
+      return null;
+    }
+  },
+  findSubviewIn: (
+    reactTag: number,
+    point: Array<number>,
+    callback: (
+      nativeViewTag: number,
+      left: number,
+      top: number,
+      width: number,
+      height: number,
+    ) => void,
+  ): void => {
+    const FabricUIManager = nullthrows(getFabricUIManager());
+    const shadowNode = FabricUIManager.findShadowNodeByTag_DEPRECATED(reactTag);
+
+    if (!shadowNode) {
+      console.error(
+        `findSubviewIn() noop: Cannot find view with reactTag ${reactTag}`,
+      );
+      return;
+    }
+
+    FabricUIManager.findNodeAtPoint(
+      shadowNode,
+      point[0],
+      point[1],
+      function (internalInstanceHandle) {
+        if (internalInstanceHandle == null) {
+          console.error('findSubviewIn(): Cannot find node at point');
+          return;
+        }
+
+        let instanceHandle: Object = internalInstanceHandle;
+        let node = instanceHandle.stateNode.node;
+
+        if (!node) {
+          console.error('findSubviewIn(): Cannot find node at point');
+          return;
+        }
+
+        let nativeViewTag: number =
+          instanceHandle.stateNode.canonical.nativeTag;
+
+        FabricUIManager.measure(
+          node,
+          function (x, y, width, height, pageX, pageY) {
+            callback(nativeViewTag, pageX, pageY, width, height);
+          },
+        );
+      },
+    );
+  },
+  viewIsDescendantOf: (
+    reactTag: number,
+    ancestorReactTag: number,
+    callback: (result: Array<boolean>) => void,
+  ): void => {
+    const FabricUIManager = nullthrows(getFabricUIManager());
+    const shadowNode = FabricUIManager.findShadowNodeByTag_DEPRECATED(reactTag);
+    if (!shadowNode) {
+      console.error(
+        `viewIsDescendantOf() noop: Cannot find view with reactTag ${reactTag}`,
+      );
+      return;
+    }
+
+    const ancestorShadowNode =
+      FabricUIManager.findShadowNodeByTag_DEPRECATED(ancestorReactTag);
+    if (!ancestorShadowNode) {
+      console.error(
+        `viewIsDescendantOf() noop: Cannot find view with ancestorReactTag ${ancestorReactTag}`,
+      );
+      return;
+    }
+
+    // Keep this in sync with ReadOnlyNode.js
+    const DOCUMENT_POSITION_CONTAINED_BY = 16;
+
+    let result = FabricUIManager.compareDocumentPosition(
+      ancestorShadowNode,
+      shadowNode,
+    );
+
+    let isAncestor = (result & DOCUMENT_POSITION_CONTAINED_BY) !== 0;
+
+    callback([isAncestor]);
+  },
+  configureNextLayoutAnimation: (
+    config: Object,
+    callback: () => void,
+    errorCallback: (error: Object) => void,
+  ): void => {
+    const FabricUIManager = nullthrows(getFabricUIManager());
+    FabricUIManager.configureNextLayoutAnimation(
+      config,
+      callback,
+      errorCallback,
+    );
+  },
+};
+
+if (getUIManagerConstants) {
+  Object.keys(getUIManagerConstantsCached()).forEach(viewConfigName => {
+    UIManagerJS[viewConfigName] = getUIManagerConstantsCached()[viewConfigName];
   });
+
+  if (UIManagerJS.getConstants().ViewManagerNames) {
+    UIManagerJS.getConstants().ViewManagerNames.forEach(viewManagerName => {
+      defineLazyObjectProperty(UIManagerJS, viewManagerName, {
+        get: () =>
+          nullthrows(UIManagerJS.getConstantsForViewManager)(viewManagerName),
+      });
+    });
+  }
 }
 
 module.exports = UIManagerJS;

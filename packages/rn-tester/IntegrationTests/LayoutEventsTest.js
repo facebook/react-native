@@ -10,24 +10,22 @@
 
 'use strict';
 
-const React = require('react');
-const ReactNative = require('react-native');
-const {Image, LayoutAnimation, StyleSheet, Text, View} = ReactNative;
-const {Platform} = ReactNative; // [macOS]
-const {TestModule} = ReactNative.NativeModules;
-
 import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
-
-const deepDiffer = require('react-native/Libraries/Utilities/differ/deepDiffer');
-
-function debug(...args: Array<void | Layout | string>) {
-  // console.log.apply(null, arguments);
-}
-
 import type {
   Layout,
   LayoutEvent,
 } from 'react-native/Libraries/Types/CoreEventTypes';
+
+const React = require('react');
+const ReactNative = require('react-native');
+const deepDiffer = require('react-native/Libraries/Utilities/differ/deepDiffer');
+
+const {Image, LayoutAnimation, StyleSheet, Text, View} = ReactNative;
+const {Platform} = ReactNative; // [macOS]
+const {TestModule} = ReactNative.NativeModules;
+function debug(...args: Array<void | Layout | string>) {
+  // console.log.apply(null, arguments);
+}
 
 type Props = $ReadOnly<{||}>;
 

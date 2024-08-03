@@ -10,9 +10,11 @@ package com.facebook.react.fabric.mounting;
 import static android.view.View.MeasureSpec.EXACTLY;
 
 import android.view.View;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.yoga.YogaMeasureMode;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public interface LayoutMetricsConversions {
 
   static float getMinSize(int viewMeasureSpec) {

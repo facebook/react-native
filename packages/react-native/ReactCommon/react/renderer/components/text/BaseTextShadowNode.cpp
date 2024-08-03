@@ -11,7 +11,6 @@
 #include <react/renderer/components/text/RawTextShadowNode.h>
 #include <react/renderer/components/text/TextProps.h>
 #include <react/renderer/components/text/TextShadowNode.h>
-#include <react/renderer/core/TraitCast.h>
 #include <react/renderer/mounting/ShadowView.h>
 
 namespace facebook::react {
@@ -33,7 +32,7 @@ void BaseTextShadowNode::buildAttributedString(
   for (const auto& childNode : parentNode.getChildren()) {
     // RawShadowNode
     auto rawTextShadowNode =
-        traitCast<const RawTextShadowNode*>(childNode.get());
+        dynamic_cast<const RawTextShadowNode*>(childNode.get());
     if (rawTextShadowNode != nullptr) {
       auto fragment = AttributedString::Fragment{};
       fragment.string = rawTextShadowNode->getConcreteProps().text;
@@ -49,7 +48,7 @@ void BaseTextShadowNode::buildAttributedString(
     }
 
     // TextShadowNode
-    auto textShadowNode = traitCast<const TextShadowNode*>(childNode.get());
+    auto textShadowNode = dynamic_cast<const TextShadowNode*>(childNode.get());
     if (textShadowNode != nullptr) {
       auto localTextAttributes = baseTextAttributes;
       localTextAttributes.apply(

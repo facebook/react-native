@@ -55,8 +55,6 @@ import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.CatalystInstanceImpl;
 import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.JSExceptionHandler;
-import com.facebook.react.bridge.JSIModulePackage;
-import com.facebook.react.bridge.JSIModuleType;
 import com.facebook.react.bridge.JavaJSExecutor;
 import com.facebook.react.bridge.JavaScriptExecutor;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
@@ -71,12 +69,14 @@ import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.UIManager;
+import com.facebook.react.bridge.UIManagerProvider;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.SurfaceDelegateFactory;
+import com.facebook.react.common.annotations.StableReactNativeAPI;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.devsupport.DevSupportManagerFactory;
@@ -86,9 +86,10 @@ import com.facebook.react.devsupport.interfaces.DevLoadingViewManager;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
 import com.facebook.react.devsupport.interfaces.RedBoxHandler;
+import com.facebook.react.internal.AndroidChoreographerProvider;
+import com.facebook.react.internal.ChoreographerProvider;
 import com.facebook.react.internal.turbomodule.core.TurboModuleManager;
 import com.facebook.react.internal.turbomodule.core.TurboModuleManagerDelegate;
-import com.facebook.react.internal.turbomodule.core.interfaces.TurboModuleRegistry;
 import com.facebook.react.modules.appearance.AppearanceModule;
 import com.facebook.react.modules.appregistry.AppRegistry;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
@@ -96,9 +97,9 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
 import com.facebook.react.packagerconnection.RequestHandler;
-import com.facebook.react.surface.ReactStage;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.ReactRoot;
+import com.facebook.react.uimanager.ReactStage;
 import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.common.UIManagerType;
@@ -133,6 +134,7 @@ import java.util.Set;
  * <p>To instantiate an instance of this class use {@link #builder}.
  */
 @ThreadSafe
+@StableReactNativeAPI
 public class ReactInstanceManager {
 
   private static final String TAG = ReactInstanceManager.class.getSimpleName();
@@ -182,7 +184,7 @@ public class ReactInstanceManager {
   private volatile Boolean mHasStartedDestroying = false;
   private final MemoryPressureRouter mMemoryPressureRouter;
   private final @Nullable JSExceptionHandler mJSExceptionHandler;
-  private final @Nullable JSIModulePackage mJSIModulePackage;
+  private final @Nullable UIManagerProvider mUIManagerProvider;
   private final @Nullable ReactPackageTurboModuleManagerDelegate.Builder mTMMDelegateBuilder;
   private List<ViewManager> mViewManagers;
   private boolean mUseFallbackBundle = true;
@@ -230,11 +232,12 @@ public class ReactInstanceManager {
       @Nullable DevBundleDownloadListener devBundleDownloadListener,
       int minNumShakes,
       int minTimeLeftInFrameForNonBatchedOperationMs,
-      @Nullable JSIModulePackage jsiModulePackage,
+      @Nullable UIManagerProvider uIManagerProvider,
       @Nullable Map<String, RequestHandler> customPackagerCommandHandlers,
       @Nullable ReactPackageTurboModuleManagerDelegate.Builder tmmDelegateBuilder,
       @Nullable SurfaceDelegateFactory surfaceDelegateFactory,
-      @Nullable DevLoadingViewManager devLoadingViewManager) {
+      @Nullable DevLoadingViewManager devLoadingViewManager,
+      @Nullable ChoreographerProvider choreographerProvider) {
     FLog.d(TAG, "ReactInstanceManager.ctor()");
     initializeSoLoaderIfNecessary(applicationContext);
 
@@ -276,7 +279,12 @@ public class ReactInstanceManager {
       mPackages.add(
           new CoreModulesPackage(
               this,
-              this::invokeDefaultOnBackPressed,
+              new DefaultHardwareBackBtnHandler() {
+                @Override
+                public void invokeDefaultOnBackPressed() {
+                  ReactInstanceManager.this.invokeDefaultOnBackPressed();
+                }
+              },
               lazyViewManagersEnabled,
               minTimeLeftInFrameForNonBatchedOperationMs));
       if (mUseDeveloperSupport) {
@@ -284,10 +292,13 @@ public class ReactInstanceManager {
       }
       mPackages.addAll(packages);
     }
-    mJSIModulePackage = jsiModulePackage;
+    mUIManagerProvider = uIManagerProvider;
 
     // Instantiate ReactChoreographer in UI thread.
-    ReactChoreographer.initialize();
+    ReactChoreographer.initialize(
+        choreographerProvider != null
+            ? choreographerProvider
+            : AndroidChoreographerProvider.getInstance());
     if (mUseDeveloperSupport) {
       mDevSupportManager.startInspector();
     }
@@ -327,8 +338,9 @@ public class ReactInstanceManager {
         Activity currentActivity = getCurrentActivity();
         if (currentActivity != null) {
           ReactRootView rootView = new ReactRootView(currentActivity);
-          rootView.setIsFabric(ReactFeatureFlags.enableFabricRenderer);
-          rootView.startReactApplication(ReactInstanceManager.this, appKey, null);
+          boolean isFabric = ReactFeatureFlags.enableFabricRenderer;
+          rootView.setIsFabric(isFabric);
+          rootView.startReactApplication(ReactInstanceManager.this, appKey, new Bundle());
           return rootView;
         }
 
@@ -368,7 +380,7 @@ public class ReactInstanceManager {
     mDevSupportManager.handleException(e);
   }
 
-  public void registerCxxErrorHandlerFunc() {
+  private void registerCxxErrorHandlerFunc() {
     Class[] parameterTypes = new Class[1];
     parameterTypes[0] = Exception.class;
     Method handleCxxErrorFunc = null;
@@ -378,6 +390,10 @@ public class ReactInstanceManager {
       FLog.e("ReactInstanceHolder", "Failed to set cxx error handler function", e);
     }
     ReactCxxErrorHandler.setHandleErrorFunc(this, handleCxxErrorFunc);
+  }
+
+  private void unregisterCxxErrorHandlerFunc() {
+    ReactCxxErrorHandler.setHandleErrorFunc(null, null);
   }
 
   static void initializeSoLoaderIfNecessary(Context applicationContext) {
@@ -728,23 +744,22 @@ public class ReactInstanceManager {
     }
 
     moveToBeforeCreateLifecycleState();
-
-    if (mCreateReactContextThread != null) {
-      mCreateReactContextThread = null;
-    }
-
     mMemoryPressureRouter.destroy(mApplicationContext);
+    unregisterCxxErrorHandlerFunc();
 
+    mCreateReactContextThread = null;
     synchronized (mReactContextLock) {
       if (mCurrentReactContext != null) {
         mCurrentReactContext.destroy();
         mCurrentReactContext = null;
       }
     }
+
     mHasStartedCreatingInitialContext = false;
     mCurrentActivity = null;
 
     ResourceDrawableIdHelper.getInstance().clear();
+
     mHasStartedDestroying = false;
     synchronized (mHasStartedDestroying) {
       mHasStartedDestroying.notifyAll();
@@ -1277,14 +1292,12 @@ public class ReactInstanceManager {
           uiManager.stopSurface(surfaceId);
         } else {
           FLog.w(ReactConstants.TAG, "Failed to stop surface, UIManager has already gone away");
-          reactRoot.getRootViewGroup().removeAllViews();
         }
       } else {
         ReactSoftExceptionLogger.logSoftException(
             TAG,
             new RuntimeException(
                 "detachRootViewFromInstance called with ReactRootView with invalid id"));
-        reactRoot.getRootViewGroup().removeAllViews();
       }
     } else {
       reactContext
@@ -1293,8 +1306,7 @@ public class ReactInstanceManager {
           .unmountApplicationComponentAtRootTag(reactRoot.getRootViewTag());
     }
 
-    // The view is no longer attached, so mark it as such by resetting its ID.
-    reactRoot.getRootViewGroup().setId(View.NO_ID);
+    clearReactRoot(reactRoot);
   }
 
   @ThreadConfined(UI)
@@ -1330,7 +1342,7 @@ public class ReactInstanceManager {
         mJSExceptionHandler != null ? mJSExceptionHandler : mDevSupportManager;
     reactContext.setJSExceptionHandler(exceptionHandler);
 
-    NativeModuleRegistry nativeModuleRegistry = processPackages(reactContext, mPackages, false);
+    NativeModuleRegistry nativeModuleRegistry = processPackages(reactContext, mPackages);
 
     CatalystInstanceImpl.Builder catalystInstanceBuilder =
         new CatalystInstanceImpl.Builder()
@@ -1353,14 +1365,12 @@ public class ReactInstanceManager {
 
     reactContext.initializeWithInstance(catalystInstance);
 
-    if (ReactFeatureFlags.unstable_useRuntimeSchedulerAlways) {
-      // On Old Architecture, we need to initialize the Native Runtime Scheduler so that
-      // the `nativeRuntimeScheduler` object is registered on JS.
-      // On New Architecture, this is normally triggered by instantiate a TurboModuleManager.
-      // Here we invoke getRuntimeScheduler() to trigger the creation of it regardless of the
-      // architecture so it will always be there.
-      catalystInstance.getRuntimeScheduler();
-    }
+    // On Old Architecture, we need to initialize the Native Runtime Scheduler so that
+    // the `nativeRuntimeScheduler` object is registered on JS.
+    // On New Architecture, this is normally triggered by instantiate a TurboModuleManager.
+    // Here we invoke getRuntimeScheduler() to trigger the creation of it regardless of the
+    // architecture so it will always be there.
+    catalystInstance.getRuntimeScheduler();
 
     if (ReactFeatureFlags.useTurboModules && mTMMDelegateBuilder != null) {
       TurboModuleManagerDelegate tmmDelegate =
@@ -1376,23 +1386,23 @@ public class ReactInstanceManager {
               catalystInstance.getJSCallInvokerHolder(),
               catalystInstance.getNativeMethodCallInvokerHolder());
 
-      catalystInstance.setTurboModuleManager(turboModuleManager);
-
-      TurboModuleRegistry registry = (TurboModuleRegistry) turboModuleManager;
+      catalystInstance.setTurboModuleRegistry(turboModuleManager);
 
       // Eagerly initialize TurboModules
-      for (String moduleName : registry.getEagerInitModuleNames()) {
-        registry.getModule(moduleName);
+      for (String moduleName : turboModuleManager.getEagerInitModuleNames()) {
+        turboModuleManager.getModule(moduleName);
       }
     }
 
-    if (mJSIModulePackage != null) {
-      catalystInstance.addJSIModules(
-          mJSIModulePackage.getJSIModules(
-              reactContext, catalystInstance.getJavaScriptContextHolder()));
-    }
-    if (ReactFeatureFlags.enableFabricRenderer) {
-      catalystInstance.getJSIModule(JSIModuleType.UIManager);
+    if (mUIManagerProvider != null) {
+      UIManager uiManager = mUIManagerProvider.createUIManager(reactContext);
+      if (uiManager != null) {
+        catalystInstance.setFabricUIManager(uiManager);
+
+        // Initialize the UIManager
+        uiManager.initialize();
+        catalystInstance.setFabricUIManager(uiManager);
+      }
     }
     if (mBridgeIdleDebugListener != null) {
       catalystInstance.addBridgeIdleDebugListener(mBridgeIdleDebugListener);
@@ -1410,9 +1420,7 @@ public class ReactInstanceManager {
   }
 
   private NativeModuleRegistry processPackages(
-      ReactApplicationContext reactContext,
-      List<ReactPackage> packages,
-      boolean checkAndUpdatePackageMembership) {
+      ReactApplicationContext reactContext, List<ReactPackage> packages) {
     NativeModuleRegistryBuilder nativeModuleRegistryBuilder =
         new NativeModuleRegistryBuilder(reactContext, this);
 
@@ -1420,14 +1428,8 @@ public class ReactInstanceManager {
 
     synchronized (mPackages) {
       for (ReactPackage reactPackage : packages) {
-        if (checkAndUpdatePackageMembership && mPackages.contains(reactPackage)) {
-          continue;
-        }
         Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "createAndProcessCustomReactPackage");
         try {
-          if (checkAndUpdatePackageMembership) {
-            mPackages.add(reactPackage);
-          }
           processPackage(reactPackage, nativeModuleRegistryBuilder);
         } finally {
           Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);

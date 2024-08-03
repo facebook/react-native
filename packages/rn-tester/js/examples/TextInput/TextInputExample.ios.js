@@ -10,33 +10,30 @@
 
 'use strict';
 
-const React = require('react');
-
-const {
-  Button,
-  InputAccessoryView,
-  Text,
-  TextInput,
-  View,
-  Image, // [macOS]
-  Platform, // [macOS]
-  StyleSheet,
-  Switch,
-  Alert,
-} = require('react-native');
-// [macOS
-import type {
-  KeyboardType,
-  SettingChangeEvent,
-  PasteEvent,
-} from 'react-native/Libraries/Components/TextInput/TextInput'; // macOS]
-
-const TextInputSharedExamples = require('./TextInputSharedExamples.js');
-
 import type {
   RNTesterModule,
   RNTesterModuleExample,
 } from '../../types/RNTesterTypes';
+import type {KeyboardType} from 'react-native/Libraries/Components/TextInput/TextInput';
+// [macOS
+import type {
+  PasteEvent,
+  SettingChangeEvent,
+} from 'react-native/Libraries/Components/TextInput/TextInput'; // macOS]
+
+const TextInputSharedExamples = require('./TextInputSharedExamples.js');
+const React = require('react');
+const {
+  Alert,
+  Button,
+  InputAccessoryView,
+  StyleSheet,
+  Switch,
+  Text,
+  TextInput,
+  View,
+} = require('react-native');
+const {Image, Platform} = require('react-native'); // [macOS]
 
 class WithLabel extends React.Component<$FlowFixMeProps> {
   render(): React.Node {
@@ -461,7 +458,7 @@ function OnPaste(): React.Node {
 }
 // macOS]
 
-const examples: Array<RNTesterModuleExample> = [
+const textInputExamples: Array<RNTesterModuleExample> = [
   ...TextInputSharedExamples,
   {
     title: 'Live Re-Write (ひ -> 日)',
@@ -1096,7 +1093,7 @@ const examples: Array<RNTesterModuleExample> = [
 
 // [macOS
 if (Platform.OS === 'macos') {
-  examples.push(
+  textInputExamples.push(
     {
       title:
         'AutoCorrect, spellCheck and grammarCheck callbacks - Multiline Textfield',
@@ -1212,5 +1209,5 @@ module.exports = ({
   documentationURL: 'https://reactnative.dev/docs/textinput',
   category: 'Basic',
   description: 'Single and multi-line text inputs.',
-  examples,
+  examples: textInputExamples,
 }: RNTesterModule);

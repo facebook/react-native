@@ -32,6 +32,10 @@ struct FloatOptional {
   constexpr bool isUndefined() const {
     return yoga::isUndefined(value_);
   }
+
+  constexpr bool isDefined() const {
+    return yoga::isDefined(value_);
+  }
 };
 
 // operators take FloatOptional by value, as it is a 32bit value

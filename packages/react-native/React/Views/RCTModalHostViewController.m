@@ -25,10 +25,10 @@
 
   self.modalInPresentation = YES;
 
-#if TARGET_OS_IOS // [visionOS]
-  _preferredStatusBarStyle = [RCTSharedApplication() statusBarStyle];
-  _preferredStatusBarHidden = [RCTSharedApplication() isStatusBarHidden];
-#endif // [visionOS]
+#if !TARGET_OS_OSX // [macOS]
+  _preferredStatusBarStyle = [RCTUIStatusBarManager() statusBarStyle];
+  _preferredStatusBarHidden = [RCTUIStatusBarManager() isStatusBarHidden];
+#endif // [macOS]
 
   return self;
 }

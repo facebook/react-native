@@ -9,6 +9,7 @@
 
 #import <Foundation/Foundation.h>
 #import <React/RCTUIKit.h> // [macOS]
+#import <react/utils/ManagedObjectWrapper.h>
 
 #include <string>
 
@@ -188,19 +189,29 @@ static inline facebook::react::ColorComponents _ColorComponentsFromUIColor(RCTUI
 
 facebook::react::ColorComponents RCTPlatformColorComponentsFromSemanticItems(std::vector<std::string> &semanticItems)
 {
+  return _ColorComponentsFromUIColor(RCTPlatformColorFromSemanticItems(semanticItems));
+}
+
+RCTUIColor *RCTPlatformColorFromSemanticItems(std::vector<std::string> &semanticItems) // [macOS]
+{
   for (const auto &semanticCString : semanticItems) {
     NSString *semanticNSString = _NSStringFromCString(semanticCString);
     RCTUIColor *uiColor = [RCTUIColor colorNamed:semanticNSString]; // [macOS]
     if (uiColor != nil) {
-      return _ColorComponentsFromUIColor(uiColor);
+      return uiColor;
     }
     uiColor = _UIColorFromSemanticString(semanticNSString);
     if (uiColor != nil) {
-      return _ColorComponentsFromUIColor(uiColor);
+      return uiColor;
     }
   }
 
-  return {0, 0, 0, 0};
+  return RCTUIColor.clearColor; // [macOS]
+}
+
+RCTUIColor *RCTPlatformColorFromColor(const facebook::react::Color &color) // [macOS]
+{
+  return (RCTUIColor *)facebook::react::unwrapManagedObject(color.getUIColor()); // [macOS]
 }
 
 NS_ASSUME_NONNULL_END

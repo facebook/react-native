@@ -21,20 +21,15 @@ enum class Display : uint8_t {
 };
 
 template <>
-constexpr inline int32_t ordinalCount<Display>() {
+constexpr int32_t ordinalCount<Display>() {
   return 2;
-} 
+}
 
-template <>
-constexpr inline int32_t bitCount<Display>() {
-  return 1;
-} 
-
-constexpr inline Display scopedEnum(YGDisplay unscoped) {
+constexpr Display scopedEnum(YGDisplay unscoped) {
   return static_cast<Display>(unscoped);
 }
 
-constexpr inline YGDisplay unscopedEnum(Display scoped) {
+constexpr YGDisplay unscopedEnum(Display scoped) {
   return static_cast<YGDisplay>(scoped);
 }
 

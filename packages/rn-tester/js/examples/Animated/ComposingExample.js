@@ -11,16 +11,17 @@
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import type {CompositeAnimation} from 'react-native/Libraries/Animated/AnimatedMock';
 import type AnimatedValue from 'react-native/Libraries/Animated/nodes/AnimatedValue';
-import * as React from 'react';
+
+import RNTConfigurationBlock from '../../components/RNTConfigurationBlock';
 import RNTesterButton from '../../components/RNTesterButton';
 import ToggleNativeDriver from './utils/ToggleNativeDriver';
-import RNTConfigurationBlock from '../../components/RNTConfigurationBlock';
+import * as React from 'react';
 import {
-  Text,
-  StyleSheet,
-  View,
   Animated,
   FlatList,
+  StyleSheet,
+  Text,
+  View,
   useWindowDimensions,
 } from 'react-native';
 

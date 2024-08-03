@@ -100,6 +100,24 @@ ScrollViewProps::ScrollViewProps(
                     "decelerationRate",
                     sourceProps.decelerationRate,
                     (Float)0.998)),
+      endDraggingSensitivityMultiplier(
+          CoreFeatures::enablePropIteratorSetter
+              ? sourceProps.endDraggingSensitivityMultiplier
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "endDraggingSensitivityMultiplier",
+                    sourceProps.endDraggingSensitivityMultiplier,
+                    1)),
+      endDraggingSensitivityVelocityMultiplier(
+          CoreFeatures::enablePropIteratorSetter
+              ? sourceProps.endDraggingSensitivityVelocityMultiplier
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "endDraggingSensitivityVelocityMultiplier",
+                    sourceProps.endDraggingSensitivityVelocityMultiplier,
+                    0)),
       directionalLockEnabled(
           CoreFeatures::enablePropIteratorSetter
               ? sourceProps.directionalLockEnabled

@@ -12,7 +12,6 @@
 
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/core/State.h>
-#include <react/utils/CoreFeatures.h>
 
 namespace facebook::react {
 
@@ -68,11 +67,7 @@ class ConcreteState : public State {
   }
 
   void updateState(Data&& newData) const {
-    updateState(
-        std::move(newData),
-        CoreFeatures::enableDefaultAsyncBatchedPriority
-            ? EventPriority::AsynchronousBatched
-            : EventPriority::AsynchronousUnbatched);
+    updateState(std::move(newData), EventPriority::AsynchronousBatched);
   }
 
   /*

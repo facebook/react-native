@@ -12,6 +12,7 @@ import android.text.TextUtils;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
+import com.facebook.infer.annotation.Nullsafe;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -19,6 +20,7 @@ import org.json.JSONObject;
  * Tracks errors connecting to or received from the debug server. The debug server returns errors as
  * json objects. This exception represents that error.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class DebugServerException extends RuntimeException {
   private static final String GENERIC_ERROR_MESSAGE =
       "\n\nTry the following to fix the issue:\n"

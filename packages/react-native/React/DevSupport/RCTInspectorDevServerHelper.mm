@@ -12,8 +12,12 @@
 #import <React/RCTLog.h>
 #import <React/RCTUIKit.h> // [macOS]
 
+#import <React/RCTCxxInspectorPackagerConnection.h>
 #import <React/RCTDefines.h>
 #import <React/RCTInspectorPackagerConnection.h>
+
+#import <CommonCrypto/CommonCrypto.h>
+#import <jsinspector-modern/InspectorFlags.h>
 
 static NSString *const kDebuggerMsgDisable = @"{ \"id\":1,\"method\":\"Debugger.disable\" }";
 
@@ -40,6 +44,80 @@ static NSString *getServerHost(NSURL *bundleURL)
   return [NSString stringWithFormat:@"%@:%@", host, port];
 }
 
+static NSString *getSHA256(NSString *string)
+{
+  const char *str = string.UTF8String;
+  unsigned char result[CC_SHA256_DIGEST_LENGTH];
+  CC_SHA256(str, (CC_LONG)strlen(str), result);
+
+  return [NSString stringWithFormat:@"%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
+                                    result[0],
+                                    result[1],
+                                    result[2],
+                                    result[3],
+                                    result[4],
+                                    result[5],
+                                    result[6],
+                                    result[7],
+                                    result[8],
+                                    result[9],
+                                    result[10],
+                                    result[11],
+                                    result[12],
+                                    result[13],
+                                    result[14],
+                                    result[15],
+                                    result[16],
+                                    result[17],
+                                    result[18],
+                                    result[19]];
+}
+
+#if TARGET_OS_OSX // [macOS
+// Returns the serial number of your device
+static NSString *getHardwareUUID()
+{
+  mach_port_t port = 0;
+  if (@available(macOS 12.0, *)) {
+  port = kIOMainPortDefault;
+  } else {
+  port = kIOMasterPortDefault;
+  }
+
+  CFMutableDictionaryRef matchingDict = IOServiceMatching("IOPlatformExpertDevice");
+  io_service_t platformExpert = IOServiceGetMatchingService(port, matchingDict);
+
+  NSString *hardwareUUID = nil;
+  if (platformExpert != 0) {
+      CFTypeRef serialNumberAsCFString = IORegistryEntryCreateCFProperty(platformExpert,CFSTR(kIOPlatformUUIDKey),kCFAllocatorDefault, 0);
+      if (serialNumberAsCFString) {
+          hardwareUUID = (__bridge NSString*)serialNumberAsCFString;
+      }
+  }
+  IOObjectRelease(platformExpert);
+  return hardwareUUID;
+}
+#endif // macOS]
+
+// Returns an opaque ID which is stable for the current combination of device and app, stable across installs,
+// and unique across devices.
+static NSString *getInspectorDeviceId()
+{
+  // A bundle ID uniquely identifies a single app throughout the system. [Source: Apple docs]
+  NSString *bundleId = [[NSBundle mainBundle] bundleIdentifier];
+
+  // An alphanumeric string that uniquely identifies a device to the app's vendor. [Source: Apple docs]
+#if !TARGET_OS_OSX // [macOS]
+  NSString *identifierForVendor = [[UIDevice currentDevice] identifierForVendor].UUIDString;
+#else // [macOS
+  NSString *identifierForVendor = getHardwareUUID();
+#endif
+
+  NSString *rawDeviceId = [NSString stringWithFormat:@"apple-%@-%@", identifierForVendor, bundleId];
+
+  return getSHA256(rawDeviceId);
+}
+
 static NSURL *getInspectorDeviceUrl(NSURL *bundleURL)
 {
 #if !TARGET_OS_OSX // [macOS]
@@ -50,17 +128,22 @@ static NSURL *getInspectorDeviceUrl(NSURL *bundleURL)
 #endif // macOS]
   NSString *escapedAppName = [[[NSBundle mainBundle] bundleIdentifier]
       stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLQueryAllowedCharacterSet];
-  return [NSURL URLWithString:[NSString stringWithFormat:@"http://%@/inspector/device?name=%@&app=%@",
+
+  NSString *escapedInspectorDeviceId = [getInspectorDeviceId()
+      stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLQueryAllowedCharacterSet];
+
+  return [NSURL URLWithString:[NSString stringWithFormat:@"http://%@/inspector/device?name=%@&app=%@&device=%@",
                                                          getServerHost(bundleURL),
                                                          escapedDeviceName,
-                                                         escapedAppName]];
+                                                         escapedAppName,
+                                                         escapedInspectorDeviceId]];
 }
 
 @implementation RCTInspectorDevServerHelper
 
 RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
-static NSMutableDictionary<NSString *, RCTInspectorPackagerConnection *> *socketConnections = nil;
+static NSMutableDictionary<NSString *, id<RCTInspectorPackagerConnectionProtocol>> *socketConnections = nil;
 static NSLock *connectionsLock = [NSLock new];
 
 static void sendEventToAllConnections(NSString *event)
@@ -72,13 +155,29 @@ static void sendEventToAllConnections(NSString *event)
   [connectionsLock unlock]; // [macOS]
 }
 
++ (BOOL)isPackagerDisconnected
+{
+  for (NSString *socketId in socketConnections) {
+    if ([socketConnections[socketId] isConnected]) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 + (void)openDebugger:(NSURL *)bundleURL withErrorMessage:(NSString *)errorMessage
 {
   NSString *appId = [[[NSBundle mainBundle] bundleIdentifier]
       stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLQueryAllowedCharacterSet];
 
-  NSURL *url = [NSURL
-      URLWithString:[NSString stringWithFormat:@"http://%@/open-debugger?appId=%@", getServerHost(bundleURL), appId]];
+  NSString *escapedInspectorDeviceId = [getInspectorDeviceId()
+      stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLQueryAllowedCharacterSet];
+
+  NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://%@/open-debugger?appId=%@&device=%@",
+                                                               getServerHost(bundleURL),
+                                                               appId,
+                                                               escapedInspectorDeviceId]];
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
   [request setHTTPMethod:@"POST"];
 
@@ -94,10 +193,13 @@ static void sendEventToAllConnections(NSString *event)
 
 + (void)disableDebugger
 {
-  sendEventToAllConnections(kDebuggerMsgDisable);
+  auto &inspectorFlags = facebook::react::jsinspector_modern::InspectorFlags::getInstance();
+  if (!inspectorFlags.getEnableModernCDPRegistry()) {
+    sendEventToAllConnections(kDebuggerMsgDisable);
+  }
 }
 
-+ (RCTInspectorPackagerConnection *)connectWithBundleURL:(NSURL *)bundleURL
++ (id<RCTInspectorPackagerConnectionProtocol>)connectWithBundleURL:(NSURL *)bundleURL
 {
   NSURL *inspectorURL = getInspectorDeviceUrl(bundleURL);
 
@@ -118,12 +220,18 @@ static void sendEventToAllConnections(NSString *event)
   }
   // macOS]
 
-  RCTInspectorPackagerConnection *connection;
-
-  [connectionsLock lock]; // [macOS]
+  // [macOS Add a lock around access to connection
+  id<RCTInspectorPackagerConnectionProtocol> connection;
+  [connectionsLock lock]; 
   connection = socketConnections[key];
+   // macOS]
   if (!connection || !connection.isConnected) {
-    connection = [[RCTInspectorPackagerConnection alloc] initWithURL:inspectorURL];
+    if (facebook::react::jsinspector_modern::InspectorFlags::getInstance().getEnableCxxInspectorPackagerConnection()) {
+      connection = [[RCTCxxInspectorPackagerConnection alloc] initWithURL:inspectorURL];
+    } else {
+      connection = [[RCTInspectorPackagerConnection alloc] initWithURL:inspectorURL];
+    }
+
     // [macOS safety check to avoid a crash
     if (connection != nil) {
       socketConnections[key] = connection;

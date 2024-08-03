@@ -6,15 +6,6 @@
  */
 
 #import "RCTTurboModule.h"
-#import "RCTBlockGuard.h"
-
-#include <glog/logging.h>
-#import <objc/message.h>
-#import <objc/runtime.h>
-#import <atomic>
-#import <iostream>
-#import <sstream>
-#import <vector>
 
 #import <React/RCTBridgeModule.h>
 #import <React/RCTConvert.h>
@@ -23,10 +14,19 @@
 #import <React/RCTModuleMethod.h>
 #import <React/RCTUtils.h>
 #import <ReactCommon/CallInvoker.h>
-#import <ReactCommon/LongLivedObject.h>
 #import <ReactCommon/TurboModule.h>
 #import <ReactCommon/TurboModulePerfLogger.h>
-#import <ReactCommon/TurboModuleUtils.h>
+#import <cxxreact/SystraceSection.h>
+#import <react/bridging/Bridging.h>
+
+#include <glog/logging.h>
+
+#import <objc/message.h>
+#import <objc/runtime.h>
+#import <atomic>
+#import <iostream>
+#import <sstream>
+#import <vector>
 
 using namespace facebook;
 using namespace facebook::react;
@@ -142,7 +142,23 @@ convertJSIObjectToNSDictionary(jsi::Runtime &runtime, const jsi::Object &value, 
 }
 
 static RCTResponseSenderBlock
-convertJSIFunctionToCallback(jsi::Runtime &runtime, const jsi::Function &value, std::shared_ptr<CallInvoker> jsInvoker);
+convertJSIFunctionToCallback(jsi::Runtime &rt, jsi::Function &&function, std::shared_ptr<CallInvoker> jsInvoker)
+{
+  __block std::optional<AsyncCallback<>> callback({rt, std::move(function), std::move(jsInvoker)});
+  return ^(NSArray *args) {
+    if (!callback) {
+      LOG(FATAL) << "Callback arg cannot be called more than once";
+      return;
+    }
+
+    callback->call([args](jsi::Runtime &rt, jsi::Function &jsFunction) {
+      auto jsArgs = convertNSArrayToStdVector(rt, args);
+      jsFunction.call(rt, (const jsi::Value *)jsArgs.data(), jsArgs.size());
+    });
+    callback = std::nullopt;
+  };
+}
+
 id convertJSIValueToObjCObject(jsi::Runtime &runtime, const jsi::Value &value, std::shared_ptr<CallInvoker> jsInvoker)
 {
   if (value.isUndefined() || value.isNull()) {
@@ -163,54 +179,12 @@ id convertJSIValueToObjCObject(jsi::Runtime &runtime, const jsi::Value &value, s
       return convertJSIArrayToNSArray(runtime, o.getArray(runtime), jsInvoker);
     }
     if (o.isFunction(runtime)) {
-      return convertJSIFunctionToCallback(runtime, std::move(o.getFunction(runtime)), jsInvoker);
+      return convertJSIFunctionToCallback(runtime, o.getFunction(runtime), jsInvoker);
     }
     return convertJSIObjectToNSDictionary(runtime, o, jsInvoker);
   }
 
   throw std::runtime_error("Unsupported jsi::jsi::Value kind");
-}
-
-static RCTResponseSenderBlock
-convertJSIFunctionToCallback(jsi::Runtime &runtime, const jsi::Function &value, std::shared_ptr<CallInvoker> jsInvoker)
-{
-  auto weakWrapper = CallbackWrapper::createWeak(value.getFunction(runtime), runtime, jsInvoker);
-  RCTBlockGuard *blockGuard = [[RCTBlockGuard alloc] initWithCleanup:^() {
-    auto strongWrapper = weakWrapper.lock();
-    if (strongWrapper) {
-      strongWrapper->destroy();
-    }
-  }];
-
-  BOOL __block wrapperWasCalled = NO;
-  RCTResponseSenderBlock callback = ^(NSArray *responses) {
-    if (wrapperWasCalled) {
-      LOG(FATAL) << "callback arg cannot be called more than once";
-    }
-
-    auto strongWrapper = weakWrapper.lock();
-    if (!strongWrapper) {
-      return;
-    }
-
-    strongWrapper->jsInvoker().invokeAsync([weakWrapper, responses, blockGuard]() {
-      auto strongWrapper2 = weakWrapper.lock();
-      if (!strongWrapper2) {
-        return;
-      }
-
-      std::vector<jsi::Value> args = convertNSArrayToStdVector(strongWrapper2->runtime(), responses);
-      strongWrapper2->callback().call(strongWrapper2->runtime(), (const jsi::Value *)args.data(), args.size());
-      strongWrapper2->destroy();
-
-      // Delete the CallbackWrapper when the block gets dealloced without being invoked.
-      (void)blockGuard;
-    });
-
-    wrapperWasCalled = YES;
-  };
-
-  return [callback copy];
 }
 
 static jsi::Value createJSRuntimeError(jsi::Runtime &runtime, const std::string &message)
@@ -237,6 +211,19 @@ static jsi::JSError convertNSExceptionToJSError(jsi::Runtime &runtime, NSExcepti
   return {runtime, std::move(error)};
 }
 
+/**
+ * Creates JS error value with current JS runtime and error details.
+ */
+static jsi::Value convertJSErrorDetailsToJSRuntimeError(jsi::Runtime &runtime, NSDictionary *jsErrorDetails)
+{
+  NSString *message = jsErrorDetails[@"message"];
+
+  auto jsError = createJSRuntimeError(runtime, [message UTF8String]);
+  jsError.asObject(runtime).setProperty(runtime, "cause", convertObjCObjectToJSIValue(runtime, jsErrorDetails));
+
+  return jsError;
+}
+
 }
 
 jsi::Value ObjCTurboModule::createPromise(jsi::Runtime &runtime, std::string methodName, PromiseInvocationBlock invoke)
@@ -246,124 +233,77 @@ jsi::Value ObjCTurboModule::createPromise(jsi::Runtime &runtime, std::string met
   }
 
   jsi::Function Promise = runtime.global().getPropertyAsFunction(runtime, "Promise");
-  std::string moduleName = name_;
 
   // Note: the passed invoke() block is not retained by default, so let's retain it here to help keep it longer.
   // Otherwise, there's a risk of it getting released before the promise function below executes.
   PromiseInvocationBlock invokeCopy = [invoke copy];
-  jsi::Function fn = jsi::Function::createFromHostFunction(
+  return Promise.callAsConstructor(
       runtime,
-      jsi::PropNameID::forAscii(runtime, "fn"),
-      2,
-      [invokeCopy, jsInvoker = jsInvoker_, moduleName, methodName](
-          jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) {
-        std::string moduleMethod = moduleName + "." + methodName + "()";
+      jsi::Function::createFromHostFunction(
+          runtime,
+          jsi::PropNameID::forAscii(runtime, "fn"),
+          2,
+          [invokeCopy, jsInvoker = jsInvoker_, moduleName = name_, methodName](
+              jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) {
+            std::string moduleMethod = moduleName + "." + methodName + "()";
 
-        if (count != 2) {
-          throw std::invalid_argument(
-              moduleMethod + ": Promise must pass constructor function two args. Passed " + std::to_string(count) +
-              " args.");
-        }
-        if (!invokeCopy) {
-          return jsi::Value::undefined();
-        }
-
-        auto weakResolveWrapper = CallbackWrapper::createWeak(args[0].getObject(rt).getFunction(rt), rt, jsInvoker);
-        auto weakRejectWrapper = CallbackWrapper::createWeak(args[1].getObject(rt).getFunction(rt), rt, jsInvoker);
-
-        __block BOOL resolveWasCalled = NO;
-        __block BOOL rejectWasCalled = NO;
-
-        RCTBlockGuard *blockGuard = [[RCTBlockGuard alloc] initWithCleanup:^() {
-          auto strongResolveWrapper = weakResolveWrapper.lock();
-          if (strongResolveWrapper) {
-            strongResolveWrapper->destroy();
-          }
-
-          auto strongRejectWrapper = weakRejectWrapper.lock();
-          if (strongRejectWrapper) {
-            strongRejectWrapper->destroy();
-          }
-        }];
-
-        RCTPromiseResolveBlock resolveBlock = ^(id result) {
-          if (rejectWasCalled) {
-            RCTLogError(@"%s: Tried to resolve a promise after it's already been rejected.", moduleMethod.c_str());
-            return;
-          }
-
-          if (resolveWasCalled) {
-            RCTLogError(@"%s: Tried to resolve a promise more than once.", moduleMethod.c_str());
-            return;
-          }
-
-          auto strongResolveWrapper = weakResolveWrapper.lock();
-          auto strongRejectWrapper = weakRejectWrapper.lock();
-          if (!strongResolveWrapper || !strongRejectWrapper) {
-            return;
-          }
-
-          strongResolveWrapper->jsInvoker().invokeAsync([weakResolveWrapper, weakRejectWrapper, result, blockGuard]() {
-            auto strongResolveWrapper2 = weakResolveWrapper.lock();
-            auto strongRejectWrapper2 = weakRejectWrapper.lock();
-            if (!strongResolveWrapper2 || !strongRejectWrapper2) {
-              return;
+            if (count != 2) {
+              throw std::invalid_argument(
+                  moduleMethod + ": Promise must pass constructor function two args. Passed " + std::to_string(count) +
+                  " args.");
+            }
+            if (!invokeCopy) {
+              return jsi::Value::undefined();
             }
 
-            jsi::Runtime &rt = strongResolveWrapper2->runtime();
-            jsi::Value arg = convertObjCObjectToJSIValue(rt, result);
-            strongResolveWrapper2->callback().call(rt, arg);
+            __block BOOL resolveWasCalled = NO;
+            __block std::optional<AsyncCallback<>> resolve(
+                {rt, args[0].getObject(rt).getFunction(rt), std::move(jsInvoker)});
+            __block std::optional<AsyncCallback<>> reject(
+                {rt, args[1].getObject(rt).getFunction(rt), std::move(jsInvoker)});
 
-            strongResolveWrapper2->destroy();
-            strongRejectWrapper2->destroy();
-            (void)blockGuard;
-          });
+            RCTPromiseResolveBlock resolveBlock = ^(id result) {
+              if (!resolve || !reject) {
+                if (resolveWasCalled) {
+                  RCTLogError(@"%s: Tried to resolve a promise more than once.", moduleMethod.c_str());
+                } else {
+                  RCTLogError(
+                      @"%s: Tried to resolve a promise after it's already been rejected.", moduleMethod.c_str());
+                }
+                return;
+              }
 
-          resolveWasCalled = YES;
-        };
+              resolve->call([result](jsi::Runtime &rt, jsi::Function &jsFunction) {
+                jsFunction.call(rt, convertObjCObjectToJSIValue(rt, result));
+              });
 
-        RCTPromiseRejectBlock rejectBlock = ^(NSString *code, NSString *message, NSError *error) {
-          if (resolveWasCalled) {
-            RCTLogError(@"%s: Tried to reject a promise after it's already been resolved.", moduleMethod.c_str());
-            return;
-          }
+              resolveWasCalled = YES;
+              resolve = std::nullopt;
+              reject = std::nullopt;
+            };
 
-          if (rejectWasCalled) {
-            RCTLogError(@"%s: Tried to reject a promise more than once.", moduleMethod.c_str());
-            return;
-          }
+            RCTPromiseRejectBlock rejectBlock = ^(NSString *code, NSString *message, NSError *error) {
+              if (!resolve || !reject) {
+                if (resolveWasCalled) {
+                  RCTLogError(@"%s: Tried to reject a promise after it's already been resolved.", moduleMethod.c_str());
+                } else {
+                  RCTLogError(@"%s: Tried to reject a promise more than once.", moduleMethod.c_str());
+                }
+                return;
+              }
 
-          auto strongResolveWrapper = weakResolveWrapper.lock();
-          auto strongRejectWrapper = weakRejectWrapper.lock();
-          if (!strongResolveWrapper || !strongRejectWrapper) {
-            return;
-          }
+              NSDictionary *jsErrorDetails = RCTJSErrorFromCodeMessageAndNSError(code, message, error);
+              reject->call([jsErrorDetails](jsi::Runtime &rt, jsi::Function &jsFunction) {
+                jsFunction.call(rt, convertJSErrorDetailsToJSRuntimeError(rt, jsErrorDetails));
+              });
+              resolveWasCalled = NO;
+              resolve = std::nullopt;
+              reject = std::nullopt;
+            };
 
-          NSDictionary *jsError = RCTJSErrorFromCodeMessageAndNSError(code, message, error);
-          strongRejectWrapper->jsInvoker().invokeAsync([weakResolveWrapper, weakRejectWrapper, jsError, blockGuard]() {
-            auto strongResolveWrapper2 = weakResolveWrapper.lock();
-            auto strongRejectWrapper2 = weakRejectWrapper.lock();
-            if (!strongResolveWrapper2 || !strongRejectWrapper2) {
-              return;
-            }
-
-            jsi::Runtime &rt = strongRejectWrapper2->runtime();
-            jsi::Value arg = convertNSDictionaryToJSIObject(rt, jsError);
-            strongRejectWrapper2->callback().call(rt, arg);
-
-            strongResolveWrapper2->destroy();
-            strongRejectWrapper2->destroy();
-            (void)blockGuard;
-          });
-
-          rejectWasCalled = YES;
-        };
-
-        invokeCopy(resolveBlock, rejectBlock);
-        return jsi::Value::undefined();
-      });
-
-  return Promise.callAsConstructor(runtime, fn);
+            invokeCopy(resolveBlock, rejectBlock);
+            return jsi::Value::undefined();
+          }));
 }
 
 /**
@@ -425,7 +365,17 @@ id ObjCTurboModule::performMethodInvocation(
   } else {
     asyncCallCounter = getUniqueId();
     TurboModulePerfLogger::asyncMethodCallDispatch(moduleName, methodName);
-    nativeMethodCallInvoker_->invokeAsync(methodNameStr, [block]() -> void { block(); });
+    nativeMethodCallInvoker_->invokeAsync(methodNameStr, [block, moduleName, methodNameStr]() -> void {
+      SystraceSection s(
+          "RCTTurboModuleAsyncMethodInvocation",
+          "module",
+          moduleName,
+          "method",
+          methodNameStr,
+          "returnType",
+          "promise");
+      block();
+    });
     return nil;
   }
 }
@@ -475,7 +425,11 @@ void ObjCTurboModule::performVoidMethodInvocation(
   } else {
     asyncCallCounter = getUniqueId();
     TurboModulePerfLogger::asyncMethodCallDispatch(moduleName, methodName);
-    nativeMethodCallInvoker_->invokeAsync(methodNameStr, [block]() -> void { block(); });
+    nativeMethodCallInvoker_->invokeAsync(methodNameStr, [moduleName, methodNameStr, block]() -> void {
+      SystraceSection s(
+          "RCTTurboModuleAsyncMethodInvocation", "module", moduleName, "method", methodNameStr, "returnType", "void");
+      block();
+    });
   }
 }
 
@@ -641,7 +595,7 @@ void ObjCTurboModule::setInvocationArg(
      * Convert objects using RCTConvert.
      */
     if (objCArgType == @encode(id)) {
-      NSString *argumentType = getArgumentTypeName(runtime, methodNameNSString, i);
+      NSString *argumentType = getArgumentTypeName(runtime, methodNameNSString, static_cast<int>(i));
       if (argumentType != nil) {
         NSString *rctConvertMethodName = [NSString stringWithFormat:@"%@:", argumentType];
         SEL rctConvertSelector = NSSelectorFromString(rctConvertMethodName);
@@ -822,19 +776,19 @@ jsi::Value ObjCTurboModule::invokeObjCMethod(
   return returnValue;
 }
 
-BOOL ObjCTurboModule::hasMethodArgConversionSelector(NSString *methodName, int argIndex)
+BOOL ObjCTurboModule::hasMethodArgConversionSelector(NSString *methodName, size_t argIndex)
 {
   return methodArgConversionSelectors_ && methodArgConversionSelectors_[methodName] &&
       ![methodArgConversionSelectors_[methodName][argIndex] isEqual:[NSNull null]];
 }
 
-SEL ObjCTurboModule::getMethodArgConversionSelector(NSString *methodName, int argIndex)
+SEL ObjCTurboModule::getMethodArgConversionSelector(NSString *methodName, size_t argIndex)
 {
   assert(hasMethodArgConversionSelector(methodName, argIndex));
   return (SEL)((NSValue *)methodArgConversionSelectors_[methodName][argIndex]).pointerValue;
 }
 
-void ObjCTurboModule::setMethodArgConversionSelector(NSString *methodName, int argIndex, NSString *fnName)
+void ObjCTurboModule::setMethodArgConversionSelector(NSString *methodName, size_t argIndex, NSString *fnName)
 {
   if (!methodArgConversionSelectors_) {
     methodArgConversionSelectors_ = [NSMutableDictionary new];

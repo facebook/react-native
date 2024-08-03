@@ -106,15 +106,14 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
   BOOL _shouldAnimatePresentation;
   BOOL _shouldPresent;
   BOOL _isPresented;
-  RCTUIView *_modalContentsSnapshot; // [macOS]
+  RCTPlatformView *_modalContentsSnapshot; // [macOS]
 }
 
 #if !TARGET_OS_OSX // [macOS]
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
-    static const auto defaultProps = std::make_shared<const ModalHostViewProps>();
-    _props = defaultProps;
+    _props = ModalHostViewShadowNode::defaultSharedProps();
     _shouldAnimatePresentation = YES;
 
     _isPresented = NO;
@@ -168,8 +167,11 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
     _isPresented = NO;
     // To animate dismissal of view controller, snapshot of
     // view hierarchy needs to be added to the UIViewController.
-    RCTUIView *snapshot = _modalContentsSnapshot; // [macOS]
-    [self.viewController.view addSubview:snapshot];
+    RCTPlatformView *snapshot = _modalContentsSnapshot; // [macOS]
+
+    if (_shouldPresent) {
+      [self.viewController.view addSubview:snapshot];
+    }
 
     [self dismissViewController:self.viewController
                        animated:_shouldAnimatePresentation
@@ -198,7 +200,7 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
 - (void)mountingTransactionWillMount:(const MountingTransaction &)transaction
                 withSurfaceTelemetry:(const facebook::react::SurfaceTelemetry &)surfaceTelemetry
 {
-  _modalContentsSnapshot = [self.viewController.view snapshotViewAfterScreenUpdates:NO];
+  _modalContentsSnapshot = [self.viewController.view snapshotViewAfterScreenUpdates:YES];
 }
 
 #pragma mark - UIView methods

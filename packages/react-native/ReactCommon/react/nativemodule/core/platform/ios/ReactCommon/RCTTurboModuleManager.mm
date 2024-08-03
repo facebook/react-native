@@ -7,6 +7,7 @@
 
 #import "RCTTurboModuleManager.h"
 #import "RCTInteropTurboModule.h"
+#import "RCTRuntimeExecutor.h"
 
 #import <atomic>
 #import <cassert>
@@ -24,8 +25,9 @@
 #import <React/RCTLog.h>
 #import <React/RCTModuleData.h>
 #import <React/RCTPerformanceLogger.h>
+#import <React/RCTRuntimeExecutorModule.h>
 #import <React/RCTUtils.h>
-#import <ReactCommon/RuntimeExecutor.h>
+#import <ReactCommon/CxxTurboModuleUtils.h>
 #import <ReactCommon/TurboCxxModule.h>
 #import <ReactCommon/TurboModulePerfLogger.h>
 #import <ReactCommon/TurboModuleUtils.h>
@@ -206,6 +208,9 @@ static Class getFallbackClassFromName(const char *name)
 
   RCTBridgeProxy *_bridgeProxy;
   RCTBridgeModuleDecorator *_bridgeModuleDecorator;
+
+  BOOL _enableSharedModuleQueue;
+  dispatch_queue_t _sharedModuleQueue;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
@@ -221,8 +226,14 @@ static Class getFallbackClassFromName(const char *name)
     _bridgeProxy = bridgeProxy;
     _bridgeModuleDecorator = bridgeModuleDecorator;
     _invalidating = false;
+    _enableSharedModuleQueue = RCTTurboModuleSharedQueueEnabled();
+
+    if (_enableSharedModuleQueue) {
+      _sharedModuleQueue = dispatch_queue_create("com.meta.react.turbomodulemanager.queue", DISPATCH_QUEUE_SERIAL);
+    }
 
     if (RCTTurboModuleInteropEnabled()) {
+      // TODO(T174674274): Implement lazy loading of legacy modules in the new architecture.
       NSMutableDictionary<NSString *, id<RCTBridgeModule>> *legacyInitializedModules = [NSMutableDictionary new];
 
       if ([_delegate respondsToSelector:@selector(extraModulesForBridge:)]) {
@@ -313,6 +324,14 @@ static Class getFallbackClassFromName(const char *name)
     }
 
     TurboModulePerfLogger::moduleCreateFail(moduleName, moduleId);
+  }
+
+  auto &cxxTurboModuleMapProvider = globalExportedCxxTurboModuleMap();
+  auto it = cxxTurboModuleMapProvider.find(moduleName);
+  if (it != cxxTurboModuleMapProvider.end()) {
+    auto turboModule = it->second(_jsInvoker);
+    _turboModuleCache.insert({moduleName, turboModule});
+    return turboModule;
   }
 
   /**
@@ -667,6 +686,13 @@ static Class getFallbackClassFromName(const char *name)
     }
   }
 
+  // This is a more performant alternative for conformsToProtocol:@protocol(RCTRuntimeExecutorModule)
+  if ([module respondsToSelector:@selector(setRuntimeExecutor:)]) {
+    RCTRuntimeExecutor *runtimeExecutor = [[RCTRuntimeExecutor alloc]
+        initWithRuntimeExecutor:[_runtimeHandler runtimeExecutorForTurboModuleManager:self]];
+    [(id<RCTRuntimeExecutorModule>)module setRuntimeExecutor:runtimeExecutor];
+  }
+
   /**
    * Some modules need their own queues, but don't provide any, so we need to create it for them.
    * These modules typically have the following:
@@ -685,8 +711,12 @@ static Class getFallbackClassFromName(const char *name)
    * following if condition's block.
    */
   if (!methodQueue) {
-    NSString *methodQueueName = [NSString stringWithFormat:@"com.facebook.react.%sQueue", moduleName];
-    methodQueue = dispatch_queue_create(methodQueueName.UTF8String, DISPATCH_QUEUE_SERIAL);
+    if (_enableSharedModuleQueue) {
+      methodQueue = _sharedModuleQueue;
+    } else {
+      NSString *methodQueueName = [NSString stringWithFormat:@"com.facebook.react.%sQueue", moduleName];
+      methodQueue = dispatch_queue_create(methodQueueName.UTF8String, DISPATCH_QUEUE_SERIAL);
+    }
 
     if (moduleHasMethodQueueGetter) {
       /**
@@ -867,19 +897,7 @@ static Class getFallbackClassFromName(const char *name)
    */
   const BOOL hasCustomInit = [moduleClass instanceMethodForSelector:@selector(init)] != objectInitMethod;
 
-  BOOL requiresMainQueueSetup = hasConstantsToExport || hasCustomInit;
-  if (requiresMainQueueSetup) {
-    RCTLogWarn(
-        @"Module %@ requires main queue setup since it overrides `%s` but doesn't implement "
-         "`requiresMainQueueSetup`. In a future release React Native will default to initializing all NativeModules "
-         "on a background thread unless explicitly opted-out of.",
-        moduleClass,
-        hasConstantsToExport ? "constantsToExport"
-            : hasCustomInit  ? "init"
-                             : "");
-  }
-
-  return requiresMainQueueSetup;
+  return hasConstantsToExport || hasCustomInit;
 }
 
 - (void)installJSBindings:(facebook::jsi::Runtime &)runtime

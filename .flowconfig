@@ -8,10 +8,17 @@
 ; Ignore "BUCK" generated dirs
 <PROJECT_ROOT>/\.buckd/
 
+; Ignore other platform suffixes
+.*\.macos\.js$
+.*\.windows\.js$
+
 .*/node_modules/resolve/test/resolver/malformed_package_json/package\.json$
 
 ; Checked-in build output
 <PROJECT_ROOT>/packages/debugger-frontend/dist/
+
+; Generated build output
+<PROJECT_ROOT>/packages/.*/dist
 
 [untyped]
 .*/node_modules/@react-native-community/cli/.*/.*
@@ -29,6 +36,7 @@ packages/react-native/flow/
 [options]
 experimental.global_find_ref=true
 enums=true
+casting_syntax=both
 
 emoji=true
 
@@ -77,4 +85,4 @@ untyped-import
 untyped-type-import
 
 [version]
-^0.218.0
+^0.228.0

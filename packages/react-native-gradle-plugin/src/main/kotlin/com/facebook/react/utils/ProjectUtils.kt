@@ -28,11 +28,9 @@ internal object ProjectUtils {
   internal fun Project.isNewArchEnabled(extension: ReactExtension): Boolean {
     return (project.hasProperty(NEW_ARCH_ENABLED) &&
         project.property(NEW_ARCH_ENABLED).toString().toBoolean()) ||
-
         (project.hasProperty(SCOPED_NEW_ARCH_ENABLED) &&
             project.property(SCOPED_NEW_ARCH_ENABLED).toString().toBoolean()) ||
         shouldEnableNewArchForReactNativeVersion(project.reactNativeDir(extension))
-
   }
 
   internal val Project.isHermesEnabled: Boolean
@@ -123,7 +121,6 @@ internal object ProjectUtils {
         (this.hasPropertySetToFalse(NEW_ARCH_ENABLED)) ||
             (this.hasPropertySetToFalse(SCOPED_NEW_ARCH_ENABLED))
 
-
     val shouldEnableNewArch =
         shouldEnableNewArchForReactNativeVersion(this.reactNativeDir(extension))
 
@@ -132,5 +129,4 @@ internal object ProjectUtils {
 
   internal fun Project.hasPropertySetToFalse(property: String): Boolean =
       this.hasProperty(property) && this.property(property).toString().toBoolean() == false
-
 }

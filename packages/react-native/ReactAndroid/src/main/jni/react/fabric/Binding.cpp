@@ -24,6 +24,7 @@
 #include <glog/logging.h>
 #include <jsi/JSIDynamic.h>
 #include <jsi/jsi.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/animations/LayoutAnimationDriver.h>
 #include <react/renderer/componentregistry/ComponentDescriptorFactory.h>
 #include <react/renderer/core/EventBeat.h>
@@ -414,13 +415,6 @@ void Binding::installFabricUIManager(
 
   CoreFeatures::enablePropIteratorSetter =
       getFeatureFlagValue("enableCppPropsIteratorSetter");
-  CoreFeatures::useNativeState = getFeatureFlagValue("useNativeState");
-  CoreFeatures::doNotSwapLeftAndRightOnAndroidInLTR =
-      getFeatureFlagValue("doNotSwapLeftAndRightOnAndroidInLTR");
-  CoreFeatures::enableCleanParagraphYogaNode =
-      getFeatureFlagValue("enableCleanParagraphYogaNode");
-  CoreFeatures::enableDefaultAsyncBatchedPriority =
-      getFeatureFlagValue("enableDefaultAsyncBatchedPriority");
   CoreFeatures::enableClonelessStateProgression =
       getFeatureFlagValue("enableClonelessStateProgression");
   CoreFeatures::excludeYogaFromRawProps =
@@ -442,7 +436,7 @@ void Binding::installFabricUIManager(
   toolbox.synchronousEventBeatFactory = synchronousBeatFactory;
   toolbox.asynchronousEventBeatFactory = asynchronousBeatFactory;
 
-  if (getFeatureFlagValue("enableBackgroundExecutor")) {
+  if (ReactNativeFeatureFlags::enableBackgroundExecutor()) {
     backgroundExecutor_ = JBackgroundExecutor::create("fabric_bg");
     toolbox.backgroundExecutor = backgroundExecutor_;
   }

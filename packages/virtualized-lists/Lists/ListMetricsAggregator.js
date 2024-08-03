@@ -8,10 +8,10 @@
  * @format
  */
 
-import type {Layout} from 'react-native/Libraries/Types/CoreEventTypes';
 import type {Props as VirtualizedListProps} from './VirtualizedListProps';
-import {keyExtractor as defaultKeyExtractor} from './VirtualizeUtils';
+import type {Layout} from 'react-native/Libraries/Types/CoreEventTypes';
 
+import {keyExtractor as defaultKeyExtractor} from './VirtualizeUtils';
 import invariant from 'invariant';
 
 export type CellMetrics = {

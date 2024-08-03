@@ -122,7 +122,7 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
     }
 
     public int getValue() {
-      return this.value;
+      return value;
     }
 
     public static BatchExecutionOpCodes fromId(int id) {

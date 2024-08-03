@@ -7,10 +7,12 @@
 
 package com.facebook.react.common;
 
+import com.facebook.infer.annotation.Nullsafe;
 import java.util.HashMap;
 import java.util.Map;
 
 /** Utility class for creating maps */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class MapBuilder {
 
   /** Creates an instance of {@code HashMap} */

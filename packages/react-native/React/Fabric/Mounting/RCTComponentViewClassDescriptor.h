@@ -27,6 +27,11 @@ class RCTComponentViewClassDescriptor final {
    */
   bool observesMountingTransactionWillMount{false};
   bool observesMountingTransactionDidMount{false};
+
+  /*
+   * Whether the component can be recycled or not
+   */
+  bool shouldBeRecycled{true};
 };
 
 NS_ASSUME_NONNULL_END

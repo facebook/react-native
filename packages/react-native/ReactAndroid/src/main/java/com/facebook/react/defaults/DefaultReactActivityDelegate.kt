@@ -21,7 +21,7 @@ import com.facebook.react.ReactRootView
  *
  * @param fabricEnabled Whether Fabric should be enabled for the RootView of this Activity.
  */
-open class DefaultReactActivityDelegate(
+public open class DefaultReactActivityDelegate(
     activity: ReactActivity,
     mainComponentName: String,
     private val fabricEnabled: Boolean = false,
@@ -35,7 +35,7 @@ open class DefaultReactActivityDelegate(
       level = DeprecationLevel.WARNING,
       replaceWith =
           ReplaceWith("DefaultReactActivityDelegate(activity, mainComponentName, fabricEnabled)"))
-  constructor(
+  public constructor(
       activity: ReactActivity,
       mainComponentName: String,
       fabricEnabled: Boolean,

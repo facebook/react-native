@@ -10,13 +10,21 @@
 
 'use strict'; // [macOS]
 
-const React = require('react');
-const ReactNative = require('react-native');
-import {Platform} from 'react-native';
 import type {KeyEvent} from 'react-native/Libraries/Types/CoreEventTypes';
 
-const {Button, ScrollView, StyleSheet, Switch, Text, TextInput, View} =
-  ReactNative;
+const React = require('react');
+const ReactNative = require('react-native');
+
+const {
+  Button,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Switch,
+  Text,
+  TextInput,
+  View,
+} = ReactNative;
 
 const switchStyle = {
   alignItems: 'center',

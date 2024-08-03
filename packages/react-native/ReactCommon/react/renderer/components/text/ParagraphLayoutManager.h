@@ -10,6 +10,7 @@
 #include <react/renderer/attributedstring/AttributedString.h>
 #include <react/renderer/attributedstring/ParagraphAttributes.h>
 #include <react/renderer/core/LayoutConstraints.h>
+#include <react/renderer/textlayoutmanager/TextLayoutContext.h>
 #include <react/renderer/textlayoutmanager/TextLayoutManager.h>
 
 namespace facebook::react {
@@ -26,6 +27,7 @@ class ParagraphLayoutManager {
   TextMeasurement measure(
       const AttributedString& attributedString,
       const ParagraphAttributes& paragraphAttributes,
+      const TextLayoutContext& layoutContext,
       LayoutConstraints layoutConstraints) const;
 
   LinesMeasurements measureLines(
@@ -84,7 +86,7 @@ class ParagraphLayoutManager {
    * text measurement result. Returns true if inputs have changed and measure is
    * needed.
    */
-  bool shoudMeasureString(
+  bool shouldMeasureString(
       const AttributedString& attributedString,
       const ParagraphAttributes& paragraphAttributes,
       LayoutConstraints layoutConstraints) const;

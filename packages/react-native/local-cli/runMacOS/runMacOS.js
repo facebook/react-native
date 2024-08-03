@@ -24,11 +24,11 @@
  * }} XcodeProject
  */
 
+const findXcodeProject = require('./findXcodeProject');
+const chalk = require('chalk');
 const child_process = require('child_process');
 const fs = require('fs');
 const path = require('path');
-const chalk = require('chalk');
-const findXcodeProject = require('./findXcodeProject');
 const {logger, CLIError, getDefaultUserTerminal} = (() => {
   const cli = require.resolve('@react-native-community/cli/package.json');
   const options = {paths: [path.dirname(cli)]};

@@ -31,7 +31,7 @@ class MutationObserverManager final : public UIManagerCommitHook {
 
   void connect(
       UIManager& uiManager,
-      std::function<void(std::vector<const MutationRecord>&)> onMutations);
+      std::function<void(std::vector<MutationRecord>&)> onMutations);
 
   void disconnect(UIManager& uiManager);
 
@@ -51,7 +51,7 @@ class MutationObserverManager final : public UIManagerCommitHook {
       std::unordered_map<MutationObserverId, MutationObserver>>
       observersBySurfaceId_;
 
-  std::function<void(std::vector<const MutationRecord>&)> onMutations_;
+  std::function<void(std::vector<MutationRecord>&)> onMutations_;
   bool commitHookRegistered_{};
 
   void runMutationObservations(

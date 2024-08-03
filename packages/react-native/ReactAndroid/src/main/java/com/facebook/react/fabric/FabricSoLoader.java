@@ -9,11 +9,13 @@ package com.facebook.react.fabric;
 
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.soloader.SoLoader;
 import com.facebook.systrace.Systrace;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class FabricSoLoader {
   private static volatile boolean sDidInit = false;
 

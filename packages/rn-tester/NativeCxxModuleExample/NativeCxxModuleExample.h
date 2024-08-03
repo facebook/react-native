@@ -15,6 +15,7 @@
 #include <AppSpecs/AppSpecsJSI.h>
 #endif
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -23,42 +24,35 @@ namespace facebook::react {
 
 #pragma mark - Structs
 using ConstantsStruct =
-    NativeCxxModuleExampleCxxBaseConstantsStruct<bool, int32_t, std::string>;
+    NativeCxxModuleExampleCxxConstantsStruct<bool, int32_t, std::string>;
 
 template <>
 struct Bridging<ConstantsStruct>
-    : NativeCxxModuleExampleCxxBaseConstantsStructBridging<
-          bool,
-          int32_t,
-          std::string> {};
+    : NativeCxxModuleExampleCxxConstantsStructBridging<ConstantsStruct> {};
 
-using ObjectStruct = NativeCxxModuleExampleCxxBaseObjectStruct<
+using ObjectStruct = NativeCxxModuleExampleCxxObjectStruct<
     int32_t,
     std::string,
     std::optional<std::string>>;
 
 template <>
 struct Bridging<ObjectStruct>
-    : NativeCxxModuleExampleCxxBaseObjectStructBridging<
-          int32_t,
-          std::string,
-          std::optional<std::string>> {};
+    : NativeCxxModuleExampleCxxObjectStructBridging<ObjectStruct> {};
 
 using ValueStruct =
-    NativeCxxModuleExampleCxxBaseValueStruct<double, std::string, ObjectStruct>;
+    NativeCxxModuleExampleCxxValueStruct<double, std::string, ObjectStruct>;
 
 template <>
-struct Bridging<ValueStruct> : NativeCxxModuleExampleCxxBaseValueStructBridging<
-                                   double,
-                                   std::string,
-                                   ObjectStruct> {};
+struct Bridging<ValueStruct>
+    : NativeCxxModuleExampleCxxValueStructBridging<ValueStruct> {};
 
 #pragma mark - enums
-enum CustomEnumInt { A = 23, B = 42 };
+enum class CustomEnumInt : int32_t { A = 23, B = 42 };
 
 template <>
 struct Bridging<CustomEnumInt> {
-  static CustomEnumInt fromJs(jsi::Runtime& rt, int32_t value) {
+  static CustomEnumInt fromJs(jsi::Runtime& rt, jsi::Value rawValue) {
+    auto value = static_cast<int32_t>(rawValue.asNumber());
     if (value == 23) {
       return CustomEnumInt::A;
     } else if (value == 42) {
@@ -97,6 +91,31 @@ struct CustomHostObjectRef {
 
 using CustomHostObject = HostObjectWrapper<CustomHostObjectRef>;
 
+#pragma mark - recursive objects
+
+using BinaryTreeNode = NativeCxxModuleExampleCxxBinaryTreeNode<int32_t>;
+
+template <>
+struct Bridging<BinaryTreeNode>
+    : NativeCxxModuleExampleCxxBinaryTreeNodeBridging<BinaryTreeNode> {};
+
+using GraphNode = NativeCxxModuleExampleCxxGraphNode<std::string>;
+
+template <>
+struct Bridging<GraphNode>
+    : NativeCxxModuleExampleCxxGraphNodeBridging<GraphNode> {};
+
+#pragma mark - functional object properties
+
+using MenuItem = NativeCxxModuleExampleCxxMenuItem<
+    std::string,
+    AsyncCallback<std::string, bool>,
+    std::optional<std::string>>;
+
+template <>
+struct Bridging<MenuItem>
+    : NativeCxxModuleExampleCxxMenuItemBridging<MenuItem> {};
+
 #pragma mark - implementation
 class NativeCxxModuleExample
     : public NativeCxxModuleExampleCxxSpec<NativeCxxModuleExample> {
@@ -104,6 +123,10 @@ class NativeCxxModuleExample
   NativeCxxModuleExample(std::shared_ptr<CallInvoker> jsInvoker);
 
   void getValueWithCallback(
+      jsi::Runtime& rt,
+      AsyncCallback<std::string> callback);
+
+  std::function<void()> setValueCallbackWithSubscription(
       jsi::Runtime& rt,
       AsyncCallback<std::string> callback);
 
@@ -122,6 +145,10 @@ class NativeCxxModuleExample
   std::string consumeCustomHostObject(
       jsi::Runtime& rt,
       std::shared_ptr<CustomHostObject> arg);
+
+  BinaryTreeNode getBinaryTreeNode(jsi::Runtime& rt, BinaryTreeNode arg);
+
+  GraphNode getGraphNode(jsi::Runtime& rt, GraphNode arg);
 
   NativeCxxModuleExampleCxxEnumFloat getNumEnum(
       jsi::Runtime& rt,
@@ -156,6 +183,8 @@ class NativeCxxModuleExample
 
   void voidFunc(jsi::Runtime& rt);
 
+  void setMenu(jsi::Runtime& rt, MenuItem menuItem);
+
   void emitCustomDeviceEvent(jsi::Runtime& rt, jsi::String eventName);
 
   void voidFuncThrows(jsi::Runtime& rt);
@@ -169,6 +198,9 @@ class NativeCxxModuleExample
   ObjectStruct getObjectAssert(jsi::Runtime& rt, ObjectStruct arg);
 
   AsyncPromise<jsi::Value> promiseAssert(jsi::Runtime& rt);
+
+ private:
+  std::optional<AsyncCallback<std::string>> valueCallback_;
 };
 
 } // namespace facebook::react

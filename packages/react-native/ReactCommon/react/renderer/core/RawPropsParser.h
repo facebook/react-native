@@ -46,7 +46,7 @@ class RawPropsParser final {
     ContextContainer contextContainer{};
     PropsParserContext parserContext{-1, contextContainer};
 
-    emptyRawProps.parse(*this, parserContext);
+    emptyRawProps.parse(*this);
     PropsT(parserContext, {}, emptyRawProps);
     postPrepare();
   }

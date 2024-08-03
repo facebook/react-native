@@ -23,16 +23,16 @@ namespace inspector_modern {
 namespace chrome {
 
 using ::facebook::react::jsinspector_modern::IInspector;
-using ::facebook::react::jsinspector_modern::InspectorPage;
+using ::facebook::react::jsinspector_modern::InspectorPageDescription;
 using ::facebook::react::jsinspector_modern::IRemoteConnection;
 
 namespace {
 
 std::unordered_map<int, std::string> makePageMap(
-    const std::vector<InspectorPage> &pages) {
+    const std::vector<InspectorPageDescription>& pages) {
   std::unordered_map<int, std::string> pageMap;
 
-  for (auto &page : pages) {
+  for (auto& page : pages) {
     pageMap[page.id] = page.title;
   }
 
@@ -40,8 +40,8 @@ std::unordered_map<int, std::string> makePageMap(
 }
 
 void expectPages(
-    IInspector &inspector,
-    const std::unordered_map<int, std::string> &expected) {
+    IInspector& inspector,
+    const std::unordered_map<int, std::string>& expected) {
   auto pages = makePageMap(inspector.getPages());
   EXPECT_EQ(pages, expected);
 }

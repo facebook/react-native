@@ -56,7 +56,7 @@ static ShimRCTInstance *shimmedRCTInstance;
   _subject = [[RCTHost alloc] initWithBundleURL:OCMClassMock([NSURL class])
                                    hostDelegate:_mockHostDelegate
                      turboModuleManagerDelegate:OCMProtocolMock(@protocol(RCTTurboModuleManagerDelegate))
-                               jsEngineProvider:^std::shared_ptr<facebook::react::JSEngineInstance>() {
+                               jsEngineProvider:^std::shared_ptr<facebook::react::JSRuntimeFactory>() {
                                  return std::make_shared<facebook::react::RCTHermesInstance>();
                                }];
 }

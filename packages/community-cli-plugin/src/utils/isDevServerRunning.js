@@ -23,19 +23,19 @@ import fetch from 'node-fetch';
  * - `unknown`: An error was encountered; attempt server creation anyway.
  */
 export default async function isDevServerRunning(
-  scheme: string,
-  host: string,
-  port: number,
+  devServerUrl: string,
   projectRoot: string,
 ): Promise<
   'not_running' | 'matched_server_running' | 'port_taken' | 'unknown',
 > {
+  const {hostname, port} = new URL(devServerUrl);
+
   try {
-    if (!(await isPortOccupied(host, port))) {
+    if (!(await isPortOccupied(hostname, port))) {
       return 'not_running';
     }
 
-    const statusResponse = await fetch(`${scheme}://${host}:${port}/status`);
+    const statusResponse = await fetch(`${devServerUrl}/status`);
     const body = await statusResponse.text();
 
     return body === 'packager-status:running' &&
@@ -47,7 +47,10 @@ export default async function isDevServerRunning(
   }
 }
 
-async function isPortOccupied(host: string, port: number): Promise<boolean> {
+async function isPortOccupied(
+  hostname: string,
+  port: string,
+): Promise<boolean> {
   let result = false;
   const server = net.createServer();
 
@@ -67,6 +70,6 @@ async function isPortOccupied(host: string, port: number): Promise<boolean> {
     server.once('close', () => {
       resolve(result);
     });
-    server.listen({host, port});
+    server.listen({host: hostname, port});
   });
 }

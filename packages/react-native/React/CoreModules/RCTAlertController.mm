@@ -57,5 +57,4 @@
   _alertWindow = nil;
 }
 #endif // [macOS]
-
 @end

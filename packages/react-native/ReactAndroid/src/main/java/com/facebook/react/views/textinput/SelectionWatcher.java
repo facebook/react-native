@@ -12,5 +12,5 @@ package com.facebook.react.views.textinput;
  * the ReactTextInputManager to forward events from the EditText to JS
  */
 interface SelectionWatcher {
-  public void onSelectionChanged(int start, int end);
+  void onSelectionChanged(int start, int end);
 }

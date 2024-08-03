@@ -11,8 +11,8 @@
 
 import type {Command} from '@react-native-community/cli-types';
 
-import path from 'path';
 import runServer from './runServer';
+import path from 'path';
 
 export type {StartCommandArgs} from './runServer';
 
@@ -96,14 +96,11 @@ const startCommand: Command = {
       description: 'Disables interactive mode',
     },
     {
-      name: '--experimental-debugger [bool]',
+      name: '--experimental-debugger',
       description:
         "[Experimental] Enable the new debugger experience and 'j' to " +
         'debug. This enables the new frontend experience only: connection ' +
         'reliability and some basic features are unstable in this release.',
-      parse: (val: ?string): boolean =>
-        val !== undefined && val !== 'false' && val !== '0',
-      default: true,
     },
   ],
 };

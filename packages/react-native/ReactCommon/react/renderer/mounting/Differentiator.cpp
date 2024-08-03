@@ -210,6 +210,7 @@ static inline bool shadowNodeIsConcrete(const ShadowNode& shadowNode) {
 
 static void sliceChildShadowNodeViewPairsRecursivelyV2(
     ShadowViewNodePair::NonOwningList& pairList,
+    size_t& startOfStaticIndex,
     ViewNodePairScope& scope,
     Point layoutOffset,
     const ShadowNode& shadowNode) {
@@ -247,11 +248,23 @@ static void sliceChildShadowNodeViewPairsRecursivelyV2(
          areChildrenFlattened,
          isConcreteView,
          storedOrigin});
-    pairList.push_back(&scope.back());
 
-    if (areChildrenFlattened) {
-      sliceChildShadowNodeViewPairsRecursivelyV2(
-          pairList, scope, origin, childShadowNode);
+    if (shadowView.layoutMetrics.positionType == PositionType::Static) {
+      auto it = pairList.begin();
+      std::advance(it, startOfStaticIndex);
+      pairList.insert(it, &scope.back());
+      startOfStaticIndex++;
+      if (areChildrenFlattened) {
+        sliceChildShadowNodeViewPairsRecursivelyV2(
+            pairList, startOfStaticIndex, scope, origin, childShadowNode);
+      }
+    } else {
+      pairList.push_back(&scope.back());
+      if (areChildrenFlattened) {
+        size_t pairListSize = pairList.size();
+        sliceChildShadowNodeViewPairsRecursivelyV2(
+            pairList, pairListSize, scope, origin, childShadowNode);
+      }
     }
   }
 }
@@ -270,8 +283,9 @@ ShadowViewNodePair::NonOwningList sliceChildShadowNodeViewPairsV2(
     return pairList;
   }
 
+  size_t startOfStaticIndex = 0;
   sliceChildShadowNodeViewPairsRecursivelyV2(
-      pairList, scope, layoutOffset, shadowNode);
+      pairList, startOfStaticIndex, scope, layoutOffset, shadowNode);
 
   // Sorting pairs based on `orderIndex` if needed.
   reorderInPlaceIfNeeded(pairList);
@@ -565,25 +579,21 @@ static void updateMatchedPair(
  * the old or new tree, and a list of flattened nodes in the other tree.
  *
  * For example: if you are Flattening, the node will be in the old tree and
- the
- * list will be from the new tree. If you are Unflattening, the opposite is
- true.
-
+ * the list will be from the new tree. If you are Unflattening, the opposite is
+ * true.
+ *
  * It is currently not possible for ReactJS, and therefore React Native, to
- move
- * a node *from* one parent to another without an entirely new subtree being
- * created. When we "reparent" in React Native here it is only because
- intermediate
- * ShadowNodes/ShadowViews, which *always* exist, are flattened or unflattened
- away.
+ * move a node *from* one parent to another without an entirely new subtree
+ * being created. When we "reparent" in React Native here it is only because
+ * intermediate ShadowNodes/ShadowViews, which *always* exist, are flattened or
+ * unflattened away.
+ *
  * Thus, this algorithm handles the very specialized cases of the tree
- collapsing or
- * expanding vertically in that way.
+ * collapsing or expanding vertically in that way.
 
  * Sketch of algorithm:
  * 0. Create a map of nodes in the flattened list. This should be done
- *before*
- *    calling this function.
+ *    before calling this function.
  * 1. Traverse the Node Subtree; remove elements from the map as they are
  *    visited in the tree.
  *    Perform a Remove/Insert depending on if we're flattening or unflattening
@@ -593,10 +603,9 @@ static void updateMatchedPair(
  *    View if we're flattening.
  *    If a node is in the list but not the map, it means it's been visited and
  *    Update has already been
- *    performed in the subtree. If it *is* in the map, it means the node is
- not
- *    * in the Tree, and should be Deleted/Created
- *    **after this function is called**, by the caller.
+ *    performed in the subtree. If it *is* in the map, it means the node is not
+ *    in the Tree, and should be Deleted/Created  **after this function is
+ *    called**, by the caller.
  */
 static void calculateShadowViewMutationsFlattener(
     ViewNodePairScope& scope,
@@ -1547,7 +1556,7 @@ static void calculateShadowViewMutationsV2(
 /**
  * Only used by unit tests currently.
  */
-static void sliceChildShadowNodeViewPairsRecursivelyLegacy(
+static void sliceChildShadowNodeViewPairsRecursivelyForTesting(
     ShadowViewNodePair::OwningList& pairList,
     Point layoutOffset,
     const ShadowNode& shadowNode) {
@@ -1578,7 +1587,7 @@ static void sliceChildShadowNodeViewPairsRecursivelyLegacy(
         pairList.push_back({shadowView, &childShadowNode});
       }
 
-      sliceChildShadowNodeViewPairsRecursivelyLegacy(
+      sliceChildShadowNodeViewPairsRecursivelyForTesting(
           pairList, origin, childShadowNode);
     }
   }
@@ -1587,7 +1596,7 @@ static void sliceChildShadowNodeViewPairsRecursivelyLegacy(
 /**
  * Only used by unit tests currently.
  */
-ShadowViewNodePair::OwningList sliceChildShadowNodeViewPairsLegacy(
+ShadowViewNodePair::OwningList sliceChildShadowNodeViewPairsForTesting(
     const ShadowNode& shadowNode) {
   auto pairList = ShadowViewNodePair::OwningList{};
 
@@ -1597,7 +1606,8 @@ ShadowViewNodePair::OwningList sliceChildShadowNodeViewPairsLegacy(
     return pairList;
   }
 
-  sliceChildShadowNodeViewPairsRecursivelyLegacy(pairList, {0, 0}, shadowNode);
+  sliceChildShadowNodeViewPairsRecursivelyForTesting(
+      pairList, {0, 0}, shadowNode);
 
   return pairList;
 }

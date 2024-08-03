@@ -8,31 +8,32 @@
  * @flow strict-local
  */
 
-// Resolves an asset into a `source` for `Image`.
-
-'use strict';
+// Utilities for resolving an asset into a `source` for e.g. `Image`
 
 import type {ResolvedAssetSource} from './AssetSourceResolver';
 import type {ImageSource} from './ImageSource';
+
+import SourceCode from '../NativeModules/specs/NativeSourceCode';
 
 const AssetSourceResolver = require('./AssetSourceResolver');
 const {pickScale} = require('./AssetUtils');
 const AssetRegistry = require('@react-native/assets-registry/registry');
 
-let _customSourceTransformer, _serverURL, _scriptURL;
+type CustomSourceTransformer = (
+  resolver: AssetSourceResolver,
+) => ?ResolvedAssetSource;
 
+let _customSourceTransformers: Array<CustomSourceTransformer> = [];
+let _serverURL: ?string;
+let _scriptURL: ?string;
 let _sourceCodeScriptURL: ?string;
+
 function getSourceCodeScriptURL(): ?string {
   if (_sourceCodeScriptURL != null) {
     return _sourceCodeScriptURL;
   }
 
-  let sourceCode =
-    global.nativeExtensions && global.nativeExtensions.SourceCode;
-  if (!sourceCode) {
-    sourceCode = require('../NativeModules/specs/NativeSourceCode').default;
-  }
-  _sourceCodeScriptURL = sourceCode.getConstants().scriptURL;
+  _sourceCodeScriptURL = SourceCode.getConstants().scriptURL;
   return _sourceCodeScriptURL;
 }
 
@@ -80,10 +81,25 @@ function getScriptURL(): ?string {
   return _scriptURL;
 }
 
+/**
+ * `transformer` can optionally be used to apply a custom transformation when
+ * resolving an asset source. This methods overrides all other custom transformers
+ * that may have been previously registered.
+ */
 function setCustomSourceTransformer(
-  transformer: (resolver: AssetSourceResolver) => ResolvedAssetSource,
+  transformer: CustomSourceTransformer,
 ): void {
-  _customSourceTransformer = transformer;
+  _customSourceTransformers = [transformer];
+}
+
+/**
+ * Adds a `transformer` into the chain of custom source transformers, which will
+ * be applied in the order registered, until one returns a non-null value.
+ */
+function addCustomSourceTransformer(
+  transformer: CustomSourceTransformer,
+): void {
+  _customSourceTransformers.push(transformer);
 }
 
 /**
@@ -107,12 +123,21 @@ function resolveAssetSource(source: ?ImageSource): ?ResolvedAssetSource {
     getScriptURL(),
     asset,
   );
-  if (_customSourceTransformer) {
-    return _customSourceTransformer(resolver);
+
+  // Apply (chained) custom source transformers, if any
+  if (_customSourceTransformers) {
+    for (const customSourceTransformer of _customSourceTransformers) {
+      const transformedSource = customSourceTransformer(resolver);
+      if (transformedSource != null) {
+        return transformedSource;
+      }
+    }
   }
+
   return resolver.defaultAsset();
 }
 
 resolveAssetSource.pickScale = pickScale;
 resolveAssetSource.setCustomSourceTransformer = setCustomSourceTransformer;
+resolveAssetSource.addCustomSourceTransformer = addCustomSourceTransformer;
 module.exports = resolveAssetSource;

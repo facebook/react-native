@@ -49,21 +49,21 @@
 #ifdef __cplusplus
 #define YG_DEFINE_ENUM_FLAG_OPERATORS(name)                       \
   extern "C++" {                                                  \
-  constexpr inline name operator~(name a) {                       \
+  constexpr name operator~(name a) {                              \
     return static_cast<name>(                                     \
         ~static_cast<std::underlying_type<name>::type>(a));       \
   }                                                               \
-  constexpr inline name operator|(name a, name b) {               \
+  constexpr name operator|(name a, name b) {                      \
     return static_cast<name>(                                     \
         static_cast<std::underlying_type<name>::type>(a) |        \
         static_cast<std::underlying_type<name>::type>(b));        \
   }                                                               \
-  constexpr inline name operator&(name a, name b) {               \
+  constexpr name operator&(name a, name b) {                      \
     return static_cast<name>(                                     \
         static_cast<std::underlying_type<name>::type>(a) &        \
         static_cast<std::underlying_type<name>::type>(b));        \
   }                                                               \
-  constexpr inline name operator^(name a, name b) {               \
+  constexpr name operator^(name a, name b) {                      \
     return static_cast<name>(                                     \
         static_cast<std::underlying_type<name>::type>(a) ^        \
         static_cast<std::underlying_type<name>::type>(b));        \
@@ -88,40 +88,6 @@
 #define YG_DEFINE_ENUM_FLAG_OPERATORS(name)
 #endif
 
-#ifdef __cplusplus
-
-namespace facebook::yoga {
-
-template <typename T>
-constexpr int
-ordinalCount(); // can't use `= delete` due to a defect in clang < 3.9
-
-namespace detail {
-template <int... xs>
-constexpr int n() {
-  return sizeof...(xs);
-}
-} // namespace detail
-
-} // namespace facebook::yoga
-#endif
-
 #define YG_ENUM_DECL(NAME, ...)                               \
   typedef YG_ENUM_BEGIN(NAME){__VA_ARGS__} YG_ENUM_END(NAME); \
   YG_EXPORT const char* NAME##ToString(NAME);
-
-#ifdef __cplusplus
-#define YG_ENUM_SEQ_DECL(NAME, ...)    \
-  YG_ENUM_DECL(NAME, __VA_ARGS__)      \
-  YG_EXTERN_C_END                      \
-                                       \
-  namespace facebook::yoga {           \
-  template <>                          \
-  constexpr int ordinalCount<NAME>() { \
-    return detail::n<__VA_ARGS__>();   \
-  }                                    \
-  }                                    \
-  YG_EXTERN_C_BEGIN
-#else
-#define YG_ENUM_SEQ_DECL YG_ENUM_DECL
-#endif

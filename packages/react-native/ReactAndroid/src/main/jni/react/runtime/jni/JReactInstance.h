@@ -18,12 +18,12 @@
 #include <react/jni/JRuntimeScheduler.h>
 #include <react/jni/JSLoader.h>
 #include <react/jni/ReadableNativeMap.h>
-#include <react/runtime/JSEngineInstance.h>
+#include <react/runtime/JSRuntimeFactory.h>
 #include <react/runtime/PlatformTimerRegistry.h>
 #include <react/runtime/ReactInstance.h>
 
 #include "JBindingsInstaller.h"
-#include "JJSEngineInstance.h"
+#include "JJSRuntimeFactory.h"
 #include "JJSTimerExecutor.h"
 #include "JJavaTimerManager.h"
 #include "JReactExceptionManager.h"
@@ -37,7 +37,7 @@ class JReactInstance : public jni::HybridClass<JReactInstance> {
 
   static jni::local_ref<jhybriddata> initHybrid(
       jni::alias_ref<jhybridobject>,
-      jni::alias_ref<JJSEngineInstance::javaobject> jsEngineInstance,
+      jni::alias_ref<JJSRuntimeFactory::javaobject> jsRuntimeFactory,
       jni::alias_ref<JavaMessageQueueThread::javaobject> jsMessageQueueThread,
       jni::alias_ref<JavaMessageQueueThread::javaobject>
           nativeMessageQueueThread,
@@ -82,7 +82,7 @@ class JReactInstance : public jni::HybridClass<JReactInstance> {
   friend HybridBase;
 
   explicit JReactInstance(
-      jni::alias_ref<JJSEngineInstance::javaobject> jsEngineInstance,
+      jni::alias_ref<JJSRuntimeFactory::javaobject> jsRuntimeFactory,
       jni::alias_ref<JavaMessageQueueThread::javaobject> jsMessageQueueThread,
       jni::alias_ref<JavaMessageQueueThread::javaobject>
           nativeMessageQueueThread,
@@ -105,6 +105,8 @@ class JReactInstance : public jni::HybridClass<JReactInstance> {
       nativeMethodCallInvokerHolder_;
   jni::global_ref<JReactExceptionManager::javaobject> jReactExceptionManager_;
   jni::global_ref<JBindingsInstaller::javaobject> jBindingsInstaller_;
+
+  jlong getJavaScriptContext();
 };
 
 } // namespace facebook::react

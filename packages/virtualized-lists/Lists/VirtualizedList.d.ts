@@ -18,8 +18,8 @@ import type {
   ScrollView,
 } from 'react-native';
 
-export interface ViewToken {
-  item: any;
+export interface ViewToken<ItemT = any> {
+  item: ItemT;
   key: string;
   index: number | null;
   isViewable: boolean;
@@ -330,8 +330,8 @@ export interface VirtualizedListWithoutRenderItemProps<ItemT>
    */
   onViewableItemsChanged?:
     | ((info: {
-        viewableItems: Array<ViewToken>;
-        changed: Array<ViewToken>;
+        viewableItems: Array<ViewToken<ItemT>>;
+        changed: Array<ViewToken<ItemT>>;
       }) => void)
     | null
     | undefined;

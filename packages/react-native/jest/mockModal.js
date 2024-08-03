@@ -12,8 +12,9 @@
 
 'use strict';
 
-const React = require('react');
 import typeof Modal from '../Libraries/Modal/Modal';
+
+const React = require('react');
 
 function mockModal(BaseComponent: $FlowFixMe) {
   class ModalMock extends BaseComponent {

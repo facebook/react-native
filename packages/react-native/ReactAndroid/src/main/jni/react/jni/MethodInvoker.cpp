@@ -59,7 +59,8 @@ jint extractInteger(const folly::dynamic& value) {
   // The logic here is taken from convertDynamicIfIntegral, but the
   // return type and exception are different.
   if (value.isInt()) {
-    return value.getInt();
+    // TODO: this truncates 64 bit ints, valid in JS
+    return static_cast<jint>(value.getInt());
   }
   double dbl = value.getDouble();
   jint result = static_cast<jint>(dbl);
@@ -227,7 +228,7 @@ MethodCallResult MethodInvoker::invoke(
 
   auto env = Environment::current();
   auto argCount = signature_.size() - 2;
-  JniLocalScope scope(env, argCount);
+  JniLocalScope scope(env, static_cast<int>(argCount));
   jvalue args[argCount];
   std::transform(
       signature_.begin() + 2,

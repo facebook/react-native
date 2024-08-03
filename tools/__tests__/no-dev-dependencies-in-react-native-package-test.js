@@ -5,11 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
-import path from 'path';
 import fs from 'fs';
+import path from 'path';
 
 const CURRENT_DIR = __dirname;
 const PATH_TO_REACT_NATIVE_PACKAGE_MANIFEST = path.join(

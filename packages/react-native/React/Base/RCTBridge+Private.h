@@ -6,6 +6,9 @@
  */
 
 #import <React/RCTBridge.h>
+#ifdef __cplusplus
+#import <jsinspector-modern/ReactCdp.h>
+#endif
 
 @class RCTModuleRegistry;
 @class RCTModuleData;
@@ -70,6 +73,17 @@ RCT_EXTERN void RCTRegisterModule(Class);
  */
 @property (nonatomic, strong, readonly) RCTModuleRegistry *moduleRegistry;
 
+/**
+ * The page target for this bridge, if one has been created. Exposed for RCTCxxBridge only.
+ */
+@property (nonatomic, assign, readonly)
+#ifdef __cplusplus
+    facebook::react::jsinspector_modern::PageTarget *
+#else
+    // The inspector infrastructure cannot be used in C code.
+    void *
+#endif
+        inspectorTarget;
 @end
 
 @interface RCTBridge (RCTCxxBridge)

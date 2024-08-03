@@ -110,8 +110,11 @@ RCT_EXPORT_MODULE()
 
   RCTExecuteOnMainQueue(^{
     RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"UIManager invalidate", nil);
+    NSMutableDictionary<NSNumber *, id<RCTComponent>> *viewRegistry =
+        (NSMutableDictionary<NSNumber *, id<RCTComponent>> *)self->_viewRegistry;
     for (NSNumber *rootViewTag in self->_rootViewTags) {
-		RCTPlatformView *rootView = self->_viewRegistry[rootViewTag]; // [macOS]
+      id<RCTComponent> rootView = viewRegistry[rootViewTag];
+      [self _purgeChildren:[rootView reactSubviews] fromRegistry:viewRegistry];
       if ([rootView conformsToProtocol:@protocol(RCTInvalidating)]) {
         [(id<RCTInvalidating>)rootView invalidate];
       }
@@ -187,13 +190,21 @@ RCT_EXPORT_MODULE()
   }
 
 #if !TARGET_OS_OSX // [macOS]
+  // Preload the a11yManager as the RCTUIManager needs it to listen for notification
+  // By eagerly preloading it in the setBridge method, we make sure that the manager is
+  // properly initialized in the Main Thread and that we do not incur in any race condition
+  // or concurrency problem.
+  id<RCTBridgeModule> a11yManager = [bridge moduleForName:@"AccessibilityManager" lazilyLoadIfNecessary:YES];
+
   // This dispatch_async avoids a deadlock while configuring native modules
-  dispatch_async(dispatch_get_main_queue(), ^{
+  dispatch_queue_t accessibilityManagerInitQueue = RCTUIManagerDispatchAccessibilityManagerInitOntoMain()
+      ? dispatch_get_main_queue()
+      : dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE, 0);
+  dispatch_async(accessibilityManagerInitQueue, ^{
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(didReceiveNewContentSizeMultiplier)
                                                  name:@"RCTAccessibilityManagerDidUpdateMultiplierNotification"
-                                               object:[self->_bridge moduleForName:@"AccessibilityManager"
-                                                             lazilyLoadIfNecessary:YES]];
+                                               object:a11yManager];
   });
 #if TARGET_OS_IOS // [visionOS]
   [[NSNotificationCenter defaultCenter] addObserver:self
@@ -384,7 +395,7 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
   if (!view) {
     view = _viewRegistry[reactTag];
   }
-  return view;
+  return [RCTUIManager paperViewOrCurrentView:view];
 }
 
 - (RCTShadowView *)shadowViewForReactTag:(NSNumber *)reactTag
@@ -731,31 +742,6 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
 }
 
 /**
- * A method to be called from JS, which takes a container ID and then releases
- * all subviews for that container upon receipt.
- */
-RCT_EXPORT_METHOD(removeSubviewsFromContainerWithID : (nonnull NSNumber *)containerID)
-{
-  RCTLogWarn(
-      @"RCTUIManager.removeSubviewsFromContainerWithID method is deprecated and it will not be implemented in newer versions of RN (Fabric) - T47686450");
-  id<RCTComponent> container = _shadowViewRegistry[containerID];
-  RCTAssert(container != nil, @"container view (for ID %@) not found", containerID);
-
-  NSUInteger subviewsCount = [container reactSubviews].count;
-  NSMutableArray<NSNumber *> *indices = [[NSMutableArray alloc] initWithCapacity:subviewsCount];
-  for (NSUInteger childIndex = 0; childIndex < subviewsCount; childIndex++) {
-    [indices addObject:@(childIndex)];
-  }
-
-  [self manageChildren:containerID
-        moveFromIndices:nil
-          moveToIndices:nil
-      addChildReactTags:nil
-           addAtIndices:nil
-        removeAtIndices:indices];
-}
-
-/**
  * Disassociates children from container. Doesn't remove from registries.
  * TODO: use [NSArray getObjects:buffer] to reuse same fast buffer each time.
  *
@@ -882,31 +868,6 @@ RCT_EXPORT_METHOD(removeRootView : (nonnull NSNumber *)rootReactTag)
                  fromRegistry:(NSMutableDictionary<NSNumber *, id<RCTComponent>> *)viewRegistry];
     [(NSMutableDictionary *)viewRegistry removeObjectForKey:rootReactTag];
   }];
-}
-
-RCT_EXPORT_METHOD(replaceExistingNonRootView : (nonnull NSNumber *)reactTag withView : (nonnull NSNumber *)newReactTag)
-{
-  RCTLogWarn(
-      @"RCTUIManager.replaceExistingNonRootView method is deprecated and it will not be implemented in newer versions of RN (Fabric) - T47686450");
-  RCTShadowView *shadowView = _shadowViewRegistry[reactTag];
-  RCTAssert(shadowView != nil, @"shadowView (for ID %@) not found", reactTag);
-
-  RCTShadowView *superShadowView = shadowView.superview;
-  if (!superShadowView) {
-    RCTAssert(NO, @"shadowView super (of ID %@) not found", reactTag);
-    return;
-  }
-
-  NSUInteger indexOfView = [superShadowView.reactSubviews indexOfObjectIdenticalTo:shadowView];
-  RCTAssert(indexOfView != NSNotFound, @"View's superview doesn't claim it as subview (id %@)", reactTag);
-  NSArray<NSNumber *> *removeAtIndices = @[ @(indexOfView) ];
-  NSArray<NSNumber *> *addTags = @[ newReactTag ];
-  [self manageChildren:superShadowView.reactTag
-        moveFromIndices:nil
-          moveToIndices:nil
-      addChildReactTags:addTags
-           addAtIndices:removeAtIndices
-        removeAtIndices:removeAtIndices];
 }
 
 RCT_EXPORT_METHOD(setChildren : (nonnull NSNumber *)containerTag reactTags : (NSArray<NSNumber *> *)reactTags)
@@ -1249,7 +1210,9 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand
 
     @try {
       for (RCTViewManagerUIBlock block in previousPendingUIBlocks) {
-        block(strongSelf, strongSelf->_viewRegistry);
+        RCTComposedViewRegistry *composedViewRegistry =
+            [[RCTComposedViewRegistry alloc] initWithUIManager:strongSelf andRegistry:strongSelf->_viewRegistry];
+        block(strongSelf, composedViewRegistry);
       }
     } @catch (NSException *exception) {
       RCTLogError(@"Exception thrown while executing UI block: %@", exception);
@@ -1737,6 +1700,19 @@ static RCTPlatformView *_jsResponder; // [macOS]
   return _jsResponder;
 }
 
++ (RCTPlatformView *)paperViewOrCurrentView:(RCTPlatformView *)view // [macOS]
+{
+  if ([view respondsToSelector:@selector(paperView)]) {
+    return [view performSelector:@selector(paperView)];
+  }
+  return view;
+}
+
+- (void)removeViewFromRegistry:(NSNumber *)reactTag
+{
+  [_viewRegistry removeObjectForKey:reactTag];
+}
+
 @end
 
 @implementation RCTBridge (RCTUIManager)
@@ -1744,6 +1720,58 @@ static RCTPlatformView *_jsResponder; // [macOS]
 - (RCTUIManager *)uiManager
 {
   return [self moduleForClass:[RCTUIManager class]];
+}
+
+@end
+
+@implementation RCTComposedViewRegistry {
+  __weak RCTUIManager *_uiManager;
+  NSDictionary<NSNumber *, RCTPlatformView *> *_registry; // [macOS]
+}
+
+- (instancetype)initWithUIManager:(RCTUIManager *)uiManager andRegistry:(NSDictionary<NSNumber *, RCTPlatformView *> *)registry // [macOS]
+{
+  self = [super init];
+  if (self) {
+    self->_uiManager = uiManager;
+    self->_registry = registry;
+  }
+  return self;
+}
+
+- (id)objectForKey:(id)key
+{
+  if (![key isKindOfClass:[NSNumber class]]) {
+    return [super objectForKeyedSubscript:key];
+  }
+
+  NSNumber *index = (NSNumber *)key;
+  RCTPlatformView *view = [_uiManager viewForReactTag:index]; // [macOS]
+  if (view) {
+    return [RCTUIManager paperViewOrCurrentView:view];
+  }
+  view = _registry[index];
+  if (view) {
+    return [RCTUIManager paperViewOrCurrentView:view];
+  }
+  return [super objectForKeyedSubscript:key];
+}
+
+- (void)removeObjectForKey:(id)key
+{
+  if (![key isKindOfClass:[NSNumber class]]) {
+    return [super removeObjectForKey:key];
+  }
+  NSNumber *tag = (NSNumber *)key;
+
+  if (_registry[key]) {
+    NSMutableDictionary *mutableRegistry = (NSMutableDictionary *)_registry;
+    [mutableRegistry removeObjectForKey:tag];
+  } else if ([_uiManager viewForReactTag:tag]) {
+    [_uiManager removeViewFromRegistry:tag];
+  } else {
+    [super removeObjectForKey:key];
+  }
 }
 
 @end

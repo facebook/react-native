@@ -8,8 +8,8 @@
  * @format
  */
 
-import * as IntersectionObserverMDNExample from './IntersectionObserverMDNExample';
 import * as IntersectionObserverBenchmark from './IntersectionObserverBenchmark';
+import * as IntersectionObserverMDNExample from './IntersectionObserverMDNExample';
 
 export const framework = 'React';
 export const title = 'IntersectionObserver';

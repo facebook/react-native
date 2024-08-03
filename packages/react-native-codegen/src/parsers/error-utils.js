@@ -11,25 +11,25 @@
 'use strict';
 
 import type {NativeModuleTypeAnnotation} from '../CodegenSchema';
+import type {TypeDeclarationMap} from '../parsers/utils';
 import type {ParserType} from './errors';
 import type {Parser} from './parser';
-import type {TypeDeclarationMap} from '../parsers/utils';
 
 const {
-  MisnamedModuleInterfaceParserError,
-  UnsupportedFunctionReturnTypeAnnotationParserError,
-  ModuleInterfaceNotFoundParserError,
-  MoreThanOneModuleRegistryCallsParserError,
-  UnusedModuleInterfaceParserError,
+  IncorrectModuleRegistryCallArgumentTypeParserError,
   IncorrectModuleRegistryCallArityParserError,
   IncorrectModuleRegistryCallTypeParameterParserError,
-  IncorrectModuleRegistryCallArgumentTypeParserError,
+  MisnamedModuleInterfaceParserError,
+  ModuleInterfaceNotFoundParserError,
+  MoreThanOneModuleInterfaceParserError,
+  MoreThanOneModuleRegistryCallsParserError,
+  UnsupportedArrayElementTypeAnnotationParserError,
+  UnsupportedFunctionParamTypeAnnotationParserError,
+  UnsupportedFunctionReturnTypeAnnotationParserError,
+  UnsupportedModulePropertyParserError,
   UnsupportedObjectPropertyValueTypeAnnotationParserError,
   UntypedModuleRegistryCallParserError,
-  UnsupportedModulePropertyParserError,
-  MoreThanOneModuleInterfaceParserError,
-  UnsupportedFunctionParamTypeAnnotationParserError,
-  UnsupportedArrayElementTypeAnnotationParserError,
+  UnusedModuleInterfaceParserError,
 } = require('./errors');
 
 function throwIfModuleInterfaceIsMisnamed(

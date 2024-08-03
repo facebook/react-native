@@ -6,7 +6,6 @@
  */
 
 #include "BaseViewEventEmitter.h"
-#include <react/utils/CoreFeatures.h>
 
 namespace facebook::react {
 
@@ -80,42 +79,37 @@ void BaseViewEventEmitter::onLayout(const LayoutMetrics& layoutMetrics) const {
     layoutEventState->isDispatching = true;
   }
 
-  dispatchEvent(
-      "layout",
-      [layoutEventState](jsi::Runtime& runtime) {
-        auto frame = Rect{};
+  dispatchEvent("layout", [layoutEventState](jsi::Runtime& runtime) {
+    auto frame = Rect{};
 
-        {
-          std::scoped_lock guard(layoutEventState->mutex);
+    {
+      std::scoped_lock guard(layoutEventState->mutex);
 
-          layoutEventState->isDispatching = false;
+      layoutEventState->isDispatching = false;
 
-          // If some *particular* `frame` was already dispatched before,
-          // and since then there were no other new values of the `frame`
-          // observed, do nothing.
-          if (layoutEventState->wasDispatched) {
-            return jsi::Value::null();
-          }
+      // If some *particular* `frame` was already dispatched before,
+      // and since then there were no other new values of the `frame`
+      // observed, do nothing.
+      if (layoutEventState->wasDispatched) {
+        return jsi::Value::null();
+      }
 
-          frame = layoutEventState->frame;
+      frame = layoutEventState->frame;
 
-          // If some *particular* `frame` was *not* already dispatched before,
-          // it's time to dispatch it and mark as dispatched.
-          layoutEventState->wasDispatched = true;
-        }
+      // If some *particular* `frame` was *not* already dispatched before,
+      // it's time to dispatch it and mark as dispatched.
+      layoutEventState->wasDispatched = true;
+    }
 
-        auto layout = jsi::Object(runtime);
-        layout.setProperty(runtime, "x", frame.origin.x);
-        layout.setProperty(runtime, "y", frame.origin.y);
-        layout.setProperty(runtime, "width", frame.size.width);
-        layout.setProperty(runtime, "height", frame.size.height);
-        auto payload = jsi::Object(runtime);
-        payload.setProperty(runtime, "layout", std::move(layout));
-        return jsi::Value(std::move(payload));
-      },
-      CoreFeatures::enableDefaultAsyncBatchedPriority
-          ? EventPriority::AsynchronousBatched
-          : EventPriority::AsynchronousUnbatched);
+    auto layout = jsi::Object(runtime);
+    layout.setProperty(runtime, "x", frame.origin.x);
+    layout.setProperty(runtime, "y", frame.origin.y);
+    layout.setProperty(runtime, "width", frame.size.width);
+    layout.setProperty(runtime, "height", frame.size.height);
+    auto payload = jsi::Object(runtime);
+    payload.setProperty(runtime, "layout", std::move(layout));
+    return jsi::Value(std::move(payload));
+  });
 }
 
 } // namespace facebook::react

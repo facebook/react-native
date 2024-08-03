@@ -1,6 +1,6 @@
 {
   "name": "@react-native/codegen",
-  "version": "0.73.0",
+  "version": "0.74.0",
   "description": "Code generation tools for React Native",
   "license": "MIT",
   "repository": {
@@ -30,8 +30,11 @@
   ],
   "dependencies": {
     "@babel/parser": "^7.20.0",
-    "flow-parser": "^0.206.0",
+    "glob": "^7.1.1",
+    "hermes-parser": "0.19.1",
+    "invariant": "^2.2.4",
     "jscodeshift": "^0.14.0",
+    "mkdirp": "^0.5.1",
     "nullthrows": "^1.1.1"
   },
   "beachball": {
@@ -49,12 +52,11 @@
     "@babel/plugin-transform-flow-strip-types": "^7.20.0",
     "@babel/preset-env": "^7.20.0",
     "chalk": "^4.0.0",
-    "glob": "^7.1.1",
-    "invariant": "^2.2.4",
+    "hermes-estree": "0.19.1",
     "micromatch": "^4.0.4",
-    "mkdirp": "^0.5.1",
     "prettier": "2.8.8",
-    "rimraf": "^3.0.2"
+    "rimraf": "^3.0.2",
+    "yargs": "^17.6.2"
   },
   "peerDependencies": {
     "@babel/preset-env": "^7.1.6"

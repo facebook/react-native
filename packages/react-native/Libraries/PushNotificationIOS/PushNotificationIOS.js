@@ -70,12 +70,16 @@ export type FetchResult = {
 export type PushNotificationEventName = $Keys<{
   /**
    * Fired when a remote notification is received. The handler will be invoked
-   * with an instance of `PushNotificationIOS`.
+   * with an instance of `PushNotificationIOS`. This will handle notifications
+   * that arrive in the foreground or were tapped to open the app from the
+   * background.
    */
   notification: string,
   /**
    * Fired when a local notification is received. The handler will be invoked
-   * with an instance of `PushNotificationIOS`.
+   * with an instance of `PushNotificationIOS`. This will handle notifications
+   * that arrive in the foreground or were tapped to open the app from the
+   * background.
    */
   localNotification: string,
   /**
@@ -85,8 +89,8 @@ export type PushNotificationEventName = $Keys<{
   register: string,
   /**
    * Fired when the user fails to register for remote notifications. Typically
-   * occurs when APNS is having issues, or the device is a simulator. The
-   * handler will be invoked with {message: string, code: number, details: any}.
+   * occurs due to APNS issues or if the device is a simulator. The handler
+   * will be invoked with {message: string, code: number, details: any}.
    */
   registrationError: string,
   ...
@@ -94,8 +98,7 @@ export type PushNotificationEventName = $Keys<{
 
 /**
  *
- * Handle push notifications for your app, including permission handling and
- * icon badge number.
+ * Handle notifications for your app, including scheduling and permissions.
  *
  * See https://reactnative.dev/docs/pushnotificationios
  */
@@ -118,7 +121,7 @@ class PushNotificationIOS {
   };
 
   /**
-   * Schedules the localNotification for immediate presentation.
+   * Schedules a local notification for immediate presentation.
    *
    * See https://reactnative.dev/docs/pushnotificationios#presentlocalnotification
    */
@@ -131,7 +134,7 @@ class PushNotificationIOS {
   }
 
   /**
-   * Schedules the localNotification for future presentation.
+   * Schedules a local notification for future presentation.
    *
    * See https://reactnative.dev/docs/pushnotificationios#schedulelocalnotification
    */
@@ -144,7 +147,7 @@ class PushNotificationIOS {
   }
 
   /**
-   * Cancels all scheduled localNotifications.
+   * Cancels all scheduled local notifications.
    *
    * See https://reactnative.dev/docs/pushnotificationios#cancelalllocalnotifications
    */
@@ -157,7 +160,7 @@ class PushNotificationIOS {
   }
 
   /**
-   * Remove all delivered notifications from Notification Center.
+   * Removes all delivered notifications from Notification Center.
    *
    * See https://reactnative.dev/docs/pushnotificationios#removealldeliverednotifications
    */
@@ -170,7 +173,8 @@ class PushNotificationIOS {
   }
 
   /**
-   * Provides you with a list of the app’s notifications that are still displayed in Notification Center.
+   * Provides a list of the app’s notifications that are currently displayed
+   * in Notification Center.
    *
    * See https://reactnative.dev/docs/pushnotificationios#getdeliverednotifications
    */
@@ -185,7 +189,7 @@ class PushNotificationIOS {
   }
 
   /**
-   * Removes the specified notifications from Notification Center
+   * Removes the specified notifications from Notification Center.
    *
    * See https://reactnative.dev/docs/pushnotificationios#removedeliverednotifications
    */
@@ -198,7 +202,7 @@ class PushNotificationIOS {
   }
 
   /**
-   * Sets the badge number for the app icon on the home screen.
+   * Sets the badge number for the app icon on the Home Screen.
    *
    * See https://reactnative.dev/docs/pushnotificationios#setapplicationiconbadgenumber
    */
@@ -211,7 +215,7 @@ class PushNotificationIOS {
   }
 
   /**
-   * Gets the current badge number for the app icon on the home screen.
+   * Gets the current badge number for the app icon on the Home Screen.
    *
    * See https://reactnative.dev/docs/pushnotificationios#getapplicationiconbadgenumber
    */
@@ -224,7 +228,8 @@ class PushNotificationIOS {
   }
 
   /**
-   * Cancel local notifications.
+   * Cancels any scheduled local notifications which match the fields in the
+   * provided `userInfo`.
    *
    * See https://reactnative.dev/docs/pushnotificationios#cancellocalnotification
    */
@@ -237,7 +242,7 @@ class PushNotificationIOS {
   }
 
   /**
-   * Gets the local notifications that are currently scheduled.
+   * Gets the list of local notifications that are currently scheduled.
    *
    * See https://reactnative.dev/docs/pushnotificationios#getscheduledlocalnotifications
    */
@@ -250,8 +255,8 @@ class PushNotificationIOS {
   }
 
   /**
-   * Attaches a listener to remote or local notification events while the app
-   * is running in the foreground or the background.
+   * Attaches a listener to notification events including local notifications,
+   * remote notifications, and notification registration results.
    *
    * See https://reactnative.dev/docs/pushnotificationios#addeventlistener
    */
@@ -305,10 +310,7 @@ class PushNotificationIOS {
    *
    * See https://reactnative.dev/docs/pushnotificationios#removeeventlistener
    */
-  static removeEventListener(
-    type: PushNotificationEventName,
-    handler: Function,
-  ): void {
+  static removeEventListener(type: PushNotificationEventName): void {
     invariant(
       type === 'notification' ||
         type === 'register' ||
@@ -325,10 +327,9 @@ class PushNotificationIOS {
   }
 
   /**
-   * Requests notification permissions from iOS, prompting the user's
+   * Requests notification permissions from iOS, prompting the user with a
    * dialog box. By default, it will request all notification permissions, but
-   * a subset of these can be requested by passing a map of requested
-   * permissions.
+   * you can optionally specify which permissions to request.
    *
    * See https://reactnative.dev/docs/pushnotificationios#requestpermissions
    */
@@ -365,7 +366,8 @@ class PushNotificationIOS {
   }
 
   /**
-   * Unregister for all remote notifications received via Apple Push Notification service.
+   * Unregister for all remote notifications received via Apple Push Notification
+   * service. This should be called in rare circumstances only.
    *
    * See https://reactnative.dev/docs/pushnotificationios#abandonpermissions
    */
@@ -378,8 +380,8 @@ class PushNotificationIOS {
   }
 
   /**
-   * See what push permissions are currently enabled. `callback` will be
-   * invoked with a `permissions` object.
+   * Check which push permissions are currently enabled. `callback` will be
+   * invoked with a `Permissions` object.
    *
    * See https://reactnative.dev/docs/pushnotificationios#checkpermissions
    */
@@ -411,7 +413,8 @@ class PushNotificationIOS {
   }
 
   /**
-   * This method returns a promise that resolves to notification authorization status.
+   * This method returns a promise that resolves to the current notification
+   * authorization status. See UNAuthorizationStatus for possible values.
    */
   static getAuthorizationStatus(
     callback: (authorizationStatus: number) => void,
@@ -427,7 +430,7 @@ class PushNotificationIOS {
   /**
    * You will never need to instantiate `PushNotificationIOS` yourself.
    * Listening to the `notification` event and invoking
-   * `getInitialNotification` is sufficient
+   * `getInitialNotification` is sufficient.
    *
    */
   constructor(nativeNotif: Object) {
@@ -466,7 +469,8 @@ class PushNotificationIOS {
 
   /**
    * This method is available for remote notifications that have been received via:
-   * `application:didReceiveRemoteNotification:fetchCompletionHandler:`
+   * `application:didReceiveRemoteNotification:fetchCompletionHandler:`. See docs
+   * for more information.
    *
    * See https://reactnative.dev/docs/pushnotificationios#finish
    */
@@ -492,7 +496,7 @@ class PushNotificationIOS {
   }
 
   /**
-   * An alias for `getAlert` to get the notification's main message string
+   * An alias for `getAlert` to get the notification's main message string.
    */
   getMessage(): ?string | ?Object {
     // alias because "alert" is an ambiguous name
@@ -500,7 +504,8 @@ class PushNotificationIOS {
   }
 
   /**
-   * Gets the sound string from the `aps` object
+   * Gets the sound string from the `aps` object. This will be `null` for local
+   * notifications.
    *
    * See https://reactnative.dev/docs/pushnotificationios#getsound
    */
@@ -509,7 +514,7 @@ class PushNotificationIOS {
   }
 
   /**
-   * Gets the category string from the `aps` object
+   * Gets the category string from the `aps` object.
    *
    * See https://reactnative.dev/docs/pushnotificationios#getcategory
    */
@@ -518,7 +523,8 @@ class PushNotificationIOS {
   }
 
   /**
-   * Gets the notification's main message from the `aps` object
+   * Gets the notification's main message from the `aps` object. Also see the
+   * alias: `getMessage()`.
    *
    * See https://reactnative.dev/docs/pushnotificationios#getalert
    */
@@ -527,7 +533,7 @@ class PushNotificationIOS {
   }
 
   /**
-   * Gets the content-available number from the `aps` object
+   * Gets the content-available number from the `aps` object.
    *
    * See https://reactnative.dev/docs/pushnotificationios#getcontentavailable
    */
@@ -536,7 +542,7 @@ class PushNotificationIOS {
   }
 
   /**
-   * Gets the badge count number from the `aps` object
+   * Gets the badge count number from the `aps` object.
    *
    * See https://reactnative.dev/docs/pushnotificationios#getbadgecount
    */
@@ -545,7 +551,7 @@ class PushNotificationIOS {
   }
 
   /**
-   * Gets the data object on the notif
+   * Gets the data object on the notification.
    *
    * See https://reactnative.dev/docs/pushnotificationios#getdata
    */
@@ -554,7 +560,7 @@ class PushNotificationIOS {
   }
 
   /**
-   * Gets the thread ID on the notif
+   * Gets the thread ID on the notification.
    *
    * See https://reactnative.dev/docs/pushnotificationios#getthreadid
    */

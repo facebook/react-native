@@ -7,15 +7,12 @@
 
 package com.facebook.react.uimanager;
 
-import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
-
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.config.ReactFeatureFlags;
-import com.facebook.systrace.SystraceMessage;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -27,7 +24,7 @@ import java.util.Set;
  * Helps generate constants map for {@link UIManagerModule} by collecting and merging constants from
  * registered view managers.
  */
-/* package */ class UIManagerModuleConstantsHelper {
+public class UIManagerModuleConstantsHelper {
   private static final String TAG = "UIManagerModuleConstantsHelper";
   private static final String BUBBLING_EVENTS_KEY = "bubblingEventTypes";
   private static final String DIRECT_EVENTS_KEY = "directEventTypes";
@@ -46,7 +43,7 @@ import java.util.Set;
     return constants;
   }
 
-  /* package */ static Map<String, Object> getDefaultExportableEventTypes() {
+  public static Map<String, Object> getDefaultExportableEventTypes() {
     return MapBuilder.<String, Object>of(
         BUBBLING_EVENTS_KEY, UIManagerModuleConstants.getBubblingEventTypeConstants(),
         DIRECT_EVENTS_KEY, UIManagerModuleConstants.getDirectEventTypeConstants());
@@ -112,21 +109,11 @@ import java.util.Set;
     for (ViewManager viewManager : viewManagers) {
       final String viewManagerName = viewManager.getName();
 
-      SystraceMessage.beginSection(
-              TRACE_TAG_REACT_JAVA_BRIDGE, "UIManagerModuleConstantsHelper.createConstants")
-          .arg("ViewManager", viewManagerName)
-          .arg("Lazy", false)
-          .flush();
-
-      try {
-        Map viewManagerConstants =
-            createConstantsForViewManager(
-                viewManager, null, null, allBubblingEventTypes, allDirectEventTypes);
-        if (!viewManagerConstants.isEmpty()) {
-          constants.put(viewManagerName, viewManagerConstants);
-        }
-      } finally {
-        SystraceMessage.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+      Map viewManagerConstants =
+          createConstantsForViewManager(
+              viewManager, null, null, allBubblingEventTypes, allDirectEventTypes);
+      if (!viewManagerConstants.isEmpty()) {
+        constants.put(viewManagerName, viewManagerConstants);
       }
     }
 
@@ -206,7 +193,15 @@ import java.util.Set;
     }
     for (String oldKey : keysToNormalize) {
       Object value = events.get(oldKey);
-      String newKey = "top" + oldKey.substring(0, 1).toUpperCase() + oldKey.substring(1);
+      String baseKey = "";
+      if (oldKey.startsWith("on")) {
+        // Drop "on" prefix.
+        baseKey = oldKey.substring(2);
+      } else {
+        // Capitalize first letter.
+        baseKey = oldKey.substring(0, 1).toUpperCase() + oldKey.substring(1);
+      }
+      String newKey = "top" + baseKey;
       events.put(newKey, value);
     }
   }

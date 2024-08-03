@@ -1,6 +1,6 @@
 {
   "name": "@react-native/metro-babel-transformer",
-  "version": "0.73.11",
+  "version": "0.74.0",
   "description": "Babel transformer for React Native applications.",
   "main": "src/index.js",
   "repository": {
@@ -16,8 +16,8 @@
   "license": "MIT",
   "dependencies": {
     "@babel/core": "^7.20.0",
-    "@react-native/babel-preset": "*",
-    "hermes-parser": "0.16.0",
+    "@react-native/babel-preset": "0.74.0",
+    "hermes-parser": "0.19.1",
     "nullthrows": "^1.1.1"
   },
   "peerDependencies": {

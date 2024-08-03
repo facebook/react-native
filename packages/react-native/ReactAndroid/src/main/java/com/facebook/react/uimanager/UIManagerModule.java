@@ -196,7 +196,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
 
   @Override
   public void invalidate() {
-    super.onCatalystInstanceDestroy();
+    super.invalidate();
     mEventDispatcher.onCatalystInstanceDestroyed();
     mUIImplementation.onCatalystInstanceDestroyed();
 
@@ -247,22 +247,26 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   }
 
   @ReactMethod(isBlockingSynchronousMethod = true)
-  public @Nullable WritableMap getConstantsForViewManager(@Nullable String viewManagerName) {
-    ViewManager targetView =
-        viewManagerName != null ? mUIImplementation.resolveViewManager(viewManagerName) : null;
+  public @Nullable WritableMap getConstantsForViewManager(String viewManagerName) {
+    ViewManager targetView = mUIImplementation.resolveViewManager(viewManagerName);
     if (targetView == null) {
       return null;
     }
 
+    return getConstantsForViewManager(targetView, mCustomDirectEvents);
+  }
+
+  public static @Nullable WritableMap getConstantsForViewManager(
+      ViewManager viewManager, Map<String, Object> customDirectEvents) {
     SystraceMessage.beginSection(
             Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "UIManagerModule.getConstantsForViewManager")
-        .arg("ViewManager", targetView.getName())
+        .arg("ViewManager", viewManager.getName())
         .arg("Lazy", true)
         .flush();
     try {
       Map<String, Object> viewManagerConstants =
           UIManagerModuleConstantsHelper.createConstantsForViewManager(
-              targetView, null, null, null, mCustomDirectEvents);
+              viewManager, null, null, null, customDirectEvents);
       if (viewManagerConstants != null) {
         return Arguments.makeNativeMap(viewManagerConstants);
       }
@@ -487,32 +491,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   }
 
   /**
-   * Replaces the View specified by oldTag with the View specified by newTag within oldTag's parent.
-   * This resolves to a simple {@link #manageChildren} call, but React doesn't have enough info in
-   * JS to formulate it itself.
-   *
-   * @deprecated This method will not be available in Fabric UIManager class.
-   */
-  @ReactMethod
-  @Deprecated
-  public void replaceExistingNonRootView(int oldTag, int newTag) {
-    mUIImplementation.replaceExistingNonRootView(oldTag, newTag);
-  }
-
-  /**
-   * Method which takes a container tag and then releases all subviews for that container upon
-   * receipt.
-   *
-   * @param containerTag the tag of the container for which the subviews must be removed
-   * @deprecated This method will not be available in Fabric UIManager class.
-   */
-  @ReactMethod
-  @Deprecated
-  public void removeSubviewsFromContainerWithID(int containerTag) {
-    mUIImplementation.removeSubviewsFromContainerWithID(containerTag);
-  }
-
-  /**
    * Determines the location on screen, width, and height of the given view and returns the values
    * via an async callback.
    */
@@ -640,6 +618,10 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   /**
    * Show a PopupMenu.
    *
+   * <p>This is deprecated, please use the <PopupMenuAndroid /> component instead.
+   *
+   * <p>TODO(T175424986): Remove UIManager.showPopupMenu() in React Native v0.75.
+   *
    * @param reactTag the tag of the anchor view (the PopupMenu is displayed next to this view); this
    *     needs to be the tag of a native view (shadow views can not be anchors)
    * @param items the menu items as an array of strings
@@ -648,11 +630,18 @@ public class UIManagerModule extends ReactContextBaseJavaModule
    *     no arguments if the menu is dismissed
    */
   @ReactMethod
+  @Deprecated
   public void showPopupMenu(int reactTag, ReadableArray items, Callback error, Callback success) {
     mUIImplementation.showPopupMenu(reactTag, items, error, success);
   }
 
+  /**
+   * This is deprecated, please use the <PopupMenuAndroid /> component instead.
+   *
+   * <p>TODO(T175424986): Remove UIManager.dismissPopupMenu() in React Native v0.75.
+   */
   @ReactMethod
+  @Deprecated
   public void dismissPopupMenu() {
     mUIImplementation.dismissPopupMenu();
   }

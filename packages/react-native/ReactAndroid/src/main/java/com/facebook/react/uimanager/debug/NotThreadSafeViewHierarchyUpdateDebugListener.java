@@ -7,6 +7,7 @@
 
 package com.facebook.react.uimanager.debug;
 
+import com.facebook.react.common.annotations.DeprecatedInNewArchitecture;
 import com.facebook.react.uimanager.UIManagerModule;
 
 /**
@@ -16,6 +17,7 @@ import com.facebook.react.uimanager.UIManagerModule;
  * <p>NB: while onViewHierarchyUpdateFinished will always be called from the UI thread, there are no
  * guarantees what thread onViewHierarchyUpdateEnqueued is called on.
  */
+@DeprecatedInNewArchitecture
 public interface NotThreadSafeViewHierarchyUpdateDebugListener {
 
   /**

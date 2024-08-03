@@ -9,9 +9,64 @@
 
 #include <ReactCommon/RuntimeExecutor.h>
 #include <fbjni/fbjni.h>
+#include <jsi/JSIDynamic.h>
+#include <jsi/jsi.h>
 #include <react/jni/JRuntimeExecutor.h>
+#include <react/jni/NativeMap.h>
 
 namespace facebook::react {
+
+class DefaultEventTypesProvider
+    : public jni::JavaClass<DefaultEventTypesProvider> {
+ public:
+  static constexpr const char* kJavaDescriptor =
+      "Lcom/facebook/react/uimanager/UIConstantsProviderManager$DefaultEventTypesProvider;";
+
+  jsi::Value getDefaultEventTypes(jsi::Runtime& runtime) {
+    static auto method =
+        javaClassStatic()
+            ->getMethod<jni::alias_ref<NativeMap::jhybridobject>()>(
+                "getDefaultEventTypes");
+    auto result = method(self());
+    return jsi::valueFromDynamic(runtime, result->cthis()->consume());
+  }
+};
+
+class ConstantsForViewManagerProvider
+    : public jni::JavaClass<ConstantsForViewManagerProvider> {
+ public:
+  static constexpr const char* kJavaDescriptor =
+      "Lcom/facebook/react/uimanager/UIConstantsProviderManager$ConstantsForViewManagerProvider;";
+
+  jsi::Value getConstantsForViewManager(
+      jsi::Runtime& runtime,
+      std::string viewManagerName) {
+    static auto method =
+        javaClassStatic()
+            ->getMethod<jni::alias_ref<NativeMap::jhybridobject>(std::string)>(
+                "getConstantsForViewManager");
+    auto result = method(self(), viewManagerName);
+    if (result == nullptr) {
+      return jsi::Value::null();
+    }
+    return jsi::valueFromDynamic(runtime, result->cthis()->consume());
+  }
+};
+
+class ConstantsProvider : public jni::JavaClass<ConstantsProvider> {
+ public:
+  static constexpr const char* kJavaDescriptor =
+      "Lcom/facebook/react/uimanager/UIConstantsProviderManager$ConstantsProvider;";
+
+  jsi::Value getConstants(jsi::Runtime& runtime) {
+    static auto method =
+        javaClassStatic()
+            ->getMethod<jni::alias_ref<NativeMap::jhybridobject>()>(
+                "getConstants");
+    auto result = method(self());
+    return jsi::valueFromDynamic(runtime, result->cthis()->consume());
+  }
+};
 
 class UIConstantsProviderManager
     : public facebook::jni::HybridClass<UIConstantsProviderManager> {
@@ -19,13 +74,15 @@ class UIConstantsProviderManager
   static auto constexpr kJavaDescriptor =
       "Lcom/facebook/react/uimanager/UIConstantsProviderManager;";
 
-  constexpr static auto UIConstantsProviderJavaDescriptor =
-      "com/facebook/react/uimanager/UIConstantsProvider";
-
   static facebook::jni::local_ref<jhybriddata> initHybrid(
       facebook::jni::alias_ref<jhybridobject> jThis,
       facebook::jni::alias_ref<JRuntimeExecutor::javaobject> runtimeExecutor,
-      facebook::jni::alias_ref<jobject> uiConstantsProviderManager);
+      facebook::jni::alias_ref<DefaultEventTypesProvider::javaobject>
+          defaultExportableEventTypesProvider,
+      facebook::jni::alias_ref<ConstantsForViewManagerProvider::javaobject>
+          constantsForViewManagerProvider,
+      facebook::jni::alias_ref<ConstantsProvider::javaobject>
+          constantsProvider);
 
   static void registerNatives();
 
@@ -34,14 +91,23 @@ class UIConstantsProviderManager
   facebook::jni::global_ref<UIConstantsProviderManager::javaobject> javaPart_;
   RuntimeExecutor runtimeExecutor_;
 
-  facebook::jni::global_ref<jobject> uiConstantsProvider_;
+  facebook::jni::global_ref<DefaultEventTypesProvider::javaobject>
+      defaultExportableEventTypesProvider_;
+  facebook::jni::global_ref<ConstantsForViewManagerProvider::javaobject>
+      constantsForViewManagerProvider_;
+  facebook::jni::global_ref<ConstantsProvider::javaobject> constantsProvider_;
 
   void installJSIBindings();
 
   explicit UIConstantsProviderManager(
       facebook::jni::alias_ref<UIConstantsProviderManager::jhybridobject> jThis,
       RuntimeExecutor runtimeExecutor,
-      facebook::jni::alias_ref<jobject> uiConstantsProviderManager);
+      facebook::jni::alias_ref<DefaultEventTypesProvider::javaobject>
+          defaultExportableEventTypesProvider,
+      facebook::jni::alias_ref<ConstantsForViewManagerProvider::javaobject>
+          constantsForViewManagerProvider,
+      facebook::jni::alias_ref<ConstantsProvider::javaobject>
+          constantsProvider);
 };
 
 } // namespace facebook::react

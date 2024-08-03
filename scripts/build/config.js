@@ -49,6 +49,10 @@ const buildConfig /*: BuildConfig */ = {
       target: 'node',
       emitTypeScriptDefs: true,
     },
+    'metro-config': {
+      target: 'node',
+      emitTypeScriptDefs: true,
+    },
   },
 };
 

@@ -8,18 +8,12 @@
  * @flow
  */
 
+import Platform from 'react-native/Libraries/Utilities/Platform';
+
 const React = require('react');
 const ReactNative = require('react-native');
-import Platform from 'react-native/Libraries/Utilities/Platform';
-const {
-  ColorWithSystemEffectMacOS, // [macOS]
-  DynamicColorIOS,
-  DynamicColorMacOS,
-  PlatformColor,
-  StyleSheet,
-  Text,
-  View,
-} = ReactNative;
+const {DynamicColorIOS, PlatformColor, StyleSheet, Text, View} = ReactNative;
+const {DynamicColorMacOS, ColorWithSystemEffectMacOS} = ReactNative; // [macOS]
 
 function PlatformColorsExample() {
   function createTable() {

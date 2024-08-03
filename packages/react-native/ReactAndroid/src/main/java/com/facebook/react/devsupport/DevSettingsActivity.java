@@ -9,12 +9,14 @@ package com.facebook.react.devsupport;
 
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.R;
 
 /**
  * Activity that display developers settings. Should be added to the debug manifest of the app. Can
  * be triggered through the developers option menu displayed by {@link DevSupportManager}.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class DevSettingsActivity extends PreferenceActivity {
 
   @Override

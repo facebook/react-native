@@ -130,7 +130,9 @@ RCT_EXPORT_MODULE()
   _inBackground = NO;
   RCTExecuteOnMainQueue(^{
 #if !TARGET_OS_OSX // [macOS]
-    if (!self->_inBackground && [RCTSharedApplication() applicationState] == UIApplicationStateBackground) {
+     if (!self->_inBackground &&
+        ([RCTSharedApplication() applicationState] == UIApplicationStateBackground ||
+         [UIDevice currentDevice].proximityState)) {
 #else // [macOS
     if (!self->_inBackground && ![RCTSharedApplication() isHidden]) {
 #endif
@@ -156,6 +158,11 @@ RCT_EXPORT_MODULE()
                                                  name:name
                                                object:nil];
   }
+
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(proximityChanged)
+                                               name:UIDeviceProximityStateDidChangeNotification
+                                             object:nil];
 #endif // [macOS]
 }
 
@@ -192,6 +199,18 @@ RCT_EXPORT_MODULE()
   _inBackground = NO;
   [self startTimers];
 }
+
+#if !TARGET_OS_OSX // [macOS]
+- (void)proximityChanged
+{
+  BOOL isClose = [UIDevice currentDevice].proximityState;
+  if (isClose) {
+    [self appDidMoveToBackground];
+  } else {
+    [self appDidMoveToForeground];
+  }
+}
+#endif // [macOS]
 
 - (void)stopTimers
 {

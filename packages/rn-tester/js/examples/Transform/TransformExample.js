@@ -8,10 +8,10 @@
  * @flow
  */
 
-import React, {useEffect, useState} from 'react';
-import {Animated, StyleSheet, Text, View, Easing} from 'react-native';
+import type {Element, Node} from 'react';
 
-import type {Node, Element} from 'react';
+import React, {useEffect, useState} from 'react';
+import {Animated, Easing, StyleSheet, Text, View} from 'react-native';
 
 function AnimateTransformSingleProp() {
   const [theta] = useState(new Animated.Value(45));
@@ -247,6 +247,7 @@ const styles = StyleSheet.create({
     marginVertical: 40,
     flex: 1,
     alignSelf: 'center',
+    zIndex: 0,
   },
   flipCard: {
     width: 200,
@@ -255,7 +256,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: 'blue',
     backfaceVisibility: 'hidden',
-    zIndex: 1024,
   },
   flipCard1: {
     position: 'absolute',
