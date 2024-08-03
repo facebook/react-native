@@ -8,7 +8,9 @@
 #pragma once
 
 #include "NativeArray.h"
+
 #include "NativeCommon.h"
+#include "NativeMap.h"
 
 namespace facebook::react {
 
@@ -34,7 +36,7 @@ class ReadableNativeArray
   static void registerNatives();
 
   jni::local_ref<jni::JArrayClass<jobject>> importArray();
-  jni::local_ref<jni::JArrayClass<ReadableType::javaobject>> importTypeArray();
+  jni::local_ref<jni::JArrayClass<jobject>> importTypeArray();
 };
 
 } // namespace facebook::react
