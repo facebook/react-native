@@ -14,16 +14,19 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
+import android.os.Build;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStructure;
 import android.view.animation.Animation;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
@@ -48,6 +51,7 @@ import com.facebook.react.uimanager.PointerEvents;
 import com.facebook.react.uimanager.ReactClippingProhibitedView;
 import com.facebook.react.uimanager.ReactClippingViewGroup;
 import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
+import com.facebook.react.uimanager.ReactMixBlendMode;
 import com.facebook.react.uimanager.ReactOverflowViewWithInset;
 import com.facebook.react.uimanager.ReactPointerEventsView;
 import com.facebook.react.uimanager.ReactZIndexedViewGroup;
@@ -74,7 +78,8 @@ public class ReactViewGroup extends ViewGroup
         ReactPointerEventsView,
         ReactHitSlopView,
         ReactZIndexedViewGroup,
-        ReactOverflowViewWithInset {
+        ReactOverflowViewWithInset,
+        ReactMixBlendMode {
 
   private static final int ARRAY_CAPACITY_INCREMENT = 12;
   private static final int DEFAULT_BACKGROUND_COLOR = Color.TRANSPARENT;
@@ -130,6 +135,7 @@ public class ReactViewGroup extends ViewGroup
   private @Nullable Rect mClippingRect;
   private @Nullable Rect mHitSlopRect;
   private Overflow mOverflow;
+  private @Nullable Paint mMixBlendMode;
   private PointerEvents mPointerEvents;
   private @Nullable ChildrenLayoutChangeListener mChildrenLayoutChangeListener;
   private @Nullable CSSBackgroundDrawable mCSSBackgroundDrawable;
@@ -864,6 +870,21 @@ public class ReactViewGroup extends ViewGroup
     mHitSlopRect = rect;
   }
 
+  @Override
+  public @Nullable Paint getMixBlendMode() {
+    return mMixBlendMode;
+  }
+
+  @Override
+  public void setMixBlendMode(@Nullable Paint p) {
+    mMixBlendMode = p;
+  }
+
+  @Override
+  public boolean isBlendModeParent() {
+    return true;
+  }
+
   public void setOverflow(@Nullable String overflow) {
     mOverflow = overflow == null ? Overflow.VISIBLE : Overflow.fromString(overflow);
     invalidate();
@@ -885,6 +906,12 @@ public class ReactViewGroup extends ViewGroup
 
   @Override
   public void setOverflowInset(int left, int top, int right, int bottom) {
+    if (mOverflowInset.left != left
+        || mOverflowInset.top != top
+        || mOverflowInset.right != right
+        || mOverflowInset.bottom != bottom) {
+      invalidate();
+    }
     mOverflowInset.set(left, top, right, bottom);
   }
 
@@ -902,6 +929,38 @@ public class ReactViewGroup extends ViewGroup
    */
   /* package */ void updateBackgroundDrawable(@Nullable Drawable drawable) {
     super.setBackground(drawable);
+  }
+
+  @Override
+  public void draw(@NonNull Canvas canvas) {
+    if (ViewUtil.getUIManagerType(this) == UIManagerType.FABRIC) {
+      boolean needsOffscreenRender = false;
+      for (int i = 0; i < getChildCount(); i++) {
+        if (getChildAt(i) instanceof ReactMixBlendMode
+            && ((ReactMixBlendMode) getChildAt(i)).getMixBlendMode() != null) {
+          needsOffscreenRender = true;
+        }
+      }
+
+      // Check if the view is a stacking context (has children) if it does, do the rendering
+      // offscreen and then composite back.
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+          && (needsOffscreenRender || mMixBlendMode != null)) {
+        Rect overflowInset = getOverflowInset();
+        canvas.saveLayer(
+            overflowInset.left,
+            overflowInset.top,
+            getWidth() + -overflowInset.right,
+            getHeight() + -overflowInset.bottom,
+            mMixBlendMode);
+        super.draw(canvas);
+        canvas.restore();
+      } else {
+        super.draw(canvas);
+      }
+    } else {
+      super.draw(canvas);
+    }
   }
 
   @Override

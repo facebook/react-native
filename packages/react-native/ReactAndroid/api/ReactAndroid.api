@@ -4685,6 +4685,12 @@ public final class com/facebook/react/uimanager/ReactInvalidPropertyException : 
 	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
 }
 
+public abstract interface class com/facebook/react/uimanager/ReactMixBlendMode {
+	public abstract fun getMixBlendMode ()Landroid/graphics/Paint;
+	public abstract fun isBlendModeParent ()Z
+	public abstract fun setMixBlendMode (Landroid/graphics/Paint;)V
+}
+
 public abstract interface class com/facebook/react/uimanager/ReactOverflowView {
 	public abstract fun getOverflow ()Ljava/lang/String;
 }
@@ -6640,11 +6646,13 @@ public class com/facebook/react/views/image/ReactImageManager$$PropsSetter : com
 public final class com/facebook/react/views/image/ReactImageManager$Companion {
 }
 
-public final class com/facebook/react/views/image/ReactImageView : com/facebook/drawee/view/GenericDraweeView {
+public final class com/facebook/react/views/image/ReactImageView : com/facebook/drawee/view/GenericDraweeView, com/facebook/react/uimanager/ReactMixBlendMode {
 	public static final field Companion Lcom/facebook/react/views/image/ReactImageView$Companion;
 	public static final field REMOTE_IMAGE_FADE_DURATION_MS I
 	public fun <init> (Landroid/content/Context;Lcom/facebook/drawee/controller/AbstractDraweeControllerBuilder;Lcom/facebook/react/views/image/GlobalImageLoadListener;Ljava/lang/Object;)V
+	public fun getMixBlendMode ()Landroid/graphics/Paint;
 	public fun hasOverlappingRendering ()Z
+	public fun isBlendModeParent ()Z
 	public final fun maybeUpdateView ()V
 	public fun onDraw (Landroid/graphics/Canvas;)V
 	public fun setBackgroundColor (I)V
@@ -6657,6 +6665,7 @@ public final class com/facebook/react/views/image/ReactImageView : com/facebook/
 	public final fun setFadeDuration (I)V
 	public final fun setHeaders (Lcom/facebook/react/bridge/ReadableMap;)V
 	public final fun setLoadingIndicatorSource (Ljava/lang/String;)V
+	public fun setMixBlendMode (Landroid/graphics/Paint;)V
 	public final fun setOverlayColor (I)V
 	public final fun setProgressiveRenderingEnabled (Z)V
 	public final fun setResizeMethod (Lcom/facebook/react/views/image/ImageResizeMethod;)V
@@ -8177,7 +8186,7 @@ public class com/facebook/react/views/view/ReactViewBackgroundDrawable : com/fac
 	public fun <init> (Landroid/content/Context;)V
 }
 
-public class com/facebook/react/views/view/ReactViewGroup : android/view/ViewGroup, com/facebook/react/touch/ReactHitSlopView, com/facebook/react/touch/ReactInterceptingViewGroup, com/facebook/react/uimanager/ReactClippingViewGroup, com/facebook/react/uimanager/ReactOverflowViewWithInset, com/facebook/react/uimanager/ReactPointerEventsView, com/facebook/react/uimanager/ReactZIndexedViewGroup {
+public class com/facebook/react/views/view/ReactViewGroup : android/view/ViewGroup, com/facebook/react/touch/ReactHitSlopView, com/facebook/react/touch/ReactInterceptingViewGroup, com/facebook/react/uimanager/ReactClippingViewGroup, com/facebook/react/uimanager/ReactMixBlendMode, com/facebook/react/uimanager/ReactOverflowViewWithInset, com/facebook/react/uimanager/ReactPointerEventsView, com/facebook/react/uimanager/ReactZIndexedViewGroup {
 	public fun <init> (Landroid/content/Context;)V
 	public fun addView (Landroid/view/View;ILandroid/view/ViewGroup$LayoutParams;)V
 	protected fun addViewInLayout (Landroid/view/View;ILandroid/view/ViewGroup$LayoutParams;Z)Z
@@ -8185,17 +8194,20 @@ public class com/facebook/react/views/view/ReactViewGroup : android/view/ViewGro
 	public fun dispatchGenericMotionEvent (Landroid/view/MotionEvent;)Z
 	public fun dispatchProvideStructure (Landroid/view/ViewStructure;)V
 	protected fun dispatchSetPressed (Z)V
+	public fun draw (Landroid/graphics/Canvas;)V
 	protected fun drawChild (Landroid/graphics/Canvas;Landroid/view/View;J)Z
 	protected fun getChildDrawingOrder (II)I
 	public fun getChildVisibleRect (Landroid/view/View;Landroid/graphics/Rect;Landroid/graphics/Point;)Z
 	public fun getClippingRect (Landroid/graphics/Rect;)V
 	public fun getHitSlopRect ()Landroid/graphics/Rect;
+	public fun getMixBlendMode ()Landroid/graphics/Paint;
 	public fun getOverflow ()Ljava/lang/String;
 	public fun getOverflowInset ()Landroid/graphics/Rect;
 	public fun getPointerEvents ()Lcom/facebook/react/uimanager/PointerEvents;
 	public fun getRemoveClippedSubviews ()Z
 	public fun getZIndexMappedChildIndex (I)I
 	public fun hasOverlappingRendering ()Z
+	public fun isBlendModeParent ()Z
 	protected fun onAttachedToWindow ()V
 	public fun onInterceptTouchEvent (Landroid/view/MotionEvent;)Z
 	protected fun onLayout (ZIIII)V
@@ -8218,6 +8230,7 @@ public class com/facebook/react/views/view/ReactViewGroup : android/view/ViewGro
 	public fun setBorderStyle (Ljava/lang/String;)V
 	public fun setBorderWidth (IF)V
 	public fun setHitSlopRect (Landroid/graphics/Rect;)V
+	public fun setMixBlendMode (Landroid/graphics/Paint;)V
 	public fun setNeedsOffscreenAlphaCompositing (Z)V
 	public fun setOnInterceptTouchEventListener (Lcom/facebook/react/touch/OnInterceptTouchEventListener;)V
 	public fun setOpacityIfPossible (F)V

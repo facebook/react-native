@@ -541,7 +541,10 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
         }
       }
 
-      if (mixBlendMode != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+      if (view instanceof ReactMixBlendMode
+          && !((ReactMixBlendMode) view).isBlendModeParent()
+          && mixBlendMode != null
+          && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         p = p == null ? new Paint() : p;
         p.setBlendMode(mixBlendMode);
       }
@@ -667,6 +670,15 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
             ? (BlendMode) view.getTag(R.id.mix_blend_mode)
             : null;
+
+    if (mixBlendMode != null
+        && view instanceof ReactMixBlendMode
+        && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+      Paint blendModePaint = new Paint();
+      blendModePaint.setBlendMode(mixBlendMode);
+      ((ReactMixBlendMode) view).setMixBlendMode(blendModePaint);
+    }
+
     Boolean useHWLayer = (Boolean) view.getTag(R.id.use_hardware_layer);
 
     LayerEffectsHelper.apply(view, filter, mixBlendMode, useHWLayer);
