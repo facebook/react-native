@@ -7,12 +7,8 @@
 
 #pragma once
 
-#include <react/renderer/graphics/Float.h>
-
 #include <optional>
-#include <string>
 #include <string_view>
-#include <vector>
 
 namespace facebook::react {
 

@@ -20,6 +20,7 @@
 #include <react/renderer/graphics/BlendMode.h>
 #include <react/renderer/graphics/BoxShadow.h>
 #include <react/renderer/graphics/Filter.h>
+#include <react/renderer/graphics/Isolation.h>
 #include <react/renderer/graphics/PlatformColorParser.h>
 #include <react/renderer/graphics/Transform.h>
 #include <react/renderer/graphics/ValueUnit.h>
@@ -1182,6 +1183,27 @@ inline void fromRawValue(
   }
 
   result = backgroundImage;
+}
+
+inline void fromRawValue(
+    const PropsParserContext& /*context*/,
+    const RawValue& value,
+    Isolation& result) {
+  react_native_expect(value.hasType<std::string>());
+  result = Isolation::Auto;
+  if (!value.hasType<std::string>()) {
+    return;
+  }
+
+  auto rawIsolation = static_cast<std::string>(value);
+  std::optional<Isolation> isolation = isolationFromString(rawIsolation);
+
+  if (!isolation) {
+    LOG(ERROR) << "Could not parse isolation: " << rawIsolation;
+    return;
+  }
+
+  result = isolation.value();
 }
 
 template <size_t N>
