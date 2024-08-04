@@ -1014,9 +1014,10 @@ exports.examples = [
   },
   {
     title: 'Borders',
+    name: 'borders',
     render: function (): React.Node {
       return (
-        <View style={styles.horizontal}>
+        <View style={styles.horizontal} testID="borders-example">
           <Image
             source={smallImage}
             style={[styles.base, styles.background, styles.customBorderColor]}
@@ -1027,9 +1028,10 @@ exports.examples = [
   },
   {
     title: 'Border Radius',
+    name: 'border-radius',
     render: function (): React.Node {
       return (
-        <View style={styles.horizontal}>
+        <View style={styles.horizontal} testID="border-radius-example">
           <Image
             style={[styles.base, styles.imageWithBorderRadius]}
             source={fullImage}
@@ -1064,9 +1066,10 @@ exports.examples = [
   },
   {
     title: 'Background Color',
+    name: 'background-color',
     render: function (): React.Node {
       return (
-        <View style={styles.horizontal}>
+        <View style={styles.horizontal} testID="background-color-example">
           <Image source={smallImage} style={styles.base} />
           <Image
             style={[styles.base, styles.backgroundColor1]}
@@ -1086,9 +1089,10 @@ exports.examples = [
   },
   {
     title: 'Box Shadow',
+    name: 'box-shadow',
     render: function (): React.Node {
       return (
-        <View style={styles.horizontal}>
+        <View style={styles.horizontal} testID="box-shadow-example">
           <Image
             style={[
               styles.base,
