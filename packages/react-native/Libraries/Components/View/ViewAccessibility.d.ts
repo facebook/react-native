@@ -7,6 +7,7 @@
  * @format
  */
 
+import {ImageRequireSource} from '../../Image/ImageSource';
 import {NativeSyntheticEvent} from '../../Types/CoreEventTypes';
 
 /**
@@ -319,6 +320,28 @@ export interface AccessibilityPropsIOS {
    * @platform ios
    */
   accessibilityLanguage?: string | undefined;
+
+  /**
+   * A Boolean value that indicates whether or not to show the item in the large content viewer.
+   * Available on iOS 13.0+
+   * https://reactnative.dev/docs/accessibility#accessibilityshowslargecontentviewer
+   * @platform ios
+   */
+  accessibilityShowsLargeContentViewer?: boolean | undefined;
+
+  /**
+   * When `accessibilityShowsLargeContentViewer` is set, this string will be used as title for the large content viewer.
+   * https://reactnative.dev/docs/accessibility#accessibilitylargecontenttitle
+   * @platform ios
+   */
+  accessibilityLargeContentTitle?: string | undefined;
+
+  /**
+   * When `accessibilityLargeContentImage` is set, this image will be used as the image for the large content viewer.
+   * https://reactnative.dev/docs/accessibility#accessibilitylargecontentimage
+   * @platform ios
+   */
+  accessibilityLargeContentImage?: ImageRequireSource | undefined;
 }
 
 export type Role =

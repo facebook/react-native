@@ -295,6 +295,34 @@ RCT_CUSTOM_VIEW_PROPERTY(accessibilityState, NSDictionary, RCTView)
   }
 }
 
+RCT_CUSTOM_VIEW_PROPERTY(showsLargeContentViewer, BOOL, RCTView)
+{
+  if (@available(iOS 13.0, *)) {
+    BOOL showsLargeContentViewer = json ? [RCTConvert BOOL:json] : defaultView.showsLargeContentViewer;
+
+    if (showsLargeContentViewer) {
+      view.showsLargeContentViewer = YES;
+      UILargeContentViewerInteraction *interaction = [[UILargeContentViewerInteraction alloc] init];
+      [view addInteraction:interaction];
+    }
+  }
+}
+
+RCT_CUSTOM_VIEW_PROPERTY(largeContentTitle, NSString, RCTView)
+{
+  if (@available(iOS 13.0, *)) {
+    view.largeContentTitle = json ? [RCTConvert NSString:json] : defaultView.largeContentTitle;
+  }
+}
+
+RCT_CUSTOM_VIEW_PROPERTY(largeContentImage, UIImage, RCTView)
+{
+  if (@available(iOS 13.0, *)) {
+    view.largeContentImage = [RCTConvert UIImage:json];
+    view.scalesLargeContentImage = YES;
+  }
+}
+
 RCT_CUSTOM_VIEW_PROPERTY(nativeID, NSString *, RCTView)
 {
   view.nativeID = json ? [RCTConvert NSString:json] : defaultView.nativeID;
