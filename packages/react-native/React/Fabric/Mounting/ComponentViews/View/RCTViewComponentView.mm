@@ -864,11 +864,7 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     }
     gradientLayer.colors = colors;
     gradientLayer.frame = layer.bounds;
-    
-    // border layer should appear above gradient layers to make sure that the border is visible
-    gradientLayer.zPosition = _borderLayer.zPosition - 1;
-    [self.layer addSublayer:gradientLayer];
-    
+  
     // border styling to work with gradient layers
     if (useCoreAnimationBorderRendering) {
       gradientLayer.borderWidth = layer.borderWidth;
@@ -884,6 +880,11 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
       CGPathRelease(path);
       gradientLayer.mask = maskLayer;
     }
+
+    // border layer should appear above gradient layers to make sure that the border is visible
+    gradientLayer.zPosition = _borderLayer.zPosition - 1;
+    
+    [self.layer addSublayer:gradientLayer];
     [_gradientLayers addObject:gradientLayer];
   }
 
