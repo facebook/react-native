@@ -869,7 +869,7 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     gradientLayer.zPosition = _borderLayer.zPosition - 1;
     [self.layer addSublayer:gradientLayer];
     
-    // Handle borders for gradient views
+    // border styling to work with gradient layers
     if (useCoreAnimationBorderRendering) {
       gradientLayer.borderWidth = layer.borderWidth;
       gradientLayer.borderColor = layer.borderColor;
