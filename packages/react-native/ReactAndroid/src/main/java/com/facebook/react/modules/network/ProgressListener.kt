@@ -5,11 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.modules.network;
+package com.facebook.react.modules.network
 
-import okhttp3.OkHttpClient;
-
-public interface OkHttpClientFactory {
-  OkHttpClient createNewNetworkModuleClient();
+public fun interface ProgressListener {
+  public fun onProgress(bytesWritten: Long, contentLength: Long, done: Boolean)
 }
-;
