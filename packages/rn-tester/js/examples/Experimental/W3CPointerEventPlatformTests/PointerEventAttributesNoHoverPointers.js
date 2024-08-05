@@ -140,13 +140,7 @@ function PointerEventAttributesNoHoverPointersTestCase(
     [harness],
   );
 
-  const square1Ref =
-    useRef<?React$ElementRef<
-      React$AbstractComponent<
-        ViewProps,
-        React.ElementRef<HostComponent<ViewProps>>,
-      >,
-    >>();
+  const square1Ref = useRef<?React.ElementRef<HostComponent<ViewProps>>>();
   const square1Handlers = useTestEventHandler(eventList, (event, eventType) => {
     if (!square1Visible) {
       return;
@@ -175,13 +169,7 @@ function PointerEventAttributesNoHoverPointersTestCase(
     }
   });
 
-  const square2Ref =
-    useRef<?React$ElementRef<
-      React$AbstractComponent<
-        ViewProps,
-        React.ElementRef<HostComponent<ViewProps>>,
-      >,
-    >>();
+  const square2Ref = useRef<?React.ElementRef<HostComponent<ViewProps>>>();
   const square2Handlers = useTestEventHandler(eventList, (event, eventType) => {
     const square2Elem = square2Ref.current;
     if (square2Elem != null) {
