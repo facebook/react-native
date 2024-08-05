@@ -48,7 +48,7 @@ class PerformanceEntryReporter {
   void pushEntry(const PerformanceEntry& entry);
 
   // https://www.w3.org/TR/performance-timeline/#getentries-method
-  std::vector<PerformanceEntry> getEntries(
+  [[nodiscard]] std::vector<PerformanceEntry> getEntries(
       std::optional<PerformanceEntryType> entryType = std::nullopt,
       std::string_view entryName = {}) const;
 
@@ -62,17 +62,17 @@ class PerformanceEntryReporter {
 
   void logLongTaskEntry(double startTime, double duration);
 
-  const std::unordered_map<std::string, uint32_t>& getEventCounts() const {
+  [[nodiscard]] const std::unordered_map<std::string, uint32_t>& getEventCounts() const {
     return eventCounts_;
   }
 
-  DOMHighResTimeStamp getCurrentTimeStamp() const;
+  [[nodiscard]] DOMHighResTimeStamp getCurrentTimeStamp() const;
 
   void setTimeStampProvider(std::function<double()> provider) {
     timeStampProvider_ = std::move(provider);
   }
 
-  PerformanceObserverRegistry& getObserverRegistry() {
+  [[nodiscard]] PerformanceObserverRegistry& getObserverRegistry() {
     return *observerRegistry_;
   }
 
