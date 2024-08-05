@@ -8,7 +8,6 @@
 #include "RuntimeScheduler_Modern.h"
 #include "SchedulerPriorityUtils.h"
 
-#include <cxxreact/ErrorUtils.h>
 #include <cxxreact/SystraceSection.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/consistency/ScopedShadowTreeRevisionLock.h>
@@ -33,8 +32,13 @@ std::chrono::milliseconds getResolvedTimeoutForIdleTask(
 
 RuntimeScheduler_Modern::RuntimeScheduler_Modern(
     RuntimeExecutor runtimeExecutor,
-    std::function<RuntimeSchedulerTimePoint()> now)
-    : runtimeExecutor_(std::move(runtimeExecutor)), now_(std::move(now)) {}
+    std::function<RuntimeSchedulerTimePoint()> now,
+    RuntimeSchedulerErrorHandler onTaskError,
+    RuntimeSchedulerErrorHandler onMicrotaskError)
+    : runtimeExecutor_(std::move(runtimeExecutor)),
+      now_(std::move(now)),
+      onTaskError_(std::move(onTaskError)),
+      onMicrotaskError_(std::move(onMicrotaskError)) {}
 
 void RuntimeScheduler_Modern::scheduleWork(RawCallback&& callback) noexcept {
   SystraceSection s("RuntimeScheduler::scheduleWork");
@@ -384,7 +388,7 @@ void RuntimeScheduler_Modern::executeTask(
       task.callback = result.getObject(runtime).getFunction(runtime);
     }
   } catch (jsi::JSError& error) {
-    handleJSError(runtime, error, true);
+    onTaskError_(runtime, error);
   }
 }
 
@@ -418,7 +422,7 @@ void RuntimeScheduler_Modern::performMicrotaskCheckpoint(
         break;
       }
     } catch (jsi::JSError& error) {
-      handleJSError(runtime, error, true);
+      onMicrotaskError_(runtime, error);
     }
     retries++;
   }
