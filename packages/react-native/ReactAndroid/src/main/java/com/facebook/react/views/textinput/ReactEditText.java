@@ -32,7 +32,6 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.method.KeyListener;
 import android.text.method.QwertyKeyListener;
-import android.util.Base64;
 import android.util.TypedValue;
 import android.view.ActionMode;
 import android.view.Gravity;
@@ -74,7 +73,6 @@ import com.facebook.react.views.text.internal.span.ReactStrikethroughSpan;
 import com.facebook.react.views.text.internal.span.ReactUnderlineSpan;
 import com.facebook.react.views.text.internal.span.TextInlineImageSpan;
 import com.facebook.react.views.view.ReactViewBackgroundManager;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -346,14 +344,7 @@ public class ReactEditText extends AppCompatEditText {
           if (itemUri != null) {
             ContentResolver cr = getReactContext(this).getContentResolver();
             type = cr.getType(itemUri);
-            if (type != null) {
-              try {
-                String encodedData = Base64.encodeToString(cr.openInputStream(itemUri).readAllBytes(), Base64.DEFAULT);
-                data = "data:" + type + ";base64," + encodedData;
-              } catch (IOException e) {
-                e.printStackTrace();
-              }
-            }
+            data = itemUri.toString();
           }
         }
         if (type != null && data != null) {

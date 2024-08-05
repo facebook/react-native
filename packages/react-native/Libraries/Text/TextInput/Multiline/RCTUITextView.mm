@@ -13,6 +13,7 @@
 #import <React/RCTBackedTextInputDelegateAdapter.h>
 #import <React/RCTTextAttributes.h>
 
+#import <MobileCoreServices/UTType.h>
 #import <UIKit/UIKit.h>
 
 @implementation RCTUITextView {
@@ -176,45 +177,26 @@ static UIColor *defaultPlaceholderColor(void)
   _textWasPasted = YES;
   UIPasteboard *clipboard = [UIPasteboard generalPasteboard];
   if (clipboard.hasImages) {
-    NSArray *clipboardTypes = [clipboard pasteboardTypes];
-    if ([clipboardTypes containsObject:@"com.compuserve.gif"]) {
-      NSString *type = @"image/gif";
-      NSString *encodedData = [[clipboard dataForPasteboardType:@"com.compuserve.gif"] base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
-      NSString *data = [NSString stringWithFormat:@"data:%@;base64,%@", type, encodedData];
-      [_textInputDelegateAdapter didPaste:type withData:data];
-    } else if ([clipboardTypes containsObject:@"public.png"]) {
-      NSString *type = @"image/png";
-      NSString *encodedData = [[clipboard dataForPasteboardType:@"public.png"] base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
-      NSString *data = [NSString stringWithFormat:@"data:%@;base64,%@", type, encodedData];
-      [_textInputDelegateAdapter didPaste:type withData:data];
-    } else if ([clipboardTypes containsObject:@"public.jpeg"]) {
-      NSString *type = @"image/jpeg";
-      NSString *encodedData = [[clipboard dataForPasteboardType:@"public.jpeg"] base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
-      NSString *data = [NSString stringWithFormat:@"data:%@;base64,%@", type, encodedData];
-      [_textInputDelegateAdapter didPaste:type withData:data];
-    } else if ([clipboardTypes containsObject:@"org.webmproject.webp"]) {
-      NSString *type = @"image/webp";
-      NSString *encodedData = [[clipboard dataForPasteboardType:@"org.webmproject.webp"] base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
-      NSString *data = [NSString stringWithFormat:@"data:%@;base64,%@", type, encodedData];
-      [_textInputDelegateAdapter didPaste:type withData:data];
-    } else if ([clipboardTypes containsObject:@"public.tiff"]) {
-      NSString *type = @"image/tiff";
-      NSString *encodedData = [[clipboard dataForPasteboardType:@"public.tiff"] base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
-      NSString *data = [NSString stringWithFormat:@"data:%@;base64,%@", type, encodedData];
-      [_textInputDelegateAdapter didPaste:type withData:data];
-    } else if ([clipboardTypes containsObject:@"com.microsoft.bmp"]) {
-      NSString *type = @"image/bmp";
-      NSString *encodedData = [[clipboard dataForPasteboardType:@"com.microsoft.bmp"] base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
-      NSString *data = [NSString stringWithFormat:@"data:%@;base64,%@", type, encodedData];
-      [_textInputDelegateAdapter didPaste:type withData:data];
-    } else if ([clipboardTypes containsObject:@"public.svg-image"]) {
-      NSString *type = @"image/svg+xml";
-      NSString *encodedData = [[clipboard dataForPasteboardType:@"public.svg-image"] base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
-      NSString *data = [NSString stringWithFormat:@"data:%@;base64,%@", type, encodedData];
-      [_textInputDelegateAdapter didPaste:type withData:data];
+    for (NSItemProvider *itemProvider in [clipboard itemProviders]) {
+      if ([itemProvider canLoadObjectOfClass:[UIImage class]]) {
+        NSString *identifier = itemProvider.registeredTypeIdentifiers.firstObject;
+        if (identifier != nil) {
+          NSString *MIMEType = (__bridge_transfer NSString *)UTTypeCopyPreferredTagWithClass((__bridge CFStringRef)identifier, kUTTagClassMIMEType);
+          NSString *fileExtension = (__bridge_transfer NSString *)UTTypeCopyPreferredTagWithClass((__bridge CFStringRef)identifier, kUTTagClassFilenameExtension);
+          NSString *fileName = [NSString stringWithFormat:@"%@.%@", itemProvider.suggestedName ?: @"file", fileExtension];
+          NSString *filePath = [NSTemporaryDirectory() stringByAppendingPathComponent:fileName];
+          NSURL *fileURL = [NSURL fileURLWithPath:filePath];
+          NSData *fileData = [clipboard dataForPasteboardType:identifier];
+          [fileData writeToFile:filePath atomically:YES];
+          [_textInputDelegateAdapter didPaste:MIMEType withData:[fileURL absoluteString]];
+        }
+        break;
+      }
     }
   } else {
-    [_textInputDelegateAdapter didPaste:@"text/plain" withData:clipboard.string];
+    if (clipboard.hasStrings) {
+      [_textInputDelegateAdapter didPaste:@"text/plain" withData:clipboard.string];
+    }
     [super paste:sender];
   }
 }
