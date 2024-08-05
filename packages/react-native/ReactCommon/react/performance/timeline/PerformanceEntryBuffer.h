@@ -25,13 +25,14 @@ constexpr size_t DEFAULT_MAX_BUFFER_SIZE = 1024;
  * Subtypes differ on how entries are stored.
  */
 struct PerformanceEntryBuffer {
-  bool isAlwaysLogged{false};
   double durationThreshold{DEFAULT_DURATION_THRESHOLD};
+  size_t droppedEntriesCount{0};
+  bool isAlwaysLogged{false};
 
   explicit PerformanceEntryBuffer() = default;
   virtual ~PerformanceEntryBuffer() = default;
 
-  virtual PerformanceEntryPushStatus add(const PerformanceEntry& entry) = 0;
+  virtual void add(const PerformanceEntry& entry) = 0;
   virtual void consume(std::vector<PerformanceEntry>& target) = 0;
   virtual size_t pendingMessagesCount() const = 0;
   virtual void getEntries(
@@ -47,10 +48,10 @@ struct PerformanceEntryCircularBuffer : public PerformanceEntryBuffer {
   explicit PerformanceEntryCircularBuffer(size_t size) : entries(size) {}
   ~PerformanceEntryCircularBuffer() override = default;
 
-  PerformanceEntryPushStatus add(const PerformanceEntry& entry) override;
+  void add(const PerformanceEntry& entry) override;
   void consume(std::vector<PerformanceEntry>& target) override;
 
-  size_t pendingMessagesCount() const override;
+  [[nodiscard]] size_t pendingMessagesCount() const override;
 
   void getEntries(
       std::optional<std::string_view> name,
@@ -66,7 +67,7 @@ struct PerformanceEntryKeyedBuffer : public PerformanceEntryBuffer {
   explicit PerformanceEntryKeyedBuffer() = default;
   ~PerformanceEntryKeyedBuffer() override = default;
 
-  PerformanceEntryPushStatus add(const PerformanceEntry& entry) override;
+  void add(const PerformanceEntry& entry) override;
   void consume(std::vector<PerformanceEntry>& target) override;
 
   size_t pendingMessagesCount() const override;

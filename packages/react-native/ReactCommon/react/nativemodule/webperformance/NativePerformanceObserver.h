@@ -22,6 +22,8 @@
 
 namespace facebook::react {
 
+using NativePerformanceObserverCallback = AsyncCallback<std::vector<PerformanceEntry>&&, size_t>;
+
 #pragma mark - Structs
 
 template <>
@@ -50,7 +52,7 @@ class NativePerformanceObserver
  public:
   NativePerformanceObserver(std::shared_ptr<CallInvoker> jsInvoker);
       
-  jsi::Object createObserver(jsi::Runtime& rt, AsyncCallback<> callback);
+  jsi::Object createObserver(jsi::Runtime& rt, NativePerformanceObserverCallback callback);
   void observe(jsi::Runtime& rt, jsi::Object observer, jsi::Object options);
   void disconnect(jsi::Runtime& rt, jsi::Object observer);
   std::vector<PerformanceEntry> takeRecords(jsi::Runtime& rt, jsi::Object observerObj);

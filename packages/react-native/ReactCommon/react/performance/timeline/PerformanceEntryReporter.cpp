@@ -27,7 +27,7 @@ DOMHighResTimeStamp PerformanceEntryReporter::getCurrentTimeStamp() const {
 void PerformanceEntryReporter::setAlwaysLogged(
     PerformanceEntryType entryType,
     bool isAlwaysLogged) {
-  auto& buffer = getBuffer(entryType);
+  auto& buffer = getBufferRef(entryType);
   buffer.isAlwaysLogged = isAlwaysLogged;
 }
 
@@ -38,7 +38,7 @@ void PerformanceEntryReporter::pushEntry(const PerformanceEntry& entry) {
 
   {
     std::lock_guard lock(entriesMutex_);
-    auto& buffer = getBuffer(entry.entryType);
+    auto& buffer = getBufferRef(entry.entryType);
 
     if (entry.entryType == PerformanceEntryType::EVENT) {
       if (entry.duration < buffer.durationThreshold) {
@@ -47,14 +47,7 @@ void PerformanceEntryReporter::pushEntry(const PerformanceEntry& entry) {
       }
     }
 
-    auto pushResult = buffer.add(std::move(entry));
-    if (pushResult ==
-        BoundedConsumableBuffer<PerformanceEntry>::PushStatus::DROP) {
-      // Start dropping entries once reached maximum buffer size.
-      // The number of dropped entries will be reported back to the corresponding
-      // PerformanceObserver callback.
-      droppedEntriesCount_ += 1;
-    }
+    buffer.add(entry);
   }
 
   observerRegistry_->emit(entry);
@@ -81,7 +74,7 @@ void PerformanceEntryReporter::clearEntries(
     return;
   }
 
-  auto& buffer = getBuffer(*entryType);
+  auto& buffer = getBufferRef(*entryType);
   if (!entryName.empty()) {
     std::lock_guard lock(entriesMutex_);
     buffer.clear(entryName);
@@ -140,7 +133,7 @@ void PerformanceEntryReporter::measure(
   DOMHighResTimeStamp durationVal =
       duration ? *duration : endTimeVal - startTimeVal;
 
-  logEntry(
+  pushEntry(
       {.name = std::string(name),
        .entryType = PerformanceEntryType::MEASURE,
        .startTime = startTimeVal,
@@ -165,7 +158,7 @@ void PerformanceEntryReporter::logEventEntry(
     DOMHighResTimeStamp processingStart,
     DOMHighResTimeStamp processingEnd,
     uint32_t interactionId) {
-  logEntry(
+  pushEntry(
       {.name = std::move(name),
        .entryType = PerformanceEntryType::EVENT,
        .startTime = startTime,
@@ -178,7 +171,7 @@ void PerformanceEntryReporter::logEventEntry(
 void PerformanceEntryReporter::logLongTaskEntry(
     DOMHighResTimeStamp startTime,
     DOMHighResTimeStamp duration) {
-  logEntry(
+  pushEntry(
       {.name = std::string{"self"},
        .entryType = PerformanceEntryType::LONGTASK,
        .startTime = startTime,

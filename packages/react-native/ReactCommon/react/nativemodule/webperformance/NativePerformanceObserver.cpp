@@ -27,13 +27,21 @@ NativePerformanceObserverModuleProvider(
 
 namespace facebook::react {
 
+std::optional<PerformanceEntryType> parseEntryType(int rawValue) {
+  if (rawValue < 0 || rawValue >= NUM_PERFORMANCE_ENTRY_TYPES) {
+    return std::nullopt;
+  }
+
+  return static_cast<PerformanceEntryType>(rawValue);
+}
+
 NativePerformanceObserver::NativePerformanceObserver(
     std::shared_ptr<CallInvoker> jsInvoker)
     : NativePerformanceObserverCxxSpec(std::move(jsInvoker)) {}
 
-jsi::Object NativePerformanceObserver::createObserver(jsi::Runtime& rt, AsyncCallback<> callback) {
-  PerformanceObserverCallback cb = [callback = std::move(callback)](size_t _) -> void {
-    callback.callWithPriority(SchedulerPriority::IdlePriority);
+jsi::Object NativePerformanceObserver::createObserver(jsi::Runtime& rt, NativePerformanceObserverCallback callback) {
+  PerformanceObserverCallback cb = [callback = std::move(callback)](std::vector<PerformanceEntry>&& entries, size_t droppedEntriesCount) -> void {
+    callback.callWithPriority(SchedulerPriority::IdlePriority, std::move(entries), droppedEntriesCount);
   };
 
   auto observer = std::make_shared<PerformanceObserver>(std::move(cb));
@@ -49,32 +57,31 @@ void NativePerformanceObserver::observe(jsi::Runtime& rt, jsi::Object observerOb
   if (!observer) {
     return;
   }
+  observer->setRequiresDroppedEntries(buffered);
 
-  std::set<int> entryTypes;
+
+  std::unordered_set<PerformanceEntryType> entryTypes;
 
   // observer of type multiple
   if (options.hasProperty(rt, "entryTypes")) {
     auto types = options.getPropertyAsObject(rt, "entryTypes").asArray(rt);
     for (auto i = 0; i < types.size(rt); ++i) {
-      entryTypes.insert(types.getValueAtIndex(rt, i).asNumber());
+      auto rawValue = types.getValueAtIndex(rt, i).asNumber();
+      if (auto entryType = parseEntryType(rawValue); entryType) {
+        entryTypes.insert(*entryType);
+      }
     }
   }
-  else {
+  else { // single
     auto buffered = options.getProperty(rt, "buffered").asBool();
     auto type = options.getProperty(rt, "type").asNumber();
-    entryTypes.insert(type);
-    observer->setEntryBuffering(buffered);
+    if (auto entryType = parseEntryType(type); entryType) {
+      entryTypes.insert(*entryType);
+    }
   }
 
   // apply collected entryTypes into observer eventFilter
-  observer->getEventFilter().clear();
-  for (auto entryType : entryTypes) {
-    if (entryType < 0 || entryType >= NUM_PERFORMANCE_ENTRY_TYPES) {
-      continue;
-    }
-
-    observer->getEventFilter().insert(static_cast<PerformanceEntryType>(entryType));
-  }
+  observer->setEntryTypeFilter(entryTypes);
 
   auto& registry = PerformanceEntryReporter::getInstance()->getObserverRegistry();
   registry.addObserver(observer);
@@ -102,7 +109,7 @@ std::vector<PerformanceEntry> NativePerformanceObserver::takeRecords(jsi::Runtim
     return {};
   }
 
-  return observer->popPendingEntries().entries;
+  return observer->takeRecords();
 }
 
 void NativePerformanceObserver::clearEntries(
