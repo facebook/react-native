@@ -469,6 +469,19 @@
 - Use our fork of the react-native-communti/cli-platform-ios use_native_modues.rb script ([c884d19a50](https://github.com/facebook/react-native/commit/c884d19a501081ffbc4b353d751ecc3e32d6f624) by [@blakef](https://github.com/blakef))
 - Enforce Activities using ReactDelegate implement DefaultHardwareBackBtnHandler. ([a2d277f740](https://github.com/facebook/react-native/commit/a2d277f740d8ee95137d42679a1ffd872962a108) by [@javache](https://github.com/javache))
 
+## v0.74.5
+
+### Fixed
+
+#### iOS specific
+
+- Pass the right Apple system versions to Hermes ([10e9669ad1](https://github.com/facebook/react-native/commit/10e9669ad11141b155caa606638b4c6081fcf01c) by [@cipolleschi](https://github.com/cipolleschi))
+
+#### Android specific
+
+- Remove deprecated onTextInput callback ([5da40cbb1c](https://github.com/facebook/react-native/commit/5da40cbb1cab9637db477156c4501ecfcf1c3315) by [@javache](https://github.com/javache))
+
+
 ## v0.74.4
 
 ### Added
