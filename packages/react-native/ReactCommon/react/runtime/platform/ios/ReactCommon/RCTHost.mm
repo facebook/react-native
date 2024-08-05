@@ -244,7 +244,7 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
   surface.surfaceHandler.setDisplayMode(displayMode);
   [self _attachSurface:surface];
 
-  [_instance callFunctionOnBufferedRumtimeExecutor:[surface](facebook::jsi::Runtime &_) { [surface start]; }];
+  [_instance callFunctionOnBufferedRuntimeExecutor:[surface](facebook::jsi::Runtime &_) { [surface start]; }];
   return surface;
 }
 
@@ -289,7 +289,7 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
 
   for (RCTFabricSurface *surface in [self _getAttachedSurfaces]) {
     [surface resetWithSurfacePresenter:self.surfacePresenter];
-    [_instance callFunctionOnBufferedRumtimeExecutor:[surface](facebook::jsi::Runtime &_) { [surface start]; }];
+    [_instance callFunctionOnBufferedRuntimeExecutor:[surface](facebook::jsi::Runtime &_) { [surface start]; }];
   }
 }
 
