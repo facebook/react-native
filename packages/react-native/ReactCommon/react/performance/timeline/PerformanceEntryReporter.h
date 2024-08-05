@@ -100,6 +100,22 @@ class PerformanceEntryReporter {
       std::optional<PerformanceEntryType> entryType = std::nullopt,
       std::string_view entryName = {});
 
+  [[nodiscard]] const PerformanceEntryBuffer& getBuffer(
+      PerformanceEntryType entryType) const {
+    switch (entryType) {
+      case PerformanceEntryType::EVENT:
+        return eventBuffer_;
+      case PerformanceEntryType::MARK:
+        return markBuffer_;
+      case PerformanceEntryType::MEASURE:
+        return measureBuffer_;
+      case PerformanceEntryType::LONGTASK:
+        return longTaskBuffer_;
+      default:
+        assert(0 && "Unhandled PerformanceEntryType");
+    }
+  }
+
 private:
   std::unique_ptr<PerformanceObserverRegistry> observerRegistry_;
 
@@ -122,23 +138,7 @@ private:
       std::string_view entryName,
       std::vector<PerformanceEntry>& res) const;
 
-  PerformanceEntryBuffer& getBuffer(PerformanceEntryType entryType) {
-    switch (entryType) {
-      case PerformanceEntryType::EVENT:
-        return eventBuffer_;
-      case PerformanceEntryType::MARK:
-        return markBuffer_;
-      case PerformanceEntryType::MEASURE:
-        return measureBuffer_;
-      case PerformanceEntryType::LONGTASK:
-        return longTaskBuffer_;
-      default:
-        assert(0 && "Unhandled PerformanceEntryType");
-    }
-  }
-
-  const PerformanceEntryBuffer& getBuffer(
-      PerformanceEntryType entryType) const {
+  PerformanceEntryBuffer& getBufferRef(PerformanceEntryType entryType) {
     switch (entryType) {
       case PerformanceEntryType::EVENT:
         return eventBuffer_;

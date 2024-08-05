@@ -14,8 +14,8 @@
 
 namespace facebook::react {
 
-using PerformanceObserverEventFilter = std::unordered_set<PerformanceEntryType>;
-using PerformanceObserverCallback = std::function<void(size_t)>;
+using PerformanceObserverEntryTypeFilter = std::unordered_set<PerformanceEntryType>;
+using PerformanceObserverCallback = std::function<void(std::vector<PerformanceEntry>, size_t)>;
 
 class PerformanceObserverRegistry;
 
@@ -25,41 +25,36 @@ class PerformanceObserverRegistry;
  * performance entry types.
  *
  * Entries are pushed to the observer by the `PerformanceEntryReporter` class,
- * which acts as a central hub.
+ * through the `PerformanceObserverRegistry` class which acts as a central hub.
  */
 class PerformanceObserver {
  public:
-  struct PopPendingEntriesResult {
-    std::vector<PerformanceEntry> entries;
-    uint32_t droppedEntriesCount;
-  };
-
   explicit PerformanceObserver(
       PerformanceObserverCallback&& callback)
       : callback_(std::move(callback)) {}
 
   virtual ~PerformanceObserver();
 
+  [[nodiscard]] bool shouldAdd(PerformanceEntryType type) const;
   void pushEntry(const PerformanceEntry& entry);
-  [[nodiscard]] PopPendingEntriesResult popPendingEntries();
-  void clearEntries(
-      std::optional<PerformanceEntryType> entryType = std::nullopt,
-      std::string_view entryName = {});
+
+  /**
+   * Returns current observer buffer and clears it.
+   */
+  [[nodiscard]] std::vector<PerformanceEntry> takeRecords();
 
   [[nodiscard]] bool isObserving(PerformanceEntryType type) const;
-  [[nodiscard]] PerformanceObserverEventFilter& getEventFilter();
-
-  void setEntryBuffering(bool isBuffered);
-  void setDurationThreshold(double durationThreshold);
+  void observe(PerformanceEntryType type, bool buffered);
+  void observe(std::unordered_set<PerformanceEntryType> types);
 
  private:
   void scheduleFlushBuffer();
 
   std::weak_ptr<PerformanceObserverRegistry> registry_;
   PerformanceObserverCallback callback_;
-  PerformanceObserverEventFilter observedTypes_;
-  size_t droppedEntriesCount_{0};
-  PerformanceEntryCircularBuffer buffer_{DEFAULT_MAX_BUFFER_SIZE};
+  PerformanceObserverEntryTypeFilter observedTypes_;
+  std::vector<PerformanceEntry> entries_;
+  bool requiresDroppedEntries_ = false;
 };
 
 inline bool operator==(const PerformanceObserver& lhs, const PerformanceObserver& rhs) {
