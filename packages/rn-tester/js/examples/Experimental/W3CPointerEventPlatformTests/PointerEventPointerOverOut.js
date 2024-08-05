@@ -61,28 +61,14 @@ function PointerEventPointerOverOutTestCase(
   const outerNativeTagRef = useRef(-1);
 
   const handleInnerRefCallback = useCallback(
-    (
-      elem: null | React$ElementRef<
-        React$AbstractComponent<
-          ViewProps,
-          React.ElementRef<HostComponent<ViewProps>>,
-        >,
-      >,
-    ) => {
+    (elem: null | React.ElementRef<HostComponent<ViewProps>>) => {
       const nativeTag = getNativeTagFromHostElement(elem);
       innerNativeTagRef.current = nativeTag != null ? nativeTag : -1;
     },
     [],
   );
   const handleOuterRefCallback = useCallback(
-    (
-      elem: null | React$ElementRef<
-        React$AbstractComponent<
-          ViewProps,
-          React.ElementRef<HostComponent<ViewProps>>,
-        >,
-      >,
-    ) => {
+    (elem: null | React.ElementRef<HostComponent<ViewProps>>) => {
       const nativeTag = getNativeTagFromHostElement(elem);
       outerNativeTagRef.current = nativeTag != null ? nativeTag : -1;
     },
