@@ -390,7 +390,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   }
 }
 
-- (void)callFunctionOnBufferedRumtimeExecutor:(std::function<void(facebook::jsi::Runtime &)> &&)executor
+- (void)callFunctionOnBufferedRuntimeExecutor:(std::function<void(facebook::jsi::Runtime &)> &&)executor
 {
   _reactInstance->getBufferedRuntimeExecutor()([=](jsi::Runtime &runtime) {
     if (executor) {
