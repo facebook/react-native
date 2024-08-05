@@ -65,10 +65,6 @@ PerformanceObserverEventFilter& PerformanceObserver::getEventFilter() {
   return observedTypes_;
 }
 
-const PerformanceObserverEventFilter& PerformanceObserver::getEventFilter() const {
-  return observedTypes_;
-}
-
 void PerformanceObserver::setEntryBuffering(bool isBuffered) {
   buffer_.isAlwaysLogged = isBuffered;
 }
