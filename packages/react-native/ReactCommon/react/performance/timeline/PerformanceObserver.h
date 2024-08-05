@@ -41,14 +41,13 @@ class PerformanceObserver {
   virtual ~PerformanceObserver();
 
   void pushEntry(const PerformanceEntry& entry);
-  PopPendingEntriesResult popPendingEntries();
+  [[nodiscard]] PopPendingEntriesResult popPendingEntries();
   void clearEntries(
       std::optional<PerformanceEntryType> entryType = std::nullopt,
       std::string_view entryName = {});
 
-  bool isObserving(PerformanceEntryType type) const;
-  PerformanceObserverEventFilter& getEventFilter();
-  const PerformanceObserverEventFilter& getEventFilter() const;
+  [[nodiscard]] bool isObserving(PerformanceEntryType type) const;
+  [[nodiscard]] PerformanceObserverEventFilter& getEventFilter();
 
   void setEntryBuffering(bool isBuffered);
   void setDurationThreshold(double durationThreshold);
