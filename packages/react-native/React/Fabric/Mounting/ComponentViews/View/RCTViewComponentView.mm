@@ -837,7 +837,6 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     [self.layer addSublayer:_filterLayer];
   }
 
-  [_boxShadowLayer removeFromSuperlayer];
   
   [self clearExistingGradientLayers];
   auto backgroundImage = _props->backgroundImage;
@@ -888,6 +887,7 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     [_gradientLayers addObject:gradientLayer];
   }
 
+  [_boxShadowLayer removeFromSuperlayer];
   _boxShadowLayer = nil;
   if (!_props->boxShadow.empty()) {
     _boxShadowLayer = [CALayer layer];
