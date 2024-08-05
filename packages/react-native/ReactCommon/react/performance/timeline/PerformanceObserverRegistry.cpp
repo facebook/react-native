@@ -40,7 +40,10 @@ void PerformanceObserverRegistry::emit(const facebook::react::PerformanceEntry& 
 
   for (auto& observer_ptr : observers_) {
     if (auto observer = observer_ptr.lock()) {
-      observer->logEntry(entry);
+      // push to observer if it is contained within its entry type filter
+      if (observer->isObserving(entry.entryType)) {
+        observer->pushEntry(entry);
+      }
     }
   }
 }

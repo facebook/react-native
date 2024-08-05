@@ -16,16 +16,7 @@ PerformanceObserver::~PerformanceObserver() {
   }
 }
 
-void PerformanceObserver::logEntry(const facebook::react::PerformanceEntry& entry) {
-  if (!isObserving(entry.entryType)) {
-    return;
-  }
-
-  if (entry.duration < buffer_.durationThreshold) {
-    // The entries duration is lower than the desired reporting threshold, skip
-    return;
-  }
-
+void PerformanceObserver::pushEntry(const facebook::react::PerformanceEntry& entry) {
   auto pushResult = buffer_.add(entry);
   if (pushResult ==
       BoundedConsumableBuffer<PerformanceEntry>::PushStatus::DROP) {
