@@ -45,7 +45,7 @@ class PerformanceEntryReporter {
     return getBuffer(entryType).isAlwaysLogged;
   }
 
-  void logEntry(const PerformanceEntry& entry);
+  void pushEntry(const PerformanceEntry& entry);
 
   // https://www.w3.org/TR/performance-timeline/#getentries-method
   std::vector<PerformanceEntry> getEntries(

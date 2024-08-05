@@ -31,7 +31,7 @@ void PerformanceEntryReporter::setAlwaysLogged(
   buffer.isAlwaysLogged = isAlwaysLogged;
 }
 
-void PerformanceEntryReporter::logEntry(const PerformanceEntry& entry) {
+void PerformanceEntryReporter::pushEntry(const PerformanceEntry& entry) {
   if (entry.entryType == PerformanceEntryType::EVENT) {
     eventCounts_[entry.name]++;
   }
@@ -39,7 +39,6 @@ void PerformanceEntryReporter::logEntry(const PerformanceEntry& entry) {
   {
     std::lock_guard lock(entriesMutex_);
     auto& buffer = getBuffer(entry.entryType);
-
 
     if (entry.entryType == PerformanceEntryType::EVENT) {
       if (entry.duration < buffer.durationThreshold) {
@@ -64,7 +63,7 @@ void PerformanceEntryReporter::logEntry(const PerformanceEntry& entry) {
 void PerformanceEntryReporter::mark(
     const std::string& name,
     const std::optional<DOMHighResTimeStamp>& startTime) {
-  logEntry(PerformanceEntry{
+  pushEntry(PerformanceEntry{
       .name = name,
       .entryType = PerformanceEntryType::MARK,
       .startTime = startTime ? *startTime : getCurrentTimeStamp()});

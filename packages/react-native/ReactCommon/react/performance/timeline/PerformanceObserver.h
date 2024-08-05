@@ -40,7 +40,7 @@ class PerformanceObserver {
 
   virtual ~PerformanceObserver();
 
-  void logEntry(const PerformanceEntry& entry);
+  void pushEntry(const PerformanceEntry& entry);
   PopPendingEntriesResult popPendingEntries();
   void clearEntries(
       std::optional<PerformanceEntryType> entryType = std::nullopt,
