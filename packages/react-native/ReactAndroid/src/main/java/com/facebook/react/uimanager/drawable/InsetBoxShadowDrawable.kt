@@ -83,7 +83,8 @@ internal class InsetBoxShadowDrawable(
     )
     val clearRegionBorderRadii = getClearRegionBorderRadii(spreadExtent, background)
 
-    if (shadowPaint.colorFilter != colorFilter ||
+    if (!renderNode.hasDisplayList() ||
+        shadowPaint.colorFilter != colorFilter ||
         clearRegionDrawable.layoutDirection != layoutDirection ||
         clearRegionDrawable.borderRadius != clearRegionBorderRadii ||
         clearRegionDrawable.bounds != clearRegionBounds) {
