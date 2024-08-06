@@ -87,7 +87,8 @@ internal class OutsetBoxShadowDrawable(
                 adjustRadiusForSpread(computedBorderRadii.bottomLeft, spreadExtent.toFloat()),
         )
 
-    if (shadowShapeDrawable.bounds != shadowShapeBounds ||
+    if (!renderNode.hasDisplayList() ||
+        shadowShapeDrawable.bounds != shadowShapeBounds ||
         shadowShapeDrawable.layoutDirection != layoutDirection ||
         shadowShapeDrawable.computedBorderRadius != shadowBorderRadii ||
         shadowShapeDrawable.colorFilter != colorFilter) {
