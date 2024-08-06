@@ -2594,12 +2594,12 @@ type IOSProps = $ReadOnly<{|
   textContentType?: ?TextContentType,
   lineBreakStrategyIOS?: ?(\\"none\\" | \\"standard\\" | \\"hangul-word\\" | \\"push-out\\"),
   lineBreakModeIOS?: ?(
-    | "wordWrapping"
-    | "char"
-    | "clip"
-    | "head"
-    | "middle"
-    | "tail"
+    | \\"wordWrapping\\"
+    | \\"char\\"
+    | \\"clip\\"
+    | \\"head\\"
+    | \\"middle\\"
+    | \\"tail\\"
   ),
   smartInsertDelete?: ?boolean,
 |}>;
@@ -2947,12 +2947,12 @@ type IOSProps = $ReadOnly<{|
   textContentType?: ?TextContentType,
   lineBreakStrategyIOS?: ?(\\"none\\" | \\"standard\\" | \\"hangul-word\\" | \\"push-out\\"),
   lineBreakModeIOS?: ?(
-    | "wordWrapping"
-    | "char"
-    | "clip"
-    | "head"
-    | "middle"
-    | "tail"
+    | \\"wordWrapping\\"
+    | \\"char\\"
+    | \\"clip\\"
+    | \\"head\\"
+    | \\"middle\\"
+    | \\"tail\\"
   ),
   smartInsertDelete?: ?boolean,
 |}>;
