@@ -239,6 +239,12 @@ NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttributes(c
     paragraphStyle.maximumLineHeight = lineHeight;
     isParagraphStyleUsed = YES;
   }
+    
+  if (textAttributes.lineBreakMode.has_value()) {
+      paragraphStyle.lineBreakMode =
+          RCTNSLineBreakModeFromLineBreakMode(textAttributes.lineBreakMode.value());
+      isParagraphStyleUsed = YES;
+  }
 
   if (isParagraphStyleUsed) {
     attributes[NSParagraphStyleAttributeName] = paragraphStyle;

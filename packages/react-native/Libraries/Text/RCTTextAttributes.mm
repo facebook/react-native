@@ -28,6 +28,7 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
     _alignment = NSTextAlignmentNatural;
     _baseWritingDirection = NSWritingDirectionNatural;
     _lineBreakStrategy = NSLineBreakStrategyNone;
+    _lineBreakMode = NSLineBreakByWordWrapping;
     _textShadowRadius = NAN;
     _opacity = NAN;
     _textTransform = RCTTextTransformUndefined;
@@ -70,6 +71,7 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
       ? textAttributes->_baseWritingDirection
       : _baseWritingDirection; // *
   _lineBreakStrategy = textAttributes->_lineBreakStrategy ?: _lineBreakStrategy;
+  _lineBreakMode = textAttributes->_lineBreakMode ?: _lineBreakMode;
 
   // Decoration
   _textDecorationColor = textAttributes->_textDecorationColor ?: _textDecorationColor;
@@ -126,6 +128,11 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
       paragraphStyle.lineBreakStrategy = _lineBreakStrategy;
       isParagraphStyleUsed = YES;
     }
+  }
+
+  if (_lineBreakMode != NSLineBreakByWordWrapping) {
+    paragraphStyle.lineBreakMode = _lineBreakMode;
+    isParagraphStyleUsed = YES;
   }
 
   if (!isnan(_lineHeight)) {
@@ -336,6 +343,7 @@ static NSString *capitalizeText(NSString *text)
       // Paragraph Styles
       RCTTextAttributesCompareFloats(_lineHeight) && RCTTextAttributesCompareFloats(_alignment) &&
       RCTTextAttributesCompareOthers(_baseWritingDirection) && RCTTextAttributesCompareOthers(_lineBreakStrategy) &&
+      RCTTextAttributesCompareOthers(_lineBreakMode) &&
       // Decoration
       RCTTextAttributesCompareObjects(_textDecorationColor) && RCTTextAttributesCompareOthers(_textDecorationStyle) &&
       RCTTextAttributesCompareOthers(_textDecorationLine) &&

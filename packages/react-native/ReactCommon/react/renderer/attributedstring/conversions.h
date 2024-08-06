@@ -592,6 +592,60 @@ inline std::string toString(const LineBreakStrategy& lineBreakStrategy) {
 inline void fromRawValue(
     const PropsParserContext& context,
     const RawValue& value,
+    LineBreakMode& result) {
+  react_native_expect(value.hasType<std::string>());
+  if (value.hasType<std::string>()) {
+    auto string = (std::string)value;
+    if (string == "wordWrapping") {
+      result = LineBreakMode::Word;
+    } else if (string == "char") {
+      result = LineBreakMode::Char;
+    } else if (string == "clip") {
+      result = LineBreakMode::Clip;
+    } else if (string == "head") {
+      result = LineBreakMode::Head;
+    } else if (string == "middle") {
+      result = LineBreakMode::Middle;
+    } else if (string == "tail") {
+        result = LineBreakMode::Tail;
+    } else {
+      LOG(ERROR) << "Unsupported LineBreakStrategy value: " << string;
+      react_native_expect(false);
+      // sane default for prod
+      result = LineBreakMode::Word;
+    }
+    return;
+  }
+
+  LOG(ERROR) << "Unsupported LineBreakStrategy type";
+  // sane default for prod
+  result = LineBreakMode::Tail;
+}
+
+inline std::string toString(const LineBreakMode& lineBreakMode) {
+  switch (lineBreakMode) {
+    case LineBreakMode::Word:
+      return "word";
+    case LineBreakMode::Char:
+      return "char";
+    case LineBreakMode::Clip:
+      return "clip";
+    case LineBreakMode::Head:
+      return "head";
+    case LineBreakMode::Middle:
+      return "middle";
+    case LineBreakMode::Tail:
+      return "tail";
+  }
+
+  LOG(ERROR) << "Unsupported LineBreakStrategy value";
+  // sane default for prod
+  return "word";
+}
+
+inline void fromRawValue(
+    const PropsParserContext& context,
+    const RawValue& value,
     TextDecorationLineType& result) {
   react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
