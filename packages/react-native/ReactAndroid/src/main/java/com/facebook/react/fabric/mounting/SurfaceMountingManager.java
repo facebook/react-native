@@ -293,6 +293,9 @@ public class SurfaceMountingManager {
 
     Runnable runnable =
         () -> {
+          if (ReactNativeFeatureFlags.enableViewRecycling()) {
+            mViewManagerRegistry.onSurfaceStopped(mSurfaceId);
+          }
           mTagSetForStoppedSurface = new SparseArrayCompat<>();
           for (Map.Entry<Integer, ViewState> entry : mTagToViewState.entrySet()) {
             // Using this as a placeholder value in the map. We're using SparseArrayCompat
@@ -312,9 +315,6 @@ public class SurfaceMountingManager {
           mThemedReactContext = null;
           mOnViewAttachMountItems.clear();
 
-          if (ReactNativeFeatureFlags.enableViewRecycling()) {
-            mViewManagerRegistry.onSurfaceStopped(mSurfaceId);
-          }
           FLog.e(TAG, "Surface [" + mSurfaceId + "] was stopped on SurfaceMountingManager.");
         };
 

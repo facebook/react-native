@@ -61,11 +61,17 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
     }
   }
 
-  private @Nullable Stack<T> getRecyclableViewStack(int surfaceId) {
+  /**
+   * Returns the stack of recycled views for the surface, if enabled
+   *
+   * @param create Whether to create a new stack if not found for the {@code surfaceId}. Should be
+   *     {@code false} if it's possible the surface has been stopped.
+   */
+  private @Nullable Stack<T> getRecyclableViewStack(int surfaceId, boolean create) {
     if (mRecyclableViews == null) {
       return null;
     }
-    if (!mRecyclableViews.containsKey(surfaceId)) {
+    if (create && !mRecyclableViews.containsKey(surfaceId)) {
       mRecyclableViews.put(surfaceId, new Stack<T>());
     }
     return mRecyclableViews.get(surfaceId);
@@ -177,7 +183,7 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
       @Nullable ReactStylesDiffMap initialProps,
       @Nullable StateWrapper stateWrapper) {
     T view = null;
-    @Nullable Stack<T> recyclableViews = getRecyclableViewStack(reactContext.getSurfaceId());
+    @Nullable Stack<T> recyclableViews = getRecyclableViewStack(reactContext.getSurfaceId(), true);
     if (recyclableViews != null && !recyclableViews.empty()) {
       view = recycleView(reactContext, recyclableViews.pop());
     } else {
@@ -224,7 +230,7 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
     // View recycling
     ThemedReactContext themedReactContext = (ThemedReactContext) viewContext;
     int surfaceId = themedReactContext.getSurfaceId();
-    @Nullable Stack<T> recyclableViews = getRecyclableViewStack(surfaceId);
+    @Nullable Stack<T> recyclableViews = getRecyclableViewStack(surfaceId, false);
     if (recyclableViews != null) {
       T recyclableView = prepareToRecycleView(themedReactContext, view);
       if (recyclableView != null) {
