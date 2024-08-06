@@ -104,6 +104,7 @@ runs:
         chmod +x ./utils/build-apple-framework.sh
         . ./utils/build-apple-framework.sh
         prepare_dest_root_for_ci
+        ls -lR ./destroot
     - name: Create fat framework for iOS
       if: ${{ steps.check_if_apple_artifacts_are_there.outputs.ARTIFACTS_EXIST != 'true' }}
       shell: bash
