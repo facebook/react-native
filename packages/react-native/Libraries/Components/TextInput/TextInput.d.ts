@@ -325,7 +325,7 @@ export interface TextInputIOSProps {
     | 'head'
     | 'middle'
     | 'tail'
-    | undefined,
+    | undefined;
 
   /**
    * If `false`, the iOS system will not insert an extra space after a paste operation

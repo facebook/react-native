@@ -361,7 +361,14 @@ type IOSProps = $ReadOnly<{|
    * Set line break mode on iOS.
    * @platform ios
    */
-  lineBreakModeIOS?: ?('wordWrapping' | 'char' | 'clip' | 'head' | 'middle' | 'tail'),
+  lineBreakModeIOS?: ?(
+    | 'wordWrapping'
+    | 'char'
+    | 'clip'
+    | 'head'
+    | 'middle'
+    | 'tail'
+  ),
 
   /**
    * If `false`, the iOS system will not insert an extra space after a paste operation
@@ -1276,7 +1283,6 @@ function InternalTextInput(props: Props): React.Node {
 
   const inputRef = useRef<null | React.ElementRef<HostComponent<mixed>>>(null);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const selection: ?Selection =
     propsSelection == null
       ? null
