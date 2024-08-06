@@ -318,12 +318,12 @@ export interface TextInputIOSProps {
    * Set line break mode on iOS.
    * @platform ios
    */
-  lineBreakModeIOS?: 
-    | 'wordWrapping' 
-    | 'char' 
-    | 'clip' 
-    | 'head' 
-    | 'middle' 
+  lineBreakModeIOS?:
+    | 'wordWrapping'
+    | 'char'
+    | 'clip'
+    | 'head'
+    | 'middle'
     | 'tail'
     | undefined,
 
