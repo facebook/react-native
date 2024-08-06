@@ -447,8 +447,8 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
   } else if ([self shouldReloadImageSourceAfterResize]) {
     CGSize imageSize = self.image.size;
     CGFloat imageScale = self.image.scale;
-    CGSize idealSize =
-        RCTTargetSize(imageSize, imageScale, frame.size, RCTScreenScale(), (RCTResizeMode)self.contentMode, YES);
+    CGSize idealSize = RCTTargetSize(
+        imageSize, imageScale, frame.size, RCTScreenScale(), RCTResizeModeFromUIViewContentMode(self.contentMode), YES);
 
     // Don't reload if the current image or target image size is close enough
     if (!RCTShouldReloadImageForSizeChange(imageSize, idealSize) ||
