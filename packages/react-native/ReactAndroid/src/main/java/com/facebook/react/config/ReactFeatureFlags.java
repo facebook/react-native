@@ -32,6 +32,11 @@ public class ReactFeatureFlags {
    * Should this application use the new (Fabric) Renderer? If yes, all rendering in this app will
    * use Fabric instead of the legacy renderer.
    */
+  @Deprecated(
+      since =
+          "enableFabricRenderer will be deleted in 0.77, please use"
+              + " DefaultNewArchitectureEntryPoint.load() to enable fabric instead.",
+      forRemoval = true)
   public static volatile boolean enableFabricRenderer = false;
 
   /**
