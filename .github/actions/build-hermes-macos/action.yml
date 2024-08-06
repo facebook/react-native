@@ -105,6 +105,11 @@ runs:
         . ./utils/build-apple-framework.sh
         prepare_dest_root_for_ci
         ls -lR ./destroot
+    - name: Upload hermes osx artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: hermes-destroot-${{ inputs.flavor }}
+        path: ./packages/react-native/sdks/hermes/destroot
     - name: Create fat framework for iOS
       if: ${{ steps.check_if_apple_artifacts_are_there.outputs.ARTIFACTS_EXIST != 'true' }}
       shell: bash
@@ -112,9 +117,9 @@ runs:
         cd ./packages/react-native/sdks/hermes || exit 1
         echo "[HERMES] Creating the universal framework"
         chmod +x ./utils/build-ios-framework.sh
-        ./utils/build-ios-framework.sh build_framework
-
         chmod +x ./destroot/bin/hermesc
+
+        ./utils/build-ios-framework.sh build_framework
     - name: Package the Hermes Apple frameworks
       if: ${{ steps.check_if_apple_artifacts_are_there.outputs.ARTIFACTS_EXIST != 'true' }}
       shell: bash
