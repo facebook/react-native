@@ -101,24 +101,43 @@ import okhttp3.WebSocketListener;
               new WebSocketListener() {
                 @Override
                 public void onFailure(WebSocket _unused, Throwable t, @Nullable Response response) {
-                  @Nullable String message = t.getMessage();
-                  delegate.didFailWithError(null, message != null ? message : "<Unknown error>");
-                  // "No further calls to this listener will be made." -OkHttp docs for
-                  // WebSocketListener.onFailure
-                  delegate.close();
+                  scheduleCallback(
+                      new Runnable() {
+                        public void run() {
+                          @Nullable String message = t.getMessage();
+                          delegate.didFailWithError(
+                              null, message != null ? message : "<Unknown error>");
+                          // "No further calls to this listener will be made." -OkHttp docs for
+                          // WebSocketListener.onFailure
+                          delegate.close();
+                        }
+                      },
+                      0);
                 }
 
                 @Override
                 public void onMessage(WebSocket _unused, String text) {
-                  delegate.didReceiveMessage(text);
+                  scheduleCallback(
+                      new Runnable() {
+                        public void run() {
+                          delegate.didReceiveMessage(text);
+                        }
+                      },
+                      0);
                 }
 
                 @Override
                 public void onClosed(WebSocket _unused, int code, String reason) {
-                  delegate.didClose();
-                  // "No further calls to this listener will be made." -OkHttp docs for
-                  // WebSocketListener.onClosed
-                  delegate.close();
+                  scheduleCallback(
+                      new Runnable() {
+                        public void run() {
+                          delegate.didClose();
+                          // "No further calls to this listener will be made." -OkHttp docs for
+                          // WebSocketListener.onClosed
+                          delegate.close();
+                        }
+                      },
+                      0);
                 }
               });
       return new IWebSocket() {
