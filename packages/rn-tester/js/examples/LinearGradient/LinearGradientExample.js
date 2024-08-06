@@ -126,4 +126,35 @@ exports.examples = [
       );
     },
   },
+  {
+    title: 'Gradient with uniform border style',
+    render(): React.Node {
+      return (
+        <GradientBox
+          testID="linear-gradient-with-uniform-borders"
+          style={{
+            experimental_backgroundImage:
+              'linear-gradient(to bottom right, yellow, green);',
+            borderRadius: 16,
+          }}
+        />
+      );
+    },
+  },
+  {
+    title: 'Gradient with non-uniform border style',
+    render(): React.Node {
+      return (
+        <GradientBox
+          testID="linear-gradient-with-non-uniform-borders"
+          style={{
+            experimental_backgroundImage:
+              'linear-gradient(to bottom right, yellow, green);',
+            borderTopRightRadius: 8,
+            borderTopLeftRadius: 80,
+          }}
+        />
+      );
+    },
+  },
 ];

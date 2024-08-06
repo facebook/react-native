@@ -33,6 +33,7 @@ using namespace facebook::react;
   __weak CALayer *_borderLayer;
   CALayer *_boxShadowLayer;
   CALayer *_filterLayer;
+  NSMutableArray<CAGradientLayer *> *_gradientLayers;
   BOOL _needsInvalidateLayer;
   BOOL _isJSResponder;
   BOOL _removeClippedSubviews;
@@ -458,6 +459,11 @@ using namespace facebook::react;
     }
   }
 
+  // `linearGradient`
+  if (oldViewProps.backgroundImage != newViewProps.backgroundImage) {
+    needsInvalidateLayer = YES;
+  }
+
   // `boxShadow`
   if (oldViewProps.boxShadow != newViewProps.boxShadow) {
     needsInvalidateLayer = YES;
@@ -830,6 +836,56 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     [self.layer addSublayer:_filterLayer];
   }
 
+  [self clearExistingGradientLayers];
+  auto backgroundImage = _props->backgroundImage;
+  if (backgroundImage.empty()) {
+    return;
+  }
+  for (const auto &gradient : backgroundImage) {
+    CAGradientLayer *gradientLayer = [CAGradientLayer layer];
+    NSMutableArray *colors = [NSMutableArray array];
+    NSMutableArray *locations = [NSMutableArray array];
+    for (const auto &colorStop : gradient.colorStops) {
+      if (colorStop.position.has_value()) {
+        auto location = @(colorStop.position.value());
+        UIColor *color = RCTUIColorFromSharedColor(colorStop.color);
+        [colors addObject:(id)color.CGColor];
+        [locations addObject:location];
+      }
+    }
+    gradientLayer.startPoint = CGPointMake(gradient.startX, gradient.startY);
+    gradientLayer.endPoint = CGPointMake(gradient.endX, gradient.endY);
+
+    if (locations.count > 0) {
+      gradientLayer.locations = locations;
+    }
+    gradientLayer.colors = colors;
+    gradientLayer.frame = layer.bounds;
+
+    // border styling to work with gradient layers
+    if (useCoreAnimationBorderRendering) {
+      gradientLayer.borderWidth = layer.borderWidth;
+      gradientLayer.borderColor = layer.borderColor;
+      gradientLayer.cornerRadius = layer.cornerRadius;
+      gradientLayer.cornerCurve = layer.cornerCurve;
+    } else {
+      CAShapeLayer *maskLayer = [CAShapeLayer layer];
+      CGPathRef path = RCTPathCreateWithRoundedRect(
+          self.bounds,
+          RCTGetCornerInsets(RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii), UIEdgeInsetsZero),
+          nil);
+      maskLayer.path = path;
+      CGPathRelease(path);
+      gradientLayer.mask = maskLayer;
+    }
+
+    // border layer should appear above gradient layers to make sure that the border is visible
+    gradientLayer.zPosition = _borderLayer.zPosition - 1;
+
+    [self.layer addSublayer:gradientLayer];
+    [_gradientLayers addObject:gradientLayer];
+  }
+
   [_boxShadowLayer removeFromSuperlayer];
   _boxShadowLayer = nil;
   if (!_props->boxShadow.empty()) {
@@ -846,6 +902,18 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
 
     _boxShadowLayer.contents = (id)boxShadowImage.CGImage;
   }
+}
+
+- (void)clearExistingGradientLayers
+{
+  if (_gradientLayers == nil) {
+    _gradientLayers = [NSMutableArray new];
+    return;
+  }
+  for (CAGradientLayer *gradientLayer in _gradientLayers) {
+    [gradientLayer removeFromSuperlayer];
+  }
+  [_gradientLayers removeAllObjects];
 }
 
 #pragma mark - Accessibility
