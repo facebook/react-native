@@ -98,8 +98,6 @@ RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrollView, NSInt
   // some other part of the system scrolls scroll view.
   BOOL _isUserTriggeredScrolling;
   BOOL _shouldUpdateContentInsetAdjustmentBehavior;
-  BOOL _automaticallyAdjustKeyboardInsets;
-  BOOL _inverted;
 
   CGPoint _contentOffsetWhenClipped;
 
@@ -122,7 +120,6 @@ RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrollView, NSInt
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
-    [self _registerKeyboardListener];
     _props = ScrollViewShadowNode::defaultSharedProps();
     _scrollView = [[RCTEnhancedScrollView alloc] initWithFrame:self.bounds];
     _scrollView.clipsToBounds = _props->getClipsContentToBounds();
@@ -131,8 +128,6 @@ RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrollView, NSInt
     ((RCTEnhancedScrollView *)_scrollView).overridingDelegate = self;
     _isUserTriggeredScrolling = NO;
     _shouldUpdateContentInsetAdjustmentBehavior = YES;
-    _automaticallyAdjustKeyboardInsets = YES;
-    _inverted = NO;
     [self addSubview:_scrollView];
 
     _containerView = [[UIView alloc] initWithFrame:CGRectZero];
@@ -152,103 +147,6 @@ RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrollView, NSInt
   // Removing all delegates from the splitter nils the actual delegate which prevents a crash on UIScrollView
   // deallocation.
   [self.scrollViewDelegateSplitter removeAllDelegates];
-}
-
-- (void)_registerKeyboardListener
-{
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(_keyboardWillChangeFrame:)
-                                               name:UIKeyboardWillChangeFrameNotification
-                                             object:nil];
-}
-
-- (void)_unregisterKeyboardListener
-{
-  [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillChangeFrameNotification object:nil];
-}
-
-- (void)_keyboardWillChangeFrame:(NSNotification *)notification
-{
-  if (!_automaticallyAdjustKeyboardInsets) {
-    return;
-  }
-  BOOL isHorizontal = _scrollView.contentSize.width > self.frame.size.width;
-  if (isHorizontal) {
-    return;
-  }
-
-  double duration = [notification.userInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue];
-
-  UIViewAnimationCurve curve =
-      (UIViewAnimationCurve)[notification.userInfo[UIKeyboardAnimationCurveUserInfoKey] unsignedIntegerValue];
-  CGRect beginFrame = [notification.userInfo[UIKeyboardFrameBeginUserInfoKey] CGRectValue];
-  CGRect endFrame = [notification.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
-
-  CGPoint absoluteViewOrigin = [self convertPoint:self.bounds.origin toView:nil];
-  CGFloat scrollViewLowerY = _inverted ? absoluteViewOrigin.y : absoluteViewOrigin.y + self.bounds.size.height;
-
-  UIEdgeInsets newEdgeInsets = _scrollView.contentInset;
-  CGFloat inset = MAX(scrollViewLowerY - endFrame.origin.y, 0);
-  if (_inverted) {
-    newEdgeInsets.top = MAX(inset, _scrollView.contentInset.top);
-  } else {
-    newEdgeInsets.bottom = MAX(inset, _scrollView.contentInset.bottom);
-  }
-
-  CGPoint newContentOffset = _scrollView.contentOffset;
-  self.firstResponderFocus = CGRectNull;
-
-  CGFloat contentDiff = 0;
-  if ([[UIApplication sharedApplication] sendAction:@selector(reactUpdateResponderOffsetForScrollView:)
-                                                 to:nil
-                                               from:self
-                                           forEvent:nil]) {
-    // Inner text field focusedS
-    CGFloat focusEnd = CGRectGetMaxY(self.firstResponderFocus);
-    BOOL didFocusExternalTextField = focusEnd == INFINITY;
-    if (!didFocusExternalTextField && focusEnd > endFrame.origin.y) {
-      // Text field active region is below visible area with keyboard - update diff to bring into view
-      contentDiff = endFrame.origin.y - focusEnd;
-    }
-  } else if (endFrame.origin.y <= beginFrame.origin.y) {
-    // Keyboard opened for other reason
-    contentDiff = endFrame.origin.y - beginFrame.origin.y;
-  }
-  if (_inverted) {
-    newContentOffset.y += contentDiff;
-  } else {
-    newContentOffset.y -= contentDiff;
-  }
-
-  if (@available(iOS 14.0, *)) {
-    // On iOS when Prefer Cross-Fade Transitions is enabled, the keyboard position
-    // & height is reported differently (0 instead of Y position value matching height of frame)
-    // Fixes similar issue we saw with https://github.com/facebook/react-native/pull/34503
-    if (UIAccessibilityPrefersCrossFadeTransitions() && endFrame.size.height == 0) {
-      newContentOffset.y = 0;
-      newEdgeInsets.bottom = 0;
-    }
-  }
-
-  [UIView animateWithDuration:duration
-                        delay:0.0
-                      options:animationOptionsWithCurve(curve)
-                   animations:^{
-                     self->_scrollView.contentInset = newEdgeInsets;
-                     self->_scrollView.verticalScrollIndicatorInsets = newEdgeInsets;
-                     [self scrollToOffset:newContentOffset animated:NO];
-                   }
-                   completion:nil];
-}
-
-static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCurve curve)
-{
-  // UIViewAnimationCurve #7 is used for keyboard and therefore private - so we can't use switch/case here.
-  // source: https://stackoverflow.com/a/7327374/5281431
-  RCTAssert(
-      UIViewAnimationCurveLinear << 16 == UIViewAnimationOptionCurveLinear,
-      @"Unexpected implementation of UIViewAnimationCurve");
-  return curve << 16;
 }
 
 - (RCTGenericDelegateSplitter<id<UIScrollViewDelegate>> *)scrollViewDelegateSplitter
@@ -326,14 +224,6 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
   MAP_SCROLL_VIEW_PROP(scrollsToTop);
   MAP_SCROLL_VIEW_PROP(showsHorizontalScrollIndicator);
   MAP_SCROLL_VIEW_PROP(showsVerticalScrollIndicator);
-
-  if (oldScrollViewProps.isInvertedVirtualizedList != newScrollViewProps.isInvertedVirtualizedList) {
-    _inverted = newScrollViewProps.isInvertedVirtualizedList;
-  }
-
-  if (oldScrollViewProps.automaticallyAdjustKeyboardInsets != newScrollViewProps.automaticallyAdjustKeyboardInsets) {
-    _automaticallyAdjustKeyboardInsets = newScrollViewProps.automaticallyAdjustKeyboardInsets;
-  }
 
   if (oldScrollViewProps.scrollIndicatorInsets != newScrollViewProps.scrollIndicatorInsets) {
     _scrollView.scrollIndicatorInsets = RCTUIEdgeInsetsFromEdgeInsets(newScrollViewProps.scrollIndicatorInsets);
