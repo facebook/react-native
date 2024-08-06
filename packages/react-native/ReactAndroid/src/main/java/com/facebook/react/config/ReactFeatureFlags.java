@@ -26,6 +26,11 @@ public class ReactFeatureFlags {
    * com.facebook.react.turbomodule.core.interfaces.TurboModule} will NOT be passed in to C++
    * CatalystInstanceImpl
    */
+  @Deprecated(
+      since =
+          "useTurboModules will be deleted in 0.77, please use"
+              + " DefaultNewArchitectureEntryPoint.load() to enable TurboModules instead.",
+      forRemoval = true)
   public static volatile boolean useTurboModules = false;
 
   /**
