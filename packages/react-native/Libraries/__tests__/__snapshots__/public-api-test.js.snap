@@ -2594,6 +2594,7 @@ type IOSProps = $ReadOnly<{|
   textContentType?: ?TextContentType,
   lineBreakStrategyIOS?: ?(\\"none\\" | \\"standard\\" | \\"hangul-word\\" | \\"push-out\\"),
   smartInsertDelete?: ?boolean,
+  lineBreakModeIOS?: ?(\\"wordWrapping\\" | \\"char\\" | \\"clip\\" | \\"head\\" | \\"middle\\" | \\"tail\\"),
 |}>;
 type AndroidProps = $ReadOnly<{|
   cursorColor?: ?ColorValue,
@@ -2939,6 +2940,7 @@ type IOSProps = $ReadOnly<{|
   textContentType?: ?TextContentType,
   lineBreakStrategyIOS?: ?(\\"none\\" | \\"standard\\" | \\"hangul-word\\" | \\"push-out\\"),
   smartInsertDelete?: ?boolean,
+  lineBreakModeIOS?: ?(\\"wordWrapping\\" | \\"char\\" | \\"clip\\" | \\"head\\" | \\"middle\\" | \\"tail\\"),
 |}>;
 type AndroidProps = $ReadOnly<{|
   cursorColor?: ?ColorValue,
