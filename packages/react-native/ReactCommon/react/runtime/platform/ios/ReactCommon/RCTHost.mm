@@ -13,6 +13,7 @@
 #import <React/RCTConvert.h>
 #import <React/RCTFabricSurface.h>
 #import <React/RCTInspectorDevServerHelper.h>
+#import <React/RCTInspectorNetworkHelper.h>
 #import <React/RCTInspectorUtils.h>
 #import <React/RCTJSThread.h>
 #import <React/RCTLog.h>
@@ -37,7 +38,9 @@ using namespace facebook::react;
 class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::HostTargetDelegate {
  public:
   RCTHostHostTargetDelegate(RCTHost *host)
-      : host_(host), pauseOverlayController_([[RCTPausedInDebuggerOverlayController alloc] init])
+      : host_(host),
+        pauseOverlayController_([[RCTPausedInDebuggerOverlayController alloc] init]),
+        networkHelper_([[RCTInspectorNetworkHelper alloc] init])
   {
   }
 
@@ -84,9 +87,16 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
     }
   }
 
+  void loadNetworkResource(const RCTInspectorLoadNetworkResourceRequest &params, RCTInspectorNetworkExecutor executor)
+      override
+  {
+    [networkHelper_ loadNetworkResourceWithParams:params executor:executor];
+  }
+
  private:
   __weak RCTHost *host_;
   RCTPausedInDebuggerOverlayController *pauseOverlayController_;
+  RCTInspectorNetworkHelper *networkHelper_;
 };
 
 @implementation RCTHost {
