@@ -113,6 +113,7 @@ internal object NdkConfiguratorUtils {
               "**/libreact_utils.so",
               "**/librrc_image.so",
               "**/librrc_legacyviewmanagerinterop.so",
+              "**/librrc_textinput.so",
               "**/librrc_view.so",
               "**/libruntimeexecutor.so",
               "**/libturbomodulejsijni.so",
