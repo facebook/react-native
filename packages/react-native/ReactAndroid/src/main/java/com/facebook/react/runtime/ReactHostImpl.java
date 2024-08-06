@@ -50,6 +50,8 @@ import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.devsupport.DevSupportManagerBase;
 import com.facebook.react.devsupport.InspectorFlags;
 import com.facebook.react.devsupport.ReleaseDevSupportManager;
+import com.facebook.react.devsupport.inspector.InspectorNetworkHelper;
+import com.facebook.react.devsupport.inspector.InspectorNetworkRequestListener;
 import com.facebook.react.devsupport.interfaces.BundleLoadCallback;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.devsupport.interfaces.DevSupportManager.PausedInDebuggerOverlayCommandListener;
@@ -506,6 +508,11 @@ public class ReactHostImpl implements ReactHost {
   @DoNotStrip
   private Map<String, String> getHostMetadata() {
     return AndroidInfoHelpers.getInspectorHostMetadata(mContext);
+  }
+
+  @DoNotStrip
+  private void loadNetworkResource(String url, InspectorNetworkRequestListener listener) {
+    InspectorNetworkHelper.loadNetworkResource(url, listener);
   }
 
   /**
