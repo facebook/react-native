@@ -180,6 +180,7 @@ jest
         getNativeScrollRef: jest.fn(),
         scrollTo: jest.fn(),
         scrollToEnd: jest.fn(),
+        scrollToStart: jest.fn(),
         flashScrollIndicators: jest.fn(),
         scrollResponderZoomTo: jest.fn(),
         scrollResponderScrollNativeHandleToKeyboard: jest.fn(),

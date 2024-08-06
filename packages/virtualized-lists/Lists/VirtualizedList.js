@@ -146,6 +146,11 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     this.scrollToOffset({animated, offset});
   }
 
+  scrollToStart(params?: ?{animated?: ?boolean, ...}) {
+    const animated = params ? params.animated : true;
+    this.scrollToOffset({animated, offset: 0});
+  }
+
   // scrollToIndex may be janky without getItemLayout prop
   scrollToIndex(params: {
     animated?: ?boolean,
