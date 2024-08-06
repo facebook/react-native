@@ -86,7 +86,7 @@ runs:
           exit 1
         fi
     - name: Upload Artifact for Slice (${{ inputs.slice }}, ${{ inputs.flavor }}}
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v4.3.4
       with:
         name: slice-${{ inputs.slice }}-${{ inputs.flavor }}
         path: ./packages/react-native/sdks/hermes/build_${{ inputs.slice }}_${{ inputs.flavor }}

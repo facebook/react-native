@@ -104,12 +104,6 @@ runs:
         chmod +x ./utils/build-apple-framework.sh
         . ./utils/build-apple-framework.sh
         prepare_dest_root_for_ci
-        ls -lR ./destroot
-    - name: Upload hermes osx artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: hermes-destroot-${{ inputs.flavor }}
-        path: ./packages/react-native/sdks/hermes/destroot
     - name: Create fat framework for iOS
       if: ${{ steps.check_if_apple_artifacts_are_there.outputs.ARTIFACTS_EXIST != 'true' }}
       shell: bash
@@ -117,9 +111,9 @@ runs:
         cd ./packages/react-native/sdks/hermes || exit 1
         echo "[HERMES] Creating the universal framework"
         chmod +x ./utils/build-ios-framework.sh
-        chmod +x ./destroot/bin/hermesc
-
         ./utils/build-ios-framework.sh build_framework
+
+        chmod +x ./destroot/bin/hermesc
     - name: Package the Hermes Apple frameworks
       if: ${{ steps.check_if_apple_artifacts_are_there.outputs.ARTIFACTS_EXIST != 'true' }}
       shell: bash
@@ -176,17 +170,17 @@ runs:
         mkdir -p "$DEST_DIR"
         mv "hermes.framework.dSYM" "$DEST_DIR"
     - name: Upload hermes dSYM artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v4.3.4
       with:
         name: hermes-dSYM-${{ inputs.flavor }}
         path: /tmp/hermes/dSYM/${{ inputs.flavor }}
     - name: Upload hermes Runtime artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v4.3.4
       with:
         name: hermes-darwin-bin-${{ inputs.flavor }}
         path: /tmp/hermes/hermes-runtime-darwin/hermes-ios-${{ inputs.flavor }}.tar.gz
     - name: Upload hermes osx artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v4.3.4
       with:
         name: hermes-osx-bin-${{ inputs.flavor }}
         path: /tmp/hermes/osx-bin/${{ inputs.flavor }}

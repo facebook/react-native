@@ -24,7 +24,7 @@ runs:
         . ./utils/build-apple-framework.sh
         build_host_hermesc_if_needed
     - name: Upload HermesC Artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v4.3.4
       with:
         name: hermesc-apple
         path: ./packages/react-native/sdks/hermes/build_host_hermesc
