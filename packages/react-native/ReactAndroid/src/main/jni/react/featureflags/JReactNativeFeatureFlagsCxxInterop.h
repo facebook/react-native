@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6c0276095ccff4eb927141ce3b2c5469>>
+ * @generated SignedSource<<5399269d162bd4823a7ec36198c0604f>>
  */
 
 /**
@@ -31,9 +31,6 @@ class JReactNativeFeatureFlagsCxxInterop
       "Lcom/facebook/react/internal/featureflags/ReactNativeFeatureFlagsCxxInterop;";
 
   static bool commonTestFlag(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
-
-  static bool allowCollapsableChildren(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool allowRecursiveCommitsWithSynchronousMountOnAndroid(

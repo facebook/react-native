@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<71e34bc8db537e0b891b1fea9ffc3475>>
+ * @generated SignedSource<<42259cb82f9ac5b3c0918339b45e6a2a>>
  */
 
 /**
@@ -32,7 +32,6 @@ class ReactNativeFeatureFlagsAccessor {
   ReactNativeFeatureFlagsAccessor();
 
   bool commonTestFlag();
-  bool allowCollapsableChildren();
   bool allowRecursiveCommitsWithSynchronousMountOnAndroid();
   bool batchRenderingUpdatesInEventLoop();
   bool changeOrderOfMountingInstructionsOnAndroid();
@@ -85,10 +84,9 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 44> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 43> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
-  std::atomic<std::optional<bool>> allowCollapsableChildren_;
   std::atomic<std::optional<bool>> allowRecursiveCommitsWithSynchronousMountOnAndroid_;
   std::atomic<std::optional<bool>> batchRenderingUpdatesInEventLoop_;
   std::atomic<std::optional<bool>> changeOrderOfMountingInstructionsOnAndroid_;

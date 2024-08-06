@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0b57a2e853d1f2872ddf0c0b610805bb>>
+ * @generated SignedSource<<6896ec018143f40b7d08487fb10239d7>>
  * @flow strict-local
  */
 
@@ -45,7 +45,6 @@ export type ReactNativeFeatureFlagsJsOnlyOverrides = Partial<ReactNativeFeatureF
 export type ReactNativeFeatureFlags = {
   ...ReactNativeFeatureFlagsJsOnly,
   commonTestFlag: Getter<boolean>,
-  allowCollapsableChildren: Getter<boolean>,
   allowRecursiveCommitsWithSynchronousMountOnAndroid: Getter<boolean>,
   batchRenderingUpdatesInEventLoop: Getter<boolean>,
   changeOrderOfMountingInstructionsOnAndroid: Getter<boolean>,
@@ -154,10 +153,6 @@ export const useRefsForTextInputState: Getter<boolean> = createJavaScriptFlagGet
  * Common flag for testing. Do NOT modify.
  */
 export const commonTestFlag: Getter<boolean> = createNativeFlagGetter('commonTestFlag', false);
-/**
- * Enables the differentiator to understand the "collapsableChildren" prop
- */
-export const allowCollapsableChildren: Getter<boolean> = createNativeFlagGetter('allowCollapsableChildren', true);
 /**
  * Adds support for recursively processing commits that mount synchronously (Android only).
  */

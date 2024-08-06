@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b64ec98268a5f4c19e3c6edaf93e7298>>
+ * @generated SignedSource<<aee6b808045e1f1e8f91cb3820c177d9>>
  */
 
 /**
@@ -40,11 +40,6 @@ NativeReactNativeFeatureFlags::NativeReactNativeFeatureFlags(
 bool NativeReactNativeFeatureFlags::commonTestFlag(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::commonTestFlag();
-}
-
-bool NativeReactNativeFeatureFlags::allowCollapsableChildren(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::allowCollapsableChildren();
 }
 
 bool NativeReactNativeFeatureFlags::allowRecursiveCommitsWithSynchronousMountOnAndroid(
