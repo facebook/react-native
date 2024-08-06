@@ -52,6 +52,11 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
   const useSetNativePropsInNativeAnimationsInFabric =
     ReactNativeFeatureFlags.shouldUseSetNativePropsInNativeAnimationsInFabric();
 
+  const useAnimatedPropsLifecycle =
+    ReactNativeFeatureFlags.usePassiveEffectsForAnimations()
+      ? useAnimatedPropsLifecycle_passiveEffects
+      : useAnimatedPropsLifecycle_layoutEffects;
+
   useAnimatedPropsLifecycle(node);
 
   // TODO: This "effect" does three things:
@@ -194,9 +199,55 @@ function reduceAnimatedProps<TProps>(
  * uses reference counting to determine when to recursively detach its children
  * nodes. So in order to optimize this, we avoid detaching until the next attach
  * unless we are unmounting.
- *
  */
-function useAnimatedPropsLifecycle(node: AnimatedProps): void {
+function useAnimatedPropsLifecycle_layoutEffects(node: AnimatedProps): void {
+  const prevNodeRef = useRef<?AnimatedProps>(null);
+  const isUnmountingRef = useRef<boolean>(false);
+
+  useEffect(() => {
+    // It is ok for multiple components to call `flushQueue` because it noops
+    // if the queue is empty. When multiple animated components are mounted at
+    // the same time. Only first component flushes the queue and the others will noop.
+    NativeAnimatedHelper.API.flushQueue();
+  });
+
+  useLayoutEffect(() => {
+    isUnmountingRef.current = false;
+    return () => {
+      isUnmountingRef.current = true;
+    };
+  }, []);
+
+  useLayoutEffect(() => {
+    node.__attach();
+    if (prevNodeRef.current != null) {
+      const prevNode = prevNodeRef.current;
+      // TODO: Stop restoring default values (unless `reset` is called).
+      prevNode.__restoreDefaultValues();
+      prevNode.__detach();
+      prevNodeRef.current = null;
+    }
+    return () => {
+      if (isUnmountingRef.current) {
+        // NOTE: Do not restore default values on unmount, see D18197735.
+        node.__detach();
+      } else {
+        prevNodeRef.current = node;
+      }
+    };
+  }, [node]);
+}
+
+/**
+ * Manages the lifecycle of the supplied `AnimatedProps` by invoking `__attach`
+ * and `__detach`. However, this is more complicated because `AnimatedProps`
+ * uses reference counting to determine when to recursively detach its children
+ * nodes. So in order to optimize this, we avoid detaching until the next attach
+ * unless we are unmounting.
+ *
+ * NOTE: unlike `useAnimatedPropsLifecycle_layoutEffects`, this version uses passive effects to setup animation graph.
+ */
+function useAnimatedPropsLifecycle_passiveEffects(node: AnimatedProps): void {
   const prevNodeRef = useRef<?AnimatedProps>(null);
   const isUnmountingRef = useRef<boolean>(false);
 
