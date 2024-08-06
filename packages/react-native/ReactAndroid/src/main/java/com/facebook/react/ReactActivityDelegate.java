@@ -12,13 +12,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.net.Uri;
+import android.nfc.NfcAdapter;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReactNoCrashSoftException;
+import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.config.ReactFeatureFlags;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.core.PermissionListener;
 
 /**
@@ -27,6 +33,7 @@ import com.facebook.react.modules.core.PermissionListener;
  * ReactApplication}.
  */
 public class ReactActivityDelegate {
+  private static final String TAG = "ReactActivityDelegate";
 
   private final @Nullable Activity mActivity;
   private final @Nullable String mMainComponentName;
@@ -131,6 +138,7 @@ public class ReactActivityDelegate {
     if (mainComponentName != null) {
       loadApp(mainComponentName);
     }
+    emitUrlDeviceEventIfNecessary();
   }
 
   protected void loadApp(String appKey) {
@@ -236,5 +244,41 @@ public class ReactActivityDelegate {
    */
   protected boolean isWideColorGamutEnabled() {
     return false;
+  }
+
+  private void emitUrlDeviceEventIfNecessary() {
+    ReactContext currentContext =
+        ReactFeatureFlags.enableBridgelessArchitecture
+            ? getReactHost().getCurrentReactContext()
+            : getReactNativeHost().getReactInstanceManager().getCurrentReactContext();
+
+    if (currentContext == null) {
+      ReactSoftExceptionLogger.logSoftException(
+          TAG,
+          new ReactNoCrashSoftException(
+              "emitUrlDeviceEventIfNecessary: Tried to emit `url` event while context is null"));
+      return;
+    }
+
+    if (mActivity == null) {
+      ReactSoftExceptionLogger.logSoftException(
+          TAG,
+          new ReactNoCrashSoftException(
+              "emitUrlDeviceEventIfNecessary: Tried to emit `url` event while activity is null"));
+      return;
+    }
+
+    Intent intent = mActivity.getIntent();
+    String action = intent.getAction();
+    Uri uri = intent.getData();
+    if (uri != null
+        && (Intent.ACTION_VIEW.equals(action)
+            || NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action))) {
+      DeviceEventManagerModule deviceEventManagerModule =
+          currentContext.getNativeModule(DeviceEventManagerModule.class);
+      if (deviceEventManagerModule != null) {
+        deviceEventManagerModule.emitNewIntentReceived(uri);
+      }
+    }
   }
 }
