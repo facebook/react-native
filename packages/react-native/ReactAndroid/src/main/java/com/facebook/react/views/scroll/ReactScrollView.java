@@ -270,7 +270,13 @@ public class ReactScrollView extends ScrollView
   }
 
   public void setOverflow(@Nullable String overflow) {
-    mOverflow = overflow == null ? Overflow.SCROLL : Overflow.fromString(overflow);
+    if (overflow == null) {
+      mOverflow = Overflow.SCROLL;
+    } else {
+      @Nullable Overflow parsedOverflow = Overflow.fromString(overflow);
+      mOverflow = parsedOverflow == null ? Overflow.SCROLL : parsedOverflow;
+    }
+
     mReactBackgroundManager.setOverflow(overflow == null ? ViewProps.SCROLL : overflow);
     invalidate();
   }
