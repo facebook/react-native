@@ -153,14 +153,14 @@ runs:
         XCRESULT_PATH=$(find . -name '*.xcresult')
         tar -zcvf xcresults.tar.gz $XCRESULT_PATH
     - name: Upload artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v4.3.4
       if: ${{ inputs.run-unit-tests == 'true' }}
       with:
         name: xcresults
         path: /Users/distiller/Library/Developer/Xcode/xcresults.tar.gz
     - name: Store test results
       if: ${{ inputs.run-unit-tests == 'true' }}
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v4.3.4
       with:
         name: test-results
         path: ./reports/junit

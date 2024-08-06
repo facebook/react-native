@@ -511,7 +511,7 @@ jobs:
           fi
           yarn build android "${args[@]}" -P reactNativeArchitectures="$TARGET_ARCHITECTURE" -P react.internal.mavenLocalRepo="/tmp/maven-local"
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.3.4
         with:
           name: helloworld-apk-${{ matrix.flavor }}-${{ matrix.architecture }}-${{ matrix.jsengine }}
           path: ./packages/helloworld/android/app/build/outputs/apk/

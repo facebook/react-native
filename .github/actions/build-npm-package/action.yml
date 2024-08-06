@@ -123,7 +123,7 @@ runs:
         fi
         node ./scripts/releases-ci/publish-npm.js -t ${{ inputs.release-type }}
     - name: Upload npm logs
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v4.3.4
       with:
         name: npm-logs
         path: ~/.npm/_logs
@@ -138,7 +138,7 @@ runs:
 
         echo "$FILENAME" > build/react-native-package-version
     - name: Upload release package
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v4.3.4
       if: ${{ inputs.release-type == 'dry-run' }}
       with:
         name: react-native-package

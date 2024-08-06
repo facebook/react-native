@@ -80,7 +80,7 @@ runs:
         exit $RESULT
     - name: Store video record
       if: always()
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v4.3.4
       with:
         name: e2e_ios_${{ inputs.app-id }}_report_${{ inputs.jsengine }}
         path: |
@@ -90,7 +90,7 @@ runs:
           report.xml
     - name: Store Logs
       if: failure() && steps.run-tests.outcome == 'failure'
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v4.3.4
       with:
         name: maestro-logs-${{ inputs.app-id }}-${{ inputs.jsengine }}
         path: /tmp/MaestroLogs
