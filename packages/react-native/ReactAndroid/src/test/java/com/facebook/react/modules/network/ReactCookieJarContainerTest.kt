@@ -13,12 +13,11 @@ import okhttp3.HttpUrl
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mockito.any
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.`when` as whenever
 import org.robolectric.RobolectricTestRunner
 
-/** Tests for {@link NetworkingModule}. */
+/** Tests for {@link ReactCookieJarContainer}. */
 @RunWith(RobolectricTestRunner::class)
 class ReactCookieJarContainerTest {
   private val httpUrl: HttpUrl = HttpUrl.Builder().host("example.com").scheme("http").build()
@@ -33,7 +32,7 @@ class ReactCookieJarContainerTest {
   fun testEmptyCookies() {
     val jarContainer: ReactCookieJarContainer = mock(ReactCookieJarContainer::class.java)
     val cookies: List<Cookie> = emptyList()
-    whenever(jarContainer.loadForRequest(any(HttpUrl::class.java))).thenReturn(cookies)
+    whenever(jarContainer.loadForRequest(httpUrl)).thenReturn(cookies)
     assertThat(jarContainer.loadForRequest(httpUrl).size).isEqualTo(0)
   }
 
