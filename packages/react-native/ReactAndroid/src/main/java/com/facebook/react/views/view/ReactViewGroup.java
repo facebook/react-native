@@ -240,7 +240,7 @@ public class ReactViewGroup extends ViewGroup
     getOrCreateReactViewBackground().setGradients(gradient);
   }
 
-  @Deprecated(since = "0.66.0", forRemoval = true)
+  @Deprecated(since = "0.76.0", forRemoval = true)
   public void setTranslucentBackgroundDrawable(@Nullable Drawable background) {
     if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
       BackgroundStyleApplicator.setFeedbackUnderlay(this, background);
