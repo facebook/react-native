@@ -14,6 +14,7 @@
 
 #include "CatalystInstanceImpl.h"
 #include "CxxModuleWrapperBase.h"
+#include "InspectorNetworkRequestListener.h"
 #include "JCallback.h"
 #include "JInspector.h"
 #include "JReactMarker.h"
@@ -92,6 +93,7 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     JReactMarker::registerNatives();
     JInspector::registerNatives();
     ReactInstanceManagerInspectorTarget::registerNatives();
+    InspectorNetworkRequestListener::registerNatives();
   });
 }
 
