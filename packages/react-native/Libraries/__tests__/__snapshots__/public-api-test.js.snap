@@ -4679,6 +4679,7 @@ declare class AssetSourceResolver {
   isLoadedFromServer(): boolean;
   isLoadedFromFileSystem(): boolean;
   defaultAsset(): ResolvedAssetSource;
+  getAssetUsingResolver(resolver: AssetDestPathResolver): ResolvedAssetSource;
   assetServerURL(): ResolvedAssetSource;
   scaledAssetPath(): ResolvedAssetSource;
   scaledAssetURLNearBundle(): ResolvedAssetSource;
