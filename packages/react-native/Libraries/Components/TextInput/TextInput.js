@@ -15,7 +15,6 @@ import type {
   SyntheticEvent,
 } from '../../Types/CoreEventTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
-import type {TextInputType} from './TextInput.flow';
 
 import * as ReactNativeFeatureFlags from '../../../src/private/featureflags/ReactNativeFeatureFlags';
 import usePressability from '../../Pressability/usePressability';
@@ -1864,5 +1863,4 @@ const verticalAlignToTextAlignVerticalMap = {
   middle: 'center',
 };
 
-// $FlowFixMe[unclear-type] Unclear type. Using `any` type is not safe.
-module.exports = ((ExportedForwardRef: any): TextInputType);
+export default ExportedForwardRef;
