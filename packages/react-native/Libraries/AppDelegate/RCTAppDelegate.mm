@@ -151,11 +151,6 @@
   return [self newArchEnabled];
 }
 
-- (BOOL)unstable_fuseboxEnabled
-{
-  return NO;
-}
-
 - (NSURL *)bundleURL
 {
   [NSException raise:@"RCTAppDelegate::bundleURL not implemented"
@@ -305,26 +300,8 @@
 
 #pragma mark - Feature Flags
 
-class RCTAppDelegateFeatureFlags : public facebook::react::ReactNativeFeatureFlagsDefaults {
+class RCTAppDelegateBridgelessFeatureFlags : public facebook::react::ReactNativeFeatureFlagsDefaults {
  public:
-  RCTAppDelegateFeatureFlags(bool fuseboxEnabled)
-  {
-    fuseboxEnabled_ = fuseboxEnabled;
-  }
-
-  bool fuseboxEnabledDebug() override
-  {
-    return fuseboxEnabled_;
-  }
-
- private:
-  bool fuseboxEnabled_;
-};
-
-class RCTAppDelegateBridgelessFeatureFlags : public RCTAppDelegateFeatureFlags {
- public:
-  RCTAppDelegateBridgelessFeatureFlags(bool fuseboxEnabled) : RCTAppDelegateFeatureFlags(fuseboxEnabled) {}
-
   bool useModernRuntimeScheduler() override
   {
     return true;
@@ -342,11 +319,7 @@ class RCTAppDelegateBridgelessFeatureFlags : public RCTAppDelegateFeatureFlags {
 - (void)_setUpFeatureFlags
 {
   if ([self bridgelessEnabled]) {
-    facebook::react::ReactNativeFeatureFlags::override(
-        std::make_unique<RCTAppDelegateBridgelessFeatureFlags>([self unstable_fuseboxEnabled]));
-  } else {
-    facebook::react::ReactNativeFeatureFlags::override(
-        std::make_unique<RCTAppDelegateFeatureFlags>([self unstable_fuseboxEnabled]));
+    facebook::react::ReactNativeFeatureFlags::override(std::make_unique<RCTAppDelegateBridgelessFeatureFlags>());
   }
 }
 
