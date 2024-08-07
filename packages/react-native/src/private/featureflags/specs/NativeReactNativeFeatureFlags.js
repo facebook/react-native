@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e7852212097fb9d6e9f929b19a99e279>>
+ * @generated SignedSource<<8e7f7c0b5eccf4db77ab4b65a4aae313>>
  * @flow strict-local
  */
 
@@ -24,7 +24,6 @@ import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboMod
 
 export interface Spec extends TurboModule {
   +commonTestFlag?: () => boolean;
-  +allowCollapsableChildren?: () => boolean;
   +allowRecursiveCommitsWithSynchronousMountOnAndroid?: () => boolean;
   +batchRenderingUpdatesInEventLoop?: () => boolean;
   +changeOrderOfMountingInstructionsOnAndroid?: () => boolean;

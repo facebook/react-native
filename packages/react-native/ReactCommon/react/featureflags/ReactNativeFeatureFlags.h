@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<14d7dd1b3690775bb8df6dc17d18c43c>>
+ * @generated SignedSource<<93b1717fb2e45f00fb068a4ffa248afe>>
  */
 
 /**
@@ -41,11 +41,6 @@ class ReactNativeFeatureFlags {
    * Common flag for testing. Do NOT modify.
    */
   RN_EXPORT static bool commonTestFlag();
-
-  /**
-   * Enables the differentiator to understand the "collapsableChildren" prop
-   */
-  RN_EXPORT static bool allowCollapsableChildren();
 
   /**
    * Adds support for recursively processing commits that mount synchronously (Android only).

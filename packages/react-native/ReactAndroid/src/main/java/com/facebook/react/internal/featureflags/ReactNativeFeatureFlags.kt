@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ea2ffa17af587ce1889472a5fd1bb0ee>>
+ * @generated SignedSource<<11bd299e21bf2eb1c320e657885826e4>>
  */
 
 /**
@@ -33,12 +33,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun commonTestFlag(): Boolean = accessor.commonTestFlag()
-
-  /**
-   * Enables the differentiator to understand the "collapsableChildren" prop
-   */
-  @JvmStatic
-  public fun allowCollapsableChildren(): Boolean = accessor.allowCollapsableChildren()
 
   /**
    * Adds support for recursively processing commits that mount synchronously (Android only).

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<763d10f3232028a26f5ed194fdb3b4f7>>
+ * @generated SignedSource<<ed768614ca40990bc4cb67fd30c62274>>
  */
 
 /**
@@ -23,10 +23,6 @@ namespace facebook::react {
 
 bool ReactNativeFeatureFlags::commonTestFlag() {
   return getAccessor().commonTestFlag();
-}
-
-bool ReactNativeFeatureFlags::allowCollapsableChildren() {
-  return getAccessor().allowCollapsableChildren();
 }
 
 bool ReactNativeFeatureFlags::allowRecursiveCommitsWithSynchronousMountOnAndroid() {
