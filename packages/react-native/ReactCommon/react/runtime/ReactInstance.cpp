@@ -210,31 +210,27 @@ void ReactInstance::loadScript(
        buffer = std::move(buffer),
        weakBufferedRuntimeExecuter = std::weak_ptr<BufferedRuntimeExecutor>(
            bufferedRuntimeExecutor_)](jsi::Runtime& runtime) {
-        try {
-          SystraceSection s("ReactInstance::loadScript");
-          bool hasLogger(ReactMarker::logTaggedMarkerBridgelessImpl);
-          if (hasLogger) {
-            ReactMarker::logTaggedMarkerBridgeless(
-                ReactMarker::RUN_JS_BUNDLE_START, scriptName.c_str());
-          }
+        SystraceSection s("ReactInstance::loadScript");
+        bool hasLogger(ReactMarker::logTaggedMarkerBridgelessImpl);
+        if (hasLogger) {
+          ReactMarker::logTaggedMarkerBridgeless(
+              ReactMarker::RUN_JS_BUNDLE_START, scriptName.c_str());
+        }
 
-          runtime.evaluateJavaScript(buffer, sourceURL);
-          if (!jsErrorHandler_->hasHandledFatalError()) {
-            jsErrorHandler_->setJSPipelineEnabled(true);
-          }
-          if (hasLogger) {
-            ReactMarker::logTaggedMarkerBridgeless(
-                ReactMarker::RUN_JS_BUNDLE_STOP, scriptName.c_str());
-            ReactMarker::logMarkerBridgeless(
-                ReactMarker::INIT_REACT_RUNTIME_STOP);
-            ReactMarker::logMarkerBridgeless(ReactMarker::APP_STARTUP_STOP);
-          }
-          if (auto strongBufferedRuntimeExecuter =
-                  weakBufferedRuntimeExecuter.lock()) {
-            strongBufferedRuntimeExecuter->flush();
-          }
-        } catch (jsi::JSError& error) {
-          jsErrorHandler_->handleFatalError(error);
+        runtime.evaluateJavaScript(buffer, sourceURL);
+        if (!jsErrorHandler_->hasHandledFatalError()) {
+          jsErrorHandler_->setJSPipelineEnabled(true);
+        }
+        if (hasLogger) {
+          ReactMarker::logTaggedMarkerBridgeless(
+              ReactMarker::RUN_JS_BUNDLE_STOP, scriptName.c_str());
+          ReactMarker::logMarkerBridgeless(
+              ReactMarker::INIT_REACT_RUNTIME_STOP);
+          ReactMarker::logMarkerBridgeless(ReactMarker::APP_STARTUP_STOP);
+        }
+        if (auto strongBufferedRuntimeExecuter =
+                weakBufferedRuntimeExecuter.lock()) {
+          strongBufferedRuntimeExecuter->flush();
         }
       });
 }
