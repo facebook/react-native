@@ -14,12 +14,12 @@ public enum class Overflow {
 
   public companion object {
     @JvmStatic
-    public fun fromString(overflow: String): Overflow {
+    public fun fromString(overflow: String): Overflow? {
       return when (overflow.lowercase()) {
         "visible" -> VISIBLE
         "hidden" -> HIDDEN
         "scroll" -> SCROLL
-        else -> throw IllegalArgumentException("Unknown overflow: $overflow")
+        else -> null
       }
     }
   }

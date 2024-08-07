@@ -1292,7 +1292,13 @@ public class ReactEditText extends AppCompatEditText {
   }
 
   public void setOverflow(@Nullable String overflow) {
-    mOverflow = overflow == null ? Overflow.VISIBLE : Overflow.fromString(overflow);
+    if (overflow == null) {
+      mOverflow = Overflow.VISIBLE;
+    } else {
+      @Nullable Overflow parsedOverflow = Overflow.fromString(overflow);
+      mOverflow = parsedOverflow == null ? Overflow.VISIBLE : parsedOverflow;
+    }
+
     mReactBackgroundManager.setOverflow(overflow);
     invalidate();
   }
