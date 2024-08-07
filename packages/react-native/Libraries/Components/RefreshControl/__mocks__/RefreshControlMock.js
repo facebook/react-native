@@ -22,7 +22,7 @@ class RefreshControlMock extends React.Component<{...}> {
   componentDidMount() {
     RefreshControlMock.latestRef = this;
   }
-  render(): React.Element<typeof RCTRefreshControl> {
+  render(): React.MixedElement {
     return <RCTRefreshControl />;
   }
 }

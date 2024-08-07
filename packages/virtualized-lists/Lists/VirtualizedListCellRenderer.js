@@ -25,7 +25,7 @@ export type Props<ItemT> = {
   ItemSeparatorComponent: ?React.ComponentType<
     any | {highlighted: boolean, leadingItem: ?ItemT},
   >,
-  ListItemComponent?: ?(React.ComponentType<any> | React.Element<any>),
+  ListItemComponent?: ?(React.ComponentType<any> | React.MixedElement),
   cellKey: string,
   horizontal: ?boolean,
   index: number,

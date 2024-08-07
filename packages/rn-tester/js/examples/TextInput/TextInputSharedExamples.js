@@ -974,7 +974,7 @@ module.exports = ([
   },
   {
     title: 'Blur on submit',
-    render: function (): React.Element<any> {
+    render: function (): React.MixedElement {
       return <BlurOnSubmitExample />;
     },
   },
@@ -1003,13 +1003,13 @@ module.exports = ([
   },
   {
     title: 'Submit behavior',
-    render: function (): React.Element<any> {
+    render: function (): React.MixedElement {
       return <SubmitBehaviorExample />;
     },
   },
   {
     title: 'Event handling',
-    render: function (): React.Element<any> {
+    render: function (): React.MixedElement {
       return <TextEventsExample />;
     },
   },

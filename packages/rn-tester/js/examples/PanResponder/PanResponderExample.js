@@ -139,7 +139,7 @@ exports.description =
 exports.examples = [
   {
     title: 'Basic gesture handling',
-    render(): React.Element<typeof PanResponderExample> {
+    render(): React.MixedElement {
       return <PanResponderExample />;
     },
   },
