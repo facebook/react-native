@@ -14,10 +14,15 @@
 #include <react/renderer/runtimescheduler/SchedulerPriorityUtils.h>
 #include <react/renderer/runtimescheduler/Task.h>
 
+#include <cxxreact/ErrorUtils.h>
+
 namespace facebook::react {
 
 using RuntimeSchedulerRenderingUpdate = std::function<void()>;
 using RuntimeSchedulerTimeout = std::chrono::milliseconds;
+
+using RuntimeSchedulerErrorHandler =
+    std::function<void(jsi::Runtime& runtime, jsi::JSError& error)>;
 
 // This is a temporary abstract class for RuntimeScheduler forks to implement
 // (and use them interchangeably).
@@ -60,7 +65,11 @@ class RuntimeScheduler final : RuntimeSchedulerBase {
   explicit RuntimeScheduler(
       RuntimeExecutor runtimeExecutor,
       std::function<RuntimeSchedulerTimePoint()> now =
-          RuntimeSchedulerClock::now);
+          RuntimeSchedulerClock::now,
+      RuntimeSchedulerErrorHandler onError = [](jsi::Runtime& runtime,
+                                                jsi::JSError& error) {
+        handleJSError(runtime, error, true);
+      });
 
   /*
    * Not copyable.
