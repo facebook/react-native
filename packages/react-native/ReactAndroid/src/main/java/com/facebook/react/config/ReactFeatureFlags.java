@@ -48,6 +48,12 @@ public class ReactFeatureFlags {
    * Feature flag to enable the new bridgeless architecture. Note: Enabling this will force enable
    * the following flags: `useTurboModules` & `enableFabricRenderer`.
    */
+  @Deprecated(
+      since =
+          "enableBridgelessArchitecture will be deleted in 0.77, please use"
+              + " DefaultNewArchitectureEntryPoint.load() to enable bridgeless architecture"
+              + " instead.",
+      forRemoval = true)
   public static boolean enableBridgelessArchitecture = false;
 
   public static boolean dispatchPointerEvents = false;
