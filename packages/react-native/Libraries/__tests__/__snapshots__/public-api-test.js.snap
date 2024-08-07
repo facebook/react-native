@@ -4327,6 +4327,8 @@ exports[`public API should not change unintentionally Libraries/Core/ExtendedErr
 "
 `;
 
+exports[`public API should not change unintentionally Libraries/Core/InitializeCore.js 1`] = `""`;
+
 exports[`public API should not change unintentionally Libraries/Core/NativeExceptionsManager.js 1`] = `
 "export * from \\"../../src/private/specs/modules/NativeExceptionsManager\\";
 declare export default typeof NativeExceptionsManager;
@@ -4432,6 +4434,10 @@ exports[`public API should not change unintentionally Libraries/Core/Timers/queu
 "
 `;
 
+exports[`public API should not change unintentionally Libraries/Core/checkNativeVersion.js 1`] = `""`;
+
+exports[`public API should not change unintentionally Libraries/Core/polyfillPromise.js 1`] = `""`;
+
 exports[`public API should not change unintentionally Libraries/Core/registerCallableModule.js 1`] = `
 "type Module = { ... };
 type RegisterCallableModule = (
@@ -4442,6 +4448,26 @@ declare const registerCallableModule: RegisterCallableModule;
 declare export default typeof registerCallableModule;
 "
 `;
+
+exports[`public API should not change unintentionally Libraries/Core/setUpAlert.js 1`] = `""`;
+
+exports[`public API should not change unintentionally Libraries/Core/setUpBatchedBridge.js 1`] = `""`;
+
+exports[`public API should not change unintentionally Libraries/Core/setUpDeveloperTools.js 1`] = `""`;
+
+exports[`public API should not change unintentionally Libraries/Core/setUpErrorHandling.js 1`] = `""`;
+
+exports[`public API should not change unintentionally Libraries/Core/setUpGlobals.js 1`] = `""`;
+
+exports[`public API should not change unintentionally Libraries/Core/setUpNavigator.js 1`] = `""`;
+
+exports[`public API should not change unintentionally Libraries/Core/setUpPerformance.js 1`] = `""`;
+
+exports[`public API should not change unintentionally Libraries/Core/setUpReactDevTools.js 1`] = `""`;
+
+exports[`public API should not change unintentionally Libraries/Core/setUpReactRefresh.js 1`] = `""`;
+
+exports[`public API should not change unintentionally Libraries/Core/setUpRegeneratorRuntime.js 1`] = `""`;
 
 exports[`public API should not change unintentionally Libraries/Core/setUpSegmentFetcher.js 1`] = `
 "export type FetchSegmentFunction = typeof __fetchSegment;
@@ -4456,6 +4482,10 @@ declare function __fetchSegment(
 ): void;
 "
 `;
+
+exports[`public API should not change unintentionally Libraries/Core/setUpTimers.js 1`] = `""`;
+
+exports[`public API should not change unintentionally Libraries/Core/setUpXHR.js 1`] = `""`;
 
 exports[`public API should not change unintentionally Libraries/Debugging/DebuggingOverlay.js 1`] = `
 "type DebuggingOverlayHandle = {
@@ -7600,6 +7630,8 @@ exports[`public API should not change unintentionally Libraries/ReactNative/requ
 declare export default typeof requireNativeComponent;
 "
 `;
+
+exports[`public API should not change unintentionally Libraries/ReactPrivate/ReactNativePrivateInitializeCore.js 1`] = `""`;
 
 exports[`public API should not change unintentionally Libraries/ReactPrivate/ReactNativePrivateInterface.js 1`] = `
 "declare module.exports: {
