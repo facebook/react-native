@@ -79,7 +79,9 @@ ReactInstanceManagerInspectorTarget::ReactInstanceManagerInspectorTarget(
             -> std::unique_ptr<ILocalConnection> {
           return inspectorTarget->connect(std::move(remote));
         },
-        {.nativePageReloads = true, .prefersFuseboxFrontend = true});
+        {.nativePageReloads = true,
+         .nativeSourceCodeFetching = true,
+         .prefersFuseboxFrontend = true});
   }
 }
 
