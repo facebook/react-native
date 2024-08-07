@@ -59,8 +59,6 @@ function build_universal_framework {
 # this is used to preserve backward compatibility
 function create_framework {
     if [ ! -d destroot/Library/Frameworks/universal/hermes.xcframework ]; then
-        ios_deployment_target=$(get_ios_deployment_target)
-
         build_framework "iphoneos"
         build_framework "iphonesimulator"
         build_framework "catalyst"
