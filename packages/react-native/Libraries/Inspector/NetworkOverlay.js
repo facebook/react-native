@@ -335,7 +335,7 @@ class NetworkOverlay extends React.Component<Props, State> {
   _renderItem = ({
     item,
     index,
-  }: RenderItemProps<NetworkRequestInfo>): React.Element<any> => {
+  }: RenderItemProps<NetworkRequestInfo>): React.MixedElement => {
     const tableRowViewStyle = [
       styles.tableRow,
       index % 2 === 1 ? styles.tableRowOdd : styles.tableRowEven,

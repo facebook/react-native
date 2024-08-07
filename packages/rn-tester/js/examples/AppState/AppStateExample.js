@@ -127,13 +127,13 @@ exports.examples = [
     title: 'Subscribed AppState:',
     description:
       'This changes according to the current state, so you can only ever see it rendered as "active"',
-    render(): React.Element<any> {
+    render(): React.MixedElement {
       return <AppStateSubscription showCurrentOnly={true} />;
     },
   },
   {
     title: 'Previous states:',
-    render(): React.Element<any> {
+    render(): React.MixedElement {
       return <AppStateSubscription showCurrentOnly={false} />;
     },
   },
@@ -142,7 +142,7 @@ exports.examples = [
     title: 'Memory Warnings',
     description:
       'In the IOS simulator, hit Shift+Command+M to simulate a memory warning.',
-    render(): React.Element<any> {
+    render(): React.MixedElement {
       return <AppStateSubscription showMemoryWarnings={true} />;
     },
   },
@@ -151,7 +151,7 @@ exports.examples = [
     title: 'Focus/Blur Events',
     description:
       'In the Android simulator, toggle the notification drawer to fire events.',
-    render(): React.Element<any> {
+    render(): React.MixedElement {
       return <AppStateSubscription detectEvents={true} />;
     },
   },

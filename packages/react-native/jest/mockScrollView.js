@@ -20,7 +20,7 @@ const RCTScrollView: $FlowFixMe = requireNativeComponent('RCTScrollView');
 
 function mockScrollView(BaseComponent: $FlowFixMe) {
   class ScrollViewMock extends BaseComponent {
-    render(): React.Element<typeof RCTScrollView> {
+    render(): React.MixedElement {
       return (
         <RCTScrollView {...this.props}>
           {this.props.refreshControl}

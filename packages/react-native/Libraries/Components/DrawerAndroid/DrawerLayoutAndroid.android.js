@@ -105,7 +105,7 @@ type Props = $ReadOnly<{|
   /**
    * The navigation view that will be rendered to the side of the screen and can be pulled in.
    */
-  renderNavigationView: () => React.Element<any>,
+  renderNavigationView: () => React.MixedElement,
 
   /**
    * Make the drawer take the entire screen and draw the background of the

@@ -176,13 +176,13 @@ exports.examples = [
   },
   {
     title: 'Non-component `getColorScheme` API',
-    render(): React.Element<any> {
+    render(): React.MixedElement {
       return <ColorSchemeSubscription />;
     },
   },
   {
     title: 'Consuming Context',
-    render(): React.Element<any> {
+    render(): React.MixedElement {
       return (
         <RNTesterThemeContext.Consumer>
           {theme => {
@@ -200,7 +200,7 @@ exports.examples = [
   },
   {
     title: 'Context forced to light theme',
-    render(): React.Element<any> {
+    render(): React.MixedElement {
       return (
         <RNTesterThemeContext.Provider value={themes.light}>
           <ThemedContainer>
@@ -214,7 +214,7 @@ exports.examples = [
   },
   {
     title: 'Context forced to dark theme',
-    render(): React.Element<any> {
+    render(): React.MixedElement {
       return (
         <RNTesterThemeContext.Provider value={themes.dark}>
           <ThemedContainer>
@@ -229,7 +229,7 @@ exports.examples = [
   {
     title: 'RNTester App Colors',
     description: 'A light and a dark theme based on standard iOS 13 colors.',
-    render(): React.Element<any> {
+    render(): React.MixedElement {
       return (
         <View>
           <RNTesterThemeContext.Provider value={themes.light}>
@@ -245,7 +245,7 @@ exports.examples = [
   {
     title: 'Toggle native appearance',
     description: 'Overwrite application-level appearance mode',
-    render(): React.Element<any> {
+    render(): React.MixedElement {
       return <ToggleNativeAppearance />;
     },
   },

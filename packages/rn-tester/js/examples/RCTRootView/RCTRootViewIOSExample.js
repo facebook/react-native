@@ -85,13 +85,13 @@ exports.description =
 exports.examples = [
   {
     title: 'Updating app properties in runtime',
-    render(): React.Element<any> {
+    render(): React.MixedElement {
       return <AppPropertiesUpdateExample />;
     },
   },
   {
     title: "RCTRootView's size flexibility",
-    render(): React.Element<any> {
+    render(): React.MixedElement {
       return <RootViewSizeFlexibilityExample />;
     },
   },

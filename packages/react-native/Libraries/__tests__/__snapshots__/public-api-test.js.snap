@@ -9403,7 +9403,7 @@ declare function expectNoConsoleWarn(): void;
 declare function expectNoConsoleError(): void;
 declare function expectRendersMatchingSnapshot(
   name: string,
-  ComponentProvider: () => React.Element<any>,
+  ComponentProvider: () => React.MixedElement,
   unmockComponent: () => mixed
 ): void;
 declare function maximumDepthOfJSON(node: ?ReactTestRendererJSON): number;
