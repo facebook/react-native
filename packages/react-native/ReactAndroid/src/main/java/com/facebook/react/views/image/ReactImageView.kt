@@ -389,8 +389,9 @@ public class ReactImageView(
     this.headers = headers
   }
 
-  public override fun hasOverlappingRendering(): Boolean =
-      backgroundImageDrawable != null || super.hasOverlappingRendering()
+  // Disable rasterizing to offscreen layer in order to preserve background effects like box-shadow
+  // or outline which may draw outside of bounds.
+  public override fun hasOverlappingRendering(): Boolean = false
 
   public override fun onDraw(canvas: Canvas) {
     if (enableBackgroundStyleApplicator()) {
