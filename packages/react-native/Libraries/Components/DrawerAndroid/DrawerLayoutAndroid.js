@@ -5,8 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
+ * @flow strict-local
  */
 
 'use strict';
 
-module.exports = require('../UnimplementedViews/UnimplementedView');
+module.exports =
+  require('../UnimplementedViews/UnimplementedView') as $FlowFixMe;
