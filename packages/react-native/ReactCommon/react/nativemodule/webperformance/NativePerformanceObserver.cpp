@@ -50,7 +50,7 @@ jsi::Object NativePerformanceObserver::createObserver(jsi::Runtime& rt, NativePe
   return observerObj;
 }
 
-void NativePerformanceObserver::observe(jsi::Runtime& rt, jsi::Object observerObj, jsi::Object options) {
+void NativePerformanceObserver::observe(jsi::Runtime& rt, jsi::Object observerObj, NativePerformanceObserverObserveOptions options) {
   auto observer =
       std::dynamic_pointer_cast<PerformanceObserver>(observerObj.getNativeState(rt));
 
@@ -59,23 +59,21 @@ void NativePerformanceObserver::observe(jsi::Runtime& rt, jsi::Object observerOb
   }
 
   // observer of type multiple
-  if (options.hasProperty(rt, "entryTypes")) {
+  if (options.entryTypes.has_value()) {
     std::unordered_set<PerformanceEntryType> entryTypes;
+    auto rawTypes = options.entryTypes.value();
 
-    auto types = options.getPropertyAsObject(rt, "entryTypes").asArray(rt);
-    for (auto i = 0; i < types.size(rt); ++i) {
-      auto rawValue = types.getValueAtIndex(rt, i).asNumber();
-      if (auto entryType = parseEntryType(rawValue); entryType) {
+    for (auto i = 0; i < rawTypes.size(); ++i) {
+      if (auto entryType = parseEntryType(rawTypes[i]); entryType) {
         entryTypes.insert(*entryType);
       }
     }
 
-    observer->observe(types);
+    observer->observe(entryTypes);
   }
   else { // single
-    auto buffered = options.getProperty(rt, "buffered").asBool();
-    auto type = options.getProperty(rt, "type").asNumber();
-    if (auto entryType = parseEntryType(type); entryType) {
+    auto buffered = options.buffered.value_or(false);
+    if (auto entryType = parseEntryType(options.type.value()); entryType) {
       observer->observe(entryType, buffered);
     }
   }

@@ -17,7 +17,7 @@ PerformanceObserver::~PerformanceObserver() {
   }
 }
 
-void PerformanceObserver::pushEntry(const facebook::react::PerformanceEntry& entry) {
+void PerformanceObserver::pushEntry(const PerformanceEntry& entry) {
   buffer_.add(entry);
 }
 
@@ -25,11 +25,11 @@ std::vector<PerformanceEntry> PerformanceObserver::takeRecords() {
   return buffer_.consume();
 }
 
-bool PerformanceObserver::isObserving(facebook::react::PerformanceEntryType type) const {
+bool PerformanceObserver::isObserving(PerformanceEntryType type) const {
   return observedTypes_.contains(type);
 }
 
-void PerformanceObserver::observe(facebook::react::PerformanceEntryType type, bool buffered) {
+void PerformanceObserver::observe(PerformanceEntryType type, bool buffered) {
   // we assume that `type` was checked on JS side and is correct
   observedTypes_.clear();
   observedTypes_.insert(type);
