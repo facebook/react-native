@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a0b0cc1b62abded9dd8a7b70f8d897da>>
+ * @generated SignedSource<<408d66cdad8b708c06ca844cd6524ba4>>
  */
 
 /**
@@ -34,6 +34,7 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var enableBackgroundStyleApplicatorCache: Boolean? = null
   private var enableCleanTextInputYogaNodeCache: Boolean? = null
   private var enableEagerRootViewAttachmentCache: Boolean? = null
+  private var enableEventEmitterRetentionDuringGesturesOnAndroidCache: Boolean? = null
   private var enableFabricLogsCache: Boolean? = null
   private var enableFabricRendererExclusivelyCache: Boolean? = null
   private var enableGranularShadowTreeStateReconciliationCache: Boolean? = null
@@ -164,6 +165,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.enableEagerRootViewAttachment()
       accessedFeatureFlags.add("enableEagerRootViewAttachment")
       enableEagerRootViewAttachmentCache = cached
+    }
+    return cached
+  }
+
+  override fun enableEventEmitterRetentionDuringGesturesOnAndroid(): Boolean {
+    var cached = enableEventEmitterRetentionDuringGesturesOnAndroidCache
+    if (cached == null) {
+      cached = currentProvider.enableEventEmitterRetentionDuringGesturesOnAndroid()
+      accessedFeatureFlags.add("enableEventEmitterRetentionDuringGesturesOnAndroid")
+      enableEventEmitterRetentionDuringGesturesOnAndroidCache = cached
     }
     return cached
   }

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<93b1717fb2e45f00fb068a4ffa248afe>>
+ * @generated SignedSource<<45ae072fb6a0b1ec404b3dc8adc13186>>
  */
 
 /**
@@ -86,6 +86,11 @@ class ReactNativeFeatureFlags {
    * Feature flag to configure eager attachment of the root view/initialisation of the JS code.
    */
   RN_EXPORT static bool enableEagerRootViewAttachment();
+
+  /**
+   * Enables the retention of EventEmitterWrapper on Android till the touch gesture is over to fix a bug on pressable (#44610)
+   */
+  RN_EXPORT static bool enableEventEmitterRetentionDuringGesturesOnAndroid();
 
   /**
    * This feature flag enables logs for Fabric.

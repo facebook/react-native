@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<28c8387a6ed837bcfbe75da8dae74e63>>
+ * @generated SignedSource<<362ab4dfd19d6f3189b3c3e5aafd009a>>
  */
 
 /**
@@ -35,6 +35,7 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool enableBackgroundStyleApplicator() = 0;
   virtual bool enableCleanTextInputYogaNode() = 0;
   virtual bool enableEagerRootViewAttachment() = 0;
+  virtual bool enableEventEmitterRetentionDuringGesturesOnAndroid() = 0;
   virtual bool enableFabricLogs() = 0;
   virtual bool enableFabricRendererExclusively() = 0;
   virtual bool enableGranularShadowTreeStateReconciliation() = 0;

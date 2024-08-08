@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ed768614ca40990bc4cb67fd30c62274>>
+ * @generated SignedSource<<d6fc68526bed62a7aa33973b2cb1eec8>>
  */
 
 /**
@@ -59,6 +59,10 @@ bool ReactNativeFeatureFlags::enableCleanTextInputYogaNode() {
 
 bool ReactNativeFeatureFlags::enableEagerRootViewAttachment() {
   return getAccessor().enableEagerRootViewAttachment();
+}
+
+bool ReactNativeFeatureFlags::enableEventEmitterRetentionDuringGesturesOnAndroid() {
+  return getAccessor().enableEventEmitterRetentionDuringGesturesOnAndroid();
 }
 
 bool ReactNativeFeatureFlags::enableFabricLogs() {

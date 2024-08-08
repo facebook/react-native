@@ -16,6 +16,7 @@ import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.TouchEvent;
@@ -191,6 +192,9 @@ public class JSTouchDispatcher {
 
   private void markActiveTouchForTag(
       int surfaceId, int reactTag, @Nullable ReactContext reactContext) {
+    if (!ReactNativeFeatureFlags.enableEventEmitterRetentionDuringGesturesOnAndroid()) {
+      return;
+    }
     if (reactContext == null) {
       return;
     }
@@ -202,6 +206,9 @@ public class JSTouchDispatcher {
 
   private void sweepActiveTouchForTag(
       int surfaceId, int reactTag, @Nullable ReactContext reactContext) {
+    if (!ReactNativeFeatureFlags.enableEventEmitterRetentionDuringGesturesOnAndroid()) {
+      return;
+    }
     if (reactContext == null) {
       return;
     }
