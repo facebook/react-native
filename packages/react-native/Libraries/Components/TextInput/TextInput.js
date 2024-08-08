@@ -1646,10 +1646,11 @@ const ExportedForwardRef: React.AbstractComponent<
   let style = flattenStyle(restProps.style);
 
   if (style?.verticalAlign != null) {
-    let overrides = {};
-    overrides.textAlignVertical =
-      verticalAlignToTextAlignVerticalMap[style.verticalAlign];
-    overrides.textAlignVertical = undefined;
+    const overrides = {
+      textAlignVertical:
+        verticalAlignToTextAlignVerticalMap[style.verticalAlign],
+      verticalAlign: undefined,
+    };
     // $FlowFixMe[incompatible-type]
     style = [style, overrides];
   }
