@@ -483,7 +483,7 @@ public class ReactModalHostView(context: ThemedReactContext) :
 
     override fun onInterceptTouchEvent(event: MotionEvent): Boolean {
       eventDispatcher?.let { eventDispatcher ->
-        jSTouchDispatcher.handleTouchEvent(event, eventDispatcher)
+        jSTouchDispatcher.handleTouchEvent(event, eventDispatcher, reactContext)
         jSPointerDispatcher?.handleMotionEvent(event, eventDispatcher, true)
       }
       return super.onInterceptTouchEvent(event)
@@ -492,7 +492,7 @@ public class ReactModalHostView(context: ThemedReactContext) :
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
       eventDispatcher?.let { eventDispatcher ->
-        jSTouchDispatcher.handleTouchEvent(event, eventDispatcher)
+        jSTouchDispatcher.handleTouchEvent(event, eventDispatcher, reactContext)
         jSPointerDispatcher?.handleMotionEvent(event, eventDispatcher, false)
       }
       super.onTouchEvent(event)

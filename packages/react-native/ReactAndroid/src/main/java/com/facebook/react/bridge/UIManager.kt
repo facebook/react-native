@@ -157,4 +157,22 @@ public interface UIManager : PerformanceCounter {
 
   /** Called before React Native instance is destroyed. */
   public fun invalidate()
+
+  /**
+   * Mark a view as currently active for a touch event. This information could be used by the
+   * [UIManager] to decide if a view could be safely destroyed or not.
+   *
+   * @param surfaceId The surface ID where the view is rendered.
+   * @param reactTag The react tag for the specific view
+   */
+  public fun markActiveTouchForTag(surfaceId: Int, reactTag: Int)
+
+  /**
+   * Sweep a view as currently not active for a touch event. This tells the [UIManager] that the
+   * view is not being interacted by the user and can safely be destroyed.
+   *
+   * @param surfaceId The surface ID where the view is rendered.
+   * @param reactTag The react tag for the specific view
+   */
+  public fun sweepActiveTouchForTag(surfaceId: Int, reactTag: Int)
 }

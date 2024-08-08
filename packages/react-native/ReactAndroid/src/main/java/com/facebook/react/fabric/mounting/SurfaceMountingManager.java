@@ -76,6 +76,17 @@ public class SurfaceMountingManager {
   @ThreadConfined(UI)
   private final Set<Integer> mErroneouslyReaddedReactTags = new HashSet<>();
 
+  // This set is used to keep track of views that are currently being interacted with (i.e.
+  // views that saw a ACTION_DOWN but not a ACTION_UP event yet). This is used to prevent
+  // views from being removed while they are being interacted with as their event emitter will
+  // also be removed, and `Pressables` will look "stuck".
+  @ThreadConfined(UI)
+  private final Set<Integer> mViewsWithActiveTouches = new HashSet<>();
+
+  // This set contains the views that are scheduled to be removed after their touch finishes.
+  @ThreadConfined(UI)
+  private final Set<Integer> mViewsToDeleteAfterTouchFinishes = new HashSet<>();
+
   // This is null *until* StopSurface is called.
   private SparseArrayCompat<Object> mTagSetForStoppedSurface;
 
@@ -1031,12 +1042,21 @@ public class SurfaceMountingManager {
       return;
     }
 
-    // To delete we simply remove the tag from the registry.
-    // We want to rely on the correct set of MountInstructions being sent to the platform,
-    // or StopSurface being called, so we do not handle deleting descendents of the View.
-    mTagToViewState.remove(reactTag);
+    if (mViewsWithActiveTouches.contains(reactTag)) {
+      // If the view that went offscreen is still being touched, we can't delete it yet.
+      // We have to delay the deletion till the touch is completed.
+      // This is causing bugs like those otherwise:
+      // - https://github.com/facebook/react-native/issues/44610
+      // - https://github.com/facebook/react-native/issues/45126
+      mViewsToDeleteAfterTouchFinishes.add(reactTag);
+    } else {
+      // To delete we simply remove the tag from the registry.
+      // We want to rely on the correct set of MountInstructions being sent to the platform,
+      // or StopSurface being called, so we do not handle deleting descendants of the View.
+      mTagToViewState.remove(reactTag);
 
-    onViewStateDeleted(viewState);
+      onViewStateDeleted(viewState);
+    }
   }
 
   @UiThread
@@ -1158,6 +1178,18 @@ public class SurfaceMountingManager {
             }
           }
         });
+  }
+
+  public void markActiveTouchForTag(int reactTag) {
+    mViewsWithActiveTouches.add(reactTag);
+  }
+
+  public void sweepActiveTouchForTag(int reactTag) {
+    mViewsWithActiveTouches.remove(reactTag);
+    if (mViewsToDeleteAfterTouchFinishes.contains(reactTag)) {
+      mViewsToDeleteAfterTouchFinishes.remove(reactTag);
+      deleteView(reactTag);
+    }
   }
 
   /**
