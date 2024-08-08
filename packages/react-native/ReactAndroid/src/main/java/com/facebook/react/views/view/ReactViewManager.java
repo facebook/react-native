@@ -26,6 +26,7 @@ import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.BackgroundStyleApplicator;
 import com.facebook.react.uimanager.LengthPercentage;
+import com.facebook.react.uimanager.LengthPercentageType;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.PointerEvents;
 import com.facebook.react.uimanager.Spacing;
@@ -156,6 +157,15 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
       })
   public void setBorderRadius(ReactViewGroup view, int index, Dynamic rawBorderRadius) {
     @Nullable LengthPercentage borderRadius = LengthPercentage.setFromDynamic(rawBorderRadius);
+
+    // We do not support percentage border radii on Paper in order to be consistent with iOS (to
+    // avoid developer surprise if it works on one platform but not another).
+    if (ViewUtil.getUIManagerType(view) != UIManagerType.FABRIC
+        && borderRadius != null
+        && borderRadius.getUnit() == LengthPercentageType.PERCENT) {
+      borderRadius = null;
+    }
+
     if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
       BackgroundStyleApplicator.setBorderRadius(
           view, BorderRadiusProp.values()[index], borderRadius);
