@@ -1652,7 +1652,7 @@ const ExportedForwardRef: React.AbstractComponent<
     }
     style.textAlignVertical =
         verticalAlignToTextAlignVerticalMap[style.verticalAlign];
-    style.verticalAlign: undefined;
+    delete style.verticalAlign;
   }
 
   return (
