@@ -23,6 +23,7 @@ import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.LengthPercentage;
+import com.facebook.react.uimanager.LengthPercentageType;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.PointerEvents;
 import com.facebook.react.uimanager.Spacing;
@@ -131,8 +132,15 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
         ViewProps.BORDER_START_START_RADIUS,
       })
   public void setBorderRadius(ReactViewGroup view, int index, Dynamic rawBorderRadius) {
-
     @Nullable LengthPercentage borderRadius = LengthPercentage.setFromDynamic(rawBorderRadius);
+
+    // We do not support percentage border radii on Paper in order to be consistent with iOS (to
+    // avoid developer surprise if it works on one platform but not another).
+    if (ViewUtil.getUIManagerType(view) != UIManagerType.FABRIC
+        && borderRadius != null
+        && borderRadius.getUnit() == LengthPercentageType.PERCENT) {
+      borderRadius = null;
+    }
 
     view.setBorderRadius(BorderRadiusProp.values()[index], borderRadius);
   }
