@@ -1650,8 +1650,13 @@ const ExportedForwardRef: React.AbstractComponent<
       // $FlowFixMe[incompatible-type]
       style = {...style};
     }
+    // $FlowFixMe[prop-missing]
+    // $FlowFixMe[cannot-write]
     style.textAlignVertical =
-        verticalAlignToTextAlignVerticalMap[style.verticalAlign];
+      // $FlowFixMe[invalid-computed-prop]
+      verticalAlignToTextAlignVerticalMap[style.verticalAlign];
+    // $FlowFixMe[prop-missing]
+    // $FlowFixMe[cannot-write]
     delete style.verticalAlign;
   }
 
