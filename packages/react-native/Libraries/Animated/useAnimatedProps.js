@@ -11,6 +11,7 @@
 'use strict';
 
 import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNativeFeatureFlags';
+import useDebouncedEffect from '../../src/private/hooks/useDebouncedEffect';
 import {isPublicInstance as isFabricPublicInstance} from '../ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstanceUtils';
 import useRefEffect from '../Utilities/useRefEffect';
 import {AnimatedEvent} from './AnimatedEvent';
@@ -265,7 +266,12 @@ function useAnimatedPropsLifecycle_passiveEffects(node: AnimatedProps): void {
     };
   }, []);
 
-  useEffect(() => {
+  const useEffectImpl =
+    ReactNativeFeatureFlags.shouldUseDebouncedEffectsForAnimated()
+      ? useDebouncedEffect
+      : useEffect;
+
+  useEffectImpl(() => {
     node.__attach();
     if (prevNodeRef.current != null) {
       const prevNode = prevNodeRef.current;

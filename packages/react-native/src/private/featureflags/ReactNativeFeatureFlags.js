@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<453a0231b2d396d59727425f008c65b8>>
+ * @generated SignedSource<<600cf82829a6912271f0e5d4cde3f9c8>>
  * @flow strict-local
  */
 
@@ -33,6 +33,7 @@ export type ReactNativeFeatureFlagsJsOnly = {
   isLayoutAnimationEnabled: Getter<boolean>,
   shouldSkipStateUpdatesForLoopingAnimations: Getter<boolean>,
   shouldUseAnimatedObjectForTransform: Getter<boolean>,
+  shouldUseDebouncedEffectsForAnimated: Getter<boolean>,
   shouldUseRemoveClippedSubviewsAsDefaultOnIOS: Getter<boolean>,
   shouldUseSetNativePropsInFabric: Getter<boolean>,
   shouldUseSetNativePropsInNativeAnimationsInFabric: Getter<boolean>,
@@ -124,6 +125,11 @@ export const shouldSkipStateUpdatesForLoopingAnimations: Getter<boolean> = creat
  * Enables use of AnimatedObject for animating transform values.
  */
 export const shouldUseAnimatedObjectForTransform: Getter<boolean> = createJavaScriptFlagGetter('shouldUseAnimatedObjectForTransform', false);
+
+/**
+ * Use new `useDebouncedEffects` hook for manging animated props lifecycle.
+ */
+export const shouldUseDebouncedEffectsForAnimated: Getter<boolean> = createJavaScriptFlagGetter('shouldUseDebouncedEffectsForAnimated', false);
 
 /**
  * removeClippedSubviews prop will be used as the default in FlatList on iOS to match Android
