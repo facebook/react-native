@@ -5,9 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <jsinspector-modern/ReactCdp.h>
-
 #import <Foundation/Foundation.h>
+
+#ifdef __cplusplus
+
+#import <jsinspector-modern/ReactCdp.h>
 
 typedef facebook::react::jsinspector_modern::NetworkRequestListener RCTInspectorNetworkListener;
 
@@ -23,3 +25,5 @@ typedef facebook::react::jsinspector_modern::LoadNetworkResourceRequest RCTInspe
 - (void)loadNetworkResourceWithParams:(const RCTInspectorLoadNetworkResourceRequest &)params
                              executor:(RCTInspectorNetworkExecutor)executor;
 @end
+
+#endif
