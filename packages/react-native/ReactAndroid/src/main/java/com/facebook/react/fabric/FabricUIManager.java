@@ -452,6 +452,16 @@ public class FabricUIManager
     }
   }
 
+  @Override
+  public void markActiveTouchForTag(int surfaceId, int reactTag) {
+    mMountingManager.getSurfaceManager(surfaceId).markActiveTouchForTag(reactTag);
+  }
+
+  @Override
+  public void sweepActiveTouchForTag(int surfaceId, int reactTag) {
+    mMountingManager.getSurfaceManager(surfaceId).sweepActiveTouchForTag(reactTag);
+  }
+
   /**
    * Method added to Fabric for backward compatibility reasons, as users on Paper could call
    * [addUiBlock] and [prependUiBlock] on UIManagerModule.

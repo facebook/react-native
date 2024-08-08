@@ -360,7 +360,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     EventDispatcher eventDispatcher =
         UIManagerHelper.getEventDispatcher(getCurrentReactContext(), getUIManagerType());
     if (eventDispatcher != null) {
-      mJSTouchDispatcher.handleTouchEvent(event, eventDispatcher);
+      mJSTouchDispatcher.handleTouchEvent(event, eventDispatcher, getCurrentReactContext());
     }
   }
 
