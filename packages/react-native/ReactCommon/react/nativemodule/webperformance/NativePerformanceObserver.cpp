@@ -46,7 +46,7 @@ jsi::Object NativePerformanceObserver::createObserver(jsi::Runtime& rt, NativePe
 
   auto observer = std::make_shared<PerformanceObserver>(std::move(cb));
   jsi::Object observerObj {rt};
-  observerObj.setNativeState(rt, std::move(observer));
+  observerObj.setNativeState(rt, observer);
   return observerObj;
 }
 
@@ -57,13 +57,11 @@ void NativePerformanceObserver::observe(jsi::Runtime& rt, jsi::Object observerOb
   if (!observer) {
     return;
   }
-  observer->setRequiresDroppedEntries(buffered);
-
-
-  std::unordered_set<PerformanceEntryType> entryTypes;
 
   // observer of type multiple
   if (options.hasProperty(rt, "entryTypes")) {
+    std::unordered_set<PerformanceEntryType> entryTypes;
+
     auto types = options.getPropertyAsObject(rt, "entryTypes").asArray(rt);
     for (auto i = 0; i < types.size(rt); ++i) {
       auto rawValue = types.getValueAtIndex(rt, i).asNumber();
@@ -71,17 +69,16 @@ void NativePerformanceObserver::observe(jsi::Runtime& rt, jsi::Object observerOb
         entryTypes.insert(*entryType);
       }
     }
+
+    observer->observe(types);
   }
   else { // single
     auto buffered = options.getProperty(rt, "buffered").asBool();
     auto type = options.getProperty(rt, "type").asNumber();
     if (auto entryType = parseEntryType(type); entryType) {
-      entryTypes.insert(*entryType);
+      observer->observe(entryType, buffered);
     }
   }
-
-  // apply collected entryTypes into observer eventFilter
-  observer->setEntryTypeFilter(entryTypes);
 
   auto& registry = PerformanceEntryReporter::getInstance()->getObserverRegistry();
   registry.addObserver(observer);
@@ -144,4 +141,10 @@ NativePerformanceObserver::getSupportedPerformanceEntryTypes(
   return supportedEntries;
 }
 
+std::vector<std::pair<std::string, uint32_t>>
+NativePerformanceObserver::getEventCounts(jsi::Runtime& /*rt*/) {
+  const auto& eventCounts =
+      PerformanceEntryReporter::getInstance()->getEventCounts();
+  return { eventCounts.begin(), eventCounts.end() };
+}
 } // namespace facebook::react

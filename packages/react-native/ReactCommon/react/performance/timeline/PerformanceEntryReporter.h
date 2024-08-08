@@ -8,9 +8,9 @@
 #pragma once
 
 #include <react/timing/primitives.h>
-#include "PerformanceObserver.h"
 #include "PerformanceObserverRegistry.h"
-#include "PerformanceEntryBuffer.h"
+#include "PerformanceEntryCircularBuffer.h"
+#include "PerformanceEntryKeyedBuffer.h"
 
 #include <cassert>
 #include <memory>
@@ -33,21 +33,31 @@ class PerformanceEntryReporter {
   // creation time instead of having the singleton.
   static std::shared_ptr<PerformanceEntryReporter>& getInstance();
 
-  /**
-   * Marks performance entry buffer of type `entryType` to be buffered even if no observers are attached.
-   */
-  void setAlwaysLogged(PerformanceEntryType entryType, bool isAlwaysLogged);
-
-  /**
-   * Whenever performance entry buffer of type `entryType` is buffered.
-   */
-  bool isAlwaysLogged(PerformanceEntryType entryType) const {
-    return getBuffer(entryType).isAlwaysLogged;
+  [[nodiscard]] PerformanceObserverRegistry& getObserverRegistry() {
+    return *observerRegistry_;
   }
 
+  /*
+   * DOM Performance (High Resolution Time)
+   * https://www.w3.org/TR/hr-time-3/#dom-performance
+   */
+  // https://www.w3.org/TR/hr-time-3/#now-method
+  [[nodiscard]] DOMHighResTimeStamp getCurrentTimeStamp() const;
+
+  void setTimeStampProvider(std::function<double()> provider) {
+    timeStampProvider_ = std::move(provider);
+  }
+
+  /*
+   * Performance Timeline functions
+   * https://www.w3.org/TR/performance-timeline
+   */
+  // https://www.w3.org/TR/performance-timeline/#queue-a-performanceentry
   void pushEntry(const PerformanceEntry& entry);
 
   // https://www.w3.org/TR/performance-timeline/#getentries-method
+  // https://www.w3.org/TR/performance-timeline/#getentriesbytype-method
+  // https://www.w3.org/TR/performance-timeline/#getentriesbyname-method
   [[nodiscard]] std::vector<PerformanceEntry> getEntries(
       std::optional<PerformanceEntryType> entryType = std::nullopt,
       std::string_view entryName = {}) const;
@@ -62,21 +72,16 @@ class PerformanceEntryReporter {
 
   void logLongTaskEntry(double startTime, double duration);
 
+  /*
+   * Event Timing API functions
+   * https://www.w3.org/TR/event-timing/
+   */
+  // https://www.w3.org/TR/event-timing/#dom-performance-eventcounts
   [[nodiscard]] const std::unordered_map<std::string, uint32_t>& getEventCounts() const {
     return eventCounts_;
   }
 
-  [[nodiscard]] DOMHighResTimeStamp getCurrentTimeStamp() const;
-
-  void setTimeStampProvider(std::function<double()> provider) {
-    timeStampProvider_ = std::move(provider);
-  }
-
-  [[nodiscard]] PerformanceObserverRegistry& getObserverRegistry() {
-    return *observerRegistry_;
-  }
-
-  /**
+  /*
    * User Timing Level 3 functions
    * https://w3c.github.io/user-timing/
    */
@@ -100,7 +105,9 @@ class PerformanceEntryReporter {
       std::optional<PerformanceEntryType> entryType = std::nullopt,
       std::string_view entryName = {});
 
-  [[nodiscard]] const PerformanceEntryBuffer& getBuffer(
+  // Instead of having a map of buffers, we store buffer for each type
+  // separately
+  [[nodiscard]] inline const PerformanceEntryBuffer& getBuffer(
       PerformanceEntryType entryType) const {
     switch (entryType) {
       case PerformanceEntryType::EVENT:
@@ -127,8 +134,6 @@ private:
 
   std::unordered_map<std::string, uint32_t> eventCounts_;
 
-  uint32_t droppedEntriesCount_{0};
-
   std::function<double()> timeStampProvider_ = nullptr;
 
   double getMarkTime(const std::string& markName) const;
@@ -138,7 +143,7 @@ private:
       std::string_view entryName,
       std::vector<PerformanceEntry>& res) const;
 
-  PerformanceEntryBuffer& getBufferRef(PerformanceEntryType entryType) {
+  [[nodiscard]] inline PerformanceEntryBuffer& getBufferRef(PerformanceEntryType entryType) {
     switch (entryType) {
       case PerformanceEntryType::EVENT:
         return eventBuffer_;

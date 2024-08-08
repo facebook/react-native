@@ -44,7 +44,7 @@ class BoundedConsumableBuffer {
    * operation, which will depend on whether the buffer reached the max allowed
    * size and how many are there unconsumed elements.
    */
-  PushStatus add(const T& el) {
+  PushStatus add(const T&& el) {
     if (entries_.size() < maxSize_) {
       // Haven't reached max buffer size yet, just add and grow the buffer
       entries_.push_back(el);

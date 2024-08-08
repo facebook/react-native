@@ -57,8 +57,7 @@ class NativePerformanceObserver
   void disconnect(jsi::Runtime& rt, jsi::Object observer);
   std::vector<PerformanceEntry> takeRecords(jsi::Runtime& rt, jsi::Object observerObj);
 
-  std::vector<std::pair<std::string, uint32_t>> getEventCounts(
-      jsi::Runtime& rt);
+  std::vector<std::pair<std::string, uint32_t>> getEventCounts(jsi::Runtime& rt);
 
   void clearEntries(
       jsi::Runtime& rt,
