@@ -889,7 +889,7 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
   if (!_props->boxShadow.empty()) {
     _boxShadowLayer = [CALayer layer];
     [self.layer addSublayer:_boxShadowLayer];
-    _boxShadowLayer.zPosition = CGFLOAT_MIN;
+    _boxShadowLayer.zPosition = _borderLayer.zPosition;
     _boxShadowLayer.frame = RCTGetBoundingRect(_props->boxShadow, self.layer.frame.size);
 
     UIImage *boxShadowImage = RCTGetBoxShadowImage(
