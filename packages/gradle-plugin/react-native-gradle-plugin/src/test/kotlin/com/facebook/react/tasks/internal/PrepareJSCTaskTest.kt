@@ -11,7 +11,8 @@ import com.facebook.react.tests.createProject
 import com.facebook.react.tests.createTestTask
 import com.facebook.react.tests.zipFiles
 import java.io.*
-import org.junit.Assert.*
+import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
@@ -20,26 +21,26 @@ class PrepareJSCTaskTest {
 
   @get:Rule val tempFolder = TemporaryFolder()
 
-  @Test(expected = IllegalStateException::class)
+  @Test
   fun prepareJSCTask_withMissingPackage_fails() {
     val task = createTestTask<PrepareJSCTask>()
 
-    task.taskAction()
+    assertThatThrownBy { task.taskAction() }.isInstanceOf(IllegalStateException::class.java)
   }
 
-  @Test(expected = IllegalStateException::class)
+  @Test
   fun prepareJSCTask_withNullPackage_fails() {
     val task = createTestTask<PrepareJSCTask> { it.jscPackagePath.set(null as String?) }
 
-    task.taskAction()
+    assertThatThrownBy { task.taskAction() }.isInstanceOf(IllegalStateException::class.java)
   }
 
-  @Test(expected = IllegalStateException::class)
+  @Test
   fun prepareJSCTask_withMissingDistFolder_fails() {
     val task =
         createTestTask<PrepareJSCTask> { it.jscPackagePath.set(tempFolder.root.absolutePath) }
 
-    task.taskAction()
+    assertThatThrownBy { task.taskAction() }.isInstanceOf(IllegalStateException::class.java)
   }
 
   @Test
@@ -56,7 +57,7 @@ class PrepareJSCTaskTest {
 
     task.taskAction()
 
-    assertFalse(File(output, "just/an/empty/folders/").exists())
+    assertThat(File(output, "just/an/empty/folders/")).doesNotExist()
   }
 
   @Test
@@ -73,7 +74,7 @@ class PrepareJSCTaskTest {
 
     task.taskAction()
 
-    assertEquals("libsomething.so", output.listFiles()?.first()?.name)
+    assertThat(output.listFiles()?.first()?.name).isEqualTo("libsomething.so")
   }
 
   @Test
@@ -93,7 +94,7 @@ class PrepareJSCTaskTest {
 
     task.taskAction()
 
-    assertTrue(File(output, "JavaScriptCore/justaheader.h").exists())
+    assertThat(File(output, "JavaScriptCore/justaheader.h")).exists()
   }
 
   @Test
@@ -114,7 +115,7 @@ class PrepareJSCTaskTest {
 
     task.taskAction()
 
-    assertTrue(File(output, "CMakeLists.txt").exists())
+    assertThat(File(output, "CMakeLists.txt")).exists()
   }
 
   private fun prepareInputFolder(aarContent: List<File> = listOf(tempFolder.newFile())) {

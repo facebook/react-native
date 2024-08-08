@@ -15,7 +15,7 @@ add_compile_options(
         -DLOG_TAG=\"Fabric\")
 
 file(GLOB rrc_legacyviewmanagerinterop_SRC CONFIGURE_DEPENDS *.cpp)
-add_library(rrc_legacyviewmanagerinterop SHARED ${rrc_legacyviewmanagerinterop_SRC})
+add_library(rrc_legacyviewmanagerinterop OBJECT ${rrc_legacyviewmanagerinterop_SRC})
 
 target_include_directories(rrc_legacyviewmanagerinterop PUBLIC ${REACT_COMMON_DIR})
 

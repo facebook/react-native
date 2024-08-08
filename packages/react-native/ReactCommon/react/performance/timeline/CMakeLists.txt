@@ -19,4 +19,5 @@ add_library(react_performance_timeline SHARED ${react_performance_timeline_SRC})
 
 target_include_directories(react_performance_timeline PUBLIC ${REACT_COMMON_DIR})
 target_link_libraries(react_performance_timeline
+        react_timing
         react_cxxreact)

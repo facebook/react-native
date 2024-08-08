@@ -80,6 +80,7 @@ export default class TimingAnimation extends Animation {
     this._useNativeDriver = NativeAnimatedHelper.shouldUseNativeDriver(config);
     this._platformConfig = config.platformConfig;
     this.__isInteraction = config.isInteraction ?? !this._useNativeDriver;
+    this.__isLooping = config.isLooping;
   }
 
   __getNativeAnimationConfig(): any {

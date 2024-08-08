@@ -26,6 +26,10 @@
 
 using namespace facebook::react;
 
+static NSString *kOnScrollEvent = @"onScroll";
+
+static NSString *kOnScrollEndEvent = @"onScrollEnded";
+
 static const CGFloat kClippingLeeway = 44.0;
 
 static UIScrollViewKeyboardDismissMode RCTUIKeyboardDismissModeFromProps(const ScrollViewProps &props)
@@ -56,10 +60,11 @@ static UIScrollViewIndicatorStyle RCTUIScrollViewIndicatorStyleFromProps(const S
 // This is just a workaround to allow animations based on onScroll event.
 // This is only used to animate sticky headers in ScrollViews, and only the contentOffset and tag is used.
 // TODO: T116850910 [Fabric][iOS] Make Fabric not use legacy RCTEventDispatcher for native-driven AnimatedEvents
-static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrollView, NSInteger tag)
+static void
+RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrollView, NSInteger tag, NSString *eventName)
 {
   static uint16_t coalescingKey = 0;
-  RCTScrollEvent *scrollEvent = [[RCTScrollEvent alloc] initWithEventName:@"onScroll"
+  RCTScrollEvent *scrollEvent = [[RCTScrollEvent alloc] initWithEventName:eventName
                                                                  reactTag:[NSNumber numberWithInt:tag]
                                                   scrollViewContentOffset:scrollView.contentOffset
                                                    scrollViewContentInset:scrollView.contentInset
@@ -408,13 +413,12 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
 
 - (ScrollViewEventEmitter::Metrics)_scrollViewMetrics
 {
-  auto metrics = ScrollViewEventEmitter::Metrics{
-      .contentSize = RCTSizeFromCGSize(_scrollView.contentSize),
-      .contentOffset = RCTPointFromCGPoint(_scrollView.contentOffset),
-      .contentInset = RCTEdgeInsetsFromUIEdgeInsets(_scrollView.contentInset),
-      .containerSize = RCTSizeFromCGSize(_scrollView.bounds.size),
-      .zoomScale = _scrollView.zoomScale,
-  };
+  auto metrics = ScrollViewEventEmitter::Metrics{};
+  metrics.contentSize = RCTSizeFromCGSize(_scrollView.contentSize);
+  metrics.contentOffset = RCTPointFromCGPoint(_scrollView.contentOffset);
+  metrics.contentInset = RCTEdgeInsetsFromUIEdgeInsets(_scrollView.contentInset);
+  metrics.containerSize = RCTSizeFromCGSize(_scrollView.bounds.size);
+  metrics.zoomScale = _scrollView.zoomScale;
 
   if (_layoutMetrics.layoutDirection == LayoutDirection::RightToLeft) {
     metrics.contentOffset.x = metrics.contentSize.width - metrics.containerSize.width - metrics.contentOffset.x;
@@ -507,7 +511,7 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
         static_cast<const ScrollViewEventEmitter &>(*_eventEmitter).onScroll(scrollMetrics);
       }
 
-      RCTSendScrollEventForNativeAnimations_DEPRECATED(scrollView, self.tag);
+      RCTSendScrollEventForNativeAnimations_DEPRECATED(scrollView, self.tag, kOnScrollEvent);
     }
   }
 
@@ -564,6 +568,7 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
     // ScrollView will not decelerate and `scrollViewDidEndDecelerating` will not be called.
     // `_isUserTriggeredScrolling` must be set to NO here.
     _isUserTriggeredScrolling = NO;
+    RCTSendScrollEventForNativeAnimations_DEPRECATED(scrollView, self.tag, kOnScrollEndEvent);
   }
 }
 
@@ -589,6 +594,8 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
   static_cast<const ScrollViewEventEmitter &>(*_eventEmitter).onMomentumScrollEnd([self _scrollViewMetrics]);
   [self _updateStateWithContentOffset];
   _isUserTriggeredScrolling = NO;
+
+  RCTSendScrollEventForNativeAnimations_DEPRECATED(scrollView, self.tag, kOnScrollEndEvent);
 }
 
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView

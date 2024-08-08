@@ -232,24 +232,16 @@ static void sliceChildShadowNodeViewPairsRecursively(
     // This might not be a FormsView, or a FormsStackingContext. We let the
     // differ handle removal of flattened views from the Mounting layer and
     // shuffling their children around.
-    bool isConcreteView = false;
-    bool areChildrenFlattened = false;
-    if (ReactNativeFeatureFlags::allowCollapsableChildren()) {
-      bool childrenFormStackingContexts = shadowNode.getTraits().check(
-          ShadowNodeTraits::Trait::ChildrenFormStackingContext);
-      isConcreteView = childShadowNode.getTraits().check(
-                           ShadowNodeTraits::Trait::FormsView) ||
-          childrenFormStackingContexts;
-      areChildrenFlattened =
-          !childShadowNode.getTraits().check(
-              ShadowNodeTraits::Trait::FormsStackingContext) &&
-          !childrenFormStackingContexts;
-    } else {
-      isConcreteView =
-          childShadowNode.getTraits().check(ShadowNodeTraits::Trait::FormsView);
-      areChildrenFlattened = !childShadowNode.getTraits().check(
-          ShadowNodeTraits::Trait::FormsStackingContext);
-    }
+    bool childrenFormStackingContexts = shadowNode.getTraits().check(
+        ShadowNodeTraits::Trait::ChildrenFormStackingContext);
+    bool isConcreteView =
+        childShadowNode.getTraits().check(ShadowNodeTraits::Trait::FormsView) ||
+        childrenFormStackingContexts;
+    bool areChildrenFlattened =
+        !childShadowNode.getTraits().check(
+            ShadowNodeTraits::Trait::FormsStackingContext) &&
+        !childrenFormStackingContexts;
+
     Point storedOrigin = {};
     if (areChildrenFlattened) {
       storedOrigin = origin;

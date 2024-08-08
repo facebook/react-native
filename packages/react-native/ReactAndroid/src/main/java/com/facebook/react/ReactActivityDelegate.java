@@ -70,7 +70,7 @@ public class ReactActivityDelegate {
    *
    * <p>Not used on bridgeless
    */
-  protected ReactRootView createRootView() {
+  protected @Nullable ReactRootView createRootView() {
     return null;
   }
 

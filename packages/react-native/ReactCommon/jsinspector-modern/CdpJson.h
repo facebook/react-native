@@ -85,7 +85,7 @@ using ParseError = folly::json::parse_error;
 /**
  * Returns a JSON-formatted string representing an error.
  *
- * {"id": <id>, "error": { "code": <code>, "message": <message> }}
+ * {"id": <id>, "error": { "code": <cdp error code>, "message": <message> }}
  *
  * \param id Request ID. Mandatory, null only if the request omitted it or
  *           could not be parsed.

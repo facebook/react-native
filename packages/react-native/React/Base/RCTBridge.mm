@@ -20,6 +20,7 @@
 #import <jsinspector-modern/ReactCdp.h>
 #import <optional>
 #import "RCTDevLoadingViewProtocol.h"
+#import "RCTInspectorNetworkHelper.h"
 #import "RCTInspectorUtils.h"
 #import "RCTJSThread.h"
 #import "RCTLog.h"
@@ -182,7 +183,9 @@ void RCTUIManagerSetDispatchAccessibilityManagerInitOntoMain(BOOL enabled)
 class RCTBridgeHostTargetDelegate : public facebook::react::jsinspector_modern::HostTargetDelegate {
  public:
   RCTBridgeHostTargetDelegate(RCTBridge *bridge)
-      : bridge_(bridge), pauseOverlayController_([[RCTPausedInDebuggerOverlayController alloc] init])
+      : bridge_(bridge),
+        pauseOverlayController_([[RCTPausedInDebuggerOverlayController alloc] init]),
+        networkHelper_([[RCTInspectorNetworkHelper alloc] init])
   {
   }
 
@@ -229,9 +232,16 @@ class RCTBridgeHostTargetDelegate : public facebook::react::jsinspector_modern::
     }
   }
 
+  void loadNetworkResource(const RCTInspectorLoadNetworkResourceRequest &params, RCTInspectorNetworkExecutor executor)
+      override
+  {
+    [networkHelper_ loadNetworkResourceWithParams:params executor:executor];
+  }
+
  private:
   __weak RCTBridge *bridge_;
   RCTPausedInDebuggerOverlayController *pauseOverlayController_;
+  RCTInspectorNetworkHelper *networkHelper_;
 };
 
 @interface RCTBridge () <RCTReloadListener>
@@ -473,7 +483,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
           }
           return strongSelf->_inspectorTarget->connect(std::move(remote));
         },
-        {.nativePageReloads = true, .prefersFuseboxFrontend = true});
+        {.nativePageReloads = true, .nativeSourceCodeFetching = true, .prefersFuseboxFrontend = true});
   }
 
   Class bridgeClass = self.bridgeClass;

@@ -9,7 +9,6 @@ package com.facebook.react.views.modal
 
 import android.content.DialogInterface.OnShowListener
 import com.facebook.react.bridge.ReadableArray
-import com.facebook.react.common.MapBuilder
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.LayoutShadowNode
 import com.facebook.react.uimanager.ReactStylesDiffMap
@@ -112,17 +111,10 @@ public class ReactModalHostManager :
 
   public override fun getExportedCustomDirectEventTypeConstants(): Map<String, Any> =
       (super.getExportedCustomDirectEventTypeConstants() ?: mutableMapOf()).apply {
-        putAll(
-            MapBuilder.builder<String, Any>()
-                .put(
-                    RequestCloseEvent.EVENT_NAME,
-                    MapBuilder.of("registrationName", "onRequestClose"))
-                .put(ShowEvent.EVENT_NAME, MapBuilder.of("registrationName", "onShow")) // iOS only
-                .put("topDismiss", MapBuilder.of("registrationName", "onDismiss")) // iOS only
-                .put(
-                    "topOrientationChange",
-                    MapBuilder.of("registrationName", "onOrientationChange"))
-                .build())
+        put(RequestCloseEvent.EVENT_NAME, mapOf("registrationName" to "onRequestClose"))
+        put(ShowEvent.EVENT_NAME, mapOf("registrationName" to "onShow")) // iOS only
+        put("topDismiss", mapOf("registrationName" to "onDismiss")) // iOS only
+        put("topOrientationChange", mapOf("registrationName" to "onOrientationChange"))
       }
 
   protected override fun onAfterUpdateTransaction(view: ReactModalHostView) {

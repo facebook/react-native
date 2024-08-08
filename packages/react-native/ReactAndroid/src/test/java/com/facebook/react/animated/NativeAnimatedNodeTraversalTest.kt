@@ -19,7 +19,6 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.WritableArray
 import com.facebook.react.bridge.WritableMap
-import com.facebook.react.common.MapBuilder
 import com.facebook.react.uimanager.UIManagerModule
 import com.facebook.react.uimanager.events.Event
 import com.facebook.react.uimanager.events.EventDispatcher
@@ -87,9 +86,9 @@ class NativeAnimatedNodeTraversalTest {
 
     uiManagerMock = mock(UIManagerModule::class.java)
     eventDispatcherMock = mock(EventDispatcher::class.java)
-    whenever(uiManagerMock.eventDispatcher).thenAnswer { eventDispatcherMock }
+    whenever(uiManagerMock.getEventDispatcher()).thenAnswer { eventDispatcherMock }
     whenever(uiManagerMock.constants).thenAnswer {
-      MapBuilder.of("customDirectEventTypes", MapBuilder.newHashMap<Any, Any>())
+      mapOf("customDirectEventTypes" to emptyMap<Any, Any>())
     }
     whenever(uiManagerMock.directEventNamesResolver).thenAnswer {
       object : UIManagerModule.CustomEventNamesResolver {
@@ -156,6 +155,40 @@ class NativeAnimatedNodeTraversalTest {
       nativeAnimatedNodesManager.runUpdates(nextFrameTime())
       verify(uiManagerMock).synchronouslyUpdateViewOnUIThread(eq(1000), stylesCaptor.capture())
       assertThat(stylesCaptor.value.getDouble("opacity")).isEqualTo(frames.getDouble(i))
+    }
+
+    reset(uiManagerMock)
+    nativeAnimatedNodesManager.runUpdates(nextFrameTime())
+    verifyNoMoreInteractions(uiManagerMock)
+  }
+
+  @Test
+  fun testFramesAnimationWithFinalFrameBeingDifferentFromToValue() {
+    createSimpleAnimatedViewWithOpacity()
+
+    val frames: JavaOnlyArray = JavaOnlyArray.of(0.0, 0.5, 1.0, 0.5, 0.0)
+
+    val animationCallback: Callback = mock(Callback::class.java)
+    nativeAnimatedNodesManager.startAnimatingNode(
+        1,
+        1,
+        JavaOnlyMap.of("type", "frames", "frames", frames, "toValue", 1.0, "iterations", 2),
+        animationCallback)
+
+    val stylesCaptor: ArgumentCaptor<ReadableMap> = ArgumentCaptor.forClass(ReadableMap::class.java)
+
+    for (iteration in 1..2) {
+      for (i in 0 until frames.size()) {
+        reset(uiManagerMock)
+        nativeAnimatedNodesManager.runUpdates(nextFrameTime())
+        verify(uiManagerMock).synchronouslyUpdateViewOnUIThread(eq(1000), stylesCaptor.capture())
+
+        if (i < frames.size() - 1 || iteration == 1) {
+          assertThat(stylesCaptor.value.getDouble("opacity")).isEqualTo(frames.getDouble(i))
+        } else {
+          assertThat(stylesCaptor.value.getDouble("opacity")).isEqualTo(1.0)
+        }
+      }
     }
 
     reset(uiManagerMock)
@@ -937,9 +970,8 @@ class NativeAnimatedNodeTraversalTest {
     val viewTag: Int = 1000
 
     whenever(uiManagerMock.constants).thenAnswer {
-      MapBuilder.of(
-          "customDirectEventTypes",
-          MapBuilder.of("onScroll", MapBuilder.of("registrationName", "onScroll")))
+      mapOf(
+          "customDirectEventTypes" to mapOf("onScroll" to mapOf("registrationName" to "onScroll")))
     }
 
     nativeAnimatedNodesManager = NativeAnimatedNodesManager(reactApplicationContextMock)
@@ -1086,7 +1118,7 @@ class NativeAnimatedNodeTraversalTest {
     }
 
     // at this point we expect tracking value to be at 75
-    assertThat((nativeAnimatedNodesManager.getNodeById(3) as ValueAnimatedNode).value)
+    assertThat((nativeAnimatedNodesManager.getNodeById(3) as ValueAnimatedNode).getValue())
         .isEqualTo(75.0)
 
     // we update "toValue" again to 100 and expect the animation to restart from the current
@@ -1194,11 +1226,11 @@ class NativeAnimatedNodeTraversalTest {
     // passes the final point (that is 1) while going backwards
     var isBoucingBack: Boolean = false
     var previousValue: Double =
-        (nativeAnimatedNodesManager.getNodeById(3) as ValueAnimatedNode).value
+        (nativeAnimatedNodesManager.getNodeById(3) as ValueAnimatedNode).getValue()
     for (i in 500 downTo 0) {
       nativeAnimatedNodesManager.runUpdates(nextFrameTime())
       val currentValue: Double =
-          (nativeAnimatedNodesManager.getNodeById(3) as ValueAnimatedNode).value
+          (nativeAnimatedNodesManager.getNodeById(3) as ValueAnimatedNode).getValue()
       if (previousValue >= 1.0 && currentValue < 1.0) {
         isBoucingBack = true
         break
@@ -1219,7 +1251,7 @@ class NativeAnimatedNodeTraversalTest {
     for (i in 0 until 8 * 60) {
       nativeAnimatedNodesManager.runUpdates(nextFrameTime())
       val currentValue: Double =
-          (nativeAnimatedNodesManager.getNodeById(3) as ValueAnimatedNode).value
+          (nativeAnimatedNodesManager.getNodeById(3) as ValueAnimatedNode).getValue()
       if (!hasTurnedForward) {
         if (currentValue <= previousValue) {
           bounceBackInitialFrames++

@@ -7,72 +7,70 @@
 
 package com.facebook.react.uimanager
 
-import com.facebook.react.common.MapBuilder
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNotNull
-import org.junit.Assert.assertTrue
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
 class UIManagerModuleConstantsHelperTest {
   @Test
   fun normalizeEventTypes_withNull_doesNothing() {
-    UIManagerModuleConstantsHelper.normalizeEventTypes(null)
+    assertThat(UIManagerModuleConstantsHelper.normalizeEventTypes(null)).isNull()
   }
 
   @Test
   fun normalizeEventTypes_withEmptyMap_doesNothing() {
-    val emptyMap: Map<String, Any?> = MapBuilder.builder<String, Any?>().build()
-    UIManagerModuleConstantsHelper.normalizeEventTypes(emptyMap)
-    assertTrue(emptyMap.isEmpty())
+    val emptyMap = mutableMapOf<String, Any?>()
+    assertThat(UIManagerModuleConstantsHelper.normalizeEventTypes(emptyMap)).isEmpty()
   }
 
   @Test
   fun normalizeEventTypes_withOnEvent_doesNormalize() {
-    val onClickMap: Map<String, String> =
-        MapBuilder.builder<String, String>().put("onClick", "¯\\_(ツ)_/¯").build()
-    UIManagerModuleConstantsHelper.normalizeEventTypes(onClickMap)
-    assertTrue(onClickMap.containsKey("topClick"))
-    assertTrue(onClickMap.containsKey("onClick"))
+    val onClickMap = mutableMapOf("onClick" to "¯\\_(ツ)_/¯")
+    assertThat(UIManagerModuleConstantsHelper.normalizeEventTypes(onClickMap))
+        .containsKeys("topClick", "onClick")
   }
 
   @Test
   fun normalizeEventTypes_withTopEvent_doesNormalize() {
-    val onClickMap: Map<String, String> =
-        MapBuilder.builder<String, String>().put("topOnClick", "¯\\_(ツ)_/¯").build()
-    UIManagerModuleConstantsHelper.normalizeEventTypes(onClickMap)
-    assertTrue(onClickMap.containsKey("topOnClick"))
-    assertFalse(onClickMap.containsKey("onClick"))
+    val onClickMap = mutableMapOf("topOnClick" to "¯\\_(ツ)_/¯")
+    assertThat(UIManagerModuleConstantsHelper.normalizeEventTypes(onClickMap))
+        .containsKey("topOnClick")
+        .doesNotContainKey("onClick")
   }
 
   @Suppress("UNCHECKED_CAST")
   @Test
   fun normalizeEventTypes_withNestedObjects_doesNotLoseThem() {
-    val nestedObjects: Map<String, Any?> =
-        MapBuilder.builder<String, Any?>()
-            .put(
-                "onColorChanged",
-                MapBuilder.of<String, Any?>(
-                    "phasedRegistrationNames",
-                    MapBuilder.of<String, String>(
-                        "bubbled", "onColorChanged", "captured", "onColorChangedCapture")))
-            .build()
-    UIManagerModuleConstantsHelper.normalizeEventTypes(nestedObjects)
-    assertTrue(nestedObjects.containsKey("topColorChanged"))
-    var innerMap = nestedObjects["topColorChanged"] as? Map<String, Any?>
-    assertNotNull(innerMap)
-    assertTrue(innerMap!!.containsKey("phasedRegistrationNames"))
-    var innerInnerMap = innerMap.get("phasedRegistrationNames") as? Map<String, Any?>
-    assertNotNull(innerInnerMap)
-    assertEquals("onColorChanged", innerInnerMap!!.get("bubbled"))
-    assertEquals("onColorChangedCapture", innerInnerMap.get("captured"))
-    assertTrue(nestedObjects.containsKey("onColorChanged"))
-    innerMap = nestedObjects.get("topColorChanged") as? Map<String, Any?>
-    assertNotNull(innerMap)
-    assertTrue(innerMap!!.containsKey("phasedRegistrationNames"))
-    innerInnerMap = innerMap.get("phasedRegistrationNames") as? Map<String, Any?>
-    assertNotNull(innerInnerMap)
-    assertEquals("onColorChanged", innerInnerMap!!.get("bubbled"))
-    assertEquals("onColorChangedCapture", innerInnerMap.get("captured"))
+    val nestedObjects =
+        mutableMapOf(
+            "onColorChanged" to
+                mutableMapOf(
+                    "phasedRegistrationNames" to
+                        mutableMapOf(
+                            "bubbled" to "onColorChanged",
+                            "captured" to "onColorChangedCapture",
+                        )))
+    val result =
+        checkNotNull(
+            UIManagerModuleConstantsHelper.normalizeEventTypes(nestedObjects)
+                as Map<String, Map<String, Map<String, String>>>) {
+              "returned map was null"
+            }
+    verifyNestedObjects(result, "topColorChanged")
+    verifyNestedObjects(result, "onColorChanged")
+  }
+
+  private fun verifyNestedObjects(
+      nestedObjects: Map<String, Map<String, Map<String, String>>>,
+      name: String,
+  ) {
+    assertThat(nestedObjects).containsKey(name)
+    val innerMap = checkNotNull(nestedObjects[name]) { """nestedObjects["$name"] is null""" }
+    assertThat(innerMap).containsKey("phasedRegistrationNames")
+    val innerInnerMap =
+        checkNotNull(innerMap["phasedRegistrationNames"]) {
+          """nestedObjects["$name"]["phasedRegistrationNames"] is null"""
+        }
+    assertThat("onColorChanged").isEqualTo(innerInnerMap["bubbled"])
+    assertThat("onColorChangedCapture").isEqualTo(innerInnerMap["captured"])
   }
 }

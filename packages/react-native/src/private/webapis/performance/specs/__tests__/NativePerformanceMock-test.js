@@ -4,12 +4,16 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  * @oncall react_native
  */
 
+import type {PerformanceEntryList} from '../../PerformanceObserver';
+
 const NativePerformanceMock = require('../__mocks__/NativePerformance').default;
-const PerformanceObserver = require('../../PerformanceObserver').default;
+const PerformanceObserver =
+  require('../../PerformanceObserver').PerformanceObserver;
 
 describe('NativePerformanceMock', () => {
   jest.mock(
@@ -18,16 +22,16 @@ describe('NativePerformanceMock', () => {
   );
 
   it('marks get reported', async () => {
-    let entries = [];
+    let entries: PerformanceEntryList = [];
     const observer = new PerformanceObserver((list, _observer) => {
       entries = [...entries, ...list.getEntries()];
     });
 
     observer.observe({type: 'mark'});
 
-    NativePerformanceMock.mark('mark1', 0, 10);
-    NativePerformanceMock.mark('mark2', 5, 10);
-    NativePerformanceMock.mark('mark3', 10, 20);
+    NativePerformanceMock.mark('mark1', 0);
+    NativePerformanceMock.mark('mark2', 5);
+    NativePerformanceMock.mark('mark3', 10);
 
     await jest.runAllTicks();
     expect(entries).toHaveLength(3);
@@ -36,16 +40,16 @@ describe('NativePerformanceMock', () => {
   });
 
   it('measures get reported', async () => {
-    let entries = [];
+    let entries: PerformanceEntryList = [];
     const observer = new PerformanceObserver((list, _observer) => {
       entries = [...entries, ...list.getEntries()];
     });
 
     observer.observe({entryTypes: ['measure']});
 
-    NativePerformanceMock.mark('mark0', 0.0, 1.0);
-    NativePerformanceMock.mark('mark1', 1.0, 3.0);
-    NativePerformanceMock.mark('mark2', 2.0, 4.0);
+    NativePerformanceMock.mark('mark0', 0.0);
+    NativePerformanceMock.mark('mark1', 1.0);
+    NativePerformanceMock.mark('mark2', 2.0);
 
     NativePerformanceMock.measure('measure0', 0, 2);
     NativePerformanceMock.measure('measure1', 0, 2, 4);

@@ -8,11 +8,14 @@
  * @flow strict
  */
 
-import type {HighResTimeStamp, PerformanceEntryType} from './PerformanceEntry';
+import type {
+  DOMHighResTimeStamp,
+  PerformanceEntryType,
+} from './PerformanceEntry';
 
 import warnOnce from '../../../../Libraries/Utilities/warnOnce';
+import {PerformanceEventTiming} from './EventTiming';
 import {PerformanceEntry} from './PerformanceEntry';
-import PerformanceEventTiming from './PerformanceEventTiming';
 import {
   performanceEntryTypeToRaw,
   rawToPerformanceEntry,
@@ -66,13 +69,13 @@ export type PerformanceObserverInit =
     }
   | {
       type: PerformanceEntryType,
-      durationThreshold?: HighResTimeStamp,
+      durationThreshold?: DOMHighResTimeStamp,
     };
 
 type PerformanceObserverConfig = {|
   callback: PerformanceObserverCallback,
-  // Map of {entryType: durationThreshold}
-  entryTypes: $ReadOnlyMap<PerformanceEntryType, ?number>,
+  entryTypes: $ReadOnlySet<PerformanceEntryType>,
+  durationThreshold: ?number,
 |};
 
 const observerCountPerEntryType: Map<PerformanceEntryType, number> = new Map();
@@ -97,8 +100,15 @@ const onPerformanceEntry = () => {
       if (!observerConfig.entryTypes.has(entry.entryType)) {
         return false;
       }
-      const durationThreshold = observerConfig.entryTypes.get(entry.entryType);
-      return entry.duration >= (durationThreshold ?? 0);
+
+      if (
+        entry.entryType === 'event' &&
+        observerConfig.durationThreshold != null
+      ) {
+        return entry.duration >= observerConfig.durationThreshold;
+      }
+
+      return true;
     });
     if (entriesForObserver.length !== 0) {
       try {
@@ -122,21 +132,11 @@ export function warnNoNativePerformanceObserver() {
 }
 
 function applyDurationThresholds() {
-  const durationThresholds: Map<PerformanceEntryType, ?number> = Array.from(
-    registeredObservers.values(),
-  )
-    .map(config => config.entryTypes)
-    .reduce(
-      (accumulator, currentValue) => union(accumulator, currentValue),
-      new Map(),
-    );
+  const durationThresholds = Array.from(registeredObservers.values())
+    .map(observerConfig => observerConfig.durationThreshold)
+    .filter(Boolean);
 
-  for (const [entryType, durationThreshold] of durationThresholds) {
-    NativePerformanceObserver?.setDurationThreshold(
-      performanceEntryTypeToRaw(entryType),
-      durationThreshold ?? 0,
-    );
-  }
+  return Math.min(...durationThresholds);
 }
 
 function getSupportedPerformanceEntryTypes(): $ReadOnlyArray<PerformanceEntryType> {
@@ -174,7 +174,7 @@ function getSupportedPerformanceEntryTypes(): $ReadOnlyArray<PerformanceEntryTyp
  * });
  * observer.observe({ type: "event" });
  */
-export default class PerformanceObserver {
+export class PerformanceObserver {
   #callback: PerformanceObserverCallback;
   #type: 'single' | 'multiple' | void;
 
@@ -194,14 +194,10 @@ export default class PerformanceObserver {
 
     if (options.entryTypes) {
       this.#type = 'multiple';
-      requestedEntryTypes = new Map(
-        options.entryTypes.map(t => [t, undefined]),
-      );
+      requestedEntryTypes = new Set(options.entryTypes);
     } else {
       this.#type = 'single';
-      requestedEntryTypes = new Map([
-        [options.type, options.durationThreshold],
-      ]);
+      requestedEntryTypes = new Set([options.type]);
     }
 
     // The same observer may receive multiple calls to "observe", so we need
@@ -218,6 +214,8 @@ export default class PerformanceObserver {
 
     registeredObservers.set(this, {
       callback: this.#callback,
+      durationThreshold:
+        options.type === 'event' ? options.durationThreshold : undefined,
       entryTypes: nextEntryTypes,
     });
 
@@ -322,20 +320,8 @@ export default class PerformanceObserver {
     getSupportedPerformanceEntryTypes();
 }
 
-// As a Set union, except if value exists in both, we take minimum
-function union<T>(
-  a: $ReadOnlyMap<T, ?number>,
-  b: $ReadOnlyMap<T, ?number>,
-): Map<T, ?number> {
-  const res = new Map<T, ?number>();
-  for (const [k, v] of a) {
-    if (!b.has(k)) {
-      res.set(k, v);
-    } else {
-      res.set(k, Math.min(v ?? 0, b.get(k) ?? 0));
-    }
-  }
-  return res;
+function union<T>(a: $ReadOnlySet<T>, b: $ReadOnlySet<T>): Set<T> {
+  return new Set([...a, ...b]);
 }
 
 function difference<T>(a: $ReadOnlySet<T>, b: $ReadOnlySet<T>): Set<T> {

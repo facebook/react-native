@@ -80,8 +80,14 @@ static NSString *getInspectorDeviceId()
   // A bundle ID uniquely identifies a single app throughout the system. [Source: Apple docs]
   NSString *bundleId = [[NSBundle mainBundle] bundleIdentifier];
 
+#if TARGET_OS_IPHONE
   // An alphanumeric string that uniquely identifies a device to the app's vendor. [Source: Apple docs]
   NSString *identifierForVendor = [[UIDevice currentDevice] identifierForVendor].UUIDString;
+#else
+  // macOS does not support UIDevice. Use an empty string, with the assumption
+  // that we are only building to the current system.
+  NSString *identifierForVendor = @"";
+#endif
 
   auto &inspectorFlags = facebook::react::jsinspector_modern::InspectorFlags::getInstance();
 

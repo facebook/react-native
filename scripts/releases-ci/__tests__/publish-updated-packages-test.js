@@ -43,19 +43,15 @@ describe('publishUpdatedPackages', () => {
           throw new Error();
       }
     });
-    const consoleError = jest
-      .spyOn(console, 'error')
-      .mockImplementation(() => {});
+    jest.spyOn(console, 'error').mockImplementation(() => {});
 
-    await publishUpdatedPackages();
-
-    expect(consoleError.mock.calls).toMatchInlineSnapshot(`
-      Array [
-        Array [
-          "Failed to read Git commit message, exiting.",
-        ],
-      ]
-    `);
+    let message = '';
+    try {
+      await publishUpdatedPackages();
+    } catch (e) {
+      message = e.message;
+    }
+    expect(message).toEqual('Failed to read Git commit message, exiting.');
   });
 
   test("should exit when commit message does not include '#publish-packages-to-npm'", async () => {
@@ -246,7 +242,6 @@ describe('publishUpdatedPackages', () => {
         ]
       `);
     });
-
     test('should exit with error if one or more packages fail after retry', async () => {
       execMock.mockImplementationOnce(() => ({code: 0}));
       execMock.mockImplementation(() => ({
@@ -258,10 +253,15 @@ describe('publishUpdatedPackages', () => {
         .spyOn(console, 'log')
         .mockImplementation(() => {});
 
-      await publishUpdatedPackages();
+      let message = '';
+      try {
+        await publishUpdatedPackages();
+      } catch (e) {
+        message = e.message;
+      }
 
       expect(consoleLog).toHaveBeenLastCalledWith('--- Retrying once! ---');
-      expect(process.exitCode).toBe(1);
+      expect(message).toEqual('Failed packages count = 1');
     });
   });
 });

@@ -1283,7 +1283,6 @@ function InternalTextInput(props: Props): React.Node {
 
   const inputRef = useRef<null | React.ElementRef<HostComponent<mixed>>>(null);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const selection: ?Selection =
     propsSelection == null
       ? null

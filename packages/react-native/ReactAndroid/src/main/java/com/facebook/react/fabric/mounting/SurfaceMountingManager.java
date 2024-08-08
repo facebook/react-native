@@ -29,7 +29,6 @@ import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.build.ReactBuildConfig;
-import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
 import com.facebook.react.fabric.mounting.MountingManager.MountItemExecutor;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
@@ -294,6 +293,9 @@ public class SurfaceMountingManager {
 
     Runnable runnable =
         () -> {
+          if (ReactNativeFeatureFlags.enableViewRecycling()) {
+            mViewManagerRegistry.onSurfaceStopped(mSurfaceId);
+          }
           mTagSetForStoppedSurface = new SparseArrayCompat<>();
           for (Map.Entry<Integer, ViewState> entry : mTagToViewState.entrySet()) {
             // Using this as a placeholder value in the map. We're using SparseArrayCompat
@@ -313,9 +315,6 @@ public class SurfaceMountingManager {
           mThemedReactContext = null;
           mOnViewAttachMountItems.clear();
 
-          if (ReactFeatureFlags.enableViewRecycling) {
-            mViewManagerRegistry.onSurfaceStopped(mSurfaceId);
-          }
           FLog.e(TAG, "Surface [" + mSurfaceId + "] was stopped on SurfaceMountingManager.");
         };
 

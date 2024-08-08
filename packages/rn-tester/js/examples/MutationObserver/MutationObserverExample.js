@@ -15,8 +15,8 @@ import {RNTesterThemeContext} from '../../components/RNTesterTheme';
 import * as React from 'react';
 import {type ElementRef, useContext, useEffect, useRef, useState} from 'react';
 import {Pressable, ScrollView, StyleSheet, Text, View} from 'react-native';
-import MutationObserver from 'react-native/Libraries/MutationObserver/MutationObserver';
 import ReadOnlyElement from 'react-native/src/private/webapis/dom/nodes/ReadOnlyElement';
+import MutationObserver from 'react-native/src/private/webapis/mutationobserver/MutationObserver';
 
 export const name = 'MutationObserver Example';
 export const title = name;

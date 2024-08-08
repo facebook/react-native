@@ -17,6 +17,8 @@ import {act, create} from 'react-test-renderer';
 
 jest.useFakeTimers();
 
+const skipTestSilenceLinter = it.skip;
+
 describe('VirtualizedList', () => {
   it('renders simple list', async () => {
     let component;
@@ -460,77 +462,80 @@ describe('VirtualizedList', () => {
   });
 
   // TODO: Revisit this test case after upgrading to React 19.
-  it.skip('calls onStartReached when near the start', async () => {
-    const ITEM_HEIGHT = 40;
-    const layout = {width: 300, height: 600};
-    let data = Array(40)
-      .fill()
-      .map((_, index) => ({key: `key-${index}`}));
-    const onStartReached = jest.fn();
-    const props = {
-      data,
-      initialNumToRender: 10,
-      onStartReachedThreshold: 1,
-      windowSize: 10,
-      renderItem: ({item}) => <item value={item.key} />,
-      getItem: (items, index) => items[index],
-      getItemCount: items => items.length,
-      getItemLayout: (items, index) => ({
-        length: ITEM_HEIGHT,
-        offset: ITEM_HEIGHT * index,
-        index,
-      }),
-      onStartReached,
-      initialScrollIndex: data.length - 1,
-    };
-    let component;
-    await act(() => {
-      component = create(<VirtualizedList {...props} />);
-    });
-
-    const instance = component.getInstance();
-
-    await act(async () => {
-      instance._onLayout({nativeEvent: {layout, zoomScale: 1}});
-      instance._onContentSizeChange(300, data.length * ITEM_HEIGHT);
-
-      // Make sure onStartReached is not called initially when initialScrollIndex is set.
-      await jest.runAllTimersAsync();
-    });
-    expect(onStartReached).not.toHaveBeenCalled();
-
-    await act(async () => {
-      // Scroll for a small amount and make sure onStartReached is not called.
-      instance._onScroll({
-        timeStamp: 1000,
-        nativeEvent: {
-          contentOffset: {y: (data.length - 2) * ITEM_HEIGHT, x: 0},
-          layoutMeasurement: layout,
-          contentSize: {...layout, height: data.length * ITEM_HEIGHT},
-          zoomScale: 1,
-          contentInset: {right: 0, top: 0, left: 0, bottom: 0},
-        },
+  skipTestSilenceLinter(
+    'calls onStartReached when near the start',
+    async () => {
+      const ITEM_HEIGHT = 40;
+      const layout = {width: 300, height: 600};
+      let data = Array(40)
+        .fill()
+        .map((_, index) => ({key: `key-${index}`}));
+      const onStartReached = jest.fn();
+      const props = {
+        data,
+        initialNumToRender: 10,
+        onStartReachedThreshold: 1,
+        windowSize: 10,
+        renderItem: ({item}) => <item value={item.key} />,
+        getItem: (items, index) => items[index],
+        getItemCount: items => items.length,
+        getItemLayout: (items, index) => ({
+          length: ITEM_HEIGHT,
+          offset: ITEM_HEIGHT * index,
+          index,
+        }),
+        onStartReached,
+        initialScrollIndex: data.length - 1,
+      };
+      let component;
+      await act(() => {
+        component = create(<VirtualizedList {...props} />);
       });
-      await jest.runAllTimersAsync();
-    });
-    expect(onStartReached).not.toHaveBeenCalled();
 
-    await act(async () => {
-      // Scroll to start and make sure onStartReached is called.
-      instance._onScroll({
-        timeStamp: 1000,
-        nativeEvent: {
-          contentOffset: {y: 0, x: 0},
-          layoutMeasurement: layout,
-          contentSize: {...layout, height: data.length * ITEM_HEIGHT},
-          zoomScale: 1,
-          contentInset: {right: 0, top: 0, left: 0, bottom: 0},
-        },
+      const instance = component.getInstance();
+
+      await act(async () => {
+        instance._onLayout({nativeEvent: {layout, zoomScale: 1}});
+        instance._onContentSizeChange(300, data.length * ITEM_HEIGHT);
+
+        // Make sure onStartReached is not called initially when initialScrollIndex is set.
+        await jest.runAllTimersAsync();
       });
-      await jest.runAllTimersAsync();
-    });
-    expect(onStartReached).toHaveBeenCalled();
-  });
+      expect(onStartReached).not.toHaveBeenCalled();
+
+      await act(async () => {
+        // Scroll for a small amount and make sure onStartReached is not called.
+        instance._onScroll({
+          timeStamp: 1000,
+          nativeEvent: {
+            contentOffset: {y: (data.length - 2) * ITEM_HEIGHT, x: 0},
+            layoutMeasurement: layout,
+            contentSize: {...layout, height: data.length * ITEM_HEIGHT},
+            zoomScale: 1,
+            contentInset: {right: 0, top: 0, left: 0, bottom: 0},
+          },
+        });
+        await jest.runAllTimersAsync();
+      });
+      expect(onStartReached).not.toHaveBeenCalled();
+
+      await act(async () => {
+        // Scroll to start and make sure onStartReached is called.
+        instance._onScroll({
+          timeStamp: 1000,
+          nativeEvent: {
+            contentOffset: {y: 0, x: 0},
+            layoutMeasurement: layout,
+            contentSize: {...layout, height: data.length * ITEM_HEIGHT},
+            zoomScale: 1,
+            contentInset: {right: 0, top: 0, left: 0, bottom: 0},
+          },
+        });
+        await jest.runAllTimersAsync();
+      });
+      expect(onStartReached).toHaveBeenCalled();
+    },
+  );
 
   it('calls onStartReached initially', async () => {
     const ITEM_HEIGHT = 40;
@@ -1742,52 +1747,55 @@ it('retains initial render region when an item is appended', async () => {
 });
 
 // TODO: Revisit this test case after upgrading to React 19.
-it.skip('retains batch render region when an item is appended', async () => {
-  const items = generateItems(10);
-  const ITEM_HEIGHT = 10;
+skipTestSilenceLinter(
+  'retains batch render region when an item is appended',
+  async () => {
+    const items = generateItems(10);
+    const ITEM_HEIGHT = 10;
 
-  let component;
-  await act(() => {
-    component = create(
-      <VirtualizedList
-        initialNumToRender={1}
-        maxToRenderPerBatch={1}
-        {...baseItemProps(items)}
-        {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
-      />,
-    );
-  });
-
-  await act(() => {
-    simulateLayout(component, {
-      viewport: {width: 10, height: 50},
-      content: {width: 10, height: 100},
+    let component;
+    await act(() => {
+      component = create(
+        <VirtualizedList
+          initialNumToRender={1}
+          maxToRenderPerBatch={1}
+          {...baseItemProps(items)}
+          {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+        />,
+      );
     });
-    performAllBatches();
-  });
 
-  await act(async () => {
-    await jest.runAllTimersAsync();
-  });
+    await act(() => {
+      simulateLayout(component, {
+        viewport: {width: 10, height: 50},
+        content: {width: 10, height: 100},
+      });
+      performAllBatches();
+    });
 
-  await act(() => {
-    component.update(
-      <VirtualizedList
-        initialNumToRender={1}
-        maxToRenderPerBatch={1}
-        {...baseItemProps(items)}
-        {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
-        data={generateItems(11)}
-      />,
-    );
-  });
+    await act(async () => {
+      await jest.runAllTimersAsync();
+    });
 
-  // Adding an item to the list after batch render should keep the existing
-  // rendered items rendered. We batch render 10 items, then add an 11th. Expect
-  // the first ten items to be present, with a spacer for the 11th until the
-  // next batch render.
-  expect(component).toMatchSnapshot();
-});
+    await act(() => {
+      component.update(
+        <VirtualizedList
+          initialNumToRender={1}
+          maxToRenderPerBatch={1}
+          {...baseItemProps(items)}
+          {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+          data={generateItems(11)}
+        />,
+      );
+    });
+
+    // Adding an item to the list after batch render should keep the existing
+    // rendered items rendered. We batch render 10 items, then add an 11th. Expect
+    // the first ten items to be present, with a spacer for the 11th until the
+    // next batch render.
+    expect(component).toMatchSnapshot();
+  },
+);
 
 it('constrains batch render region when an item is removed', async () => {
   const items = generateItems(10);

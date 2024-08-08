@@ -28,17 +28,14 @@ class FakeUIManager : UIManager, UIBlockViewResolver {
     TODO("Not yet implemented")
   }
 
-  override fun getPerformanceCounters(): MutableMap<String, Long> {
-    TODO("Not yet implemented")
-  }
-
+  @Deprecated("")
   override fun <T : View?> addRootView(rootView: T, initialProps: WritableMap?): Int {
     TODO("Not yet implemented")
   }
 
   override fun <T : View?> startSurface(
       rootView: T,
-      moduleName: String?,
+      moduleName: String,
       initialProps: WritableMap?,
       widthMeasureSpec: Int,
       heightMeasureSpec: Int
@@ -64,7 +61,7 @@ class FakeUIManager : UIManager, UIBlockViewResolver {
     TODO("Not yet implemented")
   }
 
-  override fun dispatchCommand(reactTag: Int, commandId: String?, commandArgs: ReadableArray?) {
+  override fun dispatchCommand(reactTag: Int, commandId: String, commandArgs: ReadableArray?) {
     TODO("Not yet implemented")
   }
 
@@ -93,20 +90,17 @@ class FakeUIManager : UIManager, UIBlockViewResolver {
     return null
   }
 
-  override fun receiveEvent(reactTag: Int, eventName: String?, event: WritableMap?) {
+  @Deprecated("")
+  override fun receiveEvent(reactTag: Int, eventName: String, event: WritableMap?) {
     TODO("Not yet implemented")
   }
 
-  override fun receiveEvent(
-      surfaceId: Int,
-      reactTag: Int,
-      eventName: String?,
-      event: WritableMap?
-  ) {
+  override fun receiveEvent(surfaceId: Int, reactTag: Int, eventName: String, event: WritableMap?) {
     TODO("Not yet implemented")
   }
 
-  override fun resolveCustomDirectEventName(eventName: String?): String? {
+  @Deprecated("")
+  override fun resolveCustomDirectEventName(eventName: String): String? {
     TODO("Not yet implemented")
   }
 
@@ -117,4 +111,7 @@ class FakeUIManager : UIManager, UIBlockViewResolver {
   override fun invalidate() {
     TODO("Not yet implemented")
   }
+
+  override val performanceCounters: Map<String, Long>?
+    get() = null
 }

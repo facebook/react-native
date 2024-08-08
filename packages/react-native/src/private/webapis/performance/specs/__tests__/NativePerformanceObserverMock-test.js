@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  * @oncall react_native
  */
@@ -51,10 +52,20 @@ describe('NativePerformanceObserver', () => {
     const entries1 = entriesResult1.entries;
     expect(entries1.length).toBe(0);
 
-    NativePerformanceObserverMock.stopReporting('mark');
+    NativePerformanceObserverMock.stopReporting(
+      RawPerformanceEntryTypeValues.MARK,
+    );
   });
 
   it('correctly clears/gets entries', async () => {
+    NativePerformanceObserverMock.startReporting(
+      RawPerformanceEntryTypeValues.MARK,
+    );
+
+    NativePerformanceObserverMock.startReporting(
+      RawPerformanceEntryTypeValues.EVENT,
+    );
+
     NativePerformanceObserverMock.logRawEntry({
       name: 'mark1',
       entryType: RawPerformanceEntryTypeValues.MARK,
@@ -69,9 +80,7 @@ describe('NativePerformanceObserver', () => {
       duration: 0,
     });
 
-    NativePerformanceObserverMock.clearEntries(
-      RawPerformanceEntryTypeValues.UNDEFINED,
-    );
+    NativePerformanceObserverMock.clearEntries();
 
     expect(NativePerformanceObserverMock.getEntries()).toStrictEqual([]);
 
@@ -96,10 +105,7 @@ describe('NativePerformanceObserver', () => {
       duration: 0,
     });
 
-    NativePerformanceObserverMock.clearEntries(
-      RawPerformanceEntryTypeValues.UNDEFINED,
-      'entry1',
-    );
+    NativePerformanceObserverMock.clearEntries(undefined, 'entry1');
 
     expect(
       NativePerformanceObserverMock.getEntries().map(e => e.name),

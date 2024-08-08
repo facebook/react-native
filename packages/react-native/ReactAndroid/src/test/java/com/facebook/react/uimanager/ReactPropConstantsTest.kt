@@ -11,7 +11,6 @@ import android.view.View
 import com.facebook.react.bridge.BridgeReactContext
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
-import com.facebook.react.common.MapBuilder
 import com.facebook.react.uimanager.annotations.ReactProp
 import com.facebook.react.uimanager.annotations.ReactPropGroup
 import org.assertj.core.api.Assertions
@@ -34,6 +33,10 @@ class ReactPropConstantsTest {
     }
 
     override fun createViewInstance(reactContext: ThemedReactContext): View {
+      error("This method should not be executed as a part of this test")
+    }
+
+    override fun prepareToRecycleView(reactContext: ThemedReactContext, view: View): View? {
       error("This method should not be executed as a part of this test")
     }
 
@@ -91,26 +94,26 @@ class ReactPropConstantsTest {
 
     Assertions.assertThat(constants)
         .isEqualTo(
-            MapBuilder.builder<String, String>()
-                .put("boolProp", "boolean")
-                .put("intProp", "number")
-                .put("doubleProp", "number")
-                .put("floatProp", "number")
-                .put("stringProp", "String")
-                .put("boxedBoolProp", "boolean")
-                .put("boxedIntProp", "number")
-                .put("arrayProp", "Array")
-                .put("mapProp", "Map")
-                .put("floatGroupPropFirst", "number")
-                .put("floatGroupPropSecond", "number")
-                .put("intGroupPropFirst", "number")
-                .put("intGroupPropSecond", "number")
-                .put("boxedIntGroupPropFirst", "number")
-                .put("boxedIntGroupPropSecond", "number")
-                .put("customIntProp", "date")
-                .put("customBoxedIntGroupPropFirst", "color")
-                .put("customBoxedIntGroupPropSecond", "color")
-                .build())
+            mapOf(
+                "boolProp" to "boolean",
+                "intProp" to "number",
+                "doubleProp" to "number",
+                "floatProp" to "number",
+                "stringProp" to "String",
+                "boxedBoolProp" to "boolean",
+                "boxedIntProp" to "number",
+                "arrayProp" to "Array",
+                "mapProp" to "Map",
+                "floatGroupPropFirst" to "number",
+                "floatGroupPropSecond" to "number",
+                "intGroupPropFirst" to "number",
+                "intGroupPropSecond" to "number",
+                "boxedIntGroupPropFirst" to "number",
+                "boxedIntGroupPropSecond" to "number",
+                "customIntProp" to "date",
+                "customBoxedIntGroupPropFirst" to "color",
+                "customBoxedIntGroupPropSecond" to "color",
+            ))
   }
 
   companion object {

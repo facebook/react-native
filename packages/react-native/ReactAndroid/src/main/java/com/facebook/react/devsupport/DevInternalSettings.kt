@@ -61,7 +61,6 @@ internal class DevInternalSettings(applicationContext: Context, private val list
     if (listener != null) {
       if (PREFS_FPS_DEBUG_KEY == key ||
           PREFS_JS_DEV_MODE_DEBUG_KEY == key ||
-          PREFS_START_SAMPLING_PROFILER_ON_INIT == key ||
           PREFS_JS_MINIFY_DEBUG_KEY == key) {
         listener.onInternalSettingsChanged()
       }
@@ -82,11 +81,9 @@ internal class DevInternalSettings(applicationContext: Context, private val list
       preferences.edit().putBoolean(PREFS_REMOTE_JS_DEBUG_KEY, value).apply()
     }
 
-  override var isStartSamplingProfilerOnInit: Boolean
-    get() = preferences.getBoolean(PREFS_START_SAMPLING_PROFILER_ON_INIT, false)
-    set(_) {
-      // not used
-    }
+  @Deprecated(
+      "Legacy sampling profiler is no longer supported - This field will be removed in React Native 0.77")
+  override var isStartSamplingProfilerOnInit: Boolean = false
 
   // Not supported.
   override fun addMenuItem(title: String) = Unit
@@ -109,6 +106,5 @@ internal class DevInternalSettings(applicationContext: Context, private val list
     private const val PREFS_INSPECTOR_DEBUG_KEY = "inspector_debug"
     private const val PREFS_HOT_MODULE_REPLACEMENT_KEY = "hot_module_replacement"
     private const val PREFS_REMOTE_JS_DEBUG_KEY = "remote_js_debug"
-    private const val PREFS_START_SAMPLING_PROFILER_ON_INIT = "start_sampling_profiler_on_init"
   }
 }

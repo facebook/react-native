@@ -23,6 +23,7 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.UIManagerListener;
+import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
@@ -38,6 +39,7 @@ import com.facebook.react.uimanager.common.ViewUtil;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -259,6 +261,43 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
             }
           }
         };
+  }
+
+  /**
+   * This method is used to notify the JS side that the user has stopped scrolling. With natively
+   * driven animation, we might have to force a resync between the Shadow Tree and the Native Tree.
+   * This is because with natively driven animation, the Shadow Tree is bypassed and it can have
+   * stale information on the layout of the native views. This method takes care of verifying if
+   * there are some views listening to the native driven animation and it triggers the resynch.
+   *
+   * @param viewTag The tag of the scroll view that has stopped scrolling
+   */
+  public void userDrivenScrollEnded(int viewTag) {
+    // ask to the Node Manager for all the native nodes listening to OnScroll event
+    NativeAnimatedNodesManager nodeManager = mNodesManager.get();
+    if (nodeManager == null) {
+      return;
+    }
+
+    Set<Integer> tags = nodeManager.getTagsOfConnectedNodes(viewTag, "topScrollEnded");
+
+    if (tags.isEmpty()) {
+      return;
+    }
+
+    WritableArray tagsArray = Arguments.createArray();
+    for (Integer tag : tags) {
+      tagsArray.pushInt(tag);
+    }
+
+    // emit the event to JS to resync the trees
+    WritableMap onAnimationEndedData = Arguments.createMap();
+    onAnimationEndedData.putArray("tags", tagsArray);
+
+    ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
+    if (reactApplicationContext != null) {
+      reactApplicationContext.emitDeviceEvent("onUserDrivenAnimationEnded", onAnimationEndedData);
+    }
   }
 
   @Override
@@ -507,7 +546,7 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
 
   @Override
   public void finishOperationBatch() {
-    mBatchingControlledByJS = true;
+    mBatchingControlledByJS = false;
     mCurrentBatchNumber++;
   }
 

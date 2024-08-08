@@ -12,9 +12,9 @@ set -e
 # Given a specific target, retrieve the right architecture for it
 # $1 the target you want to build. Allowed values: iphoneos, iphonesimulator, catalyst, xros, xrsimulator
 function get_architecture {
-    if [[ $1 == "iphoneos" || $1 == "xros" || $1 == "xrsimulator" ]]; then
+    if [[ $1 == "iphoneos" || $1 == "xros" ]]; then
       echo "arm64"
-    elif [[ $1 == "iphonesimulator" ]]; then
+    elif [[ $1 == "iphonesimulator" || $1 == "xrsimulator" ]]; then
       echo "x86_64;arm64"
     elif [[ $1 == "catalyst" ]]; then
       echo "x86_64;arm64"
@@ -59,8 +59,6 @@ function build_universal_framework {
 # this is used to preserve backward compatibility
 function create_framework {
     if [ ! -d destroot/Library/Frameworks/universal/hermes.xcframework ]; then
-        ios_deployment_target=$(get_ios_deployment_target)
-
         build_framework "iphoneos"
         build_framework "iphonesimulator"
         build_framework "catalyst"

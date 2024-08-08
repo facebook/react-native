@@ -1,0 +1,70 @@
+name: Maestro E2E Android
+description: Runs E2E Tests on iOS using Maestro
+inputs:
+  app-path:
+    required: true
+    description: The path to the .apk file
+  app-id:
+    required: true
+    description: The id of the app to test
+  jsengine:
+    required: true
+    description: The js engine we are using
+  maestro-flow:
+    required: true
+    description: the folder that contains the maestro tests
+  install-java:
+    required: false
+    default: 'true'
+    description: whether this action has to install java 17 or not
+runs:
+  using: composite
+  steps:
+    - name: Installing Maestro
+      shell: bash
+      run: export MAESTRO_VERSION=1.36.0; curl -Ls "https://get.maestro.mobile.dev" | bash
+    - name: Set up JDK 17
+      if: ${{ inputs.install-java == 'true' }}
+      uses: actions/setup-java@v2
+      with:
+        java-version: '17'
+        distribution: 'zulu'
+    - name: Enable KVM group perms
+      shell: bash
+      run: |
+        # ubuntu machines have hardware acceleration available and when we try to create an emulator, the script pauses asking for user input
+        # These lines set the rules to reply automatically to that question and unblock the creation of the emulator.
+        # source: https://github.com/ReactiveCircus/android-emulator-runner?tab=readme-ov-file#running-hardware-accelerated-emulators-on-linux-runners
+        echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+        sudo udevadm control --reload-rules
+        sudo udevadm trigger --name-match=kvm
+    - name: Run e2e tests
+      uses: reactivecircus/android-emulator-runner@v2
+      with:
+        api-level: 24
+        arch: x86
+        script: |
+          echo "Install APK from ${{ inputs.app-path }}"
+          adb install "${{ inputs.app-path }}"
+
+          echo "Start recording to /sdcard/screen.mp4"
+          adb shell screenrecord /sdcard/screen.mp4
+
+          echo "Start testing ${{ inputs.maestro-flow }}"
+          $HOME/.maestro/bin/maestro test ${{ inputs.maestro-flow }} --format junit -e APP_ID=${{ inputs.app-id }} --debug-output /tmp/MaestroLogs
+
+          echo "Stop recording. Saving to screen.mp4"
+          adb pull /sdcard/screen.mp4
+    - name: Store tests result
+      uses: actions/upload-artifact@v3
+      with:
+        name: e2e_android_${{ inputs.app-id }}_report_${{ inputs.jsengine }}
+        path: |
+          report.xml
+          screen.mp4
+    - name: Store Logs
+      if: failure() && steps.run-tests.outcome == 'failure'
+      uses: actions/upload-artifact@v4.3.4
+      with:
+        name: maestro-logs-android-${{ inputs.app-id }}-${{ inputs.jsengine }}
+        path: /tmp/MaestroLogs

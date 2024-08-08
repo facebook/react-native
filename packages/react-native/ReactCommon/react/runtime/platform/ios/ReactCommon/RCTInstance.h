@@ -46,8 +46,6 @@ RCT_EXTERN void RCTInstanceSetRuntimeDiagnosticFlags(NSString *_Nullable flags);
 
 @end
 
-typedef void (^_Null_unspecified RCTInstanceInitialBundleLoadCompletionBlock)();
-
 /**
  * RCTInstance owns and manages most of the pieces of infrastructure required to display a screen powered by React
  * Native. RCTInstance should never be instantiated in product code, but rather accessed through RCTHost. The host
@@ -59,12 +57,12 @@ typedef void (^_Null_unspecified RCTInstanceInitialBundleLoadCompletionBlock)();
                 jsRuntimeFactory:(std::shared_ptr<facebook::react::JSRuntimeFactory>)jsRuntimeFactory
                    bundleManager:(RCTBundleManager *)bundleManager
       turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
-             onInitialBundleLoad:(RCTInstanceInitialBundleLoadCompletionBlock)onInitialBundleLoad
                   moduleRegistry:(RCTModuleRegistry *)moduleRegistry
            parentInspectorTarget:(facebook::react::jsinspector_modern::HostTarget *)parentInspectorTarget
                    launchOptions:(nullable NSDictionary *)launchOptions;
 
 - (void)callFunctionOnJSModule:(NSString *)moduleName method:(NSString *)method args:(NSArray *)args;
+- (void)callFunctionOnBufferedRuntimeExecutor:(std::function<void(facebook::jsi::Runtime &runtime)> &&)executor;
 
 - (void)registerSegmentWithId:(NSNumber *)segmentId path:(NSString *)path;
 

@@ -351,25 +351,25 @@ exports.description = 'Layout animation';
 exports.examples = [
   {
     title: 'Add and remove views',
-    render(): React.Element<any> {
+    render(): React.MixedElement {
       return <AddRemoveExample />;
     },
   },
   {
     title: 'Animate Reparenting Update',
-    render(): React.Element<any> {
+    render(): React.MixedElement {
       return <ReparentingExample />;
     },
   },
   {
     title: 'Cross fade views',
-    render(): React.Element<any> {
+    render(): React.MixedElement {
       return <CrossFadeExample />;
     },
   },
   {
     title: 'Layout update during animation',
-    render(): React.Element<any> {
+    render(): React.MixedElement {
       return <LayoutUpdateExample />;
     },
   },

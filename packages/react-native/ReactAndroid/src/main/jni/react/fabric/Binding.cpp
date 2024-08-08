@@ -93,6 +93,14 @@ void Binding::driveCxxAnimations() {
   getScheduler()->animationTick();
 }
 
+void Binding::drainPreallocateViewsQueue() {
+  auto mountingManager = getMountingManager("drainPreallocateViewsQueue");
+  if (!mountingManager) {
+    return;
+  }
+  mountingManager->drainPreallocateViewsQueue();
+}
+
 void Binding::reportMount(SurfaceId surfaceId) {
   auto scheduler = getScheduler();
   if (!scheduler) {
@@ -348,8 +356,7 @@ void Binding::installFabricUIManager(
   std::shared_ptr<const ReactNativeConfig> config =
       std::make_shared<const ReactNativeConfigHolder>(reactNativeConfig);
 
-  enableFabricLogs_ =
-      config->getBool("react_fabric:enabled_android_fabric_logs");
+  enableFabricLogs_ = ReactNativeFeatureFlags::enableFabricLogs();
 
   if (enableFabricLogs_) {
     LOG(WARNING) << "Binding::installFabricUIManager() was called (address: "
@@ -398,7 +405,7 @@ void Binding::installFabricUIManager(
   CoreFeatures::enablePropIteratorSetter =
       getFeatureFlagValue("enableCppPropsIteratorSetter");
   CoreFeatures::excludeYogaFromRawProps =
-      getFeatureFlagValue("excludeYogaFromRawProps");
+      ReactNativeFeatureFlags::excludeYogaFromRawProps();
 
   auto toolbox = SchedulerToolbox{};
   toolbox.contextContainer = contextContainer;
@@ -503,7 +510,7 @@ void Binding::schedulerDidRequestPreliminaryViewAllocation(
   if (!mountingManager) {
     return;
   }
-  mountingManager->maybePreallocateShadowView(shadowNode);
+  mountingManager->maybePreallocateShadowNode(shadowNode);
 }
 
 void Binding::schedulerDidDispatchCommand(
@@ -570,6 +577,8 @@ void Binding::registerNatives() {
       makeNativeMethod("setConstraints", Binding::setConstraints),
       makeNativeMethod("setPixelDensity", Binding::setPixelDensity),
       makeNativeMethod("driveCxxAnimations", Binding::driveCxxAnimations),
+      makeNativeMethod(
+          "drainPreallocateViewsQueue", Binding::drainPreallocateViewsQueue),
       makeNativeMethod("reportMount", Binding::reportMount),
       makeNativeMethod(
           "uninstallFabricUIManager", Binding::uninstallFabricUIManager),

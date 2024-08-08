@@ -10,9 +10,9 @@
 
 'use strict';
 
+const {RNTesterThemeContext} = require('../../components/RNTesterTheme');
 const React = require('react');
 const {Alert, Text, View} = require('react-native');
-const {RNTesterThemeContext} = require('../../components/RNTesterTheme');
 
 type Props = $ReadOnly<{||}>;
 class AccessibilityIOSExample extends React.Component<Props> {
@@ -79,7 +79,7 @@ exports.description = 'iOS specific Accessibility APIs';
 exports.examples = [
   {
     title: 'iOS Accessibility elements',
-    render(): React.Element<any> {
+    render(): React.MixedElement {
       return <AccessibilityIOSExample />;
     },
   },

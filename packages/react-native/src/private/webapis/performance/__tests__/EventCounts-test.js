@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  * @oncall react_native
  */
@@ -13,7 +14,8 @@ import {RawPerformanceEntryTypeValues} from '../RawPerformanceEntry';
 // NOTE: Jest mocks of transitive dependencies don't appear to work with
 // ES6 module imports, therefore forced to use commonjs style imports here.
 const Performance = require('../Performance').default;
-const NativePerformanceObserver = require('../specs/NativePerformanceObserver');
+const NativePerformanceObserverMock =
+  require('../specs/__mocks__/NativePerformanceObserver').default;
 
 jest.mock(
   '../specs/NativePerformanceObserver',
@@ -27,34 +29,40 @@ describe('EventCounts', () => {
   });
 
   it('consistently implements the API for EventCounts', async () => {
-    NativePerformanceObserver.logRawEntry({
+    const eventDefaultValues = {
+      entryType: RawPerformanceEntryTypeValues.EVENT,
+      startTime: 0,
+      duration: 100,
+    };
+
+    NativePerformanceObserverMock.logRawEntry({
       name: 'click',
-      entryType: RawPerformanceEntryTypeValues.EVENT,
+      ...eventDefaultValues,
     });
 
-    NativePerformanceObserver.logRawEntry({
+    NativePerformanceObserverMock.logRawEntry({
       name: 'input',
-      entryType: RawPerformanceEntryTypeValues.EVENT,
+      ...eventDefaultValues,
     });
 
-    NativePerformanceObserver.logRawEntry({
+    NativePerformanceObserverMock.logRawEntry({
       name: 'input',
-      entryType: RawPerformanceEntryTypeValues.EVENT,
+      ...eventDefaultValues,
     });
 
-    NativePerformanceObserver.logRawEntry({
+    NativePerformanceObserverMock.logRawEntry({
       name: 'keyup',
-      entryType: RawPerformanceEntryTypeValues.EVENT,
+      ...eventDefaultValues,
     });
 
-    NativePerformanceObserver.logRawEntry({
+    NativePerformanceObserverMock.logRawEntry({
       name: 'keyup',
-      entryType: RawPerformanceEntryTypeValues.EVENT,
+      ...eventDefaultValues,
     });
 
-    NativePerformanceObserver.logRawEntry({
+    NativePerformanceObserverMock.logRawEntry({
       name: 'keyup',
-      entryType: RawPerformanceEntryTypeValues.EVENT,
+      ...eventDefaultValues,
     });
 
     const eventCounts = new Performance().eventCounts;
@@ -81,34 +89,34 @@ describe('EventCounts', () => {
     expect(Array.from(eventCounts.values())).toStrictEqual([1, 2, 3]);
 
     await jest.runAllTicks();
-    NativePerformanceObserver.logRawEntry({
+    NativePerformanceObserverMock.logRawEntry({
       name: 'input',
-      entryType: RawPerformanceEntryTypeValues.EVENT,
+      ...eventDefaultValues,
     });
 
-    NativePerformanceObserver.logRawEntry({
+    NativePerformanceObserverMock.logRawEntry({
       name: 'keyup',
-      entryType: RawPerformanceEntryTypeValues.EVENT,
+      ...eventDefaultValues,
     });
 
-    NativePerformanceObserver.logRawEntry({
+    NativePerformanceObserverMock.logRawEntry({
       name: 'keyup',
-      entryType: RawPerformanceEntryTypeValues.EVENT,
+      ...eventDefaultValues,
     });
     expect(Array.from(eventCounts.values())).toStrictEqual([1, 3, 5]);
 
     await jest.runAllTicks();
 
-    NativePerformanceObserver.logRawEntry({
+    NativePerformanceObserverMock.logRawEntry({
       name: 'click',
-      entryType: RawPerformanceEntryTypeValues.EVENT,
+      ...eventDefaultValues,
     });
 
     await jest.runAllTicks();
 
-    NativePerformanceObserver.logRawEntry({
+    NativePerformanceObserverMock.logRawEntry({
       name: 'keyup',
-      entryType: RawPerformanceEntryTypeValues.EVENT,
+      ...eventDefaultValues,
     });
 
     expect(Array.from(eventCounts.values())).toStrictEqual([2, 3, 6]);

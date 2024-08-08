@@ -33,6 +33,8 @@ class EventEmitter {
  public:
   using Shared = std::shared_ptr<const EventEmitter>;
 
+  static std::string normalizeEventType(std::string type);
+
   static std::mutex& DispatchMutex();
 
   static ValueFactory defaultPayloadFactory();

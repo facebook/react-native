@@ -24,7 +24,7 @@ import {
 
 const Drawer = () => {
   const theme = useContext(RNTesterThemeContext);
-  const drawer = useRef<null | React$ElementRef<any>>(null);
+  const drawer = useRef<null | any>(null);
   const [drawerPosition, setDrawerPosition] = useState('left');
   const changeDrawerPosition = () => {
     if (drawerPosition === 'left') {
