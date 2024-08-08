@@ -20,7 +20,7 @@ public enum class LengthPercentageType {
 
 public class LengthPercentage(
     private val value: Float,
-    private val unit: LengthPercentageType,
+    public val unit: LengthPercentageType,
 ) {
   public companion object {
     @JvmStatic
