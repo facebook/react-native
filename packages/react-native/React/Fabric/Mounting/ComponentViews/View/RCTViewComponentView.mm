@@ -346,6 +346,25 @@ using namespace facebook::react;
     self.accessibilityElement.accessibilityElementsHidden = newViewProps.accessibilityElementsHidden;
   }
 
+  // `accessibilityShowsLargeContentViewer`
+  if (oldViewProps.accessibilityShowsLargeContentViewer != newViewProps.accessibilityShowsLargeContentViewer) {
+    self.showsLargeContentViewer = newViewProps.accessibilityShowsLargeContentViewer;
+    if (@available(iOS 13.0, *)) {
+      if (newViewProps.accessibilityShowsLargeContentViewer) {
+        self.showsLargeContentViewer = YES;
+        UILargeContentViewerInteraction *interaction = [[UILargeContentViewerInteraction alloc] init];
+        [self addInteraction:interaction];
+      } else {
+        self.showsLargeContentViewer = NO;
+      }
+    }
+  }
+
+  // `accessibilityLargeContentTitle`
+  if (oldViewProps.accessibilityLargeContentTitle != newViewProps.accessibilityLargeContentTitle) {
+    self.largeContentTitle = RCTNSStringFromStringNilIfEmpty(newViewProps.accessibilityLargeContentTitle);
+  }
+
   // `accessibilityTraits`
   if (oldViewProps.accessibilityTraits != newViewProps.accessibilityTraits) {
     self.accessibilityElement.accessibilityTraits =

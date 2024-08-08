@@ -304,6 +304,8 @@ RCT_CUSTOM_VIEW_PROPERTY(accessibilityShowsLargeContentViewer, BOOL, RCTView)
       view.showsLargeContentViewer = YES;
       UILargeContentViewerInteraction *interaction = [[UILargeContentViewerInteraction alloc] init];
       [view addInteraction:interaction];
+    } else {
+      view.showsLargeContentViewer = NO;
     }
   }
 }
