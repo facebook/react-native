@@ -1,0 +1,23 @@
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ * @flow
+ */
+
+declare export class URLSearchParams {
+  _searchParams: Array<Array<string>>;
+  constructor(params: any): void;
+  append(key: string, value: string): void;
+  delete(name: string): void;
+  get(name: string): void;
+  getAll(name: string): void;
+  has(name: string): void;
+  set(name: string, value: string): void;
+  sort(): void;
+  @@iterator: Iterator<Array<string>>;
+  toString(): string;
+}

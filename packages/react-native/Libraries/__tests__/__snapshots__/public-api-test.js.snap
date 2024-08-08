@@ -1507,7 +1507,48 @@ declare export default typeof NativeFileReaderModule;
 "
 `;
 
-exports[`public API should not change unintentionally Libraries/Blob/URL.js 1`] = `"UNTYPED MODULE (unsupported-syntax suppression)"`;
+exports[`public API should not change unintentionally Libraries/Blob/URL.js 1`] = `
+"export { URLSearchParams } from \\"./URLSearchParams\\";
+declare export class URL {
+  _url: string;
+  _searchParamsInstance: ?URLSearchParams;
+  static createObjectURL(blob: Blob): string;
+  static revokeObjectURL(url: string): void;
+  constructor(url: string, base: string | URL): void;
+  get hash(): string;
+  get host(): string;
+  get hostname(): string;
+  get href(): string;
+  get origin(): string;
+  get password(): string;
+  get pathname(): string;
+  get port(): string;
+  get protocol(): string;
+  get search(): string;
+  get searchParams(): URLSearchParams;
+  toJSON(): string;
+  toString(): string;
+  get username(): string;
+}
+"
+`;
+
+exports[`public API should not change unintentionally Libraries/Blob/URLSearchParams.js.flow 1`] = `
+"declare export class URLSearchParams {
+  _searchParams: Array<Array<string>>;
+  constructor(params: any): void;
+  append(key: string, value: string): void;
+  delete(name: string): void;
+  get(name: string): void;
+  getAll(name: string): void;
+  has(name: string): void;
+  set(name: string, value: string): void;
+  sort(): void;
+  @@iterator: Iterator<Array<string>>;
+  toString(): string;
+}
+"
+`;
 
 exports[`public API should not change unintentionally Libraries/BugReporting/BugReporting.js 1`] = `
 "type ExtraData = { [key: string]: string, ... };
