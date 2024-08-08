@@ -23,6 +23,13 @@
 namespace facebook::react {
 
 using NativePerformanceObserverCallback = AsyncCallback<std::vector<PerformanceEntry>&&, size_t>;
+using NativePerformanceObserverObserveOptions = NativePerformanceObserverPerformanceObserverInit<
+    // entryTypes
+    std::optional<std::vector<int>>,
+    // type
+    std::optional<int>,
+    // buffered
+    std::optional<bool>>;
 
 #pragma mark - Structs
 
@@ -42,6 +49,9 @@ struct Bridging<PerformanceEntryType> {
 };
 
 template <>
+struct Bridging<NativePerformanceObserverObserveOptions> : NativePerformanceObserverPerformanceObserverInitBridging<NativePerformanceObserverObserveOptions> {};
+
+template <>
 struct Bridging<PerformanceEntry>
     : NativePerformanceObserverRawPerformanceEntryBridging<PerformanceEntry> {};
 
@@ -53,7 +63,7 @@ class NativePerformanceObserver
   NativePerformanceObserver(std::shared_ptr<CallInvoker> jsInvoker);
       
   jsi::Object createObserver(jsi::Runtime& rt, NativePerformanceObserverCallback callback);
-  void observe(jsi::Runtime& rt, jsi::Object observer, jsi::Object options);
+  void observe(jsi::Runtime& rt, jsi::Object observer, NativePerformanceObserverObserveOptions options);
   void disconnect(jsi::Runtime& rt, jsi::Object observer);
   std::vector<PerformanceEntry> takeRecords(jsi::Runtime& rt, jsi::Object observerObj);
 
