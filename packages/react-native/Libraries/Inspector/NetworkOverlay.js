@@ -143,6 +143,7 @@ class NetworkOverlay extends React.Component<Props, State> {
     });
 
     XHRInterceptor.setRequestHeaderCallback((header, value, xhr) => {
+      // $FlowFixMe[prop-missing]
       const xhrIndex = this._getRequestIndexByXHRID(xhr._index);
       if (xhrIndex === -1) {
         return;
@@ -159,6 +160,7 @@ class NetworkOverlay extends React.Component<Props, State> {
     });
 
     XHRInterceptor.setSendCallback((data, xhr) => {
+      // $FlowFixMe[prop-missing]
       const xhrIndex = this._getRequestIndexByXHRID(xhr._index);
       if (xhrIndex === -1) {
         return;
@@ -173,6 +175,7 @@ class NetworkOverlay extends React.Component<Props, State> {
 
     XHRInterceptor.setHeaderReceivedCallback(
       (type, size, responseHeaders, xhr) => {
+        // $FlowFixMe[prop-missing]
         const xhrIndex = this._getRequestIndexByXHRID(xhr._index);
         if (xhrIndex === -1) {
           return;
@@ -190,6 +193,7 @@ class NetworkOverlay extends React.Component<Props, State> {
 
     XHRInterceptor.setResponseCallback(
       (status, timeout, response, responseURL, responseType, xhr) => {
+        // $FlowFixMe[prop-missing]
         const xhrIndex = this._getRequestIndexByXHRID(xhr._index);
         if (xhrIndex === -1) {
           return;
