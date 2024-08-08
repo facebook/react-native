@@ -19,7 +19,7 @@ class PerformanceObserverRegistry {
   PerformanceObserverRegistry() = default;
 
   void addObserver(const std::weak_ptr<PerformanceObserver>& observer);
-  void removeObserver(const std::shared_ptr<PerformanceObserver> observer);
+  void removeObserver(const std::shared_ptr<PerformanceObserver>& observer);
   void removeObserver(const PerformanceObserver& observer);
 
   void emit(const PerformanceEntry& entry);

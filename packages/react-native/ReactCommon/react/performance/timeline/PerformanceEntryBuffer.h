@@ -7,8 +7,6 @@
 
 #pragma once
 
-#include "BoundedConsumableBuffer.h"
-#include "ConsumableEntryMap.h"
 #include "PerformanceEntry.h"
 
 namespace facebook::react {
@@ -34,50 +32,26 @@ struct PerformanceEntryBuffer {
 
   virtual void add(const PerformanceEntry& entry) = 0;
   virtual void consume(std::vector<PerformanceEntry>& target) = 0;
-  virtual size_t pendingMessagesCount() const = 0;
+  [[nodiscard]] virtual size_t pendingMessagesCount() const = 0;
   virtual void getEntries(
       std::optional<std::string_view> name,
       std::vector<PerformanceEntry>& target) const = 0;
   virtual void clear() = 0;
   virtual void clear(std::string_view name) = 0;
-};
 
-struct PerformanceEntryCircularBuffer : public PerformanceEntryBuffer {
-  BoundedConsumableBuffer<PerformanceEntry> entries;
 
-  explicit PerformanceEntryCircularBuffer(size_t size) : entries(size) {}
-  ~PerformanceEntryCircularBuffer() override = default;
+  // https://www.w3.org/TR/event-timing/#sec-should-add-performanceeventtiming
+  // TODO: perhaps move it to a better place
+  [[nodiscard]] bool shouldAdd(const PerformanceEntry& entry) const {
+    if (entry.entryType == PerformanceEntryType::EVENT) {
+      if (entry.duration < durationThreshold) {
+        // The entries duration is lower than the desired reporting threshold, skip
+        return false;
+      }
+    }
 
-  void add(const PerformanceEntry& entry) override;
-  void consume(std::vector<PerformanceEntry>& target) override;
-
-  [[nodiscard]] size_t pendingMessagesCount() const override;
-
-  void getEntries(
-      std::optional<std::string_view> name,
-      std::vector<PerformanceEntry>& target) const override;
-
-  void clear() override;
-  void clear(std::string_view name) override;
-};
-
-struct PerformanceEntryKeyedBuffer : public PerformanceEntryBuffer {
-  ConsumableEntryMap entries;
-
-  explicit PerformanceEntryKeyedBuffer() = default;
-  ~PerformanceEntryKeyedBuffer() override = default;
-
-  void add(const PerformanceEntry& entry) override;
-  void consume(std::vector<PerformanceEntry>& target) override;
-
-  size_t pendingMessagesCount() const override;
-
-  void getEntries(
-      std::optional<std::string_view> name,
-      std::vector<PerformanceEntry>& target) const override;
-
-  void clear() override;
-  void clear(std::string_view name) override;
+    return true;
+  }
 };
 
 } // namespace facebook::react

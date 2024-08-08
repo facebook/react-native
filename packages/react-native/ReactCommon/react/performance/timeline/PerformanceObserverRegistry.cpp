@@ -1,9 +1,9 @@
 /*
-* Copyright (c) Meta Platforms, Inc. and affiliates.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #include "PerformanceObserverRegistry.h"
 
@@ -21,7 +21,7 @@ void PerformanceObserverRegistry::removeObserver(const PerformanceObserver& obse
   });
 }
 
-void PerformanceObserverRegistry::removeObserver(const std::shared_ptr<PerformanceObserver> observer) {
+void PerformanceObserverRegistry::removeObserver(const std::shared_ptr<PerformanceObserver>& observer) {
   std::lock_guard guard{observersMutex_};
   observers_.erase(observer);
 }
@@ -40,8 +40,10 @@ void PerformanceObserverRegistry::emit(const facebook::react::PerformanceEntry& 
 
   for (auto& observer_ptr : observers_) {
     if (auto observer = observer_ptr.lock()) {
+      auto shouldAdd = observer->shouldAdd(entry);
+      
       // push to observer if it is contained within its entry type filter
-      if (observer->isObserving(entry.entryType)) {
+      if (observer->isObserving(entry.entryType) && shouldAdd) {
         observer->pushEntry(entry);
       }
     }

@@ -10,7 +10,7 @@
 #include <cassert>
 #include <unordered_set>
 #include <vector>
-#include "PerformanceEntryBuffer.h"
+#include "PerformanceEntryLinearBuffer.h"
 
 namespace facebook::react {
 
@@ -35,7 +35,6 @@ class PerformanceObserver {
 
   virtual ~PerformanceObserver();
 
-  [[nodiscard]] bool shouldAdd(PerformanceEntryType type) const;
   void pushEntry(const PerformanceEntry& entry);
 
   /**
@@ -47,13 +46,19 @@ class PerformanceObserver {
   void observe(PerformanceEntryType type, bool buffered);
   void observe(std::unordered_set<PerformanceEntryType> types);
 
+  [[nodiscard]] bool shouldAdd(const PerformanceEntry& entry) const;
+
+  [[nodiscard]] const PerformanceEntryBuffer& getBuffer() const {
+    return buffer_;
+  }
+
  private:
   void scheduleFlushBuffer();
 
   std::weak_ptr<PerformanceObserverRegistry> registry_;
   PerformanceObserverCallback callback_;
   PerformanceObserverEntryTypeFilter observedTypes_;
-  std::vector<PerformanceEntry> entries_;
+  PerformanceEntryLinearBuffer buffer_;
   bool requiresDroppedEntries_ = false;
 };
 

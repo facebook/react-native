@@ -52,6 +52,8 @@ export interface Spec extends TurboModule {
     entryName?: string,
   ) => $ReadOnlyArray<RawPerformanceEntry>;
   +getSupportedPerformanceEntryTypes: () => $ReadOnlyArray<RawPerformanceEntryType>;
+  
+  +getEventCounts: () => $ReadOnlyArray<[string, number]>;
 }
 
 export default (TurboModuleRegistry.get<Spec>(

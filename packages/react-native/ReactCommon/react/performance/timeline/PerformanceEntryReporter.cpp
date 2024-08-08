@@ -24,13 +24,6 @@ DOMHighResTimeStamp PerformanceEntryReporter::getCurrentTimeStamp() const {
                                        : JSExecutor::performanceNow();
 }
 
-void PerformanceEntryReporter::setAlwaysLogged(
-    PerformanceEntryType entryType,
-    bool isAlwaysLogged) {
-  auto& buffer = getBufferRef(entryType);
-  buffer.isAlwaysLogged = isAlwaysLogged;
-}
-
 void PerformanceEntryReporter::pushEntry(const PerformanceEntry& entry) {
   if (entry.entryType == PerformanceEntryType::EVENT) {
     eventCounts_[entry.name]++;
@@ -40,11 +33,8 @@ void PerformanceEntryReporter::pushEntry(const PerformanceEntry& entry) {
     std::lock_guard lock(entriesMutex_);
     auto& buffer = getBufferRef(entry.entryType);
 
-    if (entry.entryType == PerformanceEntryType::EVENT) {
-      if (entry.duration < buffer.durationThreshold) {
-        // The entries duration is lower than the desired reporting threshold, skip
-        return;
-      }
+    if (!buffer.shouldAdd(entry)) {
+      return;
     }
 
     buffer.add(entry);
@@ -144,7 +134,7 @@ DOMHighResTimeStamp PerformanceEntryReporter::getMarkTime(
     const std::string& markName) const {
   std::lock_guard lock(entriesMutex_);
 
-  if (auto it = markBuffer_.entries.find(markName); it) {
+  if (auto it = markBuffer_.find(markName); it) {
     return it->startTime;
   } else {
     return 0.0;

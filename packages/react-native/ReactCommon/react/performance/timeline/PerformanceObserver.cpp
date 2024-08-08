@@ -1,9 +1,9 @@
 /*
-* Copyright (c) Meta Platforms, Inc. and affiliates.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #include "PerformanceObserver.h"
 #include "PerformanceObserverRegistry.h"
@@ -18,13 +18,11 @@ PerformanceObserver::~PerformanceObserver() {
 }
 
 void PerformanceObserver::pushEntry(const facebook::react::PerformanceEntry& entry) {
-  entries_.push_back(entry);
+  buffer_.add(entry);
 }
 
 std::vector<PerformanceEntry> PerformanceObserver::takeRecords() {
-  auto copy = entries_;
-  entries_.clear();
-  return copy;
+  return buffer_.consume();
 }
 
 bool PerformanceObserver::isObserving(facebook::react::PerformanceEntryType type) const {
@@ -40,14 +38,18 @@ void PerformanceObserver::observe(facebook::react::PerformanceEntryType type, bo
 
   if (buffered) {
     auto& reporter = PerformanceEntryReporter::getInstance();
-    reporter->getBuffer(type).getEntries(std::nullopt, entries_);
+    reporter->getBuffer(type).getEntries(std::nullopt, buffer_.getEntries());
     scheduleFlushBuffer();
   }
 }
 
 void PerformanceObserver::observe(std::unordered_set<PerformanceEntryType> types) {
-  observedTypes_ = types;
+  observedTypes_ = std::move(types);
   requiresDroppedEntries_ = true;
+}
+
+bool PerformanceObserver::shouldAdd(const PerformanceEntry& entry) const {
+  return buffer_.shouldAdd(entry);
 }
 
 void PerformanceObserver::scheduleFlushBuffer() {
