@@ -15,7 +15,7 @@
                     android:color="#FFFFC1"
                     />
                 <stroke
-                    android:color="#D0D0B8" android:width="2dp"
+                    android:color="#B4B49D" android:width="2dp"
                     />
                 <corners
                     android:radius="12dp"
