@@ -1042,7 +1042,8 @@ public class SurfaceMountingManager {
       return;
     }
 
-    if (mViewsWithActiveTouches.contains(reactTag)) {
+    if (ReactNativeFeatureFlags.enableEventEmitterRetentionDuringGesturesOnAndroid()
+        && mViewsWithActiveTouches.contains(reactTag)) {
       // If the view that went offscreen is still being touched, we can't delete it yet.
       // We have to delay the deletion till the touch is completed.
       // This is causing bugs like those otherwise:
@@ -1181,10 +1182,16 @@ public class SurfaceMountingManager {
   }
 
   public void markActiveTouchForTag(int reactTag) {
+    if (!ReactNativeFeatureFlags.enableEventEmitterRetentionDuringGesturesOnAndroid()) {
+      return;
+    }
     mViewsWithActiveTouches.add(reactTag);
   }
 
   public void sweepActiveTouchForTag(int reactTag) {
+    if (!ReactNativeFeatureFlags.enableEventEmitterRetentionDuringGesturesOnAndroid()) {
+      return;
+    }
     mViewsWithActiveTouches.remove(reactTag);
     if (mViewsToDeleteAfterTouchFinishes.contains(reactTag)) {
       mViewsToDeleteAfterTouchFinishes.remove(reactTag);

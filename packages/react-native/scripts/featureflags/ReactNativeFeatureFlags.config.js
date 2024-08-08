@@ -83,6 +83,11 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'Feature flag to configure eager attachment of the root view/initialisation of the JS code.',
     },
+    enableEventEmitterRetentionDuringGesturesOnAndroid: {
+      defaultValue: false,
+      description:
+        'Enables the retention of EventEmitterWrapper on Android till the touch gesture is over to fix a bug on pressable (#44610)',
+    },
     enableFabricLogs: {
       defaultValue: false,
       description: 'This feature flag enables logs for Fabric.',

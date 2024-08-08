@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6896ec018143f40b7d08487fb10239d7>>
+ * @generated SignedSource<<453a0231b2d396d59727425f008c65b8>>
  * @flow strict-local
  */
 
@@ -54,6 +54,7 @@ export type ReactNativeFeatureFlags = {
   enableBackgroundStyleApplicator: Getter<boolean>,
   enableCleanTextInputYogaNode: Getter<boolean>,
   enableEagerRootViewAttachment: Getter<boolean>,
+  enableEventEmitterRetentionDuringGesturesOnAndroid: Getter<boolean>,
   enableFabricLogs: Getter<boolean>,
   enableFabricRendererExclusively: Getter<boolean>,
   enableGranularShadowTreeStateReconciliation: Getter<boolean>,
@@ -189,6 +190,10 @@ export const enableCleanTextInputYogaNode: Getter<boolean> = createNativeFlagGet
  * Feature flag to configure eager attachment of the root view/initialisation of the JS code.
  */
 export const enableEagerRootViewAttachment: Getter<boolean> = createNativeFlagGetter('enableEagerRootViewAttachment', false);
+/**
+ * Enables the retention of EventEmitterWrapper on Android till the touch gesture is over to fix a bug on pressable (#44610)
+ */
+export const enableEventEmitterRetentionDuringGesturesOnAndroid: Getter<boolean> = createNativeFlagGetter('enableEventEmitterRetentionDuringGesturesOnAndroid', false);
 /**
  * This feature flag enables logs for Fabric.
  */

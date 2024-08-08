@@ -46,6 +46,11 @@ public object DefaultNewArchitectureEntryPoint {
       ReactNativeFeatureFlags.override(
           object : ReactNativeNewArchitectureFeatureFlagsDefaults(newArchitectureEnabled = true) {
             override fun useFabricInterop(): Boolean = fabricEnabled
+
+            // We turn this feature flag to true for OSS to fix #44610 and #45126 and other
+            // similar bugs related to pressable.
+            override fun enableEventEmitterRetentionDuringGesturesOnAndroid(): Boolean =
+                fabricEnabled
           })
     }
 
