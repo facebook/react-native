@@ -3,6 +3,9 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
+glog_config = get_glog_config()
+glog_git_url = glog_config[:git]
+
 Pod::Spec.new do |spec|
   spec.name = 'glog'
   spec.version = '0.3.5'
@@ -12,7 +15,7 @@ Pod::Spec.new do |spec|
   spec.authors = 'Google'
 
   spec.prepare_command = File.read("../scripts/ios-configure-glog.sh")
-  spec.source = { :git => 'https://github.com/google/glog.git',
+  spec.source = { :git => glog_git_url,
                   :tag => "v#{spec.version}" }
   spec.module_name = 'glog'
   spec.header_dir = 'glog'

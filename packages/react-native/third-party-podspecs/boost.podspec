@@ -3,6 +3,9 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
+boost_config = get_boost_config()
+boost_git_url = boost_config[:git]
+
 Pod::Spec.new do |spec|
   spec.name = 'boost'
   spec.version = '1.84.0'
@@ -10,7 +13,7 @@ Pod::Spec.new do |spec|
   spec.homepage = 'http://www.boost.org'
   spec.summary = 'Boost provides free peer-reviewed portable C++ source libraries.'
   spec.authors = 'Rene Rivera'
-  spec.source = { :git => "https://github.com/react-native-community/boost-for-react-native",
+  spec.source = { :git => boost_git_url,
                   :tag => "v1.84.0" }
 
   # Pinning to the same version as React.podspec.

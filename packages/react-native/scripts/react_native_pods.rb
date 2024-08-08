@@ -264,13 +264,71 @@ def get_default_flags()
   return ReactNativePodsUtils.get_default_flags()
 end
 
-# This method returns an hash with the folly version and the folli compiler flags
+# This method returns an hash with the folly version, folly git url and the folly compiler flags
 # that can be used to configure libraries.
 # In this way, we can update those values in react native, and all the libraries will benefit
 # from it.
-# @return an hash with the `:version` and `:compiler_flags` fields.
+# @return an hash with the `:version`, `:git` and `:compiler_flags` fields.
 def get_folly_config()
   return Helpers::Constants.folly_config
+end
+
+# This method returns an hash with the glog git url
+# that can be used to configure libraries.
+# @return an hash with the `:git` field.
+def get_glog_config()
+  return Helpers::Constants.glog_config
+end
+
+# This method returns an hash with the fmt git url
+# that can be used to configure libraries.
+# @return an hash with the `:git` field.
+def get_fmt_config()
+  return Helpers::Constants.fmt_config
+end
+
+# This method returns an hash with the double conversion git url
+# that can be used to configure libraries.
+# @return an hash with the `:git` field.
+def get_double_conversion_config()
+  return Helpers::Constants.double_conversion_config
+end
+
+# This method returns an hash with the double conversion git url
+# that can be used to configure libraries.
+# @return an hash with the `:git` field.
+def get_boost_config()
+  return Helpers::Constants.boost_config
+end
+
+# This method can be used to set the glog config
+# that can be used to configure libraries.
+def set_folly_config(folly_config)
+   Helpers::Constants.set_folly_config(folly_config)
+end
+
+# This method can be used to set the glog config
+# that can be used to configure libraries.
+def set_glog_config(glog_config)
+   Helpers::Constants.set_glog_config(glog_config)
+end
+
+# This method can be used to set the fmt config
+# that can be used to configure libraries.
+def set_fmt_config(fmt_config)
+   Helpers::Constants.set_fmt_config(fmt_config)
+end
+
+# This method can be used to set the double conversion config
+# that can be used to configure libraries.
+def set_double_conversion_config(double_conversion_config)
+   Helpers::Constants.set_double_conversion_config(double_conversion_config)
+end
+
+# This method can be used to set the boost config
+# that can be used to configure libraries.
+def set_boost_config(boost_config)
+   Helpers::Constants.set_boost_config(boost_config)
 end
 
 def rct_cxx_language_standard()
