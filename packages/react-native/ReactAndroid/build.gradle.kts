@@ -693,6 +693,7 @@ android {
             "src/main/res/views/alert",
             "src/main/res/views/modal",
             "src/main/res/views/uimanager"))
+    kotlin.srcDir(project.file("../sdks/ossonly-soloader/src/main/java"))
     java.exclude("com/facebook/react/processing")
     java.exclude("com/facebook/react/module/processing")
   }
@@ -791,6 +792,11 @@ android {
 tasks.withType<KotlinCompile>().configureEach { exclude("com/facebook/annotationprocessors/**") }
 
 dependencies {
+  implementation(libs.fresco)
+  implementation(libs.fresco.middleware)
+  implementation(libs.fresco.imagepipeline.okhttp3)
+  implementation(libs.fresco.ui.common)
+
   api(libs.androidx.appcompat)
   api(libs.androidx.appcompat.resources)
   api(libs.androidx.autofill)
@@ -798,12 +804,7 @@ dependencies {
   api(libs.androidx.tracing)
 
   api(libs.fbjni)
-  api(libs.fresco)
-  api(libs.fresco.middleware)
-  api(libs.fresco.imagepipeline.okhttp3)
-  api(libs.fresco.ui.common)
   api(libs.infer.annotation)
-  api(libs.soloader)
   api(libs.yoga.proguard.annotations)
 
   api(libs.jsr305)
@@ -823,6 +824,8 @@ dependencies {
   testImplementation(libs.robolectric)
   testImplementation(libs.thoughtworks)
 }
+
+configurations.all { exclude(group = "com.facebook.soloader") }
 
 react {
   // TODO: The library name is chosen for parity with Fabric components & iOS
