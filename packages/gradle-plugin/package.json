@@ -32,6 +32,7 @@
     "README.md",
     "react-native-gradle-plugin",
     "settings-plugin",
-    "shared"
+    "shared",
+    "shared-testutil"
   ]
 }
