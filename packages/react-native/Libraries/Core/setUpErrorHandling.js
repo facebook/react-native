@@ -21,7 +21,31 @@ ExceptionsManager.installConsoleErrorReporter();
 if (!global.__fbDisableExceptionsManager) {
   const handleError = (e: mixed, isFatal: boolean) => {
     try {
-      ExceptionsManager.handleException(e, isFatal);
+      // TODO(T196834299): We should really use a c++ turbomodule for this
+      if (
+        global.RN$handleFatalError &&
+        global.RN$isJSPipelineEnabled &&
+        global.RN$notifyOfFatalError
+      ) {
+        if (global.RN$isJSPipelineEnabled()) {
+          if (isFatal) {
+            global.RN$notifyOfFatalError();
+          }
+          ExceptionsManager.handleException(e, isFatal);
+        } else {
+          if (isFatal) {
+            global.RN$handleFatalError(e);
+          } else {
+            // Two things are possible:
+            // 1. We haven't yet finished executing the js bundle
+            // 2. We finished executing the js bundle, but the js bundle fataled.
+            // In either case, just call into the js pipeline and hope for the best.
+            ExceptionsManager.handleException(e, false);
+          }
+        }
+      } else {
+        ExceptionsManager.handleException(e, isFatal);
+      }
     } catch (ee) {
       console.log('Failed to print error: ', ee.message);
       throw e;

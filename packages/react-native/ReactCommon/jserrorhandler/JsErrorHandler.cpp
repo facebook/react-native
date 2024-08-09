@@ -6,6 +6,7 @@
  */
 
 #include "JsErrorHandler.h"
+#include <cxxreact/ErrorUtils.h>
 #include <regex>
 #include <sstream>
 #include <string>
@@ -89,23 +90,45 @@ parseErrorStack(const jsi::JSError& error, bool isFatal, bool isHermes) {
 }
 
 JsErrorHandler::JsErrorHandler(JsErrorHandler::OnJsError onJsError)
-    : _onJsError(std::move(onJsError)),
-      _hasHandledFatalError(false){
+    : _onJsError(std::move(onJsError)){
 
       };
 
 JsErrorHandler::~JsErrorHandler() {}
 
-void JsErrorHandler::handleFatalError(const jsi::JSError& error) {
+void JsErrorHandler::handleFatalError(
+    jsi::Runtime& runtime,
+    jsi::JSError& error) {
   // TODO: Current error parsing works and is stable. Can investigate using
   // REGEX_HERMES to get additional Hermes data, though it requires JS setup.
   _hasHandledFatalError = true;
+
+  if (_useJSPipeline) {
+    try {
+      handleJSError(runtime, error, true);
+      return;
+    } catch (jsi::JSError& e) {
+    }
+  }
+  // This is a hacky way to get Hermes stack trace.
   ParsedError parsedError = parseErrorStack(error, true, false);
   _onJsError(parsedError);
 }
 
 bool JsErrorHandler::hasHandledFatalError() {
   return _hasHandledFatalError;
+}
+
+void JsErrorHandler::setJSPipelineEnabled(bool enabled) {
+  _useJSPipeline = enabled;
+}
+
+bool JsErrorHandler::isJSPipelineEnabled() {
+  return _useJSPipeline;
+}
+
+void JsErrorHandler::notifyOfFatalError() {
+  _hasHandledFatalError = true;
 }
 
 } // namespace facebook::react
