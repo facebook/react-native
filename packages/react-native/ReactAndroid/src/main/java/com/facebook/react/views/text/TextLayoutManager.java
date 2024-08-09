@@ -249,6 +249,7 @@ public class TextLayoutManager {
             new SetSpanOperation(start, end, new ReactAbsoluteSizeSpan(textAttributes.mFontSize)));
         if (textAttributes.mFontStyle != ReactConstants.UNSET
             || textAttributes.mFontWeight != ReactConstants.UNSET
+            || textAttributes.mFontVariationSettings != null
             || textAttributes.mFontFamily != null) {
           ops.add(
               new SetSpanOperation(
@@ -259,6 +260,7 @@ public class TextLayoutManager {
                       textAttributes.mFontWeight,
                       textAttributes.mFontFeatureSettings,
                       textAttributes.mFontFamily,
+                      textAttributes.mFontVariationSettings,
                       context.getAssets())));
         }
         if (textAttributes.mIsUnderlineTextDecorationSet) {
