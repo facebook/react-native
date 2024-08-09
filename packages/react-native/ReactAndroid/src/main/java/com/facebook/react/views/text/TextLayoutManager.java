@@ -598,13 +598,17 @@ public class TextLayoutManager {
     if (widthYogaMeasureMode == YogaMeasureMode.EXACTLY) {
       calculatedWidth = width;
     } else {
-      for (int lineIndex = 0; lineIndex < calculatedLineCount; lineIndex++) {
-        boolean endsWithNewLine =
-            text.length() > 0 && text.charAt(layout.getLineEnd(lineIndex) - 1) == '\n';
-        float lineWidth =
-            endsWithNewLine ? layout.getLineMax(lineIndex) : layout.getLineWidth(lineIndex);
-        if (lineWidth > calculatedWidth) {
-          calculatedWidth = lineWidth;
+      if (maximumNumberOfLines == 1) {
+        calculatedWidth = (int) layout.getEllipsizedWidth();
+      } else {
+        for (int lineIndex = 0; lineIndex < calculatedLineCount; lineIndex++) {
+          boolean endsWithNewLine =
+              text.length() > 0 && text.charAt(layout.getLineEnd(lineIndex) - 1) == '\n';
+          float lineWidth =
+              endsWithNewLine ? layout.getLineMax(lineIndex) : layout.getLineWidth(lineIndex);
+          if (lineWidth > calculatedWidth) {
+            calculatedWidth = lineWidth;
+          }
         }
       }
       if (widthYogaMeasureMode == YogaMeasureMode.AT_MOST && calculatedWidth > width) {
@@ -657,14 +661,18 @@ public class TextLayoutManager {
           // the last offset in the layout will result in an endless loop. Work around
           // this bug by avoiding getPrimaryHorizontal in that case.
           if (start == text.length() - 1) {
-            boolean endsWithNewLine =
-                text.length() > 0 && text.charAt(layout.getLineEnd(line) - 1) == '\n';
-            float lineWidth = endsWithNewLine ? layout.getLineMax(line) : layout.getLineWidth(line);
+            float lineWidth;
+            if (maximumNumberOfLines == 1) {
+              lineWidth = layout.getEllipsizedWidth();
+            } else {
+              boolean endsWithNewLine =
+                  text.length() > 0 && text.charAt(layout.getLineEnd(line) - 1) == '\n';
+              lineWidth = endsWithNewLine ? layout.getLineMax(line) : layout.getLineWidth(line);
+            }
             placeholderLeftPosition =
                 isRtlParagraph
                     // Equivalent to `layout.getLineLeft(line)` but `getLineLeft` returns
-                    // incorrect
-                    // values when the paragraph is RTL and `setSingleLine(true)`.
+                    // incorrect values when the paragraph is RTL and `setSingleLine(true)`.
                     ? calculatedWidth - lineWidth
                     : layout.getLineRight(line) - placeholderWidth;
           } else {
