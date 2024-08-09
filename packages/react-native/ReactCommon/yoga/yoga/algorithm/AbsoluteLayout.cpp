@@ -592,8 +592,7 @@ bool layoutAbsoluteDescendants(
           currentNodeTopOffsetFromContainingBlock +
           child->getLayout().position(PhysicalEdge::Top);
 
-      hasNewLayout = hasNewLayout ||
-          layoutAbsoluteDescendants(
+      hasNewLayout = layoutAbsoluteDescendants(
                          containingNode,
                          child,
                          widthSizingMode,
@@ -604,7 +603,8 @@ bool layoutAbsoluteDescendants(
                          childLeftOffsetFromContainingBlock,
                          childTopOffsetFromContainingBlock,
                          containingNodeAvailableInnerWidth,
-                         containingNodeAvailableInnerHeight);
+                         containingNodeAvailableInnerHeight) ||
+          hasNewLayout;
 
       if (hasNewLayout) {
         child->setHasNewLayout(hasNewLayout);
