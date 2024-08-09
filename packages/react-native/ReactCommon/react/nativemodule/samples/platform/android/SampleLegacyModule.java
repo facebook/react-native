@@ -13,12 +13,14 @@ import android.widget.Toast;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeArray;
@@ -153,6 +155,57 @@ public class SampleLegacyModule extends ReactContextBaseJavaModule {
     map.merge(arg);
     log("getUnsafeObject", arg, map);
     return map;
+  }
+
+  @SuppressWarnings("unused")
+  @ReactMethod(isBlockingSynchronousMethod = true)
+  public WritableMap getDynamic(Dynamic dynamic) {
+    WritableNativeMap resultMap = new WritableNativeMap();
+    ReadableType type = dynamic.getType();
+    switch (type) {
+      case Null -> {
+        log("getDynamic as Null", dynamic, dynamic);
+        resultMap.putString("type", "Null");
+        resultMap.putNull("value");
+        break;
+      }
+      case Boolean -> {
+        boolean result = dynamic.asBoolean();
+        log("getDynamic as Boolean", dynamic, result);
+        resultMap.putString("type", "Boolean");
+        resultMap.putBoolean("value", result);
+        break;
+      }
+      case Number -> {
+        double result = dynamic.asDouble();
+        log("getDynamic as Number", dynamic, result);
+        resultMap.putString("type", "Number");
+        resultMap.putDouble("value", result);
+        break;
+      }
+      case String -> {
+        String result = dynamic.asString();
+        log("getDynamic as String", dynamic, result);
+        resultMap.putString("type", "String");
+        resultMap.putString("value", result);
+        break;
+      }
+      case Array -> {
+        ReadableArray result = dynamic.asArray();
+        log("getDynamic as Array", dynamic, result);
+        resultMap.putString("type", "Array");
+        resultMap.putArray("value", result);
+        break;
+      }
+      case Map -> {
+        ReadableMap result = dynamic.asMap();
+        log("getDynamic as Map", dynamic, result);
+        resultMap.putString("type", "Map");
+        resultMap.putMap("value", result);
+        break;
+      }
+    }
+    return resultMap;
   }
 
   @DoNotStrip
