@@ -5022,6 +5022,7 @@ public class com/facebook/react/uimanager/TransformHelper {
 	public fun <init> ()V
 	public static fun processTransform (Lcom/facebook/react/bridge/ReadableArray;[D)V
 	public static fun processTransform (Lcom/facebook/react/bridge/ReadableArray;[DFFLcom/facebook/react/bridge/ReadableArray;)V
+	public static fun processTransform (Lcom/facebook/react/bridge/ReadableArray;[DFFLcom/facebook/react/bridge/ReadableArray;Z)V
 }
 
 public abstract interface class com/facebook/react/uimanager/UIBlock {

@@ -535,13 +535,16 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
       return;
     }
 
+    boolean allowPercentageResolution = ViewUtil.getUIManagerType(view) == UIManagerType.FABRIC;
+
     sMatrixDecompositionContext.reset();
     TransformHelper.processTransform(
         transforms,
         sTransformDecompositionArray,
         PixelUtil.toDIPFromPixel(view.getWidth()),
         PixelUtil.toDIPFromPixel(view.getHeight()),
-        transformOrigin);
+        transformOrigin,
+        allowPercentageResolution);
     MatrixMathHelper.decomposeMatrix(sTransformDecompositionArray, sMatrixDecompositionContext);
     view.setTranslationX(
         PixelUtil.toPixelFromDIP(
