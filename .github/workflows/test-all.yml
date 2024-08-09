@@ -268,13 +268,13 @@ jobs:
           bundle install
           HERMES_ENGINE_TARBALL_PATH=$HERMES_PATH bundle exec pod install
 
-          xcrun xcodebuild \
+          set -o pipefail && xcodebuild \
             -scheme "RNTestProject" \
             -workspace RNTestProject.xcworkspace \
             -configuration "Release" \
             -sdk "iphonesimulator" \
             -destination "generic/platform=iOS Simulator" \
-            -derivedDataPath "/tmp/RNTestProject"
+            -derivedDataPath "/tmp/RNTestProject" | xcbeautify
       - name: Run E2E Tests
         uses: ./.github/actions/maestro-ios
         with:
