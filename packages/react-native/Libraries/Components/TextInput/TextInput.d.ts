@@ -488,6 +488,16 @@ export interface TextInputSubmitEditingEventData {
 }
 
 /**
+ * @see TextInputProps.onPaste
+ */
+export interface TextInputPasteEventData extends TargetedEvent {
+  items: Array<{
+    type: string;
+    data: string;
+  }>;
+}
+
+/**
  * @see https://reactnative.dev/docs/textinput#props
  */
 export interface TextInputProps
@@ -829,6 +839,13 @@ export interface TextInputProps
    */
   onKeyPress?:
     | ((e: NativeSyntheticEvent<TextInputKeyPressEventData>) => void)
+    | undefined;
+
+  /**
+   * Invoked when the user performs the paste action.
+   */
+  onPaste?:
+    | ((e: NativeSyntheticEvent<TextInputPasteEventData>) => void)
     | undefined;
 
   /**

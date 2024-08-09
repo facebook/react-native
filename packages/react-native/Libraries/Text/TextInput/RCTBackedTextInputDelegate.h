@@ -36,6 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)textInputDidChange;
 
 - (void)textInputDidChangeSelection;
+- (void)textInputDidPaste:(NSString *)type withData:(NSString *)data;
 
 @optional
 

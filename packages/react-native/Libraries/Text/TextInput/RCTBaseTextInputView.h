@@ -37,6 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy, nullable) RCTDirectEventBlock onChange;
 @property (nonatomic, copy, nullable) RCTDirectEventBlock onChangeSync;
 @property (nonatomic, copy, nullable) RCTDirectEventBlock onScroll;
+@property (nonatomic, copy, nullable) RCTDirectEventBlock onPaste;
 
 @property (nonatomic, assign) NSInteger mostRecentEventCount;
 @property (nonatomic, assign, readonly) NSInteger nativeEventCount;

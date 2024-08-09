@@ -12,6 +12,9 @@
 #import <React/RCTUtils.h>
 #import <React/UIView+React.h>
 
+#import <MobileCoreServices/UTType.h>
+#import <UIKit/UIKit.h>
+
 @implementation RCTUITextField {
   RCTBackedTextFieldDelegateAdapter *_textInputDelegateAdapter;
   NSDictionary<NSAttributedStringKey, id> *_defaultTextAttributes;
@@ -139,6 +142,10 @@
     return NO;
   }
 
+  if (action == @selector(paste:) && [UIPasteboard generalPasteboard].hasImages) {
+    return YES;
+  }
+
   return [super canPerformAction:action withSender:sender];
 }
 
@@ -222,7 +229,30 @@
 - (void)paste:(id)sender
 {
   _textWasPasted = YES;
-  [super paste:sender];
+  UIPasteboard *clipboard = [UIPasteboard generalPasteboard];
+  if (clipboard.hasImages) {
+    for (NSItemProvider *itemProvider in [clipboard itemProviders]) {
+      if ([itemProvider canLoadObjectOfClass:[UIImage class]]) {
+        NSString *identifier = itemProvider.registeredTypeIdentifiers.firstObject;
+        if (identifier != nil) {
+          NSString *MIMEType = (__bridge_transfer NSString *)UTTypeCopyPreferredTagWithClass((__bridge CFStringRef)identifier, kUTTagClassMIMEType);
+          NSString *fileExtension = (__bridge_transfer NSString *)UTTypeCopyPreferredTagWithClass((__bridge CFStringRef)identifier, kUTTagClassFilenameExtension);
+          NSString *fileName = [NSString stringWithFormat:@"%@.%@", itemProvider.suggestedName ?: @"file", fileExtension];
+          NSString *filePath = [NSTemporaryDirectory() stringByAppendingPathComponent:fileName];
+          NSURL *fileURL = [NSURL fileURLWithPath:filePath];
+          NSData *fileData = [clipboard dataForPasteboardType:identifier];
+          [fileData writeToFile:filePath atomically:YES];
+          [_textInputDelegateAdapter didPaste:MIMEType withData:[fileURL absoluteString]];
+        }
+        break;
+      }
+    }
+  } else {
+    if (clipboard.hasStrings) {
+      [_textInputDelegateAdapter didPaste:@"text/plain" withData:clipboard.string];
+    }
+    [super paste:sender];
+  }
 }
 
 #pragma mark - Layout

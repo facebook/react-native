@@ -13,6 +13,9 @@
 #import <React/RCTBackedTextInputDelegateAdapter.h>
 #import <React/RCTTextAttributes.h>
 
+#import <MobileCoreServices/UTType.h>
+#import <UIKit/UIKit.h>
+
 @implementation RCTUITextView {
   UILabel *_placeholderView;
   UITextView *_detachedTextView;
@@ -172,7 +175,30 @@ static UIColor *defaultPlaceholderColor(void)
 - (void)paste:(id)sender
 {
   _textWasPasted = YES;
-  [super paste:sender];
+  UIPasteboard *clipboard = [UIPasteboard generalPasteboard];
+  if (clipboard.hasImages) {
+    for (NSItemProvider *itemProvider in [clipboard itemProviders]) {
+      if ([itemProvider canLoadObjectOfClass:[UIImage class]]) {
+        NSString *identifier = itemProvider.registeredTypeIdentifiers.firstObject;
+        if (identifier != nil) {
+          NSString *MIMEType = (__bridge_transfer NSString *)UTTypeCopyPreferredTagWithClass((__bridge CFStringRef)identifier, kUTTagClassMIMEType);
+          NSString *fileExtension = (__bridge_transfer NSString *)UTTypeCopyPreferredTagWithClass((__bridge CFStringRef)identifier, kUTTagClassFilenameExtension);
+          NSString *fileName = [NSString stringWithFormat:@"%@.%@", itemProvider.suggestedName ?: @"file", fileExtension];
+          NSString *filePath = [NSTemporaryDirectory() stringByAppendingPathComponent:fileName];
+          NSURL *fileURL = [NSURL fileURLWithPath:filePath];
+          NSData *fileData = [clipboard dataForPasteboardType:identifier];
+          [fileData writeToFile:filePath atomically:YES];
+          [_textInputDelegateAdapter didPaste:MIMEType withData:[fileURL absoluteString]];
+        }
+        break;
+      }
+    }
+  } else {
+    if (clipboard.hasStrings) {
+      [_textInputDelegateAdapter didPaste:@"text/plain" withData:clipboard.string];
+    }
+    [super paste:sender];
+  }
 }
 
 // Turn off scroll animation to fix flaky scrolling.
@@ -262,6 +288,10 @@ static UIColor *defaultPlaceholderColor(void)
 {
   if (_contextMenuHidden) {
     return NO;
+  }
+
+  if (action == @selector(paste:) && [UIPasteboard generalPasteboard].hasImages) {
+    return YES;
   }
 
   return [super canPerformAction:action withSender:sender];

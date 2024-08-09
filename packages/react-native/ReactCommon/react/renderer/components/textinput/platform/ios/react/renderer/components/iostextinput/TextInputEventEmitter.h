@@ -43,6 +43,7 @@ class TextInputEventEmitter : public ViewEventEmitter {
   void onSubmitEditing(const Metrics& textInputMetrics) const;
   void onKeyPress(const KeyPressMetrics& keyPressMetrics) const;
   void onScroll(const Metrics& textInputMetrics) const;
+  void onPaste(const std::string& type, const std::string& data) const;
 
  private:
   void dispatchTextInputEvent(

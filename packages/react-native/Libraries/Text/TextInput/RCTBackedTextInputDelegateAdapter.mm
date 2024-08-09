@@ -147,6 +147,11 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
   [self textFieldProbablyDidChangeSelection];
 }
 
+- (void)didPaste:(NSString *)type withData:(NSString *)data
+{
+  [_backedTextInputView.textInputDelegate textInputDidPaste:type withData:data];
+}
+
 #pragma mark - Generalization
 
 - (void)textFieldProbablyDidChangeSelection
@@ -290,6 +295,11 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
 - (void)skipNextTextInputDidChangeSelectionEventWithTextRange:(UITextRange *)textRange
 {
   _previousSelectedTextRange = textRange;
+}
+
+- (void)didPaste:(NSString *)type withData:(NSString *)data
+{
+  [_backedTextInputView.textInputDelegate textInputDidPaste:type withData:data];
 }
 
 #pragma mark - Generalization
