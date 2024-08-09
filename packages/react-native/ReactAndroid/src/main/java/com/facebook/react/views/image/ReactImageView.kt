@@ -58,6 +58,7 @@ import com.facebook.react.uimanager.FloatUtil.floatsEqual
 import com.facebook.react.uimanager.LengthPercentage
 import com.facebook.react.uimanager.LengthPercentageType
 import com.facebook.react.uimanager.PixelUtil.toPixelFromDIP
+import com.facebook.react.uimanager.ReactMixBlendMode
 import com.facebook.react.uimanager.Spacing
 import com.facebook.react.uimanager.UIManagerHelper
 import com.facebook.react.uimanager.style.BorderRadiusProp
@@ -89,7 +90,7 @@ public class ReactImageView(
     private val draweeControllerBuilder: AbstractDraweeControllerBuilder<*, *, *, *>,
     private val globalImageLoadListener: GlobalImageLoadListener?,
     private var callerContext: Any?
-) : GenericDraweeView(context, buildHierarchy(context)) {
+) : GenericDraweeView(context, buildHierarchy(context)), ReactMixBlendMode {
 
   private val sources: MutableList<ImageSource> = mutableListOf()
   internal var imageSource: ImageSource? = null
@@ -116,6 +117,12 @@ public class ReactImageView(
   private var resizeMultiplier = 1.0f
   private val reactBackgroundManager = ReactViewBackgroundManager(this)
   private var resizeMethod = ImageResizeMethod.AUTO
+
+  override var mixBlendMode: Paint? = null
+
+  override fun isBlendModeParent(): Boolean {
+    return false
+  }
 
   init {
     reactBackgroundManager.setOverflow("hidden")

@@ -184,6 +184,14 @@ BaseViewProps::BaseViewProps(
                     "experimental_mixBlendMode",
                     sourceProps.mixBlendMode,
                     {})),
+      isolation(
+          CoreFeatures::enablePropIteratorSetter ? sourceProps.isolation
+                                                 : convertRawProp(
+                                                       context,
+                                                       rawProps,
+                                                       "isolation",
+                                                       sourceProps.isolation,
+                                                       {})),
       transform(
           CoreFeatures::enablePropIteratorSetter ? sourceProps.transform
                                                  : convertRawProp(
@@ -330,6 +338,7 @@ void BaseViewProps::setProp(
     RAW_SET_PROP_SWITCH_CASE_BASIC(shouldRasterize);
     RAW_SET_PROP_SWITCH_CASE_BASIC(zIndex);
     RAW_SET_PROP_SWITCH_CASE_BASIC(pointerEvents);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(isolation);
     RAW_SET_PROP_SWITCH_CASE_BASIC(hitSlop);
     RAW_SET_PROP_SWITCH_CASE_BASIC(onLayout);
     RAW_SET_PROP_SWITCH_CASE_BASIC(collapsable);
