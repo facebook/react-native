@@ -412,12 +412,16 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
     plain().instrumentation().stopHeapSampling(os);
   }
 
-  void createSnapshotToFile(const std::string& path) override {
-    plain().instrumentation().createSnapshotToFile(path);
+  void createSnapshotToFile(
+      const std::string& path,
+      const HeapSnapshotOptions& options) override {
+    plain().instrumentation().createSnapshotToFile(path, options);
   }
 
-  void createSnapshotToStream(std::ostream& os) override {
-    plain().instrumentation().createSnapshotToStream(os);
+  void createSnapshotToStream(
+      std::ostream& os,
+      const HeapSnapshotOptions& options) override {
+    plain().instrumentation().createSnapshotToStream(os, options);
   }
 
   std::string flushAndDisableBridgeTrafficTrace() override {
