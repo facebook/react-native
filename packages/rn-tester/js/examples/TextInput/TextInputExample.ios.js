@@ -865,6 +865,48 @@ const textInputExamples: Array<RNTesterModuleExample> = [
       );
     },
   },
+  {
+    title: 'Line Break Mode',
+    render: function (): React.Node {
+      const lineBreakMode = [
+        'wordWrapping',
+        'char',
+        'clip',
+        'head',
+        'middle',
+        'tail',
+      ];
+      const textByCode = {
+        en: 'verylongtext-dummydummydummydummydummydummydummydummydummydummydummydummy',
+        ko: '한글개행한글개행-한글개행한글개행한글개행한글개행한글개행한글개행한글개행한글개행한글개행한글개행',
+      };
+      return (
+        <View>
+          {lineBreakMode.map(strategy => {
+            return (
+              <View key={strategy} style={{marginBottom: 12}}>
+                <Text
+                  style={{
+                    backgroundColor: 'lightgrey',
+                  }}>{`Mode: ${strategy}`}</Text>
+                {Object.keys(textByCode).map(code => {
+                  return (
+                    <View key={code}>
+                      <Text style={{fontWeight: 'bold'}}>{`[${code}]`}</Text>
+                      <ExampleTextInput
+                        lineBreakModeIOS={strategy}
+                        defaultValue={textByCode[code]}
+                      />
+                    </View>
+                  );
+                })}
+              </View>
+            );
+          })}
+        </View>
+      );
+    },
+  },
 ];
 
 module.exports = ({

@@ -103,6 +103,15 @@ enum class LineBreakStrategy {
            // system uses for standard UI labels.
 };
 
+enum class LineBreakMode {
+  Word, // Wrap at word boundaries, default
+  Char, // Wrap at character boundaries
+  Clip, // Simply clip
+  Head, // Truncate at head of line: "...wxyz"
+  Middle, // Truncate middle of line:  "ab...yz"
+  Tail // Truncate at tail of line: "abcd..."
+};
+
 enum class TextDecorationLineType {
   None,
   Underline,

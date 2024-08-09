@@ -2987,6 +2987,14 @@ type IOSProps = $ReadOnly<{|
   spellCheck?: ?boolean,
   textContentType?: ?TextContentType,
   lineBreakStrategyIOS?: ?(\\"none\\" | \\"standard\\" | \\"hangul-word\\" | \\"push-out\\"),
+  lineBreakModeIOS?: ?(
+    | \\"wordWrapping\\"
+    | \\"char\\"
+    | \\"clip\\"
+    | \\"head\\"
+    | \\"middle\\"
+    | \\"tail\\"
+  ),
   smartInsertDelete?: ?boolean,
 |}>;
 type AndroidProps = $ReadOnly<{|
@@ -3332,6 +3340,14 @@ type IOSProps = $ReadOnly<{|
   spellCheck?: ?boolean,
   textContentType?: ?TextContentType,
   lineBreakStrategyIOS?: ?(\\"none\\" | \\"standard\\" | \\"hangul-word\\" | \\"push-out\\"),
+  lineBreakModeIOS?: ?(
+    | \\"wordWrapping\\"
+    | \\"char\\"
+    | \\"clip\\"
+    | \\"head\\"
+    | \\"middle\\"
+    | \\"tail\\"
+  ),
   smartInsertDelete?: ?boolean,
 |}>;
 type AndroidProps = $ReadOnly<{|
