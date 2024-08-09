@@ -30,6 +30,7 @@ import type {
   Role,
 } from './ViewAccessibility';
 import type {Node} from 'react';
+import type {ImageRequireSource} from 'react-native/Libraries/Image/ImageSource';
 
 export type ViewLayout = Layout;
 export type ViewLayoutEvent = LayoutEvent;
@@ -414,6 +415,27 @@ type IOSViewProps = $ReadOnly<{|
    * See https://reactnative.dev/docs/view#accessibilityviewismodal
    */
   accessibilityViewIsModal?: ?boolean,
+
+  /**
+   * @platform ios
+   * 
+   * See https://reactnative.dev/docs/view#accessibilityshowslargecontentviewer
+   */
+  accessibilityShowsLargeContentViewer?: ?boolean,
+
+  /**
+   * @platform ios
+   * 
+   * See https://reactnative.dev/docs/view#accessibilitylargecontenttitle
+   */
+  accessibilityLargeContentTitle?: ?string,
+
+  /**
+   * @platform ios
+   * 
+   * See https://reactnative.dev/docs/view#accessibilitylargecontentimage
+   */
+  accessibilityLargeContentImage?: ?ImageRequireSource,
 
   /**
    * The aria-modal attribute indicates content contained within a modal with aria-modal="true"

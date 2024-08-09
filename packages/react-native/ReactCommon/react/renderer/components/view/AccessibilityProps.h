@@ -41,8 +41,10 @@ class AccessibilityProps {
   std::string accessibilityRole{""};
   std::string accessibilityHint{""};
   std::string accessibilityLanguage{""};
+  std::string accessibilityLargeContentTitle{""};
   AccessibilityValue accessibilityValue;
   std::vector<AccessibilityAction> accessibilityActions{};
+  bool accessibilityShowsLargeContentViewer{false};
   bool accessibilityViewIsModal{false};
   bool accessibilityElementsHidden{false};
   bool accessibilityIgnoresInvertColors{false};

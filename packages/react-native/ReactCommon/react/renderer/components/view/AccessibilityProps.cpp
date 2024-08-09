@@ -45,6 +45,15 @@ AccessibilityProps::AccessibilityProps(
                     "accessibilityLabel",
                     sourceProps.accessibilityLabel,
                     "")),
+      accessibilityLargeContentTitle(
+          CoreFeatures::enablePropIteratorSetter
+              ? sourceProps.accessibilityLargeContentTitle
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "accessibilityLargeContentTitle",
+                    sourceProps.accessibilityLargeContentTitle,
+                    "")),
       accessibilityLabelledBy(
           CoreFeatures::enablePropIteratorSetter
               ? sourceProps.accessibilityLabelledBy
@@ -99,6 +108,15 @@ AccessibilityProps::AccessibilityProps(
                     "accessibilityActions",
                     sourceProps.accessibilityActions,
                     {})),
+      accessibilityShowsLargeContentViewer(
+          CoreFeatures::enablePropIteratorSetter
+              ? sourceProps.accessibilityShowsLargeContentViewer
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "accessibilityShowsLargeContentViewer",
+                    sourceProps.accessibilityShowsLargeContentViewer,
+                    false)),                    
       accessibilityViewIsModal(
           CoreFeatures::enablePropIteratorSetter
               ? sourceProps.accessibilityViewIsModal
@@ -229,6 +247,8 @@ void AccessibilityProps::setProp(
     RAW_SET_PROP_SWITCH_CASE_BASIC(accessibilityLabelledBy);
     RAW_SET_PROP_SWITCH_CASE_BASIC(accessibilityHint);
     RAW_SET_PROP_SWITCH_CASE_BASIC(accessibilityLanguage);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(accessibilityShowsLargeContentViewer);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(accessibilityLargeContentTitle);
     RAW_SET_PROP_SWITCH_CASE_BASIC(accessibilityValue);
     RAW_SET_PROP_SWITCH_CASE_BASIC(accessibilityActions);
     RAW_SET_PROP_SWITCH_CASE_BASIC(accessibilityViewIsModal);
