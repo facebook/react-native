@@ -20,15 +20,10 @@ const BackHandler = {
   ): {remove: () => void} {
     _backPressSubscriptions.add(handler);
     return {
-      remove: () => BackHandler.removeEventListener(eventName, handler),
+      remove: () => {
+        _backPressSubscriptions.delete(handler);
+      },
     };
-  },
-
-  removeEventListener: function (
-    eventName: BackPressEventName,
-    handler: () => ?boolean,
-  ): void {
-    _backPressSubscriptions.delete(handler);
   },
 
   mockPressBack: function () {
