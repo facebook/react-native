@@ -15,7 +15,6 @@
 /* eslint-disable lint/sort-imports */
 
 const metroBabelRegister = require('metro-babel-register');
-const metroTransformPlugins = require('metro-transform-plugins');
 const nullthrows = require('nullthrows');
 const createCacheKeyFunction =
   require('@jest/create-cache-key-function').default;
@@ -91,7 +90,8 @@ module.exports = {
       ast: true,
       retainLines: true,
       plugins: [
-        metroTransformPlugins.inlineRequiresPlugin,
+        // TODO(moti): Replace with require('metro-transform-plugins').inlineRequiresPlugin when available in OSS
+        require('babel-preset-fbjs/plugins/inline-requires'),
         babelPluginPreventBabelRegister,
       ],
       sourceType: 'module',
