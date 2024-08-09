@@ -7,6 +7,8 @@
 
 package com.facebook.react.modules.network;
 
+import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -22,6 +24,7 @@ import javax.net.ssl.SSLSocketFactory;
  *
  * <p>Source: http://blog.dev-area.net/2015/08/13/android-4-1-enable-tls-1-1-and-tls-1-2/
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class TLSSocketFactory extends SSLSocketFactory {
   private SSLSocketFactory delegate;
 
@@ -48,12 +51,13 @@ public class TLSSocketFactory extends SSLSocketFactory {
   }
 
   @Override
-  public Socket createSocket(String host, int port) throws IOException, UnknownHostException {
+  public Socket createSocket(@Nullable String host, int port)
+      throws IOException, UnknownHostException {
     return enableTLSOnSocket(delegate.createSocket(host, port));
   }
 
   @Override
-  public Socket createSocket(String host, int port, InetAddress localHost, int localPort)
+  public Socket createSocket(@Nullable String host, int port, InetAddress localHost, int localPort)
       throws IOException, UnknownHostException {
     return enableTLSOnSocket(delegate.createSocket(host, port, localHost, localPort));
   }
