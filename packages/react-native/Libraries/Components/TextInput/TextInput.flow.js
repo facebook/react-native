@@ -69,6 +69,16 @@ export type FocusEvent = TargetEvent;
 type Selection = $ReadOnly<{|
   start: number,
   end: number,
+  cursorPosition: $ReadOnly<{|
+    start: $ReadOnly<{|
+      x: number,
+      y: number,
+    |}>,
+    end: $ReadOnly<{|
+      x: number,
+      y: number,
+    |}>,
+  |}>,
 |}>;
 
 export type SelectionChangeEvent = SyntheticEvent<
@@ -876,6 +886,16 @@ export type Props = $ReadOnly<{|
   selection?: ?$ReadOnly<{|
     start: number,
     end?: ?number,
+    cursorPosition: $ReadOnly<{|
+      start: $ReadOnly<{|
+        x: number,
+        y: number,
+      |}>,
+      end: $ReadOnly<{|
+        x: number,
+        y: number,
+      |}>,
+    |}>,
   |}>,
 
   /**
