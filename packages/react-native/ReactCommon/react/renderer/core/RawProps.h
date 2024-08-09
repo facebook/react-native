@@ -50,6 +50,12 @@ class RawProps final {
    */
   RawProps(jsi::Runtime& runtime, const jsi::Value& value) noexcept;
 
+  explicit RawProps(const RawProps& rawProps) noexcept;
+  RawProps& operator=(const RawProps& other) noexcept;
+
+  RawProps(RawProps&& other) noexcept = default;
+  RawProps& operator=(RawProps&& other) noexcept = default;
+
   /*
    * Creates an object with given `folly::dynamic` object.
    * Deprecated. Do not use.
@@ -58,20 +64,7 @@ class RawProps final {
    */
   explicit RawProps(folly::dynamic dynamic) noexcept;
 
-  /*
-   * Not moveable.
-   */
-  RawProps(RawProps&& other) noexcept = delete;
-  RawProps& operator=(RawProps&& other) noexcept = delete;
-
-  /*
-   * Not copyable.
-   */
-  RawProps(const RawProps& other) noexcept = delete;
-  RawProps& operator=(const RawProps& other) noexcept = delete;
-
-  void parse(const RawPropsParser& parser, const PropsParserContext&)
-      const noexcept;
+  void parse(const RawPropsParser& parser) noexcept;
 
   /*
    * Deprecated. Do not use.
@@ -79,6 +72,15 @@ class RawProps final {
    * will be removed as soon Android implementation does not need it.
    */
   explicit operator folly::dynamic() const noexcept;
+
+  /*
+   * Once called, Yoga style props will be filtered out during conversion to
+   * folly::dynamic. folly::dynamic conversion is only used on Android and props
+   * specific to Yoga do not need to be send over JNI to Android.
+   * This is a performance optimisation to minimise traffic between C++ and
+   * Java.
+   */
+  void filterYogaStylePropsInDynamicConversion() noexcept;
 
   /*
    * Returns `true` if the object is empty.
@@ -131,6 +133,20 @@ class RawProps final {
    */
   mutable std::vector<RawPropsValueIndex> keyIndexToValueIndex_;
   mutable std::vector<RawValue> values_;
+
+  bool ignoreYogaStyleProps_{false};
+};
+
+/*
+ * Once called, props will be filtered out during conversion to
+ * folly::dynamic. folly::dynamic conversion is only used on Android and props
+ * specific to Yoga do not need to be send over JNI to Android.
+ * This is a performance optimisation to minimise traffic between C++ and
+ * Java.
+ */
+template <typename T>
+concept RawPropsFilterable = requires(RawProps& rawProps) {
+  { T::filterRawProps(rawProps) } -> std::same_as<void>;
 };
 
 } // namespace facebook::react

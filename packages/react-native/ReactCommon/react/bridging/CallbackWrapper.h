@@ -8,9 +8,12 @@
 #pragma once
 
 #include <jsi/jsi.h>
-#include "LongLivedObject.h"
 
 #include <memory>
+
+#include <ReactCommon/CallInvoker.h>
+
+#include "LongLivedObject.h"
 
 namespace facebook::react {
 

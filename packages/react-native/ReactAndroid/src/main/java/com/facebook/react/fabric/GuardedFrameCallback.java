@@ -9,9 +9,11 @@ package com.facebook.react.fabric;
 
 import android.view.Choreographer;
 import androidx.annotation.NonNull;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.JSExceptionHandler;
 import com.facebook.react.bridge.ReactContext;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public abstract class GuardedFrameCallback implements Choreographer.FrameCallback {
 
   @NonNull private final JSExceptionHandler mExceptionHandler;

@@ -33,7 +33,7 @@ BlobCollector::~BlobCollector() {
 }
 
 void BlobCollector::nativeInstall(
-    jni::alias_ref<jhybridobject> jThis,
+    jni::alias_ref<jclass>,
     jni::alias_ref<jobject> blobModule,
     jlong jsContextNativePointer) {
   auto& runtime = *((jsi::Runtime*)jsContextNativePointer);

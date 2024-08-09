@@ -47,7 +47,9 @@
     "react-native.config.js",
     "React.podspec",
     "React",
+    "!React/Fabric/RCTThirdPartyFabricComponentsProvider.*",
     "ReactAndroid",
+    "ReactApple",
     "ReactCommon",
     "README.md",
     "rn-get-polyfills.js",
@@ -78,6 +80,7 @@
     "sdks/hermes-engine",
     "sdks/hermesc",
     "settings.gradle.kts",
+    "src",
     "template.config.js",
     "template",
     "!template/node_modules",
@@ -87,42 +90,43 @@
     "types"
   ],
   "scripts": {
-    "prepack": "cp ../../README.md ."
+    "prepack": "cp ../../README.md .",
+    "featureflags-check": "node ./scripts/featureflags/index.js --verify-unchanged",
+    "featureflags-update": "node ./scripts/featureflags/index.js"
   },
   "peerDependencies": {
     "react": "18.2.0"
   },
   "dependencies": {
     "@jest/create-cache-key-function": "^29.6.3",
-    "@react-native-community/cli": "12.0.0-alpha.15",
-    "@react-native-community/cli-platform-android": "12.0.0-alpha.15",
-    "@react-native-community/cli-platform-ios": "12.0.0-alpha.15",
-    "@react-native-mac/virtualized-lists": "^0.73.0",
-    "@react-native/assets-registry": "^0.73.0",
-    "@react-native/codegen": "^0.73.0",
-    "@react-native/community-cli-plugin": "^0.73.0",
-    "@react-native/gradle-plugin": "^0.73.0",
-    "@react-native/js-polyfills": "^0.73.0",
-    "@react-native/normalize-colors": "^0.73.0",
+    "@react-native-community/cli": "13.6.0",
+    "@react-native-community/cli-platform-android": "13.6.0",
+    "@react-native-community/cli-platform-ios": "13.6.0",
+    "@react-native-mac/virtualized-lists": "0.74.0",
+    "@react-native/assets-registry": "0.74.0",
+    "@react-native/codegen": "0.74.0",
+    "@react-native/community-cli-plugin": "0.74.0",
+    "@react-native/gradle-plugin": "0.74.0",
+    "@react-native/js-polyfills": "0.74.0",
+    "@react-native/normalize-colors": "0.74.1",
     "abort-controller": "^3.0.0",
     "anser": "^1.4.9",
     "ansi-regex": "^5.0.0",
     "base64-js": "^1.5.1",
-    "chalk": "^4.1.2",
-    "deprecated-react-native-prop-types": "4.2.1",
+    "chalk": "^4.0.0",
     "event-target-shim": "^5.0.1",
     "flow-enums-runtime": "^0.0.6",
     "invariant": "^2.2.4",
     "jest-environment-node": "^29.6.3",
     "jsc-android": "^250231.0.0",
     "memoize-one": "^5.0.0",
-    "metro-runtime": "0.79.1",
-    "metro-source-map": "0.79.1",
+    "metro-runtime": "^0.80.3",
+    "metro-source-map": "^0.80.3",
     "mkdirp": "^0.5.1",
     "nullthrows": "^1.1.1",
     "pretty-format": "^26.5.2",
     "promise": "^8.3.0",
-    "react-devtools-core": "^4.27.7",
+    "react-devtools-core": "^5.0.0",
     "react-refresh": "^0.14.0",
     "react-shallow-renderer": "^16.15.0",
     "regenerator-runtime": "^0.13.2",
@@ -162,14 +166,14 @@
         "type": "modules",
         "ios": {},
         "android": {},
-        "jsSrcsDir": "Libraries"
+        "jsSrcsDir": "src"
       },
       {
         "name": "rncore",
         "type": "components",
         "ios": {},
         "android": {},
-        "jsSrcsDir": "Libraries"
+        "jsSrcsDir": "src"
       }
     ]
   }

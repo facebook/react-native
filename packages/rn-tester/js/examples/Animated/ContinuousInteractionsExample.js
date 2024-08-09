@@ -9,6 +9,7 @@
  */
 
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+
 import * as React from 'react';
 import {Text} from 'react-native';
 

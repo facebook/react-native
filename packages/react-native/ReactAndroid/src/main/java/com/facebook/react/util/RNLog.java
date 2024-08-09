@@ -9,10 +9,13 @@ package com.facebook.react.util;
 
 import android.util.Log;
 import com.facebook.common.logging.FLog;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.ReactConstants;
+import javax.annotation.Nullable;
 
 /** Logging wrapper for FLog with LogBox support. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class RNLog {
   public static final int MINIMUM_LEVEL_FOR_UI = Log.WARN;
 
@@ -60,7 +63,7 @@ public class RNLog {
    * @param context The React context of the application use to display the warning.
    * @param message The message to log.
    */
-  public static void w(ReactContext context, String message) {
+  public static void w(@Nullable ReactContext context, String message) {
     logInternal(context, message, WARN);
     FLog.w(ReactConstants.TAG, message);
   }
@@ -71,7 +74,7 @@ public class RNLog {
    * @param context The React context of the application use to display the error.
    * @param message The message to log.
    */
-  public static void e(ReactContext context, String message) {
+  public static void e(@Nullable ReactContext context, String message) {
     logInternal(context, message, ERROR);
     FLog.e(ReactConstants.TAG, message);
   }
@@ -86,7 +89,8 @@ public class RNLog {
     FLog.e(ReactConstants.TAG, message);
   }
 
-  private static void logInternal(ReactContext context, String message, int level) {
+  private static void logInternal(
+      @Nullable ReactContext context, @Nullable String message, int level) {
     if (level >= MINIMUM_LEVEL_FOR_UI) {
       if (context != null && context.hasActiveReactInstance() && message != null) {
         context.getJSModule(RCTLog.class).logIfNoNativeHook(levelToString(level), message);

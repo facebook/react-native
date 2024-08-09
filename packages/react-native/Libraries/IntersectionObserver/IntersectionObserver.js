@@ -13,7 +13,7 @@
 import type IntersectionObserverEntry from './IntersectionObserverEntry';
 import type {IntersectionObserverId} from './IntersectionObserverManager';
 
-import ReactNativeElement from '../DOM/Nodes/ReactNativeElement';
+import ReactNativeElement from '../../src/private/webapis/dom/nodes/ReactNativeElement';
 import * as IntersectionObserverManager from './IntersectionObserverManager';
 
 export type IntersectionObserverCallback = (

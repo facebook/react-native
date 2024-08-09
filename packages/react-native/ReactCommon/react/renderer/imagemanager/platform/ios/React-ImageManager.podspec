@@ -26,7 +26,9 @@ Pod::Spec.new do |s|
     "\"$(PODS_TARGET_SRCROOT)/../../../\"",
     "\"$(PODS_TARGET_SRCROOT)\"",
     "\"$(PODS_ROOT)/RCT-Folly\"",
-  ]
+    "\"$(PODS_ROOT)/DoubleConversion\"",
+    "\"$(PODS_ROOT)/fmt/include\"",
+  ].join(" ")
 
   s.name                   = "React-ImageManager"
   s.version                = version
@@ -43,31 +45,23 @@ Pod::Spec.new do |s|
   if ENV['USE_FRAMEWORKS']
     s.module_name            = "React_ImageManager"
     s.header_mappings_dir  = "./"
-    header_search_paths = header_search_paths + [
-      "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\"",
-      "\"$(PODS_ROOT)/DoubleConversion\"",
-      "\"$(PODS_ROOT)/fmt/include\"",
-      "\"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers\"",
-      "\"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\"",
-      "\"${PODS_CONFIGURATION_BUILD_DIR}/React-debug/React_debug.framework/Headers\"",
-      "\"${PODS_CONFIGURATION_BUILD_DIR}/React-utils/React_utils.framework/Headers\"",
-      "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-rendererdebug/React_rendererdebug.framework/Headers/\"",
-    ]
   end
 
   s.pod_target_xcconfig  = {
     "USE_HEADERMAP" => "NO",
-    "HEADER_SEARCH_PATHS" => header_search_paths.join(" "),
+    "HEADER_SEARCH_PATHS" => header_search_paths,
     "CLANG_CXX_LANGUAGE_STANDARD" => "c++20",
     "DEFINES_MODULE" => "YES",
   }
 
   s.dependency "RCT-Folly/Fabric"
-  s.dependency "React-Fabric"
   s.dependency "React-Core/Default"
-  s.dependency "React-RCTImage"
-  s.dependency "React-debug"
-  s.dependency "React-rendererdebug"
-  s.dependency "React-utils"
   s.dependency "glog"
+
+  add_dependency(s, "React-Fabric")
+  add_dependency(s, "React-graphics", :additional_framework_paths => ["react/renderer/graphics/platform/ios"])
+  add_dependency(s, "React-debug")
+  add_dependency(s, "React-utils")
+  add_dependency(s, "React-rendererdebug")
+
 end

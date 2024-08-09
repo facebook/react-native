@@ -7,21 +7,27 @@
 
 #include "PointerEventsProcessor.h"
 
+#include <glog/logging.h>
+
 namespace facebook::react {
 
-static ShadowNode::Shared getShadowNodeFromEventTarget(
+ShadowNode::Shared PointerEventsProcessor::getShadowNodeFromEventTarget(
     jsi::Runtime& runtime,
-    const EventTarget& target) {
-  auto instanceHandle = target.getInstanceHandle(runtime);
-  if (instanceHandle.isObject()) {
-    auto handleObj = instanceHandle.asObject(runtime);
-    if (handleObj.hasProperty(runtime, "stateNode")) {
-      auto stateNode = handleObj.getProperty(runtime, "stateNode");
-      if (stateNode.isObject()) {
-        auto stateNodeObj = stateNode.asObject(runtime);
-        if (stateNodeObj.hasProperty(runtime, "node")) {
-          auto node = stateNodeObj.getProperty(runtime, "node");
-          return shadowNodeFromValue(runtime, node);
+    const EventTarget* target) {
+  if (target != nullptr) {
+    target->retain(runtime);
+    auto instanceHandle = target->getInstanceHandle(runtime);
+    target->release(runtime);
+    if (instanceHandle.isObject()) {
+      auto handleObj = instanceHandle.asObject(runtime);
+      if (handleObj.hasProperty(runtime, "stateNode")) {
+        auto stateNode = handleObj.getProperty(runtime, "stateNode");
+        if (stateNode.isObject()) {
+          auto stateNodeObj = stateNode.asObject(runtime);
+          if (stateNodeObj.hasProperty(runtime, "node")) {
+            auto node = stateNodeObj.getProperty(runtime, "node");
+            return shadowNodeFromValue(runtime, node);
+          }
         }
       }
     }
@@ -33,9 +39,7 @@ static bool isViewListeningToEvents(
     const ShadowNode& shadowNode,
     std::initializer_list<ViewEvents::Offset> eventTypes) {
   if (shadowNode.getTraits().check(ShadowNodeTraits::Trait::ViewKind)) {
-    auto props = shadowNode.getProps();
-    auto viewProps = static_cast<const ViewProps&>(*props);
-
+    auto& viewProps = static_cast<const ViewProps&>(*shadowNode.getProps());
     for (const ViewEvents::Offset eventType : eventTypes) {
       if (viewProps.events[eventType]) {
         return true;
@@ -101,13 +105,9 @@ static PointerEventTarget retargetPointerEvent(
       event.clientPoint.y - layoutMetrics.frame.origin.y,
   };
 
-  // Retrieve the event target of the retargeted node
-  auto retargetedEventTarget =
-      latestNodeToTarget->getEventEmitter()->getEventTarget();
-
   PointerEventTarget result = {};
   result.event = retargetedEvent;
-  result.target = retargetedEventTarget;
+  result.target = latestNodeToTarget;
   return result;
 }
 
@@ -197,29 +197,35 @@ static bool shouldEmitPointerEvent(
 }
 
 void PointerEventsProcessor::interceptPointerEvent(
-    jsi::Runtime& runtime,
-    const EventTarget* target,
+    const ShadowNode::Shared& target,
     const std::string& type,
     ReactEventPriority priority,
     const PointerEvent& event,
     const DispatchEvent& eventDispatcher,
     const UIManager& uiManager) {
   // Process all pending pointer capture assignments
-  processPendingPointerCapture(event, runtime, eventDispatcher, uiManager);
+  processPendingPointerCapture(event, eventDispatcher, uiManager);
 
   PointerEvent pointerEvent(event);
-  const EventTarget* eventTarget = target;
+  ShadowNode::Shared targetNode = target;
 
   // Retarget the event if it has a pointer capture override target
   auto overrideTarget = getCaptureTargetOverride(
       pointerEvent.pointerId, pendingPointerCaptureTargetOverrides_);
   if (overrideTarget != nullptr &&
-      overrideTarget->getTag() != eventTarget->getTag()) {
+      overrideTarget->getTag() != targetNode->getTag()) {
     auto retargeted =
         retargetPointerEvent(pointerEvent, *overrideTarget, uiManager);
 
     pointerEvent = retargeted.event;
-    eventTarget = retargeted.target.get();
+    targetNode = retargeted.target;
+  }
+
+  if (type == "topClick") {
+    // Click events are synthetic so should just be passed on instead of going
+    // through any sort of processing.
+    eventDispatcher(*targetNode, type, priority, pointerEvent);
+    return;
   }
 
   if (type == "topPointerDown") {
@@ -232,20 +238,40 @@ void PointerEventsProcessor::interceptPointerEvent(
     }
   }
 
-  eventTarget->retain(runtime);
-  auto shadowNode = getShadowNodeFromEventTarget(runtime, *eventTarget);
-  if (shadowNode != nullptr &&
-      shouldEmitPointerEvent(*shadowNode, type, uiManager)) {
-    eventDispatcher(runtime, eventTarget, type, priority, pointerEvent);
+  // Getting a pointerleave event from the platform is a special case telling us
+  // that the pointer has left the root so we don't forward the event raw but
+  // instead just run through our hover tracking logic with a null target.
+  //
+  // Notably: we do not forward the platform's leave event but instead will emit
+  // leave events through our unified hover tracking logic.
+  if (type == "topPointerLeave") {
+    handleIncomingPointerEventOnNode(
+        pointerEvent, nullptr, eventDispatcher, uiManager);
+  } else {
+    handleIncomingPointerEventOnNode(
+        pointerEvent, targetNode, eventDispatcher, uiManager);
+    if (shouldEmitPointerEvent(*targetNode, type, uiManager)) {
+      eventDispatcher(*targetNode, type, priority, pointerEvent);
+    }
+
+    // All pointercancel events and certain pointerup events (when using an
+    // direct pointer w/o the concept of hover) should be treated as the
+    // pointer leaving the device entirely so we go through our hover tracking
+    // logic again but pass in a null target.
+    auto activePointer = getActivePointer(pointerEvent.pointerId);
+    if (type == "topPointerCancel" ||
+        (type == "topPointerUp" && activePointer != nullptr &&
+         activePointer->shouldLeaveWhenReleased)) {
+      handleIncomingPointerEventOnNode(
+          pointerEvent, nullptr, eventDispatcher, uiManager);
+    }
   }
-  eventTarget->release(runtime);
 
   // Implicit pointer capture release
   if (overrideTarget != nullptr &&
       (type == "topPointerUp" || type == "topPointerCancel")) {
     releasePointerCapture(pointerEvent.pointerId, overrideTarget.get());
-    processPendingPointerCapture(
-        pointerEvent, runtime, eventDispatcher, uiManager);
+    processPendingPointerCapture(pointerEvent, eventDispatcher, uiManager);
   }
 
   if (type == "topPointerUp" || type == "topPointerCancel") {
@@ -310,6 +336,13 @@ void PointerEventsProcessor::registerActivePointer(const PointerEvent& event) {
   ActivePointer activePointer = {};
   activePointer.event = event;
 
+  // If the pointer has not been tracked by the hover infrastructure then when
+  // the pointer is released we're gonna have to treat it as if the pointer is
+  // leaving the screen entirely.
+  activePointer.shouldLeaveWhenReleased =
+      previousHoverTrackersPerPointer_.find(event.pointerId) ==
+      previousHoverTrackersPerPointer_.end();
+
   activePointers_[event.pointerId] = activePointer;
 }
 
@@ -334,7 +367,6 @@ void PointerEventsProcessor::unregisterActivePointer(
 
 void PointerEventsProcessor::processPendingPointerCapture(
     const PointerEvent& event,
-    jsi::Runtime& runtime,
     const DispatchEvent& eventDispatcher,
     const UIManager& uiManager) {
   auto pendingOverride = getCaptureTargetOverride(
@@ -356,43 +388,150 @@ void PointerEventsProcessor::processPendingPointerCapture(
   if (hasActiveOverride && activeOverrideTag != pendingOverrideTag) {
     auto retargeted = retargetPointerEvent(event, *activeOverride, uiManager);
 
-    retargeted.target->retain(runtime);
-    auto shadowNode = getShadowNodeFromEventTarget(runtime, *retargeted.target);
-    if (shadowNode != nullptr &&
-        shouldEmitPointerEvent(
-            *shadowNode, "topLostPointerCapture", uiManager)) {
+    if (shouldEmitPointerEvent(
+            *retargeted.target, "topLostPointerCapture", uiManager)) {
       eventDispatcher(
-          runtime,
-          retargeted.target.get(),
+          *retargeted.target,
           "topLostPointerCapture",
           ReactEventPriority::Discrete,
           retargeted.event);
     }
-    retargeted.target->release(runtime);
   }
 
   if (hasPendingOverride && activeOverrideTag != pendingOverrideTag) {
     auto retargeted = retargetPointerEvent(event, *pendingOverride, uiManager);
-
-    retargeted.target->retain(runtime);
-    auto shadowNode = getShadowNodeFromEventTarget(runtime, *retargeted.target);
-    if (shadowNode != nullptr &&
-        shouldEmitPointerEvent(
-            *shadowNode, "topGotPointerCapture", uiManager)) {
+    if (shouldEmitPointerEvent(
+            *retargeted.target, "topGotPointerCapture", uiManager)) {
       eventDispatcher(
-          runtime,
-          retargeted.target.get(),
+          *retargeted.target,
           "topGotPointerCapture",
           ReactEventPriority::Discrete,
           retargeted.event);
     }
-    retargeted.target->release(runtime);
   }
 
   if (!hasPendingOverride) {
     activePointerCaptureTargetOverrides_.erase(event.pointerId);
   } else {
     activePointerCaptureTargetOverrides_[event.pointerId] = pendingOverride;
+  }
+}
+
+void PointerEventsProcessor::handleIncomingPointerEventOnNode(
+    const PointerEvent& event,
+    const ShadowNode::Shared& targetNode,
+    const DispatchEvent& eventDispatcher,
+    const UIManager& uiManager) {
+  // Get the hover tracker from the previous event (default to null if the
+  // pointer hasn't been tracked before)
+  auto prevHoverTrackerIt =
+      previousHoverTrackersPerPointer_.find(event.pointerId);
+  PointerHoverTracker::Unique prevHoverTracker =
+      prevHoverTrackerIt != previousHoverTrackersPerPointer_.end()
+      ? std::move(prevHoverTrackerIt->second)
+      : std::make_unique<PointerHoverTracker>(nullptr, uiManager);
+  // The previous tracker was stored from a previous tick so we mark it as old
+  prevHoverTracker->markAsOld();
+
+  auto curHoverTracker =
+      std::make_unique<PointerHoverTracker>(targetNode, uiManager);
+
+  // Out
+  if (!prevHoverTracker->hasSameTarget(*curHoverTracker) &&
+      prevHoverTracker->areAnyTargetsListeningToEvents(
+          {ViewEvents::Offset::PointerOut,
+           ViewEvents::Offset::PointerOutCapture},
+          uiManager)) {
+    auto prevTarget = prevHoverTracker->getTarget(uiManager);
+    if (prevTarget != nullptr) {
+      eventDispatcher(
+          *prevTarget, "topPointerOut", ReactEventPriority::Discrete, event);
+    }
+  }
+
+  // REMINDER: The order of these lists are from the root to the target
+  const auto [leavingNodes, enteringNodes] =
+      prevHoverTracker->diffEventPath(*curHoverTracker, uiManager);
+
+  // Leaving
+
+  // pointerleave events need to be emitted from the deepest target to the root
+  // but we also need to efficiently keep track of if a view has a parent which
+  // is listening to the leave events, so we first iterate from the root to the
+  // target, collecting the views which need events fired for, of which we
+  // reverse iterate (now from target to root), actually emitting the events.
+  bool hasParentLeaveCaptureListener = false;
+  std::vector<std::reference_wrapper<const ShadowNode>> targetsToEmitLeaveTo;
+  for (auto nodeRef : leavingNodes) {
+    const auto& node = nodeRef.get();
+
+    bool hasCapturingListener = isViewListeningToEvents(
+        node, {ViewEvents::Offset::PointerLeaveCapture});
+    bool shouldEmitEvent = hasParentLeaveCaptureListener ||
+        hasCapturingListener ||
+        isViewListeningToEvents(node, {ViewEvents::Offset::PointerLeave});
+
+    if (shouldEmitEvent) {
+      targetsToEmitLeaveTo.emplace_back(node);
+    }
+
+    if (hasCapturingListener && !hasParentLeaveCaptureListener) {
+      hasParentLeaveCaptureListener = true;
+    }
+  }
+
+  // Actually emit the leave events (in order from target to root)
+  for (auto it = targetsToEmitLeaveTo.rbegin();
+       it != targetsToEmitLeaveTo.rend();
+       it++) {
+    eventDispatcher(
+        *it, "topPointerLeave", ReactEventPriority::Discrete, event);
+  }
+
+  // Over
+  if (!prevHoverTracker->hasSameTarget(*curHoverTracker) &&
+      curHoverTracker->areAnyTargetsListeningToEvents(
+          {ViewEvents::Offset::PointerOver,
+           ViewEvents::Offset::PointerOverCapture},
+          uiManager)) {
+    auto curTarget = curHoverTracker->getTarget(uiManager);
+    if (curTarget != nullptr) {
+      eventDispatcher(
+          *curTarget, "topPointerOver", ReactEventPriority::Discrete, event);
+    }
+  }
+
+  // Entering
+
+  // We want to impose the same filtering based on what events are being
+  // listened to as we did with leaving earlier in this function but we can emit
+  // the events in this loop inline since it's expected to fire the evens in
+  // order from root to target.
+  bool hasParentEnterCaptureListener = false;
+  for (auto nodeRef : enteringNodes) {
+    const auto& node = nodeRef.get();
+
+    bool hasCapturingListener = isViewListeningToEvents(
+        node, {ViewEvents::Offset::PointerEnterCapture});
+    bool shouldEmitEvent = hasParentEnterCaptureListener ||
+        hasCapturingListener ||
+        isViewListeningToEvents(node, {ViewEvents::Offset::PointerEnter});
+
+    if (shouldEmitEvent) {
+      eventDispatcher(
+          node, "topPointerEnter", ReactEventPriority::Discrete, event);
+    }
+
+    if (hasCapturingListener && !hasParentEnterCaptureListener) {
+      hasParentEnterCaptureListener = true;
+    }
+  }
+
+  if (targetNode != nullptr) {
+    previousHoverTrackersPerPointer_[event.pointerId] =
+        std::move(curHoverTracker);
+  } else {
+    previousHoverTrackersPerPointer_.erase(event.pointerId);
   }
 }
 

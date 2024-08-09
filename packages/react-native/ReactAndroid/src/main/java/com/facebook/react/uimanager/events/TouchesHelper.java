@@ -8,6 +8,7 @@
 package com.facebook.react.uimanager.events;
 
 import android.view.MotionEvent;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.WritableArray;
@@ -16,11 +17,13 @@ import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.systrace.Systrace;
 
 /** Class responsible for generating catalyst touch events based on android {@link MotionEvent}. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class TouchesHelper {
-  public static final String TARGET_SURFACE_KEY = "targetSurface";
-  public static final String TARGET_KEY = "target";
-  public static final String CHANGED_TOUCHES_KEY = "changedTouches";
-  public static final String TOUCHES_KEY = "touches";
+  @Deprecated public static final String TARGET_KEY = "target";
+
+  private static final String TARGET_SURFACE_KEY = "targetSurface";
+  private static final String CHANGED_TOUCHES_KEY = "changedTouches";
+  private static final String TOUCHES_KEY = "touches";
   private static final String PAGE_X_KEY = "pageX";
   private static final String PAGE_Y_KEY = "pageY";
   private static final String TIMESTAMP_KEY = "timestamp";
@@ -80,7 +83,8 @@ public class TouchesHelper {
    * @param rctEventEmitter Event emitter used to execute JS module call
    * @param touchEvent native touch event to read pointers count and coordinates from
    */
-  public static void sendTouchesLegacy(RCTEventEmitter rctEventEmitter, TouchEvent touchEvent) {
+  /* package */ static void sendTouchesLegacy(
+      RCTEventEmitter rctEventEmitter, TouchEvent touchEvent) {
     TouchEventType type = touchEvent.getTouchEventType();
 
     WritableArray pointers =
@@ -114,7 +118,7 @@ public class TouchesHelper {
    * @param eventEmitter emitter to dispatch event to
    * @param event the touch event to extract data from
    */
-  public static void sendTouchEvent(RCTModernEventEmitter eventEmitter, TouchEvent event) {
+  /* package */ static void sendTouchEvent(RCTModernEventEmitter eventEmitter, TouchEvent event) {
     Systrace.beginSection(
         Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
         "TouchesHelper.sentTouchEventModern(" + event.getEventName() + ")");
@@ -162,23 +166,25 @@ public class TouchesHelper {
           break;
       }
 
-      for (WritableMap touchData : changedTouches) {
-        WritableMap eventData = touchData.copy();
-        WritableArray changedTouchesArray =
-            getWritableArray(/* copyObjects */ true, changedTouches);
-        WritableArray touchesArray = getWritableArray(/* copyObjects */ true, touches);
+      if (changedTouches != null) {
+        for (WritableMap touchData : changedTouches) {
+          WritableMap eventData = touchData.copy();
+          WritableArray changedTouchesArray =
+              getWritableArray(/* copyObjects */ true, changedTouches);
+          WritableArray touchesArray = getWritableArray(/* copyObjects */ true, touches);
 
-        eventData.putArray(CHANGED_TOUCHES_KEY, changedTouchesArray);
-        eventData.putArray(TOUCHES_KEY, touchesArray);
+          eventData.putArray(CHANGED_TOUCHES_KEY, changedTouchesArray);
+          eventData.putArray(TOUCHES_KEY, touchesArray);
 
-        eventEmitter.receiveEvent(
-            event.getSurfaceId(),
-            event.getViewTag(),
-            event.getEventName(),
-            event.canCoalesce(),
-            0,
-            eventData,
-            event.getEventCategory());
+          eventEmitter.receiveEvent(
+              event.getSurfaceId(),
+              event.getViewTag(),
+              event.getEventName(),
+              event.canCoalesce(),
+              0,
+              eventData,
+              event.getEventCategory());
+        }
       }
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);

@@ -10,6 +10,26 @@ release_version="$1"; shift
 hermesc_path="$1"; shift
 jsi_path="$1"; shift
 
+# Based on platform name returns the framework copy destination. Used later by `vendored_frameworks` in Podspec. 
+# Fallbacks to "ios" if platform is not recognized.
+function get_platform_copy_destination {
+    if [[ $1 == "macosx" ]]; then
+      echo "macosx"
+      return
+    fi
+    
+    echo "ios"
+}
+
+function get_deployment_target {
+    if [[ $1 == "macosx" ]]; then
+      echo ${MACOSX_DEPLOYMENT_TARGET}
+      return
+    fi
+    
+    echo ${IPHONEOS_DEPLOYMENT_TARGET}
+}
+
 enable_debugger="false"
 if [[ "$CONFIGURATION" == "Debug" ]]; then
   enable_debugger="true"
@@ -24,10 +44,7 @@ else
   cmake_build_type="MinSizeRel"
 fi
 
-deployment_target=${IPHONEOS_DEPLOYMENT_TARGET}
-if [ -z "$deployment_target" ]; then
-  deployment_target=${MACOSX_DEPLOYMENT_TARGET}
-fi
+deployment_target=$(get_deployment_target $PLATFORM_NAME)
 
 xcode_15_flags=""
 xcode_major_version=$(xcodebuild -version | grep -oE '[0-9]*' | head -n 1)
@@ -54,6 +71,7 @@ echo "Configure Apple framework"
   -DHERMES_ENABLE_TEST_SUITE:BOOLEAN=false \
   -DHERMES_ENABLE_BITCODE:BOOLEAN=false \
   -DHERMES_BUILD_APPLE_FRAMEWORK:BOOLEAN=true \
+  -DHERMES_BUILD_SHARED_JSI:BOOLEAN=false \
   -DHERMES_BUILD_APPLE_DSYM:BOOLEAN=true \
   -DIMPORT_HERMESC:PATH="${hermesc_path}" \
   -DJSI_DIR="$jsi_path" \
@@ -69,6 +87,8 @@ echo "Build Apple framework"
 
 echo "Copy Apple framework to destroot/Library/Frameworks"
 
+platform_copy_destination=$(get_platform_copy_destination $PLATFORM_NAME)
+
 cp -pfR \
   "${PODS_ROOT}/hermes-engine/build/${PLATFORM_NAME}/API/hermes/hermes.framework" \
-  "${PODS_ROOT}/hermes-engine/destroot/Library/Frameworks/ios"
+  "${PODS_ROOT}/hermes-engine/destroot/Library/Frameworks/${platform_copy_destination}"

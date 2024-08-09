@@ -10,11 +10,12 @@
 
 'use strict';
 
-import * as React from 'react';
-import {Text, Pressable, StyleSheet, View} from 'react-native';
-import type {PressEvent} from 'react-native/Libraries/Types/CoreEventTypes';
 import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
+import type {PressEvent} from 'react-native/Libraries/Types/CoreEventTypes';
+
 import {RNTesterThemeContext} from './RNTesterTheme';
+import * as React from 'react';
+import {Pressable, StyleSheet, Text, View} from 'react-native';
 
 type Props = $ReadOnly<{|
   testID?: ?string,

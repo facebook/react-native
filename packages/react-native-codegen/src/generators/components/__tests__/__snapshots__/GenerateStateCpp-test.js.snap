@@ -13,13 +13,11 @@ Map {
  */
 #include <react/renderer/components/ARRAY_PROPS/States.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -37,13 +35,11 @@ Map {
  */
 #include <react/renderer/components/ARRAY_PROPS_WITH_NESTED_OBJECT/States.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -61,13 +57,11 @@ Map {
  */
 #include <react/renderer/components/BOOLEAN_PROP/States.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -85,13 +79,11 @@ Map {
  */
 #include <react/renderer/components/COLOR_PROP/States.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -109,13 +101,11 @@ Map {
  */
 #include <react/renderer/components/COMMANDS/States.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -133,13 +123,11 @@ Map {
  */
 #include <react/renderer/components/COMMANDS_AND_PROPS/States.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -157,13 +145,11 @@ Map {
  */
 #include <react/renderer/components/DIMENSION_PROP/States.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -181,13 +167,11 @@ Map {
  */
 #include <react/renderer/components/DOUBLE_PROPS/States.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -205,13 +189,11 @@ Map {
  */
 #include <react/renderer/components/EVENT_NESTED_OBJECT_PROPS/States.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -229,13 +211,11 @@ Map {
  */
 #include <react/renderer/components/EVENT_PROPS/States.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -253,13 +233,11 @@ Map {
  */
 #include <react/renderer/components/EVENTS_WITH_PAPER_NAME/States.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -277,13 +255,11 @@ Map {
  */
 #include <react/renderer/components/EXCLUDE_ANDROID/States.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -301,13 +277,11 @@ Map {
  */
 #include <react/renderer/components/EXCLUDE_ANDROID_IOS/States.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -325,13 +299,11 @@ Map {
  */
 #include <react/renderer/components/EXCLUDE_IOS_TWO_COMPONENTS_DIFFERENT_FILES/States.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -349,13 +321,11 @@ Map {
  */
 #include <react/renderer/components/FLOAT_PROPS/States.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -373,13 +343,11 @@ Map {
  */
 #include <react/renderer/components/IMAGE_PROP/States.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -397,13 +365,11 @@ Map {
  */
 #include <react/renderer/components/INSETS_PROP/States.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -421,13 +387,11 @@ Map {
  */
 #include <react/renderer/components/INT32_ENUM_PROP/States.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -445,13 +409,11 @@ Map {
  */
 #include <react/renderer/components/INTEGER_PROPS/States.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -469,13 +431,11 @@ Map {
  */
 #include <react/renderer/components/INTERFACE_ONLY/States.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -493,13 +453,11 @@ Map {
  */
 #include <react/renderer/components/MIXED_PROP/States.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -517,13 +475,11 @@ Map {
  */
 #include <react/renderer/components/MULTI_NATIVE_PROP/States.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -541,13 +497,11 @@ Map {
  */
 #include <react/renderer/components/NO_PROPS_NO_EVENTS/States.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -565,13 +519,11 @@ Map {
  */
 #include <react/renderer/components/OBJECT_PROPS/States.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -589,13 +541,11 @@ Map {
  */
 #include <react/renderer/components/POINT_PROP/States.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -613,13 +563,11 @@ Map {
  */
 #include <react/renderer/components/STRING_ENUM_PROP/States.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -637,13 +585,11 @@ Map {
  */
 #include <react/renderer/components/STRING_PROP/States.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -661,13 +607,11 @@ Map {
  */
 #include <react/renderer/components/TWO_COMPONENTS_DIFFERENT_FILES/States.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;
@@ -685,13 +629,11 @@ Map {
  */
 #include <react/renderer/components/TWO_COMPONENTS_SAME_FILE/States.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 ",
 }
 `;

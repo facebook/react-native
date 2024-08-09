@@ -116,18 +116,18 @@ void MapBufferBuilder::putMapBuffer(MapBuffer::Key key, const MapBuffer& map) {
 void MapBufferBuilder::putMapBufferList(
     MapBuffer::Key key,
     const std::vector<MapBuffer>& mapBufferList) {
-  int32_t offset = dynamicData_.size();
+  auto offset = static_cast<int32_t>(dynamicData_.size());
   int32_t dataSize = 0;
   for (const MapBuffer& mapBuffer : mapBufferList) {
-    dataSize = dataSize + INT_SIZE + mapBuffer.size();
+    dataSize = dataSize + INT_SIZE + static_cast<int32_t>(mapBuffer.size());
   }
 
   dynamicData_.resize(offset + INT_SIZE, 0);
   memcpy(dynamicData_.data() + offset, &dataSize, INT_SIZE);
 
   for (const MapBuffer& mapBuffer : mapBufferList) {
-    int32_t mapBufferSize = mapBuffer.size();
-    int32_t dynamicDataSize = dynamicData_.size();
+    auto mapBufferSize = static_cast<int32_t>(mapBuffer.size());
+    auto dynamicDataSize = static_cast<int32_t>(dynamicData_.size());
     dynamicData_.resize(dynamicDataSize + INT_SIZE + mapBufferSize, 0);
     // format [length of buffer (int)] + [bytes of MapBuffer]
     memcpy(dynamicData_.data() + dynamicDataSize, &mapBufferSize, INT_SIZE);

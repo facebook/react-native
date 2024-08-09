@@ -7,7 +7,6 @@
 
 #include <cxxreact/JSExecutor.h>
 #include <logger/react_native_log.h>
-#include <react/utils/CoreFeatures.h>
 #include "EventEmitter.h"
 #include "EventLogger.h"
 #include "EventQueue.h"
@@ -55,7 +54,7 @@ void EventQueueProcessor::flushEvents(
 
     auto eventLogger = getEventLogger();
     if (eventLogger != nullptr) {
-      eventLogger->onEventDispatch(event.loggingTag);
+      eventLogger->onEventProcessingStart(event.loggingTag);
     }
 
     if (event.eventPayload == nullptr) {
@@ -71,23 +70,17 @@ void EventQueueProcessor::flushEvents(
         reactPriority,
         *event.eventPayload);
 
-    // We run the "Conclusion" per-event when unbatched
-    if (!CoreFeatures::enableDefaultAsyncBatchedPriority) {
-      eventPipeConclusion_(runtime);
-    }
-
     if (eventLogger != nullptr) {
-      eventLogger->onEventEnd(event.loggingTag);
+      eventLogger->onEventProcessingEnd(event.loggingTag);
     }
 
     if (event.category == RawEvent::Category::ContinuousStart) {
       hasContinuousEventStarted_ = true;
     }
   }
+
   // We only run the "Conclusion" once per event group when batched.
-  if (CoreFeatures::enableDefaultAsyncBatchedPriority) {
-    eventPipeConclusion_(runtime);
-  }
+  eventPipeConclusion_(runtime);
 
   // No need to lock `EventEmitter::DispatchMutex()` here.
   // The mutex protects from a situation when the `instanceHandle` can be

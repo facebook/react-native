@@ -8,17 +8,18 @@
  * @format
  */
 
-import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
-import codegenNativeCommands from 'react-native/Libraries/Utilities/codegenNativeCommands';
-import type {HostComponent} from 'react-native/Libraries/Renderer/shims/ReactNativeTypes';
 import type {ViewProps} from 'react-native/Libraries/Components/View/ViewPropTypes';
+import type {HostComponent} from 'react-native/Libraries/Renderer/shims/ReactNativeTypes';
 import type {
-  Float,
-  Double,
-  Int32,
   BubblingEventHandler,
+  Double,
+  Float,
+  Int32,
 } from 'react-native/Libraries/Types/CodegenTypes';
+
 import * as React from 'react';
+import codegenNativeCommands from 'react-native/Libraries/Utilities/codegenNativeCommands';
+import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
 
 type Event = $ReadOnly<{
   values: $ReadOnlyArray<Int32>,
@@ -31,6 +32,10 @@ type Event = $ReadOnly<{
   multiArrays: $ReadOnlyArray<$ReadOnlyArray<Int32>>,
 }>;
 
+type LegacyStyleEvent = $ReadOnly<{
+  string: string,
+}>;
+
 type NativeProps = $ReadOnly<{|
   ...ViewProps,
   opacity?: Float,
@@ -38,6 +43,10 @@ type NativeProps = $ReadOnly<{|
 
   // Events
   onIntArrayChanged?: ?BubblingEventHandler<Event>,
+  onLegacyStyleEvent?: ?BubblingEventHandler<
+    LegacyStyleEvent,
+    'alternativeLegacyName',
+  >,
 |}>;
 
 export type MyNativeViewType = HostComponent<NativeProps>;
@@ -47,10 +56,26 @@ interface NativeCommands {
     viewRef: React.ElementRef<MyNativeViewType>,
     color: string,
   ) => void;
+
+  +callNativeMethodToAddOverlays: (
+    viewRef: React.ElementRef<MyNativeViewType>,
+    overlayColors: $ReadOnlyArray<string>,
+  ) => void;
+
+  +callNativeMethodToRemoveOverlays: (
+    viewRef: React.ElementRef<MyNativeViewType>,
+  ) => void;
+
+  +fireLagacyStyleEvent: (viewRef: React.ElementRef<MyNativeViewType>) => void;
 }
 
 export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
-  supportedCommands: ['callNativeMethodToChangeBackgroundColor'],
+  supportedCommands: [
+    'callNativeMethodToChangeBackgroundColor',
+    'callNativeMethodToAddOverlays',
+    'callNativeMethodToRemoveOverlays',
+    'fireLagacyStyleEvent',
+  ],
 });
 
 export default (codegenNativeComponent<NativeProps>(

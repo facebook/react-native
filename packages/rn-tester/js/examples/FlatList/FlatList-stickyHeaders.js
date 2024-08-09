@@ -8,8 +8,8 @@
  * @format
  */
 
-import type {RenderItemProps} from 'react-native/Libraries/Lists/VirtualizedList';
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+import type {RenderItemProps} from 'react-native/Libraries/Lists/VirtualizedList';
 
 import * as React from 'react';
 import {FlatList, StyleSheet, Text, View} from 'react-native';

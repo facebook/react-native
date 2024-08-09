@@ -8,34 +8,6 @@
  * @format
  */
 
-import type {TurboModule} from '../TurboModule/RCTExport';
-
-import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
-
-export type NativeIntersectionObserverEntry = {
-  intersectionObserverId: number,
-  targetInstanceHandle: mixed,
-  targetRect: $ReadOnlyArray<number>, // It's actually a tuple with x, y, width and height
-  rootRect: $ReadOnlyArray<number>, // It's actually a tuple with x, y, width and height
-  intersectionRect: ?$ReadOnlyArray<number>, // It's actually a tuple with x, y, width and height
-  isIntersectingAboveThresholds: boolean,
-  time: number,
-};
-
-export type NativeIntersectionObserverObserveOptions = {
-  intersectionObserverId: number,
-  targetShadowNode: mixed,
-  thresholds: $ReadOnlyArray<number>,
-};
-
-export interface Spec extends TurboModule {
-  +observe: (options: NativeIntersectionObserverObserveOptions) => void;
-  +unobserve: (intersectionObserverId: number, targetShadowNode: mixed) => void;
-  +connect: (notifyIntersectionObserversCallback: () => void) => void;
-  +disconnect: () => void;
-  +takeRecords: () => $ReadOnlyArray<NativeIntersectionObserverEntry>;
-}
-
-export default (TurboModuleRegistry.get<Spec>(
-  'NativeIntersectionObserverCxx',
-): ?Spec);
+export * from '../../src/private/specs/modules/NativeIntersectionObserver';
+import NativeIntersectionObserver from '../../src/private/specs/modules/NativeIntersectionObserver';
+export default NativeIntersectionObserver;

@@ -12,11 +12,10 @@ add_compile_options(
         -std=c++20
         -Wall
         -Wpedantic
-        -Wno-gnu-zero-variadic-macro-arguments
         -DLOG_TAG=\"Fabric\")
 
 file(GLOB react_render_leakchecker_SRC CONFIGURE_DEPENDS *.cpp)
-add_library(react_render_leakchecker SHARED ${react_render_leakchecker_SRC})
+add_library(react_render_leakchecker STATIC ${react_render_leakchecker_SRC})
 
 target_include_directories(react_render_leakchecker PUBLIC ${REACT_COMMON_DIR})
 target_link_libraries(react_render_leakchecker

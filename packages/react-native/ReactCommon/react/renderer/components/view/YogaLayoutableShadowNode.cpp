@@ -14,7 +14,6 @@
 #include <react/renderer/components/view/conversions.h>
 #include <react/renderer/core/LayoutConstraints.h>
 #include <react/renderer/core/LayoutContext.h>
-#include <react/renderer/core/TraitCast.h>
 #include <react/renderer/debug/DebugStringConvertibleItem.h>
 #include <react/renderer/debug/SystraceSection.h>
 #include <react/utils/CoreFeatures.h>
@@ -24,6 +23,8 @@
 #include <memory>
 
 namespace facebook::react {
+
+static_assert(RawPropsFilterable<YogaLayoutableShadowNode>);
 
 static int FabricDefaultYogaLog(
     const YGConfigConstRef /*unused*/,
@@ -62,16 +63,6 @@ static int FabricDefaultYogaLog(
 
 thread_local LayoutContext threadLocalLayoutContext;
 
-ShadowNodeTraits YogaLayoutableShadowNode::BaseTraits() {
-  auto traits = LayoutableShadowNode::BaseTraits();
-  traits.set(IdentifierTrait());
-  return traits;
-}
-
-ShadowNodeTraits::Trait YogaLayoutableShadowNode::IdentifierTrait() {
-  return ShadowNodeTraits::Trait::YogaLayoutableKind;
-}
-
 YogaLayoutableShadowNode::YogaLayoutableShadowNode(
     const ShadowNodeFragment& fragment,
     const ShadowNodeFamily::Shared& family,
@@ -106,19 +97,27 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
       yogaConfig_(FabricDefaultYogaLog),
       yogaNode_(static_cast<const YogaLayoutableShadowNode&>(sourceShadowNode)
                     .yogaNode_) {
-  // Note, cloned `yoga::Node` instance (copied using copy-constructor) inherits
-  // dirty flag, measure function, and other properties being set originally in
-  // the `YogaLayoutableShadowNode` constructor above.
+// Note, cloned `yoga::Node` instance (copied using copy-constructor) inherits
+// dirty flag, measure function, and other properties being set originally in
+// the `YogaLayoutableShadowNode` constructor above.
 
+// There is a known race condition when background executor is enabled, where
+// a tree may be laid out on the Fabric background thread concurrently with
+// the ShadowTree being created on the JS thread. This assert can be
+// re-enabled after disabling background executor everywhere.
+#if 0
   react_native_assert(
       static_cast<const YogaLayoutableShadowNode&>(sourceShadowNode)
               .yogaNode_.isDirty() == yogaNode_.isDirty() &&
       "Yoga node must inherit dirty flag.");
+#endif
 
   if (!getTraits().check(ShadowNodeTraits::Trait::LeafYogaNode)) {
     for (auto& child : getChildren()) {
-      if (auto layoutableChild = traitCast<YogaLayoutableShadowNode>(child)) {
-        yogaLayoutableChildren_.push_back(layoutableChild);
+      if (auto layoutableChild =
+              std::dynamic_pointer_cast<const YogaLayoutableShadowNode>(
+                  child)) {
+        yogaLayoutableChildren_.push_back(std::move(layoutableChild));
       }
     }
   }
@@ -204,7 +203,7 @@ void YogaLayoutableShadowNode::adoptYogaChild(size_t index) {
       !getTraits().check(ShadowNodeTraits::Trait::LeafYogaNode));
 
   auto& childNode =
-      traitCast<const YogaLayoutableShadowNode&>(*getChildren().at(index));
+      dynamic_cast<const YogaLayoutableShadowNode&>(*getChildren().at(index));
 
   if (childNode.yogaNode_.getOwner() == nullptr) {
     // The child node is not owned.
@@ -237,7 +236,8 @@ void YogaLayoutableShadowNode::appendChild(
   }
 
   if (auto yogaLayoutableChild =
-          traitCast<YogaLayoutableShadowNode>(childNode)) {
+          std::dynamic_pointer_cast<const YogaLayoutableShadowNode>(
+              childNode)) {
     // Here we don't have information about the previous structure of the node
     // (if it that existed before), so we don't have anything to compare the
     // Yoga node with (like a previous version of this node). Therefore we must
@@ -267,8 +267,9 @@ void YogaLayoutableShadowNode::replaceChild(
   ensureYogaChildrenLookFine();
 
   auto layoutableOldChild =
-      traitCast<const YogaLayoutableShadowNode*>(&oldChild);
-  auto layoutableNewChild = traitCast<YogaLayoutableShadowNode>(newChild);
+      dynamic_cast<const YogaLayoutableShadowNode*>(&oldChild);
+  auto layoutableNewChild =
+      std::dynamic_pointer_cast<const YogaLayoutableShadowNode>(newChild);
 
   if (layoutableOldChild == nullptr && layoutableNewChild == nullptr) {
     // No need to mutate yogaLayoutableChildren_
@@ -343,7 +344,8 @@ void YogaLayoutableShadowNode::updateYogaChildren() {
 
   for (size_t i = 0; i < getChildren().size(); i++) {
     if (auto yogaLayoutableChild =
-            traitCast<YogaLayoutableShadowNode>(getChildren()[i])) {
+            std::dynamic_pointer_cast<const YogaLayoutableShadowNode>(
+                getChildren()[i])) {
       appendYogaChild(yogaLayoutableChild);
       adoptYogaChild(i);
 
@@ -354,7 +356,7 @@ void YogaLayoutableShadowNode::updateYogaChildren() {
             yogaLayoutableChildren_.at(yogaChildIndex)->yogaNode_;
 
         isClean = isClean && !newYogaChildNode.isDirty() &&
-            (newYogaChildNode.getStyle() == oldYogaChildNode.getStyle());
+            (newYogaChildNode.style() == oldYogaChildNode.style());
       }
     }
   }
@@ -368,15 +370,20 @@ void YogaLayoutableShadowNode::updateYogaChildren() {
 void YogaLayoutableShadowNode::updateYogaProps() {
   ensureUnsealed();
 
-  auto props = static_cast<const YogaStylableProps&>(*props_);
+  auto& props = static_cast<const YogaStylableProps&>(*props_);
   auto styleResult = applyAliasedProps(props.yogaStyle, props);
 
   // Resetting `dirty` flag only if `yogaStyle` portion of `Props` was changed.
-  if (!yogaNode_.isDirty() && (styleResult != yogaNode_.getStyle())) {
+  if (!yogaNode_.isDirty() && (styleResult != yogaNode_.style())) {
     yogaNode_.setDirty(true);
   }
 
   yogaNode_.setStyle(styleResult);
+  if (getTraits().check(ShadowNodeTraits::ViewKind)) {
+    auto& viewProps = static_cast<const ViewProps&>(*props_);
+    YGNodeSetAlwaysFormsContainingBlock(
+        &yogaNode_, viewProps.transform != Transform::Identity());
+  }
 }
 
 /*static*/ yoga::Style YogaLayoutableShadowNode::applyAliasedProps(
@@ -385,64 +392,55 @@ void YogaLayoutableShadowNode::updateYogaProps() {
   yoga::Style result{baseStyle};
 
   // Aliases with precedence
-  if (!props.inset.isUndefined()) {
-    result.position()[YGEdgeAll] = props.inset;
+  if (props.insetInlineEnd.isDefined()) {
+    result.setPosition(yoga::Edge::End, props.insetInlineEnd);
   }
-  if (!props.insetBlock.isUndefined()) {
-    result.position()[YGEdgeVertical] = props.insetBlock;
+  if (props.insetInlineStart.isDefined()) {
+    result.setPosition(yoga::Edge::Start, props.insetInlineStart);
   }
-  if (!props.insetInline.isUndefined()) {
-    result.position()[YGEdgeHorizontal] = props.insetInline;
+  if (props.marginInline.isDefined()) {
+    result.setMargin(yoga::Edge::Horizontal, props.marginInline);
   }
-  if (!props.insetInlineEnd.isUndefined()) {
-    result.position()[YGEdgeEnd] = props.insetInlineEnd;
+  if (props.marginInlineStart.isDefined()) {
+    result.setMargin(yoga::Edge::Start, props.marginInlineStart);
   }
-  if (!props.insetInlineStart.isUndefined()) {
-    result.position()[YGEdgeStart] = props.insetInlineStart;
+  if (props.marginInlineEnd.isDefined()) {
+    result.setMargin(yoga::Edge::End, props.marginInlineEnd);
   }
-  if (!props.marginInline.isUndefined()) {
-    result.margin()[YGEdgeHorizontal] = props.marginInline;
+  if (props.marginBlock.isDefined()) {
+    result.setMargin(yoga::Edge::Vertical, props.marginBlock);
   }
-  if (!props.marginInlineStart.isUndefined()) {
-    result.margin()[YGEdgeStart] = props.marginInlineStart;
+  if (props.paddingInline.isDefined()) {
+    result.setPadding(yoga::Edge::Horizontal, props.paddingInline);
   }
-  if (!props.marginInlineEnd.isUndefined()) {
-    result.margin()[YGEdgeEnd] = props.marginInlineEnd;
+  if (props.paddingInlineStart.isDefined()) {
+    result.setPadding(yoga::Edge::Start, props.paddingInlineStart);
   }
-  if (!props.marginBlock.isUndefined()) {
-    result.margin()[YGEdgeVertical] = props.marginBlock;
+  if (props.paddingInlineEnd.isDefined()) {
+    result.setPadding(yoga::Edge::End, props.paddingInlineEnd);
   }
-  if (!props.paddingInline.isUndefined()) {
-    result.padding()[YGEdgeHorizontal] = props.paddingInline;
-  }
-  if (!props.paddingInlineStart.isUndefined()) {
-    result.padding()[YGEdgeStart] = props.paddingInlineStart;
-  }
-  if (!props.paddingInlineEnd.isUndefined()) {
-    result.padding()[YGEdgeEnd] = props.paddingInlineEnd;
-  }
-  if (!props.paddingBlock.isUndefined()) {
-    result.padding()[YGEdgeVertical] = props.paddingBlock;
+  if (props.paddingBlock.isDefined()) {
+    result.setPadding(yoga::Edge::Vertical, props.paddingBlock);
   }
 
   // Aliases without precedence
-  if (CompactValue(result.position()[YGEdgeBottom]).isUndefined()) {
-    result.position()[YGEdgeBottom] = props.insetBlockEnd;
+  if (result.position(yoga::Edge::Bottom).isUndefined()) {
+    result.setPosition(yoga::Edge::Bottom, props.insetBlockEnd);
   }
-  if (CompactValue(result.position()[YGEdgeTop]).isUndefined()) {
-    result.position()[YGEdgeTop] = props.insetBlockStart;
+  if (result.position(yoga::Edge::Top).isUndefined()) {
+    result.setPosition(yoga::Edge::Top, props.insetBlockStart);
   }
-  if (CompactValue(result.margin()[YGEdgeTop]).isUndefined()) {
-    result.margin()[YGEdgeTop] = props.marginBlockStart;
+  if (result.margin(yoga::Edge::Top).isUndefined()) {
+    result.setMargin(yoga::Edge::Top, props.marginBlockStart);
   }
-  if (CompactValue(result.margin()[YGEdgeBottom]).isUndefined()) {
-    result.margin()[YGEdgeBottom] = props.marginBlockEnd;
+  if (result.margin(yoga::Edge::Bottom).isUndefined()) {
+    result.setMargin(yoga::Edge::Bottom, props.marginBlockEnd);
   }
-  if (CompactValue(result.padding()[YGEdgeTop]).isUndefined()) {
-    result.padding()[YGEdgeTop] = props.paddingBlockStart;
+  if (result.padding(yoga::Edge::Top).isUndefined()) {
+    result.setPadding(yoga::Edge::Top, props.paddingBlockStart);
   }
-  if (CompactValue(result.padding()[YGEdgeBottom]).isUndefined()) {
-    result.padding()[YGEdgeBottom] = props.paddingBlockEnd;
+  if (result.padding(yoga::Edge::Bottom).isUndefined()) {
+    result.setPadding(yoga::Edge::Bottom, props.paddingBlockEnd);
   }
 
   return result;
@@ -473,8 +471,7 @@ void YogaLayoutableShadowNode::configureYogaTree(
   for (size_t i = 0; i < yogaLayoutableChildren_.size(); i++) {
     const auto& child = *yogaLayoutableChildren_[i];
     auto childLayoutMetrics = child.getLayoutMetrics();
-    auto childErrata =
-        YGConfigGetErrata(const_cast<yoga::Config*>(&child.yogaConfig_));
+    auto childErrata = YGConfigGetErrata(&child.yogaConfig_);
 
     if (child.yogaTreeHasBeenConfigured_ &&
         childLayoutMetrics.pointScaleFactor == pointScaleFactor &&
@@ -495,7 +492,7 @@ void YogaLayoutableShadowNode::configureYogaTree(
 }
 
 YGErrata YogaLayoutableShadowNode::resolveErrata(YGErrata defaultErrata) const {
-  if (auto viewShadowNode = traitCast<const ViewShadowNode*>(this)) {
+  if (auto viewShadowNode = dynamic_cast<const ViewShadowNode*>(this)) {
     const auto& props = viewShadowNode->getConcreteProps();
     switch (props.experimental_layoutConformance) {
       case LayoutConformance::Classic:
@@ -531,13 +528,9 @@ YogaLayoutableShadowNode& YogaLayoutableShadowNode::cloneChildInPlace(
 void YogaLayoutableShadowNode::setSize(Size size) const {
   ensureUnsealed();
 
-  auto style = yogaNode_.getStyle();
-  style.setDimension(
-      yoga::Dimension::Width,
-      yoga::CompactValue::ofMaybe<YGUnitPoint>(size.width));
-  style.setDimension(
-      yoga::Dimension::Height,
-      yoga::CompactValue::ofMaybe<YGUnitPoint>(size.height));
+  auto style = yogaNode_.style();
+  style.setDimension(yoga::Dimension::Width, yoga::value::points(size.width));
+  style.setDimension(yoga::Dimension::Height, yoga::value::points(size.height));
   yogaNode_.setStyle(style);
   yogaNode_.setDirty(true);
 }
@@ -545,25 +538,21 @@ void YogaLayoutableShadowNode::setSize(Size size) const {
 void YogaLayoutableShadowNode::setPadding(RectangleEdges<Float> padding) const {
   ensureUnsealed();
 
-  auto style = yogaNode_.getStyle();
+  auto style = yogaNode_.style();
 
-  auto leftPadding = yoga::CompactValue::ofMaybe<YGUnitPoint>(padding.left);
-  auto topPadding = yoga::CompactValue::ofMaybe<YGUnitPoint>(padding.top);
-  auto rightPadding = yoga::CompactValue::ofMaybe<YGUnitPoint>(padding.right);
-  auto bottomPadding = yoga::CompactValue::ofMaybe<YGUnitPoint>(padding.bottom);
+  auto leftPadding = yoga::value::points(padding.left);
+  auto topPadding = yoga::value::points(padding.top);
+  auto rightPadding = yoga::value::points(padding.right);
+  auto bottomPadding = yoga::value::points(padding.bottom);
 
-  if (leftPadding != style.padding()[YGEdgeLeft] ||
-      topPadding != style.padding()[YGEdgeTop] ||
-      rightPadding != style.padding()[YGEdgeRight] ||
-      bottomPadding != style.padding()[YGEdgeBottom]) {
-    style.padding()[YGEdgeTop] =
-        yoga::CompactValue::ofMaybe<YGUnitPoint>(padding.top);
-    style.padding()[YGEdgeLeft] =
-        yoga::CompactValue::ofMaybe<YGUnitPoint>(padding.left);
-    style.padding()[YGEdgeRight] =
-        yoga::CompactValue::ofMaybe<YGUnitPoint>(padding.right);
-    style.padding()[YGEdgeBottom] =
-        yoga::CompactValue::ofMaybe<YGUnitPoint>(padding.bottom);
+  if (leftPadding != style.padding(yoga::Edge::Left) ||
+      topPadding != style.padding(yoga::Edge::Top) ||
+      rightPadding != style.padding(yoga::Edge::Right) ||
+      bottomPadding != style.padding(yoga::Edge::Bottom)) {
+    style.setPadding(yoga::Edge::Top, yoga::value::points(padding.top));
+    style.setPadding(yoga::Edge::Left, yoga::value::points(padding.left));
+    style.setPadding(yoga::Edge::Right, yoga::value::points(padding.right));
+    style.setPadding(yoga::Edge::Bottom, yoga::value::points(padding.bottom));
     yogaNode_.setStyle(style);
     yogaNode_.setDirty(true);
   }
@@ -573,8 +562,8 @@ void YogaLayoutableShadowNode::setPositionType(
     YGPositionType positionType) const {
   ensureUnsealed();
 
-  auto style = yogaNode_.getStyle();
-  style.positionType() = yoga::scopedEnum(positionType);
+  auto style = yogaNode_.style();
+  style.setPositionType(yoga::scopedEnum(positionType));
   yogaNode_.setStyle(style);
   yogaNode_.setDirty(true);
 }
@@ -587,8 +576,7 @@ void YogaLayoutableShadowNode::layoutTree(
   SystraceSection s1("YogaLayoutableShadowNode::layoutTree");
 
   bool swapLeftAndRight = layoutContext.swapLeftAndRightInRTL &&
-      (layoutConstraints.layoutDirection == LayoutDirection::RightToLeft ||
-       !CoreFeatures::doNotSwapLeftAndRightOnAndroidInLTR);
+      layoutConstraints.layoutDirection == LayoutDirection::RightToLeft;
 
   {
     SystraceSection s2("YogaLayoutableShadowNode::configureYogaTree");
@@ -616,37 +604,31 @@ void YogaLayoutableShadowNode::layoutTree(
   react_native_assert(!std::isinf(minimumSize.width));
   react_native_assert(!std::isinf(minimumSize.height));
 
-  // Internally Yoga uses three different measurement modes controlling layout
-  // constraints: `Undefined`, `Exactly`, and `AtMost`. These modes are an
-  // implementation detail and are not defined in `CSS Flexible Box Layout
-  // Module`. Yoga C++ API (and `YGNodeCalculateLayout` function particularly)
-  // does not allow to specify the measure modes explicitly. Instead, it infers
-  // these from styles associated with the root node.
-  // To pass the actual layout constraints to Yoga we represent them as
+  // Yoga C++ API (and `YGNodeCalculateLayout` function particularly)
+  // does not allow to specify sizing modes (see
+  // https://www.w3.org/TR/css-sizing-3/#auto-box-sizes) explicitly. Instead, it
+  // infers these from styles associated with the root node. To pass the actual
+  // layout constraints to Yoga we represent them as
   // `(min/max)(Height/Width)` style properties. Also, we pass `ownerWidth` &
   // `ownerHeight` to allow proper calculation of relative (e.g. specified in
   // percents) style values.
 
-  auto& yogaStyle = yogaNode_.getStyle();
+  auto& yogaStyle = yogaNode_.style();
 
   auto ownerWidth = yogaFloatFromFloat(maximumSize.width);
   auto ownerHeight = yogaFloatFromFloat(maximumSize.height);
 
   yogaStyle.setMaxDimension(
-      yoga::Dimension::Width,
-      yoga::CompactValue::ofMaybe<YGUnitPoint>(maximumSize.width));
+      yoga::Dimension::Width, yoga::value::points(maximumSize.width));
 
   yogaStyle.setMaxDimension(
-      yoga::Dimension::Height,
-      yoga::CompactValue::ofMaybe<YGUnitPoint>(maximumSize.height));
+      yoga::Dimension::Height, yoga::value::points(maximumSize.height));
 
   yogaStyle.setMinDimension(
-      yoga::Dimension::Width,
-      yoga::CompactValue::ofMaybe<YGUnitPoint>(minimumSize.width));
+      yoga::Dimension::Width, yoga::value::points(minimumSize.width));
 
   yogaStyle.setMinDimension(
-      yoga::Dimension::Height,
-      yoga::CompactValue::ofMaybe<YGUnitPoint>(minimumSize.height));
+      yoga::Dimension::Height, yoga::value::points(minimumSize.height));
 
   auto direction =
       yogaDirectionFromLayoutDirection(layoutConstraints.layoutDirection);
@@ -712,8 +694,7 @@ void YogaLayoutableShadowNode::layout(LayoutContext layoutContext) {
       newLayoutMetrics.pointScaleFactor = layoutContext.pointScaleFactor;
       newLayoutMetrics.wasLeftAndRightSwapped =
           layoutContext.swapLeftAndRightInRTL &&
-          (newLayoutMetrics.layoutDirection == LayoutDirection::RightToLeft ||
-           !CoreFeatures::doNotSwapLeftAndRightOnAndroidInLTR);
+          newLayoutMetrics.layoutDirection == LayoutDirection::RightToLeft;
 
       // Child node's layout has changed. When a node is added to
       // `affectedNodes`, onLayout event is called on the component. Comparing
@@ -732,7 +713,7 @@ void YogaLayoutableShadowNode::layout(LayoutContext layoutContext) {
     }
   }
 
-  if (yogaNode_.getStyle().overflow() == yoga::Overflow::Visible) {
+  if (yogaNode_.style().overflow() == yoga::Overflow::Visible) {
     // Note that the parent node's overflow layout is NOT affected by its
     // transform matrix. That transform matrix is applied on the parent node as
     // well as all of its child nodes, which won't cause changes on the
@@ -760,7 +741,7 @@ Rect YogaLayoutableShadowNode::getContentBounds() const {
 
     auto layoutMetricsWithOverflowInset = childNode.getLayoutMetrics();
     if (layoutMetricsWithOverflowInset.displayType != DisplayType::None) {
-      auto viewChildNode = traitCast<const ViewShadowNode*>(&childNode);
+      auto viewChildNode = dynamic_cast<const ViewShadowNode*>(&childNode);
       auto hitSlop = viewChildNode != nullptr
           ? viewChildNode->getConcreteProps().hitSlop
           : EdgeInsets{};
@@ -789,6 +770,13 @@ Rect YogaLayoutableShadowNode::getContentBounds() const {
   }
 
   return contentBounds;
+}
+
+/*static*/ void YogaLayoutableShadowNode::filterRawProps(RawProps& rawProps) {
+  if (CoreFeatures::excludeYogaFromRawProps) {
+    // TODO: this shouldn't live in RawProps
+    rawProps.filterYogaStylePropsInDynamicConversion();
+  }
 }
 
 #pragma mark - Yoga Connectors
@@ -852,7 +840,7 @@ YGSize YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector(
 
 YogaLayoutableShadowNode& YogaLayoutableShadowNode::shadowNodeFromContext(
     YGNodeConstRef yogaNode) {
-  return traitCast<YogaLayoutableShadowNode&>(
+  return dynamic_cast<YogaLayoutableShadowNode&>(
       *static_cast<ShadowNode*>(YGNodeGetContext(yogaNode)));
 }
 
@@ -867,9 +855,6 @@ yoga::Config& YogaLayoutableShadowNode::initializeYogaConfig(
     YGConfigSetErrata(&config, YGConfigGetErrata(previousConfig));
   }
 
-#ifdef RN_DEBUG_YOGA_LOGGER
-  YGConfigSetPrintTreeFlag(&config, true);
-#endif
   return config;
 }
 
@@ -878,110 +863,107 @@ yoga::Config& YogaLayoutableShadowNode::initializeYogaConfig(
 void YogaLayoutableShadowNode::swapStyleLeftAndRight() {
   ensureUnsealed();
 
-  swapLeftAndRightInYogaStyleProps(*this);
-  swapLeftAndRightInViewProps(*this);
+  swapLeftAndRightInYogaStyleProps();
+  swapLeftAndRightInViewProps();
 }
 
-void YogaLayoutableShadowNode::swapLeftAndRightInYogaStyleProps(
-    const YogaLayoutableShadowNode& shadowNode) {
-  auto yogaStyle = shadowNode.yogaNode_.getStyle();
-
-  const yoga::Style::Edges& position = yogaStyle.position();
-  const yoga::Style::Edges& padding = yogaStyle.padding();
-  const yoga::Style::Edges& margin = yogaStyle.margin();
+void YogaLayoutableShadowNode::swapLeftAndRightInYogaStyleProps() {
+  auto yogaStyle = yogaNode_.style();
 
   // Swap Yoga node values, position, padding and margin.
 
-  if (yogaStyle.position()[YGEdgeLeft] != YGValueUndefined) {
-    yogaStyle.position()[YGEdgeStart] = position[YGEdgeLeft];
-    yogaStyle.position()[YGEdgeLeft] = YGValueUndefined;
+  if (yogaStyle.position(yoga::Edge::Left).isDefined()) {
+    yogaStyle.setPosition(
+        yoga::Edge::Start, yogaStyle.position(yoga::Edge::Left));
+    yogaStyle.setPosition(yoga::Edge::Left, yoga::value::undefined());
   }
 
-  if (yogaStyle.position()[YGEdgeRight] != YGValueUndefined) {
-    yogaStyle.position()[YGEdgeEnd] = position[YGEdgeRight];
-    yogaStyle.position()[YGEdgeRight] = YGValueUndefined;
+  if (yogaStyle.position(yoga::Edge::Right).isDefined()) {
+    yogaStyle.setPosition(
+        yoga::Edge::End, yogaStyle.position(yoga::Edge::Right));
+    yogaStyle.setPosition(yoga::Edge::Right, yoga::value::undefined());
   }
 
-  if (yogaStyle.padding()[YGEdgeLeft] != YGValueUndefined) {
-    yogaStyle.padding()[YGEdgeStart] = padding[YGEdgeLeft];
-    yogaStyle.padding()[YGEdgeLeft] = YGValueUndefined;
+  if (yogaStyle.padding(yoga::Edge::Left).isDefined()) {
+    yogaStyle.setPadding(
+        yoga::Edge::Start, yogaStyle.padding(yoga::Edge::Left));
+    yogaStyle.setPadding(yoga::Edge::Left, yoga::value::undefined());
   }
 
-  if (yogaStyle.padding()[YGEdgeRight] != YGValueUndefined) {
-    yogaStyle.padding()[YGEdgeEnd] = padding[YGEdgeRight];
-    yogaStyle.padding()[YGEdgeRight] = YGValueUndefined;
+  if (yogaStyle.padding(yoga::Edge::Right).isDefined()) {
+    yogaStyle.setPadding(yoga::Edge::End, yogaStyle.padding(yoga::Edge::Right));
+    yogaStyle.setPadding(yoga::Edge::Right, yoga::value::undefined());
   }
 
-  if (yogaStyle.margin()[YGEdgeLeft] != YGValueUndefined) {
-    yogaStyle.margin()[YGEdgeStart] = margin[YGEdgeLeft];
-    yogaStyle.margin()[YGEdgeLeft] = YGValueUndefined;
+  if (yogaStyle.margin(yoga::Edge::Left).isDefined()) {
+    yogaStyle.setMargin(yoga::Edge::Start, yogaStyle.margin(yoga::Edge::Left));
+    yogaStyle.setMargin(yoga::Edge::Left, yoga::value::undefined());
   }
 
-  if (yogaStyle.margin()[YGEdgeRight] != YGValueUndefined) {
-    yogaStyle.margin()[YGEdgeEnd] = margin[YGEdgeRight];
-    yogaStyle.margin()[YGEdgeRight] = YGValueUndefined;
+  if (yogaStyle.margin(yoga::Edge::Right).isDefined()) {
+    yogaStyle.setMargin(yoga::Edge::End, yogaStyle.margin(yoga::Edge::Right));
+    yogaStyle.setMargin(yoga::Edge::Right, yoga::value::undefined());
   }
 
-  shadowNode.yogaNode_.setStyle(yogaStyle);
+  if (yogaStyle.border(yoga::Edge::Left).isDefined()) {
+    yogaStyle.setBorder(yoga::Edge::Start, yogaStyle.border(yoga::Edge::Left));
+    yogaStyle.setBorder(yoga::Edge::Left, yoga::value::undefined());
+  }
+
+  if (yogaStyle.border(yoga::Edge::Right).isDefined()) {
+    yogaStyle.setBorder(yoga::Edge::End, yogaStyle.border(yoga::Edge::Right));
+    yogaStyle.setBorder(yoga::Edge::Right, yoga::value::undefined());
+  }
+
+  yogaNode_.setStyle(yogaStyle);
 }
 
-void YogaLayoutableShadowNode::swapLeftAndRightInViewProps(
-    const YogaLayoutableShadowNode& shadowNode) {
-  auto& typedCasting = static_cast<const ViewProps&>(*shadowNode.props_);
-  auto& props = const_cast<ViewProps&>(typedCasting);
+void YogaLayoutableShadowNode::swapLeftAndRightInViewProps() {
+  if (auto viewShadowNode = dynamic_cast<ViewShadowNode*>(this)) {
+    // TODO: Do not mutate props directly.
+    auto& props =
+        const_cast<ViewShadowNodeProps&>(viewShadowNode->getConcreteProps());
 
-  // Swap border node values, borderRadii, borderColors and borderStyles.
+    // Swap border node values, borderRadii, borderColors and borderStyles.
+    if (props.borderRadii.topLeft.has_value()) {
+      props.borderRadii.topStart = props.borderRadii.topLeft;
+      props.borderRadii.topLeft.reset();
+    }
 
-  if (props.borderRadii.topLeft.has_value()) {
-    props.borderRadii.topStart = props.borderRadii.topLeft;
-    props.borderRadii.topLeft.reset();
-  }
+    if (props.borderRadii.bottomLeft.has_value()) {
+      props.borderRadii.bottomStart = props.borderRadii.bottomLeft;
+      props.borderRadii.bottomLeft.reset();
+    }
 
-  if (props.borderRadii.bottomLeft.has_value()) {
-    props.borderRadii.bottomStart = props.borderRadii.bottomLeft;
-    props.borderRadii.bottomLeft.reset();
-  }
+    if (props.borderRadii.topRight.has_value()) {
+      props.borderRadii.topEnd = props.borderRadii.topRight;
+      props.borderRadii.topRight.reset();
+    }
 
-  if (props.borderRadii.topRight.has_value()) {
-    props.borderRadii.topEnd = props.borderRadii.topRight;
-    props.borderRadii.topRight.reset();
-  }
+    if (props.borderRadii.bottomRight.has_value()) {
+      props.borderRadii.bottomEnd = props.borderRadii.bottomRight;
+      props.borderRadii.bottomRight.reset();
+    }
 
-  if (props.borderRadii.bottomRight.has_value()) {
-    props.borderRadii.bottomEnd = props.borderRadii.bottomRight;
-    props.borderRadii.bottomRight.reset();
-  }
+    if (props.borderColors.left.has_value()) {
+      props.borderColors.start = props.borderColors.left;
+      props.borderColors.left.reset();
+    }
 
-  if (props.borderColors.left.has_value()) {
-    props.borderColors.start = props.borderColors.left;
-    props.borderColors.left.reset();
-  }
+    if (props.borderColors.right.has_value()) {
+      props.borderColors.end = props.borderColors.right;
+      props.borderColors.right.reset();
+    }
 
-  if (props.borderColors.right.has_value()) {
-    props.borderColors.end = props.borderColors.right;
-    props.borderColors.right.reset();
-  }
+    if (props.borderStyles.left.has_value()) {
+      props.borderStyles.start = props.borderStyles.left;
+      props.borderStyles.left.reset();
+    }
 
-  if (props.borderStyles.left.has_value()) {
-    props.borderStyles.start = props.borderStyles.left;
-    props.borderStyles.left.reset();
-  }
-
-  if (props.borderStyles.right.has_value()) {
-    props.borderStyles.end = props.borderStyles.right;
-    props.borderStyles.right.reset();
-  }
-
-  const yoga::Style::Edges& border = props.yogaStyle.border();
-
-  if (props.yogaStyle.border()[YGEdgeLeft] != YGValueUndefined) {
-    props.yogaStyle.border()[YGEdgeStart] = border[YGEdgeLeft];
-    props.yogaStyle.border()[YGEdgeLeft] = YGValueUndefined;
-  }
-
-  if (props.yogaStyle.border()[YGEdgeRight] != YGValueUndefined) {
-    props.yogaStyle.border()[YGEdgeEnd] = border[YGEdgeRight];
-    props.yogaStyle.border()[YGEdgeRight] = YGValueUndefined;
+    if (props.borderStyles.right.has_value()) {
+      props.borderStyles.end = props.borderStyles.right;
+      props.borderStyles.right.reset();
+    }
   }
 }
 
@@ -993,7 +975,7 @@ void YogaLayoutableShadowNode::ensureConsistency() const {
 }
 
 void YogaLayoutableShadowNode::ensureYogaChildrenLookFine() const {
-#ifdef REACT_NATIVE_DEBUG
+#if defined(REACT_NATIVE_DEBUG) && defined(WITH_FBSYSTRACE)
   // Checking that the shapes of Yoga node children object look fine.
   // This is the only heuristic that might produce false-positive results
   // (really broken dangled nodes might look fine). This is useful as an early
@@ -1011,7 +993,7 @@ void YogaLayoutableShadowNode::ensureYogaChildrenLookFine() const {
 }
 
 void YogaLayoutableShadowNode::ensureYogaChildrenAlignment() const {
-#ifdef REACT_NATIVE_DEBUG
+#if defined(REACT_NATIVE_DEBUG) && defined(WITH_FBSYSTRACE)
   // If the node is not a leaf node, checking that:
   // - All children are `YogaLayoutableShadowNode` subclasses.
   // - All Yoga children are owned/connected to corresponding children of
@@ -1032,7 +1014,7 @@ void YogaLayoutableShadowNode::ensureYogaChildrenAlignment() const {
     auto& child = children.at(i);
     react_native_assert(
         yogaChild->getContext() ==
-        traitCast<const YogaLayoutableShadowNode*>(child.get()));
+        dynamic_cast<const YogaLayoutableShadowNode*>(child.get()));
   }
 #endif
 }

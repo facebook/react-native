@@ -387,6 +387,11 @@ class JSI_EXPORT Runtime {
 
   virtual bool instanceOf(const Object& o, const Function& f) = 0;
 
+  /// See Object::setExternalMemoryPressure.
+  virtual void setExternalMemoryPressure(
+      const jsi::Object& obj,
+      size_t amount) = 0;
+
   // These exist so derived classes can access the private parts of
   // Value, Symbol, String, and Object, which are all friends of Runtime.
   template <typename T>
@@ -833,6 +838,16 @@ class JSI_EXPORT Object : public Pointer {
   /// will be isString().  (This is probably not optimal, but it
   /// works.  I only need it in one place.)
   Array getPropertyNames(Runtime& runtime) const;
+
+  /// Inform the runtime that there is additional memory associated with a given
+  /// JavaScript object that is not visible to the GC. This can be used if an
+  /// object is known to retain some native memory, and may be used to guide
+  /// decisions about when to run garbage collection.
+  /// This method may be invoked multiple times on an object, and subsequent
+  /// calls will overwrite any previously set value. Once the object is garbage
+  /// collected, the associated external memory will be considered freed and may
+  /// no longer factor into GC decisions.
+  void setExternalMemoryPressure(Runtime& runtime, size_t amt) const;
 
  protected:
   void setPropertyValue(

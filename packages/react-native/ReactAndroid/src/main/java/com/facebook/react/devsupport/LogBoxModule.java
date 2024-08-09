@@ -9,12 +9,14 @@ package com.facebook.react.devsupport;
 
 import androidx.annotation.Nullable;
 import com.facebook.fbreact.specs.NativeLogBoxSpec;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.SurfaceDelegate;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.module.annotations.ReactModule;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @ReactModule(name = NativeLogBoxSpec.NAME)
 public class LogBoxModule extends NativeLogBoxSpec {
 

@@ -49,12 +49,7 @@ typedef NS_ENUM(unsigned int, meta_prop_t) {
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     yogaConfig = YGConfigNew();
-#if !TARGET_OS_OSX // [macOS]
-    float pixelsInPoint = RCTScreenScale();
-#else // [macOS
-    float pixelsInPoint = 1; // Use 1x alignment for macOS until we can use backing resolution
-#endif // macOS]
-    YGConfigSetPointScaleFactor(yogaConfig, pixelsInPoint);
+    YGConfigSetPointScaleFactor(yogaConfig, RCTScreenScale());
     YGConfigSetErrata(yogaConfig, YGErrataAll);
   });
   return yogaConfig;
@@ -64,12 +59,6 @@ typedef NS_ENUM(unsigned int, meta_prop_t) {
 @synthesize rootTag = _rootTag;
 
 // YogaNode API
-
-static void RCTPrint(YGNodeConstRef node)
-{
-  RCTShadowView *shadowView = (__bridge RCTShadowView *)YGNodeGetContext(node);
-  printf("%s(%lld), ", shadowView.viewName.UTF8String, (long long)shadowView.reactTag.integerValue);
-}
 
 #define RCT_SET_YGVALUE(ygvalue, setter, ...)      \
   switch (ygvalue.unit) {                          \
@@ -227,12 +216,6 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
 
     _yogaNode = YGNodeNewWithConfig([[self class] yogaConfig]);
     YGNodeSetContext(_yogaNode, (__bridge void *)self);
-    YGNodeSetPrintFunc(_yogaNode, RCTPrint);
-
-#if TARGET_OS_OSX // [macOS
-    // RCTUIManager will fix the scale if we're on a Retina display
-    _scale = 1.0;
-#endif // macOS]
   }
   return self;
 }
@@ -394,6 +377,13 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
   YGNodeRemoveChild(constraintYogaNode, clonedYogaNode);
   YGNodeFree(constraintYogaNode);
   YGNodeFree(clonedYogaNode);
+
+  // `setOwner()` for children unlinked by `YGNodeFree()`
+  int childCount = YGNodeGetChildCount(self.yogaNode);
+  for (int i = 0; i < childCount; i++) {
+    YGNodeRef child = YGNodeGetChild(self.yogaNode, i);
+    YGNodeSwapChild(self.yogaNode, child, i);
+  }
 
   return measuredSize;
 }

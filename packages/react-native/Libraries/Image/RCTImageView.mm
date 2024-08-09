@@ -65,14 +65,14 @@ static NSImage *RCTFillImagePreservingAspectRatio(NSImage *originalImage, NSSize
     scale = scaleX;
   }
 
-  NSSize newSize = NSMakeSize(RCTRoundPixelValue(originalImageSize.width * scale, windowScale),
-                              RCTRoundPixelValue(originalImageSize.height * scale, windowScale));
+  NSSize newSize = NSMakeSize(RCTRoundPixelValue(originalImageSize.width * scale),
+                              RCTRoundPixelValue(originalImageSize.height * scale));
   NSImage *newImage = [[NSImage alloc] initWithSize:newSize];
 
   for (NSImageRep *imageRep in [originalImage representations]) {
     NSImageRep *newImageRep = [imageRep copy];
-    NSSize newImageRepSize = NSMakeSize(RCTRoundPixelValue(imageRep.size.width * scale, windowScale),
-                                        RCTRoundPixelValue(imageRep.size.height * scale, windowScale));
+    NSSize newImageRepSize = NSMakeSize(RCTRoundPixelValue(imageRep.size.width * scale),
+                                        RCTRoundPixelValue(imageRep.size.height * scale));
 
     newImageRep.size = newImageRepSize;
 

@@ -14,6 +14,8 @@ import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.common.annotations.DeprecatedInNewArchitecture;
+import com.facebook.react.common.annotations.StableReactNativeAPI;
 import com.facebook.react.common.build.ReactBuildConfig;
 import java.util.Map;
 
@@ -45,6 +47,7 @@ import java.util.Map;
  * <p>Please note that it is not allowed to have multiple methods annotated with {@link ReactMethod}
  * with the same name.
  */
+@StableReactNativeAPI
 public abstract class BaseJavaModule implements NativeModule {
   // taken from Libraries/Utilities/MessageQueue.js
   public static final String METHOD_TYPE_ASYNC = "async";
@@ -62,6 +65,7 @@ public abstract class BaseJavaModule implements NativeModule {
   }
 
   /** @return a map of constants this module exports to JS. Supports JSON types. */
+  @DeprecatedInNewArchitecture()
   public @Nullable Map<String, Object> getConstants() {
     return null;
   }
@@ -76,19 +80,17 @@ public abstract class BaseJavaModule implements NativeModule {
     return false;
   }
 
-  @Override
-  public void onCatalystInstanceDestroy() {}
-
   /**
    * The CatalystInstance is going away with Venice. Therefore, the TurboModule infra introduces the
    * invalidate() method to allow NativeModules to clean up after themselves.
    */
   @Override
-  public void invalidate() {
-    onCatalystInstanceDestroy();
-  }
+  public void invalidate() {}
 
-  /** Subclasses can use this method to access catalyst context passed as a constructor. */
+  /**
+   * Subclasses can use this method to access {@link ReactApplicationContext} passed as a
+   * constructor.
+   */
   protected final ReactApplicationContext getReactApplicationContext() {
     return Assertions.assertNotNull(
         mReactApplicationContext,
@@ -96,10 +98,11 @@ public abstract class BaseJavaModule implements NativeModule {
   }
 
   /**
-   * Subclasses can use this method to access catalyst context passed as a constructor. Use this
-   * version to check that the underlying CatalystInstance is active before returning, and
-   * automatically have SoftExceptions or debug information logged for you. Consider using this
-   * whenever calling ReactApplicationContext methods that require the Catalyst instance be alive.
+   * Subclasses can use this method to access {@link ReactApplicationContext} passed as a
+   * constructor. Use this version to check that the underlying React Instance is active before
+   * returning, and automatically have SoftExceptions or debug information logged for you. Consider
+   * using this whenever calling ReactApplicationContext methods that require the React instance be
+   * alive.
    *
    * <p>This can return null at any time, but especially during teardown methods it's
    * possible/likely.

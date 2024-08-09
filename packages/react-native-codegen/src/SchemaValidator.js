@@ -10,9 +10,9 @@
 
 'use strict';
 
-const nullthrows = require('nullthrows');
-
 import type {SchemaType} from './CodegenSchema';
+
+const nullthrows = require('nullthrows');
 
 function getErrors(schema: SchemaType): $ReadOnlyArray<string> {
   const errors = new Set<string>();

@@ -164,7 +164,21 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
     if (!_data) {
       _data = [NSMutableData new];
     }
-    [_data appendData:data];
+    @try {
+      [_data appendData:data];
+    } @catch (NSException *exception) {
+      _status = RCTNetworkTaskFinished;
+      if (_completionBlock) {
+        RCTURLRequestCompletionBlock completionBlock = _completionBlock;
+        [self dispatchCallback:^{
+          completionBlock(
+              self->_response, nil, RCTErrorWithMessage(exception.reason ?: @"Request's received data too long."));
+        }];
+      }
+      [self invalidate];
+      return;
+    }
+
     length = _data.length;
   }
 

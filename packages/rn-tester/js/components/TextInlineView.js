@@ -5,13 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
 
 const React = require('react');
-
 const {Image, Text, TouchableHighlight, View} = require('react-native');
 
 function Basic(): React.Node {

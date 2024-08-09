@@ -5,15 +5,14 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 
 import RNTesterPlatformTestResultsText from './RNTesterPlatformTestResultsText';
-
 import * as React from 'react';
-import {View, Text, StyleSheet, TouchableHighlight} from 'react-native';
+import {StyleSheet, Text, TouchableHighlight, View} from 'react-native';
 
 type Props = $ReadOnly<{|
   numFail: number,

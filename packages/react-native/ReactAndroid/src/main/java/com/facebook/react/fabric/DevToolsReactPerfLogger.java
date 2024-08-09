@@ -22,6 +22,7 @@ import static com.facebook.react.bridge.ReactMarkerConstants.FABRIC_UPDATE_UI_MA
 import static com.facebook.react.bridge.ReactMarkerConstants.FABRIC_UPDATE_UI_MAIN_THREAD_START;
 
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
 import java.util.ArrayList;
@@ -29,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class DevToolsReactPerfLogger implements ReactMarker.FabricMarkerListener {
 
   private final Map<Integer, FabricCommitPoint> mFabricCommitMarkers = new HashMap<>();
@@ -51,8 +53,8 @@ public class DevToolsReactPerfLogger implements ReactMarker.FabricMarkerListener
     private final int mCounter;
 
     public FabricCommitPointData(long timeStamp, int counter) {
-      this.mTimeStamp = timeStamp;
-      this.mCounter = counter;
+      mTimeStamp = timeStamp;
+      mCounter = counter;
     }
 
     public long getTimeStamp() {
@@ -69,7 +71,7 @@ public class DevToolsReactPerfLogger implements ReactMarker.FabricMarkerListener
     private final Map<ReactMarkerConstants, FabricCommitPointData> mPoints = new HashMap<>();
 
     private FabricCommitPoint(int commitNumber) {
-      this.mCommitNumber = commitNumber;
+      mCommitNumber = commitNumber;
     }
 
     private void addPoint(ReactMarkerConstants key, FabricCommitPointData data) {
@@ -124,6 +126,10 @@ public class DevToolsReactPerfLogger implements ReactMarker.FabricMarkerListener
 
     public int getAffectedLayoutNodesCount() {
       return getCounter(FABRIC_LAYOUT_AFFECTED_NODES);
+    }
+
+    public long getAffectedLayoutNodesCountTime() {
+      return getTimestamp(FABRIC_LAYOUT_AFFECTED_NODES);
     }
 
     public long getBatchExecutionStart() {

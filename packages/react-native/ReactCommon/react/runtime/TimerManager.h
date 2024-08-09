@@ -104,7 +104,7 @@ class TimerManager {
 
   // Each timeout that is registered on this queue gets a sequential id.  This
   // is the global count from which those are assigned.
-  uint64_t timerIndex_{0};
+  uint32_t timerIndex_{0};
 
   // The React Native microtask queue is used to back public APIs including
   // `queueMicrotask`, `clearImmediate`, and `setImmediate` (which is used by

@@ -469,6 +469,8 @@ CGPathRef UIBezierPathCreateCGPathRef(UIBezierPath *path);
 @property (nonatomic, assign) BOOL showsHorizontalScrollIndicator;
 @property (nonatomic, assign) BOOL showsVerticalScrollIndicator;
 @property (nonatomic, assign) UIEdgeInsets scrollIndicatorInsets;
+@property(nonatomic, assign) CGFloat minimumZoomScale;
+@property(nonatomic, assign) CGFloat maximumZoomScale;
 @property (nonatomic, assign) CGFloat zoomScale;
 @property (nonatomic, assign) BOOL alwaysBounceHorizontal;
 @property (nonatomic, assign) BOOL alwaysBounceVertical;

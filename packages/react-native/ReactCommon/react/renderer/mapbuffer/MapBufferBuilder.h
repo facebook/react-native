@@ -27,6 +27,8 @@ class MapBufferBuilder {
 
   void putInt(MapBuffer::Key key, int32_t value);
 
+  // TODO: Support 64 bit integers
+
   void putBool(MapBuffer::Key key, bool value);
 
   void putDouble(MapBuffer::Key key, double value);

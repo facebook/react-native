@@ -50,7 +50,6 @@ add_react_third_party_ndk_subdir(glog)
 add_react_third_party_ndk_subdir(boost)
 add_react_third_party_ndk_subdir(double-conversion)
 add_react_third_party_ndk_subdir(fmt)
-add_react_third_party_ndk_subdir(libevent)
 add_react_third_party_ndk_subdir(folly)
 add_react_third_party_ndk_subdir(jsc)
 add_react_third_party_ndk_subdir(googletest)
@@ -71,6 +70,7 @@ add_react_common_subdir(hermes/inspector-modern)
 add_react_common_subdir(react/renderer/runtimescheduler)
 add_react_common_subdir(react/debug)
 add_react_common_subdir(react/config)
+add_react_common_subdir(react/featureflags)
 add_react_common_subdir(react/renderer/animations)
 add_react_common_subdir(react/renderer/attributedstring)
 add_react_common_subdir(react/renderer/componentregistry)
@@ -119,12 +119,15 @@ add_react_android_subdir(src/main/jni/react/uimanager)
 add_react_android_subdir(src/main/jni/react/mapbuffer)
 add_react_android_subdir(src/main/jni/react/reactnativeblob)
 add_react_android_subdir(src/main/jni/react/fabric)
+add_react_android_subdir(src/main/jni/react/featureflags)
 add_react_android_subdir(src/main/jni/react/newarchdefaults)
 add_react_android_subdir(src/main/jni/react/hermes/reactexecutor)
 add_react_android_subdir(src/main/jni/react/hermes/instrumentation/)
+add_react_android_subdir(src/main/jni/react/runtime/cxxreactpackage)
 add_react_android_subdir(src/main/jni/react/runtime/jni)
 add_react_android_subdir(src/main/jni/react/runtime/hermes/jni)
 add_react_android_subdir(src/main/jni/react/runtime/jsc/jni)
+add_react_android_subdir(src/main/jni/react/devsupport)
 
 # GTest dependencies
 add_executable(reactnative_unittest
@@ -151,7 +154,6 @@ add_executable(reactnative_unittest
   ${REACT_COMMON_DIR}/react/renderer/core/tests/PrimitivesTest.cpp
   ${REACT_COMMON_DIR}/react/renderer/core/tests/RawPropsTest.cpp
   ${REACT_COMMON_DIR}/react/renderer/core/tests/ShadowNodeFamilyTest.cpp
-  ${REACT_COMMON_DIR}/react/renderer/core/tests/traitCastTest.cpp
   ${REACT_COMMON_DIR}/react/renderer/debug/tests/DebugStringConvertibleTest.cpp
   ${REACT_COMMON_DIR}/react/renderer/element/tests/ElementTest.cpp
   ${REACT_COMMON_DIR}/react/renderer/graphics/tests/GraphicsTest.cpp
@@ -190,7 +192,6 @@ add_executable(reactnative_unittest
 
   target_link_libraries(reactnative_unittest
   folly_runtime
-  folly_futures
   glog
   glog_init
   gtest_main

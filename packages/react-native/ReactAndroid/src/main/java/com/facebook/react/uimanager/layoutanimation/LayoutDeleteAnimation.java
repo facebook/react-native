@@ -7,11 +7,14 @@
 
 package com.facebook.react.uimanager.layoutanimation;
 
+import com.facebook.infer.annotation.Nullsafe;
+
 /**
  * Class responsible for handling layout view deletion animation, applied to view whenever a valid
  * config was supplied for the layout animation of DELETE type.
  */
-/* package */ class LayoutDeleteAnimation extends BaseLayoutAnimation {
+/* package */ @Nullsafe(Nullsafe.Mode.LOCAL)
+class LayoutDeleteAnimation extends BaseLayoutAnimation {
 
   @Override
   boolean isReverse() {

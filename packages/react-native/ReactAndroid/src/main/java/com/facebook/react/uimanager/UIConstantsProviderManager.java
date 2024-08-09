@@ -10,8 +10,10 @@ package com.facebook.react.uimanager;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.proguard.annotations.DoNotStripAny;
+import com.facebook.react.bridge.NativeMap;
 import com.facebook.react.bridge.RuntimeExecutor;
 import com.facebook.soloader.SoLoader;
+import javax.annotation.Nullable;
 
 @DoNotStripAny
 public class UIConstantsProviderManager {
@@ -25,17 +27,47 @@ public class UIConstantsProviderManager {
   private final HybridData mHybridData;
 
   public UIConstantsProviderManager(
-      RuntimeExecutor runtimeExecutor, Object uiConstantsProviderManager) {
-    mHybridData = initHybrid(runtimeExecutor, uiConstantsProviderManager);
+      RuntimeExecutor runtimeExecutor,
+      DefaultEventTypesProvider defaultEventTypesProvider,
+      ConstantsForViewManagerProvider viewManagerConstantsProvider,
+      ConstantsProvider constantsProvider) {
+    mHybridData =
+        initHybrid(
+            runtimeExecutor,
+            defaultEventTypesProvider,
+            viewManagerConstantsProvider,
+            constantsProvider);
     installJSIBindings();
   }
 
   private native HybridData initHybrid(
-      RuntimeExecutor runtimeExecutor, Object uiConstantsProviderManager);
+      RuntimeExecutor runtimeExecutor,
+      DefaultEventTypesProvider defaultEventTypesProvider,
+      ConstantsForViewManagerProvider viewManagerConstantsProvider,
+      ConstantsProvider constantsProvider);
 
   private native void installJSIBindings();
 
   private static void staticInit() {
     SoLoader.loadLibrary("uimanagerjni");
+  }
+
+  @DoNotStripAny
+  public static interface DefaultEventTypesProvider {
+    /* Returns UIManager's constants. */
+    NativeMap getDefaultEventTypes();
+  }
+
+  @DoNotStripAny
+  public static interface ConstantsForViewManagerProvider {
+    /* Returns UIManager's constants. */
+    @Nullable
+    NativeMap getConstantsForViewManager(String viewManagerName);
+  }
+
+  @DoNotStripAny
+  public static interface ConstantsProvider {
+    /* Returns UIManager's constants. */
+    NativeMap getConstants();
   }
 }

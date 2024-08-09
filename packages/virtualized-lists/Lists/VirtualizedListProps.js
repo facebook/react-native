@@ -8,19 +8,19 @@
  * @format
  */
 
-import {typeof ScrollView} from 'react-native';
-import type {
-  FocusEvent,
-  LayoutEvent,
-} from 'react-native/Libraries/Types/CoreEventTypes';
-import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 import type {
   ViewabilityConfig,
   ViewabilityConfigCallbackPair,
   ViewToken,
 } from './ViewabilityHelper';
+import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
+import type {
+  FocusEvent,
+  LayoutEvent,
+} from 'react-native/Libraries/Types/CoreEventTypes';
 
 import * as React from 'react';
+import {typeof ScrollView} from 'react-native';
 
 export type Item = any;
 

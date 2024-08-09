@@ -14,11 +14,6 @@
 
 RCT_EXPORT_MODULE()
 
-+ (BOOL)requiresMainQueueSetup
-{
-  return NO;
-}
-
 - (RCTUIView *)view // [macOS]
 {
   return [[RCTInputAccessoryView alloc] initWithBridge:self.bridge];

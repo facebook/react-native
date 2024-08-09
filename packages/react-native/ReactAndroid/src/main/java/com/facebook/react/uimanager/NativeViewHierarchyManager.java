@@ -866,12 +866,17 @@ public class NativeViewHierarchyManager {
   /**
    * Show a {@link PopupMenu}.
    *
+   * <p>This is deprecated, please use the <PopupMenuAndroid /> component instead.
+   *
+   * <p>TODO(T175424986): Remove UIManager.showPopupMenu() in React Native v0.75.
+   *
    * @param reactTag the tag of the anchor view (the PopupMenu is displayed next to this view); this
    *     needs to be the tag of a native view (shadow views can not be anchors)
    * @param items the menu items as an array of strings
    * @param success will be called with the position of the selected item as the first argument, or
    *     no arguments if the menu is dismissed
    */
+  @Deprecated
   public synchronized void showPopupMenu(
       int reactTag, ReadableArray items, Callback success, Callback error) {
     UiThreadUtil.assertOnUiThread();
@@ -894,7 +899,14 @@ public class NativeViewHierarchyManager {
     mPopupMenu.show();
   }
 
-  /** Dismiss the last opened PopupMenu {@link PopupMenu}. */
+  /**
+   * This is deprecated, please use the <PopupMenuAndroid /> component instead.
+   *
+   * <p>TODO(T175424986): Remove UIManager.dismissPopupMenu() in React Native v0.75.
+   *
+   * <p>Dismiss the last opened PopupMenu {@link PopupMenu}.
+   */
+  @Deprecated
   public void dismissPopupMenu() {
     if (mPopupMenu != null) {
       mPopupMenu.dismiss();

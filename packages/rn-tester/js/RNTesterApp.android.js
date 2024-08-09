@@ -5,12 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
-import {AppRegistry} from 'react-native';
-
 import RNTesterApp from './RNTesterAppShared';
+import {AppRegistry} from 'react-native';
 
 AppRegistry.registerComponent('RNTesterApp', () => RNTesterApp);
 

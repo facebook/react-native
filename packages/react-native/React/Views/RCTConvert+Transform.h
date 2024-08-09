@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTConvert.h"
+#import <React/RCTConvert.h>
 #import "UIView+React.h"
 
 @interface RCTConvert (Transform)

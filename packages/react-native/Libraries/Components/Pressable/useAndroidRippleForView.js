@@ -71,8 +71,10 @@ export default function useAndroidRippleForView(
       return {
         viewProps:
           foreground === true
-            ? {nativeForegroundAndroid: nativeRippleValue}
-            : {nativeBackgroundAndroid: nativeRippleValue},
+            ? // $FlowFixMe[incompatible-return]
+              {nativeForegroundAndroid: nativeRippleValue}
+            : // $FlowFixMe[incompatible-return]
+              {nativeBackgroundAndroid: nativeRippleValue},
         onPressIn(event: PressEvent): void {
           const view = viewRef.current;
           if (view != null) {

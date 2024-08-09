@@ -70,31 +70,47 @@ void IntersectionObserverManager::unobserve(
     const ShadowNode& shadowNode) {
   SystraceSection s("IntersectionObserverManager::unobserve");
 
-  std::unique_lock lock(observersMutex_);
+  {
+    std::unique_lock lock(observersMutex_);
 
-  auto surfaceId = shadowNode.getSurfaceId();
+    auto surfaceId = shadowNode.getSurfaceId();
 
-  auto observersIt = observersBySurfaceId_.find(surfaceId);
-  if (observersIt == observersBySurfaceId_.end()) {
-    return;
+    auto observersIt = observersBySurfaceId_.find(surfaceId);
+    if (observersIt == observersBySurfaceId_.end()) {
+      return;
+    }
+
+    auto& observers = observersIt->second;
+
+    observers.erase(
+        std::remove_if(
+            observers.begin(),
+            observers.end(),
+            [intersectionObserverId, &shadowNode](const auto& observer) {
+              return observer.getIntersectionObserverId() ==
+                  intersectionObserverId &&
+                  ShadowNode::sameFamily(
+                         observer.getTargetShadowNode(), shadowNode);
+            }),
+        observers.end());
+
+    if (observers.empty()) {
+      observersBySurfaceId_.erase(surfaceId);
+    }
   }
 
-  auto& observers = observersIt->second;
+  {
+    std::unique_lock lock(pendingEntriesMutex_);
 
-  observers.erase(
-      std::remove_if(
-          observers.begin(),
-          observers.end(),
-          [intersectionObserverId, &shadowNode](const auto& observer) {
-            return observer.getIntersectionObserverId() ==
-                intersectionObserverId &&
-                ShadowNode::sameFamily(
-                       observer.getTargetShadowNode(), shadowNode);
-          }),
-      observers.end());
-
-  if (observers.empty()) {
-    observersBySurfaceId_.erase(surfaceId);
+    pendingEntries_.erase(
+        std::remove_if(
+            pendingEntries_.begin(),
+            pendingEntries_.end(),
+            [intersectionObserverId, &shadowNode](const auto& entry) {
+              return entry.intersectionObserverId == intersectionObserverId &&
+                  ShadowNode::sameFamily(*entry.shadowNode, shadowNode);
+            }),
+        pendingEntries_.end());
   }
 }
 

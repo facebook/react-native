@@ -13,11 +13,11 @@
 #include <cxxreact/SystraceSection.h>
 #include <hermes/hermes.h>
 #include <jsi/decorator.h>
+#include <jsinspector-modern/InspectorFlags.h>
 
+#include <hermes/inspector-modern/chrome/HermesRuntimeAgentDelegate.h>
 #include <hermes/inspector-modern/chrome/Registration.h>
 #include <hermes/inspector/RuntimeAdapter.h>
-
-#include "JSITracing.h"
 
 using namespace facebook::hermes;
 using namespace facebook::jsi;
@@ -43,13 +43,16 @@ class HermesExecutorRuntimeAdapter
   }
 
   void tickleJs() override {
-    // The queue will ensure that runtime_ is still valid when this
-    // gets invoked.
-    thread_->runOnQueue([&runtime = runtime_]() {
-      auto func =
-          runtime->global().getPropertyAsFunction(*runtime, "__tickleJs");
-      func.call(*runtime);
-    });
+    thread_->runOnQueue(
+        [weakRuntime = std::weak_ptr<HermesRuntime>(runtime_)]() {
+          auto runtime = weakRuntime.lock();
+          if (!runtime) {
+            return;
+          }
+          jsi::Function func =
+              runtime->global().getPropertyAsFunction(*runtime, "__tickleJs");
+          func.call(*runtime);
+        });
   }
 
  private:
@@ -199,11 +202,14 @@ std::unique_ptr<JSExecutor> HermesExecutorFactory::createJSExecutor(
   }
 
   HermesRuntime& hermesRuntimeRef = *hermesRuntime;
+  auto& inspectorFlags = jsinspector_modern::InspectorFlags::getInstance();
+  bool enableDebugger =
+      !inspectorFlags.getEnableModernCDPRegistry() && enableDebugger_;
   auto decoratedRuntime = std::make_shared<DecoratedRuntime>(
       std::move(hermesRuntime),
       hermesRuntimeRef,
       jsQueue,
-      enableDebugger_,
+      enableDebugger,
       debuggerName_);
 
   // So what do we have now?
@@ -225,7 +231,12 @@ std::unique_ptr<JSExecutor> HermesExecutorFactory::createJSExecutor(
   errorPrototype.setProperty(*decoratedRuntime, "jsEngine", "hermes");
 
   return std::make_unique<HermesExecutor>(
-      decoratedRuntime, delegate, jsQueue, timeoutInvoker_, runtimeInstaller_);
+      decoratedRuntime,
+      delegate,
+      jsQueue,
+      timeoutInvoker_,
+      runtimeInstaller_,
+      hermesRuntimeRef);
 }
 
 ::hermes::vm::RuntimeConfig HermesExecutorFactory::defaultRuntimeConfig() {
@@ -239,9 +250,43 @@ HermesExecutor::HermesExecutor(
     std::shared_ptr<ExecutorDelegate> delegate,
     std::shared_ptr<MessageQueueThread> jsQueue,
     const JSIScopedTimeoutInvoker& timeoutInvoker,
-    RuntimeInstaller runtimeInstaller)
-    : JSIExecutor(runtime, delegate, timeoutInvoker, runtimeInstaller) {
-  jsi::addNativeTracingHooks(*runtime);
+    RuntimeInstaller runtimeInstaller,
+    HermesRuntime& hermesRuntime)
+    : JSIExecutor(runtime, delegate, timeoutInvoker, runtimeInstaller),
+      jsQueue_(jsQueue),
+      runtime_(runtime),
+      hermesRuntime_(hermesRuntime) {}
+
+std::unique_ptr<jsinspector_modern::RuntimeAgentDelegate>
+HermesExecutor::createAgentDelegate(
+    jsinspector_modern::FrontendChannel frontendChannel,
+    jsinspector_modern::SessionState& sessionState,
+    std::unique_ptr<jsinspector_modern::RuntimeAgentDelegate::ExportedState>
+        previouslyExportedState,
+    const jsinspector_modern::ExecutionContextDescription&
+        executionContextDescription) {
+  std::shared_ptr<HermesRuntime> hermesRuntimeShared(runtime_, &hermesRuntime_);
+  return std::unique_ptr<jsinspector_modern::RuntimeAgentDelegate>(
+      new jsinspector_modern::HermesRuntimeAgentDelegate(
+          frontendChannel,
+          sessionState,
+          std::move(previouslyExportedState),
+          executionContextDescription,
+          hermesRuntimeShared,
+          [jsQueueWeak = std::weak_ptr(jsQueue_),
+           runtimeWeak = std::weak_ptr(runtime_)](auto fn) {
+            auto jsQueue = jsQueueWeak.lock();
+            if (!jsQueue) {
+              return;
+            }
+            jsQueue->runOnQueue([runtimeWeak, fn]() {
+              auto runtime = runtimeWeak.lock();
+              if (!runtime) {
+                return;
+              }
+              fn(*runtime);
+            });
+          }));
 }
 
 } // namespace facebook::react

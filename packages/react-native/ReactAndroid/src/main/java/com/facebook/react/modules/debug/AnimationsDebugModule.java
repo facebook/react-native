@@ -65,7 +65,8 @@ class AnimationsDebugModule extends NativeAnimationsDebugModuleSpec {
     FpsDebugFrameCallback.FpsInfo fpsInfo = mFrameCallback.getFpsInfo((long) animationStopTimeMs);
 
     if (fpsInfo == null) {
-      Toast.makeText(getReactApplicationContext(), "Unable to get FPS info", Toast.LENGTH_LONG);
+      Toast.makeText(getReactApplicationContext(), "Unable to get FPS info", Toast.LENGTH_LONG)
+          .show();
     } else {
       String fpsString =
           String.format(

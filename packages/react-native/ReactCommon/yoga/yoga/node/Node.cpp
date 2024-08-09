@@ -9,8 +9,6 @@
 #include <cstddef>
 #include <iostream>
 
-#include <yoga/algorithm/FlexDirection.h>
-#include <yoga/algorithm/ResolveValue.h>
 #include <yoga/debug/AssertFatal.h>
 #include <yoga/node/Node.h>
 #include <yoga/numeric/Comparison.h>
@@ -32,11 +30,11 @@ Node::Node(Node&& node) {
   hasNewLayout_ = node.hasNewLayout_;
   isReferenceBaseline_ = node.isReferenceBaseline_;
   isDirty_ = node.isDirty_;
+  alwaysFormsContainingBlock_ = node.alwaysFormsContainingBlock_;
   nodeType_ = node.nodeType_;
   context_ = node.context_;
   measureFunc_ = node.measureFunc_;
   baselineFunc_ = node.baselineFunc_;
-  printFunc_ = node.printFunc_;
   dirtiedFunc_ = node.dirtiedFunc_;
   style_ = node.style_;
   layout_ = node.layout_;
@@ -50,142 +48,6 @@ Node::Node(Node&& node) {
   }
 }
 
-void Node::print() {
-  if (printFunc_ != nullptr) {
-    printFunc_(this);
-  }
-}
-
-CompactValue Node::computeEdgeValueForRow(
-    const Style::Edges& edges,
-    YGEdge rowEdge,
-    YGEdge edge) {
-  if (!edges[rowEdge].isUndefined()) {
-    return edges[rowEdge];
-  } else if (!edges[edge].isUndefined()) {
-    return edges[edge];
-  } else if (!edges[YGEdgeHorizontal].isUndefined()) {
-    return edges[YGEdgeHorizontal];
-  } else {
-    return edges[YGEdgeAll];
-  }
-}
-
-CompactValue Node::computeEdgeValueForColumn(
-    const Style::Edges& edges,
-    YGEdge edge) {
-  if (!edges[edge].isUndefined()) {
-    return edges[edge];
-  } else if (!edges[YGEdgeVertical].isUndefined()) {
-    return edges[YGEdgeVertical];
-  } else {
-    return edges[YGEdgeAll];
-  }
-}
-
-bool Node::isLeadingPositionDefined(FlexDirection axis) const {
-  auto leadingPosition = isRow(axis)
-      ? computeEdgeValueForRow(
-            style_.position(), YGEdgeStart, leadingEdge(axis))
-      : computeEdgeValueForColumn(style_.position(), leadingEdge(axis));
-
-  return !leadingPosition.isUndefined();
-}
-
-bool Node::isTrailingPosDefined(FlexDirection axis) const {
-  auto trailingPosition = isRow(axis)
-      ? computeEdgeValueForRow(style_.position(), YGEdgeEnd, trailingEdge(axis))
-      : computeEdgeValueForColumn(style_.position(), trailingEdge(axis));
-
-  return !trailingPosition.isUndefined();
-}
-
-float Node::getLeadingPosition(FlexDirection axis, float axisSize) const {
-  auto leadingPosition = isRow(axis)
-      ? computeEdgeValueForRow(
-            style_.position(), YGEdgeStart, leadingEdge(axis))
-      : computeEdgeValueForColumn(style_.position(), leadingEdge(axis));
-
-  return resolveValue(leadingPosition, axisSize).unwrapOrDefault(0.0f);
-}
-
-float Node::getTrailingPosition(FlexDirection axis, float axisSize) const {
-  auto trailingPosition = isRow(axis)
-      ? computeEdgeValueForRow(style_.position(), YGEdgeEnd, trailingEdge(axis))
-      : computeEdgeValueForColumn(style_.position(), trailingEdge(axis));
-
-  return resolveValue(trailingPosition, axisSize).unwrapOrDefault(0.0f);
-}
-
-float Node::getLeadingMargin(FlexDirection axis, float widthSize) const {
-  auto leadingMargin = isRow(axis)
-      ? computeEdgeValueForRow(style_.margin(), YGEdgeStart, leadingEdge(axis))
-      : computeEdgeValueForColumn(style_.margin(), leadingEdge(axis));
-
-  return resolveValue(leadingMargin, widthSize).unwrapOrDefault(0.0f);
-}
-
-float Node::getTrailingMargin(FlexDirection axis, float widthSize) const {
-  auto trailingMargin = isRow(axis)
-      ? computeEdgeValueForRow(style_.margin(), YGEdgeEnd, trailingEdge(axis))
-      : computeEdgeValueForColumn(style_.margin(), trailingEdge(axis));
-
-  return resolveValue(trailingMargin, widthSize).unwrapOrDefault(0.0f);
-}
-
-float Node::getLeadingBorder(FlexDirection axis) const {
-  YGValue leadingBorder = isRow(axis)
-      ? computeEdgeValueForRow(style_.border(), YGEdgeStart, leadingEdge(axis))
-      : computeEdgeValueForColumn(style_.border(), leadingEdge(axis));
-
-  return maxOrDefined(leadingBorder.value, 0.0f);
-}
-
-float Node::getTrailingBorder(FlexDirection axis) const {
-  YGValue trailingBorder = isRow(axis)
-      ? computeEdgeValueForRow(style_.border(), YGEdgeEnd, trailingEdge(axis))
-      : computeEdgeValueForColumn(style_.border(), trailingEdge(axis));
-
-  return maxOrDefined(trailingBorder.value, 0.0f);
-}
-
-float Node::getLeadingPadding(FlexDirection axis, float widthSize) const {
-  auto leadingPadding = isRow(axis)
-      ? computeEdgeValueForRow(style_.padding(), YGEdgeStart, leadingEdge(axis))
-      : computeEdgeValueForColumn(style_.padding(), leadingEdge(axis));
-
-  return maxOrDefined(resolveValue(leadingPadding, widthSize).unwrap(), 0.0f);
-}
-
-float Node::getTrailingPadding(FlexDirection axis, float widthSize) const {
-  auto trailingPadding = isRow(axis)
-      ? computeEdgeValueForRow(style_.padding(), YGEdgeEnd, trailingEdge(axis))
-      : computeEdgeValueForColumn(style_.padding(), trailingEdge(axis));
-
-  return maxOrDefined(resolveValue(trailingPadding, widthSize).unwrap(), 0.0f);
-}
-
-float Node::getLeadingPaddingAndBorder(FlexDirection axis, float widthSize)
-    const {
-  return getLeadingPadding(axis, widthSize) + getLeadingBorder(axis);
-}
-
-float Node::getTrailingPaddingAndBorder(FlexDirection axis, float widthSize)
-    const {
-  return getTrailingPadding(axis, widthSize) + getTrailingBorder(axis);
-}
-
-float Node::getMarginForAxis(FlexDirection axis, float widthSize) const {
-  return getLeadingMargin(axis, widthSize) + getTrailingMargin(axis, widthSize);
-}
-
-float Node::getGapForAxis(FlexDirection axis) const {
-  auto gap = isRow(axis) ? style_.resolveColumnGap() : style_.resolveRowGap();
-  // TODO: Validate percentage gap, and expose ability to set percentage to
-  // public API
-  return maxOrDefined(resolveValue(gap, 0.0f /*ownerSize*/).unwrap(), 0.0f);
-}
-
 YGSize Node::measure(
     float width,
     MeasureMode widthMode,
@@ -197,6 +59,18 @@ YGSize Node::measure(
 
 float Node::baseline(float width, float height) const {
   return baselineFunc_(this, width, height);
+}
+
+float Node::dimensionWithMargin(
+    const FlexDirection axis,
+    const float widthSize) {
+  return getLayout().measuredDimension(dimension(axis)) +
+      style_.computeMarginForAxis(axis, widthSize);
+}
+
+bool Node::isLayoutDimensionDefined(const FlexDirection axis) {
+  const float value = getLayout().measuredDimension(dimension(axis));
+  return yoga::isDefined(value) && value >= 0.0f;
 }
 
 // Setters
@@ -275,25 +149,16 @@ void Node::setLayoutDirection(Direction direction) {
   layout_.setDirection(direction);
 }
 
-void Node::setLayoutMargin(float margin, YGEdge edge) {
-  assertFatal(
-      edge < static_cast<int>(layout_.margin.size()),
-      "Edge must be top/left/bottom/right");
-  layout_.margin[edge] = margin;
+void Node::setLayoutMargin(float margin, PhysicalEdge edge) {
+  layout_.setMargin(edge, margin);
 }
 
-void Node::setLayoutBorder(float border, YGEdge edge) {
-  assertFatal(
-      edge < static_cast<int>(layout_.border.size()),
-      "Edge must be top/left/bottom/right");
-  layout_.border[edge] = border;
+void Node::setLayoutBorder(float border, PhysicalEdge edge) {
+  layout_.setBorder(edge, border);
 }
 
-void Node::setLayoutPadding(float padding, YGEdge edge) {
-  assertFatal(
-      edge < static_cast<int>(layout_.padding.size()),
-      "Edge must be top/left/bottom/right");
-  layout_.padding[edge] = padding;
+void Node::setLayoutPadding(float padding, PhysicalEdge edge) {
+  layout_.setPadding(edge, padding);
 }
 
 void Node::setLayoutLastOwnerDirection(Direction direction) {
@@ -304,11 +169,8 @@ void Node::setLayoutComputedFlexBasis(const FloatOptional computedFlexBasis) {
   layout_.computedFlexBasis = computedFlexBasis;
 }
 
-void Node::setLayoutPosition(float position, YGEdge edge) {
-  assertFatal(
-      edge < static_cast<int>(layout_.position.size()),
-      "Edge must be top/left/bottom/right");
-  layout_.position[edge] = position;
+void Node::setLayoutPosition(float position, PhysicalEdge edge) {
+  layout_.setPosition(edge, position);
 }
 
 void Node::setLayoutComputedFlexBasisGeneration(
@@ -326,18 +188,25 @@ void Node::setLayoutHadOverflow(bool hadOverflow) {
   layout_.setHadOverflow(hadOverflow);
 }
 
-void Node::setLayoutDimension(float dimensionValue, Dimension dimension) {
-  layout_.setDimension(dimension, dimensionValue);
+void Node::setLayoutDimension(float LengthValue, Dimension dimension) {
+  layout_.setDimension(dimension, LengthValue);
 }
 
 // If both left and right are defined, then use left. Otherwise return +left or
-// -right depending on which is defined.
-float Node::relativePosition(FlexDirection axis, float axisSize) const {
-  if (isLeadingPositionDefined(axis)) {
-    return getLeadingPosition(axis, axisSize);
+// -right depending on which is defined. Ignore statically positioned nodes as
+// insets do not apply to them.
+float Node::relativePosition(
+    FlexDirection axis,
+    Direction direction,
+    float axisSize) const {
+  if (style_.positionType() == PositionType::Static) {
+    return 0;
+  }
+  if (style_.isInlineStartPositionDefined(axis, direction)) {
+    return style_.computeInlineStartPosition(axis, direction, axisSize);
   }
 
-  return -1 * getTrailingPosition(axis, axisSize);
+  return -1 * style_.computeInlineEndPosition(axis, direction, axisSize);
 }
 
 void Node::setPosition(
@@ -354,61 +223,55 @@ void Node::setPosition(
   const FlexDirection crossAxis =
       yoga::resolveCrossDirection(mainAxis, directionRespectingRoot);
 
-  // Here we should check for `PositionType::Static` and in this case zero inset
-  // properties (left, right, top, bottom, begin, end).
+  // In the case of position static these are just 0. See:
   // https://www.w3.org/TR/css-position-3/#valdef-position-static
-  const float relativePositionMain = relativePosition(mainAxis, mainSize);
-  const float relativePositionCross = relativePosition(crossAxis, crossSize);
+  const float relativePositionMain =
+      relativePosition(mainAxis, directionRespectingRoot, mainSize);
+  const float relativePositionCross =
+      relativePosition(crossAxis, directionRespectingRoot, crossSize);
+
+  const auto mainAxisLeadingEdge = inlineStartEdge(mainAxis, direction);
+  const auto mainAxisTrailingEdge = inlineEndEdge(mainAxis, direction);
+  const auto crossAxisLeadingEdge = inlineStartEdge(crossAxis, direction);
+  const auto crossAxisTrailingEdge = inlineEndEdge(crossAxis, direction);
 
   setLayoutPosition(
-      (getLeadingMargin(mainAxis, ownerWidth) + relativePositionMain),
-      leadingEdge(mainAxis));
+      (style_.computeInlineStartMargin(mainAxis, direction, ownerWidth) +
+       relativePositionMain),
+      mainAxisLeadingEdge);
   setLayoutPosition(
-      (getTrailingMargin(mainAxis, ownerWidth) + relativePositionMain),
-      trailingEdge(mainAxis));
+      (style_.computeInlineEndMargin(mainAxis, direction, ownerWidth) +
+       relativePositionMain),
+      mainAxisTrailingEdge);
   setLayoutPosition(
-      (getLeadingMargin(crossAxis, ownerWidth) + relativePositionCross),
-      leadingEdge(crossAxis));
+      (style_.computeInlineStartMargin(crossAxis, direction, ownerWidth) +
+       relativePositionCross),
+      crossAxisLeadingEdge);
   setLayoutPosition(
-      (getTrailingMargin(crossAxis, ownerWidth) + relativePositionCross),
-      trailingEdge(crossAxis));
+      (style_.computeInlineEndMargin(crossAxis, direction, ownerWidth) +
+       relativePositionCross),
+      crossAxisTrailingEdge);
 }
 
-YGValue Node::marginLeadingValue(FlexDirection axis) const {
-  if (isRow(axis) && !style_.margin()[YGEdgeStart].isUndefined()) {
-    return style_.margin()[YGEdgeStart];
-  } else {
-    return style_.margin()[leadingEdge(axis)];
-  }
-}
-
-YGValue Node::marginTrailingValue(FlexDirection axis) const {
-  if (isRow(axis) && !style_.margin()[YGEdgeEnd].isUndefined()) {
-    return style_.margin()[YGEdgeEnd];
-  } else {
-    return style_.margin()[trailingEdge(axis)];
-  }
-}
-
-YGValue Node::resolveFlexBasisPtr() const {
-  YGValue flexBasis = style_.flexBasis();
-  if (flexBasis.unit != YGUnitAuto && flexBasis.unit != YGUnitUndefined) {
+Style::Length Node::resolveFlexBasisPtr() const {
+  Style::Length flexBasis = style_.flexBasis();
+  if (flexBasis.unit() != Unit::Auto && flexBasis.unit() != Unit::Undefined) {
     return flexBasis;
   }
-  if (!style_.flex().isUndefined() && style_.flex().unwrap() > 0.0f) {
-    return config_->useWebDefaults() ? YGValueAuto : YGValueZero;
+  if (style_.flex().isDefined() && style_.flex().unwrap() > 0.0f) {
+    return config_->useWebDefaults() ? value::ofAuto() : value::points(0);
   }
-  return YGValueAuto;
+  return value::ofAuto();
 }
 
 void Node::resolveDimension() {
-  const Style& style = getStyle();
   for (auto dim : {Dimension::Width, Dimension::Height}) {
-    if (!style.maxDimension(dim).isUndefined() &&
-        yoga::inexactEquals(style.maxDimension(dim), style.minDimension(dim))) {
-      resolvedDimensions_[yoga::to_underlying(dim)] = style.maxDimension(dim);
+    if (style_.maxDimension(dim).isDefined() &&
+        yoga::inexactEquals(
+            style_.maxDimension(dim), style_.minDimension(dim))) {
+      resolvedDimensions_[yoga::to_underlying(dim)] = style_.maxDimension(dim);
     } else {
-      resolvedDimensions_[yoga::to_underlying(dim)] = style.dimension(dim);
+      resolvedDimensions_[yoga::to_underlying(dim)] = style_.dimension(dim);
     }
   }
 }
@@ -450,22 +313,15 @@ void Node::markDirtyAndPropagate() {
   }
 }
 
-void Node::markDirtyAndPropagateDownwards() {
-  isDirty_ = true;
-  for_each(children_.begin(), children_.end(), [](Node* childNode) {
-    childNode->markDirtyAndPropagateDownwards();
-  });
-}
-
 float Node::resolveFlexGrow() const {
   // Root nodes flexGrow should always be 0
   if (owner_ == nullptr) {
     return 0.0;
   }
-  if (!style_.flexGrow().isUndefined()) {
+  if (style_.flexGrow().isDefined()) {
     return style_.flexGrow().unwrap();
   }
-  if (!style_.flex().isUndefined() && style_.flex().unwrap() > 0.0f) {
+  if (style_.flex().isDefined() && style_.flex().unwrap() > 0.0f) {
     return style_.flex().unwrap();
   }
   return Style::DefaultFlexGrow;
@@ -475,10 +331,10 @@ float Node::resolveFlexShrink() const {
   if (owner_ == nullptr) {
     return 0.0;
   }
-  if (!style_.flexShrink().isUndefined()) {
+  if (style_.flexShrink().isDefined()) {
     return style_.flexShrink().unwrap();
   }
-  if (!config_->useWebDefaults() && !style_.flex().isUndefined() &&
+  if (!config_->useWebDefaults() && style_.flex().isDefined() &&
       style_.flex().unwrap() < 0.0f) {
     return -style_.flex().unwrap();
   }

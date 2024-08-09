@@ -7,6 +7,9 @@
 
 package com.facebook.react.views.image;
 
+import com.facebook.infer.annotation.Nullsafe;
+
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public enum ImageResizeMethod {
   AUTO,
   RESIZE,

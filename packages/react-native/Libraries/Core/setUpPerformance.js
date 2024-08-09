@@ -8,8 +8,8 @@
  * @format
  */
 
-import NativePerformance from '../WebPerformance/NativePerformance';
-import Performance from '../WebPerformance/Performance';
+import NativePerformance from '../../src/private/webapis/performance/NativePerformance';
+import Performance from '../../src/private/webapis/performance/Performance';
 
 // In case if the native implementation of the Performance API is available, use it,
 // otherwise fall back to the legacy/default one, which only defines 'Performance.now()'

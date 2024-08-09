@@ -9,15 +9,17 @@
 /* Begin PBXBuildFile section */
 		0CBC915D60C701A81731A5A4 /* libPods-RNTester-macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C88AE81E635231C7F0F3BA4 /* libPods-RNTester-macOS.a */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
+		25990B13CE7E63DB346C61B9 /* libPods-RNTesterUnitTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7C0C9D229307A2C6B42B1127 /* libPods-RNTesterUnitTests.a */; };
 		2DDEF0101F84BF7B00DBDF73 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2DDEF00F1F84BF7B00DBDF73 /* Images.xcassets */; };
 		383889DA23A7398900D06C3E /* RCTConvert_UIColorTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 383889D923A7398900D06C3E /* RCTConvert_UIColorTests.m */; };
 		3A87E8599EEB2C61C0F6589F /* libPods-RNTester-macOSUnitTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 07517909E4081E5D74D5DD60 /* libPods-RNTester-macOSUnitTests.a */; };
 		3D2AFAF51D646CF80089D1A3 /* legacy_image@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D2AFAF41D646CF80089D1A3 /* legacy_image@2x.png */; };
 		5C60EB1C226440DB0018C04F /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5C60EB1B226440DB0018C04F /* AppDelegate.mm */; };
-		5D6B063D55CB76D4D2309391 /* libPods-RNTesterIntegrationTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63C6B5E1C2465D85E9BDB6E5 /* libPods-RNTesterIntegrationTests.a */; };
+		5E27AAD0A6D7359909DE02F5 /* libPods-RNTesterIntegrationTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF28E21150E69B2A4F94B72 /* libPods-RNTesterIntegrationTests.a */; };
 		8145AE06241172D900A3F8DA /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8145AE05241172D900A3F8DA /* LaunchScreen.storyboard */; };
 		832F45BB2A8A6E1F0097B4E6 /* SwiftTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 832F45BA2A8A6E1F0097B4E6 /* SwiftTest.swift */; };
 		918A215FD4EF5A828705D765 /* libPods-RNTester-macOSIntegrationTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 474EC5CD967949D41527EECF /* libPods-RNTester-macOSIntegrationTests.a */; };
+		952DE744170276A21733854C /* libPods-RNTester.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F8231F4FA4BF1B10D67D9E82 /* libPods-RNTester.a */; };
 		AC30658829B14F38007A839A /* RCTComponentPropsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E7DB20CC22B2BAA5005AC45F /* RCTComponentPropsTests.m */; };
 		AC73FCE829B1316D0003586F /* RNTesterIntegrationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E7C1241922BEC44B00DA25C0 /* RNTesterIntegrationTests.m */; };
 		AC73FCE929B131700003586F /* RCTLoggingTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E7DB215E22B2F3EC005AC45F /* RCTLoggingTests.m */; };
@@ -61,7 +63,6 @@
 		ACC52F4A299ECB7B002A2B0B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = ACC52F48299ECB7B002A2B0B /* Main.storyboard */; };
 		ACC52F6C299ECDDA002A2B0B /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = ACC52F6B299ECDDA002A2B0B /* Info.plist */; };
 		ACDBF0D529B2BF0A00EEBD9E /* RNTesterUnitTestsBundle.js in Resources */ = {isa = PBXBuildFile; fileRef = E7DB20B322B2BAA4005AC45F /* RNTesterUnitTestsBundle.js */; };
-		BE29745FA46255D106CB15ED /* libPods-RNTester.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 77955ECD532E128A8C49AC35 /* libPods-RNTester.a */; };
 		CD10C7A5290BD4EB0033E1ED /* RCTEventEmitterTests.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10C7A4290BD4EB0033E1ED /* RCTEventEmitterTests.m */; };
 		E319E5C2892523FABA38B418 /* libPods-RNTester-visionOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD5A82EE0F733AF40EA06F36 /* libPods-RNTester-visionOS.a */; };
 		E62F11832A5C6580000BF1C8 /* FlexibleSizeExampleView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 27F441E81BEBE5030039B79C /* FlexibleSizeExampleView.mm */; };
@@ -102,7 +103,6 @@
 		E7DB216422B2F3EC005AC45F /* RCTUIManagerScenarioTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E7DB215F22B2F3EC005AC45F /* RCTUIManagerScenarioTests.m */; };
 		E7DB216722B2F69F005AC45F /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7DB213022B2C649005AC45F /* JavaScriptCore.framework */; };
 		E7DB218C22B41FCD005AC45F /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7DB218B22B41FCD005AC45F /* XCTest.framework */; };
-		F37EF1CF1FC0B3DD56375DC7 /* libPods-RNTesterUnitTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D6942D0981036096211E5BDC /* libPods-RNTesterUnitTests.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -139,12 +139,12 @@
 /* Begin PBXFileReference section */
 		0553512BB0EDB0E5BC262515 /* Pods-RNTester-visionOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNTester-visionOS.release.xcconfig"; path = "Target Support Files/Pods-RNTester-visionOS/Pods-RNTester-visionOS.release.xcconfig"; sourceTree = "<group>"; };
 		07517909E4081E5D74D5DD60 /* libPods-RNTester-macOSUnitTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RNTester-macOSUnitTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		0CC3BE1A25DDB68A0033CAEB /* RNTester.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = RNTester.entitlements; path = RNTester/RNTester.entitlements; sourceTree = "<group>"; };
 		1176CCE167820DDB6B66801A /* Pods-RNTester-macOSUnitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNTester-macOSUnitTests.release.xcconfig"; path = "Target Support Files/Pods-RNTester-macOSUnitTests/Pods-RNTester-macOSUnitTests.release.xcconfig"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* RNTester.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RNTester.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = RNTester/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = RNTester/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = RNTester/main.m; sourceTree = "<group>"; };
+		1DF28E21150E69B2A4F94B72 /* libPods-RNTesterIntegrationTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RNTesterIntegrationTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		272E6B3B1BEA849E001FCF37 /* UpdatePropertiesExampleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UpdatePropertiesExampleView.h; path = RNTester/NativeExampleViews/UpdatePropertiesExampleView.h; sourceTree = "<group>"; };
 		272E6B3C1BEA849E001FCF37 /* UpdatePropertiesExampleView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = UpdatePropertiesExampleView.mm; path = RNTester/NativeExampleViews/UpdatePropertiesExampleView.mm; sourceTree = "<group>"; };
 		2734C5E31C1D7A09BF872585 /* Pods-RNTester.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNTester.debug.xcconfig"; path = "Target Support Files/Pods-RNTester/Pods-RNTester.debug.xcconfig"; sourceTree = "<group>"; };
@@ -156,9 +156,8 @@
 		474EC5CD967949D41527EECF /* libPods-RNTester-macOSIntegrationTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RNTester-macOSIntegrationTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		59BCC6695B251DC95CFA6A67 /* Pods-RNTester-macOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNTester-macOS.debug.xcconfig"; path = "Target Support Files/Pods-RNTester-macOS/Pods-RNTester-macOS.debug.xcconfig"; sourceTree = "<group>"; };
 		5C60EB1B226440DB0018C04F /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = RNTester/AppDelegate.mm; sourceTree = "<group>"; };
-		63C6B5E1C2465D85E9BDB6E5 /* libPods-RNTesterIntegrationTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RNTesterIntegrationTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		66C3087F2D5BF762FE9E6422 /* Pods-RNTesterIntegrationTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNTesterIntegrationTests.debug.xcconfig"; path = "Target Support Files/Pods-RNTesterIntegrationTests/Pods-RNTesterIntegrationTests.debug.xcconfig"; sourceTree = "<group>"; };
-		77955ECD532E128A8C49AC35 /* libPods-RNTester.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RNTester.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		7C0C9D229307A2C6B42B1127 /* libPods-RNTesterUnitTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RNTesterUnitTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7CDA7A212644C6BB8C0D00D8 /* Pods-RNTesterIntegrationTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNTesterIntegrationTests.release.xcconfig"; path = "Target Support Files/Pods-RNTesterIntegrationTests/Pods-RNTesterIntegrationTests.release.xcconfig"; sourceTree = "<group>"; };
 		8145AE05241172D900A3F8DA /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = RNTester/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		832F45BA2A8A6E1F0097B4E6 /* SwiftTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SwiftTest.swift; path = RNTester/SwiftTest.swift; sourceTree = "<group>"; };
@@ -181,7 +180,6 @@
 		CAEBC2296BB4BDDDCAAF4404 /* Pods-RNTester-macOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNTester-macOS.release.xcconfig"; path = "Target Support Files/Pods-RNTester-macOS/Pods-RNTester-macOS.release.xcconfig"; sourceTree = "<group>"; };
 		CD10C7A4290BD4EB0033E1ED /* RCTEventEmitterTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTEventEmitterTests.m; sourceTree = "<group>"; };
 		CD5A82EE0F733AF40EA06F36 /* libPods-RNTester-visionOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RNTester-visionOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		D6942D0981036096211E5BDC /* libPods-RNTesterUnitTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RNTesterUnitTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E2994DA5CC7BE9B0C836D6B6 /* Pods-RNTester-macOSUnitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNTester-macOSUnitTests.debug.xcconfig"; path = "Target Support Files/Pods-RNTester-macOSUnitTests/Pods-RNTester-macOSUnitTests.debug.xcconfig"; sourceTree = "<group>"; };
 		E771AEEA22B44E3100EA1189 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = RNTester/Info.plist; sourceTree = "<group>"; };
 		E7C1241922BEC44B00DA25C0 /* RNTesterIntegrationTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNTesterIntegrationTests.m; sourceTree = "<group>"; };
@@ -246,6 +244,7 @@
 		E7DB218B22B41FCD005AC45F /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		E8475AB4E5BB7B7A87C16D41 /* Pods-RNTesterUnitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNTesterUnitTests.debug.xcconfig"; path = "Target Support Files/Pods-RNTesterUnitTests/Pods-RNTesterUnitTests.debug.xcconfig"; sourceTree = "<group>"; };
 		EE448B25704B6F47386E69A9 /* Pods-RNTester.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNTester.release.xcconfig"; path = "Target Support Files/Pods-RNTester/Pods-RNTester.release.xcconfig"; sourceTree = "<group>"; };
+		F8231F4FA4BF1B10D67D9E82 /* libPods-RNTester.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RNTester.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -253,7 +252,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BE29745FA46255D106CB15ED /* libPods-RNTester.a in Frameworks */,
+				952DE744170276A21733854C /* libPods-RNTester.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -294,7 +293,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E7DB213122B2C649005AC45F /* JavaScriptCore.framework in Frameworks */,
-				F37EF1CF1FC0B3DD56375DC7 /* libPods-RNTesterUnitTests.a in Frameworks */,
+				25990B13CE7E63DB346C61B9 /* libPods-RNTesterUnitTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -304,7 +303,7 @@
 			files = (
 				E7DB218C22B41FCD005AC45F /* XCTest.framework in Frameworks */,
 				E7DB216722B2F69F005AC45F /* JavaScriptCore.framework in Frameworks */,
-				5D6B063D55CB76D4D2309391 /* libPods-RNTesterIntegrationTests.a in Frameworks */,
+				5E27AAD0A6D7359909DE02F5 /* libPods-RNTesterIntegrationTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -323,7 +322,6 @@
 		13B07FAE1A68108700A75B9A /* RNTester */ = {
 			isa = PBXGroup;
 			children = (
-				0CC3BE1A25DDB68A0033CAEB /* RNTester.entitlements */,
 				E771AEEA22B44E3100EA1189 /* Info.plist */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				5C60EB1B226440DB0018C04F /* AppDelegate.mm */,
@@ -377,10 +375,10 @@
 				9C88AE81E635231C7F0F3BA4 /* libPods-RNTester-macOS.a */,
 				07517909E4081E5D74D5DD60 /* libPods-RNTester-macOSUnitTests.a */,
 				474EC5CD967949D41527EECF /* libPods-RNTester-macOSIntegrationTests.a */,
-				63C6B5E1C2465D85E9BDB6E5 /* libPods-RNTesterIntegrationTests.a */,
-				D6942D0981036096211E5BDC /* libPods-RNTesterUnitTests.a */,
-				77955ECD532E128A8C49AC35 /* libPods-RNTester.a */,
 				CD5A82EE0F733AF40EA06F36 /* libPods-RNTester-visionOS.a */,
+				F8231F4FA4BF1B10D67D9E82 /* libPods-RNTester.a */,
+				1DF28E21150E69B2A4F94B72 /* libPods-RNTesterIntegrationTests.a */,
+				7C0C9D229307A2C6B42B1127 /* libPods-RNTesterUnitTests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -1258,7 +1256,6 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_ENTITLEMENTS = RNTester/RNTester.entitlements;
 				DEVELOPMENT_TEAM = "";
 				HEADER_SEARCH_PATHS = (
 					"${PODS_ROOT}/Headers/Private/Yoga",
@@ -1297,7 +1294,6 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_ENTITLEMENTS = RNTester/RNTester.entitlements;
 				DEVELOPMENT_TEAM = "";
 				EXCLUDED_ARCHS = "";
 				HEADER_SEARCH_PATHS = (
@@ -1399,14 +1395,13 @@
 					"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx",
 					"${PODS_CONFIGURATION_BUILD_DIR}/React-NativeModulesApple/React_NativeModulesApple.framework/Headers",
 					"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios",
+					" ${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers",
+					" ${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_CFLAGS = (
-					"$(inherited)",
-					"-DRN_FABRIC_ENABLED",
-				);
+				OTHER_CFLAGS = "$(inherited)";
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-DFOLLY_NO_CONFIG",
@@ -1414,13 +1409,10 @@
 					"-DFOLLY_USE_LIBCPP=1",
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
-					"-DRN_FABRIC_ENABLED",
 				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"-lc++",
-					"-Wl",
-					"-ld_classic",
 				);
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../react-native";
 				SDKROOT = iphoneos;
@@ -1496,13 +1488,12 @@
 					"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx",
 					"${PODS_CONFIGURATION_BUILD_DIR}/React-NativeModulesApple/React_NativeModulesApple.framework/Headers",
 					"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios",
+					" ${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers",
+					" ${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				MTL_ENABLE_DEBUG_INFO = NO;
-				OTHER_CFLAGS = (
-					"$(inherited)",
-					"-DRN_FABRIC_ENABLED",
-				);
+				OTHER_CFLAGS = "$(inherited)";
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-DFOLLY_NO_CONFIG",
@@ -1510,13 +1501,10 @@
 					"-DFOLLY_USE_LIBCPP=1",
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
-					"-DRN_FABRIC_ENABLED",
 				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"-lc++",
-					"-Wl",
-					"-ld_classic",
 				);
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../react-native";
 				SDKROOT = iphoneos;
@@ -1828,7 +1816,6 @@
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CODE_SIGN_STYLE = Automatic;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = "";
 				HEADER_SEARCH_PATHS = (
@@ -1849,11 +1836,8 @@
 				);
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				OTHER_CFLAGS = (
-					"$(inherited)",
-					"-DFB_SONARKIT_ENABLED=1",
-				);
-				OTHER_SWIFT_FLAGS = "$(inherited) -Xcc -DFB_SONARKIT_ENABLED";
+				OTHER_CFLAGS = "$(inherited)";
+				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.meta.RNTesterUnitTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1870,7 +1854,6 @@
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = "";
@@ -1891,11 +1874,8 @@
 					"$(PROJECT_DIR)/RNTesterUnitTests",
 				);
 				MTL_FAST_MATH = YES;
-				OTHER_CFLAGS = (
-					"$(inherited)",
-					"-DFB_SONARKIT_ENABLED=1",
-				);
-				OTHER_SWIFT_FLAGS = "$(inherited) -Xcc -DFB_SONARKIT_ENABLED";
+				OTHER_CFLAGS = "$(inherited)";
+				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.meta.RNTesterUnitTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1913,7 +1893,6 @@
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CODE_SIGN_STYLE = Automatic;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = "";
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -1933,11 +1912,8 @@
 				);
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				OTHER_CFLAGS = (
-					"$(inherited)",
-					"-DFB_SONARKIT_ENABLED=1",
-				);
-				OTHER_SWIFT_FLAGS = "$(inherited) -Xcc -DFB_SONARKIT_ENABLED";
+				OTHER_CFLAGS = "$(inherited)";
+				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.meta.RNTesterIntegrationTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1956,7 +1932,6 @@
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = "";
@@ -1972,11 +1947,8 @@
 					"@loader_path/Frameworks",
 				);
 				MTL_FAST_MATH = YES;
-				OTHER_CFLAGS = (
-					"$(inherited)",
-					"-DFB_SONARKIT_ENABLED=1",
-				);
-				OTHER_SWIFT_FLAGS = "$(inherited) -Xcc -DFB_SONARKIT_ENABLED";
+				OTHER_CFLAGS = "$(inherited)";
+				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.meta.RNTesterIntegrationTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";

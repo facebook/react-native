@@ -11,7 +11,6 @@
 import type {CellMetricProps} from '../ListMetricsAggregator';
 
 import ListMetricsAggregator from '../ListMetricsAggregator';
-
 import nullthrows from 'nullthrows';
 
 describe('ListMetricsAggregator', () => {

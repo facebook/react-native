@@ -34,12 +34,13 @@ public class ReactActivityDelegate {
   private ReactDelegate mReactDelegate;
 
   @Deprecated
-  public ReactActivityDelegate(Activity activity, @Nullable String mainComponentName) {
+  public ReactActivityDelegate(@Nullable Activity activity, @Nullable String mainComponentName) {
     mActivity = activity;
     mMainComponentName = mainComponentName;
   }
 
-  public ReactActivityDelegate(ReactActivity activity, @Nullable String mainComponentName) {
+  public ReactActivityDelegate(
+      @Nullable ReactActivity activity, @Nullable String mainComponentName) {
     mActivity = activity;
     mMainComponentName = mainComponentName;
   }
@@ -60,7 +61,6 @@ public class ReactActivityDelegate {
       if (composedLaunchOptions == null) {
         composedLaunchOptions = new Bundle();
       }
-      composedLaunchOptions.putBoolean("concurrentRoot", true);
     }
     return composedLaunchOptions;
   }
@@ -237,6 +237,6 @@ public class ReactActivityDelegate {
    * @return true if Fabric is enabled for this Activity, false otherwise.
    */
   protected boolean isFabricEnabled() {
-    return false;
+    return ReactFeatureFlags.enableFabricRenderer;
   }
 }

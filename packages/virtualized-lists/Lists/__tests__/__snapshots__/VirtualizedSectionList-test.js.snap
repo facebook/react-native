@@ -62,7 +62,6 @@ exports[`VirtualizedSectionList handles nested lists 1`] = `
         getItemCount={[Function]}
         horizontal={false}
         keyExtractor={[Function]}
-        onContentSizeChange={[Function]}
         onLayout={[Function]}
         onMomentumScrollBegin={[Function]}
         onMomentumScrollEnd={[Function]}

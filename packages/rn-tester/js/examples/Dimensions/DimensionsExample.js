@@ -8,9 +8,9 @@
  * @flow
  */
 
-import {Dimensions, Text, useWindowDimensions} from 'react-native';
 import * as React from 'react';
-import {useState, useEffect} from 'react';
+import {useEffect, useState} from 'react';
+import {Dimensions, Text, useWindowDimensions} from 'react-native';
 
 type Props = {dim: string};
 

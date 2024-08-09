@@ -16,7 +16,10 @@ import flattenStyle from '../StyleSheet/flattenStyle';
 import StyleSheet from '../StyleSheet/StyleSheet';
 import TextAncestor from '../Text/TextAncestor';
 import ImageAnalyticsTagContext from './ImageAnalyticsTagContext';
-import {unstable_getImageComponentDecorator} from './ImageInjection';
+import {
+  unstable_getImageComponentDecorator,
+  useWrapRefWithImageAttachedCallbacks,
+} from './ImageInjection';
 import {getImageSourcesFromImageProps} from './ImageSourceUtils';
 import {convertObjectFitToResizeMode} from './ImageUtils';
 import ImageViewNativeComponent from './ImageViewNativeComponent';
@@ -176,7 +179,6 @@ let BaseImage: AbstractImageAndroid = React.forwardRef(
       loadingIndicatorSrc: loadingIndicatorSource
         ? loadingIndicatorSource.uri
         : null,
-      ref: forwardedRef,
       accessibilityLabel:
         props['aria-label'] ?? props.accessibilityLabel ?? props.alt,
       accessibilityLabelledBy:
@@ -196,6 +198,8 @@ let BaseImage: AbstractImageAndroid = React.forwardRef(
       : null;
     const resizeMode =
       objectFit || props.resizeMode || style?.resizeMode || 'cover';
+
+    const actualRef = useWrapRefWithImageAttachedCallbacks(forwardedRef);
 
     return (
       <ImageAnalyticsTagContext.Consumer>
@@ -218,7 +222,7 @@ let BaseImage: AbstractImageAndroid = React.forwardRef(
                       resizeMode={resizeMode}
                       headers={nativeProps.headers}
                       src={sources}
-                      ref={forwardedRef}
+                      ref={actualRef}
                     />
                   );
                 }
@@ -227,6 +231,7 @@ let BaseImage: AbstractImageAndroid = React.forwardRef(
                   <ImageViewNativeComponent
                     {...nativePropsWithAnalytics}
                     resizeMode={resizeMode}
+                    ref={actualRef}
                   />
                 );
               }}
@@ -306,12 +311,6 @@ Image.queryCache = queryCache;
  */
 // $FlowFixMe[incompatible-use] This property isn't writable but we're actually defining it here for the first time.
 Image.resolveAssetSource = resolveAssetSource;
-
-/**
- * Switch to `deprecated-react-native-prop-types` for compatibility with future
- * releases. This is deprecated and will be removed in the future.
- */
-Image.propTypes = require('deprecated-react-native-prop-types').ImagePropTypes;
 
 const styles = StyleSheet.create({
   base: {

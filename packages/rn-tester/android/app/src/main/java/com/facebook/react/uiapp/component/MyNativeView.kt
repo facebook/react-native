@@ -5,13 +5,17 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+@file:Suppress("DEPRECATION") // As we want to test RCTEventEmitter here
+
 package com.facebook.react.uiapp.component
 
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
 import android.view.View
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReactContext
+import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.WritableArray
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.uimanager.ThemedReactContext
@@ -22,7 +26,7 @@ import com.facebook.react.uimanager.events.RCTEventEmitter
 class MyNativeView(context: ThemedReactContext) : View(context) {
   private var currentColor = 0
   private var background: GradientDrawable = GradientDrawable()
-  private var reactContext: ReactContext = context.getReactApplicationContext()
+  private var reactContext: ReactContext = context.reactApplicationContext
 
   override fun setBackgroundColor(color: Int) {
     if (color != currentColor) {
@@ -34,13 +38,29 @@ class MyNativeView(context: ThemedReactContext) : View(context) {
   }
 
   fun setCornerRadius(cornerRadius: Float) {
-    background.setCornerRadius(cornerRadius)
+    background.cornerRadius = cornerRadius
     setBackground(background)
+  }
+
+  fun addOverlays(overlayColors: ReadableArray) {
+    val numOverlays = overlayColors.size()
+    val width = getMeasuredWidth() / numOverlays
+    for (i in 0 until numOverlays) {
+      val drawable = ColorDrawable(Color.parseColor(overlayColors.getString(i)))
+      val leftOffset = width * i
+      drawable.setBounds(leftOffset, 0, leftOffset + width, getMeasuredHeight())
+      getOverlay().add(drawable)
+    }
+  }
+
+  fun removeOverlays() {
+    getOverlay().clear()
   }
 
   private fun emitNativeEvent(color: Int) {
     val event = Arguments.createMap()
     val hsv = FloatArray(3)
+    Color.colorToHSV(color, hsv)
     val backgroundColor =
         Arguments.createMap().apply {
           putDouble("hue", hsv[0].toDouble())
@@ -49,7 +69,6 @@ class MyNativeView(context: ThemedReactContext) : View(context) {
           putDouble("alpha", Color.alpha(color).toDouble())
         }
 
-    Color.colorToHSV(color, hsv)
     event.putMap("backgroundColor", backgroundColor)
 
     reactContext.getJSModule(RCTEventEmitter::class.java).receiveEvent(id, "onColorChanged", event)
@@ -105,12 +124,28 @@ class MyNativeView(context: ThemedReactContext) : View(context) {
     eventDispatcher?.dispatchEvent(event)
   }
 
+  fun emitLegacyStyleEvent() {
+    val reactContext = context as ReactContext
+    val surfaceId = UIManagerHelper.getSurfaceId(reactContext)
+    val eventDispatcher = UIManagerHelper.getEventDispatcherForReactTag(reactContext, id)
+    val payload = Arguments.createMap().apply { putString("string", "Legacy Style Event Fired.") }
+    val event = OnLegacyStyleEvent(surfaceId, id, payload)
+    eventDispatcher?.dispatchEvent(event)
+  }
+
   inner class OnIntArrayChangedEvent(
       surfaceId: Int,
       viewId: Int,
       private val payload: WritableMap
   ) : Event<OnIntArrayChangedEvent>(surfaceId, viewId) {
-    override fun getEventName() = "onIntArrayChanged"
+    override fun getEventName() = "topIntArrayChanged"
+
+    override fun getEventData() = payload
+  }
+
+  inner class OnLegacyStyleEvent(surfaceId: Int, viewId: Int, private val payload: WritableMap) :
+      Event<OnLegacyStyleEvent>(surfaceId, viewId) {
+    override fun getEventName() = "alternativeLegacyName"
 
     override fun getEventData() = payload
   }

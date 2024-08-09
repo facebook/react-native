@@ -36,6 +36,12 @@ internal object DependencyUtils {
         repositories.mavenCentral { repo ->
           // We don't want to fetch JSC from Maven Central as there are older versions there.
           repo.content { it.excludeModule("org.webkit", "android-jsc") }
+
+          // If the user provided a react.internal.mavenLocalRepo, do not attempt to load
+          // anything from Maven Central that is react related.
+          if (hasProperty(INTERNAL_REACT_NATIVE_MAVEN_LOCAL_REPO)) {
+            repo.content { it.excludeGroup("com.facebook.react") }
+          }
         }
         // Android JSC is installed from npm
         mavenRepoFromURI(File(reactNativeDir, "../jsc-android/dist").toURI())
@@ -48,8 +54,7 @@ internal object DependencyUtils {
   /**
    * This method takes care of configuring the resolution strategy for both the app and all the 3rd
    * party libraries which are auto-linked. Specifically it takes care of:
-   * - Forcing the react-android/hermes-android/flipper-integration version to the one specified in
-   *   the package.json
+   * - Forcing the react-android/hermes-android version to the one specified in the package.json
    * - Substituting `react-native` with `react-android` and `hermes-engine` with `hermes-android`.
    */
   fun configureDependencies(
@@ -71,7 +76,6 @@ internal object DependencyUtils {
         }
         configuration.resolutionStrategy.force(
             "${groupString}:react-android:${versionString}",
-            "${groupString}:flipper-integration:${versionString}",
         )
         if (!(eachProject.findProperty(INTERNAL_USE_HERMES_NIGHTLY) as? String).toBoolean()) {
           // Contributors only: The hermes-engine version is forced only if the user has
@@ -115,7 +119,7 @@ internal object DependencyUtils {
   fun readVersionAndGroupStrings(propertiesFile: File): Pair<String, String> {
     val reactAndroidProperties = Properties()
     propertiesFile.inputStream().use { reactAndroidProperties.load(it) }
-    val versionStringFromFile = reactAndroidProperties[INTERNAL_VERSION_NAME] as? String ?: ""
+    val versionStringFromFile = (reactAndroidProperties[INTERNAL_VERSION_NAME] as? String).orEmpty()
     // If on a nightly, we need to fetch the -SNAPSHOT artifact from Sonatype.
     val versionString =
         if (versionStringFromFile.startsWith("0.0.0") || "-nightly-" in versionStringFromFile) {

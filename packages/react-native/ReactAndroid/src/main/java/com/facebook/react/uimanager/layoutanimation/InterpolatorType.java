@@ -7,12 +7,14 @@
 
 package com.facebook.react.uimanager.layoutanimation;
 
+import com.facebook.infer.annotation.Nullsafe;
 import java.util.Locale;
 
 /**
  * Enum representing the different interpolators that can be used in layout animation configuration.
  */
-/* package */ enum InterpolatorType {
+/* package */ @Nullsafe(Nullsafe.Mode.LOCAL)
+enum InterpolatorType {
   LINEAR,
   EASE_IN,
   EASE_OUT,

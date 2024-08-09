@@ -43,7 +43,7 @@ steps:
     displayName: Run publish-npm.js
     inputs:
       script: |
-        node ./scripts/publish-npm.js -t ${{ parameters.build_type }}
+        node ./scripts/releases-ci/publish-npm.js -t ${{ parameters.build_type }}
     env:
       # Map the corresponding CircleCI variable since `publish-npm.js` depends on it.
       CIRCLE_TAG: $(RNM_PACKAGE_VERSION)

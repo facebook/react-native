@@ -7,10 +7,13 @@
 
 package com.facebook.react.common;
 
+import com.facebook.infer.annotation.Nullsafe;
+
 /**
  * Detour for System.currentTimeMillis and System.nanoTime calls so that they can be mocked out in
  * tests.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class SystemClock {
 
   public static long currentTimeMillis() {

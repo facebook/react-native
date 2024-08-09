@@ -28,11 +28,13 @@ import org.robolectric.RuntimeEnvironment
 class SimpleViewPropertyTest {
 
   private class ConcreteViewManager : SimpleViewManager<View?>() {
-    @Suppress("UNUSED_PARAMETER") @ReactProp(name = "foo") fun setFoo(view: View, foo: Boolean) {}
+    @Suppress("UNUSED_PARAMETER")
+    @ReactProp(name = "foo")
+    fun setFoo(view: View, foo: Boolean) = Unit
 
     @Suppress("UNUSED_PARAMETER")
     @ReactProp(name = "bar")
-    fun setBar(view: View, bar: ReadableMap?) {}
+    fun setBar(view: View, bar: ReadableMap?) = Unit
 
     override fun createViewInstance(reactContext: ThemedReactContext): View {
       return View(reactContext)

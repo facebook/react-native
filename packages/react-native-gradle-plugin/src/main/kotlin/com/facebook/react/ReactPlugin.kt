@@ -12,8 +12,10 @@ import com.android.build.gradle.internal.tasks.factory.dependsOn
 import com.facebook.react.internal.PrivateReactExtension
 import com.facebook.react.tasks.GenerateCodegenArtifactsTask
 import com.facebook.react.tasks.GenerateCodegenSchemaTask
-import com.facebook.react.utils.AgpConfiguratorUtils.configureBuildConfigFields
+import com.facebook.react.utils.AgpConfiguratorUtils.configureBuildConfigFieldsForApp
+import com.facebook.react.utils.AgpConfiguratorUtils.configureBuildConfigFieldsForLibraries
 import com.facebook.react.utils.AgpConfiguratorUtils.configureDevPorts
+import com.facebook.react.utils.AgpConfiguratorUtils.configureNamespaceForLibraries
 import com.facebook.react.utils.BackwardCompatUtils.configureBackwardCompatibilityReactMap
 import com.facebook.react.utils.DependencyUtils.configureDependencies
 import com.facebook.react.utils.DependencyUtils.configureRepositories
@@ -66,9 +68,10 @@ class ReactPlugin : Plugin<Project> {
       }
 
       configureReactNativeNdk(project, extension)
-      configureBuildConfigFields(project, extension)
+      configureBuildConfigFieldsForApp(project, extension)
       configureDevPorts(project)
       configureBackwardCompatibilityReactMap(project)
+      configureJavaToolChains(project)
 
       project.extensions.getByType(AndroidComponentsExtension::class.java).apply {
         onVariants(selector().all()) { variant ->
@@ -79,12 +82,11 @@ class ReactPlugin : Plugin<Project> {
     }
 
     // Library Only Configuration
+    configureBuildConfigFieldsForLibraries(project)
+    configureNamespaceForLibraries(project)
     project.pluginManager.withPlugin("com.android.library") {
       configureCodegen(project, extension, rootExtension, isLibrary = true)
     }
-
-    // Library and App Configurations
-    configureJavaToolChains(project)
   }
 
   private fun checkJvmVersion(project: Project) {
@@ -159,6 +161,8 @@ class ReactPlugin : Plugin<Project> {
               val parsedPackageJson = packageJson?.let { JsonUtils.fromPackageJson(it) }
 
               val jsSrcsDirInPackageJson = parsedPackageJson?.codegenConfig?.jsSrcsDir
+              val includesGeneratedCode =
+                  parsedPackageJson?.codegenConfig?.includesGeneratedCode ?: false
               if (jsSrcsDirInPackageJson != null) {
                 it.jsRootDir.set(File(packageJson.parentFile, jsSrcsDirInPackageJson))
               } else {
@@ -166,7 +170,7 @@ class ReactPlugin : Plugin<Project> {
               }
               val needsCodegenFromPackageJson =
                   project.needsCodegenFromPackageJson(rootExtension.root)
-              it.onlyIf { isLibrary || needsCodegenFromPackageJson }
+              it.onlyIf { (isLibrary || needsCodegenFromPackageJson) && !includesGeneratedCode }
             }
 
     // We create the task to generate Java code from schema.
@@ -186,7 +190,11 @@ class ReactPlugin : Plugin<Project> {
               // Therefore, the appNeedsCodegen needs to be invoked inside this lambda.
               val needsCodegenFromPackageJson =
                   project.needsCodegenFromPackageJson(rootExtension.root)
-              it.onlyIf { isLibrary || needsCodegenFromPackageJson }
+              val packageJson = findPackageJsonFile(project, rootExtension.root)
+              val parsedPackageJson = packageJson?.let { JsonUtils.fromPackageJson(it) }
+              val includesGeneratedCode =
+                  parsedPackageJson?.codegenConfig?.includesGeneratedCode ?: false
+              it.onlyIf { (isLibrary || needsCodegenFromPackageJson) && !includesGeneratedCode }
             }
 
     // We update the android configuration to include the generated sources.

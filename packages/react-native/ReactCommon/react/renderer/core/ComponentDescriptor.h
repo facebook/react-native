@@ -8,7 +8,6 @@
 #pragma once
 
 #include <react/renderer/core/EventDispatcher.h>
-#include <react/renderer/core/EventEmitter.h>
 #include <react/renderer/core/InstanceHandle.h>
 #include <react/renderer/core/Props.h>
 #include <react/renderer/core/PropsParserContext.h>
@@ -16,7 +15,6 @@
 #include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/core/State.h>
 #include <react/renderer/core/StateData.h>
-#include <react/renderer/graphics/Float.h>
 #include <react/utils/ContextContainer.h>
 
 namespace facebook::react {
@@ -78,7 +76,7 @@ class ComponentDescriptor {
   /*
    * Creates a new `ShadowNode` of a particular component type.
    */
-  virtual ShadowNode::Shared createShadowNode(
+  virtual std::shared_ptr<ShadowNode> createShadowNode(
       const ShadowNodeFragment& fragment,
       const ShadowNodeFamily::Shared& family) const = 0;
 
@@ -106,7 +104,7 @@ class ComponentDescriptor {
   virtual Props::Shared cloneProps(
       const PropsParserContext& context,
       const Props::Shared& props,
-      const RawProps& rawProps) const = 0;
+      RawProps rawProps) const = 0;
 
   /*
    * Create an initial State object that represents (and contains) an initial
@@ -129,12 +127,6 @@ class ComponentDescriptor {
    */
   virtual ShadowNodeFamily::Shared createFamily(
       const ShadowNodeFamilyFragment& fragment) const = 0;
-
-  /*
-   * Creates an event emitter for particular node.
-   */
-  virtual SharedEventEmitter createEventEmitter(
-      const InstanceHandle::Shared& instanceHandle) const = 0;
 
  protected:
   friend ShadowNode;

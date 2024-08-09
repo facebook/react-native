@@ -70,7 +70,7 @@ void MutationObserverManager::unobserve(
 
 void MutationObserverManager::connect(
     UIManager& uiManager,
-    std::function<void(std::vector<const MutationRecord>&)> onMutations) {
+    std::function<void(std::vector<MutationRecord>&)> onMutations) {
   SystraceSection s("MutationObserverManager::connect");
 
   // Fail-safe in case the caller doesn't guarantee consistency.
@@ -124,7 +124,7 @@ void MutationObserverManager::runMutationObservations(
     return;
   }
 
-  std::vector<const MutationRecord> mutationRecords;
+  std::vector<MutationRecord> mutationRecords;
 
   auto& observers = observersIt->second;
   for (const auto& [mutationObserverId, observer] : observers) {

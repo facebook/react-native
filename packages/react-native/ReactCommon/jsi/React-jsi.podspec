@@ -20,8 +20,9 @@ else
   source[:tag] = "v#{version}"
 end
 
-folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -DFOLLY_HAVE_CLOCK_GETTIME=1 -Wno-comma -Wno-shorten-64-to-32'
-folly_version = '2023.08.07.00'
+folly_config = get_folly_config()
+folly_compiler_flags = folly_config[:compiler_flags]
+folly_version = folly_config[:version]
 boost_compiler_flags = '-Wno-documentation'
 
 Pod::Spec.new do |s|
@@ -46,9 +47,15 @@ Pod::Spec.new do |s|
   s.dependency "glog"
 
   s.source_files  = "**/*.{cpp,h}"
-  s.exclude_files = [
+  files_to_exclude = [
                       "jsi/jsilib-posix.cpp",
                       "jsi/jsilib-windows.cpp",
                       "**/test/*"
-                    ]
+                     ]
+  if js_engine == :hermes
+    # JSI is a part of hermes-engine. Including them also in react-native will violate the One Definition Rulle.
+    files_to_exclude += [ "jsi/jsi.cpp" ]
+    s.dependency "hermes-engine"
+  end
+  s.exclude_files = files_to_exclude
 end

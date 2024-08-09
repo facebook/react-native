@@ -22,6 +22,18 @@ using namespace facebook::jni;
 
 namespace facebook::react {
 
+static int countAttachments(const AttributedString& attributedString) {
+  int count = 0;
+
+  for (const auto& fragment : attributedString.getFragments()) {
+    if (fragment.isAttachment()) {
+      count++;
+    }
+  }
+
+  return count;
+}
+
 Size measureAndroidComponent(
     const ContextContainer::Shared& contextContainer,
     Tag rootTag,
@@ -159,6 +171,7 @@ void* TextLayoutManager::getNativeTextLayoutManager() const {
 TextMeasurement TextLayoutManager::measure(
     const AttributedStringBox& attributedStringBox,
     const ParagraphAttributes& paragraphAttributes,
+    const TextLayoutContext& layoutContext,
     LayoutConstraints layoutConstraints,
     std::shared_ptr<void> /* hostTextStorage */) const {
   auto& attributedString = attributedStringBox.getValue();
@@ -273,14 +286,9 @@ TextMeasurement TextLayoutManager::doMeasure(
     LayoutConstraints layoutConstraints) const {
   layoutConstraints.maximumSize.height = std::numeric_limits<Float>::infinity();
 
-  int attachmentsCount = 0;
-  for (const auto& fragment : attributedString.getFragments()) {
-    if (fragment.isAttachment()) {
-      attachmentsCount++;
-    }
-  }
+  const int attachmentCount = countAttachments(attributedString);
   auto env = Environment::current();
-  auto attachmentPositions = env->NewFloatArray(attachmentsCount * 2);
+  auto attachmentPositions = env->NewFloatArray(attachmentCount * 2);
 
   auto minimumSize = layoutConstraints.minimumSize;
   auto maximumSize = layoutConstraints.maximumSize;
@@ -303,7 +311,7 @@ TextMeasurement TextLayoutManager::doMeasure(
       env->GetFloatArrayElements(attachmentPositions, nullptr);
 
   auto attachments = TextMeasurement::Attachments{};
-  if (attachmentsCount > 0) {
+  if (attachmentCount > 0) {
     const folly::dynamic& fragments = serializedAttributedString["fragments"];
     int attachmentIndex = 0;
     for (const auto& fragment : fragments) {
@@ -337,14 +345,9 @@ TextMeasurement TextLayoutManager::doMeasureMapBuffer(
     LayoutConstraints layoutConstraints) const {
   layoutConstraints.maximumSize.height = std::numeric_limits<Float>::infinity();
 
-  int attachmentsCount = 0;
-  for (const auto& fragment : attributedString.getFragments()) {
-    if (fragment.isAttachment()) {
-      attachmentsCount++;
-    }
-  }
+  const int attachmentCount = countAttachments(attributedString);
   auto env = Environment::current();
-  auto attachmentPositions = env->NewFloatArray(attachmentsCount * 2);
+  auto attachmentPositions = env->NewFloatArray(attachmentCount * 2);
 
   auto minimumSize = layoutConstraints.minimumSize;
   auto maximumSize = layoutConstraints.maximumSize;
@@ -368,7 +371,7 @@ TextMeasurement TextLayoutManager::doMeasureMapBuffer(
       env->GetFloatArrayElements(attachmentPositions, nullptr);
 
   auto attachments = TextMeasurement::Attachments{};
-  if (attachmentsCount > 0) {
+  if (attachmentCount > 0) {
     int attachmentIndex = 0;
     for (const auto& fragment : attributedString.getFragments()) {
       if (fragment.isAttachment()) {

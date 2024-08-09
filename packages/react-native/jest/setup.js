@@ -27,6 +27,12 @@ Object.defineProperties(global, {
     value: id => clearTimeout(id),
     writable: true,
   },
+  nativeFabricUIManager: {
+    configurable: true,
+    enumerable: true,
+    value: {},
+    writable: true,
+  },
   performance: {
     configurable: true,
     enumerable: true,
@@ -87,8 +93,6 @@ jest
     }),
     measure: jest.fn(),
     manageChildren: jest.fn(),
-    removeSubviewsFromContainerWithID: jest.fn(),
-    replaceExistingNonRootView: jest.fn(),
     setChildren: jest.fn(),
     updateView: jest.fn(),
     AndroidDrawerLayout: {

@@ -44,8 +44,8 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
     private MutableYogaValue() {}
 
     private MutableYogaValue(MutableYogaValue mutableYogaValue) {
-      this.value = mutableYogaValue.value;
-      this.unit = mutableYogaValue.unit;
+      value = mutableYogaValue.value;
+      unit = mutableYogaValue.unit;
     }
 
     void setFromDynamic(Dynamic dynamic) {
@@ -541,6 +541,11 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
           setAlignContent(YogaAlign.SPACE_AROUND);
           return;
         }
+      case "space-evenly":
+        {
+          setAlignContent(YogaAlign.SPACE_EVENLY);
+          return;
+        }
       default:
         {
           FLog.w(ReactConstants.TAG, "invalid value for alignContent: " + alignContent);
@@ -818,11 +823,6 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
     }
 
     switch (position) {
-      case "static":
-        {
-          setPositionType(YogaPositionType.STATIC);
-          break;
-        }
       case "relative":
         {
           setPositionType(YogaPositionType.RELATIVE);

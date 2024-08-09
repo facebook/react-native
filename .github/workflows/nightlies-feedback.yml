@@ -1,0 +1,52 @@
+name: Nightlies Partners Feedback
+env:
+  # Add accounts for users who are part of the nightlies program
+  allowed_users: >
+    [
+      "blakef",
+      "alanjhughes"
+    ]
+on:
+  workflow_dispatch:
+    inputs:
+      project:
+        description: 'What project is running against the nighties build?'
+        required: true
+        type: string
+      outcome:
+        description: 'Did the CI run: ["pass", "fail"]?'
+        required: true
+        type: string
+      stage:
+        description: 'Stage in the run that failed: ["build", "test"]?'
+        required: true
+        type: string
+      link:
+        description: 'URL to the failing test'
+        required: true
+        type: string
+      version:
+        description: 'What is the Nightlies version this was run against?'
+        required: true
+        type: string
+jobs:
+  share-nightlies-feedback:
+    name: ${{ inputs.project}} 💨 Nightlies CI
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+    steps:
+      - if: ${{ !contains(fromJSON(env.allowed_users), github.actor) }}
+        run: |
+          echo "Request from actor's login wasn't on the allowed_users list."
+          curl -X POST \
+               -H "Accept: application/vnd.github.v3+json" \
+               -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+               https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/cancel
+      - run: |
+          echo "Project: ${{ inputs.project }}"
+          echo "Outcome: ${{ inputs.outcome }}"
+          echo "Stage: ${{ inputs.stage }}"
+          echo "Link: ${{ inputs.link }}"
+          echo "Version: ${{ inputs.version }}"
+          [[ "${{ inputs.outcome }}" == "pass" ]] && { exit 0; } || { exit 1; }

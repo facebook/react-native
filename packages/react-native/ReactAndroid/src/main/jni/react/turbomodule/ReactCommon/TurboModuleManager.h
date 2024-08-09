@@ -68,8 +68,7 @@ class TurboModuleManager : public jni::HybridClass<TurboModuleManager> {
 
   TurboModuleProviderFunctionType createTurboModuleProvider(
       bool enableSyncVoidMethods);
-  TurboModuleProviderFunctionType createLegacyModuleProvider(
-      bool enableSyncVoidMethods);
+  TurboModuleProviderFunctionType createLegacyModuleProvider();
 };
 
 } // namespace facebook::react

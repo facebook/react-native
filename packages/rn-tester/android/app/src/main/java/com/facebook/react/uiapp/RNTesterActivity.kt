@@ -20,12 +20,11 @@ class RNTesterActivity : ReactActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
       // Get remote param before calling super which uses it
-      val bundle = activity.getIntent()?.getExtras()
+      val bundle = activity.intent?.extras
 
       if (bundle != null && bundle.containsKey(PARAM_ROUTE)) {
         val routeUri = "rntester://example/${bundle.getString(PARAM_ROUTE)}Example"
-        initialProps = Bundle()
-        initialProps?.putString("exampleFromAppetizeParams", routeUri)
+        initialProps = Bundle().apply { putString("exampleFromAppetizeParams", routeUri) }
       }
 
       super.onCreate(savedInstanceState)

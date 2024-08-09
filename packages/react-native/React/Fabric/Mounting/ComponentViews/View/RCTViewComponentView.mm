@@ -29,7 +29,7 @@ using namespace facebook::react;
 
 @implementation RCTViewComponentView {
   RCTUIColor *_backgroundColor; // [macOS]
-  CALayer *_borderLayer;
+  __weak CALayer *_borderLayer;
   BOOL _needsInvalidateLayer;
   BOOL _isJSResponder;
   BOOL _removeClippedSubviews;
@@ -47,8 +47,7 @@ using namespace facebook::react;
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
-    static const auto defaultProps = std::make_shared<const ViewProps>();
-    _props = defaultProps;
+    _props = ViewShadowNode::defaultSharedProps();
     _reactSubviews = [NSMutableArray new];
 #if !TARGET_OS_OSX // [macOS]
     self.multipleTouchEnabled = YES;
@@ -111,6 +110,24 @@ using namespace facebook::react;
     NSCursor *cursor = NSCursorFromCursor(_props->cursor);
     [self addCursorRect:self.bounds cursor:cursor];
   }
+}
+#endif // macOS]
+
+#if !TARGET_OS_OSX
+- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection
+{
+  [super traitCollectionDidChange:previousTraitCollection];
+
+  if ([self.traitCollection hasDifferentColorAppearanceComparedToTraitCollection:previousTraitCollection]) {
+    [self invalidateLayer];
+  }
+}
+#else // [macOS SAAD
+- (void)viewDidChangeEffectiveAppearance
+{
+  [super viewDidChangeEffectiveAppearance];
+  
+  [self invalidateLayer];
 }
 #endif // macOS]
 
@@ -296,8 +313,11 @@ using namespace facebook::react;
        oldViewProps.transformOrigin != newViewProps.transformOrigin) &&
       ![_propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN containsObject:@"transform"]) {
     auto newTransform = newViewProps.resolveTransform(_layoutMetrics);
-    self.layer.transform = RCTCATransform3DFromTransformMatrix(newTransform);
-    self.layer.allowsEdgeAntialiasing = newViewProps.transform != Transform::Identity();
+    CATransform3D caTransform = RCTCATransform3DFromTransformMatrix(newTransform);
+
+    self.layer.transform = caTransform;
+    // Enable edge antialiasing in rotation, skew, or perspective transforms
+    self.layer.allowsEdgeAntialiasing = caTransform.m12 != 0.0f || caTransform.m21 != 0.0f || caTransform.m34 != 0.0f;
   }
 
   // `hitSlop`
@@ -367,10 +387,11 @@ using namespace facebook::react;
   // `accessibilityState`
   if (oldViewProps.accessibilityState != newViewProps.accessibilityState) {
     self.accessibilityTraits &= ~(UIAccessibilityTraitNotEnabled | UIAccessibilityTraitSelected);
-    if (newViewProps.accessibilityState.selected) {
+    const auto accessibilityState = newViewProps.accessibilityState.value_or(AccessibilityState{});
+    if (accessibilityState.selected) {
       self.accessibilityTraits |= UIAccessibilityTraitSelected;
     }
-    if (newViewProps.accessibilityState.disabled) {
+    if (accessibilityState.disabled) {
       self.accessibilityTraits |= UIAccessibilityTraitNotEnabled;
     }
   }
@@ -404,11 +425,6 @@ using namespace facebook::react;
     self.accessibilityIdentifier = RCTNSStringFromString(newViewProps.testId);
   }
 
-  // `zIndex`
-  if (oldViewProps.zIndex != newViewProps.zIndex) {
-    self.layer.zPosition = newViewProps.zIndex.value_or(0);
-  }
-
   _needsInvalidateLayer = _needsInvalidateLayer || needsInvalidateLayer;
 
   _props = std::static_pointer_cast<const ViewProps>(props);
@@ -430,9 +446,7 @@ using namespace facebook::react;
   _layoutMetrics = layoutMetrics;
   _needsInvalidateLayer = YES;
 
-  if (_borderLayer) {
-    _borderLayer.frame = self.layer.bounds;
-  }
+  _borderLayer.frame = self.layer.bounds;
 
   if (_contentView) {
     _contentView.frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
@@ -712,12 +726,15 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
           borderMetrics.borderWidths.left == 0 ||
           colorComponentsFromColor(borderMetrics.borderColors.left).alpha == 0 || self.clipsToBounds);
 
+#if !TARGET_OS_OSX // [macOS]
+  CGColorRef backgroundColor = [_backgroundColor resolvedColorWithTraitCollection:self.traitCollection].CGColor;
+#else // [macOS
+  CGColorRef backgroundColor = _backgroundColor.CGColor;
+#endif // macOS]
+
   if (useCoreAnimationBorderRendering) {
     layer.mask = nil;
-    if (_borderLayer) {
-      [_borderLayer removeFromSuperlayer];
-      _borderLayer = nil;
-    }
+    [_borderLayer removeFromSuperlayer];
 
     layer.borderWidth = (CGFloat)borderMetrics.borderWidths.left;
     CGColorRef borderColor = RCTCreateCGColorRefFromSharedColor(borderMetrics.borderColors.left);
@@ -727,14 +744,15 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
 
     layer.cornerCurve = CornerCurveFromBorderCurve(borderMetrics.borderCurves.topLeft);
 
-    layer.backgroundColor = _backgroundColor.CGColor;
+    layer.backgroundColor = backgroundColor;
   } else {
     if (!_borderLayer) {
-      _borderLayer = [CALayer new];
-      _borderLayer.zPosition = -1024.0f;
-      _borderLayer.frame = layer.bounds;
-      _borderLayer.magnificationFilter = kCAFilterNearest;
-      [layer addSublayer:_borderLayer];
+      CALayer *borderLayer = [CALayer new];
+      borderLayer.zPosition = -1024.0f;
+      borderLayer.frame = layer.bounds;
+      borderLayer.magnificationFilter = kCAFilterNearest;
+      [layer addSublayer:borderLayer];
+      _borderLayer = borderLayer;
     }
 
     layer.backgroundColor = nil;
@@ -756,7 +774,7 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
         RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii),
         RCTUIEdgeInsetsFromEdgeInsets(borderMetrics.borderWidths),
         borderColors,
-        _backgroundColor.CGColor,
+        backgroundColor,
         self.clipsToBounds,
         scaleFactor); // [macOS]
 
@@ -786,6 +804,10 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
         _borderLayer.contentsCenter = CGRect{CGPoint{0.0, 0.0}, CGSize{1.0, 1.0}};
       }
     }
+
+    // If mutations are applied inside of Animation block, it may cause _borderLayer to be animated.
+    // To stop that, imperatively remove all animations from _borderLayer.
+    [_borderLayer removeAllAnimations];
 
     // Stage 2.5. Custom Clipping Mask
     CAShapeLayer *maskLayer = nil;
@@ -850,13 +872,14 @@ static NSString *RCTRecursiveAccessibilityLabel(RCTUIView *view) // [macOS]
 - (NSString *)accessibilityValue
 {
   const auto &props = static_cast<const ViewProps &>(*_props);
+  const auto accessibilityState = props.accessibilityState.value_or(AccessibilityState{});
 
   // Handle Switch.
 #if !TARGET_OS_OSX // [macOS]
   if ((self.accessibilityTraits & AccessibilityTraitSwitch) == AccessibilityTraitSwitch) {
-    if (props.accessibilityState.checked == AccessibilityState::Checked) {
+    if (accessibilityState.checked == AccessibilityState::Checked) {
       return @"1";
-    } else if (props.accessibilityState.checked == AccessibilityState::Unchecked) {
+    } else if (accessibilityState.checked == AccessibilityState::Unchecked) {
       return @"0";
     }
   }
@@ -883,25 +906,25 @@ static NSString *RCTRecursiveAccessibilityLabel(RCTUIView *view) // [macOS]
   }
 
   // Handle states which haven't already been handled.
-  if (props.accessibilityState.checked == AccessibilityState::Checked) {
+  if (accessibilityState.checked == AccessibilityState::Checked) {
     [valueComponents
         addObject:RCTLocalizedString("checked", "a checkbox, radio button, or other widget which is checked")];
   }
-  if (props.accessibilityState.checked == AccessibilityState::Unchecked) {
+  if (accessibilityState.checked == AccessibilityState::Unchecked) {
     [valueComponents
         addObject:RCTLocalizedString("unchecked", "a checkbox, radio button, or other widget which is unchecked")];
   }
-  if (props.accessibilityState.checked == AccessibilityState::Mixed) {
+  if (accessibilityState.checked == AccessibilityState::Mixed) {
     [valueComponents
         addObject:RCTLocalizedString(
                       "mixed", "a checkbox, radio button, or other widget which is both checked and unchecked")];
   }
-  if (props.accessibilityState.expanded) {
+  if (accessibilityState.expanded.value_or(false)) {
     [valueComponents
         addObject:RCTLocalizedString("expanded", "a menu, dialog, accordian panel, or other widget which is expanded")];
   }
 
-  if (props.accessibilityState.busy) {
+  if (accessibilityState.busy) {
     [valueComponents addObject:RCTLocalizedString("busy", "an element currently being updated or modified")];
   }
 

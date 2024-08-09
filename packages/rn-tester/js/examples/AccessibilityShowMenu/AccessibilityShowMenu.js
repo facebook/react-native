@@ -8,14 +8,16 @@
  * @flow
  */
 
-'use strict'; // [macOS]
+'use strict';
+
+// [macOS]
+
+import type {AccessibilityActionEvent} from 'react-native/Libraries/Components/View/ViewAccessibility';
 
 const React = require('react');
 const ReactNative = require('react-native');
-const {Button, Text, View} = ReactNative;
 
-import {Platform} from 'react-native';
-import type {AccessibilityActionEvent} from 'react-native/Libraries/Components/View/ViewAccessibility';
+const {Button, Text, View, Platform} = ReactNative;
 
 class AccessibilityShowMenu extends React.Component<{}> {
   onClick: () => void = () => {

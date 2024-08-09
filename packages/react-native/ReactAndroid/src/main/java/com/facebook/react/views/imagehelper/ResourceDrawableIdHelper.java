@@ -11,12 +11,14 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import javax.annotation.concurrent.ThreadSafe;
 
 /** Helper class for obtaining information about local images. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @ThreadSafe
 public class ResourceDrawableIdHelper {
 

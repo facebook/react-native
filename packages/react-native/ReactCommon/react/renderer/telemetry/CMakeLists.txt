@@ -12,11 +12,10 @@ add_compile_options(
         -std=c++20
         -Wall
         -Wpedantic
-        -Wno-gnu-zero-variadic-macro-arguments
         -DLOG_TAG=\"Fabric\")
 
 file(GLOB react_render_telemetry_SRC CONFIGURE_DEPENDS *.cpp)
-add_library(react_render_telemetry SHARED ${react_render_telemetry_SRC})
+add_library(react_render_telemetry STATIC ${react_render_telemetry_SRC})
 
 target_include_directories(react_render_telemetry PUBLIC ${REACT_COMMON_DIR})
 

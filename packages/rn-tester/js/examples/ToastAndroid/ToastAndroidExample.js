@@ -5,14 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
 
 const React = require('react');
-
-const {StyleSheet, Text, ToastAndroid, Pressable} = require('react-native');
+const {Pressable, StyleSheet, Text, ToastAndroid} = require('react-native');
 
 const ToastWithShortDuration = () => {
   return (

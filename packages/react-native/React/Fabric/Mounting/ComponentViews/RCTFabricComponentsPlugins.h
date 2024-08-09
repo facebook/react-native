@@ -31,6 +31,7 @@ Class<RCTComponentViewProtocol> RCTFabricComponentsProvider(const char *name);
 
 // Lookup functions
 Class<RCTComponentViewProtocol> RCTActivityIndicatorViewCls(void) __attribute__((used));
+Class<RCTComponentViewProtocol> RCTDebuggingOverlayCls(void) __attribute__((used));
 Class<RCTComponentViewProtocol> RCTInputAccessoryCls(void) __attribute__((used));
 Class<RCTComponentViewProtocol> RCTParagraphCls(void) __attribute__((used));
 Class<RCTComponentViewProtocol> RCTPullToRefreshViewCls(void) __attribute__((used));

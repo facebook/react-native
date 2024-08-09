@@ -38,8 +38,7 @@ using namespace facebook::react;
     // The pull-to-refresh view is not a subview of this view.
     self.hidden = YES;
 
-    static const auto defaultProps = std::make_shared<const PullToRefreshViewProps>();
-    _props = defaultProps;
+    _props = PullToRefreshViewShadowNode::defaultSharedProps();
 
 #if !TARGET_OS_OSX // [macOS]
     _refreshControl = [UIRefreshControl new];

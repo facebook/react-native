@@ -10,16 +10,17 @@
 
 'use strict';
 
-const React = require('react');
 import RNTesterBlock from '../../components/RNTesterBlock';
 import RNTesterPage from '../../components/RNTesterPage';
 import {
   Alert,
   StyleSheet,
   Text,
-  View,
   TouchableWithoutFeedback,
+  View,
 } from 'react-native';
+
+const React = require('react');
 
 const importantForAccessibilityValues = [
   'auto',

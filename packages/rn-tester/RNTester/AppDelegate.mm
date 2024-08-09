@@ -7,29 +7,29 @@
 
 #import "AppDelegate.h"
 
+#import <UserNotifications/UserNotifications.h>
+
 #import <React/RCTBundleURLProvider.h>
+#import <React/RCTDefines.h>
 #import <React/RCTLinkingManager.h>
 #import <ReactCommon/RCTSampleTurboModule.h>
 #import <ReactCommon/SampleTurboCxxModule.h>
 
 #import <React/RCTPushNotificationManager.h>
 
-#if RCT_NEW_ARCH_ENABLED
 #import <NativeCxxModuleExample/NativeCxxModuleExample.h>
 #ifndef RN_DISABLE_OSS_PLUGIN_HEADER
 #import <RNTMyNativeViewComponentView.h>
 #endif
-#endif
 
-#if BUNDLE_PATH
-NSString *kBundlePath = @"xplat/js/RKJSModules/EntryPoints/RNTesterTestBundle.js";
-#else
 #if !TARGET_OS_OSX // [macOS]
 NSString *kBundlePath = @"js/RNTesterApp.ios";
 #else // [macOS
 NSString *kBundlePath = @"js/RNTesterApp.macos";
 #endif // macOS]
-#endif
+
+@interface AppDelegate () <UNUserNotificationCenterDelegate>
+@end
 
 @implementation AppDelegate
 
@@ -44,12 +44,21 @@ NSString *kBundlePath = @"js/RNTesterApp.macos";
   // They will be passed down to the ViewController used by React Native.
   self.initialProps = [self prepareInitialProps];
 
+  [[UNUserNotificationCenter currentNotificationCenter] setDelegate:self];
+
 #if !TARGET_OS_OSX // [macOS]
   return [super application:application didFinishLaunchingWithOptions:launchOptions];
 #else // [macOS
   [super applicationDidFinishLaunching:notification];
 #endif // macOS]
 }
+
+#if !TARGET_OS_OSX // [macOS]
+- (void)applicationDidEnterBackground:(UIApplication *)application
+{
+  [super applicationDidEnterBackground:application];
+}
+#endif // [macOS]
 
 - (NSDictionary *)prepareInitialProps
 {
@@ -90,11 +99,9 @@ NSString *kBundlePath = @"js/RNTesterApp.macos";
   if (name == std::string([@"SampleTurboCxxModule" UTF8String])) {
     return std::make_shared<facebook::react::SampleTurboCxxModule>(jsInvoker);
   }
-#ifdef RCT_NEW_ARCH_ENABLED
   if (name == facebook::react::NativeCxxModuleExample::kModuleName) {
     return std::make_shared<facebook::react::NativeCxxModuleExample>(jsInvoker);
   }
-#endif
   return nullptr;
 }
 
@@ -112,20 +119,35 @@ NSString *kBundlePath = @"js/RNTesterApp.macos";
   [RCTPushNotificationManager didFailToRegisterForRemoteNotificationsWithError:error];
 }
 
-// Required for the remoteNotificationReceived event.
-- (void)application:(__unused RCTUIApplication *)application didReceiveRemoteNotification:(NSDictionary *)notification
+#pragma mark - UNUserNotificationCenterDelegate
+
+// Required for the remoteNotificationReceived and localNotificationReceived events
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center
+       willPresentNotification:(UNNotification *)notification
+         withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler
 {
-  [RCTPushNotificationManager didReceiveRemoteNotification:notification];
+  [RCTPushNotificationManager didReceiveNotification:notification];
+  completionHandler(UNNotificationPresentationOptionNone);
 }
 
-#if TARGET_OS_IOS // [macOS] [visionOS]
-// Required for the localNotificationReceived event.
-- (void)application:(__unused UIApplication *)application
-    didReceiveLocalNotification:(UILocalNotification *)notification
+// Required for the remoteNotificationReceived and localNotificationReceived events
+// Called when a notification is tapped from background. (Foreground notification will not be shown per
+// the presentation option selected above).
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center
+    didReceiveNotificationResponse:(UNNotificationResponse *)response
+             withCompletionHandler:(void (^)(void))completionHandler
 {
-  [RCTPushNotificationManager didReceiveLocalNotification:notification];
+  UNNotification *notification = response.notification;
+
+  // This condition will be true if tapping the notification launched the app.
+  if ([response.actionIdentifier isEqualToString:UNNotificationDefaultActionIdentifier]) {
+    // This can be retrieved with getInitialNotification.
+    [RCTPushNotificationManager setInitialNotification:notification];
+  }
+
+  [RCTPushNotificationManager didReceiveNotification:notification];
+  completionHandler();
 }
-#endif // [macOS] [visionOS]
 #if TARGET_OS_OSX // [macOS
 - (void)userNotificationCenter:(NSUserNotificationCenter *)center
         didDeliverNotification:(NSUserNotification *)notification
@@ -145,9 +167,15 @@ NSString *kBundlePath = @"js/RNTesterApp.macos";
 }
 #endif // macOS]
 
+#pragma mark - New Arch Enabled settings
+
+- (BOOL)bridgelessEnabled
+{
+  return [super bridgelessEnabled];
+}
+
 #pragma mark - RCTComponentViewFactoryComponentProvider
 
-#if RCT_NEW_ARCH_ENABLED
 #ifndef RN_DISABLE_OSS_PLUGIN_HEADER
 - (nonnull NSDictionary<NSString *, Class<RCTComponentViewProtocol>> *)thirdPartyFabricComponents
 {
@@ -155,10 +183,9 @@ NSString *kBundlePath = @"js/RNTesterApp.macos";
 }
 #endif
 
-- (NSURL *)getBundleURL
+- (NSURL *)bundleURL
 {
   return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:kBundlePath];
 }
-#endif
 
 @end

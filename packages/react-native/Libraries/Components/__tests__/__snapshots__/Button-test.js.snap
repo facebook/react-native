@@ -49,7 +49,6 @@ exports[`<Button /> should be disabled and it should set accessibilityState to d
     }
   >
     <Text
-      accessible={true}
       disabled={true}
       style={
         Array [
@@ -120,7 +119,6 @@ exports[`<Button /> should be disabled when disabled is empty and accessibilityS
     }
   >
     <Text
-      accessible={true}
       disabled={true}
       style={
         Array [
@@ -191,7 +189,6 @@ exports[`<Button /> should be disabled when disabled={true} and accessibilitySta
     }
   >
     <Text
-      accessible={true}
       disabled={true}
       style={
         Array [
@@ -262,7 +259,6 @@ exports[`<Button /> should be set importantForAccessibility={no-hide-descendants
     }
   >
     <Text
-      accessible={true}
       style={
         Array [
           Object {
@@ -329,7 +325,6 @@ exports[`<Button /> should be set importantForAccessibility={no-hide-descendants
     }
   >
     <Text
-      accessible={true}
       style={
         Array [
           Object {
@@ -395,7 +390,6 @@ exports[`<Button /> should not be disabled when disabled={false} and accessibili
     }
   >
     <Text
-      accessible={true}
       disabled={false}
       style={
         Array [
@@ -462,7 +456,6 @@ exports[`<Button /> should not be disabled when disabled={false} and accessibili
     }
   >
     <Text
-      accessible={true}
       disabled={false}
       style={
         Array [
@@ -530,7 +523,6 @@ exports[`<Button /> should overwrite accessibilityState with value of disabled p
     }
   >
     <Text
-      accessible={true}
       disabled={true}
       style={
         Array [
@@ -600,7 +592,6 @@ exports[`<Button /> should render as expected 1`] = `
     }
   >
     <Text
-      accessible={true}
       style={
         Array [
           Object {

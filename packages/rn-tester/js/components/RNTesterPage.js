@@ -8,11 +8,12 @@
  * @flow
  */
 
+import {RNTesterThemeContext} from './RNTesterTheme';
+import {useContext} from 'react';
+
 const RNTesterTitle = require('./RNTesterTitle');
 const React = require('react');
 const {SafeAreaView, ScrollView, StyleSheet, View} = require('react-native');
-import {RNTesterThemeContext} from './RNTesterTheme';
-import {useContext} from 'react';
 
 type Props = $ReadOnly<{|
   children?: React.Node,

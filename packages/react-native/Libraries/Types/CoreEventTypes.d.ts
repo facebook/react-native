@@ -285,4 +285,12 @@ export interface NativeKeyEvent {
 }
 
 export interface KeyEvent extends NativeSyntheticEvent<NativeKeyEvent> {}
+
+export interface NativeFocusEvent extends TargetedEvent {}
+
+export interface NativeBlurEvent extends TargetedEvent {}
+
+export interface FocusEvent extends NativeSyntheticEvent<NativeFocusEvent> {}
+
+export interface BlueEvent extends NativeSyntheticEvent<NativeBlurEvent> {}
 // macOS]

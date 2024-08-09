@@ -1,13 +1,13 @@
 'use strict';
 
-const fs = require('fs');
-const path = require('path');
 const {
   copyProjectTemplateAndReplace,
   installDependencies,
   installPods,
   printFinishMessage,
 } = require('./generator-macos');
+const fs = require('fs');
+const path = require('path');
 
 /**
  * Simple utility for running the macOS generator.

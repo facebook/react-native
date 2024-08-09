@@ -11,19 +11,19 @@
 'use strict';
 
 const React = require('react');
-
 const {
   ActivityIndicator,
   Animated,
   Image,
   Platform,
-  TouchableHighlight,
+  // [macOS]
+  PlatformColor,
   StyleSheet,
   Switch,
   Text,
   TextInput,
+  TouchableHighlight,
   View,
-  PlatformColor, // [macOS]
 } = require('react-native');
 
 export type Item = {

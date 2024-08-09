@@ -8,29 +8,6 @@
  * @format
  */
 
-import type {TurboModule} from '../../TurboModule/RCTExport';
-
-import * as TurboModuleRegistry from '../../TurboModule/TurboModuleRegistry';
-
-export interface Spec extends TurboModule {
-  +reload: () => void;
-  +reloadWithReason?: (reason: string) => void;
-  +onFastRefresh?: () => void;
-  +setHotLoadingEnabled: (isHotLoadingEnabled: boolean) => void;
-  +setIsDebuggingRemotely: (isDebuggingRemotelyEnabled: boolean) => void;
-  +setProfilingEnabled: (isProfilingEnabled: boolean) => void;
-  +toggleElementInspector: () => void;
-  +addMenuItem: (title: string) => void;
-
-  // Events
-  +addListener: (eventName: string) => void;
-  +removeListeners: (count: number) => void;
-
-  // iOS only.
-  +setIsShakeToShowDevMenuEnabled: (enabled: boolean) => void;
-
-  // macOS only.
-  +setIsSecondaryClickToShowDevMenuEnabled: (enabled: boolean) => void; // [macOS]
-}
-
-export default (TurboModuleRegistry.getEnforcing<Spec>('DevSettings'): Spec);
+export * from '../../../src/private/specs/modules/NativeDevSettings';
+import NativeDevSettings from '../../../src/private/specs/modules/NativeDevSettings';
+export default NativeDevSettings;

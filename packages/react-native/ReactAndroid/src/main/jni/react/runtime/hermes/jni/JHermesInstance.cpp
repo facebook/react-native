@@ -8,12 +8,18 @@
 #include "JHermesInstance.h"
 
 #include <fbjni/fbjni.h>
+#include <react/fabric/ReactNativeConfigHolder.h>
 
 namespace facebook::react {
 
 jni::local_ref<JHermesInstance::jhybriddata> JHermesInstance::initHybrid(
-    jni::alias_ref<jhybridobject>) {
-  return makeCxxInstance();
+    jni::alias_ref<jclass> /* unused */,
+    jni::alias_ref<jobject> reactNativeConfig) {
+  std::shared_ptr<const ReactNativeConfig> config = reactNativeConfig != nullptr
+      ? std::make_shared<const ReactNativeConfigHolder>(reactNativeConfig)
+      : nullptr;
+
+  return makeCxxInstance(config);
 }
 
 void JHermesInstance::registerNatives() {
@@ -22,10 +28,10 @@ void JHermesInstance::registerNatives() {
   });
 }
 
-std::unique_ptr<jsi::Runtime> JHermesInstance::createJSRuntime(
+std::unique_ptr<JSRuntime> JHermesInstance::createJSRuntime(
     std::shared_ptr<MessageQueueThread> msgQueueThread) noexcept {
-  // TODO T105438175 Pass ReactNativeConfig to init Hermes with MobileConfig
-  return HermesInstance::createJSRuntime(nullptr, nullptr, msgQueueThread);
+  return HermesInstance::createJSRuntime(
+      reactNativeConfig_, nullptr, msgQueueThread);
 }
 
 } // namespace facebook::react

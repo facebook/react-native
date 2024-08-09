@@ -37,9 +37,6 @@ class YG_EXPORT Config : public ::YGConfig {
   void setUseWebDefaults(bool useWebDefaults);
   bool useWebDefaults() const;
 
-  void setShouldPrintTree(bool printTree);
-  bool shouldPrintTree() const;
-
   void setExperimentalFeatureEnabled(ExperimentalFeature feature, bool enabled);
   bool isExperimentalFeatureEnabled(ExperimentalFeature feature) const;
   ExperimentalFeatureSet getEnabledExperiments() const;
@@ -74,7 +71,6 @@ class YG_EXPORT Config : public ::YGConfig {
   YGLogger logger_;
 
   bool useWebDefaults_ : 1 = false;
-  bool printTree_ : 1 = false;
 
   ExperimentalFeatureSet experimentalFeatures_{};
   Errata errata_ = Errata::None;

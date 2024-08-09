@@ -27,8 +27,7 @@ using namespace facebook::react;
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
-    static const auto defaultProps = std::make_shared<const UnimplementedViewProps>();
-    _props = defaultProps;
+    _props = UnimplementedViewShadowNode::defaultSharedProps();
 
     _label = [[RCTUILabel alloc] initWithFrame:self.bounds];
     _label.backgroundColor = [RCTUIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:0.3];

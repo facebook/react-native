@@ -18,7 +18,6 @@ def use_react_native! (
   flipper_configuration: FlipperConfiguration.disabled,
   app_path: '..',
   config_file_dir: '',
-  ios_folder: 'ios'
 )
 end
 `;
@@ -32,7 +31,6 @@ def use_react_native! (
   flipper_configuration: FlipperConfiguration.disabled,
   app_path: '..',
   config_file_dir: '',
-  ios_folder: 'ios'
 )
 end
 `;
@@ -45,7 +43,6 @@ def use_react_native! (
   flipper_configuration: FlipperConfiguration.disabled,
   app_path: '..',
   config_file_dir: '',
-  ios_folder: 'ios'
 )
 end
 `;

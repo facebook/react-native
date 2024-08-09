@@ -20,7 +20,7 @@ RCTHermesInstance::RCTHermesInstance(
 {
 }
 
-std::unique_ptr<jsi::Runtime> RCTHermesInstance::createJSRuntime(
+std::unique_ptr<JSRuntime> RCTHermesInstance::createJSRuntime(
     std::shared_ptr<MessageQueueThread> msgQueueThread) noexcept
 {
   return _hermesInstance->createJSRuntime(

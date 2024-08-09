@@ -4,15 +4,20 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  */
 
 'use strict';
 
+const {execSync, spawnSync} = require('child_process');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
-const {execSync, spawnSync} = require('child_process');
+
+/*::
+type BuildType = 'dry-run' | 'release' | 'nightly' | 'prealpha';
+*/
 
 const SDKS_DIR = path.normalize(path.join(__dirname, '..', '..', 'sdks'));
 const HERMES_DIR = path.join(SDKS_DIR, 'hermes');
@@ -34,11 +39,15 @@ const MACOS_IMPORT_HERMESC_PATH = path.join(
  * @param args Array of arguments pass to the command.
  * @param options child process options.
  */
-function delegateSync(command, args, options) {
+function delegateSync(
+  command /*: string */,
+  args /*: (Array<string> | child_process$spawnSyncOpts) */,
+  options /*: ?child_process$spawnSyncOpts */,
+) {
   return spawnSync(command, args, {stdio: 'inherit', ...options});
 }
 
-function readHermesTag() {
+function readHermesTag() /*: string */ {
   if (fs.existsSync(HERMES_TAG_FILE_PATH)) {
     const data = fs
       .readFileSync(HERMES_TAG_FILE_PATH, {
@@ -57,7 +66,7 @@ function readHermesTag() {
   return 'main';
 }
 
-function setHermesTag(hermesTag) {
+function setHermesTag(hermesTag /*: string */) {
   if (readHermesTag() === hermesTag) {
     // No need to update.
     return;
@@ -70,7 +79,7 @@ function setHermesTag(hermesTag) {
   console.log('Hermes tag has been updated. Please commit your changes.');
 }
 
-function getHermesTagSHA(hermesTag) {
+function getHermesTagSHA(hermesTag /*: string */) /*: string */ {
   return execSync(
     `git ls-remote https://github.com/facebook/hermes ${hermesTag} | cut -f 1`,
   )
@@ -78,7 +87,7 @@ function getHermesTagSHA(hermesTag) {
     .trim();
 }
 
-function getHermesTarballDownloadPath(hermesTag) {
+function getHermesTarballDownloadPath(hermesTag /*: string */) /*: string */ {
   const hermesTagSHA = getHermesTagSHA(hermesTag);
   return path.join(HERMES_TARBALL_DOWNLOAD_DIR, `hermes-${hermesTagSHA}.tgz`);
 }
@@ -184,11 +193,13 @@ function isTestingAgainstLocalHermesTarball() {
   return 'HERMES_ENGINE_TARBALL_PATH' in process.env;
 }
 
-function shouldBuildHermesFromSource(isInCI) {
+function shouldBuildHermesFromSource(isInCI /*: boolean */) /*: boolean */ {
   return !isTestingAgainstLocalHermesTarball() && isInCI;
 }
 
-function shouldUsePrebuiltHermesC(platform) {
+function shouldUsePrebuiltHermesC(
+  platform /*: 'macos' | 'windows' */,
+) /*: boolean */ {
   if (platform === 'macos') {
     return fs.existsSync(MACOS_HERMESC_PATH);
   }
@@ -212,7 +223,9 @@ set_target_properties(native-hermesc PROPERTIES
   }
 }
 
-function getHermesPrebuiltArtifactsTarballName(buildType) {
+function getHermesPrebuiltArtifactsTarballName(
+  buildType /*: string */,
+) /*: string */ {
   if (!buildType) {
     throw Error('Did not specify build type.');
   }
@@ -222,17 +235,20 @@ function getHermesPrebuiltArtifactsTarballName(buildType) {
 /**
  * Creates a tarball with the contents of the supplied directory.
  */
-function createTarballFromDirectory(directory, filename) {
+function createTarballFromDirectory(
+  directory /*: string */,
+  filename /*: string */,
+) {
   const args = ['-C', directory, '-czvf', filename, '.'];
   delegateSync('tar', args);
 }
 
 function createHermesPrebuiltArtifactsTarball(
-  hermesDir,
-  buildType,
-  tarballOutputDir,
-  excludeDebugSymbols,
-) {
+  hermesDir /*: string */,
+  buildType /*: string */,
+  tarballOutputDir /*: string */,
+  excludeDebugSymbols /*: boolean */,
+) /*: string */ {
   validateHermesFrameworksExist(path.join(hermesDir, 'destroot'));
 
   if (!fs.existsSync(tarballOutputDir)) {
@@ -282,7 +298,7 @@ function createHermesPrebuiltArtifactsTarball(
   return tarballFilename;
 }
 
-function validateHermesFrameworksExist(destrootDir) {
+function validateHermesFrameworksExist(destrootDir /*: string */) {
   if (
     !fs.existsSync(
       path.join(destrootDir, 'Library/Frameworks/macosx/hermes.framework'),

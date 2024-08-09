@@ -8,15 +8,15 @@
  * @flow strict-local
  */
 
-import type ReadOnlyNode from 'react-native/Libraries/DOM/Nodes/ReadOnlyNode';
-import type NodeList from 'react-native/Libraries/DOM/OldStyleCollections/NodeList';
+import type ReadOnlyNode from 'react-native/src/private/webapis/dom/nodes/ReadOnlyNode';
+import type NodeList from 'react-native/src/private/webapis/dom/oldstylecollections/NodeList';
 
-import ReadOnlyElement from 'react-native/Libraries/DOM/Nodes/ReadOnlyElement';
 import {RNTesterThemeContext} from '../../components/RNTesterTheme';
 import * as React from 'react';
 import {type ElementRef, useContext, useEffect, useRef, useState} from 'react';
 import {Pressable, ScrollView, StyleSheet, Text, View} from 'react-native';
 import MutationObserver from 'react-native/Libraries/MutationObserver/MutationObserver';
+import ReadOnlyElement from 'react-native/src/private/webapis/dom/nodes/ReadOnlyElement';
 
 export const name = 'MutationObserver Example';
 export const title = name;

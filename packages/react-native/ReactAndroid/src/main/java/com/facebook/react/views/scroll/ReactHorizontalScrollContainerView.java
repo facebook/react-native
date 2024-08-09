@@ -9,10 +9,12 @@ package com.facebook.react.views.scroll;
 
 import android.content.Context;
 import androidx.core.view.ViewCompat;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.views.view.ReactViewGroup;
 
 /** Container of Horizontal scrollViews that supports RTL scrolling. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ReactHorizontalScrollContainerView extends ReactViewGroup {
 
   private int mLayoutDirection;

@@ -8,11 +8,13 @@
 package com.facebook.react.views.swiperefresh;
 
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.events.Event;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 class RefreshEvent extends Event<RefreshEvent> {
 
   @Deprecated

@@ -9,9 +9,12 @@
 
 'use strict';
 
+/* eslint-disable lint/sort-imports */
+// The 'danger' package seems to have some side effects that make it unsafe
+// to reorder.
+
 const {danger, fail, /*message,*/ warn} = require('danger');
 const includes = require('lodash.includes');
-const eslint = require('@seadub/danger-plugin-eslint');
 const fetch = require('node-fetch');
 const {validate: validateChangelog} =
   require('@rnx-kit/rn-changelog-generator').default;
@@ -99,10 +102,6 @@ if (isMergeRefStable) {
   });
 }
 
-// Ensures that eslint is run from root folder and that it can find .eslintrc
-process.chdir('../../');
-eslint.default();
-
 // Wait for statuses and post a message if there are failures.
 async function handleStatuses() {
   const regex = /Test Suites: \d+ failed/;
@@ -182,4 +181,4 @@ async function handleStatuses() {
   }
 }
 
-handleStatuses();
+// handleStatuses();

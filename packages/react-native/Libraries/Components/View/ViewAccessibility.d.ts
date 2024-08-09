@@ -59,13 +59,6 @@ export interface AccessibilityProps
   'aria-selected'?: boolean | undefined;
 
   /**
-   * Represents the nativeID of the associated label text. When the assistive technology focuses on the component with this props, the text is read aloud.
-   *
-   * @platform android
-   */
-  'aria-labelledby'?: string | undefined;
-
-  /**
    * An accessibility hint helps users understand what will happen when they perform an action on the accessibility element when that result is not obvious from the accessibility label.
    */
   accessibilityHint?: string | undefined;
@@ -99,7 +92,6 @@ export interface AccessibilityProps
    */
   'aria-hidden'?: boolean | undefined;
 
-  'aria-live'?: ('polite' | 'assertive' | 'off') | undefined;
   'aria-modal'?: boolean | undefined;
 
   /**
@@ -227,12 +219,40 @@ export type AccessibilityRole =
 
 export interface AccessibilityPropsAndroid {
   /**
-   * Indicates to accessibility services whether the user should be notified when this view changes.
-   * Works for Android API >= 19 only.
-   * See http://developer.android.com/reference/android/view/View.html#attr_android:accessibilityLiveRegion for references.
+   * Identifies the element that labels the element it is applied to. When the assistive technology focuses on the component with this props,
+   * the text is read aloud. The value should should match the nativeID of the related element.
+   *
    * @platform android
    */
+  accessibilityLabelledBy?: string | string[] | undefined;
+
+  /**
+   * Identifies the element that labels the element it is applied to. When the assistive technology focuses on the component with this props,
+   * the text is read aloud. The value should should match the nativeID of the related element.
+   *
+   * @platform android
+   */
+  'aria-labelledby'?: string | undefined;
+
+  /**
+   * Indicates to accessibility services whether the user should be notified
+   * when this view changes. Works for Android API >= 19 only.
+   *
+   * @platform android
+   *
+   * See https://reactnative.dev/docs/view#accessibilityliveregion
+   */
   accessibilityLiveRegion?: 'none' | 'polite' | 'assertive' | undefined;
+
+  /**
+   * Indicates to accessibility services whether the user should be notified
+   * when this view changes. Works for Android API >= 19 only.
+   *
+   * @platform android
+   *
+   * See https://reactnative.dev/docs/view#accessibilityliveregion
+   */
+  'aria-live'?: ('polite' | 'assertive' | 'off') | undefined;
 
   /**
    * Controls how view is important for accessibility which is if it fires accessibility events
@@ -244,6 +264,8 @@ export interface AccessibilityPropsAndroid {
    *      'yes' - The view is important for accessibility.
    *      'no' - The view is not important for accessibility.
    *      'no-hide-descendants' - The view is not important for accessibility, nor are any of its descendant views.
+   *
+   * @platform android
    */
   importantForAccessibility?:
     | 'auto'
@@ -251,12 +273,6 @@ export interface AccessibilityPropsAndroid {
     | 'no'
     | 'no-hide-descendants'
     | undefined;
-
-  /**
-   * A reference to another element `nativeID` used to build complex forms. The value of `accessibilityLabelledBy` should match the `nativeID` of the related element.
-   * @platform android
-   */
-  accessibilityLabelledBy?: string | string[] | undefined;
 }
 
 export interface AccessibilityPropsIOS {

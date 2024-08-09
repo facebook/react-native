@@ -460,7 +460,6 @@ static RCTUIColor *defaultPlaceholderColor(void) // [macOS]
   UIEdgeInsets textContainerInset = self.textContainerInsets;
 #endif // macOS]
   NSString *placeholder = self.placeholder ?: @"";
-#if !TARGET_OS_OSX // [macOS]
   CGSize maxPlaceholderSize =
       CGSizeMake(UIEdgeInsetsInsetRect(self.bounds, textContainerInset).size.width, CGFLOAT_MAX);
   CGSize placeholderSize = [placeholder boundingRectWithSize:maxPlaceholderSize
@@ -469,11 +468,6 @@ static RCTUIColor *defaultPlaceholderColor(void) // [macOS]
                                                      context:nil]
                                .size;
   placeholderSize = CGSizeMake(RCTCeilPixelValue(placeholderSize.width), RCTCeilPixelValue(placeholderSize.height));
-#else // [macOS
-  CGFloat scale = _pointScaleFactor ?: self.window.backingScaleFactor;
-  CGSize placeholderSize = [placeholder sizeWithAttributes:[self _placeholderTextAttributes]];
-  placeholderSize = CGSizeMake(RCTCeilPixelValue(placeholderSize.width, scale), RCTCeilPixelValue(placeholderSize.height, scale));
-#endif // macOS]
   placeholderSize.width += textContainerInset.left + textContainerInset.right;
   placeholderSize.height += textContainerInset.top + textContainerInset.bottom;
   // Returning size DOES contain `textContainerInset` (aka `padding`; as `sizeThatFits:` does).

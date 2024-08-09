@@ -59,8 +59,13 @@ export type SectionListRenderItem<ItemT, SectionT = DefaultSectionT> = (
   info: SectionListRenderItemInfo<ItemT, SectionT>,
 ) => React.ReactElement | null;
 
+type VirtualizedListWithoutPreConfiguredProps<ItemT> = Omit<
+  VirtualizedListWithoutRenderItemProps<ItemT>,
+  'stickyHeaderIndices'
+>;
+
 export interface SectionListProps<ItemT, SectionT = DefaultSectionT>
-  extends VirtualizedListWithoutRenderItemProps<ItemT> {
+  extends VirtualizedListWithoutPreConfiguredProps<ItemT> {
   /**
    * Rendered in between each section.
    */

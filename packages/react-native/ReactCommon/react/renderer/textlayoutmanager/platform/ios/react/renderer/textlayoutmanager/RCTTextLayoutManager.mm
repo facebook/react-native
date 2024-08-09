@@ -7,9 +7,9 @@
 
 #import "RCTTextLayoutManager.h"
 
-#import "NSTextStorage+FontScaling.h"
 #import "RCTAttributedTextUtils.h"
 
+#import <React/NSTextStorage+FontScaling.h>
 #import <React/RCTUtils.h>
 #import <react/utils/ManagedObjectWrapper.h>
 #import <react/utils/SimpleThreadSafeCache.h>
@@ -96,20 +96,12 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
 
     // `rect`'s width is stored in double precesion.
     // `frame`'s width is also in double precesion but was stored as float in Yoga previously, precesion was lost.
-#if !TARGET_OS_OSX // [macOS]
     if (std::abs(RCTCeilPixelValue(rect.size.width) - frame.size.width) < threshold) {
-#else // [macOS
-    if (std::abs(RCTCeilPixelValue(rect.size.width, RCTScreenScale()) - frame.size.width) < threshold) {
-#endif // macOS]
       // `textStorage` passed to this method was used to calculate size of frame. If that's the case, it's
       // width is the same as frame's width. Origin must be adjusted, otherwise glyhps will be painted in wrong
       // place.
       // We could create new `NSTextStorage` for the specific frame, but that is expensive.
-#if !TARGET_OS_OSX // [macOS]
       origin.x -= RCTCeilPixelValue(rect.origin.x);
-#else // [macOS
-	  origin.x -= RCTCeilPixelValue(rect.origin.x, RCTScreenScale());
-#endif // macOS]
     }
   }
 
@@ -298,12 +290,7 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
 
   CGSize size = [layoutManager usedRectForTextContainer:textContainer].size;
 
-#if !TARGET_OS_OSX // [macOS]
   size = (CGSize){RCTCeilPixelValue(size.width), RCTCeilPixelValue(size.height)};
-#else // [macOS
-  CGFloat scale = [[NSScreen mainScreen] backingScaleFactor];
-  size = (CGSize){RCTCeilPixelValue(size.width, scale), RCTCeilPixelValue(size.height, scale)};
-#endif // macOS]
   __block auto attachments = TextMeasurement::Attachments{};
 
   [textStorage

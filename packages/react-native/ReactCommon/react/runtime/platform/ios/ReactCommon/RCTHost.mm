@@ -12,16 +12,35 @@
 #import <React/RCTBridgeModule.h>
 #import <React/RCTConvert.h>
 #import <React/RCTFabricSurface.h>
+#import <React/RCTInspectorDevServerHelper.h>
 #import <React/RCTJSThread.h>
 #import <React/RCTLog.h>
 #import <React/RCTMockDef.h>
 #import <React/RCTPerformanceLogger.h>
 #import <React/RCTReloadCommand.h>
+#import <jsinspector-modern/InspectorFlags.h>
+#import <jsinspector-modern/InspectorInterfaces.h>
+#import <jsinspector-modern/ReactCdp.h>
+#import <optional>
 
 RCT_MOCK_DEF(RCTHost, _RCTLogNativeInternal);
 #define _RCTLogNativeInternal RCT_MOCK_USE(RCTHost, _RCTLogNativeInternal)
 
 using namespace facebook::react;
+
+class RCTHostPageTargetDelegate : public facebook::react::jsinspector_modern::PageTargetDelegate {
+ public:
+  RCTHostPageTargetDelegate(RCTHost *host) : host_(host) {}
+
+  void onReload(const PageReloadRequest &request) override
+  {
+    RCTAssertMainQueue();
+    [static_cast<id<RCTReloadListener>>(host_) didReceiveReloadCommand];
+  }
+
+ private:
+  __weak RCTHost *host_;
+};
 
 @interface RCTHost () <RCTReloadListener, RCTInstanceDelegate>
 @end
@@ -47,6 +66,10 @@ using namespace facebook::react;
   std::vector<__weak RCTFabricSurface *> _attachedSurfaces;
 
   RCTModuleRegistry *_moduleRegistry;
+
+  std::unique_ptr<RCTHostPageTargetDelegate> _inspectorPageDelegate;
+  std::shared_ptr<jsinspector_modern::PageTarget> _inspectorTarget;
+  std::optional<int> _inspectorPageId;
 }
 
 + (void)initialize
@@ -133,6 +156,8 @@ using namespace facebook::react;
     dispatch_async(dispatch_get_main_queue(), ^{
       RCTRegisterReloadCommandListener(self);
     });
+
+    _inspectorPageDelegate = std::make_unique<RCTHostPageTargetDelegate>(self);
   }
   return self;
 }
@@ -141,17 +166,45 @@ using namespace facebook::react;
 
 - (void)start
 {
+  auto &inspectorFlags = jsinspector_modern::InspectorFlags::getInstance();
+  if (inspectorFlags.getEnableModernCDPRegistry() && !_inspectorPageId.has_value()) {
+    _inspectorTarget =
+        facebook::react::jsinspector_modern::PageTarget::create(*_inspectorPageDelegate, [](auto callback) {
+          RCTExecuteOnMainQueue(^{
+            callback();
+          });
+        });
+    __weak RCTHost *weakSelf = self;
+    _inspectorPageId = facebook::react::jsinspector_modern::getInspectorInstance().addPage(
+        "React Native Bridgeless (Experimental)",
+        /* vm */ "",
+        [weakSelf](std::unique_ptr<facebook::react::jsinspector_modern::IRemoteConnection> remote)
+            -> std::unique_ptr<facebook::react::jsinspector_modern::ILocalConnection> {
+          RCTHost *strongSelf = weakSelf;
+          if (!strongSelf) {
+            // This can happen if we're about to be dealloc'd. Reject the connection.
+            return nullptr;
+          }
+          return strongSelf->_inspectorTarget->connect(
+              std::move(remote),
+              {
+                  .integrationName = "iOS Bridgeless (RCTHost)",
+              });
+        },
+        {.nativePageReloads = true});
+  }
   if (_instance) {
     RCTLogWarn(
         @"RCTHost should not be creating a new instance if one already exists. This implies there is a bug with how/when this method is being called.");
     [_instance invalidate];
   }
   _instance = [[RCTInstance alloc] initWithDelegate:self
-                                   jsEngineInstance:[self _provideJSEngine]
+                                   jsRuntimeFactory:[self _provideJSEngine]
                                       bundleManager:_bundleManager
                          turboModuleManagerDelegate:_turboModuleManagerDelegate
                                 onInitialBundleLoad:_onInitialBundleLoad
-                                     moduleRegistry:_moduleRegistry];
+                                     moduleRegistry:_moduleRegistry
+                              parentInspectorTarget:_inspectorTarget.get()];
   [_hostDelegate hostDidStart:self];
 }
 
@@ -214,11 +267,12 @@ using namespace facebook::react;
   }
 
   _instance = [[RCTInstance alloc] initWithDelegate:self
-                                   jsEngineInstance:[self _provideJSEngine]
+                                   jsRuntimeFactory:[self _provideJSEngine]
                                       bundleManager:_bundleManager
                          turboModuleManagerDelegate:_turboModuleManagerDelegate
                                 onInitialBundleLoad:_onInitialBundleLoad
-                                     moduleRegistry:_moduleRegistry];
+                                     moduleRegistry:_moduleRegistry
+                              parentInspectorTarget:_inspectorTarget.get()];
   [_hostDelegate hostDidStart:self];
 
   for (RCTFabricSurface *surface in [self _getAttachedSurfaces]) {
@@ -229,6 +283,11 @@ using namespace facebook::react;
 - (void)dealloc
 {
   [_instance invalidate];
+  if (_inspectorPageId.has_value()) {
+    facebook::react::jsinspector_modern::getInspectorInstance().removePage(*_inspectorPageId);
+    _inspectorPageId.reset();
+    _inspectorTarget.reset();
+  }
 }
 
 #pragma mark - RCTInstanceDelegate
@@ -290,10 +349,10 @@ using namespace facebook::react;
   return surfaces;
 }
 
-- (std::shared_ptr<facebook::react::JSEngineInstance>)_provideJSEngine
+- (std::shared_ptr<facebook::react::JSRuntimeFactory>)_provideJSEngine
 {
   RCTAssert(_jsEngineProvider, @"_jsEngineProvider must be non-nil");
-  std::shared_ptr<facebook::react::JSEngineInstance> jsEngine = _jsEngineProvider();
+  std::shared_ptr<facebook::react::JSRuntimeFactory> jsEngine = _jsEngineProvider();
   RCTAssert(jsEngine != nullptr, @"_jsEngineProvider must return a nonnull pointer");
 
   return jsEngine;

@@ -9,13 +9,15 @@ package com.facebook.react.runtime;
 
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.jni.HybridData;
-import com.facebook.jni.annotations.DoNotStrip;
+import com.facebook.jni.annotations.DoNotStripAny;
+import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.modules.core.JavaScriptTimerExecutor;
 import com.facebook.soloader.SoLoader;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
+@DoNotStripAny
 class JSTimerExecutor implements JavaScriptTimerExecutor {
 
   static {
@@ -24,6 +26,7 @@ class JSTimerExecutor implements JavaScriptTimerExecutor {
 
   @DoNotStrip private final HybridData mHybridData;
 
+  @DoNotStrip
   public JSTimerExecutor(HybridData hybridData) {
     mHybridData = hybridData;
   }

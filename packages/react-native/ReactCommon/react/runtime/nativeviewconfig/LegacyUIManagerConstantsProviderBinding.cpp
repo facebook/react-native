@@ -9,8 +9,11 @@
 
 namespace facebook::react::LegacyUIManagerConstantsProviderBinding {
 
-void install(jsi::Runtime& runtime, ProviderType&& provider) {
-  auto name = "RN$LegacyInterop_UIManager_getConstants";
+void install(
+    jsi::Runtime& runtime,
+    const std::string& name,
+    std::function<jsi::Value()>&& provider) {
+  auto methodName = "RN$LegacyInterop_UIManager_" + name;
   auto hostFunction = [provider = std::move(provider)](
                           jsi::Runtime& runtime,
                           const jsi::Value& /*thisValue*/,
@@ -25,6 +28,34 @@ void install(jsi::Runtime& runtime, ProviderType&& provider) {
   auto jsiFunction = jsi::Function::createFromHostFunction(
       runtime, jsi::PropNameID::forAscii(runtime, name), 2, hostFunction);
 
-  runtime.global().setProperty(runtime, name, jsiFunction);
+  runtime.global().setProperty(runtime, methodName.c_str(), jsiFunction);
 }
+
+void install(
+    jsi::Runtime& runtime,
+    const std::string& name,
+    std::function<jsi::Value(std::string)>&& provider) {
+  auto methodName = "RN$LegacyInterop_UIManager_" + name;
+  auto hostFunction = [provider = std::move(provider)](
+                          jsi::Runtime& runtime,
+                          const jsi::Value& /*thisValue*/,
+                          const jsi::Value* args,
+                          size_t count) -> jsi::Value {
+    if (count != 1) {
+      throw new jsi::JSError(runtime, "1 argument expected.");
+    }
+
+    if (!args[0].isString()) {
+      throw new jsi::JSError(runtime, "First argument must be string.");
+    }
+
+    return provider(args[0].asString(runtime).utf8(runtime));
+  };
+
+  auto jsiFunction = jsi::Function::createFromHostFunction(
+      runtime, jsi::PropNameID::forAscii(runtime, name), 2, hostFunction);
+
+  runtime.global().setProperty(runtime, methodName.c_str(), jsiFunction);
+}
+
 } // namespace facebook::react::LegacyUIManagerConstantsProviderBinding

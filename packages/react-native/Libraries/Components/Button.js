@@ -6,24 +6,19 @@
  *
  * @format
  * @flow
- * @generate-docs
  */
 
 'use strict';
 
 import type {TextStyleProp, ViewStyleProp} from '../StyleSheet/StyleSheet';
 import type {PressEvent} from '../Types/CoreEventTypes';
-import type {KeyEvent} from '../Types/CoreEventTypes'; // [macOS]
-import type {Button as ButtonType} from './Button.flow';
-import type {BlurEvent, FocusEvent} from './TextInput/TextInput'; // [macOS]
+import type {BlurEvent, FocusEvent, KeyEvent} from '../Types/CoreEventTypes'; // [macOS]
 import type {
   AccessibilityActionEvent,
   AccessibilityActionInfo,
-  // [macOS
-  AccessibilityRole,
-  // macOS]
   AccessibilityState,
 } from './View/ViewAccessibility';
+import type {AccessibilityRole} from './View/ViewAccessibility'; // [macOS]
 
 import StyleSheet, {type ColorValue} from '../StyleSheet/StyleSheet';
 import Text from '../Text/Text';
@@ -337,131 +332,132 @@ type ButtonProps = $ReadOnly<{|
   ```
  */
 
-class Button extends React.Component<ButtonProps> {
-  render(): React.Node {
-    const {
-      accessibilityLabel,
-      accessibilityState,
-      'aria-busy': ariaBusy,
-      'aria-checked': ariaChecked,
-      'aria-disabled': ariaDisabled,
-      'aria-expanded': ariaExpanded,
-      'aria-label': ariaLabel,
-      'aria-selected': ariaSelected,
-      importantForAccessibility,
-      color,
-      onPress,
-      touchSoundDisabled,
-      title,
-      hasTVPreferredFocus,
-      nextFocusDown,
-      nextFocusForward,
-      nextFocusLeft,
-      nextFocusRight,
-      nextFocusUp,
-      testID,
-      onFocus, // [macOS
-      onBlur,
-      onKeyDown,
-      onKeyUp,
-      validKeysDown,
-      validKeysUp, // macOS]
-      tooltip, // [macOS]
-      accessible,
-      accessibilityActions,
-      accessibilityHint,
-      accessibilityLanguage,
-      accessibilityRole, // [macOS]
-      onAccessibilityAction,
-    } = this.props;
-    const buttonStyles: Array<ViewStyleProp> = [styles.button];
-    const textStyles: Array<TextStyleProp> = [styles.text];
-    if (color) {
-      if (Platform.OS === 'ios' || Platform.OS === 'macos' /* [macOS] */) {
-        textStyles.push({color: color});
-      } else {
-        buttonStyles.push({backgroundColor: color});
-      }
+const Button: React.AbstractComponent<ButtonProps> = (props: ButtonProps) => {
+  const {
+    accessibilityLabel,
+    accessibilityRole, // [macOS]
+    accessibilityState,
+    'aria-busy': ariaBusy,
+    'aria-checked': ariaChecked,
+    'aria-disabled': ariaDisabled,
+    'aria-expanded': ariaExpanded,
+    'aria-label': ariaLabel,
+    'aria-selected': ariaSelected,
+    importantForAccessibility,
+    color,
+    onPress,
+    touchSoundDisabled,
+    title,
+    hasTVPreferredFocus,
+    nextFocusDown,
+    nextFocusForward,
+    nextFocusLeft,
+    nextFocusRight,
+    nextFocusUp,
+    testID,
+    accessible,
+    accessibilityActions,
+    accessibilityHint,
+    accessibilityLanguage,
+    onAccessibilityAction,
+    // [macOS
+    onFocus,
+    onBlur,
+    onKeyDown,
+    onKeyUp,
+    validKeysDown,
+    validKeysUp,
+    tooltip,
+    // macOS]
+  } = props;
+  const buttonStyles: Array<ViewStyleProp> = [styles.button];
+  const textStyles: Array<TextStyleProp> = [styles.text];
+  if (color) {
+    if (Platform.OS === 'ios' || Platform.OS === 'macos') {
+      // [macOS]
+      textStyles.push({color: color});
+    } else {
+      buttonStyles.push({backgroundColor: color});
     }
-
-    let _accessibilityState = {
-      busy: ariaBusy ?? accessibilityState?.busy,
-      checked: ariaChecked ?? accessibilityState?.checked,
-      disabled: ariaDisabled ?? accessibilityState?.disabled,
-      expanded: ariaExpanded ?? accessibilityState?.expanded,
-      selected: ariaSelected ?? accessibilityState?.selected,
-    };
-
-    const disabled =
-      this.props.disabled != null
-        ? this.props.disabled
-        : _accessibilityState?.disabled;
-
-    _accessibilityState =
-      disabled !== _accessibilityState?.disabled
-        ? {..._accessibilityState, disabled}
-        : _accessibilityState;
-
-    if (disabled) {
-      buttonStyles.push(styles.buttonDisabled);
-      textStyles.push(styles.textDisabled);
-    }
-
-    invariant(
-      typeof title === 'string',
-      'The title prop of a Button must be a string',
-    );
-    const formattedTitle =
-      Platform.OS === 'android' ? title.toUpperCase() : title;
-    const Touchable =
-      Platform.OS === 'android' ? TouchableNativeFeedback : TouchableOpacity;
-
-    // If `no` is specified for `importantForAccessibility`, it will be changed to `no-hide-descendants` because the text inside should not be focused.
-    const _importantForAccessibility =
-      importantForAccessibility === 'no'
-        ? 'no-hide-descendants'
-        : importantForAccessibility;
-
-    return (
-      <Touchable
-        accessible={accessible}
-        accessibilityActions={accessibilityActions}
-        onAccessibilityAction={onAccessibilityAction}
-        accessibilityLabel={ariaLabel || accessibilityLabel}
-        accessibilityHint={accessibilityHint}
-        accessibilityLanguage={accessibilityLanguage}
-        accessibilityRole={accessibilityRole || 'button'} // [macOS]
-        accessibilityState={_accessibilityState}
-        importantForAccessibility={_importantForAccessibility}
-        hasTVPreferredFocus={hasTVPreferredFocus}
-        nextFocusDown={nextFocusDown}
-        nextFocusForward={nextFocusForward}
-        nextFocusLeft={nextFocusLeft}
-        nextFocusRight={nextFocusRight}
-        nextFocusUp={nextFocusUp}
-        testID={testID}
-        disabled={disabled}
-        onPress={onPress}
-        onFocus={onFocus} // [macOS]
-        onBlur={onBlur} // [macOS]
-        onKeyDown={onKeyDown}
-        onKeyUp={onKeyUp}
-        validKeysDown={validKeysDown}
-        validKeysUp={validKeysUp}
-        tooltip={tooltip} // [macOS]
-        touchSoundDisabled={touchSoundDisabled}>
-        <View style={buttonStyles}>
-          <Text
-            style={textStyles}
-            disabled={disabled}
-            accessible={Platform.OS !== 'macos' /* [macOS] */}>
-            {formattedTitle}
-          </Text>
-        </View>
-      </Touchable>
-    );
   }
-}
+
+  let _accessibilityState = {
+    busy: ariaBusy ?? accessibilityState?.busy,
+    checked: ariaChecked ?? accessibilityState?.checked,
+    disabled: ariaDisabled ?? accessibilityState?.disabled,
+    expanded: ariaExpanded ?? accessibilityState?.expanded,
+    selected: ariaSelected ?? accessibilityState?.selected,
+  };
+
+  const disabled =
+    props.disabled != null ? props.disabled : _accessibilityState?.disabled;
+
+  _accessibilityState =
+    disabled !== _accessibilityState?.disabled
+      ? {..._accessibilityState, disabled}
+      : _accessibilityState;
+
+  if (disabled) {
+    buttonStyles.push(styles.buttonDisabled);
+    textStyles.push(styles.textDisabled);
+  }
+
+  invariant(
+    typeof title === 'string',
+    'The title prop of a Button must be a string',
+  );
+  const formattedTitle =
+    Platform.OS === 'android' ? title.toUpperCase() : title;
+  const Touchable =
+    Platform.OS === 'android' ? TouchableNativeFeedback : TouchableOpacity;
+
+  // If `no` is specified for `importantForAccessibility`, it will be changed to `no-hide-descendants` because the text inside should not be focused.
+  const _importantForAccessibility =
+    importantForAccessibility === 'no'
+      ? 'no-hide-descendants'
+      : importantForAccessibility;
+
+  return (
+    <Touchable
+      accessible={accessible}
+      accessibilityActions={accessibilityActions}
+      onAccessibilityAction={onAccessibilityAction}
+      accessibilityLabel={ariaLabel || accessibilityLabel}
+      accessibilityHint={accessibilityHint}
+      accessibilityLanguage={accessibilityLanguage}
+      // accessibilityRole="button"
+      accessibilityRole={accessibilityRole || 'button'} // [macOS]
+      accessibilityState={_accessibilityState}
+      importantForAccessibility={_importantForAccessibility}
+      hasTVPreferredFocus={hasTVPreferredFocus}
+      nextFocusDown={nextFocusDown}
+      nextFocusForward={nextFocusForward}
+      nextFocusLeft={nextFocusLeft}
+      nextFocusRight={nextFocusRight}
+      nextFocusUp={nextFocusUp}
+      testID={testID}
+      disabled={disabled}
+      onPress={onPress}
+      // [macOS
+      onFocus={onFocus}
+      onBlur={onBlur}
+      onKeyDown={onKeyDown}
+      onKeyUp={onKeyUp}
+      validKeysDown={validKeysDown}
+      validKeysUp={validKeysUp}
+      tooltip={tooltip}
+      // macOS]
+      touchSoundDisabled={touchSoundDisabled}>
+      <View style={buttonStyles}>
+        <Text style={textStyles} disabled={disabled}>
+          {formattedTitle}
+        </Text>
+      </View>
+    </Touchable>
+  );
+};
+
+Button.displayName = 'Button';
 
 const styles = StyleSheet.create({
   button: Platform.select({
@@ -517,4 +513,4 @@ const styles = StyleSheet.create({
   }),
 });
 
-module.exports = (Button: ButtonType);
+export default Button;

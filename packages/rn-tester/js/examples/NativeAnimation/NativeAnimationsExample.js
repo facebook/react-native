@@ -12,17 +12,16 @@
 
 import type AnimatedValue from 'react-native/Libraries/Animated/nodes/AnimatedValue';
 
-const React = require('react');
-
 import RNTesterSettingSwitchRow from '../../components/RNTesterSettingSwitchRow';
 import useJsStalls from '../../utils/useJsStalls';
 
+const React = require('react');
 const {
-  View,
-  Text,
   Animated,
   StyleSheet,
+  Text,
   TouchableWithoutFeedback,
+  View,
 } = require('react-native');
 
 class Tester extends React.Component<$FlowFixMeProps, $FlowFixMeState> {

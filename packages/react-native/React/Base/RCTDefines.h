@@ -185,8 +185,8 @@
  * Controls for activating the new architecture without the legacy system.
  * Note: this is work in progress.
  */
-#ifdef REACT_NATIVE_FORCE_NEW_ARCHITECTURE
-#define RCT_ONLY_NEW_ARCHITECTURE 1
+#ifdef REACT_NATIVE_FORCE_NEW_ARCHITECTURE_EXPERIMENTAL_DO_NOT_USE
+#define RCT_ONLY_NEW_ARCHITECTURE_EXPERIMENTAL_DO_NOT_USE 1
 #else
-#define RCT_ONLY_NEW_ARCHITECTURE 0
+#define RCT_ONLY_NEW_ARCHITECTURE_EXPERIMENTAL_DO_NOT_USE 0
 #endif

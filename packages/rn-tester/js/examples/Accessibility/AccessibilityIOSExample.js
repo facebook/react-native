@@ -11,7 +11,7 @@
 'use strict';
 
 const React = require('react');
-const {Text, View, Alert} = require('react-native');
+const {Alert, Text, View} = require('react-native');
 
 type Props = $ReadOnly<{||}>;
 class AccessibilityIOSExample extends React.Component<Props> {

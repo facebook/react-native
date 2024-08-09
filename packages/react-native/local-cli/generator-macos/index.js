@@ -2,14 +2,14 @@
 
 'use strict';
 
+const {
+  copyAndReplaceAll,
+  createDir,
+} = require('../generator-common');
 const chalk = require('chalk');
-const path = require('path');
 const childProcess = require('child_process');
 const fs = require('fs');
-const {
-  createDir,
-  copyAndReplaceAll,
-} = require('../generator-common');
+const path = require('path');
 
 const macOSDir = 'macos';
 const oldProjectName = 'HelloWorld';

@@ -5,15 +5,15 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import {expectCodeIsEqual, FakeWritable} from '../src/TestHelpers';
+import { Command } from '../src/Command';
+import { Event } from '../src/Event';
 import {
   emitNotificationDecl,
   emitRequestDecl,
   emitResponseDecl,
   emitTypeDecl,
 } from '../src/HeaderWriter';
-import { Event } from '../src/Event';
-import { Command } from '../src/Command';
+import {FakeWritable, expectCodeIsEqual} from '../src/TestHelpers';
 import { Type } from '../src/Type';
 
 let stream = null;

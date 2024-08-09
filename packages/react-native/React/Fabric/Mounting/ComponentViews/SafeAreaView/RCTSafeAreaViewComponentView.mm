@@ -22,8 +22,7 @@ using namespace facebook::react;
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
-    static const auto defaultProps = std::make_shared<const SafeAreaViewProps>();
-    _props = defaultProps;
+    _props = SafeAreaViewShadowNode::defaultSharedProps();
   }
 
   return self;
@@ -55,17 +54,10 @@ using namespace facebook::react;
 
   UIEdgeInsets insets = [self _safeAreaInsets];
   CGFloat scale = _layoutMetrics.pointScaleFactor; // [macOS]
-#if !TARGET_OS_OSX // [macOS]
   insets.left = RCTRoundPixelValue(insets.left);
   insets.top = RCTRoundPixelValue(insets.top);
   insets.right = RCTRoundPixelValue(insets.right);
   insets.bottom = RCTRoundPixelValue(insets.bottom);
-#else // [macOS
-  insets.left = RCTRoundPixelValue(insets.left, scale);
-  insets.top = RCTRoundPixelValue(insets.top, scale);
-  insets.right = RCTRoundPixelValue(insets.right, scale);
-  insets.bottom = RCTRoundPixelValue(insets.bottom, scale);
-#endif // macOS]
 
   auto newPadding = RCTEdgeInsetsFromUIEdgeInsets(insets);
   auto threshold = 1.0 / scale + 0.01; // Size of a pixel plus some small threshold. [macOS]

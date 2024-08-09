@@ -20,13 +20,11 @@
 
 using namespace facebook::react;
 
-@interface RCTActionSheetManager () <
-#if !TARGET_OS_OSX // [macOS]
-UIActionSheetDelegate
+#if !TARGET_OS_OSX
+@interface RCTActionSheetManager () <NativeActionSheetManagerSpec>
 #else // [macOS
-NSSharingServicePickerDelegate
+@interface RCTActionSheetManager () <NativeActionSheetManagerSpec, NSSharingServicePickerDelegate>
 #endif // macOS]
-, NativeActionSheetManagerSpec>
 
 #if !TARGET_OS_OSX // [macOS] Unlike iOS, we will only ever have one NSMenu present at a time
 @property (nonatomic, strong) NSMutableArray<UIAlertController *> *alertControllers;
@@ -74,11 +72,6 @@ RCT_EXPORT_MODULE()
 
 @synthesize viewRegistry_DEPRECATED = _viewRegistry_DEPRECATED;
 
-- (dispatch_queue_t)methodQueue
-{
-  return dispatch_get_main_queue();
-}
-
 #if !TARGET_OS_OSX // [macOS]
 - (void)presentViewController:(UIViewController *)alertController
        onParentViewController:(UIViewController *)parentViewController
@@ -118,6 +111,17 @@ RCT_EXPORT_MODULE()
     }
     [menu popUpMenuPositioningItem:menu.itemArray.firstObject atLocation:location inView:sourceView];
 }
+- (void)presentSharingServicePicker:(NSSharingServicePicker *)picker
+                      anchorViewTag:(NSNumber *)anchorViewTag
+{
+    NSView *sourceView = nil;
+    if (anchorViewTag) {
+      sourceView = [self.viewRegistry_DEPRECATED viewForReactTag:anchorViewTag];
+    }
+    NSView *contentView = sourceView ?: NSApp.keyWindow.contentView;
+
+  [picker showRelativeToRect:contentView.bounds ofView:contentView preferredEdge:NSRectEdgeMinX];
+}
 #endif // [macOS]
 
 RCT_EXPORT_METHOD(showActionSheetWithOptions
@@ -156,134 +160,139 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions
     NSNumber *destructiveButtonIndex = @-1;
     destructiveButtonIndices = @[ destructiveButtonIndex ];
   }
-
-  UIViewController *controller = RCTPresentedViewController();
 #endif // [macOS]
   NSNumber *anchor = [RCTConvert NSNumber:options.anchor() ? @(*options.anchor()) : nil];
 #if !TARGET_OS_OSX // [macOS]
   UIColor *tintColor = [RCTConvert UIColor:options.tintColor() ? @(*options.tintColor()) : nil];
   UIColor *cancelButtonTintColor =
       [RCTConvert UIColor:options.cancelButtonTintColor() ? @(*options.cancelButtonTintColor()) : nil];
-
-  if (controller == nil) {
-    // [macOS nil check our dict values before inserting them or we may crash
-    RCTLogError(
-        @"Tried to display action sheet but there is no application window. options: %@", @{
-          @"title" : title ?: [NSNull null],
-          @"message" : message ?: [NSNull null],
-          @"options" : buttons ?: [NSNull null],
-          @"cancelButtonIndex" : @(cancelButtonIndex),
-          @"destructiveButtonIndices" : destructiveButtonIndices ?: [NSNull null],
-          @"anchor" : anchor ?: [NSNull null],
-          @"tintColor" : tintColor ?: [NSNull null],
-          @"cancelButtonTintColor" : cancelButtonTintColor ?: [NSNull null],
-          @"disabledButtonIndices" : disabledButtonIndices ?: [NSNull null],
-        });
-    // macOS]
-    return;
-  }
 #endif // [macOS]
-
-  /*
-   * The `anchor` option takes a view to set as the anchor for the share
-   * popup to point to, on iPads running iOS 8. If it is not passed, it
-   * defaults to centering the share popup on screen without any arrows.
-   */
-  NSNumber *anchorViewTag = anchor;
-
-#if !TARGET_OS_OSX // [macOS]
-  UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title
-                                                                           message:message
-                                                                    preferredStyle:UIAlertControllerStyleActionSheet];
-#else // [macOS
-  NSMenu *menu = [[NSMenu alloc] initWithTitle:title ?: @""];
-  [menu setAutoenablesItems:NO];
-  [_callbacks setObject:callback forKey:menu];
-#endif // macOS]
-
-  NSInteger index = 0;
-#if !TARGET_OS_OSX // [macOS]
-  bool isCancelButtonIndex = false;
-  // The handler for a button might get called more than once when tapping outside
-  // the action sheet on iPad. RCTResponseSenderBlock can only be called once so
-  // keep track of callback invocation here.
-  __block bool callbackInvoked = false;
-#endif  // [macOS]
-  for (NSString *option in buttons) {
-#if !TARGET_OS_OSX // [macOS]
-    UIAlertActionStyle style = UIAlertActionStyleDefault;
-    if ([destructiveButtonIndices containsObject:@(index)]) {
-      style = UIAlertActionStyleDestructive;
-    } else if (index == cancelButtonIndex) {
-      style = UIAlertActionStyleCancel;
-      isCancelButtonIndex = true;
-    }
-
-    NSInteger localIndex = index;
-    UIAlertAction *actionButton = [UIAlertAction actionWithTitle:option
-                                                           style:style
-                                                         handler:^(__unused UIAlertAction *action) {
-                                                           if (!callbackInvoked) {
-                                                             callbackInvoked = true;
-                                                             [self->_alertControllers removeObject:alertController];
-                                                             callback(@[ @(localIndex) ]);
-                                                           }
-                                                         }];
-    if (isCancelButtonIndex) {
-      [actionButton setValue:cancelButtonTintColor forKey:@"titleTextColor"];
-    }
-    [alertController addAction:actionButton];
-#else // [macOS
-    if (index == cancelButtonIndex) {
-      // NSMenu doesn't need a cancel button, you can just click outside the menu
-      continue;
-    }
-
-    NSMenuItem *item = [[NSMenuItem alloc] initWithTitle:option action:@selector(menuItemDidTap:) keyEquivalent:@""];
-    [item setTag:index];
-    [item setTarget:self];
-    [menu addItem:item];
-#endif // macOS]
-
-    index++;
-  }
-
-  if (disabledButtonIndices) {
-    for (NSNumber *disabledButtonIndex in disabledButtonIndices) {
-      if ([disabledButtonIndex integerValue] < buttons.count) {
-#if !TARGET_OS_OSX // [macOS]
-        [alertController.actions[[disabledButtonIndex integerValue]] setEnabled:false];
-#else // [macOS
-        NSMenuItem *menuItem = [[menu itemArray] objectAtIndex:[disabledButtonIndex integerValue]];
-        [menuItem setEnabled:NO];
-#endif // macOS]
-      } else {
-        RCTLogError(
-            @"Index %@ from `disabledButtonIndices` is out of bounds. Maximum index value is %@.",
-            @([disabledButtonIndex integerValue]),
-            @(buttons.count - 1));
-        return;
-      }
-    }
-  }
-
-#if !TARGET_OS_OSX // [macOS]
-  alertController.view.tintColor = tintColor;
   NSString *userInterfaceStyle = [RCTConvert NSString:options.userInterfaceStyle()];
 
-  if (userInterfaceStyle == nil || [userInterfaceStyle isEqualToString:@""]) {
-    alertController.overrideUserInterfaceStyle = UIUserInterfaceStyleUnspecified;
-  } else if ([userInterfaceStyle isEqualToString:@"dark"]) {
-    alertController.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
-  } else if ([userInterfaceStyle isEqualToString:@"light"]) {
-    alertController.overrideUserInterfaceStyle = UIUserInterfaceStyleLight;
-  }
+  dispatch_async(dispatch_get_main_queue(), ^{
+#if !TARGET_OS_OSX // [macOS]
+    UIViewController *controller = RCTPresentedViewController();
 
-  [_alertControllers addObject:alertController];
-  [self presentViewController:alertController onParentViewController:controller anchorViewTag:anchorViewTag];
+    if (controller == nil) {
+      // [macOS nil check our dict values before inserting them or we may crash
+      RCTLogError(
+          @"Tried to display action sheet but there is no application window. options: %@", @{
+            @"title" : title ?: [NSNull null],
+            @"message" : message ?: [NSNull null],
+            @"options" : buttons ?: [NSNull null],
+            @"cancelButtonIndex" : @(cancelButtonIndex),
+            @"destructiveButtonIndices" : destructiveButtonIndices ?: [NSNull null],
+            @"anchor" : anchor ?: [NSNull null],
+            @"tintColor" : tintColor ?: [NSNull null],
+            @"cancelButtonTintColor" : cancelButtonTintColor ?: [NSNull null],
+            @"disabledButtonIndices" : disabledButtonIndices ?: [NSNull null],
+          });
+      // macOS]
+      return;
+    }
+#endif // [macOS]
+
+    /*
+     * The `anchor` option takes a view to set as the anchor for the share
+     * popup to point to, on iPads running iOS 8. If it is not passed, it
+     * defaults to centering the share popup on screen without any arrows.
+     */
+    NSNumber *anchorViewTag = anchor;
+
+#if !TARGET_OS_OSX // [macOS]
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title
+                                                                             message:message
+                                                                      preferredStyle:UIAlertControllerStyleActionSheet];
 #else // [macOS
-  [self presentMenu:menu anchorViewTag:anchorViewTag];
+    NSMenu *menu = [[NSMenu alloc] initWithTitle:title ?: @""];
+    [menu setAutoenablesItems:NO];
+    [self->_callbacks setObject:callback forKey:menu];
 #endif // macOS]
+
+    NSInteger index = 0;
+#if !TARGET_OS_OSX // [macOS]
+    bool isCancelButtonIndex = false;
+    // The handler for a button might get called more than once when tapping outside
+    // the action sheet on iPad. RCTResponseSenderBlock can only be called once so
+    // keep track of callback invocation here.
+    __block bool callbackInvoked = false;
+#endif  // [macOS]
+    for (NSString *option in buttons) {
+#if !TARGET_OS_OSX // [macOS]
+      UIAlertActionStyle style = UIAlertActionStyleDefault;
+      if ([destructiveButtonIndices containsObject:@(index)]) {
+        style = UIAlertActionStyleDestructive;
+      } else if (index == cancelButtonIndex) {
+        style = UIAlertActionStyleCancel;
+        isCancelButtonIndex = true;
+      }
+
+      NSInteger localIndex = index;
+      UIAlertAction *actionButton = [UIAlertAction actionWithTitle:option
+                                                             style:style
+                                                           handler:^(__unused UIAlertAction *action) {
+                                                             if (!callbackInvoked) {
+                                                               callbackInvoked = true;
+                                                               [self->_alertControllers removeObject:alertController];
+                                                               callback(@[ @(localIndex) ]);
+                                                             }
+                                                           }];
+      if (isCancelButtonIndex) {
+        [actionButton setValue:cancelButtonTintColor forKey:@"titleTextColor"];
+      }
+      [alertController addAction:actionButton];
+#else // [macOS
+      if (index == cancelButtonIndex) {
+        // NSMenu doesn't need a cancel button, you can just click outside the menu
+        continue;
+      }
+
+      NSMenuItem *item = [[NSMenuItem alloc] initWithTitle:option action:@selector(menuItemDidTap:) keyEquivalent:@""];
+      [item setTag:index];
+      [item setTarget:self];
+      [menu addItem:item];
+#endif // macOS]
+      index++;
+    }
+
+    if (disabledButtonIndices) {
+      for (NSNumber *disabledButtonIndex in disabledButtonIndices) {
+        if ([disabledButtonIndex integerValue] < buttons.count) {
+#if !TARGET_OS_OSX // [macOS]
+          [alertController.actions[[disabledButtonIndex integerValue]] setEnabled:false];
+#else // [macOS
+          NSMenuItem *menuItem = [[menu itemArray] objectAtIndex:[disabledButtonIndex integerValue]];
+          [menuItem setEnabled:NO];
+#endif // macOS]
+        } else {
+          RCTLogError(
+              @"Index %@ from `disabledButtonIndices` is out of bounds. Maximum index value is %@.",
+              @([disabledButtonIndex integerValue]),
+              @(buttons.count - 1));
+          return;
+        }
+      }
+    }
+
+#if !TARGET_OS_OSX // [macOS]
+    alertController.view.tintColor = tintColor;
+
+    if (userInterfaceStyle == nil || [userInterfaceStyle isEqualToString:@""]) {
+      alertController.overrideUserInterfaceStyle = UIUserInterfaceStyleUnspecified;
+    } else if ([userInterfaceStyle isEqualToString:@"dark"]) {
+      alertController.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
+    } else if ([userInterfaceStyle isEqualToString:@"light"]) {
+      alertController.overrideUserInterfaceStyle = UIUserInterfaceStyleLight;
+    }
+#endif // [macOS]
+
+#if !TARGET_OS_OSX // [macOS]
+    [self->_alertControllers addObject:alertController];
+    [self presentViewController:alertController onParentViewController:controller anchorViewTag:anchorViewTag];
+#else // [macOS
+    [self presentMenu:menu anchorViewTag:anchorViewTag];
+#endif // macOS]
+  });
 }
 
 RCT_EXPORT_METHOD(dismissActionSheet)
@@ -293,9 +302,11 @@ RCT_EXPORT_METHOD(dismissActionSheet)
     RCTLogWarn(@"Unable to dismiss action sheet");
   }
 
-  id _alertController = [_alertControllers lastObject];
-  [_alertController dismissViewControllerAnimated:YES completion:nil];
-  [_alertControllers removeLastObject];
+  UIAlertController *alertController = [_alertControllers lastObject];
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [alertController dismissViewControllerAnimated:YES completion:nil];
+    [self->_alertControllers removeLastObject];
+  });
 #endif // [macOS]
 }
 
@@ -313,92 +324,101 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions
 
   NSMutableArray<id> *items = [NSMutableArray array];
   NSString *message = options.message();
-  if (message) {
-    [items addObject:message];
-  }
   NSURL *URL = [RCTConvert NSURL:options.url()];
-  if (URL) {
-    if ([URL.scheme.lowercaseString isEqualToString:@"data"]) {
-      NSError *error;
-      NSData *data = [NSData dataWithContentsOfURL:URL options:(NSDataReadingOptions)0 error:&error];
-      if (!data) {
-        failureCallback(@[ RCTJSErrorFromNSError(error) ]);
-        return;
-      }
-      [items addObject:data];
-    } else {
-      [items addObject:URL];
-    }
-  }
-  if (items.count == 0) {
-    RCTLogError(@"No `url` or `message` to share");
-    return;
-  }
-
-#if !TARGET_OS_OSX // [macOS]
-  UIActivityViewController *shareController = [[UIActivityViewController alloc] initWithActivityItems:items
-                                                                                applicationActivities:nil];
-
   NSString *subject = options.subject();
-  if (subject) {
-    [shareController setValue:subject forKey:@"subject"];
-  }
-
   NSArray *excludedActivityTypes =
       RCTConvertOptionalVecToArray(options.excludedActivityTypes(), ^id(NSString *element) {
         return element;
       });
-  if (excludedActivityTypes) {
-    shareController.excludedActivityTypes = excludedActivityTypes;
-  }
-
-  UIViewController *controller = RCTPresentedViewController();
-  shareController.completionWithItemsHandler =
-      ^(NSString *activityType, BOOL completed, __unused NSArray *returnedItems, NSError *activityError) {
-        if (activityError) {
-          failureCallback(@[ RCTJSErrorFromNSError(activityError) ]);
-        } else if (completed || activityType == nil) {
-          successCallback(@[ @(completed), RCTNullIfNil(activityType) ]);
-        }
-      };
-
-  NSNumber *anchorViewTag = [RCTConvert NSNumber:options.anchor() ? @(*options.anchor()) : nil];
-  shareController.view.tintColor = [RCTConvert UIColor:options.tintColor() ? @(*options.tintColor()) : nil];
-
   NSString *userInterfaceStyle = [RCTConvert NSString:options.userInterfaceStyle()];
-
-  if (userInterfaceStyle == nil || [userInterfaceStyle isEqualToString:@""]) {
-    shareController.overrideUserInterfaceStyle = UIUserInterfaceStyleUnspecified;
-  } else if ([userInterfaceStyle isEqualToString:@"dark"]) {
-    shareController.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
-  } else if ([userInterfaceStyle isEqualToString:@"light"]) {
-    shareController.overrideUserInterfaceStyle = UIUserInterfaceStyleLight;
-  }
-
-  [self presentViewController:shareController onParentViewController:controller anchorViewTag:anchorViewTag];
-#else // [macOS
-  NSArray *excludedActivityTypes = RCTConvertOptionalVecToArray(options.excludedActivityTypes(), ^id(NSString *element) { return element; });
-  NSMutableArray<NSSharingService*> *excludedTypes = [NSMutableArray array];
-  for (NSString *excludeActivityType in excludedActivityTypes) {
-    NSSharingService *sharingService = [NSSharingService sharingServiceNamed:excludeActivityType];
-    if (sharingService) {
-      [excludedTypes addObject:sharingService];
-    }
-  }
-  _excludedActivities = excludedTypes.copy;
-  _sharingSubject = options.subject();
-  _failureCallback = failureCallback;
-  _successCallback = successCallback;
-  RCTPlatformView *sourceView = nil;
   NSNumber *anchorViewTag = [RCTConvert NSNumber:options.anchor() ? @(*options.anchor()) : nil];
-  if (anchorViewTag) {
-    sourceView = [self.viewRegistry_DEPRECATED viewForReactTag:anchorViewTag];
-  }
-  NSView *contentView = sourceView ?: NSApp.keyWindow.contentView;
-  NSSharingServicePicker *picker = [[NSSharingServicePicker alloc] initWithItems:items];
-  picker.delegate = self;
-  [picker showRelativeToRect:contentView.bounds ofView:contentView preferredEdge:NSRectEdgeMinX];
+  RCTUIColor *tintColor = [RCTConvert RCTUIColor:options.tintColor() ? @(*options.tintColor()) : nil]; // [macOS]
+
+  dispatch_async(dispatch_get_main_queue(), ^{
+    if (message) {
+      [items addObject:message];
+    }
+    if (URL) {
+      if ([URL.scheme.lowercaseString isEqualToString:@"data"]) {
+        NSError *error;
+        NSData *data = [NSData dataWithContentsOfURL:URL options:(NSDataReadingOptions)0 error:&error];
+        if (!data) {
+          failureCallback(@[ RCTJSErrorFromNSError(error) ]);
+          return;
+        }
+        [items addObject:data];
+      } else {
+        [items addObject:URL];
+      }
+    }
+    if (items.count == 0) {
+      RCTLogError(@"No `url` or `message` to share");
+      return;
+    }
+
+#if !TARGET_OS_OSX // [macOS]
+    UIActivityViewController *shareController = [[UIActivityViewController alloc] initWithActivityItems:items
+                                                                                  applicationActivities:nil];
+#else // [macOS
+    NSSharingServicePicker *picker = [[NSSharingServicePicker alloc] initWithItems:items];
+    picker.delegate = self;
 #endif // macOS]
+
+    if (subject) {
+#if !TARGET_OS_OSX // [macOS]
+      [shareController setValue:subject forKey:@"subject"];
+#else // [macOS
+      self->_sharingSubject = subject;
+#endif // macOS]
+    }
+    if (excludedActivityTypes) {
+#if !TARGET_OS_OSX // [macOS]
+      shareController.excludedActivityTypes = excludedActivityTypes;
+#else // [macOS
+      NSMutableArray<NSSharingService*> *excludedTypes = [NSMutableArray array];
+      for (NSString *excludeActivityType in excludedActivityTypes) {
+        NSSharingService *sharingService = [NSSharingService sharingServiceNamed:excludeActivityType];
+        if (sharingService) {
+          [excludedTypes addObject:sharingService];
+        }
+      }
+      self->_excludedActivities = excludedTypes.copy;
+#endif // macOS]
+    }
+
+#if !TARGET_OS_OSX // [macOS]
+    UIViewController *controller = RCTPresentedViewController();
+    shareController.completionWithItemsHandler =
+        ^(NSString *activityType, BOOL completed, __unused NSArray *returnedItems, NSError *activityError) {
+          if (activityError) {
+            failureCallback(@[ RCTJSErrorFromNSError(activityError) ]);
+          } else if (completed || activityType == nil) {
+            successCallback(@[ @(completed), RCTNullIfNil(activityType) ]);
+          }
+        };
+#else // [macOS
+    self->_failureCallback = failureCallback;
+    self->_successCallback = successCallback;
+#endif // macOS]
+
+#if !TARGET_OS_OSX // [macOS]
+    shareController.view.tintColor = tintColor;
+
+    if (userInterfaceStyle == nil || [userInterfaceStyle isEqualToString:@""]) {
+      shareController.overrideUserInterfaceStyle = UIUserInterfaceStyleUnspecified;
+    } else if ([userInterfaceStyle isEqualToString:@"dark"]) {
+      shareController.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
+    } else if ([userInterfaceStyle isEqualToString:@"light"]) {
+      shareController.overrideUserInterfaceStyle = UIUserInterfaceStyleLight;
+    }
+#endif // macOS]
+
+#if !TARGET_OS_OSX // [macOS]
+    [self presentViewController:shareController onParentViewController:controller anchorViewTag:anchorViewTag];
+#else // [macOS
+    [self presentSharingServicePicker:picker anchorViewTag:anchorViewTag];
+#endif // macOS]
+  });
 }
 
 #if TARGET_OS_OSX // [macOS

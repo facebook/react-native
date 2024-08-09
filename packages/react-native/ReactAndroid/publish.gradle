@@ -8,12 +8,11 @@
 apply plugin: 'maven-publish'
 apply plugin: 'signing'
 
-def isNightly = findProperty("isNightly")?.toBoolean()
+def isSnapshot = findProperty("isSnapshot")?.toBoolean()
 def signingKey = findProperty("SIGNING_KEY")
 def signingPwd = findProperty("SIGNING_PWD")
 
 def reactAndroidProjectDir = project(':packages:react-native:ReactAndroid').projectDir
-def androidOutputUrl = "file://${reactAndroidProjectDir}/../android"
 def mavenTempLocalUrl = "file:///tmp/maven-local"
 
 publishing {
@@ -28,8 +27,8 @@ publishing {
             }
 
             // We populate the publishing version using the project version,
-            // appending -SNAPSHOT if on nightly.
-            if (isNightly) {
+            // appending -SNAPSHOT if on nightly or prerelase.
+            if (isSnapshot) {
                 version = this.version + "-SNAPSHOT"
             } else {
                 version = this.version
@@ -65,10 +64,6 @@ publishing {
     }
 
     repositories {
-        maven {
-            name = "npm"
-            url = androidOutputUrl
-        }
         maven {
             name = "mavenTempLocal"
             url = mavenTempLocalUrl

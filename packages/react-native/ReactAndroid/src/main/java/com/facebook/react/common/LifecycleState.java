@@ -7,6 +7,8 @@
 
 package com.facebook.react.common;
 
+import com.facebook.infer.annotation.Nullsafe;
+
 /**
  * Lifecycle state for an Activity. The state right after pause and right before resume are the
  * basically the same so this enum is in terms of the forward lifecycle progression (onResume, etc).
@@ -21,6 +23,7 @@ package com.facebook.react.common;
  * <p>RESUMED is used when a ReactRootView is rendered on the screen and the user can interact with
  * it.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public enum LifecycleState {
   BEFORE_CREATE,
   BEFORE_RESUME,

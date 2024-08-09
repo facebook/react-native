@@ -12,7 +12,9 @@ import android.graphics.Color;
 import android.view.Gravity;
 import android.widget.LinearLayout;
 import androidx.appcompat.widget.AppCompatTextView;
+import com.facebook.infer.annotation.Nullsafe;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ReactUnimplementedView extends LinearLayout {
   private AppCompatTextView mTextView;
 

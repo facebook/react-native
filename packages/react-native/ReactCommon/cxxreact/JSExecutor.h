@@ -12,6 +12,8 @@
 
 #include <cxxreact/NativeModule.h>
 #include <folly/dynamic.h>
+#include <jsinspector-modern/InspectorInterfaces.h>
+#include <jsinspector-modern/ReactCdp.h>
 
 #ifndef RN_EXPORT
 #define RN_EXPORT __attribute__((visibility("default")))
@@ -45,9 +47,6 @@ class ExecutorDelegate {
       folly::dynamic&& args) = 0;
 };
 
-using NativeExtensionsProvider =
-    std::function<folly::dynamic(const std::string&)>;
-
 class JSExecutorFactory {
  public:
   virtual std::unique_ptr<JSExecutor> createJSExecutor(
@@ -56,7 +55,7 @@ class JSExecutorFactory {
   virtual ~JSExecutorFactory() {}
 };
 
-class RN_EXPORT JSExecutor {
+class RN_EXPORT JSExecutor : public jsinspector_modern::RuntimeTargetDelegate {
  public:
   /**
    * Prepares the JS runtime for React Native by installing global variables.
@@ -114,7 +113,8 @@ class RN_EXPORT JSExecutor {
 
   /**
    * Returns whether or not the underlying executor supports debugging via the
-   * Chrome remote debugging protocol.
+   * Chrome remote debugging protocol. If true, the executor should also
+   * override the \c createAgentDelegate method.
    */
   virtual bool isInspectable() {
     return false;
@@ -130,7 +130,7 @@ class RN_EXPORT JSExecutor {
   virtual void handleMemoryPressure([[maybe_unused]] int pressureLevel) {}
 
   virtual void destroy() {}
-  virtual ~JSExecutor() {}
+  virtual ~JSExecutor() override {}
 
   virtual void flush() {}
 
@@ -139,6 +139,18 @@ class RN_EXPORT JSExecutor {
       const std::string& bundlePath);
 
   static double performanceNow();
+
+  /**
+   * Create a RuntimeAgentDelegate that can be used to debug the JS VM instance.
+   */
+  virtual std::unique_ptr<jsinspector_modern::RuntimeAgentDelegate>
+  createAgentDelegate(
+      jsinspector_modern::FrontendChannel frontendChannel,
+      jsinspector_modern::SessionState& sessionState,
+      std::unique_ptr<jsinspector_modern::RuntimeAgentDelegate::ExportedState>
+          previouslyExportedState,
+      const jsinspector_modern::ExecutionContextDescription&
+          executionContextDescription) override;
 };
 
 } // namespace facebook::react

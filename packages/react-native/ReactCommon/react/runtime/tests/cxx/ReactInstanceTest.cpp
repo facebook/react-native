@@ -116,8 +116,9 @@ class ReactInstanceTest : public ::testing::Test {
   ReactInstanceTest() {}
 
   void SetUp() override {
-    auto runtime = hermes::makeHermesRuntime();
-    runtime_ = runtime.get();
+    auto runtime =
+        std::make_unique<JSIRuntimeHolder>(hermes::makeHermesRuntime());
+    runtime_ = &runtime->getRuntime();
     messageQueueThread_ = std::make_shared<MockMessageQueueThread>();
     auto mockRegistry = std::make_unique<MockTimerRegistry>();
     mockRegistry_ = mockRegistry.get();

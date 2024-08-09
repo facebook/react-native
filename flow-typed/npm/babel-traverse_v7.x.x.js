@@ -293,9 +293,6 @@ declare module '@babel/traverse' {
     dereference(): void;
   }
 
-  declare function getNodePathType(node: BabelNode): NodePath<>;
-  declare function getNodePathType(nodes: Array<BabelNode>): Array<NodePath<>>;
-
   declare type Opts = {...};
 
   declare export class NodePath<+TNode: BabelNode = BabelNode> {
@@ -733,7 +730,7 @@ declare module '@babel/traverse' {
     get<TKey: $Keys<TNode>>(
       key: TKey,
       context?: boolean | TraversalContext,
-    ): $Call<typeof getNodePathType, TNode[TKey]>;
+    ): TNode[TKey] extends BabelNode ? NodePath<> : Array<NodePath<>>;
 
     get(
       key: string,

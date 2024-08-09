@@ -1,9 +1,9 @@
-@generated SignedSource<<7fdc9e65be03ba4c6654f14c6f23d645>>
-Git revision: 18f202a1ae468a01afb44ffd2f71d28023126989
+@generated SignedSource<<fbad20dc7d32047d6d436b94ec8a15b4>>
+Git revision: 12a45e0628384aa80075493354159ef5d91b2698
 Built with --nohooks: false
 Is local checkout: false
-Remote URL: https://github.com/motiz88/rn-chrome-devtools-frontend
-Remote branch: rn-0.73-chromium-5845
+Remote URL: https://github.com/facebookexperimental/rn-chrome-devtools-frontend
+Remote branch: main
 GN build args (overrides only): 
   is_official_build = true
 Git status in checkout:

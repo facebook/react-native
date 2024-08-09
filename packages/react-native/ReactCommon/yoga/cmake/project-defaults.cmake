@@ -17,7 +17,7 @@ add_compile_options(
     # "Standard C++ exception handling" (C++ stack unwinding including extern c)
     /EHsc
     # Enable warnings and warnings as errors
-    /W3
+    /W4
     /WX
     # Disable RTTI
     $<$<COMPILE_LANGUAGE:CXX>:/GR->

@@ -51,9 +51,6 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, RCTPlatformView *> *vie
 @property (nonatomic, assign, readonly) YGNodeRef yogaNode;
 @property (nonatomic, copy) NSString *viewName;
 @property (nonatomic, copy) RCTDirectEventBlock onLayout;
-#if TARGET_OS_OSX // [macOS
-@property (nonatomic) CGFloat scale;
-#endif // macOS]
 
 /**
  * Computed layout of the view.

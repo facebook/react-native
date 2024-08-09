@@ -10,16 +10,14 @@
 
 'use strict';
 import type {NativeModulePropertyShape} from '../../../CodegenSchema';
-
 import type {SchemaType} from '../../../CodegenSchema';
 import type {MethodSerializationOutput} from './serializeMethod';
 
 const {createAliasResolver, getModules} = require('../Utils');
-
-const {StructCollector} = require('./StructCollector');
 const {serializeStruct} = require('./header/serializeStruct');
 const {serializeMethod} = require('./serializeMethod');
 const {serializeModuleSource} = require('./source/serializeModule');
+const {StructCollector} = require('./StructCollector');
 
 type FilesOutput = Map<string, string>;
 
@@ -37,17 +35,15 @@ const ModuleDeclarationTemplate = ({
 ${protocolMethods}
 
 @end
-namespace facebook {
-  namespace react {
-    /**
-     * ObjC++ class for module '${hasteModuleName}'
-     */
-    class JSI_EXPORT ${hasteModuleName}SpecJSI : public ObjCTurboModule {
-    public:
-      ${hasteModuleName}SpecJSI(const ObjCTurboModule::InitParams &params);
-    };
-  } // namespace react
-} // namespace facebook`;
+namespace facebook::react {
+  /**
+   * ObjC++ class for module '${hasteModuleName}'
+   */
+  class JSI_EXPORT ${hasteModuleName}SpecJSI : public ObjCTurboModule {
+  public:
+    ${hasteModuleName}SpecJSI(const ObjCTurboModule::InitParams &params);
+  };
+} // namespace facebook::react`;
 
 const HeaderFileTemplate = ({
   moduleDeclarations,
@@ -122,6 +118,7 @@ module.exports = {
     schema: SchemaType,
     packageName?: string,
     assumeNonnull: boolean,
+    headerPrefix?: string,
   ): FilesOutput {
     const nativeModules = getModules(schema);
 

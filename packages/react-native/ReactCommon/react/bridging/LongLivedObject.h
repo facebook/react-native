@@ -19,13 +19,16 @@ namespace facebook::react {
  * collection when needed.
  *
  * The subclass of this class must be created using std::make_shared<T>().
- * After creation, add it to the `LongLivedObjectCollection`.
- * When done with the object, call `allowRelease()` to allow the OS to release
- * it.
+ * After creation, add it to the `LongLivedObjectCollection`. When done with the
+ * object, call `allowRelease()` to reclaim its memory.
+ *
+ * When using LongLivedObject to keep JS values alive, ensure you only hold weak
+ * references to the object outside the JS thread to avoid accessing deallocated
+ * values when the JS VM is shutdown.
  */
 class LongLivedObject {
  public:
-  void allowRelease();
+  virtual void allowRelease();
 
  protected:
   LongLivedObject() = default;
@@ -39,6 +42,7 @@ class LongLivedObjectCollection {
  public:
   static LongLivedObjectCollection& get();
 
+  LongLivedObjectCollection() = default;
   LongLivedObjectCollection(const LongLivedObjectCollection&) = delete;
   void operator=(const LongLivedObjectCollection&) = delete;
 
@@ -48,8 +52,6 @@ class LongLivedObjectCollection {
   size_t size() const;
 
  private:
-  LongLivedObjectCollection() = default;
-
   std::unordered_set<std::shared_ptr<LongLivedObject>> collection_;
   mutable std::mutex collectionMutex_;
 };

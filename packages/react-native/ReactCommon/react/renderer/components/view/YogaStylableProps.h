@@ -16,8 +16,6 @@
 namespace facebook::react {
 
 class YogaStylableProps : public Props {
-  using CompactValue = facebook::yoga::CompactValue;
-
  public:
   YogaStylableProps() = default;
   YogaStylableProps(
@@ -31,43 +29,35 @@ class YogaStylableProps : public Props {
       const char* propName,
       const RawValue& value);
 
-#ifdef ANDROID
-  void propsDiffMapBuffer(const Props* oldProps, MapBufferBuilder& builder)
-      const override;
-#endif
-
 #pragma mark - Props
   yoga::Style yogaStyle{};
 
   // Duplicates of existing properties with different names, taking
   // precedence. E.g. "marginBlock" instead of "marginVertical"
-  CompactValue inset;
-  CompactValue insetInline;
-  CompactValue insetInlineEnd;
-  CompactValue insetInlineStart;
+  yoga::Style::Length insetInlineStart;
+  yoga::Style::Length insetInlineEnd;
 
-  CompactValue marginInline;
-  CompactValue marginInlineStart;
-  CompactValue marginInlineEnd;
-  CompactValue marginBlock;
+  yoga::Style::Length marginInline;
+  yoga::Style::Length marginInlineStart;
+  yoga::Style::Length marginInlineEnd;
+  yoga::Style::Length marginBlock;
 
-  CompactValue paddingInline;
-  CompactValue paddingInlineStart;
-  CompactValue paddingInlineEnd;
-  CompactValue paddingBlock;
+  yoga::Style::Length paddingInline;
+  yoga::Style::Length paddingInlineStart;
+  yoga::Style::Length paddingInlineEnd;
+  yoga::Style::Length paddingBlock;
 
   // BlockEnd/BlockStart map to top/bottom (no writing mode), but we preserve
   // Yoga's precedence and prefer specific edges (e.g. top) to ones which are
   // flow relative (e.g. blockStart).
-  CompactValue insetBlock;
-  CompactValue insetBlockEnd;
-  CompactValue insetBlockStart;
+  yoga::Style::Length insetBlockStart;
+  yoga::Style::Length insetBlockEnd;
 
-  CompactValue marginBlockStart;
-  CompactValue marginBlockEnd;
+  yoga::Style::Length marginBlockStart;
+  yoga::Style::Length marginBlockEnd;
 
-  CompactValue paddingBlockStart;
-  CompactValue paddingBlockEnd;
+  yoga::Style::Length paddingBlockStart;
+  yoga::Style::Length paddingBlockEnd;
 
 #if RN_DEBUG_STRING_CONVERTIBLE
 

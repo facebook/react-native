@@ -16,7 +16,8 @@
 
 namespace facebook::react {
 
-class RuntimeScheduler;
+class RuntimeScheduler_Legacy;
+class RuntimeScheduler_Modern;
 class TaskPriorityComparer;
 
 using RawCallback = std::function<void(jsi::Runtime&)>;
@@ -33,7 +34,8 @@ struct Task final : public jsi::NativeState {
       std::chrono::steady_clock::time_point expirationTime);
 
  private:
-  friend RuntimeScheduler;
+  friend RuntimeScheduler_Legacy;
+  friend RuntimeScheduler_Modern;
   friend TaskPriorityComparer;
 
   SchedulerPriority priority;

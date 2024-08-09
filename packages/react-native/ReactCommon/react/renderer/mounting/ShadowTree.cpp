@@ -427,7 +427,7 @@ CommitStatus ShadowTree::tryCommit(
   telemetry.setAsThreadLocal();
   newRootShadowNode->layoutIfNeeded(&affectedLayoutableNodes);
   telemetry.unsetAsThreadLocal();
-  telemetry.didLayout(affectedLayoutableNodes.size());
+  telemetry.didLayout(static_cast<int>(affectedLayoutableNodes.size()));
 
   {
     // Updating `currentRevision_` in unique manner if it hasn't changed.

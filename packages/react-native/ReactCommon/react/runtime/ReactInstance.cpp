@@ -10,55 +10,34 @@
 #include <cxxreact/ErrorUtils.h>
 #include <cxxreact/JSBigString.h>
 #include <cxxreact/JSExecutor.h>
+#include <cxxreact/ReactMarker.h>
 #include <cxxreact/SystraceSection.h>
 #include <glog/logging.h>
 #include <jsi/JSIDynamic.h>
 #include <jsi/instrumentation.h>
 #include <jsireact/JSIExecutor.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
-
-#include <cxxreact/ReactMarker.h>
+#include <react/utils/jsi.h>
 #include <iostream>
 #include <tuple>
 #include <utility>
 
 namespace facebook::react {
 
-// Looping on \c drainMicrotasks until it completes or hits the retries bound.
-static void performMicrotaskCheckpoint(jsi::Runtime& runtime) {
-  uint8_t retries = 0;
-  // A heuristic number to guard inifinite or absurd numbers of retries.
-  constexpr unsigned int kRetriesBound = 255;
-
-  while (retries < kRetriesBound) {
-    try {
-      // The default behavior of \c drainMicrotasks is unbounded execution.
-      // We may want to make it bounded in the future.
-      if (runtime.drainMicrotasks()) {
-        break;
-      }
-    } catch (jsi::JSError& error) {
-      handleJSError(runtime, error, true);
-    }
-    retries++;
-  }
-
-  if (retries == kRetriesBound) {
-    throw std::runtime_error("Hits microtasks retries bound.");
-  }
-}
-
 ReactInstance::ReactInstance(
-    std::unique_ptr<jsi::Runtime> runtime,
+    std::unique_ptr<JSRuntime> runtime,
     std::shared_ptr<MessageQueueThread> jsMessageQueueThread,
     std::shared_ptr<TimerManager> timerManager,
-    JsErrorHandler::JsErrorHandlingFunc jsErrorHandlingFunc)
+    JsErrorHandler::JsErrorHandlingFunc jsErrorHandlingFunc,
+    jsinspector_modern::PageTarget* parentInspectorTarget)
     : runtime_(std::move(runtime)),
       jsMessageQueueThread_(jsMessageQueueThread),
       timerManager_(std::move(timerManager)),
       jsErrorHandler_(jsErrorHandlingFunc),
-      hasFatalJsError_(std::make_shared<bool>(false)) {
-  auto runtimeExecutor = [weakRuntime = std::weak_ptr<jsi::Runtime>(runtime_),
+      hasFatalJsError_(std::make_shared<bool>(false)),
+      parentInspectorTarget_(parentInspectorTarget) {
+  auto runtimeExecutor = [weakRuntime = std::weak_ptr<JSRuntime>(runtime_),
                           weakTimerManager =
                               std::weak_ptr<TimerManager>(timerManager_),
                           weakJsMessageQueueThread =
@@ -85,20 +64,31 @@ ReactInstance::ReactInstance(
       sharedJsMessageQueueThread->runOnQueue(
           [weakRuntime, weakTimerManager, callback = std::move(callback)]() {
             if (auto strongRuntime = weakRuntime.lock()) {
+              jsi::Runtime& jsiRuntime = strongRuntime->getRuntime();
               SystraceSection s("ReactInstance::_runtimeExecutor[Callback]");
               try {
-                callback(*strongRuntime);
-                if (auto strongTimerManager = weakTimerManager.lock()) {
-                  strongTimerManager->callReactNativeMicrotasks(*strongRuntime);
+                callback(jsiRuntime);
+
+                // If we have first-class support for microtasks,
+                // they would've been called as part of the previous callback.
+                if (!ReactNativeFeatureFlags::enableMicrotasks()) {
+                  if (auto strongTimerManager = weakTimerManager.lock()) {
+                    strongTimerManager->callReactNativeMicrotasks(jsiRuntime);
+                  }
                 }
-                performMicrotaskCheckpoint(*strongRuntime);
               } catch (jsi::JSError& originalError) {
-                handleJSError(*strongRuntime, originalError, true);
+                handleJSError(jsiRuntime, originalError, true);
               }
             }
           });
     }
   };
+
+  if (parentInspectorTarget_) {
+    inspectorTarget_ = &parentInspectorTarget_->registerInstance(*this);
+    runtimeInspectorTarget_ =
+        &inspectorTarget_->registerRuntime(*runtime_, runtimeExecutor);
+  }
 
   runtimeScheduler_ =
       std::make_shared<RuntimeScheduler>(std::move(runtimeExecutor));
@@ -111,6 +101,16 @@ ReactInstance::ReactInstance(
 
   bufferedRuntimeExecutor_ =
       std::make_shared<BufferedRuntimeExecutor>(pipedRuntimeExecutor);
+}
+
+void ReactInstance::unregisterFromInspector() {
+  if (inspectorTarget_) {
+    assert(runtimeInspectorTarget_);
+    inspectorTarget_->unregisterRuntime(*runtimeInspectorTarget_);
+    assert(parentInspectorTarget_);
+    parentInspectorTarget_->unregisterInstance(*inspectorTarget_);
+    inspectorTarget_ = nullptr;
+  }
 }
 
 RuntimeExecutor ReactInstance::getUnbufferedRuntimeExecutor() noexcept {
@@ -138,43 +138,6 @@ RuntimeExecutor ReactInstance::getBufferedRuntimeExecutor() noexcept {
 std::shared_ptr<RuntimeScheduler>
 ReactInstance::getRuntimeScheduler() noexcept {
   return runtimeScheduler_;
-}
-
-/**
- * Defines a property on the global object that is neither enumerable, nor
- * configurable, nor writable. This ensures that the private globals exposed by
- * ReactInstance cannot overwritten by third-party JavaScript code. It also
- * ensures that third-party JavaScript code unaware of these globals isn't able
- * to accidentally access them. In JavaScript, equivalent to:
- *
- * Object.defineProperty(global, propName, {
- *   value: value
- * })
- */
-static void defineReadOnlyGlobal(
-    jsi::Runtime& runtime,
-    std::string propName,
-    jsi::Value&& value) {
-  if (runtime.global().hasProperty(runtime, propName.c_str())) {
-    throw jsi::JSError(
-        runtime,
-        "Tried to redefine read-only global \"" + propName +
-            "\", but read-only globals can only be defined once.");
-  }
-  jsi::Object jsObject =
-      runtime.global().getProperty(runtime, "Object").asObject(runtime);
-  jsi::Function defineProperty = jsObject.getProperty(runtime, "defineProperty")
-                                     .asObject(runtime)
-                                     .asFunction(runtime);
-
-  jsi::Object descriptor = jsi::Object(runtime);
-  descriptor.setProperty(runtime, "value", std::move(value));
-  defineProperty.callWithThis(
-      runtime,
-      jsObject,
-      runtime.global(),
-      jsi::String::createFromUtf8(runtime, propName),
-      descriptor);
 }
 
 namespace {
@@ -463,6 +426,10 @@ void ReactInstance::handleMemoryPressureJs(int pressureLevel) {
                    << ") received by JS VM, unrecognized pressure level";
       break;
   }
+}
+
+void* ReactInstance::getJavaScriptContext() {
+  return &runtime_->getRuntime();
 }
 
 } // namespace facebook::react

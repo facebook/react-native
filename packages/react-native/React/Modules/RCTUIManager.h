@@ -157,6 +157,14 @@ void RCTTraverseViewNodes(id<RCTComponent> view, void (^block)(id<RCTComponent>)
 - (void)setNeedsLayout;
 
 /**
+ * This method is used to extract the wrapped view
+ * from a view that might be the Interop Layer view wrapper.
+ * If the view passed as parameter is the Interop Layer wrapper, this method returns the wrapped view
+ * Otherwise, it returns the view itself.
+ */
++ (RCTPlatformView *)paperViewOrCurrentView:(RCTPlatformView *)view; // [macOS]
+
+/**
  * Dedicated object for subscribing for UIManager events.
  * See `RCTUIManagerObserver` protocol for more details.
  */
@@ -179,6 +187,30 @@ void RCTTraverseViewNodes(id<RCTComponent> view, void (^block)(id<RCTComponent>)
 
 @property (nonatomic, readonly) RCTUIManager *uiManager;
 
+@end
+
+/**
+ * This is a composed ViewRegistry which implement the same behavior of a Dictionary.
+ * We need this because, when libraries use `addUIBlock` they receives both the UIManager and a Dictionary which maps
+ * reactTags to Views. The problem is that in the New Architecture that dictionary is always empty and many libraries
+ * broke because they want to access the dictionary. Instead, they should use the `uiManager viewForReactTag` method to
+ * retrieve the views they need.
+ *
+ * The `RCTComposedViewRegistry` follows the composite pattern and receives as inputs the `RCTUIManager`and the
+ * dictionary that was passed to the libraries. It extends `NSDictionary` to make sure that it has the same interface of
+ * the parameter that is passed. This class fixes the problem because we override the`objectForKeyedSubscript:` method
+ * which is used to access the dictionary. That method is now implemented looking in the dictionary registry first and
+ * then using the`viewForReactTag` method.
+ */
+@interface RCTComposedViewRegistry : NSMutableDictionary
+
+- (instancetype)initWithUIManager:(RCTUIManager *)uiManager andRegistry:(NSDictionary<NSNumber *, RCTPlatformView *> *)registry; // [macOS]
+
+@end
+
+// This protocol is needed to silence the "unknown selector" warning
+@protocol RCTRendererInteropLayerAdapting
+- (RCTPlatformView *)paperView; // [macOS]
 @end
 
 RCT_EXTERN NSMutableDictionary<NSString *, id> *RCTModuleConstantsForDestructuredComponent(

@@ -460,6 +460,7 @@ interface WebSocket extends EventTarget {
   readonly readyState: number;
   send(data: string | ArrayBuffer | ArrayBufferView | Blob): void;
   close(code?: number, reason?: string): void;
+  ping(): void;
   onopen: (() => void) | null;
   onmessage: ((event: WebSocketMessageEvent) => void) | null;
   onerror: ((event: WebSocketErrorEvent) => void) | null;

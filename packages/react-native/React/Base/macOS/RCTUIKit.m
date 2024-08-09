@@ -709,6 +709,27 @@ static RCTUIView *RCTUIViewCommonInit(RCTUIView *self)
   self.magnification = zoomScale;
 }
 
+- (CGFloat)maximumZoomScale
+{
+  return self.maxMagnification;
+}
+
+- (void)setMaximumZoomScale:(CGFloat)maximumZoomScale
+{
+  self.maxMagnification = maximumZoomScale;
+}
+
+- (CGFloat)minimumZoomScale
+{
+  return self.minMagnification;
+}
+
+- (void)setMinimumZoomScale:(CGFloat)minimumZoomScale
+{
+  self.minMagnification = minimumZoomScale;
+}
+
+
 - (BOOL)alwaysBounceHorizontal
 {
   return self.horizontalScrollElasticity != NSScrollElasticityNone;

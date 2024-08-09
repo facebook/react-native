@@ -8,12 +8,14 @@
  * @flow
  */
 
-'use strict'; // [macOS]
+'use strict';
+
+// [macOS]
 
 const React = require('react');
 const ReactNative = require('react-native');
-import {Platform} from 'react-native';
-const {Button, PlatformColor, StyleSheet, Text, View, TextInput} = ReactNative;
+const {Button, PlatformColor, StyleSheet, Text, View, TextInput, Platform} =
+  ReactNative;
 
 type State = {
   eventStream: string,

@@ -10,6 +10,8 @@
 #import <React/RCTNetworkTask.h>
 #import <React/RCTURLRequestHandler.h>
 
+RCT_EXTERN void RCTEnableNetworkingRequestQueue(BOOL enabled);
+
 @protocol RCTNetworkingRequestHandler <NSObject>
 
 // @lint-ignore FBOBJCUNTYPEDCOLLECTION1
@@ -27,6 +29,8 @@
 @end
 
 @interface RCTNetworking : RCTEventEmitter
+
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
 
 /**
  * Allows RCTNetworking instances to be initialized with handlers.
@@ -53,6 +57,8 @@
 - (void)removeRequestHandler:(id<RCTNetworkingRequestHandler>)handler;
 
 - (void)removeResponseHandler:(id<RCTNetworkingResponseHandler>)handler;
+
+- (dispatch_queue_t)requestQueue;
 
 @end
 

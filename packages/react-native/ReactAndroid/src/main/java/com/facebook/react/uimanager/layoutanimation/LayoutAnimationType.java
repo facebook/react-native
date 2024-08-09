@@ -7,10 +7,13 @@
 
 package com.facebook.react.uimanager.layoutanimation;
 
+import com.facebook.infer.annotation.Nullsafe;
+
 /**
  * Enum representing the different animation type that can be specified in layout animation config.
  */
-/* package */ enum LayoutAnimationType {
+/* package */ @Nullsafe(Nullsafe.Mode.LOCAL)
+enum LayoutAnimationType {
   CREATE,
   UPDATE,
   DELETE;

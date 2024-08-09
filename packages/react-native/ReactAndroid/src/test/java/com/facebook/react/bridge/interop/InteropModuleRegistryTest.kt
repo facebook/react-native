@@ -7,6 +7,7 @@
 
 @file:Suppress(
     "DEPRECATION") // Suppressing as we want to test specifically with RCTEventEmitter here
+
 package com.facebook.react.bridge.interop
 
 import com.facebook.react.config.ReactFeatureFlags

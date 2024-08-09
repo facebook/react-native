@@ -256,6 +256,19 @@ function convertDefaultTypeToString(
   }
 }
 
+const IncludeTemplate = ({
+  headerPrefix,
+  file,
+}: {
+  headerPrefix: string,
+  file: string,
+}): string => {
+  if (headerPrefix === '') {
+    return `#include "${file}"`;
+  }
+  return `#include <${headerPrefix}${file}>`;
+};
+
 module.exports = {
   convertDefaultTypeToString,
   getCppArrayTypeForAnnotation,
@@ -265,4 +278,5 @@ module.exports = {
   toIntEnumValueName,
   generateStructName,
   generateEventStructName,
+  IncludeTemplate,
 };

@@ -9,8 +9,9 @@
  */
 
 import type {Node} from 'react';
-import {NativeModules, Button} from 'react-native';
+
 import React from 'react';
+import {Button, NativeModules} from 'react-native';
 
 const {ASANCrash} = NativeModules;
 
