@@ -23,7 +23,8 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
  public:
   explicit RuntimeScheduler_Modern(
       RuntimeExecutor runtimeExecutor,
-      std::function<RuntimeSchedulerTimePoint()> now);
+      std::function<RuntimeSchedulerTimePoint()> now,
+      RuntimeSchedulerErrorHandler onError);
 
   /*
    * Not copyable.
@@ -222,6 +223,8 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
       nullptr};
 
   PerformanceEntryReporter* performanceEntryReporter_{nullptr};
+
+  RuntimeSchedulerErrorHandler onError_;
 };
 
 } // namespace facebook::react
