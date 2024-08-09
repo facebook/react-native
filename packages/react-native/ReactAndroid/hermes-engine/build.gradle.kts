@@ -290,7 +290,6 @@ android {
 
   dependencies {
     implementation(libs.fbjni)
-    implementation(libs.soloader)
     implementation(libs.yoga.proguard.annotations)
     implementation(libs.androidx.annotation)
   }
@@ -315,6 +314,8 @@ android {
     }
   }
 }
+
+configurations.all { exclude(group = "com.facebook.soloader") }
 
 afterEvaluate {
   if (!overrideHermesDir) {

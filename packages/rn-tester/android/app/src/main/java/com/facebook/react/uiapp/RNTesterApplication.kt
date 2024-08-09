@@ -128,7 +128,9 @@ class RNTesterApplication : Application(), ReactApplication {
   override fun onCreate() {
     ReactFontManager.getInstance().addCustomFont(this, "Rubik", R.font.rubik)
     super.onCreate()
-    SoLoader.init(this, /* native exopackage */ false)
+
+    // We want the .init() statement to exercise this code when building RNTester with Buck
+    @Suppress("DEPRECATION") SoLoader.init(this, /* native exopackage */ false)
 
     if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
       load()
