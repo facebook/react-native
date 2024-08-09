@@ -431,6 +431,16 @@ public class TextLayoutManager {
       ReactTextViewManagerCallback reactTextViewManagerCallback) {
     Spannable text =
         getOrCreateSpannableForText(context, attributedString, reactTextViewManagerCallback);
+
+    // StaticLayout returns wrong metrics for the last line if it's empty, add something to the
+    // last line so it's measured correctly
+    if (text.toString().endsWith("\n")) {
+      SpannableStringBuilder sb = new SpannableStringBuilder(text);
+      sb.append("I");
+
+      text = sb;
+    }
+
     BoringLayout.Metrics boring = BoringLayout.isBoring(text, sTextPaintInstance);
 
     int textBreakStrategy =
@@ -497,6 +507,7 @@ public class TextLayoutManager {
       int textBreakStrategy,
       int hyphenationFrequency,
       Layout.Alignment alignment) {
+
     BoringLayout.Metrics boring = BoringLayout.isBoring(text, sTextPaintInstance);
     Layout layout =
         createLayout(
