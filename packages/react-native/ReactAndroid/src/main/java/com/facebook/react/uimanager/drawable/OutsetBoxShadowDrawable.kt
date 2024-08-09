@@ -147,8 +147,8 @@ internal class OutsetBoxShadowDrawable(
         setPosition(
             Rect(shadowShapeFrame).apply {
               offset(
-                  PixelUtil.toPixelFromDIP(offsetX).roundToInt(),
-                  PixelUtil.toPixelFromDIP(offsetY).roundToInt())
+                  PixelUtil.toPixelFromDIP(offsetX).roundToInt() - shadowShapeFrame.left,
+                  PixelUtil.toPixelFromDIP(offsetY).roundToInt() - shadowShapeFrame.top)
             })
 
         beginRecording().let { renderNodeCanvas ->
