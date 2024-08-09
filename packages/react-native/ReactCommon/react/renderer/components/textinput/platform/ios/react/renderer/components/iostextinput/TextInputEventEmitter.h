@@ -19,6 +19,9 @@ class TextInputEventEmitter : public ViewEventEmitter {
   struct Metrics {
     std::string text;
     AttributedString::Range selectionRange;
+    int count;
+    int start;
+    int before;
     // ScrollView-like metrics
     Size contentSize;
     Point contentOffset;

@@ -11,6 +11,7 @@
 'use strict';
 
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+import type {ChangeEvent} from 'react-native/Libraries/Components/TextInput/TextInput';
 import type {TextStyle} from 'react-native/Libraries/StyleSheet/StyleSheet';
 
 import RNTesterButton from '../../components/RNTesterButton';
@@ -846,6 +847,35 @@ function MultilineStyledTextInput({
   );
 }
 
+function PartialUpdatesTextInput() {
+  const [value, setValue] = useState('');
+
+  const onChange = ({nativeEvent}: ChangeEvent) => {
+    console.log('onChange', nativeEvent);
+    setValue(previousValue => {
+      const {count, start, before, text: fullNewText} = nativeEvent;
+      // This method is called to notify you that, within fullNewText, the "count" characters beginning at "start" have just
+      // replaced old text that had length "before".
+      const newText = fullNewText.substring(start, start + count);
+      // Replace newText in the original text:
+      const updatedText =
+        previousValue.substring(0, start) +
+        newText +
+        previousValue.substring(start + before);
+
+      return updatedText;
+    });
+  };
+
+  return (
+    <ExampleTextInput
+      placeholder="Enter some text"
+      onChange={onChange}
+      value={value}
+    />
+  );
+}
+
 module.exports = ([
   {
     title: 'Auto-focus & select text on focus',
@@ -1147,6 +1177,13 @@ module.exports = ([
           </ExampleTextInput>
         </View>
       );
+    },
+  },
+  {
+    title: 'Text input with partial updates in onChange',
+    name: 'partialUpdates',
+    render: function (): React.Node {
+      return <PartialUpdatesTextInput />;
     },
   },
 ]: Array<RNTesterModuleExample>);

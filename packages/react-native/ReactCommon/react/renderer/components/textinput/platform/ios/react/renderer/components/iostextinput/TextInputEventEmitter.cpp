@@ -31,6 +31,9 @@ static jsi::Value textInputMetricsPayload(
         textInputMetrics.selectionRange.location +
             textInputMetrics.selectionRange.length);
     payload.setProperty(runtime, "selection", selection);
+    payload.setProperty(runtime, "start", textInputMetrics.start);
+    payload.setProperty(runtime, "count", textInputMetrics.count);
+    payload.setProperty(runtime, "before", textInputMetrics.before);
   }
 
   return payload;
