@@ -56,6 +56,8 @@ Pod::Spec.new do |s|
 
   s.resource_bundles = {'React-cxxreact_privacy' => 'PrivacyInfo.xcprivacy'}
 
+  s.resource_bundles = {'React-cxxreact_privacy' => 'PrivacyInfo.xcprivacy'}
+
   if ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == "1"
     s.dependency 'hermes-engine'
   end
