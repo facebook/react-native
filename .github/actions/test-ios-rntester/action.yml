@@ -121,21 +121,21 @@ runs:
       if: ${{ inputs.run-unit-tests != 'true' && inputs.run-e2e-tests == 'false' }}
       shell: bash
       run: |
-        xcodebuild build \
+        set -o pipefail && xcodebuild build \
           -workspace packages/rn-tester/RNTesterPods.xcworkspace \
           -scheme RNTester \
-          -sdk iphonesimulator
+          -sdk iphonesimulator | xcbeautify
     - name: Build RNTester (E2E Tests)
       shell: bash
       if: ${{ inputs.run-e2e-tests == 'true' }}
       run: |
-        xcrun xcodebuild \
+        set -o pipefail && xcodebuild \
           -scheme "RNTester" \
           -workspace packages/rn-tester/RNTesterPods.xcworkspace \
           -configuration "Release" \
           -sdk "iphonesimulator" \
           -destination "generic/platform=iOS Simulator" \
-          -derivedDataPath "/tmp/RNTesterBuild"
+          -derivedDataPath "/tmp/RNTesterBuild" | xcbeautify
 
           echo "Print path to *.app file"
           find "/tmp/RNTesterBuild" -type d -name "*.app"
