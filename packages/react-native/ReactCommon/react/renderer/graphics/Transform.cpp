@@ -11,6 +11,7 @@
 
 #include <glog/logging.h>
 #include <react/debug/react_native_assert.h>
+#include <react/utils/FloatComparison.h>
 
 namespace facebook::react {
 
@@ -305,11 +306,11 @@ Transform Transform::Interpolate(
 }
 
 bool Transform::isVerticalInversion(const Transform& transform) {
-  return transform.at(1, 1) == -1;
+  return facebook::react::floatEquality(transform.at(1, 1), -1.0f);
 }
 
 bool Transform::isHorizontalInversion(const Transform& transform) {
-  return transform.at(0, 0) == -1;
+  return facebook::react::floatEquality(transform.at(0, 0), -1.0f);
 }
 
 bool Transform::operator==(const Transform& rhs) const {
@@ -454,6 +455,16 @@ Rect Transform::applyWithCenter(const Rect& rect, const Point& center) const {
       transformedA, transformedB, transformedC, transformedD);
 }
 
+Point Transform::applyWithRect(const Point& point, const Rect& rect) const {
+  return this->applyWithCenter(point, rect.getCenter());
+}
+
+Point Transform::applyWithCenter(const Point& point, const Point& center)
+    const {
+  auto vector = *this * Vector{point.x - center.x, point.y - center.y, 0, 1};
+  return {vector.x + center.x, vector.y + center.y};
+}
+
 EdgeInsets operator*(const EdgeInsets& edgeInsets, const Transform& transform) {
   return EdgeInsets{
       edgeInsets.left * transform.matrix[0],
@@ -485,6 +496,72 @@ Size operator*(const Size& size, const Transform& transform) {
   result.height = std::abs(transform.at(1, 1) * size.height);
 
   return result;
+}
+
+bool Transform::getInversion(Transform& transform) {
+  double inv[16], det;
+  int i;
+  auto m = this->matrix;
+
+  inv[0] = m[5] * m[10] * m[15] - m[5] * m[11] * m[14] - m[9] * m[6] * m[15] +
+      m[9] * m[7] * m[14] + m[13] * m[6] * m[11] - m[13] * m[7] * m[10];
+
+  inv[4] = -m[4] * m[10] * m[15] + m[4] * m[11] * m[14] + m[8] * m[6] * m[15] -
+      m[8] * m[7] * m[14] - m[12] * m[6] * m[11] + m[12] * m[7] * m[10];
+
+  inv[8] = m[4] * m[9] * m[15] - m[4] * m[11] * m[13] - m[8] * m[5] * m[15] +
+      m[8] * m[7] * m[13] + m[12] * m[5] * m[11] - m[12] * m[7] * m[9];
+
+  inv[12] = -m[4] * m[9] * m[14] + m[4] * m[10] * m[13] + m[8] * m[5] * m[14] -
+      m[8] * m[6] * m[13] - m[12] * m[5] * m[10] + m[12] * m[6] * m[9];
+
+  inv[1] = -m[1] * m[10] * m[15] + m[1] * m[11] * m[14] + m[9] * m[2] * m[15] -
+      m[9] * m[3] * m[14] - m[13] * m[2] * m[11] + m[13] * m[3] * m[10];
+
+  inv[5] = m[0] * m[10] * m[15] - m[0] * m[11] * m[14] - m[8] * m[2] * m[15] +
+      m[8] * m[3] * m[14] + m[12] * m[2] * m[11] - m[12] * m[3] * m[10];
+
+  inv[9] = -m[0] * m[9] * m[15] + m[0] * m[11] * m[13] + m[8] * m[1] * m[15] -
+      m[8] * m[3] * m[13] - m[12] * m[1] * m[11] + m[12] * m[3] * m[9];
+
+  inv[13] = m[0] * m[9] * m[14] - m[0] * m[10] * m[13] - m[8] * m[1] * m[14] +
+      m[8] * m[2] * m[13] + m[12] * m[1] * m[10] - m[12] * m[2] * m[9];
+
+  inv[2] = m[1] * m[6] * m[15] - m[1] * m[7] * m[14] - m[5] * m[2] * m[15] +
+      m[5] * m[3] * m[14] + m[13] * m[2] * m[7] - m[13] * m[3] * m[6];
+
+  inv[6] = -m[0] * m[6] * m[15] + m[0] * m[7] * m[14] + m[4] * m[2] * m[15] -
+      m[4] * m[3] * m[14] - m[12] * m[2] * m[7] + m[12] * m[3] * m[6];
+
+  inv[10] = m[0] * m[5] * m[15] - m[0] * m[7] * m[13] - m[4] * m[1] * m[15] +
+      m[4] * m[3] * m[13] + m[12] * m[1] * m[7] - m[12] * m[3] * m[5];
+
+  inv[14] = -m[0] * m[5] * m[14] + m[0] * m[6] * m[13] + m[4] * m[1] * m[14] -
+      m[4] * m[2] * m[13] - m[12] * m[1] * m[6] + m[12] * m[2] * m[5];
+
+  inv[3] = -m[1] * m[6] * m[11] + m[1] * m[7] * m[10] + m[5] * m[2] * m[11] -
+      m[5] * m[3] * m[10] - m[9] * m[2] * m[7] + m[9] * m[3] * m[6];
+
+  inv[7] = m[0] * m[6] * m[11] - m[0] * m[7] * m[10] - m[4] * m[2] * m[11] +
+      m[4] * m[3] * m[10] + m[8] * m[2] * m[7] - m[8] * m[3] * m[6];
+
+  inv[11] = -m[0] * m[5] * m[11] + m[0] * m[7] * m[9] + m[4] * m[1] * m[11] -
+      m[4] * m[3] * m[9] - m[8] * m[1] * m[7] + m[8] * m[3] * m[5];
+
+  inv[15] = m[0] * m[5] * m[10] - m[0] * m[6] * m[9] - m[4] * m[1] * m[10] +
+      m[4] * m[2] * m[9] + m[8] * m[1] * m[6] - m[8] * m[2] * m[5];
+
+  det = m[0] * inv[0] + m[1] * inv[4] + m[2] * inv[8] + m[3] * inv[12];
+
+  if (det == 0)
+    return false;
+
+  det = 1.0 / det;
+
+  for (i = 0; i < 16; i++)
+    transform.matrix[i] = inv[i] * det;
+
+  return true;
 }
 
 } // namespace facebook::react

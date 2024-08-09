@@ -261,18 +261,53 @@ ShadowNode::Shared LayoutableShadowNode::findNodeAtPoint(
     return nullptr;
   }
 
+  auto transform = layoutableShadowNode->getTransform();
   auto frame = layoutableShadowNode->getLayoutMetrics().frame;
-  auto transformedFrame = frame * layoutableShadowNode->getTransform();
-  auto isPointInside = transformedFrame.containsPoint(point);
+  auto isPointInside = false;
+  auto newPoint = Point();
+
+  // Fast path: Handle horizontal/vertical inversion
+  if (Transform::isVerticalInversion(transform) ||
+      Transform::isHorizontalInversion(transform)) {
+    auto transformedFrame = frame * transform;
+    auto centerX =
+        transformedFrame.origin.x + transformedFrame.size.width / 2.0;
+    auto centerY =
+        transformedFrame.origin.y + transformedFrame.size.height / 2.0;
+
+    auto relativeX = point.x - centerX;
+    auto relativeY = point.y - centerY;
+
+    if (Transform::isVerticalInversion(transform)) {
+      relativeY = -relativeY;
+    }
+    if (Transform::isHorizontalInversion(transform)) {
+      relativeX = -relativeX;
+    }
+
+    point.x = centerX + relativeX;
+    point.y = centerY + relativeY;
+
+    isPointInside = transformedFrame.containsPoint(point);
+    newPoint = point - transformedFrame.origin -
+        layoutableShadowNode->getContentOriginOffset(false);
+  } else {
+    Transform inversionTransform;
+    // Slow path: Handle translation/rotation .. etc.
+    if (transform.matrix != Transform::Identity().matrix &&
+        transform.getInversion(inversionTransform)) {
+      point = inversionTransform.applyWithRect(point, frame);
+    }
+    isPointInside = frame.containsPoint(point);
+    newPoint = point - frame.origin -
+        layoutableShadowNode->getContentOriginOffset(false);
+  }
 
   if (!isPointInside) {
     return nullptr;
   } else if (!layoutableShadowNode->canChildrenBeTouchTarget()) {
     return node;
   }
-
-  auto newPoint = point - transformedFrame.origin -
-      layoutableShadowNode->getContentOriginOffset(false);
 
   auto sortedChildren = node->getChildren();
   std::stable_sort(
