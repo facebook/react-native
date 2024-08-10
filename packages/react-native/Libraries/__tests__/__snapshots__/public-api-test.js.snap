@@ -8330,7 +8330,7 @@ export type GradientValue = {
   direction?: string,
   colorStops: $ReadOnlyArray<{
     color: ____ColorValue_Internal,
-    position?: string,
+    stops?: string[],
   }>,
 };
 export type BoxShadowPrimitive = {
