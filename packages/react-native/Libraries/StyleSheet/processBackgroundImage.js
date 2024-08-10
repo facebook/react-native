@@ -64,7 +64,7 @@ export default function processBackgroundImage(
                 position: parseFloat(stop) / 100,
               });
             } else {
-              // If a position is invalid, return an empty array and do not apply gradient. Same as web.
+              // If a stop is invalid, return an empty array and do not apply gradient. Same as web.
               return [];
             }
           }
@@ -126,7 +126,7 @@ function parseCSSLinearGradient(
     let points = TO_BOTTOM_START_END_POINTS;
     const trimmedDirection = parts[0].trim().toLowerCase();
     const colorStopRegex =
-      /\s*((?:(?:rgba?|hsla?)\s*\([^)]+\))|#[0-9a-fA-F]+|[a-zA-Z]+)(?:\s+([0-9.]+%?))?\s*/gi;
+      /\s*((?:(?:rgba?|hsla?)\s*\([^)]+\))|#[0-9a-fA-F]+|[a-zA-Z]+)(?:\s+(-?[0-9.]+%?)(?:\s+(-?[0-9.]+%?))?)?\s*/gi;
 
     if (ANGLE_UNIT_REGEX.test(trimmedDirection)) {
       const angle = parseAngle(trimmedDirection);
@@ -157,32 +157,50 @@ function parseCSSLinearGradient(
     const fullColorStopsStr = parts.join(',');
     let colorStopMatch;
     while ((colorStopMatch = colorStopRegex.exec(fullColorStopsStr))) {
-      const [, color, position] = colorStopMatch;
+      const [, color, stop1, stop2] = colorStopMatch;
       const processedColor = processColor(color.trim().toLowerCase());
-      if (
-        processedColor != null &&
-        (typeof position === 'undefined' || position.endsWith('%'))
-      ) {
-        colorStops.push({
-          color: processedColor,
-          position: position ? parseFloat(position) / 100 : null,
-        });
-      } else {
-        // If a color or position is invalid, return an empty array and do not apply any gradient. Same as web.
+      if (processedColor == null) {
+        // If a color is invalid, return an empty array and do not apply any gradient. Same as web.
         return [];
       }
+
+      if (typeof stop1 !== 'undefined') {
+        if (stop1.endsWith('%')) {
+          colorStops.push({
+            color: processedColor,
+            position: parseFloat(stop1) / 100,
+          });
+        } else {
+          // If a stop is invalid, return an empty array and do not apply any gradient. Same as web.
+          return [];
+        }
+      } else {
+        colorStops.push({
+          color: processedColor,
+          position: null,
+        });
+      }
+
+      if (typeof stop2 !== 'undefined') {
+        if (stop2.endsWith('%')) {
+          colorStops.push({
+            color: processedColor,
+            position: parseFloat(stop2) / 100,
+          });
+        } else {
+          // If a stop is invalid, return an empty array and do not apply any gradient. Same as web.
+          return [];
+        }
+      }
     }
+
+    const fixedColorStops = getFixedColorStops(colorStops);
 
     gradients.push({
       type: 'linearGradient',
       start: points.start,
       end: points.end,
-      colorStops: colorStops.map((stop, index, array) => ({
-        color: stop.color,
-        position:
-          stop.position ??
-          (array.length === 1 ? 1 : index / (array.length - 1)),
-      })),
+      colorStops: fixedColorStops,
     });
   }
 
@@ -312,13 +330,21 @@ function getFixedColorStops(
     const colorStop = colorStops[i];
     let newPosition = colorStop.position;
     if (newPosition === null) {
+      // Step 1:
+      // If the first color stop does not have a position,
+      // set its position to 0%. If the last color stop does not have a position,
+      // set its position to 100%.
       if (i === 0) {
         newPosition = 0;
       } else if (i === colorStops.length - 1) {
         newPosition = 1;
       }
     }
-
+    // Step 2:
+    // If a color stop or transition hint has a position
+    // that is less than the specified position of any color stop or transition hint
+    // before it in the list, set its position to be equal to the
+    // largest specified position of any color stop or transition hint before it.
     if (newPosition !== null) {
       newPosition = Math.max(newPosition, maxPositionSoFar);
       fixedColorStops[i] = {
@@ -331,6 +357,11 @@ function getFixedColorStops(
     }
   }
 
+  // Step 3:
+  // If any color stop still does not have a position,
+  // then, for each run of adjacent color stops without positions,
+  // set their positions so that they are evenly spaced between the preceding and
+  // following color stops with positions.
   if (hasNullPositions) {
     let lastDefinedIndex = 0;
     for (let i = 1; i < fixedColorStops.length; i++) {
