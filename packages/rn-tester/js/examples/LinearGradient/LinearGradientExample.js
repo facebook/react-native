@@ -98,7 +98,7 @@ exports.examples = [
           testID="linear-gradient-color-stops"
           style={{
             experimental_backgroundImage:
-              'linear-gradient(red 40%  20%, blue 90%  120% , green 200% 300%)',
+              'linear-gradient(to right, red 0%, yellow 30%, green 60%, blue 100%)',
           }}
         />
       );
@@ -114,10 +114,10 @@ exports.examples = [
             experimental_backgroundImage: [
               {
                 type: 'linearGradient',
+                direction: 'to bottom',
                 colorStops: [
-                  {color: 'red'},
-                  {color: 'blue', stops: ['-20%']},
-                  {color: 'green'},
+                  {color: 'purple', stops: ['0%']},
+                  {color: 'orange', stops: ['100%']},
                 ],
               },
             ],
