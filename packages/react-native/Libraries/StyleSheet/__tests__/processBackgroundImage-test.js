@@ -546,4 +546,22 @@ describe('processBackgroundImage', () => {
       {color: processColor('green'), position: 3},
     ]);
   });
+
+  it('should return empty array for invalid multiple stop positions', () => {
+    const result = processBackgroundImage([
+      {
+        type: 'linearGradient',
+        colorStops: [
+          {color: 'red', stops: ['40%  20']},
+          {color: 'blue', stops: ['90%  120%']},
+          {color: 'green', stops: ['200% 300%']},
+        ],
+      },
+    ]);
+    const result1 = processBackgroundImage(
+      'linear-gradient(red 40%  20, blue 90%  120% , green 200% 300%)',
+    );
+    expect(result).toEqual([]);
+    expect(result1).toEqual([]);
+  });
 });
