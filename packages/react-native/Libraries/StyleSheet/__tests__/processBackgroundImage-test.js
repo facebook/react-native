@@ -282,8 +282,8 @@ describe('processBackgroundImage', () => {
         type: 'linearGradient',
         direction: 'to bottom right',
         colorStops: [
-          {color: 'red', position: '0%'},
-          {color: 'blue', position: '100%'},
+          {color: 'red', stops: ['0%']},
+          {color: 'blue', stops: ['100%']},
         ],
       },
     ];
@@ -349,7 +349,7 @@ describe('processBackgroundImage', () => {
           {color: 'red'},
           {color: 'blue'},
           {color: 'green'},
-          {color: 'purple', position: '80%'},
+          {color: 'purple', stops: ['80%']},
           {color: 'pink'},
         ],
       },

@@ -47,21 +47,34 @@ export default function processBackgroundImage(
     for (const bgImage of backgroundImage) {
       const processedColorStops = [];
       for (let index = 0; index < bgImage.colorStops.length; index++) {
-        const stop = bgImage.colorStops[index];
-        const processedColor = processColor(stop.color);
+        const colorStop = bgImage.colorStops[index];
+        const processedColor = processColor(colorStop.color);
         let processedPosition: number | null = null;
 
-        // Currently we only support percentage and undefined value for color stop position.
-        if (typeof stop.position === 'undefined') {
+        if (processedColor == null) {
+          // If a color is invalid, return an empty array and do not apply gradient. Same as web.
+          return [];
+        }
+
+        if (colorStop.stops == null || colorStop.stops.length === 0) {
           processedPosition =
             bgImage.colorStops.length === 1
               ? 1
               : index / (bgImage.colorStops.length - 1);
-        } else if (stop.position.endsWith('%')) {
-          processedPosition = parseFloat(stop.position) / 100;
         } else {
-          // If a color stop position is invalid, return an empty array and do not apply gradient. Same as web.
-          return [];
+          const stop = colorStop.stops[0];
+          // Currently we only support percentage and undefined value for color stop position.
+          if (typeof stop === 'undefined') {
+            processedPosition =
+              bgImage.colorStops.length === 1
+                ? 1
+                : index / (bgImage.colorStops.length - 1);
+          } else if (stop.endsWith('%')) {
+            processedPosition = parseFloat(stop) / 100;
+          } else {
+            // If a color stop position is invalid, return an empty array and do not apply gradient. Same as web.
+            return [];
+          }
         }
 
         if (processedColor != null) {
