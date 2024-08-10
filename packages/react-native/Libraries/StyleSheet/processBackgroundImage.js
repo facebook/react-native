@@ -316,10 +316,6 @@ function getFixedColorStops(
   color: ProcessedColorValue,
   position: number,
 }> {
-  if (colorStops.length === 0) {
-    return [];
-  }
-
   let fixedColorStops: Array<{
     color: ProcessedColorValue,
     position: number,
