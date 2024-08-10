@@ -45,46 +45,34 @@ export default function processBackgroundImage(
     result = parseCSSLinearGradient(backgroundImage);
   } else if (Array.isArray(backgroundImage)) {
     for (const bgImage of backgroundImage) {
-      const processedColorStops = [];
+      const processedColorStops: Array<{
+        color: ProcessedColorValue,
+        position: number | null,
+      }> = [];
       for (let index = 0; index < bgImage.colorStops.length; index++) {
         const colorStop = bgImage.colorStops[index];
         const processedColor = processColor(colorStop.color);
-        let processedPosition: number | null = null;
-
         if (processedColor == null) {
           // If a color is invalid, return an empty array and do not apply gradient. Same as web.
           return [];
         }
-
-        if (colorStop.stops == null || colorStop.stops.length === 0) {
-          processedPosition =
-            bgImage.colorStops.length === 1
-              ? 1
-              : index / (bgImage.colorStops.length - 1);
-        } else {
-          const stop = colorStop.stops[0];
-          // Currently we only support percentage and undefined value for color stop position.
-          if (typeof stop === 'undefined') {
-            processedPosition =
-              bgImage.colorStops.length === 1
-                ? 1
-                : index / (bgImage.colorStops.length - 1);
-          } else if (stop.endsWith('%')) {
-            processedPosition = parseFloat(stop) / 100;
-          } else {
-            // If a color stop position is invalid, return an empty array and do not apply gradient. Same as web.
-            return [];
+        if (colorStop.stops != null && colorStop.stops.length > 0) {
+          for (const stop of colorStop.stops) {
+            if (stop.endsWith('%')) {
+              processedColorStops.push({
+                color: processedColor,
+                position: parseFloat(stop) / 100,
+              });
+            } else {
+              // If a position is invalid, return an empty array and do not apply gradient. Same as web.
+              return [];
+            }
           }
-        }
-
-        if (processedColor != null) {
+        } else {
           processedColorStops.push({
             color: processedColor,
-            position: processedPosition,
+            position: null,
           });
-        } else {
-          // If a color is invalid, return an empty array and do not apply gradient. Same as web.
-          return [];
         }
       }
 
@@ -109,12 +97,14 @@ export default function processBackgroundImage(
         }
       }
 
+      const fixedColorStops = getFixedColorStops(processedColorStops);
+
       if (points != null) {
         result = result.concat({
           type: 'linearGradient',
           start: points.start,
           end: points.end,
-          colorStops: processedColorStops,
+          colorStops: fixedColorStops,
         });
       }
     }
@@ -296,4 +286,72 @@ function parseAngle(angle: string): ?number {
     default:
       return null;
   }
+}
+
+// https://drafts.csswg.org/css-images-4/#color-stop-fixup
+function getFixedColorStops(
+  colorStops: $ReadOnlyArray<{
+    color: ProcessedColorValue,
+    position: number | null,
+  }>,
+): Array<{
+  color: ProcessedColorValue,
+  position: number,
+}> {
+  if (colorStops.length === 0) {
+    return [];
+  }
+
+  let fixedColorStops: Array<{
+    color: ProcessedColorValue,
+    position: number,
+  }> = [];
+  let hasNullPositions = false;
+  let maxPositionSoFar = colorStops[0].position ?? 0;
+  for (let i = 0; i < colorStops.length; i++) {
+    const colorStop = colorStops[i];
+    let newPosition = colorStop.position;
+    if (newPosition === null) {
+      if (i === 0) {
+        newPosition = 0;
+      } else if (i === colorStops.length - 1) {
+        newPosition = 1;
+      }
+    }
+
+    if (newPosition !== null) {
+      newPosition = Math.max(newPosition, maxPositionSoFar);
+      fixedColorStops[i] = {
+        color: colorStop.color,
+        position: newPosition,
+      };
+      maxPositionSoFar = newPosition;
+    } else {
+      hasNullPositions = true;
+    }
+  }
+
+  if (hasNullPositions) {
+    let lastDefinedIndex = 0;
+    for (let i = 1; i < fixedColorStops.length; i++) {
+      if (fixedColorStops[i] !== undefined) {
+        const unpositionedStops = i - lastDefinedIndex - 1;
+        if (unpositionedStops > 0) {
+          const startPosition = fixedColorStops[lastDefinedIndex].position;
+          const endPosition = fixedColorStops[i].position;
+          const increment =
+            (endPosition - startPosition) / (unpositionedStops + 1);
+          for (let j = 1; j <= unpositionedStops; j++) {
+            fixedColorStops[lastDefinedIndex + j] = {
+              color: colorStops[lastDefinedIndex + j].color,
+              position: startPosition + increment * j,
+            };
+          }
+        }
+        lastDefinedIndex = i;
+      }
+    }
+  }
+
+  return fixedColorStops;
 }
