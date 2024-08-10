@@ -13,6 +13,7 @@
 #import <React/RCTBackedTextInputDelegateAdapter.h>
 #import <React/RCTTextAttributes.h>
 
+#import <MobileCoreServices/MobileCoreServices.h>
 #import <MobileCoreServices/UTType.h>
 #import <UIKit/UIKit.h>
 
@@ -177,18 +178,20 @@ static UIColor *defaultPlaceholderColor(void)
   _textWasPasted = YES;
   UIPasteboard *clipboard = [UIPasteboard generalPasteboard];
   if (clipboard.hasImages) {
-    for (NSItemProvider *itemProvider in [clipboard itemProviders]) {
-      if ([itemProvider canLoadObjectOfClass:[UIImage class]]) {
-        NSString *identifier = itemProvider.registeredTypeIdentifiers.firstObject;
-        if (identifier != nil) {
-          NSString *MIMEType = (__bridge_transfer NSString *)UTTypeCopyPreferredTagWithClass((__bridge CFStringRef)identifier, kUTTagClassMIMEType);
-          NSString *fileExtension = (__bridge_transfer NSString *)UTTypeCopyPreferredTagWithClass((__bridge CFStringRef)identifier, kUTTagClassFilenameExtension);
-          NSString *fileName = [NSString stringWithFormat:@"%@.%@", itemProvider.suggestedName ?: @"file", fileExtension];
-          NSString *filePath = [NSTemporaryDirectory() stringByAppendingPathComponent:fileName];
-          NSURL *fileURL = [NSURL fileURLWithPath:filePath];
-          NSData *fileData = [clipboard dataForPasteboardType:identifier];
-          [fileData writeToFile:filePath atomically:YES];
-          [_textInputDelegateAdapter didPaste:MIMEType withData:[fileURL absoluteString]];
+    for (NSItemProvider *itemProvider in clipboard.itemProviders) {
+      if ([itemProvider hasItemConformingToTypeIdentifier:(NSString *)kUTTypeImage]) {
+        for (NSString *identifier in itemProvider.registeredTypeIdentifiers) {
+          if (UTTypeConformsTo((__bridge CFStringRef)identifier, kUTTypeImage)) {
+            NSString *MIMEType = (__bridge_transfer NSString *)UTTypeCopyPreferredTagWithClass((__bridge CFStringRef)identifier, kUTTagClassMIMEType);
+            NSString *fileExtension = (__bridge_transfer NSString *)UTTypeCopyPreferredTagWithClass((__bridge CFStringRef)identifier, kUTTagClassFilenameExtension);
+            NSString *fileName = [NSString stringWithFormat:@"%@.%@", itemProvider.suggestedName ?: @"file", fileExtension];
+            NSString *filePath = [NSTemporaryDirectory() stringByAppendingPathComponent:fileName];
+            NSURL *fileURL = [NSURL fileURLWithPath:filePath];
+            NSData *fileData = [clipboard dataForPasteboardType:identifier];
+            [fileData writeToFile:filePath atomically:YES];
+            [_textInputDelegateAdapter didPaste:MIMEType withData:[fileURL absoluteString]];
+            break;
+          }
         }
         break;
       }
