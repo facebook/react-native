@@ -12,6 +12,7 @@
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/ReactPrimitives.h>
 #include <react/renderer/debug/DebugStringConvertible.h>
+#include <react/renderer/imagemanager/primitives.h>
 
 namespace facebook::react {
 
@@ -44,6 +45,7 @@ class AccessibilityProps {
   std::string accessibilityLargeContentTitle{""};
   AccessibilityValue accessibilityValue;
   std::vector<AccessibilityAction> accessibilityActions{};
+  ImageSource accessibilityLargeContentImage{};
   bool accessibilityShowsLargeContentViewer{false};
   bool accessibilityViewIsModal{false};
   bool accessibilityElementsHidden{false};

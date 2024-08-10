@@ -7,6 +7,7 @@
 
 #include "AccessibilityProps.h"
 
+#include <react/renderer/components/image/conversions.h>
 #include <react/renderer/components/view/accessibilityPropsConversions.h>
 #include <react/renderer/components/view/propsConversions.h>
 #include <react/renderer/core/propsConversions.h>
@@ -36,6 +37,16 @@ AccessibilityProps::AccessibilityProps(
                     "accessibilityState",
                     sourceProps.accessibilityState,
                     {})),
+      accessibilityLargeContentImage(
+          CoreFeatures::enablePropIteratorSetter
+              ? sourceProps.accessibilityLargeContentImage
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "accessibilityLargeContentImage",
+                    sourceProps.accessibilityLargeContentImage,
+                    {})),
+                    
       accessibilityLabel(
           CoreFeatures::enablePropIteratorSetter
               ? sourceProps.accessibilityLabel
@@ -249,6 +260,7 @@ void AccessibilityProps::setProp(
     RAW_SET_PROP_SWITCH_CASE_BASIC(accessibilityLanguage);
     RAW_SET_PROP_SWITCH_CASE_BASIC(accessibilityShowsLargeContentViewer);
     RAW_SET_PROP_SWITCH_CASE_BASIC(accessibilityLargeContentTitle);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(accessibilityLargeContentImage);
     RAW_SET_PROP_SWITCH_CASE_BASIC(accessibilityValue);
     RAW_SET_PROP_SWITCH_CASE_BASIC(accessibilityActions);
     RAW_SET_PROP_SWITCH_CASE_BASIC(accessibilityViewIsModal);
