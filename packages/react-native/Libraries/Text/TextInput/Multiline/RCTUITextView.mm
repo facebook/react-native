@@ -184,7 +184,7 @@ static UIColor *defaultPlaceholderColor(void)
           if (UTTypeConformsTo((__bridge CFStringRef)identifier, kUTTypeImage)) {
             NSString *MIMEType = (__bridge_transfer NSString *)UTTypeCopyPreferredTagWithClass((__bridge CFStringRef)identifier, kUTTagClassMIMEType);
             NSString *fileExtension = (__bridge_transfer NSString *)UTTypeCopyPreferredTagWithClass((__bridge CFStringRef)identifier, kUTTagClassFilenameExtension);
-            NSString *fileName = [NSString stringWithFormat:@"%@.%@", itemProvider.suggestedName ?: @"file", fileExtension];
+            NSString *fileName = [NSString stringWithFormat:@"%@.%@", [[NSUUID UUID] UUIDString], fileExtension];
             NSString *filePath = [NSTemporaryDirectory() stringByAppendingPathComponent:fileName];
             NSURL *fileURL = [NSURL fileURLWithPath:filePath];
             NSData *fileData = [clipboard dataForPasteboardType:identifier];
