@@ -67,6 +67,14 @@ ImageProps::ImageProps(
                                                        "tintColor",
                                                        sourceProps.tintColor,
                                                        {})),
+      fadeDuration(
+          CoreFeatures::enablePropIteratorSetter ? sourceProps.fadeDuration
+                                                 : convertRawProp(
+                                                       context,
+                                                       rawProps,
+                                                       "fadeDuration",
+                                                       sourceProps.fadeDuration,
+                                                       {})),
       internal_analyticTag(
           CoreFeatures::enablePropIteratorSetter
               ? sourceProps.internal_analyticTag
@@ -96,6 +104,7 @@ void ImageProps::setProp(
     RAW_SET_PROP_SWITCH_CASE_BASIC(blurRadius);
     RAW_SET_PROP_SWITCH_CASE_BASIC(capInsets);
     RAW_SET_PROP_SWITCH_CASE_BASIC(tintColor);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(fadeDuration);
     RAW_SET_PROP_SWITCH_CASE_BASIC(internal_analyticTag);
   }
 }

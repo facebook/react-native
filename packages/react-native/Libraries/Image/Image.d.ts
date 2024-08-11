@@ -74,9 +74,8 @@ interface ImagePropsAndroid {
   resizeMethod?: 'auto' | 'resize' | 'scale' | undefined;
 
   /**
-   * Duration of fade in animation in ms. Defaults to 300
+   * Duration of fade in animation in ms. Defaults to 300 (Android) or 0 (iOS).
    *
-   * @platform android
    */
   fadeDuration?: number | undefined;
 }
