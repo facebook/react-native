@@ -282,8 +282,8 @@ describe('processBackgroundImage', () => {
         type: 'linearGradient',
         direction: 'to bottom right',
         colorStops: [
-          {color: 'red', stops: ['0%']},
-          {color: 'blue', stops: ['100%']},
+          {color: 'red', positions: ['0%']},
+          {color: 'blue', positions: ['100%']},
         ],
       },
     ];
@@ -346,7 +346,7 @@ describe('processBackgroundImage', () => {
       {
         type: 'linearGradient',
         colorStops: [
-          {color: 'red', stops: ['40%']},
+          {color: 'red', positions: ['40%']},
           {color: 'blue'},
           {color: 'green'},
           {color: 'purple'},
@@ -384,7 +384,7 @@ describe('processBackgroundImage', () => {
       {
         type: 'linearGradient',
         colorStops: [
-          {color: 'red', stops: ['40%', '80%']},
+          {color: 'red', positions: ['40%', '80%']},
           {color: 'blue'},
           {color: 'green'},
         ],
@@ -422,7 +422,7 @@ describe('processBackgroundImage', () => {
         type: 'linearGradient',
         colorStops: [
           {color: 'red'},
-          {color: 'blue', stops: ['20%']},
+          {color: 'blue', positions: ['20%']},
           {color: 'green'},
         ],
       },
@@ -454,7 +454,7 @@ describe('processBackgroundImage', () => {
       {
         type: 'linearGradient',
         colorStops: [
-          {color: 'red', stops: ['-50%']},
+          {color: 'red', positions: ['-50%']},
           {color: 'blue'},
           {color: 'green'},
         ],
@@ -488,8 +488,8 @@ describe('processBackgroundImage', () => {
         type: 'linearGradient',
         colorStops: [
           {color: 'red'},
-          {color: 'blue', stops: ['-50%']},
-          {color: 'green', stops: ['150%']},
+          {color: 'blue', positions: ['-50%']},
+          {color: 'green', positions: ['150%']},
           {color: 'yellow'},
         ],
       },
@@ -552,9 +552,9 @@ describe('processBackgroundImage', () => {
       {
         type: 'linearGradient',
         colorStops: [
-          {color: 'red', stops: ['40%  20']},
-          {color: 'blue', stops: ['90%  120%']},
-          {color: 'green', stops: ['200% 300%']},
+          {color: 'red', positions: ['40%  20']},
+          {color: 'blue', positions: ['90%  120%']},
+          {color: 'green', positions: ['200% 300%']},
         ],
       },
     ]);

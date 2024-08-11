@@ -279,7 +279,7 @@ export type GradientValue = {
   direction: string | undefined;
   colorStops: Array<{
     color: ColorValue;
-    stops: string[] | undefined;
+    positions: string[] | undefined;
   }>;
 };
 

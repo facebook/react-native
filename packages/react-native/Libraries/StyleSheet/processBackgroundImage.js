@@ -56,15 +56,15 @@ export default function processBackgroundImage(
           // If a color is invalid, return an empty array and do not apply gradient. Same as web.
           return [];
         }
-        if (colorStop.stops != null && colorStop.stops.length > 0) {
-          for (const stop of colorStop.stops) {
-            if (stop.endsWith('%')) {
+        if (colorStop.positions != null && colorStop.positions.length > 0) {
+          for (const position of colorStop.positions) {
+            if (position.endsWith('%')) {
               processedColorStops.push({
                 color: processedColor,
-                position: parseFloat(stop) / 100,
+                position: parseFloat(position) / 100,
               });
             } else {
-              // If a stop is invalid, return an empty array and do not apply gradient. Same as web.
+              // If a position is invalid, return an empty array and do not apply gradient. Same as web.
               return [];
             }
           }
@@ -157,21 +157,21 @@ function parseCSSLinearGradient(
     const fullColorStopsStr = parts.join(',');
     let colorStopMatch;
     while ((colorStopMatch = colorStopRegex.exec(fullColorStopsStr))) {
-      const [, color, stop1, stop2] = colorStopMatch;
+      const [, color, position1, position2] = colorStopMatch;
       const processedColor = processColor(color.trim().toLowerCase());
       if (processedColor == null) {
         // If a color is invalid, return an empty array and do not apply any gradient. Same as web.
         return [];
       }
 
-      if (typeof stop1 !== 'undefined') {
-        if (stop1.endsWith('%')) {
+      if (typeof position1 !== 'undefined') {
+        if (position1.endsWith('%')) {
           colorStops.push({
             color: processedColor,
-            position: parseFloat(stop1) / 100,
+            position: parseFloat(position1) / 100,
           });
         } else {
-          // If a stop is invalid, return an empty array and do not apply any gradient. Same as web.
+          // If a position is invalid, return an empty array and do not apply any gradient. Same as web.
           return [];
         }
       } else {
@@ -181,14 +181,14 @@ function parseCSSLinearGradient(
         });
       }
 
-      if (typeof stop2 !== 'undefined') {
-        if (stop2.endsWith('%')) {
+      if (typeof position2 !== 'undefined') {
+        if (position2.endsWith('%')) {
           colorStops.push({
             color: processedColor,
-            position: parseFloat(stop2) / 100,
+            position: parseFloat(position2) / 100,
           });
         } else {
-          // If a stop is invalid, return an empty array and do not apply any gradient. Same as web.
+          // If a position is invalid, return an empty array and do not apply any gradient. Same as web.
           return [];
         }
       }

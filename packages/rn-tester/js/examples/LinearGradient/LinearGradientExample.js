@@ -116,8 +116,8 @@ exports.examples = [
                 type: 'linearGradient',
                 direction: 'to bottom',
                 colorStops: [
-                  {color: 'purple', stops: ['0%']},
-                  {color: 'orange', stops: ['100%']},
+                  {color: 'purple', positions: ['0%']},
+                  {color: 'orange', positions: ['100%']},
                 ],
               },
             ],
