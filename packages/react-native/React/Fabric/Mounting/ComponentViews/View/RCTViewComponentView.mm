@@ -16,13 +16,11 @@
 #import <React/RCTBoxShadow.h>
 #import <React/RCTConversions.h>
 #import <React/RCTLocalizedString.h>
-#import <React/RCTUtils.h>
 #import <react/renderer/components/view/ViewComponentDescriptor.h>
 #import <react/renderer/components/view/ViewEventEmitter.h>
 #import <react/renderer/components/view/ViewProps.h>
 #import <react/renderer/components/view/accessibilityPropsConversions.h>
 #import <react/renderer/graphics/BlendMode.h>
-#import "RCTImagePrimitivesConversions.h"
 
 #ifdef RCT_DYNAMIC_FRAMEWORKS
 #import <React/RCTComponentViewFactory.h>
@@ -366,26 +364,6 @@ using namespace facebook::react;
   if (oldViewProps.accessibilityLargeContentTitle != newViewProps.accessibilityLargeContentTitle) {
     if (@available(iOS 13.0, *)) {
       self.largeContentTitle = RCTNSStringFromStringNilIfEmpty(newViewProps.accessibilityLargeContentTitle);
-    }
-  }
-
-  // `accessibilityLargeContentImage`
-  if (oldViewProps.accessibilityLargeContentImage != newViewProps.accessibilityLargeContentImage) {
-    if (@available(iOS 13.0, *)) {
-      self.largeContentImage = nil;
-
-      NSURL *imageURL = NSURLFromImageSource(newViewProps.accessibilityLargeContentImage);
-      if (!imageURL) {
-        return;
-      }
-
-      UIImage *image = RCTImageFromLocalAssetURL(imageURL);
-      if (!image) {
-        return;
-      }
-
-      self.largeContentImage = image;
-      self.scalesLargeContentImage = YES;
     }
   }
 

@@ -24,7 +24,6 @@ const UIView = {
   accessibilityLanguage: true,
   accessibilityShowsLargeContentViewer: true,
   accessibilityLargeContentTitle: true,
-  accessibilityLargeContentImage: true,
   importantForAccessibility: true,
   nativeID: true,
   testID: true,

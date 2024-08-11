@@ -7,7 +7,6 @@
  * @format
  */
 
-import {ImageRequireSource} from '../../Image/ImageSource';
 import {NativeSyntheticEvent} from '../../Types/CoreEventTypes';
 
 /**
@@ -335,13 +334,6 @@ export interface AccessibilityPropsIOS {
    * @platform ios
    */
   accessibilityLargeContentTitle?: string | undefined;
-
-  /**
-   * When `accessibilityLargeContentImage` is set, this image will be used as the image for the large content viewer.
-   * https://reactnative.dev/docs/accessibility#accessibilitylargecontentimage
-   * @platform ios
-   */
-  accessibilityLargeContentImage?: ImageRequireSource | undefined;
 }
 
 export type Role =

@@ -317,14 +317,6 @@ RCT_CUSTOM_VIEW_PROPERTY(accessibilityLargeContentTitle, NSString, RCTView)
   }
 }
 
-RCT_CUSTOM_VIEW_PROPERTY(accessibilityLargeContentImage, UIImage, RCTView)
-{
-  if (@available(iOS 13.0, *)) {
-    view.largeContentImage = [RCTConvert UIImage:json];
-    view.scalesLargeContentImage = YES;
-  }
-}
-
 RCT_CUSTOM_VIEW_PROPERTY(nativeID, NSString *, RCTView)
 {
   view.nativeID = json ? [RCTConvert NSString:json] : defaultView.nativeID;
