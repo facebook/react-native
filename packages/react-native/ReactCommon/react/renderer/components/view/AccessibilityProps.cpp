@@ -35,8 +35,7 @@ AccessibilityProps::AccessibilityProps(
                     rawProps,
                     "accessibilityState",
                     sourceProps.accessibilityState,
-                    {})),
-                    
+                    {})),  
       accessibilityLabel(
           CoreFeatures::enablePropIteratorSetter
               ? sourceProps.accessibilityLabel

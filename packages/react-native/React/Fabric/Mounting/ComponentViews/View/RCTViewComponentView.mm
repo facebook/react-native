@@ -348,7 +348,6 @@ using namespace facebook::react;
 
   // `accessibilityShowsLargeContentViewer`
   if (oldViewProps.accessibilityShowsLargeContentViewer != newViewProps.accessibilityShowsLargeContentViewer) {
-    self.showsLargeContentViewer = newViewProps.accessibilityShowsLargeContentViewer;
     if (@available(iOS 13.0, *)) {
       if (newViewProps.accessibilityShowsLargeContentViewer) {
         self.showsLargeContentViewer = YES;
