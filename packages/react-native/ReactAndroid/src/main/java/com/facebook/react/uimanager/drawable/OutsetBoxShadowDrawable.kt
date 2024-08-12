@@ -8,6 +8,7 @@
 package com.facebook.react.uimanager.drawable
 
 import android.content.Context
+import android.graphics.BlurMaskFilter
 import android.graphics.Canvas
 import android.graphics.ColorFilter
 import android.graphics.Paint
@@ -18,12 +19,10 @@ import android.graphics.RenderNode
 import android.graphics.drawable.Drawable
 import androidx.annotation.RequiresApi
 import com.facebook.common.logging.FLog
-import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.uimanager.FilterHelper
 import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.style.BorderRadiusStyle
 import com.facebook.react.uimanager.style.ComputedBorderRadius
-import kotlin.math.ceil
 import kotlin.math.roundToInt
 
 private const val TAG = "OutsetBoxShadowDrawable"
@@ -34,8 +33,7 @@ private const val TAG = "OutsetBoxShadowDrawable"
 private const val BLUR_RADIUS_SIGMA_SCALE = 0.5f
 
 /** Draws an outer box-shadow https://www.w3.org/TR/css-backgrounds-3/#shadow-shape */
-@RequiresApi(31)
-@OptIn(UnstableReactNativeAPI::class)
+@RequiresApi(29)
 internal class OutsetBoxShadowDrawable(
     private val context: Context,
     borderRadius: BorderRadiusStyle? = null,
@@ -53,16 +51,23 @@ internal class OutsetBoxShadowDrawable(
       }
     }
 
-  private val renderNode =
-      RenderNode(TAG).apply {
-        clipToBounds = true
-        setRenderEffect(FilterHelper.createBlurEffect(blurRadius * BLUR_RADIUS_SIGMA_SCALE))
-      }
+  private val renderNode = RenderNode(TAG).apply { clipToBounds = true }
 
   private val shadowClipOutPath: Path = Path()
   private val shadowOuterPath: Path = Path()
-  private val shadowOuterRect: RectF = RectF()
-  private val shadowPaint = Paint().apply { color = shadowColor }
+  private val shadowPaint =
+      Paint().apply {
+        color = shadowColor
+
+        // Mask filters are not documented to be supported under hardware accelerated canvases, but
+        // they seem to work, mapped to SkMaskFilter, as of API 29.
+        if (blurRadius > 0) {
+          maskFilter =
+              BlurMaskFilter(
+                  FilterHelper.sigmaToRadius(blurRadius * BLUR_RADIUS_SIGMA_SCALE),
+                  BlurMaskFilter.Blur.NORMAL)
+        }
+      }
 
   private var lastBounds: Rect? = null
   private var lastBorderRadius: ComputedBorderRadius? = null
@@ -82,7 +87,7 @@ internal class OutsetBoxShadowDrawable(
     }
 
     val spreadExtent = PixelUtil.toPixelFromDIP(spread).roundToInt().coerceAtLeast(0)
-    val shadowOutset = ceil(PixelUtil.toPixelFromDIP(blurRadius))
+    val shadowOutset = FilterHelper.sigmaToRadius(blurRadius)
     val shadowShapeFrame = Rect(bounds).apply { inset(-spreadExtent, -spreadExtent) }
     val shadowShapeBounds = Rect(0, 0, shadowShapeFrame.width(), shadowShapeFrame.height())
 
@@ -112,8 +117,6 @@ internal class OutsetBoxShadowDrawable(
         lastBorderRadius != shadowBorderRadii) {
       lastBounds = shadowShapeBounds
       lastBorderRadius = shadowBorderRadii
-      shadowOuterRect.set(
-          RectF(bounds).apply { inset(-spreadExtent.toFloat(), -spreadExtent.toFloat()) })
 
       // We remove the portion of the shadow which overlaps the background border box, to avoid
       // showing the shadow shape e.g. behind a transparent background. There may be a subpixel gap
@@ -139,7 +142,7 @@ internal class OutsetBoxShadowDrawable(
 
         shadowOuterPath.rewind()
         shadowOuterPath.addRoundRect(
-            shadowOuterRect,
+            RectF(shadowShapeBounds),
             floatArrayOf(
                 shadowBorderRadii.topLeft,
                 shadowBorderRadii.topLeft,
@@ -156,8 +159,8 @@ internal class OutsetBoxShadowDrawable(
         setPosition(
             Rect(shadowShapeFrame).apply {
               offset(
-                  PixelUtil.toPixelFromDIP(offsetX).roundToInt() - shadowShapeFrame.left,
-                  PixelUtil.toPixelFromDIP(offsetY).roundToInt() - shadowShapeFrame.top)
+                  PixelUtil.toPixelFromDIP(offsetX).roundToInt(),
+                  PixelUtil.toPixelFromDIP(offsetY).roundToInt())
               inset(-shadowOutset.roundToInt(), -shadowOutset.roundToInt())
             })
 
@@ -166,7 +169,7 @@ internal class OutsetBoxShadowDrawable(
           if (shadowBorderRadii?.hasRoundedBorders() == true) {
             renderNodeCanvas.drawPath(shadowOuterPath, shadowPaint)
           } else {
-            renderNodeCanvas.drawRect(shadowOuterRect, shadowPaint)
+            renderNodeCanvas.drawRect(shadowShapeBounds, shadowPaint)
           }
           endRecording()
         }
