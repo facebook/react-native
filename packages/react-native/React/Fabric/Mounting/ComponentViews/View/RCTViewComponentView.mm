@@ -662,7 +662,7 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
           borderMetrics.borderWidths.left == 0 || self.clipsToBounds ||
           (colorComponentsFromColor(borderMetrics.borderColors.left).alpha == 0 &&
            (*borderMetrics.borderColors.left).getUIColor() != nullptr));
-
+ 
   CGColorRef backgroundColor = [_backgroundColor resolvedColorWithTraitCollection:self.traitCollection].CGColor;
 
   if (useCoreAnimationBorderRendering) {
@@ -681,7 +681,7 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
   } else {
     if (!_borderLayer) {
       CALayer *borderLayer = [CALayer new];
-      borderLayer.zPosition = -1024.0f;
+      borderLayer.zPosition = 1024.0f;
       borderLayer.frame = layer.bounds;
       borderLayer.magnificationFilter = kCAFilterNearest;
       [layer addSublayer:borderLayer];
@@ -694,14 +694,16 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     layer.cornerRadius = 0;
 
     RCTBorderColors borderColors = RCTCreateRCTBorderColorsFromBorderColors(borderMetrics.borderColors);
-
+    UIColor *transparentColor = [UIColor colorWithRed:0.0 green:0.0 blue:0.0 alpha:0.0]; // 50% transparent red
+    CGColorRef transparentBackgroundColor = [transparentColor resolvedColorWithTraitCollection:self.traitCollection].CGColor;
+          
     UIImage *image = RCTGetBorderImage(
         RCTBorderStyleFromBorderStyle(borderMetrics.borderStyles.left),
         layer.bounds.size,
         RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii),
         RCTUIEdgeInsetsFromEdgeInsets(borderMetrics.borderWidths),
         borderColors,
-        backgroundColor,
+        transparentBackgroundColor,
         self.clipsToBounds);
 
     RCTReleaseRCTBorderColors(borderColors);
@@ -714,9 +716,9 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
       CGRect contentsCenter = CGRect{
           CGPoint{imageCapInsets.left / imageSize.width, imageCapInsets.top / imageSize.height},
           CGSize{(CGFloat)1.0 / imageSize.width, (CGFloat)1.0 / imageSize.height}};
-
-      _borderLayer.contents = (id)image.CGImage;
-      _borderLayer.contentsScale = image.scale;
+      
+     _borderLayer.contents = (id)image.CGImage;
+     _borderLayer.contentsScale = image.scale;
 
       BOOL isResizable = !UIEdgeInsetsEqualToEdgeInsets(image.capInsets, UIEdgeInsetsZero);
       if (isResizable) {
@@ -751,6 +753,7 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     }
 
     layer.cornerRadius = cornerRadius;
+    layer.backgroundColor = backgroundColor;
     layer.mask = maskLayer;
   }
 
