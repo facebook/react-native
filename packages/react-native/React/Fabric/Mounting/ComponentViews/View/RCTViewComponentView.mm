@@ -694,7 +694,7 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     layer.cornerRadius = 0;
 
     RCTBorderColors borderColors = RCTCreateRCTBorderColorsFromBorderColors(borderMetrics.borderColors);
-    UIColor *transparentColor = [UIColor colorWithRed:0.0 green:0.0 blue:0.0 alpha:0.0];
+    UIColor *transparentColor = [UIColor clearColor];
     CGColorRef transparentBackgroundColor = [transparentColor resolvedColorWithTraitCollection:self.traitCollection].CGColor;
           
     UIImage *image = RCTGetBorderImage(
@@ -717,8 +717,8 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
           CGPoint{imageCapInsets.left / imageSize.width, imageCapInsets.top / imageSize.height},
           CGSize{(CGFloat)1.0 / imageSize.width, (CGFloat)1.0 / imageSize.height}};
       
-     _borderLayer.contents = (id)image.CGImage;
-     _borderLayer.contentsScale = image.scale;
+      _borderLayer.contents = (id)image.CGImage;
+      _borderLayer.contentsScale = image.scale;
 
       BOOL isResizable = !UIEdgeInsetsEqualToEdgeInsets(image.capInsets, UIEdgeInsetsZero);
       if (isResizable) {
