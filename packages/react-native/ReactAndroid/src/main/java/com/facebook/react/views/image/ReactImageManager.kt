@@ -183,7 +183,7 @@ public constructor(
     if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
       val radius =
           if (borderRadius.isNaN()) null
-          else LengthPercentage(toPixelFromDIP(borderRadius), LengthPercentageType.POINT)
+          else LengthPercentage(borderRadius, LengthPercentageType.POINT)
       BackgroundStyleApplicator.setBorderRadius(view, BorderRadiusProp.values()[index], radius)
     } else {
       val convertedBorderRadius =

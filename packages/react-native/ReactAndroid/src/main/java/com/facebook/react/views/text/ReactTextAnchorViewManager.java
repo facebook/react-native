@@ -158,8 +158,7 @@ public abstract class ReactTextAnchorViewManager<T extends View, C extends React
       LengthPercentage radius =
           Float.isNaN(borderRadius)
               ? null
-              : new LengthPercentage(
-                  PixelUtil.toPixelFromDIP(borderRadius), LengthPercentageType.POINT);
+              : new LengthPercentage(borderRadius, LengthPercentageType.POINT);
       BackgroundStyleApplicator.setBorderRadius(view, BorderRadiusProp.values()[index], radius);
     } else {
       if (!Float.isNaN(borderRadius)) {

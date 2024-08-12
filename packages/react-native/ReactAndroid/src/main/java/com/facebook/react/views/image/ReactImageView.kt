@@ -57,6 +57,7 @@ import com.facebook.react.uimanager.BackgroundStyleApplicator
 import com.facebook.react.uimanager.FloatUtil.floatsEqual
 import com.facebook.react.uimanager.LengthPercentage
 import com.facebook.react.uimanager.LengthPercentageType
+import com.facebook.react.uimanager.PixelUtil.toDIPFromPixel
 import com.facebook.react.uimanager.PixelUtil.toPixelFromDIP
 import com.facebook.react.uimanager.Spacing
 import com.facebook.react.uimanager.UIManagerHelper
@@ -257,7 +258,7 @@ public class ReactImageView(
     if (enableBackgroundStyleApplicator()) {
       val radius =
           if (borderRadius.isNaN()) null
-          else LengthPercentage(borderRadius, LengthPercentageType.POINT)
+          else LengthPercentage(toDIPFromPixel(borderRadius), LengthPercentageType.POINT)
       BackgroundStyleApplicator.setBorderRadius(this, BorderRadiusProp.BORDER_RADIUS, radius)
     } else if (useNewReactImageViewBackgroundDrawing()) {
       reactBackgroundManager.setBorderRadius(borderRadius)
@@ -271,7 +272,7 @@ public class ReactImageView(
     if (enableBackgroundStyleApplicator()) {
       val radius =
           if (borderRadius.isNaN()) null
-          else LengthPercentage(borderRadius, LengthPercentageType.POINT)
+          else LengthPercentage(toDIPFromPixel(borderRadius), LengthPercentageType.POINT)
       BackgroundStyleApplicator.setBorderRadius(this, BorderRadiusProp.values()[position], radius)
     } else if (useNewReactImageViewBackgroundDrawing()) {
       reactBackgroundManager.setBorderRadius(borderRadius, position + 1)
