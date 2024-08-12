@@ -8247,6 +8247,7 @@ public class com/facebook/react/views/view/ReactViewGroup : android/view/ViewGro
 	public fun setOpacityIfPossible (F)V
 	public fun setOverflow (Ljava/lang/String;)V
 	public fun setOverflowInset (IIII)V
+	public fun setPointerEvents (Lcom/facebook/react/uimanager/PointerEvents;)V
 	public fun setRemoveClippedSubviews (Z)V
 	public fun setTranslucentBackgroundDrawable (Landroid/graphics/drawable/Drawable;)V
 	public fun updateClippingRect ()V

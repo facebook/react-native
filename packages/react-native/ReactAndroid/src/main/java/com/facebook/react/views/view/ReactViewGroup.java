@@ -673,7 +673,7 @@ public class ReactViewGroup extends ViewGroup
     // to it's children.
   }
 
-  /*package*/ void setPointerEvents(PointerEvents pointerEvents) {
+  public void setPointerEvents(PointerEvents pointerEvents) {
     mPointerEvents = pointerEvents;
   }
 
