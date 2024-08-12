@@ -150,24 +150,20 @@ let BaseImage: AbstractImageAndroid = React.forwardRef(
       );
     }
 
-    let style;
+    let style: ImageStyleProp;
     let sources;
     if (Array.isArray(source)) {
-      style = flattenStyle<ImageStyleProp>([styles.base, props.style]);
+      style = [styles.base, props.style];
       sources = source;
     } else {
       const {uri} = source;
-      const width = source.width ?? props.width;
-      const height = source.height ?? props.height;
-      style = flattenStyle<ImageStyleProp>([
-        {width, height},
-        styles.base,
-        props.style,
-      ]);
-      sources = [source];
       if (uri === '') {
         console.warn('source.uri should not be an empty string');
       }
+      const width = source.width ?? props.width;
+      const height = source.height ?? props.height;
+      style = [{width, height}, styles.base, props.style];
+      sources = [source];
     }
 
     const {height, width, ...restProps} = props;
@@ -203,11 +199,10 @@ let BaseImage: AbstractImageAndroid = React.forwardRef(
       },
     };
 
-    const objectFit = style?.objectFit
-      ? convertObjectFitToResizeMode(style.objectFit)
-      : null;
+    const flattenedStyle = flattenStyle<ImageStyleProp>(style);
+    const objectFit = convertObjectFitToResizeMode(flattenedStyle?.objectFit);
     const resizeMode =
-      objectFit || props.resizeMode || style?.resizeMode || 'cover';
+      objectFit || props.resizeMode || flattenedStyle?.resizeMode || 'cover';
 
     const actualRef = useWrapRefWithImageAttachedCallbacks(forwardedRef);
 
