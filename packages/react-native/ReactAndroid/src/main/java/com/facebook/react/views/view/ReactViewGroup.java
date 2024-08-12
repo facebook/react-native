@@ -998,14 +998,14 @@ public class ReactViewGroup extends ViewGroup
             mPath.addRoundRect(
                 new RectF(left, top, right, bottom),
                 new float[] {
-                  Math.max(borderRadius.getTopLeft() - borderWidth.left, 0),
-                  Math.max(borderRadius.getTopLeft() - borderWidth.top, 0),
-                  Math.max(borderRadius.getTopRight() - borderWidth.right, 0),
-                  Math.max(borderRadius.getTopRight() - borderWidth.top, 0),
-                  Math.max(borderRadius.getBottomRight() - borderWidth.right, 0),
-                  Math.max(borderRadius.getBottomRight() - borderWidth.bottom, 0),
-                  Math.max(borderRadius.getBottomLeft() - borderWidth.left, 0),
-                  Math.max(borderRadius.getBottomLeft() - borderWidth.bottom, 0),
+                  Math.max(borderRadius.getTopLeft().getHorizontal() - borderWidth.left, 0),
+                  Math.max(borderRadius.getTopLeft().getVertical() - borderWidth.top, 0),
+                  Math.max(borderRadius.getTopRight().getHorizontal() - borderWidth.right, 0),
+                  Math.max(borderRadius.getTopRight().getVertical() - borderWidth.top, 0),
+                  Math.max(borderRadius.getBottomRight().getHorizontal() - borderWidth.right, 0),
+                  Math.max(borderRadius.getBottomRight().getVertical() - borderWidth.bottom, 0),
+                  Math.max(borderRadius.getBottomLeft().getHorizontal() - borderWidth.left, 0),
+                  Math.max(borderRadius.getBottomLeft().getVertical() - borderWidth.bottom, 0),
                 },
                 Path.Direction.CW);
             canvas.clipPath(mPath);

@@ -142,11 +142,14 @@ internal class InsetBoxShadowDrawable(
     val bottomLeftRadius = computedBorderRadii.bottomLeft
     val bottomRightRadius = computedBorderRadii.bottomRight
 
-    val innerTopLeftRadius = background.getInnerBorderRadius(topLeftRadius, borderWidth.left)
-    val innerTopRightRadius = background.getInnerBorderRadius(topRightRadius, borderWidth.right)
+    val innerTopLeftRadius =
+        background.getInnerBorderRadius(topLeftRadius.horizontal, borderWidth.left)
+    val innerTopRightRadius =
+        background.getInnerBorderRadius(topRightRadius.horizontal, borderWidth.right)
     val innerBottomRightRadius =
-        background.getInnerBorderRadius(bottomRightRadius, borderWidth.right)
-    val innerBottomLeftRadius = background.getInnerBorderRadius(bottomLeftRadius, borderWidth.left)
+        background.getInnerBorderRadius(bottomRightRadius.horizontal, borderWidth.right)
+    val innerBottomLeftRadius =
+        background.getInnerBorderRadius(bottomLeftRadius.horizontal, borderWidth.left)
 
     val spreadWithDirection = -spread.toFloat()
     return BorderRadiusStyle(
