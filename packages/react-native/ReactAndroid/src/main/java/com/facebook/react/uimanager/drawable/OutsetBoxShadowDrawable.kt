@@ -23,6 +23,7 @@ import com.facebook.react.uimanager.FilterHelper
 import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.style.BorderRadiusStyle
 import com.facebook.react.uimanager.style.ComputedBorderRadius
+import kotlin.math.ceil
 import kotlin.math.roundToInt
 
 private const val TAG = "OutsetBoxShadowDrawable"
@@ -54,7 +55,7 @@ internal class OutsetBoxShadowDrawable(
 
   private val renderNode =
       RenderNode(TAG).apply {
-        clipToBounds = false
+        clipToBounds = true
         setRenderEffect(FilterHelper.createBlurEffect(blurRadius * BLUR_RADIUS_SIGMA_SCALE))
       }
 
@@ -81,6 +82,7 @@ internal class OutsetBoxShadowDrawable(
     }
 
     val spreadExtent = PixelUtil.toPixelFromDIP(spread).roundToInt().coerceAtLeast(0)
+    val shadowOutset = ceil(PixelUtil.toPixelFromDIP(blurRadius))
     val shadowShapeFrame = Rect(bounds).apply { inset(-spreadExtent, -spreadExtent) }
     val shadowShapeBounds = Rect(0, 0, shadowShapeFrame.width(), shadowShapeFrame.height())
 
@@ -149,9 +151,11 @@ internal class OutsetBoxShadowDrawable(
               offset(
                   PixelUtil.toPixelFromDIP(offsetX).roundToInt() - shadowShapeFrame.left,
                   PixelUtil.toPixelFromDIP(offsetY).roundToInt() - shadowShapeFrame.top)
+              inset(-shadowOutset.roundToInt(), -shadowOutset.roundToInt())
             })
 
         beginRecording().let { renderNodeCanvas ->
+          renderNodeCanvas.translate(shadowOutset, shadowOutset)
           if (shadowBorderRadii?.hasRoundedBorders() == true) {
             renderNodeCanvas.drawPath(shadowOuterPath, shadowPaint)
           } else {
