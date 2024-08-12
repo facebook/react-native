@@ -142,6 +142,17 @@ class SampleLegacyModuleExample extends React.Component<{||}, State> {
             getSampleLegacyModule()?.getObject({a: 1, b: 'foo', c: null}),
           getValue: () =>
             getSampleLegacyModule()?.getValue(5, 'test', {a: 1, b: 'foo'}),
+          getDynamicWithNull: () => getSampleLegacyModule()?.getDynamic(null),
+          getDynamicWithBoolean: () =>
+            getSampleLegacyModule()?.getDynamic(true),
+          getDynamicWithNumber: () =>
+            getSampleLegacyModule()?.getDynamic(42.24),
+          getDynamicWithString: () =>
+            getSampleLegacyModule()?.getDynamic('The answer is 42'),
+          getDynamicWithArray: () =>
+            getSampleLegacyModule()?.getDynamic(['the', 'answer', 'is', '42']),
+          getDynamicWithMap: () =>
+            getSampleLegacyModule()?.getDynamic({answer: '42'}),
           callback: () =>
             getSampleLegacyModule()?.getValueWithCallback(callbackValue =>
               this._setResult('callback', callbackValue),
