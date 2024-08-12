@@ -48,6 +48,7 @@ inline const char* getTimerSourceName(TimerSource source) {
     case TimerSource::RequestAnimationFrame:
       return "requestAnimationFrame";
   }
+  return "unknown";
 }
 
 } // namespace
