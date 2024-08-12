@@ -694,7 +694,7 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     layer.cornerRadius = 0;
 
     RCTBorderColors borderColors = RCTCreateRCTBorderColorsFromBorderColors(borderMetrics.borderColors);
-    UIColor *transparentColor = [UIColor colorWithRed:0.0 green:0.0 blue:0.0 alpha:0.0]; // 50% transparent red
+    UIColor *transparentColor = [UIColor colorWithRed:0.0 green:0.0 blue:0.0 alpha:0.0];
     CGColorRef transparentBackgroundColor = [transparentColor resolvedColorWithTraitCollection:self.traitCollection].CGColor;
           
     UIImage *image = RCTGetBorderImage(
