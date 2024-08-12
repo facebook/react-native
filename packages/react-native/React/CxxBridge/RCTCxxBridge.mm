@@ -162,11 +162,13 @@ static void mapReactMarkerToPerformanceLogger(
 
 static void registerPerformanceLoggerHooks(RCTPerformanceLogger *performanceLogger)
 {
+  std::unique_lock lock(ReactMarker::logTaggedMarkerImplMutex);
   __weak RCTPerformanceLogger *weakPerformanceLogger = performanceLogger;
-  ReactMarker::logTaggedMarkerImpl = [weakPerformanceLogger](
-                                         const ReactMarker::ReactMarkerId markerId, const char *tag) {
+  ReactMarker::LogTaggedMarker newMarker = [weakPerformanceLogger](
+                                               const ReactMarker::ReactMarkerId markerId, const char *tag) {
     mapReactMarkerToPerformanceLogger(markerId, weakPerformanceLogger, tag);
   };
+  ReactMarker::logTaggedMarkerImpl = newMarker;
 }
 
 @interface RCTCxxBridge () <RCTModuleDataCallInvokerProvider>

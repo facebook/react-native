@@ -16,8 +16,9 @@ namespace ReactMarker {
 #pragma clang diagnostic ignored "-Wglobal-constructors"
 #endif
 
-LogTaggedMarker logTaggedMarkerImpl = nullptr;
 LogTaggedMarker logTaggedMarkerBridgelessImpl = nullptr;
+LogTaggedMarker logTaggedMarkerImpl = nullptr;
+std::shared_mutex logTaggedMarkerImplMutex;
 
 #if __clang__
 #pragma clang diagnostic pop
@@ -28,7 +29,14 @@ void logMarker(const ReactMarkerId markerId) {
 }
 
 void logTaggedMarker(const ReactMarkerId markerId, const char* tag) {
-  logTaggedMarkerImpl(markerId, tag);
+  LogTaggedMarker marker = nullptr;
+  {
+    std::shared_lock lock(logTaggedMarkerImplMutex);
+    marker = logTaggedMarkerImpl;
+  }
+  if (marker != nullptr) {
+    marker(markerId, tag);
+  }
 }
 
 void logMarkerBridgeless(const ReactMarkerId markerId) {
