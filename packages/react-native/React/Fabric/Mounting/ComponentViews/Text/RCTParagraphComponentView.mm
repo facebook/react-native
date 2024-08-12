@@ -36,6 +36,7 @@ using namespace facebook::react;
   RCTParagraphComponentAccessibilityProvider *_accessibilityProvider;
   UILongPressGestureRecognizer *_longPressGestureRecognizer;
   CAShapeLayer *_highlightLayer;
+  UIImageView *_textRenderView;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -44,7 +45,8 @@ using namespace facebook::react;
     _props = ParagraphShadowNode::defaultSharedProps();
 
     self.opaque = NO;
-    self.contentMode = UIViewContentModeRedraw;
+    _textRenderView = [UIImageView new];
+    [self addSubview:_textRenderView];
   }
 
   return self;
@@ -106,18 +108,21 @@ using namespace facebook::react;
 - (void)updateState:(const State::Shared &)state oldState:(const State::Shared &)oldState
 {
   _state = std::static_pointer_cast<const ParagraphShadowNode::ConcreteState>(state);
-  [self setNeedsDisplay];
+  [self invalidateLayer];
 }
 
 - (void)prepareForRecycle
 {
   [super prepareForRecycle];
   _state.reset();
+  _textRenderView.image = nil;
   _accessibilityProvider = nil;
 }
 
-- (void)drawRect:(CGRect)rect
+- (void)invalidateLayer
 {
+  [super invalidateLayer];
+
   if (!_state) {
     return;
   }
@@ -128,28 +133,37 @@ using namespace facebook::react;
     return;
   }
 
-  RCTTextLayoutManager *nativeTextLayoutManager =
-      (RCTTextLayoutManager *)unwrapManagedObject(textLayoutManager->getNativeTextLayoutManager());
+  _textRenderView.frame = self.bounds;
 
-  CGRect frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
+  CGRect frame = RCTCGRectFromRect(self->_layoutMetrics.getContentFrame());
 
-  [nativeTextLayoutManager drawAttributedString:_state->getData().attributedString
-                            paragraphAttributes:_paragraphAttributes
-                                          frame:frame
-                              drawHighlightPath:^(UIBezierPath *highlightPath) {
-                                if (highlightPath) {
-                                  if (!self->_highlightLayer) {
-                                    self->_highlightLayer = [CAShapeLayer layer];
-                                    self->_highlightLayer.fillColor = [UIColor colorWithWhite:0 alpha:0.25].CGColor;
-                                    [self.layer addSublayer:self->_highlightLayer];
+  UIGraphicsImageRendererFormat *const rendererFormat = [UIGraphicsImageRendererFormat defaultFormat];
+  UIGraphicsImageRenderer *const renderer = [[UIGraphicsImageRenderer alloc] initWithSize:self.frame.size
+                                                                                   format:rendererFormat];
+  UIImage *image = [renderer imageWithActions:^(UIGraphicsImageRendererContext *_Nonnull rendererContext) {
+    RCTTextLayoutManager *nativeTextLayoutManager =
+        (RCTTextLayoutManager *)unwrapManagedObject(textLayoutManager->getNativeTextLayoutManager());
+
+    [nativeTextLayoutManager drawAttributedString:_state->getData().attributedString
+                              paragraphAttributes:_paragraphAttributes
+                                            frame:frame
+                                drawHighlightPath:^(UIBezierPath *highlightPath) {
+                                  if (highlightPath) {
+                                    if (!self->_highlightLayer) {
+                                      self->_highlightLayer = [CAShapeLayer layer];
+                                      self->_highlightLayer.fillColor = [UIColor colorWithWhite:0 alpha:0.25].CGColor;
+                                      [self.layer addSublayer:self->_highlightLayer];
+                                    }
+
+                                    self->_highlightLayer.position = frame.origin;
+                                    self->_highlightLayer.path = highlightPath.CGPath;
+                                  } else {
+                                    [self->_highlightLayer removeFromSuperlayer];
+                                    self->_highlightLayer = nil;
                                   }
-                                  self->_highlightLayer.position = frame.origin;
-                                  self->_highlightLayer.path = highlightPath.CGPath;
-                                } else {
-                                  [self->_highlightLayer removeFromSuperlayer];
-                                  self->_highlightLayer = nil;
-                                }
-                              }];
+                                }];
+  }];
+  [_textRenderView setImage:image];
 }
 
 #pragma mark - Accessibility

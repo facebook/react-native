@@ -124,6 +124,11 @@ using namespace facebook::react;
   // Default implementation does nothing.
 }
 
+- (void)invalidateLayer
+{
+  // Default implementation does nothing.
+}
+
 - (void)prepareForRecycle
 {
   // Default implementation does nothing.
