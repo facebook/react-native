@@ -21,6 +21,7 @@
 #include <react/bridging/Bridging.h>
 #include <react/debug/react_native_assert.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
+#include <react/jni/JDynamicNative.h>
 #include <react/jni/NativeMap.h>
 #include <react/jni/ReadableNativeMap.h>
 #include <react/jni/WritableNativeMap.h>
@@ -364,7 +365,9 @@ JNIArgs convertJSIArgsToJNIArgs(
       continue;
     }
 
-    if (arg->isNull() || arg->isUndefined()) {
+    // Dynamic encapsulates the Null type so we don't want to return null here.
+    if ((arg->isNull() && type != "Lcom/facebook/react/bridge/Dynamic;") ||
+        arg->isUndefined()) {
       jarg->l = nullptr;
     } else if (type == "Ljava/lang/Double;") {
       if (!arg->isNumber()) {
@@ -426,6 +429,10 @@ JNIArgs convertJSIArgsToJNIArgs(
       auto dynamicFromValue = jsi::dynamicFromValue(rt, *arg);
       auto jParams =
           ReadableNativeMap::createWithContents(std::move(dynamicFromValue));
+      jarg->l = makeGlobalIfNecessary(jParams.release());
+    } else if (type == "Lcom/facebook/react/bridge/Dynamic;") {
+      auto dynamicFromValue = jsi::dynamicFromValue(rt, *arg);
+      auto jParams = JDynamicNative::newObjectCxxArgs(dynamicFromValue);
       jarg->l = makeGlobalIfNecessary(jParams.release());
     } else {
       throw JavaTurboModuleInvalidArgumentTypeException(
