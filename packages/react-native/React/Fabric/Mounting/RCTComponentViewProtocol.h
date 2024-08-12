@@ -105,11 +105,6 @@ typedef NS_OPTIONS(NSInteger, RNComponentViewUpdateMask) {
 - (void)finalizeUpdates:(RNComponentViewUpdateMask)updateMask;
 
 /*
- * Called when component view needs re-render.
- */
-- (void)invalidateLayer;
-
-/*
  * Called right after the component view is moved to a recycle pool.
  * Receiver must reset any local state and release associated
  * non-reusable resources.

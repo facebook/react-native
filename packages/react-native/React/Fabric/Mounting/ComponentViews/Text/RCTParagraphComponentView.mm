@@ -37,6 +37,7 @@ using namespace facebook::react;
   UILongPressGestureRecognizer *_longPressGestureRecognizer;
   CAShapeLayer *_highlightLayer;
   UIImageView *_textRenderView;
+  CGRect _lastViewBounds;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -45,11 +46,22 @@ using namespace facebook::react;
     _props = ParagraphShadowNode::defaultSharedProps();
 
     self.opaque = NO;
-    _textRenderView = [UIImageView new];
+    _textRenderView = [[UIImageView alloc] initWithFrame:self.bounds];
     [self addSubview:_textRenderView];
+    _lastViewBounds = self.bounds;
   }
 
   return self;
+}
+
+- (void)layoutSubviews
+{
+  [super layoutSubviews];
+
+  if (!CGRectEqualToRect(self.bounds, _lastViewBounds)) {
+    _lastViewBounds = self.bounds;
+    [self _drawParagraph];
+  }
 }
 
 - (NSString *)description
@@ -108,7 +120,7 @@ using namespace facebook::react;
 - (void)updateState:(const State::Shared &)state oldState:(const State::Shared &)oldState
 {
   _state = std::static_pointer_cast<const ParagraphShadowNode::ConcreteState>(state);
-  [self invalidateLayer];
+  [self _drawParagraph];
 }
 
 - (void)prepareForRecycle
@@ -119,10 +131,8 @@ using namespace facebook::react;
   _accessibilityProvider = nil;
 }
 
-- (void)invalidateLayer
+- (void)_drawParagraph
 {
-  [super invalidateLayer];
-
   if (!_state) {
     return;
   }
