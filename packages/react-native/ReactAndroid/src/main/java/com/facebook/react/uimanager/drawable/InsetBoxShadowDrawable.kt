@@ -130,17 +130,21 @@ internal class InsetBoxShadowDrawable(
     }
   }
 
+  // TODO: Remove usage of unsafe `CSSBackgroundDrawable.getComputedBorderRadius`
+  @Suppress("DEPRECATION")
   private fun getClearRegionBorderRadii(
       spread: Int,
       background: CSSBackgroundDrawable,
   ): BorderRadiusStyle {
+    // Accessing this is super duper unsafe and only works because the CSSBackgroundDrawable renders
+    // first
     val computedBorderRadii = background.computedBorderRadius
     val borderWidth = background.getDirectionAwareBorderInsets()
 
-    val topLeftRadius = computedBorderRadii.topLeft
-    val topRightRadius = computedBorderRadii.topRight
-    val bottomLeftRadius = computedBorderRadii.bottomLeft
-    val bottomRightRadius = computedBorderRadii.bottomRight
+    val topLeftRadius = PixelUtil.toPixelFromDIP(computedBorderRadii.topLeft)
+    val topRightRadius = PixelUtil.toPixelFromDIP(computedBorderRadii.topRight)
+    val bottomLeftRadius = PixelUtil.toPixelFromDIP(computedBorderRadii.bottomLeft)
+    val bottomRightRadius = PixelUtil.toPixelFromDIP(computedBorderRadii.bottomRight)
 
     val innerTopLeftRadius = background.getInnerBorderRadius(topLeftRadius, borderWidth.left)
     val innerTopRightRadius = background.getInnerBorderRadius(topRightRadius, borderWidth.right)

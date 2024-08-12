@@ -162,7 +162,7 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
     // avoid developer surprise if it works on one platform but not another).
     if (ViewUtil.getUIManagerType(view) != UIManagerType.FABRIC
         && borderRadius != null
-        && borderRadius.getUnit() == LengthPercentageType.PERCENT) {
+        && borderRadius.getType() == LengthPercentageType.PERCENT) {
       borderRadius = null;
     }
 

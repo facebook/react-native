@@ -86,10 +86,17 @@ internal class OutsetBoxShadowDrawable(
     val shadowShapeFrame = Rect(bounds).apply { inset(-spreadExtent, -spreadExtent) }
     val shadowShapeBounds = Rect(0, 0, shadowShapeFrame.width(), shadowShapeFrame.height())
 
-    val resolutionWidth = bounds.width().toFloat()
-    val resolutionHeight = bounds.height().toFloat()
+    val resolutionWidth = PixelUtil.toDIPFromPixel(bounds.width().toFloat())
+    val resolutionHeight = PixelUtil.toDIPFromPixel(bounds.height().toFloat())
     val computedBorderRadii =
-        borderRadius?.resolve(layoutDirection, context, resolutionWidth, resolutionHeight)
+        borderRadius?.resolve(layoutDirection, context, resolutionWidth, resolutionHeight)?.let {
+          ComputedBorderRadius(
+              topLeft = PixelUtil.toPixelFromDIP(it.topLeft),
+              topRight = PixelUtil.toPixelFromDIP(it.topRight),
+              bottomLeft = PixelUtil.toPixelFromDIP(it.bottomLeft),
+              bottomRight = PixelUtil.toPixelFromDIP(it.bottomRight))
+        }
+
     val shadowBorderRadii =
         computedBorderRadii?.let { radii ->
           ComputedBorderRadius(

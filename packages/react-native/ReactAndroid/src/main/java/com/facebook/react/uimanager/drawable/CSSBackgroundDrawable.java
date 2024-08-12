@@ -36,6 +36,7 @@ import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.uimanager.FloatUtil;
 import com.facebook.react.uimanager.LengthPercentage;
 import com.facebook.react.uimanager.LengthPercentageType;
+import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.Spacing;
 import com.facebook.react.uimanager.style.BorderRadiusProp;
 import com.facebook.react.uimanager.style.BorderRadiusStyle;
@@ -324,6 +325,9 @@ public class CSSBackgroundDrawable extends Drawable {
     return Math.max(computedRadius - borderWidth, 0);
   }
 
+  // TODO: This API is unsafe and should be removed when
+  // BackgroundStyleApplicator is rolled out
+  @Deprecated(forRemoval = true, since = "0.76.0")
   public ComputedBorderRadius getComputedBorderRadius() {
     return mComputedBorderRadius;
   }
@@ -660,12 +664,12 @@ public class CSSBackgroundDrawable extends Drawable {
         mBorderRadius.resolve(
             getLayoutDirection(),
             mContext,
-            mOuterClipTempRectForBorderRadius.width(),
-            mOuterClipTempRectForBorderRadius.height());
-    float topLeftRadius = mComputedBorderRadius.getTopLeft();
-    float topRightRadius = mComputedBorderRadius.getTopRight();
-    float bottomLeftRadius = mComputedBorderRadius.getBottomLeft();
-    float bottomRightRadius = mComputedBorderRadius.getBottomRight();
+            PixelUtil.toDIPFromPixel(mOuterClipTempRectForBorderRadius.width()),
+            PixelUtil.toDIPFromPixel(mOuterClipTempRectForBorderRadius.height()));
+    float topLeftRadius = PixelUtil.toPixelFromDIP(mComputedBorderRadius.getTopLeft());
+    float topRightRadius = PixelUtil.toPixelFromDIP(mComputedBorderRadius.getTopRight());
+    float bottomLeftRadius = PixelUtil.toPixelFromDIP(mComputedBorderRadius.getBottomLeft());
+    float bottomRightRadius = PixelUtil.toPixelFromDIP(mComputedBorderRadius.getBottomRight());
 
     final float innerTopLeftRadiusX = getInnerBorderRadius(topLeftRadius, borderWidth.left);
     final float innerTopLeftRadiusY = getInnerBorderRadius(topLeftRadius, borderWidth.top);
