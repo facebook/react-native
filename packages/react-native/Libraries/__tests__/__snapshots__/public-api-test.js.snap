@@ -5002,8 +5002,8 @@ export type { ImageProps } from \\"./ImageProps\\";
 exports[`public API should not change unintentionally Libraries/Image/ImageUtils.js 1`] = `
 "type ResizeMode = \\"cover\\" | \\"contain\\" | \\"stretch\\" | \\"repeat\\" | \\"center\\";
 declare export function convertObjectFitToResizeMode(
-  objectFit: string
-): ResizeMode;
+  objectFit: ?string
+): ?ResizeMode;
 "
 `;
 
