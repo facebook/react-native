@@ -305,6 +305,36 @@ TEST_P(ConsoleApiTest, testConsoleLogWithErrorObject) {
   })())");
 }
 
+TEST_P(ConsoleApiTest, testConsoleLogWithArrayOfErrors) {
+  InSequence s;
+  expectConsoleApiCallImmediate(AllOf(
+      AtJsonPtr("/type", "log"),
+      AtJsonPtr("/args/0/type", "object"),
+      AtJsonPtr("/args/0/subtype", "array"),
+      AtJsonPtr("/args/0/description", "Array(2)"),
+      AtJsonPtr("/args/0/preview/description", "Array(2)"),
+      AtJsonPtr("/args/0/preview/type", "object"),
+      AtJsonPtr("/args/0/preview/subtype", "array"),
+      AtJsonPtr("/args/0/preview/properties/0/type", "object"),
+      AtJsonPtr("/args/0/preview/properties/0/subtype", "error"),
+      AtJsonPtr(
+          "/args/0/preview/properties/0/value",
+          "Error: wut\n"
+          "    at secondFunction (<eval>:6:29)\n"
+          "    at firstFunction (<eval>:3:21)\n"
+          "    at anonymous …")));
+  expectConsoleApiCallBuffered(AllOf(AtJsonPtr("/type", "log")));
+  eval(R"((() => {
+    function firstFunction() {
+      secondFunction();
+    }
+    function secondFunction() {
+      console.log([new Error('wut'), new TypeError('why')]);
+    }
+    firstFunction();
+  })())");
+}
+
 TEST_P(ConsoleApiTest, testConsoleWarn) {
   InSequence s;
   expectConsoleApiCall(AllOf(
