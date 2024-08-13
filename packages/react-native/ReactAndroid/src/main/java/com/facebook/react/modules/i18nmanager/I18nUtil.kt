@@ -53,7 +53,8 @@ public class I18nUtil private constructor() {
 
   /** Could be used to test RTL layout with English Used for development and testing purpose */
   private fun isRTLForced(context: Context): Boolean =
-      isPrefSet(context, KEY_FOR_PREFS_FORCERTL, false)
+      isPrefSet(context, KEY_FOR_PREFS_FORCERTL, false) ||
+          System.getProperty("FORCE_RTL_FOR_TESTING", "false").equals("true", ignoreCase = true)
 
   public fun forceRTL(context: Context, forceRTL: Boolean) {
     setPref(context, KEY_FOR_PREFS_FORCERTL, forceRTL)
