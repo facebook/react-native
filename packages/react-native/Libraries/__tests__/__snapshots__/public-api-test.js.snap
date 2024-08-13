@@ -2147,7 +2147,7 @@ export type Props = $ReadOnly<{|
   snapToStart?: ?boolean,
   snapToEnd?: ?boolean,
   removeClippedSubviews?: ?boolean,
-  refreshControl?: ?React.Element<any>,
+  refreshControl?: ?ExactReactElement_DEPRECATED<any>,
   children?: React.Node,
   innerViewRef?: React.RefSetter<InnerViewInstance>,
   scrollViewRef?: React.RefSetter<PublicScrollViewInstance>,
@@ -2268,7 +2268,7 @@ declare class ScrollView extends React.Component<Props, State> {
   _handleTouchCancel: (e: PressEvent) => void;
   _handleTouchStart: (e: PressEvent) => void;
   _handleTouchMove: (e: PressEvent) => void;
-  render(): React.Node | React.Element<string>;
+  render(): React.Node;
 }
 type RefForwarder<TNativeInstance, TPublicInstance> = {
   getForwardingRef: (
@@ -2401,7 +2401,7 @@ exports[`public API should not change unintentionally Libraries/Components/Scrol
 
 exports[`public API should not change unintentionally Libraries/Components/ScrollView/ScrollViewStickyHeader.js 1`] = `
 "export type Props = $ReadOnly<{
-  children?: React.Element<$FlowFixMe>,
+  children?: ExactReactElement_DEPRECATED<$FlowFixMe>,
   nextHeaderLayoutY: ?number,
   onLayout: (event: LayoutEvent) => void,
   scrollAnimatedValue: Animated.Value,
