@@ -681,7 +681,7 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
   } else {
     if (!_borderLayer) {
       CALayer *borderLayer = [CALayer new];
-      borderLayer.zPosition = 1024.0f;
+      borderLayer.zPosition = -1024.0f;
       borderLayer.frame = layer.bounds;
       borderLayer.magnificationFilter = kCAFilterNearest;
       [layer addSublayer:borderLayer];
@@ -694,16 +694,13 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     layer.cornerRadius = 0;
 
     RCTBorderColors borderColors = RCTCreateRCTBorderColorsFromBorderColors(borderMetrics.borderColors);
-    UIColor *transparentColor = [UIColor clearColor];
-    CGColorRef transparentBackgroundColor = [transparentColor resolvedColorWithTraitCollection:self.traitCollection].CGColor;
-          
     UIImage *image = RCTGetBorderImage(
         RCTBorderStyleFromBorderStyle(borderMetrics.borderStyles.left),
         layer.bounds.size,
         RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii),
         RCTUIEdgeInsetsFromEdgeInsets(borderMetrics.borderWidths),
         borderColors,
-        transparentBackgroundColor,
+        backgroundColor,
         self.clipsToBounds);
 
     RCTReleaseRCTBorderColors(borderColors);
@@ -740,21 +737,24 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
         // In this case we can simply use `cornerRadius` exclusively.
         cornerRadius = borderMetrics.borderRadii.topLeft;
       } else {
-        // In this case we have to generate masking layer manually.
-        CGPathRef path = RCTPathCreateWithRoundedRect(
-            self.bounds,
-            RCTGetCornerInsets(RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii), UIEdgeInsetsZero),
-            nil);
-
-        maskLayer = [CAShapeLayer layer];
-        maskLayer.path = path;
-        CGPathRelease(path);
+        RCTCornerInsets cornerInsets = RCTGetCornerInsets(RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii), UIEdgeInsetsZero);
+        maskLayer = [self createMaskLayer:self.bounds cornerInsets:cornerInsets];
       }
     }
 
-    layer.cornerRadius = cornerRadius;
-    layer.backgroundColor = backgroundColor;
-    layer.mask = maskLayer;
+      layer.cornerRadius = cornerRadius;
+      layer.mask = maskLayer;
+      
+      for (UIView *subview in self.subviews) {
+          if ([subview isKindOfClass:[UIImageView class]]) {
+              RCTCornerInsets cornerInsets = RCTGetCornerInsets(RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii), RCTUIEdgeInsetsFromEdgeInsets(borderMetrics.borderWidths));
+              
+              // If the subview is an image view, we have to apply the mask directly to the image view's layer,
+              // otherwise the image might overflow with the border radius.
+              subview.layer.mask = [self createMaskLayer:subview.bounds cornerInsets:cornerInsets];
+          }
+      }
+      
   }
 
   [_filterLayer removeFromSuperlayer];
@@ -847,6 +847,18 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
 
     _boxShadowLayer.contents = (id)boxShadowImage.CGImage;
   }
+}
+
+- (CAShapeLayer *)createMaskLayer:(CGRect)bounds cornerInsets:(RCTCornerInsets)cornerInsets
+{
+    CGPathRef path = RCTPathCreateWithRoundedRect(
+                 bounds,
+                 cornerInsets,
+                 nil);
+    CAShapeLayer *maskLayer = [CAShapeLayer layer];
+    maskLayer.path = path;
+    CGPathRelease(path);
+    return maskLayer;
 }
 
 #pragma mark - Accessibility
