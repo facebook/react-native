@@ -109,12 +109,16 @@ Instrumentation& Runtime::instrumentation() {
     void startHeapSampling(size_t) override {}
     void stopHeapSampling(std::ostream&) override {}
 
-    void createSnapshotToFile(const std::string&) override {
+    void createSnapshotToFile(
+        const std::string& /*path*/,
+        const HeapSnapshotOptions& /*options*/) override {
       throw JSINativeException(
           "Default instrumentation cannot create a heap snapshot");
     }
 
-    void createSnapshotToStream(std::ostream&) override {
+    void createSnapshotToStream(
+        std::ostream& /*os*/,
+        const HeapSnapshotOptions& /*options*/) override {
       throw JSINativeException(
           "Default instrumentation cannot create a heap snapshot");
     }
