@@ -643,7 +643,7 @@ export type Props = $ReadOnly<{|
    */
   /* $FlowFixMe[unclear-type] - how to handle generic type without existential
    * operator? */
-  refreshControl?: ?React.Element<any>,
+  refreshControl?: ?ExactReactElement_DEPRECATED<any>,
   children?: React.Node,
   /**
    * A ref to the inner View element of the ScrollView. This should be used
@@ -1648,7 +1648,7 @@ class ScrollView extends React.Component<Props, State> {
     this.props.onTouchMove && this.props.onTouchMove(e);
   };
 
-  render(): React.Node | React.Element<string> {
+  render(): React.Node {
     const horizontal = this.props.horizontal === true;
 
     const NativeScrollView = horizontal
