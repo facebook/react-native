@@ -217,12 +217,12 @@ function _prepareHelloWorld(
   // and update the dependencies and devDependencies of packages scoped as @react-native
   // to the version passed as parameter
   for (const key of Object.keys(packageJson.dependencies)) {
-    if (key.startsWith('@react-native')) {
+    if (key.startsWith('@react-native/')) {
       packageJson.dependencies[key] = version;
     }
   }
   for (const key of Object.keys(packageJson.devDependencies)) {
-    if (key.startsWith('@react-native')) {
+    if (key.startsWith('@react-native/')) {
       packageJson.devDependencies[key] = version;
     }
   }
@@ -260,13 +260,13 @@ function _prepareTemplate(
   // and update the dependencies and devDependencies of packages scoped as @react-native
   // to the version passed as parameter
   for (const key of Object.keys(packageJson.dependencies)) {
-    if (key.startsWith('@react-native')) {
+    if (key.startsWith('@react-native/')) {
       packageJson.dependencies[key] = version;
     }
   }
 
   for (const key of Object.keys(packageJson.devDependencies)) {
-    if (key.startsWith('@react-native')) {
+    if (key.startsWith('@react-native/')) {
       packageJson.devDependencies[key] = version;
     }
   }
