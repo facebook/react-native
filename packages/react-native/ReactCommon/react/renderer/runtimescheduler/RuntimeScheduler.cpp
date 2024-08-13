@@ -10,6 +10,7 @@
 #include "RuntimeScheduler_Modern.h"
 #include "SchedulerPriorityUtils.h"
 
+#include <cxxreact/ErrorUtils.h>
 #include <cxxreact/SystraceSection.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <utility>
@@ -19,23 +20,33 @@ namespace facebook::react {
 namespace {
 std::unique_ptr<RuntimeSchedulerBase> getRuntimeSchedulerImplementation(
     RuntimeExecutor runtimeExecutor,
-    std::function<RuntimeSchedulerTimePoint()> now) {
+    std::function<RuntimeSchedulerTimePoint()> now,
+    RuntimeSchedulerTaskErrorHandler onTaskError) {
   if (ReactNativeFeatureFlags::useModernRuntimeScheduler()) {
     return std::make_unique<RuntimeScheduler_Modern>(
-        std::move(runtimeExecutor), std::move(now));
+        std::move(runtimeExecutor), std::move(now), std::move(onTaskError));
   } else {
     return std::make_unique<RuntimeScheduler_Legacy>(
-        std::move(runtimeExecutor), std::move(now));
+        std::move(runtimeExecutor), std::move(now), std::move(onTaskError));
   }
 }
+
 } // namespace
 
 RuntimeScheduler::RuntimeScheduler(
     RuntimeExecutor runtimeExecutor,
-    std::function<RuntimeSchedulerTimePoint()> now)
+    std::function<RuntimeSchedulerTimePoint()> now,
+    RuntimeSchedulerTaskErrorHandler onTaskError)
     : runtimeSchedulerImpl_(getRuntimeSchedulerImplementation(
           std::move(runtimeExecutor),
-          std::move(now))) {}
+          std::move(now),
+          std::move(onTaskError))) {}
+
+/* static */ void RuntimeScheduler::handleTaskErrorDefault(
+    jsi::Runtime& runtime,
+    jsi::JSError& error) {
+  handleJSError(runtime, error, true);
+}
 
 void RuntimeScheduler::scheduleWork(RawCallback&& callback) noexcept {
   return runtimeSchedulerImpl_->scheduleWork(std::move(callback));
