@@ -4359,9 +4359,15 @@ public final class com/facebook/react/uimanager/LengthPercentage {
 	public static final field Companion Lcom/facebook/react/uimanager/LengthPercentage$Companion;
 	public fun <init> ()V
 	public fun <init> (FLcom/facebook/react/uimanager/LengthPercentageType;)V
-	public final fun getUnit ()Lcom/facebook/react/uimanager/LengthPercentageType;
+	public final fun component2 ()Lcom/facebook/react/uimanager/LengthPercentageType;
+	public final fun copy (FLcom/facebook/react/uimanager/LengthPercentageType;)Lcom/facebook/react/uimanager/LengthPercentage;
+	public static synthetic fun copy$default (Lcom/facebook/react/uimanager/LengthPercentage;FLcom/facebook/react/uimanager/LengthPercentageType;ILjava/lang/Object;)Lcom/facebook/react/uimanager/LengthPercentage;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getType ()Lcom/facebook/react/uimanager/LengthPercentageType;
+	public fun hashCode ()I
 	public final fun resolve (FF)F
 	public static final fun setFromDynamic (Lcom/facebook/react/bridge/Dynamic;)Lcom/facebook/react/uimanager/LengthPercentage;
+	public fun toString ()Ljava/lang/String;
 }
 
 public final class com/facebook/react/uimanager/LengthPercentage$Companion {

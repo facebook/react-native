@@ -74,7 +74,6 @@ public object BackgroundStyleApplicator {
   public fun setBorderRadius(
       view: View,
       corner: BorderRadiusProp,
-      // TODO: LengthPercentage silently converts from pixels to DIPs before here already
       radius: LengthPercentage?
   ): Unit {
     ensureCSSBackground(view).setBorderRadius(corner, radius)

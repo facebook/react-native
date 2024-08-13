@@ -1283,7 +1283,8 @@ public class ReactScrollView extends ScrollView
       LengthPercentage radius =
           Float.isNaN(borderRadius)
               ? null
-              : new LengthPercentage(borderRadius, LengthPercentageType.POINT);
+              : new LengthPercentage(
+                  PixelUtil.toDIPFromPixel(borderRadius), LengthPercentageType.POINT);
       BackgroundStyleApplicator.setBorderRadius(this, BorderRadiusProp.values()[position], radius);
     } else {
       mReactBackgroundManager.setBorderRadius(borderRadius, position);

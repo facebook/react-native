@@ -994,18 +994,23 @@ public class ReactViewGroup extends ViewGroup
               mPath = new Path();
             }
 
+            float topLeftRadius = PixelUtil.toPixelFromDIP(borderRadius.getTopLeft());
+            float topRightRadius = PixelUtil.toPixelFromDIP(borderRadius.getTopRight());
+            float bottomLeftRadius = PixelUtil.toPixelFromDIP(borderRadius.getBottomLeft());
+            float bottomRightRadius = PixelUtil.toPixelFromDIP(borderRadius.getBottomRight());
+
             mPath.rewind();
             mPath.addRoundRect(
                 new RectF(left, top, right, bottom),
                 new float[] {
-                  Math.max(borderRadius.getTopLeft() - borderWidth.left, 0),
-                  Math.max(borderRadius.getTopLeft() - borderWidth.top, 0),
-                  Math.max(borderRadius.getTopRight() - borderWidth.right, 0),
-                  Math.max(borderRadius.getTopRight() - borderWidth.top, 0),
-                  Math.max(borderRadius.getBottomRight() - borderWidth.right, 0),
-                  Math.max(borderRadius.getBottomRight() - borderWidth.bottom, 0),
-                  Math.max(borderRadius.getBottomLeft() - borderWidth.left, 0),
-                  Math.max(borderRadius.getBottomLeft() - borderWidth.bottom, 0),
+                  Math.max(topLeftRadius - borderWidth.left, 0),
+                  Math.max(topLeftRadius - borderWidth.top, 0),
+                  Math.max(topRightRadius - borderWidth.right, 0),
+                  Math.max(topRightRadius - borderWidth.top, 0),
+                  Math.max(bottomRightRadius - borderWidth.right, 0),
+                  Math.max(bottomRightRadius - borderWidth.bottom, 0),
+                  Math.max(bottomLeftRadius - borderWidth.left, 0),
+                  Math.max(bottomLeftRadius - borderWidth.bottom, 0),
                 },
                 Path.Direction.CW);
             canvas.clipPath(mPath);
