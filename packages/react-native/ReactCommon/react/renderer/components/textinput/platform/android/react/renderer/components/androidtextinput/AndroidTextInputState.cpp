@@ -18,6 +18,7 @@ namespace facebook::react {
 
 AndroidTextInputState::AndroidTextInputState(
     int64_t mostRecentEventCount,
+    int64_t cachedAttributedStringId,
     AttributedString attributedString,
     AttributedString reactTreeAttributedString,
     ParagraphAttributes paragraphAttributes,
@@ -26,6 +27,7 @@ AndroidTextInputState::AndroidTextInputState(
     float defaultThemePaddingTop,
     float defaultThemePaddingBottom)
     : mostRecentEventCount(mostRecentEventCount),
+      cachedAttributedStringId(cachedAttributedStringId),
       attributedString(std::move(attributedString)),
       reactTreeAttributedString(std::move(reactTreeAttributedString)),
       paragraphAttributes(std::move(paragraphAttributes)),

@@ -165,10 +165,15 @@ void AndroidTextInputShadowNode::updateStateIfNeeded() {
       state.reactTreeAttributedString.isContentEqual(reactTreeAttributedString)
       ? 0
       : getConcreteProps().mostRecentEventCount;
+  auto newCachedAttributedStringId =
+      state.reactTreeAttributedString.getString() == reactTreeAttributedString.getString()
+      ? state.cachedAttributedStringId
+      : 0;
   auto newAttributedString = getMostRecentAttributedString();
 
   setStateData(AndroidTextInputState{
       newEventCount,
+      newCachedAttributedStringId,
       newAttributedString,
       reactTreeAttributedString,
       getConcreteProps().paragraphAttributes,

@@ -61,6 +61,7 @@ class AndroidTextInputState final {
 
   AndroidTextInputState(
       int64_t mostRecentEventCount,
+      int64_t cachedAttributedStringId,
       AttributedString attributedString,
       AttributedString reactTreeAttributedString,
       ParagraphAttributes paragraphAttributes,
