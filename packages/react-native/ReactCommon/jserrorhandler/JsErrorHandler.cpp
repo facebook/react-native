@@ -109,6 +109,13 @@ JsErrorHandler::~JsErrorHandler() {}
 void JsErrorHandler::handleFatalError(
     jsi::Runtime& runtime,
     jsi::JSError& error) {
+  if (_hasHandledFatalError) {
+    LOG(ERROR)
+        << "JsErrorHandler: Already handled fatal error. Dropping new error: "
+        << error.getMessage() << std::endl;
+    return;
+  }
+
   // TODO: Current error parsing works and is stable. Can investigate using
   // REGEX_HERMES to get additional Hermes data, though it requires JS setup.
   _hasHandledFatalError = true;
