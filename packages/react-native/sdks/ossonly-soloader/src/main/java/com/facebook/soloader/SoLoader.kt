@@ -22,12 +22,10 @@ public object SoLoader {
 
   private val loadedLibraries = mutableSetOf<String>()
 
-  private fun mapLibName(input: String) = input
+  private fun mapLibName(input: String) = MergedSoMapping.mapLibName(input)
 
   @Suppress("UNUSED_PARAMETER")
-  private fun invokeJniOnload(libraryName: String) {
-    // no-op for now, till we move library to So Merging in OSS
-  }
+  private fun invokeJniOnload(libraryName: String) = MergedSoMapping.invokeJniOnload(libraryName)
 
   @Deprecated("This method is a no-op and you should not be calling it")
   @JvmStatic
@@ -42,8 +40,9 @@ public object SoLoader {
     }
     val mapLibraryName = mapLibName(libraryName)
     System.loadLibrary(mapLibraryName)
+    loadedLibraries.add(libraryName)
     if (libraryName != mapLibraryName) {
-      invokeJniOnload(mapLibraryName)
+      invokeJniOnload(libraryName)
     }
     return true
   }

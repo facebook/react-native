@@ -22,7 +22,7 @@ endif(CCACHE_FOUND)
 
 # Make sure every shared lib includes a .note.gnu.build-id header
 add_link_options(-Wl,--build-id)
-add_compile_options(-Wall -Werror -std=c++20)
+add_compile_options(-Wall -Werror)
 
 function(add_react_android_subdir relative_path)
   add_subdirectory(${REACT_ANDROID_DIR}/${relative_path} ReactAndroid/${relative_path})
@@ -122,6 +122,7 @@ add_react_build_subdir(generated/source/codegen/jni)
 add_react_android_subdir(src/main/jni/first-party/fb)
 add_react_android_subdir(src/main/jni/first-party/fbgloginit)
 add_react_android_subdir(src/main/jni/first-party/yogajni)
+add_react_android_subdir(src/main/jni/first-party/jni-lib-merge)
 add_react_android_subdir(src/main/jni/react/jni)
 add_react_android_subdir(src/main/jni/react/reactperflogger)
 add_react_android_subdir(src/main/jni/react/jscexecutor)
@@ -140,6 +141,9 @@ add_react_android_subdir(src/main/jni/react/runtime/hermes/jni)
 add_react_android_subdir(src/main/jni/react/runtime/jsc/jni)
 add_react_android_subdir(src/main/jni/react/devsupport)
 
+# SoMerging Utils
+include(${REACT_ANDROID_DIR}/src/main/jni/first-party/jni-lib-merge/SoMerging-utils.cmake)
+
 # libreactnative.so Dependency
 #
 # The React Native Android Library (the .aar) should expose headers only via this target.
@@ -147,6 +151,7 @@ add_react_android_subdir(src/main/jni/react/devsupport)
 add_library(reactnative
         SHARED
           OnLoad.cpp
+          $<TARGET_OBJECTS:jni_lib_merge_glue>
           $<TARGET_OBJECTS:logger>
           $<TARGET_OBJECTS:react_bridging>
           $<TARGET_OBJECTS:react_codegen_rncore>
@@ -158,6 +163,7 @@ add_library(reactnative
           $<TARGET_OBJECTS:react_nativemodule_featureflags>
           $<TARGET_OBJECTS:react_nativemodule_idlecallbacks>
           $<TARGET_OBJECTS:react_nativemodule_microtasks>
+          $<TARGET_OBJECTS:react_newarchdefaults>
           $<TARGET_OBJECTS:react_render_attributedstring>
           $<TARGET_OBJECTS:react_render_componentregistry>
           $<TARGET_OBJECTS:react_render_consistency>
@@ -183,8 +189,11 @@ add_library(reactnative
           $<TARGET_OBJECTS:rrc_view>
           $<TARGET_OBJECTS:runtimeexecutor>
 )
+target_merge_so(reactnative)
+
 target_link_libraries(reactnative PUBLIC
         double-conversion
+        fabricjni
         fbjni
         folly_runtime
         glog
@@ -206,6 +215,7 @@ target_include_directories(reactnative
         $<TARGET_PROPERTY:react_nativemodule_idlecallbacks,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_nativemodule_featureflags,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_nativemodule_microtasks,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:react_newarchdefaults,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_render_attributedstring,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_render_componentregistry,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_render_consistency,INTERFACE_INCLUDE_DIRECTORIES>
@@ -289,6 +299,7 @@ add_executable(reactnative_unittest
     -DHERMES_ENABLE_DEBUGGER)
 
   target_link_libraries(reactnative_unittest
+  fabricjni
   folly_runtime
   glog
   glog_init
