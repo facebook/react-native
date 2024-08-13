@@ -281,6 +281,30 @@ TEST_P(ConsoleApiTest, testConsoleError) {
   eval("console.error('uh oh');");
 }
 
+TEST_P(ConsoleApiTest, testConsoleLogWithErrorObject) {
+  InSequence s;
+  expectConsoleApiCall(AllOf(
+      AtJsonPtr("/type", "log"),
+      AtJsonPtr("/args/0/type", "object"),
+      AtJsonPtr("/args/0/subtype", "error"),
+      AtJsonPtr(
+          "/args/0/description",
+          "Error: wut\n"
+          "    at secondFunction (<eval>:6:28)\n"
+          "    at firstFunction (<eval>:3:21)\n"
+          "    at anonymous (<eval>:8:18)\n"
+          "    at global (<eval>:9:5)")));
+  eval(R"((() => {
+    function firstFunction() {
+      secondFunction();
+    }
+    function secondFunction() {
+      console.log(new Error('wut'));
+    }
+    firstFunction();
+  })())");
+}
+
 TEST_P(ConsoleApiTest, testConsoleWarn) {
   InSequence s;
   expectConsoleApiCall(AllOf(
