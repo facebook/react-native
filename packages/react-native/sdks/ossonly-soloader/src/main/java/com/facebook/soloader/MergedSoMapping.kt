@@ -21,16 +21,21 @@ public object MergedSoMapping {
   public fun mapLibName(input: String): String =
       when (input) {
         "react_newarchdefaults" -> "reactnative"
+        "mapbufferjni" -> "reactnative"
         else -> input
       }
 
   public fun invokeJniOnload(libraryName: String): Unit {
     when (libraryName) {
       "react_newarchdefaults" -> libreact_newarchdefaults_so()
+      "mapbufferjni" -> libmapbufferjni_so()
+      "reactnative" -> libreactnative_so()
     }
   }
 
   public external fun libreact_newarchdefaults_so(): Int
+
+  public external fun libmapbufferjni_so(): Int
 
   public external fun libreactnative_so(): Int
 }
