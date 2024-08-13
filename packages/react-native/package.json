@@ -82,6 +82,7 @@
     "scripts/react-native-xcode.sh",
     "sdks/.hermesversion",
     "sdks/hermes-engine",
+    "sdks/ossonly-soloader",
     "sdks/hermesc",
     "settings.gradle.kts",
     "src",
