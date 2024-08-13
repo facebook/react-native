@@ -43,44 +43,45 @@ ReactInstance::ReactInstance(
                                          std::weak_ptr(timerManager_),
                                      weakJsThread =
                                          std::weak_ptr(jsMessageQueueThread_),
-                                     weakJsErrorHander = std::weak_ptr(
-                                         jsErrorHandler_)](auto callback) {
-    auto jsErrorHandler = weakJsErrorHander.lock();
-    if (weakRuntime.expired() || !jsErrorHandler) {
+                                     jsErrorHandler =
+                                         jsErrorHandler_](auto callback) {
+    if (weakRuntime.expired()) {
       return;
     }
 
     if (jsErrorHandler->hasHandledFatalError()) {
       LOG(INFO)
-          << "RuntimeExecutor: Detected fatal js error. Dropping work on non-js thread."
+          << "RuntimeExecutor: Detected fatal error. Dropping work on non-js thread."
           << std::endl;
       return;
     }
 
     if (auto jsThread = weakJsThread.lock()) {
-      jsThread->runOnQueue(
-          [weakRuntime, weakTimerManager, callback = std::move(callback)]() {
-            auto runtime = weakRuntime.lock();
-            if (!runtime) {
-              return;
-            }
+      jsThread->runOnQueue([jsErrorHandler,
+                            weakRuntime,
+                            weakTimerManager,
+                            callback = std::move(callback)]() {
+        auto runtime = weakRuntime.lock();
+        if (!runtime) {
+          return;
+        }
 
-            jsi::Runtime& jsiRuntime = runtime->getRuntime();
-            SystraceSection s("ReactInstance::_runtimeExecutor[Callback]");
-            try {
-              callback(jsiRuntime);
+        jsi::Runtime& jsiRuntime = runtime->getRuntime();
+        SystraceSection s("ReactInstance::_runtimeExecutor[Callback]");
+        try {
+          callback(jsiRuntime);
 
-              // If we have first-class support for microtasks,
-              // they would've been called as part of the previous callback.
-              if (!ReactNativeFeatureFlags::enableMicrotasks()) {
-                if (auto timerManager = weakTimerManager.lock()) {
-                  timerManager->callReactNativeMicrotasks(jsiRuntime);
-                }
-              }
-            } catch (jsi::JSError& originalError) {
-              handleJSError(jsiRuntime, originalError, true);
+          // If we have first-class support for microtasks,
+          // they would've been called as part of the previous callback.
+          if (!ReactNativeFeatureFlags::enableMicrotasks()) {
+            if (auto timerManager = weakTimerManager.lock()) {
+              timerManager->callReactNativeMicrotasks(jsiRuntime);
             }
-          });
+          }
+        } catch (jsi::JSError& originalError) {
+          jsErrorHandler->handleFatalError(jsiRuntime, originalError);
+        }
+      });
     }
   };
 
@@ -118,7 +119,13 @@ ReactInstance::ReactInstance(
         };
   }
 
-  runtimeScheduler_ = std::make_shared<RuntimeScheduler>(runtimeExecutor);
+  runtimeScheduler_ = std::make_shared<RuntimeScheduler>(
+      runtimeExecutor,
+      RuntimeSchedulerClock::now,
+      [jsErrorHandler = jsErrorHandler_](
+          jsi::Runtime& runtime, jsi::JSError& error) {
+        jsErrorHandler->handleFatalError(runtime, error);
+      });
   runtimeScheduler_->setPerformanceEntryReporter(
       // FIXME: Move creation of PerformanceEntryReporter to here and guarantee
       // that its lifetime is the same as the runtime.
@@ -212,6 +219,15 @@ void ReactInstance::loadScript(
           }
 
           runtime.evaluateJavaScript(buffer, sourceURL);
+
+          /**
+           * TODO(T183610671): We need a safe/reliable way to enable the js
+           * pipeline from javascript. Remove this after we figure that out, or
+           * after we just remove the js pipeline.
+           */
+          if (!jsErrorHandler_->hasHandledFatalError()) {
+            jsErrorHandler_->setJsPipelineReady();
+          }
           if (hasLogger) {
             ReactMarker::logTaggedMarkerBridgeless(
                 ReactMarker::RUN_JS_BUNDLE_STOP, scriptName.c_str());
@@ -224,7 +240,7 @@ void ReactInstance::loadScript(
             strongBufferedRuntimeExecuter->flush();
           }
         } catch (jsi::JSError& error) {
-          jsErrorHandler_->handleFatalError(error);
+          jsErrorHandler_->handleFatalError(runtime, error);
         }
       });
 }
