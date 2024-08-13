@@ -466,7 +466,7 @@ public class ReactViewGroup extends ViewGroup
     if (!intersects && child.getParent() != null && !isAnimating) {
       // We can try saving on invalidate call here as the view that we remove is out of visible area
       // therefore invalidation is not necessary.
-      removeViewsInLayout(idx - clippedSoFar, 1);
+      removeViewInLayout(child);
       needUpdateClippingRecursive = true;
     } else if (intersects && child.getParent() == null) {
       addViewInLayout(child, idx - clippedSoFar, sDefaultLayoutParam, true);
