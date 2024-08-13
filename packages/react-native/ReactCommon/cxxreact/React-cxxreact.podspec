@@ -52,6 +52,7 @@ Pod::Spec.new do |s|
   s.dependency "React-jsi", version
   s.dependency "React-logger", version
   s.dependency "React-debug", version
+  s.dependency "React-timing", version
 
   s.resource_bundles = {'React-cxxreact_privacy' => 'PrivacyInfo.xcprivacy'}
 

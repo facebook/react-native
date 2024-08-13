@@ -15,6 +15,9 @@
 #include <react/renderer/core/LayoutMetrics.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/RawProps.h>
+#include <react/renderer/core/graphicsConversions.h>
+#include <react/renderer/graphics/BackgroundImage.h>
+#include <react/renderer/graphics/BlendMode.h>
 #include <react/renderer/graphics/BoxShadow.h>
 #include <react/renderer/graphics/Filter.h>
 #include <react/renderer/graphics/PlatformColorParser.h>
@@ -993,14 +996,14 @@ inline void fromRawValue(
       boxShadow.blurRadius = (Float)blurRadius->second;
     }
 
-    auto spreadRadius = rawBoxShadowMap.find("spreadRadius");
-    if (spreadRadius != rawBoxShadowMap.end()) {
-      react_native_expect(spreadRadius->second.hasType<Float>());
-      if (!spreadRadius->second.hasType<Float>()) {
+    auto spreadDistance = rawBoxShadowMap.find("spreadDistance");
+    if (spreadDistance != rawBoxShadowMap.end()) {
+      react_native_expect(spreadDistance->second.hasType<Float>());
+      if (!spreadDistance->second.hasType<Float>()) {
         result = {};
         return;
       }
-      boxShadow.spreadRadius = (Float)spreadRadius->second;
+      boxShadow.spreadDistance = (Float)spreadDistance->second;
     }
 
     auto inset = rawBoxShadowMap.find("inset");
@@ -1030,14 +1033,14 @@ inline void fromRawValue(
 inline void fromRawValue(
     const PropsParserContext& /*context*/,
     const RawValue& value,
-    std::vector<FilterPrimitive>& result) {
+    std::vector<FilterFunction>& result) {
   react_native_expect(value.hasType<std::vector<RawValue>>());
   if (!value.hasType<std::vector<RawValue>>()) {
     result = {};
     return;
   }
 
-  std::vector<FilterPrimitive> filter{};
+  std::vector<FilterFunction> filter{};
   auto rawFilter = static_cast<std::vector<RawValue>>(value);
   for (const auto& rawFilterPrimitive : rawFilter) {
     bool isMap =
@@ -1053,20 +1056,132 @@ inline void fromRawValue(
     auto rawFilterPrimitiveMap =
         static_cast<std::unordered_map<std::string, RawValue>>(
             rawFilterPrimitive);
-    FilterPrimitive filterPrimitive{};
+    FilterFunction filterFunction{};
     try {
-      filterPrimitive.type =
+      filterFunction.type =
           filterTypeFromString(rawFilterPrimitiveMap.begin()->first);
-      filterPrimitive.amount = (float)rawFilterPrimitiveMap.begin()->second;
-      filter.push_back(filterPrimitive);
+      filterFunction.amount = (float)rawFilterPrimitiveMap.begin()->second;
+      filter.push_back(std::move(filterFunction));
     } catch (const std::exception& e) {
-      LOG(ERROR) << "Could not parse FilterPrimitive: " << e.what();
+      LOG(ERROR) << "Could not parse FilterFunction: " << e.what();
       result = {};
       return;
     }
   }
 
   result = filter;
+}
+
+inline void fromRawValue(
+    const PropsParserContext& /*context*/,
+    const RawValue& value,
+    BlendMode& result) {
+  react_native_expect(value.hasType<std::string>());
+  result = BlendMode::Normal;
+  if (!value.hasType<std::string>()) {
+    return;
+  }
+
+  auto rawBlendMode = static_cast<std::string>(value);
+  std::optional<BlendMode> blendMode = blendModeFromString(rawBlendMode);
+
+  if (!blendMode) {
+    LOG(ERROR) << "Could not parse blend mode: " << rawBlendMode;
+    return;
+  }
+
+  result = blendMode.value();
+}
+
+inline void fromRawValue(
+    const PropsParserContext& context,
+    const RawValue& value,
+    std::vector<GradientValue>& result) {
+  react_native_expect(value.hasType<std::vector<RawValue>>());
+  if (!value.hasType<std::vector<RawValue>>()) {
+    result = {};
+    return;
+  }
+
+  std::vector<GradientValue> backgroundImage{};
+  auto rawBackgroundImage = static_cast<std::vector<RawValue>>(value);
+  for (const auto& rawGradientValue : rawBackgroundImage) {
+    bool isMap =
+        rawGradientValue.hasType<std::unordered_map<std::string, RawValue>>();
+    react_native_expect(isMap);
+    if (!isMap) {
+      result = {};
+      return;
+    }
+
+    auto rawGradientValueMap =
+        static_cast<std::unordered_map<std::string, RawValue>>(
+            rawGradientValue);
+    GradientValue gradientValue{};
+
+    auto typeIt = rawGradientValueMap.find("type");
+    if (typeIt != rawGradientValueMap.end() &&
+        typeIt->second.hasType<std::string>()) {
+      gradientValue.type =
+          gradientTypeFromString((std::string)(typeIt->second));
+    }
+
+    auto startIt = rawGradientValueMap.find("start");
+    if (startIt != rawGradientValueMap.end() &&
+        startIt->second.hasType<std::unordered_map<std::string, RawValue>>()) {
+      auto startPoints = static_cast<std::unordered_map<std::string, RawValue>>(
+          startIt->second);
+      auto xIt = startPoints.find("x");
+      auto yIt = startPoints.find("y");
+      if (xIt != startPoints.end() && yIt != startPoints.end() &&
+          xIt->second.hasType<Float>() && yIt->second.hasType<Float>()) {
+        gradientValue.startX = (Float)(xIt->second);
+        gradientValue.startY = (Float)(yIt->second);
+      }
+    }
+
+    auto endIt = rawGradientValueMap.find("end");
+    if (endIt != rawGradientValueMap.end() &&
+        endIt->second.hasType<std::unordered_map<std::string, RawValue>>()) {
+      auto endPoints =
+          static_cast<std::unordered_map<std::string, RawValue>>(endIt->second);
+      auto xIt = endPoints.find("x");
+      auto yIt = endPoints.find("y");
+      if (xIt != endPoints.end() && yIt != endPoints.end() &&
+          xIt->second.hasType<Float>() && yIt->second.hasType<Float>()) {
+        gradientValue.endX = (Float)(xIt->second);
+        gradientValue.endY = (Float)(yIt->second);
+      }
+    }
+
+    auto colorStopsIt = rawGradientValueMap.find("colorStops");
+    if (colorStopsIt != rawGradientValueMap.end() &&
+        colorStopsIt->second.hasType<std::vector<RawValue>>()) {
+      auto rawColorStops =
+          static_cast<std::vector<RawValue>>(colorStopsIt->second);
+
+      for (const auto& stop : rawColorStops) {
+        if (stop.hasType<std::unordered_map<std::string, RawValue>>()) {
+          auto stopMap =
+              static_cast<std::unordered_map<std::string, RawValue>>(stop);
+          auto positionIt = stopMap.find("position");
+          auto colorIt = stopMap.find("color");
+
+          if (positionIt != stopMap.end() && colorIt != stopMap.end() &&
+              positionIt->second.hasType<Float>()) {
+            ColorStop colorStop{};
+            colorStop.position = (Float)(positionIt->second);
+            fromRawValue(context, colorIt->second, colorStop.color);
+            gradientValue.colorStops.push_back(colorStop);
+          }
+        }
+      }
+    }
+
+    backgroundImage.push_back(gradientValue);
+  }
+
+  result = backgroundImage;
 }
 
 template <size_t N>

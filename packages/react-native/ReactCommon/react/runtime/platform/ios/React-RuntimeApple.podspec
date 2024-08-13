@@ -56,6 +56,7 @@ Pod::Spec.new do |s|
   s.dependency "React-cxxreact"
   s.dependency "React-callinvoker"
   s.dependency "React-runtimeexecutor"
+  s.dependency "React-runtimescheduler"
   s.dependency "React-utils"
   s.dependency "React-jsi"
   s.dependency "React-Core/Default"

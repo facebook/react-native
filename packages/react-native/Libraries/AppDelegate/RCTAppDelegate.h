@@ -160,9 +160,6 @@ NS_ASSUME_NONNULL_BEGIN
 /// @return: `true` if the new initialization layer is enabled. Otherwise returns `false`.
 - (BOOL)bridgelessEnabled;
 
-/// Controls whether the new debugger stack (codename Fusebox) is enabled.
-- (BOOL)unstable_fuseboxEnabled;
-
 /// Return the bundle URL for the main bundle.
 - (NSURL *__nullable)bundleURL;
 

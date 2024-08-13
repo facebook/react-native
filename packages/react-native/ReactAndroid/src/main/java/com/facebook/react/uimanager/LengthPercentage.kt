@@ -18,9 +18,9 @@ public enum class LengthPercentageType {
   PERCENT,
 }
 
-public class LengthPercentage(
+public data class LengthPercentage(
     private val value: Float,
-    private val unit: LengthPercentageType,
+    public val type: LengthPercentageType,
 ) {
   public companion object {
     @JvmStatic
@@ -29,7 +29,7 @@ public class LengthPercentage(
         ReadableType.Number -> {
           val value = dynamic.asDouble()
           if (value >= 0f) {
-            LengthPercentage(PixelUtil.toPixelFromDIP(value), LengthPercentageType.POINT)
+            LengthPercentage(value.toFloat(), LengthPercentageType.POINT)
           } else {
             null
           }
@@ -62,7 +62,7 @@ public class LengthPercentage(
   }
 
   public fun resolve(width: Float, height: Float): Float {
-    if (unit == LengthPercentageType.PERCENT) {
+    if (type == LengthPercentageType.PERCENT) {
       return (value / 100) * Math.min(width, height)
     }
 

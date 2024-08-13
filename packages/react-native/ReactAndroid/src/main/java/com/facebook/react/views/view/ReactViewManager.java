@@ -9,9 +9,10 @@ package com.facebook.react.views.view;
 
 import android.graphics.Rect;
 import android.view.View;
-import androidx.annotation.NonNull;
+import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.DynamicFromObject;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
@@ -21,8 +22,11 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.module.annotations.ReactModule;
+import com.facebook.react.uimanager.BackgroundStyleApplicator;
 import com.facebook.react.uimanager.LengthPercentage;
+import com.facebook.react.uimanager.LengthPercentageType;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.PointerEvents;
 import com.facebook.react.uimanager.Spacing;
@@ -31,12 +35,18 @@ import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
+import com.facebook.react.uimanager.common.UIManagerType;
+import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.style.BorderRadiusProp;
+import com.facebook.react.uimanager.style.BorderStyle;
+import com.facebook.react.uimanager.style.Gradient;
+import com.facebook.react.uimanager.style.LogicalEdge;
 import java.util.Map;
 
 /** View manager for AndroidViews (plain React Views). */
 @ReactModule(name = ReactViewManager.REACT_CLASS)
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
 
   @VisibleForTesting public static final String REACT_CLASS = ViewProps.VIEW_CLASS_NAME;
@@ -64,13 +74,13 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
   }
 
   @Override
-  protected ReactViewGroup prepareToRecycleView(
-      @NonNull ThemedReactContext reactContext, ReactViewGroup view) {
+  protected @Nullable ReactViewGroup prepareToRecycleView(
+      ThemedReactContext reactContext, ReactViewGroup view) {
     // BaseViewManager
-    super.prepareToRecycleView(reactContext, view);
-
-    view.recycleView();
-
+    ReactViewGroup preparedView = super.prepareToRecycleView(reactContext, view);
+    if (preparedView != null) {
+      preparedView.recycleView();
+    }
     return view;
   }
 
@@ -85,6 +95,22 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
       view.setFocusable(true);
       view.setFocusableInTouchMode(true);
       view.requestFocus();
+    }
+  }
+
+  @ReactProp(name = ViewProps.BACKGROUND_IMAGE, customType = "BackgroundImage")
+  public void setBackgroundImage(ReactViewGroup view, @Nullable ReadableArray backgroundImage) {
+    if (ViewUtil.getUIManagerType(view) == UIManagerType.FABRIC) {
+      if (backgroundImage != null && backgroundImage.size() > 0) {
+        Gradient[] gradients = new Gradient[backgroundImage.size()];
+        for (int i = 0; i < backgroundImage.size(); i++) {
+          ReadableMap gradientMap = backgroundImage.getMap(i);
+          gradients[i] = new Gradient(gradientMap);
+        }
+        view.setGradients(gradients);
+      } else {
+        view.setGradients(null);
+      }
     }
   }
 
@@ -130,22 +156,42 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
         ViewProps.BORDER_START_START_RADIUS,
       })
   public void setBorderRadius(ReactViewGroup view, int index, Dynamic rawBorderRadius) {
-
     @Nullable LengthPercentage borderRadius = LengthPercentage.setFromDynamic(rawBorderRadius);
 
-    view.setBorderRadius(BorderRadiusProp.values()[index], borderRadius);
+    // We do not support percentage border radii on Paper in order to be consistent with iOS (to
+    // avoid developer surprise if it works on one platform but not another).
+    if (ViewUtil.getUIManagerType(view) != UIManagerType.FABRIC
+        && borderRadius != null
+        && borderRadius.getType() == LengthPercentageType.PERCENT) {
+      borderRadius = null;
+    }
+
+    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
+      BackgroundStyleApplicator.setBorderRadius(
+          view, BorderRadiusProp.values()[index], borderRadius);
+    } else {
+      view.setBorderRadius(BorderRadiusProp.values()[index], borderRadius);
+    }
   }
 
   /**
    * @deprecated Use {@link #setBorderRadius(ReactViewGroup, int, Dynamic)} instead.
    */
+  @Deprecated(since = "0.75.0", forRemoval = true)
   public void setBorderRadius(ReactViewGroup view, int index, float borderRadius) {
     setBorderRadius(view, index, new DynamicFromObject(borderRadius));
   }
 
   @ReactProp(name = "borderStyle")
   public void setBorderStyle(ReactViewGroup view, @Nullable String borderStyle) {
-    view.setBorderStyle(borderStyle);
+    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
+      @Nullable
+      BorderStyle parsedBorderStyle =
+          borderStyle == null ? null : BorderStyle.fromString(borderStyle);
+      BackgroundStyleApplicator.setBorderStyle(view, parsedBorderStyle);
+    } else {
+      view.setBorderStyle(borderStyle);
+    }
   }
 
   @ReactProp(name = "hitSlop")
@@ -220,15 +266,19 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
       },
       defaultFloat = Float.NaN)
   public void setBorderWidth(ReactViewGroup view, int index, float width) {
-    if (!Float.isNaN(width) && width < 0) {
-      width = Float.NaN;
-    }
+    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
+      BackgroundStyleApplicator.setBorderWidth(view, LogicalEdge.values()[index], width);
+    } else {
+      if (!Float.isNaN(width) && width < 0) {
+        width = Float.NaN;
+      }
 
-    if (!Float.isNaN(width)) {
-      width = PixelUtil.toPixelFromDIP(width);
-    }
+      if (!Float.isNaN(width)) {
+        width = PixelUtil.toPixelFromDIP(width);
+      }
 
-    view.setBorderWidth(SPACING_TYPES[index], width);
+      view.setBorderWidth(SPACING_TYPES[index], width);
+    }
   }
 
   @ReactPropGroup(
@@ -246,7 +296,12 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
       },
       customType = "Color")
   public void setBorderColor(ReactViewGroup view, int index, @Nullable Integer color) {
-    view.setBorderColor(SPACING_TYPES[index], color);
+    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
+      BackgroundStyleApplicator.setBorderColor(
+          view, LogicalEdge.fromSpacingType(SPACING_TYPES[index]), color);
+    } else {
+      view.setBorderColor(SPACING_TYPES[index], color);
+    }
   }
 
   @ReactProp(name = ViewProps.COLLAPSABLE)
@@ -301,17 +356,33 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
   }
 
   @Override
-  public void setOpacity(@NonNull ReactViewGroup view, float opacity) {
+  public void setOpacity(ReactViewGroup view, float opacity) {
     view.setOpacityIfPossible(opacity);
   }
 
   @Override
   protected void setTransformProperty(
-      @NonNull ReactViewGroup view,
+      ReactViewGroup view,
       @Nullable ReadableArray transforms,
       @Nullable ReadableArray transformOrigin) {
     super.setTransformProperty(view, transforms, transformOrigin);
     view.setBackfaceVisibilityDependantOpacity();
+  }
+
+  @ReactProp(name = ViewProps.BOX_SHADOW, customType = "BoxShadow")
+  public void setBoxShadow(ReactViewGroup view, @Nullable ReadableArray shadows) {
+    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
+      BackgroundStyleApplicator.setBoxShadow(view, shadows);
+    }
+  }
+
+  @Override
+  public void setBackgroundColor(ReactViewGroup view, @ColorInt int backgroundColor) {
+    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
+      BackgroundStyleApplicator.setBackgroundColor(view, backgroundColor);
+    } else {
+      super.setBackgroundColor(view, backgroundColor);
+    }
   }
 
   @Override

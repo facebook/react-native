@@ -46,6 +46,9 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
           },
           decelerationRate: true,
           enableSyncOnScroll: true, // Fabric only.
+          experimental_boxShadow: {
+            process: require('../../StyleSheet/processBoxShadow').default,
+          },
           disableIntervalMomentum: true,
           maintainVisibleContentPosition: true,
           pagingEnabled: true,

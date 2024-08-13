@@ -102,7 +102,7 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
    *
    * Can be called from any thread.
    */
-  bool getShouldYield() const noexcept override;
+  bool getShouldYield() noexcept override;
 
   /*
    * Returns value of currently executed task. Designed to be called from React.
@@ -144,6 +144,9 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
       ShadowTreeRevisionConsistencyManager*
           shadowTreeRevisionConsistencyManager) override;
 
+  void setPerformanceEntryReporter(
+      PerformanceEntryReporter* performanceEntryReporter) override;
+
  private:
   std::atomic<uint_fast8_t> syncTaskRequests_{0};
 
@@ -154,6 +157,10 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
       taskQueue_;
 
   Task* currentTask_{};
+  RuntimeSchedulerTimePoint lastYieldingOpportunity_;
+  RuntimeSchedulerDuration longestPeriodWithoutYieldingOpportunity_{};
+
+  void markYieldingOpportunity(RuntimeSchedulerTimePoint currentTime);
 
   /**
    * This protects the access to `taskQueue_` and `isevent loopScheduled_`.
@@ -193,6 +200,11 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
   bool performingMicrotaskCheckpoint_{false};
   void performMicrotaskCheckpoint(jsi::Runtime& runtime);
 
+  void reportLongTasks(
+      const Task& task,
+      RuntimeSchedulerTimePoint startTime,
+      RuntimeSchedulerTimePoint endTime);
+
   /*
    * Returns a time point representing the current point in time. May be called
    * from multiple threads.
@@ -208,6 +220,8 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
   std::queue<RuntimeSchedulerRenderingUpdate> pendingRenderingUpdates_;
   ShadowTreeRevisionConsistencyManager* shadowTreeRevisionConsistencyManager_{
       nullptr};
+
+  PerformanceEntryReporter* performanceEntryReporter_{nullptr};
 };
 
 } // namespace facebook::react

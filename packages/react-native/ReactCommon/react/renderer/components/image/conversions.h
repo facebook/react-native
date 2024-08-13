@@ -80,6 +80,15 @@ inline void fromRawValue(
       result.type = ImageSource::Type::Local;
     }
 
+    if (items.find("headers") != items.end() &&
+        items.at("headers")
+            .hasType<std::unordered_map<std::string, std::string>>()) {
+      auto headers =
+          (std::unordered_map<std::string, std::string>)items.at("headers");
+      for (const auto& header : headers) {
+        result.headers.push_back(header);
+      }
+    }
     return;
   }
 

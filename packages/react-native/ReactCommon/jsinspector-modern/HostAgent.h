@@ -41,7 +41,7 @@ class HostAgent final {
    * HostTargetDelegate and underlying HostTarget both outlive the agent.
    * \param hostMetadata Metadata about the host that created this agent.
    * \param sessionState The state of the session that created this agent.
-   * \param exector A void executor to be used by async-aware handlers.
+   * \param executor A void executor to be used by async-aware handlers.
    */
   HostAgent(
       FrontendChannel frontendChannel,

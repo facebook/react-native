@@ -1,16 +1,16 @@
 name: build-apple-slices-hermes
 description: This action builds hermesc for Apple platforms
 inputs:
-  HERMES_VERSION:
+  hermes-version:
     required: true
     description: The version of Hermes
-  REACT_NATIVE_VERSION:
+  react-native-version:
     required: true
     description: The version of Hermes
-  SLICE:
+  slice:
     required: true
     description: The slice of hermes you want to build. It could be iphone, iphonesimulator, macos, catalyst, xros, or xrossimulator
-  FLAVOR:
+  flavor:
     required: true
     description: The flavor we want to build. It can be Debug or Release
 runs:
@@ -21,22 +21,22 @@ runs:
     - name: Restore Hermes workspace
       uses: ./.github/actions/restore-hermes-workspace
     - name: Restore HermesC Artifact
-      uses: actions/download-artifact@v4.1.3
+      uses: actions/download-artifact@v4
       with:
         name: hermesc-apple
         path: ./packages/react-native/sdks/hermes/build_host_hermesc
     - name: Restore Slice From Cache
       id: restore-slice-cache
-      uses: actions/cache/restore@v4.0.0
+      uses: actions/cache/restore@v4
       with:
-        path: ./packages/react-native/sdks/hermes/build_${{ inputs.SLICE }}_${{ inputs.FLAVOR }}
-        key: v4-hermes-apple-${{ inputs.HERMES_VERSION }}-${{ inputs.REACT_NATIVE_VERSION }}-${{ hashfiles('packages/react-native/sdks/hermes-engine/utils/build-apple-framework.sh') }}-${{ inputs.SLICE }}-${{ inputs.FLAVOR }}
-    - name: Build the Hermes ${{ inputs.SLICE }} frameworks
+        path: ./packages/react-native/sdks/hermes/build_${{ inputs.slice }}_${{ inputs.flavor }}
+        key: v5-hermes-apple-${{ inputs.hermes-version }}-${{ inputs.react-native-version }}-${{ hashfiles('packages/react-native/sdks/hermes-engine/utils/build-apple-framework.sh') }}-${{ inputs.slice }}-${{ inputs.flavor }}
+    - name: Build the Hermes ${{ inputs.slice }} frameworks
       shell: bash
       run: |
         cd ./packages/react-native/sdks/hermes || exit 1
-        SLICE=${{ inputs.SLICE }}
-        FLAVOR=${{ inputs.FLAVOR }}
+        SLICE=${{ inputs.slice }}
+        FLAVOR=${{ inputs.flavor }}
         FINAL_PATH=build_"$SLICE"_"$FLAVOR"
         echo "Final path for this slice is: $FINAL_PATH"
 
@@ -50,7 +50,7 @@ runs:
           exit 0
         fi
 
-        export RELEASE_VERSION=${{ inputs.REACT_NATIVE_VERSION }}
+        export RELEASE_VERSION=${{ inputs.react-native-version }}
 
         # HermesC is used to build hermes, so it has to be executable
         chmod +x ./build_host_hermesc/bin/hermesc
@@ -59,12 +59,12 @@ runs:
           echo "[HERMES] Building Hermes for MacOS"
 
           chmod +x ./utils/build-mac-framework.sh
-          BUILD_TYPE="${{ inputs.FLAVOR }}" ./utils/build-mac-framework.sh
+          BUILD_TYPE="${{ inputs.flavor }}" ./utils/build-mac-framework.sh
         else
           echo "[HERMES] Building Hermes for iOS: $SLICE"
 
           chmod +x ./utils/build-ios-framework.sh
-          BUILD_TYPE="${{ inputs.FLAVOR }}" ./utils/build-ios-framework.sh "$SLICE"
+          BUILD_TYPE="${{ inputs.flavor }}" ./utils/build-ios-framework.sh "$SLICE"
         fi
 
         echo "Moving from build_$SLICE to $FINAL_PATH"
@@ -85,14 +85,14 @@ runs:
           echo "Please try again"
           exit 1
         fi
-    - name: Upload Artifact for Slice (${{ inputs.SLICE }}, ${{ inputs.FLAVOR }}}
-      uses: actions/upload-artifact@v4.3.1
+    - name: Upload Artifact for Slice (${{ inputs.slice }}, ${{ inputs.flavor }}}
+      uses: actions/upload-artifact@v4.3.4
       with:
-        name: slice-${{ inputs.SLICE }}-${{ inputs.FLAVOR }}
-        path: ./packages/react-native/sdks/hermes/build_${{ inputs.SLICE }}_${{ inputs.FLAVOR }}
+        name: slice-${{ inputs.slice }}-${{ inputs.flavor }}
+        path: ./packages/react-native/sdks/hermes/build_${{ inputs.slice }}_${{ inputs.flavor }}
     - name: Save slice cache
       if: ${{ github.ref == 'refs/heads/main' || contains(github.ref, '-stable') }} # To avoid that the cache explode.
-      uses: actions/cache/save@v4.0.0
+      uses: actions/cache/save@v4
       with:
-        path: ./packages/react-native/sdks/hermes/build_${{ inputs.SLICE }}_${{ inputs.FLAVOR }}
-        key: v4-hermes-apple-${{ inputs.HERMES_VERSION }}-${{ inputs.REACT_NATIVE_VERSION }}-${{ hashfiles('packages/react-native/sdks/hermes-engine/utils/build-apple-framework.sh') }}-${{ inputs.SLICE }}-${{ inputs.FLAVOR }}
+        path: ./packages/react-native/sdks/hermes/build_${{ inputs.slice }}_${{ inputs.flavor }}
+        key: v5-hermes-apple-${{ inputs.hermes-version }}-${{ inputs.react-native-version }}-${{ hashfiles('packages/react-native/sdks/hermes-engine/utils/build-apple-framework.sh') }}-${{ inputs.SLICE }}-${{ inputs.FLAVOR }}

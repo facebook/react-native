@@ -52,7 +52,7 @@ inline static jsi::Value valueFromShadowNode(
 
   if (assignRuntimeShadowNodeReference) {
     wrappedShadowNode->shadowNode->setRuntimeShadowNodeReference(
-        &*wrappedShadowNode);
+        wrappedShadowNode);
   }
 
   jsi::Object obj(runtime);

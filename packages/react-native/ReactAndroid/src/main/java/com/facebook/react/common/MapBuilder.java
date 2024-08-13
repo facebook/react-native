@@ -11,8 +11,13 @@ import com.facebook.infer.annotation.Nullsafe;
 import java.util.HashMap;
 import java.util.Map;
 
-/** Utility class for creating maps */
+/**
+ * Utility class for creating maps
+ *
+ * @deprecated Use Kotlin's built-in collections extensions
+ */
 @Nullsafe(Nullsafe.Mode.LOCAL)
+@Deprecated
 public class MapBuilder {
 
   /** Creates an instance of {@code HashMap} */

@@ -998,11 +998,13 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
       return;
     }
 
-    UiThreadUtil.runOnUiThread(
-        () -> {
-          mDevSettings.setRemoteJSDebugEnabled(isRemoteJSDebugEnabled);
-          handleReloadJS();
-        });
+    if (mDevSettings.isRemoteJSDebugEnabled() != isRemoteJSDebugEnabled) {
+      UiThreadUtil.runOnUiThread(
+          () -> {
+            mDevSettings.setRemoteJSDebugEnabled(isRemoteJSDebugEnabled);
+            handleReloadJS();
+          });
+    }
   }
 
   @Override
@@ -1182,5 +1184,10 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
   @Override
   public void hidePausedInDebuggerOverlay() {
     mPausedInDebuggerOverlayManager.hidePausedInDebuggerOverlay();
+  }
+
+  @Override
+  public void setAdditionalOptionForPackager(String name, String value) {
+    mDevSettings.getPackagerConnectionSettings().setAdditionalOptionForPackager(name, value);
   }
 }

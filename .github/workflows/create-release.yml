@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4
         with:
           token: ${{ secrets.REACT_NATIVE_BOT_GITHUB_TOKEN }}
       - name: Check if on stable branch

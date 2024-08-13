@@ -207,6 +207,16 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     ViewManagerPropertyUpdater.clear();
   }
 
+  @Override
+  public void markActiveTouchForTag(int surfaceId, int reactTag) {
+    // Not implemented for Paper.
+  }
+
+  @Override
+  public void sweepActiveTouchForTag(int surfaceId, int reactTag) {
+    // Not implemented for Paper.
+  }
+
   /**
    * This method is intended to reuse the {@link ViewManagerRegistry} with FabricUIManager. Do not
    * use this method as this will be removed in the near future.

@@ -149,44 +149,6 @@ class StatusBarStyleExample extends React.Component<{...}, $FlowFixMeState> {
   }
 }
 
-class StatusBarNetworkActivityExample extends React.Component<
-  {...},
-  $FlowFixMeState,
-> {
-  state: $FlowFixMe | {networkActivityIndicatorVisible: boolean} = {
-    networkActivityIndicatorVisible: false,
-  };
-
-  _onChangeNetworkIndicatorVisible = () => {
-    this.setState({
-      networkActivityIndicatorVisible:
-        !this.state.networkActivityIndicatorVisible,
-    });
-  };
-
-  render(): React.Node {
-    return (
-      <View>
-        <StatusBar
-          networkActivityIndicatorVisible={
-            this.state.networkActivityIndicatorVisible
-          }
-        />
-        <TouchableHighlight
-          style={styles.wrapper}
-          onPress={this._onChangeNetworkIndicatorVisible}>
-          <View style={styles.button}>
-            <Text>
-              networkActivityIndicatorVisible:
-              {this.state.networkActivityIndicatorVisible ? 'true' : 'false'}
-            </Text>
-          </View>
-        </TouchableHighlight>
-      </View>
-    );
-  }
-}
-
 class StatusBarBackgroundColorExample extends React.Component<
   {...},
   $FlowFixMeState,
@@ -306,24 +268,6 @@ class StatusBarStaticIOSExample extends React.Component<{...}> {
           }}>
           <View style={styles.button}>
             <Text>setBarStyle('light-content', true)</Text>
-          </View>
-        </TouchableHighlight>
-        <TouchableHighlight
-          style={styles.wrapper}
-          onPress={() => {
-            StatusBar.setNetworkActivityIndicatorVisible(true);
-          }}>
-          <View style={styles.button}>
-            <Text>setNetworkActivityIndicatorVisible(true)</Text>
-          </View>
-        </TouchableHighlight>
-        <TouchableHighlight
-          style={styles.wrapper}
-          onPress={() => {
-            StatusBar.setNetworkActivityIndicatorVisible(false);
-          }}>
-          <View style={styles.button}>
-            <Text>setNetworkActivityIndicatorVisible(false)</Text>
           </View>
         </TouchableHighlight>
       </View>
@@ -489,13 +433,6 @@ exports.examples = [
     render(): React.Node {
       return <StatusBarStyleExample />;
     },
-  },
-  {
-    title: 'StatusBar network activity indicator',
-    render(): React.Node {
-      return <StatusBarNetworkActivityExample />;
-    },
-    platform: 'ios',
   },
   {
     title: 'StatusBar background color',

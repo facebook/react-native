@@ -84,6 +84,8 @@ import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.devsupport.DevSupportManagerFactory;
 import com.facebook.react.devsupport.InspectorFlags;
 import com.facebook.react.devsupport.ReactInstanceDevHelper;
+import com.facebook.react.devsupport.inspector.InspectorNetworkHelper;
+import com.facebook.react.devsupport.inspector.InspectorNetworkRequestListener;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.DevLoadingViewManager;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
@@ -465,7 +467,6 @@ public class ReactInstanceManager {
 
     if (mUseDeveloperSupport && mJSMainModulePath != null) {
       final DeveloperSettings devSettings = mDevSupportManager.getDevSettings();
-
       if (!Systrace.isTracing(TRACE_TAG_REACT_APPS | TRACE_TAG_REACT_JS_VM_CALLS)) {
         if (mBundleLoader == null) {
           mDevSupportManager.handleReloadJS();
@@ -476,6 +477,11 @@ public class ReactInstanceManager {
                 public void onPackagerStatusFetched(final boolean packagerIsRunning) {
                   UiThreadUtil.runOnUiThread(
                       () -> {
+                        // ReactInstanceManager is no longer valid, ignore callback
+                        if (mInstanceManagerInvalidated) {
+                          return;
+                        }
+
                         if (packagerIsRunning) {
                           mDevSupportManager.handleReloadJS();
                         } else if (mDevSupportManager.hasUpToDateJSBundleInCache()
@@ -1610,6 +1616,11 @@ public class ReactInstanceManager {
               }
             });
       }
+    }
+
+    @Override
+    public void loadNetworkResource(String url, InspectorNetworkRequestListener listener) {
+      InspectorNetworkHelper.loadNetworkResource(url, listener);
     }
   }
 

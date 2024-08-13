@@ -6,6 +6,7 @@
  */
 
 #include "JReactHostInspectorTarget.h"
+
 #include <fbjni/NativeRunnable.h>
 #include <jsinspector-modern/InspectorFlags.h>
 #include <react/jni/JWeakRefUtils.h>
@@ -43,7 +44,9 @@ JReactHostInspectorTarget::JReactHostInspectorTarget(
           // Reject the connection.
           return nullptr;
         },
-        {.nativePageReloads = true, .prefersFuseboxFrontend = true});
+        {.nativePageReloads = true,
+         .nativeSourceCodeFetching = true,
+         .prefersFuseboxFrontend = true});
   }
 }
 
@@ -123,6 +126,19 @@ void JReactHostInspectorTarget::onSetPausedInDebuggerMessage(
     const OverlaySetPausedInDebuggerMessageRequest& request) {
   if (auto javaReactHostImplStrong = javaReactHostImpl_->get()) {
     javaReactHostImplStrong->setPausedInDebuggerMessage(request.message);
+  }
+}
+
+void JReactHostInspectorTarget::loadNetworkResource(
+    const jsinspector_modern::LoadNetworkResourceRequest& params,
+    jsinspector_modern::ScopedExecutor<
+        jsinspector_modern::NetworkRequestListener> executor) {
+  // Construct InspectorNetworkRequestListener (hybrid class) from the C++ side
+  // (holding the ScopedExecutor), pass to the delegate.
+  auto listener = InspectorNetworkRequestListener::newObjectCxxArgs(executor);
+
+  if (auto javaReactHostImplStrong = javaReactHostImpl_->get()) {
+    javaReactHostImplStrong->loadNetworkResource(params.url, listener);
   }
 }
 

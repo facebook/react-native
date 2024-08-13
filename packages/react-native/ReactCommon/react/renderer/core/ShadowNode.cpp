@@ -310,7 +310,8 @@ bool ShadowNode::progressStateIfNecessary() {
 }
 
 void ShadowNode::setRuntimeShadowNodeReference(
-    ShadowNodeWrapper* runtimeShadowNodeReference) const {
+    const std::shared_ptr<ShadowNodeWrapper>& runtimeShadowNodeReference)
+    const {
   runtimeShadowNodeReference_ = runtimeShadowNodeReference;
 }
 
@@ -319,8 +320,8 @@ void ShadowNode::transferRuntimeShadowNodeReference(
   destinationShadowNode->runtimeShadowNodeReference_ =
       runtimeShadowNodeReference_;
 
-  if (runtimeShadowNodeReference_ != nullptr) {
-    runtimeShadowNodeReference_->shadowNode = destinationShadowNode;
+  if (auto reference = runtimeShadowNodeReference_.lock()) {
+    reference->shadowNode = destinationShadowNode;
   }
 }
 

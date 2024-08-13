@@ -115,7 +115,7 @@ function expectNoConsoleError() {
 
 async function expectRendersMatchingSnapshot(
   name: string,
-  ComponentProvider: () => React.Element<any>,
+  ComponentProvider: () => React.MixedElement,
   unmockComponent: () => mixed,
 ) {
   let instance;

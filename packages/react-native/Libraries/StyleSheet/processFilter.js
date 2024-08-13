@@ -12,7 +12,7 @@
 'use strict';
 
 import type {ColorValue} from './StyleSheet';
-import type {DropShadowPrimitive, FilterPrimitive} from './StyleSheetTypes';
+import type {DropShadowPrimitive, FilterFunction} from './StyleSheetTypes';
 
 import processColor from './processColor';
 
@@ -21,12 +21,12 @@ type ParsedFilter =
   | {blur: number}
   | {contrast: number}
   | {grayscale: number}
-  | {'hue-rotate': number}
+  | {hueRotate: number}
   | {invert: number}
   | {opacity: number}
   | {saturate: number}
   | {sepia: number}
-  | {'drop-shadow': ParsedDropShadow};
+  | {dropShadow: ParsedDropShadow};
 
 type ParsedDropShadow = {
   offsetX: number,
@@ -36,9 +36,13 @@ type ParsedDropShadow = {
 };
 
 export default function processFilter(
-  filter: $ReadOnlyArray<FilterPrimitive> | string,
+  filter: ?($ReadOnlyArray<FilterFunction> | string),
 ): $ReadOnlyArray<ParsedFilter> {
   let result: Array<ParsedFilter> = [];
+  if (filter == null) {
+    return result;
+  }
+
   if (typeof filter === 'string') {
     // matches on functions with args like "drop-shadow(1.5)"
     const regex = /([\w-]+)\(([^)]+)\)/g;
@@ -49,19 +53,25 @@ export default function processFilter(
       if (filterName === 'drop-shadow') {
         const dropShadow = parseDropShadow(matches[2]);
         if (dropShadow != null) {
-          result.push({'drop-shadow': dropShadow});
+          result.push({dropShadow});
         } else {
           return [];
         }
       } else {
-        const amount = _getFilterAmount(filterName, matches[2]);
+        const camelizedName =
+          filterName === 'drop-shadow'
+            ? 'dropShadow'
+            : filterName === 'hue-rotate'
+              ? 'hueRotate'
+              : filterName;
+        const amount = _getFilterAmount(camelizedName, matches[2]);
 
         if (amount != null) {
-          const filterPrimitive = {};
+          const filterFunction = {};
           // $FlowFixMe The key will be the correct one but flow can't see that.
-          filterPrimitive[filterName] = amount;
+          filterFunction[camelizedName] = amount;
           // $FlowFixMe The key will be the correct one but flow can't see that.
-          result.push(filterPrimitive);
+          result.push(filterFunction);
         } else {
           // If any primitive is invalid then apply none of the filters. This is how
           // web works and makes it clear that something is wrong becuase no
@@ -71,15 +81,15 @@ export default function processFilter(
       }
     }
   } else {
-    for (const filterPrimitive of filter) {
-      const [filterName, filterValue] = Object.entries(filterPrimitive)[0];
-      if (filterName === 'drop-shadow') {
+    for (const filterFunction of filter) {
+      const [filterName, filterValue] = Object.entries(filterFunction)[0];
+      if (filterName === 'dropShadow') {
         // $FlowFixMe
         const dropShadow = parseDropShadow(filterValue);
         if (dropShadow == null) {
           return [];
         }
-        result.push({'drop-shadow': dropShadow});
+        result.push({dropShadow});
       } else {
         const amount = _getFilterAmount(filterName, filterValue);
 
@@ -125,7 +135,7 @@ function _getFilterAmount(filterName: string, filterArgs: mixed): ?number {
   switch (filterName) {
     // Hue rotate takes some angle that can have a unit and can be
     // negative. Additionally, 0 with no unit is allowed.
-    case 'hue-rotate':
+    case 'hueRotate':
       if (filterArgAsNumber === 0) {
         return 0;
       }

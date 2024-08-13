@@ -24,7 +24,7 @@
     "node": ">=18"
   },
   "files": [
-    "src"
+    "dist"
   ],
   "dependencies": {},
   "devDependencies": {}

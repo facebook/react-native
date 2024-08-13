@@ -97,10 +97,9 @@ tasks.register("publishAllToMavenTempLocal") {
       ":packages:react-native:ReactAndroid:hermes-engine:publishAllPublicationsToMavenTempLocalRepository")
 }
 
-tasks.register("publishAllToSonatype") {
-  description = "Publish all the artifacts to Sonatype (Maven Central or Snapshot repository)"
+tasks.register("publishAndroidToSonatype") {
+  description = "Publish the Android artifacts to Sonatype (Maven Central or Snapshot repository)"
   dependsOn(":packages:react-native:ReactAndroid:publishToSonatype")
-  dependsOn(":packages:react-native:ReactAndroid:external-artifacts:publishToSonatype")
   dependsOn(":packages:react-native:ReactAndroid:hermes-engine:publishToSonatype")
 }
 

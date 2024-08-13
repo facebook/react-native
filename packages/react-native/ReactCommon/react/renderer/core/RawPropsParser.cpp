@@ -125,10 +125,7 @@ void RawPropsParser::preparse(const RawProps& rawProps) const noexcept {
 
       for (size_t i = 0; i < count; i++) {
         auto nameValue = names.getValueAtIndex(runtime, i).getString(runtime);
-        auto value = object.getProperty(runtime, nameValue);
-
         auto name = nameValue.utf8(runtime);
-
         auto keyIndex = nameToIndex_.at(
             name.data(), static_cast<RawPropsPropNameLength>(name.size()));
 
@@ -137,6 +134,8 @@ void RawPropsParser::preparse(const RawProps& rawProps) const noexcept {
         }
 
         rawProps.keyIndexToValueIndex_[keyIndex] = valueIndex;
+
+        auto value = object.getProperty(runtime, nameValue);
         rawProps.values_.push_back(
             RawValue(jsi::dynamicFromValue(runtime, value)));
         valueIndex++;

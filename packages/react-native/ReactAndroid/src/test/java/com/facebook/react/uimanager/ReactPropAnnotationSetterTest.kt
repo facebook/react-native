@@ -65,6 +65,10 @@ class ReactPropAnnotationSetterTest {
     override fun createViewInstance(reactContext: ThemedReactContext): View =
         error("This method should not be executed as a part of this test")
 
+    override fun prepareToRecycleView(reactContext: ThemedReactContext, view: View): View? {
+      error("This method should not be executed as a part of this test")
+    }
+
     override fun updateExtraData(root: View, extraData: Any) =
         error("This method should not be executed as a part of this test")
 

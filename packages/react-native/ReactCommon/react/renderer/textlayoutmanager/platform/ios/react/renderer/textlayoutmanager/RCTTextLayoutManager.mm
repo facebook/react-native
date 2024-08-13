@@ -83,6 +83,9 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
 #endif
 
   NSRange glyphRange = [layoutManager glyphRangeForTextContainer:textContainer];
+
+  [self processTruncatedAttributedText:textStorage textContainer:textContainer layoutManager:layoutManager];
+
   [layoutManager drawBackgroundForGlyphRange:glyphRange atPoint:frame.origin];
   [layoutManager drawGlyphsForGlyphRange:glyphRange atPoint:frame.origin];
 
@@ -120,6 +123,49 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
                 }];
 
     block(highlightPath);
+  }
+}
+
+- (void)processTruncatedAttributedText:(NSTextStorage *)textStorage
+                         textContainer:(NSTextContainer *)textContainer
+                         layoutManager:(NSLayoutManager *)layoutManager
+{
+  if (textContainer.maximumNumberOfLines > 0) {
+    [layoutManager ensureLayoutForTextContainer:textContainer];
+    NSRange glyphRange = [layoutManager glyphRangeForTextContainer:textContainer];
+    __block int line = 0;
+    [layoutManager
+        enumerateLineFragmentsForGlyphRange:glyphRange
+                                 usingBlock:^(
+                                     CGRect rect,
+                                     CGRect usedRect,
+                                     NSTextContainer *_Nonnull _,
+                                     NSRange lineGlyphRange,
+                                     BOOL *_Nonnull stop) {
+                                   if (line == textContainer.maximumNumberOfLines - 1) {
+                                     NSRange truncatedRange = [layoutManager
+                                         truncatedGlyphRangeInLineFragmentForGlyphAtIndex:lineGlyphRange.location];
+                                     if (truncatedRange.location != NSNotFound) {
+                                       NSRange characterRange =
+                                           [layoutManager characterRangeForGlyphRange:truncatedRange
+                                                                     actualGlyphRange:nil];
+                                       if (characterRange.location > 0 && characterRange.length > 0) {
+                                         // Remove color attributes for truncated range
+                                         for (NSAttributedStringKey key in
+                                              @[ NSForegroundColorAttributeName, NSBackgroundColorAttributeName ]) {
+                                           [textStorage removeAttribute:key range:characterRange];
+                                           id attribute = [textStorage attribute:key
+                                                                         atIndex:characterRange.location - 1
+                                                                  effectiveRange:nil];
+                                           if (attribute) {
+                                             [textStorage addAttribute:key value:attribute range:characterRange];
+                                           }
+                                         }
+                                       }
+                                     }
+                                   }
+                                   line++;
+                                 }];
   }
 }
 

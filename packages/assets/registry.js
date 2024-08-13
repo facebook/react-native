@@ -10,6 +10,8 @@
 
 'use strict';
 
+export type AssetDestPathResolver = 'android' | 'generic';
+
 export type PackagerAsset = {
   +__packager_asset: boolean,
   +fileSystemLocation: string,
@@ -20,6 +22,7 @@ export type PackagerAsset = {
   +hash: string,
   +name: string,
   +type: string,
+  +resolver?: AssetDestPathResolver,
   ...
 };
 

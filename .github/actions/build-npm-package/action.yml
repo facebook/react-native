@@ -1,0 +1,148 @@
+name: build-npm-package
+description: This action builds the NPM package and uploads it to Maven
+inputs:
+  release-type:
+    required: true
+    description: The type of release we are building. It could be nightly, release or dry-run
+  hermes-ws-dir:
+    required: 'true'
+    description: The workspace for hermes
+  gha-npm-token:
+    required: false
+    description: The GHA npm token, required only to publish to npm
+    default: ''
+runs:
+  using: composite
+  steps:
+    - name: Setup git safe folders
+      shell: bash
+      run: git config --global --add safe.directory '*'
+    - name: Create /tmp/hermes/osx-bin directory
+      shell: bash
+      run: mkdir -p /tmp/hermes/osx-bin
+    - name: Download osx-bin release artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: hermes-osx-bin-Release
+        path: /tmp/hermes/osx-bin/Release
+    - name: Download osx-bin debug artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: hermes-osx-bin-Debug
+        path: /tmp/hermes/osx-bin/Debug
+    - name: Download darwin-bin release artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: hermes-darwin-bin-Release
+        path: /tmp/hermes/hermes-runtime-darwin
+    - name: Download darwin-bin debug artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: hermes-darwin-bin-Debug
+        path: /tmp/hermes/hermes-runtime-darwin
+    - name: Download hermes dSYM debug artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: hermes-dSYM-Debug
+        path: /tmp/hermes/dSYM/Debug
+    - name: Download hermes dSYM release vartifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: hermes-dSYM-Release
+        path: /tmp/hermes/dSYM/Release
+    - name: Download windows-bin artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: hermes-win64-bin
+        path: /tmp/hermes/win64-bin
+    - name: Download linux-bin artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: hermes-linux-bin
+        path: /tmp/hermes/linux64-bin
+    - name: Show /tmp/hermes directory
+      shell: bash
+      run: ls -lR /tmp/hermes
+    - name: Copy Hermes binaries
+      shell: bash
+      run: |
+        mkdir -p ./packages/react-native/sdks/hermesc ./packages/react-native/sdks/hermesc/osx-bin ./packages/react-native/sdks/hermesc/win64-bin ./packages/react-native/sdks/hermesc/linux64-bin
+
+        # When build_hermes_macos runs as a matrix, it outputs
+        if [[ -d ${{ inputs.hermes-ws-dir }}/osx-bin/Release ]]; then
+          cp -r ${{ inputs.hermes-ws-dir }}/osx-bin/Release/* ./packages/react-native/sdks/hermesc/osx-bin/.
+        elif [[ -d ${{ inputs.hermes-ws-dir }}/osx-bin/Debug ]]; then
+          cp -r ${{ inputs.hermes-ws-dir }}/osx-bin/Debug/* ./packages/react-native/sdks/hermesc/osx-bin/.
+        else
+          ls ${{ inputs.hermes-ws-dir }}/osx-bin || echo "hermesc macOS artifacts directory missing."
+          echo "Could not locate macOS hermesc binary."; exit 1;
+        fi
+
+        # Sometimes, GHA creates artifacts with lowercase Debug/Release. Make sure that if it happen, we uppercase them.
+        if [[ -f "${{ inputs.hermes-ws-dir }}/hermes-runtime-darwin/hermes-ios-debug.tar.gz" ]]; then
+          mv "${{ inputs.hermes-ws-dir }}/hermes-runtime-darwin/hermes-ios-debug.tar.gz" "${{ inputs.hermes-ws-dir }}/hermes-runtime-darwin/hermes-ios-Debug.tar.gz"
+        fi
+
+        if [[ -f "${{ inputs.hermes-ws-dir }}/hermes-runtime-darwin/hermes-ios-release.tar.gz" ]]; then
+          mv "${{ inputs.hermes-ws-dir }}/hermes-runtime-darwin/hermes-ios-release.tar.gz" "${{ inputs.hermes-ws-dir }}/hermes-runtime-darwin/hermes-ios-Release.tar.gz"
+        fi
+
+        cp -r ${{ inputs.hermes-ws-dir }}/win64-bin/* ./packages/react-native/sdks/hermesc/win64-bin/.
+        cp -r ${{ inputs.hermes-ws-dir }}/linux64-bin/* ./packages/react-native/sdks/hermesc/linux64-bin/.
+
+        # Make sure the hermesc files are actually executable.
+        chmod -R +x packages/react-native/sdks/hermesc/*
+
+        mkdir -p ./packages/react-native/ReactAndroid/external-artifacts/artifacts/
+        cp ${{ inputs.hermes-ws-dir }}/hermes-runtime-darwin/hermes-ios-Debug.tar.gz ./packages/react-native/ReactAndroid/external-artifacts/artifacts/hermes-ios-debug.tar.gz
+        cp ${{ inputs.hermes-ws-dir }}/hermes-runtime-darwin/hermes-ios-Release.tar.gz ./packages/react-native/ReactAndroid/external-artifacts/artifacts/hermes-ios-release.tar.gz
+        cp ${{ inputs.hermes-ws-dir }}/dSYM/Debug/hermes.framework.dSYM  ./packages/react-native/ReactAndroid/external-artifacts/artifacts/hermes-framework-dSYM-debug.tar.gz
+        cp ${{ inputs.hermes-ws-dir }}/dSYM/Release/hermes.framework.dSYM  ./packages/react-native/ReactAndroid/external-artifacts/artifacts/hermes-framework-dSYM-release.tar.gz
+    - name: Setup node.js
+      uses: ./.github/actions/setup-node
+    - name: Setup gradle
+      uses: ./.github/actions/setup-gradle
+    - name: Install dependencies
+      uses: ./.github/actions/yarn-install-with-cache
+    - name: Build packages
+      shell: bash
+      run: yarn build
+    # Continue with publish steps
+    - name: Set npm credentials
+      if: ${{ inputs.release-type == 'release' ||
+        inputs.release-type == 'nightly' }}
+      shell: bash
+      run: echo "//registry.npmjs.org/:_authToken=${{ inputs.gha-npm-token }}" > ~/.npmrc
+    - name: Publish NPM
+      shell: bash
+      run: |
+        echo "GRADLE_OPTS = $GRADLE_OPTS"
+        # We can't have a separate step because each command is executed in a separate shell
+        # so variables exported in a command are not visible in another.
+        if [[ "${{ inputs.release-type }}" == "dry-run" ]]; then
+          export ORG_GRADLE_PROJECT_reactNativeArchitectures="arm64-v8a"
+        else
+          export ORG_GRADLE_PROJECT_reactNativeArchitectures="armeabi-v7a,arm64-v8a,x86,x86_64"
+        fi
+        node ./scripts/releases-ci/publish-npm.js -t ${{ inputs.release-type }}
+    - name: Upload npm logs
+      uses: actions/upload-artifact@v4.3.4
+      with:
+        name: npm-logs
+        path: ~/.npm/_logs
+    - name: Build release package as a job artifact
+      if: ${{ inputs.release-type == 'dry-run' }}
+      shell: bash
+      run: |
+        mkdir -p build
+
+        FILENAME=$(cd packages/react-native; npm pack | tail -1)
+        mv "packages/react-native/$FILENAME" build/
+
+        echo "$FILENAME" > build/react-native-package-version
+    - name: Upload release package
+      uses: actions/upload-artifact@v4.3.4
+      if: ${{ inputs.release-type == 'dry-run' }}
+      with:
+        name: react-native-package
+        path: build

@@ -840,7 +840,9 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image, CGSize size, CGFloat scal
                                                                    progressBlock:progressBlock
                                                                 partialLoadBlock:partialLoadBlock
                                                                  completionBlock:completionHandler];
+  [cancelLoadLock lock];
   cancelLoad = loaderRequest.cancellationBlock;
+  [cancelLoadLock unlock];
   return [[RCTImageURLLoaderRequest alloc] initWithRequestId:loaderRequest.requestId
                                                     imageURL:imageURLRequest.URL
                                            cancellationBlock:cancellationBlock];

@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  * @oncall react_native
  */
@@ -23,8 +24,8 @@ jest.mock(
 describe('Performance', () => {
   it('clearEntries removes correct entry types', async () => {
     const performance = new Performance();
-    performance.mark('entry1', 0, 0);
-    performance.mark('mark2', 0, 0);
+    performance.mark('entry1', {startTime: 0});
+    performance.mark('mark2', {startTime: 0});
 
     performance.measure('entry1', {start: 0, duration: 0});
     performance.measure('measure2', {start: 0, duration: 0});
@@ -36,8 +37,8 @@ describe('Performance', () => {
       'measure2',
     ]);
 
-    performance.mark('entry2', 0, 0);
-    performance.mark('mark3', 0, 0);
+    performance.mark('entry2', {startTime: 0});
+    performance.mark('mark3', {startTime: 0});
 
     performance.clearMeasures();
 
@@ -56,10 +57,10 @@ describe('Performance', () => {
     performance.clearMarks();
     performance.clearMeasures();
 
-    performance.mark('entry1', 0, 0);
-    performance.mark('mark2', 0, 0);
+    performance.mark('entry1', {startTime: 0});
+    performance.mark('mark2', {startTime: 0});
 
-    jest.spyOn(console, 'warn').mockImplementation();
+    jest.spyOn(console, 'warn').mockImplementation(() => {});
 
     performance.getEntriesByType('mark');
     expect(console.warn).not.toHaveBeenCalled();
@@ -85,8 +86,8 @@ describe('Performance', () => {
     performance.clearMarks();
     performance.clearMeasures();
 
-    performance.mark('entry1', 0, 0);
-    performance.mark('mark2', 0, 0);
+    performance.mark('entry1', {startTime: 0});
+    performance.mark('mark2', {startTime: 0});
 
     performance.measure('entry1', {start: 0, duration: 0});
     performance.measure('measure2', {start: 0, duration: 0});

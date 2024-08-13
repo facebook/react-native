@@ -11,7 +11,7 @@
 
 'use strict';
 
-import type {FilterPrimitive} from '../StyleSheetTypes';
+import type {FilterFunction} from '../StyleSheetTypes';
 
 import processColor from '../processColor';
 
@@ -40,12 +40,12 @@ describe('processFilter', () => {
     },
   ]);
 
-  testNumericFilter('hue-rotate', 0, [{'hue-rotate': 0}]);
-  testUnitFilter('hue-rotate', 90, 'deg', [{'hue-rotate': 90}]);
+  testNumericFilter('hue-rotate', 0, [{hueRotate: 0}]);
+  testUnitFilter('hue-rotate', 90, 'deg', [{hueRotate: 90}]);
   testUnitFilter('hue-rotate', 1.5708, 'rad', [
-    {'hue-rotate': (180 * 1.5708) / Math.PI},
+    {hueRotate: (180 * 1.5708) / Math.PI},
   ]);
-  testUnitFilter('hue-rotate', -90, 'deg', [{'hue-rotate': -90}]);
+  testUnitFilter('hue-rotate', -90, 'deg', [{hueRotate: -90}]);
   testUnitFilter('hue-rotate', 1.5, 'grad', []);
   testNumericFilter('hue-rotate', 90, []);
   testUnitFilter('hue-rotate', 50, '%', []);
@@ -56,14 +56,9 @@ describe('processFilter', () => {
         {brightness: 0.5},
         {opacity: 0.5},
         {blur: 5},
-        {'hue-rotate': '90deg'},
+        {hueRotate: '90deg'},
       ]),
-    ).toEqual([
-      {brightness: 0.5},
-      {opacity: 0.5},
-      {blur: 5},
-      {'hue-rotate': 90},
-    ]);
+    ).toEqual([{brightness: 0.5}, {opacity: 0.5}, {blur: 5}, {hueRotate: 90}]);
   });
   it('multiple filters one invalid', () => {
     expect(
@@ -71,7 +66,7 @@ describe('processFilter', () => {
         {brightness: 0.5},
         {opacity: 0.5},
         {blur: 5},
-        {'hue-rotate': '90foo'},
+        {hueRotate: '90foo'},
       ]),
     ).toEqual([]);
   });
@@ -98,7 +93,7 @@ describe('processFilter', () => {
       ),
     ).toEqual([
       {brightness: 0.5},
-      {'hue-rotate': 90},
+      {hueRotate: 90},
       {brightness: 0.5},
       {brightness: 0.5},
     ]);
@@ -118,12 +113,7 @@ describe('processFilter', () => {
   it('string multiple filters', () => {
     expect(
       processFilter('brightness(0.5) opacity(0.5) blur(5) hue-rotate(90deg)'),
-    ).toEqual([
-      {brightness: 0.5},
-      {opacity: 0.5},
-      {blur: 5},
-      {'hue-rotate': 90},
-    ]);
+    ).toEqual([{brightness: 0.5}, {opacity: 0.5}, {blur: 5}, {hueRotate: 90}]);
   });
   it('string multiple filters one invalid', () => {
     expect(
@@ -175,7 +165,7 @@ function testStandardFilter(filter: string): void {
 function testNumericFilter(
   filter: string,
   value: number,
-  expected: Array<FilterPrimitive>,
+  expected: Array<FilterFunction>,
 ): void {
   const filterObject = createFilterPrimitive(filter, value);
   const filterString = filter + '(' + value.toString() + ')';
@@ -192,7 +182,7 @@ function testUnitFilter(
   filter: string,
   value: number,
   unit: string,
-  expected: Array<FilterPrimitive>,
+  expected: Array<FilterFunction>,
 ): void {
   const unitAmount = value + unit;
   const filterObject = createFilterPrimitive(filter, unitAmount);
@@ -209,7 +199,7 @@ function testUnitFilter(
 function createFilterPrimitive(
   filter: string,
   value: number | string,
-): FilterPrimitive {
+): FilterFunction {
   switch (filter) {
     case 'brightness':
       return {brightness: value};
@@ -220,7 +210,7 @@ function createFilterPrimitive(
     case 'grayscale':
       return {grayscale: value};
     case 'hue-rotate':
-      return {'hue-rotate': value};
+      return {hueRotate: value};
     case 'invert':
       return {invert: value};
     case 'opacity':
@@ -238,7 +228,7 @@ function testDropShadow() {
   it('should parse string drop-shadow', () => {
     expect(processFilter('drop-shadow(4px 4 10px red)')).toEqual([
       {
-        'drop-shadow': {
+        dropShadow: {
           offsetX: 4,
           offsetY: 4,
           color: processColor('red'),
@@ -251,7 +241,7 @@ function testDropShadow() {
   it('should parse string negative offsets drop-shadow', () => {
     expect(processFilter('drop-shadow(-4 -4)')).toEqual([
       {
-        'drop-shadow': {
+        dropShadow: {
           offsetX: -4,
           offsetY: -4,
         },
@@ -264,19 +254,19 @@ function testDropShadow() {
       processFilter('drop-shadow(4 4) drop-shadow(4 4) drop-shadow(4 4)'),
     ).toEqual([
       {
-        'drop-shadow': {
+        dropShadow: {
           offsetX: 4,
           offsetY: 4,
         },
       },
       {
-        'drop-shadow': {
+        dropShadow: {
           offsetX: 4,
           offsetY: 4,
         },
       },
       {
-        'drop-shadow': {
+        dropShadow: {
           offsetX: 4,
           offsetY: 4,
         },
@@ -289,7 +279,7 @@ function testDropShadow() {
       processFilter('    drop-shadow(4px  4   10px        red)    '),
     ).toEqual([
       {
-        'drop-shadow': {
+        dropShadow: {
           offsetX: 4,
           offsetY: 4,
           color: processColor('red'),
@@ -306,7 +296,7 @@ function testDropShadow() {
       ),
     ).toEqual([
       {
-        'drop-shadow': {
+        dropShadow: {
           offsetX: 4,
           offsetY: 4,
           color: processColor('red'),
@@ -321,7 +311,7 @@ function testDropShadow() {
   it('should parse string drop-shadow with color', () => {
     expect(processFilter('drop-shadow(50 50 purple)')).toEqual([
       {
-        'drop-shadow': {
+        dropShadow: {
           offsetX: 50,
           offsetY: 50,
           color: processColor('purple'),
@@ -333,7 +323,7 @@ function testDropShadow() {
   it('should parse string with mixed case drop-shadow', () => {
     expect(processFilter('DroP-sHaDOw(50 50 purple)')).toEqual([
       {
-        'drop-shadow': {
+        dropShadow: {
           offsetX: 50,
           offsetY: 50,
           color: processColor('purple'),
@@ -346,7 +336,7 @@ function testDropShadow() {
     expect(
       processFilter([
         {
-          'drop-shadow': {
+          dropShadow: {
             offsetX: 4,
             offsetY: 4,
             color: '#FFFFFF',
@@ -356,7 +346,7 @@ function testDropShadow() {
       ]),
     ).toEqual([
       {
-        'drop-shadow': {
+        dropShadow: {
           offsetX: 4,
           offsetY: 4,
           standardDeviation: 10,
@@ -390,7 +380,7 @@ function testDropShadow() {
     expect(
       // $FlowExpectedError[incompatible-call]
       processFilter([
-        {'drop-shadow': {offsetX: 4, offsetY: 5, invalid: 'invalid arg'}},
+        {dropShadow: {offsetX: 4, offsetY: 5, invalid: 'invalid arg'}},
       ]),
     ).toEqual([]);
   });
@@ -398,7 +388,7 @@ function testDropShadow() {
   it('should fail on invalid argument for drop-shadow object', () => {
     expect(
       // $FlowExpectedError[incompatible-call]
-      processFilter([{'drop-shadow': 8}]),
+      processFilter([{dropShadow: 8}]),
     ).toEqual([]);
   });
 }

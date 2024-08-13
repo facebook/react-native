@@ -27,11 +27,13 @@ import com.facebook.react.bridge.RetryableMountingLayerException;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.build.ReactBuildConfig;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.touch.JSResponderHandler;
 import com.facebook.react.uimanager.layoutanimation.LayoutAnimationController;
 import com.facebook.react.uimanager.layoutanimation.LayoutAnimationListener;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
+import com.facebook.yoga.YogaDirection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -153,8 +155,17 @@ public class NativeViewHierarchyManager {
     viewManager.updateExtraData(viewToUpdate, extraData);
   }
 
+  /**
+   * @deprecated Please use {@link #updateLayout(int tag, int x, int y, int width, int height,
+   *     YogaDirection layoutDirection)} instead.
+   */
+  @Deprecated
+  public void updateLayout(int tag, int x, int y, int width, int height) {
+    updateLayout(tag, tag, x, y, width, height, YogaDirection.INHERIT);
+  }
+
   public synchronized void updateLayout(
-      int parentTag, int tag, int x, int y, int width, int height) {
+      int parentTag, int tag, int x, int y, int width, int height, YogaDirection layoutDirection) {
     if (DEBUG_MODE) {
       FLog.d(TAG, "updateLayout[%d]->[%d]: %d %d %d %d", tag, parentTag, x, y, width, height);
     }
@@ -166,6 +177,10 @@ public class NativeViewHierarchyManager {
         .flush();
     try {
       View viewToUpdate = resolveView(tag);
+
+      if (ReactNativeFeatureFlags.setAndroidLayoutDirection()) {
+        viewToUpdate.setLayoutDirection(LayoutDirectionUtil.toAndroidFromYoga(layoutDirection));
+      }
 
       // Even though we have exact dimensions, we still call measure because some platform views
       // (e.g.

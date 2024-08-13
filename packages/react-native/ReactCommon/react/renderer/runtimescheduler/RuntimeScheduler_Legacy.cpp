@@ -98,7 +98,7 @@ std::shared_ptr<Task> RuntimeScheduler_Legacy::scheduleIdleTask(
   return nullptr;
 }
 
-bool RuntimeScheduler_Legacy::getShouldYield() const noexcept {
+bool RuntimeScheduler_Legacy::getShouldYield() noexcept {
   return runtimeAccessRequests_ > 0;
 }
 
@@ -186,6 +186,11 @@ void RuntimeScheduler_Legacy::setShadowTreeRevisionConsistencyManager(
     ShadowTreeRevisionConsistencyManager*
         shadowTreeRevisionConsistencyManager) {
   shadowTreeRevisionConsistencyManager_ = shadowTreeRevisionConsistencyManager;
+}
+
+void RuntimeScheduler_Legacy::setPerformanceEntryReporter(
+    PerformanceEntryReporter* /*performanceEntryReporter*/) {
+  // No-op in the legacy scheduler
 }
 
 #pragma mark - Private

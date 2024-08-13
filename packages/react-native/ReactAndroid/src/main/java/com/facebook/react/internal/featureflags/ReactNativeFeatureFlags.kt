@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<298c05e5b7384384b5fcdd851a298738>>
+ * @generated SignedSource<<275859c437f60e7733da2b238c911152>>
  */
 
 /**
@@ -35,12 +35,6 @@ public object ReactNativeFeatureFlags {
   public fun commonTestFlag(): Boolean = accessor.commonTestFlag()
 
   /**
-   * Enables the differentiator to understand the "collapsableChildren" prop
-   */
-  @JvmStatic
-  public fun allowCollapsableChildren(): Boolean = accessor.allowCollapsableChildren()
-
-  /**
    * Adds support for recursively processing commits that mount synchronously (Android only).
    */
   @JvmStatic
@@ -51,6 +45,18 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun batchRenderingUpdatesInEventLoop(): Boolean = accessor.batchRenderingUpdatesInEventLoop()
+
+  /**
+   * When enabled, insert of views on Android will be moved from the beginning of the IntBufferBatchMountItem to be after layout updates.
+   */
+  @JvmStatic
+  public fun changeOrderOfMountingInstructionsOnAndroid(): Boolean = accessor.changeOrderOfMountingInstructionsOnAndroid()
+
+  /**
+   * Do not wait for a main-thread dispatch to complete init to start executing work on the JS thread on Android
+   */
+  @JvmStatic
+  public fun completeReactInstanceCreationOnBgThreadOnAndroid(): Boolean = accessor.completeReactInstanceCreationOnBgThreadOnAndroid()
 
   /**
    * When enabled, ReactInstanceManager will clean up Fabric surfaces on destroy().
@@ -65,16 +71,52 @@ public object ReactNativeFeatureFlags {
   public fun enableAlignItemsBaselineOnFabricIOS(): Boolean = accessor.enableAlignItemsBaselineOnFabricIOS()
 
   /**
+   * Use BackgroundStyleApplicator in place of other background/border drawing code
+   */
+  @JvmStatic
+  public fun enableBackgroundStyleApplicator(): Boolean = accessor.enableBackgroundStyleApplicator()
+
+  /**
    * Clean yoga node when <TextInput /> does not change.
    */
   @JvmStatic
   public fun enableCleanTextInputYogaNode(): Boolean = accessor.enableCleanTextInputYogaNode()
 
   /**
+   * Feature flag to configure eager attachment of the root view/initialisation of the JS code.
+   */
+  @JvmStatic
+  public fun enableEagerRootViewAttachment(): Boolean = accessor.enableEagerRootViewAttachment()
+
+  /**
+   * Enables the retention of EventEmitterWrapper on Android till the touch gesture is over to fix a bug on pressable (#44610)
+   */
+  @JvmStatic
+  public fun enableEventEmitterRetentionDuringGesturesOnAndroid(): Boolean = accessor.enableEventEmitterRetentionDuringGesturesOnAndroid()
+
+  /**
+   * This feature flag enables logs for Fabric.
+   */
+  @JvmStatic
+  public fun enableFabricLogs(): Boolean = accessor.enableFabricLogs()
+
+  /**
+   * When the app is completely migrated to Fabric, set this flag to true to disable parts of Paper infrastructure that are not needed anymore but consume memory and CPU. Specifically, UIViewOperationQueue and EventDispatcherImpl will no longer work as they will not subscribe to ReactChoreographer for updates.
+   */
+  @JvmStatic
+  public fun enableFabricRendererExclusively(): Boolean = accessor.enableFabricRendererExclusively()
+
+  /**
    * When enabled, the renderer would only fail commits when they propagate state and the last commit that updated state changed before committing.
    */
   @JvmStatic
   public fun enableGranularShadowTreeStateReconciliation(): Boolean = accessor.enableGranularShadowTreeStateReconciliation()
+
+  /**
+   * Enables the reporting of long tasks through `PerformanceObserver`. Only works if the event loop is enabled.
+   */
+  @JvmStatic
+  public fun enableLongTaskAPI(): Boolean = accessor.enableLongTaskAPI()
 
   /**
    * Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).
@@ -89,6 +131,12 @@ public object ReactNativeFeatureFlags {
   public fun enablePropsUpdateReconciliationAndroid(): Boolean = accessor.enablePropsUpdateReconciliationAndroid()
 
   /**
+   * Report paint time inside the Event Timing API implementation (PerformanceObserver).
+   */
+  @JvmStatic
+  public fun enableReportEventPaintTime(): Boolean = accessor.enableReportEventPaintTime()
+
+  /**
    * Dispatches state updates synchronously in Fabric (e.g.: updates the scroll position in the shadow tree synchronously from the main thread).
    */
   @JvmStatic
@@ -99,6 +147,18 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableUIConsistency(): Boolean = accessor.enableUIConsistency()
+
+  /**
+   * Enables View Recycling. When enabled, individual ViewManagers must still opt-in.
+   */
+  @JvmStatic
+  public fun enableViewRecycling(): Boolean = accessor.enableViewRecycling()
+
+  /**
+   * When enabled, rawProps in Props will not include Yoga specific props.
+   */
+  @JvmStatic
+  public fun excludeYogaFromRawProps(): Boolean = accessor.excludeYogaFromRawProps()
 
   /**
    * Start image fetching during view preallocation instead of waiting for layout pass
@@ -167,6 +227,18 @@ public object ReactNativeFeatureFlags {
   public fun setAndroidLayoutDirection(): Boolean = accessor.setAndroidLayoutDirection()
 
   /**
+   * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.
+   */
+  @JvmStatic
+  public fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean = accessor.traceTurboModulePromiseRejectionsOnAndroid()
+
+  /**
+   * Should this application enable the Fabric Interop Layer for Android? If yes, the application will behave so that it can accept non-Fabric components and render them on Fabric. This toggle is controlling extra logic such as custom event dispatching that are needed for the Fabric Interop Layer to work correctly.
+   */
+  @JvmStatic
+  public fun useFabricInterop(): Boolean = accessor.useFabricInterop()
+
+  /**
    * Invoke callbacks immediately on the ReactInstance rather than going through a background thread for synchronization
    */
   @JvmStatic
@@ -191,6 +263,12 @@ public object ReactNativeFeatureFlags {
   public fun useNewReactImageViewBackgroundDrawing(): Boolean = accessor.useNewReactImageViewBackgroundDrawing()
 
   /**
+   * Moves more of the work in view preallocation to the main thread to free up JS thread.
+   */
+  @JvmStatic
+  public fun useOptimisedViewPreallocationOnAndroid(): Boolean = accessor.useOptimisedViewPreallocationOnAndroid()
+
+  /**
    * When enabled, cloning shadow nodes within react native will update the reference held by the current JS fiber tree.
    */
   @JvmStatic
@@ -207,6 +285,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun useStateAlignmentMechanism(): Boolean = accessor.useStateAlignmentMechanism()
+
+  /**
+   * In Bridgeless mode, should legacy NativeModules use the TurboModule system?
+   */
+  @JvmStatic
+  public fun useTurboModuleInterop(): Boolean = accessor.useTurboModuleInterop()
 
   /**
    * Overrides the feature flags with the ones provided by the given provider

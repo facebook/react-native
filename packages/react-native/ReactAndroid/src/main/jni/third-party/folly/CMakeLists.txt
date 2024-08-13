@@ -37,9 +37,6 @@ SET(folly_runtime_SRC
         folly/Unicode.cpp
         folly/concurrency/CacheLocality.cpp
         folly/container/detail/F14Table.cpp
-        folly/detail/base64_detail/Base64_SSE4_2.cpp
-        folly/detail/base64_detail/Base64Api.cpp
-        folly/detail/base64_detail/Base64SWAR.cpp
         folly/detail/FileUtilDetail.cpp
         folly/detail/Futex.cpp
         folly/detail/SplitStringSimd.cpp
@@ -57,7 +54,7 @@ SET(folly_runtime_SRC
         folly/system/ThreadId.cpp
         folly/system/ThreadName.cpp)
 
-add_library(folly_runtime SHARED ${folly_runtime_SRC})
+add_library(folly_runtime STATIC ${folly_runtime_SRC})
 
 target_compile_options(folly_runtime
         PRIVATE

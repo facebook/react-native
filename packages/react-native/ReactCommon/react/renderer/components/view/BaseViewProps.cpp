@@ -166,6 +166,15 @@ BaseViewProps::BaseViewProps(
                                                        "experimental_filter",
                                                        sourceProps.filter,
                                                        {})),
+      backgroundImage(
+          CoreFeatures::enablePropIteratorSetter
+              ? sourceProps.backgroundImage
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "experimental_backgroundImage",
+                    sourceProps.backgroundImage,
+                    {})),
       mixBlendMode(
           CoreFeatures::enablePropIteratorSetter
               ? sourceProps.mixBlendMode
@@ -311,6 +320,7 @@ void BaseViewProps::setProp(
   switch (hash) {
     RAW_SET_PROP_SWITCH_CASE_BASIC(opacity);
     RAW_SET_PROP_SWITCH_CASE_BASIC(backgroundColor);
+    RAW_SET_PROP_SWITCH_CASE(backgroundImage, "experimental_backgroundImage");
     RAW_SET_PROP_SWITCH_CASE_BASIC(shadowColor);
     RAW_SET_PROP_SWITCH_CASE_BASIC(shadowOffset);
     RAW_SET_PROP_SWITCH_CASE_BASIC(shadowOpacity);
@@ -432,12 +442,8 @@ static BorderRadii radiiPercentToPoint(
   };
 }
 
-BorderMetrics BaseViewProps::resolveBorderMetrics(
-    const LayoutMetrics& layoutMetrics) const {
-  auto isRTL =
-      bool{layoutMetrics.layoutDirection == LayoutDirection::RightToLeft};
-
-  auto borderWidths = CascadedBorderWidths{
+CascadedBorderWidths BaseViewProps::getBorderWidths() const {
+  return CascadedBorderWidths{
       /* .left = */ optionalFloatFromYogaValue(
           yogaStyle.border(yoga::Edge::Left)),
       /* .top = */
@@ -457,6 +463,14 @@ BorderMetrics BaseViewProps::resolveBorderMetrics(
       /* .all = */
       optionalFloatFromYogaValue(yogaStyle.border(yoga::Edge::All)),
   };
+}
+
+BorderMetrics BaseViewProps::resolveBorderMetrics(
+    const LayoutMetrics& layoutMetrics) const {
+  auto isRTL =
+      bool{layoutMetrics.layoutDirection == LayoutDirection::RightToLeft};
+
+  auto borderWidths = getBorderWidths();
 
   BorderRadii radii = radiiPercentToPoint(
       borderRadii.resolve(isRTL, ValueUnit{0.0f, UnitType::Point}),

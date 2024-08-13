@@ -39,12 +39,11 @@ internal object FilterHelper {
             "grayscale" -> createGrayscaleEffect((filter.value as Double).toFloat(), chainedEffects)
             "sepia" -> createSepiaEffect((filter.value as Double).toFloat(), chainedEffects)
             "saturate" -> createSaturateEffect((filter.value as Double).toFloat(), chainedEffects)
-            "hue-rotate" ->
-                createHueRotateEffect((filter.value as Double).toFloat(), chainedEffects)
+            "hueRotate" -> createHueRotateEffect((filter.value as Double).toFloat(), chainedEffects)
             "invert" -> createInvertEffect((filter.value as Double).toFloat(), chainedEffects)
             "blur" -> createBlurEffect((filter.value as Double).toFloat(), chainedEffects)
             "opacity" -> createOpacityEffect((filter.value as Double).toFloat(), chainedEffects)
-            "drop-shadow" ->
+            "dropShadow" ->
                 parseAndCreateDropShadowEffect(filter.value as ReadableMap, chainedEffects)
             else -> throw IllegalArgumentException("Invalid filter name: $filterName")
           }
@@ -69,7 +68,7 @@ internal object FilterHelper {
             "grayscale" -> createGrayscaleColorMatrix(amount)
             "sepia" -> createSepiaColorMatrix(amount)
             "saturate" -> createSaturateColorMatrix(amount)
-            "hue-rotate" -> createHueRotateColorMatrix(amount)
+            "hueRotate" -> createHueRotateColorMatrix(amount)
             "invert" -> createInvertColorMatrix(amount)
             "opacity" -> createOpacityColorMatrix(amount)
             else -> throw IllegalArgumentException("Invalid color matrix filter: $filterName")
@@ -83,11 +82,14 @@ internal object FilterHelper {
 
   @JvmStatic
   public fun isOnlyColorMatrixFilters(filters: ReadableArray?): Boolean {
-    filters ?: return false
+    if (filters == null || filters.size() == 0) {
+      return false
+    }
+
     for (i in 0 until filters.size()) {
       val filter = filters.getMap(i).entryIterator.next()
       val filterName = filter.key
-      if (filterName == "blur" || filterName == "drop-shadow") {
+      if (filterName == "blur" || filterName == "dropShadow") {
         return false
       }
     }
@@ -388,7 +390,7 @@ internal object FilterHelper {
     }
   }
 
-  private fun sigmaToRadius(sigma: Float): Float {
+  internal fun sigmaToRadius(sigma: Float): Float {
     // Android takes blur amount as a radius while web takes a sigma. This value
     // is used under the hood to convert between them on Android
     // https://cs.android.com/android/platform/superproject/main/+/main:frameworks/base/libs/hwui/jni/RenderEffect.cpp

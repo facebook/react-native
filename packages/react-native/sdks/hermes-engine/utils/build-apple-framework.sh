@@ -31,20 +31,29 @@ function use_env_var_or_ruby_prop {
   fi
 }
 
+function use_env_var {
+  if [[ -n "$1" ]]; then
+    echo "$1"
+  else
+    echo "error: Missing $2 environment variable"
+    exit 1
+  fi
+}
+
 function get_release_version {
   use_env_var_or_ruby_prop "${RELEASE_VERSION}" "version"
 }
 
 function get_ios_deployment_target {
-  use_env_var_or_ruby_prop "${IOS_DEPLOYMENT_TARGET}" "deployment_target('ios')"
+  use_env_var "${IOS_DEPLOYMENT_TARGET}" "IOS_DEPLOYMENT_TARGET"
 }
 
 function get_visionos_deployment_target {
-  use_env_var_or_ruby_prop "${XROS_DEPLOYMENT_TARGET}" "deployment_target('visionos')"
+  use_env_var "${XROS_DEPLOYMENT_TARGET}" "XROS_DEPLOYMENT_TARGET"
 }
 
 function get_mac_deployment_target {
-  use_env_var_or_ruby_prop "${MAC_DEPLOYMENT_TARGET}" "deployment_target('osx')"
+  use_env_var "${MAC_DEPLOYMENT_TARGET}" "MAC_DEPLOYMENT_TARGET"
 }
 
 # Build host hermes compiler for internal bytecode

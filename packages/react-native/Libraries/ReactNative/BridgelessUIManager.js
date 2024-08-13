@@ -382,6 +382,7 @@ const UIManagerJS: UIManagerJSInterface & {[string]: any} = {
       shadowNode,
     );
 
+    // eslint-disable-next-line no-bitwise
     let isAncestor = (result & DOCUMENT_POSITION_CONTAINED_BY) !== 0;
 
     callback([isAncestor]);

@@ -353,7 +353,7 @@ TEST_P(ShadowNodeTest, testCloneTree) {
 TEST_P(ShadowNodeTest, handleRuntimeReferenceTransferOnClone) {
   auto nodeABRev1 = nodeAB_->clone({});
   auto wrappedShadowNode = std::make_shared<ShadowNodeWrapper>(nodeABRev1);
-  nodeABRev1->setRuntimeShadowNodeReference(&*wrappedShadowNode);
+  nodeABRev1->setRuntimeShadowNodeReference(wrappedShadowNode);
 
   auto nodeABRev2 = nodeABRev1->clone({});
 

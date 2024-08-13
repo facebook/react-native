@@ -9,11 +9,10 @@
 
 package com.facebook.react.defaults
 
-import com.facebook.infer.annotation.Assertions
 import com.facebook.react.common.annotations.VisibleForTesting
 import com.facebook.react.config.ReactFeatureFlags
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsDefaults
+import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlagsDefaults
 
 /**
  * A utility class that serves as an entry point for users setup the New Architecture.
@@ -42,25 +41,16 @@ public object DefaultNewArchitectureEntryPoint {
     }
     ReactFeatureFlags.useTurboModules = turboModulesEnabled
     ReactFeatureFlags.enableFabricRenderer = fabricEnabled
-    ReactFeatureFlags.unstable_useFabricInterop = fabricEnabled
-    ReactFeatureFlags.enableBridgelessArchitecture = bridgelessEnabled
-    ReactFeatureFlags.unstable_useTurboModuleInterop = bridgelessEnabled
-    val fuseboxEnabledDebug = fuseboxEnabled
 
     if (bridgelessEnabled) {
       ReactNativeFeatureFlags.override(
-          object : ReactNativeFeatureFlagsDefaults() {
-            override fun useModernRuntimeScheduler(): Boolean = true
+          object : ReactNativeNewArchitectureFeatureFlagsDefaults(newArchitectureEnabled = true) {
+            override fun useFabricInterop(): Boolean = fabricEnabled
 
-            override fun enableMicrotasks(): Boolean = true
-
-            override fun batchRenderingUpdatesInEventLoop(): Boolean = true
-
-            override fun useNativeViewConfigsInBridgelessMode(): Boolean = true
-
-            // We need to assign this now as we can't call ReactNativeFeatureFlags.override()
-            // more than once.
-            override fun fuseboxEnabledDebug(): Boolean = fuseboxEnabledDebug
+            // We turn this feature flag to true for OSS to fix #44610 and #45126 and other
+            // similar bugs related to pressable.
+            override fun enableEventEmitterRetentionDuringGesturesOnAndroid(): Boolean =
+                fabricEnabled
           })
     }
 
@@ -70,7 +60,6 @@ public object DefaultNewArchitectureEntryPoint {
     privateBridgelessEnabled = bridgelessEnabled
 
     DefaultSoLoader.maybeLoadSoLibrary()
-    loaded = true
   }
 
   private var privateFabricEnabled: Boolean = false
@@ -112,41 +101,4 @@ public object DefaultNewArchitectureEntryPoint {
                 "bridgelessEnabled=true requires (turboModulesEnabled=true AND fabricEnabled=true) - Please update your DefaultNewArchitectureEntryPoint.load() parameters."
         else -> true to ""
       }
-
-  // region unstable_loadFusebox (short-lived API for testing Fusebox - EXPERIMENTAL)
-
-  /**
-   * Set to {@code true} when {@link #load()} is called. Used for assertion in
-   * {@link #unstable_loadFusebox()}.
-   */
-  private var loaded: Boolean = false
-
-  /** Set to {@code true} if {@link #unstable_loadFusebox()} was called. */
-  private var fuseboxEnabled: Boolean = false
-
-  /**
-   * If called, enables the new debugger stack (codename Fusebox). Must be called before
-   * {@link #load()}.
-   *
-   * @param isNewArchEnabled Please pass {@code BuildConfig.IS_NEW_ARCH_ENABLED} here.
-   */
-  @JvmStatic
-  public fun unstable_loadFusebox(
-      isNewArchEnabled: Boolean,
-  ) {
-    fuseboxEnabled = true
-
-    if (!isNewArchEnabled) {
-      ReactNativeFeatureFlags.override(
-          object : ReactNativeFeatureFlagsDefaults() {
-            override fun fuseboxEnabledDebug(): Boolean = true
-          })
-    } else {
-      Assertions.assertCondition(
-          loaded == false, "unstable_loadFusebox() must be called before load()")
-    }
-  }
-
-  // endregion
-
 }
