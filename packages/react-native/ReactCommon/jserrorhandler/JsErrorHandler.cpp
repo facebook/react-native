@@ -100,8 +100,7 @@ parseErrorStack(const jsi::JSError& error, bool isFatal, bool isHermes) {
 }
 
 JsErrorHandler::JsErrorHandler(JsErrorHandler::OnJsError onJsError)
-    : _onJsError(std::move(onJsError)),
-      _hasHandledFatalError(false){
+    : _onJsError(std::move(onJsError)){
 
       };
 
@@ -137,6 +136,14 @@ bool JsErrorHandler::hasHandledFatalError() {
 
 void JsErrorHandler::setJsPipelineReady() {
   _isJsPipelineReady = true;
+}
+
+bool JsErrorHandler::isJsPipelineReady() {
+  return _isJsPipelineReady;
+}
+
+void JsErrorHandler::notifyOfFatalError() {
+  _hasHandledFatalError = true;
 }
 
 } // namespace facebook::react

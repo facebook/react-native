@@ -35,6 +35,8 @@ class JsErrorHandler {
   void handleFatalError(jsi::Runtime& runtime, jsi::JSError& error);
   bool hasHandledFatalError();
   void setJsPipelineReady();
+  bool isJsPipelineReady();
+  void notifyOfFatalError();
 
  private:
   /**
@@ -45,7 +47,7 @@ class JsErrorHandler {
    *    teardown get reported properly.
    **/
   OnJsError _onJsError;
-  bool _hasHandledFatalError;
+  bool _hasHandledFatalError{};
   bool _isJsPipelineReady{};
 };
 
