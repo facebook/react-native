@@ -153,6 +153,7 @@ add_library(reactnative
           OnLoad.cpp
           $<TARGET_OBJECTS:jni_lib_merge_glue>
           $<TARGET_OBJECTS:logger>
+          $<TARGET_OBJECTS:mapbufferjni>
           $<TARGET_OBJECTS:react_bridging>
           $<TARGET_OBJECTS:react_codegen_rncore>
           $<TARGET_OBJECTS:react_debug>
@@ -199,12 +200,12 @@ target_link_libraries(reactnative PUBLIC
         glog
         jsi
         log
-        mapbufferjni
         reactnativejni
         yoga
 )
 target_include_directories(reactnative
         PUBLIC
+        $<TARGET_PROPERTY:mapbufferjni,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_bridging,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_codegen_rncore,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_debug,INTERFACE_INCLUDE_DIRECTORIES>
@@ -307,6 +308,7 @@ add_executable(reactnative_unittest
   hermes-engine::libhermes
   hermes_inspector_modern
   jsi
+  mapbufferjni
   react_cxxreact
   react_codegen_rncore
   react_debug
