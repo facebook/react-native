@@ -16,7 +16,7 @@ import * as React from 'react';
 import TestRenderer from 'react-test-renderer';
 
 export async function create(
-  Component: React.Element<any>,
+  Component: React.MixedElement,
 ): Promise<ReactTestRenderer> {
   let component;
   await TestRenderer.act(async () => {
@@ -33,7 +33,7 @@ export async function unmount(testRenderer: ReactTestRenderer) {
 
 export async function update(
   testRenderer: ReactTestRenderer,
-  element: React.Element<any>,
+  element: React.MixedElement,
 ) {
   await TestRenderer.act(async () => {
     testRenderer.update(element);

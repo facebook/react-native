@@ -63,22 +63,4 @@ public interface ReactHostDelegate {
    * parameter.
    */
   public fun getReactNativeConfig(): ReactNativeConfig
-
-  @UnstableReactNativeAPI
-  public class ReactHostDelegateBase(
-      override val jsMainModulePath: String,
-      override val jsBundleLoader: JSBundleLoader,
-      override val jsRuntimeFactory: JSRuntimeFactory,
-      override val turboModuleManagerDelegateBuilder:
-          ReactPackageTurboModuleManagerDelegate.Builder,
-      override val reactPackages: List<ReactPackage> = emptyList(),
-      override val bindingsInstaller: BindingsInstaller? = null,
-      private val reactNativeConfig: ReactNativeConfig = ReactNativeConfig.DEFAULT_CONFIG,
-      private val exceptionHandler: (error: Exception) -> Unit = {}
-  ) : ReactHostDelegate {
-
-    override fun getReactNativeConfig(): ReactNativeConfig = reactNativeConfig
-
-    override fun handleInstanceException(error: Exception): Unit = exceptionHandler(error)
-  }
 }

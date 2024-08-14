@@ -11,7 +11,7 @@
 import type {
   TScrollViewNativeComponentInstance,
   TScrollViewNativeImperativeHandle,
-} from '../../../src/private/core/components/useSyncOnScroll';
+} from '../../../src/private/components/useSyncOnScroll';
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
 import type {PointProp} from '../../StyleSheet/PointPropType';
@@ -31,11 +31,11 @@ import type {Props as ScrollViewStickyHeaderProps} from './ScrollViewStickyHeade
 import {
   HScrollContentViewNativeComponent,
   HScrollViewNativeComponent,
-} from '../../../src/private/core/components/HScrollViewNativeComponents';
+} from '../../../src/private/components/HScrollViewNativeComponents';
 import {
   VScrollContentViewNativeComponent,
   VScrollViewNativeComponent,
-} from '../../../src/private/core/components/VScrollViewNativeComponents';
+} from '../../../src/private/components/VScrollViewNativeComponents';
 import AnimatedImplementation from '../../Animated/AnimatedImplementation';
 import FrameRateLogger from '../../Interaction/FrameRateLogger';
 import {findNodeHandle} from '../../ReactNative/RendererProxy';
@@ -643,7 +643,7 @@ export type Props = $ReadOnly<{|
    */
   /* $FlowFixMe[unclear-type] - how to handle generic type without existential
    * operator? */
-  refreshControl?: ?React.Element<any>,
+  refreshControl?: ?ExactReactElement_DEPRECATED<any>,
   children?: React.Node,
   /**
    * A ref to the inner View element of the ScrollView. This should be used
@@ -1648,7 +1648,7 @@ class ScrollView extends React.Component<Props, State> {
     this.props.onTouchMove && this.props.onTouchMove(e);
   };
 
-  render(): React.Node | React.Element<string> {
+  render(): React.Node {
     const horizontal = this.props.horizontal === true;
 
     const NativeScrollView = horizontal

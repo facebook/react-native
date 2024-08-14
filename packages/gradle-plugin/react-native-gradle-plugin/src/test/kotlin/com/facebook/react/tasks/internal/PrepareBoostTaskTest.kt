@@ -10,7 +10,8 @@ package com.facebook.react.tasks.internal
 import com.facebook.react.tests.createProject
 import com.facebook.react.tests.createTestTask
 import java.io.*
-import org.junit.Assert.*
+import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
@@ -19,11 +20,13 @@ class PrepareBoostTaskTest {
 
   @get:Rule val tempFolder = TemporaryFolder()
 
-  @Test(expected = IllegalStateException::class)
+  @Test
   fun prepareBoostTask_withMissingConfiguration_fails() {
     val task = createTestTask<PrepareBoostTask>()
-
-    task.taskAction()
+    assertThatThrownBy { task.taskAction() }
+        .isInstanceOf(IllegalStateException::class.java)
+        .hasMessage(
+            "Cannot query the value of task ':PrepareBoostTask' property 'boostVersion' because it has no value available.")
   }
 
   @Test
@@ -43,7 +46,7 @@ class PrepareBoostTaskTest {
     }
     task.taskAction()
 
-    assertTrue(output.listFiles()!!.any { it.name == "CMakeLists.txt" })
+    assertThat(output.listFiles()).extracting("name").contains("CMakeLists.txt")
   }
 
   @Test
@@ -62,7 +65,7 @@ class PrepareBoostTaskTest {
     }
     task.taskAction()
 
-    assertTrue(File(output, "asm/asm.S").exists())
+    assertThat(File(output, "asm/asm.S")).exists()
   }
 
   @Test
@@ -81,7 +84,7 @@ class PrepareBoostTaskTest {
     }
     task.taskAction()
 
-    assertTrue(File(output, "boost_1.0.0/boost/config.hpp").exists())
+    assertThat(File(output, "boost_1.0.0/boost/config.hpp")).exists()
   }
 
   @Test
@@ -100,6 +103,6 @@ class PrepareBoostTaskTest {
     }
     task.taskAction()
 
-    assertTrue(File(output, "boost_1.0.0/boost/config.hpp").exists())
+    assertThat(File(output, "boost_1.0.0/boost/config.hpp")).exists()
   }
 }

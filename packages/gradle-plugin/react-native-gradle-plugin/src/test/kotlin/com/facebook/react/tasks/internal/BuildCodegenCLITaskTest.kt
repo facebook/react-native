@@ -8,7 +8,7 @@
 package com.facebook.react.tasks.internal
 
 import com.facebook.react.tests.createTestTask
-import org.junit.Assert.assertEquals
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
@@ -22,6 +22,6 @@ class BuildCodegenCLITaskTest {
     val bashPath = tempFolder.newFile("bash").absolutePath
     val task = createTestTask<BuildCodegenCLITask> { it.bashWindowsHome.set(bashPath) }
 
-    assertEquals(bashPath, task.bashWindowsHome.get())
+    assertThat(task.bashWindowsHome.get()).isEqualTo(bashPath)
   }
 }

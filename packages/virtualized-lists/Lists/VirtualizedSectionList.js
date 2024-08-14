@@ -38,7 +38,7 @@ export type SectionBase<SectionItemT> = {
       ...
     },
     ...
-  }) => null | React.Element<any>,
+  }) => null | React.MixedElement,
   ItemSeparatorComponent?: ?React.ComponentType<any>,
   keyExtractor?: (item: SectionItemT, index?: ?number) => string,
   ...
@@ -447,8 +447,8 @@ class VirtualizedSectionList<
 
   _updateHighlightMap: {[string]: (boolean) => void} = {};
   _updatePropsMap: {[string]: void | (boolean => void)} = {};
-  _listRef: ?React.ElementRef<typeof VirtualizedList>;
-  _captureRef = (ref: null | React$ElementRef<Class<VirtualizedList>>) => {
+  _listRef: ?VirtualizedList;
+  _captureRef = (ref: null | VirtualizedList) => {
     this._listRef = ref;
   };
 }

@@ -152,8 +152,8 @@ RuntimeExecutor ReactInstance::getUnbufferedRuntimeExecutor() noexcept {
 
 // This BufferedRuntimeExecutor ensures that the main JS bundle finished
 // execution before any JS queued into it from C++ are executed. Use
-// getBufferedRuntimeExecutor() instead if you do not need the main JS bundle to
-// have finished. e.g. setting global variables into JS runtime.
+// getUnbufferedRuntimeExecutor() instead if you do not need the main JS bundle
+// to have finished. e.g. setting global variables into JS runtime.
 RuntimeExecutor ReactInstance::getBufferedRuntimeExecutor() noexcept {
   return [weakBufferedRuntimeExecutor_ =
               std::weak_ptr<BufferedRuntimeExecutor>(bufferedRuntimeExecutor_)](

@@ -15,7 +15,7 @@
 
 import type ReactNativeElement from '../../../src/private/webapis/dom/nodes/ReactNativeElement';
 import type ReadOnlyText from '../../../src/private/webapis/dom/nodes/ReadOnlyText';
-import typeof ReactFabricType from '../../Renderer/shims/ReactFabric';
+import typeof * as RendererProxyT from '../../ReactNative/RendererProxy';
 import type {
   InternalInstanceHandle,
   Node,
@@ -32,7 +32,7 @@ let PublicInstanceClass:
 let ReadOnlyTextClass: Class<ReadOnlyText>;
 
 // Lazy loaded to avoid evaluating the module when using the legacy renderer.
-let ReactFabric: ReactFabricType;
+let RendererProxy: RendererProxyT;
 
 export function createPublicInstance(
   tag: number,
@@ -78,10 +78,10 @@ export function getNodeFromPublicInstance(
     return null;
   }
 
-  if (ReactFabric == null) {
-    ReactFabric = require('../../Renderer/shims/ReactFabric');
+  if (RendererProxy == null) {
+    RendererProxy = require('../../ReactNative/RendererProxy');
   }
-  return ReactFabric.getNodeFromInternalInstanceHandle(
+  return RendererProxy.getNodeFromInternalInstanceHandle(
     publicInstance.__internalInstanceHandle,
   );
 }

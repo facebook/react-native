@@ -8,6 +8,10 @@ on:
       - main
       - "*-stable"
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' && !contains(github.ref,  'stable')}}
+
 jobs:
   set_release_type:
     runs-on: ubuntu-latest
@@ -175,6 +179,166 @@ jobs:
           hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
           react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
 
+  test_e2e_ios_rntester:
+    if: ${{ github.ref == 'refs/heads/main' || contains(github.ref,  'stable') }}
+    runs-on: macos-13
+    needs:
+      [build_apple_slices_hermes, prepare_hermes_workspace, build_hermes_macos]
+    env:
+      HERMES_WS_DIR: /tmp/hermes
+      HERMES_TARBALL_ARTIFACTS_DIR: /tmp/hermes/hermes-runtime-darwin
+    continue-on-error: true
+    strategy:
+      fail-fast: false
+      matrix:
+        jsengine: [Hermes, JSC]
+        architecture: [NewArch]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Run it
+        uses: ./.github/actions/test-ios-rntester
+        with:
+          jsengine: ${{ matrix.jsengine }}
+          architecture: ${{ matrix.architecture }}
+          run-unit-tests: "false"
+          use-frameworks: StaticLibraries
+          hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
+          react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
+          run-e2e-tests: "true"
+      - name: Run E2E Tests
+        uses: ./.github/actions/maestro-ios
+        with:
+          app-path: "/tmp/RNTesterBuild/Build/Products/Release-iphonesimulator/RNTester.app"
+          app-id: com.meta.RNTester.localDevelopment
+          jsengine: ${{ matrix.jsengine }}
+          maestro-flow: ./packages/rn-tester/.maestro/
+
+  test_e2e_ios_templateapp:
+    if: ${{ github.ref == 'refs/heads/main' || contains(github.ref,  'stable') }}
+    runs-on: macos-13
+    needs: build_npm_package
+    env:
+      HERMES_WS_DIR: /tmp/hermes
+      HERMES_TARBALL_ARTIFACTS_DIR: /tmp/hermes/hermes-runtime-darwin
+    continue-on-error: true
+    strategy:
+      fail-fast: false
+      matrix:
+        jsengine: [Hermes, JSC]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup xcode
+        uses: ./.github/actions/setup-xcode
+      - name: Setup node.js
+        uses: ./.github/actions/setup-node
+      - name: Run yarn
+        uses: ./.github/actions/yarn-install-with-cache
+      - name: Setup ruby
+        uses: ruby/setup-ruby@v1.170.0
+        with:
+          ruby-version: 2.6.10
+      - name: Download Hermes
+        uses: actions/download-artifact@v4
+        with:
+          name: hermes-darwin-bin-Release
+          path: /tmp/react-native-tmp
+      - name: Download React Native Package
+        uses: actions/download-artifact@v4
+        with:
+          name: react-native-package
+          path: /tmp/react-native-tmp
+      - name: Print /tmp folder
+        run: ls -lR /tmp/react-native-tmp
+      - name: Prepare artifacts
+        run: |
+          REACT_NATIVE_PKG=$(find /tmp/react-native-tmp -type f -name "*.tgz")
+          echo "React Native tgs is $REACT_NATIVE_PKG"
+
+          HERMES_PATH=$(find /tmp/react-native-tmp -type f -name "*.tar.gz")
+          echo "Hermes path is $HERMES_PATH"
+
+          node ./scripts/e2e/init-project-e2e.js --projectName RNTestProject --currentBranch ${{ github.ref_name }} --directory /tmp/RNTestProject --pathToLocalReactNative $REACT_NATIVE_PKG
+
+          cd /tmp/RNTestProject/ios
+          bundle install
+          HERMES_ENGINE_TARBALL_PATH=$HERMES_PATH bundle exec pod install
+
+          set -o pipefail && xcodebuild \
+            -scheme "RNTestProject" \
+            -workspace RNTestProject.xcworkspace \
+            -configuration "Release" \
+            -sdk "iphonesimulator" \
+            -destination "generic/platform=iOS Simulator" \
+            -derivedDataPath "/tmp/RNTestProject" | xcbeautify
+      - name: Run E2E Tests
+        uses: ./.github/actions/maestro-ios
+        with:
+          app-path: "/tmp/RNTestProject/Build/Products/Release-iphonesimulator/RNTestProject.app"
+          app-id: org.reactjs.native.example.RNTestProject
+          jsengine: ${{ matrix.jsengine }}
+          maestro-flow: ./scripts/e2e/.maestro/
+
+  test_e2e_android_templateapp:
+    if: ${{ github.ref == 'refs/heads/main' || contains(github.ref,  'stable') }}
+    runs-on: 4-core-ubuntu
+    needs: build_npm_package
+    continue-on-error: true
+    strategy:
+      fail-fast: false
+      matrix:
+        jsengine: [Hermes, JSC]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup node.js
+        uses: ./.github/actions/setup-node
+      - name: Run yarn
+        uses: ./.github/actions/yarn-install-with-cache
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+          distribution: 'zulu'
+      - name: Download Maven Local
+        uses: actions/download-artifact@v4
+        with:
+          name: maven-local
+          path: /tmp/react-native-tmp/maven-local
+      - name: Download React Native Package
+        uses: actions/download-artifact@v4
+        with:
+          name: react-native-package
+          path: /tmp/react-native-tmp
+      - name: Print /tmp folder
+        run: ls -lR /tmp/react-native-tmp
+      - name: Prepare artifacts
+        run: |
+          REACT_NATIVE_PKG=$(find /tmp/react-native-tmp -type f -name "*.tgz")
+          echo "React Native tgs is $REACT_NATIVE_PKG"
+
+          MAVEN_LOCAL=/tmp/react-native-tmp/maven-local
+          echo "Maven local path is $MAVEN_LOCAL"
+
+          node ./scripts/e2e/init-project-e2e.js --projectName RNTestProject --currentBranch ${{ github.ref_name }} --directory /tmp/RNTestProject --pathToLocalReactNative $REACT_NATIVE_PKG
+
+          echo "Feed maven local to gradle.properties"
+          cd /tmp/RNTestProject
+          echo "react.internal.mavenLocalRepo=$MAVEN_LOCAL" >> android/gradle.properties
+
+          # Build
+          cd android
+          ./gradlew assembleRelease --no-daemon -PreactNativeArchitectures=x86
+      - name: Run E2E Tests
+        uses: ./.github/actions/maestro-android
+        with:
+          app-path: /tmp/RNTestProject/android/app/build/outputs/apk/release/app-release.apk
+          app-id: com.rntestproject
+          jsengine: ${{ matrix.jsengine }}
+          maestro-flow: ./scripts/e2e/.maestro/
+          install-java: 'false'
+
   build_hermesc_linux:
     runs-on: ubuntu-latest
     needs: prepare_hermes_workspace
@@ -226,6 +390,37 @@ jobs:
         uses: ./.github/actions/build-android
         with:
           release-type: ${{ needs.set_release_type.outputs.RELEASE_TYPE }}
+          run-e2e-tests: ${{ github.ref == 'refs/heads/main' || contains(github.ref,  'stable') }}
+
+  test_e2e_android_rntester:
+    if: ${{ github.ref == 'refs/heads/main' || contains(github.ref,  'stable') }}
+    runs-on: ubuntu-latest
+    needs: [build_android]
+    strategy:
+      fail-fast: false
+      matrix:
+        jsengine: [hermes, jsc]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup node.js
+        uses: ./.github/actions/setup-node
+      - name: Install node dependencies
+        uses: ./.github/actions/yarn-install-with-cache
+      - name: Download APK
+        uses: actions/download-artifact@v4
+        with:
+          name: rntester-${{ matrix.jsengine }}-release
+          path: ./packages/rn-tester/android/app/build/outputs/apk/${{ matrix.jsengine }}/release/
+      - name: Print folder structure
+        run: ls -lR ./packages/rn-tester/android/app/build/outputs/apk/${{ matrix.jsengine }}/release/
+      - name: Run E2E Tests
+        uses: ./.github/actions/maestro-android
+        with:
+          app-path: ./packages/rn-tester/android/app/build/outputs/apk/${{ matrix.jsengine }}/release/app-${{ matrix.jsengine }}-x86-release.apk
+          app-id: com.facebook.react.uiapp
+          jsengine: ${{ matrix.jsengine }}
+          maestro-flow: ./packages/rn-tester/.maestro/
 
   build_npm_package:
     runs-on: 8-core-ubuntu
@@ -312,7 +507,7 @@ jobs:
           fi
           yarn build android "${args[@]}" -P reactNativeArchitectures="$TARGET_ARCHITECTURE" -P react.internal.mavenLocalRepo="/tmp/maven-local"
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.3.4
         with:
           name: helloworld-apk-${{ matrix.flavor }}-${{ matrix.architecture }}-${{ matrix.jsengine }}
           path: ./packages/helloworld/android/app/build/outputs/apk/

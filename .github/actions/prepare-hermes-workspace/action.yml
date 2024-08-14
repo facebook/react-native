@@ -82,7 +82,7 @@ runs:
         echo ${{ steps.hermes-version.outputs.version }}
 
     - name: Upload Hermes artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v4.3.4
       with:
         name: hermes-workspace
         path: |

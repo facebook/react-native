@@ -11,6 +11,7 @@ import android.app.Activity
 import android.content.Context
 import com.facebook.react.bridge.WritableNativeArray
 import com.facebook.react.fabric.FabricUIManager
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsForTests
 import com.facebook.react.uimanager.UIManagerModule
 import com.facebook.testutils.shadows.ShadowArguments
 import com.facebook.testutils.shadows.ShadowNativeArray
@@ -41,6 +42,7 @@ class BridgelessReactContextTest {
 
   @Before
   fun setUp() {
+    ReactNativeFeatureFlagsForTests.setUp()
     context = Robolectric.buildActivity(Activity::class.java).create().get()
     reactHost = mock(ReactHostImpl::class.java)
     bridgelessReactContext = BridgelessReactContext(context, reactHost)

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a42ecd51ef7f12eb8758dbd029a2d67b>>
+ * @generated SignedSource<<c9d11f2cf414d546f5c9be0a05b22e85>>
  */
 
 /**
@@ -25,19 +25,29 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun commonTestFlag(): Boolean = false
 
-  override fun allowCollapsableChildren(): Boolean = true
-
   override fun allowRecursiveCommitsWithSynchronousMountOnAndroid(): Boolean = false
 
   override fun batchRenderingUpdatesInEventLoop(): Boolean = false
 
   override fun changeOrderOfMountingInstructionsOnAndroid(): Boolean = false
 
+  override fun completeReactInstanceCreationOnBgThreadOnAndroid(): Boolean = false
+
   override fun destroyFabricSurfacesInReactInstanceManager(): Boolean = false
 
   override fun enableAlignItemsBaselineOnFabricIOS(): Boolean = true
 
+  override fun enableBackgroundStyleApplicator(): Boolean = true
+
   override fun enableCleanTextInputYogaNode(): Boolean = false
+
+  override fun enableEagerRootViewAttachment(): Boolean = false
+
+  override fun enableEventEmitterRetentionDuringGesturesOnAndroid(): Boolean = false
+
+  override fun enableFabricLogs(): Boolean = false
+
+  override fun enableFabricRendererExclusively(): Boolean = false
 
   override fun enableGranularShadowTreeStateReconciliation(): Boolean = false
 
@@ -47,9 +57,15 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enablePropsUpdateReconciliationAndroid(): Boolean = false
 
+  override fun enableReportEventPaintTime(): Boolean = false
+
   override fun enableSynchronousStateUpdates(): Boolean = false
 
   override fun enableUIConsistency(): Boolean = false
+
+  override fun enableViewRecycling(): Boolean = false
+
+  override fun excludeYogaFromRawProps(): Boolean = false
 
   override fun fetchImagesInViewPreallocation(): Boolean = false
 
@@ -71,7 +87,11 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun loadVectorDrawablesOnImages(): Boolean = false
 
-  override fun setAndroidLayoutDirection(): Boolean = true
+  override fun setAndroidLayoutDirection(): Boolean = false
+
+  override fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean = false
+
+  override fun useFabricInterop(): Boolean = false
 
   override fun useImmediateExecutorInAndroidBridgeless(): Boolean = false
 
@@ -81,9 +101,13 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun useNewReactImageViewBackgroundDrawing(): Boolean = false
 
+  override fun useOptimisedViewPreallocationOnAndroid(): Boolean = false
+
   override fun useRuntimeShadowNodeReferenceUpdate(): Boolean = false
 
   override fun useRuntimeShadowNodeReferenceUpdateOnLayout(): Boolean = false
 
   override fun useStateAlignmentMechanism(): Boolean = false
+
+  override fun useTurboModuleInterop(): Boolean = false
 }

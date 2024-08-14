@@ -80,7 +80,7 @@ runs:
             Write-Host "Skipping; Clean c:\tmp\hermes\win64-bin to rebuild."
         }
     - name: Upload windows artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v4.3.4
       with:
         name: hermes-win64-bin
         path: D:\tmp\hermes\win64-bin\

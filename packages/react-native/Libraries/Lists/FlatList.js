@@ -617,7 +617,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
   }
 
   _renderer = (
-    ListItemComponent: ?(React.ComponentType<any> | React.Element<any>),
+    ListItemComponent: ?(React.ComponentType<any> | React.MixedElement),
     renderItem: ?RenderItemType<ItemT>,
     columnWrapperStyle: ?ViewStyleProp,
     numColumns: ?number,

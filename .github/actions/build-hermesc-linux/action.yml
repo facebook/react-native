@@ -43,7 +43,7 @@ runs:
           cp /tmp/hermes/build/bin/hermesc /tmp/hermes/linux64-bin/.
         fi
     - name: Upload linux artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v4.3.4
       with:
         name: hermes-linux-bin
         path: /tmp/hermes/linux64-bin

@@ -23,7 +23,7 @@ import type {
   ____ViewStyleProp_Internal,
 } from './StyleSheetTypes';
 
-import composeStyles from '../../src/private/core/composeStyles';
+import composeStyles from '../../src/private/styles/composeStyles';
 
 const ReactNativeStyleAttributes = require('../Components/View/ReactNativeStyleAttributes');
 const PixelRatio = require('../Utilities/PixelRatio').default;

@@ -9,6 +9,9 @@
 
 #include <fbjni/fbjni.h>
 #include <jsinspector-modern/HostTarget.h>
+#include <jsinspector-modern/NetworkIOAgent.h>
+#include <jsinspector-modern/ScopedExecutor.h>
+#include <react/jni/InspectorNetworkRequestListener.h>
 #include <react/jni/JExecutor.h>
 
 namespace facebook::react {
@@ -25,6 +28,10 @@ class ReactInstanceManagerInspectorTarget
     void onReload() const;
     void onSetPausedInDebuggerMessage(
         const OverlaySetPausedInDebuggerMessageRequest& request) const;
+    void loadNetworkResource(
+        const std::string& url,
+        jni::local_ref<InspectorNetworkRequestListener::javaobject> listener)
+        const;
   };
 
  public:
@@ -56,6 +63,10 @@ class ReactInstanceManagerInspectorTarget
   void onReload(const PageReloadRequest& request) override;
   void onSetPausedInDebuggerMessage(
       const OverlaySetPausedInDebuggerMessageRequest&) override;
+  void loadNetworkResource(
+      const jsinspector_modern::LoadNetworkResourceRequest& params,
+      jsinspector_modern::ScopedExecutor<
+          jsinspector_modern::NetworkRequestListener> executor) override;
 
  private:
   friend HybridBase;

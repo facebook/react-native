@@ -44,7 +44,7 @@ export default function attachKeyHandlers({
   };
 
   const onPress = async (key: string) => {
-    switch (key) {
+    switch (key.toLowerCase()) {
       case 'r':
         logger.info('Reloading connected app(s)...');
         messageSocket.broadcast('reload', null);

@@ -34,8 +34,8 @@ static NSData *ensureNullTerminated(NSData *source)
 
 NSDataBigString::NSDataBigString(NSData *data)
 {
+  m_length = [data length];
   m_data = ensureNullTerminated(data);
-  m_length = MAX([m_data length], 1) - 1;
 }
 
 } // namespace facebook::react

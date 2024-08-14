@@ -30,21 +30,47 @@ void initializePerfetto() {
   HermesPerfettoDataSource::RegisterDataSource();
 }
 
-perfetto::Track getPerfettoWebPerfTrack(const std::string& trackName) {
-  static std::unordered_map<std::string, perfetto::Track> tracks;
+static perfetto::Track createTrack(const std::string& trackName) {
   // Offset for custom perfetto tracks
   static uint64_t trackId = 0x5F3759DF;
+  auto track = perfetto::Track(trackId++);
+  auto desc = track.Serialize();
+  desc.set_name(trackName);
+  perfetto::TrackEvent::SetTrackDescriptor(track, desc);
+  return track;
+}
+
+perfetto::Track getPerfettoWebPerfTrackSync(const std::string& trackName) {
+  // In the case of marks we can reuse the same track saving some resources,
+  // because there's no risk of partial overlap that would break the timings.
+  static std::unordered_map<std::string, perfetto::Track> tracks;
+
   auto it = tracks.find(trackName);
   if (it == tracks.end()) {
-    auto track = perfetto::Track(trackId++);
-    auto desc = track.Serialize();
-    desc.set_name(trackName);
-    perfetto::TrackEvent::SetTrackDescriptor(track, desc);
+    auto track = createTrack(trackName);
     tracks.emplace(trackName, track);
     return track;
   } else {
     return it->second;
   }
+}
+
+perfetto::Track getPerfettoWebPerfTrackAsync(const std::string& trackName) {
+  // Note that, in the case of measures, we don't cache and reuse a track for a
+  // given name because Perfetto does not support partially overlapping measures
+  // in the same track.
+  //
+  // E.g.:
+  //   [.....]
+  //     [......]
+  // In that case, Perfetto would just cut subsequent measures as:
+  //  [.....]
+  //     [..]    <-- Part of this section is gone, so the timing is incorrect.
+  //
+  // There's a solution though. Perfetto does group different tracks with the
+  // same name together, so having a separate track for each async event allows
+  // overlap.
+  return createTrack(trackName);
 }
 
 // Perfetto's monotonic clock seems to match the std::chrono::steady_clock we
