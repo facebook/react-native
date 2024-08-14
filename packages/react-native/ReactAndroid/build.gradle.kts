@@ -83,8 +83,6 @@ val preparePrefab by
               PrefabPreprocessingEntry(
                   "turbomodulejsijni", Pair("src/main/jni/react/turbomodule", "")),
               PrefabPreprocessingEntry(
-                  "react_newarchdefaults", Pair("src/main/jni/react/newarchdefaults", "")),
-              PrefabPreprocessingEntry(
                   "react_render_animations",
                   Pair("../ReactCommon/react/renderer/animations/", "react/renderer/animations/")),
               PrefabPreprocessingEntry(
@@ -297,6 +295,8 @@ val preparePrefab by
                       Pair(
                           "../ReactCommon/react/renderer/components/textinput/platform/android/",
                           ""),
+                      // react_newarchdefaults
+                      Pair("src/main/jni/react/newarchdefaults", ""),
                       // react_nativemodule_core
                       Pair(File(buildDir, "third-party-ndk/boost/boost_1_83_0/").absolutePath, ""),
                       Pair(File(buildDir, "third-party-ndk/double-conversion/").absolutePath, ""),
@@ -623,7 +623,6 @@ android {
             "react_performance_timeline",
             "react_utils",
             "react_render_componentregistry",
-            "react_newarchdefaults",
             "react_render_animations",
             "react_render_consistency",
             "react_render_dom",
@@ -723,9 +722,6 @@ android {
   prefab {
     create("turbomodulejsijni") {
       headers = File(prefabHeadersDir, "turbomodulejsijni").absolutePath
-    }
-    create("react_newarchdefaults") {
-      headers = File(prefabHeadersDir, "react_newarchdefaults").absolutePath
     }
     create("react_render_animations") {
       headers = File(prefabHeadersDir, "react_render_animations").absolutePath
