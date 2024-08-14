@@ -10,12 +10,12 @@
 #include <glog/logging.h>
 #include <jsi/jsi.h>
 
+#include <cxxreact/SystraceSection.h>
 #include <react/debug/react_native_assert.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
 #include <react/renderer/core/EventQueueProcessor.h>
 #include <react/renderer/core/LayoutContext.h>
-#include <react/renderer/debug/SystraceSection.h>
 #include <react/renderer/mounting/MountingOverrideDelegate.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
 #include <react/renderer/runtimescheduler/RuntimeScheduler.h>
@@ -51,8 +51,8 @@ Scheduler::Scheduler(
   eventPerformanceLogger_ =
       std::make_shared<EventPerformanceLogger>(performanceEntryReporter_);
 
-  auto uiManager = std::make_shared<UIManager>(
-      runtimeExecutor_, schedulerToolbox.backgroundExecutor, contextContainer_);
+  auto uiManager =
+      std::make_shared<UIManager>(runtimeExecutor_, contextContainer_);
   auto eventOwnerBox = std::make_shared<EventBeat::OwnerBox>();
   eventOwnerBox->owner = eventDispatcher_;
 
@@ -144,17 +144,7 @@ Scheduler::Scheduler(
   }
   uiManager_->setAnimationDelegate(animationDelegate);
 
-#ifdef ANDROID
-  removeOutstandingSurfacesOnDestruction_ = true;
-#else
-  removeOutstandingSurfacesOnDestruction_ = reactNativeConfig_->getBool(
-      "react_fabric:remove_outstanding_surfaces_on_destruction_ios");
-#endif
-
-  CoreFeatures::enableReportEventPaintTime = reactNativeConfig_->getBool(
-      "rn_responsiveness_performance:enable_paint_time_reporting");
-
-  if (CoreFeatures::enableReportEventPaintTime) {
+  if (ReactNativeFeatureFlags::enableReportEventPaintTime()) {
     uiManager->registerMountHook(*eventPerformanceLogger_);
   }
 }
@@ -206,11 +196,9 @@ Scheduler::~Scheduler() {
         surfaceId,
         [](const ShadowTree& shadowTree) { shadowTree.commitEmptyTree(); });
 
-    // Removing surfaces is gated because it acquires mutex waiting for commits
-    // in flight; in theory, it can deadlock.
-    if (removeOutstandingSurfacesOnDestruction_) {
-      uiManager_->getShadowTreeRegistry().remove(surfaceId);
-    }
+    // Removing surfaces acquires mutex waiting for commits in flight; in
+    // theory, it can deadlock.
+    uiManager_->getShadowTreeRegistry().remove(surfaceId);
   }
 }
 
@@ -310,19 +298,8 @@ void Scheduler::uiManagerDidFinishTransaction(
 }
 
 void Scheduler::uiManagerDidCreateShadowNode(const ShadowNode& shadowNode) {
-  SystraceSection s("Scheduler::uiManagerDidCreateShadowNode");
-
   if (delegate_ != nullptr) {
     delegate_->schedulerDidRequestPreliminaryViewAllocation(shadowNode);
-  }
-}
-
-void Scheduler::uiManagerDidCloneShadowNodeWithNewProps(
-    const ShadowNode& shadowNode) {
-  SystraceSection s("Scheduler::uiManagerDidCreateShadowNode");
-
-  if (delegate_ != nullptr) {
-    delegate_->schedulerDidRequestUpdateToPreallocatedView(shadowNode);
   }
 }
 
@@ -375,9 +352,9 @@ std::shared_ptr<UIManager> Scheduler::getUIManager() const {
 }
 
 void Scheduler::addEventListener(
-    const std::shared_ptr<const EventListener>& listener) {
+    std::shared_ptr<const EventListener> listener) {
   if (eventDispatcher_->has_value()) {
-    eventDispatcher_->value().addListener(listener);
+    eventDispatcher_->value().addListener(std::move(listener));
   }
 }
 

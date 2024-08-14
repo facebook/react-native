@@ -38,4 +38,17 @@ constexpr uint32_t fnv1a(std::string_view string) noexcept {
   return hash;
 }
 
+constexpr uint32_t fnv1aLowercase(std::string_view string) {
+  struct LowerCaseTransform {
+    constexpr char operator()(char c) const {
+      if (c >= 'A' && c <= 'Z') {
+        return c + static_cast<char>('a' - 'A');
+      }
+      return c;
+    }
+  };
+
+  return fnv1a<LowerCaseTransform>(string);
+}
+
 } // namespace facebook::react

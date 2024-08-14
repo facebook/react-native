@@ -16,6 +16,7 @@ type SuccessResult<Props: {...} | void = {}> = {
 type ErrorResult<ErrorT = mixed> = {
   status: 'error',
   error: ErrorT,
+  prefersFuseboxFrontend?: ?boolean,
 };
 
 type CodedErrorResult<ErrorCode: string> = {
@@ -64,6 +65,7 @@ export type ReportableEvent =
       timeSinceStart: number | null,
       ...DebuggerSessionIDs,
       frontendUserAgent: string | null,
+      prefersFuseboxFrontend: boolean | null,
       ...
         | SuccessResult<void>
         | CodedErrorResult<

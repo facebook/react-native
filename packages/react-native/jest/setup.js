@@ -9,6 +9,11 @@
 
 'use strict';
 
+global.IS_REACT_ACT_ENVIRONMENT = true;
+// Suppress the `react-test-renderer` warnings until New Architecture and legacy
+// mode are no longer supported by React Native.
+global.IS_REACT_NATIVE_TEST_ENVIRONMENT = true;
+
 const MockNativeMethods = jest.requireActual('./MockNativeMethods');
 const mockComponent = jest.requireActual('./mockComponent');
 
@@ -137,19 +142,21 @@ jest
   .mock('../Libraries/Components/AccessibilityInfo/AccessibilityInfo', () => ({
     __esModule: true,
     default: {
-      addEventListener: jest.fn(),
+      addEventListener: jest.fn(() => ({
+        remove: jest.fn(),
+      })),
       announceForAccessibility: jest.fn(),
-      isAccessibilityServiceEnabled: jest.fn(),
-      isBoldTextEnabled: jest.fn(),
-      isGrayscaleEnabled: jest.fn(),
-      isInvertColorsEnabled: jest.fn(),
-      isReduceMotionEnabled: jest.fn(),
-      prefersCrossFadeTransitions: jest.fn(),
-      isReduceTransparencyEnabled: jest.fn(),
+      isAccessibilityServiceEnabled: jest.fn(() => Promise.resolve(false)),
+      isBoldTextEnabled: jest.fn(() => Promise.resolve(false)),
+      isGrayscaleEnabled: jest.fn(() => Promise.resolve(false)),
+      isInvertColorsEnabled: jest.fn(() => Promise.resolve(false)),
+      isReduceMotionEnabled: jest.fn(() => Promise.resolve(false)),
+      prefersCrossFadeTransitions: jest.fn(() => Promise.resolve(false)),
+      isReduceTransparencyEnabled: jest.fn(() => Promise.resolve(false)),
       isScreenReaderEnabled: jest.fn(() => Promise.resolve(false)),
       setAccessibilityFocus: jest.fn(),
       sendAccessibilityEvent: jest.fn(),
-      getRecommendedTimeoutMillis: jest.fn(),
+      getRecommendedTimeoutMillis: jest.fn(() => Promise.resolve(false)),
     },
   }))
   .mock('../Libraries/Components/Clipboard/Clipboard', () => ({
@@ -200,7 +207,9 @@ jest
     openURL: jest.fn(),
     canOpenURL: jest.fn(() => Promise.resolve(true)),
     openSettings: jest.fn(),
-    addEventListener: jest.fn(),
+    addEventListener: jest.fn(() => ({
+      remove: jest.fn(),
+    })),
     getInitialURL: jest.fn(() => Promise.resolve()),
     sendIntent: jest.fn(),
   }))
@@ -278,7 +287,14 @@ jest
     },
     PlatformConstants: {
       getConstants() {
-        return {};
+        return {
+          reactNativeVersion: {
+            major: 1000,
+            minor: 0,
+            patch: 0,
+            prerelease: undefined,
+          },
+        };
       },
     },
     PushNotificationManager: {

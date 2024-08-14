@@ -76,9 +76,6 @@ const RCTTextInputViewConfig = {
     },
   },
   directEventTypes: {
-    topTextInput: {
-      registrationName: 'onTextInput',
-    },
     topScroll: {
       registrationName: 'onScroll',
     },
@@ -153,7 +150,6 @@ const RCTTextInputViewConfig = {
       onSelectionChange: true,
       onContentSizeChange: true,
       onScroll: true,
-      onTextInput: true,
     }),
   },
 };

@@ -10,8 +10,8 @@
 #include "RuntimeScheduler_Modern.h"
 #include "SchedulerPriorityUtils.h"
 
+#include <cxxreact/SystraceSection.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
-#include <react/renderer/debug/SystraceSection.h>
 #include <utility>
 
 namespace facebook::react {
@@ -53,7 +53,19 @@ std::shared_ptr<Task> RuntimeScheduler::scheduleTask(
   return runtimeSchedulerImpl_->scheduleTask(priority, std::move(callback));
 }
 
-bool RuntimeScheduler::getShouldYield() const noexcept {
+std::shared_ptr<Task> RuntimeScheduler::scheduleIdleTask(
+    jsi::Function&& callback,
+    RuntimeSchedulerTimeout timeout) noexcept {
+  return runtimeSchedulerImpl_->scheduleIdleTask(std::move(callback), timeout);
+}
+
+std::shared_ptr<Task> RuntimeScheduler::scheduleIdleTask(
+    RawCallback&& callback,
+    RuntimeSchedulerTimeout timeout) noexcept {
+  return runtimeSchedulerImpl_->scheduleIdleTask(std::move(callback), timeout);
+}
+
+bool RuntimeScheduler::getShouldYield() noexcept {
   return runtimeSchedulerImpl_->getShouldYield();
 }
 
@@ -88,6 +100,12 @@ void RuntimeScheduler::setShadowTreeRevisionConsistencyManager(
         shadowTreeRevisionConsistencyManager) {
   return runtimeSchedulerImpl_->setShadowTreeRevisionConsistencyManager(
       shadowTreeRevisionConsistencyManager);
+}
+
+void RuntimeScheduler::setPerformanceEntryReporter(
+    PerformanceEntryReporter* performanceEntryReporter) {
+  return runtimeSchedulerImpl_->setPerformanceEntryReporter(
+      performanceEntryReporter);
 }
 
 } // namespace facebook::react

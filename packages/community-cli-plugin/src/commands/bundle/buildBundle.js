@@ -14,9 +14,9 @@ import type {ConfigT} from 'metro-config';
 import type {RequestOptions} from 'metro/src/shared/types.flow';
 
 import loadMetroConfig from '../../utils/loadMetroConfig';
+import {logger} from '../../utils/logger';
 import parseKeyValueParamArray from '../../utils/parseKeyValueParamArray';
 import saveAssets from './saveAssets';
-import {logger} from '@react-native-community/cli-tools';
 import chalk from 'chalk';
 import Server from 'metro/src/Server';
 import metroBundle from 'metro/src/shared/output/bundle';

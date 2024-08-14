@@ -63,9 +63,9 @@ void fromRawValue(
     auto length = items.size();
     result.clear();
     result.reserve(length);
-    for (size_t i = 0; i < length; i++) {
+    for (auto& item : items) {
       T itemResult;
-      fromRawValue(context, items.at(i), itemResult);
+      fromRawValue(context, item, itemResult);
       result.push_back(itemResult);
     }
     return;
@@ -89,9 +89,9 @@ void fromRawValue(
     auto length = items.size();
     result.clear();
     result.reserve(length);
-    for (int i = 0; i < length; i++) {
+    for (auto& item : items) {
       T itemResult;
-      fromRawValue(context, items.at(i), itemResult);
+      fromRawValue(context, item, itemResult);
       result.push_back(itemResult);
     }
     return;

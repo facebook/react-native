@@ -7,7 +7,7 @@
 
 #import "RCTImageManager.h"
 
-#import <react/renderer/debug/SystraceSection.h>
+#import <cxxreact/SystraceSection.h>
 #import <react/utils/ManagedObjectWrapper.h>
 #import <react/utils/SharedFunction.h>
 

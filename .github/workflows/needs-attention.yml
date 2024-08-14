@@ -2,7 +2,7 @@ name: Issue Needs Attention
 # This workflow is triggered on issue comments.
 on:
   issue_comment:
-    types: created
+    types: [created]
 
 permissions:
   contents: read

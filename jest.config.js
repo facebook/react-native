@@ -33,19 +33,12 @@ module.exports = {
     '<rootDir>/packages/react-native/template',
     '<rootDir>/packages/react-native/sdks',
     '<rootDir>/packages/react-native/Libraries/Renderer',
-    '<rootDir>/packages/rn-tester/e2e',
     '<rootDir>/packages/react-native-test-renderer/src',
   ],
   transformIgnorePatterns: ['node_modules/(?!@react-native/)'],
   haste: {
     defaultPlatform: 'ios',
     platforms: ['ios', 'android'],
-  },
-  moduleNameMapper: {
-    // This module is internal to Meta and used by their custom React renderer.
-    // In tests, we can just use a mock.
-    '^ReactNativeInternalFeatureFlags$':
-      '<rootDir>/packages/react-native/jest/ReactNativeInternalFeatureFlagsMock.js',
   },
   moduleFileExtensions: ['fb.js'].concat(defaults.moduleFileExtensions),
   modulePathIgnorePatterns: ['scripts/.*/__fixtures__/'],

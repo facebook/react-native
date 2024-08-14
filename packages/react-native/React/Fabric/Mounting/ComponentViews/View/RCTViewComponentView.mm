@@ -13,12 +13,14 @@
 
 #import <React/RCTAssert.h>
 #import <React/RCTBorderDrawing.h>
+#import <React/RCTBoxShadow.h>
 #import <React/RCTConversions.h>
 #import <React/RCTLocalizedString.h>
 #import <react/renderer/components/view/ViewComponentDescriptor.h>
 #import <react/renderer/components/view/ViewEventEmitter.h>
 #import <react/renderer/components/view/ViewProps.h>
 #import <react/renderer/components/view/accessibilityPropsConversions.h>
+#import <react/renderer/graphics/BlendMode.h>
 
 #ifdef RCT_DYNAMIC_FRAMEWORKS
 #import <React/RCTComponentViewFactory.h>
@@ -29,6 +31,9 @@ using namespace facebook::react;
 @implementation RCTViewComponentView {
   UIColor *_backgroundColor;
   __weak CALayer *_borderLayer;
+  CALayer *_boxShadowLayer;
+  CALayer *_filterLayer;
+  NSMutableArray<CAGradientLayer *> *_gradientLayers;
   BOOL _needsInvalidateLayer;
   BOOL _isJSResponder;
   BOOL _removeClippedSubviews;
@@ -385,7 +390,83 @@ using namespace facebook::react;
 
   // `testId`
   if (oldViewProps.testId != newViewProps.testId) {
-    self.accessibilityIdentifier = RCTNSStringFromString(newViewProps.testId);
+    SEL setAccessibilityIdentifierSelector = @selector(setAccessibilityIdentifier:);
+    NSString *identifier = RCTNSStringFromString(newViewProps.testId);
+    if ([self.accessibilityElement respondsToSelector:setAccessibilityIdentifierSelector]) {
+      UIView *accessibilityView = (UIView *)self.accessibilityElement;
+      accessibilityView.accessibilityIdentifier = identifier;
+    } else {
+      self.accessibilityIdentifier = identifier;
+    }
+  }
+
+  // `filter`
+  if (oldViewProps.filter != newViewProps.filter) {
+    needsInvalidateLayer = YES;
+  }
+
+  // `mixBlendMode`
+  if (oldViewProps.mixBlendMode != newViewProps.mixBlendMode) {
+    switch (newViewProps.mixBlendMode) {
+      case BlendMode::Multiply:
+        self.layer.compositingFilter = @"multiplyBlendMode";
+        break;
+      case BlendMode::Screen:
+        self.layer.compositingFilter = @"screenBlendMode";
+        break;
+      case BlendMode::Overlay:
+        self.layer.compositingFilter = @"overlayBlendMode";
+        break;
+      case BlendMode::Darken:
+        self.layer.compositingFilter = @"darkenBlendMode";
+        break;
+      case BlendMode::Lighten:
+        self.layer.compositingFilter = @"lightenBlendMode";
+        break;
+      case BlendMode::ColorDodge:
+        self.layer.compositingFilter = @"colorDodgeBlendMode";
+        break;
+      case BlendMode::ColorBurn:
+        self.layer.compositingFilter = @"colorBurnBlendMode";
+        break;
+      case BlendMode::HardLight:
+        self.layer.compositingFilter = @"hardLightBlendMode";
+        break;
+      case BlendMode::SoftLight:
+        self.layer.compositingFilter = @"softLightBlendMode";
+        break;
+      case BlendMode::Difference:
+        self.layer.compositingFilter = @"differenceBlendMode";
+        break;
+      case BlendMode::Exclusion:
+        self.layer.compositingFilter = @"exclusionBlendMode";
+        break;
+      case BlendMode::Hue:
+        self.layer.compositingFilter = @"hueBlendMode";
+        break;
+      case BlendMode::Saturation:
+        self.layer.compositingFilter = @"saturationBlendMode";
+        break;
+      case BlendMode::Color:
+        self.layer.compositingFilter = @"colorBlendMode";
+        break;
+      case BlendMode::Luminosity:
+        self.layer.compositingFilter = @"luminosityBlendMode";
+        break;
+      case BlendMode::Normal:
+        self.layer.compositingFilter = nil;
+        break;
+    }
+  }
+
+  // `linearGradient`
+  if (oldViewProps.backgroundImage != newViewProps.backgroundImage) {
+    needsInvalidateLayer = YES;
+  }
+
+  // `boxShadow`
+  if (oldViewProps.boxShadow != newViewProps.boxShadow) {
+    needsInvalidateLayer = YES;
   }
 
   _needsInvalidateLayer = _needsInvalidateLayer || needsInvalidateLayer;
@@ -415,7 +496,8 @@ using namespace facebook::react;
     _contentView.frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
   }
 
-  if (_props->transformOrigin.isSet()) {
+  if ((_props->transformOrigin.isSet() || _props->transform.operations.size() > 0) &&
+      layoutMetrics.frame.size != oldLayoutMetrics.frame.size) {
     auto newTransform = _props->resolveTransform(layoutMetrics);
     self.layer.transform = RCTCATransform3DFromTransformMatrix(newTransform);
   }
@@ -628,13 +710,13 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
   const bool useCoreAnimationBorderRendering =
       borderMetrics.borderColors.isUniform() && borderMetrics.borderWidths.isUniform() &&
       borderMetrics.borderStyles.isUniform() && borderMetrics.borderRadii.isUniform() &&
-      borderMetrics.borderStyles.left == BorderStyle::Solid &&
       (
           // iOS draws borders in front of the content whereas CSS draws them behind
           // the content. For this reason, only use iOS border drawing when clipping
           // or when the border is hidden.
-          borderMetrics.borderWidths.left == 0 ||
-          colorComponentsFromColor(borderMetrics.borderColors.left).alpha == 0 || self.clipsToBounds);
+          borderMetrics.borderWidths.left == 0 || self.clipsToBounds ||
+          (colorComponentsFromColor(borderMetrics.borderColors.left).alpha == 0 &&
+           (*borderMetrics.borderColors.left).getUIColor() != nullptr));
 
   CGColorRef backgroundColor = [_backgroundColor resolvedColorWithTraitCollection:self.traitCollection].CGColor;
 
@@ -726,6 +808,110 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     layer.cornerRadius = cornerRadius;
     layer.mask = maskLayer;
   }
+
+  [_filterLayer removeFromSuperlayer];
+  _filterLayer = nil;
+  self.layer.opacity = (float)_props->opacity;
+  if (!_props->filter.empty()) {
+    float multiplicativeBrightness = 1;
+    for (const auto &primitive : _props->filter) {
+      if (primitive.type == FilterType::Brightness) {
+        multiplicativeBrightness *= primitive.amount;
+      } else if (primitive.type == FilterType::Opacity) {
+        self.layer.opacity *= primitive.amount;
+      }
+    }
+
+    _filterLayer = [CALayer layer];
+    _filterLayer.frame = CGRectMake(0, 0, layer.frame.size.width, layer.frame.size.height);
+    _filterLayer.compositingFilter = @"multiplyBlendMode";
+    _filterLayer.backgroundColor = [UIColor colorWithRed:multiplicativeBrightness
+                                                   green:multiplicativeBrightness
+                                                    blue:multiplicativeBrightness
+                                                   alpha:self.layer.opacity]
+                                       .CGColor;
+    // So that this layer is always above any potential sublayers this view may
+    // add
+    _filterLayer.zPosition = CGFLOAT_MAX;
+    [self.layer addSublayer:_filterLayer];
+  }
+
+  [self clearExistingGradientLayers];
+  if (!_props->backgroundImage.empty()) {
+    for (const auto &gradient : _props->backgroundImage) {
+      CAGradientLayer *gradientLayer = [CAGradientLayer layer];
+      NSMutableArray *colors = [NSMutableArray array];
+      NSMutableArray *locations = [NSMutableArray array];
+      for (const auto &colorStop : gradient.colorStops) {
+        if (colorStop.position.has_value()) {
+          auto location = @(colorStop.position.value());
+          UIColor *color = RCTUIColorFromSharedColor(colorStop.color);
+          [colors addObject:(id)color.CGColor];
+          [locations addObject:location];
+        }
+      }
+      gradientLayer.startPoint = CGPointMake(gradient.startX, gradient.startY);
+      gradientLayer.endPoint = CGPointMake(gradient.endX, gradient.endY);
+
+      if (locations.count > 0) {
+        gradientLayer.locations = locations;
+      }
+      gradientLayer.colors = colors;
+      gradientLayer.frame = layer.bounds;
+
+      // border styling to work with gradient layers
+      if (useCoreAnimationBorderRendering) {
+        gradientLayer.borderWidth = layer.borderWidth;
+        gradientLayer.borderColor = layer.borderColor;
+        gradientLayer.cornerRadius = layer.cornerRadius;
+        gradientLayer.cornerCurve = layer.cornerCurve;
+      } else {
+        CAShapeLayer *maskLayer = [CAShapeLayer layer];
+        CGPathRef path = RCTPathCreateWithRoundedRect(
+            self.bounds,
+            RCTGetCornerInsets(RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii), UIEdgeInsetsZero),
+            nil);
+        maskLayer.path = path;
+        CGPathRelease(path);
+        gradientLayer.mask = maskLayer;
+      }
+
+      // border layer should appear above gradient layers to make sure that the border is visible
+      gradientLayer.zPosition = _borderLayer.zPosition - 1;
+
+      [self.layer addSublayer:gradientLayer];
+      [_gradientLayers addObject:gradientLayer];
+    }
+  }
+
+  [_boxShadowLayer removeFromSuperlayer];
+  _boxShadowLayer = nil;
+  if (!_props->boxShadow.empty()) {
+    _boxShadowLayer = [CALayer layer];
+    [self.layer addSublayer:_boxShadowLayer];
+    _boxShadowLayer.zPosition = _borderLayer.zPosition;
+    _boxShadowLayer.frame = RCTGetBoundingRect(_props->boxShadow, self.layer.frame.size);
+
+    UIImage *boxShadowImage = RCTGetBoxShadowImage(
+        _props->boxShadow,
+        RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii),
+        RCTUIEdgeInsetsFromEdgeInsets(borderMetrics.borderWidths),
+        layer);
+
+    _boxShadowLayer.contents = (id)boxShadowImage.CGImage;
+  }
+}
+
+- (void)clearExistingGradientLayers
+{
+  if (_gradientLayers == nil) {
+    _gradientLayers = [NSMutableArray new];
+    return;
+  }
+  for (CAGradientLayer *gradientLayer in _gradientLayers) {
+    [gradientLayer removeFromSuperlayer];
+  }
+  [_gradientLayers removeAllObjects];
 }
 
 #pragma mark - Accessibility

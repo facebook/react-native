@@ -7,6 +7,7 @@
 
 #include "RawProps.h"
 
+#include <cxxreact/SystraceSection.h>
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/core/RawPropsKey.h>
 #include <react/renderer/core/RawPropsParser.h>
@@ -161,6 +162,7 @@ RawProps& RawProps::operator=(const RawProps& other) noexcept {
 }
 
 void RawProps::parse(const RawPropsParser& parser) noexcept {
+  SystraceSection s("RawProps::parse");
   react_native_assert(parser_ == nullptr && "A parser was already assigned.");
   parser_ = &parser;
   parser.preparse(*this);
@@ -172,6 +174,7 @@ void RawProps::parse(const RawPropsParser& parser) noexcept {
  * will be removed as soon Android implementation does not need it.
  */
 RawProps::operator folly::dynamic() const noexcept {
+  SystraceSection s("RawProps::operator folly::dynamic()");
   switch (mode_) {
     case Mode::Empty:
       return folly::dynamic::object();
@@ -207,12 +210,6 @@ const RawValue* RawProps::at(
       parser_ &&
       "The object is not parsed. `parse` must be called before `at`.");
   return parser_->at(*this, RawPropsKey{prefix, name, suffix});
-}
-
-void RawProps::iterateOverValues(
-    const std::function<
-        void(RawPropsPropNameHash, const char*, const RawValue&)>& fn) const {
-  return parser_->iterateOverValues(*this, fn);
 }
 
 } // namespace facebook::react

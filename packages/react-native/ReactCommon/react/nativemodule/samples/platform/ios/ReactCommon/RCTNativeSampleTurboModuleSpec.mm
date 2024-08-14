@@ -130,16 +130,6 @@ static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_getVal
           rt, PromiseKind, "getValueWithPromise", @selector(getValueWithPromise:resolve:reject:), args, count);
 }
 
-static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_getConstants(
-    facebook::jsi::Runtime &rt,
-    TurboModule &turboModule,
-    const facebook::jsi::Value *args,
-    size_t count)
-{
-  return static_cast<ObjCTurboModule &>(turboModule)
-      .invokeObjCMethod(rt, ObjectKind, "getConstants", @selector(getConstants), args, count);
-}
-
 static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_voidFuncThrows(
     facebook::jsi::Runtime &rt,
     TurboModule &turboModule,
@@ -167,7 +157,7 @@ static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_promis
     size_t count)
 {
   return static_cast<ObjCTurboModule &>(turboModule)
-      .invokeObjCMethod(rt, PromiseKind, "promiseThrows", @selector(promiseThrows:resolve:reject:), args, count);
+      .invokeObjCMethod(rt, PromiseKind, "promiseThrows", @selector(promiseThrows:reject:), args, count);
 }
 
 static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_voidFuncAssert(
@@ -197,7 +187,17 @@ static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_promis
     size_t count)
 {
   return static_cast<ObjCTurboModule &>(turboModule)
-      .invokeObjCMethod(rt, PromiseKind, "promiseAssert", @selector(promiseAssert:resolve:reject:), args, count);
+      .invokeObjCMethod(rt, PromiseKind, "promiseAssert", @selector(promiseAssert:reject:), args, count);
+}
+
+static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_getConstants(
+    facebook::jsi::Runtime &rt,
+    TurboModule &turboModule,
+    const facebook::jsi::Value *args,
+    size_t count)
+{
+  return static_cast<ObjCTurboModule &>(turboModule)
+      .invokeObjCMethod(rt, ObjectKind, "getConstants", @selector(getConstants), args, count);
 }
 
 NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params)
@@ -219,11 +219,45 @@ NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(const ObjCTurboMo
       MethodMetadata{1, __hostFunction_NativeSampleTurboModuleSpecJSI_getValueWithPromise};
   methodMap_["voidFuncThrows"] = MethodMetadata{0, __hostFunction_NativeSampleTurboModuleSpecJSI_voidFuncThrows};
   methodMap_["getObjectThrows"] = MethodMetadata{1, __hostFunction_NativeSampleTurboModuleSpecJSI_getObjectThrows};
-  methodMap_["promiseThrows"] = MethodMetadata{1, __hostFunction_NativeSampleTurboModuleSpecJSI_promiseThrows};
+  methodMap_["promiseThrows"] = MethodMetadata{0, __hostFunction_NativeSampleTurboModuleSpecJSI_promiseThrows};
   methodMap_["voidFuncAssert"] = MethodMetadata{0, __hostFunction_NativeSampleTurboModuleSpecJSI_voidFuncAssert};
   methodMap_["getObjectAssert"] = MethodMetadata{1, __hostFunction_NativeSampleTurboModuleSpecJSI_getObjectAssert};
-  methodMap_["promiseAssert"] = MethodMetadata{1, __hostFunction_NativeSampleTurboModuleSpecJSI_promiseAssert};
+  methodMap_["promiseAssert"] = MethodMetadata{0, __hostFunction_NativeSampleTurboModuleSpecJSI_promiseAssert};
   methodMap_["getConstants"] = MethodMetadata{0, __hostFunction_NativeSampleTurboModuleSpecJSI_getConstants};
+  eventEmitterMap_["onPress"] = std::make_shared<AsyncEventEmitter<id>>();
+  eventEmitterMap_["onClick"] = std::make_shared<AsyncEventEmitter<id>>();
+  eventEmitterMap_["onChange"] = std::make_shared<AsyncEventEmitter<id>>();
+  eventEmitterMap_["onSubmit"] = std::make_shared<AsyncEventEmitter<id>>();
+  setEventEmitterCallback([&](const std::string &name, id value) {
+    static_cast<AsyncEventEmitter<id> &>(*eventEmitterMap_[name]).emit(value);
+  });
 }
 
 } // namespace facebook::react
+
+@implementation NativeSampleTurboModuleSpecBase
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *_Nonnull)eventEmitterCallbackWrapper
+{
+  _eventEmitterCallback = std::move(eventEmitterCallbackWrapper->_eventEmitterCallback);
+}
+
+- (void)emitOnPress
+{
+  _eventEmitterCallback("onPress", nil);
+}
+
+- (void)emitOnClick:(NSString *)value
+{
+  _eventEmitterCallback("onClick", value);
+}
+
+- (void)emitOnChange:(NSDictionary *)value
+{
+  _eventEmitterCallback("onChange", value);
+}
+
+- (void)emitOnSubmit:(NSArray *)value
+{
+  _eventEmitterCallback("onSubmit", value);
+}
+@end

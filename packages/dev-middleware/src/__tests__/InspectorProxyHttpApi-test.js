@@ -19,8 +19,6 @@ import {createDeviceMock} from './InspectorDeviceUtils';
 import {withAbortSignalForEachTest} from './ResourceUtils';
 import {withServerForEachTest} from './ServerUtils';
 
-import nullthrows from 'nullthrows';
-
 // Must be greater than or equal to PAGES_POLLING_INTERVAL in `InspectorProxy.js`.
 const PAGES_POLLING_DELAY = 1000;
 
@@ -174,7 +172,6 @@ describe('inspector proxy HTTP API', () => {
           app: 'bar-app',
           id: 'page1',
           title: 'bar-title',
-          vm: 'bar-vm',
         },
       ]);
 
@@ -190,7 +187,6 @@ describe('inspector proxy HTTP API', () => {
             description: 'bar-app',
             deviceName: 'foo',
             devtoolsFrontendUrl: expect.any(String),
-            faviconUrl: 'https://reactjs.org/favicon.ico',
             id: 'device1-page1',
             reactNative: {
               capabilities: {},
@@ -205,7 +201,6 @@ describe('inspector proxy HTTP API', () => {
             description: 'bar-app',
             deviceName: 'foo',
             devtoolsFrontendUrl: expect.any(String),
-            faviconUrl: 'https://reactjs.org/favicon.ico',
             id: 'device2-page1',
             reactNative: {
               capabilities: {},
@@ -213,7 +208,6 @@ describe('inspector proxy HTTP API', () => {
             },
             title: 'bar-title',
             type: 'node',
-            vm: 'bar-vm',
             webSocketDebuggerUrl: expect.any(String),
           },
         ]);

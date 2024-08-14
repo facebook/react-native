@@ -61,6 +61,7 @@ import com.facebook.react.devsupport.interfaces.PausedInDebuggerOverlayManager;
 import com.facebook.react.devsupport.interfaces.RedBoxHandler;
 import com.facebook.react.devsupport.interfaces.StackFrame;
 import com.facebook.react.modules.core.RCTNativeAppEventEmitter;
+import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
 import com.facebook.react.packagerconnection.RequestHandler;
 import com.facebook.react.packagerconnection.Responder;
 import java.io.File;
@@ -107,7 +108,7 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
   private boolean mDevLoadingViewVisible = false;
   private int mPendingJSSplitBundleRequests = 0;
   private @Nullable ReactContext mCurrentContext;
-  private final DevInternalSettings mDevSettings;
+  private final DeveloperSettings mDevSettings;
   private boolean mIsReceiverRegistered = false;
   private boolean mIsShakeDetectorStarted = false;
   private boolean mIsDevSupportEnabled = false;
@@ -143,9 +144,7 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
     mDevSettings = new DevInternalSettings(applicationContext, this::reloadSettings);
     mDevServerHelper =
         new DevServerHelper(
-            mDevSettings,
-            mApplicationContext.getPackageName(),
-            mDevSettings.getPackagerConnectionSettings());
+            mDevSettings, mApplicationContext, mDevSettings.getPackagerConnectionSettings());
     mBundleDownloadListener = devBundleDownloadListener;
 
     // Prepare shake gesture detector (will be started/stopped from #reload)
@@ -593,7 +592,7 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
   }
 
   @Override
-  public DevInternalSettings getDevSettings() {
+  public DeveloperSettings getDevSettings() {
     return mDevSettings;
   }
 
@@ -910,12 +909,6 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
     mLastErrorType = errorType;
   }
 
-  public void reloadJSFromServer(final String bundleURL) {
-    reloadJSFromServer(
-        bundleURL,
-        () -> UiThreadUtil.runOnUiThread(mReactInstanceDevHelper::onJSBundleLoadedFromServer));
-  }
-
   public void reloadJSFromServer(final String bundleURL, final BundleLoadCallback callback) {
     ReactMarker.logMarker(ReactMarkerConstants.DOWNLOAD_START);
 
@@ -954,6 +947,7 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
             }
             FLog.e(ReactConstants.TAG, "Unable to download JS bundle", cause);
             reportBundleLoadingFailure(cause);
+            callback.onError(cause);
           }
         },
         mJSBundleDownloadedFile,
@@ -1004,11 +998,13 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
       return;
     }
 
-    UiThreadUtil.runOnUiThread(
-        () -> {
-          mDevSettings.setRemoteJSDebugEnabled(isRemoteJSDebugEnabled);
-          handleReloadJS();
-        });
+    if (mDevSettings.isRemoteJSDebugEnabled() != isRemoteJSDebugEnabled) {
+      UiThreadUtil.runOnUiThread(
+          () -> {
+            mDevSettings.setRemoteJSDebugEnabled(isRemoteJSDebugEnabled);
+            handleReloadJS();
+          });
+    }
   }
 
   @Override
@@ -1078,7 +1074,7 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
 
             @Override
             public void onPackagerReloadCommand() {
-              if (!InspectorFlags.getEnableModernCDPRegistry()) {
+              if (!InspectorFlags.getFuseboxEnabled()) {
                 // Disable debugger to resume the JsVM & avoid thread locks while reloading
                 mDevServerHelper.disableDebugger();
               }
@@ -1188,5 +1184,10 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
   @Override
   public void hidePausedInDebuggerOverlay() {
     mPausedInDebuggerOverlayManager.hidePausedInDebuggerOverlay();
+  }
+
+  @Override
+  public void setAdditionalOptionForPackager(String name, String value) {
+    mDevSettings.getPackagerConnectionSettings().setAdditionalOptionForPackager(name, value);
   }
 }

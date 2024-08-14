@@ -18,17 +18,24 @@ const {
 } = require('../LogBoxNotificationContainer');
 const React = require('react');
 
+// Mock `LogBoxLogNotification` because we are interested in snapshotting the
+// behavior of `LogBoxNotificationContainer`, not `LogBoxLogNotification`.
+jest.mock('../UI/LogBoxNotification', () => ({
+  __esModule: true,
+  default: 'LogBoxLogNotification',
+}));
+
 describe('LogBoxNotificationContainer', () => {
-  it('should render null with no logs', () => {
-    const output = render.shallowRender(
+  it('should render null with no logs', async () => {
+    const output = await render.create(
       <LogBoxNotificationContainer selectedLogIndex={-1} logs={[]} />,
     );
 
     expect(output).toMatchSnapshot();
   });
 
-  it('should render null with no selected log and disabled', () => {
-    const output = render.shallowRender(
+  it('should render null with no selected log and disabled', async () => {
+    const output = await render.create(
       <LogBoxNotificationContainer
         isDisabled
         selectedLogIndex={-1}
@@ -51,8 +58,8 @@ describe('LogBoxNotificationContainer', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render the latest warning notification', () => {
-    const output = render.shallowRender(
+  it('should render the latest warning notification', async () => {
+    const output = await render.create(
       <LogBoxNotificationContainer
         selectedLogIndex={-1}
         logs={[
@@ -85,8 +92,8 @@ describe('LogBoxNotificationContainer', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render the latest error notification', () => {
-    const output = render.shallowRender(
+  it('should render the latest error notification', async () => {
+    const output = await render.create(
       <LogBoxNotificationContainer
         selectedLogIndex={-1}
         logs={[
@@ -119,8 +126,8 @@ describe('LogBoxNotificationContainer', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render both an error and warning notification', () => {
-    const output = render.shallowRender(
+  it('should render both an error and warning notification', async () => {
+    const output = await render.create(
       <LogBoxNotificationContainer
         selectedLogIndex={-1}
         logs={[
@@ -153,8 +160,8 @@ describe('LogBoxNotificationContainer', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render selected fatal error even when disabled', () => {
-    const output = render.shallowRender(
+  it('should render selected fatal error even when disabled', async () => {
+    const output = await render.create(
       <LogBoxNotificationContainer
         isDisabled
         selectedLogIndex={0}
@@ -177,8 +184,8 @@ describe('LogBoxNotificationContainer', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render selected syntax error even when disabled', () => {
-    const output = render.shallowRender(
+  it('should render selected syntax error even when disabled', async () => {
+    const output = await render.create(
       <LogBoxNotificationContainer
         isDisabled
         selectedLogIndex={0}

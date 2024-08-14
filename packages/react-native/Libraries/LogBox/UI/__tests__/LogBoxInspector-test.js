@@ -16,6 +16,26 @@ const LogBoxLog = require('../../Data/LogBoxLog').default;
 const LogBoxInspector = require('../LogBoxInspector').default;
 const React = require('react');
 
+// Mock child components because we are interested in snapshotting the behavior
+// of `LogBoxInspector`, not its children.
+jest.mock('../LogBoxInspectorBody', () => ({
+  __esModule: true,
+  default: 'LogBoxInspectorBody',
+}));
+jest.mock('../LogBoxInspectorFooter', () => ({
+  __esModule: true,
+  default: 'LogBoxInspectorFooter',
+}));
+jest.mock('../LogBoxInspectorHeader', () => ({
+  __esModule: true,
+  default: 'LogBoxInspectorHeader',
+}));
+jest.mock('../../Data/LogBoxData', () => ({
+  __esModule: true,
+  symbolicateLogLazy: () => {},
+  symbolicateLogNow: () => {},
+}));
+
 const logs = [
   new LogBoxLog({
     level: 'warn',
@@ -53,8 +73,8 @@ const logs = [
 ];
 
 describe('LogBoxContainer', () => {
-  it('should render null with no logs', () => {
-    const output = render.shallowRender(
+  it('should render null with no logs', async () => {
+    const output = await render.create(
       <LogBoxInspector
         onDismiss={() => {}}
         onMinimize={() => {}}
@@ -67,8 +87,8 @@ describe('LogBoxContainer', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render warning with selectedIndex 0', () => {
-    const output = render.shallowRender(
+  it('should render warning with selectedIndex 0', async () => {
+    const output = await render.create(
       <LogBoxInspector
         onDismiss={() => {}}
         onMinimize={() => {}}
@@ -81,8 +101,8 @@ describe('LogBoxContainer', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render fatal with selectedIndex 2', () => {
-    const output = render.shallowRender(
+  it('should render fatal with selectedIndex 2', async () => {
+    const output = await render.create(
       <LogBoxInspector
         onDismiss={() => {}}
         onMinimize={() => {}}

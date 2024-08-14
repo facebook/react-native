@@ -2,7 +2,7 @@ name: On Issue Labeled
 # This workflow is triggered when a label is added to an issue.
 on:
   issues:
-    types: labeled
+    types: [labeled]
 
 permissions:
   contents: write
@@ -21,6 +21,7 @@ jobs:
       - name: Verify RN version
         uses: actions/github-script@v6
         with:
+          github-token: ${{ secrets.REACT_NATIVE_BOT_GITHUB_TOKEN }}
           script: |
             const verifyVersion = require('./.github/workflow-scripts/verifyVersion.js')
             const labelWithContext = await verifyVersion(github, context);
@@ -40,6 +41,7 @@ jobs:
       - name: Add descriptive label
         uses: actions/github-script@v6
         with:
+          github-token: ${{ secrets.REACT_NATIVE_BOT_GITHUB_TOKEN }}
           script: |
             const addDescriptiveLabel = require('./.github/workflow-scripts/addDescriptiveLabels.js')
             await addDescriptiveLabel(github, context);
@@ -52,6 +54,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/github-script@v6
         with:
+          github-token: ${{ secrets.REACT_NATIVE_BOT_GITHUB_TOKEN }}
           script: |
             const actOnLabel = require('./.github/workflow-scripts/actOnLabel.js')
             await actOnLabel(github, context, {label: context.payload.label.name})

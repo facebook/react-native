@@ -81,16 +81,16 @@ GraphNode NativeCxxModuleExample::getGraphNode(
   return arg;
 }
 
-NativeCxxModuleExampleCxxEnumInt NativeCxxModuleExample::getNumEnum(
+NativeCxxModuleExampleEnumInt NativeCxxModuleExample::getNumEnum(
     jsi::Runtime& rt,
-    NativeCxxModuleExampleCxxEnumInt arg) {
+    NativeCxxModuleExampleEnumInt arg) {
   return arg;
 }
 
-NativeCxxModuleExampleCxxEnumStr NativeCxxModuleExample::getStrEnum(
+NativeCxxModuleExampleEnumStr NativeCxxModuleExample::getStrEnum(
     jsi::Runtime& rt,
-    NativeCxxModuleExampleCxxEnumNone arg) {
-  return NativeCxxModuleExampleCxxEnumStr::SB;
+    NativeCxxModuleExampleEnumNone /*arg*/) {
+  return NativeCxxModuleExampleEnumStr::SB;
 }
 
 std::map<std::string, std::optional<int32_t>> NativeCxxModuleExample::getMap(
@@ -166,7 +166,14 @@ std::optional<bool> NativeCxxModuleExample::getWithWithOptionalArgs(
 }
 
 void NativeCxxModuleExample::voidFunc(jsi::Runtime& rt) {
-  // Nothing to do
+  // Emit some events
+  emitOnPress();
+  emitOnClick<std::string>("value from callback on click!");
+  emitOnChange(ObjectStruct{1, "two", std::nullopt});
+  emitOnSubmit(std::vector{
+      ObjectStruct{1, "two", std::nullopt},
+      ObjectStruct{3, "four", std::nullopt},
+      ObjectStruct{5, "six", std::nullopt}});
 }
 
 void NativeCxxModuleExample::setMenu(jsi::Runtime& rt, MenuItem menuItem) {

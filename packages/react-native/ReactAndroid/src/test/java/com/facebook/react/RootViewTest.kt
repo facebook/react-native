@@ -24,6 +24,7 @@ import com.facebook.react.bridge.ReactTestHelper
 import com.facebook.react.bridge.WritableArray
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.common.SystemClock
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsForTests
 import com.facebook.react.uimanager.DisplayMetricsHolder
 import com.facebook.react.uimanager.UIManagerModule
 import com.facebook.react.uimanager.events.Event
@@ -56,6 +57,8 @@ class RootViewTest {
 
   @Before
   fun setUp() {
+    ReactNativeFeatureFlagsForTests.setUp()
+
     arguments = Mockito.mockStatic(Arguments::class.java)
     arguments.`when`<WritableArray> { Arguments.createArray() }.thenAnswer { JavaOnlyArray() }
     arguments.`when`<WritableMap> { Arguments.createMap() }.thenAnswer { JavaOnlyMap() }
@@ -89,7 +92,7 @@ class RootViewTest {
     val eventEmitterModuleMock = mock(RCTEventEmitter::class.java)
     whenever(catalystInstanceMock.getNativeModule(UIManagerModule::class.java))
         .thenReturn(uiManager)
-    whenever(uiManager.eventDispatcher).thenReturn(eventDispatcher)
+    whenever(uiManager.getEventDispatcher()).thenReturn(eventDispatcher)
 
     // RootView IDs is React Native follow the 11, 21, 31, ... progression.
     val rootViewId = 11

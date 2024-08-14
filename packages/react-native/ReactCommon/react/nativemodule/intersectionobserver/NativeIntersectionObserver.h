@@ -19,7 +19,7 @@ using NativeIntersectionObserverIntersectionObserverId = int32_t;
 using RectAsTuple = std::tuple<Float, Float, Float, Float>;
 
 using NativeIntersectionObserverObserveOptions =
-    NativeIntersectionObserverCxxNativeIntersectionObserverObserveOptions<
+    NativeIntersectionObserverNativeIntersectionObserverObserveOptions<
         // intersectionObserverId
         NativeIntersectionObserverIntersectionObserverId,
         // targetShadowNode
@@ -29,11 +29,11 @@ using NativeIntersectionObserverObserveOptions =
 
 template <>
 struct Bridging<NativeIntersectionObserverObserveOptions>
-    : NativeIntersectionObserverCxxNativeIntersectionObserverObserveOptionsBridging<
+    : NativeIntersectionObserverNativeIntersectionObserverObserveOptionsBridging<
           NativeIntersectionObserverObserveOptions> {};
 
 using NativeIntersectionObserverEntry =
-    NativeIntersectionObserverCxxNativeIntersectionObserverEntry<
+    NativeIntersectionObserverNativeIntersectionObserverEntry<
         // intersectionObserverId
         NativeIntersectionObserverIntersectionObserverId,
         // targetInstanceHandle
@@ -51,7 +51,7 @@ using NativeIntersectionObserverEntry =
 
 template <>
 struct Bridging<NativeIntersectionObserverEntry>
-    : NativeIntersectionObserverCxxNativeIntersectionObserverEntryBridging<
+    : NativeIntersectionObserverNativeIntersectionObserverEntryBridging<
           NativeIntersectionObserverEntry> {};
 
 class NativeIntersectionObserver

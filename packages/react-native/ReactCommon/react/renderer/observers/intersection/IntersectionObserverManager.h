@@ -42,7 +42,9 @@ class IntersectionObserverManager final : public UIManagerMountHook {
 
   void shadowTreeDidMount(
       const RootShadowNode::Shared& rootShadowNode,
-      double mountTime) noexcept override;
+      double time) noexcept override;
+
+  void shadowTreeDidUnmount(SurfaceId surfaceId, double time) noexcept override;
 
  private:
   mutable std::unordered_map<SurfaceId, std::vector<IntersectionObserver>>
@@ -63,8 +65,9 @@ class IntersectionObserverManager final : public UIManagerMountHook {
   // Equivalent to
   // https://w3c.github.io/IntersectionObserver/#update-intersection-observations-algo
   void updateIntersectionObservations(
-      const RootShadowNode& rootShadowNode,
-      double mountTime);
+      SurfaceId surfaceId,
+      const RootShadowNode* rootShadowNode,
+      double time);
 
   const IntersectionObserver& getRegisteredIntersectionObserver(
       SurfaceId surfaceId,

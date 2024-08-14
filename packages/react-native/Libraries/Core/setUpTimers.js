@@ -48,6 +48,25 @@ if (global.RN$Bridgeless !== true) {
   defineLazyTimer('cancelAnimationFrame');
   defineLazyTimer('requestIdleCallback');
   defineLazyTimer('cancelIdleCallback');
+} else if (
+  // TODO remove this condition when bridgeless == modern scheduler everywhere.
+  NativeReactNativeFeatureFlags != null &&
+  // eslint-disable-next-line react-hooks/rules-of-hooks -- false positive due to `use` prefix
+  ReactNativeFeatureFlags.useModernRuntimeScheduler()
+) {
+  polyfillGlobal(
+    'requestIdleCallback',
+    () =>
+      require('../../src/private/webapis/idlecallbacks/specs/NativeIdleCallbacks')
+        .default.requestIdleCallback,
+  );
+
+  polyfillGlobal(
+    'cancelIdleCallback',
+    () =>
+      require('../../src/private/webapis/idlecallbacks/specs/NativeIdleCallbacks')
+        .default.cancelIdleCallback,
+  );
 }
 
 // We need to check if the native module is available before accessing the
@@ -63,17 +82,12 @@ if (
   // mechanism to pass feature flags from RN to React in OSS.
   global.RN$enableMicrotasksInReact = true;
 
-  polyfillGlobal('queueMicrotask', () => {
-    const nativeQueueMicrotask =
+  polyfillGlobal(
+    'queueMicrotask',
+    () =>
       require('../../src/private/webapis/microtasks/specs/NativeMicrotasks')
-        .default?.queueMicrotask;
-    if (nativeQueueMicrotask) {
-      return nativeQueueMicrotask;
-    } else {
-      // For backwards-compatibility
-      return global.HermesInternal?.enqueueJob;
-    }
-  });
+        .default.queueMicrotask,
+  );
 
   // We shim the immediate APIs via `queueMicrotask` to maintain the backward
   // compatibility.

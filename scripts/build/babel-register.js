@@ -10,8 +10,6 @@
  */
 
 const {PACKAGES_DIR} = require('./build');
-const {buildConfig, getBabelConfig} = require('./config');
-const path = require('path');
 
 let isRegisteredForMonorepo = false;
 
@@ -32,28 +30,9 @@ function registerForMonorepo() {
     return;
   }
 
-  for (const [packageName, {target}] of Object.entries(buildConfig.packages)) {
-    if (target === 'node') {
-      registerPackage(packageName);
-    }
-  }
+  require('metro-babel-register')([PACKAGES_DIR]);
 
   isRegisteredForMonorepo = true;
-}
-
-function registerPackage(packageName /*: string */) {
-  const packageDir = path.join(PACKAGES_DIR, packageName);
-
-  // Prepare the config object before calling `require('@babel/register')` to
-  // prevent `require` calls within `getBabelConfig` triggering Babel to
-  // attempt to load its config from a babel.config file.
-  const registerConfig = {
-    ...getBabelConfig(packageName),
-    root: packageDir,
-    ignore: [/[/\\]node_modules[/\\]/],
-  };
-
-  require('@babel/register')(registerConfig);
 }
 
 module.exports = {registerForMonorepo};

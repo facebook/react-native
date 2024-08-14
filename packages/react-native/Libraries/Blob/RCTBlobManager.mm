@@ -98,6 +98,12 @@ RCT_EXPORT_MODULE(BlobModule)
   _blobs[blobId] = data;
 }
 
+- (NSUInteger)lengthOfBlobWithId:(NSString *)blobId
+{
+  std::lock_guard<std::mutex> lock(_blobsMutex);
+  return _blobs[blobId].length;
+}
+
 - (NSData *)resolve:(NSDictionary<NSString *, id> *)blob
 {
   NSString *blobId = [RCTConvert NSString:blob[@"blobId"]];

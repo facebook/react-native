@@ -10,10 +10,10 @@ if linkage != nil
 end
 
 target 'HelloWorld' do
-  config = use_native_modules!
+  config = use_native_modules!(['sh', '../scripts/config.sh'])
 
   use_react_native!(
-    :path => config[:reactNativePath],
+    :path => "../../react-native",
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )

@@ -88,8 +88,6 @@ class Scheduler final : public UIManagerDelegate {
       MountingCoordinator::Shared mountingCoordinator,
       bool mountSynchronously) override;
   void uiManagerDidCreateShadowNode(const ShadowNode& shadowNode) override;
-  void uiManagerDidCloneShadowNodeWithNewProps(
-      const ShadowNode& shadowNode) override;
   void uiManagerDidDispatchCommand(
       const ShadowNode::Shared& shadowNode,
       const std::string& commandName,
@@ -111,7 +109,7 @@ class Scheduler final : public UIManagerDelegate {
   void reportMount(SurfaceId surfaceId) const;
 
 #pragma mark - Event listeners
-  void addEventListener(const std::shared_ptr<const EventListener>& listener);
+  void addEventListener(std::shared_ptr<const EventListener> listener);
   void removeEventListener(
       const std::shared_ptr<const EventListener>& listener);
 
@@ -143,12 +141,6 @@ class Scheduler final : public UIManagerDelegate {
    * Must not be nullptr.
    */
   ContextContainer::Shared contextContainer_;
-
-  /*
-   * Temporary flags.
-   */
-  bool removeOutstandingSurfacesOnDestruction_{false};
-  bool reduceDeleteCreateMutationLayoutAnimation_{false};
 };
 
 } // namespace facebook::react

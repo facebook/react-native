@@ -8,9 +8,50 @@
 #include "TimerManager.h"
 
 #include <cxxreact/SystraceSection.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
+
+#include <cmath>
 #include <utility>
 
 namespace facebook::react {
+
+namespace {
+
+double coerceNumberTimeout(jsi::Runtime& rt, const jsi::Value& timeout) {
+  double delay = 0.0;
+
+  // fast-path
+  if (timeout.isNumber()) {
+    delay = timeout.getNumber();
+  } else {
+    // perform number coercion for timeout to be web spec compliant
+    auto numberCtor = rt.global().getPropertyAsObject(rt, "Number");
+    auto delayNumberObject =
+        numberCtor.getFunction(rt).callAsConstructor(rt, timeout).getObject(rt);
+    auto delayNumericValue =
+        delayNumberObject.getPropertyAsFunction(rt, "valueOf")
+            .callWithThis(rt, delayNumberObject);
+    delay = delayNumericValue.isNumber() ? delayNumericValue.getNumber() : 0;
+  }
+
+  return std::isnan(delay) ? 0.0 : std::max(0.0, delay);
+}
+
+inline const char* getTimerSourceName(TimerSource source) {
+  switch (source) {
+    case TimerSource::Unknown:
+      return "unknown";
+    case TimerSource::SetTimeout:
+      return "setTimeout";
+    case TimerSource::SetInterval:
+      return "setInterval";
+    case TimerSource::RequestAnimationFrame:
+      return "requestAnimationFrame";
+  }
+  return "unknown";
+}
+
+} // namespace
 
 TimerManager::TimerManager(
     std::unique_ptr<PlatformTimerRegistry> platformTimerRegistry) noexcept
@@ -21,125 +62,159 @@ void TimerManager::setRuntimeExecutor(
   runtimeExecutor_ = runtimeExecutor;
 }
 
-std::shared_ptr<TimerHandle> TimerManager::createReactNativeMicrotask(
+TimerHandle TimerManager::createReactNativeMicrotask(
     jsi::Function&& callback,
     std::vector<jsi::Value>&& args) {
-  auto sharedCallback = std::make_shared<TimerCallback>(
-      std::move(callback), std::move(args), /* repeat */ false);
-
   // Get the id for the callback.
-  uint32_t timerID = timerIndex_++;
-  timers_[timerID] = std::move(sharedCallback);
+  TimerHandle timerID = timerIndex_++;
+  timers_.emplace(
+      std::piecewise_construct,
+      std::forward_as_tuple(timerID),
+      std::forward_as_tuple(
+          std::move(callback), std::move(args), /* repeat */ false));
 
   reactNativeMicrotasksQueue_.push_back(timerID);
-  return std::make_shared<TimerHandle>(timerID);
+  return timerID;
 }
 
 void TimerManager::callReactNativeMicrotasks(jsi::Runtime& runtime) {
-  std::vector<uint32_t> reactNativeMicrotasksQueue;
+  std::vector<TimerHandle> reactNativeMicrotasksQueue;
   while (!reactNativeMicrotasksQueue_.empty()) {
     reactNativeMicrotasksQueue.clear();
     reactNativeMicrotasksQueue.swap(reactNativeMicrotasksQueue_);
 
     for (auto reactNativeMicrotaskID : reactNativeMicrotasksQueue) {
       // ReactNativeMicrotasks can clear other scheduled reactNativeMicrotasks.
-      if (timers_.count(reactNativeMicrotaskID) > 0) {
-        timers_[reactNativeMicrotaskID]->invoke(runtime);
+      auto it = timers_.find(reactNativeMicrotaskID);
+      if (it != timers_.end()) {
+        it->second.invoke(runtime);
+
+        // Invoking a timer has the potential to delete it. Do not re-use the
+        // existing iterator to erase it from the map.
         timers_.erase(reactNativeMicrotaskID);
       }
     }
   }
 }
 
-std::shared_ptr<TimerHandle> TimerManager::createTimer(
+TimerHandle TimerManager::createTimer(
     jsi::Function&& callback,
     std::vector<jsi::Value>&& args,
-    double delay) {
-  auto sharedCallback = std::make_shared<TimerCallback>(
-      std::move(callback), std::move(args), false);
-
+    double delay,
+    TimerSource source) {
   // Get the id for the callback.
-  uint32_t timerID = timerIndex_++;
-  timers_[timerID] = std::move(sharedCallback);
+  TimerHandle timerID = timerIndex_++;
+
+  SystraceSection s(
+      "TimerManager::createTimer",
+      "id",
+      timerID,
+      "type",
+      getTimerSourceName(source),
+      "delay",
+      delay);
+
+  timers_.emplace(
+      std::piecewise_construct,
+      std::forward_as_tuple(timerID),
+      std::forward_as_tuple(
+          std::move(callback),
+          std::move(args),
+          /* repeat */ false,
+          source));
 
   platformTimerRegistry_->createTimer(timerID, delay);
 
-  return std::make_shared<TimerHandle>(timerID);
+  return timerID;
 }
 
-std::shared_ptr<TimerHandle> TimerManager::createRecurringTimer(
+TimerHandle TimerManager::createRecurringTimer(
     jsi::Function&& callback,
     std::vector<jsi::Value>&& args,
-    double delay) {
-  auto sharedCallback = std::make_shared<TimerCallback>(
-      std::move(callback), std::move(args), true);
-
+    double delay,
+    TimerSource source) {
   // Get the id for the callback.
-  uint32_t timerID = timerIndex_++;
-  timers_[timerID] = std::move(sharedCallback);
+  TimerHandle timerID = timerIndex_++;
+
+  SystraceSection s(
+      "TimerManager::createRecurringTimer",
+      "id",
+      timerID,
+      "type",
+      getTimerSourceName(source),
+      "delay",
+      delay);
+
+  timers_.emplace(
+      std::piecewise_construct,
+      std::forward_as_tuple(timerID),
+      std::forward_as_tuple(
+          std::move(callback), std::move(args), /* repeat */ true, source));
 
   platformTimerRegistry_->createRecurringTimer(timerID, delay);
 
-  return std::make_shared<TimerHandle>(timerID);
+  return timerID;
 }
 
 void TimerManager::deleteReactNativeMicrotask(
     jsi::Runtime& runtime,
-    std::shared_ptr<TimerHandle> timerHandle) {
-  if (timerHandle == nullptr) {
+    TimerHandle timerHandle) {
+  if (timerHandle < 0) {
     throw jsi::JSError(
         runtime, "clearReactNativeMicrotask was called with an invalid handle");
   }
 
-  for (auto it = reactNativeMicrotasksQueue_.begin();
-       it != reactNativeMicrotasksQueue_.end();
-       it++) {
-    if ((*it) == timerHandle->index()) {
-      reactNativeMicrotasksQueue_.erase(it);
-      break;
-    }
-  }
-
-  if (timers_.find(timerHandle->index()) != timers_.end()) {
-    timers_.erase(timerHandle->index());
+  auto it = std::find(
+      reactNativeMicrotasksQueue_.begin(),
+      reactNativeMicrotasksQueue_.end(),
+      timerHandle);
+  if (it != reactNativeMicrotasksQueue_.end()) {
+    reactNativeMicrotasksQueue_.erase(it);
+    timers_.erase(timerHandle);
   }
 }
 
-void TimerManager::deleteTimer(
-    jsi::Runtime& runtime,
-    std::shared_ptr<TimerHandle> timerHandle) {
-  if (timerHandle == nullptr) {
+void TimerManager::deleteTimer(jsi::Runtime& runtime, TimerHandle timerHandle) {
+  if (timerHandle < 0) {
     throw jsi::JSError(runtime, "clearTimeout called with an invalid handle");
   }
 
-  platformTimerRegistry_->deleteTimer(timerHandle->index());
-  if (timers_.find(timerHandle->index()) != timers_.end()) {
-    timers_.erase(timerHandle->index());
-  }
+  platformTimerRegistry_->deleteTimer(timerHandle);
+  timers_.erase(timerHandle);
 }
 
 void TimerManager::deleteRecurringTimer(
     jsi::Runtime& runtime,
-    std::shared_ptr<TimerHandle> timerHandle) {
-  if (timerHandle == nullptr) {
+    TimerHandle timerHandle) {
+  if (timerHandle < 0) {
     throw jsi::JSError(runtime, "clearInterval called with an invalid handle");
   }
 
-  platformTimerRegistry_->deleteTimer(timerHandle->index());
-  if (timers_.find(timerHandle->index()) != timers_.end()) {
-    timers_.erase(timerHandle->index());
-  }
+  platformTimerRegistry_->deleteTimer(timerHandle);
+  timers_.erase(timerHandle);
 }
 
-void TimerManager::callTimer(uint32_t timerID) {
-  runtimeExecutor_([this, timerID](jsi::Runtime& runtime) {
-    SystraceSection s("TimerManager::callTimer");
-    if (timers_.count(timerID) > 0) {
-      timers_[timerID]->invoke(runtime);
-      // Invoking a timer has the potential to delete it. Double check the timer
-      // still exists before accessing it again.
-      if (timers_.count(timerID) > 0 && !timers_[timerID]->repeat) {
-        timers_.erase(timerID);
+void TimerManager::callTimer(TimerHandle timerHandle) {
+  runtimeExecutor_([this, timerHandle](jsi::Runtime& runtime) {
+    auto it = timers_.find(timerHandle);
+    if (it != timers_.end()) {
+      auto& timerCallback = it->second;
+      bool repeats = timerCallback.repeat;
+
+      {
+        SystraceSection s(
+            "TimerManager::callTimer",
+            "id",
+            timerHandle,
+            "type",
+            getTimerSourceName(timerCallback.source));
+        timerCallback.invoke(runtime);
+      }
+
+      if (!repeats) {
+        // Invoking a timer has the potential to delete it. Do not re-use the
+        // existing iterator to erase it from the map.
+        timers_.erase(timerHandle);
       }
     }
   });
@@ -148,64 +223,63 @@ void TimerManager::callTimer(uint32_t timerID) {
 void TimerManager::attachGlobals(jsi::Runtime& runtime) {
   // Install host functions for timers.
   // TODO (T45786383): Add missing timer functions from JSTimers
-  // TODO (T96212789): Remove when JSVM microtask queue is used everywhere in
-  // bridgeless mode. This is being overwritten in JS in that case.
-  runtime.global().setProperty(
-      runtime,
-      "setImmediate",
-      jsi::Function::createFromHostFunction(
-          runtime,
-          jsi::PropNameID::forAscii(runtime, "setImmediate"),
-          2, // Function, ...args
-          [this](
-              jsi::Runtime& rt,
-              const jsi::Value& thisVal,
-              const jsi::Value* args,
-              size_t count) {
-            if (count == 0) {
-              throw jsi::JSError(
-                  rt,
-                  "setImmediate must be called with at least one argument (a function to call)");
-            }
 
-            if (!args[0].isObject() || !args[0].asObject(rt).isFunction(rt)) {
-              throw jsi::JSError(
-                  rt, "The first argument to setImmediate must be a function.");
-            }
-            auto callback = args[0].getObject(rt).getFunction(rt);
+  // Ensure that we don't define `setImmediate` and `clearImmediate` if
+  // microtasks are enabled (as we polyfill them using `queueMicrotask` then).
+  if (!ReactNativeFeatureFlags::enableMicrotasks()) {
+    runtime.global().setProperty(
+        runtime,
+        "setImmediate",
+        jsi::Function::createFromHostFunction(
+            runtime,
+            jsi::PropNameID::forAscii(runtime, "setImmediate"),
+            2, // Function, ...args
+            [this](
+                jsi::Runtime& rt,
+                const jsi::Value& thisVal,
+                const jsi::Value* args,
+                size_t count) {
+              if (count == 0) {
+                throw jsi::JSError(
+                    rt,
+                    "setImmediate must be called with at least one argument (a function to call)");
+              }
 
-            // Package up the remaining argument values into one place.
-            std::vector<jsi::Value> moreArgs;
-            for (size_t extraArgNum = 1; extraArgNum < count; extraArgNum++) {
-              moreArgs.emplace_back(rt, args[extraArgNum]);
-            }
+              if (!args[0].isObject() || !args[0].asObject(rt).isFunction(rt)) {
+                // Do not throw any error to match web spec
+                return timerIndex_++;
+              }
+              auto callback = args[0].getObject(rt).getFunction(rt);
 
-            auto handle = createReactNativeMicrotask(
-                std::move(callback), std::move(moreArgs));
-            return jsi::Object::createFromHostObject(rt, handle);
-          }));
+              // Package up the remaining argument values into one place.
+              std::vector<jsi::Value> moreArgs;
+              for (size_t extraArgNum = 1; extraArgNum < count; extraArgNum++) {
+                moreArgs.emplace_back(rt, args[extraArgNum]);
+              }
 
-  runtime.global().setProperty(
-      runtime,
-      "clearImmediate",
-      jsi::Function::createFromHostFunction(
-          runtime,
-          jsi::PropNameID::forAscii(runtime, "clearImmediate"),
-          1, // handle
-          [this](
-              jsi::Runtime& rt,
-              const jsi::Value& thisVal,
-              const jsi::Value* args,
-              size_t count) {
-            if (count == 0 || !args[0].isObject() ||
-                !args[0].asObject(rt).isHostObject<TimerHandle>(rt)) {
+              return createReactNativeMicrotask(
+                  std::move(callback), std::move(moreArgs));
+            }));
+
+    runtime.global().setProperty(
+        runtime,
+        "clearImmediate",
+        jsi::Function::createFromHostFunction(
+            runtime,
+            jsi::PropNameID::forAscii(runtime, "clearImmediate"),
+            1, // handle
+            [this](
+                jsi::Runtime& rt,
+                const jsi::Value& thisVal,
+                const jsi::Value* args,
+                size_t count) {
+              if (count > 0 && args[0].isNumber()) {
+                auto handle = (TimerHandle)args[0].asNumber();
+                deleteReactNativeMicrotask(rt, handle);
+              }
               return jsi::Value::undefined();
-            }
-            std::shared_ptr<TimerHandle> handle =
-                args[0].asObject(rt).asHostObject<TimerHandle>(rt);
-            deleteReactNativeMicrotask(rt, handle);
-            return jsi::Value::undefined();
-          }));
+            }));
+  }
 
   runtime.global().setProperty(
       runtime,
@@ -226,18 +300,12 @@ void TimerManager::attachGlobals(jsi::Runtime& runtime) {
             }
 
             if (!args[0].isObject() || !args[0].asObject(rt).isFunction(rt)) {
-              throw jsi::JSError(
-                  rt, "The first argument to setTimeout must be a function.");
+              // Do not throw any error to match web spec
+              return timerIndex_++;
             }
-            auto callback = args[0].getObject(rt).getFunction(rt);
 
-            if (count > 1 && !args[1].isNumber() && !args[1].isUndefined()) {
-              throw jsi::JSError(
-                  rt,
-                  "The second argument to setTimeout must be a number or undefined.");
-            }
-            auto delay =
-                count > 1 && args[1].isNumber() ? args[1].getNumber() : 0;
+            auto callback = args[0].getObject(rt).getFunction(rt);
+            auto delay = count > 1 ? coerceNumberTimeout(rt, args[1]) : 0.0;
 
             // Package up the remaining argument values into one place.
             std::vector<jsi::Value> moreArgs;
@@ -245,9 +313,11 @@ void TimerManager::attachGlobals(jsi::Runtime& runtime) {
               moreArgs.emplace_back(rt, args[extraArgNum]);
             }
 
-            auto handle =
-                createTimer(std::move(callback), std::move(moreArgs), delay);
-            return jsi::Object::createFromHostObject(rt, handle);
+            return createTimer(
+                std::move(callback),
+                std::move(moreArgs),
+                delay,
+                TimerSource::SetTimeout);
           }));
 
   runtime.global().setProperty(
@@ -262,13 +332,10 @@ void TimerManager::attachGlobals(jsi::Runtime& runtime) {
               const jsi::Value& thisVal,
               const jsi::Value* args,
               size_t count) {
-            if (count == 0 || !args[0].isObject() ||
-                !args[0].asObject(rt).isHostObject<TimerHandle>(rt)) {
-              return jsi::Value::undefined();
+            if (count > 0 && args[0].isNumber()) {
+              auto handle = (TimerHandle)args[0].asNumber();
+              deleteTimer(rt, handle);
             }
-            std::shared_ptr<TimerHandle> host =
-                args[0].asObject(rt).asHostObject<TimerHandle>(rt);
-            deleteTimer(rt, host);
             return jsi::Value::undefined();
           }));
 
@@ -284,10 +351,10 @@ void TimerManager::attachGlobals(jsi::Runtime& runtime) {
               const jsi::Value& thisVal,
               const jsi::Value* args,
               size_t count) {
-            if (count < 2) {
+            if (count == 0) {
               throw jsi::JSError(
                   rt,
-                  "setInterval must be called with at least two arguments (the function to call and the delay).");
+                  "setInterval must be called with at least one argument (the function to call).");
             }
 
             if (!args[0].isObject() || !args[0].asObject(rt).isFunction(rt)) {
@@ -295,12 +362,9 @@ void TimerManager::attachGlobals(jsi::Runtime& runtime) {
                   rt, "The first argument to setInterval must be a function.");
             }
             auto callback = args[0].getObject(rt).getFunction(rt);
-
-            if (!args[1].isNumber()) {
-              throw jsi::JSError(
-                  rt, "The second argument to setInterval must be a number.");
-            }
-            auto delay = args[1].getNumber();
+            auto delay = count > 1
+                ? coerceNumberTimeout(rt, jsi::Value{rt, args[1]})
+                : 0.0;
 
             // Package up the remaining argument values into one place.
             std::vector<jsi::Value> moreArgs;
@@ -308,9 +372,11 @@ void TimerManager::attachGlobals(jsi::Runtime& runtime) {
               moreArgs.emplace_back(rt, args[extraArgNum]);
             }
 
-            auto handle = createRecurringTimer(
-                std::move(callback), std::move(moreArgs), delay);
-            return jsi::Object::createFromHostObject(rt, handle);
+            return createRecurringTimer(
+                std::move(callback),
+                std::move(moreArgs),
+                delay,
+                TimerSource::SetInterval);
           }));
 
   runtime.global().setProperty(
@@ -325,13 +391,10 @@ void TimerManager::attachGlobals(jsi::Runtime& runtime) {
               const jsi::Value& thisVal,
               const jsi::Value* args,
               size_t count) {
-            if (count == 0 || !args[0].isObject() ||
-                !args[0].asObject(rt).isHostObject<TimerHandle>(rt)) {
-              return jsi::Value::undefined();
+            if (count > 0 && args[0].isNumber()) {
+              auto handle = (TimerHandle)args[0].asNumber();
+              deleteRecurringTimer(rt, handle);
             }
-            std::shared_ptr<TimerHandle> host =
-                args[0].asObject(rt).asHostObject<TimerHandle>(rt);
-            deleteRecurringTimer(rt, host);
             return jsi::Value::undefined();
           }));
 
@@ -359,12 +422,11 @@ void TimerManager::attachGlobals(jsi::Runtime& runtime) {
                   "The first argument to requestAnimationFrame must be a function.");
             }
 
-            using CallbackContainer = std::tuple<jsi::Function>;
             auto callback = jsi::Function::createFromHostFunction(
                 rt,
                 jsi::PropNameID::forAscii(rt, "RN$rafFn"),
                 0,
-                [callbackContainer = std::make_shared<CallbackContainer>(
+                [callbackContainer = std::make_shared<jsi::Function>(
                      args[0].getObject(rt).getFunction(rt))](
                     jsi::Runtime& rt,
                     const jsi::Value& thisVal,
@@ -374,19 +436,17 @@ void TimerManager::attachGlobals(jsi::Runtime& runtime) {
                       rt.global().getPropertyAsObject(rt, "performance");
                   auto nowFn = performance.getPropertyAsFunction(rt, "now");
                   auto now = nowFn.callWithThis(rt, performance, {});
-
-                  return std::get<0>(*callbackContainer)
-                      .call(rt, {std::move(now)});
+                  return callbackContainer->call(rt, {std::move(now)});
                 });
 
             // The current implementation of requestAnimationFrame is the same
             // as setTimeout(0). This isn't exactly how requestAnimationFrame
             // is supposed to work on web, and may change in the future.
-            auto handle = createTimer(
+            return createTimer(
                 std::move(callback),
                 std::vector<jsi::Value>(),
-                /* delay */ 0);
-            return jsi::Object::createFromHostObject(rt, handle);
+                /* delay */ 0,
+                TimerSource::RequestAnimationFrame);
           }));
 
   runtime.global().setProperty(
@@ -401,13 +461,10 @@ void TimerManager::attachGlobals(jsi::Runtime& runtime) {
               const jsi::Value& thisVal,
               const jsi::Value* args,
               size_t count) {
-            if (count == 0 || !args[0].isObject() ||
-                !args[0].asObject(rt).isHostObject<TimerHandle>(rt)) {
-              return jsi::Value::undefined();
+            if (count > 0 && args[0].isNumber()) {
+              auto handle = (TimerHandle)args[0].asNumber();
+              deleteTimer(rt, handle);
             }
-            std::shared_ptr<TimerHandle> host =
-                args[0].asObject(rt).asHostObject<TimerHandle>(rt);
-            deleteTimer(rt, host);
             return jsi::Value::undefined();
           }));
 }

@@ -30,6 +30,7 @@ public class PromiseImpl implements Promise {
   // Keys for mReject's WritableMap
   private static final String ERROR_MAP_KEY_CODE = "code";
   private static final String ERROR_MAP_KEY_MESSAGE = "message";
+  private static final String ERROR_MAP_KEY_NAME = "name";
   private static final String ERROR_MAP_KEY_USER_INFO = "userInfo";
   private static final String ERROR_MAP_KEY_NATIVE_STACK = "nativeStackAndroid";
 
@@ -190,7 +191,12 @@ public class PromiseImpl implements Promise {
     if (message != null) {
       errorInfo.putString(ERROR_MAP_KEY_MESSAGE, message);
     } else if (throwable != null) {
-      errorInfo.putString(ERROR_MAP_KEY_MESSAGE, throwable.getMessage());
+      String throwableMessage = throwable.getMessage();
+      // Fallback to the trowable name, so we record some useful information
+      if (throwableMessage == null || throwableMessage.isEmpty()) {
+        throwableMessage = throwable.getClass().getCanonicalName();
+      }
+      errorInfo.putString(ERROR_MAP_KEY_MESSAGE, throwableMessage);
     } else {
       // The JavaScript side expects a map with at least an error message.
       // /Libraries/BatchedBridge/NativeModules.js -> createErrorFromErrorData
@@ -210,6 +216,8 @@ public class PromiseImpl implements Promise {
     // this matches iOS behavior - iOS adds a `nativeStackIOS` property
     // iOS: /React/Base/RCTUtils.m -> RCTJSErrorFromCodeMessageAndNSError
     if (throwable != null) {
+      errorInfo.putString(ERROR_MAP_KEY_NAME, throwable.getClass().getCanonicalName());
+
       StackTraceElement[] stackTrace = throwable.getStackTrace();
       WritableNativeArray nativeStackAndroid = new WritableNativeArray();
 

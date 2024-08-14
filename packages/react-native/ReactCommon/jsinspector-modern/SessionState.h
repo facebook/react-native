@@ -22,6 +22,7 @@ struct SessionState {
   // TODO: Generalise this to arbitrary domains
   bool isDebuggerDomainEnabled{false};
   bool isLogDomainEnabled{false};
+  bool isReactNativeApplicationDomainEnabled{false};
   bool isRuntimeDomainEnabled{false};
 
   /**

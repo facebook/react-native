@@ -9,7 +9,7 @@ package com.facebook.react.fabric.internal.interop
 
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.testutils.fakes.FakeUIManager
-import org.junit.Assert.assertEquals
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
 @OptIn(UnstableReactNativeAPI::class)
@@ -20,8 +20,8 @@ class InteropUiBlockListenerTest {
     val underTest = InteropUIBlockListener()
     underTest.prependUIBlock {}
 
-    assertEquals(1, underTest.beforeUIBlocks.size)
-    assertEquals(0, underTest.afterUIBlocks.size)
+    assertThat(underTest.beforeUIBlocks).hasSize(1)
+    assertThat(underTest.afterUIBlocks).hasSize(0)
   }
 
   @Test
@@ -29,8 +29,8 @@ class InteropUiBlockListenerTest {
     val underTest = InteropUIBlockListener()
     underTest.addUIBlock {}
 
-    assertEquals(0, underTest.beforeUIBlocks.size)
-    assertEquals(1, underTest.afterUIBlocks.size)
+    assertThat(underTest.beforeUIBlocks).hasSize(0)
+    assertThat(underTest.afterUIBlocks).hasSize(1)
   }
 
   @Test
@@ -41,8 +41,8 @@ class InteropUiBlockListenerTest {
 
     underTest.willMountItems(FakeUIManager())
 
-    assertEquals(0, underTest.beforeUIBlocks.size)
-    assertEquals(1, underTest.afterUIBlocks.size)
+    assertThat(underTest.beforeUIBlocks).hasSize(0)
+    assertThat(underTest.afterUIBlocks).hasSize(1)
   }
 
   @Test
@@ -53,8 +53,8 @@ class InteropUiBlockListenerTest {
 
     underTest.willDispatchViewUpdates(FakeUIManager())
 
-    assertEquals(0, underTest.beforeUIBlocks.size)
-    assertEquals(1, underTest.afterUIBlocks.size)
+    assertThat(underTest.beforeUIBlocks).hasSize(0)
+    assertThat(underTest.afterUIBlocks).hasSize(1)
   }
 
   @Test
@@ -65,8 +65,8 @@ class InteropUiBlockListenerTest {
 
     underTest.didMountItems(FakeUIManager())
 
-    assertEquals(1, underTest.beforeUIBlocks.size)
-    assertEquals(0, underTest.afterUIBlocks.size)
+    assertThat(underTest.beforeUIBlocks).hasSize(1)
+    assertThat(underTest.afterUIBlocks).hasSize(0)
   }
 
   @Test
@@ -77,8 +77,8 @@ class InteropUiBlockListenerTest {
 
     underTest.didDispatchMountItems(FakeUIManager())
 
-    assertEquals(1, underTest.beforeUIBlocks.size)
-    assertEquals(0, underTest.afterUIBlocks.size)
+    assertThat(underTest.beforeUIBlocks).hasSize(1)
+    assertThat(underTest.afterUIBlocks).hasSize(0)
   }
 
   @Test
@@ -90,7 +90,7 @@ class InteropUiBlockListenerTest {
 
     underTest.willMountItems(fakeUIManager)
 
-    assertEquals(1, fakeUIManager.resolvedViewCount)
+    assertThat(fakeUIManager.resolvedViewCount).isEqualTo(1)
   }
 
   @Test
@@ -102,7 +102,7 @@ class InteropUiBlockListenerTest {
 
     underTest.willDispatchViewUpdates(fakeUIManager)
 
-    assertEquals(1, fakeUIManager.resolvedViewCount)
+    assertThat(fakeUIManager.resolvedViewCount).isEqualTo(1)
   }
 
   @Test
@@ -114,7 +114,7 @@ class InteropUiBlockListenerTest {
 
     underTest.didMountItems(fakeUIManager)
 
-    assertEquals(1, fakeUIManager.resolvedViewCount)
+    assertThat(fakeUIManager.resolvedViewCount).isEqualTo(1)
   }
 
   @Test
@@ -126,6 +126,6 @@ class InteropUiBlockListenerTest {
 
     underTest.didDispatchMountItems(fakeUIManager)
 
-    assertEquals(1, fakeUIManager.resolvedViewCount)
+    assertThat(fakeUIManager.resolvedViewCount).isEqualTo(1)
   }
 }

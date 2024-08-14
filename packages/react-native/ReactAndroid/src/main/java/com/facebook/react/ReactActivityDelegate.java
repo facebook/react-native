@@ -70,7 +70,7 @@ public class ReactActivityDelegate {
    *
    * <p>Not used on bridgeless
    */
-  protected ReactRootView createRootView() {
+  protected @Nullable ReactRootView createRootView() {
     return null;
   }
 
@@ -136,6 +136,12 @@ public class ReactActivityDelegate {
   protected void loadApp(String appKey) {
     mReactDelegate.loadApp(appKey);
     getPlainActivity().setContentView(mReactDelegate.getReactRootView());
+  }
+
+  public void onUserLeaveHint() {
+    if (mReactDelegate != null) {
+      mReactDelegate.onUserLeaveHint();
+    }
   }
 
   public void onPause() {

@@ -122,6 +122,16 @@ public class ReactDelegate {
     }
   }
 
+  public void onUserLeaveHint() {
+    if (ReactFeatureFlags.enableBridgelessArchitecture) {
+      mReactHost.onHostLeaveHint(mActivity);
+    } else {
+      if (getReactNativeHost().hasInstance()) {
+        getReactNativeHost().getReactInstanceManager().onUserLeaveHint(mActivity);
+      }
+    }
+  }
+
   public void onHostPause() {
     if (ReactFeatureFlags.enableBridgelessArchitecture) {
       mReactHost.onHostPause(mActivity);
@@ -134,6 +144,10 @@ public class ReactDelegate {
 
   public void onHostDestroy() {
     if (ReactFeatureFlags.enableBridgelessArchitecture) {
+      if (mReactSurface != null) {
+        mReactSurface.stop();
+        mReactSurface = null;
+      }
       mReactHost.onHostDestroy(mActivity);
     } else {
       if (mReactRootView != null) {

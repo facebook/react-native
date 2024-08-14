@@ -29,7 +29,7 @@
 #import <React/RCTPerformanceLogger.h>
 #import <React/RCTRuntimeExecutorModule.h>
 #import <React/RCTUtils.h>
-#import <ReactCommon/CxxTurboModuleUtils.h>
+#import <ReactCommon/RCTTurboModuleWithJSIBindings.h>
 #import <ReactCommon/TurboCxxModule.h>
 #import <ReactCommon/TurboModulePerfLogger.h>
 #import <ReactCommon/TurboModuleUtils.h>
@@ -216,7 +216,6 @@ typedef struct {
   RCTBridgeProxy *_bridgeProxy;
   RCTBridgeModuleDecorator *_bridgeModuleDecorator;
 
-  BOOL _enableSharedModuleQueue;
   dispatch_queue_t _sharedModuleQueue;
 }
 
@@ -233,11 +232,7 @@ typedef struct {
     _bridgeProxy = bridgeProxy;
     _bridgeModuleDecorator = bridgeModuleDecorator;
     _invalidating = false;
-    _enableSharedModuleQueue = RCTTurboModuleSharedQueueEnabled();
-
-    if (_enableSharedModuleQueue) {
-      _sharedModuleQueue = dispatch_queue_create("com.meta.react.turbomodulemanager.queue", DISPATCH_QUEUE_SERIAL);
-    }
+    _sharedModuleQueue = dispatch_queue_create("com.meta.react.turbomodulemanager.queue", DISPATCH_QUEUE_SERIAL);
 
     if (RCTTurboModuleInteropEnabled()) {
       // TODO(T174674274): Implement lazy loading of legacy modules in the new architecture.
@@ -305,7 +300,7 @@ typedef struct {
  * (for now).
  */
 
-- (std::shared_ptr<TurboModule>)provideTurboModule:(const char *)moduleName
+- (std::shared_ptr<TurboModule>)provideTurboModule:(const char *)moduleName runtime:(jsi::Runtime *)runtime
 {
   auto turboModuleLookup = _turboModuleCache.find(moduleName);
   if (turboModuleLookup != _turboModuleCache.end()) {
@@ -331,14 +326,6 @@ typedef struct {
     }
 
     TurboModulePerfLogger::moduleCreateFail(moduleName, moduleId);
-  }
-
-  auto &cxxTurboModuleMapProvider = globalExportedCxxTurboModuleMap();
-  auto it = cxxTurboModuleMapProvider.find(moduleName);
-  if (it != cxxTurboModuleMapProvider.end()) {
-    auto turboModule = it->second(_jsInvoker);
-    _turboModuleCache.insert({moduleName, turboModule});
-    return turboModule;
   }
 
   /**
@@ -409,6 +396,10 @@ typedef struct {
       RCTLogError(@"TurboModule \"%@\"'s getTurboModule: method returned nil.", moduleClass);
     }
     _turboModuleCache.insert({moduleName, turboModule});
+
+    if ([module respondsToSelector:@selector(installJSIBindingsWithRuntime:)]) {
+      [(id<RCTTurboModuleWithJSIBindings>)module installJSIBindingsWithRuntime:*runtime];
+    }
     return turboModule;
   }
 
@@ -723,12 +714,7 @@ typedef struct {
    * following if condition's block.
    */
   if (!methodQueue) {
-    if (_enableSharedModuleQueue) {
-      methodQueue = _sharedModuleQueue;
-    } else {
-      NSString *methodQueueName = [NSString stringWithFormat:@"com.facebook.react.%sQueue", moduleName];
-      methodQueue = dispatch_queue_create(methodQueueName.UTF8String, DISPATCH_QUEUE_SERIAL);
-    }
+    methodQueue = _sharedModuleQueue;
 
     if (moduleHasMethodQueueGetter) {
       /**
@@ -771,7 +757,7 @@ typedef struct {
    * Attach method queue to id<RCTBridgeModule> object.
    * This is necessary because the id<RCTBridgeModule> object can be eagerly created/initialized before the method
    * queue is required. The method queue is required for an id<RCTBridgeModule> for JS -> Native calls. So, we need it
-   * before we create the id<RCTBridgeModule>'s TurboModule jsi::HostObject in provideTurboModule:.
+   * before we create the id<RCTBridgeModule>'s TurboModule jsi::HostObject in provideTurboModule:runtime:.
    */
   objc_setAssociatedObject(module, &kAssociatedMethodQueueKey, methodQueue, OBJC_ASSOCIATION_RETAIN);
 
@@ -921,7 +907,8 @@ typedef struct {
    * aren't any strong references to it in ObjC. Hence, we give
    * __turboModuleProxy a strong reference to TurboModuleManager.
    */
-  auto turboModuleProvider = [self](const std::string &name) -> std::shared_ptr<react::TurboModule> {
+  auto turboModuleProvider = [self,
+                              runtime = &runtime](const std::string &name) -> std::shared_ptr<react::TurboModule> {
     auto moduleName = name.c_str();
 
     TurboModulePerfLogger::moduleJSRequireBeginningStart(moduleName);
@@ -935,7 +922,7 @@ typedef struct {
      * Additionally, if a TurboModule with the name `name` isn't found, then we
      * trigger an assertion failure.
      */
-    auto turboModule = [self provideTurboModule:moduleName];
+    auto turboModule = [self provideTurboModule:moduleName runtime:runtime];
 
     if (moduleWasNotInitialized && [self moduleIsInitialized:moduleName]) {
       [self->_bridge.performanceLogger markStopForTag:RCTPLTurboModuleSetup];

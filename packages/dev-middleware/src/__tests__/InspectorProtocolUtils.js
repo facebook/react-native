@@ -126,12 +126,15 @@ export async function createAndConnectTarget(
   }>,
   signal: AbortSignal,
   page: PageFromDevice,
+  deviceId: ?string = null,
 ): Promise<{device: DeviceMock, debugger_: DebuggerMock}> {
   let device;
   let debugger_;
   try {
     device = await createDeviceMock(
-      `${serverRef.serverBaseWsUrl}/inspector/device?device=device&name=foo&app=bar`,
+      `${serverRef.serverBaseWsUrl}/inspector/device?device=${
+        deviceId ?? 'device' + Date.now()
+      }&name=foo&app=bar`,
       signal,
     );
     device.getPages.mockImplementation(() => [page]);

@@ -9,6 +9,7 @@
 
 #include "NativePerformanceObserver.h"
 
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/performance/timeline/PerformanceEntryReporter.h>
 #include <react/renderer/uimanager/UIManagerBinding.h>
 #include <react/utils/CoreFeatures.h>
@@ -113,11 +114,17 @@ std::vector<PerformanceEntry> NativePerformanceObserver::getEntries(
 std::vector<PerformanceEntryType>
 NativePerformanceObserver::getSupportedPerformanceEntryTypes(
     jsi::Runtime& /*rt*/) {
-  return {
+  std::vector supportedEntries = {
       PerformanceEntryType::MARK,
       PerformanceEntryType::MEASURE,
       PerformanceEntryType::EVENT,
   };
+
+  if (ReactNativeFeatureFlags::enableLongTaskAPI()) {
+    supportedEntries.push_back(PerformanceEntryType::LONGTASK);
+  }
+
+  return supportedEntries;
 }
 
 } // namespace facebook::react

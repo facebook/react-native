@@ -55,7 +55,7 @@ function convertStackToComponentStack(stack: Stack): ComponentStack {
   return componentStack;
 }
 
-export type LogBoxLogData = $ReadOnly<{|
+export type LogBoxLogData = $ReadOnly<{
   level: LogLevel,
   type?: ?string,
   message: Message,
@@ -66,7 +66,8 @@ export type LogBoxLogData = $ReadOnly<{|
   codeFrame?: ?CodeFrame,
   isComponentError: boolean,
   extraData?: mixed,
-|}>;
+  onNotificationPress?: ?() => void,
+}>;
 
 class LogBoxLog {
   message: Message;
@@ -102,6 +103,7 @@ class LogBoxLog {
     componentStack: null,
     status: 'NONE',
   };
+  onNotificationPress: ?() => void;
 
   constructor(data: LogBoxLogData) {
     this.level = data.level;
@@ -115,6 +117,7 @@ class LogBoxLog {
     this.isComponentError = data.isComponentError;
     this.extraData = data.extraData;
     this.count = 1;
+    this.onNotificationPress = data.onNotificationPress;
   }
 
   incrementCount(): void {

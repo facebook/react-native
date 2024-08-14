@@ -95,6 +95,8 @@ describe.skip('LogBox', () => {
     expect(mockError.mock.calls[0].map(cleanPath)).toMatchSnapshot(
       'Log passed to console error',
     );
+
+    // The Warning: prefix is added due to a hack in LogBox to prevent double logging.
     expect(mockError.mock.calls[0][0].startsWith('Warning: ')).toBe(true);
   });
 
@@ -123,6 +125,8 @@ describe.skip('LogBox', () => {
     expect(mockError.mock.calls[0].map(cleanPath)).toMatchSnapshot(
       'Log passed to console error',
     );
+
+    // The Warning: prefix is added due to a hack in LogBox to prevent double logging.
     expect(mockError.mock.calls[0][0].startsWith('Warning: ')).toBe(true);
   });
 });

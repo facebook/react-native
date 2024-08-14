@@ -15,7 +15,7 @@ add_compile_options(
         -DLOG_TAG=\"Fabric\")
 
 file(GLOB react_render_core_SRC CONFIGURE_DEPENDS *.cpp)
-add_library(react_render_core SHARED ${react_render_core_SRC})
+add_library(react_render_core OBJECT ${react_render_core_SRC})
 
 target_include_directories(react_render_core PUBLIC ${REACT_COMMON_DIR})
 target_link_libraries(react_render_core

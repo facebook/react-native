@@ -11,104 +11,123 @@
 
 'use strict';
 
+import nullthrows from 'nullthrows';
+
 const VirtualizedSectionList = require('../VirtualizedSectionList');
 const React = require('react');
 const ReactTestRenderer = require('react-test-renderer');
 
 describe('VirtualizedSectionList', () => {
-  it('renders simple list', () => {
-    const component = ReactTestRenderer.create(
-      <VirtualizedSectionList
-        sections={[
+  it('renders simple list', async () => {
+    let component;
+    await ReactTestRenderer.act(() => {
+      component = ReactTestRenderer.create(
+        <VirtualizedSectionList
+          sections={[
+            // $FlowFixMe[incompatible-type]
+            {title: 's1', data: [{key: 'i1'}, {key: 'i2'}, {key: 'i3'}]},
+          ]}
+          // $FlowFixMe[missing-local-annot]
+          renderItem={({item}) => <item value={item.key} />}
+          getItem={(data, key) => data[key]}
+          getItemCount={data => data.length}
+        />,
+      );
+    });
+    expect(component).toMatchSnapshot();
+  });
+
+  it('renders empty list', async () => {
+    let component;
+    await ReactTestRenderer.act(() => {
+      component = ReactTestRenderer.create(
+        <VirtualizedSectionList
+          sections={[]}
+          renderItem={({item}) => <item value={item.key} />}
+          getItem={(data, key) => data[key]}
+          getItemCount={data => data.length}
+        />,
+      );
+    });
+    expect(component).toMatchSnapshot();
+  });
+
+  it('renders empty list with empty component', async () => {
+    let component;
+    await ReactTestRenderer.act(() => {
+      component = ReactTestRenderer.create(
+        <VirtualizedSectionList
+          sections={[]}
+          ListEmptyComponent={() => <empty />}
+          ListFooterComponent={() => <footer />}
+          ListHeaderComponent={() => <header />}
+          getItem={(data, key) => data[key]}
+          getItemCount={data => data.length}
+          renderItem={({item}) => <item value={item.key} />}
+        />,
+      );
+    });
+    expect(component).toMatchSnapshot();
+  });
+
+  it('renders list with empty component', async () => {
+    let component;
+    await ReactTestRenderer.act(() => {
+      component = ReactTestRenderer.create(
+        <VirtualizedSectionList
           // $FlowFixMe[incompatible-type]
-          {title: 's1', data: [{key: 'i1'}, {key: 'i2'}, {key: 'i3'}]},
-        ]}
-        // $FlowFixMe[missing-local-annot]
-        renderItem={({item}) => <item value={item.key} />}
-        getItem={(data, key) => data[key]}
-        getItemCount={data => data.length}
-      />,
-    );
+          sections={[{title: 's1', data: [{key: 'hello'}]}]}
+          ListEmptyComponent={() => <empty />}
+          getItem={(data, key) => data[key]}
+          getItemCount={data => data.length}
+          renderItem={({item}) => <item value={item.key} />}
+        />,
+      );
+    });
     expect(component).toMatchSnapshot();
   });
 
-  it('renders empty list', () => {
-    const component = ReactTestRenderer.create(
-      <VirtualizedSectionList
-        sections={[]}
-        renderItem={({item}) => <item value={item.key} />}
-        getItem={(data, key) => data[key]}
-        getItemCount={data => data.length}
-      />,
-    );
+  it('renders all the bells and whistles', async () => {
+    let component;
+    await ReactTestRenderer.act(() => {
+      component = ReactTestRenderer.create(
+        <VirtualizedSectionList
+          ItemSeparatorComponent={() => <separator />}
+          ListEmptyComponent={() => <empty />}
+          ListFooterComponent={() => <footer />}
+          ListHeaderComponent={() => <header />}
+          sections={[
+            // $FlowFixMe[incompatible-type]
+            {
+              title: 's1',
+              // $FlowFixMe[incompatible-call]
+              data: new Array<void>(5)
+                .fill()
+                .map((_, ii) => ({id: String(ii)})),
+            },
+          ]}
+          getItem={(data, key) => data[key]}
+          getItemCount={data => data.length}
+          getItemLayout={({index}) => ({
+            index: -1,
+            length: 50,
+            offset: index * 50,
+          })}
+          inverted={true}
+          keyExtractor={(item, index) => item.id}
+          onRefresh={jest.fn()}
+          refreshing={false}
+          renderItem={({item}) => <item value={item.id} />}
+        />,
+      );
+    });
     expect(component).toMatchSnapshot();
   });
 
-  it('renders empty list with empty component', () => {
-    const component = ReactTestRenderer.create(
-      <VirtualizedSectionList
-        sections={[]}
-        ListEmptyComponent={() => <empty />}
-        ListFooterComponent={() => <footer />}
-        ListHeaderComponent={() => <header />}
-        getItem={(data, key) => data[key]}
-        getItemCount={data => data.length}
-        renderItem={({item}) => <item value={item.key} />}
-      />,
-    );
-    expect(component).toMatchSnapshot();
-  });
-
-  it('renders list with empty component', () => {
-    const component = ReactTestRenderer.create(
-      <VirtualizedSectionList
-        // $FlowFixMe[incompatible-type]
-        sections={[{title: 's1', data: [{key: 'hello'}]}]}
-        ListEmptyComponent={() => <empty />}
-        getItem={(data, key) => data[key]}
-        getItemCount={data => data.length}
-        renderItem={({item}) => <item value={item.key} />}
-      />,
-    );
-    expect(component).toMatchSnapshot();
-  });
-
-  it('renders all the bells and whistles', () => {
-    const component = ReactTestRenderer.create(
-      <VirtualizedSectionList
-        ItemSeparatorComponent={() => <separator />}
-        ListEmptyComponent={() => <empty />}
-        ListFooterComponent={() => <footer />}
-        ListHeaderComponent={() => <header />}
-        sections={[
-          // $FlowFixMe[incompatible-type]
-          {
-            title: 's1',
-            // $FlowFixMe[incompatible-call]
-            data: new Array<void>(5).fill().map((_, ii) => ({id: String(ii)})),
-          },
-        ]}
-        getItem={(data, key) => data[key]}
-        getItemCount={data => data.length}
-        getItemLayout={({index}) => ({
-          index: -1,
-          length: 50,
-          offset: index * 50,
-        })}
-        inverted={true}
-        keyExtractor={(item, index) => item.id}
-        onRefresh={jest.fn()}
-        refreshing={false}
-        renderItem={({item}) => <item value={item.id} />}
-      />,
-    );
-    expect(component).toMatchSnapshot();
-  });
-
-  it('handles separators correctly', () => {
+  it('handles separators correctly', async () => {
     const infos = [];
     let component;
-    ReactTestRenderer.act(() => {
+    await ReactTestRenderer.act(() => {
       component = ReactTestRenderer.create(
         <VirtualizedSectionList
           ItemSeparatorComponent={props => <separator {...props} />}
@@ -141,64 +160,79 @@ describe('VirtualizedSectionList', () => {
     expect(component).toMatchSnapshot();
   });
 
-  it('handles nested lists', () => {
-    const component = ReactTestRenderer.create(
-      <VirtualizedSectionList
-        // $FlowFixMe[incompatible-type]
-        sections={[{title: 'outer', data: [{key: 'outer0'}, {key: 'outer1'}]}]}
-        renderItem={outerInfo => (
-          <VirtualizedSectionList
-            sections={[
-              // $FlowFixMe[incompatible-type]
-              {
-                title: 'inner',
-                data: [
-                  {key: outerInfo.item.key + ':inner0'},
-                  {key: outerInfo.item.key + ':inner1'},
-                ],
-              },
-            ]}
-            horizontal={outerInfo.item.key === 'outer1'}
-            renderItem={innerInfo => {
-              return <item title={innerInfo.item.key} />;
-            }}
-            getItem={(data, key) => data[key]}
-            getItemCount={data => data.length}
-          />
-        )}
-        getItem={(data, key) => data[key]}
-        getItemCount={data => data.length}
-      />,
-    );
+  it('handles nested lists', async () => {
+    let component;
+    await ReactTestRenderer.act(() => {
+      component = ReactTestRenderer.create(
+        <VirtualizedSectionList
+          // $FlowFixMe[incompatible-type]
+          sections={[
+            {title: 'outer', data: [{key: 'outer0'}, {key: 'outer1'}]},
+          ]}
+          renderItem={outerInfo => (
+            <VirtualizedSectionList
+              sections={[
+                // $FlowFixMe[incompatible-type]
+                {
+                  title: 'inner',
+                  data: [
+                    {key: outerInfo.item.key + ':inner0'},
+                    {key: outerInfo.item.key + ':inner1'},
+                  ],
+                },
+              ]}
+              horizontal={outerInfo.item.key === 'outer1'}
+              renderItem={innerInfo => {
+                return <item title={innerInfo.item.key} />;
+              }}
+              getItem={(data, key) => data[key]}
+              getItemCount={data => data.length}
+            />
+          )}
+          getItem={(data, key) => data[key]}
+          getItemCount={data => data.length}
+        />,
+      );
+    });
     expect(component).toMatchSnapshot();
   });
 
   describe('scrollToLocation', () => {
     const ITEM_HEIGHT = 100;
 
-    const createVirtualizedSectionList = (props?: {
+    const createVirtualizedSectionList = async (props?: {
       stickySectionHeadersEnabled: boolean,
     }) => {
-      const component = ReactTestRenderer.create(
-        <VirtualizedSectionList
-          sections={[
-            // $FlowFixMe[incompatible-type]
-            {title: 's1', data: [{key: 'i1.1'}, {key: 'i1.2'}, {key: 'i1.3'}]},
-            // $FlowFixMe[incompatible-type]
-            {title: 's2', data: [{key: 'i2.1'}, {key: 'i2.2'}, {key: 'i2.3'}]},
-          ]}
-          renderItem={({item}) => <item value={item.key} />}
-          getItem={(data, key) => data[key]}
-          getItemCount={data => data.length}
-          getItemLayout={(data, index) => ({
-            length: ITEM_HEIGHT,
-            offset: ITEM_HEIGHT * index,
-            index,
-          })}
-          {...props}
-        />,
-      );
-      const instance = component.getInstance();
+      let component;
+      await ReactTestRenderer.act(() => {
+        component = ReactTestRenderer.create(
+          <VirtualizedSectionList
+            sections={[
+              // $FlowFixMe[incompatible-type]
+              {
+                title: 's1',
+                data: [{key: 'i1.1'}, {key: 'i1.2'}, {key: 'i1.3'}],
+              },
+              // $FlowFixMe[incompatible-type]
+              {
+                title: 's2',
+                data: [{key: 'i2.1'}, {key: 'i2.2'}, {key: 'i2.3'}],
+              },
+            ]}
+            renderItem={({item}) => <item value={item.key} />}
+            getItem={(data, key) => data[key]}
+            getItemCount={data => data.length}
+            getItemLayout={(data, index) => ({
+              length: ITEM_HEIGHT,
+              offset: ITEM_HEIGHT * index,
+              index,
+            })}
+            {...props}
+          />,
+        );
+      });
+
+      const instance = nullthrows(component).getInstance();
       const spy = jest.fn();
 
       // $FlowFixMe[incompatible-use] wrong types
@@ -211,8 +245,8 @@ describe('VirtualizedSectionList', () => {
       };
     };
 
-    it('when sticky stickySectionHeadersEnabled={true}, header height is added to the developer-provided viewOffset', () => {
-      const {instance, spy} = createVirtualizedSectionList({
+    it('when sticky stickySectionHeadersEnabled={true}, header height is added to the developer-provided viewOffset', async () => {
+      const {instance, spy} = await createVirtualizedSectionList({
         stickySectionHeadersEnabled: true,
       });
 
@@ -267,8 +301,8 @@ describe('VirtualizedSectionList', () => {
       ],
     ])(
       'given sectionIndex, itemIndex and viewOffset, scrollToIndex is called with correct params',
-      (scrollToLocationParams, expected) => {
-        const {instance, spy} = createVirtualizedSectionList();
+      async (scrollToLocationParams, expected) => {
+        const {instance, spy} = await createVirtualizedSectionList();
         // $FlowFixMe[prop-missing] scrollToLocation not on instance
         instance?.scrollToLocation(scrollToLocationParams);
         expect(spy).toHaveBeenCalledWith(expected);

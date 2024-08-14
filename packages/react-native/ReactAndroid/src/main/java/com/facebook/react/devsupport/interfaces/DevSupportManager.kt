@@ -58,17 +58,15 @@ public interface DevSupportManager : JSExceptionHandler {
 
   public fun stopInspector()
 
-  public fun onNewReactContextCreated(reactContext: ReactContext?)
+  public fun onNewReactContextCreated(reactContext: ReactContext)
 
-  public fun onReactInstanceDestroyed(reactContext: ReactContext?)
+  public fun onReactInstanceDestroyed(reactContext: ReactContext)
 
   public fun hasUpToDateJSBundleInCache(): Boolean
 
   public fun reloadSettings()
 
   public fun handleReloadJS()
-
-  public fun reloadJSFromServer(bundleURL: String)
 
   public fun reloadJSFromServer(bundleURL: String, callback: BundleLoadCallback)
 
@@ -108,11 +106,14 @@ public interface DevSupportManager : JSExceptionHandler {
   /** Shows the "paused in debugger" overlay with the given message. */
   public fun showPausedInDebuggerOverlay(
       message: String,
-      listener: PausedInDebuggerOverlayCommandListener
+      listener: PausedInDebuggerOverlayCommandListener,
   )
 
   /** Hides the "paused in debugger" overlay, if currently shown. */
   public fun hidePausedInDebuggerOverlay()
+
+  /** Add an option to send to packager when requesting JS bundle. */
+  public fun setAdditionalOptionForPackager(name: String, value: String)
 
   /**
    * The PackagerLocationCustomizer allows you to have a dynamic packager location that is

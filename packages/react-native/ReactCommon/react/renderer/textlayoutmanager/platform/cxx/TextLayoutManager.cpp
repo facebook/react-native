@@ -42,4 +42,11 @@ LinesMeasurements TextLayoutManager::measureLines(
   return {};
 };
 
+Float TextLayoutManager::baseline(
+    AttributedString attributedString,
+    ParagraphAttributes paragraphAttributes,
+    Size size) const {
+  return 0;
+}
+
 } // namespace facebook::react

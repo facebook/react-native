@@ -13,6 +13,11 @@
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/core/State.h>
 
+#ifdef ANDROID
+#include <react/renderer/mapbuffer/MapBuffer.h>
+#include <react/renderer/mapbuffer/MapBufferBuilder.h>
+#endif
+
 namespace facebook::react {
 
 /*
@@ -21,7 +26,7 @@ namespace facebook::react {
  * state update transaction. A data object does not need to be copyable but
  * needs to be moveable.
  */
-template <typename DataT>
+template <typename DataT, bool usesMapBufferForStateData = false>
 class ConcreteState : public State {
  public:
   using Shared = std::shared_ptr<const ConcreteState>;
@@ -101,7 +106,11 @@ class ConcreteState : public State {
   }
 
   MapBuffer getMapBuffer() const override {
-    return getData().getMapBuffer();
+    if constexpr (usesMapBufferForStateData) {
+      return getData().getMapBuffer();
+    } else {
+      return MapBufferBuilder::EMPTY();
+    }
   }
 #endif
 };

@@ -24,6 +24,7 @@ import okhttp3.Headers;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 import okio.Buffer;
 import okio.BufferedSource;
 import okio.Okio;
@@ -146,14 +147,16 @@ public class BundleDownloader {
               } else {
                 // In case the server doesn't support multipart/mixed responses, fallback to normal
                 // download.
-                processBundleResult(
-                    url,
-                    r.code(),
-                    r.headers(),
-                    Okio.buffer(r.body().source()),
-                    outputFile,
-                    bundleInfo,
-                    callback);
+                try (ResponseBody body = r.body()) {
+                  processBundleResult(
+                      url,
+                      r.code(),
+                      r.headers(),
+                      r.body().source(),
+                      outputFile,
+                      bundleInfo,
+                      callback);
+                }
               }
             }
           }

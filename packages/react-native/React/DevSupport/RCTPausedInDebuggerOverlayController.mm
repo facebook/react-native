@@ -6,6 +6,7 @@
  */
 
 #import <React/RCTUtils.h>
+#include <UIKit/UIKit.h>
 
 #import "RCTPausedInDebuggerOverlayController.h"
 
@@ -27,7 +28,7 @@
 
   UIView *dimmingView = [[UIView alloc] init];
   dimmingView.translatesAutoresizingMaskIntoConstraints = NO;
-  dimmingView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.5];
+  dimmingView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.2];
   [self.view addSubview:dimmingView];
   [NSLayoutConstraint activateConstraints:@[
     [dimmingView.topAnchor constraintEqualToAnchor:self.view.topAnchor],
@@ -46,30 +47,36 @@
   UIView *messageContainer = [[UIView alloc] init];
   [messageContainer addSubview:messageLabel];
   [NSLayoutConstraint activateConstraints:@[
-    [messageLabel.topAnchor constraintEqualToAnchor:messageContainer.topAnchor],
+    [messageLabel.topAnchor constraintEqualToAnchor:messageContainer.topAnchor constant:-1],
     [messageLabel.bottomAnchor constraintEqualToAnchor:messageContainer.bottomAnchor],
-    [messageLabel.leadingAnchor constraintEqualToAnchor:messageContainer.leadingAnchor constant:14],
+    [messageLabel.leadingAnchor constraintEqualToAnchor:messageContainer.leadingAnchor constant:16],
     [messageLabel.trailingAnchor constraintEqualToAnchor:messageContainer.trailingAnchor],
   ]];
 
   UIButton *resumeButton = [UIButton buttonWithType:UIButtonTypeCustom];
   [resumeButton setImage:[UIImage systemImageNamed:@"forward.frame.fill"] forState:UIControlStateNormal];
-  [resumeButton addTarget:self action:@selector(resumeButtonTapped) forControlEvents:UIControlEventTouchUpInside];
-  resumeButton.tintColor = [UIColor colorWithRed:0.26 green:0.5 blue:0.92 alpha:1];
+  resumeButton.tintColor = [UIColor colorWithRed:0.37 green:0.37 blue:0.37 alpha:1];
+  resumeButton.adjustsImageWhenDisabled = NO;
+  resumeButton.enabled = NO;
   [NSLayoutConstraint activateConstraints:@[
     [resumeButton.widthAnchor constraintEqualToConstant:48],
-    [resumeButton.heightAnchor constraintEqualToConstant:48],
+    [resumeButton.heightAnchor constraintEqualToConstant:46],
   ]];
 
   UIStackView *stackView = [[UIStackView alloc] initWithArrangedSubviews:@[ messageContainer, resumeButton ]];
   stackView.backgroundColor = [UIColor colorWithRed:1 green:1 blue:0.757 alpha:1];
   stackView.layer.cornerRadius = 12;
   stackView.layer.borderWidth = 2;
-  stackView.layer.borderColor = [UIColor colorWithRed:0.816 green:0.816 blue:0.723 alpha:1].CGColor;
+  stackView.layer.borderColor = [UIColor colorWithRed:0.71 green:0.71 blue:0.62 alpha:1].CGColor;
   stackView.translatesAutoresizingMaskIntoConstraints = NO;
   stackView.axis = UILayoutConstraintAxisHorizontal;
   stackView.distribution = UIStackViewDistributionFill;
   stackView.alignment = UIStackViewAlignmentCenter;
+
+  UITapGestureRecognizer *gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self
+                                                                                      action:@selector(handleResume:)];
+  [stackView addGestureRecognizer:gestureRecognizer];
+  stackView.userInteractionEnabled = YES;
 
   [self.view addSubview:stackView];
 
@@ -81,7 +88,7 @@
   stackView.semanticContentAttribute = UISemanticContentAttributeForceLeftToRight;
 }
 
-- (void)resumeButtonTapped
+- (void)handleResume:(UITapGestureRecognizer *)recognizer
 {
   self.onResume();
 }

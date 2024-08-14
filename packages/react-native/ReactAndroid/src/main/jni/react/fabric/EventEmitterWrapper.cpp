@@ -27,6 +27,22 @@ void EventEmitterWrapper::dispatchEvent(
   }
 }
 
+void EventEmitterWrapper::dispatchEventSynchronously(
+    std::string eventName,
+    NativeMap* params) {
+  // It is marginal, but possible for this to be constructed without a valid
+  // EventEmitter. In those cases, make sure we noop/blackhole events instead of
+  // crashing.
+  if (eventEmitter != nullptr) {
+    eventEmitter->experimental_flushSync([&]() {
+      eventEmitter->dispatchEvent(
+          std::move(eventName),
+          (params != nullptr) ? params->consume() : folly::dynamic::object(),
+          RawEvent::Category::Discrete);
+    });
+  }
+}
+
 void EventEmitterWrapper::dispatchUniqueEvent(
     std::string eventName,
     NativeMap* payload) {
@@ -44,6 +60,9 @@ void EventEmitterWrapper::registerNatives() {
       makeNativeMethod("dispatchEvent", EventEmitterWrapper::dispatchEvent),
       makeNativeMethod(
           "dispatchUniqueEvent", EventEmitterWrapper::dispatchUniqueEvent),
+      makeNativeMethod(
+          "dispatchEventSynchronously",
+          EventEmitterWrapper::dispatchEventSynchronously),
   });
 }
 

@@ -227,6 +227,62 @@ export interface TransformsStyle {
   translateY?: AnimatableNumericValue | undefined;
 }
 
+export type FilterFunction =
+  | {brightness: number | string}
+  | {blur: number | string}
+  | {contrast: number | string}
+  | {grayscale: number | string}
+  | {hueRotate: number | string}
+  | {invert: number | string}
+  | {opacity: number | string}
+  | {saturate: number | string}
+  | {sepia: number | string}
+  | {dropShadow: DropShadowPrimitive | string};
+
+export type DropShadowPrimitive = {
+  offsetX: number | string;
+  offsetY: number | string;
+  standardDeviation?: number | string | undefined;
+  color?: ColorValue | number | undefined;
+};
+
+export type BoxShadowPrimitive = {
+  offsetX: number | string;
+  offsetY: number | string;
+  color?: string | undefined;
+  blurRadius?: ColorValue | number | undefined;
+  spreadDistance?: number | string | undefined;
+  inset?: boolean | undefined;
+};
+
+export type BlendMode =
+  | 'normal'
+  | 'multiply'
+  | 'screen'
+  | 'overlay'
+  | 'darken'
+  | 'lighten'
+  | 'color-dodge'
+  | 'color-burn'
+  | 'hard-light'
+  | 'soft-light'
+  | 'difference'
+  | 'exclusion'
+  | 'hue'
+  | 'saturation'
+  | 'color'
+  | 'luminosity';
+
+export type GradientValue = {
+  type: 'linearGradient';
+  // Angle or direction enums
+  direction: string | undefined;
+  colorStops: Array<{
+    color: ColorValue;
+    position: number | undefined;
+  }>;
+};
+
 /**
  * @see https://reactnative.dev/docs/view#style
  */

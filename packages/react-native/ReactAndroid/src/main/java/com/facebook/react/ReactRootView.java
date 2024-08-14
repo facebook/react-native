@@ -49,6 +49,7 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.config.ReactFeatureFlags;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.modules.appregistry.AppRegistry;
 import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
@@ -359,7 +360,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     EventDispatcher eventDispatcher =
         UIManagerHelper.getEventDispatcher(getCurrentReactContext(), getUIManagerType());
     if (eventDispatcher != null) {
-      mJSTouchDispatcher.handleTouchEvent(event, eventDispatcher);
+      mJSTouchDispatcher.handleTouchEvent(event, eventDispatcher, getCurrentReactContext());
     }
   }
 
@@ -434,10 +435,8 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
     if (mShouldLogContentAppeared) {
       mShouldLogContentAppeared = false;
-
-      if (mJSModuleName != null) {
-        ReactMarker.logMarker(ReactMarkerConstants.CONTENT_APPEARED, mJSModuleName, mRootViewTag);
-      }
+      String jsModuleName = getJSModuleName();
+      ReactMarker.logMarker(ReactMarkerConstants.CONTENT_APPEARED, jsModuleName, mRootViewTag);
     }
   }
 
@@ -480,7 +479,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       mReactInstanceManager.createReactContextInBackground();
       // if in this experiment, we initialize the root earlier in startReactApplication
       // instead of waiting for the initial measure
-      if (ReactFeatureFlags.enableEagerRootViewAttachment) {
+      if (ReactNativeFeatureFlags.enableEagerRootViewAttachment()) {
         if (!mWasMeasured) {
           // Ideally, those values will be used by default, but we only update them here to scope
           // this change to `enableEagerRootViewAttachment` experiment.
@@ -819,6 +818,9 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
   @Nullable
   public ReactContext getCurrentReactContext() {
+    if (mReactInstanceManager == null) {
+      return null;
+    }
     return mReactInstanceManager.getCurrentReactContext();
   }
 
@@ -893,7 +895,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
           sendEvent(
               "keyboardDidHide",
               createKeyboardEventPayload(
-                  PixelUtil.toDIPFromPixel(mLastHeight),
+                  PixelUtil.toDIPFromPixel(mVisibleViewArea.height()),
                   0,
                   PixelUtil.toDIPFromPixel(mVisibleViewArea.width()),
                   0));
@@ -942,7 +944,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
         sendEvent(
             "keyboardDidHide",
             createKeyboardEventPayload(
-                PixelUtil.toDIPFromPixel(mLastHeight),
+                PixelUtil.toDIPFromPixel(mVisibleViewArea.height()),
                 0,
                 PixelUtil.toDIPFromPixel(mVisibleViewArea.width()),
                 0));

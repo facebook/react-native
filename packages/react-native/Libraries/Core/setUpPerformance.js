@@ -19,11 +19,13 @@ if (NativePerformance) {
 } else {
   if (!global.performance) {
     // $FlowExpectedError[cannot-write]
-    global.performance = ({
-      now: function () {
+    global.performance = {
+      mark: () => {},
+      measure: () => {},
+      now: () => {
         const performanceNow = global.nativePerformanceNow || Date.now;
         return performanceNow();
       },
-    }: {now?: () => number});
+    };
   }
 }

@@ -1,0 +1,93 @@
+name: test-ios-helloworld
+description: Test iOS Hello World
+inputs:
+  jsengine:
+    description: Which JavaScript engine to use. Must be one of "Hermes", "JSC".
+    default: Hermes
+  use-frameworks:
+    description: The dependency building and linking strategy to use. Must be one of "StaticLibraries", "DynamicFrameworks"
+    default: StaticLibraries
+  architecture:
+    description: The React Native architecture to Test. RNTester has always Fabric enabled, but we want to run integration test with the old arch setup. Must be one of "OldArch" or "NewArch"
+    default: OldArch
+  ruby-version:
+    description: The version of ruby that must be used
+    default: 2.6.10
+  flavor:
+    description: The flavor of the build. Must be one of "Debug", "Release".
+    default: Debug
+  hermes-version:
+    description: The version of hermes
+    required: true
+  react-native-version:
+    description: The version of react-native
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Setup xcode
+      uses: ./.github/actions/setup-xcode
+    - name: Setup node.js
+      uses: ./.github/actions/setup-node
+    - name: Create Hermes folder
+      shell: bash
+      run: mkdir -p "$HERMES_WS_DIR"
+    - name: Download Hermes
+      uses: actions/download-artifact@v4
+      with:
+        name: hermes-darwin-bin-${{ inputs.flavor }}
+        path: /tmp/hermes/hermes-runtime-darwin/
+    - name: Print Downloaded hermes
+      shell: bash
+      run: ls -lR "$HERMES_WS_DIR"
+    - name: Run yarn
+      uses: ./.github/actions/yarn-install-with-cache
+    - name: Setup ruby
+      uses: ruby/setup-ruby@v1.170.0
+      with:
+        ruby-version: ${{ inputs.ruby-version }}
+    - name: Install iOS dependencies - Configuration ${{ inputs.flavor }}; New Architecture ${{ inputs.architecture }}; JS Engine ${{ inputs.jsengine }}
+      shell: bash
+      run: |
+        cd packages/helloworld
+        args=()
+
+        if [[ ${{ inputs.architecture }} == "OldArch" ]]; then
+          args+=(--arch old)
+        fi
+
+        if [[ ${{ inputs.use-frameworks }} == "DynamicFrameworks" ]]; then
+          args+=(--frameworks dynamic)
+        fi
+
+        if [[ ${{ inputs.jsengine }} == "JSC" ]]; then
+          args+=(--jsvm jsc)
+          yarn bootstrap ios "${args[@]}" | cat
+        else
+          # Tarball is restored with capital flavors suffix, but somehow the tarball name from JS at line 96 returns as lowercased.
+          # Let's ensure that the tarballs have the right names
+
+          if [[ -f "$HERMES_WS_DIR/hermes-runtime-darwin/hermes-ios-Debug.tar.gz" ]]; then
+            mv "$HERMES_WS_DIR/hermes-runtime-darwin/hermes-ios-Debug.tar.gz" "$HERMES_WS_DIR/hermes-runtime-darwin/hermes-ios-debug.tar.gz"
+          fi
+
+          if [[ -f "$HERMES_WS_DIR/hermes-runtime-darwin/hermes-ios-Release.tar.gz" ]]; then
+            mv "$HERMES_WS_DIR/hermes-runtime-darwin/hermes-ios-Release.tar.gz" "$HERMES_WS_DIR/hermes-runtime-darwin/hermes-ios-release.tar.gz"
+          fi
+
+          BUILD_TYPE="${{ inputs.flavor }}"
+          TARBALL_FILENAME=$(node ../react-native/scripts/hermes/get-tarball-name.js --buildType "$BUILD_TYPE")
+          HERMES_PATH="$HERMES_WS_DIR/hermes-runtime-darwin/$TARBALL_FILENAME"
+          HERMES_ENGINE_TARBALL_PATH="$HERMES_PATH" yarn bootstrap ios "${args[@]}" | cat
+        fi
+    - name: Build HelloWorld  project
+      shell: bash
+      run: |
+        cd packages/helloworld
+
+        args=()
+        if [[ ${{ inputs.flavor }} == "Release" ]]; then
+          args+=(--prod)
+        fi
+        yarn build ios "${args[@]}" | cat
+        yarn bundle ios "${args[@]}" | cat

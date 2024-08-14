@@ -10,13 +10,13 @@
 
 'use strict';
 
+import {create} from '../../../jest/renderer';
 import SectionList from '../SectionList';
 import * as React from 'react';
-import ReactTestRenderer from 'react-test-renderer';
 
 describe('SectionList', () => {
-  it('renders empty list', () => {
-    const component = ReactTestRenderer.create(
+  it('renders empty list', async () => {
+    const component = await create(
       <SectionList
         sections={[]}
         renderItem={({item}) => <item v={item.key} />}
@@ -24,8 +24,8 @@ describe('SectionList', () => {
     );
     expect(component).toMatchSnapshot();
   });
-  it('rendering empty section headers is fine', () => {
-    const component = ReactTestRenderer.create(
+  it('rendering empty section headers is fine', async () => {
+    const component = await create(
       <SectionList
         sections={[{key: 's1', data: [{key: 'i1'}, {key: 'i2'}]}]}
         renderItem={({item}) => <item v={item.key} />}
@@ -34,8 +34,8 @@ describe('SectionList', () => {
     );
     expect(component).toMatchSnapshot();
   });
-  it('renders all the bells and whistles', () => {
-    const component = ReactTestRenderer.create(
+  it('renders all the bells and whistles', async () => {
+    const component = await create(
       <SectionList
         initialNumToRender={Infinity}
         ItemSeparatorComponent={props => (
@@ -75,8 +75,8 @@ describe('SectionList', () => {
     );
     expect(component).toMatchSnapshot();
   });
-  it('renders a footer when there is no data', () => {
-    const component = ReactTestRenderer.create(
+  it('renders a footer when there is no data', async () => {
+    const component = await create(
       <SectionList
         sections={[{key: 's1', data: []}]}
         renderItem={({item}) => <item v={item.key} />}
@@ -86,8 +86,8 @@ describe('SectionList', () => {
     );
     expect(component).toMatchSnapshot();
   });
-  it('renders a footer when there is no data and no header', () => {
-    const component = ReactTestRenderer.create(
+  it('renders a footer when there is no data and no header', async () => {
+    const component = await create(
       <SectionList
         sections={[{key: 's1', data: []}]}
         renderItem={({item}) => <item v={item.key} />}

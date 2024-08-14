@@ -61,6 +61,11 @@ RuntimeSchedulerBinding::RuntimeSchedulerBinding(
     std::shared_ptr<RuntimeScheduler> runtimeScheduler)
     : runtimeScheduler_(std::move(runtimeScheduler)) {}
 
+std::shared_ptr<RuntimeScheduler>
+RuntimeSchedulerBinding::getRuntimeScheduler() noexcept {
+  return runtimeScheduler_;
+}
+
 jsi::Value RuntimeSchedulerBinding::get(
     jsi::Runtime& runtime,
     const jsi::PropNameID& name) {

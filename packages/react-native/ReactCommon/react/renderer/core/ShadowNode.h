@@ -26,6 +26,7 @@ namespace facebook::react {
 
 class ComponentDescriptor;
 struct ShadowNodeFragment;
+struct ShadowNodeWrapper;
 
 class ShadowNode : public Sealable,
                    public DebugStringConvertible,
@@ -154,12 +155,6 @@ class ShadowNode : public Sealable,
 
   void sealRecursive() const;
 
-  /*
-   * Marks this shadow node and all of its children as promoted. Promoted shadow
-   * node is scheduled to be mounted.
-   */
-  void markPromotedRecursively() const;
-
   const ShadowNodeFamily& getFamily() const;
 
 #pragma mark - Mutating Methods
@@ -193,6 +188,27 @@ class ShadowNode : public Sealable,
    * Returns true if the state was applied, false otherwise.
    */
   bool progressStateIfNecessary();
+
+  /*
+   * Bind the runtime reference to this `ShadowNode` with a weak pointer,
+   * allowing to update the reference to this `ShadowNode` when cloned.
+   */
+  void setRuntimeShadowNodeReference(const std::shared_ptr<ShadowNodeWrapper>&
+                                         runtimeShadowNodeReference) const;
+
+  /*
+   * Transfer the runtime reference to this `ShadowNode` to a new instance,
+   * updating the reference to point to the new `ShadowNode` referencing it.
+   */
+  void transferRuntimeShadowNodeReference(
+      const Shared& destinationShadowNode) const;
+
+  /*
+   * Transfer the runtime reference based on the fragment instructions.
+   */
+  void transferRuntimeShadowNodeReference(
+      const Shared& destinationShadowNode,
+      const ShadowNodeFragment& fragment) const;
 
 #pragma mark - DebugStringConvertible
 
@@ -251,10 +267,27 @@ class ShadowNode : public Sealable,
    * that class.
    */
   ShadowNodeTraits traits_;
+
+  /*
+   * Weak pointer to the runtime reference to this `ShadowNode`.
+   */
+  mutable std::weak_ptr<ShadowNodeWrapper> runtimeShadowNodeReference_{};
 };
 
 static_assert(
     std::has_virtual_destructor<ShadowNode>::value,
     "ShadowNode must have a virtual destructor");
+
+struct ShadowNodeWrapper : public jsi::NativeState {
+  explicit ShadowNodeWrapper(ShadowNode::Shared shadowNode)
+      : shadowNode(std::move(shadowNode)) {}
+
+  // The below method needs to be implemented out-of-line in order for the class
+  // to have at least one "key function" (see
+  // https://itanium-cxx-abi.github.io/cxx-abi/abi.html#vague-vtable)
+  ~ShadowNodeWrapper() override;
+
+  ShadowNode::Shared shadowNode;
+};
 
 } // namespace facebook::react

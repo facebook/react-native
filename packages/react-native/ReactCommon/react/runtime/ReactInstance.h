@@ -20,12 +20,6 @@
 
 namespace facebook::react {
 
-struct CallableModule {
-  explicit CallableModule(jsi::Function factory)
-      : factory(std::move(factory)) {}
-  jsi::Function factory;
-};
-
 class ReactInstance final : private jsinspector_modern::InstanceTargetDelegate {
  public:
   using BindingsInstallFunc = std::function<void(jsi::Runtime& runtime)>;
@@ -61,7 +55,7 @@ class ReactInstance final : private jsinspector_modern::InstanceTargetDelegate {
   void callFunctionOnModule(
       const std::string& moduleName,
       const std::string& methodName,
-      const folly::dynamic& args);
+      folly::dynamic&& args);
 
   void handleMemoryPressureJs(int pressureLevel);
 
@@ -78,7 +72,8 @@ class ReactInstance final : private jsinspector_modern::InstanceTargetDelegate {
   std::shared_ptr<MessageQueueThread> jsMessageQueueThread_;
   std::shared_ptr<BufferedRuntimeExecutor> bufferedRuntimeExecutor_;
   std::shared_ptr<TimerManager> timerManager_;
-  std::unordered_map<std::string, std::shared_ptr<CallableModule>> modules_;
+  std::unordered_map<std::string, std::variant<jsi::Function, jsi::Object>>
+      callableModules_;
   std::shared_ptr<RuntimeScheduler> runtimeScheduler_;
   std::shared_ptr<JsErrorHandler> jsErrorHandler_;
 

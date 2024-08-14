@@ -156,6 +156,10 @@ using namespace facebook::react;
 
 - (NSString *)accessibilityLabel
 {
+  NSString *label = super.accessibilityLabel;
+  if ([label length] > 0) {
+    return label;
+  }
   return self.attributedText.string;
 }
 

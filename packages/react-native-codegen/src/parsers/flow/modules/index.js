@@ -40,6 +40,7 @@ const {
   emitPromise,
   emitRootTag,
   emitUnion,
+  translateArrayTypeAnnotation,
   typeAliasResolution,
   typeEnumResolution,
 } = require('../../parsers-primitives');
@@ -62,6 +63,20 @@ function translateTypeAnnotation(
     resolveTypeAnnotationFN(flowTypeAnnotation, types, parser);
 
   switch (typeAnnotation.type) {
+    case 'ArrayTypeAnnotation': {
+      return translateArrayTypeAnnotation(
+        hasteModuleName,
+        types,
+        aliasMap,
+        enumMap,
+        cxxOnly,
+        'Array',
+        typeAnnotation.elementType,
+        nullable,
+        translateTypeAnnotation,
+        parser,
+      );
+    }
     case 'GenericTypeAnnotation': {
       switch (parser.getTypeAnnotationName(typeAnnotation)) {
         case 'RootTag': {

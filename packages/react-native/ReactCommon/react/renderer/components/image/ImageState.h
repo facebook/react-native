@@ -54,10 +54,6 @@ class ImageState final {
   folly::dynamic getDynamic() const {
     return {};
   };
-
-  MapBuffer getMapBuffer() const {
-    return MapBufferBuilder::EMPTY();
-  };
 #endif
 
  private:

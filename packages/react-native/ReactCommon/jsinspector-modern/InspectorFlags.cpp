@@ -17,38 +17,35 @@ InspectorFlags& InspectorFlags::getInstance() {
   return instance;
 }
 
-bool InspectorFlags::getEnableModernCDPRegistry() const {
-  return loadFlagsAndAssertUnchanged().enableModernCDPRegistry;
-}
-
-bool InspectorFlags::getEnableCxxInspectorPackagerConnection() const {
-  auto& values = loadFlagsAndAssertUnchanged();
-
-  return values.enableCxxInspectorPackagerConnection ||
-      // If we are using the modern CDP registry, then we must also use the C++
-      // InspectorPackagerConnection implementation.
-      values.enableModernCDPRegistry;
+bool InspectorFlags::getFuseboxEnabled() const {
+  return loadFlagsAndAssertUnchanged().fuseboxEnabled;
 }
 
 void InspectorFlags::dangerouslyResetFlags() {
   *this = InspectorFlags{};
 }
 
+#if defined(REACT_NATIVE_FORCE_ENABLE_FUSEBOX) && \
+    defined(REACT_NATIVE_FORCE_DISABLE_FUSEBOX)
+#error \
+    "Cannot define both REACT_NATIVE_FORCE_ENABLE_FUSEBOX and REACT_NATIVE_FORCE_DISABLE_FUSEBOX"
+#endif
+
 const InspectorFlags::Values& InspectorFlags::loadFlagsAndAssertUnchanged()
     const {
   InspectorFlags::Values newValues = {
-      .enableCxxInspectorPackagerConnection =
-#ifdef REACT_NATIVE_FORCE_ENABLE_FUSEBOX
+      .fuseboxEnabled =
+#if defined(REACT_NATIVE_FORCE_ENABLE_FUSEBOX)
           true,
-#else
-          ReactNativeFeatureFlags::
-              inspectorEnableCxxInspectorPackagerConnection(),
-#endif
-      .enableModernCDPRegistry =
-#ifdef REACT_NATIVE_FORCE_ENABLE_FUSEBOX
+#elif defined(REACT_NATIVE_FORCE_DISABLE_FUSEBOX)
+          false,
+#elif defined(HERMES_ENABLE_DEBUGGER) && \
+    defined(REACT_NATIVE_ENABLE_FUSEBOX_DEBUG)
           true,
+#elif defined(HERMES_ENABLE_DEBUGGER)
+          ReactNativeFeatureFlags::fuseboxEnabledDebug(),
 #else
-          ReactNativeFeatureFlags::inspectorEnableModernCDPRegistry(),
+          ReactNativeFeatureFlags::fuseboxEnabledRelease(),
 #endif
   };
 

@@ -10,10 +10,15 @@
 
 'use strict';
 
+import processBoxShadow from '../StyleSheet/processBoxShadow';
+
 const ReactNativeStyleAttributes = require('../Components/View/ReactNativeStyleAttributes');
 const resolveAssetSource = require('../Image/resolveAssetSource');
+const processBackgroundImage =
+  require('../StyleSheet/processBackgroundImage').default;
 const processColor = require('../StyleSheet/processColor').default;
 const processColorArray = require('../StyleSheet/processColorArray');
+const processFilter = require('../StyleSheet/processFilter').default;
 const insetsDiffer = require('../Utilities/differ/insetsDiffer');
 const matricesDiffer = require('../Utilities/differ/matricesDiffer');
 const pointsDiffer = require('../Utilities/differ/pointsDiffer');
@@ -188,8 +193,14 @@ function getProcessorForType(typeName: string): ?(nextProp: any) => any {
       return processColor;
     case 'ColorArray':
       return processColorArray;
+    case 'Filter':
+      return processFilter;
+    case 'BackgroundImage':
+      return processBackgroundImage;
     case 'ImageSource':
       return resolveAssetSource;
+    case 'BoxShadow':
+      return processBoxShadow;
   }
   return null;
 }

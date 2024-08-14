@@ -9,7 +9,6 @@
 
 #include <FBReactNativeSpec/FBReactNativeSpecJSI.h>
 #include <react/performance/timeline/PerformanceEntryReporter.h>
-#include <functional>
 #include <optional>
 #include <string>
 #include <vector>
@@ -35,12 +34,11 @@ struct Bridging<PerformanceEntryType> {
 
 template <>
 struct Bridging<PerformanceEntry>
-    : NativePerformanceObserverCxxRawPerformanceEntryBridging<
-          PerformanceEntry> {};
+    : NativePerformanceObserverRawPerformanceEntryBridging<PerformanceEntry> {};
 
 template <>
 struct Bridging<PerformanceEntryReporter::PopPendingEntriesResult>
-    : NativePerformanceObserverCxxGetPendingEntriesResultBridging<
+    : NativePerformanceObserverGetPendingEntriesResultBridging<
           PerformanceEntryReporter::PopPendingEntriesResult> {};
 
 #pragma mark - implementation

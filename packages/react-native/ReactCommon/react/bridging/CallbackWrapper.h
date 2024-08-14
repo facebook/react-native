@@ -11,11 +11,11 @@
 
 #include <memory>
 
-#include <ReactCommon/CallInvoker.h>
-
-#include "LongLivedObject.h"
+#include <react/bridging/LongLivedObject.h>
 
 namespace facebook::react {
+
+class CallInvoker;
 
 // Helper for passing jsi::Function arg to other methods.
 class CallbackWrapper : public LongLivedObject {

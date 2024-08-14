@@ -29,9 +29,9 @@
 
 #include <DefaultComponentsRegistry.h>
 #include <DefaultTurboModuleManagerDelegate.h>
+#include <autolinking.h>
 #include <fbjni/fbjni.h>
 #include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
-#include <rncli.h>
 #include <rncore.h>
 
 #ifdef REACT_NATIVE_APP_CODEGEN_HEADER
@@ -56,8 +56,8 @@ void registerComponents(
   REACT_NATIVE_APP_COMPONENT_REGISTRATION(registry);
 #endif
 
-  // And we fallback to the components autolinked by RN CLI
-  rncli_registerProviders(registry);
+  // And we fallback to the components autolinked
+  autolinking_registerProviders(registry);
 }
 
 std::shared_ptr<TurboModule> cxxModuleProvider(
@@ -71,8 +71,8 @@ std::shared_ptr<TurboModule> cxxModuleProvider(
   //   return std::make_shared<NativeCxxModuleExample>(jsInvoker);
   // }
 
-  // And we fallback to the CXX module providers autolinked by RN CLI
-  return rncli_cxxModuleProvider(name, jsInvoker);
+  // And we fallback to the CXX module providers autolinked
+  return autolinking_cxxModuleProvider(name, jsInvoker);
 }
 
 std::shared_ptr<TurboModule> javaModuleProvider(
@@ -101,8 +101,8 @@ std::shared_ptr<TurboModule> javaModuleProvider(
     return module;
   }
 
-  // And we fallback to the module providers autolinked by RN CLI
-  if (auto module = rncli_ModuleProvider(name, params)) {
+  // And we fallback to the module providers autolinked
+  if (auto module = autolinking_ModuleProvider(name, params)) {
     return module;
   }
 

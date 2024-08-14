@@ -13,6 +13,7 @@
 #include <react/bridging/Class.h>
 #include <react/bridging/Dynamic.h>
 #include <react/bridging/Error.h>
+#include <react/bridging/EventEmitter.h>
 #include <react/bridging/Function.h>
 #include <react/bridging/Number.h>
 #include <react/bridging/Object.h>

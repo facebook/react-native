@@ -142,8 +142,11 @@ class ReactEventEmitter implements RCTModernEventEmitter {
           customCoalesceKey,
           event,
           category);
-    } else if (uiManagerType == UIManagerType.DEFAULT && getDefaultEventEmitter() != null) {
-      mDefaultEventEmitter.receiveEvent(targetReactTag, eventName, event);
+    } else if (uiManagerType == UIManagerType.DEFAULT) {
+      RCTEventEmitter defaultEmitter = getDefaultEventEmitter();
+      if (defaultEmitter != null) {
+        defaultEmitter.receiveEvent(targetReactTag, eventName, event);
+      }
     } else {
       ReactSoftExceptionLogger.logSoftException(
           TAG,

@@ -90,9 +90,7 @@ fi
 
 [ -z "$NODE_ARGS" ] && export NODE_ARGS=""
 
-[ -z "$CLI_PATH" ] && export CLI_PATH="$REACT_NATIVE_DIR/cli.js"
-
-[ -z "$BUNDLE_COMMAND" ] && BUNDLE_COMMAND="bundle"
+[ -z "$CLI_PATH" ] && CLI_PATH="$REACT_NATIVE_DIR/scripts/bundle.js"
 
 [ -z "$COMPOSE_SOURCEMAP_PATH" ] && COMPOSE_SOURCEMAP_PATH="$REACT_NATIVE_DIR/scripts/compose-source-maps.js"
 
@@ -139,8 +137,19 @@ if [[ $USE_HERMES != false && $DEV == false ]]; then
   EXTRA_ARGS+=("--minify" "false")
 fi
 
+# Allow opting out of using npx react-native config
+if [[ -n "$CONFIG_JSON" ]]; then
+  EXTRA_ARGS+=("--load-config" "$CONFIG_JSON")
+elif [[ -n "$CONFIG_CMD" ]]; then
+  EXTRA_ARGS+=("--config-cmd" "$CONFIG_APP")
+else
+  EXTRA_ARGS+=("--config-cmd" "$NODE_BINARY $NODE_ARGS $REACT_NATIVE_DIR/cli.js config")
+fi
+
+# shellcheck disable=SC2086
 "$NODE_BINARY" $NODE_ARGS "$CLI_PATH" $BUNDLE_COMMAND \
   $CONFIG_ARG \
+  --config-cmd "$CONFIG" \
   --entry-file "$ENTRY_FILE" \
   --platform "$BUNDLE_PLATFORM" \
   --dev $DEV \

@@ -11,6 +11,7 @@
 #include "HostCommand.h"
 #include "InspectorInterfaces.h"
 #include "InstanceTarget.h"
+#include "NetworkIOAgent.h"
 #include "ScopedExecutor.h"
 #include "WeakList.h"
 
@@ -36,18 +37,27 @@ class HostAgent;
 class HostCommandSender;
 class HostTarget;
 
+struct HostTargetMetadata {
+  std::optional<std::string> appDisplayName;
+  std::optional<std::string> appIdentifier;
+  std::optional<std::string> deviceName;
+  std::optional<std::string> integrationName;
+  std::optional<std::string> platform;
+  std::optional<std::string> reactNativeVersion;
+};
+
 /**
  * Receives events from a HostTarget. This is a shared interface that each
  * React Native platform needs to implement in order to integrate with the
  * debugging stack.
  */
-class HostTargetDelegate {
+class HostTargetDelegate : public LoadNetworkResourceDelegate {
  public:
   HostTargetDelegate() = default;
   HostTargetDelegate(const HostTargetDelegate&) = delete;
-  HostTargetDelegate(HostTargetDelegate&&) = default;
+  HostTargetDelegate(HostTargetDelegate&&) = delete;
   HostTargetDelegate& operator=(const HostTargetDelegate&) = delete;
-  HostTargetDelegate& operator=(HostTargetDelegate&&) = default;
+  HostTargetDelegate& operator=(HostTargetDelegate&&) = delete;
 
   // TODO(moti): This is 1:1 the shape of the corresponding CDP message -
   // consider reusing typed/generated CDP interfaces when we have those.
@@ -83,7 +93,13 @@ class HostTargetDelegate {
     }
   };
 
-  virtual ~HostTargetDelegate();
+  virtual ~HostTargetDelegate() override;
+
+  /**
+   * Returns a metadata object describing the host. This is called on an
+   * initial response to @cdp ReactNativeApplication.enable.
+   */
+  virtual HostTargetMetadata getMetadata() = 0;
 
   /**
    * Called when the debugger requests a reload of the page. This is called on
@@ -104,6 +120,19 @@ class HostTargetDelegate {
    */
   virtual void onSetPausedInDebuggerMessage(
       const OverlaySetPausedInDebuggerMessageRequest& request) = 0;
+
+  /**
+   * Called by NetworkIOAgent on handling a `Network.loadNetworkResource` CDP
+   * request. Platform implementations should override this to perform a
+   * network request of the given URL, and use listener's callbacks on receipt
+   * of headers, data chunks, and errors.
+   */
+  void loadNetworkResource(
+      const LoadNetworkResourceRequest& /*params*/,
+      ScopedExecutor<NetworkRequestListener> /*executor*/) override {
+    throw NotImplementedException(
+        "LoadNetworkResourceDelegate.loadNetworkResource is not implemented by this host target delegate.");
+  }
 };
 
 /**
@@ -150,10 +179,6 @@ class HostTargetController final {
 class JSINSPECTOR_EXPORT HostTarget
     : public EnableExecutorFromThis<HostTarget> {
  public:
-  struct SessionMetadata {
-    std::optional<std::string> integrationName;
-  };
-
   /**
    * Constructs a new HostTarget.
    * \param delegate The HostTargetDelegate that will
@@ -185,8 +210,7 @@ class JSINSPECTOR_EXPORT HostTarget
    * destructor execute.
    */
   std::unique_ptr<ILocalConnection> connect(
-      std::unique_ptr<IRemoteConnection> connectionToFrontend,
-      SessionMetadata sessionMetadata = {});
+      std::unique_ptr<IRemoteConnection> connectionToFrontend);
 
   /**
    * Registers an instance with this HostTarget.
@@ -246,5 +270,7 @@ class JSINSPECTOR_EXPORT HostTarget
   // HostAgent itself doesn't).
   friend class HostTargetController;
 };
+
+folly::dynamic hostMetadataToDynamic(const HostTargetMetadata& metadata);
 
 } // namespace facebook::react::jsinspector_modern

@@ -7,7 +7,7 @@
 
 package com.facebook.react.modules.network
 
-import org.junit.Assert.assertEquals
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
 class HeaderUtilTest {
@@ -24,26 +24,26 @@ class HeaderUtilTest {
 
   @Test
   fun nameStripKeepsLetters() {
-    assertEquals(ALPHABET_TEST, HeaderUtil.stripHeaderName(ALPHABET_TEST))
+    assertThat(HeaderUtil.stripHeaderName(ALPHABET_TEST)).isEqualTo(ALPHABET_TEST)
   }
 
   @Test
   fun nameStripKeepsNumbers() {
-    assertEquals(NUMBERS_TEST, HeaderUtil.stripHeaderName(NUMBERS_TEST))
+    assertThat(HeaderUtil.stripHeaderName(NUMBERS_TEST)).isEqualTo(NUMBERS_TEST)
   }
 
   @Test
   fun nameStripKeepsSpecials() {
-    assertEquals(SPECIALS_TEST, HeaderUtil.stripHeaderName(SPECIALS_TEST))
+    assertThat(HeaderUtil.stripHeaderName(SPECIALS_TEST)).isEqualTo(SPECIALS_TEST)
   }
 
   @Test
   fun nameStripDeletesTabs() {
-    assertEquals(TABULATION_STRIP_EXPECTED, HeaderUtil.stripHeaderName(TABULATION_TEST))
+    assertThat(HeaderUtil.stripHeaderName(TABULATION_TEST)).isEqualTo(TABULATION_STRIP_EXPECTED)
   }
 
   @Test
   fun nameStripRemovesExtraSymbols() {
-    assertEquals(BANNED_TEST_EXPECTED, HeaderUtil.stripHeaderName(NAME_BANNED_SYMBOLS_TEST))
+    assertThat(HeaderUtil.stripHeaderName(NAME_BANNED_SYMBOLS_TEST)).isEqualTo(BANNED_TEST_EXPECTED)
   }
 }

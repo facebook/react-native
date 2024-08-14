@@ -9,14 +9,12 @@
  * @oncall react_native
  */
 
-import type {BrowserLauncher, LaunchedBrowser} from '../types/BrowserLauncher';
+import type {BrowserLauncher} from '../types/BrowserLauncher';
 
-import {promises as fs} from 'fs';
-import path from 'path';
-import osTempDir from 'temp-dir';
-
+const {spawn} = require('child_process');
 const ChromeLauncher = require('chrome-launcher');
 const {Launcher: EdgeLauncher} = require('chromium-edge-launcher');
+const open = require('open');
 
 /**
  * Default `BrowserLauncher` implementation which opens URLs on the host
@@ -27,61 +25,46 @@ const DefaultBrowserLauncher: BrowserLauncher = {
    * Attempt to open the debugger frontend in a Google Chrome or Microsoft Edge
    * app window.
    */
-  launchDebuggerAppWindow: async (url: string): Promise<LaunchedBrowser> => {
-    let browserType = 'chrome';
+  launchDebuggerAppWindow: async url => {
     let chromePath;
 
     try {
       // Locate Chrome installation path, will throw if not found
       chromePath = ChromeLauncher.getChromePath();
     } catch (e) {
-      browserType = 'edge';
+      // Fall back to Microsoft Edge
       chromePath = EdgeLauncher.getFirstInstallation();
-
-      if (chromePath == null) {
-        throw new Error(
-          'Unable to find a browser on the host to open the debugger. ' +
-            'Supported browsers: Google Chrome, Microsoft Edge.\n' +
-            url,
-        );
-      }
     }
 
-    const userDataDir = await createTempDir(
-      `react-native-debugger-frontend-${browserType}`,
-    );
-    const launchedChrome = await ChromeLauncher.launch({
-      chromeFlags: [
-        ...ChromeLauncher.Launcher.defaultFlags().filter(
-          /**
-           * This flag controls whether Chrome treats a visually covered (occluded) tab
-           * as "backgrounded". We launch CDT as a single tab/window via `--app`, so we
-           * do want Chrome to treat our tab as "backgrounded" when the UI is covered.
-           * Omitting this flag allows "visibilitychange" events to fire properly.
-           */
-          flag => flag !== '--disable-backgrounding-occluded-windows',
-        ),
-        `--app=${url}`,
-        `--user-data-dir=${userDataDir}`,
-        '--window-size=1200,600',
-        '--guest',
-      ],
-      chromePath,
-      ignoreDefaultFlags: true,
-    });
+    if (chromePath == null) {
+      // Fall back to default browser - the frontend will warn if the browser
+      // is not supported.
+      await open(url);
+      return;
+    }
 
-    return {
-      kill: async () => launchedChrome.kill(),
-    };
+    const chromeFlags = [`--app=${url}`, '--window-size=1200,600'];
+
+    return new Promise((resolve, reject) => {
+      const childProcess = spawn(chromePath, chromeFlags, {
+        detached: true,
+        stdio: 'ignore',
+      });
+
+      childProcess.on('data', () => {
+        resolve();
+      });
+      childProcess.on('close', (code: number) => {
+        if (code !== 0) {
+          reject(
+            new Error(
+              `Failed to launch debugger app window: ${chromePath} exited with code ${code}`,
+            ),
+          );
+        }
+      });
+    });
   },
 };
-
-async function createTempDir(dirName: string): Promise<string> {
-  const tempDir = path.join(osTempDir, dirName);
-
-  await fs.mkdir(tempDir, {recursive: true});
-
-  return tempDir;
-}
 
 export default DefaultBrowserLauncher;

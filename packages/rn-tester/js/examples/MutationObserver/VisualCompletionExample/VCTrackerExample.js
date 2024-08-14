@@ -11,9 +11,9 @@
 import type DOMRectReadOnly from 'react-native/src/private/webapis/dom/geometry/DOMRectReadOnly';
 import type ReadOnlyNode from 'react-native/src/private/webapis/dom/nodes/ReadOnlyNode';
 
-import IntersectionObserver from 'react-native/Libraries/IntersectionObserver/IntersectionObserver';
-import MutationObserver from 'react-native/Libraries/MutationObserver/MutationObserver';
 import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
+import IntersectionObserver from 'react-native/src/private/webapis/intersectionobserver/IntersectionObserver';
+import MutationObserver from 'react-native/src/private/webapis/mutationobserver/MutationObserver';
 
 export type VisualElement = {
   time: number,

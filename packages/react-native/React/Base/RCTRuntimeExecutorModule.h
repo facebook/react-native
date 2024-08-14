@@ -10,7 +10,7 @@
 @class RCTRuntimeExecutor;
 
 /**
- * This is deprecated. Use RCTCallInvokerModule instead.
+ * TODO(T187851171): This is deprecated. Use RCTCallInvokerModule instead.
  */
 @protocol RCTRuntimeExecutorModule <NSObject>
 

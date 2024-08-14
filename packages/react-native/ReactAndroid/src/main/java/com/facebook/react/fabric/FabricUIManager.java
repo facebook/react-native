@@ -30,8 +30,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import com.facebook.common.logging.FLog;
-import com.facebook.debug.holder.PrinterHolder;
-import com.facebook.debug.tags.ReactDebugOverlayTags;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.proguard.annotations.DoNotStripAny;
 import com.facebook.react.bridge.ColorPropConverter;
@@ -85,12 +83,15 @@ import com.facebook.react.uimanager.events.EventCategoryDef;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.FabricEventDispatcher;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
+import com.facebook.react.uimanager.events.SynchronousEventReceiver;
 import com.facebook.react.views.text.TextLayoutManager;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -99,17 +100,13 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 @SuppressLint("MissingNativeLoadLibrary")
 @DoNotStripAny
-public class FabricUIManager implements UIManager, LifecycleEventListener, UIBlockViewResolver {
+public class FabricUIManager
+    implements UIManager, LifecycleEventListener, UIBlockViewResolver, SynchronousEventReceiver {
   public static final String TAG = FabricUIManager.class.getSimpleName();
 
   // The IS_DEVELOPMENT_ENVIRONMENT variable is used to log extra data when running fabric in a
   // development environment. DO NOT ENABLE THIS ON PRODUCTION OR YOU WILL BE FIRED!
   public static final boolean IS_DEVELOPMENT_ENVIRONMENT = false && ReactBuildConfig.DEBUG;
-  public static final boolean ENABLE_FABRIC_LOGS =
-      ReactFeatureFlags.enableFabricLogs
-          || PrinterHolder.getPrinter()
-              .shouldDisplayLogMessage(ReactDebugOverlayTags.FABRIC_UI_MANAGER);
-  public static final boolean ENABLE_FABRIC_PERF_LOGS = ENABLE_FABRIC_LOGS || false;
   public DevToolsReactPerfLogger mDevToolsReactPerfLogger;
 
   private static final DevToolsReactPerfLogger.DevToolsReactPerfLoggerListener FABRIC_PERF_LOGGER =
@@ -181,6 +178,9 @@ public class FabricUIManager implements UIManager, LifecycleEventListener, UIBlo
   @NonNull
   private final DispatchUIFrameCallback mDispatchUIFrameCallback;
 
+  /** Set of events sent synchronously during the current frame render. Cleared after each frame. */
+  private final Set<SynchronousEvent> mSynchronousEvents = new HashSet<>();
+
   /**
    * This is used to keep track of whether or not the FabricUIManager has been destroyed. Once the
    * Catalyst instance is being destroyed, we should cease all operation here.
@@ -207,14 +207,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener, UIBlo
         public void executeItems(Queue<MountItem> items) {
           // This executor can be technically accessed before the dispatcher is created,
           // but if that happens, something is terribly wrong
-          if (ReactNativeFeatureFlags.forceBatchingMountItemsOnAndroid()) {
-            for (MountItem mountItem : items) {
-              mMountItemDispatcher.addMountItem(mountItem);
-            }
-            mMountItemDispatcher.tryDispatchMountItems();
-          } else {
-            mMountItemDispatcher.dispatchMountItems(items);
-          }
+          mMountItemDispatcher.dispatchMountItems(items);
         }
       };
 
@@ -257,7 +250,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener, UIBlo
             mReactApplicationContext, rootView.getContext(), reactRootView.getSurfaceID(), rootTag);
     mMountingManager.startSurface(rootTag, reactContext, rootView);
     String moduleName = reactRootView.getJSModuleName();
-    if (ENABLE_FABRIC_LOGS) {
+    if (ReactNativeFeatureFlags.enableFabricLogs()) {
       FLog.d(TAG, "Starting surface for module: %s and reactTag: %d", moduleName, rootTag);
     }
     mBinding.startSurface(rootTag, moduleName, (NativeMap) initialProps);
@@ -300,7 +293,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener, UIBlo
     Context context = rootView.getContext();
     ThemedReactContext reactContext =
         new ThemedReactContext(mReactApplicationContext, context, moduleName, rootTag);
-    if (ENABLE_FABRIC_LOGS) {
+    if (ReactNativeFeatureFlags.enableFabricLogs()) {
       FLog.d(TAG, "Starting surface for module: %s and reactTag: %d", moduleName, rootTag);
     }
     mMountingManager.startSurface(rootTag, reactContext, rootView);
@@ -396,13 +389,13 @@ public class FabricUIManager implements UIManager, LifecycleEventListener, UIBlo
   public void initialize() {
     mEventDispatcher.registerEventEmitter(FABRIC, new FabricEventEmitter(this));
     mEventDispatcher.addBatchEventDispatchedListener(mBatchEventDispatchedListener);
-    if (ENABLE_FABRIC_PERF_LOGS) {
+    if (ReactNativeFeatureFlags.enableFabricLogs()) {
       mDevToolsReactPerfLogger = new DevToolsReactPerfLogger();
       mDevToolsReactPerfLogger.addDevToolsReactPerfLoggerListener(FABRIC_PERF_LOGGER);
 
       ReactMarker.addFabricListener(mDevToolsReactPerfLogger);
     }
-    if (ReactFeatureFlags.unstable_useFabricInterop) {
+    if (ReactNativeFeatureFlags.useFabricInterop()) {
       InteropEventEmitter interopEventEmitter = new InteropEventEmitter(mReactApplicationContext);
       mReactApplicationContext.internal_registerInteropModule(
           RCTEventEmitter.class, interopEventEmitter);
@@ -459,12 +452,22 @@ public class FabricUIManager implements UIManager, LifecycleEventListener, UIBlo
     }
   }
 
+  @Override
+  public void markActiveTouchForTag(int surfaceId, int reactTag) {
+    mMountingManager.getSurfaceManager(surfaceId).markActiveTouchForTag(reactTag);
+  }
+
+  @Override
+  public void sweepActiveTouchForTag(int surfaceId, int reactTag) {
+    mMountingManager.getSurfaceManager(surfaceId).sweepActiveTouchForTag(reactTag);
+  }
+
   /**
    * Method added to Fabric for backward compatibility reasons, as users on Paper could call
    * [addUiBlock] and [prependUiBlock] on UIManagerModule.
    */
   public void addUIBlock(UIBlock block) {
-    if (ReactFeatureFlags.unstable_useFabricInterop) {
+    if (ReactNativeFeatureFlags.useFabricInterop()) {
       InteropUIBlockListener listener = getInteropUIBlockListener();
       listener.addUIBlock(block);
     }
@@ -475,7 +478,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener, UIBlo
    * [addUiBlock] and [prependUiBlock] on UIManagerModule.
    */
   public void prependUIBlock(UIBlock block) {
-    if (ReactFeatureFlags.unstable_useFabricInterop) {
+    if (ReactNativeFeatureFlags.useFabricInterop()) {
       InteropUIBlockListener listener = getInteropUIBlockListener();
       listener.prependUIBlock(block);
     }
@@ -728,7 +731,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener, UIBlo
     ReactMarker.logFabricMarker(
         ReactMarkerConstants.FABRIC_UPDATE_UI_MAIN_THREAD_START, null, commitNumber);
 
-    if (ENABLE_FABRIC_LOGS) {
+    if (ReactNativeFeatureFlags.enableFabricLogs()) {
       FLog.d(
           TAG,
           "SynchronouslyUpdateViewOnUIThread for tag %d: %s",
@@ -751,9 +754,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener, UIBlo
       final String componentName,
       @Nullable Object props,
       @Nullable Object stateWrapper,
-      @Nullable Object eventEmitterWrapper,
       boolean isLayoutable) {
-
     mMountItemDispatcher.addPreAllocateMountItem(
         MountItemFactory.createPreAllocateViewMountItem(
             rootTag,
@@ -761,17 +762,27 @@ public class FabricUIManager implements UIManager, LifecycleEventListener, UIBlo
             componentName,
             (ReadableMap) props,
             (StateWrapper) stateWrapper,
-            (EventEmitterWrapper) eventEmitterWrapper,
             isLayoutable));
+  }
+
+  @SuppressLint("NotInvokedPrivateMethod")
+  @SuppressWarnings("unused")
+  @AnyThread
+  @ThreadConfined(ANY)
+  private boolean isOnMainThread() {
+    return UiThreadUtil.isOnUiThread();
   }
 
   @SuppressWarnings("unused")
   @AnyThread
   @ThreadConfined(ANY)
   private MountItem createIntBufferBatchMountItem(
-      int rootTag, int[] intBuffer, Object[] objBuffer, int commitNumber) {
+      int rootTag, @Nullable int[] intBuffer, @Nullable Object[] objBuffer, int commitNumber) {
     return MountItemFactory.createIntBufferBatchMountItem(
-        rootTag, intBuffer, objBuffer, commitNumber);
+        rootTag,
+        intBuffer == null ? new int[0] : intBuffer,
+        objBuffer == null ? new Object[0] : objBuffer,
+        commitNumber);
   }
 
   /**
@@ -879,7 +890,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener, UIBlo
       final int offsetX,
       final int offsetY) {
 
-    if (ENABLE_FABRIC_LOGS) {
+    if (ReactNativeFeatureFlags.enableFabricLogs()) {
       FLog.d(TAG, "Updating Root Layout Specs for [%d]", surfaceId);
     }
 
@@ -955,6 +966,19 @@ public class FabricUIManager implements UIManager, LifecycleEventListener, UIBlo
       boolean canCoalesceEvent,
       @Nullable WritableMap params,
       @EventCategoryDef int eventCategory) {
+    receiveEvent(surfaceId, reactTag, eventName, canCoalesceEvent, params, eventCategory, false);
+  }
+
+  @Override
+  public void receiveEvent(
+      int surfaceId,
+      int reactTag,
+      String eventName,
+      boolean canCoalesceEvent,
+      @Nullable WritableMap params,
+      @EventCategoryDef int eventCategory,
+      boolean experimental_isSynchronous) {
+
     if (ReactBuildConfig.DEBUG && surfaceId == View.NO_ID) {
       FLog.d(TAG, "Emitted event without surfaceId: [%d] %s", reactTag, eventName);
     }
@@ -979,10 +1003,19 @@ public class FabricUIManager implements UIManager, LifecycleEventListener, UIBlo
       return;
     }
 
-    if (canCoalesceEvent) {
-      eventEmitter.dispatchUnique(eventName, params);
+    if (experimental_isSynchronous) {
+      // add() returns true only if there are no equivalent events already in the set
+      boolean firstEventForFrame =
+          mSynchronousEvents.add(new SynchronousEvent(surfaceId, reactTag, eventName));
+      if (firstEventForFrame) {
+        eventEmitter.dispatchEventSynchronously(eventName, params);
+      }
     } else {
-      eventEmitter.dispatch(eventName, params, eventCategory);
+      if (canCoalesceEvent) {
+        eventEmitter.dispatchUnique(eventName, params);
+      } else {
+        eventEmitter.dispatch(eventName, params, eventCategory);
+      }
     }
   }
 
@@ -1050,7 +1083,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener, UIBlo
       final int reactTag,
       final String commandId,
       @Nullable final ReadableArray commandArgs) {
-    if (ReactFeatureFlags.unstable_useFabricInterop) {
+    if (ReactNativeFeatureFlags.useFabricInterop()) {
       // For Fabric Interop, we check if the commandId is an integer. If it is, we use the integer
       // overload of dispatchCommand. Otherwise, we use the string overload.
       // and the events won't be correctly dispatched.
@@ -1315,6 +1348,10 @@ public class FabricUIManager implements UIManager, LifecycleEventListener, UIBlo
         mBinding.driveCxxAnimations();
       }
 
+      if (ReactNativeFeatureFlags.useOptimisedViewPreallocationOnAndroid() && mBinding != null) {
+        mBinding.drainPreallocateViewsQueue();
+      }
+
       try {
         // First, execute as many pre mount items as we can within frameTimeNanos time.
         // If not all pre mount items were executed, following may happen:
@@ -1332,6 +1369,8 @@ public class FabricUIManager implements UIManager, LifecycleEventListener, UIBlo
             .postFrameCallback(
                 ReactChoreographer.CallbackType.DISPATCH_UI, mDispatchUIFrameCallback);
       }
+
+      mSynchronousEvents.clear();
     }
   }
 }

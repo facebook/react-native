@@ -83,7 +83,7 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
 
 @end
 
-@interface RCTRootViewFactory () <RCTContextContainerHandling> {
+@interface RCTRootViewFactory () <RCTContextContainerHandling, RCTHostDelegate> {
   std::shared_ptr<const facebook::react::ReactNativeConfig> _reactNativeConfig;
   facebook::react::ContextContainer::Shared _contextContainer;
 }
@@ -150,17 +150,25 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
         sizeMeasureMode:RCTSurfaceSizeMeasureModeWidthExact | RCTSurfaceSizeMeasureModeHeightExact];
 
     surfaceHostingProxyRootView.backgroundColor = [UIColor systemBackgroundColor];
+    if (self->_configuration.customizeRootView != nil) {
+      self->_configuration.customizeRootView(surfaceHostingProxyRootView);
+    }
     return surfaceHostingProxyRootView;
   }
 
   [self createBridgeIfNeeded:launchOptions];
   [self createBridgeAdapterIfNeeded];
 
+  UIView *rootView;
   if (self->_configuration.createRootViewWithBridge != nil) {
-    return self->_configuration.createRootViewWithBridge(self.bridge, moduleName, initProps);
+    rootView = self->_configuration.createRootViewWithBridge(self.bridge, moduleName, initProps);
+  } else {
+    rootView = [self createRootViewWithBridge:self.bridge moduleName:moduleName initProps:initProps];
   }
-
-  return [self createRootViewWithBridge:self.bridge moduleName:moduleName initProps:initProps];
+  if (self->_configuration.customizeRootView != nil) {
+    self->_configuration.customizeRootView(rootView);
+  }
+  return rootView;
 }
 
 - (RCTBridge *)createBridgeWithDelegate:(id<RCTBridgeDelegate>)delegate launchOptions:(NSDictionary *)launchOptions
@@ -178,6 +186,26 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
   rootView.backgroundColor = [UIColor systemBackgroundColor];
 
   return rootView;
+}
+
+#pragma mark - RCTHostDelegate
+
+- (void)hostDidStart:(RCTHost *)host
+{
+  if (self->_configuration.hostDidStartBlock) {
+    self->_configuration.hostDidStartBlock(host);
+  }
+}
+
+- (void)host:(RCTHost *)host
+    didReceiveJSErrorStack:(NSArray<NSDictionary<NSString *, id> *> *)stack
+                   message:(NSString *)message
+               exceptionId:(NSUInteger)exceptionId
+                   isFatal:(BOOL)isFatal
+{
+  if (self->_configuration.hostDidReceiveJSErrorStackBlock) {
+    self->_configuration.hostDidReceiveJSErrorStackBlock(host, stack, message, exceptionId, isFatal);
+  }
 }
 
 #pragma mark - RCTCxxBridgeDelegate
@@ -238,7 +266,7 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
   __weak __typeof(self) weakSelf = self;
   RCTHost *reactHost =
       [[RCTHost alloc] initWithBundleURLProvider:self->_configuration.bundleURLBlock
-                                    hostDelegate:nil
+                                    hostDelegate:self
                       turboModuleManagerDelegate:_turboModuleManagerDelegate
                                 jsEngineProvider:^std::shared_ptr<facebook::react::JSRuntimeFactory>() {
                                   return [weakSelf createJSRuntimeFactory];

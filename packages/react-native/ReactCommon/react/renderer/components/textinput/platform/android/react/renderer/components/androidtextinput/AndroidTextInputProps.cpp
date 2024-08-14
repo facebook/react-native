@@ -165,10 +165,6 @@ AndroidTextInputProps::AndroidTextInputProps(
           convertRawProp(context, rawProps, "fontWeight", sourceProps.fontWeight, {})),
       fontFamily(CoreFeatures::enablePropIteratorSetter? sourceProps.fontFamily :
           convertRawProp(context, rawProps, "fontFamily", sourceProps.fontFamily, {})),
-      textAlignVertical(CoreFeatures::enablePropIteratorSetter? sourceProps.textAlignVertical : convertRawProp(context, rawProps,
-          "textAlignVertical",
-          sourceProps.textAlignVertical,
-          {})),
       // See AndroidTextInputComponentDescriptor for usage
       // TODO T63008435: can these, and this feature, be removed entirely?
       hasPadding(CoreFeatures::enablePropIteratorSetter? sourceProps.hasPadding : hasValue(rawProps, sourceProps.hasPadding, "padding")),
@@ -250,7 +246,6 @@ void AndroidTextInputProps::setProp(
     RAW_SET_PROP_SWITCH_CASE_BASIC(includeFontPadding);
     RAW_SET_PROP_SWITCH_CASE_BASIC(fontWeight);
     RAW_SET_PROP_SWITCH_CASE_BASIC(fontFamily);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(textAlignVertical);
 
     case CONSTEXPR_RAW_PROPS_KEY_HASH("value"): {
       fromRawValue(context, value, this->value, {});
@@ -348,7 +343,6 @@ folly::dynamic AndroidTextInputProps::getDynamic() const {
   props["includeFontPadding"] = includeFontPadding;
   props["fontWeight"] = fontWeight;
   props["fontFamily"] = fontFamily;
-  props["textAlignVertical"] = textAlignVertical;
   props["cursorColor"] = toAndroidRepr(cursorColor);
   props["mostRecentEventCount"] = mostRecentEventCount;
   props["text"] = text;

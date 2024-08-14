@@ -690,6 +690,62 @@ export type ____ShadowStyle_Internal = $ReadOnly<{
   ...____ShadowStyle_InternalOverrides,
 }>;
 
+export type FilterFunction =
+  | {brightness: number | string}
+  | {blur: number | string}
+  | {contrast: number | string}
+  | {grayscale: number | string}
+  | {hueRotate: number | string}
+  | {invert: number | string}
+  | {opacity: number | string}
+  | {saturate: number | string}
+  | {sepia: number | string}
+  | {dropShadow: DropShadowPrimitive | string};
+
+export type DropShadowPrimitive = {
+  offsetX: number | string,
+  offsetY: number | string,
+  standardDeviation?: number | string,
+  color?: ____ColorValue_Internal,
+};
+
+export type GradientValue = {
+  type: 'linearGradient',
+  // Angle or direction enums
+  direction?: string,
+  colorStops: $ReadOnlyArray<{
+    color: ____ColorValue_Internal,
+    position?: string,
+  }>,
+};
+
+export type BoxShadowPrimitive = {
+  offsetX: number | string,
+  offsetY: number | string,
+  color?: ____ColorValue_Internal,
+  blurRadius?: number | string,
+  spreadDistance?: number | string,
+  inset?: boolean,
+};
+
+type ____BlendMode_Internal =
+  | 'normal'
+  | 'multiply'
+  | 'screen'
+  | 'overlay'
+  | 'darken'
+  | 'lighten'
+  | 'color-dodge'
+  | 'color-burn'
+  | 'hard-light'
+  | 'soft-light'
+  | 'difference'
+  | 'exclusion'
+  | 'hue'
+  | 'saturation'
+  | 'color'
+  | 'luminosity';
+
 export type ____ViewStyle_InternalCore = $ReadOnly<{
   ...$Exact<____LayoutStyle_Internal>,
   ...$Exact<____ShadowStyle_Internal>,
@@ -732,6 +788,10 @@ export type ____ViewStyle_InternalCore = $ReadOnly<{
   elevation?: number,
   pointerEvents?: 'auto' | 'none' | 'box-none' | 'box-only',
   cursor?: CursorValue,
+  experimental_boxShadow?: $ReadOnlyArray<BoxShadowPrimitive> | string,
+  experimental_filter?: $ReadOnlyArray<FilterFunction> | string,
+  experimental_mixBlendMode?: ____BlendMode_Internal,
+  experimental_backgroundImage?: $ReadOnlyArray<GradientValue> | string,
 }>;
 
 export type ____ViewStyle_Internal = $ReadOnly<{

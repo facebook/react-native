@@ -9,8 +9,8 @@
 #include "SchedulerPriorityUtils.h"
 
 #include <cxxreact/ErrorUtils.h>
+#include <cxxreact/SystraceSection.h>
 #include <react/renderer/consistency/ScopedShadowTreeRevisionLock.h>
-#include <react/renderer/debug/SystraceSection.h>
 #include <utility>
 
 namespace facebook::react {
@@ -80,7 +80,25 @@ std::shared_ptr<Task> RuntimeScheduler_Legacy::scheduleTask(
   return task;
 }
 
-bool RuntimeScheduler_Legacy::getShouldYield() const noexcept {
+std::shared_ptr<Task> RuntimeScheduler_Legacy::scheduleIdleTask(
+    jsi::Function&& /*callback*/,
+    RuntimeSchedulerTimeout /*timeout*/) noexcept {
+  // Idle tasks are not supported on Legacy RuntimeScheduler.
+  // Because the method is `noexcept`, we return `nullptr` here and handle it
+  // on the caller side.
+  return nullptr;
+}
+
+std::shared_ptr<Task> RuntimeScheduler_Legacy::scheduleIdleTask(
+    RawCallback&& /*callback*/,
+    RuntimeSchedulerTimeout /*timeout*/) noexcept {
+  // Idle tasks are not supported on Legacy RuntimeScheduler.
+  // Because the method is `noexcept`, we return `nullptr` here and handle it
+  // on the caller side.
+  return nullptr;
+}
+
+bool RuntimeScheduler_Legacy::getShouldYield() noexcept {
   return runtimeAccessRequests_ > 0;
 }
 
@@ -101,20 +119,30 @@ void RuntimeScheduler_Legacy::executeNowOnTheSameThread(
     RawCallback&& callback) {
   SystraceSection s("RuntimeScheduler::executeNowOnTheSameThread");
 
-  runtimeAccessRequests_ += 1;
-  executeSynchronouslyOnSameThread_CAN_DEADLOCK(
-      runtimeExecutor_,
-      [this, callback = std::move(callback)](jsi::Runtime& runtime) {
-        SystraceSection s2(
-            "RuntimeScheduler::executeNowOnTheSameThread callback");
+  static thread_local jsi::Runtime* runtimePtr = nullptr;
 
-        runtimeAccessRequests_ -= 1;
-        {
-          ScopedShadowTreeRevisionLock revisionLock(
-              shadowTreeRevisionConsistencyManager_);
-          callback(runtime);
-        }
-      });
+  if (runtimePtr == nullptr) {
+    runtimeAccessRequests_ += 1;
+    executeSynchronouslyOnSameThread_CAN_DEADLOCK(
+        runtimeExecutor_, [this, &callback](jsi::Runtime& runtime) {
+          SystraceSection s2(
+              "RuntimeScheduler::executeNowOnTheSameThread callback");
+
+          runtimeAccessRequests_ -= 1;
+          {
+            ScopedShadowTreeRevisionLock revisionLock(
+                shadowTreeRevisionConsistencyManager_);
+            runtimePtr = &runtime;
+            callback(runtime);
+            runtimePtr = nullptr;
+          }
+        });
+  } else {
+    // Protecting against re-entry into `executeNowOnTheSameThread` from within
+    // `executeNowOnTheSameThread`. Without accounting for re-rentry, a deadlock
+    // will occur when trying to gain access to the runtime.
+    return callback(*runtimePtr);
+  }
 
   // Resume work loop if needed. In synchronous mode
   // only expired tasks are executed. Tasks with lower priority
@@ -158,6 +186,11 @@ void RuntimeScheduler_Legacy::setShadowTreeRevisionConsistencyManager(
     ShadowTreeRevisionConsistencyManager*
         shadowTreeRevisionConsistencyManager) {
   shadowTreeRevisionConsistencyManager_ = shadowTreeRevisionConsistencyManager;
+}
+
+void RuntimeScheduler_Legacy::setPerformanceEntryReporter(
+    PerformanceEntryReporter* /*performanceEntryReporter*/) {
+  // No-op in the legacy scheduler
 }
 
 #pragma mark - Private

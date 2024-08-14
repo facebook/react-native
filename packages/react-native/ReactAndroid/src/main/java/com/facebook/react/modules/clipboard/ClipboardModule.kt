@@ -42,4 +42,8 @@ public class ClipboardModule(context: ReactApplicationContext) : NativeClipboard
     val clipdata: ClipData = ClipData.newPlainText(null, text)
     clipboardService.setPrimaryClip(clipdata)
   }
+
+  public companion object {
+    public const val NAME: String = NativeClipboardSpec.NAME
+  }
 }

@@ -150,10 +150,9 @@ describe('TypeScript Module Parser', () => {
           export default TurboModuleRegistry.get<Spec>('Foo');
         `);
 
-        expect(module.spec.properties[0]).not.toBe(null);
-        const param = unwrapNullable(
-          module.spec.properties[0].typeAnnotation,
-        )[0].params[0];
+        expect(module.spec.methods[0]).not.toBe(null);
+        const param = unwrapNullable(module.spec.methods[0].typeAnnotation)[0]
+          .params[0];
         expect(param).not.toBe(null);
         expect(param.name).toBe(paramName);
         expect(param.optional).toBe(optional);
@@ -361,9 +360,9 @@ describe('TypeScript Module Parser', () => {
               export default TurboModuleRegistry.get<Spec>('Foo');
             `);
 
-            expect(module.spec.properties[0]).not.toBe(null);
+            expect(module.spec.methods[0]).not.toBe(null);
             const param = unwrapNullable(
-              module.spec.properties[0].typeAnnotation,
+              module.spec.methods[0].typeAnnotation,
             )[0].params[0];
             expect(param.name).toBe('arg');
             expect(param.optional).toBe(optional);
@@ -698,10 +697,10 @@ describe('TypeScript Module Parser', () => {
         export default TurboModuleRegistry.get<Spec>('Foo');
       `);
 
-      expect(module.spec.properties[0]).not.toBe(null);
+      expect(module.spec.methods[0]).not.toBe(null);
 
       const [functionTypeAnnotation, isFunctionTypeAnnotationNullable] =
-        unwrapNullable(module.spec.properties[0].typeAnnotation);
+        unwrapNullable(module.spec.methods[0].typeAnnotation);
       expect(isFunctionTypeAnnotationNullable).toBe(false);
 
       const [returnTypeAnnotation, isReturnTypeAnnotationNullable] =
@@ -732,9 +731,9 @@ describe('TypeScript Module Parser', () => {
           export default TurboModuleRegistry.get<Spec>('Foo');
         `);
 
-        expect(module.spec.properties[0]).not.toBe(null);
+        expect(module.spec.methods[0]).not.toBe(null);
         const [functionTypeAnnotation, isFunctionTypeAnnotationNullable] =
-          unwrapNullable(module.spec.properties[0].typeAnnotation);
+          unwrapNullable(module.spec.methods[0].typeAnnotation);
         expect(isFunctionTypeAnnotationNullable).toBe(false);
 
         const [returnTypeAnnotation, isReturnTypeAnnotationNullable] =

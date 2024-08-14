@@ -14,12 +14,12 @@ import android.graphics.Point
 import android.view.View
 import android.view.ViewGroup
 import android.widget.OverScroller
-import androidx.core.view.ViewCompat
 import com.facebook.common.logging.FLog
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.WritableNativeMap
 import com.facebook.react.common.ReactConstants
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.uimanager.PixelUtil.toDIPFromPixel
 import com.facebook.react.uimanager.StateWrapper
 import com.facebook.react.uimanager.UIManagerHelper
@@ -101,7 +101,8 @@ public object ReactScrollViewHelper {
       scrollView: T,
       scrollEventType: ScrollEventType,
       xVelocity: Float,
-      yVelocity: Float
+      yVelocity: Float,
+      experimental_isSynchronous: Boolean = false,
   ) where T : HasScrollEventThrottle?, T : ViewGroup {
     val now = System.currentTimeMillis()
     // Throttle the scroll event if scrollEventThrottle is set to be equal or more than 17 ms.
@@ -112,7 +113,7 @@ public object ReactScrollViewHelper {
       return
     }
     val contentView = scrollView.getChildAt(0) ?: return
-    for (scrollListener in scrollListeners) {
+    for (scrollListener in scrollListeners.toList()) {
       scrollListener.onScroll(scrollView, scrollEventType, xVelocity, yVelocity)
     }
     val reactContext = scrollView.context as ReactContext
@@ -136,7 +137,8 @@ public object ReactScrollViewHelper {
               contentView.width,
               contentView.height,
               scrollView.width,
-              scrollView.height))
+              scrollView.height,
+              experimental_isSynchronous))
       scrollView.lastScrollDispatchTime = now
     }
   }
@@ -144,7 +146,7 @@ public object ReactScrollViewHelper {
   /** This is only for Java listeners. onLayout events emitted to JS are handled elsewhere. */
   @JvmStatic
   public fun emitLayoutEvent(scrollView: ViewGroup) {
-    for (scrollListener in scrollListeners) {
+    for (scrollListener in scrollListeners.toList()) {
       scrollListener.onLayout(scrollView)
     }
   }
@@ -248,7 +250,9 @@ public object ReactScrollViewHelper {
     if (scrollY != y) {
       scrollView.startFlingAnimator(scrollY, y)
     }
-    updateFabricScrollState<T>(scrollView, x, y)
+    if (ReactNativeFeatureFlags.fixIncorrectScrollViewStateUpdateOnAndroid()) {
+      updateFabricScrollState<T>(scrollView, x, y)
+    }
   }
 
   /** Get current position or position after current animation finishes, if any. */
@@ -364,12 +368,28 @@ public object ReactScrollViewHelper {
   T : HasScrollState?,
   T : HasStateWrapper?,
   T : ViewGroup {
+    updateStateOnScrollChanged(scrollView, xVelocity, yVelocity, false)
+  }
+
+  @JvmStatic
+  public fun <T> updateStateOnScrollChanged(
+      scrollView: T,
+      xVelocity: Float,
+      yVelocity: Float,
+      experimental_synchronous: Boolean,
+  ) where
+  T : HasFlingAnimator?,
+  T : HasScrollEventThrottle?,
+  T : HasScrollState?,
+  T : HasStateWrapper?,
+  T : ViewGroup {
     // Race an UpdateState with every onScroll. This makes it more likely that, in Fabric,
     // when JS processes the scroll event, the C++ ShadowNode representation will have a
     // "more correct" scroll position. It will frequently be /incorrect/ but this decreases
     // the error as much as possible.
     updateFabricScrollState(scrollView)
-    emitScrollEvent(scrollView, xVelocity, yVelocity)
+    emitScrollEvent(
+        scrollView, ScrollEventType.SCROLL, xVelocity, yVelocity, experimental_synchronous)
   }
 
   public fun <T> registerFlingAnimator(scrollView: T) where
@@ -416,10 +436,7 @@ public object ReactScrollViewHelper {
     scroller.setFriction(1.0f - scrollState.decelerationRate)
 
     // predict where a fling would end up so we can scroll to the nearest snap offset
-    val width =
-        (scrollView.width -
-            ViewCompat.getPaddingStart(scrollView) -
-            ViewCompat.getPaddingEnd(scrollView))
+    val width = scrollView.width - scrollView.getPaddingStart() - scrollView.getPaddingEnd()
     val height = scrollView.height - scrollView.paddingBottom - scrollView.paddingTop
     val finalAnimatedPositionScroll = scrollState.finalAnimatedPositionScroll
     scroller.fling(

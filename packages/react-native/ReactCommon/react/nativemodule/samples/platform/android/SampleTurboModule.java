@@ -23,11 +23,15 @@ import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
+import com.facebook.react.turbomodule.core.interfaces.BindingsInstallerHolder;
+import com.facebook.react.turbomodule.core.interfaces.TurboModuleWithJSIBindings;
 import java.util.HashMap;
 import java.util.Map;
 
+@DoNotStrip
 @ReactModule(name = SampleTurboModule.NAME)
-public class SampleTurboModule extends NativeSampleTurboModuleSpec {
+public class SampleTurboModule extends NativeSampleTurboModuleSpec
+    implements TurboModuleWithJSIBindings {
 
   public static final String NAME = "SampleTurboModule";
 
@@ -100,7 +104,26 @@ public class SampleTurboModule extends NativeSampleTurboModuleSpec {
   @Override
   public void voidFunc() {
     log("voidFunc", "<void>", "<void>");
-    return;
+    emitOnPress();
+    emitOnClick("click");
+    {
+      WritableNativeMap map = new WritableNativeMap();
+      map.putInt("a", 1);
+      map.putString("b", "two");
+      emitOnChange(map);
+    }
+    {
+      WritableNativeArray array = new WritableNativeArray();
+      WritableNativeMap map = new WritableNativeMap();
+      map.putInt("a", 1);
+      map.putString("b", "two");
+      array.pushMap(map);
+      WritableNativeMap map1 = new WritableNativeMap();
+      map1.putInt("a", 3);
+      map1.putString("b", "four");
+      array.pushMap(map1);
+      emitOnSubmit(array);
+    }
   }
 
   // This function returns {@link WritableMap} instead of {@link Map} for backward compat with
@@ -251,4 +274,8 @@ public class SampleTurboModule extends NativeSampleTurboModuleSpec {
   public String getName() {
     return NAME;
   }
+
+  @Override
+  @DoNotStrip
+  public native BindingsInstallerHolder getBindingsInstaller();
 }

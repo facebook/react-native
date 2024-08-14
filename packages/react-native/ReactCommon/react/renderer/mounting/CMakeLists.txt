@@ -17,7 +17,7 @@ add_compile_options(
 file(GLOB react_render_mounting_SRC CONFIGURE_DEPENDS 
         *.cpp
         stubs/*.cpp)
-add_library(react_render_mounting STATIC ${react_render_mounting_SRC})
+add_library(react_render_mounting OBJECT ${react_render_mounting_SRC})
 
 target_include_directories(react_render_mounting PRIVATE .)
 target_include_directories(react_render_mounting PUBLIC ${REACT_COMMON_DIR})

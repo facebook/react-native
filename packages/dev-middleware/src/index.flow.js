@@ -11,7 +11,7 @@
 
 export {default as createDevMiddleware} from './createDevMiddleware';
 
-export type {BrowserLauncher, LaunchedBrowser} from './types/BrowserLauncher';
+export type {BrowserLauncher} from './types/BrowserLauncher';
 export type {EventReporter, ReportableEvent} from './types/EventReporter';
 export type {
   CustomMessageHandler,

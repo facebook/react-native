@@ -39,7 +39,7 @@ import AnimatedValue from './nodes/AnimatedValue';
 import AnimatedValueXY from './nodes/AnimatedValueXY';
 
 export type CompositeAnimation = {
-  start: (callback?: ?EndCallback) => void,
+  start: (callback?: ?EndCallback, isLooping?: boolean) => void,
   stop: () => void,
   reset: () => void,
   _startNativeLoop: (iterations?: number) => void,
@@ -234,8 +234,8 @@ const timing = function (
 
   return (
     maybeVectorAnim(value, config, timing) || {
-      start: function (callback?: ?EndCallback): void {
-        start(value, config, callback);
+      start: function (callback?: ?EndCallback, isLooping?: boolean): void {
+        start(value, {...config, isLooping}, callback);
       },
 
       stop: function (): void {
@@ -305,7 +305,7 @@ const sequence = function (
 ): CompositeAnimation {
   let current = 0;
   return {
-    start: function (callback?: ?EndCallback) {
+    start: function (callback?: ?EndCallback, isLooping?: boolean) {
       const onComplete = function (result: EndResult) {
         if (!result.finished) {
           callback && callback(result);
@@ -315,17 +315,19 @@ const sequence = function (
         current++;
 
         if (current === animations.length) {
+          // if the start is called, even without a reset, it should start from the beginning
+          current = 0;
           callback && callback(result);
           return;
         }
 
-        animations[current].start(onComplete);
+        animations[current].start(onComplete, isLooping);
       };
 
       if (animations.length === 0) {
         callback && callback({finished: true});
       } else {
-        animations[current].start(onComplete);
+        animations[current].start(onComplete, isLooping);
       }
     },
 
@@ -475,7 +477,7 @@ const loop = function (
         } else {
           iterationsSoFar++;
           resetBeforeIteration && animation.reset();
-          animation.start(restart);
+          animation.start(restart, iterations === -1);
         }
       };
       if (!animation || iterations === 0) {

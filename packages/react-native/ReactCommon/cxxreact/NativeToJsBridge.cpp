@@ -101,7 +101,7 @@ class JsToNativeBridge : public react::ExecutorDelegate {
   // executor is destroyed synchronously on its queue.
   std::shared_ptr<ModuleRegistry> m_registry;
   std::shared_ptr<InstanceCallback> m_callback;
-  bool m_batchHadNativeModuleOrTurboModuleCalls = false;
+  std::atomic<bool> m_batchHadNativeModuleOrTurboModuleCalls{false};
 };
 
 NativeToJsBridge::NativeToJsBridge(

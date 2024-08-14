@@ -12,6 +12,7 @@
 #import <react/renderer/textlayoutmanager/TextLayoutManager.h>
 
 #import <React/RCTBackedTextInputViewProtocol.h>
+#import <React/RCTScrollViewComponentView.h>
 #import <React/RCTUITextField.h>
 #import <React/RCTUITextView.h>
 #import <React/RCTUtils.h>
@@ -21,6 +22,9 @@
 #import "RCTTextInputUtils.h"
 
 #import "RCTFabricComponentsPlugins.h"
+
+/** Native iOS text field bottom keyboard offset amount */
+static const CGFloat kSingleLineKeyboardBottomOffset = 15.0;
 
 using namespace facebook::react;
 
@@ -97,6 +101,30 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
     }
 
     [self _restoreTextSelection];
+}
+
+- (void)reactUpdateResponderOffsetForScrollView:(RCTScrollViewComponentView *)scrollView
+{
+  if (![self isDescendantOfView:scrollView.scrollView] || !_backedTextInputView.isFirstResponder) {
+    // View is outside scroll view or it's not a first responder.
+    return;
+  }
+
+  UITextRange *selectedTextRange = _backedTextInputView.selectedTextRange;
+  UITextSelectionRect *selection = [_backedTextInputView selectionRectsForRange:selectedTextRange].firstObject;
+  CGRect focusRect;
+  if (selection == nil) {
+    // No active selection or caret - fallback to entire input frame
+    focusRect = self.bounds;
+  } else {
+    // Focus on text selection frame
+    focusRect = selection.rect;
+    BOOL isMultiline = [_backedTextInputView isKindOfClass:[UITextView class]];
+    if (!isMultiline) {
+      focusRect.size.height += kSingleLineKeyboardBottomOffset;
+    }
+  }
+  scrollView.firstResponderFocus = [self convertRect:focusRect toView:nil];
 }
 
 #pragma mark - RCTViewComponentView overrides
@@ -194,6 +222,10 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
         RCTUITextSmartInsertDeleteTypeFromOptionalBool(newTextInputProps.traits.smartInsertDelete);
   }
 
+  if (newTextInputProps.traits.showSoftInputOnFocus != oldTextInputProps.traits.showSoftInputOnFocus) {
+    [self _setShowSoftInputOnFocus:newTextInputProps.traits.showSoftInputOnFocus];
+  }
+
   // Traits `blurOnSubmit`, `clearTextOnFocus`, and `selectTextOnFocus` were omitted intentionally here
   // because they are being checked on-demand.
 
@@ -283,18 +315,6 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
 
 - (void)textInputDidBeginEditing
 {
-  const auto &props = static_cast<const TextInputProps &>(*_props);
-
-  if (props.traits.clearTextOnFocus) {
-    _backedTextInputView.attributedText = nil;
-    [self textInputDidChange];
-  }
-
-  if (props.traits.selectTextOnFocus) {
-    [_backedTextInputView selectAll:nil];
-    [self textInputDidChangeSelection];
-  }
-
   if (_eventEmitter) {
     static_cast<const TextInputEventEmitter &>(*_eventEmitter).onFocus([self _textInputMetrics]);
   }
@@ -434,6 +454,18 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
 - (void)focus
 {
   [_backedTextInputView becomeFirstResponder];
+
+  const auto &props = static_cast<const TextInputProps &>(*_props);
+
+  if (props.traits.clearTextOnFocus) {
+    _backedTextInputView.attributedText = nil;
+    [self textInputDidChange];
+  }
+
+  if (props.traits.selectTextOnFocus) {
+    [_backedTextInputView selectAll:nil];
+    [self textInputDidChangeSelection];
+  }
 }
 
 - (void)blur
@@ -659,6 +691,23 @@ switch (returnKeyType) {
   RCTCopyBackedTextInput(_backedTextInputView, backedTextInputView);
   _backedTextInputView = backedTextInputView;
   [self addSubview:_backedTextInputView];
+}
+
+- (void)_setShowSoftInputOnFocus:(BOOL)showSoftInputOnFocus
+{
+  if (showSoftInputOnFocus) {
+    // Resets to default keyboard.
+    _backedTextInputView.inputView = nil;
+
+    // Without the call to reloadInputViews, the keyboard will not change until the textInput field (the first
+    // responder) loses and regains focus.
+    if (_backedTextInputView.isFirstResponder) {
+      [_backedTextInputView reloadInputViews];
+    }
+  } else {
+    // Hides keyboard, but keeps blinking cursor.
+    _backedTextInputView.inputView = [UIView new];
+  }
 }
 
 - (BOOL)_textOf:(NSAttributedString *)newText equals:(NSAttributedString *)oldText

@@ -11,6 +11,7 @@
 import type {
   HostComponent,
   PartialViewConfig,
+  ViewConfig,
 } from '../Renderer/shims/ReactNativeTypes';
 
 import getNativeComponentAttributes from '../ReactNative/getNativeComponentAttributes';
@@ -60,7 +61,7 @@ export function get<Config>(
       verify: false,
     };
 
-    let viewConfig;
+    let viewConfig: ViewConfig;
     if (native) {
       viewConfig =
         getNativeComponentAttributes(name) ??
@@ -81,7 +82,13 @@ export function get<Config>(
       const nativeViewConfig = native
         ? viewConfig
         : getNativeComponentAttributes(name);
-      const staticViewConfig = native
+
+      if (nativeViewConfig == null) {
+        // Defer to static view config if native view config is missing.
+        return viewConfig;
+      }
+
+      const staticViewConfig: ViewConfig = native
         ? createViewConfig(viewConfigProvider())
         : viewConfig;
 

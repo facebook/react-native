@@ -10,7 +10,7 @@
  */
 
 import type {InspectorProxyQueries} from '../inspector-proxy/InspectorProxy';
-import type {BrowserLauncher, LaunchedBrowser} from '../types/BrowserLauncher';
+import type {BrowserLauncher} from '../types/BrowserLauncher';
 import type {EventReporter} from '../types/EventReporter';
 import type {Experiments} from '../types/Experiments';
 import type {Logger} from '../types/Logger';
@@ -19,8 +19,6 @@ import type {IncomingMessage, ServerResponse} from 'http';
 
 import getDevToolsFrontendUrl from '../utils/getDevToolsFrontendUrl';
 import url from 'url';
-
-const debuggerInstances = new Map<string, ?LaunchedBrowser>();
 
 type Options = $ReadOnly<{
   serverBaseUrl: string,
@@ -61,7 +59,14 @@ export default function openDebuggerMiddleware({
         appId,
         device,
         launchId,
-      }: {appId?: string, device?: string, launchId?: string, ...} = query;
+        target: targetId,
+      }: {
+        appId?: string,
+        device?: string,
+        launchId?: string,
+        target?: string,
+        ...
+      } = query;
 
       const targets = inspectorProxy.getPageDescriptions().filter(
         // Only use targets with better reloading support
@@ -75,25 +80,27 @@ export default function openDebuggerMiddleware({
       const launchType: 'launch' | 'redirect' =
         req.method === 'POST' ? 'launch' : 'redirect';
 
-      if (typeof appId === 'string' || typeof device === 'string') {
+      if (
+        typeof targetId === 'string' ||
+        typeof appId === 'string' ||
+        typeof device === 'string'
+      ) {
         logger?.info(
           (launchType === 'launch' ? 'Launching' : 'Redirecting to') +
             ' JS debugger (experimental)...',
         );
-        if (typeof device === 'string') {
-          target = targets.find(
-            _target => _target.reactNative.logicalDeviceId === device,
-          );
-        }
-        if (!target && typeof appId === 'string') {
-          target = targets.find(_target => _target.description === appId);
-        }
-      } else {
+        target = targets.find(
+          _target =>
+            (targetId == null || _target.id === targetId) &&
+            (appId == null || _target.description === appId) &&
+            (device == null || _target.reactNative.logicalDeviceId === device),
+        );
+      } else if (targets.length > 0) {
         logger?.info(
           (launchType === 'launch' ? 'Launching' : 'Redirecting to') +
-            ' JS debugger for first available target...',
+            ` JS debugger${targets.length === 1 ? '' : ' for most recently connected target'}...`,
         );
-        target = targets[0];
+        target = targets[targets.length - 1];
       }
 
       if (!target) {
@@ -117,20 +124,12 @@ export default function openDebuggerMiddleware({
       try {
         switch (launchType) {
           case 'launch':
-            const frontendInstanceId =
-              device != null
-                ? 'device:' + device
-                : 'app:' + (appId ?? '<null>');
-            await debuggerInstances.get(frontendInstanceId)?.kill();
-            debuggerInstances.set(
-              frontendInstanceId,
-              await browserLauncher.launchDebuggerAppWindow(
-                getDevToolsFrontendUrl(
-                  experiments,
-                  target.webSocketDebuggerUrl,
-                  serverBaseUrl,
-                  {launchId, useFuseboxEntryPoint},
-                ),
+            await browserLauncher.launchDebuggerAppWindow(
+              getDevToolsFrontendUrl(
+                experiments,
+                target.webSocketDebuggerUrl,
+                serverBaseUrl,
+                {launchId, useFuseboxEntryPoint},
               ),
             );
             res.end();
@@ -170,6 +169,7 @@ export default function openDebuggerMiddleware({
           launchType,
           status: 'error',
           error: e,
+          prefersFuseboxFrontend: useFuseboxEntryPoint ?? false,
         });
         return;
       }

@@ -8,12 +8,12 @@
 #include "UIManager.h"
 
 #include <cxxreact/JSExecutor.h>
+#include <cxxreact/SystraceSection.h>
 #include <react/debug/react_native_assert.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/core/DynamicPropsUtilities.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/ShadowNodeFragment.h>
-#include <react/renderer/debug/SystraceSection.h>
 #include <react/renderer/uimanager/SurfaceRegistryBinding.h>
 #include <react/renderer/uimanager/UIManagerBinding.h>
 #include <react/renderer/uimanager/UIManagerCommitHook.h>
@@ -36,19 +36,17 @@ std::unique_ptr<facebook::react::LeakChecker> constructLeakCheckerIfNeeded(
 
 namespace facebook::react {
 
-// Explicitly define destructors here, as they to exist in order to act as a
-// "key function" for the ShadowNodeWrapper class -- this allow for RTTI to work
-// properly across dynamic library boundaries (i.e. dynamic_cast that is used by
-// isHostObject method)
+// Explicitly define destructors here, as they have to exist in order to act as
+// a "key function" for the ShadowNodeWrapper class -- this allows for RTTI to
+// work properly across dynamic library boundaries (i.e. dynamic_cast that is
+// used by getNativeState method)
 ShadowNodeListWrapper::~ShadowNodeListWrapper() = default;
 
 UIManager::UIManager(
     const RuntimeExecutor& runtimeExecutor,
-    BackgroundExecutor backgroundExecutor,
     ContextContainer::Shared contextContainer)
     : runtimeExecutor_(runtimeExecutor),
       shadowTreeRegistry_(),
-      backgroundExecutor_(std::move(backgroundExecutor)),
       contextContainer_(std::move(contextContainer)),
       leakChecker_(constructLeakCheckerIfNeeded(runtimeExecutor)),
       lazyShadowTreeRevisionConsistencyManager_(
@@ -153,11 +151,8 @@ std::shared_ptr<ShadowNode> UIManager::cloneNode(
       {
           .props = props,
           .children = children,
+          .runtimeShadowNodeReference = false,
       });
-
-  if (!rawProps.isEmpty() && delegate_ != nullptr) {
-    delegate_->uiManagerDidCloneShadowNodeWithNewProps(*clonedShadowNode);
-  }
 
   return clonedShadowNode;
 }
@@ -639,15 +634,15 @@ void UIManager::reportMount(SurfaceId surfaceId) const {
         shadowTree.getMountingCoordinator()->getBaseRevision().rootShadowNode;
   });
 
-  if (!rootShadowNode) {
-    return;
-  }
-
   {
     std::shared_lock lock(mountHookMutex_);
 
     for (auto* mountHook : mountHooks_) {
-      mountHook->shadowTreeDidMount(rootShadowNode, time);
+      if (rootShadowNode) {
+        mountHook->shadowTreeDidMount(rootShadowNode, time);
+      } else {
+        mountHook->shadowTreeDidUnmount(surfaceId, time);
+      }
     }
   }
 }

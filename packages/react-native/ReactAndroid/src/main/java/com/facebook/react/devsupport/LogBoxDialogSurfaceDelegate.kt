@@ -61,11 +61,10 @@ internal class LogBoxDialogSurfaceDelegate(private val devSupportManager: DevSup
   }
 
   override fun hide() {
-    if (!isShowing) {
-      return
+    if (isShowing) {
+      dialog?.dismiss()
     }
     (reactRootView?.parent as ViewGroup?)?.removeView(reactRootView)
-    dialog?.dismiss()
     dialog = null
   }
 

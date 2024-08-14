@@ -5,15 +5,23 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include "NativePerformance.h"
+
 #include <memory>
+#include <mutex>
+#include <unordered_map>
 
 #include <cxxreact/JSExecutor.h>
 #include <cxxreact/ReactMarker.h>
 #include <jsi/instrumentation.h>
 #include <react/performance/timeline/PerformanceEntryReporter.h>
+#include <reactperflogger/fusebox/FuseboxTracer.h>
 #include "NativePerformance.h"
-
 #include "Plugins.h"
+
+#ifdef WITH_PERFETTO
+#include <reactperflogger/ReactPerfetto.h>
+#endif
 
 std::shared_ptr<facebook::react::TurboModule> NativePerformanceModuleProvider(
     std::shared_ptr<facebook::react::CallInvoker> jsInvoker) {
@@ -23,8 +31,46 @@ std::shared_ptr<facebook::react::TurboModule> NativePerformanceModuleProvider(
 
 namespace facebook::react {
 
+namespace {
+
+#ifdef WITH_PERFETTO
+
+const std::string TRACK_PREFIX = "Track:";
+const std::string DEFAULT_TRACK_NAME = "Web Performance: Timings";
+const std::string CUSTOM_TRACK_NAME_PREFIX = "Web Performance: ";
+
+std::tuple<std::string, std::string_view> parsePerfettoTrack(
+    const std::string& name) {
+  // Until there's a standard way to pass through track information, parse it
+  // manually, e.g., "Track:Foo:Event name"
+  // https://github.com/w3c/user-timing/issues/109
+  std::optional<std::string> trackName;
+  std::string_view eventName(name);
+  if (name.starts_with(TRACK_PREFIX)) {
+    const auto trackNameDelimiter = name.find(':', TRACK_PREFIX.length());
+    if (trackNameDelimiter != std::string::npos) {
+      trackName = CUSTOM_TRACK_NAME_PREFIX +
+          name.substr(
+              TRACK_PREFIX.length(),
+              trackNameDelimiter - TRACK_PREFIX.length());
+      eventName = std::string_view(name).substr(trackNameDelimiter + 1);
+    }
+  }
+
+  auto& trackNameRef = trackName.has_value() ? *trackName : DEFAULT_TRACK_NAME;
+  return std::make_tuple(trackNameRef, eventName);
+}
+
+#endif
+
+} // namespace
+
 NativePerformance::NativePerformance(std::shared_ptr<CallInvoker> jsInvoker)
-    : NativePerformanceCxxSpec(std::move(jsInvoker)) {}
+    : NativePerformanceCxxSpec(std::move(jsInvoker)) {
+#ifdef WITH_PERFETTO
+  initializePerfetto();
+#endif
+}
 
 double NativePerformance::now(jsi::Runtime& /*rt*/) {
   return JSExecutor::performanceNow();
@@ -34,6 +80,16 @@ void NativePerformance::mark(
     jsi::Runtime& rt,
     std::string name,
     double startTime) {
+#ifdef WITH_PERFETTO
+  if (TRACE_EVENT_CATEGORY_ENABLED("react-native")) {
+    auto [trackName, eventName] = parsePerfettoTrack(name);
+    TRACE_EVENT_INSTANT(
+        "react-native",
+        perfetto::DynamicString(eventName.data(), eventName.size()),
+        getPerfettoWebPerfTrackSync(trackName),
+        performanceNowToPerfettoTraceTime(startTime));
+  }
+#endif
   PerformanceEntryReporter::getInstance()->mark(name, startTime);
 }
 
@@ -45,6 +101,33 @@ void NativePerformance::measure(
     std::optional<double> duration,
     std::optional<std::string> startMark,
     std::optional<std::string> endMark) {
+#ifdef WITH_PERFETTO
+  if (TRACE_EVENT_CATEGORY_ENABLED("react-native")) {
+    // TODO T190600850 support startMark/endMark
+    if (!startMark && !endMark) {
+      auto [trackName, eventName] = parsePerfettoTrack(name);
+      auto track = getPerfettoWebPerfTrackAsync(trackName);
+      TRACE_EVENT_BEGIN(
+          "react-native",
+          perfetto::DynamicString(eventName.data(), eventName.size()),
+          track,
+          performanceNowToPerfettoTraceTime(startTime));
+      TRACE_EVENT_END(
+          "react-native", track, performanceNowToPerfettoTraceTime(endTime));
+    }
+  }
+#endif
+  std::string trackName = "Web Performance";
+  const int TRACK_PREFIX = 6;
+  if (name.starts_with("Track:")) {
+    const auto trackNameDelimiter = name.find(':', TRACK_PREFIX);
+    if (trackNameDelimiter != std::string::npos) {
+      trackName = name.substr(TRACK_PREFIX, trackNameDelimiter - TRACK_PREFIX);
+      name = name.substr(trackNameDelimiter + 1);
+    }
+  }
+  FuseboxTracer::getFuseboxTracer().addEvent(
+      name, (uint64_t)startTime, (uint64_t)endTime, trackName);
   PerformanceEntryReporter::getInstance()->measure(
       name, startTime, endTime, duration, startMark, endMark);
 }

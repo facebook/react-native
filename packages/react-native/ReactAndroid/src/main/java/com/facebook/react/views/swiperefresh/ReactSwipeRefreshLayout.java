@@ -8,6 +8,7 @@
 package com.facebook.react.views.swiperefresh;
 
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.ViewConfiguration;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.facebook.infer.annotation.Nullsafe;
@@ -69,6 +70,16 @@ public class ReactSwipeRefreshLayout extends SwipeRefreshLayout {
       // Update values that must be set after initial layout.
       setProgressViewOffset(mProgressViewOffset);
       setRefreshing(mRefreshing);
+    }
+  }
+
+  @Override
+  public boolean canChildScrollUp() {
+    View firstChild = getChildAt(0);
+    if (firstChild != null) {
+      return firstChild.canScrollVertically(-1);
+    } else {
+      return super.canChildScrollUp();
     }
   }
 

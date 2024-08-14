@@ -76,6 +76,41 @@ class MoreThanOneModuleInterfaceParserError extends ParserError {
   }
 }
 
+class UnsupportedModuleEventEmitterTypePropertyParserError extends ParserError {
+  constructor(
+    nativeModuleName: string,
+    propertyValue: $FlowFixMe,
+    propertyName: string,
+    language: ParserType,
+    nullable: boolean,
+  ) {
+    super(
+      nativeModuleName,
+      propertyValue,
+      `Property '${propertyName}' is an EventEmitter and must have a non nullable eventType`,
+    );
+  }
+}
+
+class UnsupportedModuleEventEmitterPropertyParserError extends ParserError {
+  constructor(
+    nativeModuleName: string,
+    propertyValue: $FlowFixMe,
+    propertyName: string,
+    language: ParserType,
+    nullable: boolean,
+    untyped: boolean,
+  ) {
+    let message = `${language} interfaces extending TurboModule must only contain 'FunctionTypeAnnotation's or non nullable 'EventEmitter's. Further the EventEmitter property `;
+    if (nullable) {
+      message += `'${propertyValue}' must non nullable.`;
+    } else if (untyped) {
+      message += `'${propertyValue}' must have a concrete or void eventType.`;
+    }
+    super(nativeModuleName, propertyValue, message);
+  }
+}
+
 class UnsupportedModulePropertyParserError extends ParserError {
   constructor(
     nativeModuleName: string,
@@ -87,7 +122,7 @@ class UnsupportedModulePropertyParserError extends ParserError {
     super(
       nativeModuleName,
       propertyValue,
-      `${language} interfaces extending TurboModule must only contain 'FunctionTypeAnnotation's. Property '${propertyName}' refers to a '${invalidPropertyValueType}'.`,
+      `${language} interfaces extending TurboModule must only contain 'FunctionTypeAnnotation's or non nullable 'EventEmitter's. Property '${propertyName}' refers to a '${invalidPropertyValueType}'.`,
     );
   }
 }
@@ -416,6 +451,8 @@ module.exports = {
   UnsupportedFunctionReturnTypeAnnotationParserError,
   UnsupportedEnumDeclarationParserError,
   UnsupportedUnionTypeAnnotationParserError,
+  UnsupportedModuleEventEmitterTypePropertyParserError,
+  UnsupportedModuleEventEmitterPropertyParserError,
   UnsupportedModulePropertyParserError,
   UnsupportedObjectPropertyTypeAnnotationParserError,
   UnsupportedObjectPropertyValueTypeAnnotationParserError,

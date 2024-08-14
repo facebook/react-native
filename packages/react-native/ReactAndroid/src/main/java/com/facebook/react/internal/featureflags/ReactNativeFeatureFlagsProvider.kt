@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<173f9f2cd094134c32a7a78c7241518c>>
+ * @generated SignedSource<<040b9cb9cec727e2eb31769712980528>>
  */
 
 /**
@@ -25,41 +25,89 @@ import com.facebook.proguard.annotations.DoNotStrip
 public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun commonTestFlag(): Boolean
 
-  @DoNotStrip public fun allowCollapsableChildren(): Boolean
-
-  @DoNotStrip public fun androidEnablePendingFabricTransactions(): Boolean
+  @DoNotStrip public fun allowRecursiveCommitsWithSynchronousMountOnAndroid(): Boolean
 
   @DoNotStrip public fun batchRenderingUpdatesInEventLoop(): Boolean
 
+  @DoNotStrip public fun changeOrderOfMountingInstructionsOnAndroid(): Boolean
+
+  @DoNotStrip public fun completeReactInstanceCreationOnBgThreadOnAndroid(): Boolean
+
   @DoNotStrip public fun destroyFabricSurfacesInReactInstanceManager(): Boolean
 
-  @DoNotStrip public fun enableBackgroundExecutor(): Boolean
+  @DoNotStrip public fun enableAlignItemsBaselineOnFabricIOS(): Boolean
+
+  @DoNotStrip public fun enableBackgroundStyleApplicator(): Boolean
 
   @DoNotStrip public fun enableCleanTextInputYogaNode(): Boolean
 
+  @DoNotStrip public fun enableEagerRootViewAttachment(): Boolean
+
+  @DoNotStrip public fun enableEventEmitterRetentionDuringGesturesOnAndroid(): Boolean
+
+  @DoNotStrip public fun enableFabricLogs(): Boolean
+
+  @DoNotStrip public fun enableFabricRendererExclusively(): Boolean
+
   @DoNotStrip public fun enableGranularShadowTreeStateReconciliation(): Boolean
 
+  @DoNotStrip public fun enableLongTaskAPI(): Boolean
+
   @DoNotStrip public fun enableMicrotasks(): Boolean
+
+  @DoNotStrip public fun enablePropsUpdateReconciliationAndroid(): Boolean
+
+  @DoNotStrip public fun enableReportEventPaintTime(): Boolean
 
   @DoNotStrip public fun enableSynchronousStateUpdates(): Boolean
 
   @DoNotStrip public fun enableUIConsistency(): Boolean
 
-  @DoNotStrip public fun fixMountedFlagAndFixPreallocationClone(): Boolean
+  @DoNotStrip public fun enableViewRecycling(): Boolean
+
+  @DoNotStrip public fun excludeYogaFromRawProps(): Boolean
+
+  @DoNotStrip public fun fetchImagesInViewPreallocation(): Boolean
+
+  @DoNotStrip public fun fixIncorrectScrollViewStateUpdateOnAndroid(): Boolean
+
+  @DoNotStrip public fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean
+
+  @DoNotStrip public fun fixMissedFabricStateUpdatesOnAndroid(): Boolean
 
   @DoNotStrip public fun forceBatchingMountItemsOnAndroid(): Boolean
 
-  @DoNotStrip public fun inspectorEnableCxxInspectorPackagerConnection(): Boolean
+  @DoNotStrip public fun fuseboxEnabledDebug(): Boolean
 
-  @DoNotStrip public fun inspectorEnableModernCDPRegistry(): Boolean
+  @DoNotStrip public fun fuseboxEnabledRelease(): Boolean
+
+  @DoNotStrip public fun initEagerTurboModulesOnNativeModulesQueueAndroid(): Boolean
 
   @DoNotStrip public fun lazyAnimationCallbacks(): Boolean
 
-  @DoNotStrip public fun preventDoubleTextMeasure(): Boolean
+  @DoNotStrip public fun loadVectorDrawablesOnImages(): Boolean
+
+  @DoNotStrip public fun setAndroidLayoutDirection(): Boolean
+
+  @DoNotStrip public fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean
+
+  @DoNotStrip public fun useFabricInterop(): Boolean
+
+  @DoNotStrip public fun useImmediateExecutorInAndroidBridgeless(): Boolean
 
   @DoNotStrip public fun useModernRuntimeScheduler(): Boolean
 
   @DoNotStrip public fun useNativeViewConfigsInBridgelessMode(): Boolean
 
+  @DoNotStrip public fun useNewReactImageViewBackgroundDrawing(): Boolean
+
+  @DoNotStrip public fun useOptimisedViewPreallocationOnAndroid(): Boolean
+
+  @DoNotStrip public fun useRuntimeShadowNodeReferenceUpdate(): Boolean
+
+  @DoNotStrip public fun useRuntimeShadowNodeReferenceUpdateOnLayout(): Boolean
+
   @DoNotStrip public fun useStateAlignmentMechanism(): Boolean
+
+  @DoNotStrip public fun useTurboModuleInterop(): Boolean
 }

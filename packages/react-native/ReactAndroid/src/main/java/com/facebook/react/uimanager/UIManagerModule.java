@@ -207,6 +207,16 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     ViewManagerPropertyUpdater.clear();
   }
 
+  @Override
+  public void markActiveTouchForTag(int surfaceId, int reactTag) {
+    // Not implemented for Paper.
+  }
+
+  @Override
+  public void sweepActiveTouchForTag(int surfaceId, int reactTag) {
+    // Not implemented for Paper.
+  }
+
   /**
    * This method is intended to reuse the {@link ViewManagerRegistry} with FabricUIManager. Do not
    * use this method as this will be removed in the near future.
@@ -523,22 +533,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   public void measureLayout(
       int tag, int ancestorTag, Callback errorCallback, Callback successCallback) {
     mUIImplementation.measureLayout(tag, ancestorTag, errorCallback, successCallback);
-  }
-
-  /**
-   * Like {@link #measure} and {@link #measureLayout} but measures relative to the immediate parent.
-   *
-   * <p>NB: Unlike {@link #measure}, this will measure relative to the view layout, not the visible
-   * window which can cause unexpected results when measuring relative to things like ScrollViews
-   * that can have offset content on the screen.
-   *
-   * @deprecated this method will not be available in FabricUIManager class.
-   */
-  @ReactMethod
-  @Deprecated
-  public void measureLayoutRelativeToParent(
-      int tag, Callback errorCallback, Callback successCallback) {
-    mUIImplementation.measureLayoutRelativeToParent(tag, errorCallback, successCallback);
   }
 
   /**

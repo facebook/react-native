@@ -71,7 +71,7 @@ class ElementProperties extends React.Component<Props> {
             <View style={styles.col}>
               <StyleInspector style={style} />
             </View>
-            {<BoxInspector style={style} frame={this.props.frame} />}
+            <BoxInspector style={style} frame={this.props.frame} />
           </View>
         </View>
       </TouchableWithoutFeedback>

@@ -15,6 +15,7 @@
 #import <React/RCTBridgeMethod.h>
 #import <React/RCTBridgeModule.h>
 #import <React/RCTBridgeModuleDecorator.h>
+#import <React/RCTCallInvoker.h>
 #import <React/RCTConstants.h>
 #import <React/RCTConvert.h>
 #import <React/RCTCxxBridgeDelegate.h>
@@ -161,14 +162,16 @@ static void mapReactMarkerToPerformanceLogger(
 
 static void registerPerformanceLoggerHooks(RCTPerformanceLogger *performanceLogger)
 {
+  std::unique_lock lock(ReactMarker::logTaggedMarkerImplMutex);
   __weak RCTPerformanceLogger *weakPerformanceLogger = performanceLogger;
-  ReactMarker::logTaggedMarkerImpl = [weakPerformanceLogger](
-                                         const ReactMarker::ReactMarkerId markerId, const char *tag) {
+  ReactMarker::LogTaggedMarker newMarker = [weakPerformanceLogger](
+                                               const ReactMarker::ReactMarkerId markerId, const char *tag) {
     mapReactMarkerToPerformanceLogger(markerId, weakPerformanceLogger, tag);
   };
+  ReactMarker::logTaggedMarkerImpl = newMarker;
 }
 
-@interface RCTCxxBridge ()
+@interface RCTCxxBridge () <RCTModuleDataCallInvokerProvider>
 
 @property (nonatomic, weak, readonly) RCTBridge *parentBridge;
 @property (nonatomic, assign, readonly) BOOL moduleSetupComplete;
@@ -192,7 +195,7 @@ struct RCTInstanceCallback : public InstanceCallback {
 
 @implementation RCTCxxBridge {
   BOOL _didInvalidate;
-  BOOL _moduleRegistryCreated;
+  std::atomic<BOOL> _moduleRegistryCreated;
 
   NSMutableArray<RCTPendingCall> *_pendingCalls;
   std::atomic<NSInteger> _pendingCount;
@@ -219,12 +222,32 @@ struct RCTInstanceCallback : public InstanceCallback {
   RCTViewRegistry *_viewRegistry_DEPRECATED;
   RCTBundleManager *_bundleManager;
   RCTCallableJSModules *_callableJSModules;
+  std::atomic<BOOL> _loading;
+  std::atomic<BOOL> _valid;
 }
 
 @synthesize bridgeDescription = _bridgeDescription;
-@synthesize loading = _loading;
 @synthesize performanceLogger = _performanceLogger;
-@synthesize valid = _valid;
+
+- (BOOL)isLoading
+{
+  return _loading;
+}
+
+- (void)setLoading:(BOOL)newValue
+{
+  _loading = newValue;
+}
+
+- (BOOL)isValid
+{
+  return _valid;
+}
+
+- (void)setValid:(BOOL)newValue
+{
+  _valid = newValue;
+}
 
 - (RCTModuleRegistry *)moduleRegistry
 {
@@ -767,6 +790,7 @@ struct RCTInstanceCallback : public InstanceCallback {
                                     viewRegistry_DEPRECATED:_viewRegistry_DEPRECATED
                                               bundleManager:_bundleManager
                                           callableJSModules:_callableJSModules];
+    moduleData.callInvokerProvider = self;
     BridgeNativeModulePerfLogger::moduleDataCreateEnd([moduleName UTF8String], moduleDataId);
 
     _moduleDataByName[moduleName] = moduleData;
@@ -1593,6 +1617,13 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithBundleURL
     (std::shared_ptr<NativeMethodCallInvoker>)nativeInvoker
 {
   return _reactInstance ? _reactInstance->getDecoratedNativeMethodCallInvoker(nativeInvoker) : nullptr;
+}
+
+#pragma mark - RCTModuleDataCallInvokerProvider
+
+- (RCTCallInvoker *)callInvokerForModuleData:(RCTModuleData *)moduleData
+{
+  return [[RCTCallInvoker alloc] initWithCallInvoker:self.jsCallInvoker];
 }
 
 @end

@@ -43,33 +43,6 @@
 using namespace facebook;
 using namespace facebook::react;
 
-static dispatch_queue_t RCTGetBackgroundQueue()
-{
-  static dispatch_queue_t queue;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    dispatch_queue_attr_t attr =
-        dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL, QOS_CLASS_USER_INTERACTIVE, 0);
-    queue = dispatch_queue_create("com.facebook.react.background", attr);
-  });
-  return queue;
-}
-
-static BackgroundExecutor RCTGetBackgroundExecutor()
-{
-  return [](std::function<void()> &&callback) {
-    if (RCTIsMainQueue()) {
-      callback();
-      return;
-    }
-
-    auto copyableCallback = callback;
-    dispatch_async(RCTGetBackgroundQueue(), ^{
-      copyableCallback();
-    });
-  };
-}
-
 @interface RCTSurfacePresenter () <RCTSchedulerDelegate, RCTMountingManagerDelegate>
 @end
 
@@ -287,10 +260,6 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
 
   toolbox.runtimeExecutor = runtimeExecutor;
   toolbox.bridgelessBindingsExecutor = _bridgelessBindingsExecutor;
-
-  if (ReactNativeFeatureFlags::enableBackgroundExecutor()) {
-    toolbox.backgroundExecutor = RCTGetBackgroundExecutor();
-  }
 
   toolbox.asynchronousEventBeatFactory =
       [runtimeExecutor](const EventBeat::SharedOwnerBox &ownerBox) -> std::unique_ptr<EventBeat> {

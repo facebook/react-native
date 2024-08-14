@@ -41,10 +41,10 @@ Pod::Spec.new do |s|
   s.header_dir             = "RCTPushNotification"
   s.pod_target_xcconfig    = {
                                "USE_HEADERMAP" => "YES",
-                               "CLANG_CXX_LANGUAGE_STANDARD" => "c++20",
+                               "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
                                "HEADER_SEARCH_PATHS" => header_search_paths.join(' ')
                              }
-  s.framework              = "UserNotifications"
+  s.framework              = ["UIKit", "UserNotifications"]
 
   s.dependency "RCTTypeSafety"
   s.dependency "React-Core/RCTPushNotificationHeaders"

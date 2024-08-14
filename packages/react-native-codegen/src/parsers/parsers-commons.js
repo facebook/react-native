@@ -17,6 +17,7 @@ import type {
   NativeModuleAliasMap,
   NativeModuleBaseTypeAnnotation,
   NativeModuleEnumMap,
+  NativeModuleEventEmitterShape,
   NativeModuleFunctionTypeAnnotation,
   NativeModuleParamTypeAnnotation,
   NativeModulePropertyShape,
@@ -40,6 +41,8 @@ import type {
 
 const {
   throwIfConfigNotfound,
+  throwIfEventEmitterEventTypeIsUnsupported,
+  throwIfEventEmitterTypeIsUnsupported,
   throwIfIncorrectModuleRegistryCallArgument,
   throwIfIncorrectModuleRegistryCallTypeParameterParserError,
   throwIfModuleInterfaceIsMisnamed,
@@ -470,6 +473,81 @@ function buildPropertySchema(
   };
 }
 
+function buildEventEmitterSchema(
+  hasteModuleName: string,
+  // TODO(T108222691): [TS] Use flow-types for @babel/parser
+  // TODO(T71778680): [Flow] This is an ObjectTypeProperty containing either:
+  // - a FunctionTypeAnnotation or GenericTypeAnnotation
+  // - a NullableTypeAnnoation containing a FunctionTypeAnnotation or GenericTypeAnnotation
+  // Flow type this node
+  property: $FlowFixMe,
+  types: TypeDeclarationMap,
+  aliasMap: {...NativeModuleAliasMap},
+  enumMap: {...NativeModuleEnumMap},
+  tryParse: ParserErrorCapturer,
+  cxxOnly: boolean,
+  translateTypeAnnotation: $FlowFixMe,
+  parser: Parser,
+): NativeModuleEventEmitterShape {
+  const {key} = property;
+  const value =
+    parser.language() === 'TypeScript'
+      ? property.typeAnnotation.typeAnnotation
+      : property.value;
+
+  const eventemitterName: string = key.name;
+  const resolveTypeAnnotationFN = parser.getResolveTypeAnnotationFN();
+  const [typeAnnotation, typeAnnotationNullable] = unwrapNullable(value);
+  const typeAnnotationUntyped =
+    value.typeParameters.params.length === 1 &&
+    parser.language() === 'TypeScript'
+      ? value.typeParameters.params[0].type === 'TSTypeLiteral' &&
+        value.typeParameters.params[0].members.length === 0
+      : value.typeParameters.params[0].type === 'ObjectTypeAnnotation' &&
+        value.typeParameters.params[0].properties.length === 0;
+
+  throwIfEventEmitterTypeIsUnsupported(
+    hasteModuleName,
+    key.name,
+    typeAnnotation.type,
+    parser,
+    typeAnnotationNullable,
+    typeAnnotationUntyped,
+  );
+  const eventTypeResolutionStatus = resolveTypeAnnotationFN(
+    typeAnnotation.typeParameters.params[0],
+    types,
+    parser,
+  );
+  throwIfEventEmitterEventTypeIsUnsupported(
+    hasteModuleName,
+    key.name,
+    eventTypeResolutionStatus.typeAnnotation,
+    parser,
+    eventTypeResolutionStatus.nullable,
+  );
+
+  const eventTypeAnnotation = translateTypeAnnotation(
+    hasteModuleName,
+    typeAnnotation.typeParameters.params[0],
+    types,
+    aliasMap,
+    enumMap,
+    tryParse,
+    cxxOnly,
+    parser,
+  );
+
+  return {
+    name: eventemitterName,
+    optional: false,
+    typeAnnotation: {
+      type: 'EventEmitterTypeAnnotation',
+      typeAnnotation: eventTypeAnnotation,
+    },
+  };
+}
+
 function buildSchemaFromConfigType(
   configType: 'module' | 'component' | 'none',
   filename: ?string,
@@ -715,9 +793,12 @@ const buildModuleSchema = (
         parser,
       )
     : {};
-
   const properties: $ReadOnlyArray<$FlowFixMe> =
     language === 'Flow' ? moduleSpec.body.properties : moduleSpec.body.body;
+
+  type PropertyShape =
+    | {type: 'eventEmitter', value: NativeModuleEventEmitterShape}
+    | {type: 'method', value: NativeModulePropertyShape};
 
   // $FlowFixMe[missing-type-arg]
   const nativeModuleSchema = properties
@@ -730,23 +811,48 @@ const buildModuleSchema = (
     .map<?{
       aliasMap: NativeModuleAliasMap,
       enumMap: NativeModuleEnumMap,
-      propertyShape: NativeModulePropertyShape,
+      propertyShape: PropertyShape,
     }>(property => {
       const enumMap: {...NativeModuleEnumMap} = {};
+      const isEventEmitter =
+        language === 'TypeScript'
+          ? property?.type === 'TSPropertySignature' &&
+            property?.typeAnnotation?.typeAnnotation?.typeName?.name ===
+              'EventEmitter'
+          : property?.value?.type === 'GenericTypeAnnotation' &&
+            property?.value?.id?.name === 'EventEmitter';
       return tryParse(() => ({
         aliasMap,
         enumMap,
-        propertyShape: buildPropertySchema(
-          hasteModuleName,
-          property,
-          types,
-          aliasMap,
-          enumMap,
-          tryParse,
-          cxxOnly,
-          translateTypeAnnotation,
-          parser,
-        ),
+        propertyShape: isEventEmitter
+          ? {
+              type: 'eventEmitter',
+              value: buildEventEmitterSchema(
+                hasteModuleName,
+                property,
+                types,
+                aliasMap,
+                enumMap,
+                tryParse,
+                cxxOnly,
+                translateTypeAnnotation,
+                parser,
+              ),
+            }
+          : {
+              type: 'method',
+              value: buildPropertySchema(
+                hasteModuleName,
+                property,
+                types,
+                aliasMap,
+                enumMap,
+                tryParse,
+                cxxOnly,
+                translateTypeAnnotation,
+                parser,
+              ),
+            },
       }));
     })
     .filter(Boolean)
@@ -756,7 +862,12 @@ const buildModuleSchema = (
         aliasMap: {...moduleSchema.aliasMap, ...aliasMap},
         enumMap: {...moduleSchema.enumMap, ...enumMap},
         spec: {
-          properties: [...moduleSchema.spec.properties, propertyShape],
+          eventEmitters: [...moduleSchema.spec.eventEmitters].concat(
+            propertyShape.type === 'eventEmitter' ? [propertyShape.value] : [],
+          ),
+          methods: [...moduleSchema.spec.methods].concat(
+            propertyShape.type === 'method' ? [propertyShape.value] : [],
+          ),
         },
         moduleName: moduleSchema.moduleName,
         excludedPlatforms: moduleSchema.excludedPlatforms,
@@ -765,7 +876,7 @@ const buildModuleSchema = (
         type: 'NativeModule',
         aliasMap: {},
         enumMap: {},
-        spec: {properties: []},
+        spec: {eventEmitters: [], methods: []},
         moduleName,
         excludedPlatforms:
           excludedPlatforms.length !== 0 ? [...excludedPlatforms] : undefined,
@@ -776,7 +887,10 @@ const buildModuleSchema = (
     type: 'NativeModule',
     aliasMap: getSortedObject(nativeModuleSchema.aliasMap),
     enumMap: getSortedObject(nativeModuleSchema.enumMap),
-    spec: {properties: nativeModuleSchema.spec.properties.sort()},
+    spec: {
+      eventEmitters: nativeModuleSchema.spec.eventEmitters.sort(),
+      methods: nativeModuleSchema.spec.methods.sort(),
+    },
     moduleName,
     excludedPlatforms: nativeModuleSchema.excludedPlatforms,
   };

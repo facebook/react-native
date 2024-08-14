@@ -39,44 +39,88 @@ const testDefinitions: FeatureFlagDefinitions = {
 const definitions: FeatureFlagDefinitions = {
   common: {
     ...testDefinitions.common,
-    allowCollapsableChildren: {
-      defaultValue: true,
-      description:
-        'Enables the differentiator to understand the "collapsableChildren" prop',
-    },
-    androidEnablePendingFabricTransactions: {
+    allowRecursiveCommitsWithSynchronousMountOnAndroid: {
       defaultValue: false,
       description:
-        "To be used with batchRenderingUpdatesInEventLoop. When enbled, the Android mounting layer will concatenate pending transactions to ensure they're applied atomatically",
+        'Adds support for recursively processing commits that mount synchronously (Android only).',
     },
     batchRenderingUpdatesInEventLoop: {
       defaultValue: false,
       description:
         'When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.',
     },
+    changeOrderOfMountingInstructionsOnAndroid: {
+      defaultValue: false,
+      description:
+        'When enabled, insert of views on Android will be moved from the beginning of the IntBufferBatchMountItem to be after layout updates.',
+    },
+    completeReactInstanceCreationOnBgThreadOnAndroid: {
+      defaultValue: false,
+      description:
+        'Do not wait for a main-thread dispatch to complete init to start executing work on the JS thread on Android',
+    },
     destroyFabricSurfacesInReactInstanceManager: {
       defaultValue: false,
       description:
         'When enabled, ReactInstanceManager will clean up Fabric surfaces on destroy().',
     },
-    enableBackgroundExecutor: {
-      defaultValue: false,
+    enableAlignItemsBaselineOnFabricIOS: {
+      defaultValue: true,
       description:
-        'Enables the use of a background executor to compute layout and commit updates on Fabric (this system is deprecated and should not be used).',
+        'Kill-switch to turn off support for aling-items:baseline on Fabric iOS.',
+    },
+    enableBackgroundStyleApplicator: {
+      defaultValue: true,
+      description:
+        'Use BackgroundStyleApplicator in place of other background/border drawing code',
     },
     enableCleanTextInputYogaNode: {
       defaultValue: false,
       description: 'Clean yoga node when <TextInput /> does not change.',
+    },
+    enableEagerRootViewAttachment: {
+      defaultValue: false,
+      description:
+        'Feature flag to configure eager attachment of the root view/initialisation of the JS code.',
+    },
+    enableEventEmitterRetentionDuringGesturesOnAndroid: {
+      defaultValue: false,
+      description:
+        'Enables the retention of EventEmitterWrapper on Android till the touch gesture is over to fix a bug on pressable (#44610)',
+    },
+    enableFabricLogs: {
+      defaultValue: false,
+      description: 'This feature flag enables logs for Fabric.',
+    },
+    enableFabricRendererExclusively: {
+      defaultValue: false,
+      description:
+        'When the app is completely migrated to Fabric, set this flag to true to disable parts of Paper infrastructure that are not needed anymore but consume memory and CPU. Specifically, UIViewOperationQueue and EventDispatcherImpl will no longer work as they will not subscribe to ReactChoreographer for updates.',
     },
     enableGranularShadowTreeStateReconciliation: {
       defaultValue: false,
       description:
         'When enabled, the renderer would only fail commits when they propagate state and the last commit that updated state changed before committing.',
     },
+    enableLongTaskAPI: {
+      defaultValue: false,
+      description:
+        'Enables the reporting of long tasks through `PerformanceObserver`. Only works if the event loop is enabled.',
+    },
     enableMicrotasks: {
       defaultValue: false,
       description:
         'Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).',
+    },
+    enablePropsUpdateReconciliationAndroid: {
+      defaultValue: false,
+      description:
+        'When enabled, Android will receive prop updates based on the differences between the last rendered shadow node and the last committed shadow node.',
+    },
+    enableReportEventPaintTime: {
+      defaultValue: false,
+      description:
+        'Report paint time inside the Event Timing API implementation (PerformanceObserver).',
     },
     enableSynchronousStateUpdates: {
       defaultValue: false,
@@ -88,34 +132,84 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'Ensures that JavaScript always has a consistent view of the state of the UI (e.g.: commits done in other threads are not immediately propagated to JS during its execution).',
     },
-    fixMountedFlagAndFixPreallocationClone: {
+    enableViewRecycling: {
       defaultValue: false,
-      description: 'Splits hasBeenMounted and promoted.',
+      description:
+        'Enables View Recycling. When enabled, individual ViewManagers must still opt-in.',
+    },
+    excludeYogaFromRawProps: {
+      defaultValue: false,
+      description:
+        'When enabled, rawProps in Props will not include Yoga specific props.',
+    },
+    fetchImagesInViewPreallocation: {
+      defaultValue: false,
+      description:
+        'Start image fetching during view preallocation instead of waiting for layout pass',
+    },
+    fixIncorrectScrollViewStateUpdateOnAndroid: {
+      defaultValue: false,
+      description:
+        'When doing a smooth scroll animation, it stops setting the state with the final scroll position in Fabric before the animation starts.',
+    },
+    fixMappingOfEventPrioritiesBetweenFabricAndReact: {
+      defaultValue: false,
+      description:
+        'Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.',
+    },
+    fixMissedFabricStateUpdatesOnAndroid: {
+      defaultValue: false,
+      description:
+        'Enables a fix to prevent the possibility of state updates in Fabric being missed due to race conditions with previous state updates.',
     },
     forceBatchingMountItemsOnAndroid: {
       defaultValue: false,
       description:
         'Forces the mounting layer on Android to always batch mount items instead of dispatching them immediately. This might fix some crashes related to synchronous state updates, where some views dispatch state updates during mount.',
     },
-    inspectorEnableCxxInspectorPackagerConnection: {
-      defaultValue: false,
+    fuseboxEnabledDebug: {
+      defaultValue: true,
       description:
-        'Flag determining if the C++ implementation of InspectorPackagerConnection should be used instead of the per-platform one. This flag is global and should not be changed across React Host lifetimes.',
+        'Flag determining if the React Native DevTools (Fusebox) CDP backend should be enabled in debug builds. This flag is global and should not be changed across React Host lifetimes.',
     },
-    inspectorEnableModernCDPRegistry: {
+    fuseboxEnabledRelease: {
       defaultValue: false,
       description:
-        'Flag determining if the modern CDP backend should be enabled. This flag is global and should not be changed across React Host lifetimes.',
+        'Flag determining if the React Native DevTools (Fusebox) CDP backend should be enabled in release builds. This flag is global and should not be changed across React Host lifetimes.',
+    },
+    initEagerTurboModulesOnNativeModulesQueueAndroid: {
+      defaultValue: false,
+      description:
+        'Construct modules that requires eager init on the dedicate native modules thread',
     },
     lazyAnimationCallbacks: {
       defaultValue: false,
       description:
         'Only enqueue Choreographer calls if there is an ongoing animation, instead of enqueueing every frame.',
     },
-    preventDoubleTextMeasure: {
+    loadVectorDrawablesOnImages: {
       defaultValue: false,
       description:
-        'When enabled, ParagraphShadowNode will no longer call measure twice.',
+        'Adds support for loading vector drawable assets in the Image component (only on Android)',
+    },
+    setAndroidLayoutDirection: {
+      defaultValue: false,
+      description: 'Propagate layout direction to Android views.',
+    },
+    traceTurboModulePromiseRejectionsOnAndroid: {
+      defaultValue: false,
+      description:
+        'Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.',
+    },
+    useFabricInterop: {
+      defaultValue: false,
+      description:
+        'Should this application enable the Fabric Interop Layer for Android? If yes, the application will behave so that it can accept non-Fabric components and render them on Fabric. This toggle is controlling extra logic such as custom event dispatching that are needed for the Fabric Interop Layer to work correctly.',
+    },
+    useImmediateExecutorInAndroidBridgeless: {
+      defaultValue: false,
+      description:
+        'Invoke callbacks immediately on the ReactInstance rather than going through a background thread for synchronization',
     },
     useModernRuntimeScheduler: {
       defaultValue: false,
@@ -127,10 +221,35 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'When enabled, the native view configs are used in bridgeless mode.',
     },
+    useNewReactImageViewBackgroundDrawing: {
+      defaultValue: false,
+      description:
+        'Use shared background drawing code for ReactImageView instead of using Fresco to manipulate the bitmap',
+    },
+    useOptimisedViewPreallocationOnAndroid: {
+      defaultValue: false,
+      description:
+        'Moves more of the work in view preallocation to the main thread to free up JS thread.',
+    },
+    useRuntimeShadowNodeReferenceUpdate: {
+      defaultValue: false,
+      description:
+        'When enabled, cloning shadow nodes within react native will update the reference held by the current JS fiber tree.',
+    },
+    useRuntimeShadowNodeReferenceUpdateOnLayout: {
+      defaultValue: false,
+      description:
+        'When enabled, cloning shadow nodes during layout will update the reference held by the current JS fiber tree.',
+    },
     useStateAlignmentMechanism: {
       defaultValue: false,
       description:
         'When enabled, it uses optimised state reconciliation algorithm.',
+    },
+    useTurboModuleInterop: {
+      defaultValue: false,
+      description:
+        'In Bridgeless mode, should legacy NativeModules use the TurboModule system?',
     },
   },
 
@@ -157,10 +276,20 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'Function used to enable / disabled Layout Animations in React Native.',
     },
+    shouldSkipStateUpdatesForLoopingAnimations: {
+      defaultValue: false,
+      description:
+        'If the animation is within Animated.loop, we do not send state updates to React.',
+    },
     shouldUseAnimatedObjectForTransform: {
       defaultValue: false,
       description:
         'Enables use of AnimatedObject for animating transform values.',
+    },
+    shouldUseDebouncedEffectsForAnimated: {
+      defaultValue: false,
+      description:
+        'Use new `useDebouncedEffects` hook for manging animated props lifecycle.',
     },
     shouldUseRemoveClippedSubviewsAsDefaultOnIOS: {
       defaultValue: false,
@@ -170,6 +299,21 @@ const definitions: FeatureFlagDefinitions = {
     shouldUseSetNativePropsInFabric: {
       defaultValue: true,
       description: 'Enables use of setNativeProps in JS driven animations.',
+    },
+    shouldUseSetNativePropsInNativeAnimationsInFabric: {
+      defaultValue: false,
+      description:
+        'Enables use of setNativeProps in Native driven animations in Fabric.',
+    },
+    usePassiveEffectsForAnimations: {
+      defaultValue: false,
+      description:
+        'Enable a variant of useAnimatedPropsLifecycle hook that constructs the animation graph in passive effect instead of layout effect',
+    },
+    useRefsForTextInputState: {
+      defaultValue: false,
+      description:
+        'Enable a variant of TextInput that moves some state to refs to avoid unnecessary re-renders',
     },
   },
 };

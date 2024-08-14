@@ -22,13 +22,7 @@ class InspectorFlags {
   /**
    * Flag determining if the modern CDP backend should be enabled.
    */
-  bool getEnableModernCDPRegistry() const;
-
-  /**
-   * Flag determining if the C++ implementation of InspectorPackagerConnection
-   * should be used instead of the per-platform one.
-   */
-  bool getEnableCxxInspectorPackagerConnection() const;
+  bool getFuseboxEnabled() const;
 
   /**
    * Reset flags to their upstream values. The caller must ensure any resources
@@ -38,8 +32,7 @@ class InspectorFlags {
 
  private:
   struct Values {
-    bool enableCxxInspectorPackagerConnection;
-    bool enableModernCDPRegistry;
+    bool fuseboxEnabled;
     bool operator==(const Values&) const = default;
   };
 

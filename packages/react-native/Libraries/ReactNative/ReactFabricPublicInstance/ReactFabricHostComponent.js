@@ -20,7 +20,7 @@ import type {
 import type {ElementRef} from 'react';
 
 import TextInputState from '../../Components/TextInput/TextInputState';
-import {getNodeFromInternalInstanceHandle} from '../../Renderer/shims/ReactFabric';
+import {getNodeFromInternalInstanceHandle} from '../../ReactNative/RendererProxy';
 import {getFabricUIManager} from '../FabricUIManager';
 import {create} from './ReactNativeAttributePayload';
 import warnForStyleProps from './warnForStyleProps';

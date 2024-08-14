@@ -546,17 +546,6 @@ RCT_ENUM_CONVERTER(
     integerValue)
 
 RCT_ENUM_CONVERTER(
-    UIBarStyle,
-    (@{
-      @"default" : @(UIBarStyleDefault),
-      @"black" : @(UIBarStyleBlack),
-      @"blackOpaque" : @(UIBarStyleBlackOpaque),
-      @"blackTranslucent" : @(UIBarStyleBlackTranslucent),
-    }),
-    UIBarStyleDefault,
-    integerValue)
-
-RCT_ENUM_CONVERTER(
     RCTCursor,
     (@{
       @"auto" : @(RCTCursorAuto),

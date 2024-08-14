@@ -28,6 +28,7 @@ exports[`LogBoxNotificationContainer should render inspector with logs, even whe
             "content": "Some kind of message",
             "substitutions": Array [],
           },
+          "onNotificationPress": undefined,
           "stack": Array [],
           "symbolicated": Object {
             "error": null,
@@ -54,6 +55,7 @@ exports[`LogBoxNotificationContainer should render inspector with logs, even whe
             "content": "Some kind of message (latest)",
             "substitutions": Array [],
           },
+          "onNotificationPress": undefined,
           "stack": Array [],
           "symbolicated": Object {
             "error": null,

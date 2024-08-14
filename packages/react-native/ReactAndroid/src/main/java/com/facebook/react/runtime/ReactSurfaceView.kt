@@ -134,10 +134,13 @@ public class ReactSurfaceView(context: Context?, private val surface: ReactSurfa
   // This surface view is always on Fabric.
   @UIManagerType override fun getUIManagerType(): Int = UIManagerType.FABRIC
 
+  override fun getJSModuleName(): String = surface.moduleName
+
   override fun dispatchJSTouchEvent(event: MotionEvent) {
     val eventDispatcher = surface.eventDispatcher
     if (eventDispatcher != null) {
-      jsTouchDispatcher.handleTouchEvent(event, eventDispatcher)
+      jsTouchDispatcher.handleTouchEvent(
+          event, eventDispatcher, surface.reactHost.currentReactContext)
     } else {
       FLog.w(
           TAG, "Unable to dispatch touch events to JS as the React instance has not been attached")
