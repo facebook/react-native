@@ -6,6 +6,7 @@
 folly_config = get_folly_config()
 folly_compiler_flags = folly_config[:compiler_flags]
 folly_release_version = folly_config[:version]
+folly_git_url = folly_config[:git]
 
 Pod::Spec.new do |spec|
   spec.name = 'RCT-Folly'
@@ -15,7 +16,7 @@ Pod::Spec.new do |spec|
   spec.homepage = 'https://github.com/facebook/folly'
   spec.summary = 'An open-source C++ library developed and used at Facebook.'
   spec.authors = 'Facebook'
-  spec.source = { :git => 'https://github.com/facebook/folly.git',
+  spec.source = { :git => folly_git_url,
                   :tag => "v#{folly_release_version}" }
   spec.module_name = 'folly'
   spec.header_mappings_dir = '.'
