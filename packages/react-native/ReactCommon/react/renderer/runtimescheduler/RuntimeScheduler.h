@@ -19,6 +19,9 @@ namespace facebook::react {
 using RuntimeSchedulerRenderingUpdate = std::function<void()>;
 using RuntimeSchedulerTimeout = std::chrono::milliseconds;
 
+using RuntimeSchedulerTaskErrorHandler =
+    std::function<void(jsi::Runtime& runtime, jsi::JSError& error)>;
+
 // This is a temporary abstract class for RuntimeScheduler forks to implement
 // (and use them interchangeably).
 class RuntimeSchedulerBase {
@@ -60,7 +63,8 @@ class RuntimeScheduler final : RuntimeSchedulerBase {
   explicit RuntimeScheduler(
       RuntimeExecutor runtimeExecutor,
       std::function<RuntimeSchedulerTimePoint()> now =
-          RuntimeSchedulerClock::now);
+          RuntimeSchedulerClock::now,
+      RuntimeSchedulerTaskErrorHandler onTaskError = handleTaskErrorDefault);
 
   /*
    * Not copyable.
@@ -163,6 +167,10 @@ class RuntimeScheduler final : RuntimeSchedulerBase {
   // Actual implementation, stored as a unique pointer to simplify memory
   // management.
   std::unique_ptr<RuntimeSchedulerBase> runtimeSchedulerImpl_;
+
+  static void handleTaskErrorDefault(
+      jsi::Runtime& runtime,
+      jsi::JSError& error);
 };
 
 } // namespace facebook::react
