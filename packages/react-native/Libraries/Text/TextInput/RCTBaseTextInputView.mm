@@ -663,8 +663,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
 
 - (NSString *)returnKeyTypeToString:(UIReturnKeyType)returnKeyType {
 switch (returnKeyType) {
-    case UIReturnKeyDefault:
-        return @"Default";
     case UIReturnKeyGo:
         return @"Go";
     case UIReturnKeyNext:
@@ -692,7 +690,6 @@ switch (returnKeyType) {
         returnKeyTypesSet = [NSSet setWithObjects:
             @(UIReturnKeyDone),
             @(UIReturnKeyGo),
-            @(UIReturnKeyDefault),
             @(UIReturnKeyNext),
             @(UIReturnKeySearch),
             @(UIReturnKeySend),
