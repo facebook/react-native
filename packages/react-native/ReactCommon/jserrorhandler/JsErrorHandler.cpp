@@ -139,4 +139,8 @@ void JsErrorHandler::notifyRuntimeReady() {
   _isRuntimeReady = true;
 }
 
+void JsErrorHandler::notifyOfFatalError() {
+  _hasHandledFatalError = true;
+}
+
 } // namespace facebook::react

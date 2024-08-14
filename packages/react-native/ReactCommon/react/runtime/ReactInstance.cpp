@@ -355,6 +355,11 @@ void defineReactInstanceFlags(
   }
 }
 
+bool isTruthy(jsi::Runtime& runtime, const jsi::Value& value) {
+  auto Boolean = runtime.global().getPropertyAsFunction(runtime, "Boolean");
+  return Boolean.call(runtime, value).getBool();
+}
+
 } // namespace
 
 void ReactInstance::initializeRuntime(
@@ -372,6 +377,44 @@ void ReactInstance::initializeRuntime(
     runtime_->unstable_initializeOnJsThread();
 
     defineReactInstanceFlags(runtime, options);
+
+    // TODO(T196834299): We should really use a C++ turbomodule for this
+    defineReadOnlyGlobal(
+        runtime,
+        "RN$handleException",
+        jsi::Function::createFromHostFunction(
+            runtime,
+            jsi::PropNameID::forAscii(runtime, "handleException"),
+            2,
+            [jsErrorHandler = jsErrorHandler_](
+                jsi::Runtime& runtime,
+                const jsi::Value& /*unused*/,
+                const jsi::Value* args,
+                size_t count) {
+              if (count < 2) {
+                throw jsi::JSError(
+                    runtime,
+                    "handleException requires 2 arguments: error, isFatal");
+              }
+
+              auto isFatal = isTruthy(runtime, args[1]);
+              if (jsErrorHandler->isJsPipelineReady()) {
+                if (isFatal) {
+                  jsErrorHandler->notifyOfFatalError();
+                }
+
+                return jsi::Value(false);
+              }
+
+              if (isFatal) {
+                auto jsError =
+                    jsi::JSError(runtime, jsi::Value(runtime, args[0]));
+                jsErrorHandler->handleFatalError(runtime, jsError);
+                return jsi::Value(true);
+              }
+
+              return jsi::Value(false);
+            }));
 
     defineReadOnlyGlobal(
         runtime,
