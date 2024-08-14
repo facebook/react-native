@@ -417,14 +417,14 @@ type IOSViewProps = $ReadOnly<{|
 
   /**
    * @platform ios
-   * 
+   *
    * See https://reactnative.dev/docs/view#accessibilityshowslargecontentviewer
    */
   accessibilityShowsLargeContentViewer?: ?boolean,
 
   /**
    * @platform ios
-   * 
+   *
    * See https://reactnative.dev/docs/view#accessibilitylargecontenttitle
    */
   accessibilityLargeContentTitle?: ?string,
