@@ -1,7 +1,7 @@
 {
   "name": "@react-native/tester-e2e",
   "private": true,
-  "version": "0.75.0-rc.7",
+  "version": "0.75.0",
   "license": "MIT",
   "description": "React Native E2E tester app.",
   "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/rn-tester-e2e",

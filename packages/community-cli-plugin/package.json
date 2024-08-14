@@ -1,6 +1,6 @@
 {
   "name": "@react-native/community-cli-plugin",
-  "version": "0.75.0-rc.7",
+  "version": "0.75.0",
   "description": "Core CLI commands for React Native",
   "keywords": [
     "react-native",
@@ -24,8 +24,8 @@
   "dependencies": {
     "@react-native-community/cli-server-api": "14.0.0-alpha.11",
     "@react-native-community/cli-tools": "14.0.0-alpha.11",
-    "@react-native/dev-middleware": "0.75.0-rc.7",
-    "@react-native/metro-babel-transformer": "0.75.0-rc.7",
+    "@react-native/dev-middleware": "0.75.0",
+    "@react-native/metro-babel-transformer": "0.75.0",
     "chalk": "^4.0.0",
     "execa": "^5.1.1",
     "metro": "^0.80.3",

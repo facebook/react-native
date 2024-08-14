@@ -1,6 +1,6 @@
 {
   "name": "helloworld",
-  "version": "0.75.0-rc.7",
+  "version": "0.75.0",
   "private": true,
   "scripts": {
     "bootstrap": "node ./cli.js bootstrap",
@@ -13,16 +13,16 @@
   },
   "dependencies": {
     "react": "18.3.1",
-    "react-native": "0.75.0-rc.7"
+    "react-native": "0.75.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
     "@babel/preset-env": "^7.20.0",
     "@babel/runtime": "^7.20.0",
-    "@react-native/babel-preset": "0.75.0-rc.7",
-    "@react-native/core-cli-utils": "0.75.0-rc.7",
-    "@react-native/eslint-config": "0.75.0-rc.7",
-    "@react-native/metro-config": "0.75.0-rc.7",
+    "@react-native/babel-preset": "0.75.0",
+    "@react-native/core-cli-utils": "0.75.0",
+    "@react-native/eslint-config": "0.75.0",
+    "@react-native/metro-config": "0.75.0",
     "babel-jest": "^29.6.3",
     "chalk": "^4.1.2",
     "commander": "^12.0.0",

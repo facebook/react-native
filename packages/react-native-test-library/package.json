@@ -1,6 +1,6 @@
 {
   "name": "@react-native/oss-library-example",
-  "version": "0.75.0-rc.7",
+  "version": "0.75.0",
   "private": true,
   "description": "Package that includes native module exapmle, native component example, targets both the old and the new architecture. It should serve as an example of a real-world OSS library.",
   "license": "MIT",
@@ -26,8 +26,8 @@
   ],
   "devDependencies": {
     "@babel/core": "^7.20.0",
-    "@react-native/babel-preset": "0.75.0-rc.7",
-    "react-native": "0.75.0-rc.7"
+    "@react-native/babel-preset": "0.75.0",
+    "react-native": "0.75.0"
   },
   "peerDependencies": {
     "react": "*",
