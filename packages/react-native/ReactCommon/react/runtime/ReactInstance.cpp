@@ -214,36 +214,32 @@ void ReactInstance::loadScript(
        buffer = std::move(buffer),
        weakBufferedRuntimeExecuter = std::weak_ptr<BufferedRuntimeExecutor>(
            bufferedRuntimeExecutor_)](jsi::Runtime& runtime) {
-        try {
-          SystraceSection s("ReactInstance::loadScript");
-          bool hasLogger(ReactMarker::logTaggedMarkerBridgelessImpl);
-          if (hasLogger) {
-            ReactMarker::logTaggedMarkerBridgeless(
-                ReactMarker::RUN_JS_BUNDLE_START, scriptName.c_str());
-          }
+        SystraceSection s("ReactInstance::loadScript");
+        bool hasLogger(ReactMarker::logTaggedMarkerBridgelessImpl);
+        if (hasLogger) {
+          ReactMarker::logTaggedMarkerBridgeless(
+              ReactMarker::RUN_JS_BUNDLE_START, scriptName.c_str());
+        }
 
-          runtime.evaluateJavaScript(buffer, sourceURL);
+        runtime.evaluateJavaScript(buffer, sourceURL);
 
-          /**
-           * TODO(T183610671): We need a safe/reliable way to enable the js
-           * pipeline from javascript. Remove this after we figure that out, or
-           * after we just remove the js pipeline.
-           */
-          jsErrorHandler_->notifyRuntimeReady();
+        /**
+         * TODO(T183610671): We need a safe/reliable way to enable the js
+         * pipeline from javascript. Remove this after we figure that out, or
+         * after we just remove the js pipeline.
+         */
+        jsErrorHandler_->notifyRuntimeReady();
 
-          if (hasLogger) {
-            ReactMarker::logTaggedMarkerBridgeless(
-                ReactMarker::RUN_JS_BUNDLE_STOP, scriptName.c_str());
-            ReactMarker::logMarkerBridgeless(
-                ReactMarker::INIT_REACT_RUNTIME_STOP);
-            ReactMarker::logMarkerBridgeless(ReactMarker::APP_STARTUP_STOP);
-          }
-          if (auto strongBufferedRuntimeExecuter =
-                  weakBufferedRuntimeExecuter.lock()) {
-            strongBufferedRuntimeExecuter->flush();
-          }
-        } catch (jsi::JSError& error) {
-          jsErrorHandler_->handleFatalError(runtime, error);
+        if (hasLogger) {
+          ReactMarker::logTaggedMarkerBridgeless(
+              ReactMarker::RUN_JS_BUNDLE_STOP, scriptName.c_str());
+          ReactMarker::logMarkerBridgeless(
+              ReactMarker::INIT_REACT_RUNTIME_STOP);
+          ReactMarker::logMarkerBridgeless(ReactMarker::APP_STARTUP_STOP);
+        }
+        if (auto strongBufferedRuntimeExecuter =
+                weakBufferedRuntimeExecuter.lock()) {
+          strongBufferedRuntimeExecuter->flush();
         }
       });
 }
