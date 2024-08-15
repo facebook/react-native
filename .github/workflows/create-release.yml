@@ -26,6 +26,7 @@ jobs:
         with:
           token: ${{ secrets.REACT_NATIVE_BOT_GITHUB_TOKEN }}
           fetch-tags: 'true'
+          fetch-depth: 0
       - name: Check if on stable branch
         id: check_stable_branch
         run: |
