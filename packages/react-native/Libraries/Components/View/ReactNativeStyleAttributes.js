@@ -127,6 +127,11 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
    */
   experimental_mixBlendMode: true,
 
+  /**
+   * Isolation
+   */
+  isolation: true,
+
   /*
    * BoxShadow
    */
