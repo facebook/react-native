@@ -266,6 +266,12 @@ ShadowNode::Shared LayoutableShadowNode::findNodeAtPoint(
   auto transformedFrame = frame * transform;
   auto isPointInside = transformedFrame.containsPoint(point);
 
+  if (!isPointInside) {
+    return nullptr;
+  } else if (!layoutableShadowNode->canChildrenBeTouchTarget()) {
+    return node;
+  }
+
   if (Transform::isVerticalInversion(transform) ||
       Transform::isHorizontalInversion(transform)) {
     auto centerX =
@@ -285,11 +291,6 @@ ShadowNode::Shared LayoutableShadowNode::findNodeAtPoint(
 
     point.x = centerX + relativeX;
     point.y = centerY + relativeY;
-  }
-  if (!isPointInside) {
-    return nullptr;
-  } else if (!layoutableShadowNode->canChildrenBeTouchTarget()) {
-    return node;
   }
 
   auto newPoint = point - transformedFrame.origin -
