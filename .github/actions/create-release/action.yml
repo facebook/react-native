@@ -31,7 +31,7 @@ runs:
         GIT_PAGER=cat git show HEAD
     - name: Update "latest" tag if needed
       shell: bash
-      if: ${{ inputs.tag == 'latest' }}
+      if: ${{ inputs.is-latest-on-npm == 'true' }}
       run: |
         git tag -d "latest"
         git push origin :latest
