@@ -1,5 +1,18 @@
 # Changelog
 
+## v0.75.1
+
+### Changed
+
+- Bump Hermes version ([f202e80177](https://github.com/facebook/react-native/commit/f202e801776794ec30b2dc25fe87e52ec77c18ab) by [@cortinico](https://github.com/cortinico))
+
+### Removed
+
+#### Android specific
+
+- Gate off % border radii on Android Paper ([bbd5b5e157](https://github.com/facebook/react-native/commit/bbd5b5e1574499478ab0bf3fe9d2a21b02b7fedd) by [@NickGerleman](https://github.com/NickGerleman))
+- Gate off % translate on Android Paper ([0273123dde](https://github.com/facebook/react-native/commit/0273123dde04de72da4ebfeff26b0830eea00745) by [@NickGerleman](https://github.com/NickGerleman))
+
 ## v0.75.0
 
 ### Breaking
