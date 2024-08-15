@@ -36,6 +36,7 @@ class JsErrorHandler {
   bool hasHandledFatalError();
   void setRuntimeReady();
   bool isRuntimeReady();
+  void notifyOfFatalError();
 
  private:
   /**

@@ -143,4 +143,8 @@ bool JsErrorHandler::isRuntimeReady() {
   return _isRuntimeReady;
 }
 
+void JsErrorHandler::notifyOfFatalError() {
+  _hasHandledFatalError = true;
+}
+
 } // namespace facebook::react
