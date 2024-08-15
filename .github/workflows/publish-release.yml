@@ -696,6 +696,7 @@ jobs:
           path: build
       - name: Publish @react-native-community/template
         if: needs.set_release_type.outputs.RELEASE_TYPE == 'release'
+        shell: bash
         id: publish-to-npm
         run: |
           COMMIT_MSG=$(git log -n1 --pretty=%B);
@@ -706,7 +707,7 @@ jobs:
             IS_LATEST=false
           fi
           # Go from v0.75.0-rc.4 -> 0.75-stable, which is the template's branching scheme
-          VERSION=$(grep -oE '\d+\.\d+' <<< "${{ github.ref_name }}" | { read version; echo "$version-stable" })
+          VERSION=$(grep -oE '\d+\.\d+' <<< "${{ github.ref_name }}" | { read version; echo "$version-stable"; })
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
 
           curl -L -X POST https://api.github.com/repos/react-native-community/template/release.yaml/dispatches \
@@ -716,6 +717,7 @@ jobs:
       - name: Wait for template to be published
         if: needs.set_release_type.outputs.RELEASE_TYPE == 'release'
         timeout-minutes: 3
+        shell: bash
         env:
           VERSION: ${{ steps.publish-to-npm.outputs.VERSION }}
           TAG: ${{ steps.publish-to-npm.outputs.TAG }}
