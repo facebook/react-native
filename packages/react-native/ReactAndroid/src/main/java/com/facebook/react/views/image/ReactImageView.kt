@@ -161,7 +161,7 @@ public class ReactImageView(
                       total))
             }
 
-            override fun onSubmit(id: String, callerContext: Any) {
+            override fun onSubmit(id: String, callerContext: Any?) {
               if (eventDispatcher == null) {
                 return
               }
