@@ -228,6 +228,8 @@ const validAttributesForNonEventProps = {
   experimental_boxShadow: {
     process: require('../StyleSheet/processBoxShadow').default,
   },
+  experimental_mixBlendMode: true,
+  isolation: true,
 
   borderTopWidth: true,
   borderTopColor: {process: require('../StyleSheet/processColor').default},

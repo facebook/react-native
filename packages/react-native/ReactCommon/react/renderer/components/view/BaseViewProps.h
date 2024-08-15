@@ -18,6 +18,7 @@
 #include <react/renderer/graphics/BoxShadow.h>
 #include <react/renderer/graphics/Color.h>
 #include <react/renderer/graphics/Filter.h>
+#include <react/renderer/graphics/Isolation.h>
 #include <react/renderer/graphics/Transform.h>
 
 #include <optional>
@@ -68,7 +69,10 @@ class BaseViewProps : public YogaStylableProps, public AccessibilityProps {
   std::vector<GradientValue> backgroundImage{};
 
   // MixBlendMode
-  BlendMode mixBlendMode;
+  BlendMode mixBlendMode{BlendMode::Normal};
+
+  // Isolate
+  Isolation isolation{Isolation::Auto};
 
   // Transform
   Transform transform{};

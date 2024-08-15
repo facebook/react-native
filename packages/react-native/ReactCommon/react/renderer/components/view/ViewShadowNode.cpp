@@ -63,6 +63,7 @@ void ViewShadowNode::initialize() noexcept {
       viewProps.removeClippedSubviews || viewProps.cursor != Cursor::Auto ||
       !viewProps.filter.empty() ||
       viewProps.mixBlendMode != BlendMode::Normal ||
+      viewProps.isolation == Isolation::Isolate ||
       HostPlatformViewTraitsInitializer::formsStackingContext(viewProps);
 
   bool formsView = formsStackingContext ||

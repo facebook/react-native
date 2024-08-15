@@ -8408,6 +8408,7 @@ export type ____ViewStyle_InternalCore = $ReadOnly<{
   experimental_filter?: $ReadOnlyArray<FilterFunction> | string,
   experimental_mixBlendMode?: ____BlendMode_Internal,
   experimental_backgroundImage?: $ReadOnlyArray<GradientValue> | string,
+  isolation?: \\"auto\\" | \\"isolate\\",
 }>;
 export type ____ViewStyle_Internal = $ReadOnly<{
   ...____ViewStyle_InternalCore,

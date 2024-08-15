@@ -170,6 +170,7 @@ const validAttributesForNonEventProps = {
     process: require('../StyleSheet/processFilter').default,
   },
   experimental_mixBlendMode: true,
+  isolation: true,
   opacity: true,
   elevation: true,
   shadowColor: {process: require('../StyleSheet/processColor').default},
