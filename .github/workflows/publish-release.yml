@@ -710,10 +710,10 @@ jobs:
           VERSION=$(grep -oE '\d+\.\d+' <<< "${{ github.ref_name }}" | { read version; echo "$version-stable"; })
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
 
-          curl -L -X POST https://api.github.com/repos/react-native-community/template/release.yaml/dispatches \
+          curl -L https://api.github.com/repos/react-native-community/template/actions/workflows/release.yaml/dispatches
             -H "Accept: application/vnd.github.v3+json" \
             -H "Authorization: Bearer $REACT_NATIVE_BOT_GITHUB_TOKEN" \
-            -d "{\"ref\":\"$VERSION\",\"inputs\":{\"version\":\"${{ github.ref_name }}\",\"is_latest_on_npm\":\"$IS_LATEST\"}}\n"
+            -d "{\"ref\":\"$VERSION\",\"inputs\":{\"version\":\"${{ github.ref_name }}\",\"is_latest_on_npm\":\"$IS_LATEST\"}}"
       - name: Wait for template to be published
         if: needs.set_release_type.outputs.RELEASE_TYPE == 'release'
         timeout-minutes: 3
