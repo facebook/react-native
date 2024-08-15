@@ -471,8 +471,6 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
 - (NSString *)returnKeyTypeToString:(UIReturnKeyType)returnKeyType
 {
   switch (returnKeyType) {
-    case UIReturnKeyDefault:
-      return @"Default";
     case UIReturnKeyGo:
       return @"Go";
     case UIReturnKeyNext:
@@ -500,7 +498,6 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
 {
   returnKeyTypesSet = [NSSet setWithObjects:@(UIReturnKeyDone),
                                             @(UIReturnKeyGo),
-                                            @(UIReturnKeyDefault),
                                             @(UIReturnKeyNext),
                                             @(UIReturnKeySearch),
                                             @(UIReturnKeySend),
