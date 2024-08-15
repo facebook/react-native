@@ -3891,6 +3891,8 @@ exports[`public API should not change unintentionally Libraries/Components/View/
   accessibilityValue: true,
   accessibilityHint: true,
   accessibilityLanguage: true,
+  accessibilityShowsLargeContentViewer: true,
+  accessibilityLargeContentTitle: true,
   importantForAccessibility: true,
   nativeID: true,
   testID: true,
@@ -4177,6 +4179,8 @@ type AndroidViewProps = $ReadOnly<{|
 type IOSViewProps = $ReadOnly<{|
   accessibilityIgnoresInvertColors?: ?boolean,
   accessibilityViewIsModal?: ?boolean,
+  accessibilityShowsLargeContentViewer?: ?boolean,
+  accessibilityLargeContentTitle?: ?string,
   \\"aria-modal\\"?: ?boolean,
   accessibilityElementsHidden?: ?boolean,
   accessibilityLanguage?: ?Stringish,
