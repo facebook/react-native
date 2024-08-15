@@ -25,6 +25,7 @@ jobs:
         uses: actions/checkout@v4.1.1
         with:
           token: ${{ secrets.REACT_NATIVE_BOT_GITHUB_TOKEN }}
+          fetch-tags: 'true'
       - name: Check if on stable branch
         id: check_stable_branch
         run: |
