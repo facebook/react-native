@@ -47,6 +47,7 @@ Pod::Spec.new do |s|
 
   s.dependency folly_dep_name, folly_version
   s.dependency "React-jsi"
+  s.dependency "React-cxxreact"
   add_dependency(s, "React-debug")
 
 end
