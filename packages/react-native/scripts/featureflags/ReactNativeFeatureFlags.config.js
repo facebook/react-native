@@ -69,6 +69,10 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'Kill-switch to turn off support for aling-items:baseline on Fabric iOS.',
     },
+    enableAndroidMixBlendModeProp: {
+      defaultValue: false,
+      description: 'Enables mix-blend-mode prop on Android.',
+    },
     enableBackgroundStyleApplicator: {
       defaultValue: true,
       description:

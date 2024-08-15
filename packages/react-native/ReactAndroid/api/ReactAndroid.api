@@ -8221,6 +8221,7 @@ public class com/facebook/react/views/view/ReactViewGroup : android/view/ViewGro
 	public fun dispatchGenericMotionEvent (Landroid/view/MotionEvent;)Z
 	public fun dispatchProvideStructure (Landroid/view/ViewStructure;)V
 	protected fun dispatchSetPressed (Z)V
+	public fun draw (Landroid/graphics/Canvas;)V
 	protected fun drawChild (Landroid/graphics/Canvas;Landroid/view/View;J)Z
 	protected fun getChildDrawingOrder (II)I
 	public fun getChildVisibleRect (Landroid/view/View;Landroid/graphics/Rect;Landroid/graphics/Point;)Z

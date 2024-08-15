@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e58ecac6e67cd870b8ac077cbdfd7469>>
+ * @generated SignedSource<<50f259bf80948b672a8677307456d413>>
  */
 
 /**
@@ -27,6 +27,7 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
   private var completeReactInstanceCreationOnBgThreadOnAndroidCache: Boolean? = null
   private var destroyFabricSurfacesInReactInstanceManagerCache: Boolean? = null
   private var enableAlignItemsBaselineOnFabricIOSCache: Boolean? = null
+  private var enableAndroidMixBlendModePropCache: Boolean? = null
   private var enableBackgroundStyleApplicatorCache: Boolean? = null
   private var enableCleanTextInputYogaNodeCache: Boolean? = null
   private var enableEagerRootViewAttachmentCache: Boolean? = null
@@ -124,6 +125,15 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enableAlignItemsBaselineOnFabricIOS()
       enableAlignItemsBaselineOnFabricIOSCache = cached
+    }
+    return cached
+  }
+
+  override fun enableAndroidMixBlendModeProp(): Boolean {
+    var cached = enableAndroidMixBlendModePropCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.enableAndroidMixBlendModeProp()
+      enableAndroidMixBlendModePropCache = cached
     }
     return cached
   }

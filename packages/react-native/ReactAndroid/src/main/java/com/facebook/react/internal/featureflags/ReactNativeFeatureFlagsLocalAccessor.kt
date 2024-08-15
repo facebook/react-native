@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<408d66cdad8b708c06ca844cd6524ba4>>
+ * @generated SignedSource<<b460c7106715c0ea405dd6b284802d27>>
  */
 
 /**
@@ -31,6 +31,7 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var completeReactInstanceCreationOnBgThreadOnAndroidCache: Boolean? = null
   private var destroyFabricSurfacesInReactInstanceManagerCache: Boolean? = null
   private var enableAlignItemsBaselineOnFabricIOSCache: Boolean? = null
+  private var enableAndroidMixBlendModePropCache: Boolean? = null
   private var enableBackgroundStyleApplicatorCache: Boolean? = null
   private var enableCleanTextInputYogaNodeCache: Boolean? = null
   private var enableEagerRootViewAttachmentCache: Boolean? = null
@@ -135,6 +136,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.enableAlignItemsBaselineOnFabricIOS()
       accessedFeatureFlags.add("enableAlignItemsBaselineOnFabricIOS")
       enableAlignItemsBaselineOnFabricIOSCache = cached
+    }
+    return cached
+  }
+
+  override fun enableAndroidMixBlendModeProp(): Boolean {
+    var cached = enableAndroidMixBlendModePropCache
+    if (cached == null) {
+      cached = currentProvider.enableAndroidMixBlendModeProp()
+      accessedFeatureFlags.add("enableAndroidMixBlendModeProp")
+      enableAndroidMixBlendModePropCache = cached
     }
     return cached
   }

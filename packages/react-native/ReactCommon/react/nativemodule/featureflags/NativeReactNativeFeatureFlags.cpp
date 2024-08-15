@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<defc646c8f8a2f3ae91052f1c8ac7940>>
+ * @generated SignedSource<<64011b082abd3a72e5da2b933d5b4691>>
  */
 
 /**
@@ -70,6 +70,11 @@ bool NativeReactNativeFeatureFlags::destroyFabricSurfacesInReactInstanceManager(
 bool NativeReactNativeFeatureFlags::enableAlignItemsBaselineOnFabricIOS(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableAlignItemsBaselineOnFabricIOS();
+}
+
+bool NativeReactNativeFeatureFlags::enableAndroidMixBlendModeProp(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableAndroidMixBlendModeProp();
 }
 
 bool NativeReactNativeFeatureFlags::enableBackgroundStyleApplicator(
