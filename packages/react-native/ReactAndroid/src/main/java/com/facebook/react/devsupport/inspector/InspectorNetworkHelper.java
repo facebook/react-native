@@ -10,6 +10,7 @@ package com.facebook.react.devsupport.inspector;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Headers;
@@ -25,7 +26,12 @@ public class InspectorNetworkHelper {
 
   public static void loadNetworkResource(String url, InspectorNetworkRequestListener listener) {
     if (client == null) {
-      client = new OkHttpClient();
+      client =
+          new OkHttpClient.Builder()
+              .connectTimeout(10, TimeUnit.SECONDS)
+              .writeTimeout(10, TimeUnit.SECONDS)
+              .readTimeout(0, TimeUnit.MINUTES) // Disable timeouts for read
+              .build();
     }
 
     Request request;
