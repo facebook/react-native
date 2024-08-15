@@ -6,6 +6,8 @@
  *
  * @format
  */
+const allRules = require('./rules');
+const compat = require('@eslint/compat')
 const eslintComments = require('eslint-plugin-eslint-comments');
 const react = require('eslint-plugin-react');
 const reactHooks = require('eslint-plugin-react-hooks');
@@ -66,9 +68,6 @@ const globals = {
 };
 
 const rules = {
-  // Local Rules
-  'platform-colors': require('./platform-colors'),
-
   // General
   'comma-dangle': [1, 'always-multiline'], // allow or disallow trailing commas
   'no-cond-assign': 1, // disallow assignment in conditional expressions
@@ -268,6 +267,7 @@ const rules = {
 };
 
 const plugin = {
+  rules: allRules,
   configs: {
     legacy: {
       parserOptions: {
@@ -417,7 +417,7 @@ plugin.configs.flat = [
       'eslint-comments': eslintComments,
       react,
       'react-hooks': reactHooks,
-      'react-native': reactNative,
+      'react-native': compat.fixupPluginRules(reactNative),
       '@react-native': reactNativeCommunity,
       jest,
     },

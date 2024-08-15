@@ -10,7 +10,7 @@
 
 'use strict';
 
-const rule = require('../platform-colors.js');
+const rule = require('../rules/platform-colors.js');
 const ESLintTester = require('./eslint-tester.js');
 
 const eslintTester = new ESLintTester();
