@@ -18,6 +18,8 @@ import androidx.annotation.RequiresApi
 import com.facebook.common.logging.FLog
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
+import com.facebook.react.modules.i18nmanager.I18nUtil
 import com.facebook.react.uimanager.drawable.CSSBackgroundDrawable
 import com.facebook.react.uimanager.drawable.CompositeBackgroundDrawable
 import com.facebook.react.uimanager.drawable.InsetBoxShadowDrawable
@@ -201,6 +203,15 @@ public object BackgroundStyleApplicator {
     }
 
     val compositeDrawable = CompositeBackgroundDrawable(originalBackground = view.background)
+
+    // Propagate the global layout direction if it is not being correctly set on the view and its
+    // drawables
+    if (!ReactNativeFeatureFlags.setAndroidLayoutDirection()) {
+      compositeDrawable.layoutDirection =
+          if (I18nUtil.instance.isRTL(view.context)) View.LAYOUT_DIRECTION_RTL
+          else View.LAYOUT_DIRECTION_LTR
+    }
+
     view.background = compositeDrawable
     return compositeDrawable
   }
