@@ -11,7 +11,29 @@
 import type Blob from './Blob';
 
 import NativeBlobModule from './NativeBlobModule';
-
+import {match} from "hermes-transform/dist/traverse/esquery";
+import {tsThisType} from "@babel/types";
+function getDefaultPort(protocol) {
+  switch (protocol) {
+    case 'http':
+      return 80;
+    case 'https':
+      return 443;
+    case 'ftp':
+      return 21;
+    case 'smtp':
+      return 25;
+    case 'pop3':
+      return 110;
+    case 'imap':
+      return 143;
+    case 'mysql':
+      return 3306;
+    // Add more protocols and their default ports as needed
+    default:
+      return null; // Unknown protocol
+  }
+}
 let BLOB_URL_PREFIX = null;
 
 if (
@@ -81,7 +103,7 @@ export class URL {
     let baseUrl = null;
     if (!base || validateBaseUrl(url)) {
       this._url = url;
-      if (!this._url.endsWith('/')) {
+      if (!this._url.endsWith('/') && this.search==="") {
         this._url += '/';
       }
     } else {
@@ -107,15 +129,15 @@ export class URL {
   }
 
   get hash(): string {
-    throw new Error('URL.hash is not implemented');
+    return this.href.match(/#(.*)$/g)?this.href.match(/#(.*)$/g)[0]:""
   }
 
   get host(): string {
-    throw new Error('URL.host is not implemented');
+    return this.hostname+(this.port!==""?(":"+this.port):"")
   }
 
   get hostname(): string {
-    throw new Error('URL.hostname is not implemented');
+    return this.href.match(/^[a-zA-Z][a-zA-Z\d+\-.]*:\/\/(?:[^@]*@)?([^\/:]+)/)?this.href.match(/^[a-zA-Z][a-zA-Z\d+\-.]*:\/\/(?:[^@]*@)?([^\/:]+)/)[1]:""
   }
 
   get href(): string {
@@ -123,27 +145,32 @@ export class URL {
   }
 
   get origin(): string {
-    throw new Error('URL.origin is not implemented');
+    return this.protocol+"://"+this.host
+
   }
 
   get password(): string {
-    throw new Error('URL.password is not implemented');
+    return  this.href.match( /^[a-zA-Z][a-zA-Z\d+\-.]*:\/\/[^:]+:([^@]+)@/)?this.href.match( /^[a-zA-Z][a-zA-Z\d+\-.]*:\/\/[^:]+:([^@]+)@/)[1]:"";
   }
 
   get pathname(): string {
-    throw new Error('URL.pathname not implemented');
+    return this.href.match(/^[a-zA-Z][a-zA-Z\d+\-.]*:\/\/[^\/]+(\/[^?#]*)/)?this.href.match(/^[a-zA-Z][a-zA-Z\d+\-.]*:\/\/[^\/]+(\/[^?#]*)/)[1]:""
   }
 
   get port(): string {
-    throw new Error('URL.port is not implemented');
+    let match = this.href.match(/:[0-9]+/g)
+    if (match===null || parseInt(match[0].slice(1))===getDefaultPort(this.protocol)){
+          return ""
+    }
+    return match[0].slice(1)
   }
 
   get protocol(): string {
-    throw new Error('URL.protocol is not implemented');
+    return this.href.match(/^([a-z]+):/g)?this.href.match(/^([a-z]+):/g)[0].slice(0,-1):""
   }
 
   get search(): string {
-    throw new Error('URL.search is not implemented');
+    return  this.href.match(/\?(.)+$/g)?this.href.match(/\?(.)+$/g)[0]:"";
   }
 
   get searchParams(): URLSearchParams {
@@ -168,6 +195,6 @@ export class URL {
   }
 
   get username(): string {
-    throw new Error('URL.username is not implemented');
+    return this.href.match(/^[a-zA-Z][a-zA-Z\d+\-.]*:\/\/([^:]+)@/)?this.href.match(/^[a-zA-Z][a-zA-Z\d+\-.]*:\/\/([^:]+)@/)[1]:"";
   }
 }
