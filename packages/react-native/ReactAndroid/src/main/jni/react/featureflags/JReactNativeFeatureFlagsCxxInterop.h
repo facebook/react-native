@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d53535b04b78e24612042ba9b39f26a8>>
+ * @generated SignedSource<<8862dfc0107d61550ec61078928350b6>>
  */
 
 /**
@@ -49,6 +49,9 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool enableAlignItemsBaselineOnFabricIOS(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
+  static bool enableAndroidMixBlendModeProp(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool enableBackgroundStyleApplicator(

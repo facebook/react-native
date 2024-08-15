@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b95d717c37ef81f310016fdcdd0938e9>>
+ * @generated SignedSource<<bd279ee43c537a9de0a38a2801dd76e0>>
  */
 
 /**
@@ -38,6 +38,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool completeReactInstanceCreationOnBgThreadOnAndroid();
   bool destroyFabricSurfacesInReactInstanceManager();
   bool enableAlignItemsBaselineOnFabricIOS();
+  bool enableAndroidMixBlendModeProp();
   bool enableBackgroundStyleApplicator();
   bool enableCleanTextInputYogaNode();
   bool enableEagerRootViewAttachment();
@@ -85,7 +86,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 44> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 45> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> allowRecursiveCommitsWithSynchronousMountOnAndroid_;
@@ -94,6 +95,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> completeReactInstanceCreationOnBgThreadOnAndroid_;
   std::atomic<std::optional<bool>> destroyFabricSurfacesInReactInstanceManager_;
   std::atomic<std::optional<bool>> enableAlignItemsBaselineOnFabricIOS_;
+  std::atomic<std::optional<bool>> enableAndroidMixBlendModeProp_;
   std::atomic<std::optional<bool>> enableBackgroundStyleApplicator_;
   std::atomic<std::optional<bool>> enableCleanTextInputYogaNode_;
   std::atomic<std::optional<bool>> enableEagerRootViewAttachment_;

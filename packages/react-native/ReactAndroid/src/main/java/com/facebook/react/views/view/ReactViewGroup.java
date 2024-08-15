@@ -12,13 +12,16 @@ import static com.facebook.react.common.ReactConstants.TAG;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.graphics.BlendMode;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
+import android.os.Build;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +30,7 @@ import android.view.animation.Animation;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.R;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
@@ -819,6 +823,20 @@ public class ReactViewGroup extends ViewGroup
     }
   }
 
+  private boolean needsIsolatedLayer() {
+    if (!ReactNativeFeatureFlags.enableAndroidMixBlendModeProp()) {
+      return false;
+    }
+
+    for (int i = 0; i < getChildCount(); i++) {
+      if (getChildAt(i).getTag(R.id.mix_blend_mode) != null) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   @VisibleForTesting
   public int getBackgroundColor() {
     if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
@@ -892,6 +910,13 @@ public class ReactViewGroup extends ViewGroup
 
   @Override
   public void setOverflowInset(int left, int top, int right, int bottom) {
+    if (needsIsolatedLayer()
+        && (mOverflowInset.left != left
+            || mOverflowInset.top != top
+            || mOverflowInset.right != right
+            || mOverflowInset.bottom != bottom)) {
+      invalidate();
+    }
     mOverflowInset.set(left, top, right, bottom);
   }
 
@@ -909,6 +934,29 @@ public class ReactViewGroup extends ViewGroup
    */
   /* package */ void updateBackgroundDrawable(@Nullable Drawable drawable) {
     super.setBackground(drawable);
+  }
+
+  @Override
+  public void draw(Canvas canvas) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+        && ViewUtil.getUIManagerType(this) == UIManagerType.FABRIC
+        && needsIsolatedLayer()) {
+
+      // Check if the view is a stacking context and has children, if it does, do the rendering
+      // offscreen and then composite back. This follows the idea of group isolation on blending
+      // https://www.w3.org/TR/compositing-1/#isolationblending
+      Rect overflowInset = getOverflowInset();
+      canvas.saveLayer(
+          overflowInset.left,
+          overflowInset.top,
+          getWidth() + -overflowInset.right,
+          getHeight() + -overflowInset.bottom,
+          null);
+      super.draw(canvas);
+      canvas.restore();
+    } else {
+      super.draw(canvas);
+    }
   }
 
   @Override
@@ -950,7 +998,27 @@ public class ReactViewGroup extends ViewGroup
       CanvasUtil.enableZ(canvas, true);
     }
 
+    BlendMode mixBlendMode = null;
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && needsIsolatedLayer()) {
+      mixBlendMode = (BlendMode) child.getTag(R.id.mix_blend_mode);
+      if (mixBlendMode != null) {
+        Paint p = new Paint();
+        p.setBlendMode(mixBlendMode);
+        Rect overflowInset = getOverflowInset();
+        canvas.saveLayer(
+            overflowInset.left,
+            overflowInset.top,
+            getWidth() + -overflowInset.right,
+            getHeight() + -overflowInset.bottom,
+            p);
+      }
+    }
+
     boolean result = super.drawChild(canvas, child, drawingTime);
+
+    if (mixBlendMode != null) {
+      canvas.restore();
+    }
 
     if (drawWithZ) {
       CanvasUtil.enableZ(canvas, false);

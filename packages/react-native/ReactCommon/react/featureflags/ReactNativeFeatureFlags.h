@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<45ae072fb6a0b1ec404b3dc8adc13186>>
+ * @generated SignedSource<<0f3eb0af6d8f2012fc5169d59d38cbc4>>
  */
 
 /**
@@ -71,6 +71,11 @@ class ReactNativeFeatureFlags {
    * Kill-switch to turn off support for aling-items:baseline on Fabric iOS.
    */
   RN_EXPORT static bool enableAlignItemsBaselineOnFabricIOS();
+
+  /**
+   * Enables mix-blend-mode prop on Android.
+   */
+  RN_EXPORT static bool enableAndroidMixBlendModeProp();
 
   /**
    * Use BackgroundStyleApplicator in place of other background/border drawing code

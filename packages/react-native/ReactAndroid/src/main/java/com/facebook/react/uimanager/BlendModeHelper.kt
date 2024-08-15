@@ -9,6 +9,7 @@ package com.facebook.react.uimanager
 
 import android.annotation.TargetApi
 import android.graphics.BlendMode
+import android.os.Build
 
 @TargetApi(29)
 internal object BlendModeHelper {
@@ -16,7 +17,9 @@ internal object BlendModeHelper {
   /** @see https://www.w3.org/TR/compositing-1/#mix-blend-mode */
   @JvmStatic
   public fun parseMixBlendMode(mixBlendMode: String?): BlendMode? {
-    mixBlendMode ?: return null
+    if (mixBlendMode == null || Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+      return null
+    }
 
     return when (mixBlendMode) {
       "normal" -> null

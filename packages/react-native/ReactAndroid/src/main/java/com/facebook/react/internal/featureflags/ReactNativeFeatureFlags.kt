@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<275859c437f60e7733da2b238c911152>>
+ * @generated SignedSource<<b352d8e6c8dd42936ee48024320f6b77>>
  */
 
 /**
@@ -69,6 +69,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableAlignItemsBaselineOnFabricIOS(): Boolean = accessor.enableAlignItemsBaselineOnFabricIOS()
+
+  /**
+   * Enables mix-blend-mode prop on Android.
+   */
+  @JvmStatic
+  public fun enableAndroidMixBlendModeProp(): Boolean = accessor.enableAndroidMixBlendModeProp()
 
   /**
    * Use BackgroundStyleApplicator in place of other background/border drawing code

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d9fe713f8bbf188b2f47e7798b939351>>
+ * @generated SignedSource<<5847fa577b3396b35e3bd363a5618978>>
  */
 
 /**
@@ -78,6 +78,12 @@ class ReactNativeFeatureFlagsProviderHolder
   bool enableAlignItemsBaselineOnFabricIOS() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableAlignItemsBaselineOnFabricIOS");
+    return method(javaProvider_);
+  }
+
+  bool enableAndroidMixBlendModeProp() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableAndroidMixBlendModeProp");
     return method(javaProvider_);
   }
 
@@ -342,6 +348,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableAlignItemsBaselineOnFabricIOS(
   return ReactNativeFeatureFlags::enableAlignItemsBaselineOnFabricIOS();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::enableAndroidMixBlendModeProp(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableAndroidMixBlendModeProp();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::enableBackgroundStyleApplicator(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableBackgroundStyleApplicator();
@@ -565,6 +576,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableAlignItemsBaselineOnFabricIOS",
         JReactNativeFeatureFlagsCxxInterop::enableAlignItemsBaselineOnFabricIOS),
+      makeNativeMethod(
+        "enableAndroidMixBlendModeProp",
+        JReactNativeFeatureFlagsCxxInterop::enableAndroidMixBlendModeProp),
       makeNativeMethod(
         "enableBackgroundStyleApplicator",
         JReactNativeFeatureFlagsCxxInterop::enableBackgroundStyleApplicator),
