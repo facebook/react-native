@@ -141,16 +141,19 @@ internal class InsetBoxShadowDrawable(
     val computedBorderRadii = background.computedBorderRadius
     val borderWidth = background.getDirectionAwareBorderInsets()
 
-    val topLeftRadius = PixelUtil.toPixelFromDIP(computedBorderRadii.topLeft)
-    val topRightRadius = PixelUtil.toPixelFromDIP(computedBorderRadii.topRight)
-    val bottomLeftRadius = PixelUtil.toPixelFromDIP(computedBorderRadii.bottomLeft)
-    val bottomRightRadius = PixelUtil.toPixelFromDIP(computedBorderRadii.bottomRight)
+    val topLeftRadius = computedBorderRadii.topLeft.toPixelFromDIP()
+    val topRightRadius = computedBorderRadii.topRight.toPixelFromDIP()
+    val bottomLeftRadius = computedBorderRadii.bottomLeft.toPixelFromDIP()
+    val bottomRightRadius = computedBorderRadii.bottomRight.toPixelFromDIP()
 
-    val innerTopLeftRadius = background.getInnerBorderRadius(topLeftRadius, borderWidth.left)
-    val innerTopRightRadius = background.getInnerBorderRadius(topRightRadius, borderWidth.right)
+    val innerTopLeftRadius =
+        background.getInnerBorderRadius(topLeftRadius.horizontal, borderWidth.left)
+    val innerTopRightRadius =
+        background.getInnerBorderRadius(topRightRadius.horizontal, borderWidth.right)
     val innerBottomRightRadius =
-        background.getInnerBorderRadius(bottomRightRadius, borderWidth.right)
-    val innerBottomLeftRadius = background.getInnerBorderRadius(bottomLeftRadius, borderWidth.left)
+        background.getInnerBorderRadius(bottomRightRadius.horizontal, borderWidth.right)
+    val innerBottomLeftRadius =
+        background.getInnerBorderRadius(bottomLeftRadius.horizontal, borderWidth.left)
 
     val spreadWithDirection = -spread.toFloat()
     return BorderRadiusStyle(

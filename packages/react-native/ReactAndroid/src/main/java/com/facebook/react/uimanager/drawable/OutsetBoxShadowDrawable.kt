@@ -23,6 +23,7 @@ import com.facebook.react.uimanager.FilterHelper
 import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.style.BorderRadiusStyle
 import com.facebook.react.uimanager.style.ComputedBorderRadius
+import com.facebook.react.uimanager.style.CornerRadii
 import kotlin.math.roundToInt
 
 private const val TAG = "OutsetBoxShadowDrawable"
@@ -96,19 +97,44 @@ internal class OutsetBoxShadowDrawable(
     val computedBorderRadii =
         borderRadius?.resolve(layoutDirection, context, resolutionWidth, resolutionHeight)?.let {
           ComputedBorderRadius(
-              topLeft = PixelUtil.toPixelFromDIP(it.topLeft),
-              topRight = PixelUtil.toPixelFromDIP(it.topRight),
-              bottomLeft = PixelUtil.toPixelFromDIP(it.bottomLeft),
-              bottomRight = PixelUtil.toPixelFromDIP(it.bottomRight))
+              topLeft =
+                  CornerRadii(
+                      PixelUtil.toPixelFromDIP(it.topLeft.horizontal),
+                      PixelUtil.toPixelFromDIP(it.topLeft.vertical)),
+              topRight =
+                  CornerRadii(
+                      PixelUtil.toPixelFromDIP(it.topRight.horizontal),
+                      PixelUtil.toPixelFromDIP(it.topRight.vertical)),
+              bottomLeft =
+                  CornerRadii(
+                      PixelUtil.toPixelFromDIP(it.bottomLeft.horizontal),
+                      PixelUtil.toPixelFromDIP(it.bottomRight.vertical)),
+              bottomRight =
+                  CornerRadii(
+                      PixelUtil.toPixelFromDIP(it.bottomRight.horizontal),
+                      PixelUtil.toPixelFromDIP(it.bottomRight.vertical)),
+          )
         }
 
     val shadowBorderRadii =
         computedBorderRadii?.let { radii ->
           ComputedBorderRadius(
-              topLeft = adjustRadiusForSpread(radii.topLeft, spreadExtent.toFloat()),
-              topRight = adjustRadiusForSpread(radii.topRight, spreadExtent.toFloat()),
-              bottomRight = adjustRadiusForSpread(radii.bottomRight, spreadExtent.toFloat()),
-              bottomLeft = adjustRadiusForSpread(radii.bottomLeft, spreadExtent.toFloat()),
+              topLeft =
+                  CornerRadii(
+                      adjustRadiusForSpread(radii.topLeft.horizontal, spreadExtent.toFloat()),
+                      adjustRadiusForSpread(radii.topLeft.vertical, spreadExtent.toFloat())),
+              topRight =
+                  CornerRadii(
+                      adjustRadiusForSpread(radii.topRight.horizontal, spreadExtent.toFloat()),
+                      adjustRadiusForSpread(radii.topRight.vertical, spreadExtent.toFloat())),
+              bottomRight =
+                  CornerRadii(
+                      adjustRadiusForSpread(radii.bottomRight.horizontal, spreadExtent.toFloat()),
+                      adjustRadiusForSpread(radii.bottomRight.vertical, spreadExtent.toFloat())),
+              bottomLeft =
+                  CornerRadii(
+                      adjustRadiusForSpread(radii.bottomLeft.horizontal, spreadExtent.toFloat()),
+                      adjustRadiusForSpread(radii.bottomLeft.vertical, spreadExtent.toFloat())),
           )
         }
 
@@ -117,7 +143,6 @@ internal class OutsetBoxShadowDrawable(
         lastBorderRadius != shadowBorderRadii) {
       lastBounds = shadowShapeBounds
       lastBorderRadius = shadowBorderRadii
-
       // We remove the portion of the shadow which overlaps the background border box, to avoid
       // showing the shadow shape e.g. behind a transparent background. There may be a subpixel gap
       // between the border box path, and the edge of border rendering, so we slightly inflate the
@@ -130,28 +155,28 @@ internal class OutsetBoxShadowDrawable(
         shadowClipOutPath.addRoundRect(
             subpixelInsetBounds,
             floatArrayOf(
-                computedBorderRadii.topLeft,
-                computedBorderRadii.topLeft,
-                computedBorderRadii.topRight,
-                computedBorderRadii.topRight,
-                computedBorderRadii.bottomRight,
-                computedBorderRadii.bottomRight,
-                computedBorderRadii.bottomLeft,
-                computedBorderRadii.bottomLeft),
+                computedBorderRadii.topLeft.horizontal,
+                computedBorderRadii.topLeft.vertical,
+                computedBorderRadii.topRight.horizontal,
+                computedBorderRadii.topRight.vertical,
+                computedBorderRadii.bottomRight.horizontal,
+                computedBorderRadii.bottomRight.vertical,
+                computedBorderRadii.bottomLeft.horizontal,
+                computedBorderRadii.bottomLeft.vertical),
             Path.Direction.CW)
 
         shadowOuterPath.rewind()
         shadowOuterPath.addRoundRect(
             RectF(shadowShapeBounds),
             floatArrayOf(
-                shadowBorderRadii.topLeft,
-                shadowBorderRadii.topLeft,
-                shadowBorderRadii.topRight,
-                shadowBorderRadii.topRight,
-                shadowBorderRadii.bottomRight,
-                shadowBorderRadii.bottomRight,
-                shadowBorderRadii.bottomLeft,
-                shadowBorderRadii.bottomLeft),
+                shadowBorderRadii.topLeft.horizontal,
+                shadowBorderRadii.topLeft.vertical,
+                shadowBorderRadii.topRight.horizontal,
+                shadowBorderRadii.topRight.vertical,
+                shadowBorderRadii.bottomRight.horizontal,
+                shadowBorderRadii.bottomRight.vertical,
+                shadowBorderRadii.bottomLeft.horizontal,
+                shadowBorderRadii.bottomLeft.vertical),
             Path.Direction.CW)
       }
 

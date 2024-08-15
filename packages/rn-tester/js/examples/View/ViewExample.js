@@ -733,6 +733,25 @@ export default ({
                 borderBottomRightRadius: '40%',
               }}
             />
+            <View
+              style={{
+                width: 100,
+                height: 50,
+                borderWidth: 6,
+                borderRadius: '100%',
+              }}
+            />
+            <View
+              style={{
+                width: 100,
+                height: 50,
+                borderWidth: 6,
+                borderTopLeftRadius: '10%',
+                borderTopRightRadius: '20%',
+                borderBottomRightRadius: '50%',
+                borderBottomLeftRadius: '100%',
+              }}
+            />
           </View>
         );
       },

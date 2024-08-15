@@ -42,6 +42,7 @@ import com.facebook.react.uimanager.style.BorderRadiusProp;
 import com.facebook.react.uimanager.style.BorderRadiusStyle;
 import com.facebook.react.uimanager.style.BorderStyle;
 import com.facebook.react.uimanager.style.ComputedBorderRadius;
+import com.facebook.react.uimanager.style.CornerRadii;
 import com.facebook.react.uimanager.style.Gradient;
 import java.util.Locale;
 import java.util.Objects;
@@ -666,21 +667,27 @@ public class CSSBackgroundDrawable extends Drawable {
             mContext,
             PixelUtil.toDIPFromPixel(mOuterClipTempRectForBorderRadius.width()),
             PixelUtil.toDIPFromPixel(mOuterClipTempRectForBorderRadius.height()));
-    float topLeftRadius = PixelUtil.toPixelFromDIP(mComputedBorderRadius.getTopLeft());
-    float topRightRadius = PixelUtil.toPixelFromDIP(mComputedBorderRadius.getTopRight());
-    float bottomLeftRadius = PixelUtil.toPixelFromDIP(mComputedBorderRadius.getBottomLeft());
-    float bottomRightRadius = PixelUtil.toPixelFromDIP(mComputedBorderRadius.getBottomRight());
+    CornerRadii topLeftRadius = mComputedBorderRadius.getTopLeft().toPixelFromDIP();
+    CornerRadii topRightRadius = mComputedBorderRadius.getTopRight().toPixelFromDIP();
+    CornerRadii bottomLeftRadius = mComputedBorderRadius.getBottomLeft().toPixelFromDIP();
+    CornerRadii bottomRightRadius = mComputedBorderRadius.getBottomRight().toPixelFromDIP();
 
-    final float innerTopLeftRadiusX = getInnerBorderRadius(topLeftRadius, borderWidth.left);
-    final float innerTopLeftRadiusY = getInnerBorderRadius(topLeftRadius, borderWidth.top);
-    final float innerTopRightRadiusX = getInnerBorderRadius(topRightRadius, borderWidth.right);
-    final float innerTopRightRadiusY = getInnerBorderRadius(topRightRadius, borderWidth.top);
+    final float innerTopLeftRadiusX =
+        getInnerBorderRadius(topLeftRadius.getHorizontal(), borderWidth.left);
+    final float innerTopLeftRadiusY =
+        getInnerBorderRadius(topLeftRadius.getVertical(), borderWidth.top);
+    final float innerTopRightRadiusX =
+        getInnerBorderRadius(topRightRadius.getHorizontal(), borderWidth.right);
+    final float innerTopRightRadiusY =
+        getInnerBorderRadius(topRightRadius.getVertical(), borderWidth.top);
     final float innerBottomRightRadiusX =
-        getInnerBorderRadius(bottomRightRadius, borderWidth.right);
+        getInnerBorderRadius(bottomRightRadius.getHorizontal(), borderWidth.right);
     final float innerBottomRightRadiusY =
-        getInnerBorderRadius(bottomRightRadius, borderWidth.bottom);
-    final float innerBottomLeftRadiusX = getInnerBorderRadius(bottomLeftRadius, borderWidth.left);
-    final float innerBottomLeftRadiusY = getInnerBorderRadius(bottomLeftRadius, borderWidth.bottom);
+        getInnerBorderRadius(bottomRightRadius.getVertical(), borderWidth.bottom);
+    final float innerBottomLeftRadiusX =
+        getInnerBorderRadius(bottomLeftRadius.getHorizontal(), borderWidth.left);
+    final float innerBottomLeftRadiusY =
+        getInnerBorderRadius(bottomLeftRadius.getVertical(), borderWidth.bottom);
 
     mInnerClipPathForBorderRadius.addRoundRect(
         mInnerClipTempRectForBorderRadius,
@@ -720,14 +727,14 @@ public class CSSBackgroundDrawable extends Drawable {
     mOuterClipPathForBorderRadius.addRoundRect(
         mOuterClipTempRectForBorderRadius,
         new float[] {
-          topLeftRadius,
-          topLeftRadius,
-          topRightRadius,
-          topRightRadius,
-          bottomRightRadius,
-          bottomRightRadius,
-          bottomLeftRadius,
-          bottomLeftRadius
+          topLeftRadius.getHorizontal(),
+          topLeftRadius.getVertical(),
+          topRightRadius.getHorizontal(),
+          topRightRadius.getVertical(),
+          bottomRightRadius.getHorizontal(),
+          bottomRightRadius.getVertical(),
+          bottomLeftRadius.getHorizontal(),
+          bottomLeftRadius.getVertical()
         },
         Path.Direction.CW);
 
@@ -740,14 +747,14 @@ public class CSSBackgroundDrawable extends Drawable {
     mPathForBorderRadiusOutline.addRoundRect(
         mTempRectForBorderRadiusOutline,
         new float[] {
-          topLeftRadius + extraRadiusForOutline,
-          topLeftRadius + extraRadiusForOutline,
-          topRightRadius + extraRadiusForOutline,
-          topRightRadius + extraRadiusForOutline,
-          bottomRightRadius + extraRadiusForOutline,
-          bottomRightRadius + extraRadiusForOutline,
-          bottomLeftRadius + extraRadiusForOutline,
-          bottomLeftRadius + extraRadiusForOutline
+          topLeftRadius.getHorizontal() + extraRadiusForOutline,
+          topLeftRadius.getVertical() + extraRadiusForOutline,
+          topRightRadius.getHorizontal() + extraRadiusForOutline,
+          topRightRadius.getVertical() + extraRadiusForOutline,
+          bottomRightRadius.getHorizontal() + extraRadiusForOutline,
+          bottomRightRadius.getVertical() + extraRadiusForOutline,
+          bottomLeftRadius.getHorizontal() + extraRadiusForOutline,
+          bottomLeftRadius.getVertical() + extraRadiusForOutline
         },
         Path.Direction.CW);
 
@@ -755,29 +762,41 @@ public class CSSBackgroundDrawable extends Drawable {
         mTempRectForCenterDrawPath,
         new float[] {
           Math.max(
-              topLeftRadius - borderWidth.left * 0.5f,
-              (borderWidth.left > 0.0f) ? (topLeftRadius / borderWidth.left) : 0.0f),
+              topLeftRadius.getHorizontal() - borderWidth.left * 0.5f,
+              (borderWidth.left > 0.0f)
+                  ? (topLeftRadius.getHorizontal() / borderWidth.left)
+                  : 0.0f),
           Math.max(
-              topLeftRadius - borderWidth.top * 0.5f,
-              (borderWidth.top > 0.0f) ? (topLeftRadius / borderWidth.top) : 0.0f),
+              topLeftRadius.getVertical() - borderWidth.top * 0.5f,
+              (borderWidth.top > 0.0f) ? (topLeftRadius.getVertical() / borderWidth.top) : 0.0f),
           Math.max(
-              topRightRadius - borderWidth.right * 0.5f,
-              (borderWidth.right > 0.0f) ? (topRightRadius / borderWidth.right) : 0.0f),
+              topRightRadius.getHorizontal() - borderWidth.right * 0.5f,
+              (borderWidth.right > 0.0f)
+                  ? (topRightRadius.getHorizontal() / borderWidth.right)
+                  : 0.0f),
           Math.max(
-              topRightRadius - borderWidth.top * 0.5f,
-              (borderWidth.top > 0.0f) ? (topRightRadius / borderWidth.top) : 0.0f),
+              topRightRadius.getVertical() - borderWidth.top * 0.5f,
+              (borderWidth.top > 0.0f) ? (topRightRadius.getVertical() / borderWidth.top) : 0.0f),
           Math.max(
-              bottomRightRadius - borderWidth.right * 0.5f,
-              (borderWidth.right > 0.0f) ? (bottomRightRadius / borderWidth.right) : 0.0f),
+              bottomRightRadius.getHorizontal() - borderWidth.right * 0.5f,
+              (borderWidth.right > 0.0f)
+                  ? (bottomRightRadius.getHorizontal() / borderWidth.right)
+                  : 0.0f),
           Math.max(
-              bottomRightRadius - borderWidth.bottom * 0.5f,
-              (borderWidth.bottom > 0.0f) ? (bottomRightRadius / borderWidth.bottom) : 0.0f),
+              bottomRightRadius.getVertical() - borderWidth.bottom * 0.5f,
+              (borderWidth.bottom > 0.0f)
+                  ? (bottomRightRadius.getVertical() / borderWidth.bottom)
+                  : 0.0f),
           Math.max(
-              bottomLeftRadius - borderWidth.left * 0.5f,
-              (borderWidth.left > 0.0f) ? (bottomLeftRadius / borderWidth.left) : 0.0f),
+              bottomLeftRadius.getHorizontal() - borderWidth.left * 0.5f,
+              (borderWidth.left > 0.0f)
+                  ? (bottomLeftRadius.getHorizontal() / borderWidth.left)
+                  : 0.0f),
           Math.max(
-              bottomLeftRadius - borderWidth.bottom * 0.5f,
-              (borderWidth.bottom > 0.0f) ? (bottomLeftRadius / borderWidth.bottom) : 0.0f)
+              bottomLeftRadius.getVertical() - borderWidth.bottom * 0.5f,
+              (borderWidth.bottom > 0.0f)
+                  ? (bottomLeftRadius.getVertical() / borderWidth.bottom)
+                  : 0.0f)
         },
         Path.Direction.CW);
 
