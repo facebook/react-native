@@ -7912,7 +7912,7 @@ export type ReactNativeType = {
     eventType: string
   ): void,
   render(
-    element: Element<ElementType>,
+    element: MixedElement,
     containerTag: number,
     callback: ?() => void,
     options: ?RenderRootOptions
@@ -7945,7 +7945,7 @@ export type ReactFabricType = {
     eventType: string
   ): void,
   render(
-    element: Element<ElementType>,
+    element: MixedElement,
     containerTag: number,
     callback: ?() => void,
     concurrentRoot: ?boolean,
