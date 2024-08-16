@@ -15,16 +15,18 @@ on:
       dry-run:
         description: "Whether the job should be executed in dry-run mode or not"
         type: boolean
-        default: false
+        default: true
 
 jobs:
   create_release:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4
         with:
           token: ${{ secrets.REACT_NATIVE_BOT_GITHUB_TOKEN }}
+          fetch-depth: 0
+          fetch-tags: 'true'
       - name: Check if on stable branch
         id: check_stable_branch
         run: |

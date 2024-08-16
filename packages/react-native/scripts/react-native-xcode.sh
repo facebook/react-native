@@ -90,7 +90,7 @@ fi
 
 [ -z "$NODE_ARGS" ] && export NODE_ARGS=""
 
-[ -z "$BUNDLE_COMMAND" ] && BUNDLE_COMMAND="bundle"
+[ -z "$CLI_PATH" ] && CLI_PATH="$REACT_NATIVE_DIR/scripts/bundle.js"
 
 [ -z "$COMPOSE_SOURCEMAP_PATH" ] && COMPOSE_SOURCEMAP_PATH="$REACT_NATIVE_DIR/scripts/compose-source-maps.js"
 
@@ -147,7 +147,7 @@ else
 fi
 
 # shellcheck disable=SC2086
-"$NODE_BINARY" $NODE_ARGS "$REACT_NATIVE_DIR/scripts/bundle.js" \
+"$NODE_BINARY" $NODE_ARGS "$CLI_PATH" $BUNDLE_COMMAND \
   $CONFIG_ARG \
   --config-cmd "$CONFIG" \
   --entry-file "$ENTRY_FILE" \

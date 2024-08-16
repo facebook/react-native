@@ -448,7 +448,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
         _maxLength.integerValue - (NSInteger)backedTextInputView.attributedText.string.length + (NSInteger)range.length,
         0);
 
-    if (text.length > allowedLength) {
+    if (text.length > _maxLength.integerValue) {
       // If we typed/pasted more than one character, limit the text inputted.
       if (text.length > 1) {
         if (allowedLength > 0) {
@@ -458,6 +458,9 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
             // the character at the length limit takes more than 16bits, truncation should end at the character before
             allowedLength = cutOffCharacterRange.location;
           }
+        }
+        if (allowedLength <= 0) {
+          return nil;
         }
         // Truncate the input string so the result is exactly maxLength
         NSString *limitedString = [text substringToIndex:allowedLength];
@@ -651,8 +654,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
 - (NSString *)returnKeyTypeToString:(UIReturnKeyType)returnKeyType
 {
   switch (returnKeyType) {
-    case UIReturnKeyDefault:
-      return @"Default";
     case UIReturnKeyGo:
       return @"Go";
     case UIReturnKeyNext:
@@ -680,7 +681,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
 {
   returnKeyTypesSet = [NSSet setWithObjects:@(UIReturnKeyDone),
                                             @(UIReturnKeyGo),
-                                            @(UIReturnKeyDefault),
                                             @(UIReturnKeyNext),
                                             @(UIReturnKeySearch),
                                             @(UIReturnKeySend),

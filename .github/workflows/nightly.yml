@@ -1,11 +1,10 @@
 name: Nightly
 
 on:
-    workflow_dispatch:
-    # nightly build @ 2:15 AM UTC
-    schedule:
-     - cron: '15 2 * * *'
-
+  workflow_dispatch:
+  # nightly build @ 2:15 AM UTC
+  schedule:
+    - cron: "15 2 * * *"
 
 jobs:
   set_release_type:
@@ -32,14 +31,13 @@ jobs:
       hermes-version: ${{ steps.prepare-hermes-workspace.outputs.hermes-version }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4
       - name: Prepare Hermes Workspace
         id: prepare-hermes-workspace
         uses: ./.github/actions/prepare-hermes-workspace
         with:
           hermes-ws-dir: ${{ env.HERMES_WS_DIR }}
           hermes-version-file: ${{ env.HERMES_VERSION_FILE }}
-          build-from-source: ${{ env.BUILD_FROM_SOURCE }}
 
   build_hermesc_apple:
     runs-on: macos-13
@@ -48,7 +46,7 @@ jobs:
       HERMES_WS_DIR: /tmp/hermes
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4
       - name: Build HermesC Apple
         uses: ./.github/actions/build-hermesc-apple
         with:
@@ -72,7 +70,7 @@ jobs:
         slice: [macosx, iphoneos, iphonesimulator, catalyst, xros, xrsimulator]
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4
       - name: Build Slice
         uses: ./.github/actions/build-apple-slices-hermes
         with:
@@ -94,7 +92,7 @@ jobs:
         flavor: [Debug, Release]
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4
       - name: Build Hermes MacOS
         uses: ./.github/actions/build-hermes-macos
         with:
@@ -110,7 +108,7 @@ jobs:
       HERMES_TARBALL_ARTIFACTS_DIR: /tmp/hermes/hermes-runtime-darwin
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4
       - name: Build HermesC Linux
         uses: ./.github/actions/build-hermesc-linux
         with:
@@ -129,7 +127,7 @@ jobs:
       CMAKE_DIR: 'C:\Program Files\CMake\bin'
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4
       - name: Build HermesC Windows
         uses: ./.github/actions/build-hermesc-windows
         with:
@@ -150,7 +148,7 @@ jobs:
         ORG_GRADLE_PROJECT_SONATYPE_PASSWORD: ${{ secrets.ORG_GRADLE_PROJECT_SONATYPE_PASSWORD }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4
       - name: Build Android
         uses: ./.github/actions/build-android
         with:
@@ -158,12 +156,20 @@ jobs:
 
   build_npm_package:
     runs-on: 8-core-ubuntu
-    needs: [set_release_type, prepare_hermes_workspace, build_hermes_macos, build_hermesc_linux, build_hermesc_windows,build_android]
+    needs:
+      [
+        set_release_type,
+        prepare_hermes_workspace,
+        build_hermes_macos,
+        build_hermesc_linux,
+        build_hermesc_windows,
+        build_android,
+      ]
     container:
       image: reactnativecommunity/react-native-android:latest
       env:
         TERM: "dumb"
-        GRADLE_OPTS: '-Dorg.gradle.daemon=false'
+        GRADLE_OPTS: "-Dorg.gradle.daemon=false"
         # By default we only build ARM64 to save time/resources. For release/nightlies/prealpha, we override this value to build all archs.
         ORG_GRADLE_PROJECT_reactNativeArchitectures: "arm64-v8a"
     env:
@@ -175,9 +181,9 @@ jobs:
       ORG_GRADLE_PROJECT_SONATYPE_PASSWORD: ${{ secrets.ORG_GRADLE_PROJECT_SONATYPE_PASSWORD }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4
       - name: Build and Publish NPM PAckage
-        uses: ./.actions/build-npm-package
+        uses: ./.github/actions/build-npm-package
         with:
           hermes-ws-dir: ${{ env.HERMES_WS_DIR }}
           release-type: ${{ needs.set_release_type.outputs.RELEASE_TYPE }}

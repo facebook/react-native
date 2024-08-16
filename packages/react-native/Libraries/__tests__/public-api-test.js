@@ -12,7 +12,7 @@
 import type {TransformVisitor} from 'hermes-transform';
 
 const translate = require('flow-api-translator');
-const {promises: fs} = require('fs');
+const {existsSync, promises: fs} = require('fs');
 const glob = require('glob');
 const {transform} = require('hermes-transform');
 const path = require('path');
@@ -21,6 +21,8 @@ const PACKAGE_ROOT = path.resolve(__dirname, '../../');
 const JS_FILES_PATTERN = 'Libraries/**/*.{js,flow}';
 const IGNORE_PATTERNS = [
   '**/__{tests,mocks,fixtures,flowtests}__/**',
+  '**/*.android.js',
+  '**/*.ios.js',
   '**/*.fb.js',
   '**/*.macos.js',
   '**/*.windows.js',
@@ -28,32 +30,7 @@ const IGNORE_PATTERNS = [
 
 // Exclude list for files that fail to parse under flow-api-translator. Please
 // review your changes before adding new entries.
-const FILES_WITH_KNOWN_ERRORS = new Set([
-  'Libraries/Blob/FileReader.js',
-  'Libraries/Components/DrawerAndroid/DrawerLayoutAndroid.android.js',
-  'Libraries/Components/Keyboard/KeyboardAvoidingView.js',
-  'Libraries/Components/RefreshControl/RefreshControl.js',
-  'Libraries/Components/ScrollView/ScrollView.js',
-  'Libraries/Components/StatusBar/StatusBar.js',
-  'Libraries/Components/StaticRenderer.js',
-  'Libraries/Components/Touchable/TouchableNativeFeedback.js',
-  'Libraries/Components/UnimplementedViews/UnimplementedView.js',
-  'Libraries/Image/ImageBackground.js',
-  'Libraries/Inspector/ElementProperties.js',
-  'Libraries/Inspector/BorderBox.js',
-  'Libraries/Inspector/BoxInspector.js',
-  'Libraries/Inspector/InspectorPanel.js',
-  'Libraries/Inspector/NetworkOverlay.js',
-  'Libraries/Inspector/PerformanceOverlay.js',
-  'Libraries/Inspector/StyleInspector.js',
-  'Libraries/Inspector/ElementBox.js',
-  'Libraries/Lists/FlatList.js',
-  'Libraries/Lists/SectionList.js',
-  'Libraries/LogBox/LogBoxInspectorContainer.js',
-  'Libraries/Modal/Modal.js',
-  'Libraries/Network/XMLHttpRequest.js',
-  'Libraries/WebSocket/WebSocket.js',
-]);
+const FILES_WITH_KNOWN_ERRORS = new Set<string>([]);
 
 const sourceFiles = [
   'index.js',
@@ -70,10 +47,22 @@ describe('public API', () => {
       const source = await fs.readFile(path.join(PACKAGE_ROOT, file), 'utf-8');
 
       if (/@flow/.test(source)) {
+        // Require and use adjacent .js.flow file when source file includes an
+        // unsupported-syntax suppression
         if (source.includes('// $FlowFixMe[unsupported-syntax]')) {
-          expect(
-            'UNTYPED MODULE (unsupported-syntax suppression)',
-          ).toMatchSnapshot();
+          const flowDefPath = path.join(
+            PACKAGE_ROOT,
+            file.replace('.js', '.js.flow'),
+          );
+
+          if (!existsSync(flowDefPath)) {
+            throw new Error(
+              'Found an unsupported-syntax suppression in ' +
+                file +
+                ', meaning types cannot be parsed. Add an adjacent <module>.js.flow file to fix this!',
+            );
+          }
+
           return;
         }
 
@@ -84,13 +73,15 @@ describe('public API', () => {
           success = true;
         } catch (e) {
           if (!FILES_WITH_KNOWN_ERRORS.has(file)) {
-            console.error('Unable to parse file:', file, '\n' + e);
+            throw new Error(
+              'Unable to parse file: ' + file + '\n\n' + e.message,
+            );
           }
         } finally {
           if (success && FILES_WITH_KNOWN_ERRORS.has(file)) {
-            console.error(
-              'Expected parse error, please remove file exclude from FILES_WITH_KNOWN_ERRORS:',
-              file,
+            throw new Error(
+              'Expected parse error, please remove file exclude from FILES_WITH_KNOWN_ERRORS: ' +
+                file,
             );
           }
         }

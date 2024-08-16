@@ -90,6 +90,8 @@ type DataDetectorTypes =
   | 'none'
   | 'all';
 
+export type SubmitBehavior = 'submit' | 'blurAndSubmit' | 'newline';
+
 /**
  * DocumentSelectionState is responsible for maintaining selection information
  * for a document.
@@ -649,10 +651,38 @@ export interface TextInputProps
   autoFocus?: boolean | undefined;
 
   /**
-   * If true, the text field will blur when submitted.
-   * The default value is true.
+   * If `true`, the text field will blur when submitted.
+   * The default value is true for single-line fields and false for
+   * multiline fields. Note that for multiline fields, setting `blurOnSubmit`
+   * to `true` means that pressing return will blur the field and trigger the
+   * `onSubmitEditing` event instead of inserting a newline into the field.
+   *
+   * @deprecated
+   * Note that `submitBehavior` now takes the place of `blurOnSubmit` and will
+   * override any behavior defined by `blurOnSubmit`.
+   * @see submitBehavior
    */
   blurOnSubmit?: boolean | undefined;
+
+  /**
+   * When the return key is pressed,
+   *
+   * For single line inputs:
+   *
+   * - `'newline`' defaults to `'blurAndSubmit'`
+   * - `undefined` defaults to `'blurAndSubmit'`
+   *
+   * For multiline inputs:
+   *
+   * - `'newline'` adds a newline
+   * - `undefined` defaults to `'newline'`
+   *
+   * For both single line and multiline inputs:
+   *
+   * - `'submit'` will only send a submit event and not blur the input
+   * - `'blurAndSubmit`' will both blur the input and send a submit event
+   */
+  submitBehavior?: SubmitBehavior | undefined;
 
   /**
    * If true, caret is hidden. The default value is false.

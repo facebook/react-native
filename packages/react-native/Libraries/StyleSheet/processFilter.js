@@ -36,9 +36,13 @@ type ParsedDropShadow = {
 };
 
 export default function processFilter(
-  filter: $ReadOnlyArray<FilterFunction> | string,
+  filter: ?($ReadOnlyArray<FilterFunction> | string),
 ): $ReadOnlyArray<ParsedFilter> {
   let result: Array<ParsedFilter> = [];
+  if (filter == null) {
+    return result;
+  }
+
   if (typeof filter === 'string') {
     // matches on functions with args like "drop-shadow(1.5)"
     const regex = /([\w-]+)\(([^)]+)\)/g;

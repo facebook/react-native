@@ -294,14 +294,7 @@ public class JSPointerDispatcher {
 
     PointerEventState eventState = createEventState(activePointerId, motionEvent);
 
-    // We've empirically determined that when we get a ACTION_HOVER_EXIT from the root view on the
-    // `onInterceptHoverEvent`, this means we've exited the root view.
-    // This logic may be wrong but reasoning about the dispatch sequence for HOVER_ENTER/HOVER_EXIT
-    // doesn't follow the capture/bubbling sequence like other MotionEvents. See:
-    // https://developer.android.com/reference/android/view/MotionEvent#ACTION_HOVER_ENTER
-    // https://suragch.medium.com/how-touch-events-are-delivered-in-android-eee3b607b038
-    boolean isExitFromRoot =
-        isCapture && motionEvent.getActionMasked() == MotionEvent.ACTION_HOVER_EXIT;
+    boolean isExitFromRoot = motionEvent.getActionMasked() == MotionEvent.ACTION_HOVER_EXIT;
 
     // Calculate the targetTag, with special handling for when we exit the root view. In that case,
     // we use the root viewId of the last event

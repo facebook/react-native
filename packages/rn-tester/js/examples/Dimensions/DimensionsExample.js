@@ -46,13 +46,13 @@ exports.examples = [
   },
   {
     title: 'Non-component `get` API: window',
-    render(): React.Element<any> {
+    render(): React.MixedElement {
       return <DimensionsSubscription dim="window" />;
     },
   },
   {
     title: 'Non-component `get` API: screen',
-    render(): React.Element<any> {
+    render(): React.MixedElement {
       return <DimensionsSubscription dim="screen" />;
     },
   },

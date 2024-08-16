@@ -50,7 +50,7 @@ module PrivacyManifestUtils
     end
 
     def self.get_application_targets(user_project)
-        return user_project.targets.filter { |t| t.symbol_type == :application }
+        return user_project.targets.filter { |t| t.respond_to?(:symbol_type) && t.symbol_type == :application }
     end
 
     def self.read_privacyinfo_file(file_path)

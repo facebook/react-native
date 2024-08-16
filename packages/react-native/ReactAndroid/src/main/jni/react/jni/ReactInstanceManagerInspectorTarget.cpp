@@ -39,6 +39,19 @@ ReactInstanceManagerInspectorTarget::TargetDelegate::getMetadata() const {
   return method(self());
 }
 
+void ReactInstanceManagerInspectorTarget::TargetDelegate::loadNetworkResource(
+    const std::string& url,
+    jni::local_ref<InspectorNetworkRequestListener::javaobject> listener)
+    const {
+  auto method =
+      javaClassStatic()
+          ->getMethod<void(
+              jni::local_ref<JString>,
+              jni::local_ref<InspectorNetworkRequestListener::javaobject>)>(
+              "loadNetworkResource");
+  return method(self(), make_jstring(url), listener);
+}
+
 ReactInstanceManagerInspectorTarget::ReactInstanceManagerInspectorTarget(
     jni::alias_ref<ReactInstanceManagerInspectorTarget::jhybridobject> jobj,
     jni::alias_ref<JExecutor::javaobject> javaExecutor,
@@ -66,7 +79,9 @@ ReactInstanceManagerInspectorTarget::ReactInstanceManagerInspectorTarget(
             -> std::unique_ptr<ILocalConnection> {
           return inspectorTarget->connect(std::move(remote));
         },
-        {.nativePageReloads = true, .prefersFuseboxFrontend = true});
+        {.nativePageReloads = true,
+         .nativeSourceCodeFetching = true,
+         .prefersFuseboxFrontend = true});
   }
 }
 
@@ -142,6 +157,17 @@ void ReactInstanceManagerInspectorTarget::onReload(
 void ReactInstanceManagerInspectorTarget::onSetPausedInDebuggerMessage(
     const OverlaySetPausedInDebuggerMessageRequest& request) {
   delegate_->onSetPausedInDebuggerMessage(request);
+}
+
+void ReactInstanceManagerInspectorTarget::loadNetworkResource(
+    const jsinspector_modern::LoadNetworkResourceRequest& params,
+    jsinspector_modern::ScopedExecutor<
+        jsinspector_modern::NetworkRequestListener> executor) {
+  // Construct InspectorNetworkRequestListener (hybrid class) from the C++ side
+  // (holding the ScopedExecutor), pass to the delegate.
+  auto listener = InspectorNetworkRequestListener::newObjectCxxArgs(executor);
+
+  delegate_->loadNetworkResource(params.url, listener);
 }
 
 HostTarget* ReactInstanceManagerInspectorTarget::getInspectorTarget() {

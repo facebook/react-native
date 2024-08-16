@@ -48,7 +48,7 @@ runs:
 
     - name: Cache hermes workspace
       id: restore-hermes
-      uses: actions/cache/restore@v4.0.0
+      uses: actions/cache/restore@v4
       with:
         path: |
           /tmp/hermes/download/
@@ -69,8 +69,7 @@ runs:
 
     - name: Yarn- Install Dependencies
       if: ${{ steps.meaningful-cache.outputs.HERMES_CACHED != 'true' }}
-      shell: bash
-      run: yarn install --non-interactive
+      uses: ./.github/actions/yarn-install-with-cache
 
     - name: Download Hermes tarball
       if: ${{ steps.meaningful-cache.outputs.HERMES_CACHED != 'true' }}
@@ -83,7 +82,7 @@ runs:
         echo ${{ steps.hermes-version.outputs.version }}
 
     - name: Upload Hermes artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v4.3.4
       with:
         name: hermes-workspace
         path: |
@@ -91,7 +90,7 @@ runs:
           /tmp/hermes/hermes/
 
     - name: Cache hermes workspace
-      uses: actions/cache/save@v4.0.0
+      uses: actions/cache/save@v4
       if: ${{ github.ref == 'refs/heads/main' }} # To avoid that the cache explode.
       with:
         path: |

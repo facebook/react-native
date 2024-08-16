@@ -11,6 +11,7 @@
 import type {AnyAttributeType} from '../../Renderer/shims/ReactNativeTypes';
 
 import processAspectRatio from '../../StyleSheet/processAspectRatio';
+import processBackgroundImage from '../../StyleSheet/processBackgroundImage';
 import processBoxShadow from '../../StyleSheet/processBoxShadow';
 import processColor from '../../StyleSheet/processColor';
 import processFilter from '../../StyleSheet/processFilter';
@@ -126,10 +127,20 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
    */
   experimental_mixBlendMode: true,
 
+  /**
+   * Isolation
+   */
+  isolation: true,
+
   /*
    * BoxShadow
    */
   experimental_boxShadow: {process: processBoxShadow},
+
+  /**
+   * Linear Gradient
+   */
+  experimental_backgroundImage: {process: processBackgroundImage},
 
   /**
    * View

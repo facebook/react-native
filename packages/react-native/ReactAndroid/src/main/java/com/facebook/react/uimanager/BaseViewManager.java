@@ -7,7 +7,6 @@
 
 package com.facebook.react.uimanager;
 
-import android.graphics.BlendMode;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Build;
@@ -118,7 +117,8 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
 
     view.setTag(R.id.use_hardware_layer, null);
     view.setTag(R.id.filter, null);
-    LayerEffectsHelper.apply(view, null, null, null);
+    view.setTag(R.id.mix_blend_mode, null);
+    LayerEffectsHelper.apply(view, null, null);
 
     // setShadowColor
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
@@ -522,10 +522,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   // hitting the unknown BlendMode type
   private static class LayerEffectsHelper {
     public static void apply(
-        @NonNull View view,
-        @Nullable ReadableArray filter,
-        @Nullable BlendMode mixBlendMode,
-        @Nullable Boolean useHWLayer) {
+        @NonNull View view, @Nullable ReadableArray filter, @Nullable Boolean useHWLayer) {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         view.setRenderEffect(null);
       }
@@ -539,11 +536,6 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
           view.setRenderEffect(FilterHelper.parseFilters(filter));
         }
-      }
-
-      if (mixBlendMode != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-        p = p == null ? new Paint() : p;
-        p.setBlendMode(mixBlendMode);
       }
 
       if (p == null) {
@@ -572,13 +564,16 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
       return;
     }
 
+    boolean allowPercentageResolution = ViewUtil.getUIManagerType(view) == UIManagerType.FABRIC;
+
     sMatrixDecompositionContext.reset();
     TransformHelper.processTransform(
         transforms,
         sTransformDecompositionArray,
         PixelUtil.toDIPFromPixel(view.getWidth()),
         PixelUtil.toDIPFromPixel(view.getHeight()),
-        transformOrigin);
+        transformOrigin,
+        allowPercentageResolution);
     MatrixMathHelper.decomposeMatrix(sTransformDecompositionArray, sMatrixDecompositionContext);
     view.setTranslationX(
         PixelUtil.toPixelFromDIP(
@@ -663,13 +658,9 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     }
 
     ReadableArray filter = (ReadableArray) view.getTag(R.id.filter);
-    BlendMode mixBlendMode =
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-            ? (BlendMode) view.getTag(R.id.mix_blend_mode)
-            : null;
     Boolean useHWLayer = (Boolean) view.getTag(R.id.use_hardware_layer);
 
-    LayerEffectsHelper.apply(view, filter, mixBlendMode, useHWLayer);
+    LayerEffectsHelper.apply(view, filter, useHWLayer);
   }
 
   @Override

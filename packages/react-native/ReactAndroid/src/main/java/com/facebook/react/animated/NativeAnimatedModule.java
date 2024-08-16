@@ -546,7 +546,7 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
 
   @Override
   public void finishOperationBatch() {
-    mBatchingControlledByJS = true;
+    mBatchingControlledByJS = false;
     mCurrentBatchNumber++;
   }
 

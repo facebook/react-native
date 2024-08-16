@@ -10,6 +10,7 @@ add_compile_options(
         -fvisibility=hidden
         -fexceptions
         -frtti
+        -std=c++20
         -O3)
 
 file(GLOB yoga_SRC CONFIGURE_DEPENDS jni/*.cpp)

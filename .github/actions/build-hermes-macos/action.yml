@@ -20,7 +20,7 @@ runs:
     - name: Restore Hermes workspace
       uses: ./.github/actions/restore-hermes-workspace
     - name: Restore Cached Artifacts
-      uses: actions/cache/restore@v4.0.0
+      uses: actions/cache/restore@v4
       with:
         key: v3-hermes-artifacts-${{ inputs.flavor }}-${{ inputs.hermes-version }}-${{ inputs.react-native-version }}
         path: |
@@ -47,41 +47,40 @@ runs:
         fi
     - name: Yarn- Install Dependencies
       if: ${{ steps.check_if_apple_artifacts_are_there.outputs.ARTIFACTS_EXIST != 'true' }}
-      shell: bash
-      run: yarn install --non-interactive
+      uses: ./.github/actions/yarn-install-with-cache
     - name: Slice cache macosx
       if: ${{ steps.check_if_apple_artifacts_are_there.outputs.ARTIFACTS_EXIST != 'true' }}
-      uses: actions/download-artifact@v4.1.3
+      uses: actions/download-artifact@v4
       with:
         path: ./packages/react-native/sdks/hermes/build_macosx_${{ inputs.flavor }}
         name: slice-macosx-${{ inputs.flavor }}
     - name: Slice cache iphoneos
       if: ${{ steps.check_if_apple_artifacts_are_there.outputs.ARTIFACTS_EXIST != 'true' }}
-      uses: actions/download-artifact@v4.1.3
+      uses: actions/download-artifact@v4
       with:
         path: ./packages/react-native/sdks/hermes/build_iphoneos_${{ inputs.flavor }}
         name: slice-iphoneos-${{ inputs.flavor }}
     - name: Slice cache iphonesimulator
       if: ${{ steps.check_if_apple_artifacts_are_there.outputs.ARTIFACTS_EXIST != 'true' }}
-      uses: actions/download-artifact@v4.1.3
+      uses: actions/download-artifact@v4
       with:
         path: ./packages/react-native/sdks/hermes/build_iphonesimulator_${{ inputs.flavor }}
         name: slice-iphonesimulator-${{ inputs.flavor }}
     - name: Slice cache catalyst
       if: ${{ steps.check_if_apple_artifacts_are_there.outputs.ARTIFACTS_EXIST != 'true' }}
-      uses: actions/download-artifact@v4.1.3
+      uses: actions/download-artifact@v4
       with:
         path: ./packages/react-native/sdks/hermes/build_catalyst_${{ inputs.flavor }}
         name: slice-catalyst-${{ inputs.flavor }}
     - name: Slice cache xros
       if: ${{ steps.check_if_apple_artifacts_are_there.outputs.ARTIFACTS_EXIST != 'true' }}
-      uses: actions/download-artifact@v4.1.3
+      uses: actions/download-artifact@v4
       with:
         path: ./packages/react-native/sdks/hermes/build_xros_${{ inputs.flavor }}
         name: slice-xros-${{ inputs.flavor }}
     - name: Slice cache xrsimulator
       if: ${{ steps.check_if_apple_artifacts_are_there.outputs.ARTIFACTS_EXIST != 'true' }}
-      uses: actions/download-artifact@v4.1.3
+      uses: actions/download-artifact@v4
       with:
         path: ./packages/react-native/sdks/hermes/build_xrsimulator_${{ inputs.flavor }}
         name: slice-xrsimulator-${{ inputs.flavor }}
@@ -171,22 +170,22 @@ runs:
         mkdir -p "$DEST_DIR"
         mv "hermes.framework.dSYM" "$DEST_DIR"
     - name: Upload hermes dSYM artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v4.3.4
       with:
         name: hermes-dSYM-${{ inputs.flavor }}
         path: /tmp/hermes/dSYM/${{ inputs.flavor }}
     - name: Upload hermes Runtime artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v4.3.4
       with:
         name: hermes-darwin-bin-${{ inputs.flavor }}
         path: /tmp/hermes/hermes-runtime-darwin/hermes-ios-${{ inputs.flavor }}.tar.gz
     - name: Upload hermes osx artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v4.3.4
       with:
         name: hermes-osx-bin-${{ inputs.flavor }}
         path: /tmp/hermes/osx-bin/${{ inputs.flavor }}
     - name: Upload Hermes Artifacts
-      uses: actions/cache/save@v4.0.0
+      uses: actions/cache/save@v4
       if: ${{ github.ref == 'refs/heads/main' || contains(github.ref, '-stable') }} # To avoid that the cache explode.
       with:
         key: v3-hermes-artifacts-${{ inputs.flavor }}-${{ inputs.hermes-version }}-${{ inputs.react-native-version }}

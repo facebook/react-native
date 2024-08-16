@@ -29,7 +29,7 @@
 const start = Date.now();
 
 require('./setUpGlobals');
-require('../../src/private/core/setUpDOM');
+require('../../src/private/setup/setUpDOM').default();
 require('./setUpPerformance');
 require('./setUpErrorHandling');
 require('./polyfillPromise');

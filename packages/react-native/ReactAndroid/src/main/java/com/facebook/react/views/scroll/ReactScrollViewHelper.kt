@@ -113,7 +113,7 @@ public object ReactScrollViewHelper {
       return
     }
     val contentView = scrollView.getChildAt(0) ?: return
-    for (scrollListener in scrollListeners) {
+    for (scrollListener in scrollListeners.toList()) {
       scrollListener.onScroll(scrollView, scrollEventType, xVelocity, yVelocity)
     }
     val reactContext = scrollView.context as ReactContext
@@ -146,7 +146,7 @@ public object ReactScrollViewHelper {
   /** This is only for Java listeners. onLayout events emitted to JS are handled elsewhere. */
   @JvmStatic
   public fun emitLayoutEvent(scrollView: ViewGroup) {
-    for (scrollListener in scrollListeners) {
+    for (scrollListener in scrollListeners.toList()) {
       scrollListener.onLayout(scrollView)
     }
   }

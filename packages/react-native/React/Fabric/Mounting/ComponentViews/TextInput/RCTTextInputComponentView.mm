@@ -12,6 +12,7 @@
 #import <react/renderer/textlayoutmanager/TextLayoutManager.h>
 
 #import <React/RCTBackedTextInputViewProtocol.h>
+#import <React/RCTScrollViewComponentView.h>
 #import <React/RCTUITextField.h>
 #import <React/RCTUITextView.h>
 #import <React/RCTUtils.h>
@@ -21,6 +22,9 @@
 #import "RCTTextInputUtils.h"
 
 #import "RCTFabricComponentsPlugins.h"
+
+/** Native iOS text field bottom keyboard offset amount */
+static const CGFloat kSingleLineKeyboardBottomOffset = 15.0;
 
 using namespace facebook::react;
 
@@ -94,6 +98,30 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
   }
 
   [self _restoreTextSelection];
+}
+
+- (void)reactUpdateResponderOffsetForScrollView:(RCTScrollViewComponentView *)scrollView
+{
+  if (![self isDescendantOfView:scrollView.scrollView] || !_backedTextInputView.isFirstResponder) {
+    // View is outside scroll view or it's not a first responder.
+    return;
+  }
+
+  UITextRange *selectedTextRange = _backedTextInputView.selectedTextRange;
+  UITextSelectionRect *selection = [_backedTextInputView selectionRectsForRange:selectedTextRange].firstObject;
+  CGRect focusRect;
+  if (selection == nil) {
+    // No active selection or caret - fallback to entire input frame
+    focusRect = self.bounds;
+  } else {
+    // Focus on text selection frame
+    focusRect = selection.rect;
+    BOOL isMultiline = [_backedTextInputView isKindOfClass:[UITextView class]];
+    if (!isMultiline) {
+      focusRect.size.height += kSingleLineKeyboardBottomOffset;
+    }
+  }
+  scrollView.firstResponderFocus = [self convertRect:focusRect toView:nil];
 }
 
 #pragma mark - RCTViewComponentView overrides
@@ -475,8 +503,6 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
 - (NSString *)returnKeyTypeToString:(UIReturnKeyType)returnKeyType
 {
   switch (returnKeyType) {
-    case UIReturnKeyDefault:
-      return @"Default";
     case UIReturnKeyGo:
       return @"Go";
     case UIReturnKeyNext:
@@ -504,7 +530,6 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
 {
   returnKeyTypesSet = [NSSet setWithObjects:@(UIReturnKeyDone),
                                             @(UIReturnKeyGo),
-                                            @(UIReturnKeyDefault),
                                             @(UIReturnKeyNext),
                                             @(UIReturnKeySearch),
                                             @(UIReturnKeySend),

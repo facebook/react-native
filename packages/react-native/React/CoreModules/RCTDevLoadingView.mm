@@ -119,8 +119,13 @@ RCT_EXPORT_MODULE()
       CGFloat windowWidth = window.bounds.size.width;
 
       self->_window = [[UIWindow alloc] initWithWindowScene:window.windowScene];
+#if TARGET_OS_MACCATALYST
+      self->_window.frame = CGRectMake(0, window.safeAreaInsets.top, windowWidth, 20);
+      self->_label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, windowWidth, 20)];
+#else
       self->_window.frame = CGRectMake(0, 0, windowWidth, window.safeAreaInsets.top + 10);
       self->_label = [[UILabel alloc] initWithFrame:CGRectMake(0, window.safeAreaInsets.top - 10, windowWidth, 20)];
+#endif
       [self->_window addSubview:self->_label];
 
       self->_window.windowLevel = UIWindowLevelStatusBar + 1;

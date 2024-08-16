@@ -46,6 +46,9 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
           },
           decelerationRate: true,
           enableSyncOnScroll: true, // Fabric only.
+          experimental_boxShadow: {
+            process: require('../../StyleSheet/processBoxShadow').default,
+          },
           disableIntervalMomentum: true,
           maintainVisibleContentPosition: true,
           pagingEnabled: true,
@@ -62,9 +65,6 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
           borderRadius: true,
           nestedScrollEnabled: true,
           scrollEventThrottle: true,
-          scrollIndicatorInsets: {
-            diff: require('../../Utilities/differ/insetsDiffer'),
-          },
           borderStyle: true,
           borderRightColor: {
             process: require('../../StyleSheet/processColor').default,

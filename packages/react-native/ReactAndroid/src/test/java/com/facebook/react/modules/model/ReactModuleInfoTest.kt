@@ -9,9 +9,7 @@ package com.facebook.react.modules.model
 
 import com.facebook.react.module.model.ReactModuleInfo
 import com.facebook.react.turbomodule.core.interfaces.TurboModule
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
 class ReactModuleInfoTest {
@@ -26,21 +24,21 @@ class ReactModuleInfoTest {
             /* needsEagerInit = */ false,
             /* isCxxModule = */ false,
             /* isTurboModule = */ false)
-    assertEquals("name", reactModuleInfo.name())
-    assertFalse(reactModuleInfo.canOverrideExistingModule())
-    assertFalse(reactModuleInfo.needsEagerInit())
-    assertFalse(reactModuleInfo.isCxxModule)
-    assertFalse(reactModuleInfo.isTurboModule)
+    assertThat(reactModuleInfo.name()).isEqualTo("name")
+    assertThat(reactModuleInfo.canOverrideExistingModule()).isFalse()
+    assertThat(reactModuleInfo.needsEagerInit()).isFalse()
+    assertThat(reactModuleInfo.isCxxModule).isFalse()
+    assertThat(reactModuleInfo.isTurboModule).isFalse()
   }
 
   @Test
   fun classIsTurboModule_withRandomClass() {
-    assertFalse(ReactModuleInfo.classIsTurboModule(String::class.java))
+    assertThat(ReactModuleInfo.classIsTurboModule(String::class.java)).isFalse()
   }
 
   @Test
   fun classIsTurboModule_withTurboModule() {
-    assertTrue(ReactModuleInfo.classIsTurboModule(TestTurboModule::class.java))
+    assertThat(ReactModuleInfo.classIsTurboModule(TestTurboModule::class.java)).isTrue()
   }
 
   inner class TestTurboModule : TurboModule {

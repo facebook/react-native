@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c6b9aaa642199af1c7669d78054b061d>>
+ * @generated SignedSource<<ff305f47f055a259d4ee673c5963f0fc>>
  */
 
 /**
@@ -31,10 +31,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool allowCollapsableChildren() override {
-    return true;
-  }
-
   bool allowRecursiveCommitsWithSynchronousMountOnAndroid() override {
     return false;
   }
@@ -47,6 +43,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool completeReactInstanceCreationOnBgThreadOnAndroid() override {
+    return false;
+  }
+
   bool destroyFabricSurfacesInReactInstanceManager() override {
     return false;
   }
@@ -55,7 +55,31 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return true;
   }
 
+  bool enableAndroidMixBlendModeProp() override {
+    return false;
+  }
+
+  bool enableBackgroundStyleApplicator() override {
+    return true;
+  }
+
   bool enableCleanTextInputYogaNode() override {
+    return false;
+  }
+
+  bool enableEagerRootViewAttachment() override {
+    return false;
+  }
+
+  bool enableEventEmitterRetentionDuringGesturesOnAndroid() override {
+    return false;
+  }
+
+  bool enableFabricLogs() override {
+    return false;
+  }
+
+  bool enableFabricRendererExclusively() override {
     return false;
   }
 
@@ -75,11 +99,23 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool enableReportEventPaintTime() override {
+    return false;
+  }
+
   bool enableSynchronousStateUpdates() override {
     return false;
   }
 
   bool enableUIConsistency() override {
+    return false;
+  }
+
+  bool enableViewRecycling() override {
+    return false;
+  }
+
+  bool excludeYogaFromRawProps() override {
     return false;
   }
 
@@ -124,7 +160,15 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool setAndroidLayoutDirection() override {
-    return true;
+    return false;
+  }
+
+  bool traceTurboModulePromiseRejectionsOnAndroid() override {
+    return false;
+  }
+
+  bool useFabricInterop() override {
+    return false;
   }
 
   bool useImmediateExecutorInAndroidBridgeless() override {
@@ -143,6 +187,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool useOptimisedViewPreallocationOnAndroid() override {
+    return false;
+  }
+
   bool useRuntimeShadowNodeReferenceUpdate() override {
     return false;
   }
@@ -152,6 +200,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool useStateAlignmentMechanism() override {
+    return false;
+  }
+
+  bool useTurboModuleInterop() override {
     return false;
   }
 };

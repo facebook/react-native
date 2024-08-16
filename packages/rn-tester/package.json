@@ -23,11 +23,11 @@
     "clean-ios": "rm -rf build/generated/ios Pods Podfile.lock"
   },
   "dependencies": {
+    "@react-native/oss-library-example": "0.76.0-main",
+    "@react-native/popup-menu-android": "0.76.0-main",
     "flow-enums-runtime": "^0.0.6",
     "invariant": "^2.2.4",
-    "nullthrows": "^1.1.1",
-    "@react-native/oss-library-example": "0.76.0-main",
-    "@react-native/popup-menu-android": "0.76.0-main"
+    "nullthrows": "^1.1.1"
   },
   "peerDependencies": {
     "react": "19.0.0-rc-fb9a90fa48-20240614",
@@ -40,5 +40,10 @@
     "android": {
       "javaPackageName": "com.facebook.fbreact.specs"
     }
+  },
+  "devDependencies": {
+    "@react-native-community/cli": "^14.0.0",
+    "@react-native-community/cli-platform-android": "^14.0.0",
+    "@react-native-community/cli-platform-ios": "^14.0.0"
   }
 }

@@ -18,7 +18,10 @@ import androidx.annotation.RequiresApi
 import com.facebook.common.logging.FLog
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.uimanager.FilterHelper
+import com.facebook.react.uimanager.LengthPercentage
+import com.facebook.react.uimanager.LengthPercentageType
 import com.facebook.react.uimanager.PixelUtil
+import com.facebook.react.uimanager.style.BorderRadiusStyle
 import kotlin.math.roundToInt
 
 private const val TAG = "InsetBoxShadowDrawable"
@@ -76,19 +79,15 @@ internal class InsetBoxShadowDrawable(
     clearRegionBounds.inset(spreadExtent, spreadExtent)
     clearRegionBounds.offset(
         PixelUtil.toPixelFromDIP(offsetX).roundToInt() + padding / 2,
-        PixelUtil.toPixelFromDIP(offsetY).roundToInt() + padding / 2)
-    val clearRegionBorderRadii =
-        getShadowBorderRadii(
-            -spreadExtent.toFloat(),
-            background.borderRadius,
-            clearRegionBounds.width().toFloat(),
-            clearRegionBounds.height().toFloat())
+        PixelUtil.toPixelFromDIP(offsetY).roundToInt() + padding / 2,
+    )
+    val clearRegionBorderRadii = getClearRegionBorderRadii(spreadExtent, background)
 
-    if (shadowPaint.colorFilter != colorFilter ||
+    if (!renderNode.hasDisplayList() ||
+        shadowPaint.colorFilter != colorFilter ||
         clearRegionDrawable.layoutDirection != layoutDirection ||
         clearRegionDrawable.borderRadius != clearRegionBorderRadii ||
         clearRegionDrawable.bounds != clearRegionBounds) {
-      canvas.save()
 
       shadowPaint.colorFilter = colorFilter
       clearRegionDrawable.bounds = clearRegionBounds
@@ -99,15 +98,15 @@ internal class InsetBoxShadowDrawable(
         // We pad by the blur radius so that the edges of the blur look good and
         // the blur artifacts can bleed into the view if needed
         setPosition(Rect(bounds).apply { inset(-padding, -padding) })
-        beginRecording().let { canvas ->
+        beginRecording().let { renderNodeCanvas ->
           val borderBoxPath = clearRegionDrawable.getBorderBoxPath()
           if (borderBoxPath != null) {
-            canvas.clipOutPath(borderBoxPath)
+            renderNodeCanvas.clipOutPath(borderBoxPath)
           } else {
-            canvas.clipOutRect(clearRegionDrawable.borderBoxRect)
+            renderNodeCanvas.clipOutRect(clearRegionDrawable.borderBoxRect)
           }
 
-          canvas.drawPaint(shadowPaint)
+          renderNodeCanvas.drawPaint(shadowPaint)
           endRecording()
         }
       }
@@ -115,6 +114,8 @@ internal class InsetBoxShadowDrawable(
       // We actually draw the render node into our canvas and clip out the
       // padding
       with(canvas) {
+        save()
+
         val paddingBoxPath = background.getPaddingBoxPath()
         if (paddingBoxPath != null) {
           canvas.clipPath(paddingBoxPath)
@@ -124,9 +125,54 @@ internal class InsetBoxShadowDrawable(
         // This positions the render node properly since we padded it
         canvas.translate(padding / 2f, padding / 2f)
         drawRenderNode(renderNode)
+        restore()
       }
-
-      canvas.restore()
     }
+  }
+
+  // TODO: Remove usage of unsafe `CSSBackgroundDrawable.getComputedBorderRadius`
+  @Suppress("DEPRECATION")
+  private fun getClearRegionBorderRadii(
+      spread: Int,
+      background: CSSBackgroundDrawable,
+  ): BorderRadiusStyle {
+    // Accessing this is super duper unsafe and only works because the CSSBackgroundDrawable renders
+    // first
+    val computedBorderRadii = background.computedBorderRadius
+    val borderWidth = background.getDirectionAwareBorderInsets()
+
+    val topLeftRadius = computedBorderRadii.topLeft.toPixelFromDIP()
+    val topRightRadius = computedBorderRadii.topRight.toPixelFromDIP()
+    val bottomLeftRadius = computedBorderRadii.bottomLeft.toPixelFromDIP()
+    val bottomRightRadius = computedBorderRadii.bottomRight.toPixelFromDIP()
+
+    val innerTopLeftRadius =
+        background.getInnerBorderRadius(topLeftRadius.horizontal, borderWidth.left)
+    val innerTopRightRadius =
+        background.getInnerBorderRadius(topRightRadius.horizontal, borderWidth.right)
+    val innerBottomRightRadius =
+        background.getInnerBorderRadius(bottomRightRadius.horizontal, borderWidth.right)
+    val innerBottomLeftRadius =
+        background.getInnerBorderRadius(bottomLeftRadius.horizontal, borderWidth.left)
+
+    val spreadWithDirection = -spread.toFloat()
+    return BorderRadiusStyle(
+        topLeft =
+            LengthPercentage(
+                adjustRadiusForSpread(innerTopLeftRadius, spreadWithDirection),
+                LengthPercentageType.POINT),
+        topRight =
+            LengthPercentage(
+                adjustRadiusForSpread(innerTopRightRadius, spreadWithDirection),
+                LengthPercentageType.POINT),
+        bottomLeft =
+            LengthPercentage(
+                adjustRadiusForSpread(innerBottomLeftRadius, spreadWithDirection),
+                LengthPercentageType.POINT),
+        bottomRight =
+            LengthPercentage(
+                adjustRadiusForSpread(innerBottomRightRadius, spreadWithDirection),
+                LengthPercentageType.POINT),
+    )
   }
 }

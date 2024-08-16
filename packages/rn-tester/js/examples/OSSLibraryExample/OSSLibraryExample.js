@@ -116,7 +116,7 @@ exports.examples = [
   {
     title: 'OSS Library Example',
     description: 'Click to change background and opacity',
-    render(): React.Element<any> {
+    render(): React.MixedElement {
       return (
         <>
           <SampleNativeComponentContainer />

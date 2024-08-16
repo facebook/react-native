@@ -162,6 +162,12 @@ class ReactInstanceTest : public ::testing::Test {
     loadScript(script);
   }
 
+  jsi::Value tryEval(std::string js, std::string defaultVal) {
+    return eval(
+        "(function() { try { return " + js + "; } catch { return " +
+        defaultVal + "; } })()");
+  }
+
   jsi::Value eval(std::string js) {
     RuntimeExecutor runtimeExecutor = instance_->getUnbufferedRuntimeExecutor();
     jsi::Value ret = jsi::Value::undefined();
@@ -215,16 +221,16 @@ class ReactInstanceTest : public ::testing::Test {
 };
 
 TEST_F(ReactInstanceTest, testBridgelessFlagIsSet) {
-  eval("RN$Bridgeless === true");
-  expectError();
+  auto valBefore = tryEval("RN$Bridgeless === true", "false");
+  EXPECT_EQ(valBefore.getBool(), false);
   initializeRuntimeWithScript("");
   auto val = eval("RN$Bridgeless === true");
   EXPECT_EQ(val.getBool(), true);
 }
 
 TEST_F(ReactInstanceTest, testProfilingFlag) {
-  eval("__RCTProfileIsProfiling === true");
-  expectError();
+  auto valBefore = tryEval("__RCTProfileIsProfiling === true", "false");
+  EXPECT_EQ(valBefore.getBool(), false);
   initializeRuntimeWithScript({.isProfiling = true}, "");
   auto val = eval("__RCTProfileIsProfiling === true");
   EXPECT_EQ(val.getBool(), true);
