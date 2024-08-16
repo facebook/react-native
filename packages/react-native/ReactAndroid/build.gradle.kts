@@ -81,8 +81,6 @@ val preparePrefab by
       input.set(
           listOf(
               PrefabPreprocessingEntry(
-                  "turbomodulejsijni", Pair("src/main/jni/react/turbomodule", "")),
-              PrefabPreprocessingEntry(
                   "react_render_animations",
                   Pair("../ReactCommon/react/renderer/animations/", "react/renderer/animations/")),
               PrefabPreprocessingEntry(
@@ -127,11 +125,6 @@ val preparePrefab by
                           "react/renderer/textlayoutmanager/"),
                       Pair("../ReactCommon/react/renderer/textlayoutmanager/platform/android/", ""),
                   )),
-              PrefabPreprocessingEntry(
-                  "yoga",
-                  listOf(
-                      Pair("../ReactCommon/yoga/", ""),
-                      Pair("src/main/jni/first-party/yogajni/jni", ""))),
               PrefabPreprocessingEntry(
                   "folly_runtime",
                   listOf(
@@ -333,6 +326,9 @@ val preparePrefab by
                       Pair("src/main/jni/react/jni", "react/jni/"),
                       // react_cxxreactpackage
                       Pair("src/main/jni/react/runtime/cxxreactpackage", ""),
+                      // yoga
+                      Pair("../ReactCommon/yoga/", ""),
+                      Pair("src/main/jni/first-party/yogajni/jni", ""),
                   )),
           ))
       outputDir.set(prefabHeadersDir)
@@ -617,7 +613,6 @@ android {
             "react_render_core",
             // prefab targets
             "reactnativejni",
-            "turbomodulejsijni",
             "react_featureflags",
             "react_performance_timeline",
             "react_utils",
@@ -632,7 +627,6 @@ android {
             "jsi",
             "react_render_mapbuffer",
             "react_render_textlayoutmanager",
-            "yoga",
             "react_render_uimanager",
             "react_render_scheduler",
             "react_render_mounting",
@@ -717,9 +711,6 @@ android {
   }
 
   prefab {
-    create("turbomodulejsijni") {
-      headers = File(prefabHeadersDir, "turbomodulejsijni").absolutePath
-    }
     create("react_render_animations") {
       headers = File(prefabHeadersDir, "react_render_animations").absolutePath
     }
@@ -750,7 +741,6 @@ android {
     create("react_render_textlayoutmanager") {
       headers = File(prefabHeadersDir, "react_render_textlayoutmanager").absolutePath
     }
-    create("yoga") { headers = File(prefabHeadersDir, "yoga").absolutePath }
     create("react_render_uimanager") {
       headers = File(prefabHeadersDir, "react_render_uimanager").absolutePath
     }

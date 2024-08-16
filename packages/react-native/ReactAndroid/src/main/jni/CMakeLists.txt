@@ -205,6 +205,8 @@ add_library(reactnative
           $<TARGET_OBJECTS:rrc_textinput>
           $<TARGET_OBJECTS:rrc_view>
           $<TARGET_OBJECTS:runtimeexecutor>
+          $<TARGET_OBJECTS:turbomodulejsijni>
+          $<TARGET_OBJECTS:yoga>
 )
 target_merge_so(reactnative)
 
@@ -274,6 +276,8 @@ target_include_directories(reactnative
         $<TARGET_PROPERTY:rrc_textinput,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:rrc_view,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:runtimeexecutor,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:turbomodulejsijni,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:yoga,INTERFACE_INCLUDE_DIRECTORIES>
 )
 
 # GTest dependencies

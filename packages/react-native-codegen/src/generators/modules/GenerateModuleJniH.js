@@ -86,15 +86,13 @@ target_link_libraries(
   react_codegen_${libraryName}
   fbjni
   jsi
-  # We need to link different libraries based on wether we are building rncore or not, that's necessary
+  # We need to link different libraries based on whether we are building rncore or not, that's necessary
   # because we want to break a circular dependency between react_codegen_rncore and reactnative
   ${
     libraryName !== 'rncore'
       ? 'reactnative'
-      : 'folly_runtime glog react_debug react_nativemodule_core react_render_componentregistry react_render_core react_render_debug react_render_graphics react_render_imagemanager react_render_mapbuffer react_utils rrc_image rrc_view'
+      : 'folly_runtime glog react_debug react_nativemodule_core react_render_componentregistry react_render_core react_render_debug react_render_graphics react_render_imagemanager react_render_mapbuffer react_utils rrc_image rrc_view turbomodulejsijni yoga'
   }
-  turbomodulejsijni
-  yoga
 )
 
 target_compile_options(

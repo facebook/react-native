@@ -21,7 +21,6 @@ target_link_libraries(
   fbjni
   jsi
   reactnative
-  yoga
 )
 
 target_compile_options(

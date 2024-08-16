@@ -56,11 +56,9 @@ target_link_libraries(
   react_codegen_SampleWithUppercaseName
   fbjni
   jsi
-  # We need to link different libraries based on wether we are building rncore or not, that's necessary
+  # We need to link different libraries based on whether we are building rncore or not, that's necessary
   # because we want to break a circular dependency between react_codegen_rncore and reactnative
   reactnative
-  turbomodulejsijni
-  yoga
 )
 
 target_compile_options(
@@ -132,11 +130,9 @@ target_link_libraries(
   react_codegen_complex_objects
   fbjni
   jsi
-  # We need to link different libraries based on wether we are building rncore or not, that's necessary
+  # We need to link different libraries based on whether we are building rncore or not, that's necessary
   # because we want to break a circular dependency between react_codegen_rncore and reactnative
   reactnative
-  turbomodulejsijni
-  yoga
 )
 
 target_compile_options(
@@ -201,11 +197,9 @@ target_link_libraries(
   react_codegen_cxx_only_native_modules
   fbjni
   jsi
-  # We need to link different libraries based on wether we are building rncore or not, that's necessary
+  # We need to link different libraries based on whether we are building rncore or not, that's necessary
   # because we want to break a circular dependency between react_codegen_rncore and reactnative
   reactnative
-  turbomodulejsijni
-  yoga
 )
 
 target_compile_options(
@@ -277,11 +271,9 @@ target_link_libraries(
   react_codegen_empty_native_modules
   fbjni
   jsi
-  # We need to link different libraries based on wether we are building rncore or not, that's necessary
+  # We need to link different libraries based on whether we are building rncore or not, that's necessary
   # because we want to break a circular dependency between react_codegen_rncore and reactnative
   reactnative
-  turbomodulejsijni
-  yoga
 )
 
 target_compile_options(
@@ -353,11 +345,9 @@ target_link_libraries(
   react_codegen_event_emitter_module
   fbjni
   jsi
-  # We need to link different libraries based on wether we are building rncore or not, that's necessary
+  # We need to link different libraries based on whether we are building rncore or not, that's necessary
   # because we want to break a circular dependency between react_codegen_rncore and reactnative
   reactnative
-  turbomodulejsijni
-  yoga
 )
 
 target_compile_options(
@@ -429,11 +419,9 @@ target_link_libraries(
   react_codegen_native_modules_with_type_aliases
   fbjni
   jsi
-  # We need to link different libraries based on wether we are building rncore or not, that's necessary
+  # We need to link different libraries based on whether we are building rncore or not, that's necessary
   # because we want to break a circular dependency between react_codegen_rncore and reactnative
   reactnative
-  turbomodulejsijni
-  yoga
 )
 
 target_compile_options(
@@ -513,11 +501,9 @@ target_link_libraries(
   react_codegen_real_module_example
   fbjni
   jsi
-  # We need to link different libraries based on wether we are building rncore or not, that's necessary
+  # We need to link different libraries based on whether we are building rncore or not, that's necessary
   # because we want to break a circular dependency between react_codegen_rncore and reactnative
   reactnative
-  turbomodulejsijni
-  yoga
 )
 
 target_compile_options(
@@ -589,11 +575,9 @@ target_link_libraries(
   react_codegen_simple_native_modules
   fbjni
   jsi
-  # We need to link different libraries based on wether we are building rncore or not, that's necessary
+  # We need to link different libraries based on whether we are building rncore or not, that's necessary
   # because we want to break a circular dependency between react_codegen_rncore and reactnative
   reactnative
-  turbomodulejsijni
-  yoga
 )
 
 target_compile_options(
@@ -673,11 +657,9 @@ target_link_libraries(
   react_codegen_two_modules_different_files
   fbjni
   jsi
-  # We need to link different libraries based on wether we are building rncore or not, that's necessary
+  # We need to link different libraries based on whether we are building rncore or not, that's necessary
   # because we want to break a circular dependency between react_codegen_rncore and reactnative
   reactnative
-  turbomodulejsijni
-  yoga
 )
 
 target_compile_options(
