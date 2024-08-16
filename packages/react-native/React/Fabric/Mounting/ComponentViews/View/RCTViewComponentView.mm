@@ -739,6 +739,7 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
            (*borderMetrics.borderColors.left).getUIColor() != nullptr));
 
   CGColorRef backgroundColor = [_backgroundColor resolvedColorWithTraitCollection:self.traitCollection].CGColor;
+  UIEdgeInsets borderInsets = RCTUIEdgeInsetsFromEdgeInsets(borderMetrics.borderWidths);
 
   if (useCoreAnimationBorderRendering) {
     layer.mask = nil;
@@ -763,7 +764,7 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
       _borderLayer = borderLayer;
     }
 
-    layer.backgroundColor = nil;
+    layer.backgroundColor = backgroundColor;
     layer.borderWidth = 0;
     layer.borderColor = nil;
     layer.cornerRadius = 0;
@@ -773,9 +774,9 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
         RCTBorderStyleFromBorderStyle(borderMetrics.borderStyles.left),
         layer.bounds.size,
         RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii),
-        RCTUIEdgeInsetsFromEdgeInsets(borderMetrics.borderWidths),
+        borderInsets,
         borderColors,
-        backgroundColor,
+        UIColor.clearColor.CGColor,
         self.clipsToBounds);
 
     RCTReleaseRCTBorderColors(borderColors);
@@ -807,13 +808,20 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     // Stage 2.5. Custom Clipping Mask
     CAShapeLayer *maskLayer = nil;
     CGFloat cornerRadius = 0;
-    if (self.clipsToBounds) {
+
+    // We can always apply the maskLayer on the main layer as it won't clips subviews
+    BOOL atLeastOneBorderRadiusNotZero = borderMetrics.borderRadii.topLeft != 0 ||
+        borderMetrics.borderRadii.topRight != 0 || borderMetrics.borderRadii.bottomLeft != 0 ||
+        borderMetrics.borderRadii.bottomRight != 0;
+    BOOL shouldClipBounds = self.clipsToBounds || atLeastOneBorderRadiusNotZero;
+
+    if (shouldClipBounds) {
       if (borderMetrics.borderRadii.isUniform()) {
         // In this case we can simply use `cornerRadius` exclusively.
         cornerRadius = borderMetrics.borderRadii.topLeft;
       } else {
         RCTCornerInsets cornerInsets =
-            RCTGetCornerInsets(RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii), UIEdgeInsetsZero);
+            RCTGetCornerInsets(RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii), borderInsets);
         maskLayer = [self createMaskLayer:self.bounds cornerInsets:cornerInsets];
       }
     }
