@@ -27,6 +27,7 @@ public object MergedSoMapping {
         "react_newarchdefaults" -> "reactnative"
         "rninstance" -> "reactnative"
         "turbomodulejsijni" -> "reactnative"
+        "uimanagerjni" -> "reactnative"
         "yoga" -> "reactnative"
         else -> input
       }
@@ -41,6 +42,7 @@ public object MergedSoMapping {
       "reactnative" -> libreactnative_so()
       "rninstance" -> librninstance_so()
       "turbomodulejsijni" -> libturbomodulejsijni_so()
+      "uimanagerjni" -> libuimanagerjni_so()
       "yoga" -> libyoga_so()
     }
   }
@@ -60,6 +62,8 @@ public object MergedSoMapping {
   public external fun librninstance_so(): Int
 
   public external fun libturbomodulejsijni_so(): Int
+
+  public external fun libuimanagerjni_so(): Int
 
   public external fun libyoga_so(): Int
 }

@@ -11,7 +11,7 @@ add_compile_options(-std=c++20)
 file(GLOB_RECURSE bridgeless_nativeviewconfig_SRC CONFIGURE_DEPENDS *.cpp)
 add_library(
         bridgelessnativeviewconfig
-        STATIC
+        OBJECT
         ${bridgeless_nativeviewconfig_SRC}
 )
 target_include_directories(bridgelessnativeviewconfig PUBLIC .)
