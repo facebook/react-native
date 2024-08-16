@@ -126,6 +126,7 @@ add_react_android_subdir(src/main/jni/first-party/jni-lib-merge)
 add_react_android_subdir(src/main/jni/react/jni)
 add_react_android_subdir(src/main/jni/react/reactperflogger)
 add_react_android_subdir(src/main/jni/react/jscexecutor)
+add_react_android_subdir(src/main/jni/react/jsctooling)
 add_react_android_subdir(src/main/jni/react/turbomodule)
 add_react_android_subdir(src/main/jni/react/uimanager)
 add_react_android_subdir(src/main/jni/react/mapbuffer)
@@ -134,6 +135,7 @@ add_react_android_subdir(src/main/jni/react/fabric)
 add_react_android_subdir(src/main/jni/react/featureflags)
 add_react_android_subdir(src/main/jni/react/newarchdefaults)
 add_react_android_subdir(src/main/jni/react/hermes/reactexecutor)
+add_react_android_subdir(src/main/jni/react/hermes/tooling)
 add_react_android_subdir(src/main/jni/react/hermes/instrumentation/)
 add_react_android_subdir(src/main/jni/react/runtime/cxxreactpackage)
 add_react_android_subdir(src/main/jni/react/runtime/jni)
@@ -150,21 +152,23 @@ include(${REACT_ANDROID_DIR}/src/main/jni/first-party/jni-lib-merge/SoMerging-ut
 # This is needed in order to reduce the number of .so files that we ship in the final library
 add_library(reactnative
         SHARED
-          OnLoad.cpp
           $<TARGET_OBJECTS:bridgeless>
           $<TARGET_OBJECTS:bridgelessnativeviewconfig>
-          $<TARGET_OBJECTS:bridgelesshermes>
+          $<TARGET_OBJECTS:callinvokerholder>
           $<TARGET_OBJECTS:fabricjni>
-          $<TARGET_OBJECTS:hermes_inspector_modern>
-          $<TARGET_OBJECTS:hermesinstancejni>
+          $<TARGET_OBJECTS:glog_init>
           $<TARGET_OBJECTS:jni_lib_merge_glue>
           $<TARGET_OBJECTS:jserrorhandler>
+          $<TARGET_OBJECTS:jsinspector>
+          $<TARGET_OBJECTS:jsireact>
           $<TARGET_OBJECTS:logger>
           $<TARGET_OBJECTS:mapbufferjni>
           $<TARGET_OBJECTS:react_bridging>
           $<TARGET_OBJECTS:react_codegen_rncore>
           $<TARGET_OBJECTS:react_config>
+          $<TARGET_OBJECTS:react_cxxreact>
           $<TARGET_OBJECTS:react_debug>
+          $<TARGET_OBJECTS:react_devsupportjni>
           $<TARGET_OBJECTS:react_featureflags>
           $<TARGET_OBJECTS:react_featureflagsjni>
           $<TARGET_OBJECTS:react_nativemodule_core>
@@ -174,6 +178,7 @@ add_library(reactnative
           $<TARGET_OBJECTS:react_nativemodule_idlecallbacks>
           $<TARGET_OBJECTS:react_nativemodule_microtasks>
           $<TARGET_OBJECTS:react_newarchdefaults>
+          $<TARGET_OBJECTS:react_performance_timeline>
           $<TARGET_OBJECTS:react_render_animations>
           $<TARGET_OBJECTS:react_render_attributedstring>
           $<TARGET_OBJECTS:react_render_componentregistry>
@@ -188,12 +193,16 @@ add_library(reactnative
           $<TARGET_OBJECTS:react_render_mapbuffer>
           $<TARGET_OBJECTS:react_render_mounting>
           $<TARGET_OBJECTS:react_render_observers_events>
+          $<TARGET_OBJECTS:react_render_runtimescheduler>
           $<TARGET_OBJECTS:react_render_scheduler>
           $<TARGET_OBJECTS:react_render_telemetry>
           $<TARGET_OBJECTS:react_render_textlayoutmanager>
           $<TARGET_OBJECTS:react_render_uimanager>
           $<TARGET_OBJECTS:react_render_uimanager_consistency>
           $<TARGET_OBJECTS:react_utils>
+          $<TARGET_OBJECTS:reactnativeblob>
+          $<TARGET_OBJECTS:reactnativejni>
+          $<TARGET_OBJECTS:reactperflogger>
           $<TARGET_OBJECTS:rninstance>
           $<TARGET_OBJECTS:rrc_image>
           $<TARGET_OBJECTS:rrc_legacyviewmanagerinterop>
@@ -213,31 +222,36 @@ add_library(reactnative
 )
 target_merge_so(reactnative)
 
-target_link_libraries(reactnative PUBLIC
-        double-conversion
-        fbjni
-        folly_runtime
-        glog
-        jsi
-        log
-        reactnativejni
-        yoga
-        hermes-engine::libhermes
+target_link_libraries(reactnative
+          PUBLIC
+            android
+            double-conversion
+            fb
+            fbjni
+            folly_runtime
+            glog
+            jsi
+            log
+            yogacore
 )
+
 target_include_directories(reactnative
         PUBLIC
         $<TARGET_PROPERTY:bridgeless,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:bridgelessnativeviewconfig,INTERFACE_INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:bridgelesshermes,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:callinvokerholder,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:fabricjni,INTERFACE_INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:hermes_inspector_modern,INTERFACE_INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:hermesinstancejni,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:glog_init,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:jserrorhandler,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:jsinspector,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:jsireact,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:mapbufferjni,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_bridging,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_codegen_rncore,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_config,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:react_cxxreact,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_debug,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:react_devsupportjni,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_featureflags,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_featureflagsjni,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_nativemodule_core,INTERFACE_INCLUDE_DIRECTORIES>
@@ -247,6 +261,7 @@ target_include_directories(reactnative
         $<TARGET_PROPERTY:react_nativemodule_idlecallbacks,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_nativemodule_microtasks,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_newarchdefaults,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:react_performance_timeline,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_render_animations,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_render_attributedstring,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_render_componentregistry,INTERFACE_INCLUDE_DIRECTORIES>
@@ -262,12 +277,16 @@ target_include_directories(reactnative
         $<TARGET_PROPERTY:react_render_mapbuffer,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_render_mounting,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_render_observers_events,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:react_render_runtimescheduler,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_render_scheduler,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_render_telemetry,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_render_textlayoutmanager,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_render_uimanager,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_render_uimanager_consistency,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_utils,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:reactnativeblob,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:reactnativejni,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:reactperflogger,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:rninstance,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:rrc_image,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:rrc_legacyviewmanagerinterop,INTERFACE_INCLUDE_DIRECTORIES>

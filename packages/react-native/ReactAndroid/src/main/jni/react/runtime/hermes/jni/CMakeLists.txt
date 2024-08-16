@@ -21,12 +21,13 @@ target_compile_options(
         -std=c++20
         -fexceptions
 )
-target_merge_so(hermesinstancejni)
+
 target_include_directories(hermesinstancejni PRIVATE .)
-target_link_libraries(
-        hermesinstancejni
+target_merge_so(hermesinstancejni)
+
+target_link_libraries(hermesinstancejni
         hermes-engine::libhermes
-        rninstance
         fbjni
         bridgelesshermes
+        reactnative
 )

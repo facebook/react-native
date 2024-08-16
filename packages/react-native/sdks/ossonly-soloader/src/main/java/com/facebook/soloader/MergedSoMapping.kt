@@ -20,26 +20,52 @@ public object MergedSoMapping {
 
   public fun mapLibName(input: String): String =
       when (input) {
-        "fabricjni" -> "reactnative"
-        "hermesinstancejni" -> "reactnative"
-        "mapbufferjni" -> "reactnative"
-        "react_featureflagsjni" -> "reactnative"
-        "react_newarchdefaults" -> "reactnative"
-        "rninstance" -> "reactnative"
-        "turbomodulejsijni" -> "reactnative"
-        "uimanagerjni" -> "reactnative"
-        "yoga" -> "reactnative"
+        "fabricjni",
+        "jsinspector",
+        "mapbufferjni",
+        "react_devsupportjni",
+        "react_featureflagsjni",
+        "react_newarchdefaults",
+        "reactnativeblob",
+        "reactnativejni",
+        "rninstance",
+        "turbomodulejsijni",
+        "uimanagerjni",
+        "yoga" -> {
+          "reactnative"
+        }
+        "hermes_executor",
+        "hermesinstancejni",
+        "jsijniprofiler" -> {
+          "hermestooling"
+        }
+        "jscexecutor",
+        "jscruntime",
+        "jscinstance" -> {
+          "jsctooling"
+        }
         else -> input
       }
 
   public fun invokeJniOnload(libraryName: String): Unit {
     when (libraryName) {
       "fabricjni" -> libfabricjni_so()
+      "hermes_executor" -> libhermes_executor_so()
       "hermesinstancejni" -> libhermesinstancejni_so()
+      "hermestooling" -> libhermestooling_so()
+      "jscexecutor" -> libjscexecutor_so()
+      "jscinstance" -> libjscinstance_so()
+      "jscruntime" -> libjscruntime_so()
+      "jsctooling" -> libjsctooling_so()
+      "jsijniprofiler" -> libjsijniprofiler_so()
+      "jsinspector" -> libjsinspector_so()
       "mapbufferjni" -> libmapbufferjni_so()
+      "react_devsupportjni" -> libreact_devsupportjni_so()
       "react_featureflagsjni" -> libreact_featureflagsjni_so()
       "react_newarchdefaults" -> libreact_newarchdefaults_so()
       "reactnative" -> libreactnative_so()
+      "reactnativeblob" -> libreactnativeblob_so()
+      "reactnativejni" -> libreactnativejni_so()
       "rninstance" -> librninstance_so()
       "turbomodulejsijni" -> libturbomodulejsijni_so()
       "uimanagerjni" -> libuimanagerjni_so()
@@ -49,15 +75,37 @@ public object MergedSoMapping {
 
   public external fun libfabricjni_so(): Int
 
+  public external fun libhermes_executor_so(): Int
+
   public external fun libhermesinstancejni_so(): Int
 
+  public external fun libhermestooling_so(): Int
+
+  public external fun libjscexecutor_so(): Int
+
+  public external fun libjscinstance_so(): Int
+
+  public external fun libjscruntime_so(): Int
+
+  public external fun libjsctooling_so(): Int
+
+  public external fun libjsijniprofiler_so(): Int
+
+  public external fun libjsinspector_so(): Int
+
   public external fun libmapbufferjni_so(): Int
+
+  public external fun libreact_devsupportjni_so(): Int
 
   public external fun libreact_featureflagsjni_so(): Int
 
   public external fun libreact_newarchdefaults_so(): Int
 
   public external fun libreactnative_so(): Int
+
+  public external fun libreactnativeblob_so(): Int
+
+  public external fun libreactnativejni_so(): Int
 
   public external fun librninstance_so(): Int
 

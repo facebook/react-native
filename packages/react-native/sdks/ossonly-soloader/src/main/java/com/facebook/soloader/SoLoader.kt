@@ -24,7 +24,6 @@ public object SoLoader {
 
   private fun mapLibName(input: String) = MergedSoMapping.mapLibName(input)
 
-  @Suppress("UNUSED_PARAMETER")
   private fun invokeJniOnload(libraryName: String) = MergedSoMapping.invokeJniOnload(libraryName)
 
   @Deprecated("This method is a no-op and you should not be calling it")
