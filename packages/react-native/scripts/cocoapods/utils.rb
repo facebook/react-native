@@ -241,7 +241,7 @@ class ReactNativePodsUtils
             node_binary = `type -a node`.split("\n").map { |path|
                 path.gsub!("node is ", "")
             }.select { |b|
-                return !b.start_with?("/var")
+                !b.start_with?("/var")
             }
 
             node_binary = node_binary[0]
