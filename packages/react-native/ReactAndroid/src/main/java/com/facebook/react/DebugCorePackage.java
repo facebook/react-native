@@ -37,7 +37,7 @@ import javax.inject.Provider;
       JSCHeapCapture.class,
     })
 /* package */
-public class DebugCorePackage extends TurboReactPackage implements ViewManagerOnDemandReactPackage {
+public class DebugCorePackage extends BaseReactPackage implements ViewManagerOnDemandReactPackage {
   private @Nullable Map<String, ModuleSpec> mViewManagers;
 
   public DebugCorePackage() {}
