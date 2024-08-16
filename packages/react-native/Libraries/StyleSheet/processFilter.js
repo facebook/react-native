@@ -44,8 +44,8 @@ export default function processFilter(
   }
 
   if (typeof filter === 'string') {
-    // matches on functions with args like "drop-shadow(1.5)"
-    const regex = /([\w-]+)\(([^)]+)\)/g;
+    // matches on functions with args and nested functions like "drop-shadow(10 10 10 rgba(0, 0, 0, 1))"
+    const regex = /([\w-]+)\(([^()]*|\([^()]*\)|[^()]*\([^()]*\)[^()]*)\)/g;
     let matches;
 
     while ((matches = regex.exec(filter))) {
@@ -254,8 +254,8 @@ function parseDropShadowString(rawDropShadow: string): ?DropShadowPrimitive {
   let lengthCount = 0;
   let keywordDetectedAfterLength = false;
 
-  // split on all whitespaces
-  for (const arg of rawDropShadow.split(/\s+/)) {
+  // split args by all whitespaces that are not in parenthesis
+  for (const arg of rawDropShadow.split(/\s+(?![^(]*\))/)) {
     const processedColor = processColor(arg);
     if (processedColor != null) {
       if (dropShadow.color != null) {
