@@ -9,7 +9,7 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 file(GLOB hermesinspectormodern_SRC CONFIGURE_DEPENDS chrome/*.cpp)
 
 add_library(hermes_inspector_modern
-        STATIC
+        OBJECT
         ${hermesinspectormodern_SRC})
 
 target_compile_options(

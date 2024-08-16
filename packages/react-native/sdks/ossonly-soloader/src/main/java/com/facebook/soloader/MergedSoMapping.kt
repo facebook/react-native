@@ -20,22 +20,38 @@ public object MergedSoMapping {
 
   public fun mapLibName(input: String): String =
       when (input) {
-        "react_newarchdefaults" -> "reactnative"
+        "fabricjni" -> "reactnative"
+        "hermesinstancejni" -> "reactnative"
         "mapbufferjni" -> "reactnative"
+        "react_featureflagsjni" -> "reactnative"
+        "react_newarchdefaults" -> "reactnative"
+        "rninstance" -> "reactnative"
         else -> input
       }
 
   public fun invokeJniOnload(libraryName: String): Unit {
     when (libraryName) {
-      "react_newarchdefaults" -> libreact_newarchdefaults_so()
+      "fabricjni" -> libfabricjni_so()
+      "hermesinstancejni" -> libhermesinstancejni_so()
       "mapbufferjni" -> libmapbufferjni_so()
+      "react_featureflagsjni" -> libreact_featureflagsjni_so()
+      "react_newarchdefaults" -> libreact_newarchdefaults_so()
       "reactnative" -> libreactnative_so()
+      "rninstance" -> librninstance_so()
     }
   }
 
-  public external fun libreact_newarchdefaults_so(): Int
+  public external fun libfabricjni_so(): Int
+
+  public external fun libhermesinstancejni_so(): Int
 
   public external fun libmapbufferjni_so(): Int
 
+  public external fun libreact_featureflagsjni_so(): Int
+
+  public external fun libreact_newarchdefaults_so(): Int
+
   public external fun libreactnative_so(): Int
+
+  public external fun librninstance_so(): Int
 }
