@@ -306,6 +306,35 @@ TEST_P(ConsoleApiTest, testConsoleLogWithErrorObject) {
   })())");
 }
 
+TEST_P(ConsoleApiTest, testConsoleLogWithArrayOfErrors) {
+  InSequence s;
+  expectConsoleApiCallImmediate(AllOf(
+      AtJsonPtr("/type", "log"),
+      AtJsonPtr("/args/0/type", "object"),
+      AtJsonPtr("/args/0/subtype", "array"),
+      AtJsonPtr("/args/0/description", "Array(2)"),
+      AtJsonPtr("/args/0/preview/description", "Array(2)"),
+      AtJsonPtr("/args/0/preview/type", "object"),
+      AtJsonPtr("/args/0/preview/subtype", "array"),
+      AtJsonPtr("/args/0/preview/properties/0/type", "object"),
+      AtJsonPtr("/args/0/preview/properties/0/subtype", "error"),
+      AtJsonPtr(
+          "/args/0/preview/properties/0/value",
+          "Error: wut\n"
+          "    at typicallyUrlsAreLongAndWillHitTheAbbreviationLimit (<eval>:6:29)\n"
+          "    at reallyLon…")));
+  expectConsoleApiCallBuffered(AllOf(AtJsonPtr("/type", "log")));
+  eval(R"((() => {
+    function reallyLongFunctionNameToAssertMaxLengthOfAbbreviatedString() {
+      typicallyUrlsAreLongAndWillHitTheAbbreviationLimit();
+    }
+    function typicallyUrlsAreLongAndWillHitTheAbbreviationLimit() {
+      console.log([new Error('wut'), new TypeError('why')]);
+    }
+    reallyLongFunctionNameToAssertMaxLengthOfAbbreviatedString();
+  })())");
+}
+
 TEST_P(ConsoleApiTest, testConsoleWarn) {
   InSequence s;
   expectConsoleApiCall(AllOf(
