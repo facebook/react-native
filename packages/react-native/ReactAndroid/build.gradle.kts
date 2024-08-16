@@ -572,7 +572,6 @@ android {
             "bridgeless",
             "rninstance",
             "hermesinstancejni",
-            "uimanagerjni",
             "jscinstance",
             "react_devsupportjni",
             // prefab targets

@@ -152,6 +152,7 @@ add_library(reactnative
         SHARED
           OnLoad.cpp
           $<TARGET_OBJECTS:bridgeless>
+          $<TARGET_OBJECTS:bridgelessnativeviewconfig>
           $<TARGET_OBJECTS:bridgelesshermes>
           $<TARGET_OBJECTS:fabricjni>
           $<TARGET_OBJECTS:hermes_inspector_modern>
@@ -197,6 +198,7 @@ add_library(reactnative
           $<TARGET_OBJECTS:rrc_image>
           $<TARGET_OBJECTS:rrc_legacyviewmanagerinterop>
           $<TARGET_OBJECTS:rrc_modal>
+          $<TARGET_OBJECTS:rrc_native>
           $<TARGET_OBJECTS:rrc_progressbar>
           $<TARGET_OBJECTS:rrc_root>
           $<TARGET_OBJECTS:rrc_scrollview>
@@ -206,6 +208,7 @@ add_library(reactnative
           $<TARGET_OBJECTS:rrc_view>
           $<TARGET_OBJECTS:runtimeexecutor>
           $<TARGET_OBJECTS:turbomodulejsijni>
+          $<TARGET_OBJECTS:uimanagerjni>
           $<TARGET_OBJECTS:yoga>
 )
 target_merge_so(reactnative)
@@ -224,6 +227,7 @@ target_link_libraries(reactnative PUBLIC
 target_include_directories(reactnative
         PUBLIC
         $<TARGET_PROPERTY:bridgeless,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:bridgelessnativeviewconfig,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:bridgelesshermes,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:fabricjni,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:hermes_inspector_modern,INTERFACE_INCLUDE_DIRECTORIES>
@@ -268,6 +272,7 @@ target_include_directories(reactnative
         $<TARGET_PROPERTY:rrc_image,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:rrc_legacyviewmanagerinterop,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:rrc_modal,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:rrc_native,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:rrc_progressbar,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:rrc_root,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:rrc_scrollview,INTERFACE_INCLUDE_DIRECTORIES>
@@ -277,6 +282,7 @@ target_include_directories(reactnative
         $<TARGET_PROPERTY:rrc_view,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:runtimeexecutor,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:turbomodulejsijni,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:uimanagerjni,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:yoga,INTERFACE_INCLUDE_DIRECTORIES>
 )
 
