@@ -21,11 +21,6 @@ target_compile_options(
 )
 target_include_directories(bridgeless PUBLIC .)
 
-find_library(LIBHERMES NAMES hermes-engine::libhermes)
-if (LIBHERMES)
-    target_link_libraries(bridgeless hermes-engine::libhermes)
-endif ()
-
 target_link_libraries(
         bridgeless
         jserrorhandler
