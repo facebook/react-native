@@ -16,7 +16,7 @@ import type {
   SectionBase as _SectionBase,
   VirtualizedSectionListProps,
 } from '@react-native/virtualized-lists';
-import type {AbstractComponent, Element, ElementRef} from 'react';
+import type {AbstractComponent, ElementRef} from 'react';
 
 import Platform from '../Utilities/Platform';
 import {VirtualizedSectionList} from '@react-native/virtualized-lists';
@@ -56,7 +56,7 @@ type OptionalProps<SectionT: SectionBase<any>> = {|
       ...
     },
     ...
-  }) => null | Element<any>,
+  }) => null | React.MixedElement,
   /**
    * A marker property for telling the list to re-render (since it implements `PureComponent`). If
    * any of your `renderItem`, Header, Footer, etc. functions depend on anything outside of the

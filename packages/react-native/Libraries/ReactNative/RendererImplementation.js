@@ -14,7 +14,7 @@ import type {
   Node,
 } from '../Renderer/shims/ReactNativeTypes';
 import type ReactFabricHostComponent from './ReactFabricPublicInstance/ReactFabricHostComponent';
-import type {Element, ElementRef, ElementType} from 'react';
+import type {ElementRef, ElementType} from 'react';
 
 import {
   onCaughtError,
@@ -28,7 +28,7 @@ export function renderElement({
   useFabric,
   useConcurrentRoot,
 }: {
-  element: Element<ElementType>,
+  element: React.MixedElement,
   rootTag: number,
   useFabric: boolean,
   useConcurrentRoot: boolean,

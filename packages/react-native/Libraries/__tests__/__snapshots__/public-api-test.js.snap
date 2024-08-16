@@ -5819,7 +5819,7 @@ type OptionalProps<SectionT: SectionBase<any>> = {|
       ...
     },
     ...
-  }) => null | Element<any>,
+  }) => null | React.MixedElement,
   extraData?: any,
   initialNumToRender?: ?number,
   inverted?: ?boolean,
@@ -7572,7 +7572,7 @@ declare module.exports: ReactNativeRuntimeDiagnostics;
 
 exports[`public API should not change unintentionally Libraries/ReactNative/RendererImplementation.js 1`] = `
 "declare export function renderElement({
-  element: Element<ElementType>,
+  element: React.MixedElement,
   rootTag: number,
   useFabric: boolean,
   useConcurrentRoot: boolean,
