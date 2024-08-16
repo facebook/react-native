@@ -36,7 +36,7 @@ using namespace facebook::react;
   RCTParagraphComponentAccessibilityProvider *_accessibilityProvider;
   UILongPressGestureRecognizer *_longPressGestureRecognizer;
   CAShapeLayer *_highlightLayer;
-  UIImageView *_textRenderView;
+  CALayer *_textRenderLayer;
   CGRect _lastViewBounds;
 }
 
@@ -46,8 +46,9 @@ using namespace facebook::react;
     _props = ParagraphShadowNode::defaultSharedProps();
 
     self.opaque = NO;
-    _textRenderView = [[UIImageView alloc] initWithFrame:self.bounds];
-    [self addSubview:_textRenderView];
+    _textRenderLayer = [[CALayer alloc] init];
+    _textRenderLayer.frame = self.bounds;
+    [self.layer addSublayer:_textRenderLayer];
     _lastViewBounds = self.bounds;
   }
 
@@ -127,7 +128,7 @@ using namespace facebook::react;
 {
   [super prepareForRecycle];
   _state.reset();
-  _textRenderView.image = nil;
+  _textRenderLayer.contents = nil;
   _accessibilityProvider = nil;
 }
 
@@ -142,8 +143,7 @@ using namespace facebook::react;
   if (!textLayoutManager) {
     return;
   }
-
-  _textRenderView.frame = self.bounds;
+  _textRenderLayer.frame = self.bounds;
 
   CGRect frame = RCTCGRectFromRect(self->_layoutMetrics.getContentFrame());
 
@@ -173,7 +173,7 @@ using namespace facebook::react;
                                   }
                                 }];
   }];
-  [_textRenderView setImage:image];
+  _textRenderLayer.contents = (id)image.CGImage;
 }
 
 #pragma mark - Accessibility
