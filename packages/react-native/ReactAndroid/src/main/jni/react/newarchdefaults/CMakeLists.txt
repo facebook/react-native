@@ -14,8 +14,6 @@ add_compile_options(-fexceptions
         -Wall
         -DLOG_TAG=\"ReactNative\")
 
-add_link_options(-Wl,--defsym=JNI_OnLoad=JNI_OnLoad_Weak)
-
 file(GLOB react_newarchdefaults_SRC CONFIGURE_DEPENDS *.cpp)
 
 add_library(react_newarchdefaults OBJECT ${react_newarchdefaults_SRC})

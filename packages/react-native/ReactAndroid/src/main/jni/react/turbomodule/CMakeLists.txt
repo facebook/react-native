@@ -19,7 +19,7 @@ add_compile_options(
 # TODO This should be exported to its own folder hierarchy
 add_library(
         callinvokerholder
-        STATIC
+        OBJECT
         ReactCommon/CallInvokerHolder.cpp
         ReactCommon/NativeMethodCallInvokerHolder.cpp
 )

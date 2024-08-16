@@ -11,7 +11,7 @@ import com.facebook.react.tests.*
 import com.facebook.react.tests.createProject
 import com.facebook.react.tests.createTestTask
 import java.io.File
-import org.assertj.Assert.assertThat
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
