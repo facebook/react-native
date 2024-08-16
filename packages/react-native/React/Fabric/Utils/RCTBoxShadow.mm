@@ -10,6 +10,8 @@
 #import <CoreImage/CoreImage.h>
 #import <React/RCTConversions.h>
 
+#import <react/renderer/graphics/Color.h>
+
 #import <math.h>
 
 using namespace facebook::react;
@@ -82,6 +84,12 @@ static CGRect insetRect(CGRect rect, CGFloat left, CGFloat top, CGFloat right, C
       rect.origin.x + left, rect.origin.y + top, rect.size.width - right - left, rect.size.height - bottom - top);
 }
 
+static CGColorRef colorRefFromSharedColor(const SharedColor &color)
+{
+  CGColorRef colorRef = RCTUIColorFromSharedColor(color).CGColor;
+  return colorRef ? colorRef : [UIColor blackColor].CGColor;
+}
+
 // Core graphics has support for shadows that looks similar to web and are very
 // fast to apply. The only issue is that this shadow does not take a spread
 // radius like on web. To get around this, we draw the shadow rect (the rect
@@ -110,7 +118,7 @@ static void renderOutsetShadows(
     CGFloat offsetY = it->offsetY;
     CGFloat blurRadius = it->blurRadius;
     CGFloat spreadDistance = it->spreadDistance;
-    CGColorRef color = RCTUIColorFromSharedColor(it->color).CGColor;
+    CGColorRef color = colorRefFromSharedColor(it->color);
 
     // First, define the shadow rect. This is the rect that will be filled
     // and _cast_ the shadow. As a result, the size does not incorporate
@@ -211,7 +219,7 @@ static void renderInsetShadows(
     CGFloat offsetY = it->offsetY;
     CGFloat blurRadius = it->blurRadius;
     CGFloat spreadDistance = it->spreadDistance;
-    CGColorRef color = RCTUIColorFromSharedColor(it->color).CGColor;
+    CGColorRef color = colorRefFromSharedColor(it->color);
 
     // Second, create the two offscreen rects we will use to create the correct
     // inset shadow shape. shadowRect has an originX such that it AND the clear
