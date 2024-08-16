@@ -5,11 +5,13 @@
 
 cmake_minimum_required(VERSION 3.13)
 
+include(${REACT_ANDROID_DIR}/src/main/jni/first-party/jni-lib-merge/SoMerging-utils.cmake)
+
 file(GLOB react_featureflagsjni_SRCS CONFIGURE_DEPENDS *.cpp)
 
 add_library(
         react_featureflagsjni
-        SHARED
+        OBJECT
         ${react_featureflagsjni_SRCS}
 )
 
@@ -22,6 +24,8 @@ target_link_libraries(
         react_featureflags
         reactnativejni
 )
+
+target_merge_so(react_featureflagsjni)
 
 target_compile_options(
         react_featureflagsjni

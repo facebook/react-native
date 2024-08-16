@@ -64,7 +64,6 @@ target_compile_options(${CMAKE_PROJECT_NAME}
 
 # Prefab packages from React Native
 find_package(ReactAndroid REQUIRED CONFIG)
-add_library(fabricjni ALIAS ReactAndroid::fabricjni)
 add_library(jsi ALIAS ReactAndroid::jsi)
 add_library(react_render_mapbuffer ALIAS ReactAndroid::react_render_mapbuffer)
 add_library(react_render_textlayoutmanager ALIAS ReactAndroid::react_render_textlayoutmanager)
@@ -76,7 +75,6 @@ find_package(fbjni REQUIRED CONFIG)
 add_library(fbjni ALIAS fbjni::fbjni)
 
 target_link_libraries(${CMAKE_PROJECT_NAME}
-        fabricjni                           # prefab ready
         fbjni                               # via 3rd party prefab
         jsi                                 # prefab ready
         reactnative                         # prefab ready

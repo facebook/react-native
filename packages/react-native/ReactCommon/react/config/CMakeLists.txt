@@ -15,6 +15,6 @@ add_compile_options(
         -DLOG_TAG=\"Fabric\")
 
 file(GLOB react_config_SRC CONFIGURE_DEPENDS *.cpp)
-add_library(react_config STATIC ${react_config_SRC})
+add_library(react_config OBJECT ${react_config_SRC})
 
 target_include_directories(react_config PUBLIC ${REACT_COMMON_DIR})

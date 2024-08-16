@@ -9,7 +9,7 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 file(GLOB bridgeless_SRC "*.cpp")
 
 add_library(bridgeless
-        STATIC
+        OBJECT
         ${bridgeless_SRC}
 )
 target_compile_options(

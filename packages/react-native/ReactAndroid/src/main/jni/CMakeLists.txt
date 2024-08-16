@@ -151,20 +151,29 @@ include(${REACT_ANDROID_DIR}/src/main/jni/first-party/jni-lib-merge/SoMerging-ut
 add_library(reactnative
         SHARED
           OnLoad.cpp
+          $<TARGET_OBJECTS:bridgeless>
+          $<TARGET_OBJECTS:bridgelesshermes>
+          $<TARGET_OBJECTS:fabricjni>
+          $<TARGET_OBJECTS:hermes_inspector_modern>
+          $<TARGET_OBJECTS:hermesinstancejni>
           $<TARGET_OBJECTS:jni_lib_merge_glue>
+          $<TARGET_OBJECTS:jserrorhandler>
           $<TARGET_OBJECTS:logger>
           $<TARGET_OBJECTS:mapbufferjni>
           $<TARGET_OBJECTS:react_bridging>
           $<TARGET_OBJECTS:react_codegen_rncore>
+          $<TARGET_OBJECTS:react_config>
           $<TARGET_OBJECTS:react_debug>
           $<TARGET_OBJECTS:react_featureflags>
+          $<TARGET_OBJECTS:react_featureflagsjni>
           $<TARGET_OBJECTS:react_nativemodule_core>
-          $<TARGET_OBJECTS:react_nativemodule_dom>
           $<TARGET_OBJECTS:react_nativemodule_defaults>
+          $<TARGET_OBJECTS:react_nativemodule_dom>
           $<TARGET_OBJECTS:react_nativemodule_featureflags>
           $<TARGET_OBJECTS:react_nativemodule_idlecallbacks>
           $<TARGET_OBJECTS:react_nativemodule_microtasks>
           $<TARGET_OBJECTS:react_newarchdefaults>
+          $<TARGET_OBJECTS:react_render_animations>
           $<TARGET_OBJECTS:react_render_attributedstring>
           $<TARGET_OBJECTS:react_render_componentregistry>
           $<TARGET_OBJECTS:react_render_consistency>
@@ -177,14 +186,21 @@ add_library(reactnative
           $<TARGET_OBJECTS:react_render_leakchecker>
           $<TARGET_OBJECTS:react_render_mapbuffer>
           $<TARGET_OBJECTS:react_render_mounting>
+          $<TARGET_OBJECTS:react_render_observers_events>
+          $<TARGET_OBJECTS:react_render_scheduler>
           $<TARGET_OBJECTS:react_render_telemetry>
           $<TARGET_OBJECTS:react_render_textlayoutmanager>
           $<TARGET_OBJECTS:react_render_uimanager>
           $<TARGET_OBJECTS:react_render_uimanager_consistency>
           $<TARGET_OBJECTS:react_utils>
+          $<TARGET_OBJECTS:rninstance>
           $<TARGET_OBJECTS:rrc_image>
           $<TARGET_OBJECTS:rrc_legacyviewmanagerinterop>
+          $<TARGET_OBJECTS:rrc_modal>
+          $<TARGET_OBJECTS:rrc_progressbar>
           $<TARGET_OBJECTS:rrc_root>
+          $<TARGET_OBJECTS:rrc_scrollview>
+          $<TARGET_OBJECTS:rrc_switch>
           $<TARGET_OBJECTS:rrc_text>
           $<TARGET_OBJECTS:rrc_textinput>
           $<TARGET_OBJECTS:rrc_view>
@@ -194,7 +210,6 @@ target_merge_so(reactnative)
 
 target_link_libraries(reactnative PUBLIC
         double-conversion
-        fabricjni
         fbjni
         folly_runtime
         glog
@@ -202,22 +217,33 @@ target_link_libraries(reactnative PUBLIC
         log
         reactnativejni
         yoga
+        hermes-engine::libhermes
 )
 target_include_directories(reactnative
         PUBLIC
+        $<TARGET_PROPERTY:bridgeless,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:bridgelesshermes,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:fabricjni,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:hermes_inspector_modern,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:hermesinstancejni,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:jserrorhandler,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:mapbufferjni,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_bridging,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_codegen_rncore,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:react_config,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_debug,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_featureflags,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:react_featureflagsjni,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_nativemodule_core,INTERFACE_INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:react_nativemodule_dom,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_nativemodule_defaults,INTERFACE_INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:react_nativemodule_idlecallbacks,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:react_nativemodule_dom,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_nativemodule_featureflags,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:react_nativemodule_idlecallbacks,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_nativemodule_microtasks,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_newarchdefaults,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:react_render_animations,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_render_attributedstring,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:react_render_componentregistry,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_render_componentregistry,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_render_consistency,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_render_core,INTERFACE_INCLUDE_DIRECTORIES>
@@ -229,14 +255,21 @@ target_include_directories(reactnative
         $<TARGET_PROPERTY:react_render_leakchecker,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_render_mapbuffer,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_render_mounting,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:react_render_observers_events,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:react_render_scheduler,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_render_telemetry,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_render_textlayoutmanager,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_render_uimanager,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_render_uimanager_consistency,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_utils,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:rninstance,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:rrc_image,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:rrc_legacyviewmanagerinterop,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:rrc_modal,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:rrc_progressbar,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:rrc_root,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:rrc_scrollview,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:rrc_switch,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:rrc_text,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:rrc_textinput,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:rrc_view,INTERFACE_INCLUDE_DIRECTORIES>
@@ -299,7 +332,7 @@ add_executable(reactnative_unittest
     -std=c++20
     -DHERMES_ENABLE_DEBUGGER)
 
-  target_link_libraries(reactnative_unittest
+target_link_libraries(reactnative_unittest
   fabricjni
   folly_runtime
   glog
@@ -307,10 +340,11 @@ add_executable(reactnative_unittest
   gtest_main
   hermes-engine::libhermes
   hermes_inspector_modern
+  jserrorhandler
   jsi
   mapbufferjni
-  react_cxxreact
   react_codegen_rncore
+  react_cxxreact
   react_debug
   react_render_animations
   react_render_attributedstring
@@ -326,11 +360,13 @@ add_executable(reactnative_unittest
   react_render_uimanager
   react_render_uimanager_consistency
   react_utils
+  reactnative
   rrc_legacyviewmanagerinterop
-  rrc_root
   rrc_modal
+  rrc_root
   rrc_scrollview
   rrc_text
+  rrc_textinput
   rrc_view
   yoga
 )
