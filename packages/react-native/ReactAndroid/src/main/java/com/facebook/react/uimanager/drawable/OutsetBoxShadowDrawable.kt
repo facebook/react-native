@@ -24,13 +24,15 @@ import com.facebook.react.uimanager.style.ComputedBorderRadius
 import com.facebook.react.uimanager.style.CornerRadii
 import kotlin.math.roundToInt
 
+internal const val MIN_OUTSET_BOX_SHADOW_SDK_VERSION = 28
+
 // "the resulting shadow must approximate {...} a Gaussian blur with a standard deviation equal
 // to half the blur radius"
 // https://www.w3.org/TR/css-backgrounds-3/#shadow-blur
 private const val BLUR_RADIUS_SIGMA_SCALE = 0.5f
 
 /** Draws an outer box-shadow https://www.w3.org/TR/css-backgrounds-3/#shadow-shape */
-@RequiresApi(28)
+@RequiresApi(MIN_OUTSET_BOX_SHADOW_SDK_VERSION)
 internal class OutsetBoxShadowDrawable(
     private val context: Context,
     borderRadius: BorderRadiusStyle? = null,
@@ -97,7 +99,7 @@ internal class OutsetBoxShadowDrawable(
           )
         }
 
-    val spreadExtent = PixelUtil.toPixelFromDIP(spread).coerceAtLeast(0f)
+    val spreadExtent = PixelUtil.toPixelFromDIP(spread)
     val shadowRect =
         RectF(bounds).apply {
           inset(-spreadExtent, -spreadExtent)
