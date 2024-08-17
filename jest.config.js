@@ -30,7 +30,6 @@ module.exports = {
   testRegex: '/__tests__/.*-test(\\.fb)?\\.js$',
   testPathIgnorePatterns: [
     '/node_modules/',
-    '<rootDir>/packages/react-native/template',
     '<rootDir>/packages/react-native/sdks',
     '<rootDir>/packages/react-native/Libraries/Renderer',
     '<rootDir>/packages/react-native-test-renderer/src',
