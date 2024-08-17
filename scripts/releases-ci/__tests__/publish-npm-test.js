@@ -121,14 +121,14 @@ describe('publish-npm', () => {
 
   describe("publishNpm('nightly')", () => {
     beforeAll(() => {
-      jest.mock('../../releases/utils/monorepo', () => ({
-        ...jest.requireActual('../../releases/utils/monorepo'),
+      jest.mock('../../utils/monorepo', () => ({
+        ...jest.requireActual('../../utils/monorepo'),
         getPackages: getPackagesMock,
       }));
     });
 
     afterAll(() => {
-      jest.unmock('../../releases/utils/monorepo');
+      jest.unmock('../../utils/monorepo');
     });
 
     it('should publish', async () => {
@@ -161,8 +161,14 @@ describe('publish-npm', () => {
       /* [macOS We skip Android Artifact and NPM Publish on React Native macOS
       expect(generateAndroidArtifactsMock).toHaveBeenCalled();
       expect(publishPackageMock.mock.calls).toEqual([
-        ['path/to/monorepo/pkg-a', {otp: undefined, tags: ['nightly']}],
-        ['path/to/monorepo/pkg-b', {otp: undefined, tags: ['nightly']}],
+        [
+          'path/to/monorepo/pkg-a',
+          {otp: undefined, tags: ['nightly'], access: 'public'},
+        ],
+        [
+          'path/to/monorepo/pkg-b',
+          {otp: undefined, tags: ['nightly'], access: 'public'},
+        ],
         [
           path.join(REPO_ROOT, 'packages', 'react-native'),
           {otp: undefined, tags: ['nightly']},
@@ -251,8 +257,14 @@ describe('publish-npm', () => {
 
       // Note that we don't call `publishPackage` for react-native, or monorepo/pkg-c
       expect(publishPackageMock.mock.calls).toEqual([
-        ['path/to/monorepo/pkg-a', {otp: undefined, tags: ['nightly']}],
-        ['path/to/monorepo/pkg-b', {otp: undefined, tags: ['nightly']}],
+        [
+          'path/to/monorepo/pkg-a',
+          {otp: undefined, tags: ['nightly'], access: 'public'},
+        ],
+        [
+          'path/to/monorepo/pkg-b',
+          {otp: undefined, tags: ['nightly'], access: 'public'},
+        ],
       ]);
 
       expect(consoleLogMock.mock.calls).toEqual([

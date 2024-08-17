@@ -5,19 +5,23 @@
 
 Pod::Spec.new do |spec|
   spec.name = 'boost'
-  spec.version = '1.83.0'
+  spec.version = '1.84.0'
   spec.license = { :type => 'Boost Software License', :file => "LICENSE_1_0.txt" }
   spec.homepage = 'http://www.boost.org'
   spec.summary = 'Boost provides free peer-reviewed portable C++ source libraries.'
   spec.authors = 'Rene Rivera'
-  spec.source = { :http => 'https://archives.boost.io/release/1.83.0/source/boost_1_83_0.tar.bz2',
-                  :sha256 => '6478edfe2f3305127cffe8caf73ea0176c53769f4bf1585be237eb30798c3b8e' }
+  spec.source = { :git => "https://github.com/react-native-community/boost-for-react-native",
+                  :tag => "v1.84.0" }
 
   # Pinning to the same version as React.podspec.
   spec.platforms = min_supported_versions
   spec.requires_arc = false
+  spec.source_files = 'boost/**/*.{hpp,cpp}'
 
   spec.module_name = 'boost'
   spec.header_dir = 'boost'
   spec.preserve_path = 'boost'
+  spec.header_mappings_dir = 'boost/boost'
+
+  spec.resource_bundles = {'boost_privacy' => 'boost/PrivacyInfo.xcprivacy'}
 end

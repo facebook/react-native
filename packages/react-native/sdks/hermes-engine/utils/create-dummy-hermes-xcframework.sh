@@ -19,7 +19,7 @@ pushd destroot/Library/Frameworks > /dev/null || exit 1
 
 echo '' > dummy.c
 
-platforms=( "macosx" "ios" ) # Add other platforms here if needed
+platforms=( "macosx" "ios" "xros" ) # Add other platforms here if needed
 
 for platform in "${platforms[@]}" 
 do 

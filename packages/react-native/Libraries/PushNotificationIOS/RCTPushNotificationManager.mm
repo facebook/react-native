@@ -99,47 +99,6 @@ RCT_ENUM_CONVERTER(
 
 @implementation RCTPushNotificationManager
 
-#if TARGET_OS_IOS // [macOS] [visionOS]
-/** DEPRECATED. UILocalNotification was deprecated in iOS 10. Please don't add new callsites. */
-static NSDictionary *RCTFormatLocalNotification(UILocalNotification *notification)
-{
-  NSMutableDictionary *formattedLocalNotification = [NSMutableDictionary dictionary];
-  if (notification.fireDate) {
-    NSDateFormatter *formatter = [NSDateFormatter new];
-    [formatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"];
-    NSString *fireDateString = [formatter stringFromDate:notification.fireDate];
-    formattedLocalNotification[@"fireDate"] = fireDateString;
-  }
-  formattedLocalNotification[@"alertAction"] = RCTNullIfNil(notification.alertAction);
-  formattedLocalNotification[@"alertBody"] = RCTNullIfNil(notification.alertBody);
-  formattedLocalNotification[@"applicationIconBadgeNumber"] = @(notification.applicationIconBadgeNumber);
-  formattedLocalNotification[@"category"] = RCTNullIfNil(notification.category);
-  formattedLocalNotification[@"soundName"] = RCTNullIfNil(notification.soundName);
-  formattedLocalNotification[@"userInfo"] = RCTNullIfNil(RCTJSONClean(notification.userInfo));
-  formattedLocalNotification[@"remote"] = @NO;
-  return formattedLocalNotification;
-}
-#endif // [macOS] [visionOS]
-#if TARGET_OS_OSX // [macOS
-static NSDictionary *RCTFormatUserNotification(NSUserNotification *notification)
-{
-  NSMutableDictionary *formattedUserNotification = [NSMutableDictionary dictionary];
-  if (notification.deliveryDate) {
-    NSDateFormatter *formatter = [NSDateFormatter new];
-    [formatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"];
-    NSString *fireDateString = [formatter stringFromDate:notification.deliveryDate];
-    formattedUserNotification[@"fireDate"] = fireDateString;
-  }
-  formattedUserNotification[@"alertAction"] = RCTNullIfNil(notification.actionButtonTitle);
-  formattedUserNotification[@"alertBody"] = RCTNullIfNil(notification.informativeText);
-  formattedUserNotification[@"soundName"] = RCTNullIfNil(notification.soundName);
-  formattedUserNotification[@"userInfo"] = RCTNullIfNil(RCTJSONClean(notification.userInfo));
-  formattedUserNotification[@"remote"] = @(notification.isRemote);
-  formattedUserNotification[@"identifier"] = notification.identifier;
-  return formattedUserNotification;
-}
-#endif // macOS]
-
 /** For delivered notifications */
 static NSDictionary<NSString *, id> *RCTFormatUNNotification(UNNotification *notification)
 {
@@ -290,35 +249,6 @@ RCT_EXPORT_MODULE()
 + (void)setInitialNotification:(UNNotification *)notification
 {
   kInitialNotification = notification;
-}
-
-#if TARGET_OS_IOS // [macOS] [visionOS]
-// Deprecated
-+ (void)didReceiveLocalNotification:(UILocalNotification *)notification
-{
-  [[NSNotificationCenter defaultCenter] postNotificationName:kLocalNotificationReceived
-                                                      object:self
-                                                    userInfo:RCTFormatLocalNotification(notification)];
-}
-#endif // [macOS] [visionOS]
-#if TARGET_OS_OSX // [macOS
-+ (void)didReceiveUserNotification:(NSUserNotification *)notification
-{
-  NSString *notificationName = notification.isRemote ? RCTRemoteNotificationReceived : kLocalNotificationReceived;
-  NSDictionary *userInfo = notification.isRemote ? @{@"notification": notification.userInfo} : RCTFormatUserNotification(notification);
-  [[NSNotificationCenter defaultCenter] postNotificationName:notificationName
-                                                      object:self
-                                                    userInfo:userInfo];
-}
-#endif // macOS]
-
-// Deprecated
-+ (void)didReceiveRemoteNotification:(NSDictionary *)notification
-{
-  NSDictionary *userInfo = @{@"notification" : notification};
-  [[NSNotificationCenter defaultCenter] postNotificationName:RCTRemoteNotificationReceived
-                                                      object:self
-                                                    userInfo:userInfo];
 }
 
 - (void)invalidate
@@ -619,37 +549,6 @@ RCT_EXPORT_METHOD(getInitialNotification
     }
     return;
   }
-
-#if TARGET_OS_IOS // [macOS] [visionOS]
-  NSMutableDictionary<NSString *, id> *initialRemoteNotification =
-      [self.bridge.launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey] mutableCopy];
-
-  // The user actioned a remote notification to launch the app. This is a fallback that is deprecated
-  // in the new architecture.
-  if (initialRemoteNotification) {
-    initialRemoteNotification[@"remote"] = @YES;
-    resolve(initialRemoteNotification);
-    return;
-  }
-
-  UILocalNotification *initialLocalNotification =
-      self.bridge.launchOptions[UIApplicationLaunchOptionsLocalNotificationKey];
-
-  // The user actioned a local notification to launch the app. Notification is represented by UILocalNotification. This
-  // is deprecated.
-  if (initialLocalNotification) {
-    resolve(RCTFormatLocalNotification(initialLocalNotification));
-    return;
-  }
-#endif // [macOS] [visionOS]
-#if TARGET_OS_OSX // [macOS
-  NSUserNotification *initialNotification = self.bridge.launchOptions[NSApplicationLaunchUserNotificationKey];
-  if (initialNotification) {
-    resolve(RCTFormatUserNotification(initialNotification));
-  } else {
-    resolve((id)kCFNull);
-  }
-#endif // macOS]
 
   resolve((id)kCFNull);
 }

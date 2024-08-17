@@ -15,4 +15,10 @@ pluginManagement {
 
 plugins { id("org.gradle.toolchains.foojay-resolver-convention").version("0.5.0") }
 
-rootProject.name = "react-native-gradle-plugin"
+include(
+    ":react-native-gradle-plugin",
+    ":settings-plugin",
+    ":shared",
+)
+
+rootProject.name = "gradle-plugins-root"

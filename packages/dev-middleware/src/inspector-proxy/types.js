@@ -30,6 +30,20 @@ export type TargetCapabilityFlags = $ReadOnly<{
    * In the proxy, this disables source fetching emulation and host rewrites.
    */
   nativeSourceCodeFetching?: boolean,
+
+  /**
+   * The target supports native network inspection.
+   *
+   * In the proxy, this disables intercepting and storing network requests.
+   */
+  nativeNetworkInspection?: boolean,
+
+  /**
+   * The target supports the modern `rn_fusebox.html` entry point.
+   *
+   * In the launch flow, this controls the Chrome DevTools entrypoint that is used.
+   */
+  prefersFuseboxFrontend?: boolean,
 }>;
 
 // Page information received from the device. New page is created for
@@ -39,12 +53,16 @@ export type TargetCapabilityFlags = $ReadOnly<{
 export type PageFromDevice = $ReadOnly<{
   id: string,
   title: string,
-  vm: string,
+  /** @deprecated This is sent from legacy targets only */
+  vm?: string,
   app: string,
   capabilities?: TargetCapabilityFlags,
 }>;
 
-export type Page = Required<PageFromDevice>;
+export type Page = $ReadOnly<{
+  ...PageFromDevice,
+  capabilities: $NonMaybeType<PageFromDevice['capabilities']>,
+}>;
 
 // Chrome Debugger Protocol message/event passed between device and debugger.
 export type WrappedEvent = $ReadOnly<{
@@ -94,15 +112,18 @@ export type MessageToDevice =
 // Page description object that is sent in response to /json HTTP request from debugger.
 export type PageDescription = $ReadOnly<{
   id: string,
-  description: string,
   title: string,
-  faviconUrl: string,
-  devtoolsFrontendUrl: string,
+  description: string,
   type: string,
+  devtoolsFrontendUrl: string,
   webSocketDebuggerUrl: string,
+
+  // React Native specific fields
   deviceName: string,
-  vm: string,
-  // Metadata specific to React Native
+  /** @deprecated This is sent from legacy targets only */
+  vm?: string,
+
+  // React Native specific metadata
   reactNative: $ReadOnly<{
     logicalDeviceId: string,
     capabilities: Page['capabilities'],

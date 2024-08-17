@@ -97,6 +97,11 @@ public class JavaOnlyArray implements ReadableArray, WritableArray {
   }
 
   @Override
+  public long getLong(int index) {
+    return ((Number) mBackingList.get(index)).longValue();
+  }
+
+  @Override
   public @Nullable String getString(int index) {
     return (String) mBackingList.get(index);
   }
@@ -129,7 +134,10 @@ public class JavaOnlyArray implements ReadableArray, WritableArray {
       return ReadableType.Null;
     } else if (object instanceof Boolean) {
       return ReadableType.Boolean;
-    } else if (object instanceof Double || object instanceof Float || object instanceof Integer) {
+    } else if (object instanceof Double
+        || object instanceof Float
+        || object instanceof Integer
+        || object instanceof Long) {
       return ReadableType.Number;
     } else if (object instanceof String) {
       return ReadableType.String;
@@ -154,6 +162,11 @@ public class JavaOnlyArray implements ReadableArray, WritableArray {
   @Override
   public void pushInt(int value) {
     mBackingList.add(new Double(value));
+  }
+
+  @Override
+  public void pushLong(long value) {
+    mBackingList.add(value);
   }
 
   @Override

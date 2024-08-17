@@ -14,7 +14,7 @@ export interface StyleSheetProperties {
   flatten<T extends string>(style: T): T;
 }
 
-type Falsy = undefined | null | false;
+type Falsy = undefined | null | false | '';
 interface RecursiveArray<T>
   extends Array<T | ReadonlyArray<T> | RecursiveArray<T>> {}
 /** Keep a brand of 'T' so that calls to `StyleSheet.flatten` can take `RegisteredStyle<T>` and return `T`. */

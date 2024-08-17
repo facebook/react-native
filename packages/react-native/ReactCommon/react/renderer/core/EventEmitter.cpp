@@ -7,10 +7,10 @@
 
 #include "EventEmitter.h"
 
+#include <cxxreact/SystraceSection.h>
 #include <folly/dynamic.h>
 #include <jsi/JSIDynamic.h>
 #include <jsi/jsi.h>
-#include <react/renderer/debug/SystraceSection.h>
 
 #include "RawEvent.h"
 
@@ -58,14 +58,12 @@ EventEmitter::EventEmitter(
 void EventEmitter::dispatchEvent(
     std::string type,
     const folly::dynamic& payload,
-    EventPriority priority,
     RawEvent::Category category) const {
   dispatchEvent(
       std::move(type),
       [payload](jsi::Runtime& runtime) {
         return valueFromDynamic(runtime, payload);
       },
-      priority,
       category);
 }
 
@@ -80,19 +78,16 @@ void EventEmitter::dispatchUniqueEvent(
 void EventEmitter::dispatchEvent(
     std::string type,
     const ValueFactory& payloadFactory,
-    EventPriority priority,
     RawEvent::Category category) const {
   dispatchEvent(
       std::move(type),
       std::make_shared<ValueFactoryEventPayload>(payloadFactory),
-      priority,
       category);
 }
 
 void EventEmitter::dispatchEvent(
     std::string type,
     SharedEventPayload payload,
-    EventPriority priority,
     RawEvent::Category category) const {
   SystraceSection s("EventEmitter::dispatchEvent", "type", type);
 
@@ -101,13 +96,11 @@ void EventEmitter::dispatchEvent(
     return;
   }
 
-  eventDispatcher->dispatchEvent(
-      RawEvent(
-          normalizeEventType(std::move(type)),
-          std::move(payload),
-          eventTarget_,
-          category),
-      priority);
+  eventDispatcher->dispatchEvent(RawEvent(
+      normalizeEventType(std::move(type)),
+      std::move(payload),
+      eventTarget_,
+      category));
 }
 
 void EventEmitter::dispatchUniqueEvent(

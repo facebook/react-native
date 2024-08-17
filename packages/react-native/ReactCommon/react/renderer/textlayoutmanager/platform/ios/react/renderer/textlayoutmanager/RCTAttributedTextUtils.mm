@@ -291,7 +291,7 @@ NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttributes(c
   }
 
   // Special
-  if (textAttributes.isHighlighted) {
+  if (textAttributes.isHighlighted.value_or(false)) {
     attributes[RCTAttributedStringIsHighlightedAttributeName] = @YES;
   }
 

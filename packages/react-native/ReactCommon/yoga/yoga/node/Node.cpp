@@ -10,6 +10,7 @@
 #include <iostream>
 
 #include <yoga/debug/AssertFatal.h>
+#include <yoga/debug/Log.h>
 #include <yoga/node/Node.h>
 #include <yoga/numeric/Comparison.h>
 
@@ -26,35 +27,54 @@ Node::Node(const yoga::Config* config) : config_{config} {
   }
 }
 
-Node::Node(Node&& node) {
-  hasNewLayout_ = node.hasNewLayout_;
-  isReferenceBaseline_ = node.isReferenceBaseline_;
-  isDirty_ = node.isDirty_;
-  alwaysFormsContainingBlock_ = node.alwaysFormsContainingBlock_;
-  nodeType_ = node.nodeType_;
-  context_ = node.context_;
-  measureFunc_ = node.measureFunc_;
-  baselineFunc_ = node.baselineFunc_;
-  dirtiedFunc_ = node.dirtiedFunc_;
-  style_ = node.style_;
-  layout_ = node.layout_;
-  lineIndex_ = node.lineIndex_;
-  owner_ = node.owner_;
-  children_ = std::move(node.children_);
-  config_ = node.config_;
-  resolvedDimensions_ = node.resolvedDimensions_;
+Node::Node(Node&& node) noexcept
+    : hasNewLayout_(node.hasNewLayout_),
+      isReferenceBaseline_(node.isReferenceBaseline_),
+      isDirty_(node.isDirty_),
+      alwaysFormsContainingBlock_(node.alwaysFormsContainingBlock_),
+      nodeType_(node.nodeType_),
+      context_(node.context_),
+      measureFunc_(node.measureFunc_),
+      baselineFunc_(node.baselineFunc_),
+      dirtiedFunc_(node.dirtiedFunc_),
+      style_(std::move(node.style_)),
+      layout_(node.layout_),
+      lineIndex_(node.lineIndex_),
+      owner_(node.owner_),
+      children_(std::move(node.children_)),
+      config_(node.config_),
+      resolvedDimensions_(node.resolvedDimensions_) {
   for (auto c : children_) {
     c->setOwner(this);
   }
 }
 
 YGSize Node::measure(
-    float width,
+    float availableWidth,
     MeasureMode widthMode,
-    float height,
+    float availableHeight,
     MeasureMode heightMode) {
-  return measureFunc_(
-      this, width, unscopedEnum(widthMode), height, unscopedEnum(heightMode));
+  const auto size = measureFunc_(
+      this,
+      availableWidth,
+      unscopedEnum(widthMode),
+      availableHeight,
+      unscopedEnum(heightMode));
+
+  if (yoga::isUndefined(size.height) || size.height < 0 ||
+      yoga::isUndefined(size.width) || size.width < 0) {
+    yoga::log(
+        this,
+        LogLevel::Warn,
+        "Measure function returned an invalid dimension to Yoga: [width=%f, height=%f]",
+        size.width,
+        size.height);
+    return {
+        .width = maxOrDefined(0.0f, size.width),
+        .height = maxOrDefined(0.0f, size.height)};
+  }
+
+  return size;
 }
 
 float Node::baseline(float width, float height) const {
@@ -83,7 +103,7 @@ void Node::setMeasureFunc(YGMeasureFunc measureFunc) {
   } else {
     yoga::assertFatalWithNode(
         this,
-        children_.size() == 0,
+        children_.empty(),
         "Cannot set measure function: Nodes with measure functions cannot have "
         "children.");
     // TODO: t18095186 Move nodeType to opt-in function and mark appropriate
@@ -122,18 +142,17 @@ void Node::setConfig(yoga::Config* config) {
 }
 
 void Node::setDirty(bool isDirty) {
-  if (isDirty == isDirty_) {
+  if (static_cast<int>(isDirty) == isDirty_) {
     return;
   }
   isDirty_ = isDirty;
-  if (isDirty && dirtiedFunc_) {
+  if (isDirty && (dirtiedFunc_ != nullptr)) {
     dirtiedFunc_(this);
   }
 }
 
 bool Node::removeChild(Node* child) {
-  std::vector<Node*>::iterator p =
-      std::find(children_.begin(), children_.end(), child);
+  auto p = std::find(children_.begin(), children_.end(), child);
   if (p != children_.end()) {
     children_.erase(p);
     return true;
@@ -211,9 +230,8 @@ float Node::relativePosition(
 
 void Node::setPosition(
     const Direction direction,
-    const float mainSize,
-    const float crossSize,
-    const float ownerWidth) {
+    const float ownerWidth,
+    const float ownerHeight) {
   /* Root nodes should be always layouted as LTR, so we don't return negative
    * values. */
   const Direction directionRespectingRoot =
@@ -225,10 +243,14 @@ void Node::setPosition(
 
   // In the case of position static these are just 0. See:
   // https://www.w3.org/TR/css-position-3/#valdef-position-static
-  const float relativePositionMain =
-      relativePosition(mainAxis, directionRespectingRoot, mainSize);
-  const float relativePositionCross =
-      relativePosition(crossAxis, directionRespectingRoot, crossSize);
+  const float relativePositionMain = relativePosition(
+      mainAxis,
+      directionRespectingRoot,
+      isRow(mainAxis) ? ownerWidth : ownerHeight);
+  const float relativePositionCross = relativePosition(
+      crossAxis,
+      directionRespectingRoot,
+      isRow(mainAxis) ? ownerHeight : ownerWidth);
 
   const auto mainAxisLeadingEdge = inlineStartEdge(mainAxis, direction);
   const auto mainAxisTrailingEdge = inlineEndEdge(mainAxis, direction);
@@ -307,7 +329,7 @@ void Node::markDirtyAndPropagate() {
   if (!isDirty_) {
     setDirty(true);
     setLayoutComputedFlexBasis(FloatOptional());
-    if (owner_) {
+    if (owner_ != nullptr) {
       owner_->markDirtyAndPropagate();
     }
   }
@@ -351,7 +373,7 @@ bool Node::isNodeFlexible() {
 void Node::reset() {
   yoga::assertFatalWithNode(
       this,
-      children_.size() == 0,
+      children_.empty(),
       "Cannot reset a node which still has children attached");
   yoga::assertFatalWithNode(
       this, owner_ == nullptr, "Cannot reset a node still attached to a owner");

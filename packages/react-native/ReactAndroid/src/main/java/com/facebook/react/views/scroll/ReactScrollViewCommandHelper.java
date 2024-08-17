@@ -9,6 +9,7 @@ package com.facebook.react.views.scroll;
 
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.PixelUtil;
@@ -18,6 +19,7 @@ import java.util.Map;
  * Helper for view managers to handle commands like 'scrollTo'. Shared by {@link
  * ReactScrollViewManager} and {@link ReactHorizontalScrollViewManager}.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ReactScrollViewCommandHelper {
 
   public static final int COMMAND_SCROLL_TO = 1;
@@ -70,16 +72,15 @@ public class ReactScrollViewCommandHelper {
       @Nullable ReadableArray args) {
     Assertions.assertNotNull(viewManager);
     Assertions.assertNotNull(scrollView);
-    Assertions.assertNotNull(args);
     switch (commandType) {
       case COMMAND_SCROLL_TO:
         {
-          scrollTo(viewManager, scrollView, args);
+          scrollTo(viewManager, scrollView, Assertions.assertNotNull(args));
           return;
         }
       case COMMAND_SCROLL_TO_END:
         {
-          scrollToEnd(viewManager, scrollView, args);
+          scrollToEnd(viewManager, scrollView, Assertions.assertNotNull(args));
           return;
         }
       case COMMAND_FLASH_SCROLL_INDICATORS:
@@ -101,16 +102,15 @@ public class ReactScrollViewCommandHelper {
       @Nullable ReadableArray args) {
     Assertions.assertNotNull(viewManager);
     Assertions.assertNotNull(scrollView);
-    Assertions.assertNotNull(args);
     switch (commandType) {
       case "scrollTo":
         {
-          scrollTo(viewManager, scrollView, args);
+          scrollTo(viewManager, scrollView, Assertions.assertNotNull(args));
           return;
         }
       case "scrollToEnd":
         {
-          scrollToEnd(viewManager, scrollView, args);
+          scrollToEnd(viewManager, scrollView, Assertions.assertNotNull(args));
           return;
         }
       case "flashScrollIndicators":
@@ -126,7 +126,7 @@ public class ReactScrollViewCommandHelper {
   }
 
   private static <T> void scrollTo(
-      ScrollCommandHandler<T> viewManager, T scrollView, @Nullable ReadableArray args) {
+      ScrollCommandHandler<T> viewManager, T scrollView, ReadableArray args) {
     int destX = Math.round(PixelUtil.toPixelFromDIP(args.getDouble(0)));
     int destY = Math.round(PixelUtil.toPixelFromDIP(args.getDouble(1)));
     boolean animated = args.getBoolean(2);
@@ -134,7 +134,7 @@ public class ReactScrollViewCommandHelper {
   }
 
   private static <T> void scrollToEnd(
-      ScrollCommandHandler<T> viewManager, T scrollView, @Nullable ReadableArray args) {
+      ScrollCommandHandler<T> viewManager, T scrollView, ReadableArray args) {
     boolean animated = args.getBoolean(0);
     viewManager.scrollToEnd(scrollView, new ScrollToEndCommandData(animated));
   }

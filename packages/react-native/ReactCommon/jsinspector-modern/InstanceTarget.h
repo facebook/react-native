@@ -70,9 +70,22 @@ class InstanceTarget : public EnableExecutorFromThis<InstanceTarget> {
       FrontendChannel channel,
       SessionState& sessionState);
 
+  /**
+   * Registers a JS runtime with this InstanceTarget. \returns a reference to
+   * the created RuntimeTarget, which is owned by the \c InstanceTarget. All the
+   * requirements of \c RuntimeTarget::create must be met.
+   */
   RuntimeTarget& registerRuntime(
       RuntimeTargetDelegate& delegate,
       RuntimeExecutor executor);
+
+  /**
+   * Unregisters a JS runtime from this InstanceTarget. This destroys the \c
+   * RuntimeTarget, and it is no longer valid to use. Note that the \c
+   * RuntimeTargetDelegate& initially provided to \c registerRuntime may
+   * continue to be used as long as JavaScript execution continues in the
+   * runtime.
+   */
   void unregisterRuntime(RuntimeTarget& runtime);
 
  private:

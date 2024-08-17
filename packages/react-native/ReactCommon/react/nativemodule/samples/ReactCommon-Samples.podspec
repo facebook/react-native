@@ -64,7 +64,7 @@ Pod::Spec.new do |s|
   s.dependency "React-Core"
   s.dependency "React-cxxreact"
   s.dependency "React-jsi"
-  add_dependency(s, "React-Codegen", :additional_framework_paths => ["build/generated/ios"])
+  add_dependency(s, "ReactCodegen", :additional_framework_paths => ["build/generated/ios"])
   add_dependency(s, "ReactCommon", :subspec => "turbomodule/core", :additional_framework_paths => ["react/nativemodule/core"])
   add_dependency(s, "React-NativeModulesApple", :additional_framework_paths => ["build/generated/ios"])
 

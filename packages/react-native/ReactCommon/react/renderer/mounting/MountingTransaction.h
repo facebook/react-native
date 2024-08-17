@@ -76,6 +76,15 @@ class MountingTransaction final {
    */
   Number getNumber() const;
 
+  /*
+   * Merges the given transaction in the current transaction, so they
+   * can be executed atomatically as a single transaction.
+   *
+   * This is required for Android UI, which needs to separately apply
+   * each ShadowTree mutation due to differences in props representation.
+   */
+  void mergeWith(MountingTransaction&& transaction);
+
  private:
   SurfaceId surfaceId_;
   Number number_;

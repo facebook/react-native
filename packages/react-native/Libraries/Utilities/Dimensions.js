@@ -44,6 +44,7 @@ class Dimensions {
    * @returns {DisplayMetrics? | DisplayMetricsAndroid?} Value for the dimension.
    */
   static get(dim: string): DisplayMetrics | DisplayMetricsAndroid {
+    // $FlowFixMe[invalid-computed-prop]
     invariant(dimensions[dim], 'No dimension set for key ' + dim);
     return dimensions[dim];
   }

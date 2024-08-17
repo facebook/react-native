@@ -29,7 +29,9 @@ public class UiThreadUtil {
     return sMainHandler;
   }
 
-  /** @return {@code true} if the current thread is the UI thread. */
+  /**
+   * @return {@code true} if the current thread is the UI thread.
+   */
   public static boolean isOnUiThread() {
     return Looper.getMainLooper().getThread() == Thread.currentThread();
   }

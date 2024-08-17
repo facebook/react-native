@@ -39,7 +39,7 @@ class ContextContainer final {
    *`ReactNativeConfig`.
    */
   template <typename T>
-  void insert(const std::string& key, T const& instance) const {
+  void insert(const std::string& key, const T& instance) const {
     std::unique_lock lock(mutex_);
 
     instances_.insert({key, std::make_shared<T>(instance)});

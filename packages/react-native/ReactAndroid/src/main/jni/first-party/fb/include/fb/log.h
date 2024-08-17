@@ -264,7 +264,7 @@ int __android_log_print(int prio, const char* tag, const char* fmt, ...)
  * Stripped out of release builds.  Uses the current LOG_TAG.
  */
 #define FBLOG_ASSERT(cond, ...) FBLOG_FATAL_IF(!(cond), __VA_ARGS__)
-//#define LOG_ASSERT(cond) LOG_FATAL_IF(!(cond), "Assertion failed: " #cond)
+// #define LOG_ASSERT(cond) LOG_FATAL_IF(!(cond), "Assertion failed: " #cond)
 
 // ---------------------------------------------------------------------
 

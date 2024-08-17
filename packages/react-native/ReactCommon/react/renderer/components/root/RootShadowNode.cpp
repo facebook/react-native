@@ -7,8 +7,8 @@
 
 #include "RootShadowNode.h"
 
+#include <cxxreact/SystraceSection.h>
 #include <react/renderer/components/view/conversions.h>
-#include <react/renderer/debug/SystraceSection.h>
 
 namespace facebook::react {
 

@@ -15,12 +15,12 @@ BridgelessJSCallInvoker::BridgelessJSCallInvoker(
     RuntimeExecutor runtimeExecutor)
     : runtimeExecutor_(std::move(runtimeExecutor)) {}
 
-void BridgelessJSCallInvoker::invokeAsync(
-    std::function<void()>&& func) noexcept {
-  runtimeExecutor_([func = std::move(func)](jsi::Runtime& runtime) { func(); });
+void BridgelessJSCallInvoker::invokeAsync(CallFunc&& func) noexcept {
+  runtimeExecutor_(
+      [func = std::move(func)](jsi::Runtime& runtime) { func(runtime); });
 }
 
-void BridgelessJSCallInvoker::invokeSync(std::function<void()>&& func) {
+void BridgelessJSCallInvoker::invokeSync(CallFunc&& /*func*/) {
   // TODO: Implement this method. The TurboModule infra doesn't call invokeSync.
   throw std::runtime_error(
       "Synchronous native -> JS calls are currently not supported.");

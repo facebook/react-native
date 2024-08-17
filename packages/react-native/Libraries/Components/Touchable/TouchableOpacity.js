@@ -291,16 +291,22 @@ class TouchableOpacity extends React.Component<Props, State> {
         nextFocusUp={this.props.nextFocusUp}
         hasTVPreferredFocus={this.props.hasTVPreferredFocus}
         hitSlop={this.props.hitSlop}
-        // [macOS
-        acceptsFirstMouse={
-          this.props.acceptsFirstMouse !== false && !this.props.disabled
+        focusable={
+          this.props.focusable !== false &&
+          this.props.onPress !== undefined &&
+          !this.props.disabled
         }
+        // [macOS
         enableFocusRing={
           (this.props.enableFocusRing === undefined ||
             this.props.enableFocusRing === true) &&
           !this.props.disabled
         }
-        focusable={this.props.focusable !== false && !this.props.disabled}
+        acceptsFirstMouse={
+          this.props.acceptsFirstMouse !== false &&
+          this.props.acceptsFirstMouse !== undefined &&
+          !this.props.disabled
+        }
         tooltip={this.props.tooltip}
         onMouseEnter={this.props.onMouseEnter}
         onMouseLeave={this.props.onMouseLeave}
@@ -342,6 +348,7 @@ class TouchableOpacity extends React.Component<Props, State> {
 
   componentWillUnmount(): void {
     this.state.pressability.reset();
+    this.state.anim.resetAnimation();
   }
 }
 

@@ -12,12 +12,9 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.SparseArray;
 import android.util.SparseBooleanArray;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
-import android.widget.PopupMenu;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.R;
@@ -81,7 +78,6 @@ public class NativeViewHierarchyManager {
   private final RectF mBoundingBox = new RectF();
 
   private boolean mLayoutAnimationEnabled;
-  private PopupMenu mPopupMenu;
   private HashMap<Integer, Set<Integer>> mPendingDeletionsForTag;
 
   public NativeViewHierarchyManager(ViewManagerRegistry viewManagers) {
@@ -603,10 +599,9 @@ public class NativeViewHierarchyManager {
           TAG,
           "Trying to add a root view with an explicit id ("
               + view.getId()
-              + ") already "
-              + "set. React Native uses the id field to track react tags and will overwrite this field. "
-              + "If that is fine, explicitly overwrite the id field to View.NO_ID before calling "
-              + "addRootView.");
+              + ") already set. React Native uses the id field to track react tags and will"
+              + " overwrite this field. If that is fine, explicitly overwrite the id field to"
+              + " View.NO_ID before calling addRootView.");
     }
 
     mTagsToViews.put(tag, view);
@@ -861,85 +856,6 @@ public class NativeViewHierarchyManager {
     }
     ViewManager viewManager = resolveViewManager(reactTag);
     viewManager.receiveCommand(view, commandId, args);
-  }
-
-  /**
-   * Show a {@link PopupMenu}.
-   *
-   * <p>This is deprecated, please use the <PopupMenuAndroid /> component instead.
-   *
-   * <p>TODO(T175424986): Remove UIManager.showPopupMenu() in React Native v0.75.
-   *
-   * @param reactTag the tag of the anchor view (the PopupMenu is displayed next to this view); this
-   *     needs to be the tag of a native view (shadow views can not be anchors)
-   * @param items the menu items as an array of strings
-   * @param success will be called with the position of the selected item as the first argument, or
-   *     no arguments if the menu is dismissed
-   */
-  @Deprecated
-  public synchronized void showPopupMenu(
-      int reactTag, ReadableArray items, Callback success, Callback error) {
-    UiThreadUtil.assertOnUiThread();
-    View anchor = mTagsToViews.get(reactTag);
-    if (anchor == null) {
-      error.invoke("Can't display popup. Could not find view with tag " + reactTag);
-      return;
-    }
-    mPopupMenu = new PopupMenu(getReactContextForView(reactTag), anchor);
-
-    Menu menu = mPopupMenu.getMenu();
-    for (int i = 0; i < items.size(); i++) {
-      menu.add(Menu.NONE, Menu.NONE, i, items.getString(i));
-    }
-
-    PopupMenuCallbackHandler handler = new PopupMenuCallbackHandler(success);
-    mPopupMenu.setOnMenuItemClickListener(handler);
-    mPopupMenu.setOnDismissListener(handler);
-
-    mPopupMenu.show();
-  }
-
-  /**
-   * This is deprecated, please use the <PopupMenuAndroid /> component instead.
-   *
-   * <p>TODO(T175424986): Remove UIManager.dismissPopupMenu() in React Native v0.75.
-   *
-   * <p>Dismiss the last opened PopupMenu {@link PopupMenu}.
-   */
-  @Deprecated
-  public void dismissPopupMenu() {
-    if (mPopupMenu != null) {
-      mPopupMenu.dismiss();
-    }
-  }
-
-  private static class PopupMenuCallbackHandler
-      implements PopupMenu.OnMenuItemClickListener, PopupMenu.OnDismissListener {
-
-    final Callback mSuccess;
-    boolean mConsumed = false;
-
-    private PopupMenuCallbackHandler(Callback success) {
-      mSuccess = success;
-    }
-
-    @Override
-    public void onDismiss(PopupMenu menu) {
-      if (!mConsumed) {
-        mSuccess.invoke(UIManagerModuleConstants.ACTION_DISMISSED);
-        mConsumed = true;
-      }
-    }
-
-    @Override
-    public boolean onMenuItemClick(MenuItem item) {
-      if (!mConsumed) {
-        mSuccess.invoke(UIManagerModuleConstants.ACTION_ITEM_SELECTED, item.getOrder());
-        mConsumed = true;
-        return true;
-      }
-      return false;
-    }
   }
 
   /**

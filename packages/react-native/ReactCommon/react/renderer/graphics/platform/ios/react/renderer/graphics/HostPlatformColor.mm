@@ -93,7 +93,12 @@ int32_t ColorFromUIColor(RCTUIColor *color) // [macOS]
 {
   float ratio = 255;
   CGFloat rgba[4];
+#if !TARGET_OS_OSX // [macOS
   [color getRed:&rgba[0] green:&rgba[1] blue:&rgba[2] alpha:&rgba[3]];
+#else // [macOS
+  // [NSColor getRed:green:blue:alpha]` wil throw an exception if the colorspace is not SRGB,
+  [[color colorUsingColorSpace:[NSColorSpace genericRGBColorSpace]] getRed:&rgba[0] green:&rgba[1] blue:&rgba[2] alpha:&rgba[3]];
+#endif // macOS]
   return ((int32_t)round((float)rgba[3] * ratio) & 0xff) << 24 | ((int)round((float)rgba[0] * ratio) & 0xff) << 16 |
       ((int)round((float)rgba[1] * ratio) & 0xff) << 8 | ((int)round((float)rgba[2] * ratio) & 0xff);
 }
@@ -114,6 +119,12 @@ int32_t ColorFromUIColor(const std::shared_ptr<void> &uiColor)
 
 RCTUIColor *_Nullable UIColorFromComponentsColor(const facebook::react::ColorComponents &components) // [macOS]
 {
+  if (components.colorSpace == ColorSpace::DisplayP3) {
+    return [RCTUIColor colorWithDisplayP3Red:components.red // [macOS]
+                                       green:components.green
+                                        blue:components.blue
+                                       alpha:components.alpha];
+  }
   return [RCTUIColor colorWithRed:components.red green:components.green blue:components.blue alpha:components.alpha]; // [macOS]
 }
 } // anonymous namespace

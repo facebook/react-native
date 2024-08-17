@@ -281,13 +281,8 @@ class TouchableHighlight extends React.Component<Props, State> {
 
     // BACKWARD-COMPATIBILITY: Focus and blur events were never supported before
     // adopting `Pressability`, so preserve that behavior.
-    const {
-      onBlur,
-      onFocus,
-      onMouseEnter, // [macOS]
-      onMouseLeave, // [macOS]
-      ...eventHandlersWithoutBlurAndFocus
-    } = this.state.pressability.getEventHandlers();
+    const {onBlur, onFocus, ...eventHandlersWithoutBlurAndFocus} =
+      this.state.pressability.getEventHandlers();
 
     const accessibilityState =
       this.props.disabled != null
@@ -349,13 +344,15 @@ class TouchableHighlight extends React.Component<Props, State> {
         focusable={
           this.props.focusable !== false &&
           this.props.onPress !== undefined &&
-          !this.props.disabled // [macOS]
+          !this.props.disabled
         }
         nativeID={this.props.id ?? this.props.nativeID}
         testID={this.props.testID}
         // [macOS
         acceptsFirstMouse={
-          this.props.acceptsFirstMouse !== false && !this.props.disabled
+          this.props.acceptsFirstMouse !== false &&
+          this.props.acceptsFirstMouse !== undefined &&
+          !this.props.disabled
         }
         enableFocusRing={
           (this.props.enableFocusRing === undefined ||
@@ -363,8 +360,6 @@ class TouchableHighlight extends React.Component<Props, State> {
           !this.props.disabled
         }
         tooltip={this.props.tooltip}
-        onMouseEnter={this.props.onMouseEnter}
-        onMouseLeave={this.props.onMouseLeave}
         onDragEnter={this.props.onDragEnter}
         onDragLeave={this.props.onDragLeave}
         onDrop={this.props.onDrop}

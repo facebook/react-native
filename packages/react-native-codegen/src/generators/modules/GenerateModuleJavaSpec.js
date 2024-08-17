@@ -445,12 +445,8 @@ module.exports = {
     const outputDir = `java/${normalizedPackageName.replace(/\./g, '/')}`;
 
     Object.keys(nativeModules).forEach(hasteModuleName => {
-      const {
-        aliasMap,
-        excludedPlatforms,
-        moduleName,
-        spec: {properties},
-      } = nativeModules[hasteModuleName];
+      const {aliasMap, excludedPlatforms, moduleName, spec} =
+        nativeModules[hasteModuleName];
       if (excludedPlatforms != null && excludedPlatforms.includes('android')) {
         return;
       }
@@ -462,12 +458,12 @@ module.exports = {
         'com.facebook.react.bridge.ReactApplicationContext',
         'com.facebook.react.bridge.ReactContextBaseJavaModule',
         'com.facebook.react.bridge.ReactMethod',
-        'com.facebook.react.internal.turbomodule.core.interfaces.TurboModule',
+        'com.facebook.react.turbomodule.core.interfaces.TurboModule',
         'com.facebook.proguard.annotations.DoNotStrip',
         'javax.annotation.Nonnull',
       ]);
 
-      const methods = properties.map(method => {
+      const methods = spec.methods.map(method => {
         if (method.name === 'getConstants') {
           return buildGetConstantsMethod(method, imports, resolveAlias);
         }

@@ -438,11 +438,11 @@ module.exports = {
       .map(hasteModuleName => {
         const {
           aliasMap,
-          spec: {properties},
+          spec: {methods},
         } = nativeModules[hasteModuleName];
         const resolveAlias = createAliasResolver(aliasMap);
 
-        const translatedMethods = properties
+        const translatedMethods = methods
           .map(property =>
             translateMethodForImplementation(
               hasteModuleName,
@@ -457,7 +457,7 @@ module.exports = {
           '\n\n' +
           ModuleClassConstructorTemplate({
             hasteModuleName,
-            methods: properties
+            methods: methods
               .map(({name: propertyName, typeAnnotation}) => {
                 const [{returnTypeAnnotation, params}] =
                   unwrapNullable<NativeModuleFunctionTypeAnnotation>(

@@ -26,6 +26,7 @@ import type {
 } from '../../utils';
 
 const {
+  UnsupportedEnumDeclarationParserError,
   UnsupportedGenericParserError,
   UnsupportedTypeAnnotationParserError,
 } = require('../../errors');
@@ -342,6 +343,20 @@ function translateTypeAnnotation(
       );
     }
     case 'TSEnumDeclaration': {
+      if (
+        typeAnnotation.members.some(
+          m =>
+            m.initializer &&
+            m.initializer.type === 'NumericLiteral' &&
+            !Number.isInteger(m.initializer.value),
+        )
+      ) {
+        throw new UnsupportedEnumDeclarationParserError(
+          hasteModuleName,
+          typeAnnotation,
+          parser.language(),
+        );
+      }
       return typeEnumResolution(
         typeAnnotation,
         typeResolutionStatus,

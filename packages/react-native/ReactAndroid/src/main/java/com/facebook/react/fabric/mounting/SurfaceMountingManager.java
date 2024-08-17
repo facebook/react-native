@@ -50,7 +50,6 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.react.uimanager.events.EventCategoryDef;
-import com.facebook.react.views.view.ReactViewGroup;
 import java.util.ArrayDeque;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -208,22 +207,35 @@ public class SurfaceMountingManager {
           } else if (rootView.getId() != View.NO_ID) {
             FLog.e(
                 TAG,
-                "Trying to add RootTag to RootView that already has a tag: existing tag: [%d] new tag: [%d]",
+                "Trying to add RootTag to RootView that already has a tag: existing tag: [%d] new"
+                    + " tag: [%d]",
                 rootView.getId(),
                 mSurfaceId);
             throw new IllegalViewOperationException(
-                "Trying to add a root view with an explicit id already set. React Native uses "
-                    + "the id field to track react tags and will overwrite this field. If that is fine, "
-                    + "explicitly overwrite the id field to View.NO_ID before calling addRootView.");
+                "Trying to add a root view with an explicit id already set. React Native uses the"
+                    + " id field to track react tags and will overwrite this field. If that is"
+                    + " fine, explicitly overwrite the id field to View.NO_ID before calling"
+                    + " addRootView.");
           }
           rootView.setId(mSurfaceId);
 
           if (rootView instanceof ReactRoot) {
             ((ReactRoot) rootView).setRootViewTag(mSurfaceId);
           }
-          mRootViewAttached = true;
+
+          if (!ReactNativeFeatureFlags.forceBatchingMountItemsOnAndroid()) {
+            mRootViewAttached = true;
+          }
 
           executeMountItemsOnViewAttach();
+
+          if (ReactNativeFeatureFlags.forceBatchingMountItemsOnAndroid()) {
+            // By doing this after `executeMountItemsOnViewAttach`, we ensure
+            // that any operations scheduled while processing this queue are
+            // also added to the queue, instead of being processed immediately
+            // through the queue in `MountItemDispatcher`.
+            mRootViewAttached = true;
+          }
         };
 
     if (UiThreadUtil.isOnUiThread()) {
@@ -301,6 +313,9 @@ public class SurfaceMountingManager {
           mRootViewManager = null;
           mMountItemExecutor = null;
           mThemedReactContext = null;
+          if (ReactNativeFeatureFlags.fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak()) {
+            mRemoveDeleteTreeUIFrameCallback = null;
+          }
           mOnViewAttachMountItems.clear();
 
           if (ReactFeatureFlags.enableViewRecycling) {
@@ -382,25 +397,8 @@ public class SurfaceMountingManager {
       // should be impossible - we mark this as a "readded" View and
       // thus prevent the RemoveDeleteTree worker from deleting this
       // View in the future.
-      if (ReactNativeFeatureFlags.enableFixForClippedSubviewsCrash()) {
-        if (viewParent instanceof ReactViewGroup) {
-          ReactViewGroup viewParentGroup = (ReactViewGroup) viewParent;
-          // If the parent group has subview clipping enabled, we need to use the specialized
-          // method.
-          // Otherwise, ReactViewGroup's member variables managing subview clipping
-          // will get out of sync with Android's view hierarchy, leading to a crash.
-          if (viewParentGroup.getRemoveClippedSubviews()) {
-            viewParentGroup.removeViewWithSubviewClippingEnabled(view);
-          } else {
-            viewParentGroup.removeView(view);
-          }
-        } else if (viewParent instanceof ViewGroup) {
-          ((ViewGroup) viewParent).removeView(view);
-        }
-      } else {
-        if (viewParent instanceof ViewGroup) {
-          ((ViewGroup) viewParent).removeView(view);
-        }
+      if (viewParent instanceof ViewGroup) {
+        ((ViewGroup) viewParent).removeView(view);
       }
       mErroneouslyReaddedReactTags.add(tag);
     }
@@ -450,7 +448,8 @@ public class SurfaceMountingManager {
       ReactSoftExceptionLogger.logSoftException(
           TAG,
           new IllegalViewOperationException(
-              "removeViewAt tried to remove a React View that was actually reused. This indicates a bug in the Differ (specifically instruction ordering). ["
+              "removeViewAt tried to remove a React View that was actually reused. This indicates a"
+                  + " bug in the Differ (specifically instruction ordering). ["
                   + tag
                   + "]"));
       return;
@@ -950,7 +949,14 @@ public class SurfaceMountingManager {
 
   @UiThread
   public void updateLayout(
-      int reactTag, int parentTag, int x, int y, int width, int height, int displayType) {
+      int reactTag,
+      int parentTag,
+      int x,
+      int y,
+      int width,
+      int height,
+      int displayType,
+      int layoutDirection) {
     if (isStopped()) {
       return;
     }
@@ -964,6 +970,13 @@ public class SurfaceMountingManager {
     View viewToUpdate = viewState.mView;
     if (viewToUpdate == null) {
       throw new IllegalStateException("Unable to find View for tag: " + reactTag);
+    }
+
+    if (ReactNativeFeatureFlags.setAndroidLayoutDirection()) {
+      viewToUpdate.setLayoutDirection(
+          layoutDirection == 1
+              ? View.LAYOUT_DIRECTION_LTR
+              : layoutDirection == 2 ? View.LAYOUT_DIRECTION_RTL : View.LAYOUT_DIRECTION_INHERIT);
     }
 
     viewToUpdate.measure(
@@ -1421,7 +1434,8 @@ public class SurfaceMountingManager {
             ReactSoftExceptionLogger.logSoftException(
                 TAG,
                 new IllegalViewOperationException(
-                    "RemoveDeleteTree recursively tried to remove a React View that was actually reused. This indicates a bug in the Differ. ["
+                    "RemoveDeleteTree recursively tried to remove a React View that was actually"
+                        + " reused. This indicates a bug in the Differ. ["
                         + reactTag
                         + "]"));
             continue;

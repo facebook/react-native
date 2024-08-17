@@ -14,6 +14,7 @@ import generateAndroidModules from './generateAndroidModules';
 import generateCommonCxxModules from './generateCommonCxxModules';
 import generateJavaScriptModules from './generateJavaScriptModules';
 import fs from 'fs';
+import path from 'path';
 
 export default function generateFiles(
   generatorConfig: GeneratorConfig,
@@ -65,6 +66,7 @@ export default function generateFiles(
   }
 
   for (const [modulePath, moduleContents] of Object.entries(generatedFiles)) {
-    fs.writeFileSync(modulePath, moduleContents, 'utf8');
+    fs.mkdirSync(path.dirname(modulePath), {recursive: true});
+    fs.writeFileSync(modulePath, moduleContents, {encoding: 'utf8'});
   }
 }

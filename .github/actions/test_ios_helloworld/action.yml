@@ -1,0 +1,95 @@
+name: test_ios_helloworld
+description: Test iOS Hello World
+inputs:
+  jsengine:
+    description: Which JavaScript engine to use. Must be one of "Hermes", "JSC".
+    type: choice
+    default: Hermes
+    options:
+    - JSC
+    - Hermes
+  use-frameworks:
+      description: The dependency building and linking strategy to use. Must be one of "StaticLibraries", "DynamicFrameworks"
+      type: choice
+      default: StaticLibraries
+      options:
+      - StaticLibraries
+      - DynamicFrameworks
+  architecture:
+    description: The React Native architecture to Test. RNTester has always Fabric enabled, but we want to run integration test with the old arch setup
+    type: choice
+    default: OldArch
+    options:
+    - OldArch
+    - NewArch
+  ruby-version:
+    description: The version of ruby that must be used
+    default: 2.6.10
+  flavor:
+    description: The flavor of the build. Must be one of "Debug", "Release".
+    type: choice
+    default: Debug
+    options:
+    - Debug
+    - Release
+  hermes-version:
+    description: The version of hermes
+    required: true
+  react-native-version:
+    description: The version of react-native
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Setup xcode
+      uses: ./.github/actions/setup-xcode
+    - name: Setup node.js
+      uses: ./.github/actions/setup-node
+    - name: Cache setup
+      id: cache_setup
+      uses: ./.github/actions/cache_setup
+      with:
+        hermes-version: ${{ inputs.hermes-version }}
+        react-native-version: ${{ inputs.react-native-version }}
+    - name: Run yarn
+      shell: bash
+      run: yarn install --non-interactive
+    - name: Setup Hermes workspace
+      uses: ./.github/actions/setup_hermes_workspace
+    - name: Setup ruby
+      uses: ruby/setup-ruby@v1.170.0
+      with:
+        ruby-version: ${{ inputs.ruby-version }}
+    - name: Install iOS dependencies - Configuration ${{ inputs.flavor }}; New Architecture ${{ inputs.architecture }}; JS Engine ${{ inputs.jsengine }}
+      shell: bash
+      run: |
+        cd packages/helloworld
+        args=()
+
+        if [[ ${{ inputs.architecture }} == "OldArch" ]]; then
+          args+=(--arch old)
+        fi
+
+        if [[ ${{ inputs.use-frameworks }} == "DynamicFrameworks" ]]; then
+          args+=(--frameworks dynamic)
+        fi
+
+        if [[ ${{ inputs.jsengine }} == "JSC" ]]; then
+          args+=(--jsvm jsc)
+          yarn bootstrap ios "${args[@]}" | cat
+        else
+          BUILD_TYPE="${{ inputs.flavor }}"
+          TARBALL_FILENAME=$(node ../react-native/scripts/hermes/get-tarball-name.js --buildType "$BUILD_TYPE")
+          HERMES_PATH="$HERMES_WS_DIR/hermes-runtime-darwin/$TARBALL_FILENAME"
+          HERMES_ENGINE_TARBALL_PATH="$HERMES_PATH" yarn bootstrap ios "${args[@]}" | cat
+        fi
+    - name: Build HelloWorld  project
+      shell: bash
+      run: |
+        cd packages/helloworld
+        args=()
+        if [[ ${{ inputs.flavor }} == "Release" ]]; then
+          args+=(--prod)
+        fi
+        yarn build ios "${args[@]}" | cat
+        yarn bundle ios "${args[@]}" | cat

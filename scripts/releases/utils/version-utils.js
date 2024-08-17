@@ -29,7 +29,7 @@ export type Version = {
  *
  * Some examples of valid versions are:
  * - stable: 0.68.1
- * - stable prerelease: 0.70.0-rc.0
+ * - prerelease: 0.Y.Z-rc.K
  * - e2e-test: X.Y.Z-20221116-2018
  * - nightly: X.Y.Z-20221116-0bc4547fc
  * - dryrun: 1000.0.0
@@ -62,6 +62,7 @@ function parseVersion(
 
 function validateBuildType(
   buildType /*: string */,
+  // $FlowFixMe[incompatible-type-guard]
 ) /*: buildType is BuildType */ {
   const validBuildTypes = new Set([
     'release',
@@ -135,14 +136,17 @@ function validatePrealpha(version /*: Version */) {
 
 function isStableRelease(version /*: Version */) /*: boolean */ {
   return (
-    version.major === '0' && version.minor !== '0' && version.prerelease == null
+    version.major === '0' &&
+    !!version.minor.match(/^\d+$/) &&
+    !!version.patch.match(/^\d+$/) &&
+    version.prerelease == null
   );
 }
 
 function isStablePrerelease(version /*: Version */) /*: boolean */ {
   return !!(
     version.major === '0' &&
-    version.minor !== '0' &&
+    version.minor.match(/^\d+$/) &&
     version.patch.match(/^\d+$/) &&
     (version.prerelease?.startsWith('rc.') ||
       version.prerelease?.startsWith('rc-') ||

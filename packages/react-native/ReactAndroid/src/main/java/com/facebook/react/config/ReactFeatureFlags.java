@@ -66,33 +66,13 @@ public class ReactFeatureFlags {
    */
   public static boolean enableBridgelessArchitecture = false;
 
-  /** Server-side gating for a hacky fix to an ANR in the bridgeless core, related to Bolts task. */
-  public static boolean unstable_bridgelessArchitectureMemoryPressureHackyBoltsFix = false;
-
-  /**
-   * Does the bridgeless architecture log soft exceptions. Could be useful for tracking down issues.
-   */
-  public static volatile boolean enableBridgelessArchitectureSoftExceptions = false;
-
-  /** Does the bridgeless architecture use the new create/reload/destroy routines */
-  public static volatile boolean enableBridgelessArchitectureNewCreateReloadDestroy = true;
-
   /** This feature flag enables logs for Fabric */
   public static boolean enableFabricLogs = false;
 
   /** Feature flag to configure eager attachment of the root view/initialisation of the JS code */
   public static boolean enableEagerRootViewAttachment = false;
 
-  /** Enables or disables calculation of Transformed Frames */
-  public static boolean calculateTransformedFramesEnabled = false;
-
   public static boolean dispatchPointerEvents = false;
-
-  /** Feature Flag to enable a cache of Spannable objects used by TextLayoutManagerMapBuffer */
-  public static boolean enableTextSpannableCache = false;
-
-  /** Feature Flag to enable the pending event queue in fabric before mounting views */
-  public static boolean enableFabricPendingEventQueue = false;
 
   /**
    * Feature Flag to enable View Recycling. When enabled, individual ViewManagers must still opt-in.
@@ -108,15 +88,6 @@ public class ReactFeatureFlags {
    * Allow Differentiator.cpp and FabricMountingManager.cpp to generate a RemoveDeleteTree mega-op.
    */
   public static boolean enableRemoveDeleteTreeInstruction = false;
-
-  /** Report mount operations from the host platform to notify mount hooks. */
-  public static boolean enableMountHooks = false;
-
-  /** Use native view configs in bridgeless mode. */
-  public static boolean useNativeViewConfigsInBridgelessMode = false;
-
-  /** When enabled, Fabric will avoid cloning notes to perform state progression. */
-  public static boolean enableClonelessStateProgression = false;
 
   /** When enabled, rawProps in Props will not include Yoga specific props. */
   public static boolean excludeYogaFromRawProps = false;

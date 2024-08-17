@@ -2,7 +2,7 @@
 
 exports[`TouchableWithoutFeedback renders correctly 1`] = `
 <Text
-  acceptsFirstMouse={true}
+  acceptsFirstMouse={false}
   accessibilityState={
     Object {
       "busy": undefined,
@@ -13,7 +13,7 @@ exports[`TouchableWithoutFeedback renders correctly 1`] = `
     }
   }
   accessible={true}
-  enableFocusRing={true}
+  enableFocusRing={false}
   focusable={false}
   onClick={[Function]}
   onKeyDown={[Function]}
@@ -85,7 +85,7 @@ exports[`TouchableWithoutFeedback with disabled state should be disabled when di
 
 exports[`TouchableWithoutFeedback with disabled state should disable button when accessibilityState is disabled 1`] = `
 <View
-  acceptsFirstMouse={true}
+  acceptsFirstMouse={false}
   accessibilityState={
     Object {
       "busy": undefined,
@@ -96,7 +96,7 @@ exports[`TouchableWithoutFeedback with disabled state should disable button when
     }
   }
   accessible={true}
-  enableFocusRing={true}
+  enableFocusRing={false}
   focusable={false}
   onClick={[Function]}
   onKeyDown={[Function]}

@@ -50,6 +50,13 @@ module.exports = (moduleName, instanceMethods, isESModule) => {
     }
   };
 
+  Object.defineProperty(Component, 'name', {
+    value: name,
+    writable: false,
+    enumerable: false,
+    configurable: true,
+  });
+
   Component.displayName = nameWithoutPrefix;
 
   Object.keys(RealComponent).forEach(classStatic => {

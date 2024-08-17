@@ -11,10 +11,7 @@
 #include <jsi/JSIDynamic.h>
 #include <jsi/jsi.h>
 #include <react/debug/react_native_assert.h>
-#include <react/renderer/components/text/RawTextShadowNode.h>
-#include <react/renderer/core/LayoutMetrics.h>
 #include <react/renderer/core/ShadowNode.h>
-#include <react/renderer/graphics/Rect.h>
 
 namespace facebook::react {
 
@@ -40,16 +37,21 @@ inline static ShadowNode::Shared shadowNodeFromValue(
     return nullptr;
   }
 
-  return value.getObject(runtime).getNativeState<ShadowNode>(runtime);
+  return value.getObject(runtime)
+      .getNativeState<ShadowNodeWrapper>(runtime)
+      ->shadowNode;
 }
 
 inline static jsi::Value valueFromShadowNode(
     jsi::Runtime& runtime,
     ShadowNode::Shared shadowNode) {
+  // Wrap the shadow node so that we can update JS references from native
+  auto wrappedShadowNode =
+      std::make_shared<ShadowNodeWrapper>(std::move(shadowNode));
+  wrappedShadowNode->shadowNode->setRuntimeShadowNodeReference(
+      &*wrappedShadowNode);
   jsi::Object obj(runtime);
-  // Need to const_cast since JSI only allows non-const pointees
-  obj.setNativeState(
-      runtime, std::const_pointer_cast<ShadowNode>(std::move(shadowNode)));
+  obj.setNativeState(runtime, std::move(wrappedShadowNode));
   return obj;
 }
 
@@ -165,75 +167,5 @@ inline static folly::dynamic commandArgsFromValue(
     jsi::Runtime& runtime,
     const jsi::Value& value) {
   return jsi::dynamicFromValue(runtime, value);
-}
-
-inline static jsi::Value getArrayOfInstanceHandlesFromShadowNodes(
-    const ShadowNode::ListOfShared& nodes,
-    jsi::Runtime& runtime) {
-  // JSI doesn't support adding elements to an array after creation,
-  // so we need to accumulate the values in a vector and then create
-  // the array when we know the size.
-  std::vector<jsi::Value> nonNullInstanceHandles;
-  nonNullInstanceHandles.reserve(nodes.size());
-  for (const auto& shadowNode : nodes) {
-    auto instanceHandle = (*shadowNode).getInstanceHandle(runtime);
-    if (!instanceHandle.isNull()) {
-      nonNullInstanceHandles.push_back(std::move(instanceHandle));
-    }
-  }
-
-  auto result = jsi::Array(runtime, nonNullInstanceHandles.size());
-  for (size_t i = 0; i < nonNullInstanceHandles.size(); i++) {
-    result.setValueAtIndex(runtime, i, nonNullInstanceHandles[i]);
-  }
-  return result;
-}
-
-inline static void getTextContentInShadowNode(
-    const ShadowNode& shadowNode,
-    std::string& result) {
-  auto rawTextShadowNode = dynamic_cast<const RawTextShadowNode*>(&shadowNode);
-  if (rawTextShadowNode != nullptr) {
-    result.append(rawTextShadowNode->getConcreteProps().text);
-  }
-
-  for (const auto& childNode : shadowNode.getChildren()) {
-    getTextContentInShadowNode(*childNode.get(), result);
-  }
-}
-
-inline static Rect getScrollableContentBounds(
-    Rect contentBounds,
-    LayoutMetrics layoutMetrics) {
-  auto paddingFrame = layoutMetrics.getPaddingFrame();
-
-  auto paddingBottom =
-      layoutMetrics.contentInsets.bottom - layoutMetrics.borderWidth.bottom;
-  auto paddingLeft =
-      layoutMetrics.contentInsets.left - layoutMetrics.borderWidth.left;
-  auto paddingRight =
-      layoutMetrics.contentInsets.right - layoutMetrics.borderWidth.right;
-
-  auto minY = paddingFrame.getMinY();
-  auto maxY =
-      std::max(paddingFrame.getMaxY(), contentBounds.getMaxY() + paddingBottom);
-
-  auto minX = layoutMetrics.layoutDirection == LayoutDirection::RightToLeft
-      ? std::min(paddingFrame.getMinX(), contentBounds.getMinX() - paddingLeft)
-      : paddingFrame.getMinX();
-  auto maxX = layoutMetrics.layoutDirection == LayoutDirection::RightToLeft
-      ? paddingFrame.getMaxX()
-      : std::max(
-            paddingFrame.getMaxX(), contentBounds.getMaxX() + paddingRight);
-
-  return Rect{Point{minX, minY}, Size{maxX - minX, maxY - minY}};
-}
-
-inline static Size getScrollSize(
-    LayoutMetrics layoutMetrics,
-    Rect contentBounds) {
-  auto scrollableContentBounds =
-      getScrollableContentBounds(contentBounds, layoutMetrics);
-  return scrollableContentBounds.size;
 }
 } // namespace facebook::react

@@ -9,10 +9,12 @@
 
 #include <ReactCommon/RuntimeExecutor.h>
 
+#include "ConsoleMessage.h"
 #include "ExecutionContext.h"
 #include "InspectorInterfaces.h"
 #include "RuntimeAgent.h"
 #include "ScopedExecutor.h"
+#include "StackTrace.h"
 #include "WeakList.h"
 
 #include <memory>
@@ -49,7 +51,45 @@ class RuntimeTargetDelegate {
       SessionState& sessionState,
       std::unique_ptr<RuntimeAgentDelegate::ExportedState>
           previouslyExportedState,
-      const ExecutionContextDescription& executionContextDescription) = 0;
+      const ExecutionContextDescription& executionContextDescription,
+      RuntimeExecutor runtimeExecutor) = 0;
+
+  /**
+   * Called when the runtime intercepts a console API call. The target delegate
+   * should notify the frontend (via its agent delegates) of the message, and
+   * perform any buffering required for logging the message later (in the
+   * existing and/or new sessions).
+   *
+   * \note The method is called on the JS thread, and receives a valid reference
+   * to the current \c jsi::Runtime. The callee MAY use its own intrinsic
+   * Runtime reference, if it has one, without checking it for equivalence with
+   * the one provided here.
+   */
+  virtual void addConsoleMessage(
+      jsi::Runtime& runtime,
+      ConsoleMessage message) = 0;
+
+  /**
+   * \returns true if the runtime supports reporting console API calls over CDP.
+   * \c addConsoleMessage MAY be called even if this method returns false.
+   */
+  virtual bool supportsConsole() const = 0;
+
+  /**
+   * \returns an opaque representation of a stack trace. This may be passed back
+   * to the `RuntimeTargetDelegate` as part of `addConsoleMessage` or other APIs
+   * that report stack traces.
+   * \param framesToSkip The number of call frames to skip. The first call frame
+   * is the topmost (current) frame on the Runtime's call stack, which will
+   * typically be the (native) JSI HostFunction that called this method.
+   * \note The method is called on the JS thread, and receives a valid reference
+   * to the current \c jsi::Runtime. The callee MAY use its own intrinsic
+   * Runtime reference, if it has one, without checking it for equivalence with
+   * the one provided here.
+   */
+  virtual std::unique_ptr<StackTrace> captureStackTrace(
+      jsi::Runtime& runtime,
+      size_t framesToSkip = 0) = 0;
 };
 
 /**
@@ -77,15 +117,15 @@ class JSINSPECTOR_EXPORT RuntimeTarget
     : public EnableExecutorFromThis<RuntimeTarget> {
  public:
   /**
-   * Constructs a new RuntimeTarget. The caller must call setExecutor
-   * immediately afterwards.
    * \param executionContextDescription A description of the execution context
    * represented by this runtime. This is used for disambiguating the
    * source/destination of CDP messages when there are multiple runtimes
-   * (concurrently or over the life of a Page).
+   * (concurrently or over the life of a Host).
    * \param delegate The object that will receive events from this target. The
-   * caller is responsible for
-   * ensuring that the delegate outlives this object.
+   * caller is responsible for ensuring that the delegate outlives this object
+   * AND that it remains valid for as long as the JS runtime is executing any
+   * code, even if the \c RuntimeTarget itself is destroyed. The delegate SHOULD
+   * be the object that owns the underlying jsi::Runtime, if any.
    * \param jsExecutor A RuntimeExecutor that can be used to schedule work on
    * the JS runtime's thread. The executor's queue should be empty when
    * RuntimeTarget is constructed (i.e. anything scheduled during the
@@ -109,9 +149,9 @@ class JSINSPECTOR_EXPORT RuntimeTarget
   /**
    * Create a new RuntimeAgent that can be used to debug the underlying JS VM.
    * The agent will be destroyed when the session ends, the containing
-   * InstanceTarget is unregistered from its PageTarget, or the RuntimeAgent is
+   * InstanceTarget is unregistered from its HostTarget, or the RuntimeAgent is
    * unregistered from its InstanceTarget (whichever happens first).
-   * \param channel A thread-safe channel for sending CDP messages to the
+   * \param channel A thread-safe channel forHostTargetDP messages to the
    * frontend.
    * \returns The new agent, or nullptr if the runtime is not debuggable.
    */
@@ -126,10 +166,12 @@ class JSINSPECTOR_EXPORT RuntimeTarget
    * \param executionContextDescription A description of the execution context
    * represented by this runtime. This is used for disambiguating the
    * source/destination of CDP messages when there are multiple runtimes
-   * (concurrently or over the life of a Page).
-   * \param delegate The object that will receive events from this target.
-   * The caller is responsible for ensuring that the delegate outlives this
-   * object.
+   * (concurrently or over the life of a Host).
+   * \param delegate The object that will receive events from this target. The
+   * caller is responsible for ensuring that the delegate outlives this object
+   * AND that it remains valid for as long as the JS runtime is executing any
+   * code, even if the \c RuntimeTarget itself is destroyed. The delegate SHOULD
+   * be the object that owns the underlying jsi::Runtime, if any.
    * \param jsExecutor A RuntimeExecutor that can be used to schedule work on
    * the JS runtime's thread. The executor's queue should be empty when
    * RuntimeTarget is constructed (i.e. anything scheduled during the
@@ -152,6 +194,17 @@ class JSINSPECTOR_EXPORT RuntimeTarget
    * sessions that have registered to receive binding events for that name.
    */
   void installBindingHandler(const std::string& bindingName);
+
+  /**
+   * Installs any global values we want to expose to framework/user JavaScript
+   * code.
+   */
+  void installGlobals();
+
+  /**
+   * Install the console API handler.
+   */
+  void installConsoleHandler();
 
   // Necessary to allow RuntimeAgent to access RuntimeTarget's internals in a
   // controlled way (i.e. only RuntimeTargetController gets friend access, while

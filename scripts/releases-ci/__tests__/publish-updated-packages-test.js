@@ -21,7 +21,7 @@ const fetchMock = jest.fn();
 
 jest.mock('child_process', () => ({execSync}));
 jest.mock('shelljs', () => ({exec: execMock}));
-jest.mock('../../releases/utils/monorepo', () => ({
+jest.mock('../../utils/monorepo', () => ({
   getPackages: getPackagesMock,
 }));
 // $FlowIgnore[cannot-write]

@@ -6,20 +6,10 @@
  */
 
 #include <folly/Format.h>
-#include <folly/dynamic.h>
+#include <folly/executors/ManualExecutor.h>
 #include <folly/executors/QueuedImmediateExecutor.h>
-#include <folly/json.h>
-#include <gmock/gmock.h>
-#include <gtest/gtest.h>
 
-#include <jsinspector-modern/InspectorInterfaces.h>
-#include <jsinspector-modern/PageTarget.h>
-
-#include <memory>
-
-#include "FollyDynamicMatchers.h"
-#include "InspectorMocks.h"
-#include "UniquePtrFactory.h"
+#include "JsiIntegrationTest.h"
 #include "engines/JsiIntegrationTestGenericEngineAdapter.h"
 #include "engines/JsiIntegrationTestHermesEngineAdapter.h"
 
@@ -27,133 +17,6 @@ using namespace ::testing;
 using folly::sformat;
 
 namespace facebook::react::jsinspector_modern {
-
-namespace {
-
-/**
- * A text fixture class for the integration between the modern RN CDP backend
- * and a JSI engine, mocking out the rest of RN. For simplicity, everything is
- * single-threaded and "async" work is actually done through a queued immediate
- * executor ( = run immediately and finish all queued sub-tasks before
- * returning).
- *
- * The main limitation of the simpler threading model is that we can't cover
- * breakpoints etc - since pausing during JS execution would prevent the test
- * from making progress. Such functionality is better suited for a full RN+CDP
- * integration test (using RN's own thread management) as well as for each
- * engine's unit tests.
- *
- * \tparam EngineAdapter An adapter class that implements RuntimeTargetDelegate
- * for a particular engine, plus exposes access to a RuntimeExecutor (based on
- * the provided folly::Executor) and the corresponding jsi::Runtime.
- */
-template <typename EngineAdapter>
-class JsiIntegrationPortableTest : public Test, private PageTargetDelegate {
-  folly::QueuedImmediateExecutor immediateExecutor_;
-
- protected:
-  JsiIntegrationPortableTest() : engineAdapter_{immediateExecutor_} {
-    instance_ = &page_->registerInstance(instanceTargetDelegate_);
-    runtimeTarget_ = &instance_->registerRuntime(
-        *engineAdapter_, engineAdapter_->getRuntimeExecutor());
-  }
-
-  ~JsiIntegrationPortableTest() override {
-    toPage_.reset();
-    if (runtimeTarget_) {
-      EXPECT_TRUE(instance_);
-      instance_->unregisterRuntime(*runtimeTarget_);
-      runtimeTarget_ = nullptr;
-    }
-    if (instance_) {
-      page_->unregisterInstance(*instance_);
-      instance_ = nullptr;
-    }
-  }
-
-  void connect() {
-    ASSERT_FALSE(toPage_) << "Can only connect once in a JSI integration test.";
-    toPage_ = page_->connect(
-        remoteConnections_.make_unique(),
-        {.integrationName = "JsiIntegrationTest"});
-
-    // We'll always get an onDisconnect call when we tear
-    // down the test. Expect it in order to satisfy the strict mock.
-    EXPECT_CALL(*remoteConnections_[0], onDisconnect());
-  }
-
-  void reload() {
-    if (runtimeTarget_) {
-      ASSERT_TRUE(instance_);
-      instance_->unregisterRuntime(*runtimeTarget_);
-      runtimeTarget_ = nullptr;
-    }
-    if (instance_) {
-      page_->unregisterInstance(*instance_);
-      instance_ = nullptr;
-    }
-    // Recreate the engine (e.g. to wipe any state in the inner jsi::Runtime)
-    engineAdapter_.emplace(immediateExecutor_);
-    instance_ = &page_->registerInstance(instanceTargetDelegate_);
-    runtimeTarget_ = &instance_->registerRuntime(
-        *engineAdapter_, engineAdapter_->getRuntimeExecutor());
-  }
-
-  MockRemoteConnection& fromPage() {
-    assert(toPage_);
-    return *remoteConnections_[0];
-  }
-
-  VoidExecutor inspectorExecutor_ = [this](auto callback) {
-    immediateExecutor_.add(callback);
-  };
-
-  jsi::Value eval(std::string_view code) {
-    return engineAdapter_->getRuntime().evaluateJavaScript(
-        std::make_shared<jsi::StringBuffer>(std::string(code)), "<eval>");
-  }
-
-  /**
-   * Expect a message matching the provided gmock \c matcher and return a holder
-   * that will eventually contain the parsed JSON payload.
-   */
-  template <typename Matcher>
-  std::shared_ptr<const std::optional<folly::dynamic>> expectMessageFromPage(
-      Matcher&& matcher) {
-    std::shared_ptr result =
-        std::make_shared<std::optional<folly::dynamic>>(std::nullopt);
-    EXPECT_CALL(fromPage(), onMessage(matcher))
-        .WillOnce(
-            ([result](auto message) { *result = folly::parseJson(message); }))
-        .RetiresOnSaturation();
-    return result;
-  }
-
-  std::shared_ptr<PageTarget> page_ =
-      PageTarget::create(*this, inspectorExecutor_);
-  InstanceTarget* instance_{};
-  RuntimeTarget* runtimeTarget_{};
-
-  MockInstanceTargetDelegate instanceTargetDelegate_;
-  std::optional<EngineAdapter> engineAdapter_;
-
- private:
-  UniquePtrFactory<StrictMock<MockRemoteConnection>> remoteConnections_;
-
- protected:
-  // NOTE: Needs to be destroyed before page_.
-  std::unique_ptr<ILocalConnection> toPage_;
-
- private:
-  // PageTargetDelegate methods
-
-  void onReload(const PageReloadRequest& request) override {
-    (void)request;
-    reload();
-  }
-};
-
-} // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -170,13 +33,42 @@ using AllEngines = Types<
 
 using AllHermesVariants = Types<JsiIntegrationTestHermesEngineAdapter>;
 
+template <typename EngineAdapter>
+using JsiIntegrationPortableTest = JsiIntegrationPortableTestBase<
+    EngineAdapter,
+    folly::QueuedImmediateExecutor>;
+
 TYPED_TEST_SUITE(JsiIntegrationPortableTest, AllEngines);
 
 template <typename EngineAdapter>
-using JsiIntegrationHermesTest = JsiIntegrationPortableTest<EngineAdapter>;
-TYPED_TEST_SUITE(JsiIntegrationHermesTest, AllHermesVariants);
+using JsiIntegrationHermesTest = JsiIntegrationPortableTestBase<
+    EngineAdapter,
+    folly::QueuedImmediateExecutor>;
 
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * Fixture class for tests that run on a ManualExecutor. Work scheduled
+ * on the executor is *not* run automatically; it must be manually advanced
+ * in the body of the test.
+ */
+template <typename EngineAdapter>
+class JsiIntegrationHermesTestAsync : public JsiIntegrationPortableTestBase<
+                                          EngineAdapter,
+                                          folly::ManualExecutor> {
+ public:
+  void TearDown() override {
+    // Assert there are no pending tasks on the ManualExecutor.
+    auto tasksCleared = this->executor_.clear();
+    EXPECT_EQ(tasksCleared, 0)
+        << "There were still pending tasks on executor_ at the end of the test. Use advance() or run() as needed.";
+    JsiIntegrationPortableTestBase<EngineAdapter, folly::ManualExecutor>::
+        TearDown();
+  }
+};
+
+TYPED_TEST_SUITE(JsiIntegrationHermesTest, AllHermesVariants);
+TYPED_TEST_SUITE(JsiIntegrationHermesTestAsync, AllHermesVariants);
+
+#pragma region AllEngines
 
 TYPED_TEST(JsiIntegrationPortableTest, ConnectWithoutCrashing) {
   this->connect();
@@ -285,6 +177,7 @@ TYPED_TEST(JsiIntegrationPortableTest, AddBinding) {
                                  "id": 1,
                                  "method": "Runtime.enable"
                                })");
+  ASSERT_TRUE(executionContextInfo->has_value());
   auto executionContextId =
       executionContextInfo->value()["params"]["context"]["id"];
 
@@ -334,6 +227,7 @@ TYPED_TEST(JsiIntegrationPortableTest, AddedBindingSurvivesReload) {
                                  "id": 1,
                                  "method": "Runtime.enable"
                                })");
+  ASSERT_TRUE(executionContextInfo->has_value());
   auto executionContextId =
       executionContextInfo->value()["params"]["context"]["id"];
 
@@ -454,7 +348,109 @@ TYPED_TEST(JsiIntegrationPortableTest, ExceptionDuringAddBindingIsIgnored) {
   EXPECT_TRUE(this->eval("globalThis.foo === 42").getBool());
 }
 
-////////////////////////////////////////////////////////////////////////////////
+TYPED_TEST(JsiIntegrationPortableTest, FuseboxSetClientMetadata) {
+  this->connect();
+
+  this->expectMessageFromPage(JsonEq(R"({
+                                          "id": 1,
+                                          "result": {}
+                                        })"));
+
+  this->toPage_->sendMessage(R"({
+                                 "id": 1,
+                                 "method": "FuseboxClient.setClientMetadata",
+                                 "params": {}
+                               })");
+}
+
+TYPED_TEST(JsiIntegrationPortableTest, ReactNativeApplicationEnable) {
+  this->connect();
+
+  this->expectMessageFromPage(JsonEq(R"({
+                                          "id": 1,
+                                          "result": {}
+                                        })"));
+  this->expectMessageFromPage(JsonEq(R"({
+                                          "method": "ReactNativeApplication.metadataUpdated",
+                                          "params": {
+                                            "integrationName": "JsiIntegrationTest"
+                                          }
+                                        })"));
+
+  this->toPage_->sendMessage(R"({
+                                 "id": 1,
+                                 "method": "ReactNativeApplication.enable",
+                                 "params": {}
+                               })");
+}
+
+TYPED_TEST(JsiIntegrationPortableTest, ReactNativeApplicationDisable) {
+  this->connect();
+
+  this->expectMessageFromPage(JsonEq(R"({
+                                          "id": 1,
+                                          "result": {}
+                                        })"));
+
+  this->toPage_->sendMessage(R"({
+                                 "id": 1,
+                                 "method": "ReactNativeApplication.disable",
+                                 "params": {}
+                               })");
+}
+
+#pragma endregion // AllEngines
+#pragma region AllHermesVariants
+
+TYPED_TEST(JsiIntegrationHermesTestAsync, HermesObjectsTableDoesNotMemoryLeak) {
+  // This is a regression test for T186157855 (CDPAgent leaking JSI data in
+  // RemoteObjectsTable past the Runtime's lifetime)
+  this->connect();
+  this->executor_.run();
+
+  InSequence s;
+
+  this->expectMessageFromPage(JsonParsed(
+      AllOf(AtJsonPtr("/method", "Runtime.executionContextCreated"))));
+  this->expectMessageFromPage(JsonEq(R"({
+                                         "id": 1,
+                                         "result": {}
+                                       })"));
+  this->toPage_->sendMessage(R"({
+                                 "id": 1,
+                                 "method": "Runtime.enable"
+                               })");
+  this->executor_.run();
+
+  this->expectMessageFromPage(JsonParsed(AllOf(
+      AtJsonPtr("/method", "Runtime.consoleAPICalled"),
+      AtJsonPtr("/params/args/0/objectId", "1"))));
+  this->eval(R"(console.log({a: 1});)");
+  this->executor_.run();
+
+  this->expectMessageFromPage(JsonEq(R"({
+                                          "method": "Runtime.executionContextDestroyed",
+                                          "params": {
+                                            "executionContextId": 1
+                                          }
+                                        })"));
+  this->expectMessageFromPage(JsonEq(R"({
+                                          "method": "Runtime.executionContextsCleared"
+                                        })"));
+  this->expectMessageFromPage(JsonEq(R"({
+                                          "method": "Runtime.executionContextCreated",
+                                          "params": {
+                                            "context": {
+                                              "id": 2,
+                                              "origin": "",
+                                              "name": "main"
+                                            }
+                                          }
+                                        })"));
+  // NOTE: Doesn't crash when Hermes checks for JSI value leaks
+  this->reload();
+  this->executor_.run();
+}
 
 TYPED_TEST(JsiIntegrationHermesTest, EvaluateExpression) {
   this->connect();
@@ -490,6 +486,7 @@ TYPED_TEST(JsiIntegrationHermesTest, EvaluateExpressionInExecutionContext) {
                                  "id": 1,
                                  "method": "Runtime.enable"
                                })");
+  ASSERT_TRUE(executionContextInfo->has_value());
   auto executionContextId =
       executionContextInfo->value()["params"]["context"]["id"].getInt();
 
@@ -523,7 +520,7 @@ TYPED_TEST(JsiIntegrationHermesTest, EvaluateExpressionInExecutionContext) {
 
   // Now the old execution context is stale.
   this->expectMessageFromPage(
-      JsonParsed(AllOf(AtJsonPtr("/id", 3), AtJsonPtr("/error/code", -32000))));
+      JsonParsed(AllOf(AtJsonPtr("/id", 3), AtJsonPtr("/error/code", -32600))));
   this->toPage_->sendMessage(sformat(
       R"({{
         "id": 3,
@@ -538,23 +535,23 @@ TYPED_TEST(JsiIntegrationHermesTest, ResolveBreakpointAfterReload) {
 
   InSequence s;
 
-  this->expectMessageFromPage(JsonParsed(AtJsonPtr("/id", 1)));
+  this->expectMessageFromPage(JsonEq(R"({
+                                         "id": 1,
+                                         "result": {}
+                                       })"));
   this->toPage_->sendMessage(R"({
                                  "id": 1,
+                                 "method": "Debugger.enable"
+                               })");
+
+  this->expectMessageFromPage(JsonParsed(AtJsonPtr("/id", 2)));
+  this->toPage_->sendMessage(R"({
+                                 "id": 2,
                                  "method": "Debugger.setBreakpointByUrl",
                                  "params": {"lineNumber": 2, "url": "breakpointTest.js"}
                                })");
 
   this->reload();
-
-  this->expectMessageFromPage(JsonEq(R"({
-                                         "id": 2,
-                                         "result": {}
-                                       })"));
-  this->toPage_->sendMessage(R"({
-                                 "id": 2,
-                                 "method": "Debugger.enable"
-                               })");
 
   auto scriptInfo = this->expectMessageFromPage(JsonParsed(AllOf(
       AtJsonPtr("/method", "Debugger.scriptParsed"),
@@ -568,9 +565,125 @@ TYPED_TEST(JsiIntegrationHermesTest, ResolveBreakpointAfterReload) {
     };
     //# sourceURL=breakpointTest.js
   )");
+  ASSERT_TRUE(breakpointInfo->has_value());
+  ASSERT_TRUE(scriptInfo->has_value());
   EXPECT_EQ(
       breakpointInfo->value()["params"]["location"]["scriptId"],
       scriptInfo->value()["params"]["scriptId"]);
 }
+
+TYPED_TEST(JsiIntegrationHermesTest, CDPAgentReentrancyRegressionTest) {
+  this->connect();
+
+  InSequence s;
+
+  this->inspectorExecutor_([&]() {
+    // Tasks scheduled on our executor here will be executed when this lambda
+    // returns. This is integral to the bug we're trying to reproduce, so we
+    // place the EXPECT_* calls at the end of the lambda body to ensure the
+    // test fails if we get eager (unexpected) responses.
+
+    // 1. Cause CDPAgent to schedule a task to process the message. Originally,
+    //    the task would be simultaneously scheduled on the JS executor, and as
+    //    an interrupt on the JS interpreter. It's called via the executor
+    //    regardless, since the interpreter is idle at the moment.
+    this->toPage_->sendMessage(R"({
+                                   "id": 1,
+                                   "method": "Runtime.evaluate",
+                                   "params": {"expression": "Math.random(); /* Interrupts processed here. */ globalThis.x = 1 + 2"}
+                                 })");
+
+    // 2. Cause CDPAgent to schedule another task. If scheduled as an interrupt,
+    //    this task will run _during_ the first task.
+    this->toPage_->sendMessage(R"({
+                                   "id": 2,
+                                   "method": "Runtime.evaluate",
+                                   "params": {"expression": "globalThis.x = 3 + 4"}
+                                 })");
+
+    //  This setup used to trigger three distinct bugs in CDPAgent:
+    //    - The first task would be triggered twice due to a race condition
+    //      between the executor and the interrupt handler. (D54771697)
+    //    - The second task would deadlock due to the first task holding a lock
+    //      preventing any other CDPAgent tasks from running. (D54838179)
+    //    - The second task would complete first, returning `evaluate`
+    //      responses out of order and (crucially) performing any JS side
+    //      effects out of order. (D55250610)
+
+    this->expectMessageFromPage(JsonEq(R"({
+                                            "id": 1,
+                                            "result": {
+                                              "result": {
+                                                "type": "number",
+                                                "value": 3
+                                              }
+                                            }
+                                          })"));
+
+    this->expectMessageFromPage(JsonEq(R"({
+                                            "id": 2,
+                                            "result": {
+                                              "result": {
+                                                "type": "number",
+                                                "value": 7
+                                              }
+                                            }
+                                          })"));
+  });
+
+  // Make sure the second task ran last.
+  EXPECT_EQ(this->eval("globalThis.x").getNumber(), 7);
+}
+
+TYPED_TEST(JsiIntegrationHermesTest, ScriptParsedExactlyOnce) {
+  // Regression test for T182003727 (multiple scriptParsed events for a single
+  // script under Hermes lazy compilation).
+
+  this->connect();
+
+  InSequence s;
+
+  this->eval(R"(
+    // NOTE: Triggers lazy compilation in Hermes when running with
+    // CompilationMode::ForceLazyCompilation.
+    (function foo(){var x = 2;})()
+    //# sourceURL=script.js
+  )");
+
+  this->expectMessageFromPage(JsonParsed(AllOf(
+      AtJsonPtr("/method", "Debugger.scriptParsed"),
+      AtJsonPtr("/params/url", "script.js"))));
+  this->expectMessageFromPage(JsonEq(R"({
+                                         "id": 1,
+                                         "result": {}
+                                       })"));
+  this->toPage_->sendMessage(R"({
+                                 "id": 1,
+                                 "method": "Debugger.enable"
+                               })");
+}
+
+TYPED_TEST(JsiIntegrationHermesTest, FunctionDescriptionIncludesName) {
+  // See
+  // https://github.com/facebookexperimental/rn-chrome-devtools-frontend/blob/9a23d4c7c4c2d1a3d9e913af38d6965f474c4284/front_end/ui/legacy/components/object_ui/ObjectPropertiesSection.ts#L311-L391
+
+  this->connect();
+
+  InSequence s;
+
+  this->expectMessageFromPage(JsonParsed(AllOf(
+      AtJsonPtr("/id", 1),
+      AtJsonPtr("/result/result/type", "function"),
+      AtJsonPtr(
+          "/result/result/description",
+          DynamicString(StartsWith("function foo() {"))))));
+  this->toPage_->sendMessage(R"({
+                               "id": 1,
+                               "method": "Runtime.evaluate",
+                               "params": {"expression": "(function foo() {Math.random()});"}
+                             })");
+}
+
+#pragma endregion // AllHermesVariants
 
 } // namespace facebook::react::jsinspector_modern

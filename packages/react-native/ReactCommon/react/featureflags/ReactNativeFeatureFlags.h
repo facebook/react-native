@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3bfae310dfd28040f4b80d1a1df8b7b3>>
+ * @generated SignedSource<<5f1ae3edfe01ee0545bd89137c5cb3e9>>
  */
 
 /**
@@ -23,6 +23,10 @@
 #include <react/featureflags/ReactNativeFeatureFlagsProvider.h>
 #include <memory>
 
+#ifndef RN_EXPORT
+#define RN_EXPORT __attribute__((visibility("default")))
+#endif
+
 namespace facebook::react {
 
 /**
@@ -36,52 +40,122 @@ class ReactNativeFeatureFlags {
   /**
    * Common flag for testing. Do NOT modify.
    */
-  static bool commonTestFlag();
+  RN_EXPORT static bool commonTestFlag();
 
   /**
-   * Enables the use of a background executor to compute layout and commit updates on Fabric (this system is deprecated and should not be used).
+   * Enables the differentiator to understand the "collapsableChildren" prop
    */
-  static bool enableBackgroundExecutor();
+  RN_EXPORT static bool allowCollapsableChildren();
 
   /**
-   * When enabled, it uses the modern fork of RuntimeScheduler that allows scheduling tasks with priorities from any thread.
+   * Adds support for recursively processing commits that mount synchronously (Android only).
    */
-  static bool useModernRuntimeScheduler();
-
-  /**
-   * Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).
-   */
-  static bool enableMicrotasks();
+  RN_EXPORT static bool allowRecursiveCommitsWithSynchronousMountOnAndroid();
 
   /**
    * When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.
    */
-  static bool batchRenderingUpdatesInEventLoop();
+  RN_EXPORT static bool batchRenderingUpdatesInEventLoop();
 
   /**
-   * Uses new, deduplicated logic for constructing Android Spannables from text fragments
+   * When enabled, ReactInstanceManager will clean up Fabric surfaces on destroy().
    */
-  static bool enableSpannableBuildingUnification();
+  RN_EXPORT static bool destroyFabricSurfacesInReactInstanceManager();
 
   /**
-   * When enabled, Fabric will use customDrawOrder in ReactViewGroup (similar to old architecture).
+   * Enables the use of a background executor to compute layout and commit updates on Fabric (this system is deprecated and should not be used).
    */
-  static bool enableCustomDrawOrderFabric();
+  RN_EXPORT static bool enableBackgroundExecutor();
 
   /**
-   * Attempt at fixing a crash related to subview clipping on Android. This is a kill switch for the fix
+   * Clean yoga node when <TextInput /> does not change.
    */
-  static bool enableFixForClippedSubviewsCrash();
+  RN_EXPORT static bool enableCleanTextInputYogaNode();
 
   /**
-   * Flag determining if the C++ implementation of InspectorPackagerConnection should be used instead of the per-platform one. This flag is global and should not be changed across React Host lifetimes.
+   * When enabled, the renderer would only fail commits when they propagate state and the last commit that updated state changed before committing.
    */
-  static bool inspectorEnableCxxInspectorPackagerConnection();
+  RN_EXPORT static bool enableGranularShadowTreeStateReconciliation();
 
   /**
-   * Flag determining if the modern CDP backend should be enabled. This flag is global and should not be changed across React Host lifetimes.
+   * Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).
    */
-  static bool inspectorEnableModernCDPRegistry();
+  RN_EXPORT static bool enableMicrotasks();
+
+  /**
+   * Dispatches state updates synchronously in Fabric (e.g.: updates the scroll position in the shadow tree synchronously from the main thread).
+   */
+  RN_EXPORT static bool enableSynchronousStateUpdates();
+
+  /**
+   * Ensures that JavaScript always has a consistent view of the state of the UI (e.g.: commits done in other threads are not immediately propagated to JS during its execution).
+   */
+  RN_EXPORT static bool enableUIConsistency();
+
+  /**
+   * Fixes a leak in SurfaceMountingManager.mRemoveDeleteTreeUIFrameCallback
+   */
+  RN_EXPORT static bool fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak();
+
+  /**
+   * Forces the mounting layer on Android to always batch mount items instead of dispatching them immediately. This might fix some crashes related to synchronous state updates, where some views dispatch state updates during mount.
+   */
+  RN_EXPORT static bool forceBatchingMountItemsOnAndroid();
+
+  /**
+   * Flag determining if the React Native DevTools (Fusebox) CDP backend should be enabled in debug builds. This flag is global and should not be changed across React Host lifetimes.
+   */
+  RN_EXPORT static bool fuseboxEnabledDebug();
+
+  /**
+   * Flag determining if the React Native DevTools (Fusebox) CDP backend should be enabled in release builds. This flag is global and should not be changed across React Host lifetimes.
+   */
+  RN_EXPORT static bool fuseboxEnabledRelease();
+
+  /**
+   * Only enqueue Choreographer calls if there is an ongoing animation, instead of enqueueing every frame.
+   */
+  RN_EXPORT static bool lazyAnimationCallbacks();
+
+  /**
+   * When enabled, ParagraphShadowNode will no longer call measure twice.
+   */
+  RN_EXPORT static bool preventDoubleTextMeasure();
+
+  /**
+   * Propagate layout direction to Android views.
+   */
+  RN_EXPORT static bool setAndroidLayoutDirection();
+
+  /**
+   * Invoke callbacks immediately on the ReactInstance rather than going through a background thread for synchronization
+   */
+  RN_EXPORT static bool useImmediateExecutorInAndroidBridgeless();
+
+  /**
+   * When enabled, it uses the modern fork of RuntimeScheduler that allows scheduling tasks with priorities from any thread.
+   */
+  RN_EXPORT static bool useModernRuntimeScheduler();
+
+  /**
+   * When enabled, the native view configs are used in bridgeless mode.
+   */
+  RN_EXPORT static bool useNativeViewConfigsInBridgelessMode();
+
+  /**
+   * When enabled, cloning shadow nodes within react native will update the reference held by the current JS fiber tree.
+   */
+  RN_EXPORT static bool useRuntimeShadowNodeReferenceUpdate();
+
+  /**
+   * When enabled, cloning shadow nodes during layout will update the reference held by the current JS fiber tree.
+   */
+  RN_EXPORT static bool useRuntimeShadowNodeReferenceUpdateOnLayout();
+
+  /**
+   * When enabled, it uses optimised state reconciliation algorithm.
+   */
+  RN_EXPORT static bool useStateAlignmentMechanism();
 
   /**
    * Overrides the feature flags with the ones provided by the given provider
@@ -101,7 +175,7 @@ class ReactNativeFeatureFlags {
    *     std::make_unique<MyReactNativeFeatureFlags>());
    * ```
    */
-  static void override(
+  RN_EXPORT static void override(
       std::unique_ptr<ReactNativeFeatureFlagsProvider> provider);
 
   /**
@@ -116,7 +190,7 @@ class ReactNativeFeatureFlags {
    * call `dangerouslyReset` after destroying the runtime and `override` again
    * before initializing the new one.
    */
-  static void dangerouslyReset();
+  RN_EXPORT static void dangerouslyReset();
 
  private:
   ReactNativeFeatureFlags() = delete;

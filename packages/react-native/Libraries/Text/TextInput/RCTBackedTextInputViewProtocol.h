@@ -77,6 +77,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setSelectedTextRange:(NSRange)selectedTextRange NS_UNAVAILABLE;
 - (void)setSelectedTextRange:(NSRange)selectedTextRange notifyDelegate:(BOOL)notifyDelegate;
 #endif // macOS]
+- (void)scrollRangeToVisible:(NSRange)selectedTextRange;
 
 #if TARGET_OS_OSX // [macOS
 // UITextInput method for OSX

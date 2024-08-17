@@ -10,7 +10,7 @@
 #import <React/RCTBorderCurve.h>
 #import <React/RCTBorderStyle.h>
 #import <React/RCTComponent.h>
-#import <React/RCTCursor.h> // [macOS] [visionOS]
+#import <React/RCTCursor.h>
 #import <React/RCTEventDispatcherProtocol.h> // [macOS]
 #import <React/RCTPointerEvents.h>
 

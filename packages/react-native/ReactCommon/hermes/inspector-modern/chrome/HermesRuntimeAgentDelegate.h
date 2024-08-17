@@ -7,8 +7,11 @@
 
 #pragma once
 
-#include <ReactCommon/RuntimeExecutor.h>
+#ifdef HERMES_ENABLE_DEBUGGER
 
+#include "HermesRuntimeTargetDelegate.h"
+
+#include <ReactCommon/RuntimeExecutor.h>
 #include <hermes/hermes.h>
 #include <jsinspector-modern/ReactCdp.h>
 
@@ -16,7 +19,7 @@ namespace facebook::react::jsinspector_modern {
 
 /**
  * A RuntimeAgentDelegate that handles requests from the Chrome DevTools
- * Protocol for an instance of Hermes.
+ * Protocol for an instance of Hermes, using the modern CDPAgent API.
  */
 class HermesRuntimeAgentDelegate : public RuntimeAgentDelegate {
  public:
@@ -27,14 +30,18 @@ class HermesRuntimeAgentDelegate : public RuntimeAgentDelegate {
    * be accessed on the main thread (during the constructor, in handleRequest,
    * etc).
    * \param previouslyExportedState The exported state from a previous instance
-   * of RuntimeAgentDelegate (NOT necessarily HermesRuntimeAgentDelegate). This
-   * may be nullptr, and if not nullptr it may be of any concrete type that
+   * of RuntimeAgentDelegate (NOT necessarily HermesRuntimeAgentDelegate).
+   * This may be nullptr, and if not nullptr it may be of any concrete type that
    * implements RuntimeAgentDelegate::ExportedState.
    * \param executionContextDescription A description of the execution context
    * represented by this runtime. This is used for disambiguating the
    * source/destination of CDP messages when there are multiple runtimes
-   * (concurrently or over the life of a Page).
-   * \param runtime The HermesRuntime that this agent is attached to.
+   * (concurrently or over the life of a Host).
+   * \param runtime The HermesRuntime that this agent is attached to. The caller
+   * is responsible for keeping this object alive for the duration of the
+   * \c HermesRuntimeAgentDelegate lifetime.
+   * \param runtimeTargetDelegate The \c HermesRuntimeTargetDelegate object
+   * object for the passed runtime.
    * \param runtimeExecutor A callback for scheduling work on the JS thread.
    * \c runtimeExecutor may drop scheduled work if the runtime is destroyed
    * first.
@@ -45,11 +52,12 @@ class HermesRuntimeAgentDelegate : public RuntimeAgentDelegate {
       std::unique_ptr<RuntimeAgentDelegate::ExportedState>
           previouslyExportedState,
       const ExecutionContextDescription& executionContextDescription,
-      std::shared_ptr<hermes::HermesRuntime> runtime,
+      hermes::HermesRuntime& runtime,
+      HermesRuntimeTargetDelegate& runtimeTargetDelegate,
       RuntimeExecutor runtimeExecutor);
 
   /**
-   * Handle a CDP request.  The response will be sent over the provided
+   * Handle a CDP request. The response will be sent over the provided
    * \c FrontendChannel synchronously or asynchronously.
    * \param req The parsed request.
    * \returns true if this agent has responded, or will respond asynchronously,
@@ -58,14 +66,18 @@ class HermesRuntimeAgentDelegate : public RuntimeAgentDelegate {
    */
   bool handleRequest(const cdp::PreparsedRequest& req) override;
 
-  virtual std::unique_ptr<ExportedState> getExportedState() override;
+  std::unique_ptr<RuntimeAgentDelegate::ExportedState> getExportedState()
+      override;
 
  private:
-  // We use the private implementation idiom to keep HERMES_ENABLE_DEBUGGER
-  // checks out of the header.
   class Impl;
 
   const std::unique_ptr<Impl> impl_;
 };
 
 } // namespace facebook::react::jsinspector_modern
+
+#else
+#error \
+    "HERMES_ENABLE_DEBUGGER must be enabled to use HermesRuntimeAgentDelegate."
+#endif // HERMES_ENABLE_DEBUGGER

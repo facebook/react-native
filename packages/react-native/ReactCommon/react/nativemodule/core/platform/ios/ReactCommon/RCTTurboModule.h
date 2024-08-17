@@ -31,7 +31,7 @@ class Instance;
 namespace TurboModuleConvertUtils {
 jsi::Value convertObjCObjectToJSIValue(jsi::Runtime &runtime, id value);
 id convertJSIValueToObjCObject(jsi::Runtime &runtime, const jsi::Value &value, std::shared_ptr<CallInvoker> jsInvoker);
-}
+} // namespace TurboModuleConvertUtils
 
 /**
  * ObjC++ specific TurboModule base class.

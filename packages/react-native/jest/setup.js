@@ -9,6 +9,11 @@
 
 'use strict';
 
+global.IS_REACT_ACT_ENVIRONMENT = true;
+// Suppress the `react-test-renderer` warnings until New Architecture and legacy
+// mode are no longer supported by React Native.
+global.IS_REACT_NATIVE_TEST_ENVIRONMENT = true;
+
 const MockNativeMethods = jest.requireActual('./MockNativeMethods');
 const mockComponent = jest.requireActual('./mockComponent');
 
@@ -112,17 +117,9 @@ jest
       Constants: {},
     },
   }))
-  .mock('../Libraries/Image/Image', () => {
-    const Image = mockComponent('../Libraries/Image/Image');
-    Image.getSize = jest.fn();
-    Image.getSizeWithHeaders = jest.fn();
-    Image.prefetch = jest.fn();
-    Image.prefetchWithMetadata = jest.fn();
-    Image.queryCache = jest.fn();
-    Image.resolveAssetSource = jest.fn();
-
-    return Image;
-  })
+  .mock('../Libraries/Image/Image', () =>
+    mockComponent('../Libraries/Image/Image'),
+  )
   .mock('../Libraries/Text/Text', () =>
     mockComponent('../Libraries/Text/Text', MockNativeMethods),
   )
@@ -145,7 +142,9 @@ jest
   .mock('../Libraries/Components/AccessibilityInfo/AccessibilityInfo', () => ({
     __esModule: true,
     default: {
-      addEventListener: jest.fn(),
+      addEventListener: jest.fn(() => ({
+        remove: jest.fn(),
+      })),
       announceForAccessibility: jest.fn(),
       isAccessibilityServiceEnabled: jest.fn(),
       isBoldTextEnabled: jest.fn(),
@@ -208,7 +207,9 @@ jest
     openURL: jest.fn(),
     canOpenURL: jest.fn(() => Promise.resolve(true)),
     openSettings: jest.fn(),
-    addEventListener: jest.fn(),
+    addEventListener: jest.fn(() => ({
+      remove: jest.fn(),
+    })),
     getInitialURL: jest.fn(() => Promise.resolve()),
     sendIntent: jest.fn(),
   }))
@@ -261,7 +262,12 @@ jest
     },
     ImageLoader: {
       getSize: jest.fn(url => Promise.resolve([320, 240])),
+      getSizeWithHeaders: jest.fn((url, headers) =>
+        Promise.resolve({height: 222, width: 333}),
+      ),
       prefetchImage: jest.fn(),
+      prefetchImageWithMetadata: jest.fn(),
+      queryCache: jest.fn(),
     },
     ImageViewManager: {
       getSize: jest.fn((uri, success) =>

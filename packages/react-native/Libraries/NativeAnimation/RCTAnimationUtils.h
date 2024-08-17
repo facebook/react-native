@@ -7,9 +7,9 @@
 
 #import <CoreGraphics/CoreGraphics.h>
 #import <Foundation/Foundation.h>
+#import <React/RCTUIKit.h> // [macOS]
 
 #import <React/RCTDefines.h>
-#import <React/RCTUIKit.h> // [macOS]
 
 RCT_EXTERN NSString *const EXTRAPOLATE_TYPE_IDENTITY;
 RCT_EXTERN NSString *const EXTRAPOLATE_TYPE_CLAMP;

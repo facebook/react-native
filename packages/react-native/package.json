@@ -5,7 +5,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/microsoft/react-native-macos.git",
+    "url": "git+https://github.com/microsoft/react-native-macos.git",
     "directory": "packages/react-native"
   },
   "homepage": "https://reactnative.dev/",
@@ -23,7 +23,9 @@
   "engines": {
     "node": ">=18"
   },
-  "bin": "./cli.js",
+  "bin": {
+    "react-native": "cli.js"
+  },
   "types": "types",
   "jest-junit": {
     "outputDirectory": "reports/junit",
@@ -42,7 +44,6 @@
     "jest",
     "Libraries",
     "LICENSE",
-    "local-cli",
     "React-Core.podspec",
     "react-native.config.js",
     "React.podspec",
@@ -55,6 +56,7 @@
     "rn-get-polyfills.js",
     "scripts/compose-source-maps.js",
     "scripts/find-node-for-xcode.sh",
+    "scripts/bundle.js",
     "scripts/generate-codegen-artifacts.js",
     "scripts/generate-provider-cli.js",
     "scripts/generate-specs-cli.js",
@@ -64,6 +66,9 @@
     "scripts/hermes/hermes-utils.js",
     "scripts/hermes/prepare-hermes-for-build.js",
     "scripts/ios-configure-glog.sh",
+    "scripts/xcode/ccache-clang++.sh",
+    "scripts/xcode/ccache-clang.sh",
+    "scripts/xcode/ccache.conf",
     "scripts/xcode/with-environment.sh",
     "scripts/native_modules.rb",
     "scripts/node-binary.sh",
@@ -90,25 +95,31 @@
     "types"
   ],
   "scripts": {
-    "prepack": "cp ../../README.md .",
+    "prepack": "node ./scripts/prepack.js",
     "featureflags-check": "node ./scripts/featureflags/index.js --verify-unchanged",
     "featureflags-update": "node ./scripts/featureflags/index.js"
   },
   "peerDependencies": {
-    "react": "18.2.0"
+    "@types/react": "^18.2.6",
+    "react": "^19.0.0-rc-fb9a90fa48-20240614"
+  },
+  "peerDependenciesMeta": {
+    "@types/react": {
+      "optional": true
+    }
   },
   "dependencies": {
     "@jest/create-cache-key-function": "^29.6.3",
-    "@react-native-community/cli": "13.6.0",
-    "@react-native-community/cli-platform-android": "13.6.0",
-    "@react-native-community/cli-platform-ios": "13.6.0",
-    "@react-native-mac/virtualized-lists": "0.74.0",
-    "@react-native/assets-registry": "0.74.0",
-    "@react-native/codegen": "0.74.0",
-    "@react-native/community-cli-plugin": "0.74.0",
-    "@react-native/gradle-plugin": "0.74.0",
-    "@react-native/js-polyfills": "0.74.0",
-    "@react-native/normalize-colors": "0.74.1",
+    "@react-native-community/cli": "14.0.0-alpha.2",
+    "@react-native-community/cli-platform-android": "14.0.0-alpha.2",
+    "@react-native-community/cli-platform-ios": "14.0.0-alpha.2",
+    "@react-native-mac/virtualized-lists": "0.75.0-main",
+    "@react-native/assets-registry": "0.75.0-main",
+    "@react-native/codegen": "0.75.0-main",
+    "@react-native/community-cli-plugin": "0.75.0-main",
+    "@react-native/gradle-plugin": "0.75.0-main",
+    "@react-native/js-polyfills": "0.75.0-main",
+    "@react-native/normalize-colors": "0.75.0-main",
     "abort-controller": "^3.0.0",
     "anser": "^1.4.9",
     "ansi-regex": "^5.0.0",
@@ -116,6 +127,7 @@
     "chalk": "^4.0.0",
     "event-target-shim": "^5.0.1",
     "flow-enums-runtime": "^0.0.6",
+    "glob": "^7.1.1",
     "invariant": "^2.2.4",
     "jest-environment-node": "^29.6.3",
     "jsc-android": "^250231.0.0",
@@ -126,11 +138,11 @@
     "nullthrows": "^1.1.1",
     "pretty-format": "^26.5.2",
     "promise": "^8.3.0",
-    "react-devtools-core": "^5.0.0",
+    "react-devtools-core": "5.1.0",
     "react-refresh": "^0.14.0",
-    "react-shallow-renderer": "^16.15.0",
     "regenerator-runtime": "^0.13.2",
-    "scheduler": "0.24.0-canary-efb381bbf-20230505",
+    "scheduler": "0.25.0-rc-fb9a90fa48-20240614",
+    "semver": "^7.1.3",
     "stacktrace-parser": "^0.1.10",
     "whatwg-fetch": "^3.0.0",
     "ws": "^6.2.3",

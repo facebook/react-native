@@ -15,24 +15,23 @@ const processColor = require('../StyleSheet/processColor').default;
 const Platform = require('../Utilities/Platform');
 const invariant = require('invariant');
 
-type Content =
-  | {
-      title?: string,
-      message: string,
-      ...
-    }
+export type ShareContent =
   | {
       title?: string,
       url: string,
-      ...
+      message?: string,
+    }
+  | {
+      title?: string,
+      url?: string,
+      message: string,
     };
-type Options = {
+export type ShareOptions = {
   dialogTitle?: string,
   excludedActivityTypes?: Array<string>,
   tintColor?: string,
   subject?: string,
   anchor?: number,
-  ...
 };
 
 class Share {
@@ -43,21 +42,21 @@ class Share {
    * If the user dismissed the dialog, the Promise will still be resolved with action being `Share.dismissedAction`
    * and all the other keys being undefined.
    *
-   * In Android, Returns a Promise which always be resolved with action being `Share.sharedAction`.
+   * In Android, Returns a Promise which always resolves with action being `Share.sharedAction`.
    *
    * ### Content
-   *
-   *  - `message` - a message to share
    *
    * #### iOS
    *
    *  - `url` - a URL to share
+   *  - `message` - a message to share
    *
-   * At least one of URL and message is required.
+   * At least one of `URL` or `message` is required.
    *
    * #### Android
    *
-   * - `title` - title of the message
+   * - `title` - title of the message (optional)
+   * - `message` - a message to share (often will include a URL).
    *
    * ### Options
    *
@@ -73,8 +72,8 @@ class Share {
    *
    */
   static share(
-    content: Content,
-    options: Options = {},
+    content: ShareContent,
+    options: ShareOptions = {},
   ): Promise<{action: string, activityType: ?string}> {
     invariant(
       typeof content === 'object' && content !== null,
@@ -82,7 +81,7 @@ class Share {
     );
     invariant(
       typeof content.url === 'string' || typeof content.message === 'string',
-      'At least one of URL and message is required',
+      'At least one of URL or message is required',
     );
     invariant(
       typeof options === 'object' && options !== null,

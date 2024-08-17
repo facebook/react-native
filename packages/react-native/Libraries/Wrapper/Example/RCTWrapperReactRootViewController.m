@@ -35,7 +35,7 @@
   rootView.backgroundColor = [UIColor whiteColor];
 
   UIActivityIndicatorView *progressIndicatorView =
-      [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+      [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleLarge];
   [progressIndicatorView startAnimating];
   rootView.loadingView = progressIndicatorView;
 

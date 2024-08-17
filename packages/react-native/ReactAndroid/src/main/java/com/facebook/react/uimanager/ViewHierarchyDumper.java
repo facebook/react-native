@@ -9,11 +9,13 @@ package com.facebook.react.uimanager;
 
 import android.view.View;
 import android.view.ViewGroup;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.UiThreadUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 class ViewHierarchyDumper {
 
   public static JSONObject toJSON(View view) throws JSONException {

@@ -27,14 +27,19 @@ ${DO_NOT_MODIFY_COMMENT}
 
 #pragma once
 
+#if __has_include("rncoreJSI.h") // Cmake headers on Android
+#include "rncoreJSI.h"
+#elif __has_include("FBReactNativeSpecJSI.h") // CocoaPod headers on Apple
+#include "FBReactNativeSpecJSI.h"
+#else
 #include <FBReactNativeSpec/FBReactNativeSpecJSI.h>
+#endif
 
 namespace facebook::react {
 
 class NativeReactNativeFeatureFlags
     : public NativeReactNativeFeatureFlagsCxxSpec<
-          NativeReactNativeFeatureFlags>,
-      std::enable_shared_from_this<NativeReactNativeFeatureFlags> {
+          NativeReactNativeFeatureFlags> {
  public:
   NativeReactNativeFeatureFlags(std::shared_ptr<CallInvoker> jsInvoker);
 

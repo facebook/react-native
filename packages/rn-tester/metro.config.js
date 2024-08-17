@@ -29,7 +29,9 @@ const config = {
     path.resolve(__dirname, '../normalize-color'),
     path.resolve(__dirname, '../polyfills'),
     path.resolve(__dirname, '../react-native'),
+    path.resolve(__dirname, '../react-native-test-library'),
     path.resolve(__dirname, '../virtualized-lists'),
+    path.resolve(__dirname, '../react-native-popup-menu-android'),
   ],
   resolver: {
     blockList: [/..\/react-native\/sdks\/hermes/],

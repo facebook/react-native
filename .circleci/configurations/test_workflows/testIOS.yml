@@ -4,11 +4,12 @@
         - equal: [ false, << pipeline.parameters.run_release_workflow >> ]
         - equal: [ false, << pipeline.parameters.run_nightly_workflow >> ]
     jobs:
-      - prepare_package_for_release:
-          name: prepare_package_for_release
-          version: ''
-          latest : false
-          dryrun: true
+      - prepare_release:
+          name: "prepare_release (dry run test)"
+          version: "0.0.0"
+          monorepo_packages_version: "0.0.0"
+          tag: test
+          dry_run: true
       - prepare_hermes_workspace
       - build_android:
           release_type: "dry-run"
@@ -24,7 +25,7 @@
           matrix:
             parameters:
               flavor: ["Debug", "Release"]
-              slice: ["macosx", "iphoneos", "iphonesimulator", "catalyst"]
+              slice: ["macosx", "iphoneos", "iphonesimulator", "catalyst", "xros", "xrsimulator"]
       - build_hermes_macos:
           requires:
             - build_apple_slices_hermes
@@ -42,46 +43,38 @@
             - build_hermesc_linux
             - build_hermes_macos
             - build_hermesc_windows
-      # - test_e2e_ios:
-      #     ruby_version: "2.7.7"
-      - test_ios_template:
+      - test_ios_helloworld:
           requires:
-            - build_npm_package
-          name: "Test Template with Ruby 3.2.0"
-          ruby_version: "3.2.0"
+            - build_hermes_macos
+          name: "Test Template with Ruby 3.2.2"
+          ruby_version: "3.2.2"
           architecture: "NewArch"
           flavor: "Debug"
-          executor: reactnativeios-lts
-      - test_ios_template:
-          architecture: "OldArch"
+          jsengine: "Hermes"
+          use_frameworks: "StaticLibraries"
+      - test_ios_helloworld:
           requires:
-            - build_npm_package
+            - build_hermes_macos
           matrix:
             parameters:
               flavor: ["Debug", "Release"]
               jsengine: ["Hermes", "JSC"]
               use_frameworks: ["StaticLibraries", "DynamicFrameworks"]
             exclude:
-             # Tested with Ruby 3.2.0, let's not double test this
+              # This config is tested with Ruby 3.2.2. Let's not double test it.
               - flavor: "Debug"
                 jsengine: "Hermes"
                 use_frameworks: "StaticLibraries"
       - test_ios_rntester:
           requires:
             - build_hermes_macos
-          name: "RNTester on Ruby 3.2.0"
-          ruby_version: "3.2.0"
-          executor: reactnativeios-lts
-      - test_ios_rntester:
-          name: "RNTester with Dynamic Frameworks"
           use_frameworks: "DynamicFrameworks"
-          requires:
-            - build_hermes_macos
+          ruby_version: "3.2.2"
+          architecture: "NewArch"
           matrix:
             parameters:
               jsengine: ["Hermes", "JSC"]
       - test_ios_rntester:
-          name: "RNTester Integration Tests"
           run_unit_tests: true
           use_frameworks: "StaticLibraries"
           ruby_version: "2.6.10"

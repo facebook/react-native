@@ -10,12 +10,14 @@ package com.facebook.react.uimanager;
 import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewParent;
+import com.facebook.infer.annotation.Nullsafe;
 import javax.annotation.concurrent.NotThreadSafe;
 
 /**
  * Provides implementation of common tasks for view and it's view manager supporting property {@code
  * removeClippedSubviews}.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @NotThreadSafe
 public class ReactClippingViewGroupHelper {
 

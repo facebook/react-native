@@ -174,7 +174,7 @@ void RawPropsParser::preparse(const RawProps& rawProps) const noexcept {
 void RawPropsParser::iterateOverValues(
     const RawProps& rawProps,
     const std::function<
-        void(RawPropsPropNameHash, const char*, RawValue const&)>& visit)
+        void(RawPropsPropNameHash, const char*, const RawValue&)>& visit)
     const {
   switch (rawProps.mode_) {
     case RawProps::Mode::Empty:

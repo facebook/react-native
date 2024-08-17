@@ -16,8 +16,8 @@ const LogBoxMessage = require('../LogBoxMessage').default;
 const React = require('react');
 
 describe('LogBoxMessage', () => {
-  it('should render message', () => {
-    const output = render.create(
+  it('should render message', async () => {
+    const output = await render.create(
       <LogBoxMessage
         style={{}}
         message={{
@@ -30,8 +30,8 @@ describe('LogBoxMessage', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render message truncated to 6 chars', () => {
-    const output = render.create(
+  it('should render message truncated to 6 chars', async () => {
+    const output = await render.create(
       <LogBoxMessage
         style={{}}
         maxLength={5}
@@ -45,9 +45,9 @@ describe('LogBoxMessage', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render the whole message when maxLength = message length', () => {
+  it('should render the whole message when maxLength = message length', async () => {
     const message = 'Some kind of message';
-    const output = render.create(
+    const output = await render.create(
       <LogBoxMessage
         style={{}}
         maxLength={message.length}
@@ -61,8 +61,8 @@ describe('LogBoxMessage', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render message with substitution', () => {
-    const output = render.create(
+  it('should render message with substitution', async () => {
+    const output = await render.create(
       <LogBoxMessage
         style={{}}
         message={{
@@ -75,8 +75,8 @@ describe('LogBoxMessage', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render message with substitution, truncating the first word 3 letters in', () => {
-    const output = render.create(
+  it('should render message with substitution, truncating the first word 3 letters in', async () => {
+    const output = await render.create(
       <LogBoxMessage
         style={{}}
         maxLength={3}
@@ -90,8 +90,8 @@ describe('LogBoxMessage', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render message with substitution, truncating the second word 6 letters in', () => {
-    const output = render.create(
+  it('should render message with substitution, truncating the second word 6 letters in', async () => {
+    const output = await render.create(
       <LogBoxMessage
         style={{}}
         maxLength={13}
@@ -105,8 +105,8 @@ describe('LogBoxMessage', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render message with substitution, truncating the third word 2 letters in', () => {
-    const output = render.create(
+  it('should render message with substitution, truncating the third word 2 letters in', async () => {
+    const output = await render.create(
       <LogBoxMessage
         style={{}}
         maxLength={22}
@@ -120,9 +120,9 @@ describe('LogBoxMessage', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render the whole message with substitutions when maxLength = message length', () => {
+  it('should render the whole message with substitutions when maxLength = message length', async () => {
     const message = 'normal substitution normal';
-    const output = render.create(
+    const output = await render.create(
       <LogBoxMessage
         style={{}}
         maxLength={message.length}
@@ -136,8 +136,8 @@ describe('LogBoxMessage', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render a plaintext message with no substitutions', () => {
-    const output = render.create(
+  it('should render a plaintext message with no substitutions', async () => {
+    const output = await render.create(
       <LogBoxMessage
         plaintext
         style={{}}
@@ -151,8 +151,8 @@ describe('LogBoxMessage', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render a plaintext message and clean the content', () => {
-    const output = render.create(
+  it('should render a plaintext message and clean the content', async () => {
+    const output = await render.create(
       <LogBoxMessage
         plaintext
         style={{}}
@@ -166,8 +166,8 @@ describe('LogBoxMessage', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('Should strip "TransformError " without breaking substitution', () => {
-    const output = render.create(
+  it('Should strip "TransformError " without breaking substitution', async () => {
+    const output = await render.create(
       <LogBoxMessage
         style={{}}
         message={{
@@ -180,8 +180,8 @@ describe('LogBoxMessage', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('Should strip "Warning: " without breaking substitution', () => {
-    const output = render.create(
+  it('Should strip "Warning: " without breaking substitution', async () => {
+    const output = await render.create(
       <LogBoxMessage
         style={{}}
         message={{
@@ -194,8 +194,8 @@ describe('LogBoxMessage', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('Should strip "Warning: Warning: " without breaking substitution', () => {
-    const output = render.create(
+  it('Should strip "Warning: Warning: " without breaking substitution', async () => {
+    const output = await render.create(
       <LogBoxMessage
         style={{}}
         message={{
@@ -208,8 +208,8 @@ describe('LogBoxMessage', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('Should make links tappable', () => {
-    const output = render.create(
+  it('Should make links tappable', async () => {
+    const output = await render.create(
       <LogBoxMessage
         style={{}}
         message={{
@@ -222,8 +222,8 @@ describe('LogBoxMessage', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('Should handle multiple links', () => {
-    const output = render.create(
+  it('Should handle multiple links', async () => {
+    const output = await render.create(
       <LogBoxMessage
         style={{}}
         message={{
@@ -236,8 +236,8 @@ describe('LogBoxMessage', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('Should handle truncated links', () => {
-    const output = render.create(
+  it('Should handle truncated links', async () => {
+    const output = await render.create(
       <LogBoxMessage
         style={{}}
         maxLength={35}

@@ -22,7 +22,7 @@ folly_version = folly_config[:version]
 
 header_search_paths = [
   "\"$(PODS_ROOT)/RCT-Folly\"",
-  "\"${PODS_ROOT}/Headers/Public/React-Codegen/react/renderer/components\"",
+  "\"${PODS_ROOT}/Headers/Public/ReactCodegen/react/renderer/components\"",
 ]
 
 Pod::Spec.new do |s|
@@ -50,7 +50,7 @@ Pod::Spec.new do |s|
   s.dependency "React-jsi"
   s.dependency "React-Core/RCTVibrationHeaders"
 
-  add_dependency(s, "React-Codegen", :additional_framework_paths => ["build/generated/ios"])
+  add_dependency(s, "ReactCodegen", :additional_framework_paths => ["build/generated/ios"])
   add_dependency(s, "ReactCommon", :subspec => "turbomodule/core", :additional_framework_paths => ["react/nativemodule/core"])
   add_dependency(s, "React-NativeModulesApple")
 end

@@ -5,5 +5,5 @@
         - equal: [ false, << pipeline.parameters.run_nightly_workflow >> ]
     jobs:
       - test_e2e_ios:
-          ruby_version: "2.7.7"
+          ruby_version: "2.7.8"
       - test_e2e_android

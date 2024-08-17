@@ -12,51 +12,64 @@
 
 const React = require('react');
 const {Alert, Text, View} = require('react-native');
+const {RNTesterThemeContext} = require('../../components/RNTesterTheme');
 
 type Props = $ReadOnly<{||}>;
 class AccessibilityIOSExample extends React.Component<Props> {
   render(): React.Node {
     return (
-      <>
-        <View
-          onAccessibilityAction={event => {
-            if (event.nativeEvent.actionName === 'activate') {
-              Alert.alert('Alert', 'onAccessibilityTap success');
-            }
-          }}
-          accessible={true}
-          accessibilityActions={[{name: 'activate'}]}>
-          <Text>Accessibility normal tap example</Text>
-        </View>
-        <View
-          onAccessibilityAction={event => {
-            if (event.nativeEvent.actionName === 'magicTap') {
-              Alert.alert('Alert', 'onMagicTap success');
-            }
-          }}
-          accessible={true}
-          accessibilityActions={[{name: 'magicTap'}]}>
-          <Text>Accessibility magic tap example</Text>
-        </View>
-        <View
-          onAccessibilityAction={event => {
-            if (event.nativeEvent.actionName === 'escape') {
-              Alert.alert('onAccessibilityEscape success');
-            }
-          }}
-          accessible={true}
-          accessibilityActions={[{name: 'escape'}]}>
-          <Text>Accessibility escape example</Text>
-        </View>
-        <View accessibilityElementsHidden={true}>
-          <Text>
-            This view's children are hidden from the accessibility tree
-          </Text>
-        </View>
-        <View accessible={true} accessibilityLanguage="it-IT">
-          <Text>This view's language should be `it-IT`</Text>
-        </View>
-      </>
+      <RNTesterThemeContext.Consumer>
+        {theme => (
+          <>
+            <View
+              onAccessibilityAction={event => {
+                if (event.nativeEvent.actionName === 'activate') {
+                  Alert.alert('Alert', 'onAccessibilityTap success');
+                }
+              }}
+              accessible={true}
+              accessibilityActions={[{name: 'activate'}]}>
+              <Text style={{color: theme.SecondaryLabelColor}}>
+                Accessibility normal tap example
+              </Text>
+            </View>
+            <View
+              onAccessibilityAction={event => {
+                if (event.nativeEvent.actionName === 'magicTap') {
+                  Alert.alert('Alert', 'onMagicTap success');
+                }
+              }}
+              accessible={true}
+              accessibilityActions={[{name: 'magicTap'}]}>
+              <Text style={{color: theme.SecondaryLabelColor}}>
+                Accessibility magic tap example
+              </Text>
+            </View>
+            <View
+              onAccessibilityAction={event => {
+                if (event.nativeEvent.actionName === 'escape') {
+                  Alert.alert('onAccessibilityEscape success');
+                }
+              }}
+              accessible={true}
+              accessibilityActions={[{name: 'escape'}]}>
+              <Text style={{color: theme.SecondaryLabelColor}}>
+                Accessibility escape example
+              </Text>
+            </View>
+            <View accessibilityElementsHidden={true}>
+              <Text style={{color: theme.SecondaryLabelColor}}>
+                This view's children are hidden from the accessibility tree
+              </Text>
+            </View>
+            <View accessible={true} accessibilityLanguage="it-IT">
+              <Text style={{color: theme.SecondaryLabelColor}}>
+                This view's language should be `it-IT`
+              </Text>
+            </View>
+          </>
+        )}
+      </RNTesterThemeContext.Consumer>
     );
   }
 }

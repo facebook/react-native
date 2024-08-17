@@ -21,6 +21,8 @@ import com.facebook.react.runtime.cxxreactpackage.CxxReactPackage
  *
  * This class works together with the [DefaultNewArchitectureEntryPoint] and it's C++ implementation
  * is hosted inside the React Native framework
+ *
+ * TODO(T186951312): Should this be @UnstableReactNativeAPI?
  */
 @OptIn(UnstableReactNativeAPI::class)
 public class DefaultTurboModuleManagerDelegate

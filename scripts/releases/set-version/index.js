@@ -12,46 +12,16 @@
 'use strict';
 
 /*::
-import type {PackageJson} from '../utils/monorepo';
+import type {PackageJson} from '../../utils/monorepo';
 */
 
+const {
+  getPackages,
+  getWorkspaceRoot,
+  updatePackageJson,
+} = require('../../utils/monorepo');
 const {setReactNativeVersion} = require('../set-rn-version');
-const {getPackages} = require('../utils/monorepo');
-const {promises: fs} = require('fs');
-const path = require('path');
 const yargs = require('yargs');
-
-async function updatePackageJson(
-  packagePath /*: string */,
-  packageJson /*: PackageJson */,
-  newPackageVersions /*: $ReadOnly<{[string]: string}> */,
-) /*: Promise<void> */ {
-  const packageName = packageJson.name;
-
-  if (packageName in newPackageVersions) {
-    packageJson.version = newPackageVersions[packageName];
-  }
-
-  for (const dependencyField of ['dependencies', 'devDependencies']) {
-    const deps = packageJson[dependencyField];
-
-    if (deps == null) {
-      continue;
-    }
-
-    for (const dependency in newPackageVersions) {
-      if (dependency in deps) {
-        deps[dependency] = newPackageVersions[dependency];
-      }
-    }
-  }
-
-  return fs.writeFile(
-    path.join(packagePath, 'package.json'),
-    JSON.stringify(packageJson, null, 2) + '\n',
-    'utf-8',
-  );
-}
 
 /**
  * Sets a singular version for the entire monorepo.
@@ -61,7 +31,7 @@ async function updatePackageJson(
  * stays 1000.0.0.
  *
  * This script does the following:
- * - Update all public npm packages under `<root>/packages` to specified version
+ * - Update all packages under `<root>/packages` to specified version
  * - Update all npm dependencies of a `<root>/packages` package to specified version
  * - Update npm dependencies of the template app (`packages/react-native/template`) to specified version
  * - Update `packages/react-native` native source and build files to specified version if relevant
@@ -71,7 +41,7 @@ async function setVersion(
   skipReactNativeVersion /*: boolean */ = false,
 ) /*: Promise<void> */ {
   const packages = await getPackages({
-    includePrivate: false,
+    includePrivate: true,
     includeReactNative: true,
   });
   const newPackageVersions = Object.fromEntries(
@@ -83,11 +53,12 @@ async function setVersion(
     newPackageVersions,
   );
 
-  // Exclude the react-native package, since this (and the template) are
-  // handled by `setReactNativeVersion`.
-  const packagesToUpdate = Object.values(packages).filter(
-    pkg => pkg.name !== 'react-native',
-  );
+  const packagesToUpdate = [
+    await getWorkspaceRoot(),
+    // Exclude the react-native package, since this (and the template) are
+    // handled by `setReactNativeVersion`.
+    ...Object.values(packages).filter(pkg => pkg.name !== 'react-native'),
+  ];
 
   await Promise.all(
     packagesToUpdate.map(({path: packagePath, packageJson}) =>

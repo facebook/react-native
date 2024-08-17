@@ -15,8 +15,10 @@ import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.UIManager
 import com.facebook.react.bridge.UIManagerListener
 import com.facebook.react.bridge.WritableMap
+import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.fabric.interop.UIBlockViewResolver
 
+@OptIn(UnstableReactNativeAPI::class)
 class FakeUIManager : UIManager, UIBlockViewResolver {
 
   // The number of times resolveView was called

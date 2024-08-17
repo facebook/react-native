@@ -8,11 +8,12 @@
 #include "UIManager.h"
 
 #include <cxxreact/JSExecutor.h>
+#include <cxxreact/SystraceSection.h>
 #include <react/debug/react_native_assert.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/core/DynamicPropsUtilities.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/ShadowNodeFragment.h>
-#include <react/renderer/debug/SystraceSection.h>
 #include <react/renderer/uimanager/SurfaceRegistryBinding.h>
 #include <react/renderer/uimanager/UIManagerBinding.h>
 #include <react/renderer/uimanager/UIManagerCommitHook.h>
@@ -23,11 +24,14 @@
 #include <utility>
 
 namespace {
-constexpr int DOCUMENT_POSITION_DISCONNECTED = 1;
-constexpr int DOCUMENT_POSITION_PRECEDING = 2;
-constexpr int DOCUMENT_POSITION_FOLLOWING = 4;
-constexpr int DOCUMENT_POSITION_CONTAINS = 8;
-constexpr int DOCUMENT_POSITION_CONTAINED_BY = 16;
+std::unique_ptr<facebook::react::LeakChecker> constructLeakCheckerIfNeeded(
+    const facebook::react::RuntimeExecutor& runtimeExecutor) {
+#ifdef REACT_NATIVE_DEBUG
+  return std::make_unique<facebook::react::LeakChecker>(runtimeExecutor);
+#else
+  return {};
+#endif
+}
 } // namespace
 
 namespace facebook::react {
@@ -38,23 +42,25 @@ namespace facebook::react {
 // isHostObject method)
 ShadowNodeListWrapper::~ShadowNodeListWrapper() = default;
 
-static std::unique_ptr<LeakChecker> constructLeakCheckerIfNeeded(
-    const RuntimeExecutor& runtimeExecutor) {
-#ifdef REACT_NATIVE_DEBUG
-  return std::make_unique<LeakChecker>(runtimeExecutor);
-#else
-  return {};
-#endif
-}
-
 UIManager::UIManager(
     const RuntimeExecutor& runtimeExecutor,
     BackgroundExecutor backgroundExecutor,
     ContextContainer::Shared contextContainer)
     : runtimeExecutor_(runtimeExecutor),
+      shadowTreeRegistry_(),
       backgroundExecutor_(std::move(backgroundExecutor)),
       contextContainer_(std::move(contextContainer)),
-      leakChecker_(constructLeakCheckerIfNeeded(runtimeExecutor)) {}
+      leakChecker_(constructLeakCheckerIfNeeded(runtimeExecutor)),
+      lazyShadowTreeRevisionConsistencyManager_(
+          ReactNativeFeatureFlags::enableUIConsistency()
+              ? std::make_unique<LazyShadowTreeRevisionConsistencyManager>(
+                    shadowTreeRegistry_)
+              : nullptr),
+      latestShadowTreeRevisionProvider_(
+          ReactNativeFeatureFlags::enableUIConsistency()
+              ? nullptr
+              : std::make_unique<LatestShadowTreeRevisionProvider>(
+                    shadowTreeRegistry_)) {}
 
 UIManager::~UIManager() {
   LOG(WARNING) << "UIManager::~UIManager() was called (address: " << this
@@ -83,8 +89,7 @@ std::shared_ptr<ShadowNode> UIManager::createNode(
 
   auto shadowNode = componentDescriptor.createShadowNode(
       ShadowNodeFragment{
-          /* .props = */
-          fallbackDescriptor != nullptr &&
+          .props = fallbackDescriptor != nullptr &&
                   fallbackDescriptor->getComponentHandle() ==
                       componentDescriptor.getComponentHandle()
               ? componentDescriptor.cloneProps(
@@ -92,8 +97,8 @@ std::shared_ptr<ShadowNode> UIManager::createNode(
                     props,
                     RawProps(folly::dynamic::object("name", name)))
               : props,
-          /* .children = */ ShadowNodeFragment::childrenPlaceholder(),
-          /* .state = */ state,
+          .children = ShadowNodeFragment::childrenPlaceholder(),
+          .state = state,
       },
       family);
 
@@ -129,7 +134,9 @@ std::shared_ptr<ShadowNode> UIManager::cloneNode(
       // was previously in `nativeProps_DEPRECATED`.
       family.nativeProps_DEPRECATED =
           std::make_unique<folly::dynamic>(mergeDynamicProps(
-              *family.nativeProps_DEPRECATED, (folly::dynamic)rawProps));
+              *family.nativeProps_DEPRECATED,
+              (folly::dynamic)rawProps,
+              NullValueStrategy::Ignore));
 
       props = componentDescriptor.cloneProps(
           propsParserContext,
@@ -144,8 +151,9 @@ std::shared_ptr<ShadowNode> UIManager::cloneNode(
   auto clonedShadowNode = componentDescriptor.cloneShadowNode(
       shadowNode,
       {
-          /* .props = */ props,
-          /* .children = */ children,
+          .props = props,
+          .children = children,
+          .runtimeShadowNodeReference = false,
       });
 
   return clonedShadowNode;
@@ -163,12 +171,12 @@ void UIManager::appendChild(
 void UIManager::completeSurface(
     SurfaceId surfaceId,
     const ShadowNode::UnsharedListOfShared& rootChildren,
-    ShadowTree::CommitOptions commitOptions) const {
+    ShadowTree::CommitOptions commitOptions) {
   SystraceSection s("UIManager::completeSurface", "surfaceId", surfaceId);
 
   shadowTreeRegistry_.visit(surfaceId, [&](const ShadowTree& shadowTree) {
-    shadowTree.commit(
-        [&](RootShadowNode const& oldRootShadowNode) {
+    auto result = shadowTree.commit(
+        [&](const RootShadowNode& oldRootShadowNode) {
           return std::make_shared<RootShadowNode>(
               oldRootShadowNode,
               ShadowNodeFragment{
@@ -177,6 +185,14 @@ void UIManager::completeSurface(
               });
         },
         commitOptions);
+
+    if (result == ShadowTree::CommitStatus::Succeeded &&
+        lazyShadowTreeRevisionConsistencyManager_ != nullptr) {
+      // It's safe to update the visible revision of the shadow tree immediately
+      // after we commit a specific one.
+      lazyShadowTreeRevisionConsistencyManager_->updateCurrentRevision(
+          surfaceId, shadowTree.getCurrentRevision().rootShadowNode);
+    }
   });
 }
 
@@ -252,7 +268,12 @@ ShadowNode::Shared UIManager::getNewestCloneOfShadowNode(
       shadowNode.getSurfaceId(), [&](const ShadowTree& shadowTree) {
         ancestorShadowNode = shadowTree.getCurrentRevision().rootShadowNode;
       });
+  return getShadowNodeInSubtree(shadowNode, ancestorShadowNode);
+}
 
+ShadowNode::Shared UIManager::getShadowNodeInSubtree(
+    const ShadowNode& shadowNode,
+    const ShadowNode::Shared& ancestorShadowNode) const {
   if (!ancestorShadowNode) {
     return nullptr;
   }
@@ -273,136 +294,22 @@ ShadowNode::Shared UIManager::getNewestCloneOfShadowNode(
   return pair->first.get().getChildren().at(pair->second);
 }
 
-ShadowNode::Shared UIManager::getNewestParentOfShadowNode(
-    const ShadowNode& shadowNode) const {
-  auto ancestorShadowNode = ShadowNode::Shared{};
-  shadowTreeRegistry_.visit(
-      shadowNode.getSurfaceId(), [&](const ShadowTree& shadowTree) {
-        ancestorShadowNode = shadowTree.getCurrentRevision().rootShadowNode;
-      });
-
-  if (!ancestorShadowNode) {
-    return nullptr;
-  }
-
-  auto ancestors = shadowNode.getFamily().getAncestors(*ancestorShadowNode);
-
-  if (ancestors.empty()) {
-    return nullptr;
-  }
-
-  if (ancestors.size() == 1) {
-    // The parent is the shadow root
-    return ancestorShadowNode;
-  }
-
-  auto parentOfParentPair = ancestors[ancestors.size() - 2];
-  return parentOfParentPair.first.get().getChildren().at(
-      parentOfParentPair.second);
+ShadowTreeRevisionConsistencyManager*
+UIManager::getShadowTreeRevisionConsistencyManager() {
+  return lazyShadowTreeRevisionConsistencyManager_.get();
 }
 
-ShadowNode::Shared UIManager::getNewestPositionedAncestorOfShadowNode(
-    const ShadowNode& shadowNode) const {
-  auto rootShadowNode = ShadowNode::Shared{};
-  shadowTreeRegistry_.visit(
-      shadowNode.getSurfaceId(), [&](const ShadowTree& shadowTree) {
-        rootShadowNode = shadowTree.getCurrentRevision().rootShadowNode;
-      });
-
-  if (!rootShadowNode) {
-    return nullptr;
+ShadowTreeRevisionProvider* UIManager::getShadowTreeRevisionProvider() {
+  if (lazyShadowTreeRevisionConsistencyManager_ != nullptr) {
+    return lazyShadowTreeRevisionConsistencyManager_.get();
+  } else if (latestShadowTreeRevisionProvider_ != nullptr) {
+    return latestShadowTreeRevisionProvider_.get();
   }
 
-  auto ancestors = shadowNode.getFamily().getAncestors(*rootShadowNode);
-
-  if (ancestors.empty()) {
-    return nullptr;
-  }
-
-  for (auto it = ancestors.rbegin(); it != ancestors.rend(); it++) {
-    const auto layoutableAncestorShadowNode =
-        dynamic_cast<const LayoutableShadowNode*>(&(it->first.get()));
-    if (layoutableAncestorShadowNode == nullptr) {
-      return nullptr;
-    }
-    if (layoutableAncestorShadowNode->getLayoutMetrics().positionType !=
-        PositionType::Static) {
-      // We have found our nearest positioned ancestor, now to get a shared
-      // pointer of it
-      it++;
-      if (it != ancestors.rend()) {
-        return it->first.get().getChildren().at(it->second);
-      }
-      // else the positioned ancestor is the root which we return outside of the
-      // loop
-    }
-  }
-
-  // If there is no positioned ancestor then we just consider the root
-  // to be one
-  return rootShadowNode;
-}
-
-std::string UIManager::getTextContentInNewestCloneOfShadowNode(
-    const ShadowNode& shadowNode) const {
-  auto newestCloneOfShadowNode = getNewestCloneOfShadowNode(shadowNode);
-  std::string result;
-  getTextContentInShadowNode(*newestCloneOfShadowNode, result);
-  return result;
-}
-
-int UIManager::compareDocumentPosition(
-    const ShadowNode& shadowNode,
-    const ShadowNode& otherShadowNode) const {
-  // Quick check for node vs. itself
-  if (&shadowNode == &otherShadowNode) {
-    return 0;
-  }
-
-  if (shadowNode.getSurfaceId() != otherShadowNode.getSurfaceId()) {
-    return DOCUMENT_POSITION_DISCONNECTED;
-  }
-
-  auto ancestorShadowNode = ShadowNode::Shared{};
-  shadowTreeRegistry_.visit(
-      shadowNode.getSurfaceId(), [&](const ShadowTree& shadowTree) {
-        ancestorShadowNode = shadowTree.getCurrentRevision().rootShadowNode;
-      });
-  if (!ancestorShadowNode) {
-    return DOCUMENT_POSITION_DISCONNECTED;
-  }
-
-  auto ancestors = shadowNode.getFamily().getAncestors(*ancestorShadowNode);
-  if (ancestors.empty()) {
-    return DOCUMENT_POSITION_DISCONNECTED;
-  }
-
-  auto otherAncestors =
-      otherShadowNode.getFamily().getAncestors(*ancestorShadowNode);
-  if (ancestors.empty()) {
-    return DOCUMENT_POSITION_DISCONNECTED;
-  }
-
-  // Consume all common ancestors
-  size_t i = 0;
-  while (i < ancestors.size() && i < otherAncestors.size() &&
-         ancestors[i].second == otherAncestors[i].second) {
-    i++;
-  }
-
-  if (i == ancestors.size()) {
-    return (DOCUMENT_POSITION_CONTAINED_BY | DOCUMENT_POSITION_FOLLOWING);
-  }
-
-  if (i == otherAncestors.size()) {
-    return (DOCUMENT_POSITION_CONTAINS | DOCUMENT_POSITION_PRECEDING);
-  }
-
-  if (ancestors[i].second > otherAncestors[i].second) {
-    return DOCUMENT_POSITION_PRECEDING;
-  }
-
-  return DOCUMENT_POSITION_FOLLOWING;
+  LOG(ERROR) << "Unexpected state found in UIManager where both "
+             << "lazyShadowTreeRevisionConsistencyManager_ and "
+             << "latestShadowTreeRevisionProvider_ were null";
+  return nullptr;
 }
 
 ShadowNode::Shared UIManager::findNodeAtPoint(
@@ -456,15 +363,19 @@ void UIManager::updateState(const StateUpdate& stateUpdate) const {
   auto& callback = stateUpdate.callback;
   auto& family = stateUpdate.family;
   auto& componentDescriptor = family->getComponentDescriptor();
+  auto clonedByNativeStateTraits = ShadowNodeTraits();
+  clonedByNativeStateTraits.set(
+      ShadowNodeTraits::Trait::ClonedByNativeStateUpdate);
 
   shadowTreeRegistry_.visit(
       family->getSurfaceId(), [&](const ShadowTree& shadowTree) {
         shadowTree.commit(
-            [&](RootShadowNode const& oldRootShadowNode) {
+            [&](const RootShadowNode& oldRootShadowNode) {
               auto isValid = true;
 
               auto rootNode = oldRootShadowNode.cloneTree(
-                  *family, [&](ShadowNode const& oldShadowNode) {
+                  *family,
+                  [&](const ShadowNode& oldShadowNode) {
                     auto newData =
                         callback(oldShadowNode.getState()->getDataPointer());
 
@@ -477,13 +388,13 @@ void UIManager::updateState(const StateUpdate& stateUpdate) const {
                     auto newState =
                         componentDescriptor.createState(*family, newData);
 
-                    return oldShadowNode.clone({
-                        /* .props = */ ShadowNodeFragment::propsPlaceholder(),
-                        /* .children = */
-                        ShadowNodeFragment::childrenPlaceholder(),
-                        /* .state = */ newState,
-                    });
-                  });
+                    return oldShadowNode.clone(
+                        {.props = ShadowNodeFragment::propsPlaceholder(),
+                         .children = ShadowNodeFragment::childrenPlaceholder(),
+                         .state = newState,
+                         .traits = clonedByNativeStateTraits});
+                  },
+                  clonedByNativeStateTraits);
 
               return isValid
                   ? std::static_pointer_cast<RootShadowNode>(rootNode)
@@ -513,7 +424,9 @@ void UIManager::setNativeProps_DEPRECATED(
     // previously in `nativeProps_DEPRECATED`.
     family.nativeProps_DEPRECATED =
         std::make_unique<folly::dynamic>(mergeDynamicProps(
-            *family.nativeProps_DEPRECATED, (folly::dynamic)rawProps));
+            *family.nativeProps_DEPRECATED,
+            (folly::dynamic)rawProps,
+            NullValueStrategy::Override));
   } else {
     family.nativeProps_DEPRECATED =
         std::make_unique<folly::dynamic>((folly::dynamic)rawProps);
@@ -523,10 +436,12 @@ void UIManager::setNativeProps_DEPRECATED(
       family.getSurfaceId(), [&](const ShadowTree& shadowTree) {
         // The lambda passed to `commit` may be executed multiple times.
         // We need to create fresh copy of the `RawProps` object each time.
+        auto ancestorShadowNode =
+            shadowTree.getCurrentRevision().rootShadowNode;
         shadowTree.commit(
-            [&](RootShadowNode const& oldRootShadowNode) {
+            [&](const RootShadowNode& oldRootShadowNode) {
               auto rootNode = oldRootShadowNode.cloneTree(
-                  family, [&](ShadowNode const& oldShadowNode) {
+                  family, [&](const ShadowNode& oldShadowNode) {
                     auto& componentDescriptor =
                         componentDescriptorRegistry_->at(
                             shadowNode->getComponentHandle());
@@ -534,7 +449,8 @@ void UIManager::setNativeProps_DEPRECATED(
                         family.getSurfaceId(), *contextContainer_.get()};
                     auto props = componentDescriptor.cloneProps(
                         propsParserContext,
-                        getNewestCloneOfShadowNode(*shadowNode)->getProps(),
+                        getShadowNodeInSubtree(*shadowNode, ancestorShadowNode)
+                            ->getProps(),
                         RawProps(rawProps));
 
                     return oldShadowNode.clone({/* .props = */ props});
@@ -589,7 +505,7 @@ ShadowNode::Shared UIManager::findShadowNodeByTag_DEPRECATED(Tag tag) const {
   auto shadowNode = ShadowNode::Shared{};
 
   shadowTreeRegistry_.enumerate([&](const ShadowTree& shadowTree, bool& stop) {
-    RootShadowNode const* rootShadowNode;
+    const RootShadowNode* rootShadowNode;
     // The public interface of `ShadowTree` discourages accessing a stored
     // pointer to a root node because of the possible data race.
     // To work around this, we ask for a commit and immediately cancel it
@@ -598,16 +514,16 @@ ShadowNode::Shared UIManager::findShadowNodeByTag_DEPRECATED(Tag tag) const {
     // because this `findShadowNodeByTag` is deprecated. It is only added
     // to make migration to the new architecture easier.
     shadowTree.tryCommit(
-        [&](RootShadowNode const& oldRootShadowNode) {
+        [&](const RootShadowNode& oldRootShadowNode) {
           rootShadowNode = &oldRootShadowNode;
           return nullptr;
         },
         {/* default commit options */});
 
     if (rootShadowNode != nullptr) {
-      auto const& children = rootShadowNode->getChildren();
+      const auto& children = rootShadowNode->getChildren();
       if (!children.empty()) {
-        auto const& child = children.front();
+        const auto& child = children.front();
         shadowNode = findShadowNodeByTagRecursively(child, tag);
         if (shadowNode) {
           stop = true;
@@ -633,7 +549,7 @@ UIManagerDelegate* UIManager::getDelegate() {
 }
 
 void UIManager::visitBinding(
-    const std::function<void(UIManagerBinding const& uiManagerBinding)>&
+    const std::function<void(const UIManagerBinding& uiManagerBinding)>&
         callback,
     jsi::Runtime& runtime) const {
   auto uiManagerBinding = UIManagerBinding::getBinding(runtime);

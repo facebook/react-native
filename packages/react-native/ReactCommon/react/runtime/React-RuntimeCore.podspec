@@ -42,7 +42,7 @@ Pod::Spec.new do |s|
   s.compiler_flags       = folly_compiler_flags + ' ' + boost_compiler_flags
 
   if ENV['USE_FRAMEWORKS']
-    s.header_mappings_dir     = './'
+    s.header_mappings_dir     = '../../'
     s.module_name             = 'React_RuntimeCore'
   end
 

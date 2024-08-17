@@ -343,44 +343,6 @@ public class UIViewOperationQueue {
     }
   }
 
-  /**
-   * This is deprecated, please use the <PopupMenuAndroid /> component instead.
-   *
-   * <p>TODO(T175424986): Remove UIManager.showPopupMenu() in React Native v0.75.
-   */
-  @Deprecated
-  private final class ShowPopupMenuOperation extends ViewOperation {
-
-    private final ReadableArray mItems;
-    private final Callback mError;
-    private final Callback mSuccess;
-
-    public ShowPopupMenuOperation(int tag, ReadableArray items, Callback error, Callback success) {
-      super(tag);
-      mItems = items;
-      mError = error;
-      mSuccess = success;
-    }
-
-    @Override
-    public void execute() {
-      mNativeViewHierarchyManager.showPopupMenu(mTag, mItems, mSuccess, mError);
-    }
-  }
-
-  /**
-   * This is deprecated, please use the <PopupMenuAndroid /> component instead.
-   *
-   * <p>TODO(T175424986): Remove UIManager.dismissPopupMenu() in React Native v0.75.
-   */
-  @Deprecated
-  private final class DismissPopupMenuOperation implements UIOperation {
-    @Override
-    public void execute() {
-      mNativeViewHierarchyManager.dismissPopupMenu();
-    }
-  }
-
   /** A spec for animation operations (add/remove) */
   private abstract static class AnimationOperation implements UIViewOperationQueue.UIOperation {
 
@@ -713,27 +675,6 @@ public class UIViewOperationQueue {
 
   public void enqueueUpdateExtraData(int reactTag, Object extraData) {
     mOperations.add(new UpdateViewExtraData(reactTag, extraData));
-  }
-
-  /**
-   * This is deprecated, please use the <PopupMenuAndroid /> component instead.
-   *
-   * <p>TODO(T175424986): Remove UIManager.showPopupMenu() in React Native v0.75.
-   */
-  @Deprecated
-  public void enqueueShowPopupMenu(
-      int reactTag, ReadableArray items, Callback error, Callback success) {
-    mOperations.add(new ShowPopupMenuOperation(reactTag, items, error, success));
-  }
-
-  /**
-   * This is deprecated, please use the <PopupMenuAndroid /> component instead.
-   *
-   * <p>TODO(T175424986): Remove UIManager.dismissPopupMenu() in React Native v0.75.
-   */
-  @Deprecated
-  public void enqueueDismissPopupMenu() {
-    mOperations.add(new DismissPopupMenuOperation());
   }
 
   public void enqueueCreateView(

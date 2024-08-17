@@ -20,13 +20,13 @@ const {getNpmInfo, publishPackage} = require('../npm-utils');
 const {removeNewArchFlags} = require('../releases/remove-new-arch-flags');
 const {setReactNativeVersion} = require('../releases/set-rn-version');
 const setVersion = require('../releases/set-version');
-const {getPackages} = require('../releases/utils/monorepo');
 /* [macOS We do not generate Android artifacts for React Native macOS
 const {
   generateAndroidArtifacts,
   publishAndroidArtifactsToMaven,
 } = require('../releases/utils/release-utils');
 macOS] */
+const {getPackages} = require('../utils/monorepo');
 const path = require('path');
 const yargs = require('yargs');
 
@@ -79,9 +79,9 @@ async function publishMonorepoPackages(tag /*: ?string */) {
   for (const packageInfo of Object.values(projectInfo)) {
     console.log(`Publishing ${packageInfo.name}...`);
     const result = publishPackage(packageInfo.path, {
-      // $FlowFixMe[incompatible-call]
       tags: [tag],
       otp: process.env.NPM_CONFIG_OTP,
+      access: 'public',
     });
 
     const spec = `${packageInfo.name}@${packageInfo.packageJson.version}`;
@@ -128,7 +128,6 @@ async function publishNpm(buildType /*: BuildType */) /*: Promise<void> */ {
 
   const packagePath = path.join(REPO_ROOT, 'packages', 'react-native');
   const result = publishPackage(packagePath, {
-    // $FlowFixMe[incompatible-call]
     tags: [tag],
     otp: process.env.NPM_CONFIG_OTP,
   });

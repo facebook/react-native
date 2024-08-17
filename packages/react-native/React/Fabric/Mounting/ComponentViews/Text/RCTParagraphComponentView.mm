@@ -25,6 +25,8 @@
 #import "RCTConversions.h"
 #import "RCTFabricComponentsPlugins.h"
 
+#import <QuartzCore/QuartzCore.h> // [macOS]
+
 using namespace facebook::react;
 
 #if !TARGET_OS_OSX // [macOS]
@@ -42,6 +44,7 @@ using namespace facebook::react;
 #if !TARGET_OS_OSX // [macOS]
   UILongPressGestureRecognizer *_longPressGestureRecognizer;
 #endif // [macOS]
+  CAShapeLayer *_highlightLayer;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -115,7 +118,7 @@ using namespace facebook::react;
 
 - (void)updateState:(const State::Shared &)state oldState:(const State::Shared &)oldState
 {
-  _state = std::static_pointer_cast<ParagraphShadowNode::ConcreteState const>(state);
+  _state = std::static_pointer_cast<const ParagraphShadowNode::ConcreteState>(state);
   [self setNeedsDisplay];
 }
 
@@ -132,8 +135,11 @@ using namespace facebook::react;
     return;
   }
 
-  auto textLayoutManager = _state->getData().paragraphLayoutManager.getTextLayoutManager();
-  auto nsTextStorage = _state->getData().paragraphLayoutManager.getHostTextStorage();
+  auto textLayoutManager = _state->getData().layoutManager.lock();
+
+  if (!textLayoutManager) {
+    return;
+  }
 
   RCTTextLayoutManager *nativeTextLayoutManager =
       (RCTTextLayoutManager *)unwrapManagedObject(textLayoutManager->getNativeTextLayoutManager());
@@ -143,13 +149,30 @@ using namespace facebook::react;
   [nativeTextLayoutManager drawAttributedString:_state->getData().attributedString
                             paragraphAttributes:_paragraphAttributes
                                           frame:frame
-                                    textStorage:unwrapManagedObject(nsTextStorage)];
+                              drawHighlightPath:^(UIBezierPath *highlightPath) {
+                                if (highlightPath) {
+                                  if (!self->_highlightLayer) {
+                                    self->_highlightLayer = [CAShapeLayer layer];
+                                    self->_highlightLayer.fillColor = [RCTUIColor colorWithWhite:0 alpha:0.25].CGColor; // [macOS]
+                                    [self.layer addSublayer:self->_highlightLayer];
+                                  }
+                                  self->_highlightLayer.position = frame.origin;
+                                  self->_highlightLayer.path = highlightPath.CGPath;
+                                } else {
+                                  [self->_highlightLayer removeFromSuperlayer];
+                                  self->_highlightLayer = nil;
+                                }
+                              }];
 }
 
 #pragma mark - Accessibility
 
 - (NSString *)accessibilityLabel
 {
+  NSString *label = super.accessibilityLabel;
+  if ([label length] > 0) {
+    return label;
+  }
   return self.attributedText.string;
 }
 
@@ -176,15 +199,18 @@ using namespace facebook::react;
   auto &data = _state->getData();
 
   if (![_accessibilityProvider isUpToDate:data.attributedString]) {
-    auto textLayoutManager = data.paragraphLayoutManager.getTextLayoutManager();
-    RCTTextLayoutManager *nativeTextLayoutManager =
-        (RCTTextLayoutManager *)unwrapManagedObject(textLayoutManager->getNativeTextLayoutManager());
-    CGRect frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
-    _accessibilityProvider = [[RCTParagraphComponentAccessibilityProvider alloc] initWithString:data.attributedString
-                                                                                  layoutManager:nativeTextLayoutManager
-                                                                            paragraphAttributes:data.paragraphAttributes
-                                                                                          frame:frame
-                                                                                           view:self];
+    auto textLayoutManager = data.layoutManager.lock();
+    if (textLayoutManager) {
+      RCTTextLayoutManager *nativeTextLayoutManager =
+          (RCTTextLayoutManager *)unwrapManagedObject(textLayoutManager->getNativeTextLayoutManager());
+      CGRect frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
+      _accessibilityProvider =
+          [[RCTParagraphComponentAccessibilityProvider alloc] initWithString:data.attributedString
+                                                               layoutManager:nativeTextLayoutManager
+                                                         paragraphAttributes:data.paragraphAttributes
+                                                                       frame:frame
+                                                                        view:self];
+    }
   }
 
   return _accessibilityProvider.accessibilityElements;
@@ -204,7 +230,11 @@ using namespace facebook::react;
     return _eventEmitter;
   }
 
-  auto textLayoutManager = _state->getData().paragraphLayoutManager.getTextLayoutManager();
+  auto textLayoutManager = _state->getData().layoutManager.lock();
+
+  if (!textLayoutManager) {
+    return _eventEmitter;
+  }
 
   RCTTextLayoutManager *nativeTextLayoutManager =
       (RCTTextLayoutManager *)unwrapManagedObject(textLayoutManager->getNativeTextLayoutManager());

@@ -8,6 +8,7 @@
 package com.facebook.react.uimanager
 
 import android.view.View
+import com.facebook.react.bridge.BridgeReactContext
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.common.MapBuilder
 import org.assertj.core.api.Assertions
@@ -49,7 +50,7 @@ class UIManagerModuleConstantsTest {
 
   @Before
   fun setUp() {
-    reactContext = ReactApplicationContext(RuntimeEnvironment.getApplication())
+    reactContext = BridgeReactContext(RuntimeEnvironment.getApplication())
   }
 
   @Suppress("UNCHECKED_CAST")

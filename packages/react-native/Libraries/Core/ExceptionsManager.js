@@ -126,8 +126,8 @@ function reportException(
 }
 
 declare var console: {
-  error: typeof console.error,
-  _errorOriginal: typeof console.error,
+  error: (...data: $ReadOnlyArray<mixed>) => void,
+  _errorOriginal: (...data: $ReadOnlyArray<mixed>) => void,
   reportErrorsAsExceptions: boolean,
   ...
 };

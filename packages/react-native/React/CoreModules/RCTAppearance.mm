@@ -19,6 +19,8 @@ using namespace facebook::react;
 NSString *const RCTAppearanceColorSchemeLight = @"light";
 NSString *const RCTAppearanceColorSchemeDark = @"dark";
 
+static BOOL sIsAppearancePreferenceSet = NO;
+
 static BOOL sAppearancePreferenceEnabled = YES;
 void RCTEnableAppearancePreference(BOOL enabled)
 {
@@ -29,6 +31,12 @@ static NSString *sColorSchemeOverride = nil;
 void RCTOverrideAppearancePreference(NSString *const colorSchemeOverride)
 {
   sColorSchemeOverride = colorSchemeOverride;
+}
+
+static BOOL sUseKeyWindowForSystemStyle = NO;
+void RCTUseKeyWindowForSystemStyle(BOOL useMainScreen)
+{
+  sUseKeyWindowForSystemStyle = useMainScreen;
 }
 
 NSString *RCTCurrentOverrideAppearancePreference()
@@ -58,7 +66,14 @@ NSString *RCTColorSchemePreference(UITraitCollection *traitCollection)
     return RCTAppearanceColorSchemeLight;
   }
 
-  return appearances[@(traitCollection.userInterfaceStyle)] ?: RCTAppearanceColorSchemeLight;
+  if (appearances[@(traitCollection.userInterfaceStyle)]) {
+    sIsAppearancePreferenceSet = YES;
+    return appearances[@(traitCollection.userInterfaceStyle)];
+  }
+
+  UIUserInterfaceStyle systemStyle = sUseKeyWindowForSystemStyle ? RCTKeyWindow().traitCollection.userInterfaceStyle
+                                                                 : traitCollection.userInterfaceStyle;
+  return appearances[@(systemStyle)] ?: RCTAppearanceColorSchemeLight;
 }
 #else // [macOS
 NSString *RCTColorSchemePreference(NSAppearance *appearance)
@@ -99,8 +114,8 @@ NSString *RCTColorSchemePreference(NSAppearance *appearance)
     UITraitCollection *traitCollection = RCTKeyWindow().traitCollection;
     _currentColorScheme = RCTColorSchemePreference(traitCollection);
 #else // [macOS
-	NSAppearance *appearance = RCTSharedApplication().appearance;
-	_currentColorScheme = RCTColorSchemePreference(appearance);
+  NSAppearance *appearance = RCTSharedApplication().appearance;
+  _currentColorScheme = RCTColorSchemePreference(appearance);
 #endif // macOS]
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(appearanceChanged:)
@@ -149,6 +164,15 @@ RCT_EXPORT_METHOD(setColorScheme : (NSString *)style)
 
 RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSString *, getColorScheme)
 {
+  if (!sIsAppearancePreferenceSet) {
+#if !TARGET_OS_OSX // [macOS
+    UITraitCollection *traitCollection = RCTKeyWindow().traitCollection;
+    _currentColorScheme = RCTColorSchemePreference(traitCollection);
+#else // [macOS
+    NSAppearance *appearance = RCTKeyWindow().appearance;
+    _currentColorScheme = RCTColorSchemePreference(appearance);
+#endif // macOS]
+  }
   return _currentColorScheme;
 }
 

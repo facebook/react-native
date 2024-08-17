@@ -35,12 +35,6 @@
 
 NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotification";
 
-@interface RCTUIManager (RCTRootView)
-
-- (NSNumber *)allocateRootTag;
-
-@end
-
 @implementation RCTRootView {
   RCTBridge *_bridge;
   NSString *_moduleName;

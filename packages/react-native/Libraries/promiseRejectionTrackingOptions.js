@@ -52,6 +52,7 @@ let rejectionTrackingOptions: $NonMaybeType<Parameters<enable>[0]> = {
           substitutions: [],
         },
         componentStack: [],
+        componentStackType: null,
         stack,
         category: 'possible_unhandled_promise_rejection',
       });

@@ -51,6 +51,7 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.BridgeReactContext;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.CatalystInstanceImpl;
 import com.facebook.react.bridge.JSBundleLoader;
@@ -64,6 +65,7 @@ import com.facebook.react.bridge.ProxyJavaScriptExecutor;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactCxxErrorHandler;
+import com.facebook.react.bridge.ReactInstanceManagerInspectorTarget;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
@@ -80,14 +82,18 @@ import com.facebook.react.common.annotations.StableReactNativeAPI;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.devsupport.DevSupportManagerFactory;
+import com.facebook.react.devsupport.InspectorFlags;
 import com.facebook.react.devsupport.ReactInstanceDevHelper;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.DevLoadingViewManager;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
+import com.facebook.react.devsupport.interfaces.DevSupportManager.PausedInDebuggerOverlayCommandListener;
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
+import com.facebook.react.devsupport.interfaces.PausedInDebuggerOverlayManager;
 import com.facebook.react.devsupport.interfaces.RedBoxHandler;
 import com.facebook.react.internal.AndroidChoreographerProvider;
 import com.facebook.react.internal.ChoreographerProvider;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.internal.turbomodule.core.TurboModuleManager;
 import com.facebook.react.internal.turbomodule.core.TurboModuleManagerDelegate;
 import com.facebook.react.modules.appearance.AppearanceModule;
@@ -167,12 +173,14 @@ public class ReactInstanceManager {
   private final DevSupportManager mDevSupportManager;
   private final boolean mUseDeveloperSupport;
   private final boolean mRequireActivity;
+  private final boolean mKeepActivity;
   private final @Nullable NotThreadSafeBridgeIdleDebugListener mBridgeIdleDebugListener;
   private final Object mReactContextLock = new Object();
   private @Nullable volatile ReactContext mCurrentReactContext;
   private final Context mApplicationContext;
   private @Nullable @ThreadConfined(UI) DefaultHardwareBackBtnHandler mDefaultBackButtonImpl;
   private @Nullable Activity mCurrentActivity;
+  private @Nullable ReactInstanceManagerInspectorTarget mInspectorTarget;
   private final Collection<com.facebook.react.ReactInstanceEventListener>
       mReactInstanceEventListeners =
           Collections.synchronizedList(
@@ -224,6 +232,7 @@ public class ReactInstanceManager {
       boolean useDeveloperSupport,
       DevSupportManagerFactory devSupportManagerFactory,
       boolean requireActivity,
+      boolean keepActivity,
       @Nullable NotThreadSafeBridgeIdleDebugListener bridgeIdleDebugListener,
       LifecycleState initialLifecycleState,
       JSExceptionHandler jSExceptionHandler,
@@ -237,7 +246,8 @@ public class ReactInstanceManager {
       @Nullable ReactPackageTurboModuleManagerDelegate.Builder tmmDelegateBuilder,
       @Nullable SurfaceDelegateFactory surfaceDelegateFactory,
       @Nullable DevLoadingViewManager devLoadingViewManager,
-      @Nullable ChoreographerProvider choreographerProvider) {
+      @Nullable ChoreographerProvider choreographerProvider,
+      @Nullable PausedInDebuggerOverlayManager pausedInDebuggerOverlayManager) {
     FLog.d(TAG, "ReactInstanceManager.ctor()");
     initializeSoLoaderIfNecessary(applicationContext);
 
@@ -253,6 +263,7 @@ public class ReactInstanceManager {
     mPackages = new ArrayList<>();
     mUseDeveloperSupport = useDeveloperSupport;
     mRequireActivity = requireActivity;
+    mKeepActivity = keepActivity;
     Systrace.beginSection(
         Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "ReactInstanceManager.initDevSupportManager");
     mDevSupportManager =
@@ -266,7 +277,8 @@ public class ReactInstanceManager {
             minNumShakes,
             customPackagerCommandHandlers,
             surfaceDelegateFactory,
-            devLoadingViewManager);
+            devLoadingViewManager,
+            pausedInDebuggerOverlayManager);
     Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
     mBridgeIdleDebugListener = bridgeIdleDebugListener;
     mLifecycleState = initialLifecycleState;
@@ -695,7 +707,9 @@ public class ReactInstanceManager {
     }
 
     moveToBeforeCreateLifecycleState();
-    mCurrentActivity = null;
+    if (!mKeepActivity) {
+      mCurrentActivity = null;
+    }
   }
 
   /**
@@ -748,15 +762,34 @@ public class ReactInstanceManager {
     unregisterCxxErrorHandlerFunc();
 
     mCreateReactContextThread = null;
-    synchronized (mReactContextLock) {
-      if (mCurrentReactContext != null) {
-        mCurrentReactContext.destroy();
-        mCurrentReactContext = null;
+    synchronized (mAttachedReactRoots) {
+      synchronized (mReactContextLock) {
+        if (mCurrentReactContext != null) {
+          if (ReactNativeFeatureFlags.destroyFabricSurfacesInReactInstanceManager()) {
+            for (ReactRoot reactRoot : mAttachedReactRoots) {
+              // Fabric surfaces must be cleaned up when React Native is destroyed.
+              if (reactRoot.getUIManagerType() == UIManagerType.FABRIC) {
+                detachRootViewFromInstance(reactRoot, mCurrentReactContext);
+              }
+            }
+          }
+
+          mCurrentReactContext.destroy();
+          mCurrentReactContext = null;
+        }
       }
     }
 
+    // If the host is being destroyed, now that the current context/instance
+    // has been destroyed, we can safely destroy the host's inspector target.
+    if (mLifecycleState == LifecycleState.BEFORE_CREATE) {
+      destroyInspectorHostTarget();
+    }
+
     mHasStartedCreatingInitialContext = false;
-    mCurrentActivity = null;
+    if (!mKeepActivity) {
+      mCurrentActivity = null;
+    }
 
     ResourceDrawableIdHelper.getInstance().clear();
 
@@ -804,8 +837,12 @@ public class ReactInstanceManager {
         mLifecycleState = LifecycleState.BEFORE_RESUME;
       }
       if (mLifecycleState == LifecycleState.BEFORE_RESUME) {
-        currentContext.onHostDestroy();
+        currentContext.onHostDestroy(mKeepActivity);
       }
+    } else {
+      // There's no current context that requires the host inspector target to
+      // be kept alive, so we can destroy it immediately.
+      destroyInspectorHostTarget();
     }
     mLifecycleState = LifecycleState.BEFORE_CREATE;
   }
@@ -998,6 +1035,12 @@ public class ReactInstanceManager {
               if (names != null) {
                 uniqueNames.addAll(names);
               }
+            } else {
+              FLog.w(
+                  ReactConstants.TAG,
+                  "Package %s is not a ViewManagerOnDemandReactPackage, view managers will not be"
+                      + " loaded",
+                  reactPackage.getClass().getSimpleName());
             }
             Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
           }
@@ -1022,7 +1065,9 @@ public class ReactInstanceManager {
     mReactInstanceEventListeners.remove(listener);
   }
 
-  /** @return current ReactApplicationContext */
+  /**
+   * @return current ReactApplicationContext
+   */
   @VisibleForTesting
   public @Nullable ReactContext getCurrentReactContext() {
     synchronized (mReactContextLock) {
@@ -1331,12 +1376,14 @@ public class ReactInstanceManager {
     mDevSupportManager.onReactInstanceDestroyed(reactContext);
   }
 
-  /** @return instance of {@link ReactContext} configured a {@link CatalystInstance} set */
+  /**
+   * @return instance of {@link ReactContext} configured a {@link CatalystInstance} set
+   */
   private ReactApplicationContext createReactContext(
       JavaScriptExecutor jsExecutor, JSBundleLoader jsBundleLoader) {
     FLog.d(ReactConstants.TAG, "ReactInstanceManager.createReactContext()");
     ReactMarker.logMarker(CREATE_REACT_CONTEXT_START, jsExecutor.getName());
-    final ReactApplicationContext reactContext = new ReactApplicationContext(mApplicationContext);
+    final BridgeReactContext reactContext = new BridgeReactContext(mApplicationContext);
 
     JSExceptionHandler exceptionHandler =
         mJSExceptionHandler != null ? mJSExceptionHandler : mDevSupportManager;
@@ -1350,7 +1397,8 @@ public class ReactInstanceManager {
             .setJSExecutor(jsExecutor)
             .setRegistry(nativeModuleRegistry)
             .setJSBundleLoader(jsBundleLoader)
-            .setJSExceptionHandler(exceptionHandler);
+            .setJSExceptionHandler(exceptionHandler)
+            .setInspectorTarget(getOrCreateInspectorTarget());
 
     ReactMarker.logMarker(CREATE_CATALYST_INSTANCE_START);
     // CREATE_CATALYST_INSTANCE_END is in JSCExecutor.cpp
@@ -1465,5 +1513,48 @@ public class ReactInstanceManager {
       ((ReactPackageLogger) reactPackage).endProcessPackage();
     }
     SystraceMessage.endSection(TRACE_TAG_REACT_JAVA_BRIDGE).flush();
+  }
+
+  private @Nullable ReactInstanceManagerInspectorTarget getOrCreateInspectorTarget() {
+    if (mInspectorTarget == null && InspectorFlags.getFuseboxEnabled()) {
+
+      mInspectorTarget =
+          new ReactInstanceManagerInspectorTarget(
+              new ReactInstanceManagerInspectorTarget.TargetDelegate() {
+                @Override
+                public void onReload() {
+                  UiThreadUtil.runOnUiThread(() -> mDevSupportManager.handleReloadJS());
+                }
+
+                @Override
+                public void onSetPausedInDebuggerMessage(@Nullable String message) {
+                  if (message == null) {
+                    mDevSupportManager.hidePausedInDebuggerOverlay();
+                  } else {
+                    mDevSupportManager.showPausedInDebuggerOverlay(
+                        message,
+                        new PausedInDebuggerOverlayCommandListener() {
+                          @Override
+                          public void onResume() {
+                            UiThreadUtil.assertOnUiThread();
+                            if (mInspectorTarget != null) {
+                              mInspectorTarget.sendDebuggerResumeCommand();
+                            }
+                          }
+                        });
+                  }
+                }
+              });
+    }
+
+    return mInspectorTarget;
+  }
+
+  @ThreadConfined(UI)
+  private void destroyInspectorHostTarget() {
+    if (mInspectorTarget != null) {
+      mInspectorTarget.close();
+      mInspectorTarget = null;
+    }
   }
 }

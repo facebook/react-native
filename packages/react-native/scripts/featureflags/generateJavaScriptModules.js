@@ -25,7 +25,7 @@ export default function generateCommonCxxModules(
   return {
     [path.join(jsPath, 'ReactNativeFeatureFlags.js')]:
       ReactNativeFeatureFlagsJS(featureFlagDefinitions),
-    [path.join(jsPath, 'NativeReactNativeFeatureFlags.js')]:
+    [path.join(jsPath, 'specs', 'NativeReactNativeFeatureFlags.js')]:
       NativeReactNativeFeatureFlagsJS(featureFlagDefinitions),
     [path.join(commonNativeModuleCxxPath, 'NativeReactNativeFeatureFlags.h')]:
       NativeReactNativeFeatureFlagsH(featureFlagDefinitions),

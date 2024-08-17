@@ -211,7 +211,7 @@ const RawValue* RawProps::at(
 
 void RawProps::iterateOverValues(
     const std::function<
-        void(RawPropsPropNameHash, const char*, RawValue const&)>& fn) const {
+        void(RawPropsPropNameHash, const char*, const RawValue&)>& fn) const {
   return parser_->iterateOverValues(*this, fn);
 }
 

@@ -32,7 +32,7 @@ const loadingViewMock = {
   hide: jest.fn(),
 };
 jest.mock(
-  'react-native/Libraries/Utilities/LoadingView',
+  'react-native/Libraries/Utilities/DevLoadingView',
   () => loadingViewMock,
 );
 

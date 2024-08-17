@@ -108,10 +108,12 @@ public class ReactPropertyProcessor extends ProcessorBase {
     DEFAULT_TYPES.put(TypeName.DOUBLE, "number");
     DEFAULT_TYPES.put(TypeName.FLOAT, "number");
     DEFAULT_TYPES.put(TypeName.INT, "number");
+    DEFAULT_TYPES.put(TypeName.LONG, "number");
 
     // Boxed primitives
     DEFAULT_TYPES.put(TypeName.BOOLEAN.box(), "boolean");
     DEFAULT_TYPES.put(TypeName.INT.box(), "number");
+    DEFAULT_TYPES.put(TypeName.LONG.box(), "number");
 
     // Class types
     DEFAULT_TYPES.put(STRING_TYPE, "String");
@@ -124,6 +126,7 @@ public class ReactPropertyProcessor extends ProcessorBase {
     BOXED_PRIMITIVES.add(TypeName.BOOLEAN.box());
     BOXED_PRIMITIVES.add(TypeName.FLOAT.box());
     BOXED_PRIMITIVES.add(TypeName.INT.box());
+    BOXED_PRIMITIVES.add(TypeName.LONG.box());
   }
 
   public ReactPropertyProcessor() {
@@ -409,6 +412,11 @@ public class ReactPropertyProcessor extends ProcessorBase {
         return;
       }
     }
+    if (propertyType.equals(TypeName.LONG)) {
+      long defaultLong = info.mProperty.defaultLong();
+      builder.add("!(value instanceof Long) ? $L : (long)value", defaultLong);
+      return;
+    }
     if ("Color".equals(info.mProperty.customType())) {
       switch (classInfo.getType()) {
         case VIEW_MANAGER:
@@ -502,6 +510,8 @@ public class ReactPropertyProcessor extends ProcessorBase {
 
     int defaultInt();
 
+    long defaultLong();
+
     boolean defaultBoolean();
   }
 
@@ -535,6 +545,11 @@ public class ReactPropertyProcessor extends ProcessorBase {
     @Override
     public int defaultInt() {
       return mProp.defaultInt();
+    }
+
+    @Override
+    public long defaultLong() {
+      return mProp.defaultLong();
     }
 
     @Override
@@ -575,6 +590,11 @@ public class ReactPropertyProcessor extends ProcessorBase {
     @Override
     public int defaultInt() {
       return mProp.defaultInt();
+    }
+
+    @Override
+    public long defaultLong() {
+      return mProp.defaultLong();
     }
 
     @Override

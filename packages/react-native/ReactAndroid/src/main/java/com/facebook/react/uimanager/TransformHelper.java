@@ -103,14 +103,36 @@ public class TransformHelper {
           MatrixMathHelper.applyScaleY(helperMatrix, transform.getDouble(transformType));
         } else if ("translate".equals(transformType)) {
           ReadableArray value = transform.getArray(transformType);
-          double x = value.getDouble(0);
-          double y = value.getDouble(1);
+          double x = 0;
+          if (value.getType(0) == ReadableType.String) {
+            x = parseTranslateValue(value.getString(0), viewWidth);
+          } else {
+            x = value.getDouble(0);
+          }
+          double y = 0;
+          if (value.getType(1) == ReadableType.String) {
+            y = parseTranslateValue(value.getString(1), viewHeight);
+          } else {
+            y = value.getDouble(1);
+          }
           double z = value.size() > 2 ? value.getDouble(2) : 0d;
           MatrixMathHelper.applyTranslate3D(helperMatrix, x, y, z);
         } else if ("translateX".equals(transformType)) {
-          MatrixMathHelper.applyTranslate2D(helperMatrix, transform.getDouble(transformType), 0d);
+          double translateValue = 0;
+          if (transform.getType(transformType) == ReadableType.String) {
+            translateValue = parseTranslateValue(transform.getString(transformType), viewWidth);
+          } else {
+            translateValue = transform.getDouble(transformType);
+          }
+          MatrixMathHelper.applyTranslate2D(helperMatrix, translateValue, 0d);
         } else if ("translateY".equals(transformType)) {
-          MatrixMathHelper.applyTranslate2D(helperMatrix, 0d, transform.getDouble(transformType));
+          double translateValue = 0;
+          if (transform.getType(transformType) == ReadableType.String) {
+            translateValue = parseTranslateValue(transform.getString(transformType), viewHeight);
+          } else {
+            translateValue = transform.getDouble(transformType);
+          }
+          MatrixMathHelper.applyTranslate2D(helperMatrix, 0d, translateValue);
         } else if ("skewX".equals(transformType)) {
           MatrixMathHelper.applySkewX(helperMatrix, convertToRadians(transform, transformType));
         } else if ("skewY".equals(transformType)) {
@@ -128,6 +150,20 @@ public class TransformHelper {
       MatrixMathHelper.applyTranslate3D(helperMatrix, -offsets[0], -offsets[1], -offsets[2]);
       MatrixMathHelper.multiplyInto(result, result, helperMatrix);
     }
+  }
+
+  private static double parseTranslateValue(String stringValue, double dimension) {
+    try {
+      if (stringValue.endsWith("%")) {
+        double percentage = Double.parseDouble(stringValue.substring(0, stringValue.length() - 1));
+        return percentage * dimension / 100.0;
+      } else {
+        return Double.parseDouble(stringValue);
+      }
+    } catch (NumberFormatException e) {
+      FLog.w(ReactConstants.TAG, "Invalid translate value: " + stringValue);
+    }
+    return 0;
   }
 
   private static float[] getTranslateForTransformOrigin(

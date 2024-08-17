@@ -9,10 +9,12 @@
 
 #import <UserNotifications/UserNotifications.h>
 
+#import <RCTAppDelegate+Protected.h>
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTDefines.h>
 #import <React/RCTLinkingManager.h>
 #import <ReactCommon/RCTSampleTurboModule.h>
+#import <ReactCommon/RCTTurboModuleManager.h>
 #import <ReactCommon/SampleTurboCxxModule.h>
 
 #import <React/RCTPushNotificationManager.h>
@@ -99,10 +101,12 @@ NSString *kBundlePath = @"js/RNTesterApp.macos";
   if (name == std::string([@"SampleTurboCxxModule" UTF8String])) {
     return std::make_shared<facebook::react::SampleTurboCxxModule>(jsInvoker);
   }
+
   if (name == facebook::react::NativeCxxModuleExample::kModuleName) {
     return std::make_shared<facebook::react::NativeCxxModuleExample>(jsInvoker);
   }
-  return nullptr;
+
+  return [super getTurboModule:name jsInvoker:jsInvoker];
 }
 
 // Required for the remoteNotificationsRegistered event.
@@ -148,30 +152,20 @@ NSString *kBundlePath = @"js/RNTesterApp.macos";
   [RCTPushNotificationManager didReceiveNotification:notification];
   completionHandler();
 }
-#if TARGET_OS_OSX // [macOS
-- (void)userNotificationCenter:(NSUserNotificationCenter *)center
-        didDeliverNotification:(NSUserNotification *)notification
-{
-}
-
-- (void)userNotificationCenter:(NSUserNotificationCenter *)center
-       didActivateNotification:(NSUserNotification *)notification
-{
-  [RCTPushNotificationManager didReceiveUserNotification:notification];
-}
-
-- (BOOL)userNotificationCenter:(NSUserNotificationCenter *)center
-     shouldPresentNotification:(NSUserNotification *)notification
-{
-  return YES;
-}
-#endif // macOS]
 
 #pragma mark - New Arch Enabled settings
 
 - (BOOL)bridgelessEnabled
 {
   return [super bridgelessEnabled];
+}
+
+#pragma mark - Experimental settings
+
+// [Experiment] Enable the new debugger stack (codename Fusebox)
+- (BOOL)unstable_fuseboxEnabled
+{
+  return true;
 }
 
 #pragma mark - RCTComponentViewFactoryComponentProvider

@@ -14,7 +14,9 @@ import androidx.annotation.Nullable;
 /** An empty implementation of {@link ActivityEventListener} */
 public class BaseActivityEventListener implements ActivityEventListener {
 
-  /** @deprecated use {@link #onActivityResult(Activity, int, int, Intent)} instead. */
+  /**
+   * @deprecated use {@link #onActivityResult(Activity, int, int, Intent)} instead.
+   */
   @Deprecated
   public void onActivityResult(int requestCode, int resultCode, Intent data) {}
 

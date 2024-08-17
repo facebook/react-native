@@ -9,7 +9,6 @@ exports[`TextInput tests should render as expected: should deep render when mock
   mostRecentEventCount={0}
   onBlur={[Function]}
   onChange={[Function]}
-  onChangeSync={null}
   onClick={[Function]}
   onFocus={[Function]}
   onResponderGrant={[Function]}
@@ -38,7 +37,6 @@ exports[`TextInput tests should render as expected: should deep render when not 
   mostRecentEventCount={0}
   onBlur={[Function]}
   onChange={[Function]}
-  onChangeSync={null}
   onClick={[Function]}
   onFocus={[Function]}
   onResponderGrant={[Function]}
@@ -57,7 +55,3 @@ exports[`TextInput tests should render as expected: should deep render when not 
   underlineColorAndroid="transparent"
 />
 `;
-
-exports[`TextInput tests should render as expected: should shallow render as <TextInput /> when mocked 1`] = `<TextInput />`;
-
-exports[`TextInput tests should render as expected: should shallow render as <TextInput /> when not mocked 1`] = `<TextInput />`;

@@ -17,9 +17,8 @@ import type {
 import type NodeList from '../oldstylecollections/NodeList';
 import type ReadOnlyElement from './ReadOnlyElement';
 
-import {getFabricUIManager} from '../../../../../Libraries/ReactNative/FabricUIManager';
 import {createNodeList} from '../oldstylecollections/NodeList';
-import nullthrows from 'nullthrows';
+import NativeDOM from './specs/NativeDOM';
 
 // We initialize this lazily to avoid a require cycle
 // (`ReadOnlyElement` also depends on `ReadOnlyNode`).
@@ -52,7 +51,7 @@ export default class ReadOnlyNode {
       return false;
     }
 
-    return nullthrows(getFabricUIManager()).isConnected(shadowNode);
+    return NativeDOM.isConnected(shadowNode);
   }
 
   get lastChild(): ReadOnlyNode | null {
@@ -125,9 +124,7 @@ export default class ReadOnlyNode {
       return null;
     }
 
-    const parentInstanceHandle = nullthrows(getFabricUIManager()).getParentNode(
-      shadowNode,
-    );
+    const parentInstanceHandle = NativeDOM.getParentNode(shadowNode);
 
     if (parentInstanceHandle == null) {
       return null;
@@ -171,10 +168,7 @@ export default class ReadOnlyNode {
       return ReadOnlyNode.DOCUMENT_POSITION_DISCONNECTED;
     }
 
-    return nullthrows(getFabricUIManager()).compareDocumentPosition(
-      shadowNode,
-      otherShadowNode,
-    );
+    return NativeDOM.compareDocumentPosition(shadowNode, otherShadowNode);
   }
 
   contains(otherNode: ReadOnlyNode): boolean {
@@ -323,9 +317,7 @@ export function getChildNodes(
     return [];
   }
 
-  const childNodeInstanceHandles = nullthrows(
-    getFabricUIManager(),
-  ).getChildNodes(shadowNode);
+  const childNodeInstanceHandles = NativeDOM.getChildNodes(shadowNode);
   return childNodeInstanceHandles
     .map(instanceHandle =>
       getPublicInstanceFromInternalInstanceHandle(instanceHandle),

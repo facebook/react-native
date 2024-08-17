@@ -38,8 +38,6 @@ import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
@@ -70,7 +68,6 @@ import com.facebook.react.views.text.ReactTextViewManagerCallback;
 import com.facebook.react.views.text.ReactTypefaceUtils;
 import com.facebook.react.views.text.TextAttributeProps;
 import com.facebook.react.views.text.TextLayoutManager;
-import com.facebook.react.views.text.TextLayoutManagerMapBuffer;
 import com.facebook.react.views.text.TextTransform;
 import com.facebook.react.views.text.internal.span.TextInlineImageSpan;
 import com.facebook.yoga.YogaConstants;
@@ -234,11 +231,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
                 MapBuilder.of(
                     "phasedRegistrationNames",
                     MapBuilder.of("bubbled", "onEndEditing", "captured", "onEndEditingCapture")))
-            .put(
-                "topTextInput",
-                MapBuilder.of(
-                    "phasedRegistrationNames",
-                    MapBuilder.of("bubbled", "onTextInput", "captured", "onTextInputCapture")))
             .put(
                 "topFocus",
                 MapBuilder.of(
@@ -676,7 +668,8 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         new View.OnLongClickListener() {
           public boolean onLongClick(View v) {
             return _contextMenuHidden;
-          };
+          }
+          ;
         });
   }
 
@@ -1057,6 +1050,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     view.setBorderColor(SPACING_TYPES[index], rgbComponent, alphaComponent);
   }
 
+  @ReactProp(name = "overflow")
+  public void setOverflow(ReactEditText view, @Nullable String overflow) {
+    view.setOverflow(overflow);
+  }
+
   @Override
   protected void onAfterUpdateTransaction(ReactEditText view) {
     super.onAfterUpdateTransaction(view);
@@ -1134,17 +1132,12 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       }
 
       // The event that contains the event counter and updates it must be sent first.
-      // TODO: t7936714 merge these events
       mEventDispatcher.dispatchEvent(
           new ReactTextChangedEvent(
               mSurfaceId,
               mEditText.getId(),
               s.toString(),
               mEditText.incrementAndGetEventCounter()));
-
-      mEventDispatcher.dispatchEvent(
-          new ReactTextInputEvent(
-              mSurfaceId, mEditText.getId(), newText, oldText, start, start + before));
     }
 
     @Override
@@ -1335,7 +1328,8 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
                 0, // can't get content width
                 0, // can't get content height
                 mReactEditText.getWidth(),
-                mReactEditText.getHeight());
+                mReactEditText.getHeight(),
+                false);
 
         mEventDispatcher.dispatchEvent(event);
 
@@ -1388,34 +1382,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       return getReactTextUpdate(view, props, stateMapBuffer);
     }
 
-    ReadableNativeMap state = stateWrapper.getStateData();
-    if (state == null || !state.hasKey("attributedString")) {
-      return null;
-    }
-
-    ReadableMap attributedString = state.getMap("attributedString");
-    ReadableMap paragraphAttributes = state.getMap("paragraphAttributes");
-    if (attributedString == null || paragraphAttributes == null) {
-      throw new IllegalArgumentException("Invalid TextInput State was received as a parameters");
-    }
-
-    Spannable spanned =
-        TextLayoutManager.getOrCreateSpannableForText(
-            view.getContext(), attributedString, mReactTextViewManagerCallback);
-
-    int textBreakStrategy =
-        TextAttributeProps.getTextBreakStrategy(
-            paragraphAttributes.getString(ViewProps.TEXT_BREAK_STRATEGY));
-    int currentJustificationMode =
-        Build.VERSION.SDK_INT < Build.VERSION_CODES.O ? 0 : view.getJustificationMode();
-
-    return ReactTextUpdate.buildReactTextUpdateFromState(
-        spanned,
-        state.getInt("mostRecentEventCount"),
-        TextAttributeProps.getTextAlignment(
-            props, TextLayoutManager.isRTL(attributedString), view.getGravityHorizontal()),
-        textBreakStrategy,
-        TextAttributeProps.getJustificationMode(props, currentJustificationMode));
+    return null;
   }
 
   public @Nullable Object getReactTextUpdate(
@@ -1430,12 +1397,12 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     MapBuffer paragraphAttributes = state.getMapBuffer(TX_STATE_KEY_PARAGRAPH_ATTRIBUTES);
 
     Spannable spanned =
-        TextLayoutManagerMapBuffer.getOrCreateSpannableForText(
+        TextLayoutManager.getOrCreateSpannableForText(
             view.getContext(), attributedString, mReactTextViewManagerCallback);
 
     int textBreakStrategy =
         TextAttributeProps.getTextBreakStrategy(
-            paragraphAttributes.getString(TextLayoutManagerMapBuffer.PA_KEY_TEXT_BREAK_STRATEGY));
+            paragraphAttributes.getString(TextLayoutManager.PA_KEY_TEXT_BREAK_STRATEGY));
     int currentJustificationMode =
         Build.VERSION.SDK_INT < Build.VERSION_CODES.O ? 0 : view.getJustificationMode();
 
@@ -1443,7 +1410,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         spanned,
         state.getInt(TX_STATE_KEY_MOST_RECENT_EVENT_COUNT),
         TextAttributeProps.getTextAlignment(
-            props, TextLayoutManagerMapBuffer.isRTL(attributedString), view.getGravityHorizontal()),
+            props, TextLayoutManager.isRTL(attributedString), view.getGravityHorizontal()),
         textBreakStrategy,
         TextAttributeProps.getJustificationMode(props, currentJustificationMode));
   }

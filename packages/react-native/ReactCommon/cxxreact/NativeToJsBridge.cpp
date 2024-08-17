@@ -101,7 +101,7 @@ class JsToNativeBridge : public react::ExecutorDelegate {
   // executor is destroyed synchronously on its queue.
   std::shared_ptr<ModuleRegistry> m_registry;
   std::shared_ptr<InstanceCallback> m_callback;
-  bool m_batchHadNativeModuleOrTurboModuleCalls = false;
+  std::atomic<bool> m_batchHadNativeModuleOrTurboModuleCalls{false};
 };
 
 NativeToJsBridge::NativeToJsBridge(
@@ -326,14 +326,14 @@ NativeToJsBridge::getDecoratedNativeMethodCallInvoker(
 
     void invokeAsync(
         const std::string& methodName,
-        std::function<void()>&& func) noexcept override {
+        NativeMethodCallFunc&& func) noexcept override {
       if (auto strongJsToNativeBridge = m_jsToNativeBridge.lock()) {
         strongJsToNativeBridge->recordTurboModuleAsyncMethodCall();
       }
       m_nativeInvoker->invokeAsync(methodName, std::move(func));
     }
 
-    void invokeSync(const std::string& methodName, std::function<void()>&& func)
+    void invokeSync(const std::string& methodName, NativeMethodCallFunc&& func)
         override {
       m_nativeInvoker->invokeSync(methodName, std::move(func));
     }
@@ -345,7 +345,7 @@ NativeToJsBridge::getDecoratedNativeMethodCallInvoker(
 
 jsinspector_modern::RuntimeTargetDelegate&
 NativeToJsBridge::getInspectorTargetDelegate() {
-  return *m_executor;
+  return m_executor->getRuntimeTargetDelegate();
 }
 
 } // namespace facebook::react

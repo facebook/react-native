@@ -7,7 +7,7 @@
 
 #include "HermesInstance.h"
 
-#include <hermes/inspector-modern/chrome/HermesRuntimeAgentDelegate.h>
+#include <hermes/inspector-modern/chrome/HermesRuntimeTargetDelegate.h>
 #include <jsi/jsilib.h>
 #include <jsinspector-modern/InspectorFlags.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
@@ -94,49 +94,25 @@ class DecoratedRuntime : public jsi::RuntimeDecorator<jsi::Runtime> {
 
 class HermesJSRuntime : public JSRuntime {
  public:
-  HermesJSRuntime(
-      std::unique_ptr<HermesRuntime> runtime,
-      std::shared_ptr<MessageQueueThread> msgQueueThread)
-      : runtime_(std::move(runtime)),
-        msgQueueThread_(std::move(msgQueueThread)) {}
+  HermesJSRuntime(std::unique_ptr<HermesRuntime> runtime)
+      : runtime_(std::move(runtime)) {}
 
   jsi::Runtime& getRuntime() noexcept override {
     return *runtime_;
   }
 
-  std::unique_ptr<jsinspector_modern::RuntimeAgentDelegate> createAgentDelegate(
-      jsinspector_modern::FrontendChannel frontendChannel,
-      jsinspector_modern::SessionState& sessionState,
-      std::unique_ptr<jsinspector_modern::RuntimeAgentDelegate::ExportedState>
-          previouslyExportedState,
-      const jsinspector_modern::ExecutionContextDescription&
-          executionContextDescription) override {
-    return std::unique_ptr<jsinspector_modern::RuntimeAgentDelegate>(
-        new jsinspector_modern::HermesRuntimeAgentDelegate(
-            frontendChannel,
-            sessionState,
-            std::move(previouslyExportedState),
-            executionContextDescription,
-            runtime_,
-            [msgQueueThreadWeak = std::weak_ptr(msgQueueThread_),
-             runtimeWeak = std::weak_ptr(runtime_)](auto fn) {
-              auto msgQueueThread = msgQueueThreadWeak.lock();
-              if (!msgQueueThread) {
-                return;
-              }
-              msgQueueThread->runOnQueue([runtimeWeak, fn]() {
-                auto runtime = runtimeWeak.lock();
-                if (!runtime) {
-                  return;
-                }
-                fn(*runtime);
-              });
-            }));
+  jsinspector_modern::RuntimeTargetDelegate& getRuntimeTargetDelegate()
+      override {
+    if (!targetDelegate_) {
+      targetDelegate_.emplace(runtime_);
+    }
+    return *targetDelegate_;
   }
 
  private:
   std::shared_ptr<HermesRuntime> runtime_;
-  std::shared_ptr<MessageQueueThread> msgQueueThread_;
+  std::optional<jsinspector_modern::HermesRuntimeTargetDelegate>
+      targetDelegate_;
 };
 
 std::unique_ptr<JSRuntime> HermesInstance::createJSRuntime(
@@ -148,18 +124,11 @@ std::unique_ptr<JSRuntime> HermesInstance::createJSRuntime(
       ? reactNativeConfig->getInt64("ios_hermes:vm_experiment_flags")
       : 0;
 
-  int64_t heapSizeConfig = reactNativeConfig
-      ? reactNativeConfig->getInt64("ios_hermes:rn_heap_size_mb")
-      : 0;
-  // Default to 3GB if MobileConfigs is not available
-  auto heapSizeMB = heapSizeConfig > 0
-      ? static_cast<::hermes::vm::gcheapsize_t>(heapSizeConfig)
-      : 3072;
-
   ::hermes::vm::RuntimeConfig::Builder runtimeConfigBuilder =
       ::hermes::vm::RuntimeConfig::Builder()
           .withGCConfig(::hermes::vm::GCConfig::Builder()
-                            .withMaxHeapSize(heapSizeMB << 20)
+                            // Default to 3GB
+                            .withMaxHeapSize(3072 << 20)
                             .withName("RNBridgeless")
                             // For the next two arguments: avoid GC before TTI
                             // by initializing the runtime to allocate directly
@@ -168,7 +137,6 @@ std::unique_ptr<JSRuntime> HermesInstance::createJSRuntime(
                             .withAllocInYoung(false)
                             .withRevertToYGAtTTI(true)
                             .build())
-          .withES6Proxy(false)
           .withEnableSampleProfiling(true)
           .withMicrotaskQueue(ReactNativeFeatureFlags::enableMicrotasks())
           .withVMExperimentFlags(vmExperimentFlags);
@@ -182,16 +150,17 @@ std::unique_ptr<JSRuntime> HermesInstance::createJSRuntime(
 
 #ifdef HERMES_ENABLE_DEBUGGER
   auto& inspectorFlags = jsinspector_modern::InspectorFlags::getInstance();
-  if (!inspectorFlags.getEnableModernCDPRegistry()) {
+  if (!inspectorFlags.getFuseboxEnabled()) {
     std::unique_ptr<DecoratedRuntime> decoratedRuntime =
         std::make_unique<DecoratedRuntime>(
             std::move(hermesRuntime), msgQueueThread);
     return std::make_unique<JSIRuntimeHolder>(std::move(decoratedRuntime));
   }
+#else
+  (void)msgQueueThread;
 #endif
 
-  return std::make_unique<HermesJSRuntime>(
-      std::move(hermesRuntime), std::move(msgQueueThread));
+  return std::make_unique<HermesJSRuntime>(std::move(hermesRuntime));
 }
 
 } // namespace facebook::react
