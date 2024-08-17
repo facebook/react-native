@@ -10,11 +10,11 @@ package com.facebook.react.uiapp
 import android.app.Application
 import com.facebook.fbreact.specs.SampleLegacyModule
 import com.facebook.fbreact.specs.SampleTurboModule
+import com.facebook.react.BaseReactPackage
 import com.facebook.react.ReactApplication
 import com.facebook.react.ReactHost
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackage
-import com.facebook.react.TurboReactPackage
 import com.facebook.react.ViewManagerOnDemandReactPackage
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
@@ -47,7 +47,7 @@ class RNTesterApplication : Application(), ReactApplication {
             MainReactPackage(),
             PopupMenuPackage(),
             OSSLibraryExamplePackage(),
-            object : TurboReactPackage() {
+            object : BaseReactPackage() {
               override fun getModule(
                   name: String,
                   reactContext: ReactApplicationContext

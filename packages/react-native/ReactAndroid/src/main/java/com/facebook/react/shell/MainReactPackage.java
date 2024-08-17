@@ -9,7 +9,7 @@ package com.facebook.react.shell;
 
 import android.annotation.SuppressLint;
 import androidx.annotation.Nullable;
-import com.facebook.react.TurboReactPackage;
+import com.facebook.react.BaseReactPackage;
 import com.facebook.react.ViewManagerOnDemandReactPackage;
 import com.facebook.react.animated.NativeAnimatedModule;
 import com.facebook.react.bridge.ModuleSpec;
@@ -93,7 +93,7 @@ import javax.inject.Provider;
       VibrationModule.class,
       WebSocketModule.class,
     })
-public class MainReactPackage extends TurboReactPackage implements ViewManagerOnDemandReactPackage {
+public class MainReactPackage extends BaseReactPackage implements ViewManagerOnDemandReactPackage {
 
   private MainPackageConfig mConfig;
   private @Nullable Map<String, ModuleSpec> mViewManagers;
