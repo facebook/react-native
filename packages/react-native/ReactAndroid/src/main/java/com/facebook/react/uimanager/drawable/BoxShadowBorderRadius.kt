@@ -25,5 +25,5 @@ internal fun adjustRadiusForSpread(
       } else {
         1f
       }
-  return (radius + abs(spread) * spreadMultiplier).coerceAtLeast(0f)
+  return (radius + spread * spreadMultiplier).coerceAtLeast(0f)
 }

@@ -8,171 +8,187 @@
 package com.facebook.react.uimanager.drawable
 
 import android.content.Context
+import android.graphics.BlurMaskFilter
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.ColorFilter
 import android.graphics.Paint
-import android.graphics.Rect
-import android.graphics.RenderNode
+import android.graphics.Path
+import android.graphics.RectF
 import android.graphics.drawable.Drawable
 import androidx.annotation.RequiresApi
-import com.facebook.common.logging.FLog
-import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.uimanager.FilterHelper
-import com.facebook.react.uimanager.LengthPercentage
-import com.facebook.react.uimanager.LengthPercentageType
 import com.facebook.react.uimanager.PixelUtil
+import com.facebook.react.uimanager.style.BorderInsets
 import com.facebook.react.uimanager.style.BorderRadiusStyle
+import com.facebook.react.uimanager.style.ComputedBorderRadius
+import com.facebook.react.uimanager.style.CornerRadii
 import kotlin.math.roundToInt
 
-private const val TAG = "InsetBoxShadowDrawable"
+internal const val MIN_INSET_BOX_SHADOW_SDK_VERSION = 29
 
 // "the resulting shadow must approximate {...} a Gaussian blur with a standard deviation equal
 // to half the blur radius"
 // https://www.w3.org/TR/css-backgrounds-3/#shadow-blur
 private const val BLUR_RADIUS_SIGMA_SCALE = 0.5f
 
+private val ZERO_RADII = floatArrayOf(0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f)
+
 /** Draws an inner box-shadow https://www.w3.org/TR/css-backgrounds-3/#shadow-shape */
-@RequiresApi(31)
-@OptIn(UnstableReactNativeAPI::class)
+@RequiresApi(MIN_INSET_BOX_SHADOW_SDK_VERSION)
 internal class InsetBoxShadowDrawable(
     private val context: Context,
-    private val background: CSSBackgroundDrawable,
+    borderRadius: BorderRadiusStyle? = null,
+    borderInsets: BorderInsets? = null,
     private val shadowColor: Int,
     private val offsetX: Float,
     private val offsetY: Float,
     private val blurRadius: Float,
     private val spread: Float,
 ) : Drawable() {
-  private val renderNode =
-      RenderNode(TAG).apply {
-        clipToBounds = false
-        setRenderEffect(FilterHelper.createBlurEffect(blurRadius * BLUR_RADIUS_SIGMA_SCALE))
+  public var borderRadius = borderRadius
+    set(value) {
+      if (value != field) {
+        field = value
+        invalidateSelf()
       }
+    }
 
-  private val clearRegionDrawable = CSSBackgroundDrawable(context)
+  public var borderInsets = borderInsets
+    set(value) {
+      if (value != field) {
+        field = value
+        invalidateSelf()
+      }
+    }
 
-  private val shadowPaint = Paint().apply { color = shadowColor }
+  private val shadowPaint =
+      Paint().apply {
+        color = shadowColor
+        if (blurRadius > 0) {
+          maskFilter =
+              BlurMaskFilter(
+                  FilterHelper.sigmaToRadius(blurRadius * BLUR_RADIUS_SIGMA_SCALE),
+                  BlurMaskFilter.Blur.NORMAL)
+        }
+      }
 
   override fun setAlpha(alpha: Int) {
-    renderNode.alpha = alpha / 255f
+    shadowPaint.alpha = (((alpha / 255f) * (Color.alpha(shadowColor) / 255f)) * 255f).roundToInt()
+    invalidateSelf()
   }
 
-  override fun setColorFilter(colorFilter: ColorFilter?): Unit = Unit
+  override fun setColorFilter(colorFilter: ColorFilter?) {
+    shadowPaint.colorFilter = colorFilter
+    invalidateSelf()
+  }
 
-  override fun getOpacity(): Int = (renderNode.alpha * 255).roundToInt()
+  override fun getOpacity(): Int =
+      ((shadowPaint.alpha / 255f) / (Color.alpha(shadowColor) / 255f) * 255f).roundToInt()
 
   override fun draw(canvas: Canvas) {
-    if (!canvas.isHardwareAccelerated) {
-      FLog.w(TAG, "InsetBoxShadowDrawable requires a hardware accelerated canvas")
-      return
-    }
-    // We need the actual size the blur will increase the shadow by so we can
-    // properly pad. This is not simply the input as Android has it's own
-    // distinct blur algorithm
-    val adjustedBlurRadius =
-        FilterHelper.sigmaToRadius(blurRadius * BLUR_RADIUS_SIGMA_SCALE).roundToInt()
-    val padding = 2 * adjustedBlurRadius
+    val computedBorderRadii = computeBorderRadii()
+    val computedBorderInsets = computeBorderInsets()
 
-    val spreadExtent = PixelUtil.toPixelFromDIP(spread).roundToInt().coerceAtLeast(0)
-    val clearRegionBounds = Rect()
-    background.getPaddingBoxRect().round(clearRegionBounds)
-    clearRegionBounds.inset(spreadExtent, spreadExtent)
-    clearRegionBounds.offset(
-        PixelUtil.toPixelFromDIP(offsetX).roundToInt() + padding / 2,
-        PixelUtil.toPixelFromDIP(offsetY).roundToInt() + padding / 2,
-    )
-    val clearRegionBorderRadii = getClearRegionBorderRadii(spreadExtent, background)
+    val paddingBoxRect =
+        RectF(
+            bounds.left + (computedBorderInsets?.left ?: 0f),
+            bounds.top + (computedBorderInsets?.top ?: 0f),
+            bounds.right - (computedBorderInsets?.right ?: 0f),
+            bounds.bottom - (computedBorderInsets?.bottom ?: 0f))
+    val paddingBoxRadii =
+        computedBorderRadii?.let {
+          floatArrayOf(
+              innerRadius(it.topLeft.horizontal, computedBorderInsets?.left),
+              innerRadius(it.topLeft.vertical, computedBorderInsets?.top),
+              innerRadius(it.topRight.horizontal, computedBorderInsets?.right),
+              innerRadius(it.topRight.vertical, computedBorderInsets?.top),
+              innerRadius(it.bottomRight.horizontal, computedBorderInsets?.right),
+              innerRadius(it.bottomRight.vertical, computedBorderInsets?.bottom),
+              innerRadius(it.bottomLeft.horizontal, computedBorderInsets?.left),
+              innerRadius(it.bottomLeft.vertical, computedBorderInsets?.bottom))
+        }
 
-    if (!renderNode.hasDisplayList() ||
-        shadowPaint.colorFilter != colorFilter ||
-        clearRegionDrawable.layoutDirection != layoutDirection ||
-        clearRegionDrawable.borderRadius != clearRegionBorderRadii ||
-        clearRegionDrawable.bounds != clearRegionBounds) {
+    val x = PixelUtil.toPixelFromDIP(offsetX)
+    val y = PixelUtil.toPixelFromDIP(offsetY)
+    val spreadExtent = PixelUtil.toPixelFromDIP(spread)
+    val innerRect =
+        RectF(paddingBoxRect).apply {
+          inset(spreadExtent, spreadExtent)
+          offset(x, y)
+        }
 
-      shadowPaint.colorFilter = colorFilter
-      clearRegionDrawable.bounds = clearRegionBounds
-      clearRegionDrawable.layoutDirection = layoutDirection
-      clearRegionDrawable.borderRadius = clearRegionBorderRadii
-
-      with(renderNode) {
-        // We pad by the blur radius so that the edges of the blur look good and
-        // the blur artifacts can bleed into the view if needed
-        setPosition(Rect(bounds).apply { inset(-padding, -padding) })
-        beginRecording().let { renderNodeCanvas ->
-          val borderBoxPath = clearRegionDrawable.getBorderBoxPath()
-          if (borderBoxPath != null) {
-            renderNodeCanvas.clipOutPath(borderBoxPath)
-          } else {
-            renderNodeCanvas.clipOutRect(clearRegionDrawable.borderBoxRect)
+    // Graciously stolen from Blink
+    // https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/paint/box_painter_base.cc;l=338;drc=0a301506035e13015ea5c8dd39164d0d5954fa60
+    val blurExtent = FilterHelper.sigmaToRadius(blurRadius)
+    val outerRect =
+        RectF(innerRect).apply {
+          inset(-blurExtent, -blurExtent)
+          if (spreadExtent < 0) {
+            inset(spreadExtent, spreadExtent)
           }
-
-          renderNodeCanvas.drawPaint(shadowPaint)
-          endRecording()
+          union(RectF(this).apply { offset(-x, -y) })
         }
+
+    canvas.save().let { saveCount ->
+      if (paddingBoxRadii != null) {
+        canvas.clipPath(
+            Path().apply { addRoundRect(paddingBoxRect, paddingBoxRadii, Path.Direction.CW) })
+
+        val innerRadii =
+            paddingBoxRadii.map { adjustRadiusForSpread(it, -spreadExtent) }.toFloatArray()
+
+        canvas.drawDoubleRoundRect(outerRect, ZERO_RADII, innerRect, innerRadii, shadowPaint)
+      } else {
+        canvas.clipRect(paddingBoxRect)
+        canvas.drawDoubleRoundRect(outerRect, ZERO_RADII, innerRect, ZERO_RADII, shadowPaint)
       }
 
-      // We actually draw the render node into our canvas and clip out the
-      // padding
-      with(canvas) {
-        save()
-
-        val paddingBoxPath = background.getPaddingBoxPath()
-        if (paddingBoxPath != null) {
-          canvas.clipPath(paddingBoxPath)
-        } else {
-          canvas.clipRect(background.getPaddingBoxRect())
-        }
-        // This positions the render node properly since we padded it
-        canvas.translate(padding / 2f, padding / 2f)
-        drawRenderNode(renderNode)
-        restore()
-      }
+      canvas.restoreToCount(saveCount)
     }
   }
 
-  // TODO: Remove usage of unsafe `CSSBackgroundDrawable.getComputedBorderRadius`
-  @Suppress("DEPRECATION")
-  private fun getClearRegionBorderRadii(
-      spread: Int,
-      background: CSSBackgroundDrawable,
-  ): BorderRadiusStyle {
-    // Accessing this is super duper unsafe and only works because the CSSBackgroundDrawable renders
-    // first
-    val computedBorderRadii = background.computedBorderRadius
-    val borderWidth = background.getDirectionAwareBorderInsets()
+  private fun computeBorderRadii(): ComputedBorderRadius? {
+    val resolvedBorderRadii =
+        borderRadius?.resolve(
+            layoutDirection,
+            context,
+            PixelUtil.toDIPFromPixel(bounds.width().toFloat()),
+            PixelUtil.toDIPFromPixel(bounds.height().toFloat()))
 
-    val topLeftRadius = computedBorderRadii.topLeft.toPixelFromDIP()
-    val topRightRadius = computedBorderRadii.topRight.toPixelFromDIP()
-    val bottomLeftRadius = computedBorderRadii.bottomLeft.toPixelFromDIP()
-    val bottomRightRadius = computedBorderRadii.bottomRight.toPixelFromDIP()
-
-    val innerTopLeftRadius =
-        background.getInnerBorderRadius(topLeftRadius.horizontal, borderWidth.left)
-    val innerTopRightRadius =
-        background.getInnerBorderRadius(topRightRadius.horizontal, borderWidth.right)
-    val innerBottomRightRadius =
-        background.getInnerBorderRadius(bottomRightRadius.horizontal, borderWidth.right)
-    val innerBottomLeftRadius =
-        background.getInnerBorderRadius(bottomLeftRadius.horizontal, borderWidth.left)
-
-    val spreadWithDirection = -spread.toFloat()
-    return BorderRadiusStyle(
-        topLeft =
-            LengthPercentage(
-                adjustRadiusForSpread(innerTopLeftRadius, spreadWithDirection),
-                LengthPercentageType.POINT),
-        topRight =
-            LengthPercentage(
-                adjustRadiusForSpread(innerTopRightRadius, spreadWithDirection),
-                LengthPercentageType.POINT),
-        bottomLeft =
-            LengthPercentage(
-                adjustRadiusForSpread(innerBottomLeftRadius, spreadWithDirection),
-                LengthPercentageType.POINT),
-        bottomRight =
-            LengthPercentage(
-                adjustRadiusForSpread(innerBottomRightRadius, spreadWithDirection),
-                LengthPercentageType.POINT),
-    )
+    return if (resolvedBorderRadii?.hasRoundedBorders() == true) {
+      ComputedBorderRadius(
+          topLeft =
+              CornerRadii(
+                  PixelUtil.toPixelFromDIP(resolvedBorderRadii.topLeft.horizontal),
+                  PixelUtil.toPixelFromDIP(resolvedBorderRadii.topLeft.vertical)),
+          topRight =
+              CornerRadii(
+                  PixelUtil.toPixelFromDIP(resolvedBorderRadii.topRight.horizontal),
+                  PixelUtil.toPixelFromDIP(resolvedBorderRadii.topRight.vertical)),
+          bottomLeft =
+              CornerRadii(
+                  PixelUtil.toPixelFromDIP(resolvedBorderRadii.bottomLeft.horizontal),
+                  PixelUtil.toPixelFromDIP(resolvedBorderRadii.bottomLeft.vertical)),
+          bottomRight =
+              CornerRadii(
+                  PixelUtil.toPixelFromDIP(resolvedBorderRadii.bottomRight.horizontal),
+                  PixelUtil.toPixelFromDIP(resolvedBorderRadii.bottomRight.vertical)),
+      )
+    } else {
+      null
+    }
   }
+
+  private fun computeBorderInsets(): RectF? =
+      borderInsets?.resolve(layoutDirection, context)?.let {
+        RectF(
+            PixelUtil.toPixelFromDIP(it.left),
+            PixelUtil.toPixelFromDIP(it.top),
+            PixelUtil.toPixelFromDIP(it.right),
+            PixelUtil.toPixelFromDIP(it.bottom))
+      }
+
+  private fun innerRadius(radius: Float, borderInset: Float?): Float =
+      (radius - (borderInset ?: 0f)).coerceAtLeast(0f)
 }

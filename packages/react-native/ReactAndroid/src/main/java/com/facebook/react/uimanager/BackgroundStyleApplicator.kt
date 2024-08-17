@@ -14,14 +14,17 @@ import android.graphics.drawable.Drawable
 import android.os.Build
 import android.view.View
 import androidx.annotation.ColorInt
-import androidx.annotation.RequiresApi
-import com.facebook.common.logging.FLog
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
+import com.facebook.react.uimanager.common.UIManagerType
+import com.facebook.react.uimanager.common.ViewUtil
 import com.facebook.react.uimanager.drawable.CSSBackgroundDrawable
 import com.facebook.react.uimanager.drawable.CompositeBackgroundDrawable
 import com.facebook.react.uimanager.drawable.InsetBoxShadowDrawable
+import com.facebook.react.uimanager.drawable.MIN_INSET_BOX_SHADOW_SDK_VERSION
+import com.facebook.react.uimanager.drawable.MIN_OUTSET_BOX_SHADOW_SDK_VERSION
 import com.facebook.react.uimanager.drawable.OutsetBoxShadowDrawable
+import com.facebook.react.uimanager.style.BorderInsets
 import com.facebook.react.uimanager.style.BorderRadiusProp
 import com.facebook.react.uimanager.style.BorderRadiusStyle
 import com.facebook.react.uimanager.style.BorderStyle
@@ -51,9 +54,21 @@ public object BackgroundStyleApplicator {
   public fun getBackgroundColor(view: View): Int? = getCSSBackground(view)?.color
 
   @JvmStatic
-  public fun setBorderWidth(view: View, edge: LogicalEdge, width: Float?): Unit =
-      ensureCSSBackground(view)
-          .setBorderWidth(edge.toSpacingType(), PixelUtil.toPixelFromDIP(width ?: Float.NaN))
+  public fun setBorderWidth(view: View, edge: LogicalEdge, width: Float?): Unit {
+    ensureCSSBackground(view)
+        .setBorderWidth(edge.toSpacingType(), PixelUtil.toPixelFromDIP(width ?: Float.NaN))
+
+    if (Build.VERSION.SDK_INT >= MIN_INSET_BOX_SHADOW_SDK_VERSION) {
+      val composite = ensureCompositeBackgroundDrawable(view)
+      composite.borderInsets = composite.borderInsets ?: BorderInsets()
+      composite.borderInsets?.setBorderWidth(edge, width)
+
+      for (shadow in composite.innerShadows) {
+        (shadow as InsetBoxShadowDrawable).borderInsets = composite.borderInsets
+        shadow.invalidateSelf()
+      }
+    }
+  }
 
   @JvmStatic
   public fun getBorderWidth(view: View, edge: LogicalEdge): Float? {
@@ -77,12 +92,25 @@ public object BackgroundStyleApplicator {
       radius: LengthPercentage?
   ): Unit {
     ensureCSSBackground(view).setBorderRadius(corner, radius)
+    val compositeBackgroundDrawable = ensureCompositeBackgroundDrawable(view)
 
-    if (Build.VERSION.SDK_INT >= 31) {
-      getCompositeBackgroundDrawable(view)?.outerShadows?.forEach { shadow ->
-        val outsetShadow = shadow as OutsetBoxShadowDrawable
-        outsetShadow.borderRadius = outsetShadow.borderRadius ?: BorderRadiusStyle()
-        outsetShadow.borderRadius?.set(corner, radius)
+    if (Build.VERSION.SDK_INT >= MIN_OUTSET_BOX_SHADOW_SDK_VERSION) {
+      for (shadow in compositeBackgroundDrawable.outerShadows) {
+        if (shadow is OutsetBoxShadowDrawable) {
+          shadow.borderRadius = shadow.borderRadius ?: BorderRadiusStyle()
+          shadow.borderRadius?.set(corner, radius)
+          shadow.invalidateSelf()
+        }
+      }
+    }
+
+    if (Build.VERSION.SDK_INT >= MIN_INSET_BOX_SHADOW_SDK_VERSION) {
+      for (shadow in compositeBackgroundDrawable.innerShadows) {
+        if (shadow is InsetBoxShadowDrawable) {
+          shadow.borderRadius = shadow.borderRadius ?: BorderRadiusStyle()
+          shadow.borderRadius?.set(corner, radius)
+          shadow.invalidateSelf()
+        }
       }
     }
   }
@@ -100,10 +128,15 @@ public object BackgroundStyleApplicator {
   public fun getBorderStyle(view: View): BorderStyle? = getCSSBackground(view)?.borderStyle
 
   @JvmStatic
-  @RequiresApi(31)
   public fun setBoxShadow(view: View, shadows: List<BoxShadow>): Unit {
+    if (ViewUtil.getUIManagerType(view) != UIManagerType.FABRIC) {
+      return
+    }
+
     val outerShadows = mutableListOf<OutsetBoxShadowDrawable>()
     val innerShadows = mutableListOf<InsetBoxShadowDrawable>()
+
+    val borderInsets = ensureCompositeBackgroundDrawable(view).borderInsets
 
     for (boxShadow in shadows) {
       val offsetX = boxShadow.offsetX
@@ -113,17 +146,18 @@ public object BackgroundStyleApplicator {
       val spreadDistance = boxShadow.spreadDistance ?: 0f
       val inset = boxShadow.inset ?: false
 
-      if (inset) {
+      if (inset && Build.VERSION.SDK_INT >= MIN_INSET_BOX_SHADOW_SDK_VERSION) {
         innerShadows.add(
             InsetBoxShadowDrawable(
                 context = view.context,
-                background = ensureCSSBackground(view),
+                borderRadius = ensureCSSBackground(view).borderRadius,
+                borderInsets = borderInsets,
                 shadowColor = color,
                 offsetX = offsetX,
                 offsetY = offsetY,
                 blurRadius = blurRadius,
                 spread = spreadDistance))
-      } else {
+      } else if (!inset && Build.VERSION.SDK_INT >= MIN_OUTSET_BOX_SHADOW_SDK_VERSION) {
         outerShadows.add(
             OutsetBoxShadowDrawable(
                 context = view.context,
@@ -143,11 +177,6 @@ public object BackgroundStyleApplicator {
 
   @JvmStatic
   public fun setBoxShadow(view: View, shadows: ReadableArray?): Unit {
-    if (Build.VERSION.SDK_INT < 31) {
-      FLog.w("BackgroundStyleApplicator", "\"boxShadow\" requires Android 12 or later")
-      return
-    }
-
     if (shadows == null) {
       BackgroundStyleApplicator.setBoxShadow(view, emptyList())
       return

@@ -10,6 +10,7 @@ package com.facebook.react.uimanager.drawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.LayerDrawable
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
+import com.facebook.react.uimanager.style.BorderInsets
 
 /**
  * CompositeBackgroundDrawable can overlay multiple different layers, shadows, and native effects
@@ -51,6 +52,9 @@ internal class CompositeBackgroundDrawable(
                 feedbackUnderlay,
                 *innerShadows.asReversed().toTypedArray())
             .toTypedArray()) {
+
+  // Holder value for currently set insets
+  public var borderInsets: BorderInsets? = null
 
   init {
     // We want to overlay drawables, instead of placing future drawables within the content area of
