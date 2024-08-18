@@ -131,9 +131,20 @@ public class StatusBarModule(reactContext: ReactApplicationContext?) :
         Runnable {
           val window = activity.window ?: return@Runnable
           if (hidden) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+              // Ensure the content extends into the cutout area
+              window.attributes.layoutInDisplayCutoutMode =
+                WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+              window.setDecorFitsSystemWindows(false)
+            }
             window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
             window.clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN)
           } else {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+              window.attributes.layoutInDisplayCutoutMode =
+                WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT
+              window.setDecorFitsSystemWindows(true)
+            }
             window.addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN)
             window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
           }
