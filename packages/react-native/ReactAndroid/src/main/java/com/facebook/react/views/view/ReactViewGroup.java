@@ -241,8 +241,12 @@ public class ReactViewGroup extends ViewGroup
   }
 
   @UnstableReactNativeAPI
-  /*package*/ void setGradients(@Nullable Gradient[] gradient) {
-    getOrCreateReactViewBackground().setGradients(gradient);
+  /*package*/ void setBackgroundImage(@Nullable Gradient[] gradient) {
+    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
+      BackgroundStyleApplicator.setBackgroundImage(this, gradient);
+    } else {
+      getOrCreateReactViewBackground().setBackgroundImage(gradient);
+    }
   }
 
   @Deprecated(since = "0.76.0", forRemoval = true)

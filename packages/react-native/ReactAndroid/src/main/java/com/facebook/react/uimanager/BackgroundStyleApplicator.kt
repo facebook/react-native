@@ -29,6 +29,7 @@ import com.facebook.react.uimanager.style.BorderRadiusProp
 import com.facebook.react.uimanager.style.BorderRadiusStyle
 import com.facebook.react.uimanager.style.BorderStyle
 import com.facebook.react.uimanager.style.BoxShadow
+import com.facebook.react.uimanager.style.Gradient
 import com.facebook.react.uimanager.style.LogicalEdge
 
 /**
@@ -47,6 +48,13 @@ public object BackgroundStyleApplicator {
     }
 
     ensureCSSBackground(view).color = color ?: Color.TRANSPARENT
+  }
+
+  @JvmStatic
+  public fun setBackgroundImage(view: View, gradients: Array<Gradient>?): Unit {
+    if (!gradients.isNullOrEmpty()) {
+      ensureCSSBackground(view).setBackgroundImage(gradients);
+    }
   }
 
   @JvmStatic

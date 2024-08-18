@@ -107,9 +107,9 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
           ReadableMap gradientMap = backgroundImage.getMap(i);
           gradients[i] = new Gradient(gradientMap);
         }
-        view.setGradients(gradients);
+        view.setBackgroundImage(gradients);
       } else {
-        view.setGradients(null);
+        view.setBackgroundImage(null);
       }
     }
   }
