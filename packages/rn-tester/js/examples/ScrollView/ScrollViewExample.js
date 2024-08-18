@@ -63,9 +63,9 @@ class EnableDisableList extends React.Component<{}, {scrollEnabled: boolean}> {
 let AppendingListItemCount = 6;
 class AppendingList extends React.Component<
   {},
-  {items: Array<React$Element<Class<Item>>>},
+  {items: Array<ExactReactElement_DEPRECATED<Class<Item>>>},
 > {
-  state: {items: Array<React.Element<Class<Item>>>} = {
+  state: {items: Array<ExactReactElement_DEPRECATED<Class<Item>>>} = {
     items: [...Array(AppendingListItemCount)].map((_, ii) => (
       <Item msg={`Item ${ii}`} />
     )),

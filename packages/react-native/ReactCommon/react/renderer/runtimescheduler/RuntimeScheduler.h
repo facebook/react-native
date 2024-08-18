@@ -8,7 +8,6 @@
 #pragma once
 
 #include <ReactCommon/RuntimeExecutor.h>
-#include <cxxreact/ErrorUtils.h>
 #include <react/performance/timeline/PerformanceEntryReporter.h>
 #include <react/renderer/consistency/ShadowTreeRevisionConsistencyManager.h>
 #include <react/renderer/runtimescheduler/RuntimeSchedulerClock.h>
@@ -20,7 +19,7 @@ namespace facebook::react {
 using RuntimeSchedulerRenderingUpdate = std::function<void()>;
 using RuntimeSchedulerTimeout = std::chrono::milliseconds;
 
-using RuntimeSchedulerErrorHandler =
+using RuntimeSchedulerTaskErrorHandler =
     std::function<void(jsi::Runtime& runtime, jsi::JSError& error)>;
 
 // This is a temporary abstract class for RuntimeScheduler forks to implement
@@ -65,14 +64,7 @@ class RuntimeScheduler final : RuntimeSchedulerBase {
       RuntimeExecutor runtimeExecutor,
       std::function<RuntimeSchedulerTimePoint()> now =
           RuntimeSchedulerClock::now,
-      RuntimeSchedulerErrorHandler onTaskError =
-          [](jsi::Runtime& runtime, jsi::JSError& error) {
-            handleJSError(runtime, error, true);
-          },
-      RuntimeSchedulerErrorHandler onMicrotaskError =
-          [](jsi::Runtime& runtime, jsi::JSError& error) {
-            handleJSError(runtime, error, true);
-          });
+      RuntimeSchedulerTaskErrorHandler onTaskError = handleTaskErrorDefault);
 
   /*
    * Not copyable.
@@ -175,6 +167,10 @@ class RuntimeScheduler final : RuntimeSchedulerBase {
   // Actual implementation, stored as a unique pointer to simplify memory
   // management.
   std::unique_ptr<RuntimeSchedulerBase> runtimeSchedulerImpl_;
+
+  static void handleTaskErrorDefault(
+      jsi::Runtime& runtime,
+      jsi::JSError& error);
 };
 
 } // namespace facebook::react

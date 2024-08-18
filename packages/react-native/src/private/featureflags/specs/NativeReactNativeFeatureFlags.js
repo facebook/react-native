@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b190bdb77d71a851ab40661eedccac05>>
+ * @generated SignedSource<<9728234e0662758c72ba79b3cffbd4e5>>
  * @flow strict-local
  */
 
@@ -24,14 +24,18 @@ import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboMod
 
 export interface Spec extends TurboModule {
   +commonTestFlag?: () => boolean;
-  +allowCollapsableChildren?: () => boolean;
   +allowRecursiveCommitsWithSynchronousMountOnAndroid?: () => boolean;
   +batchRenderingUpdatesInEventLoop?: () => boolean;
   +changeOrderOfMountingInstructionsOnAndroid?: () => boolean;
   +completeReactInstanceCreationOnBgThreadOnAndroid?: () => boolean;
   +destroyFabricSurfacesInReactInstanceManager?: () => boolean;
   +enableAlignItemsBaselineOnFabricIOS?: () => boolean;
+  +enableAndroidMixBlendModeProp?: () => boolean;
+  +enableBackgroundStyleApplicator?: () => boolean;
   +enableCleanTextInputYogaNode?: () => boolean;
+  +enableEagerRootViewAttachment?: () => boolean;
+  +enableEventEmitterRetentionDuringGesturesOnAndroid?: () => boolean;
+  +enableFabricLogs?: () => boolean;
   +enableFabricRendererExclusively?: () => boolean;
   +enableGranularShadowTreeStateReconciliation?: () => boolean;
   +enableLongTaskAPI?: () => boolean;
@@ -40,6 +44,7 @@ export interface Spec extends TurboModule {
   +enableReportEventPaintTime?: () => boolean;
   +enableSynchronousStateUpdates?: () => boolean;
   +enableUIConsistency?: () => boolean;
+  +enableViewRecycling?: () => boolean;
   +excludeYogaFromRawProps?: () => boolean;
   +fetchImagesInViewPreallocation?: () => boolean;
   +fixIncorrectScrollViewStateUpdateOnAndroid?: () => boolean;
@@ -52,6 +57,8 @@ export interface Spec extends TurboModule {
   +lazyAnimationCallbacks?: () => boolean;
   +loadVectorDrawablesOnImages?: () => boolean;
   +setAndroidLayoutDirection?: () => boolean;
+  +traceTurboModulePromiseRejectionsOnAndroid?: () => boolean;
+  +useFabricInterop?: () => boolean;
   +useImmediateExecutorInAndroidBridgeless?: () => boolean;
   +useModernRuntimeScheduler?: () => boolean;
   +useNativeViewConfigsInBridgelessMode?: () => boolean;
@@ -60,6 +67,7 @@ export interface Spec extends TurboModule {
   +useRuntimeShadowNodeReferenceUpdate?: () => boolean;
   +useRuntimeShadowNodeReferenceUpdateOnLayout?: () => boolean;
   +useStateAlignmentMechanism?: () => boolean;
+  +useTurboModuleInterop?: () => boolean;
 }
 
 const NativeReactNativeFeatureFlags: ?Spec = TurboModuleRegistry.get<Spec>(

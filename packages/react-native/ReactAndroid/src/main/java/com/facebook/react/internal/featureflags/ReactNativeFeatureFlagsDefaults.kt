@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<abdee8d0b85b0d9940207b9cbe6d3f78>>
+ * @generated SignedSource<<86db65691c73cff2843e81e053268892>>
  */
 
 /**
@@ -25,8 +25,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun commonTestFlag(): Boolean = false
 
-  override fun allowCollapsableChildren(): Boolean = true
-
   override fun allowRecursiveCommitsWithSynchronousMountOnAndroid(): Boolean = false
 
   override fun batchRenderingUpdatesInEventLoop(): Boolean = false
@@ -39,7 +37,17 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableAlignItemsBaselineOnFabricIOS(): Boolean = true
 
+  override fun enableAndroidMixBlendModeProp(): Boolean = false
+
+  override fun enableBackgroundStyleApplicator(): Boolean = true
+
   override fun enableCleanTextInputYogaNode(): Boolean = false
+
+  override fun enableEagerRootViewAttachment(): Boolean = false
+
+  override fun enableEventEmitterRetentionDuringGesturesOnAndroid(): Boolean = false
+
+  override fun enableFabricLogs(): Boolean = false
 
   override fun enableFabricRendererExclusively(): Boolean = false
 
@@ -56,6 +64,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enableSynchronousStateUpdates(): Boolean = false
 
   override fun enableUIConsistency(): Boolean = false
+
+  override fun enableViewRecycling(): Boolean = false
 
   override fun excludeYogaFromRawProps(): Boolean = false
 
@@ -79,7 +89,11 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun loadVectorDrawablesOnImages(): Boolean = false
 
-  override fun setAndroidLayoutDirection(): Boolean = true
+  override fun setAndroidLayoutDirection(): Boolean = false
+
+  override fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean = false
+
+  override fun useFabricInterop(): Boolean = false
 
   override fun useImmediateExecutorInAndroidBridgeless(): Boolean = false
 
@@ -96,4 +110,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun useRuntimeShadowNodeReferenceUpdateOnLayout(): Boolean = false
 
   override fun useStateAlignmentMechanism(): Boolean = false
+
+  override fun useTurboModuleInterop(): Boolean = false
 }

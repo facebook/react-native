@@ -19,12 +19,10 @@ namespace facebook::react {
 RuntimeScheduler_Legacy::RuntimeScheduler_Legacy(
     RuntimeExecutor runtimeExecutor,
     std::function<RuntimeSchedulerTimePoint()> now,
-    RuntimeSchedulerErrorHandler onTaskError,
-    RuntimeSchedulerErrorHandler onMicrotaskError)
+    RuntimeSchedulerTaskErrorHandler onTaskError)
     : runtimeExecutor_(std::move(runtimeExecutor)),
       now_(std::move(now)),
-      onTaskError_(std::move(onTaskError)),
-      onMicrotaskError_(std::move(onMicrotaskError)) {}
+      onTaskError_(std::move(onTaskError)) {}
 
 void RuntimeScheduler_Legacy::scheduleWork(RawCallback&& callback) noexcept {
   SystraceSection s("RuntimeScheduler::scheduleWork");

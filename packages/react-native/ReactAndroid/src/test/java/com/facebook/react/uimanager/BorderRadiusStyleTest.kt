@@ -11,6 +11,7 @@ import android.content.Context
 import com.facebook.react.uimanager.style.BorderRadiusProp
 import com.facebook.react.uimanager.style.BorderRadiusStyle
 import com.facebook.react.uimanager.style.ComputedBorderRadiusProp
+import com.facebook.react.uimanager.style.CornerRadii
 import org.assertj.core.api.Assertions.*
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -60,7 +61,7 @@ class BorderRadiusStyleTest {
       for (prop in order.value) {
         borderRadiusStyle.set(prop, LengthPercentage(count, LengthPercentageType.POINT))
         val resolved = borderRadiusStyle.resolve(0, context = ctx, width = 100f, height = 100f)
-        assertThat(resolved.get(order.key)).isEqualTo(count)
+        assertThat(resolved.get(order.key)).isEqualTo(CornerRadii(count, count))
         count -= 1f
       }
     }
@@ -104,7 +105,7 @@ class BorderRadiusStyleTest {
       for (prop in order.value) {
         borderRadiusStyle.set(prop, LengthPercentage(count, LengthPercentageType.POINT))
         val resolved = borderRadiusStyle.resolve(1, context = ctx, width = 100f, height = 100f)
-        assertThat(resolved.get(order.key)).isEqualTo(count)
+        assertThat(resolved.get(order.key)).isEqualTo(CornerRadii(count, count))
         count -= 1f
       }
     }
@@ -148,7 +149,7 @@ class BorderRadiusStyleTest {
       for (prop in order.value) {
         borderRadiusStyle.set(prop, LengthPercentage(count, LengthPercentageType.POINT))
         val resolved = borderRadiusStyle.resolve(1, context = ctx, width = 100f, height = 100f)
-        assertThat(resolved.get(order.key)).isEqualTo(count)
+        assertThat(resolved.get(order.key)).isEqualTo(CornerRadii(count, count))
         count -= 1f
       }
     }
@@ -165,10 +166,10 @@ class BorderRadiusStyleTest {
         )
     val resolved = borderRadiusStyle.resolve(0, context = ctx, width = 1000f, height = 1000f)
 
-    assertThat(resolved.topLeft).isEqualTo(0f)
-    assertThat(resolved.topRight).isEqualTo(100f)
-    assertThat(resolved.bottomLeft).isEqualTo(200f)
-    assertThat(resolved.bottomRight).isEqualTo(300f)
+    assertThat(resolved.topLeft).isEqualTo(CornerRadii(0f, 0f))
+    assertThat(resolved.topRight).isEqualTo(CornerRadii(100f, 100f))
+    assertThat(resolved.bottomLeft).isEqualTo(CornerRadii(200f, 200f))
+    assertThat(resolved.bottomRight).isEqualTo(CornerRadii(300f, 300f))
   }
 
   /*

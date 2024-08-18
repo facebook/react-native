@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<436dd66c962b5bd70cc574d573ddfc0a>>
+ * @generated SignedSource<<ff305f47f055a259d4ee673c5963f0fc>>
  */
 
 /**
@@ -31,10 +31,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool allowCollapsableChildren() override {
-    return true;
-  }
-
   bool allowRecursiveCommitsWithSynchronousMountOnAndroid() override {
     return false;
   }
@@ -59,7 +55,27 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return true;
   }
 
+  bool enableAndroidMixBlendModeProp() override {
+    return false;
+  }
+
+  bool enableBackgroundStyleApplicator() override {
+    return true;
+  }
+
   bool enableCleanTextInputYogaNode() override {
+    return false;
+  }
+
+  bool enableEagerRootViewAttachment() override {
+    return false;
+  }
+
+  bool enableEventEmitterRetentionDuringGesturesOnAndroid() override {
+    return false;
+  }
+
+  bool enableFabricLogs() override {
     return false;
   }
 
@@ -92,6 +108,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableUIConsistency() override {
+    return false;
+  }
+
+  bool enableViewRecycling() override {
     return false;
   }
 
@@ -140,7 +160,15 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool setAndroidLayoutDirection() override {
-    return true;
+    return false;
+  }
+
+  bool traceTurboModulePromiseRejectionsOnAndroid() override {
+    return false;
+  }
+
+  bool useFabricInterop() override {
+    return false;
   }
 
   bool useImmediateExecutorInAndroidBridgeless() override {
@@ -172,6 +200,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool useStateAlignmentMechanism() override {
+    return false;
+  }
+
+  bool useTurboModuleInterop() override {
     return false;
   }
 };

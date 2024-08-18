@@ -406,7 +406,8 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
               getScreenX(),
               getScreenY(),
               getScreenWidth(),
-              getScreenHeight());
+              getScreenHeight(),
+              getLayoutDirection());
         }
       }
     }

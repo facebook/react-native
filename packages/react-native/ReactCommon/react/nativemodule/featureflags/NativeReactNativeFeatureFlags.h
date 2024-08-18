@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e79765ccb9d4b2d46c428b09d65ac12c>>
+ * @generated SignedSource<<23af9284953b14cb18ff1ad71145c29b>>
  */
 
 /**
@@ -37,8 +37,6 @@ class NativeReactNativeFeatureFlags
 
   bool commonTestFlag(jsi::Runtime& runtime);
 
-  bool allowCollapsableChildren(jsi::Runtime& runtime);
-
   bool allowRecursiveCommitsWithSynchronousMountOnAndroid(jsi::Runtime& runtime);
 
   bool batchRenderingUpdatesInEventLoop(jsi::Runtime& runtime);
@@ -51,7 +49,17 @@ class NativeReactNativeFeatureFlags
 
   bool enableAlignItemsBaselineOnFabricIOS(jsi::Runtime& runtime);
 
+  bool enableAndroidMixBlendModeProp(jsi::Runtime& runtime);
+
+  bool enableBackgroundStyleApplicator(jsi::Runtime& runtime);
+
   bool enableCleanTextInputYogaNode(jsi::Runtime& runtime);
+
+  bool enableEagerRootViewAttachment(jsi::Runtime& runtime);
+
+  bool enableEventEmitterRetentionDuringGesturesOnAndroid(jsi::Runtime& runtime);
+
+  bool enableFabricLogs(jsi::Runtime& runtime);
 
   bool enableFabricRendererExclusively(jsi::Runtime& runtime);
 
@@ -68,6 +76,8 @@ class NativeReactNativeFeatureFlags
   bool enableSynchronousStateUpdates(jsi::Runtime& runtime);
 
   bool enableUIConsistency(jsi::Runtime& runtime);
+
+  bool enableViewRecycling(jsi::Runtime& runtime);
 
   bool excludeYogaFromRawProps(jsi::Runtime& runtime);
 
@@ -93,6 +103,10 @@ class NativeReactNativeFeatureFlags
 
   bool setAndroidLayoutDirection(jsi::Runtime& runtime);
 
+  bool traceTurboModulePromiseRejectionsOnAndroid(jsi::Runtime& runtime);
+
+  bool useFabricInterop(jsi::Runtime& runtime);
+
   bool useImmediateExecutorInAndroidBridgeless(jsi::Runtime& runtime);
 
   bool useModernRuntimeScheduler(jsi::Runtime& runtime);
@@ -108,6 +122,8 @@ class NativeReactNativeFeatureFlags
   bool useRuntimeShadowNodeReferenceUpdateOnLayout(jsi::Runtime& runtime);
 
   bool useStateAlignmentMechanism(jsi::Runtime& runtime);
+
+  bool useTurboModuleInterop(jsi::Runtime& runtime);
 };
 
 } // namespace facebook::react

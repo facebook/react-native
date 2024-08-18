@@ -273,6 +273,16 @@ export type BlendMode =
   | 'color'
   | 'luminosity';
 
+export type GradientValue = {
+  type: 'linearGradient';
+  // Angle or direction enums
+  direction: string | undefined;
+  colorStops: Array<{
+    color: ColorValue;
+    position: number | undefined;
+  }>;
+};
+
 /**
  * @see https://reactnative.dev/docs/view#style
  */
@@ -322,6 +332,7 @@ export interface ViewStyle extends FlexStyle, ShadowStyleIOS, TransformsStyle {
    * Controls whether the View can be the target of touch events.
    */
   pointerEvents?: 'box-none' | 'none' | 'box-only' | 'auto' | undefined;
+  isolation?: 'auto' | 'isolate' | undefined;
   cursor?: CursorValue | undefined;
 }
 

@@ -188,6 +188,7 @@ jobs:
           gha-npm-token: ${{ env.GHA_NPM_TOKEN }}
       - name: Publish @react-native-community/template
         id: publish-template-to-npm
+        shell: bash
         run: |
           COMMIT_MSG=$(git log -n1 --pretty=%B);
           if grep -q '#publish-packages-to-npm&latest' <<< "$COMMIT_MSG"; then
@@ -197,18 +198,19 @@ jobs:
             IS_LATEST=false
           fi
           # Go from v0.75.0-rc.4 -> 0.75-stable, which is the template's branching scheme
-          VERSION=$(grep -oE '\d+\.\d+' <<< "${{ github.ref_name }}" | { read version; echo "$version-stable" })
+          VERSION=$(grep -oE '\d+\.\d+' <<< "${{ github.ref_name }}" | { read version; echo "$version-stable"; })
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
 
-          curl -L -X POST https://api.github.com/repos/react-native-community/template/release.yaml/dispatches \
+          curl -L https://api.github.com/repos/react-native-community/template/actions/workflows/release.yaml/dispatches
             -H "Accept: application/vnd.github.v3+json" \
             -H "Authorization: Bearer $REACT_NATIVE_BOT_GITHUB_TOKEN" \
-            -d "{\"ref\":\"$VERSION\",\"inputs\":{\"version\":\"${{ github.ref_name }}\",\"is_latest_on_npm\":\"$IS_LATEST\"}}\n"
+            -d "{\"ref\":\"$VERSION\",\"inputs\":{\"version\":\"${{ github.ref_name }}\",\"is_latest_on_npm\":\"$IS_LATEST\"}}"
       - name: Wait for template to be published
         timeout-minutes: 3
         env:
           VERSION: ${{ steps.publish-template-to-npm.outputs.VERSION }}
           TAG: ${{ steps.publish-template-to-npm.outputs.TAG }}
+        shell: bash
         run: |
           echo "Waiting until @react-native-community/template is published to npm"
           while true; do

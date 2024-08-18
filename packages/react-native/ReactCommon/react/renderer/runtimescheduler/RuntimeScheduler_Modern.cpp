@@ -33,12 +33,10 @@ std::chrono::milliseconds getResolvedTimeoutForIdleTask(
 RuntimeScheduler_Modern::RuntimeScheduler_Modern(
     RuntimeExecutor runtimeExecutor,
     std::function<RuntimeSchedulerTimePoint()> now,
-    RuntimeSchedulerErrorHandler onTaskError,
-    RuntimeSchedulerErrorHandler onMicrotaskError)
+    RuntimeSchedulerTaskErrorHandler onTaskError)
     : runtimeExecutor_(std::move(runtimeExecutor)),
       now_(std::move(now)),
-      onTaskError_(std::move(onTaskError)),
-      onMicrotaskError_(std::move(onMicrotaskError)) {}
+      onTaskError_(std::move(onTaskError)) {}
 
 void RuntimeScheduler_Modern::scheduleWork(RawCallback&& callback) noexcept {
   SystraceSection s("RuntimeScheduler::scheduleWork");
@@ -422,7 +420,7 @@ void RuntimeScheduler_Modern::performMicrotaskCheckpoint(
         break;
       }
     } catch (jsi::JSError& error) {
-      onMicrotaskError_(runtime, error);
+      onTaskError_(runtime, error);
     }
     retries++;
   }

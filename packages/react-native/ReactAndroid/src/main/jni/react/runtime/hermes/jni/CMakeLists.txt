@@ -6,10 +6,12 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
+include(${REACT_ANDROID_DIR}/src/main/jni/first-party/jni-lib-merge/SoMerging-utils.cmake)
+
 file(GLOB_RECURSE hermes_instance_jni_SRC CONFIGURE_DEPENDS *.cpp)
 
 add_library(hermesinstancejni
-        SHARED
+        OBJECT
         ${hermes_instance_jni_SRC}
 )
 target_compile_options(
@@ -19,11 +21,13 @@ target_compile_options(
         -std=c++20
         -fexceptions
 )
+
 target_include_directories(hermesinstancejni PRIVATE .)
-target_link_libraries(
-        hermesinstancejni
+target_merge_so(hermesinstancejni)
+
+target_link_libraries(hermesinstancejni
         hermes-engine::libhermes
-        rninstance
         fbjni
         bridgelesshermes
+        reactnative
 )

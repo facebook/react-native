@@ -46,7 +46,7 @@ export interface Spec extends TurboModule {
     durationThreshold: number,
   ) => void;
   +clearEntries: (
-    entryType: RawPerformanceEntryType,
+    entryType?: RawPerformanceEntryType,
     entryName?: string,
   ) => void;
   +getEntries: (

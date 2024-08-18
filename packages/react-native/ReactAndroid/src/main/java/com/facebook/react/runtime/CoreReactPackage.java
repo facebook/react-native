@@ -10,7 +10,7 @@ package com.facebook.react.runtime;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.Nullsafe;
-import com.facebook.react.TurboReactPackage;
+import com.facebook.react.BaseReactPackage;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.common.ClassFinder;
@@ -41,7 +41,7 @@ import java.util.Map;
       DeviceEventManagerModule.class,
       ExceptionsManagerModule.class,
     })
-class CoreReactPackage extends TurboReactPackage {
+class CoreReactPackage extends BaseReactPackage {
 
   private final DevSupportManager mDevSupportManager;
   private final DefaultHardwareBackBtnHandler mHardwareBackBtnHandler;

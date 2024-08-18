@@ -9,6 +9,7 @@
 
 #include <fbjni/fbjni.h>
 #include <jsinspector-modern/HostTarget.h>
+#include <react/jni/InspectorNetworkRequestListener.h>
 #include <react/jni/JExecutor.h>
 #include <string>
 
@@ -44,6 +45,19 @@ struct JReactHostImpl : public jni::JavaClass<JReactHostImpl> {
                 "getHostMetadata");
     return method(self());
   }
+
+  void loadNetworkResource(
+      const std::string& url,
+      jni::local_ref<InspectorNetworkRequestListener::javaobject> listener)
+      const {
+    auto method =
+        javaClassStatic()
+            ->getMethod<void(
+                jni::local_ref<jni::JString>,
+                jni::local_ref<InspectorNetworkRequestListener::javaobject>)>(
+                "loadNetworkResource");
+    return method(self(), jni::make_jstring(url), listener);
+  }
 };
 
 class JReactHostInspectorTarget
@@ -70,6 +84,10 @@ class JReactHostInspectorTarget
   void onReload(const PageReloadRequest& request) override;
   void onSetPausedInDebuggerMessage(
       const OverlaySetPausedInDebuggerMessageRequest&) override;
+  void loadNetworkResource(
+      const jsinspector_modern::LoadNetworkResourceRequest& params,
+      jsinspector_modern::ScopedExecutor<
+          jsinspector_modern::NetworkRequestListener> executor) override;
 
  private:
   JReactHostInspectorTarget(

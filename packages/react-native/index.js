@@ -60,6 +60,7 @@ import typeof VirtualizedList from './Libraries/Lists/VirtualizedList';
 import typeof VirtualizedSectionList from './Libraries/Lists/VirtualizedSectionList';
 import typeof LogBox from './Libraries/LogBox/LogBox';
 import typeof Modal from './Libraries/Modal/Modal';
+// $FlowFixMe[invalid-exported-annotation]
 import typeof NativeDialogManagerAndroid from './Libraries/NativeModules/specs/NativeDialogManagerAndroid';
 import typeof Networking from './Libraries/Network/RCTNetworking';
 import typeof * as Systrace from './Libraries/Performance/Systrace';

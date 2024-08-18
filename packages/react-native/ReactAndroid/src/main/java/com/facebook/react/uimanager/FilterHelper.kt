@@ -82,7 +82,10 @@ internal object FilterHelper {
 
   @JvmStatic
   public fun isOnlyColorMatrixFilters(filters: ReadableArray?): Boolean {
-    filters ?: return false
+    if (filters == null || filters.size() == 0) {
+      return false
+    }
+
     for (i in 0 until filters.size()) {
       val filter = filters.getMap(i).entryIterator.next()
       val filterName = filter.key

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<aaf205098eaac9171aa15bc8f7bda805>>
+ * @generated SignedSource<<3b5998555d0f27d3f83923cb516edb36>>
  */
 
 /**
@@ -30,8 +30,6 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun commonTestFlag(): Boolean
 
-  @DoNotStrip @JvmStatic public external fun allowCollapsableChildren(): Boolean
-
   @DoNotStrip @JvmStatic public external fun allowRecursiveCommitsWithSynchronousMountOnAndroid(): Boolean
 
   @DoNotStrip @JvmStatic public external fun batchRenderingUpdatesInEventLoop(): Boolean
@@ -44,7 +42,17 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun enableAlignItemsBaselineOnFabricIOS(): Boolean
 
+  @DoNotStrip @JvmStatic public external fun enableAndroidMixBlendModeProp(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun enableBackgroundStyleApplicator(): Boolean
+
   @DoNotStrip @JvmStatic public external fun enableCleanTextInputYogaNode(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun enableEagerRootViewAttachment(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun enableEventEmitterRetentionDuringGesturesOnAndroid(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun enableFabricLogs(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableFabricRendererExclusively(): Boolean
 
@@ -61,6 +69,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun enableSynchronousStateUpdates(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableUIConsistency(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun enableViewRecycling(): Boolean
 
   @DoNotStrip @JvmStatic public external fun excludeYogaFromRawProps(): Boolean
 
@@ -86,6 +96,10 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun setAndroidLayoutDirection(): Boolean
 
+  @DoNotStrip @JvmStatic public external fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun useFabricInterop(): Boolean
+
   @DoNotStrip @JvmStatic public external fun useImmediateExecutorInAndroidBridgeless(): Boolean
 
   @DoNotStrip @JvmStatic public external fun useModernRuntimeScheduler(): Boolean
@@ -101,6 +115,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun useRuntimeShadowNodeReferenceUpdateOnLayout(): Boolean
 
   @DoNotStrip @JvmStatic public external fun useStateAlignmentMechanism(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun useTurboModuleInterop(): Boolean
 
   @DoNotStrip @JvmStatic public external fun override(provider: Any)
 

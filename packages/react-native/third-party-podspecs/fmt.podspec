@@ -3,6 +3,9 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
+fmt_config = get_fmt_config()
+fmt_git_url = fmt_config[:git]
+
 Pod::Spec.new do |spec|
   spec.name = "fmt"
   spec.version = "9.1.0"
@@ -11,7 +14,7 @@ Pod::Spec.new do |spec|
   spec.summary = "{fmt} is an open-source formatting library for C++. It can be used as a safe and fast alternative to (s)printf and iostreams."
   spec.authors = "The fmt contributors"
   spec.source = {
-    :git => "https://github.com/fmtlib/fmt.git",
+    :git => fmt_git_url,
     :tag => "9.1.0"
   }
   spec.pod_target_xcconfig = {

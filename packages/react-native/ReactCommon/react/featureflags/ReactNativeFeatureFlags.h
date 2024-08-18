@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<55d6c0f7ab8abe8411194235ab362cd2>>
+ * @generated SignedSource<<0f3eb0af6d8f2012fc5169d59d38cbc4>>
  */
 
 /**
@@ -43,11 +43,6 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool commonTestFlag();
 
   /**
-   * Enables the differentiator to understand the "collapsableChildren" prop
-   */
-  RN_EXPORT static bool allowCollapsableChildren();
-
-  /**
    * Adds support for recursively processing commits that mount synchronously (Android only).
    */
   RN_EXPORT static bool allowRecursiveCommitsWithSynchronousMountOnAndroid();
@@ -78,9 +73,34 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableAlignItemsBaselineOnFabricIOS();
 
   /**
+   * Enables mix-blend-mode prop on Android.
+   */
+  RN_EXPORT static bool enableAndroidMixBlendModeProp();
+
+  /**
+   * Use BackgroundStyleApplicator in place of other background/border drawing code
+   */
+  RN_EXPORT static bool enableBackgroundStyleApplicator();
+
+  /**
    * Clean yoga node when <TextInput /> does not change.
    */
   RN_EXPORT static bool enableCleanTextInputYogaNode();
+
+  /**
+   * Feature flag to configure eager attachment of the root view/initialisation of the JS code.
+   */
+  RN_EXPORT static bool enableEagerRootViewAttachment();
+
+  /**
+   * Enables the retention of EventEmitterWrapper on Android till the touch gesture is over to fix a bug on pressable (#44610)
+   */
+  RN_EXPORT static bool enableEventEmitterRetentionDuringGesturesOnAndroid();
+
+  /**
+   * This feature flag enables logs for Fabric.
+   */
+  RN_EXPORT static bool enableFabricLogs();
 
   /**
    * When the app is completely migrated to Fabric, set this flag to true to disable parts of Paper infrastructure that are not needed anymore but consume memory and CPU. Specifically, UIViewOperationQueue and EventDispatcherImpl will no longer work as they will not subscribe to ReactChoreographer for updates.
@@ -121,6 +141,11 @@ class ReactNativeFeatureFlags {
    * Ensures that JavaScript always has a consistent view of the state of the UI (e.g.: commits done in other threads are not immediately propagated to JS during its execution).
    */
   RN_EXPORT static bool enableUIConsistency();
+
+  /**
+   * Enables View Recycling. When enabled, individual ViewManagers must still opt-in.
+   */
+  RN_EXPORT static bool enableViewRecycling();
 
   /**
    * When enabled, rawProps in Props will not include Yoga specific props.
@@ -183,6 +208,16 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool setAndroidLayoutDirection();
 
   /**
+   * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.
+   */
+  RN_EXPORT static bool traceTurboModulePromiseRejectionsOnAndroid();
+
+  /**
+   * Should this application enable the Fabric Interop Layer for Android? If yes, the application will behave so that it can accept non-Fabric components and render them on Fabric. This toggle is controlling extra logic such as custom event dispatching that are needed for the Fabric Interop Layer to work correctly.
+   */
+  RN_EXPORT static bool useFabricInterop();
+
+  /**
    * Invoke callbacks immediately on the ReactInstance rather than going through a background thread for synchronization
    */
   RN_EXPORT static bool useImmediateExecutorInAndroidBridgeless();
@@ -221,6 +256,11 @@ class ReactNativeFeatureFlags {
    * When enabled, it uses optimised state reconciliation algorithm.
    */
   RN_EXPORT static bool useStateAlignmentMechanism();
+
+  /**
+   * In Bridgeless mode, should legacy NativeModules use the TurboModule system?
+   */
+  RN_EXPORT static bool useTurboModuleInterop();
 
   /**
    * Overrides the feature flags with the ones provided by the given provider

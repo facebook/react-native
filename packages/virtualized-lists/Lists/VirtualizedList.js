@@ -939,7 +939,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     // 2a. Add a cell for ListEmptyComponent if applicable
     const itemCount = this.props.getItemCount(data);
     if (itemCount === 0 && ListEmptyComponent) {
-      const element: React.Element<any> = ((React.isValidElement(
+      const element: ExactReactElement_DEPRECATED<any> = ((React.isValidElement(
         ListEmptyComponent,
       ) ? (
         ListEmptyComponent

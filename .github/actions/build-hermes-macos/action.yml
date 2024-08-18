@@ -170,17 +170,17 @@ runs:
         mkdir -p "$DEST_DIR"
         mv "hermes.framework.dSYM" "$DEST_DIR"
     - name: Upload hermes dSYM artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v4.3.4
       with:
         name: hermes-dSYM-${{ inputs.flavor }}
         path: /tmp/hermes/dSYM/${{ inputs.flavor }}
     - name: Upload hermes Runtime artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v4.3.4
       with:
         name: hermes-darwin-bin-${{ inputs.flavor }}
         path: /tmp/hermes/hermes-runtime-darwin/hermes-ios-${{ inputs.flavor }}.tar.gz
     - name: Upload hermes osx artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v4.3.4
       with:
         name: hermes-osx-bin-${{ inputs.flavor }}
         path: /tmp/hermes/osx-bin/${{ inputs.flavor }}

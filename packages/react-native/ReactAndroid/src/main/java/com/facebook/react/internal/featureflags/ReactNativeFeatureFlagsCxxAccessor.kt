@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2a8d5ca8a0ac46b4d3177cb8b12ad7ac>>
+ * @generated SignedSource<<50f259bf80948b672a8677307456d413>>
  */
 
 /**
@@ -21,14 +21,18 @@ package com.facebook.react.internal.featureflags
 
 public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccessor {
   private var commonTestFlagCache: Boolean? = null
-  private var allowCollapsableChildrenCache: Boolean? = null
   private var allowRecursiveCommitsWithSynchronousMountOnAndroidCache: Boolean? = null
   private var batchRenderingUpdatesInEventLoopCache: Boolean? = null
   private var changeOrderOfMountingInstructionsOnAndroidCache: Boolean? = null
   private var completeReactInstanceCreationOnBgThreadOnAndroidCache: Boolean? = null
   private var destroyFabricSurfacesInReactInstanceManagerCache: Boolean? = null
   private var enableAlignItemsBaselineOnFabricIOSCache: Boolean? = null
+  private var enableAndroidMixBlendModePropCache: Boolean? = null
+  private var enableBackgroundStyleApplicatorCache: Boolean? = null
   private var enableCleanTextInputYogaNodeCache: Boolean? = null
+  private var enableEagerRootViewAttachmentCache: Boolean? = null
+  private var enableEventEmitterRetentionDuringGesturesOnAndroidCache: Boolean? = null
+  private var enableFabricLogsCache: Boolean? = null
   private var enableFabricRendererExclusivelyCache: Boolean? = null
   private var enableGranularShadowTreeStateReconciliationCache: Boolean? = null
   private var enableLongTaskAPICache: Boolean? = null
@@ -37,6 +41,7 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
   private var enableReportEventPaintTimeCache: Boolean? = null
   private var enableSynchronousStateUpdatesCache: Boolean? = null
   private var enableUIConsistencyCache: Boolean? = null
+  private var enableViewRecyclingCache: Boolean? = null
   private var excludeYogaFromRawPropsCache: Boolean? = null
   private var fetchImagesInViewPreallocationCache: Boolean? = null
   private var fixIncorrectScrollViewStateUpdateOnAndroidCache: Boolean? = null
@@ -49,6 +54,8 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
   private var lazyAnimationCallbacksCache: Boolean? = null
   private var loadVectorDrawablesOnImagesCache: Boolean? = null
   private var setAndroidLayoutDirectionCache: Boolean? = null
+  private var traceTurboModulePromiseRejectionsOnAndroidCache: Boolean? = null
+  private var useFabricInteropCache: Boolean? = null
   private var useImmediateExecutorInAndroidBridgelessCache: Boolean? = null
   private var useModernRuntimeSchedulerCache: Boolean? = null
   private var useNativeViewConfigsInBridgelessModeCache: Boolean? = null
@@ -57,21 +64,13 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
   private var useRuntimeShadowNodeReferenceUpdateCache: Boolean? = null
   private var useRuntimeShadowNodeReferenceUpdateOnLayoutCache: Boolean? = null
   private var useStateAlignmentMechanismCache: Boolean? = null
+  private var useTurboModuleInteropCache: Boolean? = null
 
   override fun commonTestFlag(): Boolean {
     var cached = commonTestFlagCache
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.commonTestFlag()
       commonTestFlagCache = cached
-    }
-    return cached
-  }
-
-  override fun allowCollapsableChildren(): Boolean {
-    var cached = allowCollapsableChildrenCache
-    if (cached == null) {
-      cached = ReactNativeFeatureFlagsCxxInterop.allowCollapsableChildren()
-      allowCollapsableChildrenCache = cached
     }
     return cached
   }
@@ -130,11 +129,56 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
     return cached
   }
 
+  override fun enableAndroidMixBlendModeProp(): Boolean {
+    var cached = enableAndroidMixBlendModePropCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.enableAndroidMixBlendModeProp()
+      enableAndroidMixBlendModePropCache = cached
+    }
+    return cached
+  }
+
+  override fun enableBackgroundStyleApplicator(): Boolean {
+    var cached = enableBackgroundStyleApplicatorCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.enableBackgroundStyleApplicator()
+      enableBackgroundStyleApplicatorCache = cached
+    }
+    return cached
+  }
+
   override fun enableCleanTextInputYogaNode(): Boolean {
     var cached = enableCleanTextInputYogaNodeCache
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enableCleanTextInputYogaNode()
       enableCleanTextInputYogaNodeCache = cached
+    }
+    return cached
+  }
+
+  override fun enableEagerRootViewAttachment(): Boolean {
+    var cached = enableEagerRootViewAttachmentCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.enableEagerRootViewAttachment()
+      enableEagerRootViewAttachmentCache = cached
+    }
+    return cached
+  }
+
+  override fun enableEventEmitterRetentionDuringGesturesOnAndroid(): Boolean {
+    var cached = enableEventEmitterRetentionDuringGesturesOnAndroidCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.enableEventEmitterRetentionDuringGesturesOnAndroid()
+      enableEventEmitterRetentionDuringGesturesOnAndroidCache = cached
+    }
+    return cached
+  }
+
+  override fun enableFabricLogs(): Boolean {
+    var cached = enableFabricLogsCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.enableFabricLogs()
+      enableFabricLogsCache = cached
     }
     return cached
   }
@@ -207,6 +251,15 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enableUIConsistency()
       enableUIConsistencyCache = cached
+    }
+    return cached
+  }
+
+  override fun enableViewRecycling(): Boolean {
+    var cached = enableViewRecyclingCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.enableViewRecycling()
+      enableViewRecyclingCache = cached
     }
     return cached
   }
@@ -319,6 +372,24 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
     return cached
   }
 
+  override fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean {
+    var cached = traceTurboModulePromiseRejectionsOnAndroidCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.traceTurboModulePromiseRejectionsOnAndroid()
+      traceTurboModulePromiseRejectionsOnAndroidCache = cached
+    }
+    return cached
+  }
+
+  override fun useFabricInterop(): Boolean {
+    var cached = useFabricInteropCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.useFabricInterop()
+      useFabricInteropCache = cached
+    }
+    return cached
+  }
+
   override fun useImmediateExecutorInAndroidBridgeless(): Boolean {
     var cached = useImmediateExecutorInAndroidBridgelessCache
     if (cached == null) {
@@ -387,6 +458,15 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.useStateAlignmentMechanism()
       useStateAlignmentMechanismCache = cached
+    }
+    return cached
+  }
+
+  override fun useTurboModuleInterop(): Boolean {
+    var cached = useTurboModuleInteropCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.useTurboModuleInterop()
+      useTurboModuleInteropCache = cached
     }
     return cached
   }

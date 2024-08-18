@@ -166,6 +166,15 @@ BaseViewProps::BaseViewProps(
                                                        "experimental_filter",
                                                        sourceProps.filter,
                                                        {})),
+      backgroundImage(
+          CoreFeatures::enablePropIteratorSetter
+              ? sourceProps.backgroundImage
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "experimental_backgroundImage",
+                    sourceProps.backgroundImage,
+                    {})),
       mixBlendMode(
           CoreFeatures::enablePropIteratorSetter
               ? sourceProps.mixBlendMode
@@ -175,6 +184,14 @@ BaseViewProps::BaseViewProps(
                     "experimental_mixBlendMode",
                     sourceProps.mixBlendMode,
                     {})),
+      isolation(
+          CoreFeatures::enablePropIteratorSetter ? sourceProps.isolation
+                                                 : convertRawProp(
+                                                       context,
+                                                       rawProps,
+                                                       "isolation",
+                                                       sourceProps.isolation,
+                                                       {})),
       transform(
           CoreFeatures::enablePropIteratorSetter ? sourceProps.transform
                                                  : convertRawProp(
@@ -311,6 +328,7 @@ void BaseViewProps::setProp(
   switch (hash) {
     RAW_SET_PROP_SWITCH_CASE_BASIC(opacity);
     RAW_SET_PROP_SWITCH_CASE_BASIC(backgroundColor);
+    RAW_SET_PROP_SWITCH_CASE(backgroundImage, "experimental_backgroundImage");
     RAW_SET_PROP_SWITCH_CASE_BASIC(shadowColor);
     RAW_SET_PROP_SWITCH_CASE_BASIC(shadowOffset);
     RAW_SET_PROP_SWITCH_CASE_BASIC(shadowOpacity);
@@ -320,6 +338,7 @@ void BaseViewProps::setProp(
     RAW_SET_PROP_SWITCH_CASE_BASIC(shouldRasterize);
     RAW_SET_PROP_SWITCH_CASE_BASIC(zIndex);
     RAW_SET_PROP_SWITCH_CASE_BASIC(pointerEvents);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(isolation);
     RAW_SET_PROP_SWITCH_CASE_BASIC(hitSlop);
     RAW_SET_PROP_SWITCH_CASE_BASIC(onLayout);
     RAW_SET_PROP_SWITCH_CASE_BASIC(collapsable);

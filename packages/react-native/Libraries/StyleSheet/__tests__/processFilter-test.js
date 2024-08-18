@@ -320,6 +320,18 @@ function testDropShadow() {
     ]);
   });
 
+  it('should parse string drop-shadow with rgba color', () => {
+    expect(processFilter('drop-shadow(50 50 rgba(0, 0, 0, 1))')).toEqual([
+      {
+        dropShadow: {
+          offsetX: 50,
+          offsetY: 50,
+          color: processColor('rgba(0, 0, 0, 1)'),
+        },
+      },
+    ]);
+  });
+
   it('should parse string with mixed case drop-shadow', () => {
     expect(processFilter('DroP-sHaDOw(50 50 purple)')).toEqual([
       {

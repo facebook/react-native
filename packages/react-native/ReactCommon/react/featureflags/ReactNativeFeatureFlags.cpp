@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<bab53ba585938b3bf458dbe0874931f8>>
+ * @generated SignedSource<<0a5c752e7d7ae1edd9c495dce0557347>>
  */
 
 /**
@@ -23,10 +23,6 @@ namespace facebook::react {
 
 bool ReactNativeFeatureFlags::commonTestFlag() {
   return getAccessor().commonTestFlag();
-}
-
-bool ReactNativeFeatureFlags::allowCollapsableChildren() {
-  return getAccessor().allowCollapsableChildren();
 }
 
 bool ReactNativeFeatureFlags::allowRecursiveCommitsWithSynchronousMountOnAndroid() {
@@ -53,8 +49,28 @@ bool ReactNativeFeatureFlags::enableAlignItemsBaselineOnFabricIOS() {
   return getAccessor().enableAlignItemsBaselineOnFabricIOS();
 }
 
+bool ReactNativeFeatureFlags::enableAndroidMixBlendModeProp() {
+  return getAccessor().enableAndroidMixBlendModeProp();
+}
+
+bool ReactNativeFeatureFlags::enableBackgroundStyleApplicator() {
+  return getAccessor().enableBackgroundStyleApplicator();
+}
+
 bool ReactNativeFeatureFlags::enableCleanTextInputYogaNode() {
   return getAccessor().enableCleanTextInputYogaNode();
+}
+
+bool ReactNativeFeatureFlags::enableEagerRootViewAttachment() {
+  return getAccessor().enableEagerRootViewAttachment();
+}
+
+bool ReactNativeFeatureFlags::enableEventEmitterRetentionDuringGesturesOnAndroid() {
+  return getAccessor().enableEventEmitterRetentionDuringGesturesOnAndroid();
+}
+
+bool ReactNativeFeatureFlags::enableFabricLogs() {
+  return getAccessor().enableFabricLogs();
 }
 
 bool ReactNativeFeatureFlags::enableFabricRendererExclusively() {
@@ -87,6 +103,10 @@ bool ReactNativeFeatureFlags::enableSynchronousStateUpdates() {
 
 bool ReactNativeFeatureFlags::enableUIConsistency() {
   return getAccessor().enableUIConsistency();
+}
+
+bool ReactNativeFeatureFlags::enableViewRecycling() {
+  return getAccessor().enableViewRecycling();
 }
 
 bool ReactNativeFeatureFlags::excludeYogaFromRawProps() {
@@ -137,6 +157,14 @@ bool ReactNativeFeatureFlags::setAndroidLayoutDirection() {
   return getAccessor().setAndroidLayoutDirection();
 }
 
+bool ReactNativeFeatureFlags::traceTurboModulePromiseRejectionsOnAndroid() {
+  return getAccessor().traceTurboModulePromiseRejectionsOnAndroid();
+}
+
+bool ReactNativeFeatureFlags::useFabricInterop() {
+  return getAccessor().useFabricInterop();
+}
+
 bool ReactNativeFeatureFlags::useImmediateExecutorInAndroidBridgeless() {
   return getAccessor().useImmediateExecutorInAndroidBridgeless();
 }
@@ -167,6 +195,10 @@ bool ReactNativeFeatureFlags::useRuntimeShadowNodeReferenceUpdateOnLayout() {
 
 bool ReactNativeFeatureFlags::useStateAlignmentMechanism() {
   return getAccessor().useStateAlignmentMechanism();
+}
+
+bool ReactNativeFeatureFlags::useTurboModuleInterop() {
+  return getAccessor().useTurboModuleInterop();
 }
 
 void ReactNativeFeatureFlags::override(

@@ -214,7 +214,7 @@ static NSDictionary *RCTExportedDimensions(CGFloat fontScale)
 
 - (void)_interfaceOrientationDidChange
 {
-#if TARGET_OS_IOS
+#if TARGET_OS_IOS && !TARGET_OS_MACCATALYST
   UIApplication *application = RCTSharedApplication();
   UIInterfaceOrientation nextOrientation = RCTKeyWindow().windowScene.interfaceOrientation;
 

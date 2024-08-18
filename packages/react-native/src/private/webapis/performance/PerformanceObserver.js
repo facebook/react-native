@@ -174,7 +174,7 @@ function getSupportedPerformanceEntryTypes(): $ReadOnlyArray<PerformanceEntryTyp
  * });
  * observer.observe({ type: "event" });
  */
-export default class PerformanceObserver {
+export class PerformanceObserver {
   #callback: PerformanceObserverCallback;
   #type: 'single' | 'multiple' | void;
 

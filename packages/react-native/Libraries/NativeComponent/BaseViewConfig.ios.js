@@ -193,6 +193,8 @@ const validAttributesForNonEventProps = {
   accessibilityViewIsModal: true,
   accessibilityElementsHidden: true,
   accessibilityIgnoresInvertColors: true,
+  accessibilityShowsLargeContentViewer: true,
+  accessibilityLargeContentTitle: true,
   testID: true,
   backgroundColor: {process: require('../StyleSheet/processColor').default},
   backfaceVisibility: true,
@@ -226,6 +228,8 @@ const validAttributesForNonEventProps = {
   experimental_boxShadow: {
     process: require('../StyleSheet/processBoxShadow').default,
   },
+  experimental_mixBlendMode: true,
+  isolation: true,
 
   borderTopWidth: true,
   borderTopColor: {process: require('../StyleSheet/processColor').default},

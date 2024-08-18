@@ -16,7 +16,6 @@ import com.facebook.react.bridge.Dynamic
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableType
-import com.facebook.react.common.MapBuilder
 import com.facebook.react.common.ReactConstants
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.PixelUtil.toPixelFromDIP
@@ -156,7 +155,10 @@ public class ReactDrawerLayoutManager :
   }
 
   public override fun getCommandsMap(): Map<String, Int> =
-      MapBuilder.of(COMMAND_OPEN_DRAWER, OPEN_DRAWER, COMMAND_CLOSE_DRAWER, CLOSE_DRAWER)
+      mapOf(
+          COMMAND_OPEN_DRAWER to OPEN_DRAWER,
+          COMMAND_CLOSE_DRAWER to CLOSE_DRAWER,
+      )
 
   @Deprecated(
       message =
@@ -185,24 +187,21 @@ public class ReactDrawerLayoutManager :
   }
 
   public override fun getExportedViewConstants(): Map<String, Any> =
-      MapBuilder.of<String, Any>(
-          DRAWER_POSITION,
-          MapBuilder.of(DRAWER_POSITION_LEFT, Gravity.START, DRAWER_POSITION_RIGHT, Gravity.END))
+      mapOf(
+          DRAWER_POSITION to
+              mapOf(
+                  DRAWER_POSITION_LEFT to Gravity.START,
+                  DRAWER_POSITION_RIGHT to Gravity.END,
+              ))
 
   public override fun getExportedCustomDirectEventTypeConstants(): Map<String, Any> {
-    val baseEventTypeConstants = super.getExportedCustomDirectEventTypeConstants()
-    val eventTypeConstants = baseEventTypeConstants ?: mutableMapOf()
-    eventTypeConstants.putAll(
-        MapBuilder.of(
-            DrawerSlideEvent.EVENT_NAME,
-            MapBuilder.of("registrationName", "onDrawerSlide"),
-            DrawerOpenedEvent.EVENT_NAME,
-            MapBuilder.of("registrationName", "onDrawerOpen"),
-            DrawerClosedEvent.EVENT_NAME,
-            MapBuilder.of("registrationName", "onDrawerClose"),
-            DrawerStateChangedEvent.EVENT_NAME,
-            MapBuilder.of("registrationName", "onDrawerStateChanged")))
-    return eventTypeConstants
+    val eventTypeConstants = super.getExportedCustomDirectEventTypeConstants() ?: mutableMapOf()
+    return eventTypeConstants.apply {
+      put(DrawerSlideEvent.EVENT_NAME, mapOf("registrationName" to "onDrawerSlide"))
+      put(DrawerOpenedEvent.EVENT_NAME, mapOf("registrationName" to "onDrawerOpen"))
+      put(DrawerClosedEvent.EVENT_NAME, mapOf("registrationName" to "onDrawerClose"))
+      put(DrawerStateChangedEvent.EVENT_NAME, mapOf("registrationName" to "onDrawerStateChanged"))
+    }
   }
 
   /**

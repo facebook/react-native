@@ -416,6 +416,20 @@ type IOSViewProps = $ReadOnly<{|
   accessibilityViewIsModal?: ?boolean,
 
   /**
+   * @platform ios
+   *
+   * See https://reactnative.dev/docs/view#accessibilityshowslargecontentviewer
+   */
+  accessibilityShowsLargeContentViewer?: ?boolean,
+
+  /**
+   * @platform ios
+   *
+   * See https://reactnative.dev/docs/view#accessibilitylargecontenttitle
+   */
+  accessibilityLargeContentTitle?: ?string,
+
+  /**
    * The aria-modal attribute indicates content contained within a modal with aria-modal="true"
    * should be accessible to the user.
    * Default is `false`.

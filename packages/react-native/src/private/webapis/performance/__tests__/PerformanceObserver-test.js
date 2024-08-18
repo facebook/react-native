@@ -4,15 +4,20 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  * @oncall react_native
  */
+
+import type {PerformanceEntryList} from '../PerformanceObserver';
 
 import {RawPerformanceEntryTypeValues} from '../RawPerformanceEntry';
 
 // NOTE: Jest mocks of transitive dependencies don't appear to work with
 // ES6 module imports, therefore forced to use commonjs style imports here.
-const PerformanceObserver = require('../PerformanceObserver').default;
+const {PerformanceObserver} = require('../PerformanceObserver');
+const NativePerformanceObserverMock =
+  require('../specs/__mocks__/NativePerformanceObserver').default;
 const NativePerformanceObserver = require('../specs/NativePerformanceObserver');
 
 jest.mock(
@@ -25,18 +30,20 @@ describe('PerformanceObserver', () => {
     expect(NativePerformanceObserver).not.toBe(undefined);
 
     let totalEntries = 0;
-    const observer = new PerformanceObserver((list, _observer) => {
-      expect(_observer).toBe(observer);
-      const entries = list.getEntries();
-      expect(entries).toHaveLength(1);
-      const entry = entries[0];
-      expect(entry.name).toBe('mark1');
-      expect(entry.entryType).toBe('mark');
-      totalEntries += entries.length;
-    });
+    const observer: PerformanceObserver = new PerformanceObserver(
+      (list, _observer) => {
+        expect(_observer).toBe(observer);
+        const entries = list.getEntries();
+        expect(entries).toHaveLength(1);
+        const entry = entries[0];
+        expect(entry.name).toBe('mark1');
+        expect(entry.entryType).toBe('mark');
+        totalEntries += entries.length;
+      },
+    );
     expect(() => observer.observe({entryTypes: ['mark']})).not.toThrow();
 
-    NativePerformanceObserver.logRawEntry({
+    NativePerformanceObserverMock.logRawEntry({
       name: 'mark1',
       entryType: RawPerformanceEntryTypeValues.MARK,
       startTime: 0,
@@ -52,12 +59,13 @@ describe('PerformanceObserver', () => {
     const observer = new PerformanceObserver((list, _observer) => {});
 
     expect(() =>
+      // $FlowExpectedError[incompatible-call]
       observer.observe({entryTypes: ['event', 'mark'], durationThreshold: 100}),
     ).toThrow();
   });
 
   it('ignores durationThreshold when used with marks or measures', async () => {
-    let entries = [];
+    let entries: PerformanceEntryList = [];
 
     const observer = new PerformanceObserver((list, _observer) => {
       entries = [...entries, ...list.getEntries()];
@@ -65,7 +73,7 @@ describe('PerformanceObserver', () => {
 
     observer.observe({type: 'measure', durationThreshold: 100});
 
-    NativePerformanceObserver.logRawEntry({
+    NativePerformanceObserverMock.logRawEntry({
       name: 'measure1',
       entryType: RawPerformanceEntryTypeValues.MEASURE,
       startTime: 0,
@@ -78,35 +86,35 @@ describe('PerformanceObserver', () => {
   });
 
   it('handles durationThreshold argument as expected', async () => {
-    let entries = [];
+    let entries: PerformanceEntryList = [];
     const observer = new PerformanceObserver((list, _observer) => {
       entries = [...entries, ...list.getEntries()];
     });
 
     observer.observe({type: 'event', durationThreshold: 100});
 
-    NativePerformanceObserver.logRawEntry({
+    NativePerformanceObserverMock.logRawEntry({
       name: 'event1',
       entryType: RawPerformanceEntryTypeValues.EVENT,
       startTime: 0,
       duration: 200,
     });
 
-    NativePerformanceObserver.logRawEntry({
+    NativePerformanceObserverMock.logRawEntry({
       name: 'event2',
       entryType: RawPerformanceEntryTypeValues.EVENT,
       startTime: 0,
       duration: 20,
     });
 
-    NativePerformanceObserver.logRawEntry({
+    NativePerformanceObserverMock.logRawEntry({
       name: 'event3',
       entryType: RawPerformanceEntryTypeValues.EVENT,
       startTime: 0,
       duration: 100,
     });
 
-    NativePerformanceObserver.logRawEntry({
+    NativePerformanceObserverMock.logRawEntry({
       name: 'event4',
       entryType: RawPerformanceEntryTypeValues.EVENT,
       startTime: 0,
@@ -123,22 +131,22 @@ describe('PerformanceObserver', () => {
   });
 
   it('correctly works with multiple PerformanceObservers with durationThreshold', async () => {
-    let entries1 = [];
+    let entries1: PerformanceEntryList = [];
     const observer1 = new PerformanceObserver((list, _observer) => {
       entries1 = [...entries1, ...list.getEntries()];
     });
 
-    let entries2 = [];
+    let entries2: PerformanceEntryList = [];
     const observer2 = new PerformanceObserver((list, _observer) => {
       entries2 = [...entries2, ...list.getEntries()];
     });
 
-    let entries3 = [];
+    let entries3: PerformanceEntryList = [];
     const observer3 = new PerformanceObserver((list, _observer) => {
       entries3 = [...entries3, ...list.getEntries()];
     });
 
-    let entries4 = [];
+    let entries4: PerformanceEntryList = [];
     const observer4 = new PerformanceObserver((list, _observer) => {
       entries4 = [...entries4, ...list.getEntries()];
     });
@@ -149,28 +157,28 @@ describe('PerformanceObserver', () => {
     observer3.observe({type: 'event', durationThreshold: 500});
     observer4.observe({entryTypes: ['event']});
 
-    NativePerformanceObserver.logRawEntry({
+    NativePerformanceObserverMock.logRawEntry({
       name: 'event1',
       entryType: RawPerformanceEntryTypeValues.EVENT,
       startTime: 0,
       duration: 200,
     });
 
-    NativePerformanceObserver.logRawEntry({
+    NativePerformanceObserverMock.logRawEntry({
       name: 'event2',
       entryType: RawPerformanceEntryTypeValues.EVENT,
       startTime: 0,
       duration: 20,
     });
 
-    NativePerformanceObserver.logRawEntry({
+    NativePerformanceObserverMock.logRawEntry({
       name: 'event3',
       entryType: RawPerformanceEntryTypeValues.EVENT,
       startTime: 0,
       duration: 100,
     });
 
-    NativePerformanceObserver.logRawEntry({
+    NativePerformanceObserverMock.logRawEntry({
       name: 'event4',
       entryType: RawPerformanceEntryTypeValues.EVENT,
       startTime: 0,
@@ -180,14 +188,14 @@ describe('PerformanceObserver', () => {
     await jest.runAllTicks();
     observer1.disconnect();
 
-    NativePerformanceObserver.logRawEntry({
+    NativePerformanceObserverMock.logRawEntry({
       name: 'event5',
       entryType: RawPerformanceEntryTypeValues.EVENT,
       startTime: 0,
       duration: 200,
     });
 
-    NativePerformanceObserver.logRawEntry({
+    NativePerformanceObserverMock.logRawEntry({
       name: 'event6',
       entryType: RawPerformanceEntryTypeValues.EVENT,
       startTime: 0,
@@ -197,7 +205,7 @@ describe('PerformanceObserver', () => {
     await jest.runAllTicks();
     observer3.disconnect();
 
-    NativePerformanceObserver.logRawEntry({
+    NativePerformanceObserverMock.logRawEntry({
       name: 'event7',
       entryType: RawPerformanceEntryTypeValues.EVENT,
       startTime: 0,
@@ -234,7 +242,7 @@ describe('PerformanceObserver', () => {
   it('should guard against errors in observer callbacks', () => {
     jest.spyOn(console, 'error').mockImplementation(() => {});
 
-    const observer1Callback = jest.fn(() => {
+    const observer1Callback = jest.fn((_entries, _observer, _options) => {
       throw new Error('observer 1 callback');
     });
     const observer1 = new PerformanceObserver(observer1Callback);
@@ -245,7 +253,7 @@ describe('PerformanceObserver', () => {
     observer1.observe({type: 'mark'});
     observer2.observe({type: 'mark'});
 
-    NativePerformanceObserver.logRawEntry({
+    NativePerformanceObserverMock.logRawEntry({
       name: 'mark1',
       entryType: RawPerformanceEntryTypeValues.MARK,
       startTime: 0,
@@ -272,7 +280,7 @@ describe('PerformanceObserver', () => {
     observer1.observe({type: 'mark'});
     observer2.observe({type: 'measure'});
 
-    NativePerformanceObserver.logRawEntry({
+    NativePerformanceObserverMock.logRawEntry({
       name: 'mark1',
       entryType: RawPerformanceEntryTypeValues.MARK,
       startTime: 0,

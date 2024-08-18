@@ -33,6 +33,7 @@ using namespace facebook::react;
   __weak CALayer *_borderLayer;
   CALayer *_boxShadowLayer;
   CALayer *_filterLayer;
+  NSMutableArray<CAGradientLayer *> *_gradientLayers;
   BOOL _needsInvalidateLayer;
   BOOL _isJSResponder;
   BOOL _removeClippedSubviews;
@@ -346,6 +347,26 @@ using namespace facebook::react;
     self.accessibilityElement.accessibilityElementsHidden = newViewProps.accessibilityElementsHidden;
   }
 
+  // `accessibilityShowsLargeContentViewer`
+  if (oldViewProps.accessibilityShowsLargeContentViewer != newViewProps.accessibilityShowsLargeContentViewer) {
+    if (@available(iOS 13.0, *)) {
+      if (newViewProps.accessibilityShowsLargeContentViewer) {
+        self.showsLargeContentViewer = YES;
+        UILargeContentViewerInteraction *interaction = [[UILargeContentViewerInteraction alloc] init];
+        [self addInteraction:interaction];
+      } else {
+        self.showsLargeContentViewer = NO;
+      }
+    }
+  }
+
+  // `accessibilityLargeContentTitle`
+  if (oldViewProps.accessibilityLargeContentTitle != newViewProps.accessibilityLargeContentTitle) {
+    if (@available(iOS 13.0, *)) {
+      self.largeContentTitle = RCTNSStringFromStringNilIfEmpty(newViewProps.accessibilityLargeContentTitle);
+    }
+  }
+
   // `accessibilityTraits`
   if (oldViewProps.accessibilityTraits != newViewProps.accessibilityTraits) {
     self.accessibilityElement.accessibilityTraits =
@@ -456,6 +477,11 @@ using namespace facebook::react;
         self.layer.compositingFilter = nil;
         break;
     }
+  }
+
+  // `linearGradient`
+  if (oldViewProps.backgroundImage != newViewProps.backgroundImage) {
+    needsInvalidateLayer = YES;
   }
 
   // `boxShadow`
@@ -743,7 +769,6 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     layer.cornerRadius = 0;
 
     RCTBorderColors borderColors = RCTCreateRCTBorderColorsFromBorderColors(borderMetrics.borderColors);
-
     UIImage *image = RCTGetBorderImage(
         RCTBorderStyleFromBorderStyle(borderMetrics.borderStyles.left),
         layer.bounds.size,
@@ -787,20 +812,26 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
         // In this case we can simply use `cornerRadius` exclusively.
         cornerRadius = borderMetrics.borderRadii.topLeft;
       } else {
-        // In this case we have to generate masking layer manually.
-        CGPathRef path = RCTPathCreateWithRoundedRect(
-            self.bounds,
-            RCTGetCornerInsets(RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii), UIEdgeInsetsZero),
-            nil);
-
-        maskLayer = [CAShapeLayer layer];
-        maskLayer.path = path;
-        CGPathRelease(path);
+        RCTCornerInsets cornerInsets =
+            RCTGetCornerInsets(RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii), UIEdgeInsetsZero);
+        maskLayer = [self createMaskLayer:self.bounds cornerInsets:cornerInsets];
       }
     }
 
     layer.cornerRadius = cornerRadius;
     layer.mask = maskLayer;
+
+    for (UIView *subview in self.subviews) {
+      if ([subview isKindOfClass:[UIImageView class]]) {
+        RCTCornerInsets cornerInsets = RCTGetCornerInsets(
+            RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii),
+            RCTUIEdgeInsetsFromEdgeInsets(borderMetrics.borderWidths));
+
+        // If the subview is an image view, we have to apply the mask directly to the image view's layer,
+        // otherwise the image might overflow with the border radius.
+        subview.layer.mask = [self createMaskLayer:subview.bounds cornerInsets:cornerInsets];
+      }
+    }
   }
 
   [_filterLayer removeFromSuperlayer];
@@ -830,19 +861,91 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     [self.layer addSublayer:_filterLayer];
   }
 
+  [self clearExistingGradientLayers];
+  if (!_props->backgroundImage.empty()) {
+    for (const auto &gradient : _props->backgroundImage) {
+      CAGradientLayer *gradientLayer = [CAGradientLayer layer];
+      NSMutableArray *colors = [NSMutableArray array];
+      NSMutableArray *locations = [NSMutableArray array];
+      for (const auto &colorStop : gradient.colorStops) {
+        if (colorStop.position.has_value()) {
+          auto location = @(colorStop.position.value());
+          UIColor *color = RCTUIColorFromSharedColor(colorStop.color);
+          [colors addObject:(id)color.CGColor];
+          [locations addObject:location];
+        }
+      }
+      gradientLayer.startPoint = CGPointMake(gradient.startX, gradient.startY);
+      gradientLayer.endPoint = CGPointMake(gradient.endX, gradient.endY);
+
+      if (locations.count > 0) {
+        gradientLayer.locations = locations;
+      }
+      gradientLayer.colors = colors;
+      gradientLayer.frame = layer.bounds;
+
+      // border styling to work with gradient layers
+      if (useCoreAnimationBorderRendering) {
+        gradientLayer.borderWidth = layer.borderWidth;
+        gradientLayer.borderColor = layer.borderColor;
+        gradientLayer.cornerRadius = layer.cornerRadius;
+        gradientLayer.cornerCurve = layer.cornerCurve;
+      } else {
+        CAShapeLayer *maskLayer = [CAShapeLayer layer];
+        CGPathRef path = RCTPathCreateWithRoundedRect(
+            self.bounds,
+            RCTGetCornerInsets(RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii), UIEdgeInsetsZero),
+            nil);
+        maskLayer.path = path;
+        CGPathRelease(path);
+        gradientLayer.mask = maskLayer;
+      }
+
+      // border layer should appear above gradient layers to make sure that the border is visible
+      gradientLayer.zPosition = _borderLayer.zPosition - 1;
+
+      [self.layer addSublayer:gradientLayer];
+      [_gradientLayers addObject:gradientLayer];
+    }
+  }
+
   [_boxShadowLayer removeFromSuperlayer];
   _boxShadowLayer = nil;
   if (!_props->boxShadow.empty()) {
     _boxShadowLayer = [CALayer layer];
     [self.layer addSublayer:_boxShadowLayer];
-    _boxShadowLayer.zPosition = CGFLOAT_MIN;
+    _boxShadowLayer.zPosition = _borderLayer.zPosition;
     _boxShadowLayer.frame = RCTGetBoundingRect(_props->boxShadow, self.layer.frame.size);
 
-    UIImage *boxShadowImage =
-        RCTGetBoxShadowImage(_props->boxShadow, RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii), layer);
+    UIImage *boxShadowImage = RCTGetBoxShadowImage(
+        _props->boxShadow,
+        RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii),
+        RCTUIEdgeInsetsFromEdgeInsets(borderMetrics.borderWidths),
+        layer);
 
     _boxShadowLayer.contents = (id)boxShadowImage.CGImage;
   }
+}
+
+- (CAShapeLayer *)createMaskLayer:(CGRect)bounds cornerInsets:(RCTCornerInsets)cornerInsets
+{
+  CGPathRef path = RCTPathCreateWithRoundedRect(bounds, cornerInsets, nil);
+  CAShapeLayer *maskLayer = [CAShapeLayer layer];
+  maskLayer.path = path;
+  CGPathRelease(path);
+  return maskLayer;
+}
+
+- (void)clearExistingGradientLayers
+{
+  if (_gradientLayers == nil) {
+    _gradientLayers = [NSMutableArray new];
+    return;
+  }
+  for (CAGradientLayer *gradientLayer in _gradientLayers) {
+    [gradientLayer removeFromSuperlayer];
+  }
+  [_gradientLayers removeAllObjects];
 }
 
 #pragma mark - Accessibility

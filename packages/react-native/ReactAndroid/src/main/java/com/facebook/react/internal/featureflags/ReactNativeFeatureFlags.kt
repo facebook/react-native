@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ca939ab47fa68fbb5acf5ea34481def9>>
+ * @generated SignedSource<<b352d8e6c8dd42936ee48024320f6b77>>
  */
 
 /**
@@ -33,12 +33,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun commonTestFlag(): Boolean = accessor.commonTestFlag()
-
-  /**
-   * Enables the differentiator to understand the "collapsableChildren" prop
-   */
-  @JvmStatic
-  public fun allowCollapsableChildren(): Boolean = accessor.allowCollapsableChildren()
 
   /**
    * Adds support for recursively processing commits that mount synchronously (Android only).
@@ -77,10 +71,40 @@ public object ReactNativeFeatureFlags {
   public fun enableAlignItemsBaselineOnFabricIOS(): Boolean = accessor.enableAlignItemsBaselineOnFabricIOS()
 
   /**
+   * Enables mix-blend-mode prop on Android.
+   */
+  @JvmStatic
+  public fun enableAndroidMixBlendModeProp(): Boolean = accessor.enableAndroidMixBlendModeProp()
+
+  /**
+   * Use BackgroundStyleApplicator in place of other background/border drawing code
+   */
+  @JvmStatic
+  public fun enableBackgroundStyleApplicator(): Boolean = accessor.enableBackgroundStyleApplicator()
+
+  /**
    * Clean yoga node when <TextInput /> does not change.
    */
   @JvmStatic
   public fun enableCleanTextInputYogaNode(): Boolean = accessor.enableCleanTextInputYogaNode()
+
+  /**
+   * Feature flag to configure eager attachment of the root view/initialisation of the JS code.
+   */
+  @JvmStatic
+  public fun enableEagerRootViewAttachment(): Boolean = accessor.enableEagerRootViewAttachment()
+
+  /**
+   * Enables the retention of EventEmitterWrapper on Android till the touch gesture is over to fix a bug on pressable (#44610)
+   */
+  @JvmStatic
+  public fun enableEventEmitterRetentionDuringGesturesOnAndroid(): Boolean = accessor.enableEventEmitterRetentionDuringGesturesOnAndroid()
+
+  /**
+   * This feature flag enables logs for Fabric.
+   */
+  @JvmStatic
+  public fun enableFabricLogs(): Boolean = accessor.enableFabricLogs()
 
   /**
    * When the app is completely migrated to Fabric, set this flag to true to disable parts of Paper infrastructure that are not needed anymore but consume memory and CPU. Specifically, UIViewOperationQueue and EventDispatcherImpl will no longer work as they will not subscribe to ReactChoreographer for updates.
@@ -129,6 +153,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableUIConsistency(): Boolean = accessor.enableUIConsistency()
+
+  /**
+   * Enables View Recycling. When enabled, individual ViewManagers must still opt-in.
+   */
+  @JvmStatic
+  public fun enableViewRecycling(): Boolean = accessor.enableViewRecycling()
 
   /**
    * When enabled, rawProps in Props will not include Yoga specific props.
@@ -203,6 +233,18 @@ public object ReactNativeFeatureFlags {
   public fun setAndroidLayoutDirection(): Boolean = accessor.setAndroidLayoutDirection()
 
   /**
+   * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.
+   */
+  @JvmStatic
+  public fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean = accessor.traceTurboModulePromiseRejectionsOnAndroid()
+
+  /**
+   * Should this application enable the Fabric Interop Layer for Android? If yes, the application will behave so that it can accept non-Fabric components and render them on Fabric. This toggle is controlling extra logic such as custom event dispatching that are needed for the Fabric Interop Layer to work correctly.
+   */
+  @JvmStatic
+  public fun useFabricInterop(): Boolean = accessor.useFabricInterop()
+
+  /**
    * Invoke callbacks immediately on the ReactInstance rather than going through a background thread for synchronization
    */
   @JvmStatic
@@ -249,6 +291,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun useStateAlignmentMechanism(): Boolean = accessor.useStateAlignmentMechanism()
+
+  /**
+   * In Bridgeless mode, should legacy NativeModules use the TurboModule system?
+   */
+  @JvmStatic
+  public fun useTurboModuleInterop(): Boolean = accessor.useTurboModuleInterop()
 
   /**
    * Overrides the feature flags with the ones provided by the given provider

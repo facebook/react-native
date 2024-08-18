@@ -356,8 +356,7 @@ void Binding::installFabricUIManager(
   std::shared_ptr<const ReactNativeConfig> config =
       std::make_shared<const ReactNativeConfigHolder>(reactNativeConfig);
 
-  enableFabricLogs_ =
-      config->getBool("react_fabric:enabled_android_fabric_logs");
+  enableFabricLogs_ = ReactNativeFeatureFlags::enableFabricLogs();
 
   if (enableFabricLogs_) {
     LOG(WARNING) << "Binding::installFabricUIManager() was called (address: "

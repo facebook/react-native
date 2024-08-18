@@ -24,10 +24,6 @@ type Props = $ReadOnly<{
   imageSource?: number,
 }>;
 
-const defaultProps = {
-  imageSource: hotdog,
-};
-
 function StaticViewAndImage(props: Props): React.Node {
   return (
     <>
@@ -47,12 +43,12 @@ function StaticViewAndImage(props: Props): React.Node {
       </View>
       <View style={styles.container}>
         <Image
-          source={props.imageSource}
+          source={props.imageSource ?? hotdog}
           style={[props.style, styles.commonImage]}
           resizeMode="contain"
         />
         <Image
-          source={props.imageSource}
+          source={props.imageSource ? props.imageSource : hotdog}
           style={styles.commonImage}
           resizeMode="contain"
         />
@@ -60,7 +56,6 @@ function StaticViewAndImage(props: Props): React.Node {
     </>
   );
 }
-StaticViewAndImage.defaultProps = defaultProps;
 
 function StaticViewAndImageWithState(props: Props): React.Node {
   const [s, setS] = React.useState(true);

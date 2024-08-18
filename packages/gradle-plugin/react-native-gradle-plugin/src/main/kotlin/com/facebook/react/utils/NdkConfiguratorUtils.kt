@@ -93,30 +93,9 @@ internal object NdkConfiguratorUtils {
               "**/libfbjni.so",
               // Those are prefab libraries we distribute via ReactAndroid
               // Due to a bug in AGP, they fire a warning on console as both the JNI
-              // and the prefab .so files gets considered. See more on:
-              "**/libfabricjni.so",
-              "**/libfolly_runtime.so",
-              "**/libglog.so",
+              // and the prefab .so files gets considered.
+              "**/libreactnative.so",
               "**/libjsi.so",
-              "**/libmapbufferjni.so",
-              "**/libreact_codegen_rncore.so",
-              "**/libreact_debug.so",
-              "**/libreact_nativemodule_core.so",
-              "**/libreact_newarchdefaults.so",
-              "**/libreact_cxxreactpackage.so",
-              "**/libreact_render_componentregistry.so",
-              "**/libreact_render_core.so",
-              "**/libreact_render_debug.so",
-              "**/libreact_render_graphics.so",
-              "**/libreact_render_imagemanager.so",
-              "**/libreact_render_mapbuffer.so",
-              "**/libreact_utils.so",
-              "**/librrc_image.so",
-              "**/librrc_legacyviewmanagerinterop.so",
-              "**/librrc_view.so",
-              "**/libruntimeexecutor.so",
-              "**/libturbomodulejsijni.so",
-              "**/libyoga.so",
               // AGP will give priority of libc++_shared coming from App modules.
               "**/libc++_shared.so",
           ))
@@ -144,14 +123,14 @@ internal object NdkConfiguratorUtils {
     val includes = mutableListOf<String>()
     if (hermesEnabled) {
       excludes.add("**/libjsc.so")
-      excludes.add("**/libjscexecutor.so")
+      excludes.add("**/libjsctooling.so")
       includes.add("**/libhermes.so")
-      includes.add("**/libhermes_executor.so")
+      includes.add("**/libhermestooling.so")
     } else {
       excludes.add("**/libhermes.so")
-      excludes.add("**/libhermes_executor.so")
+      excludes.add("**/libhermestooling.so")
       includes.add("**/libjsc.so")
-      includes.add("**/libjscexecutor.so")
+      includes.add("**/libjsctooling.so")
     }
     return excludes to includes
   }

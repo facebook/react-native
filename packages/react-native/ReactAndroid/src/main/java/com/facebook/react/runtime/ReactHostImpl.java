@@ -50,6 +50,8 @@ import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.devsupport.DevSupportManagerBase;
 import com.facebook.react.devsupport.InspectorFlags;
 import com.facebook.react.devsupport.ReleaseDevSupportManager;
+import com.facebook.react.devsupport.inspector.InspectorNetworkHelper;
+import com.facebook.react.devsupport.inspector.InspectorNetworkRequestListener;
 import com.facebook.react.devsupport.interfaces.BundleLoadCallback;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.devsupport.interfaces.DevSupportManager.PausedInDebuggerOverlayCommandListener;
@@ -470,8 +472,9 @@ public class ReactHostImpl implements ReactHost {
                       final Exception ex = task.getError();
                       if (mUseDevSupport) {
                         mDevSupportManager.handleException(ex);
+                      } else {
+                        mReactHostDelegate.handleInstanceException(ex);
                       }
-                      mReactHostDelegate.handleInstanceException(ex);
                       return getOrCreateDestroyTask("Reload failed", ex);
                     }
 
@@ -505,6 +508,11 @@ public class ReactHostImpl implements ReactHost {
   @DoNotStrip
   private Map<String, String> getHostMetadata() {
     return AndroidInfoHelpers.getInspectorHostMetadata(mContext);
+  }
+
+  @DoNotStrip
+  private void loadNetworkResource(String url, InspectorNetworkRequestListener listener) {
+    InspectorNetworkHelper.loadNetworkResource(url, listener);
   }
 
   /**
@@ -806,9 +814,10 @@ public class ReactHostImpl implements ReactHost {
 
     if (mUseDevSupport) {
       mDevSupportManager.handleException(e);
+    } else {
+      mReactHostDelegate.handleInstanceException(e);
     }
     destroy(method, e);
-    mReactHostDelegate.handleInstanceException(e);
   }
 
   /**
@@ -896,7 +905,12 @@ public class ReactHostImpl implements ReactHost {
               .continueWithTask(
                   (task) -> {
                     if (task.isFaulted()) {
-                      mReactHostDelegate.handleInstanceException(task.getError());
+                      Exception ex = task.getError();
+                      if (mUseDevSupport) {
+                        mDevSupportManager.handleException(ex);
+                      } else {
+                        mReactHostDelegate.handleInstanceException(ex);
+                      }
                       // Wait for destroy to finish
                       return getOrCreateDestroyTask(
                               "getOrCreateStartTask() failure: " + task.getError().getMessage(),

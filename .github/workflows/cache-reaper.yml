@@ -1,0 +1,20 @@
+name: Keep Github Actions Cache < 10GB
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Run every 2hrs during weekdays
+    - cron: "0 0/2 * * 1-5"
+
+jobs:
+  cache-cleaner:
+    if: github.repository == 'facebook/react-native'
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js 18
+        uses: actions/setup-node@v4
+      - name: Trim the cache
+        run: node scripts/clean-gha-cache.js

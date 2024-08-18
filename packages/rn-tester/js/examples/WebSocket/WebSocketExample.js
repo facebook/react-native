@@ -34,7 +34,7 @@ const WS_STATES = [
 ];
 
 class Button extends React.Component {
-  render(): React.Element<any> {
+  render(): React.MixedElement {
     const label = <Text style={styles.buttonLabel}>{this.props.label}</Text>;
     if (this.props.disabled) {
       return (
@@ -50,7 +50,7 @@ class Button extends React.Component {
 }
 
 class Row extends React.Component {
-  render(): React.Element<any> {
+  render(): React.MixedElement {
     return (
       <View style={styles.row}>
         <Text>{this.props.label}</Text>
@@ -201,7 +201,7 @@ class WebSocketExample extends React.Component<any, any, State> {
     this.setState({outgoingMessage: ''});
   };
 
-  render(): React.Element<any> {
+  render(): React.MixedElement {
     const socketState = WS_STATES[this.state.socketState || -1];
     const canConnect =
       !this.state.socket || this.state.socket.readyState >= WebSocket.CLOSING;
@@ -350,7 +350,7 @@ exports.description = 'WebSocket API';
 exports.examples = [
   {
     title: 'Basic websocket',
-    render(): React.Element<typeof WebSocketExample> {
+    render(): React.MixedElement {
       return <WebSocketExample />;
     },
   },

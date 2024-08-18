@@ -15,7 +15,7 @@ add_compile_options(
         -DLOG_TAG=\"Fabric\")
 
 file(GLOB react_render_dom_SRC CONFIGURE_DEPENDS *.cpp)
-add_library(react_render_dom STATIC ${react_render_dom_SRC})
+add_library(react_render_dom OBJECT ${react_render_dom_SRC})
 
 target_include_directories(react_render_dom PUBLIC ${REACT_COMMON_DIR})
 
