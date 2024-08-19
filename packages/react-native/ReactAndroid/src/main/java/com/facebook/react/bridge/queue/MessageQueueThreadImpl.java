@@ -16,7 +16,6 @@ import com.facebook.common.logging.FLog;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.AssertionException;
 import com.facebook.react.bridge.SoftAssertions;
-import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.futures.SimpleSettableFuture;
 import java.util.concurrent.Callable;
@@ -192,15 +191,7 @@ public class MessageQueueThreadImpl implements MessageQueueThread {
    */
   private static MessageQueueThreadImpl createForMainThread(
       String name, QueueThreadExceptionHandler exceptionHandler) {
-    final MessageQueueThreadImpl mqt =
-        new MessageQueueThreadImpl(name, Looper.getMainLooper(), exceptionHandler);
-
-    if (UiThreadUtil.isOnUiThread()) {
-      Process.setThreadPriority(Process.THREAD_PRIORITY_DISPLAY);
-    } else {
-      UiThreadUtil.runOnUiThread(() -> Process.setThreadPriority(Process.THREAD_PRIORITY_DISPLAY));
-    }
-    return mqt;
+    return new MessageQueueThreadImpl(name, Looper.getMainLooper(), exceptionHandler);
   }
 
   /**
