@@ -283,6 +283,11 @@ class NativeCxxModuleExampleExample extends React.Component<{||}, State> {
           console.log(`onSubmit: (${JSON.stringify(value)})`),
         ),
       );
+      this.eventSubscriptions.push(
+        NativeCxxModuleExample.onEvent(value =>
+          console.log(`onEvent: (${value.valueOf()})`),
+        ),
+      );
     }
   }
 
