@@ -6449,7 +6449,7 @@ public class com/facebook/react/views/image/ReactImageView : com/facebook/drawee
 	public fun updateCallerContext (Ljava/lang/Object;)V
 }
 
-public final class com/facebook/react/views/imagehelper/ImageSource {
+public class com/facebook/react/views/imagehelper/ImageSource {
 	public static final field Companion Lcom/facebook/react/views/imagehelper/ImageSource$Companion;
 	public fun <init> (Landroid/content/Context;Ljava/lang/String;)V
 	public fun <init> (Landroid/content/Context;Ljava/lang/String;D)V
