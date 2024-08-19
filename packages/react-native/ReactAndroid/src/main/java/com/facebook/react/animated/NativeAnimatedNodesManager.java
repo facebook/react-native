@@ -32,10 +32,12 @@ import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.EventDispatcherListener;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Queue;
+import java.util.Set;
 
 /**
  * This is the main class that coordinates how native animated JS implementation drives UI changes.
@@ -147,7 +149,7 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
     } else {
       throw new JSApplicationIllegalArgumentException("Unsupported node type: " + type);
     }
-    node.mTag = tag;
+    node.tag = tag;
     mAnimatedNodes.put(tag, node);
     mUpdatedNodes.put(tag, node);
   }
@@ -207,7 +209,7 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
               + "] does not exist, or is not a 'value' node");
     }
     stopAnimationsForNode(node);
-    ((ValueAnimatedNode) node).mValue = value;
+    ((ValueAnimatedNode) node).nodeValue = value;
     mUpdatedNodes.put(tag, node);
   }
 
@@ -220,7 +222,7 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
               + tag
               + "] does not exist, or is not a 'value' node");
     }
-    ((ValueAnimatedNode) node).mOffset = offset;
+    ((ValueAnimatedNode) node).offset = offset;
     mUpdatedNodes.put(tag, node);
   }
 
@@ -284,9 +286,9 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
       throw new JSApplicationIllegalArgumentException(
           "startAnimatingNode: Unsupported animation type [" + animatedNodeTag + "]: " + type);
     }
-    animation.mId = animationId;
-    animation.mEndCallback = endCallback;
-    animation.mAnimatedValue = (ValueAnimatedNode) node;
+    animation.id = animationId;
+    animation.endCallback = endCallback;
+    animation.animatedValue = (ValueAnimatedNode) node;
     mActiveAnimations.put(animationId, animation);
   }
 
@@ -299,21 +301,21 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
     WritableArray events = null;
     for (int i = 0; i < mActiveAnimations.size(); i++) {
       AnimationDriver animation = mActiveAnimations.valueAt(i);
-      if (animatedNode.equals(animation.mAnimatedValue)) {
-        if (animation.mEndCallback != null) {
+      if (animatedNode.equals(animation.animatedValue)) {
+        if (animation.endCallback != null) {
           // Invoke animation end callback with {finished: false}
           WritableMap endCallbackResponse = Arguments.createMap();
           endCallbackResponse.putBoolean("finished", false);
-          endCallbackResponse.putDouble("value", animation.mAnimatedValue.mValue);
-          animation.mEndCallback.invoke(endCallbackResponse);
+          endCallbackResponse.putDouble("value", animation.animatedValue.nodeValue);
+          animation.endCallback.invoke(endCallbackResponse);
         } else if (mReactApplicationContext != null) {
           // If no callback is passed in, this /may/ be an animation set up by the single-op
           // instruction from JS, meaning that no jsi::functions are passed into native and
           // we communicate via RCTDeviceEventEmitter instead of callbacks.
           WritableMap params = Arguments.createMap();
-          params.putInt("animationId", animation.mId);
+          params.putInt("animationId", animation.id);
           params.putBoolean("finished", false);
-          params.putDouble("value", animation.mAnimatedValue.mValue);
+          params.putDouble("value", animation.animatedValue.nodeValue);
           if (events == null) {
             events = Arguments.createArray();
           }
@@ -337,21 +339,21 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
     WritableArray events = null;
     for (int i = 0; i < mActiveAnimations.size(); i++) {
       AnimationDriver animation = mActiveAnimations.valueAt(i);
-      if (animation.mId == animationId) {
-        if (animation.mEndCallback != null) {
+      if (animation.id == animationId) {
+        if (animation.endCallback != null) {
           // Invoke animation end callback with {finished: false}
           WritableMap endCallbackResponse = Arguments.createMap();
           endCallbackResponse.putBoolean("finished", false);
-          endCallbackResponse.putDouble("value", animation.mAnimatedValue.mValue);
-          animation.mEndCallback.invoke(endCallbackResponse);
+          endCallbackResponse.putDouble("value", animation.animatedValue.nodeValue);
+          animation.endCallback.invoke(endCallbackResponse);
         } else if (mReactApplicationContext != null) {
           // If no callback is passed in, this /may/ be an animation set up by the single-op
           // instruction from JS, meaning that no jsi::functions are passed into native and
           // we communicate via RCTDeviceEventEmitter instead of callbacks.
           WritableMap params = Arguments.createMap();
-          params.putInt("animationId", animation.mId);
+          params.putInt("animationId", animation.id);
           params.putBoolean("finished", false);
-          params.putDouble("value", animation.mAnimatedValue.mValue);
+          params.putDouble("value", animation.animatedValue.nodeValue);
           if (events == null) {
             events = Arguments.createArray();
           }
@@ -427,7 +429,8 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
     }
     if (mReactApplicationContext == null) {
       throw new IllegalStateException(
-          "connectAnimatedNodeToView: Animated node could not be connected, no ReactApplicationContext: "
+          "connectAnimatedNodeToView: Animated node could not be connected, no"
+              + " ReactApplicationContext: "
               + viewTag);
     }
 
@@ -438,7 +441,8 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
       ReactSoftExceptionLogger.logSoftException(
           TAG,
           new ReactNoCrashSoftException(
-              "connectAnimatedNodeToView: Animated node could not be connected to UIManager - uiManager disappeared for tag: "
+              "connectAnimatedNodeToView: Animated node could not be connected to UIManager -"
+                  + " uiManager disappeared for tag: "
                   + viewTag));
       return;
     }
@@ -543,6 +547,11 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
     EventAnimationDriver eventDriver =
         new EventAnimationDriver(eventName, viewTag, pathList, (ValueAnimatedNode) node);
     mEventDrivers.add(eventDriver);
+
+    if (eventName.equals("topScroll")) {
+      // Handle the custom topScrollEnded event sent by the ScrollViews when the user stops dragging
+      addAnimatedEventToView(viewTag, "topScrollEnded", eventMapping);
+    }
   }
 
   @UiThread
@@ -554,9 +563,9 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
     ListIterator<EventAnimationDriver> it = mEventDrivers.listIterator();
     while (it.hasNext()) {
       EventAnimationDriver driver = it.next();
-      if (eventName.equals(driver.mEventName)
-          && viewTag == driver.mViewTag
-          && animatedValueTag == driver.mValueNode.mTag) {
+      if (eventName.equals(driver.eventName)
+          && viewTag == driver.viewTag
+          && animatedValueTag == driver.valueNode.tag) {
         it.remove();
         break;
       }
@@ -600,11 +609,11 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
       boolean foundAtLeastOneDriver = false;
       Event.EventAnimationDriverMatchSpec matchSpec = event.getEventAnimationDriverMatchSpec();
       for (EventAnimationDriver driver : mEventDrivers) {
-        if (matchSpec.match(driver.mViewTag, driver.mEventName)) {
+        if (matchSpec.match(driver.viewTag, driver.eventName)) {
           foundAtLeastOneDriver = true;
-          stopAnimationsForNode(driver.mValueNode);
+          stopAnimationsForNode(driver.valueNode);
           event.dispatchModern(driver);
-          mRunUpdateNodeList.add(driver.mValueNode);
+          mRunUpdateNodeList.add(driver.valueNode);
         }
       }
 
@@ -623,7 +632,7 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
    * <p>First BFS starts with nodes that are in {@code mUpdatedNodes} (that is, their value have
    * been modified from JS in the last batch of JS operations) or directly attached to an active
    * animation (hence linked to objects from {@code mActiveAnimations}). In that step we calculate
-   * an attribute {@code mActiveIncomingNodes}. The second BFS runs in topological order over the
+   * an attribute {@code activeIncomingNodes}. The second BFS runs in topological order over the
    * sub-graph of *active* nodes. This is done by adding node to the BFS queue only if all its
    * "predecessors" have already been visited.
    */
@@ -643,9 +652,9 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
     for (int i = 0; i < mActiveAnimations.size(); i++) {
       AnimationDriver animation = mActiveAnimations.valueAt(i);
       animation.runAnimationStep(frameTimeNanos);
-      AnimatedNode valueNode = animation.mAnimatedValue;
+      AnimatedNode valueNode = animation.animatedValue;
       mRunUpdateNodeList.add(valueNode);
-      if (animation.mHasFinished) {
+      if (animation.hasFinished) {
         hasFinishedAnimations = true;
       }
     }
@@ -659,20 +668,20 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
       WritableArray events = null;
       for (int i = mActiveAnimations.size() - 1; i >= 0; i--) {
         AnimationDriver animation = mActiveAnimations.valueAt(i);
-        if (animation.mHasFinished) {
-          if (animation.mEndCallback != null) {
+        if (animation.hasFinished) {
+          if (animation.endCallback != null) {
             WritableMap endCallbackResponse = Arguments.createMap();
             endCallbackResponse.putBoolean("finished", true);
-            endCallbackResponse.putDouble("value", animation.mAnimatedValue.mValue);
-            animation.mEndCallback.invoke(endCallbackResponse);
+            endCallbackResponse.putDouble("value", animation.animatedValue.nodeValue);
+            animation.endCallback.invoke(endCallbackResponse);
           } else if (mReactApplicationContext != null) {
             // If no callback is passed in, this /may/ be an animation set up by the single-op
             // instruction from JS, meaning that no jsi::functions are passed into native and
             // we communicate via RCTDeviceEventEmitter instead of callbacks.
             WritableMap params = Arguments.createMap();
-            params.putInt("animationId", animation.mId);
+            params.putInt("animationId", animation.id);
             params.putBoolean("finished", true);
-            params.putDouble("value", animation.mAnimatedValue.mValue);
+            params.putDouble("value", animation.animatedValue.nodeValue);
             if (events == null) {
               events = Arguments.createArray();
             }
@@ -685,6 +694,28 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
         mReactApplicationContext.emitDeviceEvent("onNativeAnimatedModuleAnimationFinished", events);
       }
     }
+  }
+
+  Set<Integer> getTagsOfConnectedNodes(int tag, String eventName) {
+    Set<Integer> tags = new HashSet<>();
+
+    // Filter only relevant animation drivers
+    ListIterator<EventAnimationDriver> it = mEventDrivers.listIterator();
+    while (it.hasNext()) {
+      EventAnimationDriver driver = it.next();
+      if (driver != null) {
+        if (eventName.equals(driver.eventName) && tag == driver.viewTag) {
+          tags.add(driver.viewTag);
+          if (driver.valueNode != null && driver.valueNode.children != null) {
+            for (AnimatedNode node : driver.valueNode.children) {
+              tags.add(node.tag);
+            }
+          }
+        }
+      }
+    }
+
+    return tags;
   }
 
   @UiThread
@@ -706,8 +737,8 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
 
     Queue<AnimatedNode> nodesQueue = new ArrayDeque<>();
     for (AnimatedNode node : nodes) {
-      if (node.mBFSColor != mAnimatedGraphBFSColor) {
-        node.mBFSColor = mAnimatedGraphBFSColor;
+      if (node.BFSColor != mAnimatedGraphBFSColor) {
+        node.BFSColor = mAnimatedGraphBFSColor;
         activeNodesCount++;
         nodesQueue.add(node);
       }
@@ -715,12 +746,12 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
 
     while (!nodesQueue.isEmpty()) {
       AnimatedNode nextNode = nodesQueue.poll();
-      if (nextNode.mChildren != null) {
-        for (int i = 0; i < nextNode.mChildren.size(); i++) {
-          AnimatedNode child = nextNode.mChildren.get(i);
-          child.mActiveIncomingNodes++;
-          if (child.mBFSColor != mAnimatedGraphBFSColor) {
-            child.mBFSColor = mAnimatedGraphBFSColor;
+      if (nextNode.children != null) {
+        for (int i = 0; i < nextNode.children.size(); i++) {
+          AnimatedNode child = nextNode.children.get(i);
+          child.activeIncomingNodes++;
+          if (child.BFSColor != mAnimatedGraphBFSColor) {
+            child.BFSColor = mAnimatedGraphBFSColor;
             activeNodesCount++;
             nodesQueue.add(child);
           }
@@ -733,7 +764,7 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
     // "predecessors" in the graph have already been visited. It is important to visit nodes in that
     // order as they may often use values of their predecessors in order to calculate "next state"
     // of their own. We start by determining the starting set of nodes by looking for nodes with
-    // `mActiveIncomingNodes = 0` (those can only be the ones that we start BFS in the previous
+    // `activeIncomingNodes = 0` (those can only be the ones that we start BFS in the previous
     // step). We store number of visited nodes in this step in `updatedNodesCount`
 
     mAnimatedGraphBFSColor++;
@@ -745,8 +776,8 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
     // find nodes with zero "incoming nodes", those can be either nodes from `mUpdatedNodes` or
     // ones connected to active animations
     for (AnimatedNode node : nodes) {
-      if (node.mActiveIncomingNodes == 0 && node.mBFSColor != mAnimatedGraphBFSColor) {
-        node.mBFSColor = mAnimatedGraphBFSColor;
+      if (node.activeIncomingNodes == 0 && node.BFSColor != mAnimatedGraphBFSColor) {
+        node.BFSColor = mAnimatedGraphBFSColor;
         updatedNodesCount++;
         nodesQueue.add(node);
       }
@@ -776,15 +807,15 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
         // Potentially send events to JS when the node's value is updated
         ((ValueAnimatedNode) nextNode).onValueUpdate();
       }
-      if (nextNode.mChildren != null) {
-        for (int i = 0; i < nextNode.mChildren.size(); i++) {
-          AnimatedNode child = nextNode.mChildren.get(i);
-          child.mActiveIncomingNodes--;
-          if (child.mBFSColor != mAnimatedGraphBFSColor && child.mActiveIncomingNodes == 0) {
-            child.mBFSColor = mAnimatedGraphBFSColor;
+      if (nextNode.children != null) {
+        for (int i = 0; i < nextNode.children.size(); i++) {
+          AnimatedNode child = nextNode.children.get(i);
+          child.activeIncomingNodes--;
+          if (child.BFSColor != mAnimatedGraphBFSColor && child.activeIncomingNodes == 0) {
+            child.BFSColor = mAnimatedGraphBFSColor;
             updatedNodesCount++;
             nodesQueue.add(child);
-          } else if (child.mBFSColor == mAnimatedGraphBFSColor) {
+          } else if (child.BFSColor == mAnimatedGraphBFSColor) {
             cyclesDetected++;
           }
         }
@@ -794,7 +825,7 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
     // Verify that we've visited *all* active nodes. Throw otherwise as this could mean there is a
     // cycle in animated node graph, or that the graph is only partially set up. We also take
     // advantage of the fact that all active nodes are visited in the step above so that all the
-    // nodes properties `mActiveIncomingNodes` are set to zero.
+    // nodes properties `activeIncomingNodes` are set to zero.
     // In Fabric there can be race conditions between the JS thread setting up or tearing down
     // animated nodes, and Fabric executing them on the UI thread, leading to temporary inconsistent
     // states.

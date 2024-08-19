@@ -9,9 +9,7 @@
  * @oncall react_native
  */
 
-import type {TargetCapabilityFlags} from '../inspector-proxy/types';
-
-import {allowSelfSignedCertsInNodeFetch} from './FetchUtils';
+import {withFetchSelfSignedCertsForAllTests} from './FetchUtils';
 import {
   createAndConnectTarget,
   parseJsonFromDataUri,
@@ -35,16 +33,14 @@ jest.useRealTimers();
 
 jest.setTimeout(10000);
 
-beforeAll(() => {
-  // inspector-proxy uses node-fetch for source map fetching.
-  allowSelfSignedCertsInNodeFetch();
-
-  jest.resetModules();
-});
-
 describe.each(['HTTP', 'HTTPS'])(
   'inspector proxy CDP rewriting hacks over %s',
   protocol => {
+    // Inspector proxy tests are using a self-signed certificate for HTTPS tests.
+    if (protocol === 'HTTPS') {
+      withFetchSelfSignedCertsForAllTests();
+    }
+
     const serverRef = withServerForEachTest({
       logger: undefined,
       projectRoot: __dirname,
@@ -89,6 +85,52 @@ describe.each(['HTTP', 'HTTPS'])(
         expect(
           parseJsonFromDataUri(scriptParsedMessage.params.sourceMapURL),
         ).toEqual({version: 3, file: '\u2757.js'});
+      } finally {
+        device.close();
+        debugger_.close();
+      }
+    });
+
+    test('async source map fetching does not reorder events', async () => {
+      serverRef.app.use(
+        '/source-map',
+        serveStaticJson({
+          version: 3,
+          // Mojibake insurance.
+          file: '\u2757.js',
+        }),
+      );
+      const {device, debugger_} = await createAndConnectTarget(
+        serverRef,
+        autoCleanup.signal,
+        {
+          app: 'bar-app',
+          id: 'page1',
+          title: 'bar-title',
+          vm: 'bar-vm',
+        },
+      );
+      try {
+        await Promise.all([
+          sendFromTargetToDebugger(device, debugger_, 'page1', {
+            method: 'Debugger.scriptParsed',
+            params: {
+              sourceMapURL: `${serverRef.serverBaseUrl}/source-map`,
+            },
+          }),
+          sendFromTargetToDebugger(device, debugger_, 'page1', {
+            method: 'Debugger.aSubsequentEvent',
+          }),
+        ]);
+        expect(debugger_.handle).toHaveBeenNthCalledWith(1, {
+          method: 'Debugger.scriptParsed',
+          params: {
+            sourceMapURL: expect.stringMatching(/^data:/),
+          },
+        });
+        expect(debugger_.handle).toHaveBeenNthCalledWith(2, {
+          method: 'Debugger.aSubsequentEvent',
+        });
       } finally {
         device.close();
         debugger_.close();
@@ -146,7 +188,7 @@ describe.each(['HTTP', 'HTTPS'])(
       }
     });
 
-    describe.each(['10.0.2.2', '10.0.3.2'])(
+    describe.each(['10.0.2.2', '10.0.3.2', '127.0.0.1'])(
       '%s aliasing to and from localhost',
       sourceHost => {
         test('in source map fetching during Debugger.scriptParsed', async () => {

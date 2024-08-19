@@ -22,7 +22,7 @@ std::string as_string(folly::dynamic value) {
 }
 
 std::string explain_error(
-    folly::dynamic::json_pointer_resolution_error<folly::dynamic const> error) {
+    folly::dynamic::json_pointer_resolution_error<const folly::dynamic> error) {
   using err_code = folly::dynamic::json_pointer_resolution_error_code;
 
   switch (error.error_code) {

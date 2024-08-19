@@ -10,36 +10,29 @@
 #include <memory>
 
 #include <folly/dynamic.h>
+#include <react/renderer/components/scrollview/ScrollEvent.h>
 #include <react/renderer/components/view/ViewEventEmitter.h>
 #include <react/renderer/core/EventEmitter.h>
 
 namespace facebook::react {
 
-class ScrollViewMetrics {
- public:
-  Size contentSize;
-  Point contentOffset;
-  EdgeInsets contentInset;
-  Size containerSize;
-  Float zoomScale;
-};
-
 class ScrollViewEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
 
-  void onScroll(const ScrollViewMetrics& scrollViewMetrics) const;
-  void onScrollBeginDrag(const ScrollViewMetrics& scrollViewMetrics) const;
-  void onScrollEndDrag(const ScrollViewMetrics& scrollViewMetrics) const;
-  void onMomentumScrollBegin(const ScrollViewMetrics& scrollViewMetrics) const;
-  void onMomentumScrollEnd(const ScrollViewMetrics& scrollViewMetrics) const;
-  void onScrollToTop(const ScrollViewMetrics& scrollViewMetrics) const;
+  using Metrics = ScrollEvent;
+
+  void onScroll(const ScrollEvent& scrollEvent) const;
+  void experimental_onDiscreteScroll(const ScrollEvent& scrollEvent) const;
+  void onScrollBeginDrag(const ScrollEvent& scrollEvent) const;
+  void onScrollEndDrag(const ScrollEvent& scrollEvent) const;
+  void onMomentumScrollBegin(const ScrollEvent& scrollEvent) const;
+  void onMomentumScrollEnd(const ScrollEvent& scrollEvent) const;
+  void onScrollToTop(const ScrollEvent& scrollEvent) const;
 
  private:
-  void dispatchScrollViewEvent(
-      std::string name,
-      const ScrollViewMetrics& scrollViewMetrics,
-      EventPriority priority = EventPriority::AsynchronousBatched) const;
+  void dispatchScrollViewEvent(std::string name, const ScrollEvent& scrollEvent)
+      const;
 };
 
 } // namespace facebook::react

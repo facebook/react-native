@@ -58,10 +58,7 @@ class PointerEventsProcessorTest : public ::testing::Test {
     // tests)
     RuntimeExecutor runtimeExecutor =
         [](std::function<void(facebook::jsi::Runtime & runtime)>&& callback) {};
-    BackgroundExecutor backgroundExecutor =
-        [](std::function<void()>&& callback) {};
-    uiManager_ = std::make_unique<UIManager>(
-        runtimeExecutor, backgroundExecutor, contextContainer);
+    uiManager_ = std::make_unique<UIManager>(runtimeExecutor, contextContainer);
     uiManager_->setComponentDescriptorRegistry(componentDescriptorRegistry);
 
     // Create a hierarchy of nodes

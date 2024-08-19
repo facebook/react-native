@@ -27,12 +27,9 @@
 // jsinspector-modern
 #import <jsinspector-modern/InspectorFlags.h>
 
-#if __has_include(<React-Codegen/RCTModulesConformingToProtocolsProvider.h>)
+#if __has_include(<ReactCodegen/RCTModulesConformingToProtocolsProvider.h>)
 #define USE_OSS_CODEGEN 1
-#import <React-Codegen/RCTModulesConformingToProtocolsProvider.h>
-#elif __has_include(<React_Codegen/RCTModulesConformingToProtocolsProvider.h>)
-#define USE_OSS_CODEGEN 1
-#import <React_Codegen/RCTModulesConformingToProtocolsProvider.h>
+#import <ReactCodegen/RCTModulesConformingToProtocolsProvider.h>
 #else
 // Meta internal system do not generate the RCTModulesConformingToProtocolsProvider.h file
 #define USE_OSS_CODEGEN 0
@@ -65,32 +62,31 @@ id<RCTTurboModule> RCTAppSetupDefaultModuleFromClass(Class moduleClass)
 {
   // private block used to filter out modules depending on protocol conformance
   NSArray * (^extractModuleConformingToProtocol)(RCTModuleRegistry *, Protocol *) =
-      ^NSArray *(RCTModuleRegistry *moduleRegistry, Protocol *protocol)
-  {
-    NSArray<NSString *> *classNames = @[];
+      ^NSArray *(RCTModuleRegistry *moduleRegistry, Protocol *protocol) {
+        NSArray<NSString *> *classNames = @[];
 
 #if USE_OSS_CODEGEN
-    if (protocol == @protocol(RCTImageURLLoader)) {
-      classNames = [RCTModulesConformingToProtocolsProvider imageURLLoaderClassNames];
-    } else if (protocol == @protocol(RCTImageDataDecoder)) {
-      classNames = [RCTModulesConformingToProtocolsProvider imageDataDecoderClassNames];
-    } else if (protocol == @protocol(RCTURLRequestHandler)) {
-      classNames = [RCTModulesConformingToProtocolsProvider URLRequestHandlerClassNames];
-    }
+        if (protocol == @protocol(RCTImageURLLoader)) {
+          classNames = [RCTModulesConformingToProtocolsProvider imageURLLoaderClassNames];
+        } else if (protocol == @protocol(RCTImageDataDecoder)) {
+          classNames = [RCTModulesConformingToProtocolsProvider imageDataDecoderClassNames];
+        } else if (protocol == @protocol(RCTURLRequestHandler)) {
+          classNames = [RCTModulesConformingToProtocolsProvider URLRequestHandlerClassNames];
+        }
 #endif
 
-    NSMutableArray *modules = [NSMutableArray new];
+        NSMutableArray *modules = [NSMutableArray new];
 
-    for (NSString *className in classNames) {
-      const char *cModuleName = [className cStringUsingEncoding:NSUTF8StringEncoding];
-      id moduleFromLibrary = [moduleRegistry moduleForName:cModuleName];
-      if (![moduleFromLibrary conformsToProtocol:protocol]) {
-        continue;
-      }
-      [modules addObject:moduleFromLibrary];
-    }
-    return modules;
-  };
+        for (NSString *className in classNames) {
+          const char *cModuleName = [className cStringUsingEncoding:NSUTF8StringEncoding];
+          id moduleFromLibrary = [moduleRegistry moduleForName:cModuleName];
+          if (![moduleFromLibrary conformsToProtocol:protocol]) {
+            continue;
+          }
+          [modules addObject:moduleFromLibrary];
+        }
+        return modules;
+      };
 
   // Set up the default RCTImageLoader and RCTNetworking modules.
   if (moduleClass == RCTImageLoader.class) {

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<95487968b66d40e1ec53936b06084931>>
+ * @generated SignedSource<<bd279ee43c537a9de0a38a2801dd76e0>>
  */
 
 /**
@@ -32,15 +32,50 @@ class ReactNativeFeatureFlagsAccessor {
   ReactNativeFeatureFlagsAccessor();
 
   bool commonTestFlag();
-  bool enableBackgroundExecutor();
-  bool useModernRuntimeScheduler();
-  bool enableMicrotasks();
+  bool allowRecursiveCommitsWithSynchronousMountOnAndroid();
   bool batchRenderingUpdatesInEventLoop();
-  bool enableSpannableBuildingUnification();
-  bool enableCustomDrawOrderFabric();
-  bool enableFixForClippedSubviewsCrash();
-  bool inspectorEnableCxxInspectorPackagerConnection();
-  bool inspectorEnableModernCDPRegistry();
+  bool changeOrderOfMountingInstructionsOnAndroid();
+  bool completeReactInstanceCreationOnBgThreadOnAndroid();
+  bool destroyFabricSurfacesInReactInstanceManager();
+  bool enableAlignItemsBaselineOnFabricIOS();
+  bool enableAndroidMixBlendModeProp();
+  bool enableBackgroundStyleApplicator();
+  bool enableCleanTextInputYogaNode();
+  bool enableEagerRootViewAttachment();
+  bool enableEventEmitterRetentionDuringGesturesOnAndroid();
+  bool enableFabricLogs();
+  bool enableFabricRendererExclusively();
+  bool enableGranularShadowTreeStateReconciliation();
+  bool enableLongTaskAPI();
+  bool enableMicrotasks();
+  bool enablePropsUpdateReconciliationAndroid();
+  bool enableReportEventPaintTime();
+  bool enableSynchronousStateUpdates();
+  bool enableUIConsistency();
+  bool enableViewRecycling();
+  bool excludeYogaFromRawProps();
+  bool fetchImagesInViewPreallocation();
+  bool fixIncorrectScrollViewStateUpdateOnAndroid();
+  bool fixMappingOfEventPrioritiesBetweenFabricAndReact();
+  bool fixMissedFabricStateUpdatesOnAndroid();
+  bool forceBatchingMountItemsOnAndroid();
+  bool fuseboxEnabledDebug();
+  bool fuseboxEnabledRelease();
+  bool initEagerTurboModulesOnNativeModulesQueueAndroid();
+  bool lazyAnimationCallbacks();
+  bool loadVectorDrawablesOnImages();
+  bool setAndroidLayoutDirection();
+  bool traceTurboModulePromiseRejectionsOnAndroid();
+  bool useFabricInterop();
+  bool useImmediateExecutorInAndroidBridgeless();
+  bool useModernRuntimeScheduler();
+  bool useNativeViewConfigsInBridgelessMode();
+  bool useNewReactImageViewBackgroundDrawing();
+  bool useOptimisedViewPreallocationOnAndroid();
+  bool useRuntimeShadowNodeReferenceUpdate();
+  bool useRuntimeShadowNodeReferenceUpdateOnLayout();
+  bool useStateAlignmentMechanism();
+  bool useTurboModuleInterop();
 
   void override(std::unique_ptr<ReactNativeFeatureFlagsProvider> provider);
 
@@ -51,18 +86,53 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 10> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 45> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
-  std::atomic<std::optional<bool>> enableBackgroundExecutor_;
-  std::atomic<std::optional<bool>> useModernRuntimeScheduler_;
-  std::atomic<std::optional<bool>> enableMicrotasks_;
+  std::atomic<std::optional<bool>> allowRecursiveCommitsWithSynchronousMountOnAndroid_;
   std::atomic<std::optional<bool>> batchRenderingUpdatesInEventLoop_;
-  std::atomic<std::optional<bool>> enableSpannableBuildingUnification_;
-  std::atomic<std::optional<bool>> enableCustomDrawOrderFabric_;
-  std::atomic<std::optional<bool>> enableFixForClippedSubviewsCrash_;
-  std::atomic<std::optional<bool>> inspectorEnableCxxInspectorPackagerConnection_;
-  std::atomic<std::optional<bool>> inspectorEnableModernCDPRegistry_;
+  std::atomic<std::optional<bool>> changeOrderOfMountingInstructionsOnAndroid_;
+  std::atomic<std::optional<bool>> completeReactInstanceCreationOnBgThreadOnAndroid_;
+  std::atomic<std::optional<bool>> destroyFabricSurfacesInReactInstanceManager_;
+  std::atomic<std::optional<bool>> enableAlignItemsBaselineOnFabricIOS_;
+  std::atomic<std::optional<bool>> enableAndroidMixBlendModeProp_;
+  std::atomic<std::optional<bool>> enableBackgroundStyleApplicator_;
+  std::atomic<std::optional<bool>> enableCleanTextInputYogaNode_;
+  std::atomic<std::optional<bool>> enableEagerRootViewAttachment_;
+  std::atomic<std::optional<bool>> enableEventEmitterRetentionDuringGesturesOnAndroid_;
+  std::atomic<std::optional<bool>> enableFabricLogs_;
+  std::atomic<std::optional<bool>> enableFabricRendererExclusively_;
+  std::atomic<std::optional<bool>> enableGranularShadowTreeStateReconciliation_;
+  std::atomic<std::optional<bool>> enableLongTaskAPI_;
+  std::atomic<std::optional<bool>> enableMicrotasks_;
+  std::atomic<std::optional<bool>> enablePropsUpdateReconciliationAndroid_;
+  std::atomic<std::optional<bool>> enableReportEventPaintTime_;
+  std::atomic<std::optional<bool>> enableSynchronousStateUpdates_;
+  std::atomic<std::optional<bool>> enableUIConsistency_;
+  std::atomic<std::optional<bool>> enableViewRecycling_;
+  std::atomic<std::optional<bool>> excludeYogaFromRawProps_;
+  std::atomic<std::optional<bool>> fetchImagesInViewPreallocation_;
+  std::atomic<std::optional<bool>> fixIncorrectScrollViewStateUpdateOnAndroid_;
+  std::atomic<std::optional<bool>> fixMappingOfEventPrioritiesBetweenFabricAndReact_;
+  std::atomic<std::optional<bool>> fixMissedFabricStateUpdatesOnAndroid_;
+  std::atomic<std::optional<bool>> forceBatchingMountItemsOnAndroid_;
+  std::atomic<std::optional<bool>> fuseboxEnabledDebug_;
+  std::atomic<std::optional<bool>> fuseboxEnabledRelease_;
+  std::atomic<std::optional<bool>> initEagerTurboModulesOnNativeModulesQueueAndroid_;
+  std::atomic<std::optional<bool>> lazyAnimationCallbacks_;
+  std::atomic<std::optional<bool>> loadVectorDrawablesOnImages_;
+  std::atomic<std::optional<bool>> setAndroidLayoutDirection_;
+  std::atomic<std::optional<bool>> traceTurboModulePromiseRejectionsOnAndroid_;
+  std::atomic<std::optional<bool>> useFabricInterop_;
+  std::atomic<std::optional<bool>> useImmediateExecutorInAndroidBridgeless_;
+  std::atomic<std::optional<bool>> useModernRuntimeScheduler_;
+  std::atomic<std::optional<bool>> useNativeViewConfigsInBridgelessMode_;
+  std::atomic<std::optional<bool>> useNewReactImageViewBackgroundDrawing_;
+  std::atomic<std::optional<bool>> useOptimisedViewPreallocationOnAndroid_;
+  std::atomic<std::optional<bool>> useRuntimeShadowNodeReferenceUpdate_;
+  std::atomic<std::optional<bool>> useRuntimeShadowNodeReferenceUpdateOnLayout_;
+  std::atomic<std::optional<bool>> useStateAlignmentMechanism_;
+  std::atomic<std::optional<bool>> useTurboModuleInterop_;
 };
 
 } // namespace facebook::react

@@ -12,6 +12,8 @@
 #import "RCTDefines.h"
 #import "RCTLog.h"
 
+#import <jsinspector-modern/InspectorFlags.h>
+
 NSString *const RCTBundleURLProviderUpdatedNotification = @"RCTBundleURLProviderUpdatedNotification";
 
 const NSUInteger kRCTBundleURLProviderDefaultPort = RCT_METRO_PORT;
@@ -258,7 +260,26 @@ static NSURL *serverRootWithHostPort(NSString *hostPort, NSString *scheme)
                      enableMinification:enableMinification
                         inlineSourceMap:inlineSourceMap
                             modulesOnly:NO
-                              runModule:YES];
+                              runModule:YES
+                      additionalOptions:nil];
+}
+
++ (NSURL *__nullable)jsBundleURLForBundleRoot:(NSString *)bundleRoot
+                                 packagerHost:(NSString *)packagerHost
+                                    enableDev:(BOOL)enableDev
+                           enableMinification:(BOOL)enableMinification
+                              inlineSourceMap:(BOOL)inlineSourceMap
+                            additionalOptions:(NSDictionary<NSString *, NSString *> *__nullable)additionalOptions
+{
+  return [self jsBundleURLForBundleRoot:bundleRoot
+                           packagerHost:packagerHost
+                         packagerScheme:nil
+                              enableDev:enableDev
+                     enableMinification:enableMinification
+                        inlineSourceMap:inlineSourceMap
+                            modulesOnly:NO
+                              runModule:YES
+                      additionalOptions:additionalOptions];
 }
 
 + (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot
@@ -270,9 +291,30 @@ static NSURL *serverRootWithHostPort(NSString *hostPort, NSString *scheme)
                         modulesOnly:(BOOL)modulesOnly
                           runModule:(BOOL)runModule
 {
+  return [self jsBundleURLForBundleRoot:bundleRoot
+                           packagerHost:packagerHost
+                         packagerScheme:nil
+                              enableDev:enableDev
+                     enableMinification:enableMinification
+                        inlineSourceMap:inlineSourceMap
+                            modulesOnly:modulesOnly
+                              runModule:runModule
+                      additionalOptions:nil];
+}
+
++ (NSURL *__nullable)jsBundleURLForBundleRoot:(NSString *)bundleRoot
+                                 packagerHost:(NSString *)packagerHost
+                               packagerScheme:(NSString *__nullable)scheme
+                                    enableDev:(BOOL)enableDev
+                           enableMinification:(BOOL)enableMinification
+                              inlineSourceMap:(BOOL)inlineSourceMap
+                                  modulesOnly:(BOOL)modulesOnly
+                                    runModule:(BOOL)runModule
+                            additionalOptions:(NSDictionary<NSString *, NSString *> *__nullable)additionalOptions
+{
   NSString *path = [NSString stringWithFormat:@"/%@.bundle", bundleRoot];
   BOOL lazy = enableDev;
-  NSArray<NSURLQueryItem *> *queryItems = @[
+  NSMutableArray<NSURLQueryItem *> *queryItems = [[NSMutableArray alloc] initWithArray:@[
     [[NSURLQueryItem alloc] initWithName:@"platform" value:RCTPlatformName],
     [[NSURLQueryItem alloc] initWithName:@"dev" value:enableDev ? @"true" : @"false"],
     [[NSURLQueryItem alloc] initWithName:@"lazy" value:lazy ? @"true" : @"false"],
@@ -280,13 +322,33 @@ static NSURL *serverRootWithHostPort(NSString *hostPort, NSString *scheme)
     [[NSURLQueryItem alloc] initWithName:@"inlineSourceMap" value:inlineSourceMap ? @"true" : @"false"],
     [[NSURLQueryItem alloc] initWithName:@"modulesOnly" value:modulesOnly ? @"true" : @"false"],
     [[NSURLQueryItem alloc] initWithName:@"runModule" value:runModule ? @"true" : @"false"],
-  ];
+  ]];
+  auto &inspectorFlags = facebook::react::jsinspector_modern::InspectorFlags::getInstance();
+  if (inspectorFlags.getFuseboxEnabled()) {
+    [queryItems addObject:[[NSURLQueryItem alloc] initWithName:@"excludeSource" value:@"true"]];
+    [queryItems addObject:[[NSURLQueryItem alloc] initWithName:@"sourcePaths" value:@"url-server"]];
+  }
 
   NSString *bundleID = [[NSBundle mainBundle] objectForInfoDictionaryKey:(NSString *)kCFBundleIdentifierKey];
   if (bundleID) {
-    queryItems = [queryItems arrayByAddingObject:[[NSURLQueryItem alloc] initWithName:@"app" value:bundleID]];
+    [queryItems addObject:[[NSURLQueryItem alloc] initWithName:@"app" value:bundleID]];
   }
-  return [[self class] resourceURLForResourcePath:path packagerHost:packagerHost scheme:scheme queryItems:queryItems];
+
+  if (additionalOptions) {
+    for (NSString *key in additionalOptions) {
+      NSString *value = [additionalOptions objectForKey:key];
+      if (!value) {
+        NSLog(@"RCTBundleURLProvider: Ignoring the additional option: '%@' due to nil value.", key);
+        continue;
+      }
+      [queryItems addObject:[[NSURLQueryItem alloc] initWithName:key value:value]];
+    }
+  }
+
+  return [[self class] resourceURLForResourcePath:path
+                                     packagerHost:packagerHost
+                                           scheme:scheme
+                                       queryItems:[queryItems copy]];
 }
 
 + (NSURL *)resourceURLForResourcePath:(NSString *)path

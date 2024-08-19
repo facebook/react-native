@@ -9,17 +9,13 @@
  */
 
 import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
+import type {EventEmitter} from 'react-native/Libraries/Types/CodegenTypes';
 
 import {TurboModuleRegistry} from 'react-native';
 
 export enum EnumInt {
   IA = 23,
   IB = 42,
-}
-
-export enum EnumFloat {
-  FA = 1.23,
-  FB = 4.56,
 }
 
 export enum EnumNone {
@@ -74,7 +70,17 @@ export type MenuItem = {
   items?: Array<MenuItem>,
 };
 
+export type CustomDeviceEvent = {
+  type: string,
+  level: number,
+  degree?: ?number,
+};
+
 export interface Spec extends TurboModule {
+  +onPress: EventEmitter<void>;
+  +onClick: EventEmitter<string>;
+  +onChange: EventEmitter<ObjectStruct>;
+  +onSubmit: EventEmitter<ObjectStruct[]>;
   +getArray: (arg: Array<ObjectStruct | null>) => Array<ObjectStruct | null>;
   +getBool: (arg: boolean) => boolean;
   +getConstants: () => ConstantsStruct;
@@ -83,7 +89,7 @@ export interface Spec extends TurboModule {
   +consumeCustomHostObject: (customHostObject: CustomHostObject) => string;
   +getBinaryTreeNode: (arg: BinaryTreeNode) => BinaryTreeNode;
   +getGraphNode: (arg: GraphNode) => GraphNode;
-  +getNumEnum: (arg: EnumInt) => EnumFloat;
+  +getNumEnum: (arg: EnumInt) => EnumInt;
   +getStrEnum: (arg: EnumNone) => EnumStr;
   +getMap: (arg: {[key: string]: ?number}) => {[key: string]: ?number};
   +getNumber: (arg: number) => number;

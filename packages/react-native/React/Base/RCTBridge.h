@@ -61,10 +61,6 @@ void RCTEnableFabricInteropLayer(BOOL enabled);
 BOOL RCTTurboModuleSyncVoidMethodsEnabled(void);
 void RCTEnableTurboModuleSyncVoidMethods(BOOL enabled);
 
-// Use a shared queue for executing module methods
-BOOL RCTTurboModuleSharedQueueEnabled(void);
-void RCTEnableTurboModuleSharedQueue(BOOL enabled);
-
 BOOL RCTUIManagerDispatchAccessibilityManagerInitOntoMain(void);
 void RCTUIManagerSetDispatchAccessibilityManagerInitOntoMain(BOOL enabled);
 

@@ -12,6 +12,7 @@
 
 import type {
   NamedShape,
+  NativeModuleEventEmitterShape,
   NativeModuleFunctionTypeAnnotation,
   NativeModuleParamTypeAnnotation,
   NativeModulePropertyShape,
@@ -54,9 +55,11 @@ const HostFunctionTemplate = ({
 
 const ModuleClassConstructorTemplate = ({
   hasteModuleName,
+  eventEmitters,
   methods,
 }: $ReadOnly<{
   hasteModuleName: string,
+  eventEmitters: $ReadOnlyArray<NativeModuleEventEmitterShape>,
   methods: $ReadOnlyArray<{
     propertyName: string,
     argCount: number,
@@ -69,7 +72,21 @@ ${methods
   .map(({propertyName, argCount}) => {
     return `  methodMap_["${propertyName}"] = MethodMetadata {${argCount}, __hostFunction_${hasteModuleName}SpecJSI_${propertyName}};`;
   })
-  .join('\n')}
+  .join('\n')}${
+    eventEmitters.length > 0
+      ? eventEmitters
+          .map(eventEmitter => {
+            return `
+  eventEmitterMap_["${eventEmitter.name}"] = std::make_shared<AsyncEventEmitter<folly::dynamic>>();`;
+          })
+          .join('')
+      : ''
+  }${
+    eventEmitters.length > 0
+      ? `
+  setEventEmitterCallback(params.instance);`
+      : ''
+  }
 }`.trim();
 };
 
@@ -334,9 +351,9 @@ function translateReturnTypeToJniType(
     case 'DoubleTypeAnnotation':
       return nullable ? 'Ljava/lang/Double;' : 'D';
     case 'FloatTypeAnnotation':
-      return nullable ? 'Ljava/lang/Float;' : 'F';
+      return nullable ? 'Ljava/lang/Double;' : 'D';
     case 'Int32TypeAnnotation':
-      return nullable ? 'Ljava/lang/Integer;' : 'I';
+      return nullable ? 'Ljava/lang/Double;' : 'D';
     case 'PromiseTypeAnnotation':
       return 'Lcom/facebook/react/bridge/Promise;';
     case 'GenericObjectTypeAnnotation':
@@ -438,11 +455,11 @@ module.exports = {
       .map(hasteModuleName => {
         const {
           aliasMap,
-          spec: {properties},
+          spec: {eventEmitters, methods},
         } = nativeModules[hasteModuleName];
         const resolveAlias = createAliasResolver(aliasMap);
 
-        const translatedMethods = properties
+        const translatedMethods = methods
           .map(property =>
             translateMethodForImplementation(
               hasteModuleName,
@@ -457,7 +474,8 @@ module.exports = {
           '\n\n' +
           ModuleClassConstructorTemplate({
             hasteModuleName,
-            methods: properties
+            eventEmitters,
+            methods: methods
               .map(({name: propertyName, typeAnnotation}) => {
                 const [{returnTypeAnnotation, params}] =
                   unwrapNullable<NativeModuleFunctionTypeAnnotation>(

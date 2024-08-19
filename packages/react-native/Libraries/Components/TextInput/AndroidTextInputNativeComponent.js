@@ -385,15 +385,6 @@ export type NativeProps = $ReadOnly<{|
     |}>,
   >,
 
-  onTextInput?: ?BubblingEventHandler<
-    $ReadOnly<{|
-      target: Int32,
-      text: string,
-      previousText: string,
-      range: $ReadOnly<{|start: Double, end: Double|}>,
-    |}>,
-  >,
-
   /**
    * Callback that is called when text input ends.
    */
@@ -662,12 +653,6 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig = {
         captured: 'onSubmitEditingCapture',
       },
     },
-    topTextInput: {
-      phasedRegistrationNames: {
-        bubbled: 'onTextInput',
-        captured: 'onTextInputCapture',
-      },
-    },
   },
   directEventTypes: {
     topScroll: {
@@ -754,6 +739,9 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig = {
     },
     borderTopLeftRadius: true,
     borderTopColor: {process: require('../../StyleSheet/processColor').default},
+    experimental_boxShadow: {
+      process: require('../../StyleSheet/processBoxShadow').default,
+    },
   },
 };
 

@@ -31,6 +31,10 @@ ${DO_NOT_MODIFY_COMMENT}
 #include <react/featureflags/ReactNativeFeatureFlagsProvider.h>
 #include <memory>
 
+#ifndef RN_EXPORT
+#define RN_EXPORT __attribute__((visibility("default")))
+#endif
+
 namespace facebook::react {
 
 /**
@@ -47,7 +51,7 @@ ${Object.entries(definitions.common)
       `  /**
    * ${flagConfig.description}
    */
-  static ${getCxxTypeFromDefaultValue(flagConfig.defaultValue)} ${flagName}();`,
+  RN_EXPORT static ${getCxxTypeFromDefaultValue(flagConfig.defaultValue)} ${flagName}();`,
   )
   .join('\n\n')}
 
@@ -69,7 +73,7 @@ ${Object.entries(definitions.common)
    *     std::make_unique<MyReactNativeFeatureFlags>());
    * \`\`\`
    */
-  static void override(
+  RN_EXPORT static void override(
       std::unique_ptr<ReactNativeFeatureFlagsProvider> provider);
 
   /**
@@ -84,7 +88,7 @@ ${Object.entries(definitions.common)
    * call \`dangerouslyReset\` after destroying the runtime and \`override\` again
    * before initializing the new one.
    */
-  static void dangerouslyReset();
+  RN_EXPORT static void dangerouslyReset();
 
  private:
   ReactNativeFeatureFlags() = delete;

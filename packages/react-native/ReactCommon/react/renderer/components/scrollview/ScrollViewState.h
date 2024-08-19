@@ -14,8 +14,6 @@
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
 namespace facebook::react {
@@ -52,9 +50,6 @@ class ScrollViewState final {
     return folly::dynamic::object("contentOffsetLeft", contentOffset.x)(
         "contentOffsetTop", contentOffset.y)(
         "scrollAwayPaddingTop", scrollAwayPaddingTop);
-  };
-  MapBuffer getMapBuffer() const {
-    return MapBufferBuilder::EMPTY();
   };
 #endif
 };

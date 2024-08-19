@@ -11,6 +11,7 @@
 import type {RNTesterModule} from '../../types/RNTesterTypes';
 
 import ColorStylesExample from './ColorStylesExample';
+import CombineExample from './CombineExample';
 import ComposeAnimationsWithEasingExample from './ComposeAnimationsWithEasingExample';
 import ComposingExample from './ComposingExample';
 import ContinuousInteractionsExample from './ContinuousInteractionsExample';
@@ -18,6 +19,7 @@ import EasingExample from './EasingExample';
 import FadeInViewExample from './FadeInViewExample';
 import LoopingExample from './LoopingExample';
 import MovingBoxExample from './MovingBoxExample';
+import PressabilityWithNativeDrivers from './PressabilityWithNativeDrivers';
 import RotatingImagesExample from './RotatingImagesExample';
 import TransformBounceExample from './TransformBounceExample';
 import TransformStylesExample from './TransformStylesExample';
@@ -43,5 +45,7 @@ export default ({
     TransformBounceExample,
     LoopingExample,
     ContinuousInteractionsExample,
+    CombineExample,
+    PressabilityWithNativeDrivers,
   ],
 }: RNTesterModule);

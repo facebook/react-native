@@ -34,7 +34,7 @@ public class HermesExecutor extends JavaScriptExecutor {
     super(
         config == null
             ? initHybridDefaultConfig(enableDebugger, debuggerName)
-            : initHybrid(enableDebugger, debuggerName, config.heapSizeMB));
+            : initHybrid(enableDebugger, debuggerName, config.getHeapSizeMB()));
   }
 
   @Override

@@ -13,18 +13,19 @@
 namespace facebook::yoga {
 
 void layoutAbsoluteChild(
-    const yoga::Node* const containingNode,
-    const yoga::Node* const node,
-    yoga::Node* const child,
-    const float containingBlockWidth,
-    const float containingBlockHeight,
-    const SizingMode widthMode,
-    const Direction direction,
+    const yoga::Node* containingNode,
+    const yoga::Node* node,
+    yoga::Node* child,
+    float containingBlockWidth,
+    float containingBlockHeight,
+    SizingMode widthMode,
+    Direction direction,
     LayoutData& layoutMarkerData,
-    const uint32_t depth,
-    const uint32_t generationCount);
+    uint32_t depth,
+    uint32_t generationCount);
 
-void layoutAbsoluteDescendants(
+// Returns if some absolute descendant has new layout
+bool layoutAbsoluteDescendants(
     yoga::Node* containingNode,
     yoga::Node* currentNode,
     SizingMode widthSizingMode,

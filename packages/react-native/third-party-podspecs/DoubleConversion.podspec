@@ -3,6 +3,9 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
+double_conversion_config = get_double_conversion_config()
+double_conversion_git_url = double_conversion_config[:git]
+
 Pod::Spec.new do |spec|
   spec.name = 'DoubleConversion'
   spec.version = '1.1.6'
@@ -11,7 +14,7 @@ Pod::Spec.new do |spec|
   spec.summary = 'Efficient binary-decimal and decimal-binary conversion routines for IEEE doubles'
   spec.authors = 'Google'
   spec.prepare_command = 'mv src double-conversion'
-  spec.source = { :git => 'https://github.com/google/double-conversion.git',
+  spec.source = { :git => double_conversion_git_url,
                   :tag => "v#{spec.version}" }
   spec.module_name = 'DoubleConversion'
   spec.header_dir = 'double-conversion'

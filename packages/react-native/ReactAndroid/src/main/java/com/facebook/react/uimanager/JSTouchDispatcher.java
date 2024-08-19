@@ -9,9 +9,15 @@ package com.facebook.react.uimanager;
 
 import android.view.MotionEvent;
 import android.view.ViewGroup;
+import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Nullsafe;
+import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.UIManager;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
+import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.TouchEvent;
 import com.facebook.react.uimanager.events.TouchEventCoalescingKeyHelper;
@@ -22,18 +28,21 @@ import com.facebook.react.uimanager.events.TouchEventType;
  * need to call handleTouchEvent from onTouchEvent and onInterceptTouchEvent. It will correctly find
  * the right view to handle the touch and also dispatch the appropriate event to JS
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class JSTouchDispatcher {
 
   private int mTargetTag = -1;
   private final float[] mTargetCoordinates = new float[2];
   private boolean mChildIsHandlingNativeGesture = false;
   private long mGestureStartTime = TouchEvent.UNSET;
-  private final ViewGroup mRootViewGroup;
+
+  private final ViewGroup mViewGroup;
+
   private final TouchEventCoalescingKeyHelper mTouchEventCoalescingKeyHelper =
       new TouchEventCoalescingKeyHelper();
 
   public JSTouchDispatcher(ViewGroup viewGroup) {
-    mRootViewGroup = viewGroup;
+    mViewGroup = viewGroup;
   }
 
   public void onChildStartedNativeGesture(
@@ -55,6 +64,10 @@ public class JSTouchDispatcher {
     mChildIsHandlingNativeGesture = false;
   }
 
+  public void handleTouchEvent(MotionEvent ev, EventDispatcher eventDispatcher) {
+    handleTouchEvent(ev, eventDispatcher, null);
+  }
+
   /**
    * Main catalyst view is responsible for collecting and sending touch events to JS. This method
    * reacts for an incoming android native touch events ({@link MotionEvent}) and calls into {@link
@@ -63,7 +76,8 @@ public class JSTouchDispatcher {
    * method for figuring out a react view ID in the case of ACTION_DOWN event (when the gesture
    * starts).
    */
-  public void handleTouchEvent(MotionEvent ev, EventDispatcher eventDispatcher) {
+  public void handleTouchEvent(
+      MotionEvent ev, EventDispatcher eventDispatcher, @Nullable ReactContext reactContext) {
     int action = ev.getAction() & MotionEvent.ACTION_MASK;
     if (action == MotionEvent.ACTION_DOWN) {
       if (mTargetTag != -1) {
@@ -76,11 +90,13 @@ public class JSTouchDispatcher {
       // this gesture
       mChildIsHandlingNativeGesture = false;
       mGestureStartTime = ev.getEventTime();
-
       mTargetTag = findTargetTagAndSetCoordinates(ev);
+      int surfaceId = UIManagerHelper.getSurfaceId(mViewGroup);
+      markActiveTouchForTag(surfaceId, mTargetTag, reactContext);
+
       eventDispatcher.dispatchEvent(
           TouchEvent.obtain(
-              UIManagerHelper.getSurfaceId(mRootViewGroup),
+              UIManagerHelper.getSurfaceId(mViewGroup),
               mTargetTag,
               TouchEventType.START,
               ev,
@@ -103,9 +119,10 @@ public class JSTouchDispatcher {
       // End of the gesture. We reset target tag to -1 and expect no further event associated with
       // this gesture.
       findTargetTagAndSetCoordinates(ev);
+      int surfaceId = UIManagerHelper.getSurfaceId(mViewGroup);
       eventDispatcher.dispatchEvent(
           TouchEvent.obtain(
-              UIManagerHelper.getSurfaceId(mRootViewGroup),
+              surfaceId,
               mTargetTag,
               TouchEventType.END,
               ev,
@@ -113,6 +130,7 @@ public class JSTouchDispatcher {
               mTargetCoordinates[0],
               mTargetCoordinates[1],
               mTouchEventCoalescingKeyHelper));
+      sweepActiveTouchForTag(surfaceId, mTargetTag, reactContext);
       mTargetTag = -1;
       mGestureStartTime = TouchEvent.UNSET;
     } else if (action == MotionEvent.ACTION_MOVE) {
@@ -120,7 +138,7 @@ public class JSTouchDispatcher {
       findTargetTagAndSetCoordinates(ev);
       eventDispatcher.dispatchEvent(
           TouchEvent.obtain(
-              UIManagerHelper.getSurfaceId(mRootViewGroup),
+              UIManagerHelper.getSurfaceId(mViewGroup),
               mTargetTag,
               TouchEventType.MOVE,
               ev,
@@ -132,7 +150,7 @@ public class JSTouchDispatcher {
       // New pointer goes down, this can only happen after ACTION_DOWN is sent for the first pointer
       eventDispatcher.dispatchEvent(
           TouchEvent.obtain(
-              UIManagerHelper.getSurfaceId(mRootViewGroup),
+              UIManagerHelper.getSurfaceId(mViewGroup),
               mTargetTag,
               TouchEventType.START,
               ev,
@@ -144,7 +162,7 @@ public class JSTouchDispatcher {
       // Exactly one of the pointers goes up
       eventDispatcher.dispatchEvent(
           TouchEvent.obtain(
-              UIManagerHelper.getSurfaceId(mRootViewGroup),
+              UIManagerHelper.getSurfaceId(mViewGroup),
               mTargetTag,
               TouchEventType.END,
               ev,
@@ -160,6 +178,9 @@ public class JSTouchDispatcher {
             ReactConstants.TAG,
             "Received an ACTION_CANCEL touch event for which we have no corresponding ACTION_DOWN");
       }
+      int surfaceId = UIManagerHelper.getSurfaceId(mViewGroup);
+      sweepActiveTouchForTag(surfaceId, mTargetTag, reactContext);
+
       mTargetTag = -1;
       mGestureStartTime = TouchEvent.UNSET;
     } else {
@@ -169,10 +190,38 @@ public class JSTouchDispatcher {
     }
   }
 
+  private void markActiveTouchForTag(
+      int surfaceId, int reactTag, @Nullable ReactContext reactContext) {
+    if (!ReactNativeFeatureFlags.enableEventEmitterRetentionDuringGesturesOnAndroid()) {
+      return;
+    }
+    if (reactContext == null) {
+      return;
+    }
+    UIManager uiManager = UIManagerHelper.getUIManager(reactContext, UIManagerType.FABRIC);
+    if (uiManager != null) {
+      uiManager.markActiveTouchForTag(surfaceId, reactTag);
+    }
+  }
+
+  private void sweepActiveTouchForTag(
+      int surfaceId, int reactTag, @Nullable ReactContext reactContext) {
+    if (!ReactNativeFeatureFlags.enableEventEmitterRetentionDuringGesturesOnAndroid()) {
+      return;
+    }
+    if (reactContext == null) {
+      return;
+    }
+    UIManager uiManager = UIManagerHelper.getUIManager(reactContext, UIManagerType.FABRIC);
+    if (uiManager != null) {
+      uiManager.sweepActiveTouchForTag(surfaceId, reactTag);
+    }
+  }
+
   private int findTargetTagAndSetCoordinates(MotionEvent ev) {
     // This method updates `mTargetCoordinates` with coordinates for the motion event.
     return TouchTargetHelper.findTargetTagAndCoordinatesForTouch(
-        ev.getX(), ev.getY(), mRootViewGroup, mTargetCoordinates, null);
+        ev.getX(), ev.getY(), mViewGroup, mTargetCoordinates, null);
   }
 
   private void dispatchCancelEvent(MotionEvent androidEvent, EventDispatcher eventDispatcher) {
@@ -193,7 +242,7 @@ public class JSTouchDispatcher {
     Assertions.assertNotNull(eventDispatcher)
         .dispatchEvent(
             TouchEvent.obtain(
-                UIManagerHelper.getSurfaceId(mRootViewGroup),
+                UIManagerHelper.getSurfaceId(mViewGroup),
                 mTargetTag,
                 TouchEventType.CANCEL,
                 androidEvent,

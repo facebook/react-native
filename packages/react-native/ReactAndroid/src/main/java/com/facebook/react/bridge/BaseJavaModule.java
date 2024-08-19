@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.ThreadConfined;
+import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.DeprecatedInNewArchitecture;
 import com.facebook.react.common.annotations.StableReactNativeAPI;
@@ -54,6 +55,8 @@ public abstract class BaseJavaModule implements NativeModule {
   public static final String METHOD_TYPE_PROMISE = "promise";
   public static final String METHOD_TYPE_SYNC = "sync";
 
+  protected @Nullable CxxCallbackImpl mEventEmitterCallback;
+
   private final @Nullable ReactApplicationContext mReactApplicationContext;
 
   public BaseJavaModule() {
@@ -64,7 +67,9 @@ public abstract class BaseJavaModule implements NativeModule {
     mReactApplicationContext = reactContext;
   }
 
-  /** @return a map of constants this module exports to JS. Supports JSON types. */
+  /**
+   * @return a map of constants this module exports to JS. Supports JSON types.
+   */
   @DeprecatedInNewArchitecture()
   public @Nullable Map<String, Object> getConstants() {
     return null;
@@ -94,7 +99,8 @@ public abstract class BaseJavaModule implements NativeModule {
   protected final ReactApplicationContext getReactApplicationContext() {
     return Assertions.assertNotNull(
         mReactApplicationContext,
-        "Tried to get ReactApplicationContext even though NativeModule wasn't instantiated with one");
+        "Tried to get ReactApplicationContext even though NativeModule wasn't instantiated with"
+            + " one");
   }
 
   /**
@@ -125,5 +131,10 @@ public abstract class BaseJavaModule implements NativeModule {
       ReactSoftExceptionLogger.logSoftException(ReactConstants.TAG, new RuntimeException(msg));
     }
     return null;
+  }
+
+  @DoNotStrip
+  private final void setEventEmitterCallback(CxxCallbackImpl eventEmitterCallback) {
+    mEventEmitterCallback = eventEmitterCallback;
   }
 }

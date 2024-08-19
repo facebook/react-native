@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <jsinspector-modern/Parsing.h>
+#include "CdpJson.h"
 
 namespace facebook::react::jsinspector_modern {
 
@@ -19,6 +19,11 @@ namespace facebook::react::jsinspector_modern {
  */
 class RuntimeAgentDelegate {
  public:
+  class ExportedState {
+   public:
+    virtual ~ExportedState() = default;
+  };
+
   virtual ~RuntimeAgentDelegate() = default;
 
   /**
@@ -30,6 +35,17 @@ class RuntimeAgentDelegate {
    * agent expects another agent to respond to the request instead.
    */
   virtual bool handleRequest(const cdp::PreparsedRequest& req) = 0;
+
+  /**
+   * Export RuntimeAgentDelegate-specific state that should persist across
+   * consecutive RuntimeTargets in this session.
+   * If the RuntimeTarget is destroyed and later logically replaced by a new
+   * one (e.g. as part of an Instance reload), the state returned here will be
+   * passed to \ref RuntimeTargetDelegate::createAgentDelegate.
+   */
+  inline virtual std::unique_ptr<ExportedState> getExportedState() {
+    return std::make_unique<ExportedState>();
+  }
 };
 
 } // namespace facebook::react::jsinspector_modern

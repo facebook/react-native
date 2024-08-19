@@ -19,7 +19,7 @@ add_compile_options(
 # TODO This should be exported to its own folder hierarchy
 add_library(
         callinvokerholder
-        STATIC
+        OBJECT
         ReactCommon/CallInvokerHolder.cpp
         ReactCommon/NativeMethodCallInvokerHolder.cpp
 )
@@ -40,14 +40,20 @@ target_link_libraries(callinvokerholder
 ### react_nativemodule_manager ###
 ##################################
 
+include(${REACT_ANDROID_DIR}/src/main/jni/first-party/jni-lib-merge/SoMerging-utils.cmake)
+
 # TODO: rename to react_nativemodule_manager
 add_library(
         turbomodulejsijni
-        SHARED
+        OBJECT
+        ReactCommon/BindingsInstallerHolder.cpp
         ReactCommon/CompositeTurboModuleManagerDelegate.cpp
         ReactCommon/OnLoad.cpp
         ReactCommon/TurboModuleManager.cpp
+        $<TARGET_OBJECTS:logger>
+        $<TARGET_OBJECTS:react_bridging>
 )
+target_merge_so(turbomodulejsijni)
 
 target_include_directories(
         turbomodulejsijni

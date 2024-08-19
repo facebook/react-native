@@ -8,33 +8,38 @@
  * @flow strict
  */
 
-import type {HighResTimeStamp, PerformanceEntryType} from './PerformanceEntry';
+import type {
+  DOMHighResTimeStamp,
+  PerformanceEntryType,
+} from './PerformanceEntry';
 
 import warnOnce from '../../../../Libraries/Utilities/warnOnce';
-import NativePerformanceObserver from './NativePerformanceObserver';
+import {PerformanceEventTiming} from './EventTiming';
 import {PerformanceEntry} from './PerformanceEntry';
-import PerformanceEventTiming from './PerformanceEventTiming';
 import {
   performanceEntryTypeToRaw,
   rawToPerformanceEntry,
   rawToPerformanceEntryType,
 } from './RawPerformanceEntry';
+import NativePerformanceObserver from './specs/NativePerformanceObserver';
 
 export type PerformanceEntryList = $ReadOnlyArray<PerformanceEntry>;
 
+export {PerformanceEntry} from './PerformanceEntry';
+
 export class PerformanceObserverEntryList {
-  _entries: PerformanceEntryList;
+  #entries: PerformanceEntryList;
 
   constructor(entries: PerformanceEntryList) {
-    this._entries = entries;
+    this.#entries = entries;
   }
 
   getEntries(): PerformanceEntryList {
-    return this._entries;
+    return this.#entries;
   }
 
   getEntriesByType(type: PerformanceEntryType): PerformanceEntryList {
-    return this._entries.filter(entry => entry.entryType === type);
+    return this.#entries.filter(entry => entry.entryType === type);
   }
 
   getEntriesByName(
@@ -42,9 +47,9 @@ export class PerformanceObserverEntryList {
     type?: PerformanceEntryType,
   ): PerformanceEntryList {
     if (type === undefined) {
-      return this._entries.filter(entry => entry.name === name);
+      return this.#entries.filter(entry => entry.name === name);
     } else {
-      return this._entries.filter(
+      return this.#entries.filter(
         entry => entry.name === name && entry.entryType === type,
       );
     }
@@ -64,13 +69,13 @@ export type PerformanceObserverInit =
     }
   | {
       type: PerformanceEntryType,
-      durationThreshold?: HighResTimeStamp,
+      durationThreshold?: DOMHighResTimeStamp,
     };
 
 type PerformanceObserverConfig = {|
   callback: PerformanceObserverCallback,
-  // Map of {entryType: durationThreshold}
-  entryTypes: $ReadOnlyMap<PerformanceEntryType, ?number>,
+  entryTypes: $ReadOnlySet<PerformanceEntryType>,
+  durationThreshold: ?number,
 |};
 
 const observerCountPerEntryType: Map<PerformanceEntryType, number> = new Map();
@@ -95,14 +100,27 @@ const onPerformanceEntry = () => {
       if (!observerConfig.entryTypes.has(entry.entryType)) {
         return false;
       }
-      const durationThreshold = observerConfig.entryTypes.get(entry.entryType);
-      return entry.duration >= (durationThreshold ?? 0);
+
+      if (
+        entry.entryType === 'event' &&
+        observerConfig.durationThreshold != null
+      ) {
+        return entry.duration >= observerConfig.durationThreshold;
+      }
+
+      return true;
     });
-    observerConfig.callback(
-      new PerformanceObserverEntryList(entriesForObserver),
-      observer,
-      droppedEntriesCount,
-    );
+    if (entriesForObserver.length !== 0) {
+      try {
+        observerConfig.callback(
+          new PerformanceObserverEntryList(entriesForObserver),
+          observer,
+          droppedEntriesCount,
+        );
+      } catch (error) {
+        console.error(error);
+      }
+    }
   }
 };
 
@@ -114,21 +132,11 @@ export function warnNoNativePerformanceObserver() {
 }
 
 function applyDurationThresholds() {
-  const durationThresholds: Map<PerformanceEntryType, ?number> = Array.from(
-    registeredObservers.values(),
-  )
-    .map(config => config.entryTypes)
-    .reduce(
-      (accumulator, currentValue) => union(accumulator, currentValue),
-      new Map(),
-    );
+  const durationThresholds = Array.from(registeredObservers.values())
+    .map(observerConfig => observerConfig.durationThreshold)
+    .filter(Boolean);
 
-  for (const [entryType, durationThreshold] of durationThresholds) {
-    NativePerformanceObserver?.setDurationThreshold(
-      performanceEntryTypeToRaw(entryType),
-      durationThreshold ?? 0,
-    );
-  }
+  return Math.min(...durationThresholds);
 }
 
 function getSupportedPerformanceEntryTypes(): $ReadOnlyArray<PerformanceEntryType> {
@@ -166,12 +174,12 @@ function getSupportedPerformanceEntryTypes(): $ReadOnlyArray<PerformanceEntryTyp
  * });
  * observer.observe({ type: "event" });
  */
-export default class PerformanceObserver {
-  _callback: PerformanceObserverCallback;
-  _type: 'single' | 'multiple' | void;
+export class PerformanceObserver {
+  #callback: PerformanceObserverCallback;
+  #type: 'single' | 'multiple' | void;
 
   constructor(callback: PerformanceObserverCallback) {
-    this._callback = callback;
+    this.#callback = callback;
   }
 
   observe(options: PerformanceObserverInit): void {
@@ -180,20 +188,16 @@ export default class PerformanceObserver {
       return;
     }
 
-    this._validateObserveOptions(options);
+    this.#validateObserveOptions(options);
 
     let requestedEntryTypes;
 
     if (options.entryTypes) {
-      this._type = 'multiple';
-      requestedEntryTypes = new Map(
-        options.entryTypes.map(t => [t, undefined]),
-      );
+      this.#type = 'multiple';
+      requestedEntryTypes = new Set(options.entryTypes);
     } else {
-      this._type = 'single';
-      requestedEntryTypes = new Map([
-        [options.type, options.durationThreshold],
-      ]);
+      this.#type = 'single';
+      requestedEntryTypes = new Set([options.type]);
     }
 
     // The same observer may receive multiple calls to "observe", so we need
@@ -209,7 +213,9 @@ export default class PerformanceObserver {
     }
 
     registeredObservers.set(this, {
-      callback: this._callback,
+      callback: this.#callback,
+      durationThreshold:
+        options.type === 'event' ? options.durationThreshold : undefined,
       entryTypes: nextEntryTypes,
     });
 
@@ -276,7 +282,7 @@ export default class PerformanceObserver {
     applyDurationThresholds();
   }
 
-  _validateObserveOptions(options: PerformanceObserverInit): void {
+  #validateObserveOptions(options: PerformanceObserverInit): void {
     const {type, entryTypes, durationThreshold} = options;
 
     if (!type && !entryTypes) {
@@ -291,13 +297,13 @@ export default class PerformanceObserver {
       );
     }
 
-    if (this._type === 'multiple' && type) {
+    if (this.#type === 'multiple' && type) {
       throw new Error(
         "Failed to execute 'observe' on 'PerformanceObserver': This observer has performed observe({entryTypes:...}, therefore it cannot perform observe({type:...})",
       );
     }
 
-    if (this._type === 'single' && entryTypes) {
+    if (this.#type === 'single' && entryTypes) {
       throw new Error(
         "Failed to execute 'observe' on 'PerformanceObserver': This PerformanceObserver has performed observe({type:...}, therefore it cannot perform observe({entryTypes:...})",
       );
@@ -314,20 +320,8 @@ export default class PerformanceObserver {
     getSupportedPerformanceEntryTypes();
 }
 
-// As a Set union, except if value exists in both, we take minimum
-function union<T>(
-  a: $ReadOnlyMap<T, ?number>,
-  b: $ReadOnlyMap<T, ?number>,
-): Map<T, ?number> {
-  const res = new Map<T, ?number>();
-  for (const [k, v] of a) {
-    if (!b.has(k)) {
-      res.set(k, v);
-    } else {
-      res.set(k, Math.min(v ?? 0, b.get(k) ?? 0));
-    }
-  }
-  return res;
+function union<T>(a: $ReadOnlySet<T>, b: $ReadOnlySet<T>): Set<T> {
+  return new Set([...a, ...b]);
 }
 
 function difference<T>(a: $ReadOnlySet<T>, b: $ReadOnlySet<T>): Set<T> {

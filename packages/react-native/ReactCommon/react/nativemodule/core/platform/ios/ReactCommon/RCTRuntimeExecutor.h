@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#import <Foundation/Foundation.h>
+
 #import <ReactCommon/RuntimeExecutor.h>
 #import <jsi/jsi.h>
 

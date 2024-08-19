@@ -25,7 +25,7 @@ export type Props<ItemT> = {
   ItemSeparatorComponent: ?React.ComponentType<
     any | {highlighted: boolean, leadingItem: ?ItemT},
   >,
-  ListItemComponent?: ?(React.ComponentType<any> | React.Element<any>),
+  ListItemComponent?: ?(React.ComponentType<any> | React.MixedElement),
   cellKey: string,
   horizontal: ?boolean,
   index: number,
@@ -140,17 +140,13 @@ export default class CellRenderer<ItemT> extends React.Component<
     }
 
     if (ListItemComponent) {
-      /* $FlowFixMe[not-a-component] (>=0.108.0 site=react_native_fb) This
-       * comment suppresses an error found when Flow v0.108 was deployed. To
-       * see the error, delete this comment and run Flow. */
-      /* $FlowFixMe[incompatible-type-arg] (>=0.108.0 site=react_native_fb)
-       * This comment suppresses an error found when Flow v0.108 was deployed.
-       * To see the error, delete this comment and run Flow. */
-      return React.createElement(ListItemComponent, {
-        item,
-        index,
-        separators: this._separators,
-      });
+      return (
+        <ListItemComponent
+          item={item}
+          index={index}
+          separators={this._separators}
+        />
+      );
     }
 
     if (renderItem) {
@@ -203,8 +199,8 @@ export default class CellRenderer<ItemT> extends React.Component<
         ? [styles.rowReverse, inversionStyle]
         : [styles.columnReverse, inversionStyle]
       : horizontal
-      ? [styles.row, inversionStyle]
-      : inversionStyle;
+        ? [styles.row, inversionStyle]
+        : inversionStyle;
     const result = !CellRendererComponent ? (
       <View
         style={cellStyle}

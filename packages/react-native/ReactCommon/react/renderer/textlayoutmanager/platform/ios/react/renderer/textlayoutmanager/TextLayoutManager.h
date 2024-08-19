@@ -34,8 +34,7 @@ class TextLayoutManager {
       AttributedStringBox attributedStringBox,
       ParagraphAttributes paragraphAttributes,
       const TextLayoutContext& layoutContext,
-      LayoutConstraints layoutConstraints,
-      std::shared_ptr<void> hostTextStorage) const;
+      LayoutConstraints layoutConstraints) const;
 
   /*
    * Measures lines of `attributedString` using native text rendering
@@ -46,10 +45,14 @@ class TextLayoutManager {
       ParagraphAttributes paragraphAttributes,
       Size size) const;
 
-  std::shared_ptr<void> getHostTextStorage(
+  /*
+   * Calculates baseline of `attributedString` using native text rendering
+   * infrastructure.
+   */
+  Float baseline(
       AttributedString attributedString,
       ParagraphAttributes paragraphAttributes,
-      LayoutConstraints layoutConstraints) const;
+      Size size) const;
 
   /*
    * Returns an opaque pointer to platform-specific TextLayoutManager.
@@ -59,7 +62,8 @@ class TextLayoutManager {
 
  private:
   std::shared_ptr<void> self_;
-  TextMeasureCache measureCache_{};
+  TextMeasureCache textMeasureCache_{};
+  LineMeasureCache lineMeasureCache_{};
 };
 
 } // namespace facebook::react

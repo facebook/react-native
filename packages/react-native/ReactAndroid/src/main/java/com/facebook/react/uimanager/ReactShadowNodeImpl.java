@@ -89,7 +89,7 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   private Integer mHeightMeasureSpec;
 
   public ReactShadowNodeImpl() {
-    mDefaultPadding = new Spacing(0);
+    mDefaultPadding = new Spacing(0f);
     if (!isVirtual()) {
       YogaNode node = YogaNodePool.get().acquire();
       mYogaNode = node == null ? YogaNodeFactory.create(sYogaConfig) : node;
@@ -406,7 +406,8 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
               getScreenX(),
               getScreenY(),
               getScreenWidth(),
-              getScreenHeight());
+              getScreenHeight(),
+              getLayoutDirection());
         }
       }
     }
@@ -685,25 +686,33 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
     return mYogaNode.getLayoutHeight();
   }
 
-  /** @return the x position of the corresponding view on the screen, rounded to pixels */
+  /**
+   * @return the x position of the corresponding view on the screen, rounded to pixels
+   */
   @Override
   public int getScreenX() {
     return mScreenX;
   }
 
-  /** @return the y position of the corresponding view on the screen, rounded to pixels */
+  /**
+   * @return the y position of the corresponding view on the screen, rounded to pixels
+   */
   @Override
   public int getScreenY() {
     return mScreenY;
   }
 
-  /** @return width corrected for rounding to pixels. */
+  /**
+   * @return width corrected for rounding to pixels.
+   */
   @Override
   public int getScreenWidth() {
     return mScreenWidth;
   }
 
-  /** @return height corrected for rounding to pixels. */
+  /**
+   * @return height corrected for rounding to pixels.
+   */
   @Override
   public int getScreenHeight() {
     return mScreenHeight;
@@ -820,13 +829,28 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   }
 
   @Override
+  public void setRowGapPercent(float percent) {
+    mYogaNode.setGapPercent(YogaGutter.ROW, percent);
+  }
+
+  @Override
   public void setColumnGap(float columnGap) {
     mYogaNode.setGap(YogaGutter.COLUMN, columnGap);
   }
 
   @Override
+  public void setColumnGapPercent(float percent) {
+    mYogaNode.setGapPercent(YogaGutter.COLUMN, percent);
+  }
+
+  @Override
   public void setGap(float gap) {
     mYogaNode.setGap(YogaGutter.ALL, gap);
+  }
+
+  @Override
+  public void setGapPercent(float percent) {
+    mYogaNode.setGap(YogaGutter.ALL, percent);
   }
 
   @Override

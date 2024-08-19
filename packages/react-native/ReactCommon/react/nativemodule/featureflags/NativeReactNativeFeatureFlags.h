@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<30481dc57cc7f389d1ed87d097caedda>>
+ * @generated SignedSource<<23af9284953b14cb18ff1ad71145c29b>>
  */
 
 /**
@@ -19,36 +19,111 @@
 
 #pragma once
 
+#if __has_include("rncoreJSI.h") // Cmake headers on Android
+#include "rncoreJSI.h"
+#elif __has_include("FBReactNativeSpecJSI.h") // CocoaPod headers on Apple
+#include "FBReactNativeSpecJSI.h"
+#else
 #include <FBReactNativeSpec/FBReactNativeSpecJSI.h>
+#endif
 
 namespace facebook::react {
 
 class NativeReactNativeFeatureFlags
     : public NativeReactNativeFeatureFlagsCxxSpec<
-          NativeReactNativeFeatureFlags>,
-      std::enable_shared_from_this<NativeReactNativeFeatureFlags> {
+          NativeReactNativeFeatureFlags> {
  public:
   NativeReactNativeFeatureFlags(std::shared_ptr<CallInvoker> jsInvoker);
 
   bool commonTestFlag(jsi::Runtime& runtime);
 
-  bool enableBackgroundExecutor(jsi::Runtime& runtime);
-
-  bool useModernRuntimeScheduler(jsi::Runtime& runtime);
-
-  bool enableMicrotasks(jsi::Runtime& runtime);
+  bool allowRecursiveCommitsWithSynchronousMountOnAndroid(jsi::Runtime& runtime);
 
   bool batchRenderingUpdatesInEventLoop(jsi::Runtime& runtime);
 
-  bool enableSpannableBuildingUnification(jsi::Runtime& runtime);
+  bool changeOrderOfMountingInstructionsOnAndroid(jsi::Runtime& runtime);
 
-  bool enableCustomDrawOrderFabric(jsi::Runtime& runtime);
+  bool completeReactInstanceCreationOnBgThreadOnAndroid(jsi::Runtime& runtime);
 
-  bool enableFixForClippedSubviewsCrash(jsi::Runtime& runtime);
+  bool destroyFabricSurfacesInReactInstanceManager(jsi::Runtime& runtime);
 
-  bool inspectorEnableCxxInspectorPackagerConnection(jsi::Runtime& runtime);
+  bool enableAlignItemsBaselineOnFabricIOS(jsi::Runtime& runtime);
 
-  bool inspectorEnableModernCDPRegistry(jsi::Runtime& runtime);
+  bool enableAndroidMixBlendModeProp(jsi::Runtime& runtime);
+
+  bool enableBackgroundStyleApplicator(jsi::Runtime& runtime);
+
+  bool enableCleanTextInputYogaNode(jsi::Runtime& runtime);
+
+  bool enableEagerRootViewAttachment(jsi::Runtime& runtime);
+
+  bool enableEventEmitterRetentionDuringGesturesOnAndroid(jsi::Runtime& runtime);
+
+  bool enableFabricLogs(jsi::Runtime& runtime);
+
+  bool enableFabricRendererExclusively(jsi::Runtime& runtime);
+
+  bool enableGranularShadowTreeStateReconciliation(jsi::Runtime& runtime);
+
+  bool enableLongTaskAPI(jsi::Runtime& runtime);
+
+  bool enableMicrotasks(jsi::Runtime& runtime);
+
+  bool enablePropsUpdateReconciliationAndroid(jsi::Runtime& runtime);
+
+  bool enableReportEventPaintTime(jsi::Runtime& runtime);
+
+  bool enableSynchronousStateUpdates(jsi::Runtime& runtime);
+
+  bool enableUIConsistency(jsi::Runtime& runtime);
+
+  bool enableViewRecycling(jsi::Runtime& runtime);
+
+  bool excludeYogaFromRawProps(jsi::Runtime& runtime);
+
+  bool fetchImagesInViewPreallocation(jsi::Runtime& runtime);
+
+  bool fixIncorrectScrollViewStateUpdateOnAndroid(jsi::Runtime& runtime);
+
+  bool fixMappingOfEventPrioritiesBetweenFabricAndReact(jsi::Runtime& runtime);
+
+  bool fixMissedFabricStateUpdatesOnAndroid(jsi::Runtime& runtime);
+
+  bool forceBatchingMountItemsOnAndroid(jsi::Runtime& runtime);
+
+  bool fuseboxEnabledDebug(jsi::Runtime& runtime);
+
+  bool fuseboxEnabledRelease(jsi::Runtime& runtime);
+
+  bool initEagerTurboModulesOnNativeModulesQueueAndroid(jsi::Runtime& runtime);
+
+  bool lazyAnimationCallbacks(jsi::Runtime& runtime);
+
+  bool loadVectorDrawablesOnImages(jsi::Runtime& runtime);
+
+  bool setAndroidLayoutDirection(jsi::Runtime& runtime);
+
+  bool traceTurboModulePromiseRejectionsOnAndroid(jsi::Runtime& runtime);
+
+  bool useFabricInterop(jsi::Runtime& runtime);
+
+  bool useImmediateExecutorInAndroidBridgeless(jsi::Runtime& runtime);
+
+  bool useModernRuntimeScheduler(jsi::Runtime& runtime);
+
+  bool useNativeViewConfigsInBridgelessMode(jsi::Runtime& runtime);
+
+  bool useNewReactImageViewBackgroundDrawing(jsi::Runtime& runtime);
+
+  bool useOptimisedViewPreallocationOnAndroid(jsi::Runtime& runtime);
+
+  bool useRuntimeShadowNodeReferenceUpdate(jsi::Runtime& runtime);
+
+  bool useRuntimeShadowNodeReferenceUpdateOnLayout(jsi::Runtime& runtime);
+
+  bool useStateAlignmentMechanism(jsi::Runtime& runtime);
+
+  bool useTurboModuleInterop(jsi::Runtime& runtime);
 };
 
 } // namespace facebook::react

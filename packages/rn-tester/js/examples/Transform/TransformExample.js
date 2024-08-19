@@ -8,8 +8,6 @@
  * @flow
  */
 
-import type {Element, Node} from 'react';
-
 import React, {useEffect, useState} from 'react';
 import {Animated, Easing, StyleSheet, Text, View} from 'react-native';
 
@@ -137,6 +135,10 @@ function Flip() {
       </Animated.View>
     </View>
   );
+}
+
+function TranslatePercentage() {
+  return <View style={styles.translatePercentageView} />;
 }
 
 const styles = StyleSheet.create({
@@ -277,6 +279,12 @@ const styles = StyleSheet.create({
     height: 100,
     transformOrigin: 'top left',
   },
+  translatePercentageView: {
+    transform: 'translate(50%)',
+    padding: 50,
+    alignSelf: 'flex-start',
+    backgroundColor: 'lightblue',
+  },
 });
 
 exports.title = 'Transforms';
@@ -287,7 +295,7 @@ exports.examples = [
   {
     title: 'Perspective, Rotate, Animation',
     description: 'perspective: 850, rotateX: Animated.timing(0 -> 360)',
-    render(): Element<any> {
+    render(): React.Node {
       return <Flip />;
     },
   },
@@ -295,7 +303,7 @@ exports.examples = [
     title: 'Translate, Rotate, Scale',
     description:
       "translateX: 100, translateY: 50, rotate: '30deg', scaleX: 2, scaleY: 2",
-    render(): Node {
+    render(): React.Node {
       return (
         <View style={styles.container}>
           <View style={styles.box1} />
@@ -307,7 +315,7 @@ exports.examples = [
     title: 'Scale, Translate, Rotate, ',
     description:
       "scaleX: 2, scaleY: 2, translateX: 100, translateY: 50, rotate: '30deg'",
-    render(): Node {
+    render(): React.Node {
       return (
         <View style={styles.container}>
           <View style={styles.box2} />
@@ -318,7 +326,7 @@ exports.examples = [
   {
     title: 'Rotate',
     description: "rotate: '30deg'",
-    render(): Node {
+    render(): React.Node {
       return (
         <View style={styles.container}>
           <View style={styles.box3step1} />
@@ -329,7 +337,7 @@ exports.examples = [
   {
     title: 'Rotate, Scale',
     description: "rotate: '30deg', scaleX: 2, scaleY: 2",
-    render(): Node {
+    render(): React.Node {
       return (
         <View style={styles.container}>
           <View style={styles.box3step2} />
@@ -341,7 +349,7 @@ exports.examples = [
     title: 'Rotate, Scale, Translate ',
     description:
       "rotate: '30deg', scaleX: 2, scaleY: 2, translateX: 100, translateY: 50",
-    render(): Node {
+    render(): React.Node {
       return (
         <View style={styles.container}>
           <View style={styles.box3step3} />
@@ -352,7 +360,7 @@ exports.examples = [
   {
     title: 'Translate, Scale, Rotate',
     description: "translate: [200, 350], scale: 2.5, rotate: '-0.2rad'",
-    render(): Node {
+    render(): React.Node {
       return (
         <View style={styles.container}>
           <View style={styles.box4} />
@@ -363,7 +371,7 @@ exports.examples = [
   {
     title: 'Translate, Rotate, Scale',
     description: "translate: [-50, 35], rotate: '50deg', scale: 2",
-    render(): Node {
+    render(): React.Node {
       return (
         <View style={styles.container}>
           <View style={[styles.box5, styles.box5Transform]} />
@@ -374,14 +382,14 @@ exports.examples = [
   {
     title: 'Animate Translate single prop',
     description: "rotate: '360deg'",
-    render(): Node {
+    render(): React.Node {
       return <AnimateTransformSingleProp />;
     },
   },
   {
     title: 'Transform using a string',
     description: "transform: 'translate(-50px, 35px) rotate(50deg) scale(2)'",
-    render(): Node {
+    render(): React.Node {
       return (
         <View style={styles.container}>
           <View style={[styles.box7, styles.box7Transform]} />
@@ -392,8 +400,15 @@ exports.examples = [
   {
     title: 'Transform origin',
     description: "transformOrigin: 'top left'",
-    render(): Node {
+    render(): React.Node {
       return <TransformOriginExample />;
+    },
+  },
+  {
+    title: 'Translate Percentage',
+    description: "transform: 'translate(50%)'",
+    render(): React.Node {
+      return <TranslatePercentage />;
     },
   },
 ];

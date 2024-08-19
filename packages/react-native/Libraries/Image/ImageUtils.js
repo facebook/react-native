@@ -10,12 +10,13 @@
 
 type ResizeMode = 'cover' | 'contain' | 'stretch' | 'repeat' | 'center';
 
-export function convertObjectFitToResizeMode(objectFit: string): ResizeMode {
-  const objectFitMap = {
-    contain: 'contain',
-    cover: 'cover',
-    fill: 'stretch',
-    'scale-down': 'contain',
-  };
-  return objectFitMap[objectFit];
+const objectFitMap: {[string]: ResizeMode} = {
+  contain: 'contain',
+  cover: 'cover',
+  fill: 'stretch',
+  'scale-down': 'contain',
+};
+
+export function convertObjectFitToResizeMode(objectFit: ?string): ?ResizeMode {
+  return objectFit != null ? objectFitMap[objectFit] : undefined;
 }

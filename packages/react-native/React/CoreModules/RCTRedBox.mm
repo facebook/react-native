@@ -8,14 +8,12 @@
 #import "RCTRedBox.h"
 
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
-#import <React/RCTBridge.h>
 #import <React/RCTConvert.h>
 #import <React/RCTDefines.h>
 #import <React/RCTErrorInfo.h>
 #import <React/RCTEventDispatcherProtocol.h>
 #import <React/RCTJSStackFrame.h>
 #import <React/RCTRedBoxExtraDataViewController.h>
-#import <React/RCTRedBoxSetEnabled.h>
 #import <React/RCTReloadCommand.h>
 #import <React/RCTUtils.h>
 
@@ -97,6 +95,7 @@
 
 - (void)viewDidLoad
 {
+  [super viewDidLoad];
   self.view.backgroundColor = [UIColor blackColor];
 
   const CGFloat buttonHeight = 60;
@@ -220,7 +219,11 @@
 
 - (NSInteger)bottomSafeViewHeight
 {
+#if TARGET_OS_MACCATALYST
+  return 0;
+#else
   return RCTSharedApplication().delegate.window.safeAreaInsets.bottom;
+#endif
 }
 
 RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
@@ -274,7 +277,13 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 
 - (void)reload
 {
-  [_actionDelegate reloadFromRedBoxController:self];
+  if (_actionDelegate != nil) {
+    [_actionDelegate reloadFromRedBoxController:self];
+  } else {
+    // In bridgeless mode `RCTRedBox` gets deallocated, we need to notify listeners anyway.
+    RCTTriggerReloadCommandListeners(@"Redbox");
+    [self dismiss];
+  }
 }
 
 - (void)showExtraDataViewController
@@ -706,24 +715,6 @@ RCT_EXPORT_METHOD(dismiss)
 
 @end
 
-@implementation RCTBridge (RCTRedBox)
-
-- (RCTRedBox *)redBox
-{
-  return RCTRedBoxGetEnabled() ? [self moduleForClass:[RCTRedBox class]] : nil;
-}
-
-@end
-
-@implementation RCTBridgeProxy (RCTRedBox)
-
-- (RCTRedBox *)redBox
-{
-  return RCTRedBoxGetEnabled() ? [self moduleForClass:[RCTRedBox class]] : nil;
-}
-
-@end
-
 #else // Disabled
 
 @interface RCTRedBox () <NativeRedBoxSpec>
@@ -796,24 +787,6 @@ RCT_EXPORT_METHOD(dismiss)
     (const facebook::react::ObjCTurboModule::InitParams &)params
 {
   return std::make_shared<facebook::react::NativeRedBoxSpecJSI>(params);
-}
-
-@end
-
-@implementation RCTBridge (RCTRedBox)
-
-- (RCTRedBox *)redBox
-{
-  return nil;
-}
-
-@end
-
-@implementation RCTBridgeProxy (RCTRedBox)
-
-- (RCTRedBox *)redBox
-{
-  return nil;
 }
 
 @end

@@ -19,6 +19,11 @@ typedef NS_OPTIONS(NSInteger, RCTTextSizeComparisonOptions) {
                minimumFontSize:(CGFloat)minimumFontSize
                maximumFontSize:(CGFloat)maximumFontSize
 {
+  // Don't scale the font if it already fits
+  if ([self compareToSize:size thresholdRatio:0.01] & RCTTextSizeComparisonSmaller) {
+    return;
+  }
+
   CGFloat bottomRatio = 1.0 / 128.0;
   CGFloat topRatio = 128.0;
   CGFloat ratio = 1.0;

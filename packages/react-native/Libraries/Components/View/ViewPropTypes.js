@@ -416,6 +416,20 @@ type IOSViewProps = $ReadOnly<{|
   accessibilityViewIsModal?: ?boolean,
 
   /**
+   * @platform ios
+   *
+   * See https://reactnative.dev/docs/view#accessibilityshowslargecontentviewer
+   */
+  accessibilityShowsLargeContentViewer?: ?boolean,
+
+  /**
+   * @platform ios
+   *
+   * See https://reactnative.dev/docs/view#accessibilitylargecontenttitle
+   */
+  accessibilityLargeContentTitle?: ?string,
+
+  /**
    * The aria-modal attribute indicates content contained within a modal with aria-modal="true"
    * should be accessible to the user.
    * Default is `false`.
@@ -559,6 +573,13 @@ export type ViewProps = $ReadOnly<{|
    * See https://reactnative.dev/docs/view#collapsable
    */
   collapsable?: ?boolean,
+
+  /**
+   * Setting to false prevents direct children of the view from being removed
+   * from the native view hierarchy, similar to the effect of setting
+   * `collapsable={false}` on each child.
+   */
+  collapsableChildren?: ?boolean,
 
   /**
    * Contols whether this view, and its transitive children, are laid in a way

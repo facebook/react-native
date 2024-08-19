@@ -17,12 +17,14 @@ add_compile_options(
 ### reactnativejni ###
 ######################
 
+include(${REACT_ANDROID_DIR}/src/main/jni/first-party/jni-lib-merge/SoMerging-utils.cmake)
 
 add_library(
         reactnativejni
-        SHARED
+        OBJECT
         ${reactnativejni_SRC}
 )
+target_merge_so(reactnativejni)
 
 # TODO This should not be ../../
 target_include_directories(reactnativejni PUBLIC ../../)
@@ -35,8 +37,8 @@ target_link_libraries(reactnativejni
         folly_runtime
         glog_init
         logger
+        react_cxxreact
         react_render_runtimescheduler
-        reactnative
         runtimeexecutor
         yoga
         )

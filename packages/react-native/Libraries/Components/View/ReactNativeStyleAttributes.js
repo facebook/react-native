@@ -11,7 +11,10 @@
 import type {AnyAttributeType} from '../../Renderer/shims/ReactNativeTypes';
 
 import processAspectRatio from '../../StyleSheet/processAspectRatio';
+import processBackgroundImage from '../../StyleSheet/processBackgroundImage';
+import processBoxShadow from '../../StyleSheet/processBoxShadow';
 import processColor from '../../StyleSheet/processColor';
+import processFilter from '../../StyleSheet/processFilter';
 import processFontVariant from '../../StyleSheet/processFontVariant';
 import processTransform from '../../StyleSheet/processTransform';
 import processTransformOrigin from '../../StyleSheet/processTransformOrigin';
@@ -115,6 +118,31 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   transformOrigin: {process: processTransformOrigin},
 
   /**
+   * Filter
+   */
+  experimental_filter: {process: processFilter},
+
+  /**
+   * MixBlendMode
+   */
+  experimental_mixBlendMode: true,
+
+  /**
+   * Isolation
+   */
+  isolation: true,
+
+  /*
+   * BoxShadow
+   */
+  experimental_boxShadow: {process: processBoxShadow},
+
+  /**
+   * Linear Gradient
+   */
+  experimental_backgroundImage: {process: processBackgroundImage},
+
+  /**
    * View
    */
   backfaceVisibility: true,
@@ -144,6 +172,7 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   borderTopLeftRadius: true,
   borderTopRightRadius: true,
   borderTopStartRadius: true,
+  cursor: true,
   opacity: true,
   pointerEvents: true,
 

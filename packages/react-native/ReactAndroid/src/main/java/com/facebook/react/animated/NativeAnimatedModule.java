@@ -23,8 +23,10 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.UIManagerListener;
+import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.uimanager.GuardedFrameCallback;
@@ -37,6 +39,7 @@ import com.facebook.react.uimanager.common.ViewUtil;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -225,6 +228,7 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
 
   private boolean mInitializedForFabric = false;
   private boolean mInitializedForNonFabric = false;
+  private boolean mEnqueuedAnimationOnFrame = false;
   private @UIManagerType int mUIManagerType = UIManagerType.DEFAULT;
   private int mNumFabricAnimations = 0;
   private int mNumNonFabricAnimations = 0;
@@ -238,28 +242,62 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
           @Override
           protected void doFrameGuarded(final long frameTimeNanos) {
             try {
+              mEnqueuedAnimationOnFrame = false;
               NativeAnimatedNodesManager nodesManager = getNodesManager();
               if (nodesManager != null && nodesManager.hasActiveAnimations()) {
                 nodesManager.runUpdates(frameTimeNanos);
               }
               // This is very unlikely to ever be hit.
-              if (nodesManager == null && mReactChoreographer == null) {
+              if (nodesManager == null || mReactChoreographer == null) {
                 return;
               }
 
-              // TODO: Would be great to avoid adding this callback in case there are no active
-              // animations and no outstanding tasks on the operations queue. Apparently frame
-              // callbacks can only be posted from the UI thread and therefore we cannot schedule
-              // them directly from other threads.
-              Assertions.assertNotNull(mReactChoreographer)
-                  .postFrameCallback(
-                      ReactChoreographer.CallbackType.NATIVE_ANIMATED_MODULE,
-                      mAnimatedFrameCallback);
+              if (!ReactNativeFeatureFlags.lazyAnimationCallbacks()
+                  || nodesManager.hasActiveAnimations()) {
+                enqueueFrameCallback();
+              }
             } catch (Exception ex) {
               throw new RuntimeException(ex);
             }
           }
         };
+  }
+
+  /**
+   * This method is used to notify the JS side that the user has stopped scrolling. With natively
+   * driven animation, we might have to force a resync between the Shadow Tree and the Native Tree.
+   * This is because with natively driven animation, the Shadow Tree is bypassed and it can have
+   * stale information on the layout of the native views. This method takes care of verifying if
+   * there are some views listening to the native driven animation and it triggers the resynch.
+   *
+   * @param viewTag The tag of the scroll view that has stopped scrolling
+   */
+  public void userDrivenScrollEnded(int viewTag) {
+    // ask to the Node Manager for all the native nodes listening to OnScroll event
+    NativeAnimatedNodesManager nodeManager = mNodesManager.get();
+    if (nodeManager == null) {
+      return;
+    }
+
+    Set<Integer> tags = nodeManager.getTagsOfConnectedNodes(viewTag, "topScrollEnded");
+
+    if (tags.isEmpty()) {
+      return;
+    }
+
+    WritableArray tagsArray = Arguments.createArray();
+    for (Integer tag : tags) {
+      tagsArray.pushInt(tag);
+    }
+
+    // emit the event to JS to resync the trees
+    WritableMap onAnimationEndedData = Arguments.createMap();
+    onAnimationEndedData.putArray("tags", tagsArray);
+
+    ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
+    if (reactApplicationContext != null) {
+      reactApplicationContext.emitDeviceEvent("onUserDrivenAnimationEnded", onAnimationEndedData);
+    }
   }
 
   @Override
@@ -406,12 +444,16 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
     Assertions.assertNotNull(mReactChoreographer)
         .removeFrameCallback(
             ReactChoreographer.CallbackType.NATIVE_ANIMATED_MODULE, mAnimatedFrameCallback);
+    mEnqueuedAnimationOnFrame = false;
   }
 
   private void enqueueFrameCallback() {
-    Assertions.assertNotNull(mReactChoreographer)
-        .postFrameCallback(
-            ReactChoreographer.CallbackType.NATIVE_ANIMATED_MODULE, mAnimatedFrameCallback);
+    if (!mEnqueuedAnimationOnFrame) {
+      Assertions.assertNotNull(mReactChoreographer)
+          .postFrameCallback(
+              ReactChoreographer.CallbackType.NATIVE_ANIMATED_MODULE, mAnimatedFrameCallback);
+      mEnqueuedAnimationOnFrame = true;
+    }
   }
 
   @VisibleForTesting
@@ -441,7 +483,8 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
       ReactSoftExceptionLogger.logSoftException(
           NAME,
           new RuntimeException(
-              "initializeLifecycleEventListenersForViewTag could not get NativeAnimatedNodesManager"));
+              "initializeLifecycleEventListenersForViewTag could not get"
+                  + " NativeAnimatedNodesManager"));
     }
 
     // Subscribe to UIManager (Fabric or non-Fabric) lifecycle events if we haven't yet
@@ -503,7 +546,7 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
 
   @Override
   public void finishOperationBatch() {
-    mBatchingControlledByJS = true;
+    mBatchingControlledByJS = false;
     mCurrentBatchNumber++;
   }
 
@@ -1116,6 +1159,9 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
                       opsAndArgs.getInt(i++), opsAndArgs.getInt(i++));
                   break;
                 case OP_CODE_START_ANIMATING_NODE:
+                  if (ReactNativeFeatureFlags.lazyAnimationCallbacks()) {
+                    enqueueFrameCallback();
+                  }
                   animatedNodesManager.startAnimatingNode(
                       opsAndArgs.getInt(i++), opsAndArgs.getInt(i++), opsAndArgs.getMap(i++), null);
                   break;

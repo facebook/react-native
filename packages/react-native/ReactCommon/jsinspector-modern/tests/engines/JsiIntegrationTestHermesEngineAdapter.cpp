@@ -5,32 +5,30 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <folly/executors/QueuedImmediateExecutor.h>
-
-#include <hermes/inspector-modern/chrome/HermesRuntimeAgentDelegate.h>
-
 #include "JsiIntegrationTestHermesEngineAdapter.h"
-
-using facebook::hermes::makeHermesRuntime;
 
 namespace facebook::react::jsinspector_modern {
 
 JsiIntegrationTestHermesEngineAdapter::JsiIntegrationTestHermesEngineAdapter(
     folly::Executor& jsExecutor)
-    : runtime_{hermes::makeHermesRuntime()}, jsExecutor_{jsExecutor} {}
+    : runtime_{hermes::makeHermesRuntime(
+          ::hermes::vm::RuntimeConfig::Builder()
+              .withCompilationMode(
+                  ::hermes::vm::CompilationMode::ForceLazyCompilation)
+              .build())},
+      jsExecutor_{jsExecutor},
+      runtimeTargetDelegate_{runtime_} {}
 
-std::unique_ptr<RuntimeAgentDelegate>
-JsiIntegrationTestHermesEngineAdapter::createAgentDelegate(
-    FrontendChannel frontendChannel,
-    SessionState& sessionState,
-    const ExecutionContextDescription& executionContextDescription) {
-  return std::unique_ptr<jsinspector_modern::RuntimeAgentDelegate>(
-      new HermesRuntimeAgentDelegate(
-          frontendChannel,
-          sessionState,
-          executionContextDescription,
-          runtime_,
-          getRuntimeExecutor()));
+/* static */ InspectorFlagOverrides
+JsiIntegrationTestHermesEngineAdapter::getInspectorFlagOverrides() noexcept {
+  return {
+      .fuseboxEnabledDebug = true,
+  };
+}
+
+RuntimeTargetDelegate&
+JsiIntegrationTestHermesEngineAdapter::getRuntimeTargetDelegate() {
+  return runtimeTargetDelegate_;
 }
 
 jsi::Runtime& JsiIntegrationTestHermesEngineAdapter::getRuntime()

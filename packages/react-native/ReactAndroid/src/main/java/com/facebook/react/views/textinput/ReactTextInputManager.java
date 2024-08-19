@@ -29,6 +29,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
+import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.autofill.HintConstants;
 import androidx.core.content.ContextCompat;
@@ -38,17 +39,19 @@ import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.mapbuffer.MapBuffer;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.module.annotations.ReactModule;
+import com.facebook.react.uimanager.BackgroundStyleApplicator;
 import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.LayoutShadowNode;
+import com.facebook.react.uimanager.LengthPercentage;
+import com.facebook.react.uimanager.LengthPercentageType;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.Spacing;
@@ -60,6 +63,9 @@ import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.uimanager.style.BorderRadiusProp;
+import com.facebook.react.uimanager.style.BorderStyle;
+import com.facebook.react.uimanager.style.LogicalEdge;
 import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper;
 import com.facebook.react.views.scroll.ScrollEvent;
 import com.facebook.react.views.scroll.ScrollEventType;
@@ -70,10 +76,8 @@ import com.facebook.react.views.text.ReactTextViewManagerCallback;
 import com.facebook.react.views.text.ReactTypefaceUtils;
 import com.facebook.react.views.text.TextAttributeProps;
 import com.facebook.react.views.text.TextLayoutManager;
-import com.facebook.react.views.text.TextLayoutManagerMapBuffer;
 import com.facebook.react.views.text.TextTransform;
 import com.facebook.react.views.text.internal.span.TextInlineImageSpan;
-import com.facebook.yoga.YogaConstants;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -233,11 +237,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
                 MapBuilder.of(
                     "phasedRegistrationNames",
                     MapBuilder.of("bubbled", "onEndEditing", "captured", "onEndEditingCapture")))
-            .put(
-                "topTextInput",
-                MapBuilder.of(
-                    "phasedRegistrationNames",
-                    MapBuilder.of("bubbled", "onTextInput", "captured", "onTextInputCapture")))
             .put(
                 "topFocus",
                 MapBuilder.of(
@@ -659,18 +658,12 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
   @ReactProp(name = "contextMenuHidden", defaultBoolean = false)
   public void setContextMenuHidden(ReactEditText view, boolean contextMenuHidden) {
-    final boolean _contextMenuHidden = contextMenuHidden;
-    view.setOnLongClickListener(
-        new View.OnLongClickListener() {
-          public boolean onLongClick(View v) {
-            return _contextMenuHidden;
-          };
-        });
+    view.setContextMenuHidden(contextMenuHidden);
   }
 
   @ReactProp(name = "selectTextOnFocus", defaultBoolean = false)
   public void setSelectTextOnFocus(ReactEditText view, boolean selectTextOnFocus) {
-    view.setSelectAllOnFocus(selectTextOnFocus);
+    view.setSelectTextOnFocus(selectTextOnFocus);
   }
 
   @ReactProp(name = ViewProps.COLOR, customType = "Color")
@@ -716,16 +709,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     if (underlineColor == null) {
       drawableToMutate.clearColorFilter();
     } else {
-      // fixes underlineColor transparent not working on API 21
-      // re-sets the TextInput underlineColor https://bit.ly/3M4alr6
-      if (Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP) {
-        int bottomBorderColor = view.getBorderColor(Spacing.BOTTOM);
-        setBorderColor(view, Spacing.START, underlineColor);
-        drawableToMutate.setColorFilter(underlineColor, PorterDuff.Mode.SRC_IN);
-        setBorderColor(view, Spacing.START, bottomBorderColor);
-      } else {
-        drawableToMutate.setColorFilter(underlineColor, PorterDuff.Mode.SRC_IN);
-      }
+      drawableToMutate.setColorFilter(underlineColor, PorterDuff.Mode.SRC_IN);
     }
   }
 
@@ -971,22 +955,38 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         ViewProps.BORDER_BOTTOM_RIGHT_RADIUS,
         ViewProps.BORDER_BOTTOM_LEFT_RADIUS
       },
-      defaultFloat = YogaConstants.UNDEFINED)
+      defaultFloat = Float.NaN)
   public void setBorderRadius(ReactEditText view, int index, float borderRadius) {
-    if (!YogaConstants.isUndefined(borderRadius)) {
-      borderRadius = PixelUtil.toPixelFromDIP(borderRadius);
-    }
-
-    if (index == 0) {
-      view.setBorderRadius(borderRadius);
+    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
+      @Nullable
+      LengthPercentage radius =
+          Float.isNaN(borderRadius)
+              ? null
+              : new LengthPercentage(borderRadius, LengthPercentageType.POINT);
+      BackgroundStyleApplicator.setBorderRadius(view, BorderRadiusProp.values()[index], radius);
     } else {
-      view.setBorderRadius(borderRadius, index - 1);
+      if (!Float.isNaN(borderRadius)) {
+        borderRadius = PixelUtil.toPixelFromDIP(borderRadius);
+      }
+
+      if (index == 0) {
+        view.setBorderRadius(borderRadius);
+      } else {
+        view.setBorderRadius(borderRadius, index - 1);
+      }
     }
   }
 
   @ReactProp(name = "borderStyle")
   public void setBorderStyle(ReactEditText view, @Nullable String borderStyle) {
-    view.setBorderStyle(borderStyle);
+    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
+      @Nullable
+      BorderStyle parsedBorderStyle =
+          borderStyle == null ? null : BorderStyle.fromString(borderStyle);
+      BackgroundStyleApplicator.setBorderStyle(view, parsedBorderStyle);
+    } else {
+      view.setBorderStyle(borderStyle);
+    }
   }
 
   @ReactProp(name = "showSoftInputOnFocus", defaultBoolean = true)
@@ -1021,12 +1021,16 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         ViewProps.BORDER_TOP_WIDTH,
         ViewProps.BORDER_BOTTOM_WIDTH,
       },
-      defaultFloat = YogaConstants.UNDEFINED)
+      defaultFloat = Float.NaN)
   public void setBorderWidth(ReactEditText view, int index, float width) {
-    if (!YogaConstants.isUndefined(width)) {
-      width = PixelUtil.toPixelFromDIP(width);
+    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
+      BackgroundStyleApplicator.setBorderWidth(view, LogicalEdge.values()[index], width);
+    } else {
+      if (!Float.isNaN(width)) {
+        width = PixelUtil.toPixelFromDIP(width);
+      }
+      view.setBorderWidth(SPACING_TYPES[index], width);
     }
-    view.setBorderWidth(SPACING_TYPES[index], width);
   }
 
   @ReactPropGroup(
@@ -1038,11 +1042,34 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         "borderBottomColor"
       },
       customType = "Color")
-  public void setBorderColor(ReactEditText view, int index, Integer color) {
-    float rgbComponent =
-        color == null ? YogaConstants.UNDEFINED : (float) ((int) color & 0x00FFFFFF);
-    float alphaComponent = color == null ? YogaConstants.UNDEFINED : (float) ((int) color >>> 24);
-    view.setBorderColor(SPACING_TYPES[index], rgbComponent, alphaComponent);
+  public void setBorderColor(ReactEditText view, int index, @Nullable Integer color) {
+
+    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
+      BackgroundStyleApplicator.setBorderColor(view, LogicalEdge.ALL, color);
+    } else {
+      view.setBorderColor(SPACING_TYPES[index], color);
+    }
+  }
+
+  @ReactProp(name = "overflow")
+  public void setOverflow(ReactEditText view, @Nullable String overflow) {
+    view.setOverflow(overflow);
+  }
+
+  @ReactProp(name = ViewProps.BOX_SHADOW, customType = "BoxShadow")
+  public void setBoxShadow(ReactEditText view, @Nullable ReadableArray shadows) {
+    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
+      BackgroundStyleApplicator.setBoxShadow(view, shadows);
+    }
+  }
+
+  @Override
+  public void setBackgroundColor(ReactEditText view, @ColorInt int backgroundColor) {
+    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
+      BackgroundStyleApplicator.setBackgroundColor(view, backgroundColor);
+    } else {
+      super.setBackgroundColor(view, backgroundColor);
+    }
   }
 
   @Override
@@ -1122,17 +1149,12 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       }
 
       // The event that contains the event counter and updates it must be sent first.
-      // TODO: t7936714 merge these events
       mEventDispatcher.dispatchEvent(
           new ReactTextChangedEvent(
               mSurfaceId,
               mEditText.getId(),
               s.toString(),
               mEditText.incrementAndGetEventCounter()));
-
-      mEventDispatcher.dispatchEvent(
-          new ReactTextInputEvent(
-              mSurfaceId, mEditText.getId(), newText, oldText, start, start + before));
     }
 
     @Override
@@ -1323,7 +1345,8 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
                 0, // can't get content width
                 0, // can't get content height
                 mReactEditText.getWidth(),
-                mReactEditText.getHeight());
+                mReactEditText.getHeight(),
+                false);
 
         mEventDispatcher.dispatchEvent(event);
 
@@ -1376,34 +1399,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       return getReactTextUpdate(view, props, stateMapBuffer);
     }
 
-    ReadableNativeMap state = stateWrapper.getStateData();
-    if (state == null || !state.hasKey("attributedString")) {
-      return null;
-    }
-
-    ReadableMap attributedString = state.getMap("attributedString");
-    ReadableMap paragraphAttributes = state.getMap("paragraphAttributes");
-    if (attributedString == null || paragraphAttributes == null) {
-      throw new IllegalArgumentException("Invalid TextInput State was received as a parameters");
-    }
-
-    Spannable spanned =
-        TextLayoutManager.getOrCreateSpannableForText(
-            view.getContext(), attributedString, mReactTextViewManagerCallback);
-
-    int textBreakStrategy =
-        TextAttributeProps.getTextBreakStrategy(
-            paragraphAttributes.getString(ViewProps.TEXT_BREAK_STRATEGY));
-    int currentJustificationMode =
-        Build.VERSION.SDK_INT < Build.VERSION_CODES.O ? 0 : view.getJustificationMode();
-
-    return ReactTextUpdate.buildReactTextUpdateFromState(
-        spanned,
-        state.getInt("mostRecentEventCount"),
-        TextAttributeProps.getTextAlignment(
-            props, TextLayoutManager.isRTL(attributedString), view.getGravityHorizontal()),
-        textBreakStrategy,
-        TextAttributeProps.getJustificationMode(props, currentJustificationMode));
+    return null;
   }
 
   public @Nullable Object getReactTextUpdate(
@@ -1418,12 +1414,12 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     MapBuffer paragraphAttributes = state.getMapBuffer(TX_STATE_KEY_PARAGRAPH_ATTRIBUTES);
 
     Spannable spanned =
-        TextLayoutManagerMapBuffer.getOrCreateSpannableForText(
+        TextLayoutManager.getOrCreateSpannableForText(
             view.getContext(), attributedString, mReactTextViewManagerCallback);
 
     int textBreakStrategy =
         TextAttributeProps.getTextBreakStrategy(
-            paragraphAttributes.getString(TextLayoutManagerMapBuffer.PA_KEY_TEXT_BREAK_STRATEGY));
+            paragraphAttributes.getString(TextLayoutManager.PA_KEY_TEXT_BREAK_STRATEGY));
     int currentJustificationMode =
         Build.VERSION.SDK_INT < Build.VERSION_CODES.O ? 0 : view.getJustificationMode();
 
@@ -1431,7 +1427,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         spanned,
         state.getInt(TX_STATE_KEY_MOST_RECENT_EVENT_COUNT),
         TextAttributeProps.getTextAlignment(
-            props, TextLayoutManagerMapBuffer.isRTL(attributedString), view.getGravityHorizontal()),
+            props, TextLayoutManager.isRTL(attributedString), view.getGravityHorizontal()),
         textBreakStrategy,
         TextAttributeProps.getJustificationMode(props, currentJustificationMode));
   }

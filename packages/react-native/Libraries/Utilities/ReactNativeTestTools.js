@@ -12,20 +12,16 @@
 
 import type {ReactTestRenderer as ReactTestRendererType} from 'react-test-renderer';
 
+import TouchableWithoutFeedback from '../Components/Touchable/TouchableWithoutFeedback';
+
 const Switch = require('../Components/Switch/Switch').default;
 const TextInput = require('../Components/TextInput/TextInput');
 const View = require('../Components/View/View');
 const Text = require('../Text/Text');
 const {VirtualizedList} = require('@react-native/virtualized-lists');
 const React = require('react');
-const ShallowRenderer = require('react-shallow-renderer');
 const ReactTestRenderer = require('react-test-renderer');
 
-/* $FlowFixMe[not-a-function] (>=0.125.1 site=react_native_fb) This comment
- * suppresses an error found when Flow v0.125.1 was deployed. To see the error,
- * delete this comment and run Flow. */
-// $FlowFixMe[invalid-constructor]
-const shallowRenderer = new ShallowRenderer();
 export type ReactTestInstance = $PropertyType<ReactTestRendererType, 'root'>;
 export type Predicate = (node: ReactTestInstance) => boolean;
 /* $FlowFixMe[value-as-type] (>=0.125.1 site=react_native_fb) This comment
@@ -49,6 +45,9 @@ function byClickable(): Predicate {
       (node.type === Switch && node.props && node.props.disabled !== true) ||
       (node.type === View &&
         node?.props?.onStartShouldSetResponder?.testOnly_pressabilityConfig) ||
+      (node.type === TouchableWithoutFeedback &&
+        node.props &&
+        typeof node.props.onPress === 'function') ||
       // HACK: Find components that use `Pressability`.
       node.instance?.state?.pressability != null ||
       // TODO: Remove this after deleting `Touchable`.
@@ -114,16 +113,18 @@ function expectNoConsoleError() {
   });
 }
 
-function expectRendersMatchingSnapshot(
+async function expectRendersMatchingSnapshot(
   name: string,
-  ComponentProvider: () => React.Element<any>,
+  ComponentProvider: () => React.MixedElement,
   unmockComponent: () => mixed,
 ) {
   let instance;
 
   jest.resetAllMocks();
 
-  instance = ReactTestRenderer.create(<ComponentProvider />);
+  await ReactTestRenderer.act(() => {
+    instance = ReactTestRenderer.create(<ComponentProvider />);
+  });
   expect(instance).toMatchSnapshot(
     'should deep render when mocked (please verify output manually)',
   );
@@ -131,22 +132,9 @@ function expectRendersMatchingSnapshot(
   jest.resetAllMocks();
   unmockComponent();
 
-  instance = shallowRenderer.render(<ComponentProvider />);
-  expect(instance).toMatchSnapshot(
-    `should shallow render as <${name} /> when not mocked`,
-  );
-
-  jest.resetAllMocks();
-
-  instance = shallowRenderer.render(<ComponentProvider />);
-  expect(instance).toMatchSnapshot(
-    `should shallow render as <${name} /> when mocked`,
-  );
-
-  jest.resetAllMocks();
-  unmockComponent();
-
-  instance = ReactTestRenderer.create(<ComponentProvider />);
+  await ReactTestRenderer.act(() => {
+    instance = ReactTestRenderer.create(<ComponentProvider />);
+  });
   expect(instance).toMatchSnapshot(
     'should deep render when not mocked (please verify output manually)',
   );

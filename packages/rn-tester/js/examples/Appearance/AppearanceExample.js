@@ -96,40 +96,41 @@ const ColorShowcase = (props: {themeName: string}) => (
           <Text style={{fontWeight: '700', color: theme.LabelColor}}>
             {props.themeName}
           </Text>
-          {Object.keys(theme).map(key => (
-            <View style={{flexDirection: 'row'}} key={key}>
-              <View
-                style={{
-                  width: 50,
-                  height: 50,
-                  paddingHorizontal: 8,
-                  paddingVertical: 2,
-                  backgroundColor: theme[key],
-                }}
-              />
-              <View>
-                <Text
-                  style={{
-                    paddingHorizontal: 16,
-                    paddingVertical: 2,
-                    color: theme.LabelColor,
-                    fontWeight: '600',
-                  }}>
-                  {key}
-                </Text>
-                <Text
-                  style={{
-                    paddingHorizontal: 16,
-                    paddingVertical: 2,
-                    color: theme.LabelColor,
-                  }}>
-                  {typeof theme[key] === 'string'
-                    ? theme[key]
-                    : JSON.stringify(theme[key])}
-                </Text>
-              </View>
-            </View>
-          ))}
+          {Object.keys(theme).map(
+            key =>
+              typeof theme[key] === 'string' && (
+                <View style={{flexDirection: 'row'}} key={key}>
+                  <View
+                    style={{
+                      width: 50,
+                      height: 50,
+                      paddingHorizontal: 8,
+                      paddingVertical: 2,
+                      backgroundColor: theme[key],
+                    }}
+                  />
+                  <View>
+                    <Text
+                      style={{
+                        paddingHorizontal: 16,
+                        paddingVertical: 2,
+                        color: theme.LabelColor,
+                        fontWeight: '600',
+                      }}>
+                      {key}
+                    </Text>
+                    <Text
+                      style={{
+                        paddingHorizontal: 16,
+                        paddingVertical: 2,
+                        color: theme.LabelColor,
+                      }}>
+                      {theme[key]}
+                    </Text>
+                  </View>
+                </View>
+              ),
+          )}
         </View>
       );
     }}
@@ -175,13 +176,13 @@ exports.examples = [
   },
   {
     title: 'Non-component `getColorScheme` API',
-    render(): React.Element<any> {
+    render(): React.MixedElement {
       return <ColorSchemeSubscription />;
     },
   },
   {
     title: 'Consuming Context',
-    render(): React.Element<any> {
+    render(): React.MixedElement {
       return (
         <RNTesterThemeContext.Consumer>
           {theme => {
@@ -199,7 +200,7 @@ exports.examples = [
   },
   {
     title: 'Context forced to light theme',
-    render(): React.Element<any> {
+    render(): React.MixedElement {
       return (
         <RNTesterThemeContext.Provider value={themes.light}>
           <ThemedContainer>
@@ -213,7 +214,7 @@ exports.examples = [
   },
   {
     title: 'Context forced to dark theme',
-    render(): React.Element<any> {
+    render(): React.MixedElement {
       return (
         <RNTesterThemeContext.Provider value={themes.dark}>
           <ThemedContainer>
@@ -228,7 +229,7 @@ exports.examples = [
   {
     title: 'RNTester App Colors',
     description: 'A light and a dark theme based on standard iOS 13 colors.',
-    render(): React.Element<any> {
+    render(): React.MixedElement {
       return (
         <View>
           <RNTesterThemeContext.Provider value={themes.light}>
@@ -244,7 +245,7 @@ exports.examples = [
   {
     title: 'Toggle native appearance',
     description: 'Overwrite application-level appearance mode',
-    render(): React.Element<any> {
+    render(): React.MixedElement {
       return <ToggleNativeAppearance />;
     },
   },

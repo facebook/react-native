@@ -49,6 +49,7 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.config.ReactFeatureFlags;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.modules.appregistry.AppRegistry;
 import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
@@ -317,7 +318,8 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     if (!hasActiveReactContext() || !isViewAttachedToReactInstance()) {
       FLog.w(
           TAG,
-          "Unable to handle child focus changed event as the catalyst instance has not been attached");
+          "Unable to handle child focus changed event as the catalyst instance has not been"
+              + " attached");
       super.requestChildFocus(child, focused);
       return;
     }
@@ -358,7 +360,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     EventDispatcher eventDispatcher =
         UIManagerHelper.getEventDispatcher(getCurrentReactContext(), getUIManagerType());
     if (eventDispatcher != null) {
-      mJSTouchDispatcher.handleTouchEvent(event, eventDispatcher);
+      mJSTouchDispatcher.handleTouchEvent(event, eventDispatcher, getCurrentReactContext());
     }
   }
 
@@ -420,8 +422,9 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
                 ReactSoftExceptionLogger.logSoftException(
                     TAG,
                     new ReactNoCrashSoftException(
-                        "A view was illegally added as a child of a ReactRootView. "
-                            + "This View should not be a direct child of a ReactRootView, because it is not visible and will never be reachable. Child: "
+                        "A view was illegally added as a child of a ReactRootView. This View should"
+                            + " not be a direct child of a ReactRootView, because it is not visible"
+                            + " and will never be reachable. Child: "
                             + child.getClass().getCanonicalName().toString()
                             + " child ID: "
                             + child.getId()));
@@ -432,10 +435,8 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
     if (mShouldLogContentAppeared) {
       mShouldLogContentAppeared = false;
-
-      if (mJSModuleName != null) {
-        ReactMarker.logMarker(ReactMarkerConstants.CONTENT_APPEARED, mJSModuleName, mRootViewTag);
-      }
+      String jsModuleName = getJSModuleName();
+      ReactMarker.logMarker(ReactMarkerConstants.CONTENT_APPEARED, jsModuleName, mRootViewTag);
     }
   }
 
@@ -452,7 +453,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   /**
    * Schedule rendering of the react component rendered by the JS application from the given JS
    * module (@{param moduleName}) using provided {@param reactInstanceManager} to attach to the JS
-   * context of that manager. Extra parameter {@param launchOptions} can be used to pass initial
+   * context of that manager. Extra parameter {@param initialProperties} can be used to pass initial
    * properties for the react component.
    */
   @ThreadConfined(UI)
@@ -478,7 +479,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       mReactInstanceManager.createReactContextInBackground();
       // if in this experiment, we initialize the root earlier in startReactApplication
       // instead of waiting for the initial measure
-      if (ReactFeatureFlags.enableEagerRootViewAttachment) {
+      if (ReactNativeFeatureFlags.enableEagerRootViewAttachment()) {
         if (!mWasMeasured) {
           // Ideally, those values will be used by default, but we only update them here to scope
           // this change to `enableEagerRootViewAttachment` experiment.
@@ -758,11 +759,11 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     super.finalize();
     Assertions.assertCondition(
         !mIsAttachedToInstance,
-        "The application this ReactRootView was rendering was not unmounted before the "
-            + "ReactRootView was garbage collected. This usually means that your application is "
-            + "leaking large amounts of memory. To solve this, make sure to call "
-            + "ReactRootView#unmountReactApplication in the onDestroy() of your hosting Activity or in "
-            + "the onDestroyView() of your hosting Fragment.");
+        "The application this ReactRootView was rendering was not unmounted before the"
+            + " ReactRootView was garbage collected. This usually means that your application is"
+            + " leaking large amounts of memory. To solve this, make sure to call"
+            + " ReactRootView#unmountReactApplication in the onDestroy() of your hosting Activity"
+            + " or in the onDestroyView() of your hosting Fragment.");
   }
 
   public int getRootViewTag() {
@@ -817,6 +818,9 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
   @Nullable
   public ReactContext getCurrentReactContext() {
+    if (mReactInstanceManager == null) {
+      return null;
+    }
     return mReactInstanceManager.getCurrentReactContext();
   }
 
@@ -891,7 +895,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
           sendEvent(
               "keyboardDidHide",
               createKeyboardEventPayload(
-                  PixelUtil.toDIPFromPixel(mLastHeight),
+                  PixelUtil.toDIPFromPixel(mVisibleViewArea.height()),
                   0,
                   PixelUtil.toDIPFromPixel(mVisibleViewArea.width()),
                   0));
@@ -940,7 +944,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
         sendEvent(
             "keyboardDidHide",
             createKeyboardEventPayload(
-                PixelUtil.toDIPFromPixel(mLastHeight),
+                PixelUtil.toDIPFromPixel(mVisibleViewArea.height()),
                 0,
                 PixelUtil.toDIPFromPixel(mVisibleViewArea.width()),
                 0));

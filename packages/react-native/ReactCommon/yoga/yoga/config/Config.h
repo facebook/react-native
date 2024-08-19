@@ -32,7 +32,7 @@ bool configUpdateInvalidatesLayout(
 
 class YG_EXPORT Config : public ::YGConfig {
  public:
-  Config(YGLogger logger);
+  explicit Config(YGLogger logger) : logger_{logger} {}
 
   void setUseWebDefaults(bool useWebDefaults);
   bool useWebDefaults() const;
@@ -53,6 +53,8 @@ class YG_EXPORT Config : public ::YGConfig {
   void setContext(void* context);
   void* getContext() const;
 
+  uint32_t getVersion() const noexcept;
+
   void setLogger(YGLogger logger);
   void log(
       const yoga::Node* node,
@@ -67,11 +69,12 @@ class YG_EXPORT Config : public ::YGConfig {
   static const Config& getDefault();
 
  private:
-  YGCloneNodeFunc cloneNodeCallback_;
-  YGLogger logger_;
+  YGCloneNodeFunc cloneNodeCallback_{nullptr};
+  YGLogger logger_{};
 
   bool useWebDefaults_ : 1 = false;
 
+  uint32_t version_ = 0;
   ExperimentalFeatureSet experimentalFeatures_{};
   Errata errata_ = Errata::None;
   float pointScaleFactor_ = 1.0f;

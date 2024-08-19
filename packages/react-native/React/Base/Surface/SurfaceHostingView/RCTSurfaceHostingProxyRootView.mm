@@ -112,8 +112,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 
 - (void)setLoadingView:(UIView *)loadingView
 {
-  super.activityIndicatorViewFactory = ^UIView *(void)
-  {
+  super.activityIndicatorViewFactory = ^UIView *(void) {
     return loadingView;
   };
 }
@@ -125,9 +124,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
   [super surface:surface didChangeStage:stage];
   if (RCTSurfaceStageIsRunning(stage)) {
     [_bridge.performanceLogger markStopForTag:RCTPLTTI];
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [[NSNotificationCenter defaultCenter] postNotificationName:RCTContentDidAppearNotification object:self];
-    });
   }
 }
 

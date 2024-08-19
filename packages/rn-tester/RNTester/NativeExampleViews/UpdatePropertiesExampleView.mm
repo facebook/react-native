@@ -41,9 +41,8 @@ RCT_EXPORT_MODULE();
 
     AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
 
-    _rootView = [[RCTRootView alloc] initWithBridge:appDelegate.bridge
-                                         moduleName:@"SetPropertiesExampleApp"
-                                  initialProperties:@{@"color" : @"beige"}];
+    _rootView = (RCTRootView *)[appDelegate.rootViewFactory viewWithModuleName:@"SetPropertiesExampleApp"
+                                                             initialProperties:@{@"color" : @"beige"}];
 
     _button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     [_button setTitle:@"Native Button" forState:UIControlStateNormal];

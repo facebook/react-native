@@ -35,12 +35,10 @@ function codegenNativeComponent<Props>(
   componentName: string,
   options?: Options,
 ): NativeComponentType<Props> {
-  if (global.RN$Bridgeless === true) {
-    const errorMessage =
-      "Native Component '" +
-      componentName +
-      "' that calls codegenNativeComponent was not code generated at build time. Please check its definition.";
-    console.error(errorMessage);
+  if (global.RN$Bridgeless === true && __DEV__) {
+    console.warn(
+      `Codegen didn't run for ${componentName}. This will be an error in the future. Make sure you are using @react-native/babel-preset when building your JavaScript code.`,
+    );
   }
 
   let componentNameInUse =

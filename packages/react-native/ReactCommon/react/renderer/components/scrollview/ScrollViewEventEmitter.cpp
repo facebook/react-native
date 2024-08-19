@@ -9,99 +9,48 @@
 
 namespace facebook::react {
 
-static jsi::Value scrollViewMetricsPayload(
-    jsi::Runtime& runtime,
-    const ScrollViewMetrics& scrollViewMetrics) {
-  auto payload = jsi::Object(runtime);
-
-  {
-    auto contentOffset = jsi::Object(runtime);
-    contentOffset.setProperty(runtime, "x", scrollViewMetrics.contentOffset.x);
-    contentOffset.setProperty(runtime, "y", scrollViewMetrics.contentOffset.y);
-    payload.setProperty(runtime, "contentOffset", contentOffset);
-  }
-
-  {
-    auto contentInset = jsi::Object(runtime);
-    contentInset.setProperty(
-        runtime, "top", scrollViewMetrics.contentInset.top);
-    contentInset.setProperty(
-        runtime, "left", scrollViewMetrics.contentInset.left);
-    contentInset.setProperty(
-        runtime, "bottom", scrollViewMetrics.contentInset.bottom);
-    contentInset.setProperty(
-        runtime, "right", scrollViewMetrics.contentInset.right);
-    payload.setProperty(runtime, "contentInset", contentInset);
-  }
-
-  {
-    auto contentSize = jsi::Object(runtime);
-    contentSize.setProperty(
-        runtime, "width", scrollViewMetrics.contentSize.width);
-    contentSize.setProperty(
-        runtime, "height", scrollViewMetrics.contentSize.height);
-    payload.setProperty(runtime, "contentSize", contentSize);
-  }
-
-  {
-    auto containerSize = jsi::Object(runtime);
-    containerSize.setProperty(
-        runtime, "width", scrollViewMetrics.containerSize.width);
-    containerSize.setProperty(
-        runtime, "height", scrollViewMetrics.containerSize.height);
-    payload.setProperty(runtime, "layoutMeasurement", containerSize);
-  }
-
-  payload.setProperty(runtime, "zoomScale", scrollViewMetrics.zoomScale);
-
-  return payload;
+void ScrollViewEventEmitter::onScroll(const ScrollEvent& scrollEvent) const {
+  dispatchUniqueEvent("scroll", std::make_shared<ScrollEvent>(scrollEvent));
 }
 
-void ScrollViewEventEmitter::onScroll(
-    const ScrollViewMetrics& scrollViewMetrics) const {
-  dispatchUniqueEvent("scroll", [scrollViewMetrics](jsi::Runtime& runtime) {
-    return scrollViewMetricsPayload(runtime, scrollViewMetrics);
-  });
+void ScrollViewEventEmitter::experimental_onDiscreteScroll(
+    const ScrollEvent& scrollEvent) const {
+  dispatchEvent(
+      "scroll",
+      std::make_shared<ScrollEvent>(scrollEvent),
+      RawEvent::Category::Discrete);
 }
 
 void ScrollViewEventEmitter::onScrollToTop(
-    const ScrollViewMetrics& scrollViewMetrics) const {
+    const ScrollEvent& scrollEvent) const {
   dispatchUniqueEvent(
-      "scrollToTop", [scrollViewMetrics](jsi::Runtime& runtime) {
-        return scrollViewMetricsPayload(runtime, scrollViewMetrics);
-      });
+      "scrollToTop", std::make_shared<ScrollEvent>(scrollEvent));
 }
 
 void ScrollViewEventEmitter::onScrollBeginDrag(
-    const ScrollViewMetrics& scrollViewMetrics) const {
-  dispatchScrollViewEvent("scrollBeginDrag", scrollViewMetrics);
+    const ScrollEvent& scrollEvent) const {
+  dispatchScrollViewEvent("scrollBeginDrag", scrollEvent);
 }
 
 void ScrollViewEventEmitter::onScrollEndDrag(
-    const ScrollViewMetrics& scrollViewMetrics) const {
-  dispatchScrollViewEvent("scrollEndDrag", scrollViewMetrics);
+    const ScrollEvent& scrollEvent) const {
+  dispatchScrollViewEvent("scrollEndDrag", scrollEvent);
 }
 
 void ScrollViewEventEmitter::onMomentumScrollBegin(
-    const ScrollViewMetrics& scrollViewMetrics) const {
-  dispatchScrollViewEvent("momentumScrollBegin", scrollViewMetrics);
+    const ScrollEvent& scrollEvent) const {
+  dispatchScrollViewEvent("momentumScrollBegin", scrollEvent);
 }
 
 void ScrollViewEventEmitter::onMomentumScrollEnd(
-    const ScrollViewMetrics& scrollViewMetrics) const {
-  dispatchScrollViewEvent("momentumScrollEnd", scrollViewMetrics);
+    const ScrollEvent& scrollEvent) const {
+  dispatchScrollViewEvent("momentumScrollEnd", scrollEvent);
 }
 
 void ScrollViewEventEmitter::dispatchScrollViewEvent(
     std::string name,
-    const ScrollViewMetrics& scrollViewMetrics,
-    EventPriority priority) const {
-  dispatchEvent(
-      std::move(name),
-      [scrollViewMetrics](jsi::Runtime& runtime) {
-        return scrollViewMetricsPayload(runtime, scrollViewMetrics);
-      },
-      priority);
+    const ScrollEvent& scrollEvent) const {
+  dispatchEvent(std::move(name), std::make_shared<ScrollEvent>(scrollEvent));
 }
 
 } // namespace facebook::react

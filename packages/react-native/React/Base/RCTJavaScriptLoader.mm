@@ -318,9 +318,11 @@ static void attemptAsynchronousLoadOfBundleAtURL(
         onComplete(nil, source);
       }
       progressHandler:^(NSDictionary *headers, NSNumber *loaded, NSNumber *total) {
+        NSString *contentType = headers[@"Content-Type"];
+        NSString *mimeType = [[contentType componentsSeparatedByString:@";"] firstObject];
         // Only care about download progress events for the javascript bundle part.
-        if ([headers[@"Content-Type"] isEqualToString:@"application/javascript"] ||
-            [headers[@"Content-Type"] isEqualToString:@"application/x-metro-bytecode-bundle"]) {
+        if ([mimeType isEqualToString:@"application/javascript"] ||
+            [mimeType isEqualToString:@"application/x-metro-bytecode-bundle"]) {
           onProgress(progressEventFromDownloadProgress(loaded, total));
         }
       }];

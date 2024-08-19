@@ -26,7 +26,7 @@ class SmallValueBuffer {
   SmallValueBuffer(const SmallValueBuffer& other) {
     *this = other;
   }
-  SmallValueBuffer(SmallValueBuffer&& other) = default;
+  SmallValueBuffer(SmallValueBuffer&& other) noexcept = default;
 
   // Add a new element to the buffer, returning the index of the element
   uint16_t push(uint32_t value) {
@@ -116,7 +116,7 @@ class SmallValueBuffer {
     return *this;
   }
 
-  SmallValueBuffer& operator=(SmallValueBuffer&& other) = default;
+  SmallValueBuffer& operator=(SmallValueBuffer&& other) noexcept = default;
 
  private:
   struct Overflow {
@@ -125,7 +125,7 @@ class SmallValueBuffer {
   };
 
   uint16_t count_{0};
-  std::array<uint32_t, BufferSize> buffer_;
+  std::array<uint32_t, BufferSize> buffer_{};
   std::bitset<BufferSize> wideElements_;
   std::unique_ptr<Overflow> overflow_;
 };

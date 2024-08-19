@@ -25,7 +25,7 @@ header_search_paths = [
   "\"$(PODS_ROOT)/boost\"",
   "\"$(PODS_ROOT)/DoubleConversion\"",
   "\"$(PODS_ROOT)/fmt/include\"",
-  "\"${PODS_ROOT}/Headers/Public/React-Codegen/react/renderer/components\"",
+  "\"${PODS_ROOT}/Headers/Public/ReactCodegen/react/renderer/components\"",
 ]
 
 Pod::Spec.new do |s|
@@ -43,7 +43,7 @@ Pod::Spec.new do |s|
   s.header_dir             = "RCTBlob"
   s.pod_target_xcconfig    = {
                                "USE_HEADERMAP" => "YES",
-                               "CLANG_CXX_LANGUAGE_STANDARD" => "c++20",
+                               "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
                                "HEADER_SEARCH_PATHS" => header_search_paths.join(' ')
                              }
 
@@ -55,7 +55,7 @@ Pod::Spec.new do |s|
   s.dependency "React-Core/RCTWebSocket"
   s.dependency "React-RCTNetwork"
 
-  add_dependency(s, "React-Codegen")
+  add_dependency(s, "ReactCodegen")
   add_dependency(s, "React-NativeModulesApple")
   add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')
   add_dependency(s, "ReactCommon", :subspec => "turbomodule/core", :additional_framework_paths => ["react/nativemodule/core"])

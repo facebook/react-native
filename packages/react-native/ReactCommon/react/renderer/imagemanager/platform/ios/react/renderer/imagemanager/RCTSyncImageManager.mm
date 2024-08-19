@@ -58,7 +58,8 @@ using namespace facebook::react;
       auto wrappedMetadata = metadata ? wrapManagedObject(metadata) : nullptr;
       observerCoordinator->nativeImageResponseComplete(ImageResponse(wrapManagedObject(image), wrappedMetadata));
     } else {
-      observerCoordinator->nativeImageResponseFailed();
+      auto wrappedError = error ? wrapManagedObject(error) : nullptr;
+      observerCoordinator->nativeImageResponseFailed(ImageLoadError(wrappedError));
     }
     dispatch_group_leave(imageWaitGroup);
   };
@@ -69,7 +70,7 @@ using namespace facebook::react;
       return;
     }
 
-    observerCoordinator->nativeImageResponseProgress((float)progress / (float)total);
+    observerCoordinator->nativeImageResponseProgress((float)progress / (float)total, progress, total);
   };
 
   RCTImageURLLoaderRequest *loaderRequest =

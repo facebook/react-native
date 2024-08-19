@@ -31,7 +31,7 @@ const Platform: PlatformType = {
       major: number,
       minor: number,
       patch: number,
-      prerelease: ?number,
+      prerelease: ?string,
     |},
     Version: number,
     Release: string,
@@ -78,10 +78,10 @@ const Platform: PlatformType = {
       ? // $FlowFixMe[incompatible-return]
         spec.android
       : 'native' in spec
-      ? // $FlowFixMe[incompatible-return]
-        spec.native
-      : // $FlowFixMe[incompatible-return]
-        spec.default,
+        ? // $FlowFixMe[incompatible-return]
+          spec.native
+        : // $FlowFixMe[incompatible-return]
+          spec.default,
 };
 
 module.exports = Platform;

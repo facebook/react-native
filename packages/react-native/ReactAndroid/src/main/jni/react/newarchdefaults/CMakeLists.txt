@@ -6,11 +6,19 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-add_compile_options(-fexceptions -frtti -std=c++20 -Wall -DLOG_TAG=\"ReactNative\")
+include(${REACT_ANDROID_DIR}/src/main/jni/first-party/jni-lib-merge/SoMerging-utils.cmake)
+
+add_compile_options(-fexceptions
+        -frtti
+        -std=c++20
+        -Wall
+        -DLOG_TAG=\"ReactNative\")
 
 file(GLOB react_newarchdefaults_SRC CONFIGURE_DEPENDS *.cpp)
 
-add_library(react_newarchdefaults SHARED ${react_newarchdefaults_SRC})
+add_library(react_newarchdefaults OBJECT ${react_newarchdefaults_SRC})
+
+target_merge_so(react_newarchdefaults)
 
 target_include_directories(react_newarchdefaults PUBLIC .)
 
@@ -21,4 +29,9 @@ target_link_libraries(react_newarchdefaults
         react_nativemodule_core
         react_codegen_rncore
         react_cxxreactpackage
+        react_nativemodule_defaults
+        react_nativemodule_dom
+        react_nativemodule_featureflags
+        react_nativemodule_microtasks
+        react_nativemodule_idlecallbacks
         jsi)

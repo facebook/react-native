@@ -24,32 +24,13 @@ std::shared_ptr<void> TextLayoutManager::getNativeTextLayoutManager() const
   return self_;
 }
 
-std::shared_ptr<void> TextLayoutManager::getHostTextStorage(
-    AttributedString attributedString,
-    ParagraphAttributes paragraphAttributes,
-    LayoutConstraints layoutConstraints) const
-{
-  RCTTextLayoutManager *textLayoutManager = (RCTTextLayoutManager *)unwrapManagedObject(self_);
-  CGSize maximumSize = CGSize{layoutConstraints.maximumSize.width, CGFLOAT_MAX};
-
-  NSTextStorage *textStorage = [textLayoutManager textStorageForAttributesString:attributedString
-                                                             paragraphAttributes:paragraphAttributes
-                                                                            size:maximumSize];
-  return wrapManagedObject(textStorage);
-}
-
 TextMeasurement TextLayoutManager::measure(
     AttributedStringBox attributedStringBox,
     ParagraphAttributes paragraphAttributes,
     const TextLayoutContext &layoutContext,
-    LayoutConstraints layoutConstraints,
-    std::shared_ptr<void> hostTextStorage) const
+    LayoutConstraints layoutConstraints) const
 {
   RCTTextLayoutManager *textLayoutManager = (RCTTextLayoutManager *)unwrapManagedObject(self_);
-  NSTextStorage *textStorage;
-  if (hostTextStorage) {
-    textStorage = unwrapManagedObject(hostTextStorage);
-  }
 
   auto measurement = TextMeasurement{};
 
@@ -57,7 +38,7 @@ TextMeasurement TextLayoutManager::measure(
     case AttributedStringBox::Mode::Value: {
       auto &attributedString = attributedStringBox.getValue();
 
-      measurement = measureCache_.get(
+      measurement = textMeasureCache_.get(
           {attributedString, paragraphAttributes, layoutConstraints}, [&](const TextMeasureCacheKey &key) {
             auto telemetry = TransactionTelemetry::threadLocalTelemetry();
             if (telemetry) {
@@ -66,8 +47,7 @@ TextMeasurement TextLayoutManager::measure(
 
             auto measurement = [textLayoutManager measureAttributedString:attributedString
                                                       paragraphAttributes:paragraphAttributes
-                                                        layoutConstraints:layoutConstraints
-                                                              textStorage:textStorage];
+                                                        layoutConstraints:layoutConstraints];
 
             if (telemetry) {
               telemetry->didMeasureText();
@@ -89,8 +69,7 @@ TextMeasurement TextLayoutManager::measure(
 
       measurement = [textLayoutManager measureNSAttributedString:nsAttributedString
                                              paragraphAttributes:paragraphAttributes
-                                               layoutConstraints:layoutConstraints
-                                                     textStorage:textStorage];
+                                               layoutConstraints:layoutConstraints];
 
       if (telemetry) {
         telemetry->didMeasureText();
@@ -111,9 +90,28 @@ LinesMeasurements TextLayoutManager::measureLines(
     Size size) const
 {
   RCTTextLayoutManager *textLayoutManager = (RCTTextLayoutManager *)unwrapManagedObject(self_);
-  return [textLayoutManager getLinesForAttributedString:attributedString
-                                    paragraphAttributes:paragraphAttributes
-                                                   size:{size.width, size.height}];
+
+  auto measurement =
+      lineMeasureCache_.get({attributedString, paragraphAttributes, size}, [&](const LineMeasureCacheKey &key) {
+        auto measurement = [textLayoutManager getLinesForAttributedString:attributedString
+                                                      paragraphAttributes:paragraphAttributes
+                                                                     size:{size.width, size.height}];
+        return measurement;
+      });
+
+  return measurement;
+}
+
+Float TextLayoutManager::baseline(AttributedString attributedString, ParagraphAttributes paragraphAttributes, Size size)
+    const
+{
+  auto lines = this->measureLines(attributedString, paragraphAttributes, size);
+
+  if (!lines.empty()) {
+    return lines[0].ascender;
+  } else {
+    return 0;
+  }
 }
 
 } // namespace facebook::react

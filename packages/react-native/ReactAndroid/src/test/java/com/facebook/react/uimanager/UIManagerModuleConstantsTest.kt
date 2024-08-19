@@ -8,8 +8,8 @@
 package com.facebook.react.uimanager
 
 import android.view.View
+import com.facebook.react.bridge.BridgeReactContext
 import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.common.MapBuilder
 import org.assertj.core.api.Assertions
 import org.assertj.core.data.MapEntry
 import org.junit.Before
@@ -36,28 +36,32 @@ class UIManagerModuleConstantsTest {
     override fun getExportedCustomDirectEventTypeConstants(): Map<String, Map<String, Any>> =
         customDirectEventTypeConstants
 
-    override fun getExportedCustomBubblingEventTypeConstants(): MutableMap<String, Any>? =
-        MapBuilder.of("onTwirl", TWIRL_BUBBLING_EVENT_MAP)
+    override fun getExportedCustomBubblingEventTypeConstants(): MutableMap<String, Any> =
+        mutableMapOf("onTwirl" to TWIRL_BUBBLING_EVENT_MAP)
 
-    override fun getExportedViewConstants(): MutableMap<String, Any>? =
-        MapBuilder.of("PhotoSizeType", MapBuilder.of("Small", 1, "Large", 2))
+    override fun getExportedViewConstants(): MutableMap<String, Any> =
+        mutableMapOf(
+            "PhotoSizeType" to
+                mutableMapOf(
+                    "Small" to 1,
+                    "Large" to 2,
+                ))
 
-    override fun getNativeProps(): MutableMap<String, String> = MapBuilder.of("fooProp", "number")
+    override fun getNativeProps(): MutableMap<String, String> = mutableMapOf("fooProp" to "number")
   }
 
   private lateinit var reactContext: ReactApplicationContext
 
   @Before
   fun setUp() {
-    reactContext = ReactApplicationContext(RuntimeEnvironment.getApplication())
+    reactContext = BridgeReactContext(RuntimeEnvironment.getApplication())
   }
 
   @Suppress("UNCHECKED_CAST")
   @Test
   fun testNoCustomConstants() {
     val manager = ConcreteViewManager(VIEW_MANAGER_NAME)
-    manager.exportedCustomDirectEventTypeConstants =
-        MapBuilder.of("onTwirl", TWIRL_DIRECT_EVENT_MAP)
+    manager.exportedCustomDirectEventTypeConstants = mapOf("onTwirl" to TWIRL_DIRECT_EVENT_MAP)
 
     val viewManagers = listOf(manager)
 
@@ -74,8 +78,7 @@ class UIManagerModuleConstantsTest {
   @Test
   fun testCustomBubblingEvents() {
     val manager = ConcreteViewManager(VIEW_MANAGER_NAME)
-    manager.exportedCustomDirectEventTypeConstants =
-        MapBuilder.of("onTwirl", TWIRL_DIRECT_EVENT_MAP)
+    manager.exportedCustomDirectEventTypeConstants = mapOf("onTwirl" to TWIRL_DIRECT_EVENT_MAP)
 
     val viewManagers = listOf(manager)
 
@@ -91,8 +94,7 @@ class UIManagerModuleConstantsTest {
   @Test
   fun testCustomDirectEvents() {
     val manager = ConcreteViewManager(VIEW_MANAGER_NAME)
-    manager.exportedCustomDirectEventTypeConstants =
-        MapBuilder.of("onTwirl", TWIRL_DIRECT_EVENT_MAP)
+    manager.exportedCustomDirectEventTypeConstants = mapOf("onTwirl" to TWIRL_DIRECT_EVENT_MAP)
 
     val viewManagers = listOf(manager)
 
@@ -108,8 +110,7 @@ class UIManagerModuleConstantsTest {
   @Test
   fun testCustomViewConstants() {
     val manager = ConcreteViewManager(VIEW_MANAGER_NAME)
-    manager.exportedCustomDirectEventTypeConstants =
-        MapBuilder.of("onTwirl", TWIRL_DIRECT_EVENT_MAP)
+    manager.exportedCustomDirectEventTypeConstants = mapOf("onTwirl" to TWIRL_DIRECT_EVENT_MAP)
 
     val viewManagers = listOf(manager)
 
@@ -127,8 +128,7 @@ class UIManagerModuleConstantsTest {
   @Test
   fun testNativeProps() {
     val manager = ConcreteViewManager(VIEW_MANAGER_NAME)
-    manager.exportedCustomDirectEventTypeConstants =
-        MapBuilder.of("onTwirl", TWIRL_DIRECT_EVENT_MAP)
+    manager.exportedCustomDirectEventTypeConstants = mapOf("onTwirl" to TWIRL_DIRECT_EVENT_MAP)
 
     val viewManagers = listOf(manager)
     val uiManagerModule = UIManagerModule(reactContext, viewManagers, 0)
@@ -143,27 +143,29 @@ class UIManagerModuleConstantsTest {
   fun testMergeConstants() {
     val managerX = ConcreteViewManager("ManagerX")
     managerX.exportedCustomDirectEventTypeConstants =
-        MapBuilder.of(
-            "onTwirl",
-            MapBuilder.of(
-                "registrationName",
-                "onTwirl",
-                "keyToOverride",
-                "valueX",
-                "mapToMerge",
-                MapBuilder.of("keyToOverride", "innerValueX", "anotherKey", "valueX")))
+        mapOf(
+            "onTwirl" to
+                mapOf(
+                    "registrationName" to "onTwirl",
+                    "keyToOverride" to "valueX",
+                    "mapToMerge" to
+                        mapOf(
+                            "keyToOverride" to "innerValueX",
+                            "anotherKey" to "valueX",
+                        )))
 
     val managerY = ConcreteViewManager("ManagerY")
     managerY.exportedCustomDirectEventTypeConstants =
-        MapBuilder.of(
-            "onTwirl",
-            MapBuilder.of(
-                "extraKey",
-                "extraValue",
-                "keyToOverride",
-                "valueY",
-                "mapToMerge",
-                MapBuilder.of("keyToOverride", "innerValueY", "extraKey", "valueY")))
+        mapOf(
+            "onTwirl" to
+                mapOf(
+                    "extraKey" to "extraValue",
+                    "keyToOverride" to "valueY",
+                    "mapToMerge" to
+                        mapOf(
+                            "keyToOverride" to "innerValueY",
+                            "extraKey" to "valueY",
+                        )))
 
     val viewManagers = listOf(managerX, managerY)
     val uiManagerModule = UIManagerModule(reactContext, viewManagers, 0)
@@ -190,12 +192,14 @@ class UIManagerModuleConstantsTest {
   companion object {
 
     private val TWIRL_BUBBLING_EVENT_MAP: Map<*, *> =
-        MapBuilder.of(
-            "phasedRegistrationNames",
-            MapBuilder.of("bubbled", "onTwirl", "captured", "onTwirlCaptured"))
+        mapOf(
+            "phasedRegistrationNames" to
+                mapOf(
+                    "bubbled" to "onTwirl",
+                    "captured" to "onTwirlCaptured",
+                ))
 
-    private val TWIRL_DIRECT_EVENT_MAP: Map<String, Any> =
-        MapBuilder.of("registrationName", "onTwirl")
+    private val TWIRL_DIRECT_EVENT_MAP: Map<String, Any> = mapOf("registrationName" to "onTwirl")
 
     private const val VIEW_MANAGER_NAME = "viewManagerName"
     private const val BUBBLING_EVENTS_TYPES_KEY = "bubblingEventTypes"

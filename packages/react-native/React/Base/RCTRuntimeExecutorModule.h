@@ -5,14 +5,15 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#import <RCTDeprecation/RCTDeprecation.h>
+
 @class RCTRuntimeExecutor;
 
 /**
- * Have your module conform to this protocol to access the RuntimeExecutor.
- * Only available in the bridgeless runtime.
+ * TODO(T187851171): This is deprecated. Use RCTCallInvokerModule instead.
  */
 @protocol RCTRuntimeExecutorModule <NSObject>
 
-@property (nonatomic, nullable, readwrite) RCTRuntimeExecutor *runtimeExecutor;
+@property (nonatomic, nullable, readwrite) RCTRuntimeExecutor *runtimeExecutor RCT_DEPRECATED;
 
 @end

@@ -10,8 +10,6 @@
 
 'use strict';
 
-import type {Element, ElementType} from 'react';
-
 import * as FabricUIManager from 'react-native/Libraries/ReactNative/__mocks__/FabricUIManager';
 import ReactFabric from 'react-native/Libraries/Renderer/shims/ReactFabric';
 import {act} from 'react-test-renderer';
@@ -51,7 +49,7 @@ function buildRenderResult(rootNode: ReactNode): RenderResult {
   };
 }
 
-export function render(element: Element<ElementType>): RenderResult {
+export function render(element: React.MixedElement): RenderResult {
   const manager = FabricUIManager.getFabricUIManager();
   if (!manager) {
     throw new Error('No FabricUIManager found');

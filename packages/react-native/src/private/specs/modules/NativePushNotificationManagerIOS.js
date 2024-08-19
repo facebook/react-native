@@ -55,10 +55,6 @@ type Notification = {|
    * getScheduledLocalNotifications or getDeliveredNotifications.
    */
   +soundName?: ?string,
-  /** DEPRECATED. This was used for iOS's legacy UILocalNotification. */
-  +alertAction?: ?string,
-  /** DEPRECATED. Use `fireDate` or `fireIntervalSeconds` instead. */
-  +repeatInterval?: ?string,
 |};
 
 export interface Spec extends TurboModule {

@@ -120,7 +120,7 @@ static UIView<RCTBackedTextInputViewProtocol> *_Nullable RCTFindTextInputWithNat
 - (void)updateState:(const facebook::react::State::Shared &)state
            oldState:(const facebook::react::State::Shared &)oldState
 {
-  _state = std::static_pointer_cast<InputAccessoryShadowNode::ConcreteState const>(state);
+  _state = std::static_pointer_cast<const InputAccessoryShadowNode::ConcreteState>(state);
   CGSize oldScreenSize = RCTCGSizeFromSize(_state->getData().viewportSize);
   CGSize viewportSize = RCTViewportSize();
   viewportSize.height = std::nan("");

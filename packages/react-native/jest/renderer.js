@@ -9,22 +9,33 @@
  * @oncall react_native
  */
 
+import type {ReactTestRenderer} from 'react-test-renderer';
+
+import nullthrows from 'nullthrows';
 import * as React from 'react';
-import ShallowRenderer from 'react-shallow-renderer';
 import TestRenderer from 'react-test-renderer';
 
-const renderer = new ShallowRenderer();
+export async function create(
+  Component: React.MixedElement,
+): Promise<ReactTestRenderer> {
+  let component;
+  await TestRenderer.act(async () => {
+    component = TestRenderer.create(Component);
+  });
+  return nullthrows(component);
+}
 
-export const shallow = (Component: React.Element<any>): any => {
-  const Wrapper = (): React.Element<any> => Component;
+export async function unmount(testRenderer: ReactTestRenderer) {
+  await TestRenderer.act(async () => {
+    testRenderer.unmount();
+  });
+}
 
-  return renderer.render(<Wrapper />);
-};
-
-export const shallowRender = (Component: React.Element<any>): any => {
-  return renderer.render(Component);
-};
-
-export const create = (Component: React.Element<any>): any => {
-  return TestRenderer.create(Component);
-};
+export async function update(
+  testRenderer: ReactTestRenderer,
+  element: React.MixedElement,
+) {
+  await TestRenderer.act(async () => {
+    testRenderer.update(element);
+  });
+}

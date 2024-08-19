@@ -46,6 +46,14 @@ export default function deprecated_openFlipperMiddleware({
             'Flipper to be installed on your system to handle the ' +
             "'flipper://' URL scheme.",
         );
+        logger?.info(
+          'In React Native 0.74, Flipper is no longer included for new React ' +
+            'Native projects. The Flipper React Native plugin is also ' +
+            'unsupported. You can continue to use Flipper to debug ' +
+            "your app's JavaScript code, however we recommend switching to " +
+            'a modern alternative.\nSee ' +
+            'https://reactnative.dev/docs/debugging#opening-the-debugger.',
+        );
         await open(FLIPPER_SELF_CONNECT_URL);
         res.end();
       } catch (e) {

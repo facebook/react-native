@@ -8,6 +8,7 @@
 package com.facebook.react.uimanager;
 
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.os.Build;
 import android.text.TextUtils;
 import android.view.View;
@@ -19,6 +20,7 @@ import androidx.core.view.ViewCompat;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.R;
 import com.facebook.react.bridge.Dynamic;
+import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
@@ -28,6 +30,8 @@ import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.Role;
 import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.uimanager.common.UIManagerType;
+import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.events.PointerEventHelper;
 import com.facebook.react.uimanager.util.ReactFindViewUtil;
 import java.util.ArrayList;
@@ -54,8 +58,16 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   private static final String STATE_EXPANDED = "expanded";
   private static final String STATE_MIXED = "mixed";
 
+  public BaseViewManager() {
+    super(null);
+  }
+
+  public BaseViewManager(@Nullable ReactApplicationContext reactContext) {
+    super(reactContext);
+  }
+
   @Override
-  protected T prepareToRecycleView(@NonNull ThemedReactContext reactContext, T view) {
+  protected @Nullable T prepareToRecycleView(@NonNull ThemedReactContext reactContext, T view) {
     // Reset tags
     view.setTag(null);
     view.setTag(R.id.pointer_events, null);
@@ -82,18 +94,31 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     setTransformProperty(view, null, null);
 
     // RenderNode params not covered by setTransformProperty above
-    view.resetPivot();
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+      view.resetPivot();
+    } else {
+      // no way of resetting pivot, or knowing whether it is set
+      return null;
+    }
     view.setTop(0);
     view.setBottom(0);
     view.setLeft(0);
     view.setRight(0);
     view.setElevation(0);
-    view.setAnimationMatrix(null);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+      // failsafe - should already be set to null when animation finishes
+      view.setAnimationMatrix(null);
+    }
 
     view.setTag(R.id.transform, null);
     view.setTag(R.id.transform_origin, null);
     view.setTag(R.id.invalidate_transform, null);
     view.removeOnLayoutChangeListener(this);
+
+    view.setTag(R.id.use_hardware_layer, null);
+    view.setTag(R.id.filter, null);
+    view.setTag(R.id.mix_blend_mode, null);
+    LayerEffectsHelper.apply(view, null, null);
 
     // setShadowColor
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
@@ -134,7 +159,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     return view;
   }
 
-  // Currently. onLayout listener is only attached when transform origin prop is being used.
+  // Currently, layout listener is only attached when transform or transformOrigin is set.
   @Override
   public void onLayoutChange(
       View v,
@@ -156,9 +181,9 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
 
     if ((currentHeight != oldHeight || currentWidth != oldWidth)) {
       ReadableArray transformOrigin = (ReadableArray) v.getTag(R.id.transform_origin);
-      ReadableArray transformMatrix = (ReadableArray) v.getTag(R.id.transform);
-      if (transformMatrix != null && transformOrigin != null) {
-        setTransformProperty((T) v, transformMatrix, transformOrigin);
+      ReadableArray transforms = (ReadableArray) v.getTag(R.id.transform);
+      if (transforms != null || transformOrigin != null) {
+        setTransformProperty((T) v, transforms, transformOrigin);
       }
     }
   }
@@ -173,6 +198,22 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   }
 
   @Override
+  @ReactProp(name = ViewProps.FILTER, customType = "Filter")
+  public void setFilter(@NonNull T view, @Nullable ReadableArray filter) {
+    if (ViewUtil.getUIManagerType(view) == UIManagerType.FABRIC) {
+      view.setTag(R.id.filter, filter);
+    }
+  }
+
+  @Override
+  @ReactProp(name = ViewProps.MIX_BLEND_MODE)
+  public void setMixBlendMode(@NonNull T view, @Nullable String mixBlendMode) {
+    if (ViewUtil.getUIManagerType(view) == UIManagerType.FABRIC) {
+      view.setTag(R.id.mix_blend_mode, BlendModeHelper.parseMixBlendMode(mixBlendMode));
+    }
+  }
+
+  @Override
   @ReactProp(name = ViewProps.TRANSFORM)
   public void setTransform(@NonNull T view, @Nullable ReadableArray matrix) {
     view.setTag(R.id.transform, matrix);
@@ -184,11 +225,6 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   public void setTransformOrigin(@NonNull T view, @Nullable ReadableArray transformOrigin) {
     view.setTag(R.id.transform_origin, transformOrigin);
     view.setTag(R.id.invalidate_transform, true);
-    if (transformOrigin != null) {
-      view.addOnLayoutChangeListener(this);
-    } else {
-      view.removeOnLayoutChangeListener(this);
-    }
   }
 
   @Override
@@ -226,7 +262,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   @Override
   @ReactProp(name = ViewProps.RENDER_TO_HARDWARE_TEXTURE)
   public void setRenderToHardwareTexture(@NonNull T view, boolean useHWTexture) {
-    view.setLayerType(useHWTexture ? View.LAYER_TYPE_HARDWARE : View.LAYER_TYPE_NONE, null);
+    view.setTag(R.id.use_hardware_layer, useHWTexture);
   }
 
   @Override
@@ -482,6 +518,36 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     }
   }
 
+  // Extracting helper method to inner class to avoid reflection on older Android versions
+  // hitting the unknown BlendMode type
+  private static class LayerEffectsHelper {
+    public static void apply(
+        @NonNull View view, @Nullable ReadableArray filter, @Nullable Boolean useHWLayer) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        view.setRenderEffect(null);
+      }
+
+      @Nullable Paint p = null;
+
+      if (filter != null) {
+        if (FilterHelper.isOnlyColorMatrixFilters(filter)) {
+          p = new Paint();
+          p.setColorFilter(FilterHelper.parseColorMatrixFilters(filter));
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+          view.setRenderEffect(FilterHelper.parseFilters(filter));
+        }
+      }
+
+      if (p == null) {
+        int layerType =
+            useHWLayer != null && useHWLayer ? View.LAYER_TYPE_HARDWARE : View.LAYER_TYPE_NONE;
+        view.setLayerType(layerType, null);
+      } else {
+        view.setLayerType(View.LAYER_TYPE_HARDWARE, p);
+      }
+    }
+  }
+
   protected void setTransformProperty(
       @NonNull T view,
       @Nullable ReadableArray transforms,
@@ -498,13 +564,16 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
       return;
     }
 
+    boolean allowPercentageResolution = ViewUtil.getUIManagerType(view) == UIManagerType.FABRIC;
+
     sMatrixDecompositionContext.reset();
     TransformHelper.processTransform(
         transforms,
         sTransformDecompositionArray,
         PixelUtil.toDIPFromPixel(view.getWidth()),
         PixelUtil.toDIPFromPixel(view.getHeight()),
-        transformOrigin);
+        transformOrigin,
+        allowPercentageResolution);
     MatrixMathHelper.decomposeMatrix(sTransformDecompositionArray, sMatrixDecompositionContext);
     view.setTranslationX(
         PixelUtil.toPixelFromDIP(
@@ -581,11 +650,17 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
 
     Boolean invalidateTransform = (Boolean) view.getTag(R.id.invalidate_transform);
     if (invalidateTransform != null && invalidateTransform) {
+      view.addOnLayoutChangeListener(this);
       ReadableArray transformOrigin = (ReadableArray) view.getTag(R.id.transform_origin);
-      ReadableArray transformMatrix = (ReadableArray) view.getTag(R.id.transform);
-      setTransformProperty(view, transformMatrix, transformOrigin);
+      ReadableArray transforms = (ReadableArray) view.getTag(R.id.transform);
+      setTransformProperty(view, transforms, transformOrigin);
       view.setTag(R.id.invalidate_transform, false);
     }
+
+    ReadableArray filter = (ReadableArray) view.getTag(R.id.filter);
+    Boolean useHWLayer = (Boolean) view.getTag(R.id.use_hardware_layer);
+
+    LayerEffectsHelper.apply(view, filter, useHWLayer);
   }
 
   @Override

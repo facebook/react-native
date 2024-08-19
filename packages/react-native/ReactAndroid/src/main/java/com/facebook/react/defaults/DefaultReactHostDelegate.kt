@@ -43,9 +43,9 @@ public class DefaultReactHostDelegate(
     override val jsBundleLoader: JSBundleLoader,
     override val reactPackages: List<ReactPackage> = emptyList(),
     override val jsRuntimeFactory: JSRuntimeFactory = HermesInstance(),
-    override val bindingsInstaller: BindingsInstaller = DefaultBindingsInstaller(),
+    override val bindingsInstaller: BindingsInstaller? = null,
     private val reactNativeConfig: ReactNativeConfig = ReactNativeConfig.DEFAULT_CONFIG,
-    private val exceptionHandler: (Exception) -> Unit = {},
+    private val exceptionHandler: (Exception) -> Unit = { throw it },
     override val turboModuleManagerDelegateBuilder: ReactPackageTurboModuleManagerDelegate.Builder
 ) : ReactHostDelegate {
 

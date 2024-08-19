@@ -5,11 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#pragma once
+
 #include <ReactCommon/RuntimeExecutor.h>
 #include <jsi/jsi.h>
 #include <atomic>
 #include <queue>
-#include "TimerManager.h"
 
 namespace facebook::react {
 
@@ -40,7 +41,7 @@ class BufferedRuntimeExecutor {
   void unsafeFlush();
 
   RuntimeExecutor runtimeExecutor_;
-  bool isBufferingEnabled_;
+  std::atomic<bool> isBufferingEnabled_;
   std::mutex lock_;
   std::atomic<uint64_t> lastIndex_;
   std::priority_queue<BufferedWork> queue_;

@@ -14,11 +14,14 @@
 
 #include "CatalystInstanceImpl.h"
 #include "CxxModuleWrapperBase.h"
+#include "InspectorNetworkRequestListener.h"
 #include "JCallback.h"
+#include "JDynamicNative.h"
 #include "JInspector.h"
 #include "JReactMarker.h"
 #include "JavaScriptExecutorHolder.h"
 #include "ProxyExecutor.h"
+#include "ReactInstanceManagerInspectorTarget.h"
 #include "WritableNativeArray.h"
 #include "WritableNativeMap.h"
 
@@ -88,8 +91,11 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     NativeMap::registerNatives();
     ReadableNativeMap::registerNatives();
     WritableNativeMap::registerNatives();
+    JDynamicNative::registerNatives();
     JReactMarker::registerNatives();
     JInspector::registerNatives();
+    ReactInstanceManagerInspectorTarget::registerNatives();
+    InspectorNetworkRequestListener::registerNatives();
   });
 }
 

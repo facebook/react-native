@@ -49,4 +49,12 @@ class RAIIRemoteConnection {
   std::unique_ptr<IRemoteConnection> remote_;
 };
 
+/**
+ * An \c IRemoteConnection that does nothing.
+ */
+class NullRemoteConnection : public IRemoteConnection {
+  inline void onMessage(std::string /*message*/) override {}
+  inline void onDisconnect() override {}
+};
+
 } // namespace facebook::react::jsinspector_modern

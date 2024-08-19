@@ -78,7 +78,9 @@ const REQUEST_EVENTS = [
 
 const XHR_EVENTS = REQUEST_EVENTS.concat('readystatechange');
 
-class XMLHttpRequestEventTarget extends (EventTarget(...REQUEST_EVENTS): any) {
+class XMLHttpRequestEventTarget extends (EventTarget(
+  ...REQUEST_EVENTS,
+): typeof EventTarget) {
   onload: ?Function;
   onloadstart: ?Function;
   onprogress: ?Function;
@@ -91,7 +93,7 @@ class XMLHttpRequestEventTarget extends (EventTarget(...REQUEST_EVENTS): any) {
 /**
  * Shared base for platform-specific XMLHttpRequest implementations.
  */
-class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): any) {
+class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): typeof EventTarget) {
   static UNSENT: number = UNSENT;
   static OPENED: number = OPENED;
   static HEADERS_RECEIVED: number = HEADERS_RECEIVED;
@@ -248,7 +250,10 @@ class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): any) {
         } else if (this._response === '') {
           this._cachedResponse = BlobManager.createFromParts([]);
         } else {
-          throw new Error(`Invalid response for blob: ${this._response}`);
+          throw new Error(
+            'Invalid response for blob - expecting object, was ' +
+              `${typeof this._response}: ${this._response.trim()}`,
+          );
         }
         break;
 
@@ -627,6 +632,7 @@ class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): any) {
     this._lowerCaseResponseHeaders = Object.keys(headers).reduce<{
       [string]: any,
     }>((lcaseHeaders, headerName) => {
+      // $FlowFixMe[invalid-computed-prop]
       lcaseHeaders[headerName.toLowerCase()] = headers[headerName];
       return lcaseHeaders;
     }, {});

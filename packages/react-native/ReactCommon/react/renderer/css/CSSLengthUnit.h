@@ -70,7 +70,7 @@ enum class CSSLengthUnit : uint8_t {
  */
 constexpr std::optional<CSSLengthUnit> parseCSSLengthUnit(
     std::string_view unit) {
-  switch (fnv1a(unit)) {
+  switch (fnv1aLowercase(unit)) {
     case fnv1a("cap"):
       return CSSLengthUnit::Cap;
     case fnv1a("ch"):

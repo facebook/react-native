@@ -32,20 +32,22 @@ jsi::Value Task::execute(jsi::Runtime& runtime, bool didUserCallbackTimeout) {
     return result;
   }
 
-  auto& cbVal = callback.value();
+  // We get the value of the callback and reset it immediately to avoid it being
+  // called more than once (including when the callback throws).
+  auto originalCallback = std::move(*callback);
+  callback.reset();
 
-  if (cbVal.index() == 0) {
+  if (originalCallback.index() == 0) {
     // Callback in JavaScript is expecting a single bool parameter.
     // React team plans to remove it in the future when a scheduler bug on web
     // is resolved.
-    result =
-        std::get<jsi::Function>(cbVal).call(runtime, {didUserCallbackTimeout});
+    result = std::get<jsi::Function>(originalCallback)
+                 .call(runtime, {didUserCallbackTimeout});
   } else {
     // Calling a raw callback
-    std::get<RawCallback>(cbVal)(runtime);
+    std::get<RawCallback>(originalCallback)(runtime);
   }
-  // Destroying callback to prevent calling it twice.
-  callback.reset();
+
   return result;
 }
 

@@ -10,18 +10,28 @@
 
 'use strict';
 
+import flattenStyle from '../../StyleSheet/flattenStyle';
+import React from 'react';
+
 const render = require('../../../jest/renderer');
-const React = require('../React');
 const Text = require('../Text');
 
 jest.unmock('../Text');
 jest.unmock('../TextNativeComponent');
 
-describe('Text', () => {
-  it('default render', () => {
-    const instance = render.create(<Text />);
+function omitRefAndFlattenStyle(instance) {
+  const json = instance.toJSON();
+  // Omit `ref` for forward-compatibility with `enableRefAsProp`.
+  delete json.props.ref;
+  json.props.style = flattenStyle(json.props.style);
+  return json;
+}
 
-    expect(instance.toJSON()).toMatchInlineSnapshot(`
+describe('Text', () => {
+  it('default render', async () => {
+    const instance = await render.create(<Text />);
+
+    expect(omitRefAndFlattenStyle(instance)).toMatchInlineSnapshot(`
       <RCTText
         accessible={true}
         allowFontScaling={true}
@@ -38,16 +48,16 @@ describe('Text', () => {
 });
 
 describe('Text compat with web', () => {
-  it('renders core props', () => {
+  it('renders core props', async () => {
     const props = {
       id: 'id',
       tabIndex: 0,
       testID: 'testID',
     };
 
-    const instance = render.create(<Text {...props} />);
+    const instance = await render.create(<Text {...props} />);
 
-    expect(instance.toJSON()).toMatchInlineSnapshot(`
+    expect(omitRefAndFlattenStyle(instance)).toMatchInlineSnapshot(`
       <RCTText
         accessible={true}
         allowFontScaling={true}
@@ -61,7 +71,7 @@ describe('Text compat with web', () => {
     `);
   });
 
-  it('renders "aria-*" props', () => {
+  it('renders "aria-*" props', async () => {
     const props = {
       'aria-activedescendant': 'activedescendant',
       'aria-atomic': true,
@@ -111,9 +121,9 @@ describe('Text compat with web', () => {
       'aria-valuetext': '3',
     };
 
-    const instance = render.create(<Text {...props} />);
+    const instance = await render.create(<Text {...props} />);
 
-    expect(instance.toJSON()).toMatchInlineSnapshot(`
+    expect(omitRefAndFlattenStyle(instance)).toMatchInlineSnapshot(`
       <RCTText
         accessibilityLabel="label"
         accessibilityState={
@@ -175,7 +185,7 @@ describe('Text compat with web', () => {
     `);
   });
 
-  it('renders styles', () => {
+  it('renders styles', async () => {
     const style = {
       display: 'flex',
       flex: 1,
@@ -185,9 +195,9 @@ describe('Text compat with web', () => {
       verticalAlign: 'middle',
     };
 
-    const instance = render.create(<Text style={style} />);
+    const instance = await render.create(<Text style={style} />);
 
-    expect(instance.toJSON()).toMatchInlineSnapshot(`
+    expect(omitRefAndFlattenStyle(instance)).toMatchInlineSnapshot(`
       <RCTText
         accessible={true}
         allowFontScaling={true}
@@ -202,6 +212,8 @@ describe('Text compat with web', () => {
             "flex": 1,
             "marginInlineStart": 10,
             "textAlignVertical": "center",
+            "userSelect": undefined,
+            "verticalAlign": undefined,
           }
         }
       />

@@ -98,10 +98,13 @@ class Alert {
       const onAction = (action, buttonKey) => {
         if (action === constants.buttonClicked) {
           if (buttonKey === constants.buttonNeutral) {
+            // $FlowFixMe[incompatible-type]
             buttonNeutral.onPress && buttonNeutral.onPress();
           } else if (buttonKey === constants.buttonNegative) {
+            // $FlowFixMe[incompatible-type]
             buttonNegative.onPress && buttonNegative.onPress();
           } else if (buttonKey === constants.buttonPositive) {
+            // $FlowFixMe[incompatible-type]
             buttonPositive.onPress && buttonPositive.onPress();
           }
         } else if (action === constants.dismissed) {

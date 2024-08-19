@@ -9,6 +9,7 @@
  */
 
 'use strict';
+'use client';
 
 // APIs
 import typeof ActionSheetIOS from './Libraries/ActionSheetIOS/ActionSheetIOS';
@@ -27,7 +28,6 @@ import typeof Clipboard from './Libraries/Components/Clipboard/Clipboard';
 import typeof DrawerLayoutAndroid from './Libraries/Components/DrawerAndroid/DrawerLayoutAndroid';
 import typeof Keyboard from './Libraries/Components/Keyboard/Keyboard';
 import typeof KeyboardAvoidingView from './Libraries/Components/Keyboard/KeyboardAvoidingView';
-import typeof PopupMenuAndroid from './Libraries/Components/PopupMenuAndroid/PopupMenuAndroid';
 import typeof Pressable from './Libraries/Components/Pressable/Pressable';
 import typeof ProgressBarAndroid from './Libraries/Components/ProgressBarAndroid/ProgressBarAndroid';
 import typeof RefreshControl from './Libraries/Components/RefreshControl/RefreshControl';
@@ -60,6 +60,7 @@ import typeof VirtualizedList from './Libraries/Lists/VirtualizedList';
 import typeof VirtualizedSectionList from './Libraries/Lists/VirtualizedSectionList';
 import typeof LogBox from './Libraries/LogBox/LogBox';
 import typeof Modal from './Libraries/Modal/Modal';
+// $FlowFixMe[invalid-exported-annotation]
 import typeof NativeDialogManagerAndroid from './Libraries/NativeModules/specs/NativeDialogManagerAndroid';
 import typeof Networking from './Libraries/Network/RCTNetworking';
 import typeof * as Systrace from './Libraries/Performance/Systrace';
@@ -133,10 +134,6 @@ module.exports = {
   },
   get KeyboardAvoidingView(): KeyboardAvoidingView {
     return require('./Libraries/Components/Keyboard/KeyboardAvoidingView')
-      .default;
-  },
-  get PopupMenuAndroid(): PopupMenuAndroid {
-    return require('./Libraries/Components/PopupMenuAndroid/PopupMenuAndroid')
       .default;
   },
   get Modal(): Modal {

@@ -8,8 +8,6 @@
 package com.facebook.react.bridge.queue;
 
 import android.os.Looper;
-import com.facebook.react.common.MapBuilder;
-import java.util.Map;
 
 public class ReactQueueConfigurationImpl implements ReactQueueConfiguration {
 
@@ -56,24 +54,12 @@ public class ReactQueueConfigurationImpl implements ReactQueueConfiguration {
 
   public static ReactQueueConfigurationImpl create(
       ReactQueueConfigurationSpec spec, QueueThreadExceptionHandler exceptionHandler) {
-    Map<MessageQueueThreadSpec, MessageQueueThreadImpl> specsToThreads = MapBuilder.newHashMap();
-
-    MessageQueueThreadSpec uiThreadSpec = MessageQueueThreadSpec.mainThreadSpec();
-    MessageQueueThreadImpl uiThread = MessageQueueThreadImpl.create(uiThreadSpec, exceptionHandler);
-    specsToThreads.put(uiThreadSpec, uiThread);
-
-    MessageQueueThreadImpl jsThread = specsToThreads.get(spec.getJSQueueThreadSpec());
-    if (jsThread == null) {
-      jsThread = MessageQueueThreadImpl.create(spec.getJSQueueThreadSpec(), exceptionHandler);
-    }
-
+    MessageQueueThreadImpl uiThread =
+        MessageQueueThreadImpl.create(MessageQueueThreadSpec.mainThreadSpec(), exceptionHandler);
+    MessageQueueThreadImpl jsThread =
+        MessageQueueThreadImpl.create(spec.getJSQueueThreadSpec(), exceptionHandler);
     MessageQueueThreadImpl nativeModulesThread =
-        specsToThreads.get(spec.getNativeModulesQueueThreadSpec());
-    if (nativeModulesThread == null) {
-      nativeModulesThread =
-          MessageQueueThreadImpl.create(spec.getNativeModulesQueueThreadSpec(), exceptionHandler);
-    }
-
+        MessageQueueThreadImpl.create(spec.getNativeModulesQueueThreadSpec(), exceptionHandler);
     return new ReactQueueConfigurationImpl(uiThread, nativeModulesThread, jsThread);
   }
 }

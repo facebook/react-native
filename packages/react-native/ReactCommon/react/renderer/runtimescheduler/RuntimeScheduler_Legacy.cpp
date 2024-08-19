@@ -8,9 +8,9 @@
 #include "RuntimeScheduler_Legacy.h"
 #include "SchedulerPriorityUtils.h"
 
-#include <react/renderer/debug/SystraceSection.h>
+#include <cxxreact/SystraceSection.h>
+#include <react/renderer/consistency/ScopedShadowTreeRevisionLock.h>
 #include <utility>
-#include "ErrorUtils.h"
 
 namespace facebook::react {
 
@@ -18,8 +18,11 @@ namespace facebook::react {
 
 RuntimeScheduler_Legacy::RuntimeScheduler_Legacy(
     RuntimeExecutor runtimeExecutor,
-    std::function<RuntimeSchedulerTimePoint()> now)
-    : runtimeExecutor_(std::move(runtimeExecutor)), now_(std::move(now)) {}
+    std::function<RuntimeSchedulerTimePoint()> now,
+    RuntimeSchedulerTaskErrorHandler onTaskError)
+    : runtimeExecutor_(std::move(runtimeExecutor)),
+      now_(std::move(now)),
+      onTaskError_(std::move(onTaskError)) {}
 
 void RuntimeScheduler_Legacy::scheduleWork(RawCallback&& callback) noexcept {
   SystraceSection s("RuntimeScheduler::scheduleWork");
@@ -30,7 +33,11 @@ void RuntimeScheduler_Legacy::scheduleWork(RawCallback&& callback) noexcept {
       [this, callback = std::move(callback)](jsi::Runtime& runtime) {
         SystraceSection s2("RuntimeScheduler::scheduleWork callback");
         runtimeAccessRequests_ -= 1;
-        callback(runtime);
+        {
+          ScopedShadowTreeRevisionLock revisionLock(
+              shadowTreeRevisionConsistencyManager_);
+          callback(runtime);
+        }
         startWorkLoop(runtime);
       });
 }
@@ -75,12 +82,26 @@ std::shared_ptr<Task> RuntimeScheduler_Legacy::scheduleTask(
   return task;
 }
 
-bool RuntimeScheduler_Legacy::getShouldYield() const noexcept {
-  return runtimeAccessRequests_ > 0;
+std::shared_ptr<Task> RuntimeScheduler_Legacy::scheduleIdleTask(
+    jsi::Function&& /*callback*/,
+    RuntimeSchedulerTimeout /*timeout*/) noexcept {
+  // Idle tasks are not supported on Legacy RuntimeScheduler.
+  // Because the method is `noexcept`, we return `nullptr` here and handle it
+  // on the caller side.
+  return nullptr;
 }
 
-bool RuntimeScheduler_Legacy::getIsSynchronous() const noexcept {
-  return isSynchronous_;
+std::shared_ptr<Task> RuntimeScheduler_Legacy::scheduleIdleTask(
+    RawCallback&& /*callback*/,
+    RuntimeSchedulerTimeout /*timeout*/) noexcept {
+  // Idle tasks are not supported on Legacy RuntimeScheduler.
+  // Because the method is `noexcept`, we return `nullptr` here and handle it
+  // on the caller side.
+  return nullptr;
+}
+
+bool RuntimeScheduler_Legacy::getShouldYield() noexcept {
+  return runtimeAccessRequests_ > 0;
 }
 
 void RuntimeScheduler_Legacy::cancelTask(Task& task) noexcept {
@@ -100,18 +121,30 @@ void RuntimeScheduler_Legacy::executeNowOnTheSameThread(
     RawCallback&& callback) {
   SystraceSection s("RuntimeScheduler::executeNowOnTheSameThread");
 
-  runtimeAccessRequests_ += 1;
-  executeSynchronouslyOnSameThread_CAN_DEADLOCK(
-      runtimeExecutor_,
-      [this, callback = std::move(callback)](jsi::Runtime& runtime) {
-        SystraceSection s2(
-            "RuntimeScheduler::executeNowOnTheSameThread callback");
+  static thread_local jsi::Runtime* runtimePtr = nullptr;
 
-        runtimeAccessRequests_ -= 1;
-        isSynchronous_ = true;
-        callback(runtime);
-        isSynchronous_ = false;
-      });
+  if (runtimePtr == nullptr) {
+    runtimeAccessRequests_ += 1;
+    executeSynchronouslyOnSameThread_CAN_DEADLOCK(
+        runtimeExecutor_, [this, &callback](jsi::Runtime& runtime) {
+          SystraceSection s2(
+              "RuntimeScheduler::executeNowOnTheSameThread callback");
+
+          runtimeAccessRequests_ -= 1;
+          {
+            ScopedShadowTreeRevisionLock revisionLock(
+                shadowTreeRevisionConsistencyManager_);
+            runtimePtr = &runtime;
+            callback(runtime);
+            runtimePtr = nullptr;
+          }
+        });
+  } else {
+    // Protecting against re-entry into `executeNowOnTheSameThread` from within
+    // `executeNowOnTheSameThread`. Without accounting for re-rentry, a deadlock
+    // will occur when trying to gain access to the runtime.
+    return callback(*runtimePtr);
+  }
 
   // Resume work loop if needed. In synchronous mode
   // only expired tasks are executed. Tasks with lower priority
@@ -136,7 +169,7 @@ void RuntimeScheduler_Legacy::callExpiredTasks(jsi::Runtime& runtime) {
       executeTask(runtime, topPriorityTask, didUserCallbackTimeout);
     }
   } catch (jsi::JSError& error) {
-    handleFatalError(runtime, error);
+    onTaskError_(runtime, error);
   }
 
   currentPriority_ = previousPriority;
@@ -149,6 +182,17 @@ void RuntimeScheduler_Legacy::scheduleRenderingUpdate(
   if (renderingUpdate != nullptr) {
     renderingUpdate();
   }
+}
+
+void RuntimeScheduler_Legacy::setShadowTreeRevisionConsistencyManager(
+    ShadowTreeRevisionConsistencyManager*
+        shadowTreeRevisionConsistencyManager) {
+  shadowTreeRevisionConsistencyManager_ = shadowTreeRevisionConsistencyManager;
+}
+
+void RuntimeScheduler_Legacy::setPerformanceEntryReporter(
+    PerformanceEntryReporter* /*performanceEntryReporter*/) {
+  // No-op in the legacy scheduler
 }
 
 #pragma mark - Private
@@ -182,7 +226,7 @@ void RuntimeScheduler_Legacy::startWorkLoop(jsi::Runtime& runtime) {
       executeTask(runtime, topPriorityTask, didUserCallbackTimeout);
     }
   } catch (jsi::JSError& error) {
-    handleFatalError(runtime, error);
+    onTaskError_(runtime, error);
   }
 
   currentPriority_ = previousPriority;
@@ -201,13 +245,19 @@ void RuntimeScheduler_Legacy::executeTask(
       didUserCallbackTimeout);
 
   currentPriority_ = task->priority;
-  auto result = task->execute(runtime, didUserCallbackTimeout);
 
-  if (result.isObject() && result.getObject(runtime).isFunction(runtime)) {
-    task->callback = result.getObject(runtime).getFunction(runtime);
-  } else {
-    if (taskQueue_.top() == task) {
-      taskQueue_.pop();
+  {
+    ScopedShadowTreeRevisionLock revisionLock(
+        shadowTreeRevisionConsistencyManager_);
+
+    auto result = task->execute(runtime, didUserCallbackTimeout);
+
+    if (result.isObject() && result.getObject(runtime).isFunction(runtime)) {
+      task->callback = result.getObject(runtime).getFunction(runtime);
+    } else {
+      if (taskQueue_.top() == task) {
+        taskQueue_.pop();
+      }
     }
   }
 }

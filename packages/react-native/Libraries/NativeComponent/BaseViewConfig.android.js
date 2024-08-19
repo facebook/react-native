@@ -166,6 +166,11 @@ const validAttributesForNonEventProps = {
   backgroundColor: {process: require('../StyleSheet/processColor').default},
   transform: true,
   transformOrigin: true,
+  experimental_filter: {
+    process: require('../StyleSheet/processFilter').default,
+  },
+  experimental_mixBlendMode: true,
+  isolation: true,
   opacity: true,
   elevation: true,
   shadowColor: {process: require('../StyleSheet/processColor').default},
@@ -195,6 +200,7 @@ const validAttributesForNonEventProps = {
   width: true,
   minWidth: true,
   collapsable: true,
+  collapsableChildren: true,
   maxWidth: true,
   height: true,
   minHeight: true,
@@ -305,6 +311,7 @@ const validAttributesForEventProps = {
 
   // Pointer events
   onClick: true,
+  onClickCapture: true,
   onPointerEnter: true,
   onPointerEnterCapture: true,
   onPointerLeave: true,

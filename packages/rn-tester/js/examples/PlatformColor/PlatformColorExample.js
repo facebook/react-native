@@ -297,8 +297,8 @@ function VariantColorsExample() {
               Platform.OS === 'ios'
                 ? DynamicColorIOS({light: 'red', dark: 'blue'})
                 : Platform.OS === 'android'
-                ? PlatformColor('?attr/colorAccent')
-                : 'red',
+                  ? PlatformColor('?attr/colorAccent')
+                  : 'red',
           }}
         />
       </View>
@@ -328,25 +328,25 @@ exports.description =
 exports.examples = [
   {
     title: 'Platform Colors',
-    render(): React.Element<any> {
+    render(): React.MixedElement {
       return <PlatformColorsExample />;
     },
   },
   {
     title: 'Fallback Colors',
-    render(): React.Element<any> {
+    render(): React.MixedElement {
       return <FallbackColorsExample />;
     },
   },
   {
     title: 'iOS Dynamic Colors',
-    render(): React.Element<any> {
+    render(): React.MixedElement {
       return <DynamicColorsExample />;
     },
   },
   {
     title: 'Variant Colors',
-    render(): React.Element<any> {
+    render(): React.MixedElement {
       return <VariantColorsExample />;
     },
   },

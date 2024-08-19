@@ -626,10 +626,10 @@ class UtilsTests < Test::Unit::TestCase
     end
 
     # ==================================== #
-    # Test - Set USE_HERMES Build Setting #
+    # Test - Set build setting             #
     # ==================================== #
 
-    def test_setUseHermesBuildSetting_addTheUserSetting
+    def test_setBuildSetting_addTheUserSetting
         # Arrange
         react_native_path = "react_native/node_modules"
         user_project_mock = prepare_empty_user_project_mock()
@@ -639,23 +639,23 @@ class UtilsTests < Test::Unit::TestCase
         ])
 
         # Act
-        ReactNativePodsUtils.set_use_hermes_build_setting(installer, false)
+        ReactNativePodsUtils.set_build_setting(installer, build_setting: "TEST_SETTING", value: ["Test"])
 
         # Assert
         user_project_mock.build_configurations.each do |config|
-            assert_equal(config.build_settings["USE_HERMES"], false)
+            assert_equal(config.build_settings["TEST_SETTING"], ["Test"])
         end
 
         assert_equal(user_project_mock.save_invocation_count, 1)
         assert_equal(pods_projects_mock.save_invocation_count, 1)
-        assert_equal(Pod::UI.collected_messages, ["Setting USE_HERMES build settings"])
+        assert_equal(Pod::UI.collected_messages, ["Setting TEST_SETTING build settings"])
     end
 
     # ==================================== #
-    # Test - Set Node_Modules User Setting #
+    # Test - Set build setting (Debug)     #
     # ==================================== #
 
-    def test_setNodeModulesUserSettings_addTheUserSetting
+    def test_setBuildSettingDebug_addTheUserSetting
         # Arrange
         react_native_path = "react_native/node_modules"
         user_project_mock = prepare_empty_user_project_mock()
@@ -665,16 +665,18 @@ class UtilsTests < Test::Unit::TestCase
         ])
 
         # Act
-        ReactNativePodsUtils.set_node_modules_user_settings(installer, react_native_path)
+        ReactNativePodsUtils.set_build_setting(installer, build_setting: "TEST_SETTING", value: ["Test"], config_name: "Debug")
 
         # Assert
         user_project_mock.build_configurations.each do |config|
-            assert_equal(config.build_settings["REACT_NATIVE_PATH"], "${PODS_ROOT}/../#{react_native_path}")
+            if config.name == "Debug" then
+                assert_equal(config.build_settings["TEST_SETTING"], ["Test"])
+            end
         end
 
         assert_equal(user_project_mock.save_invocation_count, 1)
         assert_equal(pods_projects_mock.save_invocation_count, 1)
-        assert_equal(Pod::UI.collected_messages, ["Setting REACT_NATIVE build settings"])
+        assert_equal(Pod::UI.collected_messages, ["Setting TEST_SETTING build settings"])
     end
 
     # =================================== #
@@ -764,7 +766,7 @@ class UtilsTests < Test::Unit::TestCase
         first_target = prepare_target("FirstTarget")
         second_target = prepare_target("SecondTarget", nil, [
             DependencyMock.new("RCT-Folly"),
-            DependencyMock.new("React-Codegen"),
+            DependencyMock.new("ReactCodegen"),
             DependencyMock.new("ReactCommon"),
             DependencyMock.new("React-RCTFabric"),
             DependencyMock.new("React-ImageManager"),
@@ -798,7 +800,7 @@ class UtilsTests < Test::Unit::TestCase
             if pod_name == "SecondTarget"
                 target_installation_result.native_target.build_configurations.each do |config|
                     received_search_path = config.build_settings["HEADER_SEARCH_PATHS"]
-                    expected_Search_path = "$(inherited) \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/fmt/include\" \"$(PODS_ROOT)/boost\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Codegen/React_Codegen.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric/RCTFabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-FabricImage/React_FabricImage.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Graphics/React_graphics.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/imagemanager/platform/ios\""
+                    expected_Search_path = "$(inherited) \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/fmt/include\" \"$(PODS_ROOT)/boost\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCodegen/ReactCodegen.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric/RCTFabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-FabricImage/React_FabricImage.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Graphics/React_graphics.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/imagemanager/platform/ios\""
                     assert_equal(received_search_path, expected_Search_path)
                 end
             else

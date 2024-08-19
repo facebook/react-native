@@ -31,7 +31,7 @@ TEST(SchedulerPriorityTest, serialize) {
 TEST(SchedulerPriorityTest, timeoutForSchedulerPriority) {
   EXPECT_EQ(
       timeoutForSchedulerPriority(SchedulerPriority::ImmediatePriority),
-      std::chrono::milliseconds(-1));
+      std::chrono::milliseconds(0));
   EXPECT_EQ(
       timeoutForSchedulerPriority(SchedulerPriority::UserBlockingPriority),
       std::chrono::milliseconds(250));
@@ -43,5 +43,5 @@ TEST(SchedulerPriorityTest, timeoutForSchedulerPriority) {
       std::chrono::seconds(10));
   EXPECT_EQ(
       timeoutForSchedulerPriority(SchedulerPriority::IdlePriority),
-      std::chrono::milliseconds::max());
+      std::chrono::minutes(5));
 }

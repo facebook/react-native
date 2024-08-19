@@ -23,8 +23,10 @@ target_link_libraries(react_render_runtimescheduler
         callinvoker
         jsi
         react_debug
-        react_render_core
+        react_performance_timeline
+        react_render_consistency
         react_render_debug
+        react_timing
         react_utils
         react_featureflags
         runtimeexecutor)

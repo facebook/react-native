@@ -1385,24 +1385,6 @@ RCT_EXPORT_METHOD(measureLayout
 }
 
 /**
- * Returns the computed recursive offset layout in a dictionary form. The
- * returned values are relative to the `ancestor` shadow view. Returns `nil`, if
- * the `ancestor` shadow view is not actually an `ancestor`. Does not touch
- * anything on the main UI thread. Invokes supplied callback with (x, y, width,
- * height).
- */
-RCT_EXPORT_METHOD(measureLayoutRelativeToParent
-                  : (nonnull NSNumber *)reactTag errorCallback
-                  : (__unused RCTResponseSenderBlock)errorCallback callback
-                  : (RCTResponseSenderBlock)callback)
-{
-  RCTLogWarn(
-      @"RCTUIManager.measureLayoutRelativeToParent method is deprecated and it will not be implemented in newer versions of RN (Fabric) - T47686450");
-  RCTShadowView *shadowView = _shadowViewRegistry[reactTag];
-  RCTMeasureLayout(shadowView, shadowView.reactSuperview, callback);
-}
-
-/**
  * JS sets what *it* considers to be the responder. Later, scroll views can use
  * this in order to determine if scrolling is appropriate.
  */
@@ -1674,35 +1656,46 @@ static UIView *_jsResponder;
 {
   self = [super init];
   if (self) {
-    self->_uiManager = uiManager;
-    self->_registry = registry;
+    _uiManager = uiManager;
+    _registry = registry;
   }
   return self;
+}
+
+- (NSUInteger)count
+{
+  return self->_registry.count;
+}
+
+- (NSEnumerator *)keyEnumerator
+{
+  return self->_registry.keyEnumerator;
 }
 
 - (id)objectForKey:(id)key
 {
   if (![key isKindOfClass:[NSNumber class]]) {
-    return [super objectForKeyedSubscript:key];
+    return NULL;
   }
 
   NSNumber *index = (NSNumber *)key;
-  UIView *view = [_uiManager viewForReactTag:index];
+  UIView *view = _registry[index];
   if (view) {
     return [RCTUIManager paperViewOrCurrentView:view];
   }
-  view = _registry[index];
+  view = [_uiManager viewForReactTag:index];
   if (view) {
     return [RCTUIManager paperViewOrCurrentView:view];
   }
-  return [super objectForKeyedSubscript:key];
+  return NULL;
 }
 
 - (void)removeObjectForKey:(id)key
 {
   if (![key isKindOfClass:[NSNumber class]]) {
-    return [super removeObjectForKey:key];
+    return;
   }
+
   NSNumber *tag = (NSNumber *)key;
 
   if (_registry[key]) {
@@ -1710,8 +1703,6 @@ static UIView *_jsResponder;
     [mutableRegistry removeObjectForKey:tag];
   } else if ([_uiManager viewForReactTag:tag]) {
     [_uiManager removeViewFromRegistry:tag];
-  } else {
-    [super removeObjectForKey:key];
   }
 }
 

@@ -12,12 +12,9 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.SparseArray;
 import android.util.SparseBooleanArray;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
-import android.widget.PopupMenu;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.R;
@@ -30,11 +27,13 @@ import com.facebook.react.bridge.RetryableMountingLayerException;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.build.ReactBuildConfig;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.touch.JSResponderHandler;
 import com.facebook.react.uimanager.layoutanimation.LayoutAnimationController;
 import com.facebook.react.uimanager.layoutanimation.LayoutAnimationListener;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
+import com.facebook.yoga.YogaDirection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -80,8 +79,7 @@ public class NativeViewHierarchyManager {
   private final LayoutAnimationController mLayoutAnimator = new LayoutAnimationController();
   private final RectF mBoundingBox = new RectF();
 
-  private boolean mLayoutAnimationEnabled;
-  private PopupMenu mPopupMenu;
+  private volatile boolean mLayoutAnimationEnabled;
   private HashMap<Integer, Set<Integer>> mPendingDeletionsForTag;
 
   public NativeViewHierarchyManager(ViewManagerRegistry viewManagers) {
@@ -157,8 +155,17 @@ public class NativeViewHierarchyManager {
     viewManager.updateExtraData(viewToUpdate, extraData);
   }
 
+  /**
+   * @deprecated Please use {@link #updateLayout(int tag, int x, int y, int width, int height,
+   *     YogaDirection layoutDirection)} instead.
+   */
+  @Deprecated
+  public void updateLayout(int tag, int x, int y, int width, int height) {
+    updateLayout(tag, tag, x, y, width, height, YogaDirection.INHERIT);
+  }
+
   public synchronized void updateLayout(
-      int parentTag, int tag, int x, int y, int width, int height) {
+      int parentTag, int tag, int x, int y, int width, int height, YogaDirection layoutDirection) {
     if (DEBUG_MODE) {
       FLog.d(TAG, "updateLayout[%d]->[%d]: %d %d %d %d", tag, parentTag, x, y, width, height);
     }
@@ -170,6 +177,10 @@ public class NativeViewHierarchyManager {
         .flush();
     try {
       View viewToUpdate = resolveView(tag);
+
+      if (ReactNativeFeatureFlags.setAndroidLayoutDirection()) {
+        viewToUpdate.setLayoutDirection(LayoutDirectionUtil.toAndroidFromYoga(layoutDirection));
+      }
 
       // Even though we have exact dimensions, we still call measure because some platform views
       // (e.g.
@@ -235,7 +246,7 @@ public class NativeViewHierarchyManager {
   }
 
   @Nullable
-  public long getInstanceHandle(int reactTag) {
+  public synchronized long getInstanceHandle(int reactTag) {
     View view = mTagsToViews.get(reactTag);
     if (view == null) {
       throw new IllegalViewOperationException("Unable to find view for tag: " + reactTag);
@@ -603,10 +614,9 @@ public class NativeViewHierarchyManager {
           TAG,
           "Trying to add a root view with an explicit id ("
               + view.getId()
-              + ") already "
-              + "set. React Native uses the id field to track react tags and will overwrite this field. "
-              + "If that is fine, explicitly overwrite the id field to View.NO_ID before calling "
-              + "addRootView.");
+              + ") already set. React Native uses the id field to track react tags and will"
+              + " overwrite this field. If that is fine, explicitly overwrite the id field to"
+              + " View.NO_ID before calling addRootView.");
     }
 
     mTagsToViews.put(tag, view);
@@ -804,15 +814,16 @@ public class NativeViewHierarchyManager {
     mJSResponderHandler.setJSResponder(initialReactTag, view.getParent());
   }
 
-  public void clearJSResponder() {
+  public synchronized void clearJSResponder() {
     mJSResponderHandler.clearJSResponder();
   }
 
-  void configureLayoutAnimation(final ReadableMap config, final Callback onAnimationComplete) {
+  synchronized void configureLayoutAnimation(
+      final ReadableMap config, final Callback onAnimationComplete) {
     mLayoutAnimator.initializeFromConfig(config, onAnimationComplete);
   }
 
-  void clearLayoutAnimation() {
+  synchronized void clearLayoutAnimation() {
     mLayoutAnimator.reset();
   }
 
@@ -864,85 +875,6 @@ public class NativeViewHierarchyManager {
   }
 
   /**
-   * Show a {@link PopupMenu}.
-   *
-   * <p>This is deprecated, please use the <PopupMenuAndroid /> component instead.
-   *
-   * <p>TODO(T175424986): Remove UIManager.showPopupMenu() in React Native v0.75.
-   *
-   * @param reactTag the tag of the anchor view (the PopupMenu is displayed next to this view); this
-   *     needs to be the tag of a native view (shadow views can not be anchors)
-   * @param items the menu items as an array of strings
-   * @param success will be called with the position of the selected item as the first argument, or
-   *     no arguments if the menu is dismissed
-   */
-  @Deprecated
-  public synchronized void showPopupMenu(
-      int reactTag, ReadableArray items, Callback success, Callback error) {
-    UiThreadUtil.assertOnUiThread();
-    View anchor = mTagsToViews.get(reactTag);
-    if (anchor == null) {
-      error.invoke("Can't display popup. Could not find view with tag " + reactTag);
-      return;
-    }
-    mPopupMenu = new PopupMenu(getReactContextForView(reactTag), anchor);
-
-    Menu menu = mPopupMenu.getMenu();
-    for (int i = 0; i < items.size(); i++) {
-      menu.add(Menu.NONE, Menu.NONE, i, items.getString(i));
-    }
-
-    PopupMenuCallbackHandler handler = new PopupMenuCallbackHandler(success);
-    mPopupMenu.setOnMenuItemClickListener(handler);
-    mPopupMenu.setOnDismissListener(handler);
-
-    mPopupMenu.show();
-  }
-
-  /**
-   * This is deprecated, please use the <PopupMenuAndroid /> component instead.
-   *
-   * <p>TODO(T175424986): Remove UIManager.dismissPopupMenu() in React Native v0.75.
-   *
-   * <p>Dismiss the last opened PopupMenu {@link PopupMenu}.
-   */
-  @Deprecated
-  public void dismissPopupMenu() {
-    if (mPopupMenu != null) {
-      mPopupMenu.dismiss();
-    }
-  }
-
-  private static class PopupMenuCallbackHandler
-      implements PopupMenu.OnMenuItemClickListener, PopupMenu.OnDismissListener {
-
-    final Callback mSuccess;
-    boolean mConsumed = false;
-
-    private PopupMenuCallbackHandler(Callback success) {
-      mSuccess = success;
-    }
-
-    @Override
-    public void onDismiss(PopupMenu menu) {
-      if (!mConsumed) {
-        mSuccess.invoke(UIManagerModuleConstants.ACTION_DISMISSED);
-        mConsumed = true;
-      }
-    }
-
-    @Override
-    public boolean onMenuItemClick(MenuItem item) {
-      if (!mConsumed) {
-        mSuccess.invoke(UIManagerModuleConstants.ACTION_ITEM_SELECTED, item.getOrder());
-        mConsumed = true;
-        return true;
-      }
-      return false;
-    }
-  }
-
-  /**
    * @return Themed React context for view with a given {@param reactTag} - it gets the context
    *     directly from the view using {@link View#getContext}.
    */
@@ -954,7 +886,7 @@ public class NativeViewHierarchyManager {
     return (ThemedReactContext) view.getContext();
   }
 
-  public void sendAccessibilityEvent(int tag, int eventType) {
+  public synchronized void sendAccessibilityEvent(int tag, int eventType) {
     View view = mTagsToViews.get(tag);
     if (view == null) {
       throw new RetryableMountingLayerException("Could not find view with tag " + tag);

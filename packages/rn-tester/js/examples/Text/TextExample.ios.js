@@ -13,6 +13,7 @@
 import type {RNTesterModule} from '../../types/RNTesterTypes';
 
 import TextLegend from '../../components/TextLegend';
+import TextInlineViewsExample from './TextInlineViewsExample';
 
 const TextInlineView = require('../../components/TextInlineView');
 const React = require('react');
@@ -307,9 +308,6 @@ class TextBaseLineLayoutExample extends React.Component<{}, mixed> {
           {marker}
         </View>
 
-        {/* iOS-only because it relies on inline views being able to size to content.
-         * Android's implementation requires that a width and height be specified
-         * on the inline view. */}
         <Text style={subtitleStyle}>{'Interleaving <View> and <Text>:'}</Text>
         <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
           {marker}
@@ -344,6 +342,23 @@ class TextBaseLineLayoutExample extends React.Component<{}, mixed> {
             </View>{' '}
             , ante arcu vestibulum ligula, et scelerisque diam.
           </Text>
+        </View>
+
+        <Text style={subtitleStyle}>{'Multi-line <Text> alignment'}</Text>
+        <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
+          <View style={{width: 50, height: 50, backgroundColor: 'gray'}} />
+          <View style={{width: 125, backgroundColor: '#eee'}}>
+            <Text style={{fontSize: 15}}>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+              eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            </Text>
+          </View>
+          <View style={{width: 125, backgroundColor: '#eee'}}>
+            <Text style={{fontSize: 10}}>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+              eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            </Text>
+          </View>
         </View>
 
         <Text style={subtitleStyle}>{'<TextInput/>:'}</Text>
@@ -942,7 +957,7 @@ const examples = [
   },
   {
     title: 'Toggling Attributes',
-    render: function (): React.Element<any> {
+    render: function (): React.MixedElement {
       return <AttributeToggler />;
     },
   },
@@ -1171,7 +1186,7 @@ const examples = [
   },
   {
     title: 'Dynamic Font Size Adjustment',
-    render: function (): React.Element<any> {
+    render: function (): React.MixedElement {
       return <AdjustingFontSize />;
     },
   },
@@ -1328,6 +1343,49 @@ const examples = [
       );
     },
   },
+  {
+    title: 'Clipping',
+    name: 'clipping',
+    render: function (): React.Node {
+      return (
+        <View>
+          <Text
+            testID="text-clipping"
+            style={{
+              borderRadius: 50,
+              padding: 0,
+              borderColor: 'red',
+              borderWidth: 5,
+              overflow: 'hidden',
+              fontSize: 16,
+            }}>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </Text>
+        </View>
+      );
+    },
+  },
+  {
+    title: 'Box Shadow',
+    name: 'boxShadow',
+    render: function (): React.Node {
+      return (
+        <View>
+          <Text
+            testID="text-box-shadow"
+            style={{
+              borderRadius: 10,
+              experimental_boxShadow: '0 0 10px red',
+            }}>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </Text>
+        </View>
+      );
+    },
+  },
+  TextInlineViewsExample,
 ];
 
 module.exports = ({

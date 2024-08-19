@@ -10,21 +10,22 @@ package com.facebook.react.uiapp
 import android.app.Application
 import com.facebook.fbreact.specs.SampleLegacyModule
 import com.facebook.fbreact.specs.SampleTurboModule
+import com.facebook.react.BaseReactPackage
 import com.facebook.react.ReactApplication
 import com.facebook.react.ReactHost
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackage
-import com.facebook.react.TurboReactPackage
 import com.facebook.react.ViewManagerOnDemandReactPackage
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.common.assets.ReactFontManager
-import com.facebook.react.config.ReactFeatureFlags
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.load
 import com.facebook.react.defaults.DefaultReactHost
 import com.facebook.react.defaults.DefaultReactNativeHost
 import com.facebook.react.module.model.ReactModuleInfo
 import com.facebook.react.module.model.ReactModuleInfoProvider
+import com.facebook.react.osslibraryexample.OSSLibraryExamplePackage
+import com.facebook.react.popupmenu.PopupMenuPackage
 import com.facebook.react.shell.MainReactPackage
 import com.facebook.react.uiapp.component.MyLegacyViewManager
 import com.facebook.react.uiapp.component.MyNativeViewManager
@@ -44,13 +45,14 @@ class RNTesterApplication : Application(), ReactApplication {
       public override fun getPackages(): List<ReactPackage> {
         return listOf(
             MainReactPackage(),
-            object : TurboReactPackage() {
+            PopupMenuPackage(),
+            OSSLibraryExamplePackage(),
+            object : BaseReactPackage() {
               override fun getModule(
                   name: String,
                   reactContext: ReactApplicationContext
               ): NativeModule? {
-                @Suppress("DEPRECATION")
-                if (!ReactFeatureFlags.useTurboModules) {
+                if (!isNewArchEnabled) {
                   return null
                 }
                 if (SampleTurboModule.NAME == name) {
@@ -67,27 +69,24 @@ class RNTesterApplication : Application(), ReactApplication {
               // modules.
               override fun getReactModuleInfoProvider(): ReactModuleInfoProvider =
                   ReactModuleInfoProvider {
-                    @Suppress("DEPRECATION")
-                    if (ReactFeatureFlags.useTurboModules) {
+                    if (isNewArchEnabled) {
                       mapOf(
                           SampleTurboModule.NAME to
                               ReactModuleInfo(
                                   SampleTurboModule.NAME,
                                   "SampleTurboModule",
-                                  false, // canOverrideExistingModule
-                                  false, // needsEagerInit
-                                  false, // isCxxModule
-                                  true // isTurboModule
-                                  ),
+                                  _canOverrideExistingModule = false,
+                                  _needsEagerInit = false,
+                                  isCxxModule = false,
+                                  isTurboModule = true),
                           SampleLegacyModule.NAME to
                               ReactModuleInfo(
                                   SampleLegacyModule.NAME,
                                   "SampleLegacyModule",
-                                  false, // canOverrideExistingModule
-                                  false, // needsEagerInit
-                                  false, // isCxxModule
-                                  false // isTurboModule
-                                  ))
+                                  _canOverrideExistingModule = false,
+                                  _needsEagerInit = false,
+                                  isCxxModule = false,
+                                  isTurboModule = false))
                     } else {
                       emptyMap()
                     }
@@ -109,11 +108,11 @@ class RNTesterApplication : Application(), ReactApplication {
               override fun createViewManager(
                   reactContext: ReactApplicationContext,
                   viewManagerName: String
-              ): ViewManager<*, out ReactShadowNode<*>> =
-                  if (viewManagerName == "RNTMyNativeView") {
-                    MyNativeViewManager()
-                  } else {
-                    MyLegacyViewManager(reactContext)
+              ): ViewManager<*, out ReactShadowNode<*>>? =
+                  when (viewManagerName) {
+                    "RNTMyNativeView" -> MyNativeViewManager()
+                    "RNTMyLegacyNativeView" -> MyLegacyViewManager(reactContext)
+                    else -> null
                   }
             })
       }
@@ -129,7 +128,10 @@ class RNTesterApplication : Application(), ReactApplication {
   override fun onCreate() {
     ReactFontManager.getInstance().addCustomFont(this, "Rubik", R.font.rubik)
     super.onCreate()
-    SoLoader.init(this, /* native exopackage */ false)
+
+    // We want the .init() statement to exercise this code when building RNTester with Buck
+    @Suppress("DEPRECATION") SoLoader.init(this, /* native exopackage */ false)
+
     if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
       load()
     }

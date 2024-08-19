@@ -18,56 +18,39 @@ namespace facebook::react {
 std::function<void(std::shared_ptr<const ComponentDescriptorProviderRegistry>)>
     DefaultComponentsRegistry::registerComponentDescriptorsFromEntryPoint{};
 
-DefaultComponentsRegistry::DefaultComponentsRegistry(ComponentFactory* delegate)
-    : delegate_(delegate) {}
-
-std::shared_ptr<const ComponentDescriptorProviderRegistry>
-DefaultComponentsRegistry::sharedProviderRegistry() {
-  auto providerRegistry = CoreComponentsRegistry::sharedProviderRegistry();
-
-  if (DefaultComponentsRegistry::registerComponentDescriptorsFromEntryPoint) {
-    (DefaultComponentsRegistry::registerComponentDescriptorsFromEntryPoint)(
-        providerRegistry);
-  } else {
-    LOG(WARNING)
-        << "Custom component descriptors were not configured from JNI_OnLoad";
-  }
-
-  return providerRegistry;
-}
-
-jni::local_ref<DefaultComponentsRegistry::jhybriddata>
-DefaultComponentsRegistry::initHybrid(
+void DefaultComponentsRegistry::setRegistryRunction(
     jni::alias_ref<jclass>,
     ComponentFactory* delegate) {
-  auto instance = makeCxxInstance(delegate);
-
-  auto buildRegistryFunction =
-      [](const EventDispatcher::Weak& eventDispatcher,
-         const ContextContainer::Shared& contextContainer)
-      -> ComponentDescriptorRegistry::Shared {
+  delegate
+      ->buildRegistryFunction = [](const EventDispatcher::Weak& eventDispatcher,
+                                   const ContextContainer::Shared&
+                                       contextContainer) {
     ComponentDescriptorParameters params{
         .eventDispatcher = eventDispatcher,
         .contextContainer = contextContainer,
         .flavor = nullptr};
 
-    auto registry = DefaultComponentsRegistry::sharedProviderRegistry()
-                        ->createComponentDescriptorRegistry(params);
+    auto providerRegistry = CoreComponentsRegistry::sharedProviderRegistry();
+    if (registerComponentDescriptorsFromEntryPoint) {
+      registerComponentDescriptorsFromEntryPoint(providerRegistry);
+    } else {
+      LOG(WARNING)
+          << "Custom component descriptors were not configured from JNI_OnLoad";
+    }
 
+    auto registry = providerRegistry->createComponentDescriptorRegistry(params);
     auto& mutableRegistry = const_cast<ComponentDescriptorRegistry&>(*registry);
     mutableRegistry.setFallbackComponentDescriptor(
         std::make_shared<UnimplementedNativeViewComponentDescriptor>(params));
 
     return registry;
   };
-
-  delegate->buildRegistryFunction = buildRegistryFunction;
-  return instance;
 }
 
 void DefaultComponentsRegistry::registerNatives() {
-  registerHybrid({
-      makeNativeMethod("initHybrid", DefaultComponentsRegistry::initHybrid),
+  javaClassLocal()->registerNatives({
+      makeNativeMethod(
+          "register", DefaultComponentsRegistry::setRegistryRunction),
   });
 }
 

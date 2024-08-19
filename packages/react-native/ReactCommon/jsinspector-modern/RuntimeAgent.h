@@ -7,16 +7,15 @@
 
 #pragma once
 
+#include "CdpJson.h"
 #include "InspectorInterfaces.h"
 #include "RuntimeAgentDelegate.h"
 #include "RuntimeTarget.h"
-#include "SessionState.h"
-
-#include <jsinspector-modern/Parsing.h>
 
 namespace facebook::react::jsinspector_modern {
 
 class RuntimeTargetController;
+struct SessionState;
 
 /**
  * An Agent that handles requests from the Chrome DevTools Protocol
@@ -36,7 +35,7 @@ class RuntimeAgent final {
    * \param executionContextDescription A description of the execution context
    * represented by this runtime. This is used for disambiguating the
    * source/destination of CDP messages when there are multiple runtimes
-   * (concurrently or over the life of a Page).
+   * (concurrently or over the life of a Host).
    * \param sessionState The state of the session that created this agent.
    * \param delegate The RuntimeAgentDelegate providing engine-specific
    * CDP functionality.
@@ -47,6 +46,8 @@ class RuntimeAgent final {
       const ExecutionContextDescription& executionContextDescription,
       SessionState& sessionState,
       std::unique_ptr<RuntimeAgentDelegate> delegate);
+
+  ~RuntimeAgent();
 
   /**
    * Handle a CDP request. The response will be sent over the provided
@@ -68,6 +69,17 @@ class RuntimeAgent final {
   void notifyBindingCalled(
       const std::string& bindingName,
       const std::string& payload);
+
+  struct ExportedState {
+    std::unique_ptr<RuntimeAgentDelegate::ExportedState> delegateState;
+  };
+
+  /**
+   * Export the RuntimeAgent's state, if available. This will be called
+   * shortly before the RuntimeAgent is destroyed to preserve state that may be
+   * needed when constructin a new RuntimeAgent.
+   */
+  ExportedState getExportedState();
 
  private:
   FrontendChannel frontendChannel_;

@@ -15,6 +15,7 @@ import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackageTurboModuleManagerDelegate
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.UIManagerProvider
+import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.fabric.ComponentFactory
 import com.facebook.react.fabric.FabricUIManagerProviderImpl
 import com.facebook.react.fabric.ReactNativeConfig
@@ -49,13 +50,18 @@ protected constructor(
           DefaultComponentsRegistry.register(componentFactory)
 
           val viewManagerRegistry =
-              ViewManagerRegistry(
-                  object : ViewManagerResolver {
-                    override fun getViewManager(viewManagerName: String) =
-                        reactInstanceManager.createViewManager(viewManagerName)
+              if (lazyViewManagersEnabled) {
+                ViewManagerRegistry(
+                    object : ViewManagerResolver {
+                      override fun getViewManager(viewManagerName: String) =
+                          reactInstanceManager.createViewManager(viewManagerName)
 
-                    override fun getViewManagerNames() = reactInstanceManager.viewManagerNames
-                  })
+                      override fun getViewManagerNames() = reactInstanceManager.viewManagerNames
+                    })
+              } else {
+                ViewManagerRegistry(
+                    reactInstanceManager.getOrCreateViewManagers(reactApplicationContext))
+              }
 
           FabricUIManagerProviderImpl(
                   componentFactory, ReactNativeConfig.DEFAULT_CONFIG, viewManagerRegistry)
@@ -98,12 +104,15 @@ protected constructor(
    *
    * @param context the Android [Context] to use for creating the [ReactHost]
    */
-  public fun toReactHost(context: Context): ReactHost =
+  @UnstableReactNativeAPI
+  internal fun toReactHost(context: Context): ReactHost =
       DefaultReactHost.getDefaultReactHost(
           context,
           packages,
           jsMainModuleName,
           bundleAssetName ?: "index",
+          null,
           isHermesEnabled ?: true,
+          useDeveloperSupport,
       )
 }

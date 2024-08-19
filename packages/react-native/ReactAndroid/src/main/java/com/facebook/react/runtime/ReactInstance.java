@@ -10,18 +10,21 @@ package com.facebook.react.runtime;
 import android.content.res.AssetManager;
 import android.view.View;
 import com.facebook.common.logging.FLog;
+import com.facebook.fbreact.specs.NativeExceptionsManagerSpec;
+import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.react.DebugCorePackage;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.ViewManagerOnDemandReactPackage;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.JSBundleLoaderDelegate;
+import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.JavaScriptContextHolder;
-import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.NativeArray;
 import com.facebook.react.bridge.NativeMap;
 import com.facebook.react.bridge.NativeModule;
@@ -35,16 +38,16 @@ import com.facebook.react.bridge.queue.QueueThreadExceptionHandler;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.bridge.queue.ReactQueueConfigurationImpl;
 import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
-import com.facebook.react.config.ReactFeatureFlags;
+import com.facebook.react.devsupport.StackTraceHelper;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.fabric.Binding;
 import com.facebook.react.fabric.BindingImpl;
 import com.facebook.react.fabric.ComponentFactory;
 import com.facebook.react.fabric.FabricUIManager;
-import com.facebook.react.fabric.ReactNativeConfig;
 import com.facebook.react.fabric.events.EventBeatManager;
 import com.facebook.react.interfaces.exceptionmanager.ReactJsExceptionHandler;
 import com.facebook.react.internal.AndroidChoreographerProvider;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.internal.turbomodule.core.TurboModuleManager;
 import com.facebook.react.internal.turbomodule.core.TurboModuleManagerDelegate;
 import com.facebook.react.module.annotations.ReactModule;
@@ -53,10 +56,10 @@ import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.turbomodule.core.CallInvokerHolderImpl;
 import com.facebook.react.turbomodule.core.NativeMethodCallInvokerHolderImpl;
 import com.facebook.react.uimanager.ComponentNameResolver;
-import com.facebook.react.uimanager.ComponentNameResolverManager;
+import com.facebook.react.uimanager.ComponentNameResolverBinding;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.IllegalViewOperationException;
-import com.facebook.react.uimanager.UIConstantsProviderManager;
+import com.facebook.react.uimanager.UIConstantsProviderBinding;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.UIManagerModuleConstantsHelper;
 import com.facebook.react.uimanager.ViewManager;
@@ -86,20 +89,13 @@ final class ReactInstance {
 
   @DoNotStrip private final HybridData mHybridData;
 
-  private final ReactHostDelegate mDelegate;
   private final BridgelessReactContext mBridgelessReactContext;
-  private final List<ReactPackage> mReactPackages;
-
   private final ReactQueueConfiguration mQueueConfiguration;
   private final TurboModuleManager mTurboModuleManager;
   private final FabricUIManager mFabricUIManager;
   private final JavaTimerManager mJavaTimerManager;
   private final BridgelessViewManagerResolver mViewManagerResolver;
-
-  private JavaScriptContextHolder mJavaScriptContextHolder;
-
-  @DoNotStrip @Nullable private ComponentNameResolverManager mComponentNameResolverManager;
-  @DoNotStrip @Nullable private UIConstantsProviderManager mUIConstantsProviderManager;
+  private final JavaScriptContextHolder mJavaScriptContextHolder;
 
   static {
     loadLibraryIfNeeded();
@@ -113,10 +109,9 @@ final class ReactInstance {
       ComponentFactory componentFactory,
       DevSupportManager devSupportManager,
       QueueThreadExceptionHandler exceptionHandler,
-      ReactJsExceptionHandler reactExceptionManager,
-      boolean useDevSupport) {
+      boolean useDevSupport,
+      @Nullable ReactHostInspectorTarget reactHostInspectorTarget) {
     mBridgelessReactContext = bridgelessReactContext;
-    mDelegate = delegate;
 
     Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "ReactInstance.initialize");
 
@@ -124,13 +119,10 @@ final class ReactInstance {
      * Prepare the ReactInstance by installing JSI bindings, initializing Fabric + TurboModules, and
      * loading the JS bundle.
      */
-    MessageQueueThreadSpec nativeModulesSpec =
-        MessageQueueThreadSpec.newBackgroundThreadSpec("v_native");
     ReactQueueConfigurationSpec spec =
-        ReactQueueConfigurationSpec.builder()
-            .setJSQueueThreadSpec(MessageQueueThreadSpec.newBackgroundThreadSpec("v_js"))
-            .setNativeModulesQueueThreadSpec(nativeModulesSpec)
-            .build();
+        new ReactQueueConfigurationSpec(
+            MessageQueueThreadSpec.newBackgroundThreadSpec("v_native"),
+            MessageQueueThreadSpec.newBackgroundThreadSpec("v_js"));
     mQueueConfiguration = ReactQueueConfigurationImpl.create(spec, exceptionHandler);
     FLog.d(TAG, "Calling initializeMessageQueueThreads()");
     mBridgelessReactContext.initializeMessageQueueThreads(mQueueConfiguration);
@@ -142,6 +134,7 @@ final class ReactInstance {
     if (useDevSupport) {
       devSupportManager.startInspector();
     }
+
     JSTimerExecutor jsTimerExecutor = createJSTimerExecutor();
     mJavaTimerManager =
         new JavaTimerManager(
@@ -150,29 +143,12 @@ final class ReactInstance {
             ReactChoreographer.getInstance(),
             devSupportManager);
 
-    mBridgelessReactContext.addLifecycleEventListener(
-        new LifecycleEventListener() {
-          @Override
-          public void onHostResume() {
-            mJavaTimerManager.onHostResume();
-          }
-
-          @Override
-          public void onHostPause() {
-            mJavaTimerManager.onHostPause();
-          }
-
-          @Override
-          public void onHostDestroy() {
-            mJavaTimerManager.onHostDestroy();
-          }
-        });
-
-    JSRuntimeFactory jsRuntimeFactory = mDelegate.getJsRuntimeFactory();
-    BindingsInstaller bindingsInstaller = mDelegate.getBindingsInstaller();
+    JSRuntimeFactory jsRuntimeFactory = delegate.getJsRuntimeFactory();
+    BindingsInstaller bindingsInstaller = delegate.getBindingsInstaller();
     // Notify JS if profiling is enabled
     boolean isProfiling =
         Systrace.isTracing(Systrace.TRACE_TAG_REACT_APPS | Systrace.TRACE_TAG_REACT_JS_VM_CALLS);
+
     mHybridData =
         initHybrid(
             jsRuntimeFactory,
@@ -180,9 +156,10 @@ final class ReactInstance {
             nativeModulesMessageQueueThread,
             mJavaTimerManager,
             jsTimerExecutor,
-            reactExceptionManager,
+            new ReactJsExceptionHandlerImpl(nativeModulesMessageQueueThread),
             bindingsInstaller,
-            isProfiling);
+            isProfiling,
+            reactHostInspectorTarget);
 
     mJavaScriptContextHolder = new JavaScriptContextHolder(getJavaScriptContext());
 
@@ -190,17 +167,20 @@ final class ReactInstance {
     Systrace.beginSection(
         Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "ReactInstance.initialize#initTurboModules");
 
-    mReactPackages = new ArrayList<>();
-    mReactPackages.add(
+    List<ReactPackage> reactPackages = new ArrayList<>();
+    reactPackages.add(
         new CoreReactPackage(
             bridgelessReactContext.getDevSupportManager(),
             bridgelessReactContext.getDefaultHardwareBackBtnHandler()));
-    mReactPackages.addAll(mDelegate.getReactPackages());
+    if (useDevSupport) {
+      reactPackages.add(new DebugCorePackage());
+    }
+    reactPackages.addAll(delegate.getReactPackages());
 
     TurboModuleManagerDelegate turboModuleManagerDelegate =
-        mDelegate
+        delegate
             .getTurboModuleManagerDelegateBuilder()
-            .setPackages(mReactPackages)
+            .setPackages(reactPackages)
             .setReactApplicationContext(mBridgelessReactContext)
             .build();
 
@@ -213,11 +193,6 @@ final class ReactInstance {
             getJSCallInvokerHolder(),
             getNativeMethodCallInvokerHolder());
 
-    // Eagerly initialize TurboModules
-    for (String moduleName : mTurboModuleManager.getEagerInitModuleNames()) {
-      mTurboModuleManager.getModule(moduleName);
-    }
-
     Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
 
     // Set up Fabric
@@ -225,70 +200,66 @@ final class ReactInstance {
         Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "ReactInstance.initialize#initFabric");
 
     mViewManagerResolver =
-        new BridgelessViewManagerResolver(mReactPackages, mBridgelessReactContext);
+        new BridgelessViewManagerResolver(reactPackages, mBridgelessReactContext);
 
     // Initialize function for JS's UIManager.hasViewManagerConfig()
-    mComponentNameResolverManager =
-        new ComponentNameResolverManager(
-            // Use unbuffered RuntimeExecutor to install binding
-            unbufferedRuntimeExecutor,
-            (ComponentNameResolver)
-                () -> {
-                  Collection<String> viewManagerNames = mViewManagerResolver.getViewManagerNames();
-                  if (viewManagerNames.size() < 1) {
-                    FLog.e(TAG, "No ViewManager names found");
-                    return new String[0];
-                  }
-                  return viewManagerNames.toArray(new String[0]);
-                });
+    ComponentNameResolverBinding.install(
+        // Use unbuffered RuntimeExecutor to install binding
+        unbufferedRuntimeExecutor,
+        (ComponentNameResolver)
+            () -> {
+              Collection<String> viewManagerNames = mViewManagerResolver.getViewManagerNames();
+              if (viewManagerNames.size() < 1) {
+                FLog.e(TAG, "No ViewManager names found");
+                return new String[0];
+              }
+              return viewManagerNames.toArray(new String[0]);
+            });
 
     // Initialize function for JS's UIManager.getViewManagerConfig()
     // It should come after getTurboModuleManagerDelegate as it relies on react packages being
     // initialized.
     // This happens inside getTurboModuleManagerDelegate getter.
-    if (ReactFeatureFlags.useNativeViewConfigsInBridgelessMode) {
+    if (ReactNativeFeatureFlags.useNativeViewConfigsInBridgelessMode()) {
       Map<String, Object> customDirectEvents = new HashMap<>();
 
-      mUIConstantsProviderManager =
-          new UIConstantsProviderManager(
-              // Use unbuffered RuntimeExecutor to install binding
-              unbufferedRuntimeExecutor,
-              // Here we are construncting the return value for UIManager.getConstants call.
-              // The old architectre relied on the constatnts struct to contain:
-              // 1. Eagerly loaded view configs for all native components.
-              // 2. genericBubblingEventTypes.
-              // 3. genericDirectEventTypes.
-              // We want to match this beahavior.
-              () -> {
-                return (NativeMap)
-                    Arguments.makeNativeMap(
-                        UIManagerModuleConstantsHelper.getDefaultExportableEventTypes());
-              },
-              (String viewManagerName) -> {
-                ViewManager viewManager = mViewManagerResolver.getViewManager(viewManagerName);
-                if (viewManager == null) {
-                  return null;
-                }
-                return (NativeMap)
-                    UIManagerModule.getConstantsForViewManager(viewManager, customDirectEvents);
-              },
-              () -> {
-                List<ViewManager> viewManagers =
-                    new ArrayList<ViewManager>(
-                        mViewManagerResolver.getEagerViewManagerMap().values());
+      UIConstantsProviderBinding.install(
+          // Use unbuffered RuntimeExecutor to install binding
+          unbufferedRuntimeExecutor,
+          // Here we are construncting the return value for UIManager.getConstants call.
+          // The old architectre relied on the constatnts struct to contain:
+          // 1. Eagerly loaded view configs for all native components.
+          // 2. genericBubblingEventTypes.
+          // 3. genericDirectEventTypes.
+          // We want to match this beahavior.
+          () -> {
+            return (NativeMap)
+                Arguments.makeNativeMap(
+                    UIManagerModuleConstantsHelper.getDefaultExportableEventTypes());
+          },
+          (String viewManagerName) -> {
+            ViewManager viewManager = mViewManagerResolver.getViewManager(viewManagerName);
+            if (viewManager == null) {
+              return null;
+            }
+            return (NativeMap)
+                UIManagerModule.getConstantsForViewManager(viewManager, customDirectEvents);
+          },
+          () -> {
+            List<ViewManager> viewManagers =
+                new ArrayList<>(mViewManagerResolver.getEagerViewManagerMap().values());
 
-                Map<String, Object> constants =
-                    UIManagerModule.createConstants(viewManagers, null, customDirectEvents);
+            Map<String, Object> constants =
+                UIManagerModule.createConstants(viewManagers, null, customDirectEvents);
 
-                Collection<String> lazyViewManagers =
-                    mViewManagerResolver.getLazyViewManagerNames();
-                if (lazyViewManagers.size() > 0) {
-                  constants.put("ViewManagerNames", new ArrayList<>(lazyViewManagers));
-                  constants.put("LazyViewManagersEnabled", true);
-                }
+            Collection<String> lazyViewManagers = mViewManagerResolver.getLazyViewManagerNames();
+            if (lazyViewManagers.size() > 0) {
+              constants.put("ViewManagerNames", new ArrayList<>(lazyViewManagers));
+              constants.put("LazyViewManagersEnabled", true);
+            }
 
-                return Arguments.makeNativeMap(constants);
-              });
+            return Arguments.makeNativeMap(constants);
+          });
     }
 
     EventBeatManager eventBeatManager = new EventBeatManager();
@@ -297,8 +268,6 @@ final class ReactInstance {
             mBridgelessReactContext,
             new ViewManagerRegistry(mViewManagerResolver),
             eventBeatManager);
-
-    ReactNativeConfig config = mDelegate.getReactNativeConfig();
 
     // Misc initialization that needs to be done before Fabric init
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(mBridgelessReactContext);
@@ -310,11 +279,31 @@ final class ReactInstance {
         mFabricUIManager,
         eventBeatManager,
         componentFactory,
-        config);
-    Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+        delegate.getReactNativeConfig());
 
     // Initialize the FabricUIManager
     mFabricUIManager.initialize();
+
+    Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+    Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+  }
+
+  void initializeEagerTurboModules() {
+    Runnable task =
+        () -> {
+          Systrace.beginSection(
+              Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "initializeEagerTurboModules");
+          // Eagerly initialize TurboModules
+          for (String moduleName : mTurboModuleManager.getEagerInitModuleNames()) {
+            mTurboModuleManager.getModule(moduleName);
+          }
+          Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+        };
+    if (ReactNativeFeatureFlags.initEagerTurboModulesOnNativeModulesQueueAndroid()) {
+      mQueueConfiguration.getNativeModulesQueueThread().runOnQueue(task);
+    } else {
+      task.run();
+    }
   }
 
   private static synchronized void loadLibraryIfNeeded() {
@@ -328,8 +317,30 @@ final class ReactInstance {
     return mQueueConfiguration;
   }
 
+  private class ReactJsExceptionHandlerImpl implements ReactJsExceptionHandler {
+    private final MessageQueueThread mMessageQueueThread;
+
+    ReactJsExceptionHandlerImpl(MessageQueueThread nativeModulesMessageQueueThread) {
+      mMessageQueueThread = nativeModulesMessageQueueThread;
+    }
+
+    @Override
+    public void reportJsException(ParsedError error) {
+      JavaOnlyMap data = StackTraceHelper.convertParsedError(error);
+
+      // Simulate async native module method call
+      mMessageQueueThread.runOnQueue(
+          () -> {
+            NativeExceptionsManagerSpec exceptionsManager =
+                (NativeExceptionsManagerSpec)
+                    Assertions.assertNotNull(
+                        mTurboModuleManager.getModule(NativeExceptionsManagerSpec.NAME));
+            exceptionsManager.reportException(data);
+          });
+    }
+  }
+
   public void loadJSBundle(JSBundleLoader bundleLoader) {
-    // Load the JS bundle
     Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "ReactInstance.loadJSBundle");
     bundleLoader.loadScript(
         new JSBundleLoaderDelegate() {
@@ -386,6 +397,7 @@ final class ReactInstance {
     }
   }
 
+  @ThreadConfined("ReactHost")
   /* package */ void prerenderSurface(ReactSurfaceImpl surface) {
     Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "ReactInstance.prerenderSurface");
     FLog.d(TAG, "call prerenderSurface with surface: " + surface.getModuleName());
@@ -446,9 +458,8 @@ final class ReactInstance {
     mQueueConfiguration.destroy();
     mTurboModuleManager.invalidate();
     mFabricUIManager.invalidate();
+    mJavaTimerManager.onInstanceDestroy();
     mHybridData.resetNative();
-    mComponentNameResolverManager = null;
-    mUIConstantsProviderManager = null;
     mJavaScriptContextHolder.clear();
   }
 
@@ -463,7 +474,8 @@ final class ReactInstance {
       JSTimerExecutor jsTimerExecutor,
       ReactJsExceptionHandler jReactExceptionsManager,
       @Nullable BindingsInstaller jBindingsInstaller,
-      boolean isProfiling);
+      boolean isProfiling,
+      @Nullable ReactHostInspectorTarget reactHostInspectorTarget);
 
   @DoNotStrip
   private static native JSTimerExecutor createJSTimerExecutor();
@@ -475,7 +487,7 @@ final class ReactInstance {
 
   private native void loadJSBundleFromAssets(AssetManager assetManager, String assetURL);
 
-  private native CallInvokerHolderImpl getJSCallInvokerHolder();
+  /* package */ native CallInvokerHolderImpl getJSCallInvokerHolder();
 
   private native NativeMethodCallInvokerHolderImpl getNativeMethodCallInvokerHolder();
 
@@ -494,6 +506,9 @@ final class ReactInstance {
 
   private native void handleMemoryPressureJs(int pressureLevel);
 
+  @ThreadConfined(ThreadConfined.UI)
+  /* package */ native void unregisterFromInspector();
+
   public void handleMemoryPressure(int level) {
     try {
       handleMemoryPressureJs(level);
@@ -501,7 +516,8 @@ final class ReactInstance {
       ReactSoftExceptionLogger.logSoftException(
           TAG,
           new ReactNoCrashSoftException(
-              "Native method handleMemoryPressureJs is called earlier than librninstance.so got ready."));
+              "Native method handleMemoryPressureJs is called earlier than librninstance.so got"
+                  + " ready."));
     }
   }
 
@@ -512,7 +528,9 @@ final class ReactInstance {
     return mFabricUIManager.getEventDispatcher();
   }
 
-  /** @return The {@link FabricUIManager} if it's been initialized. */
+  /**
+   * @return The {@link FabricUIManager} if it's been initialized.
+   */
   /* package */ FabricUIManager getUIManager() {
     return mFabricUIManager;
   }
@@ -522,9 +540,9 @@ final class ReactInstance {
   }
 
   private static class BridgelessViewManagerResolver implements ViewManagerResolver {
-    private List<ReactPackage> mReactPackages;
-    private BridgelessReactContext mBridgelessReactContext;
-    private Map<String, ViewManager> mLazyViewManagerMap = new HashMap<>();
+    private final List<ReactPackage> mReactPackages;
+    private final BridgelessReactContext mBridgelessReactContext;
+    private final Map<String, ViewManager> mLazyViewManagerMap = new HashMap<>();
     private @Nullable Map<String, ViewManager> mEagerViewManagerMap = null;
 
     public BridgelessViewManagerResolver(

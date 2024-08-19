@@ -8,12 +8,19 @@
 #pragma once
 
 #include <ReactCommon/RuntimeExecutor.h>
+#include <react/performance/timeline/PerformanceEntryReporter.h>
+#include <react/renderer/consistency/ShadowTreeRevisionConsistencyManager.h>
 #include <react/renderer/runtimescheduler/RuntimeSchedulerClock.h>
+#include <react/renderer/runtimescheduler/SchedulerPriorityUtils.h>
 #include <react/renderer/runtimescheduler/Task.h>
 
 namespace facebook::react {
 
 using RuntimeSchedulerRenderingUpdate = std::function<void()>;
+using RuntimeSchedulerTimeout = std::chrono::milliseconds;
+
+using RuntimeSchedulerTaskErrorHandler =
+    std::function<void(jsi::Runtime& runtime, jsi::JSError& error)>;
 
 // This is a temporary abstract class for RuntimeScheduler forks to implement
 // (and use them interchangeably).
@@ -28,14 +35,25 @@ class RuntimeSchedulerBase {
   virtual std::shared_ptr<Task> scheduleTask(
       SchedulerPriority priority,
       RawCallback&& callback) noexcept = 0;
+  virtual std::shared_ptr<Task> scheduleIdleTask(
+      jsi::Function&& callback,
+      RuntimeSchedulerTimeout timeout = timeoutForSchedulerPriority(
+          SchedulerPriority::IdlePriority)) noexcept = 0;
+  virtual std::shared_ptr<Task> scheduleIdleTask(
+      RawCallback&& callback,
+      RuntimeSchedulerTimeout timeout = timeoutForSchedulerPriority(
+          SchedulerPriority::IdlePriority)) noexcept = 0;
   virtual void cancelTask(Task& task) noexcept = 0;
-  virtual bool getShouldYield() const noexcept = 0;
-  virtual bool getIsSynchronous() const noexcept = 0;
+  virtual bool getShouldYield() noexcept = 0;
   virtual SchedulerPriority getCurrentPriorityLevel() const noexcept = 0;
   virtual RuntimeSchedulerTimePoint now() const noexcept = 0;
   virtual void callExpiredTasks(jsi::Runtime& runtime) = 0;
   virtual void scheduleRenderingUpdate(
       RuntimeSchedulerRenderingUpdate&& renderingUpdate) = 0;
+  virtual void setShadowTreeRevisionConsistencyManager(
+      ShadowTreeRevisionConsistencyManager* provider) = 0;
+  virtual void setPerformanceEntryReporter(
+      PerformanceEntryReporter* reporter) = 0;
 };
 
 // This is a proxy for RuntimeScheduler implementation, which will be selected
@@ -45,7 +63,8 @@ class RuntimeScheduler final : RuntimeSchedulerBase {
   explicit RuntimeScheduler(
       RuntimeExecutor runtimeExecutor,
       std::function<RuntimeSchedulerTimePoint()> now =
-          RuntimeSchedulerClock::now);
+          RuntimeSchedulerClock::now,
+      RuntimeSchedulerTaskErrorHandler onTaskError = handleTaskErrorDefault);
 
   /*
    * Not copyable.
@@ -84,6 +103,16 @@ class RuntimeScheduler final : RuntimeSchedulerBase {
       SchedulerPriority priority,
       RawCallback&& callback) noexcept override;
 
+  std::shared_ptr<Task> scheduleIdleTask(
+      jsi::Function&& callback,
+      RuntimeSchedulerTimeout timeout = timeoutForSchedulerPriority(
+          SchedulerPriority::IdlePriority)) noexcept override;
+
+  std::shared_ptr<Task> scheduleIdleTask(
+      RawCallback&& callback,
+      RuntimeSchedulerTimeout timeout = timeoutForSchedulerPriority(
+          SchedulerPriority::IdlePriority)) noexcept override;
+
   /*
    * Cancelled task will never be executed.
    *
@@ -98,15 +127,7 @@ class RuntimeScheduler final : RuntimeSchedulerBase {
    *
    * Can be called from any thread.
    */
-  bool getShouldYield() const noexcept override;
-
-  /*
-   * Return value informs if the current task is executed inside synchronous
-   * block.
-   *
-   * Can be called from any thread.
-   */
-  bool getIsSynchronous() const noexcept override;
+  bool getShouldYield() noexcept override;
 
   /*
    * Returns value of currently executed task. Designed to be called from React.
@@ -136,10 +157,20 @@ class RuntimeScheduler final : RuntimeSchedulerBase {
   void scheduleRenderingUpdate(
       RuntimeSchedulerRenderingUpdate&& renderingUpdate) override;
 
+  void setShadowTreeRevisionConsistencyManager(
+      ShadowTreeRevisionConsistencyManager*
+          shadowTreeRevisionConsistencyManager) override;
+
+  void setPerformanceEntryReporter(PerformanceEntryReporter* reporter) override;
+
  private:
   // Actual implementation, stored as a unique pointer to simplify memory
   // management.
   std::unique_ptr<RuntimeSchedulerBase> runtimeSchedulerImpl_;
+
+  static void handleTaskErrorDefault(
+      jsi::Runtime& runtime,
+      jsi::JSError& error);
 };
 
 } // namespace facebook::react

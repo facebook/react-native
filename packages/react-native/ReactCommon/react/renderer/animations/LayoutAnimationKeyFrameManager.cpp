@@ -16,7 +16,6 @@
 
 #include <react/renderer/animations/conversions.h>
 #include <react/renderer/animations/utils.h>
-#include <react/renderer/componentregistry/ComponentDescriptorFactory.h>
 #include <react/renderer/components/image/ImageProps.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/components/view/ViewPropsInterpolation.h>
@@ -186,7 +185,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
     };
 #endif
 
-      // DEBUG ONLY: list existing inflight animations
+    // DEBUG ONLY: list existing inflight animations
 #ifdef LAYOUT_ANIMATION_VERBOSE_LOGGING
     LOG(ERROR) << "BEGINNING DISPLAYING ONGOING inflightAnimations_!";
     int i = 0;
@@ -292,10 +291,6 @@ LayoutAnimationKeyFrameManager::pullTransaction(
       std::vector<AnimationKeyFrame> keyFramesToAnimate;
       const auto layoutAnimationConfig = animation.layoutAnimationConfig;
       for (const auto& mutation : mutations) {
-        if (mutation.type == ShadowViewMutation::Type::RemoveDeleteTree) {
-          continue;
-        }
-
         ShadowView baselineShadowView =
             (mutation.type == ShadowViewMutation::Type::Delete ||
                      mutation.type == ShadowViewMutation::Type::Remove ||
@@ -1113,12 +1108,14 @@ ShadowView LayoutAnimationKeyFrameManager::createInterpolatedShadowView(
   // Animate opacity or scale/transform
   PropsParserContext propsParserContext{
       finalView.surfaceId, *contextContainer_};
+  const auto& finalViewSize = finalView.layoutMetrics.frame.size;
   mutatedShadowView.props = interpolateProps(
       componentDescriptor,
       propsParserContext,
       progress,
       startingView.props,
-      finalView.props);
+      finalView.props,
+      finalViewSize);
 
   react_native_assert(mutatedShadowView.props != nullptr);
   if (mutatedShadowView.props == nullptr) {
@@ -1189,16 +1186,6 @@ void LayoutAnimationKeyFrameManager::queueFinalMutationsForCompletedKeyFrame(
         case ShadowViewMutation::Type::Remove:
           mutationsList.push_back(ShadowViewMutation::RemoveMutation(
               finalMutation.parentShadowView, prev, finalMutation.index));
-          break;
-        case ShadowViewMutation::Type::RemoveDeleteTree:
-          // Note: Currently, there is a guarantee that if RemoveDeleteTree
-          // operations are generated, we /also/ generate corresponding
-          // Remove/Delete operations that are marked as "redundant".
-          // LayoutAnimations will process the redundant operations here, and
-          // ignore this mega-op. In the future for perf reasons it would be
-          // nice to remove the redundant operations entirely but we would need
-          // to find a way to make the RemoveDeleteTree operation work with
-          // LayoutAnimations (that might not be possible).
           break;
         case ShadowViewMutation::Type::Update:
           mutationsList.push_back(ShadowViewMutation::UpdateMutation(
@@ -1491,10 +1478,6 @@ void LayoutAnimationKeyFrameManager::getAndEraseConflictingAnimations(
     std::vector<AnimationKeyFrame>& conflictingAnimations) const {
   ShadowViewMutationList localConflictingMutations{};
   for (const auto& mutation : mutations) {
-    if (mutation.type == ShadowViewMutation::Type::RemoveDeleteTree) {
-      continue;
-    }
-
     bool mutationIsCreateOrDelete =
         mutation.type == ShadowViewMutation::Type::Create ||
         mutation.type == ShadowViewMutation::Type::Delete;
@@ -1627,7 +1610,8 @@ Props::Shared LayoutAnimationKeyFrameManager::interpolateProps(
     const PropsParserContext& context,
     Float animationProgress,
     const Props::Shared& props,
-    const Props::Shared& newProps) const {
+    const Props::Shared& newProps,
+    const Size& size) const {
 #ifdef ANDROID
   // On Android only, the merged props should have the same RawProps as the
   // final props struct
@@ -1644,7 +1628,7 @@ Props::Shared LayoutAnimationKeyFrameManager::interpolateProps(
   if (componentDescriptor.getTraits().check(
           ShadowNodeTraits::Trait::ViewKind)) {
     interpolateViewProps(
-        animationProgress, props, newProps, interpolatedPropsShared);
+        animationProgress, props, newProps, interpolatedPropsShared, size);
   }
 
   return interpolatedPropsShared;

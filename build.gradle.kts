@@ -60,7 +60,7 @@ nexusPublishing {
 
 tasks.register("clean", Delete::class.java) {
   description = "Remove all the build files and intermediate build outputs"
-  dependsOn(gradle.includedBuild("react-native-gradle-plugin").task(":clean"))
+  dependsOn(gradle.includedBuild("gradle-plugin").task(":clean"))
   subprojects.forEach {
     if (it.project.plugins.hasPlugin("com.android.library") ||
         it.project.plugins.hasPlugin("com.android.application")) {
@@ -86,7 +86,7 @@ tasks.register("clean", Delete::class.java) {
 
 tasks.register("build") {
   description = "Build and test all the React Native relevant projects."
-  dependsOn(gradle.includedBuild("react-native-gradle-plugin").task(":build"))
+  dependsOn(gradle.includedBuild("gradle-plugin").task(":build"))
 }
 
 tasks.register("publishAllToMavenTempLocal") {
@@ -97,10 +97,9 @@ tasks.register("publishAllToMavenTempLocal") {
       ":packages:react-native:ReactAndroid:hermes-engine:publishAllPublicationsToMavenTempLocalRepository")
 }
 
-tasks.register("publishAllToSonatype") {
-  description = "Publish all the artifacts to Sonatype (Maven Central or Snapshot repository)"
+tasks.register("publishAndroidToSonatype") {
+  description = "Publish the Android artifacts to Sonatype (Maven Central or Snapshot repository)"
   dependsOn(":packages:react-native:ReactAndroid:publishToSonatype")
-  dependsOn(":packages:react-native:ReactAndroid:external-artifacts:publishToSonatype")
   dependsOn(":packages:react-native:ReactAndroid:hermes-engine:publishToSonatype")
 }
 

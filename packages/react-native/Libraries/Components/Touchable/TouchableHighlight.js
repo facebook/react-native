@@ -342,7 +342,9 @@ class TouchableHighlight extends React.Component<Props, State> {
         nextFocusRight={this.props.nextFocusRight}
         nextFocusUp={this.props.nextFocusUp}
         focusable={
-          this.props.focusable !== false && this.props.onPress !== undefined
+          this.props.focusable !== false &&
+          this.props.onPress !== undefined &&
+          !this.props.disabled
         }
         nativeID={this.props.id ?? this.props.nativeID}
         testID={this.props.testID}

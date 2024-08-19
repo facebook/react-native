@@ -140,6 +140,10 @@ const Components: Array<RNTesterModuleInfo> = [
     category: 'Basic',
     module: require('../examples/Performance/PerformanceComparisonExample'),
   },
+  {
+    key: 'OSSLibraryExample',
+    module: require('../examples/OSSLibraryExample/OSSLibraryExample'),
+  },
 ];
 
 const APIs: Array<RNTesterModuleInfo> = ([
@@ -258,6 +262,11 @@ const APIs: Array<RNTesterModuleInfo> = ([
     module: require('../examples/PanResponder/PanResponderExample'),
   },
   {
+    key: 'PixelRatio',
+    category: 'UI',
+    module: require('../examples/PixelRatio/PixelRatioExample'),
+  },
+  {
     key: 'PermissionsExampleAndroid',
     category: 'Android',
     module: require('../examples/PermissionsAndroid/PermissionsExample'),
@@ -296,6 +305,21 @@ const APIs: Array<RNTesterModuleInfo> = ([
     key: 'TransformExample',
     category: 'UI',
     module: require('../examples/Transform/TransformExample'),
+  },
+  {
+    key: 'FilterExample',
+    category: 'UI',
+    module: require('../examples/Filter/FilterExample'),
+  },
+  {
+    key: 'LinearGradient',
+    category: 'UI',
+    module: require('../examples/LinearGradient/LinearGradientExample'),
+  },
+  {
+    key: 'MixBlendModeExample',
+    category: 'UI',
+    module: require('../examples/MixBlendMode/MixBlendModeExample'),
   },
   {
     key: 'VibrationExample',

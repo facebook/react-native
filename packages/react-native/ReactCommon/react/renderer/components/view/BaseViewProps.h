@@ -13,7 +13,12 @@
 #include <react/renderer/core/LayoutMetrics.h>
 #include <react/renderer/core/Props.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/graphics/BackgroundImage.h>
+#include <react/renderer/graphics/BlendMode.h>
+#include <react/renderer/graphics/BoxShadow.h>
 #include <react/renderer/graphics/Color.h>
+#include <react/renderer/graphics/Filter.h>
+#include <react/renderer/graphics/Isolation.h>
 #include <react/renderer/graphics/Transform.h>
 
 #include <optional>
@@ -52,9 +57,33 @@ class BaseViewProps : public YogaStylableProps, public AccessibilityProps {
   Float shadowOpacity{};
   Float shadowRadius{3};
 
+  Cursor cursor{};
+
+  // Box shadow
+  std::vector<BoxShadow> boxShadow{};
+
+  // Filter
+  std::vector<FilterFunction> filter{};
+
+  // Gradient
+  std::vector<GradientValue> backgroundImage{};
+
+  // MixBlendMode
+  BlendMode mixBlendMode{BlendMode::Normal};
+
+  // Isolate
+  Isolation isolation{Isolation::Auto};
+
   // Transform
   Transform transform{};
-  TransformOrigin transformOrigin{};
+  TransformOrigin transformOrigin{
+      {
+          ValueUnit{50.0f, UnitType::Percent},
+          ValueUnit{50.0f, UnitType::Percent},
+      },
+      0.0f,
+
+  };
   BackfaceVisibility backfaceVisibility{};
   bool shouldRasterize{};
   std::optional<int> zIndex{};
@@ -67,6 +96,7 @@ class BaseViewProps : public YogaStylableProps, public AccessibilityProps {
   ViewEvents events{};
 
   bool collapsable{true};
+  bool collapsableChildren{true};
 
   bool removeClippedSubviews{false};
 
@@ -74,6 +104,7 @@ class BaseViewProps : public YogaStylableProps, public AccessibilityProps {
 
 #pragma mark - Convenience Methods
 
+  CascadedBorderWidths getBorderWidths() const;
   BorderMetrics resolveBorderMetrics(const LayoutMetrics& layoutMetrics) const;
   Transform resolveTransform(const LayoutMetrics& layoutMetrics) const;
   bool getClipsContentToBounds() const;

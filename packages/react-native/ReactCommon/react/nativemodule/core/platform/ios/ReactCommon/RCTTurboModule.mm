@@ -184,7 +184,7 @@ id convertJSIValueToObjCObject(jsi::Runtime &runtime, const jsi::Value &value, s
     return convertJSIObjectToNSDictionary(runtime, o, jsInvoker);
   }
 
-  throw std::runtime_error("Unsupported jsi::jsi::Value kind");
+  throw std::runtime_error("Unsupported jsi::Value kind");
 }
 
 static jsi::Value createJSRuntimeError(jsi::Runtime &runtime, const std::string &message)
@@ -219,12 +219,15 @@ static jsi::Value convertJSErrorDetailsToJSRuntimeError(jsi::Runtime &runtime, N
   NSString *message = jsErrorDetails[@"message"];
 
   auto jsError = createJSRuntimeError(runtime, [message UTF8String]);
-  jsError.asObject(runtime).setProperty(runtime, "cause", convertObjCObjectToJSIValue(runtime, jsErrorDetails));
+  for (NSString *key in jsErrorDetails) {
+    id value = jsErrorDetails[key];
+    jsError.asObject(runtime).setProperty(runtime, [key UTF8String], convertObjCObjectToJSIValue(runtime, value));
+  }
 
   return jsError;
 }
 
-}
+} // namespace TurboModuleConvertUtils
 
 jsi::Value ObjCTurboModule::createPromise(jsi::Runtime &runtime, std::string methodName, PromiseInvocationBlock invoke)
 {
@@ -810,5 +813,18 @@ void ObjCTurboModule::setMethodArgConversionSelector(NSString *methodName, size_
   methodArgConversionSelectors_[methodName][argIndex] = selectorValue;
 }
 
+void ObjCTurboModule::setEventEmitterCallback(EventEmitterCallback eventEmitterCallback)
+{
+  if ([instance_ conformsToProtocol:@protocol(RCTTurboModule)] &&
+      [instance_ respondsToSelector:@selector(setEventEmitterCallback:)]) {
+    EventEmitterCallbackWrapper *wrapper = [EventEmitterCallbackWrapper new];
+    wrapper->_eventEmitterCallback = std::move(eventEmitterCallback);
+    [(id<RCTTurboModule>)instance_ setEventEmitterCallback:wrapper];
+  }
 }
-} // namespace facebook::react
+
+} // namespace react
+} // namespace facebook
+
+@implementation EventEmitterCallbackWrapper
+@end

@@ -7,7 +7,6 @@
 
 package com.facebook.react.defaults
 
-import com.facebook.jni.HybridData
 import com.facebook.proguard.annotations.DoNotStrip
 import com.facebook.react.fabric.ComponentFactory
 
@@ -17,26 +16,14 @@ import com.facebook.react.fabric.ComponentFactory
  *
  * This class works together with the [DefaultNewArchitectureEntryPoint] and it's C++ implementation
  * is hosted inside the React Native framework
+ *
+ * TODO(T186951312): Should this be @UnstableReactNativeAPI?
  */
 @DoNotStrip
-public class DefaultComponentsRegistry
-@DoNotStrip
-private constructor(componentFactory: ComponentFactory) {
-
-  @DoNotStrip
-  @Suppress("NoHungarianNotation")
-  private val mHybridData: HybridData = initHybrid(componentFactory)
-
-  @DoNotStrip private external fun initHybrid(componentFactory: ComponentFactory): HybridData
-
-  public companion object {
-    init {
-      DefaultSoLoader.maybeLoadSoLibrary()
-    }
-
-    @JvmStatic
-    @DoNotStrip
-    public fun register(componentFactory: ComponentFactory): DefaultComponentsRegistry =
-        DefaultComponentsRegistry(componentFactory)
+public object DefaultComponentsRegistry {
+  init {
+    DefaultSoLoader.maybeLoadSoLibrary()
   }
+
+  @JvmStatic @DoNotStrip public external fun register(componentFactory: ComponentFactory): Unit
 }

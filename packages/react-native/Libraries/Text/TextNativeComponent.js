@@ -8,15 +8,17 @@
  * @format
  */
 
+import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
+import type {ProcessedColorValue} from '../StyleSheet/processColor';
+import type {PressEvent} from '../Types/CoreEventTypes';
+import type {TextProps} from './TextProps';
+
 import {createViewConfig} from '../NativeComponent/ViewConfig';
 import UIManager from '../ReactNative/UIManager';
 import createReactNativeComponentClass from '../Renderer/shims/createReactNativeComponentClass';
-import {type HostComponent} from '../Renderer/shims/ReactNativeTypes';
-import {type ProcessedColorValue} from '../StyleSheet/processColor';
-import {type PressEvent} from '../Types/CoreEventTypes';
-import {type TextProps} from './TextProps';
+import Platform from '../Utilities/Platform';
 
-type NativeTextProps = $ReadOnly<{
+export type NativeTextProps = $ReadOnly<{
   ...TextProps,
   isHighlighted?: ?boolean,
   selectionColor?: ?ProcessedColorValue,
@@ -47,6 +49,12 @@ const textViewConfig = {
     dataDetectorType: true,
     android_hyphenationFrequency: true,
     lineBreakStrategyIOS: true,
+    // boxShadow is currently per-component on Android instead of being on BaseViewConfig yet
+    ...(Platform.OS === 'android' && {
+      experimental_boxShadow: {
+        process: require('../StyleSheet/processBoxShadow').default,
+      },
+    }),
   },
   directEventTypes: {
     topTextLayout: {

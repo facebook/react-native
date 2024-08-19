@@ -17,7 +17,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.mapbuffer.MapBuffer;
-import com.facebook.react.config.ReactFeatureFlags;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.touch.JSResponderHandler;
 import com.facebook.react.touch.ReactInterceptingViewGroup;
 import com.facebook.react.uimanager.annotations.ReactProp;
@@ -46,18 +46,32 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    */
   @Nullable private HashMap<Integer, Stack<T>> mRecyclableViews = null;
 
+  public ViewManager() {
+    super(null);
+  }
+
+  public ViewManager(@Nullable ReactApplicationContext reactContext) {
+    super(reactContext);
+  }
+
   /** Call in constructor of concrete ViewManager class to enable. */
   protected void setupViewRecycling() {
-    if (ReactFeatureFlags.enableViewRecycling) {
+    if (ReactNativeFeatureFlags.enableViewRecycling()) {
       mRecyclableViews = new HashMap<>();
     }
   }
 
-  private @Nullable Stack<T> getRecyclableViewStack(int surfaceId) {
+  /**
+   * Returns the stack of recycled views for the surface, if enabled
+   *
+   * @param create Whether to create a new stack if not found for the {@code surfaceId}. Should be
+   *     {@code false} if it's possible the surface has been stopped.
+   */
+  private @Nullable Stack<T> getRecyclableViewStack(int surfaceId, boolean create) {
     if (mRecyclableViews == null) {
       return null;
     }
-    if (!mRecyclableViews.containsKey(surfaceId)) {
+    if (create && !mRecyclableViews.containsKey(surfaceId)) {
       mRecyclableViews.put(surfaceId, new Stack<T>());
     }
     return mRecyclableViews.get(surfaceId);
@@ -169,7 +183,7 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
       @Nullable ReactStylesDiffMap initialProps,
       @Nullable StateWrapper stateWrapper) {
     T view = null;
-    @Nullable Stack<T> recyclableViews = getRecyclableViewStack(reactContext.getSurfaceId());
+    @Nullable Stack<T> recyclableViews = getRecyclableViewStack(reactContext.getSurfaceId(), true);
     if (recyclableViews != null && !recyclableViews.empty()) {
       view = recycleView(reactContext, recyclableViews.pop());
     } else {
@@ -216,18 +230,22 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
     // View recycling
     ThemedReactContext themedReactContext = (ThemedReactContext) viewContext;
     int surfaceId = themedReactContext.getSurfaceId();
-    @Nullable Stack<T> recyclableViews = getRecyclableViewStack(surfaceId);
+    @Nullable Stack<T> recyclableViews = getRecyclableViewStack(surfaceId, false);
     if (recyclableViews != null) {
-      recyclableViews.push(prepareToRecycleView(themedReactContext, view));
+      T recyclableView = prepareToRecycleView(themedReactContext, view);
+      if (recyclableView != null) {
+        recyclableViews.push(recyclableView);
+      }
     }
   }
 
   /**
    * Called when a View is removed from the hierarchy. This should be used to reset any properties.
+   *
+   * @return {@code view} if it was properly recycled, or {@code null} if it could not be recycled
    */
-  protected T prepareToRecycleView(@NonNull ThemedReactContext reactContext, @NonNull T view) {
-    return view;
-  }
+  protected abstract @Nullable T prepareToRecycleView(
+      @NonNull ThemedReactContext reactContext, @NonNull T view);
 
   /** Called when a View is going to be reused. */
   protected T recycleView(@NonNull ThemedReactContext reactContext, @NonNull T view) {

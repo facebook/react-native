@@ -15,9 +15,16 @@ const render = require('../../../../jest/renderer');
 const LogBoxInspectorFooter = require('../LogBoxInspectorFooter').default;
 const React = require('react');
 
+// Mock `LogBoxInspectorFooterButton` because we are interested in snapshotting
+// the behavior of `LogBoxInspectorFooter`, not `LogBoxInspectorFooterButton`.
+jest.mock('../LogBoxInspectorFooterButton', () => ({
+  __esModule: true,
+  default: 'LogBoxInspectorFooterButton',
+}));
+
 describe('LogBoxInspectorFooter', () => {
-  it('should render two buttons for warning', () => {
-    const output = render.shallowRender(
+  it('should render two buttons for warning', async () => {
+    const output = await render.create(
       <LogBoxInspectorFooter
         onMinimize={() => {}}
         onDismiss={() => {}}
@@ -28,8 +35,8 @@ describe('LogBoxInspectorFooter', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render two buttons for error', () => {
-    const output = render.shallowRender(
+  it('should render two buttons for error', async () => {
+    const output = await render.create(
       <LogBoxInspectorFooter
         onMinimize={() => {}}
         onDismiss={() => {}}
@@ -40,8 +47,8 @@ describe('LogBoxInspectorFooter', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render two buttons for fatal', () => {
-    const output = render.shallowRender(
+  it('should render two buttons for fatal', async () => {
+    const output = await render.create(
       <LogBoxInspectorFooter
         onMinimize={() => {}}
         onDismiss={() => {}}
@@ -52,8 +59,8 @@ describe('LogBoxInspectorFooter', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render no buttons and a message for syntax error', () => {
-    const output = render.shallowRender(
+  it('should render no buttons and a message for syntax error', async () => {
+    const output = await render.create(
       <LogBoxInspectorFooter
         onMinimize={() => {}}
         onDismiss={() => {}}

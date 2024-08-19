@@ -32,6 +32,10 @@ jest.mock('../../FabricUIManager', () =>
   require('../../__mocks__/FabricUIManager'),
 );
 
+jest.mock('../../../../src/private/webapis/dom/nodes/specs/NativeDOM', () =>
+  require('../../../../src/private/webapis/dom/nodes/specs/__mocks__/NativeDOMMock'),
+);
+
 /**
  * Given a mocked function, get a correctly typed mock function that preserves
  * the original function's type.

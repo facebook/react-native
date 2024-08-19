@@ -16,15 +16,15 @@ import android.view.MotionEvent
 import android.view.WindowInsets
 import android.view.WindowManager
 import com.facebook.react.bridge.Arguments
+import com.facebook.react.bridge.BridgeReactContext
 import com.facebook.react.bridge.CatalystInstance
 import com.facebook.react.bridge.JavaOnlyArray
 import com.facebook.react.bridge.JavaOnlyMap
-import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.ReactTestHelper
 import com.facebook.react.bridge.WritableArray
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.common.SystemClock
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsForTests
 import com.facebook.react.uimanager.DisplayMetricsHolder
 import com.facebook.react.uimanager.UIManagerModule
 import com.facebook.react.uimanager.events.Event
@@ -49,7 +49,7 @@ import org.robolectric.RuntimeEnvironment
 @RunWith(RobolectricTestRunner::class)
 class RootViewTest {
 
-  private lateinit var reactContext: ReactContext
+  private lateinit var reactContext: BridgeReactContext
   private lateinit var catalystInstanceMock: CatalystInstance
 
   private lateinit var arguments: MockedStatic<Arguments>
@@ -57,6 +57,8 @@ class RootViewTest {
 
   @Before
   fun setUp() {
+    ReactNativeFeatureFlagsForTests.setUp()
+
     arguments = Mockito.mockStatic(Arguments::class.java)
     arguments.`when`<WritableArray> { Arguments.createArray() }.thenAnswer { JavaOnlyArray() }
     arguments.`when`<WritableMap> { Arguments.createMap() }.thenAnswer { JavaOnlyMap() }
@@ -66,7 +68,7 @@ class RootViewTest {
     systemClock.`when`<Long> { SystemClock.uptimeMillis() }.thenReturn(ts)
 
     catalystInstanceMock = ReactTestHelper.createMockCatalystInstance()
-    reactContext = spy(ReactApplicationContext(RuntimeEnvironment.getApplication()))
+    reactContext = spy(BridgeReactContext(RuntimeEnvironment.getApplication()))
     reactContext.initializeWithInstance(catalystInstanceMock)
 
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(reactContext)
@@ -90,7 +92,7 @@ class RootViewTest {
     val eventEmitterModuleMock = mock(RCTEventEmitter::class.java)
     whenever(catalystInstanceMock.getNativeModule(UIManagerModule::class.java))
         .thenReturn(uiManager)
-    whenever(uiManager.eventDispatcher).thenReturn(eventDispatcher)
+    whenever(uiManager.getEventDispatcher()).thenReturn(eventDispatcher)
 
     // RootView IDs is React Native follow the 11, 21, 31, ... progression.
     val rootViewId = 11

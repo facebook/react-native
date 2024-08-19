@@ -23,7 +23,7 @@ import {
 
 // $FlowIssue[prop-missing] Flow doesn't understand [Symbol.iterator]() {} and thinks this class doesn't implement the Iterable<T> interface.
 export default class NodeList<T> implements Iterable<T>, ArrayLike<T> {
-  _length: number;
+  #length: number;
 
   /**
    * Use `createNodeList` to create instances of this class.
@@ -38,15 +38,15 @@ export default class NodeList<T> implements Iterable<T>, ArrayLike<T> {
         writable: false,
       });
     }
-    this._length = elements.length;
+    this.#length = elements.length;
   }
 
   get length(): number {
-    return this._length;
+    return this.#length;
   }
 
   item(index: number): T | null {
-    if (index < 0 || index >= this._length) {
+    if (index < 0 || index >= this.#length) {
       return null;
     }
 
@@ -70,7 +70,7 @@ export default class NodeList<T> implements Iterable<T>, ArrayLike<T> {
     // eslint-disable-next-line consistent-this
     const arrayLike: ArrayLike<T> = this;
 
-    for (let index = 0; index < this._length; index++) {
+    for (let index = 0; index < this.#length; index++) {
       if (thisArg == null) {
         callbackFn(arrayLike[index], index, this);
       } else {

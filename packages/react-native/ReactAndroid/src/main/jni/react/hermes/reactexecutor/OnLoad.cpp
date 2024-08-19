@@ -5,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <../instrumentation/HermesMemoryDumper.h>
 #include <HermesExecutorFactory.h>
 #include <android/log.h>
 #include <fbjni/fbjni.h>

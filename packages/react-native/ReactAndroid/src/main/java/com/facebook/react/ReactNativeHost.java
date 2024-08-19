@@ -10,6 +10,7 @@ package com.facebook.react;
 import android.app.Application;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.JSExceptionHandler;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
@@ -20,6 +21,7 @@ import com.facebook.react.common.SurfaceDelegateFactory;
 import com.facebook.react.common.annotations.DeprecatedInNewArchitecture;
 import com.facebook.react.devsupport.DevSupportManagerFactory;
 import com.facebook.react.devsupport.interfaces.DevLoadingViewManager;
+import com.facebook.react.devsupport.interfaces.PausedInDebuggerOverlayManager;
 import com.facebook.react.devsupport.interfaces.RedBoxHandler;
 import com.facebook.react.internal.ChoreographerProvider;
 import java.util.List;
@@ -30,7 +32,8 @@ import java.util.List;
  */
 @DeprecatedInNewArchitecture(
     message =
-        "This class will be replaced by com.facebook.react.ReactHost in the new architecture of React Native.")
+        "This class will be replaced by com.facebook.react.ReactHost in the new architecture of"
+            + " React Native.")
 public abstract class ReactNativeHost {
 
   private final Application mApplication;
@@ -40,8 +43,14 @@ public abstract class ReactNativeHost {
     mApplication = application;
   }
 
-  /** Get the current {@link ReactInstanceManager} instance, or create one. */
-  public ReactInstanceManager getReactInstanceManager() {
+  /**
+   * Get the current {@link ReactInstanceManager} instance, or create one.
+   *
+   * <p>NOTE: Care must be taken when storing this reference outside of the ReactNativeHost
+   * lifecycle. The ReactInstanceManager will be invalidated during {@link #clear()}, and may not be
+   * used again afterwards.
+   */
+  public synchronized ReactInstanceManager getReactInstanceManager() {
     if (mReactInstanceManager == null) {
       ReactMarker.logMarker(ReactMarkerConstants.INIT_REACT_RUNTIME_START);
       ReactMarker.logMarker(ReactMarkerConstants.GET_REACT_INSTANCE_MANAGER_START);
@@ -56,22 +65,29 @@ public abstract class ReactNativeHost {
    * {@link #getReactInstanceManager()} has been called at least once since this object was created
    * or {@link #clear()} was called.
    */
-  public boolean hasInstance() {
+  public synchronized boolean hasInstance() {
     return mReactInstanceManager != null;
   }
 
   /**
-   * Destroy the current instance and release the internal reference to it, allowing it to be GCed.
+   * Destroy the current instance and invalidate the internal ReactInstanceManager, reclaiming its
+   * resources and preventing it from being reused.
    */
-  public void clear() {
+  public synchronized void clear() {
     if (mReactInstanceManager != null) {
-      mReactInstanceManager.destroy();
+      mReactInstanceManager.invalidate();
       mReactInstanceManager = null;
     }
   }
 
   protected ReactInstanceManager createReactInstanceManager() {
     ReactMarker.logMarker(ReactMarkerConstants.BUILD_REACT_INSTANCE_MANAGER_START);
+    ReactInstanceManagerBuilder builder = getBaseReactInstanceManagerBuilder();
+    ReactMarker.logMarker(ReactMarkerConstants.BUILD_REACT_INSTANCE_MANAGER_END);
+    return builder.build();
+  }
+
+  protected ReactInstanceManagerBuilder getBaseReactInstanceManagerBuilder() {
     ReactInstanceManagerBuilder builder =
         ReactInstanceManager.builder()
             .setApplication(mApplication)
@@ -81,6 +97,7 @@ public abstract class ReactNativeHost {
             .setDevLoadingViewManager(getDevLoadingViewManager())
             .setRequireActivity(getShouldRequireActivity())
             .setSurfaceDelegateFactory(getSurfaceDelegateFactory())
+            .setJSExceptionHandler(getJSExceptionHandler())
             .setLazyViewManagersEnabled(getLazyViewManagersEnabled())
             .setRedBoxHandler(getRedBoxHandler())
             .setJavaScriptExecutorFactory(getJavaScriptExecutorFactory())
@@ -89,7 +106,8 @@ public abstract class ReactNativeHost {
             .setReactPackageTurboModuleManagerDelegateBuilder(
                 getReactPackageTurboModuleManagerDelegateBuilder())
             .setJSEngineResolutionAlgorithm(getJSEngineResolutionAlgorithm())
-            .setChoreographerProvider(getChoreographerProvider());
+            .setChoreographerProvider(getChoreographerProvider())
+            .setPausedInDebuggerOverlayManager(getPausedInDebuggerOverlayManager());
 
     for (ReactPackage reactPackage : getPackages()) {
       builder.addPackage(reactPackage);
@@ -101,13 +119,15 @@ public abstract class ReactNativeHost {
     } else {
       builder.setBundleAssetName(Assertions.assertNotNull(getBundleAssetName()));
     }
-    ReactInstanceManager reactInstanceManager = builder.build();
-    ReactMarker.logMarker(ReactMarkerConstants.BUILD_REACT_INSTANCE_MANAGER_END);
-    return reactInstanceManager;
+    return builder;
   }
 
   /** Get the {@link RedBoxHandler} to send RedBox-related callbacks to. */
   protected @Nullable RedBoxHandler getRedBoxHandler() {
+    return null;
+  }
+
+  protected @Nullable JSExceptionHandler getJSExceptionHandler() {
     return null;
   }
 
@@ -163,6 +183,10 @@ public abstract class ReactNativeHost {
    * Get the {@link DevLoadingViewManager}. Override this to use a custom dev loading view manager
    */
   protected @Nullable DevLoadingViewManager getDevLoadingViewManager() {
+    return null;
+  }
+
+  protected @Nullable PausedInDebuggerOverlayManager getPausedInDebuggerOverlayManager() {
     return null;
   }
 

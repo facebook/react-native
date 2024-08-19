@@ -1,12 +1,12 @@
 {
   "name": "@react-native/bots",
   "description": "React Native Bots",
-  "version": "0.0.0",
+  "version": "0.76.0-main",
   "private": true,
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/facebook/react-native.git",
+    "url": "git+https://github.com/facebook/react-native.git",
     "directory": "packages/react-native-bots"
   },
   "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/react-native-bots#readme",
@@ -18,9 +18,5 @@
     "danger": "^11.2.1",
     "lodash.includes": "^4.3.0",
     "minimatch": "^3.0.4"
-  },
-  "dependencies": {
-    "@octokit/rest": "^18.12.0",
-    "firebase": "^9.6.5"
   }
 }

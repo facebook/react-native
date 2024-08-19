@@ -115,10 +115,24 @@ class MockInspectorPackagerConnectionDelegate
   folly::Executor& executor_;
 };
 
-class MockPageTargetDelegate : public PageTargetDelegate {
+class MockHostTargetDelegate : public HostTargetDelegate {
  public:
-  // PageTargetDelegate methods
+  // HostTargetDelegate methods
+  HostTargetMetadata getMetadata() override {
+    return {.integrationName = "MockHostTargetDelegate"};
+  }
   MOCK_METHOD(void, onReload, (const PageReloadRequest& request), (override));
+  MOCK_METHOD(
+      void,
+      onSetPausedInDebuggerMessage,
+      (const OverlaySetPausedInDebuggerMessageRequest& request),
+      (override));
+  MOCK_METHOD(
+      void,
+      loadNetworkResource,
+      (const LoadNetworkResourceRequest& params,
+       ScopedExecutor<NetworkRequestListener> executor),
+      (override));
 };
 
 class MockInstanceTargetDelegate : public InstanceTargetDelegate {};
@@ -131,7 +145,21 @@ class MockRuntimeTargetDelegate : public RuntimeTargetDelegate {
       createAgentDelegate,
       (FrontendChannel channel,
        SessionState& sessionState,
-       const ExecutionContextDescription&),
+       std::unique_ptr<RuntimeAgentDelegate::ExportedState>
+           previouslyExportedState,
+       const ExecutionContextDescription&,
+       RuntimeExecutor),
+      (override));
+  MOCK_METHOD(
+      void,
+      addConsoleMessage,
+      (jsi::Runtime & runtime, ConsoleMessage message),
+      (override));
+  MOCK_METHOD(bool, supportsConsole, (), (override, const));
+  MOCK_METHOD(
+      std::unique_ptr<StackTrace>,
+      captureStackTrace,
+      (jsi::Runtime & runtime, size_t framesToSkip),
       (override));
 };
 
@@ -140,10 +168,12 @@ class MockRuntimeAgentDelegate : public RuntimeAgentDelegate {
   inline MockRuntimeAgentDelegate(
       FrontendChannel frontendChannel,
       SessionState& sessionState,
-      const ExecutionContextDescription& executionContextDescription)
+      std::unique_ptr<RuntimeAgentDelegate::ExportedState>,
+      ExecutionContextDescription executionContextDescription,
+      const RuntimeExecutor& /*runtimeExecutor*/)
       : frontendChannel(std::move(frontendChannel)),
         sessionState(sessionState),
-        executionContextDescription(executionContextDescription) {}
+        executionContextDescription(std::move(executionContextDescription)) {}
 
   // RuntimeAgentDelegate methods
   MOCK_METHOD(

@@ -285,7 +285,7 @@ NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttributes(c
   }
 
   // Special
-  if (textAttributes.isHighlighted) {
+  if (textAttributes.isHighlighted.value_or(false)) {
     attributes[RCTAttributedStringIsHighlightedAttributeName] = @YES;
   }
 
@@ -300,7 +300,7 @@ NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttributes(c
   return [attributes copy];
 }
 
-static void RCTApplyBaselineOffset(NSMutableAttributedString *attributedText)
+void RCTApplyBaselineOffset(NSMutableAttributedString *attributedText)
 {
   __block CGFloat maximumLineHeight = 0;
 
@@ -411,7 +411,6 @@ NSAttributedString *RCTNSAttributedStringFromAttributedString(const AttributedSt
 
     [nsAttributedString appendAttributedString:nsAttributedStringFragment];
   }
-  RCTApplyBaselineOffset(nsAttributedString);
   [nsAttributedString endEditing];
 
   return nsAttributedString;

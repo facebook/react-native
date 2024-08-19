@@ -10,6 +10,7 @@
 #import <React/RCTBorderCurve.h>
 #import <React/RCTBorderStyle.h>
 #import <React/RCTComponent.h>
+#import <React/RCTCursor.h>
 #import <React/RCTPointerEvents.h>
 
 extern const UIAccessibilityTraits SwitchAccessibilityTrait;
@@ -119,6 +120,8 @@ extern const UIAccessibilityTraits SwitchAccessibilityTrait;
  *  Insets used when hit testing inside this view.
  */
 @property (nonatomic, assign) UIEdgeInsets hitTestEdgeInsets;
+
+@property (nonatomic, assign) RCTCursor cursor;
 
 /**
  * (Experimental and unused for Paper) Pointer event handlers.

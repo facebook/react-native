@@ -13,7 +13,12 @@ add_compile_options(
         -Wall
         -Wpedantic)
 
-file(GLOB reactperflogger_SRC CONFIGURE_DEPENDS reactperflogger/*.cpp)
-add_library(reactperflogger STATIC ${reactperflogger_SRC})
+
+file(GLOB reactperflogger_SRC CONFIGURE_DEPENDS
+        reactperflogger/*.cpp
+        fusebox/*.cpp)
+add_library(reactperflogger OBJECT ${reactperflogger_SRC})
 
 target_include_directories(reactperflogger PUBLIC .)
+
+target_link_libraries(reactperflogger folly_runtime)

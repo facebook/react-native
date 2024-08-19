@@ -60,12 +60,16 @@ void ViewShadowNode::initialize() noexcept {
       viewProps.accessibilityElementsHidden ||
       viewProps.accessibilityViewIsModal ||
       viewProps.importantForAccessibility != ImportantForAccessibility::Auto ||
-      viewProps.removeClippedSubviews ||
+      viewProps.removeClippedSubviews || viewProps.cursor != Cursor::Auto ||
+      !viewProps.filter.empty() ||
+      viewProps.mixBlendMode != BlendMode::Normal ||
+      viewProps.isolation == Isolation::Isolate ||
       HostPlatformViewTraitsInitializer::formsStackingContext(viewProps);
 
   bool formsView = formsStackingContext ||
       isColorMeaningful(viewProps.backgroundColor) || hasBorder() ||
-      !viewProps.testId.empty() ||
+      !viewProps.testId.empty() || !viewProps.boxShadow.empty() ||
+      !viewProps.backgroundImage.empty() ||
       HostPlatformViewTraitsInitializer::formsView(viewProps);
 
   if (formsView) {
@@ -80,7 +84,11 @@ void ViewShadowNode::initialize() noexcept {
     traits_.unset(ShadowNodeTraits::Trait::FormsStackingContext);
   }
 
-  traits_.set(HostPlatformViewTraitsInitializer::extraTraits());
+  if (!viewProps.collapsableChildren) {
+    traits_.set(ShadowNodeTraits::Trait::ChildrenFormStackingContext);
+  } else {
+    traits_.unset(ShadowNodeTraits::Trait::ChildrenFormStackingContext);
+  }
 }
 
 } // namespace facebook::react

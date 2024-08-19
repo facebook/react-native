@@ -11,6 +11,8 @@ package com.facebook.react.defaults
 
 import com.facebook.react.common.annotations.VisibleForTesting
 import com.facebook.react.config.ReactFeatureFlags
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
+import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlagsDefaults
 
 /**
  * A utility class that serves as an entry point for users setup the New Architecture.
@@ -39,11 +41,18 @@ public object DefaultNewArchitectureEntryPoint {
     }
     ReactFeatureFlags.useTurboModules = turboModulesEnabled
     ReactFeatureFlags.enableFabricRenderer = fabricEnabled
-    ReactFeatureFlags.unstable_useFabricInterop = fabricEnabled
-    ReactFeatureFlags.enableBridgelessArchitecture = bridgelessEnabled
-    ReactFeatureFlags.useNativeViewConfigsInBridgelessMode = fabricEnabled && bridgelessEnabled
-    ReactFeatureFlags.unstable_useTurboModuleInterop = bridgelessEnabled
-    ReactFeatureFlags.enableFabricPendingEventQueue = fabricEnabled
+
+    if (bridgelessEnabled) {
+      ReactNativeFeatureFlags.override(
+          object : ReactNativeNewArchitectureFeatureFlagsDefaults(newArchitectureEnabled = true) {
+            override fun useFabricInterop(): Boolean = fabricEnabled
+
+            // We turn this feature flag to true for OSS to fix #44610 and #45126 and other
+            // similar bugs related to pressable.
+            override fun enableEventEmitterRetentionDuringGesturesOnAndroid(): Boolean =
+                fabricEnabled
+          })
+    }
 
     privateFabricEnabled = fabricEnabled
     privateTurboModulesEnabled = turboModulesEnabled
@@ -54,21 +63,25 @@ public object DefaultNewArchitectureEntryPoint {
   }
 
   private var privateFabricEnabled: Boolean = false
+
   @JvmStatic
   public val fabricEnabled: Boolean
     get() = privateFabricEnabled
 
   private var privateTurboModulesEnabled: Boolean = false
+
   @JvmStatic
   public val turboModulesEnabled: Boolean
     get() = privateTurboModulesEnabled
 
   private var privateConcurrentReactEnabled: Boolean = false
+
   @JvmStatic
   public val concurrentReactEnabled: Boolean
     get() = privateConcurrentReactEnabled
 
   private var privateBridgelessEnabled: Boolean = false
+
   @JvmStatic
   public val bridgelessEnabled: Boolean
     get() = privateBridgelessEnabled

@@ -26,23 +26,23 @@ import type {
 } from '../Types/CoreEventTypes';
 import type {Node} from 'react';
 
-export type PressRetentionOffset = $ReadOnly<{|
+export type PressRetentionOffset = $ReadOnly<{
   top: number,
   left: number,
   bottom: number,
   right: number,
-|}>;
+}>;
 
-type PointerEventProps = $ReadOnly<{|
+type PointerEventProps = $ReadOnly<{
   onPointerEnter?: (event: PointerEvent) => void,
   onPointerLeave?: (event: PointerEvent) => void,
   onPointerMove?: (event: PointerEvent) => void,
-|}>;
+}>;
 
 /**
  * @see https://reactnative.dev/docs/text#reference
  */
-export type TextProps = $ReadOnly<{|
+export type TextProps = $ReadOnly<{
   ...PointerEventProps,
 
   /**
@@ -265,4 +265,4 @@ export type TextProps = $ReadOnly<{|
    * See https://reactnative.dev/docs/text.html#linebreakstrategyios
    */
   lineBreakStrategyIOS?: ?('none' | 'standard' | 'hangul-word' | 'push-out'),
-|}>;
+}>;

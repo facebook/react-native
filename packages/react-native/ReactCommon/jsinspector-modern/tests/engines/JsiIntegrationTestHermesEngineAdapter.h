@@ -7,10 +7,13 @@
 
 #pragma once
 
+#include "../utils/InspectorFlagOverridesGuard.h"
+
 #include <jsinspector-modern/RuntimeTarget.h>
 
 #include <folly/executors/QueuedImmediateExecutor.h>
 #include <hermes/hermes.h>
+#include <hermes/inspector-modern/chrome/HermesRuntimeTargetDelegate.h>
 #include <jsi/jsi.h>
 
 #include <memory>
@@ -18,17 +21,16 @@
 namespace facebook::react::jsinspector_modern {
 
 /**
- * An engine adapter for JsiIntegrationTest that uses Hermes (and Hermes's
- * CDP support).
+ * An engine adapter for JsiIntegrationTest that uses Hermes (and Hermes'
+ * modern CDPAgent API).
  */
-class JsiIntegrationTestHermesEngineAdapter : public RuntimeTargetDelegate {
+class JsiIntegrationTestHermesEngineAdapter {
  public:
   explicit JsiIntegrationTestHermesEngineAdapter(folly::Executor& jsExecutor);
 
-  virtual std::unique_ptr<RuntimeAgentDelegate> createAgentDelegate(
-      FrontendChannel frontendChannel,
-      SessionState& sessionState,
-      const ExecutionContextDescription& executionContextDescription) override;
+  static InspectorFlagOverrides getInspectorFlagOverrides() noexcept;
+
+  RuntimeTargetDelegate& getRuntimeTargetDelegate();
 
   jsi::Runtime& getRuntime() const noexcept;
 
@@ -37,6 +39,7 @@ class JsiIntegrationTestHermesEngineAdapter : public RuntimeTargetDelegate {
  private:
   std::shared_ptr<facebook::hermes::HermesRuntime> runtime_;
   folly::Executor& jsExecutor_;
+  HermesRuntimeTargetDelegate runtimeTargetDelegate_;
 };
 
 } // namespace facebook::react::jsinspector_modern

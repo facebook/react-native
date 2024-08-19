@@ -126,6 +126,7 @@ NS_ASSUME_NONNULL_BEGIN
  * - modulesOnly: When true, will only send module definitions without polyfills and without the require-runtime.
  * - runModule: When true, will run the main module after defining all modules. This is used in the main bundle but not
  *     in split bundles.
+ * - additionalOptions: A dictionary of name-value pairs of additional options to pass to the packager.
  */
 + (NSURL *__nullable)jsBundleURLForBundleRoot:(NSString *)bundleRoot
                                  packagerHost:(NSString *)packagerHost
@@ -135,12 +136,30 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSURL *__nullable)jsBundleURLForBundleRoot:(NSString *)bundleRoot
                                  packagerHost:(NSString *)packagerHost
+                                    enableDev:(BOOL)enableDev
+                           enableMinification:(BOOL)enableMinification
+                              inlineSourceMap:(BOOL)inlineSourceMap
+                            additionalOptions:(NSDictionary<NSString *, NSString *> *__nullable)additionalOptions;
+
++ (NSURL *__nullable)jsBundleURLForBundleRoot:(NSString *)bundleRoot
+                                 packagerHost:(NSString *)packagerHost
                                packagerScheme:(NSString *__nullable)scheme
                                     enableDev:(BOOL)enableDev
                            enableMinification:(BOOL)enableMinification
                               inlineSourceMap:(BOOL)inlineSourceMap
                                   modulesOnly:(BOOL)modulesOnly
                                     runModule:(BOOL)runModule;
+
++ (NSURL *__nullable)jsBundleURLForBundleRoot:(NSString *)bundleRoot
+                                 packagerHost:(NSString *)packagerHost
+                               packagerScheme:(NSString *__nullable)scheme
+                                    enableDev:(BOOL)enableDev
+                           enableMinification:(BOOL)enableMinification
+                              inlineSourceMap:(BOOL)inlineSourceMap
+                                  modulesOnly:(BOOL)modulesOnly
+                                    runModule:(BOOL)runModule
+                            additionalOptions:(NSDictionary<NSString *, NSString *> *__nullable)additionalOptions;
+
 /**
  * Given a hostname for the packager and a resource path (including "/"), return the URL to the resource.
  * In general, please use the instance method to decide if the packager is running and fallback to the pre-packaged

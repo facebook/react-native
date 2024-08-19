@@ -61,6 +61,8 @@ react {
   //   The hermes compiler command to run. By default it is 'hermesc'
   hermesCommand = "$reactNativeDirPath/ReactAndroid/hermes-engine/build/hermes/bin/hermesc"
   enableHermesOnlyInVariants = listOf("hermesDebug", "hermesRelease")
+
+  autolinkLibrariesWithApp()
 }
 
 /** Run Proguard to shrink the Java bytecode in release builds. */
@@ -82,7 +84,12 @@ fun reactNativeArchitectures(): List<String> {
   return value?.toString()?.split(",") ?: listOf("armeabi-v7a", "x86", "x86_64", "arm64-v8a")
 }
 
-repositories { maven { url = rootProject.file("node_modules/jsc-android/dist").toURI() } }
+repositories {
+  maven {
+    url = rootProject.file("node_modules/jsc-android/dist").toURI()
+    content { includeGroup("org.webkit") }
+  }
+}
 
 android {
   compileSdk = libs.versions.compileSdk.get().toInt()
@@ -145,6 +152,11 @@ android {
     java.srcDirs(
         "$reactNativeDirPath/ReactCommon/react/nativemodule/samples/platform/android",
     )
+    res.setSrcDirs(
+        listOf(
+            "src/main/res",
+            "src/main/public_res",
+        ))
   }
 }
 
@@ -195,5 +207,11 @@ afterEvaluate {
   // we can actually invoke it. It's built by the ReactAndroid:buildCodegenCLI task.
   tasks
       .getByName("generateCodegenSchemaFromJavaScript")
+      .dependsOn(":packages:react-native:ReactAndroid:buildCodegenCLI")
+  tasks
+      .getByName("createBundleJscReleaseJsAndAssets")
+      .dependsOn(":packages:react-native:ReactAndroid:buildCodegenCLI")
+  tasks
+      .getByName("createBundleHermesReleaseJsAndAssets")
       .dependsOn(":packages:react-native:ReactAndroid:buildCodegenCLI")
 }

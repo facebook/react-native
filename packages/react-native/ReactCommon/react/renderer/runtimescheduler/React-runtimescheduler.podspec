@@ -43,7 +43,7 @@ Pod::Spec.new do |s|
   s.header_dir             = "react/renderer/runtimescheduler"
   s.exclude_files          = "tests"
   s.pod_target_xcconfig    = {
-    "CLANG_CXX_LANGUAGE_STANDARD" => "c++20",
+    "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
     "HEADER_SEARCH_PATHS" => header_search_paths.join(' ')}
 
   if ENV['USE_FRAMEWORKS']
@@ -57,9 +57,12 @@ Pod::Spec.new do |s|
   s.dependency "React-rendererdebug"
   s.dependency "React-utils"
   s.dependency "React-featureflags"
+  s.dependency "React-timing"
   s.dependency "glog"
   s.dependency "RCT-Folly", folly_version
   s.dependency "React-jsi"
+  s.dependency "React-performancetimeline"
+  s.dependency "React-rendererconsistency"
   add_dependency(s, "React-debug")
 
   if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"

@@ -132,6 +132,10 @@ declare interface Headers {
   get(name: string): string | null;
   has(name: string): boolean;
   set(name: string, value: string): void;
+  entries(): IterableIterator<[string, string]>;
+  keys(): IterableIterator<string>;
+  values(): IterableIterator<string>;
+  [Symbol.iterator](): IterableIterator<[string, string]>;
 }
 
 declare var Headers: {

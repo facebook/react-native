@@ -87,6 +87,12 @@ int32_t ColorFromUIColor(const std::shared_ptr<void> &uiColor)
 
 UIColor *_Nullable UIColorFromComponentsColor(const facebook::react::ColorComponents &components)
 {
+  if (components.colorSpace == ColorSpace::DisplayP3) {
+    return [UIColor colorWithDisplayP3Red:components.red
+                                    green:components.green
+                                     blue:components.blue
+                                    alpha:components.alpha];
+  }
   return [UIColor colorWithRed:components.red green:components.green blue:components.blue alpha:components.alpha];
 }
 } // anonymous namespace
@@ -127,6 +133,15 @@ int32_t Color::getColor() const
 {
   return ColorFromUIColor(uiColor_);
 }
+
+float Color::getChannel(int channelId) const
+{
+  CGFloat rgba[4];
+  UIColor *color = (__bridge UIColor *)getUIColor().get();
+  [color getRed:&rgba[0] green:&rgba[1] blue:&rgba[2] alpha:&rgba[3]];
+  return static_cast<float>(rgba[channelId]);
+}
+
 } // namespace facebook::react
 
 NS_ASSUME_NONNULL_END

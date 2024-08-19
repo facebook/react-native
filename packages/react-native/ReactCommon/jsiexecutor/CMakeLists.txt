@@ -13,14 +13,14 @@ add_compile_options(
         -O3)
 
 add_library(jsireact
-        STATIC
+        OBJECT
         jsireact/JSIExecutor.cpp
         jsireact/JSINativeModules.cpp)
 
 target_include_directories(jsireact PUBLIC .)
 
 target_link_libraries(jsireact
-        reactnative
+        react_cxxreact
         reactperflogger
         folly_runtime
         glog

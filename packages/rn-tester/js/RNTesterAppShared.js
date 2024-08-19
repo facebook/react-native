@@ -28,21 +28,39 @@ import {
 import * as React from 'react';
 import {
   BackHandler,
+  Button,
   Linking,
+  Platform,
   StyleSheet,
   View,
   useColorScheme,
 } from 'react-native';
+import * as NativeComponentRegistry from 'react-native/Libraries/NativeComponent/NativeComponentRegistry';
+
+// In Bridgeless mode, in dev, enable static view config validator
+if (global.RN$Bridgeless === true && __DEV__) {
+  NativeComponentRegistry.setRuntimeConfigProvider(() => {
+    return {
+      native: false,
+      strict: true,
+      verify: true,
+    };
+  });
+}
 
 // RNTester App currently uses in memory storage for storing navigation state
 
+type BackButton = ({onBack: () => void}) => React.Node;
+
 const RNTesterApp = ({
   testList,
+  customBackButton,
 }: {
   testList?: {
     components?: Array<RNTesterModuleInfo>,
     apis?: Array<RNTesterModuleInfo>,
   },
+  customBackButton?: BackButton,
 }): React.Node => {
   const [state, dispatch] = React.useReducer(
     RNTesterNavigationReducer,
@@ -144,6 +162,7 @@ const RNTesterApp = ({
         rawModuleKey,
         `${rawModuleKey}Index`,
         `${rawModuleKey}Example`,
+        // $FlowFixMe[invalid-computed-prop]
       ].filter(k => RNTesterList.Modules[k] != null);
       if (validModuleKeys.length !== 1) {
         if (validModuleKeys.length === 0) {
@@ -159,6 +178,7 @@ const RNTesterApp = ({
       }
 
       const resolvedModuleKey = validModuleKeys[0];
+      // $FlowFixMe[invalid-computed-prop]
       const exampleModule = RNTesterList.Modules[resolvedModuleKey];
 
       if (exampleKey != null) {
@@ -197,6 +217,10 @@ const RNTesterApp = ({
     [dispatch],
   );
   React.useEffect(() => {
+    // Initial deeplink
+    Linking.getInitialURL()
+      .then(url => url != null && handleOpenUrlRequest({url: url}))
+      .catch(_ => {});
     const subscription = Linking.addEventListener('url', handleOpenUrlRequest);
     return () => subscription.remove();
   }, [handleOpenUrlRequest]);
@@ -208,6 +232,7 @@ const RNTesterApp = ({
   }
 
   const activeModule =
+    // $FlowFixMe[invalid-computed-prop]
     activeModuleKey != null ? RNTesterList.Modules[activeModuleKey] : null;
   const activeModuleExample =
     activeModuleExampleKey != null
@@ -217,8 +242,16 @@ const RNTesterApp = ({
     activeModuleTitle != null
       ? activeModuleTitle
       : screen === Screens.COMPONENTS
-      ? 'Components'
-      : 'APIs';
+        ? 'Components'
+        : 'APIs';
+
+  const BackButtonComponent: ?BackButton = customBackButton
+    ? customBackButton
+    : Platform.OS === 'ios'
+      ? ({onBack}) => (
+          <Button title="Back" onPress={onBack} color={theme.LinkColor} />
+        )
+      : null;
 
   const activeExampleList =
     screen === Screens.COMPONENTS ? examplesList.components : examplesList.apis;
@@ -228,9 +261,11 @@ const RNTesterApp = ({
       <RNTTitleBar
         title={title}
         theme={theme}
-        onBack={activeModule ? handleBackPress : null}
-        documentationURL={activeModule?.documentationURL}
-      />
+        documentationURL={activeModule?.documentationURL}>
+        {activeModule && BackButtonComponent ? (
+          <BackButtonComponent onBack={handleBackPress} />
+        ) : undefined}
+      </RNTTitleBar>
       <View
         style={StyleSheet.compose(styles.container, {
           backgroundColor: theme.GroupedBackgroundColor,

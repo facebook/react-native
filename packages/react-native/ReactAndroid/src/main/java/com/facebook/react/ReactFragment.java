@@ -113,6 +113,7 @@ public class ReactFragment extends Fragment implements PermissionAwareActivity {
     super.onDestroy();
     mReactDelegate.onHostDestroy();
   }
+
   // endregion
 
   @Override

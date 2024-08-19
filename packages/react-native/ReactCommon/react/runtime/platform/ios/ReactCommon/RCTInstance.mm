@@ -6,16 +6,18 @@
  */
 
 #import "RCTInstance.h"
-#import <React/RCTBridgeProxy.h>
 
 #import <memory>
 
 #import <React/NSDataBigString.h>
 #import <React/RCTAssert.h>
+#import <React/RCTBridge+Inspector.h>
 #import <React/RCTBridge+Private.h>
 #import <React/RCTBridge.h>
 #import <React/RCTBridgeModule.h>
 #import <React/RCTBridgeModuleDecorator.h>
+#import <React/RCTBridgeProxy+Cxx.h>
+#import <React/RCTBridgeProxy.h>
 #import <React/RCTComponentViewFactory.h>
 #import <React/RCTConstants.h>
 #import <React/RCTCxxUtils.h>
@@ -28,13 +30,14 @@
 #import <React/RCTLogBox.h>
 #import <React/RCTModuleData.h>
 #import <React/RCTPerformanceLogger.h>
+#import <React/RCTRedBox.h>
 #import <React/RCTSurfacePresenter.h>
 #import <ReactCommon/RCTTurboModuleManager.h>
 #import <ReactCommon/RuntimeExecutor.h>
 #import <cxxreact/ReactMarker.h>
 #import <jsinspector-modern/ReactCdp.h>
 #import <jsireact/JSIExecutor.h>
-#import <react/runtime/BridgelessJSCallInvoker.h>
+#import <react/renderer/runtimescheduler/RuntimeSchedulerCallInvoker.h>
 #import <react/utils/ContextContainer.h>
 #import <react/utils/ManagedObjectWrapper.h>
 
@@ -75,16 +78,16 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   RCTSurfacePresenter *_surfacePresenter;
   RCTPerformanceLogger *_performanceLogger;
   RCTDisplayLink *_displayLink;
-  RCTInstanceInitialBundleLoadCompletionBlock _onInitialBundleLoad;
   RCTTurboModuleManager *_turboModuleManager;
   std::mutex _invalidationMutex;
   std::atomic<bool> _valid;
   RCTJSThreadManager *_jsThreadManager;
+  NSDictionary *_launchOptions;
 
   // APIs supporting interop with native modules and view managers
   RCTBridgeModuleDecorator *_bridgeModuleDecorator;
 
-  jsinspector_modern::PageTarget *_parentInspectorTarget;
+  jsinspector_modern::HostTarget *_parentInspectorTarget;
 }
 
 #pragma mark - Public
@@ -93,9 +96,9 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
                 jsRuntimeFactory:(std::shared_ptr<facebook::react::JSRuntimeFactory>)jsRuntimeFactory
                    bundleManager:(RCTBundleManager *)bundleManager
       turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)tmmDelegate
-             onInitialBundleLoad:(RCTInstanceInitialBundleLoadCompletionBlock)onInitialBundleLoad
                   moduleRegistry:(RCTModuleRegistry *)moduleRegistry
-           parentInspectorTarget:(jsinspector_modern::PageTarget *)parentInspectorTarget
+           parentInspectorTarget:(jsinspector_modern::HostTarget *)parentInspectorTarget
+                   launchOptions:(nullable NSDictionary *)launchOptions
 {
   if (self = [super init]) {
     _performanceLogger = [RCTPerformanceLogger new];
@@ -106,7 +109,6 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
     _jsRuntimeFactory = jsRuntimeFactory;
     _appTMMDelegate = tmmDelegate;
     _jsThreadManager = [RCTJSThreadManager new];
-    _onInitialBundleLoad = onInitialBundleLoad;
     _bridgeModuleDecorator = [[RCTBridgeModuleDecorator alloc] initWithViewRegistry:[RCTViewRegistry new]
                                                                      moduleRegistry:moduleRegistry
                                                                       bundleManager:bundleManager
@@ -121,11 +123,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
             [weakSelf callFunctionOnJSModule:moduleName method:methodName args:args];
           }];
     }
-
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(_notifyEventDispatcherObserversOfEvent_DEPRECATED:)
-                                                 name:@"RCTNotifyEventDispatcherObserversOfEvent_DEPRECATED"
-                                               object:nil];
+    _launchOptions = launchOptions;
 
     [self _start];
   }
@@ -160,6 +158,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
     self->_jsRuntimeFactory = nullptr;
     self->_appTMMDelegate = nil;
     self->_delegate = nil;
+    [self->_displayLink invalidate];
     self->_displayLink = nil;
 
     self->_turboModuleManager = nil;
@@ -233,20 +232,21 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   objCTimerRegistryRawPtr->setTimerManager(timerManager);
 
   __weak __typeof(self) weakSelf = self;
-  auto jsErrorHandlingFunc = [=](MapBuffer errorMap) { [weakSelf _handleJSErrorMap:std::move(errorMap)]; };
+  auto onJsError = [=](const JsErrorHandler::ParsedError &error) { [weakSelf _handleJSError:error]; };
 
   // Create the React Instance
   _reactInstance = std::make_unique<ReactInstance>(
       _jsRuntimeFactory->createJSRuntime(_jsThreadManager.jsMessageThread),
       _jsThreadManager.jsMessageThread,
       timerManager,
-      jsErrorHandlingFunc,
+      onJsError,
       _parentInspectorTarget);
   _valid = true;
 
   RuntimeExecutor bufferedRuntimeExecutor = _reactInstance->getBufferedRuntimeExecutor();
   timerManager->setRuntimeExecutor(bufferedRuntimeExecutor);
 
+  auto jsCallInvoker = make_shared<RuntimeSchedulerCallInvoker>(_reactInstance->getRuntimeScheduler());
   RCTBridgeProxy *bridgeProxy =
       [[RCTBridgeProxy alloc] initWithViewRegistry:_bridgeModuleDecorator.viewRegistry_DEPRECATED
           moduleRegistry:_bridgeModuleDecorator.moduleRegistry
@@ -264,15 +264,16 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
               [strongSelf registerSegmentWithId:segmentId path:path];
             }
           }
-          runtime:_reactInstance->getJavaScriptContext()];
+          runtime:_reactInstance->getJavaScriptContext()
+          launchOptions:_launchOptions];
+  bridgeProxy.jsCallInvoker = jsCallInvoker;
   [RCTBridge setCurrentBridge:(RCTBridge *)bridgeProxy];
 
   // Set up TurboModules
-  _turboModuleManager = [[RCTTurboModuleManager alloc]
-        initWithBridgeProxy:bridgeProxy
-      bridgeModuleDecorator:_bridgeModuleDecorator
-                   delegate:self
-                  jsInvoker:std::make_shared<BridgelessJSCallInvoker>(bufferedRuntimeExecutor)];
+  _turboModuleManager = [[RCTTurboModuleManager alloc] initWithBridgeProxy:bridgeProxy
+                                                     bridgeModuleDecorator:_bridgeModuleDecorator
+                                                                  delegate:self
+                                                                 jsInvoker:jsCallInvoker];
   _turboModuleManager.runtimeHandler = self;
 
 #if RCT_DEV
@@ -389,6 +390,33 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   }
 }
 
+- (void)callFunctionOnBufferedRuntimeExecutor:(std::function<void(facebook::jsi::Runtime &)> &&)executor
+{
+  _reactInstance->getBufferedRuntimeExecutor()([=](jsi::Runtime &runtime) {
+    if (executor) {
+      executor(runtime);
+    }
+  });
+}
+
+- (void)handleBundleLoadingError:(NSError *)error
+{
+  if (!_valid) {
+    return;
+  }
+
+  RCTRedBox *redBox = [_turboModuleManager moduleForName:"RedBox"];
+
+  RCTExecuteOnMainQueue(^{
+    [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptDidFailToLoadNotification
+                                                        object:self
+                                                      userInfo:@{@"error" : error}];
+    [redBox showErrorMessage:[error localizedDescription]];
+
+    RCTFatal(error);
+  });
+}
+
 - (void)_loadJSBundle:(NSURL *)sourceURL
 {
 #if RCT_DEV_MENU && __has_include(<React/RCTDevLoadingViewProtocol.h>)
@@ -420,8 +448,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
         }
 
         if (error) {
-          // TODO(T91461138): Properly address bundle loading errors.
-          RCTLogError(@"RCTInstance: Error while loading bundle: %@", error);
+          [strongSelf handleBundleLoadingError:error];
           [strongSelf invalidate];
           return;
         }
@@ -446,48 +473,25 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   const auto *url = deriveSourceURL(source.url).UTF8String;
   _reactInstance->loadScript(std::move(script), url);
   [[NSNotificationCenter defaultCenter] postNotificationName:@"RCTInstanceDidLoadBundle" object:nil];
-
-  if (_onInitialBundleLoad) {
-    _onInitialBundleLoad();
-    _onInitialBundleLoad = nil;
-  }
 }
 
-- (void)_notifyEventDispatcherObserversOfEvent_DEPRECATED:(NSNotification *)notification
+- (void)_handleJSError:(const JsErrorHandler::ParsedError &)error
 {
-  NSDictionary *userInfo = notification.userInfo;
-  id<RCTEvent> event = [userInfo objectForKey:@"event"];
-
-  RCTModuleRegistry *moduleRegistry = _bridgeModuleDecorator.moduleRegistry;
-  if (event && moduleRegistry) {
-    id<RCTEventDispatcherProtocol> legacyEventDispatcher = [moduleRegistry moduleForName:"EventDispatcher"
-                                                                   lazilyLoadIfNecessary:YES];
-    [legacyEventDispatcher notifyObserversOfEvent:event];
-  }
-}
-
-- (void)_handleJSErrorMap:(facebook::react::MapBuffer)errorMap
-{
-  NSString *message = [NSString stringWithCString:errorMap.getString(JSErrorHandlerKey::kErrorMessage).c_str()
-                                         encoding:[NSString defaultCStringEncoding]];
-  std::vector<facebook::react::MapBuffer> frames = errorMap.getMapBufferList(JSErrorHandlerKey::kAllStackFrames);
+  NSString *message = [NSString stringWithCString:error.message.c_str() encoding:[NSString defaultCStringEncoding]];
   NSMutableArray<NSDictionary<NSString *, id> *> *stack = [NSMutableArray new];
-  for (const facebook::react::MapBuffer &mapBuffer : frames) {
-    NSDictionary *frame = @{
-      @"file" : [NSString stringWithCString:mapBuffer.getString(JSErrorHandlerKey::kFrameFileName).c_str()
-                                   encoding:[NSString defaultCStringEncoding]],
-      @"methodName" : [NSString stringWithCString:mapBuffer.getString(JSErrorHandlerKey::kFrameMethodName).c_str()
-                                         encoding:[NSString defaultCStringEncoding]],
-      @"lineNumber" : [NSNumber numberWithInt:mapBuffer.getInt(JSErrorHandlerKey::kFrameLineNumber)],
-      @"column" : [NSNumber numberWithInt:mapBuffer.getInt(JSErrorHandlerKey::kFrameColumnNumber)],
-    };
-    [stack addObject:frame];
+  for (const JsErrorHandler::ParsedError::StackFrame &frame : error.frames) {
+    [stack addObject:@{
+      @"file" : [NSString stringWithCString:frame.fileName.c_str() encoding:[NSString defaultCStringEncoding]],
+      @"methodName" : [NSString stringWithCString:frame.methodName.c_str() encoding:[NSString defaultCStringEncoding]],
+      @"lineNumber" : [NSNumber numberWithInt:frame.lineNumber],
+      @"column" : [NSNumber numberWithInt:frame.columnNumber],
+    }];
   }
   [_delegate instance:self
       didReceiveJSErrorStack:stack
                      message:message
-                 exceptionId:errorMap.getInt(JSErrorHandlerKey::kExceptionId)
-                     isFatal:errorMap.getBool(JSErrorHandlerKey::kIsFatal)];
+                 exceptionId:error.exceptionId
+                     isFatal:error.isFatal];
 }
 
 @end

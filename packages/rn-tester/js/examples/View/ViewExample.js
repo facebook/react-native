@@ -452,6 +452,87 @@ function LayoutConformanceBox(): React.Node {
   );
 }
 
+function BoxShadowExample(): React.Node {
+  const defaultStyleSize = {width: 75, height: 75};
+
+  return (
+    <View testID="view-test-box-shadow" style={{gap: 20}}>
+      <View style={{flexDirection: 'row', gap: 15}}>
+        <View
+          style={{
+            ...defaultStyleSize,
+            borderRadius: 10,
+            borderWidth: 5,
+            borderColor: 'red',
+            experimental_boxShadow: '0 0 10px 0 black',
+          }}
+        />
+        <View
+          style={{
+            ...defaultStyleSize,
+            borderRadius: 30,
+            borderWidth: 5,
+            borderColor: 'red',
+            experimental_boxShadow: 'inset 0 0 10px 0 black',
+          }}
+        />
+        <View
+          style={{
+            ...defaultStyleSize,
+            borderRadius: 30,
+            borderWidth: 5,
+            borderColor: 'red',
+            experimental_boxShadow:
+              'inset 15px -5px 5px 5px cyan, inset 15px -5px 20px 10px orange, -5px 5px 5px 0px green, 0px -10px 0px 5px black',
+          }}
+        />
+      </View>
+      <View style={{flexDirection: 'row', gap: 15}}>
+        <View
+          style={{
+            ...defaultStyleSize,
+            experimental_boxShadow: '0px 0px 5px 5px black',
+          }}>
+          <View
+            style={{
+              left: -10,
+              width: 25,
+              height: 25,
+              backgroundColor: 'cyan',
+            }}
+          />
+        </View>
+        <View
+          style={{
+            ...defaultStyleSize,
+            backgroundColor: 'red',
+            experimental_boxShadow: 'inset 0px 0px 5px 5px black',
+          }}
+        />
+        <View style={{...defaultStyleSize, flexDirection: 'row'}}>
+          <View style={{width: 25, height: 25, backgroundColor: 'cyan'}} />
+          <View
+            style={{
+              ...defaultStyleSize,
+              experimental_boxShadow: ' 0px 0px 20px 5px black',
+            }}
+          />
+          <View style={{width: 25, height: 25, backgroundColor: 'cyan'}} />
+        </View>
+      </View>
+      <View style={{flexDirection: 'row', gap: 15}}>
+        <View
+          style={{
+            ...defaultStyleSize,
+            backgroundColor: 'green',
+            experimental_boxShadow: '0px 10px',
+          }}
+        />
+      </View>
+    </View>
+  );
+}
+
 export default ({
   title: 'View',
   documentationURL: 'https://reactnative.dev/docs/view',
@@ -641,6 +722,115 @@ export default ({
                 borderBottomWidth: 6,
                 borderRightWidth: 6,
                 borderBottomRightRadius: 20,
+              }}
+            />
+          </View>
+        );
+      },
+    },
+    {
+      title: 'Rounded Borders (Percentages)',
+      name: 'rounded-borders-percentages',
+      render(): React.Node {
+        return (
+          <View
+            testID="view-test-rounded-borders-percentages"
+            style={{flexDirection: 'row', flexWrap: 'wrap'}}>
+            <View
+              style={{
+                width: 50,
+                height: 50,
+                borderRadius: '50%',
+                borderWidth: 1,
+                marginRight: 10,
+              }}
+            />
+            <View
+              style={{
+                width: 50,
+                height: 50,
+                borderRadius: '50%',
+                borderWidth: 10,
+                marginRight: 10,
+              }}
+            />
+            <View
+              style={{
+                width: 50,
+                height: 50,
+                borderTopLeftRadius: '10%',
+                borderTopRightRadius: '20%',
+                borderBottomRightRadius: '50%',
+                borderBottomLeftRadius: '100%',
+                borderWidth: 1,
+                marginRight: 10,
+              }}
+            />
+            <View
+              style={{
+                width: 50,
+                height: 50,
+                borderTopLeftRadius: '10%',
+                borderTopRightRadius: '20%',
+                borderBottomRightRadius: '50%',
+                borderBottomLeftRadius: '100%',
+                borderWidth: 10,
+                marginRight: 10,
+              }}
+            />
+            <View
+              style={{
+                width: 50,
+                height: 50,
+                borderLeftWidth: 6,
+                borderTopWidth: 6,
+                borderTopLeftRadius: '40%',
+              }}
+            />
+            <View
+              style={{
+                width: 50,
+                height: 50,
+                borderRightWidth: 6,
+                borderTopWidth: 6,
+                borderTopRightRadius: '40%',
+              }}
+            />
+            <View
+              style={{
+                width: 50,
+                height: 50,
+                borderBottomWidth: 6,
+                borderLeftWidth: 6,
+                borderBottomLeftRadius: '40%',
+              }}
+            />
+            <View
+              style={{
+                width: 50,
+                height: 50,
+                borderBottomWidth: 6,
+                borderRightWidth: 6,
+                borderBottomRightRadius: '40%',
+              }}
+            />
+            <View
+              style={{
+                width: 100,
+                height: 50,
+                borderWidth: 6,
+                borderRadius: '100%',
+              }}
+            />
+            <View
+              style={{
+                width: 100,
+                height: 50,
+                borderWidth: 6,
+                borderTopLeftRadius: '10%',
+                borderTopRightRadius: '20%',
+                borderBottomRightRadius: '50%',
+                borderBottomLeftRadius: '100%',
               }}
             />
           </View>
@@ -842,19 +1032,19 @@ export default ({
       name: 'insets',
       render(): React.Node {
         return (
-          <View testID="view-test-insets" style={{rowGap: 10}}>
-            <View style={{position: 'relative', height: 50, borderWidth: 1}}>
+          <View testID="view-test-insets" style={{rowGap: 5}}>
+            <View style={{position: 'relative', height: 40, borderWidth: 1}}>
               <View
                 style={{
                   backgroundColor: '#527FE4',
                   padding: 5,
                   position: 'absolute',
-                  inset: 10,
+                  inset: 5,
                 }}>
-                <Text style={{fontSize: 11}}>inset 10</Text>
+                <Text style={{fontSize: 11}}>inset 5</Text>
               </View>
             </View>
-            <View style={{position: 'relative', height: 50, borderWidth: 1}}>
+            <View style={{position: 'relative', height: 40, borderWidth: 1}}>
               <View
                 style={{
                   backgroundColor: '#527FE4',
@@ -865,7 +1055,7 @@ export default ({
                 <Text style={{fontSize: 11}}>insetBlock 5</Text>
               </View>
             </View>
-            <View style={{position: 'relative', height: 50, borderWidth: 1}}>
+            <View style={{position: 'relative', height: 40, borderWidth: 1}}>
               <View
                 style={{
                   backgroundColor: '#527FE4',
@@ -876,7 +1066,7 @@ export default ({
                 <Text style={{fontSize: 11}}>insetBlockEnd 5</Text>
               </View>
             </View>
-            <View style={{position: 'relative', height: 50, borderWidth: 1}}>
+            <View style={{position: 'relative', height: 40, borderWidth: 1}}>
               <View
                 style={{
                   backgroundColor: '#527FE4',
@@ -887,7 +1077,7 @@ export default ({
                 <Text style={{fontSize: 11}}>insetBlockStart 5</Text>
               </View>
             </View>
-            <View style={{position: 'relative', height: 50, borderWidth: 1}}>
+            <View style={{position: 'relative', height: 40, borderWidth: 1}}>
               <View
                 style={{
                   backgroundColor: '#527FE4',
@@ -898,7 +1088,7 @@ export default ({
                 <Text style={{fontSize: 11}}>insetInline 5</Text>
               </View>
             </View>
-            <View style={{position: 'relative', height: 50, borderWidth: 1}}>
+            <View style={{position: 'relative', height: 40, borderWidth: 1}}>
               <View
                 style={{
                   backgroundColor: '#527FE4',
@@ -909,7 +1099,7 @@ export default ({
                 <Text style={{fontSize: 11}}>insetInlineEnd 5</Text>
               </View>
             </View>
-            <View style={{position: 'relative', height: 50, borderWidth: 1}}>
+            <View style={{position: 'relative', height: 40, borderWidth: 1}}>
               <View
                 style={{
                   backgroundColor: '#527FE4',
@@ -968,6 +1158,11 @@ export default ({
       title: 'Layout conformance',
       name: 'layout-conformance',
       render: LayoutConformanceExample,
+    },
+    {
+      title: 'Box Shadow',
+      name: 'box-shadow',
+      render: BoxShadowExample,
     },
   ],
 }: RNTesterModule);

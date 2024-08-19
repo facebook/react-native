@@ -34,8 +34,9 @@ type PackageJSON = {
   ...
 }
 type NpmPackageOptions = {
-  tags: ?Array<string>,
+  tags: ?Array<string> | ?Array<?string>,
   otp: ?string,
+  access?: ?('public' | 'restricted')
 }
 */
 
@@ -88,14 +89,28 @@ function getNpmInfo(buildType /*: BuildType */) /*: NpmInfo */ {
   }
 
   if (buildType === 'release') {
-    if (process.env.CIRCLE_TAG == null) {
+    let versionTag /*: string*/ = '';
+    if (process.env.CIRCLE_TAG != null && process.env.CIRCLE_TAG !== '') {
+      versionTag = process.env.CIRCLE_TAG;
+    } else if (
+      process.env.GITHUB_REF != null &&
+      process.env.GITHUB_REF.includes('/tags/') &&
+      process.env.GITHUB_REF_NAME != null &&
+      process.env.GITHUB_REF_NAME !== ''
+    ) {
+      // GITHUB_REF contains the fully qualified ref, for example refs/tags/v0.75.0-rc.0
+      // GITHUB_REF_NAME contains the short name, for example v0.75.0-rc.0
+      versionTag = process.env.GITHUB_REF_NAME;
+    }
+
+    if (versionTag === '') {
       throw new Error(
-        'CIRCLE_TAG is not set for release. This should only be run in CircleCI. See https://circleci.com/docs/variables/ for how CIRCLE_TAG is set.',
+        'No version tag found in CI. It looks like this script is running in release mode, but the CIRCLE_TAG or the GITHUB_REF_NAME are missing.',
       );
     }
 
-    const {version, major, minor, prerelease} = parseVersion(
-      process.env.CIRCLE_TAG,
+    const {version, major, minor, patch, prerelease} = parseVersion(
+      versionTag,
       buildType,
     );
 
@@ -107,15 +122,19 @@ function getNpmInfo(buildType /*: BuildType */) /*: NpmInfo */ {
     );
 
     const releaseBranchTag = `${major}.${minor}-stable`;
-
+    let tag = releaseBranchTag;
     // npm will automatically tag the version as `latest` if no tag is set when we publish
     // To prevent this, use `releaseBranchTag` when we don't want that (ex. releasing a patch on older release)
-    const tag =
-      prerelease != null
-        ? 'next'
-        : isLatest === true
-        ? 'latest'
-        : releaseBranchTag;
+    if (prerelease != null) {
+      if (patch === '0') {
+        // Set `next` tag only on prereleases of 0.m.0-RC.k.
+        tag = 'next';
+      } else {
+        tag = '--no-tag';
+      }
+    } else if (isLatest === true) {
+      tag = 'latest';
+    }
 
     return {
       version,
@@ -131,73 +150,25 @@ function publishPackage(
   packageOptions /*: NpmPackageOptions */,
   execOptions /*: ?ExecOptsSync */,
 ) /*: ShellString */ {
-  const {otp, tags} = packageOptions;
-  const tagsFlag = tags != null ? tags.map(t => ` --tag ${t}`).join('') : '';
+  const {otp, tags, access} = packageOptions;
+
+  let tagsFlag = '';
+  if (tags != null) {
+    tagsFlag = tags.includes('--no-tag')
+      ? ' --no-tag'
+      : tags
+          .filter(Boolean)
+          .map(t => ` --tag ${t}`)
+          .join('');
+  }
+
   const otpFlag = otp != null ? ` --otp ${otp}` : '';
+  const accessFlag = access != null ? ` --access ${access}` : '';
   const options = execOptions
     ? {...execOptions, cwd: packagePath}
     : {cwd: packagePath};
 
-  return exec(`npm publish${tagsFlag}${otpFlag}`, options);
-}
-
-function diffPackages(
-  packageSpecA /*: string */,
-  packageSpecB /*: string */,
-  options /*:  ExecOptsSync */,
-) /*: string */ {
-  const result = exec(
-    `npm diff --diff=${packageSpecA} --diff=${packageSpecB} --diff-name-only`,
-    options,
-  );
-
-  if (result.code !== 0) {
-    throw new Error(
-      `Failed to diff ${packageSpecA} and ${packageSpecB}\n${result.stderr}`,
-    );
-  }
-
-  return result.stdout;
-}
-
-function pack(packagePath /*: string */) {
-  const result = exec('npm pack', {
-    cwd: packagePath,
-  });
-
-  if (result.code !== 0) {
-    throw new Error(result.stderr);
-  }
-}
-
-/**
- * `package` is an object form of package.json
- * `dependencies` is a map of dependency to version string
- *
- * This replaces both dependencies and devDependencies in package.json
- */
-function applyPackageVersions(
-  originalPackageJson /*: PackageJSON */,
-  packageVersions /*: {[string]: string} */,
-) /*: PackageJSON */ {
-  const packageJson = {...originalPackageJson};
-
-  for (const name of Object.keys(packageVersions)) {
-    if (
-      packageJson.dependencies != null &&
-      packageJson.dependencies[name] != null
-    ) {
-      packageJson.dependencies[name] = packageVersions[name];
-    }
-
-    if (
-      packageJson.devDependencies != null &&
-      packageJson.devDependencies[name] != null
-    ) {
-      packageJson.devDependencies[name] = packageVersions[name];
-    }
-  }
-  return packageJson;
+  return exec(`npm publish${tagsFlag}${otpFlag}${accessFlag}`, options);
 }
 
 /**
@@ -270,11 +241,7 @@ function getVersionsBySpec(
 }
 
 module.exports = {
-  applyPackageVersions,
   getNpmInfo,
-  getPackageVersionStrByTag,
   getVersionsBySpec,
   publishPackage,
-  diffPackages,
-  pack,
 };

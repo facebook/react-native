@@ -7,14 +7,20 @@
 
 package com.facebook.react.modules.timing
 
+import android.content.Context
+import android.os.Looper
 import android.view.Choreographer.FrameCallback
 import com.facebook.react.bridge.Arguments
+import com.facebook.react.bridge.BridgeReactContext
 import com.facebook.react.bridge.CatalystInstance
 import com.facebook.react.bridge.JavaOnlyArray
-import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.bridge.JavaOnlyMap
 import com.facebook.react.bridge.WritableArray
 import com.facebook.react.common.SystemClock
 import com.facebook.react.devsupport.interfaces.DevSupportManager
+import com.facebook.react.jstasks.HeadlessJsTaskConfig
+import com.facebook.react.jstasks.HeadlessJsTaskContext
+import com.facebook.react.modules.appregistry.AppRegistry
 import com.facebook.react.modules.core.JSTimers
 import com.facebook.react.modules.core.ReactChoreographer
 import com.facebook.react.modules.core.ReactChoreographer.CallbackType
@@ -24,18 +30,34 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.ArgumentMatchers.any
-import org.mockito.ArgumentMatchers.eq
+import org.mockito.ArgumentMatchers
 import org.mockito.MockedStatic
+import org.mockito.Mockito.doAnswer
+import org.mockito.Mockito.doReturn
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.mockStatic
 import org.mockito.Mockito.reset
+import org.mockito.Mockito.spy
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.verifyNoMoreInteractions
 import org.mockito.Mockito.`when` as whenever
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.Answer
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.Shadows.shadowOf
+
+public object MockCompat {
+  // Same as Mockito's 'eq()', but works for non-nullable types
+  public fun <T : Any> eq(value: T): T = ArgumentMatchers.eq(value) ?: value
+
+  // Same as Mockito's 'any()', but works for non-nullable types
+  fun <T> any(): T {
+    ArgumentMatchers.any<T>()
+    return uninitialized()
+  }
+
+  @Suppress("UNCHECKED_CAST") fun <T> uninitialized(): T = null as T
+}
 
 @RunWith(RobolectricTestRunner::class)
 class TimingModuleTest {
@@ -43,15 +65,18 @@ class TimingModuleTest {
     const val FRAME_TIME_NS = 17 * 1000 * 1000
   }
 
+  private lateinit var reactContext: BridgeReactContext
+  private lateinit var headlessContext: HeadlessJsTaskContext
   private lateinit var timingModule: TimingModule
-  private lateinit var reactChoreographerMock: ReactChoreographer
   private lateinit var postFrameCallbackHandler: PostFrameCallbackHandler
   private lateinit var idlePostFrameCallbackHandler: PostFrameCallbackHandler
-  private var currentTimeNs = 0L
-  private lateinit var jSTimersMock: JSTimers
+  private lateinit var jsTimersMock: JSTimers
   private lateinit var arguments: MockedStatic<Arguments>
   private lateinit var systemClock: MockedStatic<SystemClock>
-  private lateinit var reactChoreographer: MockedStatic<ReactChoreographer>
+  private lateinit var reactChoreographerMock: ReactChoreographer
+
+  private var currentTimeNs = 0L
+  private var reactChoreographerOriginal: ReactChoreographer? = null
 
   @Before
   fun prepareModules() {
@@ -76,40 +101,43 @@ class TimingModuleTest {
         }
 
     reactChoreographerMock = mock(ReactChoreographer::class.java)
-    reactChoreographer = mockStatic(ReactChoreographer::class.java)
-    reactChoreographer
-        .`when`<ReactChoreographer> { ReactChoreographer.getInstance() }
-        .thenAnswer { reactChoreographerMock }
+    reactChoreographerOriginal = ReactChoreographer.overrideInstanceForTest(reactChoreographerMock)
 
     val reactInstance = mock(CatalystInstance::class.java)
-    val reactContext = mock(ReactApplicationContext::class.java)
-    whenever(reactContext.catalystInstance).thenReturn(reactInstance)
-    whenever(reactContext.hasActiveReactInstance()).thenReturn(true)
+    reactContext = spy(BridgeReactContext(mock(Context::class.java)))
+    doReturn(reactInstance).`when`(reactContext).catalystInstance
+    doReturn(true).`when`(reactContext).hasActiveReactInstance()
+
+    headlessContext = HeadlessJsTaskContext.getInstance(reactContext)
 
     postFrameCallbackHandler = PostFrameCallbackHandler()
     idlePostFrameCallbackHandler = PostFrameCallbackHandler()
 
     whenever(
             reactChoreographerMock.postFrameCallback(
-                eq(CallbackType.TIMERS_EVENTS), any(FrameCallback::class.java)))
+                MockCompat.eq(CallbackType.TIMERS_EVENTS), MockCompat.any<FrameCallback>()))
         .thenAnswer {
           return@thenAnswer postFrameCallbackHandler.answer(it)
         }
-
     whenever(
             reactChoreographerMock.postFrameCallback(
-                eq(CallbackType.IDLE_EVENT), any(FrameCallback::class.java)))
+                MockCompat.eq(CallbackType.IDLE_EVENT), MockCompat.any<FrameCallback>()))
         .thenAnswer {
           return@thenAnswer idlePostFrameCallbackHandler.answer(it)
         }
 
     timingModule = TimingModule(reactContext, mock(DevSupportManager::class.java))
-    jSTimersMock = mock(JSTimers::class.java)
-    whenever(reactContext.getJSModule(JSTimers::class.java)).thenReturn(jSTimersMock)
-    whenever(reactContext.runOnJSQueueThread(any(Runnable::class.java))).thenAnswer { invocation ->
-      (invocation.arguments[0] as Runnable).run()
-      return@thenAnswer true
-    }
+    jsTimersMock = mock(JSTimers::class.java)
+    doReturn(jsTimersMock).`when`(reactContext).getJSModule(JSTimers::class.java)
+    doReturn(mock(AppRegistry::class.java))
+        .`when`(reactContext)
+        .getJSModule(AppRegistry::class.java)
+    doAnswer({ invocation ->
+          (invocation.arguments[0] as Runnable).run()
+          return@doAnswer true
+        })
+        .`when`(reactContext)
+        .runOnJSQueueThread(MockCompat.any<Runnable>())
 
     timingModule.initialize()
   }
@@ -118,10 +146,12 @@ class TimingModuleTest {
   fun tearDown() {
     systemClock.close()
     arguments.close()
-    reactChoreographer.close()
+    ReactChoreographer.overrideInstanceForTest(reactChoreographerOriginal)
   }
 
   private fun stepChoreographerFrame() {
+    shadowOf(Looper.getMainLooper()).idle()
+
     val callback = postFrameCallbackHandler.getAndResetFrameCallback()
     val idleCallback = idlePostFrameCallbackHandler.getAndResetFrameCallback()
     currentTimeNs += FRAME_TIME_NS
@@ -134,111 +164,113 @@ class TimingModuleTest {
 
   @Test
   fun testSimpleTimer() {
-    timingModule.onHostResume()
+    reactContext.onHostResume(null)
     timingModule.createTimer(1.0, 1.0, 0.0, false)
     stepChoreographerFrame()
-    verify(jSTimersMock).callTimers(JavaOnlyArray.of(1.0))
-    reset(jSTimersMock)
+    verify(jsTimersMock).callTimers(JavaOnlyArray.of(1.0))
+    reset(jsTimersMock)
     stepChoreographerFrame()
-    verifyNoMoreInteractions(jSTimersMock)
+    verifyNoMoreInteractions(jsTimersMock)
   }
 
   @Test
   fun testSimpleRecurringTimer() {
     timingModule.createTimer(100.0, 1.0, 0.0, true)
-    timingModule.onHostResume()
+    reactContext.onHostResume(null)
     stepChoreographerFrame()
-    verify(jSTimersMock).callTimers(JavaOnlyArray.of(100.0))
-    reset(jSTimersMock)
+    verify(jsTimersMock).callTimers(JavaOnlyArray.of(100.0))
+    reset(jsTimersMock)
     stepChoreographerFrame()
-    verify(jSTimersMock).callTimers(JavaOnlyArray.of(100.0))
+    verify(jsTimersMock).callTimers(JavaOnlyArray.of(100.0))
   }
 
   @Test
   fun testCancelRecurringTimer() {
-    timingModule.onHostResume()
+    reactContext.onHostResume(null)
     timingModule.createTimer(105.0, 1.0, 0.0, true)
     stepChoreographerFrame()
-    verify(jSTimersMock).callTimers(JavaOnlyArray.of(105.0))
-    reset(jSTimersMock)
+    verify(jsTimersMock).callTimers(JavaOnlyArray.of(105.0))
+    reset(jsTimersMock)
     timingModule.deleteTimer(105.0)
     stepChoreographerFrame()
-    verifyNoMoreInteractions(jSTimersMock)
+    verifyNoMoreInteractions(jsTimersMock)
   }
 
   @Test
   fun testPausingAndResuming() {
-    timingModule.onHostResume()
+    reactContext.onHostResume(null)
     timingModule.createTimer(41.0, 1.0, 0.0, true)
     stepChoreographerFrame()
-    verify(jSTimersMock).callTimers(JavaOnlyArray.of(41.0))
-    reset(jSTimersMock)
-    timingModule.onHostPause()
+    verify(jsTimersMock).callTimers(JavaOnlyArray.of(41.0))
+    reset(jsTimersMock)
+    reactContext.onHostPause()
     stepChoreographerFrame()
-    verifyNoMoreInteractions(jSTimersMock)
-    reset(jSTimersMock)
-    timingModule.onHostResume()
+    verifyNoMoreInteractions(jsTimersMock)
+    reset(jsTimersMock)
+    reactContext.onHostResume(null)
     stepChoreographerFrame()
-    verify(jSTimersMock).callTimers(JavaOnlyArray.of(41.0))
+    verify(jsTimersMock).callTimers(JavaOnlyArray.of(41.0))
   }
 
   @Test
   fun testHeadlessJsTaskInBackground() {
-    timingModule.onHostPause()
-    timingModule.onHeadlessJsTaskStart(42)
+    reactContext.onHostPause()
+    val taskConfig = HeadlessJsTaskConfig("foo", JavaOnlyMap())
+    val taskId = headlessContext.startTask(taskConfig)
     timingModule.createTimer(41.0, 1.0, 0.0, true)
     stepChoreographerFrame()
-    verify(jSTimersMock).callTimers(JavaOnlyArray.of(41.0))
-    reset(jSTimersMock)
-    timingModule.onHeadlessJsTaskFinish(42)
+    verify(jsTimersMock).callTimers(JavaOnlyArray.of(41.0))
+    reset(jsTimersMock)
+    headlessContext.finishTask(taskId)
     stepChoreographerFrame()
-    verifyNoMoreInteractions(jSTimersMock)
+    verifyNoMoreInteractions(jsTimersMock)
   }
 
   @Test
   fun testHeadlessJsTaskInForeground() {
-    timingModule.onHostResume()
-    timingModule.onHeadlessJsTaskStart(42)
+    val taskConfig = HeadlessJsTaskConfig("foo", JavaOnlyMap())
+    val taskId = headlessContext.startTask(taskConfig)
+    reactContext.onHostResume(null)
     timingModule.createTimer(41.0, 1.0, 0.0, true)
     stepChoreographerFrame()
-    verify(jSTimersMock).callTimers(JavaOnlyArray.of(41.0))
-    reset(jSTimersMock)
-    timingModule.onHeadlessJsTaskFinish(42)
+    verify(jsTimersMock).callTimers(JavaOnlyArray.of(41.0))
+    reset(jsTimersMock)
+    headlessContext.finishTask(taskId)
     stepChoreographerFrame()
-    verify(jSTimersMock).callTimers(JavaOnlyArray.of(41.0))
-    reset(jSTimersMock)
-    timingModule.onHostPause()
-    verifyNoMoreInteractions(jSTimersMock)
+    verify(jsTimersMock).callTimers(JavaOnlyArray.of(41.0))
+    reset(jsTimersMock)
+    reactContext.onHostPause()
+    verifyNoMoreInteractions(jsTimersMock)
   }
 
   @Test
   fun testHeadlessJsTaskIntertwine() {
-    timingModule.onHostResume()
-    timingModule.onHeadlessJsTaskStart(42)
     timingModule.createTimer(41.0, 1.0, 0.0, true)
-    timingModule.onHostPause()
+    reactContext.onHostPause()
+    val taskConfig = HeadlessJsTaskConfig("foo", JavaOnlyMap())
+    val taskId = headlessContext.startTask(taskConfig)
     stepChoreographerFrame()
-    verify(jSTimersMock).callTimers(JavaOnlyArray.of(41.0))
-    reset(jSTimersMock)
-    timingModule.onHostResume()
-    timingModule.onHeadlessJsTaskFinish(42)
+    verify(jsTimersMock).callTimers(JavaOnlyArray.of(41.0))
+    reset(jsTimersMock)
+    reactContext.onHostResume(null)
+    headlessContext.finishTask(taskId)
     stepChoreographerFrame()
-    verify(jSTimersMock).callTimers(JavaOnlyArray.of(41.0))
-    reset(jSTimersMock)
-    timingModule.onHostPause()
+    verify(jsTimersMock).callTimers(JavaOnlyArray.of(41.0))
+    reset(jsTimersMock)
+    reactContext.onHostPause()
     stepChoreographerFrame()
-    verifyNoMoreInteractions(jSTimersMock)
+    verifyNoMoreInteractions(jsTimersMock)
   }
 
   @Test
   fun testSetTimeoutZero() {
     timingModule.createTimer(100.0, 0.0, 0.0, false)
-    verify(jSTimersMock).callTimers(JavaOnlyArray.of(100.0))
+    verify(jsTimersMock).callTimers(JavaOnlyArray.of(100.0))
   }
 
   @Test
   fun testActiveTimersInRange() {
-    timingModule.onHostResume()
+    reactContext.onHostResume(null)
     assertThat(timingModule.hasActiveTimersInRange(100)).isFalse
     timingModule.createTimer(41.0, 1.0, 0.0, true)
     assertThat(timingModule.hasActiveTimersInRange(100)).isFalse // Repeating
@@ -250,13 +282,12 @@ class TimingModuleTest {
   @Test
   fun testIdleCallback() {
     timingModule.setSendIdleEvents(true)
-    timingModule.onHostResume()
+    reactContext.onHostResume(null)
     stepChoreographerFrame()
-    verify(jSTimersMock).callIdleCallbacks(SystemClock.currentTimeMillis().toDouble())
+    verify(jsTimersMock).callIdleCallbacks(SystemClock.currentTimeMillis().toDouble())
   }
 
   private class PostFrameCallbackHandler : Answer<Unit> {
-
     private var frameCallback: FrameCallback? = null
 
     override fun answer(invocation: InvocationOnMock) {

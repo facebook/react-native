@@ -193,6 +193,8 @@ const validAttributesForNonEventProps = {
   accessibilityViewIsModal: true,
   accessibilityElementsHidden: true,
   accessibilityIgnoresInvertColors: true,
+  accessibilityShowsLargeContentViewer: true,
+  accessibilityLargeContentTitle: true,
   testID: true,
   backgroundColor: {process: require('../StyleSheet/processColor').default},
   backfaceVisibility: true,
@@ -219,6 +221,15 @@ const validAttributesForNonEventProps = {
   borderStyle: true,
   hitSlop: {diff: require('../Utilities/differ/insetsDiffer')},
   collapsable: true,
+  collapsableChildren: true,
+  experimental_filter: {
+    process: require('../StyleSheet/processFilter').default,
+  },
+  experimental_boxShadow: {
+    process: require('../StyleSheet/processBoxShadow').default,
+  },
+  experimental_mixBlendMode: true,
+  isolation: true,
 
   borderTopWidth: true,
   borderTopColor: {process: require('../StyleSheet/processColor').default},
@@ -373,6 +384,7 @@ const validAttributesForEventProps = ConditionallyIgnoredEventHandlers({
 
   // Pointer events
   onClick: true,
+  onClickCapture: true,
   onPointerUp: true,
   onPointerDown: true,
   onPointerCancel: true,

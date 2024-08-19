@@ -135,6 +135,18 @@ describe('version-utils', () => {
       expect(prerelease).toBe('rc.4');
     });
 
+    it('should parse patch pre-release version from tag', () => {
+      const {version, major, minor, patch, prerelease} = parseVersion(
+        'v0.66.1-rc.4',
+        'release',
+      );
+      expect(version).toBe('0.66.1-rc.4');
+      expect(major).toBe('0');
+      expect(minor).toBe('66');
+      expect(patch).toBe('1');
+      expect(prerelease).toBe('rc.4');
+    });
+
     it('should reject pre-release version from tag with random prerelease pattern', () => {
       function testInvalidVersion() {
         parseVersion('v0.66.0-something_invalid', 'release');

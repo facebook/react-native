@@ -33,12 +33,13 @@ Pod::Spec.new do |s|
   s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = min_supported_versions
   s.source                 = source
-  s.source_files           = "*.{cpp,h}"
+  s.source_files           = "*.{cpp,h,def}"
   s.header_dir             = 'jsinspector-modern'
   s.compiler_flags         = folly_compiler_flags
   s.pod_target_xcconfig    = {
                                "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/..\" \"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/fmt/include\"",
-                               "CLANG_CXX_LANGUAGE_STANDARD" => "c++20"
+                               "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
+                               "DEFINES_MODULE" => "YES"
   }.merge!(use_frameworks ? {
     "PUBLIC_HEADERS_FOLDER_PATH" => "#{module_name}.framework/Headers/#{header_dir}"
   } : {})
@@ -53,6 +54,7 @@ Pod::Spec.new do |s|
   s.dependency "DoubleConversion"
   s.dependency "React-runtimeexecutor", version
   s.dependency "React-jsi"
+  s.dependency "React-perflogger", version
   if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
     s.dependency "hermes-engine"
   end

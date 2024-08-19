@@ -84,8 +84,8 @@ function PerfExampleWrapper(props: {
           {loadExample === SHOW_BAD_EXAMPLE
             ? badExampleContents
             : loadExample === SHOW_GOOD_EXAMPLE
-            ? goodExampleContents
-            : null}
+              ? goodExampleContents
+              : null}
         </View>
       </View>
     </RNTesterPage>

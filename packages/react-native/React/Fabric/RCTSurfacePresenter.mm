@@ -33,7 +33,6 @@
 #import <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #import <react/renderer/scheduler/AsynchronousEventBeat.h>
 #import <react/renderer/scheduler/SchedulerToolbox.h>
-#import <react/renderer/scheduler/SynchronousEventBeat.h>
 #import <react/utils/ContextContainer.h>
 #import <react/utils/CoreFeatures.h>
 #import <react/utils/ManagedObjectWrapper.h>
@@ -43,33 +42,6 @@
 
 using namespace facebook;
 using namespace facebook::react;
-
-static dispatch_queue_t RCTGetBackgroundQueue()
-{
-  static dispatch_queue_t queue;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    dispatch_queue_attr_t attr =
-        dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL, QOS_CLASS_USER_INTERACTIVE, 0);
-    queue = dispatch_queue_create("com.facebook.react.background", attr);
-  });
-  return queue;
-}
-
-static BackgroundExecutor RCTGetBackgroundExecutor()
-{
-  return [](std::function<void()> &&callback) {
-    if (RCTIsMainQueue()) {
-      callback();
-      return;
-    }
-
-    auto copyableCallback = callback;
-    dispatch_async(RCTGetBackgroundQueue(), ^{
-      copyableCallback();
-    });
-  };
-}
 
 @interface RCTSurfacePresenter () <RCTSchedulerDelegate, RCTMountingManagerDelegate>
 @end
@@ -265,14 +237,6 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
     CoreFeatures::enableGranularScrollViewStateUpdatesIOS = true;
   }
 
-  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_mount_hooks_ios")) {
-    CoreFeatures::enableMountHooks = true;
-  }
-
-  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_cloneless_state_progression")) {
-    CoreFeatures::enableClonelessStateProgression = true;
-  }
-
   auto componentRegistryFactory =
       [factory = wrapManagedObject(_mountingManager.componentViewRegistry.componentViewFactory)](
           const EventDispatcher::Weak &eventDispatcher, const ContextContainer::Shared &contextContainer) {
@@ -297,26 +261,10 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
   toolbox.runtimeExecutor = runtimeExecutor;
   toolbox.bridgelessBindingsExecutor = _bridgelessBindingsExecutor;
 
-  toolbox.mainRunLoopObserverFactory = [](RunLoopObserver::Activity activities,
-                                          const RunLoopObserver::WeakOwner &owner) {
-    return std::make_unique<MainRunLoopObserver>(activities, owner);
-  };
-
-  if (ReactNativeFeatureFlags::enableBackgroundExecutor()) {
-    toolbox.backgroundExecutor = RCTGetBackgroundExecutor();
-  }
-
-  toolbox.synchronousEventBeatFactory =
-      [runtimeExecutor, runtimeScheduler = runtimeScheduler](const EventBeat::SharedOwnerBox &ownerBox) {
-        auto runLoopObserver =
-            std::make_unique<MainRunLoopObserver const>(RunLoopObserver::Activity::BeforeWaiting, ownerBox->owner);
-        return std::make_unique<SynchronousEventBeat>(std::move(runLoopObserver), runtimeExecutor, runtimeScheduler);
-      };
-
   toolbox.asynchronousEventBeatFactory =
       [runtimeExecutor](const EventBeat::SharedOwnerBox &ownerBox) -> std::unique_ptr<EventBeat> {
     auto runLoopObserver =
-        std::make_unique<MainRunLoopObserver const>(RunLoopObserver::Activity::BeforeWaiting, ownerBox->owner);
+        std::make_unique<const MainRunLoopObserver>(RunLoopObserver::Activity::BeforeWaiting, ownerBox->owner);
     return std::make_unique<AsynchronousEventBeat>(std::move(runLoopObserver), runtimeExecutor);
   };
 
@@ -354,6 +302,11 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
 #pragma mark - RCTSchedulerDelegate
 
 - (void)schedulerDidFinishTransaction:(MountingCoordinator::Shared)mountingCoordinator
+{
+  // no-op, we will flush the transaction from schedulerShouldRenderTransactions
+}
+
+- (void)schedulerShouldRenderTransactions:(MountingCoordinator::Shared)mountingCoordinator
 {
   [_mountingManager scheduleTransaction:mountingCoordinator];
 }

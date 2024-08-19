@@ -8,20 +8,22 @@
  * @flow strict
  */
 
+import type {PerformanceEntryType} from './PerformanceEntry';
 import type {
   RawPerformanceEntry,
   RawPerformanceEntryType,
-} from './NativePerformanceObserver';
-import type {PerformanceEntryType} from './PerformanceEntry';
+} from './specs/NativePerformanceObserver';
 
+import {PerformanceEventTiming} from './EventTiming';
+import {PerformanceLongTaskTiming} from './LongTasks';
 import {PerformanceEntry} from './PerformanceEntry';
-import PerformanceEventTiming from './PerformanceEventTiming';
+import {PerformanceMark, PerformanceMeasure} from './UserTiming';
 
 export const RawPerformanceEntryTypeValues = {
-  UNDEFINED: 0,
   MARK: 1,
   MEASURE: 2,
   EVENT: 3,
+  LONGTASK: 4,
 };
 
 export function rawToPerformanceEntry(
@@ -35,6 +37,22 @@ export function rawToPerformanceEntry(
       processingStart: entry.processingStart,
       processingEnd: entry.processingEnd,
       interactionId: entry.interactionId,
+    });
+  } else if (entry.entryType === RawPerformanceEntryTypeValues.LONGTASK) {
+    return new PerformanceLongTaskTiming({
+      name: entry.name,
+      entryType: rawToPerformanceEntryType(entry.entryType),
+      startTime: entry.startTime,
+      duration: entry.duration,
+    });
+  } else if (entry.entryType === RawPerformanceEntryTypeValues.MARK) {
+    return new PerformanceMark(entry.name, {
+      startTime: entry.startTime,
+    });
+  } else if (entry.entryType === RawPerformanceEntryTypeValues.MEASURE) {
+    return new PerformanceMeasure(entry.name, {
+      startTime: entry.startTime,
+      duration: entry.duration,
     });
   } else {
     return new PerformanceEntry({
@@ -56,10 +74,8 @@ export function rawToPerformanceEntryType(
       return 'measure';
     case RawPerformanceEntryTypeValues.EVENT:
       return 'event';
-    case RawPerformanceEntryTypeValues.UNDEFINED:
-      throw new TypeError(
-        "rawToPerformanceEntryType: UNDEFINED can't be cast to PerformanceEntryType",
-      );
+    case RawPerformanceEntryTypeValues.LONGTASK:
+      return 'longtask';
     default:
       throw new TypeError(
         `rawToPerformanceEntryType: unexpected performance entry type received: ${type}`,
@@ -77,6 +93,8 @@ export function performanceEntryTypeToRaw(
       return RawPerformanceEntryTypeValues.MEASURE;
     case 'event':
       return RawPerformanceEntryTypeValues.EVENT;
+    case 'longtask':
+      return RawPerformanceEntryTypeValues.LONGTASK;
     default:
       // Verify exhaustive check with Flow
       (type: empty);

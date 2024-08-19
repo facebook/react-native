@@ -19,6 +19,8 @@ using namespace facebook::react;
 NSString *const RCTAppearanceColorSchemeLight = @"light";
 NSString *const RCTAppearanceColorSchemeDark = @"dark";
 
+static BOOL sIsAppearancePreferenceSet = NO;
+
 static BOOL sAppearancePreferenceEnabled = YES;
 void RCTEnableAppearancePreference(BOOL enabled)
 {
@@ -29,6 +31,12 @@ static NSString *sColorSchemeOverride = nil;
 void RCTOverrideAppearancePreference(NSString *const colorSchemeOverride)
 {
   sColorSchemeOverride = colorSchemeOverride;
+}
+
+static BOOL sUseKeyWindowForSystemStyle = NO;
+void RCTUseKeyWindowForSystemStyle(BOOL useMainScreen)
+{
+  sUseKeyWindowForSystemStyle = useMainScreen;
 }
 
 NSString *RCTCurrentOverrideAppearancePreference()
@@ -57,7 +65,14 @@ NSString *RCTColorSchemePreference(UITraitCollection *traitCollection)
     return RCTAppearanceColorSchemeLight;
   }
 
-  return appearances[@(traitCollection.userInterfaceStyle)] ?: RCTAppearanceColorSchemeLight;
+  if (appearances[@(traitCollection.userInterfaceStyle)]) {
+    sIsAppearancePreferenceSet = YES;
+    return appearances[@(traitCollection.userInterfaceStyle)];
+  }
+
+  UIUserInterfaceStyle systemStyle = sUseKeyWindowForSystemStyle ? RCTKeyWindow().traitCollection.userInterfaceStyle
+                                                                 : traitCollection.userInterfaceStyle;
+  return appearances[@(systemStyle)] ?: RCTAppearanceColorSchemeLight;
 }
 
 @interface RCTAppearance () <NativeAppearanceSpec>
@@ -109,6 +124,10 @@ RCT_EXPORT_METHOD(setColorScheme : (NSString *)style)
 
 RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSString *, getColorScheme)
 {
+  if (!sIsAppearancePreferenceSet) {
+    UITraitCollection *traitCollection = RCTKeyWindow().traitCollection;
+    _currentColorScheme = RCTColorSchemePreference(traitCollection);
+  }
   return _currentColorScheme;
 }
 

@@ -19,15 +19,15 @@ type MemoryInfoLike = {
 
 // Read-only object with JS memory information. This is returned by the performance.memory API.
 export default class MemoryInfo {
-  _jsHeapSizeLimit: ?number;
-  _totalJSHeapSize: ?number;
-  _usedJSHeapSize: ?number;
+  #jsHeapSizeLimit: ?number;
+  #totalJSHeapSize: ?number;
+  #usedJSHeapSize: ?number;
 
   constructor(memoryInfo: ?MemoryInfoLike) {
     if (memoryInfo != null) {
-      this._jsHeapSizeLimit = memoryInfo.jsHeapSizeLimit;
-      this._totalJSHeapSize = memoryInfo.totalJSHeapSize;
-      this._usedJSHeapSize = memoryInfo.usedJSHeapSize;
+      this.#jsHeapSizeLimit = memoryInfo.jsHeapSizeLimit;
+      this.#totalJSHeapSize = memoryInfo.totalJSHeapSize;
+      this.#usedJSHeapSize = memoryInfo.usedJSHeapSize;
     }
   }
 
@@ -35,20 +35,20 @@ export default class MemoryInfo {
    * The maximum size of the heap, in bytes, that is available to the context
    */
   get jsHeapSizeLimit(): ?number {
-    return this._jsHeapSizeLimit;
+    return this.#jsHeapSizeLimit;
   }
 
   /**
    * The total allocated heap size, in bytes
    */
   get totalJSHeapSize(): ?number {
-    return this._totalJSHeapSize;
+    return this.#totalJSHeapSize;
   }
 
   /**
    * The currently active segment of JS heap, in bytes.
    */
   get usedJSHeapSize(): ?number {
-    return this._usedJSHeapSize;
+    return this.#usedJSHeapSize;
   }
 }

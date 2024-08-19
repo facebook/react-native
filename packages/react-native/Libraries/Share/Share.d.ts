@@ -12,11 +12,13 @@ import {ColorValue} from '../StyleSheet/StyleSheet';
 export type ShareContent =
   | {
       title?: string | undefined;
-      message: string;
+      url: string;
+      message?: string | undefined;
     }
   | {
       title?: string | undefined;
-      url: string;
+      url?: string | undefined;
+      message: string;
     };
 
 export type ShareOptions = {
@@ -40,29 +42,33 @@ export interface ShareStatic {
    * If the user dismissed the dialog, the Promise will still be resolved with action being `Share.dismissedAction`
    * and all the other keys being undefined.
    *
-   * In Android, Returns a Promise which always be resolved with action being `Share.sharedAction`.
+   * In Android, Returns a Promise which always resolves with action being `Share.sharedAction`.
    *
    * ### Content
    *
-   *  - `message` - a message to share
-   *  - `title` - title of the message
-   *
    * #### iOS
    *
-   *  - `url` - an URL to share
+   *  - `url` - a URL to share
+   *  - `message` - a message to share
    *
-   * At least one of URL and message is required.
+   * At least one of `URL` or `message` is required.
+   *
+   * #### Android
+   *
+   * - `title` - title of the message (optional)
+   * - `message` - a message to share (often will include a URL).
    *
    * ### Options
    *
    * #### iOS
    *
-   * - `excludedActivityTypes`
-   * - `tintColor`
+   *  - `subject` - a subject to share via email
+   *  - `excludedActivityTypes`
+   *  - `tintColor`
    *
    * #### Android
    *
-   * - `dialogTitle`
+   *  - `dialogTitle`
    *
    */
   share(content: ShareContent, options?: ShareOptions): Promise<ShareAction>;
