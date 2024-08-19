@@ -93,6 +93,9 @@
 #endif
   RCTBackedTextFieldDelegateAdapter *_textInputDelegateAdapter;
   NSDictionary<NSAttributedStringKey, id> *_defaultTextAttributes;
+#if TARGET_OS_OSX // [macOS
+  BOOL _isUpdatingPlaceholderText;
+#endif // macOS]
 }
 
 #if TARGET_OS_OSX // [macOS
@@ -116,6 +119,9 @@
 
     _textInputDelegateAdapter = [[RCTBackedTextFieldDelegateAdapter alloc] initWithTextField:self];
     _scrollEnabled = YES;
+#if TARGET_OS_OSX // [macOS
+    _isUpdatingPlaceholderText = NO;
+#endif // macOS]
   }
 
   return self;
@@ -361,8 +367,11 @@
   self.attributedPlaceholder = [[NSAttributedString alloc] initWithString:self.placeholder ?: @""
                                                                attributes:[self _placeholderTextAttributes]];
 #else // [macOS
+  // Set _isUpdatingPlaceholderText to manually suppress RCTUITextFieldDelegate's textFieldEndEditing
+  _isUpdatingPlaceholderText = YES;
   self.placeholderAttributedString = [[NSAttributedString alloc] initWithString:self.placeholder ?: @""
 																	 attributes:[self _placeholderTextAttributes]];
+  _isUpdatingPlaceholderText = NO;
 #endif // macOS]
 }
 
@@ -485,10 +494,17 @@
     [delegate textFieldDidChange:self];
   }
 }
-  
+
 - (void)textDidEndEditing:(NSNotification *)notification
 {
-  [super textDidEndEditing:notification];    
+  [super textDidEndEditing:notification];
+
+  // On macOS, setting placeholderAttributedString causes AppKit to call textDidEndEditing.
+  // We don't want this to propagate or else we get unexpected onBlur/onEndEditing events.
+  if (_isUpdatingPlaceholderText) {
+    return;
+  }
+
   id<RCTUITextFieldDelegate> delegate = self.delegate;
   if ([delegate respondsToSelector:@selector(textFieldEndEditing:)]) {
     [delegate textFieldEndEditing:self];
