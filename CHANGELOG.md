@@ -1138,6 +1138,15 @@
 - Fix race condition between A11yManager and UIManager ([f39f34ed82](https://github.com/facebook/react-native/commit/f39f34ed82997d0595522a285c3cb8693594e718) by [@cipolleschi](https://github.com/cipolleschi))
 - Fix symbol not found _jump_fcontext with use_frameworks ([a2771ce58a](https://github.com/facebook/react-native/commit/a2771ce58ac221d1ac0de265c1ce571212fbcf83) by [@cipolleschi](https://github.com/cipolleschi))
 
+## v0.72.17
+
+### Fixed
+
+#### iOS specific
+
+- Fix Privacy Manifest file path by providing targets ([da0f8ac060](https://github.com/facebook/react-native/commit/da0f8ac060d853d8229423559c9338646dd11455) by [@siddharthkul](https://github.com/siddharthkul))
+- Handle the case where the file reference doesn't have a path ([b5b3f3c43d](https://github.com/facebook/react-native/commit/b5b3f3c43d02dc552c0884f9cee416c68b6eaea2) by [@robertying](https://github.com/robertying))
+
 ## v0.72.15
 
 ### Added
