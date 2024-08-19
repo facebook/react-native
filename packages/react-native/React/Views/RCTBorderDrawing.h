@@ -65,3 +65,9 @@ RCT_EXTERN UIImage *RCTGetBorderImage(
     RCTBorderColors borderColors,
     CGColorRef backgroundColor,
     BOOL drawToEdge);
+
+/**
+ * Create a CAShapeLayer that contains a path with specified bounds and corner insets without
+ * any affine transformations.
+ */
+RCT_EXTERN CAShapeLayer *RCTCreateMaskLayer(CGRect bounds, RCTCornerInsets cornerInsets);

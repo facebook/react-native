@@ -923,26 +923,40 @@ static void RCTUpdateHoverStyleForView(RCTView *view)
 
 - (void)updateClippingForLayer:(CALayer *)layer
 {
-  CALayer *mask = nil;
-  CGFloat cornerRadius = 0;
-
-  if (self.clipsToBounds) {
-    const RCTCornerRadii cornerRadii = [self cornerRadii];
-    if (RCTCornerRadiiAreEqual(cornerRadii)) {
-      cornerRadius = cornerRadii.topLeft;
-
-    } else {
-      CAShapeLayer *shapeLayer = [CAShapeLayer layer];
-      CGPathRef path =
-          RCTPathCreateWithRoundedRect(self.bounds, RCTGetCornerInsets(cornerRadii, UIEdgeInsetsZero), NULL);
-      shapeLayer.path = path;
-      CGPathRelease(path);
-      mask = shapeLayer;
+    CALayer *mask = nil;
+    CGFloat cornerRadius = 0;
+    
+    if (self.clipsToBounds) {
+        const RCTCornerRadii cornerRadii = [self cornerRadii];
+        if (RCTCornerRadiiAreEqual(cornerRadii)) {
+            cornerRadius = cornerRadii.topLeft;
+            
+        } else {
+            RCTCornerInsets cornerInsets = RCTGetCornerInsets(cornerRadii, UIEdgeInsetsZero);
+            mask = RCTCreateMaskLayer(self.bounds, cornerInsets);
+        }
     }
-  }
-
-  layer.cornerRadius = cornerRadius;
-  layer.mask = mask;
+    
+    layer.cornerRadius = cornerRadius;
+    layer.mask = mask;
+    
+    for (UIView *subview in self.subviews) {
+        if ([subview isKindOfClass:[UIImageView class]]) {
+            const RCTCornerRadii cornerRadii = [self cornerRadii];
+            const UIEdgeInsets borderInsets = [self bordersAsInsets];
+            RCTCornerInsets cornerInsets = RCTGetCornerInsets(cornerRadii, borderInsets);
+                        
+            // If the subview is an image view, we have to apply the mask directly to the image view's layer,
+            // otherwise the image might overflow with the border radius.
+            CGRect pathBounds = subview.bounds;
+            pathBounds.size.width -= borderInsets.left + borderInsets.right;
+            pathBounds.size.height -= borderInsets.top + borderInsets.bottom;
+            pathBounds.origin.x += borderInsets.left;
+            pathBounds.origin.y += borderInsets.top;
+            
+            subview.layer.mask = RCTCreateMaskLayer(pathBounds, cornerInsets);
+        }
+    }
 }
 
 #pragma mark Border Color

@@ -814,7 +814,7 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
       } else {
         RCTCornerInsets cornerInsets =
             RCTGetCornerInsets(RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii), UIEdgeInsetsZero);
-        maskLayer = [self createMaskLayer:self.bounds cornerInsets:cornerInsets];
+        maskLayer = RCTCreateMaskLayer(self.bounds, cornerInsets);
       }
     }
 
@@ -829,7 +829,7 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
 
         // If the subview is an image view, we have to apply the mask directly to the image view's layer,
         // otherwise the image might overflow with the border radius.
-        subview.layer.mask = [self createMaskLayer:subview.bounds cornerInsets:cornerInsets];
+        subview.layer.mask = RCTCreateMaskLayer(subview.bounds, cornerInsets);
       }
     }
   }
@@ -925,15 +925,6 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
 
     _boxShadowLayer.contents = (id)boxShadowImage.CGImage;
   }
-}
-
-- (CAShapeLayer *)createMaskLayer:(CGRect)bounds cornerInsets:(RCTCornerInsets)cornerInsets
-{
-  CGPathRef path = RCTPathCreateWithRoundedRect(bounds, cornerInsets, nil);
-  CAShapeLayer *maskLayer = [CAShapeLayer layer];
-  maskLayer.path = path;
-  CGPathRelease(path);
-  return maskLayer;
 }
 
 - (void)clearExistingGradientLayers

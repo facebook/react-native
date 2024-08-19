@@ -530,3 +530,16 @@ UIImage *RCTGetBorderImage(
 
   return nil;
 }
+
+CAShapeLayer *RCTCreateMaskLayer(CGRect bounds, RCTCornerInsets cornerInsets)
+{
+    CGPathRef path = RCTPathCreateWithRoundedRect(
+                 bounds,
+                 cornerInsets,
+                 nil);
+    CAShapeLayer *maskLayer = [CAShapeLayer layer];
+    maskLayer.path = path;
+    CGPathRelease(path);
+    return maskLayer;
+}
+
