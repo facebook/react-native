@@ -7,6 +7,7 @@
 
 package com.facebook.react.bridge.queue;
 
+import androidx.annotation.Nullable;
 import com.facebook.proguard.annotations.DoNotStrip;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
@@ -60,6 +61,7 @@ public interface MessageQueueThread {
    * Returns the perf counters taken when the framework was started. This method is intended to be
    * used for instrumentation purposes.
    */
+  @Nullable
   @DoNotStrip
   MessageQueueThreadPerfStats getPerfStats();
 
