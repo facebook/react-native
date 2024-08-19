@@ -2180,6 +2180,18 @@
     fast-glob "^3.3.2"
     joi "^17.2.1"
 
+"@react-native-community/cli-config@14.0.1":
+  version "14.0.1"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli-config/-/cli-config-14.0.1.tgz#43b4d6631a39e9b40ff23054031ab2f9c1324476"
+  integrity sha512-yiyBdrsqZmaTtb5XFcfCwFavPagw7UxQVKnRBNVdwQNQHsRqhhPWZ0c7W+sESTMC/L9T0zvr7k4dxZ6TJEqqKQ==
+  dependencies:
+    "@react-native-community/cli-tools" "14.0.1"
+    chalk "^4.1.2"
+    cosmiconfig "^9.0.0"
+    deepmerge "^4.3.0"
+    fast-glob "^3.3.2"
+    joi "^17.2.1"
+
 "@react-native-community/cli-debugger-ui@14.0.0":
   version "14.0.0"
   resolved "https://registry.yarnpkg.com/@react-native-community/cli-debugger-ui/-/cli-debugger-ui-14.0.0.tgz#ef02d531e70b86265d39773abc3b58ab5cb8f4b8"
@@ -2233,6 +2245,18 @@
     fast-xml-parser "^4.2.4"
     ora "^5.4.1"
 
+"@react-native-community/cli-platform-apple@14.0.1":
+  version "14.0.1"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-apple/-/cli-platform-apple-14.0.1.tgz#38fe974784d4bc492e892034af10d30b75801203"
+  integrity sha512-KY7zlDpzKfVzBuHWde7EXKgdkFFYl5Lp1o1ro8ie83sDzwSVTSyd5Pmb351SJABJuNFSuTzbyyMiuG+1BQ4hyg==
+  dependencies:
+    "@react-native-community/cli-tools" "14.0.1"
+    chalk "^4.1.2"
+    execa "^5.0.0"
+    fast-glob "^3.3.2"
+    fast-xml-parser "^4.2.4"
+    ora "^5.4.1"
+
 "@react-native-community/cli-platform-ios@14.0.0", "@react-native-community/cli-platform-ios@^14.0.0":
   version "14.0.0"
   resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-ios/-/cli-platform-ios-14.0.0.tgz#7c7c393a13415bf61aaad82f1a3583c30afb110e"
@@ -2271,10 +2295,33 @@
     shell-quote "^1.7.3"
     sudo-prompt "^9.0.0"
 
+"@react-native-community/cli-tools@14.0.1":
+  version "14.0.1"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli-tools/-/cli-tools-14.0.1.tgz#785ef342b6b02ccf86d616c8266ca9b3cd98e5b6"
+  integrity sha512-4tksgruPliZlQmO6kfX1gUBNvDChoOcZgGt9r4KvvyFelCR3VUWEoJkvhKlDlSoaEtzBO2L426CTnFK4ED/yBQ==
+  dependencies:
+    appdirsjs "^1.2.4"
+    chalk "^4.1.2"
+    execa "^5.0.0"
+    find-up "^5.0.0"
+    mime "^2.4.1"
+    open "^6.2.0"
+    ora "^5.4.1"
+    semver "^7.5.2"
+    shell-quote "^1.7.3"
+    sudo-prompt "^9.0.0"
+
 "@react-native-community/cli-types@14.0.0":
   version "14.0.0"
   resolved "https://registry.yarnpkg.com/@react-native-community/cli-types/-/cli-types-14.0.0.tgz#6cde2d2a93edd9b13238171edef30352d37e8dd2"
   integrity sha512-CMUevd1pOWqvmvutkUiyQT2lNmMHUzSW7NKc1xvHgg39NjbS58Eh2pMzIUP85IwbYNeocfYc3PH19vA/8LnQtg==
+  dependencies:
+    joi "^17.2.1"
+
+"@react-native-community/cli-types@14.0.1":
+  version "14.0.1"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli-types/-/cli-types-14.0.1.tgz#94306d9ee694a98c8d4de1cd1af6259b6a00d7f1"
+  integrity sha512-Yk6TLdkSQHaSG9NlcMsHtX7ZYuHaOrZ7K/3zBbpabWUm006blND5NKw8YQuk9guqK7i/PMSUKJUq1NbF7bGjDA==
   dependencies:
     joi "^17.2.1"
 
