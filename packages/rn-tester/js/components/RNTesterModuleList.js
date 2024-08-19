@@ -144,15 +144,6 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     fontSize: 11,
   },
-  row: {
-    justifyContent: 'center',
-    paddingHorizontal: 15,
-    paddingVertical: 12,
-    marginVertical: Platform.select({ios: 4, android: 8}),
-    marginHorizontal: 15,
-    overflow: 'hidden',
-    elevation: 5,
-  },
   topRowStyle: {
     flexDirection: 'row',
     justifyContent: 'space-between',

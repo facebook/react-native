@@ -128,29 +128,9 @@ const RNTesterNavbar = ({
 export const navBarHeight = 65;
 
 const styles = StyleSheet.create({
-  floatContainer: {
-    flex: 1,
-    zIndex: 2,
-    alignItems: 'center',
-  },
   buttonContainer: {
     flex: 1,
     flexDirection: 'row',
-  },
-  floatingButton: {
-    top: -20,
-    width: 50,
-    height: 50,
-    borderRadius: 500,
-    alignContent: 'center',
-    shadowColor: 'black',
-    shadowOffset: {
-      height: 5,
-      width: 0,
-    },
-    shadowOpacity: 0.9,
-    shadowRadius: 10,
-    elevation: 5,
   },
   componentIcon: {
     width: 20,
@@ -165,16 +145,6 @@ const styles = StyleSheet.create({
   activeBar: {
     borderTopWidth: 2,
     borderColor: '#005DFF',
-  },
-  centralBoxCutout: {
-    height: '100%',
-    width: '100%',
-    position: 'absolute',
-    top: 0,
-  },
-  centerBox: {
-    flex: 1,
-    height: navBarHeight,
   },
   navButton: {
     flex: 1,
