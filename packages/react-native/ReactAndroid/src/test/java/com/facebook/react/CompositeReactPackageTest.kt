@@ -11,8 +11,7 @@ import com.facebook.react.bridge.BridgeReactContext
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.uimanager.ViewManager
-import java.util.*
-import org.junit.Assert
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -95,7 +94,7 @@ class CompositeReactPackageTest {
     // Note that there should be no module2 returned.
     val expected: Set<NativeModule> = setOf(moduleNo1, moduleNo3, moduleNo4)
     val actual: Set<NativeModule> = compositeModules.toSet()
-    Assert.assertEquals(expected, actual)
+    assertThat(actual).isEqualTo(expected)
   }
 
   @Test
@@ -127,6 +126,6 @@ class CompositeReactPackageTest {
     // Note that there should be no managerNo2 returned.
     val expected: Set<ViewManager<*, *>> = setOf(managerNo1, managerNo3, managerNo4)
     val actual: Set<ViewManager<*, *>> = compositeModules.toSet()
-    Assert.assertEquals(expected, actual)
+    assertThat(actual).isEqualTo(expected)
   }
 }
