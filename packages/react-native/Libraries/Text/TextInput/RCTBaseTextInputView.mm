@@ -36,6 +36,9 @@ static const CGFloat kSingleLineKeyboardBottomOffset = 15.0;
   BOOL _hasInputAccessoryView;
   // [macOS] remove explicit _predictedText ivar declaration
   BOOL _didMoveToWindow;
+#if TARGET_OS_OSX // [macOS avoids duplicating effects of textInputDid(Begin|End)Editing calls
+  BOOL _isCurrentlyEditing;
+#endif // macOS]
 }
 
 #if !TARGET_OS_OSX // [macOS]
@@ -71,6 +74,9 @@ static const CGFloat kSingleLineKeyboardBottomOffset = 15.0;
   if (self = [super initWithEventDispatcher:bridge.eventDispatcher]) { // [macOS]
     _bridge = bridge;
     _eventDispatcher = bridge.eventDispatcher;
+#if TARGET_OS_OSX // [macOS
+    _isCurrentlyEditing = NO;
+#endif // macOS]
   }
 
   return self;
@@ -446,6 +452,13 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)decoder)
 
 - (void)textInputDidBeginEditing
 {
+#if TARGET_OS_OSX // [macOS consolidate duplicate callbacks
+  if (_isCurrentlyEditing) {
+    return;
+  }
+  _isCurrentlyEditing = YES;
+#endif // macOS]
+
   if (_clearTextOnFocus) {
     self.backedTextInputView.attributedText = [NSAttributedString new];
   }
@@ -474,6 +487,13 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)decoder)
 
 - (void)textInputDidEndEditing
 {
+#if TARGET_OS_OSX // [macOS consolidate duplicate callbacks
+  if (!_isCurrentlyEditing) {
+    return;
+  }
+  _isCurrentlyEditing = NO;
+#endif // macOS]
+
   self.ghostText = nil; // [macOS]
 
   [_eventDispatcher sendTextEventWithType:RCTTextEventTypeEnd
