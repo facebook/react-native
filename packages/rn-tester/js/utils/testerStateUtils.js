@@ -97,7 +97,9 @@ export const getExamplesListWithRecentlyUsed = ({
       },
       {
         key: 'COMPONENTS',
-        data: components,
+        data: components.sort((a, b) =>
+          a.module.title.localeCompare(b.module.title),
+        ),
         title: 'Components',
       },
     ],
@@ -109,7 +111,7 @@ export const getExamplesListWithRecentlyUsed = ({
       },
       {
         key: 'APIS',
-        data: apis,
+        data: apis.sort((a, b) => a.module.title.localeCompare(b.module.title)),
         title: 'APIs',
       },
     ],
