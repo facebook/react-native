@@ -10,7 +10,7 @@ package com.facebook.react.modules.network
 import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets
 import kotlin.math.min
-import org.junit.Assert
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -135,6 +135,6 @@ class ProgressiveStringDecoderTest {
       i += chunkSize
     }
     val actualString = builder.toString()
-    Assert.assertEquals(originalString, actualString)
+    assertThat(actualString).isEqualTo(originalString)
   }
 }

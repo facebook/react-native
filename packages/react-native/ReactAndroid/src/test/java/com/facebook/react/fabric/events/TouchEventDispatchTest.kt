@@ -29,8 +29,8 @@ import com.facebook.react.uimanager.events.TouchEventCoalescingKeyHelper
 import com.facebook.react.uimanager.events.TouchEventType
 import com.facebook.testutils.fakes.FakeBatchEventDispatchedListener
 import com.facebook.testutils.shadows.ShadowSoLoader
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
-import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -509,7 +509,7 @@ class TouchEventDispatchTest {
     val argument = ArgumentCaptor.forClass(WritableMap::class.java)
     verify(uiManager, times(4))
         .receiveEvent(anyInt(), anyInt(), anyString(), anyBoolean(), argument.capture(), anyInt())
-    Assert.assertEquals(startMoveEndExpectedSequence, argument.allValues)
+    assertThat(startMoveEndExpectedSequence).isEqualTo(argument.allValues)
   }
 
   @Test
@@ -520,7 +520,7 @@ class TouchEventDispatchTest {
     val argument = ArgumentCaptor.forClass(WritableMap::class.java)
     verify(uiManager, times(6))
         .receiveEvent(anyInt(), anyInt(), anyString(), anyBoolean(), argument.capture(), anyInt())
-    Assert.assertEquals(startMoveCancelExpectedSequence, argument.allValues)
+    assertThat(startMoveCancelExpectedSequence).isEqualTo(argument.allValues)
   }
 
   @Test
@@ -531,7 +531,7 @@ class TouchEventDispatchTest {
     val argument = ArgumentCaptor.forClass(WritableMap::class.java)
     verify(uiManager, times(6))
         .receiveEvent(anyInt(), anyInt(), anyString(), anyBoolean(), argument.capture(), anyInt())
-    Assert.assertEquals(startPointerMoveUpExpectedSequence, argument.allValues)
+    assertThat(startPointerMoveUpExpectedSequence).isEqualTo(argument.allValues)
   }
 
   private fun createTouchEvent(
