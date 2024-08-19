@@ -12,6 +12,6 @@
 exports.version = {
   major: 0,
   minor: 72,
-  patch: 17,
+  patch: 16,
   prerelease: null,
 };
