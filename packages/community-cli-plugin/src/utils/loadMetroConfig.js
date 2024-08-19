@@ -99,7 +99,7 @@ export default async function loadMetroConfig(
 =================================================================================================
 From React Native 0.73, your project's Metro config should extend '@react-native/metro-config'
 or it will fail to build. Please copy the template at:
-https://github.com/facebook/react-native/blob/main/packages/react-native/template/metro.config.js
+https://github.com/react-native-community/template/blob/main/template/metro.config.js
 This warning will be removed in future (https://github.com/facebook/metro/issues/1018).
 =================================================================================================
     `;

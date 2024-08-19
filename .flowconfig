@@ -1,6 +1,5 @@
 [ignore]
-; Ignore templates for 'react-native init'
-<PROJECT_ROOT>/packages/react-native/template/.*
+; Ignore build cache folder
 <PROJECT_ROOT>/packages/react-native/sdks/.*
 
 ; Ignore the codegen e2e tests
