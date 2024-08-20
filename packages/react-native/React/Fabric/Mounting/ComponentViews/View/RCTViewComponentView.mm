@@ -33,6 +33,7 @@ using namespace facebook::react;
   __weak CALayer *_borderLayer;
   CALayer *_boxShadowLayer;
   CALayer *_filterLayer;
+  CALayer *_backgroundLayer;
   NSMutableArray<CAGradientLayer *> *_gradientLayers;
   BOOL _needsInvalidateLayer;
   BOOL _isJSResponder;
@@ -739,6 +740,8 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
            (*borderMetrics.borderColors.left).getUIColor() != nullptr));
 
   CGColorRef backgroundColor = [_backgroundColor resolvedColorWithTraitCollection:self.traitCollection].CGColor;
+  [_backgroundLayer removeFromSuperlayer];
+  _backgroundLayer = nil;
 
   if (useCoreAnimationBorderRendering) {
     layer.mask = nil;
@@ -749,24 +752,35 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     layer.borderColor = borderColor;
     CGColorRelease(borderColor);
     layer.cornerRadius = (CGFloat)borderMetrics.borderRadii.topLeft;
-
     layer.cornerCurve = CornerCurveFromBorderCurve(borderMetrics.borderCurves.topLeft);
-
     layer.backgroundColor = backgroundColor;
   } else {
     if (!_borderLayer) {
       CALayer *borderLayer = [CALayer new];
-      borderLayer.zPosition = -1024.0f;
+      borderLayer.zPosition = 100;
       borderLayer.frame = layer.bounds;
       borderLayer.magnificationFilter = kCAFilterNearest;
       [layer addSublayer:borderLayer];
       _borderLayer = borderLayer;
+    }
+      
+    if (backgroundColor) {
+      CALayer *backgroundLayer = [CALayer new];
+      backgroundLayer.zPosition = -1024.0f;
+      backgroundLayer.frame = layer.bounds;
+      //      backgroundLayer.magnificationFilter = kCAFilterNearest;
+      [layer addSublayer:backgroundLayer];
+      _backgroundLayer = backgroundLayer;
+      _backgroundLayer.backgroundColor = backgroundColor;
     }
 
     layer.backgroundColor = nil;
     layer.borderWidth = 0;
     layer.borderColor = nil;
     layer.cornerRadius = 0;
+      
+    UIColor *transparentColor = [UIColor clearColor];
+    CGColorRef transparentBackgroundColor = [transparentColor resolvedColorWithTraitCollection:self.traitCollection].CGColor;
 
     RCTBorderColors borderColors = RCTCreateRCTBorderColorsFromBorderColors(borderMetrics.borderColors);
     UIImage *image = RCTGetBorderImage(
@@ -775,9 +789,9 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
         RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii),
         RCTUIEdgeInsetsFromEdgeInsets(borderMetrics.borderWidths),
         borderColors,
-        backgroundColor,
+        transparentBackgroundColor,
         self.clipsToBounds);
-
+      
     RCTReleaseRCTBorderColors(borderColors);
 
     if (image == nil) {
@@ -811,27 +825,18 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
       if (borderMetrics.borderRadii.isUniform()) {
         // In this case we can simply use `cornerRadius` exclusively.
         cornerRadius = borderMetrics.borderRadii.topLeft;
+          
       } else {
         RCTCornerInsets cornerInsets =
             RCTGetCornerInsets(RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii), UIEdgeInsetsZero);
         maskLayer = RCTCreateMaskLayer(self.bounds, cornerInsets);
       }
+    } else if (borderMetrics.borderRadii.isUniform()) {
+        _backgroundLayer.cornerRadius = borderMetrics.borderRadii.topLeft;
     }
 
     layer.cornerRadius = cornerRadius;
     layer.mask = maskLayer;
-
-    for (UIView *subview in self.subviews) {
-      if ([subview isKindOfClass:[UIImageView class]]) {
-        RCTCornerInsets cornerInsets = RCTGetCornerInsets(
-            RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii),
-            RCTUIEdgeInsetsFromEdgeInsets(borderMetrics.borderWidths));
-
-        // If the subview is an image view, we have to apply the mask directly to the image view's layer,
-        // otherwise the image might overflow with the border radius.
-        subview.layer.mask = RCTCreateMaskLayer(subview.bounds, cornerInsets);
-      }
-    }
   }
 
   [_filterLayer removeFromSuperlayer];
