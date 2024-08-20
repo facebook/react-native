@@ -161,8 +161,9 @@ Float TextInputShadowNode::baseline(
   auto top = YGNodeLayoutGetBorder(&yogaNode_, YGEdgeTop) +
       YGNodeLayoutGetPadding(&yogaNode_, YGEdgeTop);
 
+  AttributedStringBox attributedStringBox{std::move(attributedString)};
   return textLayoutManager_->baseline(
-             attributedString,
+             attributedStringBox,
              getConcreteProps().getEffectiveParagraphAttributes(),
              size) +
       top;

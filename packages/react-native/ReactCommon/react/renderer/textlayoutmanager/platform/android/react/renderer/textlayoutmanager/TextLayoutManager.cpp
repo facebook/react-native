@@ -100,7 +100,7 @@ TextMeasurement TextLayoutManager::measure(
     const AttributedStringBox& attributedStringBox,
     const ParagraphAttributes& paragraphAttributes,
     const TextLayoutContext& layoutContext,
-    LayoutConstraints layoutConstraints) const {
+    const LayoutConstraints& layoutConstraints) const {
   auto& attributedString = attributedStringBox.getValue();
 
   auto measurement = textMeasureCache_.get(
@@ -128,7 +128,7 @@ TextMeasurement TextLayoutManager::measure(
 TextMeasurement TextLayoutManager::measureCachedSpannableById(
     int64_t cacheId,
     const ParagraphAttributes& paragraphAttributes,
-    LayoutConstraints layoutConstraints) const {
+    const LayoutConstraints& layoutConstraints) const {
   auto env = Environment::current();
   auto attachmentPositions = env->NewFloatArray(0);
   auto minimumSize = layoutConstraints.minimumSize;
@@ -162,9 +162,13 @@ TextMeasurement TextLayoutManager::measureCachedSpannableById(
 }
 
 LinesMeasurements TextLayoutManager::measureLines(
-    const AttributedString& attributedString,
+    const AttributedStringBox& attributedStringBox,
     const ParagraphAttributes& paragraphAttributes,
-    Size size) const {
+    const Size& size) const {
+  react_native_assert(
+      attributedStringBox.getMode() == AttributedStringBox::Mode::Value);
+  const auto& attributedString = attributedStringBox.getValue();
+
   auto lineMeasurements = lineMeasureCache_.get(
       {attributedString, paragraphAttributes, size},
       [&](const LineMeasureCacheKey& /*key*/) {
@@ -210,10 +214,11 @@ LinesMeasurements TextLayoutManager::measureLines(
 }
 
 Float TextLayoutManager::baseline(
-    AttributedString attributedString,
-    ParagraphAttributes paragraphAttributes,
-    Size size) const {
-  auto lines = this->measureLines(attributedString, paragraphAttributes, size);
+    const AttributedStringBox& attributedStringBox,
+    const ParagraphAttributes& paragraphAttributes,
+    const Size& size) const {
+  auto lines =
+      this->measureLines(attributedStringBox, paragraphAttributes, size);
 
   if (!lines.empty()) {
     return lines[0].ascender;
@@ -223,17 +228,21 @@ Float TextLayoutManager::baseline(
 }
 
 TextMeasurement TextLayoutManager::doMeasure(
-    AttributedString attributedString,
+    const AttributedString& attributedString,
     const ParagraphAttributes& paragraphAttributes,
-    LayoutConstraints layoutConstraints) const {
-  layoutConstraints.maximumSize.height = std::numeric_limits<Float>::infinity();
-
+    const LayoutConstraints& layoutConstraints) const {
   const int attachmentCount = countAttachments(attributedString);
   auto env = Environment::current();
   auto attachmentPositions = env->NewFloatArray(attachmentCount * 2);
 
   auto minimumSize = layoutConstraints.minimumSize;
   auto maximumSize = layoutConstraints.maximumSize;
+
+  // We assume max height will have no effect on measurement, so we override it
+  // with a constant value with no constraints, to enable cache reuse later down
+  // in the stack.
+  // TODO: This is suss, and not at the right layer
+  maximumSize.height = std::numeric_limits<Float>::infinity();
 
   auto attributedStringMap = toMapBuffer(attributedString);
   auto paragraphAttributesMap = toMapBuffer(paragraphAttributes);
