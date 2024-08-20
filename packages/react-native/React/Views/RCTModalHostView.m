@@ -119,6 +119,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
   if (_isPresented) {
     [_delegate dismissModalHostView:self withViewController:_modalViewController animated:[self hasAnimationType]];
     _isPresented = NO;
+    [self setVisible:NO];
   }
 }
 
