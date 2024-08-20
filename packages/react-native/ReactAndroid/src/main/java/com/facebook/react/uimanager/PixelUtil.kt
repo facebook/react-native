@@ -67,4 +67,7 @@ public object PixelUtil {
   @JvmStatic
   public fun getDisplayMetricDensity(): Float =
       DisplayMetricsHolder.getWindowDisplayMetrics().density
+
+  /** Convert from PX (Int) to DP (Double) */
+  public fun Int.pxToDp(): Double = toDIPFromPixel(this.toFloat()).toDouble()
 }
