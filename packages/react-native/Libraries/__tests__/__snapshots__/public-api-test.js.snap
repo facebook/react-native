@@ -6459,7 +6459,6 @@ exports[`public API should not change unintentionally Libraries/NativeComponent/
 "declare export function setRuntimeConfigProvider(
   runtimeConfigProvider: (name: string) => ?{
     native: boolean,
-    strict: boolean,
     verify: boolean,
   }
 ): void;
@@ -6501,11 +6500,6 @@ exports[`public API should not change unintentionally Libraries/NativeComponent/
       type: \\"unequal\\",
       path: Array<string>,
       nativeValue: mixed,
-      staticValue: mixed,
-    }
-  | {
-      type: \\"unexpected\\",
-      path: Array<string>,
       staticValue: mixed,
     };
 export type ValidationResult = ValidResult | InvalidResult;
@@ -9679,6 +9673,11 @@ declare export default typeof stringifySafe;
 "
 `;
 
+exports[`public API should not change unintentionally Libraries/Utilities/stringifyViewConfig.js 1`] = `
+"declare export default function stringifyViewConfig(viewConfig: any): string;
+"
+`;
+
 exports[`public API should not change unintentionally Libraries/Utilities/useColorScheme.js 1`] = `
 "declare export default function useColorScheme(): ?ColorSchemeName;
 "
@@ -9703,19 +9702,6 @@ exports[`public API should not change unintentionally Libraries/Utilities/useWin
 "declare export default function useWindowDimensions():
   | DisplayMetrics
   | DisplayMetricsAndroid;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/Utilities/verifyComponentAttributeEquivalence.js 1`] = `
-"declare export default function verifyComponentAttributeEquivalence(
-  nativeViewConfig: ViewConfig,
-  staticViewConfig: ViewConfig
-): void;
-declare export function getConfigWithoutViewProps(
-  viewConfig: ViewConfig,
-  propName: string
-): { ... };
-declare export function stringifyViewConfig(viewConfig: any): string;
 "
 `;
 

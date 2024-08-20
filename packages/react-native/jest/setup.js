@@ -392,10 +392,6 @@ jest
   .mock('../Libraries/ReactNative/requireNativeComponent', () => {
     return jest.requireActual('./mockNativeComponent');
   })
-  .mock(
-    '../Libraries/Utilities/verifyComponentAttributeEquivalence',
-    () => function () {},
-  )
   .mock('../Libraries/Vibration/Vibration', () => ({
     vibrate: jest.fn(),
     cancel: jest.fn(),
