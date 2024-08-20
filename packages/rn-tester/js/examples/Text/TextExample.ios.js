@@ -596,9 +596,10 @@ const examples = [
   },
   {
     title: 'Background Color and Border Width',
+    name: 'background-border-width',
     render: function (): React.Node {
       return (
-        <>
+        <View testID="background-border-width">
           <Text
             style={{
               backgroundColor: '#F000F0',
@@ -611,7 +612,6 @@ const examples = [
               backgroundColor: '#F000F0',
               borderRadius: 10,
               padding: 10,
-              marginBottom: 10,
               marginTop: 10,
             }}>
             Text with background color and uniform borderRadii
@@ -625,7 +625,6 @@ const examples = [
               borderBottomLeftRadius: 10,
               padding: 10,
               marginTop: 10,
-              marginBottom: 10,
             }}>
             Text with background color and non-uniform borders
           </Text>
@@ -639,7 +638,6 @@ const examples = [
               borderBottomLeftRadius: 10,
               padding: 10,
               marginTop: 10,
-              marginBottom: 10,
             }}>
             Text with borderWidth
           </Text>
@@ -650,10 +648,11 @@ const examples = [
               borderColor: 'blue',
               borderRadius: 10,
               padding: 10,
+              marginTop: 10,
             }}>
             Text with background AND borderWidth
           </Text>
-        </>
+        </View>
       );
     },
   },
