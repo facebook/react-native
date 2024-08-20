@@ -70,19 +70,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: 15,
     paddingVertical: 12,
-    marginVertical: Platform.select({ios: 4, android: 8}),
-    marginHorizontal: 15,
-    overflow: 'hidden',
-    elevation: 5,
-    backgroundColor: Platform.select({ios: '#FFFFFF', android: '#F3F8FF'}),
+    marginVertical: 4,
+    marginHorizontal: 16,
+    experimental_boxShadow: '0 2px 4px -1px rgba(0, 0, 0, 0.25)',
+    borderRadius: 8,
   },
   descriptionText: {
     fontSize: 12,
     lineHeight: 20,
     marginBottom: 5,
-  },
-  pressed: {
-    elevation: 3,
   },
   topRowStyle: {
     flexDirection: 'row',
