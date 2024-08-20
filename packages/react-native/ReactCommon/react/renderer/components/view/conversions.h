@@ -720,16 +720,24 @@ inline void fromRawValue(
     result = Cursor::Alias;
     return;
   }
+  if (stringValue == "all-scroll") {
+    result = Cursor::AllScroll;
+    return;
+  }
   if (stringValue == "auto") {
     result = Cursor::Auto;
     return;
   }
+  if (stringValue == "cell") {
+    result = Cursor::Cell;
+    return;
+  }
   if (stringValue == "col-resize") {
-    result = Cursor::ColumnResize;
+    result = Cursor::ColResize;
     return;
   }
   if (stringValue == "context-menu") {
-    result = Cursor::ContextualMenu;
+    result = Cursor::ContextMenu;
     return;
   }
   if (stringValue == "copy") {
@@ -744,12 +752,12 @@ inline void fromRawValue(
     result = Cursor::Default;
     return;
   }
-  if (stringValue == "disappearing-item") {
-    result = Cursor::DisappearingItem;
+  if (stringValue == "e-resize") {
+    result = Cursor::EResize;
     return;
   }
-  if (stringValue == "e-resize") {
-    result = Cursor::EastResize;
+  if (stringValue == "ew-resize") {
+    result = Cursor::EWResize;
     return;
   }
   if (stringValue == "grab") {
@@ -760,12 +768,44 @@ inline void fromRawValue(
     result = Cursor::Grabbing;
     return;
   }
+  if (stringValue == "help") {
+    result = Cursor::Help;
+    return;
+  }
+  if (stringValue == "move") {
+    result = Cursor::Move;
+    return;
+  }
   if (stringValue == "n-resize") {
-    result = Cursor::NorthResize;
+    result = Cursor::NResize;
+    return;
+  }
+  if (stringValue == "ne-resize") {
+    result = Cursor::NEResize;
+    return;
+  }
+  if (stringValue == "nesw-resize") {
+    result = Cursor::NESWResize;
+    return;
+  }
+  if (stringValue == "ns-resize") {
+    result = Cursor::NSResize;
+    return;
+  }
+  if (stringValue == "nw-resize") {
+    result = Cursor::NWResize;
+    return;
+  }
+  if (stringValue == "nwse-resize") {
+    result = Cursor::NWSEResize;
     return;
   }
   if (stringValue == "no-drop") {
     result = Cursor::NoDrop;
+    return;
+  }
+  if (stringValue == "none") {
+    result = Cursor::None;
     return;
   }
   if (stringValue == "not-allowed") {
@@ -776,24 +816,54 @@ inline void fromRawValue(
     result = Cursor::Pointer;
     return;
   }
+  if (stringValue == "progress") {
+    result = Cursor::Progress;
+    return;
+  }
   if (stringValue == "row-resize") {
     result = Cursor::RowResize;
     return;
   }
   if (stringValue == "s-resize") {
-    result = Cursor::SouthResize;
+    result = Cursor::SResize;
+    return;
+  }
+  if (stringValue == "se-resize") {
+    result = Cursor::SEResize;
+    return;
+  }
+  if (stringValue == "sw-resize") {
+    result = Cursor::SWResize;
     return;
   }
   if (stringValue == "text") {
     result = Cursor::Text;
     return;
   }
+  if (stringValue == "url") {
+    result = Cursor::Url;
+    return;
+  }
+  // [macOS
   if (stringValue == "vertical-text") {
     result = Cursor::VerticalText;
     return;
   }
+  // macOS]
   if (stringValue == "w-resize") {
-    result = Cursor::WestResize;
+    result = Cursor::WResize;
+    return;
+  }
+  if (stringValue == "wait") {
+    result = Cursor::Wait;
+    return;
+  }
+  if (stringValue == "zoom-in") {
+    result = Cursor::ZoomIn;
+    return;
+  }
+  if (stringValue == "zoom-out") {
+    result = Cursor::ZoomOut;
     return;
   }
   LOG(ERROR) << "Could not parse Cursor:" << stringValue;

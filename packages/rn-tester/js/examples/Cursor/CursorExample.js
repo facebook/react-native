@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'blue',
   },
   pointer: {
-    cursor: 'alias',
+    cursor: 'pointer',
   },
   row: {
     flexDirection: 'row',
@@ -104,61 +104,62 @@ function CursorExampleViewFlattening() {
 }
 
 // [macOS
+
+function BoxWithCursor({cursor}) {
+  return (
+    <View style={{cursor, padding: 10, borderWidth: 1}}>
+      <Text style={{fontSize: 11}}>{cursor}</Text>
+    </View>
+  );
+}
+
 function CursorExampleMacOS() {
+  const cursors = [
+    'auto',
+    'alias',
+    'all-scroll',
+    'cell',
+    'col-resize',
+    'context-menu',
+    'copy',
+    'crosshair',
+    'default',
+    'e-resize',
+    'ew-resize',
+    'grab',
+    'grabbing',
+    'help',
+    'move',
+    'ne-resize',
+    'nesw-resize',
+    'n-resize',
+    'ns-resize',
+    'nw-resize',
+    'nwse-resize',
+    'no-drop',
+    'none',
+    'not-allowed',
+    'pointer',
+    'progress',
+    'row-resize',
+    's-resize',
+    'se-resize',
+    'sw-resize',
+    'text',
+    'url',
+    'vertical-text',
+    'w-resize',
+    'wait',
+    'zoom-in',
+    'zoom-out',
+  ];
+
   return (
     <View style={styles.row}>
       <>
-        <View style={{cursor: 'auto', padding: 10}}>
-          <Text style={{fontSize: 11}}>auto</Text>
-        </View>
-        <View style={{cursor: 'default', padding: 10}}>
-          <Text style={{fontSize: 11}}>default</Text>
-        </View>
-        <View style={{cursor: 'context-menu', padding: 10}}>
-          <Text style={{fontSize: 11}}>context-menu</Text>
-        </View>
-        <View style={{cursor: 'pointer', padding: 10}}>
-          <Text style={{fontSize: 11}}>pointer</Text>
-        </View>
-        <View style={{cursor: 'text', padding: 10}}>
-          <Text style={{fontSize: 11}}>text</Text>
-        </View>
-        <View style={{cursor: 'vertical-text', padding: 10}}>
-          <Text style={{fontSize: 11}}>vertical-text</Text>
-        </View>
-        <View style={{cursor: 'alias', padding: 10}}>
-          <Text style={{fontSize: 11}}>alias</Text>
-        </View>
-        <View style={{cursor: 'copy', padding: 10}}>
-          <Text style={{fontSize: 11}}>copy</Text>
-        </View>
-        <View style={{cursor: 'not-allowed', padding: 10}}>
-          <Text style={{fontSize: 11}}>not-allowed</Text>
-        </View>
-        <View style={{cursor: 'grab', padding: 10}}>
-          <Text style={{fontSize: 11}}>grab</Text>
-        </View>
-        <View style={{cursor: 'grabbing', padding: 10}}>
-          <Text style={{fontSize: 11}}>grabbing</Text>
-        </View>
-        <View style={{cursor: 'col-resize', padding: 10}}>
-          <Text style={{fontSize: 11}}>col-resize</Text>
-        </View>
-        <View style={{cursor: 'row-resize', padding: 10}}>
-          <Text style={{fontSize: 11}}>row-resize</Text>
-        </View>
-        <View style={{cursor: 'n-resize', padding: 10}}>
-          <Text style={{fontSize: 11}}>n-resize</Text>
-        </View>
-        <View style={{cursor: 'e-resize', padding: 10}}>
-          <Text style={{fontSize: 11}}>e-resize</Text>
-        </View>
-        <View style={{cursor: 's-resize', padding: 10}}>
-          <Text style={{fontSize: 11}}>s-resize</Text>
-        </View>
-        <View style={{cursor: 'w-resize', padding: 10}}>
-          <Text style={{fontSize: 11}}>w-resize</Text>
-        </View>
+        {cursors.map(cursor => (
+          <BoxWithCursor key={cursor} cursor={cursor} />
+        ))}
       </>
     </View>
   );
@@ -188,7 +189,8 @@ exports.examples = [
   // [macOS
   {
     title: 'macOS Cursors',
-    description: 'macOS supports many more cursors',
+    description:
+      'macOS supports many more cursors. Unsupported cursors show the system cursor',
     render: CursorExampleMacOS,
   },
   // macOS]

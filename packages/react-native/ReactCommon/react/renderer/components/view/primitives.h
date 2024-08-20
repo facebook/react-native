@@ -91,30 +91,45 @@ enum class BorderCurve : uint8_t { Circular, Continuous };
 
 enum class BorderStyle : uint8_t { Solid, Dotted, Dashed };
 
-// [macOS [visionOS]
-enum class Cursor : uint8_t { 
+enum class Cursor : uint8_t {
   Auto,
   Alias,
-  ColumnResize,
-  ContextualMenu,
+  AllScroll,
+  Cell,
+  ColResize,
+  ContextMenu,
   Copy,
   Crosshair,
   Default,
-  DisappearingItem,
-  EastResize,
+  EResize,
+  EWResize,
   Grab,
   Grabbing,
-  NorthResize,
+  Help,
+  Move,
+  NEResize,
+  NESWResize,
+  NResize,
+  NSResize,
+  NWResize,
+  NWSEResize,
   NoDrop,
+  None,
   NotAllowed,
   Pointer,
+  Progress,
   RowResize,
-  SouthResize,
+  SResize,
+  SEResize,
+  SWResize,
   Text,
-  VerticalText,
-  WestResize,
+  Url,
+  VerticalText, // [macOS]
+  WResize,
+  Wait,
+  ZoomIn,
+  ZoomOut,
 };
-// macOS] [visionOS]
 
 enum class LayoutConformance : uint8_t { Undefined, Classic, Strict };
 

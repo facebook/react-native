@@ -29,26 +29,43 @@ type AnimatableStringValue = string | Animated.AnimatedNode;
 
 // [macOS
 export type CursorValue =
-  | 'alias'
   | 'auto'
+  | 'alias'
+  | 'all-scroll'
+  | 'cell'
   | 'col-resize'
   | 'context-menu'
   | 'copy'
   | 'crosshair'
   | 'default'
-  | 'disappearing-item'
   | 'e-resize'
+  | 'ew-resize'
   | 'grab'
   | 'grabbing'
+  | 'help'
+  | 'move'
+  | 'ne-resize'
+  | 'nesw-resize'
   | 'n-resize'
+  | 'ns-resize'
+  | 'nw-resize'
+  | 'nwse-resize'
   | 'no-drop'
+  | 'none'
   | 'not-allowed'
   | 'pointer'
+  | 'progress'
   | 'row-resize'
   | 's-resize'
+  | 'se-resize'
+  | 'sw-resize'
   | 'text'
+  | 'url'
   | 'vertical-text'
-  | 'w-resize';
+  | 'w-resize'
+  | 'wait'
+  | 'zoom-in'
+  | 'zoom-out';
 // macOS]
 
 /**

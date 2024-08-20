@@ -552,34 +552,51 @@ RCT_ENUM_CONVERTER(
     integerValue)
 #endif // [macOS]
 
-// [macOS [visionOS]
+// [macOS
 RCT_ENUM_CONVERTER(
     RCTCursor,
     (@{
-      @"alias" : @(RCTCursorAlias),
       @"auto" : @(RCTCursorAuto),
-      @"col-resize" : @(RCTCursorColumnResize),
-      @"context-menu" : @(RCTCursorContextualMenu),
+      @"alias" : @(RCTCursorAlias),
+      @"all-scroll" : @(RCTCursorAllScroll),
+      @"cell" : @(RCTCursorCell),
+      @"col-resize" : @(RCTCursorColResize),
+      @"context-menu" : @(RCTCursorContextMenu),
       @"copy" : @(RCTCursorCopy),
       @"crosshair" : @(RCTCursorCrosshair),
       @"default" : @(RCTCursorDefault),
-      @"disappearing-item" : @(RCTCursorDisappearingItem),
-      @"e-resize" : @(RCTCursorEastResize),
+      @"e-resize" : @(RCTCursorEResize),
+      @"ew-resize" : @(RCTCursorEWResize),
       @"grab" : @(RCTCursorGrab),
       @"grabbing" : @(RCTCursorGrabbing),
-      @"n-resize" : @(RCTCursorNorthResize),
+      @"help" : @(RCTCursorHelp),
+      @"move" : @(RCTCursorMove),
+      @"ne-resize" : @(RCTCursorNEResize),
+      @"nesw-resize" : @(RCTCursorNESWResize),
+      @"n-resize" : @(RCTCursorNResize),
+      @"ns-resize" : @(RCTCursorNSResize),
+      @"nw-resize" : @(RCTCursorNWResize),
+      @"nwse-resize" : @(RCTCursorNWSEResize),
       @"no-drop" : @(RCTCursorNoDrop),
+      @"none" : @(RCTCursorNone),
       @"not-allowed" : @(RCTCursorNotAllowed),
       @"pointer" : @(RCTCursorPointer),
+      @"progress" : @(RCTCursorProgress),
       @"row-resize" : @(RCTCursorRowResize),
-      @"s-resize" : @(RCTCursorSouthResize),
+      @"s-resize" : @(RCTCursorSResize),
+      @"se-resize" : @(RCTCursorSEResize),
+      @"sw-resize" : @(RCTCursorSWResize),
       @"text" : @(RCTCursorText),
+      @"url" : @(RCTCursorUrl),
       @"vertical-text" : @(RCTCursorVerticalText),
-      @"w-resize" : @(RCTCursorWestResize),
+      @"w-resize" : @(RCTCursorWResize),
+      @"wait" : @(RCTCursorWait),
+      @"zoom-in" : @(RCTCursorZoomIn),
+      @"zoom-out" : @(RCTCursorZoomOut),
     }),
     RCTCursorAuto,
     integerValue)
-// macOS] [visionOS]
+// macOS]
 
 #if TARGET_OS_OSX // [macOS
 RCT_MULTI_ENUM_CONVERTER(NSTextCheckingTypes, (@{

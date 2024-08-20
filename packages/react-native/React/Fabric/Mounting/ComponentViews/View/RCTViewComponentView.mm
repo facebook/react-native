@@ -14,7 +14,7 @@
 #import <React/RCTAssert.h>
 #import <React/RCTBorderDrawing.h>
 #import <React/RCTConversions.h>
-#import <React/RCTUtils.h> // [macOS]
+#import <React/RCTCursor.h> // [macOS]
 #import <React/RCTLocalizedString.h>
 #import <react/renderer/components/view/ViewComponentDescriptor.h>
 #import <react/renderer/components/view/ViewEventEmitter.h>
@@ -107,7 +107,7 @@ using namespace facebook::react;
   [self discardCursorRects];
   if (_props->cursor != Cursor::Auto)
   {
-    NSCursor *cursor = NSCursorFromCursor(_props->cursor);
+    NSCursor *cursor = NSCursorFromRCTCursor(RCTCursorFromCursor(_props->cursor));
     [self addCursorRect:self.bounds cursor:cursor];
   }
 }
@@ -611,53 +611,86 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
 }
 
 #if TARGET_OS_OSX // [macOS
-  static NSCursor *NSCursorFromCursor(Cursor cursor)
+static RCTCursor RCTCursorFromCursor(Cursor cursor)
 {
   switch (cursor) {
     case Cursor::Auto:
-      return [NSCursor arrowCursor];
+      return RCTCursorAuto;
     case Cursor::Alias:
-      return [NSCursor dragLinkCursor];
-    case Cursor::ColumnResize:
-      return [NSCursor resizeLeftRightCursor];
-    case Cursor::ContextualMenu:
-      return [NSCursor contextualMenuCursor];
+      return RCTCursorAlias;
+    case Cursor::AllScroll:
+      return RCTCursorAllScroll;
+    case Cursor::Cell:
+      return RCTCursorCell;
+    case Cursor::ColResize:
+      return RCTCursorColResize;
+    case Cursor::ContextMenu:
+      return RCTCursorContextMenu;
     case Cursor::Copy:
-      return [NSCursor dragCopyCursor];
+      return RCTCursorCopy;
     case Cursor::Crosshair:
-      return [NSCursor crosshairCursor];
+      return RCTCursorCrosshair;
     case Cursor::Default:
-      return [NSCursor arrowCursor];
-    case Cursor::DisappearingItem:
-      return [NSCursor disappearingItemCursor];
-    case Cursor::EastResize:
-      return [NSCursor resizeRightCursor];
+      return RCTCursorDefault;
+    case Cursor::EResize:
+      return RCTCursorEResize;
+    case Cursor::EWResize:
+      return RCTCursorEWResize;
     case Cursor::Grab:
-      return [NSCursor openHandCursor];
+      return RCTCursorGrab;
     case Cursor::Grabbing:
-      return [NSCursor closedHandCursor];
-    case Cursor::NorthResize:
-      return [NSCursor resizeUpCursor];
+      return RCTCursorGrabbing;
+    case Cursor::Help:
+      return RCTCursorHelp;
+    case Cursor::Move:
+      return RCTCursorMove;
+    case Cursor::NEResize:
+      return RCTCursorNEResize;
+    case Cursor::NESWResize:
+      return RCTCursorNESWResize;
+    case Cursor::NResize:
+      return RCTCursorNResize;
+    case Cursor::NSResize:
+      return RCTCursorNSResize;
+    case Cursor::NWResize:
+      return RCTCursorNWResize;
+    case Cursor::NWSEResize:
+      return RCTCursorNWSEResize;
     case Cursor::NoDrop:
-      return [NSCursor operationNotAllowedCursor];
+      return RCTCursorNoDrop;
+    case Cursor::None:
+      return RCTCursorNone;
     case Cursor::NotAllowed:
-      return [NSCursor operationNotAllowedCursor];
+      return RCTCursorNotAllowed;
     case Cursor::Pointer:
-      return [NSCursor pointingHandCursor];
+      return RCTCursorPointer;
+    case Cursor::Progress:
+      return RCTCursorProgress;
     case Cursor::RowResize:
-      return [NSCursor resizeUpDownCursor];
-    case Cursor::SouthResize:
-      return [NSCursor resizeDownCursor];
+      return RCTCursorRowResize;
+    case Cursor::SResize:
+      return RCTCursorSResize;
+    case Cursor::SEResize:
+      return RCTCursorSEResize;
+    case Cursor::SWResize:
+      return RCTCursorSWResize;
     case Cursor::Text:
-      return [NSCursor IBeamCursor];
+      return RCTCursorText;
+    case Cursor::Url:
+      return RCTCursorUrl;
     case Cursor::VerticalText:
-      return [NSCursor IBeamCursorForVerticalLayout];
-    case Cursor::WestResize:
-      return [NSCursor resizeLeftCursor];
+      return RCTCursorVerticalText;
+    case Cursor::WResize:
+      return RCTCursorWResize;
+    case Cursor::Wait:
+      return RCTCursorWait;
+    case Cursor::ZoomIn:
+      return RCTCursorZoomIn;
+    case Cursor::ZoomOut:
+      return RCTCursorZoomOut;
   }
 }
 #endif // macOS]
-
 
 - (void)invalidateLayer
 {
