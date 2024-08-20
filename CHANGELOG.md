@@ -1,17 +1,42 @@
 # Changelog
 
+## v0.75.2
+
+### Added
+
+#### Android specific
+
+- **runtime:** Add support for handling `com.facebook.react.bridge.Dynamic` as parameter for TurboModules ([45cd81706d](https://github.com/facebook/react-native/commit/45cd81706d2c9ef7b792a716298cefa92ca2773a) by [@cortinico](https://github.com/cortinico))
+
+### Changed
+
+#### Android specific
+
+- **ReactRootView:** Replaced `mLastHeight` with `mVisibleViewArea.height()` since mLastHeight value is not getting updated. For `width` we are already using `mVisibleViewArea.width()` ([603eb94dd9](https://github.com/facebook/react-native/commit/603eb94dd934f11ff568a3bd814e310bcbf152e1) by [@shubhamguptadream11](https://github.com/shubhamguptadream11))
+- **ImageSource:** `open` for inheritance ([02d9979c32](https://github.com/facebook/react-native/commit/02d9979c3298ff9c5c4490847f94242d7ef9ea3a) by [@cortinico](https://github.com/cortinico))
+
+### Removed
+
+#### iOS specific
+
+- **RCTBaseTextInputView:** UIReturnKeyDefault ([26aff664c0](https://github.com/facebook/react-native/commit/26aff664c07f129e64e60b42aa0c7eeaa79a93c3) by [@elencho](https://github.com/elencho))
+
+### Fixed
+
+- **codegen:** scripts require `yargs` ([0979921850](https://github.com/facebook/react-native/commit/0979921850b33a8c1abdf9d256138b78a403133a) by [@tido64](https://github.com/tido64))
+
 ## v0.75.1
 
 ### Changed
 
-- Bump Hermes version ([f202e80177](https://github.com/facebook/react-native/commit/f202e801776794ec30b2dc25fe87e52ec77c18ab) by [@cortinico](https://github.com/cortinico))
+- **hermes:** Bump Hermes version ([f202e80177](https://github.com/facebook/react-native/commit/f202e801776794ec30b2dc25fe87e52ec77c18ab) by [@cortinico](https://github.com/cortinico))
 
 ### Removed
 
 #### Android specific
 
-- Gate off % border radii on Android Paper ([bbd5b5e157](https://github.com/facebook/react-native/commit/bbd5b5e1574499478ab0bf3fe9d2a21b02b7fedd) by [@NickGerleman](https://github.com/NickGerleman))
-- Gate off % translate on Android Paper ([0273123dde](https://github.com/facebook/react-native/commit/0273123dde04de72da4ebfeff26b0830eea00745) by [@NickGerleman](https://github.com/NickGerleman))
+- **renderer:** Gate off % border radii on Android Paper ([bbd5b5e157](https://github.com/facebook/react-native/commit/bbd5b5e1574499478ab0bf3fe9d2a21b02b7fedd) by [@NickGerleman](https://github.com/NickGerleman))
+- **renderer:** Gate off % translate on Android Paper ([0273123dde](https://github.com/facebook/react-native/commit/0273123dde04de72da4ebfeff26b0830eea00745) by [@NickGerleman](https://github.com/NickGerleman))
 
 ## v0.75.0
 
