@@ -784,16 +784,13 @@ const textInputExamples: Array<RNTesterModuleExample> = [
             <ExampleTextInput textContentType="birthdate" />
           </WithLabel>
           <WithLabel label="dateTime">
-            <TextInput textContentType="dateTime" style={styles.default} />
+            <ExampleTextInput textContentType="dateTime" />
           </WithLabel>
           <WithLabel label="flightNumber">
-            <TextInput textContentType="flightNumber" style={styles.default} />
+            <ExampleTextInput textContentType="flightNumber" />
           </WithLabel>
           <WithLabel label="shipmentTrackingNumber">
-            <TextInput
-              textContentType="shipmentTrackingNumber"
-              style={styles.default}
-            />
+            <ExampleTextInput textContentType="shipmentTrackingNumber" />
           </WithLabel>
         </View>
       );
