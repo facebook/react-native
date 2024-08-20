@@ -156,7 +156,7 @@ final class ReactInstance {
             nativeModulesMessageQueueThread,
             mJavaTimerManager,
             jsTimerExecutor,
-            new ReactJsExceptionHandlerImpl(nativeModulesMessageQueueThread),
+            new ReactJsExceptionHandlerImpl(exceptionHandler),
             bindingsInstaller,
             isProfiling,
             reactHostInspectorTarget);
@@ -318,25 +318,28 @@ final class ReactInstance {
   }
 
   private class ReactJsExceptionHandlerImpl implements ReactJsExceptionHandler {
-    private final MessageQueueThread mMessageQueueThread;
+    private final QueueThreadExceptionHandler mQueueThreadExceptionHandler;
 
-    ReactJsExceptionHandlerImpl(MessageQueueThread nativeModulesMessageQueueThread) {
-      mMessageQueueThread = nativeModulesMessageQueueThread;
+    ReactJsExceptionHandlerImpl(QueueThreadExceptionHandler queueThreadExceptionHandler) {
+      mQueueThreadExceptionHandler = queueThreadExceptionHandler;
     }
 
     @Override
     public void reportJsException(ParsedError error) {
       JavaOnlyMap data = StackTraceHelper.convertParsedError(error);
 
-      // Simulate async native module method call
-      mMessageQueueThread.runOnQueue(
-          () -> {
-            NativeExceptionsManagerSpec exceptionsManager =
-                (NativeExceptionsManagerSpec)
-                    Assertions.assertNotNull(
-                        mTurboModuleManager.getModule(NativeExceptionsManagerSpec.NAME));
-            exceptionsManager.reportException(data);
-          });
+      try {
+        NativeExceptionsManagerSpec exceptionsManager =
+            (NativeExceptionsManagerSpec)
+                Assertions.assertNotNull(
+                    mTurboModuleManager.getModule(NativeExceptionsManagerSpec.NAME));
+        exceptionsManager.reportException(data);
+      } catch (Exception e) {
+        // Sometimes (e.g: always with the default exception manager) the native module exceptions
+        // manager can throw. In those cases, call into the lower-level queue thread exceptions
+        // handler.
+        mQueueThreadExceptionHandler.handleException(e);
+      }
     }
   }
 
