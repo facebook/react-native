@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<fb7a3dcf7b3e5001e45f808fb4410376>>
+ * @generated SignedSource<<ff51057b07601cf49603e2f28ef501b7>>
  * @flow strict-local
  */
 
@@ -48,7 +48,6 @@ export type ReactNativeFeatureFlags = {
   commonTestFlag: Getter<boolean>,
   allowRecursiveCommitsWithSynchronousMountOnAndroid: Getter<boolean>,
   batchRenderingUpdatesInEventLoop: Getter<boolean>,
-  changeOrderOfMountingInstructionsOnAndroid: Getter<boolean>,
   completeReactInstanceCreationOnBgThreadOnAndroid: Getter<boolean>,
   destroyFabricSurfacesInReactInstanceManager: Getter<boolean>,
   enableAlignItemsBaselineOnFabricIOS: Getter<boolean>,
@@ -169,10 +168,6 @@ export const allowRecursiveCommitsWithSynchronousMountOnAndroid: Getter<boolean>
  * When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.
  */
 export const batchRenderingUpdatesInEventLoop: Getter<boolean> = createNativeFlagGetter('batchRenderingUpdatesInEventLoop', false);
-/**
- * When enabled, insert of views on Android will be moved from the beginning of the IntBufferBatchMountItem to be after layout updates.
- */
-export const changeOrderOfMountingInstructionsOnAndroid: Getter<boolean> = createNativeFlagGetter('changeOrderOfMountingInstructionsOnAndroid', false);
 /**
  * Do not wait for a main-thread dispatch to complete init to start executing work on the JS thread on Android
  */

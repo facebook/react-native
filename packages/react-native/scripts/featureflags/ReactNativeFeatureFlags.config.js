@@ -49,11 +49,6 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.',
     },
-    changeOrderOfMountingInstructionsOnAndroid: {
-      defaultValue: false,
-      description:
-        'When enabled, insert of views on Android will be moved from the beginning of the IntBufferBatchMountItem to be after layout updates.',
-    },
     completeReactInstanceCreationOnBgThreadOnAndroid: {
       defaultValue: false,
       description:

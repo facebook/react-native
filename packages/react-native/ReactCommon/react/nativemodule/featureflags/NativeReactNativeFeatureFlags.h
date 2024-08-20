@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<23af9284953b14cb18ff1ad71145c29b>>
+ * @generated SignedSource<<b458f14c06be2bc012cdff17a8203d78>>
  */
 
 /**
@@ -40,8 +40,6 @@ class NativeReactNativeFeatureFlags
   bool allowRecursiveCommitsWithSynchronousMountOnAndroid(jsi::Runtime& runtime);
 
   bool batchRenderingUpdatesInEventLoop(jsi::Runtime& runtime);
-
-  bool changeOrderOfMountingInstructionsOnAndroid(jsi::Runtime& runtime);
 
   bool completeReactInstanceCreationOnBgThreadOnAndroid(jsi::Runtime& runtime);
 

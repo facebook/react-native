@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9728234e0662758c72ba79b3cffbd4e5>>
+ * @generated SignedSource<<0795b225c6596461df69e979356a580d>>
  * @flow strict-local
  */
 
@@ -26,7 +26,6 @@ export interface Spec extends TurboModule {
   +commonTestFlag?: () => boolean;
   +allowRecursiveCommitsWithSynchronousMountOnAndroid?: () => boolean;
   +batchRenderingUpdatesInEventLoop?: () => boolean;
-  +changeOrderOfMountingInstructionsOnAndroid?: () => boolean;
   +completeReactInstanceCreationOnBgThreadOnAndroid?: () => boolean;
   +destroyFabricSurfacesInReactInstanceManager?: () => boolean;
   +enableAlignItemsBaselineOnFabricIOS?: () => boolean;

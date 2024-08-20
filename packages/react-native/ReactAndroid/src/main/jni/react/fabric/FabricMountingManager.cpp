@@ -504,13 +504,6 @@ void FabricMountingManager::executeMount(
     const auto& mountItem = cppCommonMountItems[i];
     const auto& mountItemType = mountItem.type;
 
-    if (ReactNativeFeatureFlags::changeOrderOfMountingInstructionsOnAndroid() &&
-        mountItemType != CppMountItem::Type::Create) {
-      prevMountItemType = -1;
-      // Skip all mount items except Create.
-      continue;
-    }
-
     // Get type here, and count forward how many items of this type are in a
     // row. Write preamble to any common type here.
     if (prevMountItemType != mountItemType) {
@@ -736,55 +729,6 @@ void FabricMountingManager::executeMount(
       auto javaEventEmitter = EventEmitterWrapper::newObjectCxxArgs(
           mountItem.newChildShadowView.eventEmitter);
       (*objBufferArray)[objBufferPosition++] = javaEventEmitter.get();
-    }
-  }
-
-  if (ReactNativeFeatureFlags::changeOrderOfMountingInstructionsOnAndroid()) {
-    // Fill in all other instructions.
-    prevMountItemType = -1;
-    for (int i = 0; i < cppCommonMountItems.size(); i++) {
-      const auto& mountItem = cppCommonMountItems[i];
-      const auto& mountItemType = mountItem.type;
-
-      if (mountItemType == CppMountItem::Type::Create) {
-        prevMountItemType = -1;
-        continue;
-      }
-
-      // Get type here, and count forward how many items of this type are in
-      // row. Write preamble to any common type here.
-      if (prevMountItemType != mountItemType) {
-        int numSameItemTypes = 1;
-        for (int j = i + 1; j < cppCommonMountItems.size() &&
-             cppCommonMountItems[j].type == mountItemType;
-             j++) {
-          numSameItemTypes++;
-        }
-
-        writeIntBufferTypePreamble(
-            mountItemType,
-            numSameItemTypes,
-            env,
-            intBufferArray,
-            intBufferPosition);
-      }
-      prevMountItemType = mountItemType;
-
-      if (mountItemType == CppMountItem::Type::Insert) {
-        temp[0] = mountItem.newChildShadowView.tag;
-        temp[1] = mountItem.parentShadowView.tag;
-        temp[2] = mountItem.index;
-        env->SetIntArrayRegion(intBufferArray, intBufferPosition, 3, temp);
-        intBufferPosition += 3;
-      } else if (mountItemType == CppMountItem::Remove) {
-        temp[0] = mountItem.oldChildShadowView.tag;
-        temp[1] = mountItem.parentShadowView.tag;
-        temp[2] = mountItem.index;
-        env->SetIntArrayRegion(intBufferArray, intBufferPosition, 3, temp);
-        intBufferPosition += 3;
-      } else {
-        LOG(ERROR) << "Unexpected CppMountItem type: " << mountItemType;
-      }
     }
   }
 

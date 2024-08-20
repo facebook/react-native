@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0f3eb0af6d8f2012fc5169d59d38cbc4>>
+ * @generated SignedSource<<07380f2e1127e32c6c585f6cdf377f36>>
  */
 
 /**
@@ -51,11 +51,6 @@ class ReactNativeFeatureFlags {
    * When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.
    */
   RN_EXPORT static bool batchRenderingUpdatesInEventLoop();
-
-  /**
-   * When enabled, insert of views on Android will be moved from the beginning of the IntBufferBatchMountItem to be after layout updates.
-   */
-  RN_EXPORT static bool changeOrderOfMountingInstructionsOnAndroid();
 
   /**
    * Do not wait for a main-thread dispatch to complete init to start executing work on the JS thread on Android
