@@ -530,6 +530,44 @@ TYPED_TEST(JsiIntegrationHermesTest, EvaluateExpressionInExecutionContext) {
       std::to_string(executionContextId)));
 }
 
+TYPED_TEST(JsiIntegrationHermesTest, ResolveBreakpointAfterEval) {
+  this->connect();
+
+  InSequence s;
+
+  this->expectMessageFromPage(JsonEq(R"({
+                                         "id": 1,
+                                         "result": {}
+                                       })"));
+  this->toPage_->sendMessage(R"({
+                                 "id": 1,
+                                 "method": "Debugger.enable"
+                               })");
+
+  auto scriptInfo = this->expectMessageFromPage(JsonParsed(AllOf(
+      AtJsonPtr("/method", "Debugger.scriptParsed"),
+      AtJsonPtr("/params/url", "breakpointTest.js"))));
+  this->eval(R"( // line 0
+    globalThis.foo = function() { // line 1
+      Date.now(); // line 2
+    };
+    //# sourceURL=breakpointTest.js
+  )");
+  ASSERT_TRUE(scriptInfo->has_value());
+
+  this->expectMessageFromPage(JsonParsed(AllOf(
+      AtJsonPtr("/id", 2),
+      AtJsonPtr("/result/locations/0/lineNumber", 2),
+      AtJsonPtr(
+          "/result/locations/0/scriptId",
+          scriptInfo->value()["params"]["scriptId"]))));
+  this->toPage_->sendMessage(R"({
+                                 "id": 2,
+                                 "method": "Debugger.setBreakpointByUrl",
+                                 "params": {"lineNumber": 2, "url": "breakpointTest.js"}
+                               })");
+}
+
 TYPED_TEST(JsiIntegrationHermesTest, ResolveBreakpointAfterReload) {
   this->connect();
 
