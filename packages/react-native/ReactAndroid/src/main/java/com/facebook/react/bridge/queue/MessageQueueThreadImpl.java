@@ -11,6 +11,7 @@ import android.os.Looper;
 import android.os.Process;
 import android.os.SystemClock;
 import android.util.Pair;
+import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.AssertionException;
@@ -29,7 +30,7 @@ public class MessageQueueThreadImpl implements MessageQueueThread {
   private final Looper mLooper;
   private final MessageQueueThreadHandler mHandler;
   private final String mAssertionErrorMessage;
-  private MessageQueueThreadPerfStats mPerfStats;
+  private final @Nullable MessageQueueThreadPerfStats mPerfStats;
   private volatile boolean mIsFinished = false;
 
   private MessageQueueThreadImpl(
@@ -41,7 +42,7 @@ public class MessageQueueThreadImpl implements MessageQueueThread {
       String name,
       Looper looper,
       QueueThreadExceptionHandler exceptionHandler,
-      MessageQueueThreadPerfStats stats) {
+      @Nullable MessageQueueThreadPerfStats stats) {
     mName = name;
     mLooper = looper;
     mHandler = new MessageQueueThreadHandler(looper, exceptionHandler);
@@ -73,14 +74,11 @@ public class MessageQueueThreadImpl implements MessageQueueThread {
   public <T> Future<T> callOnQueue(final Callable<T> callable) {
     final SimpleSettableFuture<T> future = new SimpleSettableFuture<>();
     runOnQueue(
-        new Runnable() {
-          @Override
-          public void run() {
-            try {
-              future.set(callable.call());
-            } catch (Exception e) {
-              future.setException(e);
-            }
+        () -> {
+          try {
+            future.set(callable.call());
+          } catch (Exception e) {
+            future.setException(e);
           }
         });
     return future;
@@ -135,6 +133,7 @@ public class MessageQueueThreadImpl implements MessageQueueThread {
     }
   }
 
+  @Nullable
   @DoNotStrip
   @Override
   public MessageQueueThreadPerfStats getPerfStats() {
@@ -146,13 +145,10 @@ public class MessageQueueThreadImpl implements MessageQueueThread {
   public void resetPerfStats() {
     assignToPerfStats(mPerfStats, -1, -1);
     runOnQueue(
-        new Runnable() {
-          @Override
-          public void run() {
-            long wallTime = SystemClock.uptimeMillis();
-            long cpuTime = SystemClock.currentThreadTimeMillis();
-            assignToPerfStats(mPerfStats, wallTime, cpuTime);
-          }
+        () -> {
+          long wallTime = SystemClock.uptimeMillis();
+          long cpuTime = SystemClock.currentThreadTimeMillis();
+          assignToPerfStats(mPerfStats, wallTime, cpuTime);
         });
   }
 
@@ -162,7 +158,11 @@ public class MessageQueueThreadImpl implements MessageQueueThread {
     return mLooper.getQueue().isIdle();
   }
 
-  private static void assignToPerfStats(MessageQueueThreadPerfStats stats, long wall, long cpu) {
+  private static void assignToPerfStats(
+      @Nullable MessageQueueThreadPerfStats stats, long wall, long cpu) {
+    if (stats == null) {
+      return;
+    }
     stats.wallTime = wall;
     stats.cpuTime = cpu;
   }
@@ -198,13 +198,7 @@ public class MessageQueueThreadImpl implements MessageQueueThread {
     if (UiThreadUtil.isOnUiThread()) {
       Process.setThreadPriority(Process.THREAD_PRIORITY_DISPLAY);
     } else {
-      UiThreadUtil.runOnUiThread(
-          new Runnable() {
-            @Override
-            public void run() {
-              Process.setThreadPriority(Process.THREAD_PRIORITY_DISPLAY);
-            }
-          });
+      UiThreadUtil.runOnUiThread(() -> Process.setThreadPriority(Process.THREAD_PRIORITY_DISPLAY));
     }
     return mqt;
   }
@@ -218,22 +212,18 @@ public class MessageQueueThreadImpl implements MessageQueueThread {
       final String name, long stackSize, QueueThreadExceptionHandler exceptionHandler) {
     final SimpleSettableFuture<Pair<Looper, MessageQueueThreadPerfStats>> dataFuture =
         new SimpleSettableFuture<>();
-    long startTimeMillis;
     Thread bgThread =
         new Thread(
             null,
-            new Runnable() {
-              @Override
-              public void run() {
-                Process.setThreadPriority(Process.THREAD_PRIORITY_DISPLAY);
-                Looper.prepare();
-                MessageQueueThreadPerfStats stats = new MessageQueueThreadPerfStats();
-                long wallTime = SystemClock.uptimeMillis();
-                long cpuTime = SystemClock.currentThreadTimeMillis();
-                assignToPerfStats(stats, wallTime, cpuTime);
-                dataFuture.set(new Pair<>(Looper.myLooper(), stats));
-                Looper.loop();
-              }
+            () -> {
+              Process.setThreadPriority(Process.THREAD_PRIORITY_DISPLAY);
+              Looper.prepare();
+              MessageQueueThreadPerfStats stats = new MessageQueueThreadPerfStats();
+              long wallTime = SystemClock.uptimeMillis();
+              long cpuTime = SystemClock.currentThreadTimeMillis();
+              assignToPerfStats(stats, wallTime, cpuTime);
+              dataFuture.set(new Pair<>(Looper.myLooper(), stats));
+              Looper.loop();
             },
             "mqt_" + name,
             stackSize);
