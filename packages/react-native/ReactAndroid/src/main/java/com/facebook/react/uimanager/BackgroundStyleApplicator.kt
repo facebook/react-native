@@ -16,6 +16,8 @@ import android.view.View
 import androidx.annotation.ColorInt
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
+import com.facebook.react.uimanager.PixelUtil.dpToPx
+import com.facebook.react.uimanager.PixelUtil.pxToDp
 import com.facebook.react.uimanager.common.UIManagerType
 import com.facebook.react.uimanager.common.ViewUtil
 import com.facebook.react.uimanager.drawable.CSSBackgroundDrawable
@@ -55,8 +57,7 @@ public object BackgroundStyleApplicator {
 
   @JvmStatic
   public fun setBorderWidth(view: View, edge: LogicalEdge, width: Float?): Unit {
-    ensureCSSBackground(view)
-        .setBorderWidth(edge.toSpacingType(), PixelUtil.toPixelFromDIP(width ?: Float.NaN))
+    ensureCSSBackground(view).setBorderWidth(edge.toSpacingType(), width?.dpToPx() ?: Float.NaN)
 
     if (Build.VERSION.SDK_INT >= MIN_INSET_BOX_SHADOW_SDK_VERSION) {
       val composite = ensureCompositeBackgroundDrawable(view)
@@ -73,7 +74,7 @@ public object BackgroundStyleApplicator {
   @JvmStatic
   public fun getBorderWidth(view: View, edge: LogicalEdge): Float? {
     val width = getCSSBackground(view)?.getBorderWidth(edge.toSpacingType())
-    return if (width == null || width.isNaN()) null else PixelUtil.toDIPFromPixel((width))
+    return if (width == null || width.isNaN()) null else width.pxToDp()
   }
 
   @JvmStatic

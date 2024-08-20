@@ -17,6 +17,7 @@ import android.graphics.RenderEffect
 import android.graphics.Shader
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
+import com.facebook.react.uimanager.PixelUtil.dpToPx
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -179,8 +180,8 @@ internal object FilterHelper {
       filterValues: ReadableMap,
       chainedEffects: RenderEffect? = null
   ): RenderEffect {
-    val offsetX: Float = PixelUtil.toPixelFromDIP(filterValues.getDouble("offsetX").toFloat())
-    val offsetY: Float = PixelUtil.toPixelFromDIP(filterValues.getDouble("offsetY").toFloat())
+    val offsetX: Float = filterValues.getDouble("offsetX").dpToPx()
+    val offsetY: Float = filterValues.getDouble("offsetY").dpToPx()
     val color: Int = if (filterValues.hasKey("color")) filterValues.getInt("color") else Color.BLACK
     val radius: Float =
         if (filterValues.hasKey("standardDeviation"))
