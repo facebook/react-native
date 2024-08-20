@@ -122,7 +122,7 @@ RCT_EXPORT_MODULE()
 RCT_EXPORT_METHOD(getHeight : (RCTResponseSenderBlock)callback)
 {
   callback(@[ @{
-    @"height" : @(RCTSharedApplication().statusBarFrame.size.height),
+    @"height" : @(RCTUIStatusBarManager().statusBarFrame.size.height),
   } ]);
 }
 
