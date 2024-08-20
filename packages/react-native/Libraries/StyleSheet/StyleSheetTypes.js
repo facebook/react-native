@@ -715,7 +715,7 @@ export type GradientValue = {
   direction?: string,
   colorStops: $ReadOnlyArray<{
     color: ____ColorValue_Internal,
-    position?: string,
+    positions?: $ReadOnlyArray<string>,
   }>,
 };
 
