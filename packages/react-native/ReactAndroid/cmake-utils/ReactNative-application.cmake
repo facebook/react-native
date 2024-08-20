@@ -108,3 +108,7 @@ if(EXISTS ${PROJECT_BUILD_DIR}/generated/source/codegen/jni/CMakeLists.txt)
                 -DREACT_NATIVE_APP_MODULE_PROVIDER=${APP_CODEGEN_HEADER}_ModuleProvider
         )
 endif()
+
+# We set REACTNATIVE_MERGED_SO so libraries/apps can selectively decide to depend on either libreactnative.so
+# or link against a old prefab target (this is needed for React Native 0.76 on).
+set(REACTNATIVE_MERGED_SO true)
