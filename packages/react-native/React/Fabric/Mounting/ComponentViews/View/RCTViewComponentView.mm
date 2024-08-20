@@ -757,7 +757,7 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
   } else {
     if (!_borderLayer) {
       CALayer *borderLayer = [CALayer new];
-      borderLayer.zPosition = 100;
+      borderLayer.zPosition = 1024.0f;
       borderLayer.frame = layer.bounds;
       borderLayer.magnificationFilter = kCAFilterNearest;
       [layer addSublayer:borderLayer];
@@ -768,7 +768,7 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
       CALayer *backgroundLayer = [CALayer new];
       backgroundLayer.zPosition = -1024.0f;
       backgroundLayer.frame = layer.bounds;
-      //      backgroundLayer.magnificationFilter = kCAFilterNearest;
+      backgroundLayer.magnificationFilter = kCAFilterNearest;
       [layer addSublayer:backgroundLayer];
       _backgroundLayer = backgroundLayer;
       _backgroundLayer.backgroundColor = backgroundColor;
@@ -821,18 +821,21 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     // Stage 2.5. Custom Clipping Mask
     CAShapeLayer *maskLayer = nil;
     CGFloat cornerRadius = 0;
-    if (self.clipsToBounds) {
-      if (borderMetrics.borderRadii.isUniform()) {
+    BOOL isBorderRadiiUniform = borderMetrics.borderRadii.isUniform();
+    if (self.clipsToBounds && isBorderRadiiUniform) {
         // In this case we can simply use `cornerRadius` exclusively.
         cornerRadius = borderMetrics.borderRadii.topLeft;
-          
-      } else {
+    } else if (self.clipsToBounds) {
         RCTCornerInsets cornerInsets =
             RCTGetCornerInsets(RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii), UIEdgeInsetsZero);
         maskLayer = RCTCreateMaskLayer(self.bounds, cornerInsets);
-      }
     } else if (borderMetrics.borderRadii.isUniform()) {
         _backgroundLayer.cornerRadius = borderMetrics.borderRadii.topLeft;
+    } else {
+        RCTCornerInsets cornerInsets =
+            RCTGetCornerInsets(RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii), UIEdgeInsetsZero);
+        CAShapeLayer *backgroundMaskLayer = RCTCreateMaskLayer(self.bounds, cornerInsets);
+        _backgroundLayer.mask = backgroundMaskLayer;
     }
 
     layer.cornerRadius = cornerRadius;
