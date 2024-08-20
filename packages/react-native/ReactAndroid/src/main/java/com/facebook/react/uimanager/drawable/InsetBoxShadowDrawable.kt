@@ -18,7 +18,8 @@ import android.graphics.RectF
 import android.graphics.drawable.Drawable
 import androidx.annotation.RequiresApi
 import com.facebook.react.uimanager.FilterHelper
-import com.facebook.react.uimanager.PixelUtil
+import com.facebook.react.uimanager.PixelUtil.dpToPx
+import com.facebook.react.uimanager.PixelUtil.pxToDp
 import com.facebook.react.uimanager.style.BorderInsets
 import com.facebook.react.uimanager.style.BorderRadiusStyle
 import com.facebook.react.uimanager.style.ComputedBorderRadius
@@ -109,9 +110,9 @@ internal class InsetBoxShadowDrawable(
               innerRadius(it.bottomLeft.vertical, computedBorderInsets?.bottom))
         }
 
-    val x = PixelUtil.toPixelFromDIP(offsetX)
-    val y = PixelUtil.toPixelFromDIP(offsetY)
-    val spreadExtent = PixelUtil.toPixelFromDIP(spread)
+    val x = offsetX.dpToPx()
+    val y = offsetY.dpToPx()
+    val spreadExtent = spread.dpToPx()
     val innerRect =
         RectF(paddingBoxRect).apply {
           inset(spreadExtent, spreadExtent)
@@ -153,27 +154,27 @@ internal class InsetBoxShadowDrawable(
         borderRadius?.resolve(
             layoutDirection,
             context,
-            PixelUtil.toDIPFromPixel(bounds.width().toFloat()),
-            PixelUtil.toDIPFromPixel(bounds.height().toFloat()))
+            bounds.width().toFloat().pxToDp(),
+            bounds.height().toFloat().pxToDp())
 
     return if (resolvedBorderRadii?.hasRoundedBorders() == true) {
       ComputedBorderRadius(
           topLeft =
               CornerRadii(
-                  PixelUtil.toPixelFromDIP(resolvedBorderRadii.topLeft.horizontal),
-                  PixelUtil.toPixelFromDIP(resolvedBorderRadii.topLeft.vertical)),
+                  resolvedBorderRadii.topLeft.horizontal.dpToPx(),
+                  resolvedBorderRadii.topLeft.vertical.dpToPx()),
           topRight =
               CornerRadii(
-                  PixelUtil.toPixelFromDIP(resolvedBorderRadii.topRight.horizontal),
-                  PixelUtil.toPixelFromDIP(resolvedBorderRadii.topRight.vertical)),
+                  resolvedBorderRadii.topRight.horizontal.dpToPx(),
+                  resolvedBorderRadii.topRight.vertical.dpToPx()),
           bottomLeft =
               CornerRadii(
-                  PixelUtil.toPixelFromDIP(resolvedBorderRadii.bottomLeft.horizontal),
-                  PixelUtil.toPixelFromDIP(resolvedBorderRadii.bottomLeft.vertical)),
+                  resolvedBorderRadii.bottomLeft.horizontal.dpToPx(),
+                  resolvedBorderRadii.bottomLeft.vertical.dpToPx()),
           bottomRight =
               CornerRadii(
-                  PixelUtil.toPixelFromDIP(resolvedBorderRadii.bottomRight.horizontal),
-                  PixelUtil.toPixelFromDIP(resolvedBorderRadii.bottomRight.vertical)),
+                  resolvedBorderRadii.bottomRight.horizontal.dpToPx(),
+                  resolvedBorderRadii.bottomRight.vertical.dpToPx()),
       )
     } else {
       null
@@ -182,11 +183,7 @@ internal class InsetBoxShadowDrawable(
 
   private fun computeBorderInsets(): RectF? =
       borderInsets?.resolve(layoutDirection, context)?.let {
-        RectF(
-            PixelUtil.toPixelFromDIP(it.left),
-            PixelUtil.toPixelFromDIP(it.top),
-            PixelUtil.toPixelFromDIP(it.right),
-            PixelUtil.toPixelFromDIP(it.bottom))
+        RectF(it.left.dpToPx(), it.top.dpToPx(), it.right.dpToPx(), it.bottom.dpToPx())
       }
 
   private fun innerRadius(radius: Float, borderInset: Float?): Float =

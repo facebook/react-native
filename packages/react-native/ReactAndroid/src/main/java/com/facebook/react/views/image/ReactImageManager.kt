@@ -21,7 +21,7 @@ import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.BackgroundStyleApplicator
 import com.facebook.react.uimanager.LengthPercentage
 import com.facebook.react.uimanager.LengthPercentageType
-import com.facebook.react.uimanager.PixelUtil.toPixelFromDIP
+import com.facebook.react.uimanager.PixelUtil.dpToPx
 import com.facebook.react.uimanager.SimpleViewManager
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.ViewProps
@@ -188,7 +188,7 @@ public constructor(
     } else {
       val convertedBorderRadius =
           if (!borderRadius.isNaN()) {
-            toPixelFromDIP(borderRadius)
+            borderRadius.dpToPx()
           } else {
             borderRadius
           }

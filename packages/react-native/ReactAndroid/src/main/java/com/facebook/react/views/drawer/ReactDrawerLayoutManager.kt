@@ -18,7 +18,7 @@ import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableType
 import com.facebook.react.common.ReactConstants
 import com.facebook.react.module.annotations.ReactModule
-import com.facebook.react.uimanager.PixelUtil.toPixelFromDIP
+import com.facebook.react.uimanager.PixelUtil.dpToPx
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.UIManagerHelper
 import com.facebook.react.uimanager.ViewGroupManager
@@ -103,18 +103,13 @@ public class ReactDrawerLayoutManager :
         if (width.isNaN()) {
           ReactDrawerLayout.DEFAULT_DRAWER_WIDTH
         } else {
-          Math.round(toPixelFromDIP(width))
+          Math.round(width.dpToPx())
         }
     view.setDrawerWidth(widthInPx)
   }
 
   public override fun setDrawerWidth(view: ReactDrawerLayout, width: Float?) {
-    val widthInPx =
-        if (width == null) {
-          ReactDrawerLayout.DEFAULT_DRAWER_WIDTH
-        } else {
-          Math.round(toPixelFromDIP(width))
-        }
+    val widthInPx = width?.let { Math.round(it.dpToPx()) } ?: ReactDrawerLayout.DEFAULT_DRAWER_WIDTH
     view.setDrawerWidth(widthInPx)
   }
 
@@ -146,7 +141,7 @@ public class ReactDrawerLayoutManager :
   public override fun setStatusBarBackgroundColor(view: ReactDrawerLayout, value: Int?): Unit = Unit
 
   public override fun setElevation(view: ReactDrawerLayout, elevation: Float) {
-    view.drawerElevation = toPixelFromDIP(elevation)
+    view.drawerElevation = elevation.dpToPx()
   }
 
   public override fun needsCustomLayoutForChildren(): Boolean {
