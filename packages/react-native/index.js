@@ -82,7 +82,7 @@ import typeof StyleSheet from './Libraries/StyleSheet/StyleSheet';
 import typeof Text from './Libraries/Text/Text';
 import typeof * as TurboModuleRegistry from './Libraries/TurboModule/TurboModuleRegistry';
 import typeof UTFSequence from './Libraries/UTFSequence';
-import typeof Appearance from './Libraries/Utilities/Appearance';
+import typeof * as Appearance from './Libraries/Utilities/Appearance';
 import typeof BackHandler from './Libraries/Utilities/BackHandler';
 import typeof DeviceInfo from './Libraries/Utilities/DeviceInfo';
 import typeof DevSettings from './Libraries/Utilities/DevSettings';
