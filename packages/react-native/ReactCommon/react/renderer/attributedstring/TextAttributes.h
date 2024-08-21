@@ -60,6 +60,7 @@ class TextAttributes : public DebugStringConvertible {
   std::optional<TextAlignment> alignment{};
   std::optional<WritingDirection> baseWritingDirection{};
   std::optional<LineBreakStrategy> lineBreakStrategy{};
+  std::optional<LineBreakMode> lineBreakMode{};
 
   // Decoration
   SharedColor textDecorationColor{};
