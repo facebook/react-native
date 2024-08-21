@@ -51,57 +51,55 @@ if (NativeAppearance) {
   );
 }
 
-module.exports = {
-  /**
-   * Note: Although color scheme is available immediately, it may change at any
-   * time. Any rendering logic or styles that depend on this should try to call
-   * this function on every render, rather than caching the value (for example,
-   * using inline styles rather than setting a value in a `StyleSheet`).
-   *
-   * Example: `const colorScheme = Appearance.getColorScheme();`
-   *
-   * @returns {?ColorSchemeName} Value for the color scheme preference.
-   */
-  getColorScheme(): ?ColorSchemeName {
-    if (__DEV__) {
-      if (isAsyncDebugging) {
-        // Hard code light theme when using the async debugger as
-        // sync calls aren't supported
-        return 'light';
-      }
+/**
+ * Note: Although color scheme is available immediately, it may change at any
+ * time. Any rendering logic or styles that depend on this should try to call
+ * this function on every render, rather than caching the value (for example,
+ * using inline styles rather than setting a value in a `StyleSheet`).
+ *
+ * Example: `const colorScheme = Appearance.getColorScheme();`
+ *
+ * @returns {?ColorSchemeName} Value for the color scheme preference.
+ */
+export function getColorScheme(): ?ColorSchemeName {
+  if (__DEV__) {
+    if (isAsyncDebugging) {
+      // Hard code light theme when using the async debugger as
+      // sync calls aren't supported
+      return 'light';
     }
+  }
 
-    // TODO: (hramos) T52919652 Use ?ColorSchemeName once codegen supports union
-    const nativeColorScheme: ?string =
-      NativeAppearance == null
-        ? null
-        : NativeAppearance.getColorScheme() || null;
-    invariant(
-      nativeColorScheme === 'dark' ||
-        nativeColorScheme === 'light' ||
-        nativeColorScheme == null,
-      "Unrecognized color scheme. Did you mean 'dark' or 'light'?",
-    );
-    return nativeColorScheme;
-  },
+  // TODO: (hramos) T52919652 Use ?ColorSchemeName once codegen supports union
+  const nativeColorScheme: ?string =
+    NativeAppearance == null ? null : NativeAppearance.getColorScheme() || null;
+  invariant(
+    nativeColorScheme === 'dark' ||
+      nativeColorScheme === 'light' ||
+      nativeColorScheme == null,
+    "Unrecognized color scheme. Did you mean 'dark' or 'light'?",
+  );
+  return nativeColorScheme;
+}
 
-  setColorScheme(colorScheme: ?ColorSchemeName): void {
-    const nativeColorScheme = colorScheme == null ? 'unspecified' : colorScheme;
+export function setColorScheme(colorScheme: ?ColorSchemeName): void {
+  const nativeColorScheme = colorScheme == null ? 'unspecified' : colorScheme;
 
-    invariant(
-      colorScheme === 'dark' || colorScheme === 'light' || colorScheme == null,
-      "Unrecognized color scheme. Did you mean 'dark', 'light' or null?",
-    );
+  invariant(
+    colorScheme === 'dark' || colorScheme === 'light' || colorScheme == null,
+    "Unrecognized color scheme. Did you mean 'dark', 'light' or null?",
+  );
 
-    if (NativeAppearance != null && NativeAppearance.setColorScheme != null) {
-      NativeAppearance.setColorScheme(nativeColorScheme);
-    }
-  },
+  if (NativeAppearance != null && NativeAppearance.setColorScheme != null) {
+    NativeAppearance.setColorScheme(nativeColorScheme);
+  }
+}
 
-  /**
-   * Add an event handler that is fired when appearance preferences change.
-   */
-  addChangeListener(listener: AppearanceListener): EventSubscription {
-    return eventEmitter.addListener('change', listener);
-  },
-};
+/**
+ * Add an event handler that is fired when appearance preferences change.
+ */
+export function addChangeListener(
+  listener: AppearanceListener,
+): EventSubscription {
+  return eventEmitter.addListener('change', listener);
+}
