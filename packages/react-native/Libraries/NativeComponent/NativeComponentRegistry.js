@@ -17,7 +17,6 @@ import type {
 import getNativeComponentAttributes from '../ReactNative/getNativeComponentAttributes';
 import UIManager from '../ReactNative/UIManager';
 import * as ReactNativeViewConfigRegistry from '../Renderer/shims/ReactNativeViewConfigRegistry';
-import verifyComponentAttributeEquivalence from '../Utilities/verifyComponentAttributeEquivalence';
 import * as StaticViewConfigValidator from './StaticViewConfigValidator';
 import {createViewConfig} from './ViewConfig';
 import invariant from 'invariant';
@@ -35,7 +34,6 @@ let getRuntimeConfig;
 export function setRuntimeConfigProvider(
   runtimeConfigProvider: (name: string) => ?{
     native: boolean,
-    strict: boolean,
     verify: boolean,
   },
 ): void {
@@ -55,9 +53,8 @@ export function get<Config>(
   viewConfigProvider: () => PartialViewConfig,
 ): HostComponent<Config> {
   ReactNativeViewConfigRegistry.register(name, () => {
-    const {native, strict, verify} = getRuntimeConfig?.(name) ?? {
+    const {native, verify} = getRuntimeConfig?.(name) ?? {
       native: !global.RN$Bridgeless,
-      strict: false,
       verify: false,
     };
 
@@ -92,23 +89,19 @@ export function get<Config>(
         ? createViewConfig(viewConfigProvider())
         : viewConfig;
 
-      if (strict) {
-        const validationOutput = StaticViewConfigValidator.validate(
-          name,
-          nativeViewConfig,
-          staticViewConfig,
-        );
+      const validationOutput = StaticViewConfigValidator.validate(
+        name,
+        nativeViewConfig,
+        staticViewConfig,
+      );
 
-        if (validationOutput.type === 'invalid') {
-          console.error(
-            StaticViewConfigValidator.stringifyValidationResult(
-              name,
-              validationOutput,
-            ),
-          );
-        }
-      } else {
-        verifyComponentAttributeEquivalence(nativeViewConfig, staticViewConfig);
+      if (validationOutput.type === 'invalid') {
+        console.error(
+          StaticViewConfigValidator.stringifyValidationResult(
+            name,
+            validationOutput,
+          ),
+        );
       }
     }
 
