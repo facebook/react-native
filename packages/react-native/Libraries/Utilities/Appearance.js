@@ -27,12 +27,17 @@ type NativeAppearanceEventDefinitions = {
   appearanceChanged: [AppearancePreferences],
 };
 
+// Cache the color scheme to reduce the cost of reading it between changes.
+// NOTE: If `NativeAppearance` is null, this will always be null.
+let appearance: ?{colorScheme: ?ColorSchemeName} = null;
+
 if (NativeAppearance != null) {
   new NativeEventEmitter<NativeAppearanceEventDefinitions>(
     NativeAppearance,
   ).addListener('appearanceChanged', (newAppearance: AppearancePreferences) => {
     const colorScheme = toColorScheme(newAppearance.colorScheme);
-    eventEmitter.emit('change', {colorScheme});
+    appearance = {colorScheme};
+    eventEmitter.emit('change', appearance);
   });
 }
 
@@ -49,14 +54,28 @@ export function getColorScheme(): ?ColorSchemeName {
       return 'light';
     }
   }
-  return toColorScheme(NativeAppearance?.getColorScheme());
+  let colorScheme = null;
+  if (NativeAppearance != null) {
+    if (appearance == null) {
+      // Lazily initialize `appearance`. This should only happen once because
+      // we never reassign a null value to `appearance`.
+      appearance = {
+        colorScheme: toColorScheme(NativeAppearance.getColorScheme()),
+      };
+    }
+    colorScheme = appearance.colorScheme;
+  }
+  return colorScheme;
 }
 
 /**
  * Updates the current color scheme to the supplied value.
  */
 export function setColorScheme(colorScheme: ?ColorSchemeName): void {
-  NativeAppearance?.setColorScheme(toColorScheme(colorScheme) ?? 'unspecified');
+  if (NativeAppearance != null) {
+    NativeAppearance.setColorScheme(colorScheme ?? 'unspecified');
+    appearance = {colorScheme};
+  }
 }
 
 /**
