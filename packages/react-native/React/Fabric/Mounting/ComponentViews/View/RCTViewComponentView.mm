@@ -778,9 +778,6 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     layer.borderWidth = 0;
     layer.borderColor = nil;
     layer.cornerRadius = 0;
-      
-    UIColor *transparentColor = [UIColor clearColor];
-    CGColorRef transparentBackgroundColor = [transparentColor resolvedColorWithTraitCollection:self.traitCollection].CGColor;
 
     RCTBorderColors borderColors = RCTCreateRCTBorderColorsFromBorderColors(borderMetrics.borderColors);
     UIImage *image = RCTGetBorderImage(
@@ -789,7 +786,7 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
         RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii),
         RCTUIEdgeInsetsFromEdgeInsets(borderMetrics.borderWidths),
         borderColors,
-        transparentBackgroundColor,
+        nil,
         self.clipsToBounds);
       
     RCTReleaseRCTBorderColors(borderColors);
