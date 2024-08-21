@@ -9,7 +9,6 @@
  */
 
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
-import Platform from '../Utilities/Platform';
 import EventEmitter, {
   type EventSubscription,
 } from '../vendor/emitter/EventEmitter';
@@ -29,26 +28,17 @@ type NativeAppearanceEventDefinitions = {
   appearanceChanged: [AppearancePreferences],
 };
 
-if (NativeAppearance) {
-  const nativeEventEmitter =
-    new NativeEventEmitter<NativeAppearanceEventDefinitions>(
-      // T88715063: NativeEventEmitter only used this parameter on iOS. Now it uses it on all platforms, so this code was modified automatically to preserve its behavior
-      // If you want to use the native module on other platforms, please remove this condition and test its behavior
-      Platform.OS !== 'ios' ? null : NativeAppearance,
+if (NativeAppearance != null) {
+  new NativeEventEmitter<NativeAppearanceEventDefinitions>(
+    NativeAppearance,
+  ).addListener('appearanceChanged', (newAppearance: AppearancePreferences) => {
+    const {colorScheme} = newAppearance;
+    invariant(
+      colorScheme === 'dark' || colorScheme === 'light' || colorScheme == null,
+      "Unrecognized color scheme. Did you mean 'dark' or 'light'?",
     );
-  nativeEventEmitter.addListener(
-    'appearanceChanged',
-    (newAppearance: AppearancePreferences) => {
-      const {colorScheme} = newAppearance;
-      invariant(
-        colorScheme === 'dark' ||
-          colorScheme === 'light' ||
-          colorScheme == null,
-        "Unrecognized color scheme. Did you mean 'dark' or 'light'?",
-      );
-      eventEmitter.emit('change', {colorScheme});
-    },
-  );
+    eventEmitter.emit('change', {colorScheme});
+  });
 }
 
 /**
