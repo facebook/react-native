@@ -270,6 +270,11 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'Enables access to the host tree in Fabric using DOM-compatible APIs.',
     },
+    enableOptimisedVirtualizedCells: {
+      defaultValue: false,
+      description:
+        'Removing unnecessary rerenders Virtualized cells after any rerenders of Virualized list. Works with strict=true option',
+    },
     isLayoutAnimationEnabled: {
       defaultValue: true,
       description:
