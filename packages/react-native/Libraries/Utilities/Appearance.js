@@ -19,9 +19,8 @@ import NativeAppearance, {
 } from './NativeAppearance';
 import invariant from 'invariant';
 
-type AppearanceListener = (preferences: AppearancePreferences) => void;
 const eventEmitter = new EventEmitter<{
-  change: [AppearancePreferences],
+  change: [{colorScheme: ?ColorSchemeName}],
 }>();
 
 type NativeAppearanceEventDefinitions = {
@@ -32,24 +31,15 @@ if (NativeAppearance != null) {
   new NativeEventEmitter<NativeAppearanceEventDefinitions>(
     NativeAppearance,
   ).addListener('appearanceChanged', (newAppearance: AppearancePreferences) => {
-    const {colorScheme} = newAppearance;
-    invariant(
-      colorScheme === 'dark' || colorScheme === 'light' || colorScheme == null,
-      "Unrecognized color scheme. Did you mean 'dark' or 'light'?",
-    );
+    const colorScheme = toColorScheme(newAppearance.colorScheme);
     eventEmitter.emit('change', {colorScheme});
   });
 }
 
 /**
- * Note: Although color scheme is available immediately, it may change at any
- * time. Any rendering logic or styles that depend on this should try to call
- * this function on every render, rather than caching the value (for example,
- * using inline styles rather than setting a value in a `StyleSheet`).
- *
- * Example: `const colorScheme = Appearance.getColorScheme();`
- *
- * @returns {?ColorSchemeName} Value for the color scheme preference.
+ * Returns the current color scheme preference. This value may change, so the
+ * value should not be cached without either listening to changes or using
+ * the `useColorScheme` hook.
  */
 export function getColorScheme(): ?ColorSchemeName {
   if (__DEV__) {
@@ -59,37 +49,32 @@ export function getColorScheme(): ?ColorSchemeName {
       return 'light';
     }
   }
-
-  // TODO: (hramos) T52919652 Use ?ColorSchemeName once codegen supports union
-  const nativeColorScheme: ?string =
-    NativeAppearance == null ? null : NativeAppearance.getColorScheme() || null;
-  invariant(
-    nativeColorScheme === 'dark' ||
-      nativeColorScheme === 'light' ||
-      nativeColorScheme == null,
-    "Unrecognized color scheme. Did you mean 'dark' or 'light'?",
-  );
-  return nativeColorScheme;
+  return toColorScheme(NativeAppearance?.getColorScheme());
 }
 
+/**
+ * Updates the current color scheme to the supplied value.
+ */
 export function setColorScheme(colorScheme: ?ColorSchemeName): void {
-  const nativeColorScheme = colorScheme == null ? 'unspecified' : colorScheme;
-
-  invariant(
-    colorScheme === 'dark' || colorScheme === 'light' || colorScheme == null,
-    "Unrecognized color scheme. Did you mean 'dark', 'light' or null?",
-  );
-
-  if (NativeAppearance != null && NativeAppearance.setColorScheme != null) {
-    NativeAppearance.setColorScheme(nativeColorScheme);
-  }
+  NativeAppearance?.setColorScheme(toColorScheme(colorScheme) ?? 'unspecified');
 }
 
 /**
  * Add an event handler that is fired when appearance preferences change.
  */
 export function addChangeListener(
-  listener: AppearanceListener,
+  listener: ({colorScheme: ?ColorSchemeName}) => void,
 ): EventSubscription {
   return eventEmitter.addListener('change', listener);
+}
+
+/**
+ * TODO: (hramos) T52919652 Use ?ColorSchemeName once codegen supports union
+ */
+function toColorScheme(colorScheme: ?string): ?ColorSchemeName {
+  invariant(
+    colorScheme === 'dark' || colorScheme === 'light' || colorScheme == null,
+    "Unrecognized color scheme. Did you mean 'dark', 'light' or null?",
+  );
+  return colorScheme;
 }
