@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7260472dccd3ec3c9612727c6c337f24>>
+ * @generated SignedSource<<fa4d24b87da9262d4a55da3e8377d0c2>>
  */
 
 /**
@@ -28,8 +28,6 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun allowRecursiveCommitsWithSynchronousMountOnAndroid(): Boolean
 
   @DoNotStrip public fun batchRenderingUpdatesInEventLoop(): Boolean
-
-  @DoNotStrip public fun changeOrderOfMountingInstructionsOnAndroid(): Boolean
 
   @DoNotStrip public fun completeReactInstanceCreationOnBgThreadOnAndroid(): Boolean
 

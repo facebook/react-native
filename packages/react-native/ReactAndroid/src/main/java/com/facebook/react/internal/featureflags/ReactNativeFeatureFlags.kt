@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b352d8e6c8dd42936ee48024320f6b77>>
+ * @generated SignedSource<<213f28bbe5ea5f66048ece938609e815>>
  */
 
 /**
@@ -45,12 +45,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun batchRenderingUpdatesInEventLoop(): Boolean = accessor.batchRenderingUpdatesInEventLoop()
-
-  /**
-   * When enabled, insert of views on Android will be moved from the beginning of the IntBufferBatchMountItem to be after layout updates.
-   */
-  @JvmStatic
-  public fun changeOrderOfMountingInstructionsOnAndroid(): Boolean = accessor.changeOrderOfMountingInstructionsOnAndroid()
 
   /**
    * Do not wait for a main-thread dispatch to complete init to start executing work on the JS thread on Android

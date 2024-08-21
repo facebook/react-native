@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b460c7106715c0ea405dd6b284802d27>>
+ * @generated SignedSource<<fd8d47346a04e8f0da915d2f9fe53253>>
  */
 
 /**
@@ -27,7 +27,6 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var commonTestFlagCache: Boolean? = null
   private var allowRecursiveCommitsWithSynchronousMountOnAndroidCache: Boolean? = null
   private var batchRenderingUpdatesInEventLoopCache: Boolean? = null
-  private var changeOrderOfMountingInstructionsOnAndroidCache: Boolean? = null
   private var completeReactInstanceCreationOnBgThreadOnAndroidCache: Boolean? = null
   private var destroyFabricSurfacesInReactInstanceManagerCache: Boolean? = null
   private var enableAlignItemsBaselineOnFabricIOSCache: Boolean? = null
@@ -96,16 +95,6 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.batchRenderingUpdatesInEventLoop()
       accessedFeatureFlags.add("batchRenderingUpdatesInEventLoop")
       batchRenderingUpdatesInEventLoopCache = cached
-    }
-    return cached
-  }
-
-  override fun changeOrderOfMountingInstructionsOnAndroid(): Boolean {
-    var cached = changeOrderOfMountingInstructionsOnAndroidCache
-    if (cached == null) {
-      cached = currentProvider.changeOrderOfMountingInstructionsOnAndroid()
-      accessedFeatureFlags.add("changeOrderOfMountingInstructionsOnAndroid")
-      changeOrderOfMountingInstructionsOnAndroidCache = cached
     }
     return cached
   }
