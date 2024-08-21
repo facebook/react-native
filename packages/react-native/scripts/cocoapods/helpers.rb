@@ -60,11 +60,11 @@ module Helpers
         }
 
         def self.min_ios_version_supported
-            return '13.4'
+            return '15.1'
         end
 
         def self.min_xcode_version_supported
-            return '14.3'
+            return '15.1'
         end
 
         def self.folly_config
