@@ -18,9 +18,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
-import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.LayerDrawable;
 import android.os.Build;
 import android.view.MotionEvent;
 import android.view.View;
@@ -31,19 +29,15 @@ import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.R;
-import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.UiThreadUtil;
-import com.facebook.react.common.annotations.UnstableReactNativeAPI;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
-import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.touch.OnInterceptTouchEventListener;
 import com.facebook.react.touch.ReactHitSlopView;
 import com.facebook.react.touch.ReactInterceptingViewGroup;
 import com.facebook.react.uimanager.BackgroundStyleApplicator;
-import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.LengthPercentage;
 import com.facebook.react.uimanager.LengthPercentageType;
 import com.facebook.react.uimanager.MeasureSpecAssertions;
@@ -55,17 +49,12 @@ import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
 import com.facebook.react.uimanager.ReactOverflowViewWithInset;
 import com.facebook.react.uimanager.ReactPointerEventsView;
 import com.facebook.react.uimanager.ReactZIndexedViewGroup;
-import com.facebook.react.uimanager.RootView;
-import com.facebook.react.uimanager.RootViewUtil;
 import com.facebook.react.uimanager.ViewGroupDrawingOrderHelper;
 import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.drawable.CSSBackgroundDrawable;
 import com.facebook.react.uimanager.style.BorderRadiusProp;
 import com.facebook.react.uimanager.style.BorderStyle;
-import com.facebook.react.uimanager.style.ComputedBorderRadius;
-import com.facebook.react.uimanager.style.CornerRadii;
-import com.facebook.react.uimanager.style.Gradient;
 import com.facebook.react.uimanager.style.LogicalEdge;
 import com.facebook.react.uimanager.style.Overflow;
 
@@ -236,40 +225,12 @@ public class ReactViewGroup extends ViewGroup
 
   @Override
   public void setBackgroundColor(int color) {
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      BackgroundStyleApplicator.setBackgroundColor(this, color);
-    } else {
-      if (color == Color.TRANSPARENT && mCSSBackgroundDrawable == null) {
-        // don't do anything, no need to allocate ReactBackgroundDrawable for transparent background
-      } else {
-        getOrCreateReactViewBackground().setColor(color);
-      }
-    }
-  }
-
-  @UnstableReactNativeAPI
-  /*package*/ void setGradients(@Nullable Gradient[] gradient) {
-    getOrCreateReactViewBackground().setGradients(gradient);
+    BackgroundStyleApplicator.setBackgroundColor(this, color);
   }
 
   @Deprecated(since = "0.76.0", forRemoval = true)
   public void setTranslucentBackgroundDrawable(@Nullable Drawable background) {
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      BackgroundStyleApplicator.setFeedbackUnderlay(this, background);
-    } else {
-      // it's required to call setBackground to null, as in some of the cases we may set new
-      // background to be a layer drawable that contains a drawable that has been setup
-      // as a background previously. This will not work correctly as the drawable callback logic is
-      // messed up in AOSP
-      updateBackgroundDrawable(null);
-      if (mCSSBackgroundDrawable != null && background != null) {
-        LayerDrawable layerDrawable =
-            new LayerDrawable(new Drawable[] {mCSSBackgroundDrawable, background});
-        updateBackgroundDrawable(layerDrawable);
-      } else if (background != null) {
-        updateBackgroundDrawable(background);
-      }
-    }
+    BackgroundStyleApplicator.setFeedbackUnderlay(this, background);
   }
 
   @Override
@@ -329,20 +290,12 @@ public class ReactViewGroup extends ViewGroup
   }
 
   public void setBorderWidth(int position, float width) {
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      BackgroundStyleApplicator.setBorderWidth(
-          this, LogicalEdge.values()[position], PixelUtil.toDIPFromPixel(width));
-    } else {
-      getOrCreateReactViewBackground().setBorderWidth(position, width);
-    }
+    BackgroundStyleApplicator.setBorderWidth(
+        this, LogicalEdge.values()[position], PixelUtil.toDIPFromPixel(width));
   }
 
   public void setBorderColor(int position, @Nullable Integer color) {
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      BackgroundStyleApplicator.setBorderColor(this, LogicalEdge.values()[position], color);
-    } else {
-      getOrCreateReactViewBackground().setBorderColor(position, color);
-    }
+    BackgroundStyleApplicator.setBorderColor(this, LogicalEdge.values()[position], color);
   }
 
   /**
@@ -358,34 +311,21 @@ public class ReactViewGroup extends ViewGroup
    */
   @Deprecated(since = "0.75.0", forRemoval = true)
   public void setBorderRadius(float borderRadius, int position) {
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      @Nullable
-      LengthPercentage radius =
-          Float.isNaN(borderRadius)
-              ? null
-              : new LengthPercentage(borderRadius, LengthPercentageType.POINT);
-      BackgroundStyleApplicator.setBorderRadius(this, BorderRadiusProp.values()[position], radius);
-    } else {
-      getOrCreateReactViewBackground().setRadius(borderRadius, position);
-    }
+    @Nullable
+    LengthPercentage radius =
+        Float.isNaN(borderRadius)
+            ? null
+            : new LengthPercentage(borderRadius, LengthPercentageType.POINT);
+    BackgroundStyleApplicator.setBorderRadius(this, BorderRadiusProp.values()[position], radius);
   }
 
   public void setBorderRadius(BorderRadiusProp property, @Nullable LengthPercentage borderRadius) {
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      BackgroundStyleApplicator.setBorderRadius(this, property, borderRadius);
-    } else {
-      CSSBackgroundDrawable backgroundDrawable = getOrCreateReactViewBackground();
-      backgroundDrawable.setBorderRadius(property, borderRadius);
-    }
+    BackgroundStyleApplicator.setBorderRadius(this, property, borderRadius);
   }
 
   public void setBorderStyle(@Nullable String style) {
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      BackgroundStyleApplicator.setBorderStyle(
-          this, style == null ? null : BorderStyle.fromString(style));
-    } else {
-      getOrCreateReactViewBackground().setBorderStyle(style);
-    }
+    BackgroundStyleApplicator.setBorderStyle(
+        this, style == null ? null : BorderStyle.fromString(style));
   }
 
   @Override
@@ -846,39 +786,8 @@ public class ReactViewGroup extends ViewGroup
 
   @VisibleForTesting
   public int getBackgroundColor() {
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      @Nullable Integer color = BackgroundStyleApplicator.getBackgroundColor(this);
-      return color == null ? DEFAULT_BACKGROUND_COLOR : color;
-    } else {
-      if (getBackground() != null) {
-        return ((CSSBackgroundDrawable) getBackground()).getColor();
-      }
-      return DEFAULT_BACKGROUND_COLOR;
-    }
-  }
-
-  /* package */ CSSBackgroundDrawable getOrCreateReactViewBackground() {
-    if (mCSSBackgroundDrawable == null) {
-      mCSSBackgroundDrawable = new CSSBackgroundDrawable(getContext());
-      Drawable backgroundDrawable = getBackground();
-      updateBackgroundDrawable(
-          null); // required so that drawable callback is cleared before we add the
-      // drawable back as a part of LayerDrawable
-      if (backgroundDrawable == null) {
-        updateBackgroundDrawable(mCSSBackgroundDrawable);
-      } else {
-        LayerDrawable layerDrawable =
-            new LayerDrawable(new Drawable[] {mCSSBackgroundDrawable, backgroundDrawable});
-        updateBackgroundDrawable(layerDrawable);
-      }
-      if (!ReactNativeFeatureFlags.setAndroidLayoutDirection()) {
-        mCSSBackgroundDrawable.setLayoutDirectionOverride(
-            I18nUtil.getInstance().isRTL(getContext())
-                ? LAYOUT_DIRECTION_RTL
-                : LAYOUT_DIRECTION_LTR);
-      }
-    }
-    return mCSSBackgroundDrawable;
+    @Nullable Integer color = BackgroundStyleApplicator.getBackgroundColor(this);
+    return color == null ? DEFAULT_BACKGROUND_COLOR : color;
   }
 
   @Override
@@ -968,33 +877,10 @@ public class ReactViewGroup extends ViewGroup
 
   @Override
   protected void dispatchDraw(Canvas canvas) {
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      if (mOverflow != Overflow.VISIBLE) {
-        BackgroundStyleApplicator.clipToPaddingBox(this, canvas);
-      }
-      super.dispatchDraw(canvas);
-      return;
+    if (mOverflow != Overflow.VISIBLE) {
+      BackgroundStyleApplicator.clipToPaddingBox(this, canvas);
     }
-
-    try {
-      dispatchOverflowDraw(canvas);
-      super.dispatchDraw(canvas);
-    } catch (NullPointerException | StackOverflowError e) {
-      // Adding special exception management for StackOverflowError for logging purposes.
-      // This will be removed in the future.
-      RootView rootView = RootViewUtil.getRootView(ReactViewGroup.this);
-      if (rootView != null) {
-        rootView.handleException(e);
-      } else {
-        if (getContext() instanceof ReactContext) {
-          ReactContext reactContext = (ReactContext) getContext();
-          reactContext.handleException(
-              new IllegalViewOperationException("StackOverflowException", this, e));
-        } else {
-          throw e;
-        }
-      }
-    }
+    super.dispatchDraw(canvas);
   }
 
   @Override
@@ -1031,76 +917,6 @@ public class ReactViewGroup extends ViewGroup
       CanvasUtil.enableZ(canvas, false);
     }
     return result;
-  }
-
-  private void dispatchOverflowDraw(Canvas canvas) {
-    switch (mOverflow) {
-      case VISIBLE:
-        if (mPath != null) {
-          mPath.rewind();
-        }
-        break;
-      case HIDDEN:
-      case SCROLL:
-        float left = 0f;
-        float top = 0f;
-        float right = getWidth();
-        float bottom = getHeight();
-
-        boolean hasClipPath = false;
-
-        if (mCSSBackgroundDrawable != null) {
-          final RectF borderWidth = mCSSBackgroundDrawable.getDirectionAwareBorderInsets();
-
-          if (borderWidth.top > 0
-              || borderWidth.left > 0
-              || borderWidth.bottom > 0
-              || borderWidth.right > 0) {
-            left += borderWidth.left;
-            top += borderWidth.top;
-            right -= borderWidth.right;
-            bottom -= borderWidth.bottom;
-          }
-
-          final ComputedBorderRadius borderRadius =
-              mCSSBackgroundDrawable.getComputedBorderRadius();
-
-          if (borderRadius.hasRoundedBorders()) {
-            if (mPath == null) {
-              mPath = new Path();
-            }
-
-            CornerRadii topLeftRadius = borderRadius.getTopLeft().toPixelFromDIP();
-            CornerRadii topRightRadius = borderRadius.getTopRight().toPixelFromDIP();
-            CornerRadii bottomLeftRadius = borderRadius.getBottomLeft().toPixelFromDIP();
-            CornerRadii bottomRightRadius = borderRadius.getBottomRight().toPixelFromDIP();
-
-            mPath.rewind();
-            mPath.addRoundRect(
-                new RectF(left, top, right, bottom),
-                new float[] {
-                  Math.max(topLeftRadius.getHorizontal() - borderWidth.left, 0),
-                  Math.max(topLeftRadius.getVertical() - borderWidth.top, 0),
-                  Math.max(topRightRadius.getHorizontal() - borderWidth.right, 0),
-                  Math.max(topRightRadius.getVertical() - borderWidth.top, 0),
-                  Math.max(bottomRightRadius.getHorizontal() - borderWidth.right, 0),
-                  Math.max(bottomRightRadius.getVertical() - borderWidth.bottom, 0),
-                  Math.max(bottomLeftRadius.getHorizontal() - borderWidth.left, 0),
-                  Math.max(bottomLeftRadius.getVertical() - borderWidth.bottom, 0),
-                },
-                Path.Direction.CW);
-            canvas.clipPath(mPath);
-            hasClipPath = true;
-          }
-        }
-
-        if (!hasClipPath) {
-          canvas.clipRect(new RectF(left, top, right, bottom));
-        }
-        break;
-      default:
-        break;
-    }
   }
 
   public void setOpacityIfPossible(float opacity) {
