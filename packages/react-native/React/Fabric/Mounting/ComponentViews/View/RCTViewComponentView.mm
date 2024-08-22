@@ -826,7 +826,7 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
         RCTCornerInsets cornerInsets =
             RCTGetCornerInsets(RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii), UIEdgeInsetsZero);
         maskLayer = RCTCreateMaskLayer(self.bounds, cornerInsets);
-    } else if (borderMetrics.borderRadii.isUniform()) {
+    } else if (isBorderRadiiUniform) {
         _backgroundLayer.cornerRadius = borderMetrics.borderRadii.topLeft;
     } else {
         RCTCornerInsets cornerInsets =
