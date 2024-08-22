@@ -9,7 +9,6 @@ package com.facebook.react.views.image
 
 import android.graphics.Color
 import android.graphics.PorterDuff
-import androidx.annotation.ColorInt
 import com.facebook.common.logging.FLog
 import com.facebook.drawee.backends.pipeline.Fresco
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder
@@ -230,11 +229,6 @@ public constructor(
     if (headers != null) {
       view.setHeaders(headers)
     }
-  }
-
-  @ReactProp(name = ViewProps.BOX_SHADOW, customType = "BoxShadow")
-  public fun setBoxShadow(view: ReactImageView, shadows: ReadableArray?): Unit {
-    BackgroundStyleApplicator.setBoxShadow(view, shadows)
   }
 
   public override fun getExportedCustomDirectEventTypeConstants(): MutableMap<String, Any> =

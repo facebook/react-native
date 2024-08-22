@@ -82,4 +82,6 @@ public interface BaseViewManagerInterface<T : View> {
   public fun setTranslateY(view: T, translateY: Float)
 
   public fun setZIndex(view: T, zIndex: Float)
+
+  public fun setBoxShadow(view: T, shadows: ReadableArray?)
 }
