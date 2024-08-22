@@ -855,6 +855,13 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
                                                     blue:multiplicativeBrightness
                                                    alpha:self.layer.opacity]
                                        .CGColor;
+    if (borderMetrics.borderRadii.isUniform()) {
+      _filterLayer.cornerRadius = borderMetrics.borderRadii.topLeft;
+    } else {
+      RCTCornerInsets cornerInsets =
+          RCTGetCornerInsets(RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii), UIEdgeInsetsZero);
+      _filterLayer.mask = [self createMaskLayer:self.bounds cornerInsets:cornerInsets];
+    }
     // So that this layer is always above any potential sublayers this view may
     // add
     _filterLayer.zPosition = CGFLOAT_MAX;
