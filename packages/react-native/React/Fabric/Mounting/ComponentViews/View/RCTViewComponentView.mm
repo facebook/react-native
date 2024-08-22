@@ -624,10 +624,14 @@ using namespace facebook::react;
 static RCTCornerRadii RCTCornerRadiiFromBorderRadii(BorderRadii borderRadii)
 {
   return RCTCornerRadii{
-      .topLeft = (CGFloat)borderRadii.topLeft,
-      .topRight = (CGFloat)borderRadii.topRight,
-      .bottomLeft = (CGFloat)borderRadii.bottomLeft,
-      .bottomRight = (CGFloat)borderRadii.bottomRight};
+      .topLeftHorizontal = (CGFloat)borderRadii.topLeft.horizontal,
+      .topLeftVertical = (CGFloat)borderRadii.topLeft.vertical,
+      .topRightHorizontal = (CGFloat)borderRadii.topRight.horizontal,
+      .topRightVertical = (CGFloat)borderRadii.topRight.vertical,
+      .bottomLeftHorizontal = (CGFloat)borderRadii.bottomLeft.horizontal,
+      .bottomLeftVertical = (CGFloat)borderRadii.bottomLeft.vertical,
+      .bottomRightHorizontal = (CGFloat)borderRadii.bottomRight.horizontal,
+      .bottomRightVertical = (CGFloat)borderRadii.bottomRight.vertical};
 }
 
 static RCTBorderColors RCTCreateRCTBorderColorsFromBorderColors(BorderColors borderColors)
@@ -748,7 +752,7 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     CGColorRef borderColor = RCTCreateCGColorRefFromSharedColor(borderMetrics.borderColors.left);
     layer.borderColor = borderColor;
     CGColorRelease(borderColor);
-    layer.cornerRadius = (CGFloat)borderMetrics.borderRadii.topLeft;
+    layer.cornerRadius = (CGFloat)borderMetrics.borderRadii.topLeft.horizontal;
 
     layer.cornerCurve = CornerCurveFromBorderCurve(borderMetrics.borderCurves.topLeft);
 
@@ -810,7 +814,7 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     if (self.clipsToBounds) {
       if (borderMetrics.borderRadii.isUniform()) {
         // In this case we can simply use `cornerRadius` exclusively.
-        cornerRadius = borderMetrics.borderRadii.topLeft;
+        cornerRadius = borderMetrics.borderRadii.topLeft.horizontal;
       } else {
         RCTCornerInsets cornerInsets =
             RCTGetCornerInsets(RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii), UIEdgeInsetsZero);
@@ -856,7 +860,7 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
                                                    alpha:self.layer.opacity]
                                        .CGColor;
     if (borderMetrics.borderRadii.isUniform()) {
-      _filterLayer.cornerRadius = borderMetrics.borderRadii.topLeft;
+      _filterLayer.cornerRadius = borderMetrics.borderRadii.topLeft.horizontal;
     } else {
       RCTCornerInsets cornerInsets =
           RCTGetCornerInsets(RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii), UIEdgeInsetsZero);

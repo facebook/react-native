@@ -32,10 +32,14 @@ static CGFloat adjustedCornerRadius(CGFloat cornerRadius, CGFloat spreadDistance
 static RCTCornerRadii cornerRadiiForBoxShadow(RCTCornerRadii cornerRadii, CGFloat spreadDistance)
 {
   return {
-      adjustedCornerRadius(cornerRadii.topLeft, spreadDistance),
-      adjustedCornerRadius(cornerRadii.topRight, spreadDistance),
-      adjustedCornerRadius(cornerRadii.bottomLeft, spreadDistance),
-      adjustedCornerRadius(cornerRadii.bottomRight, spreadDistance)};
+      adjustedCornerRadius(cornerRadii.topLeftHorizontal, spreadDistance),
+      adjustedCornerRadius(cornerRadii.topLeftVertical, spreadDistance),
+      adjustedCornerRadius(cornerRadii.topRightHorizontal, spreadDistance),
+      adjustedCornerRadius(cornerRadii.topRightVertical, spreadDistance),
+      adjustedCornerRadius(cornerRadii.bottomLeftHorizontal, spreadDistance),
+      adjustedCornerRadius(cornerRadii.bottomLeftVertical, spreadDistance),
+      adjustedCornerRadius(cornerRadii.bottomRightHorizontal, spreadDistance),
+      adjustedCornerRadius(cornerRadii.bottomRightVertical, spreadDistance)};
 }
 
 // Returns the smallest CGRect that will contain all shadows and the layer itself.
