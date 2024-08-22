@@ -8,7 +8,7 @@
  * @format
  */
 
-import * as ReactNativeFeatureFlags from '../../react-native/src/private/featureflags/ReactNativeFeatureFlags';
+import * as ReactNativeFeatureFlags from 'react-native/src/private/featureflags/ReactNativeFeatureFlags';
 import type {CellRendererProps, RenderItemType} from './VirtualizedListProps';
 import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 import type {
