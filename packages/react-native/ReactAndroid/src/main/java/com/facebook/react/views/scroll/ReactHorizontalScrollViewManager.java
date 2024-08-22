@@ -366,9 +366,4 @@ public class ReactHorizontalScrollViewManager extends ViewGroupManager<ReactHori
   public void setBoxShadow(ReactHorizontalScrollView view, @Nullable ReadableArray shadows) {
     BackgroundStyleApplicator.setBoxShadow(view, shadows);
   }
-
-  @Override
-  public void setBackgroundColor(ReactHorizontalScrollView view, @ColorInt int backgroundColor) {
-    BackgroundStyleApplicator.setBackgroundColor(view, backgroundColor);
-  }
 }

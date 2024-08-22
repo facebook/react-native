@@ -14,6 +14,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewParent;
 import android.view.accessibility.AccessibilityEvent;
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
@@ -27,6 +28,7 @@ import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.uimanager.BackgroundStyleApplicator;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.Role;
 import com.facebook.react.uimanager.annotations.ReactProp;
@@ -193,8 +195,8 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
       name = ViewProps.BACKGROUND_COLOR,
       defaultInt = Color.TRANSPARENT,
       customType = "Color")
-  public void setBackgroundColor(@NonNull T view, int backgroundColor) {
-    view.setBackgroundColor(backgroundColor);
+  public void setBackgroundColor(@NonNull T view, @ColorInt int backgroundColor) {
+    BackgroundStyleApplicator.setBackgroundColor(view, backgroundColor);
   }
 
   @Override

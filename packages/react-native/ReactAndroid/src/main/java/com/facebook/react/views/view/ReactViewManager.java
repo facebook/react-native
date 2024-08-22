@@ -9,7 +9,6 @@ package com.facebook.react.views.view;
 
 import android.graphics.Rect;
 import android.view.View;
-import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Nullsafe;
@@ -348,11 +347,6 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
   @ReactProp(name = ViewProps.BOX_SHADOW, customType = "BoxShadow")
   public void setBoxShadow(ReactViewGroup view, @Nullable ReadableArray shadows) {
     BackgroundStyleApplicator.setBoxShadow(view, shadows);
-  }
-
-  @Override
-  public void setBackgroundColor(ReactViewGroup view, @ColorInt int backgroundColor) {
-    BackgroundStyleApplicator.setBackgroundColor(view, backgroundColor);
   }
 
   @Override

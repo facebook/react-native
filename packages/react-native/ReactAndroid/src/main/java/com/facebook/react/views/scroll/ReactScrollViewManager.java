@@ -349,11 +349,6 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
   }
 
   @Override
-  public void setBackgroundColor(ReactScrollView view, @ColorInt int backgroundColor) {
-    BackgroundStyleApplicator.setBackgroundColor(view, backgroundColor);
-  }
-
-  @Override
   public @Nullable Object updateState(
       ReactScrollView view, ReactStylesDiffMap props, StateWrapper stateWrapper) {
     view.setStateWrapper(stateWrapper);

@@ -237,13 +237,6 @@ public constructor(
     BackgroundStyleApplicator.setBoxShadow(view, shadows)
   }
 
-  public override fun setBackgroundColor(
-      view: ReactImageView,
-      @ColorInt backgroundColor: Int
-  ): Unit {
-    BackgroundStyleApplicator.setBackgroundColor(view, backgroundColor)
-  }
-
   public override fun getExportedCustomDirectEventTypeConstants(): MutableMap<String, Any> =
       (super.getExportedCustomDirectEventTypeConstants() ?: mutableMapOf<String, Any>()).apply {
         put(

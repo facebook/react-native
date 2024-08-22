@@ -237,9 +237,4 @@ public abstract class ReactTextAnchorViewManager<T extends View, C extends React
   public void setBoxShadow(ReactTextView view, @Nullable ReadableArray shadows) {
     BackgroundStyleApplicator.setBoxShadow(view, shadows);
   }
-
-  @Override
-  public void setBackgroundColor(T view, @ColorInt int backgroundColor) {
-    BackgroundStyleApplicator.setBackgroundColor(view, backgroundColor);
-  }
 }
