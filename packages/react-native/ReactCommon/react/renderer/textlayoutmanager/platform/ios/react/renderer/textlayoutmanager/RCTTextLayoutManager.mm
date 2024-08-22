@@ -369,7 +369,7 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
                 if (ReactNativeFeatureFlags::enableAlignItemsBaselineOnFabricIOS()) {
                   CGFloat baseline = [layoutManager locationForGlyphAtIndex:range.location].y;
 
-                  frame = {{glyphRect.origin.x, baseline - attachmentSize.height}, attachmentSize};
+                  frame = {{glyphRect.origin.x, glyphRect.origin.y + baseline - attachmentSize.height}, attachmentSize};
                 } else {
                   UIFont *font = [textStorage attribute:NSFontAttributeName atIndex:range.location effectiveRange:nil];
 
