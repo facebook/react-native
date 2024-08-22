@@ -15,7 +15,6 @@ import android.os.Build
 import android.view.View
 import androidx.annotation.ColorInt
 import com.facebook.react.bridge.ReadableArray
-import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.uimanager.PixelUtil.dpToPx
 import com.facebook.react.uimanager.PixelUtil.pxToDp
 import com.facebook.react.uimanager.common.UIManagerType
@@ -37,7 +36,6 @@ import com.facebook.react.uimanager.style.LogicalEdge
  * BackgroundStyleApplicator is responsible for applying backgrounds, borders, and related effects,
  * to an Android view
  */
-@OptIn(UnstableReactNativeAPI::class)
 public object BackgroundStyleApplicator {
 
   @JvmStatic

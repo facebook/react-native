@@ -9,14 +9,12 @@ package com.facebook.react.uimanager.drawable
 
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.LayerDrawable
-import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.uimanager.style.BorderInsets
 
 /**
  * CompositeBackgroundDrawable can overlay multiple different layers, shadows, and native effects
  * such as ripple, into an Android View's background drawable.
  */
-@OptIn(UnstableReactNativeAPI::class)
 internal class CompositeBackgroundDrawable(
     /**
      * Any non-react-managed background already part of the view, like one set as Android style on a
