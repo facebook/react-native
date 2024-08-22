@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<82f5464427c8411040c595775767a14c>>
+ * @generated SignedSource<<79105bae18d1d43c3d425ddc9e7eb56d>>
  */
 
 /**
@@ -105,6 +105,11 @@ bool NativeReactNativeFeatureFlags::enableFabricRendererExclusively(
 bool NativeReactNativeFeatureFlags::enableGranularShadowTreeStateReconciliation(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableGranularShadowTreeStateReconciliation();
+}
+
+bool NativeReactNativeFeatureFlags::enableLayoutAnimationsOnIOS(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableLayoutAnimationsOnIOS();
 }
 
 bool NativeReactNativeFeatureFlags::enableLongTaskAPI(

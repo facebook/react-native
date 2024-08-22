@@ -10,9 +10,6 @@
 namespace facebook::react {
 
 bool EmptyReactNativeConfig::getBool(const std::string& param) const {
-  if (param == "react_fabric:enabled_layout_animations_ios") {
-    return true;
-  }
   if (param == "react_fabric:enabled_automatic_interop_android") {
     return true;
   }

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<88919d5889d0c1a03e0dcdbdcf7adddf>>
+ * @generated SignedSource<<42b958c53ce709e54864e604135633a5>>
  */
 
 /**
@@ -81,6 +81,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
 
   bool enableGranularShadowTreeStateReconciliation() override {
     return false;
+  }
+
+  bool enableLayoutAnimationsOnIOS() override {
+    return true;
   }
 
   bool enableLongTaskAPI() override {
