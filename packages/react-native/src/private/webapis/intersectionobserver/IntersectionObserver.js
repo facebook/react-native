@@ -141,12 +141,14 @@ export default class IntersectionObserver {
       return;
     }
 
-    IntersectionObserverManager.observe({
+    const didStartObserving = IntersectionObserverManager.observe({
       intersectionObserverId: this._getOrCreateIntersectionObserverId(),
       target,
     });
 
-    this._observationTargets.add(target);
+    if (didStartObserving) {
+      this._observationTargets.add(target);
+    }
   }
 
   /**
