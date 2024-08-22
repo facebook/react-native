@@ -45,7 +45,6 @@ import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.mapbuffer.MapBuffer;
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.BackgroundStyleApplicator;
 import com.facebook.react.uimanager.BaseViewManager;
