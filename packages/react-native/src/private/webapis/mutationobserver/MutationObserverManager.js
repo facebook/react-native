@@ -43,6 +43,13 @@ const registeredMutationObservers: Map<
   $ReadOnly<{observer: MutationObserver, callback: MutationObserverCallback}>,
 > = new Map();
 
+// The mapping between ReactNativeElement and their corresponding shadow node
+// needs to be kept here because React removes the link when unmounting.
+const targetToShadowNodeMap: WeakMap<
+  ReactNativeElement,
+  ReturnType<typeof getShadowNode>,
+> = new WeakMap();
+
 /**
  * Registers the given mutation observer and returns a unique ID for it,
  * which is required to start observing targets.
@@ -85,10 +92,10 @@ export function observe({
   mutationObserverId: MutationObserverId,
   target: ReactNativeElement,
   subtree: boolean,
-}): void {
+}): boolean {
   if (NativeMutationObserver == null) {
     warnNoNativeMutationObserver();
-    return;
+    return false;
   }
 
   const registeredObserver =
@@ -97,16 +104,16 @@ export function observe({
     console.error(
       `MutationObserverManager: could not start observing target because MutationObserver with ID ${mutationObserverId} was not registered.`,
     );
-    return;
+    return false;
   }
 
   const targetShadowNode = getShadowNode(target);
   if (targetShadowNode == null) {
-    console.error(
-      'MutationObserverManager: could not find reference to host node from target',
-    );
-    return;
+    // The target is disconnected. We can't observe it anymore.
+    return false;
   }
+
+  targetToShadowNodeMap.set(target, targetShadowNode);
 
   if (!isConnected) {
     NativeMutationObserver.connect(
@@ -121,11 +128,13 @@ export function observe({
     isConnected = true;
   }
 
-  return NativeMutationObserver.observe({
+  NativeMutationObserver.observe({
     mutationObserverId,
     targetShadowNode,
     subtree,
   });
+
+  return true;
 }
 
 export function unobserve(
@@ -146,10 +155,10 @@ export function unobserve(
     return;
   }
 
-  const targetShadowNode = getShadowNode(target);
+  const targetShadowNode = targetToShadowNodeMap.get(target);
   if (targetShadowNode == null) {
     console.error(
-      'MutationObserverManager: could not find reference to host node from target',
+      'MutationObserverManager: could not find registration data for target',
     );
     return;
   }
