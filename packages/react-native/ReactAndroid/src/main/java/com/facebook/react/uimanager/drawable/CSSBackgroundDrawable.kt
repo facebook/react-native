@@ -25,7 +25,6 @@ import android.graphics.Shader
 import android.graphics.drawable.Drawable
 import android.view.View
 import androidx.core.graphics.ColorUtils
-import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.common.annotations.VisibleForTesting
 import com.facebook.react.modules.i18nmanager.I18nUtil.Companion.instance
 import com.facebook.react.uimanager.FloatUtil.floatsEqual
@@ -50,8 +49,7 @@ import com.facebook.react.uimanager.style.Gradient
  * `mBorderWidthResult` and similar. When only background color is set we won't allocate any
  * extra/unnecessary objects.
  */
-@UnstableReactNativeAPI
-public class CSSBackgroundDrawable(private val mContext: Context) : Drawable() {
+internal class CSSBackgroundDrawable(private val mContext: Context) : Drawable() {
   /* Value at Spacing.ALL index used for rounded borders, whole array used by rectangular borders */
   private var mBorderWidth: Spacing? = null
   private var mBorderRGB: Spacing? = null
