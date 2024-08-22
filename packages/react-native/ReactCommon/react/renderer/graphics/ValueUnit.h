@@ -35,7 +35,7 @@ struct ValueUnit {
         return value;
       case UnitType::Percent:
         return value * referenceLength * 0.01f;
-      default:
+      case UnitType::Undefined:
         return 0.0f;
     }
   }
