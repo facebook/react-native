@@ -116,10 +116,10 @@ export function observe({
 }: {
   intersectionObserverId: IntersectionObserverId,
   target: ReactNativeElement,
-}): void {
+}): boolean {
   if (NativeIntersectionObserver == null) {
     warnNoNativeIntersectionObserver();
-    return;
+    return false;
   }
 
   const registeredObserver = registeredIntersectionObservers.get(
@@ -129,15 +129,13 @@ export function observe({
     console.error(
       `IntersectionObserverManager: could not start observing target because IntersectionObserver with ID ${intersectionObserverId} was not registered.`,
     );
-    return;
+    return false;
   }
 
   const targetShadowNode = getShadowNode(target);
   if (targetShadowNode == null) {
-    console.error(
-      'IntersectionObserverManager: could not find reference to host node from target',
-    );
-    return;
+    // The target is disconnected. We can't observe it anymore.
+    return false;
   }
 
   const instanceHandle = getInstanceHandle(target);
@@ -145,7 +143,7 @@ export function observe({
     console.error(
       'IntersectionObserverManager: could not find reference to instance handle from target',
     );
-    return;
+    return false;
   }
 
   // Store the mapping between the instance handle and the target so we can
@@ -160,11 +158,13 @@ export function observe({
     isConnected = true;
   }
 
-  return NativeIntersectionObserver.observe({
+  NativeIntersectionObserver.observe({
     intersectionObserverId,
     targetShadowNode,
     thresholds: registeredObserver.observer.thresholds,
   });
+
+  return true;
 }
 
 export function unobserve(
