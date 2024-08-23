@@ -229,7 +229,9 @@ MethodCallResult MethodInvoker::invoke(
   auto env = Environment::current();
   auto argCount = signature_.size() - 2;
   JniLocalScope scope(env, static_cast<int>(argCount));
-  jvalue args[argCount];
+  std::vector<jvalue> argsStorage(
+      argCount + 1); // ensure we have at least 1 element
+  jvalue* args = argsStorage.data();
   std::transform(
       signature_.begin() + 2,
       signature_.end(),
