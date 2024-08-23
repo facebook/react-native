@@ -363,7 +363,7 @@ type IOSProps = $ReadOnly<{|
    * @platform ios
    */
   lineBreakModeIOS?: ?(
-    | 'wordWrapping'
+    | 'word'
     | 'char'
     | 'clip'
     | 'head'

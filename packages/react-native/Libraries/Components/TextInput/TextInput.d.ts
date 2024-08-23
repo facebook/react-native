@@ -321,7 +321,7 @@ export interface TextInputIOSProps {
    * @platform ios
    */
   lineBreakModeIOS?:
-    | 'wordWrapping'
+    | 'word'
     | 'char'
     | 'clip'
     | 'head'

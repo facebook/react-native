@@ -869,7 +869,7 @@ const textInputExamples: Array<RNTesterModuleExample> = [
     title: 'Line Break Mode',
     render: function (): React.Node {
       const lineBreakMode = [
-        'wordWrapping',
+        'word',
         'char',
         'clip',
         'head',

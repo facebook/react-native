@@ -2988,7 +2988,7 @@ type IOSProps = $ReadOnly<{|
   textContentType?: ?TextContentType,
   lineBreakStrategyIOS?: ?(\\"none\\" | \\"standard\\" | \\"hangul-word\\" | \\"push-out\\"),
   lineBreakModeIOS?: ?(
-    | \\"wordWrapping\\"
+    | \\"word\\"
     | \\"char\\"
     | \\"clip\\"
     | \\"head\\"
@@ -3341,7 +3341,7 @@ type IOSProps = $ReadOnly<{|
   textContentType?: ?TextContentType,
   lineBreakStrategyIOS?: ?(\\"none\\" | \\"standard\\" | \\"hangul-word\\" | \\"push-out\\"),
   lineBreakModeIOS?: ?(
-    | \\"wordWrapping\\"
+    | \\"word\\"
     | \\"char\\"
     | \\"clip\\"
     | \\"head\\"
