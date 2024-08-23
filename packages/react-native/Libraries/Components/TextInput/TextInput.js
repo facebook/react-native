@@ -362,14 +362,7 @@ type IOSProps = $ReadOnly<{|
    * Set line break mode on iOS.
    * @platform ios
    */
-  lineBreakModeIOS?: ?(
-    | 'word'
-    | 'char'
-    | 'clip'
-    | 'head'
-    | 'middle'
-    | 'tail'
-  ),
+  lineBreakModeIOS?: ?('word' | 'char' | 'clip' | 'head' | 'middle' | 'tail'),
 
   /**
    * If `false`, the iOS system will not insert an extra space after a paste operation

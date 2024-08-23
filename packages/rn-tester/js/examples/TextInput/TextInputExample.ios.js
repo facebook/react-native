@@ -868,14 +868,7 @@ const textInputExamples: Array<RNTesterModuleExample> = [
   {
     title: 'Line Break Mode',
     render: function (): React.Node {
-      const lineBreakMode = [
-        'word',
-        'char',
-        'clip',
-        'head',
-        'middle',
-        'tail',
-      ];
+      const lineBreakMode = ['word', 'char', 'clip', 'head', 'middle', 'tail'];
       const textByCode = {
         en: 'verylongtext-dummydummydummydummydummydummydummydummydummydummydummydummy',
         ko: '한글개행한글개행-한글개행한글개행한글개행한글개행한글개행한글개행한글개행한글개행한글개행한글개행',
