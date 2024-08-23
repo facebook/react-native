@@ -233,6 +233,11 @@ NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttributes(c
     isParagraphStyleUsed = YES;
   }
 
+  if (textAttributes.lineBreakMode.has_value()) {
+    paragraphStyle.lineBreakMode = RCTNSLineBreakModeFromLineBreakMode(textAttributes.lineBreakMode.value());
+    isParagraphStyleUsed = YES;
+  }
+
   if (!isnan(textAttributes.lineHeight)) {
     CGFloat lineHeight = textAttributes.lineHeight * RCTEffectiveFontSizeMultiplierFromTextAttributes(textAttributes);
     paragraphStyle.minimumLineHeight = lineHeight;
