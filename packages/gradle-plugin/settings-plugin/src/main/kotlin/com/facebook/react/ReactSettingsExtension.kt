@@ -62,13 +62,13 @@ abstract class ReactSettingsExtension @Inject constructor(val settings: Settings
               .redirectError(ProcessBuilder.Redirect.INHERIT)
               .start()
       val finished = process.waitFor(5, TimeUnit.MINUTES)
+      val logger = Logging.getLogger("ReactSettingsExtension")
       if (!finished || (process.exitValue() != 0)) {
         val prefixCommand =
             "ERROR: autolinkLibrariesFromCommand: process ${command.joinToString(" ")}"
         val message =
-            if (!finished) "${prefixCommand} timed out"
-            else "${prefixCommand} exited with error code: ${process.exitValue()}"
-        val logger = Logging.getLogger("ReactSettingsExtension")
+            if (!finished) "$prefixCommand timed out"
+            else "$prefixCommand exited with error code: ${process.exitValue()}"
         logger.error(message)
         if (outputFile.length() != 0L) {
           logger.error(outputFile.readText().substring(0, 1024))
@@ -76,6 +76,9 @@ abstract class ReactSettingsExtension @Inject constructor(val settings: Settings
         outputFile.delete()
         throw GradleException(message)
       }
+      val prefixCommand = command.joinToString(separator = " ")
+      val model = JsonUtils.fromAutolinkingConfigJsonSimplified(outputFile)
+      logger.info("$prefixCommand:\n${"-".repeat(prefixCommand.length+1)}\n${model ?: "<empty: this is not good>"}")
     }
     linkLibraries(getLibrariesToAutolink(outputFile))
   }

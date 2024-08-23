@@ -10,6 +10,8 @@ package com.facebook.react.utils
 import com.facebook.react.model.ModelAutolinkingConfigJson
 import com.facebook.react.model.ModelPackageJson
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import com.google.gson.JsonElement
 import java.io.File
 
 object JsonUtils {
@@ -25,4 +27,15 @@ object JsonUtils {
         runCatching { gsonConverter.fromJson(it, ModelAutolinkingConfigJson::class.java) }
             .getOrNull()
       }
+
+  fun fromAutolinkingConfigJsonSimplified(input: File): String? {
+    val out = input.bufferedReader().use {
+      runCatching { gsonConverter.fromJson(it, JsonElement::class.java)}
+    }
+    val configJson = out.getOrNull()?.asJsonObject ?: return null
+    if (configJson.has("commands")) {
+      configJson.addProperty("commands", "// removed from output...")
+    }
+    return GsonBuilder().setPrettyPrinting().create().toJson(configJson)
+  }
 }
