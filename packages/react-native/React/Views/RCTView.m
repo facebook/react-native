@@ -723,8 +723,12 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x)
   // Return scaled radii
   return (RCTCornerRadii){
       topLeftRadius * MIN(topScaleFactor, leftScaleFactor),
+      topLeftRadius * MIN(topScaleFactor, leftScaleFactor),
+      topRightRadius * MIN(topScaleFactor, rightScaleFactor),
       topRightRadius * MIN(topScaleFactor, rightScaleFactor),
       bottomLeftRadius * MIN(bottomScaleFactor, leftScaleFactor),
+      bottomLeftRadius * MIN(bottomScaleFactor, leftScaleFactor),
+      bottomRightRadius * MIN(bottomScaleFactor, rightScaleFactor),
       bottomRightRadius * MIN(bottomScaleFactor, rightScaleFactor),
   };
 }
