@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3c32ce3847859db45d2e8bafb3cc31a1>>
+ * @generated SignedSource<<b188797845a400f7c824dbaad42aa2b1>>
  * @flow strict-local
  */
 
@@ -60,6 +60,7 @@ export type ReactNativeFeatureFlags = {
   enableFabricLogs: Getter<boolean>,
   enableFabricRendererExclusively: Getter<boolean>,
   enableGranularShadowTreeStateReconciliation: Getter<boolean>,
+  enableIOSViewClipToPaddingBox: Getter<boolean>,
   enableLayoutAnimationsOnIOS: Getter<boolean>,
   enableLongTaskAPI: Getter<boolean>,
   enableMicrotasks: Getter<boolean>,
@@ -219,6 +220,10 @@ export const enableFabricRendererExclusively: Getter<boolean> = createNativeFlag
  * When enabled, the renderer would only fail commits when they propagate state and the last commit that updated state changed before committing.
  */
 export const enableGranularShadowTreeStateReconciliation: Getter<boolean> = createNativeFlagGetter('enableGranularShadowTreeStateReconciliation', false);
+/**
+ * iOS Views will clip to their padding box vs border box
+ */
+export const enableIOSViewClipToPaddingBox: Getter<boolean> = createNativeFlagGetter('enableIOSViewClipToPaddingBox', false);
 /**
  * When enabled, LayoutAnimations API will animate state changes on iOS.
  */

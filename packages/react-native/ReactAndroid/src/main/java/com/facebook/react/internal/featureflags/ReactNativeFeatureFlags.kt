@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<37c55ee907c49bff0f6b3fe1d56dcfe6>>
+ * @generated SignedSource<<3ab43e4b7a4f75fbe87ec0d03aa5be2b>>
  */
 
 /**
@@ -111,6 +111,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableGranularShadowTreeStateReconciliation(): Boolean = accessor.enableGranularShadowTreeStateReconciliation()
+
+  /**
+   * iOS Views will clip to their padding box vs border box
+   */
+  @JvmStatic
+  public fun enableIOSViewClipToPaddingBox(): Boolean = accessor.enableIOSViewClipToPaddingBox()
 
   /**
    * When enabled, LayoutAnimations API will animate state changes on iOS.
