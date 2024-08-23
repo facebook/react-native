@@ -12,14 +12,14 @@
 
 import type {ColorSchemeName} from './NativeAppearance';
 
-import Appearance from './Appearance';
+import {addChangeListener, getColorScheme} from './Appearance';
 import {useSyncExternalStore} from 'react';
 
 const subscribe = (onStoreChange: () => void) => {
-  const appearanceSubscription = Appearance.addChangeListener(onStoreChange);
+  const appearanceSubscription = addChangeListener(onStoreChange);
   return () => appearanceSubscription.remove();
 };
 
 export default function useColorScheme(): ?ColorSchemeName {
-  return useSyncExternalStore(subscribe, Appearance.getColorScheme);
+  return useSyncExternalStore(subscribe, getColorScheme);
 }

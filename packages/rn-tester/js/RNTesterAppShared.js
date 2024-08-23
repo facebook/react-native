@@ -42,7 +42,6 @@ if (global.RN$Bridgeless === true && __DEV__) {
   NativeComponentRegistry.setRuntimeConfigProvider(() => {
     return {
       native: false,
-      strict: true,
       verify: true,
     };
   });

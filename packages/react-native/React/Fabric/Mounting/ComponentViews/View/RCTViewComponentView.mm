@@ -624,10 +624,14 @@ using namespace facebook::react;
 static RCTCornerRadii RCTCornerRadiiFromBorderRadii(BorderRadii borderRadii)
 {
   return RCTCornerRadii{
-      .topLeft = (CGFloat)borderRadii.topLeft,
-      .topRight = (CGFloat)borderRadii.topRight,
-      .bottomLeft = (CGFloat)borderRadii.bottomLeft,
-      .bottomRight = (CGFloat)borderRadii.bottomRight};
+      .topLeftHorizontal = (CGFloat)borderRadii.topLeft.horizontal,
+      .topLeftVertical = (CGFloat)borderRadii.topLeft.vertical,
+      .topRightHorizontal = (CGFloat)borderRadii.topRight.horizontal,
+      .topRightVertical = (CGFloat)borderRadii.topRight.vertical,
+      .bottomLeftHorizontal = (CGFloat)borderRadii.bottomLeft.horizontal,
+      .bottomLeftVertical = (CGFloat)borderRadii.bottomLeft.vertical,
+      .bottomRightHorizontal = (CGFloat)borderRadii.bottomRight.horizontal,
+      .bottomRightVertical = (CGFloat)borderRadii.bottomRight.vertical};
 }
 
 static RCTBorderColors RCTCreateRCTBorderColorsFromBorderColors(BorderColors borderColors)
@@ -748,7 +752,7 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     CGColorRef borderColor = RCTCreateCGColorRefFromSharedColor(borderMetrics.borderColors.left);
     layer.borderColor = borderColor;
     CGColorRelease(borderColor);
-    layer.cornerRadius = (CGFloat)borderMetrics.borderRadii.topLeft;
+    layer.cornerRadius = (CGFloat)borderMetrics.borderRadii.topLeft.horizontal;
 
     layer.cornerCurve = CornerCurveFromBorderCurve(borderMetrics.borderCurves.topLeft);
 
@@ -810,7 +814,7 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     if (self.clipsToBounds) {
       if (borderMetrics.borderRadii.isUniform()) {
         // In this case we can simply use `cornerRadius` exclusively.
-        cornerRadius = borderMetrics.borderRadii.topLeft;
+        cornerRadius = borderMetrics.borderRadii.topLeft.horizontal;
       } else {
         RCTCornerInsets cornerInsets =
             RCTGetCornerInsets(RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii), UIEdgeInsetsZero);
@@ -840,10 +844,12 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
   if (!_props->filter.empty()) {
     float multiplicativeBrightness = 1;
     for (const auto &primitive : _props->filter) {
-      if (primitive.type == FilterType::Brightness) {
-        multiplicativeBrightness *= primitive.amount;
-      } else if (primitive.type == FilterType::Opacity) {
-        self.layer.opacity *= primitive.amount;
+      if (std::holds_alternative<Float>(primitive.parameters)) {
+        if (primitive.type == FilterType::Brightness) {
+          multiplicativeBrightness *= std::get<Float>(primitive.parameters);
+        } else if (primitive.type == FilterType::Opacity) {
+          self.layer.opacity *= std::get<Float>(primitive.parameters);
+        }
       }
     }
 
@@ -855,6 +861,13 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
                                                     blue:multiplicativeBrightness
                                                    alpha:self.layer.opacity]
                                        .CGColor;
+    if (borderMetrics.borderRadii.isUniform()) {
+      _filterLayer.cornerRadius = borderMetrics.borderRadii.topLeft.horizontal;
+    } else {
+      RCTCornerInsets cornerInsets =
+          RCTGetCornerInsets(RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii), UIEdgeInsetsZero);
+      _filterLayer.mask = [self createMaskLayer:self.bounds cornerInsets:cornerInsets];
+    }
     // So that this layer is always above any potential sublayers this view may
     // add
     _filterLayer.zPosition = CGFLOAT_MAX;

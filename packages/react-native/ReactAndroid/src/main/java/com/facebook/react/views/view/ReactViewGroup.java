@@ -176,6 +176,13 @@ public class ReactViewGroup extends ViewGroup
   }
 
   /* package */ void recycleView() {
+    // Remove dangling listeners
+    if (mAllChildren != null && mChildrenLayoutChangeListener != null) {
+      for (int i = 0; i < mAllChildrenCount; i++) {
+        mAllChildren[i].removeOnLayoutChangeListener(mChildrenLayoutChangeListener);
+      }
+    }
+
     // Set default field values
     initView();
     mOverflowInset.setEmpty();

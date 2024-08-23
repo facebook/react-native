@@ -23,9 +23,8 @@ folly_version = folly_config[:version]
 is_new_arch_enabled = ENV["RCT_NEW_ARCH_ENABLED"] == "1"
 use_hermes = ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == '1'
 
-new_arch_enabled_flag = (is_new_arch_enabled ? " -DRCT_NEW_ARCH_ENABLED" : "")
-is_fabric_enabled = true #is_new_arch_enabled || ENV["RCT_FABRIC_ENABLED"]
-hermes_flag = (use_hermes ? " -DUSE_HERMES" : "")
+new_arch_enabled_flag = (is_new_arch_enabled ? " -DRCT_NEW_ARCH_ENABLED=1" : "")
+hermes_flag = (use_hermes ? " -DUSE_HERMES=1" : "")
 other_cflags = "$(inherited) " + folly_compiler_flags + new_arch_enabled_flag + hermes_flag
 
 header_search_paths = [

@@ -14,7 +14,7 @@ import com.facebook.react.bridge.ReactSoftExceptionLogger
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.UnexpectedNativeTypeException
 import com.facebook.react.module.annotations.ReactModule
-import com.facebook.react.uimanager.PixelUtil
+import com.facebook.react.uimanager.PixelUtil.dpToPx
 import com.facebook.react.uimanager.SimpleViewManager
 import com.facebook.react.uimanager.ThemedReactContext
 
@@ -53,12 +53,7 @@ public class DebuggingOverlayManager : SimpleViewManager<DebuggingOverlay>() {
             val right = (left + serializedRectangle.getDouble("width")).toFloat()
             val bottom = (top + serializedRectangle.getDouble("height")).toFloat()
 
-            val rectangle =
-                RectF(
-                    PixelUtil.toPixelFromDIP(left),
-                    PixelUtil.toPixelFromDIP(top),
-                    PixelUtil.toPixelFromDIP(right),
-                    PixelUtil.toPixelFromDIP(bottom))
+            val rectangle = RectF(left.dpToPx(), top.dpToPx(), right.dpToPx(), bottom.dpToPx())
 
             formattedTraceUpdates.add(TraceUpdate(id, rectangle, color))
           } catch (ex: Exception) {
@@ -98,12 +93,7 @@ public class DebuggingOverlayManager : SimpleViewManager<DebuggingOverlay>() {
             val top = element.getDouble("y").toFloat()
             val right = (left + element.getDouble("width")).toFloat()
             val bottom = (top + element.getDouble("height")).toFloat()
-            val rect =
-                RectF(
-                    PixelUtil.toPixelFromDIP(left),
-                    PixelUtil.toPixelFromDIP(top),
-                    PixelUtil.toPixelFromDIP(right),
-                    PixelUtil.toPixelFromDIP(bottom))
+            val rect = RectF(left.dpToPx(), top.dpToPx(), right.dpToPx(), bottom.dpToPx())
 
             elementsRectangles.add(rect)
           } catch (ex: Exception) {

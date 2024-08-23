@@ -10,6 +10,7 @@
 #include <cfloat>
 #include <cmath>
 #include <cstring>
+#include <string>
 
 #include <yoga/Yoga.h>
 
@@ -661,6 +662,13 @@ static float distributeFreeSpaceSecondPass(
       }
     }
 
+    yoga::assertFatalWithNode(
+        currentLineChild,
+        yoga::isDefined(updatedMainSize),
+        ("updatedMainSize is undefined. mainAxisownerSize: " +
+         std::to_string(mainAxisownerSize))
+            .c_str());
+
     deltaFreeSpace += updatedMainSize - childFlexBasis;
 
     const float marginMain = currentLineChild->style().computeMarginForAxis(
@@ -749,6 +757,20 @@ static float distributeFreeSpaceSecondPass(
     const bool isLayoutPass = performLayout && !requiresStretchLayout;
     // Recursively call the layout algorithm for this child with the updated
     // main size.
+
+    yoga::assertFatalWithNode(
+        currentLineChild,
+        yoga::isUndefined(childMainSize)
+            ? childMainSizingMode == SizingMode::MaxContent
+            : true,
+        "childMainSize is undefined so childMainSizingMode must be MaxContent");
+    yoga::assertFatalWithNode(
+        currentLineChild,
+        yoga::isUndefined(childCrossSize)
+            ? childCrossSizingMode == SizingMode::MaxContent
+            : true,
+        "childCrossSize is undefined so childCrossSizingMode must be MaxContent");
+
     calculateLayoutInternal(
         currentLineChild,
         childWidth,

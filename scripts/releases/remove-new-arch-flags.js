@@ -87,7 +87,7 @@ function flipNewArchFlagForAndroid(
   // Gradle.properties
   const gradlePropertiesPath = path.join(
     cwd,
-    '/packages/react-native/template/android/gradle.properties',
+    '/packages/helloworld/android/gradle.properties',
   );
   backupPath.push(
     replaceContentsOfFile(

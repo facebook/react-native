@@ -4491,7 +4491,11 @@ public class com/facebook/react/uimanager/OnLayoutEvent : com/facebook/react/uim
 
 public final class com/facebook/react/uimanager/PixelUtil {
 	public static final field INSTANCE Lcom/facebook/react/uimanager/PixelUtil;
+	public final fun dpToPx (D)F
+	public final fun dpToPx (F)F
 	public static final fun getDisplayMetricDensity ()F
+	public final fun pxToDp (D)F
+	public final fun pxToDp (F)F
 	public static final fun toDIPFromPixel (F)F
 	public static final fun toPixelFromDIP (D)F
 	public static final fun toPixelFromDIP (F)F
@@ -6706,7 +6710,7 @@ public final class com/facebook/react/views/image/ReactImageView : com/facebook/
 public final class com/facebook/react/views/image/ReactImageView$Companion {
 }
 
-public final class com/facebook/react/views/imagehelper/ImageSource {
+public class com/facebook/react/views/imagehelper/ImageSource {
 	public static final field Companion Lcom/facebook/react/views/imagehelper/ImageSource$Companion;
 	public fun <init> (Landroid/content/Context;Ljava/lang/String;)V
 	public fun <init> (Landroid/content/Context;Ljava/lang/String;D)V
@@ -6831,6 +6835,7 @@ public final class com/facebook/react/views/modal/ReactModalHostView : android/v
 	public final fun setAnimationType (Ljava/lang/String;)V
 	public final fun setEventDispatcher (Lcom/facebook/react/uimanager/events/EventDispatcher;)V
 	public final fun setHardwareAccelerated (Z)V
+	public fun setId (I)V
 	public final fun setOnRequestCloseListener (Lcom/facebook/react/views/modal/ReactModalHostView$OnRequestCloseListener;)V
 	public final fun setOnShowListener (Landroid/content/DialogInterface$OnShowListener;)V
 	public final fun setStateWrapper (Lcom/facebook/react/uimanager/StateWrapper;)V
@@ -6841,7 +6846,6 @@ public final class com/facebook/react/views/modal/ReactModalHostView : android/v
 }
 
 public final class com/facebook/react/views/modal/ReactModalHostView$DialogRootViewGroup : com/facebook/react/views/view/ReactViewGroup, com/facebook/react/uimanager/RootView {
-	public fun <init> (Lcom/facebook/react/views/modal/ReactModalHostView;Landroid/content/Context;)V
 	public fun addView (Landroid/view/View;ILandroid/view/ViewGroup$LayoutParams;)V
 	public fun handleException (Ljava/lang/Throwable;)V
 	public fun onChildEndedNativeGesture (Landroid/view/View;Landroid/view/MotionEvent;)V

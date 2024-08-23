@@ -31,28 +31,28 @@ class TextLayoutManager {
    * Measures `attributedString` using native text rendering infrastructure.
    */
   TextMeasurement measure(
-      AttributedStringBox attributedStringBox,
-      ParagraphAttributes paragraphAttributes,
+      const AttributedStringBox& attributedStringBox,
+      const ParagraphAttributes& paragraphAttributes,
       const TextLayoutContext& layoutContext,
-      LayoutConstraints layoutConstraints) const;
+      const LayoutConstraints& layoutConstraints) const;
 
   /*
    * Measures lines of `attributedString` using native text rendering
    * infrastructure.
    */
   LinesMeasurements measureLines(
-      AttributedString attributedString,
-      ParagraphAttributes paragraphAttributes,
-      Size size) const;
+      const AttributedStringBox& attributedStringBox,
+      const ParagraphAttributes& paragraphAttributes,
+      const Size& size) const;
 
   /*
    * Calculates baseline of `attributedString` using native text rendering
    * infrastructure.
    */
   Float baseline(
-      AttributedString attributedString,
-      ParagraphAttributes paragraphAttributes,
-      Size size) const;
+      const AttributedStringBox& attributedStringBox,
+      const ParagraphAttributes& paragraphAttributes,
+      const Size& size) const;
 
   /*
    * Returns an opaque pointer to platform-specific TextLayoutManager.

@@ -57,8 +57,8 @@ import com.facebook.react.uimanager.BackgroundStyleApplicator
 import com.facebook.react.uimanager.FloatUtil.floatsEqual
 import com.facebook.react.uimanager.LengthPercentage
 import com.facebook.react.uimanager.LengthPercentageType
-import com.facebook.react.uimanager.PixelUtil.toDIPFromPixel
-import com.facebook.react.uimanager.PixelUtil.toPixelFromDIP
+import com.facebook.react.uimanager.PixelUtil.dpToPx
+import com.facebook.react.uimanager.PixelUtil.pxToDp
 import com.facebook.react.uimanager.Spacing
 import com.facebook.react.uimanager.UIManagerHelper
 import com.facebook.react.uimanager.style.BorderRadiusProp
@@ -202,7 +202,7 @@ public class ReactImageView(
 
   public fun setBlurRadius(blurRadius: Float) {
     // Divide `blurRadius` by 2 to more closely match other platforms.
-    val pixelBlurRadius = toPixelFromDIP(blurRadius).toInt() / 2
+    val pixelBlurRadius = blurRadius.dpToPx().toInt() / 2
     iterativeBoxBlurPostProcessor =
         if (pixelBlurRadius == 0) {
           null
@@ -243,7 +243,7 @@ public class ReactImageView(
   }
 
   public fun setBorderWidth(borderWidth: Float) {
-    val newBorderWidth = toPixelFromDIP(borderWidth)
+    val newBorderWidth = borderWidth.dpToPx()
     if (enableBackgroundStyleApplicator()) {
       BackgroundStyleApplicator.setBorderWidth(this, LogicalEdge.ALL, borderWidth)
     } else if (useNewReactImageViewBackgroundDrawing()) {
@@ -258,7 +258,7 @@ public class ReactImageView(
     if (enableBackgroundStyleApplicator()) {
       val radius =
           if (borderRadius.isNaN()) null
-          else LengthPercentage(toDIPFromPixel(borderRadius), LengthPercentageType.POINT)
+          else LengthPercentage(borderRadius.pxToDp(), LengthPercentageType.POINT)
       BackgroundStyleApplicator.setBorderRadius(this, BorderRadiusProp.BORDER_RADIUS, radius)
     } else if (useNewReactImageViewBackgroundDrawing()) {
       reactBackgroundManager.setBorderRadius(borderRadius)
@@ -272,7 +272,7 @@ public class ReactImageView(
     if (enableBackgroundStyleApplicator()) {
       val radius =
           if (borderRadius.isNaN()) null
-          else LengthPercentage(toDIPFromPixel(borderRadius), LengthPercentageType.POINT)
+          else LengthPercentage(borderRadius.pxToDp(), LengthPercentageType.POINT)
       BackgroundStyleApplicator.setBorderRadius(this, BorderRadiusProp.values()[position], radius)
     } else if (useNewReactImageViewBackgroundDrawing()) {
       reactBackgroundManager.setBorderRadius(borderRadius, position + 1)

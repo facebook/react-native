@@ -26,8 +26,8 @@ import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.util.RNLog
 import com.facebook.react.views.imagehelper.ImageSource
 import com.facebook.soloader.SoLoader
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
-import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -100,22 +100,22 @@ class ReactImagePropertyTest {
         buildStyles("src", JavaOnlyArray.of(JavaOnlyMap.of("uri", "http://mysite.com/mypic.jpg"))))
     viewManager.updateProperties(view, buildStyles("borderColor", Color.argb(0, 0, 255, 255)))
     var borderColor = view.hierarchy.roundingParams!!.borderColor
-    Assert.assertEquals(0, Color.alpha(borderColor).toLong())
-    Assert.assertEquals(0, Color.red(borderColor).toLong())
-    Assert.assertEquals(255, Color.green(borderColor).toLong())
-    Assert.assertEquals(255, Color.blue(borderColor).toLong())
+    assertThat(Color.alpha(borderColor)).isEqualTo(0)
+    assertThat(Color.red(borderColor)).isEqualTo(0)
+    assertThat(Color.green(borderColor)).isEqualTo(255)
+    assertThat(Color.blue(borderColor)).isEqualTo(255)
     viewManager.updateProperties(view, buildStyles("borderColor", Color.argb(0, 255, 50, 128)))
     borderColor = view.hierarchy.roundingParams!!.borderColor
-    Assert.assertEquals(0, Color.alpha(borderColor).toLong())
-    Assert.assertEquals(255, Color.red(borderColor).toLong())
-    Assert.assertEquals(50, Color.green(borderColor).toLong())
-    Assert.assertEquals(128, Color.blue(borderColor).toLong())
+    assertThat(Color.alpha(borderColor)).isEqualTo(0)
+    assertThat(Color.red(borderColor)).isEqualTo(255)
+    assertThat(Color.green(borderColor)).isEqualTo(50)
+    assertThat(Color.blue(borderColor)).isEqualTo(128)
     viewManager.updateProperties(view, buildStyles("borderColor", null))
     borderColor = view.hierarchy.roundingParams!!.borderColor
-    Assert.assertEquals(0, Color.alpha(borderColor).toLong())
-    Assert.assertEquals(0, Color.red(borderColor).toLong())
-    Assert.assertEquals(0, Color.green(borderColor).toLong())
-    Assert.assertEquals(0, Color.blue(borderColor).toLong())
+    assertThat(Color.alpha(borderColor)).isEqualTo(0)
+    assertThat(Color.red(borderColor)).isEqualTo(0)
+    assertThat(Color.green(borderColor)).isEqualTo(0)
+    assertThat(Color.blue(borderColor)).isEqualTo(0)
   }
 
   @Test
@@ -138,20 +138,20 @@ class ReactImagePropertyTest {
     val viewManager = ReactImageManager()
     val view = viewManager.createViewInstance(themeContext)
     viewManager.setAccessible(view, true)
-    Assert.assertEquals(true, view.isFocusable)
+    assertThat(view.isFocusable).isTrue()
   }
 
   @Test
   fun testTintColor() {
     val viewManager = ReactImageManager()
     val view = viewManager.createViewInstance(themeContext)
-    Assert.assertNull(view.colorFilter)
+    assertThat(view.colorFilter).isNull()
     viewManager.updateProperties(view, buildStyles("tintColor", Color.argb(50, 0, 0, 255)))
     // Can't actually assert the specific color so this is the next best thing.
     // Does the color filter now exist?
-    Assert.assertNotNull(view.colorFilter)
+    assertThat(view.colorFilter).isNotNull()
     viewManager.updateProperties(view, buildStyles("tintColor", null))
-    Assert.assertNull(view.colorFilter)
+    assertThat(view.colorFilter).isNull()
   }
 
   @Test
@@ -166,6 +166,7 @@ class ReactImagePropertyTest {
     sources.pushMap(srcObj)
     viewManager.setSource(view, sources)
     view.maybeUpdateView()
-    Assert.assertEquals(ImageSource.getTransparentBitmapImageSource(view.context), view.imageSource)
+    assertThat(ImageSource.getTransparentBitmapImageSource(view.context))
+        .isEqualTo(view.imageSource)
   }
 }

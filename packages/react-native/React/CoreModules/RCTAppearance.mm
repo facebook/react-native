@@ -70,8 +70,13 @@ NSString *RCTColorSchemePreference(UITraitCollection *traitCollection)
     return appearances[@(traitCollection.userInterfaceStyle)];
   }
 
+  if (!traitCollection) {
+    traitCollection = [UITraitCollection currentTraitCollection];
+  }
+
   UIUserInterfaceStyle systemStyle = sUseKeyWindowForSystemStyle ? RCTKeyWindow().traitCollection.userInterfaceStyle
                                                                  : traitCollection.userInterfaceStyle;
+
   return appearances[@(systemStyle)] ?: RCTAppearanceColorSchemeLight;
 }
 

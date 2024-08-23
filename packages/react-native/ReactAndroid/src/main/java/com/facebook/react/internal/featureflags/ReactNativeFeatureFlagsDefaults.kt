@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<86db65691c73cff2843e81e053268892>>
+ * @generated SignedSource<<2ac7adf2656a8a356cc1b4d8f40bd20b>>
  */
 
 /**
@@ -29,8 +29,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun batchRenderingUpdatesInEventLoop(): Boolean = false
 
-  override fun changeOrderOfMountingInstructionsOnAndroid(): Boolean = false
-
   override fun completeReactInstanceCreationOnBgThreadOnAndroid(): Boolean = false
 
   override fun destroyFabricSurfacesInReactInstanceManager(): Boolean = false
@@ -52,6 +50,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enableFabricRendererExclusively(): Boolean = false
 
   override fun enableGranularShadowTreeStateReconciliation(): Boolean = false
+
+  override fun enableLayoutAnimationsOnIOS(): Boolean = true
 
   override fun enableLongTaskAPI(): Boolean = false
 

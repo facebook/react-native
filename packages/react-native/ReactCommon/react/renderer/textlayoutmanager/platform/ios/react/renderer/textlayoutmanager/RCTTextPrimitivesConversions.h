@@ -63,6 +63,24 @@ inline static NSLineBreakStrategy RCTNSLineBreakStrategyFromLineBreakStrategy(
   }
 }
 
+inline static NSLineBreakMode RCTNSLineBreakModeFromLineBreakMode(facebook::react::LineBreakMode lineBreakMode)
+{
+  switch (lineBreakMode) {
+    case facebook::react::LineBreakMode::Word:
+      return NSLineBreakByWordWrapping;
+    case facebook::react::LineBreakMode::Char:
+      return NSLineBreakByCharWrapping;
+    case facebook::react::LineBreakMode::Clip:
+      return NSLineBreakByClipping;
+    case facebook::react::LineBreakMode::Head:
+      return NSLineBreakByTruncatingHead;
+    case facebook::react::LineBreakMode::Middle:
+      return NSLineBreakByTruncatingMiddle;
+    case facebook::react::LineBreakMode::Tail:
+      return NSLineBreakByTruncatingTail;
+  }
+}
+
 inline static RCTFontStyle RCTFontStyleFromFontStyle(facebook::react::FontStyle fontStyle)
 {
   switch (fontStyle) {

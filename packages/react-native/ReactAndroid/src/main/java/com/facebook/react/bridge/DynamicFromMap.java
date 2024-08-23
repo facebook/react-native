@@ -9,6 +9,7 @@ package com.facebook.react.bridge;
 
 import androidx.annotation.Nullable;
 import androidx.core.util.Pools.SimplePool;
+import java.util.Objects;
 
 /** Implementation of Dynamic wrapping a ReadableMap. */
 class DynamicFromMap implements Dynamic {
@@ -96,7 +97,7 @@ class DynamicFromMap implements Dynamic {
     if (mMap == null || mName == null) {
       throw new IllegalStateException("This dynamic value has been recycled");
     }
-    return mMap.getMap(mName);
+    return Objects.requireNonNull(mMap.getMap(mName));
   }
 
   @Override

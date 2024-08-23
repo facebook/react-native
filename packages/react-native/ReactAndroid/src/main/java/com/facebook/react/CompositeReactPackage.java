@@ -56,8 +56,8 @@ public class CompositeReactPackage implements ViewManagerOnDemandReactPackage, R
     final Map<String, NativeModule> moduleMap = new HashMap<>();
     for (ReactPackage reactPackage : mChildReactPackages) {
       /**
-       * For now, we eagerly initialize the NativeModules inside TurboReactPackages. Ultimately, we
-       * should turn CompositeReactPackage into a TurboReactPackage and remove this eager
+       * For now, we eagerly initialize the NativeModules inside BaseReactPackages. Ultimately, we
+       * should turn CompositeReactPackage into a BaseReactPackage and remove this eager
        * initialization.
        *
        * <p>TODO: T45627020

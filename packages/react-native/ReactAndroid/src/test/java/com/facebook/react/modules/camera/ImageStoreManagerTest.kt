@@ -13,7 +13,7 @@ import com.facebook.react.bridge.ReactApplicationContext
 import java.io.ByteArrayInputStream
 import java.io.InputStream
 import java.util.*
-import org.junit.Assert
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -35,13 +35,12 @@ class ImageStoreManagerTest {
   @Test
   fun itDoesNotAddLineBreaks_whenBasicStringProvided() {
     val exampleString = "test".toByteArray()
-    Assert.assertEquals("dGVzdA==", invokeConversion(ByteArrayInputStream(exampleString)))
+    assertThat(invokeConversion(ByteArrayInputStream(exampleString))).isEqualTo("dGVzdA==")
   }
 
   @Test
   fun itDoesNotAddLineBreaks_whenEmptyStringProvided() {
-    val exampleString = "".toByteArray()
-    Assert.assertEquals("", invokeConversion(ByteArrayInputStream(exampleString)))
+    assertThat(invokeConversion(ByteArrayInputStream("".toByteArray()))).isEqualTo("")
   }
 
   @Test
@@ -49,7 +48,7 @@ class ImageStoreManagerTest {
     val exampleString = "sdfsdf\nasdfsdfsdfsd\r\nasdas".toByteArray()
     val inputStream = ByteArrayInputStream(exampleString)
     val converted = invokeConversion(inputStream)
-    Assert.assertFalse(converted.contains("\n"))
+    assertThat(converted).doesNotContain("\n")
   }
 
   /**
@@ -59,7 +58,7 @@ class ImageStoreManagerTest {
   fun itDoesNotAddLineBreaks_whenStringBiggerThanBuffer() {
     val inputStream = ByteArrayInputStream(generateRandomByteString(10000))
     val converted = invokeConversion(inputStream)
-    Assert.assertFalse(converted.contains("\n"))
+    assertThat(converted).doesNotContain("\n")
   }
 
   /** Just to test if using the ByteArrayInputStream isn't missing something */
@@ -67,7 +66,7 @@ class ImageStoreManagerTest {
   fun itDoesNotAddLineBreaks_whenBase64InputStream() {
     val exampleString = "dGVzdA==".toByteArray()
     val inputStream = Base64InputStream(ByteArrayInputStream(exampleString), Base64.NO_WRAP)
-    Assert.assertEquals("dGVzdA==", invokeConversion(inputStream))
+    assertThat(invokeConversion(inputStream)).isEqualTo("dGVzdA==")
   }
 
   private fun invokeConversion(inputStream: InputStream): String {

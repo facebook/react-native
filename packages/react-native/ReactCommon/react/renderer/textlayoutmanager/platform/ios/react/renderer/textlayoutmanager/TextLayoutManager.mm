@@ -25,10 +25,10 @@ std::shared_ptr<void> TextLayoutManager::getNativeTextLayoutManager() const
 }
 
 TextMeasurement TextLayoutManager::measure(
-    AttributedStringBox attributedStringBox,
-    ParagraphAttributes paragraphAttributes,
+    const AttributedStringBox &attributedStringBox,
+    const ParagraphAttributes &paragraphAttributes,
     const TextLayoutContext &layoutContext,
-    LayoutConstraints layoutConstraints) const
+    const LayoutConstraints &layoutConstraints) const
 {
   RCTTextLayoutManager *textLayoutManager = (RCTTextLayoutManager *)unwrapManagedObject(self_);
 
@@ -85,10 +85,13 @@ TextMeasurement TextLayoutManager::measure(
 }
 
 LinesMeasurements TextLayoutManager::measureLines(
-    AttributedString attributedString,
-    ParagraphAttributes paragraphAttributes,
-    Size size) const
+    const AttributedStringBox &attributedStringBox,
+    const ParagraphAttributes &paragraphAttributes,
+    const Size &size) const
 {
+  react_native_assert(attributedStringBox.getMode() == AttributedStringBox::Mode::Value);
+  const auto &attributedString = attributedStringBox.getValue();
+
   RCTTextLayoutManager *textLayoutManager = (RCTTextLayoutManager *)unwrapManagedObject(self_);
 
   auto measurement =
@@ -102,10 +105,12 @@ LinesMeasurements TextLayoutManager::measureLines(
   return measurement;
 }
 
-Float TextLayoutManager::baseline(AttributedString attributedString, ParagraphAttributes paragraphAttributes, Size size)
-    const
+Float TextLayoutManager::baseline(
+    const AttributedStringBox &attributedStringBox,
+    const ParagraphAttributes &paragraphAttributes,
+    const Size &size) const
 {
-  auto lines = this->measureLines(attributedString, paragraphAttributes, size);
+  auto lines = this->measureLines(attributedStringBox, paragraphAttributes, size);
 
   if (!lines.empty()) {
     return lines[0].ascender;

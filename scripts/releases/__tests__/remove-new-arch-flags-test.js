@@ -37,7 +37,7 @@ describe('removeNewArchFlags', () => {
     const reactNativePodsPath =
       '/packages/react-native/scripts/react_native_pods.rb';
     const templateGradlePropertiesPath =
-      '/packages/react-native/template/android/gradle.properties';
+      '/packages/helloworld/android/gradle.properties';
     jest.spyOn(process, 'cwd').mockReturnValue(cwd);
     jest.spyOn(fs, 'readFileSync').mockImplementation(filename => {
       if (filename === path.join(cwd, reactNativePodsPath)) {
@@ -89,7 +89,7 @@ describe('removeNewArchFlags', () => {
     const reactNativePodsPath =
       '/packages/react-native/scripts/react_native_pods.rb';
     const templateGradlePropertiesPath =
-      '/packages/react-native/template/android/gradle.properties';
+      '/packages/helloworld/android/gradle.properties';
     jest.spyOn(process, 'cwd').mockReturnValue(cwd);
     jest.spyOn(fs, 'readFileSync').mockImplementation(filename => {
       if (filename === path.join(cwd, reactNativePodsPath)) {

@@ -18,7 +18,8 @@ import android.graphics.RectF
 import android.graphics.drawable.Drawable
 import androidx.annotation.RequiresApi
 import com.facebook.react.uimanager.FilterHelper
-import com.facebook.react.uimanager.PixelUtil
+import com.facebook.react.uimanager.PixelUtil.dpToPx
+import com.facebook.react.uimanager.PixelUtil.pxToDp
 import com.facebook.react.uimanager.style.BorderRadiusStyle
 import com.facebook.react.uimanager.style.ComputedBorderRadius
 import com.facebook.react.uimanager.style.CornerRadii
@@ -75,35 +76,26 @@ internal class OutsetBoxShadowDrawable(
       ((shadowPaint.alpha / 255f) / (Color.alpha(shadowColor) / 255f) * 255f).roundToInt()
 
   override fun draw(canvas: Canvas) {
-    val resolutionWidth = PixelUtil.toDIPFromPixel(bounds.width().toFloat())
-    val resolutionHeight = PixelUtil.toDIPFromPixel(bounds.height().toFloat())
+    val resolutionWidth = bounds.width().toFloat().pxToDp()
+    val resolutionHeight = bounds.height().toFloat().pxToDp()
     val computedBorderRadii =
         borderRadius?.resolve(layoutDirection, context, resolutionWidth, resolutionHeight)?.let {
           ComputedBorderRadius(
-              topLeft =
-                  CornerRadii(
-                      PixelUtil.toPixelFromDIP(it.topLeft.horizontal),
-                      PixelUtil.toPixelFromDIP(it.topLeft.vertical)),
+              topLeft = CornerRadii(it.topLeft.horizontal.dpToPx(), it.topLeft.vertical.dpToPx()),
               topRight =
-                  CornerRadii(
-                      PixelUtil.toPixelFromDIP(it.topRight.horizontal),
-                      PixelUtil.toPixelFromDIP(it.topRight.vertical)),
+                  CornerRadii(it.topRight.horizontal.dpToPx(), it.topRight.vertical.dpToPx()),
               bottomLeft =
-                  CornerRadii(
-                      PixelUtil.toPixelFromDIP(it.bottomLeft.horizontal),
-                      PixelUtil.toPixelFromDIP(it.bottomLeft.vertical)),
+                  CornerRadii(it.bottomLeft.horizontal.dpToPx(), it.bottomLeft.vertical.dpToPx()),
               bottomRight =
-                  CornerRadii(
-                      PixelUtil.toPixelFromDIP(it.bottomRight.horizontal),
-                      PixelUtil.toPixelFromDIP(it.bottomRight.vertical)),
+                  CornerRadii(it.bottomRight.horizontal.dpToPx(), it.bottomRight.vertical.dpToPx()),
           )
         }
 
-    val spreadExtent = PixelUtil.toPixelFromDIP(spread)
+    val spreadExtent = spread.dpToPx()
     val shadowRect =
         RectF(bounds).apply {
           inset(-spreadExtent, -spreadExtent)
-          offset(PixelUtil.toPixelFromDIP(offsetX), PixelUtil.toPixelFromDIP(offsetY))
+          offset(offsetX.dpToPx(), offsetY.dpToPx())
         }
 
     canvas.save().let { saveCount ->

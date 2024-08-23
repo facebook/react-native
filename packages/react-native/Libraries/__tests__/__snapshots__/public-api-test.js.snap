@@ -6459,7 +6459,6 @@ exports[`public API should not change unintentionally Libraries/NativeComponent/
 "declare export function setRuntimeConfigProvider(
   runtimeConfigProvider: (name: string) => ?{
     native: boolean,
-    strict: boolean,
     verify: boolean,
   }
 ): void;
@@ -6501,11 +6500,6 @@ exports[`public API should not change unintentionally Libraries/NativeComponent/
       type: \\"unequal\\",
       path: Array<string>,
       nativeValue: mixed,
-      staticValue: mixed,
-    }
-  | {
-      type: \\"unexpected\\",
-      path: Array<string>,
       staticValue: mixed,
     };
 export type ValidationResult = ValidResult | InvalidResult;
@@ -8334,7 +8328,7 @@ export type GradientValue = {
   direction?: string,
   colorStops: $ReadOnlyArray<{
     color: ____ColorValue_Internal,
-    position?: string,
+    positions?: $ReadOnlyArray<string>,
   }>,
 };
 export type BoxShadowPrimitive = {
@@ -9161,12 +9155,11 @@ declare export default typeof UTFSequence;
 `;
 
 exports[`public API should not change unintentionally Libraries/Utilities/Appearance.js 1`] = `
-"type AppearanceListener = (preferences: AppearancePreferences) => void;
-declare module.exports: {
-  getColorScheme(): ?ColorSchemeName,
-  setColorScheme(colorScheme: ?ColorSchemeName): void,
-  addChangeListener(listener: AppearanceListener): EventSubscription,
-};
+"declare export function getColorScheme(): ?ColorSchemeName;
+declare export function setColorScheme(colorScheme: ?ColorSchemeName): void;
+declare export function addChangeListener(
+  listener: ({ colorScheme: ?ColorSchemeName }) => void
+): EventSubscription;
 "
 `;
 
@@ -9679,6 +9672,11 @@ declare export default typeof stringifySafe;
 "
 `;
 
+exports[`public API should not change unintentionally Libraries/Utilities/stringifyViewConfig.js 1`] = `
+"declare export default function stringifyViewConfig(viewConfig: any): string;
+"
+`;
+
 exports[`public API should not change unintentionally Libraries/Utilities/useColorScheme.js 1`] = `
 "declare export default function useColorScheme(): ?ColorSchemeName;
 "
@@ -9703,19 +9701,6 @@ exports[`public API should not change unintentionally Libraries/Utilities/useWin
 "declare export default function useWindowDimensions():
   | DisplayMetrics
   | DisplayMetricsAndroid;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/Utilities/verifyComponentAttributeEquivalence.js 1`] = `
-"declare export default function verifyComponentAttributeEquivalence(
-  nativeViewConfig: ViewConfig,
-  staticViewConfig: ViewConfig
-): void;
-declare export function getConfigWithoutViewProps(
-  viewConfig: ViewConfig,
-  propName: string
-): { ... };
-declare export function stringifyViewConfig(viewConfig: any): string;
 "
 `;
 

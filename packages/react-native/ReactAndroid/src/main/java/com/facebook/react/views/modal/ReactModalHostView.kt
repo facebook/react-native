@@ -102,7 +102,7 @@ public class ReactModalHostView(context: ThemedReactContext) :
       hostView.eventDispatcher = eventDispatcher
     }
 
-  private var hostView: DialogRootViewGroup
+  private val hostView: DialogRootViewGroup
 
   // Set this flag to true if changing a particular property on the view requires a new Dialog to
   // be created or Dialog was destroyed. For instance, animation does since it affects Dialog
@@ -121,6 +121,13 @@ public class ReactModalHostView(context: ThemedReactContext) :
 
   protected override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
     // Do nothing as we are laid out by UIManager
+  }
+
+  override fun setId(id: Int) {
+    super.setId(id)
+
+    // Forward the ID to our content view, so event dispatching behaves correctly
+    hostView.id = id
   }
 
   protected override fun onDetachedFromWindow() {
@@ -383,15 +390,16 @@ public class ReactModalHostView(context: ThemedReactContext) :
    * styleHeight on the LayoutShadowNode to be the window size. This is done through the
    * UIManagerModule, and will then cause the children to layout as if they can fill the window.
    */
-  public inner class DialogRootViewGroup(context: Context?) : ReactViewGroup(context), RootView {
+  public class DialogRootViewGroup internal constructor(context: Context?) :
+      ReactViewGroup(context), RootView {
     internal var stateWrapper: StateWrapper? = null
+    internal var eventDispatcher: EventDispatcher? = null
 
     private var hasAdjustedSize = false
     private var viewWidth = 0
     private var viewHeight = 0
     private val jSTouchDispatcher: JSTouchDispatcher = JSTouchDispatcher(this)
     private var jSPointerDispatcher: JSPointerDispatcher? = null
-    internal var eventDispatcher: EventDispatcher? = null
 
     private val reactContext: ThemedReactContext
       get() = context as ThemedReactContext

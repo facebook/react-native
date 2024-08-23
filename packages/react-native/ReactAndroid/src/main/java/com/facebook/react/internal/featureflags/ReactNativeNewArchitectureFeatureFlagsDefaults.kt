@@ -14,7 +14,7 @@ import com.facebook.react.config.ReactFeatureFlags
  * com.facebook.react.config.ReactFeatureFlags} when newArchitectureEnabled is true.
  */
 public open class ReactNativeNewArchitectureFeatureFlagsDefaults(
-    private val newArchitectureEnabled: Boolean
+    private val newArchitectureEnabled: Boolean = true
 ) : ReactNativeFeatureFlagsDefaults() {
 
   init {

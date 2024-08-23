@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9728234e0662758c72ba79b3cffbd4e5>>
+ * @generated SignedSource<<1f1710a12f6980b23bb6c0ece0060b59>>
  * @flow strict-local
  */
 
@@ -26,7 +26,6 @@ export interface Spec extends TurboModule {
   +commonTestFlag?: () => boolean;
   +allowRecursiveCommitsWithSynchronousMountOnAndroid?: () => boolean;
   +batchRenderingUpdatesInEventLoop?: () => boolean;
-  +changeOrderOfMountingInstructionsOnAndroid?: () => boolean;
   +completeReactInstanceCreationOnBgThreadOnAndroid?: () => boolean;
   +destroyFabricSurfacesInReactInstanceManager?: () => boolean;
   +enableAlignItemsBaselineOnFabricIOS?: () => boolean;
@@ -38,6 +37,7 @@ export interface Spec extends TurboModule {
   +enableFabricLogs?: () => boolean;
   +enableFabricRendererExclusively?: () => boolean;
   +enableGranularShadowTreeStateReconciliation?: () => boolean;
+  +enableLayoutAnimationsOnIOS?: () => boolean;
   +enableLongTaskAPI?: () => boolean;
   +enableMicrotasks?: () => boolean;
   +enablePropsUpdateReconciliationAndroid?: () => boolean;

@@ -197,9 +197,9 @@ describe('processBackgroundImage', () => {
     const result = processBackgroundImage(input);
     expect(result[0].colorStops).toEqual([
       {color: processColor('red'), position: 0},
-      {color: processColor('green'), position: 0.25},
+      {color: processColor('green'), position: 0.3},
       {color: processColor('blue'), position: 0.6},
-      {color: processColor('yellow'), position: 0.75},
+      {color: processColor('yellow'), position: 0.8},
       {color: processColor('purple'), position: 1},
     ]);
   });
@@ -282,8 +282,8 @@ describe('processBackgroundImage', () => {
         type: 'linearGradient',
         direction: 'to bottom right',
         colorStops: [
-          {color: 'red', position: '0%'},
-          {color: 'blue', position: '100%'},
+          {color: 'red', positions: ['0%']},
+          {color: 'blue', positions: ['100%']},
         ],
       },
     ];
@@ -341,24 +341,129 @@ describe('processBackgroundImage', () => {
     expect(result[0].end.y).toBeCloseTo(0.146447, 5);
   });
 
-  it('should process an style object with mix of default and undefined stop positions', () => {
+  it('should fix up stop positions #1', () => {
+    const input = [
+      {
+        type: 'linearGradient',
+        colorStops: [
+          {color: 'red', positions: ['40%']},
+          {color: 'blue'},
+          {color: 'green'},
+          {color: 'purple'},
+        ],
+      },
+    ];
+    const output = [
+      {
+        color: processColor('red'),
+        position: 0.4,
+      },
+      {
+        color: processColor('blue'),
+        position: 0.6,
+      },
+      {
+        color: processColor('green'),
+        position: 0.8,
+      },
+      {
+        color: processColor('purple'),
+        position: 1,
+      },
+    ];
+    const result = processBackgroundImage(input);
+    const result1 = processBackgroundImage(
+      `linear-gradient(red 40%, blue, green, purple)`,
+    );
+    expect(result[0].colorStops).toEqual(output);
+    expect(result1[0].colorStops).toEqual(output);
+  });
+
+  it('should process multiple stop positions', () => {
+    const input = [
+      {
+        type: 'linearGradient',
+        colorStops: [
+          {color: 'red', positions: ['40%', '80%']},
+          {color: 'blue'},
+          {color: 'green'},
+        ],
+      },
+    ];
+    const result = processBackgroundImage(input);
+    const result2 = processBackgroundImage(
+      `linear-gradient(red 40%  80%, blue, green)`,
+    );
+    const output = [
+      {
+        color: processColor('red'),
+        position: 0.4,
+      },
+      {
+        color: processColor('red'),
+        position: 0.8,
+      },
+      {
+        color: processColor('blue'),
+        position: 0.9,
+      },
+      {
+        color: processColor('green'),
+        position: 1,
+      },
+    ];
+    expect(result[0].colorStops).toEqual(output);
+    expect(result2[0].colorStops).toEqual(output);
+  });
+
+  it('should fix up stop positions #2', () => {
     const input = [
       {
         type: 'linearGradient',
         colorStops: [
           {color: 'red'},
-          {color: 'blue'},
+          {color: 'blue', positions: ['20%']},
           {color: 'green'},
-          {color: 'purple', position: '80%'},
-          {color: 'pink'},
         ],
       },
     ];
-    const result = processBackgroundImage(input);
-    expect(result[0].colorStops).toEqual([
+    const output = [
       {
         color: processColor('red'),
         position: 0,
+      },
+      {
+        color: processColor('blue'),
+        position: 0.2,
+      },
+      {
+        color: processColor('green'),
+        position: 1,
+      },
+    ];
+    const result = processBackgroundImage(input);
+    const result1 = processBackgroundImage(
+      `linear-gradient(red , blue  20%, green)`,
+    );
+    expect(result[0].colorStops).toEqual(output);
+    expect(result1[0].colorStops).toEqual(output);
+  });
+
+  it('should fix up stop positions #3', () => {
+    const input = [
+      {
+        type: 'linearGradient',
+        colorStops: [
+          {color: 'red', positions: ['-50%']},
+          {color: 'blue'},
+          {color: 'green'},
+        ],
+      },
+    ];
+    const output = [
+      {
+        color: processColor('red'),
+        position: -0.5,
       },
       {
         color: processColor('blue'),
@@ -366,16 +471,97 @@ describe('processBackgroundImage', () => {
       },
       {
         color: processColor('green'),
-        position: 0.5,
-      },
-      {
-        color: processColor('purple'),
-        position: 0.8,
-      },
-      {
-        color: processColor('pink'),
         position: 1,
       },
+    ];
+    const result = processBackgroundImage(input);
+    const result1 = processBackgroundImage(
+      `linear-gradient(red -50%, blue, green)`,
+    );
+    expect(result[0].colorStops).toEqual(output);
+    expect(result1[0].colorStops).toEqual(output);
+  });
+
+  it('should fix up stop positions #4', () => {
+    const input = [
+      {
+        type: 'linearGradient',
+        colorStops: [
+          {color: 'red'},
+          {color: 'blue', positions: ['-50%']},
+          {color: 'green', positions: ['150%']},
+          {color: 'yellow'},
+        ],
+      },
+    ];
+    const output = [
+      {
+        color: processColor('red'),
+        position: 0,
+      },
+      {
+        color: processColor('blue'),
+        position: 0,
+      },
+      {
+        color: processColor('green'),
+        position: 1.5,
+      },
+      {
+        color: processColor('yellow'),
+        position: 1.5,
+      },
+    ];
+    const result = processBackgroundImage(input);
+    const result1 = processBackgroundImage(
+      `linear-gradient(red, blue -50%, green 150%, yellow)`,
+    );
+    expect(result[0].colorStops).toEqual(output);
+    expect(result1[0].colorStops).toEqual(output);
+  });
+
+  it('should fix up stop positions #5', () => {
+    const result = processBackgroundImage(
+      'linear-gradient(red 40%  20%, blue 90%  120% , green)',
+    );
+    expect(result[0].colorStops).toEqual([
+      {color: processColor('red'), position: 0.4},
+      {color: processColor('red'), position: 0.4},
+      {color: processColor('blue'), position: 0.9},
+      {color: processColor('blue'), position: 1.2},
+      {color: processColor('green'), position: 1.2},
     ]);
+  });
+
+  it('should fix up stop positions #6', () => {
+    const result = processBackgroundImage(
+      'linear-gradient(red 40%  20%, blue 90%  120% , green 200% 300%)',
+    );
+    expect(result[0].colorStops).toEqual([
+      {color: processColor('red'), position: 0.4},
+      {color: processColor('red'), position: 0.4},
+      {color: processColor('blue'), position: 0.9},
+      {color: processColor('blue'), position: 1.2},
+      {color: processColor('green'), position: 2},
+      {color: processColor('green'), position: 3},
+    ]);
+  });
+
+  it('should return empty array for invalid multiple stop positions', () => {
+    const result = processBackgroundImage([
+      {
+        type: 'linearGradient',
+        colorStops: [
+          {color: 'red', positions: ['40%  20']},
+          {color: 'blue', positions: ['90%  120%']},
+          {color: 'green', positions: ['200% 300%']},
+        ],
+      },
+    ]);
+    const result1 = processBackgroundImage(
+      'linear-gradient(red 40%  20, blue 90%  120% , green 200% 300%)',
+    );
+    expect(result).toEqual([]);
+    expect(result1).toEqual([]);
   });
 });

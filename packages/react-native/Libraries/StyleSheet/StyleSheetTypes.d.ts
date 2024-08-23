@@ -276,10 +276,10 @@ export type BlendMode =
 export type GradientValue = {
   type: 'linearGradient';
   // Angle or direction enums
-  direction: string | undefined;
-  colorStops: Array<{
+  direction?: string | undefined;
+  colorStops: ReadonlyArray<{
     color: ColorValue;
-    position: number | undefined;
+    positions?: ReadonlyArray<string[]> | undefined;
   }>;
 };
 

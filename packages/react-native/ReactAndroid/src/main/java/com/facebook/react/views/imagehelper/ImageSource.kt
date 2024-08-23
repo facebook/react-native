@@ -12,7 +12,7 @@ import android.net.Uri
 import java.util.Objects
 
 /** Class describing an image source (network URI or resource) and size. */
-public class ImageSource
+public open class ImageSource
 @JvmOverloads
 constructor(
     context: Context,

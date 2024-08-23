@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b460c7106715c0ea405dd6b284802d27>>
+ * @generated SignedSource<<d883bc5832598b7034aaedfe8606a9ff>>
  */
 
 /**
@@ -27,7 +27,6 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var commonTestFlagCache: Boolean? = null
   private var allowRecursiveCommitsWithSynchronousMountOnAndroidCache: Boolean? = null
   private var batchRenderingUpdatesInEventLoopCache: Boolean? = null
-  private var changeOrderOfMountingInstructionsOnAndroidCache: Boolean? = null
   private var completeReactInstanceCreationOnBgThreadOnAndroidCache: Boolean? = null
   private var destroyFabricSurfacesInReactInstanceManagerCache: Boolean? = null
   private var enableAlignItemsBaselineOnFabricIOSCache: Boolean? = null
@@ -39,6 +38,7 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var enableFabricLogsCache: Boolean? = null
   private var enableFabricRendererExclusivelyCache: Boolean? = null
   private var enableGranularShadowTreeStateReconciliationCache: Boolean? = null
+  private var enableLayoutAnimationsOnIOSCache: Boolean? = null
   private var enableLongTaskAPICache: Boolean? = null
   private var enableMicrotasksCache: Boolean? = null
   private var enablePropsUpdateReconciliationAndroidCache: Boolean? = null
@@ -96,16 +96,6 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.batchRenderingUpdatesInEventLoop()
       accessedFeatureFlags.add("batchRenderingUpdatesInEventLoop")
       batchRenderingUpdatesInEventLoopCache = cached
-    }
-    return cached
-  }
-
-  override fun changeOrderOfMountingInstructionsOnAndroid(): Boolean {
-    var cached = changeOrderOfMountingInstructionsOnAndroidCache
-    if (cached == null) {
-      cached = currentProvider.changeOrderOfMountingInstructionsOnAndroid()
-      accessedFeatureFlags.add("changeOrderOfMountingInstructionsOnAndroid")
-      changeOrderOfMountingInstructionsOnAndroidCache = cached
     }
     return cached
   }
@@ -216,6 +206,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.enableGranularShadowTreeStateReconciliation()
       accessedFeatureFlags.add("enableGranularShadowTreeStateReconciliation")
       enableGranularShadowTreeStateReconciliationCache = cached
+    }
+    return cached
+  }
+
+  override fun enableLayoutAnimationsOnIOS(): Boolean {
+    var cached = enableLayoutAnimationsOnIOSCache
+    if (cached == null) {
+      cached = currentProvider.enableLayoutAnimationsOnIOS()
+      accessedFeatureFlags.add("enableLayoutAnimationsOnIOS")
+      enableLayoutAnimationsOnIOSCache = cached
     }
     return cached
   }
