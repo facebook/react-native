@@ -68,6 +68,9 @@ void TextAttributes::apply(TextAttributes textAttributes) {
   lineBreakStrategy = textAttributes.lineBreakStrategy.has_value()
       ? textAttributes.lineBreakStrategy
       : lineBreakStrategy;
+  lineBreakMode = textAttributes.lineBreakMode.has_value()
+      ? textAttributes.lineBreakMode
+      : lineBreakMode;
 
   // Decoration
   textDecorationColor = textAttributes.textDecorationColor
@@ -216,6 +219,7 @@ SharedDebugStringConvertibleList TextAttributes::getDebugProps() const {
       debugStringConvertibleItem("alignment", alignment),
       debugStringConvertibleItem("baseWritingDirection", baseWritingDirection),
       debugStringConvertibleItem("lineBreakStrategyIOS", lineBreakStrategy),
+      debugStringConvertibleItem("lineBreakModeIOS", lineBreakMode),
 
       // Decoration
       debugStringConvertibleItem("textDecorationColor", textDecorationColor),
