@@ -338,7 +338,7 @@ public class CSSBackgroundDrawable extends Drawable {
     invalidateSelf();
   }
 
-  public void setBackgroundImage(Gradient[] gradients) {
+  public void setBackgroundImage(@Nullable Gradient[] gradients) {
     mGradients = gradients;
     invalidateSelf();
   }

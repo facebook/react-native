@@ -54,9 +54,7 @@ public object BackgroundStyleApplicator {
 
   @JvmStatic
   public fun setBackgroundImage(view: View, gradients: Array<Gradient>?): Unit {
-    if (!gradients.isNullOrEmpty()) {
-      ensureCSSBackground(view).setBackgroundImage(gradients);
-    }
+    ensureCSSBackground(view).setBackgroundImage(gradients);
   }
 
   @JvmStatic
