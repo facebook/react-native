@@ -844,10 +844,12 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
   if (!_props->filter.empty()) {
     float multiplicativeBrightness = 1;
     for (const auto &primitive : _props->filter) {
-      if (primitive.type == FilterType::Brightness) {
-        multiplicativeBrightness *= primitive.amount;
-      } else if (primitive.type == FilterType::Opacity) {
-        self.layer.opacity *= primitive.amount;
+      if (std::holds_alternative<Float>(primitive.parameters)) {
+        if (primitive.type == FilterType::Brightness) {
+          multiplicativeBrightness *= std::get<Float>(primitive.parameters);
+        } else if (primitive.type == FilterType::Opacity) {
+          self.layer.opacity *= std::get<Float>(primitive.parameters);
+        }
       }
     }
 
