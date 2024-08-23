@@ -28,8 +28,11 @@
 
 using namespace facebook::react;
 
+const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
+
 @implementation RCTViewComponentView {
   UIColor *_backgroundColor;
+  CALayer *_backgroundColorLayer;
   __weak CALayer *_borderLayer;
   CALayer *_boxShadowLayer;
   CALayer *_filterLayer;
@@ -524,6 +527,10 @@ using namespace facebook::react;
     _containerView.frame = CGRectMake(0, 0, self.layer.bounds.size.width, self.layer.bounds.size.height);
   }
 
+  if (_backgroundColorLayer) {
+    _backgroundColorLayer.frame = CGRectMake(0, 0, self.layer.bounds.size.width, self.layer.bounds.size.height);
+  }
+
   if ((_props->transformOrigin.isSet() || _props->transform.operations.size() > 0) &&
       layoutMetrics.frame.size != oldLayoutMetrics.frame.size) {
     auto newTransform = _props->resolveTransform(layoutMetrics);
@@ -774,8 +781,6 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     [self setHoverStyle:hoverStyle];
   }
 #endif
-
-  // Stage 2. Border Rendering
   const bool useCoreAnimationBorderRendering =
       borderMetrics.borderColors.isUniform() && borderMetrics.borderWidths.isUniform() &&
       borderMetrics.borderStyles.isUniform() && borderMetrics.borderRadii.isUniform() &&
@@ -787,8 +792,35 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
           (colorComponentsFromColor(borderMetrics.borderColors.left).alpha == 0 &&
            (*borderMetrics.borderColors.left).getUIColor() != nullptr));
 
+  // background color
   CGColorRef backgroundColor = [_backgroundColor resolvedColorWithTraitCollection:self.traitCollection].CGColor;
+  // The reason we sometimes do not set self.layer's backgroundColor is because
+  // we want to support non-uniform border radii, which apple does not natively
+  // support. To get this behavior we need to create a CGPath in the shape that
+  // we want. If we mask self.layer to this path, we would be clipping subviews
+  // which we may not want to do. The generalized solution in this case is just
+  // create a new layer
+  if (useCoreAnimationBorderRendering) {
+    [_backgroundColorLayer removeFromSuperlayer];
+    _backgroundColorLayer = nil;
+    layer.backgroundColor = backgroundColor;
+  } else {
+    layer.backgroundColor = nil;
+    if (!_backgroundColorLayer) {
+      _backgroundColorLayer = [CALayer layer];
+      _backgroundColorLayer.frame = CGRectMake(0, 0, self.frame.size.width, self.frame.size.height);
+      _backgroundColorLayer.zPosition = BACKGROUND_COLOR_ZPOSITION;
+      [self.layer addSublayer:_backgroundColorLayer];
+    }
 
+    CAShapeLayer *maskLayer = [self
+        createMaskLayer:self.bounds
+           cornerInsets:RCTGetCornerInsets(RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii), UIEdgeInsetsZero)];
+    _backgroundColorLayer.backgroundColor = backgroundColor;
+    _backgroundColorLayer.mask = maskLayer;
+  }
+
+  // Stage 2. Border Rendering
   if (useCoreAnimationBorderRendering) {
     layer.mask = nil;
     [_borderLayer removeFromSuperlayer];
@@ -798,21 +830,17 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     layer.borderColor = borderColor;
     CGColorRelease(borderColor);
     layer.cornerRadius = (CGFloat)borderMetrics.borderRadii.topLeft.horizontal;
-
     layer.cornerCurve = CornerCurveFromBorderCurve(borderMetrics.borderCurves.topLeft);
-
-    layer.backgroundColor = backgroundColor;
   } else {
     if (!_borderLayer) {
       CALayer *borderLayer = [CALayer new];
-      borderLayer.zPosition = -1024.0f;
+      borderLayer.zPosition = BACKGROUND_COLOR_ZPOSITION + 1;
       borderLayer.frame = layer.bounds;
       borderLayer.magnificationFilter = kCAFilterNearest;
       [layer addSublayer:borderLayer];
       _borderLayer = borderLayer;
     }
 
-    layer.backgroundColor = nil;
     layer.borderWidth = 0;
     layer.borderColor = nil;
     layer.cornerRadius = 0;
@@ -824,8 +852,8 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
         RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii),
         RCTUIEdgeInsetsFromEdgeInsets(borderMetrics.borderWidths),
         borderColors,
-        backgroundColor,
-        self.clipsToBounds);
+        [UIColor clearColor].CGColor,
+        NO);
 
     RCTReleaseRCTBorderColors(borderColors);
 
@@ -959,8 +987,7 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
         gradientLayer.mask = maskLayer;
       }
 
-      // border layer should appear above gradient layers to make sure that the border is visible
-      gradientLayer.zPosition = _borderLayer.zPosition - 1;
+      gradientLayer.zPosition = BACKGROUND_COLOR_ZPOSITION;
 
       [self.layer addSublayer:gradientLayer];
       [_gradientLayers addObject:gradientLayer];
