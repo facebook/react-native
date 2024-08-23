@@ -21,6 +21,8 @@ import type {
   SettingChangeEvent,
 } from 'react-native/Libraries/Components/TextInput/TextInput'; // macOS]
 
+import ExampleTextInput from './ExampleTextInput';
+
 const TextInputSharedExamples = require('./TextInputSharedExamples.js');
 const React = require('react');
 const {
@@ -30,7 +32,6 @@ const {
   StyleSheet,
   Switch,
   Text,
-  TextInput,
   View,
 } = require('react-native');
 const {Image, Platform} = require('react-native'); // [macOS]
@@ -53,6 +54,7 @@ class TextInputAccessoryViewChangeTextExample extends React.Component<
   {text: string},
 > {
   constructor(props: void | {...}) {
+    // $FlowFixMe[incompatible-call]
     super(props);
     this.state = {text: 'Placeholder Text'};
   }
@@ -62,8 +64,7 @@ class TextInputAccessoryViewChangeTextExample extends React.Component<
     return (
       <View>
         <Text>Set InputAccessoryView with ID & reset text:</Text>
-        <TextInput
-          style={styles.default}
+        <ExampleTextInput
           inputAccessoryViewID={inputAccessoryViewID}
           onChangeText={text => this.setState({text})}
           value={this.state.text}
@@ -86,6 +87,7 @@ class TextInputAccessoryViewChangeKeyboardExample extends React.Component<
   {keyboardType: string, text: string},
 > {
   constructor(props: void | {...}) {
+    // $FlowFixMe[incompatible-call]
     super(props);
     this.state = {text: '', keyboardType: 'default'};
   }
@@ -103,8 +105,7 @@ class TextInputAccessoryViewChangeKeyboardExample extends React.Component<
       <View>
         <Text>Set InputAccessoryView with ID & switch keyboard:</Text>
         {/* $FlowFixMe[incompatible-use] */}
-        <TextInput
-          style={styles.default}
+        <ExampleTextInput
           inputAccessoryViewID={inputAccessoryViewID}
           onChangeText={text => this.setState({text})}
           value={this.state.text}
@@ -129,14 +130,14 @@ class TextInputAccessoryViewDefaultDoneButtonExample extends React.Component<
   {text: string},
 > {
   constructor(props: void | $ReadOnly<{keyboardType: KeyboardType}>) {
+    // $FlowFixMe[incompatible-call]
     super(props);
     this.state = {text: ''};
   }
 
   render(): React.Node {
     return (
-      <TextInput
-        style={styles.default}
+      <ExampleTextInput
         onChangeText={text => this.setState({text})}
         value={this.state.text}
         keyboardType={this.props.keyboardType}
@@ -154,12 +155,11 @@ class RewriteExampleKana extends React.Component<$FlowFixMeProps, any> {
   render(): React.Node {
     return (
       <View style={styles.rewriteContainer}>
-        <TextInput
+        <ExampleTextInput
           multiline={false}
           onChangeText={text => {
             this.setState({text: text.replace(/ひ/g, '日')});
           }}
-          style={styles.default}
           value={this.state.text}
         />
       </View>
@@ -179,9 +179,8 @@ class SecureEntryExample extends React.Component<$FlowFixMeProps, any> {
   render(): React.Node {
     return (
       <View>
-        <TextInput
+        <ExampleTextInput
           secureTextEntry={true}
-          style={styles.default}
           defaultValue="abc"
           onChangeText={text => this.setState({text})}
           value={this.state.text}
@@ -192,8 +191,7 @@ class SecureEntryExample extends React.Component<$FlowFixMeProps, any> {
             flex: 1,
             flexDirection: 'row',
           }}>
-          <TextInput
-            style={styles.default}
+          <ExampleTextInput
             defaultValue="cde"
             onChangeText={text => this.setState({password: text})}
             secureTextEntry={this.state.isSecureTextEntry}
@@ -253,7 +251,7 @@ class AutogrowingTextInputExample extends React.Component<
         />
 
         <Text>TextInput:</Text>
-        <TextInput
+        <ExampleTextInput
           value="prop"
           multiline={this.state.multiline}
           style={[style, {width: this.state.fullWidth ? '100%' : '50%'}]}
@@ -272,20 +270,8 @@ class AutogrowingTextInputExample extends React.Component<
 }
 
 const styles = StyleSheet.create({
-  default: {
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: '#0f0f0f',
-    flex: 1,
-    fontSize: 13,
-    padding: 4,
-  },
   multiline: {
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: '#0f0f0f',
-    flex: 1,
-    fontSize: 13,
     height: 50,
-    padding: 4,
     marginBottom: 4,
   },
   multilinePlaceholderStyles: {
@@ -314,7 +300,6 @@ const styles = StyleSheet.create({
   labelContainer: {
     flexDirection: 'row',
     marginVertical: 2,
-    flex: 1,
   },
   label: {
     width: 115,
@@ -346,7 +331,7 @@ function AutoCorrectSpellCheckGrammarCheckCallbacks(): React.Node {
       <Text>
         enableGrammarCheck: {enableGrammarCheck ? 'enabled' : 'disabled'}
       </Text>
-      <TextInput
+      <ExampleTextInput
         autoCorrect={enableAutoCorrect}
         style={{padding: 10, marginTop: 10}}
         multiline={true}
@@ -375,7 +360,7 @@ function OnDragEnterOnDragLeaveOnDrop(): React.Node {
   };
   return (
     <>
-      <TextInput
+      <ExampleTextInput
         multiline={false}
         draggedTypes={'fileUrl'}
         onDragEnter={e => appendLog('SinglelineEnter')}
@@ -384,7 +369,7 @@ function OnDragEnterOnDragLeaveOnDrop(): React.Node {
         style={styles.multiline}
         placeholder="SINGLE LINE with onDragEnter|Leave() and onDrop()"
       />
-      <TextInput
+      <ExampleTextInput
         multiline={true}
         draggedTypes={'fileUrl'}
         onDragEnter={e => appendLog('MultilineEnter')}
@@ -394,12 +379,12 @@ function OnDragEnterOnDragLeaveOnDrop(): React.Node {
         placeholder="MULTI LINE with onDragEnter|Leave() and onDrop()"
       />
       <Text style={{height: 120}}>{log.join('\n')}</Text>
-      <TextInput
+      <ExampleTextInput
         multiline={false}
         style={styles.multiline}
         placeholder="SINGLE LINE w/o onDragEnter|Leave() and onDrop()"
       />
-      <TextInput
+      <ExampleTextInput
         multiline={true}
         style={styles.multiline}
         placeholder="MULTI LINE w/o onDragEnter|Leave() and onDrop()"
@@ -422,7 +407,7 @@ function OnPaste(): React.Node {
   );
   return (
     <>
-      <TextInput
+      <ExampleTextInput
         multiline={true}
         style={styles.multiline}
         onPaste={(e: PasteEvent) => {
@@ -432,7 +417,7 @@ function OnPaste(): React.Node {
         pastedTypes={['string']}
         placeholder="MULTI LINE with onPaste() text from clipboard"
       />
-      <TextInput
+      <ExampleTextInput
         multiline={true}
         style={styles.multiline}
         onPaste={(e: PasteEvent) => {
@@ -505,21 +490,18 @@ const textInputExamples: Array<RNTesterModuleExample> = [
       return (
         <View>
           <WithLabel label="singleline">
-            <TextInput style={styles.default} value="(value property)">
+            <ExampleTextInput value="(value property)">
               (first raw text node)
               <Text style={{color: 'red'}}>(internal raw text node)</Text>
               (last raw text node)
-            </TextInput>
+            </ExampleTextInput>
           </WithLabel>
           <WithLabel label="multiline">
-            <TextInput
-              style={styles.default}
-              multiline={true}
-              value="(value property)">
+            <ExampleTextInput multiline={true} value="(value property)">
               (first raw text node)
               <Text style={{color: 'red'}}>(internal raw text node)</Text>
               (last raw text node)
-            </TextInput>
+            </ExampleTextInput>
           </WithLabel>
         </View>
       );
@@ -532,7 +514,7 @@ const textInputExamples: Array<RNTesterModuleExample> = [
       const examples = keyboardAppearance.map(type => {
         return (
           <WithLabel key={type} label={type}>
-            <TextInput keyboardAppearance={type} style={styles.default} />
+            <ExampleTextInput keyboardAppearance={type} />
           </WithLabel>
         );
       });
@@ -558,7 +540,7 @@ const textInputExamples: Array<RNTesterModuleExample> = [
       const examples = returnKeyTypes.map(type => {
         return (
           <WithLabel key={type} label={type}>
-            <TextInput returnKeyType={type} style={styles.default} />
+            <ExampleTextInput returnKeyType={type} />
           </WithLabel>
         );
       });
@@ -571,10 +553,7 @@ const textInputExamples: Array<RNTesterModuleExample> = [
       return (
         <View>
           <WithLabel label="true">
-            <TextInput
-              enablesReturnKeyAutomatically={true}
-              style={styles.default}
-            />
+            <ExampleTextInput enablesReturnKeyAutomatically={true} />
           </WithLabel>
         </View>
       );
@@ -591,14 +570,8 @@ const textInputExamples: Array<RNTesterModuleExample> = [
     render: function (): React.Node {
       return (
         <View>
-          <TextInput
-            style={[styles.default, {color: 'blue'}]}
-            defaultValue="Blue"
-          />
-          <TextInput
-            style={[styles.default, {color: 'green'}]}
-            defaultValue="Green"
-          />
+          <ExampleTextInput style={{color: 'blue'}} defaultValue="Blue" />
+          <ExampleTextInput style={{color: 'green'}} defaultValue="Green" />
         </View>
       );
     },
@@ -612,13 +585,11 @@ const textInputExamples: Array<RNTesterModuleExample> = [
     render: function (): React.Node {
       return (
         <View>
-          <TextInput
-            style={styles.default}
+          <ExampleTextInput
             selectionColor={'green'}
             defaultValue="Highlight me"
           />
-          <TextInput
-            style={styles.default}
+          <ExampleTextInput
             selectionColor={'rgba(86, 76, 205, 1)'}
             defaultValue="Highlight me"
           />
@@ -638,11 +609,7 @@ const textInputExamples: Array<RNTesterModuleExample> = [
       const examples = clearButtonModes.map(mode => {
         return (
           <WithLabel key={mode} label={mode}>
-            <TextInput
-              style={styles.default}
-              clearButtonMode={mode}
-              defaultValue={mode}
-            />
+            <ExampleTextInput clearButtonMode={mode} defaultValue={mode} />
           </WithLabel>
         );
       });
@@ -655,35 +622,31 @@ const textInputExamples: Array<RNTesterModuleExample> = [
       return (
         <View>
           <WithLabel label="clearTextOnFocus">
-            <TextInput
+            <ExampleTextInput
               placeholder="text is cleared on focus"
               defaultValue="text is cleared on focus"
-              style={styles.default}
               clearTextOnFocus={true}
             />
           </WithLabel>
           <WithLabel label="selectTextOnFocus">
-            <TextInput
+            <ExampleTextInput
               placeholder="text is selected on focus"
               defaultValue="text is selected on focus"
-              style={styles.default}
               selectTextOnFocus={true}
             />
           </WithLabel>
           <WithLabel label="clearTextOnFocus (multiline)">
-            <TextInput
+            <ExampleTextInput
               placeholder="text is cleared on focus"
               defaultValue="text is cleared on focus"
-              style={styles.default}
               clearTextOnFocus={true}
               multiline={true}
             />
           </WithLabel>
           <WithLabel label="selectTextOnFocus (multiline)">
-            <TextInput
+            <ExampleTextInput
               placeholder="text is selected on focus"
               defaultValue="text is selected on focus"
-              style={styles.default}
               selectTextOnFocus={true}
               multiline={true}
             />
@@ -697,7 +660,7 @@ const textInputExamples: Array<RNTesterModuleExample> = [
     render: function (): React.Node {
       return (
         <View>
-          <TextInput
+          <ExampleTextInput
             style={styles.multiline}
             placeholder="blurOnSubmit = true"
             returnKeyType="next"
@@ -716,12 +679,12 @@ const textInputExamples: Array<RNTesterModuleExample> = [
     render: function (): React.Node {
       return (
         <View>
-          <TextInput
+          <ExampleTextInput
             placeholder="multiline text input"
             multiline={true}
             style={styles.multiline}
           />
-          <TextInput
+          <ExampleTextInput
             placeholder="multiline text input with font styles and placeholder"
             multiline={true}
             clearTextOnFocus={true}
@@ -731,39 +694,39 @@ const textInputExamples: Array<RNTesterModuleExample> = [
             keyboardType="url"
             style={[styles.multiline, styles.multilineWithFontStyles]}
           />
-          <TextInput
+          <ExampleTextInput
             placeholder="multiline text input with max length"
             maxLength={5}
             multiline={true}
             style={styles.multiline}
           />
-          <TextInput
+          <ExampleTextInput
             placeholder="uneditable multiline text input"
             editable={false}
             multiline={true}
             style={styles.multiline}
           />
-          {/* [macOS */}
-          <TextInput
-            placeholder="multiline text input with scroll disabled"
-            multiline={true}
-            scrollEnabled={false}
-            style={styles.multiline}
-          />
-          {/* macOS] */}
-          <TextInput
-            placeholder="multiline text input with vertical scrollbar hidden"
-            multiline={true}
-            style={styles.multiline}
-            hideVerticalScrollIndicator={true}
-          />
-          <TextInput
+          <ExampleTextInput
             defaultValue="uneditable multiline text input with phone number detection: 88888888."
             editable={false}
             multiline={true}
             style={styles.multiline}
             dataDetectorTypes="phoneNumber"
           />
+          {/* [macOS */}
+          <ExampleTextInput
+            placeholder="multiline text input with scroll disabled"
+            multiline={true}
+            scrollEnabled={false}
+            style={styles.multiline}
+          />
+          <ExampleTextInput
+            placeholder="multiline text input with vertical scrollbar hidden"
+            multiline={true}
+            style={styles.multiline}
+            hideVerticalScrollIndicator={true}
+          />
+          {/* macOS] */}
         </View>
       );
     },
@@ -773,24 +736,20 @@ const textInputExamples: Array<RNTesterModuleExample> = [
     render: function (): React.Node {
       return (
         <View>
-          <TextInput
+          <ExampleTextInput
             placeholder="editable text input using editable prop"
-            style={styles.default}
             editable
           />
-          <TextInput
+          <ExampleTextInput
             placeholder="uneditable text input using editable prop"
-            style={styles.default}
             editable={false}
           />
-          <TextInput
+          <ExampleTextInput
             placeholder="editable text input using readOnly prop"
-            style={styles.default}
             readOnly={false}
           />
-          <TextInput
+          <ExampleTextInput
             placeholder="uneditable text input using readOnly prop"
-            style={styles.default}
             readOnly
           />
         </View>
@@ -804,7 +763,7 @@ const textInputExamples: Array<RNTesterModuleExample> = [
         <View>
           <Text>Singleline TextInput</Text>
           <View style={{height: 80}}>
-            <TextInput
+            <ExampleTextInput
               style={{
                 position: 'absolute',
                 fontSize: 16,
@@ -823,7 +782,7 @@ const textInputExamples: Array<RNTesterModuleExample> = [
           </View>
           <Text>Multiline TextInput</Text>
           <View style={{height: 130}}>
-            <TextInput
+            <ExampleTextInput
               style={{
                 position: 'absolute',
                 fontSize: 16,
@@ -843,7 +802,7 @@ const textInputExamples: Array<RNTesterModuleExample> = [
             />
           </View>
           <View>
-            <TextInput
+            <ExampleTextInput
               style={{
                 fontSize: 16,
                 backgroundColor: '#eeeeee',
@@ -869,7 +828,7 @@ const textInputExamples: Array<RNTesterModuleExample> = [
     render: function (): React.Node {
       return (
         <View>
-          <TextInput
+          <ExampleTextInput
             placeholder="height increases with content"
             defaultValue="React Native enables you to build world-class application experiences on native platforms using a consistent developer experience based on JavaScript and React. The focus of React Native is on developer efficiency across all the platforms you care about - learn once, write anywhere. Facebook uses React Native in multiple production apps and will continue investing in React Native."
             multiline={true}
@@ -918,28 +877,16 @@ const textInputExamples: Array<RNTesterModuleExample> = [
       return (
         <View>
           <WithLabel label="maxLength: 5">
-            <TextInput maxLength={5} style={styles.default} />
+            <ExampleTextInput maxLength={5} />
           </WithLabel>
           <WithLabel label="maxLength: 5 with placeholder">
-            <TextInput
-              maxLength={5}
-              placeholder="ZIP code entry"
-              style={styles.default}
-            />
+            <ExampleTextInput maxLength={5} placeholder="ZIP code entry" />
           </WithLabel>
           <WithLabel label="maxLength: 5 with default value already set">
-            <TextInput
-              maxLength={5}
-              defaultValue="94025"
-              style={styles.default}
-            />
+            <ExampleTextInput maxLength={5} defaultValue="94025" />
           </WithLabel>
           <WithLabel label="maxLength: 5 with very long default value already set">
-            <TextInput
-              maxLength={5}
-              defaultValue="9402512345"
-              style={styles.default}
-            />
+            <ExampleTextInput maxLength={5} defaultValue="9402512345" />
           </WithLabel>
         </View>
       );
@@ -951,16 +898,16 @@ const textInputExamples: Array<RNTesterModuleExample> = [
       return (
         <View>
           <WithLabel label="country">
-            <TextInput autoComplete="country" style={styles.default} />
+            <ExampleTextInput autoComplete="country" />
           </WithLabel>
           <WithLabel label="one-time-code">
-            <TextInput autoComplete="one-time-code" style={styles.default} />
+            <ExampleTextInput autoComplete="one-time-code" />
           </WithLabel>
           <WithLabel label="birthdate-full">
-            <TextInput autoComplete="birthdate-full" style={styles.default} />
+            <ExampleTextInput autoComplete="birthdate-full" />
           </WithLabel>
           <WithLabel label="cc-name">
-            <TextInput autoComplete="cc-name" style={styles.default} />
+            <ExampleTextInput autoComplete="cc-name" />
           </WithLabel>
         </View>
       );
@@ -972,26 +919,22 @@ const textInputExamples: Array<RNTesterModuleExample> = [
       return (
         <View>
           <WithLabel label="emailAddress">
-            <TextInput textContentType="emailAddress" style={styles.default} />
+            <ExampleTextInput textContentType="emailAddress" />
           </WithLabel>
           <WithLabel label="name">
-            <TextInput textContentType="name" style={styles.default} />
+            <ExampleTextInput textContentType="name" />
           </WithLabel>
           <WithLabel label="postalCode, when autoComplete set">
-            <TextInput
+            <ExampleTextInput
               textContentType="postalCode"
               autoComplete="email"
-              style={styles.default}
             />
           </WithLabel>
           <WithLabel label="creditCardExpiration">
-            <TextInput
-              textContentType="creditCardExpiration"
-              style={styles.default}
-            />
+            <ExampleTextInput textContentType="creditCardExpiration" />
           </WithLabel>
           <WithLabel label="birthdate">
-            <TextInput textContentType="birthdate" style={styles.default} />
+            <ExampleTextInput textContentType="birthdate" />
           </WithLabel>
         </View>
       );
@@ -1003,29 +946,17 @@ const textInputExamples: Array<RNTesterModuleExample> = [
       return (
         <View>
           <WithLabel label="letterSpacing: 10 lineHeight: 20 textAlign: 'center'">
-            <TextInput
+            <ExampleTextInput
               placeholder="multiline text input"
               multiline={true}
               style={[styles.multiline, styles.multilinePlaceholderStyles]}
             />
           </WithLabel>
           <WithLabel label="letterSpacing: 10 textAlign: 'center'">
-            <TextInput
+            <ExampleTextInput
               placeholder="singleline"
-              style={[styles.default, styles.singlelinePlaceholderStyles]}
+              style={styles.singlelinePlaceholderStyles}
             />
-          </WithLabel>
-        </View>
-      );
-    },
-  },
-  {
-    title: 'showSoftInputOnFocus',
-    render: function (): React.Node {
-      return (
-        <View>
-          <WithLabel label="showSoftInputOnFocus: false">
-            <TextInput showSoftInputOnFocus={false} style={[styles.default]} />
           </WithLabel>
         </View>
       );
@@ -1054,10 +985,9 @@ const textInputExamples: Array<RNTesterModuleExample> = [
                   return (
                     <View key={code}>
                       <Text style={{fontWeight: 'bold'}}>{`[${code}]`}</Text>
-                      <TextInput
+                      <ExampleTextInput
                         multiline
                         lineBreakStrategyIOS={strategy}
-                        style={styles.default}
                         defaultValue={textByCode[code]}
                       />
                     </View>
@@ -1076,12 +1006,11 @@ const textInputExamples: Array<RNTesterModuleExample> = [
       return (
         <View>
           <WithLabel label="smartInsertDelete: true | undefined">
-            <TextInput style={styles.default} defaultValue="CopyAndPaste" />
+            <ExampleTextInput defaultValue="CopyAndPaste" />
           </WithLabel>
           <WithLabel label="smartInsertDelete: false">
-            <TextInput
+            <ExampleTextInput
               smartInsertDelete={false}
-              style={styles.default}
               defaultValue="CopyAndPaste"
             />
           </WithLabel>
@@ -1107,27 +1036,27 @@ if (Platform.OS === 'macos') {
         return (
           <View>
             <Text>Default submit key (Enter):</Text>
-            <TextInput
+            <ExampleTextInput
               multiline={true}
               clearTextOnSubmit={true}
               style={styles.multiline}
             />
             <Text>Custom submit key (Enter): - same as above</Text>
-            <TextInput
+            <ExampleTextInput
               multiline={true}
               clearTextOnSubmit={true}
               style={styles.multiline}
               submitKeyEvents={[{key: 'Enter'}]}
             />
             <Text>Custom submit key (CMD + Enter):</Text>
-            <TextInput
+            <ExampleTextInput
               multiline={true}
               clearTextOnSubmit={true}
               style={styles.multiline}
               submitKeyEvents={[{key: 'Enter', metaKey: true}]}
             />
             <Text>Custom submit key (Shift + Enter):</Text>
-            <TextInput
+            <ExampleTextInput
               multiline={true}
               clearTextOnSubmit={true}
               style={styles.multiline}
@@ -1155,45 +1084,45 @@ if (Platform.OS === 'macos') {
       render: function (): React.Node {
         return (
           <View>
-            <TextInput
+            <ExampleTextInput
               placeholder="Single line"
               cursorColor="#00FF00"
               placeholderTextColor="grey"
-              style={[
-                styles.default,
-                {backgroundColor: 'black', color: 'white', marginBottom: 4},
-              ]}
+              style={{
+                backgroundColor: 'black',
+                color: 'white',
+                marginBottom: 4,
+              }}
             />
-            <TextInput
+            <ExampleTextInput
               multiline={true}
               placeholder="Multiline"
               cursorColor="#00FF00"
               placeholderTextColor="grey"
-              style={[
-                styles.default,
-                {backgroundColor: 'black', color: 'white', marginBottom: 4},
-              ]}
+              style={{
+                backgroundColor: 'black',
+                color: 'white',
+                marginBottom: 4,
+              }}
             />
-            <TextInput
+            <ExampleTextInput
               placeholder="Single line with selection color"
               cursorColor="#00FF00"
               selectionColor="yellow"
               placeholderTextColor="grey"
-              style={[
-                styles.default,
-                {backgroundColor: 'black', color: 'white', marginBottom: 4},
-              ]}
+              style={{
+                backgroundColor: 'black',
+                color: 'white',
+                marginBottom: 4,
+              }}
             />
-            <TextInput
+            <ExampleTextInput
               multiline={true}
               placeholder="Multiline with selection color"
               cursorColor="#00FF00"
               selectionColor="yellow"
               placeholderTextColor="grey"
-              style={[
-                styles.default,
-                {backgroundColor: 'black', color: 'white'},
-              ]}
+              style={{backgroundColor: 'black', color: 'white'}}
             />
           </View>
         );
@@ -1206,7 +1135,7 @@ if (Platform.OS === 'macos') {
 module.exports = ({
   displayName: (undefined: ?string),
   title: 'TextInput',
-  documentationURL: 'https://reactnative.dev/docs/textinput',
+  documentationURL: 'https://reactnative.dev/docs/TextInput',
   category: 'Basic',
   description: 'Single and multi-line text inputs.',
   examples: textInputExamples,

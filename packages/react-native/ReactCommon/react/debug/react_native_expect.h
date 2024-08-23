@@ -20,6 +20,8 @@
 // will see a helpful diagnostic (beyond a low level log). That concern is the
 // caller's responsibility.
 
+#pragma once
+
 #include "flags.h"
 
 #undef react_native_expect

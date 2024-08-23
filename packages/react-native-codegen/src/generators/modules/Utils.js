@@ -12,7 +12,6 @@
 
 import type {
   NativeModuleAliasMap,
-  NativeModuleEnumMembers,
   NativeModuleObjectTypeAnnotation,
   NativeModuleSchema,
   NativeModuleTypeAnnotation,
@@ -78,14 +77,9 @@ function isArrayRecursiveMember(
   );
 }
 
-function getAreEnumMembersInteger(members: NativeModuleEnumMembers): boolean {
-  return !members.some(m => `${m.value}`.includes('.'));
-}
-
 module.exports = {
   createAliasResolver,
   getModules,
-  getAreEnumMembersInteger,
   isDirectRecursiveMember,
   isArrayRecursiveMember,
 };

@@ -126,6 +126,12 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
 
   boolean mCollapsable;
 
+  @ReactProp(name = "collapsableChildren")
+  public void setCollapsableChildren(boolean collapsableChildren) {
+    // Do Nothing: Align with static ViewConfigs
+
+  }
+
   @ReactProp(name = "collapsable")
   public void setCollapsable(boolean collapsable) {
     mCollapsable = collapsable;
@@ -230,28 +236,67 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
     super.setFlexGrow(flexGrow);
   }
 
-  @ReactProp(name = ViewProps.ROW_GAP, defaultFloat = YogaConstants.UNDEFINED)
-  public void setRowGap(float rowGap) {
+  @ReactProp(name = ViewProps.ROW_GAP)
+  public void setRowGap(Dynamic rowGap) {
     if (isVirtual()) {
       return;
     }
-    super.setRowGap(PixelUtil.toPixelFromDIP(rowGap));
+
+    mTempYogaValue.setFromDynamic(rowGap);
+    switch (mTempYogaValue.unit) {
+      case AUTO:
+      case POINT:
+      case UNDEFINED:
+        setRowGap(mTempYogaValue.value);
+        break;
+      case PERCENT:
+        setRowGapPercent(mTempYogaValue.value);
+        break;
+    }
+
+    rowGap.recycle();
   }
 
-  @ReactProp(name = ViewProps.COLUMN_GAP, defaultFloat = YogaConstants.UNDEFINED)
-  public void setColumnGap(float columnGap) {
+  @ReactProp(name = ViewProps.COLUMN_GAP)
+  public void setColumnGap(Dynamic columnGap) {
     if (isVirtual()) {
       return;
     }
-    super.setColumnGap(PixelUtil.toPixelFromDIP(columnGap));
+
+    mTempYogaValue.setFromDynamic(columnGap);
+    switch (mTempYogaValue.unit) {
+      case AUTO:
+      case POINT:
+      case UNDEFINED:
+        setColumnGap(mTempYogaValue.value);
+        break;
+      case PERCENT:
+        setColumnGapPercent(mTempYogaValue.value);
+        break;
+    }
+
+    columnGap.recycle();
   }
 
-  @ReactProp(name = ViewProps.GAP, defaultFloat = YogaConstants.UNDEFINED)
-  public void setGap(float gap) {
+  @ReactProp(name = ViewProps.GAP)
+  public void setGap(Dynamic gap) {
     if (isVirtual()) {
       return;
     }
-    super.setGap(PixelUtil.toPixelFromDIP(gap));
+
+    mTempYogaValue.setFromDynamic(gap);
+    switch (mTempYogaValue.unit) {
+      case AUTO:
+      case POINT:
+      case UNDEFINED:
+        setGap(mTempYogaValue.value);
+        break;
+      case PERCENT:
+        setGapPercent(mTempYogaValue.value);
+        break;
+    }
+
+    gap.recycle();
   }
 
   @ReactProp(name = ViewProps.FLEX_SHRINK, defaultFloat = 0f)
@@ -674,6 +719,71 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
 
   @ReactPropGroup(
       names = {
+        "marginBlock",
+        "marginBlockEnd",
+        "marginBlockStart",
+      })
+  public void setMarginBlock(int index, Dynamic margin) {
+    // Do Nothing: Align with static ViewConfigs
+  }
+
+  @ReactPropGroup(
+      names = {
+        "marginInline",
+        "marginInlineEnd",
+        "marginInlineStart",
+      })
+  public void setMarginInline(int index, Dynamic margin) {
+    // Do Nothing: Align with static ViewConfigs
+  }
+
+  @ReactPropGroup(
+      names = {
+        "paddingBlock",
+        "paddingBlockEnd",
+        "paddingBlockStart",
+      })
+  public void setPaddingBlock(int index, Dynamic padding) {
+    // Do Nothing: Align with static ViewConfigs
+  }
+
+  @ReactPropGroup(
+      names = {
+        "paddingInline",
+        "paddingInlineEnd",
+        "paddingInlineStart",
+      })
+  public void setPaddingInline(int index, Dynamic padding) {
+    // Do Nothing: Align with static ViewConfigs
+  }
+
+  @ReactPropGroup(
+      names = {
+        "insetBlock",
+        "insetBlockEnd",
+        "insetBlockStart",
+      })
+  public void setInsetBlock(int index, Dynamic inset) {
+    // Do Nothing: Align with static ViewConfigs
+  }
+
+  @ReactPropGroup(
+      names = {
+        "insetInline",
+        "insetInlineEnd",
+        "insetInlineStart",
+      })
+  public void setInsetInline(int index, Dynamic inset) {
+    // Do Nothing: Align with static ViewConfigs
+  }
+
+  @ReactProp(name = "inset")
+  public void setInset(Dynamic inset) {
+    // Do Nothing: Align with static ViewConfigs
+  }
+
+  @ReactPropGroup(
+      names = {
         ViewProps.MARGIN,
         ViewProps.MARGIN_VERTICAL,
         ViewProps.MARGIN_HORIZONTAL,
@@ -850,19 +960,21 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
 
   @ReactProp(name = "onPointerEnter")
   public void setShouldNotifyPointerEnter(boolean value) {
-    // This method exists to inject Native View configs in RN Android VR
-    // DO NOTHING
+    // Do Nothing: Align with static ViewConfigs
   }
 
   @ReactProp(name = "onPointerLeave")
   public void setShouldNotifyPointerLeave(boolean value) {
-    // This method exists to inject Native View configs in RN Android VR
-    // DO NOTHING
+    // Do Nothing: Align with static ViewConfigs
   }
 
   @ReactProp(name = "onPointerMove")
   public void setShouldNotifyPointerMove(boolean value) {
-    // This method exists to inject Native View configs in RN Android VR
-    // DO NOTHING
+    // Do Nothing: Align with static ViewConfigs
+  }
+
+  @ReactProp(name = "experimental_layoutConformance")
+  public void setLayoutConformance(String value) {
+    // Do Nothing: Align with static ViewConfigs
   }
 }

@@ -7,11 +7,11 @@
 
 #pragma once
 
+#include "CdpJson.h"
 #include "RuntimeTarget.h"
 #include "SessionState.h"
 
 #include <jsinspector-modern/InspectorInterfaces.h>
-#include <jsinspector-modern/Parsing.h>
 #include <jsinspector-modern/RuntimeAgent.h>
 
 #include <functional>
@@ -47,15 +47,22 @@ class InstanceAgent final {
   bool handleRequest(const cdp::PreparsedRequest& req);
 
   /**
-   * Replace the current RuntimeAgent pageAgent_ with a new one
+   * Replace the current RuntimeAgent hostAgent_ with a new one
    * connected to the new RuntimeTarget.
    * \param runtime The new runtime target. May be nullptr to indicate
    * there's no current debuggable runtime.
    */
   void setCurrentRuntime(RuntimeTarget* runtime);
 
+  /**
+   * Send a console message to the frontend, or buffer it to be sent later.
+   */
+  void sendConsoleMessage(SimpleConsoleMessage message);
+
  private:
   void maybeSendExecutionContextCreatedNotification();
+  void sendConsoleMessageImmediately(SimpleConsoleMessage message);
+  void maybeSendPendingConsoleMessages();
 
   FrontendChannel frontendChannel_;
   InstanceTarget& target_;

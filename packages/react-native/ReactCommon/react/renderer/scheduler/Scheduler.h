@@ -12,6 +12,7 @@
 
 #include <ReactCommon/RuntimeExecutor.h>
 #include <react/config/ReactNativeConfig.h>
+#include <react/performance/timeline/PerformanceEntryReporter.h>
 #include <react/renderer/componentregistry/ComponentDescriptorFactory.h>
 #include <react/renderer/components/root/RootComponentDescriptor.h>
 #include <react/renderer/core/ComponentDescriptor.h>
@@ -19,6 +20,7 @@
 #include <react/renderer/core/EventListener.h>
 #include <react/renderer/core/LayoutConstraints.h>
 #include <react/renderer/mounting/MountingOverrideDelegate.h>
+#include <react/renderer/observers/events/EventPerformanceLogger.h>
 #include <react/renderer/scheduler/InspectorData.h>
 #include <react/renderer/scheduler/SchedulerDelegate.h>
 #include <react/renderer/scheduler/SchedulerToolbox.h>
@@ -130,6 +132,9 @@ class Scheduler final : public UIManagerDelegate {
    * fill the optional.
    */
   std::shared_ptr<std::optional<const EventDispatcher>> eventDispatcher_;
+
+  std::shared_ptr<PerformanceEntryReporter> performanceEntryReporter_;
+  std::shared_ptr<EventPerformanceLogger> eventPerformanceLogger_;
 
   /**
    * Hold onto ContextContainer. See SchedulerToolbox.

@@ -130,7 +130,8 @@ public class TouchesHelper {
         ReactSoftExceptionLogger.logSoftException(
             TAG,
             new IllegalStateException(
-                "Cannot dispatch a TouchEvent that has no MotionEvent; the TouchEvent has been recycled"));
+                "Cannot dispatch a TouchEvent that has no MotionEvent; the TouchEvent has been"
+                    + " recycled"));
         return;
       }
 

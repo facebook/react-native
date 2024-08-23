@@ -21,14 +21,14 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class RCTMountingManager;
-
 /**
  * Exactly same semantic as `facebook::react::SchedulerDelegate`.
  */
 @protocol RCTSchedulerDelegate
 
 - (void)schedulerDidFinishTransaction:(facebook::react::MountingCoordinator::Shared)mountingCoordinator;
+
+- (void)schedulerShouldRenderTransactions:(facebook::react::MountingCoordinator::Shared)mountingCoordinator;
 
 - (void)schedulerDidDispatchCommand:(const facebook::react::ShadowView &)shadowView
                         commandName:(const std::string &)commandName

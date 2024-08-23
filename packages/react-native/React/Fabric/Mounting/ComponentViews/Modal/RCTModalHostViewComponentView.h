@@ -5,13 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTMountingTransactionObserving.h>
 #import <React/RCTViewComponentView.h>
 
 /**
  * UIView class for root <ModalHostView> component.
  */
-@interface RCTModalHostViewComponentView : RCTViewComponentView <RCTMountingTransactionObserving>
+@interface RCTModalHostViewComponentView : RCTViewComponentView
 
 #if !TARGET_OS_OSX // [macOS]
 /**

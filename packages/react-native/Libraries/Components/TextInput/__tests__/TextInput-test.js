@@ -4,11 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow-strict
  * @format
- * @oncall react_native
  */
 
+const {create} = require('../../../../jest/renderer');
 const ReactNative = require('../../../ReactNative/RendererProxy');
 const {
   enter,
@@ -26,7 +25,7 @@ describe('TextInput tests', () => {
   let onChangeListener;
   let onChangeTextListener;
   const initialValue = 'initialValue';
-  beforeEach(() => {
+  beforeEach(async () => {
     inputRef = React.createRef(null);
     onChangeListener = jest.fn();
     onChangeTextListener = jest.fn();
@@ -47,7 +46,7 @@ describe('TextInput tests', () => {
         />
       );
     }
-    const renderTree = ReactTestRenderer.create(<TextInputWrapper />);
+    const renderTree = await create(<TextInputWrapper />);
     input = renderTree.root.findByType(TextInput);
   });
   it('has expected instance functions', () => {
@@ -79,17 +78,16 @@ describe('TextInput tests', () => {
     });
   });
 
-  function createTextInput(extraProps) {
+  async function createTextInput(extraProps) {
     const textInputRef = React.createRef(null);
-    ReactTestRenderer.create(
+    await create(
       <TextInput ref={textInputRef} value="value1" {...extraProps} />,
     );
     return textInputRef;
   }
 
-  it('focus() should not do anything if the TextInput is not editable', () => {
-    const textInputRef = createTextInput({editable: false});
-    // currentProps is the property actually containing props at runtime
+  it('focus() should not do anything if the TextInput is not editable', async () => {
+    const textInputRef = await createTextInput({editable: false});
     textInputRef.current.currentProps = textInputRef.current.props;
     expect(textInputRef.current.isFocused()).toBe(false);
 
@@ -97,8 +95,8 @@ describe('TextInput tests', () => {
     expect(textInputRef.current.isFocused()).toBe(false);
   });
 
-  it('should have support for being focused and blurred', () => {
-    const textInputRef = createTextInput();
+  it('should have support for being focused and blurred', async () => {
+    const textInputRef = await createTextInput();
 
     expect(textInputRef.current.isFocused()).toBe(false);
     ReactNative.findNodeHandle = jest.fn().mockImplementation(ref => {
@@ -125,11 +123,11 @@ describe('TextInput tests', () => {
     expect(TextInput.State.currentlyFocusedInput()).toBe(null);
   });
 
-  it('should unfocus when other TextInput is focused', () => {
+  it('should unfocus when other TextInput is focused', async () => {
     const textInputRe1 = React.createRef(null);
     const textInputRe2 = React.createRef(null);
 
-    ReactTestRenderer.create(
+    await create(
       <>
         <TextInput ref={textInputRe1} value="value1" />
         <TextInput ref={textInputRe2} value="value2" />
@@ -169,8 +167,8 @@ describe('TextInput tests', () => {
     expect(TextInput.State.currentlyFocusedInput()).toBe(textInputRe2.current);
   });
 
-  it('should give precedence to `textContentType` when set', () => {
-    const instance = ReactTestRenderer.create(
+  it('should give precedence to `textContentType` when set', async () => {
+    const instance = await create(
       <TextInput autoComplete="tel" textContentType="emailAddress" />,
     );
 
@@ -183,7 +181,6 @@ describe('TextInput tests', () => {
         mostRecentEventCount={0}
         onBlur={[Function]}
         onChange={[Function]}
-        onChangeSync={null}
         onClick={[Function]}
         onFocus={[Function]}
         onResponderGrant={[Function]}
@@ -205,8 +202,8 @@ describe('TextInput tests', () => {
     `);
   });
 
-  it('should render as expected', () => {
-    expectRendersMatchingSnapshot(
+  it('should render as expected', async () => {
+    await expectRendersMatchingSnapshot(
       'TextInput',
       () => <TextInput />,
       () => {
@@ -217,8 +214,8 @@ describe('TextInput tests', () => {
 });
 
 describe('TextInput', () => {
-  it('default render', () => {
-    const instance = ReactTestRenderer.create(<TextInput />);
+  it('default render', async () => {
+    const instance = await create(<TextInput />);
 
     expect(instance.toJSON()).toMatchInlineSnapshot(`
       <RCTSinglelineTextInputView
@@ -229,7 +226,6 @@ describe('TextInput', () => {
         mostRecentEventCount={0}
         onBlur={[Function]}
         onChange={[Function]}
-        onChangeSync={null}
         onClick={[Function]}
         onFocus={[Function]}
         onResponderGrant={[Function]}
@@ -256,14 +252,14 @@ describe('TextInput', () => {
 });
 
 describe('TextInput compat with web', () => {
-  it('renders core props', () => {
+  it('renders core props', async () => {
     const props = {
       id: 'id',
       tabIndex: 0,
       testID: 'testID',
     };
 
-    const instance = ReactTestRenderer.create(<TextInput {...props} />);
+    const instance = await create(<TextInput {...props} />);
 
     expect(instance.toJSON()).toMatchInlineSnapshot(`
       <RCTSinglelineTextInputView
@@ -275,7 +271,6 @@ describe('TextInput compat with web', () => {
         nativeID="id"
         onBlur={[Function]}
         onChange={[Function]}
-        onChangeSync={null}
         onClick={[Function]}
         onFocus={[Function]}
         onResponderGrant={[Function]}
@@ -297,7 +292,7 @@ describe('TextInput compat with web', () => {
     `);
   });
 
-  it('renders "aria-*" props', () => {
+  it('renders "aria-*" props', async () => {
     const props = {
       'aria-activedescendant': 'activedescendant',
       'aria-atomic': true,
@@ -347,7 +342,7 @@ describe('TextInput compat with web', () => {
       'aria-valuetext': '3',
     };
 
-    const instance = ReactTestRenderer.create(<TextInput {...props} />);
+    const instance = await create(<TextInput {...props} />);
 
     expect(instance.toJSON()).toMatchInlineSnapshot(`
       <RCTSinglelineTextInputView
@@ -407,7 +402,6 @@ describe('TextInput compat with web', () => {
         mostRecentEventCount={0}
         onBlur={[Function]}
         onChange={[Function]}
-        onChangeSync={null}
         onClick={[Function]}
         onFocus={[Function]}
         onResponderGrant={[Function]}
@@ -429,7 +423,7 @@ describe('TextInput compat with web', () => {
     `);
   });
 
-  it('renders styles', () => {
+  it('renders styles', async () => {
     const style = {
       display: 'flex',
       flex: 1,
@@ -439,7 +433,7 @@ describe('TextInput compat with web', () => {
       verticalAlign: 'middle',
     };
 
-    const instance = ReactTestRenderer.create(<TextInput style={style} />);
+    const instance = await create(<TextInput style={style} />);
 
     expect(instance.toJSON()).toMatchInlineSnapshot(`
       <RCTSinglelineTextInputView
@@ -450,7 +444,6 @@ describe('TextInput compat with web', () => {
         mostRecentEventCount={0}
         onBlur={[Function]}
         onChange={[Function]}
-        onChangeSync={null}
         onClick={[Function]}
         onFocus={[Function]}
         onResponderGrant={[Function]}

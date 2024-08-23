@@ -13,11 +13,12 @@
 
 #include <ReactCommon/RuntimeExecutor.h>
 #include <hermes/hermes.h>
+#include <jserrorhandler/JsErrorHandler.h>
 #include <jsi/jsi.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
 #include <react/runtime/ReactInstance.h>
 
 using ::testing::_;
+using ::testing::HasSubstr;
 using ::testing::SaveArg;
 
 namespace facebook::react {
@@ -123,14 +124,15 @@ class ReactInstanceTest : public ::testing::Test {
     auto mockRegistry = std::make_unique<MockTimerRegistry>();
     mockRegistry_ = mockRegistry.get();
     timerManager_ = std::make_shared<TimerManager>(std::move(mockRegistry));
-    auto jsErrorHandlingFunc = [](MapBuffer errorMap) noexcept {
+    auto onJsError = [](const JsErrorHandler::ParsedError& errorMap) noexcept {
       // Do nothing
     };
+
     instance_ = std::make_unique<ReactInstance>(
         std::move(runtime),
         messageQueueThread_,
         timerManager_,
-        std::move(jsErrorHandlingFunc));
+        std::move(onJsError));
     timerManager_->setRuntimeExecutor(instance_->getBufferedRuntimeExecutor());
 
     // Install a C++ error handler
@@ -536,16 +538,10 @@ TEST_F(ReactInstanceTest, testSetIntervalWithInvalidArgs) {
 
   EXPECT_EQ(
       getErrorMessage("setInterval();"),
-      "setInterval must be called with at least two arguments (the function to call and the delay).");
-  EXPECT_EQ(
-      getErrorMessage("setInterval(() => {});"),
-      "setInterval must be called with at least two arguments (the function to call and the delay).");
+      "setInterval must be called with at least one argument (the function to call).");
   EXPECT_EQ(
       getErrorMessage("setInterval('invalid', 100);"),
       "The first argument to setInterval must be a function.");
-  EXPECT_EQ(
-      getErrorMessage("setInterval(() => {}, 'invalid');"),
-      "The second argument to setInterval must be a number.");
 }
 
 TEST_F(ReactInstanceTest, testClearInterval) {
@@ -806,9 +802,10 @@ TEST_F(ReactInstanceTest, testCallFunctionOnModule_invalidModule) {
   instance_->callFunctionOnModule("invalidModule", "method", std::move(args));
   step();
   expectError();
-  EXPECT_EQ(
+  EXPECT_THAT(
       getLastErrorMessage(),
-      "Failed to call into JavaScript module method invalidModule.method(). Module has not been registered as callable. Registered callable JavaScript modules (n = 0):. Did you forget to call `RN$registerCallableModule`?");
+      HasSubstr(
+          "Failed to call into JavaScript module method invalidModule.method()"));
 }
 
 TEST_F(ReactInstanceTest, testCallFunctionOnModule_undefinedMethod) {
@@ -825,7 +822,7 @@ RN$registerCallableModule('foo', () => module);
   expectError();
   EXPECT_EQ(
       getLastErrorMessage(),
-      "Failed to call into JavaScript module method foo.invalidMethod. Module exists, but the method is undefined.");
+      "getPropertyAsObject: property 'invalidMethod' is undefined, expected an Object");
 }
 
 TEST_F(ReactInstanceTest, testCallFunctionOnModule_invalidMethod) {

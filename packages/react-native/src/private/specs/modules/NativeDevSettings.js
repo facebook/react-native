@@ -21,6 +21,7 @@ export interface Spec extends TurboModule {
   +setProfilingEnabled: (isProfilingEnabled: boolean) => void;
   +toggleElementInspector: () => void;
   +addMenuItem: (title: string) => void;
+  +openDebugger?: () => void;
 
   // Events
   +addListener: (eventName: string) => void;

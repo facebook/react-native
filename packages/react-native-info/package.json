@@ -1,0 +1,32 @@
+{
+  "name": "react-native-info",
+  "version": "1.0.0",
+  "main": "build/index.js",
+  "license": "MIT",
+  "private": true,
+  "types": "build/index.d.ts",
+  "files": [
+    "build",
+    "!*.d.ts",
+    "!*.map"
+  ],
+  "homepage": "https://github.com/facebook//react-native/tree/main/packages/react-native-info",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/facebook/react-native.git",
+    "directory": "packages/react-native-info"
+  },
+  "dependencies": {
+    "@react-native-community/cli-config": "^13.6.4",
+    "@react-native-community/cli-platform-apple": "^13.6.4",
+    "@react-native-community/cli-tools": "^13.6.4",
+    "@react-native-community/cli-types": "^13.6.4",
+    "commander": "^12.0.0",
+    "fs-extra": "^11.2.0",
+    "yaml": "^2.4.1"
+  },
+  "devDependencies": {
+    "@types/envinfo": "^7.8.3",
+    "@types/fs-extra": "^11.0.4"
+  }
+}

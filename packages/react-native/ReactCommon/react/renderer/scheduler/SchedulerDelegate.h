@@ -29,11 +29,21 @@ class SchedulerDelegate {
       const MountingCoordinator::Shared& mountingCoordinator) = 0;
 
   /*
+   * Called when the runtime scheduler decides that one-or-more previously
+   * finished transactions should now be flushed to the screen (atomically).
+   *
+   * This is a separate callback from didFinishTransaction as the Android UI
+   * mounting layer needs to be able toobserve each created ShadowTree to
+   * correctly apply changes, due to changes in Props representation.
+   */
+  virtual void schedulerShouldRenderTransactions(
+      const MountingCoordinator::Shared& mountingCoordinator) = 0;
+
+  /*
    * Called right after a new ShadowNode was created.
    */
   virtual void schedulerDidRequestPreliminaryViewAllocation(
-      SurfaceId surfaceId,
-      const ShadowNode& shadowView) = 0;
+      const ShadowNode& shadowNode) = 0;
 
   virtual void schedulerDidDispatchCommand(
       const ShadowView& shadowView,

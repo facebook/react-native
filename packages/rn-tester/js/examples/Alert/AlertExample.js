@@ -11,6 +11,7 @@
 import type {RNTesterModule} from '../../types/RNTesterTypes';
 
 import * as React from 'react';
+import {RNTesterThemeContext} from '../../components/RNTesterTheme';
 import {Alert, Pressable, StyleSheet, Text, View} from 'react-native';
 
 // Shows log on the screen
@@ -227,7 +228,9 @@ const AlertWithStylesPreferred = () => {
 };
 
 const PromptOptions = () => {
-  const [promptValue, setPromptValue] = React.useState<string>('');
+  const [promptValue, setPromptValue] = React.useState<
+    string | {login: string, password: string},
+  >('');
 
   const customButtons = [
     {
@@ -239,11 +242,15 @@ const PromptOptions = () => {
       style: 'cancel',
     },
   ];
+  const theme = React.useContext(RNTesterThemeContext);
 
   return (
     <View>
       <Text style={styles.promptValue}>
-        <Text style={styles.bold}>Prompt value:</Text> {promptValue}
+        <Text style={[{color: theme.SecondaryLabelColor}, styles.bold]}>
+          Prompt value:
+        </Text>
+        {JSON.stringify(promptValue, null, 2)}
       </Text>
 
       <Pressable

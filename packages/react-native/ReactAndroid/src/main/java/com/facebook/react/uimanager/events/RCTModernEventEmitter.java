@@ -31,7 +31,9 @@ public interface RCTModernEventEmitter extends RCTEventEmitter {
       @Nullable WritableMap event,
       @EventCategoryDef int category);
 
-  /** @deprecated Dispatch the TouchEvent using {@link EventDispatcher} instead */
+  /**
+   * @deprecated Dispatch the TouchEvent using {@link EventDispatcher} instead
+   */
   @Deprecated
   void receiveTouches(TouchEvent event);
 }

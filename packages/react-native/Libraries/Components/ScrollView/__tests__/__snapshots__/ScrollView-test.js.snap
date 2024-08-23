@@ -51,6 +51,7 @@ exports[`ScrollView renders its children: should deep render when not mocked (pl
 >
   <RCTScrollContentView
     collapsable={false}
+    collapsableChildren={true}
     style={
       Array [
         false,
@@ -65,24 +66,4 @@ exports[`ScrollView renders its children: should deep render when not mocked (pl
     </View>
   </RCTScrollContentView>
 </RCTScrollView>
-`;
-
-exports[`ScrollView renders its children: should shallow render as <ScrollView /> when mocked 1`] = `
-<ScrollView>
-  <View>
-    <Text>
-      Hello World!
-    </Text>
-  </View>
-</ScrollView>
-`;
-
-exports[`ScrollView renders its children: should shallow render as <ScrollView /> when not mocked 1`] = `
-<ScrollView>
-  <View>
-    <Text>
-      Hello World!
-    </Text>
-  </View>
-</ScrollView>
 `;

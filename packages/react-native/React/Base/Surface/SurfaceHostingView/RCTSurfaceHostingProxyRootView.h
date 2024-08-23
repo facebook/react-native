@@ -33,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, weak) UIViewController *reactViewController;
 @property (nonatomic, strong, readonly) RCTUIView *view; // [macOS]
 @property (nonatomic, strong, readonly) RCTUIView *contentView; // [macOS]
-@property (nonatomic, strong) RCTUIView *loadingView; // [macOS]
+@property (nonatomic, strong) RCTPlatformView *loadingView; // [macOS]
 @property (nonatomic, assign) BOOL passThroughTouches;
 @property (nonatomic, assign) NSTimeInterval loadingViewFadeDelay;
 @property (nonatomic, assign) NSTimeInterval loadingViewFadeDuration;

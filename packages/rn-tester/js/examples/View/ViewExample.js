@@ -648,6 +648,96 @@ export default ({
       },
     },
     {
+      title: 'Rounded Borders (Percentages)',
+      name: 'rounded-borders-percentages',
+      render(): React.Node {
+        return (
+          <View
+            testID="view-test-rounded-borders-percentages"
+            style={{flexDirection: 'row', flexWrap: 'wrap'}}>
+            <View
+              style={{
+                width: 50,
+                height: 50,
+                borderRadius: '50%',
+                borderWidth: 1,
+                marginRight: 10,
+              }}
+            />
+            <View
+              style={{
+                width: 50,
+                height: 50,
+                borderRadius: '50%',
+                borderWidth: 10,
+                marginRight: 10,
+              }}
+            />
+            <View
+              style={{
+                width: 50,
+                height: 50,
+                borderTopLeftRadius: '10%',
+                borderTopRightRadius: '20%',
+                borderBottomRightRadius: '50%',
+                borderBottomLeftRadius: '100%',
+                borderWidth: 1,
+                marginRight: 10,
+              }}
+            />
+            <View
+              style={{
+                width: 50,
+                height: 50,
+                borderTopLeftRadius: '10%',
+                borderTopRightRadius: '20%',
+                borderBottomRightRadius: '50%',
+                borderBottomLeftRadius: '100%',
+                borderWidth: 10,
+                marginRight: 10,
+              }}
+            />
+            <View
+              style={{
+                width: 50,
+                height: 50,
+                borderLeftWidth: 6,
+                borderTopWidth: 6,
+                borderTopLeftRadius: '40%',
+              }}
+            />
+            <View
+              style={{
+                width: 50,
+                height: 50,
+                borderRightWidth: 6,
+                borderTopWidth: 6,
+                borderTopRightRadius: '40%',
+              }}
+            />
+            <View
+              style={{
+                width: 50,
+                height: 50,
+                borderBottomWidth: 6,
+                borderLeftWidth: 6,
+                borderBottomLeftRadius: '40%',
+              }}
+            />
+            <View
+              style={{
+                width: 50,
+                height: 50,
+                borderBottomWidth: 6,
+                borderRightWidth: 6,
+                borderBottomRightRadius: '40%',
+              }}
+            />
+          </View>
+        );
+      },
+    },
+    {
       title: 'Overflow',
       name: 'overflow',
       render(): React.Node {
@@ -842,19 +932,19 @@ export default ({
       name: 'insets',
       render(): React.Node {
         return (
-          <View testID="view-test-insets" style={{rowGap: 10}}>
-            <View style={{position: 'relative', height: 50, borderWidth: 1}}>
+          <View testID="view-test-insets" style={{rowGap: 5}}>
+            <View style={{position: 'relative', height: 40, borderWidth: 1}}>
               <View
                 style={{
                   backgroundColor: '#527FE4',
                   padding: 5,
                   position: 'absolute',
-                  inset: 10,
+                  inset: 5,
                 }}>
-                <Text style={{fontSize: 11}}>inset 10</Text>
+                <Text style={{fontSize: 11}}>inset 5</Text>
               </View>
             </View>
-            <View style={{position: 'relative', height: 50, borderWidth: 1}}>
+            <View style={{position: 'relative', height: 40, borderWidth: 1}}>
               <View
                 style={{
                   backgroundColor: '#527FE4',
@@ -865,7 +955,7 @@ export default ({
                 <Text style={{fontSize: 11}}>insetBlock 5</Text>
               </View>
             </View>
-            <View style={{position: 'relative', height: 50, borderWidth: 1}}>
+            <View style={{position: 'relative', height: 40, borderWidth: 1}}>
               <View
                 style={{
                   backgroundColor: '#527FE4',
@@ -876,7 +966,7 @@ export default ({
                 <Text style={{fontSize: 11}}>insetBlockEnd 5</Text>
               </View>
             </View>
-            <View style={{position: 'relative', height: 50, borderWidth: 1}}>
+            <View style={{position: 'relative', height: 40, borderWidth: 1}}>
               <View
                 style={{
                   backgroundColor: '#527FE4',
@@ -887,7 +977,7 @@ export default ({
                 <Text style={{fontSize: 11}}>insetBlockStart 5</Text>
               </View>
             </View>
-            <View style={{position: 'relative', height: 50, borderWidth: 1}}>
+            <View style={{position: 'relative', height: 40, borderWidth: 1}}>
               <View
                 style={{
                   backgroundColor: '#527FE4',
@@ -898,7 +988,7 @@ export default ({
                 <Text style={{fontSize: 11}}>insetInline 5</Text>
               </View>
             </View>
-            <View style={{position: 'relative', height: 50, borderWidth: 1}}>
+            <View style={{position: 'relative', height: 40, borderWidth: 1}}>
               <View
                 style={{
                   backgroundColor: '#527FE4',
@@ -909,7 +999,7 @@ export default ({
                 <Text style={{fontSize: 11}}>insetInlineEnd 5</Text>
               </View>
             </View>
-            <View style={{position: 'relative', height: 50, borderWidth: 1}}>
+            <View style={{position: 'relative', height: 40, borderWidth: 1}}>
               <View
                 style={{
                   backgroundColor: '#527FE4',

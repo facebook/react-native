@@ -194,8 +194,8 @@ class RefProperty extends Property {
     return this.cyclical
       ? `{nullptr, deleter<${fullCppType}>}`
       : this.optional
-      ? ''
-      : '{}';
+        ? ''
+        : '{}';
   }
 }
 

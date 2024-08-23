@@ -6,11 +6,17 @@
  */
 
 #import "RCTSampleTurboModule.h"
+#import "RCTSampleTurboModulePlugin.h"
 
 #import <React/RCTAssert.h>
 #import <React/RCTUtils.h>
+#import <ReactCommon/RCTTurboModuleWithJSIBindings.h>
+#import <React/RCTUIKit.h> // [macOS]
 
 using namespace facebook::react;
+
+@interface RCTSampleTurboModule () <RCTTurboModuleWithJSIBindings>
+@end
 
 @implementation RCTSampleTurboModule
 
@@ -72,6 +78,15 @@ RCT_EXPORT_MODULE()
 {
   return [self getConstants];
 }
+
+#pragma mark - RCTTurboModuleWithJSIBindings
+
+- (void)installJSIBindingsWithRuntime:(facebook::jsi::Runtime &)runtime
+{
+  runtime.global().setProperty(runtime, "__SampleTurboModuleJSIBindings", "Hello JSI!");
+}
+
+#pragma mark - Spec Methods
 
 RCT_EXPORT_METHOD(voidFunc)
 {
@@ -170,10 +185,7 @@ RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSDictionary *, getObjectThrows : (NSDiction
   @throw myException;
 }
 
-RCT_EXPORT_METHOD(promiseThrows
-                  : (BOOL)error resolve
-                  : (RCTPromiseResolveBlock)resolve reject
-                  : (RCTPromiseRejectBlock)reject)
+RCT_EXPORT_METHOD(promiseThrows : (RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject)
 {
   NSException *myException = [NSException exceptionWithName:@"Excepption"
                                                      reason:@"Intentional exception from ObjC promiseThrows"
@@ -192,12 +204,14 @@ RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSDictionary *, getObjectAssert : (NSDiction
   return arg;
 }
 
-RCT_EXPORT_METHOD(promiseAssert
-                  : (BOOL)error resolve
-                  : (RCTPromiseResolveBlock)resolve reject
-                  : (RCTPromiseRejectBlock)reject)
+RCT_EXPORT_METHOD(promiseAssert : (RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject)
 {
   RCTAssert(false, @"Intentional assert from ObjC promiseAssert");
 }
 
 @end
+
+Class _Nonnull RCTSampleTurboModuleCls(void)
+{
+  return RCTSampleTurboModule.class;
+}

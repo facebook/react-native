@@ -45,6 +45,7 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.build.ReactBuildConfig;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.modules.fresco.ReactNetworkImageRequest;
 import com.facebook.react.uimanager.FloatUtil;
 import com.facebook.react.uimanager.PixelUtil;
@@ -133,6 +134,7 @@ public class ReactImageView extends GenericDraweeView {
   private int mFadeDurationMs = -1;
   private boolean mProgressiveRenderingEnabled;
   private ReadableMap mHeaders;
+  private float mResizeMultiplier = 1.0f;
 
   // We can't specify rounding in XML, so have to do so here
   private static GenericDraweeHierarchy buildHierarchy(Context context) {
@@ -302,6 +304,14 @@ public class ReactImageView extends GenericDraweeView {
   public void setResizeMethod(ImageResizeMethod resizeMethod) {
     if (mResizeMethod != resizeMethod) {
       mResizeMethod = resizeMethod;
+      mIsDirty = true;
+    }
+  }
+
+  public void setResizeMultiplier(float multiplier) {
+    boolean isNewMultiplier = Math.abs(mResizeMultiplier - multiplier) > 0.0001f;
+    if (isNewMultiplier) {
+      mResizeMultiplier = multiplier;
       mIsDirty = true;
     }
   }
@@ -477,7 +487,7 @@ public class ReactImageView extends GenericDraweeView {
     }
     Postprocessor postprocessor = MultiPostprocessor.from(postprocessors);
 
-    ResizeOptions resizeOptions = doResize ? new ResizeOptions(getWidth(), getHeight()) : null;
+    ResizeOptions resizeOptions = doResize ? getResizeOptions() : null;
 
     ImageRequestBuilder imageRequestBuilder =
         ImageRequestBuilder.newBuilderWithSource(mImageSource.getUri())
@@ -578,8 +588,8 @@ public class ReactImageView extends GenericDraweeView {
     } else if (hasMultipleSources()) {
       MultiSourceResult multiSource =
           MultiSourceHelper.getBestSourceForSize(getWidth(), getHeight(), mSources);
-      mImageSource = multiSource.getBestResult();
-      mCachedImageSource = multiSource.getBestResultInCache();
+      mImageSource = multiSource.bestResult;
+      mCachedImageSource = multiSource.bestResultInCache;
       return;
     }
 
@@ -600,8 +610,26 @@ public class ReactImageView extends GenericDraweeView {
     }
   }
 
+  @Nullable
+  private ResizeOptions getResizeOptions() {
+    int width = Math.round((float) getWidth() * mResizeMultiplier);
+    int height = Math.round((float) getHeight() * mResizeMultiplier);
+    if (width <= 0 || height <= 0) {
+      return null;
+    }
+    return new ResizeOptions(width, height);
+  }
+
   private void warnImageSource(String uri) {
-    if (ReactBuildConfig.DEBUG) {
+    // TODO(T189014077): This code-path produces an infinite loop of js calls with logbox.
+    // This is an issue with Fabric view preallocation, react, and LogBox. Fix.
+    // The bug:
+    // 1. An app renders an <Image/>
+    // 2. Fabric preallocates <Image/>; sets a null src to ReactImageView (potential problem?).
+    // 3. ReactImageView detects the null src; displays a warning in LogBox (via this code).
+    // 3. LogBox renders an <Image/>, which fabric preallocates.
+    // 4. Rinse and repeat.
+    if (ReactBuildConfig.DEBUG && !ReactFeatureFlags.enableBridgelessArchitecture) {
       RNLog.w(
           (ReactContext) getContext(),
           "ReactImageView: Image source \"" + uri + "\" doesn't exist");

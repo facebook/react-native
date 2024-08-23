@@ -9,7 +9,6 @@
 
 #import <React/RCTDefines.h>
 #import <jsinspector-modern/ReactCdp.h>
-#import <react/renderer/mapbuffer/MapBuffer.h>
 #import <react/runtime/JSRuntimeFactory.h>
 #import <react/runtime/ReactInstance.h>
 
@@ -62,7 +61,8 @@ typedef void (^_Null_unspecified RCTInstanceInitialBundleLoadCompletionBlock)();
       turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
              onInitialBundleLoad:(RCTInstanceInitialBundleLoadCompletionBlock)onInitialBundleLoad
                   moduleRegistry:(RCTModuleRegistry *)moduleRegistry
-           parentInspectorTarget:(facebook::react::jsinspector_modern::PageTarget *)parentInspectorTarget;
+           parentInspectorTarget:(facebook::react::jsinspector_modern::HostTarget *)parentInspectorTarget
+                   launchOptions:(nullable NSDictionary *)launchOptions;
 
 - (void)callFunctionOnJSModule:(NSString *)moduleName method:(NSString *)method args:(NSArray *)args;
 

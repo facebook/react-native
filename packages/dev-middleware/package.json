@@ -1,6 +1,6 @@
 {
   "name": "@react-native/dev-middleware",
-  "version": "0.74.0",
+  "version": "0.75.0-main",
   "description": "Dev server middleware for React Native",
   "keywords": [
     "react-native",
@@ -10,7 +10,7 @@
   "bugs": "https://github.com/facebook/react-native/issues",
   "repository": {
     "type": "git",
-    "url": "https://github.com/facebook/react-native.git",
+    "url": "git+https://github.com/facebook/react-native.git",
     "directory": "packages/dev-middleware"
   },
   "license": "MIT",
@@ -23,9 +23,9 @@
   ],
   "dependencies": {
     "@isaacs/ttlcache": "^1.4.1",
-    "@react-native/debugger-frontend": "0.74.0",
-    "@rnx-kit/chromium-edge-launcher": "^1.0.0",
+    "@react-native/debugger-frontend": "0.75.0-main",
     "chrome-launcher": "^0.15.2",
+    "chromium-edge-launcher": "^0.2.0",
     "connect": "^3.6.5",
     "debug": "^2.2.0",
     "node-fetch": "^2.2.0",
@@ -33,7 +33,6 @@
     "open": "^7.0.3",
     "selfsigned": "^2.4.1",
     "serve-static": "^1.13.1",
-    "temp-dir": "^2.0.0",
     "ws": "^6.2.2"
   },
   "engines": {

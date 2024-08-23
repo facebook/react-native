@@ -7,7 +7,10 @@
 
 package com.facebook.react.bridge
 
+import com.facebook.react.common.annotations.UnstableReactNativeAPI
+
 /** Listener used to hook into the UIManager update process. */
+@UnstableReactNativeAPI
 public interface UIManagerListener {
   /**
    * Called right before view updates are dispatched at the end of a batch. This is useful if a
@@ -16,18 +19,21 @@ public interface UIManagerListener {
    * <p>This is called by Paper only.
    */
   public fun willDispatchViewUpdates(uiManager: UIManager): Unit
+
   /**
    * Called on UIThread right before view updates are executed.
    *
    * <p>This is called by Fabric only.
    */
   public fun willMountItems(uiManager: UIManager): Unit
+
   /**
    * Called on UIThread right after view updates are executed.
    *
    * <p>This is called by Fabric only.
    */
   public fun didMountItems(uiManager: UIManager): Unit
+
   /**
    * Called on UIThread right after view updates are dispatched for a frame. Note that this will be
    * called for every frame even if there are no updates.
@@ -35,6 +41,7 @@ public interface UIManagerListener {
    * <p>This is called by Fabric only.
    */
   public fun didDispatchMountItems(uiManager: UIManager): Unit
+
   /**
    * Called right after scheduleMountItems is called in Fabric, after a new tree is committed.
    *

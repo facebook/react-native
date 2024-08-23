@@ -29,7 +29,6 @@ target_link_libraries(rrc_modal
         react_render_debug
         react_render_graphics
         react_render_imagemanager
-        react_render_mapbuffer
         react_render_uimanager
         rrc_image
         rrc_view

@@ -8,13 +8,15 @@
 package com.facebook.react.runtime;
 
 import static com.facebook.infer.annotation.Assertions.assertNotNull;
-import static com.facebook.infer.annotation.Assertions.nullsafeFIXME;
 import static com.facebook.infer.annotation.ThreadConfined.UI;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -23,6 +25,7 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
+import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.JSEngineResolutionAlgorithm;
 import com.facebook.react.MemoryPressureRouter;
 import com.facebook.react.ReactHost;
@@ -45,20 +48,24 @@ import com.facebook.react.bridge.queue.QueueThreadExceptionHandler;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.build.ReactBuildConfig;
-import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.devsupport.DevSupportManagerBase;
-import com.facebook.react.devsupport.DisabledDevSupportManager;
+import com.facebook.react.devsupport.InspectorFlags;
+import com.facebook.react.devsupport.ReleaseDevSupportManager;
+import com.facebook.react.devsupport.interfaces.BundleLoadCallback;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
+import com.facebook.react.devsupport.interfaces.DevSupportManager.PausedInDebuggerOverlayCommandListener;
 import com.facebook.react.fabric.ComponentFactory;
 import com.facebook.react.fabric.FabricUIManager;
 import com.facebook.react.interfaces.TaskInterface;
 import com.facebook.react.interfaces.exceptionmanager.ReactJsExceptionHandler;
 import com.facebook.react.interfaces.fabric.ReactSurface;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
+import com.facebook.react.modules.appearance.AppearanceModule;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
-import com.facebook.react.runtime.internal.bolts.Continuation;
 import com.facebook.react.runtime.internal.bolts.Task;
 import com.facebook.react.runtime.internal.bolts.TaskCompletionSource;
+import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.BlackHoleEventDispatcher;
 import com.facebook.react.uimanager.events.EventDispatcher;
@@ -88,9 +95,6 @@ import kotlin.jvm.functions.Function0;
 @ThreadSafe
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public class ReactHostImpl implements ReactHost {
-
-  // TODO T61403233 Make this configurable by product code
-  private static final boolean DEV = ReactBuildConfig.DEBUG;
   private static final String TAG = "ReactHost";
   private static final int BRIDGELESS_MARKER_INSTANCE_KEY = 1;
   private static final AtomicInteger mCounter = new AtomicInteger(0);
@@ -111,11 +115,10 @@ public class ReactHostImpl implements ReactHost {
   private final Collection<ReactInstanceEventListener> mReactInstanceEventListeners =
       Collections.synchronizedList(new ArrayList<>());
 
-  private final BridgelessAtomicRef<Task<ReactInstance>> mReactInstanceTaskRef =
-      new BridgelessAtomicRef<>(
-          Task.forResult(
-              nullsafeFIXME(
-                  null, "forResult parameter supports null, but is not annotated as @Nullable")));
+  // todo: T192399917 This no longer needs to store the react instance
+  private final BridgelessAtomicRef<Task<ReactInstance>> mCreateReactInstanceTaskRef =
+      new BridgelessAtomicRef<>(Task.forResult(null));
+  private @Nullable ReactInstance mReactInstance;
 
   private final BridgelessAtomicRef<BridgelessReactContext> mBridgelessReactContextRef =
       new BridgelessAtomicRef<>();
@@ -124,16 +127,18 @@ public class ReactHostImpl implements ReactHost {
   private final AtomicReference<WeakReference<Activity>> mLastUsedActivity =
       new AtomicReference<>(new WeakReference<>(null));
   private final BridgelessReactStateTracker mBridgelessReactStateTracker =
-      new BridgelessReactStateTracker(DEV);
+      new BridgelessReactStateTracker(ReactBuildConfig.DEBUG);
   private final ReactLifecycleStateManager mReactLifecycleStateManager =
       new ReactLifecycleStateManager(mBridgelessReactStateTracker);
   private final int mId = mCounter.getAndIncrement();
   private @Nullable JSEngineResolutionAlgorithm mJSEngineResolutionAlgorithm = null;
-  private MemoryPressureListener mMemoryPressureListener;
+  private @Nullable MemoryPressureListener mMemoryPressureListener;
   private @Nullable DefaultHardwareBackBtnHandler mDefaultHardwareBackBtnHandler;
 
   private final Set<Function0<Unit>> mBeforeDestroyListeners =
       Collections.synchronizedSet(new HashSet<>());
+
+  private @Nullable ReactHostInspectorTarget mReactHostInspectorTarget;
 
   public ReactHostImpl(
       Context context,
@@ -170,20 +175,16 @@ public class ReactHostImpl implements ReactHost {
     mReactJsExceptionHandler = reactJsExceptionHandler;
     mQueueThreadExceptionHandler = ReactHostImpl.this::handleHostException;
     mMemoryPressureRouter = new MemoryPressureRouter(context);
-    mMemoryPressureListener =
-        level ->
-            callWithExistingReactInstance(
-                "handleMemoryPressure(" + level + ")",
-                reactInstance -> reactInstance.handleMemoryPressure(level));
     mAllowPackagerServerAccess = allowPackagerServerAccess;
-    if (DEV) {
+    mUseDevSupport = useDevSupport;
+
+    if (mUseDevSupport) {
       mDevSupportManager =
           new BridgelessDevSupportManager(
               ReactHostImpl.this, mContext, mReactHostDelegate.getJsMainModulePath());
     } else {
-      mDevSupportManager = new DisabledDevSupportManager();
+      mDevSupportManager = new ReleaseDevSupportManager();
     }
-    mUseDevSupport = useDevSupport;
   }
 
   @Override
@@ -217,7 +218,8 @@ public class ReactHostImpl implements ReactHost {
         reactInstance -> {
           log(method, "Execute");
           reactInstance.prerenderSurface(surface);
-        });
+        },
+        mBGExecutor);
   }
 
   /**
@@ -237,7 +239,8 @@ public class ReactHostImpl implements ReactHost {
         reactInstance -> {
           log(method, "Execute");
           reactInstance.startSurface(surface);
-        });
+        },
+        mBGExecutor);
   }
 
   /**
@@ -257,7 +260,8 @@ public class ReactHostImpl implements ReactHost {
             reactInstance -> {
               log(method, "Execute");
               reactInstance.stopSurface(surface);
-            })
+            },
+            mBGExecutor)
         .makeVoid();
   }
 
@@ -373,25 +377,27 @@ public class ReactHostImpl implements ReactHost {
   public ReactSurface createSurface(
       Context context, String moduleName, @Nullable Bundle initialProps) {
     ReactSurfaceImpl surface = new ReactSurfaceImpl(context, moduleName, initialProps);
-    surface.attachView(new ReactSurfaceView(context, surface));
+    ReactSurfaceView surfaceView = new ReactSurfaceView(context, surface);
+    surfaceView.setShouldLogContentAppeared(true);
+    surface.attachView(surfaceView);
     surface.attach(this);
     return surface;
   }
 
+  @Override
   public MemoryPressureRouter getMemoryPressureRouter() {
     return mMemoryPressureRouter;
   }
 
   /* package */ boolean isInstanceInitialized() {
-    final ReactInstance reactInstance = mReactInstanceTaskRef.get().getResult();
-    return reactInstance != null;
+    return mReactInstance != null;
   }
 
   @ThreadConfined(UI)
   @Override
   public boolean onBackPressed() {
     UiThreadUtil.assertOnUiThread();
-    final ReactInstance reactInstance = mReactInstanceTaskRef.get().getResult();
+    final ReactInstance reactInstance = mReactInstance;
     if (reactInstance == null) {
       return false;
     }
@@ -407,11 +413,9 @@ public class ReactHostImpl implements ReactHost {
   }
 
   public @Nullable ReactQueueConfiguration getReactQueueConfiguration() {
-    synchronized (mReactInstanceTaskRef) {
-      Task<ReactInstance> task = mReactInstanceTaskRef.get();
-      if (!task.isFaulted() && !task.isCancelled() && task.getResult() != null) {
-        return task.getResult().getReactQueueConfiguration();
-      }
+    final ReactInstance reactInstance = mReactInstance;
+    if (reactInstance != null) {
+      return reactInstance.getReactQueueConfiguration();
     }
     return null;
   }
@@ -453,8 +457,12 @@ public class ReactHostImpl implements ReactHost {
               return reloadTask.continueWithTask(
                   task -> {
                     if (task.isFaulted()) {
-                      mReactHostDelegate.handleInstanceException(task.getError());
-                      return getOrCreateDestroyTask("Reload failed", task.getError());
+                      final Exception ex = task.getError();
+                      if (mUseDevSupport) {
+                        mDevSupportManager.handleException(ex);
+                      }
+                      mReactHostDelegate.handleInstanceException(ex);
+                      return getOrCreateDestroyTask("Reload failed", ex);
                     }
 
                     return task;
@@ -463,6 +471,25 @@ public class ReactHostImpl implements ReactHost {
             },
             mBGExecutor)
         .continueWithTask(Task::getResult);
+  }
+
+  @DoNotStrip
+  private void setPausedInDebuggerMessage(@Nullable String message) {
+    if (message == null) {
+      mDevSupportManager.hidePausedInDebuggerOverlay();
+    } else {
+      mDevSupportManager.showPausedInDebuggerOverlay(
+          message,
+          new PausedInDebuggerOverlayCommandListener() {
+            @Override
+            public void onResume() {
+              UiThreadUtil.assertOnUiThread();
+              if (mReactHostInspectorTarget != null) {
+                mReactHostInspectorTarget.sendDebuggerResumeCommand();
+              }
+            }
+          });
+    }
   }
 
   /**
@@ -483,7 +510,8 @@ public class ReactHostImpl implements ReactHost {
               if (mReloadTask != null) {
                 log(
                     method,
-                    "Reloading React Native. Waiting for reload to finish before destroying React Native.");
+                    "Reloading React Native. Waiting for reload to finish before destroying React"
+                        + " Native.");
                 return mReloadTask.continueWithTask(
                     task -> getOrCreateDestroyTask(reason, ex), mBGExecutor);
               }
@@ -536,7 +564,7 @@ public class ReactHostImpl implements ReactHost {
    *     BlackHoleEventDispatcher}.
    */
   /* package */ EventDispatcher getEventDispatcher() {
-    final ReactInstance reactInstance = mReactInstanceTaskRef.get().getResult();
+    final ReactInstance reactInstance = mReactInstance;
     if (reactInstance == null) {
       return BlackHoleEventDispatcher.get();
     }
@@ -547,7 +575,7 @@ public class ReactHostImpl implements ReactHost {
   /* package */
   @Nullable
   FabricUIManager getUIManager() {
-    final ReactInstance reactInstance = mReactInstanceTaskRef.get().getResult();
+    final ReactInstance reactInstance = mReactInstance;
     if (reactInstance == null) {
       return null;
     }
@@ -555,7 +583,7 @@ public class ReactHostImpl implements ReactHost {
   }
 
   /* package */ <T extends NativeModule> boolean hasNativeModule(Class<T> nativeModuleInterface) {
-    final ReactInstance reactInstance = mReactInstanceTaskRef.get().getResult();
+    final ReactInstance reactInstance = mReactInstance;
     if (reactInstance != null) {
       return reactInstance.hasNativeModule(nativeModuleInterface);
     }
@@ -563,7 +591,7 @@ public class ReactHostImpl implements ReactHost {
   }
 
   /* package */ Collection<NativeModule> getNativeModules() {
-    final ReactInstance reactInstance = mReactInstanceTaskRef.get().getResult();
+    final ReactInstance reactInstance = mReactInstance;
     if (reactInstance != null) {
       return reactInstance.getNativeModules();
     }
@@ -577,10 +605,11 @@ public class ReactHostImpl implements ReactHost {
       ReactSoftExceptionLogger.logSoftExceptionVerbose(
           TAG,
           new ReactNoCrashBridgeNotAllowedSoftException(
-              "getNativeModule(UIManagerModule.class) cannot be called when the bridge is disabled"));
+              "getNativeModule(UIManagerModule.class) cannot be called when the bridge is"
+                  + " disabled"));
     }
 
-    final ReactInstance reactInstance = mReactInstanceTaskRef.get().getResult();
+    final ReactInstance reactInstance = mReactInstance;
     if (reactInstance != null) {
       return reactInstance.getNativeModule(nativeModuleInterface);
     }
@@ -589,20 +618,128 @@ public class ReactHostImpl implements ReactHost {
 
   /* package */
   @Nullable
+  NativeModule getNativeModule(String nativeModuleName) {
+    final ReactInstance reactInstance = mReactInstance;
+    if (reactInstance != null) {
+      return reactInstance.getNativeModule(nativeModuleName);
+    }
+    return null;
+  }
+
+  /* package */
+  @Nullable
   RuntimeExecutor getRuntimeExecutor() {
-    final ReactInstance reactInstance = mReactInstanceTaskRef.get().getResult();
+    final String method = "getRuntimeExecutor()";
+
+    final ReactInstance reactInstance = mReactInstance;
     if (reactInstance != null) {
       return reactInstance.getBufferedRuntimeExecutor();
     }
-    ReactSoftExceptionLogger.logSoftException(
-        TAG,
-        new ReactNoCrashSoftException("Tried to get runtime executor while instance is not ready"));
+    raiseSoftException(method, "Tried to get runtime executor while instance is not ready");
     return null;
+  }
+
+  /* package */
+  @Nullable
+  CallInvokerHolder getJSCallInvokerHolder() {
+    final String method = "getJSCallInvokerHolder()";
+
+    final ReactInstance reactInstance = mReactInstance;
+    if (reactInstance != null) {
+      return reactInstance.getJSCallInvokerHolder();
+    }
+    raiseSoftException(method, "Tried to get JSCallInvokerHolder while instance is not ready");
+    return null;
+  }
+
+  /**
+   * To be called when the host activity receives an activity result.
+   *
+   * @param activity The host activity
+   */
+  @ThreadConfined(UI)
+  @Override
+  public void onActivityResult(
+      Activity activity, int requestCode, int resultCode, @Nullable Intent data) {
+    final String method =
+        "onActivityResult(activity = \""
+            + activity
+            + "\", requestCode = \""
+            + requestCode
+            + "\", resultCode = \""
+            + resultCode
+            + "\", data = \""
+            + data
+            + "\")";
+
+    ReactContext currentContext = getCurrentReactContext();
+    if (currentContext != null) {
+      currentContext.onActivityResult(activity, requestCode, resultCode, data);
+    } else {
+      raiseSoftException(method, "Tried to access onActivityResult while context is not ready");
+    }
+  }
+
+  /* To be called when focus has changed for the hosting window. */
+  @ThreadConfined(UI)
+  @Override
+  public void onWindowFocusChange(boolean hasFocus) {
+    final String method = "onWindowFocusChange(hasFocus = \"" + hasFocus + "\")";
+
+    ReactContext currentContext = getCurrentReactContext();
+    if (currentContext != null) {
+      currentContext.onWindowFocusChange(hasFocus);
+    } else {
+      raiseSoftException(method, "Tried to access onWindowFocusChange while context is not ready");
+    }
+  }
+
+  /* This method will give JS the opportunity to receive intents via Linking.
+   *
+   * @param intent The incoming intent
+   */
+  @ThreadConfined(UI)
+  @Override
+  public void onNewIntent(Intent intent) {
+    final String method = "onNewIntent(intent = \"" + intent + "\")";
+
+    ReactContext currentContext = getCurrentReactContext();
+    if (currentContext != null) {
+      String action = intent.getAction();
+      Uri uri = intent.getData();
+
+      if (uri != null
+          && (Intent.ACTION_VIEW.equals(action)
+              || NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action))) {
+        DeviceEventManagerModule deviceEventManagerModule =
+            currentContext.getNativeModule(DeviceEventManagerModule.class);
+        if (deviceEventManagerModule != null) {
+          deviceEventManagerModule.emitNewIntentReceived(uri);
+        }
+      }
+      currentContext.onNewIntent(getCurrentActivity(), intent);
+    } else {
+      raiseSoftException(method, "Tried to access onNewIntent while context is not ready");
+    }
+  }
+
+  @ThreadConfined(UI)
+  @Override
+  public void onConfigurationChanged(Context updatedContext) {
+    ReactContext currentReactContext = getCurrentReactContext();
+    if (currentReactContext != null) {
+      AppearanceModule appearanceModule =
+          currentReactContext.getNativeModule(AppearanceModule.class);
+
+      if (appearanceModule != null) {
+        appearanceModule.onConfigurationChanged(updatedContext);
+      }
+    }
   }
 
   @Nullable
   JavaScriptContextHolder getJavaScriptContextHolder() {
-    final ReactInstance reactInstance = mReactInstanceTaskRef.get().getResult();
+    final ReactInstance reactInstance = mReactInstance;
     if (reactInstance != null) {
       return reactInstance.getJavaScriptContextHolder();
     }
@@ -628,7 +765,8 @@ public class ReactHostImpl implements ReactHost {
         reactInstance -> {
           log(method, "Execute");
           reactInstance.loadJSBundle(bundleLoader);
-        });
+        },
+        null);
   }
 
   /* package */ Task<Boolean> registerSegment(
@@ -643,14 +781,15 @@ public class ReactHostImpl implements ReactHost {
           log(method, "Execute");
           reactInstance.registerSegment(segmentId, path);
           assertNotNull(callback).invoke();
-        });
+        },
+        null);
   }
 
   /* package */ void handleHostException(Exception e) {
     final String method = "handleHostException(message = \"" + e.getMessage() + "\")";
     log(method);
 
-    if (DEV) {
+    if (mUseDevSupport) {
       mDevSupportManager.handleException(e);
     }
     destroy(method, e);
@@ -672,7 +811,8 @@ public class ReactHostImpl implements ReactHost {
         method,
         reactInstance -> {
           reactInstance.callFunctionOnModule(moduleName, methodName, args);
-        });
+        },
+        null);
   }
 
   /* package */ void attachSurface(ReactSurfaceImpl surface) {
@@ -724,8 +864,8 @@ public class ReactHostImpl implements ReactHost {
     }
   }
 
-  /* package */ interface VeniceThenable<T> {
-    void then(T t);
+  private interface ReactInstanceCalback {
+    void then(ReactInstance reactInstance);
   }
 
   @ThreadConfined("ReactHost")
@@ -759,73 +899,96 @@ public class ReactHostImpl implements ReactHost {
   @ThreadConfined(UI)
   private void moveToHostDestroy(@Nullable ReactContext currentContext) {
     mReactLifecycleStateManager.moveToOnHostDestroy(currentContext);
+    if (currentContext == null) {
+      // There's no current context/instance that requires the host inspector
+      // target to be kept alive, so we can destroy it immediately.
+      destroyInspectorHostTarget();
+    }
     setCurrentActivity(null);
   }
 
-  private void raiseSoftException(String method, String message) {
-    raiseSoftException(method, message, null);
+  private void raiseSoftException(String callingMethod, String message) {
+    raiseSoftException(callingMethod, message, null);
   }
 
-  private void raiseSoftException(String method, String message, @Nullable Throwable throwable) {
+  private void raiseSoftException(
+      String callingMethod, String message, @Nullable Throwable throwable) {
+    final String method = "raiseSoftException(" + callingMethod + ")";
     log(method, message);
-    if (ReactFeatureFlags.enableBridgelessArchitectureSoftExceptions) {
-      if (throwable != null) {
-        ReactSoftExceptionLogger.logSoftException(
-            TAG, new ReactNoCrashSoftException(method + ": " + message, throwable));
-        return;
-      }
-
+    if (throwable != null) {
       ReactSoftExceptionLogger.logSoftException(
-          TAG, new ReactNoCrashSoftException(method + ": " + message));
+          TAG, new ReactNoCrashSoftException(method + ": " + message, throwable));
+      return;
     }
+
+    ReactSoftExceptionLogger.logSoftException(
+        TAG, new ReactNoCrashSoftException(method + ": " + message));
   }
 
+  private Executor getDefaultReactInstanceExecutor() {
+    return ReactNativeFeatureFlags.useImmediateExecutorInAndroidBridgeless()
+        ? Task.IMMEDIATE_EXECUTOR
+        : mBGExecutor;
+  }
+
+  /** Schedule work on a ReactInstance that is already created. */
   private Task<Boolean> callWithExistingReactInstance(
-      final String callingMethod, final VeniceThenable<ReactInstance> continuation) {
+      final String callingMethod,
+      final ReactInstanceCalback continuation,
+      @Nullable Executor executor) {
     final String method = "callWithExistingReactInstance(" + callingMethod + ")";
 
-    return mReactInstanceTaskRef
+    if (executor == null) {
+      executor = getDefaultReactInstanceExecutor();
+    }
+
+    return mCreateReactInstanceTaskRef
         .get()
         .onSuccess(
             task -> {
-              final ReactInstance reactInstance = task.getResult();
+              final ReactInstance reactInstance = mReactInstance;
               if (reactInstance == null) {
-                raiseSoftException(method, "Execute: ReactInstance null. Dropping work.");
+                raiseSoftException(method, "Execute: reactInstance is null. Dropping work.");
                 return FALSE;
               }
 
               continuation.then(reactInstance);
               return TRUE;
             },
-            mBGExecutor);
+            executor);
   }
 
+  /** Create a ReactInstance if it doesn't exist already, and schedule work on it. */
   private Task<Void> callAfterGetOrCreateReactInstance(
-      final String callingMethod, final VeniceThenable<ReactInstance> runnable) {
+      final String callingMethod,
+      final ReactInstanceCalback runnable,
+      @Nullable Executor executor) {
     final String method = "callAfterGetOrCreateReactInstance(" + callingMethod + ")";
+
+    if (executor == null) {
+      executor = getDefaultReactInstanceExecutor();
+    }
 
     return getOrCreateReactInstance()
         .onSuccess(
-            (Continuation<ReactInstance, Void>)
-                task -> {
-                  final ReactInstance reactInstance = task.getResult();
-                  if (reactInstance == null) {
-                    raiseSoftException(method, "Execute: ReactInstance is null");
-                    return null;
-                  }
+            task -> {
+              final ReactInstance reactInstance = mReactInstance;
+              if (reactInstance == null) {
+                raiseSoftException(method, "Execute: reactInstance is null. Dropping work.");
+                return null;
+              }
 
-                  runnable.then(reactInstance);
-                  return null;
-                },
-            mBGExecutor)
+              runnable.then(reactInstance);
+              return null;
+            },
+            executor)
         .continueWith(
             task -> {
               if (task.isFaulted()) {
                 handleHostException(task.getError());
               }
               return null;
-            },
-            mBGExecutor);
+            });
   }
 
   private BridgelessReactContext getOrCreateReactContext() {
@@ -889,7 +1052,7 @@ public class ReactHostImpl implements ReactHost {
     final String method = "getOrCreateReactInstanceTask()";
     log(method);
 
-    return mReactInstanceTaskRef.getOrCreate(
+    return mCreateReactInstanceTaskRef.getOrCreate(
         () -> {
           log(method, "Start");
           ReactMarker.logMarker(
@@ -912,13 +1075,17 @@ public class ReactHostImpl implements ReactHost {
                             devSupportManager,
                             mQueueThreadExceptionHandler,
                             mReactJsExceptionHandler,
-                            mUseDevSupport);
+                            mUseDevSupport,
+                            getOrCreateReactHostInspectorTarget());
+                    mReactInstance = instance;
 
-                    if (ReactFeatureFlags
-                        .unstable_bridgelessArchitectureMemoryPressureHackyBoltsFix) {
-                      mMemoryPressureListener = createMemoryPressureListener(instance);
-                    }
-                    mMemoryPressureRouter.addMemoryPressureListener(mMemoryPressureListener);
+                    // eagerly initailize turbo modules
+                    instance.initializeEagerTurboModules();
+
+                    MemoryPressureListener memoryPressureListener =
+                        createMemoryPressureListener(instance);
+                    mMemoryPressureListener = memoryPressureListener;
+                    mMemoryPressureRouter.addMemoryPressureListener(memoryPressureListener);
 
                     log(method, "Loading JS Bundle");
                     instance.loadJSBundle(bundleLoader);
@@ -1008,7 +1175,7 @@ public class ReactHostImpl implements ReactHost {
     final String method = "getJSBundleLoader()";
     log(method);
 
-    if (DEV && mAllowPackagerServerAccess) {
+    if (mUseDevSupport && mAllowPackagerServerAccess) {
       return isMetroRunning()
           .onSuccessTask(
               task -> {
@@ -1021,7 +1188,7 @@ public class ReactHostImpl implements ReactHost {
               },
               mBGExecutor);
     } else {
-      if (DEV) {
+      if (ReactBuildConfig.DEBUG) {
         FLog.d(TAG, "Packager server access is disabled in this environment");
       }
 
@@ -1052,10 +1219,6 @@ public class ReactHostImpl implements ReactHost {
     return taskCompletionSource.getTask();
   }
 
-  /**
-   * TODO(T104078367): Ensure that if creating this JSBundleLoader fails, we route the errors
-   * through ReactHost's error reporting pipeline
-   */
   private Task<JSBundleLoader> loadJSBundleFromMetro() {
     final String method = "loadJSBundleFromMetro()";
     log(method);
@@ -1071,12 +1234,20 @@ public class ReactHostImpl implements ReactHost {
 
     asyncDevSupportManager.reloadJSFromServer(
         bundleURL,
-        () -> {
-          log(method, "Creating BundleLoader");
-          JSBundleLoader bundleLoader =
-              JSBundleLoader.createCachedBundleFromNetworkLoader(
-                  bundleURL, asyncDevSupportManager.getDownloadedJSBundleFile());
-          taskCompletionSource.setResult(bundleLoader);
+        new BundleLoadCallback() {
+          @Override
+          public void onSuccess() {
+            log(method, "Creating BundleLoader");
+            JSBundleLoader bundleLoader =
+                JSBundleLoader.createCachedBundleFromNetworkLoader(
+                    bundleURL, asyncDevSupportManager.getDownloadedJSBundleFile());
+            taskCompletionSource.setResult(bundleLoader);
+          }
+
+          @Override
+          public void onError(Exception cause) {
+            taskCompletionSource.setError(cause);
+          }
         });
 
     return taskCompletionSource.getTask();
@@ -1117,12 +1288,12 @@ public class ReactHostImpl implements ReactHost {
     ReactInstance unwrap(Task<ReactInstance> task, String stage);
   }
 
-  private ReactInstanceTaskUnwrapper createReactInstanceUnwraper(
+  private ReactInstanceTaskUnwrapper createReactInstanceUnwrapper(
       String tag, String method, String reason) {
 
     return (task, stage) -> {
       final ReactInstance reactInstance = task.getResult();
-      final ReactInstance currentReactInstance = mReactInstanceTaskRef.get().getResult();
+      final ReactInstance currentReactInstance = mReactInstance;
 
       final String stageLabel = "Stage: " + stage;
       final String reasonLabel = tag + " reason: " + reason;
@@ -1185,17 +1356,19 @@ public class ReactHostImpl implements ReactHost {
     raiseSoftException(method, reason);
 
     ReactInstanceTaskUnwrapper reactInstanceTaskUnwrapper =
-        createReactInstanceUnwraper("Reload", method, reason);
+        createReactInstanceUnwrapper("Reload", method, reason);
 
     if (mReloadTask == null) {
       mReloadTask =
-          mReactInstanceTaskRef
+          mCreateReactInstanceTaskRef
               .get()
               .continueWithTask(
                   (task) -> {
                     log(method, "Starting React Native reload");
                     final ReactInstance reactInstance =
                         reactInstanceTaskUnwrapper.unwrap(task, "1: Starting reload");
+
+                    unregisterInstanceFromInspector(reactInstance);
 
                     final ReactContext reactContext = mBridgelessReactContextRef.getNullable();
                     if (reactContext == null) {
@@ -1246,8 +1419,10 @@ public class ReactHostImpl implements ReactHost {
                   task -> {
                     reactInstanceTaskUnwrapper.unwrap(task, "4: Destroying ReactContext");
 
-                    log(method, "Removing memory pressure listener");
-                    mMemoryPressureRouter.removeMemoryPressureListener(mMemoryPressureListener);
+                    if (mMemoryPressureListener != null) {
+                      log(method, "Removing memory pressure listener");
+                      mMemoryPressureRouter.removeMemoryPressureListener(mMemoryPressureListener);
+                    }
 
                     final ReactContext reactContext = mBridgelessReactContextRef.getNullable();
                     if (reactContext != null) {
@@ -1282,7 +1457,10 @@ public class ReactHostImpl implements ReactHost {
                     mBridgelessReactContextRef.reset();
 
                     log(method, "Resetting ReactInstance task ref");
-                    mReactInstanceTaskRef.reset();
+                    mCreateReactInstanceTaskRef.reset();
+
+                    log(method, "Resetting ReactInstance ptr");
+                    mReactInstance = null;
 
                     log(method, "Resetting preload task ref");
                     mStartTask = null;
@@ -1357,11 +1535,11 @@ public class ReactHostImpl implements ReactHost {
     raiseSoftException(method, reason, ex);
 
     ReactInstanceTaskUnwrapper reactInstanceTaskUnwrapper =
-        createReactInstanceUnwraper("Destroy", method, reason);
+        createReactInstanceUnwrapper("Destroy", method, reason);
 
     if (mDestroyTask == null) {
       mDestroyTask =
-          mReactInstanceTaskRef
+          mCreateReactInstanceTaskRef
               .get()
               .continueWithTask(
                   task -> {
@@ -1369,6 +1547,8 @@ public class ReactHostImpl implements ReactHost {
 
                     final ReactInstance reactInstance =
                         reactInstanceTaskUnwrapper.unwrap(task, "1: Starting destroy");
+
+                    unregisterInstanceFromInspector(reactInstance);
 
                     // Step 1: Destroy DevSupportManager
                     if (mUseDevSupport) {
@@ -1402,9 +1582,9 @@ public class ReactHostImpl implements ReactHost {
 
                     // Step 3: Stop all React Native surfaces
                     stopAttachedSurfaces(method, reactInstance);
-
-                    // TODO(T161461674): Should we clear mAttachedSurfaces?
-                    // Not clearing mAttachedSurfaces could lead to a memory leak.
+                    synchronized (mAttachedSurfaces) {
+                      mAttachedSurfaces.clear();
+                    }
 
                     return task;
                   },
@@ -1470,7 +1650,10 @@ public class ReactHostImpl implements ReactHost {
                     mBridgelessReactContextRef.reset();
 
                     log(method, "Resetting ReactInstance task ref");
-                    mReactInstanceTaskRef.reset();
+                    mCreateReactInstanceTaskRef.reset();
+
+                    log(method, "Resetting ReactInstance ptr");
+                    mReactInstance = null;
 
                     log(method, "Resetting Preload task ref");
                     mStartTask = null;
@@ -1516,5 +1699,39 @@ public class ReactHostImpl implements ReactHost {
   public void setJsEngineResolutionAlgorithm(
       @Nullable JSEngineResolutionAlgorithm jsEngineResolutionAlgorithm) {
     mJSEngineResolutionAlgorithm = jsEngineResolutionAlgorithm;
+  }
+
+  private @Nullable ReactHostInspectorTarget getOrCreateReactHostInspectorTarget() {
+    if (mReactHostInspectorTarget == null && InspectorFlags.getFuseboxEnabled()) {
+      mReactHostInspectorTarget = new ReactHostInspectorTarget(this);
+    }
+
+    return mReactHostInspectorTarget;
+  }
+
+  @ThreadConfined(UI)
+  private void destroyInspectorHostTarget() {
+    if (mReactHostInspectorTarget != null) {
+      mReactHostInspectorTarget.close();
+      mReactHostInspectorTarget = null;
+    }
+  }
+
+  @ThreadConfined(UI)
+  private void unregisterInstanceFromInspector(final @Nullable ReactInstance reactInstance) {
+    if (reactInstance != null) {
+      if (InspectorFlags.getFuseboxEnabled()) {
+        Assertions.assertCondition(
+            mReactHostInspectorTarget != null && mReactHostInspectorTarget.isValid(),
+            "Host inspector target destroyed before instance was unregistered");
+      }
+      reactInstance.unregisterFromInspector();
+    }
+    if (mReactLifecycleStateManager.getLifecycleState() == LifecycleState.BEFORE_CREATE) {
+      // If the host is being destroyed, now that the current context/instance
+      // has been unregistered, we can safely destroy the host's inspector
+      // target.
+      destroyInspectorHostTarget();
+    }
   }
 }

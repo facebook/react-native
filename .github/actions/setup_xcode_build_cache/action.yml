@@ -1,0 +1,28 @@
+name: setup_xcode_build_cache
+description: Add caching to iOS jobs to speed up builds
+inputs:
+  hermes-version:
+    description: The version of hermes
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: See commands.yml with_xcodebuild_cache
+      shell: bash
+      run: echo "See commands.yml with_xcodebuild_cache"
+    - name: Prepare Xcodebuild cache
+      shell: bash
+      run: |
+        WEEK=$(date +"%U")
+        YEAR=$(date +"%Y")
+        echo "$WEEK-$YEAR" > /tmp/week_year
+    - name: Cache podfile lock
+      uses: actions/cache@v4.0.0
+      with:
+        path: packages/rn-tester/Podfile.lock
+        key: v9-podfilelock-${{ github.job }}-${{ hashfiles('packages/rn-tester/Podfile') }}-{{ hashfiles('/tmp/week_year') }}-${{ inputs.hermes-version}}
+    - name: Cache cocoapods
+      uses: actions/cache@v4.0.0
+      with:
+        path: packages/rn-tester/Pods
+        key: v11-cocoapods-${{ github.job }}-${{ hashfiles('packages/rn-tester/Podfile.lock') }}-{{ hashfiles('packages/rn-tester/Podfile') }}-${{ inputs.hermes-version}}

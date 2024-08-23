@@ -1,0 +1,9 @@
+name: Setup gradle
+description: "Set up your GitHub Actions workflow with a specific version of gradle"
+runs:
+  using: "composite"
+  steps:
+    - name: Setup gradle
+      uses: gradle/actions/setup-gradle@v3
+      with:
+        gradle-version: wrapper

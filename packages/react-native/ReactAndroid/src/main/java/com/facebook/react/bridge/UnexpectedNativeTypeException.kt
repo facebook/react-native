@@ -1,0 +1,16 @@
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+package com.facebook.react.bridge
+
+import com.facebook.proguard.annotations.DoNotStrip
+
+/**
+ * Exception thrown from native code when a type retrieved from a map or array (e.g. via
+ * [NativeArrayParameter.getString(int)]) does not match the expected type.
+ */
+@DoNotStrip public class UnexpectedNativeTypeException(msg: String) : RuntimeException(msg)

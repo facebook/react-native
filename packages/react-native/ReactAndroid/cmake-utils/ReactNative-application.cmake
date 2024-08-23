@@ -37,14 +37,14 @@ endif()
 
 file(GLOB input_SRC CONFIGURE_DEPENDS
         *.cpp
-        ${BUILD_DIR}/generated/rncli/src/main/jni/*.cpp)
+        ${BUILD_DIR}/generated/autolinking/src/main/jni/*.cpp)
 
 add_library(${CMAKE_PROJECT_NAME} SHARED ${input_SRC})
 
 target_include_directories(${CMAKE_PROJECT_NAME}
         PUBLIC
                 ${CMAKE_CURRENT_SOURCE_DIR}
-                ${PROJECT_BUILD_DIR}/generated/rncli/src/main/jni)
+                ${PROJECT_BUILD_DIR}/generated/autolinking/src/main/jni)
 
 target_compile_options(${CMAKE_PROJECT_NAME}
         PRIVATE
@@ -70,14 +70,17 @@ add_library(react_debug ALIAS ReactAndroid::react_debug)
 add_library(react_utils ALIAS ReactAndroid::react_utils)
 add_library(react_render_componentregistry ALIAS ReactAndroid::react_render_componentregistry)
 add_library(react_newarchdefaults ALIAS ReactAndroid::react_newarchdefaults)
-add_library(react_cxxreactpackage ALIAS ReactAndroid::react_cxxreactpackage)
 add_library(react_render_core ALIAS ReactAndroid::react_render_core)
 add_library(react_render_graphics ALIAS ReactAndroid::react_render_graphics)
 add_library(rrc_view ALIAS ReactAndroid::rrc_view)
+add_library(rrc_text ALIAS ReactAndroid::rrc_text)
+add_library(rrc_textinput ALIAS ReactAndroid::rrc_textinput)
 add_library(jsi ALIAS ReactAndroid::jsi)
 add_library(glog ALIAS ReactAndroid::glog)
 add_library(fabricjni ALIAS ReactAndroid::fabricjni)
+add_library(mapbufferjni ALIAS ReactAndroid::mapbufferjni)
 add_library(react_render_mapbuffer ALIAS ReactAndroid::react_render_mapbuffer)
+add_library(react_render_textlayoutmanager ALIAS ReactAndroid::react_render_textlayoutmanager)
 add_library(yoga ALIAS ReactAndroid::yoga)
 add_library(folly_runtime ALIAS ReactAndroid::folly_runtime)
 add_library(react_nativemodule_core ALIAS ReactAndroid::react_nativemodule_core)
@@ -90,6 +93,7 @@ add_library(fbjni ALIAS fbjni::fbjni)
 
 target_link_libraries(${CMAKE_PROJECT_NAME}
         fabricjni                           # prefab ready
+        mapbufferjni                        # prefab ready
         fbjni                               # via 3rd party prefab
         folly_runtime                       # prefab ready
         glog                                # prefab ready
@@ -99,15 +103,17 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         react_utils                         # prefab ready
         react_nativemodule_core             # prefab ready
         react_newarchdefaults               # prefab ready
-        react_cxxreactpackage               # prefab ready
         react_render_componentregistry      # prefab ready
         react_render_core                   # prefab ready
         react_render_debug                  # prefab ready
         react_render_graphics               # prefab ready
         react_render_imagemanager           # prefab ready
         react_render_mapbuffer              # prefab ready
+        react_render_textlayoutmanager      # prefab ready
         rrc_image                           # prefab ready
         rrc_view                            # prefab ready
+        rrc_text                            # prefab ready
+        rrc_textinput                       # prefab ready
         rrc_legacyviewmanagerinterop        # prefab ready
         runtimeexecutor                     # prefab ready
         turbomodulejsijni                   # prefab ready
@@ -120,8 +126,8 @@ target_compile_options(common_flags INTERFACE ${folly_FLAGS})
 target_link_libraries(ReactAndroid::react_codegen_rncore INTERFACE common_flags)
 
 # If project is on RN CLI v9, then we can use the following lines to link against the autolinked 3rd party libraries.
-if(EXISTS ${PROJECT_BUILD_DIR}/generated/rncli/src/main/jni/Android-rncli.cmake)
-        include(${PROJECT_BUILD_DIR}/generated/rncli/src/main/jni/Android-rncli.cmake)
+if(EXISTS ${PROJECT_BUILD_DIR}/generated/autolinking/src/main/jni/Android-autolinking.cmake)
+        include(${PROJECT_BUILD_DIR}/generated/autolinking/src/main/jni/Android-autolinking.cmake)
         target_link_libraries(${CMAKE_PROJECT_NAME} ${AUTOLINKED_LIBRARIES})
         foreach(autolinked_library ${AUTOLINKED_LIBRARIES})
             target_link_libraries(${autolinked_library} common_flags)

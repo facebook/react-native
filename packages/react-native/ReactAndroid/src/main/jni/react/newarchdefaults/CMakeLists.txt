@@ -21,4 +21,9 @@ target_link_libraries(react_newarchdefaults
         react_nativemodule_core
         react_codegen_rncore
         react_cxxreactpackage
+        react_nativemodule_defaults
+        react_nativemodule_dom
+        react_nativemodule_featureflags
+        react_nativemodule_microtasks
+        react_nativemodule_idlecallbacks
         jsi)

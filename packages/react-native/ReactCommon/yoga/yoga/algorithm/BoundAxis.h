@@ -19,13 +19,12 @@ namespace facebook::yoga {
 inline float paddingAndBorderForAxis(
     const yoga::Node* const node,
     const FlexDirection axis,
+    const Direction direction,
     const float widthSize) {
-  // The total padding/border for a given axis does not depend on the direction
-  // so hardcoding LTR here to avoid piping direction to this function
   return node->style().computeInlineStartPaddingAndBorder(
-             axis, Direction::LTR, widthSize) +
+             axis, direction, widthSize) +
       node->style().computeInlineEndPaddingAndBorder(
-          axis, Direction::LTR, widthSize);
+          axis, direction, widthSize);
 }
 
 inline FloatOptional boundAxisWithinMinAndMax(
@@ -60,13 +59,14 @@ inline FloatOptional boundAxisWithinMinAndMax(
 inline float boundAxis(
     const yoga::Node* const node,
     const FlexDirection axis,
+    const Direction direction,
     const float value,
     const float axisSize,
     const float widthSize) {
   return yoga::maxOrDefined(
       boundAxisWithinMinAndMax(node, axis, FloatOptional{value}, axisSize)
           .unwrap(),
-      paddingAndBorderForAxis(node, axis, widthSize));
+      paddingAndBorderForAxis(node, axis, direction, widthSize));
 }
 
 } // namespace facebook::yoga

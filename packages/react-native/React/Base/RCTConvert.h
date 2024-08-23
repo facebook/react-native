@@ -11,12 +11,21 @@
 #import <React/RCTAnimationType.h>
 #import <React/RCTBorderCurve.h>
 #import <React/RCTBorderStyle.h>
-#import <React/RCTCursor.h> // [macOS] [visionOS]
+#import <React/RCTCursor.h>
 #import <React/RCTDefines.h>
 #import <React/RCTLog.h>
 #import <React/RCTPointerEvents.h>
 #import <React/RCTTextDecorationLineType.h>
 #import <yoga/Yoga.h>
+
+typedef NS_ENUM(NSInteger, RCTColorSpace) {
+  RCTColorSpaceSRGB,
+  RCTColorSpaceDisplayP3,
+};
+
+// Change the default color space
+RCTColorSpace RCTGetDefaultColorSpace(void);
+RCT_EXTERN void RCTSetDefaultColorSpace(RCTColorSpace colorSpace);
 
 @class RCTHandledKey; // [macOS]
 
@@ -74,6 +83,7 @@ typedef NSURL RCTFileURL;
 + (UIReturnKeyType)UIReturnKeyType:(id)json;
 + (UIUserInterfaceStyle)UIUserInterfaceStyle:(id)json API_AVAILABLE(ios(12));
 + (UIInterfaceOrientationMask)UIInterfaceOrientationMask:(NSString *)orientation;
++ (UIModalPresentationStyle)UIModalPresentationStyle:(id)json;
 
 #if !TARGET_OS_TV
 + (UIDataDetectorTypes)UIDataDetectorTypes:(id)json;
@@ -85,11 +95,11 @@ typedef NSURL RCTFileURL;
 #endif
 #endif // [macOS]
 
-+ (RCTCursor)RCTCursor:(id)json; // [macOS] [visionOS]
-
 #if TARGET_OS_OSX // [macOS
 + (NSTextCheckingTypes)NSTextCheckingTypes:(id)json;
 #endif // macOS]
+
++ (RCTCursor)RCTCursor:(id)json;
 
 + (CGFloat)CGFloat:(id)json;
 + (CGPoint)CGPoint:(id)json;
@@ -102,6 +112,13 @@ typedef NSURL RCTFileURL;
 
 + (CGAffineTransform)CGAffineTransform:(id)json;
 
++ (RCTUIColor *)UIColorWithRed:(CGFloat)red green:(CGFloat)green blue:(CGFloat)blue alpha:(CGFloat)alpha; // [macOS]
++ (RCTUIColor *)UIColorWithRed:(CGFloat)red // [macOS]
+                         green:(CGFloat)green
+                          blue:(CGFloat)blue
+                         alpha:(CGFloat)alpha
+                 andColorSpace:(RCTColorSpace)colorSpace;
++ (RCTColorSpace)RCTColorSpaceFromString:(NSString *)colorSpace;
 + (RCTUIColor *)UIColor:(id)json; // [macOS]
 + (RCTUIColor *)NSColor:(id)json; // [macOS]
 + (CGColorRef)CGColor:(id)json CF_RETURNS_NOT_RETAINED;

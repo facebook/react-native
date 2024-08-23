@@ -8,8 +8,8 @@
  * @format
  */
 
-import NativePerformanceObserver from './NativePerformanceObserver';
 import {warnNoNativePerformanceObserver} from './PerformanceObserver';
+import NativePerformanceObserver from './specs/NativePerformanceObserver';
 
 type EventCountsForEachCallbackType =
   | (() => void)

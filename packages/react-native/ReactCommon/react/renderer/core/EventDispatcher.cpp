@@ -7,51 +7,51 @@
 
 #include "EventDispatcher.h"
 #include <cxxreact/JSExecutor.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/core/StateUpdate.h>
-#include "EventLogger.h"
 
-#include "BatchedEventQueue.h"
+#include "EventQueue.h"
 #include "RawEvent.h"
-#include "UnbatchedEventQueue.h"
 
 namespace facebook::react {
 
 EventDispatcher::EventDispatcher(
     const EventQueueProcessor& eventProcessor,
-    const EventBeat::Factory& synchonousEventBeatFactory,
     const EventBeat::Factory& asynchronousEventBeatFactory,
-    const EventBeat::SharedOwnerBox& ownerBox)
-    : synchronousUnbatchedQueue_(std::make_unique<UnbatchedEventQueue>(
+    const EventBeat::SharedOwnerBox& ownerBox,
+    RuntimeScheduler& runtimeScheduler,
+    StatePipe statePipe,
+    std::weak_ptr<EventLogger> eventLogger)
+    : eventQueue_(EventQueue(
           eventProcessor,
-          synchonousEventBeatFactory(ownerBox))),
-      synchronousBatchedQueue_(std::make_unique<BatchedEventQueue>(
-          eventProcessor,
-          synchonousEventBeatFactory(ownerBox))),
-      asynchronousUnbatchedQueue_(std::make_unique<UnbatchedEventQueue>(
-          eventProcessor,
-          asynchronousEventBeatFactory(ownerBox))),
-      asynchronousBatchedQueue_(std::make_unique<BatchedEventQueue>(
-          eventProcessor,
-          asynchronousEventBeatFactory(ownerBox))) {}
+          asynchronousEventBeatFactory(ownerBox),
+          runtimeScheduler)),
+      statePipe_(std::move(statePipe)),
+      eventLogger_(std::move(eventLogger)) {}
 
-void EventDispatcher::dispatchEvent(RawEvent&& rawEvent, EventPriority priority)
-    const {
+void EventDispatcher::dispatchEvent(RawEvent&& rawEvent) const {
   // Allows the event listener to interrupt default event dispatch
   if (eventListeners_.willDispatchEvent(rawEvent)) {
     return;
   }
 
-  auto eventLogger = getEventLogger();
+  auto eventLogger = eventLogger_.lock();
   if (eventLogger != nullptr) {
     rawEvent.loggingTag = eventLogger->onEventStart(rawEvent.type);
   }
-  getEventQueue(priority).enqueueEvent(std::move(rawEvent));
+  eventQueue_.enqueueEvent(std::move(rawEvent));
 }
 
-void EventDispatcher::dispatchStateUpdate(
-    StateUpdate&& stateUpdate,
-    EventPriority priority) const {
-  getEventQueue(priority).enqueueStateUpdate(std::move(stateUpdate));
+void EventDispatcher::experimental_flushSync() const {
+  eventQueue_.experimental_flushSync();
+}
+
+void EventDispatcher::dispatchStateUpdate(StateUpdate&& stateUpdate) const {
+  if (ReactNativeFeatureFlags::enableSynchronousStateUpdates()) {
+    statePipe_(stateUpdate);
+  } else {
+    eventQueue_.enqueueStateUpdate(std::move(stateUpdate));
+  }
 }
 
 void EventDispatcher::dispatchUniqueEvent(RawEvent&& rawEvent) const {
@@ -59,20 +59,7 @@ void EventDispatcher::dispatchUniqueEvent(RawEvent&& rawEvent) const {
   if (eventListeners_.willDispatchEvent(rawEvent)) {
     return;
   }
-  asynchronousBatchedQueue_->enqueueUniqueEvent(std::move(rawEvent));
-}
-
-const EventQueue& EventDispatcher::getEventQueue(EventPriority priority) const {
-  switch (priority) {
-    case EventPriority::SynchronousUnbatched:
-      return *synchronousUnbatchedQueue_;
-    case EventPriority::SynchronousBatched:
-      return *synchronousBatchedQueue_;
-    case EventPriority::AsynchronousUnbatched:
-      return *asynchronousUnbatchedQueue_;
-    case EventPriority::AsynchronousBatched:
-      return *asynchronousBatchedQueue_;
-  }
+  eventQueue_.enqueueUniqueEvent(std::move(rawEvent));
 }
 
 void EventDispatcher::addListener(

@@ -93,6 +93,7 @@ import okhttp3.WebSocketListener;
 
     private final Handler mHandler = new Handler(Looper.getMainLooper());
 
+    @DoNotStrip
     public IWebSocket connectWebSocket(String url, WebSocketDelegate delegate) {
       Request request = new Request.Builder().url(url).build();
       final WebSocket webSocket =
@@ -135,6 +136,7 @@ import okhttp3.WebSocketListener;
       };
     }
 
+    @DoNotStrip
     public void scheduleCallback(Runnable runnable, long delayMs) {
       mHandler.postDelayed(runnable, delayMs);
     }

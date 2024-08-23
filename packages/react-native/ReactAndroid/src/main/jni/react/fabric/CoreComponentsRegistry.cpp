@@ -67,8 +67,6 @@ CoreComponentsRegistry::sharedProviderRegistry() {
                           AndroidDrawerLayoutComponentDescriptor>());
     providerRegistry->add(concreteComponentDescriptorProvider<
                           DebuggingOverlayComponentDescriptor>());
-    providerRegistry->add(concreteComponentDescriptorProvider<
-                          AndroidPopupMenuComponentDescriptor>());
 
     return providerRegistry;
   }();

@@ -38,7 +38,7 @@ export type StartCommandArgs = {
   https?: boolean,
   maxWorkers?: number,
   key?: string,
-  platforms?: string[],
+  platforms: string[],
   port?: number,
   resetCache?: boolean,
   sourceExts?: string[],
@@ -57,7 +57,7 @@ async function runServer(
   const metroConfig = await loadMetroConfig(ctx, {
     config: args.config,
     maxWorkers: args.maxWorkers,
-    port: args.port ?? 8081,
+    port: args.port,
     resetCache: args.resetCache,
     watchFolders: args.watchFolders,
     projectRoot: args.projectRoot,

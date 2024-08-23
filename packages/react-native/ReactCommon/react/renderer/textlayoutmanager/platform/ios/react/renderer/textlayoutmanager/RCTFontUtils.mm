@@ -6,10 +6,12 @@
  */
 
 #import "RCTFontUtils.h"
+#import <CoreText/CoreText.h>
 
 #import <algorithm>
 #import <cmath>
 #import <limits>
+#import <map>
 #import <mutex>
 
 static RCTFontProperties RCTDefaultFontProperties()
@@ -62,8 +64,51 @@ static RCTFontStyle RCTGetFontStyle(UIFont *font)
 
 static NSArray *RCTFontFeatures(RCTFontVariant fontVariant)
 {
-  // FIXME:
-  return @[];
+  NSMutableArray *fontFeatures = [NSMutableArray array];
+  static std::map<RCTFontVariant, NSDictionary *> mapping;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    mapping = {
+        {RCTFontVariantSmallCaps, @{
+           UIFontFeatureTypeIdentifierKey : @(kLowerCaseType),
+           UIFontFeatureSelectorIdentifierKey : @(kLowerCaseSmallCapsSelector),
+         }},
+        {RCTFontVariantOldstyleNums, @{
+           UIFontFeatureTypeIdentifierKey : @(kNumberCaseType),
+           UIFontFeatureSelectorIdentifierKey : @(kLowerCaseNumbersSelector),
+         }},
+        {RCTFontVariantLiningNums, @{
+           UIFontFeatureTypeIdentifierKey : @(kNumberCaseType),
+           UIFontFeatureSelectorIdentifierKey : @(kUpperCaseNumbersSelector),
+         }},
+        {RCTFontVariantTabularNums, @{
+           UIFontFeatureTypeIdentifierKey : @(kNumberSpacingType),
+           UIFontFeatureSelectorIdentifierKey : @(kMonospacedNumbersSelector),
+         }},
+        {RCTFontVariantProportionalNums, @{
+           UIFontFeatureTypeIdentifierKey : @(kNumberSpacingType),
+           UIFontFeatureSelectorIdentifierKey : @(kProportionalNumbersSelector),
+         }},
+    };
+  });
+
+  if (fontVariant & RCTFontVariantSmallCaps) {
+    [fontFeatures addObject:mapping[RCTFontVariantSmallCaps]];
+  }
+  if (fontVariant & RCTFontVariantOldstyleNums) {
+    [fontFeatures addObject:mapping[RCTFontVariantOldstyleNums]];
+  }
+  if (fontVariant & RCTFontVariantLiningNums) {
+    [fontFeatures addObject:mapping[RCTFontVariantLiningNums]];
+  }
+  if (fontVariant & RCTFontVariantTabularNums) {
+    [fontFeatures addObject:mapping[RCTFontVariantTabularNums]];
+  }
+  if (fontVariant & RCTFontVariantProportionalNums) {
+    [fontFeatures addObject:mapping[RCTFontVariantProportionalNums]];
+  }
+
+  return fontFeatures;
 }
 
 static UIFont *RCTDefaultFontWithFontProperties(RCTFontProperties fontProperties)

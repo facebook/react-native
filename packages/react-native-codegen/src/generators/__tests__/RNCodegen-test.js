@@ -54,6 +54,7 @@ describe('RNCodegen.generate', () => {
 
         let expectedPath = path.join(
           outputDirectory,
+          // $FlowFixMe[invalid-computed-prop]
           expectedPaths[receivedBasename],
         );
         expect(receivedDir).toEqual(expectedPath);

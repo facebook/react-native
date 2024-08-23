@@ -362,12 +362,12 @@ function VariantColorsExample() {
               Platform.OS === 'ios'
                 ? DynamicColorIOS({light: 'red', dark: 'blue'})
                 : // [macOS
-                Platform.OS === 'macos'
-                ? DynamicColorMacOS({light: 'red', dark: 'blue'})
-                : // macOS]
-                Platform.OS === 'android'
-                ? PlatformColor('?attr/colorAccent')
-                : 'red',
+                  Platform.OS === 'macos'
+                  ? DynamicColorMacOS({light: 'red', dark: 'blue'})
+                  : // macOS]
+                    Platform.OS === 'android'
+                    ? PlatformColor('?attr/colorAccent')
+                    : 'red',
           }}
         />
       </View>

@@ -27,18 +27,6 @@
 
 using namespace facebook::react;
 
-static BOOL imagePerfInstrumentationEnabled = NO;
-
-BOOL RCTImageLoadingPerfInstrumentationEnabled(void)
-{
-  return imagePerfInstrumentationEnabled;
-}
-
-void RCTEnableImageLoadingPerfInstrumentation(BOOL enabled)
-{
-  imagePerfInstrumentationEnabled = enabled;
-}
-
 static NSInteger RCTImageBytesForImage(UIImage *image)
 {
   CGFloat imageScale = 1.0;

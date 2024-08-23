@@ -8,6 +8,7 @@
  * @format
  */
 
+import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
 import type {RootTag} from '../Types/RootTagTypes';
 import type {IPerformanceLogger} from '../Utilities/createPerformanceLogger';
 import type {DisplayModeType} from './DisplayMode';
@@ -60,6 +61,7 @@ export type Registry = {
 export type WrapperComponentProvider = (
   appParameters: Object,
 ) => React$ComponentType<any>;
+export type RootViewStyleProvider = (appParameters: Object) => ViewStyleProp;
 
 const runnables: Runnables = {};
 let runCount = 1;
@@ -70,6 +72,7 @@ let componentProviderInstrumentationHook: ComponentProviderInstrumentationHook =
   (component: ComponentProvider) => component();
 
 let wrapperComponentProvider: ?WrapperComponentProvider;
+let rootViewStyleProvider: ?RootViewStyleProvider;
 let showArchitectureIndicator = false;
 
 /**
@@ -80,6 +83,10 @@ let showArchitectureIndicator = false;
 const AppRegistry = {
   setWrapperComponentProvider(provider: WrapperComponentProvider) {
     wrapperComponentProvider = provider;
+  },
+
+  setRootViewStyleProvider(provider: RootViewStyleProvider) {
+    rootViewStyleProvider = provider;
   },
 
   enableArchitectureIndicator(enabled: boolean): void {
@@ -130,6 +137,7 @@ const AppRegistry = {
         appParameters.initialProps,
         appParameters.rootTag,
         wrapperComponentProvider && wrapperComponentProvider(appParameters),
+        rootViewStyleProvider && rootViewStyleProvider(appParameters),
         appParameters.fabric,
         showArchitectureIndicator,
         scopedPerformanceLogger,
@@ -196,10 +204,8 @@ const AppRegistry = {
     displayMode?: number,
   ): void {
     if (appKey !== 'LogBox') {
-      const logParams = __DEV__
-        ? '" with ' + JSON.stringify(appParameters)
-        : '';
-      const msg = 'Running "' + appKey + logParams;
+      const logParams = __DEV__ ? ` with ${JSON.stringify(appParameters)}` : '';
+      const msg = `Running "${appKey}"${logParams}`;
       infoLog(msg);
       BugReporting.addSource(
         'AppRegistry.runApplication' + runCount++,

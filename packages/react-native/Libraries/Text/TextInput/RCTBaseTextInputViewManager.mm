@@ -71,6 +71,8 @@ RCT_EXPORT_VIEW_PROPERTY(onAutoCorrectChange, RCTBubblingEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onSpellCheckChange, RCTBubblingEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onGrammarCheckChange, RCTBubblingEventBlock);
 
+RCT_EXPORT_VIEW_PROPERTY(onPaste, RCTDirectEventBlock)
+
 // Specifically for clearing text on enter key press
 RCT_EXPORT_VIEW_PROPERTY(clearTextOnSubmit, BOOL);
 RCT_EXPORT_VIEW_PROPERTY(onSubmitEditing, RCTBubblingEventBlock);
@@ -83,8 +85,6 @@ RCT_EXPORT_VIEW_PROPERTY(onChange, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onKeyPressSync, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onChangeSync, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onSelectionChange, RCTDirectEventBlock)
-RCT_EXPORT_VIEW_PROPERTY(onPaste, RCTDirectEventBlock)
-RCT_EXPORT_VIEW_PROPERTY(onTextInput, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onScroll, RCTDirectEventBlock)
 
 RCT_EXPORT_VIEW_PROPERTY(mostRecentEventCount, NSInteger)

@@ -7,10 +7,12 @@
 
 package com.facebook.react.fabric.internal.interop
 
+import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.testutils.fakes.FakeUIManager
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
+@OptIn(UnstableReactNativeAPI::class)
 class InteropUiBlockListenerTest {
 
   @Test
@@ -44,12 +46,36 @@ class InteropUiBlockListenerTest {
   }
 
   @Test
+  fun willDispatchViewUpdates_emptiesBeforeUIBlocks() {
+    val underTest = InteropUIBlockListener()
+    underTest.prependUIBlock {}
+    underTest.addUIBlock {}
+
+    underTest.willDispatchViewUpdates(FakeUIManager())
+
+    assertEquals(0, underTest.beforeUIBlocks.size)
+    assertEquals(1, underTest.afterUIBlocks.size)
+  }
+
+  @Test
   fun didMountItems_emptiesAfterUIBlocks() {
     val underTest = InteropUIBlockListener()
     underTest.prependUIBlock {}
     underTest.addUIBlock {}
 
     underTest.didMountItems(FakeUIManager())
+
+    assertEquals(1, underTest.beforeUIBlocks.size)
+    assertEquals(0, underTest.afterUIBlocks.size)
+  }
+
+  @Test
+  fun didDispatchMountItems_emptiesAfterUIBlocks() {
+    val underTest = InteropUIBlockListener()
+    underTest.prependUIBlock {}
+    underTest.addUIBlock {}
+
+    underTest.didDispatchMountItems(FakeUIManager())
 
     assertEquals(1, underTest.beforeUIBlocks.size)
     assertEquals(0, underTest.afterUIBlocks.size)
@@ -68,6 +94,18 @@ class InteropUiBlockListenerTest {
   }
 
   @Test
+  fun willDispatchViewUpdates_deliversUiManagerCorrectly() {
+    val fakeUIManager = FakeUIManager()
+    val underTest = InteropUIBlockListener()
+
+    underTest.prependUIBlock { uiManager -> uiManager.resolveView(0) }
+
+    underTest.willDispatchViewUpdates(fakeUIManager)
+
+    assertEquals(1, fakeUIManager.resolvedViewCount)
+  }
+
+  @Test
   fun didMountItems_deliversUiManagerCorrectly() {
     val fakeUIManager = FakeUIManager()
     val underTest = InteropUIBlockListener()
@@ -75,6 +113,18 @@ class InteropUiBlockListenerTest {
     underTest.addUIBlock { uiManager -> uiManager.resolveView(0) }
 
     underTest.didMountItems(fakeUIManager)
+
+    assertEquals(1, fakeUIManager.resolvedViewCount)
+  }
+
+  @Test
+  fun didDispatchMountItems_deliversUiManagerCorrectly() {
+    val fakeUIManager = FakeUIManager()
+    val underTest = InteropUIBlockListener()
+
+    underTest.addUIBlock { uiManager -> uiManager.resolveView(0) }
+
+    underTest.didDispatchMountItems(fakeUIManager)
 
     assertEquals(1, fakeUIManager.resolvedViewCount)
   }

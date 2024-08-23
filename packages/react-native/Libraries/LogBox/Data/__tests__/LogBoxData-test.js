@@ -65,6 +65,7 @@ const addLogs = (logs: Array<string>, options: void | {flush: boolean}) => {
       },
       category: message,
       componentStack: [],
+      componentStackType: null,
     });
     if (options == null || options.flush !== false) {
       jest.runOnlyPendingTimers();

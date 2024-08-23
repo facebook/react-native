@@ -20,12 +20,6 @@
 
 namespace facebook::react {
 
-struct CallableModule {
-  explicit CallableModule(jsi::Function factory)
-      : factory(std::move(factory)) {}
-  jsi::Function factory;
-};
-
 class ReactInstance final : private jsinspector_modern::InstanceTargetDelegate {
  public:
   using BindingsInstallFunc = std::function<void(jsi::Runtime& runtime)>;
@@ -34,8 +28,8 @@ class ReactInstance final : private jsinspector_modern::InstanceTargetDelegate {
       std::unique_ptr<JSRuntime> runtime,
       std::shared_ptr<MessageQueueThread> jsMessageQueueThread,
       std::shared_ptr<TimerManager> timerManager,
-      JsErrorHandler::JsErrorHandlingFunc JsErrorHandlingFunc,
-      jsinspector_modern::PageTarget* parentInspectorTarget = nullptr);
+      JsErrorHandler::OnJsError onJsError,
+      jsinspector_modern::HostTarget* parentInspectorTarget = nullptr);
 
   RuntimeExecutor getUnbufferedRuntimeExecutor() noexcept;
 
@@ -61,7 +55,7 @@ class ReactInstance final : private jsinspector_modern::InstanceTargetDelegate {
   void callFunctionOnModule(
       const std::string& moduleName,
       const std::string& methodName,
-      const folly::dynamic& args);
+      folly::dynamic&& args);
 
   void handleMemoryPressureJs(int pressureLevel);
 
@@ -78,16 +72,14 @@ class ReactInstance final : private jsinspector_modern::InstanceTargetDelegate {
   std::shared_ptr<MessageQueueThread> jsMessageQueueThread_;
   std::shared_ptr<BufferedRuntimeExecutor> bufferedRuntimeExecutor_;
   std::shared_ptr<TimerManager> timerManager_;
-  std::unordered_map<std::string, std::shared_ptr<CallableModule>> modules_;
+  std::unordered_map<std::string, std::variant<jsi::Function, jsi::Object>>
+      callableModules_;
   std::shared_ptr<RuntimeScheduler> runtimeScheduler_;
-  JsErrorHandler jsErrorHandler_;
-
-  // Whether there are errors caught during bundle loading
-  std::shared_ptr<bool> hasFatalJsError_;
+  std::shared_ptr<JsErrorHandler> jsErrorHandler_;
 
   jsinspector_modern::InstanceTarget* inspectorTarget_{nullptr};
   jsinspector_modern::RuntimeTarget* runtimeInspectorTarget_{nullptr};
-  jsinspector_modern::PageTarget* parentInspectorTarget_{nullptr};
+  jsinspector_modern::HostTarget* parentInspectorTarget_{nullptr};
 };
 
 } // namespace facebook::react

@@ -129,7 +129,7 @@ class RCTObjcExecutor : public JSExecutor {
   RCTJavaScriptCallback m_jsCallback;
 };
 
-}
+} // namespace
 
 RCTObjcExecutorFactory::RCTObjcExecutorFactory(id<RCTJavaScriptExecutor> jse, RCTJavaScriptCompleteBlock errorBlock)
     : m_jse(jse), m_errorBlock(errorBlock)

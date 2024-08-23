@@ -61,8 +61,10 @@ Pod::Spec.new do |s|
 
   s.dependency "glog"
   s.dependency "RCT-Folly/Fabric", folly_version
-  s.dependency "React-Core/Default", version
+  s.dependency "React-jsi"
+  s.dependency "React-jsiexecutor"
   s.dependency "React-utils"
+  s.dependency "React-Core" # [macOS] Needed for RCTUIKit
   s.dependency "DoubleConversion"
   s.dependency "fmt", "9.1.0"
 end

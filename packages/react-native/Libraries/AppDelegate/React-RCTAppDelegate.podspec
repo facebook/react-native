@@ -21,7 +21,7 @@ folly_compiler_flags = folly_config[:compiler_flags]
 folly_version = folly_config[:version]
 
 is_new_arch_enabled = ENV["RCT_NEW_ARCH_ENABLED"] == "1"
-use_hermes =  ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == '1'
+use_hermes = ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == '1'
 
 new_arch_enabled_flag = (is_new_arch_enabled ? " -DRCT_NEW_ARCH_ENABLED" : "")
 is_fabric_enabled = true #is_new_arch_enabled || ENV["RCT_FABRIC_ENABLED"]
@@ -66,8 +66,6 @@ Pod::Spec.new do |s|
   }
   s.user_target_xcconfig   = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/Headers/Private/React-Core\""}
 
-  use_hermes = ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == "1"
-
   s.dependency "React-Core"
   s.dependency "RCT-Folly", folly_version
   s.dependency "RCTRequired"
@@ -76,7 +74,8 @@ Pod::Spec.new do |s|
   s.dependency "React-RCTImage"
   s.dependency "React-CoreModules"
   s.dependency "React-nativeconfig"
-  s.dependency "React-Codegen"
+  s.dependency "ReactCodegen"
+  s.dependency "React-defaultsnativemodule"
 
   add_dependency(s, "ReactCommon", :subspec => "turbomodule/core", :additional_framework_paths => ["react/nativemodule/core"])
   add_dependency(s, "React-NativeModulesApple")
@@ -89,6 +88,7 @@ Pod::Spec.new do |s|
   add_dependency(s, "React-utils")
   add_dependency(s, "React-debug")
   add_dependency(s, "React-rendererdebug")
+  add_dependency(s, "React-featureflags")
 
   if use_hermes
     s.dependency "React-hermes"

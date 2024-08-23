@@ -16,6 +16,8 @@ const {
   IncludeTemplate,
   convertDefaultTypeToString,
   getImports,
+  getSourceProp,
+  isWrappedPropType,
 } = require('./CppHelpers');
 
 // File path -> contents
@@ -71,8 +73,14 @@ ${className}::${className}(
 function generatePropsString(componentName: string, component: ComponentShape) {
   return component.props
     .map(prop => {
+      const sourceProp = getSourceProp(componentName, prop);
       const defaultValue = convertDefaultTypeToString(componentName, prop);
-      return `${prop.name}(convertRawProp(context, rawProps, "${prop.name}", sourceProps.${prop.name}, {${defaultValue}}))`;
+      const isWrappedProp = isWrappedPropType(prop);
+      let convertRawProp = `convertRawProp(context, rawProps, "${prop.name}", ${sourceProp}, {${defaultValue}})`;
+      if (isWrappedProp) {
+        convertRawProp += '.value';
+      }
+      return `${prop.name}(${convertRawProp})`;
     })
     .join(',\n' + '    ');
 }

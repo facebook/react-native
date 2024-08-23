@@ -455,18 +455,22 @@ function addWhitelistedInterpolationParam(param: string): void {
 }
 
 function isSupportedColorStyleProp(prop: string): boolean {
+  // $FlowFixMe[invalid-computed-prop]
   return SUPPORTED_COLOR_STYLES[prop] === true;
 }
 
 function isSupportedStyleProp(prop: string): boolean {
+  // $FlowFixMe[invalid-computed-prop]
   return SUPPORTED_STYLES[prop] === true;
 }
 
 function isSupportedTransformProp(prop: string): boolean {
+  // $FlowFixMe[invalid-computed-prop]
   return SUPPORTED_TRANSFORMS[prop] === true;
 }
 
 function isSupportedInterpolationParam(param: string): boolean {
+  // $FlowFixMe[invalid-computed-prop]
   return SUPPORTED_INTERPOLATION_PARAMS[param] === true;
 }
 

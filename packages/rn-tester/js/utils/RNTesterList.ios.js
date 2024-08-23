@@ -174,6 +174,10 @@ const Components: Array<RNTesterModuleInfo> = [
     category: 'Basic',
     module: require('../examples/Performance/PerformanceComparisonExample'),
   },
+  {
+    key: 'OSSLibraryExample',
+    module: require('../examples/OSSLibraryExample/OSSLibraryExample'),
+  },
 ];
 
 const APIs: Array<RNTesterModuleInfo> = ([
@@ -288,6 +292,10 @@ const APIs: Array<RNTesterModuleInfo> = ([
     module: require('../examples/PlatformColor/PlatformColorExample'),
   },
   {
+    key: 'PixelRatio',
+    module: require('../examples/PixelRatio/PixelRatioExample'),
+  },
+  {
     key: 'PointerEventsExample',
     module: require('../examples/PointerEvents/PointerEventsExample'),
   },
@@ -314,6 +322,10 @@ const APIs: Array<RNTesterModuleInfo> = ([
   {
     key: 'TransformExample',
     module: require('../examples/Transform/TransformExample'),
+  },
+  {
+    key: 'FilterExample',
+    module: require('../examples/Filter/FilterExample'),
   },
   {
     key: 'TurboModuleExample',

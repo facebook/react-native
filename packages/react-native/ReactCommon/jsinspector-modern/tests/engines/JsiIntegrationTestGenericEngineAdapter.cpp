@@ -5,8 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <jsinspector-modern/FallbackRuntimeAgentDelegate.h>
-
 #include <folly/executors/QueuedImmediateExecutor.h>
 #include <hermes/hermes.h>
 
@@ -18,19 +16,19 @@ namespace facebook::react::jsinspector_modern {
 
 JsiIntegrationTestGenericEngineAdapter::JsiIntegrationTestGenericEngineAdapter(
     folly::Executor& jsExecutor)
-    : runtime_{hermes::makeHermesRuntime()}, jsExecutor_{jsExecutor} {}
+    : runtime_{hermes::makeHermesRuntime()},
+      jsExecutor_{jsExecutor},
+      runtimeTargetDelegate_{
+          "Generic engine (" + runtime_->description() + ")"} {}
 
-std::unique_ptr<RuntimeAgentDelegate>
-JsiIntegrationTestGenericEngineAdapter::createAgentDelegate(
-    FrontendChannel frontendChannel,
-    SessionState& sessionState,
-    std::unique_ptr<RuntimeAgentDelegate::ExportedState>,
-    const ExecutionContextDescription&) {
-  return std::unique_ptr<jsinspector_modern::RuntimeAgentDelegate>(
-      new FallbackRuntimeAgentDelegate(
-          frontendChannel,
-          sessionState,
-          "Generic engine (" + runtime_->description() + ")"));
+/* static */ InspectorFlagOverrides
+JsiIntegrationTestGenericEngineAdapter::getInspectorFlagOverrides() noexcept {
+  return {.fuseboxEnabledDebug = true};
+}
+
+RuntimeTargetDelegate&
+JsiIntegrationTestGenericEngineAdapter::getRuntimeTargetDelegate() {
+  return runtimeTargetDelegate_;
 }
 
 jsi::Runtime& JsiIntegrationTestGenericEngineAdapter::getRuntime()

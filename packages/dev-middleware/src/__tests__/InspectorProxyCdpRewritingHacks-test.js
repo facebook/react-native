@@ -9,8 +9,6 @@
  * @oncall react_native
  */
 
-import type {TargetCapabilityFlags} from '../inspector-proxy/types';
-
 import {allowSelfSignedCertsInNodeFetch} from './FetchUtils';
 import {
   createAndConnectTarget,
@@ -95,6 +93,52 @@ describe.each(['HTTP', 'HTTPS'])(
       }
     });
 
+    test('async source map fetching does not reorder events', async () => {
+      serverRef.app.use(
+        '/source-map',
+        serveStaticJson({
+          version: 3,
+          // Mojibake insurance.
+          file: '\u2757.js',
+        }),
+      );
+      const {device, debugger_} = await createAndConnectTarget(
+        serverRef,
+        autoCleanup.signal,
+        {
+          app: 'bar-app',
+          id: 'page1',
+          title: 'bar-title',
+          vm: 'bar-vm',
+        },
+      );
+      try {
+        await Promise.all([
+          sendFromTargetToDebugger(device, debugger_, 'page1', {
+            method: 'Debugger.scriptParsed',
+            params: {
+              sourceMapURL: `${serverRef.serverBaseUrl}/source-map`,
+            },
+          }),
+          sendFromTargetToDebugger(device, debugger_, 'page1', {
+            method: 'Debugger.aSubsequentEvent',
+          }),
+        ]);
+        expect(debugger_.handle).toHaveBeenNthCalledWith(1, {
+          method: 'Debugger.scriptParsed',
+          params: {
+            sourceMapURL: expect.stringMatching(/^data:/),
+          },
+        });
+        expect(debugger_.handle).toHaveBeenNthCalledWith(2, {
+          method: 'Debugger.aSubsequentEvent',
+        });
+      } finally {
+        device.close();
+        debugger_.close();
+      }
+    });
+
     test('handling of failure to fetch source map', async () => {
       const {device, debugger_} = await createAndConnectTarget(
         serverRef,
@@ -146,7 +190,7 @@ describe.each(['HTTP', 'HTTPS'])(
       }
     });
 
-    describe.each(['10.0.2.2', '10.0.3.2'])(
+    describe.each(['10.0.2.2', '10.0.3.2', '127.0.0.1'])(
       '%s aliasing to and from localhost',
       sourceHost => {
         test('in source map fetching during Debugger.scriptParsed', async () => {

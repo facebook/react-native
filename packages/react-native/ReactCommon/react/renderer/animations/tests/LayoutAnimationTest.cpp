@@ -21,7 +21,7 @@
 #include <react/renderer/mounting/Differentiator.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
 
-#include <react/renderer/mounting/stubs.h>
+#include <react/renderer/mounting/stubs/stubs.h>
 #include <react/test_utils/Entropy.h>
 #include <react/test_utils/MockClock.h>
 #include <react/test_utils/shadowTreeGeneration.h>

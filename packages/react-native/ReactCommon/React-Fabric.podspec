@@ -56,6 +56,7 @@ Pod::Spec.new do |s|
   s.dependency "fmt", "9.1.0"
   s.dependency "React-Core"
   s.dependency "React-debug"
+  s.dependency "React-featureflags"
   s.dependency "React-utils"
   s.dependency "React-runtimescheduler"
   s.dependency "React-cxxreact"
@@ -129,13 +130,22 @@ Pod::Spec.new do |s|
   end
 
   s.subspec "components" do |ss|
-
-    ss.subspec "inputaccessory" do |sss|
+    ss.subspec "root" do |sss|
       sss.dependency             folly_dep_name, folly_version
       sss.compiler_flags       = folly_compiler_flags
-      sss.source_files         = "react/renderer/components/inputaccessory/**/*.{m,mm,cpp,h}"
-      sss.exclude_files        = "react/renderer/components/inputaccessory/tests"
-      sss.header_dir           = "react/renderer/components/inputaccessory"
+      sss.source_files         = "react/renderer/components/root/**/*.{m,mm,cpp,h}"
+      sss.exclude_files        = "react/renderer/components/root/tests"
+      sss.header_dir           = "react/renderer/components/root"
+    end
+
+    ss.subspec "view" do |sss|
+      sss.dependency             folly_dep_name, folly_version
+      sss.dependency             "Yoga"
+      sss.compiler_flags       = folly_compiler_flags
+      sss.source_files         = "react/renderer/components/view/**/*.{m,mm,cpp,h}"
+      sss.exclude_files        = "react/renderer/components/view/tests", "react/renderer/components/view/platform/android", "react/renderer/components/view/platform/windows"
+      sss.header_dir           = "react/renderer/components/view"
+      sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/Headers/Private/Yoga\"" }
     end
 
     ss.subspec "legacyviewmanagerinterop" do |sss|
@@ -146,83 +156,25 @@ Pod::Spec.new do |s|
       sss.header_dir           = "react/renderer/components/legacyviewmanagerinterop"
       sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/Headers/Private/React-Core\"" }
     end
+  end
 
-    ss.subspec "modal" do |sss|
-      sss.dependency             folly_dep_name, folly_version
-      sss.compiler_flags       = folly_compiler_flags
-      sss.source_files         = "react/renderer/components/modal/**/*.{m,mm,cpp,h}"
-      sss.exclude_files        = "react/renderer/components/modal/tests"
-      sss.header_dir           = "react/renderer/components/modal"
-    end
+  s.subspec "dom" do |ss|
+    ss.dependency             folly_dep_name, folly_version
+    ss.dependency             "React-graphics"
+    ss.compiler_flags       = folly_compiler_flags
+    ss.source_files         = "react/renderer/dom/**/*.{m,mm,cpp,h}"
+    ss.exclude_files        = "react/renderer/dom/tests"
+    ss.header_dir           = "react/renderer/dom"
+  end
 
-    ss.subspec "rncore" do |sss|
-      sss.dependency             folly_dep_name, folly_version
-      sss.compiler_flags       = folly_compiler_flags
-      sss.source_files         = "react/renderer/components/rncore/**/*.{m,mm,cpp,h}"
-      sss.header_dir           = "react/renderer/components/rncore"
-    end
+  s.subspec "scheduler" do |ss|
+    ss.dependency             folly_dep_name, folly_version
+    ss.compiler_flags       = folly_compiler_flags
+    ss.source_files         = "react/renderer/scheduler/**/*.{m,mm,cpp,h}"
+    ss.header_dir           = "react/renderer/scheduler"
 
-    ss.subspec "root" do |sss|
-      sss.dependency             folly_dep_name, folly_version
-      sss.compiler_flags       = folly_compiler_flags
-      sss.source_files         = "react/renderer/components/root/**/*.{m,mm,cpp,h}"
-      sss.exclude_files        = "react/renderer/components/root/tests"
-      sss.header_dir           = "react/renderer/components/root"
-    end
-
-    ss.subspec "safeareaview" do |sss|
-      sss.dependency             folly_dep_name, folly_version
-      sss.compiler_flags       = folly_compiler_flags
-      sss.source_files         = "react/renderer/components/safeareaview/**/*.{m,mm,cpp,h}"
-      sss.exclude_files        = "react/renderer/components/safeareaview/tests"
-      sss.header_dir           = "react/renderer/components/safeareaview"
-
-    end
-
-    ss.subspec "scrollview" do |sss|
-      sss.dependency             folly_dep_name, folly_version
-      sss.compiler_flags       = folly_compiler_flags
-      sss.source_files         = "react/renderer/components/scrollview/**/*.{m,mm,cpp,h}"
-      sss.exclude_files        = "react/renderer/components/scrollview/tests"
-      sss.header_dir           = "react/renderer/components/scrollview"
-
-    end
-
-    ss.subspec "text" do |sss|
-      sss.dependency             folly_dep_name, folly_version
-      sss.compiler_flags       = folly_compiler_flags
-      sss.source_files         = "react/renderer/components/text/**/*.{m,mm,cpp,h}"
-      sss.exclude_files        = "react/renderer/components/text/tests"
-      sss.header_dir           = "react/renderer/components/text"
-
-    end
-
-    ss.subspec "textinput" do |sss|
-      sss.dependency             folly_dep_name, folly_version
-      sss.compiler_flags       = folly_compiler_flags
-      sss.source_files         = "react/renderer/components/textinput/platform/ios/**/*.{m,mm,cpp,h}"
-      sss.header_dir           = "react/renderer/components/iostextinput"
-
-    end
-
-    ss.subspec "unimplementedview" do |sss|
-      sss.dependency             folly_dep_name, folly_version
-      sss.compiler_flags       = folly_compiler_flags
-      sss.source_files         = "react/renderer/components/unimplementedview/**/*.{m,mm,cpp,h}"
-      sss.exclude_files        = "react/renderer/components/unimplementedview/tests"
-      sss.header_dir           = "react/renderer/components/unimplementedview"
-
-    end
-
-    ss.subspec "view" do |sss|
-      sss.dependency             folly_dep_name, folly_version
-      sss.dependency             "Yoga"
-      sss.compiler_flags       = folly_compiler_flags
-      sss.source_files         = "react/renderer/components/view/**/*.{m,mm,cpp,h}"
-      sss.exclude_files        = "react/renderer/components/view/tests", "react/renderer/components/view/platform/android"
-      sss.header_dir           = "react/renderer/components/view"
-      sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/Headers/Private/Yoga\"" }
-    end
+    ss.dependency             "React-performancetimeline"
+    ss.dependency             "React-Fabric/observers/events"
   end
 
   s.subspec "imagemanager" do |ss|
@@ -240,11 +192,14 @@ Pod::Spec.new do |s|
     ss.header_dir           = "react/renderer/mounting"
   end
 
-  s.subspec "scheduler" do |ss|
-    ss.dependency             folly_dep_name, folly_version
-    ss.compiler_flags       = folly_compiler_flags
-    ss.source_files         = "react/renderer/scheduler/**/*.{m,mm,cpp,h}"
-    ss.header_dir           = "react/renderer/scheduler"
+  s.subspec "observers" do |ss|
+    ss.subspec "events" do |sss|
+      sss.dependency             folly_dep_name, folly_version
+      sss.compiler_flags       = folly_compiler_flags
+      sss.source_files         = "react/renderer/observers/events/**/*.{m,mm,cpp,h}"
+      sss.exclude_files        = "react/renderer/observers/events/tests"
+      sss.header_dir           = "react/renderer/observers/events"
+    end
   end
 
   s.subspec "templateprocessor" do |ss|
@@ -255,26 +210,6 @@ Pod::Spec.new do |s|
     ss.header_dir           = "react/renderer/templateprocessor"
   end
 
-  s.subspec "textlayoutmanager" do |ss|
-    ss.dependency             folly_dep_name, folly_version
-    ss.dependency             "React-Fabric/uimanager"
-    ss.compiler_flags       = folly_compiler_flags
-    ss.source_files         = "react/renderer/textlayoutmanager/platform/ios/**/*.{m,mm,cpp,h}",
-                              "react/renderer/textlayoutmanager/*.{m,mm,cpp,h}"
-    ss.exclude_files        = "react/renderer/textlayoutmanager/tests",
-                              "react/renderer/textlayoutmanager/platform/android",
-                              "react/renderer/textlayoutmanager/platform/cxx"
-    ss.header_dir           = "react/renderer/textlayoutmanager"
-  end
-
-  s.subspec "uimanager" do |ss|
-    ss.dependency             folly_dep_name, folly_version
-    ss.compiler_flags       = folly_compiler_flags
-    ss.source_files         = "react/renderer/uimanager/**/*.{m,mm,cpp,h}"
-    ss.exclude_files        = "react/renderer/uimanager/tests"
-    ss.header_dir           = "react/renderer/uimanager"
-  end
-
   s.subspec "telemetry" do |ss|
     ss.dependency             folly_dep_name, folly_version
     ss.compiler_flags       = folly_compiler_flags
@@ -282,6 +217,21 @@ Pod::Spec.new do |s|
     ss.exclude_files        = "react/renderer/telemetry/tests"
     ss.header_dir           = "react/renderer/telemetry"
 
+  end
+
+  s.subspec "uimanager" do |ss|
+    ss.subspec "consistency" do |sss|
+      sss.dependency             folly_dep_name, folly_version
+      sss.compiler_flags       = folly_compiler_flags
+      sss.source_files         = "react/renderer/uimanager/consistency/*.{m,mm,cpp,h}"
+      sss.header_dir           = "react/renderer/uimanager/consistency"
+    end
+
+    ss.dependency             folly_dep_name, folly_version
+    ss.dependency             "React-rendererconsistency"
+    ss.compiler_flags       = folly_compiler_flags
+    ss.source_files         = "react/renderer/uimanager/*.{m,mm,cpp,h}"
+    ss.header_dir           = "react/renderer/uimanager"
   end
 
   s.subspec "leakchecker" do |ss|

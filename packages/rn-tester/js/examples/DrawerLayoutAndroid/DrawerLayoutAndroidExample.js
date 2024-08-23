@@ -12,7 +12,8 @@
 
 import type {Node} from 'react';
 
-import React, {useRef, useState} from 'react';
+import {RNTesterThemeContext} from '../../components/RNTesterTheme';
+import React, {useContext, useRef, useState} from 'react';
 import {
   Button,
   DrawerLayoutAndroid,
@@ -22,6 +23,7 @@ import {
 } from 'react-native';
 
 const Drawer = () => {
+  const theme = useContext(RNTesterThemeContext);
   const drawer = useRef<null | React$ElementRef<any>>(null);
   const [drawerPosition, setDrawerPosition] = useState('left');
   const changeDrawerPosition = () => {
@@ -52,7 +54,9 @@ const Drawer = () => {
       drawerPosition={drawerPosition}
       renderNavigationView={navigationView}>
       <View style={styles.container}>
-        <Text style={styles.paragraph}>Drawer on the {drawerPosition}!</Text>
+        <Text style={[{color: theme.LabelColor}, styles.paragraph]}>
+          Drawer on the {drawerPosition}!
+        </Text>
         <Button
           title="Change Drawer Position"
           onPress={() => changeDrawerPosition()}

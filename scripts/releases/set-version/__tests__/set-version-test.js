@@ -28,13 +28,20 @@ const writeFileMock = jest.fn().mockImplementation((filePath, content) => {
     customWriteFileExpect(filePath, content);
   }
 
-  expect(content).toMatchSnapshot(
-    // Make snapshot names resilient to platform path sep differences
-    path
-      .relative(path.join(__dirname, '__fixtures__'), filePath)
-      .split(path.sep)
-      .join('/'),
-  );
+  const normalizedFilePath = path
+    .relative(path.join(__dirname, '__fixtures__'), filePath)
+    .split(path.sep)
+    .join('/');
+
+  if (!filePath.endsWith('package.json')) {
+    // Updated source and build files are already validated in the tests for
+    // `set-rn-version.js`. We also want to avoid polluting this test's
+    // snapshots with \@\generated.
+    expect('[omitted]').toMatchSnapshot(normalizedFilePath);
+    return;
+  }
+
+  expect(content).toMatchSnapshot(normalizedFilePath);
 });
 
 describe('setVersion', () => {

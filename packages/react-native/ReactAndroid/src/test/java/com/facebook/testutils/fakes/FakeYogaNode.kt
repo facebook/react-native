@@ -217,6 +217,10 @@ class FakeYogaNode : YogaNode() {
     // no-op
   }
 
+  override fun setGapPercent(gutter: YogaGutter?, gapLength: Float) {
+    // no-op
+  }
+
   override fun getLayoutX(): Float = 0f
 
   override fun getLayoutY(): Float = 0f

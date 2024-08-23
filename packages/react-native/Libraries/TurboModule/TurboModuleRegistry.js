@@ -76,7 +76,8 @@ export function getEnforcing<T: TurboModule>(name: string): T {
     'Verify that a module by this name is registered in the native binary.';
 
   if (shouldReportDebugInfo()) {
-    message += 'Bridgeless mode: ' + (isBridgeless() ? 'true' : 'false') + '. ';
+    message +=
+      ' Bridgeless mode: ' + (isBridgeless() ? 'true' : 'false') + '. ';
     message +=
       'TurboModule interop: ' +
       (isTurboModuleInteropEnabled() ? 'true' : 'false') +

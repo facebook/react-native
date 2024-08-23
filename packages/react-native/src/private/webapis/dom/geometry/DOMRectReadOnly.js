@@ -33,10 +33,10 @@ function castToNumber(value: mixed): number {
  * This is a (mostly) spec-compliant version of `DOMRectReadOnly` (https://developer.mozilla.org/en-US/docs/Web/API/DOMRectReadOnly).
  */
 export default class DOMRectReadOnly {
-  _x: number;
-  _y: number;
-  _width: number;
-  _height: number;
+  #x: number;
+  #y: number;
+  #width: number;
+  #height: number;
 
   constructor(x: ?number, y: ?number, width: ?number, height: ?number) {
     this.__setInternalX(x);
@@ -49,36 +49,36 @@ export default class DOMRectReadOnly {
    * The x coordinate of the `DOMRectReadOnly`'s origin.
    */
   get x(): number {
-    return this._x;
+    return this.#x;
   }
 
   /**
    * The y coordinate of the `DOMRectReadOnly`'s origin.
    */
   get y(): number {
-    return this._y;
+    return this.#y;
   }
 
   /**
    * The width of the `DOMRectReadOnly`.
    */
   get width(): number {
-    return this._width;
+    return this.#width;
   }
 
   /**
    * The height of the `DOMRectReadOnly`.
    */
   get height(): number {
-    return this._height;
+    return this.#height;
   }
 
   /**
    * Returns the top coordinate value of the `DOMRect` (has the same value as `y`, or `y + height` if `height` is negative).
    */
   get top(): number {
-    const height = this._height;
-    const y = this._y;
+    const height = this.#height;
+    const y = this.#y;
 
     if (height < 0) {
       return y + height;
@@ -91,8 +91,8 @@ export default class DOMRectReadOnly {
    * Returns the right coordinate value of the `DOMRect` (has the same value as ``x + width`, or `x` if `width` is negative).
    */
   get right(): number {
-    const width = this._width;
-    const x = this._x;
+    const width = this.#width;
+    const x = this.#x;
 
     if (width < 0) {
       return x;
@@ -105,8 +105,8 @@ export default class DOMRectReadOnly {
    * Returns the bottom coordinate value of the `DOMRect` (has the same value as `y + height`, or `y` if `height` is negative).
    */
   get bottom(): number {
-    const height = this._height;
-    const y = this._y;
+    const height = this.#height;
+    const y = this.#y;
 
     if (height < 0) {
       return y;
@@ -119,8 +119,8 @@ export default class DOMRectReadOnly {
    * Returns the left coordinate value of the `DOMRect` (has the same value as `x`, or `x + width` if `width` is negative).
    */
   get left(): number {
-    const width = this._width;
-    const x = this._x;
+    const width = this.#width;
+    const x = this.#x;
 
     if (width < 0) {
       return x + width;
@@ -155,34 +155,34 @@ export default class DOMRectReadOnly {
   }
 
   __getInternalX(): number {
-    return this._x;
+    return this.#x;
   }
 
   __getInternalY(): number {
-    return this._y;
+    return this.#y;
   }
 
   __getInternalWidth(): number {
-    return this._width;
+    return this.#width;
   }
 
   __getInternalHeight(): number {
-    return this._height;
+    return this.#height;
   }
 
   __setInternalX(x: ?number) {
-    this._x = castToNumber(x);
+    this.#x = castToNumber(x);
   }
 
   __setInternalY(y: ?number) {
-    this._y = castToNumber(y);
+    this.#y = castToNumber(y);
   }
 
   __setInternalWidth(width: ?number) {
-    this._width = castToNumber(width);
+    this.#width = castToNumber(width);
   }
 
   __setInternalHeight(height: ?number) {
-    this._height = castToNumber(height);
+    this.#height = castToNumber(height);
   }
 }

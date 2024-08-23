@@ -92,6 +92,11 @@ public class StateWrapperImpl implements StateWrapper {
       return "<destroyed>";
     }
 
+    ReadableMapBuffer mapBuffer = getStateMapBufferDataImpl();
+    if (mapBuffer != null) {
+      return mapBuffer.toString();
+    }
+
     ReadableNativeMap map = getStateDataImpl();
     if (map == null) {
       return "<unexpected null>";

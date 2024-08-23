@@ -10,7 +10,6 @@
 #include <condition_variable>
 #include <mutex>
 
-#include <fb/log.h>
 #include <fbjni/NativeRunnable.h>
 #include <fbjni/fbjni.h>
 #include <jsi/jsi.h>

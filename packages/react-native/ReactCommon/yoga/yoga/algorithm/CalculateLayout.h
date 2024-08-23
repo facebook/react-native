@@ -15,24 +15,24 @@
 namespace facebook::yoga {
 
 void calculateLayout(
-    yoga::Node* const node,
-    const float ownerWidth,
-    const float ownerHeight,
-    const Direction ownerDirection);
+    yoga::Node* node,
+    float ownerWidth,
+    float ownerHeight,
+    Direction ownerDirection);
 
 bool calculateLayoutInternal(
-    yoga::Node* const node,
-    const float availableWidth,
-    const float availableHeight,
-    const Direction ownerDirection,
-    const SizingMode widthSizingMode,
-    const SizingMode heightSizingMode,
-    const float ownerWidth,
-    const float ownerHeight,
-    const bool performLayout,
-    const LayoutPassReason reason,
+    yoga::Node* node,
+    float availableWidth,
+    float availableHeight,
+    Direction ownerDirection,
+    SizingMode widthSizingMode,
+    SizingMode heightSizingMode,
+    float ownerWidth,
+    float ownerHeight,
+    bool performLayout,
+    LayoutPassReason reason,
     LayoutData& layoutMarkerData,
-    const uint32_t depth,
-    const uint32_t generationCount);
+    uint32_t depth,
+    uint32_t generationCount);
 
 } // namespace facebook::yoga

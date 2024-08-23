@@ -30,6 +30,7 @@ using namespace facebook::react;
 @implementation RCTViewComponentView {
   RCTUIColor *_backgroundColor; // [macOS]
   __weak CALayer *_borderLayer;
+  CALayer *_filterLayer;
   BOOL _needsInvalidateLayer;
   BOOL _isJSResponder;
   BOOL _removeClippedSubviews;
@@ -226,7 +227,7 @@ using namespace facebook::react;
   RCTAssert(
       propsRawPtr &&
           ([self class] == [RCTViewComponentView class] ||
-           typeid(*propsRawPtr).hash_code() != typeid(ViewProps const).hash_code()),
+           typeid(*propsRawPtr).hash_code() != typeid(const ViewProps).hash_code()),
       @"`RCTViewComponentView` subclasses (and `%@` particularly) must setup `_props`"
        " instance variable with a default value in the constructor.",
       NSStringFromClass([self class]));
@@ -288,6 +289,11 @@ using namespace facebook::react;
     self.layer.doubleSided = newViewProps.backfaceVisibility == BackfaceVisibility::Visible;
   }
   
+  // `cursor`
+  if (oldViewProps.cursor != newViewProps.cursor) {
+    needsInvalidateLayer = YES;
+  }
+
   // `cursor`
   if (oldViewProps.cursor != newViewProps.cursor) {
     needsInvalidateLayer = YES;
@@ -425,6 +431,11 @@ using namespace facebook::react;
     self.accessibilityIdentifier = RCTNSStringFromString(newViewProps.testId);
   }
 
+  // `filter`
+  if (oldViewProps.filter != newViewProps.filter) {
+    _needsInvalidateLayer = YES;
+  }
+
   _needsInvalidateLayer = _needsInvalidateLayer || needsInvalidateLayer;
 
   _props = std::static_pointer_cast<const ViewProps>(props);
@@ -452,7 +463,8 @@ using namespace facebook::react;
     _contentView.frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
   }
 
-  if (_props->transformOrigin.isSet()) {
+  if ((_props->transformOrigin.isSet() || _props->transform.operations.size() > 0) &&
+      layoutMetrics.frame.size != oldLayoutMetrics.frame.size) {
     auto newTransform = _props->resolveTransform(layoutMetrics);
     self.layer.transform = RCTCATransform3DFromTransformMatrix(newTransform);
   }
@@ -747,6 +759,33 @@ static RCTCursor RCTCursorFromCursor(Cursor cursor)
   }
 #endif // [visionOS]
 
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 170000 /* __IPHONE_17_0 */
+  // Stage 1.5. Cursor / Hover Effects
+  if (@available(iOS 17.0, *)) {
+    UIHoverStyle *hoverStyle = nil;
+    if (_props->cursor == Cursor::Pointer) {
+      const RCTCornerInsets cornerInsets =
+          RCTGetCornerInsets(RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii), UIEdgeInsetsZero);
+#if TARGET_OS_IOS
+      // Due to an Apple bug, it seems on iOS, UIShapes made with `[UIShape shapeWithBezierPath:]`
+      // evaluate their shape on the superviews' coordinate space. This leads to the hover shape
+      // rendering incorrectly on iOS, iOS apps in compatibility mode on visionOS, but not on visionOS.
+      // To work around this, for iOS, we can calculate the border path based on `view.frame` (the
+      // superview's coordinate space) instead of view.bounds.
+      CGPathRef borderPath = RCTPathCreateWithRoundedRect(self.frame, cornerInsets, NULL);
+#else // TARGET_OS_VISION
+      CGPathRef borderPath = RCTPathCreateWithRoundedRect(self.bounds, cornerInsets, NULL);
+#endif
+      UIBezierPath *bezierPath = [UIBezierPath bezierPathWithCGPath:borderPath];
+      CGPathRelease(borderPath);
+      UIShape *shape = [UIShape shapeWithBezierPath:bezierPath];
+
+      hoverStyle = [UIHoverStyle styleWithEffect:[UIHoverAutomaticEffect effect] shape:shape];
+    }
+    [self setHoverStyle:hoverStyle];
+  }
+#endif
+
   // Stage 2. Border Rendering
   const bool useCoreAnimationBorderRendering =
       borderMetrics.borderColors.isUniform() && borderMetrics.borderWidths.isUniform() &&
@@ -756,8 +795,9 @@ static RCTCursor RCTCursorFromCursor(Cursor cursor)
           // iOS draws borders in front of the content whereas CSS draws them behind
           // the content. For this reason, only use iOS border drawing when clipping
           // or when the border is hidden.
-          borderMetrics.borderWidths.left == 0 ||
-          colorComponentsFromColor(borderMetrics.borderColors.left).alpha == 0 || self.clipsToBounds);
+          borderMetrics.borderWidths.left == 0 || self.clipsToBounds ||
+          (colorComponentsFromColor(borderMetrics.borderColors.left).alpha == 0 &&
+           (*borderMetrics.borderColors.left).getUIColor() != nullptr));
 
 #if !TARGET_OS_OSX // [macOS]
   CGColorRef backgroundColor = [_backgroundColor resolvedColorWithTraitCollection:self.traitCollection].CGColor;
@@ -865,6 +905,33 @@ static RCTCursor RCTCursorFromCursor(Cursor cursor)
     layer.cornerRadius = cornerRadius;
     layer.mask = maskLayer;
   }
+
+  [_filterLayer removeFromSuperlayer];
+  _filterLayer = nil;
+  self.layer.opacity = (float)_props->opacity;
+  if (!_props->filter.empty()) {
+    float multiplicativeBrightness = 1;
+    for (const auto &primitive : _props->filter) {
+      if (primitive.type == FilterType::Brightness) {
+        multiplicativeBrightness *= primitive.amount;
+      } else if (primitive.type == FilterType::Opacity) {
+        self.layer.opacity *= primitive.amount;
+      }
+    }
+
+    _filterLayer = [CALayer layer];
+    _filterLayer.frame = CGRectMake(0, 0, layer.frame.size.width, layer.frame.size.height);
+    _filterLayer.compositingFilter = @"multiplyBlendMode";
+    _filterLayer.backgroundColor = [RCTUIColor colorWithRed:multiplicativeBrightness // [macOS]
+                                                      green:multiplicativeBrightness
+                                                       blue:multiplicativeBrightness
+                                                      alpha:self.layer.opacity]
+                                       .CGColor;
+    // So that this layer is always above any potential sublayers this view may
+    // add
+    _filterLayer.zPosition = CGFLOAT_MAX;
+    [self.layer addSublayer:_filterLayer];
+  }
 }
 
 #pragma mark - Accessibility
@@ -900,6 +967,15 @@ static NSString *RCTRecursiveAccessibilityLabel(RCTUIView *view) // [macOS]
   }
 
   return RCTRecursiveAccessibilityLabel(self);
+}
+
+- (BOOL)isAccessibilityElement
+{
+  if (self.contentView != nil) {
+    return self.contentView.isAccessibilityElement;
+  }
+
+  return [super isAccessibilityElement];
 }
 
 - (NSString *)accessibilityValue

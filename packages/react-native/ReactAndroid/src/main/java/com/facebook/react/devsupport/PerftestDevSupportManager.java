@@ -9,15 +9,16 @@ package com.facebook.react.devsupport;
 
 import android.content.Context;
 import com.facebook.infer.annotation.Nullsafe;
+import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
 
 /**
  * Interface for accessing and interacting with development features related to performance testing.
  * Communication is enabled via the Inspector, but everything else is disabled.
  */
 @Nullsafe(Nullsafe.Mode.LOCAL)
-public final class PerftestDevSupportManager extends DisabledDevSupportManager {
+public final class PerftestDevSupportManager extends ReleaseDevSupportManager {
   private final DevServerHelper mDevServerHelper;
-  private final DevInternalSettings mDevSettings;
+  private final DeveloperSettings mDevSettings;
 
   public PerftestDevSupportManager(Context applicationContext) {
     mDevSettings =
@@ -29,13 +30,11 @@ public final class PerftestDevSupportManager extends DisabledDevSupportManager {
             });
     mDevServerHelper =
         new DevServerHelper(
-            mDevSettings,
-            applicationContext.getPackageName(),
-            mDevSettings.getPackagerConnectionSettings());
+            mDevSettings, applicationContext, mDevSettings.getPackagerConnectionSettings());
   }
 
   @Override
-  public DevInternalSettings getDevSettings() {
+  public DeveloperSettings getDevSettings() {
     return mDevSettings;
   }
 

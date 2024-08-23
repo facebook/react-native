@@ -14,8 +14,6 @@ Map {
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
 namespace facebook::react {
@@ -28,9 +26,6 @@ public:
   ArrayPropsNativeComponentState(ArrayPropsNativeComponentState const &previousState, folly::dynamic data){};
   folly::dynamic getDynamic() const {
     return {};
-  };
-  MapBuffer getMapBuffer() const {
-    return MapBufferBuilder::EMPTY();
   };
 #endif
 };
@@ -53,8 +48,6 @@ Map {
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
 namespace facebook::react {
@@ -67,9 +60,6 @@ public:
   ArrayPropsNativeComponentState(ArrayPropsNativeComponentState const &previousState, folly::dynamic data){};
   folly::dynamic getDynamic() const {
     return {};
-  };
-  MapBuffer getMapBuffer() const {
-    return MapBufferBuilder::EMPTY();
   };
 #endif
 };
@@ -92,8 +82,6 @@ Map {
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
 namespace facebook::react {
@@ -106,9 +94,6 @@ public:
   BooleanPropNativeComponentState(BooleanPropNativeComponentState const &previousState, folly::dynamic data){};
   folly::dynamic getDynamic() const {
     return {};
-  };
-  MapBuffer getMapBuffer() const {
-    return MapBufferBuilder::EMPTY();
   };
 #endif
 };
@@ -131,8 +116,6 @@ Map {
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
 namespace facebook::react {
@@ -145,9 +128,6 @@ public:
   ColorPropNativeComponentState(ColorPropNativeComponentState const &previousState, folly::dynamic data){};
   folly::dynamic getDynamic() const {
     return {};
-  };
-  MapBuffer getMapBuffer() const {
-    return MapBufferBuilder::EMPTY();
   };
 #endif
 };
@@ -170,8 +150,6 @@ Map {
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
 namespace facebook::react {
@@ -184,9 +162,6 @@ public:
   CommandNativeComponentState(CommandNativeComponentState const &previousState, folly::dynamic data){};
   folly::dynamic getDynamic() const {
     return {};
-  };
-  MapBuffer getMapBuffer() const {
-    return MapBufferBuilder::EMPTY();
   };
 #endif
 };
@@ -209,8 +184,6 @@ Map {
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
 namespace facebook::react {
@@ -223,9 +196,6 @@ public:
   CommandNativeComponentState(CommandNativeComponentState const &previousState, folly::dynamic data){};
   folly::dynamic getDynamic() const {
     return {};
-  };
-  MapBuffer getMapBuffer() const {
-    return MapBufferBuilder::EMPTY();
   };
 #endif
 };
@@ -248,8 +218,6 @@ Map {
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
 namespace facebook::react {
@@ -262,9 +230,6 @@ public:
   DimensionPropNativeComponentState(DimensionPropNativeComponentState const &previousState, folly::dynamic data){};
   folly::dynamic getDynamic() const {
     return {};
-  };
-  MapBuffer getMapBuffer() const {
-    return MapBufferBuilder::EMPTY();
   };
 #endif
 };
@@ -287,8 +252,6 @@ Map {
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
 namespace facebook::react {
@@ -301,9 +264,6 @@ public:
   DoublePropNativeComponentState(DoublePropNativeComponentState const &previousState, folly::dynamic data){};
   folly::dynamic getDynamic() const {
     return {};
-  };
-  MapBuffer getMapBuffer() const {
-    return MapBufferBuilder::EMPTY();
   };
 #endif
 };
@@ -326,8 +286,6 @@ Map {
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
 namespace facebook::react {
@@ -340,9 +298,6 @@ public:
   EventsNestedObjectNativeComponentState(EventsNestedObjectNativeComponentState const &previousState, folly::dynamic data){};
   folly::dynamic getDynamic() const {
     return {};
-  };
-  MapBuffer getMapBuffer() const {
-    return MapBufferBuilder::EMPTY();
   };
 #endif
 };
@@ -365,8 +320,6 @@ Map {
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
 namespace facebook::react {
@@ -379,9 +332,6 @@ public:
   EventsNativeComponentState(EventsNativeComponentState const &previousState, folly::dynamic data){};
   folly::dynamic getDynamic() const {
     return {};
-  };
-  MapBuffer getMapBuffer() const {
-    return MapBufferBuilder::EMPTY();
   };
 #endif
 };
@@ -404,8 +354,6 @@ Map {
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
 namespace facebook::react {
@@ -430,8 +378,6 @@ Map {
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
 namespace facebook::react {
@@ -444,9 +390,6 @@ public:
   ExcludedAndroidComponentState(ExcludedAndroidComponentState const &previousState, folly::dynamic data){};
   folly::dynamic getDynamic() const {
     return {};
-  };
-  MapBuffer getMapBuffer() const {
-    return MapBufferBuilder::EMPTY();
   };
 #endif
 };
@@ -469,8 +412,6 @@ Map {
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
 namespace facebook::react {
@@ -483,9 +424,6 @@ public:
   ExcludedAndroidIosComponentState(ExcludedAndroidIosComponentState const &previousState, folly::dynamic data){};
   folly::dynamic getDynamic() const {
     return {};
-  };
-  MapBuffer getMapBuffer() const {
-    return MapBufferBuilder::EMPTY();
   };
 #endif
 };
@@ -508,8 +446,6 @@ Map {
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
 namespace facebook::react {
@@ -523,9 +459,6 @@ public:
   folly::dynamic getDynamic() const {
     return {};
   };
-  MapBuffer getMapBuffer() const {
-    return MapBufferBuilder::EMPTY();
-  };
 #endif
 };
 
@@ -537,9 +470,6 @@ public:
   MultiFileIncludedNativeComponentState(MultiFileIncludedNativeComponentState const &previousState, folly::dynamic data){};
   folly::dynamic getDynamic() const {
     return {};
-  };
-  MapBuffer getMapBuffer() const {
-    return MapBufferBuilder::EMPTY();
   };
 #endif
 };
@@ -562,8 +492,6 @@ Map {
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
 namespace facebook::react {
@@ -576,9 +504,6 @@ public:
   FloatPropNativeComponentState(FloatPropNativeComponentState const &previousState, folly::dynamic data){};
   folly::dynamic getDynamic() const {
     return {};
-  };
-  MapBuffer getMapBuffer() const {
-    return MapBufferBuilder::EMPTY();
   };
 #endif
 };
@@ -601,8 +526,6 @@ Map {
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
 namespace facebook::react {
@@ -615,9 +538,6 @@ public:
   ImagePropNativeComponentState(ImagePropNativeComponentState const &previousState, folly::dynamic data){};
   folly::dynamic getDynamic() const {
     return {};
-  };
-  MapBuffer getMapBuffer() const {
-    return MapBufferBuilder::EMPTY();
   };
 #endif
 };
@@ -640,8 +560,6 @@ Map {
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
 namespace facebook::react {
@@ -654,9 +572,6 @@ public:
   InsetsPropNativeComponentState(InsetsPropNativeComponentState const &previousState, folly::dynamic data){};
   folly::dynamic getDynamic() const {
     return {};
-  };
-  MapBuffer getMapBuffer() const {
-    return MapBufferBuilder::EMPTY();
   };
 #endif
 };
@@ -679,8 +594,6 @@ Map {
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
 namespace facebook::react {
@@ -693,9 +606,6 @@ public:
   Int32EnumPropsNativeComponentState(Int32EnumPropsNativeComponentState const &previousState, folly::dynamic data){};
   folly::dynamic getDynamic() const {
     return {};
-  };
-  MapBuffer getMapBuffer() const {
-    return MapBufferBuilder::EMPTY();
   };
 #endif
 };
@@ -718,8 +628,6 @@ Map {
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
 namespace facebook::react {
@@ -732,9 +640,6 @@ public:
   IntegerPropNativeComponentState(IntegerPropNativeComponentState const &previousState, folly::dynamic data){};
   folly::dynamic getDynamic() const {
     return {};
-  };
-  MapBuffer getMapBuffer() const {
-    return MapBufferBuilder::EMPTY();
   };
 #endif
 };
@@ -757,8 +662,6 @@ Map {
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
 namespace facebook::react {
@@ -783,8 +686,6 @@ Map {
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
 namespace facebook::react {
@@ -797,9 +698,6 @@ public:
   MixedPropNativeComponentState(MixedPropNativeComponentState const &previousState, folly::dynamic data){};
   folly::dynamic getDynamic() const {
     return {};
-  };
-  MapBuffer getMapBuffer() const {
-    return MapBufferBuilder::EMPTY();
   };
 #endif
 };
@@ -822,8 +720,6 @@ Map {
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
 namespace facebook::react {
@@ -836,9 +732,6 @@ public:
   ImageColorPropNativeComponentState(ImageColorPropNativeComponentState const &previousState, folly::dynamic data){};
   folly::dynamic getDynamic() const {
     return {};
-  };
-  MapBuffer getMapBuffer() const {
-    return MapBufferBuilder::EMPTY();
   };
 #endif
 };
@@ -861,8 +754,6 @@ Map {
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
 namespace facebook::react {
@@ -875,9 +766,6 @@ public:
   NoPropsNoEventsComponentState(NoPropsNoEventsComponentState const &previousState, folly::dynamic data){};
   folly::dynamic getDynamic() const {
     return {};
-  };
-  MapBuffer getMapBuffer() const {
-    return MapBufferBuilder::EMPTY();
   };
 #endif
 };
@@ -900,8 +788,6 @@ Map {
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
 namespace facebook::react {
@@ -914,9 +800,6 @@ public:
   ObjectPropsState(ObjectPropsState const &previousState, folly::dynamic data){};
   folly::dynamic getDynamic() const {
     return {};
-  };
-  MapBuffer getMapBuffer() const {
-    return MapBufferBuilder::EMPTY();
   };
 #endif
 };
@@ -939,8 +822,6 @@ Map {
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
 namespace facebook::react {
@@ -953,9 +834,6 @@ public:
   PointPropNativeComponentState(PointPropNativeComponentState const &previousState, folly::dynamic data){};
   folly::dynamic getDynamic() const {
     return {};
-  };
-  MapBuffer getMapBuffer() const {
-    return MapBufferBuilder::EMPTY();
   };
 #endif
 };
@@ -978,8 +856,6 @@ Map {
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
 namespace facebook::react {
@@ -992,9 +868,6 @@ public:
   StringEnumPropsNativeComponentState(StringEnumPropsNativeComponentState const &previousState, folly::dynamic data){};
   folly::dynamic getDynamic() const {
     return {};
-  };
-  MapBuffer getMapBuffer() const {
-    return MapBufferBuilder::EMPTY();
   };
 #endif
 };
@@ -1017,8 +890,6 @@ Map {
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
 namespace facebook::react {
@@ -1031,9 +902,6 @@ public:
   StringPropComponentState(StringPropComponentState const &previousState, folly::dynamic data){};
   folly::dynamic getDynamic() const {
     return {};
-  };
-  MapBuffer getMapBuffer() const {
-    return MapBufferBuilder::EMPTY();
   };
 #endif
 };
@@ -1056,8 +924,6 @@ Map {
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
 namespace facebook::react {
@@ -1071,9 +937,6 @@ public:
   folly::dynamic getDynamic() const {
     return {};
   };
-  MapBuffer getMapBuffer() const {
-    return MapBufferBuilder::EMPTY();
-  };
 #endif
 };
 
@@ -1085,9 +948,6 @@ public:
   MultiFile2NativeComponentState(MultiFile2NativeComponentState const &previousState, folly::dynamic data){};
   folly::dynamic getDynamic() const {
     return {};
-  };
-  MapBuffer getMapBuffer() const {
-    return MapBufferBuilder::EMPTY();
   };
 #endif
 };
@@ -1110,8 +970,6 @@ Map {
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
 namespace facebook::react {
@@ -1125,9 +983,6 @@ public:
   folly::dynamic getDynamic() const {
     return {};
   };
-  MapBuffer getMapBuffer() const {
-    return MapBufferBuilder::EMPTY();
-  };
 #endif
 };
 
@@ -1139,9 +994,6 @@ public:
   MultiComponent2NativeComponentState(MultiComponent2NativeComponentState const &previousState, folly::dynamic data){};
   folly::dynamic getDynamic() const {
     return {};
-  };
-  MapBuffer getMapBuffer() const {
-    return MapBufferBuilder::EMPTY();
   };
 #endif
 };

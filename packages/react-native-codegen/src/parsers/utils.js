@@ -203,6 +203,17 @@ function isModuleRegistryCall(node: $FlowFixMe): boolean {
   return true;
 }
 
+function getSortedObject<T>(unsortedObject: {[key: string]: T}): {
+  [key: string]: T,
+} {
+  return Object.keys(unsortedObject)
+    .sort()
+    .reduce((sortedObject: {[key: string]: T}, key: string) => {
+      sortedObject[key] = unsortedObject[key];
+      return sortedObject;
+    }, {});
+}
+
 module.exports = {
   getConfigType,
   extractNativeModuleName,
@@ -210,4 +221,5 @@ module.exports = {
   verifyPlatforms,
   visit,
   isModuleRegistryCall,
+  getSortedObject,
 };

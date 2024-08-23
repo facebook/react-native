@@ -14,7 +14,7 @@ import type {
   JsonVersionResponse,
 } from '../inspector-proxy/types';
 
-import {fetchJson} from './FetchUtils';
+import {fetchJson, fetchLocal} from './FetchUtils';
 import {createDeviceMock} from './InspectorDeviceUtils';
 import {withAbortSignalForEachTest} from './ResourceUtils';
 import {withServerForEachTest} from './ServerUtils';
@@ -172,7 +172,6 @@ describe('inspector proxy HTTP API', () => {
           app: 'bar-app',
           id: 'page1',
           title: 'bar-title',
-          vm: 'bar-vm',
         },
       ]);
 
@@ -188,7 +187,6 @@ describe('inspector proxy HTTP API', () => {
             description: 'bar-app',
             deviceName: 'foo',
             devtoolsFrontendUrl: expect.any(String),
-            faviconUrl: 'https://reactjs.org/favicon.ico',
             id: 'device1-page1',
             reactNative: {
               capabilities: {},
@@ -203,7 +201,6 @@ describe('inspector proxy HTTP API', () => {
             description: 'bar-app',
             deviceName: 'foo',
             devtoolsFrontendUrl: expect.any(String),
-            faviconUrl: 'https://reactjs.org/favicon.ico',
             id: 'device2-page1',
             reactNative: {
               capabilities: {},
@@ -211,7 +208,6 @@ describe('inspector proxy HTTP API', () => {
             },
             title: 'bar-title',
             type: 'node',
-            vm: 'bar-vm',
             webSocketDebuggerUrl: expect.any(String),
           },
         ]);
@@ -308,6 +304,68 @@ describe('inspector proxy HTTP API', () => {
           deviceHttps?.close();
         }
       });
+    });
+
+    test('handles Unicode data safely', async () => {
+      const device = await createDeviceMock(
+        `${serverRef.serverBaseWsUrl}/inspector/device?device=device1&name=foo&app=bar`,
+        autoCleanup.signal,
+      );
+      try {
+        device.getPages.mockImplementation(() => [
+          {
+            app: 'bar-app 📱',
+            id: 'page1 🛂',
+            title: 'bar-title 📰',
+            vm: 'bar-vm 🤖',
+          },
+        ]);
+
+        jest.advanceTimersByTime(PAGES_POLLING_DELAY);
+
+        const json = await fetchJson<JsonPagesListResponse>(
+          `${serverRef.serverBaseUrl}${endpoint}`,
+        );
+        expect(json).toEqual([
+          expect.objectContaining({
+            description: 'bar-app 📱',
+            deviceName: 'foo',
+            id: 'device1-page1 🛂',
+            title: 'bar-title 📰',
+            vm: 'bar-vm 🤖',
+          }),
+        ]);
+      } finally {
+        device.close();
+      }
+    });
+
+    test('includes a valid Content-Length header', async () => {
+      // NOTE: This test is needed because chrome://inspect's HTTP client is picky
+      // and doesn't accept responses without a Content-Length header.
+      const device = await createDeviceMock(
+        `${serverRef.serverBaseWsUrl}/inspector/device?device=device1&name=foo&app=bar`,
+        autoCleanup.signal,
+      );
+      try {
+        device.getPages.mockImplementation(() => [
+          {
+            app: 'bar-app',
+            id: 'page1',
+            title: 'bar-title',
+            vm: 'bar-vm',
+          },
+        ]);
+
+        jest.advanceTimersByTime(PAGES_POLLING_DELAY);
+
+        const response = await fetchLocal(
+          `${serverRef.serverBaseUrl}${endpoint}`,
+        );
+        expect(response.headers.get('Content-Length')).not.toBeNull();
+      } finally {
+        device.close();
+      }
     });
   });
 });

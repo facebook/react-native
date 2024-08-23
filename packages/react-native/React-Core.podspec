@@ -132,6 +132,8 @@ Pod::Spec.new do |s|
   s.dependency "Yoga"
   s.dependency "glog"
 
+  s.resource_bundles = {'React-Core_privacy' => 'React/Resources/PrivacyInfo.xcprivacy'}
+
   add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')
   add_dependency(s, "RCTDeprecation")
 

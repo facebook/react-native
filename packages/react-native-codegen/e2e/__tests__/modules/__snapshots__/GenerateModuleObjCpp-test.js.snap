@@ -17,6 +17,11 @@ exports[`GenerateModuleObjCpp can generate a header file NativeModule specs 1`] 
 #ifndef __cplusplus
 #error This file must be compiled as Obj-C++. If you are importing it, you must change your file extension to .mm.
 #endif
+
+// Avoid multiple includes of RNCodegenModuleFixtures symbols
+#ifndef RNCodegenModuleFixtures_H
+#define RNCodegenModuleFixtures_H
+
 #import <Foundation/Foundation.h>
 #import <RCTRequired/RCTRequired.h>
 #import <RCTTypeSafety/RCTConvertHelpers.h>
@@ -100,7 +105,7 @@ namespace JS {
       NSString *regular() const;
       NSString *str() const;
       double num() const;
-      double fraction() const;
+      NSString *lowerCase() const;
 
       StateTypeWithEnums(NSDictionary *const v) : _v(v) {}
     private:
@@ -117,11 +122,11 @@ namespace JS {
 - (NSString *)getStatusRegular:(JS::NativeEnumTurboModule::StateType &)statusProp;
 - (NSString *)getStatusStr:(JS::NativeEnumTurboModule::StateType &)statusProp;
 - (NSNumber *)getStatusNum:(JS::NativeEnumTurboModule::StateType &)statusProp;
-- (NSNumber *)getStatusFraction:(JS::NativeEnumTurboModule::StateType &)statusProp;
+- (NSString *)getStatusLowerCase:(JS::NativeEnumTurboModule::StateType &)statusProp;
 - (NSDictionary *)getStateType:(NSString *)a
                              b:(NSString *)b
                              c:(double)c
-                             d:(double)d;
+                             d:(NSString *)d;
 - (NSDictionary *)getStateTypeWithEnums:(JS::NativeEnumTurboModule::StateTypeWithEnums &)paramOfTypeWithEnums;
 
 @end
@@ -1050,10 +1055,10 @@ inline double JS::NativeEnumTurboModule::StateTypeWithEnums::num() const
   id const p = _v[@\\"num\\"];
   return RCTBridgingToDouble(p);
 }
-inline double JS::NativeEnumTurboModule::StateTypeWithEnums::fraction() const
+inline NSString *JS::NativeEnumTurboModule::StateTypeWithEnums::lowerCase() const
 {
-  id const p = _v[@\\"fraction\\"];
-  return RCTBridgingToDouble(p);
+  id const p = _v[@\\"lowerCase\\"];
+  return RCTBridgingToString(p);
 }
 
 
@@ -1341,6 +1346,7 @@ inline JS::NativeSampleTurboModuleOptional::Constants::Builder::Builder(Constant
   return i.unsafeRawValue();
 }) {}
 
+#endif // RNCodegenModuleFixtures_H
 "
 `;
 
@@ -1361,6 +1367,11 @@ exports[`GenerateModuleObjCpp can generate a header file NativeModule specs with
 #ifndef __cplusplus
 #error This file must be compiled as Obj-C++. If you are importing it, you must change your file extension to .mm.
 #endif
+
+// Avoid multiple includes of RNCodegenModuleFixtures symbols
+#ifndef RNCodegenModuleFixtures_H
+#define RNCodegenModuleFixtures_H
+
 #import <Foundation/Foundation.h>
 #import <RCTRequired/RCTRequired.h>
 #import <RCTTypeSafety/RCTConvertHelpers.h>
@@ -1446,7 +1457,7 @@ namespace JS {
       NSString *regular() const;
       NSString *str() const;
       double num() const;
-      double fraction() const;
+      NSString *lowerCase() const;
 
       StateTypeWithEnums(NSDictionary *const v) : _v(v) {}
     private:
@@ -1463,11 +1474,11 @@ namespace JS {
 - (NSString *)getStatusRegular:(JS::NativeEnumTurboModule::StateType &)statusProp;
 - (NSString *)getStatusStr:(JS::NativeEnumTurboModule::StateType &)statusProp;
 - (NSNumber *)getStatusNum:(JS::NativeEnumTurboModule::StateType &)statusProp;
-- (NSNumber *)getStatusFraction:(JS::NativeEnumTurboModule::StateType &)statusProp;
+- (NSString *)getStatusLowerCase:(JS::NativeEnumTurboModule::StateType &)statusProp;
 - (NSDictionary *)getStateType:(NSString *)a
                              b:(NSString *)b
                              c:(double)c
-                             d:(double)d;
+                             d:(NSString *)d;
 - (NSDictionary *)getStateTypeWithEnums:(JS::NativeEnumTurboModule::StateTypeWithEnums &)paramOfTypeWithEnums;
 
 @end
@@ -2396,10 +2407,10 @@ inline double JS::NativeEnumTurboModule::StateTypeWithEnums::num() const
   id const p = _v[@\\"num\\"];
   return RCTBridgingToDouble(p);
 }
-inline double JS::NativeEnumTurboModule::StateTypeWithEnums::fraction() const
+inline NSString *JS::NativeEnumTurboModule::StateTypeWithEnums::lowerCase() const
 {
-  id const p = _v[@\\"fraction\\"];
-  return RCTBridgingToDouble(p);
+  id const p = _v[@\\"lowerCase\\"];
+  return RCTBridgingToString(p);
 }
 
 
@@ -2688,6 +2699,7 @@ inline JS::NativeSampleTurboModuleOptional::Constants::Builder::Builder(Constant
 }) {}
 
 NS_ASSUME_NONNULL_END
+#endif // RNCodegenModuleFixtures_H
 "
 `;
 
@@ -2803,8 +2815,8 @@ namespace facebook::react {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, NumberKind, \\"getStatusNum\\", @selector(getStatusNum:), args, count);
     }
 
-    static facebook::jsi::Value __hostFunction_NativeEnumTurboModuleSpecJSI_getStatusFraction(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, NumberKind, \\"getStatusFraction\\", @selector(getStatusFraction:), args, count);
+    static facebook::jsi::Value __hostFunction_NativeEnumTurboModuleSpecJSI_getStatusLowerCase(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, StringKind, \\"getStatusLowerCase\\", @selector(getStatusLowerCase:), args, count);
     }
 
     static facebook::jsi::Value __hostFunction_NativeEnumTurboModuleSpecJSI_getStateType(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
@@ -2827,8 +2839,8 @@ namespace facebook::react {
         methodMap_[\\"getStatusNum\\"] = MethodMetadata {1, __hostFunction_NativeEnumTurboModuleSpecJSI_getStatusNum};
         setMethodArgConversionSelector(@\\"getStatusNum\\", 0, @\\"JS_NativeEnumTurboModule_StateType:\\");
         
-        methodMap_[\\"getStatusFraction\\"] = MethodMetadata {1, __hostFunction_NativeEnumTurboModuleSpecJSI_getStatusFraction};
-        setMethodArgConversionSelector(@\\"getStatusFraction\\", 0, @\\"JS_NativeEnumTurboModule_StateType:\\");
+        methodMap_[\\"getStatusLowerCase\\"] = MethodMetadata {1, __hostFunction_NativeEnumTurboModuleSpecJSI_getStatusLowerCase};
+        setMethodArgConversionSelector(@\\"getStatusLowerCase\\", 0, @\\"JS_NativeEnumTurboModule_StateType:\\");
         
         methodMap_[\\"getStateType\\"] = MethodMetadata {4, __hostFunction_NativeEnumTurboModuleSpecJSI_getStateType};
         

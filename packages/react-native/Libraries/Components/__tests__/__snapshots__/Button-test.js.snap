@@ -212,7 +212,7 @@ exports[`<Button /> should be disabled when disabled={true} and accessibilitySta
 
 exports[`<Button /> should be set importantForAccessibility={no-hide-descendants} when importantForAccessibility={no} 1`] = `
 <View
-  acceptsFirstMouse={true}
+  acceptsFirstMouse={false}
   accessibilityRole="button"
   accessibilityState={
     Object {
@@ -234,7 +234,7 @@ exports[`<Button /> should be set importantForAccessibility={no-hide-descendants
   accessible={true}
   collapsable={false}
   enableFocusRing={true}
-  focusable={true}
+  focusable={false}
   importantForAccessibility="no-hide-descendants"
   onClick={[Function]}
   onKeyDown={[Function]}
@@ -278,7 +278,7 @@ exports[`<Button /> should be set importantForAccessibility={no-hide-descendants
 
 exports[`<Button /> should be set importantForAccessibility={no-hide-descendants} when importantForAccessibility={no-hide-descendants} 1`] = `
 <View
-  acceptsFirstMouse={true}
+  acceptsFirstMouse={false}
   accessibilityRole="button"
   accessibilityState={
     Object {
@@ -300,7 +300,7 @@ exports[`<Button /> should be set importantForAccessibility={no-hide-descendants
   accessible={true}
   collapsable={false}
   enableFocusRing={true}
-  focusable={true}
+  focusable={false}
   importantForAccessibility="no-hide-descendants"
   onClick={[Function]}
   onKeyDown={[Function]}
@@ -344,7 +344,7 @@ exports[`<Button /> should be set importantForAccessibility={no-hide-descendants
 
 exports[`<Button /> should not be disabled when disabled={false} and accessibilityState={{disabled: false}} 1`] = `
 <View
-  acceptsFirstMouse={true}
+  acceptsFirstMouse={false}
   accessibilityRole="button"
   accessibilityState={
     Object {
@@ -366,7 +366,7 @@ exports[`<Button /> should not be disabled when disabled={false} and accessibili
   accessible={true}
   collapsable={false}
   enableFocusRing={true}
-  focusable={true}
+  focusable={false}
   onClick={[Function]}
   onKeyDown={[Function]}
   onKeyUp={[Function]}
@@ -410,7 +410,7 @@ exports[`<Button /> should not be disabled when disabled={false} and accessibili
 
 exports[`<Button /> should not be disabled when disabled={false} and accessibilityState={{disabled: true}} 1`] = `
 <View
-  acceptsFirstMouse={true}
+  acceptsFirstMouse={false}
   accessibilityRole="button"
   accessibilityState={
     Object {
@@ -432,7 +432,7 @@ exports[`<Button /> should not be disabled when disabled={false} and accessibili
   accessible={true}
   collapsable={false}
   enableFocusRing={true}
-  focusable={true}
+  focusable={false}
   onClick={[Function]}
   onKeyDown={[Function]}
   onKeyUp={[Function]}
@@ -546,7 +546,7 @@ exports[`<Button /> should overwrite accessibilityState with value of disabled p
 
 exports[`<Button /> should render as expected 1`] = `
 <View
-  acceptsFirstMouse={true}
+  acceptsFirstMouse={false}
   accessibilityRole="button"
   accessibilityState={
     Object {
@@ -568,7 +568,7 @@ exports[`<Button /> should render as expected 1`] = `
   accessible={true}
   collapsable={false}
   enableFocusRing={true}
-  focusable={true}
+  focusable={false}
   onClick={[Function]}
   onKeyDown={[Function]}
   onKeyUp={[Function]}

@@ -1,0 +1,25 @@
+name: prepare_ios_tests
+description: Prepare iOS Tests
+runs:
+  using: composite
+  steps:
+    - name: brew install xcbeautify
+      run: brew install xcbeautify
+      shell: bash
+    - name: Run Ruby Tests
+      shell: bash
+      run: |
+        cd packages/react-native/scripts
+        sh run_ruby_tests.sh
+    - name: Boot iPhone Simulator
+      shell: bash
+      run: source scripts/.tests.env && xcrun simctl boot "$IOS_DEVICE" || true
+    - name: "Brew: Tap wix/brew"
+      shell: bash
+      run: brew tap wix/brew
+    - name: brew install applesimutils watchman
+      shell: bash
+      run: brew install applesimutils watchman
+    - name: Configure Watchman
+      shell: bash
+      run: echo "{}" > .watchmanconfig

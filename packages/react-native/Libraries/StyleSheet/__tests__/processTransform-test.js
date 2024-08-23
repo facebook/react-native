@@ -34,6 +34,11 @@ describe('processTransform', () => {
       );
     });
 
+    it('should accept a percentage translate transform', () => {
+      processTransform([{translateY: '20%'}, {translateX: '10%'}]);
+      processTransform('translateX(10%)');
+    });
+
     it('should throw on object with multiple properties', () => {
       expect(() =>
         processTransform([{scale: 0.5, translateY: 10}]),

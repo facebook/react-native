@@ -41,7 +41,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy, nullable) RCTDirectEventBlock onChange;
 @property (nonatomic, copy, nullable) RCTDirectEventBlock onPaste; // [macOS]
 @property (nonatomic, copy, nullable) RCTDirectEventBlock onChangeSync;
-@property (nonatomic, copy, nullable) RCTDirectEventBlock onTextInput;
 @property (nonatomic, copy, nullable) RCTDirectEventBlock onScroll;
 #if TARGET_OS_OSX // [macOS
 @property (nonatomic, copy, nullable) RCTBubblingEventBlock onAutoCorrectChange;

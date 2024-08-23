@@ -10,14 +10,6 @@
  */
 
 /**
- * Represents a launched web browser instance.
- */
-export type LaunchedBrowser = {
-  kill: () => void | Promise<void>,
-  ...
-};
-
-/**
  * An interface for integrators to provide a custom implementation for
  * opening URLs in a web browser.
  */
@@ -27,5 +19,5 @@ export interface BrowserLauncher {
    * optionally returning an object to control the launched browser instance.
    * The browser used should be capable of running Chrome DevTools.
    */
-  launchDebuggerAppWindow: (url: string) => Promise<LaunchedBrowser | void>;
+  launchDebuggerAppWindow: (url: string) => Promise<void>;
 }

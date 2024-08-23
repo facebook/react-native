@@ -21,8 +21,8 @@ const DrawerLayoutAndroid = require('../DrawerLayoutAndroid.android');
 const React = require('react');
 
 describe('<DrawerLayoutAndroid />', () => {
-  it('should render as expected', () => {
-    ReactNativeTestTools.expectRendersMatchingSnapshot(
+  it('should render as expected', async () => {
+    await ReactNativeTestTools.expectRendersMatchingSnapshot(
       'DrawerLayoutAndroid',
       () => (
         <DrawerLayoutAndroid

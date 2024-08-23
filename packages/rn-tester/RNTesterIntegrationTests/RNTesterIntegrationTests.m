@@ -72,7 +72,9 @@ RCT_TEST(SimpleSnapshotTest)
 #endif // [macOS]
 RCT_TEST(SyncMethodTest)
 RCT_TEST(PromiseTest)
+#if !TARGET_OS_OSX // [macOS] Temporarily disable on macOS
 RCT_TEST_ONLY_WITH_PACKAGER(WebSocketTest) // Requires a WebSocket test server, see scripts/objc-test.sh
+#endif // [macOS]
 #if !TARGET_OS_OSX // [macOS] iOS specific
 RCT_TEST(AccessibilityManagerTest)
 #endif // [macOS]

@@ -22,7 +22,7 @@ class LegacyViewManagerInteropViewProps final : public ViewProps {
 
 #pragma mark - Props
 
-  folly::dynamic const otherProps;
+  const folly::dynamic otherProps;
 };
 
 } // namespace facebook::react

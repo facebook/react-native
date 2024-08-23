@@ -2,7 +2,7 @@
 
 exports[`TouchableHighlight renders correctly 1`] = `
 <View
-  acceptsFirstMouse={true}
+  acceptsFirstMouse={false}
   accessibilityValue={
     Object {
       "max": undefined,
@@ -99,7 +99,7 @@ exports[`TouchableHighlight with disabled state should be disabled when disabled
 
 exports[`TouchableHighlight with disabled state should disable button when accessibilityState is disabled 1`] = `
 <View
-  acceptsFirstMouse={true}
+  acceptsFirstMouse={false}
   accessibilityState={
     Object {
       "disabled": true,

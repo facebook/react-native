@@ -10,7 +10,7 @@ package com.facebook.react.modules.clipboard
 import android.annotation.SuppressLint
 import android.content.ClipboardManager
 import android.content.Context
-import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.bridge.BridgeReactContext
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -28,7 +28,7 @@ class ClipboardModuleTest {
 
   @Before
   fun setUp() {
-    clipboardModule = ClipboardModule(ReactApplicationContext(RuntimeEnvironment.getApplication()))
+    clipboardModule = ClipboardModule(BridgeReactContext(RuntimeEnvironment.getApplication()))
     clipboardManager =
         RuntimeEnvironment.getApplication().getSystemService(Context.CLIPBOARD_SERVICE)
             as ClipboardManager

@@ -24,7 +24,7 @@ NSString *NSStringFromUTF8StringView(std::string_view view)
 {
   return [[NSString alloc] initWithBytes:(const char *)view.data() length:view.size() encoding:NSUTF8StringEncoding];
 }
-}
+} // namespace
 @interface RCTCxxInspectorWebSocketAdapter () <SRWebSocketDelegate> {
   std::weak_ptr<IWebSocketDelegate> _delegate;
   SRWebSocket *_webSocket;

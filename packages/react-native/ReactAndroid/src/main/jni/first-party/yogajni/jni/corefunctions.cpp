@@ -12,9 +12,9 @@
 namespace facebook::yoga::vanillajni {
 
 namespace {
-JavaVM* globalVm = NULL;
+JavaVM* globalVm = nullptr;
 struct JavaVMInitializer {
-  JavaVMInitializer(JavaVM* vm) {
+  explicit JavaVMInitializer(JavaVM* vm) {
     if (!vm) {
       logErrorMessageAndDie(
           "You cannot pass a NULL JavaVM to ensureInitialized");
@@ -27,7 +27,7 @@ struct JavaVMInitializer {
 jint ensureInitialized(JNIEnv** env, JavaVM* vm) {
   static JavaVMInitializer init(vm);
 
-  if (!env) {
+  if (env == nullptr) {
     logErrorMessageAndDie(
         "Need to pass a valid JNIEnv pointer to vanillajni initialization "
         "routine");
@@ -43,7 +43,7 @@ jint ensureInitialized(JNIEnv** env, JavaVM* vm) {
 
 // TODO why we need JNIEXPORT for getCurrentEnv ?
 JNIEXPORT JNIEnv* getCurrentEnv() {
-  JNIEnv* env;
+  JNIEnv* env = nullptr;
   jint ret = globalVm->GetEnv((void**)&env, JNI_VERSION_1_6);
   if (ret != JNI_OK) {
     logErrorMessageAndDie(
@@ -68,7 +68,7 @@ void assertNoPendingJniException(JNIEnv* env) {
   }
 
   auto throwable = env->ExceptionOccurred();
-  if (!throwable) {
+  if (throwable == nullptr) {
     logErrorMessageAndDie("Unable to get pending JNI exception.");
   }
   env->ExceptionClear();

@@ -26,46 +26,6 @@ using RuntimeExecutor =
     std::function<void(std::function<void(jsi::Runtime& runtime)>&& callback)>;
 
 /*
- * The caller can expect that the callback will be executed sometime later on an
- * unspecified thread.
- * Use this method when the caller prefers to not be blocked by executing the
- * `callback`.
- * Note that this method does not provide any guarantees
- * about when the `callback` will be executed (before returning to the caller,
- * after that, or in parallel), the only thing that is guaranteed is that there
- * is no synchronization.
- */
-inline static void executeAsynchronously(
-    const RuntimeExecutor& runtimeExecutor,
-    std::function<void(jsi::Runtime& runtime)>&& callback) noexcept {
-  std::thread([callback = std::move(callback), runtimeExecutor]() mutable {
-    runtimeExecutor(std::move(callback));
-  }).detach();
-}
-
-/*
- * Executes a `callback` in a *synchronous* manner using given
- * `RuntimeExecutor`.
- * Use this method when the caller needs to *be blocked* by executing the
- * callback but does not concerned about the particular thread on which the
- * `callback` will be executed.
- */
-inline static void executeSynchronously_CAN_DEADLOCK(
-    const RuntimeExecutor& runtimeExecutor,
-    std::function<void(jsi::Runtime& runtime)>&& callback) noexcept {
-  std::mutex mutex;
-  mutex.lock();
-
-  runtimeExecutor(
-      [callback = std::move(callback), &mutex](jsi::Runtime& runtime) {
-        callback(runtime);
-        mutex.unlock();
-      });
-
-  mutex.lock();
-}
-
-/*
  * Executes a `callback` in a *synchronous* manner on the same thread using
  * given `RuntimeExecutor`.
  * Use this method when the caller needs to *be blocked* by executing the

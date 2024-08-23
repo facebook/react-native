@@ -30,8 +30,9 @@ void ImageResponseObserverCoordinator::addObserver(
       break;
     }
     case ImageResponse::Status::Failed: {
+      auto imageErrorData = imageErrorData_;
       mutex_.unlock();
-      observer.didReceiveFailure();
+      observer.didReceiveFailure(ImageLoadError{imageErrorData});
       break;
     }
   }
@@ -49,14 +50,16 @@ void ImageResponseObserverCoordinator::removeObserver(
 }
 
 void ImageResponseObserverCoordinator::nativeImageResponseProgress(
-    float progress) const {
+    float progress,
+    int64_t loaded,
+    int64_t total) const {
   mutex_.lock();
   auto observers = observers_;
   react_native_assert(status_ == ImageResponse::Status::Loading);
   mutex_.unlock();
 
   for (auto observer : observers) {
-    observer->didReceiveProgress(progress);
+    observer->didReceiveProgress(progress, loaded, total);
   }
 }
 
@@ -75,15 +78,17 @@ void ImageResponseObserverCoordinator::nativeImageResponseComplete(
   }
 }
 
-void ImageResponseObserverCoordinator::nativeImageResponseFailed() const {
+void ImageResponseObserverCoordinator::nativeImageResponseFailed(
+    const ImageLoadError& loadError) const {
   mutex_.lock();
   react_native_assert(status_ == ImageResponse::Status::Loading);
   status_ = ImageResponse::Status::Failed;
+  imageErrorData_ = loadError.getError();
   auto observers = observers_;
   mutex_.unlock();
 
   for (auto observer : observers) {
-    observer->didReceiveFailure();
+    observer->didReceiveFailure(loadError);
   }
 }
 

@@ -10,12 +10,6 @@
 #import <React/RCTViewManager.h>
 
 #if !TARGET_OS_OSX // [macOS]
-@interface RCTConvert (RCTModalHostView)
-
-+ (UIModalPresentationStyle)UIModalPresentationStyle:(id)json;
-
-@end
-
 typedef void (^RCTModalViewInteractionBlock)(
     UIViewController *reactViewController,
     UIViewController *viewController,

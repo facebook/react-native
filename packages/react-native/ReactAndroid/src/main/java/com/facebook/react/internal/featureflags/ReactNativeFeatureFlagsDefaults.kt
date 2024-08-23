@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<cc8e437bf2f486949f256a19d3d73a1e>>
+ * @generated SignedSource<<7c95ebf976344317cd8904d71ea22fe5>>
  */
 
 /**
@@ -25,21 +25,49 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun commonTestFlag(): Boolean = false
 
-  override fun enableBackgroundExecutor(): Boolean = false
+  override fun allowCollapsableChildren(): Boolean = true
 
-  override fun useModernRuntimeScheduler(): Boolean = false
-
-  override fun enableMicrotasks(): Boolean = false
+  override fun allowRecursiveCommitsWithSynchronousMountOnAndroid(): Boolean = false
 
   override fun batchRenderingUpdatesInEventLoop(): Boolean = false
 
-  override fun enableSpannableBuildingUnification(): Boolean = false
+  override fun destroyFabricSurfacesInReactInstanceManager(): Boolean = false
 
-  override fun enableCustomDrawOrderFabric(): Boolean = false
+  override fun enableBackgroundExecutor(): Boolean = false
 
-  override fun enableFixForClippedSubviewsCrash(): Boolean = false
+  override fun enableCleanTextInputYogaNode(): Boolean = false
 
-  override fun inspectorEnableCxxInspectorPackagerConnection(): Boolean = false
+  override fun enableGranularShadowTreeStateReconciliation(): Boolean = false
 
-  override fun inspectorEnableModernCDPRegistry(): Boolean = false
+  override fun enableMicrotasks(): Boolean = false
+
+  override fun enableSynchronousStateUpdates(): Boolean = false
+
+  override fun enableUIConsistency(): Boolean = false
+
+  override fun fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak(): Boolean = false
+
+  override fun forceBatchingMountItemsOnAndroid(): Boolean = false
+
+  override fun fuseboxEnabledDebug(): Boolean = false
+
+  override fun fuseboxEnabledRelease(): Boolean = false
+
+  override fun lazyAnimationCallbacks(): Boolean = false
+
+  override fun preventDoubleTextMeasure(): Boolean = true
+
+  override fun setAndroidLayoutDirection(): Boolean = false
+
+  override fun useImmediateExecutorInAndroidBridgeless(): Boolean = false
+
+  override fun useModernRuntimeScheduler(): Boolean = false
+
+  override fun useNativeViewConfigsInBridgelessMode(): Boolean = false
+
+  override fun useRuntimeShadowNodeReferenceUpdate(): Boolean = false
+
+  override fun useRuntimeShadowNodeReferenceUpdateOnLayout(): Boolean = false
+
+  override fun useStateAlignmentMechanism(): Boolean = false
 }

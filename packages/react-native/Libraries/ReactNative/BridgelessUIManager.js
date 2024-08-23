@@ -160,27 +160,7 @@ const UIManagerJSUnusedInNewArchAPIs = {
  * them from React Native.
  */
 const UIManagerJSDeprecatedPlatformAPIs = Platform.select({
-  android: {
-    // TODO(T175424986): Remove UIManager.showPopupMenu() in React Native v0.75.
-    showPopupMenu: (
-      reactTag: number,
-      items: Array<string>,
-      error: (error: Object) => void,
-      success: (event: string, selected?: number) => void,
-    ): void => {
-      raiseSoftError(
-        'showPopupMenu',
-        'Please use the <PopupMenuAndroid /> component instead.',
-      );
-    },
-    // TODO(T175424986): Remove UIManager.dismissPopupMenu() in React Native v0.75.
-    dismissPopupMenu: (): void => {
-      raiseSoftError(
-        'dismissPopupMenu',
-        'Please use the <PopupMenuAndroid /> component instead.',
-      );
-    },
-  },
+  android: {},
 });
 
 const UIManagerJSPlatformAPIs = Platform.select({

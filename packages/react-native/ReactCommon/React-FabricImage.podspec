@@ -38,7 +38,7 @@ if ENV['USE_FRAMEWORKS']
     "\"$(PODS_TARGET_SRCROOT)\"",
     "\"$(PODS_TARGET_SRCROOT)/react/renderer/textlayoutmanager/platform/ios\"",
     "\"$(PODS_TARGET_SRCROOT)/react/renderer/components/textinput/platform/ios\"",
-    # "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-Codegen/React_Codegen.framework/Headers\"",
+    # "\"$(PODS_CONFIGURATION_BUILD_DIR)/ReactCodegen/ReactCodegen.framework/Headers\"",
   ]
 end
 

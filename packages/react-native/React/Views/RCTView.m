@@ -1144,9 +1144,7 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x)
 
   RCTUpdateShadowPathForView(self);
 
-#if !TARGET_OS_OSX // [visionOS]
   RCTUpdateHoverStyleForView(self);
-#endif // [visionOS]
 
 #if TARGET_OS_OSX // [macOS
   // clipsToBounds is stubbed out on macOS because it's not part of NSView
@@ -1294,9 +1292,10 @@ static void RCTUpdateShadowPathForView(RCTView *view)
   }
 }
 
-#if !TARGET_OS_OSX // [visionOS
 static void RCTUpdateHoverStyleForView(RCTView *view)
 {
+#if !TARGET_OS_OSX // [macOS]
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 170000 /* __IPHONE_17_0 */
   if (@available(iOS 17.0, *)) {
     UIHoverStyle *hoverStyle = nil;
     if ([view cursor] == RCTCursorPointer) {
@@ -1318,8 +1317,9 @@ static void RCTUpdateHoverStyleForView(RCTView *view)
     }
     [view setHoverStyle:hoverStyle];
   }
+#endif
+#endif // [macOS]
 }
-#endif // visionOS]
 
 - (void)updateClippingForLayer:(CALayer *)layer
 {
@@ -1465,11 +1465,11 @@ setBorderColor() setBorderColor(Top) setBorderColor(Right) setBorderColor(Bottom
 	return [self focusable] || [super acceptsFirstResponder];
 }
 
-- (BOOL)mouseDownCanMoveWindow{
+- (BOOL)mouseDownCanMoveWindow {
 	return _mouseDownCanMoveWindow;
 }
 
-- (void)setMouseDownCanMoveWindow:(BOOL)mouseDownCanMoveWindow{
+- (void)setMouseDownCanMoveWindow:(BOOL)mouseDownCanMoveWindow {
 	_mouseDownCanMoveWindow = mouseDownCanMoveWindow;
 }
 

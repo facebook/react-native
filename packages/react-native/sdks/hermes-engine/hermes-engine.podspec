@@ -47,6 +47,7 @@ Pod::Spec.new do |spec|
       ss.source_files = "destroot/include/hermes/**/*.h"
       ss.header_mappings_dir = "destroot/include"
       ss.ios.vendored_frameworks = "destroot/Library/Frameworks/universal/hermes.xcframework"
+      ss.visionos.vendored_frameworks = "destroot/Library/Frameworks/universal/hermes.xcframework"
       ss.osx.vendored_frameworks = "destroot/Library/Frameworks/macosx/hermes.framework"
     end
 
@@ -80,6 +81,12 @@ Pod::Spec.new do |spec|
       ss.source_files = ''
       ss.public_header_files = 'API/hermes/*.h'
       ss.header_dir = 'hermes'
+    end
+
+    spec.subspec 'cdp' do |ss|
+      ss.source_files = ''
+      ss.public_header_files = 'API/hermes/cdp/*.h'
+      ss.header_dir = 'hermes/cdp'
     end
 
     spec.subspec 'inspector' do |ss|

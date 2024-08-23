@@ -25,7 +25,7 @@ typedef const struct YGNode* YGNodeConstRef;
 typedef struct YGConfig* YGConfigRef;
 
 /**
- * Handle to an immutable Yoga configruation.
+ * Handle to an immutable Yoga configuration.
  */
 typedef const struct YGConfig* YGConfigConstRef;
 
@@ -60,7 +60,7 @@ YG_EXPORT void YGConfigSetUseWebDefaults(YGConfigRef config, bool enabled);
 YG_EXPORT bool YGConfigGetUseWebDefaults(YGConfigConstRef config);
 
 /**
- * Yoga will by deafult round final layout positions and dimensions to the
+ * Yoga will by default round final layout positions and dimensions to the
  * nearst point. `pointScaleFactor` controls the density of the grid used for
  * layout rounding (e.g. to round to the closest display pixel).
  *
@@ -79,11 +79,11 @@ YG_EXPORT float YGConfigGetPointScaleFactor(YGConfigConstRef config);
  * Configures how Yoga balances W3C conformance vs compatibility with layouts
  * created against earlier versions of Yoga.
  *
- * By deafult Yoga will prioritize W3C conformance. `Errata` may be set to ask
+ * By default Yoga will prioritize W3C conformance. `Errata` may be set to ask
  * Yoga to produce specific incorrect behaviors. E.g. `YGConfigSetErrata(config,
  * YGErrataStretchFlexBasis)`.
  *
- * YGErrata is a bitmask, and multiple errata may be set at once. Predfined
+ * YGErrata is a bitmask, and multiple errata may be set at once. Predefined
  * constants exist for convenience:
  * 1. YGErrataNone: No errata
  * 2. YGErrataClassic: Match layout behaviors of Yoga 1.x

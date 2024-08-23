@@ -24,8 +24,4 @@ inline bool formsView(const ViewProps& viewProps) {
       viewProps.renderToHardwareTextureAndroid;
 }
 
-inline ShadowNodeTraits::Trait extraTraits() {
-  return ShadowNodeTraits::Trait::AndroidMapBufferPropsSupported;
-}
-
 } // namespace facebook::react::HostPlatformViewTraitsInitializer
