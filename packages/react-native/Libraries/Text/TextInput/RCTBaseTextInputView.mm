@@ -966,16 +966,8 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)decoder)
   NSMutableDictionary<NSAttributedStringKey, id> *textAttributes =
       [backedTextInputView.defaultTextAttributes mutableCopy] ?: [NSMutableDictionary new];
 
-  if (@available(iOS 13.0, *)) {
-    [textAttributes setValue:backedTextInputView.placeholderColor ?: [RCTUIColor placeholderTextColor]
-                      forKey:NSForegroundColorAttributeName];
-  } else {
-    if (backedTextInputView.placeholderColor) {
-      [textAttributes setValue:backedTextInputView.placeholderColor forKey:NSForegroundColorAttributeName];
-    } else {
-      [textAttributes removeObjectForKey:NSForegroundColorAttributeName];
-    }
-  }
+  [textAttributes setValue:backedTextInputView.placeholderColor ?: [RCTUIColor placeholderTextColor]
+                    forKey:NSForegroundColorAttributeName];
 
   return textAttributes;
 }

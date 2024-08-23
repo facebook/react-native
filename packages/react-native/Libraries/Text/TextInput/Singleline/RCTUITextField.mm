@@ -417,18 +417,8 @@
   NSMutableDictionary<NSAttributedStringKey, id> *textAttributes =
       [_defaultTextAttributes mutableCopy] ?: [NSMutableDictionary new];
 
-  // [macOS
-  if (@available(iOS 13.0, *)) {
     [textAttributes setValue:self.placeholderColor ?: [RCTUIColor placeholderTextColor]
-                      forKey:NSForegroundColorAttributeName];
-  } else {
-  // macOS]
-    if (self.placeholderColor) {
-      [textAttributes setValue:self.placeholderColor forKey:NSForegroundColorAttributeName];
-    } else {
-      [textAttributes removeObjectForKey:NSForegroundColorAttributeName];
-    }
-  }
+                      forKey:NSForegroundColorAttributeName]; // [macOS]
 
   return textAttributes;
 }

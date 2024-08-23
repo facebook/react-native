@@ -63,7 +63,7 @@ Follow the [Getting Started guide](https://reactnative.dev/docs/getting-started)
 
 ## Requirements
 
-You can run React Native for macOS apps on Mac devices with versions Catalina (10.15) or newer.
+You can run React Native for macOS apps on Mac devices with versions Big Sur (11) or newer.
 
 For a full and detailed list of the system requirements and how to set up your development platform, see our [System Requirements](https://microsoft.github.io/react-native-windows/docs/rnm-dependencies) documentation on our website.
 

@@ -20,11 +20,7 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
 // [macOS
 + (RCTUIColor *)defaultForegroundColor
 {
-  if (@available(iOS 13.0, *)) {
-    return [RCTUIColor labelColor];
-  } else {
-    return [RCTUIColor blackColor];
-  }
+  return [RCTUIColor labelColor];
 }
 // macOS]
 
@@ -141,7 +137,7 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
   }
 
   if (_lineBreakStrategy != NSLineBreakStrategyNone) {
-    if (@available(iOS 14.0, macOS 11.0, *)) { // [macOS]
+    if (@available(iOS 14.0, *)) {
       paragraphStyle.lineBreakStrategy = _lineBreakStrategy;
       isParagraphStyleUsed = YES;
     }

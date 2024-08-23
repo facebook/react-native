@@ -377,7 +377,7 @@ RCT_ENUM_CONVERTER(
 
 + (NSLineBreakStrategy)NSLineBreakStrategy:(id)json RCT_DYNAMIC
 {
-  if (@available(iOS 14.0, macOS 11.0, *)) { // [macOS]
+  if (@available(iOS 14.0, *)) {
     static NSDictionary *mapping;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{

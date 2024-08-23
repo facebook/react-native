@@ -4,7 +4,7 @@ require_relative '../node_modules/@react-native-community/cli-platform-ios/nativ
 prepare_react_native_project!
 
 target 'HelloWorld-macOS' do
-  platform :macos, '10.15'
+  platform :macos, '11.0'
   use_native_modules!
 
   # Flags change depending on the env values.

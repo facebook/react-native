@@ -886,11 +886,7 @@ BOOL RCTUIViewSetClipsToBounds(RCTPlatformView *view)
   
   switch (activityIndicatorViewStyle) {
     case UIActivityIndicatorViewStyleLarge:
-	  if (@available(macOS 11.0, *)) {
-		self.controlSize = NSControlSizeLarge;
-	  } else {
-		self.controlSize = NSControlSizeRegular;
-	  }
+      self.controlSize = NSControlSizeLarge;
       break;
     case UIActivityIndicatorViewStyleMedium:
       self.controlSize = NSControlSizeRegular;

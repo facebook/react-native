@@ -26,7 +26,7 @@ end
 
 # [macOS
 def min_macos_version_supported
-    return '10.15'
+    return '11.0'
 end
 # macOS]
 
@@ -524,7 +524,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
           'header_mappings_dir' => './',
           'platforms' => {
             :ios => '13.4',
-            'osx' => '10.15',
+            :osx => '11.0',
           },
           'source_files' => "**/*.{h,mm,cpp}",
           'pod_target_xcconfig' => {
