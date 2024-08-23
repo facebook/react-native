@@ -101,6 +101,11 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'When enabled, the renderer would only fail commits when they propagate state and the last commit that updated state changed before committing.',
     },
+    enableLayoutAnimationsOnIOS: {
+      defaultValue: true,
+      description:
+        'When enabled, LayoutAnimations API will animate state changes on iOS.',
+    },
     enableLongTaskAPI: {
       defaultValue: false,
       description:

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b458f14c06be2bc012cdff17a8203d78>>
+ * @generated SignedSource<<de2307f404cdcf679eb1258c9a12cf4b>>
  */
 
 /**
@@ -62,6 +62,8 @@ class NativeReactNativeFeatureFlags
   bool enableFabricRendererExclusively(jsi::Runtime& runtime);
 
   bool enableGranularShadowTreeStateReconciliation(jsi::Runtime& runtime);
+
+  bool enableLayoutAnimationsOnIOS(jsi::Runtime& runtime);
 
   bool enableLongTaskAPI(jsi::Runtime& runtime);
 

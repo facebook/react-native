@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<213f28bbe5ea5f66048ece938609e815>>
+ * @generated SignedSource<<37c55ee907c49bff0f6b3fe1d56dcfe6>>
  */
 
 /**
@@ -111,6 +111,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableGranularShadowTreeStateReconciliation(): Boolean = accessor.enableGranularShadowTreeStateReconciliation()
+
+  /**
+   * When enabled, LayoutAnimations API will animate state changes on iOS.
+   */
+  @JvmStatic
+  public fun enableLayoutAnimationsOnIOS(): Boolean = accessor.enableLayoutAnimationsOnIOS()
 
   /**
    * Enables the reporting of long tasks through `PerformanceObserver`. Only works if the event loop is enabled.

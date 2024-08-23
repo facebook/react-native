@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<fd8d47346a04e8f0da915d2f9fe53253>>
+ * @generated SignedSource<<d883bc5832598b7034aaedfe8606a9ff>>
  */
 
 /**
@@ -38,6 +38,7 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var enableFabricLogsCache: Boolean? = null
   private var enableFabricRendererExclusivelyCache: Boolean? = null
   private var enableGranularShadowTreeStateReconciliationCache: Boolean? = null
+  private var enableLayoutAnimationsOnIOSCache: Boolean? = null
   private var enableLongTaskAPICache: Boolean? = null
   private var enableMicrotasksCache: Boolean? = null
   private var enablePropsUpdateReconciliationAndroidCache: Boolean? = null
@@ -205,6 +206,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.enableGranularShadowTreeStateReconciliation()
       accessedFeatureFlags.add("enableGranularShadowTreeStateReconciliation")
       enableGranularShadowTreeStateReconciliationCache = cached
+    }
+    return cached
+  }
+
+  override fun enableLayoutAnimationsOnIOS(): Boolean {
+    var cached = enableLayoutAnimationsOnIOSCache
+    if (cached == null) {
+      cached = currentProvider.enableLayoutAnimationsOnIOS()
+      accessedFeatureFlags.add("enableLayoutAnimationsOnIOS")
+      enableLayoutAnimationsOnIOSCache = cached
     }
     return cached
   }
