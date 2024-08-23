@@ -13,6 +13,7 @@ import {GestureResponderHandlers} from '../../../types/public/ReactNativeRendere
 import {StyleProp} from '../../StyleSheet/StyleSheet';
 import {ViewStyle} from '../../StyleSheet/StyleSheetTypes';
 import {
+  HandledKeyEvent,
   KeyEvent,
   LayoutChangeEvent,
   MouseEvent,
@@ -178,8 +179,11 @@ export interface ViewPropsMacOS {
   onDrop?: ((event: MouseEvent) => void) | undefined;
   onKeyDown?: ((event: KeyEvent) => void) | undefined;
   onKeyUp?: ((event: KeyEvent) => void) | undefined;
-  validKeysDown?: string[] | undefined;
-  validKeysUp?: string[] | undefined;
+  validKeysDown?: Array<HandledKeyEvent | string> | undefined;
+  validKeysUp?: Array<HandledKeyEvent | string> | undefined;
+  passthroughAllKeyEvents?: boolean | undefined;
+  keyDownEvents?: Array<HandledKeyEvent> | undefined;
+  keyUpEvents?: Array<HandledKeyEvent> | undefined;
   draggedTypes?: DraggedTypesType | undefined;
 }
 

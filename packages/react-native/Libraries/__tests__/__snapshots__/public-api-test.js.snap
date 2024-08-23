@@ -1710,6 +1710,9 @@ exports[`public API should not change unintentionally Libraries/Components/Butto
   onKeyUp?: ?(e: KeyEvent) => void,
   validKeysDown?: ?Array<string>,
   validKeysUp?: ?Array<string>,
+  passthroughAllKeyEvents?: ?boolean,
+  keyDownEvents?: ?Array<HandledKeyEvent>,
+  keyUpEvents?: ?Array<HandledKeyEvent>,
   tooltip?: string,
   accessible?: ?boolean,
   accessibilityActions?: ?$ReadOnlyArray<AccessibilityActionInfo>,
@@ -1901,9 +1904,11 @@ type Props = $ReadOnly<{|
   onBlur?: ?(event: BlurEvent) => void,
   onKeyDown?: ?(event: KeyEvent) => void,
   onKeyUp?: ?(event: KeyEvent) => void,
+  validKeysDown?: ?Array<string | HandledKeyEvent>,
+  validKeysUp?: ?Array<string | HandledKeyEvent>,
   passthroughAllKeyEvents?: ?boolean,
-  validKeysDown?: ?Array<string | HandledKeyboardEvent>,
-  validKeysUp?: ?Array<string | HandledKeyboardEvent>,
+  keyDownEvents?: ?Array<HandledKeyEvent>,
+  keyUpEvents?: ?Array<HandledKeyEvent>,
   acceptsFirstMouse?: ?boolean,
   mouseDownCanMoveWindow?: ?boolean,
   enableFocusRing?: ?boolean,
@@ -3569,8 +3574,6 @@ type Props = $ReadOnly<{|
   activeOpacity?: ?number,
   style?: ?ViewStyleProp,
   hostRef?: ?React.Ref<typeof Animated.View>,
-  validKeysDown?: ?Array<string>,
-  validKeysUp?: ?Array<string>,
 |}>;
 declare const Touchable: React.AbstractComponent<
   Props,
@@ -3636,9 +3639,11 @@ exports[`public API should not change unintentionally Libraries/Components/View/
   onDrop: true,
   onKeyDown: true,
   onKeyUp: true,
-  passthroughAllKeyEvents: true,
   validKeysDown: true,
   validKeysUp: true,
+  passthroughAllKeyEvents: true,
+  keyDownEvents: true,
+  keyUpEvents: true,
   draggedTypes: true,
 };
 declare const RCTView: { ...UIView, removeClippedSubviews: true };
@@ -3823,19 +3828,14 @@ type DirectEventProps = $ReadOnly<{|
   onMagicTap?: ?() => mixed,
   onAccessibilityEscape?: ?() => mixed,
 |}>;
-export type HandledKeyboardEvent = $ReadOnly<{|
-  altKey?: ?boolean,
-  ctrlKey?: ?boolean,
-  metaKey?: ?boolean,
-  shiftKey?: ?boolean,
-  key: string,
-|}>;
 export type KeyboardEventProps = $ReadOnly<{|
   onKeyDown?: ?(event: KeyEvent) => void,
   onKeyUp?: ?(event: KeyEvent) => void,
+  validKeysDown?: ?Array<string | HandledKeyEvent>,
+  validKeysUp?: ?Array<string | HandledKeyEvent>,
   passthroughAllKeyEvents?: ?boolean,
-  validKeysDown?: ?Array<string | HandledKeyboardEvent>,
-  validKeysUp?: ?Array<string | HandledKeyboardEvent>,
+  keyDownEvents?: ?Array<HandledKeyEvent>,
+  keyUpEvents?: ?Array<HandledKeyEvent>,
 |}>;
 type MouseEventProps = $ReadOnly<{|
   onMouseEnter?: ?(event: MouseEvent) => void,
@@ -6443,8 +6443,6 @@ exports[`public API should not change unintentionally Libraries/Pressability/Pre
   onFocus?: ?(event: FocusEvent) => void,
   onKeyDown?: ?(event: KeyEvent) => void,
   onKeyUp?: ?(event: KeyEvent) => void,
-  validKeysDown?: ?Array<string>,
-  validKeysUp?: ?Array<string>,
   onHoverIn?: ?(event: MouseEvent) => mixed,
   onHoverOut?: ?(event: MouseEvent) => mixed,
   onLongPress?: ?(event: PressEvent) => mixed,
@@ -8534,6 +8532,13 @@ export type KeyEvent = SyntheticEvent<
     key: string,
   |}>,
 >;
+export type HandledKeyEvent = $ReadOnly<{|
+  altKey?: ?boolean,
+  ctrlKey?: ?boolean,
+  metaKey?: ?boolean,
+  shiftKey?: ?boolean,
+  key: string,
+|}>;
 export type MouseEvent = SyntheticEvent<
   $ReadOnly<{|
     clientX: number,

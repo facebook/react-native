@@ -38,20 +38,6 @@ type Props = $ReadOnly<{|
   style?: ?ViewStyleProp,
 
   hostRef?: ?React.Ref<typeof Animated.View>,
-
-  // [macOS
-  /*
-   * Array of keys to receive key down events for
-   * For arrow keys, add "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown",
-   */
-  validKeysDown?: ?Array<string>,
-
-  /*
-   * Array of keys to receive key up events for
-   * For arrow keys, add "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown",
-   */
-  validKeysUp?: ?Array<string>,
-  // macOS]
 |}>;
 
 type State = $ReadOnly<{|
@@ -178,18 +164,6 @@ class TouchableOpacity extends React.Component<Props, State> {
           this.props.onFocus(event);
         }
       },
-      onKeyDown: event => {
-        if (this.props.onKeyDown != null) {
-          this.props.onKeyDown(event);
-        }
-      },
-      onKeyUp: event => {
-        if (this.props.onKeyUp != null) {
-          this.props.onKeyUp(event);
-        }
-      },
-      validKeysDown: this.props.validKeysDown,
-      validKeysUp: this.props.validKeysUp,
       onLongPress: this.props.onLongPress,
       onPress: this.props.onPress,
       onPressIn: event => {

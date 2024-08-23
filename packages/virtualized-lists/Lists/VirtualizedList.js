@@ -1286,27 +1286,20 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       this.props.onPreferredScrollerStyleDidChange;
     const invertedDidChange = this.props.onInvertedDidChange;
 
-    const isFirstRowSelected =
-      this.state.selectedRowIndex === this.state.cellsAroundViewport.first;
-    const isLastRowSelected =
-      this.state.selectedRowIndex === this.state.cellsAroundViewport.last;
-
-    // Don't pass in ArrowUp/ArrowDown at the top/bottom of the list so that keyboard event can bubble
-    let _validKeysDown = ['Home', 'End'];
-    if (!isFirstRowSelected) {
-      _validKeysDown.push('ArrowUp');
-    }
-    if (!isLastRowSelected) {
-      _validKeysDown.push('ArrowDown');
-    }
+    let keyDownEvents = [
+      {key: 'ArrowUp'},
+      {key: 'ArrowDown'},
+      {key: 'Home'},
+      {key: 'End'},
+    ];
 
     const keyboardNavigationProps = {
       focusable: true,
-      validKeysDown: _validKeysDown,
+      keyDownEvents: keyDownEvents,
       onKeyDown: this._handleKeyDown,
     };
-
     // macOS]
+
     const onRefresh = props.onRefresh;
     if (this._isNestedWithSameOrientation()) {
       // Prevent VirtualizedList._onContentSizeChange from being triggered by a bubbling onContentSizeChange event.

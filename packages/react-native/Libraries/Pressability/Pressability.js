@@ -98,6 +98,7 @@ export type PressabilityConfig = $ReadOnly<{|
    */
   onFocus?: ?(event: FocusEvent) => void,
 
+  // [macOS
   /*
    * Called after a key down event is detected.
    */
@@ -107,18 +108,7 @@ export type PressabilityConfig = $ReadOnly<{|
    * Called after a key up event is detected.
    */
   onKeyUp?: ?(event: KeyEvent) => void,
-
-  /*
-   * Array of keys to receive key down events for
-   * For arrow keys, add "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown",
-   */
-  validKeysDown?: ?Array<string>,
-
-  /*
-   * Array of keys to receive key up events for
-   * For arrow keys, add "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown",
-   */
-  validKeysUp?: ?Array<string>,
+  // macOS]
 
   /**
    * Called when the hover is activated to provide visual feedback.

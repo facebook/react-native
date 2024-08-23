@@ -16,6 +16,7 @@ import type {
   BlurEvent,
   FocusEvent,
   // [macOS]
+  HandledKeyEvent,
   KeyEvent,
   Layout,
   LayoutEvent,
@@ -99,26 +100,6 @@ type DirectEventProps = $ReadOnly<{|
   onAccessibilityEscape?: ?() => mixed,
 |}>;
 
-// [macOS
-/**
- * Represents a key that could be passed to `validKeysDown` and `validKeysUp`.
- *
- * `key` is the actual key, such as "a", or one of the special values:
- * "Tab", "Escape", "Enter", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown",
- * "Backspace", "Delete", "Home", "End", "PageUp", "PageDown".
- *
- * The rest are modifiers that when absent mean false.
- *
- * @platform macos
- */
-export type HandledKeyboardEvent = $ReadOnly<{|
-  altKey?: ?boolean,
-  ctrlKey?: ?boolean,
-  metaKey?: ?boolean,
-  shiftKey?: ?boolean,
-  key: string,
-|}>;
-
 export type KeyboardEventProps = $ReadOnly<{|
   /**
    * Called after a key down event is detected.
@@ -131,6 +112,21 @@ export type KeyboardEventProps = $ReadOnly<{|
   onKeyUp?: ?(event: KeyEvent) => void,
 
   /**
+   * Array of keys to receive key down events for. These events have their default native behavior prevented.
+   *
+   * @platform macos
+   */
+  validKeysDown?: ?Array<string | HandledKeyEvent>,
+
+  /**
+   * Array of keys to receive key up events for. These events have their default native behavior prevented.
+   *
+   * @platform macos
+   */
+  validKeysUp?: ?Array<string | HandledKeyEvent>,
+
+  /**
+   * @deprecated use `keyDownEvents` or `keyUpEvents` instead
    * When `true`, allows `onKeyDown` and `onKeyUp` to receive events not specified in
    * `validKeysDown` and `validKeysUp`, respectively. Events matching `validKeysDown` and `validKeysUp`
    * are still removed from the event queue, but the others are not.
@@ -141,17 +137,19 @@ export type KeyboardEventProps = $ReadOnly<{|
 
   /**
    * Array of keys to receive key down events for. These events have their default native behavior prevented.
+   * Overrides the props `validKeysDown`, `validKeysUp` and `passthroughAllKeyEvents`
    *
    * @platform macos
    */
-  validKeysDown?: ?Array<string | HandledKeyboardEvent>,
+  keyDownEvents?: ?Array<HandledKeyEvent>,
 
   /**
    * Array of keys to receive key up events for. These events have their default native behavior prevented.
+   * Overrides the props `validKeysDown`, `validKeysUp` and `passthroughAllKeyEvents`
    *
    * @platform macos
    */
-  validKeysUp?: ?Array<string | HandledKeyboardEvent>,
+  keyUpEvents?: ?Array<HandledKeyEvent>,
 |}>;
 // macOS]
 

@@ -284,6 +284,25 @@ export interface NativeKeyEvent {
   key: string;
 }
 
+/**
+ * Represents a key that could be passed to `validKeysDown` and `validKeysUp`.
+ *
+ * `key` is the actual key, such as "a", or one of the special values:
+ * "Tab", "Escape", "Enter", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown",
+ * "Backspace", "Delete", "Home", "End", "PageUp", "PageDown".
+ *
+ * The rest are modifiers that when absent mean false.
+ *
+ * @platform macos
+ */
+export type HandledKeyEvent = {
+  altKey?: boolean | undefined;
+  ctrlKey?: boolean | undefined;
+  metaKey?: boolean | undefined;
+  shiftKey?: boolean | undefined;
+  key: string;
+};
+
 export interface KeyEvent extends NativeSyntheticEvent<NativeKeyEvent> {}
 
 export interface NativeFocusEvent extends TargetedEvent {}

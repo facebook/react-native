@@ -12,7 +12,12 @@
 
 import type {TextStyleProp, ViewStyleProp} from '../StyleSheet/StyleSheet';
 import type {PressEvent} from '../Types/CoreEventTypes';
-import type {BlurEvent, FocusEvent, KeyEvent} from '../Types/CoreEventTypes'; // [macOS]
+import type {
+  BlurEvent,
+  FocusEvent,
+  HandledKeyEvent,
+  KeyEvent,
+} from '../Types/CoreEventTypes'; // [macOS]
 import type {
   AccessibilityActionEvent,
   AccessibilityActionInfo,
@@ -177,16 +182,44 @@ type ButtonProps = $ReadOnly<{|
   onKeyUp?: ?(e: KeyEvent) => void,
 
   /*
+   * @deprecated use `keyDownEvents` or `keyUpEvents` instead
    * Array of keys to receive key down events for
    * For arrow keys, add "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown",
    */
   validKeysDown?: ?Array<string>,
 
   /*
+   * @deprecated use `keyDownEvents` or `keyUpEvents` instead
    * Array of keys to receive key up events for
    * For arrow keys, add "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown",
    */
   validKeysUp?: ?Array<string>,
+
+  /**
+   * @deprecated use `keyDownEvents` or `keyUpEvents` instead
+   * When `true`, allows `onKeyDown` and `onKeyUp` to receive events not specified in
+   * `validKeysDown` and `validKeysUp`, respectively. Events matching `validKeysDown` and `validKeysUp`
+   * are still removed from the event queue, but the others are not.
+   *
+   * @platform macos
+   */
+  passthroughAllKeyEvents?: ?boolean,
+
+  /**
+   * Array of keys to receive key down events for. These events have their default native behavior prevented.
+   * Overrides the props `validKeysDown`, `validKeysUp` and `passthroughAllKeyEvents`
+   *
+   * @platform macos
+   */
+  keyDownEvents?: ?Array<HandledKeyEvent>,
+
+  /**
+   * Array of keys to receive key up events for. These events have their default native behavior prevented.
+   * Overrides the props `validKeysDown`, `validKeysUp` and `passthroughAllKeyEvents`
+   *
+   * @platform macos
+   */
+  keyUpEvents?: ?Array<HandledKeyEvent>,
 
   /*
    * Specifies the Tooltip for the view
@@ -365,8 +398,6 @@ const Button: React.AbstractComponent<ButtonProps> = (props: ButtonProps) => {
     onBlur,
     onKeyDown,
     onKeyUp,
-    validKeysDown,
-    validKeysUp,
     tooltip,
     // macOS]
   } = props;
@@ -441,10 +472,6 @@ const Button: React.AbstractComponent<ButtonProps> = (props: ButtonProps) => {
       // [macOS
       onFocus={onFocus}
       onBlur={onBlur}
-      onKeyDown={onKeyDown}
-      onKeyUp={onKeyUp}
-      validKeysDown={validKeysDown}
-      validKeysUp={validKeysUp}
       tooltip={tooltip}
       // macOS]
       touchSoundDisabled={touchSoundDisabled}>

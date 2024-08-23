@@ -308,6 +308,26 @@ export type KeyEvent = SyntheticEvent<
     key: string,
   |}>,
 >;
+
+/**
+ * Represents a key that could be passed to `validKeysDown` and `validKeysUp`.
+ *
+ * `key` is the actual key, such as "a", or one of the special values:
+ * "Tab", "Escape", "Enter", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown",
+ * "Backspace", "Delete", "Home", "End", "PageUp", "PageDown".
+ *
+ * The rest are modifiers that when absent mean false.
+ *
+ * @platform macos
+ */
+export type HandledKeyEvent = $ReadOnly<{|
+  altKey?: ?boolean,
+  ctrlKey?: ?boolean,
+  metaKey?: ?boolean,
+  shiftKey?: ?boolean,
+  key: string,
+|}>;
+
 // macOS]
 
 export type MouseEvent = SyntheticEvent<
