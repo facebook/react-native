@@ -803,8 +803,8 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x)
   const UIEdgeInsets borderInsets = [self bordersAsInsets];
   const RCTBorderColors borderColors = [self borderColorsWithTraitCollection:self.traitCollection];
 
-  BOOL useIOSBorderRendering = RCTCornerRadiiAreEqual(cornerRadii) && RCTBorderInsetsAreEqual(borderInsets) &&
-      RCTBorderColorsAreEqual(borderColors) &&
+  BOOL useIOSBorderRendering = RCTCornerRadiiAreEqualAndSymmetrical(cornerRadii) &&
+      RCTBorderInsetsAreEqual(borderInsets) && RCTBorderColorsAreEqual(borderColors) &&
 
       // iOS draws borders in front of the content whereas CSS draws them behind
       // the content. For this reason, only use iOS border drawing when clipping
@@ -821,7 +821,7 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x)
   backgroundColor = [_backgroundColor resolvedColorWithTraitCollection:self.traitCollection].CGColor;
 
   if (useIOSBorderRendering) {
-    layer.cornerRadius = cornerRadii.topLeft;
+    layer.cornerRadius = cornerRadii.topLeftHorizontal;
     layer.borderColor = borderColors.left;
     layer.borderWidth = borderInsets.left;
     layer.backgroundColor = backgroundColor;
@@ -928,8 +928,8 @@ static void RCTUpdateHoverStyleForView(RCTView *view)
 
   if (self.clipsToBounds) {
     const RCTCornerRadii cornerRadii = [self cornerRadii];
-    if (RCTCornerRadiiAreEqual(cornerRadii)) {
-      cornerRadius = cornerRadii.topLeft;
+    if (RCTCornerRadiiAreEqualAndSymmetrical(cornerRadii)) {
+      cornerRadius = cornerRadii.topLeftHorizontal;
 
     } else {
       CAShapeLayer *shapeLayer = [CAShapeLayer layer];
