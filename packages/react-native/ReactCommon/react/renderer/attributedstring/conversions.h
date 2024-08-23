@@ -596,7 +596,7 @@ inline void fromRawValue(
   react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
-    if (string == "wordWrapping") {
+    if (string == "word") {
       result = LineBreakMode::Word;
     } else if (string == "char") {
       result = LineBreakMode::Char;
