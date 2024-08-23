@@ -112,7 +112,7 @@
     "signedsource": "^1.0.0",
     "supports-color": "^7.1.0",
     "typescript": "5.0.4",
-    "ws": "^6.2.2"
+    "ws": "^6.2.3"
   },
   "beachball": {
     "shouldPublish": false

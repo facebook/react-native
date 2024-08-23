@@ -133,7 +133,7 @@
     "scheduler": "0.24.0-canary-efb381bbf-20230505",
     "stacktrace-parser": "^0.1.10",
     "whatwg-fetch": "^3.0.0",
-    "ws": "^6.2.2",
+    "ws": "^6.2.3",
     "yargs": "^17.6.2"
   },
   "beachball": {
