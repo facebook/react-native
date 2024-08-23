@@ -39,6 +39,8 @@ using namespace facebook::react;
   BOOL _removeClippedSubviews;
   NSMutableArray<UIView *> *_reactSubviews;
   NSSet<NSString *> *_Nullable _propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN;
+  UIView *_containerView;
+  BOOL _useCustomContainerView;
 }
 
 #ifdef RCT_DYNAMIC_FRAMEWORKS
@@ -54,6 +56,7 @@ using namespace facebook::react;
     _props = ViewShadowNode::defaultSharedProps();
     _reactSubviews = [NSMutableArray new];
     self.multipleTouchEnabled = YES;
+    _useCustomContainerView = NO;
   }
   return self;
 }
@@ -72,7 +75,7 @@ using namespace facebook::react;
   _contentView = contentView;
 
   if (_contentView) {
-    [self addSubview:_contentView];
+    [self.currentContainerView addSubview:_contentView];
     _contentView.frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
   }
 }
@@ -129,7 +132,7 @@ using namespace facebook::react;
   if (_removeClippedSubviews) {
     [_reactSubviews insertObject:childComponentView atIndex:index];
   } else {
-    [self insertSubview:childComponentView atIndex:index];
+    [self.currentContainerView insertSubview:childComponentView atIndex:index];
   }
 }
 
@@ -139,19 +142,20 @@ using namespace facebook::react;
     [_reactSubviews removeObjectAtIndex:index];
   } else {
     RCTAssert(
-        childComponentView.superview == self,
+        childComponentView.superview == self.currentContainerView,
         @"Attempt to unmount a view which is mounted inside different view. (parent: %@, child: %@, index: %@)",
         self,
         childComponentView,
         @(index));
     RCTAssert(
-        (self.subviews.count > index) && [self.subviews objectAtIndex:index] == childComponentView,
+        (self.currentContainerView.subviews.count > index) &&
+            [self.currentContainerView.subviews objectAtIndex:index] == childComponentView,
         @"Attempt to unmount a view which has a different index. (parent: %@, child: %@, index: %@, actual index: %@, tag at index: %@)",
         self,
         childComponentView,
         @(index),
-        @([self.subviews indexOfObject:childComponentView]),
-        @([[self.subviews objectAtIndex:index] tag]));
+        @([self.currentContainerView.subviews indexOfObject:childComponentView]),
+        @([[self.currentContainerView.subviews objectAtIndex:index] tag]));
   }
 
   [childComponentView removeFromSuperview];
@@ -181,7 +185,7 @@ using namespace facebook::react;
   for (UIView *view in _reactSubviews) {
     if (CGRectIntersectsRect(clipRect, view.frame)) {
       // View is at least partially visible, so remount it if unmounted
-      [self addSubview:view];
+      [self.currentContainerView addSubview:view];
       // View is visible, update clipped subviews
       [view updateClippedSubviewsWithClipRect:clipRect relativeToView:self];
     } else if (view.superview) {
@@ -220,8 +224,8 @@ using namespace facebook::react;
 
   if (oldViewProps.removeClippedSubviews != newViewProps.removeClippedSubviews) {
     _removeClippedSubviews = newViewProps.removeClippedSubviews;
-    if (_removeClippedSubviews && self.subviews.count > 0) {
-      _reactSubviews = [NSMutableArray arrayWithArray:self.subviews];
+    if (_removeClippedSubviews && self.currentContainerView.subviews.count > 0) {
+      _reactSubviews = [NSMutableArray arrayWithArray:self.currentContainerView.subviews];
     }
   }
 
@@ -516,6 +520,10 @@ using namespace facebook::react;
     _contentView.frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
   }
 
+  if (_containerView) {
+    _containerView.frame = CGRectMake(0, 0, self.layer.bounds.size.width, self.layer.bounds.size.height);
+  }
+
   if ((_props->transformOrigin.isSet() || _props->transform.operations.size() > 0) &&
       layoutMetrics.frame.size != oldLayoutMetrics.frame.size) {
     auto newTransform = _props->resolveTransform(layoutMetrics);
@@ -536,6 +544,7 @@ using namespace facebook::react;
 - (void)finalizeUpdates:(RNComponentViewUpdateMask)updateMask
 {
   [super finalizeUpdates:updateMask];
+  _useCustomContainerView = [self styleWouldClipOverflowInk];
   if (!_needsInvalidateLayer) {
     return;
   }
@@ -561,6 +570,7 @@ using namespace facebook::react;
   _eventEmitter.reset();
   _isJSResponder = NO;
   _removeClippedSubviews = NO;
+  _useCustomContainerView = NO;
   _reactSubviews = [NSMutableArray new];
 }
 
@@ -672,6 +682,41 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
       return RCTBorderStyleDotted;
     case BorderStyle::Dashed:
       return RCTBorderStyleDashed;
+  }
+}
+
+- (BOOL)styleWouldClipOverflowInk
+{
+  const auto borderMetrics = _props->resolveBorderMetrics(_layoutMetrics);
+  BOOL nonZeroBorderWidth = !(borderMetrics.borderWidths.isUniform() && borderMetrics.borderWidths.left == 0);
+  return _props->getClipsContentToBounds() && (!_props->boxShadow.empty() || nonZeroBorderWidth);
+}
+
+// This UIView is the UIView that holds all subviews. It is sometimes not self
+// because we want to render "overflow ink" that extends beyond the bounds of
+// the view and is not affected by clipping.
+- (UIView *)currentContainerView
+{
+  if (_useCustomContainerView) {
+    if (!_containerView) {
+      _containerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
+      for (UIView *subview in self.subviews) {
+        [_containerView addSubview:subview];
+      }
+      [self addSubview:_containerView];
+    }
+
+    return _containerView;
+  } else {
+    if (_containerView) {
+      for (UIView *subview in _containerView.subviews) {
+        [self addSubview:subview];
+      }
+      [_containerView removeFromSuperview];
+      _containerView = nil;
+    }
+
+    return self;
   }
 }
 
@@ -825,7 +870,7 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     layer.cornerRadius = cornerRadius;
     layer.mask = maskLayer;
 
-    for (UIView *subview in self.subviews) {
+    for (UIView *subview in self.currentContainerView.subviews) {
       if ([subview isKindOfClass:[UIImageView class]]) {
         RCTCornerInsets cornerInsets = RCTGetCornerInsets(
             RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii),
@@ -993,7 +1038,7 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
     return label;
   }
 
-  return RCTRecursiveAccessibilityLabel(self);
+  return RCTRecursiveAccessibilityLabel(self.currentContainerView);
 }
 
 - (BOOL)isAccessibilityElement
