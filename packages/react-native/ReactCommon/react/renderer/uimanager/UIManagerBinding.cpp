@@ -264,30 +264,6 @@ jsi::Value UIManagerBinding::get(
         });
   }
 
-  // Semantic: Clones the node with *same* props and *same* children.
-  if (methodName == "cloneNode") {
-    auto paramCount = 1;
-    return jsi::Function::createFromHostFunction(
-        runtime,
-        name,
-        paramCount,
-        [uiManager, methodName, paramCount](
-            jsi::Runtime& runtime,
-            const jsi::Value& /*thisValue*/,
-            const jsi::Value* arguments,
-            size_t count) -> jsi::Value {
-          validateArgumentCount(runtime, methodName, paramCount, count);
-
-          return valueFromShadowNode(
-              runtime,
-              uiManager->cloneNode(
-                  *shadowNodeFromValue(runtime, arguments[0]),
-                  nullptr,
-                  RawProps()),
-              true);
-        });
-  }
-
   if (methodName == "setIsJSResponder") {
     auto paramCount = 3;
     return jsi::Function::createFromHostFunction(
