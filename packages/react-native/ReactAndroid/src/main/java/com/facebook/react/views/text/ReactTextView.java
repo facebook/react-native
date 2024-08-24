@@ -35,7 +35,6 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.ReactConstants;
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.uimanager.BackgroundStyleApplicator;
 import com.facebook.react.uimanager.LengthPercentage;
 import com.facebook.react.uimanager.LengthPercentageType;
@@ -52,7 +51,6 @@ import com.facebook.react.uimanager.style.Overflow;
 import com.facebook.react.views.text.internal.span.ReactTagSpan;
 import com.facebook.react.views.text.internal.span.TextInlineImageSpan;
 import com.facebook.react.views.text.internal.span.TextInlineViewPlaceholderSpan;
-import com.facebook.react.views.view.ReactViewBackgroundManager;
 import com.facebook.yoga.YogaMeasureMode;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -79,7 +77,6 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   private boolean mShouldAdjustSpannableFontSize;
   private Overflow mOverflow = Overflow.VISIBLE;
 
-  private ReactViewBackgroundManager mReactBackgroundManager;
   private Spannable mSpanned;
 
   public ReactTextView(Context context) {
@@ -93,12 +90,6 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
    * ReactTextView is recycled.
    */
   private void initView() {
-    if (mReactBackgroundManager != null) {
-      // make sure old background manager doesn't have any references back to this View
-      mReactBackgroundManager.cleanup();
-    }
-    mReactBackgroundManager = new ReactViewBackgroundManager(this);
-
     mNumberOfLines = ViewDefaults.NUMBER_OF_LINES;
     mAdjustsFontSizeToFit = false;
     mLinkifyMaskType = 0;
@@ -117,9 +108,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     // Set default field values
     initView();
 
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      BackgroundStyleApplicator.reset(this);
-    }
+    BackgroundStyleApplicator.reset(this);
 
     // Defaults for these fields:
     // https://github.com/aosp-mirror/platform_frameworks_base/blob/master/core/java/android/widget/TextView.java#L1061
@@ -394,12 +383,8 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
       setText(getSpanned());
     }
 
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      if (mOverflow != Overflow.VISIBLE) {
-        BackgroundStyleApplicator.clipToPaddingBox(this, canvas);
-      }
-    } else {
-      mReactBackgroundManager.maybeClipToPaddingBox(canvas);
+    if (mOverflow != Overflow.VISIBLE) {
+      BackgroundStyleApplicator.clipToPaddingBox(this, canvas);
     }
 
     super.onDraw(canvas);
@@ -697,28 +682,16 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
 
   @Override
   public void setBackgroundColor(int color) {
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      BackgroundStyleApplicator.setBackgroundColor(this, color);
-    } else {
-      mReactBackgroundManager.setBackgroundColor(color);
-    }
+    BackgroundStyleApplicator.setBackgroundColor(this, color);
   }
 
   public void setBorderWidth(int position, float width) {
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      BackgroundStyleApplicator.setBorderWidth(
-          this, LogicalEdge.values()[position], PixelUtil.toDIPFromPixel(width));
-    } else {
-      mReactBackgroundManager.setBorderWidth(position, width);
-    }
+    BackgroundStyleApplicator.setBorderWidth(
+        this, LogicalEdge.values()[position], PixelUtil.toDIPFromPixel(width));
   }
 
   public void setBorderColor(int position, @Nullable Integer color) {
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      BackgroundStyleApplicator.setBorderColor(this, LogicalEdge.values()[position], color);
-    } else {
-      mReactBackgroundManager.setBorderColor(position, color);
-    }
+    BackgroundStyleApplicator.setBorderColor(this, LogicalEdge.values()[position], color);
   }
 
   public void setBorderRadius(float borderRadius) {
@@ -726,26 +699,18 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   }
 
   public void setBorderRadius(float borderRadius, int position) {
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      @Nullable
-      LengthPercentage radius =
-          Float.isNaN(borderRadius)
-              ? null
-              : new LengthPercentage(
-                  PixelUtil.toDIPFromPixel(borderRadius), LengthPercentageType.POINT);
-      BackgroundStyleApplicator.setBorderRadius(this, BorderRadiusProp.values()[position], radius);
-    } else {
-      mReactBackgroundManager.setBorderRadius(borderRadius, position);
-    }
+    @Nullable
+    LengthPercentage radius =
+        Float.isNaN(borderRadius)
+            ? null
+            : new LengthPercentage(
+                PixelUtil.toDIPFromPixel(borderRadius), LengthPercentageType.POINT);
+    BackgroundStyleApplicator.setBorderRadius(this, BorderRadiusProp.values()[position], radius);
   }
 
   public void setBorderStyle(@Nullable String style) {
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      BackgroundStyleApplicator.setBorderStyle(
-          this, style == null ? null : BorderStyle.fromString(style));
-    } else {
-      mReactBackgroundManager.setBorderStyle(style);
-    }
+    BackgroundStyleApplicator.setBorderStyle(
+        this, style == null ? null : BorderStyle.fromString(style));
   }
 
   public void setSpanned(Spannable spanned) {
@@ -798,7 +763,6 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
       mOverflow = parsedOverflow == null ? Overflow.VISIBLE : parsedOverflow;
     }
 
-    mReactBackgroundManager.setOverflow(overflow);
     invalidate();
   }
 }

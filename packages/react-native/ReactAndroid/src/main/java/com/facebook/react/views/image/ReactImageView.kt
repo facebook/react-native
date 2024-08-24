@@ -28,7 +28,6 @@ import com.facebook.drawee.controller.AbstractDraweeControllerBuilder
 import com.facebook.drawee.controller.ControllerListener
 import com.facebook.drawee.controller.ForwardingControllerListener
 import com.facebook.drawee.drawable.AutoRotateDrawable
-import com.facebook.drawee.drawable.RoundedColorDrawable
 import com.facebook.drawee.drawable.ScalingUtils
 import com.facebook.drawee.generic.GenericDraweeHierarchyBuilder
 import com.facebook.drawee.generic.RoundingParams
@@ -49,17 +48,13 @@ import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.common.annotations.VisibleForTesting
 import com.facebook.react.common.build.ReactBuildConfig
 import com.facebook.react.config.ReactFeatureFlags
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags.enableBackgroundStyleApplicator
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags.loadVectorDrawablesOnImages
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags.useNewReactImageViewBackgroundDrawing
 import com.facebook.react.modules.fresco.ReactNetworkImageRequest
 import com.facebook.react.uimanager.BackgroundStyleApplicator
-import com.facebook.react.uimanager.FloatUtil.floatsEqual
 import com.facebook.react.uimanager.LengthPercentage
 import com.facebook.react.uimanager.LengthPercentageType
 import com.facebook.react.uimanager.PixelUtil.dpToPx
 import com.facebook.react.uimanager.PixelUtil.pxToDp
-import com.facebook.react.uimanager.Spacing
 import com.facebook.react.uimanager.UIManagerHelper
 import com.facebook.react.uimanager.style.BorderRadiusProp
 import com.facebook.react.uimanager.style.LogicalEdge
@@ -76,8 +71,6 @@ import com.facebook.react.views.imagehelper.ImageSource
 import com.facebook.react.views.imagehelper.ImageSource.Companion.getTransparentBitmapImageSource
 import com.facebook.react.views.imagehelper.MultiSourceHelper.getBestSourceForSize
 import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper.Companion.instance
-import com.facebook.react.views.view.ReactViewBackgroundManager
-import com.facebook.yoga.YogaConstants
 import kotlin.math.abs
 
 /**
@@ -97,13 +90,7 @@ public class ReactImageView(
   private var cachedImageSource: ImageSource? = null
   private var defaultImageDrawable: Drawable? = null
   private var loadingImageDrawable: Drawable? = null
-  private var backgroundImageDrawable: RoundedColorDrawable? = null
-  private var backgroundColor = 0x00000000
-  private var borderColor = 0
   private var overlayColor = 0
-  private var borderWidth = 0f
-  private var borderRadius = YogaConstants.UNDEFINED
-  private var borderCornerRadii: FloatArray? = null
   private var scaleType = defaultValue()
   private var tileMode = defaultTileMode()
   private var isDirty = false
@@ -115,11 +102,9 @@ public class ReactImageView(
   private var progressiveRenderingEnabled = false
   private var headers: ReadableMap? = null
   private var resizeMultiplier = 1.0f
-  private val reactBackgroundManager = ReactViewBackgroundManager(this)
   private var resizeMethod = ImageResizeMethod.AUTO
 
   init {
-    reactBackgroundManager.setOverflow("hidden")
     // Workaround Android bug where ImageView visibility is not propagated to the Drawable, so you
     // have to manually update visibility. Will be resolved once we move to VitoView.
     setLegacyVisibilityHandlingEnabled(true)
@@ -213,26 +198,11 @@ public class ReactImageView(
   }
 
   public override fun setBackgroundColor(backgroundColor: Int) {
-    if (enableBackgroundStyleApplicator()) {
-      BackgroundStyleApplicator.setBackgroundColor(this, backgroundColor)
-    } else if (useNewReactImageViewBackgroundDrawing()) {
-      reactBackgroundManager.backgroundColor = backgroundColor
-    } else if (this.backgroundColor != backgroundColor) {
-      this.backgroundColor = backgroundColor
-      backgroundImageDrawable = RoundedColorDrawable(backgroundColor)
-      isDirty = true
-    }
+    BackgroundStyleApplicator.setBackgroundColor(this, backgroundColor)
   }
 
   public fun setBorderColor(borderColor: Int) {
-    if (enableBackgroundStyleApplicator()) {
-      BackgroundStyleApplicator.setBorderColor(this, LogicalEdge.ALL, borderColor)
-    } else if (useNewReactImageViewBackgroundDrawing()) {
-      reactBackgroundManager.setBorderColor(Spacing.ALL, borderColor)
-    } else if (this.borderColor != borderColor) {
-      this.borderColor = borderColor
-      isDirty = true
-    }
+    BackgroundStyleApplicator.setBorderColor(this, LogicalEdge.ALL, borderColor)
   }
 
   public fun setOverlayColor(overlayColor: Int) {
@@ -243,49 +213,21 @@ public class ReactImageView(
   }
 
   public fun setBorderWidth(borderWidth: Float) {
-    val newBorderWidth = borderWidth.dpToPx()
-    if (enableBackgroundStyleApplicator()) {
-      BackgroundStyleApplicator.setBorderWidth(this, LogicalEdge.ALL, borderWidth)
-    } else if (useNewReactImageViewBackgroundDrawing()) {
-      reactBackgroundManager.setBorderWidth(Spacing.ALL, newBorderWidth)
-    } else if (!floatsEqual(this.borderWidth, newBorderWidth)) {
-      this.borderWidth = newBorderWidth
-      isDirty = true
-    }
+    BackgroundStyleApplicator.setBorderWidth(this, LogicalEdge.ALL, borderWidth)
   }
 
   public fun setBorderRadius(borderRadius: Float) {
-    if (enableBackgroundStyleApplicator()) {
-      val radius =
-          if (borderRadius.isNaN()) null
-          else LengthPercentage(borderRadius.pxToDp(), LengthPercentageType.POINT)
-      BackgroundStyleApplicator.setBorderRadius(this, BorderRadiusProp.BORDER_RADIUS, radius)
-    } else if (useNewReactImageViewBackgroundDrawing()) {
-      reactBackgroundManager.setBorderRadius(borderRadius)
-    } else if (!floatsEqual(this.borderRadius, borderRadius)) {
-      this.borderRadius = borderRadius
-      isDirty = true
-    }
+    val radius =
+        if (borderRadius.isNaN()) null
+        else LengthPercentage(borderRadius.pxToDp(), LengthPercentageType.POINT)
+    BackgroundStyleApplicator.setBorderRadius(this, BorderRadiusProp.BORDER_RADIUS, radius)
   }
 
   public fun setBorderRadius(borderRadius: Float, position: Int) {
-    if (enableBackgroundStyleApplicator()) {
-      val radius =
-          if (borderRadius.isNaN()) null
-          else LengthPercentage(borderRadius.pxToDp(), LengthPercentageType.POINT)
-      BackgroundStyleApplicator.setBorderRadius(this, BorderRadiusProp.values()[position], radius)
-    } else if (useNewReactImageViewBackgroundDrawing()) {
-      reactBackgroundManager.setBorderRadius(borderRadius, position + 1)
-    } else {
-      if (borderCornerRadii == null) {
-        borderCornerRadii = FloatArray(4) { YogaConstants.UNDEFINED }
-      }
-
-      if (!floatsEqual(borderCornerRadii?.get(position), borderRadius)) {
-        borderCornerRadii?.set(position, borderRadius)
-        isDirty = true
-      }
-    }
+    val radius =
+        if (borderRadius.isNaN()) null
+        else LengthPercentage(borderRadius.pxToDp(), LengthPercentageType.POINT)
+    BackgroundStyleApplicator.setBorderRadius(this, BorderRadiusProp.values()[position], radius)
   }
 
   public fun setScaleType(scaleType: ScalingUtils.ScaleType) {
@@ -395,11 +337,7 @@ public class ReactImageView(
   public override fun hasOverlappingRendering(): Boolean = false
 
   public override fun onDraw(canvas: Canvas) {
-    if (enableBackgroundStyleApplicator()) {
-      BackgroundStyleApplicator.clipToPaddingBox(this, canvas)
-    } else if (useNewReactImageViewBackgroundDrawing()) {
-      reactBackgroundManager.maybeClipToPaddingBox(canvas)
-    }
+    BackgroundStyleApplicator.clipToPaddingBox(this, canvas)
     super.onDraw(canvas)
   }
 
@@ -439,22 +377,8 @@ public class ReactImageView(
       hierarchy.setPlaceholderImage(loadingImageDrawable, ScalingUtils.ScaleType.CENTER)
     }
 
-    getCornerRadii(computedCornerRadii)
-
     val roundingParams = hierarchy.roundingParams
     if (roundingParams != null) {
-      roundingParams.setCornersRadii(
-          computedCornerRadii[0],
-          computedCornerRadii[1],
-          computedCornerRadii[2],
-          computedCornerRadii[3])
-
-      backgroundImageDrawable?.let { background ->
-        background.setBorder(borderColor, borderWidth)
-        roundingParams.cornersRadii?.let { background.radii = it }
-        hierarchy.setBackgroundImage(background)
-      }
-      roundingParams.setBorder(borderColor, borderWidth)
       if (overlayColor != Color.TRANSPARENT) {
         roundingParams.setOverlayColor(overlayColor)
       } else {
@@ -582,16 +506,6 @@ public class ReactImageView(
     }
   }
 
-  private fun getCornerRadii(computedCorners: FloatArray) {
-    val defaultBorderRadius = if (!YogaConstants.isUndefined(borderRadius)) borderRadius else 0f
-
-    val radii = borderCornerRadii ?: FloatArray(4) { Float.NaN }
-    computedCorners[0] = if (!YogaConstants.isUndefined(radii[0])) radii[0] else defaultBorderRadius
-    computedCorners[1] = if (!YogaConstants.isUndefined(radii[1])) radii[1] else defaultBorderRadius
-    computedCorners[2] = if (!YogaConstants.isUndefined(radii[2])) radii[2] else defaultBorderRadius
-    computedCorners[3] = if (!YogaConstants.isUndefined(radii[3])) radii[3] else defaultBorderRadius
-  }
-
   @VisibleForTesting
   public fun setControllerListener(controllerListener: ControllerListener<ImageInfo>?) {
     controllerForTesting = controllerListener
@@ -712,8 +626,6 @@ public class ReactImageView(
 
   public companion object {
     public const val REMOTE_IMAGE_FADE_DURATION_MS: Int = 300
-
-    private val computedCornerRadii = FloatArray(4)
 
     // Fresco lacks support for repeating images, see https://github.com/facebook/fresco/issues/1575
     // We implement it here as a postprocessing step.
