@@ -44,6 +44,8 @@ import com.facebook.react.uimanager.style.BorderStyle;
 import com.facebook.react.uimanager.style.ComputedBorderRadius;
 import com.facebook.react.uimanager.style.CornerRadii;
 import com.facebook.react.uimanager.style.BackgroundImageLayer;
+
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -115,7 +117,7 @@ public class CSSBackgroundDrawable extends Drawable {
   /* Used by all types of background and for drawing borders */
   private final Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
   private int mColor = Color.TRANSPARENT;
-  private @Nullable BackgroundImageLayer[] mBackgroundImageLayers = null;
+  private @Nullable List<BackgroundImageLayer> mBackgroundImageLayers = null;
   private int mAlpha = 255;
 
   // There is a small gap between the edges of adjacent paths
@@ -338,7 +340,7 @@ public class CSSBackgroundDrawable extends Drawable {
     invalidateSelf();
   }
 
-  public void setBackgroundImage(@Nullable BackgroundImageLayer[] backgroundImageLayers) {
+  public void setBackgroundImage(@Nullable List<BackgroundImageLayer> backgroundImageLayers) {
     mBackgroundImageLayers = backgroundImageLayers;
     invalidateSelf();
   }
@@ -398,7 +400,7 @@ public class CSSBackgroundDrawable extends Drawable {
       canvas.drawPath(Preconditions.checkNotNull(mBackgroundColorRenderPath), mPaint);
     }
 
-    if (mBackgroundImageLayers != null && mBackgroundImageLayers.length > 0) {
+    if (mBackgroundImageLayers != null && mBackgroundImageLayers.size() > 0) {
       mPaint.setShader(getBackgroundImageShader());
       mPaint.setStyle(Paint.Style.FILL);
       canvas.drawPath(Preconditions.checkNotNull(mBackgroundColorRenderPath), mPaint);
@@ -1150,7 +1152,7 @@ public class CSSBackgroundDrawable extends Drawable {
       canvas.drawRect(getBounds(), mPaint);
     }
 
-    if (mBackgroundImageLayers != null && mBackgroundImageLayers.length > 0) {
+    if (mBackgroundImageLayers != null && mBackgroundImageLayers.size() > 0) {
       mPaint.setShader(getBackgroundImageShader());
       canvas.drawRect(getBounds(), mPaint);
       mPaint.setShader(null);

@@ -53,7 +53,7 @@ public object BackgroundStyleApplicator {
   }
 
   @JvmStatic
-  public fun setBackgroundImage(view: View, backgroundImageLayers: Array<BackgroundImageLayer>?): Unit {
+  public fun setBackgroundImage(view: View, backgroundImageLayers: List<BackgroundImageLayer>?): Unit {
     ensureCSSBackground(view).setBackgroundImage(backgroundImageLayers);
   }
 

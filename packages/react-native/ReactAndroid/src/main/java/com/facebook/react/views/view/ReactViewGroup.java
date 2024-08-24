@@ -69,6 +69,8 @@ import com.facebook.react.uimanager.style.CornerRadii;
 import com.facebook.react.uimanager.style.LogicalEdge;
 import com.facebook.react.uimanager.style.Overflow;
 
+import java.util.List;
+
 /**
  * Backing for a React View. Has support for borders, but since borders aren't common, lazy
  * initializes most of the storage needed for them.
@@ -248,7 +250,7 @@ public class ReactViewGroup extends ViewGroup
   }
 
   @UnstableReactNativeAPI
-  /*package*/ void setBackgroundImage(@Nullable BackgroundImageLayer[] backgroundImageLayers) {
+  /*package*/ void setBackgroundImage(@Nullable List<BackgroundImageLayer> backgroundImageLayers) {
     if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
       BackgroundStyleApplicator.setBackgroundImage(this, backgroundImageLayers);
     } else {
