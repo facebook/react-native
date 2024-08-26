@@ -35,6 +35,7 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.internal.SystraceSection;
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.uimanager.BackgroundStyleApplicator;
 import com.facebook.react.uimanager.LengthPercentage;
@@ -375,85 +376,96 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
 
   @Override
   protected void onDraw(Canvas canvas) {
-    if (mAdjustsFontSizeToFit && getSpanned() != null && mShouldAdjustSpannableFontSize) {
-      mShouldAdjustSpannableFontSize = false;
-      TextLayoutManager.adjustSpannableFontToFit(
-          getSpanned(),
-          getWidth(),
-          YogaMeasureMode.EXACTLY,
-          getHeight(),
-          YogaMeasureMode.EXACTLY,
-          mMinimumFontSize,
-          mNumberOfLines,
-          getIncludeFontPadding(),
-          getBreakStrategy(),
-          getHyphenationFrequency(),
-          // always passing ALIGN_NORMAL here should be fine, since this method doesn't depend on
-          // how exacly lines are aligned, just their width
-          Layout.Alignment.ALIGN_NORMAL);
-      setText(getSpanned());
-    }
-
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      if (mOverflow != Overflow.VISIBLE) {
-        BackgroundStyleApplicator.clipToPaddingBox(this, canvas);
+    try (SystraceSection s = new SystraceSection("ReactTextView.onDraw")) {
+      if (mAdjustsFontSizeToFit && getSpanned() != null && mShouldAdjustSpannableFontSize) {
+        mShouldAdjustSpannableFontSize = false;
+        TextLayoutManager.adjustSpannableFontToFit(
+            getSpanned(),
+            getWidth(),
+            YogaMeasureMode.EXACTLY,
+            getHeight(),
+            YogaMeasureMode.EXACTLY,
+            mMinimumFontSize,
+            mNumberOfLines,
+            getIncludeFontPadding(),
+            getBreakStrategy(),
+            getHyphenationFrequency(),
+            // always passing ALIGN_NORMAL here should be fine, since this method doesn't depend on
+            // how exacly lines are aligned, just their width
+            Layout.Alignment.ALIGN_NORMAL);
+        setText(getSpanned());
       }
-    } else {
-      mReactBackgroundManager.maybeClipToPaddingBox(canvas);
-    }
 
-    super.onDraw(canvas);
+      if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
+        if (mOverflow != Overflow.VISIBLE) {
+          BackgroundStyleApplicator.clipToPaddingBox(this, canvas);
+        }
+      } else {
+        mReactBackgroundManager.maybeClipToPaddingBox(canvas);
+      }
+
+      super.onDraw(canvas);
+    }
+  }
+
+  @Override
+  protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+    try (SystraceSection s = new SystraceSection("ReactTextView.onMeasure")) {
+      super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    }
   }
 
   public void setText(ReactTextUpdate update) {
-    mContainsImages = update.containsImages();
-    // Android's TextView crashes when it tries to relayout if LayoutParams are
-    // null; explicitly set the LayoutParams to prevent this crash. See:
-    // https://github.com/facebook/react-native/pull/7011
-    if (getLayoutParams() == null) {
-      setLayoutParams(EMPTY_LAYOUT_PARAMS);
-    }
-    Spannable spannable = update.getText();
-    if (mLinkifyMaskType > 0) {
-      Linkify.addLinks(spannable, mLinkifyMaskType);
-      setMovementMethod(LinkMovementMethod.getInstance());
-    }
-    setText(spannable);
-    float paddingLeft = update.getPaddingLeft();
-    float paddingTop = update.getPaddingTop();
-    float paddingRight = update.getPaddingRight();
-    float paddingBottom = update.getPaddingBottom();
-
-    // In Fabric padding is set by the update of Layout Metrics and not as part of the "setText"
-    // operation
-    // TODO T56559197: remove this condition when we migrate 100% to Fabric
-    if (paddingLeft != ReactConstants.UNSET
-        && paddingTop != ReactConstants.UNSET
-        && paddingRight != ReactConstants.UNSET
-        && paddingBottom != ReactConstants.UNSET) {
-
-      setPadding(
-          (int) Math.floor(paddingLeft),
-          (int) Math.floor(paddingTop),
-          (int) Math.floor(paddingRight),
-          (int) Math.floor(paddingBottom));
-    }
-
-    int nextTextAlign = update.getTextAlign();
-    if (nextTextAlign != getGravityHorizontal()) {
-      setGravityHorizontal(nextTextAlign);
-    }
-    if (getBreakStrategy() != update.getTextBreakStrategy()) {
-      setBreakStrategy(update.getTextBreakStrategy());
-    }
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      if (getJustificationMode() != update.getJustificationMode()) {
-        setJustificationMode(update.getJustificationMode());
+    try (SystraceSection s = new SystraceSection("ReactTextView.setText(ReactTextUpdate)")) {
+      mContainsImages = update.containsImages();
+      // Android's TextView crashes when it tries to relayout if LayoutParams are
+      // null; explicitly set the LayoutParams to prevent this crash. See:
+      // https://github.com/facebook/react-native/pull/7011
+      if (getLayoutParams() == null) {
+        setLayoutParams(EMPTY_LAYOUT_PARAMS);
       }
-    }
+      Spannable spannable = update.getText();
+      if (mLinkifyMaskType > 0) {
+        Linkify.addLinks(spannable, mLinkifyMaskType);
+        setMovementMethod(LinkMovementMethod.getInstance());
+      }
+      setText(spannable);
+      float paddingLeft = update.getPaddingLeft();
+      float paddingTop = update.getPaddingTop();
+      float paddingRight = update.getPaddingRight();
+      float paddingBottom = update.getPaddingBottom();
 
-    // Ensure onLayout is called so the inline views can be repositioned.
-    requestLayout();
+      // In Fabric padding is set by the update of Layout Metrics and not as part of the "setText"
+      // operation
+      // TODO T56559197: remove this condition when we migrate 100% to Fabric
+      if (paddingLeft != ReactConstants.UNSET
+          && paddingTop != ReactConstants.UNSET
+          && paddingRight != ReactConstants.UNSET
+          && paddingBottom != ReactConstants.UNSET) {
+
+        setPadding(
+            (int) Math.floor(paddingLeft),
+            (int) Math.floor(paddingTop),
+            (int) Math.floor(paddingRight),
+            (int) Math.floor(paddingBottom));
+      }
+
+      int nextTextAlign = update.getTextAlign();
+      if (nextTextAlign != getGravityHorizontal()) {
+        setGravityHorizontal(nextTextAlign);
+      }
+      if (getBreakStrategy() != update.getTextBreakStrategy()) {
+        setBreakStrategy(update.getTextBreakStrategy());
+      }
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (getJustificationMode() != update.getJustificationMode()) {
+          setJustificationMode(update.getJustificationMode());
+        }
+      }
+
+      // Ensure onLayout is called so the inline views can be repositioned.
+      requestLayout();
+    }
   }
 
   @Override
