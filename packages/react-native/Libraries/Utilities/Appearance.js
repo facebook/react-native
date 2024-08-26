@@ -8,37 +8,64 @@
  * @flow strict-local
  */
 
+import type {EventSubscription} from '../vendor/emitter/EventEmitter';
+import type {AppearancePreferences, ColorSchemeName} from './NativeAppearance';
+import typeof INativeAppearance from './NativeAppearance';
+
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
-import EventEmitter, {
-  type EventSubscription,
-} from '../vendor/emitter/EventEmitter';
+import EventEmitter from '../vendor/emitter/EventEmitter';
 import {isAsyncDebugging} from './DebugEnvironment';
-import NativeAppearance, {
-  type AppearancePreferences,
-  type ColorSchemeName,
-} from './NativeAppearance';
 import invariant from 'invariant';
 
-const eventEmitter = new EventEmitter<{
-  change: [{colorScheme: ?ColorSchemeName}],
-}>();
-
-type NativeAppearanceEventDefinitions = {
-  appearanceChanged: [AppearancePreferences],
+type Appearance = {
+  colorScheme: ?ColorSchemeName,
 };
 
-// Cache the color scheme to reduce the cost of reading it between changes.
-// NOTE: If `NativeAppearance` is null, this will always be null.
-let appearance: ?{colorScheme: ?ColorSchemeName} = null;
+let lazyState: ?{
+  +NativeAppearance: INativeAppearance,
+  // Cache the color scheme to reduce the cost of reading it between changes.
+  // NOTE: If `NativeAppearance` is null, this will always be null.
+  appearance: ?Appearance,
+  // NOTE: This is non-nullable to make it easier for `onChangedListener` to
+  // return a non-nullable `EventSubscription` value. This is not the common
+  // path, so we do not have to over-optimize it.
+  +eventEmitter: EventEmitter<{change: [Appearance]}>,
+};
 
-if (NativeAppearance != null) {
-  new NativeEventEmitter<NativeAppearanceEventDefinitions>(
-    NativeAppearance,
-  ).addListener('appearanceChanged', (newAppearance: AppearancePreferences) => {
-    const colorScheme = toColorScheme(newAppearance.colorScheme);
-    appearance = {colorScheme};
-    eventEmitter.emit('change', appearance);
-  });
+/**
+ * Ensures that all state and listeners are lazily initialized correctly.
+ */
+function getState(): $NonMaybeType<typeof lazyState> {
+  if (lazyState != null) {
+    return lazyState;
+  }
+  const eventEmitter = new EventEmitter<{change: [Appearance]}>();
+  // NOTE: Avoid initializing `NativeAppearance` until it is actually used.
+  const NativeAppearance = require('./NativeAppearance').default;
+  if (NativeAppearance == null) {
+    // Assign `null` to avoid re-initializing on subsequent invocations.
+    lazyState = {
+      NativeAppearance: null,
+      appearance: null,
+      eventEmitter,
+    };
+  } else {
+    const state: $NonMaybeType<typeof lazyState> = {
+      NativeAppearance,
+      appearance: null,
+      eventEmitter,
+    };
+    new NativeEventEmitter<{
+      appearanceChanged: [AppearancePreferences],
+    }>(NativeAppearance).addListener('appearanceChanged', newAppearance => {
+      state.appearance = {
+        colorScheme: toColorScheme(newAppearance.colorScheme),
+      };
+      eventEmitter.emit('change', state.appearance);
+    });
+    lazyState = state;
+  }
+  return lazyState;
 }
 
 /**
@@ -55,15 +82,17 @@ export function getColorScheme(): ?ColorSchemeName {
     }
   }
   let colorScheme = null;
+  const state = getState();
+  const {NativeAppearance} = state;
   if (NativeAppearance != null) {
-    if (appearance == null) {
-      // Lazily initialize `appearance`. This should only happen once because
-      // we never reassign a null value to `appearance`.
-      appearance = {
+    if (state.appearance == null) {
+      // Lazily initialize `state.appearance`. This should only
+      // happen once because we never reassign a null value to it.
+      state.appearance = {
         colorScheme: toColorScheme(NativeAppearance.getColorScheme()),
       };
     }
-    colorScheme = appearance.colorScheme;
+    colorScheme = state.appearance.colorScheme;
   }
   return colorScheme;
 }
@@ -72,9 +101,11 @@ export function getColorScheme(): ?ColorSchemeName {
  * Updates the current color scheme to the supplied value.
  */
 export function setColorScheme(colorScheme: ?ColorSchemeName): void {
+  const state = getState();
+  const {NativeAppearance} = state;
   if (NativeAppearance != null) {
     NativeAppearance.setColorScheme(colorScheme ?? 'unspecified');
-    appearance = {colorScheme};
+    state.appearance = {colorScheme};
   }
 }
 
@@ -84,6 +115,7 @@ export function setColorScheme(colorScheme: ?ColorSchemeName): void {
 export function addChangeListener(
   listener: ({colorScheme: ?ColorSchemeName}) => void,
 ): EventSubscription {
+  const {eventEmitter} = getState();
   return eventEmitter.addListener('change', listener);
 }
 
