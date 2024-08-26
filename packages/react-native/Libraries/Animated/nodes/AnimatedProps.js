@@ -88,6 +88,8 @@ export default class AnimatedProps extends AnimatedNode {
     if (this.__isNative && this._animatedView) {
       this.__disconnectAnimatedView();
     }
+    this._animatedView = null;
+
     for (const key in this._props) {
       const value = this._props[key];
       if (value instanceof AnimatedNode) {
