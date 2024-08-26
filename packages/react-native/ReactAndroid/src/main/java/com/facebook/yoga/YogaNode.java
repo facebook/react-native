@@ -144,6 +144,8 @@ public abstract class YogaNode implements YogaProps {
 
   public abstract void setPositionPercent(YogaEdge edge, float percent);
 
+  public abstract void setPositionAuto(YogaEdge edge);
+
   public abstract YogaValue getWidth();
 
   public abstract void setWidth(float width);

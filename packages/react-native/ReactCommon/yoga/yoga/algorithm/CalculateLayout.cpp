@@ -1059,7 +1059,8 @@ static void justifyMainAxis(
       continue;
     }
     if (childStyle.positionType() == PositionType::Absolute &&
-        child->style().isFlexStartPositionDefined(mainAxis, direction)) {
+        child->style().isFlexStartPositionDefined(mainAxis, direction) &&
+        !child->style().isFlexStartPositionAuto(mainAxis, direction)) {
       if (performLayout) {
         // In case the child is position absolute and has left/top being
         // defined, we override the position to whatever the user said (and
@@ -1629,7 +1630,8 @@ static void calculateLayoutImpl(
           // top/left/bottom/right set, override all the previously computed
           // positions to set it correctly.
           const bool isChildLeadingPosDefined =
-              child->style().isFlexStartPositionDefined(crossAxis, direction);
+              child->style().isFlexStartPositionDefined(crossAxis, direction) &&
+              !child->style().isFlexStartPositionAuto(crossAxis, direction);
           if (isChildLeadingPosDefined) {
             child->setLayoutPosition(
                 child->style().computeFlexStartPosition(

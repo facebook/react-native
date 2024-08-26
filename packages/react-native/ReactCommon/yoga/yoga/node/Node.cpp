@@ -226,7 +226,8 @@ float Node::relativePosition(
   if (style_.positionType() == PositionType::Static) {
     return 0;
   }
-  if (style_.isInlineStartPositionDefined(axis, direction)) {
+  if (style_.isInlineStartPositionDefined(axis, direction) &&
+      !style_.isInlineStartPositionAuto(axis, direction)) {
     return style_.computeInlineStartPosition(axis, direction, axisSize);
   }
 
