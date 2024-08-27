@@ -23,11 +23,11 @@ constructor(
 ) {
 
   /** Get the URI for this image - can be either a parsed network URI or a resource URI. */
-  public val uri: Uri = computeUri(context)
+  public open val uri: Uri = computeUri(context)
   /** Get the area of this image. */
   public val size: Double = width * height
   /** Get whether this image source represents an Android resource or a network URI. */
-  public var isResource: Boolean = false
+  public open var isResource: Boolean = false
     private set
 
   override fun equals(other: Any?): Boolean {
