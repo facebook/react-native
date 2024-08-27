@@ -20,7 +20,7 @@ import type {
   NativeModuleBaseTypeAnnotation,
   NativeModuleEnumDeclaration,
   NativeModuleEnumMap,
-  NativeModuleFloatTypeAnnotation,
+  FloatTypeAnnotation,
   NativeModuleFunctionTypeAnnotation,
   NativeModuleGenericObjectTypeAnnotation,
   NativeModuleMixedTypeAnnotation,
@@ -368,9 +368,7 @@ function emitObject(
   });
 }
 
-function emitFloat(
-  nullable: boolean,
-): Nullable<NativeModuleFloatTypeAnnotation> {
+function emitFloat(nullable: boolean): Nullable<FloatTypeAnnotation> {
   return wrapNullable(nullable, {
     type: 'FloatTypeAnnotation',
   });
