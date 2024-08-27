@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<fb7a3dcf7b3e5001e45f808fb4410376>>
+ * @generated SignedSource<<3c32ce3847859db45d2e8bafb3cc31a1>>
  * @flow strict-local
  */
 
@@ -30,6 +30,7 @@ export type ReactNativeFeatureFlagsJsOnly = {
   animatedShouldDebounceQueueFlush: Getter<boolean>,
   animatedShouldUseSingleOp: Getter<boolean>,
   enableAccessToHostTreeInFabric: Getter<boolean>,
+  enableOptimisedVirtualizedCells: Getter<boolean>,
   isLayoutAnimationEnabled: Getter<boolean>,
   shouldSkipStateUpdatesForLoopingAnimations: Getter<boolean>,
   shouldUseAnimatedObjectForTransform: Getter<boolean>,
@@ -48,7 +49,6 @@ export type ReactNativeFeatureFlags = {
   commonTestFlag: Getter<boolean>,
   allowRecursiveCommitsWithSynchronousMountOnAndroid: Getter<boolean>,
   batchRenderingUpdatesInEventLoop: Getter<boolean>,
-  changeOrderOfMountingInstructionsOnAndroid: Getter<boolean>,
   completeReactInstanceCreationOnBgThreadOnAndroid: Getter<boolean>,
   destroyFabricSurfacesInReactInstanceManager: Getter<boolean>,
   enableAlignItemsBaselineOnFabricIOS: Getter<boolean>,
@@ -60,6 +60,7 @@ export type ReactNativeFeatureFlags = {
   enableFabricLogs: Getter<boolean>,
   enableFabricRendererExclusively: Getter<boolean>,
   enableGranularShadowTreeStateReconciliation: Getter<boolean>,
+  enableLayoutAnimationsOnIOS: Getter<boolean>,
   enableLongTaskAPI: Getter<boolean>,
   enableMicrotasks: Getter<boolean>,
   enablePropsUpdateReconciliationAndroid: Getter<boolean>,
@@ -111,6 +112,11 @@ export const animatedShouldUseSingleOp: Getter<boolean> = createJavaScriptFlagGe
  * Enables access to the host tree in Fabric using DOM-compatible APIs.
  */
 export const enableAccessToHostTreeInFabric: Getter<boolean> = createJavaScriptFlagGetter('enableAccessToHostTreeInFabric', false);
+
+/**
+ * Removing unnecessary rerenders Virtualized cells after any rerenders of Virualized list. Works with strict=true option
+ */
+export const enableOptimisedVirtualizedCells: Getter<boolean> = createJavaScriptFlagGetter('enableOptimisedVirtualizedCells', false);
 
 /**
  * Function used to enable / disabled Layout Animations in React Native.
@@ -170,10 +176,6 @@ export const allowRecursiveCommitsWithSynchronousMountOnAndroid: Getter<boolean>
  */
 export const batchRenderingUpdatesInEventLoop: Getter<boolean> = createNativeFlagGetter('batchRenderingUpdatesInEventLoop', false);
 /**
- * When enabled, insert of views on Android will be moved from the beginning of the IntBufferBatchMountItem to be after layout updates.
- */
-export const changeOrderOfMountingInstructionsOnAndroid: Getter<boolean> = createNativeFlagGetter('changeOrderOfMountingInstructionsOnAndroid', false);
-/**
  * Do not wait for a main-thread dispatch to complete init to start executing work on the JS thread on Android
  */
 export const completeReactInstanceCreationOnBgThreadOnAndroid: Getter<boolean> = createNativeFlagGetter('completeReactInstanceCreationOnBgThreadOnAndroid', false);
@@ -217,6 +219,10 @@ export const enableFabricRendererExclusively: Getter<boolean> = createNativeFlag
  * When enabled, the renderer would only fail commits when they propagate state and the last commit that updated state changed before committing.
  */
 export const enableGranularShadowTreeStateReconciliation: Getter<boolean> = createNativeFlagGetter('enableGranularShadowTreeStateReconciliation', false);
+/**
+ * When enabled, LayoutAnimations API will animate state changes on iOS.
+ */
+export const enableLayoutAnimationsOnIOS: Getter<boolean> = createNativeFlagGetter('enableLayoutAnimationsOnIOS', true);
 /**
  * Enables the reporting of long tasks through `PerformanceObserver`. Only works if the event loop is enabled.
  */

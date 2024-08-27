@@ -121,13 +121,15 @@ export default class MutationObserver {
       MutationObserverManager.unobserve(mutationObserverId, target);
     }
 
-    MutationObserverManager.observe({
+    const didStartObserving = MutationObserverManager.observe({
       mutationObserverId,
       target,
       subtree: Boolean(options?.subtree),
     });
 
-    this._observationTargets.add(target);
+    if (didStartObserving) {
+      this._observationTargets.add(target);
+    }
   }
 
   _unobserve(target: ReactNativeElement): void {

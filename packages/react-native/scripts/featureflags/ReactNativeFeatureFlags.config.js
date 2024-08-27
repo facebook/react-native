@@ -49,11 +49,6 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.',
     },
-    changeOrderOfMountingInstructionsOnAndroid: {
-      defaultValue: false,
-      description:
-        'When enabled, insert of views on Android will be moved from the beginning of the IntBufferBatchMountItem to be after layout updates.',
-    },
     completeReactInstanceCreationOnBgThreadOnAndroid: {
       defaultValue: false,
       description:
@@ -105,6 +100,11 @@ const definitions: FeatureFlagDefinitions = {
       defaultValue: false,
       description:
         'When enabled, the renderer would only fail commits when they propagate state and the last commit that updated state changed before committing.',
+    },
+    enableLayoutAnimationsOnIOS: {
+      defaultValue: true,
+      description:
+        'When enabled, LayoutAnimations API will animate state changes on iOS.',
     },
     enableLongTaskAPI: {
       defaultValue: false,
@@ -274,6 +274,11 @@ const definitions: FeatureFlagDefinitions = {
       defaultValue: false,
       description:
         'Enables access to the host tree in Fabric using DOM-compatible APIs.',
+    },
+    enableOptimisedVirtualizedCells: {
+      defaultValue: false,
+      description:
+        'Removing unnecessary rerenders Virtualized cells after any rerenders of Virualized list. Works with strict=true option',
     },
     isLayoutAnimationEnabled: {
       defaultValue: true,

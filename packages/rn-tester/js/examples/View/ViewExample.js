@@ -833,6 +833,14 @@ export default ({
                 borderBottomLeftRadius: '100%',
               }}
             />
+            <View
+              style={{
+                width: 100,
+                height: 50,
+                borderWidth: 6,
+                borderRadius: '0%',
+              }}
+            />
           </View>
         );
       },

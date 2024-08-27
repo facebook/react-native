@@ -57,7 +57,7 @@ jobs:
       HERMES_WS_DIR: /tmp/hermes
       HERMES_TARBALL_ARTIFACTS_DIR: /tmp/hermes/hermes-runtime-darwin
       HERMES_OSXBIN_ARTIFACTS_DIR: /tmp/hermes/osx-bin
-      IOS_DEPLOYMENT_TARGET: "13.4"
+      IOS_DEPLOYMENT_TARGET: "15.1"
       XROS_DEPLOYMENT_TARGET: "1.0"
       MAC_DEPLOYMENT_TARGET: "10.15"
     strategy:
@@ -180,6 +180,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
       - name: Build and Publish NPM PAckage
         uses: ./.github/actions/build-npm-package
         with:

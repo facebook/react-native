@@ -9157,12 +9157,11 @@ declare export default typeof UTFSequence;
 `;
 
 exports[`public API should not change unintentionally Libraries/Utilities/Appearance.js 1`] = `
-"type AppearanceListener = (preferences: AppearancePreferences) => void;
-declare module.exports: {
-  getColorScheme(): ?ColorSchemeName,
-  setColorScheme(colorScheme: ?ColorSchemeName): void,
-  addChangeListener(listener: AppearanceListener): EventSubscription,
-};
+"declare export function getColorScheme(): ?ColorSchemeName;
+declare export function setColorScheme(colorScheme: ?ColorSchemeName): void;
+declare export function addChangeListener(
+  listener: ({ colorScheme: ?ColorSchemeName }) => void
+): EventSubscription;
 "
 `;
 

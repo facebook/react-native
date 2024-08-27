@@ -286,28 +286,8 @@ export type NativeModuleArrayTypeAnnotation<
   elementType?: T,
 }>;
 
-export type NativeModuleStringTypeAnnotation = $ReadOnly<{
-  type: 'StringTypeAnnotation',
-}>;
-
 export type NativeModuleNumberTypeAnnotation = $ReadOnly<{
   type: 'NumberTypeAnnotation',
-}>;
-
-export type NativeModuleInt32TypeAnnotation = $ReadOnly<{
-  type: 'Int32TypeAnnotation',
-}>;
-
-export type NativeModuleDoubleTypeAnnotation = $ReadOnly<{
-  type: 'DoubleTypeAnnotation',
-}>;
-
-export type NativeModuleFloatTypeAnnotation = $ReadOnly<{
-  type: 'FloatTypeAnnotation',
-}>;
-
-export type NativeModuleBooleanTypeAnnotation = $ReadOnly<{
-  type: 'BooleanTypeAnnotation',
 }>;
 
 export type NativeModuleEnumMembers = $ReadOnlyArray<
@@ -367,12 +347,12 @@ export type NativeModuleMixedTypeAnnotation = $ReadOnly<{
 }>;
 
 type NativeModuleEventEmitterBaseTypeAnnotation =
-  | NativeModuleBooleanTypeAnnotation
-  | NativeModuleDoubleTypeAnnotation
-  | NativeModuleFloatTypeAnnotation
-  | NativeModuleInt32TypeAnnotation
+  | BooleanTypeAnnotation
+  | DoubleTypeAnnotation
+  | FloatTypeAnnotation
+  | Int32TypeAnnotation
   | NativeModuleNumberTypeAnnotation
-  | NativeModuleStringTypeAnnotation
+  | StringTypeAnnotation
   | NativeModuleTypeAliasTypeAnnotation
   | NativeModuleGenericObjectTypeAnnotation
   | VoidTypeAnnotation;
@@ -385,12 +365,12 @@ export type NativeModuleEventEmitterTypeAnnotation =
     };
 
 export type NativeModuleBaseTypeAnnotation =
-  | NativeModuleStringTypeAnnotation
+  | StringTypeAnnotation
   | NativeModuleNumberTypeAnnotation
-  | NativeModuleInt32TypeAnnotation
-  | NativeModuleDoubleTypeAnnotation
-  | NativeModuleFloatTypeAnnotation
-  | NativeModuleBooleanTypeAnnotation
+  | Int32TypeAnnotation
+  | DoubleTypeAnnotation
+  | FloatTypeAnnotation
+  | BooleanTypeAnnotation
   | NativeModuleEnumDeclaration
   | NativeModuleGenericObjectTypeAnnotation
   | ReservedTypeAnnotation

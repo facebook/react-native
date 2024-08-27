@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<bd279ee43c537a9de0a38a2801dd76e0>>
+ * @generated SignedSource<<3d703d706bd75f37a4d1af33be80c1ef>>
  */
 
 /**
@@ -34,7 +34,6 @@ class ReactNativeFeatureFlagsAccessor {
   bool commonTestFlag();
   bool allowRecursiveCommitsWithSynchronousMountOnAndroid();
   bool batchRenderingUpdatesInEventLoop();
-  bool changeOrderOfMountingInstructionsOnAndroid();
   bool completeReactInstanceCreationOnBgThreadOnAndroid();
   bool destroyFabricSurfacesInReactInstanceManager();
   bool enableAlignItemsBaselineOnFabricIOS();
@@ -46,6 +45,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableFabricLogs();
   bool enableFabricRendererExclusively();
   bool enableGranularShadowTreeStateReconciliation();
+  bool enableLayoutAnimationsOnIOS();
   bool enableLongTaskAPI();
   bool enableMicrotasks();
   bool enablePropsUpdateReconciliationAndroid();
@@ -91,7 +91,6 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> allowRecursiveCommitsWithSynchronousMountOnAndroid_;
   std::atomic<std::optional<bool>> batchRenderingUpdatesInEventLoop_;
-  std::atomic<std::optional<bool>> changeOrderOfMountingInstructionsOnAndroid_;
   std::atomic<std::optional<bool>> completeReactInstanceCreationOnBgThreadOnAndroid_;
   std::atomic<std::optional<bool>> destroyFabricSurfacesInReactInstanceManager_;
   std::atomic<std::optional<bool>> enableAlignItemsBaselineOnFabricIOS_;
@@ -103,6 +102,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableFabricLogs_;
   std::atomic<std::optional<bool>> enableFabricRendererExclusively_;
   std::atomic<std::optional<bool>> enableGranularShadowTreeStateReconciliation_;
+  std::atomic<std::optional<bool>> enableLayoutAnimationsOnIOS_;
   std::atomic<std::optional<bool>> enableLongTaskAPI_;
   std::atomic<std::optional<bool>> enableMicrotasks_;
   std::atomic<std::optional<bool>> enablePropsUpdateReconciliationAndroid_;

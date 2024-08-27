@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b352d8e6c8dd42936ee48024320f6b77>>
+ * @generated SignedSource<<37c55ee907c49bff0f6b3fe1d56dcfe6>>
  */
 
 /**
@@ -45,12 +45,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun batchRenderingUpdatesInEventLoop(): Boolean = accessor.batchRenderingUpdatesInEventLoop()
-
-  /**
-   * When enabled, insert of views on Android will be moved from the beginning of the IntBufferBatchMountItem to be after layout updates.
-   */
-  @JvmStatic
-  public fun changeOrderOfMountingInstructionsOnAndroid(): Boolean = accessor.changeOrderOfMountingInstructionsOnAndroid()
 
   /**
    * Do not wait for a main-thread dispatch to complete init to start executing work on the JS thread on Android
@@ -117,6 +111,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableGranularShadowTreeStateReconciliation(): Boolean = accessor.enableGranularShadowTreeStateReconciliation()
+
+  /**
+   * When enabled, LayoutAnimations API will animate state changes on iOS.
+   */
+  @JvmStatic
+  public fun enableLayoutAnimationsOnIOS(): Boolean = accessor.enableLayoutAnimationsOnIOS()
 
   /**
    * Enables the reporting of long tasks through `PerformanceObserver`. Only works if the event loop is enabled.

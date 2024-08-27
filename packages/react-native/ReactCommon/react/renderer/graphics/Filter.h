@@ -7,10 +7,12 @@
 
 #pragma once
 
+#include <react/renderer/graphics/Color.h>
 #include <react/renderer/graphics/Float.h>
 
 #include <string>
 #include <string_view>
+#include <variant>
 #include <vector>
 
 namespace facebook::react {
@@ -28,11 +30,20 @@ enum class FilterType {
   DropShadow
 };
 
+struct DropShadowParams {
+  bool operator==(const DropShadowParams& other) const = default;
+
+  Float offsetX{};
+  Float offsetY{};
+  Float standardDeviation{};
+  SharedColor color{};
+};
+
 struct FilterFunction {
   bool operator==(const FilterFunction& other) const = default;
 
-  FilterType type;
-  Float amount;
+  FilterType type{};
+  std::variant<Float, DropShadowParams> parameters{};
 };
 
 inline FilterType filterTypeFromString(std::string_view filterName) {

@@ -141,7 +141,7 @@ fi
 if [[ -n "$CONFIG_JSON" ]]; then
   EXTRA_ARGS+=("--load-config" "$CONFIG_JSON")
 elif [[ -n "$CONFIG_CMD" ]]; then
-  EXTRA_ARGS+=("--config-cmd" "$CONFIG_APP")
+  EXTRA_ARGS+=("--config-cmd" "$CONFIG_CMD")
 else
   EXTRA_ARGS+=("--config-cmd" "$NODE_BINARY $NODE_ARGS $REACT_NATIVE_DIR/cli.js config")
 fi
@@ -149,7 +149,6 @@ fi
 # shellcheck disable=SC2086
 "$NODE_BINARY" $NODE_ARGS "$CLI_PATH" $BUNDLE_COMMAND \
   $CONFIG_ARG \
-  --config-cmd "$CONFIG" \
   --entry-file "$ENTRY_FILE" \
   --platform "$BUNDLE_PLATFORM" \
   --dev $DEV \

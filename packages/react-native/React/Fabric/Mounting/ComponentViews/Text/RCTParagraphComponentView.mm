@@ -54,7 +54,6 @@ using namespace facebook::react;
     _props = ParagraphShadowNode::defaultSharedProps();
 
     self.opaque = NO;
-    self.contentMode = UIViewContentModeRedraw;
     _textView = [RCTParagraphTextView new];
     _textView.backgroundColor = UIColor.clearColor;
     self.contentView = _textView;
@@ -324,8 +323,6 @@ Class<RCTComponentViewProtocol> RCTParagraphCls(void)
 }
 
 @implementation RCTParagraphTextView {
-  RCTParagraphComponentAccessibilityProvider *_accessibilityProvider;
-  UILongPressGestureRecognizer *_longPressGestureRecognizer;
   CAShapeLayer *_highlightLayer;
 }
 

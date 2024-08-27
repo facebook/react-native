@@ -25,6 +25,7 @@ jest
 
 import {format} from 'node:util';
 import * as React from 'react';
+import {createRef} from 'react';
 
 const {create, unmount, update} = require('../../../jest/renderer');
 const Animated = require('../Animated').default;
@@ -1265,7 +1266,7 @@ describe('Native Animated', () => {
   });
 
   describe('Animated Components', () => {
-    it('Should restore default values on prop updates only', async () => {
+    it('should restore default values on prop updates only', async () => {
       const opacity = new Animated.Value(0);
       opacity.__makeNative();
 
@@ -1280,6 +1281,58 @@ describe('Native Animated', () => {
       await unmount(root);
       // Make sure it doesn't get called on unmount.
       expect(NativeAnimatedModule.restoreDefaultValues).toHaveBeenCalledTimes(
+        1,
+      );
+    });
+
+    it('connects the native view on mount and disconnects on unmount', async () => {
+      const opacity = new Animated.Value(0, {useNativeDriver: true});
+
+      const root = await create(<Animated.View style={{opacity}} />);
+
+      // AnimatedProps > AnimatedStyle > opacity AnimatedValue
+      const propsTag = opacity
+        .__getChildren()[0]
+        .__getChildren()[0]
+        .__getNativeTag();
+      expect(NativeAnimatedModule.connectAnimatedNodeToView).toBeCalledWith(
+        propsTag,
+        1,
+      );
+
+      await unmount(root);
+      expect(
+        NativeAnimatedModule.disconnectAnimatedNodeFromView,
+      ).toBeCalledWith(propsTag, 1);
+    });
+
+    it('reconnects the native view when the component is remounted', async () => {
+      const opacity = new Animated.Value(0, {useNativeDriver: true});
+      const ref = createRef();
+      await create(<Animated.View ref={ref} style={{opacity}} />);
+
+      // AnimatedProps > AnimatedStyle > opacity AnimatedValue
+      const propsNode = opacity.__getChildren()[0].__getChildren()[0];
+      let propsTag = propsNode.__nativeTag;
+      expect(NativeAnimatedModule.connectAnimatedNodeToView).nthCalledWith(
+        1,
+        propsTag,
+        1,
+      );
+
+      // Simulate what happens when React.Activity unmounts and remounts
+      propsNode.__detach();
+      expect(
+        NativeAnimatedModule.disconnectAnimatedNodeFromView,
+      ).toBeCalledWith(propsTag, 1);
+
+      propsNode.__attach();
+      propsNode.setNativeView(ref.current);
+
+      propsTag = propsNode.__nativeTag;
+      expect(NativeAnimatedModule.connectAnimatedNodeToView).nthCalledWith(
+        2,
+        propsTag,
         1,
       );
     });

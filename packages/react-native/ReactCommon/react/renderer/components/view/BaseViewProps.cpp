@@ -388,36 +388,53 @@ static BorderRadii ensureNoOverlap(const BorderRadii& radii, const Size& size) {
   // Source: https://www.w3.org/TR/css-backgrounds-3/#corner-overlap
 
   auto insets = EdgeInsets{
-      /* .left = */ radii.topLeft + radii.bottomLeft,
-      /* .top = */ radii.topLeft + radii.topRight,
-      /* .right = */ radii.topRight + radii.bottomRight,
-      /* .bottom = */ radii.bottomLeft + radii.bottomRight,
+      .left = radii.topLeft.horizontal + radii.bottomLeft.horizontal,
+      .top = radii.topLeft.vertical + radii.topRight.vertical,
+      .right = radii.topRight.horizontal + radii.bottomRight.horizontal,
+      .bottom = radii.bottomLeft.vertical + radii.bottomRight.vertical,
   };
 
   auto insetsScale = EdgeInsets{
-      /* .left = */
-      insets.left > 0 ? std::min((Float)1.0, size.height / insets.left) : 0,
-      /* .top = */
-      insets.top > 0 ? std::min((Float)1.0, size.width / insets.top) : 0,
-      /* .right = */
-      insets.right > 0 ? std::min((Float)1.0, size.height / insets.right) : 0,
-      /* .bottom = */
-      insets.bottom > 0 ? std::min((Float)1.0, size.width / insets.bottom) : 0,
+      .left =
+          insets.left > 0 ? std::min((Float)1.0, size.height / insets.left) : 0,
+      .top = insets.top > 0 ? std::min((Float)1.0, size.width / insets.top) : 0,
+      .right = insets.right > 0
+          ? std::min((Float)1.0, size.height / insets.right)
+          : 0,
+      .bottom = insets.bottom > 0
+          ? std::min((Float)1.0, size.width / insets.bottom)
+          : 0,
   };
 
   return BorderRadii{
-      /* topLeft = */
-      static_cast<float>(
-          radii.topLeft * std::min(insetsScale.top, insetsScale.left)),
-      /* topRight = */
-      static_cast<float>(
-          radii.topRight * std::min(insetsScale.top, insetsScale.right)),
-      /* bottomLeft = */
-      static_cast<float>(
-          radii.bottomLeft * std::min(insetsScale.bottom, insetsScale.left)),
-      /* bottomRight = */
-      static_cast<float>(
-          radii.bottomRight * std::min(insetsScale.bottom, insetsScale.right)),
+      .topLeft =
+          {static_cast<float>(
+               radii.topLeft.horizontal *
+               std::min(insetsScale.top, insetsScale.left)),
+           static_cast<float>(
+               radii.topLeft.vertical *
+               std::min(insetsScale.top, insetsScale.left))},
+      .topRight =
+          {static_cast<float>(
+               radii.topRight.horizontal *
+               std::min(insetsScale.top, insetsScale.right)),
+           static_cast<float>(
+               radii.topRight.vertical *
+               std::min(insetsScale.top, insetsScale.right))},
+      .bottomLeft =
+          {static_cast<float>(
+               radii.bottomLeft.horizontal *
+               std::min(insetsScale.bottom, insetsScale.left)),
+           static_cast<float>(
+               radii.bottomLeft.vertical *
+               std::min(insetsScale.bottom, insetsScale.left))},
+      .bottomRight =
+          {static_cast<float>(
+               radii.bottomRight.horizontal *
+               std::min(insetsScale.bottom, insetsScale.right)),
+           static_cast<float>(
+               radii.bottomRight.vertical *
+               std::min(insetsScale.bottom, insetsScale.right))},
   };
 }
 
@@ -425,52 +442,35 @@ static BorderRadii radiiPercentToPoint(
     const RectangleCorners<ValueUnit>& radii,
     const Size& size) {
   return BorderRadii{
-      /* topLeft = */
-      (radii.topLeft.unit == UnitType::Percent)
-          ? static_cast<float>(
-                (radii.topLeft.value / 100) * std::max(size.width, size.height))
-          : static_cast<float>(radii.topLeft.value),
-      /* topRight = */
-      (radii.topRight.unit == UnitType::Percent)
-          ? static_cast<float>(
-                (radii.topRight.value / 100) *
-                std::max(size.width, size.height))
-          : static_cast<float>(radii.topRight.value),
-      /* bottomLeft = */
-      (radii.bottomLeft.unit == UnitType::Percent)
-          ? static_cast<float>(
-                (radii.bottomLeft.value / 100) *
-                std::max(size.width, size.height))
-          : static_cast<float>(radii.bottomLeft.value),
-      /* bottomRight = */
-      (radii.bottomRight.unit == UnitType::Percent)
-          ? static_cast<float>(
-                (radii.bottomRight.value / 100) *
-                std::max(size.width, size.height))
-          : static_cast<float>(radii.bottomRight.value),
+      .topLeft =
+          {radii.topLeft.resolve(size.width),
+           radii.topLeft.resolve(size.height)},
+      .topRight =
+          {radii.topRight.resolve(size.width),
+           radii.topRight.resolve(size.height)},
+      .bottomLeft =
+          {radii.bottomLeft.resolve(size.width),
+           radii.bottomLeft.resolve(size.height)},
+      .bottomRight =
+          {radii.bottomRight.resolve(size.width),
+           radii.bottomRight.resolve(size.height)},
   };
 }
 
 CascadedBorderWidths BaseViewProps::getBorderWidths() const {
   return CascadedBorderWidths{
-      /* .left = */ optionalFloatFromYogaValue(
-          yogaStyle.border(yoga::Edge::Left)),
-      /* .top = */
-      optionalFloatFromYogaValue(yogaStyle.border(yoga::Edge::Top)),
-      /* .right = */
-      optionalFloatFromYogaValue(yogaStyle.border(yoga::Edge::Right)),
-      /* .bottom = */
-      optionalFloatFromYogaValue(yogaStyle.border(yoga::Edge::Bottom)),
-      /* .start = */
-      optionalFloatFromYogaValue(yogaStyle.border(yoga::Edge::Start)),
-      /* .end = */
-      optionalFloatFromYogaValue(yogaStyle.border(yoga::Edge::End)),
-      /* .horizontal = */
-      optionalFloatFromYogaValue(yogaStyle.border(yoga::Edge::Horizontal)),
-      /* .vertical = */
-      optionalFloatFromYogaValue(yogaStyle.border(yoga::Edge::Vertical)),
-      /* .all = */
-      optionalFloatFromYogaValue(yogaStyle.border(yoga::Edge::All)),
+      .left = optionalFloatFromYogaValue(yogaStyle.border(yoga::Edge::Left)),
+      .top = optionalFloatFromYogaValue(yogaStyle.border(yoga::Edge::Top)),
+      .right = optionalFloatFromYogaValue(yogaStyle.border(yoga::Edge::Right)),
+      .bottom =
+          optionalFloatFromYogaValue(yogaStyle.border(yoga::Edge::Bottom)),
+      .start = optionalFloatFromYogaValue(yogaStyle.border(yoga::Edge::Start)),
+      .end = optionalFloatFromYogaValue(yogaStyle.border(yoga::Edge::End)),
+      .horizontal =
+          optionalFloatFromYogaValue(yogaStyle.border(yoga::Edge::Horizontal)),
+      .vertical =
+          optionalFloatFromYogaValue(yogaStyle.border(yoga::Edge::Vertical)),
+      .all = optionalFloatFromYogaValue(yogaStyle.border(yoga::Edge::All)),
   };
 }
 
@@ -486,13 +486,11 @@ BorderMetrics BaseViewProps::resolveBorderMetrics(
       layoutMetrics.frame.size);
 
   return {
-      /* .borderColors = */ borderColors.resolve(isRTL, {}),
-      /* .borderWidths = */ borderWidths.resolve(isRTL, 0),
-      /* .borderRadii = */
-      ensureNoOverlap(radii, layoutMetrics.frame.size),
-      /* .borderCurves = */
-      borderCurves.resolve(isRTL, BorderCurve::Circular),
-      /* .borderStyles = */ borderStyles.resolve(isRTL, BorderStyle::Solid),
+      .borderColors = borderColors.resolve(isRTL, {}),
+      .borderWidths = borderWidths.resolve(isRTL, 0),
+      .borderRadii = ensureNoOverlap(radii, layoutMetrics.frame.size),
+      .borderCurves = borderCurves.resolve(isRTL, BorderCurve::Circular),
+      .borderStyles = borderStyles.resolve(isRTL, BorderStyle::Solid),
   };
 }
 

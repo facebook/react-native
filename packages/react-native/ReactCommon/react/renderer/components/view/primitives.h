@@ -92,6 +92,13 @@ enum class BorderCurve : uint8_t { Circular, Continuous };
 
 enum class BorderStyle : uint8_t { Solid, Dotted, Dashed };
 
+struct CornerRadii {
+  float vertical{0.0f};
+  float horizontal{0.0f};
+
+  bool operator==(const CornerRadii& other) const = default;
+};
+
 enum class Cursor : uint8_t {
   Auto,
   Alias,
@@ -289,7 +296,7 @@ using BorderWidths = RectangleEdges<Float>;
 using BorderCurves = RectangleCorners<BorderCurve>;
 using BorderStyles = RectangleEdges<BorderStyle>;
 using BorderColors = RectangleEdges<SharedColor>;
-using BorderRadii = RectangleCorners<Float>;
+using BorderRadii = RectangleCorners<CornerRadii>;
 
 using CascadedBorderWidths = CascadedRectangleEdges<Float>;
 using CascadedBorderCurves = CascadedRectangleCorners<BorderCurve>;
