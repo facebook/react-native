@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<42b958c53ce709e54864e604135633a5>>
+ * @generated SignedSource<<ac8e50ab283a37bc338866e4caca291d>>
  */
 
 /**
@@ -80,6 +80,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableGranularShadowTreeStateReconciliation() override {
+    return false;
+  }
+
+  bool enableIOSViewClipToPaddingBox() override {
     return false;
   }
 

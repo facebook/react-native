@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<50413c841b6983476df2efcf74e1c5d6>>
+ * @generated SignedSource<<806c575e58455abee7d9348867a68f8a>>
  */
 
 /**
@@ -70,6 +70,9 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool enableGranularShadowTreeStateReconciliation(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
+  static bool enableIOSViewClipToPaddingBox(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool enableLayoutAnimationsOnIOS(
