@@ -6459,9 +6459,9 @@ public class com/facebook/react/views/imagehelper/ImageSource {
 	public final fun getSize ()D
 	public final fun getSource ()Ljava/lang/String;
 	public static final fun getTransparentBitmapImageSource (Landroid/content/Context;)Lcom/facebook/react/views/imagehelper/ImageSource;
-	public final fun getUri ()Landroid/net/Uri;
+	public fun getUri ()Landroid/net/Uri;
 	public fun hashCode ()I
-	public final fun isResource ()Z
+	public fun isResource ()Z
 }
 
 public final class com/facebook/react/views/imagehelper/ImageSource$Companion {
