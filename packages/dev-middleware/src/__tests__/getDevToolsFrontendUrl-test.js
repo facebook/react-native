@@ -20,7 +20,6 @@ describe('getDevToolsFrontendUrl', () => {
     enableNetworkInspector: false,
     enableNewDebugger: false,
     enableOpenDebuggerRedirect: false,
-    useFuseboxInternalBranding: false,
   };
 
   describe('relative: false, launchId: undefined (default)', () => {
