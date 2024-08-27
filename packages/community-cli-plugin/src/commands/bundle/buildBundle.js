@@ -18,7 +18,7 @@ import parseKeyValueParamArray from '../../utils/parseKeyValueParamArray';
 import saveAssets from './saveAssets';
 import {logger} from '@react-native-community/cli-tools';
 import chalk from 'chalk';
-import fs from 'fs/promises';
+import {promises as fs} from 'fs';
 import Server from 'metro/src/Server';
 import metroBundle from 'metro/src/shared/output/bundle';
 import metroRamBundle from 'metro/src/shared/output/RamBundle';
