@@ -18,7 +18,7 @@ import type {
   Message,
 } from './parseLogBoxLog';
 
-import NativeDebuggerSessionObserver from '../../../src/private/specs/modules/NativeDebuggerSessionObserver';
+import DebuggerSessionObserver from '../../../src/private/fusebox/FuseboxSessionObserver';
 import parseErrorStack from '../../Core/Devtools/parseErrorStack';
 import NativeDevSettings from '../../NativeModules/specs/NativeDevSettings';
 import NativeLogBox from '../../NativeModules/specs/NativeLogBox';
@@ -198,29 +198,23 @@ function appendNewLog(newLog: LogBoxLog) {
 }
 
 export function addLog(log: LogData): void {
-  if (
-    hostTargetSessionObserverSubscription == null &&
-    NativeDebuggerSessionObserver != null
-  ) {
-    hostTargetSessionObserverSubscription =
-      NativeDebuggerSessionObserver.subscribe(hasActiveSession => {
+  if (hostTargetSessionObserverSubscription == null) {
+    hostTargetSessionObserverSubscription = DebuggerSessionObserver.subscribe(
+      hasActiveSession => {
         if (hasActiveSession) {
           clearWarnings();
         } else {
           // Reset the flag so that we can show the message again if new warning was emitted
           hasShownFuseboxWarningsMigrationMessage = false;
         }
-      });
+      },
+    );
   }
 
   // If Host has Fusebox support
-  if (
-    log.level === 'warn' &&
-    global.__FUSEBOX_HAS_FULL_CONSOLE_SUPPORT__ &&
-    NativeDebuggerSessionObserver != null
-  ) {
+  if (log.level === 'warn' && global.__FUSEBOX_HAS_FULL_CONSOLE_SUPPORT__) {
     // And there is no active debugging session
-    if (!NativeDebuggerSessionObserver.hasActiveSession()) {
+    if (!DebuggerSessionObserver.hasActiveSession()) {
       showFuseboxWarningsMigrationMessageOnce();
     }
 
