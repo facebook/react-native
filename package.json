@@ -32,7 +32,8 @@
     "test-typescript": "dtslint packages/react-native/types",
     "test": "jest",
     "trigger-react-native-release": "node ./scripts/releases-local/trigger-react-native-release.js",
-    "update-lock": "npx yarn-deduplicate"
+    "update-lock": "npx yarn-deduplicate",
+    "postinstall": "cd packages/react-native-codegen && yarn build"
   },
   "workspaces": [
     "packages/*",
