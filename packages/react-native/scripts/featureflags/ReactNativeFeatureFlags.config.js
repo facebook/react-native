@@ -166,6 +166,11 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'Enables a fix to prevent the possibility of state updates in Fabric being missed due to race conditions with previous state updates.',
     },
+    fixMountingCoordinatorReportedPendingTransactionsOnAndroid: {
+      defaultValue: false,
+      description:
+        'Fixes a limitation on Android where the mounting coordinator would report there are no pending transactions but some of them were actually not processed due to the use of the push model.',
+    },
     forceBatchingMountItemsOnAndroid: {
       defaultValue: false,
       description:

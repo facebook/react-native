@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<42b958c53ce709e54864e604135633a5>>
+ * @generated SignedSource<<d47e51a2208f40fd2073c5e0395cd7ad>>
  */
 
 /**
@@ -132,6 +132,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool fixMissedFabricStateUpdatesOnAndroid() override {
+    return false;
+  }
+
+  bool fixMountingCoordinatorReportedPendingTransactionsOnAndroid() override {
     return false;
   }
 

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2ac7adf2656a8a356cc1b4d8f40bd20b>>
+ * @generated SignedSource<<00aae631e9d9b146fae9be838e04e165>>
  */
 
 /**
@@ -76,6 +76,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean = false
 
   override fun fixMissedFabricStateUpdatesOnAndroid(): Boolean = false
+
+  override fun fixMountingCoordinatorReportedPendingTransactionsOnAndroid(): Boolean = false
 
   override fun forceBatchingMountItemsOnAndroid(): Boolean = false
 

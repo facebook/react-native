@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9aa269f6c9056b4e0e477142554db59a>>
+ * @generated SignedSource<<748622d87b1051bbb1cd79fb479ab0e2>>
  */
 
 /**
@@ -171,6 +171,11 @@ class ReactNativeFeatureFlags {
    * Enables a fix to prevent the possibility of state updates in Fabric being missed due to race conditions with previous state updates.
    */
   RN_EXPORT static bool fixMissedFabricStateUpdatesOnAndroid();
+
+  /**
+   * Fixes a limitation on Android where the mounting coordinator would report there are no pending transactions but some of them were actually not processed due to the use of the push model.
+   */
+  RN_EXPORT static bool fixMountingCoordinatorReportedPendingTransactionsOnAndroid();
 
   /**
    * Forces the mounting layer on Android to always batch mount items instead of dispatching them immediately. This might fix some crashes related to synchronous state updates, where some views dispatch state updates during mount.
