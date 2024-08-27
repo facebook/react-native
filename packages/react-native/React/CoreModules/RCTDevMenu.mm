@@ -272,7 +272,7 @@ RCT_EXPORT_MODULE()
       BOOL isDisconnected = RCTInspectorDevServerHelper.isPackagerDisconnected;
       NSString *title = isDisconnected
           ? [NSString stringWithFormat:@"Connect to %@ to debug JavaScript", RCT_PACKAGER_NAME]
-          : @"Open Debugger";
+          : @"Open DevTools";
       RCTDevMenuItem *item = [RCTDevMenuItem
           buttonItemWithTitle:title
                       handler:^{
