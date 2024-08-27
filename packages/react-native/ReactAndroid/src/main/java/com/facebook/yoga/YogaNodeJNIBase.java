@@ -411,6 +411,10 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
     YogaNative.jni_YGNodeStyleSetPositionPercentJNI(mNativePointer, edge.intValue(), percent);
   }
 
+  public void setPositionAuto(YogaEdge edge) {
+    YogaNative.jni_YGNodeStyleSetPositionAutoJNI(mNativePointer, edge.intValue());
+  }
+
   public YogaValue getWidth() {
     return valueFromLong(YogaNative.jni_YGNodeStyleGetWidthJNI(mNativePointer));
   }
