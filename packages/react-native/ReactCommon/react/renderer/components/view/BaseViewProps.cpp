@@ -346,6 +346,8 @@ void BaseViewProps::setProp(
     RAW_SET_PROP_SWITCH_CASE_BASIC(removeClippedSubviews);
     RAW_SET_PROP_SWITCH_CASE_BASIC(experimental_layoutConformance);
     RAW_SET_PROP_SWITCH_CASE_BASIC(cursor);
+    RAW_SET_PROP_SWITCH_CASE(filter, "experimental_filter");
+    RAW_SET_PROP_SWITCH_CASE(boxShadow, "experimental_boxShadow");
     // events field
     VIEW_EVENT_CASE(PointerEnter);
     VIEW_EVENT_CASE(PointerEnterCapture);
