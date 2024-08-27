@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<50413c841b6983476df2efcf74e1c5d6>>
+ * @generated SignedSource<<a03c665dfa72c2f0514bc81d96ab827a>>
  */
 
 /**
@@ -109,6 +109,9 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool fixMissedFabricStateUpdatesOnAndroid(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
+  static bool fixMountingCoordinatorReportedPendingTransactionsOnAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool forceBatchingMountItemsOnAndroid(

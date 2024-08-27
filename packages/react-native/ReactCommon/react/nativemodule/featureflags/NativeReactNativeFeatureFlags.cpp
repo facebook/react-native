@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<79105bae18d1d43c3d425ddc9e7eb56d>>
+ * @generated SignedSource<<903710df33dd5666f8f2ddce79f66660>>
  */
 
 /**
@@ -170,6 +170,11 @@ bool NativeReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndR
 bool NativeReactNativeFeatureFlags::fixMissedFabricStateUpdatesOnAndroid(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::fixMissedFabricStateUpdatesOnAndroid();
+}
+
+bool NativeReactNativeFeatureFlags::fixMountingCoordinatorReportedPendingTransactionsOnAndroid(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::fixMountingCoordinatorReportedPendingTransactionsOnAndroid();
 }
 
 bool NativeReactNativeFeatureFlags::forceBatchingMountItemsOnAndroid(

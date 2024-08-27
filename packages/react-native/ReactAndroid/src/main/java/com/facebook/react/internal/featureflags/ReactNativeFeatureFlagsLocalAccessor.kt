@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d883bc5832598b7034aaedfe8606a9ff>>
+ * @generated SignedSource<<ead344838f30d7e3f1205d7bbabbc803>>
  */
 
 /**
@@ -51,6 +51,7 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var fixIncorrectScrollViewStateUpdateOnAndroidCache: Boolean? = null
   private var fixMappingOfEventPrioritiesBetweenFabricAndReactCache: Boolean? = null
   private var fixMissedFabricStateUpdatesOnAndroidCache: Boolean? = null
+  private var fixMountingCoordinatorReportedPendingTransactionsOnAndroidCache: Boolean? = null
   private var forceBatchingMountItemsOnAndroidCache: Boolean? = null
   private var fuseboxEnabledDebugCache: Boolean? = null
   private var fuseboxEnabledReleaseCache: Boolean? = null
@@ -336,6 +337,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.fixMissedFabricStateUpdatesOnAndroid()
       accessedFeatureFlags.add("fixMissedFabricStateUpdatesOnAndroid")
       fixMissedFabricStateUpdatesOnAndroidCache = cached
+    }
+    return cached
+  }
+
+  override fun fixMountingCoordinatorReportedPendingTransactionsOnAndroid(): Boolean {
+    var cached = fixMountingCoordinatorReportedPendingTransactionsOnAndroidCache
+    if (cached == null) {
+      cached = currentProvider.fixMountingCoordinatorReportedPendingTransactionsOnAndroid()
+      accessedFeatureFlags.add("fixMountingCoordinatorReportedPendingTransactionsOnAndroid")
+      fixMountingCoordinatorReportedPendingTransactionsOnAndroidCache = cached
     }
     return cached
   }

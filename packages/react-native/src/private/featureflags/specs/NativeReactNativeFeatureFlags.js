@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1f1710a12f6980b23bb6c0ece0060b59>>
+ * @generated SignedSource<<0f11ba941f22bed8f3b43d1332dc4557>>
  * @flow strict-local
  */
 
@@ -50,6 +50,7 @@ export interface Spec extends TurboModule {
   +fixIncorrectScrollViewStateUpdateOnAndroid?: () => boolean;
   +fixMappingOfEventPrioritiesBetweenFabricAndReact?: () => boolean;
   +fixMissedFabricStateUpdatesOnAndroid?: () => boolean;
+  +fixMountingCoordinatorReportedPendingTransactionsOnAndroid?: () => boolean;
   +forceBatchingMountItemsOnAndroid?: () => boolean;
   +fuseboxEnabledDebug?: () => boolean;
   +fuseboxEnabledRelease?: () => boolean;

@@ -102,6 +102,21 @@ void Binding::drainPreallocateViewsQueue() {
 }
 
 void Binding::reportMount(SurfaceId surfaceId) {
+  if (ReactNativeFeatureFlags::
+          fixMountingCoordinatorReportedPendingTransactionsOnAndroid()) {
+    // This is a fix for `MountingCoordinator::hasPendingTransactions` on
+    // Android, which otherwise would report no pending transactions
+    // incorrectly. This is due to the push model used on Android and can be
+    // removed when we migrate to a pull model.
+    std::shared_lock lock(surfaceHandlerRegistryMutex_);
+
+    auto iterator = surfaceHandlerRegistry_.find(surfaceId);
+    if (iterator != surfaceHandlerRegistry_.end()) {
+      auto& surfaceHandler = iterator->second;
+      surfaceHandler.getMountingCoordinator()->didPerformAsyncTransactions();
+    }
+  }
+
   auto scheduler = getScheduler();
   if (!scheduler) {
     LOG(ERROR) << "Binding::reportMount: scheduler disappeared";
@@ -451,7 +466,13 @@ std::shared_ptr<FabricMountingManager> Binding::getMountingManager(
 
 void Binding::schedulerDidFinishTransaction(
     const MountingCoordinator::Shared& mountingCoordinator) {
-  auto mountingTransaction = mountingCoordinator->pullTransaction();
+  // We shouldn't be pulling the transaction here (which triggers diffing of
+  // the trees to determine the mutations to run on the host platform),
+  // but we have to due to current limitations in the Android implementation.
+  auto mountingTransaction = mountingCoordinator->pullTransaction(
+      // Indicate that the transaction will be performed asynchronously
+      ReactNativeFeatureFlags::
+          fixMountingCoordinatorReportedPendingTransactionsOnAndroid());
   if (!mountingTransaction.has_value()) {
     return;
   }
