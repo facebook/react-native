@@ -223,6 +223,89 @@ class ReactSettingsExtensionTest {
         .isEqualTo("9be5bca432b81becf4f54451aea021add68376330581eaa93ab9a0b3e4e29a3b")
   }
 
+  @Test
+  fun isExistingConfigValid_withMissingFile_returnsFalse() {
+    val buildFolder = tempFolder.newFolder("build")
+    val configFile = File(buildFolder, "autolinking.json")
+
+    assertThat(ReactSettingsExtension.isExistingConfigValid(configFile)).isFalse()
+  }
+
+  @Test
+  fun isExistingConfigValid_withEmptyFile_returnsFalse() {
+    val buildFolder = tempFolder.newFolder("build")
+
+    val configFile = File(buildFolder, "autolinking.json").apply { createNewFile() }
+
+    assertThat(ReactSettingsExtension.isExistingConfigValid(configFile)).isFalse()
+  }
+
+  @Test
+  fun isExistingConfigValid_withEmptyJson_returnsFalse() {
+    val buildFolder = tempFolder.newFolder("build")
+
+    val configFile = File(buildFolder, "autolinking.json").apply { writeText("{}") }
+
+    assertThat(ReactSettingsExtension.isExistingConfigValid(configFile)).isFalse()
+  }
+
+  @Test
+  fun isExistingConfigValid_withMissingDependenciesInJson_returnsFalse() {
+    val invalidJsonFile =
+        createJsonFile(
+            """
+      {
+        "reactNativeVersion": "1000.0.0"
+      }
+      """
+                .trimIndent())
+
+    assertThat(ReactSettingsExtension.isExistingConfigValid(invalidJsonFile)).isFalse()
+  }
+
+  @Test
+  fun isExistingConfigValid_withExistingEmptyDependenciesInJson_returnsTrue() {
+    val validJsonFile =
+        createJsonFile(
+            """
+      {
+        "reactNativeVersion": "1000.0.0",
+        "dependencies": {}
+      }
+      """
+                .trimIndent())
+
+    assertThat(ReactSettingsExtension.isExistingConfigValid(validJsonFile)).isTrue()
+  }
+
+  @Test
+  fun isExistingConfigValid_withExistingDependenciesInJson_returnsTrue() {
+    val validJsonFile =
+        createJsonFile(
+            """
+      {
+        "reactNativeVersion": "1000.0.0",
+        "dependencies": {
+          "@react-native/oss-library-example": {
+            "root": "./node_modules/@react-native/oss-library-example",
+            "name": "@react-native/oss-library-example",
+            "platforms": {
+              "ios": {
+                "podspecPath": "./node_modules/@react-native/oss-library-example/OSSLibraryExample.podspec",
+                "version": "0.0.1",
+                "configurations": [],
+                "scriptPhases": []
+              }
+            }
+          }
+        }
+      }
+      """
+                .trimIndent())
+
+    assertThat(ReactSettingsExtension.isExistingConfigValid(validJsonFile)).isTrue()
+  }
+
   private fun createJsonFile(@Language("JSON") input: String) =
       tempFolder.newFile().apply { writeText(input) }
 }
