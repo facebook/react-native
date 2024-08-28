@@ -969,7 +969,7 @@ public class ReactViewGroup extends ViewGroup
   @Override
   protected void dispatchDraw(Canvas canvas) {
     if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      if (mOverflow != Overflow.VISIBLE) {
+      if (mOverflow != Overflow.VISIBLE || getTag(R.id.filter) != null) {
         BackgroundStyleApplicator.clipToPaddingBox(this, canvas);
       }
       super.dispatchDraw(canvas);
@@ -1034,7 +1034,14 @@ public class ReactViewGroup extends ViewGroup
   }
 
   private void dispatchOverflowDraw(Canvas canvas) {
-    switch (mOverflow) {
+    Overflow tempOverflow = mOverflow;
+
+    // If the view contains a filter, we clip to the padding box.
+    if (getTag(R.id.filter) != null) {
+      tempOverflow = Overflow.HIDDEN;
+    }
+
+    switch (tempOverflow) {
       case VISIBLE:
         if (mPath != null) {
           mPath.rewind();
