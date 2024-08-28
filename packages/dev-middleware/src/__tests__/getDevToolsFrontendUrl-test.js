@@ -18,7 +18,6 @@ describe('getDevToolsFrontendUrl', () => {
 
   const experiments = {
     enableNetworkInspector: false,
-    enableNewDebugger: false,
     enableOpenDebuggerRedirect: false,
   };
 
@@ -39,7 +38,7 @@ describe('getDevToolsFrontendUrl', () => {
 
     test('should return a valid url for enableNetworkInspector experiment on', async () => {
       const actual = getDevToolsFrontendUrl(
-        {...experiments, enableNetworkInspector: true, enableNewDebugger: true},
+        {...experiments, enableNetworkInspector: true},
         webSocketDebuggerUrl,
         devServerUrl,
       );
@@ -96,7 +95,7 @@ describe('getDevToolsFrontendUrl', () => {
 
     test('should return a valid url for enableNetworkInspector experiment on', async () => {
       const actual = getDevToolsFrontendUrl(
-        {...experiments, enableNetworkInspector: true, enableNewDebugger: true},
+        {...experiments, enableNetworkInspector: true},
         webSocketDebuggerUrl,
         devServerUrl,
         {
@@ -151,7 +150,7 @@ describe('getDevToolsFrontendUrl', () => {
 
     test('should return a valid url for enableNetworkInspector experiment on', async () => {
       const actual = getDevToolsFrontendUrl(
-        {...experiments, enableNetworkInspector: true, enableNewDebugger: true},
+        {...experiments, enableNetworkInspector: true},
         webSocketDebuggerUrl,
         devServerUrl,
         {

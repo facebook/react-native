@@ -30,7 +30,7 @@ type Options = $ReadOnly<{
 }>;
 
 /**
- * Open the JavaScript debugger for a given CDP target (direct Hermes debugging).
+ * Open the debugger frontend for a given CDP target.
  *
  * Currently supports Hermes targets, opening debugger websocket URL in Chrome
  * DevTools.
