@@ -221,9 +221,9 @@ HostAgent::~HostAgent() {
 }
 
 void HostAgent::sendFuseboxNotice() {
-  static constexpr auto kFuseboxNotice = ANSI_COLOR_BG_YELLOW
-      "Welcome to " ANSI_WEIGHT_BOLD "React Native DevTools" ANSI_WEIGHT_RESET
-      " (experimental)"sv;
+  static constexpr auto kFuseboxNotice =
+      ANSI_COLOR_BG_YELLOW "Welcome to " ANSI_WEIGHT_BOLD
+                           "React Native DevTools" ANSI_WEIGHT_RESET ""sv;
 
   sendInfoLogEntry(kFuseboxNotice);
 }
@@ -233,7 +233,7 @@ void HostAgent::sendNonFuseboxNotice() {
       ANSI_COLOR_BG_YELLOW ANSI_WEIGHT_BOLD
       "NOTE: " ANSI_WEIGHT_RESET
       "You are using an unsupported debugging client. "
-      "Use the Dev Menu in your app (or type `j` in the Metro terminal) to open the latest, supported React Native debugger."sv;
+      "Use the Dev Menu in your app (or type `j` in the Metro terminal) to open React Native DevTools."sv;
 
   std::vector<std::string> args;
   args.emplace_back(kNonFuseboxNotice);
