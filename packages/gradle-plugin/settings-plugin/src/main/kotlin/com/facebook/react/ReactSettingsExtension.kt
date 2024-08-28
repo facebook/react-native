@@ -7,6 +7,7 @@
 
 package com.facebook.react
 
+import com.facebook.react.model.ModelAutolinkingConfigJson
 import com.facebook.react.utils.JsonUtils
 import com.facebook.react.utils.windowsAwareCommandLine
 import java.io.File
@@ -54,7 +55,8 @@ abstract class ReactSettingsExtension @Inject constructor(val settings: Settings
   ) {
     outputFile.parentFile.mkdirs()
     val lockFilesChanged = checkAndUpdateLockfiles(lockFiles, outputFolder)
-    if (lockFilesChanged || outputFile.exists().not() || outputFile.length() != 0L) {
+    val invalidConfig = !validateConfigModel(JsonUtils.fromAutolinkingConfigJson(outputFile))
+    if (lockFilesChanged || invalidConfig) {
       val process =
           ProcessBuilder(command)
               .directory(workingDirectory)
@@ -150,5 +152,8 @@ abstract class ReactSettingsExtension @Inject constructor(val settings: Settings
 
     internal fun computeSha256(lockFile: File) =
         String.format("%032x", BigInteger(1, md.digest(lockFile.readBytes())))
+
+    internal fun validateConfigModel(model: ModelAutolinkingConfigJson?) =
+        model?.project?.android?.packageName != null
   }
 }
