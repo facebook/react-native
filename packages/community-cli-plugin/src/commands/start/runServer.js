@@ -34,7 +34,6 @@ export type StartCommandArgs = {
   assetPlugins?: string[],
   cert?: string,
   customLogReporterPath?: string,
-  experimentalDebugger: boolean,
   host?: string,
   https?: boolean,
   maxWorkers?: number,
@@ -113,10 +112,6 @@ async function runServer(
     projectRoot,
     serverBaseUrl: devServerUrl,
     logger,
-    unstable_experiments: {
-      // NOTE: Only affects the /open-debugger endpoint
-      enableNewDebugger: args.experimentalDebugger,
-    },
   });
 
   let reportEvent: (event: TerminalReportableEvent) => void;
@@ -135,7 +130,6 @@ async function runServer(
           cliConfig: ctx,
           devServerUrl,
           messageSocket: messageSocketEndpoint,
-          experimentalDebuggerFrontend: args.experimentalDebugger,
         });
       }
     },
