@@ -509,6 +509,10 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
           mEnableSyncOnScroll);
       mPreventReentry = false;
     }
+
+    if (mMaintainVisibleContentPositionHelper != null) {
+      mMaintainVisibleContentPositionHelper.onScroll();
+    }
   }
 
   @Nullable
@@ -1459,7 +1463,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     if (layoutDirection == LAYOUT_DIRECTION_RTL) {
       adjustPositionForContentChangeRTL(left, right, oldLeft, oldRight);
     } else if (mMaintainVisibleContentPositionHelper != null) {
-      mMaintainVisibleContentPositionHelper.updateScrollPosition();
+      mMaintainVisibleContentPositionHelper.onLayout();
     }
   }
 

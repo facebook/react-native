@@ -86,6 +86,7 @@ class MaintainVisibleScrollPositionHelper<ScrollViewT extends ViewGroup & HasSmo
       return;
     }
     mListening = false;
+    mFirstVisibleView = null;
     getUIManagerModule().removeUIManagerEventListener(this);
   }
 
@@ -93,20 +94,19 @@ class MaintainVisibleScrollPositionHelper<ScrollViewT extends ViewGroup & HasSmo
    * Update the scroll position of the managed ScrollView. This should be called after layout has
    * been updated.
    */
-  public void updateScrollPosition() {
+  public void onLayout() {
     // On Fabric this will be called internally in `didMountItems`.
-    if (ViewUtil.getUIManagerType(mScrollView.getId()) == UIManagerType.FABRIC) {
-      return;
+    if (ViewUtil.getUIManagerType(mScrollView.getId()) != UIManagerType.FABRIC) {
+      didMountItemsInternal();
     }
-    updateScrollPositionInternal();
   }
 
-  private void updateScrollPositionInternal() {
-    if (mConfig == null || mFirstVisibleView == null || mPrevFirstVisibleFrame == null) {
+  private void didMountItemsInternal() {
+    if (mConfig == null || mPrevFirstVisibleFrame == null) {
       return;
     }
 
-    View firstVisibleView = mFirstVisibleView.get();
+    View firstVisibleView = getFirstVisibleView();
     if (firstVisibleView == null) {
       return;
     }
@@ -150,7 +150,7 @@ class MaintainVisibleScrollPositionHelper<ScrollViewT extends ViewGroup & HasSmo
             ViewUtil.getUIManagerType(mScrollView.getId())));
   }
 
-  private void computeTargetView() {
+  public void onScroll() {
     if (mConfig == null) {
       return;
     }
@@ -160,6 +160,12 @@ class MaintainVisibleScrollPositionHelper<ScrollViewT extends ViewGroup & HasSmo
     }
 
     int currentScroll = mHorizontal ? mScrollView.getScrollX() : mScrollView.getScrollY();
+    View firstVisibleView = null;
+    // We cannot assume that the views will be in position order because of things like z-index
+    // which will change the order of views in their parent. This means we need to iterate through
+    // the full children array and find the view with the smallest position that is bigger than
+    // the scroll position.
+    float firstVisibleViewPosition = Float.MAX_VALUE;
     for (int i = mConfig.minIndexForVisible; i < contentView.getChildCount(); i++) {
       View child = contentView.getChildAt(i);
 
@@ -168,14 +174,36 @@ class MaintainVisibleScrollPositionHelper<ScrollViewT extends ViewGroup & HasSmo
           mHorizontal ? child.getX() + child.getWidth() : child.getY() + child.getHeight();
 
       // If the child is partially visible or this is the last child, select it as the anchor.
-      if (position > currentScroll || i == contentView.getChildCount() - 1) {
-        mFirstVisibleView = new WeakReference<>(child);
-        Rect frame = new Rect();
-        child.getHitRect(frame);
-        mPrevFirstVisibleFrame = frame;
-        break;
+      if ((position > currentScroll && position < firstVisibleViewPosition) ||
+              (firstVisibleView == null && i == contentView.getChildCount() - 1)) {
+        firstVisibleView = child;
+        firstVisibleViewPosition = position;
       }
     }
+    mFirstVisibleView = new WeakReference<>(firstVisibleView);
+  }
+
+  private View getFirstVisibleView() {
+    return mFirstVisibleView != null ? mFirstVisibleView.get() : null;
+  }
+
+  private void willMountItemsInternal() {
+    View firstVisibleView = getFirstVisibleView();
+
+    // If we don't have a first visible view because no scroll happened call onScroll
+    // to update it.
+    if (firstVisibleView == null) {
+      onScroll();
+      firstVisibleView = getFirstVisibleView();
+
+      // There are cases where it is possible for this to still be null so just bail out.
+      if (firstVisibleView == null) {
+        return;
+      }
+    }
+    Rect frame = new Rect();
+    firstVisibleView.getHitRect(frame);
+    mPrevFirstVisibleFrame = frame;
   }
 
   // UIManagerListener
@@ -186,19 +214,19 @@ class MaintainVisibleScrollPositionHelper<ScrollViewT extends ViewGroup & HasSmo
         new Runnable() {
           @Override
           public void run() {
-            computeTargetView();
+            willMountItemsInternal();
           }
         });
   }
 
   @Override
   public void willMountItems(UIManager uiManager) {
-    computeTargetView();
+    willMountItemsInternal();
   }
 
   @Override
   public void didMountItems(UIManager uiManager) {
-    updateScrollPositionInternal();
+    didMountItemsInternal();
   }
 
   @Override

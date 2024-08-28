@@ -433,6 +433,10 @@ public class ReactScrollView extends ScrollView
           mEnableSyncOnScroll);
       mPreventReentry = false;
     }
+
+    if (mMaintainVisibleContentPositionHelper != null) {
+      mMaintainVisibleContentPositionHelper.onScroll();
+    }
   }
 
   @Override
@@ -1235,7 +1239,7 @@ public class ReactScrollView extends ScrollView
     }
 
     if (mMaintainVisibleContentPositionHelper != null) {
-      mMaintainVisibleContentPositionHelper.updateScrollPosition();
+      mMaintainVisibleContentPositionHelper.onLayout();
     }
 
     if (isShown() && isContentReady()) {
