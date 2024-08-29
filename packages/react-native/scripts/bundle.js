@@ -31,6 +31,8 @@ program
     'npx react-native config',
   )
   .option('--load-config <string>', 'JSON project config')
+  .option('--verbose', 'Additional logs', () => true, false)
+  .allowUnknownOption()
   .action(async function handleAction() {
     let config = null;
     let options = program.opts();
