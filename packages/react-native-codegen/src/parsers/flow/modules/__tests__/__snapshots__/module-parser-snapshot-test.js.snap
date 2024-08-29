@@ -798,14 +798,20 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_ARRAY_WI
             'typeAnnotation': {
               'type': 'FunctionTypeAnnotation',
               'returnTypeAnnotation': {
-                'type': 'ArrayTypeAnnotation'
+                'type': 'ArrayTypeAnnotation',
+                'elementType': {
+                  'type': 'AnyTypeAnnotation'
+                }
               },
               'params': [
                 {
                   'name': 'arg',
                   'optional': false,
                   'typeAnnotation': {
-                    'type': 'ArrayTypeAnnotation'
+                    'type': 'ArrayTypeAnnotation',
+                    'elementType': {
+                      'type': 'AnyTypeAnnotation'
+                    }
                   }
                 }
               ]

@@ -110,8 +110,8 @@ export interface ExtendsPropsShape {
 export interface EventTypeShape {
   readonly name: string;
   readonly bubblingType:
-    | 'direct'
-    | 'bubble';
+  | 'direct'
+  | 'bubble';
   readonly optional: boolean;
   readonly paperTopLevelNameDeprecated?: string | undefined;
   readonly typeAnnotation: {
@@ -137,55 +137,55 @@ export type EventTypeAnnotation =
 export type ArrayTypeAnnotation = {
   readonly type: 'ArrayTypeAnnotation';
   readonly elementType:
-    | BooleanTypeAnnotation
-    | StringTypeAnnotation
-    | DoubleTypeAnnotation
-    | FloatTypeAnnotation
-    | Int32TypeAnnotation
-    | {
-        readonly type: 'StringEnumTypeAnnotation';
-        readonly default: string;
-        readonly options: readonly string[];
-      }
-    | ObjectTypeAnnotation<PropTypeAnnotation>
-    | ReservedPropTypeAnnotation
-    | {
-        readonly type: 'ArrayTypeAnnotation';
-        readonly elementType: ObjectTypeAnnotation<PropTypeAnnotation>;
-      };
+  | BooleanTypeAnnotation
+  | StringTypeAnnotation
+  | DoubleTypeAnnotation
+  | FloatTypeAnnotation
+  | Int32TypeAnnotation
+  | {
+    readonly type: 'StringEnumTypeAnnotation';
+    readonly default: string;
+    readonly options: readonly string[];
+  }
+  | ObjectTypeAnnotation<PropTypeAnnotation>
+  | ReservedPropTypeAnnotation
+  | {
+    readonly type: 'ArrayTypeAnnotation';
+    readonly elementType: ObjectTypeAnnotation<PropTypeAnnotation>;
+  };
 }
 
 export type PropTypeAnnotation =
   | {
-      readonly type: 'BooleanTypeAnnotation';
-      readonly default: boolean | null;
-    }
+    readonly type: 'BooleanTypeAnnotation';
+    readonly default: boolean | null;
+  }
   | {
-      readonly type: 'StringTypeAnnotation';
-      readonly default: string | null;
-    }
+    readonly type: 'StringTypeAnnotation';
+    readonly default: string | null;
+  }
   | {
-      readonly type: 'DoubleTypeAnnotation';
-      readonly default: number;
-    }
+    readonly type: 'DoubleTypeAnnotation';
+    readonly default: number;
+  }
   | {
-      readonly type: 'FloatTypeAnnotation';
-      readonly default: number | null;
-    }
+    readonly type: 'FloatTypeAnnotation';
+    readonly default: number | null;
+  }
   | {
-      readonly type: 'Int32TypeAnnotation';
-      readonly default: number;
-    }
+    readonly type: 'Int32TypeAnnotation';
+    readonly default: number;
+  }
   | {
-      readonly type: 'StringEnumTypeAnnotation';
-      readonly default: string;
-      readonly options: readonly string[];
-    }
+    readonly type: 'StringEnumTypeAnnotation';
+    readonly default: string;
+    readonly options: readonly string[];
+  }
   | {
-      readonly type: 'Int32EnumTypeAnnotation';
-      readonly default: number;
-      readonly options: readonly number[];
-    }
+    readonly type: 'Int32EnumTypeAnnotation';
+    readonly default: number;
+    readonly options: readonly number[];
+  }
   | ReservedPropTypeAnnotation
   | ObjectTypeAnnotation<PropTypeAnnotation>
   | ArrayTypeAnnotation
@@ -194,12 +194,12 @@ export type PropTypeAnnotation =
 export interface ReservedPropTypeAnnotation {
   readonly type: 'ReservedPropTypeAnnotation';
   readonly name:
-    | 'ColorPrimitive'
-    | 'ImageSourcePrimitive'
-    | 'PointPrimitive'
-    | 'EdgeInsetsPrimitive'
-    | 'ImageRequestPrimitive'
-    | 'DimensionPrimitive';
+  | 'ColorPrimitive'
+  | 'ImageSourcePrimitive'
+  | 'PointPrimitive'
+  | 'EdgeInsetsPrimitive'
+  | 'ImageRequestPrimitive'
+  | 'DimensionPrimitive';
 }
 
 export type CommandTypeAnnotation = FunctionTypeAnnotation<
@@ -279,7 +279,11 @@ export interface NativeModuleArrayTypeAnnotation<T extends Nullable<NativeModule
    * TODO(T72031674): Migrate all our NativeModule specs to not use
    * invalid Array ElementTypes. Then, make the elementType required.
    */
-  readonly elementType?: T | undefined;
+  readonly elementType: T | UnsafeAnyTypeAnnotation;
+}
+
+export interface UnsafeAnyTypeAnnotation {
+  readonly type: 'AnyTypeAnnotation',
 }
 
 export interface NativeModuleStringTypeAnnotation {
@@ -375,7 +379,7 @@ export type NativeModuleEventEmitterTypeAnnotation =
   | NativeModuleEventEmitterBaseTypeAnnotation
   | {
     readonly type: 'ArrayTypeAnnotation';
-    readonly elementType: NativeModuleEventEmitterBaseTypeAnnotation | {type: string};
+    readonly elementType: NativeModuleEventEmitterBaseTypeAnnotation | { type: string };
   };
 
 export type NativeModuleBaseTypeAnnotation =
