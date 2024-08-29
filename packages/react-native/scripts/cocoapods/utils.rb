@@ -539,7 +539,7 @@ class ReactNativePodsUtils
 
     def self.add_search_path_if_not_included(current_search_paths, new_search_path)
         if !current_search_paths.include?(new_search_path)
-            current_search_paths << " #{new_search_path}"
+            current_search_paths << "#{new_search_path}"
         end
         return current_search_paths
     end
