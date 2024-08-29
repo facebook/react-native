@@ -297,7 +297,7 @@ export type NativeModuleNumberTypeAnnotation = $ReadOnly<{
 export type NativeModuleEnumMembers = $ReadOnlyArray<
   $ReadOnly<{
     name: string,
-    value: string,
+    value: string | number,
   }>,
 >;
 
