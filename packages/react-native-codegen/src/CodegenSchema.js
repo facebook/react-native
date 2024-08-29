@@ -283,8 +283,12 @@ export type NativeModuleArrayTypeAnnotation<
    * TODO(T72031674): Migrate all our NativeModule specs to not use
    * invalid Array ElementTypes. Then, make the elementType required.
    */
-  elementType?: T,
+  elementType: T | UnsafeAnyTypeAnnotation,
 }>;
+
+export type UnsafeAnyTypeAnnotation = {
+  type: 'AnyTypeAnnotation',
+};
 
 export type NativeModuleNumberTypeAnnotation = $ReadOnly<{
   type: 'NumberTypeAnnotation',

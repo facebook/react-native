@@ -305,7 +305,7 @@ function getReturnObjCType(
     case 'TypeAliasTypeAnnotation':
       return wrapOptional('NSDictionary *', isRequired);
     case 'ArrayTypeAnnotation':
-      if (typeAnnotation.elementType == null) {
+      if (typeAnnotation.elementType.type === 'AnyTypeAnnotation') {
         return wrapOptional('NSArray<id<NSObject>> *', isRequired);
       }
 

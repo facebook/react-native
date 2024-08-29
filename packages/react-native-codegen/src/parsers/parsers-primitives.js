@@ -466,6 +466,9 @@ function translateArrayTypeAnnotation(
   } catch (ex) {
     return wrapNullable(nullable, {
       type: 'ArrayTypeAnnotation',
+      elementType: {
+        type: 'AnyTypeAnnotation',
+      },
     });
   }
 }

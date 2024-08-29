@@ -93,9 +93,12 @@ class StructCollector {
         });
       }
       case 'ArrayTypeAnnotation': {
-        if (typeAnnotation.elementType == null) {
+        if (typeAnnotation.elementType.type === 'AnyTypeAnnotation') {
           return wrapNullable(nullable, {
             type: 'ArrayTypeAnnotation',
+            elementType: {
+              type: 'AnyTypeAnnotation',
+            },
           });
         }
 
