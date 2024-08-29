@@ -169,7 +169,8 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
   ShadowNodeFamily::Shared createFamily(
       const ShadowNodeFamilyFragment& fragment) const override {
     auto eventEmitter = std::make_shared<const ConcreteEventEmitter>(
-        std::make_shared<EventTarget>(fragment.instanceHandle),
+        std::make_shared<EventTarget>(
+            fragment.instanceHandle, fragment.surfaceId),
         eventDispatcher_);
     return std::make_shared<ShadowNodeFamily>(
         fragment, std::move(eventEmitter), eventDispatcher_, *this);
