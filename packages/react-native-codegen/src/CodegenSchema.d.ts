@@ -379,7 +379,7 @@ export type NativeModuleEventEmitterTypeAnnotation =
   | NativeModuleEventEmitterBaseTypeAnnotation
   | {
     readonly type: 'ArrayTypeAnnotation';
-    readonly elementType: NativeModuleEventEmitterBaseTypeAnnotation | { type: string };
+    readonly elementType: NativeModuleEventEmitterBaseTypeAnnotation;
   };
 
 export type NativeModuleBaseTypeAnnotation =
