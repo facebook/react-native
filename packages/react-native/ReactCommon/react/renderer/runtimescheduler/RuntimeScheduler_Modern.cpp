@@ -335,15 +335,15 @@ void RuntimeScheduler_Modern::runEventLoopTick(
     performMicrotaskCheckpoint(runtime);
   }
 
-  if (ReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop()) {
-    // "Update the rendering" step.
-    updateRendering();
-  }
-
   if (ReactNativeFeatureFlags::enableLongTaskAPI()) {
     auto taskEndTime = now_();
     markYieldingOpportunity(taskEndTime);
     reportLongTasks(task, taskStartTime, taskEndTime);
+  }
+
+  if (ReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop()) {
+    // "Update the rendering" step.
+    updateRendering();
   }
 
   currentTask_ = nullptr;
