@@ -365,7 +365,7 @@ export type NativeModuleEventEmitterTypeAnnotation =
   | NativeModuleEventEmitterBaseTypeAnnotation
   | {
       type: 'ArrayTypeAnnotation',
-      elementType: NativeModuleEventEmitterBaseTypeAnnotation | {type: string},
+      elementType: NativeModuleEventEmitterBaseTypeAnnotation,
     };
 
 export type NativeModuleBaseTypeAnnotation =
