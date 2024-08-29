@@ -9,6 +9,7 @@
 
 #include <react/performance/timeline/PerformanceEntryReporter.h>
 #include <react/renderer/core/EventLogger.h>
+#include <react/renderer/runtimescheduler/RuntimeSchedulerEventTimingDelegate.h>
 #include <react/renderer/uimanager/UIManagerMountHook.h>
 #include <memory>
 #include <mutex>
@@ -17,16 +18,25 @@
 
 namespace facebook::react {
 
-class EventPerformanceLogger : public EventLogger, public UIManagerMountHook {
+class EventPerformanceLogger : public EventLogger,
+                               public RuntimeSchedulerEventTimingDelegate,
+                               public UIManagerMountHook {
  public:
   explicit EventPerformanceLogger(
       std::weak_ptr<PerformanceEntryReporter> performanceEntryReporter);
 
 #pragma mark - EventLogger
 
-  EventTag onEventStart(std::string_view name) override;
+  EventTag onEventStart(std::string_view name, SharedEventTarget target)
+      override;
   void onEventProcessingStart(EventTag tag) override;
   void onEventProcessingEnd(EventTag tag) override;
+
+#pragma mark - RuntimeSchedulerEventTimingDelegate
+
+  void dispatchPendingEventTimingEntries(
+      const std::unordered_set<SurfaceId>&
+          surfaceIdsWithPendingRenderingUpdates) override;
 
 #pragma mark - UIManagerMountHook
 
@@ -37,13 +47,20 @@ class EventPerformanceLogger : public EventLogger, public UIManagerMountHook {
  private:
   struct EventEntry {
     std::string_view name;
+    SharedEventTarget target{nullptr};
     DOMHighResTimeStamp startTime{0.0};
     DOMHighResTimeStamp processingStartTime{0.0};
     DOMHighResTimeStamp processingEndTime{0.0};
 
+    bool isWaitingForMount{false};
+
     // TODO: Define the way to assign interaction IDs to the event chains
     // (T141358175)
     PerformanceEntryInteractionId interactionId{0};
+
+    bool isWaitingForDispatch() {
+      return processingEndTime == 0.0;
+    }
   };
 
   // Registry to store the events that are currently ongoing.
