@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     marginVertical: 5,
     marginHorizontal: 16,
-    experimental_boxShadow: '0 2px 4px -1px rgba(0, 0, 0, 0.25)',
+    boxShadow: '0 2px 4px -1px rgba(0, 0, 0, 0.25)',
     borderRadius: 8,
   },
   descriptionText: {
