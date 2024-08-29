@@ -54,7 +54,8 @@ abstract class ReactSettingsExtension @Inject constructor(val settings: Settings
   ) {
     outputFile.parentFile.mkdirs()
     val lockFilesChanged = checkAndUpdateLockfiles(lockFiles, outputFolder)
-    if (lockFilesChanged || outputFile.exists().not() || outputFile.length() != 0L) {
+    val existingConfigValid = isExistingConfigValid(outputFile)
+    if (lockFilesChanged || !existingConfigValid) {
       val process =
           ProcessBuilder(command)
               .directory(workingDirectory)
@@ -66,8 +67,8 @@ abstract class ReactSettingsExtension @Inject constructor(val settings: Settings
         val prefixCommand =
             "ERROR: autolinkLibrariesFromCommand: process ${command.joinToString(" ")}"
         val message =
-            if (!finished) "${prefixCommand} timed out"
-            else "${prefixCommand} exited with error code: ${process.exitValue()}"
+            if (!finished) "$prefixCommand timed out"
+            else "$prefixCommand exited with error code: ${process.exitValue()}"
         val logger = Logging.getLogger("ReactSettingsExtension")
         logger.error(message)
         if (outputFile.length() != 0L) {
@@ -150,5 +151,16 @@ abstract class ReactSettingsExtension @Inject constructor(val settings: Settings
 
     internal fun computeSha256(lockFile: File) =
         String.format("%032x", BigInteger(1, md.digest(lockFile.readBytes())))
+
+    internal fun isExistingConfigValid(input: File): Boolean {
+      if (input.exists().not()) {
+        return false
+      }
+      if (input.length() == 0L) {
+        return false
+      }
+      val parsed = JsonUtils.fromAutolinkingConfigJson(input) ?: return false
+      return parsed.dependencies != null
+    }
   }
 }
