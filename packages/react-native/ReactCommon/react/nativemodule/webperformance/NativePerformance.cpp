@@ -36,8 +36,8 @@ namespace {
 #ifdef WITH_PERFETTO
 
 const std::string TRACK_PREFIX = "Track:";
-const std::string DEFAULT_TRACK_NAME = "Web Performance: Timings";
-const std::string CUSTOM_TRACK_NAME_PREFIX = "Web Performance: ";
+const std::string DEFAULT_TRACK_NAME = "# Web Performance: Timings";
+const std::string CUSTOM_TRACK_NAME_PREFIX = "# Web Performance: ";
 
 std::tuple<std::string, std::string_view> parsePerfettoTrack(
     const std::string& name) {
@@ -117,7 +117,7 @@ void NativePerformance::measure(
     }
   }
 #endif
-  std::string trackName = "Web Performance";
+  std::string trackName = "# Web Performance";
   const int TRACK_PREFIX = 6;
   if (name.starts_with("Track:")) {
     const auto trackNameDelimiter = name.find(':', TRACK_PREFIX);
