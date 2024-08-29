@@ -170,7 +170,7 @@ TEST_P(RuntimeSchedulerTest, scheduleNonBatchedRenderingUpdate) {
   bool didRunRenderingUpdate = false;
 
   runtimeScheduler_->scheduleRenderingUpdate(
-      [&]() { didRunRenderingUpdate = true; });
+      0, [&]() { didRunRenderingUpdate = true; });
 
   EXPECT_TRUE(didRunRenderingUpdate);
 }
@@ -195,7 +195,7 @@ TEST_P(
     taskPosition = nextOperationPosition;
     nextOperationPosition++;
 
-    runtimeScheduler_->scheduleRenderingUpdate([&]() {
+    runtimeScheduler_->scheduleRenderingUpdate(0, [&]() {
       updateRenderingPosition = nextOperationPosition;
       nextOperationPosition++;
     });

@@ -176,6 +176,7 @@ void RuntimeScheduler_Legacy::callExpiredTasks(jsi::Runtime& runtime) {
 }
 
 void RuntimeScheduler_Legacy::scheduleRenderingUpdate(
+    SurfaceId /*surfaceId*/,
     RuntimeSchedulerRenderingUpdate&& renderingUpdate) {
   SystraceSection s("RuntimeScheduler::scheduleRenderingUpdate");
 
@@ -192,6 +193,11 @@ void RuntimeScheduler_Legacy::setShadowTreeRevisionConsistencyManager(
 
 void RuntimeScheduler_Legacy::setPerformanceEntryReporter(
     PerformanceEntryReporter* /*performanceEntryReporter*/) {
+  // No-op in the legacy scheduler
+}
+
+void RuntimeScheduler_Legacy::setEventTimingDelegate(
+    RuntimeSchedulerEventTimingDelegate* /*eventTimingDelegate*/) {
   // No-op in the legacy scheduler
 }
 

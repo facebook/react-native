@@ -101,9 +101,10 @@ void RuntimeScheduler::callExpiredTasks(jsi::Runtime& runtime) {
 }
 
 void RuntimeScheduler::scheduleRenderingUpdate(
+    SurfaceId surfaceId,
     RuntimeSchedulerRenderingUpdate&& renderingUpdate) {
   return runtimeSchedulerImpl_->scheduleRenderingUpdate(
-      std::move(renderingUpdate));
+      surfaceId, std::move(renderingUpdate));
 }
 
 void RuntimeScheduler::setShadowTreeRevisionConsistencyManager(
@@ -117,6 +118,11 @@ void RuntimeScheduler::setPerformanceEntryReporter(
     PerformanceEntryReporter* performanceEntryReporter) {
   return runtimeSchedulerImpl_->setPerformanceEntryReporter(
       performanceEntryReporter);
+}
+
+void RuntimeScheduler::setEventTimingDelegate(
+    RuntimeSchedulerEventTimingDelegate* eventTimingDelegate) {
+  return runtimeSchedulerImpl_->setEventTimingDelegate(eventTimingDelegate);
 }
 
 } // namespace facebook::react
