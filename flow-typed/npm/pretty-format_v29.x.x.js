@@ -13,11 +13,11 @@ declare type PluginOptions = {
   spacing: string,
 };
 declare type Colors = {
-  comment: {close: string; open: string},
-  content: {close: string; open: string},
-  prop: {close: string; open: string},
-  tag: {close: string; open: string},
-  value: {close: string; open: string},
+  comment: {close: string, open: string},
+  content: {close: string, open: string},
+  prop: {close: string, open: string},
+  tag: {close: string, open: string},
+  value: {close: string, open: string},
 };
 declare type CompareKeys = ((a: string, b: string) => number) | null | void;
 
@@ -29,7 +29,7 @@ declare type PrettyFormatPlugin =
         indent?: ?Indent,
         options?: ?PluginOptions,
         colors?: ?Colors,
-        ) => string,
+      ) => string,
       test: (value: mixed) => boolean,
     }
   | {
