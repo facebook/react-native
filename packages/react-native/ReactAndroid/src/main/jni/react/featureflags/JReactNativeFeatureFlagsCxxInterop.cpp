@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<35f5003b77104e68e32741e4626e2ba6>>
+ * @generated SignedSource<<07d3bcf171990d2976f611a82d8fcd32>>
  */
 
 /**
@@ -120,6 +120,12 @@ class ReactNativeFeatureFlagsProviderHolder
   bool enableGranularShadowTreeStateReconciliation() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableGranularShadowTreeStateReconciliation");
+    return method(javaProvider_);
+  }
+
+  bool enableIOSViewClipToPaddingBox() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableIOSViewClipToPaddingBox");
     return method(javaProvider_);
   }
 
@@ -389,6 +395,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableGranularShadowTreeStateReconcilia
   return ReactNativeFeatureFlags::enableGranularShadowTreeStateReconciliation();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::enableIOSViewClipToPaddingBox(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableIOSViewClipToPaddingBox();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::enableLayoutAnimationsOnIOS(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableLayoutAnimationsOnIOS();
@@ -608,6 +619,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableGranularShadowTreeStateReconciliation",
         JReactNativeFeatureFlagsCxxInterop::enableGranularShadowTreeStateReconciliation),
+      makeNativeMethod(
+        "enableIOSViewClipToPaddingBox",
+        JReactNativeFeatureFlagsCxxInterop::enableIOSViewClipToPaddingBox),
       makeNativeMethod(
         "enableLayoutAnimationsOnIOS",
         JReactNativeFeatureFlagsCxxInterop::enableLayoutAnimationsOnIOS),

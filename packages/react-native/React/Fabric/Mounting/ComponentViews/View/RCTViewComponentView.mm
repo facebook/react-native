@@ -16,6 +16,7 @@
 #import <React/RCTBoxShadow.h>
 #import <React/RCTConversions.h>
 #import <React/RCTLocalizedString.h>
+#import <react/featureflags/ReactNativeFeatureFlags.h>
 #import <react/renderer/components/view/ViewComponentDescriptor.h>
 #import <react/renderer/components/view/ViewEventEmitter.h>
 #import <react/renderer/components/view/ViewProps.h>
@@ -308,7 +309,7 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
 
   // `overflow`
   if (oldViewProps.getClipsContentToBounds() != newViewProps.getClipsContentToBounds()) {
-    self.clipsToBounds = newViewProps.getClipsContentToBounds();
+    self.currentContainerView.clipsToBounds = newViewProps.getClipsContentToBounds();
     needsInvalidateLayer = YES;
   }
 
@@ -577,7 +578,6 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
   _eventEmitter.reset();
   _isJSResponder = NO;
   _removeClippedSubviews = NO;
-  _useCustomContainerView = NO;
   _reactSubviews = [NSMutableArray new];
 }
 
@@ -605,7 +605,7 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
 
   BOOL isPointInside = [self pointInside:point withEvent:event];
 
-  BOOL clipsToBounds = self.clipsToBounds;
+  BOOL clipsToBounds = self.currentContainerView.clipsToBounds;
 
   clipsToBounds = clipsToBounds || _layoutMetrics.overflowInset == EdgeInsets{};
 
@@ -696,7 +696,8 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
 {
   const auto borderMetrics = _props->resolveBorderMetrics(_layoutMetrics);
   BOOL nonZeroBorderWidth = !(borderMetrics.borderWidths.isUniform() && borderMetrics.borderWidths.left == 0);
-  return _props->getClipsContentToBounds() && (!_props->boxShadow.empty() || nonZeroBorderWidth);
+  BOOL clipToPaddingBox = ReactNativeFeatureFlags::enableIOSViewClipToPaddingBox();
+  return _props->getClipsContentToBounds() && (!_props->boxShadow.empty() || (clipToPaddingBox && nonZeroBorderWidth));
 }
 
 // This UIView is the UIView that holds all subviews. It is sometimes not self
@@ -710,6 +711,10 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
       for (UIView *subview in self.subviews) {
         [_containerView addSubview:subview];
       }
+      _containerView.clipsToBounds = self.clipsToBounds;
+      self.clipsToBounds = NO;
+      _containerView.layer.mask = self.layer.mask;
+      self.layer.mask = nil;
       [self addSubview:_containerView];
     }
 
@@ -719,6 +724,8 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
       for (UIView *subview in _containerView.subviews) {
         [self addSubview:subview];
       }
+      self.clipsToBounds = _containerView.clipsToBounds;
+      self.layer.mask = _containerView.layer.mask;
       [_containerView removeFromSuperview];
       _containerView = nil;
     }
@@ -788,7 +795,7 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
           // iOS draws borders in front of the content whereas CSS draws them behind
           // the content. For this reason, only use iOS border drawing when clipping
           // or when the border is hidden.
-          borderMetrics.borderWidths.left == 0 || self.clipsToBounds ||
+          borderMetrics.borderWidths.left == 0 || self.currentContainerView.clipsToBounds ||
           (colorComponentsFromColor(borderMetrics.borderColors.left).alpha == 0 &&
            (*borderMetrics.borderColors.left).getUIColor() != nullptr));
 
@@ -813,17 +820,25 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
       [self.layer addSublayer:_backgroundColorLayer];
     }
 
-    CAShapeLayer *maskLayer = [self
-        createMaskLayer:self.bounds
-           cornerInsets:RCTGetCornerInsets(RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii), UIEdgeInsetsZero)];
     _backgroundColorLayer.backgroundColor = backgroundColor;
-    _backgroundColorLayer.mask = maskLayer;
+    if (borderMetrics.borderRadii.isUniform()) {
+      _backgroundColorLayer.mask = nil;
+      _backgroundColorLayer.cornerRadius = borderMetrics.borderRadii.topLeft.horizontal;
+      _backgroundColorLayer.cornerCurve = CornerCurveFromBorderCurve(borderMetrics.borderCurves.topLeft);
+    } else {
+      CAShapeLayer *maskLayer =
+          [self createMaskLayer:self.bounds
+                   cornerInsets:RCTGetCornerInsets(
+                                    RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii), UIEdgeInsetsZero)];
+      _backgroundColorLayer.mask = maskLayer;
+      _backgroundColorLayer.cornerRadius = 0;
+    }
   }
 
-  // Stage 2. Border Rendering
+  // borders
   if (useCoreAnimationBorderRendering) {
-    layer.mask = nil;
     [_borderLayer removeFromSuperlayer];
+    _borderLayer = nil;
 
     layer.borderWidth = (CGFloat)borderMetrics.borderWidths.left;
     CGColorRef borderColor = RCTCreateCGColorRefFromSharedColor(borderMetrics.borderColors.left);
@@ -880,37 +895,9 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     // If mutations are applied inside of Animation block, it may cause _borderLayer to be animated.
     // To stop that, imperatively remove all animations from _borderLayer.
     [_borderLayer removeAllAnimations];
-
-    // Stage 2.5. Custom Clipping Mask
-    CAShapeLayer *maskLayer = nil;
-    CGFloat cornerRadius = 0;
-    if (self.clipsToBounds) {
-      if (borderMetrics.borderRadii.isUniform()) {
-        // In this case we can simply use `cornerRadius` exclusively.
-        cornerRadius = borderMetrics.borderRadii.topLeft.horizontal;
-      } else {
-        RCTCornerInsets cornerInsets =
-            RCTGetCornerInsets(RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii), UIEdgeInsetsZero);
-        maskLayer = [self createMaskLayer:self.bounds cornerInsets:cornerInsets];
-      }
-    }
-
-    layer.cornerRadius = cornerRadius;
-    layer.mask = maskLayer;
-
-    for (UIView *subview in self.currentContainerView.subviews) {
-      if ([subview isKindOfClass:[UIImageView class]]) {
-        RCTCornerInsets cornerInsets = RCTGetCornerInsets(
-            RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii),
-            RCTUIEdgeInsetsFromEdgeInsets(borderMetrics.borderWidths));
-
-        // If the subview is an image view, we have to apply the mask directly to the image view's layer,
-        // otherwise the image might overflow with the border radius.
-        subview.layer.mask = [self createMaskLayer:subview.bounds cornerInsets:cornerInsets];
-      }
-    }
   }
 
+  // filter
   [_filterLayer removeFromSuperlayer];
   _filterLayer = nil;
   self.layer.opacity = (float)_props->opacity;
@@ -947,6 +934,7 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     [self.layer addSublayer:_filterLayer];
   }
 
+  // background image
   [self clearExistingGradientLayers];
   if (!_props->backgroundImage.empty()) {
     for (const auto &gradient : _props->backgroundImage) {
@@ -994,6 +982,7 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     }
   }
 
+  // box shadow
   [_boxShadowLayer removeFromSuperlayer];
   _boxShadowLayer = nil;
   if (!_props->boxShadow.empty()) {
@@ -1009,6 +998,42 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
         layer);
 
     _boxShadowLayer.contents = (id)boxShadowImage.CGImage;
+  }
+
+  // clipping
+  if (self.currentContainerView.clipsToBounds) {
+    BOOL clipToPaddingBox = ReactNativeFeatureFlags::enableIOSViewClipToPaddingBox();
+    if (clipToPaddingBox) {
+      CALayer *maskLayer = [self createMaskLayer:RCTCGRectFromRect(_layoutMetrics.getPaddingFrame())
+                                    cornerInsets:RCTGetCornerInsets(
+                                                     RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii),
+                                                     RCTUIEdgeInsetsFromEdgeInsets(borderMetrics.borderWidths))];
+      self.currentContainerView.layer.mask = maskLayer;
+    } else {
+      if (borderMetrics.borderRadii.isUniform()) {
+        self.currentContainerView.layer.cornerRadius = borderMetrics.borderRadii.topLeft.horizontal;
+      } else {
+        CALayer *maskLayer =
+            [self createMaskLayer:self.bounds
+                     cornerInsets:RCTGetCornerInsets(
+                                      RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii), UIEdgeInsetsZero)];
+        self.currentContainerView.layer.mask = maskLayer;
+      }
+
+      for (UIView *subview in self.currentContainerView.subviews) {
+        if ([subview isKindOfClass:[UIImageView class]]) {
+          RCTCornerInsets cornerInsets = RCTGetCornerInsets(
+              RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii),
+              RCTUIEdgeInsetsFromEdgeInsets(borderMetrics.borderWidths));
+
+          // If the subview is an image view, we have to apply the mask directly to the image view's layer,
+          // otherwise the image might overflow with the border radius.
+          subview.layer.mask = [self createMaskLayer:subview.bounds cornerInsets:cornerInsets];
+        }
+      }
+    }
+  } else {
+    self.currentContainerView.layer.mask = nil;
   }
 }
 
