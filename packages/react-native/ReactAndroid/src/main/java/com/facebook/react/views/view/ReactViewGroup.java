@@ -61,13 +61,14 @@ import com.facebook.react.uimanager.ViewGroupDrawingOrderHelper;
 import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.drawable.CSSBackgroundDrawable;
+import com.facebook.react.uimanager.style.BackgroundImageLayer;
 import com.facebook.react.uimanager.style.BorderRadiusProp;
 import com.facebook.react.uimanager.style.BorderStyle;
 import com.facebook.react.uimanager.style.ComputedBorderRadius;
 import com.facebook.react.uimanager.style.CornerRadii;
-import com.facebook.react.uimanager.style.Gradient;
 import com.facebook.react.uimanager.style.LogicalEdge;
 import com.facebook.react.uimanager.style.Overflow;
+import java.util.List;
 
 /**
  * Backing for a React View. Has support for borders, but since borders aren't common, lazy
@@ -248,8 +249,12 @@ public class ReactViewGroup extends ViewGroup
   }
 
   @UnstableReactNativeAPI
-  /*package*/ void setGradients(@Nullable Gradient[] gradient) {
-    getOrCreateReactViewBackground().setGradients(gradient);
+  /*package*/ void setBackgroundImage(@Nullable List<BackgroundImageLayer> backgroundImageLayers) {
+    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
+      BackgroundStyleApplicator.setBackgroundImage(this, backgroundImageLayers);
+    } else {
+      getOrCreateReactViewBackground().setBackgroundImage(backgroundImageLayers);
+    }
   }
 
   @Deprecated(since = "0.76.0", forRemoval = true)

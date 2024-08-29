@@ -38,12 +38,13 @@ import com.facebook.react.uimanager.LengthPercentage;
 import com.facebook.react.uimanager.LengthPercentageType;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.Spacing;
+import com.facebook.react.uimanager.style.BackgroundImageLayer;
 import com.facebook.react.uimanager.style.BorderRadiusProp;
 import com.facebook.react.uimanager.style.BorderRadiusStyle;
 import com.facebook.react.uimanager.style.BorderStyle;
 import com.facebook.react.uimanager.style.ComputedBorderRadius;
 import com.facebook.react.uimanager.style.CornerRadii;
-import com.facebook.react.uimanager.style.Gradient;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -115,7 +116,7 @@ public class CSSBackgroundDrawable extends Drawable {
   /* Used by all types of background and for drawing borders */
   private final Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
   private int mColor = Color.TRANSPARENT;
-  private @Nullable Gradient[] mGradients = null;
+  private @Nullable List<BackgroundImageLayer> mBackgroundImageLayers = null;
   private int mAlpha = 255;
 
   // There is a small gap between the edges of adjacent paths
@@ -338,8 +339,8 @@ public class CSSBackgroundDrawable extends Drawable {
     invalidateSelf();
   }
 
-  public void setGradients(Gradient[] gradients) {
-    mGradients = gradients;
+  public void setBackgroundImage(@Nullable List<BackgroundImageLayer> backgroundImageLayers) {
+    mBackgroundImageLayers = backgroundImageLayers;
     invalidateSelf();
   }
 
@@ -398,8 +399,8 @@ public class CSSBackgroundDrawable extends Drawable {
       canvas.drawPath(Preconditions.checkNotNull(mBackgroundColorRenderPath), mPaint);
     }
 
-    if (mGradients != null && mGradients.length > 0) {
-      mPaint.setShader(getGradientShader());
+    if (mBackgroundImageLayers != null && !mBackgroundImageLayers.isEmpty()) {
+      mPaint.setShader(getBackgroundImageShader());
       mPaint.setStyle(Paint.Style.FILL);
       canvas.drawPath(Preconditions.checkNotNull(mBackgroundColorRenderPath), mPaint);
       mPaint.setShader(null);
@@ -1150,8 +1151,8 @@ public class CSSBackgroundDrawable extends Drawable {
       canvas.drawRect(getBounds(), mPaint);
     }
 
-    if (mGradients != null && mGradients.length > 0) {
-      mPaint.setShader(getGradientShader());
+    if (mBackgroundImageLayers != null && !mBackgroundImageLayers.isEmpty()) {
+      mPaint.setShader(getBackgroundImageShader());
       canvas.drawRect(getBounds(), mPaint);
       mPaint.setShader(null);
     }
@@ -1447,14 +1448,14 @@ public class CSSBackgroundDrawable extends Drawable {
     return new RectF(borderLeftWidth, borderTopWidth, borderRightWidth, borderBottomWidth);
   }
 
-  private @Nullable Shader getGradientShader() {
-    if (mGradients == null) {
+  private @Nullable Shader getBackgroundImageShader() {
+    if (mBackgroundImageLayers == null) {
       return null;
     }
 
     Shader compositeShader = null;
-    for (Gradient gradient : mGradients) {
-      Shader currentShader = gradient.getShader(getBounds());
+    for (BackgroundImageLayer backgroundImageLayer : mBackgroundImageLayers) {
+      Shader currentShader = backgroundImageLayer.getShader(getBounds());
       if (currentShader == null) {
         continue;
       }

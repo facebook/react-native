@@ -38,10 +38,12 @@ import com.facebook.react.uimanager.annotations.ReactPropGroup;
 import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.uimanager.style.BackgroundImageLayer;
 import com.facebook.react.uimanager.style.BorderRadiusProp;
 import com.facebook.react.uimanager.style.BorderStyle;
-import com.facebook.react.uimanager.style.Gradient;
 import com.facebook.react.uimanager.style.LogicalEdge;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /** View manager for AndroidViews (plain React Views). */
@@ -102,14 +104,15 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
   public void setBackgroundImage(ReactViewGroup view, @Nullable ReadableArray backgroundImage) {
     if (ViewUtil.getUIManagerType(view) == UIManagerType.FABRIC) {
       if (backgroundImage != null && backgroundImage.size() > 0) {
-        Gradient[] gradients = new Gradient[backgroundImage.size()];
+        List<BackgroundImageLayer> backgroundImageLayers = new ArrayList<>(backgroundImage.size());
         for (int i = 0; i < backgroundImage.size(); i++) {
-          ReadableMap gradientMap = backgroundImage.getMap(i);
-          gradients[i] = new Gradient(gradientMap);
+          ReadableMap backgroundImageMap = backgroundImage.getMap(i);
+          BackgroundImageLayer layer = new BackgroundImageLayer(backgroundImageMap);
+          backgroundImageLayers.add(layer);
         }
-        view.setGradients(gradients);
+        view.setBackgroundImage(backgroundImageLayers);
       } else {
-        view.setGradients(null);
+        view.setBackgroundImage(null);
       }
     }
   }

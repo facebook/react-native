@@ -4101,6 +4101,7 @@ public final class com/facebook/react/uimanager/BackgroundStyleApplicator {
 	public static final fun getBorderWidth (Landroid/view/View;Lcom/facebook/react/uimanager/style/LogicalEdge;)Ljava/lang/Float;
 	public static final fun reset (Landroid/view/View;)V
 	public static final fun setBackgroundColor (Landroid/view/View;Ljava/lang/Integer;)V
+	public static final fun setBackgroundImage (Landroid/view/View;Ljava/util/List;)V
 	public static final fun setBorderColor (Landroid/view/View;Lcom/facebook/react/uimanager/style/LogicalEdge;Ljava/lang/Integer;)V
 	public static final fun setBorderRadius (Landroid/view/View;Lcom/facebook/react/uimanager/style/BorderRadiusProp;Lcom/facebook/react/uimanager/LengthPercentage;)V
 	public static final fun setBorderStyle (Landroid/view/View;Lcom/facebook/react/uimanager/style/BorderStyle;)V
@@ -6002,6 +6003,11 @@ public class com/facebook/react/uimanager/layoutanimation/LayoutAnimationControl
 
 public abstract interface class com/facebook/react/uimanager/layoutanimation/LayoutAnimationListener {
 	public abstract fun onAnimationEnd ()V
+}
+
+public final class com/facebook/react/uimanager/style/BackgroundImageLayer {
+	public fun <init> (Lcom/facebook/react/bridge/ReadableMap;)V
+	public final fun getShader (Landroid/graphics/Rect;)Landroid/graphics/Shader;
 }
 
 public final class com/facebook/react/uimanager/style/BorderRadiusProp : java/lang/Enum {
