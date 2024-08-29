@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<00aae631e9d9b146fae9be838e04e165>>
+ * @generated SignedSource<<22f05fff5c867324d44729c5bf02dddb>>
  */
 
 /**
@@ -50,6 +50,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enableFabricRendererExclusively(): Boolean = false
 
   override fun enableGranularShadowTreeStateReconciliation(): Boolean = false
+
+  override fun enableIOSViewClipToPaddingBox(): Boolean = false
 
   override fun enableLayoutAnimationsOnIOS(): Boolean = true
 

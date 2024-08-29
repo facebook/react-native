@@ -101,6 +101,10 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'When enabled, the renderer would only fail commits when they propagate state and the last commit that updated state changed before committing.',
     },
+    enableIOSViewClipToPaddingBox: {
+      defaultValue: false,
+      description: 'iOS Views will clip to their padding box vs border box',
+    },
     enableLayoutAnimationsOnIOS: {
       defaultValue: true,
       description:

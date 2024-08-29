@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<580db8acae42a65aeb678d2d6ef4630c>>
+ * @generated SignedSource<<eb4afd665292a96aa9f2ea754ce64e35>>
  */
 
 /**
@@ -55,6 +55,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun enableFabricRendererExclusively(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableGranularShadowTreeStateReconciliation(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun enableIOSViewClipToPaddingBox(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableLayoutAnimationsOnIOS(): Boolean
 

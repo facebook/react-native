@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ffc9e4785820aa65fad28f79d27a85d2>>
+ * @generated SignedSource<<9ed448a2c92f8494ac23b6d8e69e220d>>
  */
 
 /**
@@ -34,6 +34,7 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
   private var enableFabricLogsCache: Boolean? = null
   private var enableFabricRendererExclusivelyCache: Boolean? = null
   private var enableGranularShadowTreeStateReconciliationCache: Boolean? = null
+  private var enableIOSViewClipToPaddingBoxCache: Boolean? = null
   private var enableLayoutAnimationsOnIOSCache: Boolean? = null
   private var enableLongTaskAPICache: Boolean? = null
   private var enableMicrotasksCache: Boolean? = null
@@ -189,6 +190,15 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enableGranularShadowTreeStateReconciliation()
       enableGranularShadowTreeStateReconciliationCache = cached
+    }
+    return cached
+  }
+
+  override fun enableIOSViewClipToPaddingBox(): Boolean {
+    var cached = enableIOSViewClipToPaddingBoxCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.enableIOSViewClipToPaddingBox()
+      enableIOSViewClipToPaddingBoxCache = cached
     }
     return cached
   }

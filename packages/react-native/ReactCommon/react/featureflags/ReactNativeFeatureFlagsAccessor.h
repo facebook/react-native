@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e5d5840544391ffde1fe34e43bd0edc5>>
+ * @generated SignedSource<<2a71493572a1a2c8115f2561c8b1937d>>
  */
 
 /**
@@ -45,6 +45,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableFabricLogs();
   bool enableFabricRendererExclusively();
   bool enableGranularShadowTreeStateReconciliation();
+  bool enableIOSViewClipToPaddingBox();
   bool enableLayoutAnimationsOnIOS();
   bool enableLongTaskAPI();
   bool enableMicrotasks();
@@ -87,7 +88,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 46> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 47> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> allowRecursiveCommitsWithSynchronousMountOnAndroid_;
@@ -103,6 +104,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableFabricLogs_;
   std::atomic<std::optional<bool>> enableFabricRendererExclusively_;
   std::atomic<std::optional<bool>> enableGranularShadowTreeStateReconciliation_;
+  std::atomic<std::optional<bool>> enableIOSViewClipToPaddingBox_;
   std::atomic<std::optional<bool>> enableLayoutAnimationsOnIOS_;
   std::atomic<std::optional<bool>> enableLongTaskAPI_;
   std::atomic<std::optional<bool>> enableMicrotasks_;
