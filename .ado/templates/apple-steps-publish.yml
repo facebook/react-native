@@ -29,13 +29,11 @@ steps:
     # Note, This won't do the actual `git tag` and `git push` as we're doing a dry run.
     # We do that as a separate step in `.ado/publish.yml`.
     - task: CmdLine@2
-      displayName: Prepare package for release
+      displayName: Prepare React Native macOS release
       inputs:
         script: |
-          node ./scripts/prepare-package-for-release.js -v "$RNM_PACKAGE_VERSION" --dry-run
-      env:
-        # Map the corresponding CircleCI variable since `prepare-package-for-release.js` depends on it.
-        CIRCLE_BRANCH: $(Build.SourceBranchName)
+          set -eox pipefail
+          node scripts/releases/set-rn-version.js -v $RNM_PACKAGE_VERSION --build-type "release"
 
   # Note: This won't actually publish to NPM as we've commented that bit out.
   # We do that as a separate step in `.ado/publish.yml`. 

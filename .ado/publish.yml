@@ -1,5 +1,3 @@
-# It is expected that a `latestStableBranch` variable is set in the pipeline's settings:
-
 # This file defines the build steps to publish a release
 name: $(Date:yyyyMMdd).$(Rev:.r)
 
@@ -21,6 +19,9 @@ variables:
   - group: InfoSec-SecurityResults
   - name: tags
     value: production,externalfacing
+  # Remember to update this in previous stable branches when creating a new stable branch
+  - name : latestStableBranch
+    value: '0.75-stable'
 
 resources:
   repositories:
@@ -137,7 +138,6 @@ extends:
              os: linux
            timeoutInMinutes: 90 # how long to run the job before automatically cancelling
            cancelTimeoutInMinutes: 5 # how much time to give 'run always even if cancelled tasks' before killing them
-           condition: eq(variables['Build.SourceBranchName'], 'main')
            templateContext:
              outputs:
                - output: pipelineArtifact
