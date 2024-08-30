@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<56c3d93945f6c320e268c9ba32cbde0f>>
+ * @generated SignedSource<<c8266eb27ec23aaa856fa95275503a81>>
  */
 
 /**
@@ -106,6 +106,11 @@ class ReactNativeFeatureFlags {
    * When enabled, the renderer would only fail commits when they propagate state and the last commit that updated state changed before committing.
    */
   RN_EXPORT static bool enableGranularShadowTreeStateReconciliation();
+
+  /**
+   * iOS Views will clip to their padding box vs border box
+   */
+  RN_EXPORT static bool enableIOSViewClipToPaddingBox();
 
   /**
    * When enabled, LayoutAnimations API will animate state changes on iOS.
