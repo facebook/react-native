@@ -80,7 +80,7 @@ export default function processFilter(
         }
       }
     }
-  } else {
+  } else if (Array.isArray(filter)) {
     for (const filterFunction of filter) {
       const [filterName, filterValue] = Object.entries(filterFunction)[0];
       if (filterName === 'dropShadow') {
@@ -107,6 +107,8 @@ export default function processFilter(
         }
       }
     }
+  } else {
+    throw new TypeError(`${typeof filter} filter is not a string or array`);
   }
 
   return result;
