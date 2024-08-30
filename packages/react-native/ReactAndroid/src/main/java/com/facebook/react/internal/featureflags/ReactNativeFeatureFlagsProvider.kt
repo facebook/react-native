@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2c8c28515aa6929b975ef7193c8bf72e>>
+ * @generated SignedSource<<d9975558a8a9981b4f43e7c5d4473231>>
  */
 
 /**
@@ -106,6 +106,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun useNewReactImageViewBackgroundDrawing(): Boolean
 
   @DoNotStrip public fun useOptimisedViewPreallocationOnAndroid(): Boolean
+
+  @DoNotStrip public fun useOptimizedEventBatchingOnAndroid(): Boolean
 
   @DoNotStrip public fun useRuntimeShadowNodeReferenceUpdate(): Boolean
 

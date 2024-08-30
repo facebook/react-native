@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ead344838f30d7e3f1205d7bbabbc803>>
+ * @generated SignedSource<<7727737ae31a239d6b68397fafadbfea>>
  */
 
 /**
@@ -66,6 +66,7 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var useNativeViewConfigsInBridgelessModeCache: Boolean? = null
   private var useNewReactImageViewBackgroundDrawingCache: Boolean? = null
   private var useOptimisedViewPreallocationOnAndroidCache: Boolean? = null
+  private var useOptimizedEventBatchingOnAndroidCache: Boolean? = null
   private var useRuntimeShadowNodeReferenceUpdateCache: Boolean? = null
   private var useRuntimeShadowNodeReferenceUpdateOnLayoutCache: Boolean? = null
   private var useStateAlignmentMechanismCache: Boolean? = null
@@ -487,6 +488,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.useOptimisedViewPreallocationOnAndroid()
       accessedFeatureFlags.add("useOptimisedViewPreallocationOnAndroid")
       useOptimisedViewPreallocationOnAndroidCache = cached
+    }
+    return cached
+  }
+
+  override fun useOptimizedEventBatchingOnAndroid(): Boolean {
+    var cached = useOptimizedEventBatchingOnAndroidCache
+    if (cached == null) {
+      cached = currentProvider.useOptimizedEventBatchingOnAndroid()
+      accessedFeatureFlags.add("useOptimizedEventBatchingOnAndroid")
+      useOptimizedEventBatchingOnAndroidCache = cached
     }
     return cached
   }
