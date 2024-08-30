@@ -44,6 +44,8 @@ export default function processFilter(
   }
 
   if (typeof filter === 'string') {
+    filter = filter.replace(/\n/g, ' ');
+
     // matches on functions with args and nested functions like "drop-shadow(10 10 10 rgba(0, 0, 0, 1))"
     const regex = /([\w-]+)\(([^()]*|\([^()]*\)|[^()]*\([^()]*\)[^()]*)\)/g;
     let matches;

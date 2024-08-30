@@ -33,7 +33,7 @@ export default function processBoxShadow(
 
   const boxShadowList =
     typeof rawBoxShadows === 'string'
-      ? parseBoxShadowString(rawBoxShadows)
+      ? parseBoxShadowString(rawBoxShadows.replace(/\n/g, ' '))
       : rawBoxShadows;
 
   for (const rawBoxShadow of boxShadowList) {
