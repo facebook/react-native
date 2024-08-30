@@ -40,6 +40,7 @@ import com.facebook.react.views.text.internal.span.ReactAbsoluteSizeSpan;
 import com.facebook.react.views.text.internal.span.ReactBackgroundColorSpan;
 import com.facebook.react.views.text.internal.span.ReactClickableSpan;
 import com.facebook.react.views.text.internal.span.ReactForegroundColorSpan;
+import com.facebook.react.views.text.internal.span.ReactOpacitySpan;
 import com.facebook.react.views.text.internal.span.ReactStrikethroughSpan;
 import com.facebook.react.views.text.internal.span.ReactTagSpan;
 import com.facebook.react.views.text.internal.span.ReactUnderlineSpan;
@@ -239,6 +240,10 @@ public class TextLayoutManager {
           ops.add(
               new SetSpanOperation(
                   start, end, new ReactBackgroundColorSpan(textAttributes.mBackgroundColor)));
+        }
+        if (!Float.isNaN(textAttributes.getOpacity())) {
+          ops.add(
+              new SetSpanOperation(start, end, new ReactOpacitySpan(textAttributes.getOpacity())));
         }
         if (!Float.isNaN(textAttributes.getLetterSpacing())) {
           ops.add(
