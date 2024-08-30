@@ -150,8 +150,11 @@ declare module '.' {
   }
 
   export interface ViewStyle {
-    boxShadow?: ReadonlyArray<BoxShadowPrimitive> | string | undefined;
-    filter?: ReadonlyArray<FilterFunction> | string | undefined;
+    experimental_boxShadow?:
+      | ReadonlyArray<BoxShadowPrimitive>
+      | string
+      | undefined;
+    experimental_filter?: ReadonlyArray<FilterFunction> | string | undefined;
     experimental_mixBlendMode?: BlendMode | undefined;
     experimental_backgroundImage?:
       | ReadonlyArray<GradientValue>
