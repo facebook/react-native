@@ -464,7 +464,7 @@ function BoxShadowExample(): React.Node {
             borderRadius: 10,
             borderWidth: 5,
             borderColor: 'red',
-            boxShadow: '0 0 10px 0 black',
+            experimental_boxShadow: '0 0 10px 0 black',
           }}
         />
         <View
@@ -473,7 +473,7 @@ function BoxShadowExample(): React.Node {
             borderRadius: 30,
             borderWidth: 5,
             borderColor: 'red',
-            boxShadow: 'inset 0 0 10px 0 black',
+            experimental_boxShadow: 'inset 0 0 10px 0 black',
           }}
         />
         <View
@@ -482,7 +482,7 @@ function BoxShadowExample(): React.Node {
             borderRadius: 30,
             borderWidth: 5,
             borderColor: 'red',
-            boxShadow:
+            experimental_boxShadow:
               'inset 15px -5px 5px 5px cyan, inset 15px -5px 20px 10px orange, -5px 5px 5px 0px green, 0px -10px 0px 5px black',
           }}
         />
@@ -491,7 +491,7 @@ function BoxShadowExample(): React.Node {
         <View
           style={{
             ...defaultStyleSize,
-            boxShadow: '0px 0px 5px 5px black',
+            experimental_boxShadow: '0px 0px 5px 5px black',
           }}>
           <View
             style={{
@@ -506,7 +506,7 @@ function BoxShadowExample(): React.Node {
           style={{
             ...defaultStyleSize,
             backgroundColor: 'red',
-            boxShadow: 'inset 0px 0px 5px 5px black',
+            experimental_boxShadow: 'inset 0px 0px 5px 5px black',
           }}
         />
         <View style={{...defaultStyleSize, flexDirection: 'row'}}>
@@ -514,7 +514,7 @@ function BoxShadowExample(): React.Node {
           <View
             style={{
               ...defaultStyleSize,
-              boxShadow: ' 0px 0px 20px 5px black',
+              experimental_boxShadow: ' 0px 0px 20px 5px black',
             }}
           />
           <View style={{width: 25, height: 25, backgroundColor: 'cyan'}} />
@@ -525,7 +525,7 @@ function BoxShadowExample(): React.Node {
           style={{
             ...defaultStyleSize,
             backgroundColor: 'green',
-            boxShadow: '0px 10px',
+            experimental_boxShadow: '0px 10px',
           }}
         />
       </View>

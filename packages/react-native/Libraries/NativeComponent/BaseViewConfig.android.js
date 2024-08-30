@@ -169,10 +169,10 @@ const validAttributesForNonEventProps = {
   experimental_backgroundImage: {
     process: require('../StyleSheet/processBackgroundImage').default,
   },
-  boxShadow: {
+  experimental_boxShadow: {
     process: require('../StyleSheet/processBoxShadow').default,
   },
-  filter: {
+  experimental_filter: {
     process: require('../StyleSheet/processFilter').default,
   },
   experimental_mixBlendMode: true,

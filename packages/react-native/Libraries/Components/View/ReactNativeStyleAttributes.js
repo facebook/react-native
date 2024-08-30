@@ -120,7 +120,7 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   /**
    * Filter
    */
-  filter: {process: processFilter},
+  experimental_filter: {process: processFilter},
 
   /**
    * MixBlendMode
@@ -135,7 +135,7 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   /*
    * BoxShadow
    */
-  boxShadow: {process: processBoxShadow},
+  experimental_boxShadow: {process: processBoxShadow},
 
   /**
    * Linear Gradient
