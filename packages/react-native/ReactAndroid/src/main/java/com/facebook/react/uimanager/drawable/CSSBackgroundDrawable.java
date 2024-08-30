@@ -767,42 +767,14 @@ public class CSSBackgroundDrawable extends Drawable {
     mCenterDrawPath.addRoundRect(
         mTempRectForCenterDrawPath,
         new float[] {
-          Math.max(
-              topLeftRadius.getHorizontal() - borderWidth.left * 0.5f,
-              (borderWidth.left > 0.0f)
-                  ? (topLeftRadius.getHorizontal() / borderWidth.left)
-                  : 0.0f),
-          Math.max(
-              topLeftRadius.getVertical() - borderWidth.top * 0.5f,
-              (borderWidth.top > 0.0f) ? (topLeftRadius.getVertical() / borderWidth.top) : 0.0f),
-          Math.max(
-              topRightRadius.getHorizontal() - borderWidth.right * 0.5f,
-              (borderWidth.right > 0.0f)
-                  ? (topRightRadius.getHorizontal() / borderWidth.right)
-                  : 0.0f),
-          Math.max(
-              topRightRadius.getVertical() - borderWidth.top * 0.5f,
-              (borderWidth.top > 0.0f) ? (topRightRadius.getVertical() / borderWidth.top) : 0.0f),
-          Math.max(
-              bottomRightRadius.getHorizontal() - borderWidth.right * 0.5f,
-              (borderWidth.right > 0.0f)
-                  ? (bottomRightRadius.getHorizontal() / borderWidth.right)
-                  : 0.0f),
-          Math.max(
-              bottomRightRadius.getVertical() - borderWidth.bottom * 0.5f,
-              (borderWidth.bottom > 0.0f)
-                  ? (bottomRightRadius.getVertical() / borderWidth.bottom)
-                  : 0.0f),
-          Math.max(
-              bottomLeftRadius.getHorizontal() - borderWidth.left * 0.5f,
-              (borderWidth.left > 0.0f)
-                  ? (bottomLeftRadius.getHorizontal() / borderWidth.left)
-                  : 0.0f),
-          Math.max(
-              bottomLeftRadius.getVertical() - borderWidth.bottom * 0.5f,
-              (borderWidth.bottom > 0.0f)
-                  ? (bottomLeftRadius.getVertical() / borderWidth.bottom)
-                  : 0.0f)
+          topLeftRadius.getHorizontal() - borderWidth.left * 0.5f,
+          topLeftRadius.getVertical() - borderWidth.top * 0.5f,
+          topRightRadius.getHorizontal() - borderWidth.right * 0.5f,
+          topRightRadius.getVertical() - borderWidth.top * 0.5f,
+          bottomRightRadius.getHorizontal() - borderWidth.right * 0.5f,
+          bottomRightRadius.getVertical() - borderWidth.bottom * 0.5f,
+          bottomLeftRadius.getHorizontal() - borderWidth.left * 0.5f,
+          bottomLeftRadius.getVertical() - borderWidth.bottom * 0.5f,
         },
         Path.Direction.CW);
 
