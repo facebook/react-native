@@ -89,16 +89,7 @@ public class FabricEventDispatcher implements EventDispatcher, LifecycleEventLis
   }
 
   private void maybePostFrameCallbackFromNonUI() {
-    if (mReactEventEmitter != null) {
-      // If the host activity is paused, the frame callback may not be currently
-      // posted. Ensure that it is so that this event gets delivered promptly.
-      mCurrentFrameCallback.maybePostFromNonUI();
-    } else {
-      // No JS application has started yet, or resumed. This can happen when a ReactRootView is
-      // added to view hierarchy, but ReactContext creation has not completed yet. In this case, any
-      // touch event dispatch will hit this codepath, and we simply queue them so that they
-      // are dispatched once ReactContext creation completes and JS app is running.
-    }
+    mCurrentFrameCallback.maybePostFromNonUI();
   }
 
   /** Add a listener to this EventDispatcher. */
