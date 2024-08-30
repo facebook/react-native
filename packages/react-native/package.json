@@ -44,6 +44,7 @@
     "jest",
     "Libraries",
     "LICENSE",
+    "local-cli",
     "React-Core.podspec",
     "react-native.config.js",
     "React.podspec",
