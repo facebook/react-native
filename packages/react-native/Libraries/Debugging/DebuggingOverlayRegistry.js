@@ -301,63 +301,52 @@ class DebuggingOverlayRegistry {
 
   // TODO: remove once DOM Node APIs are opt-in by default and Paper is no longer supported.
   #drawTraceUpdatesLegacy(updates: Array<LegacyNodeUpdate>): void {
-    const parentToTraceUpdatesPromisesMap = new Map<
+    const parentToTraceUpdatesMap = new Map<
       DebuggingOverlayRegistrySubscriberProtocol,
-      Array<Promise<TraceUpdate>>,
+      Array<TraceUpdate>,
     >();
 
+    let expectedNumberOfUpdatesToProcess = updates.length;
     for (const {id, instance, color} of updates) {
       const parent =
         this.#findLowestParentFromRegistryForInstanceLegacy(instance);
 
       if (parent == null) {
+        --expectedNumberOfUpdatesToProcess;
         continue;
       }
 
-      let traceUpdatesPromisesForParent =
-        parentToTraceUpdatesPromisesMap.get(parent);
-      if (traceUpdatesPromisesForParent == null) {
-        traceUpdatesPromisesForParent = [];
-        parentToTraceUpdatesPromisesMap.set(
-          parent,
-          traceUpdatesPromisesForParent,
-        );
-      }
+      instance.measure((x, y, width, height, left, top) => {
+        --expectedNumberOfUpdatesToProcess;
 
-      const frameToDrawPromise = new Promise<TraceUpdate>((resolve, reject) => {
-        instance.measure((x, y, width, height, left, top) => {
-          // measure can execute callback without any values provided to signal error.
-          if (left == null || top == null || width == null || height == null) {
-            reject('Unexpectedly failed to call measure on an instance.');
+        // measure can execute callback without any values provided to signal error.
+        if (left != null && top != null && width != null && height != null) {
+          let traceUpdatesForParent = parentToTraceUpdatesMap.get(parent);
+          if (traceUpdatesForParent === undefined) {
+            traceUpdatesForParent = [];
+            parentToTraceUpdatesMap.set(parent, traceUpdatesForParent);
           }
 
-          resolve({
+          traceUpdatesForParent.push({
             id,
             rectangle: {x: left, y: top, width, height},
             color: processColor(color),
           });
-        });
+        }
+
+        if (expectedNumberOfUpdatesToProcess === 0) {
+          for (const [
+            containerToDisplayTraceUpdates,
+            traceUpdates,
+          ] of parentToTraceUpdatesMap.entries()) {
+            if (traceUpdates.length > 0) {
+              containerToDisplayTraceUpdates.debuggingOverlayRef.current?.highlightTraceUpdates(
+                traceUpdates,
+              );
+            }
+          }
+        }
       });
-
-      traceUpdatesPromisesForParent.push(frameToDrawPromise);
-    }
-
-    for (const [
-      parent,
-      traceUpdatesPromises,
-    ] of parentToTraceUpdatesPromisesMap.entries()) {
-      Promise.all(traceUpdatesPromises)
-        .then(resolvedTraceUpdates =>
-          parent.debuggingOverlayRef.current?.highlightTraceUpdates(
-            resolvedTraceUpdates,
-          ),
-        )
-        .catch(() => {
-          // noop. For legacy architecture (Paper) this can happen for root views or LogBox button.
-          // LogBox case: it has a separate React root, so `measure` fails.
-          // Calling `console.error` here would trigger rendering a new LogBox button, for which we will call measure again, this is a cycle.
-          // Don't spam the UI with errors for such cases.
-        });
     }
   }
 
@@ -465,37 +454,27 @@ class DebuggingOverlayRegistry {
     }
 
     for (const [parent, elementsToHighlight] of parentToElementsMap.entries()) {
-      const promises = elementsToHighlight.map(
-        element =>
-          new Promise<ElementRectangle>((resolve, reject) => {
-            element.measure((x, y, width, height, left, top) => {
-              // measure can execute callback without any values provided to signal error.
-              if (
-                left == null ||
-                top == null ||
-                width == null ||
-                height == null
-              ) {
-                reject('Unexpectedly failed to call measure on an instance.');
-              }
+      const elementsRectangles = [];
+      let expectedNumberOfRectangles = elementsToHighlight.length;
 
-              resolve({x: left, y: top, width, height});
-            });
-          }),
-      );
+      for (const element of elementsToHighlight) {
+        element.measure((x, y, width, height, left, top) => {
+          if (left == null || top == null || width == null || height == null) {
+            expectedNumberOfRectangles--;
+          } else {
+            elementsRectangles.push({x: left, y: top, width, height});
+          }
 
-      Promise.all(promises)
-        .then(resolvedElementsRectangles =>
-          parent.debuggingOverlayRef.current?.highlightElements(
-            resolvedElementsRectangles,
-          ),
-        )
-        .catch(() => {
-          // noop. For legacy architecture (Paper) this can happen for root views or LogBox button.
-          // LogBox case: it has a separate React root, so `measure` fails.
-          // Calling `console.error` here would trigger rendering a new LogBox button, for which we will call measure again, this is a cycle.
-          // Don't spam the UI with errors for such cases.
+          if (
+            elementsRectangles.length > 0 &&
+            elementsRectangles.length === expectedNumberOfRectangles
+          ) {
+            parent.debuggingOverlayRef.current?.highlightElements(
+              elementsRectangles,
+            );
+          }
         });
+      }
     }
   }
 
