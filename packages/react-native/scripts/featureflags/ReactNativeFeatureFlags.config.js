@@ -240,6 +240,11 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'Moves more of the work in view preallocation to the main thread to free up JS thread.',
     },
+    useOptimizedEventBatchingOnAndroid: {
+      defaultValue: false,
+      description:
+        'Uses an optimized mechanism for event batching on Android that does not need to wait for a Choreographer frame callback.',
+    },
     useRuntimeShadowNodeReferenceUpdate: {
       defaultValue: false,
       description:

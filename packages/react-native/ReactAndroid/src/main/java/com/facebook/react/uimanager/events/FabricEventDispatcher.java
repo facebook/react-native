@@ -7,6 +7,7 @@
 
 package com.facebook.react.uimanager.events;
 
+import android.os.Handler;
 import android.view.Choreographer;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.LifecycleEventListener;
@@ -15,6 +16,7 @@ import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.common.UIManagerType;
@@ -27,6 +29,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public class FabricEventDispatcher implements EventDispatcher, LifecycleEventListener {
+  private static final Handler uiThreadHandler = UiThreadUtil.getUiThreadHandler();
+
   private final ReactEventEmitter mReactEventEmitter;
   private final ReactApplicationContext mReactContext;
   private final CopyOnWriteArrayList<EventDispatcherListener> mListeners =
@@ -35,6 +39,25 @@ public class FabricEventDispatcher implements EventDispatcher, LifecycleEventLis
       new CopyOnWriteArrayList<>();
   private final FabricEventDispatcher.ScheduleDispatchFrameCallback mCurrentFrameCallback =
       new FabricEventDispatcher.ScheduleDispatchFrameCallback();
+
+  private boolean mIsDispatchScheduled = false;
+  private final Runnable mDispatchEventsRunnable =
+      new Runnable() {
+        @Override
+        public void run() {
+          mIsDispatchScheduled = false;
+
+          Systrace.beginSection(
+              Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "BatchEventDispatchedListeners");
+          try {
+            for (BatchEventDispatchedListener listener : mPostEventDispatchListeners) {
+              listener.onBatchEventDispatched();
+            }
+          } finally {
+            Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+          }
+        }
+      };
 
   public FabricEventDispatcher(ReactApplicationContext reactContext) {
     mReactContext = reactContext;
@@ -89,7 +112,14 @@ public class FabricEventDispatcher implements EventDispatcher, LifecycleEventLis
   }
 
   private void scheduleDispatchOfBatchedEvents() {
-    mCurrentFrameCallback.maybeScheduleDispatchOfBatchedEvents();
+    if (ReactNativeFeatureFlags.useOptimizedEventBatchingOnAndroid()) {
+      if (!mIsDispatchScheduled) {
+        mIsDispatchScheduled = true;
+        uiThreadHandler.postAtFrontOfQueue(mDispatchEventsRunnable);
+      }
+    } else {
+      mCurrentFrameCallback.maybeScheduleDispatchOfBatchedEvents();
+    }
   }
 
   /** Add a listener to this EventDispatcher. */
@@ -137,7 +167,12 @@ public class FabricEventDispatcher implements EventDispatcher, LifecycleEventLis
 
   private void cancelDispatchOfBatchedEvents() {
     UiThreadUtil.assertOnUiThread();
-    mCurrentFrameCallback.stop();
+    if (ReactNativeFeatureFlags.useOptimizedEventBatchingOnAndroid()) {
+      mIsDispatchScheduled = false;
+      uiThreadHandler.removeCallbacks(mDispatchEventsRunnable);
+    } else {
+      mCurrentFrameCallback.stop();
+    }
   }
 
   public void registerEventEmitter(@UIManagerType int uiManagerType, RCTEventEmitter eventEmitter) {

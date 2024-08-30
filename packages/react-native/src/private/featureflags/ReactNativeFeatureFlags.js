@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e6f75b1da7b738958530a845290f944c>>
+ * @generated SignedSource<<1f82c87c0c011c0bf2e76a6e46bb1d3e>>
  * @flow strict-local
  */
 
@@ -88,6 +88,7 @@ export type ReactNativeFeatureFlags = {
   useNativeViewConfigsInBridgelessMode: Getter<boolean>,
   useNewReactImageViewBackgroundDrawing: Getter<boolean>,
   useOptimisedViewPreallocationOnAndroid: Getter<boolean>,
+  useOptimizedEventBatchingOnAndroid: Getter<boolean>,
   useRuntimeShadowNodeReferenceUpdate: Getter<boolean>,
   useRuntimeShadowNodeReferenceUpdateOnLayout: Getter<boolean>,
   useStateAlignmentMechanism: Getter<boolean>,
@@ -332,6 +333,10 @@ export const useNewReactImageViewBackgroundDrawing: Getter<boolean> = createNati
  * Moves more of the work in view preallocation to the main thread to free up JS thread.
  */
 export const useOptimisedViewPreallocationOnAndroid: Getter<boolean> = createNativeFlagGetter('useOptimisedViewPreallocationOnAndroid', false);
+/**
+ * Uses an optimized mechanism for event batching on Android that does not need to wait for a Choreographer frame callback.
+ */
+export const useOptimizedEventBatchingOnAndroid: Getter<boolean> = createNativeFlagGetter('useOptimizedEventBatchingOnAndroid', false);
 /**
  * When enabled, cloning shadow nodes within react native will update the reference held by the current JS fiber tree.
  */

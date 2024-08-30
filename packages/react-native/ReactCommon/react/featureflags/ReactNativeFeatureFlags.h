@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<748622d87b1051bbb1cd79fb479ab0e2>>
+ * @generated SignedSource<<56c3d93945f6c320e268c9ba32cbde0f>>
  */
 
 /**
@@ -246,6 +246,11 @@ class ReactNativeFeatureFlags {
    * Moves more of the work in view preallocation to the main thread to free up JS thread.
    */
   RN_EXPORT static bool useOptimisedViewPreallocationOnAndroid();
+
+  /**
+   * Uses an optimized mechanism for event batching on Android that does not need to wait for a Choreographer frame callback.
+   */
+  RN_EXPORT static bool useOptimizedEventBatchingOnAndroid();
 
   /**
    * When enabled, cloning shadow nodes within react native will update the reference held by the current JS fiber tree.
