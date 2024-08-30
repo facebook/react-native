@@ -7823,6 +7823,7 @@ public class com/facebook/react/views/text/TextAttributeProps {
 	protected field mLineHeight F
 	protected field mLineHeightInput F
 	protected field mNumberOfLines I
+	protected field mOpacity F
 	protected field mRole Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$Role;
 	protected field mTextAlign I
 	protected field mTextShadowColor I
@@ -7846,6 +7847,7 @@ public class com/facebook/react/views/text/TextAttributeProps {
 	public static fun getJustificationMode (Lcom/facebook/react/uimanager/ReactStylesDiffMap;I)I
 	public static fun getLayoutDirection (Ljava/lang/String;)I
 	public fun getLetterSpacing ()F
+	public fun getOpacity ()F
 	public fun getRole ()Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$Role;
 	public static fun getTextAlignment (Lcom/facebook/react/uimanager/ReactStylesDiffMap;ZI)I
 	public static fun getTextBreakStrategy (Ljava/lang/String;)I
