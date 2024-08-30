@@ -848,6 +848,18 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
   RCT_FORWARD_SCROLL_EVENT(scrollViewDidEndZooming : scrollView withView : view atScale : scale);
 }
 
+- (void)didMoveToWindow {
+  [super didMoveToWindow];
+  if (self.window == nil) {
+    // Check if the ScrollView was in motion
+    if (_scrollView.isDecelerating || _scrollView.isTracking == NO) {
+      // Trigger the onMomentumScrollEnd event manually
+      RCT_SEND_SCROLL_EVENT(onMomentumScrollEnd, nil);
+      RCT_FORWARD_SCROLL_EVENT(scrollViewDidEndDecelerating : _scrollView);
+    }
+  }
+}
+
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {
   // Fire a final scroll event
