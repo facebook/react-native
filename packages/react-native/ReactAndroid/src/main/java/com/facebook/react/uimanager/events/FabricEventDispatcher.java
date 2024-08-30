@@ -54,7 +54,7 @@ public class FabricEventDispatcher implements EventDispatcher, LifecycleEventLis
     }
 
     event.dispose();
-    maybePostFrameCallbackFromNonUI();
+    scheduleDispatchOfBatchedEvents();
   }
 
   private void dispatchSynchronous(Event event) {
@@ -85,11 +85,11 @@ public class FabricEventDispatcher implements EventDispatcher, LifecycleEventLis
   }
 
   public void dispatchAllEvents() {
-    maybePostFrameCallbackFromNonUI();
+    scheduleDispatchOfBatchedEvents();
   }
 
-  private void maybePostFrameCallbackFromNonUI() {
-    mCurrentFrameCallback.maybePostFromNonUI();
+  private void scheduleDispatchOfBatchedEvents() {
+    mCurrentFrameCallback.maybeScheduleDispatchOfBatchedEvents();
   }
 
   /** Add a listener to this EventDispatcher. */
@@ -112,17 +112,17 @@ public class FabricEventDispatcher implements EventDispatcher, LifecycleEventLis
 
   @Override
   public void onHostResume() {
-    maybePostFrameCallbackFromNonUI();
+    scheduleDispatchOfBatchedEvents();
   }
 
   @Override
   public void onHostPause() {
-    stopFrameCallback();
+    cancelDispatchOfBatchedEvents();
   }
 
   @Override
   public void onHostDestroy() {
-    stopFrameCallback();
+    cancelDispatchOfBatchedEvents();
   }
 
   public void onCatalystInstanceDestroyed() {
@@ -130,12 +130,12 @@ public class FabricEventDispatcher implements EventDispatcher, LifecycleEventLis
         new Runnable() {
           @Override
           public void run() {
-            stopFrameCallback();
+            cancelDispatchOfBatchedEvents();
           }
         });
   }
 
-  private void stopFrameCallback() {
+  private void cancelDispatchOfBatchedEvents() {
     UiThreadUtil.assertOnUiThread();
     mCurrentFrameCallback.stop();
   }
@@ -154,7 +154,7 @@ public class FabricEventDispatcher implements EventDispatcher, LifecycleEventLis
   }
 
   private class ScheduleDispatchFrameCallback implements Choreographer.FrameCallback {
-    private volatile boolean mIsPosted = false;
+    private volatile boolean mIsDispatchScheduled = false;
     private boolean mShouldStop = false;
 
     @Override
@@ -162,9 +162,9 @@ public class FabricEventDispatcher implements EventDispatcher, LifecycleEventLis
       UiThreadUtil.assertOnUiThread();
 
       if (mShouldStop) {
-        mIsPosted = false;
+        mIsDispatchScheduled = false;
       } else {
-        post();
+        dispatchBatchedEvents();
       }
 
       Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "BatchEventDispatchedListeners");
@@ -181,32 +181,32 @@ public class FabricEventDispatcher implements EventDispatcher, LifecycleEventLis
       mShouldStop = true;
     }
 
-    public void maybePost() {
-      if (!mIsPosted) {
-        mIsPosted = true;
-        post();
+    public void maybeDispatchBatchedEvents() {
+      if (!mIsDispatchScheduled) {
+        mIsDispatchScheduled = true;
+        dispatchBatchedEvents();
       }
     }
 
-    private void post() {
+    private void dispatchBatchedEvents() {
       ReactChoreographer.getInstance()
           .postFrameCallback(ReactChoreographer.CallbackType.TIMERS_EVENTS, mCurrentFrameCallback);
     }
 
-    public void maybePostFromNonUI() {
-      if (mIsPosted) {
+    public void maybeScheduleDispatchOfBatchedEvents() {
+      if (mIsDispatchScheduled) {
         return;
       }
 
       // We should only hit this slow path when we receive events while the host activity is paused.
       if (mReactContext.isOnUiQueueThread()) {
-        maybePost();
+        maybeDispatchBatchedEvents();
       } else {
         mReactContext.runOnUiQueueThread(
             new Runnable() {
               @Override
               public void run() {
-                maybePost();
+                maybeDispatchBatchedEvents();
               }
             });
       }
