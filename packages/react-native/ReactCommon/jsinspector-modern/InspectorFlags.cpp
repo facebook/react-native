@@ -39,9 +39,10 @@ const InspectorFlags::Values& InspectorFlags::loadFlagsAndAssertUnchanged()
           true,
 #elif defined(REACT_NATIVE_FORCE_DISABLE_FUSEBOX)
           false,
-#elif !defined(NDEBUG) && defined(REACT_NATIVE_ENABLE_FUSEBOX_DEBUG)
+#elif defined(HERMES_ENABLE_DEBUGGER) && \
+    defined(REACT_NATIVE_ENABLE_FUSEBOX_DEBUG)
           true,
-#elif !defined(NDEBUG)
+#elif defined(HERMES_ENABLE_DEBUGGER)
           ReactNativeFeatureFlags::fuseboxEnabledDebug(),
 #else
           ReactNativeFeatureFlags::fuseboxEnabledRelease(),
