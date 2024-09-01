@@ -25,9 +25,6 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig = {
     disableIntervalMomentum: true,
     maintainVisibleContentPosition: true,
     endFillColor: {process: require('../../StyleSheet/processColor').default},
-    experimental_boxShadow: {
-      process: require('../../StyleSheet/processBoxShadow').default,
-    },
     fadingEdgeLength: true,
     nestedScrollEnabled: true,
     overScrollMode: true,

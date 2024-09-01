@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6ced494246c9c64487dee9f409d75f0e>>
+ * @generated SignedSource<<6139aa47aac3e5682a453a416bc10236>>
  */
 
 /**
@@ -77,6 +77,10 @@ bool ReactNativeFeatureFlags::enableGranularShadowTreeStateReconciliation() {
   return getAccessor().enableGranularShadowTreeStateReconciliation();
 }
 
+bool ReactNativeFeatureFlags::enableIOSViewClipToPaddingBox() {
+  return getAccessor().enableIOSViewClipToPaddingBox();
+}
+
 bool ReactNativeFeatureFlags::enableLayoutAnimationsOnIOS() {
   return getAccessor().enableLayoutAnimationsOnIOS();
 }
@@ -127,6 +131,10 @@ bool ReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact()
 
 bool ReactNativeFeatureFlags::fixMissedFabricStateUpdatesOnAndroid() {
   return getAccessor().fixMissedFabricStateUpdatesOnAndroid();
+}
+
+bool ReactNativeFeatureFlags::fixMountingCoordinatorReportedPendingTransactionsOnAndroid() {
+  return getAccessor().fixMountingCoordinatorReportedPendingTransactionsOnAndroid();
 }
 
 bool ReactNativeFeatureFlags::forceBatchingMountItemsOnAndroid() {
@@ -183,6 +191,10 @@ bool ReactNativeFeatureFlags::useNewReactImageViewBackgroundDrawing() {
 
 bool ReactNativeFeatureFlags::useOptimisedViewPreallocationOnAndroid() {
   return getAccessor().useOptimisedViewPreallocationOnAndroid();
+}
+
+bool ReactNativeFeatureFlags::useOptimizedEventBatchingOnAndroid() {
+  return getAccessor().useOptimizedEventBatchingOnAndroid();
 }
 
 bool ReactNativeFeatureFlags::useRuntimeShadowNodeReferenceUpdate() {

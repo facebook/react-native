@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<de2307f404cdcf679eb1258c9a12cf4b>>
+ * @generated SignedSource<<7e65025b9bdd8b515b31f02d2a1489b1>>
  */
 
 /**
@@ -63,6 +63,8 @@ class NativeReactNativeFeatureFlags
 
   bool enableGranularShadowTreeStateReconciliation(jsi::Runtime& runtime);
 
+  bool enableIOSViewClipToPaddingBox(jsi::Runtime& runtime);
+
   bool enableLayoutAnimationsOnIOS(jsi::Runtime& runtime);
 
   bool enableLongTaskAPI(jsi::Runtime& runtime);
@@ -88,6 +90,8 @@ class NativeReactNativeFeatureFlags
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact(jsi::Runtime& runtime);
 
   bool fixMissedFabricStateUpdatesOnAndroid(jsi::Runtime& runtime);
+
+  bool fixMountingCoordinatorReportedPendingTransactionsOnAndroid(jsi::Runtime& runtime);
 
   bool forceBatchingMountItemsOnAndroid(jsi::Runtime& runtime);
 
@@ -116,6 +120,8 @@ class NativeReactNativeFeatureFlags
   bool useNewReactImageViewBackgroundDrawing(jsi::Runtime& runtime);
 
   bool useOptimisedViewPreallocationOnAndroid(jsi::Runtime& runtime);
+
+  bool useOptimizedEventBatchingOnAndroid(jsi::Runtime& runtime);
 
   bool useRuntimeShadowNodeReferenceUpdate(jsi::Runtime& runtime);
 

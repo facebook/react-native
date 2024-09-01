@@ -42,7 +42,7 @@ export default function processBackgroundImage(
   }
 
   if (typeof backgroundImage === 'string') {
-    result = parseCSSLinearGradient(backgroundImage);
+    result = parseCSSLinearGradient(backgroundImage.replace(/\n/g, ' '));
   } else if (Array.isArray(backgroundImage)) {
     for (const bgImage of backgroundImage) {
       const processedColorStops: Array<{

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<42b958c53ce709e54864e604135633a5>>
+ * @generated SignedSource<<2a078848517574213e02b42dff1af8e8>>
  */
 
 /**
@@ -83,6 +83,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool enableIOSViewClipToPaddingBox() override {
+    return false;
+  }
+
   bool enableLayoutAnimationsOnIOS() override {
     return true;
   }
@@ -132,6 +136,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool fixMissedFabricStateUpdatesOnAndroid() override {
+    return false;
+  }
+
+  bool fixMountingCoordinatorReportedPendingTransactionsOnAndroid() override {
     return false;
   }
 
@@ -188,6 +196,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool useOptimisedViewPreallocationOnAndroid() override {
+    return false;
+  }
+
+  bool useOptimizedEventBatchingOnAndroid() override {
     return false;
   }
 

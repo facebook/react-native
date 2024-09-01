@@ -68,6 +68,11 @@ Scheduler::Scheduler(
         uiManager->getShadowTreeRevisionConsistencyManager());
   }
 
+  if (runtimeScheduler &&
+      ReactNativeFeatureFlags::enableReportEventPaintTime()) {
+    runtimeScheduler->setEventTimingDelegate(eventPerformanceLogger_.get());
+  }
+
   auto eventPipe = [uiManager, runtimeScheduler = runtimeScheduler.get()](
                        jsi::Runtime& runtime,
                        const EventTarget* eventTarget,
@@ -152,6 +157,19 @@ Scheduler::Scheduler(
 Scheduler::~Scheduler() {
   LOG(WARNING) << "Scheduler::~Scheduler() was called (address: " << this
                << ").";
+
+  if (ReactNativeFeatureFlags::enableReportEventPaintTime()) {
+    auto weakRuntimeScheduler =
+        contextContainer_->find<std::weak_ptr<RuntimeScheduler>>(
+            "RuntimeScheduler");
+    auto runtimeScheduler = weakRuntimeScheduler.has_value()
+        ? weakRuntimeScheduler.value().lock()
+        : nullptr;
+
+    if (runtimeScheduler) {
+      runtimeScheduler->setEventTimingDelegate(nullptr);
+    }
+  }
 
   for (auto& commitHook : commitHooks_) {
     uiManager_->unregisterCommitHook(*commitHook);
@@ -286,7 +304,10 @@ void Scheduler::uiManagerDidFinishTransaction(
         ? weakRuntimeScheduler.value().lock()
         : nullptr;
     if (runtimeScheduler && !mountSynchronously) {
+      auto surfaceId = mountingCoordinator->getSurfaceId();
+
       runtimeScheduler->scheduleRenderingUpdate(
+          surfaceId,
           [delegate = delegate_,
            mountingCoordinator = std::move(mountingCoordinator)]() {
             delegate->schedulerShouldRenderTransactions(mountingCoordinator);

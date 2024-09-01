@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9aa269f6c9056b4e0e477142554db59a>>
+ * @generated SignedSource<<c8266eb27ec23aaa856fa95275503a81>>
  */
 
 /**
@@ -108,6 +108,11 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableGranularShadowTreeStateReconciliation();
 
   /**
+   * iOS Views will clip to their padding box vs border box
+   */
+  RN_EXPORT static bool enableIOSViewClipToPaddingBox();
+
+  /**
    * When enabled, LayoutAnimations API will animate state changes on iOS.
    */
   RN_EXPORT static bool enableLayoutAnimationsOnIOS();
@@ -171,6 +176,11 @@ class ReactNativeFeatureFlags {
    * Enables a fix to prevent the possibility of state updates in Fabric being missed due to race conditions with previous state updates.
    */
   RN_EXPORT static bool fixMissedFabricStateUpdatesOnAndroid();
+
+  /**
+   * Fixes a limitation on Android where the mounting coordinator would report there are no pending transactions but some of them were actually not processed due to the use of the push model.
+   */
+  RN_EXPORT static bool fixMountingCoordinatorReportedPendingTransactionsOnAndroid();
 
   /**
    * Forces the mounting layer on Android to always batch mount items instead of dispatching them immediately. This might fix some crashes related to synchronous state updates, where some views dispatch state updates during mount.
@@ -241,6 +251,11 @@ class ReactNativeFeatureFlags {
    * Moves more of the work in view preallocation to the main thread to free up JS thread.
    */
   RN_EXPORT static bool useOptimisedViewPreallocationOnAndroid();
+
+  /**
+   * Uses an optimized mechanism for event batching on Android that does not need to wait for a Choreographer frame callback.
+   */
+  RN_EXPORT static bool useOptimizedEventBatchingOnAndroid();
 
   /**
    * When enabled, cloning shadow nodes within react native will update the reference held by the current JS fiber tree.

@@ -122,6 +122,7 @@ class RuntimeScheduler_Legacy final : public RuntimeSchedulerBase {
   void callExpiredTasks(jsi::Runtime& runtime) override;
 
   void scheduleRenderingUpdate(
+      SurfaceId surfaceId,
       RuntimeSchedulerRenderingUpdate&& renderingUpdate) override;
 
   void setShadowTreeRevisionConsistencyManager(
@@ -130,6 +131,9 @@ class RuntimeScheduler_Legacy final : public RuntimeSchedulerBase {
 
   void setPerformanceEntryReporter(
       PerformanceEntryReporter* performanceEntryReporter) override;
+
+  void setEventTimingDelegate(
+      RuntimeSchedulerEventTimingDelegate* eventTimingDelegate) override;
 
  private:
   std::priority_queue<

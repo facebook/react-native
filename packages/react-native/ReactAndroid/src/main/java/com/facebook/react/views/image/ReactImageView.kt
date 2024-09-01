@@ -481,9 +481,7 @@ public class ReactImageView(
   }
 
   private fun maybeUpdateViewFromRequest(doResize: Boolean) {
-    if (imageSource == null) {
-      return
-    }
+    val uri = this.imageSource?.uri ?: return
 
     val postprocessorList = mutableListOf<Postprocessor>()
     iterativeBoxBlurPostProcessor?.let { postprocessorList.add(it) }
@@ -492,10 +490,8 @@ public class ReactImageView(
 
     val resizeOptions = if (doResize) resizeOptions else null
 
-    val imageSourceSafe = this.imageSource ?: return
-
     val imageRequestBuilder =
-        ImageRequestBuilder.newBuilderWithSource(imageSourceSafe.uri)
+        ImageRequestBuilder.newBuilderWithSource(uri)
             .setPostprocessor(postprocessor)
             .setResizeOptions(resizeOptions)
             .setAutoRotateEnabled(true)
@@ -504,7 +500,7 @@ public class ReactImageView(
     val imageRequest: ImageRequest =
         ReactNetworkImageRequest.fromBuilderWithHeaders(imageRequestBuilder, headers)
 
-    globalImageLoadListener?.onLoadAttempt(imageSourceSafe.uri)
+    globalImageLoadListener?.onLoadAttempt(uri)
 
     @Suppress("UNCHECKED_CAST") // Unsafe cast necessary as this java class used raw generics
     val builder =

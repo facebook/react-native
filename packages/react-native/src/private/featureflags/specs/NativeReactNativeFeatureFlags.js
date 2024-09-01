@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1f1710a12f6980b23bb6c0ece0060b59>>
+ * @generated SignedSource<<6d4aa48dfdd3b78ac5f0f8e70eb3895f>>
  * @flow strict-local
  */
 
@@ -37,6 +37,7 @@ export interface Spec extends TurboModule {
   +enableFabricLogs?: () => boolean;
   +enableFabricRendererExclusively?: () => boolean;
   +enableGranularShadowTreeStateReconciliation?: () => boolean;
+  +enableIOSViewClipToPaddingBox?: () => boolean;
   +enableLayoutAnimationsOnIOS?: () => boolean;
   +enableLongTaskAPI?: () => boolean;
   +enableMicrotasks?: () => boolean;
@@ -50,6 +51,7 @@ export interface Spec extends TurboModule {
   +fixIncorrectScrollViewStateUpdateOnAndroid?: () => boolean;
   +fixMappingOfEventPrioritiesBetweenFabricAndReact?: () => boolean;
   +fixMissedFabricStateUpdatesOnAndroid?: () => boolean;
+  +fixMountingCoordinatorReportedPendingTransactionsOnAndroid?: () => boolean;
   +forceBatchingMountItemsOnAndroid?: () => boolean;
   +fuseboxEnabledDebug?: () => boolean;
   +fuseboxEnabledRelease?: () => boolean;
@@ -64,6 +66,7 @@ export interface Spec extends TurboModule {
   +useNativeViewConfigsInBridgelessMode?: () => boolean;
   +useNewReactImageViewBackgroundDrawing?: () => boolean;
   +useOptimisedViewPreallocationOnAndroid?: () => boolean;
+  +useOptimizedEventBatchingOnAndroid?: () => boolean;
   +useRuntimeShadowNodeReferenceUpdate?: () => boolean;
   +useRuntimeShadowNodeReferenceUpdateOnLayout?: () => boolean;
   +useStateAlignmentMechanism?: () => boolean;

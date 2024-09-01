@@ -1538,15 +1538,26 @@ function InternalTextInput(props: Props): React.Node {
   // Keep the original (potentially nested) style when possible, as React can diff these more efficiently
   let _style = props.style;
   const flattenedStyle = flattenStyle<TextStyleProp>(props.style);
-  if (typeof flattenedStyle?.fontWeight === 'number') {
-    _style = [
-      _style,
-      {
-        fontWeight:
-          // $FlowFixMe[incompatible-cast]
-          (flattenedStyle.fontWeight.toString(): TextStyleInternal['fontWeight']),
-      },
-    ];
+  if (flattenedStyle != null) {
+    let overrides: ?{...TextStyleInternal} = null;
+    if (typeof flattenedStyle?.fontWeight === 'number') {
+      overrides = overrides || ({}: {...TextStyleInternal});
+      overrides.fontWeight =
+        // $FlowFixMe[incompatible-cast]
+        (flattenedStyle.fontWeight.toString(): TextStyleInternal['fontWeight']);
+    }
+
+    if (flattenedStyle.verticalAlign != null) {
+      overrides = overrides || ({}: {...TextStyleInternal});
+      overrides.textAlignVertical =
+        verticalAlignToTextAlignVerticalMap[flattenedStyle.verticalAlign];
+      overrides.verticalAlign = undefined;
+    }
+
+    if (overrides != null) {
+      // $FlowFixMe[incompatible-type]
+      _style = [_style, overrides];
+    }
   }
 
   if (Platform.OS === 'ios') {
@@ -1782,20 +1793,6 @@ const ExportedForwardRef: React.AbstractComponent<
   },
   forwardedRef: ReactRefSetter<TextInputInstance>,
 ) {
-  // $FlowFixMe[underconstrained-implicit-instantiation]
-  let style = flattenStyle(restProps.style);
-
-  if (style?.verticalAlign != null) {
-    // $FlowFixMe[prop-missing]
-    // $FlowFixMe[cannot-write]
-    style.textAlignVertical =
-      // $FlowFixMe[invalid-computed-prop]
-      verticalAlignToTextAlignVerticalMap[style.verticalAlign];
-    // $FlowFixMe[prop-missing]
-    // $FlowFixMe[cannot-write]
-    delete style.verticalAlign;
-  }
-
   return (
     <InternalTextInput
       allowFontScaling={allowFontScaling}
@@ -1832,7 +1829,6 @@ const ExportedForwardRef: React.AbstractComponent<
       }
       {...restProps}
       forwardedRef={forwardedRef}
-      style={style}
     />
   );
 });

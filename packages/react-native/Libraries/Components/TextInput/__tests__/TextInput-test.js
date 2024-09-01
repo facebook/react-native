@@ -473,14 +473,20 @@ jest.unmock('../TextInput');
         rejectResponderTermination={true}
         selection={null}
         style={
-          Object {
-            "backgroundColor": "white",
-            "display": "flex",
-            "flex": 1,
-            "marginInlineStart": 10,
-            "textAlignVertical": "center",
-            "userSelect": "none",
-          }
+          Array [
+            Object {
+              "backgroundColor": "white",
+              "display": "flex",
+              "flex": 1,
+              "marginInlineStart": 10,
+              "userSelect": "none",
+              "verticalAlign": "middle",
+            },
+            Object {
+              "textAlignVertical": "center",
+              "verticalAlign": undefined,
+            },
+          ]
         }
         submitBehavior="blurAndSubmit"
         text=""

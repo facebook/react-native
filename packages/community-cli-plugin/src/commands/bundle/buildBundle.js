@@ -18,6 +18,7 @@ import {logger} from '../../utils/logger';
 import parseKeyValueParamArray from '../../utils/parseKeyValueParamArray';
 import saveAssets from './saveAssets';
 import chalk from 'chalk';
+import {promises as fs} from 'fs';
 import Server from 'metro/src/Server';
 import metroBundle from 'metro/src/shared/output/bundle';
 import metroRamBundle from 'metro/src/shared/output/RamBundle';
@@ -111,6 +112,12 @@ async function buildBundleWithConfig(
 
   try {
     const bundle = await bundleImpl.build(server, requestOpts);
+
+    // Ensure destination directory exists before saving the bundle
+    await fs.mkdir(path.dirname(args.bundleOutput), {
+      recursive: true,
+      mode: 0o755,
+    });
 
     // $FlowIgnore[class-object-subtyping]
     // $FlowIgnore[incompatible-call]

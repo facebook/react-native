@@ -44,6 +44,8 @@ export default function processFilter(
   }
 
   if (typeof filter === 'string') {
+    filter = filter.replace(/\n/g, ' ');
+
     // matches on functions with args and nested functions like "drop-shadow(10 10 10 rgba(0, 0, 0, 1))"
     const regex = /([\w-]+)\(([^()]*|\([^()]*\)|[^()]*\([^()]*\)[^()]*)\)/g;
     let matches;
@@ -80,7 +82,7 @@ export default function processFilter(
         }
       }
     }
-  } else {
+  } else if (Array.isArray(filter)) {
     for (const filterFunction of filter) {
       const [filterName, filterValue] = Object.entries(filterFunction)[0];
       if (filterName === 'dropShadow') {
@@ -107,6 +109,8 @@ export default function processFilter(
         }
       }
     }
+  } else {
+    throw new TypeError(`${typeof filter} filter is not a string or array`);
   }
 
   return result;

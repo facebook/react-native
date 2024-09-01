@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2e4136d39051c4a1ee6289a6ccf02d52>>
+ * @generated SignedSource<<92b1214e3a526d7c67dcc7b0c2a131de>>
  */
 
 /**
@@ -51,6 +51,8 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableGranularShadowTreeStateReconciliation(): Boolean
 
+  @DoNotStrip public fun enableIOSViewClipToPaddingBox(): Boolean
+
   @DoNotStrip public fun enableLayoutAnimationsOnIOS(): Boolean
 
   @DoNotStrip public fun enableLongTaskAPI(): Boolean
@@ -76,6 +78,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean
 
   @DoNotStrip public fun fixMissedFabricStateUpdatesOnAndroid(): Boolean
+
+  @DoNotStrip public fun fixMountingCoordinatorReportedPendingTransactionsOnAndroid(): Boolean
 
   @DoNotStrip public fun forceBatchingMountItemsOnAndroid(): Boolean
 
@@ -104,6 +108,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun useNewReactImageViewBackgroundDrawing(): Boolean
 
   @DoNotStrip public fun useOptimisedViewPreallocationOnAndroid(): Boolean
+
+  @DoNotStrip public fun useOptimizedEventBatchingOnAndroid(): Boolean
 
   @DoNotStrip public fun useRuntimeShadowNodeReferenceUpdate(): Boolean
 

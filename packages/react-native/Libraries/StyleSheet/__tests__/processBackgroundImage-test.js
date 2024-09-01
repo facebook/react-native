@@ -166,7 +166,30 @@ describe('processBackgroundImage', () => {
 
   it('should process multiple linear gradients', () => {
     const input = `
-      linear-gradient(to right, red, blue), 
+      linear-gradient(to right, red, blue),
+      linear-gradient(to bottom, green, yellow)`;
+    const result = processBackgroundImage(input);
+    expect(result).toHaveLength(2);
+    expect(result[0].type).toEqual('linearGradient');
+    expect(result[0].start).toEqual({x: 0, y: 0.5});
+    expect(result[0].end).toEqual({x: 1, y: 0.5});
+    expect(result[0].colorStops).toEqual([
+      {color: processColor('red'), position: 0},
+      {color: processColor('blue'), position: 1},
+    ]);
+    expect(result[1].type).toEqual('linearGradient');
+    expect(result[1].start).toEqual({x: 0.5, y: 0});
+    expect(result[1].end).toEqual({x: 0.5, y: 1});
+
+    expect(result[1].colorStops).toEqual([
+      {color: processColor('green'), position: 0},
+      {color: processColor('yellow'), position: 1},
+    ]);
+  });
+
+  it('should process multiple linear gradients with newlines', () => {
+    const input = `
+      linear-gradient(to right, red, blue),\n
       linear-gradient(to bottom, green, yellow)`;
     const result = processBackgroundImage(input);
     expect(result).toHaveLength(2);
@@ -239,7 +262,7 @@ describe('processBackgroundImage', () => {
   });
 
   it('should process multiple gradients with spaces', () => {
-    const input = `linear-gradient(to right , 
+    const input = `linear-gradient(to right ,
     rgba(255,0,0,0.5), rgba(0,0,255,0.8)),
               linear-gradient(to bottom , rgba(255,0,0,0.9)  , rgba(0,0,255,0.2)  )`;
     const result = processBackgroundImage(input);

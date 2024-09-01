@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d883bc5832598b7034aaedfe8606a9ff>>
+ * @generated SignedSource<<d02af2a8ef015c57d45aba8280539606>>
  */
 
 /**
@@ -38,6 +38,7 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var enableFabricLogsCache: Boolean? = null
   private var enableFabricRendererExclusivelyCache: Boolean? = null
   private var enableGranularShadowTreeStateReconciliationCache: Boolean? = null
+  private var enableIOSViewClipToPaddingBoxCache: Boolean? = null
   private var enableLayoutAnimationsOnIOSCache: Boolean? = null
   private var enableLongTaskAPICache: Boolean? = null
   private var enableMicrotasksCache: Boolean? = null
@@ -51,6 +52,7 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var fixIncorrectScrollViewStateUpdateOnAndroidCache: Boolean? = null
   private var fixMappingOfEventPrioritiesBetweenFabricAndReactCache: Boolean? = null
   private var fixMissedFabricStateUpdatesOnAndroidCache: Boolean? = null
+  private var fixMountingCoordinatorReportedPendingTransactionsOnAndroidCache: Boolean? = null
   private var forceBatchingMountItemsOnAndroidCache: Boolean? = null
   private var fuseboxEnabledDebugCache: Boolean? = null
   private var fuseboxEnabledReleaseCache: Boolean? = null
@@ -65,6 +67,7 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var useNativeViewConfigsInBridgelessModeCache: Boolean? = null
   private var useNewReactImageViewBackgroundDrawingCache: Boolean? = null
   private var useOptimisedViewPreallocationOnAndroidCache: Boolean? = null
+  private var useOptimizedEventBatchingOnAndroidCache: Boolean? = null
   private var useRuntimeShadowNodeReferenceUpdateCache: Boolean? = null
   private var useRuntimeShadowNodeReferenceUpdateOnLayoutCache: Boolean? = null
   private var useStateAlignmentMechanismCache: Boolean? = null
@@ -210,6 +213,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
     return cached
   }
 
+  override fun enableIOSViewClipToPaddingBox(): Boolean {
+    var cached = enableIOSViewClipToPaddingBoxCache
+    if (cached == null) {
+      cached = currentProvider.enableIOSViewClipToPaddingBox()
+      accessedFeatureFlags.add("enableIOSViewClipToPaddingBox")
+      enableIOSViewClipToPaddingBoxCache = cached
+    }
+    return cached
+  }
+
   override fun enableLayoutAnimationsOnIOS(): Boolean {
     var cached = enableLayoutAnimationsOnIOSCache
     if (cached == null) {
@@ -336,6 +349,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.fixMissedFabricStateUpdatesOnAndroid()
       accessedFeatureFlags.add("fixMissedFabricStateUpdatesOnAndroid")
       fixMissedFabricStateUpdatesOnAndroidCache = cached
+    }
+    return cached
+  }
+
+  override fun fixMountingCoordinatorReportedPendingTransactionsOnAndroid(): Boolean {
+    var cached = fixMountingCoordinatorReportedPendingTransactionsOnAndroidCache
+    if (cached == null) {
+      cached = currentProvider.fixMountingCoordinatorReportedPendingTransactionsOnAndroid()
+      accessedFeatureFlags.add("fixMountingCoordinatorReportedPendingTransactionsOnAndroid")
+      fixMountingCoordinatorReportedPendingTransactionsOnAndroidCache = cached
     }
     return cached
   }
@@ -476,6 +499,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.useOptimisedViewPreallocationOnAndroid()
       accessedFeatureFlags.add("useOptimisedViewPreallocationOnAndroid")
       useOptimisedViewPreallocationOnAndroidCache = cached
+    }
+    return cached
+  }
+
+  override fun useOptimizedEventBatchingOnAndroid(): Boolean {
+    var cached = useOptimizedEventBatchingOnAndroidCache
+    if (cached == null) {
+      cached = currentProvider.useOptimizedEventBatchingOnAndroid()
+      accessedFeatureFlags.add("useOptimizedEventBatchingOnAndroid")
+      useOptimizedEventBatchingOnAndroidCache = cached
     }
     return cached
   }

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3c32ce3847859db45d2e8bafb3cc31a1>>
+ * @generated SignedSource<<3693bce1a6719ef03c1c3148230771b4>>
  * @flow strict-local
  */
 
@@ -60,6 +60,7 @@ export type ReactNativeFeatureFlags = {
   enableFabricLogs: Getter<boolean>,
   enableFabricRendererExclusively: Getter<boolean>,
   enableGranularShadowTreeStateReconciliation: Getter<boolean>,
+  enableIOSViewClipToPaddingBox: Getter<boolean>,
   enableLayoutAnimationsOnIOS: Getter<boolean>,
   enableLongTaskAPI: Getter<boolean>,
   enableMicrotasks: Getter<boolean>,
@@ -73,6 +74,7 @@ export type ReactNativeFeatureFlags = {
   fixIncorrectScrollViewStateUpdateOnAndroid: Getter<boolean>,
   fixMappingOfEventPrioritiesBetweenFabricAndReact: Getter<boolean>,
   fixMissedFabricStateUpdatesOnAndroid: Getter<boolean>,
+  fixMountingCoordinatorReportedPendingTransactionsOnAndroid: Getter<boolean>,
   forceBatchingMountItemsOnAndroid: Getter<boolean>,
   fuseboxEnabledDebug: Getter<boolean>,
   fuseboxEnabledRelease: Getter<boolean>,
@@ -87,6 +89,7 @@ export type ReactNativeFeatureFlags = {
   useNativeViewConfigsInBridgelessMode: Getter<boolean>,
   useNewReactImageViewBackgroundDrawing: Getter<boolean>,
   useOptimisedViewPreallocationOnAndroid: Getter<boolean>,
+  useOptimizedEventBatchingOnAndroid: Getter<boolean>,
   useRuntimeShadowNodeReferenceUpdate: Getter<boolean>,
   useRuntimeShadowNodeReferenceUpdateOnLayout: Getter<boolean>,
   useStateAlignmentMechanism: Getter<boolean>,
@@ -220,6 +223,10 @@ export const enableFabricRendererExclusively: Getter<boolean> = createNativeFlag
  */
 export const enableGranularShadowTreeStateReconciliation: Getter<boolean> = createNativeFlagGetter('enableGranularShadowTreeStateReconciliation', false);
 /**
+ * iOS Views will clip to their padding box vs border box
+ */
+export const enableIOSViewClipToPaddingBox: Getter<boolean> = createNativeFlagGetter('enableIOSViewClipToPaddingBox', false);
+/**
  * When enabled, LayoutAnimations API will animate state changes on iOS.
  */
 export const enableLayoutAnimationsOnIOS: Getter<boolean> = createNativeFlagGetter('enableLayoutAnimationsOnIOS', true);
@@ -271,6 +278,10 @@ export const fixMappingOfEventPrioritiesBetweenFabricAndReact: Getter<boolean> =
  * Enables a fix to prevent the possibility of state updates in Fabric being missed due to race conditions with previous state updates.
  */
 export const fixMissedFabricStateUpdatesOnAndroid: Getter<boolean> = createNativeFlagGetter('fixMissedFabricStateUpdatesOnAndroid', false);
+/**
+ * Fixes a limitation on Android where the mounting coordinator would report there are no pending transactions but some of them were actually not processed due to the use of the push model.
+ */
+export const fixMountingCoordinatorReportedPendingTransactionsOnAndroid: Getter<boolean> = createNativeFlagGetter('fixMountingCoordinatorReportedPendingTransactionsOnAndroid', false);
 /**
  * Forces the mounting layer on Android to always batch mount items instead of dispatching them immediately. This might fix some crashes related to synchronous state updates, where some views dispatch state updates during mount.
  */
@@ -327,6 +338,10 @@ export const useNewReactImageViewBackgroundDrawing: Getter<boolean> = createNati
  * Moves more of the work in view preallocation to the main thread to free up JS thread.
  */
 export const useOptimisedViewPreallocationOnAndroid: Getter<boolean> = createNativeFlagGetter('useOptimisedViewPreallocationOnAndroid', false);
+/**
+ * Uses an optimized mechanism for event batching on Android that does not need to wait for a Choreographer frame callback.
+ */
+export const useOptimizedEventBatchingOnAndroid: Getter<boolean> = createNativeFlagGetter('useOptimizedEventBatchingOnAndroid', false);
 /**
  * When enabled, cloning shadow nodes within react native will update the reference held by the current JS fiber tree.
  */

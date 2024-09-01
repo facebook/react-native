@@ -851,7 +851,10 @@ describe('buildSchema', () => {
                       {
                         name: 'a',
                         optional: false,
-                        typeAnnotation: {type: 'ArrayTypeAnnotation'},
+                        typeAnnotation: {
+                          type: 'ArrayTypeAnnotation',
+                          elementType: {type: 'AnyTypeAnnotation'},
+                        },
                       },
                     ],
                   },
@@ -1258,7 +1261,10 @@ describe('buildModuleSchema', () => {
                 {
                   name: 'a',
                   optional: false,
-                  typeAnnotation: {type: 'ArrayTypeAnnotation'},
+                  typeAnnotation: {
+                    type: 'ArrayTypeAnnotation',
+                    elementType: {type: 'AnyTypeAnnotation'},
+                  },
                 },
               ],
               returnTypeAnnotation: {

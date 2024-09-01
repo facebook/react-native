@@ -84,6 +84,7 @@ public class YogaNative {
   static native long jni_YGNodeStyleGetPositionJNI(long nativePointer, int edge);
   static native void jni_YGNodeStyleSetPositionJNI(long nativePointer, int edge, float position);
   static native void jni_YGNodeStyleSetPositionPercentJNI(long nativePointer, int edge, float percent);
+  static native void jni_YGNodeStyleSetPositionAutoJNI(long nativePointer, int edge);
   static native long jni_YGNodeStyleGetWidthJNI(long nativePointer);
   static native void jni_YGNodeStyleSetWidthJNI(long nativePointer, float width);
   static native void jni_YGNodeStyleSetWidthPercentJNI(long nativePointer, float percent);

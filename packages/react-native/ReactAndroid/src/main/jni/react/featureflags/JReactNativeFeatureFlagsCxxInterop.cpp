@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8c6289e2eda0e672a38a7c30bf508806>>
+ * @generated SignedSource<<c23b21fca18699470580e54b99de1126>>
  */
 
 /**
@@ -123,6 +123,12 @@ class ReactNativeFeatureFlagsProviderHolder
     return method(javaProvider_);
   }
 
+  bool enableIOSViewClipToPaddingBox() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableIOSViewClipToPaddingBox");
+    return method(javaProvider_);
+  }
+
   bool enableLayoutAnimationsOnIOS() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableLayoutAnimationsOnIOS");
@@ -198,6 +204,12 @@ class ReactNativeFeatureFlagsProviderHolder
   bool fixMissedFabricStateUpdatesOnAndroid() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("fixMissedFabricStateUpdatesOnAndroid");
+    return method(javaProvider_);
+  }
+
+  bool fixMountingCoordinatorReportedPendingTransactionsOnAndroid() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("fixMountingCoordinatorReportedPendingTransactionsOnAndroid");
     return method(javaProvider_);
   }
 
@@ -282,6 +294,12 @@ class ReactNativeFeatureFlagsProviderHolder
   bool useOptimisedViewPreallocationOnAndroid() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useOptimisedViewPreallocationOnAndroid");
+    return method(javaProvider_);
+  }
+
+  bool useOptimizedEventBatchingOnAndroid() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useOptimizedEventBatchingOnAndroid");
     return method(javaProvider_);
   }
 
@@ -383,6 +401,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableGranularShadowTreeStateReconcilia
   return ReactNativeFeatureFlags::enableGranularShadowTreeStateReconciliation();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::enableIOSViewClipToPaddingBox(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableIOSViewClipToPaddingBox();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::enableLayoutAnimationsOnIOS(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableLayoutAnimationsOnIOS();
@@ -446,6 +469,11 @@ bool JReactNativeFeatureFlagsCxxInterop::fixMappingOfEventPrioritiesBetweenFabri
 bool JReactNativeFeatureFlagsCxxInterop::fixMissedFabricStateUpdatesOnAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::fixMissedFabricStateUpdatesOnAndroid();
+}
+
+bool JReactNativeFeatureFlagsCxxInterop::fixMountingCoordinatorReportedPendingTransactionsOnAndroid(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::fixMountingCoordinatorReportedPendingTransactionsOnAndroid();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::forceBatchingMountItemsOnAndroid(
@@ -516,6 +544,11 @@ bool JReactNativeFeatureFlagsCxxInterop::useNewReactImageViewBackgroundDrawing(
 bool JReactNativeFeatureFlagsCxxInterop::useOptimisedViewPreallocationOnAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::useOptimisedViewPreallocationOnAndroid();
+}
+
+bool JReactNativeFeatureFlagsCxxInterop::useOptimizedEventBatchingOnAndroid(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::useOptimizedEventBatchingOnAndroid();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::useRuntimeShadowNodeReferenceUpdate(
@@ -598,6 +631,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
         "enableGranularShadowTreeStateReconciliation",
         JReactNativeFeatureFlagsCxxInterop::enableGranularShadowTreeStateReconciliation),
       makeNativeMethod(
+        "enableIOSViewClipToPaddingBox",
+        JReactNativeFeatureFlagsCxxInterop::enableIOSViewClipToPaddingBox),
+      makeNativeMethod(
         "enableLayoutAnimationsOnIOS",
         JReactNativeFeatureFlagsCxxInterop::enableLayoutAnimationsOnIOS),
       makeNativeMethod(
@@ -636,6 +672,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "fixMissedFabricStateUpdatesOnAndroid",
         JReactNativeFeatureFlagsCxxInterop::fixMissedFabricStateUpdatesOnAndroid),
+      makeNativeMethod(
+        "fixMountingCoordinatorReportedPendingTransactionsOnAndroid",
+        JReactNativeFeatureFlagsCxxInterop::fixMountingCoordinatorReportedPendingTransactionsOnAndroid),
       makeNativeMethod(
         "forceBatchingMountItemsOnAndroid",
         JReactNativeFeatureFlagsCxxInterop::forceBatchingMountItemsOnAndroid),
@@ -678,6 +717,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "useOptimisedViewPreallocationOnAndroid",
         JReactNativeFeatureFlagsCxxInterop::useOptimisedViewPreallocationOnAndroid),
+      makeNativeMethod(
+        "useOptimizedEventBatchingOnAndroid",
+        JReactNativeFeatureFlagsCxxInterop::useOptimizedEventBatchingOnAndroid),
       makeNativeMethod(
         "useRuntimeShadowNodeReferenceUpdate",
         JReactNativeFeatureFlagsCxxInterop::useRuntimeShadowNodeReferenceUpdate),

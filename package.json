@@ -32,7 +32,8 @@
     "test-typescript": "dtslint packages/react-native/types",
     "test": "jest",
     "trigger-react-native-release": "node ./scripts/releases-local/trigger-react-native-release.js",
-    "update-lock": "npx yarn-deduplicate"
+    "update-lock": "npx yarn-deduplicate",
+    "postinstall": "cd packages/react-native-codegen && yarn build"
   },
   "workspaces": [
     "packages/*",
@@ -78,7 +79,7 @@
     "eslint-plugin-redundant-undefined": "^0.4.0",
     "eslint-plugin-relay": "^1.8.3",
     "flow-api-translator": "0.23.1",
-    "flow-bin": "^0.244.0",
+    "flow-bin": "^0.245.0",
     "glob": "^7.1.1",
     "hermes-eslint": "0.23.1",
     "hermes-transform": "0.23.1",
@@ -86,8 +87,8 @@
     "jest": "^29.6.3",
     "jest-junit": "^10.0.0",
     "jscodeshift": "^0.14.0",
-    "metro-babel-register": "^0.80.0",
-    "metro-memory-fs": "^0.80.0",
+    "metro-babel-register": "^0.80.10",
+    "metro-memory-fs": "^0.80.10",
     "micromatch": "^4.0.4",
     "mkdirp": "^0.5.1",
     "node-fetch": "^2.2.0",

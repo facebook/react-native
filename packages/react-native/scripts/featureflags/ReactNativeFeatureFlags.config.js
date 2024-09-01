@@ -101,6 +101,10 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'When enabled, the renderer would only fail commits when they propagate state and the last commit that updated state changed before committing.',
     },
+    enableIOSViewClipToPaddingBox: {
+      defaultValue: false,
+      description: 'iOS Views will clip to their padding box vs border box',
+    },
     enableLayoutAnimationsOnIOS: {
       defaultValue: true,
       description:
@@ -165,6 +169,11 @@ const definitions: FeatureFlagDefinitions = {
       defaultValue: false,
       description:
         'Enables a fix to prevent the possibility of state updates in Fabric being missed due to race conditions with previous state updates.',
+    },
+    fixMountingCoordinatorReportedPendingTransactionsOnAndroid: {
+      defaultValue: false,
+      description:
+        'Fixes a limitation on Android where the mounting coordinator would report there are no pending transactions but some of them were actually not processed due to the use of the push model.',
     },
     forceBatchingMountItemsOnAndroid: {
       defaultValue: false,
@@ -234,6 +243,11 @@ const definitions: FeatureFlagDefinitions = {
       defaultValue: false,
       description:
         'Moves more of the work in view preallocation to the main thread to free up JS thread.',
+    },
+    useOptimizedEventBatchingOnAndroid: {
+      defaultValue: false,
+      description:
+        'Uses an optimized mechanism for event batching on Android that does not need to wait for a Choreographer frame callback.',
     },
     useRuntimeShadowNodeReferenceUpdate: {
       defaultValue: false,

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d453a8b69f3ed1f6e5652f27a4e29810>>
+ * @generated SignedSource<<4adf3f21c8c7e370aa59bc79937e91a2>>
  */
 
 /**
@@ -39,6 +39,7 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool enableFabricLogs() = 0;
   virtual bool enableFabricRendererExclusively() = 0;
   virtual bool enableGranularShadowTreeStateReconciliation() = 0;
+  virtual bool enableIOSViewClipToPaddingBox() = 0;
   virtual bool enableLayoutAnimationsOnIOS() = 0;
   virtual bool enableLongTaskAPI() = 0;
   virtual bool enableMicrotasks() = 0;
@@ -52,6 +53,7 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool fixIncorrectScrollViewStateUpdateOnAndroid() = 0;
   virtual bool fixMappingOfEventPrioritiesBetweenFabricAndReact() = 0;
   virtual bool fixMissedFabricStateUpdatesOnAndroid() = 0;
+  virtual bool fixMountingCoordinatorReportedPendingTransactionsOnAndroid() = 0;
   virtual bool forceBatchingMountItemsOnAndroid() = 0;
   virtual bool fuseboxEnabledDebug() = 0;
   virtual bool fuseboxEnabledRelease() = 0;
@@ -66,6 +68,7 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool useNativeViewConfigsInBridgelessMode() = 0;
   virtual bool useNewReactImageViewBackgroundDrawing() = 0;
   virtual bool useOptimisedViewPreallocationOnAndroid() = 0;
+  virtual bool useOptimizedEventBatchingOnAndroid() = 0;
   virtual bool useRuntimeShadowNodeReferenceUpdate() = 0;
   virtual bool useRuntimeShadowNodeReferenceUpdateOnLayout() = 0;
   virtual bool useStateAlignmentMechanism() = 0;

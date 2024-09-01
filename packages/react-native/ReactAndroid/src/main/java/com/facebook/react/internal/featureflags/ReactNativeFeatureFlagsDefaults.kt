@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2ac7adf2656a8a356cc1b4d8f40bd20b>>
+ * @generated SignedSource<<2a0cd5a4875a54bb724e5765ffe7753e>>
  */
 
 /**
@@ -51,6 +51,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableGranularShadowTreeStateReconciliation(): Boolean = false
 
+  override fun enableIOSViewClipToPaddingBox(): Boolean = false
+
   override fun enableLayoutAnimationsOnIOS(): Boolean = true
 
   override fun enableLongTaskAPI(): Boolean = false
@@ -76,6 +78,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean = false
 
   override fun fixMissedFabricStateUpdatesOnAndroid(): Boolean = false
+
+  override fun fixMountingCoordinatorReportedPendingTransactionsOnAndroid(): Boolean = false
 
   override fun forceBatchingMountItemsOnAndroid(): Boolean = false
 
@@ -104,6 +108,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun useNewReactImageViewBackgroundDrawing(): Boolean = false
 
   override fun useOptimisedViewPreallocationOnAndroid(): Boolean = false
+
+  override fun useOptimizedEventBatchingOnAndroid(): Boolean = false
 
   override fun useRuntimeShadowNodeReferenceUpdate(): Boolean = false
 

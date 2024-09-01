@@ -206,10 +206,12 @@ void RuntimeScheduler_Modern::callExpiredTasks(jsi::Runtime& runtime) {
 }
 
 void RuntimeScheduler_Modern::scheduleRenderingUpdate(
+    SurfaceId surfaceId,
     RuntimeSchedulerRenderingUpdate&& renderingUpdate) {
   SystraceSection s("RuntimeScheduler::scheduleRenderingUpdate");
 
   if (ReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop()) {
+    surfaceIdsWithPendingRenderingUpdates_.insert(surfaceId);
     pendingRenderingUpdates_.push(renderingUpdate);
   } else {
     if (renderingUpdate != nullptr) {
@@ -227,6 +229,11 @@ void RuntimeScheduler_Modern::setShadowTreeRevisionConsistencyManager(
 void RuntimeScheduler_Modern::setPerformanceEntryReporter(
     PerformanceEntryReporter* performanceEntryReporter) {
   performanceEntryReporter_ = performanceEntryReporter;
+}
+
+void RuntimeScheduler_Modern::setEventTimingDelegate(
+    RuntimeSchedulerEventTimingDelegate* eventTimingDelegate) {
+  eventTimingDelegate_ = eventTimingDelegate;
 }
 
 #pragma mark - Private
@@ -335,15 +342,15 @@ void RuntimeScheduler_Modern::runEventLoopTick(
     performMicrotaskCheckpoint(runtime);
   }
 
-  if (ReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop()) {
-    // "Update the rendering" step.
-    updateRendering();
-  }
-
   if (ReactNativeFeatureFlags::enableLongTaskAPI()) {
     auto taskEndTime = now_();
     markYieldingOpportunity(taskEndTime);
     reportLongTasks(task, taskStartTime, taskEndTime);
+  }
+
+  if (ReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop()) {
+    // "Update the rendering" step.
+    updateRendering();
   }
 
   currentTask_ = nullptr;
@@ -356,6 +363,14 @@ void RuntimeScheduler_Modern::runEventLoopTick(
  */
 void RuntimeScheduler_Modern::updateRendering() {
   SystraceSection s("RuntimeScheduler::updateRendering");
+
+  if (eventTimingDelegate_ != nullptr &&
+      ReactNativeFeatureFlags::enableReportEventPaintTime()) {
+    eventTimingDelegate_->dispatchPendingEventTimingEntries(
+        surfaceIdsWithPendingRenderingUpdates_);
+  }
+
+  surfaceIdsWithPendingRenderingUpdates_.clear();
 
   while (!pendingRenderingUpdates_.empty()) {
     auto& pendingRenderingUpdate = pendingRenderingUpdates_.front();

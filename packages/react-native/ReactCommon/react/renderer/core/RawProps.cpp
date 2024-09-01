@@ -162,7 +162,6 @@ RawProps& RawProps::operator=(const RawProps& other) noexcept {
 }
 
 void RawProps::parse(const RawPropsParser& parser) noexcept {
-  SystraceSection s("RawProps::parse");
   react_native_assert(parser_ == nullptr && "A parser was already assigned.");
   parser_ = &parser;
   parser.preparse(*this);
@@ -174,7 +173,6 @@ void RawProps::parse(const RawPropsParser& parser) noexcept {
  * will be removed as soon Android implementation does not need it.
  */
 RawProps::operator folly::dynamic() const noexcept {
-  SystraceSection s("RawProps::operator folly::dynamic()");
   switch (mode_) {
     case Mode::Empty:
       return folly::dynamic::object();

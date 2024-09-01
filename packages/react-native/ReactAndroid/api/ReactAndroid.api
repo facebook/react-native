@@ -4101,6 +4101,7 @@ public final class com/facebook/react/uimanager/BackgroundStyleApplicator {
 	public static final fun getBorderWidth (Landroid/view/View;Lcom/facebook/react/uimanager/style/LogicalEdge;)Ljava/lang/Float;
 	public static final fun reset (Landroid/view/View;)V
 	public static final fun setBackgroundColor (Landroid/view/View;Ljava/lang/Integer;)V
+	public static final fun setBackgroundImage (Landroid/view/View;Ljava/util/List;)V
 	public static final fun setBorderColor (Landroid/view/View;Lcom/facebook/react/uimanager/style/LogicalEdge;Ljava/lang/Integer;)V
 	public static final fun setBorderRadius (Landroid/view/View;Lcom/facebook/react/uimanager/style/BorderRadiusProp;Lcom/facebook/react/uimanager/LengthPercentage;)V
 	public static final fun setBorderStyle (Landroid/view/View;Lcom/facebook/react/uimanager/style/BorderStyle;)V
@@ -6004,6 +6005,11 @@ public abstract interface class com/facebook/react/uimanager/layoutanimation/Lay
 	public abstract fun onAnimationEnd ()V
 }
 
+public final class com/facebook/react/uimanager/style/BackgroundImageLayer {
+	public fun <init> (Lcom/facebook/react/bridge/ReadableMap;)V
+	public final fun getShader (Landroid/graphics/Rect;)Landroid/graphics/Shader;
+}
+
 public final class com/facebook/react/uimanager/style/BorderRadiusProp : java/lang/Enum {
 	public static final field BORDER_BOTTOM_END_RADIUS Lcom/facebook/react/uimanager/style/BorderRadiusProp;
 	public static final field BORDER_BOTTOM_LEFT_RADIUS Lcom/facebook/react/uimanager/style/BorderRadiusProp;
@@ -6720,9 +6726,9 @@ public class com/facebook/react/views/imagehelper/ImageSource {
 	public final fun getSize ()D
 	public final fun getSource ()Ljava/lang/String;
 	public static final fun getTransparentBitmapImageSource (Landroid/content/Context;)Lcom/facebook/react/views/imagehelper/ImageSource;
-	public final fun getUri ()Landroid/net/Uri;
+	public fun getUri ()Landroid/net/Uri;
 	public fun hashCode ()I
-	public final fun isResource ()Z
+	public fun isResource ()Z
 }
 
 public final class com/facebook/react/views/imagehelper/ImageSource$Companion {
@@ -7663,6 +7669,7 @@ public class com/facebook/react/views/text/ReactTextView : androidx/appcompat/wi
 	protected fun onDraw (Landroid/graphics/Canvas;)V
 	public fun onFinishTemporaryDetach ()V
 	protected fun onLayout (ZIIII)V
+	protected fun onMeasure (II)V
 	public fun onStartTemporaryDetach ()V
 	public fun reactTagForTouch (FF)I
 	public fun setAdjustFontSizeToFit (Z)V
@@ -7816,6 +7823,7 @@ public class com/facebook/react/views/text/TextAttributeProps {
 	protected field mLineHeight F
 	protected field mLineHeightInput F
 	protected field mNumberOfLines I
+	protected field mOpacity F
 	protected field mRole Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$Role;
 	protected field mTextAlign I
 	protected field mTextShadowColor I
@@ -7839,6 +7847,7 @@ public class com/facebook/react/views/text/TextAttributeProps {
 	public static fun getJustificationMode (Lcom/facebook/react/uimanager/ReactStylesDiffMap;I)I
 	public static fun getLayoutDirection (Ljava/lang/String;)I
 	public fun getLetterSpacing ()F
+	public fun getOpacity ()F
 	public fun getRole ()Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$Role;
 	public static fun getTextAlignment (Lcom/facebook/react/uimanager/ReactStylesDiffMap;ZI)I
 	public static fun getTextBreakStrategy (Ljava/lang/String;)I
@@ -8327,5 +8336,10 @@ public final class com/facebook/react/views/view/ViewGroupClickEvent : com/faceb
 	public fun <init> (II)V
 	public fun canCoalesce ()Z
 	public fun getEventName ()Ljava/lang/String;
+}
+
+public final class com/facebook/react/views/view/WindowUtilKt {
+	public static final fun setStatusBarTranslucency (Landroid/view/Window;Z)V
+	public static final fun setStatusBarVisibility (Landroid/view/Window;Z)V
 }
 

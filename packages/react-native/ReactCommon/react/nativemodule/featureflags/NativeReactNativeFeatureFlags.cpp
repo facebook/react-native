@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<79105bae18d1d43c3d425ddc9e7eb56d>>
+ * @generated SignedSource<<1307630df6aff0acdb4f587465785a09>>
  */
 
 /**
@@ -107,6 +107,11 @@ bool NativeReactNativeFeatureFlags::enableGranularShadowTreeStateReconciliation(
   return ReactNativeFeatureFlags::enableGranularShadowTreeStateReconciliation();
 }
 
+bool NativeReactNativeFeatureFlags::enableIOSViewClipToPaddingBox(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableIOSViewClipToPaddingBox();
+}
+
 bool NativeReactNativeFeatureFlags::enableLayoutAnimationsOnIOS(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableLayoutAnimationsOnIOS();
@@ -170,6 +175,11 @@ bool NativeReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndR
 bool NativeReactNativeFeatureFlags::fixMissedFabricStateUpdatesOnAndroid(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::fixMissedFabricStateUpdatesOnAndroid();
+}
+
+bool NativeReactNativeFeatureFlags::fixMountingCoordinatorReportedPendingTransactionsOnAndroid(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::fixMountingCoordinatorReportedPendingTransactionsOnAndroid();
 }
 
 bool NativeReactNativeFeatureFlags::forceBatchingMountItemsOnAndroid(
@@ -240,6 +250,11 @@ bool NativeReactNativeFeatureFlags::useNewReactImageViewBackgroundDrawing(
 bool NativeReactNativeFeatureFlags::useOptimisedViewPreallocationOnAndroid(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::useOptimisedViewPreallocationOnAndroid();
+}
+
+bool NativeReactNativeFeatureFlags::useOptimizedEventBatchingOnAndroid(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::useOptimizedEventBatchingOnAndroid();
 }
 
 bool NativeReactNativeFeatureFlags::useRuntimeShadowNodeReferenceUpdate(

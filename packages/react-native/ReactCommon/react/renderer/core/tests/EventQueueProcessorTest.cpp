@@ -11,6 +11,7 @@
 #include <react/renderer/core/EventLogger.h>
 #include <react/renderer/core/EventPipe.h>
 #include <react/renderer/core/EventQueueProcessor.h>
+#include <react/renderer/core/EventTarget.h>
 #include <react/renderer/core/StatePipe.h>
 #include <react/renderer/core/ValueFactoryEventPayload.h>
 
@@ -20,7 +21,8 @@
 namespace facebook::react {
 
 class MockEventLogger : public EventLogger {
-  EventTag onEventStart(std::string_view /*name*/) override {
+  EventTag onEventStart(std::string_view /*name*/, SharedEventTarget /*target*/)
+      override {
     return EMPTY_EVENT_TAG;
   }
   void onEventProcessingStart(EventTag /*tag*/) override {}

@@ -8,7 +8,6 @@
 #include "HostTarget.h"
 #include "CdpJson.h"
 #include "HostAgent.h"
-#include "HostTargetSessionObserver.h"
 #include "InspectorInterfaces.h"
 #include "InspectorUtilities.h"
 #include "InstanceTarget.h"
@@ -44,13 +43,7 @@ class HostTargetSession {
             targetController,
             std::move(hostMetadata),
             state_,
-            executor) {
-    HostTargetSessionObserver::getInstance().onHostTargetSessionCreated();
-  }
-
-  ~HostTargetSession() {
-    HostTargetSessionObserver::getInstance().onHostTargetSessionDestroyed();
-  }
+            executor) {}
 
   /**
    * Called by CallbackLocalConnection to send a message to this Session's

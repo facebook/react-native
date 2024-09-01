@@ -947,6 +947,9 @@ const COMPLEX_OBJECTS: SchemaType = {
                 type: 'NullableTypeAnnotation',
                 typeAnnotation: {
                   type: 'ArrayTypeAnnotation',
+                  elementType: {
+                    type: 'AnyTypeAnnotation',
+                  },
                 },
               },
               params: [],
@@ -1969,6 +1972,9 @@ const CXX_ONLY_NATIVE_MODULES: SchemaType = {
               type: 'FunctionTypeAnnotation',
               returnTypeAnnotation: {
                 type: 'ArrayTypeAnnotation',
+                elementType: {
+                  type: 'AnyTypeAnnotation',
+                },
               },
               params: [
                 {

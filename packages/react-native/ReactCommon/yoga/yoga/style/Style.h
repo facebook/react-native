@@ -223,20 +223,38 @@ class YG_EXPORT Style {
     return computePosition(flexStartEdge(axis), direction).isDefined();
   }
 
+  bool isFlexStartPositionAuto(FlexDirection axis, Direction direction) const {
+    return computePosition(flexStartEdge(axis), direction).isAuto();
+  }
+
   bool isInlineStartPositionDefined(FlexDirection axis, Direction direction)
       const {
     return computePosition(inlineStartEdge(axis, direction), direction)
         .isDefined();
   }
 
+  bool isInlineStartPositionAuto(FlexDirection axis, Direction direction)
+      const {
+    return computePosition(inlineStartEdge(axis, direction), direction)
+        .isAuto();
+  }
+
   bool isFlexEndPositionDefined(FlexDirection axis, Direction direction) const {
     return computePosition(flexEndEdge(axis), direction).isDefined();
+  }
+
+  bool isFlexEndPositionAuto(FlexDirection axis, Direction direction) const {
+    return computePosition(flexEndEdge(axis), direction).isAuto();
   }
 
   bool isInlineEndPositionDefined(FlexDirection axis, Direction direction)
       const {
     return computePosition(inlineEndEdge(axis, direction), direction)
         .isDefined();
+  }
+
+  bool isInlineEndPositionAuto(FlexDirection axis, Direction direction) const {
+    return computePosition(inlineEndEdge(axis, direction), direction).isAuto();
   }
 
   float computeFlexStartPosition(

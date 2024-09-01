@@ -26,6 +26,7 @@ import com.facebook.react.uimanager.drawable.InsetBoxShadowDrawable
 import com.facebook.react.uimanager.drawable.MIN_INSET_BOX_SHADOW_SDK_VERSION
 import com.facebook.react.uimanager.drawable.MIN_OUTSET_BOX_SHADOW_SDK_VERSION
 import com.facebook.react.uimanager.drawable.OutsetBoxShadowDrawable
+import com.facebook.react.uimanager.style.BackgroundImageLayer
 import com.facebook.react.uimanager.style.BorderInsets
 import com.facebook.react.uimanager.style.BorderRadiusProp
 import com.facebook.react.uimanager.style.BorderRadiusStyle
@@ -49,6 +50,14 @@ public object BackgroundStyleApplicator {
     }
 
     ensureCSSBackground(view).color = color ?: Color.TRANSPARENT
+  }
+
+  @JvmStatic
+  public fun setBackgroundImage(
+      view: View,
+      backgroundImageLayers: List<BackgroundImageLayer>?
+  ): Unit {
+    ensureCSSBackground(view).setBackgroundImage(backgroundImageLayers)
   }
 
   @JvmStatic

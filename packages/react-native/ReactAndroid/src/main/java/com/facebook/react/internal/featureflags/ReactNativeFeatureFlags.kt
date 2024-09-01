@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<37c55ee907c49bff0f6b3fe1d56dcfe6>>
+ * @generated SignedSource<<6cc52570dd571ddc792a0fd842c05dd9>>
  */
 
 /**
@@ -113,6 +113,12 @@ public object ReactNativeFeatureFlags {
   public fun enableGranularShadowTreeStateReconciliation(): Boolean = accessor.enableGranularShadowTreeStateReconciliation()
 
   /**
+   * iOS Views will clip to their padding box vs border box
+   */
+  @JvmStatic
+  public fun enableIOSViewClipToPaddingBox(): Boolean = accessor.enableIOSViewClipToPaddingBox()
+
+  /**
    * When enabled, LayoutAnimations API will animate state changes on iOS.
    */
   @JvmStatic
@@ -189,6 +195,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun fixMissedFabricStateUpdatesOnAndroid(): Boolean = accessor.fixMissedFabricStateUpdatesOnAndroid()
+
+  /**
+   * Fixes a limitation on Android where the mounting coordinator would report there are no pending transactions but some of them were actually not processed due to the use of the push model.
+   */
+  @JvmStatic
+  public fun fixMountingCoordinatorReportedPendingTransactionsOnAndroid(): Boolean = accessor.fixMountingCoordinatorReportedPendingTransactionsOnAndroid()
 
   /**
    * Forces the mounting layer on Android to always batch mount items instead of dispatching them immediately. This might fix some crashes related to synchronous state updates, where some views dispatch state updates during mount.
@@ -273,6 +285,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun useOptimisedViewPreallocationOnAndroid(): Boolean = accessor.useOptimisedViewPreallocationOnAndroid()
+
+  /**
+   * Uses an optimized mechanism for event batching on Android that does not need to wait for a Choreographer frame callback.
+   */
+  @JvmStatic
+  public fun useOptimizedEventBatchingOnAndroid(): Boolean = accessor.useOptimizedEventBatchingOnAndroid()
 
   /**
    * When enabled, cloning shadow nodes within react native will update the reference held by the current JS fiber tree.
