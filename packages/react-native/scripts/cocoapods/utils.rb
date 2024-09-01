@@ -541,7 +541,7 @@ class ReactNativePodsUtils
         new_search_path = new_search_path.strip
       
         if current_search_paths.is_a?(String)
-          paths = current_search_paths.split.map(&:strip)
+          paths = current_search_paths.split
           paths << new_search_path unless paths.include?(new_search_path)
           current_search_paths = paths.join(' ')
         elsif current_search_paths.is_a?(Array)
