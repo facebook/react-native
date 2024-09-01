@@ -842,54 +842,70 @@ class UtilsTests < Test::Unit::TestCase
     # ====================================== #
     # Test - Add Search Path If Not Included #
     # ====================================== #
-    def test_add_search_path_if_not_included_with_string_input
-        # Test when the path doesn't exist
+    # Tests for string input
+    def test_add_search_path_if_not_included_adds_new_path_to_string
         current_paths = "/path/to/headers /another/path"
         new_path = "/new/path"
         result = ReactNativePodsUtils.add_search_path_if_not_included(current_paths, new_path)
         assert_equal("/path/to/headers /another/path /new/path", result)
-    
-        # Test when the path already exists
+    end
+
+    def test_add_search_path_if_not_included_does_not_add_existing_path_to_string
         current_paths = "/path/to/headers /another/path"
         new_path = "/another/path"
         result = ReactNativePodsUtils.add_search_path_if_not_included(current_paths, new_path)
         assert_equal("/path/to/headers /another/path", result)
-    
-        # Test when the path exists with different spacing
-        current_paths = " /path/to/headers /another/path "
-        new_path = "/another/path"
+    end
+
+    def test_add_search_path_if_not_included_does_not_add_existing_path_with_leading_space_to_string
+        current_paths = " /path/with/leading/space /another/path"
+        new_path = "/path/with/leading/space"
         result = ReactNativePodsUtils.add_search_path_if_not_included(current_paths, new_path)
-        assert_equal("/path/to/headers /another/path", result)
-      end
-    
-      def test_add_search_path_if_not_included_with_array_input
-        # Test when the path doesn't exist
+        assert_equal(" /path/with/leading/space /another/path", result)
+    end
+
+    def test_add_search_path_if_not_included_handles_path_with_spaces_in_string
+        current_paths = "/path/to/headers /another/path"
+        new_path = "/path/with spaces/lib"
+        result = ReactNativePodsUtils.add_search_path_if_not_included(current_paths, new_path)
+        assert_equal("/path/to/headers /another/path /path/with spaces/lib", result)
+    end
+
+    # Tests for array input
+    def test_add_search_path_if_not_included_adds_new_path_to_array
         current_paths = ["/path/to/headers", "/another/path"]
         new_path = "/new/path"
         result = ReactNativePodsUtils.add_search_path_if_not_included(current_paths, new_path)
-        assert_equal(["/path/to/headers", "/another/path", "/new/path"], result)
-    
-        # Test when the path already exists
+        assert_equal(["/path/to/headers", "/another/path", " /new/path"], result)
+    end
+
+    def test_add_search_path_if_not_included_does_not_add_existing_path_to_array
         current_paths = ["/path/to/headers", "/another/path"]
         new_path = "/another/path"
         result = ReactNativePodsUtils.add_search_path_if_not_included(current_paths, new_path)
         assert_equal(["/path/to/headers", "/another/path"], result)
-    
-        # Test when the path exists with different spacing
-        current_paths = [" /path/to/headers ", "  /another/path  "]
+    end
+
+    def test_add_search_path_if_not_included_does_not_add_existing_path_with_leading_space_to_array
+        current_paths = ["/path/to/headers", " /another/path"]
         new_path = "/another/path"
         result = ReactNativePodsUtils.add_search_path_if_not_included(current_paths, new_path)
-        assert_equal(["/path/to/headers", "/another/path"], result)
-      end
-    
-      def test_add_search_path_if_not_included_with_invalid_input
-        # Test with invalid input type
-        current_paths = 12345
+        assert_equal(["/path/to/headers", " /another/path"], result)
+    end
+
+    def test_add_search_path_if_not_included_handles_path_with_spaces_in_array
+        current_paths = ["/path/to/headers", "/another/path"]
+        new_path = "/path/with spaces/lib"
+        result = ReactNativePodsUtils.add_search_path_if_not_included(current_paths, new_path)
+        assert_equal(["/path/to/headers", "/another/path", " /path/with spaces/lib"], result)
+    end
+
+    def test_add_search_path_if_not_included_adds_to_empty_array
+        current_paths = []
         new_path = "/new/path"
-        assert_raises(RuntimeError) do
-          ReactNativePodsUtils.add_search_path_if_not_included(current_paths, new_path)
-        end
-      end
+        result = ReactNativePodsUtils.add_search_path_if_not_included(current_paths, new_path)
+        assert_equal([" /new/path"], result)
+    end
 
     # =============================================== #
     # Test - Create Header Search Path For Frameworks #

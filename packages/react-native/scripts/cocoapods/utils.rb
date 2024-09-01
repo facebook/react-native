@@ -538,21 +538,14 @@ class ReactNativePodsUtils
     end
 
     def self.add_search_path_if_not_included(current_search_paths, new_search_path)
-        new_search_path = new_search_path.strip
-      
-        if current_search_paths.is_a?(String)
-          paths = current_search_paths.split
-          paths << new_search_path unless paths.include?(new_search_path)
-          current_search_paths = paths.join(' ')
-        elsif current_search_paths.is_a?(Array)
-          current_search_paths = current_search_paths.map(&:strip)
-          current_search_paths << new_search_path unless current_search_paths.include?(new_search_path)
-        else
-          raise "Unsupported type for current_search_paths: #{current_search_paths.class}"
+        entry = " #{new_search_path}"
+
+        if !current_search_paths.include?(new_search_path) && !current_search_paths.include?(entry)
+            current_search_paths << entry
         end
       
         current_search_paths
-      end
+    end
 
     def self.update_header_paths_if_depends_on(target_installation_result, dependency_name, header_paths)
         depends_on_framework = target_installation_result.native_target.dependencies.any? { |d| d.name == dependency_name }
