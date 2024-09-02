@@ -171,13 +171,11 @@ jobs:
             echo "Please try again"
             exit 1
           fi
-      - name: Compress slices to preserve symlinks
-        run: zip ./packages/react-native/sdks/hermes/build_${{ matrix.slice }}_${{ matrix.flavor }}
       - name: Upload Artifact for Slice (${{ matrix.slice }}, ${{ matrix.flavor }}}
         uses: actions/upload-artifact@v4.3.1
         with:
           name: slice-${{ matrix.slice }}-${{ matrix.flavor }}
-          path: ./packages/react-native/sdks/hermes/build_${{ matrix.slice }}_${{ matrix.flavor }}.zip
+          path: ./packages/react-native/sdks/hermes/build_${{ matrix.slice }}_${{ matrix.flavor }}
       - name: Save slice cache
         if: ${{ github.ref == 'refs/heads/main' || contains(github.ref, '-stable') }} # To avoid that the cache explode.
         uses: actions/cache/save@v4.0.0
