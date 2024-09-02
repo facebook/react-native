@@ -55,6 +55,7 @@ target_link_libraries(
         rrc_modal
         rrc_progressbar
         rrc_root
+        rrc_safeareaview
         rrc_scrollview
         rrc_switch
         rrc_text

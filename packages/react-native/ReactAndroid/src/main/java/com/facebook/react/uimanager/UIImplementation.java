@@ -204,6 +204,20 @@ public class UIImplementation {
     dispatchViewUpdatesIfNeeded();
   }
 
+  public void updateInsetsPadding(int nodeViewTag, int top, int left, int bottom, int right) {
+    ReactShadowNode cssNode = mShadowNodeRegistry.getNode(nodeViewTag);
+    if (cssNode == null) {
+      FLog.w(ReactConstants.TAG, "Tried to update size of non-existent tag: " + nodeViewTag);
+      return;
+    }
+    cssNode.setPadding(Spacing.START, (float) left);
+    cssNode.setPadding(Spacing.TOP, (float) top);
+    cssNode.setPadding(Spacing.END, (float) right);
+    cssNode.setPadding(Spacing.BOTTOM, (float) bottom);
+
+    dispatchViewUpdatesIfNeeded();
+  }
+
   public void setViewLocalData(int tag, Object data) {
     ReactShadowNode shadowNode = mShadowNodeRegistry.getNode(tag);
 
