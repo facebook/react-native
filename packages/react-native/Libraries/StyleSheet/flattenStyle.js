@@ -18,7 +18,8 @@ function flattenStyle<TStyleProp: DangerouslyImpreciseStyleProp>(
   // $FlowFixMe[underconstrained-implicit-instantiation]
 ): ?____FlattenStyleProp_Internal<TStyleProp> {
   if (style === null || typeof style !== 'object') {
-    return undefined;
+    // $FlowFixMe[incompatible-return]
+    return {};
   }
 
   if (!Array.isArray(style)) {

@@ -62,14 +62,6 @@ describe('flattenStyle', () => {
     expect(flatStyle.height).toBe(20);
   });
 
-  it('should not allocate an object when there is no style', () => {
-    const nullStyle = flattenStyle(null);
-    const nullStyleAgain = flattenStyle(null);
-
-    expect(nullStyle).toBe(nullStyleAgain);
-    expect(nullStyle).toBe(undefined);
-  });
-
   it('should not allocate an object when there is a style', () => {
     const style = {a: 'b'};
     const nullStyle = flattenStyle(style);
@@ -143,10 +135,10 @@ describe('flattenStyle', () => {
     });
   });
 
-  it('should ignore invalid class names', () => {
-    const invalid = flattenStyle(1234, null);
-
-    expect(invalid).toEqual(undefined);
-    // Invalid class name 1234 skipping ...
+  it('should flatten falsy values', () => {
+    expect(flattenStyle(null)).toEqual({});
+    expect(flattenStyle(undefined)).toEqual({});
+    expect(flattenStyle(false)).toEqual({});
+    expect(flattenStyle('')).toEqual({});
   });
 });

@@ -38,6 +38,7 @@ describe('Text', () => {
         ellipsizeMode="tail"
         isHighlighted={false}
         selectionColor={null}
+        style={Object {}}
       />
     `);
   });
@@ -65,6 +66,7 @@ describe('Text compat with web', () => {
         isHighlighted={false}
         nativeID="id"
         selectionColor={null}
+        style={Object {}}
         tabIndex={0}
         testID="testID"
       />
@@ -181,6 +183,7 @@ describe('Text compat with web', () => {
         isHighlighted={false}
         role="main"
         selectionColor={null}
+        style={Object {}}
       />
     `);
   });
