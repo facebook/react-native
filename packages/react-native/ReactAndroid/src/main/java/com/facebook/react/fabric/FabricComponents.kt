@@ -35,6 +35,7 @@ public object FabricComponents {
           "WebView" to "RCTWebView",
           "Keyframes" to "RCTKeyframes",
           "ImpressionTrackingView" to "RCTImpressionTrackingView",
+          "SafeAreaView" to "RCTSafeAreaView",
       )
 
   /** @return the name of component in the Fabric environment */

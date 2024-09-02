@@ -400,6 +400,12 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     mUIImplementation.updateNodeSize(nodeViewTag, newWidth, newHeight);
   }
 
+  public void updateInsetsPadding(int nodeViewTag, int top, int left, int bottom, int right) {
+    getReactApplicationContext().assertOnNativeModulesQueueThread();
+
+    mUIImplementation.updateInsetsPadding(nodeViewTag, top, left, bottom, right);
+  }
+
   /**
    * Sets local data for a shadow node corresponded with given tag. In some cases we need a way to
    * specify some environmental data to shadow node to improve layout (or do something similar), so
