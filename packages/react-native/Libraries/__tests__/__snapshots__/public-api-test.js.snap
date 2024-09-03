@@ -1118,16 +1118,23 @@ exports[`public API should not change unintentionally Libraries/Animated/nodes/A
 `;
 
 exports[`public API should not change unintentionally Libraries/Animated/nodes/AnimatedTransform.js 1`] = `
-"declare export default class AnimatedTransform extends AnimatedWithChildren {
-  _transforms: $ReadOnlyArray<Object>;
-  constructor(transforms: $ReadOnlyArray<Object>): void;
+"type Transform<T = AnimatedNode> = {
+  [string]:
+    | number
+    | string
+    | T
+    | $ReadOnlyArray<number | string | T>
+    | { [string]: number | string | T },
+};
+declare export default class AnimatedTransform extends AnimatedWithChildren {
+  _transforms: $ReadOnlyArray<Transform<>>;
+  constructor(transforms: $ReadOnlyArray<Transform<>>): void;
   __makeNative(platformConfig: ?PlatformConfig): void;
-  __getValue(): $ReadOnlyArray<Object>;
-  __getAnimatedValue(): $ReadOnlyArray<Object>;
+  __getValue(): $ReadOnlyArray<Transform<any>>;
+  __getAnimatedValue(): $ReadOnlyArray<Transform<any>>;
   __attach(): void;
   __detach(): void;
   __getNativeConfig(): any;
-  _get(getter: (AnimatedNode) => any): $ReadOnlyArray<Object>;
 }
 "
 `;
