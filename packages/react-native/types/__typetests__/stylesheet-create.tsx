@@ -40,3 +40,9 @@ const styles2 = StyleSheet.create({
     magrinRight: 1,
   },
 });
+
+const styles3 = StyleSheet.create({
+  transforms: {
+    transform: [{translateX: 40}] as const,
+  },
+});
