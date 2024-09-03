@@ -33,7 +33,7 @@ JReactHostInspectorTarget::JReactHostInspectorTarget(
     inspectorTarget_ = HostTarget::create(*this, inspectorExecutor_);
 
     inspectorPageId_ = getInspectorInstance().addPage(
-        "React Native Bridgeless (Experimental)",
+        "React Native Bridgeless",
         /* vm */ "",
         [inspectorTargetWeak = std::weak_ptr(inspectorTarget_)](
             std::unique_ptr<IRemoteConnection> remote)
