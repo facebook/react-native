@@ -83,15 +83,16 @@ bool FuseboxTracer::stopTracing(
 }
 
 void FuseboxTracer::addEvent(
-    const std::string& name,
+    const std::string_view& name,
     uint64_t start,
     uint64_t end,
-    const std::string& track) {
+    const std::string_view& track) {
   std::lock_guard<std::mutex> lock(mutex_);
   if (!tracing_) {
     return;
   }
-  buffer_.push_back(BufferEvent{start, end, name, track});
+  buffer_.push_back(
+      BufferEvent{start, end, std::string(name), std::string(track)});
 }
 
 /* static */ FuseboxTracer& FuseboxTracer::getFuseboxTracer() {
