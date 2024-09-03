@@ -15,6 +15,8 @@
 #include "HermesPerfettoDataSource.h"
 #include "ReactPerfetto.h"
 
+namespace facebook::react {
+
 namespace {
 
 const int SAMPLING_HZ = 100;
@@ -125,6 +127,9 @@ void HermesPerfettoDataSource::OnStop(const StopArgs& a) {
   facebook::hermes::HermesRuntime::disableSamplingProfiler();
 }
 
-PERFETTO_DEFINE_DATA_SOURCE_STATIC_MEMBERS(HermesPerfettoDataSource);
+} // namespace facebook::react
+
+PERFETTO_DEFINE_DATA_SOURCE_STATIC_MEMBERS(
+    facebook::react::HermesPerfettoDataSource);
 
 #endif // WITH_PERFETTO

@@ -34,10 +34,10 @@ class FuseboxTracer {
   bool stopTracing(const std::function<void(const folly::dynamic& eventsChunk)>&
                        resultCallback);
   void addEvent(
-      const std::string& name,
+      const std::string_view& name,
       uint64_t start,
       uint64_t end,
-      const std::string& track);
+      const std::string_view& track);
 
   static FuseboxTracer& getFuseboxTracer();
 
