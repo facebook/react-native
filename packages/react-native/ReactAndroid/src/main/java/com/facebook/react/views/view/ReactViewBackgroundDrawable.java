@@ -581,6 +581,7 @@ public class ReactViewBackgroundDrawable extends Drawable {
     }
 
     // Clip border ONLY if its color is non transparent
+    float pathAdjustment = 0f;
     if (Color.alpha(colorLeft) != 0
         && Color.alpha(colorTop) != 0
         && Color.alpha(colorRight) != 0
@@ -591,6 +592,10 @@ public class ReactViewBackgroundDrawable extends Drawable {
       mInnerClipTempRectForBorderRadius.bottom -= borderWidth.bottom;
       mInnerClipTempRectForBorderRadius.left += borderWidth.left;
       mInnerClipTempRectForBorderRadius.right -= borderWidth.right;
+      
+      // only close gap between border and main path if we draw the border, otherwise
+      // we wind up pixelating small pixel-radius curves
+      pathAdjustment = mGapBetweenPaths;
     }
 
     mTempRectForCenterDrawPath.top += borderWidth.top * 0.5f;
@@ -714,14 +719,14 @@ public class ReactViewBackgroundDrawable extends Drawable {
         Path.Direction.CW);
 
     // There is a small gap between mBackgroundColorRenderPath and its
-    // border. mGapBetweenPaths is used to slightly enlarge the rectangle
+    // border. pathAdjustment is used to slightly enlarge the rectangle
     // (mInnerClipTempRectForBorderRadius), ensuring the border can be
     // drawn on top without the gap.
     mBackgroundColorRenderPath.addRoundRect(
-        mInnerClipTempRectForBorderRadius.left - mGapBetweenPaths,
-        mInnerClipTempRectForBorderRadius.top - mGapBetweenPaths,
-        mInnerClipTempRectForBorderRadius.right + mGapBetweenPaths,
-        mInnerClipTempRectForBorderRadius.bottom + mGapBetweenPaths,
+        mInnerClipTempRectForBorderRadius.left - pathAdjustment,
+        mInnerClipTempRectForBorderRadius.top - pathAdjustment,
+        mInnerClipTempRectForBorderRadius.right + pathAdjustment,
+        mInnerClipTempRectForBorderRadius.bottom + pathAdjustment,
         new float[] {
           innerTopLeftRadiusX,
           innerTopLeftRadiusY,
