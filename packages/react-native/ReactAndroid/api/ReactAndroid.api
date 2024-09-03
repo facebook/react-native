@@ -6850,11 +6850,9 @@ public final class com/facebook/react/views/modal/ReactModalHostView : android/v
 	public final fun setStatusBarTranslucent (Z)V
 	public final fun setTransparent (Z)V
 	public final fun showOrUpdate ()V
-	public final fun updateState (II)V
 }
 
 public final class com/facebook/react/views/modal/ReactModalHostView$DialogRootViewGroup : com/facebook/react/views/view/ReactViewGroup, com/facebook/react/uimanager/RootView {
-	public fun addView (Landroid/view/View;ILandroid/view/ViewGroup$LayoutParams;)V
 	public fun handleException (Ljava/lang/Throwable;)V
 	public fun onChildEndedNativeGesture (Landroid/view/View;Landroid/view/MotionEvent;)V
 	public fun onChildStartedNativeGesture (Landroid/view/View;Landroid/view/MotionEvent;)V

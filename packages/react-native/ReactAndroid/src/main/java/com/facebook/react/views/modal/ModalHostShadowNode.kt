@@ -27,7 +27,7 @@ internal class ModalHostShadowNode : LayoutShadowNode() {
    */
   override fun addChildAt(child: ReactShadowNodeImpl, i: Int) {
     super.addChildAt(child, i)
-    val modalSize = getModalHostSize(themedContext)
+    val modalSize = getModalHostSize(themedContext, themedContext.currentActivity?.window)
     child.setStyleWidth(modalSize.x.toFloat())
     child.setStyleHeight(modalSize.y.toFloat())
   }
