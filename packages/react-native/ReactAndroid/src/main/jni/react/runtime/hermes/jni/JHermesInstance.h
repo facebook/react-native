@@ -28,12 +28,16 @@ class JHermesInstance
 
   static jni::local_ref<jhybriddata> initHybrid(
       jni::alias_ref<jclass> /* unused */,
-      jni::alias_ref<jobject> reactNativeConfig);
+      jni::alias_ref<jobject> reactNativeConfig,
+      bool allocInOldGenBeforeTTI);
 
   static void registerNatives();
 
-  JHermesInstance(std::shared_ptr<const ReactNativeConfig> reactNativeConfig)
-      : reactNativeConfig_(reactNativeConfig){};
+  JHermesInstance(
+      std::shared_ptr<const ReactNativeConfig> reactNativeConfig,
+      bool allocInOldGenBeforeTTI)
+      : reactNativeConfig_(std::move(reactNativeConfig)),
+        allocInOldGenBeforeTTI_(allocInOldGenBeforeTTI){};
 
   std::unique_ptr<JSRuntime> createJSRuntime(
       std::shared_ptr<MessageQueueThread> msgQueueThread) noexcept;
@@ -44,6 +48,7 @@ class JHermesInstance
   friend HybridBase;
 
   std::shared_ptr<const ReactNativeConfig> reactNativeConfig_;
+  bool allocInOldGenBeforeTTI_;
 };
 
 } // namespace facebook::react
