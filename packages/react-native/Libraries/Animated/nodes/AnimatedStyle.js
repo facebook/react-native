@@ -12,10 +12,10 @@
 
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 
+import {validateStyles} from '../../../src/private/animated/NativeAnimatedValidation';
 import * as ReactNativeFeatureFlags from '../../../src/private/featureflags/ReactNativeFeatureFlags';
 import flattenStyle from '../../StyleSheet/flattenStyle';
 import Platform from '../../Utilities/Platform';
-import NativeAnimatedHelper from '../NativeAnimatedHelper';
 import AnimatedNode from './AnimatedNode';
 import AnimatedObject, {hasAnimatedNode} from './AnimatedObject';
 import AnimatedTransform from './AnimatedTransform';
@@ -121,7 +121,10 @@ export default class AnimatedStyle extends AnimatedWithChildren {
       // Non-animated styles are set using `setNativeProps`, no need
       // to pass those as a part of the node config
     }
-    NativeAnimatedHelper.validateStyles(styleConfig);
+
+    if (__DEV__) {
+      validateStyles(styleConfig);
+    }
     return {
       type: 'style',
       style: styleConfig,
