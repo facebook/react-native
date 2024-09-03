@@ -383,68 +383,6 @@ declare export function isSupportedTransformProp(prop: string): boolean;
 "
 `;
 
-exports[`public API should not change unintentionally Libraries/Animated/NativeAnimatedHelper.js 1`] = `
-"declare const API: {
-  getValue: (tag: number, saveValueCallback: (value: number) => void) => void,
-  setWaitingForIdentifier: (id: string) => void,
-  unsetWaitingForIdentifier: (id: string) => void,
-  disableQueue: () => void,
-  flushQueue: () => void,
-  queueOperation: <Args: $ReadOnlyArray<mixed>, Fn: (...Args) => void>(
-    fn: Fn,
-    ...args: Args
-  ) => void,
-  createAnimatedNode: (tag: number, config: AnimatedNodeConfig) => void,
-  updateAnimatedNodeConfig: (tag: number, config: AnimatedNodeConfig) => void,
-  startListeningToAnimatedNodeValue: (tag: number) => void,
-  stopListeningToAnimatedNodeValue: (tag: number) => void,
-  connectAnimatedNodes: (parentTag: number, childTag: number) => void,
-  disconnectAnimatedNodes: (parentTag: number, childTag: number) => void,
-  startAnimatingNode: (
-    animationId: number,
-    nodeTag: number,
-    config: AnimatingNodeConfig,
-    endCallback: EndCallback
-  ) => void,
-  stopAnimation: (animationId: number) => void,
-  setAnimatedNodeValue: (nodeTag: number, value: number) => void,
-  setAnimatedNodeOffset: (nodeTag: number, offset: number) => void,
-  flattenAnimatedNodeOffset: (nodeTag: number) => void,
-  extractAnimatedNodeOffset: (nodeTag: number) => void,
-  connectAnimatedNodeToView: (nodeTag: number, viewTag: number) => void,
-  disconnectAnimatedNodeFromView: (nodeTag: number, viewTag: number) => void,
-  restoreDefaultValues: (nodeTag: number) => void,
-  dropAnimatedNode: (tag: number) => void,
-  addAnimatedEventToView: (
-    viewTag: number,
-    eventName: string,
-    eventMapping: EventMapping
-  ) => void,
-  removeAnimatedEventFromView(
-    viewTag: number,
-    eventName: string,
-    animatedNodeTag: number
-  ): void,
-};
-declare function generateNewNodeTag(): number;
-declare function generateNewAnimationId(): number;
-declare function assertNativeAnimatedModule(): void;
-declare function shouldUseNativeDriver(
-  config: $ReadOnly<{ ...AnimationConfig, ... }> | EventConfig
-): boolean;
-declare function transformDataType(value: number | string): number | string;
-declare export default {
-  API: API,
-  generateNewNodeTag: generateNewNodeTag,
-  generateNewAnimationId: generateNewAnimationId,
-  assertNativeAnimatedModule: assertNativeAnimatedModule,
-  shouldUseNativeDriver: shouldUseNativeDriver,
-  transformDataType: transformDataType,
-  get nativeEventEmitter(): NativeEventEmitter,
-};
-"
-`;
-
 exports[`public API should not change unintentionally Libraries/Animated/NativeAnimatedModule.js 1`] = `
 "export * from \\"../../src/private/specs/modules/NativeAnimatedModule\\";
 declare export default typeof NativeAnimatedModule;

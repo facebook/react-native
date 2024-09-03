@@ -14,7 +14,7 @@ import type {PlatformConfig} from '../AnimatedPlatformConfig';
 import type {EndCallback} from '../animations/Animation';
 import type AnimatedValue from './AnimatedValue';
 
-import NativeAnimatedHelper from '../NativeAnimatedHelper';
+import NativeAnimatedHelper from '../../../src/private/animated/NativeAnimatedHelper';
 import AnimatedNode from './AnimatedNode';
 
 export default class AnimatedTracking extends AnimatedNode {

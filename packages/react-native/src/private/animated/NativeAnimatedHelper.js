@@ -8,21 +8,24 @@
  * @format
  */
 
-import type {EventSubscription} from '../vendor/emitter/EventEmitter';
-import type {EventConfig} from './AnimatedEvent';
-import type {AnimationConfig, EndCallback} from './animations/Animation';
+import type {EventSubscription} from '../../../Libraries/vendor/emitter/EventEmitter';
+import type {EventConfig} from '../../../Libraries/Animated/AnimatedEvent';
+import type {
+  AnimationConfig,
+  EndCallback,
+} from '../../../Libraries/Animated/animations/Animation';
 import type {
   AnimatedNodeConfig,
   AnimatingNodeConfig,
   EventMapping,
-} from './NativeAnimatedModule';
+} from '../../../Libraries/Animated/NativeAnimatedModule';
 
-import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNativeFeatureFlags';
-import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
-import RCTDeviceEventEmitter from '../EventEmitter/RCTDeviceEventEmitter';
-import Platform from '../Utilities/Platform';
-import NativeAnimatedNonTurboModule from './NativeAnimatedModule';
-import NativeAnimatedTurboModule from './NativeAnimatedTurboModule';
+import * as ReactNativeFeatureFlags from '../featureflags/ReactNativeFeatureFlags';
+import NativeEventEmitter from '../../../Libraries/EventEmitter/NativeEventEmitter';
+import RCTDeviceEventEmitter from '../../../Libraries/EventEmitter/RCTDeviceEventEmitter';
+import Platform from '../../../Libraries/Utilities/Platform';
+import NativeAnimatedNonTurboModule from '../../../Libraries/Animated/NativeAnimatedModule';
+import NativeAnimatedTurboModule from '../../../Libraries/Animated/NativeAnimatedTurboModule';
 import invariant from 'invariant';
 
 // TODO T69437152 @petetheheat - Delete this fork when Fabric ships to 100%.

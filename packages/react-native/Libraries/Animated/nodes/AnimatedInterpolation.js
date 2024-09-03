@@ -19,7 +19,7 @@ import {validateInterpolation} from '../../../src/private/animated/NativeAnimate
 import normalizeColor from '../../StyleSheet/normalizeColor';
 import processColor from '../../StyleSheet/processColor';
 import Easing from '../Easing';
-import NativeAnimatedHelper from '../NativeAnimatedHelper';
+import NativeAnimatedHelper from '../../../src/private/animated/NativeAnimatedHelper';
 import AnimatedWithChildren from './AnimatedWithChildren';
 import invariant from 'invariant';
 
