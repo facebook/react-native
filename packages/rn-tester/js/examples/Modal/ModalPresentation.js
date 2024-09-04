@@ -34,6 +34,12 @@ const supportedOrientations = [
   'landscape-right',
 ];
 
+const overlayColors = [
+  'red',
+  'blue',
+  undefined, // default prop value
+];
+
 function ModalPresentation() {
   const onDismiss = React.useCallback(() => {
     alert('onDismiss');
@@ -63,10 +69,12 @@ function ModalPresentation() {
     onDismiss: undefined,
     onShow: undefined,
     visible: false,
+    overlayColor: undefined,
   });
   const presentationStyle = props.presentationStyle;
   const hardwareAccelerated = props.hardwareAccelerated;
   const statusBarTranslucent = props.statusBarTranslucent;
+  const overlayColor = props.overlayColor;
 
   const [currentOrientation, setCurrentOrientation] = React.useState('unknown');
 
@@ -209,6 +217,26 @@ function ModalPresentation() {
             }
             selected={!!props.onDismiss}
           />
+        </View>
+      </View>
+      <View style={styles.block}>
+        <Text style={styles.title}>Overlay Color ⚫️</Text>
+        <View style={styles.row}>
+          {overlayColors.map(type => (
+            <RNTOption
+              key={"overlay_" + type}
+              style={styles.option}
+              label={type === undefined ? 'default' : type}
+              multiSelect={true}
+              onPress={() =>
+                setProps(prev => ({
+                  ...prev,
+                  overlayColor: type,
+                }))
+              }
+              selected={type === overlayColor}
+            />
+          ))}
         </View>
       </View>
     </>
