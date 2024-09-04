@@ -20,7 +20,6 @@ import com.facebook.react.uimanager.ViewManagerDelegate
 import com.facebook.react.uimanager.annotations.ReactProp
 import com.facebook.react.viewmanagers.ModalHostViewManagerDelegate
 import com.facebook.react.viewmanagers.ModalHostViewManagerInterface
-import com.facebook.react.views.modal.ModalHostHelper.getModalHostSize
 import com.facebook.react.views.modal.ReactModalHostView.OnRequestCloseListener
 
 /** View manager for [ReactModalHostView] components. */
@@ -128,8 +127,6 @@ public class ReactModalHostManager :
       stateWrapper: StateWrapper
   ): Any? {
     view.stateWrapper = stateWrapper
-    val modalSize = getModalHostSize(view.context)
-    view.updateState(modalSize.x, modalSize.y)
     return null
   }
 

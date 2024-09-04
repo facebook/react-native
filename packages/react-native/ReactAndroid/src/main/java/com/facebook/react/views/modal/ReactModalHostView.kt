@@ -45,6 +45,8 @@ import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.UIManagerModule
 import com.facebook.react.uimanager.events.EventDispatcher
 import com.facebook.react.views.common.ContextUtils
+import com.facebook.react.views.modal.ModalHostHelper.getModalHostSize
+import com.facebook.react.views.modal.ReactModalHostView.DialogRootViewGroup
 import com.facebook.react.views.view.ReactViewGroup
 import java.util.Objects
 import kotlin.math.abs
@@ -361,10 +363,6 @@ public class ReactModalHostView(context: ThemedReactContext) :
     }
   }
 
-  public fun updateState(width: Int, height: Int) {
-    dialogRootViewGroup.updateState(width, height)
-  }
-
   // This listener is called when the user presses KeyEvent.KEYCODE_BACK
   // An event is then passed to JS which can either close or not close the Modal by setting the
   // visible property
@@ -392,7 +390,6 @@ public class ReactModalHostView(context: ThemedReactContext) :
     internal var stateWrapper: StateWrapper? = null
     internal var eventDispatcher: EventDispatcher? = null
 
-    private var hasAdjustedSize = false
     private var viewWidth = 0
     private var viewHeight = 0
     private val jSTouchDispatcher: JSTouchDispatcher = JSTouchDispatcher(this)
@@ -411,31 +408,8 @@ public class ReactModalHostView(context: ThemedReactContext) :
       super.onSizeChanged(w, h, oldw, oldh)
       viewWidth = w
       viewHeight = h
-      updateFirstChildView()
-    }
 
-    private fun updateFirstChildView() {
-      if (childCount > 0) {
-        hasAdjustedSize = false
-        val viewTag: Int = getChildAt(0).id
-        if (stateWrapper != null) {
-          // This will only be called under Fabric
-          updateState(viewWidth, viewHeight)
-        } else {
-          // TODO: T44725185 remove after full migration to Fabric
-          val reactContext: ReactContext = reactContext
-          reactContext.runOnNativeModulesQueueThread(
-              object : GuardedRunnable(reactContext) {
-                override fun runGuarded() {
-                  this@DialogRootViewGroup.reactContext.reactApplicationContext
-                      .getNativeModule(UIManagerModule::class.java)
-                      ?.updateNodeSize(viewTag, viewWidth, viewHeight)
-                }
-              })
-        }
-      } else {
-        hasAdjustedSize = true
-      }
+      updateState(viewWidth, viewHeight)
     }
 
     @UiThread
@@ -468,18 +442,26 @@ public class ReactModalHostView(context: ThemedReactContext) :
       }
 
       stateWrapper?.let { sw ->
+        // new architecture
         val newStateData: WritableMap = WritableNativeMap()
         newStateData.putDouble("screenWidth", realWidth.toDouble())
         newStateData.putDouble("screenHeight", realHeight.toDouble())
         sw.updateState(newStateData)
       }
-    }
-
-    override fun addView(child: View, index: Int, params: LayoutParams) {
-      super.addView(child, index, params)
-      if (hasAdjustedSize) {
-        updateFirstChildView()
-      }
+          ?: {
+            // old architecture
+            // TODO: T44725185 remove after full migration to Fabric
+            val viewTag: Int = getChildAt(0).id
+            val reactContext: ReactContext = reactContext
+            reactContext.runOnNativeModulesQueueThread(
+                object : GuardedRunnable(reactContext) {
+                  override fun runGuarded() {
+                    this@DialogRootViewGroup.reactContext.reactApplicationContext
+                        .getNativeModule(UIManagerModule::class.java)
+                        ?.updateNodeSize(viewTag, viewWidth, viewHeight)
+                  }
+                })
+          }
     }
 
     override fun handleException(t: Throwable) {
