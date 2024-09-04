@@ -34,11 +34,7 @@ const supportedOrientations = [
   'landscape-right',
 ];
 
-const overlayColors = [
-  'red',
-  'blue',
-  undefined, // default prop value
-];
+const overlayColors = ['red', 'blue', undefined];
 
 function ModalPresentation() {
   const onDismiss = React.useCallback(() => {
@@ -224,7 +220,7 @@ function ModalPresentation() {
         <View style={styles.row}>
           {overlayColors.map(type => (
             <RNTOption
-              key={"overlay_" + type}
+              key={type}
               style={styles.option}
               label={type === undefined ? 'default' : type}
               multiSelect={true}
