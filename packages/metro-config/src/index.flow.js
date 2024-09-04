@@ -87,6 +87,7 @@ export function getDefaultConfig(projectRoot: string): ConfigT {
       babelTransformerPath: require.resolve(
         '@react-native/metro-babel-transformer',
       ),
+      hermesParser: true,
       getTransformOptions: async () => ({
         transform: {
           experimentalImportSupport: false,
