@@ -13,7 +13,7 @@
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 
 import {validateTransform} from '../../../src/private/animated/NativeAnimatedValidation';
-import NativeAnimatedHelper from '../NativeAnimatedHelper';
+import NativeAnimatedHelper from '../../../src/private/animated/NativeAnimatedHelper';
 import AnimatedNode from './AnimatedNode';
 import AnimatedWithChildren from './AnimatedWithChildren';
 

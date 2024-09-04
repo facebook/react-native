@@ -12,7 +12,7 @@
 
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 
-import NativeAnimatedHelper from '../NativeAnimatedHelper';
+import NativeAnimatedHelper from '../../../src/private/animated/NativeAnimatedHelper';
 import AnimatedNode from './AnimatedNode';
 
 export default class AnimatedWithChildren extends AnimatedNode {
