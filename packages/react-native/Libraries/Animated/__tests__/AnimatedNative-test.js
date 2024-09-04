@@ -1054,7 +1054,14 @@ describe('Native Animated', () => {
         duration: 50,
         useNativeDriver: true,
       });
-      expect(animation.start).toThrowError(/left/);
+
+      jest.spyOn(console, 'error').mockImplementation(() => {});
+      animation.start();
+      expect(console.error).toHaveBeenCalledTimes(1);
+      expect(console.error).toHaveBeenCalledWith(
+        "Style property 'left' is not supported by native animated module",
+      );
+      console.error.mockRestore();
     });
 
     it('works for any `static` props and styles', async () => {

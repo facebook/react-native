@@ -12,6 +12,7 @@
 
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 
+import {validateTransform} from '../../../src/private/animated/NativeAnimatedValidation';
 import NativeAnimatedHelper from '../NativeAnimatedHelper';
 import AnimatedNode from './AnimatedNode';
 import AnimatedWithChildren from './AnimatedWithChildren';
@@ -105,7 +106,9 @@ export default class AnimatedTransform extends AnimatedWithChildren {
       }
     });
 
-    NativeAnimatedHelper.validateTransform(transConfigs);
+    if (__DEV__) {
+      validateTransform(transConfigs);
+    }
     return {
       type: 'transform',
       transforms: transConfigs,

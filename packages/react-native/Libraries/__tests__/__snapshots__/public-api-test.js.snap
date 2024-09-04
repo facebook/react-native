@@ -372,6 +372,17 @@ declare export default typeof Easing;
 "
 `;
 
+exports[`public API should not change unintentionally Libraries/Animated/NativeAnimatedAllowlist.js 1`] = `
+"declare export function allowInterpolationParam(param: string): void;
+declare export function allowStyleProp(prop: string): void;
+declare export function allowTransformProp(prop: string): void;
+declare export function isSupportedColorStyleProp(prop: string): boolean;
+declare export function isSupportedInterpolationParam(param: string): boolean;
+declare export function isSupportedStyleProp(prop: string): boolean;
+declare export function isSupportedTransformProp(prop: string): boolean;
+"
+`;
+
 exports[`public API should not change unintentionally Libraries/Animated/NativeAnimatedHelper.js 1`] = `
 "declare const API: {
   getValue: (tag: number, saveValueCallback: (value: number) => void) => void,
@@ -415,33 +426,6 @@ exports[`public API should not change unintentionally Libraries/Animated/NativeA
     animatedNodeTag: number
   ): void,
 };
-declare function addWhitelistedStyleProp(prop: string): void;
-declare function addWhitelistedTransformProp(prop: string): void;
-declare function addWhitelistedInterpolationParam(param: string): void;
-declare function isSupportedColorStyleProp(prop: string): boolean;
-declare function isSupportedStyleProp(prop: string): boolean;
-declare function isSupportedTransformProp(prop: string): boolean;
-declare function isSupportedInterpolationParam(param: string): boolean;
-declare function validateTransform(
-  configs: Array<
-    | {
-        type: \\"animated\\",
-        property: string,
-        nodeTag: ?number,
-        ...
-      }
-    | {
-        type: \\"static\\",
-        property: string,
-        value: number | string,
-        ...
-      },
-  >
-): void;
-declare function validateStyles(styles: { [key: string]: ?number, ... }): void;
-declare function validateInterpolation<OutputT: number | string>(
-  config: InterpolationConfigType<OutputT>
-): void;
 declare function generateNewNodeTag(): number;
 declare function generateNewAnimationId(): number;
 declare function assertNativeAnimatedModule(): void;
@@ -451,16 +435,6 @@ declare function shouldUseNativeDriver(
 declare function transformDataType(value: number | string): number | string;
 declare export default {
   API: API,
-  isSupportedColorStyleProp: isSupportedColorStyleProp,
-  isSupportedStyleProp: isSupportedStyleProp,
-  isSupportedTransformProp: isSupportedTransformProp,
-  isSupportedInterpolationParam: isSupportedInterpolationParam,
-  addWhitelistedStyleProp: addWhitelistedStyleProp,
-  addWhitelistedTransformProp: addWhitelistedTransformProp,
-  addWhitelistedInterpolationParam: addWhitelistedInterpolationParam,
-  validateStyles: validateStyles,
-  validateTransform: validateTransform,
-  validateInterpolation: validateInterpolation,
   generateNewNodeTag: generateNewNodeTag,
   generateNewAnimationId: generateNewAnimationId,
   assertNativeAnimatedModule: assertNativeAnimatedModule,

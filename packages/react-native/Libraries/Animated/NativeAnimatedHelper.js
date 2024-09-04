@@ -16,7 +16,6 @@ import type {
   AnimatingNodeConfig,
   EventMapping,
 } from './NativeAnimatedModule';
-import type {InterpolationConfigType} from './nodes/AnimatedInterpolation';
 
 import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNativeFeatureFlags';
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
@@ -367,160 +366,6 @@ function setupGlobalEventEmitterListeners() {
     );
 }
 
-/**
- * Styles allowed by the native animated implementation.
- *
- * In general native animated implementation should support any numeric or color property that
- * doesn't need to be updated through the shadow view hierarchy (all non-layout properties).
- */
-const SUPPORTED_COLOR_STYLES = {
-  backgroundColor: true,
-  borderBottomColor: true,
-  borderColor: true,
-  borderEndColor: true,
-  borderLeftColor: true,
-  borderRightColor: true,
-  borderStartColor: true,
-  borderTopColor: true,
-  color: true,
-  tintColor: true,
-};
-
-const SUPPORTED_STYLES = {
-  ...SUPPORTED_COLOR_STYLES,
-  borderBottomEndRadius: true,
-  borderBottomLeftRadius: true,
-  borderBottomRightRadius: true,
-  borderBottomStartRadius: true,
-  borderEndEndRadius: true,
-  borderEndStartRadius: true,
-  borderRadius: true,
-  borderTopEndRadius: true,
-  borderTopLeftRadius: true,
-  borderTopRightRadius: true,
-  borderTopStartRadius: true,
-  borderStartEndRadius: true,
-  borderStartStartRadius: true,
-  elevation: true,
-  opacity: true,
-  transform: true,
-  zIndex: true,
-  /* ios styles */
-  shadowOpacity: true,
-  shadowRadius: true,
-  /* legacy android transform properties */
-  scaleX: true,
-  scaleY: true,
-  translateX: true,
-  translateY: true,
-};
-
-const SUPPORTED_TRANSFORMS = {
-  translateX: true,
-  translateY: true,
-  scale: true,
-  scaleX: true,
-  scaleY: true,
-  rotate: true,
-  rotateX: true,
-  rotateY: true,
-  rotateZ: true,
-  perspective: true,
-  skewX: true,
-  skewY: true,
-  matrix: ReactNativeFeatureFlags.shouldUseAnimatedObjectForTransform(),
-};
-
-const SUPPORTED_INTERPOLATION_PARAMS = {
-  inputRange: true,
-  outputRange: true,
-  extrapolate: true,
-  extrapolateRight: true,
-  extrapolateLeft: true,
-};
-
-function addWhitelistedStyleProp(prop: string): void {
-  // $FlowFixMe[prop-missing]
-  SUPPORTED_STYLES[prop] = true;
-}
-
-function addWhitelistedTransformProp(prop: string): void {
-  // $FlowFixMe[prop-missing]
-  SUPPORTED_TRANSFORMS[prop] = true;
-}
-
-function addWhitelistedInterpolationParam(param: string): void {
-  // $FlowFixMe[prop-missing]
-  SUPPORTED_INTERPOLATION_PARAMS[param] = true;
-}
-
-function isSupportedColorStyleProp(prop: string): boolean {
-  // $FlowFixMe[invalid-computed-prop]
-  return SUPPORTED_COLOR_STYLES[prop] === true;
-}
-
-function isSupportedStyleProp(prop: string): boolean {
-  // $FlowFixMe[invalid-computed-prop]
-  return SUPPORTED_STYLES[prop] === true;
-}
-
-function isSupportedTransformProp(prop: string): boolean {
-  // $FlowFixMe[invalid-computed-prop]
-  return SUPPORTED_TRANSFORMS[prop] === true;
-}
-
-function isSupportedInterpolationParam(param: string): boolean {
-  // $FlowFixMe[invalid-computed-prop]
-  return SUPPORTED_INTERPOLATION_PARAMS[param] === true;
-}
-
-function validateTransform(
-  configs: Array<
-    | {
-        type: 'animated',
-        property: string,
-        nodeTag: ?number,
-        ...
-      }
-    | {
-        type: 'static',
-        property: string,
-        value: number | string,
-        ...
-      },
-  >,
-): void {
-  configs.forEach(config => {
-    if (!isSupportedTransformProp(config.property)) {
-      throw new Error(
-        `Property '${config.property}' is not supported by native animated module`,
-      );
-    }
-  });
-}
-
-function validateStyles(styles: {[key: string]: ?number, ...}): void {
-  for (const key in styles) {
-    if (!isSupportedStyleProp(key)) {
-      throw new Error(
-        `Style property '${key}' is not supported by native animated module`,
-      );
-    }
-  }
-}
-
-function validateInterpolation<OutputT: number | string>(
-  config: InterpolationConfigType<OutputT>,
-): void {
-  for (const key in config) {
-    if (!isSupportedInterpolationParam(key)) {
-      throw new Error(
-        `Interpolation property '${key}' is not supported by native animated module`,
-      );
-    }
-  }
-}
-
 function generateNewNodeTag(): number {
   return __nativeAnimatedNodeTagCount++;
 }
@@ -584,16 +429,6 @@ function transformDataType(value: number | string): number | string {
 
 export default {
   API,
-  isSupportedColorStyleProp,
-  isSupportedStyleProp,
-  isSupportedTransformProp,
-  isSupportedInterpolationParam,
-  addWhitelistedStyleProp,
-  addWhitelistedTransformProp,
-  addWhitelistedInterpolationParam,
-  validateStyles,
-  validateTransform,
-  validateInterpolation,
   generateNewNodeTag,
   generateNewAnimationId,
   assertNativeAnimatedModule,
