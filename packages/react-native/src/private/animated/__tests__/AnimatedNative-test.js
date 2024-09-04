@@ -8,36 +8,38 @@
  * @oncall react_native
  */
 
-jest
-  .clearAllMocks()
-  .mock('../../../../Libraries/BatchedBridge/NativeModules', () => ({
-    NativeAnimatedModule: {},
-    PlatformConstants: {
-      getConstants() {
-        return {};
-      },
-    },
-  }))
-  .mock('../../specs/modules/NativeAnimatedModule')
-  .mock('../../../../Libraries/EventEmitter/NativeEventEmitter')
-  // findNodeHandle is imported from RendererProxy so mock that whole module.
-  .setMock('../../../../Libraries/ReactNative/RendererProxy', {
-    findNodeHandle: () => 1,
-  });
-
 import {format} from 'node:util';
 import * as React from 'react';
 import {createRef} from 'react';
 
 const {create, unmount, update} = require('../../../../jest/renderer');
-const Animated = require('../../../../Libraries/Animated/Animated').default;
-const NativeAnimatedHelper = require('../NativeAnimatedHelper').default;
 
 describe('Native Animated', () => {
-  const NativeAnimatedModule =
-    require('../../specs/modules/NativeAnimatedModule').default;
+  let Animated;
+  let NativeAnimatedHelper;
+  let NativeAnimatedModule;
 
   beforeEach(() => {
+    jest.resetModules();
+    jest
+      .clearAllMocks()
+      .mock('../../../../Libraries/BatchedBridge/NativeModules', () => ({
+        NativeAnimatedModule: {},
+        PlatformConstants: {
+          getConstants() {
+            return {};
+          },
+        },
+      }))
+      .mock('../../specs/modules/NativeAnimatedModule')
+      .mock('../../../../Libraries/EventEmitter/NativeEventEmitter')
+      // findNodeHandle is imported from RendererProxy so mock that whole module.
+      .setMock('../../../../Libraries/ReactNative/RendererProxy', {
+        findNodeHandle: () => 1,
+      });
+
+    NativeAnimatedModule =
+      require('../../specs/modules/NativeAnimatedModule').default;
     Object.assign(NativeAnimatedModule, {
       getValue: jest.fn(),
       addAnimatedEventToView: jest.fn(),
@@ -58,6 +60,9 @@ describe('Native Animated', () => {
       stopAnimation: jest.fn(),
       stopListeningToAnimatedNodeValue: jest.fn(),
     });
+
+    Animated = require('../../../../Libraries/Animated/Animated').default;
+    NativeAnimatedHelper = require('../NativeAnimatedHelper').default;
   });
 
   describe('Animated Value', () => {

@@ -906,7 +906,7 @@ exports[`public API should not change unintentionally Libraries/Animated/nodes/A
 declare export default class AnimatedNode {
   _listeners: { [key: string]: ValueListenerCallback, ... };
   _platformConfig: ?PlatformConfig;
-  __nativeAnimatedValueListener: ?any;
+  __nativeAnimatedValueListener: ?EventSubscription;
   __attach(): void;
   __detach(): void;
   __getValue(): any;
@@ -917,7 +917,6 @@ declare export default class AnimatedNode {
   __isNative: boolean;
   __nativeTag: ?number;
   __shouldUpdateListenersForNewNativeTag: boolean;
-  constructor(): void;
   __makeNative(platformConfig: ?PlatformConfig): void;
   addListener(callback: (value: any) => mixed): string;
   removeListener(id: string): void;
@@ -937,10 +936,10 @@ declare export default class AnimatedNode {
 `;
 
 exports[`public API should not change unintentionally Libraries/Animated/nodes/AnimatedObject.js 1`] = `
-"declare export function hasAnimatedNode(value: any, depth: number): boolean;
-declare export default class AnimatedObject extends AnimatedWithChildren {
-  _value: any;
-  constructor(value: any): void;
+"declare export default class AnimatedObject extends AnimatedWithChildren {
+  _value: mixed;
+  static from(value: mixed): ?AnimatedObject;
+  constructor(nodes: $ReadOnlyArray<AnimatedNode>, value: mixed): void;
   __getValue(): any;
   __getAnimatedValue(): any;
   __attach(): void;
@@ -953,10 +952,10 @@ declare export default class AnimatedObject extends AnimatedWithChildren {
 
 exports[`public API should not change unintentionally Libraries/Animated/nodes/AnimatedProps.js 1`] = `
 "declare export default class AnimatedProps extends AnimatedNode {
-  _props: Object;
   _animatedView: any;
+  _props: Object;
   _callback: () => void;
-  constructor(props: Object, callback: () => void): void;
+  constructor(inputProps: Object, callback: () => void): void;
   __getValue(): Object;
   __getAnimatedValue(): Object;
   __attach(): void;
@@ -975,8 +974,8 @@ exports[`public API should not change unintentionally Libraries/Animated/nodes/A
 exports[`public API should not change unintentionally Libraries/Animated/nodes/AnimatedStyle.js 1`] = `
 "declare export default class AnimatedStyle extends AnimatedWithChildren {
   _inputStyle: any;
-  _style: Object;
-  constructor(style: any): void;
+  _style: { [string]: any };
+  constructor(inputStyle: any): void;
   __getValue(): Object | Array<Object>;
   __getAnimatedValue(): Object;
   __attach(): void;
@@ -1138,7 +1137,6 @@ declare export default class AnimatedValueXY extends AnimatedWithChildren {
 exports[`public API should not change unintentionally Libraries/Animated/nodes/AnimatedWithChildren.js 1`] = `
 "declare export default class AnimatedWithChildren extends AnimatedNode {
   _children: Array<AnimatedNode>;
-  constructor(): void;
   __makeNative(platformConfig: ?PlatformConfig): void;
   __addChild(child: AnimatedNode): void;
   __removeChild(child: AnimatedNode): void;
