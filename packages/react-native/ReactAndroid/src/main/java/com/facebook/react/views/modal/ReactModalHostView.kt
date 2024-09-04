@@ -48,6 +48,7 @@ import com.facebook.react.views.common.ContextUtils
 import com.facebook.react.views.modal.ModalHostHelper.getModalHostSize
 import com.facebook.react.views.modal.ReactModalHostView.DialogRootViewGroup
 import com.facebook.react.views.view.ReactViewGroup
+import com.facebook.react.views.view.setStatusBarTranslucency
 import java.util.Objects
 import kotlin.math.abs
 
@@ -298,14 +299,13 @@ public class ReactModalHostView(context: ThemedReactContext) :
      * statusBarHeight", since that margin will be included in the FrameLayout.
      */
     get() {
-      val frameLayout = FrameLayout(context)
-      frameLayout.addView(dialogRootViewGroup)
-      if (statusBarTranslucent) {
-        frameLayout.systemUiVisibility = SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+      return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+        FrameLayout(context).apply { addView(dialogRootViewGroup) }
       } else {
-        frameLayout.fitsSystemWindows = true
+        // On Android 15, we can't use FrameLayout as system bars are part of the content area
+        // and we need to used the full screen and apply padding using insets instead of margins
+        dialogRootViewGroup
       }
-      return frameLayout
     }
 
   /**
@@ -332,6 +332,8 @@ public class ReactModalHostView(context: ThemedReactContext) :
         dialogWindow.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
       }
     }
+
+    dialogWindow.setStatusBarTranslucency(statusBarTranslucent)
 
     if (transparent) {
       dialogWindow.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
@@ -406,8 +408,10 @@ public class ReactModalHostView(context: ThemedReactContext) :
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
       super.onSizeChanged(w, h, oldw, oldh)
-      viewWidth = w
-      viewHeight = h
+
+      val size = getModalHostSize(reactContext)
+      viewWidth = size.x
+      viewHeight = size.y
 
       updateState(viewWidth, viewHeight)
     }
