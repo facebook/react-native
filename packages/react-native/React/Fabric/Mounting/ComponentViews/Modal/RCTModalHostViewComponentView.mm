@@ -134,7 +134,9 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
                    completion:(void (^)(void))completion
 {
   UIViewController *controller = [self reactViewController];
-  [controller presentViewController:modalViewController animated:animated completion:completion];
+  [[self _topMostViewControllerFrom:controller] presentViewController:modalViewController
+                                                             animated:animated
+                                                           completion:completion];
 }
 
 - (void)dismissViewController:(UIViewController *)modalViewController
@@ -272,6 +274,26 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
 - (void)unmountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
 {
   [childComponentView removeFromSuperview];
+}
+
+#pragma mark - Private
+
+- (UIViewController *)_topMostViewControllerFrom:(UIViewController *)rootViewController
+{
+  UIViewController *topController = rootViewController;
+  while (topController.presentedViewController) {
+    topController = topController.presentedViewController;
+  }
+  if ([topController isKindOfClass:[UINavigationController class]]) {
+    UINavigationController *navigationController = (UINavigationController *)topController;
+    topController = navigationController.visibleViewController;
+    return [self _topMostViewControllerFrom:topController];
+  } else if ([topController isKindOfClass:[UITabBarController class]]) {
+    UITabBarController *tabBarController = (UITabBarController *)topController;
+    topController = tabBarController.selectedViewController;
+    return [self _topMostViewControllerFrom:topController];
+  }
+  return topController;
 }
 
 @end
