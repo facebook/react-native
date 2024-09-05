@@ -25,7 +25,7 @@
     "generated"
   ],
   "devDependencies": {
-    "@babel/core": "^7.20.0",
+    "@babel/core": "^7.25.2",
     "@react-native/babel-preset": "0.76.0-main",
     "react-native": "1000.0.0"
   },

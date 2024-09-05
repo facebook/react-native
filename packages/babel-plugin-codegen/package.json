@@ -28,6 +28,6 @@
     "@react-native/codegen": "0.76.0-main"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.0"
+    "@babel/core": "^7.25.2"
   }
 }
