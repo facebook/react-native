@@ -137,7 +137,7 @@ class PerformanceEntryReporter {
       const std::optional<double>& startTime = std::nullopt);
 
   void measure(
-      const std::string& name,
+      const std::string_view& name,
       double startTime,
       double endTime,
       const std::optional<double>& duration = std::nullopt,

@@ -16,9 +16,9 @@
     "react-native": "1000.0.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.0",
-    "@babel/preset-env": "^7.20.0",
-    "@babel/runtime": "^7.20.0",
+    "@babel/core": "^7.25.2",
+    "@babel/preset-env": "^7.25.3",
+    "@babel/runtime": "^7.25.0",
     "@react-native/babel-preset": "0.76.0-main",
     "@react-native/core-cli-utils": "0.76.0-main",
     "@react-native/eslint-config": "0.76.0-main",

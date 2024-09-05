@@ -15,10 +15,11 @@
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 import type AnimatedNode from './AnimatedNode';
 
+import {validateInterpolation} from '../../../src/private/animated/NativeAnimatedValidation';
 import normalizeColor from '../../StyleSheet/normalizeColor';
 import processColor from '../../StyleSheet/processColor';
 import Easing from '../Easing';
-import NativeAnimatedHelper from '../NativeAnimatedHelper';
+import NativeAnimatedHelper from '../../../src/private/animated/NativeAnimatedHelper';
 import AnimatedWithChildren from './AnimatedWithChildren';
 import invariant from 'invariant';
 
@@ -382,7 +383,7 @@ export default class AnimatedInterpolation<
 
   __getNativeConfig(): any {
     if (__DEV__) {
-      NativeAnimatedHelper.validateInterpolation(this._config);
+      validateInterpolation(this._config);
     }
 
     // Only the `outputRange` can contain strings so we don't need to transform `inputRange` here

@@ -7,11 +7,15 @@
 
 #ifdef WITH_PERFETTO
 
+#include "ReactPerfetto.h"
+
 #include <perfetto.h>
 #include <unordered_map>
 
 #include "HermesPerfettoDataSource.h"
 #include "ReactPerfettoCategories.h"
+
+namespace facebook::react {
 
 std::once_flag perfettoInit;
 void initializePerfetto() {
@@ -82,5 +86,7 @@ uint64_t performanceNowToPerfettoTraceTime(double perfNowTime) {
   }
   return static_cast<uint64_t>(perfNowTime * 1.e6);
 }
+
+} // namespace facebook::react
 
 #endif // WITH_PERFETTO

@@ -46,6 +46,7 @@ const AnimatedScrollView: AnimatedComponentType<Props, Instance> =
         props.style != null
       ) {
         return (
+          // $FlowFixMe[prop-missing]
           <AnimatedScrollViewWithInvertedRefreshControl
             scrollEventThrottle={0.0001}
             {...props}

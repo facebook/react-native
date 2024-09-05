@@ -12,14 +12,24 @@
 
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 
-import NativeAnimatedHelper from '../NativeAnimatedHelper';
+import {validateTransform} from '../../../src/private/animated/NativeAnimatedValidation';
+import NativeAnimatedHelper from '../../../src/private/animated/NativeAnimatedHelper';
 import AnimatedNode from './AnimatedNode';
 import AnimatedWithChildren from './AnimatedWithChildren';
 
-export default class AnimatedTransform extends AnimatedWithChildren {
-  _transforms: $ReadOnlyArray<Object>;
+type Transform<T = AnimatedNode> = {
+  [string]:
+    | number
+    | string
+    | T
+    | $ReadOnlyArray<number | string | T>
+    | {[string]: number | string | T},
+};
 
-  constructor(transforms: $ReadOnlyArray<Object>) {
+export default class AnimatedTransform extends AnimatedWithChildren {
+  _transforms: $ReadOnlyArray<Transform<>>;
+
+  constructor(transforms: $ReadOnlyArray<Transform<>>) {
     super();
     this._transforms = transforms;
   }
@@ -36,12 +46,16 @@ export default class AnimatedTransform extends AnimatedWithChildren {
     super.__makeNative(platformConfig);
   }
 
-  __getValue(): $ReadOnlyArray<Object> {
-    return this._get(animatedNode => animatedNode.__getValue());
+  __getValue(): $ReadOnlyArray<Transform<any>> {
+    return mapTransforms(this._transforms, animatedNode =>
+      animatedNode.__getValue(),
+    );
   }
 
-  __getAnimatedValue(): $ReadOnlyArray<Object> {
-    return this._get(animatedNode => animatedNode.__getAnimatedValue());
+  __getAnimatedValue(): $ReadOnlyArray<Transform<any>> {
+    return mapTransforms(this._transforms, animatedNode =>
+      animatedNode.__getAnimatedValue(),
+    );
   }
 
   __attach(): void {
@@ -83,48 +97,53 @@ export default class AnimatedTransform extends AnimatedWithChildren {
           transConfigs.push({
             type: 'static',
             property: key,
+            /* $FlowFixMe[incompatible-call] - `value` can be an array or an
+               object. This is not currently handled by `transformDataType`.
+               Migrating to `TransformObject` might solve this. */
             value: NativeAnimatedHelper.transformDataType(value),
           });
         }
       }
     });
 
-    NativeAnimatedHelper.validateTransform(transConfigs);
+    if (__DEV__) {
+      validateTransform(transConfigs);
+    }
     return {
       type: 'transform',
       transforms: transConfigs,
     };
   }
+}
 
-  _get(getter: AnimatedNode => any): $ReadOnlyArray<Object> {
-    return this._transforms.map(transform => {
-      const result: {[string]: any} = {};
-      for (const key in transform) {
-        const value = transform[key];
-        if (value instanceof AnimatedNode) {
-          result[key] = getter(value);
-        } else if (Array.isArray(value)) {
-          result[key] = value.map(element => {
-            if (element instanceof AnimatedNode) {
-              return getter(element);
-            } else {
-              return element;
-            }
-          });
-        } else if (typeof value === 'object') {
-          result[key] = {};
-          for (const [nestedKey, nestedValue] of Object.entries(value)) {
-            if (nestedValue instanceof AnimatedNode) {
-              result[key][nestedKey] = getter(nestedValue);
-            } else {
-              result[key][nestedKey] = nestedValue;
-            }
-          }
-        } else {
-          result[key] = value;
+function mapTransforms<T>(
+  transforms: $ReadOnlyArray<Transform<>>,
+  mapFunction: AnimatedNode => T,
+): $ReadOnlyArray<Transform<T>> {
+  return transforms.map(transform => {
+    const result: Transform<T> = {};
+    for (const key in transform) {
+      const value = transform[key];
+      if (value instanceof AnimatedNode) {
+        result[key] = mapFunction(value);
+      } else if (Array.isArray(value)) {
+        result[key] = value.map(element =>
+          element instanceof AnimatedNode ? mapFunction(element) : element,
+        );
+      } else if (typeof value === 'object') {
+        const object: {[string]: number | string | T} = {};
+        for (const propertyName in value) {
+          const propertyValue = value[propertyName];
+          object[propertyName] =
+            propertyValue instanceof AnimatedNode
+              ? mapFunction(propertyValue)
+              : propertyValue;
         }
+        result[key] = object;
+      } else {
+        result[key] = value;
       }
-      return result;
-    });
-  }
+    }
+    return result;
+  });
 }

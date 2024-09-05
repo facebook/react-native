@@ -17,7 +17,7 @@ import useDebouncedEffect from '../../src/private/hooks/useDebouncedEffect';
 import {isPublicInstance as isFabricPublicInstance} from '../ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstanceUtils';
 import useRefEffect from '../Utilities/useRefEffect';
 import {AnimatedEvent} from './AnimatedEvent';
-import NativeAnimatedHelper from './NativeAnimatedHelper';
+import NativeAnimatedHelper from '../../src/private/animated/NativeAnimatedHelper';
 import AnimatedNode from './nodes/AnimatedNode';
 import AnimatedProps from './nodes/AnimatedProps';
 import AnimatedValue from './nodes/AnimatedValue';

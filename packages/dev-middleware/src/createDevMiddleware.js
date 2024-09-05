@@ -106,6 +106,13 @@ export default function createDevMiddleware({
       }),
     )
     .use(
+      '/debugger-frontend/embedder-static/embedderScript.js',
+      (_req, res) => {
+        res.setHeader('Content-Type', 'application/javascript');
+        res.end('');
+      },
+    )
+    .use(
       '/debugger-frontend',
       serveStaticMiddleware(path.join(reactNativeDebuggerFrontendPath), {
         fallthrough: false,

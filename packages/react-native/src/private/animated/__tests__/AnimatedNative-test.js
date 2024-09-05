@@ -10,7 +10,7 @@
 
 jest
   .clearAllMocks()
-  .mock('../../BatchedBridge/NativeModules', () => ({
+  .mock('../../../../Libraries/BatchedBridge/NativeModules', () => ({
     NativeAnimatedModule: {},
     PlatformConstants: {
       getConstants() {
@@ -18,21 +18,24 @@ jest
       },
     },
   }))
-  .mock('../NativeAnimatedModule')
-  .mock('../../EventEmitter/NativeEventEmitter')
+  .mock('../../specs/modules/NativeAnimatedModule')
+  .mock('../../../../Libraries/EventEmitter/NativeEventEmitter')
   // findNodeHandle is imported from RendererProxy so mock that whole module.
-  .setMock('../../ReactNative/RendererProxy', {findNodeHandle: () => 1});
+  .setMock('../../../../Libraries/ReactNative/RendererProxy', {
+    findNodeHandle: () => 1,
+  });
 
 import {format} from 'node:util';
 import * as React from 'react';
 import {createRef} from 'react';
 
-const {create, unmount, update} = require('../../../jest/renderer');
-const Animated = require('../Animated').default;
+const {create, unmount, update} = require('../../../../jest/renderer');
+const Animated = require('../../../../Libraries/Animated/Animated').default;
 const NativeAnimatedHelper = require('../NativeAnimatedHelper').default;
 
 describe('Native Animated', () => {
-  const NativeAnimatedModule = require('../NativeAnimatedModule').default;
+  const NativeAnimatedModule =
+    require('../../specs/modules/NativeAnimatedModule').default;
 
   beforeEach(() => {
     Object.assign(NativeAnimatedModule, {
@@ -1054,7 +1057,14 @@ describe('Native Animated', () => {
         duration: 50,
         useNativeDriver: true,
       });
-      expect(animation.start).toThrowError(/left/);
+
+      jest.spyOn(console, 'error').mockImplementation(() => {});
+      animation.start();
+      expect(console.error).toHaveBeenCalledTimes(1);
+      expect(console.error).toHaveBeenCalledWith(
+        "Style property 'left' is not supported by native animated module",
+      );
+      console.error.mockRestore();
     });
 
     it('works for any `static` props and styles', async () => {
