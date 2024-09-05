@@ -64,9 +64,9 @@ RCT_EXPORT_MODULE()
     if (self->_presentationBlock) {
       self->_presentationBlock([modalHostView reactViewController], viewController, animated, completionBlock);
     } else {
-      [[modalHostView reactViewController] presentViewController:viewController
-                                                        animated:animated
-                                                      completion:completionBlock];
+      [[self _topMostViewControllerFrom:[modalHostView reactViewController]] presentViewController:viewController
+                                                                                          animated:animated
+                                                                                        completion:completionBlock];
     }
   });
 }
@@ -105,6 +105,26 @@ RCT_EXPORT_MODULE()
     [hostView invalidate];
   }
   _hostViews = nil;
+}
+
+#pragma mark - Private
+
+- (UIViewController *)_topMostViewControllerFrom:(UIViewController *)rootViewController
+{
+  UIViewController *topController = rootViewController;
+  while (topController.presentedViewController) {
+    topController = topController.presentedViewController;
+  }
+  if ([topController isKindOfClass:[UINavigationController class]]) {
+    UINavigationController *navigationController = (UINavigationController *)topController;
+    topController = navigationController.visibleViewController;
+    return [self _topMostViewControllerFrom:topController];
+  } else if ([topController isKindOfClass:[UITabBarController class]]) {
+    UITabBarController *tabBarController = (UITabBarController *)topController;
+    topController = tabBarController.selectedViewController;
+    return [self _topMostViewControllerFrom:topController];
+  }
+  return topController;
 }
 
 RCT_EXPORT_VIEW_PROPERTY(animationType, NSString)
