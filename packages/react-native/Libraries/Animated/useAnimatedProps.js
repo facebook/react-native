@@ -247,16 +247,15 @@ function addAnimatedValuesListenersToProps(
 function useAnimatedPropsLifecycle_layoutEffects(node: AnimatedProps): void {
   const prevNodeRef = useRef<?AnimatedProps>(null);
   const isUnmountingRef = useRef<boolean>(false);
-  const userDrivenAnimationEndedListener = useRef<?EventSubscription>(null);
 
   useEffect(() => {
     // It is ok for multiple components to call `flushQueue` because it noops
     // if the queue is empty. When multiple animated components are mounted at
     // the same time. Only first component flushes the queue and the others will noop.
     NativeAnimatedHelper.API.flushQueue();
-
+    let drivenAnimationEndedListener: ?EventSubscription = null;
     if (node.__isNative) {
-      userDrivenAnimationEndedListener.current =
+      drivenAnimationEndedListener =
         NativeAnimatedHelper.nativeEventEmitter.addListener(
           'onUserDrivenAnimationEnded',
           data => {
@@ -266,10 +265,7 @@ function useAnimatedPropsLifecycle_layoutEffects(node: AnimatedProps): void {
     }
 
     return () => {
-      if (userDrivenAnimationEndedListener.current) {
-        userDrivenAnimationEndedListener.current?.remove();
-        userDrivenAnimationEndedListener.current = null;
-      }
+      drivenAnimationEndedListener?.remove();
     };
   });
 
