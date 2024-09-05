@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Base class that should be suitable for the majority of subclasses of {@link ViewManager}. It
@@ -216,15 +217,22 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   @Override
   @ReactProp(name = ViewProps.TRANSFORM)
   public void setTransform(@NonNull T view, @Nullable ReadableArray matrix) {
-    view.setTag(R.id.transform, matrix);
-    view.setTag(R.id.invalidate_transform, true);
+    @Nullable ReadableArray currentTransform = (ReadableArray) view.getTag(R.id.transform);
+    if (!Objects.equals(currentTransform, matrix)) {
+      view.setTag(R.id.transform, matrix);
+      view.setTag(R.id.invalidate_transform, true);
+    }
   }
 
   @Override
   @ReactProp(name = ViewProps.TRANSFORM_ORIGIN)
   public void setTransformOrigin(@NonNull T view, @Nullable ReadableArray transformOrigin) {
-    view.setTag(R.id.transform_origin, transformOrigin);
-    view.setTag(R.id.invalidate_transform, true);
+    @Nullable
+    ReadableArray currentTransformOrigin = (ReadableArray) view.getTag(R.id.transform_origin);
+    if (!Objects.equals(currentTransformOrigin, transformOrigin)) {
+      view.setTag(R.id.transform_origin, transformOrigin);
+      view.setTag(R.id.invalidate_transform, true);
+    }
   }
 
   @Override
