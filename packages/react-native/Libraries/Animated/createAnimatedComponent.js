@@ -15,14 +15,15 @@ import useAnimatedProps from './useAnimatedProps';
 import * as React from 'react';
 import {useMemo} from 'react';
 
-// $FlowFixMe[deprecated-type]
-export type AnimatedProps<Props: {...}> = $ObjMap<
-  Props &
-    $ReadOnly<{
-      passthroughAnimatedPropExplicitValues?: React.ElementConfig<typeof View>,
-    }>,
-  () => any,
->;
+export type AnimatedProps<Props: {...}> = {
+  // eslint-disable-next-line no-unused-vars
+  +[_K in keyof (Props &
+      $ReadOnly<{
+        passthroughAnimatedPropExplicitValues?: React.ElementConfig<
+          typeof View,
+        >,
+      }>)]: any,
+};
 
 export type AnimatedComponentType<
   Props: {...},
