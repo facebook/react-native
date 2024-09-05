@@ -7,6 +7,7 @@
 
 package com.facebook.react.modules.core
 
+import androidx.annotation.GuardedBy
 import android.view.Choreographer
 import com.facebook.common.logging.FLog
 import com.facebook.infer.annotation.Assertions
@@ -41,12 +42,12 @@ public class ReactChoreographer private constructor(choreographerProvider: Chore
   private val callbackQueues: Array<ArrayDeque<Choreographer.FrameCallback>> =
       Array(CallbackType.entries.size) { ArrayDeque() }
   private var totalCallbacks = 0
+  @GuardedBy("callbackQueues")
   private var hasPostedCallback = false
 
   private val frameCallback =
       Choreographer.FrameCallback { frameTimeNanos ->
         synchronized(callbackQueues) {
-
           // Callbacks run once and are then automatically removed, the callback will
           // be posted again from postFrameCallback
           hasPostedCallback = false
@@ -76,17 +77,7 @@ public class ReactChoreographer private constructor(choreographerProvider: Chore
       callbackQueues[type.order].addLast(callback)
       totalCallbacks++
       Assertions.assertCondition(totalCallbacks > 0)
-      if (!hasPostedCallback) {
-        if (choreographer == null) {
-          // Schedule on the main thread, at which point the constructor's async work will have
-          // completed
-          UiThreadUtil.runOnUiThread {
-            synchronized(callbackQueues) { postFrameCallbackOnChoreographer() }
-          }
-        } else {
-          postFrameCallbackOnChoreographer()
-        }
-      }
+      postFrameCallbackOnChoreographer()
     }
   }
 
@@ -102,12 +93,22 @@ public class ReactChoreographer private constructor(choreographerProvider: Chore
   }
 
   /**
-   * This method writes on mHasPostedCallback and it should be called from another method that has
+   * This method writes [hasPostedCallback] and it should be called from another method that has
    * the lock on [callbackQueues].
    */
   private fun postFrameCallbackOnChoreographer() {
-    choreographer?.postFrameCallback(frameCallback)
-    hasPostedCallback = true
+    if (!hasPostedCallback) {
+      val choreographer = choreographer
+      if (choreographer == null) {
+        // Schedule on the main thread, at which point the constructor's async work will have
+         UiThreadUtil.runOnUiThread {
+                   synchronized(callbackQueues) { postFrameCallbackOnChoreographer() }
+                  }
+      } else {
+        choreographer.postFrameCallback(frameCallback)
+        hasPostedCallback = true
+      }
+    }
   }
 
   /**
