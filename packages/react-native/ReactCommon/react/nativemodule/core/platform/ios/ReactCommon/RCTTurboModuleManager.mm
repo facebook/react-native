@@ -131,6 +131,13 @@ class ModuleNativeMethodCallInvoker : public NativeMethodCallInvoker {
 
   void invokeSync(const std::string &methodName, std::function<void()> &&work) override
   {
+    const bool isMainQueue = methodQueue_ == dispatch_get_main_queue();
+    if (isMainQueue) {
+      RCTUnsafeExecuteOnMainQueueSync(^{
+        work();
+      });
+      return;
+    }
     work();
   }
 };
