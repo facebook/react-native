@@ -330,6 +330,17 @@ function useAnimatedPropsLifecycle_passiveEffects(node: AnimatedProps): void {
 
   useEffectImpl(() => {
     node.__attach();
+    let drivenAnimationEndedListener: ?EventSubscription = null;
+
+    if (node.__isNative) {
+      drivenAnimationEndedListener =
+        NativeAnimatedHelper.nativeEventEmitter.addListener(
+          'onUserDrivenAnimationEnded',
+          data => {
+            node.update();
+          },
+        );
+    }
     if (prevNodeRef.current != null) {
       const prevNode = prevNodeRef.current;
       // TODO: Stop restoring default values (unless `reset` is called).
@@ -344,6 +355,8 @@ function useAnimatedPropsLifecycle_passiveEffects(node: AnimatedProps): void {
       } else {
         prevNodeRef.current = node;
       }
+
+      drivenAnimationEndedListener?.remove();
     };
   }, [node]);
 }
