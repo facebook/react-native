@@ -7,7 +7,6 @@
 
 import org.gradle.api.internal.classpath.ModuleRegistry
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
-import org.gradle.configurationcache.extensions.serviceOf
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -41,14 +40,6 @@ dependencies {
 
   testImplementation(libs.junit)
   testImplementation(project(":shared-testutil"))
-
-  testRuntimeOnly(
-      files(
-          serviceOf<ModuleRegistry>()
-              .getModule("gradle-tooling-api-builders")
-              .classpath
-              .asFiles
-              .first()))
 }
 
 // We intentionally don't build for Java 17 as users will see a cryptic bytecode version
