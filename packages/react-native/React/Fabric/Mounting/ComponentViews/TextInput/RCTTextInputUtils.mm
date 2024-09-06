@@ -240,6 +240,13 @@ UITextContentType RCTUITextContentTypeFromString(const std::string &contentType)
         @"birthdateYear" : UITextContentTypeBirthdateYear,
       }];
     }
+
+    if (@available(iOS 17.4, *)) {
+      [mutableContentTypeMap addEntriesFromDictionary:@{
+        @"cellularEID" : UITextContentTypeCellularEID,
+        @"cellularIMEI" : UITextContentTypeCellularIMEI,
+      }];
+    }
 #endif
 
     contentTypeMap = mutableContentTypeMap;

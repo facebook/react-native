@@ -198,7 +198,9 @@ export type TextContentType =
   | 'birthdate'
   | 'birthdateDay'
   | 'birthdateMonth'
-  | 'birthdateYear';
+  | 'birthdateYear'
+  | 'cellularEID'
+  | 'cellularIMEI';
 
 export type enterKeyHintType =
   | 'enter'

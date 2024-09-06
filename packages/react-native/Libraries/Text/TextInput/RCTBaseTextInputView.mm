@@ -323,6 +323,13 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
         @"birthdateYear" : UITextContentTypeBirthdateYear,
       }];
     }
+
+    if (@available(iOS 17.4, *)) {
+      [mutableContentTypeMap addEntriesFromDictionary:@{
+        @"cellularEID" : UITextContentTypeCellularEID,
+        @"cellularIMEI" : UITextContentTypeCellularIMEI,
+      }];
+    }
 #endif
 
     contentTypeMap = mutableContentTypeMap;

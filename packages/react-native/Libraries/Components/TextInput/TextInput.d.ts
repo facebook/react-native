@@ -255,6 +255,8 @@ export interface TextInputIOSProps {
    *  - `'birthdateDay'` (iOS 17+)
    *  - `'birthdateMonth'` (iOS 17+)
    *  - `'birthdateYear'` (iOS 17+)
+   *  - `'cellularEID'` (iOS 17.4+)
+   *  - `'cellularIMEI'` (iOS 17.4+)
    *
    */
   textContentType?:
@@ -299,6 +301,8 @@ export interface TextInputIOSProps {
     | 'birthdateDay'
     | 'birthdateMonth'
     | 'birthdateYear'
+    | 'cellularEID'
+    | 'cellularIMEI'
     | undefined;
 
   /**
