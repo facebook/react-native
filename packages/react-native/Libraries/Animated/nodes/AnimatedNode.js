@@ -10,23 +10,31 @@
 
 'use strict';
 
+import type {EventSubscription} from '../../vendor/emitter/EventEmitter';
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 
 import NativeAnimatedHelper from '../../../src/private/animated/NativeAnimatedHelper';
 import invariant from 'invariant';
 
-const NativeAnimatedAPI = NativeAnimatedHelper.API;
+const {startListeningToAnimatedNodeValue, stopListeningToAnimatedNodeValue} =
+  NativeAnimatedHelper.API;
 
 type ValueListenerCallback = (state: {value: number, ...}) => mixed;
 
 let _uniqueId = 1;
+let _assertNativeAnimatedModule: ?() => void = () => {
+  NativeAnimatedHelper.assertNativeAnimatedModule();
+  // We only have to assert that the module exists once. After we've asserted
+  // this, clear out the function so we know to skip it in the future.
+  _assertNativeAnimatedModule = null;
+};
 
 // Note(vjeux): this would be better as an interface but flow doesn't
 // support them yet
 export default class AnimatedNode {
-  _listeners: {[key: string]: ValueListenerCallback, ...};
-  _platformConfig: ?PlatformConfig;
-  __nativeAnimatedValueListener: ?any;
+  _listeners: {[key: string]: ValueListenerCallback, ...} = {};
+  _platformConfig: ?PlatformConfig = undefined;
+  __nativeAnimatedValueListener: ?EventSubscription = null;
   __attach(): void {}
   __detach(): void {
     this.removeAllListeners();
@@ -46,13 +54,9 @@ export default class AnimatedNode {
   }
 
   /* Methods and props used by native Animated impl */
-  __isNative: boolean;
-  __nativeTag: ?number;
-  __shouldUpdateListenersForNewNativeTag: boolean;
-
-  constructor() {
-    this._listeners = {};
-  }
+  __isNative: boolean = false;
+  __nativeTag: ?number = undefined;
+  __shouldUpdateListenersForNewNativeTag: boolean = false;
 
   __makeNative(platformConfig: ?PlatformConfig): void {
     if (!this.__isNative) {
@@ -123,7 +127,7 @@ export default class AnimatedNode {
       this._stopListeningForNativeValueUpdates();
     }
 
-    NativeAnimatedAPI.startListeningToAnimatedNodeValue(this.__getNativeTag());
+    startListeningToAnimatedNodeValue(this.__getNativeTag());
     this.__nativeAnimatedValueListener =
       NativeAnimatedHelper.nativeEventEmitter.addListener(
         'onAnimatedValueUpdate',
@@ -141,8 +145,9 @@ export default class AnimatedNode {
   }
 
   __callListeners(value: number): void {
+    const event = {value};
     for (const key in this._listeners) {
-      this._listeners[key]({value});
+      this._listeners[key](event);
     }
   }
 
@@ -153,21 +158,24 @@ export default class AnimatedNode {
 
     this.__nativeAnimatedValueListener.remove();
     this.__nativeAnimatedValueListener = null;
-    NativeAnimatedAPI.stopListeningToAnimatedNodeValue(this.__getNativeTag());
+    stopListeningToAnimatedNodeValue(this.__getNativeTag());
   }
 
   __getNativeTag(): number {
-    NativeAnimatedHelper.assertNativeAnimatedModule();
-    invariant(
-      this.__isNative,
-      'Attempt to get native tag from node not marked as "native"',
-    );
+    let nativeTag = this.__nativeTag;
+    if (nativeTag == null) {
+      _assertNativeAnimatedModule?.();
 
-    const nativeTag =
-      this.__nativeTag ?? NativeAnimatedHelper.generateNewNodeTag();
+      // `__isNative` is initialized as false and only ever set to true. So we
+      // only need to check it once here when initializing `__nativeTag`.
+      invariant(
+        this.__isNative,
+        'Attempt to get native tag from node not marked as "native"',
+      );
 
-    if (this.__nativeTag == null) {
+      nativeTag = NativeAnimatedHelper.generateNewNodeTag();
       this.__nativeTag = nativeTag;
+
       const config = this.__getNativeConfig();
       if (this._platformConfig) {
         config.platformConfig = this._platformConfig;
@@ -175,9 +183,9 @@ export default class AnimatedNode {
       NativeAnimatedHelper.API.createAnimatedNode(nativeTag, config);
       this.__shouldUpdateListenersForNewNativeTag = true;
     }
-
     return nativeTag;
   }
+
   __getNativeConfig(): Object {
     throw new Error(
       'This JS animated node type cannot be used as native animated node',
@@ -191,6 +199,7 @@ export default class AnimatedNode {
   __getPlatformConfig(): ?PlatformConfig {
     return this._platformConfig;
   }
+
   __setPlatformConfig(platformConfig: ?PlatformConfig) {
     this._platformConfig = platformConfig;
   }
