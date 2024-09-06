@@ -21,6 +21,12 @@ std::unordered_map<
         std::shared_ptr<TurboModule>(std::shared_ptr<CallInvoker> jsInvoker)>>&
 globalExportedCxxTurboModuleMap();
 
+/**
+ * Registers the given C++ TurboModule initializer function
+ * in the global module map.
+ * This needs to be called before the TurboModule is requested from JS,
+ * for example in a `+ load`, your AppDelegate's start, or from Java init.
+ */
 void registerCxxModuleToGlobalModuleMap(
     std::string name,
     std::function<std::shared_ptr<TurboModule>(
