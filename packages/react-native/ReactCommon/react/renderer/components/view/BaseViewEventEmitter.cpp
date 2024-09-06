@@ -7,6 +7,8 @@
 
 #include "BaseViewEventEmitter.h"
 
+#include <react/featureflags/ReactNativeFeatureFlags.h>
+
 namespace facebook::react {
 
 #pragma mark - Accessibility
@@ -79,7 +81,7 @@ void BaseViewEventEmitter::onLayout(const LayoutMetrics& layoutMetrics) const {
     layoutEventState->isDispatching = true;
   }
 
-  dispatchEvent("layout", [layoutEventState](jsi::Runtime& runtime) {
+  const ValueFactory valueFactory = [layoutEventState](jsi::Runtime& runtime) {
     auto frame = Rect{};
 
     {
@@ -109,7 +111,13 @@ void BaseViewEventEmitter::onLayout(const LayoutMetrics& layoutMetrics) const {
     auto payload = jsi::Object(runtime);
     payload.setProperty(runtime, "layout", std::move(layout));
     return jsi::Value(std::move(payload));
-  });
+  };
+
+  if (ReactNativeFeatureFlags::coalesceOnLayoutEvents()) {
+    dispatchUniqueEvent("layout", valueFactory);
+  } else {
+    dispatchEvent("layout", valueFactory);
+  }
 }
 
 } // namespace facebook::react
