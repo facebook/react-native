@@ -26,7 +26,6 @@ import com.facebook.react.fabric.mounting.mountitems.MountItem;
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.systrace.Systrace;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -34,8 +33,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class MountItemDispatcher {
 
   private static final String TAG = "MountItemDispatcher";
-  private static final int FRAME_TIME_MS = 16;
-  private static final int MAX_TIME_IN_FRAME_FOR_NON_BATCHED_OPERATIONS_MS = 8;
+
+  private static final long FRAME_TIME_NS = 1_000_000_000 / 60;
 
   private final MountingManager mMountingManager;
   private final ItemDispatchListener mItemDispatchListener;
@@ -264,7 +263,7 @@ public class MountItemDispatcher {
 
     // If there are MountItems to dispatch, we make sure all the "pre mount items" are executed
     // first
-    Collection<MountItem> preMountItemsToDispatch = getAndResetPreMountItems();
+    List<MountItem> preMountItemsToDispatch = getAndResetPreMountItems();
     if (preMountItemsToDispatch != null) {
       Systrace.beginSection(
           Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "MountItemDispatcher::mountViews preMountItems");
@@ -348,9 +347,10 @@ public class MountItemDispatcher {
     // reentering during dispatchPreMountItems
     mInDispatch = true;
 
+    long frameTimeDeadline = frameTimeNanos + FRAME_TIME_NS / 2;
     try {
       while (true) {
-        if (haveExceededNonBatchedFrameTime(frameTimeNanos)) {
+        if (System.nanoTime() > frameTimeDeadline) {
           break;
         }
 
@@ -388,9 +388,7 @@ public class MountItemDispatcher {
     }
   }
 
-  @Nullable
-  private static <E extends MountItem> List<E> drainConcurrentItemQueue(
-      ConcurrentLinkedQueue<E> queue) {
+  private static <E> @Nullable List<E> drainConcurrentItemQueue(ConcurrentLinkedQueue<E> queue) {
     if (queue.isEmpty()) {
       return null;
     }
@@ -407,25 +405,21 @@ public class MountItemDispatcher {
     return result;
   }
 
-  /** Detect if we still have processing time left in this frame. */
-  private static boolean haveExceededNonBatchedFrameTime(long frameTimeNanos) {
-    long timeLeftInFrame = FRAME_TIME_MS - ((System.nanoTime() - frameTimeNanos) / 1000000);
-    return timeLeftInFrame < MAX_TIME_IN_FRAME_FOR_NON_BATCHED_OPERATIONS_MS;
-  }
-
   @UiThread
   @ThreadConfined(UI)
-  private List<DispatchCommandMountItem> getAndResetViewCommandMountItems() {
+  private @Nullable List<DispatchCommandMountItem> getAndResetViewCommandMountItems() {
     return drainConcurrentItemQueue(mViewCommandMountItems);
   }
 
   @UiThread
   @ThreadConfined(UI)
-  private List<MountItem> getAndResetMountItems() {
+  private @Nullable List<MountItem> getAndResetMountItems() {
     return drainConcurrentItemQueue(mMountItems);
   }
 
-  private Collection<MountItem> getAndResetPreMountItems() {
+  @UiThread
+  @ThreadConfined(UI)
+  private @Nullable List<MountItem> getAndResetPreMountItems() {
     return drainConcurrentItemQueue(mPreMountItems);
   }
 
@@ -447,9 +441,9 @@ public class MountItemDispatcher {
   }
 
   public interface ItemDispatchListener {
-    void willMountItems(List<MountItem> mountItems);
+    void willMountItems(@Nullable List<MountItem> mountItems);
 
-    void didMountItems(List<MountItem> mountItems);
+    void didMountItems(@Nullable List<MountItem> mountItems);
 
     void didDispatchMountItems();
   }
