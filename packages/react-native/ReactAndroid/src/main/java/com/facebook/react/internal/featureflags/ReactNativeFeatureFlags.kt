@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6cc52570dd571ddc792a0fd842c05dd9>>
+ * @generated SignedSource<<f6470a89519ac47c09bca5dd9353a1e4>>
  */
 
 /**
@@ -45,6 +45,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun batchRenderingUpdatesInEventLoop(): Boolean = accessor.batchRenderingUpdatesInEventLoop()
+
+  /**
+   * When enabled, the Fabric onLayout event will be coalesced by dispatching with dispatchUniqueEvent.
+   */
+  @JvmStatic
+  public fun coalesceOnLayoutEvents(): Boolean = accessor.coalesceOnLayoutEvents()
 
   /**
    * Do not wait for a main-thread dispatch to complete init to start executing work on the JS thread on Android

@@ -49,6 +49,11 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.',
     },
+    coalesceOnLayoutEvents: {
+      defaultValue: false,
+      description:
+        'When enabled, the Fabric onLayout event will be coalesced by dispatching with dispatchUniqueEvent.',
+    },
     completeReactInstanceCreationOnBgThreadOnAndroid: {
       defaultValue: false,
       description:

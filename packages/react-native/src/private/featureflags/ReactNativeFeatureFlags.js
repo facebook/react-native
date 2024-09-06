@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0bff47ec5af8ed96d8b2abe351f318f1>>
+ * @generated SignedSource<<221d887c1c6c96a633ed31de93ee11d4>>
  * @flow strict-local
  */
 
@@ -48,6 +48,7 @@ export type ReactNativeFeatureFlags = {
   commonTestFlag: Getter<boolean>,
   allowRecursiveCommitsWithSynchronousMountOnAndroid: Getter<boolean>,
   batchRenderingUpdatesInEventLoop: Getter<boolean>,
+  coalesceOnLayoutEvents: Getter<boolean>,
   completeReactInstanceCreationOnBgThreadOnAndroid: Getter<boolean>,
   destroyFabricSurfacesInReactInstanceManager: Getter<boolean>,
   enableAlignItemsBaselineOnFabricIOS: Getter<boolean>,
@@ -172,6 +173,10 @@ export const allowRecursiveCommitsWithSynchronousMountOnAndroid: Getter<boolean>
  * When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.
  */
 export const batchRenderingUpdatesInEventLoop: Getter<boolean> = createNativeFlagGetter('batchRenderingUpdatesInEventLoop', false);
+/**
+ * When enabled, the Fabric onLayout event will be coalesced by dispatching with dispatchUniqueEvent.
+ */
+export const coalesceOnLayoutEvents: Getter<boolean> = createNativeFlagGetter('coalesceOnLayoutEvents', false);
 /**
  * Do not wait for a main-thread dispatch to complete init to start executing work on the JS thread on Android
  */

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c8266eb27ec23aaa856fa95275503a81>>
+ * @generated SignedSource<<b891ab975bd5d25e6334f52be6b5ace2>>
  */
 
 /**
@@ -51,6 +51,11 @@ class ReactNativeFeatureFlags {
    * When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.
    */
   RN_EXPORT static bool batchRenderingUpdatesInEventLoop();
+
+  /**
+   * When enabled, the Fabric onLayout event will be coalesced by dispatching with dispatchUniqueEvent.
+   */
+  RN_EXPORT static bool coalesceOnLayoutEvents();
 
   /**
    * Do not wait for a main-thread dispatch to complete init to start executing work on the JS thread on Android
