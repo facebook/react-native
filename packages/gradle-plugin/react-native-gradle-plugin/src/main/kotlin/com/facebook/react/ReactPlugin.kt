@@ -94,7 +94,7 @@ class ReactPlugin : Plugin<Project> {
   }
 
   private fun checkJvmVersion(project: Project) {
-    val jvmVersion = Jvm.current()?.javaVersion?.majorVersion
+    val jvmVersion = Jvm.current().javaVersion?.majorVersion
     if ((jvmVersion?.toIntOrNull() ?: 0) <= 16) {
       project.logger.error(
           """
