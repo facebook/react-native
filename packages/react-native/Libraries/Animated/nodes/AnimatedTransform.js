@@ -27,22 +27,40 @@ type Transform<T = AnimatedNode> = {
 };
 
 export default class AnimatedTransform extends AnimatedWithChildren {
+  // NOTE: For potentially historical reasons, some operations only operate on
+  // the first level of AnimatedNode instances. This optimizes that bevavior.
+  #shallowNodes: $ReadOnlyArray<AnimatedNode>;
+
   _transforms: $ReadOnlyArray<Transform<>>;
 
   constructor(transforms: $ReadOnlyArray<Transform<>>) {
     super();
     this._transforms = transforms;
+
+    const shallowNodes = [];
+    // NOTE: This check should not be necessary, but the types are not enforced
+    // as of this writing. This check should be hoisted to instantiation sites.
+    if (Array.isArray(transforms)) {
+      for (let ii = 0, length = transforms.length; ii < length; ii++) {
+        const transform = transforms[ii];
+        // There should be exactly one property in `transform`.
+        for (const key in transform) {
+          const value = transform[key];
+          if (value instanceof AnimatedNode) {
+            shallowNodes.push(value);
+          }
+        }
+      }
+    }
+    this.#shallowNodes = shallowNodes;
   }
 
   __makeNative(platformConfig: ?PlatformConfig) {
-    this._transforms.forEach(transform => {
-      for (const key in transform) {
-        const value = transform[key];
-        if (value instanceof AnimatedNode) {
-          value.__makeNative(platformConfig);
-        }
-      }
-    });
+    const nodes = this.#shallowNodes;
+    for (let ii = 0, length = nodes.length; ii < length; ii++) {
+      const node = nodes[ii];
+      node.__makeNative(platformConfig);
+    }
     super.__makeNative(platformConfig);
   }
 
@@ -59,42 +77,39 @@ export default class AnimatedTransform extends AnimatedWithChildren {
   }
 
   __attach(): void {
-    this._transforms.forEach(transform => {
-      for (const key in transform) {
-        const value = transform[key];
-        if (value instanceof AnimatedNode) {
-          value.__addChild(this);
-        }
-      }
-    });
+    const nodes = this.#shallowNodes;
+    for (let ii = 0, length = nodes.length; ii < length; ii++) {
+      const node = nodes[ii];
+      node.__addChild(this);
+    }
   }
 
   __detach(): void {
-    this._transforms.forEach(transform => {
-      for (const key in transform) {
-        const value = transform[key];
-        if (value instanceof AnimatedNode) {
-          value.__removeChild(this);
-        }
-      }
-    });
+    const nodes = this.#shallowNodes;
+    for (let ii = 0, length = nodes.length; ii < length; ii++) {
+      const node = nodes[ii];
+      node.__removeChild(this);
+    }
     super.__detach();
   }
 
   __getNativeConfig(): any {
-    const transConfigs: Array<any> = [];
+    const transformsConfig: Array<any> = [];
 
-    this._transforms.forEach(transform => {
+    const transforms = this._transforms;
+    for (let ii = 0, length = transforms.length; ii < length; ii++) {
+      const transform = transforms[ii];
+      // There should be exactly one property in `transform`.
       for (const key in transform) {
         const value = transform[key];
         if (value instanceof AnimatedNode) {
-          transConfigs.push({
+          transformsConfig.push({
             type: 'animated',
             property: key,
             nodeTag: value.__getNativeTag(),
           });
         } else {
-          transConfigs.push({
+          transformsConfig.push({
             type: 'static',
             property: key,
             /* $FlowFixMe[incompatible-call] - `value` can be an array or an
@@ -104,14 +119,14 @@ export default class AnimatedTransform extends AnimatedWithChildren {
           });
         }
       }
-    });
+    }
 
     if (__DEV__) {
-      validateTransform(transConfigs);
+      validateTransform(transformsConfig);
     }
     return {
       type: 'transform',
-      transforms: transConfigs,
+      transforms: transformsConfig,
     };
   }
 }
@@ -122,6 +137,7 @@ function mapTransforms<T>(
 ): $ReadOnlyArray<Transform<T>> {
   return transforms.map(transform => {
     const result: Transform<T> = {};
+    // There should be exactly one property in `transform`.
     for (const key in transform) {
       const value = transform[key];
       if (value instanceof AnimatedNode) {
