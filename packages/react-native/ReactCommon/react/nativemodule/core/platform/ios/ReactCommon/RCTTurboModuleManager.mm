@@ -29,6 +29,7 @@
 #import <React/RCTPerformanceLogger.h>
 #import <React/RCTRuntimeExecutorModule.h>
 #import <React/RCTUtils.h>
+#import <ReactCommon/CxxTurboModuleUtils.h>
 #import <ReactCommon/RCTTurboModuleWithJSIBindings.h>
 #import <ReactCommon/TurboCxxModule.h>
 #import <ReactCommon/TurboModulePerfLogger.h>
@@ -326,6 +327,14 @@ typedef struct {
     }
 
     TurboModulePerfLogger::moduleCreateFail(moduleName, moduleId);
+  }
+
+  auto &cxxTurboModuleMapProvider = globalExportedCxxTurboModuleMap();
+  auto it = cxxTurboModuleMapProvider.find(moduleName);
+  if (it != cxxTurboModuleMapProvider.end()) {
+    auto turboModule = it->second(_jsInvoker);
+    _turboModuleCache.insert({moduleName, turboModule});
+    return turboModule;
   }
 
   /**
