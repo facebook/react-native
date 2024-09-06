@@ -16,9 +16,10 @@ import {FlatList_BaseOnViewableItemsChanged} from './FlatList-BaseOnViewableItem
 import * as React from 'react';
 
 export default ({
-  title: 'FlatList onViewableItemsChanged',
-  name: 'onViewableItemsChanged',
-  description: 'Test onViewableItemsChanged behavior',
+  title: 'onViewableItemsChanged',
+  name: 'onViewableItemsChanged-waitForInteraction',
+  description: 'E2E Test:\nonViewableItemsChanged-waitForInteraction',
+  hidden: true,
   render: () => (
     <FlatList_BaseOnViewableItemsChanged waitForInteraction={true} />
   ),

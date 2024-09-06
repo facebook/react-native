@@ -77,9 +77,11 @@ export default function RNTesterModuleContainer(props: Props): React.Node {
   const filter = ({example: e, filterRegex}: $FlowFixMe) =>
     filterRegex.test(e.title);
 
+  const removeHiddenExamples = (ex: RNTesterModuleExample) =>
+    ex.hidden !== true;
   const sections = [
     {
-      data: module.examples,
+      data: module.examples.filter(removeHiddenExamples),
       title: 'EXAMPLES',
       key: 'e',
     },

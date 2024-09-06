@@ -358,7 +358,7 @@ const styles = StyleSheet.create({
 
 export default {
   title: 'SectionList scrollable',
-  name: 'SectionList-scrollable',
+  name: 'scrollable',
   render: function (): React.MixedElement {
     return <SectionList_scrollable />;
   },
