@@ -32,7 +32,7 @@ let _assertNativeAnimatedModule: ?() => void = () => {
 // Note(vjeux): this would be better as an interface but flow doesn't
 // support them yet
 export default class AnimatedNode {
-  _listeners: {[key: string]: ValueListenerCallback, ...} = {};
+  #listeners: Map<string, ValueListenerCallback> = new Map();
   _platformConfig: ?PlatformConfig = undefined;
   __nativeAnimatedValueListener: ?EventSubscription = null;
   __attach(): void {}
@@ -64,7 +64,7 @@ export default class AnimatedNode {
     }
 
     this._platformConfig = platformConfig;
-    if (this.hasListeners()) {
+    if (this.#listeners.size > 0) {
       this._startListeningToNativeValueUpdates();
     }
   }
@@ -78,7 +78,7 @@ export default class AnimatedNode {
    */
   addListener(callback: (value: any) => mixed): string {
     const id = String(_uniqueId++);
-    this._listeners[id] = callback;
+    this.#listeners.set(id, callback);
     if (this.__isNative) {
       this._startListeningToNativeValueUpdates();
     }
@@ -92,8 +92,8 @@ export default class AnimatedNode {
    * See https://reactnative.dev/docs/animatedvalue#removelistener
    */
   removeListener(id: string): void {
-    delete this._listeners[id];
-    if (this.__isNative && !this.hasListeners()) {
+    this.#listeners.delete(id);
+    if (this.__isNative && this.#listeners.size === 0) {
       this._stopListeningForNativeValueUpdates();
     }
   }
@@ -104,14 +104,14 @@ export default class AnimatedNode {
    * See https://reactnative.dev/docs/animatedvalue#removealllisteners
    */
   removeAllListeners(): void {
-    this._listeners = {};
+    this.#listeners.clear();
     if (this.__isNative) {
       this._stopListeningForNativeValueUpdates();
     }
   }
 
   hasListeners(): boolean {
-    return !!Object.keys(this._listeners).length;
+    return this.#listeners.size > 0;
   }
 
   _startListeningToNativeValueUpdates() {
@@ -146,9 +146,9 @@ export default class AnimatedNode {
 
   __callListeners(value: number): void {
     const event = {value};
-    for (const key in this._listeners) {
-      this._listeners[key](event);
-    }
+    this.#listeners.forEach(listener => {
+      listener(event);
+    });
   }
 
   _stopListeningForNativeValueUpdates() {
