@@ -16,10 +16,14 @@ import {FlatList_BaseOnViewableItemsChanged} from './FlatList-BaseOnViewableItem
 import * as React from 'react';
 
 export default ({
-  title: 'FlatList onViewableItemsChanged',
-  name: 'onViewableItemsChanged',
-  description: 'Test onViewableItemsChanged behavior',
+  title: 'onViewableItemsChanged horizontal',
+  name: 'onViewableItemsChanged-horizontal-offScreen',
+  description: 'E2E Test:\nonViewableItemsChanged-horizontal-offScreen',
+  hidden: true,
   render: () => (
-    <FlatList_BaseOnViewableItemsChanged waitForInteraction={true} />
+    <FlatList_BaseOnViewableItemsChanged
+      horizontal={true}
+      waitForInteraction={true}
+    />
   ),
 }: RNTesterModuleExample);

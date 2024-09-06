@@ -13,12 +13,11 @@ import {SectionList_BaseOnViewableItemsChanged} from './SectionList-BaseOnViewab
 import * as React from 'react';
 
 export default {
-  title: 'SectionList onViewableItemsChanged',
-  name: 'onViewableItemsChanged',
-  description: 'Test onViewableItemsChanged behavior',
+  title: 'onViewableItemsChanged',
+  name: 'onViewableItemsChanged-waitForInteraction',
+  description: 'E2E Test:\nonViewableItemsChanged-waitForInteraction',
+  hidden: true,
   render: function (): React.MixedElement {
-    return (
-      <SectionList_BaseOnViewableItemsChanged waitForInteraction={false} />
-    );
+    return <SectionList_BaseOnViewableItemsChanged waitForInteraction={true} />;
   },
 };

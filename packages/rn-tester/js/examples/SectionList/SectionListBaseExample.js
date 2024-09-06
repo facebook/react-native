@@ -33,7 +33,7 @@ const DATA = [
   },
   {
     title: 'Desserts',
-    data: ['Cheesecake', 'Ice Cream'],
+    data: ['Cheesecake', 'Brownie'],
   },
 ];
 
