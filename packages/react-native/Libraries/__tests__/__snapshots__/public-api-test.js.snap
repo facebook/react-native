@@ -903,9 +903,7 @@ exports[`public API should not change unintentionally Libraries/Animated/nodes/A
 `;
 
 exports[`public API should not change unintentionally Libraries/Animated/nodes/AnimatedNode.js 1`] = `
-"type ValueListenerCallback = (state: { value: number, ... }) => mixed;
-declare export default class AnimatedNode {
-  _listeners: { [key: string]: ValueListenerCallback, ... };
+"declare export default class AnimatedNode {
   _platformConfig: ?PlatformConfig;
   __nativeAnimatedValueListener: ?EventSubscription;
   __attach(): void;
