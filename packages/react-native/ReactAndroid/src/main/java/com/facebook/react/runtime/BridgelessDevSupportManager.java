@@ -23,8 +23,6 @@ import com.facebook.react.devsupport.HMRClient;
 import com.facebook.react.devsupport.ReactInstanceDevHelper;
 import com.facebook.react.devsupport.interfaces.DevSplitBundleCallback;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
-import com.facebook.react.runtime.internal.bolts.Continuation;
-import com.facebook.react.runtime.internal.bolts.Task;
 
 /**
  * An implementation of {@link com.facebook.react.devsupport.interfaces.DevSupportManager} that
@@ -69,20 +67,17 @@ class BridgelessDevSupportManager extends DevSupportManagerBase {
             mReactHost
                 .loadBundle(bundleLoader)
                 .onSuccess(
-                    new Continuation<Boolean, Void>() {
-                      @Override
-                      public Void then(Task<Boolean> task) {
-                        if (task.getResult().equals(Boolean.TRUE)) {
-                          String bundleURL =
-                              getDevServerHelper().getDevServerSplitBundleURL(bundlePath);
-                          ReactContext reactContext = mReactHost.getCurrentReactContext();
-                          if (reactContext != null) {
-                            reactContext.getJSModule(HMRClient.class).registerBundle(bundleURL);
-                          }
-                          callback.onSuccess();
+                    task -> {
+                      if (task.isCompleted()) {
+                        String bundleURL =
+                            getDevServerHelper().getDevServerSplitBundleURL(bundlePath);
+                        ReactContext reactContext = mReactHost.getCurrentReactContext();
+                        if (reactContext != null) {
+                          reactContext.getJSModule(HMRClient.class).registerBundle(bundleURL);
                         }
-                        return null;
+                        callback.onSuccess();
                       }
+                      return null;
                     });
           }
 
