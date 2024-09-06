@@ -127,9 +127,13 @@ public class ReactModalHostManager :
       props: ReactStylesDiffMap,
       stateWrapper: StateWrapper
   ): Any? {
+    val isInitialState = view.stateWrapper == null
+
     view.stateWrapper = stateWrapper
-    val modalSize = getModalHostSize(view.context)
-    view.updateState(modalSize.x, modalSize.y)
+    if (isInitialState) {
+      val modalSize = getModalHostSize(view.context)
+      view.updateState(modalSize.x, modalSize.y)
+    }
     return null
   }
 
