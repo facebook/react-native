@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import type {EventSubscription} from '../../vendor/emitter/EventEmitter';
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 
@@ -29,12 +27,11 @@ let _assertNativeAnimatedModule: ?() => void = () => {
   _assertNativeAnimatedModule = null;
 };
 
-// Note(vjeux): this would be better as an interface but flow doesn't
-// support them yet
 export default class AnimatedNode {
   #listeners: Map<string, ValueListenerCallback> = new Map();
+  #updateSubscription: ?EventSubscription = null;
+
   _platformConfig: ?PlatformConfig = undefined;
-  __nativeAnimatedValueListener: ?EventSubscription = null;
   __attach(): void {}
   __detach(): void {
     this.removeAllListeners();
@@ -56,16 +53,17 @@ export default class AnimatedNode {
   /* Methods and props used by native Animated impl */
   __isNative: boolean = false;
   __nativeTag: ?number = undefined;
-  __shouldUpdateListenersForNewNativeTag: boolean = false;
 
   __makeNative(platformConfig: ?PlatformConfig): void {
-    if (!this.__isNative) {
-      throw new Error('This node cannot be made a "native" animated node');
-    }
+    // Subclasses are expected to set `__isNative` to true before this.
+    invariant(
+      this.__isNative,
+      'This node cannot be made a "native" animated node',
+    );
 
     this._platformConfig = platformConfig;
     if (this.#listeners.size > 0) {
-      this._startListeningToNativeValueUpdates();
+      this.#ensureUpdateSubscriptionExists();
     }
   }
 
@@ -80,7 +78,7 @@ export default class AnimatedNode {
     const id = String(_uniqueId++);
     this.#listeners.set(id, callback);
     if (this.__isNative) {
-      this._startListeningToNativeValueUpdates();
+      this.#ensureUpdateSubscriptionExists();
     }
     return id;
   }
@@ -94,7 +92,7 @@ export default class AnimatedNode {
   removeListener(id: string): void {
     this.#listeners.delete(id);
     if (this.__isNative && this.#listeners.size === 0) {
-      this._stopListeningForNativeValueUpdates();
+      this.#updateSubscription?.remove();
     }
   }
 
@@ -106,7 +104,7 @@ export default class AnimatedNode {
   removeAllListeners(): void {
     this.#listeners.clear();
     if (this.__isNative) {
-      this._stopListeningForNativeValueUpdates();
+      this.#updateSubscription?.remove();
     }
   }
 
@@ -114,33 +112,36 @@ export default class AnimatedNode {
     return this.#listeners.size > 0;
   }
 
-  _startListeningToNativeValueUpdates() {
-    if (
-      this.__nativeAnimatedValueListener &&
-      !this.__shouldUpdateListenersForNewNativeTag
-    ) {
+  #ensureUpdateSubscriptionExists(): void {
+    if (this.#updateSubscription != null) {
       return;
     }
-
-    if (this.__shouldUpdateListenersForNewNativeTag) {
-      this.__shouldUpdateListenersForNewNativeTag = false;
-      this._stopListeningForNativeValueUpdates();
-    }
-
-    startListeningToAnimatedNodeValue(this.__getNativeTag());
-    this.__nativeAnimatedValueListener =
+    const nativeTag = this.__getNativeTag();
+    startListeningToAnimatedNodeValue(nativeTag);
+    const subscription: EventSubscription =
       NativeAnimatedHelper.nativeEventEmitter.addListener(
         'onAnimatedValueUpdate',
         data => {
-          if (data.tag !== this.__getNativeTag()) {
-            return;
+          if (data.tag === nativeTag) {
+            this.__onAnimatedValueUpdateReceived(data.value);
           }
-          this.__onAnimatedValueUpdateReceived(data.value);
         },
       );
+
+    this.#updateSubscription = {
+      remove: () => {
+        // Only this function assigns to `this.#updateSubscription`.
+        if (this.#updateSubscription == null) {
+          return;
+        }
+        this.#updateSubscription = null;
+        subscription.remove();
+        stopListeningToAnimatedNodeValue(nativeTag);
+      },
+    };
   }
 
-  __onAnimatedValueUpdateReceived(value: number) {
+  __onAnimatedValueUpdateReceived(value: number): void {
     this.__callListeners(value);
   }
 
@@ -149,16 +150,6 @@ export default class AnimatedNode {
     this.#listeners.forEach(listener => {
       listener(event);
     });
-  }
-
-  _stopListeningForNativeValueUpdates() {
-    if (!this.__nativeAnimatedValueListener) {
-      return;
-    }
-
-    this.__nativeAnimatedValueListener.remove();
-    this.__nativeAnimatedValueListener = null;
-    stopListeningToAnimatedNodeValue(this.__getNativeTag());
   }
 
   __getNativeTag(): number {
@@ -181,7 +172,6 @@ export default class AnimatedNode {
         config.platformConfig = this._platformConfig;
       }
       NativeAnimatedHelper.API.createAnimatedNode(nativeTag, config);
-      this.__shouldUpdateListenersForNewNativeTag = true;
     }
     return nativeTag;
   }
