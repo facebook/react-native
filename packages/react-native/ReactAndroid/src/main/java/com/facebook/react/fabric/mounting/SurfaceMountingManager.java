@@ -46,6 +46,7 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.react.uimanager.events.EventCategoryDef;
+import com.facebook.systrace.Systrace;
 import java.util.ArrayDeque;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -659,21 +660,28 @@ public class SurfaceMountingManager {
       @Nullable StateWrapper stateWrapper,
       @Nullable EventEmitterWrapper eventEmitterWrapper,
       boolean isLayoutable) {
-    ReactStylesDiffMap propMap = new ReactStylesDiffMap(props);
+    Systrace.beginSection(
+        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+        "SurfaceMountingManager::createViewUnsafe(" + componentName + ")");
+    try {
+      ReactStylesDiffMap propMap = new ReactStylesDiffMap(props);
 
-    ViewState viewState = new ViewState(reactTag);
-    viewState.mCurrentProps = propMap;
-    viewState.mStateWrapper = stateWrapper;
-    viewState.mEventEmitter = eventEmitterWrapper;
-    mTagToViewState.put(reactTag, viewState);
+      ViewState viewState = new ViewState(reactTag);
+      viewState.mCurrentProps = propMap;
+      viewState.mStateWrapper = stateWrapper;
+      viewState.mEventEmitter = eventEmitterWrapper;
+      mTagToViewState.put(reactTag, viewState);
 
-    if (isLayoutable) {
-      ViewManager viewManager = mViewManagerRegistry.get(componentName);
-      // View Managers are responsible for dealing with inital state and props.
-      viewState.mView =
-          viewManager.createView(
-              reactTag, mThemedReactContext, propMap, stateWrapper, mJSResponderHandler);
-      viewState.mViewManager = viewManager;
+      if (isLayoutable) {
+        ViewManager viewManager = mViewManagerRegistry.get(componentName);
+        // View Managers are responsible for dealing with inital state and props.
+        viewState.mView =
+            viewManager.createView(
+                reactTag, mThemedReactContext, propMap, stateWrapper, mJSResponderHandler);
+        viewState.mViewManager = viewManager;
+      }
+    } finally {
+      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     }
   }
 
