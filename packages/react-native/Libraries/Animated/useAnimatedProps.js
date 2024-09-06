@@ -13,7 +13,6 @@
 import type {EventSubscription} from '../EventEmitter/NativeEventEmitter';
 
 import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNativeFeatureFlags';
-import useDebouncedEffect from '../../src/private/hooks/useDebouncedEffect';
 import {isPublicInstance as isFabricPublicInstance} from '../ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstanceUtils';
 import useRefEffect from '../Utilities/useRefEffect';
 import {AnimatedEvent} from './AnimatedEvent';
@@ -323,12 +322,7 @@ function useAnimatedPropsLifecycle_passiveEffects(node: AnimatedProps): void {
     };
   }, []);
 
-  const useEffectImpl =
-    ReactNativeFeatureFlags.shouldUseDebouncedEffectsForAnimated()
-      ? useDebouncedEffect
-      : useEffect;
-
-  useEffectImpl(() => {
+  useEffect(() => {
     node.__attach();
     let drivenAnimationEndedListener: ?EventSubscription = null;
 

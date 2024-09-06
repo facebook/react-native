@@ -309,11 +309,6 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'Enables use of AnimatedObject for animating transform values.',
     },
-    shouldUseDebouncedEffectsForAnimated: {
-      defaultValue: false,
-      description:
-        'Use new `useDebouncedEffects` hook for manging animated props lifecycle.',
-    },
     shouldUseRemoveClippedSubviewsAsDefaultOnIOS: {
       defaultValue: false,
       description:
