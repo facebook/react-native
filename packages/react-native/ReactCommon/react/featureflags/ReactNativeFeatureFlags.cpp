@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6139aa47aac3e5682a453a416bc10236>>
+ * @generated SignedSource<<8987cb4c07891b8b5716d6ac18677a11>>
  */
 
 /**
@@ -31,6 +31,10 @@ bool ReactNativeFeatureFlags::allowRecursiveCommitsWithSynchronousMountOnAndroid
 
 bool ReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop() {
   return getAccessor().batchRenderingUpdatesInEventLoop();
+}
+
+bool ReactNativeFeatureFlags::coalesceOnLayoutEvents() {
+  return getAccessor().coalesceOnLayoutEvents();
 }
 
 bool ReactNativeFeatureFlags::completeReactInstanceCreationOnBgThreadOnAndroid() {

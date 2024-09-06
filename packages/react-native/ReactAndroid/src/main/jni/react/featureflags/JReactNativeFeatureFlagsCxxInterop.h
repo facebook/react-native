@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<89d0da3b2bb56a4ee3c887e6c57491b2>>
+ * @generated SignedSource<<1d8cfaa9b86400f61db540a2f8d25ebc>>
  */
 
 /**
@@ -37,6 +37,9 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool batchRenderingUpdatesInEventLoop(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
+  static bool coalesceOnLayoutEvents(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool completeReactInstanceCreationOnBgThreadOnAndroid(

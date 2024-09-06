@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d02af2a8ef015c57d45aba8280539606>>
+ * @generated SignedSource<<3016538257cf64e360de0e6a0ed45ba2>>
  */
 
 /**
@@ -27,6 +27,7 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var commonTestFlagCache: Boolean? = null
   private var allowRecursiveCommitsWithSynchronousMountOnAndroidCache: Boolean? = null
   private var batchRenderingUpdatesInEventLoopCache: Boolean? = null
+  private var coalesceOnLayoutEventsCache: Boolean? = null
   private var completeReactInstanceCreationOnBgThreadOnAndroidCache: Boolean? = null
   private var destroyFabricSurfacesInReactInstanceManagerCache: Boolean? = null
   private var enableAlignItemsBaselineOnFabricIOSCache: Boolean? = null
@@ -99,6 +100,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.batchRenderingUpdatesInEventLoop()
       accessedFeatureFlags.add("batchRenderingUpdatesInEventLoop")
       batchRenderingUpdatesInEventLoopCache = cached
+    }
+    return cached
+  }
+
+  override fun coalesceOnLayoutEvents(): Boolean {
+    var cached = coalesceOnLayoutEventsCache
+    if (cached == null) {
+      cached = currentProvider.coalesceOnLayoutEvents()
+      accessedFeatureFlags.add("coalesceOnLayoutEvents")
+      coalesceOnLayoutEventsCache = cached
     }
     return cached
   }

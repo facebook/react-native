@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2a0cd5a4875a54bb724e5765ffe7753e>>
+ * @generated SignedSource<<353196c285c62f4304d612a57417cb6a>>
  */
 
 /**
@@ -28,6 +28,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun allowRecursiveCommitsWithSynchronousMountOnAndroid(): Boolean = false
 
   override fun batchRenderingUpdatesInEventLoop(): Boolean = false
+
+  override fun coalesceOnLayoutEvents(): Boolean = false
 
   override fun completeReactInstanceCreationOnBgThreadOnAndroid(): Boolean = false
 
