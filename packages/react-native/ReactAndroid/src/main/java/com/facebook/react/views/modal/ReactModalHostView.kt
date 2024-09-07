@@ -30,7 +30,6 @@ import com.facebook.react.R
 import com.facebook.react.bridge.GuardedRunnable
 import com.facebook.react.bridge.LifecycleEventListener
 import com.facebook.react.bridge.ReactContext
-import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.WritableNativeMap
@@ -45,9 +44,9 @@ import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.UIManagerModule
 import com.facebook.react.uimanager.events.EventDispatcher
 import com.facebook.react.views.common.ContextUtils
+import com.facebook.react.views.view.setStatusBarTranslucency
 import com.facebook.react.views.view.ReactViewGroup
 import java.util.Objects
-import kotlin.math.abs
 
 /**
  * ReactModalHostView is a view that sits in the view hierarchy representing a Modal view.
@@ -295,16 +294,7 @@ public class ReactModalHostView(context: ThemedReactContext) :
      * changed. This has the pleasant side-effect of us not having to preface all Modals with "top:
      * statusBarHeight", since that margin will be included in the FrameLayout.
      */
-    get() {
-      val frameLayout = FrameLayout(context)
-      frameLayout.addView(dialogRootViewGroup)
-      if (statusBarTranslucent) {
-        frameLayout.systemUiVisibility = SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-      } else {
-        frameLayout.fitsSystemWindows = true
-      }
-      return frameLayout
-    }
+    get() = FrameLayout(context).apply { addView(dialogRootViewGroup) }
 
   /**
    * updateProperties will update the properties that do not require us to recreate the dialog
@@ -330,6 +320,8 @@ public class ReactModalHostView(context: ThemedReactContext) :
         dialogWindow.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
       }
     }
+
+    dialogWindow.setStatusBarTranslucency(statusBarTranslucent)
 
     if (transparent) {
       dialogWindow.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
@@ -361,10 +353,6 @@ public class ReactModalHostView(context: ThemedReactContext) :
     }
   }
 
-  public fun updateState(width: Int, height: Int) {
-    dialogRootViewGroup.updateState(width, height)
-  }
-
   // This listener is called when the user presses KeyEvent.KEYCODE_BACK
   // An event is then passed to JS which can either close or not close the Modal by setting the
   // visible property
@@ -392,7 +380,6 @@ public class ReactModalHostView(context: ThemedReactContext) :
     internal var stateWrapper: StateWrapper? = null
     internal var eventDispatcher: EventDispatcher? = null
 
-    private var hasAdjustedSize = false
     private var viewWidth = 0
     private var viewHeight = 0
     private val jSTouchDispatcher: JSTouchDispatcher = JSTouchDispatcher(this)
@@ -411,31 +398,8 @@ public class ReactModalHostView(context: ThemedReactContext) :
       super.onSizeChanged(w, h, oldw, oldh)
       viewWidth = w
       viewHeight = h
-      updateFirstChildView()
-    }
 
-    private fun updateFirstChildView() {
-      if (childCount > 0) {
-        hasAdjustedSize = false
-        val viewTag: Int = getChildAt(0).id
-        if (stateWrapper != null) {
-          // This will only be called under Fabric
-          updateState(viewWidth, viewHeight)
-        } else {
-          // TODO: T44725185 remove after full migration to Fabric
-          val reactContext: ReactContext = reactContext
-          reactContext.runOnNativeModulesQueueThread(
-              object : GuardedRunnable(reactContext) {
-                override fun runGuarded() {
-                  this@DialogRootViewGroup.reactContext.reactApplicationContext
-                      .getNativeModule(UIManagerModule::class.java)
-                      ?.updateNodeSize(viewTag, viewWidth, viewHeight)
-                }
-              })
-        }
-      } else {
-        hasAdjustedSize = true
-      }
+      updateState(viewWidth, viewHeight)
     }
 
     @UiThread
@@ -443,43 +407,24 @@ public class ReactModalHostView(context: ThemedReactContext) :
       val realWidth: Float = width.toFloat().pxToDp()
       val realHeight: Float = height.toFloat().pxToDp()
 
-      // Check incoming state values. If they're already the correct value, return early to prevent
-      // infinite UpdateState/SetState loop.
-      val currentState: ReadableMap? = stateWrapper?.stateData
-      if (currentState != null) {
-        val delta = 0.9f
-        val stateScreenHeight =
-            if (currentState.hasKey("screenHeight")) {
-              currentState.getDouble("screenHeight").toFloat()
-            } else {
-              0f
-            }
-        val stateScreenWidth =
-            if (currentState.hasKey("screenWidth")) {
-              currentState.getDouble("screenWidth").toFloat()
-            } else {
-              0f
-            }
-
-        if (abs((stateScreenWidth - realWidth).toDouble()) < delta &&
-            abs((stateScreenHeight - realHeight).toDouble()) < delta) {
-          return
-        }
-      }
-
       stateWrapper?.let { sw ->
+        // new architecture
         val newStateData: WritableMap = WritableNativeMap()
         newStateData.putDouble("screenWidth", realWidth.toDouble())
         newStateData.putDouble("screenHeight", realHeight.toDouble())
         sw.updateState(newStateData)
-      }
-    }
-
-    override fun addView(child: View, index: Int, params: LayoutParams) {
-      super.addView(child, index, params)
-      if (hasAdjustedSize) {
-        updateFirstChildView()
-      }
+      } ?: run {
+          // old architecture
+          // TODO: T44725185 remove after full migration to Fabric
+          reactContext.runOnNativeModulesQueueThread(
+              object : GuardedRunnable(reactContext) {
+                override fun runGuarded() {
+                  reactContext.reactApplicationContext
+                      .getNativeModule(UIManagerModule::class.java)
+                      ?.updateNodeSize(id, viewWidth, viewHeight)
+                }
+              })
+        }
     }
 
     override fun handleException(t: Throwable) {
