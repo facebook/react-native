@@ -301,6 +301,12 @@ def get_boost_config()
   return Helpers::Constants.boost_config
 end
 
+# This method returns an hash with the socket rocket version
+# @return an hash with the `:version` field.
+def get_socket_rocket_config()
+  return Helpers::Constants.socket_rocket_config
+end
+
 # This method can be used to set the glog config
 # that can be used to configure libraries.
 def set_folly_config(folly_config)
@@ -329,6 +335,12 @@ end
 # that can be used to configure libraries.
 def set_boost_config(boost_config)
    Helpers::Constants.set_boost_config(boost_config)
+end
+
+# This method can be used to set the socket rocket config
+# that can be used to configure libraries.
+def set_socket_rocket_config(socket_rocket_config)
+   Helpers::Constants.set_socket_rocket_config(socket_rocket_config)
 end
 
 def rct_cxx_language_standard()
