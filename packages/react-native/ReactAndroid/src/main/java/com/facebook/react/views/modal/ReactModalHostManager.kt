@@ -11,7 +11,6 @@ import android.content.DialogInterface.OnShowListener
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.common.MapBuilder
 import com.facebook.react.module.annotations.ReactModule
-import com.facebook.react.uimanager.LayoutShadowNode
 import com.facebook.react.uimanager.ReactStylesDiffMap
 import com.facebook.react.uimanager.StateWrapper
 import com.facebook.react.uimanager.ThemedReactContext
@@ -21,7 +20,6 @@ import com.facebook.react.uimanager.ViewManagerDelegate
 import com.facebook.react.uimanager.annotations.ReactProp
 import com.facebook.react.viewmanagers.ModalHostViewManagerDelegate
 import com.facebook.react.viewmanagers.ModalHostViewManagerInterface
-import com.facebook.react.views.modal.ModalHostHelper.getModalHostSize
 import com.facebook.react.views.modal.ReactModalHostView.OnRequestCloseListener
 
 /** View manager for [ReactModalHostView] components. */
@@ -34,11 +32,6 @@ public class ReactModalHostManager :
 
   protected override fun createViewInstance(reactContext: ThemedReactContext): ReactModalHostView =
       ReactModalHostView(reactContext)
-
-  public override fun createShadowNodeInstance(): LayoutShadowNode = ModalHostShadowNode()
-
-  public override fun getShadowNodeClass(): Class<out LayoutShadowNode> =
-      ModalHostShadowNode::class.java
 
   public override fun onDropViewInstance(view: ReactModalHostView) {
     super.onDropViewInstance(view)
@@ -136,8 +129,6 @@ public class ReactModalHostManager :
       stateWrapper: StateWrapper
   ): Any? {
     view.stateWrapper = stateWrapper
-    val modalSize = getModalHostSize(view.context)
-    view.updateState(modalSize.x, modalSize.y)
     return null
   }
 

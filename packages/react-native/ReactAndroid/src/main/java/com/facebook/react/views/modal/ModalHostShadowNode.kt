@@ -9,7 +9,6 @@ package com.facebook.react.views.modal
 
 import com.facebook.react.uimanager.LayoutShadowNode
 import com.facebook.react.uimanager.ReactShadowNodeImpl
-import com.facebook.react.views.modal.ModalHostHelper.getModalHostSize
 
 /**
  * We implement the Modal by using an Android Dialog. That will fill the entire window of the
@@ -19,6 +18,7 @@ import com.facebook.react.views.modal.ModalHostHelper.getModalHostSize
  * to be the window size. This will then cause the children of the Modal to layout as if they can
  * fill the window.
  */
+@Deprecated("This class is no longer used and will be removed soon.") 
 internal class ModalHostShadowNode : LayoutShadowNode() {
   /**
    * We need to set the styleWidth and styleHeight of the one child (represented by the
@@ -27,8 +27,5 @@ internal class ModalHostShadowNode : LayoutShadowNode() {
    */
   override fun addChildAt(child: ReactShadowNodeImpl, i: Int) {
     super.addChildAt(child, i)
-    val modalSize = getModalHostSize(themedContext)
-    child.setStyleWidth(modalSize.x.toFloat())
-    child.setStyleHeight(modalSize.y.toFloat())
   }
 }

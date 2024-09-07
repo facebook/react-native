@@ -6506,13 +6506,10 @@ public final class com/facebook/react/views/modal/ReactModalHostManager : com/fa
 	public static final field REACT_CLASS Ljava/lang/String;
 	public fun <init> ()V
 	public synthetic fun addEventEmitters (Lcom/facebook/react/uimanager/ThemedReactContext;Landroid/view/View;)V
-	public fun createShadowNodeInstance ()Lcom/facebook/react/uimanager/LayoutShadowNode;
-	public synthetic fun createShadowNodeInstance ()Lcom/facebook/react/uimanager/ReactShadowNode;
 	public synthetic fun createViewInstance (Lcom/facebook/react/uimanager/ThemedReactContext;)Landroid/view/View;
 	public fun getDelegate ()Lcom/facebook/react/uimanager/ViewManagerDelegate;
 	public fun getExportedCustomDirectEventTypeConstants ()Ljava/util/Map;
 	public fun getName ()Ljava/lang/String;
-	public fun getShadowNodeClass ()Ljava/lang/Class;
 	public synthetic fun onAfterUpdateTransaction (Landroid/view/View;)V
 	public synthetic fun onDropViewInstance (Landroid/view/View;)V
 	public fun onDropViewInstance (Lcom/facebook/react/views/modal/ReactModalHostView;)V
@@ -6579,12 +6576,10 @@ public final class com/facebook/react/views/modal/ReactModalHostView : android/v
 	public final fun setStatusBarTranslucent (Z)V
 	public final fun setTransparent (Z)V
 	public final fun showOrUpdate ()V
-	public final fun updateState (II)V
 }
 
 public final class com/facebook/react/views/modal/ReactModalHostView$DialogRootViewGroup : com/facebook/react/views/view/ReactViewGroup, com/facebook/react/uimanager/RootView {
 	public fun <init> (Lcom/facebook/react/views/modal/ReactModalHostView;Landroid/content/Context;)V
-	public fun addView (Landroid/view/View;ILandroid/view/ViewGroup$LayoutParams;)V
 	public fun handleException (Ljava/lang/Throwable;)V
 	public fun onChildEndedNativeGesture (Landroid/view/View;Landroid/view/MotionEvent;)V
 	public fun onChildStartedNativeGesture (Landroid/view/View;Landroid/view/MotionEvent;)V
@@ -8055,4 +8050,3 @@ public final class com/facebook/react/views/view/ViewGroupClickEvent : com/faceb
 	public fun canCoalesce ()Z
 	public fun getEventName ()Ljava/lang/String;
 }
-
