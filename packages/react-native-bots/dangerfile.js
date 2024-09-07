@@ -9,10 +9,6 @@
 
 'use strict';
 
-/* eslint-disable lint/sort-imports */
-// The 'danger' package seems to have some side effects that make it unsafe
-// to reorder.
-
 const {danger, fail, /*message,*/ warn} = require('danger');
 const includes = require('lodash.includes');
 const {validate: validateChangelog} =

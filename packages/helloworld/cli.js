@@ -13,7 +13,6 @@
 import {Command} from 'commander';
 */
 
-// eslint-disable-next-line lint/sort-imports
 const {patchCoreCLIUtilsPackageJSON} = require('./scripts/monorepo');
 
 function injectCoreCLIUtilsRuntimePatch() {
