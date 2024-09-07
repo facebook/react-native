@@ -19,7 +19,9 @@ end
 folly_config = get_folly_config()
 folly_compiler_flags = folly_config[:compiler_flags]
 folly_version = folly_config[:version]
-socket_rocket_version = '0.7.0'
+
+socket_rocket_config = get_socket_rocket_config()
+socket_rocket_version = socket_rocket_config[:version] 
 
 header_search_paths = [
   "\"$(PODS_ROOT)/boost\"",

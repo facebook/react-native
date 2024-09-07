@@ -41,6 +41,10 @@ module Helpers
             :git => "https://github.com/react-native-community/boost-for-react-native",
         }
 
+        @@socket_rocket_config = {
+            :version => '0.7.1'
+        }
+
         @@folly_config = {
             :version => '2024.01.01.00',
             :git => 'https://github.com/facebook/folly.git',
@@ -81,6 +85,14 @@ module Helpers
 
         def self.set_boost_config(new_boost_config)
            @@boost_config.update(new_boost_config)
+        end
+
+        def self.socket_rocket_config
+            return @@socket_rocket_config
+        end
+
+        def self.set_socket_rocket_config(new_socket_rocket_config)
+           @@socket_rocket_config.update(new_socket_rocket_config)
         end
 
         def self.fmt_config
