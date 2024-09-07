@@ -38,7 +38,7 @@ import com.facebook.react.common.annotations.VisibleForTesting
 import com.facebook.react.config.ReactFeatureFlags
 import com.facebook.react.uimanager.JSPointerDispatcher
 import com.facebook.react.uimanager.JSTouchDispatcher
-import com.facebook.react.uimanager.PixelUtil
+import com.facebook.react.uimanager.PixelUtil.pxToDp
 import com.facebook.react.uimanager.RootView
 import com.facebook.react.uimanager.StateWrapper
 import com.facebook.react.uimanager.ThemedReactContext
@@ -91,18 +91,18 @@ public class ReactModalHostView(context: ThemedReactContext) :
     }
 
   public var stateWrapper: StateWrapper?
-    get() = hostView.stateWrapper
+    get() = dialogRootViewGroup.stateWrapper
     public set(stateWrapper) {
-      hostView.stateWrapper = stateWrapper
+      dialogRootViewGroup.stateWrapper = stateWrapper
     }
 
   public var eventDispatcher: EventDispatcher?
-    get() = hostView.eventDispatcher
+    get() = dialogRootViewGroup.eventDispatcher
     public set(eventDispatcher) {
-      hostView.eventDispatcher = eventDispatcher
+      dialogRootViewGroup.eventDispatcher = eventDispatcher
     }
 
-  private val hostView: DialogRootViewGroup
+  private val dialogRootViewGroup: DialogRootViewGroup
 
   // Set this flag to true if changing a particular property on the view requires a new Dialog to
   // be created or Dialog was destroyed. For instance, animation does since it affects Dialog
@@ -112,11 +112,11 @@ public class ReactModalHostView(context: ThemedReactContext) :
 
   init {
     context.addLifecycleEventListener(this)
-    hostView = DialogRootViewGroup(context)
+    dialogRootViewGroup = DialogRootViewGroup(context)
   }
 
   public override fun dispatchProvideStructure(structure: ViewStructure) {
-    hostView.dispatchProvideStructure(structure)
+    dialogRootViewGroup.dispatchProvideStructure(structure)
   }
 
   protected override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
@@ -127,7 +127,7 @@ public class ReactModalHostView(context: ThemedReactContext) :
     super.setId(id)
 
     // Forward the ID to our content view, so event dispatching behaves correctly
-    hostView.id = id
+    dialogRootViewGroup.id = id
   }
 
   protected override fun onDetachedFromWindow() {
@@ -137,25 +137,25 @@ public class ReactModalHostView(context: ThemedReactContext) :
 
   public override fun addView(child: View?, index: Int) {
     UiThreadUtil.assertOnUiThread()
-    hostView.addView(child, index)
+    dialogRootViewGroup.addView(child, index)
   }
 
-  public override fun getChildCount(): Int = hostView.childCount
+  public override fun getChildCount(): Int = dialogRootViewGroup.childCount
 
-  public override fun getChildAt(index: Int): View? = hostView.getChildAt(index)
+  public override fun getChildAt(index: Int): View? = dialogRootViewGroup.getChildAt(index)
 
   public override fun removeView(child: View?) {
     UiThreadUtil.assertOnUiThread()
 
     if (child != null) {
-      hostView.removeView(child)
+      dialogRootViewGroup.removeView(child)
     }
   }
 
   public override fun removeViewAt(index: Int) {
     UiThreadUtil.assertOnUiThread()
     val child = getChildAt(index)
-    hostView.removeView(child)
+    dialogRootViewGroup.removeView(child)
   }
 
   public override fun addChildrenForAccessibility(outChildren: ArrayList<View>) {
@@ -188,7 +188,7 @@ public class ReactModalHostView(context: ThemedReactContext) :
 
       // We need to remove the mHostView from the parent
       // It is possible we are dismissing this dialog and reattaching the hostView to another
-      (hostView.parent as? ViewGroup)?.removeViewAt(0)
+      (dialogRootViewGroup.parent as? ViewGroup)?.removeViewAt(0)
     }
   }
 
@@ -297,7 +297,7 @@ public class ReactModalHostView(context: ThemedReactContext) :
      */
     get() {
       val frameLayout = FrameLayout(context)
-      frameLayout.addView(hostView)
+      frameLayout.addView(dialogRootViewGroup)
       if (statusBarTranslucent) {
         frameLayout.systemUiVisibility = SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
       } else {
@@ -313,10 +313,10 @@ public class ReactModalHostView(context: ThemedReactContext) :
    */
   private fun updateProperties() {
     val dialog = checkNotNull(dialog) { "dialog must exist when we call updateProperties" }
-    val currentActivity = getCurrentActivity()
-    val window =
+    val dialogWindow =
         checkNotNull(dialog.window) { "dialog must have window when we call updateProperties" }
-    if (currentActivity == null || currentActivity.isFinishing || !window.isActive) {
+    val currentActivity = getCurrentActivity()
+    if (currentActivity == null || currentActivity.isFinishing) {
       // If the activity has disappeared, then we shouldn't update the window associated to the
       // Dialog.
       return
@@ -325,17 +325,17 @@ public class ReactModalHostView(context: ThemedReactContext) :
     if (activityWindow != null) {
       val activityWindowFlags = activityWindow.attributes.flags
       if ((activityWindowFlags and WindowManager.LayoutParams.FLAG_FULLSCREEN) != 0) {
-        window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+        dialogWindow.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
       } else {
-        window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+        dialogWindow.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
       }
     }
 
     if (transparent) {
-      window.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+      dialogWindow.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
     } else {
-      window.setDimAmount(0.5f)
-      window.setFlags(
+      dialogWindow.setDimAmount(0.5f)
+      dialogWindow.setFlags(
           WindowManager.LayoutParams.FLAG_DIM_BEHIND, WindowManager.LayoutParams.FLAG_DIM_BEHIND)
     }
   }
@@ -343,29 +343,26 @@ public class ReactModalHostView(context: ThemedReactContext) :
   private fun updateSystemAppearance() {
     val currentActivity = getCurrentActivity() ?: return
     val dialog = checkNotNull(dialog) { "dialog must exist when we call updateProperties" }
-    val window =
+    val dialogWindow =
         checkNotNull(dialog.window) { "dialog must have window when we call updateProperties" }
+    val activityWindow = currentActivity.window
     // Modeled after the version check in StatusBarModule.setStyle
     if (Build.VERSION.SDK_INT > Build.VERSION_CODES.R) {
-      val currentActivityWindow = currentActivity.window
-      val insetsController: WindowInsetsController =
-          checkNotNull(currentActivityWindow.insetsController)
+      val insetsController: WindowInsetsController = checkNotNull(activityWindow.insetsController)
       val activityAppearance: Int = insetsController.systemBarsAppearance
 
       val activityLightStatusBars =
           activityAppearance and WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
 
-      window.insetsController?.setSystemBarsAppearance(
+      dialogWindow.insetsController?.setSystemBarsAppearance(
           activityLightStatusBars, WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS)
     } else {
-      val currentActivityWindow = checkNotNull(currentActivity.window)
-      val decorView = currentActivityWindow.decorView
-      decorView.setSystemUiVisibility(decorView.systemUiVisibility)
+      dialogWindow.decorView.systemUiVisibility = activityWindow.decorView.systemUiVisibility
     }
   }
 
   public fun updateState(width: Int, height: Int) {
-    hostView.updateState(width, height)
+    dialogRootViewGroup.updateState(width, height)
   }
 
   // This listener is called when the user presses KeyEvent.KEYCODE_BACK
@@ -443,12 +440,12 @@ public class ReactModalHostView(context: ThemedReactContext) :
 
     @UiThread
     public fun updateState(width: Int, height: Int) {
-      val realWidth: Float = PixelUtil.toDIPFromPixel(width.toFloat())
-      val realHeight: Float = PixelUtil.toDIPFromPixel(height.toFloat())
+      val realWidth: Float = width.toFloat().pxToDp()
+      val realHeight: Float = height.toFloat().pxToDp()
 
       // Check incoming state values. If they're already the correct value, return early to prevent
       // infinite UpdateState/SetState loop.
-      val currentState: ReadableMap? = stateWrapper?.getStateData()
+      val currentState: ReadableMap? = stateWrapper?.stateData
       if (currentState != null) {
         val delta = 0.9f
         val stateScreenHeight =
