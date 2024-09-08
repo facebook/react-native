@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 
 import {findNodeHandle} from '../../ReactNative/RendererProxy';
@@ -20,12 +18,12 @@ import AnimatedObject from './AnimatedObject';
 import AnimatedStyle from './AnimatedStyle';
 import invariant from 'invariant';
 
-function createAnimatedProps(
-  inputProps: Object,
-): [$ReadOnlyArray<string>, $ReadOnlyArray<AnimatedNode>, Object] {
+function createAnimatedProps(inputProps: {
+  [string]: mixed,
+}): [$ReadOnlyArray<string>, $ReadOnlyArray<AnimatedNode>, {[string]: mixed}] {
   const nodeKeys: Array<string> = [];
   const nodes: Array<AnimatedNode> = [];
-  const props: Object = {};
+  const props: {[string]: mixed} = {};
 
   const keys = Object.keys(inputProps);
   for (let ii = 0, length = keys.length; ii < length; ii++) {
@@ -62,29 +60,28 @@ function createAnimatedProps(
 }
 
 export default class AnimatedProps extends AnimatedNode {
+  #animatedView: any = null;
+  #callback: () => void;
   #nodeKeys: $ReadOnlyArray<string>;
   #nodes: $ReadOnlyArray<AnimatedNode>;
+  #props: {[string]: mixed};
 
-  _animatedView: any = null;
-  _props: Object;
-  _callback: () => void;
-
-  constructor(inputProps: Object, callback: () => void) {
+  constructor(inputProps: {[string]: mixed}, callback: () => void) {
     super();
     const [nodeKeys, nodes, props] = createAnimatedProps(inputProps);
     this.#nodeKeys = nodeKeys;
     this.#nodes = nodes;
-    this._props = props;
-    this._callback = callback;
+    this.#props = props;
+    this.#callback = callback;
   }
 
   __getValue(): Object {
-    const props: {[string]: any | ((...args: any) => void)} = {};
+    const props: {[string]: mixed} = {};
 
-    const keys = Object.keys(this._props);
+    const keys = Object.keys(this.#props);
     for (let ii = 0, length = keys.length; ii < length; ii++) {
       const key = keys[ii];
-      const value = this._props[key];
+      const value = this.#props[key];
 
       if (value instanceof AnimatedNode) {
         props[key] = value.__getValue();
@@ -99,7 +96,7 @@ export default class AnimatedProps extends AnimatedNode {
   }
 
   __getAnimatedValue(): Object {
-    const props: {[string]: any} = {};
+    const props: {[string]: mixed} = {};
 
     const nodeKeys = this.#nodeKeys;
     const nodes = this.#nodes;
@@ -121,10 +118,10 @@ export default class AnimatedProps extends AnimatedNode {
   }
 
   __detach(): void {
-    if (this.__isNative && this._animatedView) {
+    if (this.__isNative && this.#animatedView) {
       this.__disconnectAnimatedView();
     }
-    this._animatedView = null;
+    this.#animatedView = null;
 
     const nodes = this.#nodes;
     for (let ii = 0, length = nodes.length; ii < length; ii++) {
@@ -136,7 +133,7 @@ export default class AnimatedProps extends AnimatedNode {
   }
 
   update(): void {
-    this._callback();
+    this.#callback();
   }
 
   __makeNative(platformConfig: ?PlatformConfig): void {
@@ -154,17 +151,17 @@ export default class AnimatedProps extends AnimatedNode {
       // where it will be needed to traverse the graph of attached values.
       super.__setPlatformConfig(platformConfig);
 
-      if (this._animatedView) {
+      if (this.#animatedView) {
         this.__connectAnimatedView();
       }
     }
   }
 
   setNativeView(animatedView: any): void {
-    if (this._animatedView === animatedView) {
+    if (this.#animatedView === animatedView) {
       return;
     }
-    this._animatedView = animatedView;
+    this.#animatedView = animatedView;
     if (this.__isNative) {
       this.__connectAnimatedView();
     }
@@ -172,7 +169,7 @@ export default class AnimatedProps extends AnimatedNode {
 
   __connectAnimatedView(): void {
     invariant(this.__isNative, 'Expected node to be marked as "native"');
-    const nativeViewTag: ?number = findNodeHandle(this._animatedView);
+    const nativeViewTag: ?number = findNodeHandle(this.#animatedView);
     invariant(
       nativeViewTag != null,
       'Unable to locate attached view in the native tree',
@@ -185,7 +182,7 @@ export default class AnimatedProps extends AnimatedNode {
 
   __disconnectAnimatedView(): void {
     invariant(this.__isNative, 'Expected node to be marked as "native"');
-    const nativeViewTag: ?number = findNodeHandle(this._animatedView);
+    const nativeViewTag: ?number = findNodeHandle(this.#animatedView);
     invariant(
       nativeViewTag != null,
       'Unable to locate attached view in the native tree',

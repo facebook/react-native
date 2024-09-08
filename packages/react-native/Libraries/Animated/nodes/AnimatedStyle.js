@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 
 import {validateStyles} from '../../../src/private/animated/NativeAnimatedValidation';
@@ -24,10 +22,10 @@ import AnimatedWithChildren from './AnimatedWithChildren';
 function createAnimatedStyle(
   inputStyle: {[string]: mixed},
   keepUnanimatedValues: boolean,
-): [$ReadOnlyArray<string>, $ReadOnlyArray<AnimatedNode>, Object] {
+): [$ReadOnlyArray<string>, $ReadOnlyArray<AnimatedNode>, {[string]: mixed}] {
   const nodeKeys: Array<string> = [];
   const nodes: Array<AnimatedNode> = [];
-  const style: {[string]: any} = {};
+  const style: {[string]: mixed} = {};
 
   const keys = Object.keys(inputStyle);
   for (let ii = 0, length = keys.length; ii < length; ii++) {
@@ -71,11 +69,10 @@ function createAnimatedStyle(
 }
 
 export default class AnimatedStyle extends AnimatedWithChildren {
+  #inputStyle: any;
   #nodeKeys: $ReadOnlyArray<string>;
   #nodes: $ReadOnlyArray<AnimatedNode>;
-
-  _inputStyle: any;
-  _style: {[string]: any};
+  #style: {[string]: mixed};
 
   /**
    * Creates an `AnimatedStyle` if `value` contains `AnimatedNode` instances.
@@ -99,23 +96,23 @@ export default class AnimatedStyle extends AnimatedWithChildren {
   constructor(
     nodeKeys: $ReadOnlyArray<string>,
     nodes: $ReadOnlyArray<AnimatedNode>,
-    style: {[string]: any},
+    style: {[string]: mixed},
     inputStyle: any,
   ) {
     super();
     this.#nodeKeys = nodeKeys;
     this.#nodes = nodes;
-    this._style = style;
-    this._inputStyle = inputStyle;
+    this.#style = style;
+    this.#inputStyle = inputStyle;
   }
 
   __getValue(): Object | Array<Object> {
-    const style: {[string]: any} = {};
+    const style: {[string]: mixed} = {};
 
-    const keys = Object.keys(this._style);
+    const keys = Object.keys(this.#style);
     for (let ii = 0, length = keys.length; ii < length; ii++) {
       const key = keys[ii];
-      const value = this._style[key];
+      const value = this.#style[key];
 
       if (value instanceof AnimatedNode) {
         style[key] = value.__getValue();
@@ -124,11 +121,11 @@ export default class AnimatedStyle extends AnimatedWithChildren {
       }
     }
 
-    return Platform.OS === 'web' ? [this._inputStyle, style] : style;
+    return Platform.OS === 'web' ? [this.#inputStyle, style] : style;
   }
 
   __getAnimatedValue(): Object {
-    const style: {[string]: any} = {};
+    const style: {[string]: mixed} = {};
 
     const nodeKeys = this.#nodeKeys;
     const nodes = this.#nodes;
