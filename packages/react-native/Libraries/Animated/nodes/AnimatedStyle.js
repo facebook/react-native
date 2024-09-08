@@ -25,43 +25,28 @@ function createAnimatedStyle(
 ): [$ReadOnlyArray<string>, $ReadOnlyArray<AnimatedNode>, {[string]: mixed}] {
   const nodeKeys: Array<string> = [];
   const nodes: Array<AnimatedNode> = [];
-  const style: {[string]: mixed} = {};
+  const style: {[string]: mixed} = keepUnanimatedValues ? {...inputStyle} : {};
 
   const keys = Object.keys(inputStyle);
   for (let ii = 0, length = keys.length; ii < length; ii++) {
     const key = keys[ii];
     const value = inputStyle[key];
 
+    let node;
     if (value != null && key === 'transform') {
-      const node = ReactNativeFeatureFlags.shouldUseAnimatedObjectForTransform()
+      node = ReactNativeFeatureFlags.shouldUseAnimatedObjectForTransform()
         ? AnimatedObject.from(value)
         : // $FlowFixMe[incompatible-call] - `value` is mixed.
           AnimatedTransform.from(value);
-      if (node == null) {
-        if (keepUnanimatedValues) {
-          style[key] = value;
-        }
-      } else {
-        nodeKeys.push(key);
-        nodes.push(node);
-        style[key] = node;
-      }
     } else if (value instanceof AnimatedNode) {
-      const node = value;
+      node = value;
+    } else {
+      node = AnimatedObject.from(value);
+    }
+    if (node != null) {
       nodeKeys.push(key);
       nodes.push(node);
-      style[key] = value;
-    } else {
-      const node = AnimatedObject.from(value);
-      if (node == null) {
-        if (keepUnanimatedValues) {
-          style[key] = value;
-        }
-      } else {
-        nodeKeys.push(key);
-        nodes.push(node);
-        style[key] = node;
-      }
+      style[key] = node;
     }
   }
 
