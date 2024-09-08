@@ -21,7 +21,6 @@ const generateSpecsCLIExecutor = require('./generate-specs-cli-executor');
 const {execSync} = require('child_process');
 const fs = require('fs');
 const glob = require('glob');
-const mkdirp = require('mkdirp');
 const os = require('os');
 const path = require('path');
 
@@ -513,7 +512,7 @@ function createComponentProvider(schemas, supportedApplePlatforms) {
     'React',
     'Fabric',
   );
-  mkdirp.sync(outputDir);
+  fs.mkdirSync(outputDir, {recursive: true});
   utils.getCodegen().generateFromSchemas(
     {
       schemas: schemas,

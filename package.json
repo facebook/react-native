@@ -90,7 +90,6 @@
     "metro-babel-register": "^0.80.10",
     "metro-memory-fs": "^0.80.10",
     "micromatch": "^4.0.4",
-    "mkdirp": "^0.5.1",
     "node-fetch": "^2.2.0",
     "nullthrows": "^1.1.1",
     "prettier": "2.8.8",

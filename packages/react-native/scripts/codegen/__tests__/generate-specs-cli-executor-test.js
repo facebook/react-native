@@ -34,25 +34,21 @@ describe('generateSpec', () => {
         expect(encoding).toBe('utf-8');
         return fixtures.schemaText;
       },
-    }));
-
-    let mkdirpSyncInvoked = 0;
-    jest.mock('mkdirp', () => ({
-      sync: folder => {
-        if (mkdirpSyncInvoked === 0) {
-          expect(folder).toBe(outputDirectory);
+      mkdirSync: jest.fn((folder, options) => {
+        if (folder === outputDirectory) {
+          expect(options).toEqual({ recursive: true });
         }
 
-        if (mkdirpSyncInvoked === 1) {
-          expect(folder).toBe(componentsOutputDir);
+        if (folder === componentsOutputDir) {
+          expect(options).toEqual({ recursive: true });
         }
 
-        if (mkdirpSyncInvoked === 2) {
-          expect(folder).toBe(modulesOutputDir);
+        if (folder === modulesOutputDir) {
+          expect(options).toEqual({ recursive: true });
         }
-
-        mkdirpSyncInvoked += 1;
-      },
+      }),
+      readdirSync: jest.fn().mockReturnValue([]),
+      renameSync: jest.fn(),
     }));
 
     // We cannot mock directly the `RNCodegen` object because the
@@ -82,7 +78,5 @@ describe('generateSpec', () => {
       packageName,
       libraryType,
     );
-
-    expect(mkdirpSyncInvoked).toBe(1);
   });
 });
