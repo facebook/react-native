@@ -19,8 +19,11 @@ import AnimatedObject from './AnimatedObject';
 import AnimatedTransform from './AnimatedTransform';
 import AnimatedWithChildren from './AnimatedWithChildren';
 
+export type AnimatedStyleAllowlist = $ReadOnly<{[string]: true}>;
+
 function createAnimatedStyle(
   inputStyle: {[string]: mixed},
+  allowlist: ?AnimatedStyleAllowlist,
   keepUnanimatedValues: boolean,
 ): [$ReadOnlyArray<string>, $ReadOnlyArray<AnimatedNode>, {[string]: mixed}] {
   const nodeKeys: Array<string> = [];
@@ -30,6 +33,21 @@ function createAnimatedStyle(
   const keys = Object.keys(inputStyle);
   for (let ii = 0, length = keys.length; ii < length; ii++) {
     const key = keys[ii];
+    if (allowlist != null && !Object.hasOwn(allowlist, key)) {
+      if (__DEV__) {
+        // WARNING: This is a potetially expensive check that we should only
+        // do in development. Without this check in development, it might be
+        // difficult to identify which styles need to be allowlisted.
+        if (AnimatedObject.from(inputStyle[key]) != null) {
+          console.error(
+            `AnimatedStyle: ${key} is not allowlisted for animation, but it ` +
+              'contains AnimatedNode values; styles allowing animation: ',
+            allowlist,
+          );
+        }
+      }
+      continue;
+    }
     const value = inputStyle[key];
 
     let node;
@@ -63,13 +81,17 @@ export default class AnimatedStyle extends AnimatedWithChildren {
    * Creates an `AnimatedStyle` if `value` contains `AnimatedNode` instances.
    * Otherwise, returns `null`.
    */
-  static from(inputStyle: any): ?AnimatedStyle {
+  static from(
+    inputStyle: any,
+    allowlist: ?AnimatedStyleAllowlist,
+  ): ?AnimatedStyle {
     const flatStyle = flattenStyle(inputStyle);
     if (flatStyle == null) {
       return null;
     }
     const [nodeKeys, nodes, style] = createAnimatedStyle(
       flatStyle,
+      allowlist,
       Platform.OS !== 'web',
     );
     if (nodes.length === 0) {

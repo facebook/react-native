@@ -9,6 +9,7 @@
  */
 
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
+import type {AnimatedStyleAllowlist} from './AnimatedStyle';
 
 import {findNodeHandle} from '../../ReactNative/RendererProxy';
 import {AnimatedEvent} from '../AnimatedEvent';
@@ -18,9 +19,15 @@ import AnimatedObject from './AnimatedObject';
 import AnimatedStyle from './AnimatedStyle';
 import invariant from 'invariant';
 
-function createAnimatedProps(inputProps: {
-  [string]: mixed,
-}): [$ReadOnlyArray<string>, $ReadOnlyArray<AnimatedNode>, {[string]: mixed}] {
+export type AnimatedPropsAllowlist = $ReadOnly<{
+  style?: ?AnimatedStyleAllowlist,
+  [string]: true,
+}>;
+
+function createAnimatedProps(
+  inputProps: {[string]: mixed},
+  allowlist: ?AnimatedPropsAllowlist,
+): [$ReadOnlyArray<string>, $ReadOnlyArray<AnimatedNode>, {[string]: mixed}] {
   const nodeKeys: Array<string> = [];
   const nodes: Array<AnimatedNode> = [];
   const props: {[string]: mixed} = {...inputProps};
@@ -28,11 +35,26 @@ function createAnimatedProps(inputProps: {
   const keys = Object.keys(inputProps);
   for (let ii = 0, length = keys.length; ii < length; ii++) {
     const key = keys[ii];
+    if (allowlist != null && !Object.hasOwn(allowlist, key)) {
+      if (__DEV__) {
+        // WARNING: This is a potetially expensive check that we should only
+        // do in development. Without this check in development, it might be
+        // difficult to identify which props need to be allowlisted.
+        if (AnimatedObject.from(inputProps[key]) != null) {
+          console.error(
+            `AnimatedProps: ${key} is not allowlisted for animation, but it ` +
+              'contains AnimatedNode values; props allowing animation: ',
+            allowlist,
+          );
+        }
+      }
+      continue;
+    }
     const value = inputProps[key];
 
     let node;
     if (key === 'style') {
-      node = AnimatedStyle.from(value);
+      node = AnimatedStyle.from(value, allowlist?.style);
     } else if (value instanceof AnimatedNode) {
       node = value;
     } else {
@@ -55,9 +77,13 @@ export default class AnimatedProps extends AnimatedNode {
   #nodes: $ReadOnlyArray<AnimatedNode>;
   #props: {[string]: mixed};
 
-  constructor(inputProps: {[string]: mixed}, callback: () => void) {
+  constructor(
+    inputProps: {[string]: mixed},
+    callback: () => void,
+    allowlist?: ?AnimatedPropsAllowlist,
+  ) {
     super();
-    const [nodeKeys, nodes, props] = createAnimatedProps(inputProps);
+    const [nodeKeys, nodes, props] = createAnimatedProps(inputProps, allowlist);
     this.#nodeKeys = nodeKeys;
     this.#nodes = nodes;
     this.#props = props;
