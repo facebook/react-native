@@ -33,10 +33,14 @@ function createAnimatedProps(
     const value = inputProps[key];
 
     if (key === 'style') {
-      const node = new AnimatedStyle(value);
-      nodeKeys.push(key);
-      nodes.push(node);
-      props[key] = node;
+      const node = AnimatedStyle.from(value);
+      if (node == null) {
+        props[key] = value;
+      } else {
+        nodeKeys.push(key);
+        nodes.push(node);
+        props[key] = node;
+      }
     } else if (value instanceof AnimatedNode) {
       const node = value;
       nodeKeys.push(key);
