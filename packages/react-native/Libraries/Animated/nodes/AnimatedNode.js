@@ -182,10 +182,6 @@ export default class AnimatedNode {
     );
   }
 
-  toJSON(): any {
-    return this.__getValue();
-  }
-
   __getPlatformConfig(): ?PlatformConfig {
     return this._platformConfig;
   }
