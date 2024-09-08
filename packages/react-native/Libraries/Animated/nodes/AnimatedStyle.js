@@ -38,7 +38,7 @@ function createAnimatedStyle(
       const node = ReactNativeFeatureFlags.shouldUseAnimatedObjectForTransform()
         ? AnimatedObject.from(value)
         : // $FlowFixMe[incompatible-call] - `value` is mixed.
-          new AnimatedTransform(value);
+          AnimatedTransform.from(value);
       if (node == null) {
         if (keepUnanimatedValues) {
           style[key] = value;
@@ -77,19 +77,36 @@ export default class AnimatedStyle extends AnimatedWithChildren {
   _inputStyle: any;
   _style: {[string]: any};
 
-  constructor(inputStyle: any) {
-    super();
-    this._inputStyle = inputStyle;
+  /**
+   * Creates an `AnimatedStyle` if `value` contains `AnimatedNode` instances.
+   * Otherwise, returns `null`.
+   */
+  static from(inputStyle: any): ?AnimatedStyle {
+    const flatStyle = flattenStyle(inputStyle);
+    if (flatStyle == null) {
+      return null;
+    }
     const [nodeKeys, nodes, style] = createAnimatedStyle(
-      // NOTE: This null check should not be necessary, but the types are not
-      // strong nor enforced as of this writing. This check should be hoisted
-      // to instantiation sites.
-      flattenStyle(inputStyle) ?? {},
+      flatStyle,
       Platform.OS !== 'web',
     );
+    if (nodes.length === 0) {
+      return null;
+    }
+    return new AnimatedStyle(nodeKeys, nodes, style, inputStyle);
+  }
+
+  constructor(
+    nodeKeys: $ReadOnlyArray<string>,
+    nodes: $ReadOnlyArray<AnimatedNode>,
+    style: {[string]: any},
+    inputStyle: any,
+  ) {
+    super();
     this.#nodeKeys = nodeKeys;
     this.#nodes = nodes;
     this._style = style;
+    this._inputStyle = inputStyle;
   }
 
   __getValue(): Object | Array<Object> {
