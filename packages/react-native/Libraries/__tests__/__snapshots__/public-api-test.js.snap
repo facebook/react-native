@@ -946,10 +946,7 @@ exports[`public API should not change unintentionally Libraries/Animated/nodes/A
 
 exports[`public API should not change unintentionally Libraries/Animated/nodes/AnimatedProps.js 1`] = `
 "declare export default class AnimatedProps extends AnimatedNode {
-  _animatedView: any;
-  _props: Object;
-  _callback: () => void;
-  constructor(inputProps: Object, callback: () => void): void;
+  constructor(inputProps: { [string]: mixed }, callback: () => void): void;
   __getValue(): Object;
   __getAnimatedValue(): Object;
   __attach(): void;
@@ -967,13 +964,11 @@ exports[`public API should not change unintentionally Libraries/Animated/nodes/A
 
 exports[`public API should not change unintentionally Libraries/Animated/nodes/AnimatedStyle.js 1`] = `
 "declare export default class AnimatedStyle extends AnimatedWithChildren {
-  _inputStyle: any;
-  _style: { [string]: any };
   static from(inputStyle: any): ?AnimatedStyle;
   constructor(
     nodeKeys: $ReadOnlyArray<string>,
     nodes: $ReadOnlyArray<AnimatedNode>,
-    style: { [string]: any },
+    style: { [string]: mixed },
     inputStyle: any
   ): void;
   __getValue(): Object | Array<Object>;
