@@ -48,13 +48,22 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
   const onUpdateRef = useRef<?() => void>(null);
   const timerRef = useRef<TimeoutID | null>(null);
 
+  const allowlistIfEnabled = ReactNativeFeatureFlags.enableAnimatedAllowlist()
+    ? allowlist
+    : null;
+
   // TODO: Only invalidate `node` if animated props or `style` change. In the
   // previous implementation, we permitted `style` to override props with the
   // same name property name as styles, so we can probably continue doing that.
   // The ordering of other props *should* not matter.
   const node = useMemo(
-    () => new AnimatedProps(props, () => onUpdateRef.current?.(), allowlist),
-    [allowlist, props],
+    () =>
+      new AnimatedProps(
+        props,
+        () => onUpdateRef.current?.(),
+        allowlistIfEnabled,
+      ),
+    [allowlistIfEnabled, props],
   );
   const useNativePropsInFabric =
     ReactNativeFeatureFlags.shouldUseSetNativePropsInFabric();
