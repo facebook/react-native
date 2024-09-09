@@ -19,10 +19,6 @@ class CoreFeatures {
   // Specifies whether the iterator-style prop parsing is enabled.
   static bool enablePropIteratorSetter;
 
-  // When enabled, RCTScrollViewComponentView will trigger ShadowTree state
-  // updates for all changes in scroll position.
-  static bool enableGranularScrollViewStateUpdatesIOS;
-
   // When enabled, rawProps in Props will not include Yoga specific props.
   static bool excludeYogaFromRawProps;
 };
