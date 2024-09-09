@@ -66,7 +66,6 @@ describe('generateSpec', () => {
       libraryType,
     );
 
-    // Verifying that mkdirSync was called once with the correct arguments
     expect(mkdirSyncMock).toHaveBeenCalledTimes(1);
     expect(mkdirSyncMock).toHaveBeenCalledWith(outputDirectory, { recursive: true });
   });
