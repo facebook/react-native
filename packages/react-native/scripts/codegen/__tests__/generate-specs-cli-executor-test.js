@@ -19,14 +19,13 @@ describe('generateSpec', () => {
     const platform = 'ios';
     const libraryType = 'all';
     const schemaPath = './';
-    const componentsOutputDir = normalize(
-      'app/ios/build/generated/ios/react/renderer/components/library',
-    );
-    const modulesOutputDir = normalize('app/ios/build/generated/ios/library');
     const outputDirectory = normalize('app/ios/build/generated/ios');
     const libraryName = 'library';
     const packageName = 'com.library';
     const generators = ['componentsIOS', 'modulesIOS', 'modulesCxx'];
+
+    // Create a mock for fs.mkdirSync
+    const mkdirSyncMock = jest.fn();
 
     jest.mock('fs', () => ({
       readFileSync: (path, encoding) => {
@@ -34,19 +33,7 @@ describe('generateSpec', () => {
         expect(encoding).toBe('utf-8');
         return fixtures.schemaText;
       },
-      mkdirSync: jest.fn((folder, options) => {
-        if (folder === outputDirectory) {
-          expect(options).toEqual({ recursive: true });
-        }
-
-        if (folder === componentsOutputDir) {
-          expect(options).toEqual({ recursive: true });
-        }
-
-        if (folder === modulesOutputDir) {
-          expect(options).toEqual({ recursive: true });
-        }
-      }),
+      mkdirSync: mkdirSyncMock, // Use the mock for mkdirSync
       readdirSync: jest.fn().mockReturnValue([]),
       renameSync: jest.fn(),
     }));
@@ -78,5 +65,9 @@ describe('generateSpec', () => {
       packageName,
       libraryType,
     );
+
+    // Verifying that mkdirSync was called once with the correct arguments
+    expect(mkdirSyncMock).toHaveBeenCalledTimes(1);
+    expect(mkdirSyncMock).toHaveBeenCalledWith(outputDirectory, { recursive: true });
   });
 });
