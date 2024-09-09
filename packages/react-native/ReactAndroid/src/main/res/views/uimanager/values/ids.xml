@@ -62,4 +62,7 @@
 
   <!-- tag is used to store graphical filter effects to apply to the view -->
   <item type="id" name="filter"/>
+
+  <!-- tag is used to store mixBlendMode effects to apply to the view -->
+  <item type="id" name="mix_blend_mode"/>
 </resources>

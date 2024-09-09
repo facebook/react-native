@@ -1,9 +1,0 @@
-{
-  "name": "@monorepo/pkg-c",
-  "version": "0.0.3",
-  "description": "@monorepo/pkg-c",
-  "dependencies": {
-    "metro-config": "^0.80.3",
-    "metro-runtime": "^0.80.3"
-  }
-}

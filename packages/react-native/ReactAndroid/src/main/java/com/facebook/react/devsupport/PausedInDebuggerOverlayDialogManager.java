@@ -9,10 +9,12 @@ package com.facebook.react.devsupport;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.graphics.drawable.ColorDrawable;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.core.util.Supplier;
@@ -44,20 +46,32 @@ import com.facebook.react.devsupport.interfaces.PausedInDebuggerOverlayManager;
           if (context == null) {
             return;
           }
+
           View dialogView =
               LayoutInflater.from(context).inflate(R.layout.paused_in_debugger_view, null);
-          mPausedInDebuggerDialog = new Dialog(context);
+          View resumeButton = Assertions.assertNotNull(dialogView.findViewById(R.id.button));
+          resumeButton.setOnClickListener((v) -> listener.onResume());
+          TextView buttonText = Assertions.assertNotNull(dialogView.findViewById(R.id.button_text));
+          buttonText.setText(message);
+
+          mPausedInDebuggerDialog = new Dialog(context, R.style.NoAnimationDialog);
           mPausedInDebuggerDialog.setContentView(dialogView);
           mPausedInDebuggerDialog.setCancelable(false);
-          TextView pausedText = Assertions.assertNotNull(dialogView.findViewById(R.id.paused_text));
-          pausedText.setText(message);
-          View resumeButton = Assertions.assertNotNull(dialogView.findViewById(R.id.resume_button));
-          resumeButton.setOnClickListener((v) -> listener.onResume());
+
           Window dialogWindow = mPausedInDebuggerDialog.getWindow();
           if (dialogWindow != null) {
+            WindowManager.LayoutParams layoutParams = dialogWindow.getAttributes();
+            layoutParams.dimAmount = 0.2f;
+
+            dialogWindow.setAttributes(layoutParams);
+            dialogWindow.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
             dialogWindow.setGravity(Gravity.TOP);
+            dialogWindow.setElevation(0);
+            dialogWindow.setBackgroundDrawable(
+                new ColorDrawable(android.graphics.Color.TRANSPARENT));
             dialogWindow.setBackgroundDrawableResource(R.drawable.paused_in_debugger_background);
           }
+
           mPausedInDebuggerDialog.show();
         });
   }

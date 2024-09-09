@@ -75,6 +75,9 @@ class ShadowNodeTraits {
 
     // Indicates that direct children of the node should not be collapsed
     ChildrenFormStackingContext = 1 << 10,
+
+    // Inherits `YogaLayoutableShadowNode` and has a custom baseline function.
+    BaselineYogaNode = 1 << 11,
   };
 
   /*

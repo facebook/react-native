@@ -53,8 +53,6 @@ static inline int getIntBufferSizeForType(CppMountItem::Type mountItemType) {
     case CppMountItem::Type::Insert:
     case CppMountItem::Type::Remove:
       return 3; // tag, parentTag, index
-    case CppMountItem::Type::RemoveDeleteTree:
-      return 3; // tag, parentTag, index
     case CppMountItem::Type::Delete:
     case CppMountItem::Type::UpdateProps:
     case CppMountItem::Type::UpdateState:
@@ -192,7 +190,8 @@ static inline void writeIntBufferTypePreamble(
 
 // TODO: this method will be removed when binding for components are code-gen
 jni::local_ref<jstring> getPlatformComponentName(const ShadowView& shadowView) {
-  static std::string scrollViewComponentName = std::string("ScrollView");
+  constexpr static std::string_view scrollViewComponentName = "ScrollView";
+
   if (scrollViewComponentName == shadowView.componentName) {
     const auto& newViewProps =
         static_cast<const ScrollViewProps&>(*shadowView.props);
@@ -222,6 +221,17 @@ static inline float scale(Float value, Float pointScaleFactor) {
 jni::local_ref<jobject> FabricMountingManager::getProps(
     const ShadowView& oldShadowView,
     const ShadowView& newShadowView) {
+  auto componentName = newShadowView.componentName;
+  // We calculate the diffing between the props of the last mounted ShadowTree
+  // and the Props of the latest commited ShadowTree). ONLY for <View>
+  // components when the "enablePropsUpdateReconciliationAndroid" feature flag
+  // is enabled.
+  if (ReactNativeFeatureFlags::enablePropsUpdateReconciliationAndroid() &&
+      strcmp(componentName, "View") == 0) {
+    const Props* oldProps = oldShadowView.props.get();
+    auto diffProps = newShadowView.props->getDiffProps(oldProps);
+    return ReadableNativeMap::newObjectCxxArgs(diffProps);
+  }
   return ReadableNativeMap::newObjectCxxArgs(newShadowView.props->rawProps);
 }
 
@@ -287,25 +297,15 @@ void FabricMountingManager::executeMount(
           break;
         }
         case ShadowViewMutation::Remove: {
-          if (!isVirtual && !mutation.isRedundantOperation) {
+          if (!isVirtual) {
             cppCommonMountItems.push_back(CppMountItem::RemoveMountItem(
                 parentShadowView, oldChildShadowView, index));
           }
           break;
         }
-        case ShadowViewMutation::RemoveDeleteTree: {
-          if (!isVirtual) {
-            cppCommonMountItems.push_back(
-                CppMountItem::RemoveDeleteTreeMountItem(
-                    parentShadowView, oldChildShadowView, index));
-          }
-          break;
-        }
         case ShadowViewMutation::Delete: {
-          if (!mutation.isRedundantOperation) {
-            cppDeleteMountItems.push_back(
-                CppMountItem::DeleteMountItem(oldChildShadowView));
-          }
+          cppDeleteMountItems.push_back(
+              CppMountItem::DeleteMountItem(oldChildShadowView));
           break;
         }
         case ShadowViewMutation::Update: {
@@ -499,6 +499,7 @@ void FabricMountingManager::executeMount(
   int objBufferPosition = 0;
   int prevMountItemType = -1;
   jint temp[8];
+  // Fill in CREATE instructions.
   for (int i = 0; i < cppCommonMountItems.size(); i++) {
     const auto& mountItem = cppCommonMountItems[i];
     const auto& mountItemType = mountItem.type;
@@ -522,7 +523,6 @@ void FabricMountingManager::executeMount(
     }
     prevMountItemType = mountItemType;
 
-    // TODO: multi-create, multi-insert, etc
     if (mountItemType == CppMountItem::Type::Create) {
       auto componentName =
           getPlatformComponentName(mountItem.newChildShadowView);
@@ -540,7 +540,7 @@ void FabricMountingManager::executeMount(
       if (mountItem.newChildShadowView.state != nullptr) {
         javaStateWrapper = StateWrapperImpl::newObjectJavaArgs();
         StateWrapperImpl* cStateWrapper = cthis(javaStateWrapper);
-        cStateWrapper->state_ = mountItem.newChildShadowView.state;
+        cStateWrapper->setState(mountItem.newChildShadowView.state);
       }
 
       // Do not hold a reference to javaEventEmitter from the C++ side.
@@ -568,16 +568,11 @@ void FabricMountingManager::executeMount(
       temp[2] = mountItem.index;
       env->SetIntArrayRegion(intBufferArray, intBufferPosition, 3, temp);
       intBufferPosition += 3;
-    } else if (mountItemType == CppMountItem::RemoveDeleteTree) {
-      temp[0] = mountItem.oldChildShadowView.tag;
-      temp[1] = mountItem.parentShadowView.tag;
-      temp[2] = mountItem.index;
-      env->SetIntArrayRegion(intBufferArray, intBufferPosition, 3, temp);
-      intBufferPosition += 3;
     } else {
-      LOG(ERROR) << "Unexpected CppMountItem type";
+      LOG(ERROR) << "Unexpected CppMountItem type: " << mountItemType;
     }
   }
+
   if (!cppUpdatePropsMountItems.empty()) {
     writeIntBufferTypePreamble(
         CppMountItem::Type::UpdateProps,
@@ -615,7 +610,7 @@ void FabricMountingManager::executeMount(
       if (state != nullptr) {
         javaStateWrapper = StateWrapperImpl::newObjectJavaArgs();
         StateWrapperImpl* cStateWrapper = cthis(javaStateWrapper);
-        cStateWrapper->state_ = state;
+        cStateWrapper->setState(state);
       }
 
       (*objBufferArray)[objBufferPosition++] =
@@ -784,30 +779,68 @@ void FabricMountingManager::executeMount(
   env->DeleteLocalRef(intBufferArray);
 }
 
-void FabricMountingManager::preallocateShadowView(
+void FabricMountingManager::drainPreallocateViewsQueue() {
+  std::vector<ShadowView> shadowViews;
+
+  {
+    std::lock_guard lock(preallocateMutex_);
+    std::swap(shadowViews, preallocatedViewsQueue_);
+  }
+
+  for (const auto& shadowView : shadowViews) {
+    preallocateShadowView(shadowView);
+  }
+}
+
+void FabricMountingManager::maybePreallocateShadowNode(
     const ShadowNode& shadowNode) {
+  if (!shadowNode.getTraits().check(ShadowNodeTraits::Trait::FormsView)) {
+    return;
+  }
+
+  static thread_local bool onMainThread = isOnMainThread();
+  if (onMainThread) {
+    // View preallocation is not beneficial when rendering on the main thread
+    return;
+  }
+
+  auto shadowView = ShadowView(shadowNode);
+
+  if (ReactNativeFeatureFlags::useOptimisedViewPreallocationOnAndroid()) {
+    // Optimised implementation where FabricUIManager.preallocateView is called
+    // from the main thread.
+    std::lock_guard lock(preallocateMutex_);
+    preallocatedViewsQueue_.push_back(std::move(shadowView));
+  } else {
+    // Old implementation where FabricUIManager.preallocateView is called
+    // immediatelly.
+    preallocateShadowView(shadowView);
+  }
+}
+
+void FabricMountingManager::preallocateShadowView(
+    const ShadowView& shadowView) {
+  SystraceSection section("FabricMountingManager::preallocateShadowView");
+
   {
     std::lock_guard lock(allocatedViewsMutex_);
     auto allocatedViewsIterator =
-        allocatedViewRegistry_.find(shadowNode.getSurfaceId());
+        allocatedViewRegistry_.find(shadowView.surfaceId);
     if (allocatedViewsIterator == allocatedViewRegistry_.end()) {
       return;
     }
     auto& allocatedViews = allocatedViewsIterator->second;
-    if (allocatedViews.find(shadowNode.getTag()) != allocatedViews.end()) {
+    if (allocatedViews.find(shadowView.tag) != allocatedViews.end()) {
       return;
     }
-    allocatedViews.insert(shadowNode.getTag());
+    allocatedViews.insert(shadowView.tag);
   }
-
-  auto shadowView = ShadowView(shadowNode);
 
   bool isLayoutableShadowNode = shadowView.layoutMetrics != EmptyLayoutMetrics;
 
   static auto preallocateView =
       JFabricUIManager::javaClassStatic()
-          ->getMethod<void(
-              jint, jint, jstring, jobject, jobject, jobject, jboolean)>(
+          ->getMethod<void(jint, jint, jstring, jobject, jobject, jboolean)>(
               "preallocateView");
 
   // Do not hold onto Java object from C
@@ -817,11 +850,8 @@ void FabricMountingManager::preallocateShadowView(
   if (shadowView.state != nullptr) {
     javaStateWrapper = StateWrapperImpl::newObjectJavaArgs();
     StateWrapperImpl* cStateWrapper = cthis(javaStateWrapper);
-    cStateWrapper->state_ = shadowView.state;
+    cStateWrapper->setState(shadowView.state);
   }
-
-  // Do not hold a reference to javaEventEmitter from the C++ side.
-  jni::local_ref<EventEmitterWrapper::JavaPart> javaEventEmitter = nullptr;
 
   jni::local_ref<jobject> props = getProps({}, shadowView);
 
@@ -829,13 +859,19 @@ void FabricMountingManager::preallocateShadowView(
 
   preallocateView(
       javaUIManager_,
-      shadowNode.getSurfaceId(),
+      shadowView.surfaceId,
       shadowView.tag,
       component.get(),
       props.get(),
       (javaStateWrapper != nullptr ? javaStateWrapper.get() : nullptr),
-      (javaEventEmitter != nullptr ? javaEventEmitter.get() : nullptr),
       isLayoutableShadowNode);
+}
+
+bool FabricMountingManager::isOnMainThread() {
+  static auto isOnMainThread =
+      JFabricUIManager::javaClassStatic()->getMethod<jboolean()>(
+          "isOnMainThread");
+  return isOnMainThread(javaUIManager_);
 }
 
 void FabricMountingManager::dispatchCommand(

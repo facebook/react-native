@@ -91,9 +91,8 @@ using namespace facebook::react;
 
 - (RCTPlatformView *)createPaperViewWithTag:(NSInteger)tag // [macOS]
 {
-  RCTPlatformView *view = [_componentData createViewWithTag:[NSNumber numberWithInteger:tag] rootTag:NULL]; // [macOS]
-  [_bridgelessInteropData attachInteropAPIsToModule:(id<RCTBridgeModule>)_componentData.bridgelessViewManager];
-  return view;
+  [_bridgelessInteropData attachInteropAPIsToModule:(id<RCTBridgeModule>)_componentData.manager];
+  return [_componentData createViewWithTag:[NSNumber numberWithInteger:tag] rootTag:NULL];
 }
 
 - (void)setProps:(NSDictionary<NSString *, id> *)props forView:(RCTPlatformView *)view // [macOS]

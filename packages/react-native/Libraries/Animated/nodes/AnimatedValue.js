@@ -16,7 +16,7 @@ import type AnimatedNode from './AnimatedNode';
 import type AnimatedTracking from './AnimatedTracking';
 
 import InteractionManager from '../../Interaction/InteractionManager';
-import NativeAnimatedHelper from '../NativeAnimatedHelper';
+import NativeAnimatedHelper from '../../../src/private/animated/NativeAnimatedHelper';
 import AnimatedInterpolation from './AnimatedInterpolation';
 import AnimatedWithChildren from './AnimatedWithChildren';
 
@@ -49,6 +49,7 @@ const NativeAnimatedAPI = NativeAnimatedHelper.API;
  * transform which can receive values from multiple parents.
  */
 export function flushValue(rootNode: AnimatedNode): void {
+  // eslint-disable-next-line func-call-spacing
   const leaves = new Set<{update: () => void, ...}>();
   function findAnimatedStyles(node: AnimatedNode) {
     // $FlowFixMe[prop-missing]

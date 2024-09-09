@@ -18,6 +18,7 @@ import type {
   Message,
 } from './parseLogBoxLog';
 
+import DebuggerSessionObserver from '../../../src/private/fusebox/FuseboxSessionObserver';
 import parseErrorStack from '../../Core/Devtools/parseErrorStack';
 import NativeDevSettings from '../../NativeModules/specs/NativeDevSettings';
 import NativeLogBox from '../../NativeModules/specs/NativeLogBox';
@@ -75,6 +76,7 @@ let updateTimeout: $FlowFixMe | null = null;
 let _isDisabled = false;
 let _selectedIndex = -1;
 let hasShownFuseboxWarningsMigrationMessage = false;
+let hostTargetSessionObserverSubscription = null;
 
 let warningFilter: WarningFilter = function (format) {
   return {
@@ -196,11 +198,30 @@ function appendNewLog(newLog: LogBoxLog) {
 }
 
 export function addLog(log: LogData): void {
+  if (hostTargetSessionObserverSubscription == null) {
+    hostTargetSessionObserverSubscription = DebuggerSessionObserver.subscribe(
+      hasActiveSession => {
+        if (hasActiveSession) {
+          clearWarnings();
+        } else {
+          // Reset the flag so that we can show the message again if new warning was emitted
+          hasShownFuseboxWarningsMigrationMessage = false;
+        }
+      },
+    );
+  }
+
+  // If Host has Fusebox support
   if (log.level === 'warn' && global.__FUSEBOX_HAS_FULL_CONSOLE_SUPPORT__) {
-    // Under Fusebox, don't report warnings to LogBox.
-    showFuseboxWarningsMigrationMessageOnce();
+    // And there is no active debugging session
+    if (!DebuggerSessionObserver.hasActiveSession()) {
+      showFuseboxWarningsMigrationMessageOnce();
+    }
+
+    // Don't show LogBox warnings when Host has active debugging session
     return;
   }
+
   const errorForStackTrace = new Error();
 
   // Parsing logs are expensive so we schedule this
@@ -419,6 +440,7 @@ export function withSubscription(
     componentDidCatch(err: Error, errorInfo: {componentStack: string, ...}) {
       /* $FlowFixMe[class-object-subtyping] added when improving typing for
        * this parameters */
+      // $FlowFixMe[incompatible-call]
       reportLogBoxError(err, errorInfo.componentStack);
     }
 
@@ -483,7 +505,6 @@ function showFuseboxWarningsMigrationMessageOnce() {
         if (NativeDevSettings.openDebugger) {
           NativeDevSettings.openDebugger();
         }
-        clearWarnings();
       },
     }),
   );

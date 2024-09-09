@@ -27,7 +27,7 @@ let rejectionTrackingOptions: $NonMaybeType<Parameters<enable>[0]> = {
       stack = error.stack;
     } else {
       try {
-        message = require('pretty-format')(rejection);
+        message = require('pretty-format').format(rejection);
       } catch {
         message =
           typeof rejection === 'string'

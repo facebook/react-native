@@ -20,6 +20,7 @@
 		8145AE06241172D900A3F8DA /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8145AE05241172D900A3F8DA /* LaunchScreen.storyboard */; };
 		832F45BB2A8A6E1F0097B4E6 /* SwiftTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 832F45BA2A8A6E1F0097B4E6 /* SwiftTest.swift */; };
 		918A215FD4EF5A828705D765 /* libPods-RNTester-macOSIntegrationTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 474EC5CD967949D41527EECF /* libPods-RNTester-macOSIntegrationTests.a */; };
+		A975CA6C2C05EADF0043F72A /* RCTNetworkTaskTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A975CA6B2C05EADE0043F72A /* RCTNetworkTaskTests.m */; };
 		AC30658829B14F38007A839A /* RCTComponentPropsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E7DB20CC22B2BAA5005AC45F /* RCTComponentPropsTests.m */; };
 		AC73FCE829B1316D0003586F /* RNTesterIntegrationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E7C1241922BEC44B00DA25C0 /* RNTesterIntegrationTests.m */; };
 		AC73FCE929B131700003586F /* RCTLoggingTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E7DB215E22B2F3EC005AC45F /* RCTLoggingTests.m */; };
@@ -166,10 +167,13 @@
 		832F45BA2A8A6E1F0097B4E6 /* SwiftTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SwiftTest.swift; path = RNTester/SwiftTest.swift; sourceTree = "<group>"; };
 		8BFB9C61D7BDE894E24BF24F /* Pods-RNTesterUnitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNTesterUnitTests.release.xcconfig"; path = "Target Support Files/Pods-RNTesterUnitTests/Pods-RNTesterUnitTests.release.xcconfig"; sourceTree = "<group>"; };
 		95706B2D6A97C2C7489615A1 /* Pods-RNTester-macOSIntegrationTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNTester-macOSIntegrationTests.release.xcconfig"; path = "Target Support Files/Pods-RNTester-macOSIntegrationTests/Pods-RNTester-macOSIntegrationTests.release.xcconfig"; sourceTree = "<group>"; };
+		9B8542B8C590B51BD0588751 /* Pods-RNTester.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNTester.release.xcconfig"; path = "Target Support Files/Pods-RNTester/Pods-RNTester.release.xcconfig"; sourceTree = "<group>"; };
 		9BD1BBDA193F1DB661EDB0CF /* Pods-RNTester-macOSIntegrationTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNTester-macOSIntegrationTests.debug.xcconfig"; path = "Target Support Files/Pods-RNTester-macOSIntegrationTests/Pods-RNTester-macOSIntegrationTests.debug.xcconfig"; sourceTree = "<group>"; };
 		9C88AE81E635231C7F0F3BA4 /* libPods-RNTester-macOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RNTester-macOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		A975CA6B2C05EADE0043F72A /* RCTNetworkTaskTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RCTNetworkTaskTests.m; sourceTree = "<group>"; };
 		AB8577B0E8D863BFD8BEB398 /* Pods-RNTester-visionOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNTester-visionOS.debug.xcconfig"; path = "Target Support Files/Pods-RNTester-visionOS/Pods-RNTester-visionOS.debug.xcconfig"; sourceTree = "<group>"; };
 		AC276E71CF27E40DFA22979F /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = ../PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		AC474BFB29BBD4A1002BDAED /* RNTester.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; name = RNTester.xctestplan; path = RNTester/RNTester.xctestplan; sourceTree = "<group>"; };
 		AC474BFE29BBF793002BDAED /* RNTester-macOS.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = "RNTester-macOS.xctestplan"; sourceTree = "<group>"; };
 		AC78A60A2B5738FB00121555 /* RNTester-visionOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "RNTester-visionOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		AC78A6142B5738FD00121555 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -249,7 +253,6 @@
 		E7DB215F22B2F3EC005AC45F /* RCTUIManagerScenarioTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTUIManagerScenarioTests.m; sourceTree = "<group>"; };
 		E7DB218B22B41FCD005AC45F /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		E8475AB4E5BB7B7A87C16D41 /* Pods-RNTesterUnitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNTesterUnitTests.debug.xcconfig"; path = "Target Support Files/Pods-RNTesterUnitTests/Pods-RNTesterUnitTests.debug.xcconfig"; sourceTree = "<group>"; };
-		EE448B25704B6F47386E69A9 /* Pods-RNTester.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNTester.release.xcconfig"; path = "Target Support Files/Pods-RNTester/Pods-RNTester.release.xcconfig"; sourceTree = "<group>"; };
 		F0D621C22BBB9E38005960AC /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -329,6 +332,7 @@
 			isa = PBXGroup;
 			children = (
 				F0D621C22BBB9E38005960AC /* PrivacyInfo.xcprivacy */,
+				AC474BFB29BBD4A1002BDAED /* RNTester.xctestplan */,
 				E771AEEA22B44E3100EA1189 /* Info.plist */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				5C60EB1B226440DB0018C04F /* AppDelegate.mm */,
@@ -480,7 +484,7 @@
 				66C3087F2D5BF762FE9E6422 /* Pods-RNTesterIntegrationTests.debug.xcconfig */,
 				7CDA7A212644C6BB8C0D00D8 /* Pods-RNTesterIntegrationTests.release.xcconfig */,
 				8BFB9C61D7BDE894E24BF24F /* Pods-RNTesterUnitTests.release.xcconfig */,
-				EE448B25704B6F47386E69A9 /* Pods-RNTester.release.xcconfig */,
+				9B8542B8C590B51BD0588751 /* Pods-RNTester.release.xcconfig */,
 				E8475AB4E5BB7B7A87C16D41 /* Pods-RNTesterUnitTests.debug.xcconfig */,
 				AB8577B0E8D863BFD8BEB398 /* Pods-RNTester-visionOS.debug.xcconfig */,
 				0553512BB0EDB0E5BC262515 /* Pods-RNTester-visionOS.release.xcconfig */,
@@ -516,6 +520,7 @@
 				E7DB20B022B2BAA4005AC45F /* RCTModuleInitTests.m */,
 				E7DB20CB22B2BAA5005AC45F /* RCTModuleMethodTests.mm */,
 				E7DB20CF22B2BAA5005AC45F /* RCTMultipartStreamReaderTests.m */,
+				A975CA6B2C05EADE0043F72A /* RCTNetworkTaskTests.m */,
 				E7DB20BE22B2BAA4005AC45F /* RCTNativeAnimatedNodesManagerTests.m */,
 				E7DB20AD22B2BAA3005AC45F /* RCTPerformanceLoggerTests.m */,
 				E7DB20C422B2BAA4005AC45F /* RCTShadowViewTests.m */,
@@ -1181,6 +1186,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A975CA6C2C05EADF0043F72A /* RCTNetworkTaskTests.m in Sources */,
 				E7DB20DF22B2BAA6005AC45F /* RCTImageLoaderTests.m in Sources */,
 				E7DB20D222B2BAA6005AC45F /* RCTModuleInitNotificationRaceTests.m in Sources */,
 				E7DB20D522B2BAA6005AC45F /* RCTPerformanceLoggerTests.m in Sources */,
@@ -1274,7 +1280,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/RNTester/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					/usr/lib/swift,
 					"$(inherited)",
@@ -1302,7 +1308,7 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = EE448B25704B6F47386E69A9 /* Pods-RNTester.release.xcconfig */;
+			baseConfigurationReference = 9B8542B8C590B51BD0588751 /* Pods-RNTester.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -1313,7 +1319,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/RNTester/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					/usr/lib/swift,
 					"$(inherited)",
@@ -1410,7 +1416,7 @@
 					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers",
 					"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "$(inherited)";
@@ -1504,7 +1510,7 @@
 					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers",
 					"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				OTHER_CFLAGS = "$(inherited)";
 				OTHER_CPLUSPLUSFLAGS = (
@@ -1836,7 +1842,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = RNTesterUnitTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1875,7 +1881,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = RNTesterUnitTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1917,7 +1923,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = RNTesterIntegrationTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1953,7 +1959,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = RNTesterIntegrationTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

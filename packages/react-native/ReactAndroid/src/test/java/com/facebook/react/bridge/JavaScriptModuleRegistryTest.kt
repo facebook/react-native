@@ -7,7 +7,7 @@
 
 package com.facebook.react.bridge
 
-import org.junit.Assert
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
 /** Tests for [JavaScriptModuleRegistry] */
@@ -23,12 +23,12 @@ class JavaScriptModuleRegistryTest {
   @Test
   fun testGetJSModuleName() {
     val name = JavaScriptModuleRegistry.getJSModuleName(TestJavaScriptModule::class.java)
-    Assert.assertEquals("TestJavaScriptModule", name)
+    assertThat(name).isEqualTo("TestJavaScriptModule")
   }
 
   @Test
   fun testGetJSModuleName_stripOuterClass() {
     val name = JavaScriptModuleRegistry.getJSModuleName(`OuterClass$NestedInnerClass`::class.java)
-    Assert.assertEquals("NestedInnerClass", name)
+    assertThat(name).isEqualTo("NestedInnerClass")
   }
 }

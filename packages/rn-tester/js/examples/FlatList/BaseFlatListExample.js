@@ -31,7 +31,7 @@ const DATA = [
   'Coke',
   'Beer',
   'Cheesecake',
-  'Ice Cream',
+  'Brownie',
 ];
 
 const Item = ({item, separators}: RenderItemProps<string>) => {

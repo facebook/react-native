@@ -13,15 +13,15 @@
 import type {
   NativeModuleArrayTypeAnnotation,
   NativeModuleBaseTypeAnnotation,
-  NativeModuleBooleanTypeAnnotation,
-  NativeModuleDoubleTypeAnnotation,
+  BooleanTypeAnnotation,
+  DoubleTypeAnnotation,
   NativeModuleEnumDeclaration,
-  NativeModuleFloatTypeAnnotation,
+  FloatTypeAnnotation,
   NativeModuleGenericObjectTypeAnnotation,
-  NativeModuleInt32TypeAnnotation,
+  Int32TypeAnnotation,
   NativeModuleNumberTypeAnnotation,
   NativeModuleObjectTypeAnnotation,
-  NativeModuleStringTypeAnnotation,
+  StringTypeAnnotation,
   NativeModuleTypeAliasTypeAnnotation,
   Nullable,
   ReservedTypeAnnotation,
@@ -57,12 +57,12 @@ export type StructProperty = $ReadOnly<{
 }>;
 
 export type StructTypeAnnotation =
-  | NativeModuleStringTypeAnnotation
+  | StringTypeAnnotation
   | NativeModuleNumberTypeAnnotation
-  | NativeModuleInt32TypeAnnotation
-  | NativeModuleDoubleTypeAnnotation
-  | NativeModuleFloatTypeAnnotation
-  | NativeModuleBooleanTypeAnnotation
+  | Int32TypeAnnotation
+  | DoubleTypeAnnotation
+  | FloatTypeAnnotation
+  | BooleanTypeAnnotation
   | NativeModuleEnumDeclaration
   | NativeModuleGenericObjectTypeAnnotation
   | ReservedTypeAnnotation
@@ -93,9 +93,12 @@ class StructCollector {
         });
       }
       case 'ArrayTypeAnnotation': {
-        if (typeAnnotation.elementType == null) {
+        if (typeAnnotation.elementType.type === 'AnyTypeAnnotation') {
           return wrapNullable(nullable, {
             type: 'ArrayTypeAnnotation',
+            elementType: {
+              type: 'AnyTypeAnnotation',
+            },
           });
         }
 

@@ -15,6 +15,8 @@
 
 #include <chrono>
 
+#include <reactperflogger/fusebox/FuseboxTracer.h>
+
 using namespace std::chrono;
 using namespace std::literals::string_view_literals;
 
@@ -28,11 +30,13 @@ HostAgent::HostAgent(
     FrontendChannel frontendChannel,
     HostTargetController& targetController,
     HostTargetMetadata hostMetadata,
-    SessionState& sessionState)
+    SessionState& sessionState,
+    VoidExecutor executor)
     : frontendChannel_(frontendChannel),
       targetController_(targetController),
       hostMetadata_(std::move(hostMetadata)),
-      sessionState_(sessionState) {}
+      sessionState_(sessionState),
+      networkIOAgent_(NetworkIOAgent(frontendChannel, executor)) {}
 
 void HostAgent::handleRequest(const cdp::PreparsedRequest& req) {
   bool shouldSendOKResponse = false;
@@ -146,25 +150,47 @@ void HostAgent::handleRequest(const cdp::PreparsedRequest& req) {
     shouldSendOKResponse = true;
     isFinishedHandlingRequest = true;
   } else if (req.method == "Tracing.start") {
-    // @cdp Tracing.start is implemented as a stub only.
-    frontendChannel_(cdp::jsonNotification(
-        // @cdp Tracing.bufferUsage is implemented as a stub only.
-        "Tracing.bufferUsage",
-        folly::dynamic::object("percentFull", 0)("eventCount", 0)("value", 0)));
-    shouldSendOKResponse = true;
+    // @cdp Tracing.start support is experimental.
+    if (FuseboxTracer::getFuseboxTracer().startTracing()) {
+      shouldSendOKResponse = true;
+    } else {
+      frontendChannel_(cdp::jsonError(
+          req.id,
+          cdp::ErrorCode::InternalError,
+          "Tracing session already started"));
+      return;
+    }
     isFinishedHandlingRequest = true;
   } else if (req.method == "Tracing.end") {
-    // @cdp Tracing.end is implemented as a stub only.
+    // @cdp Tracing.end support is experimental.
+    bool firstChunk = true;
+    auto id = req.id;
+    bool wasStopped = FuseboxTracer::getFuseboxTracer().stopTracing(
+        [this, firstChunk, id](const folly::dynamic& eventsChunk) {
+          if (firstChunk) {
+            frontendChannel_(cdp::jsonResult(id));
+          }
+          frontendChannel_(cdp::jsonNotification(
+              "Tracing.dataCollected",
+              folly::dynamic::object("value", eventsChunk)));
+        });
+    if (!wasStopped) {
+      frontendChannel_(cdp::jsonError(
+          req.id,
+          cdp::ErrorCode::InternalError,
+          "Tracing session not started"));
+      return;
+    }
     frontendChannel_(cdp::jsonNotification(
-        // @cdp Tracing.dataCollected is implemented as a stub only.
-        "Tracing.dataCollected",
-        folly::dynamic::object("value", folly::dynamic::array())));
-    frontendChannel_(cdp::jsonNotification(
-        // @cdp Tracing.tracingComplete is implemented as a stub only.
         "Tracing.tracingComplete",
         folly::dynamic::object("dataLossOccurred", false)));
     shouldSendOKResponse = true;
     isFinishedHandlingRequest = true;
+  }
+
+  if (!isFinishedHandlingRequest &&
+      networkIOAgent_.handleRequest(req, targetController_.getDelegate())) {
+    return;
   }
 
   if (!isFinishedHandlingRequest && instanceAgent_ &&
@@ -177,10 +203,7 @@ void HostAgent::handleRequest(const cdp::PreparsedRequest& req) {
     return;
   }
 
-  frontendChannel_(cdp::jsonError(
-      req.id,
-      cdp::ErrorCode::MethodNotFound,
-      req.method + " not implemented yet"));
+  throw NotImplementedException(req.method);
 }
 
 HostAgent::~HostAgent() {
@@ -198,9 +221,9 @@ HostAgent::~HostAgent() {
 }
 
 void HostAgent::sendFuseboxNotice() {
-  static constexpr auto kFuseboxNotice = ANSI_COLOR_BG_YELLOW
-      "Welcome to " ANSI_WEIGHT_BOLD "React Native DevTools" ANSI_WEIGHT_RESET
-      " (experimental)"sv;
+  static constexpr auto kFuseboxNotice =
+      ANSI_COLOR_BG_YELLOW "Welcome to " ANSI_WEIGHT_BOLD
+                           "React Native DevTools" ANSI_WEIGHT_RESET ""sv;
 
   sendInfoLogEntry(kFuseboxNotice);
 }
@@ -210,7 +233,7 @@ void HostAgent::sendNonFuseboxNotice() {
       ANSI_COLOR_BG_YELLOW ANSI_WEIGHT_BOLD
       "NOTE: " ANSI_WEIGHT_RESET
       "You are using an unsupported debugging client. "
-      "Use the Dev Menu in your app (or type `j` in the Metro terminal) to open the latest, supported React Native debugger."sv;
+      "Use the Dev Menu in your app (or type `j` in the Metro terminal) to open React Native DevTools."sv;
 
   std::vector<std::string> args;
   args.emplace_back(kNonFuseboxNotice);

@@ -207,6 +207,16 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     ViewManagerPropertyUpdater.clear();
   }
 
+  @Override
+  public void markActiveTouchForTag(int surfaceId, int reactTag) {
+    // Not implemented for Paper.
+  }
+
+  @Override
+  public void sweepActiveTouchForTag(int surfaceId, int reactTag) {
+    // Not implemented for Paper.
+  }
+
   /**
    * This method is intended to reuse the {@link ViewManagerRegistry} with FabricUIManager. Do not
    * use this method as this will be removed in the near future.
@@ -388,6 +398,12 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     getReactApplicationContext().assertOnNativeModulesQueueThread();
 
     mUIImplementation.updateNodeSize(nodeViewTag, newWidth, newHeight);
+  }
+
+  public void updateInsetsPadding(int nodeViewTag, int top, int left, int bottom, int right) {
+    getReactApplicationContext().assertOnNativeModulesQueueThread();
+
+    mUIImplementation.updateInsetsPadding(nodeViewTag, top, left, bottom, right);
   }
 
   /**

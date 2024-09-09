@@ -20,6 +20,7 @@ import type {
   WrappedEvent,
 } from '../inspector-proxy/types';
 
+import nullthrows from 'nullthrows';
 import WebSocket from 'ws';
 
 export class DeviceAgent {
@@ -81,6 +82,11 @@ export class DeviceAgent {
         wrappedEvent: JSON.stringify(event),
       },
     });
+  }
+
+  // $FlowIgnore[unsafe-getters-setters]
+  get socket(): WebSocket {
+    return nullthrows(this.#ws);
   }
 }
 

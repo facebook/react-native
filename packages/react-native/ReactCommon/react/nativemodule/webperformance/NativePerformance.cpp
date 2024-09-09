@@ -15,7 +15,8 @@
 #include <cxxreact/ReactMarker.h>
 #include <jsi/instrumentation.h>
 #include <react/performance/timeline/PerformanceEntryReporter.h>
-
+#include <reactperflogger/fusebox/FuseboxTracer.h>
+#include "NativePerformance.h"
 #include "Plugins.h"
 
 #ifdef WITH_PERFETTO
@@ -32,12 +33,17 @@ namespace facebook::react {
 
 namespace {
 
-#ifdef WITH_PERFETTO
+#if defined(__clang__)
+#define NO_DESTROY [[clang::no_destroy]]
+#else
+#define NO_DESTROY
+#endif
 
-const std::string TRACK_PREFIX = "Track:";
-const std::string DEFAULT_TRACK_NAME = "Web Performance";
+NO_DESTROY const std::string TRACK_PREFIX = "Track:";
+NO_DESTROY const std::string DEFAULT_TRACK_NAME = "# Web Performance";
+NO_DESTROY const std::string CUSTOM_TRACK_NAME_PREFIX = "# Web Performance: ";
 
-std::tuple<perfetto::Track, std::string_view> parsePerfettoTrack(
+std::tuple<std::string, std::string_view> parseTrackName(
     const std::string& name) {
   // Until there's a standard way to pass through track information, parse it
   // manually, e.g., "Track:Foo:Event name"
@@ -47,17 +53,17 @@ std::tuple<perfetto::Track, std::string_view> parsePerfettoTrack(
   if (name.starts_with(TRACK_PREFIX)) {
     const auto trackNameDelimiter = name.find(':', TRACK_PREFIX.length());
     if (trackNameDelimiter != std::string::npos) {
-      trackName = name.substr(
-          TRACK_PREFIX.length(), trackNameDelimiter - TRACK_PREFIX.length());
+      trackName = CUSTOM_TRACK_NAME_PREFIX +
+          name.substr(
+              TRACK_PREFIX.length(),
+              trackNameDelimiter - TRACK_PREFIX.length());
       eventName = std::string_view(name).substr(trackNameDelimiter + 1);
     }
   }
 
   auto& trackNameRef = trackName.has_value() ? *trackName : DEFAULT_TRACK_NAME;
-  return std::make_tuple(getPerfettoWebPerfTrack(trackNameRef), eventName);
+  return std::make_tuple(trackNameRef, eventName);
 }
-
-#endif
 
 } // namespace
 
@@ -76,17 +82,18 @@ void NativePerformance::mark(
     jsi::Runtime& rt,
     std::string name,
     double startTime) {
+  PerformanceEntryReporter::getInstance()->mark(name, startTime);
+
 #ifdef WITH_PERFETTO
   if (TRACE_EVENT_CATEGORY_ENABLED("react-native")) {
-    auto [track, eventName] = parsePerfettoTrack(name);
+    auto [trackName, eventName] = parseTrackName(name);
     TRACE_EVENT_INSTANT(
         "react-native",
         perfetto::DynamicString(eventName.data(), eventName.size()),
-        track,
+        getPerfettoWebPerfTrackSync(trackName),
         performanceNowToPerfettoTraceTime(startTime));
   }
 #endif
-  PerformanceEntryReporter::getInstance()->mark(name, startTime);
 }
 
 void NativePerformance::measure(
@@ -97,11 +104,18 @@ void NativePerformance::measure(
     std::optional<double> duration,
     std::optional<std::string> startMark,
     std::optional<std::string> endMark) {
+  auto [trackName, eventName] = parseTrackName(name);
+
+  FuseboxTracer::getFuseboxTracer().addEvent(
+      eventName, (uint64_t)startTime, (uint64_t)endTime, trackName);
+  PerformanceEntryReporter::getInstance()->measure(
+      eventName, startTime, endTime, duration, startMark, endMark);
+
 #ifdef WITH_PERFETTO
   if (TRACE_EVENT_CATEGORY_ENABLED("react-native")) {
     // TODO T190600850 support startMark/endMark
     if (!startMark && !endMark) {
-      auto [track, eventName] = parsePerfettoTrack(name);
+      auto track = getPerfettoWebPerfTrackAsync(trackName);
       TRACE_EVENT_BEGIN(
           "react-native",
           perfetto::DynamicString(eventName.data(), eventName.size()),
@@ -112,8 +126,6 @@ void NativePerformance::measure(
     }
   }
 #endif
-  PerformanceEntryReporter::getInstance()->measure(
-      name, startTime, endTime, duration, startMark, endMark);
 }
 
 std::unordered_map<std::string, double> NativePerformance::getSimpleMemoryInfo(

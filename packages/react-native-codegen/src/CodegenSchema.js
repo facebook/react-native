@@ -63,7 +63,7 @@ export type MixedTypeAnnotation = $ReadOnly<{
 
 type EventEmitterTypeAnnotation = $ReadOnly<{
   type: 'EventEmitterTypeAnnotation',
-  typeAnnotation: NativeModuleBaseTypeAnnotation,
+  typeAnnotation: NativeModuleEventEmitterTypeAnnotation | $FlowFixMe,
 }>;
 
 type FunctionTypeAnnotation<+P, +R> = $ReadOnly<{
@@ -283,37 +283,21 @@ export type NativeModuleArrayTypeAnnotation<
    * TODO(T72031674): Migrate all our NativeModule specs to not use
    * invalid Array ElementTypes. Then, make the elementType required.
    */
-  elementType?: T,
+  elementType: T | UnsafeAnyTypeAnnotation,
 }>;
 
-export type NativeModuleStringTypeAnnotation = $ReadOnly<{
-  type: 'StringTypeAnnotation',
-}>;
+export type UnsafeAnyTypeAnnotation = {
+  type: 'AnyTypeAnnotation',
+};
 
 export type NativeModuleNumberTypeAnnotation = $ReadOnly<{
   type: 'NumberTypeAnnotation',
 }>;
 
-export type NativeModuleInt32TypeAnnotation = $ReadOnly<{
-  type: 'Int32TypeAnnotation',
-}>;
-
-export type NativeModuleDoubleTypeAnnotation = $ReadOnly<{
-  type: 'DoubleTypeAnnotation',
-}>;
-
-export type NativeModuleFloatTypeAnnotation = $ReadOnly<{
-  type: 'FloatTypeAnnotation',
-}>;
-
-export type NativeModuleBooleanTypeAnnotation = $ReadOnly<{
-  type: 'BooleanTypeAnnotation',
-}>;
-
 export type NativeModuleEnumMembers = $ReadOnlyArray<
   $ReadOnly<{
     name: string,
-    value: string,
+    value: string | number,
   }>,
 >;
 
@@ -366,13 +350,31 @@ export type NativeModuleMixedTypeAnnotation = $ReadOnly<{
   type: 'MixedTypeAnnotation',
 }>;
 
-export type NativeModuleBaseTypeAnnotation =
-  | NativeModuleStringTypeAnnotation
+type NativeModuleEventEmitterBaseTypeAnnotation =
+  | BooleanTypeAnnotation
+  | DoubleTypeAnnotation
+  | FloatTypeAnnotation
+  | Int32TypeAnnotation
   | NativeModuleNumberTypeAnnotation
-  | NativeModuleInt32TypeAnnotation
-  | NativeModuleDoubleTypeAnnotation
-  | NativeModuleFloatTypeAnnotation
-  | NativeModuleBooleanTypeAnnotation
+  | StringTypeAnnotation
+  | NativeModuleTypeAliasTypeAnnotation
+  | NativeModuleGenericObjectTypeAnnotation
+  | VoidTypeAnnotation;
+
+export type NativeModuleEventEmitterTypeAnnotation =
+  | NativeModuleEventEmitterBaseTypeAnnotation
+  | {
+      type: 'ArrayTypeAnnotation',
+      elementType: NativeModuleEventEmitterBaseTypeAnnotation,
+    };
+
+export type NativeModuleBaseTypeAnnotation =
+  | StringTypeAnnotation
+  | NativeModuleNumberTypeAnnotation
+  | Int32TypeAnnotation
+  | DoubleTypeAnnotation
+  | FloatTypeAnnotation
+  | BooleanTypeAnnotation
   | NativeModuleEnumDeclaration
   | NativeModuleGenericObjectTypeAnnotation
   | ReservedTypeAnnotation
@@ -393,7 +395,8 @@ export type NativeModuleReturnTypeAnnotation =
 export type NativeModuleTypeAnnotation =
   | NativeModuleBaseTypeAnnotation
   | NativeModuleParamOnlyTypeAnnotation
-  | NativeModuleReturnOnlyTypeAnnotation;
+  | NativeModuleReturnOnlyTypeAnnotation
+  | NativeModuleEventEmitterTypeAnnotation;
 
 type NativeModuleParamOnlyTypeAnnotation = NativeModuleFunctionTypeAnnotation;
 

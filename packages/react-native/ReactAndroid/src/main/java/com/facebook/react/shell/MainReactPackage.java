@@ -9,7 +9,7 @@ package com.facebook.react.shell;
 
 import android.annotation.SuppressLint;
 import androidx.annotation.Nullable;
-import com.facebook.react.TurboReactPackage;
+import com.facebook.react.BaseReactPackage;
 import com.facebook.react.ViewManagerOnDemandReactPackage;
 import com.facebook.react.animated.NativeAnimatedModule;
 import com.facebook.react.bridge.ModuleSpec;
@@ -48,6 +48,7 @@ import com.facebook.react.views.drawer.ReactDrawerLayoutManager;
 import com.facebook.react.views.image.ReactImageManager;
 import com.facebook.react.views.modal.ReactModalHostManager;
 import com.facebook.react.views.progressbar.ReactProgressBarViewManager;
+import com.facebook.react.views.safeareaview.ReactSafeAreaViewManager;
 import com.facebook.react.views.scroll.ReactHorizontalScrollContainerViewManager;
 import com.facebook.react.views.scroll.ReactHorizontalScrollViewManager;
 import com.facebook.react.views.scroll.ReactScrollViewManager;
@@ -93,7 +94,7 @@ import javax.inject.Provider;
       VibrationModule.class,
       WebSocketModule.class,
     })
-public class MainReactPackage extends TurboReactPackage implements ViewManagerOnDemandReactPackage {
+public class MainReactPackage extends BaseReactPackage implements ViewManagerOnDemandReactPackage {
 
   private MainPackageConfig mConfig;
   private @Nullable Map<String, ModuleSpec> mViewManagers;
@@ -169,6 +170,7 @@ public class MainReactPackage extends TurboReactPackage implements ViewManagerOn
     viewManagers.add(new ReactProgressBarViewManager());
     viewManagers.add(new ReactScrollViewManager());
     viewManagers.add(new ReactSwitchManager());
+    viewManagers.add(new ReactSafeAreaViewManager());
     viewManagers.add(new SwipeRefreshLayoutManager());
 
     // Native equivalents
@@ -209,6 +211,7 @@ public class MainReactPackage extends TurboReactPackage implements ViewManagerOn
           ReactHorizontalScrollContainerViewManager::new);
       appendMap(
           viewManagers, ReactProgressBarViewManager.REACT_CLASS, ReactProgressBarViewManager::new);
+      appendMap(viewManagers, ReactSafeAreaViewManager.REACT_CLASS, ReactSafeAreaViewManager::new);
       appendMap(viewManagers, ReactScrollViewManager.REACT_CLASS, ReactScrollViewManager::new);
       appendMap(viewManagers, ReactSwitchManager.REACT_CLASS, ReactSwitchManager::new);
       appendMap(

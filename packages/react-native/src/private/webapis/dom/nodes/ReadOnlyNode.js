@@ -304,8 +304,10 @@ function setInstanceHandle(
 export function getShadowNode(node: ReadOnlyNode): ?ShadowNode {
   // Lazy import Fabric here to avoid DOM Node APIs classes from having side-effects.
   // With a static import we can't use these classes for Paper-only variants.
-  const ReactFabric = require('../../../../../Libraries/Renderer/shims/ReactFabric');
-  return ReactFabric.getNodeFromInternalInstanceHandle(getInstanceHandle(node));
+  const RendererProxy = require('../../../../../Libraries/ReactNative/RendererProxy');
+  return RendererProxy.getNodeFromInternalInstanceHandle(
+    getInstanceHandle(node),
+  );
 }
 
 export function getChildNodes(
@@ -349,9 +351,9 @@ export function getPublicInstanceFromInternalInstanceHandle(
 ): ?ReadOnlyNode {
   // Lazy import Fabric here to avoid DOM Node APIs classes from having side-effects.
   // With a static import we can't use these classes for Paper-only variants.
-  const ReactFabric = require('../../../../../Libraries/Renderer/shims/ReactFabric');
+  const RendererProxy = require('../../../../../Libraries/ReactNative/RendererProxy');
   const mixedPublicInstance =
-    ReactFabric.getPublicInstanceFromInternalInstanceHandle(instanceHandle);
+    RendererProxy.getPublicInstanceFromInternalInstanceHandle(instanceHandle);
   // $FlowExpectedError[incompatible-return] React defines public instances as "mixed" because it can't access the definition from React Native.
   return mixedPublicInstance;
 }

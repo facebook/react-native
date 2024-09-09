@@ -282,7 +282,7 @@ exports.description = 'Examples that show how Key events can be used.';
 exports.examples = [
   {
     title: 'KeyEventExample',
-    render: function (): React.Element<any> {
+    render: function (): React.Node {
       return <KeyEventExample />;
     },
   },

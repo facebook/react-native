@@ -18,7 +18,13 @@ import TextInlineViewsExample from './TextInlineViewsExample';
 
 const TextInlineView = require('../../components/TextInlineView');
 const React = require('react');
-const {LayoutAnimation, StyleSheet, Text, View} = require('react-native');
+const {
+  LayoutAnimation,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} = require('react-native');
 
 class Entity extends React.Component<{|children: React.Node|}> {
   render(): React.Node {
@@ -669,6 +675,21 @@ function NestedExample(props: {}): React.Node {
         <Text style={{color: 'blue'}}>blue color, </Text>
         and red color again
       </Text>
+      <Text style={{opacity: 0.7}}>
+        (opacity
+        <Text>
+          (is inherited
+          <Text style={{opacity: 0.7}}>
+            (and accumulated
+            <Text style={{opacity: 0.5, backgroundColor: '#ffaaaa'}}>
+              (and also applies to the background)
+            </Text>
+            )
+          </Text>
+          )
+        </Text>
+        )
+      </Text>
     </>
   );
 }
@@ -956,6 +977,56 @@ function TextBaseLineLayoutExample(props: {}): React.Node {
             {marker}
           </View>
         </Text>
+        {marker}
+      </View>
+
+      <Text style={subtitleStyle}>
+        {'Multi-line interleaved <View> and <Text>:'}
+      </Text>
+      <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
+        <Text selectable={true}>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris
+          venenatis,{' '}
+          <View
+            style={{
+              backgroundColor: 'yellow',
+            }}>
+            <Text>mauris eu commodo maximus</Text>
+          </View>{' '}
+          , ante arcu vestibulum ligula, et scelerisque diam.
+        </Text>
+      </View>
+
+      <Text style={subtitleStyle}>{'Multi-line <Text> alignment'}</Text>
+      <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
+        <View style={{width: 50, height: 50, backgroundColor: 'gray'}} />
+        <View style={{width: 125, backgroundColor: '#eee'}}>
+          <Text style={{fontSize: 15}}>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </Text>
+        </View>
+        <View style={{width: 125, backgroundColor: '#eee'}}>
+          <Text style={{fontSize: 10}}>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </Text>
+        </View>
+      </View>
+
+      <Text style={subtitleStyle}>{'<TextInput/>:'}</Text>
+      <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
+        {marker}
+        <TextInput style={{margin: 0, padding: 0}}>{texts}</TextInput>
+        {marker}
+      </View>
+
+      <Text style={subtitleStyle}>{'<TextInput multiline/>:'}</Text>
+      <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
+        {marker}
+        <TextInput multiline={true} style={{margin: 0, padding: 0}}>
+          {texts}
+        </TextInput>
         {marker}
       </View>
     </View>
@@ -1355,6 +1426,25 @@ const examples = [
               borderWidth: 5,
               overflow: 'hidden',
               fontSize: 16,
+            }}>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </Text>
+        </View>
+      );
+    },
+  },
+  {
+    title: 'Box Shadow',
+    name: 'boxShadow',
+    render: function (): React.Node {
+      return (
+        <View>
+          <Text
+            testID="text-box-shadow"
+            style={{
+              borderRadius: 10,
+              experimental_boxShadow: '0 0 10px red',
             }}>
             Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
             eiusmod tempor incididunt ut labore et dolore magna aliqua.

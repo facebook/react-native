@@ -160,14 +160,6 @@ NSString *kBundlePath = @"js/RNTesterApp.macos";
   return [super bridgelessEnabled];
 }
 
-#pragma mark - Experimental settings
-
-// [Experiment] Enable the new debugger stack (codename Fusebox)
-- (BOOL)unstable_fuseboxEnabled
-{
-  return true;
-}
-
 #pragma mark - RCTComponentViewFactoryComponentProvider
 
 #ifndef RN_DISABLE_OSS_PLUGIN_HEADER

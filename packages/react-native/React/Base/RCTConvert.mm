@@ -490,7 +490,6 @@ RCT_ENUM_CONVERTER(
     UIReturnKeyDefault,
     integerValue)
 
-#if !TARGET_OS_OSX // [macOS]
 RCT_ENUM_CONVERTER(
     UIUserInterfaceStyle,
     (@{
@@ -500,7 +499,6 @@ RCT_ENUM_CONVERTER(
     }),
     UIUserInterfaceStyleUnspecified,
     integerValue)
-#endif // [macOS]
 
 RCT_ENUM_CONVERTER(
     UIInterfaceOrientationMask,
@@ -548,22 +546,8 @@ RCT_ENUM_CONVERTER(
     }),
     UIViewContentModeScaleAspectFill,
     integerValue)
-
-RCT_ENUM_CONVERTER(
-    UIBarStyle,
-    (@{
-      @"default" : @(UIBarStyleDefault),
-      @"black" : @(UIBarStyleBlack),
-#if !TARGET_OS_VISION // [visionOS]
-      @"blackOpaque" : @(UIBarStyleBlackOpaque),
-      @"blackTranslucent" : @(UIBarStyleBlackTranslucent),
-#endif // [visionOS]
-    }),
-    UIBarStyleDefault,
-    integerValue)
 #endif // [macOS]
 
-// [macOS
 RCT_ENUM_CONVERTER(
     RCTCursor,
     (@{

@@ -37,7 +37,8 @@ void EventDispatcher::dispatchEvent(RawEvent&& rawEvent) const {
 
   auto eventLogger = eventLogger_.lock();
   if (eventLogger != nullptr) {
-    rawEvent.loggingTag = eventLogger->onEventStart(rawEvent.type);
+    rawEvent.loggingTag =
+        eventLogger->onEventStart(rawEvent.type, rawEvent.eventTarget);
   }
   eventQueue_.enqueueEvent(std::move(rawEvent));
 }
@@ -59,12 +60,13 @@ void EventDispatcher::dispatchUniqueEvent(RawEvent&& rawEvent) const {
   if (eventListeners_.willDispatchEvent(rawEvent)) {
     return;
   }
+
   eventQueue_.enqueueUniqueEvent(std::move(rawEvent));
 }
 
 void EventDispatcher::addListener(
-    const std::shared_ptr<const EventListener>& listener) const {
-  eventListeners_.addListener(listener);
+    std::shared_ptr<const EventListener> listener) const {
+  eventListeners_.addListener(std::move(listener));
 }
 
 /*

@@ -57,6 +57,12 @@ bool isColorMeaningful(const SharedColor& color) noexcept;
 SharedColor colorFromComponents(ColorComponents components);
 ColorComponents colorComponentsFromColor(SharedColor color);
 
+uint8_t alphaFromColor(SharedColor color);
+uint8_t redFromColor(SharedColor color);
+uint8_t greenFromColor(SharedColor color);
+uint8_t blueFromColor(SharedColor color);
+SharedColor colorFromRGBA(uint8_t r, uint8_t g, uint8_t b, uint8_t a);
+
 SharedColor clearColor();
 SharedColor blackColor();
 SharedColor whiteColor();

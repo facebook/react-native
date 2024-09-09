@@ -554,19 +554,13 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
     CGSize imageSize = self.image.size;
     CGFloat imageScale = UIImageGetScale(self.image); // [macOS]
 #if !TARGET_OS_OSX // [macOS]
-    CGFloat windowScale = RCTScreenScale();
-    RCTResizeMode resizeMode = (RCTResizeMode)_imageView.contentMode; // [macOS]
+    CGSize idealSize = RCTTargetSize(
+        imageSize, imageScale, frame.size, RCTScreenScale(), RCTResizeModeFromUIViewContentMode(self.contentMode), YES);
 #else // [macOS
-    CGFloat windowScale = self.window != nil ? self.window.backingScaleFactor : [NSScreen mainScreen].backingScaleFactor;
-    RCTResizeMode resizeMode = self.resizeMode;
-
-    // self.contentMode on iOS is translated to RCTResizeModeRepeat in -setResizeMode:
-    if (resizeMode == RCTResizeModeRepeat) {
-      resizeMode = RCTResizeModeStretch;
-    }
+    CGSize idealSize = RCTTargetSize(
+        imageSize, imageScale, frame.size, RCTScreenScale(), RCTResizeModeFromUIViewContentMode(_imageView.contentMode), YES);
 #endif // macOS]
-    CGSize idealSize = RCTTargetSize(imageSize, imageScale, frame.size, windowScale,
-                                       resizeMode, YES); // macOS]
+
     // Don't reload if the current image or target image size is close enough
     if ((!RCTShouldReloadImageForSizeChange(imageSize, idealSize) ||
          !RCTShouldReloadImageForSizeChange(_targetSize, idealSize)) // [macOS
@@ -574,7 +568,8 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
          // Since macOS doen't support UIViewContentModeScaleAspectFill, we have to manually resample the image
          // If we're in cover mode we need to ensure that the image is re-sampled to the correct size when the container size (shrinking 
          // being the most obvious case) otherwise we will end up in a state an image will not properly scale inside its container
-         && (resizeMode != RCTResizeModeCover || (imageSize.width == idealSize.width && imageSize.height == idealSize.height))
+         && (RCTResizeModeFromUIViewContentMode(_imageView.contentMode) != RCTResizeModeCover ||
+            (imageSize.width == idealSize.width && imageSize.height == idealSize.height))
 #endif
          ) { // macOS]
       return;

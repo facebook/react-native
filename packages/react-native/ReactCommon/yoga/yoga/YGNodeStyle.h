@@ -71,8 +71,10 @@ YGNodeStyleSetPosition(YGNodeRef node, YGEdge edge, float position);
 YG_EXPORT void
 YGNodeStyleSetPositionPercent(YGNodeRef node, YGEdge edge, float position);
 YG_EXPORT YGValue YGNodeStyleGetPosition(YGNodeConstRef node, YGEdge edge);
+YG_EXPORT void YGNodeStyleSetPositionAuto(YGNodeRef node, YGEdge edge);
 
-YG_EXPORT void YGNodeStyleSetMargin(YGNodeRef node, YGEdge edge, float margin);
+YG_EXPORT
+void YGNodeStyleSetMargin(YGNodeRef node, YGEdge edge, float margin);
 YG_EXPORT void
 YGNodeStyleSetMarginPercent(YGNodeRef node, YGEdge edge, float margin);
 YG_EXPORT void YGNodeStyleSetMarginAuto(YGNodeRef node, YGEdge edge);

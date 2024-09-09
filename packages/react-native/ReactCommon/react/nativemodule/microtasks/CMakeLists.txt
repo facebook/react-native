@@ -15,7 +15,7 @@ add_compile_options(
         -DLOG_TAG=\"ReactNative\")
 
 file(GLOB react_nativemodule_microtasks_SRC CONFIGURE_DEPENDS *.cpp)
-add_library(react_nativemodule_microtasks SHARED ${react_nativemodule_microtasks_SRC})
+add_library(react_nativemodule_microtasks OBJECT ${react_nativemodule_microtasks_SRC})
 
 target_include_directories(react_nativemodule_microtasks PUBLIC ${REACT_COMMON_DIR})
 

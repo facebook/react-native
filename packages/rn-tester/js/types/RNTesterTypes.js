@@ -20,6 +20,7 @@ export type RNTesterModuleExample = $ReadOnly<{|
   platform?: RNTesterPlatform | Array<RNTesterPlatform>, // [macOS]
   description?: string,
   expect?: string,
+  hidden?: boolean,
   render: ({testID?: ?string}) => React.Node,
 |}>;
 

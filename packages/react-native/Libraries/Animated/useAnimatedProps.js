@@ -10,12 +10,16 @@
 
 'use strict';
 
+import type {EventSubscription} from '../EventEmitter/NativeEventEmitter';
+
 import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNativeFeatureFlags';
 import {isPublicInstance as isFabricPublicInstance} from '../ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstanceUtils';
 import useRefEffect from '../Utilities/useRefEffect';
 import {AnimatedEvent} from './AnimatedEvent';
-import NativeAnimatedHelper from './NativeAnimatedHelper';
+import NativeAnimatedHelper from '../../src/private/animated/NativeAnimatedHelper';
+import AnimatedNode from './nodes/AnimatedNode';
 import AnimatedProps from './nodes/AnimatedProps';
+import AnimatedValue from './nodes/AnimatedValue';
 import {
   useCallback,
   useEffect,
@@ -31,6 +35,11 @@ type ReducedProps<TProps> = {
   ...
 };
 type CallbackRef<T> = T => mixed;
+
+type AnimatedValueListeners = Array<{
+  propValue: AnimatedValue,
+  listenerId: string,
+}>;
 
 export default function useAnimatedProps<TProps: {...}, TInstance>(
   props: TProps,
@@ -49,6 +58,14 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
   );
   const useNativePropsInFabric =
     ReactNativeFeatureFlags.shouldUseSetNativePropsInFabric();
+  const useSetNativePropsInNativeAnimationsInFabric =
+    ReactNativeFeatureFlags.shouldUseSetNativePropsInNativeAnimationsInFabric();
+
+  const useAnimatedPropsLifecycle =
+    ReactNativeFeatureFlags.usePassiveEffectsForAnimations()
+      ? useAnimatedPropsLifecycle_passiveEffects
+      : useAnimatedPropsLifecycle_layoutEffects;
+
   useAnimatedPropsLifecycle(node);
 
   // TODO: This "effect" does three things:
@@ -87,7 +104,12 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
           if (isFabricNode) {
             // Call `scheduleUpdate` to synchronise Fiber and Shadow tree.
             // Must not be called in Paper.
-            scheduleUpdate();
+            if (useSetNativePropsInNativeAnimationsInFabric) {
+              // $FlowFixMe[incompatible-use]
+              instance.setNativeProps(node.__getAnimatedValue());
+            } else {
+              scheduleUpdate();
+            }
           }
           return;
         }
@@ -139,6 +161,7 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
 
       const target = getEventTarget(instance);
       const events = [];
+      const animatedValueListeners: AnimatedValueListeners = [];
 
       for (const propName in props) {
         // $FlowFixMe[invalid-computed-prop]
@@ -146,6 +169,8 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
         if (propValue instanceof AnimatedEvent && propValue.__isNative) {
           propValue.__attach(target, propName);
           events.push([propName, propValue]);
+          // $FlowFixMe[incompatible-call] - the `addListenersToPropsValue` drills down the propValue.
+          addListenersToPropsValue(propValue, animatedValueListeners);
         }
       }
 
@@ -155,24 +180,60 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
         for (const [propName, propValue] of events) {
           propValue.__detach(target, propName);
         }
+
+        for (const {propValue, listenerId} of animatedValueListeners) {
+          propValue.removeListener(listenerId);
+        }
       };
     },
-    [props, node, useNativePropsInFabric],
+    [
+      node,
+      useNativePropsInFabric,
+      useSetNativePropsInNativeAnimationsInFabric,
+      props,
+    ],
   );
   const callbackRef = useRefEffect<TInstance>(refEffect);
 
   return [reduceAnimatedProps<TProps>(node), callbackRef];
 }
 
-function reduceAnimatedProps<TProps>(
-  node: AnimatedProps,
-): ReducedProps<TProps> {
+function reduceAnimatedProps<TProps>(node: AnimatedNode): ReducedProps<TProps> {
   // Force `collapsable` to be false so that the native view is not flattened.
   // Flattened views cannot be accurately referenced by the native driver.
   return {
     ...node.__getValue(),
     collapsable: false,
   };
+}
+
+function addListenersToPropsValue(
+  propValue: AnimatedValue,
+  accumulator: AnimatedValueListeners,
+) {
+  // propValue can be a scalar value, an array or an object.
+  if (propValue instanceof AnimatedValue) {
+    const listenerId = propValue.addListener(() => {});
+    accumulator.push({propValue, listenerId});
+  } else if (Array.isArray(propValue)) {
+    // An array can be an array of scalar values, arrays of arrays, or arrays of objects
+    for (const prop of propValue) {
+      addListenersToPropsValue(prop, accumulator);
+    }
+  } else if (propValue instanceof Object) {
+    addAnimatedValuesListenersToProps(propValue, accumulator);
+  }
+}
+
+function addAnimatedValuesListenersToProps(
+  props: AnimatedNode,
+  accumulator: AnimatedValueListeners,
+) {
+  for (const propName in props) {
+    // $FlowFixMe[prop-missing] - This is an object contained in a prop, but we don't know the exact type.
+    const propValue = props[propName];
+    addListenersToPropsValue(propValue, accumulator);
+  }
 }
 
 /**
@@ -182,7 +243,7 @@ function reduceAnimatedProps<TProps>(
  * nodes. So in order to optimize this, we avoid detaching until the next attach
  * unless we are unmounting.
  */
-function useAnimatedPropsLifecycle(node: AnimatedProps): void {
+function useAnimatedPropsLifecycle_layoutEffects(node: AnimatedProps): void {
   const prevNodeRef = useRef<?AnimatedProps>(null);
   const isUnmountingRef = useRef<boolean>(false);
 
@@ -191,6 +252,20 @@ function useAnimatedPropsLifecycle(node: AnimatedProps): void {
     // if the queue is empty. When multiple animated components are mounted at
     // the same time. Only first component flushes the queue and the others will noop.
     NativeAnimatedHelper.API.flushQueue();
+    let drivenAnimationEndedListener: ?EventSubscription = null;
+    if (node.__isNative) {
+      drivenAnimationEndedListener =
+        NativeAnimatedHelper.nativeEventEmitter.addListener(
+          'onUserDrivenAnimationEnded',
+          data => {
+            node.update();
+          },
+        );
+    }
+
+    return () => {
+      drivenAnimationEndedListener?.remove();
+    };
   });
 
   useLayoutEffect(() => {
@@ -216,6 +291,66 @@ function useAnimatedPropsLifecycle(node: AnimatedProps): void {
       } else {
         prevNodeRef.current = node;
       }
+    };
+  }, [node]);
+}
+
+/**
+ * Manages the lifecycle of the supplied `AnimatedProps` by invoking `__attach`
+ * and `__detach`. However, this is more complicated because `AnimatedProps`
+ * uses reference counting to determine when to recursively detach its children
+ * nodes. So in order to optimize this, we avoid detaching until the next attach
+ * unless we are unmounting.
+ *
+ * NOTE: unlike `useAnimatedPropsLifecycle_layoutEffects`, this version uses passive effects to setup animation graph.
+ */
+function useAnimatedPropsLifecycle_passiveEffects(node: AnimatedProps): void {
+  const prevNodeRef = useRef<?AnimatedProps>(null);
+  const isUnmountingRef = useRef<boolean>(false);
+
+  useEffect(() => {
+    // It is ok for multiple components to call `flushQueue` because it noops
+    // if the queue is empty. When multiple animated components are mounted at
+    // the same time. Only first component flushes the queue and the others will noop.
+    NativeAnimatedHelper.API.flushQueue();
+  });
+
+  useEffect(() => {
+    isUnmountingRef.current = false;
+    return () => {
+      isUnmountingRef.current = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    node.__attach();
+    let drivenAnimationEndedListener: ?EventSubscription = null;
+
+    if (node.__isNative) {
+      drivenAnimationEndedListener =
+        NativeAnimatedHelper.nativeEventEmitter.addListener(
+          'onUserDrivenAnimationEnded',
+          data => {
+            node.update();
+          },
+        );
+    }
+    if (prevNodeRef.current != null) {
+      const prevNode = prevNodeRef.current;
+      // TODO: Stop restoring default values (unless `reset` is called).
+      prevNode.__restoreDefaultValues();
+      prevNode.__detach();
+      prevNodeRef.current = null;
+    }
+    return () => {
+      if (isUnmountingRef.current) {
+        // NOTE: Do not restore default values on unmount, see D18197735.
+        node.__detach();
+      } else {
+        prevNodeRef.current = node;
+      }
+
+      drivenAnimationEndedListener?.remove();
     };
   }, [node]);
 }

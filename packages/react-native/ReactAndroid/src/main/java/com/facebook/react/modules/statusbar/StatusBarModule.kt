@@ -24,6 +24,8 @@ import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.common.ReactConstants
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.PixelUtil
+import com.facebook.react.views.view.setStatusBarTranslucency
+import com.facebook.react.views.view.setStatusBarVisibility
 
 /** [NativeModule] that allows changing the appearance of the status bar. */
 @ReactModule(name = NativeStatusBarManagerAndroidSpec.NAME)
@@ -97,23 +99,7 @@ public class StatusBarModule(reactContext: ReactApplicationContext?) :
     UiThreadUtil.runOnUiThread(
         object : GuardedRunnable(reactApplicationContext) {
           override fun runGuarded() {
-            // If the status bar is translucent hook into the window insets calculations
-            // and consume all the top insets so no padding will be added under the status bar.
-            val window = activity.window ?: return
-            val decorView = window.decorView
-            if (translucent) {
-              decorView.setOnApplyWindowInsetsListener { v, insets ->
-                val defaultInsets = v.onApplyWindowInsets(insets)
-                defaultInsets.replaceSystemWindowInsets(
-                    defaultInsets.systemWindowInsetLeft,
-                    0,
-                    defaultInsets.systemWindowInsetRight,
-                    defaultInsets.systemWindowInsetBottom)
-              }
-            } else {
-              decorView.setOnApplyWindowInsetsListener(null)
-            }
-            ViewCompat.requestApplyInsets(decorView)
+            activity.window?.setStatusBarTranslucency(translucent)
           }
         })
   }
@@ -127,17 +113,7 @@ public class StatusBarModule(reactContext: ReactApplicationContext?) :
           "StatusBarModule: Ignored status bar change, current activity is null.")
       return
     }
-    UiThreadUtil.runOnUiThread(
-        Runnable {
-          val window = activity.window ?: return@Runnable
-          if (hidden) {
-            window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
-            window.clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN)
-          } else {
-            window.addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN)
-            window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
-          }
-        })
+    UiThreadUtil.runOnUiThread { activity.window?.setStatusBarVisibility(hidden) }
   }
 
   @Suppress("DEPRECATION")

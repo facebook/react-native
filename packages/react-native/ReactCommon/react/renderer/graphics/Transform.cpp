@@ -11,6 +11,7 @@
 
 #include <glog/logging.h>
 #include <react/debug/react_native_assert.h>
+#include <react/utils/FloatComparison.h>
 
 namespace facebook::react {
 
@@ -305,11 +306,11 @@ Transform Transform::Interpolate(
 }
 
 bool Transform::isVerticalInversion(const Transform& transform) {
-  return transform.at(1, 1) == -1;
+  return facebook::react::floatEquality(transform.at(1, 1), -1.0f);
 }
 
 bool Transform::isHorizontalInversion(const Transform& transform) {
-  return transform.at(0, 0) == -1;
+  return facebook::react::floatEquality(transform.at(0, 0), -1.0f);
 }
 
 bool Transform::operator==(const Transform& rhs) const {

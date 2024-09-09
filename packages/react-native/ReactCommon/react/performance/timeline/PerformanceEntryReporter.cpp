@@ -229,7 +229,7 @@ std::vector<PerformanceEntry> PerformanceEntryReporter::getEntries(
 }
 
 void PerformanceEntryReporter::measure(
-    const std::string& name,
+    const std::string_view& name,
     DOMHighResTimeStamp startTime,
     DOMHighResTimeStamp endTime,
     const std::optional<DOMHighResTimeStamp>& duration,
@@ -249,7 +249,7 @@ void PerformanceEntryReporter::measure(
       duration ? *duration : endTimeVal - startTimeVal;
 
   logEntry(
-      {.name = name,
+      {.name = std::string(name),
        .entryType = PerformanceEntryType::MEASURE,
        .startTime = startTimeVal,
        .duration = durationVal});
@@ -285,6 +285,16 @@ void PerformanceEntryReporter::logEventEntry(
        .processingStart = processingStart,
        .processingEnd = processingEnd,
        .interactionId = interactionId});
+}
+
+void PerformanceEntryReporter::logLongTaskEntry(
+    DOMHighResTimeStamp startTime,
+    DOMHighResTimeStamp duration) {
+  logEntry(
+      {.name = std::string{"self"},
+       .entryType = PerformanceEntryType::LONGTASK,
+       .startTime = startTime,
+       .duration = duration});
 }
 
 void PerformanceEntryReporter::scheduleFlushBuffer() {

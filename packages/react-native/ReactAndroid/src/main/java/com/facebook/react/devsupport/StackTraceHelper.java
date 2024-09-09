@@ -8,12 +8,17 @@
 package com.facebook.react.devsupport;
 
 import androidx.annotation.Nullable;
+import com.facebook.react.bridge.JavaOnlyArray;
+import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.devsupport.interfaces.StackFrame;
+import com.facebook.react.interfaces.exceptionmanager.ReactJsExceptionHandler.ParsedError;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.json.JSONArray;
@@ -23,8 +28,15 @@ import org.json.JSONObject;
 /** Helper class converting JS and Java stack traces into arrays of {@link StackFrame} objects. */
 public class StackTraceHelper {
 
-  public static final java.lang.String COLUMN_KEY = "column";
-  public static final java.lang.String LINE_NUMBER_KEY = "lineNumber";
+  public static final String COLUMN_KEY = "column";
+  public static final String LINE_NUMBER_KEY = "lineNumber";
+  public static final String FILE_KEY = "file";
+  public static final String METHOD_NAME_KEY = "methodName";
+
+  public static final String MESSAGE_KEY = "message";
+  public static final String STACK_KEY = "stack";
+  public static final String ID_KEY = "id";
+  public static final String IS_FATAL_KEY = "isFatal";
 
   private static final Pattern STACK_FRAME_PATTERN1 =
       Pattern.compile("^(?:(.*?)@)?(.*?)\\:([0-9]+)\\:([0-9]+)$");
@@ -245,5 +257,26 @@ public class StackTraceHelper {
     }
 
     return stackTrace.toString();
+  }
+
+  public static JavaOnlyMap convertParsedError(ParsedError error) {
+    List<ParsedError.StackFrame> frames = error.getFrames();
+    List<ReadableMap> readableMapList = new ArrayList<>();
+    for (ParsedError.StackFrame frame : frames) {
+      JavaOnlyMap map = new JavaOnlyMap();
+      map.putDouble(COLUMN_KEY, frame.getColumnNumber());
+      map.putDouble(LINE_NUMBER_KEY, frame.getLineNumber());
+      map.putString(FILE_KEY, (String) frame.getFileName());
+      map.putString(METHOD_NAME_KEY, (String) frame.getMethodName());
+      readableMapList.add(map);
+    }
+
+    JavaOnlyMap data = new JavaOnlyMap();
+    data.putString(MESSAGE_KEY, error.getMessage());
+    data.putArray(STACK_KEY, JavaOnlyArray.from(readableMapList));
+    data.putInt(ID_KEY, error.getExceptionId());
+    data.putBoolean(IS_FATAL_KEY, error.isFatal());
+
+    return data;
   }
 }

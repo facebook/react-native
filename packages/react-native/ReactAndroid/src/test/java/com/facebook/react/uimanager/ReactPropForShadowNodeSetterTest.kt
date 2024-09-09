@@ -14,12 +14,18 @@ import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.uimanager.annotations.ReactProp
 import com.facebook.react.uimanager.annotations.ReactPropGroup
 import com.facebook.testutils.shadows.ShadowSoLoader
-import com.facebook.testutils.shadows.ShadowYogaConfigProvider
-import com.facebook.testutils.shadows.ShadowYogaNodeFactory
+import com.facebook.yoga.YogaConfig
+import com.facebook.yoga.YogaConfigFactory
+import com.facebook.yoga.YogaNode
+import com.facebook.yoga.YogaNodeFactory
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.MockedStatic
+import org.mockito.Mockito.any
 import org.mockito.Mockito.mock
+import org.mockito.Mockito.mockStatic
 import org.mockito.Mockito.reset
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.verifyNoMoreInteractions
@@ -29,9 +35,7 @@ import org.robolectric.annotation.Config
 
 /** Test [ReactProp] and [ReactPropGroup] annotations for [ReactShadowNode] */
 @RunWith(RobolectricTestRunner::class)
-@Config(
-    shadows =
-        [ShadowYogaConfigProvider::class, ShadowSoLoader::class, ShadowYogaNodeFactory::class])
+@Config(shadows = [ShadowSoLoader::class])
 class ReactPropForShadowNodeSetterTest {
   interface ViewManagerUpdatesReceiver {
     fun onBooleanSetterCalled(value: Boolean)
@@ -90,13 +94,30 @@ class ReactPropForShadowNodeSetterTest {
     }
   }
 
+  private lateinit var yogaNodeFactory: MockedStatic<YogaNodeFactory>
+  private lateinit var yogaConfigFactory: MockedStatic<YogaConfigFactory>
   private lateinit var shadowView: ShadowViewUnderTest
   private lateinit var updatesReceiverMock: ViewManagerUpdatesReceiver
 
   @Before
   fun setup() {
+    yogaNodeFactory = mockStatic(YogaNodeFactory::class.java)
+    yogaNodeFactory
+        .`when`<YogaNode> { YogaNodeFactory.create(any()) }
+        .thenReturn(mock(YogaNode::class.java))
+    yogaConfigFactory = mockStatic(YogaConfigFactory::class.java)
+    yogaConfigFactory
+        .`when`<YogaConfig> { YogaConfigFactory.create() }
+        .thenReturn(mock(YogaConfig::class.java))
+
     updatesReceiverMock = mock(ViewManagerUpdatesReceiver::class.java)
     shadowView = ShadowViewUnderTest(updatesReceiverMock)
+  }
+
+  @After()
+  fun tearDown() {
+    yogaNodeFactory.close()
+    yogaConfigFactory.close()
   }
 
   @Test

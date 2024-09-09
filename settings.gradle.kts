@@ -11,7 +11,7 @@ pluginManagement {
     google()
     gradlePluginPortal()
   }
-  includeBuild("packages/react-native-gradle-plugin/")
+  includeBuild("packages/gradle-plugin/")
 }
 
 include(
@@ -20,7 +20,7 @@ include(
     ":packages:react-native:ReactAndroid:external-artifacts",
     ":packages:rn-tester:android:app")
 
-includeBuild("packages/react-native-gradle-plugin/")
+includeBuild("packages/gradle-plugin/")
 
 dependencyResolutionManagement {
   versionCatalogs {

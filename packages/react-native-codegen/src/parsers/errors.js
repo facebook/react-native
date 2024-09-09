@@ -100,15 +100,12 @@ class UnsupportedModuleEventEmitterPropertyParserError extends ParserError {
     language: ParserType,
     nullable: boolean,
     untyped: boolean,
-    cxxOnly: boolean,
   ) {
     let message = `${language} interfaces extending TurboModule must only contain 'FunctionTypeAnnotation's or non nullable 'EventEmitter's. Further the EventEmitter property `;
     if (nullable) {
       message += `'${propertyValue}' must non nullable.`;
     } else if (untyped) {
       message += `'${propertyValue}' must have a concrete or void eventType.`;
-    } else if (cxxOnly) {
-      message += `'${propertyValue}' is only supported in C++ Turbo Modules.`;
     }
     super(nativeModuleName, propertyValue, message);
   }

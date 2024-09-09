@@ -36,7 +36,7 @@ Pod::Spec.new do |s|
   s.source_files           = "JsErrorHandler.{cpp,h}"
   s.pod_target_xcconfig = {
     "USE_HEADERMAP" => "YES",
-    "CLANG_CXX_LANGUAGE_STANDARD" => "c++20"
+    "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard()
   }
   s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
 
@@ -47,6 +47,12 @@ Pod::Spec.new do |s|
 
   s.dependency folly_dep_name, folly_version
   s.dependency "React-jsi"
+  s.dependency "React-cxxreact"
+  s.dependency "glog"
   add_dependency(s, "React-debug")
+  
+  if ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == "1"
+    s.dependency 'hermes-engine'
+  end
 
 end

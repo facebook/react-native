@@ -73,7 +73,6 @@ let componentProviderInstrumentationHook: ComponentProviderInstrumentationHook =
 
 let wrapperComponentProvider: ?WrapperComponentProvider;
 let rootViewStyleProvider: ?RootViewStyleProvider;
-let showArchitectureIndicator = false;
 
 /**
  * `AppRegistry` is the JavaScript entry point to running all React Native apps.
@@ -87,10 +86,6 @@ const AppRegistry = {
 
   setRootViewStyleProvider(provider: RootViewStyleProvider) {
     rootViewStyleProvider = provider;
-  },
-
-  enableArchitectureIndicator(enabled: boolean): void {
-    showArchitectureIndicator = enabled;
   },
 
   registerConfig(config: Array<AppConfig>): void {
@@ -139,7 +134,6 @@ const AppRegistry = {
         wrapperComponentProvider && wrapperComponentProvider(appParameters),
         rootViewStyleProvider && rootViewStyleProvider(appParameters),
         appParameters.fabric,
-        showArchitectureIndicator,
         scopedPerformanceLogger,
         appKey === 'LogBox', // is logbox
         appKey,

@@ -239,6 +239,11 @@ NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttributes(c
     isParagraphStyleUsed = YES;
   }
 
+  if (textAttributes.lineBreakMode.has_value()) {
+    paragraphStyle.lineBreakMode = RCTNSLineBreakModeFromLineBreakMode(textAttributes.lineBreakMode.value());
+    isParagraphStyleUsed = YES;
+  }
+
   if (!isnan(textAttributes.lineHeight)) {
     CGFloat lineHeight = textAttributes.lineHeight * RCTEffectiveFontSizeMultiplierFromTextAttributes(textAttributes);
     paragraphStyle.minimumLineHeight = lineHeight;
@@ -306,7 +311,7 @@ NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttributes(c
   return [attributes copy];
 }
 
-static void RCTApplyBaselineOffset(NSMutableAttributedString *attributedText)
+void RCTApplyBaselineOffset(NSMutableAttributedString *attributedText)
 {
   __block CGFloat maximumLineHeight = 0;
 
@@ -417,7 +422,6 @@ NSAttributedString *RCTNSAttributedStringFromAttributedString(const AttributedSt
 
     [nsAttributedString appendAttributedString:nsAttributedStringFragment];
   }
-  RCTApplyBaselineOffset(nsAttributedString);
   [nsAttributedString endEditing];
 
   return nsAttributedString;

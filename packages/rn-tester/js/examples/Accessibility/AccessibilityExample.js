@@ -1821,80 +1821,80 @@ exports.description = 'Examples of using Accessibility APIs.';
 exports.examples = [
   {
     title: 'Accessibility expanded',
-    render(): React.Element<typeof AccessibilityExpandedExample> {
+    render(): React.MixedElement {
       return <AccessibilityExpandedExample />;
     },
   },
   {
     title: 'Accessibility elements',
-    render(): React.Element<typeof AccessibilityExample> {
+    render(): React.MixedElement {
       return <AccessibilityExample />;
     },
   },
   {
     title: 'Automatic Content Grouping',
-    render(): React.Element<typeof AutomaticContentGrouping> {
+    render(): React.MixedElement {
       return <AutomaticContentGrouping />;
     },
   },
   {
     title: 'New accessibility roles and states',
-    render(): React.Element<typeof AccessibilityRoleAndStateExample> {
+    render(): React.MixedElement {
       return <AccessibilityRoleAndStateExample />;
     },
   },
   {
     title: 'Accessibility action examples',
-    render(): React.Element<typeof AccessibilityActionsExample> {
+    render(): React.MixedElement {
       return <AccessibilityActionsExample />;
     },
   },
   {
     title: 'Fake Slider Example',
-    render(): React.Element<typeof FakeSliderExample> {
+    render(): React.MixedElement {
       return <FakeSliderExample />;
     },
   },
   {
     title: 'Fake SliderExample For AccessibilityValue',
-    render(): React.Element<typeof FakeSliderExampleForAccessibilityValue> {
+    render(): React.MixedElement {
       return <FakeSliderExampleForAccessibilityValue />;
     },
   },
   {
     title: 'Check if the display options are enabled',
-    render(): React.Element<typeof DisplayOptionsStatusExample> {
+    render(): React.MixedElement {
       return <DisplayOptionsStatusExample />;
     },
   },
   {
     title: 'Check if the screen reader announces',
-    render(): React.Element<typeof AnnounceForAccessibility> {
+    render(): React.MixedElement {
       return <AnnounceForAccessibility />;
     },
   },
   {
     title: 'Check if accessibility is focused',
-    render(): React.Element<typeof SetAccessibilityFocusExample> {
+    render(): React.MixedElement {
       return <SetAccessibilityFocusExample />;
     },
   },
   {
     title: 'Check if these properties are enabled',
-    render(): React.Element<typeof EnabledExamples> {
+    render(): React.MixedElement {
       return <EnabledExamples />;
     },
   },
   {
     title: 'Testing importantForAccessibility',
-    render(): React.Element<typeof ImportantForAccessibilityExamples> {
+    render(): React.MixedElement {
       return <ImportantForAccessibilityExamples />;
     },
   },
   {
     title:
       'Check if accessibilityState disabled is announced when the screenreader focus moves on the image',
-    render(): React.Element<typeof Image> {
+    render(): React.MixedElement {
       return (
         <Image
           accessible={true}
@@ -1908,9 +1908,7 @@ exports.examples = [
   },
   {
     title: 'TextInput with aria-labelledby attribute',
-    render(): React.Element<
-      typeof AccessibilityTextInputWithArialabelledByAttributeExample,
-    > {
+    render(): React.MixedElement {
       return <AccessibilityTextInputWithArialabelledByAttributeExample />;
     },
   },

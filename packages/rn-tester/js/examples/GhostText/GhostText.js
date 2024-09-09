@@ -249,7 +249,7 @@ exports.description = 'Examples that show how ghost text can be used.';
 exports.examples = [
   {
     title: 'GhostTextExample',
-    render: function (): React.Element<any> {
+    render: function (): React.Node {
       return <GhostTextExample />;
     },
   },

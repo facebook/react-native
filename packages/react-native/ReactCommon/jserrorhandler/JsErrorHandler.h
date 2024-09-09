@@ -32,12 +32,23 @@ class JsErrorHandler {
   explicit JsErrorHandler(OnJsError onJsError);
   ~JsErrorHandler();
 
-  void handleFatalError(const jsi::JSError& error);
+  void handleFatalError(jsi::Runtime& runtime, jsi::JSError& error);
   bool hasHandledFatalError();
+  void setRuntimeReady();
+  bool isRuntimeReady();
+  void notifyOfFatalError();
 
  private:
+  /**
+   * This callback:
+   * 1. Shouldn't retain the ReactInstance. So that we don't get retain cycles.
+   * 2. Should be implemented by something that can outlive the react instance
+   *    (both before init and after teardown). So that errors during init and
+   *    teardown get reported properly.
+   **/
   OnJsError _onJsError;
   bool _hasHandledFatalError;
+  bool _isRuntimeReady{};
 };
 
 } // namespace facebook::react

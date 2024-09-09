@@ -21,7 +21,6 @@ const AppContainer = ({
   fabric,
   initialProps,
   rootTag,
-  showArchitectureIndicator,
   WrapperComponent,
   rootViewStyle,
 }: Props): React.Node => {
@@ -29,10 +28,7 @@ const AppContainer = ({
 
   if (WrapperComponent != null) {
     innerView = (
-      <WrapperComponent
-        initialProps={initialProps}
-        fabric={fabric === true}
-        showArchitectureIndicator={showArchitectureIndicator === true}>
+      <WrapperComponent initialProps={initialProps} fabric={fabric === true}>
         {innerView}
       </WrapperComponent>
     );

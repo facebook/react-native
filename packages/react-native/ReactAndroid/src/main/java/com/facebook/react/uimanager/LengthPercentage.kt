@@ -11,6 +11,7 @@ import com.facebook.common.logging.FLog
 import com.facebook.react.bridge.Dynamic
 import com.facebook.react.bridge.ReadableType
 import com.facebook.react.common.ReactConstants
+import com.facebook.react.uimanager.style.CornerRadii
 import java.lang.NumberFormatException
 
 public enum class LengthPercentageType {
@@ -18,18 +19,18 @@ public enum class LengthPercentageType {
   PERCENT,
 }
 
-public class LengthPercentage(
+public data class LengthPercentage(
     private val value: Float,
-    private val unit: LengthPercentageType,
+    public val type: LengthPercentageType,
 ) {
   public companion object {
     @JvmStatic
     public fun setFromDynamic(dynamic: Dynamic): LengthPercentage? {
-      return when (dynamic.getType()) {
+      return when (dynamic.type) {
         ReadableType.Number -> {
           val value = dynamic.asDouble()
           if (value >= 0f) {
-            LengthPercentage(PixelUtil.toPixelFromDIP(value), LengthPercentageType.POINT)
+            LengthPercentage(value.toFloat(), LengthPercentageType.POINT)
           } else {
             null
           }
@@ -54,19 +55,19 @@ public class LengthPercentage(
           }
         }
         else -> {
-          FLog.w(ReactConstants.TAG, "Unsupported type for radius property: ${dynamic.getType()}")
+          FLog.w(ReactConstants.TAG, "Unsupported type for radius property: ${dynamic.type}")
           null
         }
       }
     }
   }
 
-  public fun resolve(width: Float, height: Float): Float {
-    if (unit == LengthPercentageType.PERCENT) {
-      return (value / 100) * Math.min(width, height)
+  public fun resolve(width: Float, height: Float): CornerRadii {
+    if (type == LengthPercentageType.PERCENT) {
+      return CornerRadii((value / 100) * width, (value / 100) * height)
     }
 
-    return value
+    return CornerRadii(value, value)
   }
 
   public constructor() : this(0f, LengthPercentageType.POINT)

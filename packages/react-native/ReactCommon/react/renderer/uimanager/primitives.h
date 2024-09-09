@@ -44,12 +44,17 @@ inline static ShadowNode::Shared shadowNodeFromValue(
 
 inline static jsi::Value valueFromShadowNode(
     jsi::Runtime& runtime,
-    ShadowNode::Shared shadowNode) {
+    ShadowNode::Shared shadowNode,
+    bool assignRuntimeShadowNodeReference = false) {
   // Wrap the shadow node so that we can update JS references from native
   auto wrappedShadowNode =
       std::make_shared<ShadowNodeWrapper>(std::move(shadowNode));
-  wrappedShadowNode->shadowNode->setRuntimeShadowNodeReference(
-      &*wrappedShadowNode);
+
+  if (assignRuntimeShadowNodeReference) {
+    wrappedShadowNode->shadowNode->setRuntimeShadowNodeReference(
+        wrappedShadowNode);
+  }
+
   jsi::Object obj(runtime);
   obj.setNativeState(runtime, std::move(wrappedShadowNode));
   return obj;

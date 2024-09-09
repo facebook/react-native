@@ -27,6 +27,129 @@ const EMPTY_NATIVE_MODULES: SchemaType = {
   },
 };
 
+const EVENT_EMITTER_MODULES: SchemaType = {
+  modules: {
+    NativeSampleTurboModule: {
+      type: 'NativeModule',
+      aliasMap: {
+        ObjectStruct: {
+          type: 'ObjectTypeAnnotation',
+          properties: [
+            {
+              name: 'a',
+              optional: false,
+              typeAnnotation: {
+                type: 'NumberTypeAnnotation',
+              },
+            },
+            {
+              name: 'b',
+              optional: false,
+              typeAnnotation: {
+                type: 'StringTypeAnnotation',
+              },
+            },
+            {
+              name: 'c',
+              optional: true,
+              typeAnnotation: {
+                type: 'NullableTypeAnnotation',
+                typeAnnotation: {
+                  type: 'StringTypeAnnotation',
+                },
+              },
+            },
+          ],
+        },
+      },
+      enumMap: {},
+      spec: {
+        eventEmitters: [
+          {
+            name: 'onEvent1',
+            optional: false,
+            typeAnnotation: {
+              type: 'EventEmitterTypeAnnotation',
+              typeAnnotation: {
+                type: 'VoidTypeAnnotation',
+              },
+            },
+          },
+          {
+            name: 'onEvent2',
+            optional: false,
+            typeAnnotation: {
+              type: 'EventEmitterTypeAnnotation',
+              typeAnnotation: {
+                type: 'StringTypeAnnotation',
+              },
+            },
+          },
+          {
+            name: 'onEvent3',
+            optional: false,
+            typeAnnotation: {
+              type: 'EventEmitterTypeAnnotation',
+              typeAnnotation: {
+                type: 'NumberTypeAnnotation',
+              },
+            },
+          },
+          {
+            name: 'onEvent4',
+            optional: false,
+            typeAnnotation: {
+              type: 'EventEmitterTypeAnnotation',
+              typeAnnotation: {
+                type: 'BooleanTypeAnnotation',
+              },
+            },
+          },
+          {
+            name: 'onEvent5',
+            optional: false,
+            typeAnnotation: {
+              type: 'EventEmitterTypeAnnotation',
+              typeAnnotation: {
+                type: 'TypeAliasTypeAnnotation',
+                name: 'ObjectStruct',
+              },
+            },
+          },
+          {
+            name: 'onEvent6',
+            optional: false,
+            typeAnnotation: {
+              type: 'EventEmitterTypeAnnotation',
+              typeAnnotation: {
+                type: 'ArrayTypeAnnotation',
+                elementType: {
+                  type: 'TypeAliasTypeAnnotation',
+                  name: 'ObjectStruct',
+                },
+              },
+            },
+          },
+        ],
+        methods: [
+          {
+            name: 'voidFunc',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'VoidTypeAnnotation',
+              },
+              params: [],
+            },
+          },
+        ],
+      },
+      moduleName: 'SampleTurboModule',
+    },
+  },
+};
+
 const SIMPLE_NATIVE_MODULES: SchemaType = {
   modules: {
     NativeSampleTurboModule: {
@@ -824,6 +947,9 @@ const COMPLEX_OBJECTS: SchemaType = {
                 type: 'NullableTypeAnnotation',
                 typeAnnotation: {
                   type: 'ArrayTypeAnnotation',
+                  elementType: {
+                    type: 'AnyTypeAnnotation',
+                  },
                 },
               },
               params: [],
@@ -1846,6 +1972,9 @@ const CXX_ONLY_NATIVE_MODULES: SchemaType = {
               type: 'FunctionTypeAnnotation',
               returnTypeAnnotation: {
                 type: 'ArrayTypeAnnotation',
+                elementType: {
+                  type: 'AnyTypeAnnotation',
+                },
               },
               params: [
                 {
@@ -2435,6 +2564,7 @@ module.exports = {
   complex_objects: COMPLEX_OBJECTS,
   two_modules_different_files: TWO_MODULES_DIFFERENT_FILES,
   empty_native_modules: EMPTY_NATIVE_MODULES,
+  event_emitter_module: EVENT_EMITTER_MODULES,
   simple_native_modules: SIMPLE_NATIVE_MODULES,
   native_modules_with_type_aliases: NATIVE_MODULES_WITH_TYPE_ALIASES,
   real_module_example: REAL_MODULE_EXAMPLE,

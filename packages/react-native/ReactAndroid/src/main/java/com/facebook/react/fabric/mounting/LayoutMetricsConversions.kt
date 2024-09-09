@@ -8,7 +8,7 @@
 package com.facebook.react.fabric.mounting
 
 import android.view.View.MeasureSpec
-import com.facebook.react.uimanager.PixelUtil
+import com.facebook.react.uimanager.PixelUtil.dpToPx
 import com.facebook.yoga.YogaMeasureMode
 
 public interface LayoutMetricsConversions {
@@ -33,11 +33,11 @@ public interface LayoutMetricsConversions {
     @JvmStatic
     public fun getYogaSize(minSize: Float, maxSize: Float): Float =
         if (minSize == maxSize) {
-          PixelUtil.toPixelFromDIP(maxSize)
+          maxSize.dpToPx()
         } else if (maxSize.isInfinite()) {
           Float.POSITIVE_INFINITY
         } else {
-          PixelUtil.toPixelFromDIP(maxSize)
+          maxSize.dpToPx()
         }
 
     @JvmStatic

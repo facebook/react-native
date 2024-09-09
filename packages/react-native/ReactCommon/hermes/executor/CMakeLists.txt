@@ -11,15 +11,15 @@ add_compile_options(-std=c++20)
 file(GLOB_RECURSE hermes_executor_SRC CONFIGURE_DEPENDS *.cpp)
 add_library(
         hermes_executor_common
-        STATIC
+        OBJECT
         ${hermes_executor_SRC}
 )
 target_include_directories(hermes_executor_common PUBLIC .)
 target_link_libraries(hermes_executor_common
-        jsireact
         hermes-engine::libhermes
-        jsi
         hermes_inspector_modern
+        jsi
+        reactnative
 )
 
 if(${CMAKE_BUILD_TYPE} MATCHES Debug)

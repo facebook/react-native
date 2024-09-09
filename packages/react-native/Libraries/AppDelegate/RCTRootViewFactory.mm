@@ -287,7 +287,8 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
 - (std::shared_ptr<facebook::react::JSRuntimeFactory>)createJSRuntimeFactory
 {
 #if USE_HERMES
-  return std::make_shared<facebook::react::RCTHermesInstance>(_reactNativeConfig, nullptr);
+  return std::make_shared<facebook::react::RCTHermesInstance>(
+      _reactNativeConfig, nullptr, /* allocInOldGenBeforeTTI */ false);
 #else
   return std::make_shared<facebook::react::RCTJscInstance>();
 #endif

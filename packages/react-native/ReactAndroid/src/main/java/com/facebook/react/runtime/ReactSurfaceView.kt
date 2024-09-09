@@ -139,7 +139,8 @@ public class ReactSurfaceView(context: Context?, private val surface: ReactSurfa
   override fun dispatchJSTouchEvent(event: MotionEvent) {
     val eventDispatcher = surface.eventDispatcher
     if (eventDispatcher != null) {
-      jsTouchDispatcher.handleTouchEvent(event, eventDispatcher)
+      jsTouchDispatcher.handleTouchEvent(
+          event, eventDispatcher, surface.reactHost.currentReactContext)
     } else {
       FLog.w(
           TAG, "Unable to dispatch touch events to JS as the React instance has not been attached")

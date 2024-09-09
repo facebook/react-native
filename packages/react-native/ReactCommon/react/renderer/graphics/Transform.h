@@ -67,6 +67,17 @@ struct TransformOrigin {
     return xy[0].value != 0.0f || xy[0].unit != UnitType::Undefined ||
         xy[1].value != 0.0f || xy[1].unit != UnitType::Undefined || z != 0.0f;
   }
+
+#ifdef ANDROID
+
+  /**
+   * Convert to folly::dynamic.
+   */
+  operator folly::dynamic() const {
+    return folly::dynamic::array(xy[0].value, xy[1].value, z);
+  }
+
+#endif
 };
 
 /*

@@ -33,7 +33,7 @@ type RequiredProps<SectionT: SectionBase<any>> = {|
    *
    *     sections: $ReadOnlyArray<{
    *       data: $ReadOnlyArray<SectionItem>,
-   *       renderItem?: ({item: SectionItem, ...}) => ?React.Element<*>,
+   *       renderItem?: ({item: SectionItem, ...}) => ?React.MixedElement,
    *       ItemSeparatorComponent?: ?ReactClass<{highlighted: boolean, ...}>,
    *     }>
    */
@@ -55,7 +55,7 @@ type OptionalProps<SectionT: SectionBase<any>> = {|
       ...
     },
     ...
-  }) => null | React.Element<any>,
+  }) => null | React.Node,
   /**
    * A marker property for telling the list to re-render (since it implements `PureComponent`). If
    * any of your `renderItem`, Header, Footer, etc. functions depend on anything outside of the

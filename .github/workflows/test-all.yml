@@ -2,10 +2,15 @@ name: Test All
 
 on:
   workflow_dispatch:
+  pull_request:
   push:
     branches:
       - main
       - "*-stable"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' && !contains(github.ref,  'stable')}}
 
 jobs:
   set_release_type:
@@ -34,84 +39,32 @@ jobs:
     env:
       HERMES_WS_DIR: /tmp/hermes
       HERMES_VERSION_FILE: packages/react-native/sdks/.hermesversion
-      BUILD_FROM_SOURCE: true
     outputs:
-      react-native-version: ${{ steps.react-native-version.outputs.version }}
-      hermes-version: ${{ steps.hermes-version.outputs.version }}
+      react-native-version: ${{ steps.prepare-hermes-workspace.outputs.react-native-version }}
+      hermes-version: ${{ steps.prepare-hermes-workspace.outputs.hermes-version }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.1.1
-      - name: Setup node.js
-        uses: ./.github/actions/setup-node
-      - name: Setup hermes version
-        id: hermes-version
-        run: |
-          mkdir -p "/tmp/hermes" "/tmp/hermes/download" "/tmp/hermes/hermes"
-
-          if [ -f "$HERMES_VERSION_FILE" ]; then
-            echo "Hermes Version file found! Using this version for the build:"
-            echo "VERSION=$(cat $HERMES_VERSION_FILE)" >> "$GITHUB_OUTPUT"
-          else
-            echo "Hermes Version file not found!!!"
-            echo "Using the last commit from main for the build:"
-            HERMES_TAG_SHA=$(git ls-remote https://github.com/$GITHUB_REPOSITORY main | cut -f 1 | tr -d '[:space:]')
-            echo "VERSION=$HERMES_TAG_SHA" >> "$GITHUB_OUTPUT"
-          fi
-          echo "Hermes commit is $HERMES_TAG_SHA"
-      - name: Get react-native version
-        id: react-native-version
-        run: |
-          VERSION=$(cat packages/react-native/package.json | jq -r '.version')
-          # Save the react native version we are building in an output variable so we can use that file as part of the cache key.
-          echo "VERSION=$VERSION" >> "$GITHUB_OUTPUT"
-          echo "React Native Version is $VERSION"
-      - name: Cache hermes workspace
-        uses: actions/cache@v4.0.0
+        uses: actions/checkout@v4
+      - name: Prepare Hermes Workspace
+        id: prepare-hermes-workspace
+        uses: ./.github/actions/prepare-hermes-workspace
         with:
-          path: |
-            /tmp/hermes/download/
-            /tmp/hermes/hermes/
-          key: v1-hermes-${{ steps.hermes-version.outputs.version }}-${{ github.run_number }}
-          enableCrossOsArchive: true
-      - name: Yarn- Install Dependencies
-        run: yarn install --non-interactive
-      - name: Download Hermes tarball
-        run: |
-          node packages/react-native/scripts/hermes/prepare-hermes-for-build ${{ github.event.pull_request.html_url }}
-          cp packages/react-native/sdks/download/* $HERMES_WS_DIR/download/.
-          cp -r packages/react-native/sdks/hermes/* $HERMES_WS_DIR/hermes/.
-
-          echo ${{ steps.hermes-version.outputs.version }}
+          hermes-ws-dir: ${{ env.HERMES_WS_DIR }}
+          hermes-version-file: ${{ env.HERMES_VERSION_FILE }}
 
   build_hermesc_apple:
     runs-on: macos-13
     needs: prepare_hermes_workspace
     env:
       HERMES_WS_DIR: /tmp/hermes
-      HERMES_TARBALL_ARTIFACTS_DIR: /tmp/hermes/hermes-runtime-darwin
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.1.1
-      - name: Cache hermes workspace
-        uses: actions/cache@v4.0.0
-        with:
-          path: |
-            /tmp/hermes/download/
-            /tmp/hermes/hermes/
-          key: v1-hermes-${{ needs.prepare_hermes_workspace.outputs.hermes-version }}-${{ github.run_number }}
-          enableCrossOsArchive: true
-      - name: Setup Hermes workspace
-        uses: ./.github/actions/setup_hermes_workspace
-      - name: Hermes apple cache
-        uses: actions/cache@v4.0.0
-        with:
-          path: ./packages/react-native/sdks/hermes/build_host_hermesc
-          key: v2-hermesc-apple-${{ needs.prepare_hermes_workspace.outputs.hermes-version }}-${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
+        uses: actions/checkout@v4
       - name: Build HermesC Apple
-        run: |
-          cd ./packages/react-native/sdks/hermes || exit 1
-          . ./utils/build-apple-framework.sh
-          build_host_hermesc_if_needed
+        uses: ./.github/actions/build-hermesc-apple
+        with:
+          hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
+          react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
 
   build_apple_slices_hermes:
     runs-on: macos-14
@@ -120,7 +73,9 @@ jobs:
       HERMES_WS_DIR: /tmp/hermes
       HERMES_TARBALL_ARTIFACTS_DIR: /tmp/hermes/hermes-runtime-darwin
       HERMES_OSXBIN_ARTIFACTS_DIR: /tmp/hermes/osx-bin
-    continue-on-error: true
+      IOS_DEPLOYMENT_TARGET: "15.1"
+      XROS_DEPLOYMENT_TARGET: "1.0"
+      MAC_DEPLOYMENT_TARGET: "10.15"
     strategy:
       fail-fast: false
       matrix:
@@ -128,82 +83,14 @@ jobs:
         slice: [macosx, iphoneos, iphonesimulator, catalyst, xros, xrsimulator]
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.1.1
-      - name: Setup xcode
-        uses: ./.github/actions/setup-xcode
-      - name: Cache setup
-        id: cache_setup
-        uses: ./.github/actions/cache_setup
+        uses: actions/checkout@v4
+      - name: Build Slice
+        uses: ./.github/actions/build-apple-slices-hermes
         with:
+          flavor: ${{ matrix.flavor }}
+          slice: ${{ matrix.slice}}
           hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
           react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
-      - name: Setup Hermes workspace
-        uses: ./.github/actions/setup_hermes_workspace
-      - name: Check if the required artifacts already exist
-        id: check_if_apple_artifacts_are_there
-        run: |
-          FLAVOR="${{ matrix.flavor }}"
-          echo "Flavor is $FLAVOR"
-          OSX_BIN="/tmp/hermes/osx-bin/$FLAVOR"
-          DSYM="/tmp/hermes/dSYM/$FLAVOR"
-          HERMES="/tmp/hermes/hermes-runtime-darwin/hermes-ios-$FLAVOR.tar.gz"
-
-          if [[ -d "$OSX_BIN" ]] && \
-             [[ -d "$DSYM" ]] && \
-             [[ -f "$HERMES" ]]; then
-
-            echo "Artifacts are there!"
-            echo "ARTIFACTS_EXIST=true" >> $GITHUB_ENV
-          fi
-      - name: Build the Hermes ${{ matrix.slice }} frameworks
-        run: |
-          cd ./packages/react-native/sdks/hermes || exit 1
-          SLICE=${{ matrix.slice }}
-          FLAVOR=${{ matrix.flavor }}
-          FINAL_PATH=build_"$SLICE"_"$FLAVOR"
-          echo "Final path for this slice is: $FINAL_PATH"
-
-          if [[ -d "$FINAL_PATH" ]]; then
-            echo "[HERMES] Skipping! Found the requested slice at $FINAL_PATH".
-            exit 0
-          fi
-
-          if [[ "$ARTIFACTS_EXIST" ]]; then
-            echo "[HERMES] Skipping! Artifacts exists already."
-            exit 0
-          fi
-
-          if [[ "$SLICE" == "macosx" ]]; then
-            echo "[HERMES] Building Hermes for MacOS"
-            BUILD_TYPE="${{ matrix.flavor }}" ./utils/build-mac-framework.sh
-          else
-            echo "[HERMES] Building Hermes for iOS: $SLICE"
-            BUILD_TYPE="${{ matrix.flavor }}" ./utils/build-ios-framework.sh "$SLICE"
-          fi
-
-          echo "Moving from build_$SLICE to $FINAL_PATH"
-          mv build_"$SLICE" "$FINAL_PATH"
-
-          # check whether everything is there
-          if [[ -d "$FINAL_PATH/API/hermes/hermes.framework" ]]; then
-            echo "Successfully built hermes.framework for $SLICE in $FLAVOR"
-          else
-            echo "Failed to built hermes.framework for $SLICE in $FLAVOR"
-            exit 1
-          fi
-
-          if [[ -d "$FINAL_PATH/API/hermes/hermes.framework.dSYM" ]]; then
-            echo "Successfully built hermes.framework.dSYM for $SLICE in $FLAVOR"
-          else
-            echo "Failed to built hermes.framework.dSYM for $SLICE in $FLAVOR"
-            echo "Please try again"
-            exit 1
-          fi
-      - name: Save slice cache
-        uses: actions/cache@v4.0.0
-        with:
-          path: ./packages/react-native/sdks/hermes/build_${{ matrix.slice }}_${{ matrix.flavor }}
-          key: v4-hermes-apple-${{ needs.prepare_hermes_workspace.outputs.hermes-version }}-${{ needs.prepare_hermes_workspace.outputs.react-native-version }}-${{ hashfiles('packages/react-native/sdks/hermes-engine/utils/build-apple-framework.sh') }}-${{ matrix.slice }}-${{ matrix.flavor }}
 
   build_hermes_macos:
     runs-on: macos-13
@@ -218,165 +105,13 @@ jobs:
         flavor: [Debug, Release]
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.1.1
-      - name: Setup xcode
-        uses: ./.github/actions/setup-xcode
-      - name: Setup node.js
-        uses: ./.github/actions/setup-node
-      - name: Cache setup
-        id: cache_setup
-        uses: ./.github/actions/cache_setup
+        uses: actions/checkout@v4
+      - name: Build Hermes MacOS
+        uses: ./.github/actions/build-hermes-macos
         with:
           hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
           react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
-      - name: Setup Hermes workspace
-        uses: ./.github/actions/setup_hermes_workspace
-      - name: Check if the required artifacts already exist
-        id: check_if_apple_artifacts_are_there
-        run: |
-          FLAVOR="${{ matrix.flavor }}"
-          echo "Flavor is $FLAVOR"
-          OSX_BIN="/tmp/hermes/osx-bin/$FLAVOR"
-          DSYM="/tmp/hermes/dSYM/$FLAVOR"
-          HERMES="/tmp/hermes/hermes-runtime-darwin/hermes-ios-$FLAVOR.tar.gz"
-
-          if [[ -d "$OSX_BIN" ]] && \
-             [[ -d "$DSYM" ]] && \
-             [[ -f "$HERMES" ]]; then
-
-            echo "Artifacts are there!"
-            echo "ARTIFACTS_EXIST=true" >> $GITHUB_ENV
-            echo "ARTIFACTS_EXIST=true" >> $GITHUB_OUTPUT
-          fi
-      - name: Yarn- Install Dependencies
-        run: yarn install --non-interactive
-      - name: Slice cache macosx
-        if: ${{ steps.check_if_apple_artifacts_are_there.outputs.ARTIFACTS_EXIST != true }}
-        uses: actions/cache@v4.0.0
-        with:
-          path: ./packages/react-native/sdks/hermes/build_macosx_${{ matrix.flavor }}
-          key: v4-hermes-apple-${{ needs.prepare_hermes_workspace.outputs.hermes-version }}-${{ needs.prepare_hermes_workspace.outputs.react-native-version }}-${{ hashfiles('packages/react-native/sdks/hermes-engine/utils/build-apple-framework.sh') }}-macosx-${{ matrix.flavor }}
-      - name: Slice cache iphoneos
-        if: ${{ steps.check_if_apple_artifacts_are_there.outputs.ARTIFACTS_EXIST != true }}
-        uses: actions/cache@v4.0.0
-        with:
-          path: ./packages/react-native/sdks/hermes/build_iphoneos_${{ matrix.flavor }}
-          key: v4-hermes-apple-${{ needs.prepare_hermes_workspace.outputs.hermes-version }}-${{ needs.prepare_hermes_workspace.outputs.react-native-version }}-${{ hashfiles('packages/react-native/sdks/hermes-engine/utils/build-apple-framework.sh') }}-iphoneos-${{ matrix.flavor }}
-      - name: Slice cache iphonesimulator
-        if: ${{ steps.check_if_apple_artifacts_are_there.outputs.ARTIFACTS_EXIST != true }}
-        uses: actions/cache@v4.0.0
-        with:
-          path: ./packages/react-native/sdks/hermes/build_iphonesimulator_${{ matrix.flavor }}
-          key: v4-hermes-apple-${{ needs.prepare_hermes_workspace.outputs.hermes-version }}-${{ needs.prepare_hermes_workspace.outputs.react-native-version }}-${{ hashfiles('packages/react-native/sdks/hermes-engine/utils/build-apple-framework.sh') }}-iphonesimulator-${{ matrix.flavor }}
-      - name: Slice cache catalyst
-        if: ${{ steps.check_if_apple_artifacts_are_there.outputs.ARTIFACTS_EXIST != true }}
-        uses: actions/cache@v4.0.0
-        with:
-          path: ./packages/react-native/sdks/hermes/build_catalyst_${{ matrix.flavor }}
-          key: v4-hermes-apple-${{ needs.prepare_hermes_workspace.outputs.hermes-version }}-${{ needs.prepare_hermes_workspace.outputs.react-native-version }}-${{ hashfiles('packages/react-native/sdks/hermes-engine/utils/build-apple-framework.sh') }}-catalyst-${{ matrix.flavor }}
-      - name: Slice cache xros
-        if: ${{ steps.check_if_apple_artifacts_are_there.outputs.ARTIFACTS_EXIST != true }}
-        uses: actions/cache@v4.0.0
-        with:
-          path: ./packages/react-native/sdks/hermes/build_xros_${{ matrix.flavor }}
-          key: v4-hermes-apple-${{ needs.prepare_hermes_workspace.outputs.hermes-version }}-${{ needs.prepare_hermes_workspace.outputs.react-native-version }}-${{ hashfiles('packages/react-native/sdks/hermes-engine/utils/build-apple-framework.sh') }}-xros-${{ matrix.flavor }}
-      - name: Slice cache xrsimulator
-        if: ${{ steps.check_if_apple_artifacts_are_there.outputs.ARTIFACTS_EXIST != true }}
-        uses: actions/cache@v4.0.0
-        with:
-          path: ./packages/react-native/sdks/hermes/build_xrsimulator_${{ matrix.flavor }}
-          key: v4-hermes-apple-${{ needs.prepare_hermes_workspace.outputs.hermes-version }}-${{ needs.prepare_hermes_workspace.outputs.react-native-version }}-${{ hashfiles('packages/react-native/sdks/hermes-engine/utils/build-apple-framework.sh') }}-xrsimulator-${{ matrix.flavor }}
-      - name: Move back build folders
-        if: ${{ steps.check_if_apple_artifacts_are_there.outputs.ARTIFACTS_EXIST != true }}
-        run: |
-          ls -l ./packages/react-native/sdks/hermes
-          cd ./packages/react-native/sdks/hermes || exit 1
-          mv build_macosx_${{ matrix.flavor }} build_macosx
-          mv build_iphoneos_${{ matrix.flavor }} build_iphoneos
-          mv build_iphonesimulator_${{ matrix.flavor }} build_iphonesimulator
-          mv build_catalyst_${{ matrix.flavor }} build_catalyst
-          mv build_xros_${{ matrix.flavor }} build_xros
-          mv build_xrsimulator_${{ matrix.flavor }} build_xrsimulator
-      - name: Prepare destroot folder
-        if: ${{ steps.check_if_apple_artifacts_are_there.outputs.ARTIFACTS_EXIST != true }}
-        run: |
-          cd ./packages/react-native/sdks/hermes || exit 1
-          . ./utils/build-apple-framework.sh
-          prepare_dest_root_for_ci
-      - name: Create fat framework for iOS
-        if: ${{ steps.check_if_apple_artifacts_are_there.outputs.ARTIFACTS_EXIST != true }}
-        run: |
-          cd ./packages/react-native/sdks/hermes || exit 1
-          echo "[HERMES] Creating the universal framework"
-          ./utils/build-ios-framework.sh build_framework
-      - name: Package the Hermes Apple frameworks
-        if: ${{ steps.check_if_apple_artifacts_are_there.outputs.ARTIFACTS_EXIST != true }}
-        run: |
-          BUILD_TYPE="${{ matrix.flavor }}"
-          echo "Packaging Hermes Apple frameworks for $BUILD_TYPE build type"
-
-          TARBALL_OUTPUT_DIR=$(mktemp -d /tmp/hermes-tarball-output-XXXXXXXX)
-
-          TARBALL_FILENAME=$(node ./packages/react-native/scripts/hermes/get-tarball-name.js --buildType "$BUILD_TYPE")
-
-          echo "Packaging Hermes Apple frameworks for $BUILD_TYPE build type"
-
-          TARBALL_OUTPUT_PATH=$(node ./packages/react-native/scripts/hermes/create-tarball.js \
-            --inputDir ./packages/react-native/sdks/hermes \
-            --buildType "$BUILD_TYPE" \
-            --outputDir $TARBALL_OUTPUT_DIR)
-
-          echo "Hermes tarball saved to $TARBALL_OUTPUT_PATH"
-
-          mkdir -p $HERMES_TARBALL_ARTIFACTS_DIR
-          cp $TARBALL_OUTPUT_PATH $HERMES_TARBALL_ARTIFACTS_DIR/.
-
-          mkdir -p /tmp/hermes/osx-bin/${{ matrix.flavor }}
-          cp ./packages/react-native/sdks/hermes/build_macosx/bin/* /tmp/hermes/osx-bin/${{ matrix.flavor }}
-          ls -lR /tmp/hermes/osx-bin/
-      - name: Upload darwin artifacts
-        uses: actions/upload-artifact@v4.3.1
-        with:
-          name: hermes-darwin-bin-${{ matrix.flavor }}
-          path: /tmp/hermes/hermes-runtime-darwin
-      - name: Upload osx-bin
-        uses: actions/upload-artifact@v4.3.1
-        with:
-          name: hermes-osx-bin-${{ matrix.flavor }}
-          path: /tmp/hermes/osx-bin
-      - name: Create dSYM archive
-        if: ${{ steps.check_if_apple_artifacts_are_there.outputs.ARTIFACTS_EXIST != true }}
-        run: |
-          FLAVOR=${{ matrix.flavor }}
-          WORKING_DIR="/tmp/hermes_tmp/dSYM/$FLAVOR"
-
-          mkdir -p "$WORKING_DIR/macosx"
-          mkdir -p "$WORKING_DIR/catalyst"
-          mkdir -p "$WORKING_DIR/iphoneos"
-          mkdir -p "$WORKING_DIR/iphonesimulator"
-          mkdir -p "$WORKING_DIR/xros"
-          mkdir -p "$WORKING_DIR/xrsimulator"
-
-          cd ./packages/react-native/sdks/hermes || exit 1
-
-          DSYM_FILE_PATH=API/hermes/hermes.framework.dSYM
-          cp -r build_macosx/$DSYM_FILE_PATH "$WORKING_DIR/macosx/"
-          cp -r build_catalyst/$DSYM_FILE_PATH "$WORKING_DIR/catalyst/"
-          cp -r build_iphoneos/$DSYM_FILE_PATH "$WORKING_DIR/iphoneos/"
-          cp -r build_iphonesimulator/$DSYM_FILE_PATH "$WORKING_DIR/iphonesimulator/"
-          cp -r build_xros/$DSYM_FILE_PATH "$WORKING_DIR/xros/"
-          cp -r build_xrsimulator/$DSYM_FILE_PATH "$WORKING_DIR/xrsimulator/"
-
-          DEST_DIR="/tmp/hermes/dSYM/$FLAVOR"
-          tar -C "$WORKING_DIR" -czvf "hermes.framework.dSYM" .
-
-          mkdir -p "$DEST_DIR"
-          mv "hermes.framework.dSYM" "$DEST_DIR"
-      - name: Upload hermes dSYM artifacts
-        uses: actions/upload-artifact@v4.3.1
-        with:
-          name: hermes-dSYM-${{ matrix.flavor }}
-          path: /tmp/hermes/dSYM/${{ matrix.flavor }}
+          flavor: ${{ matrix.flavor }}
 
   test_ios_rntester_ruby_3_2_0:
     runs-on: macos-13
@@ -387,13 +122,14 @@ jobs:
       HERMES_TARBALL_ARTIFACTS_DIR: /tmp/hermes/hermes-runtime-darwin
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4
       - name: Run it
-        uses: ./.github/actions/test_ios_rntester
+        uses: ./.github/actions/test-ios-rntester
         with:
           ruby-version: "3.2.0"
           hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
           react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
+
   test_ios_rntester_dynamic_frameworks:
     runs-on: macos-13
     needs:
@@ -408,9 +144,9 @@ jobs:
         jsengine: [Hermes, JSC]
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4
       - name: Run it
-        uses: ./.github/actions/test_ios_rntester
+        uses: ./.github/actions/test-ios-rntester
         with:
           jsengine: ${{ matrix.jsengine }}
           use-frameworks: DynamicFrameworks
@@ -432,142 +168,210 @@ jobs:
         architecture: [NewArch, OldArch]
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4
       - name: Run it
-        uses: ./.github/actions/test_ios_rntester
+        uses: ./.github/actions/test-ios-rntester
         with:
           jsengine: ${{ matrix.jsengine }}
           architecture: ${{ matrix.architecture }}
-          run-unit-tests: true
+          run-unit-tests: "false"
           use-frameworks: StaticLibraries
           hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
           react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
 
+  test_e2e_ios_rntester:
+    if: ${{ github.ref == 'refs/heads/main' || contains(github.ref,  'stable') }}
+    runs-on: macos-13
+    needs:
+      [build_apple_slices_hermes, prepare_hermes_workspace, build_hermes_macos]
+    env:
+      HERMES_WS_DIR: /tmp/hermes
+      HERMES_TARBALL_ARTIFACTS_DIR: /tmp/hermes/hermes-runtime-darwin
+    continue-on-error: true
+    strategy:
+      fail-fast: false
+      matrix:
+        jsengine: [Hermes, JSC]
+        architecture: [NewArch]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Run it
+        uses: ./.github/actions/test-ios-rntester
+        with:
+          jsengine: ${{ matrix.jsengine }}
+          architecture: ${{ matrix.architecture }}
+          run-unit-tests: "false"
+          use-frameworks: StaticLibraries
+          hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
+          react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
+          run-e2e-tests: "true"
+      - name: Run E2E Tests
+        uses: ./.github/actions/maestro-ios
+        with:
+          app-path: "/tmp/RNTesterBuild/Build/Products/Release-iphonesimulator/RNTester.app"
+          app-id: com.meta.RNTester.localDevelopment
+          jsengine: ${{ matrix.jsengine }}
+          maestro-flow: ./packages/rn-tester/.maestro/
+
+  test_e2e_ios_templateapp:
+    if: ${{ github.ref == 'refs/heads/main' || contains(github.ref,  'stable') }}
+    runs-on: macos-13
+    needs: build_npm_package
+    env:
+      HERMES_WS_DIR: /tmp/hermes
+      HERMES_TARBALL_ARTIFACTS_DIR: /tmp/hermes/hermes-runtime-darwin
+    continue-on-error: true
+    strategy:
+      fail-fast: false
+      matrix:
+        jsengine: [Hermes, JSC]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup xcode
+        uses: ./.github/actions/setup-xcode
+      - name: Setup node.js
+        uses: ./.github/actions/setup-node
+      - name: Run yarn
+        uses: ./.github/actions/yarn-install-with-cache
+      - name: Setup ruby
+        uses: ruby/setup-ruby@v1.170.0
+        with:
+          ruby-version: 2.6.10
+      - name: Download Hermes
+        uses: actions/download-artifact@v4
+        with:
+          name: hermes-darwin-bin-Release
+          path: /tmp/react-native-tmp
+      - name: Download React Native Package
+        uses: actions/download-artifact@v4
+        with:
+          name: react-native-package
+          path: /tmp/react-native-tmp
+      - name: Print /tmp folder
+        run: ls -lR /tmp/react-native-tmp
+      - name: Prepare artifacts
+        run: |
+          REACT_NATIVE_PKG=$(find /tmp/react-native-tmp -type f -name "*.tgz")
+          echo "React Native tgs is $REACT_NATIVE_PKG"
+
+          HERMES_PATH=$(find /tmp/react-native-tmp -type f -name "*.tar.gz")
+          echo "Hermes path is $HERMES_PATH"
+
+          node ./scripts/e2e/init-project-e2e.js --projectName RNTestProject --currentBranch ${{ github.ref_name }} --directory /tmp/RNTestProject --pathToLocalReactNative $REACT_NATIVE_PKG
+
+          cd /tmp/RNTestProject/ios
+          bundle install
+          HERMES_ENGINE_TARBALL_PATH=$HERMES_PATH bundle exec pod install
+
+          set -o pipefail && xcodebuild \
+            -scheme "RNTestProject" \
+            -workspace RNTestProject.xcworkspace \
+            -configuration "Release" \
+            -sdk "iphonesimulator" \
+            -destination "generic/platform=iOS Simulator" \
+            -derivedDataPath "/tmp/RNTestProject" | xcbeautify
+      - name: Run E2E Tests
+        uses: ./.github/actions/maestro-ios
+        with:
+          app-path: "/tmp/RNTestProject/Build/Products/Release-iphonesimulator/RNTestProject.app"
+          app-id: org.reactjs.native.example.RNTestProject
+          jsengine: ${{ matrix.jsengine }}
+          maestro-flow: ./scripts/e2e/.maestro/
+
+  test_e2e_android_templateapp:
+    if: ${{ github.ref == 'refs/heads/main' || contains(github.ref,  'stable') }}
+    runs-on: 4-core-ubuntu
+    needs: build_npm_package
+    continue-on-error: true
+    strategy:
+      fail-fast: false
+      matrix:
+        jsengine: [Hermes, JSC]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup node.js
+        uses: ./.github/actions/setup-node
+      - name: Run yarn
+        uses: ./.github/actions/yarn-install-with-cache
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+          distribution: 'zulu'
+      - name: Download Maven Local
+        uses: actions/download-artifact@v4
+        with:
+          name: maven-local
+          path: /tmp/react-native-tmp/maven-local
+      - name: Download React Native Package
+        uses: actions/download-artifact@v4
+        with:
+          name: react-native-package
+          path: /tmp/react-native-tmp
+      - name: Print /tmp folder
+        run: ls -lR /tmp/react-native-tmp
+      - name: Prepare artifacts
+        run: |
+          REACT_NATIVE_PKG=$(find /tmp/react-native-tmp -type f -name "*.tgz")
+          echo "React Native tgs is $REACT_NATIVE_PKG"
+
+          MAVEN_LOCAL=/tmp/react-native-tmp/maven-local
+          echo "Maven local path is $MAVEN_LOCAL"
+
+          node ./scripts/e2e/init-project-e2e.js --projectName RNTestProject --currentBranch ${{ github.ref_name }} --directory /tmp/RNTestProject --pathToLocalReactNative $REACT_NATIVE_PKG
+
+          echo "Feed maven local to gradle.properties"
+          cd /tmp/RNTestProject
+          echo "react.internal.mavenLocalRepo=$MAVEN_LOCAL" >> android/gradle.properties
+
+          # Build
+          cd android
+          ./gradlew assembleRelease --no-daemon -PreactNativeArchitectures=x86
+      - name: Run E2E Tests
+        uses: ./.github/actions/maestro-android
+        with:
+          app-path: /tmp/RNTestProject/android/app/build/outputs/apk/release/app-release.apk
+          app-id: com.rntestproject
+          jsengine: ${{ matrix.jsengine }}
+          maestro-flow: ./scripts/e2e/.maestro/
+          install-java: 'false'
+
   build_hermesc_linux:
     runs-on: ubuntu-latest
     needs: prepare_hermes_workspace
+    env:
+      HERMES_WS_DIR: /tmp/hermes
+      HERMES_TARBALL_ARTIFACTS_DIR: /tmp/hermes/hermes-runtime-darwin
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.1.1
-      - name: Install dependencies
-        run: |
-          sudo apt update
-          sudo apt install -y git openssh-client cmake build-essential \
-              libreadline-dev libicu-dev jq zip python3
-      - name: Cache setup
-        id: cache_setup
-        uses: ./.github/actions/cache_setup
+        uses: actions/checkout@v4
+      - name: Build HermesC Linux
+        uses: ./.github/actions/build-hermesc-linux
         with:
           hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
           react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
-      - name: Linux cache
-        uses: actions/cache@v4.0.0
-        with:
-          key: v1-hermes-${{ github.job }}-linux-${{ needs.prepare_hermes_workspace.outputs.hermes-version }}-${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
-          path: |
-            /tmp/hermes/linux64-bin/
-            /tmp/hermes/hermes/destroot/
-      - name: Set up workspace
-        run: |
-          mkdir -p /tmp/hermes/linux64-bin
-      - name: Build HermesC for Linux
-        run: |
-          if [ -f /tmp/hermes/linux64-bin/hermesc ]; then
-            echo 'Skipping; Clean "/tmp/hermes/linux64-bin" to rebuild.'
-          else
-            cd /tmp/hermes
-            cmake -S hermes -B build -DHERMES_STATIC_LINK=ON -DCMAKE_BUILD_TYPE=Release -DHERMES_ENABLE_TEST_SUITE=OFF \
-              -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=True -DCMAKE_CXX_FLAGS=-s -DCMAKE_C_FLAGS=-s \
-              -DCMAKE_EXE_LINKER_FLAGS="-Wl,--whole-archive -lpthread -Wl,--no-whole-archive"
-            cmake --build build --target hermesc -j 4
-            cp /tmp/hermes/build/bin/hermesc /tmp/hermes/linux64-bin/.
-          fi
-      - name: Upload linux artifacts
-        uses: actions/upload-artifact@v4.3.0
-        with:
-          name: hermes-linux-bin
-          path: /tmp/hermes/linux64-bin
 
   build_hermesc_windows:
     runs-on: windows-2019
     needs: prepare_hermes_workspace
     env:
       HERMES_WS_DIR: 'D:\tmp\hermes'
+      HERMES_TARBALL_ARTIFACTS_DIR: 'D:\tmp\hermes\hermes-runtime-darwin'
+      HERMES_OSXBIN_ARTIFACTS_DIR: 'D:\tmp\hermes\osx-bin'
       ICU_URL: "https://github.com/unicode-org/icu/releases/download/release-64-2/icu4c-64_2-Win64-MSVC2017.zip"
       MSBUILD_DIR: 'C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\MSBuild\Current\Bin'
       CMAKE_DIR: 'C:\Program Files\CMake\bin'
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.1.1
-      - name: Cache setup
-        id: cache_setup
-        uses: ./.github/actions/cache_setup
+        uses: actions/checkout@v4
+      - name: Build HermesC Windows
+        uses: ./.github/actions/build-hermesc-windows
         with:
           hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
           react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
-      - name: Windows cache
-        uses: actions/cache@v4.0.0
-        with:
-          key: v2-hermes-${{ github.job }}-windows-${{ needs.prepare_hermes_workspace.outputs.hermes-version }}-${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
-          path: |
-            D:\tmp\hermes\win64-bin\
-            D:\tmp\hermes\hermes\icu\
-            D:\tmp\hermes\hermes\deps\
-            D:\tmp\hermes\hermes\build_release\
-      - name: setup-msbuild
-        uses: microsoft/setup-msbuild@v1.3.2
-      - name: Set up workspace
-        run: |
-          #New-Item -ItemType Directory -ErrorAction SilentlyContinue $Env:HERMES_WS_DIR
-          New-Item -ItemType Directory -ErrorAction SilentlyContinue $Env:HERMES_WS_DIR\icu
-          New-Item -ItemType Directory -ErrorAction SilentlyContinue $Env:HERMES_WS_DIR\deps
-          New-Item -ItemType Directory -ErrorAction SilentlyContinue $Env:HERMES_WS_DIR\win64-bin
-          #New-Item -ItemType Directory -ErrorAction SilentlyContinue $Env:HERMES_WS_DIR\hermes
-          #New-Item -ItemType SymbolicLink -ErrorAction SilentlyContinue -Target tmp\hermes\hermes -Path $Env:HERMES_WS_DIR -Name hermes
-      - name: Build HermesC for Windows
-        run: |
-          if (-not(Test-Path -Path $Env:HERMES_WS_DIR\win64-bin\hermesc.exe)) {
-            choco install --no-progress cmake --version 3.14.7
-            if (-not $?) { throw "Failed to install CMake" }
-
-            cd $Env:HERMES_WS_DIR\icu
-            # If Invoke-WebRequest shows a progress bar, it will fail with
-            #   Win32 internal error "Access is denied" 0x5 occurred [...]
-            $progressPreference = 'silentlyContinue'
-            Invoke-WebRequest -Uri "$Env:ICU_URL" -OutFile "icu.zip"
-            Expand-Archive -Path "icu.zip" -DestinationPath "."
-
-            cd $Env:HERMES_WS_DIR
-            Copy-Item -Path "icu\bin64\icu*.dll" -Destination "deps"
-            # Include MSVC++ 2015 redistributables
-            Copy-Item -Path "c:\windows\system32\msvcp140.dll" -Destination "deps"
-            Copy-Item -Path "c:\windows\system32\vcruntime140.dll" -Destination "deps"
-            Copy-Item -Path "c:\windows\system32\vcruntime140_1.dll" -Destination "deps"
-
-            $Env:PATH += ";$Env:CMAKE_DIR;$Env:MSBUILD_DIR"
-            $Env:ICU_ROOT = "$Env:HERMES_WS_DIR\icu"
-
-            cmake -S hermes -B build_release -G 'Visual Studio 16 2019' -Ax64 -DCMAKE_BUILD_TYPE=Release -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=True -DHERMES_ENABLE_WIN10_ICU_FALLBACK=OFF
-            if (-not $?) { throw "Failed to configure Hermes" }
-            echo "Running windows build..."
-            cd build_release
-            cmake --build . --target hermesc --config Release
-            if (-not $?) { throw "Failed to build Hermes" }
-
-            echo "Copying hermesc.exe to win64-bin"
-            cd $Env:HERMES_WS_DIR
-            Copy-Item -Path "build_release\bin\Release\hermesc.exe" -Destination "win64-bin"
-            # Include Windows runtime dependencies
-            Copy-Item -Path "deps\*" -Destination "win64-bin"
-          }
-          else {
-              Write-Host "Skipping; Clean c:\tmp\hermes\win64-bin to rebuild."
-          }
-      - name: Upload windows artifacts
-        uses: actions/upload-artifact@v4.3.0
-        with:
-          name: hermes-win64-bin
-          path: D:\tmp\hermes\win64-bin\
 
   build_android:
     runs-on: 8-core-ubuntu
@@ -577,44 +381,46 @@ jobs:
       env:
         TERM: "dumb"
         GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+        ORG_GRADLE_PROJECT_SIGNING_PWD: ${{ secrets.ORG_GRADLE_PROJECT_SIGNING_PWD }}
+        ORG_GRADLE_PROJECT_SIGNING_KEY: ${{ secrets.ORG_GRADLE_PROJECT_SIGNING_KEY }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4
+      - name: Build Android
+        uses: ./.github/actions/build-android
+        with:
+          release-type: ${{ needs.set_release_type.outputs.RELEASE_TYPE }}
+          run-e2e-tests: ${{ github.ref == 'refs/heads/main' || contains(github.ref,  'stable') }}
+
+  test_e2e_android_rntester:
+    if: ${{ github.ref == 'refs/heads/main' || contains(github.ref,  'stable') }}
+    runs-on: ubuntu-latest
+    needs: [build_android]
+    strategy:
+      fail-fast: false
+      matrix:
+        jsengine: [hermes, jsc]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
       - name: Setup node.js
         uses: ./.github/actions/setup-node
-      - name: Install dependencies
-        run: yarn install --non-interactive
-      - name: Set React Native Version
-        run: node ./scripts/releases/set-rn-version.js --build-type ${{ needs.set_release_type.outputs.RELEASE_TYPE }}
-      - name: Setup gradle
-        uses: ./.github/actions/setup-gradle
-      - name: Build and publish all the Android Artifacts to /tmp/maven-local
-        run: |
-          # By default we only build ARM64 to save time/resources. For release/nightlies/prealpha, we override this value to build all archs.
-          if [[ "${{ needs.set_release_type.outputs.RELEASE_TYPE }}" == "dry-run" ]]; then
-            export ORG_GRADLE_PROJECT_reactNativeArchitectures="arm64-v8a"
-          else
-            export ORG_GRADLE_PROJECT_reactNativeArchitectures="armeabi-v7a,arm64-v8a,x86,x86_64"
-          fi
-          ./gradlew publishAllToMavenTempLocal build -PenableWarningsAsErrors=true
-        shell: bash
-      - name: Upload test results
-        if: ${{ always() }}
-        uses: actions/upload-artifact@v4.3.0
+      - name: Install node dependencies
+        uses: ./.github/actions/yarn-install-with-cache
+      - name: Download APK
+        uses: actions/download-artifact@v4
         with:
-          name: build-android-results
-          compression-level: 1
-          path: |
-            packages/react-native-gradle-plugin/react-native-gradle-plugin/build/reports
-            packages/react-native-gradle-plugin/settings-plugin/build/reports
-            packages/react-native/ReactAndroid/build/reports
-      - name: Upload RNTester APK
-        if: ${{ always() }}
-        uses: actions/upload-artifact@v4.3.0
+          name: rntester-${{ matrix.jsengine }}-release
+          path: ./packages/rn-tester/android/app/build/outputs/apk/${{ matrix.jsengine }}/release/
+      - name: Print folder structure
+        run: ls -lR ./packages/rn-tester/android/app/build/outputs/apk/${{ matrix.jsengine }}/release/
+      - name: Run E2E Tests
+        uses: ./.github/actions/maestro-android
         with:
-          name: rntester-apk
-          path: packages/rn-tester/android/app/build/outputs/apk/
-          compression-level: 0
+          app-path: ./packages/rn-tester/android/app/build/outputs/apk/${{ matrix.jsengine }}/release/app-${{ matrix.jsengine }}-x86-release.apk
+          app-id: com.facebook.react.uiapp
+          jsengine: ${{ matrix.jsengine }}
+          maestro-flow: ./packages/rn-tester/.maestro/
 
   build_npm_package:
     runs-on: 8-core-ubuntu
@@ -632,174 +438,20 @@ jobs:
       env:
         TERM: "dumb"
         GRADLE_OPTS: "-Dorg.gradle.daemon=false"
-        # By default we only build ARM64 to save time/resources. For release/nightlies/prealpha, we override this value to build all archs.
-        ORG_GRADLE_PROJECT_reactNativeArchitectures: "arm64-v8a"
-        # Repeated here, as the environment key in this executor will overwrite the one in defaults
-        PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A: ${{ secrets.GITHUB_ANALYSISBOT_TOKEN_A }}
-        PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B: ${{ secrets.GITHUB_ANALYSISBOT_TOKEN_B }}
-        HERMES_WS_DIR: /tmp/hermes
+    env:
+      HERMES_WS_DIR: /tmp/hermes
     steps:
-      - name: Add github.com to SSH known hosts
-        run: |
-          mkdir -p ~/.ssh
-          echo '|1|If6MU203eXTaaWL678YEfWkVMrw=|kqLeIAyTy8pzpj8x8Ae4Fr8Mtlc= ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==' >> ~/.ssh/known_hosts
       - name: Checkout
-        uses: actions/checkout@v4.1.1
-      - name: Create /tmp/hermes/osx-bin directory
-        run: mkdir -p /tmp/hermes/osx-bin
-      - name: Download osx-bin release artifacts
-        uses: actions/download-artifact@v4.1.3
+        uses: actions/checkout@v4
+      - name: Build NPM Package
+        uses: ./.github/actions/build-npm-package
         with:
-          name: hermes-osx-bin-Release
-          path: /tmp/hermes/osx-bin
-      - name: Download osx-bin debug artifacts
-        uses: actions/download-artifact@v4.1.3
-        with:
-          name: hermes-osx-bin-Debug
-          path: /tmp/hermes/osx-bin
-      - name: Download darwin-bin release artifacts
-        uses: actions/download-artifact@v4.1.3
-        with:
-          name: hermes-darwin-bin-Release
-          path: /tmp/hermes/hermes-runtime-darwin
-      - name: Download darwin-bin debug artifacts
-        uses: actions/download-artifact@v4.1.3
-        with:
-          name: hermes-darwin-bin-Debug
-          path: /tmp/hermes/hermes-runtime-darwin
-      - name: Download hermes dSYM debug artifacts
-        uses: actions/download-artifact@v4.1.3
-        with:
-          name: hermes-dSYM-Debug
-          path: /tmp/hermes/dSYM/Debug
-      - name: Download hermes dSYM release vartifacts
-        uses: actions/download-artifact@v4.1.3
-        with:
-          name: hermes-dSYM-Release
-          path: /tmp/hermes/dSYM/Release
-      - name: Download windows-bin artifacts
-        uses: actions/download-artifact@v4.1.3
-        with:
-          name: hermes-win64-bin
-          path: /tmp/hermes/win64-bin
-      - name: Download linux-bin artifacts
-        uses: actions/download-artifact@v4.1.3
-        with:
-          name: hermes-linux-bin
-          path: /tmp/hermes/linux64-bin
-      - name: Show /tmp/hermes directory
-        run: ls -lR /tmp/hermes
-      - name: Cache setup
-        id: cache_setup
-        uses: ./.github/actions/cache_setup
-        with:
-          hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
-          react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
-      - name: Copy Hermes binaries
-        shell: bash
-        run: |
-          mkdir -p ./packages/react-native/sdks/hermesc ./packages/react-native/sdks/hermesc/osx-bin ./packages/react-native/sdks/hermesc/win64-bin ./packages/react-native/sdks/hermesc/linux64-bin
-
-          # When build_hermes_macos runs as a matrix, it outputs
-          if [[ -d $HERMES_WS_DIR/osx-bin/Release ]]; then
-            cp -r $HERMES_WS_DIR/osx-bin/Release/* ./packages/react-native/sdks/hermesc/osx-bin/.
-          elif [[ -d $HERMES_WS_DIR/osx-bin/Debug ]]; then
-            cp -r $HERMES_WS_DIR/osx-bin/Debug/* ./packages/react-native/sdks/hermesc/osx-bin/.
-          else
-            ls $HERMES_WS_DIR/osx-bin || echo "hermesc macOS artifacts directory missing."
-            echo "Could not locate macOS hermesc binary."; exit 1;
-          fi
-
-          # Sometimes, GHA creates artifacts with lowercase Debug/Release. Make sure that if it happen, we uppercase them.
-          if [[ -f "$HERMES_WS_DIR/hermes-runtime-darwin/hermes-ios-debug.tar.gz" ]]; then
-            mv "$HERMES_WS_DIR/hermes-runtime-darwin/hermes-ios-debug.tar.gz" "$HERMES_WS_DIR/hermes-runtime-darwin/hermes-ios-Debug.tar.gz"
-          fi
-
-          if [[ -f "$HERMES_WS_DIR/hermes-runtime-darwin/hermes-ios-release.tar.gz" ]]; then
-            mv "$HERMES_WS_DIR/hermes-runtime-darwin/hermes-ios-release.tar.gz" "$HERMES_WS_DIR/hermes-runtime-darwin/hermes-ios-Release.tar.gz"
-          fi
-
-          cp -r $HERMES_WS_DIR/win64-bin/* ./packages/react-native/sdks/hermesc/win64-bin/.
-          cp -r $HERMES_WS_DIR/linux64-bin/* ./packages/react-native/sdks/hermesc/linux64-bin/.
-
-          # Make sure the hermesc files are actually executable.
-          chmod -R +x packages/react-native/sdks/hermesc/*
-
-          mkdir -p ./packages/react-native/ReactAndroid/external-artifacts/artifacts/
-          cp $HERMES_WS_DIR/hermes-runtime-darwin/hermes-ios-Debug.tar.gz ./packages/react-native/ReactAndroid/external-artifacts/artifacts/hermes-ios-debug.tar.gz
-          cp $HERMES_WS_DIR/hermes-runtime-darwin/hermes-ios-Release.tar.gz ./packages/react-native/ReactAndroid/external-artifacts/artifacts/hermes-ios-release.tar.gz
-          cp $HERMES_WS_DIR/dSYM/Debug/hermes.framework.dSYM  ./packages/react-native/ReactAndroid/external-artifacts/artifacts/hermes-framework-dSYM-debug.tar.gz
-          cp $HERMES_WS_DIR/dSYM/Release/hermes.framework.dSYM  ./packages/react-native/ReactAndroid/external-artifacts/artifacts/hermes-framework-dSYM-release.tar.gz
-      - name: Use Node.js 18
-        uses: actions/setup-node@v4.0.0
-        with:
-          node-version: 18
-          cache: yarn
-      - name: Install dependencies
-        run: yarn install --non-interactive
-      - name: Build packages
-        run: yarn build
-      # Continue with publish steps
-      - name: Set npm credentials
-        if: needs.set_release_type.outputs.RELEASE_TYPE == 'release' ||
-          needs.set_release_type.outputs.RELEASE_TYPE == 'nightly'
-        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.CIRCLE_NPM_TOKEN }}" > ~/.npmrc
-      - name: Publish NPM
-        shell: bash
-        run: |
-          # The checkout command puts react-native in a folder that is not "safe" for git
-          # Every git command run in an unsafe folder fails. We need to pick the current commit to use it as part of the version
-          # The following line marks the folder where react-native lives as "safe"
-          git config --global --add safe.directory /__w/react-native/react-native
-
-          echo "GRADLE_OPTS = $GRADLE_OPTS"
-          # We can't have a separate step because each command is executed in a separate shell
-          # so variables exported in a command are not visible in another.
-          if [[ "${{ needs.set_release_type.outputs.RELEASE_TYPE }}" == "dry-run" ]]; then
-            export ORG_GRADLE_PROJECT_reactNativeArchitectures="arm64-v8a"
-          else
-            export ORG_GRADLE_PROJECT_reactNativeArchitectures="armeabi-v7a,arm64-v8a,x86,x86_64"
-          fi
-          node ./scripts/releases-ci/publish-npm.js -t ${{ needs.set_release_type.outputs.RELEASE_TYPE }}
-      - name: Zip Maven Artifacts from /tmp/maven-local
-        working-directory: /tmp
-        run: zip -r maven-local.zip maven-local
-      - name: Upload Maven Artifacts
-        uses: actions/upload-artifact@v4.3.1
-        with:
-          name: maven-local
-          path: /tmp/maven-local.zip
-      - name: Upload npm logs
-        uses: actions/upload-artifact@v4.3.1
-        with:
-          name: npm-logs
-          path: ~/.npm/_logs
-      - name: Build release package as a job artifact
-        if: needs.set_release_type.outputs.RELEASE_TYPE == 'dry-run'
-        run: |
-          mkdir -p build
-
-          FILENAME=$(cd packages/react-native; npm pack | tail -1)
-          mv packages/react-native/$FILENAME build/
-
-          echo $FILENAME > build/react-native-package-version
-      - name: Upload release package
-        uses: actions/upload-artifact@v4.3.1
-        if: needs.set_release_type.outputs.RELEASE_TYPE == 'dry-run'
-        with:
-          name: react-native-package
-          path: build
-      - name: Update rn-diff-purge to generate upgrade-support diff
-        if: needs.set_release_type.outputs.RELEASE_TYPE == 'release'
-        run: |
-          curl -X POST https://api.github.com/repos/react-native-community/rn-diff-purge/dispatches \
-            -H "Accept: application/vnd.github.v3+json" \
-            -H "Authorization: Bearer $REACT_NATIVE_BOT_GITHUB_TOKEN" \
-            -d "{\"event_type\": \"publish\", \"client_payload\": { \"version\": \"${{ github.ref_name }}\" }}"
+          hermes-ws-dir: ${{ env.HERMES_WS_DIR }}
+          release-type: ${{ needs.set_release_type.outputs.RELEASE_TYPE }}
 
   test_android_helloworld:
-    runs-on: ubuntu-latest
-    needs: prepare_hermes_workspace
+    runs-on: 4-core-ubuntu
+    needs: build_npm_package
     container:
       image: reactnativecommunity/react-native-android:latest
     env:
@@ -819,33 +471,26 @@ jobs:
         jsengine: [Hermes, JSC]
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.1.1
-      - name: Cache setup
-        id: cache_setup
-        uses: ./.github/actions/cache_setup
+        uses: actions/checkout@v4
+      - name: Setup git safe folders
+        run: git config --global --add safe.directory '*'
+      - name: Download npm package artifact
+        uses: actions/download-artifact@v4.1.3
         with:
-          hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
-          react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
-      - name: Run yarn
-        shell: bash
-        run: yarn install --non-interactive
+          name: react-native-package
+          path: build
+      - name: Download maven-local artifact
+        uses: actions/download-artifact@v4.1.3
+        with:
+          name: maven-local
+          path: /tmp/maven-local
       - name: Setup gradle
         uses: ./.github/actions/setup-gradle
-      - name: Build CodeGen JS scripts
+      - name: Run yarn install
+        uses: ./.github/actions/yarn-install-with-cache
+      - name: Prepare the Helloworld application
         shell: bash
-        run: |
-          cd packages/react-native-codegen
-          yarn run build
-      - name: Monitor Disk utilization (before build)
-        shell: bash
-        if: always()
-        run: |
-          echo "On Runner:"
-          df -h
-          echo "Root:"
-          du -hs *
-          echo "Projects folder:"
-          du -hs ./packages/*
+        run: node ./scripts/e2e/init-project-e2e.js --useHelloWorld --pathToLocalReactNative "$GITHUB_WORKSPACE/build/$(cat build/react-native-package-version)"
       - name: Build the Helloworld application for ${{ matrix.flavor }} with Architecture set to ${{ matrix.architecture }}, and using the ${{ matrix.jsengine }} JS engine.
         shell: bash
         run: |
@@ -860,22 +505,12 @@ jobs:
           if [[ ${{ matrix.flavor }} == "Release" ]]; then
             args+=(--prod)
           fi
-          yarn build android "${args[@]}" -P reactNativeArchitectures="$TARGET_ARCHITECTURE"
-      - name: Monitor Disk utilization (after build)
-        shell: bash
-        if: always()
-        run: |
-          echo "On Runner:"
-          df -h
-          echo "Root:"
-          du -hs *
-          echo "Projects folder:"
-          du -hs ./packages/*
+          yarn build android "${args[@]}" -P reactNativeArchitectures="$TARGET_ARCHITECTURE" -P react.internal.mavenLocalRepo="/tmp/maven-local"
       - name: Upload artifact
-        uses: actions/upload-artifact@v4.3.1
+        uses: actions/upload-artifact@v4.3.4
         with:
-          name: template-apk-${{ matrix.flavor }}-${{ matrix.architecture }}-${{ matrix.jsengine }}
-          path: ./app/build/outputs/apk/
+          name: helloworld-apk-${{ matrix.flavor }}-${{ matrix.architecture }}-${{ matrix.jsengine }}
+          path: ./packages/helloworld/android/app/build/outputs/apk/
           compression-level: 0
 
   test_ios_helloworld_with_ruby_3_2_0:
@@ -887,8 +522,8 @@ jobs:
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.1.1
-      - uses: ./.github/actions/test_ios_helloworld
+        uses: actions/checkout@v4
+      - uses: ./.github/actions/test-ios-helloworld
         with:
           ruby-version: 3.2.0
           architecture: NewArch
@@ -915,11 +550,37 @@ jobs:
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.1.1
-      - uses: ./.github/actions/test_ios_helloworld
+        uses: actions/checkout@v4
+      - uses: ./.github/actions/test-ios-helloworld
         with:
           flavor: ${{ matrix.flavor }}
           jsengine: ${{ matrix.jsengine }}
           use-frameworks: ${{ matrix.use_frameworks }}
           hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
           react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
+
+  test_js:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: ["20", "18"]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Test JS
+        uses: ./.github/actions/test-js
+        with:
+          node-version: ${{ matrix.node-version }}
+
+  lint:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Run all the Linters
+        uses: ./.github/actions/lint
+        with:
+          github-token: ${{ env.GH_TOKEN }}

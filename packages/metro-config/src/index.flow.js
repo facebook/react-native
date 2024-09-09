@@ -25,6 +25,7 @@ const INTERNAL_CALLSITES_REGEX = new RegExp(
     '/Libraries/vendor/.+\\.js$',
     '/Libraries/WebSocket/.+\\.js$',
     '/Libraries/YellowBox/.+\\.js$',
+    '/src/private/renderer/errorhandling/.+\\.js$',
     '/metro-runtime/.+\\.js$',
     '/node_modules/@babel/runtime/.+\\.js$',
     '/node_modules/@react-native/js-polyfills/.+\\.js$',
@@ -86,6 +87,7 @@ export function getDefaultConfig(projectRoot: string): ConfigT {
       babelTransformerPath: require.resolve(
         '@react-native/metro-babel-transformer',
       ),
+      hermesParser: true,
       getTransformOptions: async () => ({
         transform: {
           experimentalImportSupport: false,

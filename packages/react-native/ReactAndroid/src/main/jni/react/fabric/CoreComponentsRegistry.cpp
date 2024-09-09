@@ -9,8 +9,6 @@
 
 #include <android/log.h>
 
-#include <fbjni/fbjni.h>
-
 #include <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
 #include <react/renderer/components/androidswitch/AndroidSwitchComponentDescriptor.h>
 #include <react/renderer/components/androidtextinput/AndroidTextInputComponentDescriptor.h>
@@ -18,19 +16,17 @@
 #include <react/renderer/components/modal/ModalHostViewComponentDescriptor.h>
 #include <react/renderer/components/progressbar/AndroidProgressBarComponentDescriptor.h>
 #include <react/renderer/components/rncore/ComponentDescriptors.h>
+#include <react/renderer/components/safeareaview/SafeAreaViewComponentDescriptor.h>
 #include <react/renderer/components/scrollview/ScrollViewComponentDescriptor.h>
 #include <react/renderer/components/text/ParagraphComponentDescriptor.h>
 #include <react/renderer/components/text/RawTextComponentDescriptor.h>
 #include <react/renderer/components/text/TextComponentDescriptor.h>
 #include <react/renderer/components/view/ViewComponentDescriptor.h>
 
-namespace facebook::react {
-
-CoreComponentsRegistry::CoreComponentsRegistry(ComponentFactory* delegate)
-    : delegate_(delegate) {}
+namespace facebook::react::CoreComponentsRegistry {
 
 std::shared_ptr<const ComponentDescriptorProviderRegistry>
-CoreComponentsRegistry::sharedProviderRegistry() {
+sharedProviderRegistry() {
   static auto providerRegistry =
       []() -> std::shared_ptr<ComponentDescriptorProviderRegistry> {
     auto providerRegistry =
@@ -53,6 +49,8 @@ CoreComponentsRegistry::sharedProviderRegistry() {
     providerRegistry->add(concreteComponentDescriptorProvider<
                           AndroidSwitchComponentDescriptor>());
     providerRegistry->add(
+        concreteComponentDescriptorProvider<SafeAreaViewComponentDescriptor>());
+    providerRegistry->add(
         concreteComponentDescriptorProvider<TextComponentDescriptor>());
     providerRegistry->add(
         concreteComponentDescriptorProvider<RawTextComponentDescriptor>());
@@ -74,39 +72,4 @@ CoreComponentsRegistry::sharedProviderRegistry() {
   return providerRegistry;
 }
 
-jni::local_ref<CoreComponentsRegistry::jhybriddata>
-CoreComponentsRegistry::initHybrid(
-    jni::alias_ref<jclass>,
-    ComponentFactory* delegate) {
-  auto instance = makeCxxInstance(delegate);
-
-  // TODO T69453179: Codegen this file
-  auto buildRegistryFunction =
-      [](const EventDispatcher::Weak& eventDispatcher,
-         const ContextContainer::Shared& contextContainer)
-      -> ComponentDescriptorRegistry::Shared {
-    ComponentDescriptorParameters params{
-        .eventDispatcher = eventDispatcher,
-        .contextContainer = contextContainer,
-        .flavor = nullptr};
-
-    auto registry = CoreComponentsRegistry::sharedProviderRegistry()
-                        ->createComponentDescriptorRegistry(params);
-    auto& mutableRegistry = const_cast<ComponentDescriptorRegistry&>(*registry);
-    mutableRegistry.setFallbackComponentDescriptor(
-        std::make_shared<UnimplementedNativeViewComponentDescriptor>(params));
-
-    return registry;
-  };
-
-  delegate->buildRegistryFunction = buildRegistryFunction;
-  return instance;
-}
-
-void CoreComponentsRegistry::registerNatives() {
-  registerHybrid({
-      makeNativeMethod("initHybrid", CoreComponentsRegistry::initHybrid),
-  });
-}
-
-} // namespace facebook::react
+} // namespace facebook::react::CoreComponentsRegistry

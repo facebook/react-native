@@ -7,10 +7,15 @@
  * @noformat
  * @nolint
  * @flow strict
- * @generated SignedSource<<e7a1421518e1d99f18c5b14e85f44843>>
+ * @generated SignedSource<<89361333bb6b688486e35849a9c669a6>>
  */
 
-import type {ElementRef, ElementType, Element, AbstractComponent} from 'react';
+import type {
+  ElementRef,
+  ElementType,
+  MixedElement,
+  AbstractComponent,
+} from 'react';
 
 export type MeasureOnSuccessCallback = (
   x: number,
@@ -86,6 +91,7 @@ export type ViewConfig = $ReadOnly<{
     }>,
     ...
   }>,
+  supportsRawText?: boolean,
   uiViewClassName: string,
   validAttributes: AttributeConfiguration,
 }>;
@@ -93,6 +99,7 @@ export type ViewConfig = $ReadOnly<{
 export type PartialViewConfig = $ReadOnly<{
   bubblingEventTypes?: $PropertyType<ViewConfig, 'bubblingEventTypes'>,
   directEventTypes?: $PropertyType<ViewConfig, 'directEventTypes'>,
+  supportsRawText?: boolean,
   uiViewClassName: string,
   validAttributes?: PartialAttributeConfiguration,
 }>;
@@ -220,7 +227,7 @@ export type ReactNativeType = {
     eventType: string,
   ): void,
   render(
-    element: Element<ElementType>,
+    element: MixedElement,
     containerTag: number,
     callback: ?() => void,
     options: ?RenderRootOptions,
@@ -255,7 +262,7 @@ export type ReactFabricType = {
     eventType: string,
   ): void,
   render(
-    element: Element<ElementType>,
+    element: MixedElement,
     containerTag: number,
     callback: ?() => void,
     concurrentRoot: ?boolean,

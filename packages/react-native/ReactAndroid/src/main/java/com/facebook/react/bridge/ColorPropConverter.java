@@ -217,6 +217,11 @@ public class ColorPropConverter {
 
     int resourceId = context.getResources().getIdentifier(resourceName, ATTR, packageName);
 
+    // If resourceId is 0, try resolving with the android package name
+    if (resourceId == 0) {
+      resourceId = context.getResources().getIdentifier(resourceName, ATTR, "android");
+    }
+
     TypedValue outValue = new TypedValue();
     Resources.Theme theme = context.getTheme();
 

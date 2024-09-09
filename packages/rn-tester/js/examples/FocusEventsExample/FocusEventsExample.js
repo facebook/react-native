@@ -285,7 +285,7 @@ exports.description = 'Examples that show how Focus events can be used.';
 exports.examples = [
   {
     title: 'FocusEventExample',
-    render: function (): React.Element<any> {
+    render: function (): React.Node {
       return <FocusEventExample />;
     },
   },

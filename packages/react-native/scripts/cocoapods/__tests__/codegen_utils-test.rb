@@ -21,7 +21,7 @@ require_relative "./test_utils/FileUtilsMock.rb"
 # without incurring in circular deps
 # TODO: move `min_ios_version_supported` to utils.rb
 def min_ios_version_supported
-    return '13.4'
+    return '15.1'
 end
 
 # [macOS

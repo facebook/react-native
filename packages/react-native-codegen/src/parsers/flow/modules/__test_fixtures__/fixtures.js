@@ -620,6 +620,45 @@ export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
 
 `;
 
+const NATIVE_MODULE_WITH_EVENT_EMITTERS = `
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow strict-local
+ * @format
+ */
+
+'use strict';
+
+import type {TurboModule} from '../RCTExport';
+import type {EventEmitter} from '../CodegenTypes';
+import * as TurboModuleRegistry from '../TurboModuleRegistry';
+
+export type ObjectStruct = {
+  a: number,
+  b: string,
+  c?: ?string,
+};
+
+export type MappedObject = {[string]: string};
+
+export interface Spec extends TurboModule {
+  +onEvent1: EventEmitter<void>;
+  +onEvent2: EventEmitter<string>;
+  +onEvent3: EventEmitter<number>;
+  +onEvent4: EventEmitter<boolean>;
+  +onEvent5: EventEmitter<ObjectStruct>;
+  +onEvent6: EventEmitter<ObjectStruct[]>;
+  +onEvent7: EventEmitter<MappedObject>;
+}
+
+export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+
+`;
+
 const ANDROID_ONLY_NATIVE_MODULE = `
 /**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -813,6 +852,7 @@ module.exports = {
   NATIVE_MODULE_WITH_BASIC_PARAM_TYPES,
   NATIVE_MODULE_WITH_CALLBACK,
   NATIVE_MODULE_WITH_UNION,
+  NATIVE_MODULE_WITH_EVENT_EMITTERS,
   EMPTY_NATIVE_MODULE,
   ANDROID_ONLY_NATIVE_MODULE,
   IOS_ONLY_NATIVE_MODULE,

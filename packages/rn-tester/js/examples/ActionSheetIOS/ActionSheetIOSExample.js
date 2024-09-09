@@ -11,6 +11,7 @@
 'use strict';
 
 import type {NativeMethods} from 'react-native/Libraries/Renderer/shims/ReactNativeTypes';
+
 import {RNTesterThemeContext} from '../../components/RNTesterTheme';
 
 const ScreenshotManager = require('../../../NativeModuleExample/NativeScreenshotManager');
@@ -463,61 +464,61 @@ exports.description = "Interface to show iOS' action sheets";
 exports.examples = [
   {
     title: 'Show Action Sheet',
-    render(): React.Element<any> {
+    render(): React.MixedElement {
       return <ActionSheetExample />;
     },
   },
   {
     title: 'Show Action Sheet with tinted buttons',
-    render(): React.Element<any> {
+    render(): React.MixedElement {
       return <ActionSheetTintExample />;
     },
   },
   {
     title: 'Show Action Sheet with cancel tinted button',
-    render(): React.Element<any> {
+    render(): React.MixedElement {
       return <ActionSheetCancelButtonTintExample />;
     },
   },
   {
     title: 'Show Action Sheet with anchor',
-    render(): React.Element<any> {
+    render(): React.MixedElement {
       return <ActionSheetAnchorExample />;
     },
   },
   {
     title: 'Show Action Sheet with disabled buttons',
-    render(): React.Element<any> {
+    render(): React.MixedElement {
       return <ActionSheetDisabledExample />;
     },
   },
   {
     title: 'Show Action Sheet and automatically dismiss it',
-    render(): React.Element<any> {
+    render(): React.MixedElement {
       return <ActionSheetDismissExample />;
     },
   },
   {
     title: 'Show Share Action Sheet',
-    render(): React.Element<any> {
+    render(): React.MixedElement {
       return <ShareActionSheetExample url="https://code.facebook.com" />;
     },
   },
   {
     title: 'Share Local Image',
-    render(): React.Element<any> {
+    render(): React.MixedElement {
       return <ShareActionSheetExample url="bunny.png" />;
     },
   },
   {
     title: 'Share Screenshot',
-    render(): React.Element<any> {
+    render(): React.MixedElement {
       return <ShareScreenshotExample />;
     },
   },
   {
     title: 'Share from Anchor',
-    render(): React.Element<any> {
+    render(): React.MixedElement {
       return <ShareScreenshotAnchorExample />;
     },
   },

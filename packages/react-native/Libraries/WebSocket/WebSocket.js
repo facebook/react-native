@@ -68,7 +68,7 @@ type WebSocketEventDefinitions = {
  * See https://developer.mozilla.org/en-US/docs/Web/API/WebSocket
  * See https://github.com/websockets/ws
  */
-class WebSocket extends (EventTarget(...WEBSOCKET_EVENTS): any) {
+class WebSocket extends (EventTarget(...WEBSOCKET_EVENTS): typeof EventTarget) {
   static CONNECTING: number = CONNECTING;
   static OPEN: number = OPEN;
   static CLOSING: number = CLOSING;

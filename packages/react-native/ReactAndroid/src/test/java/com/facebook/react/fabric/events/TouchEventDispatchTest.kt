@@ -19,6 +19,7 @@ import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.WritableArray
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.fabric.FabricUIManager
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsForTests
 import com.facebook.react.modules.core.ReactChoreographer
 import com.facebook.react.uimanager.DisplayMetricsHolder
 import com.facebook.react.uimanager.ViewManagerRegistry
@@ -28,8 +29,8 @@ import com.facebook.react.uimanager.events.TouchEventCoalescingKeyHelper
 import com.facebook.react.uimanager.events.TouchEventType
 import com.facebook.testutils.fakes.FakeBatchEventDispatchedListener
 import com.facebook.testutils.shadows.ShadowSoLoader
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
-import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -463,10 +464,12 @@ class TouchEventDispatchTest {
   private lateinit var eventDispatcher: EventDispatcher
   private lateinit var uiManager: FabricUIManager
   private lateinit var arguments: MockedStatic<Arguments>
-  private lateinit var reactChoreographer: MockedStatic<ReactChoreographer>
+  private var reactChoreographerOriginal: ReactChoreographer? = null
 
   @Before
   fun setUp() {
+    ReactNativeFeatureFlagsForTests.setUp()
+
     arguments = mockStatic(Arguments::class.java)
     arguments.`when`<WritableArray> { Arguments.createArray() }.thenAnswer { JavaOnlyArray() }
     arguments.`when`<WritableMap> { Arguments.createMap() }.thenAnswer { JavaOnlyMap() }
@@ -489,16 +492,13 @@ class TouchEventDispatchTest {
 
     // Ignore scheduled choreographer work
     val reactChoreographerMock = mock(ReactChoreographer::class.java)
-    reactChoreographer = mockStatic(ReactChoreographer::class.java)
-    reactChoreographer
-        .`when`<ReactChoreographer> { ReactChoreographer.getInstance() }
-        .thenReturn(reactChoreographerMock)
+    reactChoreographerOriginal = ReactChoreographer.overrideInstanceForTest(reactChoreographerMock)
   }
 
   @After
   fun tearDown() {
     arguments.close()
-    reactChoreographer.close()
+    ReactChoreographer.overrideInstanceForTest(reactChoreographerOriginal)
   }
 
   @Test
@@ -509,7 +509,7 @@ class TouchEventDispatchTest {
     val argument = ArgumentCaptor.forClass(WritableMap::class.java)
     verify(uiManager, times(4))
         .receiveEvent(anyInt(), anyInt(), anyString(), anyBoolean(), argument.capture(), anyInt())
-    Assert.assertEquals(startMoveEndExpectedSequence, argument.allValues)
+    assertThat(startMoveEndExpectedSequence).isEqualTo(argument.allValues)
   }
 
   @Test
@@ -520,7 +520,7 @@ class TouchEventDispatchTest {
     val argument = ArgumentCaptor.forClass(WritableMap::class.java)
     verify(uiManager, times(6))
         .receiveEvent(anyInt(), anyInt(), anyString(), anyBoolean(), argument.capture(), anyInt())
-    Assert.assertEquals(startMoveCancelExpectedSequence, argument.allValues)
+    assertThat(startMoveCancelExpectedSequence).isEqualTo(argument.allValues)
   }
 
   @Test
@@ -531,7 +531,7 @@ class TouchEventDispatchTest {
     val argument = ArgumentCaptor.forClass(WritableMap::class.java)
     verify(uiManager, times(6))
         .receiveEvent(anyInt(), anyInt(), anyString(), anyBoolean(), argument.capture(), anyInt())
-    Assert.assertEquals(startPointerMoveUpExpectedSequence, argument.allValues)
+    assertThat(startPointerMoveUpExpectedSequence).isEqualTo(argument.allValues)
   }
 
   private fun createTouchEvent(

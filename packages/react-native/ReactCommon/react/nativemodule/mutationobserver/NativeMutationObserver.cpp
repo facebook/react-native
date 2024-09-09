@@ -58,17 +58,6 @@ void NativeMutationObserver::connect(
     SyncCallback<jsi::Value(jsi::Value)> getPublicInstanceFromInstanceHandle) {
   auto& uiManager = getUIManagerFromRuntime(runtime);
 
-  // MutationObserver is not compatible with background executor.
-  // When using background executor, we commit trees outside the JS thread.
-  // In that case, we can't safely access the JS runtime in commit hooks to
-  // get references to mutated nodes (which we need to do at that point
-  // to ensure we are retaining removed nodes).
-  if (uiManager.hasBackgroundExecutor()) {
-    throw jsi::JSError(
-        runtime,
-        "MutationObserver: could not start observation because MutationObserver is incompatible with UIManager using background executor.");
-  }
-
   runtime_ = &runtime;
   notifyMutationObservers_.emplace(std::move(notifyMutationObservers));
   getPublicInstanceFromInstanceHandle_.emplace(

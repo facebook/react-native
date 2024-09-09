@@ -10,7 +10,6 @@
 #include <cmath>
 
 #include <react/debug/react_native_assert.h>
-#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/attributedstring/AttributedStringBox.h>
 #include <react/renderer/components/view/ViewShadowNode.h>
 #include <react/renderer/components/view/conversions.h>
@@ -163,6 +162,33 @@ Size ParagraphShadowNode::measureContent(
       .size;
 }
 
+Float ParagraphShadowNode::baseline(
+    const LayoutContext& layoutContext,
+    Size size) const {
+  auto layoutMetrics = getLayoutMetrics();
+  auto layoutConstraints =
+      LayoutConstraints{size, size, layoutMetrics.layoutDirection};
+  auto content =
+      getContentWithMeasuredAttachments(layoutContext, layoutConstraints);
+  auto attributedString = content.attributedString;
+
+  if (attributedString.isEmpty()) {
+    // Note: `zero-width space` is insufficient in some cases (e.g. when we need
+    // to measure the "height" of the font).
+    // TODO T67606511: We will redefine the measurement of empty strings as part
+    // of T67606511
+    auto string = BaseTextShadowNode::getEmptyPlaceholder();
+    auto textAttributes = TextAttributes::defaultTextAttributes();
+    textAttributes.fontSizeMultiplier = layoutContext.fontSizeMultiplier;
+    textAttributes.apply(getConcreteProps().textAttributes);
+    attributedString.appendFragment({string, textAttributes, {}});
+  }
+
+  AttributedStringBox attributedStringBox{attributedString};
+  return textLayoutManager_->baseline(
+      attributedStringBox, getConcreteProps().paragraphAttributes, size);
+}
+
 void ParagraphShadowNode::layout(LayoutContext layoutContext) {
   ensureUnsealed();
 
@@ -180,17 +206,11 @@ void ParagraphShadowNode::layout(LayoutContext layoutContext) {
   textLayoutContext.pointScaleFactor = layoutContext.pointScaleFactor;
   auto measurement = TextMeasurement{};
 
-  if (!ReactNativeFeatureFlags::preventDoubleTextMeasure()) {
-    measurement = textLayoutManager_->measure(
-        AttributedStringBox{content.attributedString},
-        content.paragraphAttributes,
-        textLayoutContext,
-        layoutConstraints);
-  }
+  AttributedStringBox attributedStringBox{content.attributedString};
 
   if (getConcreteProps().onTextLayout) {
     auto linesMeasurements = textLayoutManager_->measureLines(
-        content.attributedString, content.paragraphAttributes, size);
+        attributedStringBox, content.paragraphAttributes, size);
     getConcreteEventEmitter().onTextLayout(linesMeasurements);
   }
 
@@ -199,14 +219,12 @@ void ParagraphShadowNode::layout(LayoutContext layoutContext) {
     return;
   }
 
-  if (ReactNativeFeatureFlags::preventDoubleTextMeasure()) {
-    // Only measure if attachments are not empty.
-    measurement = textLayoutManager_->measure(
-        AttributedStringBox{content.attributedString},
-        content.paragraphAttributes,
-        textLayoutContext,
-        layoutConstraints);
-  }
+  // Only measure if attachments are not empty.
+  measurement = textLayoutManager_->measure(
+      attributedStringBox,
+      content.paragraphAttributes,
+      textLayoutContext,
+      layoutConstraints);
 
   //  Iterating on attachments, we clone shadow nodes and moving
   //  `paragraphShadowNode` that represents clones of `this` object.

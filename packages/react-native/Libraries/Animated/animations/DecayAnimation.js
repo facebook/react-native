@@ -14,7 +14,7 @@ import type {PlatformConfig} from '../AnimatedPlatformConfig';
 import type AnimatedValue from '../nodes/AnimatedValue';
 import type {AnimationConfig, EndCallback} from './Animation';
 
-import NativeAnimatedHelper from '../NativeAnimatedHelper';
+import NativeAnimatedHelper from '../../../src/private/animated/NativeAnimatedHelper';
 import Animation from './Animation';
 
 export type DecayAnimationConfig = {

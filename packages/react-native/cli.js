@@ -22,6 +22,13 @@ const deprecated = () => {
   );
 };
 
+function isMissingCliDependency(error) {
+  return (
+    error.code === 'MODULE_NOT_FOUND' &&
+    /@react-native-community\/cli/.test(error.message)
+  );
+}
+
 let cli = {
   bin: '/dev/null',
   loadConfig: deprecated,
@@ -35,10 +42,10 @@ const DEFAULT_REGISTRY_HOST =
 const HEAD = '1000.0.0';
 
 // We're going to deprecate the `init` command proxying requests to @react-native-community/cli transparently
-// on September 30th, 2024 or 0.76 (whichever arrives first). This is part of work to decouple of community CLI from React Native core.
+// on December 31th, 2024 or 0.76 (whichever arrives first). This is part of work to decouple of community CLI from React Native core.
 //
 // See https://github.com/react-native-community/discussions-and-proposals/blob/main/proposals/0759-react-native-frameworks.md
-const CLI_DEPRECATION_DATE = new Date('2024-09-30');
+const CLI_DEPRECATION_DATE = new Date('2024-12-31');
 
 async function getLatestVersion(registryHost = DEFAULT_REGISTRY_HOST) {
   return new Promise((res, rej) => {
@@ -107,15 +114,28 @@ The behavior will be changed on ${chalk.white.bold(CLI_DEPRECATION_DATE.toLocale
 }
 
 function warnWithDeprecated() {
-  if (process.argv[2] !== 'init') {
+  if (!isInitCommand) {
     return;
   }
 
   console.warn(`
-${chalk.yellow('⚠')}️ The \`init\` command is deprecated.
+🚨️ The \`init\` command is deprecated.
 
 - Switch to ${chalk.dim('npx @react-native-community/cli init')} for the identical behavior.
 - Refer to the documentation for information about alternative tools: ${chalk.dim('https://reactnative.dev/docs/getting-started')}`);
+}
+
+function warnWithExplicitDependency(version = '*') {
+  console.warn(`
+${chalk.yellow('⚠')}️ ${chalk.dim('react-native')} depends on ${chalk.dim('@react-native-community/cli')} for cli commands. To fix update your ${chalk.dim('package.json')} to include:
+
+${chalk.white.bold(`
+  "devDependencies": {
+    "@react-native-community/cli": "latest",
+  }
+`)}
+
+`);
 }
 
 /**
@@ -157,24 +177,36 @@ async function main() {
     currentVersion.startsWith('0.76');
 
   /**
-   * This command now fails as it's fully deprecated. It will be entirely removed in 0.77.
+   * This command is now deprecated. We will continue to proxy commands to @react-native-community/cli, but it
+   * isn't supported anymore. We'll always show the warning.
+   *
+   * WARNING: Projects will have to have an explicit dependency on @react-native-community/cli to use the CLI.
    *
    * Phase 3
    *
    * @see https://github.com/react-native-community/discussions-and-proposals/tree/main/proposals/0759-react-native-frameworks.md
    */
-  if (currentVersion !== HEAD && isDeprecated) {
-    warnWithDeprecated();
-    process.exit(1);
+  if (isInitCommand) {
+    if (currentVersion !== HEAD && isDeprecated) {
+      warnWithDeprecated();
+      // We only exit if the user calls `init` and it's deprecated. All other cases should proxy to to @react-native-community/cli.
+      // Be careful with this as it can break a lot of users.
+      process.exit(1);
+    } else if (currentVersion.startsWith('0.75')) {
+      warnWithDeprecationSchedule();
+    }
+    warnWhenRunningInit();
   }
 
-  if (currentVersion.startsWith('0.75')) {
-    warnWithDeprecationSchedule();
+  try {
+    return require('@react-native-community/cli').run(name);
+  } catch (e) {
+    if (isMissingCliDependency(e)) {
+      warnWithExplicitDependency();
+      process.exit(1);
+    }
+    throw e;
   }
-
-  warnWhenRunningInit();
-
-  return require('@react-native-community/cli').run(name);
 }
 
 if (require.main === module) {
@@ -185,10 +217,7 @@ if (require.main === module) {
   } catch (e) {
     // We silence @react-native-community/cli missing as it is no
     // longer a dependency
-    if (
-      !e.code === 'MODULE_NOT_FOUND' &&
-      /@react-native-community\/cli/.test(e.message)
-    ) {
+    if (!isMissingCliDependency(e)) {
       throw e;
     }
   }

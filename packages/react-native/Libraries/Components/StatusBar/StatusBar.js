@@ -272,8 +272,10 @@ class StatusBar extends React.Component<Props> {
   }
 
   /**
-   * Control the visibility of the network activity indicator
+   * DEPRECATED - The status bar network activity indicator is not supported in iOS 13 and later. This will be removed in a future release.
    * @param visible Show the indicator.
+   *
+   * @deprecated
    */
   static setNetworkActivityIndicatorVisible(visible: boolean) {
     if (Platform.OS !== 'ios') {

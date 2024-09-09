@@ -109,7 +109,7 @@ function toObjCType(
     case 'GenericObjectTypeAnnotation':
       return wrapObjCOptional('id<NSObject>', isRequired);
     case 'ArrayTypeAnnotation':
-      if (typeAnnotation.elementType == null) {
+      if (typeAnnotation.elementType.type === 'AnyTypeAnnotation') {
         return wrapObjCOptional('id<NSObject>', isRequired);
       }
       return wrapCxxOptional(
@@ -188,7 +188,7 @@ function toObjCValue(
       return value;
     case 'ArrayTypeAnnotation':
       const {elementType} = typeAnnotation;
-      if (elementType == null) {
+      if (elementType.type === 'AnyTypeAnnotation') {
         return value;
       }
 

@@ -407,7 +407,7 @@ function generateEnum(
   const nativeEnumMemberType: NativeEnumMemberValueType =
     memberType === 'StringTypeAnnotation' ? 'std::string' : 'int32_t';
 
-  const getMemberValueAppearance = (value: string) =>
+  const getMemberValueAppearance = (value: string | number) =>
     memberType === 'StringTypeAnnotation' ? `"${value}"` : `${value}`;
 
   const fromCases =

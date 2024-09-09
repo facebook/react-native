@@ -22,7 +22,7 @@ Pod::Spec.new do |s|
   s.requires_arc    = true
   s.pod_target_xcconfig = {
     "USE_HEADERMAP" => "YES",
-    "CLANG_CXX_LANGUAGE_STANDARD" => "c++20"
+    "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard()
   }
 
   install_modules_dependencies(s)
