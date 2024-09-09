@@ -9,15 +9,23 @@ package com.facebook.react.devsupport;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.Window;
+import android.widget.FrameLayout;
 import androidx.annotation.Nullable;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.R;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.SurfaceDelegate;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.devsupport.interfaces.RedBoxHandler;
+import java.util.Objects;
 
 /**
  * The implementation of SurfaceDelegate with {@link Activity}. This is the default SurfaceDelegate
@@ -101,6 +109,29 @@ class RedBoxDialogSurfaceDelegate implements SurfaceDelegate {
                 mDevSupportManager.handleReloadJS();
               }
               return super.onKeyUp(keyCode, event);
+            }
+
+            @Override
+            protected void onCreate(Bundle savedInstanceState) {
+              Objects.requireNonNull(getWindow());
+              // set background color so it will show below transparent system bars on forced
+              // edge-to-edge
+              getWindow().setBackgroundDrawable(new ColorDrawable(Color.BLACK));
+              // register insets listener to update margins on the ReactRootView to avoid overlap w/
+              // system bars
+              int insetsType =
+                  WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout();
+
+              ViewCompat.setOnApplyWindowInsetsListener(
+                  mRedBoxContentView,
+                  (view, windowInsetsCompat) -> {
+                    Insets insets = windowInsetsCompat.getInsets(insetsType);
+
+                    FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) view.getLayoutParams();
+                    lp.setMargins(insets.left, insets.top, insets.right, insets.bottom);
+
+                    return WindowInsetsCompat.CONSUMED;
+                  });
             }
           };
       mDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
