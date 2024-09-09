@@ -852,7 +852,7 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
   [super didMoveToWindow];
   if (self.window == nil) {
     // Check if the ScrollView was in motion
-    if (_scrollView.isDecelerating || _scrollView.isTracking == NO) {
+    if (_scrollView.isDecelerating || !_scrollView.isTracking) {
       // Trigger the onMomentumScrollEnd event manually
       RCT_SEND_SCROLL_EVENT(onMomentumScrollEnd, nil);
       RCT_FORWARD_SCROLL_EVENT(scrollViewDidEndDecelerating : _scrollView);
