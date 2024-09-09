@@ -53,6 +53,13 @@ function getAssetPathInDrawableFolder(asset: PackagerAsset): string {
   return drawableFolder + '/' + fileName + '.' + asset.type;
 }
 
+/**
+ * Returns true if the asset can be loaded over the network.
+ */
+function assetSupportsNetworkLoads(asset: PackagerAsset): boolean {
+  return !(asset.type === 'xml' && Platform.OS === 'android');
+}
+
 class AssetSourceResolver {
   serverUrl: ?string;
   // where the jsbundle is being run from
@@ -67,7 +74,11 @@ class AssetSourceResolver {
   }
 
   isLoadedFromServer(): boolean {
-    return !!this.serverUrl;
+    return (
+      this.serverUrl != null &&
+      this.serverUrl !== '' &&
+      assetSupportsNetworkLoads(this.asset)
+    );
   }
 
   isLoadedFromFileSystem(): boolean {
