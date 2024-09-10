@@ -19,6 +19,7 @@ import org.xmlpull.v1.XmlPullParser
 @ThreadSafe
 public class ResourceDrawableIdHelper private constructor() {
   private val resourceDrawableIdMap: MutableMap<String, Int> = HashMap()
+  private val vectorDrawableCheckCache: MutableMap<Context, MutableMap<String, Boolean>> = HashMap()
 
   @Synchronized
   public fun clear() {
@@ -64,7 +65,15 @@ public class ResourceDrawableIdHelper private constructor() {
   }
 
   public fun isVectorDrawable(context: Context, name: String): Boolean {
-    return getOpeningXmlTag(context, name) == "vector"
+    val cachedResult = vectorDrawableCheckCache[context]?.get(name);
+    if (cachedResult != null) {
+      return cachedResult
+    }
+
+
+    val result = getOpeningXmlTag(context, name) == "vector"
+    vectorDrawableCheckCache.getOrPut(context, { HashMap() }).put(name, result)
+    return result
   }
 
   /**
