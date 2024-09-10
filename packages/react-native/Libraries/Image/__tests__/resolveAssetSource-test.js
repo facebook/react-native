@@ -109,6 +109,29 @@ describe('resolveAssetSource', () => {
         },
       );
     });
+
+    it('respects query parameters', () => {
+      expectResolvesAsset(
+        {
+          __packager_asset: true,
+          fileSystemLocation: '/root/app/assets/module/a',
+          httpServerLocation: '/assets?unstable_path=./module/a',
+          width: 100,
+          height: 200,
+          scales: [1, 2, 3],
+          hash: '5b6f00f',
+          name: 'logo',
+          type: 'png',
+        },
+        {
+          __packager_asset: true,
+          width: 100,
+          height: 200,
+          uri: 'http://10.0.0.1:8081/assets?unstable_path=./module/a/logo@2x.png?platform=ios&hash=5b6f00f',
+          scale: 2,
+        },
+      );
+    });
   });
 
   describe('bundle was loaded from file on iOS', () => {

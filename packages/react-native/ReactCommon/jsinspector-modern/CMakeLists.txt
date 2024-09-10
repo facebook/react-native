@@ -7,6 +7,7 @@ cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
 add_compile_options(
+        $<$<CONFIG:Debug>:-DHERMES_ENABLE_DEBUGGER=1>
         -fexceptions
         -std=c++20)
 

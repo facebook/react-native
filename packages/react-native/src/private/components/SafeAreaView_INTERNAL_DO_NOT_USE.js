@@ -13,15 +13,17 @@ import type {ViewProps} from '../../../Libraries/Components/View/ViewPropTypes';
 import Platform from '../../../Libraries/Utilities/Platform';
 import View from '../../../Libraries/Components/View/View';
 import * as React from 'react';
-export * from '../../../src/private/specs/components/RCTSafeAreaViewNativeComponent';
-import RCTSafeAreaViewNativeComponent from '../../../src/private/specs/components/RCTSafeAreaViewNativeComponent';
 
-let exported: React.AbstractComponent<ViewProps, React.ElementRef<typeof View>>;
-
-if (Platform.OS === 'android' || Platform.OS === 'ios') {
-  exported = RCTSafeAreaViewNativeComponent;
-} else {
-  exported = View;
-}
+const exported: React.AbstractComponent<
+  ViewProps,
+  React.ElementRef<typeof View>,
+> = Platform.select({
+  ios: require('../../../src/private/specs/components/RCTSafeAreaViewNativeComponent')
+    .default,
+  android:
+    require('../../../src/private/specs/components/RCTSafeAreaViewNativeComponent')
+      .default,
+  default: View,
+});
 
 export default exported;

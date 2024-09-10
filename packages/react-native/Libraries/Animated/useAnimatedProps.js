@@ -8,8 +8,7 @@
  * @format
  */
 
-'use strict';
-
+import type {AnimatedPropsAllowlist} from './nodes/AnimatedProps';
 import type {EventSubscription} from '../EventEmitter/NativeEventEmitter';
 
 import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNativeFeatureFlags';
@@ -43,6 +42,7 @@ type AnimatedValueListeners = Array<{
 
 export default function useAnimatedProps<TProps: {...}, TInstance>(
   props: TProps,
+  allowlist?: ?AnimatedPropsAllowlist,
 ): [ReducedProps<TProps>, CallbackRef<TInstance | null>] {
   const [, scheduleUpdate] = useReducer<number, void>(count => count + 1, 0);
   const onUpdateRef = useRef<?() => void>(null);
@@ -53,8 +53,8 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
   // same name property name as styles, so we can probably continue doing that.
   // The ordering of other props *should* not matter.
   const node = useMemo(
-    () => new AnimatedProps(props, () => onUpdateRef.current?.()),
-    [props],
+    () => new AnimatedProps(props, () => onUpdateRef.current?.(), allowlist),
+    [allowlist, props],
   );
   const useNativePropsInFabric =
     ReactNativeFeatureFlags.shouldUseSetNativePropsInFabric();

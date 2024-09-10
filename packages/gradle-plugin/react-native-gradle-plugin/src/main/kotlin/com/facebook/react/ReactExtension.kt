@@ -188,6 +188,7 @@ abstract class ReactExtension @Inject constructor(val project: Project) {
           ?.dependencies
           ?.values
           ?.filter { it.platforms?.android !== null }
+          ?.filterNot { it.platforms?.android?.isPureCxxDependency == true }
           ?.forEach { deps ->
             val nameCleansed = deps.nameCleansed
             val dependencyConfiguration = deps.platforms?.android?.dependencyConfiguration

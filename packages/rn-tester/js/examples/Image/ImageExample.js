@@ -14,15 +14,9 @@ import type {LayoutEvent} from 'react-native/Libraries/Types/CoreEventTypes';
 
 import * as ReactNativeFeatureFlags from 'react-native/src/private/featureflags/ReactNativeFeatureFlags';
 
-const ImageCapInsetsExample = require('./ImageCapInsetsExample');
-const React = require('react');
-const {
-  Image,
-  ImageBackground,
-  StyleSheet,
-  Text,
-  View,
-} = require('react-native');
+import ImageCapInsetsExample from './ImageCapInsetsExample';
+import React from 'react';
+import {Image, ImageBackground, StyleSheet, Text, View} from 'react-native';
 
 const IMAGE1 =
   'https://www.facebook.com/assets/fb_lite_messaging/E2EE-settings@3x.png';
@@ -618,7 +612,9 @@ class VectorDrawableExample extends React.Component<
     return (
       <View style={styles.flex}>
         <Text>Enabled: {isEnabled ? 'true' : 'false'}</Text>
-        <Image source={{uri: 'ic_android'}} style={{height: 64, width: 64}} />
+        <View style={styles.vectorDrawableRow}>
+          <Image source={{uri: 'ic_android'}} style={styles.vectorDrawable} />
+        </View>
       </View>
     );
   }
@@ -848,6 +844,14 @@ const styles = StyleSheet.create({
     marginTop: 40,
     experimental_boxShadow: '80px 0px 10px 0px hotpink',
     transform: 'rotate(-15deg)',
+  },
+  vectorDrawableRow: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  vectorDrawable: {
+    height: 64,
+    width: 64,
   },
 });
 

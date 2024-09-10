@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 
 import {validateStyles} from '../../../src/private/animated/NativeAnimatedValidation';
@@ -21,24 +19,34 @@ import AnimatedObject from './AnimatedObject';
 import AnimatedTransform from './AnimatedTransform';
 import AnimatedWithChildren from './AnimatedWithChildren';
 
+export type AnimatedStyleAllowlist = $ReadOnly<{[string]: true}>;
+
 function createAnimatedStyle(
   inputStyle: {[string]: mixed},
+  allowlist: ?AnimatedStyleAllowlist,
   keepUnanimatedValues: boolean,
-): [$ReadOnlyArray<string>, $ReadOnlyArray<AnimatedNode>, Object] {
+): [$ReadOnlyArray<string>, $ReadOnlyArray<AnimatedNode>, {[string]: mixed}] {
   const nodeKeys: Array<string> = [];
   const nodes: Array<AnimatedNode> = [];
-  const style: {[string]: any} = {};
+  const style: {[string]: mixed} = {};
 
   const keys = Object.keys(inputStyle);
   for (let ii = 0, length = keys.length; ii < length; ii++) {
     const key = keys[ii];
     const value = inputStyle[key];
 
-    if (value != null && key === 'transform') {
-      const node = ReactNativeFeatureFlags.shouldUseAnimatedObjectForTransform()
-        ? AnimatedObject.from(value)
-        : // $FlowFixMe[incompatible-call] - `value` is mixed.
-          new AnimatedTransform(value);
+    if (allowlist == null || Object.hasOwn(allowlist, key)) {
+      let node;
+      if (value != null && key === 'transform') {
+        node = ReactNativeFeatureFlags.shouldUseAnimatedObjectForTransform()
+          ? AnimatedObject.from(value)
+          : // $FlowFixMe[incompatible-call] - `value` is mixed.
+            AnimatedTransform.from(value);
+      } else if (value instanceof AnimatedNode) {
+        node = value;
+      } else {
+        node = AnimatedObject.from(value);
+      }
       if (node == null) {
         if (keepUnanimatedValues) {
           style[key] = value;
@@ -48,21 +56,21 @@ function createAnimatedStyle(
         nodes.push(node);
         style[key] = node;
       }
-    } else if (value instanceof AnimatedNode) {
-      const node = value;
-      nodeKeys.push(key);
-      nodes.push(node);
-      style[key] = value;
     } else {
-      const node = AnimatedObject.from(value);
-      if (node == null) {
-        if (keepUnanimatedValues) {
-          style[key] = value;
+      if (__DEV__) {
+        // WARNING: This is a potentially expensive check that we should only
+        // do in development. Without this check in development, it might be
+        // difficult to identify which styles need to be allowlisted.
+        if (AnimatedObject.from(inputStyle[key]) != null) {
+          console.error(
+            `AnimatedStyle: ${key} is not allowlisted for animation, but it ` +
+              'contains AnimatedNode values; styles allowing animation: ',
+            allowlist,
+          );
         }
-      } else {
-        nodeKeys.push(key);
-        nodes.push(node);
-        style[key] = node;
+      }
+      if (keepUnanimatedValues) {
+        style[key] = value;
       }
     }
   }
@@ -71,34 +79,54 @@ function createAnimatedStyle(
 }
 
 export default class AnimatedStyle extends AnimatedWithChildren {
+  #inputStyle: any;
   #nodeKeys: $ReadOnlyArray<string>;
   #nodes: $ReadOnlyArray<AnimatedNode>;
+  #style: {[string]: mixed};
 
-  _inputStyle: any;
-  _style: {[string]: any};
-
-  constructor(inputStyle: any) {
-    super();
-    this._inputStyle = inputStyle;
+  /**
+   * Creates an `AnimatedStyle` if `value` contains `AnimatedNode` instances.
+   * Otherwise, returns `null`.
+   */
+  static from(
+    inputStyle: any,
+    allowlist: ?AnimatedStyleAllowlist,
+  ): ?AnimatedStyle {
+    const flatStyle = flattenStyle(inputStyle);
+    if (flatStyle == null) {
+      return null;
+    }
     const [nodeKeys, nodes, style] = createAnimatedStyle(
-      // NOTE: This null check should not be necessary, but the types are not
-      // strong nor enforced as of this writing. This check should be hoisted
-      // to instantiation sites.
-      flattenStyle(inputStyle) ?? {},
+      flatStyle,
+      allowlist,
       Platform.OS !== 'web',
     );
+    if (nodes.length === 0) {
+      return null;
+    }
+    return new AnimatedStyle(nodeKeys, nodes, style, inputStyle);
+  }
+
+  constructor(
+    nodeKeys: $ReadOnlyArray<string>,
+    nodes: $ReadOnlyArray<AnimatedNode>,
+    style: {[string]: mixed},
+    inputStyle: any,
+  ) {
+    super();
     this.#nodeKeys = nodeKeys;
     this.#nodes = nodes;
-    this._style = style;
+    this.#style = style;
+    this.#inputStyle = inputStyle;
   }
 
   __getValue(): Object | Array<Object> {
-    const style: {[string]: any} = {};
+    const style: {[string]: mixed} = {};
 
-    const keys = Object.keys(this._style);
+    const keys = Object.keys(this.#style);
     for (let ii = 0, length = keys.length; ii < length; ii++) {
       const key = keys[ii];
-      const value = this._style[key];
+      const value = this.#style[key];
 
       if (value instanceof AnimatedNode) {
         style[key] = value.__getValue();
@@ -107,11 +135,11 @@ export default class AnimatedStyle extends AnimatedWithChildren {
       }
     }
 
-    return Platform.OS === 'web' ? [this._inputStyle, style] : style;
+    return Platform.OS === 'web' ? [this.#inputStyle, style] : style;
   }
 
   __getAnimatedValue(): Object {
-    const style: {[string]: any} = {};
+    const style: {[string]: mixed} = {};
 
     const nodeKeys = this.#nodeKeys;
     const nodes = this.#nodes;
