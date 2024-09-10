@@ -30,29 +30,20 @@ function createAnimatedProps(inputProps: {
     const key = keys[ii];
     const value = inputProps[key];
 
+    let node;
     if (key === 'style') {
-      const node = AnimatedStyle.from(value);
-      if (node == null) {
-        props[key] = value;
-      } else {
-        nodeKeys.push(key);
-        nodes.push(node);
-        props[key] = node;
-      }
+      node = AnimatedStyle.from(value);
     } else if (value instanceof AnimatedNode) {
-      const node = value;
+      node = value;
+    } else {
+      node = AnimatedObject.from(value);
+    }
+    if (node == null) {
+      props[key] = value;
+    } else {
       nodeKeys.push(key);
       nodes.push(node);
       props[key] = node;
-    } else {
-      const node = AnimatedObject.from(value);
-      if (node == null) {
-        props[key] = value;
-      } else {
-        nodeKeys.push(key);
-        nodes.push(node);
-        props[key] = node;
-      }
     }
   }
 
