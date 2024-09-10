@@ -161,13 +161,13 @@ function downloadArtifact(
 async function artifactURLForJSCRNTesterAPK(
   emulatorArch /*: string */,
 ) /*: Promise<string> */ {
-  return getArtifactURL('rntester-jsc-release');
+  return getArtifactURL('rntester-jsc-debug');
 }
 
 async function artifactURLForHermesRNTesterAPK(
   emulatorArch /*: string */,
 ) /*: Promise<string> */ {
-  return getArtifactURL('rntester-hermes-release');
+  return getArtifactURL('rntester-hermes-debug');
 }
 
 async function artifactURLForMavenLocal() /*: Promise<string> */ {
