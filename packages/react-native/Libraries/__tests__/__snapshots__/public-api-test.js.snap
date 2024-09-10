@@ -970,7 +970,13 @@ exports[`public API should not change unintentionally Libraries/Animated/nodes/A
 "declare export default class AnimatedStyle extends AnimatedWithChildren {
   _inputStyle: any;
   _style: { [string]: any };
-  constructor(inputStyle: any): void;
+  static from(inputStyle: any): ?AnimatedStyle;
+  constructor(
+    nodeKeys: $ReadOnlyArray<string>,
+    nodes: $ReadOnlyArray<AnimatedNode>,
+    style: { [string]: any },
+    inputStyle: any
+  ): void;
   __getValue(): Object | Array<Object>;
   __getAnimatedValue(): Object;
   __attach(): void;
@@ -1034,7 +1040,11 @@ exports[`public API should not change unintentionally Libraries/Animated/nodes/A
 };
 declare export default class AnimatedTransform extends AnimatedWithChildren {
   _transforms: $ReadOnlyArray<Transform<>>;
-  constructor(transforms: $ReadOnlyArray<Transform<>>): void;
+  static from(transforms: $ReadOnlyArray<Transform<>>): ?AnimatedTransform;
+  constructor(
+    nodes: $ReadOnlyArray<AnimatedNode>,
+    transforms: $ReadOnlyArray<Transform<>>
+  ): void;
   __makeNative(platformConfig: ?PlatformConfig): void;
   __getValue(): $ReadOnlyArray<Transform<any>>;
   __getAnimatedValue(): $ReadOnlyArray<Transform<any>>;
