@@ -730,6 +730,13 @@ declare export default function createAnimatedComponent<
 >(
   Component: React.AbstractComponent<TProps, TInstance>
 ): AnimatedComponentType<TProps, TInstance>;
+declare export function unstable_createAnimatedComponentWithAllowlist<
+  TProps: { ... },
+  TInstance,
+>(
+  Component: React.AbstractComponent<TProps, TInstance>,
+  allowlist: ?AnimatedPropsAllowlist
+): AnimatedComponentType<TProps, TInstance>;
 "
 `;
 
@@ -945,8 +952,16 @@ exports[`public API should not change unintentionally Libraries/Animated/nodes/A
 `;
 
 exports[`public API should not change unintentionally Libraries/Animated/nodes/AnimatedProps.js 1`] = `
-"declare export default class AnimatedProps extends AnimatedNode {
-  constructor(inputProps: { [string]: mixed }, callback: () => void): void;
+"export type AnimatedPropsAllowlist = $ReadOnly<{
+  style?: ?AnimatedStyleAllowlist,
+  [string]: true,
+}>;
+declare export default class AnimatedProps extends AnimatedNode {
+  constructor(
+    inputProps: { [string]: mixed },
+    callback: () => void,
+    allowlist?: ?AnimatedPropsAllowlist
+  ): void;
   __getValue(): Object;
   __getAnimatedValue(): Object;
   __attach(): void;
@@ -963,8 +978,12 @@ exports[`public API should not change unintentionally Libraries/Animated/nodes/A
 `;
 
 exports[`public API should not change unintentionally Libraries/Animated/nodes/AnimatedStyle.js 1`] = `
-"declare export default class AnimatedStyle extends AnimatedWithChildren {
-  static from(inputStyle: any): ?AnimatedStyle;
+"export type AnimatedStyleAllowlist = $ReadOnly<{ [string]: true }>;
+declare export default class AnimatedStyle extends AnimatedWithChildren {
+  static from(
+    inputStyle: any,
+    allowlist: ?AnimatedStyleAllowlist
+  ): ?AnimatedStyle;
   constructor(
     nodeKeys: $ReadOnlyArray<string>,
     nodes: $ReadOnlyArray<AnimatedNode>,
@@ -1159,7 +1178,8 @@ exports[`public API should not change unintentionally Libraries/Animated/useAnim
 };
 type CallbackRef<T> = (T) => mixed;
 declare export default function useAnimatedProps<TProps: { ... }, TInstance>(
-  props: TProps
+  props: TProps,
+  allowlist?: ?AnimatedPropsAllowlist
 ): [ReducedProps<TProps>, CallbackRef<TInstance | null>];
 "
 `;
