@@ -102,6 +102,18 @@ BaseTextInputProps::BaseTextInputProps(
           rawProps,
           "autoCapitalize",
           sourceProps.autoCapitalize,
+          {})),
+      editable(convertRawProp(
+          context,
+          rawProps,
+          "editable",
+          sourceProps.editable,
+          {})),
+      readOnly(convertRawProp(
+          context,
+          rawProps,
+          "readOnly",
+          sourceProps.readOnly,
           {})) {}
 
 void BaseTextInputProps::setProp(
@@ -180,6 +192,8 @@ void BaseTextInputProps::setProp(
     RAW_SET_PROP_SWITCH_CASE_BASIC(text);
     RAW_SET_PROP_SWITCH_CASE_BASIC(mostRecentEventCount);
     RAW_SET_PROP_SWITCH_CASE_BASIC(autoCapitalize);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(editable);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(readOnly);
   }
 }
 
