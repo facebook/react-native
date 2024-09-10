@@ -11,6 +11,7 @@
 'use strict';
 
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+import type {PasteEvent} from 'react-native/Libraries/Components/TextInput/TextInput';
 import type {TextStyle} from 'react-native/Libraries/StyleSheet/StyleSheet';
 
 import RNTesterButton from '../../components/RNTesterButton';
@@ -20,6 +21,7 @@ import * as React from 'react';
 import {useContext, useState} from 'react';
 import {
   Button,
+  Image,
   Platform,
   StyleSheet,
   Text,
@@ -414,6 +416,9 @@ class TextEventsExample extends React.Component<{...}, $FlowFixMeState> {
           }
           onKeyPress={event =>
             this.updateText('onKeyPress key: ' + event.nativeEvent.key)
+          }
+          onPaste={event =>
+            this.updateText('onPaste type: ' + event.nativeEvent.items[0].type)
           }
           style={styles.singleLine}
         />
@@ -846,6 +851,40 @@ function MultilineStyledTextInput({
   );
 }
 
+function PasteboardTextInput() {
+  const [pasteEvent, setPasteEvent] = useState<?PasteEvent['nativeEvent']>();
+  const content = pasteEvent?.items[0];
+
+  return (
+    <View>
+      <ExampleTextInput
+        onPaste={event => setPasteEvent(event.nativeEvent)}
+        placeholder="Paste text or image"
+        multiline={true}
+      />
+      {content && (
+        <>
+          <Text>{'Type: ' + content.type}</Text>
+          {content.type.startsWith('text/') ? (
+            <Text>{'Data: ' + content.data}</Text>
+          ) : content.type.startsWith('image/') ? (
+            <Image
+              source={{uri: content.data}}
+              style={{
+                width: '100%',
+                height: 300,
+                borderWidth: 1,
+                borderColor: 'lightgray',
+              }}
+              resizeMode="contain"
+            />
+          ) : null}
+        </>
+      )}
+    </View>
+  );
+}
+
 module.exports = ([
   {
     title: 'Auto-focus & select text on focus',
@@ -1147,6 +1186,12 @@ module.exports = ([
           </ExampleTextInput>
         </View>
       );
+    },
+  },
+  {
+    title: 'Pasteboard',
+    render: function (): React.Element<any> {
+      return <PasteboardTextInput />;
     },
   },
 ]: Array<RNTesterModuleExample>);

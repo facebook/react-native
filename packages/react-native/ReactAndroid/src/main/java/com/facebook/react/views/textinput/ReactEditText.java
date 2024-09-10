@@ -9,6 +9,10 @@ package com.facebook.react.views.textinput;
 
 import static com.facebook.react.uimanager.UIManagerHelper.getReactContext;
 
+import android.content.ClipboardManager;
+import android.content.ClipData;
+import android.content.ClipDescription;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -16,6 +20,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
@@ -118,6 +123,7 @@ public class ReactEditText extends AppCompatEditText {
   private @Nullable SelectionWatcher mSelectionWatcher;
   private @Nullable ContentSizeWatcher mContentSizeWatcher;
   private @Nullable ScrollWatcher mScrollWatcher;
+  private @Nullable PasteWatcher mPasteWatcher;
   private InternalKeyListener mKeyListener;
   private boolean mDetectScrollMovement = false;
   private boolean mOnKeyPress = false;
@@ -164,6 +170,7 @@ public class ReactEditText extends AppCompatEditText {
       mKeyListener = new InternalKeyListener();
     }
     mScrollWatcher = null;
+    mPasteWatcher = null;
     mTextAttributes = new TextAttributes();
 
     applyTextAttributes();
@@ -331,8 +338,29 @@ public class ReactEditText extends AppCompatEditText {
    */
   @Override
   public boolean onTextContextMenuItem(int id) {
-    if (id == android.R.id.paste) {
+    if (id == android.R.id.paste || id == android.R.id.pasteAsPlainText) {
       id = android.R.id.pasteAsPlainText;
+      if (mPasteWatcher != null) {
+        ClipboardManager clipboardManager =
+            (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clipData = clipboardManager.getPrimaryClip();
+        String type = null;
+        String data = null;
+        if (clipData.getDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)) {
+          type = ClipDescription.MIMETYPE_TEXT_PLAIN;
+          data = clipData.getItemAt(0).getText().toString();
+        } else {
+          Uri itemUri = clipData.getItemAt(0).getUri();
+          if (itemUri != null) {
+            ContentResolver cr = getReactContext(this).getContentResolver();
+            type = cr.getType(itemUri);
+            data = itemUri.toString();
+          }
+        }
+        if (type != null && data != null) {
+          mPasteWatcher.onPaste(type, data);
+        }
+      }
     }
     return super.onTextContextMenuItem(id);
   }
@@ -392,6 +420,10 @@ public class ReactEditText extends AppCompatEditText {
 
   public void setScrollWatcher(@Nullable ScrollWatcher scrollWatcher) {
     mScrollWatcher = scrollWatcher;
+  }
+
+  public void setPasteWatcher(@Nullable PasteWatcher pasteWatcher) {
+    mPasteWatcher = pasteWatcher;
   }
 
   /**

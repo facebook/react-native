@@ -2655,6 +2655,17 @@ export type NativeProps = $ReadOnly<{|
       |}>,
     |}>,
   >,
+  onPaste?: ?DirectEventHandler<
+    $ReadOnly<{|
+      target: Int32,
+      items: $ReadOnlyArray<
+        $ReadOnly<{|
+          type: string,
+          data: string,
+        |}>,
+      >,
+    |}>,
+  >,
   placeholder?: ?Stringish,
   placeholderTextColor?: ?ColorValue,
   secureTextEntry?: ?boolean,
@@ -2806,6 +2817,17 @@ export type EditingEvent = SyntheticEvent<
     eventCount: number,
     text: string,
     target: number,
+  |}>,
+>;
+export type PasteEvent = SyntheticEvent<
+  $ReadOnly<{|
+    target: number,
+    items: $ReadOnlyArray<
+      $ReadOnly<{|
+        type: string,
+        data: string,
+      |}>,
+    >,
   |}>,
 >;
 type DataDetectorTypesType =
@@ -3053,6 +3075,7 @@ export type Props = $ReadOnly<{|
   onSelectionChange?: ?(e: SelectionChangeEvent) => mixed,
   onSubmitEditing?: ?(e: EditingEvent) => mixed,
   onScroll?: ?(e: ScrollEvent) => mixed,
+  onPaste?: ?(e: PasteEvent) => mixed,
   placeholder?: ?Stringish,
   placeholderTextColor?: ?ColorValue,
   readOnly?: ?boolean,
@@ -3162,6 +3185,17 @@ export type EditingEvent = SyntheticEvent<
     eventCount: number,
     text: string,
     target: number,
+  |}>,
+>;
+export type PasteEvent = SyntheticEvent<
+  $ReadOnly<{|
+    target: number,
+    items: $ReadOnlyArray<
+      $ReadOnly<{|
+        type: string,
+        data: string,
+      |}>,
+    >,
   |}>,
 >;
 type DataDetectorTypesType =
@@ -3403,6 +3437,7 @@ export type Props = $ReadOnly<{|
   onSelectionChange?: ?(e: SelectionChangeEvent) => mixed,
   onSubmitEditing?: ?(e: EditingEvent) => mixed,
   onScroll?: ?(e: ScrollEvent) => mixed,
+  onPaste?: ?(e: PasteEvent) => mixed,
   placeholder?: ?Stringish,
   placeholderTextColor?: ?ColorValue,
   readOnly?: ?boolean,

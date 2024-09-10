@@ -268,6 +268,9 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
             .put(
                 ScrollEventType.getJSEventName(ScrollEventType.SCROLL),
                 MapBuilder.of("registrationName", "onScroll"))
+            .put(
+                "topPaste",
+                MapBuilder.of("registrationName", "onPaste"))
             .build());
     return eventTypeConstants;
   }
@@ -481,6 +484,15 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       view.setScrollWatcher(new ReactScrollWatcher(view));
     } else {
       view.setScrollWatcher(null);
+    }
+  }
+
+  @ReactProp(name = "onPaste", defaultBoolean = false)
+  public void setOnPaste(final ReactEditText view, boolean onPaste) {
+    if (onPaste) {
+      view.setPasteWatcher(new ReactPasteWatcher(view));
+    } else {
+      view.setPasteWatcher(null);
     }
   }
 
@@ -1353,6 +1365,25 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         mPreviousHorizontal = horiz;
         mPreviousVert = vert;
       }
+    }
+  }
+
+  private static class ReactPasteWatcher implements PasteWatcher {
+    private final ReactEditText mReactEditText;
+    private final EventDispatcher mEventDispatcher;
+    private final int mSurfaceId;
+
+    public ReactPasteWatcher(ReactEditText editText) {
+      mReactEditText = editText;
+      ReactContext reactContext = getReactContext(editText);
+      mEventDispatcher = getEventDispatcher(reactContext, editText);
+      mSurfaceId = UIManagerHelper.getSurfaceId(reactContext);
+    }
+
+    @Override
+    public void onPaste(String type, String data) {
+      mEventDispatcher.dispatchEvent(
+          new ReactTextInputPasteEvent(mSurfaceId, mReactEditText.getId(), type, data));
     }
   }
 

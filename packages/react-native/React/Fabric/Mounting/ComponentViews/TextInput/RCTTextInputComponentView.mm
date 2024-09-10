@@ -432,6 +432,13 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
   }
 }
 
+- (void)textInputDidPaste:(NSString *)type withData:(NSString *)data
+{
+  if (_eventEmitter) {
+    static_cast<const TextInputEventEmitter &>(*_eventEmitter).onPaste(std::string([type UTF8String]), std::string([data UTF8String]));
+  }
+}
+
 #pragma mark - RCTBackedTextInputDelegate (UIScrollViewDelegate)
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
