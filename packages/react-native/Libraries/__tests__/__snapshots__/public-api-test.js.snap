@@ -905,7 +905,6 @@ exports[`public API should not change unintentionally Libraries/Animated/nodes/A
 exports[`public API should not change unintentionally Libraries/Animated/nodes/AnimatedNode.js 1`] = `
 "declare export default class AnimatedNode {
   _platformConfig: ?PlatformConfig;
-  __nativeAnimatedValueListener: ?EventSubscription;
   __attach(): void;
   __detach(): void;
   __getValue(): any;
@@ -915,16 +914,13 @@ exports[`public API should not change unintentionally Libraries/Animated/nodes/A
   __getChildren(): $ReadOnlyArray<AnimatedNode>;
   __isNative: boolean;
   __nativeTag: ?number;
-  __shouldUpdateListenersForNewNativeTag: boolean;
   __makeNative(platformConfig: ?PlatformConfig): void;
   addListener(callback: (value: any) => mixed): string;
   removeListener(id: string): void;
   removeAllListeners(): void;
   hasListeners(): boolean;
-  _startListeningToNativeValueUpdates(): void;
   __onAnimatedValueUpdateReceived(value: number): void;
   __callListeners(value: number): void;
-  _stopListeningForNativeValueUpdates(): void;
   __getNativeTag(): number;
   __getNativeConfig(): Object;
   toJSON(): any;
