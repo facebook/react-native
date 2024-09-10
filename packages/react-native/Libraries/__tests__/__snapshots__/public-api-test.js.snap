@@ -923,7 +923,6 @@ exports[`public API should not change unintentionally Libraries/Animated/nodes/A
   __callListeners(value: number): void;
   __getNativeTag(): number;
   __getNativeConfig(): Object;
-  toJSON(): any;
   __getPlatformConfig(): ?PlatformConfig;
   __setPlatformConfig(platformConfig: ?PlatformConfig): void;
 }
