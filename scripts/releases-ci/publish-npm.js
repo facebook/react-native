@@ -116,13 +116,14 @@ async function publishNpm(buildType /*: BuildType */) /*: Promise<void> */ {
     return;
   }
 
-  // We first publish on Maven Central the external artifacts
-  // produced by iOS
-  publishExternalArtifactsToMaven(version, buildType);
-
-  // We the publish on Maven Central all the Android artifacts.
-  // NPM publishing is done just after.
+  // We first publish on Maven Central all the Android artifacts.
+  // Those were built by the `build-android` CI job.
   publishAndroidArtifactsToMaven(version, buildType);
+
+  // And we then publish on Maven Central the external artifacts
+  // produced by iOS
+  // NPM publishing is done just after.
+  publishExternalArtifactsToMaven(version, buildType);
 
   const packagePath = path.join(REPO_ROOT, 'packages', 'react-native');
   const result = publishPackage(packagePath, {
