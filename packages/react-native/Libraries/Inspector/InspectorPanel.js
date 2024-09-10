@@ -80,16 +80,22 @@ class InspectorPanel extends React.Component<Props> {
             pressed={this.props.inspecting}
             onClick={this.props.setInspecting}
           />
-          <InspectorPanelButton
-            title={'Perf'}
-            pressed={this.props.perfing}
-            onClick={this.props.setPerfing}
-          />
-          <InspectorPanelButton
-            title={'Network'}
-            pressed={this.props.networking}
-            onClick={this.props.setNetworking}
-          />
+          {global.RN$Bridgeless === true ? null : (
+            // These Inspector Panel sub-features are removed under the New Arch.
+            // See https://github.com/react-native-community/discussions-and-proposals/pull/777
+            <>
+              <InspectorPanelButton
+                title={'Perf'}
+                pressed={this.props.perfing}
+                onClick={this.props.setPerfing}
+              />
+              <InspectorPanelButton
+                title={'Network'}
+                pressed={this.props.networking}
+                onClick={this.props.setNetworking}
+              />
+            </>
+          )}
           <InspectorPanelButton
             title={'Touchables'}
             pressed={this.props.touchTargeting}

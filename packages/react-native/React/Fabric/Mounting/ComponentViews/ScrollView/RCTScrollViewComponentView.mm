@@ -620,9 +620,7 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
       });
     }
   } else {
-    if (!_isUserTriggeredScrolling || CoreFeatures::enableGranularScrollViewStateUpdatesIOS) {
-      [self _updateStateWithContentOffset];
-    }
+    [self _updateStateWithContentOffset];
 
     NSTimeInterval now = CACurrentMediaTime();
     if ((_lastScrollEventDispatchTime == 0) || (now - _lastScrollEventDispatchTime > _scrollEventThrottle)) {

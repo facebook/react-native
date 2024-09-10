@@ -8,6 +8,8 @@
  * @format
  */
 
+import type {AnimatedPropsAllowlist} from './nodes/AnimatedProps';
+
 import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNativeFeatureFlags';
 
 /**
@@ -16,7 +18,7 @@ import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNa
  * In general native animated implementation should support any numeric or color property that
  * doesn't need to be updated through the shadow view hierarchy (all non-layout properties).
  */
-const SUPPORTED_COLOR_STYLES: {[string]: boolean} = {
+const SUPPORTED_COLOR_STYLES: {[string]: true} = {
   backgroundColor: true,
   borderBottomColor: true,
   borderColor: true,
@@ -29,7 +31,7 @@ const SUPPORTED_COLOR_STYLES: {[string]: boolean} = {
   tintColor: true,
 };
 
-const SUPPORTED_STYLES: {[string]: boolean} = {
+const SUPPORTED_STYLES: {[string]: true} = {
   ...SUPPORTED_COLOR_STYLES,
   borderBottomEndRadius: true,
   borderBottomLeftRadius: true,
@@ -58,7 +60,7 @@ const SUPPORTED_STYLES: {[string]: boolean} = {
   translateY: true,
 };
 
-const SUPPORTED_TRANSFORMS: {[string]: boolean} = {
+const SUPPORTED_TRANSFORMS: {[string]: true} = {
   translateX: true,
   translateY: true,
   scale: true,
@@ -71,16 +73,25 @@ const SUPPORTED_TRANSFORMS: {[string]: boolean} = {
   perspective: true,
   skewX: true,
   skewY: true,
-  matrix: ReactNativeFeatureFlags.shouldUseAnimatedObjectForTransform(),
+  ...(ReactNativeFeatureFlags.shouldUseAnimatedObjectForTransform()
+    ? {matrix: true}
+    : {}),
 };
 
-const SUPPORTED_INTERPOLATION_PARAMS: {[string]: boolean} = {
+const SUPPORTED_INTERPOLATION_PARAMS: {[string]: true} = {
   inputRange: true,
   outputRange: true,
   extrapolate: true,
   extrapolateRight: true,
   extrapolateLeft: true,
 };
+
+/**
+ * Default allowlist for component props that support native animated values.
+ */
+export default {
+  style: SUPPORTED_STYLES,
+} as AnimatedPropsAllowlist;
 
 export function allowInterpolationParam(param: string): void {
   SUPPORTED_INTERPOLATION_PARAMS[param] = true;
@@ -95,17 +106,17 @@ export function allowTransformProp(prop: string): void {
 }
 
 export function isSupportedColorStyleProp(prop: string): boolean {
-  return SUPPORTED_COLOR_STYLES[prop] === true;
+  return Object.hasOwn(SUPPORTED_COLOR_STYLES, prop);
 }
 
 export function isSupportedInterpolationParam(param: string): boolean {
-  return SUPPORTED_INTERPOLATION_PARAMS[param] === true;
+  return Object.hasOwn(SUPPORTED_INTERPOLATION_PARAMS, param);
 }
 
 export function isSupportedStyleProp(prop: string): boolean {
-  return SUPPORTED_STYLES[prop] === true;
+  return Object.hasOwn(SUPPORTED_STYLES, prop);
 }
 
 export function isSupportedTransformProp(prop: string): boolean {
-  return SUPPORTED_TRANSFORMS[prop] === true;
+  return Object.hasOwn(SUPPORTED_TRANSFORMS, prop);
 }

@@ -87,7 +87,6 @@ class AndroidTextInputProps final : public BaseTextInputProps {
   bool autoCorrect{false};
   bool allowFontScaling{false};
   Float maxFontSizeMultiplier{0.0};
-  bool editable{false};
   std::string keyboardType{};
   std::string returnKeyType{};
   bool multiline{false};

@@ -189,6 +189,44 @@ class ReactExtensionTest {
     assertThat(deps).isEmpty()
   }
 
+  @Test
+  fun getGradleDependenciesToApply_withIsPureCxxDeps_filtersCorrectly() {
+    val validJsonFile =
+      createJsonFile(
+        """
+      {
+        "reactNativeVersion": "1000.0.0",
+        "dependencies": {
+          "@react-native/oss-library-example": {
+            "root": "./node_modules/@react-native/android-example",
+            "name": "@react-native/android-example",
+            "platforms": {
+              "android": {
+                "sourceDir": "src/main/java",
+                "packageImportPath": "com.facebook.react"
+              }
+            }
+          },
+          "@react-native/another-library-for-testing": {
+            "root": "./node_modules/@react-native/cxx-testing",
+            "name": "@react-native/cxx-testing",
+            "platforms": {
+              "android": {
+                "sourceDir": "src/main/java",
+                "packageImportPath": "com.facebook.react",
+                "isPureCxxDependency": true
+              }
+            }
+          }
+        }
+      }
+      """
+          .trimIndent())
+
+    val deps = getGradleDependenciesToApply(validJsonFile)
+    assertThat(deps).containsExactly("implementation" to ":react-native_android-example")
+  }
+
   private fun createJsonFile(@Language("JSON") input: String) =
       tempFolder.newFile().apply { writeText(input) }
 }

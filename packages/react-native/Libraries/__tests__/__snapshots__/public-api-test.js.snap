@@ -373,7 +373,8 @@ declare export default typeof Easing;
 `;
 
 exports[`public API should not change unintentionally Libraries/Animated/NativeAnimatedAllowlist.js 1`] = `
-"declare export function allowInterpolationParam(param: string): void;
+"declare export default AnimatedPropsAllowlist;
+declare export function allowInterpolationParam(param: string): void;
 declare export function allowStyleProp(prop: string): void;
 declare export function allowTransformProp(prop: string): void;
 declare export function isSupportedColorStyleProp(prop: string): boolean;
@@ -730,6 +731,13 @@ declare export default function createAnimatedComponent<
 >(
   Component: React.AbstractComponent<TProps, TInstance>
 ): AnimatedComponentType<TProps, TInstance>;
+declare export function unstable_createAnimatedComponentWithAllowlist<
+  TProps: { ... },
+  TInstance,
+>(
+  Component: React.AbstractComponent<TProps, TInstance>,
+  allowlist: ?AnimatedPropsAllowlist
+): AnimatedComponentType<TProps, TInstance>;
 "
 `;
 
@@ -905,7 +913,6 @@ exports[`public API should not change unintentionally Libraries/Animated/nodes/A
 exports[`public API should not change unintentionally Libraries/Animated/nodes/AnimatedNode.js 1`] = `
 "declare export default class AnimatedNode {
   _platformConfig: ?PlatformConfig;
-  __nativeAnimatedValueListener: ?EventSubscription;
   __attach(): void;
   __detach(): void;
   __getValue(): any;
@@ -915,19 +922,15 @@ exports[`public API should not change unintentionally Libraries/Animated/nodes/A
   __getChildren(): $ReadOnlyArray<AnimatedNode>;
   __isNative: boolean;
   __nativeTag: ?number;
-  __shouldUpdateListenersForNewNativeTag: boolean;
   __makeNative(platformConfig: ?PlatformConfig): void;
   addListener(callback: (value: any) => mixed): string;
   removeListener(id: string): void;
   removeAllListeners(): void;
   hasListeners(): boolean;
-  _startListeningToNativeValueUpdates(): void;
   __onAnimatedValueUpdateReceived(value: number): void;
   __callListeners(value: number): void;
-  _stopListeningForNativeValueUpdates(): void;
   __getNativeTag(): number;
   __getNativeConfig(): Object;
-  toJSON(): any;
   __getPlatformConfig(): ?PlatformConfig;
   __setPlatformConfig(platformConfig: ?PlatformConfig): void;
 }
@@ -950,11 +953,16 @@ exports[`public API should not change unintentionally Libraries/Animated/nodes/A
 `;
 
 exports[`public API should not change unintentionally Libraries/Animated/nodes/AnimatedProps.js 1`] = `
-"declare export default class AnimatedProps extends AnimatedNode {
-  _animatedView: any;
-  _props: Object;
-  _callback: () => void;
-  constructor(inputProps: Object, callback: () => void): void;
+"export type AnimatedPropsAllowlist = $ReadOnly<{
+  style?: ?AnimatedStyleAllowlist,
+  [string]: true,
+}>;
+declare export default class AnimatedProps extends AnimatedNode {
+  constructor(
+    inputProps: { [string]: mixed },
+    callback: () => void,
+    allowlist?: ?AnimatedPropsAllowlist
+  ): void;
   __getValue(): Object;
   __getAnimatedValue(): Object;
   __attach(): void;
@@ -971,10 +979,18 @@ exports[`public API should not change unintentionally Libraries/Animated/nodes/A
 `;
 
 exports[`public API should not change unintentionally Libraries/Animated/nodes/AnimatedStyle.js 1`] = `
-"declare export default class AnimatedStyle extends AnimatedWithChildren {
-  _inputStyle: any;
-  _style: { [string]: any };
-  constructor(inputStyle: any): void;
+"export type AnimatedStyleAllowlist = $ReadOnly<{ [string]: true }>;
+declare export default class AnimatedStyle extends AnimatedWithChildren {
+  static from(
+    inputStyle: any,
+    allowlist: ?AnimatedStyleAllowlist
+  ): ?AnimatedStyle;
+  constructor(
+    nodeKeys: $ReadOnlyArray<string>,
+    nodes: $ReadOnlyArray<AnimatedNode>,
+    style: { [string]: mixed },
+    inputStyle: any
+  ): void;
   __getValue(): Object | Array<Object>;
   __getAnimatedValue(): Object;
   __attach(): void;
@@ -1038,7 +1054,11 @@ exports[`public API should not change unintentionally Libraries/Animated/nodes/A
 };
 declare export default class AnimatedTransform extends AnimatedWithChildren {
   _transforms: $ReadOnlyArray<Transform<>>;
-  constructor(transforms: $ReadOnlyArray<Transform<>>): void;
+  static from(transforms: $ReadOnlyArray<Transform<>>): ?AnimatedTransform;
+  constructor(
+    nodes: $ReadOnlyArray<AnimatedNode>,
+    transforms: $ReadOnlyArray<Transform<>>
+  ): void;
   __makeNative(platformConfig: ?PlatformConfig): void;
   __getValue(): $ReadOnlyArray<Transform<any>>;
   __getAnimatedValue(): $ReadOnlyArray<Transform<any>>;
@@ -1159,7 +1179,8 @@ exports[`public API should not change unintentionally Libraries/Animated/useAnim
 };
 type CallbackRef<T> = (T) => mixed;
 declare export default function useAnimatedProps<TProps: { ... }, TInstance>(
-  props: TProps
+  props: TProps,
+  allowlist?: ?AnimatedPropsAllowlist
 ): [ReducedProps<TProps>, CallbackRef<TInstance | null>];
 "
 `;
@@ -2880,7 +2901,10 @@ export type TextContentType =
   | \\"birthdateMonth\\"
   | \\"birthdateYear\\"
   | \\"cellularEID\\"
-  | \\"cellularIMEI\\";
+  | \\"cellularIMEI\\"
+  | \\"dateTime\\"
+  | \\"flightNumber\\"
+  | \\"shipmentTrackingNumber\\";
 export type enterKeyHintType =
   | \\"enter\\"
   | \\"done\\"
@@ -2905,6 +2929,14 @@ type IOSProps = $ReadOnly<{|
   spellCheck?: ?boolean,
   textContentType?: ?TextContentType,
   lineBreakStrategyIOS?: ?(\\"none\\" | \\"standard\\" | \\"hangul-word\\" | \\"push-out\\"),
+  lineBreakModeIOS?: ?(
+    | \\"wordWrapping\\"
+    | \\"char\\"
+    | \\"clip\\"
+    | \\"head\\"
+    | \\"middle\\"
+    | \\"tail\\"
+  ),
   smartInsertDelete?: ?boolean,
 |}>;
 type AndroidProps = $ReadOnly<{|
@@ -3227,7 +3259,10 @@ export type TextContentType =
   | \\"birthdateMonth\\"
   | \\"birthdateYear\\"
   | \\"cellularEID\\"
-  | \\"cellularIMEI\\";
+  | \\"cellularIMEI\\"
+  | \\"dateTime\\"
+  | \\"flightNumber\\"
+  | \\"shipmentTrackingNumber\\";
 export type enterKeyHintType =
   | \\"done\\"
   | \\"go\\"
@@ -3252,6 +3287,14 @@ type IOSProps = $ReadOnly<{|
   spellCheck?: ?boolean,
   textContentType?: ?TextContentType,
   lineBreakStrategyIOS?: ?(\\"none\\" | \\"standard\\" | \\"hangul-word\\" | \\"push-out\\"),
+  lineBreakModeIOS?: ?(
+    | \\"wordWrapping\\"
+    | \\"char\\"
+    | \\"clip\\"
+    | \\"head\\"
+    | \\"middle\\"
+    | \\"tail\\"
+  ),
   smartInsertDelete?: ?boolean,
 |}>;
 type AndroidProps = $ReadOnly<{|
@@ -7833,8 +7876,8 @@ export type ReactNativeType = {
   ): ?ElementRef<ElementType>,
   unmountComponentAtNode(containerTag: number): void,
   unmountComponentAtNodeAndRemoveContainer(containerTag: number): void,
-  unstable_batchedUpdates: <T>(fn: (T) => void, bookkeeping: T) => void,
-  __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED: SecretInternalsType,
+  +unstable_batchedUpdates: <T>(fn: (T) => void, bookkeeping: T) => void,
+  +__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED: SecretInternalsType,
   ...
 };
 declare export opaque type Node;
