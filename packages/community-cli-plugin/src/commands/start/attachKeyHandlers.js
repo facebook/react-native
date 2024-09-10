@@ -19,6 +19,18 @@ import fetch from 'node-fetch';
 
 const CTRL_C = '\u0003';
 const CTRL_D = '\u0004';
+const reloadTimeout = 700;
+
+const throttle = (callback, timeout) => {
+  let previousCall = 0;
+  return () => {
+    const currentCall = new Date().getTime();
+    if (currentCall - previousCall > timeout) {
+      previousCall = currentCall;
+      callback();
+    }
+  };
+};
 
 export default function attachKeyHandlers({
   cliConfig,
@@ -41,11 +53,15 @@ export default function attachKeyHandlers({
     env: {FORCE_COLOR: chalk.supportsColor ? 'true' : 'false'},
   };
 
+  const reload = throttle(() => {
+    logger.info('Reloading connected app(s)...');
+    messageSocket.broadcast('reload', null);
+  }, reloadTimeout);
+
   const onPress = async (key: string) => {
     switch (key.toLowerCase()) {
       case 'r':
-        logger.info('Reloading connected app(s)...');
-        messageSocket.broadcast('reload', null);
+        reload();
         break;
       case 'd':
         logger.info('Opening Dev Menu...');
