@@ -373,7 +373,8 @@ declare export default typeof Easing;
 `;
 
 exports[`public API should not change unintentionally Libraries/Animated/NativeAnimatedAllowlist.js 1`] = `
-"declare export function allowInterpolationParam(param: string): void;
+"declare export default AnimatedPropsAllowlist;
+declare export function allowInterpolationParam(param: string): void;
 declare export function allowStyleProp(prop: string): void;
 declare export function allowTransformProp(prop: string): void;
 declare export function isSupportedColorStyleProp(prop: string): boolean;
