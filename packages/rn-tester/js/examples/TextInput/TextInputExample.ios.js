@@ -783,6 +783,15 @@ const textInputExamples: Array<RNTesterModuleExample> = [
           <WithLabel label="birthdate">
             <ExampleTextInput textContentType="birthdate" />
           </WithLabel>
+          <WithLabel label="dateTime">
+            <ExampleTextInput textContentType="dateTime" />
+          </WithLabel>
+          <WithLabel label="flightNumber">
+            <ExampleTextInput textContentType="flightNumber" />
+          </WithLabel>
+          <WithLabel label="shipmentTrackingNumber">
+            <ExampleTextInput textContentType="shipmentTrackingNumber" />
+          </WithLabel>
         </View>
       );
     },
