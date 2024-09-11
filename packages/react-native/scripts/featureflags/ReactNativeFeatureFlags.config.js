@@ -293,6 +293,11 @@ const definitions: FeatureFlagDefinitions = {
       defaultValue: false,
       description: 'Enables Animated to skip non-allowlisted props and styles.',
     },
+    enableAnimatedPropsMemo: {
+      defaultValue: false,
+      description:
+        'Enables Animated to analyze props to minimize invalidating `AnimatedProps`.',
+    },
     enableOptimisedVirtualizedCells: {
       defaultValue: false,
       description:

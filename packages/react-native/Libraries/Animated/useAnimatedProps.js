@@ -27,6 +27,7 @@ import {
   useReducer,
   useRef,
 } from 'react';
+import {useAnimatedPropsMemo} from '../../src/private/animated/useAnimatedPropsMemo';
 
 type ReducedProps<TProps> = {
   ...TProps,
@@ -40,23 +41,24 @@ type AnimatedValueListeners = Array<{
   listenerId: string,
 }>;
 
+const useMemoOrAnimatedPropsMemo =
+  ReactNativeFeatureFlags.enableAnimatedPropsMemo()
+    ? useAnimatedPropsMemo
+    : useMemo;
+
 export default function useAnimatedProps<TProps: {...}, TInstance>(
   props: TProps,
   allowlist?: ?AnimatedPropsAllowlist,
 ): [ReducedProps<TProps>, CallbackRef<TInstance | null>] {
   const [, scheduleUpdate] = useReducer<number, void>(count => count + 1, 0);
-  const onUpdateRef = useRef<?() => void>(null);
+  const onUpdateRef = useRef<(() => void) | null>(null);
   const timerRef = useRef<TimeoutID | null>(null);
 
   const allowlistIfEnabled = ReactNativeFeatureFlags.enableAnimatedAllowlist()
     ? allowlist
     : null;
 
-  // TODO: Only invalidate `node` if animated props or `style` change. In the
-  // previous implementation, we permitted `style` to override props with the
-  // same name property name as styles, so we can probably continue doing that.
-  // The ordering of other props *should* not matter.
-  const node = useMemo(
+  const node = useMemoOrAnimatedPropsMemo(
     () =>
       new AnimatedProps(
         props,
@@ -65,6 +67,7 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
       ),
     [allowlistIfEnabled, props],
   );
+
   const useNativePropsInFabric =
     ReactNativeFeatureFlags.shouldUseSetNativePropsInFabric();
   const useSetNativePropsInNativeAnimationsInFabric =
@@ -204,14 +207,19 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
   );
   const callbackRef = useRefEffect<TInstance>(refEffect);
 
-  return [reduceAnimatedProps<TProps>(node), callbackRef];
+  return [reduceAnimatedProps<TProps>(node, props), callbackRef];
 }
 
-function reduceAnimatedProps<TProps>(node: AnimatedNode): ReducedProps<TProps> {
+function reduceAnimatedProps<TProps>(
+  node: AnimatedProps,
+  props: TProps,
+): ReducedProps<TProps> {
   // Force `collapsable` to be false so that the native view is not flattened.
   // Flattened views cannot be accurately referenced by the native driver.
   return {
-    ...node.__getValue(),
+    ...(ReactNativeFeatureFlags.enableAnimatedPropsMemo()
+      ? node.__getValueWithStaticProps(props)
+      : node.__getValue()),
     collapsable: false,
   };
 }

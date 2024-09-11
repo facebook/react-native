@@ -938,11 +938,15 @@ exports[`public API should not change unintentionally Libraries/Animated/nodes/A
 `;
 
 exports[`public API should not change unintentionally Libraries/Animated/nodes/AnimatedObject.js 1`] = `
-"declare export default class AnimatedObject extends AnimatedWithChildren {
+"declare export function isPlainObject(
+  value: mixed
+): value is $ReadOnly<{ [string]: mixed }>;
+declare export default class AnimatedObject extends AnimatedWithChildren {
   _value: mixed;
   static from(value: mixed): ?AnimatedObject;
   constructor(nodes: $ReadOnlyArray<AnimatedNode>, value: mixed): void;
   __getValue(): any;
+  __getValueWithStaticObject(staticObject: mixed): any;
   __getAnimatedValue(): any;
   __attach(): void;
   __detach(): void;
@@ -964,6 +968,7 @@ declare export default class AnimatedProps extends AnimatedNode {
     allowlist?: ?AnimatedPropsAllowlist
   ): void;
   __getValue(): Object;
+  __getValueWithStaticProps(staticProps: Object): Object;
   __getAnimatedValue(): Object;
   __attach(): void;
   __detach(): void;
@@ -992,6 +997,7 @@ declare export default class AnimatedStyle extends AnimatedWithChildren {
     inputStyle: any
   ): void;
   __getValue(): Object | Array<Object>;
+  __getValueWithStaticStyle(staticStyle: Object): Object | Array<Object>;
   __getAnimatedValue(): Object;
   __attach(): void;
   __detach(): void;
@@ -1061,6 +1067,9 @@ declare export default class AnimatedTransform extends AnimatedWithChildren {
   ): void;
   __makeNative(platformConfig: ?PlatformConfig): void;
   __getValue(): $ReadOnlyArray<Transform<any>>;
+  __getValueWithStaticTransforms(
+    staticTransforms: $ReadOnlyArray<Object>
+  ): $ReadOnlyArray<Object>;
   __getAnimatedValue(): $ReadOnlyArray<Transform<any>>;
   __attach(): void;
   __detach(): void;
