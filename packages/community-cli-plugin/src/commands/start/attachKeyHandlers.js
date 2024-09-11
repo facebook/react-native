@@ -21,7 +21,7 @@ const CTRL_C = '\u0003';
 const CTRL_D = '\u0004';
 const reloadTimeout = 700;
 
-const throttle = (callback, timeout) => {
+const throttle = (callback: () => void, timeout: number) => {
   let previousCall = 0;
   return () => {
     const currentCall = new Date().getTime();
