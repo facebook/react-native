@@ -566,6 +566,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4.1.1
+        with:
+          fetch-depth: 0
+          fetch-tags: true
       - name: Create /tmp/hermes/osx-bin directory
         run: mkdir -p /tmp/hermes/osx-bin
       - name: Download osx-bin release artifacts
