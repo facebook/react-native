@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ea4c7d3691081d2eb90a4041defd7d44>>
+ * @generated SignedSource<<20de2dddd88f49d4f3a6491ca5c2fe6f>>
  * @flow strict-local
  */
 
@@ -52,6 +52,7 @@ export type ReactNativeFeatureFlags = {
   completeReactInstanceCreationOnBgThreadOnAndroid: Getter<boolean>,
   destroyFabricSurfacesInReactInstanceManager: Getter<boolean>,
   enableAlignItemsBaselineOnFabricIOS: Getter<boolean>,
+  enableAndroidLineHeightCentering: Getter<boolean>,
   enableAndroidMixBlendModeProp: Getter<boolean>,
   enableBackgroundStyleApplicator: Getter<boolean>,
   enableCleanTextInputYogaNode: Getter<boolean>,
@@ -190,6 +191,10 @@ export const destroyFabricSurfacesInReactInstanceManager: Getter<boolean> = crea
  * Kill-switch to turn off support for aling-items:baseline on Fabric iOS.
  */
 export const enableAlignItemsBaselineOnFabricIOS: Getter<boolean> = createNativeFlagGetter('enableAlignItemsBaselineOnFabricIOS', true);
+/**
+ * When enabled, custom line height calculation will be centered from top to bottom.
+ */
+export const enableAndroidLineHeightCentering: Getter<boolean> = createNativeFlagGetter('enableAndroidLineHeightCentering', false);
 /**
  * Enables mix-blend-mode prop on Android.
  */
