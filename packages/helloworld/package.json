@@ -34,8 +34,5 @@
   },
   "engines": {
     "node": ">=18"
-  },
-  "resolution": {
-    "commander": "^12.0.0"
   }
 }
