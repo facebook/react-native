@@ -38,7 +38,7 @@ public class JSPointerDispatcher {
   private static final int UNSELECTED_VIEW_TAG = -1;
   private static final int UNSET_POINTER_ID = -1;
   private static final float ONMOVE_EPSILON = 0.1f;
-  private static final String TAG = "POINTER EVENTS";
+  private static final String TAG = "PointerEvents";
 
   private Map<Integer, List<ViewTarget>> mLastHitPathByPointerId;
   private Map<Integer, float[]> mLastEventCoordinatesByPointerId;
