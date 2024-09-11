@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ad54375c4ae3be2f377260887ae5aaf9>>
+ * @generated SignedSource<<ba7f0d3c03fef86fb12e4d9842dcb241>>
  */
 
 /**
@@ -39,6 +39,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun destroyFabricSurfacesInReactInstanceManager(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableAlignItemsBaselineOnFabricIOS(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun enableAndroidLineHeightCentering(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableAndroidMixBlendModeProp(): Boolean
 

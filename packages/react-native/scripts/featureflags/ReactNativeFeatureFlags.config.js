@@ -64,6 +64,11 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'Kill-switch to turn off support for aling-items:baseline on Fabric iOS.',
     },
+    enableAndroidLineHeightCentering: {
+      defaultValue: false,
+      description:
+        'When enabled, custom line height calculation will be centered from top to bottom.',
+    },
     enableAndroidMixBlendModeProp: {
       defaultValue: false,
       description: 'Enables mix-blend-mode prop on Android.',
