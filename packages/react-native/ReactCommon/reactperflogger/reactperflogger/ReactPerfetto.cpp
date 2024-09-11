@@ -12,6 +12,7 @@
 #include <perfetto.h>
 #include <unordered_map>
 
+#include "FuseboxPerfettoDataSource.h"
 #include "HermesPerfettoDataSource.h"
 #include "ReactPerfettoCategories.h"
 
@@ -32,6 +33,7 @@ void initializePerfetto() {
   });
 
   HermesPerfettoDataSource::RegisterDataSource();
+  FuseboxPerfettoDataSource::RegisterDataSource();
 }
 
 static perfetto::Track createTrack(const std::string& trackName) {
