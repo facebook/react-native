@@ -135,7 +135,7 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   /*
    * BoxShadow
    */
-  experimental_boxShadow: {process: processBoxShadow},
+  boxShadow: {process: processBoxShadow},
 
   /**
    * Linear Gradient

@@ -336,6 +336,7 @@ export interface ViewStyle extends FlexStyle, ShadowStyleIOS, TransformsStyle {
   pointerEvents?: 'box-none' | 'none' | 'box-only' | 'auto' | undefined;
   isolation?: 'auto' | 'isolate' | undefined;
   cursor?: CursorValue | undefined;
+  boxShadow?: ReadonlyArray<BoxShadowPrimitive> | string | undefined;
 }
 
 export type FontVariant =
