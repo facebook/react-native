@@ -1,5 +1,30 @@
 # Changelog
 
+## v0.75.3
+
+### Changed
+
+- **Infra:** Remove resolution and add commander as devDependency for the monorepo ([cf7b9b9486](https://github.com/facebook/react-native/commit/cf7b9b9486069a8a3cf4443353603fcb2174d012) by [@cipolleschi](https://github.com/cipolleschi))
+- **CLI:** Bump CLI to 14.1.0 ([6a08c38263](https://github.com/facebook/react-native/commit/6a08c38263a544d88157cc3a6b1ee44ed28f7db0) by [@cipolleschi](https://github.com/cipolleschi))
+
+### Fixed
+
+- **TypeScript:** Allow readonly array type for transform property ([c16defaff2](https://github.com/facebook/react-native/commit/c16defaff2964a2b30656def35eb3450cff9cd71) by [@tjzel](https://github.com/tjzel))
+
+#### Android specific
+
+- **Autolinking:** Fix autolinking issues for Pure C++ TurboModules ([833c3a2cf5](https://github.com/facebook/react-native/commit/833c3a2cf5df6b65c6fe75577da2df7c5a085e8d) by [@hsjoberg](https://github.com/hsjoberg))
+- **Renderer:** Don't use mGapBetweenPaths if not drawing a border ([8501b6396b](https://github.com/facebook/react-native/commit/8501b6396b0a4fd7a9bd2add2b3c8b9c755c27ae) by [@knappam](https://github.com/knappam))
+- **Image:** Make getUri and isResource open ([8c81ffa60a](https://github.com/facebook/react-native/commit/8c81ffa60a211e4ae7db50cd04de0e4a4c29df04) by [@shubhamguptadream11](https://github.com/shubhamguptadream11))
+- **RGNP:** Remove unnecessary dependency on `gradle-tooling-api-builders` - serviceOf failure ([1067798a7e](https://github.com/facebook/react-native/commit/1067798a7e9ad06f8a22c1749e582c42348a554d) by [@cortinico](https://github.com/cortinico))
+
+#### iOS specific
+
+- **Infra:** Include x86_64 slice when building for visionOS simulator
+ ([05dec917f2](https://github.com/facebook/react-native/commit/05dec917f2e5f8288c0d9f31bc50c10bd0c0eab3) by [@okwasniewski](https://github.com/okwasniewski))
+- **Infra:** Support bundle install from outside the ios folder using --project-directory ([b22970e3cf](https://github.com/facebook/react-native/commit/b22970e3cfbe603bffea5b1c3bbf150887e3d7b8) by [@blakef](https://github.com/blakef))
+- **Codegen:** Codegen will start looking for codegen-enabled dependencies from the project root. ([46d17efa62](https://github.com/facebook/react-native/commit/46d17efa626cd546e839648e1a95f43a3802051c) by [@dmytrorykun](https://github.com/dmytrorykun))
+
 ## v0.75.2
 
 ### Added
