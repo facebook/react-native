@@ -226,14 +226,14 @@ val preparePrefab by
                       Pair("../ReactCommon/yoga/", ""),
                       Pair("src/main/jni/first-party/yogajni/jni", ""),
                   )),
-            PrefabPreprocessingEntry("hermestooling",
-              // hermes_executor
-              Pair("../ReactCommon/hermes/inspector-modern/", "hermes/inspector-modern/")
-            ),
-            PrefabPreprocessingEntry("jsctooling",
-              // jsc
-              Pair("../ReactCommon/jsc/", "jsc/")
-            ),
+              PrefabPreprocessingEntry(
+                  "hermestooling",
+                  // hermes_executor
+                  Pair("../ReactCommon/hermes/inspector-modern/", "hermes/inspector-modern/")),
+              PrefabPreprocessingEntry(
+                  "jsctooling",
+                  // jsc
+                  Pair("../ReactCommon/jsc/", "jsc/")),
           ))
       outputDir.set(prefabHeadersDir)
     }

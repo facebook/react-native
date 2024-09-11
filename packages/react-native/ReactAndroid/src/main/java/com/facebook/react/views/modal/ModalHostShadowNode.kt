@@ -18,7 +18,7 @@ import com.facebook.react.uimanager.ReactShadowNodeImpl
  * to be the window size. This will then cause the children of the Modal to layout as if they can
  * fill the window.
  */
-@Deprecated("This class is no longer used and will be removed soon.") 
+@Deprecated("This class is no longer used and will be removed soon.")
 internal class ModalHostShadowNode : LayoutShadowNode() {
   /**
    * We need to set the styleWidth and styleHeight of the one child (represented by the
