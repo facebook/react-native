@@ -279,8 +279,8 @@ ShadowNode::Shared LayoutableShadowNode::findNodeAtPoint(
     auto centerY =
         transformedFrame.origin.y + transformedFrame.size.height / 2.0;
 
-    auto relativeX = float(point.x - centerX);
-    auto relativeY = float(point.y - centerY);
+    auto relativeX = point.x - centerX;
+    auto relativeY = point.y - centerY;
 
     if (Transform::isVerticalInversion(transform)) {
       relativeY = -relativeY;
@@ -289,8 +289,8 @@ ShadowNode::Shared LayoutableShadowNode::findNodeAtPoint(
       relativeX = -relativeX;
     }
 
-    point.x = centerX + relativeX;
-    point.y = centerY + relativeY;
+    point.x = float(centerX + relativeX);
+    point.y = float(centerY + relativeY);
   }
 
   auto newPoint = point - transformedFrame.origin -
