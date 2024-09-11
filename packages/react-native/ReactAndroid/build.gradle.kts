@@ -228,6 +228,10 @@ val preparePrefab by
               // hermes_executor
               Pair("../ReactCommon/hermes/inspector-modern/", "hermes/inspector-modern/")
             ),
+            PrefabPreprocessingEntry("jsctooling",
+              // jsc
+              Pair("../ReactCommon/jsc/", "jsc/")
+            ),
           ))
       outputDir.set(prefabHeadersDir)
     }
@@ -585,6 +589,7 @@ android {
     create("jsi") { headers = File(prefabHeadersDir, "jsi").absolutePath }
     create("reactnative") { headers = File(prefabHeadersDir, "reactnative").absolutePath }
     create("hermestooling") { headers = File(prefabHeadersDir, "hermestooling").absolutePath }
+    create("jsctooling") { headers = File(prefabHeadersDir, "jsctooling").absolutePath }
   }
 
   publishing {
