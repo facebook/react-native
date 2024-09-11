@@ -144,6 +144,7 @@ const RCTTextInputViewConfig = {
     showSoftInputOnFocus: true,
     autoFocus: true,
     lineBreakStrategyIOS: true,
+    lineBreakModeIOS: true,
     smartInsertDelete: true,
     ...ConditionallyIgnoredEventHandlers({
       onChange: true,

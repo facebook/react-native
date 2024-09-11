@@ -87,8 +87,6 @@ AndroidTextInputProps::AndroidTextInputProps(
           "maxFontSizeMultiplier",
           sourceProps.maxFontSizeMultiplier,
           {0.0})),
-      editable(CoreFeatures::enablePropIteratorSetter? sourceProps.editable :
-          convertRawProp(context, rawProps, "editable", sourceProps.editable, {false})),
       keyboardType(CoreFeatures::enablePropIteratorSetter? sourceProps.keyboardType : convertRawProp(context, rawProps,
           "keyboardType",
           sourceProps.keyboardType,
@@ -223,7 +221,6 @@ void AndroidTextInputProps::setProp(
     RAW_SET_PROP_SWITCH_CASE_BASIC(autoCorrect);
     RAW_SET_PROP_SWITCH_CASE_BASIC(allowFontScaling);
     RAW_SET_PROP_SWITCH_CASE_BASIC(maxFontSizeMultiplier);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(editable);
     RAW_SET_PROP_SWITCH_CASE_BASIC(keyboardType);
     RAW_SET_PROP_SWITCH_CASE_BASIC(returnKeyType);
     RAW_SET_PROP_SWITCH_CASE_BASIC(multiline);
@@ -313,7 +310,6 @@ folly::dynamic AndroidTextInputProps::getDynamic() const {
   props["autoFocus"] = autoFocus;
   props["allowFontScaling"] = allowFontScaling;
   props["maxFontSizeMultiplier"] = maxFontSizeMultiplier;
-  props["editable"] = editable;
   props["keyboardType"] = keyboardType;
   props["returnKeyType"] = returnKeyType;
   props["maxLength"] = maxLength;

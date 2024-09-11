@@ -289,6 +289,10 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'Enables access to the host tree in Fabric using DOM-compatible APIs.',
     },
+    enableAnimatedAllowlist: {
+      defaultValue: false,
+      description: 'Enables Animated to skip non-allowlisted props and styles.',
+    },
     enableOptimisedVirtualizedCells: {
       defaultValue: false,
       description:

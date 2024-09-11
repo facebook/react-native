@@ -220,10 +220,16 @@ val preparePrefab by
                       Pair(
                           "../ReactCommon/react/renderer/observers/events/",
                           "react/renderer/observers/events/"),
+                      // react_timing
+                      Pair("../ReactCommon/react/timing/", "react/timing/"),
                       // yoga
                       Pair("../ReactCommon/yoga/", ""),
                       Pair("src/main/jni/first-party/yogajni/jni", ""),
                   )),
+            PrefabPreprocessingEntry("hermestooling",
+              // hermes_executor
+              Pair("../ReactCommon/hermes/inspector-modern/", "hermes/inspector-modern/")
+            ),
           ))
       outputDir.set(prefabHeadersDir)
     }
@@ -580,6 +586,7 @@ android {
   prefab {
     create("jsi") { headers = File(prefabHeadersDir, "jsi").absolutePath }
     create("reactnative") { headers = File(prefabHeadersDir, "reactnative").absolutePath }
+    create("hermestooling") { headers = File(prefabHeadersDir, "hermestooling").absolutePath }
   }
 
   publishing {

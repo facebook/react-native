@@ -21,33 +21,34 @@ import Platform from '../../../Libraries/Utilities/Platform';
 import AndroidHorizontalScrollContentViewNativeComponent from '../specs/components/AndroidHorizontalScrollContentViewNativeComponent';
 import useSyncOnScroll from './useSyncOnScroll';
 import * as React from 'react';
+import {forwardRef} from 'react';
 
 const HScrollViewNativeComponentForPlatform =
   Platform.OS === 'android'
     ? AndroidHorizontalScrollViewNativeComponent
     : ScrollViewNativeComponent;
 
+// TODO: After upgrading to React 19, remove `forwardRef` from this component.
 export const HScrollViewNativeComponent: React.AbstractComponent<
   ScrollViewNativeProps,
   TScrollViewNativeImperativeHandle,
   // $FlowExpectedError[incompatible-type] - Flow cannot model imperative handles, yet.
-> = function HScrollViewNativeComponent(props: {
-  ...ScrollViewNativeProps,
-  ref?: React.RefSetter<TScrollViewNativeImperativeHandle | null>,
-  ...
-}): React.Node {
-  const [ref, enableSyncOnScroll] = useSyncOnScroll(props.ref);
+> = forwardRef(function HScrollViewNativeComponent(
+  props: ScrollViewNativeProps,
+  ref: ?React.RefSetter<TScrollViewNativeImperativeHandle | null>,
+): React.Node {
+  const [componentRef, enableSyncOnScroll] = useSyncOnScroll(ref);
   // NOTE: When `useSyncOnScroll` triggers an update, `props` will not have
   // changed. Notably, `props.children` will be the same, allowing React to
   // bail out during reconciliation.
   return (
     <HScrollViewNativeComponentForPlatform
       {...props}
-      ref={ref}
+      ref={componentRef}
       enableSyncOnScroll={enableSyncOnScroll}
     />
   );
-};
+});
 
 export const HScrollContentViewNativeComponent: HostComponent<ViewProps> =
   Platform.OS === 'android'

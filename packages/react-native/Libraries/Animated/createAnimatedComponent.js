@@ -8,6 +8,8 @@
  * @format
  */
 
+import type {AnimatedPropsAllowlist} from './nodes/AnimatedProps';
+
 import composeStyles from '../../src/private/styles/composeStyles';
 import View from '../Components/View/View';
 import useMergeRefs from '../Utilities/useMergeRefs';
@@ -33,11 +35,22 @@ export type AnimatedComponentType<
 export default function createAnimatedComponent<TProps: {...}, TInstance>(
   Component: React.AbstractComponent<TProps, TInstance>,
 ): AnimatedComponentType<TProps, TInstance> {
+  return unstable_createAnimatedComponentWithAllowlist(Component, null);
+}
+
+export function unstable_createAnimatedComponentWithAllowlist<
+  TProps: {...},
+  TInstance,
+>(
+  Component: React.AbstractComponent<TProps, TInstance>,
+  allowlist: ?AnimatedPropsAllowlist,
+): AnimatedComponentType<TProps, TInstance> {
   const AnimatedComponent = React.forwardRef<AnimatedProps<TProps>, TInstance>(
     (props, forwardedRef) => {
       const [reducedProps, callbackRef] = useAnimatedProps<TProps, TInstance>(
         // $FlowFixMe[incompatible-call]
         props,
+        allowlist,
       );
       const ref = useMergeRefs<TInstance>(callbackRef, forwardedRef);
 
