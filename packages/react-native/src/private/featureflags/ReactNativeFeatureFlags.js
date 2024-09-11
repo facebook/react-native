@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<20de2dddd88f49d4f3a6491ca5c2fe6f>>
+ * @generated SignedSource<<d6b7a8d93e08da169a3e6d60de9e3155>>
  * @flow strict-local
  */
 
@@ -31,6 +31,7 @@ export type ReactNativeFeatureFlagsJsOnly = {
   animatedShouldUseSingleOp: Getter<boolean>,
   enableAccessToHostTreeInFabric: Getter<boolean>,
   enableAnimatedAllowlist: Getter<boolean>,
+  enableAnimatedPropsMemo: Getter<boolean>,
   enableOptimisedVirtualizedCells: Getter<boolean>,
   isLayoutAnimationEnabled: Getter<boolean>,
   shouldSkipStateUpdatesForLoopingAnimations: Getter<boolean>,
@@ -121,6 +122,11 @@ export const enableAccessToHostTreeInFabric: Getter<boolean> = createJavaScriptF
  * Enables Animated to skip non-allowlisted props and styles.
  */
 export const enableAnimatedAllowlist: Getter<boolean> = createJavaScriptFlagGetter('enableAnimatedAllowlist', false);
+
+/**
+ * Enables Animated to analyze props to minimize invalidating `AnimatedProps`.
+ */
+export const enableAnimatedPropsMemo: Getter<boolean> = createJavaScriptFlagGetter('enableAnimatedPropsMemo', false);
 
 /**
  * Removing unnecessary rerenders Virtualized cells after any rerenders of Virualized list. Works with strict=true option

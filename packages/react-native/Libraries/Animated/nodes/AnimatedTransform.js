@@ -91,6 +91,18 @@ export default class AnimatedTransform extends AnimatedWithChildren {
     );
   }
 
+  __getValueWithStaticTransforms(
+    staticTransforms: $ReadOnlyArray<Object>,
+  ): $ReadOnlyArray<Object> {
+    const values = [];
+    mapTransforms(this._transforms, node => {
+      values.push(node.__getValue());
+    });
+    // NOTE: We can depend on `this._transforms` and `staticTransforms` sharing
+    // a structure because of `useAnimatedPropsMemo`.
+    return mapTransforms(staticTransforms, () => values.shift());
+  }
+
   __getAnimatedValue(): $ReadOnlyArray<Transform<any>> {
     return mapTransforms(this._transforms, animatedNode =>
       animatedNode.__getAnimatedValue(),

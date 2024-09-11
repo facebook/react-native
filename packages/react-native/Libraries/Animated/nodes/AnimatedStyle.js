@@ -138,6 +138,43 @@ export default class AnimatedStyle extends AnimatedWithChildren {
     return Platform.OS === 'web' ? [this.#inputStyle, style] : style;
   }
 
+  /**
+   * Creates a new `style` object that contains the same style properties as
+   * the supplied `staticStyle` object, except with animated nodes for any
+   * style properties that were created by this `AnimatedStyle` instance.
+   */
+  __getValueWithStaticStyle(staticStyle: Object): Object | Array<Object> {
+    const flatStaticStyle = flattenStyle(staticStyle);
+    const style: {[string]: mixed} =
+      flatStaticStyle == null
+        ? {}
+        : flatStaticStyle === staticStyle
+          ? // Copy the input style, since we'll mutate it below.
+            {...flatStaticStyle}
+          : // Reuse `flatStaticStyle` if it is a newly created object.
+            flatStaticStyle;
+
+    const keys = Object.keys(style);
+    for (let ii = 0, length = keys.length; ii < length; ii++) {
+      const key = keys[ii];
+      const maybeNode = this.#style[key];
+
+      if (key === 'transform' && maybeNode instanceof AnimatedTransform) {
+        style[key] = maybeNode.__getValueWithStaticTransforms(
+          // NOTE: This check should not be necessary, but the types are not
+          // enforced as of this writing.
+          Array.isArray(style[key]) ? style[key] : [],
+        );
+      } else if (maybeNode instanceof AnimatedObject) {
+        style[key] = maybeNode.__getValueWithStaticObject(style[key]);
+      } else if (maybeNode instanceof AnimatedNode) {
+        style[key] = maybeNode.__getValue();
+      }
+    }
+
+    return Platform.OS === 'web' ? [this.#inputStyle, style] : style;
+  }
+
   __getAnimatedValue(): Object {
     const style: {[string]: mixed} = {};
 
