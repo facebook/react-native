@@ -337,6 +337,7 @@ export interface ViewStyle extends FlexStyle, ShadowStyleIOS, TransformsStyle {
   isolation?: 'auto' | 'isolate' | undefined;
   cursor?: CursorValue | undefined;
   boxShadow?: ReadonlyArray<BoxShadowPrimitive> | string | undefined;
+  filter?: ReadonlyArray<FilterFunction> | string | undefined;
 }
 
 export type FontVariant =
