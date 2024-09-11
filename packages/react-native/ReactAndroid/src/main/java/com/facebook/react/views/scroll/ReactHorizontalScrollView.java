@@ -62,6 +62,7 @@ import com.facebook.react.views.scroll.ReactScrollViewHelper.HasSmoothScroll;
 import com.facebook.react.views.scroll.ReactScrollViewHelper.HasStateWrapper;
 import com.facebook.react.views.scroll.ReactScrollViewHelper.ReactScrollViewScrollState;
 import com.facebook.react.views.view.ReactViewBackgroundManager;
+import com.facebook.systrace.Systrace;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -490,24 +491,30 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
       FLog.i(TAG, "onScrollChanged[%d] x %d y %d oldx %d oldy %d", getId(), x, y, oldX, oldY);
     }
 
-    super.onScrollChanged(x, y, oldX, oldY);
+    Systrace.beginSection(
+        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "ReactHorizontalScrollView.onScrollChanged");
+    try {
+      super.onScrollChanged(x, y, oldX, oldY);
 
-    mActivelyScrolling = true;
+      mActivelyScrolling = true;
 
-    if (mOnScrollDispatchHelper.onScrollChanged(x, y)) {
-      if (mRemoveClippedSubviews) {
-        updateClippingRect();
+      if (mOnScrollDispatchHelper.onScrollChanged(x, y)) {
+        if (mRemoveClippedSubviews) {
+          updateClippingRect();
+        }
+        if (mPreventReentry) {
+          return;
+        }
+        mPreventReentry = true;
+        ReactScrollViewHelper.updateStateOnScrollChanged(
+            this,
+            mOnScrollDispatchHelper.getXFlingVelocity(),
+            mOnScrollDispatchHelper.getYFlingVelocity(),
+            mEnableSyncOnScroll);
+        mPreventReentry = false;
       }
-      if (mPreventReentry) {
-        return;
-      }
-      mPreventReentry = true;
-      ReactScrollViewHelper.updateStateOnScrollChanged(
-          this,
-          mOnScrollDispatchHelper.getXFlingVelocity(),
-          mOnScrollDispatchHelper.getYFlingVelocity(),
-          mEnableSyncOnScroll);
-      mPreventReentry = false;
+    } finally {
+      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     }
   }
 
@@ -783,12 +790,18 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
       return;
     }
 
-    Assertions.assertNotNull(mClippingRect);
+    Systrace.beginSection(
+        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "ReactHorizontalScrollView.updateClippingRect");
+    try {
+      Assertions.assertNotNull(mClippingRect);
 
-    ReactClippingViewGroupHelper.calculateClippingRect(this, mClippingRect);
-    View contentView = getContentView();
-    if (contentView instanceof ReactClippingViewGroup) {
-      ((ReactClippingViewGroup) contentView).updateClippingRect();
+      ReactClippingViewGroupHelper.calculateClippingRect(this, mClippingRect);
+      View contentView = getContentView();
+      if (contentView instanceof ReactClippingViewGroup) {
+        ((ReactClippingViewGroup) contentView).updateClippingRect();
+      }
+    } finally {
+      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     }
   }
 
