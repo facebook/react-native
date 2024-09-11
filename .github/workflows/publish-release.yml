@@ -415,7 +415,7 @@ jobs:
             cp /tmp/hermes/build/bin/hermesc /tmp/hermes/linux64-bin/.
           fi
       - name: Upload linux artifacts
-        uses: actions/upload-artifact@v4.3.0
+        uses: actions/upload-artifact@v4.3.1
         with:
           name: hermes-linux-bin
           path: /tmp/hermes/linux64-bin
@@ -503,7 +503,7 @@ jobs:
               Write-Host "Skipping; Clean c:\tmp\hermes\win64-bin to rebuild."
           }
       - name: Upload windows artifacts
-        uses: actions/upload-artifact@v4.3.0
+        uses: actions/upload-artifact@v4.3.1
         with:
           name: hermes-win64-bin
           path: D:\tmp\hermes\win64-bin\
@@ -541,7 +541,7 @@ jobs:
         shell: bash
       - name: Upload test results
         if: ${{ always() }}
-        uses: actions/upload-artifact@v4.3.0
+        uses: actions/upload-artifact@v4.3.1
         with:
           name: build-android-results
           compression-level: 1
@@ -551,7 +551,7 @@ jobs:
             packages/react-native/ReactAndroid/build/reports
       - name: Upload RNTester APK
         if: ${{ always() }}
-        uses: actions/upload-artifact@v4.3.0
+        uses: actions/upload-artifact@v4.3.1
         with:
           name: rntester-apk
           path: packages/rn-tester/android/app/build/outputs/apk/
