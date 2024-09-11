@@ -99,7 +99,7 @@ RCT_EXPORT_MODULE()
   _currentInterfaceOrientation = RCTKeyWindow().windowScene.interfaceOrientation;
 
   [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(interfaceFrameDidChange)
+                                           selector:@selector(interfaceFrameDidChangeAsync)
                                                name:UIDeviceOrientationDidChangeNotification
                                              object:nil];
 #endif
@@ -275,6 +275,23 @@ static NSDictionary *RCTExportedDimensions(CGFloat fontScale)
   __weak __typeof(self) weakSelf = self;
   RCTExecuteOnMainQueue(^{
     [weakSelf _interfaceFrameDidChange];
+  });
+
+}
+
+// Because this RCTDeviceInfo uses dispatch_get_main_queue, RCTExecuteOnMainQueue
+// as specified in the interfaceFrameDidChange method will run without delay.
+//
+// The call to get window measurements may not be accurate as the window 
+// may not have updated yet. To ensure we get the correct window measurements
+// use `dispatch_async` to delay a tick and wait for the window to update.
+//
+// This bug was observed and reproduced on an iPad but may exist for iPhone as well.
+- (void)interfaceFrameDidChangeAsync
+{
+  __weak __typeof(self) weakSelf = self;
+  dispatch_async(dispatch_get_main_queue(), ^{
+      [weakSelf _interfaceFrameDidChange];
   });
 }
 
