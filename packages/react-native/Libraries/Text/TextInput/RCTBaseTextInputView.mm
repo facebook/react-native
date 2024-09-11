@@ -324,12 +324,14 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
       }];
     }
 
-    if (@available(iOS 17.4, *)) {
-      [mutableContentTypeMap addEntriesFromDictionary:@{
-        @"cellularEID" : UITextContentTypeCellularEID,
-        @"cellularIMEI" : UITextContentTypeCellularIMEI,
-      }];
-    }
+    #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 170400 /* __IPHONE_17_4 */
+      if (@available(iOS 17.4, *)) {
+        [mutableContentTypeMap addEntriesFromDictionary:@{
+          @"cellularEID" : UITextContentTypeCellularEID,
+          @"cellularIMEI" : UITextContentTypeCellularIMEI,
+        }];
+      }
+    #endif
 #endif
 
     contentTypeMap = mutableContentTypeMap;
