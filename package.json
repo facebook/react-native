@@ -60,7 +60,7 @@
     "babel-preset-fbjs": "^3.4.0",
     "chalk": "^4.0.0",
     "clang-format": "^1.8.0",
-    "commander": "^12.0.0",
+    "commander": "^9.4.1",
     "connect": "^3.6.5",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^8.5.0",

@@ -21,7 +21,7 @@
     "@react-native-community/cli-platform-apple": "14.1.0",
     "@react-native-community/cli-tools": "14.1.0",
     "@react-native-community/cli-types": "14.1.0",
-    "commander": "^12.0.0",
+    "commander": "^9.4.1",
     "fs-extra": "^11.2.0",
     "yaml": "^2.4.1"
   },
