@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<eca842a1b1c823b72136c625b3bfd16e>>
+ * @generated SignedSource<<a397b9b648fab0e8b1f9d8a9dba04ab4>>
  */
 
 /**
@@ -26,6 +26,7 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
   private var completeReactInstanceCreationOnBgThreadOnAndroidCache: Boolean? = null
   private var destroyFabricSurfacesInReactInstanceManagerCache: Boolean? = null
   private var enableAlignItemsBaselineOnFabricIOSCache: Boolean? = null
+  private var enableAndroidLineHeightCenteringCache: Boolean? = null
   private var enableAndroidMixBlendModePropCache: Boolean? = null
   private var enableBackgroundStyleApplicatorCache: Boolean? = null
   private var enableCleanTextInputYogaNodeCache: Boolean? = null
@@ -119,6 +120,15 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enableAlignItemsBaselineOnFabricIOS()
       enableAlignItemsBaselineOnFabricIOSCache = cached
+    }
+    return cached
+  }
+
+  override fun enableAndroidLineHeightCentering(): Boolean {
+    var cached = enableAndroidLineHeightCenteringCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.enableAndroidLineHeightCentering()
+      enableAndroidLineHeightCenteringCache = cached
     }
     return cached
   }

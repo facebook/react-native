@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6139aa47aac3e5682a453a416bc10236>>
+ * @generated SignedSource<<7c97c370b2f453691c153fb370bea149>>
  */
 
 /**
@@ -43,6 +43,10 @@ bool ReactNativeFeatureFlags::destroyFabricSurfacesInReactInstanceManager() {
 
 bool ReactNativeFeatureFlags::enableAlignItemsBaselineOnFabricIOS() {
   return getAccessor().enableAlignItemsBaselineOnFabricIOS();
+}
+
+bool ReactNativeFeatureFlags::enableAndroidLineHeightCentering() {
+  return getAccessor().enableAndroidLineHeightCentering();
 }
 
 bool ReactNativeFeatureFlags::enableAndroidMixBlendModeProp() {
