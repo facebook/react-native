@@ -8,10 +8,6 @@ on:
       - main
       - "*-stable"
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: ${{ github.ref != 'refs/heads/main' && !contains(github.ref,  'stable')}}
-
 jobs:
   set_release_type:
     runs-on: ubuntu-latest
