@@ -7,7 +7,6 @@
 
 #import "RCTTurboModuleManager.h"
 #import "RCTInteropTurboModule.h"
-#import "RCTRuntimeExecutor.h"
 
 #import <atomic>
 #import <cassert>
@@ -27,7 +26,6 @@
 #import <React/RCTLog.h>
 #import <React/RCTModuleData.h>
 #import <React/RCTPerformanceLogger.h>
-#import <React/RCTRuntimeExecutorModule.h>
 #import <React/RCTUtils.h>
 #import <ReactCommon/CxxTurboModuleUtils.h>
 #import <ReactCommon/RCTTurboModuleWithJSIBindings.h>
@@ -690,13 +688,6 @@ typedef struct {
            "or provide your own setter method.",
           RCTBridgeModuleNameForClass([module class]));
     }
-  }
-
-  // This is a more performant alternative for conformsToProtocol:@protocol(RCTRuntimeExecutorModule)
-  if ([module respondsToSelector:@selector(setRuntimeExecutor:)]) {
-    RCTRuntimeExecutor *runtimeExecutor = [[RCTRuntimeExecutor alloc]
-        initWithRuntimeExecutor:[_runtimeHandler runtimeExecutorForTurboModuleManager:self]];
-    [(id<RCTRuntimeExecutorModule>)module setRuntimeExecutor:runtimeExecutor];
   }
 
   // This is a more performant alternative for conformsToProtocol:@protocol(RCTCallInvokerModule)
