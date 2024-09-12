@@ -67,14 +67,29 @@ module PrivacyManifestUtils
     end
 
     def self.ensure_reference(file_path, user_project, target)
-        reference_exists = target.resources_build_phase.files_references.any? { |file_ref| file_ref&.path&.end_with? "PrivacyInfo.xcprivacy" }
-        unless reference_exists
-            # We try to find the main group, but if it doesn't exist, we default to adding the file to the project root – both work
-            file_root = user_project.root_object.main_group.children.find { |group|
-                group.class == Xcodeproj::Project::Object::PBXGroup && (group.name == target.name || group.path == target.name)
-            } || user_project
-            file_ref = file_root.new_file(file_path)
-            build_file = target.resources_build_phase.add_file_reference(file_ref, true)
+        privacy_info_filename = File.basename(file_path)
+
+        # Check if the file is already in the PBXBuildFile section
+        build_phase_reference_exists = target.resources_build_phase.files_references.any? { |file_ref| file_ref&.path&.end_with?(privacy_info_filename) }
+
+        unless build_phase_reference_exists
+            # Check if the file is already in the PBXFileReference section
+            existing_file_reference = user_project.files.find { |file| file.path&.end_with?(privacy_info_filename) }
+
+            if existing_file_reference
+                # If the file reference exists, add it to the build phase
+                target.resources_build_phase.add_file_reference(existing_file_reference, true)
+            else
+                # If the file reference doesn't exist, add it to the project and the build phase
+                # We try to find the main group, but if it doesn't exist, we default to adding the file to the project root - both work
+                file_root = user_project.root_object.main_group.children.find { |group|
+                    group.class == Xcodeproj::Project::Object::PBXGroup && (group.name == target.name || group.path == target.name)
+                } || user_project
+                puts "file_root: #{file_root}"
+
+                file_ref = file_root.new_file(file_path)
+                target.resources_build_phase.add_file_reference(file_ref, true)
+            end
         end
     end
 
