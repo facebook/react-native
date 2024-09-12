@@ -37,6 +37,7 @@ import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.annotations.UnstableReactNativeAPI;
 import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.touch.OnInterceptTouchEventListener;
@@ -307,6 +308,15 @@ public class ReactViewGroup extends ViewGroup
     // For an explanation of bubbling and capturing, see
     // http://javascript.info/tutorial/bubbling-and-capturing#capturing
     return true;
+  }
+
+  @Override
+  public boolean onHoverEvent(MotionEvent event) {
+    if (ReactFeatureFlags.dispatchPointerEvents) {
+      // Match the logic from onTouchEvent if pointer events are enabled
+      return PointerEvents.canBeTouchTarget(mPointerEvents);
+    }
+    return super.onHoverEvent(event);
   }
 
   @Override
