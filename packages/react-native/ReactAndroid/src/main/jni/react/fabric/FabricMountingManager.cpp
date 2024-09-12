@@ -847,7 +847,14 @@ void FabricMountingManager::preallocateShadowView(
   // We DO want to hold onto C object from Java, since we don't know the
   // lifetime of the Java object
   jni::local_ref<StateWrapperImpl::JavaPart> javaStateWrapper = nullptr;
-  if (shadowView.state != nullptr) {
+
+  // Paragraph only has a dummy state during view preallocation.
+  // Updating state on Android side has a cost and doing it unnecessarily for
+  // dummy state is wasteful.
+  bool preventPassingStateWrapperForText =
+      ReactNativeFeatureFlags::enableTextPreallocationOptimisation() &&
+      strcmp(shadowView.componentName, "Paragraph") == 0;
+  if (shadowView.state != nullptr && !preventPassingStateWrapperForText) {
     javaStateWrapper = StateWrapperImpl::newObjectJavaArgs();
     StateWrapperImpl* cStateWrapper = cthis(javaStateWrapper);
     cStateWrapper->setState(shadowView.state);

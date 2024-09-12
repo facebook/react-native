@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<fa8245a05ab1f508318e1d18938f9dab>>
+ * @generated SignedSource<<25a422b93ab27473bfccabf653b1e196>>
  */
 
 /**
@@ -66,6 +66,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enableReportEventPaintTime(): Boolean = false
 
   override fun enableSynchronousStateUpdates(): Boolean = false
+
+  override fun enableTextPreallocationOptimisation(): Boolean = false
 
   override fun enableUIConsistency(): Boolean = false
 

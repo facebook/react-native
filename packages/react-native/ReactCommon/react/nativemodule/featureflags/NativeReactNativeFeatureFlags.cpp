@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<dcef79032ef43fce2de3e3f12f6e38bc>>
+ * @generated SignedSource<<462f08327661efce8cff4747045e51c0>>
  */
 
 /**
@@ -145,6 +145,11 @@ bool NativeReactNativeFeatureFlags::enableReportEventPaintTime(
 bool NativeReactNativeFeatureFlags::enableSynchronousStateUpdates(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableSynchronousStateUpdates();
+}
+
+bool NativeReactNativeFeatureFlags::enableTextPreallocationOptimisation(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableTextPreallocationOptimisation();
 }
 
 bool NativeReactNativeFeatureFlags::enableUIConsistency(

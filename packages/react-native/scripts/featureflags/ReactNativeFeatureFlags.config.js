@@ -140,6 +140,11 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'Dispatches state updates synchronously in Fabric (e.g.: updates the scroll position in the shadow tree synchronously from the main thread).',
     },
+    enableTextPreallocationOptimisation: {
+      defaultValue: false,
+      description:
+        'Text preallocation optimisation where unnecessary work is removed.',
+    },
     enableUIConsistency: {
       defaultValue: false,
       description:

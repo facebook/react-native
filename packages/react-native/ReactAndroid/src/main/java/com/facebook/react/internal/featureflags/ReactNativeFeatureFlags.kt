@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<312da6e350ea6b96180156a341810654>>
+ * @generated SignedSource<<b9b1988a78ba67a99027372dab215d06>>
  */
 
 /**
@@ -159,6 +159,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableSynchronousStateUpdates(): Boolean = accessor.enableSynchronousStateUpdates()
+
+  /**
+   * Text preallocation optimisation where unnecessary work is removed.
+   */
+  @JvmStatic
+  public fun enableTextPreallocationOptimisation(): Boolean = accessor.enableTextPreallocationOptimisation()
 
   /**
    * Ensures that JavaScript always has a consistent view of the state of the UI (e.g.: commits done in other threads are not immediately propagated to JS during its execution).

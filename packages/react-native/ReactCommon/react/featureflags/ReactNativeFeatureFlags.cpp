@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7c97c370b2f453691c153fb370bea149>>
+ * @generated SignedSource<<5df8c423af27ec25003d26a67ec1ef56>>
  */
 
 /**
@@ -107,6 +107,10 @@ bool ReactNativeFeatureFlags::enableReportEventPaintTime() {
 
 bool ReactNativeFeatureFlags::enableSynchronousStateUpdates() {
   return getAccessor().enableSynchronousStateUpdates();
+}
+
+bool ReactNativeFeatureFlags::enableTextPreallocationOptimisation() {
+  return getAccessor().enableTextPreallocationOptimisation();
 }
 
 bool ReactNativeFeatureFlags::enableUIConsistency() {

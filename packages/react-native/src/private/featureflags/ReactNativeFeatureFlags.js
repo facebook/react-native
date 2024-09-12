@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d6b7a8d93e08da169a3e6d60de9e3155>>
+ * @generated SignedSource<<2333bd2bbcab9d50e4cb23d1b7d42021>>
  * @flow strict-local
  */
 
@@ -69,6 +69,7 @@ export type ReactNativeFeatureFlags = {
   enablePropsUpdateReconciliationAndroid: Getter<boolean>,
   enableReportEventPaintTime: Getter<boolean>,
   enableSynchronousStateUpdates: Getter<boolean>,
+  enableTextPreallocationOptimisation: Getter<boolean>,
   enableUIConsistency: Getter<boolean>,
   enableViewRecycling: Getter<boolean>,
   excludeYogaFromRawProps: Getter<boolean>,
@@ -261,6 +262,10 @@ export const enableReportEventPaintTime: Getter<boolean> = createNativeFlagGette
  * Dispatches state updates synchronously in Fabric (e.g.: updates the scroll position in the shadow tree synchronously from the main thread).
  */
 export const enableSynchronousStateUpdates: Getter<boolean> = createNativeFlagGetter('enableSynchronousStateUpdates', false);
+/**
+ * Text preallocation optimisation where unnecessary work is removed.
+ */
+export const enableTextPreallocationOptimisation: Getter<boolean> = createNativeFlagGetter('enableTextPreallocationOptimisation', false);
 /**
  * Ensures that JavaScript always has a consistent view of the state of the UI (e.g.: commits done in other threads are not immediately propagated to JS during its execution).
  */
