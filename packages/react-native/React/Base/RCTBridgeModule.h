@@ -346,7 +346,7 @@ RCT_EXTERN_C_END
 /**
  * Notifies the module that a batch of JS method invocations has just completed.
  */
-- (void)batchDidComplete;
+- (void)batchDidComplete RCT_DEPRECATED;
 
 /**
  * Notifies the module that the active batch of JS method invocations has been
