@@ -431,7 +431,7 @@ RCT_CUSTOM_VIEW_PROPERTY(experimental_layoutConformance, NSString *, RCTView)
   // filtered by view configs.
 }
 
-RCT_CUSTOM_VIEW_PROPERTY(experimental_filter, NSArray *, RCTView)
+RCT_CUSTOM_VIEW_PROPERTY(filter, NSArray *, RCTView)
 {
   // Property is only to be used in the new renderer.
   // It is necessary to add it here, otherwise it gets
