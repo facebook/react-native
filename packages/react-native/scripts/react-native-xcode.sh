@@ -100,10 +100,7 @@ else
   CONFIG_ARG="--config $BUNDLE_CONFIG"
 fi
 
-if [[ "$BUNDLE_NAME" ]]; then
-  # Use BUNDLE_NAME defined by user
-  :
-else
+if [[ -z "$BUNDLE_NAME" ]]; then
   BUNDLE_NAME="main"
 fi
 BUNDLE_FILE="$CONFIGURATION_BUILD_DIR/$BUNDLE_NAME.jsbundle"
