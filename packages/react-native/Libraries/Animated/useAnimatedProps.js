@@ -37,6 +37,8 @@ type ReducedProps<TProps> = {
 };
 type CallbackRef<T> = T => mixed;
 
+type UpdateCallback = () => void;
+
 type AnimatedValueListeners = Array<{
   propValue: AnimatedValue,
   listenerId: string,
@@ -52,7 +54,7 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
   allowlist?: ?AnimatedPropsAllowlist,
 ): [ReducedProps<TProps>, CallbackRef<TInstance | null>] {
   const [, scheduleUpdate] = useReducer<number, void>(count => count + 1, 0);
-  const onUpdateRef = useRef<(() => void) | null>(null);
+  const onUpdateRef = useRef<UpdateCallback | null>(null);
   const timerRef = useRef<TimeoutID | null>(null);
 
   const allowlistIfEnabled = ReactNativeFeatureFlags.enableAnimatedAllowlist()
