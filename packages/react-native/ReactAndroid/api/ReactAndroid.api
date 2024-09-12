@@ -179,6 +179,7 @@ public class com/facebook/react/ReactDelegate {
 	public fun onWindowFocusChanged (Z)V
 	public fun reload ()V
 	public fun shouldShowDevMenuOrReload (ILandroid/view/KeyEvent;)Z
+	public fun unloadApp ()V
 }
 
 public class com/facebook/react/ReactFragment : androidx/fragment/app/Fragment, com/facebook/react/modules/core/PermissionAwareActivity {
