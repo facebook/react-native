@@ -44,7 +44,7 @@ public object DefaultNewArchitectureEntryPoint {
 
     if (bridgelessEnabled) {
       ReactNativeFeatureFlags.override(
-          object : ReactNativeNewArchitectureFeatureFlagsDefaults(newArchitectureEnabled = true) {
+          object : ReactNativeNewArchitectureFeatureFlagsDefaults() {
             override fun useFabricInterop(): Boolean = fabricEnabled
 
             // We turn this feature flag to true for OSS to fix #44610 and #45126 and other
