@@ -8,14 +8,21 @@
 package com.facebook.react.views.text
 
 import android.graphics.Paint
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsForTests
 import com.facebook.react.views.text.internal.span.CustomLineHeightSpan
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
 class CustomLineHeightSpanTest {
+
+  @Before
+  fun setUp() {
+    ReactNativeFeatureFlagsForTests.setUp()
+  }
 
   @Test
   fun evenLineHeightShouldIncreaseAllMetricsProportionally() {

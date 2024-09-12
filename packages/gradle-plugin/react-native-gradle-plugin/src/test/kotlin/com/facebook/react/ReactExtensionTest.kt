@@ -192,8 +192,8 @@ class ReactExtensionTest {
   @Test
   fun getGradleDependenciesToApply_withIsPureCxxDeps_filtersCorrectly() {
     val validJsonFile =
-      createJsonFile(
-        """
+        createJsonFile(
+            """
       {
         "reactNativeVersion": "1000.0.0",
         "dependencies": {
@@ -221,7 +221,7 @@ class ReactExtensionTest {
         }
       }
       """
-          .trimIndent())
+                .trimIndent())
 
     val deps = getGradleDependenciesToApply(validJsonFile)
     assertThat(deps).containsExactly("implementation" to ":react-native_android-example")

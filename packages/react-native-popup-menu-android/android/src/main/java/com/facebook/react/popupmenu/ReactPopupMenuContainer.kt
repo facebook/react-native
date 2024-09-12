@@ -8,7 +8,6 @@
 package com.facebook.react.popupmenu
 
 import android.content.Context
-import android.os.Build
 import android.view.Menu
 import android.widget.FrameLayout
 import android.widget.PopupMenu

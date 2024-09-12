@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c8266eb27ec23aaa856fa95275503a81>>
+ * @generated SignedSource<<c3f43e92b0710e4a68bb76d874b3058d>>
  */
 
 /**
@@ -66,6 +66,11 @@ class ReactNativeFeatureFlags {
    * Kill-switch to turn off support for aling-items:baseline on Fabric iOS.
    */
   RN_EXPORT static bool enableAlignItemsBaselineOnFabricIOS();
+
+  /**
+   * When enabled, custom line height calculation will be centered from top to bottom.
+   */
+  RN_EXPORT static bool enableAndroidLineHeightCentering();
 
   /**
    * Enables mix-blend-mode prop on Android.

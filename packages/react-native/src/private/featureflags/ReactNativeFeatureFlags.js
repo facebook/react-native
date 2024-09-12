@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0bff47ec5af8ed96d8b2abe351f318f1>>
+ * @generated SignedSource<<d6b7a8d93e08da169a3e6d60de9e3155>>
  * @flow strict-local
  */
 
@@ -30,6 +30,8 @@ export type ReactNativeFeatureFlagsJsOnly = {
   animatedShouldDebounceQueueFlush: Getter<boolean>,
   animatedShouldUseSingleOp: Getter<boolean>,
   enableAccessToHostTreeInFabric: Getter<boolean>,
+  enableAnimatedAllowlist: Getter<boolean>,
+  enableAnimatedPropsMemo: Getter<boolean>,
   enableOptimisedVirtualizedCells: Getter<boolean>,
   isLayoutAnimationEnabled: Getter<boolean>,
   shouldSkipStateUpdatesForLoopingAnimations: Getter<boolean>,
@@ -51,6 +53,7 @@ export type ReactNativeFeatureFlags = {
   completeReactInstanceCreationOnBgThreadOnAndroid: Getter<boolean>,
   destroyFabricSurfacesInReactInstanceManager: Getter<boolean>,
   enableAlignItemsBaselineOnFabricIOS: Getter<boolean>,
+  enableAndroidLineHeightCentering: Getter<boolean>,
   enableAndroidMixBlendModeProp: Getter<boolean>,
   enableBackgroundStyleApplicator: Getter<boolean>,
   enableCleanTextInputYogaNode: Getter<boolean>,
@@ -114,6 +117,16 @@ export const animatedShouldUseSingleOp: Getter<boolean> = createJavaScriptFlagGe
  * Enables access to the host tree in Fabric using DOM-compatible APIs.
  */
 export const enableAccessToHostTreeInFabric: Getter<boolean> = createJavaScriptFlagGetter('enableAccessToHostTreeInFabric', false);
+
+/**
+ * Enables Animated to skip non-allowlisted props and styles.
+ */
+export const enableAnimatedAllowlist: Getter<boolean> = createJavaScriptFlagGetter('enableAnimatedAllowlist', false);
+
+/**
+ * Enables Animated to analyze props to minimize invalidating `AnimatedProps`.
+ */
+export const enableAnimatedPropsMemo: Getter<boolean> = createJavaScriptFlagGetter('enableAnimatedPropsMemo', false);
 
 /**
  * Removing unnecessary rerenders Virtualized cells after any rerenders of Virualized list. Works with strict=true option
@@ -184,6 +197,10 @@ export const destroyFabricSurfacesInReactInstanceManager: Getter<boolean> = crea
  * Kill-switch to turn off support for aling-items:baseline on Fabric iOS.
  */
 export const enableAlignItemsBaselineOnFabricIOS: Getter<boolean> = createNativeFlagGetter('enableAlignItemsBaselineOnFabricIOS', true);
+/**
+ * When enabled, custom line height calculation will be centered from top to bottom.
+ */
+export const enableAndroidLineHeightCentering: Getter<boolean> = createNativeFlagGetter('enableAndroidLineHeightCentering', false);
 /**
  * Enables mix-blend-mode prop on Android.
  */

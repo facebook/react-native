@@ -63,6 +63,9 @@ class BaseTextInputProps : public ViewProps, public BaseTextProps {
   bool autoFocus{false};
 
   std::string autoCapitalize{};
+
+  bool editable{true};
+  bool readOnly{false};
 };
 
 } // namespace facebook::react

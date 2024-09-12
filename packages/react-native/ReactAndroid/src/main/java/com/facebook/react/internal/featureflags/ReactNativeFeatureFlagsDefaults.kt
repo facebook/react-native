@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2a0cd5a4875a54bb724e5765ffe7753e>>
+ * @generated SignedSource<<fa8245a05ab1f508318e1d18938f9dab>>
  */
 
 /**
@@ -34,6 +34,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun destroyFabricSurfacesInReactInstanceManager(): Boolean = false
 
   override fun enableAlignItemsBaselineOnFabricIOS(): Boolean = true
+
+  override fun enableAndroidLineHeightCentering(): Boolean = false
 
   override fun enableAndroidMixBlendModeProp(): Boolean = false
 
