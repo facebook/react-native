@@ -113,6 +113,31 @@ export default class AnimatedProps extends AnimatedNode {
     return props;
   }
 
+  /**
+   * Creates a new `props` object that contains the same props as the supplied
+   * `staticProps` object, except with animated nodes for any props that were
+   * created by this `AnimatedProps` instance.
+   */
+  __getValueWithStaticProps(staticProps: Object): Object {
+    const props: {[string]: mixed} = {...staticProps};
+
+    const keys = Object.keys(staticProps);
+    for (let ii = 0, length = keys.length; ii < length; ii++) {
+      const key = keys[ii];
+      const maybeNode = this.#props[key];
+
+      if (key === 'style' && maybeNode instanceof AnimatedStyle) {
+        props[key] = maybeNode.__getValueWithStaticStyle(staticProps.style);
+      } else if (maybeNode instanceof AnimatedNode) {
+        props[key] = maybeNode.__getValue();
+      } else if (maybeNode instanceof AnimatedEvent) {
+        props[key] = maybeNode.__getHandler();
+      }
+    }
+
+    return props;
+  }
+
   __getAnimatedValue(): Object {
     const props: {[string]: mixed} = {};
 

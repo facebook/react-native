@@ -7,9 +7,9 @@
 
 package com.facebook.react.uiapp
 
-import android.os.Bundle
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.os.Bundle
 import android.view.View
 import android.widget.FrameLayout
 import androidx.core.view.ViewCompat
@@ -47,7 +47,8 @@ class RNTesterActivity : ReactActivity() {
     super.onCreate(savedInstanceState)
     // set background color so it will show below transparent system bars on forced edge-to-edge
     this.window?.setBackgroundDrawable(ColorDrawable(Color.BLACK))
-    // register insets listener to update margins on the ReactRootView to avoid overlap w/ system bars
+    // register insets listener to update margins on the ReactRootView to avoid overlap w/ system
+    // bars
     getReactDelegate()?.getReactRootView()?.let { rootView ->
       val insetsType: Int =
           WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()

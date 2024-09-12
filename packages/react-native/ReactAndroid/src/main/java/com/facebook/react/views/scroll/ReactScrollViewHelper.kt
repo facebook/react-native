@@ -30,8 +30,9 @@ import java.util.concurrent.CopyOnWriteArrayList
 
 /** Helper class that deals with emitting Scroll Events. */
 public object ReactScrollViewHelper {
-  private val TAG = ReactHorizontalScrollView::class.java.simpleName
+  private val TAG = ReactScrollView::class.java.simpleName
   private val DEBUG_MODE = false // ReactBuildConfig.DEBUG
+
   private const val CONTENT_OFFSET_LEFT = "contentOffsetLeft"
   private const val CONTENT_OFFSET_TOP = "contentOffsetTop"
   private const val SCROLL_AWAY_PADDING_TOP = "scrollAwayPaddingTop"

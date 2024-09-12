@@ -44,8 +44,8 @@ import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.UIManagerModule
 import com.facebook.react.uimanager.events.EventDispatcher
 import com.facebook.react.views.common.ContextUtils
-import com.facebook.react.views.view.setStatusBarTranslucency
 import com.facebook.react.views.view.ReactViewGroup
+import com.facebook.react.views.view.setStatusBarTranslucency
 import java.util.Objects
 
 /**
@@ -413,18 +413,19 @@ public class ReactModalHostView(context: ThemedReactContext) :
         newStateData.putDouble("screenWidth", realWidth.toDouble())
         newStateData.putDouble("screenHeight", realHeight.toDouble())
         sw.updateState(newStateData)
-      } ?: run {
-          // old architecture
-          // TODO: T44725185 remove after full migration to Fabric
-          reactContext.runOnNativeModulesQueueThread(
-              object : GuardedRunnable(reactContext) {
-                override fun runGuarded() {
-                  reactContext.reactApplicationContext
-                      .getNativeModule(UIManagerModule::class.java)
-                      ?.updateNodeSize(id, viewWidth, viewHeight)
-                }
-              })
-        }
+      }
+          ?: run {
+            // old architecture
+            // TODO: T44725185 remove after full migration to Fabric
+            reactContext.runOnNativeModulesQueueThread(
+                object : GuardedRunnable(reactContext) {
+                  override fun runGuarded() {
+                    reactContext.reactApplicationContext
+                        .getNativeModule(UIManagerModule::class.java)
+                        ?.updateNodeSize(id, viewWidth, viewHeight)
+                  }
+                })
+          }
     }
 
     override fun handleException(t: Throwable) {

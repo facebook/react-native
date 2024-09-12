@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c23b21fca18699470580e54b99de1126>>
+ * @generated SignedSource<<63ef974f6ed666553bc0be593730a08e>>
  */
 
 /**
@@ -72,6 +72,12 @@ class ReactNativeFeatureFlagsProviderHolder
   bool enableAlignItemsBaselineOnFabricIOS() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableAlignItemsBaselineOnFabricIOS");
+    return method(javaProvider_);
+  }
+
+  bool enableAndroidLineHeightCentering() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableAndroidLineHeightCentering");
     return method(javaProvider_);
   }
 
@@ -361,6 +367,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableAlignItemsBaselineOnFabricIOS(
   return ReactNativeFeatureFlags::enableAlignItemsBaselineOnFabricIOS();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::enableAndroidLineHeightCentering(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableAndroidLineHeightCentering();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::enableAndroidMixBlendModeProp(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableAndroidMixBlendModeProp();
@@ -606,6 +617,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableAlignItemsBaselineOnFabricIOS",
         JReactNativeFeatureFlagsCxxInterop::enableAlignItemsBaselineOnFabricIOS),
+      makeNativeMethod(
+        "enableAndroidLineHeightCentering",
+        JReactNativeFeatureFlagsCxxInterop::enableAndroidLineHeightCentering),
       makeNativeMethod(
         "enableAndroidMixBlendModeProp",
         JReactNativeFeatureFlagsCxxInterop::enableAndroidMixBlendModeProp),

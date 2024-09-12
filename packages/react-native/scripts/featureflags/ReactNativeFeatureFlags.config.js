@@ -64,6 +64,11 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'Kill-switch to turn off support for aling-items:baseline on Fabric iOS.',
     },
+    enableAndroidLineHeightCentering: {
+      defaultValue: false,
+      description:
+        'When enabled, custom line height calculation will be centered from top to bottom.',
+    },
     enableAndroidMixBlendModeProp: {
       defaultValue: false,
       description: 'Enables mix-blend-mode prop on Android.',
@@ -288,6 +293,15 @@ const definitions: FeatureFlagDefinitions = {
       defaultValue: false,
       description:
         'Enables access to the host tree in Fabric using DOM-compatible APIs.',
+    },
+    enableAnimatedAllowlist: {
+      defaultValue: false,
+      description: 'Enables Animated to skip non-allowlisted props and styles.',
+    },
+    enableAnimatedPropsMemo: {
+      defaultValue: false,
+      description:
+        'Enables Animated to analyze props to minimize invalidating `AnimatedProps`.',
     },
     enableOptimisedVirtualizedCells: {
       defaultValue: false,

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2a078848517574213e02b42dff1af8e8>>
+ * @generated SignedSource<<cc7780d72b0241440e7f4ecb3212a0b8>>
  */
 
 /**
@@ -49,6 +49,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
 
   bool enableAlignItemsBaselineOnFabricIOS() override {
     return true;
+  }
+
+  bool enableAndroidLineHeightCentering() override {
+    return false;
   }
 
   bool enableAndroidMixBlendModeProp() override {

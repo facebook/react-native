@@ -22,11 +22,13 @@ import AnimatedValue from './nodes/AnimatedValue';
 import {
   useCallback,
   useEffect,
+  useInsertionEffect,
   useLayoutEffect,
   useMemo,
   useReducer,
   useRef,
 } from 'react';
+import {useAnimatedPropsMemo} from '../../src/private/animated/useAnimatedPropsMemo';
 
 type ReducedProps<TProps> = {
   ...TProps,
@@ -40,22 +42,33 @@ type AnimatedValueListeners = Array<{
   listenerId: string,
 }>;
 
+const useMemoOrAnimatedPropsMemo =
+  ReactNativeFeatureFlags.enableAnimatedPropsMemo()
+    ? useAnimatedPropsMemo
+    : useMemo;
+
 export default function useAnimatedProps<TProps: {...}, TInstance>(
   props: TProps,
   allowlist?: ?AnimatedPropsAllowlist,
 ): [ReducedProps<TProps>, CallbackRef<TInstance | null>] {
   const [, scheduleUpdate] = useReducer<number, void>(count => count + 1, 0);
-  const onUpdateRef = useRef<?() => void>(null);
+  const onUpdateRef = useRef<(() => void) | null>(null);
   const timerRef = useRef<TimeoutID | null>(null);
 
-  // TODO: Only invalidate `node` if animated props or `style` change. In the
-  // previous implementation, we permitted `style` to override props with the
-  // same name property name as styles, so we can probably continue doing that.
-  // The ordering of other props *should* not matter.
-  const node = useMemo(
-    () => new AnimatedProps(props, () => onUpdateRef.current?.(), allowlist),
-    [allowlist, props],
+  const allowlistIfEnabled = ReactNativeFeatureFlags.enableAnimatedAllowlist()
+    ? allowlist
+    : null;
+
+  const node = useMemoOrAnimatedPropsMemo(
+    () =>
+      new AnimatedProps(
+        props,
+        () => onUpdateRef.current?.(),
+        allowlistIfEnabled,
+      ),
+    [allowlistIfEnabled, props],
   );
+
   const useNativePropsInFabric =
     ReactNativeFeatureFlags.shouldUseSetNativePropsInFabric();
   const useSetNativePropsInNativeAnimationsInFabric =
@@ -195,14 +208,19 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
   );
   const callbackRef = useRefEffect<TInstance>(refEffect);
 
-  return [reduceAnimatedProps<TProps>(node), callbackRef];
+  return [reduceAnimatedProps<TProps>(node, props), callbackRef];
 }
 
-function reduceAnimatedProps<TProps>(node: AnimatedNode): ReducedProps<TProps> {
+function reduceAnimatedProps<TProps>(
+  node: AnimatedProps,
+  props: TProps,
+): ReducedProps<TProps> {
   // Force `collapsable` to be false so that the native view is not flattened.
   // Flattened views cannot be accurately referenced by the native driver.
   return {
-    ...node.__getValue(),
+    ...(ReactNativeFeatureFlags.enableAnimatedPropsMemo()
+      ? node.__getValueWithStaticProps(props)
+      : node.__getValue()),
     collapsable: false,
   };
 }
@@ -305,8 +323,8 @@ function useAnimatedPropsLifecycle_layoutEffects(node: AnimatedProps): void {
  * NOTE: unlike `useAnimatedPropsLifecycle_layoutEffects`, this version uses passive effects to setup animation graph.
  */
 function useAnimatedPropsLifecycle_passiveEffects(node: AnimatedProps): void {
-  const prevNodeRef = useRef<?AnimatedProps>(null);
-  const isUnmountingRef = useRef<boolean>(false);
+  const attachedNodeRef =
+    useRef<?{node: AnimatedProps, listener: ?EventSubscription}>(null);
 
   useEffect(() => {
     // It is ok for multiple components to call `flushQueue` because it noops
@@ -315,43 +333,45 @@ function useAnimatedPropsLifecycle_passiveEffects(node: AnimatedProps): void {
     NativeAnimatedHelper.API.flushQueue();
   });
 
-  useEffect(() => {
-    isUnmountingRef.current = false;
+  useInsertionEffect(() => {
     return () => {
-      isUnmountingRef.current = true;
+      const attachedNode = attachedNodeRef.current;
+      if (attachedNode != null) {
+        const {node: prevNode, listener} = attachedNode;
+        // NOTE: Do not restore default values on unmount, see D18197735.
+        prevNode.__detach();
+        listener?.remove();
+        attachedNodeRef.current = null;
+      }
     };
   }, []);
 
   useEffect(() => {
-    node.__attach();
-    let drivenAnimationEndedListener: ?EventSubscription = null;
+    let prevAttachedNode = null;
+    if (attachedNodeRef.current !== node) {
+      node.__attach();
+      prevAttachedNode = attachedNodeRef.current;
+      let listener: ?EventSubscription = null;
 
-    if (node.__isNative) {
-      drivenAnimationEndedListener =
-        NativeAnimatedHelper.nativeEventEmitter.addListener(
+      if (node.__isNative) {
+        listener = NativeAnimatedHelper.nativeEventEmitter.addListener(
           'onUserDrivenAnimationEnded',
           data => {
             node.update();
           },
         );
+      }
+
+      attachedNodeRef.current = {node, listener};
     }
-    if (prevNodeRef.current != null) {
-      const prevNode = prevNodeRef.current;
+
+    if (prevAttachedNode != null) {
+      const {node: prevNode, listener} = prevAttachedNode;
       // TODO: Stop restoring default values (unless `reset` is called).
       prevNode.__restoreDefaultValues();
       prevNode.__detach();
-      prevNodeRef.current = null;
+      listener?.remove();
     }
-    return () => {
-      if (isUnmountingRef.current) {
-        // NOTE: Do not restore default values on unmount, see D18197735.
-        node.__detach();
-      } else {
-        prevNodeRef.current = node;
-      }
-
-      drivenAnimationEndedListener?.remove();
-    };
   }, [node]);
 }
 
