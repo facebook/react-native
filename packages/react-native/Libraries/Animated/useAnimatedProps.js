@@ -22,7 +22,6 @@ import AnimatedValue from './nodes/AnimatedValue';
 import {
   useCallback,
   useEffect,
-  useInsertionEffect,
   useLayoutEffect,
   useMemo,
   useReducer,
@@ -323,8 +322,8 @@ function useAnimatedPropsLifecycle_layoutEffects(node: AnimatedProps): void {
  * NOTE: unlike `useAnimatedPropsLifecycle_layoutEffects`, this version uses passive effects to setup animation graph.
  */
 function useAnimatedPropsLifecycle_passiveEffects(node: AnimatedProps): void {
-  const attachedNodeRef =
-    useRef<?{node: AnimatedProps, listener: ?EventSubscription}>(null);
+  const prevNodeRef = useRef<?AnimatedProps>(null);
+  const isUnmountingRef = useRef<boolean>(false);
 
   useEffect(() => {
     // It is ok for multiple components to call `flushQueue` because it noops
@@ -333,45 +332,43 @@ function useAnimatedPropsLifecycle_passiveEffects(node: AnimatedProps): void {
     NativeAnimatedHelper.API.flushQueue();
   });
 
-  useInsertionEffect(() => {
+  useEffect(() => {
+    isUnmountingRef.current = false;
     return () => {
-      const attachedNode = attachedNodeRef.current;
-      if (attachedNode != null) {
-        const {node: prevNode, listener} = attachedNode;
-        // NOTE: Do not restore default values on unmount, see D18197735.
-        prevNode.__detach();
-        listener?.remove();
-        attachedNodeRef.current = null;
-      }
+      isUnmountingRef.current = true;
     };
   }, []);
 
   useEffect(() => {
-    let prevAttachedNode = null;
-    if (attachedNodeRef.current !== node) {
-      node.__attach();
-      prevAttachedNode = attachedNodeRef.current;
-      let listener: ?EventSubscription = null;
+    node.__attach();
+    let drivenAnimationEndedListener: ?EventSubscription = null;
 
-      if (node.__isNative) {
-        listener = NativeAnimatedHelper.nativeEventEmitter.addListener(
+    if (node.__isNative) {
+      drivenAnimationEndedListener =
+        NativeAnimatedHelper.nativeEventEmitter.addListener(
           'onUserDrivenAnimationEnded',
           data => {
             node.update();
           },
         );
-      }
-
-      attachedNodeRef.current = {node, listener};
     }
-
-    if (prevAttachedNode != null) {
-      const {node: prevNode, listener} = prevAttachedNode;
+    if (prevNodeRef.current != null) {
+      const prevNode = prevNodeRef.current;
       // TODO: Stop restoring default values (unless `reset` is called).
       prevNode.__restoreDefaultValues();
       prevNode.__detach();
-      listener?.remove();
+      prevNodeRef.current = null;
     }
+    return () => {
+      if (isUnmountingRef.current) {
+        // NOTE: Do not restore default values on unmount, see D18197735.
+        node.__detach();
+      } else {
+        prevNodeRef.current = node;
+      }
+
+      drivenAnimationEndedListener?.remove();
+    };
   }, [node]);
 }
 
