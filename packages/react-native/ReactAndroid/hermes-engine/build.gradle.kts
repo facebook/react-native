@@ -315,8 +315,6 @@ android {
   }
 }
 
-configurations.all { exclude(group = "com.facebook.soloader") }
-
 afterEvaluate {
   if (!overrideHermesDir) {
     // If you're not specifying a Hermes Path override, we want to

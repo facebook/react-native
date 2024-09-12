@@ -27,6 +27,7 @@ import com.facebook.react.module.model.ReactModuleInfoProvider
 import com.facebook.react.osslibraryexample.OSSLibraryExamplePackage
 import com.facebook.react.popupmenu.PopupMenuPackage
 import com.facebook.react.shell.MainReactPackage
+import com.facebook.react.soloader.OpenSourceMergedSoMapping
 import com.facebook.react.uiapp.component.MyLegacyViewManager
 import com.facebook.react.uiapp.component.MyNativeViewManager
 import com.facebook.react.uimanager.ReactShadowNode
@@ -129,8 +130,14 @@ class RNTesterApplication : Application(), ReactApplication {
     ReactFontManager.getInstance().addCustomFont(this, "Rubik", R.font.rubik)
     super.onCreate()
 
-    // We want the .init() statement to exercise this code when building RNTester with Buck
-    @Suppress("DEPRECATION") SoLoader.init(this, /* native exopackage */ false)
+    if (BuildConfig.IS_INTERNAL_BUILD) {
+      // For Buck we call the simple init() as the SoMapping is built-from-source inside SoLoader
+      SoLoader.init(this, false)
+    } else {
+      // For Gradle instead, we need to specify it as constructor parameter.
+      SoLoader.init(this, OpenSourceMergedSoMapping)
+    }
+
 
     if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
       load()
