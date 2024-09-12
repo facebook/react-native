@@ -29,7 +29,7 @@ import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 public class ReactDelegate {
 
   private final Activity mActivity;
-  private ReactRootView mReactRootView;
+  @Nullable private ReactRootView mReactRootView;
 
   @Nullable private final String mMainComponentName;
 
@@ -305,6 +305,7 @@ public class ReactDelegate {
     }
   }
 
+  @Nullable
   public ReactRootView getReactRootView() {
     if (ReactFeatureFlags.enableBridgelessArchitecture) {
       return (ReactRootView) mReactSurface.getView();
