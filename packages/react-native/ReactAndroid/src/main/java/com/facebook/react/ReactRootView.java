@@ -27,6 +27,7 @@ import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.view.ViewTreeObserver;
 import android.view.WindowInsets;
 import android.view.WindowManager;
@@ -99,8 +100,9 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       0; /* This should be View.NO_ID, but for legacy reasons we haven't migrated yet */
   private boolean mIsAttachedToInstance;
   private boolean mShouldLogContentAppeared;
-  private @Nullable JSTouchDispatcher mJSTouchDispatcher;
-  private @Nullable JSPointerDispatcher mJSPointerDispatcher;
+  private final JSTouchDispatcher mJSTouchDispatcher = new JSTouchDispatcher(this);
+  private final @Nullable JSPointerDispatcher mJSPointerDispatcher =
+      ReactFeatureFlags.dispatchPointerEvents ? new JSPointerDispatcher(this) : null;
   private final ReactAndroidHWInputDeviceHelper mAndroidHWInputDeviceHelper =
       new ReactAndroidHWInputDeviceHelper(this);
   private boolean mWasMeasured = false;
@@ -193,51 +195,37 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
   @Override
   public void onChildStartedNativeGesture(View childView, MotionEvent ev) {
-    if (!isDispatcherReady()) {
+    EventDispatcher eventDispatcher = getEventDispatcher();
+    if (eventDispatcher == null) {
       return;
     }
 
-    EventDispatcher eventDispatcher =
-        UIManagerHelper.getEventDispatcher(getCurrentReactContext(), getUIManagerType());
-    if (eventDispatcher != null) {
-      mJSTouchDispatcher.onChildStartedNativeGesture(ev, eventDispatcher);
-      if (childView != null && mJSPointerDispatcher != null) {
-        mJSPointerDispatcher.onChildStartedNativeGesture(childView, ev, eventDispatcher);
-      }
+    mJSTouchDispatcher.onChildStartedNativeGesture(ev, eventDispatcher);
+    if (childView != null && mJSPointerDispatcher != null) {
+      mJSPointerDispatcher.onChildStartedNativeGesture(childView, ev, eventDispatcher);
     }
   }
 
   @Override
   public void onChildEndedNativeGesture(View childView, MotionEvent ev) {
-    if (!isDispatcherReady()) {
+    EventDispatcher eventDispatcher = getEventDispatcher();
+    if (eventDispatcher == null) {
       return;
     }
 
-    EventDispatcher eventDispatcher =
-        UIManagerHelper.getEventDispatcher(getCurrentReactContext(), getUIManagerType());
-    if (eventDispatcher != null) {
-      mJSTouchDispatcher.onChildEndedNativeGesture(ev, eventDispatcher);
-      if (mJSPointerDispatcher != null) {
-        mJSPointerDispatcher.onChildEndedNativeGesture();
-      }
+    mJSTouchDispatcher.onChildEndedNativeGesture(ev, eventDispatcher);
+    if (mJSPointerDispatcher != null) {
+      mJSPointerDispatcher.onChildEndedNativeGesture();
     }
   }
 
-  private boolean isDispatcherReady() {
-    if (!hasActiveReactContext() || !isViewAttachedToReactInstance()) {
+  protected @Nullable EventDispatcher getEventDispatcher() {
+    ReactContext context = getCurrentReactContext();
+    if (context == null || !isViewAttachedToReactInstance()) {
       FLog.w(TAG, "Unable to dispatch touch to JS as the catalyst instance has not been attached");
-      return false;
+      return null;
     }
-    if (mJSTouchDispatcher == null) {
-      FLog.w(TAG, "Unable to dispatch touch to JS before the dispatcher is available");
-      return false;
-    }
-    if (ReactFeatureFlags.dispatchPointerEvents && mJSPointerDispatcher == null) {
-      FLog.w(TAG, "Unable to dispatch pointer events to JS before the dispatcher is available");
-      return false;
-    }
-
-    return true;
+    return UIManagerHelper.getEventDispatcher(context, getUIManagerType());
   }
 
   // By default the JS touch events are dispatched at the root view. This can be overridden in
@@ -328,37 +316,14 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   }
 
   protected void dispatchJSPointerEvent(MotionEvent event, boolean isCapture) {
-    if (!hasActiveReactContext() || !isViewAttachedToReactInstance()) {
-      FLog.w(TAG, "Unable to dispatch touch to JS as the catalyst instance has not been attached");
-      return;
-    }
-    if (mJSPointerDispatcher == null) {
-      if (!ReactFeatureFlags.dispatchPointerEvents) {
-        return;
-      }
-      FLog.w(TAG, "Unable to dispatch pointer events to JS before the dispatcher is available");
-      return;
-    }
-
-    EventDispatcher eventDispatcher =
-        UIManagerHelper.getEventDispatcher(getCurrentReactContext(), getUIManagerType());
-    if (eventDispatcher != null) {
+    EventDispatcher eventDispatcher = getEventDispatcher();
+    if (mJSPointerDispatcher != null && eventDispatcher != null) {
       mJSPointerDispatcher.handleMotionEvent(event, eventDispatcher, isCapture);
     }
   }
 
   protected void dispatchJSTouchEvent(MotionEvent event) {
-    if (!hasActiveReactContext() || !isViewAttachedToReactInstance()) {
-      FLog.w(TAG, "Unable to dispatch touch to JS as the catalyst instance has not been attached");
-      return;
-    }
-    if (mJSTouchDispatcher == null) {
-      FLog.w(TAG, "Unable to dispatch touch to JS before the dispatcher is available");
-      return;
-    }
-
-    EventDispatcher eventDispatcher =
-        UIManagerHelper.getEventDispatcher(getCurrentReactContext(), getUIManagerType());
+    EventDispatcher eventDispatcher = getEventDispatcher();
     if (eventDispatcher != null) {
       mJSTouchDispatcher.handleTouchEvent(event, eventDispatcher, getCurrentReactContext());
     }
@@ -368,8 +333,9 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   public void requestDisallowInterceptTouchEvent(boolean disallowIntercept) {
     // Override in order to still receive events to onInterceptTouchEvent even when some other
     // views disallow that, but propagate it up the tree if possible.
-    if (getParent() != null) {
-      getParent().requestDisallowInterceptTouchEvent(disallowIntercept);
+    ViewParent parent = getParent();
+    if (parent != null) {
+      parent.requestDisallowInterceptTouchEvent(disallowIntercept);
     }
   }
 
@@ -610,16 +576,6 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   }
 
   public void onAttachedToReactInstance() {
-    // Create the touch dispatcher here instead of having it always available, to make sure
-    // that all touch events are only passed to JS after React/JS side is ready to consume
-    // them. Otherwise, these events might break the states expected by JS.
-    // Note that this callback was invoked from within the UI thread.
-    mJSTouchDispatcher = new JSTouchDispatcher(this);
-
-    if (ReactFeatureFlags.dispatchPointerEvents) {
-      mJSPointerDispatcher = new JSPointerDispatcher(this);
-    }
-
     if (mRootViewEventListener != null) {
       mRootViewEventListener.onAttachedToReactInstance(this);
     }
@@ -694,10 +650,6 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   @VisibleForTesting
   /* package */ void simulateAttachForTesting() {
     mIsAttachedToInstance = true;
-    mJSTouchDispatcher = new JSTouchDispatcher(this);
-    if (ReactFeatureFlags.dispatchPointerEvents) {
-      mJSPointerDispatcher = new JSPointerDispatcher(this);
-    }
   }
 
   @VisibleForTesting

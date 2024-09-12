@@ -10,35 +10,22 @@
 package com.facebook.react.runtime
 
 import android.content.Context
-import android.graphics.Point
-import android.graphics.Rect
-import android.view.MotionEvent
-import android.view.View
 import com.facebook.common.logging.FLog
 import com.facebook.react.ReactRootView
 import com.facebook.react.bridge.ReactContext
-import com.facebook.react.config.ReactFeatureFlags
 import com.facebook.react.uimanager.IllegalViewOperationException
-import com.facebook.react.uimanager.JSPointerDispatcher
-import com.facebook.react.uimanager.JSTouchDispatcher
+import com.facebook.react.uimanager.RootViewUtil
 import com.facebook.react.uimanager.common.UIManagerType
+import com.facebook.react.uimanager.events.EventDispatcher
 import com.facebook.systrace.Systrace
 import java.util.Objects
 
 /** A view created by [ReactSurface] that's responsible for rendering a React component. */
 public class ReactSurfaceView(context: Context?, private val surface: ReactSurfaceImpl) :
     ReactRootView(context) {
-  private val jsTouchDispatcher: JSTouchDispatcher = JSTouchDispatcher(this)
-  private var jsPointerDispatcher: JSPointerDispatcher? = null
   private var wasMeasured = false
   private var widthMeasureSpec = 0
   private var heightMeasureSpec = 0
-
-  init {
-    if (ReactFeatureFlags.dispatchPointerEvents) {
-      jsPointerDispatcher = JSPointerDispatcher(this)
-    }
-  }
 
   override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
     Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "ReactSurfaceView.onMeasure")
@@ -68,7 +55,7 @@ public class ReactSurfaceView(context: Context?, private val surface: ReactSurfa
     wasMeasured = true
     this.widthMeasureSpec = widthMeasureSpec
     this.heightMeasureSpec = heightMeasureSpec
-    val viewportOffset = viewportOffset
+    val viewportOffset = RootViewUtil.getViewportOffset(this)
     surface.updateLayoutSpecs(
         widthMeasureSpec, heightMeasureSpec, viewportOffset.x, viewportOffset.y)
     Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE)
@@ -77,46 +64,18 @@ public class ReactSurfaceView(context: Context?, private val surface: ReactSurfa
   override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
     // Call updateLayoutSpecs to update locationOnScreen offsets, in case they've changed
     if (wasMeasured && changed) {
-      val viewportOffset = viewportOffset
+      val viewportOffset = RootViewUtil.getViewportOffset(this)
       surface.updateLayoutSpecs(
           widthMeasureSpec, heightMeasureSpec, viewportOffset.x, viewportOffset.y)
     }
   }
 
-  private val viewportOffset: Point
-    get() {
-      val locationOnScreen = IntArray(2)
-      getLocationOnScreen(locationOnScreen)
-
-      // we need to subtract visibleWindowCoords - to subtract possible window insets, split
-      // screen or multi window
-      val visibleWindowFrame = Rect()
-      getWindowVisibleDisplayFrame(visibleWindowFrame)
-      locationOnScreen[0] -= visibleWindowFrame.left
-      locationOnScreen[1] -= visibleWindowFrame.top
-      return Point(locationOnScreen[0], locationOnScreen[1])
+  override fun getEventDispatcher(): EventDispatcher? {
+    val eventDispatcher = surface.getEventDispatcher()
+    if (eventDispatcher == null) {
+      FLog.w(TAG, "Unable to dispatch events to JS as the React instance has not been attached")
     }
-
-  override fun requestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {
-    // Override in order to still receive events to onInterceptTouchEvent even when some other
-    // views disallow that, but propagate it up the tree if possible.
-    parent?.requestDisallowInterceptTouchEvent(disallowIntercept)
-  }
-
-  /**
-   * Called when a child starts a native gesture (e.g. a scroll in a ScrollView). Should be called
-   * from the child's onTouchIntercepted implementation.
-   */
-  override fun onChildStartedNativeGesture(childView: View?, ev: MotionEvent) {
-    val eventDispatcher = surface.eventDispatcher ?: return
-    jsTouchDispatcher.onChildStartedNativeGesture(ev, eventDispatcher)
-    childView?.let { jsPointerDispatcher?.onChildStartedNativeGesture(it, ev, eventDispatcher) }
-  }
-
-  override fun onChildEndedNativeGesture(childView: View, ev: MotionEvent) {
-    val eventDispatcher = surface.eventDispatcher ?: return
-    jsTouchDispatcher.onChildEndedNativeGesture(ev, eventDispatcher)
-    jsPointerDispatcher?.onChildEndedNativeGesture()
+    return eventDispatcher
   }
 
   override fun handleException(t: Throwable) {
@@ -136,34 +95,7 @@ public class ReactSurfaceView(context: Context?, private val surface: ReactSurfa
 
   override fun getJSModuleName(): String = surface.moduleName
 
-  override fun dispatchJSTouchEvent(event: MotionEvent) {
-    val eventDispatcher = surface.eventDispatcher
-    if (eventDispatcher != null) {
-      jsTouchDispatcher.handleTouchEvent(
-          event, eventDispatcher, surface.reactHost.currentReactContext)
-    } else {
-      FLog.w(
-          TAG, "Unable to dispatch touch events to JS as the React instance has not been attached")
-    }
-  }
-
-  override fun dispatchJSPointerEvent(event: MotionEvent, isCapture: Boolean) {
-    if (jsPointerDispatcher == null) {
-      if (!ReactFeatureFlags.dispatchPointerEvents) {
-        return
-      }
-      FLog.w(TAG, "Unable to dispatch pointer events to JS before the dispatcher is available")
-      return
-    }
-    val eventDispatcher = surface.eventDispatcher
-    if (eventDispatcher != null) {
-      jsPointerDispatcher?.handleMotionEvent(event, eventDispatcher, isCapture)
-    } else {
-      FLog.w(
-          TAG,
-          "Unable to dispatch pointer events to JS as the React instance has not been attached")
-    }
-  }
+  // TODO: incorporate D60594878
 
   override fun hasActiveReactContext(): Boolean =
       surface.isAttached && surface.reactHost.currentReactContext != null
