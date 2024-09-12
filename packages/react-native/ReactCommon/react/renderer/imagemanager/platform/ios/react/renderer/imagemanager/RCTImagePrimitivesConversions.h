@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import <React/RCTConvert.h>
 #import <React/RCTImageLoader.h>
 #import <react/renderer/imagemanager/primitives.h>
 
@@ -41,6 +42,25 @@ inline std::string toString(const facebook::react::ImageResizeMode &value)
       return "center";
     case facebook::react::ImageResizeMode::Repeat:
       return "repeat";
+  }
+}
+
+inline static NSURLRequestCachePolicy NSURLRequestCachePolicyFromImageSource(
+    const facebook::react::ImageSource &imageSource)
+{
+  switch (imageSource.cache) {
+    case facebook::react::ImageSource::CacheStategy::Reload:
+      return NSURLRequestReloadIgnoringLocalCacheData;
+      break;
+    case facebook::react::ImageSource::CacheStategy::ForceCache:
+      return NSURLRequestReturnCacheDataElseLoad;
+      break;
+    case facebook::react::ImageSource::CacheStategy::OnlyIfCached:
+      return NSURLRequestReturnCacheDataDontLoad;
+      break;
+    default:
+      return NSURLRequestUseProtocolCachePolicy;
+      break;
   }
 }
 
@@ -102,13 +122,30 @@ inline static NSURLRequest *NSURLRequestFromImageSource(const facebook::react::I
 
   NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url];
 
-  /*
-  // TODO(shergin): To be implemented.
-  request.HTTPBody = ...;
-  request.HTTPMethod = ...;
-  request.cachePolicy = ...;
-  request.allHTTPHeaderFields = ...;
-  */
+  NSString *method = @"GET";
+  if (!imageSource.method.empty()) {
+    method = [[NSString alloc] initWithBytesNoCopy:(void *)imageSource.method.c_str()
+                                            length:imageSource.method.size()
+                                          encoding:NSUTF8StringEncoding
+                                      freeWhenDone:NO]
+                 .uppercaseString
+        ?: @"GET";
+  }
+  NSData *body = nil;
+  if (!imageSource.body.empty()) {
+    NSString *bodyString = [[NSString alloc] initWithBytesNoCopy:(void *)imageSource.body.c_str()
+                                                          length:imageSource.body.size()
+                                                        encoding:NSUTF8StringEncoding
+                                                    freeWhenDone:NO];
+    body = [RCTConvert NSData:bodyString];
+  }
+  NSURLRequestCachePolicy cachePolicy = NSURLRequestCachePolicyFromImageSource(imageSource);
+
+  if ([method isEqualToString:@"GET"] && imageSource.headers.empty() && body == nil &&
+      cachePolicy == NSURLRequestUseProtocolCachePolicy) {
+    return request;
+  }
+
   for (const auto &header : imageSource.headers) {
     NSString *key = [NSString stringWithUTF8String:header.first.c_str()];
     NSString *value = [NSString stringWithUTF8String:header.second.c_str()];
@@ -116,6 +153,10 @@ inline static NSURLRequest *NSURLRequestFromImageSource(const facebook::react::I
       [request setValue:value forHTTPHeaderField:key];
     }
   }
+
+  request.HTTPBody = body;
+  request.HTTPMethod = method;
+  request.cachePolicy = cachePolicy;
 
   return [request copy];
 }
