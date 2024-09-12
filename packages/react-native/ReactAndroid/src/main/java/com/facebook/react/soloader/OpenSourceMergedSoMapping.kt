@@ -5,7 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.soloader
+package com.facebook.react.soloader
+
+import com.facebook.soloader.ExternalSoMapping
 
 /**
  * This class is a manually created MergedSoMapping.
@@ -16,9 +18,9 @@ package com.facebook.soloader
  * entry in the [invokeJniOnload] method, the [mapLibName] method as well as a new external function
  * that will take care of calling the JNI_OnLoad method.
  */
-public object MergedSoMapping {
+public object OpenSourceMergedSoMapping : ExternalSoMapping {
 
-  public fun mapLibName(input: String): String =
+  override public fun mapLibName(input: String): String =
       when (input) {
         "fabricjni",
         "jsinspector",
@@ -47,7 +49,7 @@ public object MergedSoMapping {
         else -> input
       }
 
-  public fun invokeJniOnload(libraryName: String): Unit {
+  override public fun invokeJniOnload(libraryName: String): Unit {
     when (libraryName) {
       "fabricjni" -> libfabricjni_so()
       "hermes_executor" -> libhermes_executor_so()
