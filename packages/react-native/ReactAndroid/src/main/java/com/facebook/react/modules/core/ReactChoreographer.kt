@@ -7,8 +7,8 @@
 
 package com.facebook.react.modules.core
 
-import androidx.annotation.GuardedBy
 import android.view.Choreographer
+import androidx.annotation.GuardedBy
 import com.facebook.common.logging.FLog
 import com.facebook.infer.annotation.Assertions
 import com.facebook.react.bridge.UiThreadUtil
@@ -42,8 +42,7 @@ public class ReactChoreographer private constructor(choreographerProvider: Chore
   private val callbackQueues: Array<ArrayDeque<Choreographer.FrameCallback>> =
       Array(CallbackType.entries.size) { ArrayDeque() }
   private var totalCallbacks = 0
-  @GuardedBy("callbackQueues")
-  private var hasPostedCallback = false
+  @GuardedBy("callbackQueues") private var hasPostedCallback = false
 
   private val frameCallback =
       Choreographer.FrameCallback { frameTimeNanos ->
@@ -93,17 +92,17 @@ public class ReactChoreographer private constructor(choreographerProvider: Chore
   }
 
   /**
-   * This method writes [hasPostedCallback] and it should be called from another method that has
-   * the lock on [callbackQueues].
+   * This method writes [hasPostedCallback] and it should be called from another method that has the
+   * lock on [callbackQueues].
    */
   private fun postFrameCallbackOnChoreographer() {
     if (!hasPostedCallback) {
       val choreographer = choreographer
       if (choreographer == null) {
         // Schedule on the main thread, at which point the constructor's async work will have
-         UiThreadUtil.runOnUiThread {
-                   synchronized(callbackQueues) { postFrameCallbackOnChoreographer() }
-                  }
+        UiThreadUtil.runOnUiThread {
+          synchronized(callbackQueues) { postFrameCallbackOnChoreographer() }
+        }
       } else {
         choreographer.postFrameCallback(frameCallback)
         hasPostedCallback = true

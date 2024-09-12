@@ -33,7 +33,8 @@ internal class LogBoxDialog(context: Activity, private val reactRootView: View?)
     super.onCreate(savedInstanceState)
     // set background color so it will show below transparent system bars on forced edge-to-edge
     this.window?.setBackgroundDrawable(ColorDrawable(Color.BLACK))
-    // register insets listener to update margins on the ReactRootView to avoid overlap w/ system bars
+    // register insets listener to update margins on the ReactRootView to avoid overlap w/ system
+    // bars
     reactRootView?.let { rootView ->
       val insetsType: Int =
           WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()
