@@ -292,13 +292,13 @@ examples.push(
           <LayeredView
             style={{
               experimental_mixBlendMode: 'luminosity',
-              experimental_filter: 'blur(3px)',
+              filter: 'blur(3px)',
             }}
           />
           <LayeredImage
             style={{
               experimental_mixBlendMode: 'difference',
-              experimental_filter: 'hue-rotate(90deg)',
+              filter: 'hue-rotate(90deg)',
             }}
           />
         </View>

@@ -150,7 +150,6 @@ declare module '.' {
   }
 
   export interface ViewStyle {
-    experimental_filter?: ReadonlyArray<FilterFunction> | string | undefined;
     experimental_mixBlendMode?: BlendMode | undefined;
     experimental_backgroundImage?:
       | ReadonlyArray<GradientValue>
