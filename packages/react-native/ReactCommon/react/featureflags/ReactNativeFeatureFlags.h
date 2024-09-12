@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c3f43e92b0710e4a68bb76d874b3058d>>
+ * @generated SignedSource<<631e0b3e36325d36803b7e6fbefe2644>>
  */
 
 /**
@@ -146,6 +146,11 @@ class ReactNativeFeatureFlags {
    * Dispatches state updates synchronously in Fabric (e.g.: updates the scroll position in the shadow tree synchronously from the main thread).
    */
   RN_EXPORT static bool enableSynchronousStateUpdates();
+
+  /**
+   * Text preallocation optimisation where unnecessary work is removed.
+   */
+  RN_EXPORT static bool enableTextPreallocationOptimisation();
 
   /**
    * Ensures that JavaScript always has a consistent view of the state of the UI (e.g.: commits done in other threads are not immediately propagated to JS during its execution).

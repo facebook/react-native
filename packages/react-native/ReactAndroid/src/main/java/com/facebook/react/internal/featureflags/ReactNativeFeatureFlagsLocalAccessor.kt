@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<069787b84036b763c47d128e66ddd1ab>>
+ * @generated SignedSource<<d18208e5018340e48e3c20b6a80ecccd>>
  */
 
 /**
@@ -46,6 +46,7 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var enablePropsUpdateReconciliationAndroidCache: Boolean? = null
   private var enableReportEventPaintTimeCache: Boolean? = null
   private var enableSynchronousStateUpdatesCache: Boolean? = null
+  private var enableTextPreallocationOptimisationCache: Boolean? = null
   private var enableUIConsistencyCache: Boolean? = null
   private var enableViewRecyclingCache: Boolean? = null
   private var excludeYogaFromRawPropsCache: Boolean? = null
@@ -290,6 +291,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.enableSynchronousStateUpdates()
       accessedFeatureFlags.add("enableSynchronousStateUpdates")
       enableSynchronousStateUpdatesCache = cached
+    }
+    return cached
+  }
+
+  override fun enableTextPreallocationOptimisation(): Boolean {
+    var cached = enableTextPreallocationOptimisationCache
+    if (cached == null) {
+      cached = currentProvider.enableTextPreallocationOptimisation()
+      accessedFeatureFlags.add("enableTextPreallocationOptimisation")
+      enableTextPreallocationOptimisationCache = cached
     }
     return cached
   }
