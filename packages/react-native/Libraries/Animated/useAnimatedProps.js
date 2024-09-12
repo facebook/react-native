@@ -323,8 +323,10 @@ function useAnimatedPropsLifecycle_layoutEffects(node: AnimatedProps): void {
  * NOTE: unlike `useAnimatedPropsLifecycle_layoutEffects`, this version uses passive effects to setup animation graph.
  */
 function useAnimatedPropsLifecycle_passiveEffects(node: AnimatedProps): void {
-  const attachedNodeRef =
-    useRef<?{node: AnimatedProps, listener: ?EventSubscription}>(null);
+  const attachedRef = useRef<$ReadOnly<{
+    node: AnimatedProps,
+    listener: ?EventSubscription,
+  }> | null>(null);
 
   useEffect(() => {
     // It is ok for multiple components to call `flushQueue` because it noops
@@ -335,24 +337,24 @@ function useAnimatedPropsLifecycle_passiveEffects(node: AnimatedProps): void {
 
   useInsertionEffect(() => {
     return () => {
-      const attachedNode = attachedNodeRef.current;
-      if (attachedNode != null) {
-        const {node: prevNode, listener} = attachedNode;
+      const attached = attachedRef.current;
+      if (attached != null) {
+        const {node: prevNode, listener} = attached;
         // NOTE: Do not restore default values on unmount, see D18197735.
         prevNode.__detach();
         listener?.remove();
-        attachedNodeRef.current = null;
+        attachedRef.current = null;
       }
     };
   }, []);
 
   useEffect(() => {
-    let prevAttachedNode = null;
-    if (attachedNodeRef.current !== node) {
-      node.__attach();
-      prevAttachedNode = attachedNodeRef.current;
-      let listener: ?EventSubscription = null;
+    const prevAttachedNode: ?AnimatedProps = attachedRef.current?.node;
+    if (prevAttachedNode !== node) {
+      const prevAttached = attachedRef.current;
 
+      node.__attach();
+      let listener: ?EventSubscription = null;
       if (node.__isNative) {
         listener = NativeAnimatedHelper.nativeEventEmitter.addListener(
           'onUserDrivenAnimationEnded',
@@ -361,16 +363,15 @@ function useAnimatedPropsLifecycle_passiveEffects(node: AnimatedProps): void {
           },
         );
       }
+      attachedRef.current = {node, listener};
 
-      attachedNodeRef.current = {node, listener};
-    }
-
-    if (prevAttachedNode != null) {
-      const {node: prevNode, listener} = prevAttachedNode;
-      // TODO: Stop restoring default values (unless `reset` is called).
-      prevNode.__restoreDefaultValues();
-      prevNode.__detach();
-      listener?.remove();
+      if (prevAttached != null) {
+        const {node: prevNode, listener: prevListener} = prevAttached;
+        // TODO: Stop restoring default values (unless `reset` is called).
+        prevNode.__restoreDefaultValues();
+        prevNode.__detach();
+        prevListener?.remove();
+      }
     }
   }, [node]);
 }
