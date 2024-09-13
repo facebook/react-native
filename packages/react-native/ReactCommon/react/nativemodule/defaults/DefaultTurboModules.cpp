@@ -30,6 +30,7 @@ namespace facebook::react {
     return std::make_shared<NativeIdleCallbacks>(jsInvoker);
   }
 
+  // TEMPORARY (PR only, for testing)
   if (name == NativePerformance::kModuleName) {
     return std::make_shared<NativePerformance>(jsInvoker);
   }
