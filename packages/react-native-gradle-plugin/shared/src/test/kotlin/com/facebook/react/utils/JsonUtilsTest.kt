@@ -186,6 +186,54 @@ class JsonUtilsTest {
   }
 
   @Test
+  fun fromAutolinkingConfigJson_withInfoLogs_sanitizeAndParseIt() {
+    @Suppress("JsonStandardCompliance")
+    val validJson =
+        createJsonFile(
+            """
+      
+      > AwesomeProject@0.0.1 npx
+      > rnc-cli config
+      
+       {
+        "reactNativeVersion": "1000.0.0",
+        "project": {
+          "ios": {
+            "sourceDir": "./packages/rn-tester",
+            "xcodeProject": {
+              "name": "RNTesterPods.xcworkspace",
+              "isWorkspace": true
+            },
+            "automaticPodsInstallation": false
+          },
+          "android": {
+            "sourceDir": "./packages/rn-tester",
+            "appName": "RN-Tester",
+            "packageName": "com.facebook.react.uiapp",
+            "applicationId": "com.facebook.react.uiapp",
+            "mainActivity": ".RNTesterActivity",
+            "watchModeCommandParams": [
+              "--mode HermesDebug"
+            ],
+            "dependencyConfiguration": "implementation"
+          }
+        }
+      } 
+      """
+                .trimIndent())
+    val parsed = JsonUtils.fromAutolinkingConfigJson(validJson)!!
+
+    assertThat("./packages/rn-tester").isEqualTo(parsed.project!!.android!!.sourceDir)
+    assertThat("RN-Tester").isEqualTo(parsed.project!!.android!!.appName)
+    assertThat("com.facebook.react.uiapp").isEqualTo(parsed.project!!.android!!.packageName)
+    assertThat("com.facebook.react.uiapp").isEqualTo(parsed.project!!.android!!.applicationId)
+    assertThat(".RNTesterActivity").isEqualTo(parsed.project!!.android!!.mainActivity)
+    assertThat("--mode HermesDebug")
+        .isEqualTo(parsed.project!!.android!!.watchModeCommandParams!![0])
+    assertThat("implementation").isEqualTo(parsed.project!!.android!!.dependencyConfiguration)
+  }
+
+  @Test
   fun fromAutolinkingConfigJson_withDependenciesSpecified_canParseIt() {
     val validJson =
         createJsonFile(
