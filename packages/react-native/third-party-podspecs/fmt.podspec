@@ -19,6 +19,7 @@ Pod::Spec.new do |spec|
   }
   spec.pod_target_xcconfig = {
     "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
+    "GCC_WARN_INHIBIT_ALL_WARNINGS" => "YES" # Disable warnings because we don't control this library
   }
   spec.platforms = min_supported_versions
   spec.libraries = "c++"
