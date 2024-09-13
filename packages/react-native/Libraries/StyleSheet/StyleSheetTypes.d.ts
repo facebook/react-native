@@ -339,7 +339,7 @@ export type DropShadowPrimitive = {
   color?: ColorValue | number | undefined;
 };
 
-export type BoxShadowPrimitive = {
+export type BoxShadowValue = {
   offsetX: number | string;
   offsetY: number | string;
   color?: string | undefined;
@@ -427,7 +427,7 @@ export interface ViewStyle extends FlexStyle, ShadowStyleIOS, TransformsStyle {
   pointerEvents?: 'box-none' | 'none' | 'box-only' | 'auto' | undefined;
   isolation?: 'auto' | 'isolate' | undefined;
   cursor?: CursorValue | undefined;
-  boxShadow?: ReadonlyArray<BoxShadowPrimitive> | string | undefined;
+  boxShadow?: ReadonlyArray<BoxShadowValue> | string | undefined;
   filter?: ReadonlyArray<FilterFunction> | string | undefined;
 }
 

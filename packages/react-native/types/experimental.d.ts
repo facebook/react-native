@@ -35,8 +35,6 @@
 import {
   GradientValue,
   BlendMode,
-  BoxShadowPrimitive,
-  FilterFunction,
 } from 'react-native/Libraries/StyleSheet/StyleSheetTypes';
 
 export {};
