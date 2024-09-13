@@ -210,7 +210,7 @@ jobs:
       - name: Restore Cached Artifacts
         uses: actions/cache/restore@v4.0.0
         with:
-          key: v4-hermes-artifacts-${{ matrix.flavor }}-${{ needs.prepare_hermes_workspace.outputs.hermes-version }}-${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
+          key: v4-hermes-artifacts-${{ matrix.flavor }}-${{ needs.prepare_hermes_workspace.outputs.hermes-version }}-${{ needs.prepare_hermes_workspace.outputs.react-native-version }}-${{ hashFiles('./packages/react-native/sdks/hermes/utils/build-apple-frameworks.sh') }}
           path: |
             /tmp/hermes/osx-bin/${{ matrix.flavor }}
             /tmp/hermes/dSYM/${{ matrix.flavor }}
@@ -382,7 +382,7 @@ jobs:
         uses: actions/cache/save@v4.0.0
         if: ${{ github.ref == 'refs/heads/main' || contains(github.ref, '-stable') }} # To avoid that the cache explode.
         with:
-          key: v4-hermes-artifacts-${{ matrix.flavor }}-${{ needs.prepare_hermes_workspace.outputs.hermes-version }}-${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
+          key: v4-hermes-artifacts-${{ matrix.flavor }}-${{ needs.prepare_hermes_workspace.outputs.hermes-version }}-${{ needs.prepare_hermes_workspace.outputs.react-native-version }}-${{ hashFiles('./packages/react-native/sdks/hermes/utils/build-apple-frameworks.sh') }}
           path: |
             /tmp/hermes/osx-bin/${{ matrix.flavor }}
             /tmp/hermes/dSYM/${{ matrix.flavor }}
