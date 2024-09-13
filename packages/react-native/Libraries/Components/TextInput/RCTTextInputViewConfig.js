@@ -85,8 +85,15 @@ const RCTTextInputViewConfig = {
     topContentSizeChange: {
       registrationName: 'onContentSizeChange',
     },
+    topChangeSync: {
+      registrationName: 'onChangeSync',
+    },
+    topKeyPressSync: {
+      registrationName: 'onKeyPressSync',
+    },
   },
   validAttributes: {
+    dynamicTypeRamp: true,
     fontSize: true,
     fontWeight: true,
     fontVariant: true,
@@ -150,6 +157,8 @@ const RCTTextInputViewConfig = {
       onSelectionChange: true,
       onContentSizeChange: true,
       onScroll: true,
+      onChangeSync: true,
+      onKeyPressSync: true,
     }),
   },
 };
