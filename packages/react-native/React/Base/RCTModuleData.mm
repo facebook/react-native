@@ -56,7 +56,6 @@ int32_t getUniqueId()
 - (void)setUp
 {
   _implementsBatchDidComplete = [_moduleClass instancesRespondToSelector:@selector(batchDidComplete)];
-  _implementsPartialBatchDidFlush = [_moduleClass instancesRespondToSelector:@selector(partialBatchDidFlush)];
 
   // If a module overrides `constantsToExport` and doesn't implement `requiresMainQueueSetup`, then we must assume
   // that it must be called on the main thread, because it may need to access UIKit.

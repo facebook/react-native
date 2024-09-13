@@ -104,12 +104,6 @@ typedef id<RCTBridgeModule> (^RCTBridgeModuleProvider)(void);
  */
 @property (nonatomic, assign, readonly) BOOL implementsBatchDidComplete;
 
-/**
- * Whether the receiver has a valid `instance` which implements
- * -partialBatchDidFlush.
- */
-@property (nonatomic, assign, readonly) BOOL implementsPartialBatchDidFlush;
-
 @property (nonatomic, weak, readwrite) id<RCTModuleDataCallInvokerProvider> callInvokerProvider;
 
 @end
