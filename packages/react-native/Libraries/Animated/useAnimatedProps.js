@@ -22,6 +22,7 @@ import AnimatedValue from './nodes/AnimatedValue';
 import {
   useCallback,
   useEffect,
+  useInsertionEffect,
   useLayoutEffect,
   useMemo,
   useReducer,
@@ -74,8 +75,8 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
     ReactNativeFeatureFlags.shouldUseSetNativePropsInNativeAnimationsInFabric();
 
   const useAnimatedPropsLifecycle =
-    ReactNativeFeatureFlags.usePassiveEffectsForAnimations()
-      ? useAnimatedPropsLifecycle_passiveEffects
+    ReactNativeFeatureFlags.useInsertionEffectsForAnimations()
+      ? useAnimatedPropsLifecycle_insertionEffects
       : useAnimatedPropsLifecycle_layoutEffects;
 
   useAnimatedPropsLifecycle(node);
@@ -318,10 +319,8 @@ function useAnimatedPropsLifecycle_layoutEffects(node: AnimatedProps): void {
  * uses reference counting to determine when to recursively detach its children
  * nodes. So in order to optimize this, we avoid detaching until the next attach
  * unless we are unmounting.
- *
- * NOTE: unlike `useAnimatedPropsLifecycle_layoutEffects`, this version uses passive effects to setup animation graph.
  */
-function useAnimatedPropsLifecycle_passiveEffects(node: AnimatedProps): void {
+function useAnimatedPropsLifecycle_insertionEffects(node: AnimatedProps): void {
   const prevNodeRef = useRef<?AnimatedProps>(null);
   const isUnmountingRef = useRef<boolean>(false);
 
@@ -332,14 +331,14 @@ function useAnimatedPropsLifecycle_passiveEffects(node: AnimatedProps): void {
     NativeAnimatedHelper.API.flushQueue();
   });
 
-  useEffect(() => {
+  useInsertionEffect(() => {
     isUnmountingRef.current = false;
     return () => {
       isUnmountingRef.current = true;
     };
   }, []);
 
-  useEffect(() => {
+  useInsertionEffect(() => {
     node.__attach();
     let drivenAnimationEndedListener: ?EventSubscription = null;
 

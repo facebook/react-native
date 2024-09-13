@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2333bd2bbcab9d50e4cb23d1b7d42021>>
+ * @generated SignedSource<<b3cd4e12b2e0f1d16234ad642b9f02d5>>
  * @flow strict-local
  */
 
@@ -39,7 +39,7 @@ export type ReactNativeFeatureFlagsJsOnly = {
   shouldUseRemoveClippedSubviewsAsDefaultOnIOS: Getter<boolean>,
   shouldUseSetNativePropsInFabric: Getter<boolean>,
   shouldUseSetNativePropsInNativeAnimationsInFabric: Getter<boolean>,
-  usePassiveEffectsForAnimations: Getter<boolean>,
+  useInsertionEffectsForAnimations: Getter<boolean>,
   useRefsForTextInputState: Getter<boolean>,
 };
 
@@ -165,9 +165,9 @@ export const shouldUseSetNativePropsInFabric: Getter<boolean> = createJavaScript
 export const shouldUseSetNativePropsInNativeAnimationsInFabric: Getter<boolean> = createJavaScriptFlagGetter('shouldUseSetNativePropsInNativeAnimationsInFabric', false);
 
 /**
- * Enable a variant of useAnimatedPropsLifecycle hook that constructs the animation graph in passive effect instead of layout effect
+ * Changes construction of the animation graph to `useInsertionEffect` instead of `useLayoutEffect`.
  */
-export const usePassiveEffectsForAnimations: Getter<boolean> = createJavaScriptFlagGetter('usePassiveEffectsForAnimations', false);
+export const useInsertionEffectsForAnimations: Getter<boolean> = createJavaScriptFlagGetter('useInsertionEffectsForAnimations', false);
 
 /**
  * Enable a variant of TextInput that moves some state to refs to avoid unnecessary re-renders
