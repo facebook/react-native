@@ -188,6 +188,7 @@ public class com/facebook/react/ReactFragment : androidx/fragment/app/Fragment, 
 	protected static final field ARG_LAUNCH_OPTIONS Ljava/lang/String;
 	protected field mReactDelegate Lcom/facebook/react/ReactDelegate;
 	public fun <init> ()V
+	protected fun <init> (Z)V
 	public fun checkPermission (Ljava/lang/String;II)I
 	public fun checkSelfPermission (Ljava/lang/String;)I
 	protected fun getReactDelegate ()Lcom/facebook/react/ReactDelegate;

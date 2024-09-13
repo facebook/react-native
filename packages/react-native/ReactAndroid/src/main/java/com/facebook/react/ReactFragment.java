@@ -32,10 +32,20 @@ public class ReactFragment extends Fragment implements PermissionAwareActivity {
 
   protected ReactDelegate mReactDelegate;
 
+  private final boolean mDisableHostLifecycleEvents;
+
   @Nullable private PermissionListener mPermissionListener;
 
   public ReactFragment() {
     // Required empty public constructor
+    this(false);
+  }
+
+  /**
+   * @param disableHostLifecycleEvents Disable forwarding lifecycle events to the {@link ReactHost}.
+   */
+  protected ReactFragment(boolean disableHostLifecycleEvents) {
+    this.mDisableHostLifecycleEvents = disableHostLifecycleEvents;
   }
 
   /**
@@ -99,19 +109,27 @@ public class ReactFragment extends Fragment implements PermissionAwareActivity {
   @Override
   public void onResume() {
     super.onResume();
-    mReactDelegate.onHostResume();
+    if (!mDisableHostLifecycleEvents) {
+      mReactDelegate.onHostResume();
+    }
   }
 
   @Override
   public void onPause() {
     super.onPause();
-    mReactDelegate.onHostPause();
+    if (!mDisableHostLifecycleEvents) {
+      mReactDelegate.onHostPause();
+    }
   }
 
   @Override
   public void onDestroy() {
     super.onDestroy();
-    mReactDelegate.onHostDestroy();
+    if (!mDisableHostLifecycleEvents) {
+      mReactDelegate.onHostDestroy();
+    } else {
+      mReactDelegate.unloadApp();
+    }
   }
 
   // endregion
