@@ -721,6 +721,29 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
   [self _handleFinishedScrolling:scrollView];
 }
 
+- (void)didMoveToWindow
+{
+  [super didMoveToWindow];
+
+  if (!self.window) {
+    // The view is being removed, ensure that the scroll end event is dispatched
+    [self _handleScrollEndIfNeeded];
+  }
+}
+
+- (void)_handleScrollEndIfNeeded
+{
+  if (_scrollView.isDecelerating || !_scrollView.isTracking) {
+    if (!_eventEmitter) {
+      return;
+    }
+    static_cast<const ScrollViewEventEmitter &>(*_eventEmitter).onMomentumScrollEnd([self _scrollViewMetrics]);
+
+    [self _updateStateWithContentOffset];
+    _isUserTriggeredScrolling = NO;
+  }
+}
+
 - (void)_handleFinishedScrolling:(UIScrollView *)scrollView
 {
   [self _forceDispatchNextScrollEvent];
