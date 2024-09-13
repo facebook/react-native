@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
   <uses-feature
     android:name="android.software.leanback"
@@ -66,10 +65,6 @@
       android:authorities="@string/blob_provider_authority"
       android:exported="false"
     />
-    <meta-data
-        android:name="com.facebook.soloader.enabled"
-        android:value="true"
-        tools:replace="android:value" />
   </application>
   <queries>
     <package android:name="com.facebook.katana" />
