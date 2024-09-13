@@ -110,11 +110,102 @@ export interface FlexStyle {
   top?: DimensionValue | undefined;
   width?: DimensionValue | undefined;
   zIndex?: number | undefined;
+  direction?: 'inherit' | 'ltr' | 'rtl' | undefined;
 
   /**
-   * @platform ios
+   * Equivalent to `top`, `bottom`, `right` and `left`
    */
-  direction?: 'inherit' | 'ltr' | 'rtl' | undefined;
+  inset?: DimensionValue | undefined;
+
+  /**
+   * Equivalent to `top`, `bottom`
+   */
+  insetBlock?: DimensionValue | undefined;
+
+  /**
+   * Equivalent to `bottom`
+   */
+  insetBlockEnd?: DimensionValue | undefined;
+
+  /**
+   * Equivalent to `top`
+   */
+  insetBlockStart?: DimensionValue | undefined;
+
+  /**
+   * Equivalent to `right` and `left`
+   */
+  insetInline?: DimensionValue | undefined;
+
+  /**
+   * Equivalent to `right` or `left`
+   */
+  insetInlineEnd?: DimensionValue | undefined;
+
+  /**
+   * Equivalent to `right` or `left`
+   */
+  insetInlineStart?: DimensionValue | undefined;
+
+  /**
+   * Equivalent to `marginVertical`
+   */
+  marginBlock?: DimensionValue | undefined;
+
+  /**
+   * Equivalent to `marginBottom`
+   */
+  marginBlockEnd?: DimensionValue | undefined;
+
+  /**
+   * Equivalent to `marginTop`
+   */
+  marginBlockStart?: DimensionValue | undefined;
+
+  /**
+   * Equivalent to `marginHorizontal`
+   */
+  marginInline?: DimensionValue | undefined;
+
+  /**
+   * Equivalent to `marginEnd`
+   */
+  marginInlineEnd?: DimensionValue | undefined;
+
+  /**
+   * Equivalent to `marginStart`
+   */
+  marginInlineStart?: DimensionValue | undefined;
+
+  /**
+   * Equivalent to `paddingVertical`
+   */
+  paddingBlock?: DimensionValue | undefined;
+
+  /**
+   * Equivalent to `paddingBottom`
+   */
+  paddingBlockEnd?: DimensionValue | undefined;
+
+  /**
+   * Equivalent to `paddingTop`
+   */
+  paddingBlockStart?: DimensionValue | undefined;
+
+  /**
+   * Equivalent to `paddingHorizontal`
+   */
+  paddingInline?: DimensionValue | undefined;
+
+  /**
+   * Equivalent to `paddingEnd`
+   */
+  paddingInlineEnd?: DimensionValue | undefined;
+
+  /**
+   * Equivalent to `paddingStart`
+   */
+  paddingInlineStart?: DimensionValue | undefined;
 }
 
 export interface ShadowStyleIOS {
