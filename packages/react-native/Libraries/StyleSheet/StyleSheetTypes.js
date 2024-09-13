@@ -719,7 +719,7 @@ export type GradientValue = {
   }>,
 };
 
-export type BoxShadowPrimitive = {
+export type BoxShadowValue = {
   offsetX: number | string,
   offsetY: number | string,
   color?: ____ColorValue_Internal,
@@ -788,7 +788,7 @@ export type ____ViewStyle_InternalCore = $ReadOnly<{
   elevation?: number,
   pointerEvents?: 'auto' | 'none' | 'box-none' | 'box-only',
   cursor?: CursorValue,
-  boxShadow?: $ReadOnlyArray<BoxShadowPrimitive> | string,
+  boxShadow?: $ReadOnlyArray<BoxShadowValue> | string,
   filter?: $ReadOnlyArray<FilterFunction> | string,
   experimental_mixBlendMode?: ____BlendMode_Internal,
   experimental_backgroundImage?: $ReadOnlyArray<GradientValue> | string,
