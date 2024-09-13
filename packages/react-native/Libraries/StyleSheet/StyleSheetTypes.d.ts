@@ -330,9 +330,9 @@ export type FilterFunction =
   | {opacity: number | string}
   | {saturate: number | string}
   | {sepia: number | string}
-  | {dropShadow: DropShadowPrimitive | string};
+  | {dropShadow: DropShadowValue | string};
 
-export type DropShadowPrimitive = {
+export type DropShadowValue = {
   offsetX: number | string;
   offsetY: number | string;
   standardDeviation?: number | string | undefined;
