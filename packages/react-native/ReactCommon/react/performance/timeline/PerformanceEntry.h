@@ -40,22 +40,6 @@ struct PerformanceEntry {
 constexpr size_t NUM_PERFORMANCE_ENTRY_TYPES =
     (size_t)PerformanceEntryType::_NEXT - 1; // Valid types start from 1.
 
-/**
- * Status of the add/push operation for the `BoundedConsumableBuffer`
- * container
- */
-enum class PerformanceEntryPushStatus {
-  // There was free space in the buffer, element was successfully pushed:
-  OK = 0,
-
-  // Element was pushed, but had to overwrite some already consumed elements:
-  OVERWRITE = 1,
-
-  // Element wasn't pushed, as buffer size limit has been reached and it's
-  // not possible to overwrite already consumed elements anymore:
-  DROP = 2,
-};
-
 struct PerformanceEntrySorter {
   bool operator()(const PerformanceEntry& lhs, const PerformanceEntry& rhs) {
     if (lhs.startTime != rhs.startTime) {

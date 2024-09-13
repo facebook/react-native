@@ -32,7 +32,21 @@ constexpr size_t DEFAULT_MAX_SIZE = 1024;
 template <class T>
 class BoundedConsumableBuffer {
  public:
-  using PushStatus = PerformanceEntryPushStatus;
+  /**
+   * Status of the add/push operation for the `BoundedConsumableBuffer`
+   * container
+   */
+  enum class PushStatus {
+    // There was free space in the buffer, element was successfully pushed:
+    OK = 0,
+
+    // Element was pushed, but had to overwrite some already consumed elements:
+    OVERWRITE = 1,
+
+    // Element wasn't pushed, as buffer size limit has been reached and it's
+    // not possible to overwrite already consumed elements anymore:
+    DROP = 2,
+  };
 
   explicit BoundedConsumableBuffer(size_t maxSize = DEFAULT_MAX_SIZE)
       : maxSize_(maxSize) {

@@ -11,7 +11,7 @@ namespace facebook::react {
 
 void PerformanceEntryCircularBuffer::add(const facebook::react::PerformanceEntry& entry) {
   auto result = entries.add(std::move(entry));
-  if (result == PerformanceEntryPushStatus::DROP) {
+  if (result == BoundedConsumableBuffer<PerformanceEntry>::PushStatus::DROP) {
     droppedEntriesCount += 1;
   }
 }
