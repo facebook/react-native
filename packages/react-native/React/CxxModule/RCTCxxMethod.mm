@@ -98,14 +98,22 @@ using namespace facebook::react;
       NSNumber *id2 = arguments[arguments.count - 1];
 
       second = ^(std::vector<folly::dynamic> args) {
-        [bridge enqueueCallback:id2 args:convertFollyDynamicToId(folly::dynamic(args.begin(), args.end()))];
+        folly::dynamic obj = folly::dynamic::array;
+        for (auto &arg : args) {
+          obj.push_back(std::move(arg));
+        }
+        [bridge enqueueCallback:id2 args:convertFollyDynamicToId(std::move(obj))];
       };
     } else {
       id1 = arguments[arguments.count - 1];
     }
 
     first = ^(std::vector<folly::dynamic> args) {
-      [bridge enqueueCallback:id1 args:convertFollyDynamicToId(folly::dynamic(args.begin(), args.end()))];
+      folly::dynamic obj = folly::dynamic::array;
+      for (auto &arg : args) {
+        obj.push_back(std::move(arg));
+      }
+      [bridge enqueueCallback:id1 args:convertFollyDynamicToId(std::move(obj))];
     };
   }
 
