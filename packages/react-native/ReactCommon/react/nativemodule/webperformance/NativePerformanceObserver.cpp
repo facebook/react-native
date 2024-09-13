@@ -40,6 +40,10 @@ NativePerformanceObserver::NativePerformanceObserver(
     : NativePerformanceObserverCxxSpec(std::move(jsInvoker)) {}
 
 jsi::Object NativePerformanceObserver::createObserver(jsi::Runtime& rt, NativePerformanceObserverCallback callback) {
+  // The way we dispatch performance observer callbacks is a bit different from
+  // the spec. The specification requires us to queue a single task that dispatches
+  // observer callbacks. Instead, we are queuing all callbacks as separate tasks
+  // in the scheduler.
   PerformanceObserverCallback cb = [callback = std::move(callback)](std::vector<PerformanceEntry>&& entries, size_t droppedEntriesCount) -> void {
     callback.callWithPriority(SchedulerPriority::IdlePriority, std::move(entries), droppedEntriesCount);
   };
