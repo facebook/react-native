@@ -118,8 +118,8 @@ convertJSIArrayToNSArray(jsi::Runtime &runtime, const jsi::Array &value, std::sh
   NSMutableArray *result = [NSMutableArray new];
   for (size_t i = 0; i < size; i++) {
     // Insert kCFNull when it's `undefined` value to preserve the indices.
-    [result
-        addObject:convertJSIValueToObjCObject(runtime, value.getValueAtIndex(runtime, i), jsInvoker) ?: (id)kCFNull];
+    id convertedObject = convertJSIValueToObjCObject(runtime, value.getValueAtIndex(runtime, i), jsInvoker);
+    [result addObject:convertedObject ? convertedObject : (id)kCFNull];
   }
   return [result copy];
 }

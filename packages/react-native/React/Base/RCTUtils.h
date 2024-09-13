@@ -112,7 +112,7 @@ RCT_EXTERN NSError *RCTErrorWithMessage(NSString *message);
 RCT_EXTERN NSError *RCTErrorWithNSException(NSException *exception);
 
 // Convert nil values to NSNull, and vice-versa
-#define RCTNullIfNil(value) ((value) ?: (id)kCFNull)
+#define RCTNullIfNil(value) ((value) ? (value) : (id)kCFNull)
 #define RCTNilIfNull(value)                           \
   ({                                                  \
     __typeof__(value) t = (value);                    \

@@ -127,7 +127,6 @@ class ShadowTree final {
   /**
    * Forces the ShadowTree to ping its delegate that an update is available.
    * Useful for animations on Android.
-   * @return
    */
   void notifyDelegatesOfUpdates() const;
 
