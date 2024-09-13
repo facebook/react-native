@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<cdbb41b6f1fe2c0ff96a3edaf885459c>>
+ * @generated SignedSource<<f8f8400002aa4742d2be5bc00a73323c>>
  * @flow strict-local
  */
 
@@ -33,6 +33,7 @@ export interface Spec extends TurboModule {
   +enableAndroidMixBlendModeProp?: () => boolean;
   +enableBackgroundStyleApplicator?: () => boolean;
   +enableCleanTextInputYogaNode?: () => boolean;
+  +enableDeletionOfUnmountedViews?: () => boolean;
   +enableEagerRootViewAttachment?: () => boolean;
   +enableEventEmitterRetentionDuringGesturesOnAndroid?: () => boolean;
   +enableFabricLogs?: () => boolean;

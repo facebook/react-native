@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<462f08327661efce8cff4747045e51c0>>
+ * @generated SignedSource<<d713ffeb1c62b237a9764316590222c4>>
  */
 
 /**
@@ -85,6 +85,11 @@ bool NativeReactNativeFeatureFlags::enableBackgroundStyleApplicator(
 bool NativeReactNativeFeatureFlags::enableCleanTextInputYogaNode(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableCleanTextInputYogaNode();
+}
+
+bool NativeReactNativeFeatureFlags::enableDeletionOfUnmountedViews(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableDeletionOfUnmountedViews();
 }
 
 bool NativeReactNativeFeatureFlags::enableEagerRootViewAttachment(

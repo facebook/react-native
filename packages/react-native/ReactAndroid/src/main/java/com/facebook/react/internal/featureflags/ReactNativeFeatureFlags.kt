@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b9b1988a78ba67a99027372dab215d06>>
+ * @generated SignedSource<<43a7bd07cf5236aa9357e5c1de87151a>>
  */
 
 /**
@@ -87,6 +87,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableCleanTextInputYogaNode(): Boolean = accessor.enableCleanTextInputYogaNode()
+
+  /**
+   * Deletes views that were pre-allocated but never mounted on the screen.
+   */
+  @JvmStatic
+  public fun enableDeletionOfUnmountedViews(): Boolean = accessor.enableDeletionOfUnmountedViews()
 
   /**
    * Feature flag to configure eager attachment of the root view/initialisation of the JS code.

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<500b64c27ce4976086f60ea767926b25>>
+ * @generated SignedSource<<38357b83ae559d10c212a2cec336ff62>>
  */
 
 /**
@@ -54,6 +54,8 @@ class NativeReactNativeFeatureFlags
   bool enableBackgroundStyleApplicator(jsi::Runtime& runtime);
 
   bool enableCleanTextInputYogaNode(jsi::Runtime& runtime);
+
+  bool enableDeletionOfUnmountedViews(jsi::Runtime& runtime);
 
   bool enableEagerRootViewAttachment(jsi::Runtime& runtime);
 
