@@ -22,7 +22,7 @@ runs:
     - name: Restore Cached Artifacts
       uses: actions/cache/restore@v4
       with:
-        key: v4-hermes-artifacts-${{ inputs.flavor }}-${{ inputs.hermes-version }}-${{ inputs.react-native-version }}
+        key: v4-hermes-artifacts-${{ inputs.flavor }}-${{ inputs.hermes-version }}-${{ inputs.react-native-version }}-${{ hashFiles('./packages/react-native/sdks/hermes/utils/build-apple-frameworks.sh') }}
         path: |
           /tmp/hermes/osx-bin/${{ inputs.flavor }}
           /tmp/hermes/dSYM/${{ inputs.flavor }}
@@ -200,7 +200,7 @@ runs:
       uses: actions/cache/save@v4
       if: ${{ github.ref == 'refs/heads/main' || contains(github.ref, '-stable') }} # To avoid that the cache explode.
       with:
-        key: v4-hermes-artifacts-${{ inputs.flavor }}-${{ inputs.hermes-version }}-${{ inputs.react-native-version }}
+        key: v4-hermes-artifacts-${{ inputs.flavor }}-${{ inputs.hermes-version }}-${{ inputs.react-native-version }}-${{ hashFiles('./packages/react-native/sdks/hermes/utils/build-apple-frameworks.sh') }}
         path: |
           /tmp/hermes/osx-bin/${{ inputs.flavor }}
           /tmp/hermes/dSYM/${{ inputs.flavor }}
