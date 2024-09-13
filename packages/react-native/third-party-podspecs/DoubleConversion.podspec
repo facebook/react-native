@@ -25,6 +25,7 @@ Pod::Spec.new do |spec|
 
   spec.pod_target_xcconfig = {
     "DEFINES_MODULE" => "YES",
+    "GCC_WARN_INHIBIT_ALL_WARNINGS" => "YES" # Disable warnings because we don't control this library
   }
 
   # Pinning to the same version as React.podspec.

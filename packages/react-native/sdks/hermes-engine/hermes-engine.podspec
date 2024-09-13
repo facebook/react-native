@@ -36,7 +36,8 @@ Pod::Spec.new do |spec|
 
   spec.pod_target_xcconfig = {
                     "CLANG_CXX_LANGUAGE_STANDARD" => "c++20",
-                    "CLANG_CXX_LIBRARY" => "compiler-default"
+                    "CLANG_CXX_LIBRARY" => "compiler-default",
+                    "GCC_WARN_INHIBIT_ALL_WARNINGS" => "YES" # Disable warnings because we don't control this library
                   }
 
   spec.ios.vendored_frameworks = "destroot/Library/Frameworks/ios/hermes.framework"
