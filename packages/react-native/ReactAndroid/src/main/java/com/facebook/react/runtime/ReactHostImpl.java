@@ -9,6 +9,8 @@ package com.facebook.react.runtime;
 
 import static com.facebook.infer.annotation.Assertions.assertNotNull;
 import static com.facebook.infer.annotation.ThreadConfined.UI;
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
 
 import android.app.Activity;
 import android.content.Context;
@@ -250,12 +252,13 @@ public class ReactHostImpl implements ReactHost {
 
     detachSurface(surface);
     return callWithExistingReactInstance(
-        method,
-        reactInstance -> {
-          log(method, "Execute");
-          reactInstance.stopSurface(surface);
-        },
-        mBGExecutor);
+            method,
+            reactInstance -> {
+              log(method, "Execute");
+              reactInstance.stopSurface(surface);
+            },
+            mBGExecutor)
+        .makeVoid();
   }
 
   /**
@@ -776,7 +779,7 @@ public class ReactHostImpl implements ReactHost {
     };
   }
 
-  /* package */ Task<Void> loadBundle(final JSBundleLoader bundleLoader) {
+  /* package */ Task<Boolean> loadBundle(final JSBundleLoader bundleLoader) {
     final String method = "loadBundle()";
     log(method, "Schedule");
 
@@ -789,7 +792,7 @@ public class ReactHostImpl implements ReactHost {
         null);
   }
 
-  /* package */ Task<Void> registerSegment(
+  /* package */ Task<Boolean> registerSegment(
       final int segmentId, final String path, final Callback callback) {
     final String method =
         "registerSegment(segmentId = \"" + segmentId + "\", path = \"" + path + "\")";
@@ -825,7 +828,7 @@ public class ReactHostImpl implements ReactHost {
    * @param args Arguments to be passed to the function
    * @return A Task that will complete when the function call has been enqueued on the JS thread.
    */
-  /* package */ Task<Void> callFunctionOnModule(
+  /* package */ Task<Boolean> callFunctionOnModule(
       final String moduleName, final String methodName, final NativeArray args) {
     final String method = "callFunctionOnModule(\"" + moduleName + "\", \"" + methodName + "\")";
     return callWithExistingReactInstance(
@@ -947,9 +950,9 @@ public class ReactHostImpl implements ReactHost {
   }
 
   /** Schedule work on a ReactInstance that is already created. */
-  private Task<Void> callWithExistingReactInstance(
+  private Task<Boolean> callWithExistingReactInstance(
       final String callingMethod,
-      final ReactInstanceCalback callback,
+      final ReactInstanceCalback continuation,
       @Nullable Executor executor) {
     final String method = "callWithExistingReactInstance(" + callingMethod + ")";
 
@@ -959,18 +962,19 @@ public class ReactHostImpl implements ReactHost {
 
     return mCreateReactInstanceTaskRef
         .get()
-        .continueWith(
+        .onSuccess(
             task -> {
               final ReactInstance reactInstance =
                   ReactNativeFeatureFlags.completeReactInstanceCreationOnBgThreadOnAndroid()
                       ? task.getResult()
                       : mReactInstance;
-              if (reactInstance == null || task.isFaulted()) {
+              if (reactInstance == null) {
                 raiseSoftException(method, "Execute: reactInstance is null. Dropping work.");
-              } else {
-                callback.then(reactInstance);
+                return FALSE;
               }
-              return null;
+
+              continuation.then(reactInstance);
+              return TRUE;
             },
             executor);
   }
@@ -978,7 +982,7 @@ public class ReactHostImpl implements ReactHost {
   /** Create a ReactInstance if it doesn't exist already, and schedule work on it. */
   private Task<Void> callAfterGetOrCreateReactInstance(
       final String callingMethod,
-      final ReactInstanceCalback callback,
+      final ReactInstanceCalback runnable,
       @Nullable Executor executor) {
     final String method = "callAfterGetOrCreateReactInstance(" + callingMethod + ")";
 
@@ -987,17 +991,18 @@ public class ReactHostImpl implements ReactHost {
     }
 
     return getOrCreateReactInstance()
-        .continueWith(
+        .onSuccess(
             task -> {
               final ReactInstance reactInstance =
                   ReactNativeFeatureFlags.completeReactInstanceCreationOnBgThreadOnAndroid()
                       ? task.getResult()
                       : mReactInstance;
-              if (reactInstance == null || task.isFaulted()) {
+              if (reactInstance == null) {
                 raiseSoftException(method, "Execute: reactInstance is null. Dropping work.");
-              } else {
-                callback.then(reactInstance);
+                return null;
               }
+
+              runnable.then(reactInstance);
               return null;
             },
             executor)
