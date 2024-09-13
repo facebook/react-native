@@ -342,10 +342,10 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'Enables use of setNativeProps in Native driven animations in Fabric.',
     },
-    usePassiveEffectsForAnimations: {
+    useInsertionEffectsForAnimations: {
       defaultValue: false,
       description:
-        'Enable a variant of useAnimatedPropsLifecycle hook that constructs the animation graph in passive effect instead of layout effect',
+        'Changes construction of the animation graph to `useInsertionEffect` instead of `useLayoutEffect`.',
     },
     useRefsForTextInputState: {
       defaultValue: false,
