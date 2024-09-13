@@ -92,6 +92,8 @@ enum class BorderCurve : uint8_t { Circular, Continuous };
 
 enum class BorderStyle : uint8_t { Solid, Dotted, Dashed };
 
+enum class OutlineStyle : uint8_t { Solid, Dotted, Dashed };
+
 struct CornerRadii {
   float vertical{0.0f};
   float horizontal{0.0f};

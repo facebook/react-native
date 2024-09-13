@@ -411,6 +411,10 @@ export interface ViewStyle extends FlexStyle, ShadowStyleIOS, TransformsStyle {
   borderTopLeftRadius?: AnimatableNumericValue | string | undefined;
   borderTopRightRadius?: AnimatableNumericValue | string | undefined;
   borderTopStartRadius?: AnimatableNumericValue | string | undefined;
+  outlineColor?: ColorValue | undefined;
+  outlineOffset?: AnimatableNumericValue | undefined;
+  outlineStyle?: 'solid' | 'dotted' | 'dashed' | undefined;
+  outlineWidth?: AnimatableNumericValue | undefined;
   opacity?: AnimatableNumericValue | undefined;
   /**
    * Sets the elevation of a view, using Android's underlying

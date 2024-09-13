@@ -268,6 +268,11 @@ const validAttributesForNonEventProps = {
   borderLeftWidth: true,
   borderRightWidth: true,
 
+  outlineColor: {process: require('../StyleSheet/processColor').default},
+  outlineOffset: true,
+  outlineStyle: true,
+  outlineWidth: true,
+
   start: true,
   end: true,
   left: true,

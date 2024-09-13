@@ -4128,6 +4128,10 @@ public final class com/facebook/react/uimanager/BackgroundStyleApplicator {
 	public static final fun getBorderRadius (Landroid/view/View;Lcom/facebook/react/uimanager/style/BorderRadiusProp;)Lcom/facebook/react/uimanager/LengthPercentage;
 	public static final fun getBorderStyle (Landroid/view/View;)Lcom/facebook/react/uimanager/style/BorderStyle;
 	public static final fun getBorderWidth (Landroid/view/View;Lcom/facebook/react/uimanager/style/LogicalEdge;)Ljava/lang/Float;
+	public static final fun getOutlineColor (Landroid/view/View;)Ljava/lang/Integer;
+	public final fun getOutlineOffset (Landroid/view/View;)Ljava/lang/Float;
+	public final fun getOutlineStyle (Landroid/view/View;)Lcom/facebook/react/uimanager/style/OutlineStyle;
+	public final fun getOutlineWidth (Landroid/view/View;)Ljava/lang/Float;
 	public static final fun reset (Landroid/view/View;)V
 	public static final fun setBackgroundColor (Landroid/view/View;Ljava/lang/Integer;)V
 	public static final fun setBackgroundImage (Landroid/view/View;Ljava/util/List;)V
@@ -4138,6 +4142,10 @@ public final class com/facebook/react/uimanager/BackgroundStyleApplicator {
 	public static final fun setBoxShadow (Landroid/view/View;Lcom/facebook/react/bridge/ReadableArray;)V
 	public static final fun setBoxShadow (Landroid/view/View;Ljava/util/List;)V
 	public static final fun setFeedbackUnderlay (Landroid/view/View;Landroid/graphics/drawable/Drawable;)V
+	public static final fun setOutlineColor (Landroid/view/View;Ljava/lang/Integer;)V
+	public static final fun setOutlineOffset (Landroid/view/View;F)V
+	public static final fun setOutlineStyle (Landroid/view/View;Lcom/facebook/react/uimanager/style/OutlineStyle;)V
+	public static final fun setOutlineWidth (Landroid/view/View;F)V
 }
 
 public abstract class com/facebook/react/uimanager/BaseViewManager : com/facebook/react/uimanager/ViewManager, android/view/View$OnLayoutChangeListener, com/facebook/react/uimanager/BaseViewManagerInterface {
@@ -4173,6 +4181,10 @@ public abstract class com/facebook/react/uimanager/BaseViewManager : com/faceboo
 	public fun setMoveShouldSetResponderCapture (Landroid/view/View;Z)V
 	public fun setNativeId (Landroid/view/View;Ljava/lang/String;)V
 	public fun setOpacity (Landroid/view/View;F)V
+	public fun setOutlineColor (Landroid/view/View;Ljava/lang/Integer;)V
+	public fun setOutlineOffset (Landroid/view/View;F)V
+	public fun setOutlineStyle (Landroid/view/View;Ljava/lang/String;)V
+	public fun setOutlineWidth (Landroid/view/View;F)V
 	public fun setPointerEnter (Landroid/view/View;Z)V
 	public fun setPointerEnterCapture (Landroid/view/View;Z)V
 	public fun setPointerLeave (Landroid/view/View;Z)V
@@ -5645,6 +5657,10 @@ public final class com/facebook/react/uimanager/ViewProps {
 	public static final field ON Ljava/lang/String;
 	public static final field ON_LAYOUT Ljava/lang/String;
 	public static final field OPACITY Ljava/lang/String;
+	public static final field OUTLINE_COLOR Ljava/lang/String;
+	public static final field OUTLINE_OFFSET Ljava/lang/String;
+	public static final field OUTLINE_STYLE Ljava/lang/String;
+	public static final field OUTLINE_WIDTH Ljava/lang/String;
 	public static final field OVERFLOW Ljava/lang/String;
 	public static final field PADDING Ljava/lang/String;
 	public static final field PADDING_BOTTOM Ljava/lang/String;
@@ -6233,6 +6249,21 @@ public abstract class com/facebook/react/uimanager/style/LogicalEdge : java/lang
 
 public final class com/facebook/react/uimanager/style/LogicalEdge$Companion {
 	public final fun fromSpacingType (I)Lcom/facebook/react/uimanager/style/LogicalEdge;
+}
+
+public final class com/facebook/react/uimanager/style/OutlineStyle : java/lang/Enum {
+	public static final field Companion Lcom/facebook/react/uimanager/style/OutlineStyle$Companion;
+	public static final field DASHED Lcom/facebook/react/uimanager/style/OutlineStyle;
+	public static final field DOTTED Lcom/facebook/react/uimanager/style/OutlineStyle;
+	public static final field SOLID Lcom/facebook/react/uimanager/style/OutlineStyle;
+	public static final fun fromString (Ljava/lang/String;)Lcom/facebook/react/uimanager/style/OutlineStyle;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcom/facebook/react/uimanager/style/OutlineStyle;
+	public static fun values ()[Lcom/facebook/react/uimanager/style/OutlineStyle;
+}
+
+public final class com/facebook/react/uimanager/style/OutlineStyle$Companion {
+	public final fun fromString (Ljava/lang/String;)Lcom/facebook/react/uimanager/style/OutlineStyle;
 }
 
 public final class com/facebook/react/uimanager/style/Overflow : java/lang/Enum {
