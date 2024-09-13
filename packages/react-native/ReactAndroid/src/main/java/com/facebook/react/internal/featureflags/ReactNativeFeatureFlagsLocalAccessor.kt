@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d18208e5018340e48e3c20b6a80ecccd>>
+ * @generated SignedSource<<8d55bf40875d6544f2d8524035cb773e>>
  */
 
 /**
@@ -34,6 +34,7 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var enableAndroidMixBlendModePropCache: Boolean? = null
   private var enableBackgroundStyleApplicatorCache: Boolean? = null
   private var enableCleanTextInputYogaNodeCache: Boolean? = null
+  private var enableDeletionOfUnmountedViewsCache: Boolean? = null
   private var enableEagerRootViewAttachmentCache: Boolean? = null
   private var enableEventEmitterRetentionDuringGesturesOnAndroidCache: Boolean? = null
   private var enableFabricLogsCache: Boolean? = null
@@ -171,6 +172,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.enableCleanTextInputYogaNode()
       accessedFeatureFlags.add("enableCleanTextInputYogaNode")
       enableCleanTextInputYogaNodeCache = cached
+    }
+    return cached
+  }
+
+  override fun enableDeletionOfUnmountedViews(): Boolean {
+    var cached = enableDeletionOfUnmountedViewsCache
+    if (cached == null) {
+      cached = currentProvider.enableDeletionOfUnmountedViews()
+      accessedFeatureFlags.add("enableDeletionOfUnmountedViews")
+      enableDeletionOfUnmountedViewsCache = cached
     }
     return cached
   }

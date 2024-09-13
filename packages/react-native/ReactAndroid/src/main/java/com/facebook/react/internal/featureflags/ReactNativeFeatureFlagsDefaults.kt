@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<25a422b93ab27473bfccabf653b1e196>>
+ * @generated SignedSource<<a8e719f4345d0a526bb62f5f42c4d6c5>>
  */
 
 /**
@@ -42,6 +42,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enableBackgroundStyleApplicator(): Boolean = true
 
   override fun enableCleanTextInputYogaNode(): Boolean = false
+
+  override fun enableDeletionOfUnmountedViews(): Boolean = false
 
   override fun enableEagerRootViewAttachment(): Boolean = false
 

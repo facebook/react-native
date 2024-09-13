@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b3cd4e12b2e0f1d16234ad642b9f02d5>>
+ * @generated SignedSource<<5b3e764da9814e0dedfe5bb3efe33384>>
  * @flow strict-local
  */
 
@@ -57,6 +57,7 @@ export type ReactNativeFeatureFlags = {
   enableAndroidMixBlendModeProp: Getter<boolean>,
   enableBackgroundStyleApplicator: Getter<boolean>,
   enableCleanTextInputYogaNode: Getter<boolean>,
+  enableDeletionOfUnmountedViews: Getter<boolean>,
   enableEagerRootViewAttachment: Getter<boolean>,
   enableEventEmitterRetentionDuringGesturesOnAndroid: Getter<boolean>,
   enableFabricLogs: Getter<boolean>,
@@ -214,6 +215,10 @@ export const enableBackgroundStyleApplicator: Getter<boolean> = createNativeFlag
  * Clean yoga node when <TextInput /> does not change.
  */
 export const enableCleanTextInputYogaNode: Getter<boolean> = createNativeFlagGetter('enableCleanTextInputYogaNode', false);
+/**
+ * Deletes views that were pre-allocated but never mounted on the screen.
+ */
+export const enableDeletionOfUnmountedViews: Getter<boolean> = createNativeFlagGetter('enableDeletionOfUnmountedViews', false);
 /**
  * Feature flag to configure eager attachment of the root view/initialisation of the JS code.
  */

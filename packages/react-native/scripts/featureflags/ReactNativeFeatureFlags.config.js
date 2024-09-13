@@ -82,6 +82,11 @@ const definitions: FeatureFlagDefinitions = {
       defaultValue: false,
       description: 'Clean yoga node when <TextInput /> does not change.',
     },
+    enableDeletionOfUnmountedViews: {
+      defaultValue: false,
+      description:
+        'Deletes views that were pre-allocated but never mounted on the screen.',
+    },
     enableEagerRootViewAttachment: {
       defaultValue: false,
       description:

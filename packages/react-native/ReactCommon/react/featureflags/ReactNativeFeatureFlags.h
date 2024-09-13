@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<631e0b3e36325d36803b7e6fbefe2644>>
+ * @generated SignedSource<<be7334d60768774b87c270df8a640acc>>
  */
 
 /**
@@ -86,6 +86,11 @@ class ReactNativeFeatureFlags {
    * Clean yoga node when <TextInput /> does not change.
    */
   RN_EXPORT static bool enableCleanTextInputYogaNode();
+
+  /**
+   * Deletes views that were pre-allocated but never mounted on the screen.
+   */
+  RN_EXPORT static bool enableDeletionOfUnmountedViews();
 
   /**
    * Feature flag to configure eager attachment of the root view/initialisation of the JS code.
