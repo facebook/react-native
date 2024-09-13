@@ -33,7 +33,7 @@ class PerformanceEntryReporter {
   // creation time instead of having the singleton.
   static std::shared_ptr<PerformanceEntryReporter>& getInstance();
 
-  [[nodiscard]] PerformanceObserverRegistry& getObserverRegistry() {
+  PerformanceObserverRegistry& getObserverRegistry() {
     return *observerRegistry_;
   }
 
@@ -42,7 +42,7 @@ class PerformanceEntryReporter {
    * https://www.w3.org/TR/hr-time-3/#dom-performance
    */
   // https://www.w3.org/TR/hr-time-3/#now-method
-  [[nodiscard]] DOMHighResTimeStamp getCurrentTimeStamp() const;
+  DOMHighResTimeStamp getCurrentTimeStamp() const;
 
   void setTimeStampProvider(std::function<double()> provider) {
     timeStampProvider_ = std::move(provider);
@@ -58,7 +58,7 @@ class PerformanceEntryReporter {
   // https://www.w3.org/TR/performance-timeline/#getentries-method
   // https://www.w3.org/TR/performance-timeline/#getentriesbytype-method
   // https://www.w3.org/TR/performance-timeline/#getentriesbyname-method
-  [[nodiscard]] std::vector<PerformanceEntry> getEntries(
+  std::vector<PerformanceEntry> getEntries(
       std::optional<PerformanceEntryType> entryType = std::nullopt,
       std::string_view entryName = {}) const;
 
@@ -77,7 +77,7 @@ class PerformanceEntryReporter {
    * https://www.w3.org/TR/event-timing/
    */
   // https://www.w3.org/TR/event-timing/#dom-performance-eventcounts
-  [[nodiscard]] const std::unordered_map<std::string, uint32_t>& getEventCounts() const {
+  const std::unordered_map<std::string, uint32_t>& getEventCounts() const {
     return eventCounts_;
   }
 
@@ -107,7 +107,7 @@ class PerformanceEntryReporter {
 
   // Instead of having a map of buffers, we store buffer for each type
   // separately
-  [[nodiscard]] inline const PerformanceEntryBuffer& getBuffer(
+  inline const PerformanceEntryBuffer& getBuffer(
       PerformanceEntryType entryType) const {
     switch (entryType) {
       case PerformanceEntryType::EVENT:
@@ -143,7 +143,7 @@ private:
       std::string_view entryName,
       std::vector<PerformanceEntry>& res) const;
 
-  [[nodiscard]] inline PerformanceEntryBuffer& getBufferRef(PerformanceEntryType entryType) {
+  inline PerformanceEntryBuffer& getBufferRef(PerformanceEntryType entryType) {
     switch (entryType) {
       case PerformanceEntryType::EVENT:
         return eventBuffer_;

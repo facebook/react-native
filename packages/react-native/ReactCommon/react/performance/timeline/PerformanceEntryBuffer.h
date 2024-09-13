@@ -30,7 +30,7 @@ public:
 
   virtual void add(const PerformanceEntry& entry) = 0;
   virtual void consume(std::vector<PerformanceEntry>& target) = 0;
-  [[nodiscard]] virtual size_t pendingMessagesCount() const = 0;
+  virtual size_t pendingMessagesCount() const = 0;
   virtual void getEntries(
       std::optional<std::string_view> name,
       std::vector<PerformanceEntry>& target) const = 0;
@@ -40,7 +40,7 @@ public:
 
   // https://www.w3.org/TR/event-timing/#sec-should-add-performanceeventtiming
   // TODO: perhaps move it to a better place
-  [[nodiscard]] bool shouldAdd(const PerformanceEntry& entry) const {
+  bool shouldAdd(const PerformanceEntry& entry) const {
     if (entry.entryType == PerformanceEntryType::EVENT) {
       if (entry.duration < durationThreshold) {
         // The entries duration is lower than the desired reporting threshold, skip

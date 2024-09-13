@@ -65,7 +65,7 @@ class PerformanceObserver {
   void observe(std::unordered_set<PerformanceEntryType> types);
 
 private:
-  [[nodiscard]] const PerformanceEntryBuffer& getBuffer() const {
+  const PerformanceEntryBuffer& getBuffer() const {
     return buffer_;
   }
 
