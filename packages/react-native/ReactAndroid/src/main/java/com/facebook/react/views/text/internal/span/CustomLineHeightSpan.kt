@@ -10,7 +10,6 @@ package com.facebook.react.views.text.internal.span
 import android.graphics.Paint.FontMetricsInt
 import android.text.style.LineHeightSpan
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
-import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.min
@@ -38,26 +37,12 @@ public class CustomLineHeightSpan(height: Float) : LineHeightSpan, ReactSpan {
       fm.top = fm.ascent
       fm.bottom = fm.descent
     } else if (-fm.top + fm.bottom > lineHeight) {
-      val excess = (-fm.top + fm.bottom) - lineHeight
+      // Calculate the amount we are over, and split the adjustment between top and bottom
 
-      // Calculate the differences from top to ascent and bottom to descent
-      val topToAscent = abs(fm.top - fm.ascent)
-      val bottomToDescent = abs(fm.bottom - fm.descent)
+      val excess = ((-fm.top + fm.bottom) - lineHeight) / 2
 
-      // Calculate the total delta
-      val totalDelta = topToAscent + bottomToDescent
-
-      // Calculate proportional reductions
-      val topReduction = (excess * topToAscent / totalDelta).toInt()
-      val bottomReduction = (excess * bottomToDescent / totalDelta).toInt()
-
-      // Adjust fm.top and fm.bottom
-      fm.top += topReduction
-      fm.bottom -= bottomReduction
-
-      // If there's a remainder, put it on the top
-      val remainder = excess - (topReduction + bottomReduction)
-      fm.top -= remainder
+      fm.top += excess
+      fm.bottom -= excess
     } else {
       // Show proportionally additional ascent / top & descent / bottom
       val additional = lineHeight - (-fm.top + fm.bottom)
