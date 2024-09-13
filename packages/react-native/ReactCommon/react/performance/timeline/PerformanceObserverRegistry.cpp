@@ -26,7 +26,7 @@ void PerformanceObserverRegistry::removeObserver(const std::shared_ptr<Performan
   observers_.erase(observer);
 }
 
-void PerformanceObserverRegistry::emit(const facebook::react::PerformanceEntry& entry) {
+void PerformanceObserverRegistry::queuePerformanceEntry(const facebook::react::PerformanceEntry& entry) {
   std::lock_guard lock(observersMutex_);
 
   // filter dead observers

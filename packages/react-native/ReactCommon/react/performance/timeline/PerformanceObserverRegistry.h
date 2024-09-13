@@ -22,7 +22,7 @@ class PerformanceObserverRegistry {
   void removeObserver(const std::shared_ptr<PerformanceObserver>& observer);
   void removeObserver(const PerformanceObserver& observer);
 
-  void emit(const PerformanceEntry& entry);
+  void queuePerformanceEntry(const PerformanceEntry& entry);
 
  private:
   mutable std::mutex observersMutex_;

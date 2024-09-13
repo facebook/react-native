@@ -40,7 +40,7 @@ void PerformanceEntryReporter::pushEntry(const PerformanceEntry& entry) {
     buffer.add(entry);
   }
 
-  observerRegistry_->emit(entry);
+  observerRegistry_->queuePerformanceEntry(entry);
 }
 
 void PerformanceEntryReporter::mark(
