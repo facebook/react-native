@@ -3646,7 +3646,7 @@ exports[`public API should not change unintentionally Libraries/Components/Touch
   releaseBounciness?: ?number,
   releaseVelocity?: ?number,
   style?: ?ViewStyleProp,
-  hostRef: React.Ref<typeof Animated.View>,
+  hostRef: React.RefSetter<React.ElementRef<typeof Animated.View>>,
 |}>;
 declare module.exports: React.AbstractComponent<
   $ReadOnly<$Diff<Props, {| hostRef: mixed |}>>,
@@ -3675,10 +3675,10 @@ type Props = $ReadOnly<{|
   onShowUnderlay?: ?() => void,
   onHideUnderlay?: ?() => void,
   testOnly_pressed?: ?boolean,
-  hostRef: React.Ref<typeof View>,
+  hostRef: React.RefSetter<React.ElementRef<typeof View>>,
 |}>;
 declare const Touchable: React.AbstractComponent<
-  $ReadOnly<$Diff<Props, {| hostRef: React.Ref<typeof View> |}>>,
+  $ReadOnly<$Diff<Props, {| +hostRef: mixed |}>>,
   React.ElementRef<typeof View>,
 >;
 declare module.exports: Touchable;
@@ -3763,7 +3763,7 @@ type Props = $ReadOnly<{|
   ...TVProps,
   activeOpacity?: ?number,
   style?: ?ViewStyleProp,
-  hostRef?: ?React.Ref<typeof Animated.View>,
+  hostRef?: ?React.RefSetter<React.ElementRef<typeof Animated.View>>,
 |}>;
 declare const Touchable: React.AbstractComponent<
   Props,
