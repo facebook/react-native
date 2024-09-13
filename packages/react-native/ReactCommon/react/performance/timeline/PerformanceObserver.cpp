@@ -17,7 +17,7 @@ PerformanceObserver::~PerformanceObserver() {
   }
 }
 
-void PerformanceObserver::pushEntry(const PerformanceEntry& entry) {
+void PerformanceObserver::append(const PerformanceEntry& entry) {
   buffer_.add(entry);
 }
 

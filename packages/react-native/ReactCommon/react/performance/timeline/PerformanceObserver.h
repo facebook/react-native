@@ -35,24 +35,63 @@ class PerformanceObserver {
 
   virtual ~PerformanceObserver();
 
-  void pushEntry(const PerformanceEntry& entry);
+  /**
+   * Appends specified entry to this buffer.
+   *
+   * Specified entry is not checked whenever it fits to this buffer
+   * (as in being observer). It is responsibility of the caller
+   * to ensure this entry fits into this buffer.
+   *
+   * Spec:
+   *  https://w3c.github.io/performance-timeline/#queue-a-performanceentry (step 8.1)
+   */
+  void append(const PerformanceEntry& entry);
 
   /**
    * Returns current observer buffer and clears it.
+   *
+   * Spec:
+   *  https://w3c.github.io/performance-timeline/#takerecords-method
    */
   [[nodiscard]] std::vector<PerformanceEntry> takeRecords();
 
+  /**
+   * Checks if the observer is configured to observe specified entry type
+   *
+   * Spec:
+   *  https://w3c.github.io/performance-timeline/#takerecords-method (step 7.1)
+   */
   [[nodiscard]] bool isObserving(PerformanceEntryType type) const;
+
+  /**
+   * Configures the observer to watch for specified entry type.
+   *
+   * This operation resets and overrides previous configurations. So consecutive
+   * calls to this methods remove any previous watch configuration (as per spec).
+   */
   void observe(PerformanceEntryType type, bool buffered);
+
+  /**
+   * Configures the observer to watch for specified entry type.
+   *
+   * This operation resets and overrides previous configurations. So consecutive
+   * calls to this methods remove any previous watch configuration (as per spec).
+   */
   void observe(std::unordered_set<PerformanceEntryType> types);
 
+  /**
+   * Determines if specified entry should be added to this buffer.
+   *
+   * Spec:
+   *  https://www.w3.org/TR/event-timing/#should-add-performanceeventtiming
+   */
   [[nodiscard]] bool shouldAdd(const PerformanceEntry& entry) const;
 
+ private:
   [[nodiscard]] const PerformanceEntryBuffer& getBuffer() const {
     return buffer_;
   }
 
- private:
   void scheduleFlushBuffer();
 
   std::weak_ptr<PerformanceObserverRegistry> registry_;

@@ -44,7 +44,7 @@ void PerformanceObserverRegistry::emit(const facebook::react::PerformanceEntry& 
       
       // push to observer if it is contained within its entry type filter
       if (observer->isObserving(entry.entryType) && shouldAdd) {
-        observer->pushEntry(entry);
+        observer->append(entry);
       }
     }
   }
