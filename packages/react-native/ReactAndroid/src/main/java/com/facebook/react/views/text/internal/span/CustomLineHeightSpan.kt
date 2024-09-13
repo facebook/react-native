@@ -53,11 +53,11 @@ public class CustomLineHeightSpan(height: Float) : LineHeightSpan, ReactSpan {
 
       // Adjust fm.top and fm.bottom
       fm.top += topReduction
-      fm.bottom += bottomReduction
+      fm.bottom -= bottomReduction
 
       // If there's a remainder, put it on the top
       val remainder = excess - (topReduction + bottomReduction)
-      fm.top += remainder
+      fm.top -= remainder
     } else {
       // Show proportionally additional ascent / top & descent / bottom
       val additional = lineHeight - (-fm.top + fm.bottom)
