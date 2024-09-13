@@ -8284,8 +8284,8 @@ export type FilterFunction =
   | { opacity: number | string }
   | { saturate: number | string }
   | { sepia: number | string }
-  | { dropShadow: DropShadowPrimitive | string };
-export type DropShadowPrimitive = {
+  | { dropShadow: DropShadowValue | string };
+export type DropShadowValue = {
   offsetX: number | string,
   offsetY: number | string,
   standardDeviation?: number | string,
@@ -8367,7 +8367,7 @@ export type ____ViewStyle_InternalCore = $ReadOnly<{
   pointerEvents?: \\"auto\\" | \\"none\\" | \\"box-none\\" | \\"box-only\\",
   cursor?: CursorValue,
   boxShadow?: $ReadOnlyArray<BoxShadowValue> | string,
-  experimental_filter?: $ReadOnlyArray<FilterFunction> | string,
+  filter?: $ReadOnlyArray<FilterFunction> | string,
   experimental_mixBlendMode?: ____BlendMode_Internal,
   experimental_backgroundImage?: $ReadOnlyArray<GradientValue> | string,
   isolation?: \\"auto\\" | \\"isolate\\",
