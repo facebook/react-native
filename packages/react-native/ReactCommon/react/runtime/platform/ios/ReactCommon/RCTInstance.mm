@@ -134,7 +134,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
 {
   if (_valid) {
     _reactInstance->callFunctionOnModule(
-        [moduleName UTF8String], [method UTF8String], convertIdToFollyDynamic(args ?: @[]));
+        [moduleName UTF8String], [method UTF8String], convertIdToFollyDynamic(args ? args : @[]));
   }
 }
 

@@ -156,10 +156,10 @@ struct Transform {
    * performs slerp between the two rotations, and a linear interpolation
    * of scale and translation.
    *
-   * @param progress
-   * @param lhs
-   * @param rhs
-   * @return
+   * @param animationProgress of the animation
+   * @param lhs start of the interpolation
+   * @param rhs end of the interpolation
+   * @return the Transformation
    */
   static Transform Interpolate(
       Float animationProgress,
