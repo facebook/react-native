@@ -160,6 +160,9 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
           snapToInterval: true,
           snapToOffsets: true,
           snapToStart: true,
+          verticalScrollIndicatorInsets: {
+            diff: require('../../Utilities/differ/insetsDiffer'),
+          },
           zoomScale: true,
           ...ConditionallyIgnoredEventHandlers({
             onScrollBeginDrag: true,
