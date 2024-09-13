@@ -13,7 +13,7 @@ import type {RootTag} from '../Types/RootTagTypes';
 import type {IPerformanceLogger} from '../Utilities/createPerformanceLogger';
 import type {DisplayModeType} from './DisplayMode';
 
-import BatchedBridge from '../BatchedBridge/BatchedBridge';
+import registerCallableModule from '../Core/registerCallableModule';
 import BugReporting from '../BugReporting/BugReporting';
 import createPerformanceLogger from '../Utilities/createPerformanceLogger';
 import infoLog from '../Utilities/infoLog';
@@ -363,8 +363,8 @@ global.RN$SurfaceRegistry = {
 
 if (global.RN$Bridgeless === true) {
   console.log('Bridgeless mode is enabled');
-} else {
-  BatchedBridge.registerCallableModule('AppRegistry', AppRegistry);
 }
+
+registerCallableModule('AppRegistry', AppRegistry);
 
 module.exports = AppRegistry;
