@@ -361,10 +361,6 @@ global.RN$SurfaceRegistry = {
   setSurfaceProps: AppRegistry.setSurfaceProps,
 };
 
-if (global.RN$Bridgeless === true) {
-  console.log('Bridgeless mode is enabled');
-}
-
 registerCallableModule('AppRegistry', AppRegistry);
 
 module.exports = AppRegistry;
