@@ -17,16 +17,16 @@ PerformanceObserver::~PerformanceObserver() {
   }
 }
 
-void PerformanceObserver::append(const PerformanceEntry& entry) {
-  buffer_.add(entry);
+void PerformanceObserver::handleEntry(const facebook::react::PerformanceEntry& entry) {
+  // https://w3c.github.io/performance-timeline/#takerecords-method (step 7.1)
+  // https://www.w3.org/TR/event-timing/#should-add-performanceeventtiming
+  if (buffer_.shouldAdd(entry) && observedTypes_.contains(entry.entryType)) {
+    buffer_.add(entry);
+  }
 }
 
 std::vector<PerformanceEntry> PerformanceObserver::takeRecords() {
   return buffer_.consume();
-}
-
-bool PerformanceObserver::isObserving(PerformanceEntryType type) const {
-  return observedTypes_.contains(type);
 }
 
 void PerformanceObserver::observe(PerformanceEntryType type, bool buffered) {
@@ -46,10 +46,6 @@ void PerformanceObserver::observe(PerformanceEntryType type, bool buffered) {
 void PerformanceObserver::observe(std::unordered_set<PerformanceEntryType> types) {
   observedTypes_ = std::move(types);
   requiresDroppedEntries_ = true;
-}
-
-bool PerformanceObserver::shouldAdd(const PerformanceEntry& entry) const {
-  return buffer_.shouldAdd(entry);
 }
 
 void PerformanceObserver::scheduleFlushBuffer() {

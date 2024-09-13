@@ -15,14 +15,12 @@ namespace facebook::react {
 // all")
 constexpr double DEFAULT_DURATION_THRESHOLD = 0.0;
 
-// Default buffer size limit, per entry type
-constexpr size_t DEFAULT_MAX_BUFFER_SIZE = 1024;
-
 /**
  * Abstract performance entry buffer with reporting flags.
  * Subtypes differ on how entries are stored.
  */
-struct PerformanceEntryBuffer {
+class PerformanceEntryBuffer {
+public:
   double durationThreshold{DEFAULT_DURATION_THRESHOLD};
   size_t droppedEntriesCount{0};
   bool isAlwaysLogged{false};
