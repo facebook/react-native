@@ -10,7 +10,7 @@
  */
 
 import type {ProcessedColorValue} from './processColor';
-import type {BoxShadowPrimitive} from './StyleSheetTypes';
+import type {BoxShadowValue} from './StyleSheetTypes';
 
 import processColor from './processColor';
 
@@ -24,7 +24,7 @@ export type ParsedBoxShadow = {
 };
 
 export default function processBoxShadow(
-  rawBoxShadows: ?($ReadOnlyArray<BoxShadowPrimitive> | string),
+  rawBoxShadows: ?($ReadOnlyArray<BoxShadowValue> | string),
 ): Array<ParsedBoxShadow> {
   const result: Array<ParsedBoxShadow> = [];
   if (rawBoxShadows == null) {
@@ -106,16 +106,14 @@ export default function processBoxShadow(
   return result;
 }
 
-function parseBoxShadowString(
-  rawBoxShadows: string,
-): Array<BoxShadowPrimitive> {
-  let result: Array<BoxShadowPrimitive> = [];
+function parseBoxShadowString(rawBoxShadows: string): Array<BoxShadowValue> {
+  let result: Array<BoxShadowValue> = [];
 
   for (const rawBoxShadow of rawBoxShadows
     .split(/,(?![^()]*\))/) // split by comma that is not in parenthesis
     .map(bS => bS.trim())
     .filter(bS => bS !== '')) {
-    const boxShadow: BoxShadowPrimitive = {
+    const boxShadow: BoxShadowValue = {
       offsetX: 0,
       offsetY: 0,
     };

@@ -8299,7 +8299,7 @@ export type GradientValue = {
     positions?: $ReadOnlyArray<string>,
   }>,
 };
-export type BoxShadowPrimitive = {
+export type BoxShadowValue = {
   offsetX: number | string,
   offsetY: number | string,
   color?: ____ColorValue_Internal,
@@ -8366,8 +8366,8 @@ export type ____ViewStyle_InternalCore = $ReadOnly<{
   elevation?: number,
   pointerEvents?: \\"auto\\" | \\"none\\" | \\"box-none\\" | \\"box-only\\",
   cursor?: CursorValue,
-  boxShadow?: $ReadOnlyArray<BoxShadowPrimitive> | string,
-  filter?: $ReadOnlyArray<FilterFunction> | string,
+  boxShadow?: $ReadOnlyArray<BoxShadowValue> | string,
+  experimental_filter?: $ReadOnlyArray<FilterFunction> | string,
   experimental_mixBlendMode?: ____BlendMode_Internal,
   experimental_backgroundImage?: $ReadOnlyArray<GradientValue> | string,
   isolation?: \\"auto\\" | \\"isolate\\",
@@ -8638,7 +8638,7 @@ exports[`public API should not change unintentionally Libraries/StyleSheet/proce
   inset?: boolean,
 };
 declare export default function processBoxShadow(
-  rawBoxShadows: ?($ReadOnlyArray<BoxShadowPrimitive> | string)
+  rawBoxShadows: ?($ReadOnlyArray<BoxShadowValue> | string)
 ): Array<ParsedBoxShadow>;
 "
 `;
