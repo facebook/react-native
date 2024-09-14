@@ -533,6 +533,122 @@ function BoxShadowExample(): React.Node {
   );
 }
 
+function OutlineExample(): React.Node {
+  const defaultStyleSize = {width: 50, height: 50};
+
+  return (
+    <View
+      testID="view-test-outline"
+      style={{
+        padding: 10,
+        flexDirection: 'row',
+        gap: 20,
+        margin: 10,
+        flexWrap: 'wrap',
+      }}>
+      <View
+        style={[
+          defaultStyleSize,
+          {
+            borderColor: 'red',
+            borderWidth: 8,
+            outlineWidth: 8,
+            outlineColor: 'purple',
+          },
+        ]}
+      />
+      <View
+        style={[
+          defaultStyleSize,
+          {
+            borderColor: 'red',
+            borderWidth: 8,
+            outlineWidth: 8,
+            borderRadius: 20,
+            outlineColor: 'purple',
+          },
+        ]}
+      />
+      <View
+        style={[
+          defaultStyleSize,
+          {
+            borderColor: 'red',
+            borderWidth: 8,
+            outlineWidth: 8,
+            borderTopLeftRadius: 20,
+            borderBottomRightRadius: 20,
+            outlineColor: 'purple',
+          },
+        ]}
+      />
+      <View
+        style={[
+          defaultStyleSize,
+          {
+            borderColor: 'green',
+            borderWidth: 8,
+            outlineWidth: 8,
+            outlineColor: 'orange',
+            outlineStyle: 'solid',
+            outlineOffset: 5,
+            marginLeft: 5,
+          },
+        ]}
+      />
+      <View
+        style={[
+          defaultStyleSize,
+          {
+            borderColor: 'green',
+            borderWidth: 8,
+            outlineWidth: 8,
+            borderRadius: 20,
+            outlineColor: 'orange',
+            outlineStyle: 'dotted',
+          },
+        ]}
+      />
+      <View
+        style={[
+          defaultStyleSize,
+          {
+            borderColor: 'green',
+            borderWidth: 8,
+            outlineWidth: 8,
+            borderTopLeftRadius: 20,
+            borderBottomRightRadius: 20,
+            outlineColor: 'orange',
+            outlineStyle: 'dashed',
+          },
+        ]}
+      />
+      <View
+        style={[
+          defaultStyleSize,
+          {
+            width: 100,
+            borderColor: 'green',
+            borderWidth: 8,
+            outlineWidth: 8,
+            borderRadius: '100%',
+            outlineColor: 'orange',
+          },
+        ]}
+      />
+      <View
+        style={[
+          defaultStyleSize,
+          {
+            outlineWidth: 9,
+            outlineColor: 'orange',
+          },
+        ]}
+      />
+    </View>
+  );
+}
+
 export default ({
   title: 'View',
   documentationURL: 'https://reactnative.dev/docs/view',
@@ -1171,6 +1287,12 @@ export default ({
       title: 'Box Shadow',
       name: 'box-shadow',
       render: BoxShadowExample,
+    },
+    {
+      title: 'Outline',
+      name: 'outline',
+      platform: 'android',
+      render: OutlineExample,
     },
   ],
 }: RNTesterModule);

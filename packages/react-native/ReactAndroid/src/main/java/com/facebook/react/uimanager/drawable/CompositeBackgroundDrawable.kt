@@ -40,6 +40,9 @@ internal class CompositeBackgroundDrawable(
 
     /** Inset box-shadows */
     public val innerShadows: List<Drawable> = emptyList(),
+
+    /** Outline */
+    public val outline: OutlineDrawable? = null,
 ) :
     LayerDrawable(
         listOfNotNull(
@@ -50,7 +53,8 @@ internal class CompositeBackgroundDrawable(
                 *outerShadows.asReversed().toTypedArray(),
                 cssBackground,
                 feedbackUnderlay,
-                *innerShadows.asReversed().toTypedArray())
+                *innerShadows.asReversed().toTypedArray(),
+                outline)
             .toTypedArray()) {
 
   // Holder value for currently set insets
@@ -67,7 +71,7 @@ internal class CompositeBackgroundDrawable(
       cssBackground: CSSBackgroundDrawable?
   ): CompositeBackgroundDrawable {
     return CompositeBackgroundDrawable(
-        originalBackground, outerShadows, cssBackground, feedbackUnderlay, innerShadows)
+        originalBackground, outerShadows, cssBackground, feedbackUnderlay, innerShadows, outline)
   }
 
   public fun withNewShadows(
@@ -75,11 +79,16 @@ internal class CompositeBackgroundDrawable(
       innerShadows: List<Drawable>
   ): CompositeBackgroundDrawable {
     return CompositeBackgroundDrawable(
-        originalBackground, outerShadows, cssBackground, feedbackUnderlay, innerShadows)
+        originalBackground, outerShadows, cssBackground, feedbackUnderlay, innerShadows, outline)
+  }
+
+  public fun withNewOutline(outline: OutlineDrawable): CompositeBackgroundDrawable {
+    return CompositeBackgroundDrawable(
+        originalBackground, outerShadows, cssBackground, feedbackUnderlay, innerShadows, outline)
   }
 
   public fun withNewFeedbackUnderlay(newUnderlay: Drawable?): CompositeBackgroundDrawable {
     return CompositeBackgroundDrawable(
-        originalBackground, outerShadows, cssBackground, newUnderlay, innerShadows)
+        originalBackground, outerShadows, cssBackground, newUnderlay, innerShadows, outline)
   }
 }
