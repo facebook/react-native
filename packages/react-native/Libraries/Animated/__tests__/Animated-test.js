@@ -162,6 +162,10 @@ describe('Animated tests', () => {
       expect(anim.__getValue()).toBe(15);
     });
 
+    it('convert to JSON', () => {
+      expect(JSON.stringify(new Animated.Value(10))).toBe('10');
+    });
+
     it('bypasses `setNativeProps` in test environments', async () => {
       const opacity = new Animated.Value(0);
 
