@@ -189,4 +189,12 @@ export default class AnimatedNode {
   __setPlatformConfig(platformConfig: ?PlatformConfig) {
     this._platformConfig = platformConfig;
   }
+
+  /**
+   * NOTE: This is intended to prevent `JSON.stringify` from throwing "cyclic
+   * structure" errors in React DevTools. Avoid depending on this!
+   */
+  toJSON(): mixed {
+    return this.__getValue();
+  }
 }
