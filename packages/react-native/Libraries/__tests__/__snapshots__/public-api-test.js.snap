@@ -930,6 +930,7 @@ exports[`public API should not change unintentionally Libraries/Animated/nodes/A
   toJSON(): any;
   __getPlatformConfig(): ?PlatformConfig;
   __setPlatformConfig(platformConfig: ?PlatformConfig): void;
+  toJSON(): mixed;
 }
 "
 `;
