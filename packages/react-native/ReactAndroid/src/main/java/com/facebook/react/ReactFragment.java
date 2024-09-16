@@ -30,22 +30,22 @@ public class ReactFragment extends Fragment implements PermissionAwareActivity {
   protected static final String ARG_LAUNCH_OPTIONS = "arg_launch_options";
   protected static final String ARG_FABRIC_ENABLED = "arg_fabric_enabled";
 
+  /**
+   * @deprecated We will remove this and use a different solution for handling Fragment lifecycle
+   *     events
+   */
+  @Deprecated
+  protected static final String ARG_DISABLE_HOST_LIFECYCLE_EVENTS =
+      "arg_disable_host_lifecycle_events";
+
   protected ReactDelegate mReactDelegate;
 
-  private final boolean mDisableHostLifecycleEvents;
+  private boolean mDisableHostLifecycleEvents;
 
   @Nullable private PermissionListener mPermissionListener;
 
   public ReactFragment() {
     // Required empty public constructor
-    this(false);
-  }
-
-  /**
-   * @param disableHostLifecycleEvents Disable forwarding lifecycle events to the {@link ReactHost}.
-   */
-  protected ReactFragment(boolean disableHostLifecycleEvents) {
-    this.mDisableHostLifecycleEvents = disableHostLifecycleEvents;
   }
 
   /**
@@ -75,6 +75,7 @@ public class ReactFragment extends Fragment implements PermissionAwareActivity {
       mainComponentName = getArguments().getString(ARG_COMPONENT_NAME);
       launchOptions = getArguments().getBundle(ARG_LAUNCH_OPTIONS);
       fabricEnabled = getArguments().getBoolean(ARG_FABRIC_ENABLED);
+      mDisableHostLifecycleEvents = getArguments().getBoolean(ARG_DISABLE_HOST_LIFECYCLE_EVENTS);
     }
     if (mainComponentName == null) {
       throw new IllegalStateException("Cannot loadApp if component name is null");
