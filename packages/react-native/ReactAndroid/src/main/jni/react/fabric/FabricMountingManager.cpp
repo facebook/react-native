@@ -792,6 +792,21 @@ void FabricMountingManager::drainPreallocateViewsQueue() {
   }
 }
 
+void FabricMountingManager::destroyUnmountedShadowNode(
+    const ShadowNodeFamily& family) {
+  auto tag = family.getTag();
+  auto surfaceId = family.getSurfaceId();
+
+  // ThreadScope::WithClassLoader is necessary because
+  // destroyUnmountedShadowNode is being called from a destructor thread
+  facebook::jni::ThreadScope::WithClassLoader([&]() {
+    static auto destroyUnmountedView =
+        JFabricUIManager::javaClassStatic()->getMethod<void(jint, jint)>(
+            "destroyUnmountedView");
+    destroyUnmountedView(javaUIManager_, surfaceId, tag);
+  });
+}
+
 void FabricMountingManager::maybePreallocateShadowNode(
     const ShadowNode& shadowNode) {
   if (!shadowNode.getTraits().check(ShadowNodeTraits::Trait::FormsView)) {
@@ -813,7 +828,7 @@ void FabricMountingManager::maybePreallocateShadowNode(
     preallocatedViewsQueue_.push_back(std::move(shadowView));
   } else {
     // Old implementation where FabricUIManager.preallocateView is called
-    // immediatelly.
+    // immediately.
     preallocateShadowView(shadowView);
   }
 }

@@ -34,6 +34,8 @@ class FabricMountingManager final {
 
   void maybePreallocateShadowNode(const ShadowNode& shadowNode);
 
+  void destroyUnmountedShadowNode(const ShadowNodeFamily& family);
+
   /*
    * Drains preallocatedViewsQueue_ by calling preallocateShadowView on each
    * item in the queue. Can be called by any thread.
