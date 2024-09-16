@@ -169,26 +169,25 @@ public class HeadlessJsTaskContext {
 
   /**
    * Finish a JS task. Doesn't actually stop the task on the JS side, only removes it from the list
-   * of active tasks and notifies listeners. A task can only be finished once.
+   * of active tasks and notifies listeners.
    *
    * @param taskId the unique id returned by {@link #startTask}.
    */
   public synchronized void finishTask(final int taskId) {
-    Assertions.assertCondition(
-        mActiveTasks.remove(taskId), "Tried to finish non-existent task with id " + taskId + ".");
-    Assertions.assertCondition(
-        mActiveTaskConfigs.remove(taskId) != null,
-        "Tried to remove non-existent task config with id " + taskId + ".");
+    boolean removed = mActiveTasks.remove(taskId);
+    mActiveTaskConfigs.remove(taskId);
     removeTimeout(taskId);
-    UiThreadUtil.runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            for (HeadlessJsTaskEventListener listener : mHeadlessJsTaskEventListeners) {
-              listener.onHeadlessJsTaskFinish(taskId);
+    if (removed) {
+      UiThreadUtil.runOnUiThread(
+          new Runnable() {
+            @Override
+            public void run() {
+              for (HeadlessJsTaskEventListener listener : mHeadlessJsTaskEventListeners) {
+                listener.onHeadlessJsTaskFinish(taskId);
+              }
             }
-          }
-        });
+          });
+    }
   }
 
   private void removeTimeout(int taskId) {
