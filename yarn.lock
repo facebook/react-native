@@ -2730,7 +2730,7 @@ babel-helper-remove-or-void@^0.4.3:
   resolved "https://registry.yarnpkg.com/babel-helper-remove-or-void/-/babel-helper-remove-or-void-0.4.3.tgz#a4f03b40077a0ffe88e45d07010dee241ff5ae60"
   integrity sha512-eYNceYtcGKpifHDir62gHJadVXdg9fAhuZEXiRQnJJ4Yi4oUTpqpNY//1pM4nVyjjDMPYaC2xSf0I+9IqVzwdA==
 
-babel-jest@^29.7.0:
+babel-jest@^29.6.3, babel-jest@^29.7.0:
   version "29.7.0"
   resolved "https://registry.yarnpkg.com/babel-jest/-/babel-jest-29.7.0.tgz#f4369919225b684c56085998ac63dbd05be020d5"
   integrity sha512-BrvGY3xZSwEcCzKvKsCi2GgHqDqsYkOP4/by5xCgIwGXQxIEh+8ew3gmrE1y7XRR6LHZIj6yLYnUi/mm2KXKBg==
