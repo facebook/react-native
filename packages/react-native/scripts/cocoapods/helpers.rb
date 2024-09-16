@@ -39,6 +39,7 @@ module Helpers
     class Constants
         @@boost_config = {
             :git => "https://github.com/react-native-community/boost-for-react-native",
+            :compiler_flags => '-Wno-documentation'
         }
 
         @@socket_rocket_config = {
@@ -48,7 +49,8 @@ module Helpers
         @@folly_config = {
             :version => '2024.01.01.00',
             :git => 'https://github.com/facebook/folly.git',
-            :compiler_flags => '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -DFOLLY_HAVE_CLOCK_GETTIME=1 -Wno-comma -Wno-shorten-64-to-32'
+            :compiler_flags => '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -DFOLLY_HAVE_CLOCK_GETTIME=1 -Wno-comma -Wno-shorten-64-to-32',
+            :dep_name => 'RCT-Folly/Fabric'
         }
 
         @@fmt_config = {

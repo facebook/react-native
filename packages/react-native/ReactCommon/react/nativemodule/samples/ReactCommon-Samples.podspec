@@ -20,7 +20,8 @@ folly_config = get_folly_config()
 folly_compiler_flags = folly_config[:compiler_flags]
 folly_version = folly_config[:version]
 
-boost_compiler_flags = '-Wno-documentation'
+boost_config = get_boost_config()
+boost_compiler_flags = boost_config[:compiler_flags] 
 using_hermes = ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == "1"
 
 header_search_paths = [
