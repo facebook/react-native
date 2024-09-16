@@ -4,17 +4,9 @@ PODS:
   - FBLazyVector (0.76.0-rc.0)
   - fmt (9.1.0)
   - glog (0.3.5)
-  - hermes-engine (1000.0.0):
-    - hermes-engine/cdp (= 1000.0.0)
-    - hermes-engine/Hermes (= 1000.0.0)
-    - hermes-engine/inspector (= 1000.0.0)
-    - hermes-engine/inspector_chrome (= 1000.0.0)
-    - hermes-engine/Public (= 1000.0.0)
-  - hermes-engine/cdp (1000.0.0)
-  - hermes-engine/Hermes (1000.0.0)
-  - hermes-engine/inspector (1000.0.0)
-  - hermes-engine/inspector_chrome (1000.0.0)
-  - hermes-engine/Public (1000.0.0)
+  - hermes-engine (0.76.0-rc.0):
+    - hermes-engine/Pre-built (= 0.76.0-rc.0)
+  - hermes-engine/Pre-built (0.76.0-rc.0)
   - MyNativeView (0.76.0-rc.0):
     - DoubleConversion
     - glog
@@ -1870,17 +1862,17 @@ EXTERNAL SOURCES:
     :path: "../react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  boost: 1dca942403ed9342f98334bf4c3621f011aa7946
-  DoubleConversion: f16ae600a246532c4020132d54af21d0ddb2a385
+  boost: 4cb898d0bf20404aab1850c656dcea009429d6c1
+  DoubleConversion: 76ab83afb40bddeeee456813d9c04f67f78771b5
   FBLazyVector: 78ff590303ba0da15e5735c35afcf2075a75a327
-  fmt: 10c6e61f4be25dc963c36bd73fc7b1705fe975be
-  glog: 08b301085f15bcbb6ff8632a8ebaf239aae04e6a
-  hermes-engine: ad3ef0310a4f477cbf9c9bb39a1400a3d3b43b62
+  fmt: 4c2741a687cc09f0634a2e2c72a838b99f1ff120
+  glog: fdfdfe5479092de0c4bdbebedd9056951f092c4f
+  hermes-engine: f2f50a30dea28b49726bc014bd49199ad2950fc4
   MyNativeView: b5b444af1ea12a97af387f65bc3f37b1fbcd9046
   NativeCxxModuleExample: 4ad41fd6fb2f35f0a4093e0d1746eab1312a8572
   OCMock: 589f2c84dacb1f5aaf6e4cec1f292551fe748e74
   OSSLibraryExample: d718c15310946957bb5265a22895e25c57414085
-  RCT-Folly: bf5c0376ffe4dd2cf438dcf86db385df9fdce648
+  RCT-Folly: 02617c592a293bd6d418e0a88ff4ee1f88329b47
   RCTDeprecation: 647fcdc7a3642a3b1a403a215677c51cd4c47b69
   RCTRequired: 88420e04330df9f5f2123f30e6b2818708aa925c
   RCTTypeSafety: 3cd0eabec19df5a947c88adda32e75593219bf5d
@@ -1945,4 +1937,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 8591f96a513620a2a83a0b9a125ad3fa32ea1369
 
-COCOAPODS: 1.15.2
+COCOAPODS: 1.14.3
