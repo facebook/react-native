@@ -19,7 +19,8 @@
 
 namespace facebook::react {
 
-constexpr size_t MAX_BUFFER_SIZE_EVENT = 150;
+constexpr size_t EVENT_BUFFER_SIZE = 150;
+constexpr size_t LONG_TASK_BUFFER_SIZE = 200;
 
 constexpr DOMHighResTimeStamp LONG_TASK_DURATION_THRESHOLD_MS = 50.0;
 
@@ -47,13 +48,6 @@ class PerformanceEntryReporter {
   void setTimeStampProvider(std::function<double()> provider) {
     timeStampProvider_ = std::move(provider);
   }
-
-  /*
-   * Performance Timeline functions
-   * https://www.w3.org/TR/performance-timeline
-   */
-  // https://www.w3.org/TR/performance-timeline/#queue-a-performanceentry
-  void pushEntry(const PerformanceEntry& entry);
 
   // https://www.w3.org/TR/performance-timeline/#getentries-method
   // https://www.w3.org/TR/performance-timeline/#getentriesbytype-method
@@ -105,30 +99,12 @@ class PerformanceEntryReporter {
       std::optional<PerformanceEntryType> entryType = std::nullopt,
       std::string_view entryName = {});
 
-  // Instead of having a map of buffers, we store buffer for each type
-  // separately
-  inline const PerformanceEntryBuffer& getBuffer(
-      PerformanceEntryType entryType) const {
-    switch (entryType) {
-      case PerformanceEntryType::EVENT:
-        return eventBuffer_;
-      case PerformanceEntryType::MARK:
-        return markBuffer_;
-      case PerformanceEntryType::MEASURE:
-        return measureBuffer_;
-      case PerformanceEntryType::LONGTASK:
-        return longTaskBuffer_;
-      default:
-        assert(0 && "Unhandled PerformanceEntryType");
-    }
-  }
-
 private:
   std::unique_ptr<PerformanceObserverRegistry> observerRegistry_;
 
   mutable std::mutex entriesMutex_;
-  PerformanceEntryCircularBuffer eventBuffer_{MAX_BUFFER_SIZE_EVENT};
-  PerformanceEntryCircularBuffer longTaskBuffer_{MAX_BUFFER_SIZE_EVENT};
+  PerformanceEntryCircularBuffer eventBuffer_{EVENT_BUFFER_SIZE};
+  PerformanceEntryCircularBuffer longTaskBuffer_{LONG_TASK_BUFFER_SIZE};
   PerformanceEntryKeyedBuffer markBuffer_;
   PerformanceEntryKeyedBuffer measureBuffer_;
 
@@ -142,6 +118,21 @@ private:
       PerformanceEntryType entryType,
       std::string_view entryName,
       std::vector<PerformanceEntry>& res) const;
+
+  inline const PerformanceEntryBuffer& getBuffer(PerformanceEntryType entryType) const {
+    switch (entryType) {
+      case PerformanceEntryType::EVENT:
+        return eventBuffer_;
+      case PerformanceEntryType::MARK:
+        return markBuffer_;
+      case PerformanceEntryType::MEASURE:
+        return measureBuffer_;
+      case PerformanceEntryType::LONGTASK:
+        return longTaskBuffer_;
+      default:
+        assert(0 && "Unhandled PerformanceEntryType");
+    }
+  }
 
   inline PerformanceEntryBuffer& getBufferRef(PerformanceEntryType entryType) {
     switch (entryType) {

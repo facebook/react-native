@@ -24,32 +24,21 @@ DOMHighResTimeStamp PerformanceEntryReporter::getCurrentTimeStamp() const {
                                        : JSExecutor::performanceNow();
 }
 
-void PerformanceEntryReporter::pushEntry(const PerformanceEntry& entry) {
-  if (entry.entryType == PerformanceEntryType::EVENT) {
-    eventCounts_[entry.name]++;
-  }
-
-  {
-    std::lock_guard lock(entriesMutex_);
-    auto& buffer = getBufferRef(entry.entryType);
-
-    if (!buffer.shouldAdd(entry)) {
-      return;
-    }
-
-    buffer.add(entry);
-  }
-
-  observerRegistry_->queuePerformanceEntry(entry);
-}
-
 void PerformanceEntryReporter::mark(
     const std::string& name,
     const std::optional<DOMHighResTimeStamp>& startTime) {
-  pushEntry(PerformanceEntry{
+  const auto entry = PerformanceEntry {
       .name = name,
       .entryType = PerformanceEntryType::MARK,
-      .startTime = startTime ? *startTime : getCurrentTimeStamp()});
+      .startTime = startTime ? *startTime : getCurrentTimeStamp()
+  };
+
+  {
+    std::lock_guard lock(entriesMutex_);
+    markBuffer_.add(entry);
+  }
+
+  observerRegistry_->queuePerformanceEntry(entry);
 }
 
 void PerformanceEntryReporter::clearEntries(
@@ -57,20 +46,20 @@ void PerformanceEntryReporter::clearEntries(
     std::string_view entryName) {
   // Clear all entry types
   if (!entryType) {
-    for (int i = 1; i < NUM_PERFORMANCE_ENTRY_TYPES; i++) {
-      clearEntries(static_cast<PerformanceEntryType>(i), entryName);
-    }
-
-    return;
-  }
-
-  auto& buffer = getBufferRef(*entryType);
-  if (!entryName.empty()) {
     std::lock_guard lock(entriesMutex_);
-    buffer.clear(entryName);
+    markBuffer_.clear();
+    measureBuffer_.clear();
+    eventBuffer_.clear();
+    longTaskBuffer_.clear();
   } else {
-    std::lock_guard lock(entriesMutex_);
-    buffer.clear();
+    auto& buffer = getBufferRef(*entryType);
+    if (!entryName.empty()) {
+      std::lock_guard lock(entriesMutex_);
+      buffer.clear(entryName);
+    } else {
+      std::lock_guard lock(entriesMutex_);
+      buffer.clear();
+    }
   }
 }
 
@@ -123,11 +112,19 @@ void PerformanceEntryReporter::measure(
   DOMHighResTimeStamp durationVal =
       duration ? *duration : endTimeVal - startTimeVal;
 
-  pushEntry(
-      {.name = std::string(name),
-       .entryType = PerformanceEntryType::MEASURE,
-       .startTime = startTimeVal,
-       .duration = durationVal});
+  auto const entry = PerformanceEntry {
+      .name = std::string(name),
+      .entryType = PerformanceEntryType::MEASURE,
+      .startTime = startTimeVal,
+      .duration = durationVal
+  };
+
+  {
+    std::lock_guard lock(entriesMutex_);
+    measureBuffer_.add(entry);
+  }
+
+  observerRegistry_->queuePerformanceEntry(entry);
 }
 
 DOMHighResTimeStamp PerformanceEntryReporter::getMarkTime(
@@ -148,24 +145,48 @@ void PerformanceEntryReporter::logEventEntry(
     DOMHighResTimeStamp processingStart,
     DOMHighResTimeStamp processingEnd,
     uint32_t interactionId) {
-  pushEntry(
-      {.name = std::move(name),
-       .entryType = PerformanceEntryType::EVENT,
-       .startTime = startTime,
-       .duration = duration,
-       .processingStart = processingStart,
-       .processingEnd = processingEnd,
-       .interactionId = interactionId});
+  eventCounts_[name]++;
+
+  auto const entry = PerformanceEntry {
+    .name = std::move(name),
+    .entryType = PerformanceEntryType::EVENT,
+    .startTime = startTime,
+    .duration = duration,
+    .processingStart = processingStart,
+    .processingEnd = processingEnd,
+    .interactionId = interactionId
+  };
+
+  {
+    std::lock_guard lock(entriesMutex_);
+
+    if (entry.duration < eventBuffer_.durationThreshold) {
+      // The entries duration is lower than the desired reporting threshold, skip
+      return;
+    }
+
+    eventBuffer_.add(entry);
+  }
+
+  observerRegistry_->queuePerformanceEntry(entry);
 }
 
 void PerformanceEntryReporter::logLongTaskEntry(
     DOMHighResTimeStamp startTime,
     DOMHighResTimeStamp duration) {
-  pushEntry(
-      {.name = std::string{"self"},
-       .entryType = PerformanceEntryType::LONGTASK,
-       .startTime = startTime,
-       .duration = duration});
+  auto const entry = PerformanceEntry {
+    .name = std::string{"self"},
+    .entryType = PerformanceEntryType::LONGTASK,
+    .startTime = startTime,
+    .duration = duration
+  };
+
+  {
+    std::lock_guard lock(entriesMutex_);
+    longTaskBuffer_.add(entry);
+  }
+
+  observerRegistry_->queuePerformanceEntry(entry);
 }
 
 } // namespace facebook::react

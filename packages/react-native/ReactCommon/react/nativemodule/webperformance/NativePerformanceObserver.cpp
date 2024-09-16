@@ -26,15 +26,6 @@ NativePerformanceObserverModuleProvider(
 }
 
 namespace facebook::react {
-
-std::optional<PerformanceEntryType> parseEntryType(int rawValue) {
-  if (rawValue < 0 || rawValue >= NUM_PERFORMANCE_ENTRY_TYPES) {
-    return std::nullopt;
-  }
-
-  return static_cast<PerformanceEntryType>(rawValue);
-}
-
 NativePerformanceObserver::NativePerformanceObserver(
     std::shared_ptr<CallInvoker> jsInvoker)
     : NativePerformanceObserverCxxSpec(std::move(jsInvoker)) {}
@@ -68,17 +59,15 @@ void NativePerformanceObserver::observe(jsi::Runtime& rt, jsi::Object observerOb
     auto rawTypes = options.entryTypes.value();
 
     for (auto i = 0; i < rawTypes.size(); ++i) {
-      if (auto entryType = parseEntryType(rawTypes[i]); entryType) {
-        entryTypes.insert(*entryType);
-      }
+      entryTypes.insert(Bridging<PerformanceEntryType>::fromJs(rt, rawTypes[i]));
     }
 
     observer->observe(entryTypes);
   }
   else { // single
     auto buffered = options.buffered.value_or(false);
-    if (auto entryType = parseEntryType(options.type.value()); entryType) {
-      observer->observe(entryType, buffered);
+    if (options.type.has_value()) {
+      observer->observe(static_cast<PerformanceEntryType>(options.type.value()), buffered);
     }
   }
 

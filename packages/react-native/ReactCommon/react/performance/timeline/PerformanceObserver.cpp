@@ -20,7 +20,14 @@ PerformanceObserver::~PerformanceObserver() {
 void PerformanceObserver::handleEntry(const facebook::react::PerformanceEntry& entry) {
   // https://w3c.github.io/performance-timeline/#takerecords-method (step 7.1)
   // https://www.w3.org/TR/event-timing/#should-add-performanceeventtiming
-  if (buffer_.shouldAdd(entry) && observedTypes_.contains(entry.entryType)) {
+  if (entry.entryType == PerformanceEntryType::EVENT) {
+    if (entry.duration < buffer_.durationThreshold) {
+      // The entries duration is lower than the desired reporting threshold, skip
+      return;
+    }
+  }
+
+  if (observedTypes_.contains(entry.entryType)) {
     buffer_.add(entry);
   }
 }

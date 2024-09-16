@@ -23,7 +23,6 @@ class PerformanceEntryBuffer {
 public:
   double durationThreshold{DEFAULT_DURATION_THRESHOLD};
   size_t droppedEntriesCount{0};
-  bool isAlwaysLogged{false};
 
   explicit PerformanceEntryBuffer() = default;
   virtual ~PerformanceEntryBuffer() = default;
@@ -36,20 +35,6 @@ public:
       std::vector<PerformanceEntry>& target) const = 0;
   virtual void clear() = 0;
   virtual void clear(std::string_view name) = 0;
-
-
-  // https://www.w3.org/TR/event-timing/#sec-should-add-performanceeventtiming
-  // TODO: perhaps move it to a better place
-  bool shouldAdd(const PerformanceEntry& entry) const {
-    if (entry.entryType == PerformanceEntryType::EVENT) {
-      if (entry.duration < durationThreshold) {
-        // The entries duration is lower than the desired reporting threshold, skip
-        return false;
-      }
-    }
-
-    return true;
-  }
 };
 
 } // namespace facebook::react
