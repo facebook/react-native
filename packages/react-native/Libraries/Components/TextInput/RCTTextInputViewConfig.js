@@ -104,6 +104,7 @@ const RCTTextInputViewConfig = {
     textTransform: true,
     textAlign: true,
     fontFamily: true,
+    lineBreakModeIOS: true,
     lineHeight: true,
     isHighlighted: true,
     writingDirection: true,
