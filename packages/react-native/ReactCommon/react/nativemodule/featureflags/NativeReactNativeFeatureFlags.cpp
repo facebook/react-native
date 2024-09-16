@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d713ffeb1c62b237a9764316590222c4>>
+ * @generated SignedSource<<ecdb5b70ea9f9c0b95dbd3916049428c>>
  */
 
 /**
@@ -185,11 +185,6 @@ bool NativeReactNativeFeatureFlags::fixIncorrectScrollViewStateUpdateOnAndroid(
 bool NativeReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact();
-}
-
-bool NativeReactNativeFeatureFlags::fixMissedFabricStateUpdatesOnAndroid(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::fixMissedFabricStateUpdatesOnAndroid();
 }
 
 bool NativeReactNativeFeatureFlags::fixMountingCoordinatorReportedPendingTransactionsOnAndroid(

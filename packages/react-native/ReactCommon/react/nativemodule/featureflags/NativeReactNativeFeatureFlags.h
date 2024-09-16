@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<38357b83ae559d10c212a2cec336ff62>>
+ * @generated SignedSource<<ce59461f685fba2d72d9d4a9b2cfa244>>
  */
 
 /**
@@ -94,8 +94,6 @@ class NativeReactNativeFeatureFlags
   bool fixIncorrectScrollViewStateUpdateOnAndroid(jsi::Runtime& runtime);
 
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact(jsi::Runtime& runtime);
-
-  bool fixMissedFabricStateUpdatesOnAndroid(jsi::Runtime& runtime);
 
   bool fixMountingCoordinatorReportedPendingTransactionsOnAndroid(jsi::Runtime& runtime);
 

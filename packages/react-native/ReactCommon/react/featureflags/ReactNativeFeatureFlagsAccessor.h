@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4394c75516783601b03aa6bcfa1719f0>>
+ * @generated SignedSource<<1f4c1895882f77b3647f5d8d507d94b8>>
  */
 
 /**
@@ -61,7 +61,6 @@ class ReactNativeFeatureFlagsAccessor {
   bool fetchImagesInViewPreallocation();
   bool fixIncorrectScrollViewStateUpdateOnAndroid();
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact();
-  bool fixMissedFabricStateUpdatesOnAndroid();
   bool fixMountingCoordinatorReportedPendingTransactionsOnAndroid();
   bool forceBatchingMountItemsOnAndroid();
   bool fuseboxEnabledDebug();
@@ -92,7 +91,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 51> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 50> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> allowRecursiveCommitsWithSynchronousMountOnAndroid_;
@@ -124,7 +123,6 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> fetchImagesInViewPreallocation_;
   std::atomic<std::optional<bool>> fixIncorrectScrollViewStateUpdateOnAndroid_;
   std::atomic<std::optional<bool>> fixMappingOfEventPrioritiesBetweenFabricAndReact_;
-  std::atomic<std::optional<bool>> fixMissedFabricStateUpdatesOnAndroid_;
   std::atomic<std::optional<bool>> fixMountingCoordinatorReportedPendingTransactionsOnAndroid_;
   std::atomic<std::optional<bool>> forceBatchingMountItemsOnAndroid_;
   std::atomic<std::optional<bool>> fuseboxEnabledDebug_;
