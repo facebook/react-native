@@ -16,7 +16,7 @@
 
 // flowlint sketchy-null:off, unsafe-getters-setters:off
 
-export interface DOMRectLike {
+export interface DOMRectInit {
   x?: ?number;
   y?: ?number;
   width?: ?number;
@@ -146,7 +146,7 @@ export default class DOMRectReadOnly {
   /**
    * Creates a new `DOMRectReadOnly` object with a given location and dimensions.
    */
-  static fromRect(rect?: ?DOMRectLike): DOMRectReadOnly {
+  static fromRect(rect?: ?DOMRectInit): DOMRectReadOnly {
     if (!rect) {
       return new DOMRectReadOnly();
     }
