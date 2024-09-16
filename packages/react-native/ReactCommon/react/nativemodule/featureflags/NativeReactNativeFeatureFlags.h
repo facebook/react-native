@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b0baf795aa3ddf796d337e4d65321216>>
+ * @generated SignedSource<<6cce043e2e23a01d32b5fe8fc93a2e01>>
  */
 
 /**
@@ -92,8 +92,6 @@ class NativeReactNativeFeatureFlags
   bool fetchImagesInViewPreallocation(jsi::Runtime& runtime);
 
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact(jsi::Runtime& runtime);
-
-  bool fixMissedFabricStateUpdatesOnAndroid(jsi::Runtime& runtime);
 
   bool fixMountingCoordinatorReportedPendingTransactionsOnAndroid(jsi::Runtime& runtime);
 

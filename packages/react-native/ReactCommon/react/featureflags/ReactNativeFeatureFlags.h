@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<97ae74b9c397b0d7b6890ccb7c05be3d>>
+ * @generated SignedSource<<8d28b4f3ffac32a287c9b858d62e39e1>>
  */
 
 /**
@@ -181,11 +181,6 @@ class ReactNativeFeatureFlags {
    * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.
    */
   RN_EXPORT static bool fixMappingOfEventPrioritiesBetweenFabricAndReact();
-
-  /**
-   * Enables a fix to prevent the possibility of state updates in Fabric being missed due to race conditions with previous state updates.
-   */
-  RN_EXPORT static bool fixMissedFabricStateUpdatesOnAndroid();
 
   /**
    * Fixes a limitation on Android where the mounting coordinator would report there are no pending transactions but some of them were actually not processed due to the use of the push model.

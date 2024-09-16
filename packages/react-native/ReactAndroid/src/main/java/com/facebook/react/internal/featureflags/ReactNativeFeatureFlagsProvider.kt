@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c38c8dbb8eea726b9daf62174ab6f375>>
+ * @generated SignedSource<<cab6789c15431b677b1ccff477933a74>>
  */
 
 /**
@@ -80,8 +80,6 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun fetchImagesInViewPreallocation(): Boolean
 
   @DoNotStrip public fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean
-
-  @DoNotStrip public fun fixMissedFabricStateUpdatesOnAndroid(): Boolean
 
   @DoNotStrip public fun fixMountingCoordinatorReportedPendingTransactionsOnAndroid(): Boolean
 

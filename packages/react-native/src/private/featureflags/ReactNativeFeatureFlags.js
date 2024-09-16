@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ad2ce25e61c9a2a120a2c9b00eb0c487>>
+ * @generated SignedSource<<2dad4a59eb97dc6737765c548830fcbf>>
  * @flow strict-local
  */
 
@@ -76,7 +76,6 @@ export type ReactNativeFeatureFlags = {
   excludeYogaFromRawProps: Getter<boolean>,
   fetchImagesInViewPreallocation: Getter<boolean>,
   fixMappingOfEventPrioritiesBetweenFabricAndReact: Getter<boolean>,
-  fixMissedFabricStateUpdatesOnAndroid: Getter<boolean>,
   fixMountingCoordinatorReportedPendingTransactionsOnAndroid: Getter<boolean>,
   forceBatchingMountItemsOnAndroid: Getter<boolean>,
   fuseboxEnabledDebug: Getter<boolean>,
@@ -290,10 +289,6 @@ export const fetchImagesInViewPreallocation: Getter<boolean> = createNativeFlagG
  * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.
  */
 export const fixMappingOfEventPrioritiesBetweenFabricAndReact: Getter<boolean> = createNativeFlagGetter('fixMappingOfEventPrioritiesBetweenFabricAndReact', false);
-/**
- * Enables a fix to prevent the possibility of state updates in Fabric being missed due to race conditions with previous state updates.
- */
-export const fixMissedFabricStateUpdatesOnAndroid: Getter<boolean> = createNativeFlagGetter('fixMissedFabricStateUpdatesOnAndroid', false);
 /**
  * Fixes a limitation on Android where the mounting coordinator would report there are no pending transactions but some of them were actually not processed due to the use of the push model.
  */

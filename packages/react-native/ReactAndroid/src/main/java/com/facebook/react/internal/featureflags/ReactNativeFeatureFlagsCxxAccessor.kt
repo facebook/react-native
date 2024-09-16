@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<62f70ca59ca5a74fb260afd2cf2b41db>>
+ * @generated SignedSource<<f504580bc8284172ad6a35c7ddbd7417>>
  */
 
 /**
@@ -49,7 +49,6 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
   private var excludeYogaFromRawPropsCache: Boolean? = null
   private var fetchImagesInViewPreallocationCache: Boolean? = null
   private var fixMappingOfEventPrioritiesBetweenFabricAndReactCache: Boolean? = null
-  private var fixMissedFabricStateUpdatesOnAndroidCache: Boolean? = null
   private var fixMountingCoordinatorReportedPendingTransactionsOnAndroidCache: Boolean? = null
   private var forceBatchingMountItemsOnAndroidCache: Boolean? = null
   private var fuseboxEnabledDebugCache: Boolean? = null
@@ -328,15 +327,6 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.fixMappingOfEventPrioritiesBetweenFabricAndReact()
       fixMappingOfEventPrioritiesBetweenFabricAndReactCache = cached
-    }
-    return cached
-  }
-
-  override fun fixMissedFabricStateUpdatesOnAndroid(): Boolean {
-    var cached = fixMissedFabricStateUpdatesOnAndroidCache
-    if (cached == null) {
-      cached = ReactNativeFeatureFlagsCxxInterop.fixMissedFabricStateUpdatesOnAndroid()
-      fixMissedFabricStateUpdatesOnAndroidCache = cached
     }
     return cached
   }

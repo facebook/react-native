@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<dc401ac2d74d6451aadbcdbb802ec35d>>
+ * @generated SignedSource<<cbe89e7ba78af155f751f19e48cb6557>>
  * @flow strict-local
  */
 
@@ -52,7 +52,6 @@ export interface Spec extends TurboModule {
   +excludeYogaFromRawProps?: () => boolean;
   +fetchImagesInViewPreallocation?: () => boolean;
   +fixMappingOfEventPrioritiesBetweenFabricAndReact?: () => boolean;
-  +fixMissedFabricStateUpdatesOnAndroid?: () => boolean;
   +fixMountingCoordinatorReportedPendingTransactionsOnAndroid?: () => boolean;
   +forceBatchingMountItemsOnAndroid?: () => boolean;
   +fuseboxEnabledDebug?: () => boolean;

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8e2909969c109d5accc346c40fd637dd>>
+ * @generated SignedSource<<d3deef1be546ac4cd55512c8a8c1972e>>
  */
 
 /**
@@ -135,10 +135,6 @@ bool ReactNativeFeatureFlags::fetchImagesInViewPreallocation() {
 
 bool ReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact() {
   return getAccessor().fixMappingOfEventPrioritiesBetweenFabricAndReact();
-}
-
-bool ReactNativeFeatureFlags::fixMissedFabricStateUpdatesOnAndroid() {
-  return getAccessor().fixMissedFabricStateUpdatesOnAndroid();
 }
 
 bool ReactNativeFeatureFlags::fixMountingCoordinatorReportedPendingTransactionsOnAndroid() {

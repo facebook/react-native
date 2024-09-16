@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f98b7c783cd79248c8e27c00885dff92>>
+ * @generated SignedSource<<3c04d494bdbf5d3fe63023617e9134f4>>
  */
 
 /**
@@ -180,11 +180,6 @@ bool NativeReactNativeFeatureFlags::fetchImagesInViewPreallocation(
 bool NativeReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact();
-}
-
-bool NativeReactNativeFeatureFlags::fixMissedFabricStateUpdatesOnAndroid(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::fixMissedFabricStateUpdatesOnAndroid();
 }
 
 bool NativeReactNativeFeatureFlags::fixMountingCoordinatorReportedPendingTransactionsOnAndroid(
