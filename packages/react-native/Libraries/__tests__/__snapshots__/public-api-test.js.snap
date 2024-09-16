@@ -6377,6 +6377,7 @@ export type Props = $ReadOnly<{|
     | \\"landscape-right\\",
   >,
   onOrientationChange?: ?DirectEventHandler<OrientationChangeEvent>,
+  overlayColor?: ?string,
 |}>;
 type State = {
   isRendered: boolean,

@@ -157,6 +157,12 @@ export type Props = $ReadOnly<{|
    * See https://reactnative.dev/docs/modal#onorientationchange
    */
   onOrientationChange?: ?DirectEventHandler<OrientationChangeEvent>,
+
+  /**
+   * The `overlayColor` props sets the color of the modal's background overlay.
+   * Defaults to `white` if not provided and transparent is `false`. Ignored if `transparent` is `true`.
+   */
+  overlayColor?: ?string,
 |}>;
 
 function confirmProps(props: Props) {
@@ -249,7 +255,9 @@ class Modal extends React.Component<Props, State> {
 
     const containerStyles = {
       backgroundColor:
-        this.props.transparent === true ? 'transparent' : 'white',
+        this.props.transparent === true
+          ? 'transparent'
+          : this.props.overlayColor ?? 'white',
     };
 
     let animationType = this.props.animationType || 'none';
