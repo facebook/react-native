@@ -14,6 +14,8 @@ import * as TurboModuleRegistry from '../../../../../Libraries/TurboModule/Turbo
 
 export type RawPerformanceEntryType = number;
 
+export type OpaqueNativeObserverHandle = mixed;
+
 export type RawPerformanceEntry = {|
   name: string,
   entryType: RawPerformanceEntryType,
@@ -37,7 +39,7 @@ export type PerformanceObserverInit = {
 };
 
 export interface Spec extends TurboModule {
-  +createObserver: (callback: () => void) => mixed;
+  +createObserver: (callback: () => void) => OpaqueNativeObserverHandle;
 
   +observe: (observer: mixed, options: PerformanceObserverInit) => void;
   +disconnect: (observer: mixed) => void;
