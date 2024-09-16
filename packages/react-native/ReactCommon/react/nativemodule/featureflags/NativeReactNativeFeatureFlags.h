@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<38357b83ae559d10c212a2cec336ff62>>
+ * @generated SignedSource<<b0baf795aa3ddf796d337e4d65321216>>
  */
 
 /**
@@ -90,8 +90,6 @@ class NativeReactNativeFeatureFlags
   bool excludeYogaFromRawProps(jsi::Runtime& runtime);
 
   bool fetchImagesInViewPreallocation(jsi::Runtime& runtime);
-
-  bool fixIncorrectScrollViewStateUpdateOnAndroid(jsi::Runtime& runtime);
 
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact(jsi::Runtime& runtime);
 

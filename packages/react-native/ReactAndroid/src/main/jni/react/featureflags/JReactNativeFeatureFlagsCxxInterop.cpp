@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f87375ebbf889045c449769fdf6018ba>>
+ * @generated SignedSource<<abe426d087d52b027743ec91139bf001>>
  */
 
 /**
@@ -204,12 +204,6 @@ class ReactNativeFeatureFlagsProviderHolder
   bool fetchImagesInViewPreallocation() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("fetchImagesInViewPreallocation");
-    return method(javaProvider_);
-  }
-
-  bool fixIncorrectScrollViewStateUpdateOnAndroid() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("fixIncorrectScrollViewStateUpdateOnAndroid");
     return method(javaProvider_);
   }
 
@@ -489,11 +483,6 @@ bool JReactNativeFeatureFlagsCxxInterop::fetchImagesInViewPreallocation(
   return ReactNativeFeatureFlags::fetchImagesInViewPreallocation();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::fixIncorrectScrollViewStateUpdateOnAndroid(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::fixIncorrectScrollViewStateUpdateOnAndroid();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::fixMappingOfEventPrioritiesBetweenFabricAndReact(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact();
@@ -705,9 +694,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "fetchImagesInViewPreallocation",
         JReactNativeFeatureFlagsCxxInterop::fetchImagesInViewPreallocation),
-      makeNativeMethod(
-        "fixIncorrectScrollViewStateUpdateOnAndroid",
-        JReactNativeFeatureFlagsCxxInterop::fixIncorrectScrollViewStateUpdateOnAndroid),
       makeNativeMethod(
         "fixMappingOfEventPrioritiesBetweenFabricAndReact",
         JReactNativeFeatureFlagsCxxInterop::fixMappingOfEventPrioritiesBetweenFabricAndReact),

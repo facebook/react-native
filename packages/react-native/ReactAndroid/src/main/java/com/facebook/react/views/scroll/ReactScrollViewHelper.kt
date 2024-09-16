@@ -19,7 +19,6 @@ import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.WritableNativeMap
 import com.facebook.react.common.ReactConstants
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.uimanager.PixelUtil.toDIPFromPixel
 import com.facebook.react.uimanager.StateWrapper
 import com.facebook.react.uimanager.UIManagerHelper
@@ -247,9 +246,8 @@ public object ReactScrollViewHelper {
     if (scrollY != y) {
       scrollView.startFlingAnimator(scrollY, y)
     }
-    if (ReactNativeFeatureFlags.fixIncorrectScrollViewStateUpdateOnAndroid()) {
-      updateFabricScrollState<T>(scrollView, x, y)
-    }
+
+    updateFabricScrollState<T>(scrollView, x, y)
   }
 
   /** Get current position or position after current animation finishes, if any. */

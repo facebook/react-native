@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9b8a7242404f7f1e3c3c6590413db128>>
+ * @generated SignedSource<<18ead04a682d1201ee402f2ce129d319>>
  */
 
 /**
@@ -83,8 +83,6 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun excludeYogaFromRawProps(): Boolean
 
   @DoNotStrip @JvmStatic public external fun fetchImagesInViewPreallocation(): Boolean
-
-  @DoNotStrip @JvmStatic public external fun fixIncorrectScrollViewStateUpdateOnAndroid(): Boolean
 
   @DoNotStrip @JvmStatic public external fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean
 

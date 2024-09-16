@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0543475ed30951d4098cb4046f996891>>
+ * @generated SignedSource<<23c50e84046f11a144320655aa0d16b0>>
  */
 
 /**
@@ -53,7 +53,6 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool enableViewRecycling() = 0;
   virtual bool excludeYogaFromRawProps() = 0;
   virtual bool fetchImagesInViewPreallocation() = 0;
-  virtual bool fixIncorrectScrollViewStateUpdateOnAndroid() = 0;
   virtual bool fixMappingOfEventPrioritiesBetweenFabricAndReact() = 0;
   virtual bool fixMissedFabricStateUpdatesOnAndroid() = 0;
   virtual bool fixMountingCoordinatorReportedPendingTransactionsOnAndroid() = 0;
