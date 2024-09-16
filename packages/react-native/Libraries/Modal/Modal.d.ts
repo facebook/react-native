@@ -46,10 +46,10 @@ export interface ModalBaseProps {
   onShow?: ((event: NativeSyntheticEvent<any>) => void) | undefined;
 
   /**
-   * The `overlayColor` props sets the color of the modal's background overlay.
+   * The `backdropColor` props sets the background color of the modal's container.
    * Defaults to `white` if not provided and transparent is `false`. Ignored if `transparent` is `true`.
    */
-  overlayColor?: ColorValue | undefined;
+  backdropColor?: ColorValue | undefined;
 }
 
 export interface ModalPropsIOS {
