@@ -52,7 +52,7 @@ void PerformanceObserver::observe(PerformanceEntryType type, bool buffered) {
 
 void PerformanceObserver::observe(std::unordered_set<PerformanceEntryType> types) {
   observedTypes_ = std::move(types);
-  requiresDroppedEntries_ = true;
+  requiresDroppedEntries_ = false;
 }
 
 void PerformanceObserver::scheduleFlushBuffer() {
