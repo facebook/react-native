@@ -15,7 +15,11 @@ module.exports = {
     platforms: ['android', 'ios', 'native'],
   },
   transform: {
-    '^.+\\.(js|ts|tsx)$': 'babel-jest',
+    '^.+\\.(js)$': [
+      'babel-jest',
+      {plugins: ['babel-plugin-syntax-hermes-parser']},
+    ],
+    '^.+\\.(ts|tsx)$': 'babel-jest',
     '^.+\\.(bmp|gif|jpg|jpeg|mp4|png|psd|svg|webp)$': require.resolve(
       './jest/assetFileTransformer.js',
     ),
