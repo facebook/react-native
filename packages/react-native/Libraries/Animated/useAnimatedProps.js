@@ -268,10 +268,6 @@ function useAnimatedPropsLifecycle_layoutEffects(node: AnimatedProps): void {
   const isUnmountingRef = useRef<boolean>(false);
 
   useEffect(() => {
-    // It is ok for multiple components to call `flushQueue` because it noops
-    // if the queue is empty. When multiple animated components are mounted at
-    // the same time. Only first component flushes the queue and the others will noop.
-    NativeAnimatedHelper.API.flushQueue();
     let drivenAnimationEndedListener: ?EventSubscription = null;
     if (node.__isNative) {
       drivenAnimationEndedListener =
@@ -325,13 +321,6 @@ function useAnimatedPropsLifecycle_layoutEffects(node: AnimatedProps): void {
 function useAnimatedPropsLifecycle_insertionEffects(node: AnimatedProps): void {
   const prevNodeRef = useRef<?AnimatedProps>(null);
   const isUnmountingRef = useRef<boolean>(false);
-
-  useEffect(() => {
-    // It is ok for multiple components to call `flushQueue` because it noops
-    // if the queue is empty. When multiple animated components are mounted at
-    // the same time. Only first component flushes the queue and the others will noop.
-    NativeAnimatedHelper.API.flushQueue();
-  });
 
   useInsertionEffect(() => {
     isUnmountingRef.current = false;
