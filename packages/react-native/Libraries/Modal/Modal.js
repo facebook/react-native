@@ -159,10 +159,10 @@ export type Props = $ReadOnly<{|
   onOrientationChange?: ?DirectEventHandler<OrientationChangeEvent>,
 
   /**
-   * The `overlayColor` props sets the color of the modal's background overlay.
+   * The `backdropColor` props sets the background color of the modal's container.
    * Defaults to `white` if not provided and transparent is `false`. Ignored if `transparent` is `true`.
    */
-  overlayColor?: ?string,
+  backdropColor?: ?string,
 |}>;
 
 function confirmProps(props: Props) {
@@ -257,7 +257,7 @@ class Modal extends React.Component<Props, State> {
       backgroundColor:
         this.props.transparent === true
           ? 'transparent'
-          : this.props.overlayColor ?? 'white',
+          : this.props.backdropColor ?? 'white',
     };
 
     let animationType = this.props.animationType || 'none';
