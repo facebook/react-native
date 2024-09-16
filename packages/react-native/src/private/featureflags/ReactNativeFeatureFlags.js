@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5b3e764da9814e0dedfe5bb3efe33384>>
+ * @generated SignedSource<<ad2ce25e61c9a2a120a2c9b00eb0c487>>
  * @flow strict-local
  */
 
@@ -75,7 +75,6 @@ export type ReactNativeFeatureFlags = {
   enableViewRecycling: Getter<boolean>,
   excludeYogaFromRawProps: Getter<boolean>,
   fetchImagesInViewPreallocation: Getter<boolean>,
-  fixIncorrectScrollViewStateUpdateOnAndroid: Getter<boolean>,
   fixMappingOfEventPrioritiesBetweenFabricAndReact: Getter<boolean>,
   fixMissedFabricStateUpdatesOnAndroid: Getter<boolean>,
   fixMountingCoordinatorReportedPendingTransactionsOnAndroid: Getter<boolean>,
@@ -287,10 +286,6 @@ export const excludeYogaFromRawProps: Getter<boolean> = createNativeFlagGetter('
  * Start image fetching during view preallocation instead of waiting for layout pass
  */
 export const fetchImagesInViewPreallocation: Getter<boolean> = createNativeFlagGetter('fetchImagesInViewPreallocation', false);
-/**
- * When doing a smooth scroll animation, it stops setting the state with the final scroll position in Fabric before the animation starts.
- */
-export const fixIncorrectScrollViewStateUpdateOnAndroid: Getter<boolean> = createNativeFlagGetter('fixIncorrectScrollViewStateUpdateOnAndroid', false);
 /**
  * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.
  */

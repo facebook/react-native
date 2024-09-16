@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<43a7bd07cf5236aa9357e5c1de87151a>>
+ * @generated SignedSource<<bb0e7f124e13191b9dc11d2a7719da73>>
  */
 
 /**
@@ -195,12 +195,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun fetchImagesInViewPreallocation(): Boolean = accessor.fetchImagesInViewPreallocation()
-
-  /**
-   * When doing a smooth scroll animation, it stops setting the state with the final scroll position in Fabric before the animation starts.
-   */
-  @JvmStatic
-  public fun fixIncorrectScrollViewStateUpdateOnAndroid(): Boolean = accessor.fixIncorrectScrollViewStateUpdateOnAndroid()
 
   /**
    * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.

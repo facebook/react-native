@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<be7334d60768774b87c270df8a640acc>>
+ * @generated SignedSource<<97ae74b9c397b0d7b6890ccb7c05be3d>>
  */
 
 /**
@@ -176,11 +176,6 @@ class ReactNativeFeatureFlags {
    * Start image fetching during view preallocation instead of waiting for layout pass
    */
   RN_EXPORT static bool fetchImagesInViewPreallocation();
-
-  /**
-   * When doing a smooth scroll animation, it stops setting the state with the final scroll position in Fabric before the animation starts.
-   */
-  RN_EXPORT static bool fixIncorrectScrollViewStateUpdateOnAndroid();
 
   /**
    * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.

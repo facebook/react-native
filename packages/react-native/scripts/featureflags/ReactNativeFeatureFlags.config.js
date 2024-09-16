@@ -170,11 +170,6 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'Start image fetching during view preallocation instead of waiting for layout pass',
     },
-    fixIncorrectScrollViewStateUpdateOnAndroid: {
-      defaultValue: false,
-      description:
-        'When doing a smooth scroll animation, it stops setting the state with the final scroll position in Fabric before the animation starts.',
-    },
     fixMappingOfEventPrioritiesBetweenFabricAndReact: {
       defaultValue: false,
       description:

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<cfca00e8b378d7d61a72d0d2c366d6f6>>
+ * @generated SignedSource<<b1c58a2a250df23619fee64a449eb9fd>>
  */
 
 /**
@@ -136,10 +136,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool fetchImagesInViewPreallocation() override {
-    return false;
-  }
-
-  bool fixIncorrectScrollViewStateUpdateOnAndroid() override {
     return false;
   }
 

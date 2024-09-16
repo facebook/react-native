@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8d55bf40875d6544f2d8524035cb773e>>
+ * @generated SignedSource<<6881bc2953e3f69805a8d42dd1fde826>>
  */
 
 /**
@@ -52,7 +52,6 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var enableViewRecyclingCache: Boolean? = null
   private var excludeYogaFromRawPropsCache: Boolean? = null
   private var fetchImagesInViewPreallocationCache: Boolean? = null
-  private var fixIncorrectScrollViewStateUpdateOnAndroidCache: Boolean? = null
   private var fixMappingOfEventPrioritiesBetweenFabricAndReactCache: Boolean? = null
   private var fixMissedFabricStateUpdatesOnAndroidCache: Boolean? = null
   private var fixMountingCoordinatorReportedPendingTransactionsOnAndroidCache: Boolean? = null
@@ -352,16 +351,6 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.fetchImagesInViewPreallocation()
       accessedFeatureFlags.add("fetchImagesInViewPreallocation")
       fetchImagesInViewPreallocationCache = cached
-    }
-    return cached
-  }
-
-  override fun fixIncorrectScrollViewStateUpdateOnAndroid(): Boolean {
-    var cached = fixIncorrectScrollViewStateUpdateOnAndroidCache
-    if (cached == null) {
-      cached = currentProvider.fixIncorrectScrollViewStateUpdateOnAndroid()
-      accessedFeatureFlags.add("fixIncorrectScrollViewStateUpdateOnAndroid")
-      fixIncorrectScrollViewStateUpdateOnAndroidCache = cached
     }
     return cached
   }

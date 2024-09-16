@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<69f2b48b14a886ed2c214441fdfc4f09>>
+ * @generated SignedSource<<8e2909969c109d5accc346c40fd637dd>>
  */
 
 /**
@@ -131,10 +131,6 @@ bool ReactNativeFeatureFlags::excludeYogaFromRawProps() {
 
 bool ReactNativeFeatureFlags::fetchImagesInViewPreallocation() {
   return getAccessor().fetchImagesInViewPreallocation();
-}
-
-bool ReactNativeFeatureFlags::fixIncorrectScrollViewStateUpdateOnAndroid() {
-  return getAccessor().fixIncorrectScrollViewStateUpdateOnAndroid();
 }
 
 bool ReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact() {

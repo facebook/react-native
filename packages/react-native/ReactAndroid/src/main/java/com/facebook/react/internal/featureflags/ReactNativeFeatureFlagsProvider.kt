@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4b0ce21f608338f4c8cb3bb5830b4965>>
+ * @generated SignedSource<<c38c8dbb8eea726b9daf62174ab6f375>>
  */
 
 /**
@@ -78,8 +78,6 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun excludeYogaFromRawProps(): Boolean
 
   @DoNotStrip public fun fetchImagesInViewPreallocation(): Boolean
-
-  @DoNotStrip public fun fixIncorrectScrollViewStateUpdateOnAndroid(): Boolean
 
   @DoNotStrip public fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean
 
