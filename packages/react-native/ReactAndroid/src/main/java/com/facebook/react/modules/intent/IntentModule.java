@@ -39,9 +39,11 @@ public class IntentModule extends NativeIntentAndroidSpec {
 
   @Override
   public void invalidate() {
-    if (mInitialURLListener != null) {
-      getReactApplicationContext().removeLifecycleEventListener(mInitialURLListener);
-      mInitialURLListener = null;
+    synchronized (this) {
+      if (mInitialURLListener != null) {
+        getReactApplicationContext().removeLifecycleEventListener(mInitialURLListener);
+        mInitialURLListener = null;
+      }
     }
     super.invalidate();
   }
@@ -79,7 +81,7 @@ public class IntentModule extends NativeIntentAndroidSpec {
     }
   }
 
-  private void waitForActivityAndGetInitialURL(final Promise promise) {
+  private synchronized void waitForActivityAndGetInitialURL(final Promise promise) {
     if (mInitialURLListener != null) {
       promise.reject(
           new IllegalStateException(
@@ -94,7 +96,9 @@ public class IntentModule extends NativeIntentAndroidSpec {
             getInitialURL(promise);
 
             getReactApplicationContext().removeLifecycleEventListener(this);
-            mInitialURLListener = null;
+            synchronized (IntentModule.this) {
+              mInitialURLListener = null;
+            }
           }
 
           @Override
