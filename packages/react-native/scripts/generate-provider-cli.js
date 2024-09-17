@@ -48,7 +48,7 @@ function generateProvider(platform, schemaListPath, outputDirectory) {
   if (!outputDirectory) {
     throw new Error('outputDir is required');
   }
-  fs.mkdirSync(outputDirectory, { recursive: true });
+  fs.mkdirSync(outputDirectory, {recursive: true});
 
   let schemaPaths;
   try {

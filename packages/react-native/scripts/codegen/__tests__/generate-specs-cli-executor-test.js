@@ -67,6 +67,8 @@ describe('generateSpec', () => {
     );
 
     expect(mkdirSyncMock).toHaveBeenCalledTimes(1);
-    expect(mkdirSyncMock).toHaveBeenCalledWith(outputDirectory, { recursive: true });
+    expect(mkdirSyncMock).toHaveBeenCalledWith(outputDirectory, {
+      recursive: true,
+    });
   });
 });

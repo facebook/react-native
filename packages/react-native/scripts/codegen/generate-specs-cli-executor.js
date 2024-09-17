@@ -32,7 +32,7 @@ function createOutputDirectoryIfNeeded(outputDirectory, libraryName) {
   if (!outputDirectory) {
     outputDirectory = path.resolve(__dirname, '..', 'Libraries', libraryName);
   }
-  fs.mkdirSync(outputDirectory, { recursive: true });
+  fs.mkdirSync(outputDirectory, {recursive: true});
 }
 
 /**
@@ -94,7 +94,7 @@ function generateSpecFromInMemorySchema(
     // * this subdir structure is Android-only, not applicable to iOS
     const files = fs.readdirSync(outputDirectory);
     const jniOutputDirectory = `${outputDirectory}/jni/react/renderer/components/${libraryName}`;
-    fs.mkdirSync(jniOutputDirectory, { recursive: true });
+    fs.mkdirSync(jniOutputDirectory, {recursive: true});
     files
       .filter(f => f.endsWith('.h') || f.endsWith('.cpp'))
       .forEach(f => {

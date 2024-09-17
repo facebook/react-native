@@ -38,7 +38,7 @@ if (schemaText == null) {
   throw new Error(`Can't find schema at ${schemaPath}`);
 }
 
-fs.mkdirSync(outputDirectory, { recursive: true });
+fs.mkdirSync(outputDirectory, {recursive: true});
 
 let schema;
 try {

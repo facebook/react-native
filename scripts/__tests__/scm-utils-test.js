@@ -62,7 +62,9 @@ describe('scm-utils', () => {
     it('it should save files in the temp folder', () => {
       const tmpFolder = '/tmp';
       saveFiles(['package.json', 'android/package.json'], tmpFolder);
-      expect(mkdirSyncMock).toHaveBeenCalledWith(`${tmpFolder}/android`, { recursive: true });
+      expect(mkdirSyncMock).toHaveBeenCalledWith(`${tmpFolder}/android`, {
+        recursive: true,
+      });
       expect(cpMock).toHaveBeenNthCalledWith(
         1,
         'package.json',

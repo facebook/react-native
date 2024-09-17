@@ -59,7 +59,7 @@ function getBuildPath(file, buildFolder) {
 function buildFile(file, silent) {
   const destPath = getBuildPath(file, BUILD_DIR);
 
-  fs.mkdirSync(path.dirname(destPath), { recursive: true });
+  fs.mkdirSync(path.dirname(destPath), {recursive: true});
 
   if (micromatch.isMatch(file, IGNORE_PATTERN)) {
     silent ||

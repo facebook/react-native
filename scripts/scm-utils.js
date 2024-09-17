@@ -74,7 +74,7 @@ function saveFiles(filePaths /*: Array<string> */, tmpFolder /*: string */) {
     const dirName = path.dirname(filePath);
     if (dirName !== '.') {
       const destFolder = `${tmpFolder}/${dirName}`;
-      fs.mkdirSync(destFolder, { recursive: true });
+      fs.mkdirSync(destFolder, {recursive: true});
     }
     cp(filePath, `${tmpFolder}/${filePath}`);
   }
