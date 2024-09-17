@@ -29,7 +29,10 @@ using NativePerformanceObserverObserveOptions = NativePerformanceObserverPerform
     // type
     std::optional<int>,
     // buffered
-    std::optional<bool>>;
+    std::optional<bool>,
+    // durationThreshold
+    std::optional<double>
+>;
 
 #pragma mark - Structs
 

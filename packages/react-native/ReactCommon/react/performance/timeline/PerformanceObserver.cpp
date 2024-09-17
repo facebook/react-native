@@ -21,38 +21,43 @@ void PerformanceObserver::handleEntry(const facebook::react::PerformanceEntry& e
   // https://w3c.github.io/performance-timeline/#takerecords-method (step 7.1)
   // https://www.w3.org/TR/event-timing/#should-add-performanceeventtiming
   if (entry.entryType == PerformanceEntryType::EVENT) {
-    if (entry.duration < buffer_.durationThreshold) {
+    if (entry.duration < durationThreshold_) {
       // The entries duration is lower than the desired reporting threshold, skip
       return;
     }
   }
 
   if (observedTypes_.contains(entry.entryType)) {
-    buffer_.add(entry);
+    buffer_.push_back(entry);
   }
 }
 
 std::vector<PerformanceEntry> PerformanceObserver::takeRecords() {
-  return buffer_.consume();
+  std::vector<PerformanceEntry> result;
+  buffer_.swap(result);
+  return result;
 }
 
-void PerformanceObserver::observe(PerformanceEntryType type, bool buffered) {
+void PerformanceObserver::observe(PerformanceEntryType type, PerformanceObserverObserveSingleOptions options) {
   // we assume that `type` was checked on JS side and is correct
   observedTypes_.clear();
   observedTypes_.insert(type);
 
+  durationThreshold_ = options.durationThreshold;
+
   requiresDroppedEntries_ = true;
 
-  if (buffered) {
+  if (options.buffered) {
     auto& reporter = PerformanceEntryReporter::getInstance();
-    reporter->getBuffer(type).getEntries(std::nullopt, buffer_.getEntries());
+    reporter->getBuffer(type).getEntries(std::nullopt, buffer_);
     scheduleFlushBuffer();
   }
 }
 
-void PerformanceObserver::observe(std::unordered_set<PerformanceEntryType> types) {
+void PerformanceObserver::observe(std::unordered_set<PerformanceEntryType> types, PerformanceObserverObserveMultipleOptions options) {
   observedTypes_ = std::move(types);
   requiresDroppedEntries_ = false;
+  durationThreshold_ = options.durationThreshold;
 }
 
 void PerformanceObserver::scheduleFlushBuffer() {

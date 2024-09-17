@@ -20,6 +20,24 @@ using PerformanceObserverCallback = std::function<void(std::vector<PerformanceEn
 class PerformanceObserverRegistry;
 
 /**
+ * Represents subset of spec's `PerformanceObserverInit` that is allowed for multiple types.
+ *
+ * https://w3c.github.io/performance-timeline/#performanceobserverinit-dictionary
+ */
+struct PerformanceObserverObserveMultipleOptions {
+  double durationThreshold = 0.0;
+};
+
+/**
+ * Represents subset of spec's `PerformanceObserverInit` that is allowed for single type.
+ *
+ * https://w3c.github.io/performance-timeline/#performanceobserverinit-dictionary
+ */
+struct PerformanceObserverObserveSingleOptions: public PerformanceObserverObserveMultipleOptions {
+  bool buffered = false;
+};
+
+/**
  * Represents native counterpart of performance timeline PerformanceObserver
  * class. Each instance has its own entry buffer and can listen for different
  * performance entry types.
@@ -54,7 +72,7 @@ class PerformanceObserver {
    * This operation resets and overrides previous configurations. So consecutive
    * calls to this methods remove any previous watch configuration (as per spec).
    */
-  void observe(PerformanceEntryType type, bool buffered);
+  void observe(PerformanceEntryType type, PerformanceObserverObserveSingleOptions options = {});
 
   /**
    * Configures the observer to watch for specified entry type.
@@ -62,19 +80,18 @@ class PerformanceObserver {
    * This operation resets and overrides previous configurations. So consecutive
    * calls to this methods remove any previous watch configuration (as per spec).
    */
-  void observe(std::unordered_set<PerformanceEntryType> types);
+  void observe(std::unordered_set<PerformanceEntryType> types, PerformanceObserverObserveMultipleOptions options = {});
 
 private:
-  const PerformanceEntryBuffer& getBuffer() const {
-    return buffer_;
-  }
-
   void scheduleFlushBuffer();
 
   std::weak_ptr<PerformanceObserverRegistry> registry_;
   PerformanceObserverCallback callback_;
   PerformanceObserverEntryTypeFilter observedTypes_;
-  PerformanceEntryLinearBuffer buffer_;
+
+  /// https://www.w3.org/TR/event-timing/#sec-modifications-perf-timeline
+  double durationThreshold_{DEFAULT_DURATION_THRESHOLD};
+  std::vector<PerformanceEntry> buffer_;
   bool requiresDroppedEntries_ = false;
 };
 

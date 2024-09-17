@@ -16,6 +16,8 @@ export type RawPerformanceEntryType = number;
 
 export type OpaqueNativeObserverHandle = mixed;
 
+export type NativeBatchedObserverCallback = (entries: $ReadOnlyArray<RawPerformanceEntry>, droppedEntriesCount: number) => void;
+
 export type RawPerformanceEntry = {|
   name: string,
   entryType: RawPerformanceEntryType,
@@ -36,10 +38,11 @@ export type PerformanceObserverInit = {
   entryTypes: $ReadOnlyArray<string>;
   type: number;
   buffered: boolean;
+  durationThreshold: number;
 };
 
 export interface Spec extends TurboModule {
-  +createObserver: (callback: () => void) => OpaqueNativeObserverHandle;
+  +createObserver: (callback: NativeBatchedObserverCallback) => OpaqueNativeObserverHandle;
 
   +observe: (observer: mixed, options: PerformanceObserverInit) => void;
   +disconnect: (observer: mixed) => void;
