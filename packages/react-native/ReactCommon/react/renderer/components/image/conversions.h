@@ -109,8 +109,6 @@ inline void fromRawValue(
         result.cache = ImageSource::CacheStategy::ForceCache;
       } else if (cache == "only-if-cached") {
         result.cache = ImageSource::CacheStategy::OnlyIfCached;
-      } else {
-        result.cache = ImageSource::CacheStategy::Default;
       }
     }
 

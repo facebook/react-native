@@ -27,7 +27,7 @@ class ImageSource {
   Size size{0};
   std::string body{};
   std::string method{};
-  CacheStategy cache{};
+  CacheStategy cache = CacheStategy::Default;
   std::vector<std::pair<std::string, std::string>> headers{};
 
   bool operator==(const ImageSource& rhs) const {

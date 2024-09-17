@@ -124,19 +124,11 @@ inline static NSURLRequest *NSURLRequestFromImageSource(const facebook::react::I
 
   NSString *method = @"GET";
   if (!imageSource.method.empty()) {
-    method = [[NSString alloc] initWithBytesNoCopy:(void *)imageSource.method.c_str()
-                                            length:imageSource.method.size()
-                                          encoding:NSUTF8StringEncoding
-                                      freeWhenDone:NO]
-                 .uppercaseString
-        ?: @"GET";
+    method = [[NSString alloc] initWithUTF8String:imageSource.method.c_str()].uppercaseString;
   }
   NSData *body = nil;
   if (!imageSource.body.empty()) {
-    NSString *bodyString = [[NSString alloc] initWithBytesNoCopy:(void *)imageSource.body.c_str()
-                                                          length:imageSource.body.size()
-                                                        encoding:NSUTF8StringEncoding
-                                                    freeWhenDone:NO];
+    NSString *bodyString = [[NSString alloc] initWithUTF8String:imageSource.body.c_str()];
     body = [RCTConvert NSData:bodyString];
   }
   NSURLRequestCachePolicy cachePolicy = NSURLRequestCachePolicyFromImageSource(imageSource);
@@ -158,5 +150,5 @@ inline static NSURLRequest *NSURLRequestFromImageSource(const facebook::react::I
   request.HTTPMethod = method;
   request.cachePolicy = cachePolicy;
 
-  return [request copy];
+  return request;
 }
