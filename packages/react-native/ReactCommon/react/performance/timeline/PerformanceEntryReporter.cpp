@@ -34,7 +34,7 @@ void PerformanceEntryReporter::mark(
   };
 
   {
-    std::lock_guard lock(entriesMutex_);
+    std::lock_guard lock(buffersMutex_);
     markBuffer_.add(entry);
   }
 
@@ -46,7 +46,7 @@ void PerformanceEntryReporter::clearEntries(
     std::string_view entryName) {
   // Clear all entry types
   if (!entryType) {
-    std::lock_guard lock(entriesMutex_);
+    std::lock_guard lock(buffersMutex_);
     markBuffer_.clear();
     measureBuffer_.clear();
     eventBuffer_.clear();
@@ -54,10 +54,10 @@ void PerformanceEntryReporter::clearEntries(
   } else {
     auto& buffer = getBufferRef(*entryType);
     if (!entryName.empty()) {
-      std::lock_guard lock(entriesMutex_);
+      std::lock_guard lock(buffersMutex_);
       buffer.clear(entryName);
     } else {
-      std::lock_guard lock(entriesMutex_);
+      std::lock_guard lock(buffersMutex_);
       buffer.clear();
     }
   }
@@ -67,7 +67,7 @@ void PerformanceEntryReporter::getEntries(
     PerformanceEntryType entryType,
     std::string_view entryName,
     std::vector<PerformanceEntry>& res) const {
-  std::lock_guard lock(entriesMutex_);
+  std::lock_guard lock(buffersMutex_);
   auto& buffer = getBuffer(entryType);
 
   if (entryName.empty()) {
@@ -120,7 +120,7 @@ void PerformanceEntryReporter::measure(
   };
 
   {
-    std::lock_guard lock(entriesMutex_);
+    std::lock_guard lock(buffersMutex_);
     measureBuffer_.add(entry);
   }
 
@@ -129,7 +129,7 @@ void PerformanceEntryReporter::measure(
 
 DOMHighResTimeStamp PerformanceEntryReporter::getMarkTime(
     const std::string& markName) const {
-  std::lock_guard lock(entriesMutex_);
+  std::lock_guard lock(buffersMutex_);
 
   if (auto it = markBuffer_.find(markName); it) {
     return it->startTime;
@@ -158,7 +158,7 @@ void PerformanceEntryReporter::logEventEntry(
   };
 
   {
-    std::lock_guard lock(entriesMutex_);
+    std::lock_guard lock(buffersMutex_);
 
     if (entry.duration < eventBuffer_.durationThreshold) {
       // The entries duration is lower than the desired reporting threshold, skip
@@ -182,7 +182,7 @@ void PerformanceEntryReporter::logLongTaskEntry(
   };
 
   {
-    std::lock_guard lock(entriesMutex_);
+    std::lock_guard lock(buffersMutex_);
     longTaskBuffer_.add(entry);
   }
 

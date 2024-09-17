@@ -117,7 +117,7 @@ class PerformanceEntryReporter {
 private:
   PerformanceObserverRegistry::Ptr observerRegistry_;
 
-  mutable std::mutex entriesMutex_;
+  mutable std::mutex buffersMutex_;
   PerformanceEntryCircularBuffer eventBuffer_{EVENT_BUFFER_SIZE};
   PerformanceEntryCircularBuffer longTaskBuffer_{LONG_TASK_BUFFER_SIZE};
   PerformanceEntryKeyedBuffer markBuffer_;
