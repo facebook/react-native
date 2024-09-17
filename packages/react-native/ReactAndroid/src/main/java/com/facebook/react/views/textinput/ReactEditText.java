@@ -49,7 +49,6 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.build.ReactBuildConfig;
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.uimanager.BackgroundStyleApplicator;
 import com.facebook.react.uimanager.LengthPercentage;
 import com.facebook.react.uimanager.LengthPercentageType;
@@ -76,7 +75,6 @@ import com.facebook.react.views.text.internal.span.ReactSpan;
 import com.facebook.react.views.text.internal.span.ReactStrikethroughSpan;
 import com.facebook.react.views.text.internal.span.ReactUnderlineSpan;
 import com.facebook.react.views.text.internal.span.TextInlineImageSpan;
-import com.facebook.react.views.view.ReactViewBackgroundManager;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -133,8 +131,6 @@ public class ReactEditText extends AppCompatEditText {
   private @Nullable String mPlaceholder = null;
   private Overflow mOverflow = Overflow.VISIBLE;
 
-  private final ReactViewBackgroundManager mReactBackgroundManager;
-
   private StateWrapper mStateWrapper = null;
   protected boolean mDisableTextDiffing = false;
 
@@ -147,7 +143,6 @@ public class ReactEditText extends AppCompatEditText {
     super(context);
     setFocusableInTouchMode(false);
 
-    mReactBackgroundManager = new ReactViewBackgroundManager(this);
     mInputMethodManager =
         (InputMethodManager)
             Assertions.assertNotNull(context.getSystemService(Context.INPUT_METHOD_SERVICE));
@@ -765,7 +760,9 @@ public class ReactEditText extends AppCompatEditText {
     stripSpansOfKind(
         sb,
         ReactBackgroundColorSpan.class,
-        (span) -> span.getBackgroundColor() == mReactBackgroundManager.getBackgroundColor());
+        (span) ->
+            Objects.equals(
+                span.getBackgroundColor(), BackgroundStyleApplicator.getBackgroundColor(this)));
 
     stripSpansOfKind(
         sb,
@@ -827,8 +824,8 @@ public class ReactEditText extends AppCompatEditText {
     workingText.setSpan(
         new ReactForegroundColorSpan(getCurrentTextColor()), 0, workingText.length(), spanFlags);
 
-    int backgroundColor = mReactBackgroundManager.getBackgroundColor();
-    if (backgroundColor != Color.TRANSPARENT) {
+    @Nullable Integer backgroundColor = BackgroundStyleApplicator.getBackgroundColor(this);
+    if (backgroundColor != null && backgroundColor != Color.TRANSPARENT) {
       workingText.setSpan(
           new ReactBackgroundColorSpan(backgroundColor), 0, workingText.length(), spanFlags);
     }
@@ -1087,39 +1084,23 @@ public class ReactEditText extends AppCompatEditText {
 
   @Override
   public void setBackgroundColor(int color) {
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      BackgroundStyleApplicator.setBackgroundColor(this, color);
-    } else {
-      mReactBackgroundManager.setBackgroundColor(color);
-    }
+    BackgroundStyleApplicator.setBackgroundColor(this, color);
   }
 
   public void setBorderWidth(int position, float width) {
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      BackgroundStyleApplicator.setBorderWidth(
-          this, LogicalEdge.values()[position], PixelUtil.toDIPFromPixel(width));
-    } else {
-      mReactBackgroundManager.setBorderWidth(position, width);
-    }
+    BackgroundStyleApplicator.setBorderWidth(
+        this, LogicalEdge.values()[position], PixelUtil.toDIPFromPixel(width));
   }
 
   public void setBorderColor(int position, @Nullable Integer color) {
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      BackgroundStyleApplicator.setBorderColor(this, LogicalEdge.values()[position], color);
-    } else {
-      mReactBackgroundManager.setBorderColor(position, color);
-    }
+    BackgroundStyleApplicator.setBorderColor(this, LogicalEdge.values()[position], color);
   }
 
   public int getBorderColor(int position) {
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      @Nullable
-      Integer borderColor =
-          BackgroundStyleApplicator.getBorderColor(this, LogicalEdge.values()[position]);
-      return borderColor == null ? Color.TRANSPARENT : borderColor;
-    } else {
-      return mReactBackgroundManager.getBorderColor(position);
-    }
+    @Nullable
+    Integer borderColor =
+        BackgroundStyleApplicator.getBorderColor(this, LogicalEdge.values()[position]);
+    return borderColor == null ? Color.TRANSPARENT : borderColor;
   }
 
   public void setBorderRadius(float borderRadius) {
@@ -1127,26 +1108,18 @@ public class ReactEditText extends AppCompatEditText {
   }
 
   public void setBorderRadius(float borderRadius, int position) {
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      @Nullable
-      LengthPercentage radius =
-          Float.isNaN(borderRadius)
-              ? null
-              : new LengthPercentage(
-                  PixelUtil.toDIPFromPixel(borderRadius), LengthPercentageType.POINT);
-      BackgroundStyleApplicator.setBorderRadius(this, BorderRadiusProp.values()[position], radius);
-    } else {
-      mReactBackgroundManager.setBorderRadius(borderRadius, position);
-    }
+    @Nullable
+    LengthPercentage radius =
+        Float.isNaN(borderRadius)
+            ? null
+            : new LengthPercentage(
+                PixelUtil.toDIPFromPixel(borderRadius), LengthPercentageType.POINT);
+    BackgroundStyleApplicator.setBorderRadius(this, BorderRadiusProp.values()[position], radius);
   }
 
   public void setBorderStyle(@Nullable String style) {
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      BackgroundStyleApplicator.setBorderStyle(
-          this, style == null ? null : BorderStyle.fromString(style));
-    } else {
-      mReactBackgroundManager.setBorderStyle(style);
-    }
+    BackgroundStyleApplicator.setBorderStyle(
+        this, style == null ? null : BorderStyle.fromString(style));
   }
 
   public void setLetterSpacingPt(float letterSpacingPt) {
@@ -1300,18 +1273,13 @@ public class ReactEditText extends AppCompatEditText {
       mOverflow = parsedOverflow == null ? Overflow.VISIBLE : parsedOverflow;
     }
 
-    mReactBackgroundManager.setOverflow(overflow);
     invalidate();
   }
 
   @Override
   public void onDraw(Canvas canvas) {
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      if (mOverflow != Overflow.VISIBLE) {
-        BackgroundStyleApplicator.clipToPaddingBox(this, canvas);
-      }
-    } else {
-      mReactBackgroundManager.maybeClipToPaddingBox(canvas);
+    if (mOverflow != Overflow.VISIBLE) {
+      BackgroundStyleApplicator.clipToPaddingBox(this, canvas);
     }
 
     super.onDraw(canvas);
