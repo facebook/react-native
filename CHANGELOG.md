@@ -1,5 +1,118 @@
 # Changelog
 
+## v0.76.0-rc.1
+
+### Breaking
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+- Unbreak `RCTHermesInstance` constructor breaking change ([aec6666bfa](https://github.com/facebook/react-native/commit/aec6666bfabf93cde70fa869b3eea68590998dee) by [@tido64](https://github.com/tido64))
+
+### Added
+
+- Unhide new arch layout props ([2d6c59e1d4](https://github.com/facebook/react-native/commit/2d6c59e1d4f6ddb46373ed10c915aed4ce0c030c) by [@NickGerleman](https://github.com/NickGerleman))
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Changed
+
+- AnimatedNode (and its subclasses) once again implement `toJSON()`. ([7bd4a54968](https://github.com/facebook/react-native/commit/7bd4a5496815943b031b68ca46792560d8d798d8) by [@yungsters](https://github.com/yungsters))
+- Add official `filter` CSSProperty. ([6b369a40d9](https://github.com/facebook/react-native/commit/6b369a40d98c2bb7f933415f62b1e2b8f4da86ed) by [@jorge-cab](https://github.com/jorge-cab))
+- Add official `boxShadow` CSSProperty. ([2241c3146f](https://github.com/facebook/react-native/commit/2241c3146ffbfb8b77f54599b7cebb717537c15a) by [@jorge-cab](https://github.com/jorge-cab))
+
+#### Android specific
+
+- Expose jsctooling via prefab ([e91690d929](https://github.com/facebook/react-native/commit/e91690d929d7c8b251964cae282ad8e1d95aa39a) by [@tomekzaw](https://github.com/tomekzaw))
+- Expose hermestooling via prefab ([f41af55958](https://github.com/facebook/react-native/commit/f41af55958dfbc39c536d433c3a27db329dd05f1) by [@cortinico](https://github.com/cortinico))
+
+#### iOS specific
+
+
+
+### Deprecated
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Removed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Fixed
+
+
+
+#### Android specific
+
+- Fix Headless Crash `Tried to finish non-existent task with id` ([b4532adad4](https://github.com/facebook/react-native/commit/b4532adad4e38e1237631778f7b8c917a9ccf746) by [@RodolfoGS](https://github.com/RodolfoGS))
+- Expose `react_timing` headers in `reactnative` prefab ([b1d42c8ef2](https://github.com/facebook/react-native/commit/b1d42c8ef2eb54af48ad27d3dc121e15c07d3dba) by [@tomekzaw](https://github.com/tomekzaw))
+- RNGP - Sanitize the output of the config command ([d7884a6bb8](https://github.com/facebook/react-native/commit/d7884a6bb8f2d8fd08dfd7d2817a4fc25f61a57c) by [@cortinico](https://github.com/cortinico))
+
+#### iOS specific
+
+- Don't reference PrivacyInfo.xcprivacy twice for new projects ([cadd41b1a2](https://github.com/facebook/react-native/commit/cadd41b1a2e16b1c77a8d3022f4ccbdbd5ea295f) by [@okwasniewski](https://github.com/okwasniewski))
+- Fixed warnings when validating SVC ([de39a204c3](https://github.com/facebook/react-native/commit/de39a204c3588a3c02dc2e72464174c75b3a6749) by [@cipolleschi](https://github.com/cipolleschi))
+- Solved SVC warnings for RNTester ([fad4a0783b](https://github.com/facebook/react-native/commit/fad4a0783b0a0478c147d9bde2ef9ab082a08297) by [@cipolleschi](https://github.com/cipolleschi))
+
+### Security
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Unknown
+
+- Release 0.76.0-rc.1 ([ec9e1718aa](https://github.com/facebook/react-native/commit/ec9e1718aa6179c6f634128fd64c36c9b116fa8f) by [@react-native-bot](https://github.com/react-native-bot))
+- Bump Podfile.lock ([c4714e81d8](https://github.com/facebook/react-native/commit/c4714e81d857845ad9d87b9d49c14eed0db774c0) by [@cipolleschi](https://github.com/cipolleschi))
+- [0.76] Bump Metro to 0.81.0-alpha ([4126ce844d](https://github.com/facebook/react-native/commit/4126ce844d91612d83a1b2118a4859cac5bb480f) by [@robhogan](https://github.com/robhogan))
+- Bump Podfile.lock ([33d175f51b](https://github.com/facebook/react-native/commit/33d175f51bda3f6b773127172d5dde34762725a5) by [@cipolleschi](https://github.com/cipolleschi))
+
+#### Android Unknown
+
+
+
+#### iOS Unknown
+
+
+
+#### Failed to parse
+
+
+
+
 ## v0.76.0-rc.0
 
 ### Breaking
