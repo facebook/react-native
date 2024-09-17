@@ -19,7 +19,7 @@ import fetch from 'node-fetch';
 
 const CTRL_C = '\u0003';
 const CTRL_D = '\u0004';
-const reloadTimeout = 700;
+const RELOAD_TIMEOUT = 500;
 
 const throttle = (callback: () => void, timeout: number) => {
   let previousCall = 0;
