@@ -73,8 +73,9 @@ class CodegenUtils
         package = JSON.parse(file_manager.read(package_json_file))
         version = package['version']
         use_frameworks = ENV['USE_FRAMEWORKS'] != nil
-        folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -DFOLLY_HAVE_CLOCK_GETTIME=1 -Wno-comma -Wno-shorten-64-to-32'
-        boost_compiler_flags = '-Wno-documentation'
+
+        folly_compiler_flags = get_folly_config()[:compiler_flags]
+        boost_compiler_flags = get_boost_config()[:compiler_flags]
 
         header_search_paths = [
           "\"$(PODS_ROOT)/boost\"",
