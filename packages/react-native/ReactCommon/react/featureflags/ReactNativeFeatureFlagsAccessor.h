@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7943d0be377deed21ddec9964d952db9>>
+ * @generated SignedSource<<81fc3492769dc1f8d239f628a35d1b00>>
  */
 
 /**
@@ -41,6 +41,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableAndroidMixBlendModeProp();
   bool enableBackgroundStyleApplicator();
   bool enableCleanTextInputYogaNode();
+  bool enableDeletionOfUnmountedViews();
   bool enableEagerRootViewAttachment();
   bool enableEventEmitterRetentionDuringGesturesOnAndroid();
   bool enableFabricLogs();
@@ -53,13 +54,12 @@ class ReactNativeFeatureFlagsAccessor {
   bool enablePropsUpdateReconciliationAndroid();
   bool enableReportEventPaintTime();
   bool enableSynchronousStateUpdates();
+  bool enableTextPreallocationOptimisation();
   bool enableUIConsistency();
   bool enableViewRecycling();
   bool excludeYogaFromRawProps();
   bool fetchImagesInViewPreallocation();
-  bool fixIncorrectScrollViewStateUpdateOnAndroid();
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact();
-  bool fixMissedFabricStateUpdatesOnAndroid();
   bool fixMountingCoordinatorReportedPendingTransactionsOnAndroid();
   bool forceBatchingMountItemsOnAndroid();
   bool fuseboxEnabledDebug();
@@ -102,6 +102,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableAndroidMixBlendModeProp_;
   std::atomic<std::optional<bool>> enableBackgroundStyleApplicator_;
   std::atomic<std::optional<bool>> enableCleanTextInputYogaNode_;
+  std::atomic<std::optional<bool>> enableDeletionOfUnmountedViews_;
   std::atomic<std::optional<bool>> enableEagerRootViewAttachment_;
   std::atomic<std::optional<bool>> enableEventEmitterRetentionDuringGesturesOnAndroid_;
   std::atomic<std::optional<bool>> enableFabricLogs_;
@@ -114,13 +115,12 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enablePropsUpdateReconciliationAndroid_;
   std::atomic<std::optional<bool>> enableReportEventPaintTime_;
   std::atomic<std::optional<bool>> enableSynchronousStateUpdates_;
+  std::atomic<std::optional<bool>> enableTextPreallocationOptimisation_;
   std::atomic<std::optional<bool>> enableUIConsistency_;
   std::atomic<std::optional<bool>> enableViewRecycling_;
   std::atomic<std::optional<bool>> excludeYogaFromRawProps_;
   std::atomic<std::optional<bool>> fetchImagesInViewPreallocation_;
-  std::atomic<std::optional<bool>> fixIncorrectScrollViewStateUpdateOnAndroid_;
   std::atomic<std::optional<bool>> fixMappingOfEventPrioritiesBetweenFabricAndReact_;
-  std::atomic<std::optional<bool>> fixMissedFabricStateUpdatesOnAndroid_;
   std::atomic<std::optional<bool>> fixMountingCoordinatorReportedPendingTransactionsOnAndroid_;
   std::atomic<std::optional<bool>> forceBatchingMountItemsOnAndroid_;
   std::atomic<std::optional<bool>> fuseboxEnabledDebug_;

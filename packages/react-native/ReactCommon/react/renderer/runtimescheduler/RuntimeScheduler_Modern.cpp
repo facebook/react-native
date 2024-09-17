@@ -253,7 +253,7 @@ void RuntimeScheduler_Modern::scheduleTask(std::shared_ptr<Task> task) {
       shouldScheduleEventLoop = true;
     }
 
-    taskQueue_.push(task);
+    taskQueue_.push(std::move(task));
   }
 
   if (shouldScheduleEventLoop) {

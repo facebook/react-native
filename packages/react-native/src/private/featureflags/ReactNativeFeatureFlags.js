@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d6b7a8d93e08da169a3e6d60de9e3155>>
+ * @generated SignedSource<<2dad4a59eb97dc6737765c548830fcbf>>
  * @flow strict-local
  */
 
@@ -39,7 +39,7 @@ export type ReactNativeFeatureFlagsJsOnly = {
   shouldUseRemoveClippedSubviewsAsDefaultOnIOS: Getter<boolean>,
   shouldUseSetNativePropsInFabric: Getter<boolean>,
   shouldUseSetNativePropsInNativeAnimationsInFabric: Getter<boolean>,
-  usePassiveEffectsForAnimations: Getter<boolean>,
+  useInsertionEffectsForAnimations: Getter<boolean>,
   useRefsForTextInputState: Getter<boolean>,
 };
 
@@ -57,6 +57,7 @@ export type ReactNativeFeatureFlags = {
   enableAndroidMixBlendModeProp: Getter<boolean>,
   enableBackgroundStyleApplicator: Getter<boolean>,
   enableCleanTextInputYogaNode: Getter<boolean>,
+  enableDeletionOfUnmountedViews: Getter<boolean>,
   enableEagerRootViewAttachment: Getter<boolean>,
   enableEventEmitterRetentionDuringGesturesOnAndroid: Getter<boolean>,
   enableFabricLogs: Getter<boolean>,
@@ -69,13 +70,12 @@ export type ReactNativeFeatureFlags = {
   enablePropsUpdateReconciliationAndroid: Getter<boolean>,
   enableReportEventPaintTime: Getter<boolean>,
   enableSynchronousStateUpdates: Getter<boolean>,
+  enableTextPreallocationOptimisation: Getter<boolean>,
   enableUIConsistency: Getter<boolean>,
   enableViewRecycling: Getter<boolean>,
   excludeYogaFromRawProps: Getter<boolean>,
   fetchImagesInViewPreallocation: Getter<boolean>,
-  fixIncorrectScrollViewStateUpdateOnAndroid: Getter<boolean>,
   fixMappingOfEventPrioritiesBetweenFabricAndReact: Getter<boolean>,
-  fixMissedFabricStateUpdatesOnAndroid: Getter<boolean>,
   fixMountingCoordinatorReportedPendingTransactionsOnAndroid: Getter<boolean>,
   forceBatchingMountItemsOnAndroid: Getter<boolean>,
   fuseboxEnabledDebug: Getter<boolean>,
@@ -164,9 +164,9 @@ export const shouldUseSetNativePropsInFabric: Getter<boolean> = createJavaScript
 export const shouldUseSetNativePropsInNativeAnimationsInFabric: Getter<boolean> = createJavaScriptFlagGetter('shouldUseSetNativePropsInNativeAnimationsInFabric', false);
 
 /**
- * Enable a variant of useAnimatedPropsLifecycle hook that constructs the animation graph in passive effect instead of layout effect
+ * Changes construction of the animation graph to `useInsertionEffect` instead of `useLayoutEffect`.
  */
-export const usePassiveEffectsForAnimations: Getter<boolean> = createJavaScriptFlagGetter('usePassiveEffectsForAnimations', false);
+export const useInsertionEffectsForAnimations: Getter<boolean> = createJavaScriptFlagGetter('useInsertionEffectsForAnimations', false);
 
 /**
  * Enable a variant of TextInput that moves some state to refs to avoid unnecessary re-renders
@@ -213,6 +213,10 @@ export const enableBackgroundStyleApplicator: Getter<boolean> = createNativeFlag
  * Clean yoga node when <TextInput /> does not change.
  */
 export const enableCleanTextInputYogaNode: Getter<boolean> = createNativeFlagGetter('enableCleanTextInputYogaNode', false);
+/**
+ * Deletes views that were pre-allocated but never mounted on the screen.
+ */
+export const enableDeletionOfUnmountedViews: Getter<boolean> = createNativeFlagGetter('enableDeletionOfUnmountedViews', false);
 /**
  * Feature flag to configure eager attachment of the root view/initialisation of the JS code.
  */
@@ -262,6 +266,10 @@ export const enableReportEventPaintTime: Getter<boolean> = createNativeFlagGette
  */
 export const enableSynchronousStateUpdates: Getter<boolean> = createNativeFlagGetter('enableSynchronousStateUpdates', false);
 /**
+ * Text preallocation optimisation where unnecessary work is removed.
+ */
+export const enableTextPreallocationOptimisation: Getter<boolean> = createNativeFlagGetter('enableTextPreallocationOptimisation', false);
+/**
  * Ensures that JavaScript always has a consistent view of the state of the UI (e.g.: commits done in other threads are not immediately propagated to JS during its execution).
  */
 export const enableUIConsistency: Getter<boolean> = createNativeFlagGetter('enableUIConsistency', false);
@@ -278,17 +286,9 @@ export const excludeYogaFromRawProps: Getter<boolean> = createNativeFlagGetter('
  */
 export const fetchImagesInViewPreallocation: Getter<boolean> = createNativeFlagGetter('fetchImagesInViewPreallocation', false);
 /**
- * When doing a smooth scroll animation, it stops setting the state with the final scroll position in Fabric before the animation starts.
- */
-export const fixIncorrectScrollViewStateUpdateOnAndroid: Getter<boolean> = createNativeFlagGetter('fixIncorrectScrollViewStateUpdateOnAndroid', false);
-/**
  * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.
  */
 export const fixMappingOfEventPrioritiesBetweenFabricAndReact: Getter<boolean> = createNativeFlagGetter('fixMappingOfEventPrioritiesBetweenFabricAndReact', false);
-/**
- * Enables a fix to prevent the possibility of state updates in Fabric being missed due to race conditions with previous state updates.
- */
-export const fixMissedFabricStateUpdatesOnAndroid: Getter<boolean> = createNativeFlagGetter('fixMissedFabricStateUpdatesOnAndroid', false);
 /**
  * Fixes a limitation on Android where the mounting coordinator would report there are no pending transactions but some of them were actually not processed due to the use of the push model.
  */

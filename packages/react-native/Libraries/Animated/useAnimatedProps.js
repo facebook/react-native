@@ -37,6 +37,8 @@ type ReducedProps<TProps> = {
 };
 type CallbackRef<T> = T => mixed;
 
+type UpdateCallback = () => void;
+
 type AnimatedValueListeners = Array<{
   propValue: AnimatedValue,
   listenerId: string,
@@ -52,7 +54,7 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
   allowlist?: ?AnimatedPropsAllowlist,
 ): [ReducedProps<TProps>, CallbackRef<TInstance | null>] {
   const [, scheduleUpdate] = useReducer<number, void>(count => count + 1, 0);
-  const onUpdateRef = useRef<(() => void) | null>(null);
+  const onUpdateRef = useRef<UpdateCallback | null>(null);
   const timerRef = useRef<TimeoutID | null>(null);
 
   const allowlistIfEnabled = ReactNativeFeatureFlags.enableAnimatedAllowlist()
@@ -75,8 +77,8 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
     ReactNativeFeatureFlags.shouldUseSetNativePropsInNativeAnimationsInFabric();
 
   const useAnimatedPropsLifecycle =
-    ReactNativeFeatureFlags.usePassiveEffectsForAnimations()
-      ? useAnimatedPropsLifecycle_passiveEffects
+    ReactNativeFeatureFlags.useInsertionEffectsForAnimations()
+      ? useAnimatedPropsLifecycle_insertionEffects
       : useAnimatedPropsLifecycle_layoutEffects;
 
   useAnimatedPropsLifecycle(node);
@@ -319,12 +321,10 @@ function useAnimatedPropsLifecycle_layoutEffects(node: AnimatedProps): void {
  * uses reference counting to determine when to recursively detach its children
  * nodes. So in order to optimize this, we avoid detaching until the next attach
  * unless we are unmounting.
- *
- * NOTE: unlike `useAnimatedPropsLifecycle_layoutEffects`, this version uses passive effects to setup animation graph.
  */
-function useAnimatedPropsLifecycle_passiveEffects(node: AnimatedProps): void {
-  const attachedNodeRef =
-    useRef<?{node: AnimatedProps, listener: ?EventSubscription}>(null);
+function useAnimatedPropsLifecycle_insertionEffects(node: AnimatedProps): void {
+  const prevNodeRef = useRef<?AnimatedProps>(null);
+  const isUnmountingRef = useRef<boolean>(false);
 
   useEffect(() => {
     // It is ok for multiple components to call `flushQueue` because it noops
@@ -334,44 +334,42 @@ function useAnimatedPropsLifecycle_passiveEffects(node: AnimatedProps): void {
   });
 
   useInsertionEffect(() => {
+    isUnmountingRef.current = false;
     return () => {
-      const attachedNode = attachedNodeRef.current;
-      if (attachedNode != null) {
-        const {node: prevNode, listener} = attachedNode;
-        // NOTE: Do not restore default values on unmount, see D18197735.
-        prevNode.__detach();
-        listener?.remove();
-        attachedNodeRef.current = null;
-      }
+      isUnmountingRef.current = true;
     };
   }, []);
 
-  useEffect(() => {
-    let prevAttachedNode = null;
-    if (attachedNodeRef.current !== node) {
-      node.__attach();
-      prevAttachedNode = attachedNodeRef.current;
-      let listener: ?EventSubscription = null;
+  useInsertionEffect(() => {
+    node.__attach();
+    let drivenAnimationEndedListener: ?EventSubscription = null;
 
-      if (node.__isNative) {
-        listener = NativeAnimatedHelper.nativeEventEmitter.addListener(
+    if (node.__isNative) {
+      drivenAnimationEndedListener =
+        NativeAnimatedHelper.nativeEventEmitter.addListener(
           'onUserDrivenAnimationEnded',
           data => {
             node.update();
           },
         );
-      }
-
-      attachedNodeRef.current = {node, listener};
     }
-
-    if (prevAttachedNode != null) {
-      const {node: prevNode, listener} = prevAttachedNode;
+    if (prevNodeRef.current != null) {
+      const prevNode = prevNodeRef.current;
       // TODO: Stop restoring default values (unless `reset` is called).
       prevNode.__restoreDefaultValues();
       prevNode.__detach();
-      listener?.remove();
+      prevNodeRef.current = null;
     }
+    return () => {
+      if (isUnmountingRef.current) {
+        // NOTE: Do not restore default values on unmount, see D18197735.
+        node.__detach();
+      } else {
+        prevNodeRef.current = node;
+      }
+
+      drivenAnimationEndedListener?.remove();
+    };
   }, [node]);
 }
 

@@ -109,6 +109,39 @@ BaseViewProps::BaseViewProps(
                                                        "Style",
                                                        sourceProps.borderStyles,
                                                        {})),
+      outlineColor(
+          CoreFeatures::enablePropIteratorSetter ? sourceProps.outlineColor
+                                                 : convertRawProp(
+                                                       context,
+                                                       rawProps,
+                                                       "outlineColor",
+                                                       sourceProps.outlineColor,
+                                                       {})),
+      outlineOffset(
+          CoreFeatures::enablePropIteratorSetter
+              ? sourceProps.outlineOffset
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "outlineOffset",
+                    sourceProps.outlineOffset,
+                    {})),
+      outlineStyle(
+          CoreFeatures::enablePropIteratorSetter ? sourceProps.outlineStyle
+                                                 : convertRawProp(
+                                                       context,
+                                                       rawProps,
+                                                       "outlineStyle",
+                                                       sourceProps.outlineStyle,
+                                                       {})),
+      outlineWidth(
+          CoreFeatures::enablePropIteratorSetter ? sourceProps.outlineWidth
+                                                 : convertRawProp(
+                                                       context,
+                                                       rawProps,
+                                                       "outlineWidth",
+                                                       sourceProps.outlineWidth,
+                                                       {})),
       shadowColor(
           CoreFeatures::enablePropIteratorSetter ? sourceProps.shadowColor
                                                  : convertRawProp(
@@ -163,7 +196,7 @@ BaseViewProps::BaseViewProps(
                                                  : convertRawProp(
                                                        context,
                                                        rawProps,
-                                                       "experimental_filter",
+                                                       "filter",
                                                        sourceProps.filter,
                                                        {})),
       backgroundImage(
@@ -346,7 +379,11 @@ void BaseViewProps::setProp(
     RAW_SET_PROP_SWITCH_CASE_BASIC(removeClippedSubviews);
     RAW_SET_PROP_SWITCH_CASE_BASIC(experimental_layoutConformance);
     RAW_SET_PROP_SWITCH_CASE_BASIC(cursor);
-    RAW_SET_PROP_SWITCH_CASE(filter, "experimental_filter");
+    RAW_SET_PROP_SWITCH_CASE_BASIC(outlineColor);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(outlineOffset);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(outlineStyle);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(outlineWidth);
+    RAW_SET_PROP_SWITCH_CASE(filter, "filter");
     RAW_SET_PROP_SWITCH_CASE(boxShadow, "boxShadow");
     // events field
     VIEW_EVENT_CASE(PointerEnter);

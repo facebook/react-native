@@ -34,6 +34,8 @@ const supportedOrientations = [
   'landscape-right',
 ];
 
+const backdropColors = ['red', 'blue', undefined];
+
 function ModalPresentation() {
   const onDismiss = React.useCallback(() => {
     alert('onDismiss');
@@ -63,10 +65,12 @@ function ModalPresentation() {
     onDismiss: undefined,
     onShow: undefined,
     visible: false,
+    backdropColor: undefined,
   });
   const presentationStyle = props.presentationStyle;
   const hardwareAccelerated = props.hardwareAccelerated;
   const statusBarTranslucent = props.statusBarTranslucent;
+  const backdropColor = props.backdropColor;
 
   const [currentOrientation, setCurrentOrientation] = React.useState('unknown');
 
@@ -209,6 +213,26 @@ function ModalPresentation() {
             }
             selected={!!props.onDismiss}
           />
+        </View>
+      </View>
+      <View style={styles.block}>
+        <Text style={styles.title}>Backdrop Color ⚫️</Text>
+        <View style={styles.row}>
+          {backdropColors.map(type => (
+            <RNTOption
+              key={type}
+              style={styles.option}
+              label={type === undefined ? 'default' : type}
+              multiSelect={true}
+              onPress={() =>
+                setProps(prev => ({
+                  ...prev,
+                  backdropColor: type,
+                }))
+              }
+              selected={type === backdropColor}
+            />
+          ))}
         </View>
       </View>
     </>

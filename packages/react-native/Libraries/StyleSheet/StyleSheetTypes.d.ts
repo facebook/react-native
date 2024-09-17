@@ -110,11 +110,102 @@ export interface FlexStyle {
   top?: DimensionValue | undefined;
   width?: DimensionValue | undefined;
   zIndex?: number | undefined;
+  direction?: 'inherit' | 'ltr' | 'rtl' | undefined;
 
   /**
-   * @platform ios
+   * Equivalent to `top`, `bottom`, `right` and `left`
    */
-  direction?: 'inherit' | 'ltr' | 'rtl' | undefined;
+  inset?: DimensionValue | undefined;
+
+  /**
+   * Equivalent to `top`, `bottom`
+   */
+  insetBlock?: DimensionValue | undefined;
+
+  /**
+   * Equivalent to `bottom`
+   */
+  insetBlockEnd?: DimensionValue | undefined;
+
+  /**
+   * Equivalent to `top`
+   */
+  insetBlockStart?: DimensionValue | undefined;
+
+  /**
+   * Equivalent to `right` and `left`
+   */
+  insetInline?: DimensionValue | undefined;
+
+  /**
+   * Equivalent to `right` or `left`
+   */
+  insetInlineEnd?: DimensionValue | undefined;
+
+  /**
+   * Equivalent to `right` or `left`
+   */
+  insetInlineStart?: DimensionValue | undefined;
+
+  /**
+   * Equivalent to `marginVertical`
+   */
+  marginBlock?: DimensionValue | undefined;
+
+  /**
+   * Equivalent to `marginBottom`
+   */
+  marginBlockEnd?: DimensionValue | undefined;
+
+  /**
+   * Equivalent to `marginTop`
+   */
+  marginBlockStart?: DimensionValue | undefined;
+
+  /**
+   * Equivalent to `marginHorizontal`
+   */
+  marginInline?: DimensionValue | undefined;
+
+  /**
+   * Equivalent to `marginEnd`
+   */
+  marginInlineEnd?: DimensionValue | undefined;
+
+  /**
+   * Equivalent to `marginStart`
+   */
+  marginInlineStart?: DimensionValue | undefined;
+
+  /**
+   * Equivalent to `paddingVertical`
+   */
+  paddingBlock?: DimensionValue | undefined;
+
+  /**
+   * Equivalent to `paddingBottom`
+   */
+  paddingBlockEnd?: DimensionValue | undefined;
+
+  /**
+   * Equivalent to `paddingTop`
+   */
+  paddingBlockStart?: DimensionValue | undefined;
+
+  /**
+   * Equivalent to `paddingHorizontal`
+   */
+  paddingInline?: DimensionValue | undefined;
+
+  /**
+   * Equivalent to `paddingEnd`
+   */
+  paddingInlineEnd?: DimensionValue | undefined;
+
+  /**
+   * Equivalent to `paddingStart`
+   */
+  paddingInlineStart?: DimensionValue | undefined;
 }
 
 export interface ShadowStyleIOS {
@@ -239,16 +330,16 @@ export type FilterFunction =
   | {opacity: number | string}
   | {saturate: number | string}
   | {sepia: number | string}
-  | {dropShadow: DropShadowPrimitive | string};
+  | {dropShadow: DropShadowValue | string};
 
-export type DropShadowPrimitive = {
+export type DropShadowValue = {
   offsetX: number | string;
   offsetY: number | string;
   standardDeviation?: number | string | undefined;
   color?: ColorValue | number | undefined;
 };
 
-export type BoxShadowPrimitive = {
+export type BoxShadowValue = {
   offsetX: number | string;
   offsetY: number | string;
   color?: string | undefined;
@@ -320,6 +411,10 @@ export interface ViewStyle extends FlexStyle, ShadowStyleIOS, TransformsStyle {
   borderTopLeftRadius?: AnimatableNumericValue | string | undefined;
   borderTopRightRadius?: AnimatableNumericValue | string | undefined;
   borderTopStartRadius?: AnimatableNumericValue | string | undefined;
+  outlineColor?: ColorValue | undefined;
+  outlineOffset?: AnimatableNumericValue | undefined;
+  outlineStyle?: 'solid' | 'dotted' | 'dashed' | undefined;
+  outlineWidth?: AnimatableNumericValue | undefined;
   opacity?: AnimatableNumericValue | undefined;
   /**
    * Sets the elevation of a view, using Android's underlying
@@ -336,7 +431,8 @@ export interface ViewStyle extends FlexStyle, ShadowStyleIOS, TransformsStyle {
   pointerEvents?: 'box-none' | 'none' | 'box-only' | 'auto' | undefined;
   isolation?: 'auto' | 'isolate' | undefined;
   cursor?: CursorValue | undefined;
-  boxShadow?: ReadonlyArray<BoxShadowPrimitive> | string | undefined;
+  boxShadow?: ReadonlyArray<BoxShadowValue> | string | undefined;
+  filter?: ReadonlyArray<FilterFunction> | string | undefined;
 }
 
 export type FontVariant =

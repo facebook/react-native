@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<fa8245a05ab1f508318e1d18938f9dab>>
+ * @generated SignedSource<<06791e428f1e199b718f11c6bc1f1414>>
  */
 
 /**
@@ -43,6 +43,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableCleanTextInputYogaNode(): Boolean = false
 
+  override fun enableDeletionOfUnmountedViews(): Boolean = false
+
   override fun enableEagerRootViewAttachment(): Boolean = false
 
   override fun enableEventEmitterRetentionDuringGesturesOnAndroid(): Boolean = false
@@ -67,6 +69,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableSynchronousStateUpdates(): Boolean = false
 
+  override fun enableTextPreallocationOptimisation(): Boolean = false
+
   override fun enableUIConsistency(): Boolean = false
 
   override fun enableViewRecycling(): Boolean = false
@@ -75,11 +79,7 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun fetchImagesInViewPreallocation(): Boolean = false
 
-  override fun fixIncorrectScrollViewStateUpdateOnAndroid(): Boolean = false
-
   override fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean = false
-
-  override fun fixMissedFabricStateUpdatesOnAndroid(): Boolean = false
 
   override fun fixMountingCoordinatorReportedPendingTransactionsOnAndroid(): Boolean = false
 

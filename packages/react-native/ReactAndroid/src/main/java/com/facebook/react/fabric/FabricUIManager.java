@@ -760,6 +760,14 @@ public class FabricUIManager
             isLayoutable));
   }
 
+  @SuppressWarnings("unused")
+  @AnyThread
+  @ThreadConfined(ANY)
+  private void destroyUnmountedView(int surfaceId, int reactTag) {
+    mMountItemDispatcher.addMountItem(
+        MountItemFactory.createDestroyViewMountItem(surfaceId, reactTag));
+  }
+
   @SuppressLint("NotInvokedPrivateMethod")
   @SuppressWarnings("unused")
   @AnyThread

@@ -41,6 +41,7 @@ declare module 'react-native/Libraries/Utilities/codegenNativeComponent' {
 
 declare module 'react-native/Libraries/Types/CodegenTypes' {
   import type {NativeSyntheticEvent} from 'react-native';
+  import type {EventSubscription} from 'react-native/Libraries/vendor/emitter/EventEmitter';
 
   // Event types
   // We're not using the PaperName, it is only used to codegen view config settings
@@ -59,6 +60,7 @@ declare module 'react-native/Libraries/Types/CodegenTypes' {
   export type Float = number;
   export type Int32 = number;
   export type UnsafeObject = object;
+  export type UnsafeMixed = unknown;
 
   type DefaultTypes = number | boolean | string | ReadonlyArray<string>;
   // Default handling, ignore the unused value
@@ -71,4 +73,8 @@ declare module 'react-native/Libraries/Types/CodegenTypes' {
     Type extends DefaultTypes,
     Value extends Type | string | undefined | null,
   > = Type | undefined | null;
+
+  export type EventEmitter<T> = (
+    handler: (arg: T) => void | Promise<void>,
+  ) => EventSubscription;
 }

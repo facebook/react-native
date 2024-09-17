@@ -199,7 +199,11 @@ class YG_EXPORT Style {
     return pool_.getNumber(aspectRatio_);
   }
   void setAspectRatio(FloatOptional value) {
-    pool_.store(aspectRatio_, value);
+    // degenerate aspect ratios act as auto.
+    // see https://drafts.csswg.org/css-sizing-4/#valdef-aspect-ratio-ratio
+    pool_.store(
+        aspectRatio_,
+        value == 0.0f || std::isinf(value.unwrap()) ? FloatOptional{} : value);
   }
 
   bool horizontalInsetsDefined() const {

@@ -14,7 +14,7 @@
  * licensed under [CC-BY-SA 2.5](https://creativecommons.org/licenses/by-sa/2.5/).
  */
 
-import DOMRectReadOnly, {type DOMRectLike} from './DOMRectReadOnly';
+import DOMRectReadOnly, {type DOMRectInit} from './DOMRectReadOnly';
 
 // flowlint unsafe-getters-setters:off
 
@@ -72,7 +72,7 @@ export default class DOMRect extends DOMRectReadOnly {
   /**
    * Creates a new `DOMRect` object with a given location and dimensions.
    */
-  static fromRect(rect?: ?DOMRectLike): DOMRect {
+  static fromRect(rect?: ?DOMRectInit): DOMRect {
     if (!rect) {
       return new DOMRect();
     }

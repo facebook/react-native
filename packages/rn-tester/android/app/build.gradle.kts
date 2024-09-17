@@ -130,6 +130,7 @@ android {
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     buildConfigField("String", "JS_MAIN_MODULE_NAME", "\"js/RNTesterApp.android\"")
     buildConfigField("String", "BUNDLE_ASSET_NAME", "\"RNTesterApp.android.bundle\"")
+    buildConfigField("Boolean", "IS_INTERNAL_BUILD", "false")
   }
   externalNativeBuild { cmake { version = cmakeVersion } }
   splits {

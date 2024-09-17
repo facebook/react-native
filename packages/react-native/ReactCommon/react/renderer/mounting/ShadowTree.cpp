@@ -347,8 +347,6 @@ MountingCoordinator::Shared ShadowTree::getMountingCoordinator() const {
 CommitStatus ShadowTree::commit(
     const ShadowTreeCommitTransaction& transaction,
     const CommitOptions& commitOptions) const {
-  SystraceSection s("ShadowTree::commit");
-
   [[maybe_unused]] int attempts = 0;
 
   while (true) {
@@ -368,7 +366,7 @@ CommitStatus ShadowTree::commit(
 CommitStatus ShadowTree::tryCommit(
     const ShadowTreeCommitTransaction& transaction,
     const CommitOptions& commitOptions) const {
-  SystraceSection s("ShadowTree::tryCommit");
+  SystraceSection s("ShadowTree::commit");
 
   auto telemetry = TransactionTelemetry{};
   telemetry.willCommit();

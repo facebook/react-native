@@ -586,17 +586,7 @@ UIWindow *__nullable RCTKeyWindow(void)
   UIScene *sceneToUse = foregroundActiveScene ? foregroundActiveScene : foregroundInactiveScene;
   UIWindowScene *windowScene = (UIWindowScene *)sceneToUse;
 
-  if (@available(iOS 15.0, *)) {
-    return windowScene.keyWindow;
-  }
-
-  for (UIWindow *window in windowScene.windows) {
-    if (window.isKeyWindow) {
-      return window;
-    }
-  }
-
-  return nil;
+  return windowScene.keyWindow;
 }
 
 UIStatusBarManager *__nullable RCTUIStatusBarManager(void)

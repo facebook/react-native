@@ -82,6 +82,11 @@ const definitions: FeatureFlagDefinitions = {
       defaultValue: false,
       description: 'Clean yoga node when <TextInput /> does not change.',
     },
+    enableDeletionOfUnmountedViews: {
+      defaultValue: false,
+      description:
+        'Deletes views that were pre-allocated but never mounted on the screen.',
+    },
     enableEagerRootViewAttachment: {
       defaultValue: false,
       description:
@@ -140,6 +145,11 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'Dispatches state updates synchronously in Fabric (e.g.: updates the scroll position in the shadow tree synchronously from the main thread).',
     },
+    enableTextPreallocationOptimisation: {
+      defaultValue: false,
+      description:
+        'Text preallocation optimisation where unnecessary work is removed.',
+    },
     enableUIConsistency: {
       defaultValue: false,
       description:
@@ -160,20 +170,10 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'Start image fetching during view preallocation instead of waiting for layout pass',
     },
-    fixIncorrectScrollViewStateUpdateOnAndroid: {
-      defaultValue: false,
-      description:
-        'When doing a smooth scroll animation, it stops setting the state with the final scroll position in Fabric before the animation starts.',
-    },
     fixMappingOfEventPrioritiesBetweenFabricAndReact: {
       defaultValue: false,
       description:
         'Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.',
-    },
-    fixMissedFabricStateUpdatesOnAndroid: {
-      defaultValue: false,
-      description:
-        'Enables a fix to prevent the possibility of state updates in Fabric being missed due to race conditions with previous state updates.',
     },
     fixMountingCoordinatorReportedPendingTransactionsOnAndroid: {
       defaultValue: false,
@@ -337,10 +337,10 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'Enables use of setNativeProps in Native driven animations in Fabric.',
     },
-    usePassiveEffectsForAnimations: {
+    useInsertionEffectsForAnimations: {
       defaultValue: false,
       description:
-        'Enable a variant of useAnimatedPropsLifecycle hook that constructs the animation graph in passive effect instead of layout effect',
+        'Changes construction of the animation graph to `useInsertionEffect` instead of `useLayoutEffect`.',
     },
     useRefsForTextInputState: {
       defaultValue: false,

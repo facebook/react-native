@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c3f43e92b0710e4a68bb76d874b3058d>>
+ * @generated SignedSource<<8d28b4f3ffac32a287c9b858d62e39e1>>
  */
 
 /**
@@ -88,6 +88,11 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableCleanTextInputYogaNode();
 
   /**
+   * Deletes views that were pre-allocated but never mounted on the screen.
+   */
+  RN_EXPORT static bool enableDeletionOfUnmountedViews();
+
+  /**
    * Feature flag to configure eager attachment of the root view/initialisation of the JS code.
    */
   RN_EXPORT static bool enableEagerRootViewAttachment();
@@ -148,6 +153,11 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableSynchronousStateUpdates();
 
   /**
+   * Text preallocation optimisation where unnecessary work is removed.
+   */
+  RN_EXPORT static bool enableTextPreallocationOptimisation();
+
+  /**
    * Ensures that JavaScript always has a consistent view of the state of the UI (e.g.: commits done in other threads are not immediately propagated to JS during its execution).
    */
   RN_EXPORT static bool enableUIConsistency();
@@ -168,19 +178,9 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool fetchImagesInViewPreallocation();
 
   /**
-   * When doing a smooth scroll animation, it stops setting the state with the final scroll position in Fabric before the animation starts.
-   */
-  RN_EXPORT static bool fixIncorrectScrollViewStateUpdateOnAndroid();
-
-  /**
    * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.
    */
   RN_EXPORT static bool fixMappingOfEventPrioritiesBetweenFabricAndReact();
-
-  /**
-   * Enables a fix to prevent the possibility of state updates in Fabric being missed due to race conditions with previous state updates.
-   */
-  RN_EXPORT static bool fixMissedFabricStateUpdatesOnAndroid();
 
   /**
    * Fixes a limitation on Android where the mounting coordinator would report there are no pending transactions but some of them were actually not processed due to the use of the push model.

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<978d9e8d1129951f3c5750f95e2ff5d2>>
+ * @generated SignedSource<<cab6789c15431b677b1ccff477933a74>>
  */
 
 /**
@@ -43,6 +43,8 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableCleanTextInputYogaNode(): Boolean
 
+  @DoNotStrip public fun enableDeletionOfUnmountedViews(): Boolean
+
   @DoNotStrip public fun enableEagerRootViewAttachment(): Boolean
 
   @DoNotStrip public fun enableEventEmitterRetentionDuringGesturesOnAndroid(): Boolean
@@ -67,6 +69,8 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableSynchronousStateUpdates(): Boolean
 
+  @DoNotStrip public fun enableTextPreallocationOptimisation(): Boolean
+
   @DoNotStrip public fun enableUIConsistency(): Boolean
 
   @DoNotStrip public fun enableViewRecycling(): Boolean
@@ -75,11 +79,7 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun fetchImagesInViewPreallocation(): Boolean
 
-  @DoNotStrip public fun fixIncorrectScrollViewStateUpdateOnAndroid(): Boolean
-
   @DoNotStrip public fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean
-
-  @DoNotStrip public fun fixMissedFabricStateUpdatesOnAndroid(): Boolean
 
   @DoNotStrip public fun fixMountingCoordinatorReportedPendingTransactionsOnAndroid(): Boolean
 

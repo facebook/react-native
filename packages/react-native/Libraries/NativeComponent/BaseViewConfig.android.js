@@ -172,7 +172,7 @@ const validAttributesForNonEventProps = {
   boxShadow: {
     process: require('../StyleSheet/processBoxShadow').default,
   },
-  experimental_filter: {
+  filter: {
     process: require('../StyleSheet/processFilter').default,
   },
   experimental_mixBlendMode: true,
@@ -267,6 +267,11 @@ const validAttributesForNonEventProps = {
   borderBottomWidth: true,
   borderLeftWidth: true,
   borderRightWidth: true,
+
+  outlineColor: {process: require('../StyleSheet/processColor').default},
+  outlineOffset: true,
+  outlineStyle: true,
+  outlineWidth: true,
 
   start: true,
   end: true,

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<dcef79032ef43fce2de3e3f12f6e38bc>>
+ * @generated SignedSource<<3c04d494bdbf5d3fe63023617e9134f4>>
  */
 
 /**
@@ -87,6 +87,11 @@ bool NativeReactNativeFeatureFlags::enableCleanTextInputYogaNode(
   return ReactNativeFeatureFlags::enableCleanTextInputYogaNode();
 }
 
+bool NativeReactNativeFeatureFlags::enableDeletionOfUnmountedViews(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableDeletionOfUnmountedViews();
+}
+
 bool NativeReactNativeFeatureFlags::enableEagerRootViewAttachment(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableEagerRootViewAttachment();
@@ -147,6 +152,11 @@ bool NativeReactNativeFeatureFlags::enableSynchronousStateUpdates(
   return ReactNativeFeatureFlags::enableSynchronousStateUpdates();
 }
 
+bool NativeReactNativeFeatureFlags::enableTextPreallocationOptimisation(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableTextPreallocationOptimisation();
+}
+
 bool NativeReactNativeFeatureFlags::enableUIConsistency(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableUIConsistency();
@@ -167,19 +177,9 @@ bool NativeReactNativeFeatureFlags::fetchImagesInViewPreallocation(
   return ReactNativeFeatureFlags::fetchImagesInViewPreallocation();
 }
 
-bool NativeReactNativeFeatureFlags::fixIncorrectScrollViewStateUpdateOnAndroid(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::fixIncorrectScrollViewStateUpdateOnAndroid();
-}
-
 bool NativeReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact();
-}
-
-bool NativeReactNativeFeatureFlags::fixMissedFabricStateUpdatesOnAndroid(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::fixMissedFabricStateUpdatesOnAndroid();
 }
 
 bool NativeReactNativeFeatureFlags::fixMountingCoordinatorReportedPendingTransactionsOnAndroid(

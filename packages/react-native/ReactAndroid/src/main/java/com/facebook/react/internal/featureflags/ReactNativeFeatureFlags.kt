@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<312da6e350ea6b96180156a341810654>>
+ * @generated SignedSource<<ac309a5ea9ff969824d34cca43b45ddf>>
  */
 
 /**
@@ -89,6 +89,12 @@ public object ReactNativeFeatureFlags {
   public fun enableCleanTextInputYogaNode(): Boolean = accessor.enableCleanTextInputYogaNode()
 
   /**
+   * Deletes views that were pre-allocated but never mounted on the screen.
+   */
+  @JvmStatic
+  public fun enableDeletionOfUnmountedViews(): Boolean = accessor.enableDeletionOfUnmountedViews()
+
+  /**
    * Feature flag to configure eager attachment of the root view/initialisation of the JS code.
    */
   @JvmStatic
@@ -161,6 +167,12 @@ public object ReactNativeFeatureFlags {
   public fun enableSynchronousStateUpdates(): Boolean = accessor.enableSynchronousStateUpdates()
 
   /**
+   * Text preallocation optimisation where unnecessary work is removed.
+   */
+  @JvmStatic
+  public fun enableTextPreallocationOptimisation(): Boolean = accessor.enableTextPreallocationOptimisation()
+
+  /**
    * Ensures that JavaScript always has a consistent view of the state of the UI (e.g.: commits done in other threads are not immediately propagated to JS during its execution).
    */
   @JvmStatic
@@ -185,22 +197,10 @@ public object ReactNativeFeatureFlags {
   public fun fetchImagesInViewPreallocation(): Boolean = accessor.fetchImagesInViewPreallocation()
 
   /**
-   * When doing a smooth scroll animation, it stops setting the state with the final scroll position in Fabric before the animation starts.
-   */
-  @JvmStatic
-  public fun fixIncorrectScrollViewStateUpdateOnAndroid(): Boolean = accessor.fixIncorrectScrollViewStateUpdateOnAndroid()
-
-  /**
    * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.
    */
   @JvmStatic
   public fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean = accessor.fixMappingOfEventPrioritiesBetweenFabricAndReact()
-
-  /**
-   * Enables a fix to prevent the possibility of state updates in Fabric being missed due to race conditions with previous state updates.
-   */
-  @JvmStatic
-  public fun fixMissedFabricStateUpdatesOnAndroid(): Boolean = accessor.fixMissedFabricStateUpdatesOnAndroid()
 
   /**
    * Fixes a limitation on Android where the mounting coordinator would report there are no pending transactions but some of them were actually not processed due to the use of the push model.

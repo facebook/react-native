@@ -792,6 +792,21 @@ void FabricMountingManager::drainPreallocateViewsQueue() {
   }
 }
 
+void FabricMountingManager::destroyUnmountedShadowNode(
+    const ShadowNodeFamily& family) {
+  auto tag = family.getTag();
+  auto surfaceId = family.getSurfaceId();
+
+  // ThreadScope::WithClassLoader is necessary because
+  // destroyUnmountedShadowNode is being called from a destructor thread
+  facebook::jni::ThreadScope::WithClassLoader([&]() {
+    static auto destroyUnmountedView =
+        JFabricUIManager::javaClassStatic()->getMethod<void(jint, jint)>(
+            "destroyUnmountedView");
+    destroyUnmountedView(javaUIManager_, surfaceId, tag);
+  });
+}
+
 void FabricMountingManager::maybePreallocateShadowNode(
     const ShadowNode& shadowNode) {
   if (!shadowNode.getTraits().check(ShadowNodeTraits::Trait::FormsView)) {
@@ -813,7 +828,7 @@ void FabricMountingManager::maybePreallocateShadowNode(
     preallocatedViewsQueue_.push_back(std::move(shadowView));
   } else {
     // Old implementation where FabricUIManager.preallocateView is called
-    // immediatelly.
+    // immediately.
     preallocateShadowView(shadowView);
   }
 }
@@ -847,7 +862,14 @@ void FabricMountingManager::preallocateShadowView(
   // We DO want to hold onto C object from Java, since we don't know the
   // lifetime of the Java object
   jni::local_ref<StateWrapperImpl::JavaPart> javaStateWrapper = nullptr;
-  if (shadowView.state != nullptr) {
+
+  // Paragraph only has a dummy state during view preallocation.
+  // Updating state on Android side has a cost and doing it unnecessarily for
+  // dummy state is wasteful.
+  bool preventPassingStateWrapperForText =
+      ReactNativeFeatureFlags::enableTextPreallocationOptimisation() &&
+      strcmp(shadowView.componentName, "Paragraph") == 0;
+  if (shadowView.state != nullptr && !preventPassingStateWrapperForText) {
     javaStateWrapper = StateWrapperImpl::newObjectJavaArgs();
     StateWrapperImpl* cStateWrapper = cthis(javaStateWrapper);
     cStateWrapper->setState(shadowView.state);

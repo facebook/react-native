@@ -108,10 +108,10 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
    * Given a `progress` between 0 and 1, a mutation and LayoutAnimation config,
    * return a ShadowView with mutated props and/or LayoutMetrics.
    *
-   * @param progress
-   * @param layoutAnimation
-   * @param animatedMutation
-   * @return
+   * @param progress the current progress for the animation
+   * @param startingView the initial configuration of the ShadowView
+   * @param finalView the final configuration of the ShadowView
+   * @return the current ShadowView
    */
   ShadowView createInterpolatedShadowView(
       Float progress,

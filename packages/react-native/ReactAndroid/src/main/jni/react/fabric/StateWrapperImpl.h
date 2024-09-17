@@ -32,7 +32,6 @@ class StateWrapperImpl : public jni::HybridClass<StateWrapperImpl> {
 
  private:
   jni::alias_ref<StateWrapperImpl::jhybriddata> jhybridobject_;
-  std::weak_ptr<const State> weakState_;
   std::shared_ptr<const State> state_;
 
   static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jclass>);

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7c97c370b2f453691c153fb370bea149>>
+ * @generated SignedSource<<d3deef1be546ac4cd55512c8a8c1972e>>
  */
 
 /**
@@ -61,6 +61,10 @@ bool ReactNativeFeatureFlags::enableCleanTextInputYogaNode() {
   return getAccessor().enableCleanTextInputYogaNode();
 }
 
+bool ReactNativeFeatureFlags::enableDeletionOfUnmountedViews() {
+  return getAccessor().enableDeletionOfUnmountedViews();
+}
+
 bool ReactNativeFeatureFlags::enableEagerRootViewAttachment() {
   return getAccessor().enableEagerRootViewAttachment();
 }
@@ -109,6 +113,10 @@ bool ReactNativeFeatureFlags::enableSynchronousStateUpdates() {
   return getAccessor().enableSynchronousStateUpdates();
 }
 
+bool ReactNativeFeatureFlags::enableTextPreallocationOptimisation() {
+  return getAccessor().enableTextPreallocationOptimisation();
+}
+
 bool ReactNativeFeatureFlags::enableUIConsistency() {
   return getAccessor().enableUIConsistency();
 }
@@ -125,16 +133,8 @@ bool ReactNativeFeatureFlags::fetchImagesInViewPreallocation() {
   return getAccessor().fetchImagesInViewPreallocation();
 }
 
-bool ReactNativeFeatureFlags::fixIncorrectScrollViewStateUpdateOnAndroid() {
-  return getAccessor().fixIncorrectScrollViewStateUpdateOnAndroid();
-}
-
 bool ReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact() {
   return getAccessor().fixMappingOfEventPrioritiesBetweenFabricAndReact();
-}
-
-bool ReactNativeFeatureFlags::fixMissedFabricStateUpdatesOnAndroid() {
-  return getAccessor().fixMissedFabricStateUpdatesOnAndroid();
 }
 
 bool ReactNativeFeatureFlags::fixMountingCoordinatorReportedPendingTransactionsOnAndroid() {

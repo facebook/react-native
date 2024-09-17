@@ -120,7 +120,7 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   /**
    * Filter
    */
-  experimental_filter: {process: processFilter},
+  filter: {process: processFilter},
 
   /**
    * MixBlendMode
@@ -174,6 +174,10 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   borderTopStartRadius: true,
   cursor: true,
   opacity: true,
+  outlineColor: colorAttributes,
+  outlineOffset: true,
+  outlineStyle: true,
+  outlineWidth: true,
   pointerEvents: true,
 
   /**

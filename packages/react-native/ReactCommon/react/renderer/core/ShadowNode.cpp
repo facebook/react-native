@@ -282,6 +282,7 @@ void ShadowNode::cloneChildrenIfShared() {
 void ShadowNode::setMounted(bool mounted) const {
   if (mounted) {
     family_->setMostRecentState(getState());
+    family_->setMounted();
     hasBeenMounted_ = mounted;
   }
 

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<653edeb6896f7803d7617b330b23683f>>
+ * @generated SignedSource<<6cce043e2e23a01d32b5fe8fc93a2e01>>
  */
 
 /**
@@ -55,6 +55,8 @@ class NativeReactNativeFeatureFlags
 
   bool enableCleanTextInputYogaNode(jsi::Runtime& runtime);
 
+  bool enableDeletionOfUnmountedViews(jsi::Runtime& runtime);
+
   bool enableEagerRootViewAttachment(jsi::Runtime& runtime);
 
   bool enableEventEmitterRetentionDuringGesturesOnAndroid(jsi::Runtime& runtime);
@@ -79,6 +81,8 @@ class NativeReactNativeFeatureFlags
 
   bool enableSynchronousStateUpdates(jsi::Runtime& runtime);
 
+  bool enableTextPreallocationOptimisation(jsi::Runtime& runtime);
+
   bool enableUIConsistency(jsi::Runtime& runtime);
 
   bool enableViewRecycling(jsi::Runtime& runtime);
@@ -87,11 +91,7 @@ class NativeReactNativeFeatureFlags
 
   bool fetchImagesInViewPreallocation(jsi::Runtime& runtime);
 
-  bool fixIncorrectScrollViewStateUpdateOnAndroid(jsi::Runtime& runtime);
-
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact(jsi::Runtime& runtime);
-
-  bool fixMissedFabricStateUpdatesOnAndroid(jsi::Runtime& runtime);
 
   bool fixMountingCoordinatorReportedPendingTransactionsOnAndroid(jsi::Runtime& runtime);
 

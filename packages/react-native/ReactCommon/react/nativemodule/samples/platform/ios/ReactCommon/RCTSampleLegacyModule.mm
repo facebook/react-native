@@ -141,8 +141,8 @@ RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSDictionary *, getValue : (double)x y : (NS
 {
   return @{
     @"x" : @(x),
-    @"y" : y ?: [NSNull null],
-    @"z" : z ?: [NSNull null],
+    @"y" : y ? y : [NSNull null],
+    @"z" : z ? z : [NSNull null],
   };
 }
 

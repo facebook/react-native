@@ -124,15 +124,11 @@ public abstract class HeadlessJsTaskService extends Service implements HeadlessJ
   @Override
   public void onDestroy() {
     super.onDestroy();
+    ReactContext reactContext = getReactContext();
 
-    if (getReactNativeHost().hasInstance()) {
-      ReactInstanceManager reactInstanceManager = getReactNativeHost().getReactInstanceManager();
-      ReactContext reactContext = reactInstanceManager.getCurrentReactContext();
-      if (reactContext != null) {
-        HeadlessJsTaskContext headlessJsTaskContext =
-            HeadlessJsTaskContext.getInstance(reactContext);
-        headlessJsTaskContext.removeTaskEventListener(this);
-      }
+    if (reactContext != null) {
+      HeadlessJsTaskContext headlessJsTaskContext = HeadlessJsTaskContext.getInstance(reactContext);
+      headlessJsTaskContext.removeTaskEventListener(this);
     }
     if (sWakeLock != null) {
       sWakeLock.release();

@@ -12,7 +12,7 @@
 'use strict';
 
 import type {ColorValue} from './StyleSheet';
-import type {DropShadowPrimitive, FilterFunction} from './StyleSheetTypes';
+import type {DropShadowValue, FilterFunction} from './StyleSheetTypes';
 
 import processColor from './processColor';
 
@@ -179,7 +179,7 @@ function _getFilterAmount(filterName: string, filterArgs: mixed): ?number {
 }
 
 function parseDropShadow(
-  rawDropShadow: string | DropShadowPrimitive,
+  rawDropShadow: string | DropShadowValue,
 ): ?ParsedDropShadow {
   const dropShadow =
     typeof rawDropShadow === 'string'
@@ -248,8 +248,8 @@ function parseDropShadow(
   return parsedDropShadow;
 }
 
-function parseDropShadowString(rawDropShadow: string): ?DropShadowPrimitive {
-  const dropShadow: DropShadowPrimitive = {
+function parseDropShadowString(rawDropShadow: string): ?DropShadowValue {
+  const dropShadow: DropShadowValue = {
     offsetX: 0,
     offsetY: 0,
   };

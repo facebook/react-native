@@ -29,7 +29,7 @@ import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 public class ReactDelegate {
 
   private final Activity mActivity;
-  private ReactRootView mReactRootView;
+  @Nullable private ReactRootView mReactRootView;
 
   @Nullable private final String mMainComponentName;
 
@@ -143,17 +143,10 @@ public class ReactDelegate {
   }
 
   public void onHostDestroy() {
+    unloadApp();
     if (ReactFeatureFlags.enableBridgelessArchitecture) {
-      if (mReactSurface != null) {
-        mReactSurface.stop();
-        mReactSurface = null;
-      }
       mReactHost.onHostDestroy(mActivity);
     } else {
-      if (mReactRootView != null) {
-        mReactRootView.unmountReactApplication();
-        mReactRootView = null;
-      }
       if (getReactNativeHost().hasInstance()) {
         getReactNativeHost().getReactInstanceManager().onHostDestroy(mActivity);
       }
@@ -281,10 +274,16 @@ public class ReactDelegate {
     devSupportManager.handleReloadJS();
   }
 
+  /** Start the React surface with the app key supplied in the {@link ReactDelegate} constructor. */
   public void loadApp() {
     loadApp(mMainComponentName);
   }
 
+  /**
+   * Start the React surface for the given app key.
+   *
+   * @param appKey The ID of the app to load into the surface.
+   */
   public void loadApp(String appKey) {
     // With Bridgeless enabled, create and start the surface
     if (ReactFeatureFlags.enableBridgelessArchitecture) {
@@ -305,6 +304,22 @@ public class ReactDelegate {
     }
   }
 
+  /** Stop the React surface started with {@link ReactDelegate#loadApp()}. */
+  public void unloadApp() {
+    if (ReactFeatureFlags.enableBridgelessArchitecture) {
+      if (mReactSurface != null) {
+        mReactSurface.stop();
+        mReactSurface = null;
+      }
+    } else {
+      if (mReactRootView != null) {
+        mReactRootView.unmountReactApplication();
+        mReactRootView = null;
+      }
+    }
+  }
+
+  @Nullable
   public ReactRootView getReactRootView() {
     if (ReactFeatureFlags.enableBridgelessArchitecture) {
       return (ReactRootView) mReactSurface.getView();

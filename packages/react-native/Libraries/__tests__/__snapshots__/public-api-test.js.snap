@@ -933,6 +933,7 @@ exports[`public API should not change unintentionally Libraries/Animated/nodes/A
   __getNativeConfig(): Object;
   __getPlatformConfig(): ?PlatformConfig;
   __setPlatformConfig(platformConfig: ?PlatformConfig): void;
+  toJSON(): mixed;
 }
 "
 `;
@@ -3646,7 +3647,7 @@ exports[`public API should not change unintentionally Libraries/Components/Touch
   releaseBounciness?: ?number,
   releaseVelocity?: ?number,
   style?: ?ViewStyleProp,
-  hostRef: React.Ref<typeof Animated.View>,
+  hostRef: React.RefSetter<React.ElementRef<typeof Animated.View>>,
 |}>;
 declare module.exports: React.AbstractComponent<
   $ReadOnly<$Diff<Props, {| hostRef: mixed |}>>,
@@ -3675,10 +3676,10 @@ type Props = $ReadOnly<{|
   onShowUnderlay?: ?() => void,
   onHideUnderlay?: ?() => void,
   testOnly_pressed?: ?boolean,
-  hostRef: React.Ref<typeof View>,
+  hostRef: React.RefSetter<React.ElementRef<typeof View>>,
 |}>;
 declare const Touchable: React.AbstractComponent<
-  $ReadOnly<$Diff<Props, {| hostRef: React.Ref<typeof View> |}>>,
+  $ReadOnly<$Diff<Props, {| +hostRef: mixed |}>>,
   React.ElementRef<typeof View>,
 >;
 declare module.exports: Touchable;
@@ -3763,7 +3764,7 @@ type Props = $ReadOnly<{|
   ...TVProps,
   activeOpacity?: ?number,
   style?: ?ViewStyleProp,
-  hostRef?: ?React.Ref<typeof Animated.View>,
+  hostRef?: ?React.RefSetter<React.ElementRef<typeof Animated.View>>,
 |}>;
 declare const Touchable: React.AbstractComponent<
   Props,
@@ -6376,6 +6377,7 @@ export type Props = $ReadOnly<{|
     | \\"landscape-right\\",
   >,
   onOrientationChange?: ?DirectEventHandler<OrientationChangeEvent>,
+  backdropColor?: ?string,
 |}>;
 type State = {
   isRendered: boolean,
@@ -8284,8 +8286,8 @@ export type FilterFunction =
   | { opacity: number | string }
   | { saturate: number | string }
   | { sepia: number | string }
-  | { dropShadow: DropShadowPrimitive | string };
-export type DropShadowPrimitive = {
+  | { dropShadow: DropShadowValue | string };
+export type DropShadowValue = {
   offsetX: number | string,
   offsetY: number | string,
   standardDeviation?: number | string,
@@ -8299,7 +8301,7 @@ export type GradientValue = {
     positions?: $ReadOnlyArray<string>,
   }>,
 };
-export type BoxShadowPrimitive = {
+export type BoxShadowValue = {
   offsetX: number | string,
   offsetY: number | string,
   color?: ____ColorValue_Internal,
@@ -8363,11 +8365,15 @@ export type ____ViewStyle_InternalCore = $ReadOnly<{
   borderStartWidth?: AnimatableNumericValue,
   borderTopWidth?: AnimatableNumericValue,
   opacity?: AnimatableNumericValue,
+  outlineColor?: ____ColorValue_Internal,
+  outlineOffset?: AnimatableNumericValue,
+  outlineStyle?: \\"solid\\" | \\"dotted\\" | \\"dashed\\",
+  outlineWidth?: AnimatableNumericValue,
   elevation?: number,
   pointerEvents?: \\"auto\\" | \\"none\\" | \\"box-none\\" | \\"box-only\\",
   cursor?: CursorValue,
-  boxShadow?: $ReadOnlyArray<BoxShadowPrimitive> | string,
-  experimental_filter?: $ReadOnlyArray<FilterFunction> | string,
+  boxShadow?: $ReadOnlyArray<BoxShadowValue> | string,
+  filter?: $ReadOnlyArray<FilterFunction> | string,
   experimental_mixBlendMode?: ____BlendMode_Internal,
   experimental_backgroundImage?: $ReadOnlyArray<GradientValue> | string,
   isolation?: \\"auto\\" | \\"isolate\\",
@@ -8638,7 +8644,7 @@ exports[`public API should not change unintentionally Libraries/StyleSheet/proce
   inset?: boolean,
 };
 declare export default function processBoxShadow(
-  rawBoxShadows: ?($ReadOnlyArray<BoxShadowPrimitive> | string)
+  rawBoxShadows: ?($ReadOnlyArray<BoxShadowValue> | string)
 ): Array<ParsedBoxShadow>;
 "
 `;

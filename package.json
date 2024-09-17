@@ -32,8 +32,7 @@
     "test-typescript": "dtslint packages/react-native/types",
     "test": "jest",
     "trigger-react-native-release": "node ./scripts/releases-local/trigger-react-native-release.js",
-    "update-lock": "npx yarn-deduplicate",
-    "postinstall": "cd packages/react-native-codegen && yarn build"
+    "update-lock": "npx yarn-deduplicate"
   },
   "workspaces": [
     "packages/*",
@@ -50,8 +49,8 @@
     "@definitelytyped/dtslint": "^0.0.127",
     "@jest/create-cache-key-function": "^29.6.3",
     "@pkgjs/parseargs": "^0.11.0",
-    "@react-native/metro-babel-transformer": "0.76.0-main",
-    "@react-native/metro-config": "0.76.0-main",
+    "@react-native/metro-babel-transformer": "0.77.0-main",
+    "@react-native/metro-config": "0.77.0-main",
     "@tsconfig/node18": "1.0.1",
     "@types/react": "^18.2.6",
     "@typescript-eslint/parser": "^7.1.1",

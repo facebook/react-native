@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<cc7780d72b0241440e7f4ecb3212a0b8>>
+ * @generated SignedSource<<5cef66cb54312e8454c7781e3bb96aa3>>
  */
 
 /**
@@ -67,6 +67,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool enableDeletionOfUnmountedViews() override {
+    return false;
+  }
+
   bool enableEagerRootViewAttachment() override {
     return false;
   }
@@ -115,6 +119,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool enableTextPreallocationOptimisation() override {
+    return false;
+  }
+
   bool enableUIConsistency() override {
     return false;
   }
@@ -131,15 +139,7 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool fixIncorrectScrollViewStateUpdateOnAndroid() override {
-    return false;
-  }
-
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact() override {
-    return false;
-  }
-
-  bool fixMissedFabricStateUpdatesOnAndroid() override {
     return false;
   }
 
