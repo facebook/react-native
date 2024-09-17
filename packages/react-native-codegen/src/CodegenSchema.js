@@ -403,3 +403,11 @@ type NativeModuleParamOnlyTypeAnnotation = NativeModuleFunctionTypeAnnotation;
 type NativeModuleReturnOnlyTypeAnnotation =
   | NativeModulePromiseTypeAnnotation
   | VoidTypeAnnotation;
+
+// Used by compatibility check which needs to handle all possible types
+// This will eventually also include the union of all view manager types
+export type CompleteTypeAnnotation =
+  | NativeModuleTypeAnnotation
+  | NativeModuleFunctionTypeAnnotation
+  | NullableTypeAnnotation<NativeModuleTypeAnnotation>
+  | UnsafeAnyTypeAnnotation;
