@@ -10,6 +10,7 @@
 #include <cassert>
 #include <unordered_set>
 #include <vector>
+#include <jsi/jsi.h>
 #include "PerformanceEntryLinearBuffer.h"
 
 namespace facebook::react {
@@ -45,7 +46,7 @@ struct PerformanceObserverObserveSingleOptions: public PerformanceObserverObserv
  * Entries are pushed to the observer by the `PerformanceEntryReporter` class,
  * through the `PerformanceObserverRegistry` class which acts as a central hub.
  */
-class PerformanceObserver {
+class PerformanceObserver: public jsi::NativeState {
  public:
   explicit PerformanceObserver(
       PerformanceObserverCallback&& callback)
