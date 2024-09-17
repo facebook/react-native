@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2dad4a59eb97dc6737765c548830fcbf>>
- * @flow strict-local
+ * @generated SignedSource<<15b41e51eb5e0c45bdfe8ed76e5ca26c>>
+ * @flow strict
  */
 
 /**
@@ -20,6 +20,7 @@
 
 import {
   type Getter,
+  type OverridesFor,
   createJavaScriptFlagGetter,
   createNativeFlagGetter,
   setOverrides,
@@ -27,13 +28,20 @@ import {
 
 export type ReactNativeFeatureFlagsJsOnly = {
   jsOnlyTestFlag: Getter<boolean>,
+  alwaysThrottleRetriesInReact: Getter<boolean>,
   animatedShouldDebounceQueueFlush: Getter<boolean>,
   animatedShouldUseSingleOp: Getter<boolean>,
   enableAccessToHostTreeInFabric: Getter<boolean>,
+  enableAddPropertiesFastPathInReact: Getter<boolean>,
   enableAnimatedAllowlist: Getter<boolean>,
   enableAnimatedPropsMemo: Getter<boolean>,
+  enableFabricCompleteRootInCommitPhaseInReact: Getter<boolean>,
+  enableLazyContextPropagationInReact: Getter<boolean>,
   enableOptimisedVirtualizedCells: Getter<boolean>,
+  enablePersistedModeClonedFlagInReact: Getter<boolean>,
+  enableShallowPropDiffingInReact: Getter<boolean>,
   isLayoutAnimationEnabled: Getter<boolean>,
+  passChildrenWhenCloningPersistedNodesInReact: Getter<boolean>,
   shouldSkipStateUpdatesForLoopingAnimations: Getter<boolean>,
   shouldUseAnimatedObjectForTransform: Getter<boolean>,
   shouldUseRemoveClippedSubviewsAsDefaultOnIOS: Getter<boolean>,
@@ -43,7 +51,7 @@ export type ReactNativeFeatureFlagsJsOnly = {
   useRefsForTextInputState: Getter<boolean>,
 };
 
-export type ReactNativeFeatureFlagsJsOnlyOverrides = Partial<ReactNativeFeatureFlagsJsOnly>;
+export type ReactNativeFeatureFlagsJsOnlyOverrides = OverridesFor<ReactNativeFeatureFlagsJsOnly>;
 
 export type ReactNativeFeatureFlags = {
   ...ReactNativeFeatureFlagsJsOnly,
@@ -104,6 +112,11 @@ export type ReactNativeFeatureFlags = {
 export const jsOnlyTestFlag: Getter<boolean> = createJavaScriptFlagGetter('jsOnlyTestFlag', false);
 
 /**
+ * Throttle Suspense retries to 300ms even if everything has already loaded. Throttle Suspense on appearance and disappearance of fallback, not only appearance.
+ */
+export const alwaysThrottleRetriesInReact: Getter<boolean> = createJavaScriptFlagGetter('alwaysThrottleRetriesInReact', false);
+
+/**
  * Enables an experimental flush-queue debouncing in Animated.js.
  */
 export const animatedShouldDebounceQueueFlush: Getter<boolean> = createJavaScriptFlagGetter('animatedShouldDebounceQueueFlush', false);
@@ -119,6 +132,11 @@ export const animatedShouldUseSingleOp: Getter<boolean> = createJavaScriptFlagGe
 export const enableAccessToHostTreeInFabric: Getter<boolean> = createJavaScriptFlagGetter('enableAccessToHostTreeInFabric', false);
 
 /**
+ * Enables an optimized version of the function to compute the update payload for React Native in React.
+ */
+export const enableAddPropertiesFastPathInReact: Getter<boolean> = createJavaScriptFlagGetter('enableAddPropertiesFastPathInReact', false);
+
+/**
  * Enables Animated to skip non-allowlisted props and styles.
  */
 export const enableAnimatedAllowlist: Getter<boolean> = createJavaScriptFlagGetter('enableAnimatedAllowlist', false);
@@ -129,14 +147,39 @@ export const enableAnimatedAllowlist: Getter<boolean> = createJavaScriptFlagGett
 export const enableAnimatedPropsMemo: Getter<boolean> = createJavaScriptFlagGetter('enableAnimatedPropsMemo', false);
 
 /**
+ * Moves committing the Fabric shadow tree to the commit phase in React.
+ */
+export const enableFabricCompleteRootInCommitPhaseInReact: Getter<boolean> = createJavaScriptFlagGetter('enableFabricCompleteRootInCommitPhaseInReact', false);
+
+/**
+ * Enables an optimization to lazily propagate context in React.
+ */
+export const enableLazyContextPropagationInReact: Getter<boolean> = createJavaScriptFlagGetter('enableLazyContextPropagationInReact', false);
+
+/**
  * Removing unnecessary rerenders Virtualized cells after any rerenders of Virualized list. Works with strict=true option
  */
 export const enableOptimisedVirtualizedCells: Getter<boolean> = createJavaScriptFlagGetter('enableOptimisedVirtualizedCells', false);
 
 /**
+ * Enables an optimization in React for persisted mode (like Fabric) to avoid unnecessary clones of nodes.
+ */
+export const enablePersistedModeClonedFlagInReact: Getter<boolean> = createJavaScriptFlagGetter('enablePersistedModeClonedFlagInReact', false);
+
+/**
+ * Enables an optimization to do shallow prop diffing in React.
+ */
+export const enableShallowPropDiffingInReact: Getter<boolean> = createJavaScriptFlagGetter('enableShallowPropDiffingInReact', false);
+
+/**
  * Function used to enable / disabled Layout Animations in React Native.
  */
 export const isLayoutAnimationEnabled: Getter<boolean> = createJavaScriptFlagGetter('isLayoutAnimationEnabled', true);
+
+/**
+ * Enables an optimization to pass children when cloning nodes in persisted mode in React, to avoid doing additional clones later.
+ */
+export const passChildrenWhenCloningPersistedNodesInReact: Getter<boolean> = createJavaScriptFlagGetter('passChildrenWhenCloningPersistedNodesInReact', false);
 
 /**
  * If the animation is within Animated.loop, we do not send state updates to React.

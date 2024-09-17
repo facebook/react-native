@@ -279,6 +279,11 @@ const definitions: FeatureFlagDefinitions = {
   jsOnly: {
     ...testDefinitions.jsOnly,
 
+    alwaysThrottleRetriesInReact: {
+      defaultValue: false,
+      description:
+        'Throttle Suspense retries to 300ms even if everything has already loaded. Throttle Suspense on appearance and disappearance of fallback, not only appearance.',
+    },
     animatedShouldDebounceQueueFlush: {
       defaultValue: false,
       description:
@@ -294,6 +299,11 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'Enables access to the host tree in Fabric using DOM-compatible APIs.',
     },
+    enableAddPropertiesFastPathInReact: {
+      defaultValue: false,
+      description:
+        'Enables an optimized version of the function to compute the update payload for React Native in React.',
+    },
     enableAnimatedAllowlist: {
       defaultValue: false,
       description: 'Enables Animated to skip non-allowlisted props and styles.',
@@ -303,15 +313,40 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'Enables Animated to analyze props to minimize invalidating `AnimatedProps`.',
     },
+    enableFabricCompleteRootInCommitPhaseInReact: {
+      defaultValue: false,
+      description:
+        'Moves committing the Fabric shadow tree to the commit phase in React.',
+    },
+    enableLazyContextPropagationInReact: {
+      defaultValue: false,
+      description:
+        'Enables an optimization to lazily propagate context in React.',
+    },
     enableOptimisedVirtualizedCells: {
       defaultValue: false,
       description:
         'Removing unnecessary rerenders Virtualized cells after any rerenders of Virualized list. Works with strict=true option',
     },
+    enablePersistedModeClonedFlagInReact: {
+      defaultValue: false,
+      description:
+        'Enables an optimization in React for persisted mode (like Fabric) to avoid unnecessary clones of nodes.',
+    },
+    enableShallowPropDiffingInReact: {
+      defaultValue: false,
+      description:
+        'Enables an optimization to do shallow prop diffing in React.',
+    },
     isLayoutAnimationEnabled: {
       defaultValue: true,
       description:
         'Function used to enable / disabled Layout Animations in React Native.',
+    },
+    passChildrenWhenCloningPersistedNodesInReact: {
+      defaultValue: false,
+      description:
+        'Enables an optimization to pass children when cloning nodes in persisted mode in React, to avoid doing additional clones later.',
     },
     shouldSkipStateUpdatesForLoopingAnimations: {
       defaultValue: false,
