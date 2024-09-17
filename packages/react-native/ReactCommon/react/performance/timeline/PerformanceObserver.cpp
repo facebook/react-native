@@ -60,12 +60,8 @@ void PerformanceObserver::observe(std::unordered_set<PerformanceEntryType> types
   durationThreshold_ = options.durationThreshold;
 }
 
-void PerformanceObserver::scheduleFlushBuffer() {
-  if (!callback_) {
-    return;
-  }
-
-  auto droppedEntriesCount = 0;
+double PerformanceObserver::getDroppedEntriesCount() {
+  double droppedEntriesCount = 0;
 
   if (requiresDroppedEntries_) {
     auto reporter = PerformanceEntryReporter::getInstance();
@@ -77,7 +73,19 @@ void PerformanceObserver::scheduleFlushBuffer() {
     requiresDroppedEntries_ = false;
   }
 
-  callback_(takeRecords(), droppedEntriesCount);
+  return droppedEntriesCount;
+}
+
+void PerformanceObserver::scheduleFlushBuffer() {
+  if (!callback_) {
+    return;
+  }
+
+  if (!didScheduleFlushBuffer) {
+    didScheduleFlushBuffer = true;
+
+    callback_();
+  }
 }
 
 } // namespace facebook::react

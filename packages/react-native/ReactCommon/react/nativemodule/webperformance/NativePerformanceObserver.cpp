@@ -35,14 +35,25 @@ jsi::Object NativePerformanceObserver::createObserver(jsi::Runtime& rt, NativePe
   // the spec. The specification requires us to queue a single task that dispatches
   // observer callbacks. Instead, we are queuing all callbacks as separate tasks
   // in the scheduler.
-  PerformanceObserverCallback cb = [callback = std::move(callback)](std::vector<PerformanceEntry>&& entries, size_t droppedEntriesCount) -> void {
-    callback.callWithPriority(SchedulerPriority::IdlePriority, std::move(entries), droppedEntriesCount);
+  PerformanceObserverCallback cb = [callback = std::move(callback)]() -> void {
+    callback.callWithPriority(SchedulerPriority::IdlePriority);
   };
 
   auto observer = std::make_shared<PerformanceObserver>(std::move(cb));
   jsi::Object observerObj {rt};
   observerObj.setNativeState(rt, observer);
   return observerObj;
+}
+
+double NativePerformanceObserver::getDroppedEntriesCount(jsi::Runtime& rt, jsi::Object observerObj) {
+  auto observer =
+      std::dynamic_pointer_cast<PerformanceObserver>(observerObj.getNativeState(rt));
+
+  if (!observer) {
+    return 0;
+  }
+
+  return observer->getDroppedEntriesCount();
 }
 
 void NativePerformanceObserver::observe(jsi::Runtime& rt, jsi::Object observerObj, NativePerformanceObserverObserveOptions options) {
@@ -52,6 +63,7 @@ void NativePerformanceObserver::observe(jsi::Runtime& rt, jsi::Object observerOb
   if (!observer) {
     return;
   }
+  auto durationThreshold = options.durationThreshold.value_or(0.0);
 
   // observer of type multiple
   if (options.entryTypes.has_value()) {
@@ -62,12 +74,15 @@ void NativePerformanceObserver::observe(jsi::Runtime& rt, jsi::Object observerOb
       entryTypes.insert(Bridging<PerformanceEntryType>::fromJs(rt, rawTypes[i]));
     }
 
-    observer->observe(entryTypes);
+    observer->observe(entryTypes, { .durationThreshold = durationThreshold });
   }
   else { // single
     auto buffered = options.buffered.value_or(false);
     if (options.type.has_value()) {
-      observer->observe(static_cast<PerformanceEntryType>(options.type.value()), buffered);
+      observer->observe(static_cast<PerformanceEntryType>(options.type.value()), {
+                                                                                     .buffered = buffered,
+                                                                                     .durationThreshold = durationThreshold
+                                                                                 });
     }
   }
 

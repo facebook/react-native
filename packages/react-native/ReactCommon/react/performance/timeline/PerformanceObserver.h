@@ -15,7 +15,7 @@
 namespace facebook::react {
 
 using PerformanceObserverEntryTypeFilter = std::unordered_set<PerformanceEntryType>;
-using PerformanceObserverCallback = std::function<void(std::vector<PerformanceEntry>, size_t)>;
+using PerformanceObserverCallback = std::function<void()>;
 
 class PerformanceObserverRegistry;
 
@@ -82,6 +82,12 @@ class PerformanceObserver {
    */
   void observe(std::unordered_set<PerformanceEntryType> types, PerformanceObserverObserveMultipleOptions options = {});
 
+  /**
+   * Internal function called by JS bridge to get number of dropped entries count
+   * counted at call time.
+   */
+  double getDroppedEntriesCount();
+
 private:
   void scheduleFlushBuffer();
 
@@ -92,6 +98,7 @@ private:
   /// https://www.w3.org/TR/event-timing/#sec-modifications-perf-timeline
   double durationThreshold_{DEFAULT_DURATION_THRESHOLD};
   std::vector<PerformanceEntry> buffer_;
+  bool didScheduleFlushBuffer = false;
   bool requiresDroppedEntries_ = false;
 };
 

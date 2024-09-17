@@ -174,8 +174,9 @@ export class PerformanceObserver {
   }
 
   #createNativeObserver() {
-    return NativePerformanceObserver.createObserver((droppedEntriesCount) => {
+    return NativePerformanceObserver.createObserver(() => {
       const entryList = new PerformanceObserverEntryList(NativePerformanceObserver.takeRecords(this.#observerHandle));
+      const droppedEntriesCount = NativePerformanceObserver.getDroppedEntriesCount(this.#nativeObserverHandle);
       this.#callback(entryList, this, { droppedEntriesCount });
     });
   }

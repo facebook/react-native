@@ -66,6 +66,8 @@ class NativePerformanceObserver
   NativePerformanceObserver(std::shared_ptr<CallInvoker> jsInvoker);
       
   jsi::Object createObserver(jsi::Runtime& rt, NativePerformanceObserverCallback callback);
+  double getDroppedEntriesCount(jsi::Runtime& rt, jsi::Object observerObj);
+
   void observe(jsi::Runtime& rt, jsi::Object observer, NativePerformanceObserverObserveOptions options);
   void disconnect(jsi::Runtime& rt, jsi::Object observer);
   std::vector<PerformanceEntry> takeRecords(jsi::Runtime& rt, jsi::Object observerObj);
