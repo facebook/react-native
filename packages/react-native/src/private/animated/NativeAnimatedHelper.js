@@ -46,7 +46,7 @@ const isSingleOpBatching =
   Platform.OS === 'android' &&
   NativeAnimatedModule?.queueAndExecuteBatchedOperations != null &&
   ReactNativeFeatureFlags.animatedShouldUseSingleOp();
-let flushQueueTimeout = null;
+let flushQueueImmediate = null;
 
 const eventListenerGetValueCallbacks: {
   [number]: (value: number) => void,
@@ -142,9 +142,13 @@ const API = {
     queueOperations = true;
     if (
       ReactNativeFeatureFlags.animatedShouldDebounceQueueFlush() &&
-      flushQueueTimeout
+      flushQueueImmediate
     ) {
-      clearTimeout(flushQueueTimeout);
+      if (ReactNativeFeatureFlags.enableAnimatedClearImmediateFix()) {
+        clearImmediate(flushQueueImmediate);
+      } else {
+        clearTimeout(flushQueueImmediate);
+      }
     }
   },
 
@@ -161,9 +165,9 @@ const API = {
     invariant(NativeAnimatedModule, 'Native animated module is not available');
 
     if (ReactNativeFeatureFlags.animatedShouldDebounceQueueFlush()) {
-      const prevTimeout = flushQueueTimeout;
-      clearImmediate(prevTimeout);
-      flushQueueTimeout = setImmediate(API.flushQueue);
+      const prevImmediate = flushQueueImmediate;
+      clearImmediate(prevImmediate);
+      flushQueueImmediate = setImmediate(API.flushQueue);
     } else {
       API.flushQueue();
     }
@@ -176,7 +180,7 @@ const API = {
           NativeAnimatedModule || process.env.NODE_ENV === 'test',
           'Native animated module is not available',
         );
-        flushQueueTimeout = null;
+        flushQueueImmediate = null;
 
         if (singleOpQueue.length === 0) {
           return;
@@ -198,7 +202,7 @@ const API = {
           NativeAnimatedModule || process.env.NODE_ENV === 'test',
           'Native animated module is not available',
         );
-        flushQueueTimeout = null;
+        flushQueueImmediate = null;
 
         if (queue.length === 0) {
           return;

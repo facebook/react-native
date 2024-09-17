@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a1d731250e59d99ac390c9d01c4dbd2f>>
+ * @generated SignedSource<<da9c8c080b54d86a30c4f671365ba990>>
  * @flow strict
  */
 
@@ -32,6 +32,7 @@ export type ReactNativeFeatureFlagsJsOnly = {
   animatedShouldUseSingleOp: Getter<boolean>,
   enableAccessToHostTreeInFabric: Getter<boolean>,
   enableAnimatedAllowlist: Getter<boolean>,
+  enableAnimatedClearImmediateFix: Getter<boolean>,
   enableAnimatedPropsMemo: Getter<boolean>,
   enableOptimisedVirtualizedCells: Getter<boolean>,
   isLayoutAnimationEnabled: Getter<boolean>,
@@ -123,6 +124,11 @@ export const enableAccessToHostTreeInFabric: Getter<boolean> = createJavaScriptF
  * Enables Animated to skip non-allowlisted props and styles.
  */
 export const enableAnimatedAllowlist: Getter<boolean> = createJavaScriptFlagGetter('enableAnimatedAllowlist', false);
+
+/**
+ * Enables an experimental to use the proper clearIntermediate instead of calling the wrong clearTimeout and canceling another timer.
+ */
+export const enableAnimatedClearImmediateFix: Getter<boolean> = createJavaScriptFlagGetter('enableAnimatedClearImmediateFix', true);
 
 /**
  * Enables Animated to analyze props to minimize invalidating `AnimatedProps`.
