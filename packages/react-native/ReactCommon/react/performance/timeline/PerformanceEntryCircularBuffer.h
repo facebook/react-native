@@ -12,10 +12,9 @@
 
 namespace facebook::react {
 
-struct PerformanceEntryCircularBuffer : public PerformanceEntryBuffer {
-  BoundedConsumableBuffer<PerformanceEntry> entries;
-
-  explicit PerformanceEntryCircularBuffer(size_t size) : entries(size) {}
+class PerformanceEntryCircularBuffer : public PerformanceEntryBuffer {
+public:
+  explicit PerformanceEntryCircularBuffer(size_t size) : entries_(size) {}
   ~PerformanceEntryCircularBuffer() override = default;
 
   void add(const PerformanceEntry& entry) override;
@@ -29,6 +28,9 @@ struct PerformanceEntryCircularBuffer : public PerformanceEntryBuffer {
 
   void clear() override;
   void clear(std::string_view name) override;
+  
+private:
+  BoundedConsumableBuffer<PerformanceEntry> entries_;
 };
 
 } // namespace facebook::react
