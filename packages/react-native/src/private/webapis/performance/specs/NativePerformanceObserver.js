@@ -42,6 +42,7 @@ export type PerformanceObserverInit = {
 };
 
 export interface Spec extends TurboModule {
+  +getEventCounts: () => $ReadOnlyArray<[string, number]>;
   +createObserver: (callback: NativeBatchedObserverCallback) => OpaqueNativeObserverHandle;
   +getDroppedEntriesCount: (observer: OpaqueNativeObserverHandle) => number;
 
@@ -58,8 +59,7 @@ export interface Spec extends TurboModule {
     entryName?: string,
   ) => $ReadOnlyArray<RawPerformanceEntry>;
   +getSupportedPerformanceEntryTypes: () => $ReadOnlyArray<RawPerformanceEntryType>;
-  
-  +getEventCounts: () => $ReadOnlyArray<[string, number]>;
+
 }
 
 export default (TurboModuleRegistry.get<Spec>(
