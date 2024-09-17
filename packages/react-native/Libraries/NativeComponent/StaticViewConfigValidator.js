@@ -9,7 +9,6 @@
  */
 
 import {type ViewConfig} from '../Renderer/shims/ReactNativeTypes';
-import {isIgnored} from './ViewConfigIgnore';
 
 export type Difference =
   | {

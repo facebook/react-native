@@ -12,8 +12,6 @@
 
 'use strict';
 
-/* eslint-disable lint/sort-imports */
-
 const metroBabelRegister = require('metro-babel-register');
 const nullthrows = require('nullthrows');
 const createCacheKeyFunction =
