@@ -696,10 +696,18 @@ class ReactNativePodsUtils
             map[field] = "$(inherited)" + flag
         else
             unless map[field].include?(flag)
-                map[field] = map[field] + flag
+                if map[field].instance_of? String
+                    map[field] = map[field] + flag
+                elsif map[field].instance_of? Array
+                    map[field].push(flag)
+                end
             end
             unless map[field].include?("$(inherited)")
-                map[field] = "$(inherited) " + map[field]
+                if map[field].instance_of? String
+                    map[field] = "$(inherited) " + map[field]
+                elsif map[field].instance_of? Array
+                    map[field].unshift("$(inherited)")
+                end
             end
         end
     end
