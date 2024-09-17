@@ -10,6 +10,7 @@
 #include <cassert>
 #include <unordered_set>
 #include <vector>
+#include <memory>
 #include <jsi/jsi.h>
 #include "PerformanceEntryLinearBuffer.h"
 
@@ -17,8 +18,6 @@ namespace facebook::react {
 
 using PerformanceObserverEntryTypeFilter = std::unordered_set<PerformanceEntryType>;
 using PerformanceObserverCallback = std::function<void()>;
-
-class PerformanceObserverRegistry;
 
 /**
  * Represents subset of spec's `PerformanceObserverInit` that is allowed for multiple types.
@@ -45,14 +44,23 @@ struct PerformanceObserverObserveSingleOptions: public PerformanceObserverObserv
  *
  * Entries are pushed to the observer by the `PerformanceEntryReporter` class,
  * through the `PerformanceObserverRegistry` class which acts as a central hub.
+ *
+ * To create new performance observers, you should use
+ * `PerformanceObserverRegistry::createObserver` which creates the observer,
+ * registers it immediately and unregisters it when it goes out of scope.
+ *
+ * You can still manually create instance of `PerformanceObserver`, but then
+ * you need to manually register and unregister it from registry.
  */
 class PerformanceObserver: public jsi::NativeState {
  public:
-  explicit PerformanceObserver(
-      PerformanceObserverCallback&& callback)
+  using Ptr = std::shared_ptr<PerformanceObserver>;
+  using WeakPtr = std::weak_ptr<PerformanceObserver>;
+
+  explicit PerformanceObserver(PerformanceObserverCallback&& callback)
       : callback_(std::move(callback)) {}
 
-  virtual ~PerformanceObserver();
+  virtual ~PerformanceObserver() {}
 
   /**
    * Append entry to the buffer if this observer should handle this entry.
@@ -92,7 +100,6 @@ class PerformanceObserver: public jsi::NativeState {
 private:
   void scheduleFlushBuffer();
 
-  std::weak_ptr<PerformanceObserverRegistry> registry_;
   PerformanceObserverCallback callback_;
   PerformanceObserverEntryTypeFilter observedTypes_;
 

@@ -6,16 +6,9 @@
  */
 
 #include "PerformanceObserver.h"
-#include "PerformanceObserverRegistry.h"
 #include "PerformanceEntryReporter.h"
 
 namespace facebook::react {
-
-PerformanceObserver::~PerformanceObserver() {
-  if (auto registry = registry_.lock()) {
-    registry->removeObserver(*this);
-  }
-}
 
 void PerformanceObserver::handleEntry(const facebook::react::PerformanceEntry& entry) {
   // https://w3c.github.io/performance-timeline/#takerecords-method (step 7.1)
