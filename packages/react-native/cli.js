@@ -119,10 +119,13 @@ function warnWithDeprecated() {
   }
 
   console.warn(`
-🚨️ The \`init\` command is deprecated.
+🚨️ Creating a project using ${chalk.green('npx react-native init')} is deprecated. Please use:
 
-- Switch to ${chalk.dim('npx @react-native-community/cli init')} for the identical behavior.
-- Refer to the documentation for information about alternative tools: ${chalk.dim('https://reactnative.dev/docs/getting-started')}`);
+    ${chalk.green('npx @react-native-community/cli init')}
+
+Refer to the documentation for information about alternative tools: ${chalk.dim('https://reactnative.dev/docs/getting-started')}
+
+${chalk.green('No changes made.')}`);
 }
 
 function warnWithExplicitDependency(version = '*') {
