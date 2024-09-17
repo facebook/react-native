@@ -63,7 +63,7 @@ class PerformanceObserver: public jsi::NativeState {
   explicit PerformanceObserver(PerformanceObserverCallback&& callback)
       : callback_(std::move(callback)) {}
 
-  virtual ~PerformanceObserver() {}
+  ~PerformanceObserver() = default;
 
   /**
    * Append entry to the buffer if this observer should handle this entry.

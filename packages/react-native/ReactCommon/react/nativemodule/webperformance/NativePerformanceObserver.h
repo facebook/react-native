@@ -63,7 +63,7 @@ struct Bridging<PerformanceEntry>
 class NativePerformanceObserver
     : public NativePerformanceObserverCxxSpec<NativePerformanceObserver> {
  public:
-  NativePerformanceObserver(std::shared_ptr<CallInvoker> jsInvoker);
+  explicit NativePerformanceObserver(std::shared_ptr<CallInvoker> jsInvoker);
       
   jsi::Object createObserver(jsi::Runtime& rt, NativePerformanceObserverCallback callback);
   double getDroppedEntriesCount(jsi::Runtime& rt, jsi::Object observerObj);
