@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2dad4a59eb97dc6737765c548830fcbf>>
- * @flow strict-local
+ * @generated SignedSource<<08cb1ef37f80dbd53e1aa9ff5ba97286>>
+ * @flow strict
  */
 
 /**
