@@ -8315,10 +8315,6 @@ public class com/facebook/react/views/view/ReactDrawableHelper {
 	public static fun createDrawableFromJSDescription (Landroid/content/Context;Lcom/facebook/react/bridge/ReadableMap;)Landroid/graphics/drawable/Drawable;
 }
 
-public class com/facebook/react/views/view/ReactViewBackgroundDrawable : com/facebook/react/uimanager/drawable/CSSBackgroundDrawable {
-	public fun <init> (Landroid/content/Context;)V
-}
-
 public class com/facebook/react/views/view/ReactViewGroup : android/view/ViewGroup, com/facebook/react/touch/ReactHitSlopView, com/facebook/react/touch/ReactInterceptingViewGroup, com/facebook/react/uimanager/ReactClippingViewGroup, com/facebook/react/uimanager/ReactOverflowViewWithInset, com/facebook/react/uimanager/ReactPointerEventsView, com/facebook/react/uimanager/ReactZIndexedViewGroup {
 	public fun <init> (Landroid/content/Context;)V
 	public fun addView (Landroid/view/View;ILandroid/view/ViewGroup$LayoutParams;)V
