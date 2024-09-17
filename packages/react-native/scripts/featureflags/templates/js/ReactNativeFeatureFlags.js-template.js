@@ -28,6 +28,7 @@ ${DO_NOT_MODIFY_COMMENT}
 
 import {
   type Getter,
+  type OverridesFor,
   createJavaScriptFlagGetter,
   createNativeFlagGetter,
   setOverrides,
@@ -42,7 +43,7 @@ ${Object.entries(definitions.jsOnly)
   .join('\n')}
 };
 
-export type ReactNativeFeatureFlagsJsOnlyOverrides = Partial<ReactNativeFeatureFlagsJsOnly>;
+export type ReactNativeFeatureFlagsJsOnlyOverrides = OverridesFor<ReactNativeFeatureFlagsJsOnly>;
 
 export type ReactNativeFeatureFlags = {
   ...ReactNativeFeatureFlagsJsOnly,
