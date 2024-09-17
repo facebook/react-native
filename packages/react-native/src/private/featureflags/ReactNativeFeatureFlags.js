@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<08cb1ef37f80dbd53e1aa9ff5ba97286>>
+ * @generated SignedSource<<a1d731250e59d99ac390c9d01c4dbd2f>>
  * @flow strict
  */
 
@@ -20,6 +20,7 @@
 
 import {
   type Getter,
+  type OverridesFor,
   createJavaScriptFlagGetter,
   createNativeFlagGetter,
   setOverrides,
@@ -43,7 +44,7 @@ export type ReactNativeFeatureFlagsJsOnly = {
   useRefsForTextInputState: Getter<boolean>,
 };
 
-export type ReactNativeFeatureFlagsJsOnlyOverrides = Partial<ReactNativeFeatureFlagsJsOnly>;
+export type ReactNativeFeatureFlagsJsOnlyOverrides = OverridesFor<ReactNativeFeatureFlagsJsOnly>;
 
 export type ReactNativeFeatureFlags = {
   ...ReactNativeFeatureFlagsJsOnly,
