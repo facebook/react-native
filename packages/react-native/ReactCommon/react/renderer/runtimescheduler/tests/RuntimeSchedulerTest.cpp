@@ -705,17 +705,66 @@ TEST_P(RuntimeSchedulerTest, normalTaskYieldsToSynchronousAccess) {
   t1.join();
 
   EXPECT_EQ(syncTaskExecutionCount, 1);
-  EXPECT_TRUE(runtimeScheduler_->getShouldYield());
-  // The previous task is still in the queue (although it was executed
-  // already).
-  EXPECT_EQ(stubQueue_->size(), 1);
-
-  // Just empty the queue
-  stubQueue_->tick();
-
   EXPECT_EQ(normalTaskExecutionCount, 1); // It hasn't executed again
   EXPECT_FALSE(runtimeScheduler_->getShouldYield());
   EXPECT_EQ(stubQueue_->size(), 0);
+}
+
+TEST_P(RuntimeSchedulerTest, normalTaskYieldsToSynchronousAccessAndResumes) {
+  // Only for modern runtime scheduler
+  if (!GetParam()) {
+    return;
+  }
+
+  uint syncTaskExecutionCount = 0;
+  uint normalTaskExecutionCount = 0;
+
+  std::binary_semaphore signalTaskToSync{0};
+
+  // Scheduling normal priority task.
+  runtimeScheduler_->scheduleTask(
+      SchedulerPriority::NormalPriority,
+      [&normalTaskExecutionCount](jsi::Runtime& /*unused*/) {
+        normalTaskExecutionCount++;
+      });
+
+  // Only the normal task has been scheduled at this point.
+  EXPECT_EQ(stubQueue_->size(), 1);
+
+  // Scheduling sync task.
+  std::thread t1([this, &syncTaskExecutionCount, &signalTaskToSync]() {
+    signalTaskToSync.release();
+    runtimeScheduler_->executeNowOnTheSameThread(
+        [&syncTaskExecutionCount](jsi::Runtime& /*runtime*/) {
+          syncTaskExecutionCount++;
+        });
+  });
+
+  signalTaskToSync.acquire();
+
+  // Normal priority task immediatelly yield in favour of the sync task.
+  stubQueue_->tick();
+
+  EXPECT_EQ(stubQueue_->size(), 1);
+  EXPECT_EQ(normalTaskExecutionCount, 0);
+  EXPECT_EQ(syncTaskExecutionCount, 0);
+
+  // Execute sync task.
+  stubQueue_->tick();
+  t1.join();
+
+  // After executing sync task, event loop resumes normal operation and normal
+  // priority task is scheduled.
+  EXPECT_EQ(stubQueue_->size(), 1);
+  EXPECT_EQ(syncTaskExecutionCount, 1);
+  EXPECT_EQ(normalTaskExecutionCount, 0);
+
+  // Execute follow up normal priority task.
+  stubQueue_->tick();
+
+  EXPECT_EQ(stubQueue_->size(), 0);
+  EXPECT_EQ(syncTaskExecutionCount, 1);
+  EXPECT_EQ(normalTaskExecutionCount, 1);
 }
 
 TEST_P(RuntimeSchedulerTest, immediateTaskYieldsToSynchronousAccess) {
@@ -782,14 +831,6 @@ TEST_P(RuntimeSchedulerTest, immediateTaskYieldsToSynchronousAccess) {
   t1.join();
 
   EXPECT_EQ(syncTaskExecutionCount, 1);
-  EXPECT_TRUE(runtimeScheduler_->getShouldYield());
-  // The previous task is still in the queue (although it was executed
-  // already), so the sync task scheduled the work loop to process it.
-  EXPECT_EQ(stubQueue_->size(), 1);
-
-  // Just empty the queue
-  stubQueue_->tick();
-
   EXPECT_EQ(normalTaskExecutionCount, 1); // It hasn't executed again
   EXPECT_FALSE(runtimeScheduler_->getShouldYield());
   EXPECT_EQ(stubQueue_->size(), 0);
