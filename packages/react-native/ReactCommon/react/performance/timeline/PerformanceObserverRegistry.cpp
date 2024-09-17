@@ -22,19 +22,19 @@ PerformanceObserver::Ptr PerformanceObserverRegistry::createObserver(Performance
 }
 
 void PerformanceObserverRegistry::addObserver(const PerformanceObserver::WeakPtr& observer) {
-  std::lock_guard guard{observersMutex_};
+  std::lock_guard guard(observersMutex_);
   observers_.insert(observer);
 }
 
 void PerformanceObserverRegistry::removeObserver(const PerformanceObserver& observer) {
-  std::lock_guard guard{observersMutex_};
+  std::lock_guard guard(observersMutex_);
   erase_if(observers_, [&](auto e) -> bool {
     return !e.expired() && *e.lock() == observer;
   });
 }
 
 void PerformanceObserverRegistry::removeObserver(const PerformanceObserver::Ptr& observer) {
-  std::lock_guard guard{observersMutex_};
+  std::lock_guard guard(observersMutex_);
   observers_.erase(observer);
 }
 
