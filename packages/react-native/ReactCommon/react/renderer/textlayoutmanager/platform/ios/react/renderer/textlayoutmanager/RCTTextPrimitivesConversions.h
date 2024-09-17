@@ -49,17 +49,9 @@ inline static NSLineBreakStrategy RCTNSLineBreakStrategyFromLineBreakStrategy(
     case facebook::react::LineBreakStrategy::PushOut:
       return NSLineBreakStrategyPushOut;
     case facebook::react::LineBreakStrategy::HangulWordPriority:
-      if (@available(iOS 14.0, *)) {
-        return NSLineBreakStrategyHangulWordPriority;
-      } else {
-        return NSLineBreakStrategyNone;
-      }
+      return NSLineBreakStrategyHangulWordPriority;
     case facebook::react::LineBreakStrategy::Standard:
-      if (@available(iOS 14.0, *)) {
-        return NSLineBreakStrategyStandard;
-      } else {
-        return NSLineBreakStrategyNone;
-      }
+      return NSLineBreakStrategyStandard;
   }
 }
 
