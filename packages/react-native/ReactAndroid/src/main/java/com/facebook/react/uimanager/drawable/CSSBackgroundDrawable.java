@@ -327,13 +327,6 @@ public class CSSBackgroundDrawable extends Drawable {
     return Math.max(computedRadius - borderWidth, 0);
   }
 
-  // TODO: This API is unsafe and should be removed when
-  // BackgroundStyleApplicator is rolled out
-  @Deprecated(forRemoval = true, since = "0.76.0")
-  public ComputedBorderRadius getComputedBorderRadius() {
-    return mComputedBorderRadius;
-  }
-
   public void setColor(int color) {
     mColor = color;
     invalidateSelf();
