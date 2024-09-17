@@ -155,26 +155,25 @@ void RuntimeScheduler_Modern::executeNowOnTheSameThread(
   auto expirationTime = currentTime + timeoutForSchedulerPriority(priority);
   Task task{priority, std::move(callback), expirationTime};
 
-  if (runtimePtr == nullptr) {
-    syncTaskRequests_++;
-    executeSynchronouslyOnSameThread_CAN_DEADLOCK(
-        runtimeExecutor_,
-        [this, currentTime, &task](jsi::Runtime& runtime) mutable {
-          SystraceSection s2(
-              "RuntimeScheduler::executeNowOnTheSameThread callback");
-
-          syncTaskRequests_--;
-          runtimePtr = &runtime;
-          runEventLoopTick(runtime, task, currentTime);
-          runtimePtr = nullptr;
-        });
-
-  } else {
+  if (runtimePtr != nullptr) {
     // Protecting against re-entry into `executeNowOnTheSameThread` from within
     // `executeNowOnTheSameThread`. Without accounting for re-rentry, a deadlock
     // will occur when trying to gain access to the runtime.
     return runEventLoopTick(*runtimePtr, task, currentTime);
   }
+
+  syncTaskRequests_++;
+  executeSynchronouslyOnSameThread_CAN_DEADLOCK(
+      runtimeExecutor_,
+      [this, currentTime, &task](jsi::Runtime& runtime) mutable {
+        SystraceSection s2(
+            "RuntimeScheduler::executeNowOnTheSameThread callback");
+
+        syncTaskRequests_--;
+        runtimePtr = &runtime;
+        runEventLoopTick(runtime, task, currentTime);
+        runtimePtr = nullptr;
+      });
 
   bool shouldScheduleEventLoop = false;
 
@@ -273,17 +272,18 @@ void RuntimeScheduler_Modern::runEventLoop(
 
   auto previousPriority = currentPriority_;
 
-  while (syncTaskRequests_ == 0) {
-    auto currentTime = now_();
-    auto topPriorityTask = selectTask(currentTime, onlyExpired);
-
-    if (!topPriorityTask) {
-      // No pending work to do.
-      // Events will restart the loop when necessary.
-      break;
-    }
-
+  auto currentTime = now_();
+  // `selectTask` must be called unconditionaly to ensure that
+  // `isEventLoopScheduled_` is set to false and the event loop resume
+  // correctly if a synchronous task is scheduled.
+  // Unit test normalTaskYieldsToSynchronousAccessAndResumes covers this
+  // scenario.
+  auto topPriorityTask = selectTask(currentTime, onlyExpired);
+  while (topPriorityTask && syncTaskRequests_ == 0) {
     runEventLoopTick(runtime, *topPriorityTask, currentTime);
+
+    currentTime = now_();
+    topPriorityTask = selectTask(currentTime, onlyExpired);
   }
 
   currentPriority_ = previousPriority;
