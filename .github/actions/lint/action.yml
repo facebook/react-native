@@ -23,6 +23,7 @@ runs:
       run: yarn lint-ci
       env:
         GITHUB_TOKEN: ${{ inputs.github-token }}
+        GITHUB_PR_NUMBER: ${{ github.event.number }}
     - name: Lint code
       shell: bash
       run: ./scripts/circleci/exec_swallow_error.sh yarn lint --format junit -o ./reports/junit/eslint/results.xml
