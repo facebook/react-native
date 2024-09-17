@@ -10,7 +10,7 @@
 
 namespace facebook::react {
 
-void PerformanceObserver::handleEntry(const facebook::react::PerformanceEntry& entry) {
+void PerformanceObserver::handleEntry(const PerformanceEntry& entry) {
   // https://w3c.github.io/performance-timeline/#takerecords-method (step 7.1)
   // https://www.w3.org/TR/event-timing/#should-add-performanceeventtiming
   if (entry.entryType == PerformanceEntryType::EVENT) {
@@ -53,7 +53,7 @@ void PerformanceObserver::observe(std::unordered_set<PerformanceEntryType> types
   durationThreshold_ = options.durationThreshold;
 }
 
-double PerformanceObserver::getDroppedEntriesCount() {
+double PerformanceObserver::getDroppedEntriesCount() noexcept {
   double droppedEntriesCount = 0;
 
   if (requiresDroppedEntries_) {
@@ -69,6 +69,10 @@ double PerformanceObserver::getDroppedEntriesCount() {
   return droppedEntriesCount;
 }
 
+void PerformanceObserver::flush() noexcept {
+  didScheduleFlushBuffer = false;
+}
+
 void PerformanceObserver::scheduleFlushBuffer() {
   if (!callback_) {
     return;
@@ -77,7 +81,7 @@ void PerformanceObserver::scheduleFlushBuffer() {
   if (!didScheduleFlushBuffer) {
     didScheduleFlushBuffer = true;
 
-    callback_();
+    callback_(*this);
   }
 }
 

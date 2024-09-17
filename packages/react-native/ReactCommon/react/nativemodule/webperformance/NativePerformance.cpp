@@ -15,7 +15,10 @@
 #include <cxxreact/ReactMarker.h>
 #include <jsi/instrumentation.h>
 #include <react/performance/timeline/PerformanceEntryReporter.h>
+#if __has_include(<reactperflogger/fusebox/FuseboxTracer.h>)
 #include <reactperflogger/fusebox/FuseboxTracer.h>
+#define HAS_FUSEBOX
+#endif
 #include "NativePerformance.h"
 
 #ifdef RN_DISABLE_OSS_PLUGIN_HEADER
@@ -109,8 +112,11 @@ void NativePerformance::measure(
     std::optional<std::string> endMark) {
   auto [trackName, eventName] = parseTrackName(name);
 
+#ifdef HAS_FUSEBOX
   FuseboxTracer::getFuseboxTracer().addEvent(
       eventName, (uint64_t)startTime, (uint64_t)endTime, trackName);
+#endif
+  
   PerformanceEntryReporter::getInstance()->measure(
       eventName, startTime, endTime, duration, startMark, endMark);
 

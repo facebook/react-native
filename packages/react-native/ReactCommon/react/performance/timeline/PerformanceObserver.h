@@ -16,8 +16,10 @@
 
 namespace facebook::react {
 
+class PerformanceObserver;
+
 using PerformanceObserverEntryTypeFilter = std::unordered_set<PerformanceEntryType>;
-using PerformanceObserverCallback = std::function<void()>;
+using PerformanceObserverCallback = std::function<void(PerformanceObserver& observer)>;
 
 /**
  * Represents subset of spec's `PerformanceObserverInit` that is allowed for multiple types.
@@ -33,8 +35,9 @@ struct PerformanceObserverObserveMultipleOptions {
  *
  * https://w3c.github.io/performance-timeline/#performanceobserverinit-dictionary
  */
-struct PerformanceObserverObserveSingleOptions: public PerformanceObserverObserveMultipleOptions {
+struct PerformanceObserverObserveSingleOptions {
   bool buffered = false;
+  double durationThreshold = 0.0;
 };
 
 /**
@@ -95,7 +98,12 @@ class PerformanceObserver: public jsi::NativeState {
    * Internal function called by JS bridge to get number of dropped entries count
    * counted at call time.
    */
-  double getDroppedEntriesCount();
+  double getDroppedEntriesCount() noexcept;
+
+  /**
+   * Called when the callback was dispatched
+   */
+  void flush() noexcept;
 
 private:
   void scheduleFlushBuffer();

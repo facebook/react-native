@@ -22,7 +22,7 @@
 
 namespace facebook::react {
 
-using NativePerformanceObserverCallback = AsyncCallback<std::vector<PerformanceEntry>&&, size_t>;
+using NativePerformanceObserverCallback = AsyncCallback<>;
 using NativePerformanceObserverObserveOptions = NativePerformanceObserverPerformanceObserverInit<
     // entryTypes
     std::optional<std::vector<int>>,

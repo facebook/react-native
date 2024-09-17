@@ -35,11 +35,16 @@ jsi::Object NativePerformanceObserver::createObserver(jsi::Runtime& rt, NativePe
   // the spec. The specification requires us to queue a single task that dispatches
   // observer callbacks. Instead, we are queuing all callbacks as separate tasks
   // in the scheduler.
-  PerformanceObserverCallback cb = [callback = std::move(callback)]() -> void {
-    callback.callWithPriority(SchedulerPriority::IdlePriority);
+  PerformanceObserverCallback cb = [this, callback = std::move(callback)](PerformanceObserver& currentObserver) {
+    jsInvoker_->invokeAsync(SchedulerPriority::IdlePriority, [currentObserver, callback] (jsi::Runtime& /*rt*/) mutable {
+      callback.call();
+      currentObserver.flush();
+    });
   };
 
-  auto observer = std::make_shared<PerformanceObserver>(std::move(cb));
+  auto& registry = PerformanceEntryReporter::getInstance()->getObserverRegistry();
+  auto observer = registry.createObserver(std::move(cb));
+
   jsi::Object observerObj {rt};
   observerObj.setNativeState(rt, observer);
   return observerObj;
@@ -79,15 +84,9 @@ void NativePerformanceObserver::observe(jsi::Runtime& rt, jsi::Object observerOb
   else { // single
     auto buffered = options.buffered.value_or(false);
     if (options.type.has_value()) {
-      observer->observe(static_cast<PerformanceEntryType>(options.type.value()), {
-                                                                                     .buffered = buffered,
-                                                                                     .durationThreshold = durationThreshold
-                                                                                 });
+      observer->observe(static_cast<PerformanceEntryType>( options.type.value()), { .buffered = buffered, .durationThreshold = durationThreshold });
     }
   }
-
-  auto& registry = PerformanceEntryReporter::getInstance()->getObserverRegistry();
-  registry.addObserver(observer);
 }
 
 void NativePerformanceObserver::disconnect(jsi::Runtime& rt, jsi::Object observerObj) {
