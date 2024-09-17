@@ -23,7 +23,6 @@ class PerformanceEntryKeyedBuffer: public PerformanceEntryBuffer {
    * Retrieves buffer entries, whether consumed or not, with predicate
    */
   void consume(std::vector<PerformanceEntry>& target) override;
-  size_t pendingMessagesCount() const override;
 
   void getEntries(
       std::optional<std::string_view> name,

@@ -12,7 +12,7 @@
 #include <vector>
 #include <memory>
 #include <jsi/jsi.h>
-#include "PerformanceEntryLinearBuffer.h"
+#include "PerformanceEntryBuffer.h"
 
 namespace facebook::react {
 

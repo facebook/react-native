@@ -27,10 +27,6 @@ void PerformanceEntryKeyedBuffer::consume(std::vector<PerformanceEntry>& target)
   }
 }
 
-size_t PerformanceEntryKeyedBuffer::pendingMessagesCount() const {
-  return totalToConsume_;
-}
-
 void PerformanceEntryKeyedBuffer::getEntries(std::optional<std::string_view> name, std::vector<PerformanceEntry>& target) const {
   if (name.has_value()) {
     std::string nameStr{name.value()};

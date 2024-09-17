@@ -20,8 +20,6 @@ public:
   void add(const PerformanceEntry& entry) override;
   void consume(std::vector<PerformanceEntry>& target) override;
 
-  size_t pendingMessagesCount() const override;
-
   void getEntries(
       std::optional<std::string_view> name,
       std::vector<PerformanceEntry>& target) const override;

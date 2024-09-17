@@ -29,7 +29,6 @@ public:
 
   virtual void add(const PerformanceEntry& entry) = 0;
   virtual void consume(std::vector<PerformanceEntry>& target) = 0;
-  virtual size_t pendingMessagesCount() const = 0;
   virtual void getEntries(
       std::optional<std::string_view> name,
       std::vector<PerformanceEntry>& target) const = 0;
