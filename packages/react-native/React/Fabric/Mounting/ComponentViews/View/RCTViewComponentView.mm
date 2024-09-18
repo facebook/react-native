@@ -35,6 +35,7 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
   UIColor *_backgroundColor;
   CALayer *_backgroundColorLayer;
   __weak CALayer *_borderLayer;
+  CALayer *_outlineLayer;
   CALayer *_boxShadowLayer;
   CALayer *_filterLayer;
   NSMutableArray<CAGradientLayer *> *_gradientLayers;
@@ -316,6 +317,14 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
   // `border`
   if (oldViewProps.borderStyles != newViewProps.borderStyles || oldViewProps.borderRadii != newViewProps.borderRadii ||
       oldViewProps.borderColors != newViewProps.borderColors) {
+    needsInvalidateLayer = YES;
+  }
+
+  // `outline`
+  if (oldViewProps.outlineStyle != newViewProps.outlineStyle ||
+      oldViewProps.outlineColor != newViewProps.outlineColor ||
+      oldViewProps.outlineOffset != newViewProps.outlineOffset ||
+      oldViewProps.outlineWidth != newViewProps.outlineWidth) {
     needsInvalidateLayer = YES;
   }
 
@@ -651,6 +660,54 @@ static RCTCornerRadii RCTCornerRadiiFromBorderRadii(BorderRadii borderRadii)
       .bottomRightVertical = (CGFloat)borderRadii.bottomRight.vertical};
 }
 
+static RCTCornerRadii RCTCreateOutlineCornerRadiiFromBorderRadii(const BorderRadii &borderRadii, CGFloat outlineWidth)
+{
+  return RCTCornerRadii{
+      borderRadii.topLeft.horizontal != 0 ? borderRadii.topLeft.horizontal + outlineWidth : 0,
+      borderRadii.topLeft.vertical != 0 ? borderRadii.topLeft.vertical + outlineWidth : 0,
+      borderRadii.topRight.horizontal != 0 ? borderRadii.topRight.horizontal + outlineWidth : 0,
+      borderRadii.topRight.vertical != 0 ? borderRadii.topRight.vertical + outlineWidth : 0,
+      borderRadii.bottomLeft.horizontal != 0 ? borderRadii.bottomLeft.horizontal + outlineWidth : 0,
+      borderRadii.bottomLeft.vertical != 0 ? borderRadii.bottomLeft.vertical + outlineWidth : 0,
+      borderRadii.bottomRight.horizontal != 0 ? borderRadii.bottomRight.horizontal + outlineWidth : 0,
+      borderRadii.bottomRight.vertical != 0 ? borderRadii.bottomRight.vertical + outlineWidth : 0};
+}
+
+// To be used for CSS properties like `border` and `outline`.
+static void RCTAddContourEffectToLayer(
+    CALayer *layer,
+    const RCTCornerRadii &cornerRadii,
+    const RCTBorderColors &contourColors,
+    const UIEdgeInsets &contourInsets,
+    const RCTBorderStyle &contourStyle)
+{
+  UIImage *image = RCTGetBorderImage(
+      contourStyle, layer.bounds.size, cornerRadii, contourInsets, contourColors, [UIColor clearColor].CGColor, NO);
+
+  if (image == nil) {
+    layer.contents = nil;
+  } else {
+    CGSize imageSize = image.size;
+    UIEdgeInsets imageCapInsets = image.capInsets;
+    CGRect contentsCenter = CGRect{
+        CGPoint{imageCapInsets.left / imageSize.width, imageCapInsets.top / imageSize.height},
+        CGSize{(CGFloat)1.0 / imageSize.width, (CGFloat)1.0 / imageSize.height}};
+    layer.contents = (id)image.CGImage;
+    layer.contentsScale = image.scale;
+
+    BOOL isResizable = !UIEdgeInsetsEqualToEdgeInsets(image.capInsets, UIEdgeInsetsZero);
+    if (isResizable) {
+      layer.contentsCenter = contentsCenter;
+    } else {
+      layer.contentsCenter = CGRect{CGPoint{0.0, 0.0}, CGSize{1.0, 1.0}};
+    }
+  }
+
+  // If mutations are applied inside of Animation block, it may cause layer to be animated.
+  // To stop that, imperatively remove all animations from layer.
+  [layer removeAllAnimations];
+}
+
 static RCTBorderColors RCTCreateRCTBorderColorsFromBorderColors(BorderColors borderColors)
 {
   return RCTBorderColors{
@@ -692,12 +749,25 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
   }
 }
 
+static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
+{
+  switch (outlineStyle) {
+    case OutlineStyle::Solid:
+      return RCTBorderStyleSolid;
+    case OutlineStyle::Dotted:
+      return RCTBorderStyleDotted;
+    case OutlineStyle::Dashed:
+      return RCTBorderStyleDashed;
+  }
+}
+
 - (BOOL)styleWouldClipOverflowInk
 {
   const auto borderMetrics = _props->resolveBorderMetrics(_layoutMetrics);
   BOOL nonZeroBorderWidth = !(borderMetrics.borderWidths.isUniform() && borderMetrics.borderWidths.left == 0);
   BOOL clipToPaddingBox = ReactNativeFeatureFlags::enableIOSViewClipToPaddingBox();
-  return _props->getClipsContentToBounds() && (!_props->boxShadow.empty() || (clipToPaddingBox && nonZeroBorderWidth));
+  return _props->getClipsContentToBounds() &&
+      ((!_props->boxShadow.empty() || (clipToPaddingBox && nonZeroBorderWidth)) || _props->outlineWidth != 0);
 }
 
 // This UIView is the UIView that holds all subviews. It is sometimes not self
@@ -861,40 +931,49 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     layer.cornerRadius = 0;
 
     RCTBorderColors borderColors = RCTCreateRCTBorderColorsFromBorderColors(borderMetrics.borderColors);
-    UIImage *image = RCTGetBorderImage(
-        RCTBorderStyleFromBorderStyle(borderMetrics.borderStyles.left),
-        layer.bounds.size,
+
+    RCTAddContourEffectToLayer(
+        _borderLayer,
         RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii),
-        RCTUIEdgeInsetsFromEdgeInsets(borderMetrics.borderWidths),
         borderColors,
-        [UIColor clearColor].CGColor,
-        NO);
+        RCTUIEdgeInsetsFromEdgeInsets(borderMetrics.borderWidths),
+        RCTBorderStyleFromBorderStyle(borderMetrics.borderStyles.left));
 
     RCTReleaseRCTBorderColors(borderColors);
+  }
 
-    if (image == nil) {
-      _borderLayer.contents = nil;
-    } else {
-      CGSize imageSize = image.size;
-      UIEdgeInsets imageCapInsets = image.capInsets;
-      CGRect contentsCenter = CGRect{
-          CGPoint{imageCapInsets.left / imageSize.width, imageCapInsets.top / imageSize.height},
-          CGSize{(CGFloat)1.0 / imageSize.width, (CGFloat)1.0 / imageSize.height}};
+  // outline
+  [_outlineLayer removeFromSuperlayer];
+  _outlineLayer = nil;
+  if (_props->outlineWidth != 0) {
+    if (!_outlineLayer) {
+      CALayer *outlineLayer = [CALayer new];
+      outlineLayer.magnificationFilter = kCAFilterNearest;
+      outlineLayer.zPosition = BACKGROUND_COLOR_ZPOSITION + 2;
 
-      _borderLayer.contents = (id)image.CGImage;
-      _borderLayer.contentsScale = image.scale;
-
-      BOOL isResizable = !UIEdgeInsetsEqualToEdgeInsets(image.capInsets, UIEdgeInsetsZero);
-      if (isResizable) {
-        _borderLayer.contentsCenter = contentsCenter;
-      } else {
-        _borderLayer.contentsCenter = CGRect{CGPoint{0.0, 0.0}, CGSize{1.0, 1.0}};
-      }
+      [layer addSublayer:outlineLayer];
+      _outlineLayer = outlineLayer;
     }
+    _outlineLayer.frame = CGRectInset(
+        layer.bounds, -_props->outlineOffset - _props->outlineWidth, -_props->outlineOffset - _props->outlineWidth);
 
-    // If mutations are applied inside of Animation block, it may cause _borderLayer to be animated.
-    // To stop that, imperatively remove all animations from _borderLayer.
-    [_borderLayer removeAllAnimations];
+    if (borderMetrics.borderRadii.isUniform() && borderMetrics.borderRadii.topLeft.horizontal == 0) {
+      CGColorRef outlineColor = RCTCreateCGColorRefFromSharedColor(_props->outlineColor);
+      _outlineLayer.borderWidth = _props->outlineWidth;
+      _outlineLayer.borderColor = outlineColor;
+      CGColorRelease(outlineColor);
+    } else {
+      CGColorRef outlineColor = RCTCreateCGColorRefFromSharedColor(_props->outlineColor);
+
+      RCTAddContourEffectToLayer(
+          _outlineLayer,
+          RCTCreateOutlineCornerRadiiFromBorderRadii(borderMetrics.borderRadii, _props->outlineWidth),
+          RCTBorderColors{outlineColor, outlineColor, outlineColor, outlineColor},
+          UIEdgeInsets{_props->outlineWidth, _props->outlineWidth, _props->outlineWidth, _props->outlineWidth},
+          RCTBorderStyleFromOutlineStyle(_props->outlineStyle));
+
+      CGColorRelease(outlineColor);
+    }
   }
 
   // filter
