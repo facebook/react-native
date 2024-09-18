@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<80169565fecd1ed75b23d07523538e8e>>
+ * @generated SignedSource<<43f360d769690622252f3051f71e78ab>>
  */
 
 /**
@@ -61,6 +61,7 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool initEagerTurboModulesOnNativeModulesQueueAndroid() = 0;
   virtual bool lazyAnimationCallbacks() = 0;
   virtual bool loadVectorDrawablesOnImages() = 0;
+  virtual bool removeNestedCallsToDispatchMountItemsOnAndroid() = 0;
   virtual bool setAndroidLayoutDirection() = 0;
   virtual bool traceTurboModulePromiseRejectionsOnAndroid() = 0;
   virtual bool useFabricInterop() = 0;

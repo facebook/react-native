@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ac309a5ea9ff969824d34cca43b45ddf>>
+ * @generated SignedSource<<60fcb02736ca814a842225291e3a55b1>>
  */
 
 /**
@@ -243,6 +243,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun loadVectorDrawablesOnImages(): Boolean = accessor.loadVectorDrawablesOnImages()
+
+  /**
+   * Removes nested calls to MountItemDispatcher.dispatchMountItems on Android, so we do less work per frame on the UI thread.
+   */
+  @JvmStatic
+  public fun removeNestedCallsToDispatchMountItemsOnAndroid(): Boolean = accessor.removeNestedCallsToDispatchMountItemsOnAndroid()
 
   /**
    * Propagate layout direction to Android views.
