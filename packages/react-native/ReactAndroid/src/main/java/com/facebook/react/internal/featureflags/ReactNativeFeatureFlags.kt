@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<60fcb02736ca814a842225291e3a55b1>>
+ * @generated SignedSource<<73409b567e77f17838ae9681a8e20be6>>
  */
 
 /**
@@ -147,6 +147,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableMicrotasks(): Boolean = accessor.enableMicrotasks()
+
+  /**
+   * Moves execution of pre-mount items to outside the choregrapher in the main thread, so we can estimate idle time more precisely (Android only).
+   */
+  @JvmStatic
+  public fun enablePreciseSchedulingForPremountItemsOnAndroid(): Boolean = accessor.enablePreciseSchedulingForPremountItemsOnAndroid()
 
   /**
    * When enabled, Android will receive prop updates based on the differences between the last rendered shadow node and the last committed shadow node.

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f2a64fef9775f1890adcf3d761061182>>
+ * @generated SignedSource<<9f2978b5a732a3ca4f3c3d74debba782>>
  */
 
 /**
@@ -40,6 +40,7 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
   private var enableLayoutAnimationsOnIOSCache: Boolean? = null
   private var enableLongTaskAPICache: Boolean? = null
   private var enableMicrotasksCache: Boolean? = null
+  private var enablePreciseSchedulingForPremountItemsOnAndroidCache: Boolean? = null
   private var enablePropsUpdateReconciliationAndroidCache: Boolean? = null
   private var enableReportEventPaintTimeCache: Boolean? = null
   private var enableSynchronousStateUpdatesCache: Boolean? = null
@@ -247,6 +248,15 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enableMicrotasks()
       enableMicrotasksCache = cached
+    }
+    return cached
+  }
+
+  override fun enablePreciseSchedulingForPremountItemsOnAndroid(): Boolean {
+    var cached = enablePreciseSchedulingForPremountItemsOnAndroidCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.enablePreciseSchedulingForPremountItemsOnAndroid()
+      enablePreciseSchedulingForPremountItemsOnAndroidCache = cached
     }
     return cached
   }

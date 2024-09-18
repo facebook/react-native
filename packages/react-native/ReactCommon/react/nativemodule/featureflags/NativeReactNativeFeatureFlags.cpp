@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7df4018785f9aefb615b8671abf71454>>
+ * @generated SignedSource<<b166070ae3a427dd654ebc16e77fb8e3>>
  */
 
 /**
@@ -135,6 +135,11 @@ bool NativeReactNativeFeatureFlags::enableLongTaskAPI(
 bool NativeReactNativeFeatureFlags::enableMicrotasks(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableMicrotasks();
+}
+
+bool NativeReactNativeFeatureFlags::enablePreciseSchedulingForPremountItemsOnAndroid(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enablePreciseSchedulingForPremountItemsOnAndroid();
 }
 
 bool NativeReactNativeFeatureFlags::enablePropsUpdateReconciliationAndroid(

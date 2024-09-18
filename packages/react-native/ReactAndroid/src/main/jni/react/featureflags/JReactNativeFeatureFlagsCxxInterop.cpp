@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9e891a5d26221136d7334982fc2e99d3>>
+ * @generated SignedSource<<43b92dd984e985e09e3efad9c8fedf44>>
  */
 
 /**
@@ -156,6 +156,12 @@ class ReactNativeFeatureFlagsProviderHolder
   bool enableMicrotasks() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableMicrotasks");
+    return method(javaProvider_);
+  }
+
+  bool enablePreciseSchedulingForPremountItemsOnAndroid() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enablePreciseSchedulingForPremountItemsOnAndroid");
     return method(javaProvider_);
   }
 
@@ -443,6 +449,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableMicrotasks(
   return ReactNativeFeatureFlags::enableMicrotasks();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::enablePreciseSchedulingForPremountItemsOnAndroid(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enablePreciseSchedulingForPremountItemsOnAndroid();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::enablePropsUpdateReconciliationAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enablePropsUpdateReconciliationAndroid();
@@ -670,6 +681,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableMicrotasks",
         JReactNativeFeatureFlagsCxxInterop::enableMicrotasks),
+      makeNativeMethod(
+        "enablePreciseSchedulingForPremountItemsOnAndroid",
+        JReactNativeFeatureFlagsCxxInterop::enablePreciseSchedulingForPremountItemsOnAndroid),
       makeNativeMethod(
         "enablePropsUpdateReconciliationAndroid",
         JReactNativeFeatureFlagsCxxInterop::enablePropsUpdateReconciliationAndroid),
