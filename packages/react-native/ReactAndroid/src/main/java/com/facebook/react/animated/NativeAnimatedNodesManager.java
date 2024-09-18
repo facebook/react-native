@@ -26,7 +26,6 @@ import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.common.UIManagerType;
-import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.EventDispatcherListener;
@@ -591,36 +590,24 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
 
   @UiThread
   private void handleEvent(Event event) {
-    if (!mEventDrivers.isEmpty()) {
-      // If the event has a different name in native convert it to it's JS name.
-      // TODO T64216139 Remove dependency of UIManagerModule when the Constants are not in Native
-      // anymore
-      if (mReactApplicationContext == null) {
-        return;
-      }
-      UIManager uiManager =
-          UIManagerHelper.getUIManager(
-              mReactApplicationContext,
-              ViewUtil.getUIManagerType(event.getViewTag(), event.getSurfaceId()));
-      if (uiManager == null) {
-        return;
-      }
+    if (mEventDrivers.isEmpty()) {
+      return;
+    }
 
-      boolean foundAtLeastOneDriver = false;
-      Event.EventAnimationDriverMatchSpec matchSpec = event.getEventAnimationDriverMatchSpec();
-      for (EventAnimationDriver driver : mEventDrivers) {
-        if (matchSpec.match(driver.viewTag, driver.eventName)) {
-          foundAtLeastOneDriver = true;
-          stopAnimationsForNode(driver.valueNode);
-          event.dispatchModern(driver);
-          mRunUpdateNodeList.add(driver.valueNode);
-        }
+    boolean foundAtLeastOneDriver = false;
+    Event.EventAnimationDriverMatchSpec matchSpec = event.getEventAnimationDriverMatchSpec();
+    for (EventAnimationDriver driver : mEventDrivers) {
+      if (matchSpec.match(driver.viewTag, driver.eventName)) {
+        foundAtLeastOneDriver = true;
+        stopAnimationsForNode(driver.valueNode);
+        event.dispatchModern(driver);
+        mRunUpdateNodeList.add(driver.valueNode);
       }
+    }
 
-      if (foundAtLeastOneDriver) {
-        updateNodes(mRunUpdateNodeList);
-        mRunUpdateNodeList.clear();
-      }
+    if (foundAtLeastOneDriver) {
+      updateNodes(mRunUpdateNodeList);
+      mRunUpdateNodeList.clear();
     }
   }
 
