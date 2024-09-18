@@ -375,7 +375,7 @@ public class ReactModalHostView(context: ThemedReactContext) :
    * styleHeight on the LayoutShadowNode to be the window size. This is done through the
    * UIManagerModule, and will then cause the children to layout as if they can fill the window.
    */
-  public class DialogRootViewGroup internal constructor(context: Context?) :
+  public class DialogRootViewGroup internal constructor(context: Context) :
       ReactViewGroup(context), RootView {
     internal var stateWrapper: StateWrapper? = null
     internal var eventDispatcher: EventDispatcher? = null

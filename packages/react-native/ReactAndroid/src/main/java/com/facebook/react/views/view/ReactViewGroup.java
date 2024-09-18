@@ -7,6 +7,7 @@
 
 package com.facebook.react.views.view;
 
+import static com.facebook.infer.annotation.Assertions.nullsafeFIXME;
 import static com.facebook.react.common.ReactConstants.TAG;
 
 import android.annotation.SuppressLint;
@@ -28,6 +29,7 @@ import android.view.animation.Animation;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.R;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
@@ -63,6 +65,7 @@ import com.facebook.react.uimanager.style.Overflow;
  * Backing for a React View. Has support for borders, but since borders aren't common, lazy
  * initializes most of the storage needed for them.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ReactViewGroup extends ViewGroup
     implements ReactInterceptingViewGroup,
         ReactClippingViewGroup,
@@ -381,7 +384,7 @@ public class ReactViewGroup extends ViewGroup
 
   @Override
   public void getClippingRect(Rect outClippingRect) {
-    outClippingRect.set(mClippingRect);
+    outClippingRect.set(nullsafeFIXME(mClippingRect, "Fix in Kotlin"));
   }
 
   @Override
@@ -522,7 +525,7 @@ public class ReactViewGroup extends ViewGroup
     }
   }
 
-  private void handleRemoveView(View view) {
+  private void handleRemoveView(@Nullable View view) {
     UiThreadUtil.assertOnUiThread();
 
     if (!customDrawOrderDisabled()) {
@@ -546,7 +549,7 @@ public class ReactViewGroup extends ViewGroup
   }
 
   @Override
-  public void addView(View child, int index, ViewGroup.LayoutParams params) {
+  public void addView(View child, int index, @Nullable ViewGroup.LayoutParams params) {
     // This will get called for every overload of addView so there is not need to override every
     // method.
     handleAddView(child);
@@ -561,7 +564,7 @@ public class ReactViewGroup extends ViewGroup
   }
 
   @Override
-  public void removeView(View view) {
+  public void removeView(@Nullable View view) {
     handleRemoveView(view);
     super.removeView(view);
   }
