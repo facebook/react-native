@@ -13,6 +13,8 @@ import static com.facebook.react.fabric.mounting.mountitems.FabricNameComponentM
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.react.bridge.ReactMarker;
+import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
 import com.facebook.react.fabric.mounting.MountingManager;
@@ -70,6 +72,25 @@ final class IntBufferBatchMountItem implements BatchMountItem {
     mObjBufferLen = mObjBuffer.length;
   }
 
+  private void beginMarkers(String reason) {
+    Systrace.beginSection(
+        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "IntBufferBatchMountItem::" + reason);
+
+    if (mCommitNumber > 0) {
+      ReactMarker.logFabricMarker(
+          ReactMarkerConstants.FABRIC_BATCH_EXECUTION_START, null, mCommitNumber);
+    }
+  }
+
+  private void endMarkers() {
+    if (mCommitNumber > 0) {
+      ReactMarker.logFabricMarker(
+          ReactMarkerConstants.FABRIC_BATCH_EXECUTION_END, null, mCommitNumber);
+    }
+
+    Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+  }
+
   @Override
   public void execute(MountingManager mountingManager) {
     SurfaceMountingManager surfaceMountingManager = mountingManager.getSurfaceManager(mSurfaceId);
@@ -88,6 +109,7 @@ final class IntBufferBatchMountItem implements BatchMountItem {
       FLog.d(TAG, "Executing IntBufferBatchMountItem on surface [%d]", mSurfaceId);
     }
 
+    beginMarkers("mountViews");
     int i = 0, j = 0;
     while (i < mIntBufferLen) {
       int rawType = mIntBuffer[i++];
@@ -166,6 +188,7 @@ final class IntBufferBatchMountItem implements BatchMountItem {
       }
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     }
+    endMarkers();
   }
 
   @Override
