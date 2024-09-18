@@ -246,8 +246,6 @@ public object ReactScrollViewHelper {
     if (scrollY != y) {
       scrollView.startFlingAnimator(scrollY, y)
     }
-
-    updateFabricScrollState<T>(scrollView, x, y)
   }
 
   /** Get current position or position after current animation finishes, if any. */
