@@ -11,7 +11,13 @@
 'use strict';
 
 import processBackgroundImage from '../processBackgroundImage';
-
+const {OS} = require('../../Utilities/Platform');
+const PlatformColorAndroid =
+  require('../PlatformColorValueTypes.android').PlatformColor;
+const PlatformColorIOS =
+  require('../PlatformColorValueTypes.ios').PlatformColor;
+const DynamicColorIOS =
+  require('../PlatformColorValueTypesIOS.ios').DynamicColorIOS;
 const processColor = require('../processColor').default;
 
 describe('processBackgroundImage', () => {
@@ -586,5 +592,63 @@ describe('processBackgroundImage', () => {
     );
     expect(result).toEqual([]);
     expect(result1).toEqual([]);
+  });
+
+  describe('iOS', () => {
+    if (OS === 'ios') {
+      it('should process iOS PlatformColor colors', () => {
+        const result = processBackgroundImage([
+          {
+            type: 'linearGradient',
+            colorStops: [
+              {color: PlatformColorIOS('systemRedColor'), positions: ['0%']},
+              {color: 'red', positions: ['100%']},
+            ],
+          },
+        ]);
+        expect(result[0].colorStops[0].color).toEqual({
+          semantic: ['systemRedColor'],
+        });
+      });
+      it('should process iOS Dynamic colors', () => {
+        const result = processBackgroundImage([
+          {
+            type: 'linearGradient',
+            colorStops: [
+              {
+                color: DynamicColorIOS({light: 'black', dark: 'white'}),
+                positions: ['0%'],
+              },
+              {color: 'red', positions: ['100%']},
+            ],
+          },
+        ]);
+        expect(result[0].colorStops[0].color).toEqual({
+          dynamic: {light: 0xff000000, dark: 0xffffffff},
+        });
+      });
+    }
+  });
+
+  describe('Android', () => {
+    if (OS === 'android') {
+      it('should process Android PlatformColor colors', () => {
+        const result = processBackgroundImage([
+          {
+            type: 'linearGradient',
+            colorStops: [
+              {
+                color: PlatformColorAndroid('?attr/colorPrimary'),
+                positions: ['0%'],
+              },
+              {color: 'red', positions: ['100%']},
+            ],
+          },
+        ]);
+        expect(result[0].colorStops[0].color).toEqual({
+          resource_paths: ['?attr/colorPrimary'],
+        });
+      });
+    }
   });
 });

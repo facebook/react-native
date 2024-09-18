@@ -7,15 +7,16 @@
 
 package com.facebook.react.uimanager.style
 
+import android.content.Context
 import android.graphics.Rect
 import android.graphics.Shader
 import com.facebook.react.bridge.ReadableMap
 
-public class BackgroundImageLayer(gradientMap: ReadableMap?) {
+public class BackgroundImageLayer(gradientMap: ReadableMap?, context: Context) {
   private val gradient: Gradient? =
       if (gradientMap != null) {
         try {
-          Gradient(gradientMap)
+          Gradient(gradientMap, context)
         } catch (e: IllegalArgumentException) {
           // Gracefully reject invalid styles
           null

@@ -106,7 +106,8 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
         List<BackgroundImageLayer> backgroundImageLayers = new ArrayList<>(backgroundImage.size());
         for (int i = 0; i < backgroundImage.size(); i++) {
           ReadableMap backgroundImageMap = backgroundImage.getMap(i);
-          BackgroundImageLayer layer = new BackgroundImageLayer(backgroundImageMap);
+          BackgroundImageLayer layer =
+              new BackgroundImageLayer(backgroundImageMap, view.getContext());
           backgroundImageLayers.add(layer);
         }
         BackgroundStyleApplicator.setBackgroundImage(view, backgroundImageLayers);

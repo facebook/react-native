@@ -7,12 +7,15 @@
 
 package com.facebook.react.uimanager.style
 
+import android.content.Context
 import android.graphics.LinearGradient
 import android.graphics.Rect
 import android.graphics.Shader
+import com.facebook.react.bridge.ColorPropConverter
 import com.facebook.react.bridge.ReadableMap
+import com.facebook.react.bridge.ReadableType
 
-public class Gradient(gradient: ReadableMap?) {
+public class Gradient(gradient: ReadableMap?, context: Context) {
   private enum class GradientType {
     LINEAR_GRADIENT
   }
@@ -55,7 +58,11 @@ public class Gradient(gradient: ReadableMap?) {
 
     for (i in 0 until size) {
       val colorStop = colorStops.getMap(i)
-      colors[i] = colorStop.getInt("color")
+      if (colorStop.getType("color") == ReadableType.Map) {
+        colors[i] = ColorPropConverter.getColor(colorStop.getMap("color"), context)
+      } else {
+        colors[i] = colorStop.getInt("color")
+      }
       positions[i] = colorStop.getDouble("position").toFloat()
     }
   }

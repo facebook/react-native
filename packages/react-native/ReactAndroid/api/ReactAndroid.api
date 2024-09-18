@@ -6054,7 +6054,7 @@ public abstract interface class com/facebook/react/uimanager/layoutanimation/Lay
 }
 
 public final class com/facebook/react/uimanager/style/BackgroundImageLayer {
-	public fun <init> (Lcom/facebook/react/bridge/ReadableMap;)V
+	public fun <init> (Lcom/facebook/react/bridge/ReadableMap;Landroid/content/Context;)V
 	public final fun getShader (Landroid/graphics/Rect;)Landroid/graphics/Shader;
 }
 
@@ -6222,7 +6222,7 @@ public final class com/facebook/react/uimanager/style/CornerRadii {
 }
 
 public final class com/facebook/react/uimanager/style/Gradient {
-	public fun <init> (Lcom/facebook/react/bridge/ReadableMap;)V
+	public fun <init> (Lcom/facebook/react/bridge/ReadableMap;Landroid/content/Context;)V
 	public final fun getShader (Landroid/graphics/Rect;)Landroid/graphics/Shader;
 }
 
