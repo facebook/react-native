@@ -21,11 +21,14 @@ const CTRL_C = '\u0003';
 const CTRL_D = '\u0004';
 const RELOAD_TIMEOUT = 500;
 
-const debounce = (callback: () => void, timeout: number) => {
-  let timeoutId;
+const throttle = (callback: () => void, timeout: number) => {
+  let previousCallTimestamp = 0;
   return () => {
-    if (timeoutId != null) clearTimeout(timeoutId);
-    timeoutId = setTimeout(callback, timeout);
+    const currentCallTimestamp = new Date().getTime();
+    if (currentCallTimestamp - previousCallTimestamp > timeout) {
+      previousCallTimestamp = currentCallTimestamp;
+      callback();
+    }
   };
 };
 
@@ -50,7 +53,7 @@ export default function attachKeyHandlers({
     env: {FORCE_COLOR: chalk.supportsColor ? 'true' : 'false'},
   };
 
-  const reload = debounce(() => {
+  const reload = throttle(() => {
     logger.info('Reloading connected app(s)...');
     messageSocket.broadcast('reload', null);
   }, RELOAD_TIMEOUT);
