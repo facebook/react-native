@@ -53,18 +53,6 @@ class CircularBuffer {
     }
   }
 
-  /**
-   * Returns pointer to next entry which would be overwritten or dropped if
-   * added a new element. Null if no entry will be dropped.
-   */
-  const T* getNextOverwriteCandidate() const {
-    if (entries_.size() < maxSize_) {
-      return nullptr;
-    } else {
-      return &entries_[position_];
-    }
-  }
-
   T& operator[](size_t idx) {
     return entries_[(position_ + idx) % entries_.size()];
   }

@@ -67,8 +67,6 @@ TEST(BoundedConsumableBuffer, WrapsAroundCorrectly) {
   ASSERT_EQ(8, buffer[0]);
   ASSERT_EQ(9, buffer[1]);
   ASSERT_EQ(10, buffer[2]);
-
-  ASSERT_EQ(8, *buffer.getNextOverwriteCandidate());
 }
 
 TEST(BoundedConsumableBuffer, CanClearByPredicate) {
