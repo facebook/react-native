@@ -7,10 +7,10 @@
 
 #pragma once
 
+#include <react/timing/primitives.h>
 #include <string>
 #include <string_view>
 #include <unordered_set>
-#include <react/timing/primitives.h>
 
 namespace facebook::react {
 

@@ -15,7 +15,8 @@ void PerformanceObserver::handleEntry(const PerformanceEntry& entry) {
   // https://www.w3.org/TR/event-timing/#should-add-performanceeventtiming
   if (entry.entryType == PerformanceEntryType::EVENT) {
     if (entry.duration < durationThreshold_) {
-      // The entries duration is lower than the desired reporting threshold, skip
+      // The entries duration is lower than the desired reporting threshold,
+      // skip
       return;
     }
   }
@@ -31,7 +32,9 @@ std::vector<PerformanceEntry> PerformanceObserver::takeRecords() {
   return result;
 }
 
-void PerformanceObserver::observe(PerformanceEntryType type, PerformanceObserverObserveSingleOptions options) {
+void PerformanceObserver::observe(
+    PerformanceEntryType type,
+    PerformanceObserverObserveSingleOptions options) {
   // we assume that `type` was checked on JS side and is correct
   observedTypes_.clear();
   observedTypes_.insert(type);
@@ -47,7 +50,9 @@ void PerformanceObserver::observe(PerformanceEntryType type, PerformanceObserver
   }
 }
 
-void PerformanceObserver::observe(std::unordered_set<PerformanceEntryType> types, PerformanceObserverObserveMultipleOptions options) {
+void PerformanceObserver::observe(
+    std::unordered_set<PerformanceEntryType> types,
+    PerformanceObserverObserveMultipleOptions options) {
   observedTypes_ = std::move(types);
   requiresDroppedEntries_ = false;
   durationThreshold_ = options.durationThreshold;

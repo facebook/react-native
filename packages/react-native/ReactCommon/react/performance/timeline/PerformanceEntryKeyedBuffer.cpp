@@ -16,7 +16,9 @@ void PerformanceEntryKeyedBuffer::add(const PerformanceEntry& entry) {
   totalEntryCount_ += 1;
 }
 
-void PerformanceEntryKeyedBuffer::getEntries(std::optional<std::string_view> name, std::vector<PerformanceEntry>& target) const {
+void PerformanceEntryKeyedBuffer::getEntries(
+    std::optional<std::string_view> name,
+    std::vector<PerformanceEntry>& target) const {
   if (name.has_value()) {
     std::string nameStr{name.value()};
 
@@ -34,7 +36,7 @@ void PerformanceEntryKeyedBuffer::clear() {
 }
 
 void PerformanceEntryKeyedBuffer::clear(std::string_view nameView) {
-  std::string name { nameView };
+  std::string name{nameView};
 
   if (auto node = entryMap_.find(name); node != entryMap_.end()) {
     totalEntryCount_ -= node->second.size();
@@ -42,7 +44,8 @@ void PerformanceEntryKeyedBuffer::clear(std::string_view nameView) {
   }
 }
 
-std::optional<PerformanceEntry> PerformanceEntryKeyedBuffer::find(const std::string& name) const {
+std::optional<PerformanceEntry> PerformanceEntryKeyedBuffer::find(
+    const std::string& name) const {
   if (auto node = entryMap_.find(name); node != entryMap_.end()) {
     if (!node->second.empty()) {
       return std::make_optional<PerformanceEntry>(node->second.back());
@@ -52,7 +55,8 @@ std::optional<PerformanceEntry> PerformanceEntryKeyedBuffer::find(const std::str
   return std::nullopt;
 }
 
-void PerformanceEntryKeyedBuffer::getEntries(std::vector<PerformanceEntry>& target) const  {
+void PerformanceEntryKeyedBuffer::getEntries(
+    std::vector<PerformanceEntry>& target) const {
   std::vector<PerformanceEntry> allEntries;
   // pre-allocate result vector
   allEntries.reserve(totalEntryCount_);

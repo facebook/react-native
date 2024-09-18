@@ -25,7 +25,7 @@ class PerformanceEntryCircularBuffer : public PerformanceEntryBuffer {
 
   void clear() override;
   void clear(std::string_view name) override;
-  
+
  private:
   CircularBuffer<PerformanceEntry> buffer_;
 };

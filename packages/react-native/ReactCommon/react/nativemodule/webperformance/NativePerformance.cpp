@@ -116,7 +116,7 @@ void NativePerformance::measure(
   FuseboxTracer::getFuseboxTracer().addEvent(
       eventName, (uint64_t)startTime, (uint64_t)endTime, trackName);
 #endif
-  
+
   PerformanceEntryReporter::getInstance()->measure(
       eventName, startTime, endTime, duration, startMark, endMark);
 

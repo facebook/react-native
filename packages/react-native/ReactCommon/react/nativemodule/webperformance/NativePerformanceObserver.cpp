@@ -30,29 +30,37 @@ NativePerformanceObserver::NativePerformanceObserver(
     std::shared_ptr<CallInvoker> jsInvoker)
     : NativePerformanceObserverCxxSpec(std::move(jsInvoker)) {}
 
-jsi::Object NativePerformanceObserver::createObserver(jsi::Runtime& rt, NativePerformanceObserverCallback callback) {
+jsi::Object NativePerformanceObserver::createObserver(
+    jsi::Runtime& rt,
+    NativePerformanceObserverCallback callback) {
   // The way we dispatch performance observer callbacks is a bit different from
-  // the spec. The specification requires us to queue a single task that dispatches
-  // observer callbacks. Instead, we are queuing all callbacks as separate tasks
-  // in the scheduler.
-  PerformanceObserverCallback cb = [this, callback = std::move(callback)](PerformanceObserver& currentObserver) {
-    jsInvoker_->invokeAsync(SchedulerPriority::IdlePriority, [currentObserver, callback] (jsi::Runtime& /*rt*/) mutable {
-      callback.call();
-      currentObserver.flush();
-    });
+  // the spec. The specification requires us to queue a single task that
+  // dispatches observer callbacks. Instead, we are queuing all callbacks as
+  // separate tasks in the scheduler.
+  PerformanceObserverCallback cb = [this, callback = std::move(callback)](
+                                       PerformanceObserver& currentObserver) {
+    jsInvoker_->invokeAsync(
+        SchedulerPriority::IdlePriority,
+        [currentObserver, callback](jsi::Runtime& /*rt*/) mutable {
+          callback.call();
+          currentObserver.flush();
+        });
   };
 
-  auto& registry = PerformanceEntryReporter::getInstance()->getObserverRegistry();
+  auto& registry =
+      PerformanceEntryReporter::getInstance()->getObserverRegistry();
   auto observer = registry.createObserver(std::move(cb));
 
-  jsi::Object observerObj {rt};
+  jsi::Object observerObj{rt};
   observerObj.setNativeState(rt, observer);
   return observerObj;
 }
 
-double NativePerformanceObserver::getDroppedEntriesCount(jsi::Runtime& rt, jsi::Object observerObj) {
-  auto observer =
-      std::dynamic_pointer_cast<PerformanceObserver>(observerObj.getNativeState(rt));
+double NativePerformanceObserver::getDroppedEntriesCount(
+    jsi::Runtime& rt,
+    jsi::Object observerObj) {
+  auto observer = std::dynamic_pointer_cast<PerformanceObserver>(
+      observerObj.getNativeState(rt));
 
   if (!observer) {
     return 0;
@@ -61,9 +69,12 @@ double NativePerformanceObserver::getDroppedEntriesCount(jsi::Runtime& rt, jsi::
   return observer->getDroppedEntriesCount();
 }
 
-void NativePerformanceObserver::observe(jsi::Runtime& rt, jsi::Object observerObj, NativePerformanceObserverObserveOptions options) {
-  auto observer =
-      std::dynamic_pointer_cast<PerformanceObserver>(observerObj.getNativeState(rt));
+void NativePerformanceObserver::observe(
+    jsi::Runtime& rt,
+    jsi::Object observerObj,
+    NativePerformanceObserverObserveOptions options) {
+  auto observer = std::dynamic_pointer_cast<PerformanceObserver>(
+      observerObj.getNativeState(rt));
 
   if (!observer) {
     return;
@@ -76,35 +87,41 @@ void NativePerformanceObserver::observe(jsi::Runtime& rt, jsi::Object observerOb
     auto rawTypes = options.entryTypes.value();
 
     for (auto i = 0; i < rawTypes.size(); ++i) {
-      entryTypes.insert(Bridging<PerformanceEntryType>::fromJs(rt, rawTypes[i]));
+      entryTypes.insert(
+          Bridging<PerformanceEntryType>::fromJs(rt, rawTypes[i]));
     }
 
-    observer->observe(entryTypes, { .durationThreshold = durationThreshold });
-  }
-  else { // single
+    observer->observe(entryTypes, {.durationThreshold = durationThreshold});
+  } else { // single
     auto buffered = options.buffered.value_or(false);
     if (options.type.has_value()) {
-      observer->observe(static_cast<PerformanceEntryType>( options.type.value()), { .buffered = buffered, .durationThreshold = durationThreshold });
+      observer->observe(
+          static_cast<PerformanceEntryType>(options.type.value()),
+          {.buffered = buffered, .durationThreshold = durationThreshold});
     }
   }
 }
 
-void NativePerformanceObserver::disconnect(jsi::Runtime& rt, jsi::Object observerObj) {
-  auto observer =
-      std::dynamic_pointer_cast<PerformanceObserver>(observerObj.getNativeState(rt));
+void NativePerformanceObserver::disconnect(
+    jsi::Runtime& rt,
+    jsi::Object observerObj) {
+  auto observer = std::dynamic_pointer_cast<PerformanceObserver>(
+      observerObj.getNativeState(rt));
 
   if (!observer) {
     return;
   }
   observerObj.setNativeState(rt, nullptr);
 
-  auto& registry = PerformanceEntryReporter::getInstance()->getObserverRegistry();
+  auto& registry =
+      PerformanceEntryReporter::getInstance()->getObserverRegistry();
   registry.removeObserver(observer);
 }
 
-std::vector<PerformanceEntry> NativePerformanceObserver::takeRecords(jsi::Runtime& rt, jsi::Object observerObj) {
-  auto observer =
-      std::dynamic_pointer_cast<PerformanceObserver>(
+std::vector<PerformanceEntry> NativePerformanceObserver::takeRecords(
+    jsi::Runtime& rt,
+    jsi::Object observerObj) {
+  auto observer = std::dynamic_pointer_cast<PerformanceObserver>(
       observerObj.getNativeState(rt));
 
   if (!observer) {
@@ -150,6 +167,6 @@ std::vector<std::pair<std::string, uint32_t>>
 NativePerformanceObserver::getEventCounts(jsi::Runtime& /*rt*/) {
   const auto& eventCounts =
       PerformanceEntryReporter::getInstance()->getEventCounts();
-  return { eventCounts.begin(), eventCounts.end() };
+  return {eventCounts.begin(), eventCounts.end()};
 }
 } // namespace facebook::react

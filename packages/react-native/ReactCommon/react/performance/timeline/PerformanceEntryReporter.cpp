@@ -17,25 +17,26 @@ PerformanceEntryReporter::getInstance() {
   return instance;
 }
 
-PerformanceEntryReporter::PerformanceEntryReporter(): observerRegistry_(std::make_unique<PerformanceObserverRegistry>()) {}
+PerformanceEntryReporter::PerformanceEntryReporter()
+    : observerRegistry_(std::make_unique<PerformanceObserverRegistry>()) {}
 
 DOMHighResTimeStamp PerformanceEntryReporter::getCurrentTimeStamp() const {
   return timeStampProvider_ != nullptr ? timeStampProvider_()
                                        : JSExecutor::performanceNow();
 }
 
-double PerformanceEntryReporter::getDroppedEntriesCount(PerformanceEntryType type) const noexcept {
+double PerformanceEntryReporter::getDroppedEntriesCount(
+    PerformanceEntryType type) const noexcept {
   return getBuffer(type).droppedEntriesCount;
 }
 
 void PerformanceEntryReporter::mark(
     const std::string& name,
     const std::optional<DOMHighResTimeStamp>& startTime) {
-  const auto entry = PerformanceEntry {
+  const auto entry = PerformanceEntry{
       .name = name,
       .entryType = PerformanceEntryType::MARK,
-      .startTime = startTime ? *startTime : getCurrentTimeStamp()
-  };
+      .startTime = startTime ? *startTime : getCurrentTimeStamp()};
 
   {
     std::lock_guard lock(buffersMutex_);
@@ -57,7 +58,7 @@ void PerformanceEntryReporter::clearEntries(
     longTaskBuffer_.clear();
     return;
   }
-    
+
   auto& buffer = getBufferRef(*entryType);
   if (!entryName.empty()) {
     std::lock_guard lock(buffersMutex_);
@@ -117,12 +118,11 @@ void PerformanceEntryReporter::measure(
   DOMHighResTimeStamp durationVal =
       duration ? *duration : endTimeVal - startTimeVal;
 
-  auto const entry = PerformanceEntry {
+  const auto entry = PerformanceEntry{
       .name = std::string(name),
       .entryType = PerformanceEntryType::MEASURE,
       .startTime = startTimeVal,
-      .duration = durationVal
-  };
+      .duration = durationVal};
 
   {
     std::lock_guard lock(buffersMutex_);
@@ -152,21 +152,21 @@ void PerformanceEntryReporter::logEventEntry(
     uint32_t interactionId) {
   eventCounts_[name]++;
 
-  auto const entry = PerformanceEntry {
-    .name = std::move(name),
-    .entryType = PerformanceEntryType::EVENT,
-    .startTime = startTime,
-    .duration = duration,
-    .processingStart = processingStart,
-    .processingEnd = processingEnd,
-    .interactionId = interactionId
-  };
+  const auto entry = PerformanceEntry{
+      .name = std::move(name),
+      .entryType = PerformanceEntryType::EVENT,
+      .startTime = startTime,
+      .duration = duration,
+      .processingStart = processingStart,
+      .processingEnd = processingEnd,
+      .interactionId = interactionId};
 
   {
     std::lock_guard lock(buffersMutex_);
 
     if (entry.duration < eventBuffer_.durationThreshold) {
-      // The entries duration is lower than the desired reporting threshold, skip
+      // The entries duration is lower than the desired reporting threshold,
+      // skip
       return;
     }
 
@@ -179,12 +179,11 @@ void PerformanceEntryReporter::logEventEntry(
 void PerformanceEntryReporter::logLongTaskEntry(
     DOMHighResTimeStamp startTime,
     DOMHighResTimeStamp duration) {
-  auto const entry = PerformanceEntry {
-    .name = std::string{"self"},
-    .entryType = PerformanceEntryType::LONGTASK,
-    .startTime = startTime,
-    .duration = duration
-  };
+  const auto entry = PerformanceEntry{
+      .name = std::string{"self"},
+      .entryType = PerformanceEntryType::LONGTASK,
+      .startTime = startTime,
+      .duration = duration};
 
   {
     std::lock_guard lock(buffersMutex_);

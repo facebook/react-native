@@ -27,17 +27,18 @@ constexpr size_t DEFAULT_MAX_SIZE = 1024;
  */
 template <class T>
 class CircularBuffer {
-public:
-  explicit CircularBuffer(size_t maxSize = DEFAULT_MAX_SIZE) : maxSize_(maxSize) {
+ public:
+  explicit CircularBuffer(size_t maxSize = DEFAULT_MAX_SIZE)
+      : maxSize_(maxSize) {
     entries_.reserve(maxSize_);
   }
 
   /**
    * Adds (pushes) element into the buffer.
    *
-   * Returns the result of the operation, which will depend on whether the buffer
-   * reached the max allowed size, in which case `true` is returned. If no
-   * items were overridden `false` is returned.
+   * Returns the result of the operation, which will depend on whether the
+   * buffer reached the max allowed size, in which case `true` is returned. If
+   * no items were overridden `false` is returned.
    */
   bool add(const T&& el) {
     if (entries_.size() < maxSize_) {

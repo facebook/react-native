@@ -7,22 +7,25 @@
 
 #pragma once
 
+#include <jsi/jsi.h>
 #include <cassert>
+#include <memory>
 #include <unordered_set>
 #include <vector>
-#include <memory>
-#include <jsi/jsi.h>
 #include "PerformanceEntryBuffer.h"
 
 namespace facebook::react {
 
 class PerformanceObserver;
 
-using PerformanceObserverEntryTypeFilter = std::unordered_set<PerformanceEntryType>;
-using PerformanceObserverCallback = std::function<void(PerformanceObserver& observer)>;
+using PerformanceObserverEntryTypeFilter =
+    std::unordered_set<PerformanceEntryType>;
+using PerformanceObserverCallback =
+    std::function<void(PerformanceObserver& observer)>;
 
 /**
- * Represents subset of spec's `PerformanceObserverInit` that is allowed for multiple types.
+ * Represents subset of spec's `PerformanceObserverInit` that is allowed for
+ * multiple types.
  *
  * https://w3c.github.io/performance-timeline/#performanceobserverinit-dictionary
  */
@@ -31,7 +34,8 @@ struct PerformanceObserverObserveMultipleOptions {
 };
 
 /**
- * Represents subset of spec's `PerformanceObserverInit` that is allowed for single type.
+ * Represents subset of spec's `PerformanceObserverInit` that is allowed for
+ * single type.
  *
  * https://w3c.github.io/performance-timeline/#performanceobserverinit-dictionary
  */
@@ -55,7 +59,7 @@ struct PerformanceObserverObserveSingleOptions {
  * You can still manually create instance of `PerformanceObserver`, but then
  * you need to manually register and unregister it from registry.
  */
-class PerformanceObserver: public jsi::NativeState {
+class PerformanceObserver : public jsi::NativeState {
  public:
   using Ptr = std::shared_ptr<PerformanceObserver>;
   using WeakPtr = std::weak_ptr<PerformanceObserver>;
@@ -82,21 +86,27 @@ class PerformanceObserver: public jsi::NativeState {
    * Configures the observer to watch for specified entry type.
    *
    * This operation resets and overrides previous configurations. So consecutive
-   * calls to this methods remove any previous watch configuration (as per spec).
+   * calls to this methods remove any previous watch configuration (as per
+   * spec).
    */
-  void observe(PerformanceEntryType type, PerformanceObserverObserveSingleOptions options = {});
+  void observe(
+      PerformanceEntryType type,
+      PerformanceObserverObserveSingleOptions options = {});
 
   /**
    * Configures the observer to watch for specified entry type.
    *
    * This operation resets and overrides previous configurations. So consecutive
-   * calls to this methods remove any previous watch configuration (as per spec).
+   * calls to this methods remove any previous watch configuration (as per
+   * spec).
    */
-  void observe(std::unordered_set<PerformanceEntryType> types, PerformanceObserverObserveMultipleOptions options = {});
+  void observe(
+      std::unordered_set<PerformanceEntryType> types,
+      PerformanceObserverObserveMultipleOptions options = {});
 
   /**
-   * Internal function called by JS bridge to get number of dropped entries count
-   * counted at call time.
+   * Internal function called by JS bridge to get number of dropped entries
+   * count counted at call time.
    */
   double getDroppedEntriesCount() noexcept;
 
@@ -105,7 +115,7 @@ class PerformanceObserver: public jsi::NativeState {
    */
   void flush() noexcept;
 
-private:
+ private:
   void scheduleFlushBuffer();
 
   PerformanceObserverCallback callback_;
@@ -118,7 +128,9 @@ private:
   bool requiresDroppedEntries_ = false;
 };
 
-inline bool operator==(const PerformanceObserver& lhs, const PerformanceObserver& rhs) {
+inline bool operator==(
+    const PerformanceObserver& lhs,
+    const PerformanceObserver& rhs) {
   return &lhs == &rhs;
 }
 

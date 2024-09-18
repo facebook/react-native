@@ -23,16 +23,16 @@
 namespace facebook::react {
 
 using NativePerformanceObserverCallback = AsyncCallback<>;
-using NativePerformanceObserverObserveOptions = NativePerformanceObserverPerformanceObserverInit<
-    // entryTypes
-    std::optional<std::vector<int>>,
-    // type
-    std::optional<int>,
-    // buffered
-    std::optional<bool>,
-    // durationThreshold
-    std::optional<double>
->;
+using NativePerformanceObserverObserveOptions =
+    NativePerformanceObserverPerformanceObserverInit<
+        // entryTypes
+        std::optional<std::vector<int>>,
+        // type
+        std::optional<int>,
+        // buffered
+        std::optional<bool>,
+        // durationThreshold
+        std::optional<double>>;
 
 #pragma mark - Structs
 
@@ -52,7 +52,9 @@ struct Bridging<PerformanceEntryType> {
 };
 
 template <>
-struct Bridging<NativePerformanceObserverObserveOptions> : NativePerformanceObserverPerformanceObserverInitBridging<NativePerformanceObserverObserveOptions> {};
+struct Bridging<NativePerformanceObserverObserveOptions>
+    : NativePerformanceObserverPerformanceObserverInitBridging<
+          NativePerformanceObserverObserveOptions> {};
 
 template <>
 struct Bridging<PerformanceEntry>
@@ -64,15 +66,23 @@ class NativePerformanceObserver
     : public NativePerformanceObserverCxxSpec<NativePerformanceObserver> {
  public:
   explicit NativePerformanceObserver(std::shared_ptr<CallInvoker> jsInvoker);
-      
-  jsi::Object createObserver(jsi::Runtime& rt, NativePerformanceObserverCallback callback);
+
+  jsi::Object createObserver(
+      jsi::Runtime& rt,
+      NativePerformanceObserverCallback callback);
   double getDroppedEntriesCount(jsi::Runtime& rt, jsi::Object observerObj);
 
-  void observe(jsi::Runtime& rt, jsi::Object observer, NativePerformanceObserverObserveOptions options);
+  void observe(
+      jsi::Runtime& rt,
+      jsi::Object observer,
+      NativePerformanceObserverObserveOptions options);
   void disconnect(jsi::Runtime& rt, jsi::Object observer);
-  std::vector<PerformanceEntry> takeRecords(jsi::Runtime& rt, jsi::Object observerObj);
+  std::vector<PerformanceEntry> takeRecords(
+      jsi::Runtime& rt,
+      jsi::Object observerObj);
 
-  std::vector<std::pair<std::string, uint32_t>> getEventCounts(jsi::Runtime& rt);
+  std::vector<std::pair<std::string, uint32_t>> getEventCounts(
+      jsi::Runtime& rt);
 
   void clearEntries(
       jsi::Runtime& rt,

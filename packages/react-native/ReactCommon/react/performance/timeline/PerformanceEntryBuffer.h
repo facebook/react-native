@@ -20,7 +20,7 @@ constexpr double DEFAULT_DURATION_THRESHOLD = 0.0;
  * Subtypes differ on how entries are stored.
  */
 class PerformanceEntryBuffer {
-public:
+ public:
   double durationThreshold{DEFAULT_DURATION_THRESHOLD};
   size_t droppedEntriesCount{0};
 

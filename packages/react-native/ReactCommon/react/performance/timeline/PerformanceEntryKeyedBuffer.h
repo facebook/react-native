@@ -13,7 +13,7 @@
 
 namespace facebook::react {
 
-class PerformanceEntryKeyedBuffer: public PerformanceEntryBuffer {
+class PerformanceEntryKeyedBuffer : public PerformanceEntryBuffer {
  public:
   PerformanceEntryKeyedBuffer() = default;
 

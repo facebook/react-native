@@ -8,9 +8,9 @@
 #pragma once
 
 #include <react/timing/primitives.h>
-#include "PerformanceObserverRegistry.h"
 #include "PerformanceEntryCircularBuffer.h"
 #include "PerformanceEntryKeyedBuffer.h"
+#include "PerformanceObserverRegistry.h"
 
 #include <cassert>
 #include <memory>
@@ -37,7 +37,7 @@ class PerformanceEntryReporter {
   PerformanceObserverRegistry& getObserverRegistry() {
     return *observerRegistry_;
   }
-  
+
   double getDroppedEntriesCount(PerformanceEntryType type) const noexcept;
 
   /*
@@ -100,13 +100,13 @@ class PerformanceEntryReporter {
   void clearEntries(
       std::optional<PerformanceEntryType> entryType = std::nullopt,
       std::string_view entryName = {});
-  
-  void getEntries(
-                  PerformanceEntryType entryType,
-                  std::optional<std::string_view> entryName,
-                  std::vector<PerformanceEntry>& res) const;
 
-private:
+  void getEntries(
+      PerformanceEntryType entryType,
+      std::optional<std::string_view> entryName,
+      std::vector<PerformanceEntry>& res) const;
+
+ private:
   PerformanceObserverRegistry::Ptr observerRegistry_;
 
   mutable std::mutex buffersMutex_;
@@ -135,8 +135,9 @@ private:
         assert(0 && "Unhandled PerformanceEntryType");
     }
   }
-  
-  const inline PerformanceEntryBuffer& getBuffer(PerformanceEntryType entryType) const {
+
+  const inline PerformanceEntryBuffer& getBuffer(
+      PerformanceEntryType entryType) const {
     switch (entryType) {
       case PerformanceEntryType::EVENT:
         return eventBuffer_;
