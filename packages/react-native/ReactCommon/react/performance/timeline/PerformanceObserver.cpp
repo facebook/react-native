@@ -42,7 +42,7 @@ void PerformanceObserver::observe(PerformanceEntryType type, PerformanceObserver
 
   if (options.buffered) {
     auto& reporter = PerformanceEntryReporter::getInstance();
-    reporter->getBuffer(type).getEntries(std::nullopt, buffer_);
+    reporter->getEntries(type, std::nullopt, buffer_);
     scheduleFlushBuffer();
   }
 }
@@ -59,8 +59,8 @@ double PerformanceObserver::getDroppedEntriesCount() noexcept {
   if (requiresDroppedEntries_) {
     auto reporter = PerformanceEntryReporter::getInstance();
 
-    for (auto& entry : observedTypes_) {
-      droppedEntriesCount += reporter->getBuffer(entry).droppedEntriesCount;
+    for (auto& entryType : observedTypes_) {
+      droppedEntriesCount += reporter->getDroppedEntriesCount(entryType);
     }
 
     requiresDroppedEntries_ = false;

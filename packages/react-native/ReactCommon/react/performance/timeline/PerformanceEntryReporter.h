@@ -37,6 +37,8 @@ class PerformanceEntryReporter {
   PerformanceObserverRegistry& getObserverRegistry() {
     return *observerRegistry_;
   }
+  
+  double getDroppedEntriesCount(PerformanceEntryType type) const noexcept;
 
   /*
    * DOM Performance (High Resolution Time)
@@ -98,21 +100,11 @@ class PerformanceEntryReporter {
   void clearEntries(
       std::optional<PerformanceEntryType> entryType = std::nullopt,
       std::string_view entryName = {});
-
-  inline const PerformanceEntryBuffer& getBuffer(PerformanceEntryType entryType) const {
-    switch (entryType) {
-      case PerformanceEntryType::EVENT:
-        return eventBuffer_;
-      case PerformanceEntryType::MARK:
-        return markBuffer_;
-      case PerformanceEntryType::MEASURE:
-        return measureBuffer_;
-      case PerformanceEntryType::LONGTASK:
-        return longTaskBuffer_;
-      default:
-        assert(0 && "Unhandled PerformanceEntryType");
-    }
-  }
+  
+  void getEntries(
+                  PerformanceEntryType entryType,
+                  std::optional<std::string_view> entryName,
+                  std::vector<PerformanceEntry>& res) const;
 
 private:
   PerformanceObserverRegistry::Ptr observerRegistry_;
@@ -129,12 +121,22 @@ private:
 
   double getMarkTime(const std::string& markName) const;
 
-  void getEntries(
-      PerformanceEntryType entryType,
-      std::string_view entryName,
-      std::vector<PerformanceEntry>& res) const;
-
   inline PerformanceEntryBuffer& getBufferRef(PerformanceEntryType entryType) {
+    switch (entryType) {
+      case PerformanceEntryType::EVENT:
+        return eventBuffer_;
+      case PerformanceEntryType::MARK:
+        return markBuffer_;
+      case PerformanceEntryType::MEASURE:
+        return measureBuffer_;
+      case PerformanceEntryType::LONGTASK:
+        return longTaskBuffer_;
+      default:
+        assert(0 && "Unhandled PerformanceEntryType");
+    }
+  }
+  
+  const inline PerformanceEntryBuffer& getBuffer(PerformanceEntryType entryType) const {
     switch (entryType) {
       case PerformanceEntryType::EVENT:
         return eventBuffer_;

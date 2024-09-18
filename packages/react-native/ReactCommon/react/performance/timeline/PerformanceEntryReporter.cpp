@@ -24,6 +24,10 @@ DOMHighResTimeStamp PerformanceEntryReporter::getCurrentTimeStamp() const {
                                        : JSExecutor::performanceNow();
 }
 
+double PerformanceEntryReporter::getDroppedEntriesCount(PerformanceEntryType type) const noexcept {
+  return getBuffer(type).droppedEntriesCount;
+}
+
 void PerformanceEntryReporter::mark(
     const std::string& name,
     const std::optional<DOMHighResTimeStamp>& startTime) {
@@ -51,26 +55,27 @@ void PerformanceEntryReporter::clearEntries(
     measureBuffer_.clear();
     eventBuffer_.clear();
     longTaskBuffer_.clear();
+    return;
+  }
+    
+  auto& buffer = getBufferRef(*entryType);
+  if (!entryName.empty()) {
+    std::lock_guard lock(buffersMutex_);
+    buffer.clear(entryName);
   } else {
-    auto& buffer = getBufferRef(*entryType);
-    if (!entryName.empty()) {
-      std::lock_guard lock(buffersMutex_);
-      buffer.clear(entryName);
-    } else {
-      std::lock_guard lock(buffersMutex_);
-      buffer.clear();
-    }
+    std::lock_guard lock(buffersMutex_);
+    buffer.clear();
   }
 }
 
 void PerformanceEntryReporter::getEntries(
     PerformanceEntryType entryType,
-    std::string_view entryName,
+    std::optional<std::string_view> entryName,
     std::vector<PerformanceEntry>& res) const {
   std::lock_guard lock(buffersMutex_);
   auto& buffer = getBuffer(entryType);
 
-  if (entryName.empty()) {
+  if (entryName.has_value() && entryName.value().empty()) {
     buffer.getEntries(std::nullopt, res);
   } else {
     buffer.getEntries(entryName, res);
