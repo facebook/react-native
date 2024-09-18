@@ -159,7 +159,7 @@ void RuntimeScheduler_Modern::executeNowOnTheSameThread(
     // Protecting against re-entry into `executeNowOnTheSameThread` from within
     // `executeNowOnTheSameThread`. Without accounting for re-rentry, a deadlock
     // will occur when trying to gain access to the runtime.
-    return runEventLoopTick(*runtimePtr, task, currentTime);
+    return executeTask(*runtimePtr, task, true);
   }
 
   syncTaskRequests_++;
