@@ -298,6 +298,11 @@ const definitions: FeatureFlagDefinitions = {
       defaultValue: false,
       description: 'Enables Animated to skip non-allowlisted props and styles.',
     },
+    enableAnimatedClearImmediateFix: {
+      defaultValue: true,
+      description:
+        'Enables an experimental to use the proper clearIntermediate instead of calling the wrong clearTimeout and canceling another timer.',
+    },
     enableAnimatedPropsMemo: {
       defaultValue: false,
       description:
