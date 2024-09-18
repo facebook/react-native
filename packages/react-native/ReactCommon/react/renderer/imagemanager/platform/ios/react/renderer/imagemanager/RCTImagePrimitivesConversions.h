@@ -128,8 +128,7 @@ inline static NSURLRequest *NSURLRequestFromImageSource(const facebook::react::I
   }
   NSData *body = nil;
   if (!imageSource.body.empty()) {
-    NSString *bodyString = [[NSString alloc] initWithUTF8String:imageSource.body.c_str()];
-    body = [RCTConvert NSData:bodyString];
+    body = [NSData dataWithBytes:imageSource.body.c_str() length:imageSource.body.size()];
   }
   NSURLRequestCachePolicy cachePolicy = NSURLRequestCachePolicyFromImageSource(imageSource);
 
