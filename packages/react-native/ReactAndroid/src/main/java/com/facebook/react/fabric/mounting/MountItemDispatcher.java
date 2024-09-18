@@ -137,22 +137,25 @@ public class MountItemDispatcher {
       // scheduled
       mItemDispatchListener.didDispatchMountItems();
 
-      // Decide if we want to try reentering
-      if (mReDispatchCounter < 10 && didDispatchItems) {
-        // Executing twice in a row is normal. Only log after that point.
-        if (mReDispatchCounter > 2) {
-          ReactSoftExceptionLogger.logSoftException(
-              TAG,
-              new ReactNoCrashSoftException(
-                  "Re-dispatched "
-                      + mReDispatchCounter
-                      + " times. This indicates setState (?) is likely being called too many times"
-                      + " during mounting."));
-        }
+      if (!ReactNativeFeatureFlags.removeNestedCallsToDispatchMountItemsOnAndroid()) {
+        // Decide if we want to try reentering
+        if (mReDispatchCounter < 10 && didDispatchItems) {
+          // Executing twice in a row is normal. Only log after that point.
+          if (mReDispatchCounter > 2) {
+            ReactSoftExceptionLogger.logSoftException(
+                TAG,
+                new ReactNoCrashSoftException(
+                    "Re-dispatched "
+                        + mReDispatchCounter
+                        + " times. This indicates setState (?) is likely being called too many"
+                        + " times during mounting."));
+          }
 
-        mReDispatchCounter++;
-        tryDispatchMountItems();
+          mReDispatchCounter++;
+          tryDispatchMountItems();
+        }
       }
+
       mReDispatchCounter = 0;
     }
   }

@@ -210,6 +210,11 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'Adds support for loading vector drawable assets in the Image component (only on Android)',
     },
+    removeNestedCallsToDispatchMountItemsOnAndroid: {
+      defaultValue: false,
+      description:
+        'Removes nested calls to MountItemDispatcher.dispatchMountItems on Android, so we do less work per frame on the UI thread.',
+    },
     setAndroidLayoutDirection: {
       defaultValue: false,
       description: 'Propagate layout direction to Android views.',
