@@ -7,18 +7,17 @@
 
 #pragma once
 
+#include "CircularBuffer.h"
 #include "PerformanceEntryBuffer.h"
-#include "BoundedConsumableBuffer.h"
 
 namespace facebook::react {
 
 class PerformanceEntryCircularBuffer : public PerformanceEntryBuffer {
-public:
-  explicit PerformanceEntryCircularBuffer(size_t size) : entries_(size) {}
+ public:
+  explicit PerformanceEntryCircularBuffer(size_t size) : buffer_(size) {}
   ~PerformanceEntryCircularBuffer() override = default;
 
   void add(const PerformanceEntry& entry) override;
-  void consume(std::vector<PerformanceEntry>& target) override;
 
   void getEntries(
       std::optional<std::string_view> name,
@@ -27,8 +26,8 @@ public:
   void clear() override;
   void clear(std::string_view name) override;
   
-private:
-  BoundedConsumableBuffer<PerformanceEntry> entries_;
+ private:
+  CircularBuffer<PerformanceEntry> buffer_;
 };
 
 } // namespace facebook::react

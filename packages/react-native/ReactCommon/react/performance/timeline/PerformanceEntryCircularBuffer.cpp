@@ -10,28 +10,22 @@
 namespace facebook::react {
 
 void PerformanceEntryCircularBuffer::add(const facebook::react::PerformanceEntry& entry) {
-  auto result = entries_.add(std::move(entry));
-  if (result == BoundedConsumableBuffer<PerformanceEntry>::PushStatus::DROP) {
+  if (buffer_.add(std::move(entry))) {
     droppedEntriesCount += 1;
   }
 }
 
-void PerformanceEntryCircularBuffer::consume(std::vector<PerformanceEntry>& target) {
-  entries_.consume(target);
-}
-
 void PerformanceEntryCircularBuffer::getEntries(std::optional<std::string_view> name, std::vector<PerformanceEntry>& target) const {
-  entries_.getEntries(
-      target, [&](const PerformanceEntry& e) { return e.name == name; });
+  buffer_.getEntries(target, [&](const PerformanceEntry& e) { return e.name == name; });
 }
 
 void PerformanceEntryCircularBuffer::clear() {
-  entries_.clear();
+  buffer_.clear();
 }
 
 
 void PerformanceEntryCircularBuffer::clear(std::string_view name) {
-  entries_.clear([&](const PerformanceEntry& e) { return e.name == name; });
+  buffer_.clear([&](const PerformanceEntry& e) { return e.name == name; });
 }
 
 } // namespace facebook::react

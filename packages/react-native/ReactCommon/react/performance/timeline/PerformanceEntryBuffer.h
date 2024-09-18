@@ -28,7 +28,6 @@ public:
   virtual ~PerformanceEntryBuffer() = default;
 
   virtual void add(const PerformanceEntry& entry) = 0;
-  virtual void consume(std::vector<PerformanceEntry>& target) = 0;
   virtual void getEntries(
       std::optional<std::string_view> name,
       std::vector<PerformanceEntry>& target) const = 0;

@@ -12,19 +12,8 @@ namespace facebook::react {
 
 void PerformanceEntryKeyedBuffer::add(const PerformanceEntry& entry) {
   auto& list = entryMap_.at(entry.name);
-  auto& toConsume = toConsumeMap_.at(entry.name);
   list.push_back(entry);
   totalEntryCount_ += 1;
-  totalToConsume_ += 1;
-  toConsume += 1;
-}
-
-void PerformanceEntryKeyedBuffer::consume(std::vector<PerformanceEntry>& target) {
-  for (const auto& [name, entries] : entryMap_) {
-    target.insert(
-        target.end(), entries.end() - toConsumeMap_[name], entries.end());
-    toConsumeMap_[name] = 0;
-  }
 }
 
 void PerformanceEntryKeyedBuffer::getEntries(std::optional<std::string_view> name, std::vector<PerformanceEntry>& target) const {
@@ -41,9 +30,7 @@ void PerformanceEntryKeyedBuffer::getEntries(std::optional<std::string_view> nam
 
 void PerformanceEntryKeyedBuffer::clear() {
   entryMap_.clear();
-  toConsumeMap_.clear();
   totalEntryCount_ = 0;
-  totalToConsume_ = 0;
 }
 
 void PerformanceEntryKeyedBuffer::clear(std::string_view nameView) {
@@ -51,8 +38,6 @@ void PerformanceEntryKeyedBuffer::clear(std::string_view nameView) {
 
   if (auto node = entryMap_.find(name); node != entryMap_.end()) {
     totalEntryCount_ -= node->second.size();
-    totalToConsume_ -= node->second.size();
-    toConsumeMap_[name] = 0;
     node->second.clear();
   }
 }

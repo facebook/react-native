@@ -19,11 +19,6 @@ class PerformanceEntryKeyedBuffer: public PerformanceEntryBuffer {
 
   void add(const PerformanceEntry& entry) override;
 
-  /**
-   * Retrieves buffer entries, whether consumed or not, with predicate
-   */
-  void consume(std::vector<PerformanceEntry>& target) override;
-
   void getEntries(
       std::optional<std::string_view> name,
       std::vector<PerformanceEntry>& target) const override;
@@ -36,10 +31,8 @@ class PerformanceEntryKeyedBuffer: public PerformanceEntryBuffer {
 
  private:
   std::unordered_map<std::string, std::vector<PerformanceEntry>> entryMap_{};
-  std::unordered_map<std::string, size_t> toConsumeMap_{};
   mutable std::optional<std::vector<PerformanceEntry>> allEntriesCache_;
   size_t totalEntryCount_ = 0;
-  size_t totalToConsume_ = 0;
 };
 
 } // namespace facebook::react
