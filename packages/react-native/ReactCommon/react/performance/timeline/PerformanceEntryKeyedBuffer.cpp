@@ -53,12 +53,6 @@ std::optional<PerformanceEntry> PerformanceEntryKeyedBuffer::find(const std::str
 }
 
 void PerformanceEntryKeyedBuffer::getEntries(std::vector<PerformanceEntry>& target) const  {
-  if (allEntriesCache_.has_value()) {
-    auto& allEntries = allEntriesCache_.value();
-    target.insert(target.end(), allEntries.begin(), allEntries.end());
-    return;
-  }
-
   std::vector<PerformanceEntry> allEntries;
   // pre-allocate result vector
   allEntries.reserve(totalEntryCount_);
@@ -69,7 +63,6 @@ void PerformanceEntryKeyedBuffer::getEntries(std::vector<PerformanceEntry>& targ
 
   std::stable_sort(
       allEntries.begin(), allEntries.end(), PerformanceEntrySorter{});
-  allEntriesCache_ = allEntries;
   target.insert(target.end(), allEntries.begin(), allEntries.end());
 }
 

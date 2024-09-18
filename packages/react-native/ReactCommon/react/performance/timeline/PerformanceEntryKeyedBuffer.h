@@ -31,7 +31,6 @@ class PerformanceEntryKeyedBuffer: public PerformanceEntryBuffer {
 
  private:
   std::unordered_map<std::string, std::vector<PerformanceEntry>> entryMap_{};
-  mutable std::optional<std::vector<PerformanceEntry>> allEntriesCache_;
   size_t totalEntryCount_ = 0;
 };
 
