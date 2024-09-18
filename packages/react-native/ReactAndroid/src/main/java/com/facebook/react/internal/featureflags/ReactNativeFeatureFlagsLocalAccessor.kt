@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0dbb1f1a08649132955698ac51050e62>>
+ * @generated SignedSource<<e1a44f8e54709e70934f1d418d4ed80f>>
  */
 
 /**
@@ -44,6 +44,7 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var enableLayoutAnimationsOnIOSCache: Boolean? = null
   private var enableLongTaskAPICache: Boolean? = null
   private var enableMicrotasksCache: Boolean? = null
+  private var enablePreciseSchedulingForPremountItemsOnAndroidCache: Boolean? = null
   private var enablePropsUpdateReconciliationAndroidCache: Boolean? = null
   private var enableReportEventPaintTimeCache: Boolean? = null
   private var enableSynchronousStateUpdatesCache: Boolean? = null
@@ -271,6 +272,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.enableMicrotasks()
       accessedFeatureFlags.add("enableMicrotasks")
       enableMicrotasksCache = cached
+    }
+    return cached
+  }
+
+  override fun enablePreciseSchedulingForPremountItemsOnAndroid(): Boolean {
+    var cached = enablePreciseSchedulingForPremountItemsOnAndroidCache
+    if (cached == null) {
+      cached = currentProvider.enablePreciseSchedulingForPremountItemsOnAndroid()
+      accessedFeatureFlags.add("enablePreciseSchedulingForPremountItemsOnAndroid")
+      enablePreciseSchedulingForPremountItemsOnAndroidCache = cached
     }
     return cached
   }

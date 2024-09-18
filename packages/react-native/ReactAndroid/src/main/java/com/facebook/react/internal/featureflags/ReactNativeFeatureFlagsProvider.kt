@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<79cd9812257f42d553b49a3f6d3d4989>>
+ * @generated SignedSource<<0f6129ccbcf7857785724f14b41edb2d>>
  */
 
 /**
@@ -62,6 +62,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun enableLongTaskAPI(): Boolean
 
   @DoNotStrip public fun enableMicrotasks(): Boolean
+
+  @DoNotStrip public fun enablePreciseSchedulingForPremountItemsOnAndroid(): Boolean
 
   @DoNotStrip public fun enablePropsUpdateReconciliationAndroid(): Boolean
 

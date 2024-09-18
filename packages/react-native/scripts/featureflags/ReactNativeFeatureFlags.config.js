@@ -130,6 +130,11 @@ const definitions: FeatureFlagDefinitions = {
       description:
         'Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).',
     },
+    enablePreciseSchedulingForPremountItemsOnAndroid: {
+      defaultValue: false,
+      description:
+        'Moves execution of pre-mount items to outside the choregrapher in the main thread, so we can estimate idle time more precisely (Android only).',
+    },
     enablePropsUpdateReconciliationAndroid: {
       defaultValue: false,
       description:

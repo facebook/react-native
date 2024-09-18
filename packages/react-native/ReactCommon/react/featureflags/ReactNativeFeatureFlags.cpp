@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<80b130f32b0bc59b9a9605777537feeb>>
+ * @generated SignedSource<<b04a641595d870bd9666281b3f0cfec5>>
  */
 
 /**
@@ -99,6 +99,10 @@ bool ReactNativeFeatureFlags::enableLongTaskAPI() {
 
 bool ReactNativeFeatureFlags::enableMicrotasks() {
   return getAccessor().enableMicrotasks();
+}
+
+bool ReactNativeFeatureFlags::enablePreciseSchedulingForPremountItemsOnAndroid() {
+  return getAccessor().enablePreciseSchedulingForPremountItemsOnAndroid();
 }
 
 bool ReactNativeFeatureFlags::enablePropsUpdateReconciliationAndroid() {

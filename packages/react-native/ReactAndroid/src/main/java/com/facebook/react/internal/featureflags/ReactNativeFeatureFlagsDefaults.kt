@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<fc795741e932cf24e5bfb7e2fe1046ae>>
+ * @generated SignedSource<<72e3e7b5a53e64f8f48310d8b07cdf76>>
  */
 
 /**
@@ -62,6 +62,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enableLongTaskAPI(): Boolean = false
 
   override fun enableMicrotasks(): Boolean = false
+
+  override fun enablePreciseSchedulingForPremountItemsOnAndroid(): Boolean = false
 
   override fun enablePropsUpdateReconciliationAndroid(): Boolean = false
 
