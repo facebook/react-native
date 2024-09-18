@@ -15,9 +15,9 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.RippleDrawable;
 import android.util.TypedValue;
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ViewProps;
 
@@ -25,15 +25,19 @@ import com.facebook.react.uimanager.ViewProps;
  * Utility class that helps with converting android drawable description used in JS to an actual
  * instance of {@link Drawable}.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ReactDrawableHelper {
 
   private static final TypedValue sResolveOutValue = new TypedValue();
 
-  public static Drawable createDrawableFromJSDescription(
+  public static @Nullable Drawable createDrawableFromJSDescription(
       Context context, ReadableMap drawableDescriptionDict) {
     String type = drawableDescriptionDict.getString("type");
     if ("ThemeAttrAndroid".equals(type)) {
       String attr = drawableDescriptionDict.getString("attribute");
+      if (attr == null) {
+        throw new JSApplicationIllegalArgumentException("JS description missing 'attribute' field");
+      }
       int attrId = getAttrId(context, attr);
       if (!context.getTheme().resolveAttribute(attrId, sResolveOutValue, true)) {
         throw new JSApplicationIllegalArgumentException(
@@ -50,7 +54,6 @@ public class ReactDrawableHelper {
   }
 
   private static int getAttrId(Context context, String attr) {
-    SoftAssertions.assertNotNull(attr);
     if ("selectableItemBackground".equals(attr)) {
       return android.R.attr.selectableItemBackground;
     } else if ("selectableItemBackgroundBorderless".equals(attr)) {
@@ -60,7 +63,7 @@ public class ReactDrawableHelper {
     }
   }
 
-  private static Drawable getDefaultThemeDrawable(Context context) {
+  private static @Nullable Drawable getDefaultThemeDrawable(Context context) {
     return context.getResources().getDrawable(sResolveOutValue.resourceId, context.getTheme());
   }
 
@@ -74,7 +77,8 @@ public class ReactDrawableHelper {
     return new RippleDrawable(colorStateList, null, mask);
   }
 
-  private static Drawable setRadius(ReadableMap drawableDescriptionDict, Drawable drawable) {
+  private static @Nullable Drawable setRadius(
+      ReadableMap drawableDescriptionDict, @Nullable Drawable drawable) {
     if (drawableDescriptionDict.hasKey("rippleRadius") && drawable instanceof RippleDrawable) {
       RippleDrawable rippleDrawable = (RippleDrawable) drawable;
       double rippleRadius = drawableDescriptionDict.getDouble("rippleRadius");

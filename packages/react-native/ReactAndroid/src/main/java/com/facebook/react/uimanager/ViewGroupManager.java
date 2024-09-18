@@ -68,7 +68,7 @@ public abstract class ViewGroupManager<T extends ViewGroup>
     mZIndexHash.put(view, zIndex);
   }
 
-  public static @Nullable Integer getViewZIndex(View view) {
+  public static @Nullable Integer getViewZIndex(@Nullable View view) {
     return mZIndexHash.get(view);
   }
 
