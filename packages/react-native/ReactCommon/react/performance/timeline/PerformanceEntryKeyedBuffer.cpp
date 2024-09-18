@@ -17,16 +17,27 @@ void PerformanceEntryKeyedBuffer::add(const PerformanceEntry& entry) {
 }
 
 void PerformanceEntryKeyedBuffer::getEntries(
-    std::optional<std::string_view> name,
     std::vector<PerformanceEntry>& target) const {
-  if (name.has_value()) {
-    std::string nameStr{name.value()};
+  std::vector<PerformanceEntry> allEntries;
+  // pre-allocate result vector
+  allEntries.reserve(totalEntryCount_);
 
-    if (auto node = entryMap_.find(nameStr); node != entryMap_.end()) {
-      target.insert(target.end(), node->second.begin(), node->second.end());
-    }
-  } else {
-    getEntries(target);
+  for (const auto& [_, entries] : entryMap_) {
+    allEntries.insert(allEntries.end(), entries.begin(), entries.end());
+  }
+
+  std::stable_sort(
+      allEntries.begin(), allEntries.end(), PerformanceEntrySorter{});
+  target.insert(target.end(), allEntries.begin(), allEntries.end());
+}
+
+void PerformanceEntryKeyedBuffer::getEntries(
+    std::string_view name,
+    std::vector<PerformanceEntry>& target) const {
+  std::string nameStr{name};
+
+  if (auto node = entryMap_.find(nameStr); node != entryMap_.end()) {
+    target.insert(target.end(), node->second.begin(), node->second.end());
   }
 }
 
@@ -53,21 +64,6 @@ std::optional<PerformanceEntry> PerformanceEntryKeyedBuffer::find(
   }
 
   return std::nullopt;
-}
-
-void PerformanceEntryKeyedBuffer::getEntries(
-    std::vector<PerformanceEntry>& target) const {
-  std::vector<PerformanceEntry> allEntries;
-  // pre-allocate result vector
-  allEntries.reserve(totalEntryCount_);
-
-  for (const auto& [_, entries] : entryMap_) {
-    allEntries.insert(allEntries.end(), entries.begin(), entries.end());
-  }
-
-  std::stable_sort(
-      allEntries.begin(), allEntries.end(), PerformanceEntrySorter{});
-  target.insert(target.end(), allEntries.begin(), allEntries.end());
 }
 
 } // namespace facebook::react

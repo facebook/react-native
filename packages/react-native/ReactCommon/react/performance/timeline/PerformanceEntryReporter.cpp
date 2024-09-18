@@ -69,32 +69,33 @@ void PerformanceEntryReporter::clearEntries(
   }
 }
 
-void PerformanceEntryReporter::getEntries(
-    PerformanceEntryType entryType,
-    std::optional<std::string_view> entryName,
-    std::vector<PerformanceEntry>& res) const {
-  std::lock_guard lock(buffersMutex_);
-  auto& buffer = getBuffer(entryType);
-
-  if (entryName.has_value() && entryName.value().empty()) {
-    buffer.getEntries(std::nullopt, res);
-  } else {
-    buffer.getEntries(entryName, res);
+std::vector<PerformanceEntry> PerformanceEntryReporter::getEntries() const {
+  std::vector<PerformanceEntry> res;
+  // Collect all entry types
+  for (int i = 1; i < NUM_PERFORMANCE_ENTRY_TYPES; i++) {
+    getBuffer(static_cast<PerformanceEntryType>(i)).getEntries(res);
   }
+  return res;
 }
 
-std::vector<PerformanceEntry> PerformanceEntryReporter::getEntries(
-    std::optional<PerformanceEntryType> entryType,
-    std::string_view entryName) const {
+std::vector<PerformanceEntry> PerformanceEntryReporter::getEntriesByType(PerformanceEntryType entryType) const {
   std::vector<PerformanceEntry> res;
-  if (!entryType) {
-    // Collect all entry types
-    for (int i = 1; i < NUM_PERFORMANCE_ENTRY_TYPES; i++) {
-      getEntries(static_cast<PerformanceEntryType>(i), entryName, res);
-    }
-  } else {
-    getEntries(*entryType, entryName, res);
+  getBuffer(entryType).getEntries(res);
+  return res;
+}
+
+std::vector<PerformanceEntry> PerformanceEntryReporter::getEntriesByName(std::string_view entryName) const {
+  std::vector<PerformanceEntry> res;
+  // Collect all entry types
+  for (int i = 1; i < NUM_PERFORMANCE_ENTRY_TYPES; i++) {
+    getBuffer(static_cast<PerformanceEntryType>(i)).getEntries(entryName, res);
   }
+  return res;
+}
+
+std::vector<PerformanceEntry> PerformanceEntryReporter::getEntriesByName(std::string_view entryName, PerformanceEntryType entryType) const {
+  std::vector<PerformanceEntry> res;
+  getBuffer(entryType).getEntries(entryName, res);
   return res;
 }
 

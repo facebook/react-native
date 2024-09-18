@@ -45,7 +45,7 @@ void PerformanceObserver::observe(
 
   if (options.buffered) {
     auto& reporter = PerformanceEntryReporter::getInstance();
-    reporter->getEntries(type, std::nullopt, buffer_);
+    buffer_ = reporter->getEntriesByType(type);
 
     if (!buffer_.empty()) {
       scheduleFlushBuffer();

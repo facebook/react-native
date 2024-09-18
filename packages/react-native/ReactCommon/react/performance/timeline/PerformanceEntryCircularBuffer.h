@@ -19,8 +19,9 @@ class PerformanceEntryCircularBuffer : public PerformanceEntryBuffer {
 
   void add(const PerformanceEntry& entry) override;
 
+  void getEntries(std::vector<PerformanceEntry>& target) const override;
   void getEntries(
-      std::optional<std::string_view> name,
+      std::string_view name,
       std::vector<PerformanceEntry>& target) const override;
 
   void clear() override;

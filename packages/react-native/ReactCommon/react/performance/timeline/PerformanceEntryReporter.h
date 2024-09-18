@@ -54,9 +54,10 @@ class PerformanceEntryReporter {
   // https://www.w3.org/TR/performance-timeline/#getentries-method
   // https://www.w3.org/TR/performance-timeline/#getentriesbytype-method
   // https://www.w3.org/TR/performance-timeline/#getentriesbyname-method
-  std::vector<PerformanceEntry> getEntries(
-      std::optional<PerformanceEntryType> entryType = std::nullopt,
-      std::string_view entryName = {}) const;
+  std::vector<PerformanceEntry> getEntries() const;
+  std::vector<PerformanceEntry> getEntriesByType(PerformanceEntryType entryType) const;
+  std::vector<PerformanceEntry> getEntriesByName(std::string_view entryName) const;
+  std::vector<PerformanceEntry> getEntriesByName(std::string_view entryName, PerformanceEntryType entryType) const;
 
   void logEventEntry(
       std::string name,
@@ -100,11 +101,6 @@ class PerformanceEntryReporter {
   void clearEntries(
       std::optional<PerformanceEntryType> entryType = std::nullopt,
       std::string_view entryName = {});
-
-  void getEntries(
-      PerformanceEntryType entryType,
-      std::optional<std::string_view> entryName,
-      std::vector<PerformanceEntry>& res) const;
 
  private:
   PerformanceObserverRegistry::Ptr observerRegistry_;

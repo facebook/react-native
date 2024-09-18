@@ -143,8 +143,21 @@ std::vector<PerformanceEntry> NativePerformanceObserver::getEntries(
     jsi::Runtime& /*rt*/,
     std::optional<PerformanceEntryType> entryType,
     std::optional<std::string> entryName) {
-  return PerformanceEntryReporter::getInstance()->getEntries(
-      entryType, entryName ? entryName->c_str() : std::string_view{});
+  const auto reporter = PerformanceEntryReporter::getInstance();
+  
+  if (entryType.has_value()) {
+    if (entryName.has_value()) {
+      return reporter->getEntriesByName(entryName.value(), entryType.value());
+    }
+    else {
+      return reporter->getEntriesByType(entryType.value());
+    }
+  }
+  else if (entryName.has_value()) {
+    return reporter->getEntriesByName(entryName.value());
+  }
+  
+  return reporter->getEntries();
 }
 
 std::vector<PerformanceEntryType>

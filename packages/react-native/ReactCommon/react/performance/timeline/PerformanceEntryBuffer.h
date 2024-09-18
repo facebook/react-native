@@ -29,8 +29,9 @@ class PerformanceEntryBuffer {
 
   virtual void add(const PerformanceEntry& entry) = 0;
   virtual void getEntries(
-      std::optional<std::string_view> name,
+      std::string_view name,
       std::vector<PerformanceEntry>& target) const = 0;
+  virtual void getEntries(std::vector<PerformanceEntry>& target) const = 0;
   virtual void clear() = 0;
   virtual void clear(std::string_view name) = 0;
 };

@@ -16,8 +16,12 @@ void PerformanceEntryCircularBuffer::add(
   }
 }
 
+void PerformanceEntryCircularBuffer::getEntries(std::vector<PerformanceEntry>& target) const {
+  buffer_.getEntries(target);
+}
+
 void PerformanceEntryCircularBuffer::getEntries(
-    std::optional<std::string_view> name,
+    std::string_view name,
     std::vector<PerformanceEntry>& target) const {
   buffer_.getEntries(
       target, [&](const PerformanceEntry& e) { return e.name == name; });

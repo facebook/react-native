@@ -20,13 +20,15 @@ class PerformanceEntryKeyedBuffer : public PerformanceEntryBuffer {
   void add(const PerformanceEntry& entry) override;
 
   void getEntries(
-      std::optional<std::string_view> name,
+      std::vector<PerformanceEntry>& target) const override;
+
+  void getEntries(
+      std::string_view name,
       std::vector<PerformanceEntry>& target) const override;
 
   void clear() override;
   void clear(std::string_view name) override;
 
-  void getEntries(std::vector<PerformanceEntry>& target) const;
   std::optional<PerformanceEntry> find(const std::string& name) const;
 
  private:
