@@ -51,7 +51,7 @@ void PerformanceEntryKeyedBuffer::clear(std::string_view nameView) {
 
   if (auto node = entryMap_.find(name); node != entryMap_.end()) {
     totalEntryCount_ -= node->second.size();
-    node->second.clear();
+    entryMap_.erase(node);
   }
 }
 
