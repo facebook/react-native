@@ -52,7 +52,6 @@ class PerformanceObserverRegistry {
    */
   void queuePerformanceEntry(const PerformanceEntry& entry);
 
- private:
   void addObserver(const PerformanceObserver::WeakPtr& observer);
   void removeObserver(const PerformanceObserver& observer);
 
