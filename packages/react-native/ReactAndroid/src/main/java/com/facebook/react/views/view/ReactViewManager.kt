@@ -166,23 +166,23 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
     when (hitSlop.type) {
       ReadableType.Map -> {
         val hitSlopMap = hitSlop.asMap()
-        view.setHitSlopRect(
+        view.hitSlopRect =
             Rect(
                 getPixels(hitSlopMap, "left"),
                 getPixels(hitSlopMap, "top"),
                 getPixels(hitSlopMap, "right"),
-                getPixels(hitSlopMap, "bottom")))
+                getPixels(hitSlopMap, "bottom"))
       }
 
       ReadableType.Number -> {
         val hitSlopValue = hitSlop.asDouble().dpToPx().toInt()
-        view.setHitSlopRect(Rect(hitSlopValue, hitSlopValue, hitSlopValue, hitSlopValue))
+        view.hitSlopRect = Rect(hitSlopValue, hitSlopValue, hitSlopValue, hitSlopValue)
       }
 
-      ReadableType.Null -> view.setHitSlopRect(null)
+      ReadableType.Null -> view.hitSlopRect = null
       else -> {
         FLog.w(ReactConstants.TAG, "Invalid type for 'hitSlop' value ${hitSlop.type}")
-        view.setHitSlopRect(null)
+        view.hitSlopRect = null
       }
     }
   }
