@@ -17,6 +17,9 @@ inputs:
     required: false
     default: 'true'
     description: whether this action has to install java 17 or not
+  flavor:
+    required: true
+    description: the flavor we want to run - either debug or release
 runs:
   using: composite
   steps:
@@ -44,6 +47,11 @@ runs:
         api-level: 24
         arch: x86
         script: |
+          if [[ "${{ inputs.flavor }}" == debug ]]; then
+            echo "Running Metro in backgroud"
+            yarn start &
+          fi
+
           echo "Install APK from ${{ inputs.app-path }}"
           adb install "${{ inputs.app-path }}"
 
@@ -58,7 +66,7 @@ runs:
     - name: Store tests result
       uses: actions/upload-artifact@v3
       with:
-        name: e2e_android_${{ inputs.app-id }}_report_${{ inputs.jsengine }}
+        name: e2e_android_${{ inputs.app-id }}_report_${{ inputs.jsengine }}_${{ inputs.flavor }}
         path: |
           report.xml
           screen.mp4
@@ -66,5 +74,5 @@ runs:
       if: failure() && steps.run-tests.outcome == 'failure'
       uses: actions/upload-artifact@v4.3.4
       with:
-        name: maestro-logs-android-${{ inputs.app-id }}-${{ inputs.jsengine }}
+        name: maestro-logs-android-${{ inputs.app-id }}-${{ inputs.jsengine }}-${{ inputs.flavor }}
         path: /tmp/MaestroLogs

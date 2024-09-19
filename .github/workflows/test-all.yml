@@ -196,6 +196,7 @@ jobs:
       matrix:
         jsengine: [Hermes, JSC]
         architecture: [NewArch]
+        flavor: [Debug, Release]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -209,13 +210,15 @@ jobs:
           hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
           react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
           run-e2e-tests: "true"
+          flavor: ${{ matrix.flavor }}
       - name: Run E2E Tests
         uses: ./.github/actions/maestro-ios
         with:
-          app-path: "/tmp/RNTesterBuild/Build/Products/Release-iphonesimulator/RNTester.app"
+          app-path: "/tmp/RNTesterBuild/Build/Products/${{ inputs.flavor }}-iphonesimulator/RNTester.app"
           app-id: com.meta.RNTester.localDevelopment
           jsengine: ${{ matrix.jsengine }}
           maestro-flow: ./packages/rn-tester/.maestro/
+          flavor: ${{ matrix.flavor }}
 
   test_e2e_ios_templateapp:
     if: ${{ github.ref == 'refs/heads/main' || contains(github.ref,  'stable') || inputs.run-e2e-tests }}
@@ -229,6 +232,7 @@ jobs:
       fail-fast: false
       matrix:
         jsengine: [Hermes, JSC]
+        flavor: [Debug, Release]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -271,17 +275,18 @@ jobs:
           set -o pipefail && xcodebuild \
             -scheme "RNTestProject" \
             -workspace RNTestProject.xcworkspace \
-            -configuration "Release" \
+            -configuration "${{ matrix.flavor }}" \
             -sdk "iphonesimulator" \
             -destination "generic/platform=iOS Simulator" \
             -derivedDataPath "/tmp/RNTestProject" | xcbeautify
       - name: Run E2E Tests
         uses: ./.github/actions/maestro-ios
         with:
-          app-path: "/tmp/RNTestProject/Build/Products/Release-iphonesimulator/RNTestProject.app"
+          app-path: "/tmp/RNTestProject/Build/Products/${{ matrix.flavor }}-iphonesimulator/RNTestProject.app"
           app-id: org.reactjs.native.example.RNTestProject
           jsengine: ${{ matrix.jsengine }}
           maestro-flow: ./scripts/e2e/.maestro/
+          flavor: ${{ matrix.flavor }}
 
   test_e2e_android_templateapp:
     if: ${{ github.ref == 'refs/heads/main' || contains(github.ref,  'stable') || inputs.run-e2e-tests }}
@@ -292,6 +297,7 @@ jobs:
       fail-fast: false
       matrix:
         jsengine: [Hermes, JSC]
+        flavor: [debug, release]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -317,6 +323,7 @@ jobs:
       - name: Print /tmp folder
         run: ls -lR /tmp/react-native-tmp
       - name: Prepare artifacts
+        id: prepare-artifacts
         run: |
           REACT_NATIVE_PKG=$(find /tmp/react-native-tmp -type f -name "*.tgz")
           echo "React Native tgs is $REACT_NATIVE_PKG"
@@ -332,15 +339,18 @@ jobs:
 
           # Build
           cd android
-          ./gradlew assembleRelease --no-daemon -PreactNativeArchitectures=x86
+          CAPITALIZED_FLAVOR=$(echo "${{ matrix.flavor }}" | awk '{print toupper(substr($0, 1, 1)) substr($0, 2)}')
+          ./gradlew assemble$CAPITALIZED_FLAVOR --no-daemon -PreactNativeArchitectures=x86
+
       - name: Run E2E Tests
         uses: ./.github/actions/maestro-android
         with:
-          app-path: /tmp/RNTestProject/android/app/build/outputs/apk/release/app-release.apk
+          app-path: /tmp/RNTestProject/android/app/build/outputs/apk/${{ matrix.flavor }}/app-${{ matrix.flavor }}.apk
           app-id: com.rntestproject
           jsengine: ${{ matrix.jsengine }}
           maestro-flow: ./scripts/e2e/.maestro/
           install-java: 'false'
+          flavor: ${{ matrix.flavor }}
 
   build_hermesc_linux:
     runs-on: ubuntu-latest
@@ -403,6 +413,7 @@ jobs:
       fail-fast: false
       matrix:
         jsengine: [hermes, jsc]
+        flavor: [debug, release]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -414,9 +425,9 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: rntester-${{ matrix.jsengine }}-release
-          path: ./packages/rn-tester/android/app/build/outputs/apk/${{ matrix.jsengine }}/release/
+          path: ./packages/rn-tester/android/app/build/outputs/apk/${{ matrix.jsengine }}/${{ matrix.flavor }}/
       - name: Print folder structure
-        run: ls -lR ./packages/rn-tester/android/app/build/outputs/apk/${{ matrix.jsengine }}/release/
+        run: ls -lR ./packages/rn-tester/android/app/build/outputs/apk/${{ matrix.jsengine }}/${{ matrix.flavor }}/
       - name: Run E2E Tests
         uses: ./.github/actions/maestro-android
         with:
@@ -424,6 +435,7 @@ jobs:
           app-id: com.facebook.react.uiapp
           jsengine: ${{ matrix.jsengine }}
           maestro-flow: ./packages/rn-tester/.maestro/
+          flavor: ${{ matrix.flavor }}
 
   build_npm_package:
     runs-on: 8-core-ubuntu

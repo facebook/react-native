@@ -13,6 +13,10 @@ inputs:
   maestro-flow:
     required: true
     description: the folder that contains the maestro tests
+  flavor:
+    required: true
+    description: Whether we are building for Debug or Release
+
 runs:
   using: composite
   steps:
@@ -36,6 +40,12 @@ runs:
         # Avoid exit from the job if one of the command returns an error.
         # Maestro can fail in case of flakyness, we have some retry logic.
         set +e
+
+        # Start metro in Debug mode
+        if [[ ${{ inputs.flavor }} == "Debug" ]]; then
+          echo "Starting Metro in background..."
+          yarn start &
+        fi
 
         echo "Launching iOS Simulator: iPhone 15 Pro"
         xcrun simctl boot "iPhone 15 Pro"
@@ -82,7 +92,7 @@ runs:
       if: always()
       uses: actions/upload-artifact@v4.3.4
       with:
-        name: e2e_ios_${{ inputs.app-id }}_report_${{ inputs.jsengine }}
+        name: e2e_ios_${{ inputs.app-id }}_report_${{ inputs.jsengine }}_${{ inputs.flavor }}
         path: |
           video_record_1.mov
           video_record_2.mov
@@ -92,5 +102,5 @@ runs:
       if: failure() && steps.run-tests.outcome == 'failure'
       uses: actions/upload-artifact@v4.3.4
       with:
-        name: maestro-logs-${{ inputs.app-id }}-${{ inputs.jsengine }}
+        name: maestro-logs-${{ inputs.app-id }}-${{ inputs.jsengine }}-${{ inputs.flavor }}
         path: /tmp/MaestroLogs
