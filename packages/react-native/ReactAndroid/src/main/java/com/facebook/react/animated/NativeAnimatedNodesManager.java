@@ -556,7 +556,6 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
   @UiThread
   public void removeAnimatedEventFromView(
       int viewTag, String eventHandlerName, int animatedValueTag) {
-
     String eventName = normalizeEventName(eventHandlerName);
 
     ListIterator<EventAnimationDriver> it = mEventDrivers.listIterator();
@@ -568,6 +567,11 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
         it.remove();
         break;
       }
+    }
+
+    if (eventName.equals("topScroll")) {
+      // Handle the custom topScrollEnded event sent by the ScrollViews when the user stops dragging
+      removeAnimatedEventFromView(viewTag, "topScrollEnded", animatedValueTag);
     }
   }
 
