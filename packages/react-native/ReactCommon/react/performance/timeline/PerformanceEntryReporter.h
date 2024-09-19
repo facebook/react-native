@@ -103,7 +103,7 @@ class PerformanceEntryReporter {
       std::string_view entryName = {});
 
  private:
-  PerformanceObserverRegistry::Ptr observerRegistry_;
+  std::unique_ptr<PerformanceObserverRegistry> observerRegistry_;
 
   mutable std::mutex buffersMutex_;
   PerformanceEntryCircularBuffer eventBuffer_{EVENT_BUFFER_SIZE};

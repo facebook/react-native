@@ -9,35 +9,13 @@
 
 namespace facebook::react {
 
-PerformanceObserver::Ptr PerformanceObserverRegistry::createObserver(
-    PerformanceObserverCallback&& callback) {
-  // We allocate observer manually, and use `shared_ptr` deleter
-  // functionality to remove observer from registry
-  auto obj = new PerformanceObserver(std::move(callback));
-  auto deleter = [&](PerformanceObserver* observer) -> void {
-    this->removeObserver(*obj);
-    delete observer;
-  };
-  PerformanceObserver::Ptr ptr{obj, deleter};
-  return ptr;
-}
-
-void PerformanceObserverRegistry::addObserver(
-    const PerformanceObserver::WeakPtr& observer) {
+void PerformanceObserverRegistry::addObserver(std::shared_ptr<PerformanceObserver> observer) {
   std::lock_guard guard(observersMutex_);
   observers_.insert(observer);
 }
 
 void PerformanceObserverRegistry::removeObserver(
-    const PerformanceObserver& observer) {
-  std::lock_guard guard(observersMutex_);
-  erase_if(observers_, [&](auto e) -> bool {
-    return !e.expired() && *e.lock() == observer;
-  });
-}
-
-void PerformanceObserverRegistry::removeObserver(
-    const PerformanceObserver::Ptr& observer) {
+    std::shared_ptr<PerformanceObserver> observer) {
   std::lock_guard guard(observersMutex_);
   observers_.erase(observer);
 }

@@ -61,9 +61,6 @@ struct PerformanceObserverObserveSingleOptions {
  */
 class PerformanceObserver : public jsi::NativeState {
  public:
-  using Ptr = std::shared_ptr<PerformanceObserver>;
-  using WeakPtr = std::weak_ptr<PerformanceObserver>;
-
   explicit PerformanceObserver(PerformanceObserverCallback&& callback)
       : callback_(std::move(callback)) {}
 

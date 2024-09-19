@@ -23,28 +23,17 @@ namespace facebook::react {
  */
 class PerformanceObserverRegistry {
  public:
-  using Ptr = std::unique_ptr<PerformanceObserverRegistry>;
-  using WeakPtr = std::weak_ptr<PerformanceObserverRegistry>;
-
   PerformanceObserverRegistry() = default;
 
   /**
-   * Creates Performance Observer instance and registers it in the registry.
-   *
-   * Observer is automatically removed from the registry when it goes out of
-   * scope. You can manually remove it from the registry earlier by calling
-   * `removeObserver`.
+   * Adds observer to the registry.
    */
-  PerformanceObserver::Ptr createObserver(
-      PerformanceObserverCallback&& callback);
+  void addObserver(std::shared_ptr<PerformanceObserver> observer);
 
   /**
    * Removes observer from the registry.
-   *
-   * It is called automatically for observers created by `createObserver`
-   * method.
    */
-  void removeObserver(const PerformanceObserver::Ptr& observer);
+  void removeObserver(std::shared_ptr<PerformanceObserver> observer);
 
   /**
    * Delegates specified performance `entry` to all registered observers
@@ -52,14 +41,11 @@ class PerformanceObserverRegistry {
    */
   void queuePerformanceEntry(const PerformanceEntry& entry);
 
-  void addObserver(const PerformanceObserver::WeakPtr& observer);
-  void removeObserver(const PerformanceObserver& observer);
-
  private:
   mutable std::mutex observersMutex_;
   std::set<
-      PerformanceObserver::WeakPtr,
-      std::owner_less<PerformanceObserver::WeakPtr>>
+      std::weak_ptr<PerformanceObserver>,
+      std::owner_less<std::weak_ptr<PerformanceObserver>>>
       observers_;
 };
 

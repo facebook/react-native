@@ -47,10 +47,7 @@ jsi::Object NativePerformanceObserver::createObserver(
         });
   };
 
-  auto& registry =
-      PerformanceEntryReporter::getInstance()->getObserverRegistry();
-  auto observer = registry.createObserver(std::move(cb));
-
+  auto observer = std::make_shared<PerformanceObserver>(std::move(cb));
   jsi::Object observerObj{rt};
   observerObj.setNativeState(rt, observer);
   return observerObj;
@@ -100,6 +97,10 @@ void NativePerformanceObserver::observe(
           {.buffered = buffered, .durationThreshold = durationThreshold});
     }
   }
+
+  auto& registry =
+      PerformanceEntryReporter::getInstance()->getObserverRegistry();
+  registry.addObserver(observer);
 }
 
 void NativePerformanceObserver::disconnect(
@@ -111,6 +112,7 @@ void NativePerformanceObserver::disconnect(
   if (!observer) {
     return;
   }
+
   observerObj.setNativeState(rt, nullptr);
 
   auto& registry =
