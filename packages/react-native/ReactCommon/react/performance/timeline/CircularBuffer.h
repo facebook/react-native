@@ -14,8 +14,6 @@
 
 namespace facebook::react {
 
-constexpr size_t DEFAULT_MAX_SIZE = 1024;
-
 /**
  * A container for storing entries of type T, with the following properties:
  * - It can only grow up to a specified max size
@@ -28,8 +26,7 @@ constexpr size_t DEFAULT_MAX_SIZE = 1024;
 template <class T>
 class CircularBuffer {
  public:
-  explicit CircularBuffer(size_t maxSize = DEFAULT_MAX_SIZE)
-      : maxSize_(maxSize) {
+  explicit CircularBuffer(size_t maxSize): maxSize_(maxSize) {
     entries_.reserve(maxSize_);
   }
 
