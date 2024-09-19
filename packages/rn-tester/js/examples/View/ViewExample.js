@@ -647,6 +647,18 @@ function OutlineExample(): React.Node {
         style={[
           defaultStyleSize,
           {
+            borderColor: 'green',
+            borderWidth: 12,
+            outlineWidth: 4,
+            outlineOffset: -8,
+            outlineColor: 'orange',
+          },
+        ]}
+      />
+      <View
+        style={[
+          defaultStyleSize,
+          {
             outlineWidth: 9,
             outlineColor: 'orange',
           },
@@ -1298,7 +1310,6 @@ export default ({
     {
       title: 'Outline',
       name: 'outline',
-      platform: 'android',
       render: OutlineExample,
     },
   ],
