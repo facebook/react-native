@@ -1400,9 +1400,14 @@ public class ReactHostImpl implements ReactHost {
         createReactInstanceUnwrapper("Reload", method, reason);
 
     if (mReloadTask == null) {
+      // When using the immediate executor, we want to avoid scheduling any further work immediately
+      // when destruction is kicked off.
+      Task<ReactInstance> createTask =
+          ReactNativeFeatureFlags.completeReactInstanceCreationOnBgThreadOnAndroid()
+              ? mCreateReactInstanceTaskRef.getAndReset()
+              : mCreateReactInstanceTaskRef.get();
       mReloadTask =
-          mCreateReactInstanceTaskRef
-              .get()
+          createTask
               .continueWithTask(
                   (task) -> {
                     log(method, "Starting React Native reload");
@@ -1499,8 +1504,13 @@ public class ReactHostImpl implements ReactHost {
                       reactInstance.destroy();
                     }
 
-                    log(method, "Resetting createReactInstance task ref");
-                    mCreateReactInstanceTaskRef.reset();
+                    // Originally, we reset the instance task ref quite late, leading to potential
+                    // racing invocations while shutting down
+                    if (!ReactNativeFeatureFlags
+                        .completeReactInstanceCreationOnBgThreadOnAndroid()) {
+                      log(method, "Resetting createReactInstance task ref");
+                      mCreateReactInstanceTaskRef.reset();
+                    }
 
                     log(method, "Resetting start task ref");
                     mStartTask = null;
@@ -1578,9 +1588,15 @@ public class ReactHostImpl implements ReactHost {
         createReactInstanceUnwrapper("Destroy", method, reason);
 
     if (mDestroyTask == null) {
+      // When using the immediate executor, we want to avoid scheduling any further work immediately
+      // when destruction is kicked off.
+      Task<ReactInstance> createTask =
+          ReactNativeFeatureFlags.completeReactInstanceCreationOnBgThreadOnAndroid()
+              ? mCreateReactInstanceTaskRef.getAndReset()
+              : mCreateReactInstanceTaskRef.get();
+
       mDestroyTask =
-          mCreateReactInstanceTaskRef
-              .get()
+          createTask
               .continueWithTask(
                   task -> {
                     log(method, "Starting React Native destruction");
@@ -1608,7 +1624,6 @@ public class ReactHostImpl implements ReactHost {
                     }
 
                     final ReactContext reactContext = mBridgelessReactContextRef.getNullable();
-
                     if (reactContext == null) {
                       raiseSoftException(method, "ReactContext is null. Destroy reason: " + reason);
                     }
@@ -1624,7 +1639,6 @@ public class ReactHostImpl implements ReactHost {
                   task -> {
                     final ReactInstance reactInstance =
                         reactInstanceTaskUnwrapper.unwrap(task, "2: Stopping surfaces");
-
                     if (reactInstance == null) {
                       raiseSoftException(method, "Skipping surface shutdown: ReactInstance null");
                       return task;
@@ -1701,8 +1715,13 @@ public class ReactHostImpl implements ReactHost {
                       reactInstance.destroy();
                     }
 
-                    log(method, "Resetting createReactInstance task ref");
-                    mCreateReactInstanceTaskRef.reset();
+                    // Originally, we reset the instance task ref quite late, leading to potential
+                    // racing invocations while shutting down
+                    if (!ReactNativeFeatureFlags
+                        .completeReactInstanceCreationOnBgThreadOnAndroid()) {
+                      log(method, "Resetting createReactInstance task ref");
+                      mCreateReactInstanceTaskRef.reset();
+                    }
 
                     log(method, "Resetting start task ref");
                     mStartTask = null;
