@@ -214,7 +214,7 @@ jobs:
       - name: Run E2E Tests
         uses: ./.github/actions/maestro-ios
         with:
-          app-path: "/tmp/RNTesterBuild/Build/Products/${{ inputs.flavor }}-iphonesimulator/RNTester.app"
+          app-path: "/tmp/RNTesterBuild/Build/Products/${{ matrix.flavor }}-iphonesimulator/RNTester.app"
           app-id: com.meta.RNTester.localDevelopment
           jsengine: ${{ matrix.jsengine }}
           maestro-flow: ./packages/rn-tester/.maestro/
@@ -249,7 +249,7 @@ jobs:
       - name: Download Hermes
         uses: actions/download-artifact@v4
         with:
-          name: hermes-darwin-bin-Release
+          name: hermes-darwin-bin-${{matrix.flavor}}
           path: /tmp/react-native-tmp
       - name: Download React Native Package
         uses: actions/download-artifact@v4
@@ -266,19 +266,26 @@ jobs:
           HERMES_PATH=$(find /tmp/react-native-tmp -type f -name "*.tar.gz")
           echo "Hermes path is $HERMES_PATH"
 
-          node ./scripts/e2e/init-project-e2e.js --projectName RNTestProject --currentBranch ${{ github.ref_name }} --directory /tmp/RNTestProject --pathToLocalReactNative $REACT_NATIVE_PKG
+          # For stable branches, we want to use the stable branch of the template
+          # In all the other cases, we want to use "main"
+          BRANCH=${{ github.ref_name }}
+          if ! [[ $BRANCH == *-stable* ]]; then
+            BRANCH=main
+          fi
+
+          node ./scripts/e2e/init-project-e2e.js --projectName RNTestProject --currentBranch $BRANCH --directory /tmp/RNTestProject --pathToLocalReactNative $REACT_NATIVE_PKG
 
           cd /tmp/RNTestProject/ios
           bundle install
           HERMES_ENGINE_TARBALL_PATH=$HERMES_PATH bundle exec pod install
 
-          set -o pipefail && xcodebuild \
+          xcodebuild \
             -scheme "RNTestProject" \
             -workspace RNTestProject.xcworkspace \
             -configuration "${{ matrix.flavor }}" \
             -sdk "iphonesimulator" \
             -destination "generic/platform=iOS Simulator" \
-            -derivedDataPath "/tmp/RNTestProject" | xcbeautify
+            -derivedDataPath "/tmp/RNTestProject"
       - name: Run E2E Tests
         uses: ./.github/actions/maestro-ios
         with:
@@ -287,6 +294,7 @@ jobs:
           jsengine: ${{ matrix.jsengine }}
           maestro-flow: ./scripts/e2e/.maestro/
           flavor: ${{ matrix.flavor }}
+          working-directory: /tmp/RNTestProject
 
   test_e2e_android_templateapp:
     if: ${{ github.ref == 'refs/heads/main' || contains(github.ref,  'stable') || inputs.run-e2e-tests }}
@@ -331,7 +339,13 @@ jobs:
           MAVEN_LOCAL=/tmp/react-native-tmp/maven-local
           echo "Maven local path is $MAVEN_LOCAL"
 
-          node ./scripts/e2e/init-project-e2e.js --projectName RNTestProject --currentBranch ${{ github.ref_name }} --directory /tmp/RNTestProject --pathToLocalReactNative $REACT_NATIVE_PKG
+          # For stable branches, we want to use the stable branch of the template
+          # In all the other cases, we want to use "main"
+          BRANCH=${{ github.ref_name }}
+          if ! [[ $BRANCH == *-stable* ]]; then
+            BRANCH=main
+          fi
+          node ./scripts/e2e/init-project-e2e.js --projectName RNTestProject --currentBranch $BRANCH  --directory /tmp/RNTestProject --pathToLocalReactNative $REACT_NATIVE_PKG
 
           echo "Feed maven local to gradle.properties"
           cd /tmp/RNTestProject
@@ -351,6 +365,7 @@ jobs:
           maestro-flow: ./scripts/e2e/.maestro/
           install-java: 'false'
           flavor: ${{ matrix.flavor }}
+          working-directory: /tmp/RNTestProject
 
   build_hermesc_linux:
     runs-on: ubuntu-latest
@@ -424,17 +439,17 @@ jobs:
       - name: Download APK
         uses: actions/download-artifact@v4
         with:
-          name: rntester-${{ matrix.jsengine }}-release
+          name: rntester-${{ matrix.jsengine }}-${{ matrix.flavor }}
           path: ./packages/rn-tester/android/app/build/outputs/apk/${{ matrix.jsengine }}/${{ matrix.flavor }}/
       - name: Print folder structure
         run: ls -lR ./packages/rn-tester/android/app/build/outputs/apk/${{ matrix.jsengine }}/${{ matrix.flavor }}/
       - name: Run E2E Tests
         uses: ./.github/actions/maestro-android
         with:
-          app-path: ./packages/rn-tester/android/app/build/outputs/apk/${{ matrix.jsengine }}/release/app-${{ matrix.jsengine }}-x86-release.apk
+          app-path: ./packages/rn-tester/android/app/build/outputs/apk/${{ matrix.jsengine }}/${{ matrix.flavor }}/app-${{ matrix.jsengine }}-x86-${{ matrix.flavor }}.apk
           app-id: com.facebook.react.uiapp
           jsengine: ${{ matrix.jsengine }}
-          maestro-flow: ./packages/rn-tester/.maestro/
+          maestro-flow: ./packages/rn-tester/.maestro
           flavor: ${{ matrix.flavor }}
 
   build_npm_package:

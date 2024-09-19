@@ -20,6 +20,11 @@ inputs:
   flavor:
     required: true
     description: the flavor we want to run - either debug or release
+  working-directory:
+    required: false
+    default: "."
+    description: The directory from which metro should be started
+
 runs:
   using: composite
   steps:
@@ -41,30 +46,48 @@ runs:
         echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
         sudo udevadm control --reload-rules
         sudo udevadm trigger --name-match=kvm
+    - name: Build Codegen
+      shell: bash
+      if: ${{ inputs.flavor == 'debug' }}
+      run: ./packages/react-native-codegen/scripts/oss/build.sh
     - name: Run e2e tests
       uses: reactivecircus/android-emulator-runner@v2
+      env:
+          ANDROID_EMULATOR_WAIT_TIME_BEFORE_KILL: 60
       with:
         api-level: 24
         arch: x86
+        force-avd-creation: true
         script: |
-          if [[ "${{ inputs.flavor }}" == debug ]]; then
-            echo "Running Metro in backgroud"
-            yarn start &
-          fi
-
           echo "Install APK from ${{ inputs.app-path }}"
           adb install "${{ inputs.app-path }}"
+
+          echo "Build Codegen"
+
+          echo "Start Metro in Background"
+          cd ${{ inputs.working-directory }}
+          pwd
+          yarn start &
+
+          # Launch the app
+          adb shell monkey -p ${{ inputs.app-id }} 1
 
           echo "Start recording to /sdcard/screen.mp4"
           adb shell screenrecord /sdcard/screen.mp4
 
           echo "Start testing ${{ inputs.maestro-flow }}"
+          export MAESTRO_DRIVER_STARTUP_TIMEOUT=120000
           $HOME/.maestro/bin/maestro test ${{ inputs.maestro-flow }} --format junit -e APP_ID=${{ inputs.app-id }} --debug-output /tmp/MaestroLogs
 
-          echo "Stop recording. Saving to screen.mp4"
           adb pull /sdcard/screen.mp4
+
+          # see: https://github.com/ReactiveCircus/android-emulator-runner/issues/385#issuecomment-2018211127
+          pkill -9 crashpad_handler || true
+          sleep 5
+          pkill -9 crashpad_handler || true
     - name: Store tests result
       uses: actions/upload-artifact@v3
+      if: always()
       with:
         name: e2e_android_${{ inputs.app-id }}_report_${{ inputs.jsengine }}_${{ inputs.flavor }}
         path: |

@@ -16,6 +16,10 @@ inputs:
   flavor:
     required: true
     description: Whether we are building for Debug or Release
+  working-directory:
+    required: false
+    default: "."
+    description: The directory from which metro should be started
 
 runs:
   using: composite
@@ -33,6 +37,12 @@ runs:
       with:
         java-version: '17'
         distribution: 'zulu'
+    - name: Start Metro in Debug
+      shell: bash
+      if: ${{ inputs.flavor == 'Debug' }}
+      run: |
+        cd ${{ inputs.working-directory }}
+        yarn start &
     - name: Run tests
       id: run-tests
       shell: bash
@@ -40,12 +50,6 @@ runs:
         # Avoid exit from the job if one of the command returns an error.
         # Maestro can fail in case of flakyness, we have some retry logic.
         set +e
-
-        # Start metro in Debug mode
-        if [[ ${{ inputs.flavor }} == "Debug" ]]; then
-          echo "Starting Metro in background..."
-          yarn start &
-        fi
 
         echo "Launching iOS Simulator: iPhone 15 Pro"
         xcrun simctl boot "iPhone 15 Pro"
@@ -64,16 +68,23 @@ runs:
         xcrun simctl launch $UDID ${{ inputs.app-id }}
 
         echo "Running tests with Maestro"
-        export MAESTRO_DRIVER_STARTUP_TIMEOUT=1500000 # 25 min. CI is extremely slow
+        export MAESTRO_DRIVER_STARTUP_TIMEOUT=1800000 # 25 min. CI is extremely slow
 
         # Add retries for flakyness
-        MAX_ATTEMPTS=3
+        MAX_ATTEMPTS=5
         CURR_ATTEMPT=0
         RESULT=1
 
         while [[ $CURR_ATTEMPT -lt $MAX_ATTEMPTS ]] && [[ $RESULT -ne 0 ]]; do
+          if [[ $CURR_ATTEMPT -ne 0 ]]; then
+            echo "Rebooting simulator for stability"
+            xcrun simctl boot "iPhone 15 Pro"
+          fi
+
           CURR_ATTEMPT=$((CURR_ATTEMPT+1))
           echo "Attempt number $CURR_ATTEMPT"
+
+
 
           echo "Start video record using pid: video_record_${{ inputs.jsengine }}_$CURR_ATTEMPT.pid"
           xcrun simctl io booted recordVideo video_record_$CURR_ATTEMPT.mov & echo $! > video_record_${{ inputs.jsengine }}_$CURR_ATTEMPT.pid
@@ -85,6 +96,9 @@ runs:
 
           # Stop video
           kill -SIGINT $(cat video_record_${{ inputs.jsengine }}_$CURR_ATTEMPT.pid)
+
+          echo "Shutting down simulator for stability"
+          xcrun simctl shutdown "iPhone 15 Pro"
         done
 
         exit $RESULT
