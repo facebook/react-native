@@ -124,6 +124,7 @@ export class PerformanceObserver {
   #nativeObserverHandle: mixed | void;
   #callback: PerformanceObserverCallback;
   #type: 'single' | 'multiple' | void;
+  #calledAtLeastOnce = false;
 
   constructor(callback: PerformanceObserverCallback) {
     this.#callback = callback;
@@ -153,7 +154,7 @@ export class PerformanceObserver {
 
     // The same observer may receive multiple calls to "observe", so we need
     // to check what is new on this call vs. previous ones.
-    NativePerformanceObserver.observe(this.#observerHandle, {
+    NativePerformanceObserver.observe(this.#nativeObserverHandle, {
       entryTypes,
       durationThreshold:
         options.type === 'event' ? options.durationThreshold : undefined,
@@ -174,9 +175,14 @@ export class PerformanceObserver {
   }
 
   #createNativeObserver() {
+    this.#calledAtLeastOnce = false;
     return NativePerformanceObserver.createObserver(() => {
-      const entryList = new PerformanceObserverEntryList(NativePerformanceObserver.takeRecords(this.#observerHandle));
-      const droppedEntriesCount = NativePerformanceObserver.getDroppedEntriesCount(this.#nativeObserverHandle);
+      const entryList = new PerformanceObserverEntryList(NativePerformanceObserver.takeRecords(this.#nativeObserverHandle));
+      let droppedEntriesCount = 0;
+      if (!this.#calledAtLeastOnce) {
+        droppedEntriesCount = NativePerformanceObserver.getDroppedEntriesCount(this.#nativeObserverHandle);
+        this.#calledAtLeastOnce = true;
+      }
       this.#callback(entryList, this, { droppedEntriesCount });
     });
   }
