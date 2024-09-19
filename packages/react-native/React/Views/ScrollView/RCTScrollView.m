@@ -856,7 +856,14 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
     if (_scrollView.isDecelerating || !_scrollView.isTracking) {
       // Trigger the onMomentumScrollEnd event manually
       RCT_SEND_SCROLL_EVENT(onMomentumScrollEnd, nil);
-      RCT_FORWARD_SCROLL_EVENT(scrollViewDidEndDecelerating : _scrollView);
+      // We can't use the RCT_FORWARD_SCROLL_EVENT here beacuse the `_cmd` parameter passed
+      // to `respondsToSelector` is the current method - so it will be `didMoveToWindow` - and not
+      // `scrollViewDidEndDecelerating` that is passed.
+      for (NSObject<UIScrollViewDelegate> *scrollViewListener in _scrollListeners) {
+        if ([scrollViewListener respondsToSelector:@selector(scrollViewDidEndDecelerating:)]) {
+          [scrollViewListener scrollViewDidEndDecelerating:_scrollView];
+        }
+      }
     }
   }
 }
