@@ -51,13 +51,6 @@ struct PerformanceObserverObserveSingleOptions {
  *
  * Entries are pushed to the observer by the `PerformanceEntryReporter` class,
  * through the `PerformanceObserverRegistry` class which acts as a central hub.
- *
- * To create new performance observers, you should use
- * `PerformanceObserverRegistry::createObserver` which creates the observer,
- * registers it immediately and unregisters it when it goes out of scope.
- *
- * You can still manually create instance of `PerformanceObserver`, but then
- * you need to manually register and unregister it from registry.
  */
 class PerformanceObserver : public jsi::NativeState {
  public:
