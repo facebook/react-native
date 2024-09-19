@@ -78,13 +78,15 @@ std::vector<PerformanceEntry> PerformanceEntryReporter::getEntries() const {
   return res;
 }
 
-std::vector<PerformanceEntry> PerformanceEntryReporter::getEntriesByType(PerformanceEntryType entryType) const {
+std::vector<PerformanceEntry> PerformanceEntryReporter::getEntriesByType(
+    PerformanceEntryType entryType) const {
   std::vector<PerformanceEntry> res;
   getBuffer(entryType).getEntries(res);
   return res;
 }
 
-std::vector<PerformanceEntry> PerformanceEntryReporter::getEntriesByName(std::string_view entryName) const {
+std::vector<PerformanceEntry> PerformanceEntryReporter::getEntriesByName(
+    std::string_view entryName) const {
   std::vector<PerformanceEntry> res;
   // Collect all entry types
   for (int i = 1; i < NUM_PERFORMANCE_ENTRY_TYPES; i++) {
@@ -93,7 +95,9 @@ std::vector<PerformanceEntry> PerformanceEntryReporter::getEntriesByName(std::st
   return res;
 }
 
-std::vector<PerformanceEntry> PerformanceEntryReporter::getEntriesByName(std::string_view entryName, PerformanceEntryType entryType) const {
+std::vector<PerformanceEntry> PerformanceEntryReporter::getEntriesByName(
+    std::string_view entryName,
+    PerformanceEntryType entryType) const {
   std::vector<PerformanceEntry> res;
   getBuffer(entryType).getEntries(entryName, res);
   return res;

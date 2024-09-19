@@ -55,9 +55,13 @@ class PerformanceEntryReporter {
   // https://www.w3.org/TR/performance-timeline/#getentriesbytype-method
   // https://www.w3.org/TR/performance-timeline/#getentriesbyname-method
   std::vector<PerformanceEntry> getEntries() const;
-  std::vector<PerformanceEntry> getEntriesByType(PerformanceEntryType entryType) const;
-  std::vector<PerformanceEntry> getEntriesByName(std::string_view entryName) const;
-  std::vector<PerformanceEntry> getEntriesByName(std::string_view entryName, PerformanceEntryType entryType) const;
+  std::vector<PerformanceEntry> getEntriesByType(
+      PerformanceEntryType entryType) const;
+  std::vector<PerformanceEntry> getEntriesByName(
+      std::string_view entryName) const;
+  std::vector<PerformanceEntry> getEntriesByName(
+      std::string_view entryName,
+      PerformanceEntryType entryType) const;
 
   void logEventEntry(
       std::string name,

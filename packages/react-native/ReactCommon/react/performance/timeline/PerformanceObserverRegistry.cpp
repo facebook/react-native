@@ -9,7 +9,8 @@
 
 namespace facebook::react {
 
-void PerformanceObserverRegistry::addObserver(std::shared_ptr<PerformanceObserver> observer) {
+void PerformanceObserverRegistry::addObserver(
+    std::shared_ptr<PerformanceObserver> observer) {
   std::lock_guard guard(observersMutex_);
   observers_.insert(observer);
 }

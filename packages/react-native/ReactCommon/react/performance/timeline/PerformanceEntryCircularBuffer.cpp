@@ -16,7 +16,8 @@ void PerformanceEntryCircularBuffer::add(
   }
 }
 
-void PerformanceEntryCircularBuffer::getEntries(std::vector<PerformanceEntry>& target) const {
+void PerformanceEntryCircularBuffer::getEntries(
+    std::vector<PerformanceEntry>& target) const {
   buffer_.getEntries(target);
 }
 
