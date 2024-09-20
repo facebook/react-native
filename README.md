@@ -114,6 +114,7 @@ Please read the [full text][code] so that you can understand what actions will a
 [code]: https://code.fb.com/codeofconduct/
 
 ### [Contributing Guide][contribute]
+[![Open in DevZero](https://assets.devzero.io/open-in-devzero.svg)](https://www.devzero.io/dashboard/recipes/new?repo-url=https://github.com/facebook/react-native)
 
 Read our [**Contributing Guide**][contribute] to learn about our development process, how to propose bugfixes and improvements, and how to build and test your changes to React Native.
 
