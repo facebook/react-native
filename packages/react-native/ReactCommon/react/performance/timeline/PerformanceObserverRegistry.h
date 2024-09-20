@@ -46,8 +46,8 @@ class PerformanceObserverRegistry {
  private:
   mutable std::mutex observersMutex_;
   std::set<
-      std::weak_ptr<PerformanceObserver>,
-      std::owner_less<std::weak_ptr<PerformanceObserver>>>
+      std::shared_ptr<PerformanceObserver>,
+      std::owner_less<std::shared_ptr<PerformanceObserver>>>
       observers_;
 };
 
