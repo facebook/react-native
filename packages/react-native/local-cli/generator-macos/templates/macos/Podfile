@@ -14,8 +14,6 @@ target 'HelloWorld-macOS' do
     :path => '../node_modules/react-native-macos',
     :hermes_enabled => false,
     :fabric_enabled => ENV['RCT_NEW_ARCH_ENABLED'] == '1',
-    # Flipper is not compatible w/ macOS
-    :flipper_configuration => FlipperConfiguration.disabled,
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
