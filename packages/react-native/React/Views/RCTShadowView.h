@@ -17,7 +17,7 @@
 @class RCTRootShadowView;
 @class RCTSparseArray;
 
-typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, RCTPlatformView *> *viewRegistry); // [macOS]
+typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, __kindof RCTPlatformView *> *viewRegistry); // [macOS]
 
 /**
  * ShadowView tree mirrors RCT view tree. Every node is highly stateful.

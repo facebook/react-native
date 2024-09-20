@@ -19,7 +19,7 @@
 @class RCTSparseArray;
 @class RCTUIManager;
 
-typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTPlatformView *> *viewRegistry); // [macOS]
+typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, NSDictionary<NSNumber *, __kindof RCTPlatformView *> *viewRegistry); // [macOS]
 
 @interface RCTViewManager : NSObject <RCTBridgeModule>
 
