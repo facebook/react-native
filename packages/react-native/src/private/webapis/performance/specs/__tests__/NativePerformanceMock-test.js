@@ -11,16 +11,16 @@
 
 import type {PerformanceEntryList} from '../../PerformanceObserver';
 
+jest.mock(
+  '../NativePerformanceObserver',
+  () => require('../__mocks__/NativePerformanceObserver').default,
+);
+
 const NativePerformanceMock = require('../__mocks__/NativePerformance').default;
 const PerformanceObserver =
   require('../../PerformanceObserver').PerformanceObserver;
 
 describe('NativePerformanceMock', () => {
-  jest.mock(
-    '../NativePerformanceObserver',
-    () => require('../__mocks__/NativePerformanceObserver').default,
-  );
-
   it('marks get reported', async () => {
     let entries: PerformanceEntryList = [];
     const observer = new PerformanceObserver((list, _observer) => {

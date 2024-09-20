@@ -19,12 +19,47 @@ import type {
 
 import {RawPerformanceEntryTypeValues} from '../../RawPerformanceEntry';
 
+jest.mock(
+  '../NativePerformance',
+  () => require('../__mocks__/NativePerformance').default,
+);
+
+jest.mock(
+  '../NativePerformanceObserver',
+  () => require('../__mocks__/NativePerformanceObserver').default,
+);
+
 const eventCounts: Map<string, number> = new Map();
-const observers = new WeakSet<MockObserver>();
+let observers: MockObserver[] = [];
 let entries: Array<RawPerformanceEntry> = [];
 
 export function logMockEntry(entry: RawPerformanceEntry) {
   entries.push(entry);
+
+  if (entry.entryType == RawPerformanceEntryTypeValues.EVENT) {
+    eventCounts.set(entry.name, (eventCounts.get(entry.name) ?? 0) + 1);
+  }
+
+  for (const observer of observers) {
+    if (observer.options.type != entry.entryType &&
+      !observer.options.entryTypes?.includes(entry.entryType)) {
+      continue;
+    }
+
+    if (entry.entryType == RawPerformanceEntryTypeValues.EVENT) {
+      if (observer.options.durationThreshold > 0 && entry.duration < observer.options.durationThreshold) {
+        continue;
+      }
+    }
+
+    observer.entries.push(entry);
+
+    // $FlowFixMe[incompatible-call]
+    global.queueMicrotask(() => {
+      // We want to emulate the way it's done in native (i.e. async/batched)
+      observer.callback();
+    });
+  }
 }
 
 type MockObserver = {
@@ -60,13 +95,13 @@ const NativePerformanceObserverMock: NativePerformanceObserver = {
     // $FlowFixMe
     const mockObserver = (observer: any) as MockObserver;
     mockObserver.options = options;
-    observers.add(mockObserver);
+    observers.push(mockObserver);
   },
 
   disconnect: (observer: OpaqueNativeObserverHandle): void => {
     // $FlowFixMe
     const mockObserver = (observer: any) as MockObserver;
-    observers.delete(mockObserver);
+    observers = observers.filter(e => e !== mockObserver);
   },
 
   takeRecords: (observer: OpaqueNativeObserverHandle): $ReadOnlyArray<RawPerformanceEntry> => {

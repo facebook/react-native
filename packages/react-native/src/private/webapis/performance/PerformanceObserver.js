@@ -135,7 +135,7 @@ export class PerformanceObserver {
 
     this.#validateObserveOptions(options);
 
-    if (this.#nativeObserverHandle != null) {
+    if (this.#nativeObserverHandle == null) {
       this.#nativeObserverHandle = this.#createNativeObserver();
     }
 
@@ -182,9 +182,9 @@ export class PerformanceObserver {
     this.#calledAtLeastOnce = false;
 
     return NativePerformanceObserver.createObserver(() => { // $FlowNotNull
-      const entries = NativePerformanceObserver
-        .takeRecords(this.#nativeObserverHandle)
-        .map(rawToPerformanceEntry);
+      let entries = NativePerformanceObserver
+        .takeRecords(this.#nativeObserverHandle);
+      entries = entries.map(rawToPerformanceEntry);
       const entryList = new PerformanceObserverEntryList(entries);
 
       let droppedEntriesCount = 0;

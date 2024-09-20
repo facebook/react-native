@@ -45,8 +45,8 @@ const NativePerformanceMock: typeof NativePerformance = {
     logMockEntry({
       entryType: RawPerformanceEntryTypeValues.MEASURE,
       name,
-      startTime,
-      duration: duration ?? 0,
+      startTime: start,
+      duration: duration ?? end - start,
     });
   },
 

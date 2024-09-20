@@ -14,7 +14,6 @@ import {RawPerformanceEntryTypeValues} from '../../RawPerformanceEntry';
 
 describe('NativePerformanceObserver', () => {
   it('correctly clears/gets entries', async () => {
-
     logMockEntry({
       name: 'mark1',
       entryType: RawPerformanceEntryTypeValues.MARK,
@@ -28,6 +27,10 @@ describe('NativePerformanceObserver', () => {
       startTime: 0,
       duration: 0,
     });
+
+    expect(
+      NativePerformanceObserverMock.getEntries().map(e => e.name),
+    ).toStrictEqual(['mark1', 'event1']);
 
     NativePerformanceObserverMock.clearEntries();
 

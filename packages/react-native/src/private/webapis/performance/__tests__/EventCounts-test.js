@@ -9,12 +9,6 @@
  * @oncall react_native
  */
 
-// NOTE: Jest mocks of transitive dependencies don't appear to work with
-// ES6 module imports, therefore forced to use commonjs style imports here.
-const Performance = require('../Performance').default;
-const NativePerformanceMock =
-  require('../specs/__mocks__/NativePerformance').default;
-
 jest.mock(
   '../specs/NativePerformance',
   () => require('../specs/__mocks__/NativePerformance').default,
@@ -24,6 +18,12 @@ jest.mock(
   '../specs/NativePerformanceObserver',
   () => require('../specs/__mocks__/NativePerformanceObserver').default,
 );
+
+// NOTE: Jest mocks of transitive dependencies don't appear to work with
+// ES6 module imports, therefore forced to use commonjs style imports here.
+const Performance = require('../Performance').default;
+const NativePerformanceMock =
+  require('../specs/__mocks__/NativePerformance').default;
 
 describe('EventCounts', () => {
   it('defines EventCounts for Performance', () => {
