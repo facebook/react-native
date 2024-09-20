@@ -6,18 +6,17 @@
  */
 
 #include "MountingCoordinator.h"
+
+#include <cxxreact/SystraceSection.h>
+#include <react/debug/react_native_assert.h>
+#include <react/renderer/mounting/ShadowViewMutation.h>
+#include <condition_variable>
 #include "updateMountedFlag.h"
 
 #ifdef RN_SHADOW_TREE_INTROSPECTION
 #include <glog/logging.h>
 #include <sstream>
 #endif
-
-#include <condition_variable>
-
-#include <cxxreact/SystraceSection.h>
-#include <react/debug/react_native_assert.h>
-#include <react/renderer/mounting/ShadowViewMutation.h>
 
 namespace facebook::react {
 
@@ -104,6 +103,9 @@ std::optional<MountingTransaction> MountingCoordinator::pullTransaction(
   }
 
   // Override case
+#ifdef RN_SHADOW_TREE_INTROSPECTION
+  bool didOverridePullTransaction = false;
+#endif
   for (const auto& delegate : mountingOverrideDelegates_) {
     auto mountingOverrideDelegate = delegate.lock();
     auto shouldOverridePullTransaction = mountingOverrideDelegate &&
@@ -130,6 +132,9 @@ std::optional<MountingTransaction> MountingCoordinator::pullTransaction(
 
       transaction = mountingOverrideDelegate->pullTransaction(
           surfaceId_, number_, telemetry, std::move(mutations));
+#ifdef RN_SHADOW_TREE_INTROSPECTION
+      didOverridePullTransaction = true;
+#endif
     }
   }
 
@@ -148,7 +153,7 @@ std::optional<MountingTransaction> MountingCoordinator::pullTransaction(
     // If the transaction was overridden, we don't have a model of the shadow
     // tree therefore we cannot validate the validity of the mutation
     // instructions.
-    if (!shouldOverridePullTransaction && lastRevision_.has_value()) {
+    if (!didOverridePullTransaction && lastRevision_.has_value()) {
       auto stubViewTree = buildStubViewTreeWithoutUsingDifferentiator(
           *lastRevision_->rootShadowNode);
 

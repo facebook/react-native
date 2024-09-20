@@ -17,7 +17,6 @@
 #include <react/renderer/mounting/MountingTransaction.h>
 #include <react/renderer/mounting/ShadowTreeRevision.h>
 #include <react/renderer/mounting/TelemetryController.h>
-#include "ShadowTreeRevision.h"
 
 #ifdef RN_SHADOW_TREE_INTROSPECTION
 #include <react/renderer/mounting/stubs/stubs.h>
