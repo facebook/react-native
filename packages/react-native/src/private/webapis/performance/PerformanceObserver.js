@@ -166,7 +166,7 @@ export class PerformanceObserver {
       return;
     }
 
-    if (this.#nativeObserverHandle != null) {
+    if (this.#nativeObserverHandle == null) {
       return;
     }
 
