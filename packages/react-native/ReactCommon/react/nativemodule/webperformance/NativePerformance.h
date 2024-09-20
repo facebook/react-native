@@ -36,6 +36,15 @@ class NativePerformance : public NativePerformanceCxxSpec<NativePerformance> {
       std::optional<std::string> startMark,
       std::optional<std::string> endMark);
 
+  void logEvent(
+      jsi::Runtime& rt,
+      std::string name,
+      double startTime,
+      double duration,
+      double processingStart,
+      double processingEnd,
+      double interactionId);
+
   // To align with web API, we will make sure to return three properties
   // (jsHeapSizeLimit, totalJSHeapSize, usedJSHeapSize) + anything needed from
   // the VM side.

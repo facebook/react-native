@@ -137,6 +137,18 @@ void NativePerformance::measure(
 #endif
 }
 
+void NativePerformance::logEvent(
+    jsi::Runtime& rt,
+    std::string name,
+    double startTime,
+    double duration,
+    double processingStart,
+    double processingEnd,
+    double interactionId) {
+  PerformanceEntryReporter::getInstance()->logEventEntry(
+      name, startTime, duration, processingStart, processingEnd, interactionId);
+}
+
 std::unordered_map<std::string, double> NativePerformance::getSimpleMemoryInfo(
     jsi::Runtime& rt) {
   auto heapInfo = rt.instrumentation().getHeapInfo(false);

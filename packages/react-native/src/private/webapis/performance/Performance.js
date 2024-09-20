@@ -40,16 +40,6 @@ declare var global: {
 const getCurrentTimeStamp: () => DOMHighResTimeStamp =
   NativePerformance?.now ?? global.nativePerformanceNow ?? (() => Date.now());
 
-// We want some of the performance entry types to be always logged,
-// even if they are not currently observed - this is either to be able to
-// retrieve them at any time via Performance.getEntries* or to refer by other entries
-// (such as when measures may refer to marks, even if the latter are not observed)
-if (NativePerformanceObserver?.setIsBuffered) {
-  NativePerformanceObserver?.setIsBuffered(
-    ALWAYS_LOGGED_ENTRY_TYPES.map(performanceEntryTypeToRaw),
-    true,
-  );
-}
 
 function warnNoNativePerformance() {
   warnOnce(
@@ -145,7 +135,7 @@ export default class Performance {
       return;
     }
 
-    NativePerformanceObserver?.clearEntries(
+    NativePerformanceObserver.clearEntries(
       RawPerformanceEntryTypeValues.MARK,
       markName,
     );

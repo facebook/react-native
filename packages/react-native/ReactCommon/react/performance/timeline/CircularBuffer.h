@@ -26,7 +26,7 @@ namespace facebook::react {
 template <class T>
 class CircularBuffer {
  public:
-  explicit CircularBuffer(size_t maxSize): maxSize_(maxSize) {
+  explicit CircularBuffer(size_t maxSize) : maxSize_(maxSize) {
     entries_.reserve(maxSize_);
   }
 

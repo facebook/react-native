@@ -6,6 +6,7 @@
  */
 
 #include "PerformanceObserverRegistry.h"
+#include "PerformanceObserver.h"
 
 namespace facebook::react {
 

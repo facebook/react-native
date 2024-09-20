@@ -16,6 +16,7 @@
 #endif
 
 #include <react/performance/timeline/PerformanceEntryReporter.h>
+#include <react/performance/timeline/PerformanceObserver.h>
 #include <optional>
 #include <string>
 #include <vector>

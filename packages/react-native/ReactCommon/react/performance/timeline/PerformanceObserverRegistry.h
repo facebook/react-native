@@ -10,9 +10,11 @@
 #include <memory>
 #include <mutex>
 #include <set>
-#include "PerformanceObserver.h"
+#include "PerformanceEntry.h"
 
 namespace facebook::react {
+
+class PerformanceObserver;
 
 /**
  * PerformanceObserverRegistry acts as a container for known performance

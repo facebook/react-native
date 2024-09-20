@@ -9,90 +9,72 @@
  */
 
 import type {
-  GetPendingEntriesResult,
+  NativeBatchedObserverCallback,
   RawPerformanceEntry,
   RawPerformanceEntryType,
+  OpaqueNativeObserverHandle,
+  PerformanceObserverInit,
   Spec as NativePerformanceObserver,
 } from '../NativePerformanceObserver';
 
 import {RawPerformanceEntryTypeValues} from '../../RawPerformanceEntry';
 
-const reportingType: Set<RawPerformanceEntryType> = new Set();
-const isAlwaysLogged: Set<RawPerformanceEntryType> = new Set();
 const eventCounts: Map<string, number> = new Map();
-const durationThresholds: Map<RawPerformanceEntryType, number> = new Map();
+const observers = new WeakSet<MockObserver>();
 let entries: Array<RawPerformanceEntry> = [];
-let onPerformanceEntryCallback: ?() => void;
+
+export function logMockEntry(entry: RawPerformanceEntry) {
+  entries.push(entry);
+}
+
+type MockObserver = {
+  callback: NativeBatchedObserverCallback,
+  entries: Array<RawPerformanceEntry>,
+  options: PerformanceObserverInit,
+  droppedEntriesCount: number
+};
 
 const NativePerformanceObserverMock: NativePerformanceObserver = {
-  startReporting: (entryType: RawPerformanceEntryType) => {
-    reportingType.add(entryType);
-  },
-
-  stopReporting: (entryType: RawPerformanceEntryType) => {
-    reportingType.delete(entryType);
-    durationThresholds.delete(entryType);
-  },
-
-  setIsBuffered: (
-    entryTypes: $ReadOnlyArray<RawPerformanceEntryType>,
-    isBuffered: boolean,
-  ) => {
-    for (const entryType of entryTypes) {
-      if (isBuffered) {
-        isAlwaysLogged.add(entryType);
-      } else {
-        isAlwaysLogged.delete(entryType);
-      }
-    }
-  },
-
-  popPendingEntries: (): GetPendingEntriesResult => {
-    const res = entries;
-    entries = [];
-    return {
-      droppedEntriesCount: 0,
-      entries: res,
-    };
-  },
-
-  setOnPerformanceEntryCallback: (callback?: () => void) => {
-    onPerformanceEntryCallback = callback;
-  },
-
-  logRawEntry: (entry: RawPerformanceEntry) => {
-    if (
-      reportingType.has(entry.entryType) ||
-      isAlwaysLogged.has(entry.entryType)
-    ) {
-      const durationThreshold = durationThresholds.get(entry.entryType);
-      if (
-        durationThreshold !== undefined &&
-        entry.duration < durationThreshold
-      ) {
-        return;
-      }
-      entries.push(entry);
-      // $FlowFixMe[incompatible-call]
-      global.queueMicrotask(() => {
-        // We want to emulate the way it's done in native (i.e. async/batched)
-        onPerformanceEntryCallback?.();
-      });
-    }
-    if (entry.entryType === RawPerformanceEntryTypeValues.EVENT) {
-      eventCounts.set(entry.name, (eventCounts.get(entry.name) ?? 0) + 1);
-    }
-  },
-
   getEventCounts: (): $ReadOnlyArray<[string, number]> => {
     return Array.from(eventCounts.entries());
   },
 
-  setDurationThreshold: (
-    entryType: RawPerformanceEntryType,
-    durationThreshold: number,
-  ) => {
-    durationThresholds.set(entryType, durationThreshold);
+  createObserver: (callback: NativeBatchedObserverCallback): OpaqueNativeObserverHandle => {
+    const observer: MockObserver = {
+      callback,
+      entries: [],
+      options: {},
+      droppedEntriesCount: 0,
+    };
+
+    return observer;
+  },
+
+  getDroppedEntriesCount: (observer: OpaqueNativeObserverHandle): number => {
+    // $FlowFixMe
+    const mockObserver = (observer: any) as MockObserver;
+    return mockObserver.droppedEntriesCount;
+  },
+
+  observe: (observer: OpaqueNativeObserverHandle, options: PerformanceObserverInit): void => {
+    // $FlowFixMe
+    const mockObserver = (observer: any) as MockObserver;
+    mockObserver.options = options;
+    observers.add(mockObserver);
+  },
+
+  disconnect: (observer: OpaqueNativeObserverHandle): void => {
+    // $FlowFixMe
+    const mockObserver = (observer: any) as MockObserver;
+    observers.delete(mockObserver);
+  },
+
+  takeRecords: (observer: OpaqueNativeObserverHandle): $ReadOnlyArray<RawPerformanceEntry> => {
+    // $FlowFixMe
+    const mockObserver = (observer: any) as MockObserver;
+    const observerEntries = mockObserver.entries;
+    mockObserver.entries = [];
+    return observerEntries;
   },
 
   clearEntries: (entryType?: RawPerformanceEntryType, entryName?: string) => {

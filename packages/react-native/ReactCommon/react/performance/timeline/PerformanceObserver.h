@@ -13,6 +13,7 @@
 #include <unordered_set>
 #include <vector>
 #include "PerformanceEntryBuffer.h"
+#include "PerformanceObserverRegistry.h"
 
 namespace facebook::react {
 
@@ -20,8 +21,7 @@ class PerformanceObserver;
 
 using PerformanceObserverEntryTypeFilter =
     std::unordered_set<PerformanceEntryType>;
-using PerformanceObserverCallback =
-    std::function<void(PerformanceObserver& observer)>;
+using PerformanceObserverCallback = std::function<void()>;
 
 /**
  * Represents subset of spec's `PerformanceObserverInit` that is allowed for
@@ -52,10 +52,27 @@ struct PerformanceObserverObserveSingleOptions {
  * Entries are pushed to the observer by the `PerformanceEntryReporter` class,
  * through the `PerformanceObserverRegistry` class which acts as a central hub.
  */
-class PerformanceObserver : public jsi::NativeState {
+class PerformanceObserver
+    : public jsi::NativeState,
+      public std::enable_shared_from_this<PerformanceObserver> {
+ private:
+  struct PrivateUseCreateMethod {
+    explicit PrivateUseCreateMethod() = default;
+  };
+
  public:
-  explicit PerformanceObserver(PerformanceObserverCallback&& callback)
-      : callback_(std::move(callback)) {}
+  explicit PerformanceObserver(
+      PrivateUseCreateMethod,
+      PerformanceObserverRegistry& registry,
+      PerformanceObserverCallback&& callback)
+      : registry_(registry), callback_(std::move(callback)) {}
+
+  static std::shared_ptr<PerformanceObserver> create(
+      PerformanceObserverRegistry& registry,
+      PerformanceObserverCallback&& callback) {
+    return std::make_shared<PerformanceObserver>(
+        PrivateUseCreateMethod(), registry, std::move(callback));
+  }
 
   ~PerformanceObserver() = default;
 
@@ -95,19 +112,21 @@ class PerformanceObserver : public jsi::NativeState {
       PerformanceObserverObserveMultipleOptions options = {});
 
   /**
+   * Disconnects observer from the registry
+   */
+  void disconnect() noexcept;
+
+  /**
    * Internal function called by JS bridge to get number of dropped entries
    * count counted at call time.
    */
   double getDroppedEntriesCount() noexcept;
 
-  /**
-   * Called when the callback was dispatched
-   */
-  void flush() noexcept;
-
  private:
   void scheduleFlushBuffer();
+  void flush() noexcept;
 
+  PerformanceObserverRegistry& registry_;
   PerformanceObserverCallback callback_;
   PerformanceObserverEntryTypeFilter observedTypes_;
 

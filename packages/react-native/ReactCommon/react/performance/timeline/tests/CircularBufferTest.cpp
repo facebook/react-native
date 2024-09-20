@@ -19,7 +19,7 @@ constexpr auto OK = false;
 constexpr auto OVERWRITE = true;
 
 TEST(CircularBuffer, CanAddAndRetrieveElements) {
-  CircularBuffer<int> buffer;
+  CircularBuffer<int> buffer{5};
 
   ASSERT_EQ(OK, buffer.add(1));
   ASSERT_EQ(OK, buffer.add(2));

@@ -22,6 +22,7 @@ import {
   rawToPerformanceEntryType,
 } from './RawPerformanceEntry';
 import NativePerformanceObserver from './specs/NativePerformanceObserver';
+import type { OpaqueNativeObserverHandle } from './specs/NativePerformanceObserver';
 
 export type PerformanceEntryList = $ReadOnlyArray<PerformanceEntry>;
 
@@ -56,27 +57,23 @@ export class PerformanceObserverEntryList {
   }
 }
 
+export type PerformanceObserverCallbackOptions = {
+  droppedEntriesCount: number,
+};
+
 export type PerformanceObserverCallback = (
   list: PerformanceObserverEntryList,
   observer: PerformanceObserver,
   // The number of buffered entries which got dropped from the buffer due to the buffer being full:
-  droppedEntryCount?: number,
+  options?: PerformanceObserverCallbackOptions
 ) => void;
 
-export type PerformanceObserverInit =
-  | {
-      entryTypes: Array<PerformanceEntryType>,
-    }
-  | {
-      type: PerformanceEntryType,
-      durationThreshold?: DOMHighResTimeStamp,
-    };
-
-type PerformanceObserverConfig = {|
-  callback: PerformanceObserverCallback,
-  entryTypes: $ReadOnlySet<PerformanceEntryType>,
-  durationThreshold: ?number,
-|};
+export type PerformanceObserverInit = {
+  entryTypes?: Array<PerformanceEntryType>,
+  type?: PerformanceEntryType,
+  buffered?: boolean,
+  durationThreshold?: DOMHighResTimeStamp,
+};
 
 export function warnNoNativePerformanceObserver() {
   warnOnce(
@@ -121,7 +118,7 @@ function getSupportedPerformanceEntryTypes(): $ReadOnlyArray<PerformanceEntryTyp
  * observer.observe({ type: "event" });
  */
 export class PerformanceObserver {
-  #nativeObserverHandle: mixed | void;
+  #nativeObserverHandle: OpaqueNativeObserverHandle | null = null;
   #callback: PerformanceObserverCallback;
   #type: 'single' | 'multiple' | void;
   #calledAtLeastOnce = false;
@@ -138,27 +135,29 @@ export class PerformanceObserver {
 
     this.#validateObserveOptions(options);
 
-    let requestedEntryTypes;
-
-    if (options.entryTypes) {
-      this.#type = 'multiple';
-      requestedEntryTypes = new Set(options.entryTypes);
-    } else {
-      this.#type = 'single';
-      requestedEntryTypes = new Set([options.type]);
-    }
-
-    if (!this.#nativeObserverHandle) {
+    if (this.#nativeObserverHandle != null) {
       this.#nativeObserverHandle = this.#createNativeObserver();
     }
 
-    // The same observer may receive multiple calls to "observe", so we need
-    // to check what is new on this call vs. previous ones.
-    NativePerformanceObserver.observe(this.#nativeObserverHandle, {
-      entryTypes,
-      durationThreshold:
-        options.type === 'event' ? options.durationThreshold : undefined,
-    });
+    if (options.entryTypes) {
+      this.#type = 'multiple';
+      NativePerformanceObserver.observe(this.#nativeObserverHandle, {
+        entryTypes: options.entryTypes.map(performanceEntryTypeToRaw),
+        type: undefined,
+        buffered: undefined,
+        durationThreshold:
+          options.type === 'event' ? options.durationThreshold : undefined,
+      });
+    } else if (options.type) {
+      this.#type = 'single';
+      NativePerformanceObserver.observe(this.#nativeObserverHandle, {
+        entryTypes: undefined,
+        type: performanceEntryTypeToRaw(options.type),
+        buffered: options.buffered,
+        durationThreshold:
+          options.type === 'event' ? options.durationThreshold : undefined,
+      });
+    }
   }
 
   disconnect(): void {
@@ -167,22 +166,33 @@ export class PerformanceObserver {
       return;
     }
 
-    if (!this.#nativeObserverHandle) {
+    if (this.#nativeObserverHandle != null) {
       return;
     }
 
     NativePerformanceObserver.disconnect(this.#nativeObserverHandle);
   }
 
-  #createNativeObserver() {
+  #createNativeObserver(): OpaqueNativeObserverHandle {
+    if (!NativePerformanceObserver) {
+      warnNoNativePerformanceObserver();
+      return;
+    }
+
     this.#calledAtLeastOnce = false;
-    return NativePerformanceObserver.createObserver(() => {
-      const entryList = new PerformanceObserverEntryList(NativePerformanceObserver.takeRecords(this.#nativeObserverHandle));
+
+    return NativePerformanceObserver.createObserver(() => { // $FlowNotNull
+      const entries = NativePerformanceObserver
+        .takeRecords(this.#nativeObserverHandle)
+        .map(rawToPerformanceEntry);
+      const entryList = new PerformanceObserverEntryList(entries);
+
       let droppedEntriesCount = 0;
       if (!this.#calledAtLeastOnce) {
         droppedEntriesCount = NativePerformanceObserver.getDroppedEntriesCount(this.#nativeObserverHandle);
         this.#calledAtLeastOnce = true;
       }
+
       this.#callback(entryList, this, { droppedEntriesCount });
     });
   }

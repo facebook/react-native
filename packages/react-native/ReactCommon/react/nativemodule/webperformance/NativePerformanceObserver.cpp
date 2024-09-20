@@ -37,17 +37,14 @@ jsi::Object NativePerformanceObserver::createObserver(
   // the spec. The specification requires us to queue a single task that
   // dispatches observer callbacks. Instead, we are queuing all callbacks as
   // separate tasks in the scheduler.
-  PerformanceObserverCallback cb = [this, callback = std::move(callback)](
-                                       PerformanceObserver& currentObserver) {
-    jsInvoker_->invokeAsync(
-        SchedulerPriority::IdlePriority,
-        [currentObserver, callback](jsi::Runtime& /*rt*/) mutable {
-          callback.call();
-          currentObserver.flush();
-        });
+  PerformanceObserverCallback cb = [callback = std::move(callback)]() {
+    callback.callWithPriority(SchedulerPriority::IdlePriority);
   };
 
-  auto observer = std::make_shared<PerformanceObserver>(std::move(cb));
+  auto& registry =
+      PerformanceEntryReporter::getInstance()->getObserverRegistry();
+
+  auto observer = PerformanceObserver::create(registry, std::move(cb));
   jsi::Object observerObj{rt};
   observerObj.setNativeState(rt, observer);
   return observerObj;
@@ -97,10 +94,6 @@ void NativePerformanceObserver::observe(
           {.buffered = buffered, .durationThreshold = durationThreshold});
     }
   }
-
-  auto& registry =
-      PerformanceEntryReporter::getInstance()->getObserverRegistry();
-  registry.addObserver(observer);
 }
 
 void NativePerformanceObserver::disconnect(
@@ -114,10 +107,7 @@ void NativePerformanceObserver::disconnect(
   }
 
   observerObj.setNativeState(rt, nullptr);
-
-  auto& registry =
-      PerformanceEntryReporter::getInstance()->getObserverRegistry();
-  registry.removeObserver(observer);
+  observer->disconnect();
 }
 
 std::vector<PerformanceEntry> NativePerformanceObserver::takeRecords(

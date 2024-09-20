@@ -29,6 +29,7 @@ void PerformanceObserver::handleEntry(const PerformanceEntry& entry) {
 std::vector<PerformanceEntry> PerformanceObserver::takeRecords() {
   std::vector<PerformanceEntry> result;
   buffer_.swap(result);
+  flush();
   return result;
 }
 
@@ -51,6 +52,7 @@ void PerformanceObserver::observe(
       scheduleFlushBuffer();
     }
   }
+  registry_.addObserver(shared_from_this());
 }
 
 void PerformanceObserver::observe(
@@ -59,6 +61,7 @@ void PerformanceObserver::observe(
   observedTypes_ = std::move(types);
   requiresDroppedEntries_ = false;
   durationThreshold_ = options.durationThreshold;
+  registry_.addObserver(shared_from_this());
 }
 
 double PerformanceObserver::getDroppedEntriesCount() noexcept {
@@ -77,6 +80,10 @@ double PerformanceObserver::getDroppedEntriesCount() noexcept {
   return droppedEntriesCount;
 }
 
+void PerformanceObserver::disconnect() noexcept {
+  registry_.removeObserver(shared_from_this());
+}
+
 void PerformanceObserver::flush() noexcept {
   didScheduleFlushBuffer = false;
 }
@@ -89,7 +96,7 @@ void PerformanceObserver::scheduleFlushBuffer() {
   if (!didScheduleFlushBuffer) {
     didScheduleFlushBuffer = true;
 
-    callback_(*this);
+    callback_();
   }
 }
 

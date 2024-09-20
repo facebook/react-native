@@ -41,65 +41,10 @@ namespace facebook::react {
 
 using namespace facebook::react;
 
-TEST(PerformanceEntryReporter, PerformanceEntryReporterTestStartReporting) {
-  auto reporter = PerformanceEntryReporter::getInstance();
-
-  reporter->stopReporting();
-  reporter->clearEntries();
-
-  reporter->startReporting(PerformanceEntryType::MARK);
-  reporter->startReporting(PerformanceEntryType::MEASURE);
-
-  ASSERT_TRUE(reporter->isReporting(PerformanceEntryType::MARK));
-  ASSERT_TRUE(reporter->isReporting(PerformanceEntryType::MEASURE));
-
-  ASSERT_FALSE(reporter->isReporting(PerformanceEntryType::EVENT));
-}
-
-TEST(PerformanceEntryReporter, PerformanceEntryReporterTestStopReporting) {
-  auto reporter = PerformanceEntryReporter::getInstance();
-
-  reporter->stopReporting();
-  reporter->clearEntries();
-
-  reporter->startReporting(PerformanceEntryType::MARK);
-
-  reporter->mark("mark0", 0.0);
-  reporter->mark("mark1", 0.0);
-  reporter->mark("mark2", 0.0);
-  reporter->measure("measure0", 0.0, 0.0);
-
-  auto res = reporter->popPendingEntries();
-  const auto& entries = res.entries;
-
-  ASSERT_EQ(0, res.droppedEntriesCount);
-  ASSERT_EQ(3, entries.size());
-
-  res = reporter->popPendingEntries();
-
-  ASSERT_EQ(0, res.droppedEntriesCount);
-  ASSERT_EQ(0, res.entries.size());
-
-  reporter->stopReporting(PerformanceEntryType::MARK);
-  reporter->startReporting(PerformanceEntryType::MEASURE);
-
-  reporter->mark("mark3");
-  reporter->measure("measure1", 0.0, 0.0);
-
-  res = reporter->popPendingEntries();
-
-  ASSERT_EQ(0, res.droppedEntriesCount);
-  ASSERT_EQ(1, res.entries.size());
-  ASSERT_STREQ("measure1", res.entries[0].name.c_str());
-}
-
 TEST(PerformanceEntryReporter, PerformanceEntryReporterTestReportMarks) {
   auto reporter = PerformanceEntryReporter::getInstance();
 
-  reporter->stopReporting();
   reporter->clearEntries();
-
-  reporter->startReporting(PerformanceEntryType::MARK);
 
   reporter->mark("mark0", 0.0);
   reporter->mark("mark1", 1.0);
@@ -107,10 +52,8 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestReportMarks) {
   // Report mark0 again
   reporter->mark("mark0", 3.0);
 
-  auto res = reporter->popPendingEntries();
-  const auto& entries = res.entries;
+  const auto& entries = reporter->getEntries();
 
-  ASSERT_EQ(0, res.droppedEntriesCount);
   ASSERT_EQ(4, entries.size());
 
   const std::vector<PerformanceEntry> expected = {
@@ -133,12 +76,7 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestReportMarks) {
 
 TEST(PerformanceEntryReporter, PerformanceEntryReporterTestReportMeasures) {
   auto reporter = PerformanceEntryReporter::getInstance();
-
-  reporter->stopReporting();
   reporter->clearEntries();
-
-  reporter->startReporting(PerformanceEntryType::MARK);
-  reporter->startReporting(PerformanceEntryType::MEASURE);
 
   reporter->mark("mark0", 0.0);
   reporter->mark("mark1", 1.0);
@@ -160,10 +98,7 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestReportMeasures) {
   // Uses the last reported time for mark4
   reporter->measure("measure7", 0.0, 0.0, std::nullopt, "mark1", "mark4");
 
-  auto res = reporter->popPendingEntries();
-  const auto& entries = res.entries;
-
-  ASSERT_EQ(0, res.droppedEntriesCount);
+  const auto& entries = reporter->getEntries();
 
   const std::vector<PerformanceEntry> expected = {
       {.name = "mark0",
@@ -244,18 +179,12 @@ static std::vector<PerformanceEntryType> getTypes(
 
 TEST(PerformanceEntryReporter, PerformanceEntryReporterTestGetEntries) {
   auto reporter = PerformanceEntryReporter::getInstance();
-
-  reporter->stopReporting();
   reporter->clearEntries();
 
-  auto res = reporter->popPendingEntries();
-  const auto& entries = res.entries;
-
-  ASSERT_EQ(0, res.droppedEntriesCount);
-  ASSERT_EQ(0, entries.size());
-
-  reporter->startReporting(PerformanceEntryType::MARK);
-  reporter->startReporting(PerformanceEntryType::MEASURE);
+  {
+    const auto& entries = reporter->getEntries();
+    ASSERT_EQ(0, entries.size());
+  }
 
   reporter->mark("common_name", 0.0);
   reporter->mark("mark1", 1.0);
@@ -267,17 +196,15 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestGetEntries) {
   reporter->measure("measure3", 0.0, 0.0, 5.0, "mark1");
   reporter->measure("measure4", 1.5, 0.0, std::nullopt, std::nullopt, "mark2");
 
-  res = reporter->popPendingEntries();
-  ASSERT_EQ(0, res.droppedEntriesCount);
-  ASSERT_EQ(8, res.entries.size());
+  {
+    const auto& entries = reporter->getEntries();
+    ASSERT_EQ(8, entries.size());
+  }
 
-  reporter->getEntries(PerformanceEntryType::MARK);
-  const auto marks = reporter->getEntries(PerformanceEntryType::MARK);
+  const auto marks = reporter->getEntriesByType(PerformanceEntryType::MARK);
+  const auto measures = reporter->getEntriesByType(PerformanceEntryType::MEASURE);
+  const auto common_name = reporter->getEntriesByName("common_name");
 
-  const auto measures = reporter->getEntries(PerformanceEntryType::MEASURE);
-  const auto common_name = reporter->getEntries(std::nullopt, "common_name");
-
-  reporter->getEntries();
   const auto all = reporter->getEntries();
 
   ASSERT_EQ(
@@ -320,12 +247,7 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestGetEntries) {
 
 TEST(PerformanceEntryReporter, PerformanceEntryReporterTestClearEntries) {
   auto reporter = PerformanceEntryReporter::getInstance();
-
-  reporter->stopReporting();
   reporter->clearEntries();
-
-  reporter->startReporting(PerformanceEntryType::MARK);
-  reporter->startReporting(PerformanceEntryType::MEASURE);
 
   reporter->mark("common_name", 0.0);
   reporter->mark("mark1", 1.0);

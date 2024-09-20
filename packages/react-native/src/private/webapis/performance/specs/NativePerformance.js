@@ -27,6 +27,14 @@ export interface Spec extends TurboModule {
     startMark?: string,
     endMark?: string,
   ) => void;
+  +logEvent: (
+    name: string,
+    startTime: number,
+    duration: number,
+    processingStart: number,
+    processingEnd: number,
+    interactionId: number,
+  ) => void;
   +getSimpleMemoryInfo: () => NativeMemoryInfo;
   +getReactNativeStartupTiming: () => ReactNativeStartupTiming;
 }

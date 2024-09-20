@@ -29,9 +29,9 @@ describe('NativePerformanceMock', () => {
 
     observer.observe({type: 'mark'});
 
-    NativePerformanceMock.mark('mark1', 0);
-    NativePerformanceMock.mark('mark2', 5);
-    NativePerformanceMock.mark('mark3', 10);
+    NativePerformanceMock?.mark('mark1', 0);
+    NativePerformanceMock?.mark('mark2', 5);
+    NativePerformanceMock?.mark('mark3', 10);
 
     await jest.runAllTicks();
     expect(entries).toHaveLength(3);
@@ -47,13 +47,13 @@ describe('NativePerformanceMock', () => {
 
     observer.observe({entryTypes: ['measure']});
 
-    NativePerformanceMock.mark('mark0', 0.0);
-    NativePerformanceMock.mark('mark1', 1.0);
-    NativePerformanceMock.mark('mark2', 2.0);
+    NativePerformanceMock?.mark('mark0', 0.0);
+    NativePerformanceMock?.mark('mark1', 1.0);
+    NativePerformanceMock?.mark('mark2', 2.0);
 
-    NativePerformanceMock.measure('measure0', 0, 2);
-    NativePerformanceMock.measure('measure1', 0, 2, 4);
-    NativePerformanceMock.measure(
+    NativePerformanceMock?.measure('measure0', 0, 2);
+    NativePerformanceMock?.measure('measure1', 0, 2, 4);
+    NativePerformanceMock?.measure(
       'measure2',
       0,
       0,
@@ -61,8 +61,8 @@ describe('NativePerformanceMock', () => {
       'mark1',
       'mark2',
     );
-    NativePerformanceMock.measure('measure3', 0, 0, 5, 'mark1');
-    NativePerformanceMock.measure(
+    NativePerformanceMock?.measure('measure3', 0, 0, 5, 'mark1');
+    NativePerformanceMock?.measure(
       'measure4',
       1.5,
       0,

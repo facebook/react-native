@@ -35,10 +35,10 @@ export type GetPendingEntriesResult = {|
 |};
 
 export type PerformanceObserverInit = {
-  entryTypes: $ReadOnlyArray<string>;
-  type: number;
-  buffered: boolean;
-  durationThreshold: number;
+  entryTypes?: $ReadOnlyArray<number>;
+  type?: number;
+  buffered?: boolean;
+  durationThreshold?: number;
 };
 
 export interface Spec extends TurboModule {
@@ -49,7 +49,7 @@ export interface Spec extends TurboModule {
   +observe: (observer: OpaqueNativeObserverHandle, options: PerformanceObserverInit) => void;
   +disconnect: (observer: OpaqueNativeObserverHandle) => void;
   +takeRecords: (observer: OpaqueNativeObserverHandle) => $ReadOnlyArray<RawPerformanceEntry>;
-  
+
   +clearEntries: (
     entryType?: RawPerformanceEntryType,
     entryName?: string,

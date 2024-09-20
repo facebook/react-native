@@ -11,23 +11,24 @@
 import type {
   NativeMemoryInfo,
   ReactNativeStartupTiming,
-  Spec as NativePerformance,
 } from '../NativePerformance';
 
 import {RawPerformanceEntryTypeValues} from '../../RawPerformanceEntry';
-import NativePerformanceObserver from '../NativePerformanceObserver';
+import NativePerformance from '../NativePerformance';
+import { logMockEntry } from './NativePerformanceObserver';
 
 const marks: Map<string, number> = new Map();
 
-const NativePerformanceMock: NativePerformance = {
+const NativePerformanceMock: typeof NativePerformance = {
   mark: (name: string, startTime: number): void => {
-    NativePerformanceObserver?.logRawEntry({
-      name,
+    NativePerformance?.mark(name, startTime);
+    marks.set(name, startTime);
+    logMockEntry({
       entryType: RawPerformanceEntryTypeValues.MARK,
+      name,
       startTime,
       duration: 0,
     });
-    marks.set(name, startTime);
   },
 
   measure: (
@@ -40,11 +41,32 @@ const NativePerformanceMock: NativePerformance = {
   ): void => {
     const start = startMark != null ? marks.get(startMark) ?? 0 : startTime;
     const end = endMark != null ? marks.get(endMark) ?? 0 : endTime;
-    NativePerformanceObserver?.logRawEntry({
-      name,
+    NativePerformance?.measure(name, start, end);
+    logMockEntry({
       entryType: RawPerformanceEntryTypeValues.MEASURE,
-      startTime: start,
-      duration: duration ?? (end ? end - start : 0),
+      name,
+      startTime,
+      duration: duration ?? 0,
+    });
+  },
+
+  logEvent: (
+    name: string,
+    startTime: number,
+    duration: number,
+    processingStart: number,
+    processingEnd: number,
+    interactionId: number,
+  ): void => {
+    NativePerformance?.logEvent(name, startTime, duration, processingStart, processingEnd, interactionId);
+    logMockEntry({
+      entryType: RawPerformanceEntryTypeValues.EVENT,
+      name,
+      startTime,
+      duration: duration ?? 0,
+      processingStart,
+      processingEnd,
+      interactionId,
     });
   },
 
