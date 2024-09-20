@@ -106,7 +106,6 @@ void NativePerformanceObserver::disconnect(
     return;
   }
 
-  observerObj.setNativeState(rt, nullptr);
   observer->disconnect();
 }
 
