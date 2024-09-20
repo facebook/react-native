@@ -55,6 +55,17 @@ static inline bool shouldFirstComeBeforeSecondMutation(
         lhs.type == ShadowViewMutation::Type::Insert) {
       return false;
     }
+
+    // Remove comes before Update
+    if (lhs.type == ShadowViewMutation::Type::Remove &&
+        rhs.type == ShadowViewMutation::Type::Update) {
+      return true;
+    }
+    if (rhs.type == ShadowViewMutation::Type::Remove &&
+        lhs.type == ShadowViewMutation::Type::Update) {
+      return false;
+    }
+
   } else {
     // Make sure that removes on the same level are sorted - highest indices
     // must come first.
