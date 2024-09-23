@@ -109,6 +109,10 @@ internal class OutlineDrawable(
       ((outlinePaint.alpha / 255f) / (Color.alpha(outlineColor) / 255f) * 255f).roundToInt()
 
   override fun draw(canvas: Canvas) {
+    if (outlineWidth == 0f) {
+      return
+    }
+
     pathForOutline.reset()
 
     computedBorderRadius =
