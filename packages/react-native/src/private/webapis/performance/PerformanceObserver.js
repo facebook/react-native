@@ -22,7 +22,7 @@ import {
   rawToPerformanceEntryType,
 } from './RawPerformanceEntry';
 import NativePerformanceObserver from './specs/NativePerformanceObserver';
-import type { OpaqueNativeObserverHandle } from './specs/NativePerformanceObserver';
+import type {OpaqueNativeObserverHandle} from './specs/NativePerformanceObserver';
 
 export type PerformanceEntryList = $ReadOnlyArray<PerformanceEntry>;
 
@@ -65,7 +65,7 @@ export type PerformanceObserverCallback = (
   list: PerformanceObserverEntryList,
   observer: PerformanceObserver,
   // The number of buffered entries which got dropped from the buffer due to the buffer being full:
-  options?: PerformanceObserverCallbackOptions
+  options?: PerformanceObserverCallbackOptions,
 ) => void;
 
 export type PerformanceObserverInit = {
@@ -181,19 +181,23 @@ export class PerformanceObserver {
 
     this.#calledAtLeastOnce = false;
 
-    return NativePerformanceObserver.createObserver(() => { // $FlowNotNull
-      const rawEntries = NativePerformanceObserver
-        .takeRecords(this.#nativeObserverHandle);
+    return NativePerformanceObserver.createObserver(() => {
+      // $FlowNotNull
+      const rawEntries = NativePerformanceObserver.takeRecords(
+        this.#nativeObserverHandle,
+      );
       const entries = rawEntries.map(rawToPerformanceEntry);
       const entryList = new PerformanceObserverEntryList(entries);
 
       let droppedEntriesCount = 0;
       if (!this.#calledAtLeastOnce) {
-        droppedEntriesCount = NativePerformanceObserver.getDroppedEntriesCount(this.#nativeObserverHandle);
+        droppedEntriesCount = NativePerformanceObserver.getDroppedEntriesCount(
+          this.#nativeObserverHandle,
+        );
         this.#calledAtLeastOnce = true;
       }
 
-      this.#callback(entryList, this, { droppedEntriesCount });
+      this.#callback(entryList, this, {droppedEntriesCount});
     });
   }
 

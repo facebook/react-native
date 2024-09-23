@@ -15,7 +15,7 @@ import type {
 
 import {RawPerformanceEntryTypeValues} from '../../RawPerformanceEntry';
 import NativePerformance from '../NativePerformance';
-import { logMockEntry } from './NativePerformanceObserver';
+import {logMockEntry} from './NativePerformanceObserver';
 
 const marks: Map<string, number> = new Map();
 
@@ -58,7 +58,14 @@ const NativePerformanceMock: typeof NativePerformance = {
     processingEnd: number,
     interactionId: number,
   ): void => {
-    NativePerformance?.testOnly_logEvent(name, startTime, duration, processingStart, processingEnd, interactionId);
+    NativePerformance?.testOnly_logEvent(
+      name,
+      startTime,
+      duration,
+      processingStart,
+      processingEnd,
+      interactionId,
+    );
     logMockEntry({
       entryType: RawPerformanceEntryTypeValues.EVENT,
       name,

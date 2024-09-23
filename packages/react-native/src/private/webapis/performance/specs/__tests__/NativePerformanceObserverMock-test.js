@@ -9,7 +9,9 @@
  * @oncall react_native
  */
 
-import NativePerformanceObserverMock, { logMockEntry } from '../__mocks__/NativePerformanceObserver';
+import NativePerformanceObserverMock, {
+  logMockEntry,
+} from '../__mocks__/NativePerformanceObserver';
 import {RawPerformanceEntryTypeValues} from '../../RawPerformanceEntry';
 
 describe('NativePerformanceObserver', () => {

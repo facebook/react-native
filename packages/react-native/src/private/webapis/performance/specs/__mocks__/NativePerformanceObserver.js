@@ -41,13 +41,15 @@ export function logMockEntry(entry: RawPerformanceEntry) {
   }
 
   for (const observer of observers) {
-    if (observer.options.type != entry.entryType &&
-      !observer.options.entryTypes?.includes(entry.entryType)) {
+    if (
+      observer.options.type != entry.entryType &&
+      !observer.options.entryTypes?.includes(entry.entryType)
+    ) {
       continue;
     }
 
     if (entry.entryType == RawPerformanceEntryTypeValues.EVENT) {
-      const { durationThreshold = 0 } = observer.options;
+      const {durationThreshold = 0} = observer.options;
       if (durationThreshold > 0 && entry.duration < durationThreshold) {
         continue;
       }
@@ -67,7 +69,7 @@ type MockObserver = {
   callback: NativeBatchedObserverCallback,
   entries: Array<RawPerformanceEntry>,
   options: PerformanceObserverInit,
-  droppedEntriesCount: number
+  droppedEntriesCount: number,
 };
 
 const NativePerformanceObserverMock: NativePerformanceObserver = {
@@ -75,7 +77,9 @@ const NativePerformanceObserverMock: NativePerformanceObserver = {
     return Array.from(eventCounts.entries());
   },
 
-  createObserver: (callback: NativeBatchedObserverCallback): OpaqueNativeObserverHandle => {
+  createObserver: (
+    callback: NativeBatchedObserverCallback,
+  ): OpaqueNativeObserverHandle => {
     const observer: MockObserver = {
       callback,
       entries: [],
@@ -92,7 +96,10 @@ const NativePerformanceObserverMock: NativePerformanceObserver = {
     return mockObserver.droppedEntriesCount;
   },
 
-  observe: (observer: OpaqueNativeObserverHandle, options: PerformanceObserverInit): void => {
+  observe: (
+    observer: OpaqueNativeObserverHandle,
+    options: PerformanceObserverInit,
+  ): void => {
     // $FlowFixMe
     const mockObserver = (observer: any) as MockObserver;
     mockObserver.options = options;
@@ -105,7 +112,9 @@ const NativePerformanceObserverMock: NativePerformanceObserver = {
     observers = observers.filter(e => e !== mockObserver);
   },
 
-  takeRecords: (observer: OpaqueNativeObserverHandle): $ReadOnlyArray<RawPerformanceEntry> => {
+  takeRecords: (
+    observer: OpaqueNativeObserverHandle,
+  ): $ReadOnlyArray<RawPerformanceEntry> => {
     // $FlowFixMe
     const mockObserver = (observer: any) as MockObserver;
     const observerEntries = mockObserver.entries;

@@ -40,7 +40,6 @@ declare var global: {
 const getCurrentTimeStamp: () => DOMHighResTimeStamp =
   NativePerformance?.now ?? global.nativePerformanceNow ?? (() => Date.now());
 
-
 function warnNoNativePerformance() {
   warnOnce(
     'missing-native-performance',

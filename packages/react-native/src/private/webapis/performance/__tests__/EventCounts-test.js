@@ -40,12 +40,36 @@ describe('EventCounts', () => {
       100, // processingEnd
     ];
 
-    NativePerformanceMock?.testOnly_logEvent('click', ...eventDefaultValues, interactionId++);
-    NativePerformanceMock?.testOnly_logEvent('input', ...eventDefaultValues, interactionId++);
-    NativePerformanceMock?.testOnly_logEvent('input', ...eventDefaultValues, interactionId++);
-    NativePerformanceMock?.testOnly_logEvent('keyup', ...eventDefaultValues, interactionId++);
-    NativePerformanceMock?.testOnly_logEvent('keyup', ...eventDefaultValues, interactionId++);
-    NativePerformanceMock?.testOnly_logEvent('keyup', ...eventDefaultValues, interactionId++);
+    NativePerformanceMock?.testOnly_logEvent(
+      'click',
+      ...eventDefaultValues,
+      interactionId++,
+    );
+    NativePerformanceMock?.testOnly_logEvent(
+      'input',
+      ...eventDefaultValues,
+      interactionId++,
+    );
+    NativePerformanceMock?.testOnly_logEvent(
+      'input',
+      ...eventDefaultValues,
+      interactionId++,
+    );
+    NativePerformanceMock?.testOnly_logEvent(
+      'keyup',
+      ...eventDefaultValues,
+      interactionId++,
+    );
+    NativePerformanceMock?.testOnly_logEvent(
+      'keyup',
+      ...eventDefaultValues,
+      interactionId++,
+    );
+    NativePerformanceMock?.testOnly_logEvent(
+      'keyup',
+      ...eventDefaultValues,
+      interactionId++,
+    );
 
     const eventCounts = new Performance().eventCounts;
     expect(eventCounts.size).toBe(3);
@@ -71,17 +95,37 @@ describe('EventCounts', () => {
     expect(Array.from(eventCounts.values())).toStrictEqual([1, 2, 3]);
 
     await jest.runAllTicks();
-    NativePerformanceMock?.testOnly_logEvent('input', ...eventDefaultValues, interactionId++);
-    NativePerformanceMock?.testOnly_logEvent('keyup', ...eventDefaultValues, interactionId++);
-    NativePerformanceMock?.testOnly_logEvent('keyup', ...eventDefaultValues, interactionId++);
+    NativePerformanceMock?.testOnly_logEvent(
+      'input',
+      ...eventDefaultValues,
+      interactionId++,
+    );
+    NativePerformanceMock?.testOnly_logEvent(
+      'keyup',
+      ...eventDefaultValues,
+      interactionId++,
+    );
+    NativePerformanceMock?.testOnly_logEvent(
+      'keyup',
+      ...eventDefaultValues,
+      interactionId++,
+    );
     expect(Array.from(eventCounts.values())).toStrictEqual([1, 3, 5]);
 
     await jest.runAllTicks();
-    NativePerformanceMock?.testOnly_logEvent('click', ...eventDefaultValues, interactionId++);
+    NativePerformanceMock?.testOnly_logEvent(
+      'click',
+      ...eventDefaultValues,
+      interactionId++,
+    );
 
     await jest.runAllTicks();
 
-    NativePerformanceMock?.testOnly_logEvent('keyup', ...eventDefaultValues, interactionId++);
+    NativePerformanceMock?.testOnly_logEvent(
+      'keyup',
+      ...eventDefaultValues,
+      interactionId++,
+    );
 
     expect(Array.from(eventCounts.values())).toStrictEqual([2, 3, 6]);
   });
