@@ -21,7 +21,7 @@ export type IntersectionObserverCallback = (
   observer: IntersectionObserver,
 ) => mixed;
 
-type IntersectionObserverInit = {
+export type IntersectionObserverInit = {
   // root?: ReactNativeElement, // This option exists on the Web but it's not currently supported in React Native.
   // rootMargin?: string, // This option exists on the Web but it's not currently supported in React Native.
   threshold?: number | $ReadOnlyArray<number>,
