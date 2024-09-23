@@ -22,11 +22,6 @@
 #include <react/renderer/uimanager/UIManager.h>
 #include <react/renderer/uimanager/UIManagerBinding.h>
 
-#ifdef RN_SHADOW_TREE_INTROSPECTION
-#include <react/renderer/mounting/stubs.h>
-#include <iostream>
-#endif
-
 namespace facebook::react {
 
 Scheduler::Scheduler(
