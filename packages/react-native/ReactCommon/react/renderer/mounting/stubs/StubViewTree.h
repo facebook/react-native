@@ -41,7 +41,7 @@ class StubViewTree {
   friend bool operator==(const StubViewTree& lhs, const StubViewTree& rhs);
   friend bool operator!=(const StubViewTree& lhs, const StubViewTree& rhs);
 
-  std::ostream& dumpTags(std::ostream& stream);
+  std::ostream& dumpTags(std::ostream& stream) const;
 
   bool hasTag(Tag tag) const {
     return registry_.find(tag) != registry_.end();
