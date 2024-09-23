@@ -17,8 +17,21 @@ export type FeatureFlagDefinitions = {
 
 type FeatureFlagList = {
   [flagName: string]: {
-    description: string,
     defaultValue: FeatureFlagValue,
+    metadata:
+      | {
+          purpose: 'experimentation',
+          /**
+           * Aproximate date when the flag was added.
+           * Used to help prioritize feature flags that need to be cleaned up.
+           */
+          dateAdded: string,
+          description: string,
+        }
+      | {
+          purpose: 'operational' | 'release',
+          description: string,
+        },
   },
 };
 

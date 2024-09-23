@@ -59,7 +59,7 @@ ${Object.entries(definitions.jsOnly)
   .map(
     ([flagName, flagConfig]) =>
       `/**
- * ${flagConfig.description}
+ * ${flagConfig.metadata.description}
  */
 export const ${flagName}: Getter<${typeof flagConfig.defaultValue}> = createJavaScriptFlagGetter('${flagName}', ${JSON.stringify(
         flagConfig.defaultValue,
@@ -71,7 +71,7 @@ ${Object.entries(definitions.common)
   .map(
     ([flagName, flagConfig]) =>
       `/**
- * ${flagConfig.description}
+ * ${flagConfig.metadata.description}
  */
 export const ${flagName}: Getter<${typeof flagConfig.defaultValue}> = createNativeFlagGetter('${flagName}', ${JSON.stringify(
         flagConfig.defaultValue,

@@ -49,7 +49,7 @@ ${Object.entries(definitions.common)
   .map(
     ([flagName, flagConfig]) =>
       `  /**
-   * ${flagConfig.description}
+   * ${flagConfig.metadata.description}
    */
   RN_EXPORT static ${getCxxTypeFromDefaultValue(flagConfig.defaultValue)} ${flagName}();`,
   )
