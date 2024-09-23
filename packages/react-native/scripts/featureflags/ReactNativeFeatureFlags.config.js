@@ -553,6 +553,15 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'release',
       },
     },
+    shouldSkipStateUpdatesForLoopingAnimations: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2024-07-25',
+        description:
+          'If the animation is within Animated.loop, we do not send state updates to React.',
+        purpose: 'experimentation',
+      },
+    },
     shouldUseAnimatedObjectForTransform: {
       defaultValue: false,
       metadata: {
