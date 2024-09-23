@@ -2672,11 +2672,6 @@ public final class com/facebook/react/fabric/EmptyReactNativeConfig : com/facebo
 	public fun getString (Ljava/lang/String;)Ljava/lang/String;
 }
 
-public final class com/facebook/react/fabric/FabricComponents {
-	public static final field INSTANCE Lcom/facebook/react/fabric/FabricComponents;
-	public static final fun getFabricComponentName (Ljava/lang/String;)Ljava/lang/String;
-}
-
 public final class com/facebook/react/fabric/FabricSoLoader {
 	public static final field INSTANCE Lcom/facebook/react/fabric/FabricSoLoader;
 	public static final fun staticInit ()V
