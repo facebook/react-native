@@ -36,7 +36,7 @@ class NativePerformance : public NativePerformanceCxxSpec<NativePerformance> {
       std::optional<std::string> startMark,
       std::optional<std::string> endMark);
 
-  void logEvent(
+  void testOnly_logEvent(
       jsi::Runtime& rt,
       std::string name,
       double startTime,

@@ -137,7 +137,7 @@ void NativePerformance::measure(
 #endif
 }
 
-void NativePerformance::logEvent(
+void NativePerformance::testOnly_logEvent(
     jsi::Runtime& rt,
     std::string name,
     double startTime,

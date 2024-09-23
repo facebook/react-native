@@ -27,7 +27,7 @@ export interface Spec extends TurboModule {
     startMark?: string,
     endMark?: string,
   ) => void;
-  +logEvent: (
+  +testOnly_logEvent: (
     name: string,
     startTime: number,
     duration: number,

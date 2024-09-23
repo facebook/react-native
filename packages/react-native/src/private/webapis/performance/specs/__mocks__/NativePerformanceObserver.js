@@ -47,7 +47,8 @@ export function logMockEntry(entry: RawPerformanceEntry) {
     }
 
     if (entry.entryType == RawPerformanceEntryTypeValues.EVENT) {
-      if (observer.options.durationThreshold > 0 && entry.duration < observer.options.durationThreshold) {
+      const { durationThreshold = 0 } = observer.options;
+      if (durationThreshold > 0 && entry.duration < durationThreshold) {
         continue;
       }
     }

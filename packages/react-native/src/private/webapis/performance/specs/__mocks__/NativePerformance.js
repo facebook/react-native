@@ -50,7 +50,7 @@ const NativePerformanceMock: typeof NativePerformance = {
     });
   },
 
-  logEvent: (
+  testOnly_logEvent: (
     name: string,
     startTime: number,
     duration: number,
@@ -58,7 +58,7 @@ const NativePerformanceMock: typeof NativePerformance = {
     processingEnd: number,
     interactionId: number,
   ): void => {
-    NativePerformance?.logEvent(name, startTime, duration, processingStart, processingEnd, interactionId);
+    NativePerformance?.testOnly_logEvent(name, startTime, duration, processingStart, processingEnd, interactionId);
     logMockEntry({
       entryType: RawPerformanceEntryTypeValues.EVENT,
       name,
