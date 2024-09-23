@@ -39,6 +39,16 @@ enum class NoBreadcrumb {};
 
 namespace facebook::react {
 
+enum class ReparentMode { Flatten, Unflatten };
+
+bool ShadowViewNodePair::operator==(const ShadowViewNodePair& rhs) const {
+  return this->shadowNode == rhs.shadowNode;
+}
+
+bool ShadowViewNodePair::operator!=(const ShadowViewNodePair& rhs) const {
+  return !(*this == rhs);
+}
+
 /*
  * Extremely simple and naive implementation of a map.
  * The map is simple but it's optimized for particular constraints that we have
