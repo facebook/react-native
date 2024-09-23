@@ -83,10 +83,6 @@ class FabricMountingManager final {
       allocatedViewRegistry_{};
   std::recursive_mutex allocatedViewsMutex_;
 
-  jni::local_ref<jobject> getProps(
-      const ShadowView& oldShadowView,
-      const ShadowView& newShadowView);
-
   /*
    * Calls FabricUIManager.preallocateView() on the Java side if view needs to
    * be preallocated.
