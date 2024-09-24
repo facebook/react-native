@@ -15,6 +15,7 @@ import type {Props as ModalProps} from 'react-native/Libraries/Modal/Modal';
 
 import RNTOption from '../../components/RNTOption';
 import * as React from 'react';
+import {useCallback, useState} from 'react';
 import {Modal, Platform, StyleSheet, Switch, Text, View} from 'react-native';
 
 const RNTesterButton = require('../../components/RNTesterButton');
@@ -37,19 +38,19 @@ const supportedOrientations = [
 const backdropColors = ['red', 'blue', undefined];
 
 function ModalPresentation() {
-  const onDismiss = React.useCallback(() => {
+  const onDismiss = useCallback(() => {
     alert('onDismiss');
   }, []);
 
-  const onShow = React.useCallback(() => {
+  const onShow = useCallback(() => {
     alert('onShow');
   }, []);
 
-  const onRequestClose = React.useCallback(() => {
+  const onRequestClose = useCallback(() => {
     console.log('onRequestClose');
   }, []);
 
-  const [props, setProps] = React.useState<ModalProps>({
+  const [props, setProps] = useState<ModalProps>({
     animationType: 'none',
     transparent: false,
     hardwareAccelerated: false,
@@ -72,11 +73,12 @@ function ModalPresentation() {
   const statusBarTranslucent = props.statusBarTranslucent;
   const backdropColor = props.backdropColor;
 
-  const [currentOrientation, setCurrentOrientation] = React.useState('unknown');
+  const [currentOrientation, setCurrentOrientation] = useState('unknown');
 
-  /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
-   * LTI update could not be added via codemod */
-  const onOrientationChange = event =>
+  type OrientationChangeEvent = Parameters<
+    $NonMaybeType<React.PropsOf<Modal>['onOrientationChange']>,
+  >[0];
+  const onOrientationChange = (event: OrientationChangeEvent) =>
     setCurrentOrientation(event.nativeEvent.orientation);
 
   const controls = (
@@ -220,9 +222,9 @@ function ModalPresentation() {
         <View style={styles.row}>
           {backdropColors.map(type => (
             <RNTOption
-              key={type}
+              key={type ?? 'default'}
               style={styles.option}
-              label={type === undefined ? 'default' : type}
+              label={type ?? 'default'}
               multiSelect={true}
               onPress={() =>
                 setProps(prev => ({
