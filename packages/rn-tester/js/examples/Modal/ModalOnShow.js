@@ -11,13 +11,14 @@
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 
 import * as React from 'react';
+import {useState} from 'react';
 import {Modal, Pressable, StyleSheet, Text, View} from 'react-native';
 
 function ModalOnShowOnDismiss(): React.Node {
-  const [modalShowComponent, setModalShowComponent] = React.useState(true);
-  const [modalVisible, setModalVisible] = React.useState(false);
-  const [onShowCount, setOnShowCount] = React.useState(0);
-  const [onDismissCount, setOnDismissCount] = React.useState(0);
+  const [modalShowComponent, setModalShowComponent] = useState(true);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [onShowCount, setOnShowCount] = useState(0);
+  const [onDismissCount, setOnDismissCount] = useState(0);
 
   return (
     <View style={styles.container}>
@@ -27,10 +28,10 @@ function ModalOnShowOnDismiss(): React.Node {
           transparent={true}
           visible={modalVisible}
           onShow={() => {
-            setOnShowCount(onShowCount + 1);
+            setOnShowCount(showCount => showCount + 1);
           }}
           onDismiss={() => {
-            setOnDismissCount(onDismissCount + 1);
+            setOnDismissCount(dismissCount => dismissCount + 1);
           }}
           onRequestClose={() => {
             setModalVisible(false);
