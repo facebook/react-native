@@ -58,7 +58,7 @@ export default function attachKeyHandlers({
     messageSocket.broadcast('reload', null);
   }, RELOAD_TIMEOUT);
 
-  const onPress = async (key: string) => {
+  const onPress = (key: string) => {
     switch (key.toLowerCase()) {
       case 'r':
         reload();
@@ -93,7 +93,7 @@ export default function attachKeyHandlers({
         break;
       case 'j':
         // TODO(T192878199): Add multi-target selection
-        await fetch(devServerUrl + '/open-debugger', {method: 'POST'});
+        fetch(devServerUrl + '/open-debugger', {method: 'POST'});
         break;
       case CTRL_C:
       case CTRL_D:
