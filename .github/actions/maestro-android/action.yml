@@ -33,7 +33,7 @@ runs:
       run: export MAESTRO_VERSION=1.36.0; curl -Ls "https://get.maestro.mobile.dev" | bash
     - name: Set up JDK 17
       if: ${{ inputs.install-java == 'true' }}
-      uses: actions/setup-java@v2
+      uses: actions/setup-java@v4
       with:
         java-version: '17'
         distribution: 'zulu'
@@ -52,44 +52,26 @@ runs:
       run: ./packages/react-native-codegen/scripts/oss/build.sh
     - name: Run e2e tests
       uses: reactivecircus/android-emulator-runner@v2
-      env:
-          ANDROID_EMULATOR_WAIT_TIME_BEFORE_KILL: 60
       with:
         api-level: 24
         arch: x86
-        force-avd-creation: true
-        script: |
-          echo "Install APK from ${{ inputs.app-path }}"
-          adb install "${{ inputs.app-path }}"
-
-          echo "Build Codegen"
-
-          echo "Start Metro in Background"
-          cd ${{ inputs.working-directory }}
-          pwd
-          yarn start &
-
-          # Launch the app
-          adb shell monkey -p ${{ inputs.app-id }} 1
-
-          echo "Start recording to /sdcard/screen.mp4"
-          adb shell screenrecord /sdcard/screen.mp4
-
-          echo "Start testing ${{ inputs.maestro-flow }}"
-          export MAESTRO_DRIVER_STARTUP_TIMEOUT=120000
-          $HOME/.maestro/bin/maestro test ${{ inputs.maestro-flow }} --format junit -e APP_ID=${{ inputs.app-id }} --debug-output /tmp/MaestroLogs
-
-          adb pull /sdcard/screen.mp4
-
-          # see: https://github.com/ReactiveCircus/android-emulator-runner/issues/385#issuecomment-2018211127
-          pkill -9 crashpad_handler || true
-          sleep 5
-          pkill -9 crashpad_handler || true
+        ram-size: '4096M'
+        disk-size: '10G'
+        disable-animations: false
+        avd-name: e2e_emulator
+        script: node .github/workflow-scripts/maestro-android.js ${{ inputs.app-path }} ${{ inputs.app-id }} ${{ inputs.maestro-flow }} ${{ inputs.flavor }} ${{ inputs.working-directory }}
+    - name: Normalize APP_ID
+      id: normalize-app-id
+      shell: bash
+      if: always()
+      run: |
+        NORM_APP_ID=$(echo "${{ inputs.app-id }}" | tr '.' '-')
+        echo "app-id=$NORM_APP_ID" >> $GITHUB_OUTPUT
     - name: Store tests result
       uses: actions/upload-artifact@v3
       if: always()
       with:
-        name: e2e_android_${{ inputs.app-id }}_report_${{ inputs.jsengine }}_${{ inputs.flavor }}
+        name: e2e_android_${{ steps.normalize-app-id.outputs.app-id }}_report_${{ inputs.jsengine }}_${{ inputs.flavor }}
         path: |
           report.xml
           screen.mp4
@@ -97,5 +79,5 @@ runs:
       if: failure() && steps.run-tests.outcome == 'failure'
       uses: actions/upload-artifact@v4.3.4
       with:
-        name: maestro-logs-android-${{ inputs.app-id }}-${{ inputs.jsengine }}-${{ inputs.flavor }}
+        name: maestro-logs-android-${{ steps.normalize-app-id.outputs.app-id }}-${{ inputs.jsengine }}-${{ inputs.flavor }}
         path: /tmp/MaestroLogs
