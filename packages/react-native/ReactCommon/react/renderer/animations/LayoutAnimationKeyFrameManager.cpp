@@ -793,7 +793,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
       std::stable_sort(
           immediateMutations.begin(),
           immediateMutations.end(),
-          &shouldFirstComeBeforeSecondRemovesOnly);
+          &shouldFirstComeBeforeSecondMutation);
 
       animation.keyFrames = keyFramesToAnimate;
       inflightAnimations_.push_back(std::move(animation));

@@ -13,17 +13,6 @@
 
 namespace facebook::react {
 
-static inline bool shouldFirstComeBeforeSecondRemovesOnly(
-    const ShadowViewMutation& lhs,
-    const ShadowViewMutation& rhs) noexcept {
-  // Make sure that removes on the same level are sorted - highest indices must
-  // come first.
-  return (lhs.type == ShadowViewMutation::Type::Remove &&
-          lhs.type == rhs.type) &&
-      (lhs.parentShadowView.tag == rhs.parentShadowView.tag) &&
-      (lhs.index > rhs.index);
-}
-
 static inline bool shouldFirstComeBeforeSecondMutation(
     const ShadowViewMutation& lhs,
     const ShadowViewMutation& rhs) noexcept {
@@ -53,6 +42,16 @@ static inline bool shouldFirstComeBeforeSecondMutation(
     }
     if (rhs.type == ShadowViewMutation::Type::Create &&
         lhs.type == ShadowViewMutation::Type::Insert) {
+      return false;
+    }
+
+    // Remove comes before Update
+    if (lhs.type == ShadowViewMutation::Type::Remove &&
+        rhs.type == ShadowViewMutation::Type::Update) {
+      return true;
+    }
+    if (rhs.type == ShadowViewMutation::Type::Remove &&
+        lhs.type == ShadowViewMutation::Type::Update) {
       return false;
     }
   } else {
