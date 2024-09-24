@@ -296,6 +296,15 @@ float YGNodeStyleGetAspectRatio(const YGNodeConstRef node) {
   return op.isUndefined() ? YGUndefined : op.unwrap();
 }
 
+void YGNodeStyleSetBoxSizing(YGNodeRef node, YGBoxSizing boxSizing) {
+  updateStyle<&Style::boxSizing, &Style::setBoxSizing>(
+      node, scopedEnum(boxSizing));
+}
+
+YGBoxSizing YGNodeStyleGetBoxSizing(const YGNodeConstRef node) {
+  return unscopedEnum(resolveRef(node)->style().boxSizing());
+}
+
 void YGNodeStyleSetWidth(YGNodeRef node, float points) {
   updateStyle<&Style::dimension, &Style::setDimension>(
       node, Dimension::Width, value::points(points));

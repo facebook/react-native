@@ -475,6 +475,7 @@ YG_NODE_JNI_STYLE_PROP(jint, YGAlign, AlignItems);
 YG_NODE_JNI_STYLE_PROP(jint, YGAlign, AlignSelf);
 YG_NODE_JNI_STYLE_PROP(jint, YGAlign, AlignContent);
 YG_NODE_JNI_STYLE_PROP(jint, YGPositionType, PositionType);
+YG_NODE_JNI_STYLE_PROP(jint, YGBoxSizing, BoxSizing);
 YG_NODE_JNI_STYLE_PROP(jint, YGWrap, FlexWrap);
 YG_NODE_JNI_STYLE_PROP(jint, YGOverflow, Overflow);
 YG_NODE_JNI_STYLE_PROP(jint, YGDisplay, Display);
@@ -819,6 +820,12 @@ static JNINativeMethod methods[] = {
     {"jni_YGNodeStyleSetPositionTypeJNI",
      "(JI)V",
      (void*)jni_YGNodeStyleSetPositionTypeJNI},
+    {"jni_YGNodeStyleGetBoxSizingJNI",
+     "(J)I",
+     (void*)jni_YGNodeStyleGetBoxSizingJNI},
+    {"jni_YGNodeStyleSetBoxSizingJNI",
+     "(JI)V",
+     (void*)jni_YGNodeStyleSetBoxSizingJNI},
     {"jni_YGNodeStyleGetFlexWrapJNI",
      "(J)I",
      (void*)jni_YGNodeStyleGetFlexWrapJNI},

@@ -88,6 +88,10 @@ public abstract class YogaNode implements YogaProps {
 
   public abstract void setPositionType(YogaPositionType positionType);
 
+  public abstract YogaBoxSizing getBoxSizing();
+
+  public abstract void setBoxSizing(YogaBoxSizing boxSizing);
+
   public abstract YogaWrap getWrap();
 
   public abstract void setWrap(YogaWrap flexWrap);

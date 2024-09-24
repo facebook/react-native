@@ -299,6 +299,14 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
     YogaNative.jni_YGNodeStyleSetPositionTypeJNI(mNativePointer, positionType.intValue());
   }
 
+  public YogaBoxSizing getBoxSizing() {
+    return YogaBoxSizing.fromInt(YogaNative.jni_YGNodeStyleGetBoxSizingJNI(mNativePointer));
+  }
+
+  public void setBoxSizing(YogaBoxSizing boxSizing) {
+    YogaNative.jni_YGNodeStyleSetBoxSizingJNI(mNativePointer, boxSizing.intValue());
+  }
+
   public YogaWrap getWrap() {
     return YogaWrap.fromInt(YogaNative.jni_YGNodeStyleGetFlexWrapJNI(mNativePointer));
   }
