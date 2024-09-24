@@ -24,6 +24,40 @@ static inline bool shouldFirstComeBeforeSecondRemovesOnly(
       (lhs.index > rhs.index);
 }
 
+static inline void handleShouldFirstComeBeforeSecondRemovesOnly(
+    ShadowViewMutation::List& list) noexcept {
+  std::unordered_map<std::string, std::vector<ShadowViewMutation>>
+      removeMutationsByTag;
+  ShadowViewMutation::List finalList;
+  for (auto& mutation : list) {
+    if (mutation.type == ShadowViewMutation::Type::Remove) {
+      auto key = std::to_string(mutation.parentShadowView.tag);
+      removeMutationsByTag[key].push_back(mutation);
+    } else {
+      finalList.push_back(mutation);
+    }
+  }
+
+  if (removeMutationsByTag.size() == 0) {
+    return;
+  }
+
+  for (auto& mutationsPair : removeMutationsByTag) {
+    if (mutationsPair.second.size() > 1) {
+      std::stable_sort(
+          mutationsPair.second.begin(),
+          mutationsPair.second.end(),
+          &shouldFirstComeBeforeSecondRemovesOnly);
+    }
+    finalList.insert(
+        finalList.begin(),
+        mutationsPair.second.begin(),
+        mutationsPair.second.end());
+  }
+
+  list = finalList;
+}
+
 static inline bool shouldFirstComeBeforeSecondMutation(
     const ShadowViewMutation& lhs,
     const ShadowViewMutation& rhs) noexcept {
