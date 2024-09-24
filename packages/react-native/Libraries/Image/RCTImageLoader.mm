@@ -1119,11 +1119,12 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image, CGSize size, CGFloat scal
     return NO;
   }
 
+  std::unique_lock<std::mutex> guard(_loadersMutex);
   for (id<RCTImageURLLoader> loader in _loaders) {
     // Don't use RCTImageURLLoader protocol for modules that already conform to
     // RCTURLRequestHandler as it's inefficient to decode an image and then
     // convert it back into data
-    if (![loader conformsToProtocol:@protocol(RCTURLRequestHandler)] && [loader canLoadImageURL:requestURL]) {
+    if (loader && ![loader conformsToProtocol:@protocol(RCTURLRequestHandler)] && [loader canLoadImageURL:requestURL]) {
       return YES;
     }
   }
