@@ -169,6 +169,14 @@ using namespace facebook::react;
   } else {
     self->_imageView.image = image;
   }
+  
+  if (imageProps.fadeDuration > 0) {
+    self->_imageView.alpha = 0.0;
+    NSTimeInterval duration = imageProps.fadeDuration / 1000;
+    [UIView animateWithDuration: duration animations:^{
+      self->_imageView.alpha = 1.0;
+    }];
+  }
 }
 
 - (void)didReceiveProgress:(float)progress

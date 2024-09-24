@@ -1568,11 +1568,10 @@ exports.examples = [
   {
     title: 'Fade Duration',
     description:
-      ('The time (in miliseconds) that an image will fade in for when it appears (default = 300).': string),
+      ('The time (in miliseconds) that an image will fade in for when it appears - default = 300 (Android) or 0 (iOS).': string),
     render: function (): React.Node {
       return <FadeDurationExample />;
     },
-    platform: 'android',
   },
   {
     title: 'Loading Indicator Source',

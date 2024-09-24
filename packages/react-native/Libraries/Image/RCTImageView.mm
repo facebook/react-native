@@ -400,6 +400,14 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
 
     strongSelf.image = image;
 
+    if (self->_fadeDuration > 0 && !isPartialLoad) {
+      strongSelf.alpha = 0.0;
+      NSTimeInterval duration = self -> _fadeDuration / 1000;
+      [UIView animateWithDuration: duration animations:^{
+        strongSelf.alpha = 1.0;
+      }];
+    }
+
     if (isPartialLoad) {
       if (strongSelf->_onPartialLoad) {
         strongSelf->_onPartialLoad(nil);

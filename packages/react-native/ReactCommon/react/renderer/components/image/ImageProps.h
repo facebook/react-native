@@ -37,6 +37,7 @@ class ImageProps final : public ViewProps {
   Float blurRadius{};
   EdgeInsets capInsets{};
   SharedColor tintColor{};
+  Float fadeDuration{};
   std::string internal_analyticTag{};
 };
 

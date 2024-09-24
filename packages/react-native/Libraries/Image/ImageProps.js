@@ -58,7 +58,6 @@ type IOSImageProps = $ReadOnly<{|
 type AndroidImageProps = $ReadOnly<{|
   loadingIndicatorSource?: ?(number | $ReadOnly<{|uri: string|}>),
   progressiveRenderingEnabled?: ?boolean,
-  fadeDuration?: ?number,
 
   /**
    * The mechanism that should be used to resize the image when the image's
@@ -148,6 +147,12 @@ export type ImageProps = {|
    * See https://reactnative.dev/docs/image#height
    */
   height?: number,
+
+  /**
+   * Duration of fade in animation in ms. Defaults to 300 (Android) or 0 (iOS).
+   *
+   */
+  fadeDuration?: ?number,
 
   /**
    * Width of the image component.

@@ -148,6 +148,7 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
           },
           internal_analyticTag: true,
           resizeMode: true,
+          fadeDuration: true,
           source: true,
           tintColor: {
             process: require('../StyleSheet/processColor').default,

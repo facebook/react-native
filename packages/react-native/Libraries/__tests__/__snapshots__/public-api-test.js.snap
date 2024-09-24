@@ -4815,7 +4815,6 @@ type IOSImageProps = $ReadOnly<{|
 type AndroidImageProps = $ReadOnly<{|
   loadingIndicatorSource?: ?(number | $ReadOnly<{| uri: string |}>),
   progressiveRenderingEnabled?: ?boolean,
-  fadeDuration?: ?number,
   resizeMethod?: ?(\\"auto\\" | \\"resize\\" | \\"scale\\"),
   resizeMultiplier?: ?number,
 |}>;
@@ -4833,6 +4832,7 @@ export type ImageProps = {|
   capInsets?: ?EdgeInsetsProp,
   crossOrigin?: ?(\\"anonymous\\" | \\"use-credentials\\"),
   height?: number,
+  fadeDuration?: ?number,
   width?: number,
   onError?: ?(
     event: SyntheticEvent<
