@@ -1000,6 +1000,23 @@ public class ReactHostImpl implements ReactHost {
               return null;
             },
             executor)
+        .continueWithTask(
+          task -> {
+            final BridgelessReactContext reactContext = getOrCreateReactContext();
+
+            reactContext.runOnJSQueueThread(
+              () -> {
+                for (ReactInstanceEventListener listener : mReactInstanceEventListeners) {
+                  if (listener != null) {
+                    listener.onReactContextInitialized(reactContext);
+                  }
+                }
+              }
+            );
+
+            return null;
+          }
+        )
         .continueWith(
             task -> {
               if (task.isFaulted()) {
@@ -1183,11 +1200,6 @@ public class ReactHostImpl implements ReactHost {
                 }
 
                 log(method, "Executing ReactInstanceEventListeners");
-                for (ReactInstanceEventListener listener : mReactInstanceEventListeners) {
-                  if (listener != null) {
-                    listener.onReactContextInitialized(reactContext);
-                  }
-                }
                 return reactInstance;
               };
 
