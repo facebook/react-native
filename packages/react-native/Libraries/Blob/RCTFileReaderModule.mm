@@ -71,7 +71,7 @@ RCT_EXPORT_METHOD(readAsDataURL
           [NSString stringWithFormat:@"Unable to resolve data for blob: %@", [RCTConvert NSString:blob[@"blobId"]]],
           nil);
     } else {
-      NSString *type = [RCTConvert NSString:blob[@"type"]];
+      NSString *type = RCTNilIfNull([RCTConvert NSString:blob[@"type"]]);
       NSString *text = [NSString stringWithFormat:@"data:%@;base64,%@",
                                                   type != nil && [type length] > 0 ? type : @"application/octet-stream",
                                                   [data base64EncodedStringWithOptions:0]];
