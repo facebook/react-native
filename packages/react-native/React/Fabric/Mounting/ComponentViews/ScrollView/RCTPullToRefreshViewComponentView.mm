@@ -51,9 +51,9 @@ using namespace facebook::react;
             forControlEvents:UIControlEventValueChanged];
   
   const auto &concreteProps = static_cast<const PullToRefreshViewProps &>(*_props);
-  
-  [_refreshControl setTintColor: RCTUIColorFromSharedColor(concreteProps.tintColor)];
-  [_refreshControl setBounds:CGRectMake(_refreshControl.bounds.origin.x, concreteProps.progressViewOffset, _refreshControl.bounds.size.width, _refreshControl.bounds.size.height)];
+
+  _refreshControl.tintColor = RCTUIColorFromSharedColor(concreteProps.tintColor);
+  _refreshControl.bounds = CGRectMake(_refreshControl.bounds.origin.x, -concreteProps.progressViewOffset, _refreshControl.bounds.size.width, _refreshControl.bounds.size.height);
 }
 
 #pragma mark - RCTComponentViewProtocol
@@ -84,11 +84,11 @@ using namespace facebook::react;
   }
 
   if (newConcreteProps.tintColor != oldConcreteProps.tintColor) {
-    [_refreshControl setTintColor: RCTUIColorFromSharedColor(newConcreteProps.tintColor)];
+    _refreshControl.tintColor = RCTUIColorFromSharedColor(newConcreteProps.tintColor);
   }
 
   if (newConcreteProps.progressViewOffset != oldConcreteProps.progressViewOffset) {
-    [_refreshControl setBounds:CGRectMake(_refreshControl.bounds.origin.x, newConcreteProps.progressViewOffset, _refreshControl.bounds.size.width, _refreshControl.bounds.size.height)];
+    _refreshControl.bounds = CGRectMake(_refreshControl.bounds.origin.x, -newConcreteProps.progressViewOffset, _refreshControl.bounds.size.width, _refreshControl.bounds.size.height);
   }
 
   BOOL needsUpdateTitle = NO;
