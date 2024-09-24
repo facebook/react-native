@@ -1241,7 +1241,7 @@ class FakeSliderExample extends React.Component<{}, FakeSliderExampleState> {
                 max: 100,
               }}>
               <Text style={{color: theme.SecondaryLabelColor}}>
-                Fake Slider
+                Fake Slider {this.state.current}
               </Text>
             </View>
             <TouchableWithoutFeedback
@@ -1270,7 +1270,7 @@ class FakeSliderExample extends React.Component<{}, FakeSliderExampleState> {
               accessibilityValue={{text: this.state.textualValue}}>
               <View>
                 <Text style={{color: theme.SecondaryLabelColor}}>
-                  Equalizer
+                  Equalizer {this.state.textualValue}
                 </Text>
               </View>
             </TouchableWithoutFeedback>
@@ -1335,7 +1335,7 @@ class FakeSliderExampleForAccessibilityValue extends React.Component<
               aria-valuetext={'slider aria value text'}
               aria-valuenow={this.state.current}>
               <Text style={{color: theme.SecondaryLabelColor}}>
-                Fake Slider
+                Fake Slider {this.state.current}
               </Text>
             </View>
             <TouchableWithoutFeedback
@@ -1364,7 +1364,7 @@ class FakeSliderExampleForAccessibilityValue extends React.Component<
               accessibilityValue={{text: this.state.textualValue}}>
               <View>
                 <Text style={{color: theme.SecondaryLabelColor}}>
-                  Equalizer
+                  Equalizer {this.state.textualValue}
                 </Text>
               </View>
             </TouchableWithoutFeedback>

@@ -1308,6 +1308,20 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
   }
 }
 
+- (void)accessibilityIncrement
+{
+  if (_eventEmitter && _props->onAccessibilityAction) {
+    _eventEmitter->onAccessibilityAction("increment");
+  }
+}
+
+- (void)accessibilityDecrement
+{
+  if (_eventEmitter && _props->onAccessibilityAction) {
+    _eventEmitter->onAccessibilityAction("decrement");
+  }
+}
+
 - (BOOL)didActivateAccessibilityCustomAction:(UIAccessibilityCustomAction *)action
 {
   if (_eventEmitter && _props->onAccessibilityAction) {
