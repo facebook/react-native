@@ -1543,7 +1543,10 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       this._listMetrics.getContentLength() !== this._sentEndForContentLength
     ) {
       this._sentEndForContentLength = this._listMetrics.getContentLength();
-      onEndReached({distanceFromEnd});
+      // It will only runs when data is available and also it wont trigger onEndReached on First Mount as data will be empty
+      if (data && data.length > 0) {
+        onEndReached({distanceFromEnd});
+      }
     }
 
     // Next check if the user just scrolled within the start threshold
