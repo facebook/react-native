@@ -1,14 +1,27 @@
 # Changelog
 
+## v0.76.0-rc.2
+
+### Added
+
+#### iOS specific
+
+- Fire onMomentumScrollEnd when UIScrollView is removed from window ([b98b9f1fa7](https://github.com/facebook/react-native/commit/b98b9f1fa7717283f368eb182a51d971b8776c80) by [@shubhamguptadream11](https://github.com/shubhamguptadream11))
+
+### Fixed
+
+- Throttle reload command ([42bad68220](https://github.com/facebook/react-native/commit/42bad68220d288ef2436609ee50ad993c239b362) by [@coado](https://github.com/coado))
+
+#### iOS specific
+
+- Fixed a crash when navigating away from a screen that contains a scrollView ([c6f32828b9](https://github.com/facebook/react-native/commit/c6f32828b9487381dab27f645aedcdbae9dcbc7e) by [@cipolleschi](https://github.com/cipolleschi))
+- Allow pods mixte type settings on post-install ([1e59f2e3f8](https://github.com/facebook/react-native/commit/1e59f2e3f8f0ab3ee4173bddaa089bbecf61d1eb) by [@MasGaNo](https://github.com/MasGaNo))
+- Add back the BUNDLE_COMMAND ([cf42288181](https://github.com/facebook/react-native/commit/cf422881819decccdd2b486fbb73f2192b9ec522) by [@Vin-Xi](https://github.com/Vin-Xi))
+- Fix SVC for lineBreakModeIOS ([1099c0ccf7](https://github.com/facebook/react-native/commit/1099c0ccf7ea4f5d2e5caafd56b4e92faa367dc6) by [@cipolleschi](https://github.com/cipolleschi))
+
 ## v0.76.0-rc.1
 
 ### Breaking
-
-
-
-#### Android specific
-
-
 
 #### iOS specific
 
@@ -18,56 +31,19 @@
 
 - Unhide new arch layout props ([2d6c59e1d4](https://github.com/facebook/react-native/commit/2d6c59e1d4f6ddb46373ed10c915aed4ce0c030c) by [@NickGerleman](https://github.com/NickGerleman))
 
-#### Android specific
-
-
-
-#### iOS specific
-
-
-
 ### Changed
 
 - AnimatedNode (and its subclasses) once again implement `toJSON()`. ([7bd4a54968](https://github.com/facebook/react-native/commit/7bd4a5496815943b031b68ca46792560d8d798d8) by [@yungsters](https://github.com/yungsters))
 - Add official `filter` CSSProperty. ([6b369a40d9](https://github.com/facebook/react-native/commit/6b369a40d98c2bb7f933415f62b1e2b8f4da86ed) by [@jorge-cab](https://github.com/jorge-cab))
 - Add official `boxShadow` CSSProperty. ([2241c3146f](https://github.com/facebook/react-native/commit/2241c3146ffbfb8b77f54599b7cebb717537c15a) by [@jorge-cab](https://github.com/jorge-cab))
+- [0.76] Bump Metro to 0.81.0-alpha ([4126ce844d](https://github.com/facebook/react-native/commit/4126ce844d91612d83a1b2118a4859cac5bb480f) by [@robhogan](https://github.com/robhogan))
 
 #### Android specific
 
 - Expose jsctooling via prefab ([e91690d929](https://github.com/facebook/react-native/commit/e91690d929d7c8b251964cae282ad8e1d95aa39a) by [@tomekzaw](https://github.com/tomekzaw))
 - Expose hermestooling via prefab ([f41af55958](https://github.com/facebook/react-native/commit/f41af55958dfbc39c536d433c3a27db329dd05f1) by [@cortinico](https://github.com/cortinico))
 
-#### iOS specific
-
-
-
-### Deprecated
-
-
-
-#### Android specific
-
-
-
-#### iOS specific
-
-
-
-### Removed
-
-
-
-#### Android specific
-
-
-
-#### iOS specific
-
-
-
 ### Fixed
-
-
 
 #### Android specific
 
@@ -80,38 +56,6 @@
 - Don't reference PrivacyInfo.xcprivacy twice for new projects ([cadd41b1a2](https://github.com/facebook/react-native/commit/cadd41b1a2e16b1c77a8d3022f4ccbdbd5ea295f) by [@okwasniewski](https://github.com/okwasniewski))
 - Fixed warnings when validating SVC ([de39a204c3](https://github.com/facebook/react-native/commit/de39a204c3588a3c02dc2e72464174c75b3a6749) by [@cipolleschi](https://github.com/cipolleschi))
 - Solved SVC warnings for RNTester ([fad4a0783b](https://github.com/facebook/react-native/commit/fad4a0783b0a0478c147d9bde2ef9ab082a08297) by [@cipolleschi](https://github.com/cipolleschi))
-
-### Security
-
-
-
-#### Android specific
-
-
-
-#### iOS specific
-
-
-
-### Unknown
-
-- Release 0.76.0-rc.1 ([ec9e1718aa](https://github.com/facebook/react-native/commit/ec9e1718aa6179c6f634128fd64c36c9b116fa8f) by [@react-native-bot](https://github.com/react-native-bot))
-- Bump Podfile.lock ([c4714e81d8](https://github.com/facebook/react-native/commit/c4714e81d857845ad9d87b9d49c14eed0db774c0) by [@cipolleschi](https://github.com/cipolleschi))
-- [0.76] Bump Metro to 0.81.0-alpha ([4126ce844d](https://github.com/facebook/react-native/commit/4126ce844d91612d83a1b2118a4859cac5bb480f) by [@robhogan](https://github.com/robhogan))
-- Bump Podfile.lock ([33d175f51b](https://github.com/facebook/react-native/commit/33d175f51bda3f6b773127172d5dde34762725a5) by [@cipolleschi](https://github.com/cipolleschi))
-
-#### Android Unknown
-
-
-
-#### iOS Unknown
-
-
-
-#### Failed to parse
-
-
-
 
 ## v0.76.0-rc.0
 
