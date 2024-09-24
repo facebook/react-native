@@ -49,6 +49,11 @@ using namespace facebook::react;
   [_refreshControl addTarget:self
                       action:@selector(handleUIControlEventValueChanged)
             forControlEvents:UIControlEventValueChanged];
+  
+  const auto &concreteProps = static_cast<const PullToRefreshViewProps &>(*_props);
+  
+  [_refreshControl setTintColor: RCTUIColorFromSharedColor(concreteProps.tintColor)];
+  [_refreshControl setBounds:CGRectMake(_refreshControl.bounds.origin.x, concreteProps.progressViewOffset, _refreshControl.bounds.size.width, _refreshControl.bounds.size.height)];
 }
 
 #pragma mark - RCTComponentViewProtocol
@@ -76,6 +81,14 @@ using namespace facebook::react;
     } else {
       [_refreshControl endRefreshing];
     }
+  }
+
+  if (newConcreteProps.tintColor != oldConcreteProps.tintColor) {
+    [_refreshControl setTintColor: RCTUIColorFromSharedColor(newConcreteProps.tintColor)];
+  }
+
+  if (newConcreteProps.progressViewOffset != oldConcreteProps.progressViewOffset) {
+    [_refreshControl setBounds:CGRectMake(_refreshControl.bounds.origin.x, newConcreteProps.progressViewOffset, _refreshControl.bounds.size.width, _refreshControl.bounds.size.height)];
   }
 
   BOOL needsUpdateTitle = NO;
