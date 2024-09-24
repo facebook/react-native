@@ -166,6 +166,10 @@ abstract class GenerateAutolinkingNewArchitecturesFileTask : DefaultTask() {
       cmake_minimum_required(VERSION 3.13)
       set(CMAKE_VERBOSE_MAKEFILE on)
       
+      # We set REACTNATIVE_MERGED_SO so libraries/apps can selectively decide to depend on either libreactnative.so
+      # or link against a old prefab target (this is needed for React Native 0.76 on).
+      set(REACTNATIVE_MERGED_SO true)
+      
       {{ libraryIncludes }}
       
       set(AUTOLINKED_LIBRARIES
