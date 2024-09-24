@@ -1536,6 +1536,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     // and call onEndReached only once for a given content length,
     // and only if onStartReached is not being executed
     if (
+      data?.length > 0 &&
       onEndReached &&
       this.state.cellsAroundViewport.last === getItemCount(data) - 1 &&
       isWithinEndThreshold &&
