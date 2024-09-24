@@ -6,6 +6,7 @@
  */
 
 #import "RCTAppDelegate.h"
+#include <UIKit/UIKit.h>
 #import <React/RCTColorSpaceUtils.h>
 #import <React/RCTLog.h>
 #import <React/RCTRootView.h>
@@ -38,6 +39,14 @@
 
 @implementation RCTAppDelegate
 
+- (instancetype)init
+{
+  if (self = [super init]) {
+    _automaticallyLoadReactNativeWindow = YES;
+  }
+  return self;
+}
+
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
   [self _setUpFeatureFlags];
@@ -47,23 +56,29 @@
   RCTAppSetupPrepareApp(application, self.turboModuleEnabled);
 
   self.rootViewFactory = [self createRCTRootViewFactory];
-
-  UIView *rootView = [self.rootViewFactory viewWithModuleName:self.moduleName
-                                            initialProperties:self.initialProps
-                                                launchOptions:launchOptions];
-
   if (self.newArchEnabled || self.fabricEnabled) {
     [RCTComponentViewFactory currentComponentViewFactory].thirdPartyFabricComponentsProvider = self;
   }
 
+  if (self.automaticallyLoadReactNativeWindow) {
+    [self loadReactNativeWindow:launchOptions];
+  }
+
+  return YES;
+}
+
+- (void)loadReactNativeWindow:(NSDictionary *)launchOptions
+{
+  UIView *rootView = [self.rootViewFactory viewWithModuleName:self.moduleName
+                                            initialProperties:self.initialProps
+                                                launchOptions:launchOptions];
+
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
   UIViewController *rootViewController = [self createRootViewController];
   [self setRootView:rootView toRootViewController:rootViewController];
-  self.window.rootViewController = rootViewController;
-  self.window.windowScene.delegate = self;
-  [self.window makeKeyAndVisible];
+  _window.rootViewController = rootViewController;
+  [_window makeKeyAndVisible];
 
-  return YES;
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
