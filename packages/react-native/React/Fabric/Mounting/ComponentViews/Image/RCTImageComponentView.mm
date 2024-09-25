@@ -130,10 +130,8 @@ using namespace facebook::react;
         [self _setImage:defaultImage
             setImageBlock:^(UIImage *finalImage) {
               RCTImageComponentView *strongSelf = weakSelf;
-              if (strongSelf) {
-                if (!strongSelf->_imageView.image) {
-                  strongSelf->_imageView.image = finalImage;
-                }
+              if (strongSelf && !strongSelf->_imageView.image) {
+                strongSelf->_imageView.image = finalImage;
               }
             }];
       }
