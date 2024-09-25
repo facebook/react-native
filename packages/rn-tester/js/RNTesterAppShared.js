@@ -8,8 +8,9 @@
  * @flow
  */
 
-import type {RNTesterModuleInfo} from './types/RNTesterTypes';
+import type {RNTesterModuleInfo, ScreenTypes} from './types/RNTesterTypes';
 
+import {title as PlaygroundTitle} from './examples/Playground/PlaygroundExample';
 import RNTesterModuleContainer from './components/RNTesterModuleContainer';
 import RNTesterModuleList from './components/RNTesterModuleList';
 import RNTesterNavBar, {navBarHeight} from './components/RNTesterNavbar';
@@ -127,11 +128,22 @@ const RNTesterApp = ({
   );
 
   const handleNavBarPress = React.useCallback(
-    (args: {screen: string}) => {
-      dispatch({
-        type: RNTesterNavigationActionsType.NAVBAR_PRESS,
-        data: {screen: args.screen},
-      });
+    (args: {screen: ScreenTypes}) => {
+      if (args.screen === 'playgrounds') {
+        dispatch({
+          type: RNTesterNavigationActionsType.NAVBAR_OPEN_MODULE_PRESS,
+          data: {
+            key: 'PlaygroundExample',
+            title: PlaygroundTitle,
+            screen: args.screen,
+          },
+        });
+      } else {
+        dispatch({
+          type: RNTesterNavigationActionsType.NAVBAR_PRESS,
+          data: {screen: args.screen},
+        });
+      }
     },
     [dispatch],
   );
