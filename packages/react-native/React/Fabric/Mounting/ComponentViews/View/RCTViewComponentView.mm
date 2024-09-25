@@ -1080,15 +1080,10 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
   }
 
   // clipping
+  self.currentContainerView.layer.mask = nil;
   if (self.currentContainerView.clipsToBounds) {
     BOOL clipToPaddingBox = ReactNativeFeatureFlags::enableIOSViewClipToPaddingBox();
-    if (clipToPaddingBox) {
-      CALayer *maskLayer = [self createMaskLayer:RCTCGRectFromRect(_layoutMetrics.getPaddingFrame())
-                                    cornerInsets:RCTGetCornerInsets(
-                                                     RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii),
-                                                     RCTUIEdgeInsetsFromEdgeInsets(borderMetrics.borderWidths))];
-      self.currentContainerView.layer.mask = maskLayer;
-    } else {
+    if (!clipToPaddingBox) {
       if (borderMetrics.borderRadii.isUniform()) {
         self.currentContainerView.layer.cornerRadius = borderMetrics.borderRadii.topLeft.horizontal;
       } else {
@@ -1110,9 +1105,17 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
           subview.layer.mask = [self createMaskLayer:subview.bounds cornerInsets:cornerInsets];
         }
       }
+    } else if (
+        !borderMetrics.borderWidths.isUniform() || borderMetrics.borderWidths.left != 0 ||
+        !borderMetrics.borderRadii.isUniform()) {
+      CALayer *maskLayer = [self createMaskLayer:RCTCGRectFromRect(_layoutMetrics.getPaddingFrame())
+                                    cornerInsets:RCTGetCornerInsets(
+                                                     RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii),
+                                                     RCTUIEdgeInsetsFromEdgeInsets(borderMetrics.borderWidths))];
+      self.currentContainerView.layer.mask = maskLayer;
+    } else {
+      self.currentContainerView.layer.cornerRadius = borderMetrics.borderRadii.topLeft.horizontal;
     }
-  } else {
-    self.currentContainerView.layer.mask = nil;
   }
 }
 
