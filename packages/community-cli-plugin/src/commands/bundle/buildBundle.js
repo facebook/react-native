@@ -140,7 +140,7 @@ async function buildBundleWithConfig(
       args.assetCatalogDest,
     );
   } finally {
-    server.end();
+    await server.end();
   }
 }
 
