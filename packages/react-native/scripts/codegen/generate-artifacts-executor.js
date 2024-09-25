@@ -58,7 +58,13 @@ const CORE_LIBRARIES_WITH_OUTPUT_FOLDER = {
     ),
   },
 };
-const REACT_NATIVE = 'react-native';
+
+const packageJsonPath = path.join(
+  REACT_NATIVE_PACKAGE_ROOT_FOLDER,
+  'package.json',
+);
+const packageJson = JSON.parse(fs.readFileSync(packageJsonPath));
+const REACT_NATIVE = packageJson.name;
 
 const MODULES_PROTOCOLS_H_TEMPLATE_PATH = path.join(
   REACT_NATIVE_PACKAGE_ROOT_FOLDER,
