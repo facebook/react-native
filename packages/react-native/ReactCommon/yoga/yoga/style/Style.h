@@ -15,6 +15,7 @@
 
 #include <yoga/algorithm/FlexDirection.h>
 #include <yoga/enums/Align.h>
+#include <yoga/enums/BoxSizing.h>
 #include <yoga/enums/Dimension.h>
 #include <yoga/enums/Direction.h>
 #include <yoga/enums/Display.h>
@@ -204,6 +205,13 @@ class YG_EXPORT Style {
     pool_.store(
         aspectRatio_,
         value == 0.0f || std::isinf(value.unwrap()) ? FloatOptional{} : value);
+  }
+
+  BoxSizing boxSizing() const {
+    return boxSizing_;
+  }
+  void setBoxSizing(BoxSizing value) {
+    boxSizing_ = value;
   }
 
   bool horizontalInsetsDefined() const {
@@ -675,6 +683,7 @@ class YG_EXPORT Style {
   Wrap flexWrap_ : bitCount<Wrap>() = Wrap::NoWrap;
   Overflow overflow_ : bitCount<Overflow>() = Overflow::Visible;
   Display display_ : bitCount<Display>() = Display::Flex;
+  BoxSizing boxSizing_ : bitCount<BoxSizing>() = BoxSizing::BorderBox;
 
   StyleValueHandle flex_{};
   StyleValueHandle flexGrow_{};

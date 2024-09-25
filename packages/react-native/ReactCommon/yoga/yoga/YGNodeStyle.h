@@ -95,6 +95,9 @@ YG_EXPORT void
 YGNodeStyleSetGapPercent(YGNodeRef node, YGGutter gutter, float gapLength);
 YG_EXPORT float YGNodeStyleGetGap(YGNodeConstRef node, YGGutter gutter);
 
+YG_EXPORT void YGNodeStyleSetBoxSizing(YGNodeRef node, YGBoxSizing boxSizing);
+YG_EXPORT YGBoxSizing YGNodeStyleGetBoxSizing(YGNodeConstRef node);
+
 YG_EXPORT void YGNodeStyleSetWidth(YGNodeRef node, float width);
 YG_EXPORT void YGNodeStyleSetWidthPercent(YGNodeRef node, float width);
 YG_EXPORT void YGNodeStyleSetWidthAuto(YGNodeRef node);
