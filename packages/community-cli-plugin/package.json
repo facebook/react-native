@@ -26,6 +26,7 @@
     "@react-native/metro-babel-transformer": "0.76.0-rc.2",
     "chalk": "^4.0.0",
     "execa": "^5.1.1",
+    "invariant": "^2.2.4",
     "metro": "^0.81.0-alpha.2",
     "metro-config": "^0.81.0-alpha.2",
     "metro-core": "^0.81.0-alpha.2",
