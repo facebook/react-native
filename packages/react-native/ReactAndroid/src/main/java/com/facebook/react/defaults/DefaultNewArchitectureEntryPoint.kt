@@ -39,21 +39,19 @@ public object DefaultNewArchitectureEntryPoint {
       error(errorMessage)
     }
 
-    if (bridgelessEnabled) {
-      ReactNativeFeatureFlags.override(
-          object : ReactNativeNewArchitectureFeatureFlagsDefaults() {
-            override fun useFabricInterop(): Boolean = fabricEnabled
+    ReactNativeFeatureFlags.override(
+        object : ReactNativeNewArchitectureFeatureFlagsDefaults(bridgelessEnabled) {
+          override fun useFabricInterop(): Boolean = bridgelessEnabled || fabricEnabled
 
-            override fun enableFabricRenderer(): Boolean = fabricEnabled
+          override fun enableFabricRenderer(): Boolean = bridgelessEnabled || fabricEnabled
 
-            // We turn this feature flag to true for OSS to fix #44610 and #45126 and other
-            // similar bugs related to pressable.
-            override fun enableEventEmitterRetentionDuringGesturesOnAndroid(): Boolean =
-                fabricEnabled
+          // We turn this feature flag to true for OSS to fix #44610 and #45126 and other
+          // similar bugs related to pressable.
+          override fun enableEventEmitterRetentionDuringGesturesOnAndroid(): Boolean =
+              bridgelessEnabled || fabricEnabled
 
-            override fun useTurboModules(): Boolean = turboModulesEnabled
-          })
-    }
+          override fun useTurboModules(): Boolean = bridgelessEnabled || turboModulesEnabled
+        })
 
     privateFabricEnabled = fabricEnabled
     privateTurboModulesEnabled = turboModulesEnabled
