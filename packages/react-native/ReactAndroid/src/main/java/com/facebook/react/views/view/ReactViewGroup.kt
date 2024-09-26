@@ -649,30 +649,45 @@ public open class ReactViewGroup(context: Context) :
   }
 
   private fun addInArray(child: View, index: Int) {
-    var children = checkNotNull(allChildren)
+    val children = growAllChildrenIfNeeded(index)
+    children[index] = child
+    allChildrenCount++
+  }
+
+  /**
+   * Grow the [allChildren] array if it's run out of space
+   *
+   * @param insertIndex index where child is being inserted, must be <= [allChildrenCount]
+   * @return the non-null array that's backing [allChildren] after any potential resize, with a null
+   *   slot at [insertIndex]
+   */
+  private fun growAllChildrenIfNeeded(insertIndex: Int): Array<View?> {
+    val children = checkNotNull(allChildren)
     val count = allChildrenCount
-    val size = children.size
-    if (index == count) {
-      if (size == count) {
-        children = arrayOfNulls(size + ARRAY_CAPACITY_INCREMENT)
-        System.arraycopy(children, 0, children, 0, size)
-        allChildren = children
-      }
-      children[allChildrenCount++] = child
-    } else if (index < count) {
-      if (size == count) {
-        children = arrayOfNulls(size + ARRAY_CAPACITY_INCREMENT)
-        System.arraycopy(children, 0, children, 0, index)
-        System.arraycopy(children, index, children, index + 1, count - index)
-        allChildren = children
-      } else {
-        System.arraycopy(children, index, children, index + 1, count - index)
-      }
-      children[index] = child
-      allChildrenCount++
-    } else {
-      throw IndexOutOfBoundsException("index=$index count=$count")
+    if (insertIndex > count) {
+      throw IndexOutOfBoundsException("index=$insertIndex count=$count")
     }
+    if (children.size > count) {
+      // no need to resize, ensure index is free
+      if (insertIndex < count) {
+        System.arraycopy(children, insertIndex, children, insertIndex + 1, count - insertIndex)
+      }
+      return children
+    }
+    // need to resize the array
+    val newArray =
+        if (insertIndex == count) {
+          // inserting at the end of the array
+          children.copyOf(children.size + ARRAY_CAPACITY_INCREMENT)
+        } else {
+          // inserting within the array
+          arrayOfNulls<View?>(children.size + ARRAY_CAPACITY_INCREMENT).apply {
+            System.arraycopy(children, 0, this, 0, insertIndex)
+            System.arraycopy(children, insertIndex, this, insertIndex + 1, count - insertIndex)
+          }
+        }
+    allChildren = newArray
+    return newArray
   }
 
   private fun removeFromArray(index: Int) {
