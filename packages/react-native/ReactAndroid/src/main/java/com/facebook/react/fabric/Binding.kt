@@ -71,4 +71,6 @@ public interface Binding {
   public fun registerSurface(surfaceHandler: SurfaceHandlerBinding)
 
   public fun unregisterSurface(surfaceHandler: SurfaceHandlerBinding)
+
+  public fun addAnimationDriver(surfaceHandler: SurfaceHandlerBinding)
 }

@@ -307,6 +307,16 @@ void Binding::unregisterSurface(SurfaceHandlerBinding* surfaceHandlerBinding) {
   mountingManager->onSurfaceStop(surfaceHandler.getSurfaceId());
 }
 
+void Binding::addAnimationDriver(SurfaceHandlerBinding* surfaceHandlerBinding) {
+  const auto& surfaceHandler = surfaceHandlerBinding->getSurfaceHandler();
+  if (surfaceHandler.getStatus() != SurfaceHandler::Status::Running) {
+    LOG(ERROR) << "Binding::addAnimationDriver: surface handler is not running";
+    return;
+  }
+  surfaceHandler.getMountingCoordinator()->setMountingOverrideDelegate(
+      animationDriver_);
+}
+
 void Binding::setConstraints(
     jint surfaceId,
     jfloat minWidth,
@@ -618,6 +628,7 @@ void Binding::registerNatives() {
           "uninstallFabricUIManager", Binding::uninstallFabricUIManager),
       makeNativeMethod("registerSurface", Binding::registerSurface),
       makeNativeMethod("unregisterSurface", Binding::unregisterSurface),
+      makeNativeMethod("addAnimationDriver", Binding::addAnimationDriver)
   });
 }
 

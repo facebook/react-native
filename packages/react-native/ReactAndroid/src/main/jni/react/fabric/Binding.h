@@ -99,6 +99,8 @@ class Binding : public jni::HybridClass<Binding, JBinding>,
 
   void unregisterSurface(SurfaceHandlerBinding* surfaceHandler);
 
+  void addAnimationDriver(SurfaceHandlerBinding* surfaceHandlerBinding);
+
   void schedulerDidFinishTransaction(
       const MountingCoordinator::Shared& mountingCoordinator) override;
 

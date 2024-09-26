@@ -104,6 +104,8 @@ public class BindingImpl : Binding {
 
   external override fun unregisterSurface(surfaceHandler: SurfaceHandlerBinding)
 
+  external override fun addAnimationDriver(surfaceHandler: SurfaceHandlerBinding)
+
   private companion object {
     init {
       FabricSoLoader.staticInit()

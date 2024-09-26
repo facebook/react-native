@@ -335,6 +335,7 @@ public class FabricUIManager
     }
     surfaceHandler.setMountable(rootView != null);
     surfaceHandler.start();
+    mBinding.addAnimationDriver((SurfaceHandlerBinding) surfaceHandler);
   }
 
   public void attachRootView(final SurfaceHandler surfaceHandler, final View rootView) {
