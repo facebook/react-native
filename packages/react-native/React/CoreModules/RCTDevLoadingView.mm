@@ -138,7 +138,7 @@ RCT_EXPORT_MODULE()
       self->_label.font = [UIFont monospacedDigitSystemFontOfSize:12.0 weight:UIFontWeightRegular];
       self->_label.textAlignment = NSTextAlignmentCenter;
 #else // [macOS
-      self->_window = [[NSWindow alloc] initWithContentRect:NSMakeRect(0, 0, 375, 20)
+      self->_window = [[NSPanel alloc] initWithContentRect:NSMakeRect(0, 0, 375, 20)
                                                  styleMask:NSWindowStyleMaskBorderless
                                                    backing:NSBackingStoreBuffered
                                                      defer:YES];
@@ -214,6 +214,8 @@ RCT_EXPORT_METHOD(hide)
         }];
 #else // [macOS]
     [RCTKeyWindow() endSheet:self->_window];
+    self->_window = nil;
+    self->_hiding = false;
 #endif // macOS]
   });
 }
