@@ -12,6 +12,7 @@
 #import <React/RCTSurfacePresenterBridgeAdapter.h>
 #import <React/RCTUtils.h>
 #import <ReactCommon/RCTHost.h>
+#include <UIKit/UIKit.h>
 #import <objc/runtime.h>
 #import <react/featureflags/ReactNativeFeatureFlags.h>
 #import <react/featureflags/ReactNativeFeatureFlagsDefaults.h>
@@ -38,6 +39,14 @@
 
 @implementation RCTAppDelegate
 
+- (instancetype)init
+{
+  if (self = [super init]) {
+    _automaticallyLoadReactNativeWindow = YES;
+  }
+  return self;
+}
+
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
   [self _setUpFeatureFlags];
@@ -47,23 +56,28 @@
   RCTAppSetupPrepareApp(application, self.turboModuleEnabled);
 
   self.rootViewFactory = [self createRCTRootViewFactory];
-
-  UIView *rootView = [self.rootViewFactory viewWithModuleName:self.moduleName
-                                            initialProperties:self.initialProps
-                                                launchOptions:launchOptions];
-
   if (self.newArchEnabled || self.fabricEnabled) {
     [RCTComponentViewFactory currentComponentViewFactory].thirdPartyFabricComponentsProvider = self;
   }
 
+  if (self.automaticallyLoadReactNativeWindow) {
+    [self loadReactNativeWindow:launchOptions];
+  }
+
+  return YES;
+}
+
+- (void)loadReactNativeWindow:(NSDictionary *)launchOptions
+{
+  UIView *rootView = [self.rootViewFactory viewWithModuleName:self.moduleName
+                                            initialProperties:self.initialProps
+                                                launchOptions:launchOptions];
+
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
   UIViewController *rootViewController = [self createRootViewController];
   [self setRootView:rootView toRootViewController:rootViewController];
-  self.window.rootViewController = rootViewController;
-  self.window.windowScene.delegate = self;
-  [self.window makeKeyAndVisible];
-
-  return YES;
+  _window.rootViewController = rootViewController;
+  [_window makeKeyAndVisible];
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
