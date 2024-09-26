@@ -432,21 +432,21 @@ public class ReactModalHostView(context: ThemedReactContext) :
       reactContext.reactApplicationContext.handleException(RuntimeException(t))
     }
 
-    override fun onInterceptTouchEvent(event: MotionEvent): Boolean {
+    override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
       eventDispatcher?.let { eventDispatcher ->
-        jSTouchDispatcher.handleTouchEvent(event, eventDispatcher, reactContext)
-        jSPointerDispatcher?.handleMotionEvent(event, eventDispatcher, true)
+        jSTouchDispatcher.handleTouchEvent(ev, eventDispatcher, reactContext)
+        jSPointerDispatcher?.handleMotionEvent(ev, eventDispatcher, true)
       }
-      return super.onInterceptTouchEvent(event)
+      return super.onInterceptTouchEvent(ev)
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    override fun onTouchEvent(event: MotionEvent): Boolean {
+    override fun onTouchEvent(ev: MotionEvent): Boolean {
       eventDispatcher?.let { eventDispatcher ->
-        jSTouchDispatcher.handleTouchEvent(event, eventDispatcher, reactContext)
-        jSPointerDispatcher?.handleMotionEvent(event, eventDispatcher, false)
+        jSTouchDispatcher.handleTouchEvent(ev, eventDispatcher, reactContext)
+        jSPointerDispatcher?.handleMotionEvent(ev, eventDispatcher, false)
       }
-      super.onTouchEvent(event)
+      super.onTouchEvent(ev)
       // In case when there is no children interested in handling touch event, we return true from
       // the root view in order to receive subsequent events related to that gesture
       return true
