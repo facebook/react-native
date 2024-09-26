@@ -23,6 +23,7 @@
 
 #include "EventEmitterWrapper.h"
 #include "JFabricUIManager.h"
+#include "SurfaceHandlerBinding.h"
 
 namespace facebook::react {
 
@@ -33,7 +34,6 @@ class Instance;
 class LayoutAnimationDriver;
 class ReactNativeConfig;
 class Scheduler;
-class SurfaceHandlerBinding;
 
 struct JBinding : public jni::JavaClass<JBinding> {
   constexpr static auto kJavaDescriptor = "Lcom/facebook/react/fabric/Binding;";
@@ -95,9 +95,11 @@ class Binding : public jni::HybridClass<Binding, JBinding>,
 
   void stopSurface(jint surfaceId);
 
-  void registerSurface(SurfaceHandlerBinding* surfaceHandler);
+  void registerSurface(
+      jni::alias_ref<SurfaceHandlerBinding::jhybridobject> surfaceHandler);
 
-  void unregisterSurface(SurfaceHandlerBinding* surfaceHandler);
+  void unregisterSurface(
+      jni::alias_ref<SurfaceHandlerBinding::jhybridobject> surfaceHandler);
 
   void schedulerDidFinishTransaction(
       const MountingCoordinator::Shared& mountingCoordinator) override;
@@ -148,7 +150,15 @@ class Binding : public jni::HybridClass<Binding, JBinding>,
 
   BackgroundExecutor backgroundExecutor_;
 
-  std::unordered_map<SurfaceId, SurfaceHandler> surfaceHandlerRegistry_{};
+  // Roots not created through ReactSurface (non-bridgeless) will store their
+  // SurfaceHandler here, for other roots we keep a weak reference to the Java
+  // owner
+  std::unordered_map<
+      SurfaceId,
+      std::variant<
+          SurfaceHandler,
+          jni::weak_ref<SurfaceHandlerBinding::jhybridobject>>>
+      surfaceHandlerRegistry_{};
   std::shared_mutex
       surfaceHandlerRegistryMutex_; // Protects `surfaceHandlerRegistry_`.
 
