@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ee3f60941427d4efa2f5b03bf0b78514>>
+ * @generated SignedSource<<0467a8715892bbeca0a08681c730aeab>>
  * @flow strict
  */
 
@@ -32,11 +32,13 @@ export interface Spec extends TurboModule {
   +enableAndroidLineHeightCentering?: () => boolean;
   +enableAndroidMixBlendModeProp?: () => boolean;
   +enableBackgroundStyleApplicator?: () => boolean;
+  +enableBridgelessArchitecture?: () => boolean;
   +enableCleanTextInputYogaNode?: () => boolean;
   +enableDeletionOfUnmountedViews?: () => boolean;
   +enableEagerRootViewAttachment?: () => boolean;
   +enableEventEmitterRetentionDuringGesturesOnAndroid?: () => boolean;
   +enableFabricLogs?: () => boolean;
+  +enableFabricRenderer?: () => boolean;
   +enableFabricRendererExclusively?: () => boolean;
   +enableGranularShadowTreeStateReconciliation?: () => boolean;
   +enableIOSViewClipToPaddingBox?: () => boolean;
@@ -74,6 +76,7 @@ export interface Spec extends TurboModule {
   +useRuntimeShadowNodeReferenceUpdateOnLayout?: () => boolean;
   +useStateAlignmentMechanism?: () => boolean;
   +useTurboModuleInterop?: () => boolean;
+  +useTurboModules?: () => boolean;
 }
 
 const NativeReactNativeFeatureFlags: ?Spec = TurboModuleRegistry.get<Spec>(

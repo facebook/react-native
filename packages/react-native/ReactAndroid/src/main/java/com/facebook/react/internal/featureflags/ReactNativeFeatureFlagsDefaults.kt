@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<72e3e7b5a53e64f8f48310d8b07cdf76>>
+ * @generated SignedSource<<8155a9c1309145fefdb19feb33c241db>>
  */
 
 /**
@@ -41,6 +41,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableBackgroundStyleApplicator(): Boolean = true
 
+  override fun enableBridgelessArchitecture(): Boolean = false
+
   override fun enableCleanTextInputYogaNode(): Boolean = false
 
   override fun enableDeletionOfUnmountedViews(): Boolean = false
@@ -50,6 +52,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enableEventEmitterRetentionDuringGesturesOnAndroid(): Boolean = false
 
   override fun enableFabricLogs(): Boolean = false
+
+  override fun enableFabricRenderer(): Boolean = false
 
   override fun enableFabricRendererExclusively(): Boolean = false
 
@@ -124,4 +128,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun useStateAlignmentMechanism(): Boolean = false
 
   override fun useTurboModuleInterop(): Boolean = false
+
+  override fun useTurboModules(): Boolean = false
 }

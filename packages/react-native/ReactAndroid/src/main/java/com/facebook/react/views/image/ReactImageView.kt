@@ -47,7 +47,7 @@ import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.common.annotations.VisibleForTesting
 import com.facebook.react.common.build.ReactBuildConfig
-import com.facebook.react.config.ReactFeatureFlags
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags.loadVectorDrawablesOnImages
 import com.facebook.react.modules.fresco.ReactNetworkImageRequest
 import com.facebook.react.uimanager.BackgroundStyleApplicator
@@ -590,7 +590,7 @@ public class ReactImageView(
     // 3. ReactImageView detects the null src; displays a warning in LogBox (via this code).
     // 3. LogBox renders an <Image/>, which fabric preallocates.
     // 4. Rinse and repeat.
-    if (ReactBuildConfig.DEBUG && !ReactFeatureFlags.enableBridgelessArchitecture) {
+    if (ReactBuildConfig.DEBUG && !ReactNativeFeatureFlags.enableBridgelessArchitecture()) {
       RNLog.w(context as ReactContext, "ReactImageView: Image source \"$uri\" doesn't exist")
     }
   }

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0d2f5427661ce67e468aea47bdd29802>>
+ * @generated SignedSource<<76eebf045692e945d39a4ea27a63ae02>>
  */
 
 /**
@@ -46,6 +46,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun enableBackgroundStyleApplicator(): Boolean
 
+  @DoNotStrip @JvmStatic public external fun enableBridgelessArchitecture(): Boolean
+
   @DoNotStrip @JvmStatic public external fun enableCleanTextInputYogaNode(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableDeletionOfUnmountedViews(): Boolean
@@ -55,6 +57,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun enableEventEmitterRetentionDuringGesturesOnAndroid(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableFabricLogs(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun enableFabricRenderer(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableFabricRendererExclusively(): Boolean
 
@@ -129,6 +133,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun useStateAlignmentMechanism(): Boolean
 
   @DoNotStrip @JvmStatic public external fun useTurboModuleInterop(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun useTurboModules(): Boolean
 
   @DoNotStrip @JvmStatic public external fun override(provider: Any)
 

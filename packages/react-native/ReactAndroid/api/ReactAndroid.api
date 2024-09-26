@@ -2041,10 +2041,7 @@ public final class com/facebook/react/common/network/OkHttpCallUtil {
 
 public class com/facebook/react/config/ReactFeatureFlags {
 	public static field dispatchPointerEvents Z
-	public static field enableBridgelessArchitecture Z
 	public static field enableCppPropsIteratorSetter Z
-	public static field enableFabricRenderer Z
-	public static field useTurboModules Z
 	public fun <init> ()V
 }
 

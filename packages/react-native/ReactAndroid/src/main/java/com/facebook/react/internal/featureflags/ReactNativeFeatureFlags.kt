@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<73409b567e77f17838ae9681a8e20be6>>
+ * @generated SignedSource<<bce0548a9e58299746c75aad95a25275>>
  */
 
 /**
@@ -83,6 +83,12 @@ public object ReactNativeFeatureFlags {
   public fun enableBackgroundStyleApplicator(): Boolean = accessor.enableBackgroundStyleApplicator()
 
   /**
+   * Feature flag to enable the new bridgeless architecture. Note: Enabling this will force enable the following flags: `useTurboModules` & `enableFabricRenderer.
+   */
+  @JvmStatic
+  public fun enableBridgelessArchitecture(): Boolean = accessor.enableBridgelessArchitecture()
+
+  /**
    * Clean yoga node when <TextInput /> does not change.
    */
   @JvmStatic
@@ -111,6 +117,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableFabricLogs(): Boolean = accessor.enableFabricLogs()
+
+  /**
+   * Enables the use of the Fabric renderer in the whole app.
+   */
+  @JvmStatic
+  public fun enableFabricRenderer(): Boolean = accessor.enableFabricRenderer()
 
   /**
    * When the app is completely migrated to Fabric, set this flag to true to disable parts of Paper infrastructure that are not needed anymore but consume memory and CPU. Specifically, UIViewOperationQueue and EventDispatcherImpl will no longer work as they will not subscribe to ReactChoreographer for updates.
@@ -333,6 +345,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun useTurboModuleInterop(): Boolean = accessor.useTurboModuleInterop()
+
+  /**
+   * When enabled, NativeModules will be executed by using the TurboModule system
+   */
+  @JvmStatic
+  public fun useTurboModules(): Boolean = accessor.useTurboModules()
 
   /**
    * Overrides the feature flags with the ones provided by the given provider

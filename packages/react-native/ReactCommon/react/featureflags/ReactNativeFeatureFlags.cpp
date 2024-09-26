@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b04a641595d870bd9666281b3f0cfec5>>
+ * @generated SignedSource<<85cdb5a41317e9671cc23b2c7345c04d>>
  */
 
 /**
@@ -57,6 +57,10 @@ bool ReactNativeFeatureFlags::enableBackgroundStyleApplicator() {
   return getAccessor().enableBackgroundStyleApplicator();
 }
 
+bool ReactNativeFeatureFlags::enableBridgelessArchitecture() {
+  return getAccessor().enableBridgelessArchitecture();
+}
+
 bool ReactNativeFeatureFlags::enableCleanTextInputYogaNode() {
   return getAccessor().enableCleanTextInputYogaNode();
 }
@@ -75,6 +79,10 @@ bool ReactNativeFeatureFlags::enableEventEmitterRetentionDuringGesturesOnAndroid
 
 bool ReactNativeFeatureFlags::enableFabricLogs() {
   return getAccessor().enableFabricLogs();
+}
+
+bool ReactNativeFeatureFlags::enableFabricRenderer() {
+  return getAccessor().enableFabricRenderer();
 }
 
 bool ReactNativeFeatureFlags::enableFabricRendererExclusively() {
@@ -223,6 +231,10 @@ bool ReactNativeFeatureFlags::useStateAlignmentMechanism() {
 
 bool ReactNativeFeatureFlags::useTurboModuleInterop() {
   return getAccessor().useTurboModuleInterop();
+}
+
+bool ReactNativeFeatureFlags::useTurboModules() {
+  return getAccessor().useTurboModules();
 }
 
 void ReactNativeFeatureFlags::override(

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3273d68bcf8118b939e11dde654c3e34>>
+ * @generated SignedSource<<5f2c9b500fc26e68d56efae08b15575f>>
  */
 
 /**
@@ -40,11 +40,13 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableAndroidLineHeightCentering();
   bool enableAndroidMixBlendModeProp();
   bool enableBackgroundStyleApplicator();
+  bool enableBridgelessArchitecture();
   bool enableCleanTextInputYogaNode();
   bool enableDeletionOfUnmountedViews();
   bool enableEagerRootViewAttachment();
   bool enableEventEmitterRetentionDuringGesturesOnAndroid();
   bool enableFabricLogs();
+  bool enableFabricRenderer();
   bool enableFabricRendererExclusively();
   bool enableGranularShadowTreeStateReconciliation();
   bool enableIOSViewClipToPaddingBox();
@@ -82,6 +84,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool useRuntimeShadowNodeReferenceUpdateOnLayout();
   bool useStateAlignmentMechanism();
   bool useTurboModuleInterop();
+  bool useTurboModules();
 
   void override(std::unique_ptr<ReactNativeFeatureFlagsProvider> provider);
 
@@ -92,7 +95,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 51> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 54> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> allowRecursiveCommitsWithSynchronousMountOnAndroid_;
@@ -103,11 +106,13 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableAndroidLineHeightCentering_;
   std::atomic<std::optional<bool>> enableAndroidMixBlendModeProp_;
   std::atomic<std::optional<bool>> enableBackgroundStyleApplicator_;
+  std::atomic<std::optional<bool>> enableBridgelessArchitecture_;
   std::atomic<std::optional<bool>> enableCleanTextInputYogaNode_;
   std::atomic<std::optional<bool>> enableDeletionOfUnmountedViews_;
   std::atomic<std::optional<bool>> enableEagerRootViewAttachment_;
   std::atomic<std::optional<bool>> enableEventEmitterRetentionDuringGesturesOnAndroid_;
   std::atomic<std::optional<bool>> enableFabricLogs_;
+  std::atomic<std::optional<bool>> enableFabricRenderer_;
   std::atomic<std::optional<bool>> enableFabricRendererExclusively_;
   std::atomic<std::optional<bool>> enableGranularShadowTreeStateReconciliation_;
   std::atomic<std::optional<bool>> enableIOSViewClipToPaddingBox_;
@@ -145,6 +150,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> useRuntimeShadowNodeReferenceUpdateOnLayout_;
   std::atomic<std::optional<bool>> useStateAlignmentMechanism_;
   std::atomic<std::optional<bool>> useTurboModuleInterop_;
+  std::atomic<std::optional<bool>> useTurboModules_;
 };
 
 } // namespace facebook::react

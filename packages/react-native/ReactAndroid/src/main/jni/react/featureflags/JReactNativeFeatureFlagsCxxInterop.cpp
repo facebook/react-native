@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<43b92dd984e985e09e3efad9c8fedf44>>
+ * @generated SignedSource<<383e9749c506bc2326455ef907e06a4c>>
  */
 
 /**
@@ -93,6 +93,12 @@ class ReactNativeFeatureFlagsProviderHolder
     return method(javaProvider_);
   }
 
+  bool enableBridgelessArchitecture() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableBridgelessArchitecture");
+    return method(javaProvider_);
+  }
+
   bool enableCleanTextInputYogaNode() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableCleanTextInputYogaNode");
@@ -120,6 +126,12 @@ class ReactNativeFeatureFlagsProviderHolder
   bool enableFabricLogs() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableFabricLogs");
+    return method(javaProvider_);
+  }
+
+  bool enableFabricRenderer() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableFabricRenderer");
     return method(javaProvider_);
   }
 
@@ -345,6 +357,12 @@ class ReactNativeFeatureFlagsProviderHolder
     return method(javaProvider_);
   }
 
+  bool useTurboModules() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useTurboModules");
+    return method(javaProvider_);
+  }
+
  private:
   jni::global_ref<jobject> javaProvider_;
 };
@@ -394,6 +412,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableBackgroundStyleApplicator(
   return ReactNativeFeatureFlags::enableBackgroundStyleApplicator();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::enableBridgelessArchitecture(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableBridgelessArchitecture();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::enableCleanTextInputYogaNode(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableCleanTextInputYogaNode();
@@ -417,6 +440,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableEventEmitterRetentionDuringGestur
 bool JReactNativeFeatureFlagsCxxInterop::enableFabricLogs(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableFabricLogs();
+}
+
+bool JReactNativeFeatureFlagsCxxInterop::enableFabricRenderer(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableFabricRenderer();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::enableFabricRendererExclusively(
@@ -604,6 +632,11 @@ bool JReactNativeFeatureFlagsCxxInterop::useTurboModuleInterop(
   return ReactNativeFeatureFlags::useTurboModuleInterop();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::useTurboModules(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::useTurboModules();
+}
+
 void JReactNativeFeatureFlagsCxxInterop::override(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/,
     jni::alias_ref<jobject> provider) {
@@ -649,6 +682,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
         "enableBackgroundStyleApplicator",
         JReactNativeFeatureFlagsCxxInterop::enableBackgroundStyleApplicator),
       makeNativeMethod(
+        "enableBridgelessArchitecture",
+        JReactNativeFeatureFlagsCxxInterop::enableBridgelessArchitecture),
+      makeNativeMethod(
         "enableCleanTextInputYogaNode",
         JReactNativeFeatureFlagsCxxInterop::enableCleanTextInputYogaNode),
       makeNativeMethod(
@@ -663,6 +699,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableFabricLogs",
         JReactNativeFeatureFlagsCxxInterop::enableFabricLogs),
+      makeNativeMethod(
+        "enableFabricRenderer",
+        JReactNativeFeatureFlagsCxxInterop::enableFabricRenderer),
       makeNativeMethod(
         "enableFabricRendererExclusively",
         JReactNativeFeatureFlagsCxxInterop::enableFabricRendererExclusively),
@@ -774,6 +813,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "useTurboModuleInterop",
         JReactNativeFeatureFlagsCxxInterop::useTurboModuleInterop),
+      makeNativeMethod(
+        "useTurboModules",
+        JReactNativeFeatureFlagsCxxInterop::useTurboModules),
   });
 }
 

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<596ec10892f79595c352d27574a0c5a3>>
+ * @generated SignedSource<<94afee988401ba2af586ec8fe310cb8b>>
  */
 
 /**
@@ -53,6 +53,8 @@ class NativeReactNativeFeatureFlags
 
   bool enableBackgroundStyleApplicator(jsi::Runtime& runtime);
 
+  bool enableBridgelessArchitecture(jsi::Runtime& runtime);
+
   bool enableCleanTextInputYogaNode(jsi::Runtime& runtime);
 
   bool enableDeletionOfUnmountedViews(jsi::Runtime& runtime);
@@ -62,6 +64,8 @@ class NativeReactNativeFeatureFlags
   bool enableEventEmitterRetentionDuringGesturesOnAndroid(jsi::Runtime& runtime);
 
   bool enableFabricLogs(jsi::Runtime& runtime);
+
+  bool enableFabricRenderer(jsi::Runtime& runtime);
 
   bool enableFabricRendererExclusively(jsi::Runtime& runtime);
 
@@ -136,6 +140,8 @@ class NativeReactNativeFeatureFlags
   bool useStateAlignmentMechanism(jsi::Runtime& runtime);
 
   bool useTurboModuleInterop(jsi::Runtime& runtime);
+
+  bool useTurboModules(jsi::Runtime& runtime);
 };
 
 } // namespace facebook::react

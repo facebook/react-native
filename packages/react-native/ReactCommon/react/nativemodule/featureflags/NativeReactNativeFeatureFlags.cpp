@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b166070ae3a427dd654ebc16e77fb8e3>>
+ * @generated SignedSource<<2b484558d552981e4ec0644d75849dde>>
  */
 
 /**
@@ -82,6 +82,11 @@ bool NativeReactNativeFeatureFlags::enableBackgroundStyleApplicator(
   return ReactNativeFeatureFlags::enableBackgroundStyleApplicator();
 }
 
+bool NativeReactNativeFeatureFlags::enableBridgelessArchitecture(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableBridgelessArchitecture();
+}
+
 bool NativeReactNativeFeatureFlags::enableCleanTextInputYogaNode(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableCleanTextInputYogaNode();
@@ -105,6 +110,11 @@ bool NativeReactNativeFeatureFlags::enableEventEmitterRetentionDuringGesturesOnA
 bool NativeReactNativeFeatureFlags::enableFabricLogs(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableFabricLogs();
+}
+
+bool NativeReactNativeFeatureFlags::enableFabricRenderer(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableFabricRenderer();
 }
 
 bool NativeReactNativeFeatureFlags::enableFabricRendererExclusively(
@@ -290,6 +300,11 @@ bool NativeReactNativeFeatureFlags::useStateAlignmentMechanism(
 bool NativeReactNativeFeatureFlags::useTurboModuleInterop(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::useTurboModuleInterop();
+}
+
+bool NativeReactNativeFeatureFlags::useTurboModules(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::useTurboModules();
 }
 
 } // namespace facebook::react
