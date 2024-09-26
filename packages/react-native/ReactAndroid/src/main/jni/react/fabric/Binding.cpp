@@ -109,11 +109,13 @@ void Binding::reportMount(SurfaceId surfaceId) {
     // incorrectly. This is due to the push model used on Android and can be
     // removed when we migrate to a pull model.
     std::shared_lock lock(surfaceHandlerRegistryMutex_);
-
     auto iterator = surfaceHandlerRegistry_.find(surfaceId);
     if (iterator != surfaceHandlerRegistry_.end()) {
       auto& surfaceHandler = iterator->second;
       surfaceHandler.getMountingCoordinator()->didPerformAsyncTransactions();
+    } else {
+      LOG(ERROR) << "Binding::reportMount: Surface with id " << surfaceId
+                 << " is not found";
     }
   }
 
