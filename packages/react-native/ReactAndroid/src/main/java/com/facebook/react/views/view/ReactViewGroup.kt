@@ -127,16 +127,9 @@ public open class ReactViewGroup(context: Context) :
   private var childrenLayoutChangeListener: ChildrenLayoutChangeListener? = null
   private var onInterceptTouchEventListener: OnInterceptTouchEventListener? = null
   private var needsOffscreenAlphaCompositing = false
+  private var _drawingOrderHelper: ViewGroupDrawingOrderHelper? = null
   private var backfaceOpacity = 1f
   private var backfaceVisibility: String? = "visible"
-  private var _drawingOrderHelper: ViewGroupDrawingOrderHelper? = null
-  private val drawingOrderHelper: ViewGroupDrawingOrderHelper
-    get() =
-        _drawingOrderHelper ?: ViewGroupDrawingOrderHelper(this).also { _drawingOrderHelper = it }
-
-  init {
-    initView()
-  }
 
   /**
    * Set all default values here as opposed to in the constructor or field defaults. It is important
@@ -165,7 +158,9 @@ public open class ReactViewGroup(context: Context) :
     val children = allChildren
     val listener = childrenLayoutChangeListener
     if (children != null && listener != null) {
-      children.forEach { child -> child?.removeOnLayoutChangeListener(listener) }
+      for (i in 0 until allChildrenCount) {
+        children[i]?.removeOnLayoutChangeListener(listener)
+      }
     }
 
     // Set default field values
@@ -178,6 +173,16 @@ public open class ReactViewGroup(context: Context) :
     // Reset background, borders
     updateBackgroundDrawable(null)
     resetPointerEvents()
+  }
+
+  private val drawingOrderHelper: ViewGroupDrawingOrderHelper
+    get() {
+      return _drawingOrderHelper
+          ?: ViewGroupDrawingOrderHelper(this).also { _drawingOrderHelper = it }
+    }
+
+  init {
+    initView()
   }
 
   override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -330,7 +335,9 @@ public open class ReactViewGroup(context: Context) :
       val clippingRect = checkNotNull(_clippingRect)
       val children = checkNotNull(allChildren)
       val listener = checkNotNull(childrenLayoutChangeListener)
-      children.forEach { child -> child?.removeOnLayoutChangeListener(listener) }
+      for (i in 0 until allChildrenCount) {
+        children[i]?.removeOnLayoutChangeListener(listener)
+      }
       getDrawingRect(clippingRect)
       updateClippingToRect(clippingRect)
       allChildren = null
@@ -628,7 +635,9 @@ public open class ReactViewGroup(context: Context) :
   internal open fun removeAllViewsWithSubviewClippingEnabled(): Unit {
     Assertions.assertCondition(_removeClippedSubviews)
     val children = checkNotNull(allChildren)
-    children.forEach { child -> child?.removeOnLayoutChangeListener(childrenLayoutChangeListener) }
+    for (i in 0 until allChildrenCount) {
+      children[i]?.removeOnLayoutChangeListener(childrenLayoutChangeListener)
+    }
     removeAllViewsInLayout()
     allChildrenCount = 0
   }
@@ -705,22 +714,23 @@ public open class ReactViewGroup(context: Context) :
   protected open fun getBackgroundColor(): Int =
       BackgroundStyleApplicator.getBackgroundColor(this) ?: DEFAULT_BACKGROUND_COLOR
 
-  override var overflow: String?
-    get() =
-        when (_overflow) {
-          Overflow.HIDDEN -> "hidden"
-          Overflow.SCROLL -> "scroll"
-          Overflow.VISIBLE -> "visible"
+  // TODO: convert to val
+  public open fun setOverflow(overflow: String?): Unit {
+    _overflow =
+        if (overflow == null) {
+          Overflow.VISIBLE
+        } else {
+          Overflow.fromString(overflow) ?: Overflow.VISIBLE
         }
-    set(value) {
-      _overflow =
-          if (value == null) {
-            Overflow.VISIBLE
-          } else {
-            Overflow.fromString(value) ?: Overflow.VISIBLE
-          }
-      invalidate()
-    }
+    invalidate()
+  }
+
+  override fun getOverflow(): String? =
+      when (_overflow) {
+        Overflow.HIDDEN -> "hidden"
+        Overflow.SCROLL -> "scroll"
+        Overflow.VISIBLE -> "visible"
+      }
 
   override fun setOverflowInset(left: Int, top: Int, right: Int, bottom: Int) {
     if (needsIsolatedLayer() &&
@@ -758,8 +768,8 @@ public open class ReactViewGroup(context: Context) :
       canvas.saveLayer(
           overflowInset.left.toFloat(),
           overflowInset.top.toFloat(),
-          (width - overflowInset.right).toFloat(),
-          (height - overflowInset.bottom).toFloat(),
+          (width + -overflowInset.right).toFloat(),
+          (height + -overflowInset.bottom).toFloat(),
           null)
       super.draw(canvas)
       canvas.restore()
@@ -790,8 +800,8 @@ public open class ReactViewGroup(context: Context) :
         canvas.saveLayer(
             overflowInset.left.toFloat(),
             overflowInset.top.toFloat(),
-            (width - overflowInset.right).toFloat(),
-            (height - overflowInset.bottom).toFloat(),
+            (width + -overflowInset.right).toFloat(),
+            (height + -overflowInset.bottom).toFloat(),
             p)
       }
     }
