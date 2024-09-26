@@ -21,6 +21,7 @@ import RNTesterList from './RNTesterList';
 export const Screens = {
   COMPONENTS: 'components',
   APIS: 'apis',
+  PLAYGROUNDS: 'playgrounds',
 };
 
 export const initialNavigationState: RNTesterNavigationState = {
