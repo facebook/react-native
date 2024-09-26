@@ -192,6 +192,7 @@ public class com/facebook/react/ReactFragment : androidx/fragment/app/Fragment, 
 	public fun checkPermission (Ljava/lang/String;II)I
 	public fun checkSelfPermission (Ljava/lang/String;)I
 	protected fun getReactDelegate ()Lcom/facebook/react/ReactDelegate;
+	protected fun getReactHost ()Lcom/facebook/react/ReactHost;
 	protected fun getReactNativeHost ()Lcom/facebook/react/ReactNativeHost;
 	public fun onActivityResult (IILandroid/content/Intent;)V
 	public fun onBackPressed ()Z
