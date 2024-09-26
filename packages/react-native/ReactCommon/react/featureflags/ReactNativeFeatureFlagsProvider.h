@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<727c5ccb59b23aa6e14d58121e0007bd>>
+ * @generated SignedSource<<aaa516b2c719cb871f08c65bd7ce072f>>
  */
 
 /**
@@ -34,11 +34,13 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool enableAndroidLineHeightCentering() = 0;
   virtual bool enableAndroidMixBlendModeProp() = 0;
   virtual bool enableBackgroundStyleApplicator() = 0;
+  virtual bool enableBridgelessArchitecture() = 0;
   virtual bool enableCleanTextInputYogaNode() = 0;
   virtual bool enableDeletionOfUnmountedViews() = 0;
   virtual bool enableEagerRootViewAttachment() = 0;
   virtual bool enableEventEmitterRetentionDuringGesturesOnAndroid() = 0;
   virtual bool enableFabricLogs() = 0;
+  virtual bool enableFabricRenderer() = 0;
   virtual bool enableFabricRendererExclusively() = 0;
   virtual bool enableGranularShadowTreeStateReconciliation() = 0;
   virtual bool enableIOSViewClipToPaddingBox() = 0;
@@ -76,6 +78,7 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool useRuntimeShadowNodeReferenceUpdateOnLayout() = 0;
   virtual bool useStateAlignmentMechanism() = 0;
   virtual bool useTurboModuleInterop() = 0;
+  virtual bool useTurboModules() = 0;
 };
 
 } // namespace facebook::react

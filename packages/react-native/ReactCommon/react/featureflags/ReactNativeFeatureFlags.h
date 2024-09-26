@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2cde82b474ab94cd05bdf5e04e700c13>>
+ * @generated SignedSource<<ea2c2d19e83630b549e719057cd1982e>>
  */
 
 /**
@@ -83,6 +83,11 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableBackgroundStyleApplicator();
 
   /**
+   * Feature flag to enable the new bridgeless architecture. Note: Enabling this will force enable the following flags: `useTurboModules` & `enableFabricRenderer.
+   */
+  RN_EXPORT static bool enableBridgelessArchitecture();
+
+  /**
    * Clean yoga node when <TextInput /> does not change.
    */
   RN_EXPORT static bool enableCleanTextInputYogaNode();
@@ -106,6 +111,11 @@ class ReactNativeFeatureFlags {
    * This feature flag enables logs for Fabric.
    */
   RN_EXPORT static bool enableFabricLogs();
+
+  /**
+   * Enables the use of the Fabric renderer in the whole app.
+   */
+  RN_EXPORT static bool enableFabricRenderer();
 
   /**
    * When the app is completely migrated to Fabric, set this flag to true to disable parts of Paper infrastructure that are not needed anymore but consume memory and CPU. Specifically, UIViewOperationQueue and EventDispatcherImpl will no longer work as they will not subscribe to ReactChoreographer for updates.
@@ -291,6 +301,11 @@ class ReactNativeFeatureFlags {
    * In Bridgeless mode, should legacy NativeModules use the TurboModule system?
    */
   RN_EXPORT static bool useTurboModuleInterop();
+
+  /**
+   * When enabled, NativeModules will be executed by using the TurboModule system
+   */
+  RN_EXPORT static bool useTurboModules();
 
   /**
    * Overrides the feature flags with the ones provided by the given provider

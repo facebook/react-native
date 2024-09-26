@@ -13,7 +13,7 @@ import com.facebook.react.bridge.ModuleHolder;
 import com.facebook.react.bridge.ModuleSpec;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.config.ReactFeatureFlags;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.module.model.ReactModuleInfo;
 import com.facebook.react.module.model.ReactModuleInfoProvider;
 import com.facebook.react.uimanager.ViewManager;
@@ -73,7 +73,7 @@ public abstract class BaseReactPackage implements ReactPackage {
               // This Iterator is used to create the NativeModule registry. The NativeModule
               // registry must not have TurboModules. Therefore, if TurboModules are enabled, and
               // the current NativeModule is a TurboModule, we need to skip iterating over it.
-              if (ReactFeatureFlags.useTurboModules && reactModuleInfo.isTurboModule()) {
+              if (ReactNativeFeatureFlags.useTurboModules() && reactModuleInfo.isTurboModule()) {
                 continue;
               }
 

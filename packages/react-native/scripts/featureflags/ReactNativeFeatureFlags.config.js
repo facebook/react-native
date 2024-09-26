@@ -115,6 +115,14 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'experimentation',
       },
     },
+    enableBridgelessArchitecture: {
+      defaultValue: false,
+      metadata: {
+        description:
+          'Feature flag to enable the new bridgeless architecture. Note: Enabling this will force enable the following flags: `useTurboModules` & `enableFabricRenderer.',
+        purpose: 'release',
+      },
+    },
     enableCleanTextInputYogaNode: {
       defaultValue: false,
       metadata: {
@@ -155,6 +163,13 @@ const definitions: FeatureFlagDefinitions = {
       metadata: {
         description: 'This feature flag enables logs for Fabric.',
         purpose: 'operational',
+      },
+    },
+    enableFabricRenderer: {
+      defaultValue: false,
+      metadata: {
+        description: 'Enables the use of the Fabric renderer in the whole app.',
+        purpose: 'release',
       },
     },
     enableFabricRendererExclusively: {
@@ -476,6 +491,14 @@ const definitions: FeatureFlagDefinitions = {
         description:
           'In Bridgeless mode, should legacy NativeModules use the TurboModule system?',
         purpose: 'experimentation',
+      },
+    },
+    useTurboModules: {
+      defaultValue: false,
+      metadata: {
+        description:
+          'When enabled, NativeModules will be executed by using the TurboModule system',
+        purpose: 'release',
       },
     },
   },

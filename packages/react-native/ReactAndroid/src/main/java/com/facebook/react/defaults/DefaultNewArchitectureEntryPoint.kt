@@ -10,7 +10,6 @@
 package com.facebook.react.defaults
 
 import com.facebook.react.common.annotations.VisibleForTesting
-import com.facebook.react.config.ReactFeatureFlags
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlagsDefaults
 
@@ -39,18 +38,20 @@ public object DefaultNewArchitectureEntryPoint {
     if (!isValid) {
       error(errorMessage)
     }
-    ReactFeatureFlags.useTurboModules = turboModulesEnabled
-    ReactFeatureFlags.enableFabricRenderer = fabricEnabled
 
     if (bridgelessEnabled) {
       ReactNativeFeatureFlags.override(
           object : ReactNativeNewArchitectureFeatureFlagsDefaults() {
             override fun useFabricInterop(): Boolean = fabricEnabled
 
+            override fun enableFabricRenderer(): Boolean = fabricEnabled
+
             // We turn this feature flag to true for OSS to fix #44610 and #45126 and other
             // similar bugs related to pressable.
             override fun enableEventEmitterRetentionDuringGesturesOnAndroid(): Boolean =
                 fabricEnabled
+
+            override fun useTurboModules(): Boolean = turboModulesEnabled
           })
     }
 

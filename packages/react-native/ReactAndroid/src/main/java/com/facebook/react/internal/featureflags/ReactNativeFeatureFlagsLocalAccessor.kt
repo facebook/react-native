@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e1a44f8e54709e70934f1d418d4ed80f>>
+ * @generated SignedSource<<5e4e474b62996caec15bbf8af9622a0a>>
  */
 
 /**
@@ -33,11 +33,13 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var enableAndroidLineHeightCenteringCache: Boolean? = null
   private var enableAndroidMixBlendModePropCache: Boolean? = null
   private var enableBackgroundStyleApplicatorCache: Boolean? = null
+  private var enableBridgelessArchitectureCache: Boolean? = null
   private var enableCleanTextInputYogaNodeCache: Boolean? = null
   private var enableDeletionOfUnmountedViewsCache: Boolean? = null
   private var enableEagerRootViewAttachmentCache: Boolean? = null
   private var enableEventEmitterRetentionDuringGesturesOnAndroidCache: Boolean? = null
   private var enableFabricLogsCache: Boolean? = null
+  private var enableFabricRendererCache: Boolean? = null
   private var enableFabricRendererExclusivelyCache: Boolean? = null
   private var enableGranularShadowTreeStateReconciliationCache: Boolean? = null
   private var enableIOSViewClipToPaddingBoxCache: Boolean? = null
@@ -75,6 +77,7 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var useRuntimeShadowNodeReferenceUpdateOnLayoutCache: Boolean? = null
   private var useStateAlignmentMechanismCache: Boolean? = null
   private var useTurboModuleInteropCache: Boolean? = null
+  private var useTurboModulesCache: Boolean? = null
 
   override fun commonTestFlag(): Boolean {
     var cached = commonTestFlagCache
@@ -166,6 +169,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
     return cached
   }
 
+  override fun enableBridgelessArchitecture(): Boolean {
+    var cached = enableBridgelessArchitectureCache
+    if (cached == null) {
+      cached = currentProvider.enableBridgelessArchitecture()
+      accessedFeatureFlags.add("enableBridgelessArchitecture")
+      enableBridgelessArchitectureCache = cached
+    }
+    return cached
+  }
+
   override fun enableCleanTextInputYogaNode(): Boolean {
     var cached = enableCleanTextInputYogaNodeCache
     if (cached == null) {
@@ -212,6 +225,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.enableFabricLogs()
       accessedFeatureFlags.add("enableFabricLogs")
       enableFabricLogsCache = cached
+    }
+    return cached
+  }
+
+  override fun enableFabricRenderer(): Boolean {
+    var cached = enableFabricRendererCache
+    if (cached == null) {
+      cached = currentProvider.enableFabricRenderer()
+      accessedFeatureFlags.add("enableFabricRenderer")
+      enableFabricRendererCache = cached
     }
     return cached
   }
@@ -582,6 +605,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.useTurboModuleInterop()
       accessedFeatureFlags.add("useTurboModuleInterop")
       useTurboModuleInteropCache = cached
+    }
+    return cached
+  }
+
+  override fun useTurboModules(): Boolean {
+    var cached = useTurboModulesCache
+    if (cached == null) {
+      cached = currentProvider.useTurboModules()
+      accessedFeatureFlags.add("useTurboModules")
+      useTurboModulesCache = cached
     }
     return cached
   }
