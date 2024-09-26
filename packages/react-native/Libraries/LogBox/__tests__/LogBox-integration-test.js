@@ -11,39 +11,24 @@
 import {
   DoesNotUseKey,
   FragmentWithProp,
+  ManualConsoleError,
+  ManualConsoleErrorWithStack,
 } from './__fixtures__/ReactWarningFixtures';
 import * as React from 'react';
 
 const LogBoxData = require('../Data/LogBoxData');
 const TestRenderer = require('react-test-renderer');
 
+const ExceptionsManager = require('../../Core/ExceptionsManager.js');
+
 const installLogBox = () => {
   const LogBox = require('../LogBox').default;
-
   LogBox.install();
 };
 
 const uninstallLogBox = () => {
   const LogBox = require('../LogBox').default;
   LogBox.uninstall();
-};
-
-const BEFORE_SLASH_RE = /(?:\/[a-zA-Z]+\/)(.+?)(?:\/.+)\//;
-
-const cleanPath = message => {
-  return message.replace(BEFORE_SLASH_RE, '/path/to/');
-};
-
-const cleanLog = logs => {
-  return logs.map(log => {
-    return {
-      ...log,
-      componentStack: log.componentStack.map(stack => ({
-        ...stack,
-        fileName: cleanPath(stack.fileName),
-      })),
-    };
-  });
 };
 
 // TODO: we can remove all the symetric matchers once OSS lands component stack frames.
@@ -60,6 +45,10 @@ describe('LogBox', () => {
 
     mockError.mockClear();
     mockWarn.mockClear();
+    // Reset ExceptionManager patching.
+    if (console._errorOriginal) {
+      console._errorOriginal = null;
+    }
     (console: any).error = mockError;
     (console: any).warn = mockWarn;
   });
@@ -91,7 +80,7 @@ describe('LogBox', () => {
     expect(output).toBeDefined();
     expect(mockWarn).not.toBeCalled();
     expect(console.error).toBeCalledTimes(1);
-    expect(console.error.mock.calls[0].map(cleanPath)).toEqual([
+    expect(console.error.mock.calls[0]).toEqual([
       'Each child in a list should have a unique "key" prop.%s%s See https://react.dev/link/warning-keys for more information.%s',
       '\n\nCheck the render method of `DoesNotUseKey`.',
       '',
@@ -145,7 +134,7 @@ describe('LogBox', () => {
     expect(output).toBeDefined();
     expect(mockWarn).not.toBeCalled();
     expect(console.error).toBeCalledTimes(1);
-    expect(console.error.mock.calls[0].map(cleanPath)).toEqual([
+    expect(console.error.mock.calls[0]).toEqual([
       'Invalid prop `%s` supplied to `React.Fragment`. React.Fragment can only have `key` and `children` props.%s',
       'invalid',
       expect.stringMatching('at FragmentWithProp'),
@@ -167,6 +156,101 @@ describe('LogBox', () => {
     expect(mockError.mock.calls[0]).toEqual([
       expect.stringMatching(
         'Warning: Invalid prop `invalid` supplied to `React.Fragment`. React.Fragment can only have `key` and `children` props.\n    at FragmentWithProp',
+      ),
+    ]);
+  });
+
+  it('handles a manual console.error without a component stack in LogBox', () => {
+    const LogBox = require('../LogBox').default;
+    const spy = jest.spyOn(LogBox, 'addException');
+    installLogBox();
+
+    // console.error handling depends on installing the ExceptionsManager error reporter.
+    ExceptionsManager.installConsoleErrorReporter();
+
+    // Spy console.error after LogBox is installed
+    // so we can assert on what React logs.
+    jest.spyOn(console, 'error');
+
+    let output;
+    TestRenderer.act(() => {
+      output = TestRenderer.create(<ManualConsoleError />);
+    });
+
+    // Manual console errors should show a collapsed error dialog.
+    // When there is no component stack, we expect these errors to:
+    //   - Go to the LogBox patch and fall through to console.error.
+    //   - Get picked up by the ExceptionsManager console.error override.
+    //   - Get passed back to LogBox via addException (non-fatal).
+    expect(output).toBeDefined();
+    expect(mockWarn).not.toBeCalled();
+    expect(spy).toBeCalledTimes(1);
+    expect(console.error).toBeCalledTimes(1);
+    expect(console.error.mock.calls[0]).toEqual(['Manual console error']);
+    expect(spy).toHaveBeenCalledWith({
+      id: 1,
+      isComponentError: false,
+      isFatal: false,
+      name: 'console.error',
+      originalMessage: 'Manual console error',
+      message: 'console.error: Manual console error',
+      extraData: expect.anything(),
+      componentStack: null,
+      stack: expect.anything(),
+    });
+
+    // No Warning: prefix is added due since this is falling through.
+    expect(mockError.mock.calls[0]).toEqual(['Manual console error']);
+  });
+
+  it('handles a manual console.error with a component stack in LogBox', () => {
+    const spy = jest.spyOn(LogBoxData, 'addLog');
+    installLogBox();
+
+    // console.error handling depends on installing the ExceptionsManager error reporter.
+    ExceptionsManager.installConsoleErrorReporter();
+
+    // Spy console.error after LogBox is installed
+    // so we can assert on what React logs.
+    jest.spyOn(console, 'error');
+
+    let output;
+    TestRenderer.act(() => {
+      output = TestRenderer.create(<ManualConsoleErrorWithStack />);
+    });
+
+    // Manual console errors should show a collapsed error dialog.
+    // When there is a component stack, we expect these errors to:
+    //   - Go to the LogBox patch and be detected as a React error.
+    //   - Check the warning filter to see if there is a fiter setting.
+    //   - Call console.error with the parsed error.
+    //   - Get picked up by ExceptionsManager console.error override.
+    //   - Log to console.error.
+    expect(output).toBeDefined();
+    expect(mockWarn).not.toBeCalled();
+    expect(console.error).toBeCalledTimes(1);
+    expect(spy).toBeCalledTimes(1);
+    expect(console.error.mock.calls[0]).toEqual([
+      expect.stringContaining(
+        'Manual console error\n    at ManualConsoleErrorWithStack',
+      ),
+    ]);
+    expect(spy).toHaveBeenCalledWith({
+      level: 'warn',
+      category: expect.stringContaining('Warning: Manual console error'),
+      componentStack: expect.anything(),
+      componentStackType: 'stack',
+      message: {
+        content: 'Warning: Manual console error',
+        substitutions: [],
+      },
+    });
+
+    // The Warning: prefix is added due to a hack in LogBox to prevent double logging.
+    // We also interpolate the string before passing to the underlying console method.
+    expect(mockError.mock.calls[0]).toEqual([
+      expect.stringMatching(
+        'Warning: Manual console error\n    at ManualConsoleErrorWithStack',
       ),
     ]);
   });
