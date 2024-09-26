@@ -89,7 +89,7 @@ using namespace facebook::react;
   }
 
   if (needsUpdateTitle) {
-    [self _updateTitle];
+    [self _updateTitle:newConcreteProps.title titleColor:newConcreteProps.titleColor];
   }
 
   [super updateProps:props oldProps:oldProps];
@@ -102,22 +102,20 @@ using namespace facebook::react;
   static_cast<const PullToRefreshViewEventEmitter &>(*_eventEmitter).onRefresh({});
 }
 
-- (void)_updateTitle
+- (void)_updateTitle:(const std::string &)title titleColor:(const SharedColor &)titleColor
 {
-  const auto &concreteProps = static_cast<const PullToRefreshViewProps &>(*_props);
-
-  if (concreteProps.title.empty()) {
+  if (title.empty()) {
     _refreshControl.attributedTitle = nil;
     return;
   }
 
   NSMutableDictionary *attributes = [NSMutableDictionary dictionary];
-  if (concreteProps.titleColor) {
-    attributes[NSForegroundColorAttributeName] = RCTUIColorFromSharedColor(concreteProps.titleColor);
+  if (titleColor) {
+    attributes[NSForegroundColorAttributeName] = RCTUIColorFromSharedColor(titleColor);
   }
 
   _refreshControl.attributedTitle =
-      [[NSAttributedString alloc] initWithString:RCTNSStringFromString(concreteProps.title) attributes:attributes];
+    [[NSAttributedString alloc] initWithString:RCTNSStringFromString(title) attributes:attributes];
 }
 
 #pragma mark - Attaching & Detaching
