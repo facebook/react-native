@@ -16,6 +16,7 @@ inputs:
   flavor:
     required: true
     description: Whether we are building for Debug or Release
+    default: Release
   working-directory:
     required: false
     default: "."
@@ -68,7 +69,7 @@ runs:
         xcrun simctl launch $UDID ${{ inputs.app-id }}
 
         echo "Running tests with Maestro"
-        export MAESTRO_DRIVER_STARTUP_TIMEOUT=1800000 # 25 min. CI is extremely slow
+        export MAESTRO_DRIVER_STARTUP_TIMEOUT=1800000 # 30 min. CI is extremely slow
 
         # Add retries for flakyness
         MAX_ATTEMPTS=5

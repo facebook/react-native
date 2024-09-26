@@ -20,6 +20,7 @@ inputs:
   flavor:
     required: true
     description: the flavor we want to run - either debug or release
+    default: release
   working-directory:
     required: false
     default: "."

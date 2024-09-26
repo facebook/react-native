@@ -30,7 +30,7 @@ if (args.length !== 5) {
 const APP_PATH = args[0];
 const APP_ID = args[1];
 const MAESTRO_FLOW = args[2];
-const isDebug = args[3] === 'debug';
+const IS_DEBUG = args[3] === 'debug';
 const WORKING_DIRECTORY = args[4];
 
 async function main() {
@@ -39,7 +39,7 @@ async function main() {
   console.info(`APP_PATH: ${APP_PATH}`);
   console.info(`APP_ID: ${APP_ID}`);
   console.info(`MAESTRO_FLOW: ${MAESTRO_FLOW}`);
-  console.info(`isDebug: ${isDebug}`);
+  console.info(`IS_DEBUG: ${IS_DEBUG}`);
   console.info(`WORKING_DIRECTORY: ${WORKING_DIRECTORY}`);
   console.info('==============================\n');
 
@@ -47,7 +47,7 @@ async function main() {
   childProcess.execSync(`adb install ${APP_PATH}`, {stdio: 'ignore'});
 
   let metroProcess = null;
-  if (isDebug) {
+  if (IS_DEBUG) {
     console.info('Start Metro');
     childProcess.execSync(`cd ${WORKING_DIRECTORY}`, {stdio: 'ignore'});
     metroProcess = childProcess.spawn('yarn', ['start', '&'], {
@@ -85,7 +85,7 @@ async function main() {
     console.info('Stop recording');
     childProcess.execSync('adb pull /sdcard/screen.mp4', {stdio: 'ignore'});
 
-    if (isDebug && metroProcess != null) {
+    if (IS_DEBUG && metroProcess != null) {
       const pid = metroProcess.pid;
       console.info(`Kill Metro. PID: ${pid}`);
       process.kill(-pid);
