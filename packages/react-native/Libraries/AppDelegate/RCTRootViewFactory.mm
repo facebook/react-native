@@ -55,6 +55,24 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
 
 - (instancetype)initWithBundleURL:(NSURL *)bundleURL
                    newArchEnabled:(BOOL)newArchEnabled
+{
+  return [self initWithBundleURL:bundleURL
+                  newArchEnabled:newArchEnabled
+              turboModuleEnabled:newArchEnabled
+               bridgelessEnabled:newArchEnabled];
+}
+
+- (instancetype)initWithBundleURLBlock:(RCTBundleURLBlock)bundleURLBlock
+                        newArchEnabled:(BOOL)newArchEnabled
+{
+  return [self initWithBundleURLBlock:bundleURLBlock
+                        newArchEnabled:newArchEnabled
+                    turboModuleEnabled:newArchEnabled
+                     bridgelessEnabled:newArchEnabled];
+}
+
+- (instancetype)initWithBundleURL:(NSURL *)bundleURL
+                   newArchEnabled:(BOOL)newArchEnabled
                turboModuleEnabled:(BOOL)turboModuleEnabled
                 bridgelessEnabled:(BOOL)bridgelessEnabled
 {
