@@ -4742,6 +4742,7 @@ public final class com/facebook/react/uimanager/ReactInvalidPropertyException : 
 
 public abstract interface class com/facebook/react/uimanager/ReactOverflowView {
 	public abstract fun getOverflow ()Ljava/lang/String;
+	public abstract fun setOverflow (Ljava/lang/String;)V
 }
 
 public abstract interface class com/facebook/react/uimanager/ReactOverflowViewWithInset : com/facebook/react/uimanager/ReactOverflowView {
