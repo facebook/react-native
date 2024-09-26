@@ -17,214 +17,101 @@ PerformanceEntryReporter::getInstance() {
   return instance;
 }
 
-PerformanceEntryReporter::PerformanceEntryReporter() {
-  // For mark entry types we also want to keep the lookup by name, to make
-  // sure that marks can be referenced by measures
-  getBuffer(PerformanceEntryType::MARK).hasNameLookup = true;
-}
-
-void PerformanceEntryReporter::setReportingCallback(
-    std::function<void()> callback) {
-  callback_ = std::move(callback);
-}
+PerformanceEntryReporter::PerformanceEntryReporter()
+    : observerRegistry_(std::make_unique<PerformanceObserverRegistry>()) {}
 
 DOMHighResTimeStamp PerformanceEntryReporter::getCurrentTimeStamp() const {
   return timeStampProvider_ != nullptr ? timeStampProvider_()
                                        : JSExecutor::performanceNow();
 }
 
-void PerformanceEntryReporter::startReporting(PerformanceEntryType entryType) {
-  auto& buffer = getBuffer(entryType);
-  buffer.isReporting = true;
-  buffer.durationThreshold = DEFAULT_DURATION_THRESHOLD;
-}
-
-void PerformanceEntryReporter::setAlwaysLogged(
-    PerformanceEntryType entryType,
-    bool isAlwaysLogged) {
-  auto& buffer = getBuffer(entryType);
-  buffer.isAlwaysLogged = isAlwaysLogged;
-}
-
-void PerformanceEntryReporter::setDurationThreshold(
-    PerformanceEntryType entryType,
-    DOMHighResTimeStamp durationThreshold) {
-  getBuffer(entryType).durationThreshold = durationThreshold;
-}
-
-void PerformanceEntryReporter::stopReporting(PerformanceEntryType entryType) {
-  getBuffer(entryType).isReporting = false;
-}
-
-void PerformanceEntryReporter::stopReporting() {
-  for (auto& buffer : buffers_) {
-    buffer.isReporting = false;
-  }
-}
-
-PerformanceEntryReporter::PopPendingEntriesResult
-PerformanceEntryReporter::popPendingEntries() {
-  std::lock_guard lock(entriesMutex_);
-  PopPendingEntriesResult res = {
-      .entries = std::vector<PerformanceEntry>(),
-      .droppedEntriesCount = droppedEntriesCount_};
-  for (auto& buffer : buffers_) {
-    buffer.entries.consume(res.entries);
-  }
-
-  // Sort by starting time (or ending time, if starting times are equal)
-  std::stable_sort(
-      res.entries.begin(),
-      res.entries.end(),
-      [](const PerformanceEntry& lhs, const PerformanceEntry& rhs) {
-        if (lhs.startTime != rhs.startTime) {
-          return lhs.startTime < rhs.startTime;
-        } else {
-          return lhs.duration < rhs.duration;
-        }
-      });
-
-  droppedEntriesCount_ = 0;
-  return res;
-}
-
-void PerformanceEntryReporter::logEntry(const PerformanceEntry& entry) {
-  if (entry.entryType == PerformanceEntryType::EVENT) {
-    eventCounts_[entry.name]++;
-  }
-
-  if (!isReporting(entry.entryType) && !isAlwaysLogged(entry.entryType)) {
-    return;
-  }
-
-  std::lock_guard lock(entriesMutex_);
-
-  auto& buffer = getBuffer(entry.entryType);
-
-  if (entry.duration < buffer.durationThreshold) {
-    // The entries duration is lower than the desired reporting threshold, skip
-    return;
-  }
-
-  if (buffer.hasNameLookup) {
-    // If we need to remove an entry because the buffer is null,
-    // we also need to remove it from the name lookup.
-    auto overwriteCandidate = buffer.entries.getNextOverwriteCandidate();
-    if (overwriteCandidate != nullptr) {
-      std::lock_guard lock2(nameLookupMutex_);
-      auto it = buffer.nameLookup.find(overwriteCandidate);
-      if (it != buffer.nameLookup.end() && *it == overwriteCandidate) {
-        buffer.nameLookup.erase(it);
-      }
-    }
-  }
-
-  auto pushResult = buffer.entries.add(std::move(entry));
-  if (pushResult ==
-      BoundedConsumableBuffer<PerformanceEntry>::PushStatus::DROP) {
-    // Start dropping entries once reached maximum buffer size.
-    // The number of dropped entries will be reported back to the corresponding
-    // PerformanceObserver callback.
-    droppedEntriesCount_ += 1;
-  }
-
-  if (buffer.hasNameLookup) {
-    std::lock_guard lock2(nameLookupMutex_);
-    auto currentEntry = &buffer.entries.back();
-    auto it = buffer.nameLookup.find(currentEntry);
-    if (it != buffer.nameLookup.end()) {
-      buffer.nameLookup.erase(it);
-    }
-    buffer.nameLookup.insert(currentEntry);
-  }
-
-  if (buffer.entries.getNumToConsume() == 1) {
-    // If the buffer was empty, it signals that JS side just has possibly
-    // consumed it and is ready to get more
-    scheduleFlushBuffer();
-  }
+uint32_t PerformanceEntryReporter::getDroppedEntriesCount(
+    PerformanceEntryType type) const noexcept {
+  return getBuffer(type).droppedEntriesCount;
 }
 
 void PerformanceEntryReporter::mark(
     const std::string& name,
     const std::optional<DOMHighResTimeStamp>& startTime) {
-  logEntry(PerformanceEntry{
+  const auto entry = PerformanceEntry{
       .name = name,
       .entryType = PerformanceEntryType::MARK,
-      .startTime = startTime ? *startTime : getCurrentTimeStamp()});
+      .startTime = startTime ? *startTime : getCurrentTimeStamp()};
+
+  {
+    std::lock_guard lock(buffersMutex_);
+    markBuffer_.add(entry);
+  }
+
+  observerRegistry_->queuePerformanceEntry(entry);
 }
 
 void PerformanceEntryReporter::clearEntries(
     std::optional<PerformanceEntryType> entryType,
-    std::string_view entryName) {
+    std::optional<std::string_view> entryName) {
+  std::lock_guard lock(buffersMutex_);
+
+  // Clear all entry types
   if (!entryType) {
-    // Clear all entry types
-    for (int i = 1; i < NUM_PERFORMANCE_ENTRY_TYPES; i++) {
-      clearEntries(static_cast<PerformanceEntryType>(i), entryName);
-    }
-  } else {
-    auto& buffer = getBuffer(*entryType);
-    if (!entryName.empty()) {
-      if (buffer.hasNameLookup) {
-        std::lock_guard lock2(nameLookupMutex_);
-        buffer.nameLookup.clear();
-      }
-
-      std::lock_guard lock(entriesMutex_);
-      buffer.entries.clear([entryName](const PerformanceEntry& entry) {
-        return entry.name == entryName;
-      });
-
-      if (buffer.hasNameLookup) {
-        std::lock_guard lock2(nameLookupMutex_);
-        // BoundedConsumableBuffer::clear() invalidates existing references; we
-        // need to rebuild the lookup table. If there are multiple entries with
-        // the same name, make sure the last one gets inserted.
-        for (int i = static_cast<int>(buffer.entries.size()) - 1; i >= 0; i--) {
-          const auto& entry = buffer.entries[i];
-          buffer.nameLookup.insert(&entry);
-        }
-      }
+    if (entryName.has_value()) {
+      markBuffer_.clear(*entryName);
+      measureBuffer_.clear(*entryName);
+      eventBuffer_.clear(*entryName);
+      longTaskBuffer_.clear(*entryName);
     } else {
-      {
-        std::lock_guard lock(entriesMutex_);
-        buffer.entries.clear();
-      }
-      {
-        std::lock_guard lock2(nameLookupMutex_);
-        buffer.nameLookup.clear();
-      }
+      markBuffer_.clear();
+      measureBuffer_.clear();
+      eventBuffer_.clear();
+      longTaskBuffer_.clear();
     }
+    return;
   }
-}
 
-void PerformanceEntryReporter::getEntries(
-    PerformanceEntryType entryType,
-    std::string_view entryName,
-    std::vector<PerformanceEntry>& res) const {
-  std::lock_guard lock(entriesMutex_);
-  const auto& entries = getBuffer(entryType).entries;
-  if (entryName.empty()) {
-    entries.getEntries(res);
+  auto& buffer = getBufferRef(*entryType);
+  if (entryName.has_value()) {
+    buffer.clear(*entryName);
   } else {
-    entries.getEntries(res, [entryName](const PerformanceEntry& entry) {
-      return entry.name == entryName;
-    });
+    buffer.clear();
   }
 }
 
-std::vector<PerformanceEntry> PerformanceEntryReporter::getEntries(
-    std::optional<PerformanceEntryType> entryType,
+std::vector<PerformanceEntry> PerformanceEntryReporter::getEntries() const {
+  std::vector<PerformanceEntry> res;
+  // Collect all entry types
+  for (int i = 1; i <= NUM_PERFORMANCE_ENTRY_TYPES; i++) {
+    getBuffer(static_cast<PerformanceEntryType>(i)).getEntries(res);
+  }
+  return res;
+}
+
+std::vector<PerformanceEntry> PerformanceEntryReporter::getEntriesByType(
+    PerformanceEntryType entryType) const {
+  std::vector<PerformanceEntry> res;
+  getEntriesByType(entryType, res);
+  return res;
+}
+
+void PerformanceEntryReporter::getEntriesByType(
+    PerformanceEntryType entryType,
+    std::vector<PerformanceEntry>& target) const {
+  getBuffer(entryType).getEntries(target);
+}
+
+std::vector<PerformanceEntry> PerformanceEntryReporter::getEntriesByName(
     std::string_view entryName) const {
   std::vector<PerformanceEntry> res;
-  if (!entryType) {
-    // Collect all entry types
-    for (int i = 1; i < NUM_PERFORMANCE_ENTRY_TYPES; i++) {
-      getEntries(static_cast<PerformanceEntryType>(i), entryName, res);
-    }
-  } else {
-    getEntries(*entryType, entryName, res);
+  // Collect all entry types
+  for (int i = 1; i <= NUM_PERFORMANCE_ENTRY_TYPES; i++) {
+    getBuffer(static_cast<PerformanceEntryType>(i)).getEntries(entryName, res);
   }
+  return res;
+}
+
+std::vector<PerformanceEntry> PerformanceEntryReporter::getEntriesByName(
+    std::string_view entryName,
+    PerformanceEntryType entryType) const {
+  std::vector<PerformanceEntry> res;
+  getBuffer(entryType).getEntries(entryName, res);
   return res;
 }
 
@@ -248,23 +135,26 @@ void PerformanceEntryReporter::measure(
   DOMHighResTimeStamp durationVal =
       duration ? *duration : endTimeVal - startTimeVal;
 
-  logEntry(
-      {.name = std::string(name),
-       .entryType = PerformanceEntryType::MEASURE,
-       .startTime = startTimeVal,
-       .duration = durationVal});
+  const auto entry = PerformanceEntry{
+      .name = std::string(name),
+      .entryType = PerformanceEntryType::MEASURE,
+      .startTime = startTimeVal,
+      .duration = durationVal};
+
+  {
+    std::lock_guard lock(buffersMutex_);
+    measureBuffer_.add(entry);
+  }
+
+  observerRegistry_->queuePerformanceEntry(entry);
 }
 
 DOMHighResTimeStamp PerformanceEntryReporter::getMarkTime(
     const std::string& markName) const {
-  PerformanceEntry mark{
-      .name = markName, .entryType = PerformanceEntryType::MARK};
+  std::lock_guard lock(buffersMutex_);
 
-  std::lock_guard lock(nameLookupMutex_);
-  const auto& marksBuffer = getBuffer(PerformanceEntryType::MARK);
-  auto it = marksBuffer.nameLookup.find(&mark);
-  if (it != marksBuffer.nameLookup.end()) {
-    return (*it)->startTime;
+  if (auto it = markBuffer_.find(markName); it) {
+    return it->startTime;
   } else {
     return 0.0;
   }
@@ -277,30 +167,47 @@ void PerformanceEntryReporter::logEventEntry(
     DOMHighResTimeStamp processingStart,
     DOMHighResTimeStamp processingEnd,
     uint32_t interactionId) {
-  logEntry(
-      {.name = std::move(name),
-       .entryType = PerformanceEntryType::EVENT,
-       .startTime = startTime,
-       .duration = duration,
-       .processingStart = processingStart,
-       .processingEnd = processingEnd,
-       .interactionId = interactionId});
+  eventCounts_[name]++;
+
+  const auto entry = PerformanceEntry{
+      .name = std::move(name),
+      .entryType = PerformanceEntryType::EVENT,
+      .startTime = startTime,
+      .duration = duration,
+      .processingStart = processingStart,
+      .processingEnd = processingEnd,
+      .interactionId = interactionId};
+
+  {
+    std::lock_guard lock(buffersMutex_);
+
+    if (entry.duration < eventBuffer_.durationThreshold) {
+      // The entries duration is lower than the desired reporting threshold,
+      // skip
+      return;
+    }
+
+    eventBuffer_.add(entry);
+  }
+
+  observerRegistry_->queuePerformanceEntry(entry);
 }
 
 void PerformanceEntryReporter::logLongTaskEntry(
     DOMHighResTimeStamp startTime,
     DOMHighResTimeStamp duration) {
-  logEntry(
-      {.name = std::string{"self"},
-       .entryType = PerformanceEntryType::LONGTASK,
-       .startTime = startTime,
-       .duration = duration});
-}
+  const auto entry = PerformanceEntry{
+      .name = std::string{"self"},
+      .entryType = PerformanceEntryType::LONGTASK,
+      .startTime = startTime,
+      .duration = duration};
 
-void PerformanceEntryReporter::scheduleFlushBuffer() {
-  if (callback_) {
-    callback_();
+  {
+    std::lock_guard lock(buffersMutex_);
+    longTaskBuffer_.add(entry);
   }
+
+  observerRegistry_->queuePerformanceEntry(entry);
 }
 
 } // namespace facebook::react

@@ -7,13 +7,32 @@
 
 #pragma once
 
+#if __has_include("rncoreJSI.h") // Cmake headers on Android
+#include "rncoreJSI.h"
+#elif __has_include("FBReactNativeSpecJSI.h") // CocoaPod headers on Apple
+#include "FBReactNativeSpecJSI.h"
+#else
 #include <FBReactNativeSpec/FBReactNativeSpecJSI.h>
+#endif
+
 #include <react/performance/timeline/PerformanceEntryReporter.h>
 #include <optional>
 #include <string>
 #include <vector>
 
 namespace facebook::react {
+
+using NativePerformanceObserverCallback = AsyncCallback<>;
+using NativePerformanceObserverObserveOptions =
+    NativePerformanceObserverPerformanceObserverInit<
+        // entryTypes
+        std::optional<std::vector<int>>,
+        // type
+        std::optional<int>,
+        // buffered
+        std::optional<bool>,
+        // durationThreshold
+        std::optional<double>>;
 
 #pragma mark - Structs
 
@@ -33,46 +52,41 @@ struct Bridging<PerformanceEntryType> {
 };
 
 template <>
-struct Bridging<PerformanceEntry>
-    : NativePerformanceObserverRawPerformanceEntryBridging<PerformanceEntry> {};
+struct Bridging<NativePerformanceObserverObserveOptions>
+    : NativePerformanceObserverPerformanceObserverInitBridging<
+          NativePerformanceObserverObserveOptions> {};
 
 template <>
-struct Bridging<PerformanceEntryReporter::PopPendingEntriesResult>
-    : NativePerformanceObserverGetPendingEntriesResultBridging<
-          PerformanceEntryReporter::PopPendingEntriesResult> {};
+struct Bridging<PerformanceEntry>
+    : NativePerformanceObserverRawPerformanceEntryBridging<PerformanceEntry> {};
 
 #pragma mark - implementation
 
 class NativePerformanceObserver
     : public NativePerformanceObserverCxxSpec<NativePerformanceObserver> {
  public:
-  NativePerformanceObserver(std::shared_ptr<CallInvoker> jsInvoker);
+  explicit NativePerformanceObserver(std::shared_ptr<CallInvoker> jsInvoker);
 
-  void startReporting(jsi::Runtime& rt, PerformanceEntryType entryType);
-
-  void stopReporting(jsi::Runtime& rt, PerformanceEntryType entryType);
-
-  void setIsBuffered(
+  jsi::Object createObserver(
       jsi::Runtime& rt,
-      const std::vector<PerformanceEntryType> entryTypes,
-      bool isBuffered);
+      NativePerformanceObserverCallback callback);
+  double getDroppedEntriesCount(jsi::Runtime& rt, jsi::Object observerObj);
 
-  PerformanceEntryReporter::PopPendingEntriesResult popPendingEntries(
-      jsi::Runtime& rt);
-
-  void setOnPerformanceEntryCallback(
+  void observe(
       jsi::Runtime& rt,
-      std::optional<AsyncCallback<>> callback);
-
-  void logRawEntry(jsi::Runtime& rt, const PerformanceEntry entry);
+      jsi::Object observer,
+      NativePerformanceObserverObserveOptions options);
+  void disconnect(jsi::Runtime& rt, jsi::Object observer);
+  std::vector<PerformanceEntry> takeRecords(
+      jsi::Runtime& rt,
+      jsi::Object observerObj,
+      // When called via `observer.takeRecords` it should be in insertion order.
+      // When called via the observer callback, it should be in chronological
+      // order with respect to `startTime`.
+      bool sort);
 
   std::vector<std::pair<std::string, uint32_t>> getEventCounts(
       jsi::Runtime& rt);
-
-  void setDurationThreshold(
-      jsi::Runtime& rt,
-      PerformanceEntryType entryType,
-      DOMHighResTimeStamp durationThreshold);
 
   void clearEntries(
       jsi::Runtime& rt,
