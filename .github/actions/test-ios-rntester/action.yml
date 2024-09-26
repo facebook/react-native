@@ -132,7 +132,7 @@ runs:
         set -o pipefail && xcodebuild \
           -scheme "RNTester" \
           -workspace packages/rn-tester/RNTesterPods.xcworkspace \
-          -configuration "Release" \
+          -configuration "${{ inputs.flavor }}" \
           -sdk "iphonesimulator" \
           -destination "generic/platform=iOS Simulator" \
           -derivedDataPath "/tmp/RNTesterBuild" | xcbeautify

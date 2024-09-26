@@ -13,6 +13,15 @@ inputs:
   maestro-flow:
     required: true
     description: the folder that contains the maestro tests
+  flavor:
+    required: true
+    description: Whether we are building for Debug or Release
+    default: Release
+  working-directory:
+    required: false
+    default: "."
+    description: The directory from which metro should be started
+
 runs:
   using: composite
   steps:
@@ -29,6 +38,12 @@ runs:
       with:
         java-version: '17'
         distribution: 'zulu'
+    - name: Start Metro in Debug
+      shell: bash
+      if: ${{ inputs.flavor == 'Debug' }}
+      run: |
+        cd ${{ inputs.working-directory }}
+        yarn start &
     - name: Run tests
       id: run-tests
       shell: bash
@@ -54,16 +69,23 @@ runs:
         xcrun simctl launch $UDID ${{ inputs.app-id }}
 
         echo "Running tests with Maestro"
-        export MAESTRO_DRIVER_STARTUP_TIMEOUT=1500000 # 25 min. CI is extremely slow
+        export MAESTRO_DRIVER_STARTUP_TIMEOUT=1800000 # 30 min. CI is extremely slow
 
         # Add retries for flakyness
-        MAX_ATTEMPTS=3
+        MAX_ATTEMPTS=5
         CURR_ATTEMPT=0
         RESULT=1
 
         while [[ $CURR_ATTEMPT -lt $MAX_ATTEMPTS ]] && [[ $RESULT -ne 0 ]]; do
+          if [[ $CURR_ATTEMPT -ne 0 ]]; then
+            echo "Rebooting simulator for stability"
+            xcrun simctl boot "iPhone 15 Pro"
+          fi
+
           CURR_ATTEMPT=$((CURR_ATTEMPT+1))
           echo "Attempt number $CURR_ATTEMPT"
+
+
 
           echo "Start video record using pid: video_record_${{ inputs.jsengine }}_$CURR_ATTEMPT.pid"
           xcrun simctl io booted recordVideo video_record_$CURR_ATTEMPT.mov & echo $! > video_record_${{ inputs.jsengine }}_$CURR_ATTEMPT.pid
@@ -75,6 +97,9 @@ runs:
 
           # Stop video
           kill -SIGINT $(cat video_record_${{ inputs.jsengine }}_$CURR_ATTEMPT.pid)
+
+          echo "Shutting down simulator for stability"
+          xcrun simctl shutdown "iPhone 15 Pro"
         done
 
         exit $RESULT
@@ -82,7 +107,7 @@ runs:
       if: always()
       uses: actions/upload-artifact@v4.3.4
       with:
-        name: e2e_ios_${{ inputs.app-id }}_report_${{ inputs.jsengine }}
+        name: e2e_ios_${{ inputs.app-id }}_report_${{ inputs.jsengine }}_${{ inputs.flavor }}
         path: |
           video_record_1.mov
           video_record_2.mov
@@ -92,5 +117,5 @@ runs:
       if: failure() && steps.run-tests.outcome == 'failure'
       uses: actions/upload-artifact@v4.3.4
       with:
-        name: maestro-logs-${{ inputs.app-id }}-${{ inputs.jsengine }}
+        name: maestro-logs-${{ inputs.app-id }}-${{ inputs.jsengine }}-${{ inputs.flavor }}
         path: /tmp/MaestroLogs
