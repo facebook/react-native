@@ -72,7 +72,7 @@ public class ReactFragment extends Fragment implements PermissionAwareActivity {
     }
     if (ReactFeatureFlags.enableBridgelessArchitecture) {
       mReactDelegate =
-          new BridgelessReactDelegate(
+          new ReactDelegate(
               getActivity(), getReactHost(), mainComponentName, launchOptions);
     } else {
       mReactDelegate =
