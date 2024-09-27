@@ -165,6 +165,11 @@ static void sendEventToAllConnections(NSString *event)
         }] resume];
 }
 
++ (void)clearSocketConnections
+{
+  socketConnections = nil;
+}
+
 + (void)disableDebugger
 {
   auto &inspectorFlags = facebook::react::jsinspector_modern::InspectorFlags::getInstance();
