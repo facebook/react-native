@@ -1703,7 +1703,10 @@ declare export default typeof AndroidDrawerLayoutNativeComponent;
 "
 `;
 
-exports[`public API should not change unintentionally Libraries/Components/DrawerAndroid/DrawerLayoutAndroid.js 1`] = `"UNTYPED MODULE"`;
+exports[`public API should not change unintentionally Libraries/Components/DrawerAndroid/DrawerLayoutAndroid.js 1`] = `
+"declare module.exports: $FlowFixMe;
+"
+`;
 
 exports[`public API should not change unintentionally Libraries/Components/Keyboard/Keyboard.js 1`] = `
 "export type KeyboardEventName = $Keys<KeyboardEventDefinitions>;
@@ -3518,7 +3521,11 @@ declare module.exports: ToastAndroid;
 "
 `;
 
-exports[`public API should not change unintentionally Libraries/Components/Touchable/BoundingDimensions.js 1`] = `"UNTYPED MODULE"`;
+exports[`public API should not change unintentionally Libraries/Components/Touchable/BoundingDimensions.js 1`] = `
+"declare function BoundingDimensions(width: number, height: number): void;
+declare module.exports: BoundingDimensions;
+"
+`;
 
 exports[`public API should not change unintentionally Libraries/Components/Touchable/PooledClass.js 1`] = `
 "type Pooler = any;
@@ -3541,7 +3548,11 @@ declare module.exports: PooledClass;
 "
 `;
 
-exports[`public API should not change unintentionally Libraries/Components/Touchable/Position.js 1`] = `"UNTYPED MODULE"`;
+exports[`public API should not change unintentionally Libraries/Components/Touchable/Position.js 1`] = `
+"declare function Position(left: number, top: number): void;
+declare module.exports: Position;
+"
+`;
 
 exports[`public API should not change unintentionally Libraries/Components/Touchable/Touchable.js 1`] = `
 "declare const States: {
@@ -5431,7 +5442,37 @@ declare module.exports: TaskQueue;
 "
 `;
 
-exports[`public API should not change unintentionally Libraries/Interaction/TouchHistoryMath.js 1`] = `"UNTYPED MODULE"`;
+exports[`public API should not change unintentionally Libraries/Interaction/TouchHistoryMath.js 1`] = `
+"declare const TouchHistoryMath: {
+  centroidDimension: (
+    touchHistory: TouchHistoryMath,
+    touchesChangedAfter: number,
+    isXAxis: boolean,
+    ofCurrent: boolean
+  ) => number,
+  currentCentroidXOfTouchesChangedAfter: (
+    touchHistory: TouchHistoryMath,
+    touchesChangedAfter: number
+  ) => number,
+  currentCentroidYOfTouchesChangedAfter: (
+    touchHistory: TouchHistoryMath,
+    touchesChangedAfter: number
+  ) => number,
+  previousCentroidXOfTouchesChangedAfter: (
+    touchHistory: TouchHistoryMath,
+    touchesChangedAfter: number
+  ) => number,
+  previousCentroidYOfTouchesChangedAfter: (
+    touchHistory: TouchHistoryMath,
+    touchesChangedAfter: number
+  ) => number,
+  currentCentroidX: (touchHistory: TouchHistoryMath) => number,
+  currentCentroidY: (touchHistory: TouchHistoryMath) => number,
+  noCentroid: $FlowFixMe,
+};
+declare module.exports: TouchHistoryMath;
+"
+`;
 
 exports[`public API should not change unintentionally Libraries/JSInspector/InspectorAgent.js 1`] = `
 "export type EventSender = (name: string, params: mixed) => void;
@@ -6612,7 +6653,50 @@ declare export default typeof RCTNetworking;
 "
 `;
 
-exports[`public API should not change unintentionally Libraries/Network/XHRInterceptor.js 1`] = `"UNTYPED MODULE"`;
+exports[`public API should not change unintentionally Libraries/Network/XHRInterceptor.js 1`] = `
+"type XHRInterceptorOpenCallback = (
+  method: string,
+  url: string,
+  request: XMLHttpRequest
+) => void;
+type XHRInterceptorSendCallback = (
+  data: string,
+  request: XMLHttpRequest
+) => void;
+type XHRInterceptorRequestHeaderCallback = (
+  header: string,
+  value: string,
+  request: XMLHttpRequest
+) => void;
+type XHRInterceptorHeaderReceivedCallback = (
+  responseContentType: string | void,
+  responseSize: number | void,
+  allHeaders: string,
+  request: XMLHttpRequest
+) => void;
+type XHRInterceptorResponseCallback = (
+  status: number,
+  timeout: number,
+  response: string,
+  responseURL: string,
+  responseType: string,
+  request: XMLHttpRequest
+) => void;
+declare const XHRInterceptor: {
+  setOpenCallback(callback: XHRInterceptorOpenCallback): void,
+  setSendCallback(callback: XHRInterceptorSendCallback): void,
+  setHeaderReceivedCallback(
+    callback: XHRInterceptorHeaderReceivedCallback
+  ): void,
+  setResponseCallback(callback: XHRInterceptorResponseCallback): void,
+  setRequestHeaderCallback(callback: XHRInterceptorRequestHeaderCallback): void,
+  isInterceptorEnabled(): boolean,
+  enableInterception(): void,
+  disableInterception(): void,
+};
+declare module.exports: XHRInterceptor;
+"
+`;
 
 exports[`public API should not change unintentionally Libraries/Network/XMLHttpRequest.js 1`] = `
 "export type NativeResponseType = \\"base64\\" | \\"blob\\" | \\"text\\";
@@ -9753,9 +9837,34 @@ declare module.exports: WebSocket;
 "
 `;
 
-exports[`public API should not change unintentionally Libraries/WebSocket/WebSocketEvent.js 1`] = `"UNTYPED MODULE"`;
+exports[`public API should not change unintentionally Libraries/WebSocket/WebSocketEvent.js 1`] = `
+"declare class WebSocketEvent {
+  type: string;
+  constructor(type: string, eventInitDict: $FlowFixMe): void;
+}
+declare module.exports: WebSocketEvent;
+"
+`;
 
-exports[`public API should not change unintentionally Libraries/WebSocket/WebSocketInterceptor.js 1`] = `"UNTYPED MODULE"`;
+exports[`public API should not change unintentionally Libraries/WebSocket/WebSocketInterceptor.js 1`] = `
+"declare const WebSocketInterceptor: {
+  setCloseCallback(callback: $FlowFixMe): void,
+  setSendCallback(callback: $FlowFixMe): void,
+  setConnectCallback(callback: $FlowFixMe): void,
+  setOnOpenCallback(callback: $FlowFixMe): void,
+  setOnMessageCallback(callback: $FlowFixMe): void,
+  setOnErrorCallback(callback: $FlowFixMe): void,
+  setOnCloseCallback(callback: $FlowFixMe): void,
+  isInterceptorEnabled(): boolean,
+  _unregisterEvents(): void,
+  _registerEvents(): void,
+  enableInterception(): void,
+  _arrayBufferToString(data: string): ArrayBuffer | string,
+  disableInterception(): void,
+};
+declare module.exports: WebSocketInterceptor;
+"
+`;
 
 exports[`public API should not change unintentionally Libraries/YellowBox/YellowBoxDeprecated.js 1`] = `
 "declare const React: $FlowFixMe;
