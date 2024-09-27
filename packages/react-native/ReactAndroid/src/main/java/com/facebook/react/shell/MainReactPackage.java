@@ -28,7 +28,6 @@ import com.facebook.react.modules.blob.FileReaderModule;
 import com.facebook.react.modules.camera.ImageStoreManager;
 import com.facebook.react.modules.clipboard.ClipboardModule;
 import com.facebook.react.modules.devloading.DevLoadingModule;
-import com.facebook.react.modules.devtoolssettings.DevToolsSettingsManagerModule;
 import com.facebook.react.modules.dialog.DialogModule;
 import com.facebook.react.modules.fresco.FrescoModule;
 import com.facebook.react.modules.i18nmanager.I18nManagerModule;
@@ -36,6 +35,7 @@ import com.facebook.react.modules.image.ImageLoaderModule;
 import com.facebook.react.modules.intent.IntentModule;
 import com.facebook.react.modules.network.NetworkingModule;
 import com.facebook.react.modules.permissions.PermissionsModule;
+import com.facebook.react.modules.reactdevtoolssettings.ReactDevToolsSettingsManagerModule;
 import com.facebook.react.modules.share.ShareModule;
 import com.facebook.react.modules.sound.SoundManagerModule;
 import com.facebook.react.modules.statusbar.StatusBarModule;
@@ -153,8 +153,8 @@ public class MainReactPackage extends BaseReactPackage implements ViewManagerOnD
         return new VibrationModule(context);
       case WebSocketModule.NAME:
         return new WebSocketModule(context);
-      case DevToolsSettingsManagerModule.NAME:
-        return new DevToolsSettingsManagerModule(context);
+      case ReactDevToolsSettingsManagerModule.NAME:
+        return new ReactDevToolsSettingsManagerModule(context);
       default:
         return null;
     }
@@ -300,7 +300,7 @@ public class MainReactPackage extends BaseReactPackage implements ViewManagerOnD
           NativeAnimatedModule.class,
           NetworkingModule.class,
           PermissionsModule.class,
-          DevToolsSettingsManagerModule.class,
+          ReactDevToolsSettingsManagerModule.class,
           ShareModule.class,
           StatusBarModule.class,
           SoundManagerModule.class,
