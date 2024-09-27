@@ -91,6 +91,14 @@
 #define RCT_DEV_MENU RCT_DEV
 #endif
 
+/**
+ * Setting RCT_DEV_KEY_COMMANDS to 0 allows apps with RCT_DEV enabled to be
+ * distributed to developers via TestFlight.
+ */
+#ifndef RCT_DEV_KEY_COMMANDS
+#define RCT_DEV_KEY_COMMANDS RCT_DEV
+#endif
+
 #ifndef RCT_DEV_SETTINGS_ENABLE_PACKAGER_CONNECTION
 #if RCT_DEV && (__has_include("RCTPackagerConnection.h") || __has_include(<React/RCTPackagerConnection.h>))
 #define RCT_DEV_SETTINGS_ENABLE_PACKAGER_CONNECTION 1
