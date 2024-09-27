@@ -21,8 +21,23 @@ if (__DEV__) {
     connectWithCustomMessagingProtocol,
   } = require('react-devtools-core');
 
+  const reactDevToolsSettingsManager = require('../../src/private/reactdevtools/ReactDevToolsSettingsManager');
+  const serializedHookSettings =
+    reactDevToolsSettingsManager.getGlobalHookSettings();
+
+  let hookSettings = null;
+  if (serializedHookSettings != null) {
+    try {
+      const parsedSettings = JSON.parse(serializedHookSettings);
+      hookSettings = parsedSettings;
+    } catch {
+      console.error(
+        'Failed to parse persisted React DevTools hook settings. React DevTools will be initialized with default settings.',
+      );
+    }
+  }
   // Install hook before React is loaded.
-  initialize();
+  initialize(hookSettings);
 
   // This should be defined in DEV, otherwise error is expected.
   const fuseboxReactDevToolsDispatcher =
@@ -32,6 +47,12 @@ if (__DEV__) {
 
   const ReactNativeStyleAttributes = require('../Components/View/ReactNativeStyleAttributes');
   const resolveRNStyle = require('../StyleSheet/flattenStyle');
+
+  function handleReactDevToolsSettingsUpdate(settings: Object) {
+    reactDevToolsSettingsManager.setGlobalHookSettings(
+      JSON.stringify(settings),
+    );
+  }
 
   let disconnect = null;
   function disconnectBackendFromReactDevToolsInFuseboxIfNeeded() {
@@ -54,6 +75,7 @@ if (__DEV__) {
       },
       nativeStyleEditorValidAttributes: Object.keys(ReactNativeStyleAttributes),
       resolveRNStyle,
+      onSettingsUpdated: handleReactDevToolsSettingsUpdate,
     });
   }
 
@@ -112,6 +134,7 @@ if (__DEV__) {
           ReactNativeStyleAttributes,
         ),
         websocket: ws,
+        onSettingsUpdated: handleReactDevToolsSettingsUpdate,
       });
     }
   }
