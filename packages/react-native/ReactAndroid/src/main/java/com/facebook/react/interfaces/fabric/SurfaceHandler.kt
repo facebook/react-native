@@ -24,12 +24,6 @@ public interface SurfaceHandler {
 
   public val moduleName: String
 
-  /** Starts the surface if the surface is not running */
-  public fun start()
-
-  /** Stops the surface if it is currently running */
-  public fun stop()
-
   public fun setProps(props: NativeMap)
 
   /**

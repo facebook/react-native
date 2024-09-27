@@ -66,20 +66,6 @@ public class SurfaceHandlerBinding implements SurfaceHandler {
   private native String getModuleNameNative();
 
   @Override
-  public void start() {
-    startNative();
-  }
-
-  private native void startNative();
-
-  @Override
-  public void stop() {
-    stopNative();
-  }
-
-  private native void stopNative();
-
-  @Override
   public boolean isRunning() {
     return isRunningNative();
   }

@@ -329,11 +329,11 @@ public class FabricUIManager
     mMountingManager.startSurface(rootTag, reactContext, rootView);
 
     surfaceHandler.setSurfaceId(rootTag);
-    if (surfaceHandler instanceof SurfaceHandlerBinding) {
-      mBinding.registerSurface((SurfaceHandlerBinding) surfaceHandler);
-    }
     surfaceHandler.setMountable(rootView != null);
-    surfaceHandler.start();
+    if (!(surfaceHandler instanceof SurfaceHandlerBinding)) {
+      throw new IllegalArgumentException("Invalid SurfaceHandler");
+    }
+    mBinding.startSurfaceWithSurfaceHandler((SurfaceHandlerBinding) surfaceHandler);
   }
 
   public void attachRootView(final SurfaceHandler surfaceHandler, final View rootView) {
@@ -357,12 +357,10 @@ public class FabricUIManager
     }
 
     mMountingManager.stopSurface(surfaceHandler.getSurfaceId());
-
-    surfaceHandler.stop();
-
-    if (surfaceHandler instanceof SurfaceHandlerBinding) {
-      mBinding.unregisterSurface((SurfaceHandlerBinding) surfaceHandler);
+    if (!(surfaceHandler instanceof SurfaceHandlerBinding)) {
+      throw new IllegalArgumentException("Invalid SurfaceHandler");
     }
+    mBinding.stopSurfaceWithSurfaceHandler((SurfaceHandlerBinding) surfaceHandler);
   }
 
   /** Method called when an event has been dispatched on the C++ side. */

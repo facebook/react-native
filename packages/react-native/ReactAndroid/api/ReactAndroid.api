@@ -2583,15 +2583,15 @@ public abstract interface class com/facebook/react/fabric/Binding {
 	public abstract fun driveCxxAnimations ()V
 	public abstract fun getInspectorDataForInstance (Lcom/facebook/react/fabric/events/EventEmitterWrapper;)Lcom/facebook/react/bridge/ReadableNativeMap;
 	public abstract fun register (Lcom/facebook/react/bridge/RuntimeExecutor;Lcom/facebook/react/bridge/RuntimeScheduler;Lcom/facebook/react/fabric/FabricUIManager;Lcom/facebook/react/fabric/events/EventBeatManager;Lcom/facebook/react/fabric/ComponentFactory;Lcom/facebook/react/fabric/ReactNativeConfig;)V
-	public abstract fun registerSurface (Lcom/facebook/react/fabric/SurfaceHandlerBinding;)V
 	public abstract fun reportMount (I)V
 	public abstract fun setConstraints (IFFFFFFZZ)V
 	public abstract fun setPixelDensity (F)V
 	public abstract fun startSurface (ILjava/lang/String;Lcom/facebook/react/bridge/NativeMap;)V
 	public abstract fun startSurfaceWithConstraints (ILjava/lang/String;Lcom/facebook/react/bridge/NativeMap;FFFFFFZZ)V
+	public abstract fun startSurfaceWithSurfaceHandler (Lcom/facebook/react/fabric/SurfaceHandlerBinding;)V
 	public abstract fun stopSurface (I)V
+	public abstract fun stopSurfaceWithSurfaceHandler (Lcom/facebook/react/fabric/SurfaceHandlerBinding;)V
 	public abstract fun unregister ()V
-	public abstract fun unregisterSurface (Lcom/facebook/react/fabric/SurfaceHandlerBinding;)V
 }
 
 public final class com/facebook/react/fabric/BindingImpl : com/facebook/react/fabric/Binding {
@@ -2600,15 +2600,15 @@ public final class com/facebook/react/fabric/BindingImpl : com/facebook/react/fa
 	public fun driveCxxAnimations ()V
 	public fun getInspectorDataForInstance (Lcom/facebook/react/fabric/events/EventEmitterWrapper;)Lcom/facebook/react/bridge/ReadableNativeMap;
 	public fun register (Lcom/facebook/react/bridge/RuntimeExecutor;Lcom/facebook/react/bridge/RuntimeScheduler;Lcom/facebook/react/fabric/FabricUIManager;Lcom/facebook/react/fabric/events/EventBeatManager;Lcom/facebook/react/fabric/ComponentFactory;Lcom/facebook/react/fabric/ReactNativeConfig;)V
-	public fun registerSurface (Lcom/facebook/react/fabric/SurfaceHandlerBinding;)V
 	public fun reportMount (I)V
 	public fun setConstraints (IFFFFFFZZ)V
 	public fun setPixelDensity (F)V
 	public fun startSurface (ILjava/lang/String;Lcom/facebook/react/bridge/NativeMap;)V
 	public fun startSurfaceWithConstraints (ILjava/lang/String;Lcom/facebook/react/bridge/NativeMap;FFFFFFZZ)V
+	public fun startSurfaceWithSurfaceHandler (Lcom/facebook/react/fabric/SurfaceHandlerBinding;)V
 	public fun stopSurface (I)V
+	public fun stopSurfaceWithSurfaceHandler (Lcom/facebook/react/fabric/SurfaceHandlerBinding;)V
 	public fun unregister ()V
-	public fun unregisterSurface (Lcom/facebook/react/fabric/SurfaceHandlerBinding;)V
 }
 
 public final class com/facebook/react/fabric/ComponentFactory {
@@ -2771,8 +2771,6 @@ public class com/facebook/react/fabric/SurfaceHandlerBinding : com/facebook/reac
 	public fun setMountable (Z)V
 	public fun setProps (Lcom/facebook/react/bridge/NativeMap;)V
 	public fun setSurfaceId (I)V
-	public fun start ()V
-	public fun stop ()V
 }
 
 public abstract interface annotation class com/facebook/react/fabric/SurfaceHandlerBinding$DisplayModeTypeDef : java/lang/annotation/Annotation {
@@ -2966,8 +2964,6 @@ public abstract interface class com/facebook/react/interfaces/fabric/SurfaceHand
 	public abstract fun setMountable (Z)V
 	public abstract fun setProps (Lcom/facebook/react/bridge/NativeMap;)V
 	public abstract fun setSurfaceId (I)V
-	public abstract fun start ()V
-	public abstract fun stop ()V
 }
 
 public final class com/facebook/react/jscexecutor/JSCExecutor : com/facebook/react/bridge/JavaScriptExecutor {

@@ -24,9 +24,6 @@ class SurfaceHandlerBinding : public jni::HybridClass<SurfaceHandlerBinding> {
 
   SurfaceHandlerBinding(SurfaceId surfaceId, const std::string& moduleName);
 
-  void start();
-  void stop();
-
   void setDisplayMode(jint mode);
 
   jint getSurfaceId();
@@ -51,7 +48,6 @@ class SurfaceHandlerBinding : public jni::HybridClass<SurfaceHandlerBinding> {
   const SurfaceHandler& getSurfaceHandler();
 
  private:
-  mutable std::shared_mutex lifecycleMutex_;
   const SurfaceHandler surfaceHandler_;
 
   jni::alias_ref<SurfaceHandlerBinding::jhybriddata> jhybridobject_;

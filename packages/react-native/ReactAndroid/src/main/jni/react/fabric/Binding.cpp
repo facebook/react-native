@@ -140,11 +140,57 @@ void Binding::reportMount(SurfaceId surfaceId) {
 
 #pragma mark - Surface management
 
+// Used by bridgeless
+void Binding::startSurfaceWithSurfaceHandler(
+    jni::alias_ref<SurfaceHandlerBinding::jhybridobject>
+        surfaceHandlerBinding) {
+  SystraceSection s("FabricUIManagerBinding::startSurfaceWithSurfaceHandler");
+
+  const auto& surfaceHandler =
+      surfaceHandlerBinding->cthis()->getSurfaceHandler();
+  if (enableFabricLogs_) {
+    LOG(WARNING)
+        << "Binding::startSurfaceWithSurfaceHandler() was called (address: "
+        << this << ", surfaceId: " << surfaceHandler.getSurfaceId() << ").";
+  }
+
+  auto scheduler = getScheduler();
+  if (!scheduler) {
+    LOG(ERROR)
+        << "Binding::startSurfaceWithSurfaceHandler: scheduler disappeared";
+    return;
+  }
+  scheduler->registerSurface(surfaceHandler);
+
+  surfaceHandler.start();
+
+  surfaceHandler.getMountingCoordinator()->setMountingOverrideDelegate(
+      animationDriver_);
+
+  {
+    std::unique_lock lock(surfaceHandlerRegistryMutex_);
+    surfaceHandlerRegistry_.emplace(
+        surfaceHandler.getSurfaceId(), jni::make_weak(surfaceHandlerBinding));
+  }
+
+  auto mountingManager = getMountingManager("startSurfaceWithSurfaceHandler");
+  if (!mountingManager) {
+    return;
+  }
+  mountingManager->onSurfaceStart(surfaceHandler.getSurfaceId());
+}
+
+// Used by non-bridgeless+Fabric
 void Binding::startSurface(
     jint surfaceId,
     jni::alias_ref<jstring> moduleName,
     NativeMap* initialProps) {
   SystraceSection s("FabricUIManagerBinding::startSurface");
+
+  if (enableFabricLogs_) {
+    LOG(WARNING) << "Binding::startSurface() was called (address: " << this
+                 << ", surfaceId: " << surfaceId << ").";
+  }
 
   auto scheduler = getScheduler();
   if (!scheduler) {
@@ -181,6 +227,7 @@ void Binding::startSurface(
   mountingManager->onSurfaceStart(surfaceId);
 }
 
+// Used by non-bridgeless+Fabric
 void Binding::startSurfaceWithConstraints(
     jint surfaceId,
     jni::alias_ref<jstring> moduleName,
@@ -251,9 +298,9 @@ void Binding::startSurfaceWithConstraints(
   mountingManager->onSurfaceStart(surfaceId);
 }
 
+// Used by non-bridgeless+Fabric
 void Binding::stopSurface(jint surfaceId) {
   SystraceSection s("FabricUIManagerBinding::stopSurface");
-
   if (enableFabricLogs_) {
     LOG(WARNING) << "Binding::stopSurface() was called (address: " << this
                  << ", surfaceId: " << surfaceId << ").";
@@ -267,7 +314,6 @@ void Binding::stopSurface(jint surfaceId) {
 
   {
     std::unique_lock lock(surfaceHandlerRegistryMutex_);
-
     auto iterator = surfaceHandlerRegistry_.find(surfaceId);
     if (iterator == surfaceHandlerRegistry_.end()) {
       LOG(ERROR) << "Binding::stopSurface: Surface with given id is not found";
@@ -291,37 +337,21 @@ void Binding::stopSurface(jint surfaceId) {
   mountingManager->onSurfaceStop(surfaceId);
 }
 
-void Binding::registerSurface(
+// Used by bridgeless
+void Binding::stopSurfaceWithSurfaceHandler(
     jni::alias_ref<SurfaceHandlerBinding::jhybridobject>
         surfaceHandlerBinding) {
+  SystraceSection s("FabricUIManagerBinding::stopSurfaceWithSurfaceHandler");
   const auto& surfaceHandler =
       surfaceHandlerBinding->cthis()->getSurfaceHandler();
-
-  auto scheduler = getScheduler();
-  if (!scheduler) {
-    LOG(ERROR) << "Binding::registerSurface: scheduler disappeared";
-    return;
-  }
-  scheduler->registerSurface(surfaceHandler);
-
-  {
-    std::unique_lock lock(surfaceHandlerRegistryMutex_);
-    surfaceHandlerRegistry_.emplace(
-        surfaceHandler.getSurfaceId(), jni::make_weak(surfaceHandlerBinding));
+  if (enableFabricLogs_) {
+    LOG(WARNING)
+        << "Binding::stopSurfaceWithSurfaceHandler() was called (address: "
+        << this << ", surfaceId: " << surfaceHandler.getSurfaceId() << ").";
   }
 
-  auto mountingManager = getMountingManager("registerSurface");
-  if (!mountingManager) {
-    return;
-  }
-  mountingManager->onSurfaceStart(surfaceHandler.getSurfaceId());
-}
+  surfaceHandler.stop();
 
-void Binding::unregisterSurface(
-    jni::alias_ref<SurfaceHandlerBinding::jhybridobject>
-        surfaceHandlerBinding) {
-  const auto& surfaceHandler =
-      surfaceHandlerBinding->cthis()->getSurfaceHandler();
   auto scheduler = getScheduler();
   if (!scheduler) {
     LOG(ERROR) << "Binding::unregisterSurface: scheduler disappeared";
@@ -377,7 +407,6 @@ void Binding::setConstraints(
 
   {
     std::shared_lock lock(surfaceHandlerRegistryMutex_);
-
     auto iterator = surfaceHandlerRegistry_.find(surfaceId);
     if (iterator == surfaceHandlerRegistry_.end()) {
       LOG(ERROR)
@@ -650,8 +679,12 @@ void Binding::registerNatives() {
       makeNativeMethod("reportMount", Binding::reportMount),
       makeNativeMethod(
           "uninstallFabricUIManager", Binding::uninstallFabricUIManager),
-      makeNativeMethod("registerSurface", Binding::registerSurface),
-      makeNativeMethod("unregisterSurface", Binding::unregisterSurface),
+      makeNativeMethod(
+          "startSurfaceWithSurfaceHandler",
+          Binding::startSurfaceWithSurfaceHandler),
+      makeNativeMethod(
+          "stopSurfaceWithSurfaceHandler",
+          Binding::stopSurfaceWithSurfaceHandler),
   });
 }
 

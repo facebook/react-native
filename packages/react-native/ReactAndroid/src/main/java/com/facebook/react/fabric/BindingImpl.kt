@@ -49,7 +49,11 @@ public class BindingImpl : Binding {
       doLeftAndRightSwapInRTL: Boolean
   )
 
+  external override fun startSurfaceWithSurfaceHandler(surfaceHandler: SurfaceHandlerBinding)
+
   external override fun stopSurface(surfaceId: Int)
+
+  external override fun stopSurfaceWithSurfaceHandler(surfaceHandler: SurfaceHandlerBinding)
 
   external override fun setPixelDensity(pointScaleFactor: Float)
 
@@ -99,10 +103,6 @@ public class BindingImpl : Binding {
   override fun unregister() {
     uninstallFabricUIManager()
   }
-
-  external override fun registerSurface(surfaceHandler: SurfaceHandlerBinding)
-
-  external override fun unregisterSurface(surfaceHandler: SurfaceHandlerBinding)
 
   private companion object {
     init {
