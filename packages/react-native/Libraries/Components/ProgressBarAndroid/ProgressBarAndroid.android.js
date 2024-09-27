@@ -80,6 +80,7 @@ export type ProgressBarAndroidProps = $ReadOnly<{|
  */
 const ProgressBarAndroid = (
   {
+    // $FlowFixMe[incompatible-type]
     styleAttr = 'Normal',
     indeterminate = true,
     animating = true,
