@@ -140,15 +140,6 @@ void RCTNativeModule::invoke(unsigned int methodId, folly::dynamic &&params, int
 
 MethodCallResult RCTNativeModule::callSerializableNativeHook(unsigned int reactMethodId, folly::dynamic &&params)
 {
-  const bool isMainQueue = m_moduleData.methodQueue == dispatch_get_main_queue();
-  __block MethodCallResult result;
-
-  if (isMainQueue) {
-    RCTUnsafeExecuteOnMainQueueSync(^{
-      result = invokeInner(m_bridge, m_moduleData, reactMethodId, params, 0, Sync);
-    });
-    return result;
-  }
   return invokeInner(m_bridge, m_moduleData, reactMethodId, params, 0, Sync);
 }
 
