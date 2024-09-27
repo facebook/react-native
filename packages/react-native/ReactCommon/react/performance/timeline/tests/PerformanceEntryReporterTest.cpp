@@ -53,11 +53,11 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestReportMarks) {
 
   reporter->clearEntries();
 
-  reporter->mark("mark0", 0.0);
-  reporter->mark("mark1", 1.0);
-  reporter->mark("mark2", 2.0);
+  reporter->reportMark("mark0", 0.0);
+  reporter->reportMark("mark1", 1.0);
+  reporter->reportMark("mark2", 2.0);
   // Report mark0 again
-  reporter->mark("mark0", 3.0);
+  reporter->reportMark("mark0", 3.0);
 
   const auto entries = toSorted(reporter->getEntries());
 
@@ -85,25 +85,26 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestReportMeasures) {
   auto reporter = PerformanceEntryReporter::getInstance();
   reporter->clearEntries();
 
-  reporter->mark("mark0", 0.0);
-  reporter->mark("mark1", 1.0);
-  reporter->mark("mark2", 2.0);
+  reporter->reportMark("mark0", 0.0);
+  reporter->reportMark("mark1", 1.0);
+  reporter->reportMark("mark2", 2.0);
 
-  reporter->measure("measure0", 0.0, 2.0);
-  reporter->measure("measure1", 0.0, 2.0, 4.0);
-  reporter->measure("measure2", 0.0, 0.0, std::nullopt, "mark1", "mark2");
-  reporter->measure("measure3", 0.0, 0.0, 5.0, "mark1");
-  reporter->measure("measure4", 1.5, 0.0, std::nullopt, std::nullopt, "mark2");
+  reporter->reportMeasure("measure0", 0.0, 2.0);
+  reporter->reportMeasure("measure1", 0.0, 2.0, 4.0);
+  reporter->reportMeasure("measure2", 0.0, 0.0, std::nullopt, "mark1", "mark2");
+  reporter->reportMeasure("measure3", 0.0, 0.0, 5.0, "mark1");
+  reporter->reportMeasure(
+      "measure4", 1.5, 0.0, std::nullopt, std::nullopt, "mark2");
 
   reporter->setTimeStampProvider([]() { return 3.5; });
-  reporter->measure("measure5", 0.0, 0.0, std::nullopt, "mark2");
+  reporter->reportMeasure("measure5", 0.0, 0.0, std::nullopt, "mark2");
 
-  reporter->mark("mark3", 2.5);
-  reporter->measure("measure6", 2.0, 2.0);
-  reporter->mark("mark4", 2.1);
-  reporter->mark("mark4", 3.0);
+  reporter->reportMark("mark3", 2.5);
+  reporter->reportMeasure("measure6", 2.0, 2.0);
+  reporter->reportMark("mark4", 2.1);
+  reporter->reportMark("mark4", 3.0);
   // Uses the last reported time for mark4
-  reporter->measure("measure7", 0.0, 0.0, std::nullopt, "mark1", "mark4");
+  reporter->reportMeasure("measure7", 0.0, 0.0, std::nullopt, "mark1", "mark4");
 
   const auto entries = toSorted(reporter->getEntries());
 
@@ -177,15 +178,16 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestGetEntries) {
     ASSERT_EQ(0, entries.size());
   }
 
-  reporter->mark("common_name", 0.0);
-  reporter->mark("mark1", 1.0);
-  reporter->mark("mark2", 2.0);
+  reporter->reportMark("common_name", 0.0);
+  reporter->reportMark("mark1", 1.0);
+  reporter->reportMark("mark2", 2.0);
 
-  reporter->measure("common_name", 0.0, 2.0);
-  reporter->measure("measure1", 0.0, 2.0, 4.0);
-  reporter->measure("measure2", 0.0, 0.0, std::nullopt, "mark1", "mark2");
-  reporter->measure("measure3", 0.0, 0.0, 5.0, "mark1");
-  reporter->measure("measure4", 1.5, 0.0, std::nullopt, std::nullopt, "mark2");
+  reporter->reportMeasure("common_name", 0.0, 2.0);
+  reporter->reportMeasure("measure1", 0.0, 2.0, 4.0);
+  reporter->reportMeasure("measure2", 0.0, 0.0, std::nullopt, "mark1", "mark2");
+  reporter->reportMeasure("measure3", 0.0, 0.0, 5.0, "mark1");
+  reporter->reportMeasure(
+      "measure4", 1.5, 0.0, std::nullopt, std::nullopt, "mark2");
 
   {
     const auto allEntries = toSorted(reporter->getEntries());
@@ -291,15 +293,16 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestClearEntries) {
   auto reporter = PerformanceEntryReporter::getInstance();
   reporter->clearEntries();
 
-  reporter->mark("common_name", 0.0);
-  reporter->mark("mark1", 1.0);
-  reporter->mark("mark2", 2.0);
+  reporter->reportMark("common_name", 0.0);
+  reporter->reportMark("mark1", 1.0);
+  reporter->reportMark("mark2", 2.0);
 
-  reporter->measure("common_name", 0.0, 2.0);
-  reporter->measure("measure1", 0.0, 2.0, 4.0);
-  reporter->measure("measure2", 0.0, 0.0, std::nullopt, "mark1", "mark2");
-  reporter->measure("measure3", 0.0, 0.0, 5.0, "mark1");
-  reporter->measure("measure4", 1.5, 0.0, std::nullopt, std::nullopt, "mark2");
+  reporter->reportMeasure("common_name", 0.0, 2.0);
+  reporter->reportMeasure("measure1", 0.0, 2.0, 4.0);
+  reporter->reportMeasure("measure2", 0.0, 0.0, std::nullopt, "mark1", "mark2");
+  reporter->reportMeasure("measure3", 0.0, 0.0, 5.0, "mark1");
+  reporter->reportMeasure(
+      "measure4", 1.5, 0.0, std::nullopt, std::nullopt, "mark2");
 
   {
     reporter->clearEntries(std::nullopt, "common_name");

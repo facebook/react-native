@@ -169,7 +169,7 @@ void EventPerformanceLogger::onEventProcessingEnd(EventTag tag) {
 
     const auto& name = entry.name;
 
-    performanceEntryReporter->logEventEntry(
+    performanceEntryReporter->reportEvent(
         std::string(name),
         entry.startTime,
         timeStamp - entry.startTime,
@@ -205,7 +205,7 @@ void EventPerformanceLogger::dispatchPendingEventTimingEntries(
       entry.isWaitingForMount = true;
       ++it;
     } else {
-      performanceEntryReporter->logEventEntry(
+      performanceEntryReporter->reportEvent(
           std::string(entry.name),
           entry.startTime,
           performanceEntryReporter->getCurrentTimeStamp() - entry.startTime,
@@ -235,7 +235,7 @@ void EventPerformanceLogger::shadowTreeDidMount(
     const auto& entry = it->second;
     if (entry.isWaitingForMount &&
         isTargetInRootShadowNode(entry.target, rootShadowNode)) {
-      performanceEntryReporter->logEventEntry(
+      performanceEntryReporter->reportEvent(
           std::string(entry.name),
           entry.startTime,
           mountTime - entry.startTime,

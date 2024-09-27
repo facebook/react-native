@@ -459,7 +459,7 @@ void RuntimeScheduler_Modern::reportLongTasks(
   if (checkedDurationMs >= LONG_TASK_DURATION_THRESHOLD_MS) {
     auto durationMs = chronoToDOMHighResTimeStamp(endTime - startTime);
     auto startTimeMs = chronoToDOMHighResTimeStamp(startTime);
-    reporter->logLongTaskEntry(startTimeMs, durationMs);
+    reporter->reportLongTask(startTimeMs, durationMs);
   }
 }
 
