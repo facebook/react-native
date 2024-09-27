@@ -15,6 +15,7 @@ const chalk = require('chalk');
 const {get} = require('https');
 const semver = require('semver');
 const {URL} = require('url');
+const {spawn} = require('child_process');
 
 const deprecated = () => {
   throw new Error(
@@ -200,6 +201,19 @@ async function main() {
       warnWithDeprecationSchedule();
     }
     warnWhenRunningInit();
+
+    const proc = spawn(
+      'npx',
+      ['@react-native-community/cli', ...process.argv.slice(2)],
+      {
+        stdio: 'inherit',
+      },
+    );
+
+    const code = await new Promise(resolve => {
+      proc.on('exit', resolve);
+    });
+    process.exit(code);
   }
 
   try {
