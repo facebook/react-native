@@ -675,6 +675,21 @@ function NestedExample(props: {}): React.Node {
         <Text style={{color: 'blue'}}>blue color, </Text>
         and red color again
       </Text>
+      <Text style={{opacity: 0.7}}>
+        (opacity
+        <Text>
+          (is inherited
+          <Text style={{opacity: 0.7}}>
+            (and accumulated
+            <Text style={{opacity: 0.5, backgroundColor: '#ffaaaa'}}>
+              (and also applies to the background)
+            </Text>
+            )
+          </Text>
+          )
+        </Text>
+        )
+      </Text>
     </>
   );
 }
@@ -1429,7 +1444,7 @@ const examples = [
             testID="text-box-shadow"
             style={{
               borderRadius: 10,
-              experimental_boxShadow: '0 0 10px red',
+              boxShadow: '0 0 10px red',
             }}>
             Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
             eiusmod tempor incididunt ut labore et dolore magna aliqua.

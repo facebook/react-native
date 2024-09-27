@@ -1,0 +1,45 @@
+name: Trigger E2E Tests on Comment
+# This workflow is used to automatically trigger E2E tests when a comment is made
+# containing the text "/run-e2e-tests".
+
+on:
+  issue_comment:
+    types: [created]
+permissions:
+  contents: read
+jobs:
+  trigger-e2e-tests:
+    name: Trigger E2E Tests
+    runs-on: ubuntu-latest
+    if: github.event.issue.pull_request != '' && contains(github.event.comment.body, '/test-e2e')
+    steps:
+      # This is needed because of https://github.com/actions/runner-images/issues/6283
+      # TL;DR: brew is not in the PATH anymore.
+      - name: Setup Homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+      - name: Install jq
+        run: brew install jq
+      - name: Run E2E Tests
+        run: |
+          # Github does not provide the branch of a PR when a comment on a PR is made
+          # So, given the issue number, which is the PR number, we can retrieve the branch with
+          # a quick API call
+          echo "Retrieving branch"
+          BRANCH=$(curl -L \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/facebook/react-native/pulls/$PR_NUMBER | jq -r '.head.ref')
+
+          echo "Trigger Test All workflow for branch $BRANCH"
+          curl -L \
+            -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/facebook/react-native/actions/workflows/test-all.yml/dispatches \
+            -d "{\"ref\": \"$BRANCH\", \"inputs\": {\"run-e2e-tests\": \"true\"}}"
+
+        env:
+          GITHUB_TOKEN: ${{ secrets.REACT_NATIVE_BOT_GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.issue.number }}

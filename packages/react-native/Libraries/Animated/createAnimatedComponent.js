@@ -8,6 +8,8 @@
  * @format
  */
 
+import type {AnimatedPropsAllowlist} from './nodes/AnimatedProps';
+
 import composeStyles from '../../src/private/styles/composeStyles';
 import View from '../Components/View/View';
 import useMergeRefs from '../Utilities/useMergeRefs';
@@ -15,14 +17,15 @@ import useAnimatedProps from './useAnimatedProps';
 import * as React from 'react';
 import {useMemo} from 'react';
 
-// $FlowFixMe[deprecated-type]
-export type AnimatedProps<Props: {...}> = $ObjMap<
-  Props &
-    $ReadOnly<{
-      passthroughAnimatedPropExplicitValues?: React.ElementConfig<typeof View>,
-    }>,
-  () => any,
->;
+export type AnimatedProps<Props: {...}> = {
+  // eslint-disable-next-line no-unused-vars
+  +[_K in keyof (Props &
+      $ReadOnly<{
+        passthroughAnimatedPropExplicitValues?: React.ElementConfig<
+          typeof View,
+        >,
+      }>)]: any,
+};
 
 export type AnimatedComponentType<
   Props: {...},
@@ -32,11 +35,22 @@ export type AnimatedComponentType<
 export default function createAnimatedComponent<TProps: {...}, TInstance>(
   Component: React.AbstractComponent<TProps, TInstance>,
 ): AnimatedComponentType<TProps, TInstance> {
+  return unstable_createAnimatedComponentWithAllowlist(Component, null);
+}
+
+export function unstable_createAnimatedComponentWithAllowlist<
+  TProps: {...},
+  TInstance,
+>(
+  Component: React.AbstractComponent<TProps, TInstance>,
+  allowlist: ?AnimatedPropsAllowlist,
+): AnimatedComponentType<TProps, TInstance> {
   const AnimatedComponent = React.forwardRef<AnimatedProps<TProps>, TInstance>(
     (props, forwardedRef) => {
       const [reducedProps, callbackRef] = useAnimatedProps<TProps, TInstance>(
         // $FlowFixMe[incompatible-call]
         props,
+        allowlist,
       );
       const ref = useMergeRefs<TInstance>(callbackRef, forwardedRef);
 

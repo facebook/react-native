@@ -9,6 +9,7 @@ package com.facebook.react.defaults
 
 import com.facebook.jni.HybridData
 import com.facebook.proguard.annotations.DoNotStrip
+import com.facebook.proguard.annotations.DoNotStripAny
 import com.facebook.react.ReactPackage
 import com.facebook.react.ReactPackageTurboModuleManagerDelegate
 import com.facebook.react.bridge.ReactApplicationContext
@@ -25,6 +26,7 @@ import com.facebook.react.runtime.cxxreactpackage.CxxReactPackage
  * TODO(T186951312): Should this be @UnstableReactNativeAPI?
  */
 @OptIn(UnstableReactNativeAPI::class)
+@DoNotStripAny
 public class DefaultTurboModuleManagerDelegate
 private constructor(
     context: ReactApplicationContext,

@@ -12,6 +12,7 @@
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/core/LayoutableShadowNode.h>
 #include <algorithm>
+
 #include "ShadowView.h"
 
 #ifdef DEBUG_LOGS_DIFFER
@@ -38,6 +39,16 @@ enum class NoBreadcrumb {};
 #endif
 
 namespace facebook::react {
+
+enum class ReparentMode { Flatten, Unflatten };
+
+bool ShadowViewNodePair::operator==(const ShadowViewNodePair& rhs) const {
+  return this->shadowNode == rhs.shadowNode;
+}
+
+bool ShadowViewNodePair::operator!=(const ShadowViewNodePair& rhs) const {
+  return !(*this == rhs);
+}
 
 /*
  * Extremely simple and naive implementation of a map.

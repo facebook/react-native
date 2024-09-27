@@ -19,8 +19,12 @@ end
 folly_config = get_folly_config()
 folly_compiler_flags = folly_config[:compiler_flags]
 folly_version = folly_config[:version]
-socket_rocket_version = '0.7.0'
-boost_compiler_flags = '-Wno-documentation'
+
+socket_rocket_config = get_socket_rocket_config()
+socket_rocket_version = socket_rocket_config[:version] 
+
+boost_config = get_boost_config()
+boost_compiler_flags = boost_config[:compiler_flags] 
 
 use_hermes = ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == '1'
 use_hermes_flag = use_hermes ? "-DUSE_HERMES=1" : ""

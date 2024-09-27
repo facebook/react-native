@@ -46,6 +46,7 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.react.uimanager.events.EventCategoryDef;
+import com.facebook.systrace.Systrace;
 import java.util.ArrayDeque;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -659,25 +660,29 @@ public class SurfaceMountingManager {
       @Nullable StateWrapper stateWrapper,
       @Nullable EventEmitterWrapper eventEmitterWrapper,
       boolean isLayoutable) {
-    View view = null;
-    ViewManager viewManager = null;
+    Systrace.beginSection(
+        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+        "SurfaceMountingManager::createViewUnsafe(" + componentName + ")");
+    try {
+      ReactStylesDiffMap propMap = new ReactStylesDiffMap(props);
 
-    ReactStylesDiffMap propMap = new ReactStylesDiffMap(props);
+      ViewState viewState = new ViewState(reactTag);
+      viewState.mCurrentProps = propMap;
+      viewState.mStateWrapper = stateWrapper;
+      viewState.mEventEmitter = eventEmitterWrapper;
+      mTagToViewState.put(reactTag, viewState);
 
-    if (isLayoutable) {
-      viewManager = mViewManagerRegistry.get(componentName);
-      // View Managers are responsible for dealing with inital state and props.
-      view =
-          viewManager.createView(
-              reactTag, mThemedReactContext, propMap, stateWrapper, mJSResponderHandler);
+      if (isLayoutable) {
+        ViewManager viewManager = mViewManagerRegistry.get(componentName);
+        // View Managers are responsible for dealing with inital state and props.
+        viewState.mView =
+            viewManager.createView(
+                reactTag, mThemedReactContext, propMap, stateWrapper, mJSResponderHandler);
+        viewState.mViewManager = viewManager;
+      }
+    } finally {
+      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     }
-
-    ViewState viewState = new ViewState(reactTag, view, viewManager);
-    viewState.mCurrentProps = propMap;
-    viewState.mStateWrapper = stateWrapper;
-    viewState.mEventEmitter = eventEmitterWrapper;
-
-    mTagToViewState.put(reactTag, viewState);
   }
 
   public void updateProps(int reactTag, ReadableMap props) {
@@ -949,7 +954,7 @@ public class SurfaceMountingManager {
     if (viewState == null) {
       // TODO T62717437 - Use a flag to determine that these event emitters belong to virtual nodes
       // only.
-      viewState = new ViewState(reactTag, null, null);
+      viewState = new ViewState(reactTag);
       mTagToViewState.put(reactTag, viewState);
     }
     EventEmitterWrapper previousEventEmitterWrapper = viewState.mEventEmitter;
@@ -1204,21 +1209,21 @@ public class SurfaceMountingManager {
    * #mTagToViewState}, and they should be updated in the same thread.
    */
   private static class ViewState {
-    @Nullable final View mView;
+    @Nullable View mView = null;
     final int mReactTag;
     final boolean mIsRoot;
-    @Nullable final ViewManager mViewManager;
-    @Nullable public ReactStylesDiffMap mCurrentProps = null;
-    @Nullable public ReadableMap mCurrentLocalData = null;
-    @Nullable public StateWrapper mStateWrapper = null;
-    @Nullable public EventEmitterWrapper mEventEmitter = null;
+    @Nullable ViewManager mViewManager = null;
+    @Nullable ReactStylesDiffMap mCurrentProps = null;
+    @Nullable ReadableMap mCurrentLocalData = null;
+    @Nullable StateWrapper mStateWrapper = null;
+    @Nullable EventEmitterWrapper mEventEmitter = null;
 
     @ThreadConfined(UI)
     @Nullable
-    public Queue<PendingViewEvent> mPendingEventQueue = null;
+    Queue<PendingViewEvent> mPendingEventQueue = null;
 
-    private ViewState(int reactTag, @Nullable View view, @Nullable ViewManager viewManager) {
-      this(reactTag, view, viewManager, false);
+    private ViewState(int reactTag) {
+      this(reactTag, null, null, false);
     }
 
     private ViewState(

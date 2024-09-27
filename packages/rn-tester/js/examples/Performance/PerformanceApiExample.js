@@ -167,7 +167,7 @@ function PerformanceObserverEventTimingExample(): React.Node {
       setEntries(newEntries);
     });
 
-    observer.observe({entryTypes: ['event']});
+    observer.observe({type: 'event'});
 
     return () => observer.disconnect();
   }, []);

@@ -27,17 +27,20 @@ import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.Role;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.events.PointerEventHelper;
+import com.facebook.react.uimanager.style.OutlineStyle;
 import com.facebook.react.uimanager.util.ReactFindViewUtil;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Base class that should be suitable for the majority of subclasses of {@link ViewManager}. It
@@ -216,15 +219,22 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   @Override
   @ReactProp(name = ViewProps.TRANSFORM)
   public void setTransform(@NonNull T view, @Nullable ReadableArray matrix) {
-    view.setTag(R.id.transform, matrix);
-    view.setTag(R.id.invalidate_transform, true);
+    @Nullable ReadableArray currentTransform = (ReadableArray) view.getTag(R.id.transform);
+    if (!Objects.equals(currentTransform, matrix)) {
+      view.setTag(R.id.transform, matrix);
+      view.setTag(R.id.invalidate_transform, true);
+    }
   }
 
   @Override
   @ReactProp(name = ViewProps.TRANSFORM_ORIGIN)
   public void setTransformOrigin(@NonNull T view, @Nullable ReadableArray transformOrigin) {
-    view.setTag(R.id.transform_origin, transformOrigin);
-    view.setTag(R.id.invalidate_transform, true);
+    @Nullable
+    ReadableArray currentTransformOrigin = (ReadableArray) view.getTag(R.id.transform_origin);
+    if (!Objects.equals(currentTransformOrigin, transformOrigin)) {
+      view.setTag(R.id.transform_origin, transformOrigin);
+      view.setTag(R.id.invalidate_transform, true);
+    }
   }
 
   @Override
@@ -770,6 +780,37 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   @Override
   public void setBorderTopRightRadius(T view, float borderRadius) {
     logUnsupportedPropertyWarning(ViewProps.BORDER_TOP_RIGHT_RADIUS);
+  }
+
+  @ReactProp(name = ViewProps.OUTLINE_COLOR, customType = "Color")
+  public void setOutlineColor(T view, @Nullable Integer color) {
+    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
+      BackgroundStyleApplicator.setOutlineColor(view, color);
+    }
+  }
+
+  @ReactProp(name = ViewProps.OUTLINE_OFFSET)
+  public void setOutlineOffset(T view, float offset) {
+    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
+      BackgroundStyleApplicator.setOutlineOffset(view, offset);
+    }
+  }
+
+  @ReactProp(name = ViewProps.OUTLINE_STYLE)
+  public void setOutlineStyle(T view, @Nullable String outlineStyle) {
+    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
+      @Nullable
+      OutlineStyle parsedOutlineStyle =
+          outlineStyle == null ? null : OutlineStyle.fromString(outlineStyle);
+      BackgroundStyleApplicator.setOutlineStyle(view, parsedOutlineStyle);
+    }
+  }
+
+  @ReactProp(name = ViewProps.OUTLINE_WIDTH)
+  public void setOutlineWidth(T view, float width) {
+    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
+      BackgroundStyleApplicator.setOutlineWidth(view, width);
+    }
   }
 
   private void logUnsupportedPropertyWarning(String propName) {

@@ -34,6 +34,8 @@ class FabricMountingManager final {
 
   void maybePreallocateShadowNode(const ShadowNode& shadowNode);
 
+  void destroyUnmountedShadowNode(const ShadowNodeFamily& family);
+
   /*
    * Drains preallocatedViewsQueue_ by calling preallocateShadowView on each
    * item in the queue. Can be called by any thread.
@@ -80,10 +82,6 @@ class FabricMountingManager final {
   std::unordered_map<SurfaceId, std::unordered_set<Tag>>
       allocatedViewRegistry_{};
   std::recursive_mutex allocatedViewsMutex_;
-
-  jni::local_ref<jobject> getProps(
-      const ShadowView& oldShadowView,
-      const ShadowView& newShadowView);
 
   /*
    * Calls FabricUIManager.preallocateView() on the Java side if view needs to

@@ -50,7 +50,7 @@ ${Object.entries(definitions.common)
   .map(
     ([flagName, flagConfig]) =>
       `  /**
-   * ${flagConfig.description}
+   * ${flagConfig.metadata.description}
    */
   @JvmStatic
   public fun ${flagName}(): ${getKotlinTypeFromDefaultValue(flagConfig.defaultValue)} = accessor.${flagName}()`,

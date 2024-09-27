@@ -15,6 +15,7 @@
 
 #include <yoga/algorithm/FlexDirection.h>
 #include <yoga/enums/Align.h>
+#include <yoga/enums/BoxSizing.h>
 #include <yoga/enums/Dimension.h>
 #include <yoga/enums/Direction.h>
 #include <yoga/enums/Display.h>
@@ -199,7 +200,18 @@ class YG_EXPORT Style {
     return pool_.getNumber(aspectRatio_);
   }
   void setAspectRatio(FloatOptional value) {
-    pool_.store(aspectRatio_, value);
+    // degenerate aspect ratios act as auto.
+    // see https://drafts.csswg.org/css-sizing-4/#valdef-aspect-ratio-ratio
+    pool_.store(
+        aspectRatio_,
+        value == 0.0f || std::isinf(value.unwrap()) ? FloatOptional{} : value);
+  }
+
+  BoxSizing boxSizing() const {
+    return boxSizing_;
+  }
+  void setBoxSizing(BoxSizing value) {
+    boxSizing_ = value;
   }
 
   bool horizontalInsetsDefined() const {
@@ -223,20 +235,38 @@ class YG_EXPORT Style {
     return computePosition(flexStartEdge(axis), direction).isDefined();
   }
 
+  bool isFlexStartPositionAuto(FlexDirection axis, Direction direction) const {
+    return computePosition(flexStartEdge(axis), direction).isAuto();
+  }
+
   bool isInlineStartPositionDefined(FlexDirection axis, Direction direction)
       const {
     return computePosition(inlineStartEdge(axis, direction), direction)
         .isDefined();
   }
 
+  bool isInlineStartPositionAuto(FlexDirection axis, Direction direction)
+      const {
+    return computePosition(inlineStartEdge(axis, direction), direction)
+        .isAuto();
+  }
+
   bool isFlexEndPositionDefined(FlexDirection axis, Direction direction) const {
     return computePosition(flexEndEdge(axis), direction).isDefined();
+  }
+
+  bool isFlexEndPositionAuto(FlexDirection axis, Direction direction) const {
+    return computePosition(flexEndEdge(axis), direction).isAuto();
   }
 
   bool isInlineEndPositionDefined(FlexDirection axis, Direction direction)
       const {
     return computePosition(inlineEndEdge(axis, direction), direction)
         .isDefined();
+  }
+
+  bool isInlineEndPositionAuto(FlexDirection axis, Direction direction) const {
+    return computePosition(inlineEndEdge(axis, direction), direction).isAuto();
   }
 
   float computeFlexStartPosition(
@@ -653,6 +683,7 @@ class YG_EXPORT Style {
   Wrap flexWrap_ : bitCount<Wrap>() = Wrap::NoWrap;
   Overflow overflow_ : bitCount<Overflow>() = Overflow::Visible;
   Display display_ : bitCount<Display>() = Display::Flex;
+  BoxSizing boxSizing_ : bitCount<BoxSizing>() = BoxSizing::BorderBox;
 
   StyleValueHandle flex_{};
   StyleValueHandle flexGrow_{};

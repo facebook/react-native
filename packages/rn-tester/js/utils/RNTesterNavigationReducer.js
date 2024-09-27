@@ -19,6 +19,7 @@ export const RNTesterNavigationActionsType = {
   MODULE_CARD_PRESS: 'MODULE_CARD_PRESS',
   EXAMPLE_CARD_PRESS: 'EXAMPLE_CARD_PRESS',
   EXAMPLE_OPEN_URL_REQUEST: 'EXAMPLE_OPEN_URL_REQUEST',
+  NAVBAR_OPEN_MODULE_PRESS: 'NAVBAR_OPEN_MODULE_PRESS',
 };
 
 const getUpdatedRecentlyUsed = ({
@@ -77,6 +78,16 @@ export const RNTesterNavigationReducer = (
         hadDeepLink: false,
       };
 
+    case RNTesterNavigationActionsType.NAVBAR_OPEN_MODULE_PRESS:
+      return {
+        ...state,
+        activeModuleKey: key,
+        activeModuleTitle: title,
+        activeModuleExampleKey: null,
+        screen,
+        hadDeepLink: true,
+      };
+
     case RNTesterNavigationActionsType.MODULE_CARD_PRESS:
       return {
         ...state,
@@ -99,7 +110,6 @@ export const RNTesterNavigationReducer = (
 
     case RNTesterNavigationActionsType.BACK_BUTTON_PRESS:
       // Go back to module or list.
-      // If there was a deeplink navigation, pressing Back should bring us back to the root.
       return {
         ...state,
         activeModuleExampleKey: null,
@@ -112,6 +122,8 @@ export const RNTesterNavigationReducer = (
             ? state.activeModuleTitle
             : null,
         hadDeepLink: false,
+        // If there was a deeplink navigation, pressing Back should bring us back to the root.
+        screen: state.hadDeepLink ? 'components' : state.screen,
       };
 
     case RNTesterNavigationActionsType.EXAMPLE_OPEN_URL_REQUEST:
@@ -121,6 +133,7 @@ export const RNTesterNavigationReducer = (
         activeModuleTitle: title,
         activeModuleExampleKey: exampleKey,
         hadDeepLink: true,
+        screen: 'components',
       };
 
     default:

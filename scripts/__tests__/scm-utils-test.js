@@ -11,7 +11,7 @@ const {isTaggedLatest, revertFiles, saveFiles} = require('../scm-utils');
 
 let execResult = null;
 const cpMock = jest.fn();
-const mkdirpSyncMock = jest.fn();
+const mkdirSyncMock = jest.fn();
 jest
   .mock('shelljs', () => ({
     exec: () => {
@@ -29,6 +29,7 @@ jest
   }))
   .mock('fs', () => ({
     existsSync: jest.fn().mockImplementation(_ => true),
+    mkdirSync: mkdirSyncMock,
   }))
   .mock('path', () => ({
     dirname: jest
@@ -36,9 +37,6 @@ jest
       .mockImplementation(filePath =>
         filePath.includes('/') ? filePath.split('/')[0] : '.',
       ),
-  }))
-  .mock('mkdirp', () => ({
-    sync: mkdirpSyncMock,
   }));
 
 describe('scm-utils', () => {
@@ -64,7 +62,9 @@ describe('scm-utils', () => {
     it('it should save files in the temp folder', () => {
       const tmpFolder = '/tmp';
       saveFiles(['package.json', 'android/package.json'], tmpFolder);
-      expect(mkdirpSyncMock).toHaveBeenCalledWith(`${tmpFolder}/android`);
+      expect(mkdirSyncMock).toHaveBeenCalledWith(`${tmpFolder}/android`, {
+        recursive: true,
+      });
       expect(cpMock).toHaveBeenNthCalledWith(
         1,
         'package.json',

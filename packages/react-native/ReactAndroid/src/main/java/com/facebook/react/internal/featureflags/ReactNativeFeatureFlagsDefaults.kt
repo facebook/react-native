@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2ac7adf2656a8a356cc1b4d8f40bd20b>>
+ * @generated SignedSource<<8155a9c1309145fefdb19feb33c241db>>
  */
 
 /**
@@ -35,11 +35,17 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableAlignItemsBaselineOnFabricIOS(): Boolean = true
 
+  override fun enableAndroidLineHeightCentering(): Boolean = false
+
   override fun enableAndroidMixBlendModeProp(): Boolean = false
 
   override fun enableBackgroundStyleApplicator(): Boolean = true
 
+  override fun enableBridgelessArchitecture(): Boolean = false
+
   override fun enableCleanTextInputYogaNode(): Boolean = false
+
+  override fun enableDeletionOfUnmountedViews(): Boolean = false
 
   override fun enableEagerRootViewAttachment(): Boolean = false
 
@@ -47,9 +53,13 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableFabricLogs(): Boolean = false
 
+  override fun enableFabricRenderer(): Boolean = false
+
   override fun enableFabricRendererExclusively(): Boolean = false
 
   override fun enableGranularShadowTreeStateReconciliation(): Boolean = false
+
+  override fun enableIOSViewClipToPaddingBox(): Boolean = false
 
   override fun enableLayoutAnimationsOnIOS(): Boolean = true
 
@@ -57,11 +67,15 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableMicrotasks(): Boolean = false
 
+  override fun enablePreciseSchedulingForPremountItemsOnAndroid(): Boolean = false
+
   override fun enablePropsUpdateReconciliationAndroid(): Boolean = false
 
   override fun enableReportEventPaintTime(): Boolean = false
 
   override fun enableSynchronousStateUpdates(): Boolean = false
+
+  override fun enableTextPreallocationOptimisation(): Boolean = false
 
   override fun enableUIConsistency(): Boolean = false
 
@@ -71,11 +85,9 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun fetchImagesInViewPreallocation(): Boolean = false
 
-  override fun fixIncorrectScrollViewStateUpdateOnAndroid(): Boolean = false
-
   override fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean = false
 
-  override fun fixMissedFabricStateUpdatesOnAndroid(): Boolean = false
+  override fun fixMountingCoordinatorReportedPendingTransactionsOnAndroid(): Boolean = false
 
   override fun forceBatchingMountItemsOnAndroid(): Boolean = false
 
@@ -88,6 +100,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun lazyAnimationCallbacks(): Boolean = false
 
   override fun loadVectorDrawablesOnImages(): Boolean = false
+
+  override fun removeNestedCallsToDispatchMountItemsOnAndroid(): Boolean = false
 
   override fun setAndroidLayoutDirection(): Boolean = false
 
@@ -105,6 +119,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun useOptimisedViewPreallocationOnAndroid(): Boolean = false
 
+  override fun useOptimizedEventBatchingOnAndroid(): Boolean = false
+
   override fun useRuntimeShadowNodeReferenceUpdate(): Boolean = false
 
   override fun useRuntimeShadowNodeReferenceUpdateOnLayout(): Boolean = false
@@ -112,4 +128,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun useStateAlignmentMechanism(): Boolean = false
 
   override fun useTurboModuleInterop(): Boolean = false
+
+  override fun useTurboModules(): Boolean = false
 }

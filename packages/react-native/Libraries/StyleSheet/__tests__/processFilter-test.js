@@ -115,6 +115,13 @@ describe('processFilter', () => {
       processFilter('brightness(0.5) opacity(0.5) blur(5) hue-rotate(90deg)'),
     ).toEqual([{brightness: 0.5}, {opacity: 0.5}, {blur: 5}, {hueRotate: 90}]);
   });
+  it('string multiple filters with newlines', () => {
+    expect(
+      processFilter(
+        'brightness(0.5)\n   opacity(0.5)\n   blur(5)\n   hue-rotate(90deg)',
+      ),
+    ).toEqual([{brightness: 0.5}, {opacity: 0.5}, {blur: 5}, {hueRotate: 90}]);
+  });
   it('string multiple filters one invalid', () => {
     expect(
       processFilter('brightness(0.5) opacity(0.5) blur(5) hue-rotate(90foo)'),

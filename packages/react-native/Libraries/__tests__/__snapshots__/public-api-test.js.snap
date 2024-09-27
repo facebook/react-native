@@ -372,102 +372,15 @@ declare export default typeof Easing;
 "
 `;
 
-exports[`public API should not change unintentionally Libraries/Animated/NativeAnimatedHelper.js 1`] = `
-"declare const API: {
-  getValue: (tag: number, saveValueCallback: (value: number) => void) => void,
-  setWaitingForIdentifier: (id: string) => void,
-  unsetWaitingForIdentifier: (id: string) => void,
-  disableQueue: () => void,
-  flushQueue: () => void,
-  queueOperation: <Args: $ReadOnlyArray<mixed>, Fn: (...Args) => void>(
-    fn: Fn,
-    ...args: Args
-  ) => void,
-  createAnimatedNode: (tag: number, config: AnimatedNodeConfig) => void,
-  updateAnimatedNodeConfig: (tag: number, config: AnimatedNodeConfig) => void,
-  startListeningToAnimatedNodeValue: (tag: number) => void,
-  stopListeningToAnimatedNodeValue: (tag: number) => void,
-  connectAnimatedNodes: (parentTag: number, childTag: number) => void,
-  disconnectAnimatedNodes: (parentTag: number, childTag: number) => void,
-  startAnimatingNode: (
-    animationId: number,
-    nodeTag: number,
-    config: AnimatingNodeConfig,
-    endCallback: EndCallback
-  ) => void,
-  stopAnimation: (animationId: number) => void,
-  setAnimatedNodeValue: (nodeTag: number, value: number) => void,
-  setAnimatedNodeOffset: (nodeTag: number, offset: number) => void,
-  flattenAnimatedNodeOffset: (nodeTag: number) => void,
-  extractAnimatedNodeOffset: (nodeTag: number) => void,
-  connectAnimatedNodeToView: (nodeTag: number, viewTag: number) => void,
-  disconnectAnimatedNodeFromView: (nodeTag: number, viewTag: number) => void,
-  restoreDefaultValues: (nodeTag: number) => void,
-  dropAnimatedNode: (tag: number) => void,
-  addAnimatedEventToView: (
-    viewTag: number,
-    eventName: string,
-    eventMapping: EventMapping
-  ) => void,
-  removeAnimatedEventFromView(
-    viewTag: number,
-    eventName: string,
-    animatedNodeTag: number
-  ): void,
-};
-declare function addWhitelistedStyleProp(prop: string): void;
-declare function addWhitelistedTransformProp(prop: string): void;
-declare function addWhitelistedInterpolationParam(param: string): void;
-declare function isSupportedColorStyleProp(prop: string): boolean;
-declare function isSupportedStyleProp(prop: string): boolean;
-declare function isSupportedTransformProp(prop: string): boolean;
-declare function isSupportedInterpolationParam(param: string): boolean;
-declare function validateTransform(
-  configs: Array<
-    | {
-        type: \\"animated\\",
-        property: string,
-        nodeTag: ?number,
-        ...
-      }
-    | {
-        type: \\"static\\",
-        property: string,
-        value: number | string,
-        ...
-      },
-  >
-): void;
-declare function validateStyles(styles: { [key: string]: ?number, ... }): void;
-declare function validateInterpolation<OutputT: number | string>(
-  config: InterpolationConfigType<OutputT>
-): void;
-declare function generateNewNodeTag(): number;
-declare function generateNewAnimationId(): number;
-declare function assertNativeAnimatedModule(): void;
-declare function shouldUseNativeDriver(
-  config: $ReadOnly<{ ...AnimationConfig, ... }> | EventConfig
-): boolean;
-declare function transformDataType(value: number | string): number | string;
-declare export default {
-  API: API,
-  isSupportedColorStyleProp: isSupportedColorStyleProp,
-  isSupportedStyleProp: isSupportedStyleProp,
-  isSupportedTransformProp: isSupportedTransformProp,
-  isSupportedInterpolationParam: isSupportedInterpolationParam,
-  addWhitelistedStyleProp: addWhitelistedStyleProp,
-  addWhitelistedTransformProp: addWhitelistedTransformProp,
-  addWhitelistedInterpolationParam: addWhitelistedInterpolationParam,
-  validateStyles: validateStyles,
-  validateTransform: validateTransform,
-  validateInterpolation: validateInterpolation,
-  generateNewNodeTag: generateNewNodeTag,
-  generateNewAnimationId: generateNewAnimationId,
-  assertNativeAnimatedModule: assertNativeAnimatedModule,
-  shouldUseNativeDriver: shouldUseNativeDriver,
-  transformDataType: transformDataType,
-  get nativeEventEmitter(): NativeEventEmitter,
-};
+exports[`public API should not change unintentionally Libraries/Animated/NativeAnimatedAllowlist.js 1`] = `
+"declare export default AnimatedPropsAllowlist;
+declare export function allowInterpolationParam(param: string): void;
+declare export function allowStyleProp(prop: string): void;
+declare export function allowTransformProp(prop: string): void;
+declare export function isSupportedColorStyleProp(prop: string): boolean;
+declare export function isSupportedInterpolationParam(param: string): boolean;
+declare export function isSupportedStyleProp(prop: string): boolean;
+declare export function isSupportedTransformProp(prop: string): boolean;
 "
 `;
 
@@ -800,13 +713,14 @@ exports[`public API should not change unintentionally Libraries/Animated/compone
 `;
 
 exports[`public API should not change unintentionally Libraries/Animated/createAnimatedComponent.js 1`] = `
-"export type AnimatedProps<Props: { ... }> = $ObjMap<
-  Props &
-    $ReadOnly<{
-      passthroughAnimatedPropExplicitValues?: React.ElementConfig<typeof View>,
-    }>,
-  () => any,
->;
+"export type AnimatedProps<Props: { ... }> = {
+  +[_K in keyof (Props &
+      $ReadOnly<{
+        passthroughAnimatedPropExplicitValues?: React.ElementConfig<
+          typeof View,
+        >,
+      }>)]: any,
+};
 export type AnimatedComponentType<
   Props: { ... },
   +Instance = mixed,
@@ -816,6 +730,13 @@ declare export default function createAnimatedComponent<
   TInstance,
 >(
   Component: React.AbstractComponent<TProps, TInstance>
+): AnimatedComponentType<TProps, TInstance>;
+declare export function unstable_createAnimatedComponentWithAllowlist<
+  TProps: { ... },
+  TInstance,
+>(
+  Component: React.AbstractComponent<TProps, TInstance>,
+  allowlist: ?AnimatedPropsAllowlist
 ): AnimatedComponentType<TProps, TInstance>;
 "
 `;
@@ -990,11 +911,8 @@ exports[`public API should not change unintentionally Libraries/Animated/nodes/A
 `;
 
 exports[`public API should not change unintentionally Libraries/Animated/nodes/AnimatedNode.js 1`] = `
-"type ValueListenerCallback = (state: { value: number, ... }) => mixed;
-declare export default class AnimatedNode {
-  _listeners: { [key: string]: ValueListenerCallback, ... };
+"declare export default class AnimatedNode {
   _platformConfig: ?PlatformConfig;
-  __nativeAnimatedValueListener: ?any;
   __attach(): void;
   __detach(): void;
   __getValue(): any;
@@ -1004,32 +922,32 @@ declare export default class AnimatedNode {
   __getChildren(): $ReadOnlyArray<AnimatedNode>;
   __isNative: boolean;
   __nativeTag: ?number;
-  __shouldUpdateListenersForNewNativeTag: boolean;
-  constructor(): void;
   __makeNative(platformConfig: ?PlatformConfig): void;
   addListener(callback: (value: any) => mixed): string;
   removeListener(id: string): void;
   removeAllListeners(): void;
   hasListeners(): boolean;
-  _startListeningToNativeValueUpdates(): void;
   __onAnimatedValueUpdateReceived(value: number): void;
   __callListeners(value: number): void;
-  _stopListeningForNativeValueUpdates(): void;
   __getNativeTag(): number;
   __getNativeConfig(): Object;
-  toJSON(): any;
   __getPlatformConfig(): ?PlatformConfig;
   __setPlatformConfig(platformConfig: ?PlatformConfig): void;
+  toJSON(): mixed;
 }
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Animated/nodes/AnimatedObject.js 1`] = `
-"declare export function hasAnimatedNode(value: any, depth: number): boolean;
+"declare export function isPlainObject(
+  value: mixed
+): value is $ReadOnly<{ [string]: mixed }>;
 declare export default class AnimatedObject extends AnimatedWithChildren {
-  _value: any;
-  constructor(value: any): void;
+  _value: mixed;
+  static from(value: mixed): ?AnimatedObject;
+  constructor(nodes: $ReadOnlyArray<AnimatedNode>, value: mixed): void;
   __getValue(): any;
+  __getValueWithStaticObject(staticObject: mixed): any;
   __getAnimatedValue(): any;
   __attach(): void;
   __detach(): void;
@@ -1040,12 +958,18 @@ declare export default class AnimatedObject extends AnimatedWithChildren {
 `;
 
 exports[`public API should not change unintentionally Libraries/Animated/nodes/AnimatedProps.js 1`] = `
-"declare export default class AnimatedProps extends AnimatedNode {
-  _props: Object;
-  _animatedView: any;
-  _callback: () => void;
-  constructor(props: Object, callback: () => void): void;
+"export type AnimatedPropsAllowlist = $ReadOnly<{
+  style?: ?AnimatedStyleAllowlist,
+  [string]: true,
+}>;
+declare export default class AnimatedProps extends AnimatedNode {
+  constructor(
+    inputProps: { [string]: mixed },
+    callback: () => void,
+    allowlist?: ?AnimatedPropsAllowlist
+  ): void;
   __getValue(): Object;
+  __getValueWithStaticProps(staticProps: Object): Object;
   __getAnimatedValue(): Object;
   __attach(): void;
   __detach(): void;
@@ -1061,11 +985,20 @@ exports[`public API should not change unintentionally Libraries/Animated/nodes/A
 `;
 
 exports[`public API should not change unintentionally Libraries/Animated/nodes/AnimatedStyle.js 1`] = `
-"declare export default class AnimatedStyle extends AnimatedWithChildren {
-  _inputStyle: any;
-  _style: Object;
-  constructor(style: any): void;
+"export type AnimatedStyleAllowlist = $ReadOnly<{ [string]: true }>;
+declare export default class AnimatedStyle extends AnimatedWithChildren {
+  static from(
+    inputStyle: any,
+    allowlist: ?AnimatedStyleAllowlist
+  ): ?AnimatedStyle;
+  constructor(
+    nodeKeys: $ReadOnlyArray<string>,
+    nodes: $ReadOnlyArray<AnimatedNode>,
+    style: { [string]: mixed },
+    inputStyle: any
+  ): void;
   __getValue(): Object | Array<Object>;
+  __getValueWithStaticStyle(staticStyle: Object): Object | Array<Object>;
   __getAnimatedValue(): Object;
   __attach(): void;
   __detach(): void;
@@ -1118,16 +1051,30 @@ exports[`public API should not change unintentionally Libraries/Animated/nodes/A
 `;
 
 exports[`public API should not change unintentionally Libraries/Animated/nodes/AnimatedTransform.js 1`] = `
-"declare export default class AnimatedTransform extends AnimatedWithChildren {
-  _transforms: $ReadOnlyArray<Object>;
-  constructor(transforms: $ReadOnlyArray<Object>): void;
+"type Transform<T = AnimatedNode> = {
+  [string]:
+    | number
+    | string
+    | T
+    | $ReadOnlyArray<number | string | T>
+    | { [string]: number | string | T },
+};
+declare export default class AnimatedTransform extends AnimatedWithChildren {
+  _transforms: $ReadOnlyArray<Transform<>>;
+  static from(transforms: $ReadOnlyArray<Transform<>>): ?AnimatedTransform;
+  constructor(
+    nodes: $ReadOnlyArray<AnimatedNode>,
+    transforms: $ReadOnlyArray<Transform<>>
+  ): void;
   __makeNative(platformConfig: ?PlatformConfig): void;
-  __getValue(): $ReadOnlyArray<Object>;
-  __getAnimatedValue(): $ReadOnlyArray<Object>;
+  __getValue(): $ReadOnlyArray<Transform<any>>;
+  __getValueWithStaticTransforms(
+    staticTransforms: $ReadOnlyArray<Object>
+  ): $ReadOnlyArray<Object>;
+  __getAnimatedValue(): $ReadOnlyArray<Transform<any>>;
   __attach(): void;
   __detach(): void;
   __getNativeConfig(): any;
-  _get(getter: (AnimatedNode) => any): $ReadOnlyArray<Object>;
 }
 "
 `;
@@ -1219,7 +1166,6 @@ declare export default class AnimatedValueXY extends AnimatedWithChildren {
 exports[`public API should not change unintentionally Libraries/Animated/nodes/AnimatedWithChildren.js 1`] = `
 "declare export default class AnimatedWithChildren extends AnimatedNode {
   _children: Array<AnimatedNode>;
-  constructor(): void;
   __makeNative(platformConfig: ?PlatformConfig): void;
   __addChild(child: AnimatedNode): void;
   __removeChild(child: AnimatedNode): void;
@@ -1243,7 +1189,8 @@ exports[`public API should not change unintentionally Libraries/Animated/useAnim
 };
 type CallbackRef<T> = (T) => mixed;
 declare export default function useAnimatedProps<TProps: { ... }, TInstance>(
-  props: TProps
+  props: TProps,
+  allowlist?: ?AnimatedPropsAllowlist
 ): [ReducedProps<TProps>, CallbackRef<TInstance | null>];
 "
 `;
@@ -1833,10 +1780,12 @@ declare class KeyboardAvoidingView extends React.Component<Props, State> {
   viewRef: { current: React.ElementRef<typeof View> | null, ... };
   _initialFrameHeight: number;
   _bottom: number;
+  _windowWidth: number;
   constructor(props: Props): void;
   _relativeKeyboardHeight(keyboardFrame: KeyboardMetrics): Promise<number>;
   _onKeyboardChange: $FlowFixMe;
   _onLayout: $FlowFixMe;
+  _onDimensionsChange: $FlowFixMe;
   _setBottom: $FlowFixMe;
   _updateBottomIfNecessary: $FlowFixMe;
   componentDidUpdate(_: Props, prevState: State): void;
@@ -2962,7 +2911,10 @@ export type TextContentType =
   | \\"birthdate\\"
   | \\"birthdateDay\\"
   | \\"birthdateMonth\\"
-  | \\"birthdateYear\\";
+  | \\"birthdateYear\\"
+  | \\"dateTime\\"
+  | \\"flightNumber\\"
+  | \\"shipmentTrackingNumber\\";
 export type enterKeyHintType =
   | \\"enter\\"
   | \\"done\\"
@@ -2987,6 +2939,14 @@ type IOSProps = $ReadOnly<{|
   spellCheck?: ?boolean,
   textContentType?: ?TextContentType,
   lineBreakStrategyIOS?: ?(\\"none\\" | \\"standard\\" | \\"hangul-word\\" | \\"push-out\\"),
+  lineBreakModeIOS?: ?(
+    | \\"wordWrapping\\"
+    | \\"char\\"
+    | \\"clip\\"
+    | \\"head\\"
+    | \\"middle\\"
+    | \\"tail\\"
+  ),
   smartInsertDelete?: ?boolean,
 |}>;
 type AndroidProps = $ReadOnly<{|
@@ -3307,7 +3267,10 @@ export type TextContentType =
   | \\"birthdate\\"
   | \\"birthdateDay\\"
   | \\"birthdateMonth\\"
-  | \\"birthdateYear\\";
+  | \\"birthdateYear\\"
+  | \\"dateTime\\"
+  | \\"flightNumber\\"
+  | \\"shipmentTrackingNumber\\";
 export type enterKeyHintType =
   | \\"done\\"
   | \\"go\\"
@@ -3332,6 +3295,14 @@ type IOSProps = $ReadOnly<{|
   spellCheck?: ?boolean,
   textContentType?: ?TextContentType,
   lineBreakStrategyIOS?: ?(\\"none\\" | \\"standard\\" | \\"hangul-word\\" | \\"push-out\\"),
+  lineBreakModeIOS?: ?(
+    | \\"wordWrapping\\"
+    | \\"char\\"
+    | \\"clip\\"
+    | \\"head\\"
+    | \\"middle\\"
+    | \\"tail\\"
+  ),
   smartInsertDelete?: ?boolean,
 |}>;
 type AndroidProps = $ReadOnly<{|
@@ -3678,7 +3649,7 @@ exports[`public API should not change unintentionally Libraries/Components/Touch
   releaseBounciness?: ?number,
   releaseVelocity?: ?number,
   style?: ?ViewStyleProp,
-  hostRef: React.Ref<typeof Animated.View>,
+  hostRef: React.RefSetter<React.ElementRef<typeof Animated.View>>,
 |}>;
 declare module.exports: React.AbstractComponent<
   $ReadOnly<$Diff<Props, {| hostRef: mixed |}>>,
@@ -3707,10 +3678,10 @@ type Props = $ReadOnly<{|
   onShowUnderlay?: ?() => void,
   onHideUnderlay?: ?() => void,
   testOnly_pressed?: ?boolean,
-  hostRef: React.Ref<typeof View>,
+  hostRef: React.RefSetter<React.ElementRef<typeof View>>,
 |}>;
 declare const Touchable: React.AbstractComponent<
-  $ReadOnly<$Diff<Props, {| hostRef: React.Ref<typeof View> |}>>,
+  $ReadOnly<$Diff<Props, {| +hostRef: mixed |}>>,
   React.ElementRef<typeof View>,
 >;
 declare module.exports: Touchable;
@@ -3795,7 +3766,7 @@ type Props = $ReadOnly<{|
   ...TVProps,
   activeOpacity?: ?number,
   style?: ?ViewStyleProp,
-  hostRef?: ?React.Ref<typeof Animated.View>,
+  hostRef?: ?React.RefSetter<React.ElementRef<typeof Animated.View>>,
 |}>;
 declare const Touchable: React.AbstractComponent<
   Props,
@@ -6408,6 +6379,7 @@ export type Props = $ReadOnly<{|
     | \\"landscape-right\\",
   >,
   onOrientationChange?: ?DirectEventHandler<OrientationChangeEvent>,
+  backdropColor?: ?string,
 |}>;
 type State = {
   isRendered: boolean,
@@ -7866,6 +7838,7 @@ export type TouchedViewDataAtPoint = $ReadOnly<{
     width: number,
     height: number,
   }>,
+  closestPublicInstance?: PublicInstance,
   ...InspectorData,
 }>;
 export type RenderRootOptions = {
@@ -7913,8 +7886,8 @@ export type ReactNativeType = {
   ): ?ElementRef<ElementType>,
   unmountComponentAtNode(containerTag: number): void,
   unmountComponentAtNodeAndRemoveContainer(containerTag: number): void,
-  unstable_batchedUpdates: <T>(fn: (T) => void, bookkeeping: T) => void,
-  __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED: SecretInternalsType,
+  +unstable_batchedUpdates: <T>(fn: (T) => void, bookkeeping: T) => void,
+  +__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED: SecretInternalsType,
   ...
 };
 declare export opaque type Node;
@@ -8316,8 +8289,8 @@ export type FilterFunction =
   | { opacity: number | string }
   | { saturate: number | string }
   | { sepia: number | string }
-  | { dropShadow: DropShadowPrimitive | string };
-export type DropShadowPrimitive = {
+  | { dropShadow: DropShadowValue | string };
+export type DropShadowValue = {
   offsetX: number | string,
   offsetY: number | string,
   standardDeviation?: number | string,
@@ -8331,7 +8304,7 @@ export type GradientValue = {
     positions?: $ReadOnlyArray<string>,
   }>,
 };
-export type BoxShadowPrimitive = {
+export type BoxShadowValue = {
   offsetX: number | string,
   offsetY: number | string,
   color?: ____ColorValue_Internal,
@@ -8395,11 +8368,15 @@ export type ____ViewStyle_InternalCore = $ReadOnly<{
   borderStartWidth?: AnimatableNumericValue,
   borderTopWidth?: AnimatableNumericValue,
   opacity?: AnimatableNumericValue,
+  outlineColor?: ____ColorValue_Internal,
+  outlineOffset?: AnimatableNumericValue,
+  outlineStyle?: \\"solid\\" | \\"dotted\\" | \\"dashed\\",
+  outlineWidth?: AnimatableNumericValue,
   elevation?: number,
   pointerEvents?: \\"auto\\" | \\"none\\" | \\"box-none\\" | \\"box-only\\",
   cursor?: CursorValue,
-  experimental_boxShadow?: $ReadOnlyArray<BoxShadowPrimitive> | string,
-  experimental_filter?: $ReadOnlyArray<FilterFunction> | string,
+  boxShadow?: $ReadOnlyArray<BoxShadowValue> | string,
+  filter?: $ReadOnlyArray<FilterFunction> | string,
   experimental_mixBlendMode?: ____BlendMode_Internal,
   experimental_backgroundImage?: $ReadOnlyArray<GradientValue> | string,
   isolation?: \\"auto\\" | \\"isolate\\",
@@ -8670,7 +8647,7 @@ exports[`public API should not change unintentionally Libraries/StyleSheet/proce
   inset?: boolean,
 };
 declare export default function processBoxShadow(
-  rawBoxShadows: ?($ReadOnlyArray<BoxShadowPrimitive> | string)
+  rawBoxShadows: ?($ReadOnlyArray<BoxShadowValue> | string)
 ): Array<ParsedBoxShadow>;
 "
 `;

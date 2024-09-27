@@ -839,6 +839,74 @@ class UtilsTests < Test::Unit::TestCase
         end
     end
 
+    # ====================================== #
+    # Test - Add Search Path If Not Included #
+    # ====================================== #
+    # Tests for string input
+    def test_add_search_path_if_not_included_adds_new_path_to_string
+        current_paths = "/path/to/headers /another/path"
+        new_path = "/new/path"
+        result = ReactNativePodsUtils.add_search_path_if_not_included(current_paths, new_path)
+        assert_equal("/path/to/headers /another/path /new/path", result)
+    end
+
+    def test_add_search_path_if_not_included_does_not_add_existing_path_to_string
+        current_paths = "/path/to/headers /another/path"
+        new_path = "/another/path"
+        result = ReactNativePodsUtils.add_search_path_if_not_included(current_paths, new_path)
+        assert_equal("/path/to/headers /another/path", result)
+    end
+
+    def test_add_search_path_if_not_included_does_not_add_existing_path_with_leading_space_to_string
+        current_paths = " /path/with/leading/space /another/path"
+        new_path = "/path/with/leading/space"
+        result = ReactNativePodsUtils.add_search_path_if_not_included(current_paths, new_path)
+        assert_equal("/path/with/leading/space /another/path", result)
+    end
+
+    def test_add_search_path_if_not_included_handles_path_with_spaces_in_string
+        current_paths = "/path/to/headers /another/path"
+        new_path = '"/path/with spaces/lib"'
+        result = ReactNativePodsUtils.add_search_path_if_not_included(current_paths, new_path)
+        assert_equal('/path/to/headers /another/path "/path/with spaces/lib"', result)
+    end
+
+    # Tests for array input
+    def test_add_search_path_if_not_included_adds_new_path_to_array
+        current_paths = ["/path/to/headers", "/another/path"]
+        new_path = "/new/path"
+        result = ReactNativePodsUtils.add_search_path_if_not_included(current_paths, new_path)
+        assert_equal(["/path/to/headers", "/another/path", "/new/path"], result)
+    end
+
+    def test_add_search_path_if_not_included_does_not_add_existing_path_to_array
+        current_paths = ["/path/to/headers", "/another/path"]
+        new_path = "/another/path"
+        result = ReactNativePodsUtils.add_search_path_if_not_included(current_paths, new_path)
+        assert_equal(["/path/to/headers", "/another/path"], result)
+    end
+
+    def test_add_search_path_if_not_included_strips_leading_and_trailing_spaces_in_array
+        current_paths = ["/path/to/headers", " /another/path"]
+        new_path = "/another/path"
+        result = ReactNativePodsUtils.add_search_path_if_not_included(current_paths, new_path)
+        assert_equal(["/path/to/headers", "/another/path"], result)
+    end
+
+    def test_add_search_path_if_not_included_handles_path_with_spaces_in_array
+        current_paths = [" /path/to/headers  ", "/another/path"]
+        new_path = '"/path/with spaces/lib"'
+        result = ReactNativePodsUtils.add_search_path_if_not_included(current_paths, new_path)
+        assert_equal(["/path/to/headers", "/another/path", '"/path/with spaces/lib"'], result)
+    end
+
+    def test_add_search_path_if_not_included_adds_to_empty_array
+        current_paths = []
+        new_path = "/new/path"
+        result = ReactNativePodsUtils.add_search_path_if_not_included(current_paths, new_path)
+        assert_equal(["/new/path"], result)
+    end
+
     # =============================================== #
     # Test - Create Header Search Path For Frameworks #
     # =============================================== #
@@ -1046,6 +1114,26 @@ class UtilsTests < Test::Unit::TestCase
         assert_equal("$(inherited)" + test_flag, empty_xcconfig.attributes["OTHER_CPLUSPLUSFLAGS"])
         assert_equal("$(inherited) INIT_FLAG" + test_flag, initialized_xcconfig.attributes["OTHER_CPLUSPLUSFLAGS"])
         assert_equal("$(inherited)" + test_flag, twiceProcessed_xcconfig.attributes["OTHER_CPLUSPLUSFLAGS"])
+    end
+
+    def test_add_flag_to_map_with_inheritance_whenUsedWithArrayAttributes
+        # Arrange
+        initialized_xcconfig = XCConfigMock.new("InitializedConfig", attributes: {
+            "OTHER_CPLUSPLUSFLAGS" => ["INIT_FLAG"]
+        })
+        twiceProcessed_xcconfig = XCConfigMock.new("TwiceProcessedConfig", attributes: {
+            "OTHER_CPLUSPLUSFLAGS" => []
+        })
+        test_flag = " -DTEST_FLAG=1"
+
+        # Act
+        ReactNativePodsUtils.add_flag_to_map_with_inheritance(initialized_xcconfig.attributes, "OTHER_CPLUSPLUSFLAGS", test_flag)
+        ReactNativePodsUtils.add_flag_to_map_with_inheritance(twiceProcessed_xcconfig.attributes, "OTHER_CPLUSPLUSFLAGS", test_flag)
+        ReactNativePodsUtils.add_flag_to_map_with_inheritance(twiceProcessed_xcconfig.attributes, "OTHER_CPLUSPLUSFLAGS", test_flag)
+
+        # Assert
+        assert_equal(["$(inherited)", "INIT_FLAG", test_flag], initialized_xcconfig.attributes["OTHER_CPLUSPLUSFLAGS"])
+        assert_equal(["$(inherited)", test_flag], twiceProcessed_xcconfig.attributes["OTHER_CPLUSPLUSFLAGS"])
     end
 
     def test_add_ndebug_flag_to_pods_in_release

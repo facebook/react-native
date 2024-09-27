@@ -166,7 +166,13 @@ const validAttributesForNonEventProps = {
   backgroundColor: {process: require('../StyleSheet/processColor').default},
   transform: true,
   transformOrigin: true,
-  experimental_filter: {
+  experimental_backgroundImage: {
+    process: require('../StyleSheet/processBackgroundImage').default,
+  },
+  boxShadow: {
+    process: require('../StyleSheet/processBoxShadow').default,
+  },
+  filter: {
     process: require('../StyleSheet/processFilter').default,
   },
   experimental_mixBlendMode: true,
@@ -261,6 +267,11 @@ const validAttributesForNonEventProps = {
   borderBottomWidth: true,
   borderLeftWidth: true,
   borderRightWidth: true,
+
+  outlineColor: {process: require('../StyleSheet/processColor').default},
+  outlineOffset: true,
+  outlineStyle: true,
+  outlineWidth: true,
 
   start: true,
   end: true,

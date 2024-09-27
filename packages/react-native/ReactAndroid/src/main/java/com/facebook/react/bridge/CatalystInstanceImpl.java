@@ -26,7 +26,7 @@ import com.facebook.react.bridge.queue.ReactQueueConfigurationImpl;
 import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
-import com.facebook.react.config.ReactFeatureFlags;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.internal.turbomodule.core.interfaces.TurboModuleRegistry;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.turbomodule.core.CallInvokerHolderImpl;
@@ -459,7 +459,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
   }
 
   private TurboModuleRegistry getTurboModuleRegistry() {
-    if (ReactFeatureFlags.useTurboModules) {
+    if (ReactNativeFeatureFlags.useTurboModules()) {
       return Assertions.assertNotNull(
           mTurboModuleRegistry,
           "TurboModules are enabled, but mTurboModuleRegistry hasn't been set.");

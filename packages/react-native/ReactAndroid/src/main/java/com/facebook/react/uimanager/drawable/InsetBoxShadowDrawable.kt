@@ -14,6 +14,7 @@ import android.graphics.Color
 import android.graphics.ColorFilter
 import android.graphics.Paint
 import android.graphics.Path
+import android.graphics.PixelFormat
 import android.graphics.RectF
 import android.graphics.drawable.Drawable
 import androidx.annotation.RequiresApi
@@ -84,8 +85,11 @@ internal class InsetBoxShadowDrawable(
     invalidateSelf()
   }
 
-  override fun getOpacity(): Int =
-      ((shadowPaint.alpha / 255f) / (Color.alpha(shadowColor) / 255f) * 255f).roundToInt()
+  override fun getOpacity(): Int {
+    val alpha = Color.alpha(shadowColor)
+    return if (alpha == 0) PixelFormat.TRANSPARENT
+    else ((shadowPaint.alpha / 255f) / (alpha / 255f) * 255f).roundToInt()
+  }
 
   override fun draw(canvas: Canvas) {
     val computedBorderRadii = computeBorderRadii()

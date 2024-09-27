@@ -14,6 +14,10 @@ import * as TurboModuleRegistry from '../../../../../Libraries/TurboModule/Turbo
 
 export type RawPerformanceEntryType = number;
 
+export type OpaqueNativeObserverHandle = mixed;
+
+export type NativeBatchedObserverCallback = () => void;
+
 export type RawPerformanceEntry = {|
   name: string,
   entryType: RawPerformanceEntryType,
@@ -25,26 +29,30 @@ export type RawPerformanceEntry = {|
   interactionId?: number,
 |};
 
-export type GetPendingEntriesResult = {|
-  entries: $ReadOnlyArray<RawPerformanceEntry>,
-  droppedEntriesCount: number,
-|};
+export type PerformanceObserverInit = {
+  entryTypes?: $ReadOnlyArray<number>,
+  type?: number,
+  buffered?: boolean,
+  durationThreshold?: number,
+};
 
 export interface Spec extends TurboModule {
-  +startReporting: (entryType: RawPerformanceEntryType) => void;
-  +stopReporting: (entryType: RawPerformanceEntryType) => void;
-  +setIsBuffered: (
-    entryTypes: $ReadOnlyArray<RawPerformanceEntryType>,
-    isBuffered: boolean,
-  ) => void;
-  +popPendingEntries: () => GetPendingEntriesResult;
-  +setOnPerformanceEntryCallback: (callback?: () => void) => void;
-  +logRawEntry: (entry: RawPerformanceEntry) => void;
   +getEventCounts: () => $ReadOnlyArray<[string, number]>;
-  +setDurationThreshold: (
-    entryType: RawPerformanceEntryType,
-    durationThreshold: number,
+  +createObserver?: (
+    callback: NativeBatchedObserverCallback,
+  ) => OpaqueNativeObserverHandle;
+  +getDroppedEntriesCount?: (observer: OpaqueNativeObserverHandle) => number;
+
+  +observe?: (
+    observer: OpaqueNativeObserverHandle,
+    options: PerformanceObserverInit,
   ) => void;
+  +disconnect?: (observer: OpaqueNativeObserverHandle) => void;
+  +takeRecords?: (
+    observer: OpaqueNativeObserverHandle,
+    sort: boolean,
+  ) => $ReadOnlyArray<RawPerformanceEntry>;
+
   +clearEntries: (
     entryType?: RawPerformanceEntryType,
     entryName?: string,

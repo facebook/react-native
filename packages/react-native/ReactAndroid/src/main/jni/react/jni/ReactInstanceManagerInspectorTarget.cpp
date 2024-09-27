@@ -72,7 +72,7 @@ ReactInstanceManagerInspectorTarget::ReactInstanceManagerInspectorTarget(
     inspectorTarget_ = HostTarget::create(*this, inspectorExecutor_);
 
     inspectorPageId_ = getInspectorInstance().addPage(
-        "React Native Bridge (Experimental)",
+        "React Native Bridge",
         /* vm */ "",
         [inspectorTarget =
              inspectorTarget_](std::unique_ptr<IRemoteConnection> remote)

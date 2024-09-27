@@ -620,9 +620,7 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
       });
     }
   } else {
-    if (!_isUserTriggeredScrolling || CoreFeatures::enableGranularScrollViewStateUpdatesIOS) {
-      [self _updateStateWithContentOffset];
-    }
+    [self _updateStateWithContentOffset];
 
     NSTimeInterval now = CACurrentMediaTime();
     if ((_lastScrollEventDispatchTime == 0) || (now - _lastScrollEventDispatchTime > _scrollEventThrottle)) {
@@ -721,6 +719,29 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView
 {
   [self _handleFinishedScrolling:scrollView];
+}
+
+- (void)didMoveToWindow
+{
+  [super didMoveToWindow];
+
+  if (!self.window) {
+    // The view is being removed, ensure that the scroll end event is dispatched
+    [self _handleScrollEndIfNeeded];
+  }
+}
+
+- (void)_handleScrollEndIfNeeded
+{
+  if (_scrollView.isDecelerating || !_scrollView.isTracking) {
+    if (!_eventEmitter) {
+      return;
+    }
+    static_cast<const ScrollViewEventEmitter &>(*_eventEmitter).onMomentumScrollEnd([self _scrollViewMetrics]);
+
+    [self _updateStateWithContentOffset];
+    _isUserTriggeredScrolling = NO;
+  }
 }
 
 - (void)_handleFinishedScrolling:(UIScrollView *)scrollView

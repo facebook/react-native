@@ -205,6 +205,11 @@ void YGNodeStyleSetPositionPercent(YGNodeRef node, YGEdge edge, float percent) {
       node, scopedEnum(edge), value::percent(percent));
 }
 
+void YGNodeStyleSetPositionAuto(YGNodeRef node, YGEdge edge) {
+  updateStyle<&Style::position, &Style::setPosition>(
+      node, scopedEnum(edge), value::ofAuto());
+}
+
 YGValue YGNodeStyleGetPosition(YGNodeConstRef node, YGEdge edge) {
   return (YGValue)resolveRef(node)->style().position(scopedEnum(edge));
 }
@@ -289,6 +294,15 @@ void YGNodeStyleSetAspectRatio(const YGNodeRef node, const float aspectRatio) {
 float YGNodeStyleGetAspectRatio(const YGNodeConstRef node) {
   const FloatOptional op = resolveRef(node)->style().aspectRatio();
   return op.isUndefined() ? YGUndefined : op.unwrap();
+}
+
+void YGNodeStyleSetBoxSizing(YGNodeRef node, YGBoxSizing boxSizing) {
+  updateStyle<&Style::boxSizing, &Style::setBoxSizing>(
+      node, scopedEnum(boxSizing));
+}
+
+YGBoxSizing YGNodeStyleGetBoxSizing(const YGNodeConstRef node) {
+  return unscopedEnum(resolveRef(node)->style().boxSizing());
 }
 
 void YGNodeStyleSetWidth(YGNodeRef node, float points) {

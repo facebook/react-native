@@ -283,37 +283,21 @@ export type NativeModuleArrayTypeAnnotation<
    * TODO(T72031674): Migrate all our NativeModule specs to not use
    * invalid Array ElementTypes. Then, make the elementType required.
    */
-  elementType?: T,
+  elementType: T | UnsafeAnyTypeAnnotation,
 }>;
 
-export type NativeModuleStringTypeAnnotation = $ReadOnly<{
-  type: 'StringTypeAnnotation',
-}>;
+export type UnsafeAnyTypeAnnotation = {
+  type: 'AnyTypeAnnotation',
+};
 
 export type NativeModuleNumberTypeAnnotation = $ReadOnly<{
   type: 'NumberTypeAnnotation',
 }>;
 
-export type NativeModuleInt32TypeAnnotation = $ReadOnly<{
-  type: 'Int32TypeAnnotation',
-}>;
-
-export type NativeModuleDoubleTypeAnnotation = $ReadOnly<{
-  type: 'DoubleTypeAnnotation',
-}>;
-
-export type NativeModuleFloatTypeAnnotation = $ReadOnly<{
-  type: 'FloatTypeAnnotation',
-}>;
-
-export type NativeModuleBooleanTypeAnnotation = $ReadOnly<{
-  type: 'BooleanTypeAnnotation',
-}>;
-
 export type NativeModuleEnumMembers = $ReadOnlyArray<
   $ReadOnly<{
     name: string,
-    value: string,
+    value: string | number,
   }>,
 >;
 
@@ -367,12 +351,12 @@ export type NativeModuleMixedTypeAnnotation = $ReadOnly<{
 }>;
 
 type NativeModuleEventEmitterBaseTypeAnnotation =
-  | NativeModuleBooleanTypeAnnotation
-  | NativeModuleDoubleTypeAnnotation
-  | NativeModuleFloatTypeAnnotation
-  | NativeModuleInt32TypeAnnotation
+  | BooleanTypeAnnotation
+  | DoubleTypeAnnotation
+  | FloatTypeAnnotation
+  | Int32TypeAnnotation
   | NativeModuleNumberTypeAnnotation
-  | NativeModuleStringTypeAnnotation
+  | StringTypeAnnotation
   | NativeModuleTypeAliasTypeAnnotation
   | NativeModuleGenericObjectTypeAnnotation
   | VoidTypeAnnotation;
@@ -381,16 +365,16 @@ export type NativeModuleEventEmitterTypeAnnotation =
   | NativeModuleEventEmitterBaseTypeAnnotation
   | {
       type: 'ArrayTypeAnnotation',
-      elementType: NativeModuleEventEmitterBaseTypeAnnotation | {type: string},
+      elementType: NativeModuleEventEmitterBaseTypeAnnotation,
     };
 
 export type NativeModuleBaseTypeAnnotation =
-  | NativeModuleStringTypeAnnotation
+  | StringTypeAnnotation
   | NativeModuleNumberTypeAnnotation
-  | NativeModuleInt32TypeAnnotation
-  | NativeModuleDoubleTypeAnnotation
-  | NativeModuleFloatTypeAnnotation
-  | NativeModuleBooleanTypeAnnotation
+  | Int32TypeAnnotation
+  | DoubleTypeAnnotation
+  | FloatTypeAnnotation
+  | BooleanTypeAnnotation
   | NativeModuleEnumDeclaration
   | NativeModuleGenericObjectTypeAnnotation
   | ReservedTypeAnnotation
@@ -419,3 +403,11 @@ type NativeModuleParamOnlyTypeAnnotation = NativeModuleFunctionTypeAnnotation;
 type NativeModuleReturnOnlyTypeAnnotation =
   | NativeModulePromiseTypeAnnotation
   | VoidTypeAnnotation;
+
+// Used by compatibility check which needs to handle all possible types
+// This will eventually also include the union of all view manager types
+export type CompleteTypeAnnotation =
+  | NativeModuleTypeAnnotation
+  | NativeModuleFunctionTypeAnnotation
+  | NullableTypeAnnotation<NativeModuleTypeAnnotation>
+  | UnsafeAnyTypeAnnotation;

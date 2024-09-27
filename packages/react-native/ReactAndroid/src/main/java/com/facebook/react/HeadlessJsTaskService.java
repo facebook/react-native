@@ -19,7 +19,7 @@ import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.UiThreadUtil;
-import com.facebook.react.config.ReactFeatureFlags;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.jstasks.HeadlessJsTaskConfig;
 import com.facebook.react.jstasks.HeadlessJsTaskContext;
 import com.facebook.react.jstasks.HeadlessJsTaskEventListener;
@@ -124,15 +124,11 @@ public abstract class HeadlessJsTaskService extends Service implements HeadlessJ
   @Override
   public void onDestroy() {
     super.onDestroy();
+    ReactContext reactContext = getReactContext();
 
-    if (getReactNativeHost().hasInstance()) {
-      ReactInstanceManager reactInstanceManager = getReactNativeHost().getReactInstanceManager();
-      ReactContext reactContext = reactInstanceManager.getCurrentReactContext();
-      if (reactContext != null) {
-        HeadlessJsTaskContext headlessJsTaskContext =
-            HeadlessJsTaskContext.getInstance(reactContext);
-        headlessJsTaskContext.removeTaskEventListener(this);
-      }
+    if (reactContext != null) {
+      HeadlessJsTaskContext headlessJsTaskContext = HeadlessJsTaskContext.getInstance(reactContext);
+      headlessJsTaskContext.removeTaskEventListener(this);
     }
     if (sWakeLock != null) {
       sWakeLock.release();
@@ -171,7 +167,7 @@ public abstract class HeadlessJsTaskService extends Service implements HeadlessJ
   }
 
   protected ReactContext getReactContext() {
-    if (ReactFeatureFlags.enableBridgelessArchitecture) {
+    if (ReactNativeFeatureFlags.enableBridgelessArchitecture()) {
       ReactHost reactHost = getReactHost();
       Assertions.assertNotNull(reactHost, "getReactHost() is null in New Architecture");
       return reactHost.getCurrentReactContext();

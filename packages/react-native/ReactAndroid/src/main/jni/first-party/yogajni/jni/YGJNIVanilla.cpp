@@ -460,6 +460,14 @@ static void jni_YGNodeCopyStyleJNI(
         static_cast<float>(value));                                       \
   }
 
+#define YG_NODE_JNI_STYLE_EDGE_UNIT_PROP_AUTO(name)                       \
+  YG_NODE_JNI_STYLE_EDGE_UNIT_PROP(name)                                  \
+  static void jni_YGNodeStyleSet##name##AutoJNI(                          \
+      JNIEnv* /*env*/, jobject /*obj*/, jlong nativePointer, jint edge) { \
+    YGNodeStyleSet##name##Auto(                                           \
+        _jlong2YGNodeRef(nativePointer), static_cast<YGEdge>(edge));      \
+  }
+
 YG_NODE_JNI_STYLE_PROP(jint, YGDirection, Direction);
 YG_NODE_JNI_STYLE_PROP(jint, YGFlexDirection, FlexDirection);
 YG_NODE_JNI_STYLE_PROP(jint, YGJustify, JustifyContent);
@@ -467,6 +475,7 @@ YG_NODE_JNI_STYLE_PROP(jint, YGAlign, AlignItems);
 YG_NODE_JNI_STYLE_PROP(jint, YGAlign, AlignSelf);
 YG_NODE_JNI_STYLE_PROP(jint, YGAlign, AlignContent);
 YG_NODE_JNI_STYLE_PROP(jint, YGPositionType, PositionType);
+YG_NODE_JNI_STYLE_PROP(jint, YGBoxSizing, BoxSizing);
 YG_NODE_JNI_STYLE_PROP(jint, YGWrap, FlexWrap);
 YG_NODE_JNI_STYLE_PROP(jint, YGOverflow, Overflow);
 YG_NODE_JNI_STYLE_PROP(jint, YGDisplay, Display);
@@ -482,7 +491,7 @@ YG_NODE_JNI_STYLE_UNIT_PROP_AUTO(Height);
 YG_NODE_JNI_STYLE_UNIT_PROP(MinHeight);
 YG_NODE_JNI_STYLE_UNIT_PROP(MaxHeight);
 
-YG_NODE_JNI_STYLE_EDGE_UNIT_PROP(Position);
+YG_NODE_JNI_STYLE_EDGE_UNIT_PROP_AUTO(Position);
 
 static jlong jni_YGNodeStyleGetMarginJNI(
     JNIEnv* /*env*/,
@@ -811,6 +820,12 @@ static JNINativeMethod methods[] = {
     {"jni_YGNodeStyleSetPositionTypeJNI",
      "(JI)V",
      (void*)jni_YGNodeStyleSetPositionTypeJNI},
+    {"jni_YGNodeStyleGetBoxSizingJNI",
+     "(J)I",
+     (void*)jni_YGNodeStyleGetBoxSizingJNI},
+    {"jni_YGNodeStyleSetBoxSizingJNI",
+     "(JI)V",
+     (void*)jni_YGNodeStyleSetBoxSizingJNI},
     {"jni_YGNodeStyleGetFlexWrapJNI",
      "(J)I",
      (void*)jni_YGNodeStyleGetFlexWrapJNI},
@@ -891,6 +906,9 @@ static JNINativeMethod methods[] = {
     {"jni_YGNodeStyleSetPositionPercentJNI",
      "(JIF)V",
      (void*)jni_YGNodeStyleSetPositionPercentJNI},
+    {"jni_YGNodeStyleSetPositionAutoJNI",
+     "(JI)V",
+     (void*)jni_YGNodeStyleSetPositionAutoJNI},
     {"jni_YGNodeStyleGetWidthJNI", "(J)J", (void*)jni_YGNodeStyleGetWidthJNI},
     {"jni_YGNodeStyleSetWidthJNI", "(JF)V", (void*)jni_YGNodeStyleSetWidthJNI},
     {"jni_YGNodeStyleSetWidthPercentJNI",

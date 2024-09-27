@@ -17,11 +17,10 @@ import type {
 import type {PerformanceEntryList} from './PerformanceObserver';
 import type {DetailType, PerformanceMarkOptions} from './UserTiming';
 
-import warnOnce from '../../../../Libraries/Utilities/warnOnce';
 import {EventCounts} from './EventTiming';
 import MemoryInfo from './MemoryInfo';
 import {ALWAYS_LOGGED_ENTRY_TYPES} from './PerformanceEntry';
-import {warnNoNativePerformanceObserver} from './PerformanceObserver';
+import {warnNoNativePerformanceObserver} from './Utilities';
 import {
   performanceEntryTypeToRaw,
   rawToPerformanceEntry,
@@ -31,6 +30,7 @@ import ReactNativeStartupTiming from './ReactNativeStartupTiming';
 import NativePerformance from './specs/NativePerformance';
 import NativePerformanceObserver from './specs/NativePerformanceObserver';
 import {PerformanceMark, PerformanceMeasure} from './UserTiming';
+import {warnNoNativePerformance} from './Utilities';
 
 declare var global: {
   // This value is defined directly via JSI, if available.
@@ -39,24 +39,6 @@ declare var global: {
 
 const getCurrentTimeStamp: () => DOMHighResTimeStamp =
   NativePerformance?.now ?? global.nativePerformanceNow ?? (() => Date.now());
-
-// We want some of the performance entry types to be always logged,
-// even if they are not currently observed - this is either to be able to
-// retrieve them at any time via Performance.getEntries* or to refer by other entries
-// (such as when measures may refer to marks, even if the latter are not observed)
-if (NativePerformanceObserver?.setIsBuffered) {
-  NativePerformanceObserver?.setIsBuffered(
-    ALWAYS_LOGGED_ENTRY_TYPES.map(performanceEntryTypeToRaw),
-    true,
-  );
-}
-
-function warnNoNativePerformance() {
-  warnOnce(
-    'missing-native-performance',
-    'Missing native implementation of Performance',
-  );
-}
 
 export type PerformanceMeasureOptions = {
   detail?: DetailType,
@@ -145,7 +127,7 @@ export default class Performance {
       return;
     }
 
-    NativePerformanceObserver?.clearEntries(
+    NativePerformanceObserver.clearEntries(
       RawPerformanceEntryTypeValues.MARK,
       markName,
     );

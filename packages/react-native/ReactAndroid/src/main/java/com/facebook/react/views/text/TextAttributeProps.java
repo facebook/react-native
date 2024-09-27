@@ -84,6 +84,7 @@ public class TextAttributeProps {
   protected int mColor;
   protected boolean mIsBackgroundColorSet = false;
   protected int mBackgroundColor;
+  protected float mOpacity = Float.NaN;
 
   protected int mNumberOfLines = ReactConstants.UNSET;
   protected int mFontSize = ReactConstants.UNSET;
@@ -161,6 +162,7 @@ public class TextAttributeProps {
           result.setBackgroundColor(entry.getIntValue());
           break;
         case TA_KEY_OPACITY:
+          result.setOpacity((float) entry.getDoubleValue());
           break;
         case TA_KEY_FONT_FAMILY:
           result.setFontFamily(entry.getStringValue());
@@ -251,6 +253,7 @@ public class TextAttributeProps {
         props.hasKey(ViewProps.BACKGROUND_COLOR)
             ? props.getInt(ViewProps.BACKGROUND_COLOR, 0)
             : null);
+    result.setOpacity(getFloatProp(props, ViewProps.OPACITY, Float.NaN));
     result.setFontFamily(getStringProp(props, ViewProps.FONT_FAMILY));
     result.setFontWeight(getStringProp(props, ViewProps.FONT_WEIGHT));
     result.setFontStyle(getStringProp(props, ViewProps.FONT_STYLE));
@@ -451,6 +454,14 @@ public class TextAttributeProps {
       mBackgroundColor = color;
     }
     // }
+  }
+
+  public float getOpacity() {
+    return mOpacity;
+  }
+
+  private void setOpacity(float opacity) {
+    mOpacity = opacity;
   }
 
   public boolean isBackgroundColorSet() {

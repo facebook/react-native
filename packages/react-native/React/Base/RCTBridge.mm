@@ -169,6 +169,17 @@ void RCTEnableTurboModuleSyncVoidMethods(BOOL enabled)
   gTurboModuleEnableSyncVoidMethods = enabled;
 }
 
+static BOOL gBridgeModuleDisableBatchDidComplete = NO;
+BOOL RCTBridgeModuleBatchDidCompleteDisabled(void)
+{
+  return gBridgeModuleDisableBatchDidComplete;
+}
+
+void RCTDisableBridgeModuleBatchDidComplete(BOOL disabled)
+{
+  gBridgeModuleDisableBatchDidComplete = disabled;
+}
+
 BOOL kDispatchAccessibilityManagerInitOntoMain = NO;
 BOOL RCTUIManagerDispatchAccessibilityManagerInitOntoMain(void)
 {
@@ -472,7 +483,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
         });
     __weak RCTBridge *weakSelf = self;
     _inspectorPageId = facebook::react::jsinspector_modern::getInspectorInstance().addPage(
-        "React Native Bridge (Experimental)",
+        "React Native Bridge",
         /* vm */ "",
         [weakSelf](std::unique_ptr<facebook::react::jsinspector_modern::IRemoteConnection> remote)
             -> std::unique_ptr<facebook::react::jsinspector_modern::ILocalConnection> {

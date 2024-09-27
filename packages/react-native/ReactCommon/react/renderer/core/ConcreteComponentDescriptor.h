@@ -10,7 +10,6 @@
 #include <memory>
 #include <vector>
 
-#include <cxxreact/SystraceSection.h>
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/core/ComponentDescriptor.h>
 #include <react/renderer/core/EventDispatcher.h>
@@ -67,7 +66,6 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
   std::shared_ptr<ShadowNode> createShadowNode(
       const ShadowNodeFragment& fragment,
       const ShadowNodeFamily::Shared& family) const override {
-    SystraceSection s("ConcreteComponentDescriptor::createShadowNode");
     auto shadowNode =
         std::make_shared<ShadowNodeT>(fragment, family, getTraits());
 
@@ -99,7 +97,6 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
       const PropsParserContext& context,
       const Props::Shared& props,
       RawProps rawProps) const override {
-    SystraceSection s1("ConcreteComponentDescriptor::cloneProps");
     // Optimization:
     // Quite often nodes are constructed with default/empty props: the base
     // `props` object is `null` (there no base because it's not cloning) and the
@@ -125,8 +122,6 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
 #else
       const auto& dynamic = static_cast<folly::dynamic>(rawProps);
 #endif
-      SystraceSection s2(
-          "ConcreteComponentDescriptor::cloneProps - iterateOverValues");
       for (const auto& pair : dynamic.items()) {
         const auto& name = pair.first.getString();
         shadowNodeProps->setProp(
@@ -137,8 +132,6 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
       }
       return shadowNodeProps;
     } else {
-      SystraceSection s3(
-          "ConcreteComponentDescriptor::cloneProps - old-style constructor");
       // Call old-style constructor
       return ShadowNodeT::Props(context, rawProps, props);
     }
@@ -176,7 +169,8 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
   ShadowNodeFamily::Shared createFamily(
       const ShadowNodeFamilyFragment& fragment) const override {
     auto eventEmitter = std::make_shared<const ConcreteEventEmitter>(
-        std::make_shared<EventTarget>(fragment.instanceHandle),
+        std::make_shared<EventTarget>(
+            fragment.instanceHandle, fragment.surfaceId),
         eventDispatcher_);
     return std::make_shared<ShadowNodeFamily>(
         fragment, std::move(eventEmitter), eventDispatcher_, *this);

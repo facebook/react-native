@@ -51,6 +51,12 @@ class BaseViewProps : public YogaStylableProps, public AccessibilityProps {
   CascadedBorderCurves borderCurves{}; // iOS only?
   CascadedBorderStyles borderStyles{};
 
+  // Outline
+  SharedColor outlineColor{};
+  Float outlineOffset{};
+  OutlineStyle outlineStyle{OutlineStyle::Solid};
+  Float outlineWidth{};
+
   // Shadow
   SharedColor shadowColor{};
   Size shadowOffset{0, -3};

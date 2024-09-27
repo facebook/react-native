@@ -16,8 +16,10 @@ else
   source[:tag] = "v#{version}"
 end
 
-folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -DFOLLY_HAVE_CLOCK_GETTIME=1 -Wno-comma -Wno-shorten-64-to-32'
-boost_compiler_flags = '-Wno-documentation'
+folly_config = get_folly_config()
+folly_compiler_flags = folly_config[:compiler_flags]
+boost_config = get_boost_config()
+boost_compiler_flags = boost_config[:compiler_flags]
 
 Pod::Spec.new do |s|
   source_files = "**/*.{m,mm,cpp,h}"

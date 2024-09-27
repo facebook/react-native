@@ -149,6 +149,30 @@ describe('processBoxShadow', () => {
     ]);
   });
 
+  it('should parse multiple box shadow strings with newlines', () => {
+    expect(
+      processBoxShadow('10 5 red, 5 12 inset,\n  inset 10 45 13 red'),
+    ).toEqual([
+      {
+        offsetX: 10,
+        offsetY: 5,
+        color: processColor('red'),
+      },
+      {
+        offsetX: 5,
+        offsetY: 12,
+        inset: true,
+      },
+      {
+        offsetX: 10,
+        offsetY: 45,
+        blurRadius: 13,
+        inset: true,
+        color: processColor('red'),
+      },
+    ]);
+  });
+
   it('should fail to parse string with invalid units', () => {
     expect(processBoxShadow('red 10em 5$ 2| 3rp')).toEqual([]);
   });

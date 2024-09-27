@@ -137,7 +137,7 @@ ReactInstance::ReactInstance(
       PerformanceEntryReporter::getInstance().get());
 
   bufferedRuntimeExecutor_ = std::make_shared<BufferedRuntimeExecutor>(
-      [runtimeScheduler = runtimeScheduler_.get()](
+      [runtimeScheduler = runtimeScheduler_](
           std::function<void(jsi::Runtime & runtime)>&& callback) {
         runtimeScheduler->scheduleWork(std::move(callback));
       });
@@ -156,7 +156,7 @@ void ReactInstance::unregisterFromInspector() {
 }
 
 RuntimeExecutor ReactInstance::getUnbufferedRuntimeExecutor() noexcept {
-  return [runtimeScheduler = runtimeScheduler_.get()](
+  return [runtimeScheduler = runtimeScheduler_](
              std::function<void(jsi::Runtime & runtime)>&& callback) {
     runtimeScheduler->scheduleWork(std::move(callback));
   };
@@ -167,12 +167,14 @@ RuntimeExecutor ReactInstance::getUnbufferedRuntimeExecutor() noexcept {
 // getUnbufferedRuntimeExecutor() instead if you do not need the main JS bundle
 // to have finished. e.g. setting global variables into JS runtime.
 RuntimeExecutor ReactInstance::getBufferedRuntimeExecutor() noexcept {
-  return [weakBufferedRuntimeExecutor_ =
+  // FIXME: we don't really need a weak reference here, bufferedRuntimeExecutor
+  // retains a strong reference to runtimeScheduler, which in turns retains weak
+  // references to the runtime
+  return [weakBufferedRuntimeExecutor =
               std::weak_ptr<BufferedRuntimeExecutor>(bufferedRuntimeExecutor_)](
              std::function<void(jsi::Runtime & runtime)>&& callback) {
-    if (auto strongBufferedRuntimeExecutor_ =
-            weakBufferedRuntimeExecutor_.lock()) {
-      strongBufferedRuntimeExecutor_->execute(std::move(callback));
+    if (auto bufferedRuntimeExecutor = weakBufferedRuntimeExecutor.lock()) {
+      bufferedRuntimeExecutor->execute(std::move(callback));
     }
   };
 }
@@ -209,12 +211,8 @@ void ReactInstance::loadScript(
   std::string scriptName = simpleBasename(sourceURL);
 
   runtimeScheduler_->scheduleWork(
-      [this,
-       scriptName,
-       sourceURL,
-       buffer = std::move(buffer),
-       weakBufferedRuntimeExecuter = std::weak_ptr<BufferedRuntimeExecutor>(
-           bufferedRuntimeExecutor_)](jsi::Runtime& runtime) {
+      [this, scriptName, sourceURL, buffer = std::move(buffer)](
+          jsi::Runtime& runtime) {
         SystraceSection s("ReactInstance::loadScript");
         bool hasLogger(ReactMarker::logTaggedMarkerBridgelessImpl);
         if (hasLogger) {
@@ -240,10 +238,8 @@ void ReactInstance::loadScript(
               ReactMarker::INIT_REACT_RUNTIME_STOP);
           ReactMarker::logMarkerBridgeless(ReactMarker::APP_STARTUP_STOP);
         }
-        if (auto strongBufferedRuntimeExecuter =
-                weakBufferedRuntimeExecuter.lock()) {
-          strongBufferedRuntimeExecuter->flush();
-        }
+
+        bufferedRuntimeExecutor_->flush();
       });
 }
 

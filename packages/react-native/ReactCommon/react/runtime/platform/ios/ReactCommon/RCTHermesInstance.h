@@ -13,8 +13,8 @@
 #import <react/runtime/JSRuntimeFactory.h>
 #import <react/runtime/hermes/HermesInstance.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
+
 using CrashManagerProvider =
     std::function<std::shared_ptr<::hermes::vm::CrashManager>()>;
 
@@ -25,6 +25,10 @@ class RCTHermesInstance : public JSRuntimeFactory {
   RCTHermesInstance(
       std::shared_ptr<const ReactNativeConfig> reactNativeConfig,
       CrashManagerProvider crashManagerProvider);
+  RCTHermesInstance(
+      std::shared_ptr<const ReactNativeConfig> reactNativeConfig,
+      CrashManagerProvider crashManagerProvider,
+      bool allocInOldGenBeforeTTI);
 
   std::unique_ptr<JSRuntime> createJSRuntime(
       std::shared_ptr<MessageQueueThread> msgQueueThread) noexcept override;
@@ -35,6 +39,7 @@ class RCTHermesInstance : public JSRuntimeFactory {
   std::shared_ptr<const ReactNativeConfig> _reactNativeConfig;
   CrashManagerProvider _crashManagerProvider;
   std::unique_ptr<HermesInstance> _hermesInstance;
+  bool _allocInOldGenBeforeTTI;
 };
-} // namespace react
-} // namespace facebook
+
+} // namespace facebook::react

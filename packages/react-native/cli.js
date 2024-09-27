@@ -109,7 +109,7 @@ function warnWithDeprecationSchedule() {
 ${chalk.yellow('⚠️')} The \`init\` command is deprecated.
 The behavior will be changed on ${chalk.white.bold(CLI_DEPRECATION_DATE.toLocaleDateString())} ${emphasis(`(${daysRemaining} day${daysRemaining > 1 ? 's' : ''})`)}.
 
-- Switch to ${chalk.dim('npx @react-native-community/cli init')} for the identical behavior.
+- Switch to ${chalk.grey.bold('npx @react-native-community/cli init')} for the identical behavior.
 - Refer to the documentation for information about alternative tools: ${chalk.dim('https://reactnative.dev/docs/getting-started')}`);
 }
 
@@ -117,11 +117,10 @@ function warnWithDeprecated() {
   if (!isInitCommand) {
     return;
   }
-
   console.warn(`
 🚨️ The \`init\` command is deprecated.
 
-- Switch to ${chalk.dim('npx @react-native-community/cli init')} for the identical behavior.
+- Switch to ${chalk.grey.bold('npx @react-native-community/cli init')} for the identical behavior.
 - Refer to the documentation for information about alternative tools: ${chalk.dim('https://reactnative.dev/docs/getting-started')}`);
 }
 
@@ -174,7 +173,7 @@ async function main() {
 
   const isDeprecated =
     CLI_DEPRECATION_DATE.getTime() <= new Date().getTime() ||
-    currentVersion.startsWith('0.76');
+    currentVersion.startsWith('0.77');
 
   /**
    * This command is now deprecated. We will continue to proxy commands to @react-native-community/cli, but it
@@ -191,8 +190,13 @@ async function main() {
       warnWithDeprecated();
       // We only exit if the user calls `init` and it's deprecated. All other cases should proxy to to @react-native-community/cli.
       // Be careful with this as it can break a lot of users.
+      console.warn(`${chalk.green('Exiting...')}`);
       process.exit(1);
-    } else if (currentVersion.startsWith('0.75')) {
+    } else if (
+      currentVersion.startsWith('0.75') ||
+      currentVersion.startsWith('0.76')
+    ) {
+      // We check deprecation schedule only for 0.75 and 0.76 and 0.77 is expected to land in Jan 2025.
       warnWithDeprecationSchedule();
     }
     warnWhenRunningInit();

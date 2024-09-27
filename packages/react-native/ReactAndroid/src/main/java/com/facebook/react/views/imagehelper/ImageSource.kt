@@ -23,12 +23,14 @@ constructor(
 ) {
 
   /** Get the URI for this image - can be either a parsed network URI or a resource URI. */
-  public val uri: Uri = computeUri(context)
+  public open val uri: Uri = computeUri(context)
   /** Get the area of this image. */
   public val size: Double = width * height
   /** Get whether this image source represents an Android resource or a network URI. */
-  public var isResource: Boolean = false
-    private set
+  public open val isResource: Boolean
+    get() = _isResource
+
+  private var _isResource: Boolean = false
 
   override fun equals(other: Any?): Boolean {
     if (this === other) {
@@ -58,7 +60,7 @@ constructor(
       }
 
   private fun computeLocalUri(context: Context): Uri {
-    isResource = true
+    _isResource = true
     return ResourceDrawableIdHelper.instance.getResourceDrawableUri(context, source)
   }
 

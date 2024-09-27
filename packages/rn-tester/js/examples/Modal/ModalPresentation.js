@@ -15,6 +15,7 @@ import type {Props as ModalProps} from 'react-native/Libraries/Modal/Modal';
 
 import RNTOption from '../../components/RNTOption';
 import * as React from 'react';
+import {useCallback, useState} from 'react';
 import {Modal, Platform, StyleSheet, Switch, Text, View} from 'react-native';
 
 const RNTesterButton = require('../../components/RNTesterButton');
@@ -34,20 +35,22 @@ const supportedOrientations = [
   'landscape-right',
 ];
 
+const backdropColors = ['red', 'blue', undefined];
+
 function ModalPresentation() {
-  const onDismiss = React.useCallback(() => {
+  const onDismiss = useCallback(() => {
     alert('onDismiss');
   }, []);
 
-  const onShow = React.useCallback(() => {
+  const onShow = useCallback(() => {
     alert('onShow');
   }, []);
 
-  const onRequestClose = React.useCallback(() => {
+  const onRequestClose = useCallback(() => {
     console.log('onRequestClose');
   }, []);
 
-  const [props, setProps] = React.useState<ModalProps>({
+  const [props, setProps] = useState<ModalProps>({
     animationType: 'none',
     transparent: false,
     hardwareAccelerated: false,
@@ -63,16 +66,19 @@ function ModalPresentation() {
     onDismiss: undefined,
     onShow: undefined,
     visible: false,
+    backdropColor: undefined,
   });
   const presentationStyle = props.presentationStyle;
   const hardwareAccelerated = props.hardwareAccelerated;
   const statusBarTranslucent = props.statusBarTranslucent;
+  const backdropColor = props.backdropColor;
 
-  const [currentOrientation, setCurrentOrientation] = React.useState('unknown');
+  const [currentOrientation, setCurrentOrientation] = useState('unknown');
 
-  /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
-   * LTI update could not be added via codemod */
-  const onOrientationChange = event =>
+  type OrientationChangeEvent = Parameters<
+    $NonMaybeType<React.PropsOf<Modal>['onOrientationChange']>,
+  >[0];
+  const onOrientationChange = (event: OrientationChangeEvent) =>
     setCurrentOrientation(event.nativeEvent.orientation);
 
   const controls = (
@@ -209,6 +215,26 @@ function ModalPresentation() {
             }
             selected={!!props.onDismiss}
           />
+        </View>
+      </View>
+      <View style={styles.block}>
+        <Text style={styles.title}>Backdrop Color ⚫️</Text>
+        <View style={styles.row}>
+          {backdropColors.map(type => (
+            <RNTOption
+              key={type ?? 'default'}
+              style={styles.option}
+              label={type ?? 'default'}
+              multiSelect={true}
+              onPress={() =>
+                setProps(prev => ({
+                  ...prev,
+                  backdropColor: type,
+                }))
+              }
+              selected={type === backdropColor}
+            />
+          ))}
         </View>
       </View>
     </>

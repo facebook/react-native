@@ -40,6 +40,7 @@ import com.facebook.react.views.text.internal.span.ReactAbsoluteSizeSpan;
 import com.facebook.react.views.text.internal.span.ReactBackgroundColorSpan;
 import com.facebook.react.views.text.internal.span.ReactClickableSpan;
 import com.facebook.react.views.text.internal.span.ReactForegroundColorSpan;
+import com.facebook.react.views.text.internal.span.ReactOpacitySpan;
 import com.facebook.react.views.text.internal.span.ReactStrikethroughSpan;
 import com.facebook.react.views.text.internal.span.ReactTagSpan;
 import com.facebook.react.views.text.internal.span.ReactUnderlineSpan;
@@ -240,6 +241,10 @@ public class TextLayoutManager {
               new SetSpanOperation(
                   start, end, new ReactBackgroundColorSpan(textAttributes.mBackgroundColor)));
         }
+        if (!Float.isNaN(textAttributes.getOpacity())) {
+          ops.add(
+              new SetSpanOperation(start, end, new ReactOpacitySpan(textAttributes.getOpacity())));
+        }
         if (!Float.isNaN(textAttributes.getLetterSpacing())) {
           ops.add(
               new SetSpanOperation(
@@ -350,6 +355,15 @@ public class TextLayoutManager {
       int hyphenationFrequency,
       Layout.Alignment alignment) {
     Layout layout;
+    // StaticLayout returns wrong metrics for the last line if it's empty, add something to the
+    // last line so it's measured correctly
+    if (text.toString().endsWith("\n")) {
+      SpannableStringBuilder sb = new SpannableStringBuilder(text);
+      sb.append("I");
+
+      text = sb;
+    }
+
     int spanLength = text.length();
     boolean unconstrainedWidth = widthYogaMeasureMode == YogaMeasureMode.UNDEFINED || width < 0;
     float desiredWidth =
@@ -441,7 +455,7 @@ public class TextLayoutManager {
             ? paragraphAttributes.getBoolean(PA_KEY_INCLUDE_FONT_PADDING)
             : DEFAULT_INCLUDE_FONT_PADDING;
     int hyphenationFrequency =
-        TextAttributeProps.getTextBreakStrategy(
+        TextAttributeProps.getHyphenationFrequency(
             paragraphAttributes.getString(PA_KEY_HYPHENATION_FREQUENCY));
     boolean adjustFontSizeToFit =
         paragraphAttributes.contains(PA_KEY_ADJUST_FONT_SIZE_TO_FIT)

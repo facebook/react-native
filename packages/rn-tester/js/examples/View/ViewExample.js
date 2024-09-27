@@ -464,7 +464,7 @@ function BoxShadowExample(): React.Node {
             borderRadius: 10,
             borderWidth: 5,
             borderColor: 'red',
-            experimental_boxShadow: '0 0 10px 0 black',
+            boxShadow: '0 0 10px 0 black',
           }}
         />
         <View
@@ -473,7 +473,7 @@ function BoxShadowExample(): React.Node {
             borderRadius: 30,
             borderWidth: 5,
             borderColor: 'red',
-            experimental_boxShadow: 'inset 0 0 10px 0 black',
+            boxShadow: 'inset 0 0 10px 0 black',
           }}
         />
         <View
@@ -482,7 +482,7 @@ function BoxShadowExample(): React.Node {
             borderRadius: 30,
             borderWidth: 5,
             borderColor: 'red',
-            experimental_boxShadow:
+            boxShadow:
               'inset 15px -5px 5px 5px cyan, inset 15px -5px 20px 10px orange, -5px 5px 5px 0px green, 0px -10px 0px 5px black',
           }}
         />
@@ -491,7 +491,7 @@ function BoxShadowExample(): React.Node {
         <View
           style={{
             ...defaultStyleSize,
-            experimental_boxShadow: '0px 0px 5px 5px black',
+            boxShadow: '0px 0px 5px 5px black',
           }}>
           <View
             style={{
@@ -506,7 +506,7 @@ function BoxShadowExample(): React.Node {
           style={{
             ...defaultStyleSize,
             backgroundColor: 'red',
-            experimental_boxShadow: 'inset 0px 0px 5px 5px black',
+            boxShadow: 'inset 0px 0px 5px 5px black',
           }}
         />
         <View style={{...defaultStyleSize, flexDirection: 'row'}}>
@@ -514,7 +514,7 @@ function BoxShadowExample(): React.Node {
           <View
             style={{
               ...defaultStyleSize,
-              experimental_boxShadow: ' 0px 0px 20px 5px black',
+              boxShadow: ' 0px 0px 20px 5px black',
             }}
           />
           <View style={{width: 25, height: 25, backgroundColor: 'cyan'}} />
@@ -525,10 +525,145 @@ function BoxShadowExample(): React.Node {
           style={{
             ...defaultStyleSize,
             backgroundColor: 'green',
-            experimental_boxShadow: '0px 10px',
+            boxShadow: '0px 10px',
+          }}
+        />
+        <View
+          style={{
+            ...defaultStyleSize,
+            backgroundColor: 'orange',
+            boxShadow: '5px 5px 5px 0px rgba(0, 0, 0, 0)',
           }}
         />
       </View>
+    </View>
+  );
+}
+
+function OutlineExample(): React.Node {
+  const defaultStyleSize = {width: 50, height: 50};
+
+  return (
+    <View
+      testID="view-test-outline"
+      style={{
+        padding: 10,
+        flexDirection: 'row',
+        gap: 20,
+        margin: 10,
+        flexWrap: 'wrap',
+      }}>
+      <View
+        style={[
+          defaultStyleSize,
+          {
+            borderColor: 'red',
+            borderWidth: 8,
+            outlineWidth: 8,
+            outlineColor: 'purple',
+          },
+        ]}
+      />
+      <View
+        style={[
+          defaultStyleSize,
+          {
+            borderColor: 'red',
+            borderWidth: 8,
+            outlineWidth: 8,
+            borderRadius: 20,
+            outlineColor: 'purple',
+          },
+        ]}
+      />
+      <View
+        style={[
+          defaultStyleSize,
+          {
+            borderColor: 'red',
+            borderWidth: 8,
+            outlineWidth: 8,
+            borderTopLeftRadius: 20,
+            borderBottomRightRadius: 20,
+            outlineColor: 'purple',
+          },
+        ]}
+      />
+      <View
+        style={[
+          defaultStyleSize,
+          {
+            borderColor: 'green',
+            borderWidth: 8,
+            outlineWidth: 8,
+            outlineColor: 'orange',
+            outlineStyle: 'solid',
+            outlineOffset: 5,
+            marginLeft: 5,
+          },
+        ]}
+      />
+      <View
+        style={[
+          defaultStyleSize,
+          {
+            borderColor: 'green',
+            borderWidth: 8,
+            outlineWidth: 8,
+            borderRadius: 20,
+            outlineColor: 'orange',
+            outlineStyle: 'dotted',
+          },
+        ]}
+      />
+      <View
+        style={[
+          defaultStyleSize,
+          {
+            borderColor: 'green',
+            borderWidth: 8,
+            outlineWidth: 8,
+            borderTopLeftRadius: 20,
+            borderBottomRightRadius: 20,
+            outlineColor: 'orange',
+            outlineStyle: 'dashed',
+          },
+        ]}
+      />
+      <View
+        style={[
+          defaultStyleSize,
+          {
+            width: 100,
+            borderColor: 'green',
+            borderWidth: 8,
+            outlineWidth: 8,
+            borderRadius: '100%',
+            outlineColor: 'orange',
+          },
+        ]}
+      />
+      <View
+        style={[
+          defaultStyleSize,
+          {
+            borderColor: 'green',
+            borderWidth: 12,
+            outlineWidth: 4,
+            outlineOffset: -8,
+            outlineColor: 'orange',
+          },
+        ]}
+      />
+      <View
+        style={[
+          defaultStyleSize,
+          {
+            outlineWidth: 9,
+            outlineColor: 'orange',
+          },
+        ]}
+      />
     </View>
   );
 }
@@ -1171,6 +1306,11 @@ export default ({
       title: 'Box Shadow',
       name: 'box-shadow',
       render: BoxShadowExample,
+    },
+    {
+      title: 'Outline',
+      name: 'outline',
+      render: OutlineExample,
     },
   ],
 }: RNTesterModule);

@@ -188,6 +188,10 @@ function getProcessorForType(typeName: string): ?(nextProp: any) => any {
     case 'UIImage':
     case 'RCTImageSource':
       return resolveAssetSource;
+    case 'BoxShadowArray':
+      return processBoxShadow;
+    case 'FilterArray':
+      return processFilter;
     // Android Types
     case 'Color':
       return processColor;

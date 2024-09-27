@@ -105,6 +105,8 @@ public interface YogaProps {
 
   void setBaselineFunction(YogaBaselineFunction yogaBaselineFunction);
 
+  void setBoxSizing(YogaBoxSizing boxSizing);
+
   /* Getters */
 
   YogaValue getWidth();
@@ -148,4 +150,6 @@ public interface YogaProps {
   YogaValue getPosition(YogaEdge edge);
 
   float getBorder(YogaEdge edge);
+
+  YogaBoxSizing getBoxSizing();
 }

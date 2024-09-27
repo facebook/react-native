@@ -6,7 +6,17 @@
 require "json"
 require_relative "./hermes-utils.rb"
 
-react_native_path = File.join(__dir__, "..", "..")
+begin
+  react_native_path = File.dirname(Pod::Executable.execute_command('node', ['-p',
+    'require.resolve(
+    "react-native",
+    {paths: [process.argv[1]]},
+    )', __dir__]).strip
+  )
+rescue => e
+  # Fallback to the parent directory if the above command fails (e.g when building locally in OOT Platform)
+  react_native_path = File.join(__dir__, "..", "..")
+end
 
 # package.json
 package = JSON.parse(File.read(File.join(react_native_path, "package.json")))
@@ -31,7 +41,8 @@ Pod::Spec.new do |spec|
 
   spec.pod_target_xcconfig = {
                     "CLANG_CXX_LANGUAGE_STANDARD" => "c++20",
-                    "CLANG_CXX_LIBRARY" => "compiler-default"
+                    "CLANG_CXX_LIBRARY" => "compiler-default",
+                    "GCC_WARN_INHIBIT_ALL_WARNINGS" => "YES" # Disable warnings because we don't control this library
                   }
 
   spec.ios.vendored_frameworks = "destroot/Library/Frameworks/ios/hermes.framework"

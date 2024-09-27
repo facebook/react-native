@@ -122,51 +122,51 @@ class RawValue {
   folly::dynamic dynamic_;
 
   static bool checkValueType(
-      const folly::dynamic& dynamic,
-      RawValue* type) noexcept {
+      const folly::dynamic& /*dynamic*/,
+      RawValue* /*type*/) noexcept {
     return true;
   }
 
   static bool checkValueType(
       const folly::dynamic& dynamic,
-      bool* type) noexcept {
+      bool* /*type*/) noexcept {
     return dynamic.isBool();
   }
 
   static bool checkValueType(
       const folly::dynamic& dynamic,
-      int* type) noexcept {
+      int* /*type*/) noexcept {
     return dynamic.isNumber();
   }
 
   static bool checkValueType(
       const folly::dynamic& dynamic,
-      int64_t* type) noexcept {
+      int64_t* /*type*/) noexcept {
     return dynamic.isNumber();
   }
 
   static bool checkValueType(
       const folly::dynamic& dynamic,
-      float* type) noexcept {
+      float* /*type*/) noexcept {
     return dynamic.isNumber();
   }
 
   static bool checkValueType(
       const folly::dynamic& dynamic,
-      double* type) noexcept {
+      double* /*type*/) noexcept {
     return dynamic.isNumber();
   }
 
   static bool checkValueType(
       const folly::dynamic& dynamic,
-      std::string* type) noexcept {
+      std::string* /*type*/) noexcept {
     return dynamic.isString();
   }
 
   template <typename T>
   static bool checkValueType(
       const folly::dynamic& dynamic,
-      std::vector<T>* type) noexcept {
+      std::vector<T>* /*type*/) noexcept {
     if (!dynamic.isArray()) {
       return false;
     }
@@ -186,7 +186,7 @@ class RawValue {
   template <typename T>
   static bool checkValueType(
       const folly::dynamic& dynamic,
-      std::unordered_map<std::string, T>* type) noexcept {
+      std::unordered_map<std::string, T>* /*type*/) noexcept {
     if (!dynamic.isObject()) {
       return false;
     }
@@ -207,40 +207,40 @@ class RawValue {
   // Casts
   static RawValue castValue(
       const folly::dynamic& dynamic,
-      RawValue* type) noexcept {
+      RawValue* /*type*/) noexcept {
     return RawValue(dynamic);
   }
 
-  static bool castValue(const folly::dynamic& dynamic, bool* type) {
+  static bool castValue(const folly::dynamic& dynamic, bool* /*type*/) {
     return dynamic.getBool();
   }
 
-  static int castValue(const folly::dynamic& dynamic, int* type) {
+  static int castValue(const folly::dynamic& dynamic, int* /*type*/) {
     return static_cast<int>(dynamic.asInt());
   }
 
-  static int64_t castValue(const folly::dynamic& dynamic, int64_t* type) {
+  static int64_t castValue(const folly::dynamic& dynamic, int64_t* /*type*/) {
     return dynamic.asInt();
   }
 
-  static float castValue(const folly::dynamic& dynamic, float* type) {
+  static float castValue(const folly::dynamic& dynamic, float* /*type*/) {
     return static_cast<float>(dynamic.asDouble());
   }
 
-  static double castValue(const folly::dynamic& dynamic, double* type) {
+  static double castValue(const folly::dynamic& dynamic, double* /*type*/) {
     return dynamic.asDouble();
   }
 
   static std::string castValue(
       const folly::dynamic& dynamic,
-      std::string* type) {
+      std::string* /*type*/) {
     return dynamic.getString();
   }
 
   template <typename T>
   static std::vector<T> castValue(
       const folly::dynamic& dynamic,
-      std::vector<T>* type) {
+      std::vector<T>* /*type*/) {
     react_native_assert(dynamic.isArray());
     auto result = std::vector<T>{};
     result.reserve(dynamic.size());
@@ -253,7 +253,7 @@ class RawValue {
   template <typename T>
   static std::vector<std::vector<T>> castValue(
       const folly::dynamic& dynamic,
-      std::vector<std::vector<T>>* type) {
+      std::vector<std::vector<T>>* /*type*/) {
     react_native_assert(dynamic.isArray());
     auto result = std::vector<std::vector<T>>{};
     result.reserve(dynamic.size());
@@ -266,7 +266,7 @@ class RawValue {
   template <typename T>
   static std::unordered_map<std::string, T> castValue(
       const folly::dynamic& dynamic,
-      std::unordered_map<std::string, T>* type) {
+      std::unordered_map<std::string, T>* /*type*/) {
     react_native_assert(dynamic.isObject());
     auto result = std::unordered_map<std::string, T>{};
     for (const auto& item : dynamic.items()) {

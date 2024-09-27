@@ -31,7 +31,7 @@ class UIManagerAnimationDelegate {
   /**
    * Set ComponentDescriptor registry.
    *
-   * @param componentDescriptorRegistry
+   * @param componentDescriptorRegistry the registry of componentDescriptors
    */
   virtual void setComponentDescriptorRegistry(
       const SharedComponentDescriptorRegistry& componentDescriptorRegistry) = 0;

@@ -43,6 +43,7 @@ class ReactNativePodsUtils
 
     def self.set_gcc_preprocessor_definition_for_React_hermes(installer)
         self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "HERMES_ENABLE_DEBUGGER=1", "React-hermes", "Debug")
+        self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "HERMES_ENABLE_DEBUGGER=1", "React-jsinspector", "Debug")
         self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "HERMES_ENABLE_DEBUGGER=1", "hermes-engine", "Debug")
         self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "HERMES_ENABLE_DEBUGGER=1", "React-RuntimeHermes", "Debug")
     end
@@ -538,10 +539,19 @@ class ReactNativePodsUtils
     end
 
     def self.add_search_path_if_not_included(current_search_paths, new_search_path)
-        if !current_search_paths.include?(new_search_path)
-            current_search_paths << " #{new_search_path}"
+        new_search_path = new_search_path.strip
+
+        if current_search_paths.is_a?(String)
+          current_search_paths = current_search_paths.strip
+          return "#{current_search_paths} #{new_search_path}" unless current_search_paths.include?(new_search_path)
         end
-        return current_search_paths
+
+        if current_search_paths.is_a?(Array)
+          current_search_paths = current_search_paths.map(&:strip)
+          return current_search_paths << new_search_path unless current_search_paths.include?(new_search_path)
+        end
+
+        current_search_paths
     end
 
     def self.update_header_paths_if_depends_on(target_installation_result, dependency_name, header_paths)
@@ -686,10 +696,18 @@ class ReactNativePodsUtils
             map[field] = "$(inherited)" + flag
         else
             unless map[field].include?(flag)
-                map[field] = map[field] + flag
+                if map[field].instance_of? String
+                    map[field] = map[field] + flag
+                elsif map[field].instance_of? Array
+                    map[field].push(flag)
+                end
             end
             unless map[field].include?("$(inherited)")
-                map[field] = "$(inherited) " + map[field]
+                if map[field].instance_of? String
+                    map[field] = "$(inherited) " + map[field]
+                elsif map[field].instance_of? Array
+                    map[field].unshift("$(inherited)")
+                end
             end
         end
     end

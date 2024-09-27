@@ -19,7 +19,9 @@ end
 folly_config = get_folly_config()
 folly_compiler_flags = folly_config[:compiler_flags]
 folly_version = folly_config[:version]
-socket_rocket_version = '0.7.0'
+
+socket_rocket_config = get_socket_rocket_config()
+socket_rocket_version = socket_rocket_config[:version] 
 
 header_search_paths = [
   "\"$(PODS_ROOT)/boost\"",
@@ -40,7 +42,15 @@ Pod::Spec.new do |s|
   s.platforms              = min_supported_versions
   s.compiler_flags         = folly_compiler_flags + ' -Wno-nullability-completeness'
   s.source                 = source
+
   s.source_files           = "**/*.{c,m,mm,cpp}"
+
+  s.ios.exclude_files      = "PlatformStubs/**/*"
+  exclude_files            = ["RCTStatusBarManager.mm"]
+  s.macos.exclude_files    = exclude_files 
+  s.visionos.exclude_files = exclude_files
+  s.tvos.exclude_files     = exclude_files
+
   s.header_dir             = "CoreModules"
   s.pod_target_xcconfig    = {
                                "USE_HEADERMAP" => "YES",

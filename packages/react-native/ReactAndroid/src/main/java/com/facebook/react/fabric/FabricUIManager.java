@@ -50,7 +50,6 @@ import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.common.mapbuffer.ReadableMapBuffer;
-import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
 import com.facebook.react.fabric.events.FabricEventEmitter;
 import com.facebook.react.fabric.internal.interop.InteropUIBlockListener;
@@ -421,11 +420,6 @@ public class FabricUIManager
 
     mDestroyed = true;
 
-    // This is not technically thread-safe, since it's read on the UI thread and written
-    // here on the JS thread. We've marked it as volatile so that this writes to UI-thread
-    // memory immediately.
-    mDispatchUIFrameCallback.stop();
-
     mEventDispatcher.removeBatchEventDispatchedListener(mBatchEventDispatchedListener);
     mEventDispatcher.unregisterEventEmitter(FABRIC);
 
@@ -447,7 +441,7 @@ public class FabricUIManager
     // responsible for initializing and deallocating EventDispatcher. StaticViewConfigs is enabled
     // only in Bridgeless for now.
     // TODO T83943316: Remove this IF once StaticViewConfigs are enabled by default
-    if (!ReactFeatureFlags.enableBridgelessArchitecture) {
+    if (!ReactNativeFeatureFlags.enableBridgelessArchitecture()) {
       mEventDispatcher.onCatalystInstanceDestroyed();
     }
   }
@@ -765,6 +759,14 @@ public class FabricUIManager
             isLayoutable));
   }
 
+  @SuppressWarnings("unused")
+  @AnyThread
+  @ThreadConfined(ANY)
+  private void destroyUnmountedView(int surfaceId, int reactTag) {
+    mMountItemDispatcher.addMountItem(
+        MountItemFactory.createDestroyViewMountItem(surfaceId, reactTag));
+  }
+
   @SuppressLint("NotInvokedPrivateMethod")
   @SuppressWarnings("unused")
   @AnyThread
@@ -1021,8 +1023,7 @@ public class FabricUIManager
 
   @Override
   public void onHostResume() {
-    ReactChoreographer.getInstance()
-        .postFrameCallback(ReactChoreographer.CallbackType.DISPATCH_UI, mDispatchUIFrameCallback);
+    mDispatchUIFrameCallback.resume();
   }
 
   @Override
@@ -1034,8 +1035,7 @@ public class FabricUIManager
 
   @Override
   public void onHostPause() {
-    ReactChoreographer.getInstance()
-        .removeFrameCallback(ReactChoreographer.CallbackType.DISPATCH_UI, mDispatchUIFrameCallback);
+    mDispatchUIFrameCallback.pause();
   }
 
   @Override
@@ -1322,21 +1322,55 @@ public class FabricUIManager
 
     private volatile boolean mIsMountingEnabled = true;
 
+    @ThreadConfined(UI)
+    private boolean mShouldSchedule = false;
+
+    @ThreadConfined(UI)
+    private boolean mIsScheduled = false;
+
     private DispatchUIFrameCallback(@NonNull ReactContext reactContext) {
       super(reactContext);
     }
 
-    @AnyThread
-    void stop() {
-      mIsMountingEnabled = false;
+    @UiThread
+    @ThreadConfined(UI)
+    private void schedule() {
+      if (!mIsScheduled && mShouldSchedule) {
+        mIsScheduled = true;
+        ReactChoreographer.getInstance()
+            .postFrameCallback(ReactChoreographer.CallbackType.DISPATCH_UI, this);
+      }
+    }
+
+    @UiThread
+    @ThreadConfined(UI)
+    void resume() {
+      mShouldSchedule = true;
+      schedule();
+    }
+
+    @UiThread
+    @ThreadConfined(UI)
+    void pause() {
+      ReactChoreographer.getInstance()
+          .removeFrameCallback(ReactChoreographer.CallbackType.DISPATCH_UI, this);
+      mShouldSchedule = false;
+      mIsScheduled = false;
     }
 
     @Override
     @UiThread
     @ThreadConfined(UI)
     public void doFrameGuarded(long frameTimeNanos) {
-      if (!mIsMountingEnabled || mDestroyed) {
-        FLog.w(TAG, "Not flushing pending UI operations because of previously thrown Exception");
+      mIsScheduled = false;
+
+      if (!mIsMountingEnabled) {
+        FLog.w(TAG, "Not flushing pending UI operations: exception was previously thrown");
+        return;
+      }
+
+      if (mDestroyed) {
+        FLog.w(TAG, "Not flushing pending UI operations: FabricUIManager is destroyed");
         return;
       }
 
@@ -1362,12 +1396,10 @@ public class FabricUIManager
         mMountItemDispatcher.tryDispatchMountItems();
       } catch (Exception ex) {
         FLog.e(TAG, "Exception thrown when executing UIFrameGuarded", ex);
-        stop();
+        mIsMountingEnabled = false;
         throw ex;
       } finally {
-        ReactChoreographer.getInstance()
-            .postFrameCallback(
-                ReactChoreographer.CallbackType.DISPATCH_UI, mDispatchUIFrameCallback);
+        schedule();
       }
 
       mSynchronousEvents.clear();

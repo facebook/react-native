@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9aa269f6c9056b4e0e477142554db59a>>
+ * @generated SignedSource<<ea2c2d19e83630b549e719057cd1982e>>
  */
 
 /**
@@ -68,6 +68,11 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableAlignItemsBaselineOnFabricIOS();
 
   /**
+   * When enabled, custom line height calculation will be centered from top to bottom.
+   */
+  RN_EXPORT static bool enableAndroidLineHeightCentering();
+
+  /**
    * Enables mix-blend-mode prop on Android.
    */
   RN_EXPORT static bool enableAndroidMixBlendModeProp();
@@ -78,9 +83,19 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableBackgroundStyleApplicator();
 
   /**
+   * Feature flag to enable the new bridgeless architecture. Note: Enabling this will force enable the following flags: `useTurboModules` & `enableFabricRenderer.
+   */
+  RN_EXPORT static bool enableBridgelessArchitecture();
+
+  /**
    * Clean yoga node when <TextInput /> does not change.
    */
   RN_EXPORT static bool enableCleanTextInputYogaNode();
+
+  /**
+   * Deletes views that were pre-allocated but never mounted on the screen.
+   */
+  RN_EXPORT static bool enableDeletionOfUnmountedViews();
 
   /**
    * Feature flag to configure eager attachment of the root view/initialisation of the JS code.
@@ -98,6 +113,11 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableFabricLogs();
 
   /**
+   * Enables the use of the Fabric renderer in the whole app.
+   */
+  RN_EXPORT static bool enableFabricRenderer();
+
+  /**
    * When the app is completely migrated to Fabric, set this flag to true to disable parts of Paper infrastructure that are not needed anymore but consume memory and CPU. Specifically, UIViewOperationQueue and EventDispatcherImpl will no longer work as they will not subscribe to ReactChoreographer for updates.
    */
   RN_EXPORT static bool enableFabricRendererExclusively();
@@ -106,6 +126,11 @@ class ReactNativeFeatureFlags {
    * When enabled, the renderer would only fail commits when they propagate state and the last commit that updated state changed before committing.
    */
   RN_EXPORT static bool enableGranularShadowTreeStateReconciliation();
+
+  /**
+   * iOS Views will clip to their padding box vs border box
+   */
+  RN_EXPORT static bool enableIOSViewClipToPaddingBox();
 
   /**
    * When enabled, LayoutAnimations API will animate state changes on iOS.
@@ -123,6 +148,11 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableMicrotasks();
 
   /**
+   * Moves execution of pre-mount items to outside the choregrapher in the main thread, so we can estimate idle time more precisely (Android only).
+   */
+  RN_EXPORT static bool enablePreciseSchedulingForPremountItemsOnAndroid();
+
+  /**
    * When enabled, Android will receive prop updates based on the differences between the last rendered shadow node and the last committed shadow node.
    */
   RN_EXPORT static bool enablePropsUpdateReconciliationAndroid();
@@ -136,6 +166,11 @@ class ReactNativeFeatureFlags {
    * Dispatches state updates synchronously in Fabric (e.g.: updates the scroll position in the shadow tree synchronously from the main thread).
    */
   RN_EXPORT static bool enableSynchronousStateUpdates();
+
+  /**
+   * Text preallocation optimisation where unnecessary work is removed.
+   */
+  RN_EXPORT static bool enableTextPreallocationOptimisation();
 
   /**
    * Ensures that JavaScript always has a consistent view of the state of the UI (e.g.: commits done in other threads are not immediately propagated to JS during its execution).
@@ -158,19 +193,14 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool fetchImagesInViewPreallocation();
 
   /**
-   * When doing a smooth scroll animation, it stops setting the state with the final scroll position in Fabric before the animation starts.
-   */
-  RN_EXPORT static bool fixIncorrectScrollViewStateUpdateOnAndroid();
-
-  /**
    * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.
    */
   RN_EXPORT static bool fixMappingOfEventPrioritiesBetweenFabricAndReact();
 
   /**
-   * Enables a fix to prevent the possibility of state updates in Fabric being missed due to race conditions with previous state updates.
+   * Fixes a limitation on Android where the mounting coordinator would report there are no pending transactions but some of them were actually not processed due to the use of the push model.
    */
-  RN_EXPORT static bool fixMissedFabricStateUpdatesOnAndroid();
+  RN_EXPORT static bool fixMountingCoordinatorReportedPendingTransactionsOnAndroid();
 
   /**
    * Forces the mounting layer on Android to always batch mount items instead of dispatching them immediately. This might fix some crashes related to synchronous state updates, where some views dispatch state updates during mount.
@@ -201,6 +231,11 @@ class ReactNativeFeatureFlags {
    * Adds support for loading vector drawable assets in the Image component (only on Android)
    */
   RN_EXPORT static bool loadVectorDrawablesOnImages();
+
+  /**
+   * Removes nested calls to MountItemDispatcher.dispatchMountItems on Android, so we do less work per frame on the UI thread.
+   */
+  RN_EXPORT static bool removeNestedCallsToDispatchMountItemsOnAndroid();
 
   /**
    * Propagate layout direction to Android views.
@@ -243,6 +278,11 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool useOptimisedViewPreallocationOnAndroid();
 
   /**
+   * Uses an optimized mechanism for event batching on Android that does not need to wait for a Choreographer frame callback.
+   */
+  RN_EXPORT static bool useOptimizedEventBatchingOnAndroid();
+
+  /**
    * When enabled, cloning shadow nodes within react native will update the reference held by the current JS fiber tree.
    */
   RN_EXPORT static bool useRuntimeShadowNodeReferenceUpdate();
@@ -261,6 +301,11 @@ class ReactNativeFeatureFlags {
    * In Bridgeless mode, should legacy NativeModules use the TurboModule system?
    */
   RN_EXPORT static bool useTurboModuleInterop();
+
+  /**
+   * When enabled, NativeModules will be executed by using the TurboModule system
+   */
+  RN_EXPORT static bool useTurboModules();
 
   /**
    * Overrides the feature flags with the ones provided by the given provider

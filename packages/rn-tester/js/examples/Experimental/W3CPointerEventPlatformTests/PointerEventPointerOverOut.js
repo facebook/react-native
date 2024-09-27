@@ -26,7 +26,7 @@ function getNativeTagFromHostElement(
   }
   if (elem != null) {
     // $FlowExpectedError - accessing non-public property
-    return elem._nativeTag;
+    return elem.__nativeTag;
   }
   return undefined;
 }

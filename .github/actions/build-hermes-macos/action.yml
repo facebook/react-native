@@ -22,7 +22,7 @@ runs:
     - name: Restore Cached Artifacts
       uses: actions/cache/restore@v4
       with:
-        key: v3-hermes-artifacts-${{ inputs.flavor }}-${{ inputs.hermes-version }}-${{ inputs.react-native-version }}
+        key: v4-hermes-artifacts-${{ inputs.flavor }}-${{ inputs.hermes-version }}-${{ inputs.react-native-version }}-${{ hashFiles('./packages/react-native/sdks/hermes/utils/build-apple-frameworks.sh') }}
         path: |
           /tmp/hermes/osx-bin/${{ inputs.flavor }}
           /tmp/hermes/dSYM/${{ inputs.flavor }}
@@ -52,38 +52,50 @@ runs:
       if: ${{ steps.check_if_apple_artifacts_are_there.outputs.ARTIFACTS_EXIST != 'true' }}
       uses: actions/download-artifact@v4
       with:
-        path: ./packages/react-native/sdks/hermes/build_macosx_${{ inputs.flavor }}
+        path: ./packages/react-native/sdks/hermes/
         name: slice-macosx-${{ inputs.flavor }}
     - name: Slice cache iphoneos
       if: ${{ steps.check_if_apple_artifacts_are_there.outputs.ARTIFACTS_EXIST != 'true' }}
       uses: actions/download-artifact@v4
       with:
-        path: ./packages/react-native/sdks/hermes/build_iphoneos_${{ inputs.flavor }}
+        path: ./packages/react-native/sdks/hermes/
         name: slice-iphoneos-${{ inputs.flavor }}
     - name: Slice cache iphonesimulator
       if: ${{ steps.check_if_apple_artifacts_are_there.outputs.ARTIFACTS_EXIST != 'true' }}
       uses: actions/download-artifact@v4
       with:
-        path: ./packages/react-native/sdks/hermes/build_iphonesimulator_${{ inputs.flavor }}
+        path: ./packages/react-native/sdks/hermes/
         name: slice-iphonesimulator-${{ inputs.flavor }}
     - name: Slice cache catalyst
       if: ${{ steps.check_if_apple_artifacts_are_there.outputs.ARTIFACTS_EXIST != 'true' }}
       uses: actions/download-artifact@v4
       with:
-        path: ./packages/react-native/sdks/hermes/build_catalyst_${{ inputs.flavor }}
+        path: ./packages/react-native/sdks/hermes/
         name: slice-catalyst-${{ inputs.flavor }}
     - name: Slice cache xros
       if: ${{ steps.check_if_apple_artifacts_are_there.outputs.ARTIFACTS_EXIST != 'true' }}
       uses: actions/download-artifact@v4
       with:
-        path: ./packages/react-native/sdks/hermes/build_xros_${{ inputs.flavor }}
+        path: ./packages/react-native/sdks/hermes/
         name: slice-xros-${{ inputs.flavor }}
     - name: Slice cache xrsimulator
       if: ${{ steps.check_if_apple_artifacts_are_there.outputs.ARTIFACTS_EXIST != 'true' }}
       uses: actions/download-artifact@v4
       with:
-        path: ./packages/react-native/sdks/hermes/build_xrsimulator_${{ inputs.flavor }}
+        path: ./packages/react-native/sdks/hermes/
         name: slice-xrsimulator-${{ inputs.flavor }}
+    - name: Unzip slices
+      shell: bash
+      if: ${{ steps.check_if_apple_artifacts_are_there.outputs.ARTIFACTS_EXIST != 'true' }}
+      run: |
+        cd ./packages/react-native/sdks/hermes
+        ls -l .
+        tar -xzv -f build_catalyst_${{ matrix.flavor }}.tar.gz
+        tar -xzv -f build_iphoneos_${{ matrix.flavor }}.tar.gz
+        tar -xzv -f build_iphonesimulator_${{ matrix.flavor }}.tar.gz
+        tar -xzv -f build_macosx_${{ matrix.flavor }}.tar.gz
+        tar -xzv -f build_xros_${{ matrix.flavor }}.tar.gz
+        tar -xzv -f build_xrsimulator_${{ matrix.flavor }}.tar.gz
     - name: Move back build folders
       if: ${{ steps.check_if_apple_artifacts_are_there.outputs.ARTIFACTS_EXIST != 'true' }}
       shell: bash
@@ -188,7 +200,7 @@ runs:
       uses: actions/cache/save@v4
       if: ${{ github.ref == 'refs/heads/main' || contains(github.ref, '-stable') }} # To avoid that the cache explode.
       with:
-        key: v3-hermes-artifacts-${{ inputs.flavor }}-${{ inputs.hermes-version }}-${{ inputs.react-native-version }}
+        key: v4-hermes-artifacts-${{ inputs.flavor }}-${{ inputs.hermes-version }}-${{ inputs.react-native-version }}-${{ hashFiles('./packages/react-native/sdks/hermes/utils/build-apple-frameworks.sh') }}
         path: |
           /tmp/hermes/osx-bin/${{ inputs.flavor }}
           /tmp/hermes/dSYM/${{ inputs.flavor }}

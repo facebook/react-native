@@ -25,13 +25,16 @@ import com.facebook.react.uimanager.drawable.CompositeBackgroundDrawable
 import com.facebook.react.uimanager.drawable.InsetBoxShadowDrawable
 import com.facebook.react.uimanager.drawable.MIN_INSET_BOX_SHADOW_SDK_VERSION
 import com.facebook.react.uimanager.drawable.MIN_OUTSET_BOX_SHADOW_SDK_VERSION
+import com.facebook.react.uimanager.drawable.OutlineDrawable
 import com.facebook.react.uimanager.drawable.OutsetBoxShadowDrawable
+import com.facebook.react.uimanager.style.BackgroundImageLayer
 import com.facebook.react.uimanager.style.BorderInsets
 import com.facebook.react.uimanager.style.BorderRadiusProp
 import com.facebook.react.uimanager.style.BorderRadiusStyle
 import com.facebook.react.uimanager.style.BorderStyle
 import com.facebook.react.uimanager.style.BoxShadow
 import com.facebook.react.uimanager.style.LogicalEdge
+import com.facebook.react.uimanager.style.OutlineStyle
 
 /**
  * BackgroundStyleApplicator is responsible for applying backgrounds, borders, and related effects,
@@ -49,6 +52,14 @@ public object BackgroundStyleApplicator {
     }
 
     ensureCSSBackground(view).color = color ?: Color.TRANSPARENT
+  }
+
+  @JvmStatic
+  public fun setBackgroundImage(
+      view: View,
+      backgroundImageLayers: List<BackgroundImageLayer>?
+  ): Unit {
+    ensureCSSBackground(view).setBackgroundImage(backgroundImageLayers)
   }
 
   @JvmStatic
@@ -114,6 +125,13 @@ public object BackgroundStyleApplicator {
         }
       }
     }
+
+    val outline = compositeBackgroundDrawable.outline
+    if (outline != null) {
+      outline.borderRadius = outline.borderRadius ?: BorderRadiusStyle()
+      outline.borderRadius?.set(corner, radius)
+      outline.invalidateSelf()
+    }
   }
 
   @JvmStatic
@@ -127,6 +145,58 @@ public object BackgroundStyleApplicator {
 
   @JvmStatic
   public fun getBorderStyle(view: View): BorderStyle? = getCSSBackground(view)?.borderStyle
+
+  @JvmStatic
+  public fun setOutlineColor(view: View, @ColorInt outlineColor: Int?): Unit {
+    if (ViewUtil.getUIManagerType(view) != UIManagerType.FABRIC) {
+      return
+    }
+
+    val outline = ensureOutlineDrawable(view)
+    if (outlineColor != null) {
+      outline.outlineColor = outlineColor
+    }
+  }
+
+  @JvmStatic public fun getOutlineColor(view: View): Int? = getOutlineDrawable(view)?.outlineColor
+
+  @JvmStatic
+  public fun setOutlineOffset(view: View, outlineOffset: Float): Unit {
+    if (ViewUtil.getUIManagerType(view) != UIManagerType.FABRIC) {
+      return
+    }
+
+    val outline = ensureOutlineDrawable(view)
+    outline.outlineOffset = outlineOffset.dpToPx()
+  }
+
+  public fun getOutlineOffset(view: View): Float? = getOutlineDrawable(view)?.outlineOffset
+
+  @JvmStatic
+  public fun setOutlineStyle(view: View, outlineStyle: OutlineStyle?): Unit {
+    if (ViewUtil.getUIManagerType(view) != UIManagerType.FABRIC) {
+      return
+    }
+
+    val outline = ensureOutlineDrawable(view)
+    if (outlineStyle != null) {
+      outline.outlineStyle = outlineStyle
+    }
+  }
+
+  public fun getOutlineStyle(view: View): OutlineStyle? = getOutlineDrawable(view)?.outlineStyle
+
+  @JvmStatic
+  public fun setOutlineWidth(view: View, width: Float): Unit {
+    if (ViewUtil.getUIManagerType(view) != UIManagerType.FABRIC) {
+      return
+    }
+
+    val outline = ensureOutlineDrawable(view)
+    outline.outlineWidth = width.dpToPx()
+  }
+
+  public fun getOutlineWidth(view: View): Float? = getOutlineDrawable(view)?.outlineOffset
 
   @JvmStatic
   public fun setBoxShadow(view: View, shadows: List<BoxShadow>): Unit {
@@ -251,4 +321,26 @@ public object BackgroundStyleApplicator {
 
   private fun getCSSBackground(view: View): CSSBackgroundDrawable? =
       getCompositeBackgroundDrawable(view)?.cssBackground
+
+  private fun ensureOutlineDrawable(view: View): OutlineDrawable {
+    val compositeBackgroundDrawable = ensureCompositeBackgroundDrawable(view)
+    var outline = compositeBackgroundDrawable.outline
+    if (outline == null) {
+      outline =
+          OutlineDrawable(
+              context = view.context,
+              borderRadius = ensureCSSBackground(view).borderRadius.copy(),
+              outlineColor = Color.BLACK,
+              outlineOffset = 0f,
+              outlineStyle = OutlineStyle.SOLID,
+              outlineWidth = 0f,
+          )
+      view.background = compositeBackgroundDrawable.withNewOutline(outline)
+    }
+
+    return outline
+  }
+
+  private fun getOutlineDrawable(view: View): OutlineDrawable? =
+      getCompositeBackgroundDrawable(view)?.outline
 }

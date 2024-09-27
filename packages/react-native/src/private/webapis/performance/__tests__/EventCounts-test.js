@@ -11,16 +11,21 @@
 
 import {RawPerformanceEntryTypeValues} from '../RawPerformanceEntry';
 
-// NOTE: Jest mocks of transitive dependencies don't appear to work with
-// ES6 module imports, therefore forced to use commonjs style imports here.
-const Performance = require('../Performance').default;
-const NativePerformanceObserverMock =
-  require('../specs/__mocks__/NativePerformanceObserver').default;
+jest.mock(
+  '../specs/NativePerformance',
+  () => require('../specs/__mocks__/NativePerformance').default,
+);
 
 jest.mock(
   '../specs/NativePerformanceObserver',
   () => require('../specs/__mocks__/NativePerformanceObserver').default,
 );
+
+// NOTE: Jest mocks of transitive dependencies don't appear to work with
+// ES6 module imports, therefore forced to use commonjs style imports here.
+const Performance = require('../Performance').default;
+const logMockEntry =
+  require('../specs/__mocks__/NativePerformanceObserver').logMockEntry;
 
 describe('EventCounts', () => {
   it('defines EventCounts for Performance', () => {
@@ -29,40 +34,44 @@ describe('EventCounts', () => {
   });
 
   it('consistently implements the API for EventCounts', async () => {
+    let interactionId = 0;
     const eventDefaultValues = {
       entryType: RawPerformanceEntryTypeValues.EVENT,
       startTime: 0,
       duration: 100,
+      processingStart: 0,
+      processingEnd: 100,
     };
 
-    NativePerformanceObserverMock.logRawEntry({
+    logMockEntry({
       name: 'click',
       ...eventDefaultValues,
+      interactionId: interactionId++,
     });
-
-    NativePerformanceObserverMock.logRawEntry({
+    logMockEntry({
       name: 'input',
       ...eventDefaultValues,
+      interactionId: interactionId++,
     });
-
-    NativePerformanceObserverMock.logRawEntry({
+    logMockEntry({
       name: 'input',
       ...eventDefaultValues,
+      interactionId: interactionId++,
     });
-
-    NativePerformanceObserverMock.logRawEntry({
+    logMockEntry({
       name: 'keyup',
       ...eventDefaultValues,
+      interactionId: interactionId++,
     });
-
-    NativePerformanceObserverMock.logRawEntry({
+    logMockEntry({
       name: 'keyup',
       ...eventDefaultValues,
+      interactionId: interactionId++,
     });
-
-    NativePerformanceObserverMock.logRawEntry({
+    logMockEntry({
       name: 'keyup',
       ...eventDefaultValues,
+      interactionId: interactionId++,
     });
 
     const eventCounts = new Performance().eventCounts;
@@ -89,34 +98,36 @@ describe('EventCounts', () => {
     expect(Array.from(eventCounts.values())).toStrictEqual([1, 2, 3]);
 
     await jest.runAllTicks();
-    NativePerformanceObserverMock.logRawEntry({
+    logMockEntry({
       name: 'input',
       ...eventDefaultValues,
+      interactionId: interactionId++,
     });
-
-    NativePerformanceObserverMock.logRawEntry({
+    logMockEntry({
       name: 'keyup',
       ...eventDefaultValues,
+      interactionId: interactionId++,
     });
-
-    NativePerformanceObserverMock.logRawEntry({
+    logMockEntry({
       name: 'keyup',
       ...eventDefaultValues,
+      interactionId: interactionId++,
     });
     expect(Array.from(eventCounts.values())).toStrictEqual([1, 3, 5]);
 
     await jest.runAllTicks();
-
-    NativePerformanceObserverMock.logRawEntry({
+    logMockEntry({
       name: 'click',
       ...eventDefaultValues,
+      interactionId: interactionId++,
     });
 
     await jest.runAllTicks();
 
-    NativePerformanceObserverMock.logRawEntry({
+    logMockEntry({
       name: 'keyup',
       ...eventDefaultValues,
+      interactionId: interactionId++,
     });
 
     expect(Array.from(eventCounts.values())).toStrictEqual([2, 3, 6]);

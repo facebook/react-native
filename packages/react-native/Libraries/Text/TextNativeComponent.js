@@ -16,7 +16,6 @@ import type {TextProps} from './TextProps';
 import {createViewConfig} from '../NativeComponent/ViewConfig';
 import UIManager from '../ReactNative/UIManager';
 import createReactNativeComponentClass from '../Renderer/shims/createReactNativeComponentClass';
-import Platform from '../Utilities/Platform';
 
 export type NativeTextProps = $ReadOnly<{
   ...TextProps,
@@ -49,12 +48,6 @@ const textViewConfig = {
     dataDetectorType: true,
     android_hyphenationFrequency: true,
     lineBreakStrategyIOS: true,
-    // boxShadow is currently per-component on Android instead of being on BaseViewConfig yet
-    ...(Platform.OS === 'android' && {
-      experimental_boxShadow: {
-        process: require('../StyleSheet/processBoxShadow').default,
-      },
-    }),
   },
   directEventTypes: {
     topTextLayout: {

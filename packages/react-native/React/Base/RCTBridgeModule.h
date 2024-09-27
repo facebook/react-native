@@ -346,15 +346,7 @@ RCT_EXTERN_C_END
 /**
  * Notifies the module that a batch of JS method invocations has just completed.
  */
-- (void)batchDidComplete;
-
-/**
- * Notifies the module that the active batch of JS method invocations has been
- * partially flushed.
- *
- * This occurs before -batchDidComplete, and more frequently.
- */
-- (void)partialBatchDidFlush;
+- (void)batchDidComplete RCT_DEPRECATED;
 
 @end
 

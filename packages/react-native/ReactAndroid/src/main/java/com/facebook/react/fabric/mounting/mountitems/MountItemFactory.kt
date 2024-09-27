@@ -53,6 +53,11 @@ public object MountItemFactory {
   ): MountItem =
       PreAllocateViewMountItem(surfaceId, reactTag, component, props, stateWrapper, isLayoutable)
 
+  /** @return a [MountItem] that will be used to destroy views */
+  @JvmStatic
+  public fun createDestroyViewMountItem(surfaceId: Int, reactTag: Int): MountItem =
+      DestroyUnmountedViewMountItem(surfaceId, reactTag)
+
   /**
    * @return a [MountItem] that will be read and execute a collection of MountItems serialized in
    *   the int[] and Object[] received by parameter

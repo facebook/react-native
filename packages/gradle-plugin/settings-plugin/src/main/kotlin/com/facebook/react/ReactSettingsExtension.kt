@@ -7,6 +7,7 @@
 
 package com.facebook.react
 
+import com.facebook.react.model.ModelAutolinkingConfigJson
 import com.facebook.react.utils.JsonUtils
 import com.facebook.react.utils.windowsAwareCommandLine
 import java.io.File
@@ -53,30 +54,22 @@ abstract class ReactSettingsExtension @Inject constructor(val settings: Settings
               .files("yarn.lock", "package-lock.json", "package.json", "react-native.config.js")
   ) {
     outputFile.parentFile.mkdirs()
-    val lockFilesChanged = checkAndUpdateLockfiles(lockFiles, outputFolder)
-    if (lockFilesChanged || outputFile.exists().not() || outputFile.length() != 0L) {
-      val process =
-          ProcessBuilder(command)
-              .directory(workingDirectory)
-              .redirectOutput(ProcessBuilder.Redirect.to(outputFile))
-              .redirectError(ProcessBuilder.Redirect.INHERIT)
-              .start()
-      val finished = process.waitFor(5, TimeUnit.MINUTES)
-      if (!finished || (process.exitValue() != 0)) {
-        val prefixCommand =
-            "ERROR: autolinkLibrariesFromCommand: process ${command.joinToString(" ")}"
-        val message =
-            if (!finished) "${prefixCommand} timed out"
-            else "${prefixCommand} exited with error code: ${process.exitValue()}"
-        val logger = Logging.getLogger("ReactSettingsExtension")
-        logger.error(message)
-        if (outputFile.length() != 0L) {
-          logger.error(outputFile.readText().substring(0, 1024))
+
+    val updateConfig =
+        object : GenerateConfig {
+          private val pb =
+              ProcessBuilder(command)
+                  .directory(workingDirectory)
+                  .redirectOutput(ProcessBuilder.Redirect.to(outputFile))
+                  .redirectError(ProcessBuilder.Redirect.INHERIT)
+
+          override fun command(): List<String> = pb.command()
+
+          override fun start(): Process = pb.start()
         }
-        outputFile.delete()
-        throw GradleException(message)
-      }
-    }
+
+    checkAndUpdateCache(updateConfig, outputFile, outputFolder, lockFiles)
+
     linkLibraries(getLibrariesToAutolink(outputFile))
   }
 
@@ -107,8 +100,72 @@ abstract class ReactSettingsExtension @Inject constructor(val settings: Settings
     }
   }
 
+  internal interface GenerateConfig {
+    fun command(): List<String>
+
+    fun start(): Process
+  }
+
   companion object {
     private val md = MessageDigest.getInstance("SHA-256")
+
+    /**
+     * Determine if our cache is out-of-date
+     *
+     * @param cacheJsonConfig Our current cached autolinking.json config, which may exist
+     * @param cacheFolder The folder we store our cached SHAs and config
+     * @param lockFiles The [FileCollection] of the lockfiles to check.
+     * @return `true` if the cache needs to be rebuilt, `false` otherwise
+     */
+    internal fun isCacheDirty(
+        cacheJsonConfig: File,
+        cacheFolder: File,
+        lockFiles: FileCollection,
+    ): Boolean {
+      if (cacheJsonConfig.exists().not() || cacheJsonConfig.length() == 0L) {
+        return true
+      }
+      val lockFilesChanged = checkAndUpdateLockfiles(lockFiles, cacheFolder)
+      if (lockFilesChanged) {
+        return true
+      }
+      return isConfigModelInvalid(JsonUtils.fromAutolinkingConfigJson(cacheJsonConfig))
+    }
+
+    /**
+     * Utility function to update the settings cache only if it's entries are dirty
+     *
+     * @param updateJsonConfig A [GenerateConfig] to update the project's autolinking config
+     * @param cacheJsonConfig Our current cached autolinking.json config, which may exist
+     * @param cacheFolder The folder we store our cached SHAs and config
+     * @param lockFiles The [FileCollection] of the lockfiles to check.
+     */
+    internal fun checkAndUpdateCache(
+        updateJsonConfig: GenerateConfig,
+        cacheJsonConfig: File,
+        cacheFolder: File,
+        lockFiles: FileCollection,
+    ) {
+      if (isCacheDirty(cacheJsonConfig, cacheFolder, lockFiles)) {
+        val process = updateJsonConfig.start()
+
+        val finished = process.waitFor(5, TimeUnit.MINUTES)
+        if (!finished || (process.exitValue() != 0)) {
+          val command = updateJsonConfig.command().joinToString(" ")
+          val prefixCommand = "ERROR: autolinkLibrariesFromCommand: process $command"
+          val message =
+              if (!finished) "$prefixCommand timed out"
+              else "$prefixCommand exited with error code: ${process.exitValue()}"
+          val logger = Logging.getLogger("ReactSettingsExtension")
+          logger.error(message)
+          if (cacheJsonConfig.length() != 0L) {
+            logger.error(cacheJsonConfig.readText().substring(0, 1024))
+          }
+          cacheJsonConfig.delete()
+          throw GradleException(message)
+        }
+      }
+    }
 
     /**
      * Utility function to check if the provided lockfiles have been updated or not. This function
@@ -150,5 +207,8 @@ abstract class ReactSettingsExtension @Inject constructor(val settings: Settings
 
     internal fun computeSha256(lockFile: File) =
         String.format("%032x", BigInteger(1, md.digest(lockFile.readBytes())))
+
+    internal fun isConfigModelInvalid(model: ModelAutolinkingConfigJson?) =
+        model?.project?.android?.packageName == null
   }
 }

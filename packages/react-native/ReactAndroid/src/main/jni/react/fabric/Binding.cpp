@@ -13,7 +13,6 @@
 #include "EventEmitterWrapper.h"
 #include "FabricMountingManager.h"
 #include "ReactNativeConfigHolder.h"
-#include "SurfaceHandlerBinding.h"
 
 #include <cxxreact/SystraceSection.h>
 #include <fbjni/fbjni.h>
@@ -102,6 +101,35 @@ void Binding::drainPreallocateViewsQueue() {
 }
 
 void Binding::reportMount(SurfaceId surfaceId) {
+  if (ReactNativeFeatureFlags::
+          fixMountingCoordinatorReportedPendingTransactionsOnAndroid()) {
+    // This is a fix for `MountingCoordinator::hasPendingTransactions` on
+    // Android, which otherwise would report no pending transactions
+    // incorrectly. This is due to the push model used on Android and can be
+    // removed when we migrate to a pull model.
+    std::shared_lock lock(surfaceHandlerRegistryMutex_);
+    auto iterator = surfaceHandlerRegistry_.find(surfaceId);
+    if (iterator != surfaceHandlerRegistry_.end()) {
+      const auto* surfaceHandler =
+          std::get_if<SurfaceHandler>(&iterator->second);
+      if (surfaceHandler == nullptr) {
+        auto javaSurfaceHandler =
+            std::get<jni::weak_ref<SurfaceHandlerBinding::jhybridobject>>(
+                iterator->second)
+                .lockLocal();
+        if (javaSurfaceHandler) {
+          surfaceHandler = &javaSurfaceHandler->cthis()->getSurfaceHandler();
+        }
+      }
+      if (surfaceHandler != nullptr) {
+        surfaceHandler->getMountingCoordinator()->didPerformAsyncTransactions();
+      }
+    } else {
+      LOG(ERROR) << "Binding::reportMount: Surface with id " << surfaceId
+                 << " is not found";
+    }
+  }
+
   auto scheduler = getScheduler();
   if (!scheduler) {
     LOG(ERROR) << "Binding::reportMount: scheduler disappeared";
@@ -241,16 +269,19 @@ void Binding::stopSurface(jint surfaceId) {
     std::unique_lock lock(surfaceHandlerRegistryMutex_);
 
     auto iterator = surfaceHandlerRegistry_.find(surfaceId);
-
     if (iterator == surfaceHandlerRegistry_.end()) {
       LOG(ERROR) << "Binding::stopSurface: Surface with given id is not found";
       return;
     }
 
-    auto surfaceHandler = std::move(iterator->second);
+    auto* surfaceHandler = std::get_if<SurfaceHandler>(&iterator->second);
+    if (surfaceHandler != nullptr) {
+      surfaceHandler->stop();
+      scheduler->unregisterSurface(*surfaceHandler);
+    } else {
+      LOG(ERROR) << "Java-owned SurfaceHandler found in stopSurface";
+    }
     surfaceHandlerRegistry_.erase(iterator);
-    surfaceHandler.stop();
-    scheduler->unregisterSurface(surfaceHandler);
   }
 
   auto mountingManager = getMountingManager("stopSurface");
@@ -260,14 +291,24 @@ void Binding::stopSurface(jint surfaceId) {
   mountingManager->onSurfaceStop(surfaceId);
 }
 
-void Binding::registerSurface(SurfaceHandlerBinding* surfaceHandlerBinding) {
-  const auto& surfaceHandler = surfaceHandlerBinding->getSurfaceHandler();
+void Binding::registerSurface(
+    jni::alias_ref<SurfaceHandlerBinding::jhybridobject>
+        surfaceHandlerBinding) {
+  const auto& surfaceHandler =
+      surfaceHandlerBinding->cthis()->getSurfaceHandler();
+
   auto scheduler = getScheduler();
   if (!scheduler) {
     LOG(ERROR) << "Binding::registerSurface: scheduler disappeared";
     return;
   }
   scheduler->registerSurface(surfaceHandler);
+
+  {
+    std::unique_lock lock(surfaceHandlerRegistryMutex_);
+    surfaceHandlerRegistry_.emplace(
+        surfaceHandler.getSurfaceId(), jni::make_weak(surfaceHandlerBinding));
+  }
 
   auto mountingManager = getMountingManager("registerSurface");
   if (!mountingManager) {
@@ -276,14 +317,22 @@ void Binding::registerSurface(SurfaceHandlerBinding* surfaceHandlerBinding) {
   mountingManager->onSurfaceStart(surfaceHandler.getSurfaceId());
 }
 
-void Binding::unregisterSurface(SurfaceHandlerBinding* surfaceHandlerBinding) {
-  const auto& surfaceHandler = surfaceHandlerBinding->getSurfaceHandler();
+void Binding::unregisterSurface(
+    jni::alias_ref<SurfaceHandlerBinding::jhybridobject>
+        surfaceHandlerBinding) {
+  const auto& surfaceHandler =
+      surfaceHandlerBinding->cthis()->getSurfaceHandler();
   auto scheduler = getScheduler();
   if (!scheduler) {
     LOG(ERROR) << "Binding::unregisterSurface: scheduler disappeared";
     return;
   }
   scheduler->unregisterSurface(surfaceHandler);
+
+  {
+    std::unique_lock lock(surfaceHandlerRegistryMutex_);
+    surfaceHandlerRegistry_.erase(surfaceHandler.getSurfaceId());
+  }
 
   auto mountingManager = getMountingManager("unregisterSurface");
   if (!mountingManager) {
@@ -330,15 +379,15 @@ void Binding::setConstraints(
     std::shared_lock lock(surfaceHandlerRegistryMutex_);
 
     auto iterator = surfaceHandlerRegistry_.find(surfaceId);
-
     if (iterator == surfaceHandlerRegistry_.end()) {
       LOG(ERROR)
           << "Binding::setConstraints: Surface with given id is not found";
       return;
     }
-
-    auto& surfaceHandler = iterator->second;
-    surfaceHandler.constraintLayout(constraints, context);
+    auto* surfaceHandler = std::get_if<SurfaceHandler>(&iterator->second);
+    if (surfaceHandler != nullptr) {
+      surfaceHandler->constraintLayout(constraints, context);
+    }
   }
 }
 
@@ -451,7 +500,13 @@ std::shared_ptr<FabricMountingManager> Binding::getMountingManager(
 
 void Binding::schedulerDidFinishTransaction(
     const MountingCoordinator::Shared& mountingCoordinator) {
-  auto mountingTransaction = mountingCoordinator->pullTransaction();
+  // We shouldn't be pulling the transaction here (which triggers diffing of
+  // the trees to determine the mutations to run on the host platform),
+  // but we have to due to current limitations in the Android implementation.
+  auto mountingTransaction = mountingCoordinator->pullTransaction(
+      // Indicate that the transaction will be performed asynchronously
+      ReactNativeFeatureFlags::
+          fixMountingCoordinatorReportedPendingTransactionsOnAndroid());
   if (!mountingTransaction.has_value()) {
     return;
   }
@@ -511,6 +566,19 @@ void Binding::schedulerDidRequestPreliminaryViewAllocation(
     return;
   }
   mountingManager->maybePreallocateShadowNode(shadowNode);
+  // Only the Views of ShadowNode that were pre-allocated (forms views) needs
+  // to be destroyed if the ShadowNode is destroyed but it was never mounted
+  // on the screen.
+  if (ReactNativeFeatureFlags::enableDeletionOfUnmountedViews() &&
+      shadowNode.getTraits().check(ShadowNodeTraits::Trait::FormsView)) {
+    shadowNode.getFamily().onUnmountedFamilyDestroyed(
+        [weakMountingManager =
+             std::weak_ptr(mountingManager)](const ShadowNodeFamily& family) {
+          if (auto mountingManager = weakMountingManager.lock()) {
+            mountingManager->destroyUnmountedShadowNode(family);
+          }
+        });
+  }
 }
 
 void Binding::schedulerDidDispatchCommand(

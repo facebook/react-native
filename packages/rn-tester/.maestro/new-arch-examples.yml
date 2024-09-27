@@ -1,0 +1,16 @@
+appId: ${APP_ID} # iOS: com.meta.RNTester.localDevelopment | Android: com.facebook.react.uiapp
+---
+- launchApp
+- assertVisible: "Components"
+- scrollUntilVisible:
+    element:
+      id: "New Architecture Examples"
+    direction: DOWN
+    speed: 40
+- tapOn:
+    id: "New Architecture Examples"
+- assertVisible: "HSBA: h: 0, s: 0, b: 0, a: 0"
+- assertVisible: "Constants From Interop Layer: 3.14"
+- tapOn: "Change Background"
+- assertVisible:
+    text: "HSBA: h: 0, s: 1, b: 1, a: 255"

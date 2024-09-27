@@ -49,7 +49,6 @@ import com.facebook.react.uimanager.ReactClippingViewGroup;
 import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
 import com.facebook.react.uimanager.ReactOverflowViewWithInset;
 import com.facebook.react.uimanager.StateWrapper;
-import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.events.NativeGestureUtil;
 import com.facebook.react.uimanager.style.BorderRadiusProp;
 import com.facebook.react.uimanager.style.BorderStyle;
@@ -61,7 +60,7 @@ import com.facebook.react.views.scroll.ReactScrollViewHelper.HasScrollState;
 import com.facebook.react.views.scroll.ReactScrollViewHelper.HasSmoothScroll;
 import com.facebook.react.views.scroll.ReactScrollViewHelper.HasStateWrapper;
 import com.facebook.react.views.scroll.ReactScrollViewHelper.ReactScrollViewScrollState;
-import com.facebook.react.views.view.ReactViewBackgroundManager;
+import com.facebook.systrace.Systrace;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -117,7 +116,6 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   private boolean mSnapToStart = true;
   private boolean mSnapToEnd = true;
   private int mSnapToAlignment = SNAP_ALIGNMENT_DISABLED;
-  private ReactViewBackgroundManager mReactBackgroundManager;
   private boolean mPagedArrowScrolling = false;
   private int pendingContentOffsetX = UNSET_CONTENT_OFFSET;
   private int pendingContentOffsetY = UNSET_CONTENT_OFFSET;
@@ -138,7 +136,6 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
 
   public ReactHorizontalScrollView(Context context, @Nullable FpsListener fpsListener) {
     super(context);
-    mReactBackgroundManager = new ReactViewBackgroundManager(this);
     mFpsListener = fpsListener;
 
     ViewCompat.setAccessibilityDelegate(this, new ReactScrollViewAccessibilityDelegate());
@@ -154,7 +151,6 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
 
     setOnHierarchyChangeListener(this);
     setClipChildren(false);
-    mReactBackgroundManager.setOverflow(ViewProps.SCROLL);
   }
 
   public boolean getScrollEnabled() {
@@ -289,7 +285,6 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
       mOverflow = parsedOverflow == null ? Overflow.SCROLL : parsedOverflow;
     }
 
-    mReactBackgroundManager.setOverflow(overflow == null ? ViewProps.SCROLL : overflow);
     invalidate();
   }
 
@@ -333,12 +328,8 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
 
   @Override
   public void onDraw(Canvas canvas) {
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      if (mOverflow != Overflow.VISIBLE) {
-        BackgroundStyleApplicator.clipToPaddingBox(this, canvas);
-      }
-    } else {
-      mReactBackgroundManager.maybeClipToPaddingBox(canvas);
+    if (mOverflow != Overflow.VISIBLE) {
+      BackgroundStyleApplicator.clipToPaddingBox(this, canvas);
     }
     super.onDraw(canvas);
   }
@@ -490,24 +481,30 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
       FLog.i(TAG, "onScrollChanged[%d] x %d y %d oldx %d oldy %d", getId(), x, y, oldX, oldY);
     }
 
-    super.onScrollChanged(x, y, oldX, oldY);
+    Systrace.beginSection(
+        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "ReactHorizontalScrollView.onScrollChanged");
+    try {
+      super.onScrollChanged(x, y, oldX, oldY);
 
-    mActivelyScrolling = true;
+      mActivelyScrolling = true;
 
-    if (mOnScrollDispatchHelper.onScrollChanged(x, y)) {
-      if (mRemoveClippedSubviews) {
-        updateClippingRect();
+      if (mOnScrollDispatchHelper.onScrollChanged(x, y)) {
+        if (mRemoveClippedSubviews) {
+          updateClippingRect();
+        }
+        if (mPreventReentry) {
+          return;
+        }
+        mPreventReentry = true;
+        ReactScrollViewHelper.updateStateOnScrollChanged(
+            this,
+            mOnScrollDispatchHelper.getXFlingVelocity(),
+            mOnScrollDispatchHelper.getYFlingVelocity(),
+            mEnableSyncOnScroll);
+        mPreventReentry = false;
       }
-      if (mPreventReentry) {
-        return;
-      }
-      mPreventReentry = true;
-      ReactScrollViewHelper.updateStateOnScrollChanged(
-          this,
-          mOnScrollDispatchHelper.getXFlingVelocity(),
-          mOnScrollDispatchHelper.getYFlingVelocity(),
-          mEnableSyncOnScroll);
-      mPreventReentry = false;
+    } finally {
+      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     }
   }
 
@@ -783,12 +780,18 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
       return;
     }
 
-    Assertions.assertNotNull(mClippingRect);
+    Systrace.beginSection(
+        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "ReactHorizontalScrollView.updateClippingRect");
+    try {
+      Assertions.assertNotNull(mClippingRect);
 
-    ReactClippingViewGroupHelper.calculateClippingRect(this, mClippingRect);
-    View contentView = getContentView();
-    if (contentView instanceof ReactClippingViewGroup) {
-      ((ReactClippingViewGroup) contentView).updateClippingRect();
+      ReactClippingViewGroupHelper.calculateClippingRect(this, mClippingRect);
+      View contentView = getContentView();
+      if (contentView instanceof ReactClippingViewGroup) {
+        ((ReactClippingViewGroup) contentView).updateClippingRect();
+      }
+    } finally {
+      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     }
   }
 
@@ -1317,28 +1320,16 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
 
   @Override
   public void setBackgroundColor(int color) {
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      BackgroundStyleApplicator.setBackgroundColor(this, color);
-    } else {
-      mReactBackgroundManager.setBackgroundColor(color);
-    }
+    BackgroundStyleApplicator.setBackgroundColor(this, color);
   }
 
   public void setBorderWidth(int position, float width) {
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      BackgroundStyleApplicator.setBorderWidth(
-          this, LogicalEdge.values()[position], PixelUtil.toDIPFromPixel(width));
-    } else {
-      mReactBackgroundManager.setBorderWidth(position, width);
-    }
+    BackgroundStyleApplicator.setBorderWidth(
+        this, LogicalEdge.values()[position], PixelUtil.toDIPFromPixel(width));
   }
 
   public void setBorderColor(int position, @Nullable Integer color) {
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      BackgroundStyleApplicator.setBorderColor(this, LogicalEdge.values()[position], color);
-    } else {
-      mReactBackgroundManager.setBorderColor(position, color);
-    }
+    BackgroundStyleApplicator.setBorderColor(this, LogicalEdge.values()[position], color);
   }
 
   public void setBorderRadius(float borderRadius) {
@@ -1346,26 +1337,18 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   }
 
   public void setBorderRadius(float borderRadius, int position) {
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      @Nullable
-      LengthPercentage radius =
-          Float.isNaN(borderRadius)
-              ? null
-              : new LengthPercentage(
-                  PixelUtil.toDIPFromPixel(borderRadius), LengthPercentageType.POINT);
-      BackgroundStyleApplicator.setBorderRadius(this, BorderRadiusProp.values()[position], radius);
-    } else {
-      mReactBackgroundManager.setBorderRadius(borderRadius, position);
-    }
+    @Nullable
+    LengthPercentage radius =
+        Float.isNaN(borderRadius)
+            ? null
+            : new LengthPercentage(
+                PixelUtil.toDIPFromPixel(borderRadius), LengthPercentageType.POINT);
+    BackgroundStyleApplicator.setBorderRadius(this, BorderRadiusProp.values()[position], radius);
   }
 
   public void setBorderStyle(@Nullable String style) {
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      BackgroundStyleApplicator.setBorderStyle(
-          this, style == null ? null : BorderStyle.fromString(style));
-    } else {
-      mReactBackgroundManager.setBorderStyle(style);
-    }
+    BackgroundStyleApplicator.setBorderStyle(
+        this, style == null ? null : BorderStyle.fromString(style));
   }
 
   /**

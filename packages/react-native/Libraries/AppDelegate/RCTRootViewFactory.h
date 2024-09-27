@@ -183,7 +183,7 @@ typedef void (^RCTHostDidReceiveJSErrorStackBlock)(
 @property (nonatomic, strong, nullable) RCTSurfacePresenterBridgeAdapter *bridgeAdapter;
 
 - (instancetype)initWithConfiguration:(RCTRootViewFactoryConfiguration *)configuration
-        andTurboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate;
+        andTurboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate> _Nullable)turboModuleManagerDelegate;
 
 - (instancetype)initWithConfiguration:(RCTRootViewFactoryConfiguration *)configuration;
 

@@ -77,12 +77,4 @@ std::vector<DebugStringConvertibleObject> getDebugProps(
 
 #endif
 
-bool ShadowViewNodePair::operator==(const ShadowViewNodePair& rhs) const {
-  return this->shadowNode == rhs.shadowNode;
-}
-
-bool ShadowViewNodePair::operator!=(const ShadowViewNodePair& rhs) const {
-  return !(*this == rhs);
-}
-
 } // namespace facebook::react
