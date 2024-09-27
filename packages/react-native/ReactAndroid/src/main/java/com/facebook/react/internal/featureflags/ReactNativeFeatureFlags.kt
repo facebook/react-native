@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<bce0548a9e58299746c75aad95a25275>>
+ * @generated SignedSource<<0831732fd487c26cf7f36f9fbc88ef98>>
  */
 
 /**
@@ -141,12 +141,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableIOSViewClipToPaddingBox(): Boolean = accessor.enableIOSViewClipToPaddingBox()
-
-  /**
-   * When enabled, LayoutAnimations API will animate state changes on iOS.
-   */
-  @JvmStatic
-  public fun enableLayoutAnimationsOnIOS(): Boolean = accessor.enableLayoutAnimationsOnIOS()
 
   /**
    * Enables the reporting of long tasks through `PerformanceObserver`. Only works if the event loop is enabled.

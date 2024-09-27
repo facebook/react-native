@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<97eddbbd75ff7cfd0f1c905d72e9eafd>>
+ * @generated SignedSource<<1248603029a7977711ccb6671a20c880>>
  */
 
 /**
@@ -60,8 +60,6 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun enableGranularShadowTreeStateReconciliation(): Boolean
 
   @DoNotStrip public fun enableIOSViewClipToPaddingBox(): Boolean
-
-  @DoNotStrip public fun enableLayoutAnimationsOnIOS(): Boolean
 
   @DoNotStrip public fun enableLongTaskAPI(): Boolean
 

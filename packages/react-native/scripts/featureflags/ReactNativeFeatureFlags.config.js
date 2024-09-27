@@ -197,14 +197,6 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'experimentation',
       },
     },
-    enableLayoutAnimationsOnIOS: {
-      defaultValue: true,
-      metadata: {
-        description:
-          'When enabled, LayoutAnimations API will animate state changes on iOS.',
-        purpose: 'release',
-      },
-    },
     enableLongTaskAPI: {
       defaultValue: false,
       metadata: {

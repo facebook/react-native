@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ea2c2d19e83630b549e719057cd1982e>>
+ * @generated SignedSource<<5b718a969b55c6e93e45e153e4dbaa05>>
  */
 
 /**
@@ -131,11 +131,6 @@ class ReactNativeFeatureFlags {
    * iOS Views will clip to their padding box vs border box
    */
   RN_EXPORT static bool enableIOSViewClipToPaddingBox();
-
-  /**
-   * When enabled, LayoutAnimations API will animate state changes on iOS.
-   */
-  RN_EXPORT static bool enableLayoutAnimationsOnIOS();
 
   /**
    * Enables the reporting of long tasks through `PerformanceObserver`. Only works if the event loop is enabled.

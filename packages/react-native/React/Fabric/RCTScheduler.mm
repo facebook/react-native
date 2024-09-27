@@ -119,17 +119,6 @@ class LayoutAnimationDelegateProxy : public LayoutAnimationStatusDelegate, publi
 
     _delegateProxy = std::make_shared<SchedulerDelegateProxy>((__bridge void *)self);
 
-    if (ReactNativeFeatureFlags::enableLayoutAnimationsOnIOS()) {
-      _layoutAnimationDelegateProxy = std::make_shared<LayoutAnimationDelegateProxy>((__bridge void *)self);
-      _animationDriver = std::make_shared<LayoutAnimationDriver>(
-          toolbox.runtimeExecutor, toolbox.contextContainer, _layoutAnimationDelegateProxy.get());
-
-      _uiRunLoopObserver = std::make_unique<MainRunLoopObserver>(
-          RunLoopObserver::Activity::BeforeWaiting, _layoutAnimationDelegateProxy);
-
-      _uiRunLoopObserver->setDelegate(_layoutAnimationDelegateProxy.get());
-    }
-
     _scheduler = std::make_unique<Scheduler>(
         toolbox, (_animationDriver ? _animationDriver.get() : nullptr), _delegateProxy.get());
   }
