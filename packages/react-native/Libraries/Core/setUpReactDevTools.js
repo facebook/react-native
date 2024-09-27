@@ -15,9 +15,15 @@ import type {Domain} from '../../src/private/fusebox/setUpFuseboxReactDevToolsDi
 if (__DEV__) {
   // Register dispatcher on global, which can be used later by Chrome DevTools frontend
   require('../../src/private/fusebox/setUpFuseboxReactDevToolsDispatcher');
+  const {
+    initialize,
+    connectToDevTools,
+    connectWithCustomMessagingProtocol,
+  } = require('react-devtools-core');
 
   // Install hook before React is loaded.
-  const reactDevTools = require('react-devtools-core');
+  initialize();
+
   // This should be defined in DEV, otherwise error is expected.
   const fuseboxReactDevToolsDispatcher =
     global.__FUSEBOX_REACT_DEVTOOLS_DISPATCHER__;
@@ -25,7 +31,6 @@ if (__DEV__) {
     fuseboxReactDevToolsDispatcher.BINDING_NAME;
 
   const ReactNativeStyleAttributes = require('../Components/View/ReactNativeStyleAttributes');
-  const devToolsSettingsManager = require('../DevToolsSettings/DevToolsSettingsManager');
   const resolveRNStyle = require('../StyleSheet/flattenStyle');
 
   let disconnect = null;
@@ -37,7 +42,7 @@ if (__DEV__) {
   }
 
   function connectToReactDevToolsInFusebox(domain: Domain) {
-    disconnect = reactDevTools.connectWithCustomMessagingProtocol({
+    disconnect = connectWithCustomMessagingProtocol({
       onSubscribe: listener => {
         domain.onMessage.addEventListener(listener);
       },
@@ -47,7 +52,6 @@ if (__DEV__) {
       onMessage: (event, payload) => {
         domain.sendMessage({event, payload});
       },
-      settingsManager: devToolsSettingsManager,
       nativeStyleEditorValidAttributes: Object.keys(ReactNativeStyleAttributes),
       resolveRNStyle,
     });
@@ -101,14 +105,13 @@ if (__DEV__) {
         isWebSocketOpen = true;
       });
 
-      reactDevTools.connectToDevTools({
+      connectToDevTools({
         isAppActive,
         resolveRNStyle,
         nativeStyleEditorValidAttributes: Object.keys(
           ReactNativeStyleAttributes,
         ),
         websocket: ws,
-        devToolsSettingsManager,
       });
     }
   }
