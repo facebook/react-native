@@ -17,6 +17,7 @@
 #include <react/renderer/components/progressbar/AndroidProgressBarComponentDescriptor.h>
 #include <react/renderer/components/rncore/ComponentDescriptors.h>
 #include <react/renderer/components/safeareaview/SafeAreaViewComponentDescriptor.h>
+#include <react/renderer/components/scrollview/AndroidHorizontalScrollContentViewComponentDescriptor.h>
 #include <react/renderer/components/scrollview/ScrollViewComponentDescriptor.h>
 #include <react/renderer/components/text/ParagraphComponentDescriptor.h>
 #include <react/renderer/components/text/RawTextComponentDescriptor.h>
