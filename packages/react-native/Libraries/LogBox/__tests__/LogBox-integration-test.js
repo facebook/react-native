@@ -87,7 +87,7 @@ describe('LogBox', () => {
       expect.stringMatching('at DoesNotUseKey'),
     ]);
     expect(spy).toHaveBeenCalledWith({
-      level: 'warn',
+      level: 'error',
       category: expect.stringContaining(
         'Warning: Each child in a list should have a unique',
       ),
@@ -140,7 +140,7 @@ describe('LogBox', () => {
       expect.stringMatching('at FragmentWithProp'),
     ]);
     expect(spy).toHaveBeenCalledWith({
-      level: 'warn',
+      level: 'error',
       category: expect.stringContaining('Warning: Invalid prop'),
       componentStack: expect.anything(),
       componentStackType: expect.stringMatching(/(stack|legacy)/),
@@ -236,7 +236,7 @@ describe('LogBox', () => {
       ),
     ]);
     expect(spy).toHaveBeenCalledWith({
-      level: 'warn',
+      level: 'error',
       category: expect.stringContaining('Warning: Manual console error'),
       componentStack: expect.anything(),
       componentStackType: 'stack',
