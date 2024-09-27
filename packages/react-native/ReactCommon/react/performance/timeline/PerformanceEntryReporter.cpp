@@ -109,8 +109,8 @@ std::vector<PerformanceEntry> PerformanceEntryReporter::getEntriesByType(
 }
 
 std::vector<PerformanceEntry> PerformanceEntryReporter::getEntriesByName(
-    std::string_view entryName,
-    std::optional<PerformanceEntryType> entryType) const {
+    const std::string& entryName,
+    const std::optional<PerformanceEntryType>& entryType) const {
   std::vector<PerformanceEntry> res;
 
   if (entryType) {
@@ -147,7 +147,7 @@ void PerformanceEntryReporter::reportMark(
 }
 
 void PerformanceEntryReporter::reportMeasure(
-    const std::string_view& name,
+    const std::string& name,
     DOMHighResTimeStamp startTime,
     DOMHighResTimeStamp endTime,
     const std::optional<DOMHighResTimeStamp>& duration,
@@ -181,7 +181,7 @@ void PerformanceEntryReporter::reportMeasure(
 }
 
 void PerformanceEntryReporter::clearMarks(
-    std::optional<std::string_view> entryName) {
+    const std::optional<std::string>& entryName) {
   std::lock_guard lock(buffersMutex_);
 
   if (entryName) {
@@ -192,7 +192,7 @@ void PerformanceEntryReporter::clearMarks(
 }
 
 void PerformanceEntryReporter::clearMeasures(
-    std::optional<std::string_view> entryName) {
+    const std::optional<std::string>& entryName) {
   std::lock_guard lock(buffersMutex_);
 
   if (entryName) {
@@ -216,7 +216,7 @@ DOMHighResTimeStamp PerformanceEntryReporter::getMarkTime(
 #pragma mark - Event Timing API functions (https://www.w3.org/TR/event-timing/)
 
 void PerformanceEntryReporter::reportEvent(
-    std::string name,
+    const std::string& name,
     DOMHighResTimeStamp startTime,
     DOMHighResTimeStamp duration,
     DOMHighResTimeStamp processingStart,

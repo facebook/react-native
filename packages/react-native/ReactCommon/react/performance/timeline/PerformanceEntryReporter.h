@@ -65,12 +65,13 @@ class PerformanceEntryReporter {
       PerformanceEntryType entryType) const;
   void getEntriesByType(
       PerformanceEntryType entryType,
-      std::vector<PerformanceEntry>& target) const;
+      const std::vector<PerformanceEntry>& target) const;
 
   // https://www.w3.org/TR/performance-timeline/#getentriesbyname-method
   std::vector<PerformanceEntry> getEntriesByName(
-      std::string_view entryName,
-      std::optional<PerformanceEntryType> entryType = std::nullopt) const;
+      const std::string& entryName,
+      const std::optional<PerformanceEntryType>& entryType =
+          std::nullopt) const;
 
 #pragma mark - User Timing Level 3 functions (https://w3c.github.io/user-timing/)
 
@@ -81,7 +82,7 @@ class PerformanceEntryReporter {
 
   // https://w3c.github.io/user-timing/#measure-method
   void reportMeasure(
-      const std::string_view& name,
+      const std::string& name,
       double startTime,
       double endTime,
       const std::optional<double>& duration = std::nullopt,
@@ -89,15 +90,16 @@ class PerformanceEntryReporter {
       const std::optional<std::string>& endMark = std::nullopt);
 
   // https://w3c.github.io/user-timing/#clearmarks-method
-  void clearMarks(std::optional<std::string_view> entryName = std::nullopt);
+  void clearMarks(const std::optional<std::string>& entryName = std::nullopt);
 
   // https://w3c.github.io/user-timing/#clearmeasures-method
-  void clearMeasures(std::optional<std::string_view> entryName = std::nullopt);
+  void clearMeasures(
+      const std::optional<std::string>& entryName = std::nullopt);
 
 #pragma mark - Event Timing API functions (https://www.w3.org/TR/event-timing/)
 
   void reportEvent(
-      std::string name,
+      const std::string& name,
       double startTime,
       double duration,
       double processingStart,
