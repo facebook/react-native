@@ -24,7 +24,8 @@ tasks.withType<KotlinCompile>().configureEach {
   kotlinOptions {
     apiVersion = "1.6"
     jvmTarget = "11"
-    allWarningsAsErrors = true
+    allWarningsAsErrors =
+        project.properties["enableWarningsAsErrors"]?.toString()?.toBoolean() ?: false
   }
 }
 

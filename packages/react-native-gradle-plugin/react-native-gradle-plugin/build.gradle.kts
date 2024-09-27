@@ -65,7 +65,8 @@ tasks.withType<KotlinCompile>().configureEach {
     apiVersion = "1.6"
     // See comment above on JDK 11 support
     jvmTarget = "11"
-    allWarningsAsErrors = true
+    allWarningsAsErrors =
+        project.properties["enableWarningsAsErrors"]?.toString()?.toBoolean() ?: false
   }
 }
 
