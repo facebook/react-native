@@ -252,6 +252,7 @@ val downloadBoost by
       onlyIfModified(true)
       overwrite(false)
       retries(5)
+      quiet(true)
       dest(File(downloadsDir, "boost_${BOOST_VERSION}.tar.gz"))
     }
 
@@ -271,6 +272,7 @@ val downloadDoubleConversion by
       onlyIfModified(true)
       overwrite(false)
       retries(5)
+      quiet(true)
       dest(File(downloadsDir, "double-conversion-${DOUBLE_CONVERSION_VERSION}.tar.gz"))
     }
 
@@ -291,6 +293,7 @@ val downloadFolly by
       onlyIfModified(true)
       overwrite(false)
       retries(5)
+      quiet(true)
       dest(File(downloadsDir, "folly-${FOLLY_VERSION}.tar.gz"))
     }
 
@@ -312,6 +315,7 @@ val downloadFmt by
       onlyIfModified(true)
       overwrite(false)
       retries(5)
+      quiet(true)
       dest(File(downloadsDir, "fmt-${FMT_VERSION}.tar.gz"))
     }
 
@@ -333,6 +337,7 @@ val downloadGlog by
       onlyIfModified(true)
       overwrite(false)
       retries(5)
+      quiet(true)
       dest(File(downloadsDir, "glog-${GLOG_VERSION}.tar.gz"))
     }
 
@@ -343,6 +348,7 @@ val downloadGtest by
       onlyIfModified(true)
       overwrite(false)
       retries(5)
+      quiet(true)
       dest(File(downloadsDir, "gtest.tar.gz"))
     }
 
