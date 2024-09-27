@@ -13,12 +13,10 @@ import type {TurboModule} from '../../../../Libraries/TurboModule/RCTExport';
 import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
-  +setConsolePatchSettings: (newConsolePatchSettings: string) => void;
-  +getConsolePatchSettings: () => ?string;
-  +setProfilingSettings?: (newProfilingSettings: string) => void;
-  +getProfilingSettings?: () => ?string;
+  +setGlobalHookSettings: (settings: string) => void;
+  +getGlobalHookSettings: () => ?string;
 }
 
 export default (TurboModuleRegistry.get<Spec>(
-  'DevToolsSettingsManager',
+  'ReactDevToolsSettingsManager',
 ): ?Spec);
