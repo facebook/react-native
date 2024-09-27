@@ -130,7 +130,10 @@ RCT_EXPORT_METHOD(setColorScheme : (NSString *)style)
 RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSString *, getColorScheme)
 {
   if (!sIsAppearancePreferenceSet) {
-    UITraitCollection *traitCollection = RCTKeyWindow().traitCollection;
+    __block UITraitCollection *traitCollection = nil;
+    RCTUnsafeExecuteOnMainQueueSync(^{
+      traitCollection = RCTKeyWindow().traitCollection;
+    });
     _currentColorScheme = RCTColorSchemePreference(traitCollection);
   }
   return _currentColorScheme;
