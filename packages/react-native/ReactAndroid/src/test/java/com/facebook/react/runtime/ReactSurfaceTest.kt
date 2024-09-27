@@ -174,11 +174,11 @@ class ReactSurfaceTest {
     var heightMeasureSpec = 0
     var widthMeasureSpec = 0
 
-    override fun start() {
+    fun start() {
       isRunning = true
     }
 
-    override fun stop() {
+    fun stop() {
       isRunning = false
     }
 

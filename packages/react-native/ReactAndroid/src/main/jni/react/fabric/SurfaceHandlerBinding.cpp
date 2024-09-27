@@ -19,22 +19,6 @@ void SurfaceHandlerBinding::setDisplayMode(jint mode) {
   surfaceHandler_.setDisplayMode(static_cast<DisplayMode>(mode));
 }
 
-void SurfaceHandlerBinding::start() {
-  std::unique_lock lock(lifecycleMutex_);
-
-  if (surfaceHandler_.getStatus() != SurfaceHandler::Status::Running) {
-    surfaceHandler_.start();
-  }
-}
-
-void SurfaceHandlerBinding::stop() {
-  std::unique_lock lock(lifecycleMutex_);
-
-  if (surfaceHandler_.getStatus() == SurfaceHandler::Status::Running) {
-    surfaceHandler_.stop();
-  }
-}
-
 jint SurfaceHandlerBinding::getSurfaceId() {
   return surfaceHandler_.getSurfaceId();
 }
@@ -101,8 +85,6 @@ void SurfaceHandlerBinding::registerNatives() {
       makeNativeMethod("isRunningNative", SurfaceHandlerBinding::isRunning),
       makeNativeMethod(
           "getModuleNameNative", SurfaceHandlerBinding::getModuleName),
-      makeNativeMethod("startNative", SurfaceHandlerBinding::start),
-      makeNativeMethod("stopNative", SurfaceHandlerBinding::stop),
       makeNativeMethod(
           "setLayoutConstraintsNative",
           SurfaceHandlerBinding::setLayoutConstraints),

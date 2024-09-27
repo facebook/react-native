@@ -31,7 +31,11 @@ public interface Binding {
       doLeftAndRightSwapInRTL: Boolean
   )
 
+  public fun startSurfaceWithSurfaceHandler(surfaceHandler: SurfaceHandlerBinding)
+
   public fun stopSurface(surfaceId: Int)
+
+  public fun stopSurfaceWithSurfaceHandler(surfaceHandler: SurfaceHandlerBinding)
 
   public fun setPixelDensity(pointScaleFactor: Float)
 
@@ -67,8 +71,4 @@ public interface Binding {
   )
 
   public fun unregister()
-
-  public fun registerSurface(surfaceHandler: SurfaceHandlerBinding)
-
-  public fun unregisterSurface(surfaceHandler: SurfaceHandlerBinding)
 }

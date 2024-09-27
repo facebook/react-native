@@ -95,10 +95,10 @@ class Binding : public jni::HybridClass<Binding, JBinding>,
 
   void stopSurface(jint surfaceId);
 
-  void registerSurface(
+  void startSurfaceWithSurfaceHandler(
       jni::alias_ref<SurfaceHandlerBinding::jhybridobject> surfaceHandler);
 
-  void unregisterSurface(
+  void stopSurfaceWithSurfaceHandler(
       jni::alias_ref<SurfaceHandlerBinding::jhybridobject> surfaceHandler);
 
   void schedulerDidFinishTransaction(
