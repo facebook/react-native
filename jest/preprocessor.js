@@ -23,6 +23,17 @@ const {
 } = require('@babel/core');
 const generate = require('@babel/generator').default;
 
+if (process.env.FBSOURCE_ENV === '1') {
+  // If we're running in the Meta-internal monorepo, use the central Babel
+  // registration, which registers all of the relevant source directories
+  // including Metro's root.
+  //
+  // $FlowExpectedError[cannot-resolve-module] - Won't resolve in OSS
+  require('@fb-tools/babel-register');
+}
+
+const metroTransformPlugins = require('metro-transform-plugins');
+
 // Files matching this pattern will be transformed with the Node JS Babel
 // transformer, rather than with the React Native Babel transformer. Scripts
 // intended to run through Node JS should be included here.
@@ -88,8 +99,7 @@ module.exports = {
       ast: true,
       retainLines: true,
       plugins: [
-        // TODO(moti): Replace with require('metro-transform-plugins').inlineRequiresPlugin when available in OSS
-        require('babel-preset-fbjs/plugins/inline-requires'),
+        metroTransformPlugins.inlineRequiresPlugin,
         babelPluginPreventBabelRegister,
       ],
       sourceType: 'module',
