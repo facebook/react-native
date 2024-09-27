@@ -78,20 +78,15 @@ export default function ReactDevToolsOverlay({
         x,
         y,
         viewData => {
-          const {touchedViewTag, closestInstance, frame} = viewData;
-          if (closestInstance != null || touchedViewTag != null) {
-            // We call `selectNode` for both non-fabric(viewTag) and fabric(instance),
-            // this makes sure it works for both architectures.
-            reactDevToolsAgent.selectNode(findNodeHandle(touchedViewTag));
-            if (closestInstance != null) {
-              reactDevToolsAgent.selectNode(closestInstance);
-            }
-            setInspected({
-              frame,
-            });
-            return true;
+          const {frame, closestPublicInstance} = viewData;
+
+          if (closestPublicInstance == null) {
+            return false;
           }
-          return false;
+
+          reactDevToolsAgent.selectNode(closestPublicInstance);
+          setInspected({frame});
+          return true;
         },
       );
     },
