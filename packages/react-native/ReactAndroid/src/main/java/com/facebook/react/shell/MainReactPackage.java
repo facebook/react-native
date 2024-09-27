@@ -87,6 +87,7 @@ import javax.inject.Provider;
       NativeAnimatedModule.class,
       NetworkingModule.class,
       PermissionsModule.class,
+      ReactDevToolsSettingsManagerModule.class,
       ShareModule.class,
       SoundManagerModule.class,
       StatusBarModule.class,
