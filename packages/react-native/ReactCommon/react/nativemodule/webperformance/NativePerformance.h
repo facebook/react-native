@@ -14,10 +14,48 @@
 #else
 #include <FBReactNativeSpec/FBReactNativeSpecJSI.h>
 #endif
+
+#include <react/performance/timeline/PerformanceEntry.h>
 #include <memory>
 #include <string>
 
 namespace facebook::react {
+
+using NativePerformancePerformanceObserverCallback = AsyncCallback<>;
+using NativePerformancePerformanceObserverObserveOptions =
+    NativePerformancePerformanceObserverInit<
+        // entryTypes
+        std::optional<std::vector<int>>,
+        // type
+        std::optional<int>,
+        // buffered
+        std::optional<bool>,
+        // durationThreshold
+        std::optional<double>>;
+
+template <>
+struct Bridging<PerformanceEntryType> {
+  static PerformanceEntryType fromJs(
+      jsi::Runtime& /*rt*/,
+      const jsi::Value& value) {
+    return static_cast<PerformanceEntryType>(value.asNumber());
+  }
+
+  static jsi::Value toJs(
+      jsi::Runtime& /*rt*/,
+      const PerformanceEntryType& value) {
+    return {static_cast<int>(value)};
+  }
+};
+
+template <>
+struct Bridging<PerformanceEntry>
+    : NativePerformanceRawPerformanceEntryBridging<PerformanceEntry> {};
+
+template <>
+struct Bridging<NativePerformancePerformanceObserverObserveOptions>
+    : NativePerformancePerformanceObserverInitBridging<
+          NativePerformancePerformanceObserverObserveOptions> {};
 
 class NativePerformance : public NativePerformanceCxxSpec<NativePerformance> {
  public:
@@ -36,6 +74,28 @@ class NativePerformance : public NativePerformanceCxxSpec<NativePerformance> {
       std::optional<std::string> startMark,
       std::optional<std::string> endMark);
 
+  void clearMarks(
+      jsi::Runtime& rt,
+      std::optional<std::string> entryName = std::nullopt);
+
+  void clearMeasures(
+      jsi::Runtime& rt,
+      std::optional<std::string> entryName = std::nullopt);
+
+  std::vector<PerformanceEntry> getEntries(jsi::Runtime& rt);
+
+  std::vector<PerformanceEntry> getEntriesByName(
+      jsi::Runtime& rt,
+      std::string entryName,
+      std::optional<PerformanceEntryType> entryType = std::nullopt);
+
+  std::vector<PerformanceEntry> getEntriesByType(
+      jsi::Runtime& rt,
+      PerformanceEntryType entryType);
+
+  std::vector<std::pair<std::string, uint32_t>> getEventCounts(
+      jsi::Runtime& rt);
+
   // To align with web API, we will make sure to return three properties
   // (jsHeapSizeLimit, totalJSHeapSize, usedJSHeapSize) + anything needed from
   // the VM side.
@@ -52,6 +112,28 @@ class NativePerformance : public NativePerformanceCxxSpec<NativePerformance> {
   // Collect and return the RN app startup timing information for performance
   // tracking.
   std::unordered_map<std::string, double> getReactNativeStartupTiming(
+      jsi::Runtime& rt);
+
+  jsi::Object createObserver(
+      jsi::Runtime& rt,
+      NativePerformancePerformanceObserverCallback callback);
+
+  double getDroppedEntriesCount(jsi::Runtime& rt, jsi::Object observerObj);
+
+  void observe(
+      jsi::Runtime& rt,
+      jsi::Object observer,
+      NativePerformancePerformanceObserverObserveOptions options);
+  void disconnect(jsi::Runtime& rt, jsi::Object observer);
+  std::vector<PerformanceEntry> takeRecords(
+      jsi::Runtime& rt,
+      jsi::Object observerObj,
+      // When called via `observer.takeRecords` it should be in insertion order.
+      // When called via the observer callback, it should be in chronological
+      // order with respect to `startTime`.
+      bool sort);
+
+  std::vector<PerformanceEntryType> getSupportedPerformanceEntryTypes(
       jsi::Runtime& rt);
 };
 

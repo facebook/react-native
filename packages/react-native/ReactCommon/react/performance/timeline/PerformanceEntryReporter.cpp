@@ -8,8 +8,35 @@
 #include "PerformanceEntryReporter.h"
 
 #include <cxxreact/JSExecutor.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
+#include <algorithm>
+#include <array>
 
 namespace facebook::react {
+
+namespace {
+std::unordered_set<PerformanceEntryType> getSupportedEntryTypesInternal() {
+  std::unordered_set supportedEntryTypes{
+      PerformanceEntryType::MARK,
+      PerformanceEntryType::MEASURE,
+      PerformanceEntryType::EVENT,
+  };
+
+  if (ReactNativeFeatureFlags::enableLongTaskAPI()) {
+    supportedEntryTypes.emplace(PerformanceEntryType::LONGTASK);
+  }
+
+  return supportedEntryTypes;
+}
+
+const std::array<PerformanceEntryType, 2> ENTRY_TYPES_AVAILABLE_FROM_TIMELINE{
+    {PerformanceEntryType::MARK, PerformanceEntryType::MEASURE}};
+
+bool isAvailableFromTimeline(PerformanceEntryType entryType) {
+  return entryType == PerformanceEntryType::MARK ||
+      entryType == PerformanceEntryType::MEASURE;
+}
+} // namespace
 
 std::shared_ptr<PerformanceEntryReporter>&
 PerformanceEntryReporter::getInstance() {
@@ -20,6 +47,22 @@ PerformanceEntryReporter::getInstance() {
 PerformanceEntryReporter::PerformanceEntryReporter()
     : observerRegistry_(std::make_unique<PerformanceObserverRegistry>()) {}
 
+std::vector<PerformanceEntry> PerformanceEntryReporter::getBufferedEntries(
+    PerformanceEntryType entryType) const {
+  std::vector<PerformanceEntry> res;
+  getBuffer(entryType).getEntries(res);
+  return res;
+}
+
+void PerformanceEntryReporter::clearEntries() {
+  std::lock_guard lock(buffersMutex_);
+
+  markBuffer_.clear();
+  measureBuffer_.clear();
+  eventBuffer_.clear();
+  longTaskBuffer_.clear();
+}
+
 #pragma mark - DOM Performance (High Resolution Time) (https://www.w3.org/TR/hr-time-3/#dom-performance)
 
 DOMHighResTimeStamp PerformanceEntryReporter::getCurrentTimeStamp() const {
@@ -29,77 +72,59 @@ DOMHighResTimeStamp PerformanceEntryReporter::getCurrentTimeStamp() const {
 
 #pragma mark - Performance Timeline (https://w3c.github.io/performance-timeline/)
 
+std::unordered_set<PerformanceEntryType>
+PerformanceEntryReporter::getSupportedEntryTypes() {
+  static std::unordered_set supportedEntries = getSupportedEntryTypesInternal();
+  return supportedEntries;
+}
+
 uint32_t PerformanceEntryReporter::getDroppedEntriesCount(
     PerformanceEntryType type) const noexcept {
   return getBuffer(type).droppedEntriesCount;
 }
 
-void PerformanceEntryReporter::clearEntries(
-    std::optional<PerformanceEntryType> entryType,
-    std::optional<std::string_view> entryName) {
-  std::lock_guard lock(buffersMutex_);
-
-  // Clear all entry types
-  if (!entryType) {
-    if (entryName.has_value()) {
-      markBuffer_.clear(*entryName);
-      measureBuffer_.clear(*entryName);
-      eventBuffer_.clear(*entryName);
-      longTaskBuffer_.clear(*entryName);
-    } else {
-      markBuffer_.clear();
-      measureBuffer_.clear();
-      eventBuffer_.clear();
-      longTaskBuffer_.clear();
-    }
-    return;
-  }
-
-  auto& buffer = getBufferRef(*entryType);
-  if (entryName.has_value()) {
-    buffer.clear(*entryName);
-  } else {
-    buffer.clear();
-  }
-}
-
 std::vector<PerformanceEntry> PerformanceEntryReporter::getEntries() const {
   std::vector<PerformanceEntry> res;
-  // Collect all entry types
-  for (int i = 1; i <= NUM_PERFORMANCE_ENTRY_TYPES; i++) {
-    getBuffer(static_cast<PerformanceEntryType>(i)).getEntries(res);
+
+  for (auto entryType : ENTRY_TYPES_AVAILABLE_FROM_TIMELINE) {
+    getBuffer(entryType).getEntries(res);
   }
+
+  std::stable_sort(res.begin(), res.end(), PerformanceEntrySorter{});
+
   return res;
 }
 
 std::vector<PerformanceEntry> PerformanceEntryReporter::getEntriesByType(
     PerformanceEntryType entryType) const {
   std::vector<PerformanceEntry> res;
-  getEntriesByType(entryType, res);
-  return res;
-}
 
-void PerformanceEntryReporter::getEntriesByType(
-    PerformanceEntryType entryType,
-    std::vector<PerformanceEntry>& target) const {
-  getBuffer(entryType).getEntries(target);
-}
-
-std::vector<PerformanceEntry> PerformanceEntryReporter::getEntriesByName(
-    std::string_view entryName) const {
-  std::vector<PerformanceEntry> res;
-  // Collect all entry types
-  for (int i = 1; i <= NUM_PERFORMANCE_ENTRY_TYPES; i++) {
-    getBuffer(static_cast<PerformanceEntryType>(i)).getEntries(entryName, res);
+  if (isAvailableFromTimeline(entryType)) {
+    getBuffer(entryType).getEntries(res);
   }
+
+  std::stable_sort(res.begin(), res.end(), PerformanceEntrySorter{});
+
   return res;
 }
 
 std::vector<PerformanceEntry> PerformanceEntryReporter::getEntriesByName(
     std::string_view entryName,
-    PerformanceEntryType entryType) const {
+    std::optional<PerformanceEntryType> entryType) const {
   std::vector<PerformanceEntry> res;
-  getBuffer(entryType).getEntries(entryName, res);
+
+  if (entryType) {
+    if (isAvailableFromTimeline(*entryType)) {
+      getBuffer(*entryType).getEntries(entryName, res);
+    }
+  } else {
+    for (auto type : ENTRY_TYPES_AVAILABLE_FROM_TIMELINE) {
+      getBuffer(type).getEntries(entryName, res);
+    }
+  }
+
+  std::stable_sort(res.begin(), res.end(), PerformanceEntrySorter{});
+
   return res;
 }
 
@@ -153,6 +178,28 @@ void PerformanceEntryReporter::reportMeasure(
   }
 
   observerRegistry_->queuePerformanceEntry(entry);
+}
+
+void PerformanceEntryReporter::clearMarks(
+    std::optional<std::string_view> entryName) {
+  std::lock_guard lock(buffersMutex_);
+
+  if (entryName) {
+    markBuffer_.clear(*entryName);
+  } else {
+    markBuffer_.clear();
+  }
+}
+
+void PerformanceEntryReporter::clearMeasures(
+    std::optional<std::string_view> entryName) {
+  std::lock_guard lock(buffersMutex_);
+
+  if (entryName) {
+    measureBuffer_.clear(*entryName);
+  } else {
+    measureBuffer_.clear();
+  }
 }
 
 DOMHighResTimeStamp PerformanceEntryReporter::getMarkTime(

@@ -45,7 +45,7 @@ void PerformanceObserver::observe(
   if (options.buffered) {
     auto& reporter = PerformanceEntryReporter::getInstance();
 
-    auto bufferedEntries = reporter->getEntriesByType(type);
+    auto bufferedEntries = reporter->getBufferedEntries(type);
     for (auto& bufferedEntry : bufferedEntries) {
       handleEntry(bufferedEntry);
     }

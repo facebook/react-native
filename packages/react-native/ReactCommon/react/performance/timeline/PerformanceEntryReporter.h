@@ -36,6 +36,11 @@ class PerformanceEntryReporter {
     return *observerRegistry_;
   }
 
+  std::vector<PerformanceEntry> getBufferedEntries(
+      PerformanceEntryType entryType) const;
+
+  void clearEntries();
+
 #pragma mark - DOM Performance (High Resolution Time) (https://www.w3.org/TR/hr-time-3/#dom-performance)
 
   // https://www.w3.org/TR/hr-time-3/#now-method
@@ -47,23 +52,25 @@ class PerformanceEntryReporter {
 
 #pragma mark - Performance Timeline (https://w3c.github.io/performance-timeline/)
 
+  static std::unordered_set<PerformanceEntryType> getSupportedEntryTypes();
+
   // https://www.w3.org/TR/performance-timeline/#dom-performanceobservercallbackoptions-droppedentriescount
   uint32_t getDroppedEntriesCount(PerformanceEntryType type) const noexcept;
 
   // https://www.w3.org/TR/performance-timeline/#getentries-method
-  // https://www.w3.org/TR/performance-timeline/#getentriesbytype-method
-  // https://www.w3.org/TR/performance-timeline/#getentriesbyname-method
   std::vector<PerformanceEntry> getEntries() const;
+
+  // https://www.w3.org/TR/performance-timeline/#getentriesbytype-method
   std::vector<PerformanceEntry> getEntriesByType(
       PerformanceEntryType entryType) const;
   void getEntriesByType(
       PerformanceEntryType entryType,
       std::vector<PerformanceEntry>& target) const;
-  std::vector<PerformanceEntry> getEntriesByName(
-      std::string_view entryName) const;
+
+  // https://www.w3.org/TR/performance-timeline/#getentriesbyname-method
   std::vector<PerformanceEntry> getEntriesByName(
       std::string_view entryName,
-      PerformanceEntryType entryType) const;
+      std::optional<PerformanceEntryType> entryType = std::nullopt) const;
 
 #pragma mark - User Timing Level 3 functions (https://w3c.github.io/user-timing/)
 
@@ -82,10 +89,10 @@ class PerformanceEntryReporter {
       const std::optional<std::string>& endMark = std::nullopt);
 
   // https://w3c.github.io/user-timing/#clearmarks-method
+  void clearMarks(std::optional<std::string_view> entryName = std::nullopt);
+
   // https://w3c.github.io/user-timing/#clearmeasures-method
-  void clearEntries(
-      std::optional<PerformanceEntryType> entryType = std::nullopt,
-      std::optional<std::string_view> entryName = std::nullopt);
+  void clearMeasures(std::optional<std::string_view> entryName = std::nullopt);
 
 #pragma mark - Event Timing API functions (https://www.w3.org/TR/event-timing/)
 
@@ -120,21 +127,6 @@ class PerformanceEntryReporter {
   std::function<double()> timeStampProvider_ = nullptr;
 
   double getMarkTime(const std::string& markName) const;
-
-  inline PerformanceEntryBuffer& getBufferRef(PerformanceEntryType entryType) {
-    switch (entryType) {
-      case PerformanceEntryType::EVENT:
-        return eventBuffer_;
-      case PerformanceEntryType::MARK:
-        return markBuffer_;
-      case PerformanceEntryType::MEASURE:
-        return measureBuffer_;
-      case PerformanceEntryType::LONGTASK:
-        return longTaskBuffer_;
-      case PerformanceEntryType::_NEXT:
-        throw std::logic_error("Cannot get buffer for _NEXT entry type");
-    }
-  }
 
   const inline PerformanceEntryBuffer& getBuffer(
       PerformanceEntryType entryType) const {

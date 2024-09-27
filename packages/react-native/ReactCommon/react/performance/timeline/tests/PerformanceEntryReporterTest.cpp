@@ -37,13 +37,6 @@ namespace facebook::react {
             << ", .startTime = " << entry.startTime
             << ", .duration = " << entry.duration << " }";
 }
-
-static std::vector<PerformanceEntry> toSorted(
-    const std::vector<PerformanceEntry>& originalEntries) {
-  std::vector<PerformanceEntry> entries = originalEntries;
-  std::stable_sort(entries.begin(), entries.end(), PerformanceEntrySorter{});
-  return entries;
-}
 } // namespace facebook::react
 
 using namespace facebook::react;
@@ -53,29 +46,29 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestReportMarks) {
 
   reporter->clearEntries();
 
-  reporter->reportMark("mark0", 0.0);
-  reporter->reportMark("mark1", 1.0);
-  reporter->reportMark("mark2", 2.0);
+  reporter->reportMark("mark0", 0);
+  reporter->reportMark("mark1", 1);
+  reporter->reportMark("mark2", 2);
   // Report mark0 again
-  reporter->reportMark("mark0", 3.0);
+  reporter->reportMark("mark0", 3);
 
-  const auto entries = toSorted(reporter->getEntries());
+  const auto entries = reporter->getEntries();
 
   ASSERT_EQ(4, entries.size());
 
   const std::vector<PerformanceEntry> expected = {
       {.name = "mark0",
        .entryType = PerformanceEntryType::MARK,
-       .startTime = 0.0},
+       .startTime = 0},
       {.name = "mark1",
        .entryType = PerformanceEntryType::MARK,
-       .startTime = 1.0},
+       .startTime = 1},
       {.name = "mark2",
        .entryType = PerformanceEntryType::MARK,
-       .startTime = 2.0},
+       .startTime = 2},
       {.name = "mark0",
        .entryType = PerformanceEntryType::MARK,
-       .startTime = 3.0},
+       .startTime = 3},
   };
 
   ASSERT_EQ(expected, entries);
@@ -85,34 +78,33 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestReportMeasures) {
   auto reporter = PerformanceEntryReporter::getInstance();
   reporter->clearEntries();
 
-  reporter->reportMark("mark0", 0.0);
-  reporter->reportMark("mark1", 1.0);
-  reporter->reportMark("mark2", 2.0);
+  reporter->reportMark("mark0", 0);
+  reporter->reportMark("mark1", 1);
+  reporter->reportMark("mark2", 2);
 
-  reporter->reportMeasure("measure0", 0.0, 2.0);
-  reporter->reportMeasure("measure1", 0.0, 2.0, 4.0);
-  reporter->reportMeasure("measure2", 0.0, 0.0, std::nullopt, "mark1", "mark2");
-  reporter->reportMeasure("measure3", 0.0, 0.0, 5.0, "mark1");
+  reporter->reportMeasure("measure0", 0, 2);
+  reporter->reportMeasure("measure1", 0, 2, 4);
+  reporter->reportMeasure("measure2", 0, 0, std::nullopt, "mark1", "mark2");
+  reporter->reportMeasure("measure3", 0, 0, 5, "mark1");
   reporter->reportMeasure(
-      "measure4", 1.5, 0.0, std::nullopt, std::nullopt, "mark2");
+      "measure4", 1.5, 0, std::nullopt, std::nullopt, "mark2");
 
   reporter->setTimeStampProvider([]() { return 3.5; });
-  reporter->reportMeasure("measure5", 0.0, 0.0, std::nullopt, "mark2");
+  reporter->reportMeasure("measure5", 0, 0, std::nullopt, "mark2");
 
   reporter->reportMark("mark3", 2.5);
   reporter->reportMeasure("measure6", 2.0, 2.0);
   reporter->reportMark("mark4", 2.1);
   reporter->reportMark("mark4", 3.0);
   // Uses the last reported time for mark4
-  reporter->reportMeasure("measure7", 0.0, 0.0, std::nullopt, "mark1", "mark4");
+  reporter->reportMeasure("measure7", 0, 0, std::nullopt, "mark1", "mark4");
 
-  const auto entries = toSorted(reporter->getEntries());
+  const auto entries = reporter->getEntries();
 
   const std::vector<PerformanceEntry> expected = {
       {.name = "mark0",
        .entryType = PerformanceEntryType::MARK,
-       .startTime = 0,
-       .duration = 0},
+       .startTime = 0},
       {.name = "measure0",
        .entryType = PerformanceEntryType::MEASURE,
        .startTime = 0,
@@ -123,8 +115,7 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestReportMeasures) {
        .duration = 4},
       {.name = "mark1",
        .entryType = PerformanceEntryType::MARK,
-       .startTime = 1,
-       .duration = 0},
+       .startTime = 1},
       {.name = "measure2",
        .entryType = PerformanceEntryType::MEASURE,
        .startTime = 1,
@@ -143,8 +134,7 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestReportMeasures) {
        .duration = 0.5},
       {.name = "mark2",
        .entryType = PerformanceEntryType::MARK,
-       .startTime = 2,
-       .duration = 0},
+       .startTime = 2},
       {.name = "measure6",
        .entryType = PerformanceEntryType::MEASURE,
        .startTime = 2,
@@ -163,8 +153,7 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestReportMeasures) {
        .duration = 0},
       {.name = "mark4",
        .entryType = PerformanceEntryType::MARK,
-       .startTime = 3,
-       .duration = 0}};
+       .startTime = 3}};
 
   ASSERT_EQ(expected, entries);
 }
@@ -178,24 +167,23 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestGetEntries) {
     ASSERT_EQ(0, entries.size());
   }
 
-  reporter->reportMark("common_name", 0.0);
-  reporter->reportMark("mark1", 1.0);
-  reporter->reportMark("mark2", 2.0);
+  reporter->reportMark("common_name", 0);
+  reporter->reportMark("mark1", 1);
+  reporter->reportMark("mark2", 2);
 
-  reporter->reportMeasure("common_name", 0.0, 2.0);
-  reporter->reportMeasure("measure1", 0.0, 2.0, 4.0);
-  reporter->reportMeasure("measure2", 0.0, 0.0, std::nullopt, "mark1", "mark2");
-  reporter->reportMeasure("measure3", 0.0, 0.0, 5.0, "mark1");
+  reporter->reportMeasure("common_name", 0, 2);
+  reporter->reportMeasure("measure1", 0, 2, 4);
+  reporter->reportMeasure("measure2", 0, 0, std::nullopt, "mark1", "mark2");
+  reporter->reportMeasure("measure3", 0, 0, 5, "mark1");
   reporter->reportMeasure(
-      "measure4", 1.5, 0.0, std::nullopt, std::nullopt, "mark2");
+      "measure4", 1.5, 0, std::nullopt, std::nullopt, "mark2");
 
   {
-    const auto allEntries = toSorted(reporter->getEntries());
+    const auto allEntries = reporter->getEntries();
     const std::vector<PerformanceEntry> expected = {
         {.name = "common_name",
          .entryType = PerformanceEntryType::MARK,
-         .startTime = 0,
-         .duration = 0},
+         .startTime = 0},
         {.name = "common_name",
          .entryType = PerformanceEntryType::MEASURE,
          .startTime = 0,
@@ -206,8 +194,7 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestGetEntries) {
          .duration = 4},
         {.name = "mark1",
          .entryType = PerformanceEntryType::MARK,
-         .startTime = 1,
-         .duration = 0},
+         .startTime = 1},
         {.name = "measure2",
          .entryType = PerformanceEntryType::MEASURE,
          .startTime = 1,
@@ -222,33 +209,28 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestGetEntries) {
          .duration = 0.5},
         {.name = "mark2",
          .entryType = PerformanceEntryType::MARK,
-         .startTime = 2,
-         .duration = 0}};
+         .startTime = 2}};
     ASSERT_EQ(expected, allEntries);
   }
 
   {
-    const auto marks =
-        toSorted(reporter->getEntriesByType(PerformanceEntryType::MARK));
+    const auto marks = reporter->getEntriesByType(PerformanceEntryType::MARK);
     const std::vector<PerformanceEntry> expected = {
         {.name = "common_name",
          .entryType = PerformanceEntryType::MARK,
-         .startTime = 0,
-         .duration = 0},
+         .startTime = 0},
         {.name = "mark1",
          .entryType = PerformanceEntryType::MARK,
-         .startTime = 1,
-         .duration = 0},
+         .startTime = 1},
         {.name = "mark2",
          .entryType = PerformanceEntryType::MARK,
-         .startTime = 2,
-         .duration = 0}};
+         .startTime = 2}};
     ASSERT_EQ(expected, marks);
   }
 
   {
     const auto measures =
-        toSorted(reporter->getEntriesByType(PerformanceEntryType::MEASURE));
+        reporter->getEntriesByType(PerformanceEntryType::MEASURE);
     const std::vector<PerformanceEntry> expected = {
         {.name = "common_name",
          .entryType = PerformanceEntryType::MEASURE,
@@ -278,113 +260,47 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestGetEntries) {
     const std::vector<PerformanceEntry> expected = {
         {.name = "common_name",
          .entryType = PerformanceEntryType::MARK,
-         .startTime = 0,
-         .duration = 0},
+         .startTime = 0},
         {.name = "common_name",
          .entryType = PerformanceEntryType::MEASURE,
          .startTime = 0,
          .duration = 2}};
-    const auto commonName = toSorted(reporter->getEntriesByName("common_name"));
+    const auto commonName = reporter->getEntriesByName("common_name");
     ASSERT_EQ(expected, commonName);
   }
 }
 
-TEST(PerformanceEntryReporter, PerformanceEntryReporterTestClearEntries) {
+TEST(PerformanceEntryReporter, PerformanceEntryReporterTestClearMarks) {
   auto reporter = PerformanceEntryReporter::getInstance();
   reporter->clearEntries();
 
-  reporter->reportMark("common_name", 0.0);
-  reporter->reportMark("mark1", 1.0);
-  reporter->reportMark("mark2", 2.0);
+  reporter->reportMark("common_name", 0);
+  reporter->reportMark("mark1", 1);
+  reporter->reportMark("mark1", 2.1);
+  reporter->reportMark("mark2", 2);
 
-  reporter->reportMeasure("common_name", 0.0, 2.0);
-  reporter->reportMeasure("measure1", 0.0, 2.0, 4.0);
-  reporter->reportMeasure("measure2", 0.0, 0.0, std::nullopt, "mark1", "mark2");
-  reporter->reportMeasure("measure3", 0.0, 0.0, 5.0, "mark1");
+  reporter->reportMeasure("common_name", 0, 2);
+  reporter->reportMeasure("measure1", 0, 2, 4);
+  reporter->reportMeasure("measure2", 0, 0, std::nullopt, "mark1", "mark2");
+  reporter->reportMeasure("measure3", 0, 0, 5, "mark1");
   reporter->reportMeasure(
-      "measure4", 1.5, 0.0, std::nullopt, std::nullopt, "mark2");
+      "measure4", 1.5, 0, std::nullopt, std::nullopt, "mark2");
+
+  reporter->clearMarks("common_name");
 
   {
-    reporter->clearEntries(std::nullopt, "common_name");
-    auto entriesWithoutCommonName = toSorted(reporter->getEntries());
+    auto entries = reporter->getEntriesByType(PerformanceEntryType::MARK);
     std::vector<PerformanceEntry> expected = {
-        {.name = "measure1",
-         .entryType = PerformanceEntryType::MEASURE,
-         .startTime = 0,
-         .duration = 4},
         {.name = "mark1",
          .entryType = PerformanceEntryType::MARK,
-         .startTime = 1,
-         .duration = 0},
-        {.name = "measure2",
-         .entryType = PerformanceEntryType::MEASURE,
-         .startTime = 1,
-         .duration = 1},
-        {.name = "measure3",
-         .entryType = PerformanceEntryType::MEASURE,
-         .startTime = 1,
-         .duration = 5},
-        {.name = "measure4",
-         .entryType = PerformanceEntryType::MEASURE,
-         .startTime = 1.5,
-         .duration = 0.5},
+         .startTime = 1},
         {.name = "mark2",
          .entryType = PerformanceEntryType::MARK,
-         .startTime = 2,
-         .duration = 0}};
-
-    ASSERT_EQ(6, entriesWithoutCommonName.size());
-    ASSERT_EQ(expected, entriesWithoutCommonName);
-  }
-
-  {
-    reporter->clearEntries(PerformanceEntryType::MARK, "mark1");
-    auto entriesWithoutMark1 = toSorted(reporter->getEntries());
-
-    ASSERT_EQ(5, entriesWithoutMark1.size());
-    ASSERT_EQ(
-        std::vector<PerformanceEntry>(
-            {{.name = "measure1",
-              .entryType = PerformanceEntryType::MEASURE,
-              .startTime = 0,
-              .duration = 4},
-             {.name = "measure2",
-              .entryType = PerformanceEntryType::MEASURE,
-              .startTime = 1,
-              .duration = 1},
-             {.name = "measure3",
-              .entryType = PerformanceEntryType::MEASURE,
-              .startTime = 1,
-              .duration = 5},
-             {.name = "measure4",
-              .entryType = PerformanceEntryType::MEASURE,
-              .startTime = 1.5,
-              .duration = 0.5},
-             {.name = "mark2",
-              .entryType = PerformanceEntryType::MARK,
-              .startTime = 2,
-              .duration = 0}}),
-        entriesWithoutMark1);
-  }
-
-  {
-    reporter->clearEntries(PerformanceEntryType::MEASURE);
-    auto entriesWithoutMeasures = toSorted(reporter->getEntries());
-
-    ASSERT_EQ(1, entriesWithoutMeasures.size());
-    ASSERT_EQ(
-        std::vector<PerformanceEntry>(
-            {{.name = "mark2",
-              .entryType = PerformanceEntryType::MARK,
-              .startTime = 2,
-              .duration = 0}}),
-        entriesWithoutMeasures);
-  }
-
-  {
-    reporter->clearEntries();
-    auto emptyEntries = reporter->getEntries();
-
-    ASSERT_EQ(0, emptyEntries.size());
+         .startTime = 2},
+        {.name = "mark1",
+         .entryType = PerformanceEntryType::MARK,
+         .startTime = 2.1},
+    };
+    ASSERT_EQ(expected, entries);
   }
 }
