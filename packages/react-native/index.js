@@ -85,6 +85,7 @@ import typeof UTFSequence from './Libraries/UTFSequence';
 import typeof * as Appearance from './Libraries/Utilities/Appearance';
 import typeof BackHandler from './Libraries/Utilities/BackHandler';
 import typeof DeviceInfo from './Libraries/Utilities/DeviceInfo';
+import typeof DevMenu from './Libraries/Utilities/DevMenu';
 import typeof DevSettings from './Libraries/Utilities/DevSettings';
 import typeof Dimensions from './Libraries/Utilities/Dimensions';
 import typeof PixelRatio from './Libraries/Utilities/PixelRatio';
@@ -237,6 +238,9 @@ module.exports = {
   },
   get DeviceInfo(): DeviceInfo {
     return require('./Libraries/Utilities/DeviceInfo');
+  },
+  get DevMenu(): DevMenu {
+    return require('./Libraries/Utilities/DevMenu');
   },
   get DevSettings(): DevSettings {
     return require('./Libraries/Utilities/DevSettings');
