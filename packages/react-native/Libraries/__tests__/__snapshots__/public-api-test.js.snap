@@ -8901,6 +8901,14 @@ exports[`public API should not change unintentionally Libraries/Utilities/DevLoa
 "
 `;
 
+exports[`public API should not change unintentionally Libraries/Utilities/DevMenu.js 1`] = `
+"declare let DevMenu: {
+  show(): void,
+};
+declare module.exports: DevMenu;
+"
+`;
+
 exports[`public API should not change unintentionally Libraries/Utilities/DevSettings.js 1`] = `
 "declare let DevSettings: {
   addMenuItem(title: string, handler: () => mixed): void,
@@ -9630,6 +9638,7 @@ declare module.exports: {
   get BackHandler(): BackHandler,
   get Clipboard(): Clipboard,
   get DeviceInfo(): DeviceInfo,
+  get DevMenu(): DevMenu,
   get DevSettings(): DevSettings,
   get Dimensions(): Dimensions,
   get Easing(): Easing,
