@@ -98,6 +98,18 @@ jobs:
         steps:
         - template: /.ado/templates/apple-tools-setup.yml@self
 
+        - ${{ if in(slice.sdk, 'xros', 'xrsimulator') }}:
+            - task: CmdLine@2
+              displayName: Download visionOS SDDK
+              inputs:
+                script: |
+                  set -eox
+                  # https://github.com/actions/runner-images/issues/10559
+                  sudo xcodebuild -runFirstLaunch
+                  sudo xcrun simctl list
+                  sudo xcodebuild -downloadPlatform visionOS
+                  sudo xcodebuild -runFirstLaunch
+
         - task: CmdLine@2
           displayName: yarn install
           inputs:
