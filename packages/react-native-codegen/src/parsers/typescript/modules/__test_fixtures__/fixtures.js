@@ -146,6 +146,7 @@ export type ObjectAlias = {
   label: string;
   truthy: boolean;
 };
+export type PureObjectAlias = ObjectAlias;
 export type ReadOnlyAlias = Readonly<ObjectAlias>;
 
 export interface Spec extends TurboModule {
@@ -155,6 +156,7 @@ export interface Spec extends TurboModule {
   readonly getArray: (a: Array<A>) => {a: B};
   readonly getStringFromAlias: (a: ObjectAlias) => string;
   readonly getStringFromNullableAlias: (a: ObjectAlias | null) => string;
+  readonly getStringFromPureAlias: (a: PureObjectAlias) => string;
   readonly getStringFromReadOnlyAlias: (a: ReadOnlyAlias) => string;
   readonly getStringFromNullableReadOnlyAlias: (a: ReadOnlyAlias | null) => string;
 }
