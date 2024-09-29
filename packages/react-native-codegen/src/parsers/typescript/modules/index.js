@@ -28,6 +28,7 @@ import type {
 const {
   UnsupportedEnumDeclarationParserError,
   UnsupportedGenericParserError,
+  UnsupportedObjectPropertyWithIndexerTypeAnnotationParserError,
   UnsupportedTypeAnnotationParserError,
 } = require('../../errors');
 const {parseObjectProperty} = require('../../parsers-commons');
@@ -308,6 +309,18 @@ function translateTypeAnnotation(
         const indexSignatures = typeAnnotation.members.filter(
           member => member.type === 'TSIndexSignature',
         );
+
+        const properties = typeAnnotation.members.filter(
+          member => member.type === 'TSPropertySignature',
+        );
+
+        if (indexSignatures.length > 0 && properties.length > 0) {
+          throw new UnsupportedObjectPropertyWithIndexerTypeAnnotationParserError(
+            hasteModuleName,
+            typeAnnotation,
+          );
+        }
+
         if (indexSignatures.length > 0) {
           // check the property type to prevent developers from using unsupported types
           // the return value from `translateTypeAnnotation` is unused
