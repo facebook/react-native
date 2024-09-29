@@ -11,6 +11,7 @@
 #import <React/RCTBridge+Private.h>
 #import <React/RCTConstants.h>
 #import <React/RCTScrollEvent.h>
+#import <React/UIResponder+React.h>
 
 #import <react/renderer/components/scrollview/RCTComponentViewHelpers.h>
 #import <react/renderer/components/scrollview/ScrollViewComponentDescriptor.h>
@@ -204,8 +205,13 @@ RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrollView, NSInt
                                                from:self
                                            forEvent:nil]) {
     if (CGRectEqualToRect(_firstResponderFocus, CGRectNull)) {
-      // Text input view is outside of the scroll view.
-      contentDiff = keyboardEndFrame.origin.y - keyboardBeginFrame.origin.y;
+      UIResponder *currentFirstResponder = [UIResponder reactCurrentFirstResponder];
+      UIView *inputAccessoryView = currentFirstResponder.inputAccessoryView;
+      if ([currentFirstResponder isKindOfClass:UIView.class] &&
+          [(UIView *)currentFirstResponder isDescendantOfView:inputAccessoryView]) {
+        // Text input view is within the inputAccessoryView.
+        contentDiff = keyboardEndFrame.origin.y - keyboardBeginFrame.origin.y;
+      }
     } else {
       CGRect viewIntersection = CGRectIntersection(self.firstResponderFocus, keyboardEndFrame);
 
