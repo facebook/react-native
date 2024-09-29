@@ -98,14 +98,6 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'experimentation',
       },
     },
-    enableAndroidMixBlendModeProp: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-08-16',
-        description: 'Enables mix-blend-mode prop on Android.',
-        purpose: 'experimentation',
-      },
-    },
     enableBackgroundStyleApplicator: {
       defaultValue: true,
       metadata: {

@@ -125,7 +125,7 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   /**
    * MixBlendMode
    */
-  experimental_mixBlendMode: true,
+  mixBlendMode: true,
 
   /**
    * Isolation

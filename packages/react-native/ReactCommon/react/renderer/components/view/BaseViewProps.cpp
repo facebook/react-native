@@ -209,14 +209,13 @@ BaseViewProps::BaseViewProps(
                     sourceProps.backgroundImage,
                     {})),
       mixBlendMode(
-          CoreFeatures::enablePropIteratorSetter
-              ? sourceProps.mixBlendMode
-              : convertRawProp(
-                    context,
-                    rawProps,
-                    "experimental_mixBlendMode",
-                    sourceProps.mixBlendMode,
-                    {})),
+          CoreFeatures::enablePropIteratorSetter ? sourceProps.mixBlendMode
+                                                 : convertRawProp(
+                                                       context,
+                                                       rawProps,
+                                                       "mixBlendMode",
+                                                       sourceProps.mixBlendMode,
+                                                       {})),
       isolation(
           CoreFeatures::enablePropIteratorSetter ? sourceProps.isolation
                                                  : convertRawProp(

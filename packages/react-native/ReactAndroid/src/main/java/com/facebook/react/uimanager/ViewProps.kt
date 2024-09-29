@@ -138,7 +138,7 @@ public object ViewProps {
   public const val ON_LAYOUT: String = "onLayout"
   public const val BOX_SHADOW: String = "boxShadow"
   public const val FILTER: String = "filter"
-  public const val MIX_BLEND_MODE: String = "experimental_mixBlendMode"
+  public const val MIX_BLEND_MODE: String = "mixBlendMode"
   public const val OUTLINE_COLOR: String = "outlineColor"
   public const val OUTLINE_OFFSET: String = "outlineOffset"
   public const val OUTLINE_STYLE: String = "outlineStyle"

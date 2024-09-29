@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<383e9749c506bc2326455ef907e06a4c>>
+ * @generated SignedSource<<8b39b99e91976d5bf63956e6501e180f>>
  */
 
 /**
@@ -78,12 +78,6 @@ class ReactNativeFeatureFlagsProviderHolder
   bool enableAndroidLineHeightCentering() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableAndroidLineHeightCentering");
-    return method(javaProvider_);
-  }
-
-  bool enableAndroidMixBlendModeProp() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableAndroidMixBlendModeProp");
     return method(javaProvider_);
   }
 
@@ -402,11 +396,6 @@ bool JReactNativeFeatureFlagsCxxInterop::enableAndroidLineHeightCentering(
   return ReactNativeFeatureFlags::enableAndroidLineHeightCentering();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::enableAndroidMixBlendModeProp(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::enableAndroidMixBlendModeProp();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::enableBackgroundStyleApplicator(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableBackgroundStyleApplicator();
@@ -675,9 +664,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableAndroidLineHeightCentering",
         JReactNativeFeatureFlagsCxxInterop::enableAndroidLineHeightCentering),
-      makeNativeMethod(
-        "enableAndroidMixBlendModeProp",
-        JReactNativeFeatureFlagsCxxInterop::enableAndroidMixBlendModeProp),
       makeNativeMethod(
         "enableBackgroundStyleApplicator",
         JReactNativeFeatureFlagsCxxInterop::enableBackgroundStyleApplicator),

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<94afee988401ba2af586ec8fe310cb8b>>
+ * @generated SignedSource<<3f8b503d5402563b0eb94fe46ffa2814>>
  */
 
 /**
@@ -48,8 +48,6 @@ class NativeReactNativeFeatureFlags
   bool enableAlignItemsBaselineOnFabricIOS(jsi::Runtime& runtime);
 
   bool enableAndroidLineHeightCentering(jsi::Runtime& runtime);
-
-  bool enableAndroidMixBlendModeProp(jsi::Runtime& runtime);
 
   bool enableBackgroundStyleApplicator(jsi::Runtime& runtime);
 

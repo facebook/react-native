@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ea2c2d19e83630b549e719057cd1982e>>
+ * @generated SignedSource<<646023269f07d6ae792b8aad5ef2d3c1>>
  */
 
 /**
@@ -71,11 +71,6 @@ class ReactNativeFeatureFlags {
    * When enabled, custom line height calculation will be centered from top to bottom.
    */
   RN_EXPORT static bool enableAndroidLineHeightCentering();
-
-  /**
-   * Enables mix-blend-mode prop on Android.
-   */
-  RN_EXPORT static bool enableAndroidMixBlendModeProp();
 
   /**
    * Use BackgroundStyleApplicator in place of other background/border drawing code
