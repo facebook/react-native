@@ -689,6 +689,26 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_ALIASES 
             }
           },
           {
+            'name': 'getStringFromPureAlias',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'StringTypeAnnotation'
+              },
+              'params': [
+                {
+                  'name': 'a',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'TypeAliasTypeAnnotation',
+                    'name': 'ObjectAlias'
+                  }
+                }
+              ]
+            }
+          },
+          {
             'name': 'getStringFromReadOnlyAlias',
             'optional': false,
             'typeAnnotation': {
