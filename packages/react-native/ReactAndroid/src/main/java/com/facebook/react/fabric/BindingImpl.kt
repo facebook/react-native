@@ -49,7 +49,11 @@ public class BindingImpl : Binding {
       doLeftAndRightSwapInRTL: Boolean
   )
 
-  external override fun startSurfaceWithSurfaceHandler(surfaceHandler: SurfaceHandlerBinding)
+  external override fun startSurfaceWithSurfaceHandler(
+      surfaceId: Int,
+      surfaceHandler: SurfaceHandlerBinding,
+      isMountable: Boolean
+  )
 
   external override fun stopSurface(surfaceId: Int)
 
