@@ -35,6 +35,22 @@ typedef NSURL *_Nullable (^RCTHostBundleURLProvider)(void);
 
 - (void)hostDidStart:(RCTHost *)host;
 
+@optional
+
+/**
+ * The `RCTInstance` will automatically attempt to load the JS source code , however, if you want
+ * to handle loading the JS yourself, you can do so by implementing this method.
+ */
+- (void)loadSourceForHost:(RCTHost *)host
+               onProgress:(RCTSourceLoadProgressBlock)onProgress
+               onComplete:(RCTSourceLoadBlock)loadCallback;
+
+/**
+ * Similar to loadSourceForHost:onProgress:onComplete: but without progress
+ * reporting.
+ */
+- (void)loadSourceForHost:(RCTHost *)host withBlock:(RCTSourceLoadBlock)loadCallback;
+
 @end
 
 @protocol RCTHostRuntimeDelegate <NSObject>

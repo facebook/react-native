@@ -329,6 +329,18 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
   [self.runtimeDelegate host:self didInitializeRuntime:runtime];
 }
 
+- (void)loadSourceForInstance:(RCTInstance *)instance onProgress:(RCTSourceLoadProgressBlock)onProgress onComplete:(RCTSourceLoadBlock)loadCallback {
+  if ([_hostDelegate respondsToSelector:@selector(loadSourceForHost:onProgress:onComplete:)]) {
+    [_hostDelegate loadSourceForHost:self onProgress:onProgress onComplete:loadCallback];
+  } else if ([_hostDelegate respondsToSelector:@selector(loadSourceForHost:withBlock:)]) {
+    [_hostDelegate loadSourceForHost:self withBlock:loadCallback];
+  } else {
+    [RCTJavaScriptLoader loadBundleAtURL:[_bundleManager bundleURL]
+                              onProgress:onProgress
+                              onComplete:loadCallback];
+  }
+}
+
 #pragma mark - RCTContextContainerHandling
 
 - (void)didCreateContextContainer:(std::shared_ptr<facebook::react::ContextContainer>)contextContainer

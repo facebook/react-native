@@ -95,7 +95,6 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
 @end
 
 @implementation RCTRootViewFactory {
-  RCTRootViewFactoryConfiguration *_configuration;
   __weak id<RCTTurboModuleManagerDelegate> _turboModuleManagerDelegate;
 }
 

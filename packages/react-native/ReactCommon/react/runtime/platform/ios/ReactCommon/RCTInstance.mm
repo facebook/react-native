@@ -416,7 +416,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
 #endif
 
   __weak __typeof(self) weakSelf = self;
-  [RCTJavaScriptLoader loadBundleAtURL:sourceURL
+  [_delegate loadSourceForInstance:self
       onProgress:^(RCTLoadingProgress *progressData) {
         __typeof(self) strongSelf = weakSelf;
         if (!strongSelf) {
