@@ -80,7 +80,7 @@ static void computeFlexBasisForChild(
       resolveDirection(node->style().flexDirection(), direction);
   const bool isMainAxisRow = isRow(mainAxis);
   const float mainAxisSize = isMainAxisRow ? width : height;
-  const float mainAxisownerSize = isMainAxisRow ? ownerWidth : ownerHeight;
+  const float mainAxisOwnerSize = isMainAxisRow ? ownerWidth : ownerHeight;
 
   float childWidth = YGUndefined;
   float childHeight = YGUndefined;
@@ -88,7 +88,7 @@ static void computeFlexBasisForChild(
   SizingMode childHeightSizingMode;
 
   const FloatOptional resolvedFlexBasis =
-      child->resolveFlexBasis(direction, mainAxis, mainAxisownerSize);
+      child->resolveFlexBasis(direction, mainAxis, mainAxisOwnerSize);
   const bool isRowStyleDimDefined =
       child->hasDefiniteLength(Dimension::Width, ownerWidth);
   const bool isColumnStyleDimDefined =
@@ -594,7 +594,7 @@ static float distributeFreeSpaceSecondPass(
     const FlexDirection mainAxis,
     const FlexDirection crossAxis,
     const Direction direction,
-    const float mainAxisownerSize,
+    const float mainAxisOwnerSize,
     const float availableInnerMainDim,
     const float availableInnerCrossDim,
     const float availableInnerWidth,
@@ -618,7 +618,7 @@ static float distributeFreeSpaceSecondPass(
                          direction,
                          mainAxis,
                          currentLineChild->getLayout().computedFlexBasis,
-                         mainAxisownerSize)
+                         mainAxisOwnerSize)
                          .unwrap();
     float updatedMainSize = childFlexBasis;
 
@@ -670,8 +670,8 @@ static float distributeFreeSpaceSecondPass(
     yoga::assertFatalWithNode(
         currentLineChild,
         yoga::isDefined(updatedMainSize),
-        ("updatedMainSize is undefined. mainAxisownerSize: " +
-         std::to_string(mainAxisownerSize))
+        ("updatedMainSize is undefined. mainAxisOwnerSize: " +
+         std::to_string(mainAxisOwnerSize))
             .c_str());
 
     deltaFreeSpace += updatedMainSize - childFlexBasis;
@@ -808,7 +808,7 @@ static void distributeFreeSpaceFirstPass(
     FlexLine& flexLine,
     const Direction direction,
     const FlexDirection mainAxis,
-    const float mainAxisownerSize,
+    const float mainAxisOwnerSize,
     const float availableInnerMainDim,
     const float availableInnerWidth) {
   float flexShrinkScaledFactor = 0;
@@ -823,7 +823,7 @@ static void distributeFreeSpaceFirstPass(
                                direction,
                                mainAxis,
                                currentLineChild->getLayout().computedFlexBasis,
-                               mainAxisownerSize)
+                               mainAxisOwnerSize)
                                .unwrap();
 
     if (flexLine.layout.remainingFreeSpace < 0) {
@@ -917,7 +917,7 @@ static void resolveFlexibleLength(
     const FlexDirection mainAxis,
     const FlexDirection crossAxis,
     const Direction direction,
-    const float mainAxisownerSize,
+    const float mainAxisOwnerSize,
     const float availableInnerMainDim,
     const float availableInnerCrossDim,
     const float availableInnerWidth,
@@ -934,7 +934,7 @@ static void resolveFlexibleLength(
       flexLine,
       direction,
       mainAxis,
-      mainAxisownerSize,
+      mainAxisOwnerSize,
       availableInnerMainDim,
       availableInnerWidth);
 
@@ -945,7 +945,7 @@ static void resolveFlexibleLength(
       mainAxis,
       crossAxis,
       direction,
-      mainAxisownerSize,
+      mainAxisOwnerSize,
       availableInnerMainDim,
       availableInnerCrossDim,
       availableInnerWidth,
@@ -969,7 +969,7 @@ static void justifyMainAxis(
     const Direction direction,
     const SizingMode sizingModeMainDim,
     const SizingMode sizingModeCrossDim,
-    const float mainAxisownerSize,
+    const float mainAxisOwnerSize,
     const float ownerWidth,
     const float availableInnerMainDim,
     const float availableInnerCrossDim,
@@ -993,7 +993,7 @@ static void justifyMainAxis(
     if (style.minDimension(dimension(mainAxis)).isDefined() &&
         style
             .resolvedMinDimension(
-                direction, dimension(mainAxis), mainAxisownerSize)
+                direction, dimension(mainAxis), mainAxisOwnerSize)
             .isDefined()) {
       // This condition makes sure that if the size of main dimension(after
       // considering child nodes main dim, leading and trailing padding etc)
@@ -1005,7 +1005,7 @@ static void justifyMainAxis(
       const float minAvailableMainDim =
           style
               .resolvedMinDimension(
-                  direction, dimension(mainAxis), mainAxisownerSize)
+                  direction, dimension(mainAxis), mainAxisOwnerSize)
               .unwrap() -
           leadingPaddingAndBorderMain - trailingPaddingAndBorderMain;
       const float occupiedSpaceByChildNodes =
@@ -1374,8 +1374,8 @@ static void calculateLayoutImpl(
   const bool isMainAxisRow = isRow(mainAxis);
   const bool isNodeFlexWrap = node->style().flexWrap() != Wrap::NoWrap;
 
-  const float mainAxisownerSize = isMainAxisRow ? ownerWidth : ownerHeight;
-  const float crossAxisownerSize = isMainAxisRow ? ownerHeight : ownerWidth;
+  const float mainAxisOwnerSize = isMainAxisRow ? ownerWidth : ownerHeight;
+  const float crossAxisOwnerSize = isMainAxisRow ? ownerHeight : ownerWidth;
 
   const float paddingAndBorderAxisMain =
       paddingAndBorderForAxis(node, mainAxis, direction, ownerWidth);
@@ -1470,7 +1470,7 @@ static void calculateLayoutImpl(
     auto flexLine = calculateFlexLine(
         node,
         ownerDirection,
-        mainAxisownerSize,
+        mainAxisOwnerSize,
         availableInnerWidth,
         availableInnerMainDim,
         startOfLineIndex,
@@ -1559,7 +1559,7 @@ static void calculateLayoutImpl(
           mainAxis,
           crossAxis,
           direction,
-          mainAxisownerSize,
+          mainAxisOwnerSize,
           availableInnerMainDim,
           availableInnerCrossDim,
           availableInnerWidth,
@@ -1592,7 +1592,7 @@ static void calculateLayoutImpl(
         direction,
         sizingModeMainDim,
         sizingModeCrossDim,
-        mainAxisownerSize,
+        mainAxisOwnerSize,
         ownerWidth,
         availableInnerMainDim,
         availableInnerCrossDim,
@@ -1609,7 +1609,7 @@ static void calculateLayoutImpl(
               crossAxis,
               direction,
               flexLine.layout.crossDim + paddingAndBorderAxisCross,
-              crossAxisownerSize,
+              crossAxisOwnerSize,
               ownerWidth) -
           paddingAndBorderAxisCross;
     }
@@ -1630,7 +1630,7 @@ static void calculateLayoutImpl(
               crossAxis,
               direction,
               flexLine.layout.crossDim + paddingAndBorderAxisCross,
-              crossAxisownerSize,
+              crossAxisOwnerSize,
               ownerWidth) -
           paddingAndBorderAxisCross;
     }
@@ -1800,9 +1800,9 @@ static void calculateLayoutImpl(
 
     const float unclampedCrossDim = sizingModeCrossDim == SizingMode::StretchFit
         ? availableInnerCrossDim + paddingAndBorderAxisCross
-        : node->hasDefiniteLength(dimension(crossAxis), crossAxisownerSize)
+        : node->hasDefiniteLength(dimension(crossAxis), crossAxisOwnerSize)
         ? node->getResolvedDimension(
-                  direction, dimension(crossAxis), crossAxisownerSize)
+                  direction, dimension(crossAxis), crossAxisOwnerSize)
               .unwrap()
         : totalLineCrossDim + paddingAndBorderAxisCross;
 
@@ -2042,7 +2042,7 @@ static void calculateLayoutImpl(
             mainAxis,
             direction,
             maxLineMainDim,
-            mainAxisownerSize,
+            mainAxisOwnerSize,
             ownerWidth),
         dimension(mainAxis));
 
@@ -2058,7 +2058,7 @@ static void calculateLayoutImpl(
                     direction,
                     mainAxis,
                     FloatOptional{maxLineMainDim},
-                    mainAxisownerSize)
+                    mainAxisOwnerSize)
                     .unwrap()),
             paddingAndBorderAxisMain),
         dimension(mainAxis));
@@ -2075,7 +2075,7 @@ static void calculateLayoutImpl(
             crossAxis,
             direction,
             totalLineCrossDim + paddingAndBorderAxisCross,
-            crossAxisownerSize,
+            crossAxisOwnerSize,
             ownerWidth),
         dimension(crossAxis));
 
@@ -2092,7 +2092,7 @@ static void calculateLayoutImpl(
                     crossAxis,
                     FloatOptional{
                         totalLineCrossDim + paddingAndBorderAxisCross},
-                    crossAxisownerSize)
+                    crossAxisOwnerSize)
                     .unwrap()),
             paddingAndBorderAxisCross),
         dimension(crossAxis));
