@@ -43,7 +43,7 @@ Node::Node(Node&& node) noexcept
       owner_(node.owner_),
       children_(std::move(node.children_)),
       config_(node.config_),
-      resolvedDimensions_(node.resolvedDimensions_) {
+      processedDimensions_(node.processedDimensions_) {
   for (auto c : children_) {
     c->setOwner(this);
   }
@@ -292,14 +292,14 @@ Style::Length Node::resolveFlexBasisPtr() const {
   return value::ofAuto();
 }
 
-void Node::resolveDimension() {
+void Node::processDimensions() {
   for (auto dim : {Dimension::Width, Dimension::Height}) {
     if (style_.maxDimension(dim).isDefined() &&
         yoga::inexactEquals(
             style_.maxDimension(dim), style_.minDimension(dim))) {
-      resolvedDimensions_[yoga::to_underlying(dim)] = style_.maxDimension(dim);
+      processedDimensions_[yoga::to_underlying(dim)] = style_.maxDimension(dim);
     } else {
-      resolvedDimensions_[yoga::to_underlying(dim)] = style_.dimension(dim);
+      processedDimensions_[yoga::to_underlying(dim)] = style_.dimension(dim);
     }
   }
 }
