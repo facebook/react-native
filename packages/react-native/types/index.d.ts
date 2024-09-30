@@ -141,7 +141,7 @@ export * as TurboModuleRegistry from '../Libraries/TurboModule/TurboModuleRegist
 export * from '../Libraries/Types/CoreEventTypes';
 export * from '../Libraries/Utilities/Appearance';
 export * from '../Libraries/Utilities/BackHandler';
-export * from '../Libraries/Utilities/DevMenu';
+export * from '../src/private/utilities/DevMenu';
 export * from '../Libraries/Utilities/DevSettings';
 export * from '../Libraries/Utilities/Dimensions';
 export * from '../Libraries/Utilities/PixelRatio';

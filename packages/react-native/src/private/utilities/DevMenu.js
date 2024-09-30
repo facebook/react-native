@@ -8,20 +8,24 @@
  * @format
  */
 
-import NativeDevMenu from '../NativeModules/specs/NativeDevMenu';
+import NativeDevMenu from '../specs/modules/NativeDevMenu';
 
-let DevMenu: {
+/**
+ * The DevMenu module exposes methods for interacting with the Dev Menu in development.
+ */
+type DevMenuStatic = {
+  /**
+   * Show the Dev Menu.
+   */
   show(): void,
-} = {
-  show(): void {},
 };
 
-if (__DEV__) {
-  DevMenu = {
-    show(): void {
+const DevMenu: DevMenuStatic = {
+  show(): void {
+    if (__DEV__) {
       NativeDevMenu.show?.();
-    },
-  };
-}
+    }
+  },
+};
 
 module.exports = DevMenu;

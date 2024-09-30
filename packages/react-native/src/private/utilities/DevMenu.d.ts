@@ -8,11 +8,11 @@
  */
 
 /**
- * The DevMenu module exposes methods for show the dev menu in development.
+ * The DevMenu module exposes methods for interacting with the Dev Menu in development.
  */
 export interface DevMenuStatic {
   /**
-   * Show the developer menu.
+   * Show the Dev Menu.
    */
   show(): void;
 }
