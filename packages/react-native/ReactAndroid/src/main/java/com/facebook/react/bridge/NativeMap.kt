@@ -7,12 +7,12 @@
 
 package com.facebook.react.bridge
 
-import com.facebook.jni.HybridData
+import com.facebook.jni.HybridClassBase
 import com.facebook.proguard.annotations.DoNotStrip
 
 /** Base class for a Map whose keys and values are stored in native code (C++). */
 @DoNotStrip
-public abstract class NativeMap(@field:DoNotStrip private val mHybridData: HybridData?) {
+public abstract class NativeMap : HybridClassBase() {
   external override fun toString(): String
 
   private companion object {

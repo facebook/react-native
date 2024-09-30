@@ -10,7 +10,7 @@ package com.facebook.react.fabric.events;
 import android.annotation.SuppressLint;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
-import com.facebook.jni.HybridData;
+import com.facebook.jni.HybridClassBase;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.NativeMap;
 import com.facebook.react.bridge.WritableMap;
@@ -24,18 +24,13 @@ import com.facebook.react.uimanager.events.EventCategoryDef;
 @Nullsafe(Nullsafe.Mode.LOCAL)
 @DoNotStrip
 @SuppressLint("MissingNativeLoadLibrary")
-public class EventEmitterWrapper {
-
+public class EventEmitterWrapper extends HybridClassBase {
   static {
     FabricSoLoader.staticInit();
   }
 
-  @DoNotStrip private final HybridData mHybridData;
-
   @DoNotStrip
-  private EventEmitterWrapper(HybridData hybridData) {
-    mHybridData = hybridData;
-  }
+  private EventEmitterWrapper() {}
 
   private native void dispatchEvent(
       String eventName, @Nullable NativeMap params, @EventCategoryDef int category);
@@ -81,15 +76,8 @@ public class EventEmitterWrapper {
   }
 
   public synchronized void destroy() {
-    if (mHybridData != null) {
-      mHybridData.resetNative();
+    if (isValid()) {
+      resetNative();
     }
-  }
-
-  private boolean isValid() {
-    if (mHybridData != null) {
-      return mHybridData.isValid();
-    }
-    return false;
   }
 }

@@ -23,9 +23,8 @@ WritableNativeArray::WritableNativeArray(folly::dynamic&& val)
   }
 }
 
-local_ref<WritableNativeArray::jhybriddata> WritableNativeArray::initHybrid(
-    alias_ref<jclass>) {
-  return makeCxxInstance();
+void WritableNativeArray::initHybrid(alias_ref<jhybridobject> jobj) {
+  setCxxInstance(jobj);
 }
 
 void WritableNativeArray::pushNull() {

@@ -9,18 +9,15 @@ package com.facebook.react.bridge;
 
 import static com.facebook.react.bridge.Arguments.*;
 
-import com.facebook.jni.HybridData;
+import com.facebook.jni.HybridClassBase;
 import com.facebook.proguard.annotations.DoNotStrip;
 
 /** Callback impl that calls directly into the cxx bridge. Created from C++. */
 @DoNotStrip
-public class CxxCallbackImpl implements Callback {
-  @DoNotStrip private final HybridData mHybridData;
+public class CxxCallbackImpl extends HybridClassBase implements Callback {
 
   @DoNotStrip
-  private CxxCallbackImpl(HybridData hybridData) {
-    mHybridData = hybridData;
-  }
+  private CxxCallbackImpl() {}
 
   @Override
   public void invoke(Object... args) {
