@@ -9630,6 +9630,7 @@ declare module.exports: {
   get BackHandler(): BackHandler,
   get Clipboard(): Clipboard,
   get DeviceInfo(): DeviceInfo,
+  get DevMenu(): DevMenu,
   get DevSettings(): DevSettings,
   get Dimensions(): Dimensions,
   get Easing(): Easing,
