@@ -328,12 +328,11 @@ public class FabricUIManager
             mReactApplicationContext, context, surfaceHandler.getModuleName(), rootTag);
     mMountingManager.startSurface(rootTag, reactContext, rootView);
 
-    surfaceHandler.setSurfaceId(rootTag);
-    surfaceHandler.setMountable(rootView != null);
     if (!(surfaceHandler instanceof SurfaceHandlerBinding)) {
       throw new IllegalArgumentException("Invalid SurfaceHandler");
     }
-    mBinding.startSurfaceWithSurfaceHandler((SurfaceHandlerBinding) surfaceHandler);
+    mBinding.startSurfaceWithSurfaceHandler(
+        rootTag, (SurfaceHandlerBinding) surfaceHandler, rootView != null);
   }
 
   public void attachRootView(final SurfaceHandler surfaceHandler, final View rootView) {

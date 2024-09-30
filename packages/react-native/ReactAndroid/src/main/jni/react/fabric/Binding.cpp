@@ -142,17 +142,21 @@ void Binding::reportMount(SurfaceId surfaceId) {
 
 // Used by bridgeless
 void Binding::startSurfaceWithSurfaceHandler(
-    jni::alias_ref<SurfaceHandlerBinding::jhybridobject>
-        surfaceHandlerBinding) {
+    jint surfaceId,
+    jni::alias_ref<SurfaceHandlerBinding::jhybridobject> surfaceHandlerBinding,
+    jboolean isMountable) {
   SystraceSection s("FabricUIManagerBinding::startSurfaceWithSurfaceHandler");
-
-  const auto& surfaceHandler =
-      surfaceHandlerBinding->cthis()->getSurfaceHandler();
   if (enableFabricLogs_) {
     LOG(WARNING)
         << "Binding::startSurfaceWithSurfaceHandler() was called (address: "
-        << this << ", surfaceId: " << surfaceHandler.getSurfaceId() << ").";
+        << this << ", surfaceId: " << surfaceId << ").";
   }
+
+  const auto& surfaceHandler =
+      surfaceHandlerBinding->cthis()->getSurfaceHandler();
+  surfaceHandler.setSurfaceId(surfaceId);
+  surfaceHandler.setDisplayMode(
+      isMountable != 0 ? DisplayMode::Visible : DisplayMode::Suspended);
 
   auto scheduler = getScheduler();
   if (!scheduler) {

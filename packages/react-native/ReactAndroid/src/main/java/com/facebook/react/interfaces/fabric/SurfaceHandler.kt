@@ -29,7 +29,7 @@ public interface SurfaceHandler {
   /**
    * Updates current surface id. Id should be updated after each call to {@link SurfaceHandler#stop}
    */
-  public fun setSurfaceId(surfaceId: Int)
+  // public fun setSurfaceId(surfaceId: Int)
 
   public fun setLayoutConstraints(
       widthMeasureSpec: Int,

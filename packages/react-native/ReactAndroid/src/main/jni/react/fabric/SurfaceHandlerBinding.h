@@ -27,7 +27,6 @@ class SurfaceHandlerBinding : public jni::HybridClass<SurfaceHandlerBinding> {
   void setDisplayMode(jint mode);
 
   jint getSurfaceId();
-  void setSurfaceId(jint surfaceId);
   jni::local_ref<jstring> getModuleName();
 
   jboolean isRunning();
@@ -50,10 +49,8 @@ class SurfaceHandlerBinding : public jni::HybridClass<SurfaceHandlerBinding> {
  private:
   const SurfaceHandler surfaceHandler_;
 
-  jni::alias_ref<SurfaceHandlerBinding::jhybriddata> jhybridobject_;
-
-  static jni::local_ref<jhybriddata> initHybrid(
-      jni::alias_ref<jclass>,
+  static void initHybrid(
+      jni::alias_ref<jhybridobject> jobj,
       jint surfaceId,
       jni::alias_ref<jstring> moduleName);
 };
