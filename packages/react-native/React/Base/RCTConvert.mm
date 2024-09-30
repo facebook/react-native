@@ -752,11 +752,13 @@ static NSDictionary<NSString *, NSDictionary *> *RCTSemanticColorsMap(void)
         // iOS 13.0
         RCTFallbackARGB : @(0xFFa2845e)
       },
+      @"systemCyanColor" : @{},
       @"systemGreenColor" : @{},
       @"systemIndigoColor" : @{
         // iOS 13.0
         RCTFallbackARGB : @(0xFF5856d6)
       },
+      @"systemMintColor" : @{},
       @"systemOrangeColor" : @{},
       @"systemPinkColor" : @{},
       @"systemPurpleColor" : @{},

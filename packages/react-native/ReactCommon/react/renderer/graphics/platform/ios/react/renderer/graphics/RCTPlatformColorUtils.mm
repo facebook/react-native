@@ -95,10 +95,12 @@ static NSDictionary<NSString *, NSDictionary *> *_PlatformColorSelectorsDict()
       @"systemBrown" : @{
         kFallbackARGBKey : @(0xFFa2845e) // iOS 13.0
       },
+      @"systemCyan" : @{},
       @"systemGreen" : @{},
       @"systemIndigo" : @{
         kFallbackARGBKey : @(0xFF5856d6) // iOS 13.0
       },
+      @"systemMint" : @{},
       @"systemOrange" : @{},
       @"systemPink" : @{},
       @"systemPurple" : @{},
