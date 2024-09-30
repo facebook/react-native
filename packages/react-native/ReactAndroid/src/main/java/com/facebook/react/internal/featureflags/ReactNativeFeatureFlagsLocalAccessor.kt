@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<bb25a0d771f0f129ab3f224640053ac3>>
+ * @generated SignedSource<<0d8f65a06ed20f44e5de58b764635602>>
  */
 
 /**
@@ -74,7 +74,6 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var useOptimizedEventBatchingOnAndroidCache: Boolean? = null
   private var useRuntimeShadowNodeReferenceUpdateCache: Boolean? = null
   private var useRuntimeShadowNodeReferenceUpdateOnLayoutCache: Boolean? = null
-  private var useStateAlignmentMechanismCache: Boolean? = null
   private var useTurboModuleInteropCache: Boolean? = null
   private var useTurboModulesCache: Boolean? = null
 
@@ -574,16 +573,6 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.useRuntimeShadowNodeReferenceUpdateOnLayout()
       accessedFeatureFlags.add("useRuntimeShadowNodeReferenceUpdateOnLayout")
       useRuntimeShadowNodeReferenceUpdateOnLayoutCache = cached
-    }
-    return cached
-  }
-
-  override fun useStateAlignmentMechanism(): Boolean {
-    var cached = useStateAlignmentMechanismCache
-    if (cached == null) {
-      cached = currentProvider.useStateAlignmentMechanism()
-      accessedFeatureFlags.add("useStateAlignmentMechanism")
-      useStateAlignmentMechanismCache = cached
     }
     return cached
   }

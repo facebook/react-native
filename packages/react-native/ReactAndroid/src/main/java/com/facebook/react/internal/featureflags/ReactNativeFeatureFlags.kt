@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<70e68165b567734a2609b77656b2c183>>
+ * @generated SignedSource<<346573dc832f9de6a2e29a4cfde558c5>>
  */
 
 /**
@@ -327,12 +327,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun useRuntimeShadowNodeReferenceUpdateOnLayout(): Boolean = accessor.useRuntimeShadowNodeReferenceUpdateOnLayout()
-
-  /**
-   * When enabled, it uses optimised state reconciliation algorithm.
-   */
-  @JvmStatic
-  public fun useStateAlignmentMechanism(): Boolean = accessor.useStateAlignmentMechanism()
 
   /**
    * In Bridgeless mode, should legacy NativeModules use the TurboModule system?

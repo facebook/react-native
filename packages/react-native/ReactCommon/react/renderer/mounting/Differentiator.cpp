@@ -298,6 +298,7 @@ ShadowViewNodePair::NonOwningList sliceChildShadowNodeViewPairs(
   }
 
   size_t startOfStaticIndex = 0;
+
   sliceChildShadowNodeViewPairsRecursively(
       pairList, startOfStaticIndex, scope, layoutOffset, shadowNode);
 

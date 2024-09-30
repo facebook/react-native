@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<646023269f07d6ae792b8aad5ef2d3c1>>
+ * @generated SignedSource<<d2afeedcfb81ca31bd7f0c19fd406ae6>>
  */
 
 /**
@@ -286,11 +286,6 @@ class ReactNativeFeatureFlags {
    * When enabled, cloning shadow nodes during layout will update the reference held by the current JS fiber tree.
    */
   RN_EXPORT static bool useRuntimeShadowNodeReferenceUpdateOnLayout();
-
-  /**
-   * When enabled, it uses optimised state reconciliation algorithm.
-   */
-  RN_EXPORT static bool useStateAlignmentMechanism();
 
   /**
    * In Bridgeless mode, should legacy NativeModules use the TurboModule system?
