@@ -96,7 +96,10 @@ class Binding : public jni::HybridClass<Binding, JBinding>,
   void stopSurface(jint surfaceId);
 
   void startSurfaceWithSurfaceHandler(
-      jni::alias_ref<SurfaceHandlerBinding::jhybridobject> surfaceHandler);
+      jint surfaceId,
+      jni::alias_ref<SurfaceHandlerBinding::jhybridobject>
+          surfaceHandlerBinding,
+      jboolean isMountable);
 
   void stopSurfaceWithSurfaceHandler(
       jni::alias_ref<SurfaceHandlerBinding::jhybridobject> surfaceHandler);

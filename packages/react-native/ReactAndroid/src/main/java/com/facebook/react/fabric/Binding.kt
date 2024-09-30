@@ -31,7 +31,11 @@ public interface Binding {
       doLeftAndRightSwapInRTL: Boolean
   )
 
-  public fun startSurfaceWithSurfaceHandler(surfaceHandler: SurfaceHandlerBinding)
+  public fun startSurfaceWithSurfaceHandler(
+      surfaceId: Int,
+      surfaceHandler: SurfaceHandlerBinding,
+      isMountable: Boolean
+  )
 
   public fun stopSurface(surfaceId: Int)
 
