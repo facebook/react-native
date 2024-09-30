@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<eca1f4ea2447e754c5cfa8998c2e7903>>
+ * @generated SignedSource<<ddd6b6977c8ee0e40d710947b4a23c3c>>
  */
 
 /**
@@ -75,7 +75,6 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool useOptimizedEventBatchingOnAndroid() = 0;
   virtual bool useRuntimeShadowNodeReferenceUpdate() = 0;
   virtual bool useRuntimeShadowNodeReferenceUpdateOnLayout() = 0;
-  virtual bool useStateAlignmentMechanism() = 0;
   virtual bool useTurboModuleInterop() = 0;
   virtual bool useTurboModules() = 0;
 };

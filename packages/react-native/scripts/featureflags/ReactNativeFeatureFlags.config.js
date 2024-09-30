@@ -467,15 +467,6 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'experimentation',
       },
     },
-    useStateAlignmentMechanism: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-04-12',
-        description:
-          'When enabled, it uses optimised state reconciliation algorithm.',
-        purpose: 'experimentation',
-      },
-    },
     useTurboModuleInterop: {
       defaultValue: false,
       metadata: {
