@@ -86,7 +86,7 @@ class YG_EXPORT Node : public ::YGNode {
    * https://www.w3.org/TR/css-sizing-3/#definite
    */
   inline bool hasDefiniteLength(Dimension dimension, float ownerSize) {
-    auto usedValue = getResolvedDimension(dimension).resolve(ownerSize);
+    auto usedValue = getProcessedDimension(dimension).resolve(ownerSize);
     return usedValue.isDefined() && usedValue.unwrap() >= 0.0f;
   }
 
@@ -152,12 +152,8 @@ class YG_EXPORT Node : public ::YGNode {
     return isDirty_;
   }
 
-  std::array<Style::Length, 2> getResolvedDimensions() const {
-    return resolvedDimensions_;
-  }
-
-  Style::Length getResolvedDimension(Dimension dimension) const {
-    return resolvedDimensions_[static_cast<size_t>(dimension)];
+  Style::Length getProcessedDimension(Dimension dimension) const {
+    return processedDimensions_[static_cast<size_t>(dimension)];
   }
 
   // Setters
@@ -233,7 +229,7 @@ class YG_EXPORT Node : public ::YGNode {
 
   // Other methods
   Style::Length resolveFlexBasisPtr() const;
-  void resolveDimension();
+  void processDimensions();
   Direction resolveDirection(Direction ownerDirection);
   void clearChildren();
   /// Replaces the occurrences of oldChild with newChild
@@ -280,7 +276,7 @@ class YG_EXPORT Node : public ::YGNode {
   Node* owner_ = nullptr;
   std::vector<Node*> children_;
   const Config* config_;
-  std::array<Style::Length, 2> resolvedDimensions_{
+  std::array<Style::Length, 2> processedDimensions_{
       {value::undefined(), value::undefined()}};
 };
 
