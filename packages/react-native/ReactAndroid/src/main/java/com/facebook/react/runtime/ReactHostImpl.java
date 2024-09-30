@@ -238,16 +238,11 @@ public class ReactHostImpl implements ReactHost {
           log(method, "Execute");
           reactInstance.startSurface(surface);
           final BridgelessReactContext reactContext = getOrCreateReactContext();
-
-          reactContext.runOnJSQueueThread(
-            () -> {
-              for (ReactInstanceEventListener listener : mReactInstanceEventListeners) {
-                if (listener != null) {
-                  listener.onReactContextInitialized(reactContext);
-                }
-              }
+          for (ReactInstanceEventListener listener : mReactInstanceEventListeners) {
+            if (listener != null) {
+              listener.onReactContextInitialized(reactContext);
             }
-          );
+          }
         },
         mBGExecutor);
   }
