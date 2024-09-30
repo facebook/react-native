@@ -211,6 +211,9 @@ RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrollView, NSInt
           [(UIView *)currentFirstResponder isDescendantOfView:inputAccessoryView]) {
         // Text input view is within the inputAccessoryView.
         contentDiff = keyboardEndFrame.origin.y - keyboardBeginFrame.origin.y;
+      } else {
+        // Text input view is outside of the scroll view.
+        return;
       }
     } else {
       CGRect viewIntersection = CGRectIntersection(self.firstResponderFocus, keyboardEndFrame);
