@@ -20,9 +20,8 @@ WritableNativeMap::WritableNativeMap(folly::dynamic&& val)
   }
 }
 
-local_ref<WritableNativeMap::jhybriddata> WritableNativeMap::initHybrid(
-    alias_ref<jclass>) {
-  return makeCxxInstance();
+void WritableNativeMap::initHybrid(alias_ref<jhybridobject> jobj) {
+  setCxxInstance(jobj);
 }
 
 void WritableNativeMap::putNull(std::string key) {

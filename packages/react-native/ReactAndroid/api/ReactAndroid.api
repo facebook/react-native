@@ -744,7 +744,7 @@ public class com/facebook/react/bridge/ColorPropConverter {
 	public static fun resolveResourcePath (Landroid/content/Context;Ljava/lang/String;)Ljava/lang/Integer;
 }
 
-public class com/facebook/react/bridge/CxxCallbackImpl : com/facebook/react/bridge/Callback {
+public class com/facebook/react/bridge/CxxCallbackImpl : com/facebook/jni/HybridClassBase, com/facebook/react/bridge/Callback {
 	public fun invoke ([Ljava/lang/Object;)V
 }
 
@@ -1047,8 +1047,8 @@ public class com/facebook/react/bridge/ModuleSpec {
 	public static fun viewManagerSpec (Ljavax/inject/Provider;)Lcom/facebook/react/bridge/ModuleSpec;
 }
 
-public abstract class com/facebook/react/bridge/NativeArray : com/facebook/react/bridge/NativeArrayInterface {
-	protected fun <init> (Lcom/facebook/jni/HybridData;)V
+public abstract class com/facebook/react/bridge/NativeArray : com/facebook/jni/HybridClassBase, com/facebook/react/bridge/NativeArrayInterface {
+	protected fun <init> ()V
 	public fun toString ()Ljava/lang/String;
 }
 
@@ -1056,8 +1056,8 @@ public abstract interface class com/facebook/react/bridge/NativeArrayInterface {
 	public abstract fun toString ()Ljava/lang/String;
 }
 
-public abstract class com/facebook/react/bridge/NativeMap {
-	public fun <init> (Lcom/facebook/jni/HybridData;)V
+public abstract class com/facebook/react/bridge/NativeMap : com/facebook/jni/HybridClassBase {
+	public fun <init> ()V
 	public fun toString ()Ljava/lang/String;
 }
 
@@ -1485,7 +1485,7 @@ public abstract interface class com/facebook/react/bridge/ReadableMapKeySetItera
 }
 
 public class com/facebook/react/bridge/ReadableNativeArray : com/facebook/react/bridge/NativeArray, com/facebook/react/bridge/ReadableArray {
-	protected fun <init> (Lcom/facebook/jni/HybridData;)V
+	protected fun <init> ()V
 	public fun equals (Ljava/lang/Object;)Z
 	public synthetic fun getArray (I)Lcom/facebook/react/bridge/ReadableArray;
 	public fun getArray (I)Lcom/facebook/react/bridge/ReadableNativeArray;
@@ -1506,7 +1506,7 @@ public class com/facebook/react/bridge/ReadableNativeArray : com/facebook/react/
 }
 
 public class com/facebook/react/bridge/ReadableNativeMap : com/facebook/react/bridge/NativeMap, com/facebook/react/bridge/ReadableMap {
-	protected fun <init> (Lcom/facebook/jni/HybridData;)V
+	protected fun <init> ()V
 	public fun equals (Ljava/lang/Object;)Z
 	public fun getArray (Ljava/lang/String;)Lcom/facebook/react/bridge/ReadableArray;
 	public fun getBoolean (Ljava/lang/String;)Z
@@ -2717,7 +2717,7 @@ public abstract interface class com/facebook/react/fabric/ReactNativeConfig {
 public final class com/facebook/react/fabric/ReactNativeConfig$Companion {
 }
 
-public class com/facebook/react/fabric/StateWrapperImpl : com/facebook/react/uimanager/StateWrapper {
+public class com/facebook/react/fabric/StateWrapperImpl : com/facebook/jni/HybridClassBase, com/facebook/react/uimanager/StateWrapper {
 	public fun destroyState ()V
 	public fun getStateData ()Lcom/facebook/react/bridge/ReadableNativeMap;
 	public fun getStateDataMapBuffer ()Lcom/facebook/react/common/mapbuffer/ReadableMapBuffer;
@@ -2745,7 +2745,7 @@ public final class com/facebook/react/fabric/events/EventBeatManager : com/faceb
 	public fun onBatchEventDispatched ()V
 }
 
-public class com/facebook/react/fabric/events/EventEmitterWrapper {
+public class com/facebook/react/fabric/events/EventEmitterWrapper : com/facebook/jni/HybridClassBase {
 	public fun destroy ()V
 	public fun dispatch (Ljava/lang/String;Lcom/facebook/react/bridge/WritableMap;I)V
 	public fun dispatchEventSynchronously (Ljava/lang/String;Lcom/facebook/react/bridge/WritableMap;)V

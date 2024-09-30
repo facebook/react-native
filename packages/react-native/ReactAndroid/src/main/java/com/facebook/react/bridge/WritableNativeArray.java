@@ -9,7 +9,6 @@ package com.facebook.react.bridge;
 
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
-import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 
 /**
@@ -23,7 +22,7 @@ public class WritableNativeArray extends ReadableNativeArray implements Writable
   }
 
   public WritableNativeArray() {
-    super(initHybrid());
+    initHybrid();
   }
 
   @Override
@@ -60,7 +59,7 @@ public class WritableNativeArray extends ReadableNativeArray implements Writable
     pushNativeMap((ReadableNativeMap) map);
   }
 
-  private static native HybridData initHybrid();
+  private native void initHybrid();
 
   private native void pushNativeArray(ReadableNativeArray array);
 
