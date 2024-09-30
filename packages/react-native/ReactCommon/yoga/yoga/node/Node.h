@@ -156,6 +156,25 @@ class YG_EXPORT Node : public ::YGNode {
     return processedDimensions_[static_cast<size_t>(dimension)];
   }
 
+  FloatOptional getResolvedDimension(
+      Direction direction,
+      Dimension dimension,
+      float referenceLength) const {
+    FloatOptional value =
+        getProcessedDimension(dimension).resolve(referenceLength);
+    if (style_.boxSizing() == BoxSizing::BorderBox) {
+      return value;
+    }
+
+    FloatOptional dimensionPaddingAndBorder =
+        FloatOptional{style_.computePaddingAndBorderForDimension(
+            direction, dimension, referenceLength)};
+
+    return value +
+        (dimensionPaddingAndBorder.isDefined() ? dimensionPaddingAndBorder
+                                               : FloatOptional{0.0});
+  }
+
   // Setters
 
   void setContext(void* context) {
