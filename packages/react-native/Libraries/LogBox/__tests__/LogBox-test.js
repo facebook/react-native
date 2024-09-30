@@ -506,6 +506,45 @@ describe('LogBox', () => {
       'Custom: after installing for the second time',
     );
   });
+
+  it('registers errors with component stack as errors by default, when ExceptionManager is registered first', () => {
+    jest.spyOn(LogBoxData, 'checkWarningFilter');
+    jest.spyOn(LogBoxData, 'addLog');
+
+    ExceptionsManager.installConsoleErrorReporter();
+    LogBox.install();
+
+    console.error(
+      'HIT\n    at Text (/path/to/Component:30:175)\n    at DoesNotUseKey',
+    );
+
+    expect(LogBoxData.addLog).toBeCalledWith(
+      expect.objectContaining({level: 'error'}),
+    );
+    expect(LogBoxData.checkWarningFilter).toBeCalledWith(
+      'HIT\n    at Text (/path/to/Component:30:175)\n    at DoesNotUseKey',
+    );
+  });
+
+  it('registers errors with component stack as errors by default, when ExceptionManager is registered second', () => {
+    jest.spyOn(LogBoxData, 'checkWarningFilter');
+    jest.spyOn(LogBoxData, 'addLog');
+
+    LogBox.install();
+    ExceptionsManager.installConsoleErrorReporter();
+
+    console.error(
+      'HIT\n    at Text (/path/to/Component:30:175)\n    at DoesNotUseKey',
+    );
+
+    expect(LogBoxData.addLog).toBeCalledWith(
+      expect.objectContaining({level: 'error'}),
+    );
+    expect(LogBoxData.checkWarningFilter).toBeCalledWith(
+      'HIT\n    at Text (/path/to/Component:30:175)\n    at DoesNotUseKey',
+    );
+  });
+
   it('registers errors without component stack as errors by default, when ExceptionManager is registered first', () => {
     jest.spyOn(LogBoxData, 'checkWarningFilter');
     jest.spyOn(LogBoxData, 'addException');
