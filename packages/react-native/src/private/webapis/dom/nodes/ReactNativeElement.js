@@ -11,7 +11,7 @@
 // flowlint unsafe-getters-setters:off
 
 import type {
-  HostComponent,
+  HostInstance,
   INativeMethods,
   InternalInstanceHandle,
   MeasureInWindowOnSuccessCallback,
@@ -19,7 +19,6 @@ import type {
   MeasureOnSuccessCallback,
   ViewConfig,
 } from '../../../../../Libraries/Renderer/shims/ReactNativeTypes';
-import type {ElementRef} from 'react';
 
 import TextInputState from '../../../../../Libraries/Components/TextInput/TextInputState';
 import {getFabricUIManager} from '../../../../../Libraries/ReactNative/FabricUIManager';
@@ -143,7 +142,7 @@ export default class ReactNativeElement
   }
 
   measureLayout(
-    relativeToNativeNode: number | ElementRef<HostComponent<mixed>>,
+    relativeToNativeNode: number | HostInstance,
     onSuccess: MeasureLayoutOnSuccessCallback,
     onFail?: () => void /* currently unused */,
   ) {

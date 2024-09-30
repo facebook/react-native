@@ -86,9 +86,7 @@ export interface NativeMethods {
    * _Can also be called with a relativeNativeNodeHandle but is deprecated._
    */
   measureLayout(
-    relativeToNativeComponentRef:
-      | React.ElementRef<HostComponent<unknown>>
-      | number,
+    relativeToNativeComponentRef: HostInstance | number,
     onSuccess: MeasureLayoutOnSuccessCallback,
     onFail?: () => void,
   ): void;
@@ -122,6 +120,8 @@ export type NativeMethodsMixin = NativeMethods;
  */
 export type NativeMethodsMixinType = NativeMethods;
 
+export type HostInstance = NativeMethods;
+
 /**
  * Represents a native component, such as those returned from `requireNativeComponent`.
  *
@@ -135,5 +135,5 @@ export interface HostComponent<P>
     React.ComponentClass<P>,
     Exclude<keyof React.ComponentClass<P>, 'new'>
   > {
-  new (props: P, context?: any): React.Component<P> & Readonly<NativeMethods>;
+  new (props: P, context?: any): React.Component<P> & HostInstance;
 }

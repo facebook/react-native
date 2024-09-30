@@ -8,9 +8,8 @@
  * @format
  */
 
-import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
+import type {HostInstance} from '../../Renderer/shims/ReactNativeTypes';
 import type {EventSubscription} from '../../vendor/emitter/EventEmitter';
-import type {ElementRef} from 'react';
 
 import RCTDeviceEventEmitter from '../../EventEmitter/RCTDeviceEventEmitter';
 import {sendAccessibilityEvent} from '../../ReactNative/RendererProxy';
@@ -347,7 +346,7 @@ const AccessibilityInfo = {
    * Send a named accessibility event to a HostComponent.
    */
   sendAccessibilityEvent(
-    handle: ElementRef<HostComponent<mixed>>,
+    handle: HostInstance,
     eventType: AccessibilityEventTypes,
   ) {
     // iOS only supports 'focus' event types

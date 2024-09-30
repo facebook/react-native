@@ -71,7 +71,10 @@ import typeof I18nManager from './Libraries/ReactNative/I18nManager';
 import typeof {RootTagContext} from './Libraries/ReactNative/RootTag';
 import typeof UIManager from './Libraries/ReactNative/UIManager';
 import typeof ReactNative from './Libraries/Renderer/shims/ReactNative';
-import type {HostComponent as _HostComponentInternal} from './Libraries/Renderer/shims/ReactNativeTypes';
+import type {
+  HostComponent,
+  HostInstance,
+} from './Libraries/Renderer/shims/ReactNativeTypes';
 import typeof Settings from './Libraries/Settings/Settings';
 import typeof Share from './Libraries/Share/Share';
 import typeof {PlatformColor} from './Libraries/StyleSheet/PlatformColorValueTypes';
@@ -98,7 +101,7 @@ import typeof YellowBox from './Libraries/YellowBox/YellowBoxDeprecated';
 const warnOnce = require('./Libraries/Utilities/warnOnce');
 const invariant = require('invariant');
 
-export type HostComponent<T> = _HostComponentInternal<T>;
+export type {HostComponent, HostInstance};
 
 module.exports = {
   get registerCallableModule(): RegisterCallableModule {

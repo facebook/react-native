@@ -11,7 +11,7 @@ import type * as React from 'react';
 import {Constructor} from '../../../types/private/Utilities';
 import {TimerMixin} from '../../../types/private/TimerMixin';
 import {
-  HostComponent,
+  HostInstance,
   NativeMethods,
 } from '../../../types/public/ReactNativeTypes';
 import {ColorValue, StyleProp} from '../../StyleSheet/StyleSheet';
@@ -956,21 +956,21 @@ interface TextInputState {
    * Returns the ref of the currently focused text field, if one exists
    * If no text field is focused it returns null
    */
-  currentlyFocusedInput(): React.ElementRef<HostComponent<unknown>>;
+  currentlyFocusedInput(): HostInstance;
 
   /**
    * @param textField ref of the text field to focus
    * Focuses the specified text field
    * noop if the text field was already focused
    */
-  focusTextInput(textField?: React.ElementRef<HostComponent<unknown>>): void;
+  focusTextInput(textField?: HostInstance): void;
 
   /**
    * @param textField ref of the text field to focus
    * Unfocuses the specified text field
    * noop if it wasn't focused
    */
-  blurTextInput(textField?: React.ElementRef<HostComponent<unknown>>): void;
+  blurTextInput(textField?: HostInstance): void;
 }
 
 /**

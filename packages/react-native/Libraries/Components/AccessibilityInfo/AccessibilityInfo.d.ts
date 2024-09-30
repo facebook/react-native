@@ -7,8 +7,7 @@
  * @format
  */
 
-import type * as React from 'react';
-import {HostComponent} from '../../../types/public/ReactNativeTypes';
+import {HostInstance} from '../../../types/public/ReactNativeTypes';
 import {EmitterSubscription} from '../../vendor/emitter/EventEmitter';
 
 type AccessibilityChangeEventName =
@@ -148,7 +147,7 @@ export interface AccessibilityInfoStatic {
    */
   getRecommendedTimeoutMillis: (originalTimeout: number) => Promise<number>;
   sendAccessibilityEvent: (
-    handle: React.ElementRef<HostComponent<unknown>>,
+    handle: HostInstance,
     eventType: AccessibilityEventTypes,
   ) => void;
 }
