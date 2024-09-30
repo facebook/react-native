@@ -316,6 +316,9 @@ function emitPromise(
   ) {
     return wrapNullable(nullable, {
       type: 'PromiseTypeAnnotation',
+      elementType: {
+        type: 'VoidTypeAnnotation',
+      },
     });
   } else {
     try {
@@ -335,6 +338,9 @@ function emitPromise(
     } catch {
       return wrapNullable(nullable, {
         type: 'PromiseTypeAnnotation',
+        elementType: {
+          type: 'VoidTypeAnnotation',
+        },
       });
     }
   }

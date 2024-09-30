@@ -347,7 +347,7 @@ export interface NativeModuleTypeAliasTypeAnnotation {
 
 export interface NativeModulePromiseTypeAnnotation {
   readonly type: 'PromiseTypeAnnotation';
-  readonly elementType?: Nullable<NativeModuleBaseTypeAnnotation> | undefined;
+  readonly elementType: Nullable<NativeModuleBaseTypeAnnotation> | VoidTypeAnnotation;
 }
 
 export type UnionTypeAnnotationMemberType =
