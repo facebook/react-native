@@ -111,10 +111,6 @@ export interface NativeMethods {
    * Removes focus from an input or view. This is the opposite of `focus()`.
    */
   blur(): void;
-
-  refs: {
-    [key: string]: React.Component<any, any>;
-  };
 }
 
 /**
