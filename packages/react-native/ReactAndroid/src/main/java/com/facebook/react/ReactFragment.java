@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.modules.core.PermissionAwareActivity;
 import com.facebook.react.modules.core.PermissionListener;
 
@@ -69,9 +70,15 @@ public class ReactFragment extends Fragment implements PermissionAwareActivity {
     if (mainComponentName == null) {
       throw new IllegalStateException("Cannot loadApp if component name is null");
     }
-    mReactDelegate =
-        new ReactDelegate(
-            getActivity(), getReactNativeHost(), mainComponentName, launchOptions, fabricEnabled);
+    if (ReactFeatureFlags.enableBridgelessArchitecture) {
+      mReactDelegate =
+          new ReactDelegate(
+              getActivity(), getReactHost(), mainComponentName, launchOptions);
+    } else {
+      mReactDelegate =
+          new ReactDelegate(
+              getActivity(), getReactNativeHost(), mainComponentName, launchOptions, fabricEnabled);
+    }
   }
 
   /**
@@ -81,8 +88,34 @@ public class ReactFragment extends Fragment implements PermissionAwareActivity {
    * implement {@code ReactApplication} or you simply have a different mechanism for storing a
    * {@code ReactNativeHost}, e.g. as a static field somewhere.
    */
+  @Nullable
   protected ReactNativeHost getReactNativeHost() {
-    return ((ReactApplication) getActivity().getApplication()).getReactNativeHost();
+    ReactApplication application = ((ReactApplication) getActivity().getApplication());
+    if (application != null) {
+      return application.getReactNativeHost();
+    } else {
+      return null;
+    }
+  }
+
+  /**
+   * Get the {@link ReactHost} used by this app. By default, assumes {@link
+   * Activity#getApplication()} is an instance of {@link ReactApplication} and calls {@link
+   * ReactApplication#getReactHost()}. Override this method if your application class does not
+   * implement {@code ReactApplication} or you simply have a different mechanism for storing a
+   * {@code ReactHost}, e.g. as a static field somewhere.
+   *
+   * <p>If you're using Old Architecture/Bridge Mode, this method should return null as {@link
+   * ReactHost} is a Bridgeless-only concept.
+   */
+  @Nullable
+  protected ReactHost getReactHost() {
+    ReactApplication application = ((ReactApplication) getActivity().getApplication());
+    if (application != null) {
+      return application.getReactHost();
+    } else {
+      return null;
+    }
   }
 
   protected ReactDelegate getReactDelegate() {
