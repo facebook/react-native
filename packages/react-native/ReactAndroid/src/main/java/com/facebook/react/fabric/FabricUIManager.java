@@ -158,7 +158,7 @@ public class FabricUIManager
     FabricSoLoader.staticInit();
   }
 
-  @Nullable private Binding mBinding;
+  @Nullable private FabricUIManagerBinding mBinding;
   @NonNull private final ReactApplicationContext mReactApplicationContext;
   @NonNull private final MountingManager mMountingManager;
   @NonNull private final EventDispatcher mEventDispatcher;
@@ -872,7 +872,7 @@ public class FabricUIManager
     }
   }
 
-  public void setBinding(Binding binding) {
+  public void setBinding(FabricUIManagerBinding binding) {
     mBinding = binding;
   }
 
@@ -1271,7 +1271,7 @@ public class FabricUIManager
                   public void run() {
                     mMountNotificationScheduled = false;
 
-                    final @Nullable Binding binding = mBinding;
+                    final @Nullable FabricUIManagerBinding binding = mBinding;
                     if (binding == null || mDestroyed) {
                       mMountedSurfaceIds.clear();
                       return;

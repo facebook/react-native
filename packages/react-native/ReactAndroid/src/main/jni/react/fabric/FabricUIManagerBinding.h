@@ -35,16 +35,12 @@ class LayoutAnimationDriver;
 class ReactNativeConfig;
 class Scheduler;
 
-struct JBinding : public jni::JavaClass<JBinding> {
-  constexpr static auto kJavaDescriptor = "Lcom/facebook/react/fabric/Binding;";
-};
-
-class Binding : public jni::HybridClass<Binding, JBinding>,
-                public SchedulerDelegate,
-                public LayoutAnimationStatusDelegate {
+class FabricUIManagerBinding : public jni::HybridClass<FabricUIManagerBinding>,
+                               public SchedulerDelegate,
+                               public LayoutAnimationStatusDelegate {
  public:
   constexpr static const char* const kJavaDescriptor =
-      "Lcom/facebook/react/fabric/BindingImpl;";
+      "Lcom/facebook/react/fabric/FabricUIManagerBinding;";
 
   static void registerNatives();
 
@@ -65,7 +61,7 @@ class Binding : public jni::HybridClass<Binding, JBinding>,
   jni::local_ref<ReadableNativeMap::jhybridobject> getInspectorDataForInstance(
       jni::alias_ref<EventEmitterWrapper::javaobject> eventEmitterWrapper);
 
-  static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jclass>);
+  static void initHybrid(jni::alias_ref<jhybridobject> jobj);
 
   void installFabricUIManager(
       jni::alias_ref<JRuntimeExecutor::javaobject> runtimeExecutorHolder,
@@ -150,8 +146,6 @@ class Binding : public jni::HybridClass<Binding, JBinding>,
   void onAllAnimationsComplete() override;
 
   std::shared_ptr<LayoutAnimationDriver> animationDriver_;
-
-  BackgroundExecutor backgroundExecutor_;
 
   // Roots not created through ReactSurface (non-bridgeless) will store their
   // SurfaceHandler here, for other roots we keep a weak reference to the Java
