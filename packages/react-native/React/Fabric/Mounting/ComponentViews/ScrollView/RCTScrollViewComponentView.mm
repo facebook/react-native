@@ -11,7 +11,6 @@
 #import <React/RCTBridge+Private.h>
 #import <React/RCTConstants.h>
 #import <React/RCTScrollEvent.h>
-#import <React/UIResponder+React.h>
 
 #import <react/renderer/components/scrollview/RCTComponentViewHelpers.h>
 #import <react/renderer/components/scrollview/ScrollViewComponentDescriptor.h>
@@ -205,10 +204,8 @@ RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrollView, NSInt
                                                from:self
                                            forEvent:nil]) {
     if (CGRectEqualToRect(_firstResponderFocus, CGRectNull)) {
-      UIResponder *currentFirstResponder = [UIResponder reactCurrentFirstResponder];
-      UIView *inputAccessoryView = currentFirstResponder.inputAccessoryView;
-      if ([currentFirstResponder isKindOfClass:UIView.class] &&
-          [(UIView *)currentFirstResponder isDescendantOfView:inputAccessoryView]) {
+      UIView *inputAccessoryView = _firstResponderFocusView.inputAccessoryView;
+      if (inputAccessoryView) {
         // Text input view is within the inputAccessoryView.
         contentDiff = keyboardEndFrame.origin.y - keyboardBeginFrame.origin.y;
       } else {

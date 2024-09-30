@@ -7,7 +7,6 @@
 
 #import "RCTScrollView.h"
 
-#import <React/UIResponder+React.h>
 #import <UIKit/UIKit.h>
 
 #import "RCTConvert.h"
@@ -340,10 +339,8 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
       // Text field active region is below visible area with keyboard - update diff to bring into view
       contentDiff = endFrame.origin.y - focusEnd;
     } else {
-      UIResponder *currentFirstResponder = [UIResponder reactCurrentFirstResponder];
-      UIView *inputAccessoryView = currentFirstResponder.inputAccessoryView;
-      if ([currentFirstResponder isKindOfClass:UIView.class] &&
-          [(UIView *)currentFirstResponder isDescendantOfView:inputAccessoryView]) {
+      UIView *inputAccessoryView = _firstResponderFocusView.inputAccessoryView;
+      if (inputAccessoryView) {
         // Text input view is within the inputAccessoryView.
         contentDiff = endFrame.origin.y - beginFrame.origin.y;
       }
