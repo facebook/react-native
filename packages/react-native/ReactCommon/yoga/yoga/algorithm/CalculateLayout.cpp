@@ -2360,7 +2360,7 @@ void calculateLayout(
   const auto& style = node->style();
   if (node->hasDefiniteLength(Dimension::Width, ownerWidth)) {
     width =
-        (node->getProcessedDimension(dimension(FlexDirection::Row))
+        (node->getProcessedDimension(Dimension::Width)
              .resolve(ownerWidth)
              .unwrap() +
          node->style().computeMarginForAxis(FlexDirection::Row, ownerWidth));
@@ -2380,7 +2380,7 @@ void calculateLayout(
   SizingMode heightSizingMode = SizingMode::MaxContent;
   if (node->hasDefiniteLength(Dimension::Height, ownerHeight)) {
     height =
-        (node->getProcessedDimension(dimension(FlexDirection::Column))
+        (node->getProcessedDimension(Dimension::Height)
              .resolve(ownerHeight)
              .unwrap() +
          node->style().computeMarginForAxis(FlexDirection::Column, ownerWidth));
