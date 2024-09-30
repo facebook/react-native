@@ -139,8 +139,8 @@ const examples: Array<RNTesterModuleExample> = mixBlendModes.map(mode => ({
   render(): React.Node {
     return (
       <View style={styles.container} testID={`mix-blend-mode-test-${mode}`}>
-        <LayeredView style={{experimental_mixBlendMode: mode}} />
-        <LayeredImage style={{experimental_mixBlendMode: mode}} />
+        <LayeredView style={{mixBlendMode: mode}} />
+        <LayeredImage style={{mixBlendMode: mode}} />
       </View>
     );
   },
@@ -164,7 +164,7 @@ examples.push(
               fontSize: 20,
               fontWeight: 900,
               color: 'red',
-              experimental_mixBlendMode: 'overlay',
+              mixBlendMode: 'overlay',
             }}>
             'OVERLAY' BLENDING ON TEXT
           </Text>
@@ -182,7 +182,7 @@ examples.push(
           style={styles.duckContainer}
           testID="mix-blend-mode-test-spec-example-1">
           <Image
-            style={[styles.duck, {experimental_mixBlendMode: 'multiply'}]}
+            style={[styles.duck, {mixBlendMode: 'multiply'}]}
             source={require('../../assets/rubber-ducky.png')}
           />
         </View>
@@ -216,7 +216,7 @@ examples.push(
                   borderRadius: '100%',
                   position: 'absolute',
                   left: 55,
-                  experimental_mixBlendMode: 'difference',
+                  mixBlendMode: 'difference',
                 }}
               />
               <View
@@ -228,7 +228,7 @@ examples.push(
                   position: 'absolute',
                   top: 40,
                   left: 26,
-                  experimental_mixBlendMode: 'screen',
+                  mixBlendMode: 'screen',
                 }}
               />
             </View>
@@ -254,7 +254,7 @@ examples.push(
               style={[
                 styles.duck,
                 {
-                  experimental_mixBlendMode: 'difference',
+                  mixBlendMode: 'difference',
                   width: 150,
                   height: 165,
                 },
@@ -272,12 +272,8 @@ examples.push(
     render(): React.Node {
       return (
         <View style={styles.container}>
-          <LayeredViewWithState
-            style={{experimental_mixBlendMode: 'difference'}}
-          />
-          <LayeredImageWithState
-            style={{experimental_mixBlendMode: 'difference'}}
-          />
+          <LayeredViewWithState style={{mixBlendMode: 'difference'}} />
+          <LayeredImageWithState style={{mixBlendMode: 'difference'}} />
         </View>
       );
     },
@@ -291,13 +287,13 @@ examples.push(
         <View style={styles.container} testID="mix-blend-mode-test-filter">
           <LayeredView
             style={{
-              experimental_mixBlendMode: 'luminosity',
+              mixBlendMode: 'luminosity',
               filter: 'blur(3px)',
             }}
           />
           <LayeredImage
             style={{
-              experimental_mixBlendMode: 'difference',
+              mixBlendMode: 'difference',
               filter: 'hue-rotate(90deg)',
             }}
           />

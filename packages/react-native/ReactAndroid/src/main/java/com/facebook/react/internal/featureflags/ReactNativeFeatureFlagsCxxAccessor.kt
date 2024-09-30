@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<19dca512d93d689e927ee5988a43e646>>
+ * @generated SignedSource<<2f8da8585f1ac040bd26953263b08392>>
  */
 
 /**
@@ -27,7 +27,6 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
   private var destroyFabricSurfacesInReactInstanceManagerCache: Boolean? = null
   private var enableAlignItemsBaselineOnFabricIOSCache: Boolean? = null
   private var enableAndroidLineHeightCenteringCache: Boolean? = null
-  private var enableAndroidMixBlendModePropCache: Boolean? = null
   private var enableBackgroundStyleApplicatorCache: Boolean? = null
   private var enableBridgelessArchitectureCache: Boolean? = null
   private var enableCleanTextInputYogaNodeCache: Boolean? = null
@@ -134,15 +133,6 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enableAndroidLineHeightCentering()
       enableAndroidLineHeightCenteringCache = cached
-    }
-    return cached
-  }
-
-  override fun enableAndroidMixBlendModeProp(): Boolean {
-    var cached = enableAndroidMixBlendModePropCache
-    if (cached == null) {
-      cached = ReactNativeFeatureFlagsCxxInterop.enableAndroidMixBlendModeProp()
-      enableAndroidMixBlendModePropCache = cached
     }
     return cached
   }

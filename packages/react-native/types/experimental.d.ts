@@ -50,7 +50,7 @@ declare module '.' {
   }
 
   export interface ViewStyle {
-    experimental_mixBlendMode?: BlendMode | undefined;
+    mixBlendMode?: BlendMode | undefined;
     experimental_backgroundImage?:
       | ReadonlyArray<GradientValue>
       | string
