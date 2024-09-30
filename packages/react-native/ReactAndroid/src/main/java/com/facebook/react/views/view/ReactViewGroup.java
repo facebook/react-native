@@ -36,7 +36,6 @@ import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.config.ReactFeatureFlags;
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.touch.OnInterceptTouchEventListener;
 import com.facebook.react.touch.ReactHitSlopView;
 import com.facebook.react.touch.ReactInterceptingViewGroup;
@@ -784,10 +783,6 @@ public class ReactViewGroup extends ViewGroup
   }
 
   private boolean needsIsolatedLayer() {
-    if (!ReactNativeFeatureFlags.enableAndroidMixBlendModeProp()) {
-      return false;
-    }
-
     for (int i = 0; i < getChildCount(); i++) {
       if (getChildAt(i).getTag(R.id.mix_blend_mode) != null) {
         return true;

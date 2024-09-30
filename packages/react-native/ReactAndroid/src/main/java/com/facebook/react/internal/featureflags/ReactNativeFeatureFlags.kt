@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<bce0548a9e58299746c75aad95a25275>>
+ * @generated SignedSource<<70e68165b567734a2609b77656b2c183>>
  */
 
 /**
@@ -69,12 +69,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableAndroidLineHeightCentering(): Boolean = accessor.enableAndroidLineHeightCentering()
-
-  /**
-   * Enables mix-blend-mode prop on Android.
-   */
-  @JvmStatic
-  public fun enableAndroidMixBlendModeProp(): Boolean = accessor.enableAndroidMixBlendModeProp()
 
   /**
    * Use BackgroundStyleApplicator in place of other background/border drawing code

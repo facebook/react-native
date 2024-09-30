@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c9497d9d49c14ab537fd8b337f1c5836>>
+ * @generated SignedSource<<1bf690e95da1924a4cae50ec639a95df>>
  * @flow strict
  */
 
@@ -56,7 +56,6 @@ export type ReactNativeFeatureFlags = {
   destroyFabricSurfacesInReactInstanceManager: Getter<boolean>,
   enableAlignItemsBaselineOnFabricIOS: Getter<boolean>,
   enableAndroidLineHeightCentering: Getter<boolean>,
-  enableAndroidMixBlendModeProp: Getter<boolean>,
   enableBackgroundStyleApplicator: Getter<boolean>,
   enableBridgelessArchitecture: Getter<boolean>,
   enableCleanTextInputYogaNode: Getter<boolean>,
@@ -213,10 +212,6 @@ export const enableAlignItemsBaselineOnFabricIOS: Getter<boolean> = createNative
  * When enabled, custom line height calculation will be centered from top to bottom.
  */
 export const enableAndroidLineHeightCentering: Getter<boolean> = createNativeFlagGetter('enableAndroidLineHeightCentering', false);
-/**
- * Enables mix-blend-mode prop on Android.
- */
-export const enableAndroidMixBlendModeProp: Getter<boolean> = createNativeFlagGetter('enableAndroidMixBlendModeProp', false);
 /**
  * Use BackgroundStyleApplicator in place of other background/border drawing code
  */

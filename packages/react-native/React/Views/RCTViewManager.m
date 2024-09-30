@@ -446,7 +446,7 @@ RCT_CUSTOM_VIEW_PROPERTY(boxShadow, BoxShadowArray, RCTView)
   //   filtered by view configs.
 }
 
-RCT_CUSTOM_VIEW_PROPERTY(experimental_mixBlendMode, NSString *, RCTView)
+RCT_CUSTOM_VIEW_PROPERTY(mixBlendMode, NSString *, RCTView)
 {
   // Property is only to be used in the new renderer.
   // It is necessary to add it here, otherwise it gets

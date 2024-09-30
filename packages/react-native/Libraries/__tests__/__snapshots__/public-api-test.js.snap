@@ -8108,7 +8108,7 @@ export type ____ViewStyle_InternalCore = $ReadOnly<{
   cursor?: CursorValue,
   boxShadow?: $ReadOnlyArray<BoxShadowValue> | string,
   filter?: $ReadOnlyArray<FilterFunction> | string,
-  experimental_mixBlendMode?: ____BlendMode_Internal,
+  mixBlendMode?: ____BlendMode_Internal,
   experimental_backgroundImage?: $ReadOnlyArray<GradientValue> | string,
   isolation?: \\"auto\\" | \\"isolate\\",
 }>;
