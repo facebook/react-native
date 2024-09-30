@@ -163,6 +163,7 @@ val buildHermesC by
           ndkBuildJobs,
       )
       standardOutput = FileOutputStream("$buildDir/build-hermesc.log")
+      errorOutput = FileOutputStream("$buildDir/build-hermesc.error.log")
     }
 
 val prepareHeadersForPrefab by
