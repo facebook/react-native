@@ -453,6 +453,9 @@ const SIMPLE_NATIVE_MODULES: SchemaType = {
               type: 'FunctionTypeAnnotation',
               returnTypeAnnotation: {
                 type: 'PromiseTypeAnnotation',
+                elementType: {
+                  type: 'VoidTypeAnnotation',
+                },
               },
               params: [
                 {
@@ -472,6 +475,9 @@ const SIMPLE_NATIVE_MODULES: SchemaType = {
               type: 'FunctionTypeAnnotation',
               returnTypeAnnotation: {
                 type: 'PromiseTypeAnnotation',
+                elementType: {
+                  type: 'VoidTypeAnnotation',
+                },
               },
               params: [
                 {
@@ -1365,6 +1371,9 @@ const REAL_MODULE_EXAMPLE: SchemaType = {
               type: 'FunctionTypeAnnotation',
               returnTypeAnnotation: {
                 type: 'PromiseTypeAnnotation',
+                elementType: {
+                  type: 'VoidTypeAnnotation',
+                },
               },
               params: [
                 {
@@ -1385,6 +1394,9 @@ const REAL_MODULE_EXAMPLE: SchemaType = {
               type: 'FunctionTypeAnnotation',
               returnTypeAnnotation: {
                 type: 'PromiseTypeAnnotation',
+                elementType: {
+                  type: 'VoidTypeAnnotation',
+                },
               },
               params: [
                 {
@@ -1411,6 +1423,9 @@ const REAL_MODULE_EXAMPLE: SchemaType = {
               type: 'FunctionTypeAnnotation',
               returnTypeAnnotation: {
                 type: 'PromiseTypeAnnotation',
+                elementType: {
+                  type: 'VoidTypeAnnotation',
+                },
               },
               params: [
                 {

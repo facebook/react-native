@@ -53,6 +53,9 @@ const SCHEMA_WITH_TM_AND_FC: SchemaType = {
               type: 'FunctionTypeAnnotation',
               returnTypeAnnotation: {
                 type: 'PromiseTypeAnnotation',
+                elementType: {
+                  type: 'VoidTypeAnnotation',
+                },
               },
               params: [
                 {
