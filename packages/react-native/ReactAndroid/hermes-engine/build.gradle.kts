@@ -6,6 +6,7 @@
  */
 
 import de.undercouch.gradle.tasks.download.Download
+import java.io.FileOutputStream
 import org.apache.tools.ant.taskdefs.condition.Os
 
 plugins {
@@ -70,13 +71,7 @@ val hermesCOutputBinary = File("$buildDir/hermes/bin/hermesc")
 // and won't rebuilt hermesc unless those files are changing.
 val hermesBuildOutputFileTree =
     fileTree(hermesBuildDir.toString())
-        .include(
-            "**/*.make",
-            "**/*.cmake",
-            "**/*.marks",
-            "**/compiler_depends.ts",
-            "**/Makefile",
-            "**/link.txt")
+        .include("**/*.cmake", "**/*.marks", "**/compiler_depends.ts", "**/Makefile", "**/link.txt")
 
 var hermesVersion = "main"
 val hermesVersionFile = File(reactNativeRootDir, "sdks/.hermesversion")
@@ -96,6 +91,7 @@ val downloadHermes by
       src("https://github.com/facebook/hermes/tarball/${hermesVersion}")
       onlyIfModified(true)
       overwrite(true)
+      quiet(true)
       useETag("all")
       retries(5)
       dest(File(downloadsDir, "hermes.tar.gz"))
@@ -143,7 +139,9 @@ val configureBuildForHermes by
               ".",
               "-B",
               hermesBuildDir.toString(),
-              "-DJSI_DIR=" + jsiDir.absolutePath))
+              "-DJSI_DIR=" + jsiDir.absolutePath,
+          ))
+      standardOutput = FileOutputStream("$buildDir/configure-hermesc.log")
     }
 
 val buildHermesC by
@@ -153,15 +151,15 @@ val buildHermesC by
       inputs.files(hermesBuildOutputFileTree)
       outputs.file(hermesCOutputBinary)
       commandLine(
-          windowsAwareCommandLine(
-              cmakeBinaryPath,
-              "--build",
-              hermesBuildDir.toString(),
-              "--target",
-              "hermesc",
-              "-j",
-              ndkBuildJobs,
-          ))
+          cmakeBinaryPath,
+          "--build",
+          hermesBuildDir.toString(),
+          "--target",
+          "hermesc",
+          "-j",
+          ndkBuildJobs,
+      )
+      standardOutput = FileOutputStream("$buildDir/build-hermesc.log")
     }
 
 val prepareHeadersForPrefab by
@@ -221,6 +219,8 @@ android {
     externalNativeBuild {
       cmake {
         arguments(
+            "--log-level=ERROR",
+            "-Wno-dev",
             "-DHERMES_IS_ANDROID=True",
             "-DANDROID_STL=c++_shared",
             "-DANDROID_PIE=True",
