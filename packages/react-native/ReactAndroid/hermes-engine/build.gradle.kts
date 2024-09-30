@@ -134,6 +134,9 @@ val configureBuildForHermes by
       commandLine(
           windowsAwareCommandLine(
               cmakeBinaryPath,
+              // Suppress all warnings as this is the Hermes build and we can't fix them.
+              "--log-level=ERROR",
+              "-Wno-dev",
               if (Os.isFamily(Os.FAMILY_WINDOWS)) "-GNMake Makefiles" else "",
               "-S",
               ".",
