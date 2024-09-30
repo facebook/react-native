@@ -213,6 +213,11 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   public void setMixBlendMode(@NonNull T view, @Nullable String mixBlendMode) {
     if (ViewUtil.getUIManagerType(view) == UIManagerType.FABRIC) {
       view.setTag(R.id.mix_blend_mode, BlendModeHelper.parseMixBlendMode(mixBlendMode));
+      // We need to trigger drawChild for the parent ViewGroup which will set the
+      // mixBlendMode compositing on the child
+      if (view.getParent() instanceof View) {
+        ((View) view.getParent()).invalidate();
+      }
     }
   }
 
