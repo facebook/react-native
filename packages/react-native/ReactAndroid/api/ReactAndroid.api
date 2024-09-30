@@ -2578,39 +2578,6 @@ public abstract interface class com/facebook/react/devsupport/interfaces/StackFr
 	public abstract fun toJSON ()Lorg/json/JSONObject;
 }
 
-public abstract interface class com/facebook/react/fabric/Binding {
-	public abstract fun drainPreallocateViewsQueue ()V
-	public abstract fun driveCxxAnimations ()V
-	public abstract fun getInspectorDataForInstance (Lcom/facebook/react/fabric/events/EventEmitterWrapper;)Lcom/facebook/react/bridge/ReadableNativeMap;
-	public abstract fun register (Lcom/facebook/react/bridge/RuntimeExecutor;Lcom/facebook/react/bridge/RuntimeScheduler;Lcom/facebook/react/fabric/FabricUIManager;Lcom/facebook/react/fabric/events/EventBeatManager;Lcom/facebook/react/fabric/ComponentFactory;Lcom/facebook/react/fabric/ReactNativeConfig;)V
-	public abstract fun reportMount (I)V
-	public abstract fun setConstraints (IFFFFFFZZ)V
-	public abstract fun setPixelDensity (F)V
-	public abstract fun startSurface (ILjava/lang/String;Lcom/facebook/react/bridge/NativeMap;)V
-	public abstract fun startSurfaceWithConstraints (ILjava/lang/String;Lcom/facebook/react/bridge/NativeMap;FFFFFFZZ)V
-	public abstract fun startSurfaceWithSurfaceHandler (ILcom/facebook/react/fabric/SurfaceHandlerBinding;Z)V
-	public abstract fun stopSurface (I)V
-	public abstract fun stopSurfaceWithSurfaceHandler (Lcom/facebook/react/fabric/SurfaceHandlerBinding;)V
-	public abstract fun unregister ()V
-}
-
-public final class com/facebook/react/fabric/BindingImpl : com/facebook/react/fabric/Binding {
-	public fun <init> ()V
-	public fun drainPreallocateViewsQueue ()V
-	public fun driveCxxAnimations ()V
-	public fun getInspectorDataForInstance (Lcom/facebook/react/fabric/events/EventEmitterWrapper;)Lcom/facebook/react/bridge/ReadableNativeMap;
-	public fun register (Lcom/facebook/react/bridge/RuntimeExecutor;Lcom/facebook/react/bridge/RuntimeScheduler;Lcom/facebook/react/fabric/FabricUIManager;Lcom/facebook/react/fabric/events/EventBeatManager;Lcom/facebook/react/fabric/ComponentFactory;Lcom/facebook/react/fabric/ReactNativeConfig;)V
-	public fun reportMount (I)V
-	public fun setConstraints (IFFFFFFZZ)V
-	public fun setPixelDensity (F)V
-	public fun startSurface (ILjava/lang/String;Lcom/facebook/react/bridge/NativeMap;)V
-	public fun startSurfaceWithConstraints (ILjava/lang/String;Lcom/facebook/react/bridge/NativeMap;FFFFFFZZ)V
-	public fun startSurfaceWithSurfaceHandler (ILcom/facebook/react/fabric/SurfaceHandlerBinding;Z)V
-	public fun stopSurface (I)V
-	public fun stopSurfaceWithSurfaceHandler (Lcom/facebook/react/fabric/SurfaceHandlerBinding;)V
-	public fun unregister ()V
-}
-
 public final class com/facebook/react/fabric/ComponentFactory {
 	public fun <init> ()V
 }
@@ -2715,7 +2682,7 @@ public class com/facebook/react/fabric/FabricUIManager : com/facebook/react/brid
 	public fun resolveView (I)Landroid/view/View;
 	public fun sendAccessibilityEvent (II)V
 	public fun sendAccessibilityEventFromJS (IILjava/lang/String;)V
-	public fun setBinding (Lcom/facebook/react/fabric/Binding;)V
+	public fun setBinding (Lcom/facebook/react/fabric/FabricUIManagerBinding;)V
 	public fun setJSResponder (IIIZ)V
 	public fun startSurface (Landroid/view/View;Ljava/lang/String;Lcom/facebook/react/bridge/WritableMap;II)I
 	public fun startSurface (Lcom/facebook/react/interfaces/fabric/SurfaceHandler;Landroid/content/Context;Landroid/view/View;)V

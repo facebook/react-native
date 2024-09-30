@@ -47,7 +47,7 @@ public class FabricUIManagerProviderImpl implements UIManagerProvider {
 
     Systrace.beginSection(
         Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricUIManagerProviderImpl.registerBinding");
-    final Binding binding = new BindingImpl();
+    final FabricUIManagerBinding binding = new FabricUIManagerBinding();
 
     CatalystInstance catalystInstance = reactApplicationContext.getCatalystInstance();
 

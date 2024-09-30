@@ -8,7 +8,7 @@
 package com.facebook.react.fabric
 
 import android.annotation.SuppressLint
-import com.facebook.jni.HybridData
+import com.facebook.jni.HybridClassBase
 import com.facebook.proguard.annotations.DoNotStrip
 import com.facebook.react.bridge.NativeMap
 import com.facebook.react.bridge.ReadableNativeMap
@@ -21,8 +21,12 @@ import com.facebook.react.uimanager.PixelUtil.getDisplayMetricDensity
 
 @DoNotStrip
 @SuppressLint("MissingNativeLoadLibrary")
-public class BindingImpl : Binding {
-  @DoNotStrip @Suppress("NoHungarianNotation") private val mHybridData: HybridData = initHybrid()
+internal class FabricUIManagerBinding : HybridClassBase() {
+  init {
+    initHybrid()
+  }
+
+  private external fun initHybrid()
 
   private external fun installFabricUIManager(
       runtimeExecutor: RuntimeExecutor,
@@ -33,9 +37,9 @@ public class BindingImpl : Binding {
       reactNativeConfig: Any
   )
 
-  external override fun startSurface(surfaceId: Int, moduleName: String, initialProps: NativeMap)
+  public external fun startSurface(surfaceId: Int, moduleName: String, initialProps: NativeMap)
 
-  external override fun startSurfaceWithConstraints(
+  public external fun startSurfaceWithConstraints(
       surfaceId: Int,
       moduleName: String,
       initialProps: NativeMap,
@@ -49,19 +53,19 @@ public class BindingImpl : Binding {
       doLeftAndRightSwapInRTL: Boolean
   )
 
-  external override fun startSurfaceWithSurfaceHandler(
+  public external fun startSurfaceWithSurfaceHandler(
       surfaceId: Int,
       surfaceHandler: SurfaceHandlerBinding,
       isMountable: Boolean
   )
 
-  external override fun stopSurface(surfaceId: Int)
+  public external fun stopSurface(surfaceId: Int)
 
-  external override fun stopSurfaceWithSurfaceHandler(surfaceHandler: SurfaceHandlerBinding)
+  public external fun stopSurfaceWithSurfaceHandler(surfaceHandler: SurfaceHandlerBinding)
 
-  external override fun setPixelDensity(pointScaleFactor: Float)
+  public external fun setPixelDensity(pointScaleFactor: Float)
 
-  external override fun setConstraints(
+  public external fun setConstraints(
       surfaceId: Int,
       minWidth: Float,
       maxWidth: Float,
@@ -73,17 +77,17 @@ public class BindingImpl : Binding {
       doLeftAndRightSwapInRTL: Boolean
   )
 
-  external override fun driveCxxAnimations()
+  public external fun driveCxxAnimations()
 
-  external override fun drainPreallocateViewsQueue()
+  public external fun drainPreallocateViewsQueue()
 
-  external override fun reportMount(surfaceId: Int)
+  public external fun reportMount(surfaceId: Int)
 
-  external override fun getInspectorDataForInstance(
+  public external fun getInspectorDataForInstance(
       eventEmitterWrapper: EventEmitterWrapper?
   ): ReadableNativeMap?
 
-  override fun register(
+  public fun register(
       runtimeExecutor: RuntimeExecutor,
       runtimeScheduler: RuntimeScheduler,
       fabricUIManager: FabricUIManager,
@@ -104,7 +108,7 @@ public class BindingImpl : Binding {
 
   private external fun uninstallFabricUIManager()
 
-  override fun unregister() {
+  public fun unregister() {
     uninstallFabricUIManager()
   }
 
@@ -113,7 +117,5 @@ public class BindingImpl : Binding {
       FabricSoLoader.staticInit()
       MapBufferSoLoader.staticInit()
     }
-
-    @JvmStatic private external fun initHybrid(): HybridData
   }
 }

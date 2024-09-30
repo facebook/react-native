@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "Binding.h"
+#include "FabricUIManagerBinding.h"
 
 #include "AsyncEventBeat.h"
 #include "ComponentFactory.h"
@@ -34,13 +34,12 @@
 
 namespace facebook::react {
 
-jni::local_ref<Binding::jhybriddata> Binding::initHybrid(
-    jni::alias_ref<jclass>) {
-  return makeCxxInstance();
+void FabricUIManagerBinding::initHybrid(jni::alias_ref<jhybridobject> jobj) {
+  setCxxInstance(jobj);
 }
 
 // Thread-safe getter
-std::shared_ptr<Scheduler> Binding::getScheduler() {
+std::shared_ptr<Scheduler> FabricUIManagerBinding::getScheduler() {
   std::shared_lock lock(installMutex_);
   // Need to return a copy of the shared_ptr to make sure this is safe if called
   // concurrently with uninstallFabricUIManager
@@ -48,7 +47,7 @@ std::shared_ptr<Scheduler> Binding::getScheduler() {
 }
 
 jni::local_ref<ReadableNativeMap::jhybridobject>
-Binding::getInspectorDataForInstance(
+FabricUIManagerBinding::getInspectorDataForInstance(
     jni::alias_ref<EventEmitterWrapper::javaobject> eventEmitterWrapper) {
   auto scheduler = getScheduler();
   if (!scheduler) {
@@ -81,18 +80,18 @@ static bool getFeatureFlagValue(const char* name) {
   static const auto reactFeatureFlagsClass =
       jni::findClassStatic(kReactFeatureFlagsJavaDescriptor);
   const auto field = reactFeatureFlagsClass->getStaticField<jboolean>(name);
-  return reactFeatureFlagsClass->getStaticFieldValue(field);
+  return reactFeatureFlagsClass->getStaticFieldValue(field) != 0;
 }
 
-void Binding::setPixelDensity(float pointScaleFactor) {
+void FabricUIManagerBinding::setPixelDensity(float pointScaleFactor) {
   pointScaleFactor_ = pointScaleFactor;
 }
 
-void Binding::driveCxxAnimations() {
+void FabricUIManagerBinding::driveCxxAnimations() {
   getScheduler()->animationTick();
 }
 
-void Binding::drainPreallocateViewsQueue() {
+void FabricUIManagerBinding::drainPreallocateViewsQueue() {
   auto mountingManager = getMountingManager("drainPreallocateViewsQueue");
   if (!mountingManager) {
     return;
@@ -100,7 +99,7 @@ void Binding::drainPreallocateViewsQueue() {
   mountingManager->drainPreallocateViewsQueue();
 }
 
-void Binding::reportMount(SurfaceId surfaceId) {
+void FabricUIManagerBinding::reportMount(SurfaceId surfaceId) {
   if (ReactNativeFeatureFlags::
           fixMountingCoordinatorReportedPendingTransactionsOnAndroid()) {
     // This is a fix for `MountingCoordinator::hasPendingTransactions` on
@@ -141,7 +140,7 @@ void Binding::reportMount(SurfaceId surfaceId) {
 #pragma mark - Surface management
 
 // Used by bridgeless
-void Binding::startSurfaceWithSurfaceHandler(
+void FabricUIManagerBinding::startSurfaceWithSurfaceHandler(
     jint surfaceId,
     jni::alias_ref<SurfaceHandlerBinding::jhybridobject> surfaceHandlerBinding,
     jboolean isMountable) {
@@ -185,7 +184,7 @@ void Binding::startSurfaceWithSurfaceHandler(
 }
 
 // Used by non-bridgeless+Fabric
-void Binding::startSurface(
+void FabricUIManagerBinding::startSurface(
     jint surfaceId,
     jni::alias_ref<jstring> moduleName,
     NativeMap* initialProps) {
@@ -232,7 +231,7 @@ void Binding::startSurface(
 }
 
 // Used by non-bridgeless+Fabric
-void Binding::startSurfaceWithConstraints(
+void FabricUIManagerBinding::startSurfaceWithConstraints(
     jint surfaceId,
     jni::alias_ref<jstring> moduleName,
     NativeMap* initialProps,
@@ -267,12 +266,12 @@ void Binding::startSurfaceWithConstraints(
   context.viewportOffset =
       Point{offsetX / pointScaleFactor_, offsetY / pointScaleFactor_};
   context.pointScaleFactor = {pointScaleFactor_};
-  context.swapLeftAndRightInRTL = doLeftAndRightSwapInRTL;
+  context.swapLeftAndRightInRTL = doLeftAndRightSwapInRTL != 0;
   LayoutConstraints constraints = {};
   constraints.minimumSize = minimumSize;
   constraints.maximumSize = maximumSize;
   constraints.layoutDirection =
-      isRTL ? LayoutDirection::RightToLeft : LayoutDirection::LeftToRight;
+      isRTL != 0 ? LayoutDirection::RightToLeft : LayoutDirection::LeftToRight;
 
   auto surfaceHandler = SurfaceHandler{moduleName->toStdString(), surfaceId};
   surfaceHandler.setContextContainer(scheduler->getContextContainer());
@@ -303,7 +302,7 @@ void Binding::startSurfaceWithConstraints(
 }
 
 // Used by non-bridgeless+Fabric
-void Binding::stopSurface(jint surfaceId) {
+void FabricUIManagerBinding::stopSurface(jint surfaceId) {
   SystraceSection s("FabricUIManagerBinding::stopSurface");
   if (enableFabricLogs_) {
     LOG(WARNING) << "Binding::stopSurface() was called (address: " << this
@@ -342,7 +341,7 @@ void Binding::stopSurface(jint surfaceId) {
 }
 
 // Used by bridgeless
-void Binding::stopSurfaceWithSurfaceHandler(
+void FabricUIManagerBinding::stopSurfaceWithSurfaceHandler(
     jni::alias_ref<SurfaceHandlerBinding::jhybridobject>
         surfaceHandlerBinding) {
   SystraceSection s("FabricUIManagerBinding::stopSurfaceWithSurfaceHandler");
@@ -375,7 +374,7 @@ void Binding::stopSurfaceWithSurfaceHandler(
   mountingManager->onSurfaceStop(surfaceHandler.getSurfaceId());
 }
 
-void Binding::setConstraints(
+void FabricUIManagerBinding::setConstraints(
     jint surfaceId,
     jfloat minWidth,
     jfloat maxWidth,
@@ -402,7 +401,7 @@ void Binding::setConstraints(
   context.viewportOffset =
       Point{offsetX / pointScaleFactor_, offsetY / pointScaleFactor_};
   context.pointScaleFactor = {pointScaleFactor_};
-  context.swapLeftAndRightInRTL = doLeftAndRightSwapInRTL;
+  context.swapLeftAndRightInRTL = doLeftAndRightSwapInRTL != 0;
   LayoutConstraints constraints = {};
   constraints.minimumSize = minimumSize;
   constraints.maximumSize = maximumSize;
@@ -426,7 +425,7 @@ void Binding::setConstraints(
 
 #pragma mark - Install/uninstall java binding
 
-void Binding::installFabricUIManager(
+void FabricUIManagerBinding::installFabricUIManager(
     jni::alias_ref<JRuntimeExecutor::javaobject> runtimeExecutorHolder,
     jni::alias_ref<JRuntimeScheduler::javaobject> runtimeSchedulerHolder,
     jni::alias_ref<JFabricUIManager::javaobject> javaUIManager,
@@ -506,7 +505,7 @@ void Binding::installFabricUIManager(
       std::make_shared<Scheduler>(toolbox, animationDriver_.get(), this);
 }
 
-void Binding::uninstallFabricUIManager() {
+void FabricUIManagerBinding::uninstallFabricUIManager() {
   if (enableFabricLogs_) {
     LOG(WARNING) << "Binding::uninstallFabricUIManager() was called (address: "
                  << this << ").";
@@ -519,8 +518,8 @@ void Binding::uninstallFabricUIManager() {
   reactNativeConfig_ = nullptr;
 }
 
-std::shared_ptr<FabricMountingManager> Binding::getMountingManager(
-    const char* locationHint) {
+std::shared_ptr<FabricMountingManager>
+FabricUIManagerBinding::getMountingManager(const char* locationHint) {
   std::shared_lock lock(installMutex_);
   if (!mountingManager_) {
     LOG(ERROR) << "FabricMountingManager::" << locationHint
@@ -531,7 +530,7 @@ std::shared_ptr<FabricMountingManager> Binding::getMountingManager(
   return mountingManager_;
 }
 
-void Binding::schedulerDidFinishTransaction(
+void FabricUIManagerBinding::schedulerDidFinishTransaction(
     const MountingCoordinator::Shared& mountingCoordinator) {
   // We shouldn't be pulling the transaction here (which triggers diffing of
   // the trees to determine the mutations to run on the host platform),
@@ -560,8 +559,8 @@ void Binding::schedulerDidFinishTransaction(
   }
 }
 
-void Binding::schedulerShouldRenderTransactions(
-    const MountingCoordinator::Shared& mountingCoordinator) {
+void FabricUIManagerBinding::schedulerShouldRenderTransactions(
+    const MountingCoordinator::Shared& /* mountingCoordinator */) {
   auto mountingManager =
       getMountingManager("schedulerShouldRenderTransactions");
   if (!mountingManager) {
@@ -592,7 +591,7 @@ void Binding::schedulerShouldRenderTransactions(
   }
 }
 
-void Binding::schedulerDidRequestPreliminaryViewAllocation(
+void FabricUIManagerBinding::schedulerDidRequestPreliminaryViewAllocation(
     const ShadowNode& shadowNode) {
   auto mountingManager = getMountingManager("preallocateView");
   if (!mountingManager) {
@@ -614,7 +613,7 @@ void Binding::schedulerDidRequestPreliminaryViewAllocation(
   }
 }
 
-void Binding::schedulerDidDispatchCommand(
+void FabricUIManagerBinding::schedulerDidDispatchCommand(
     const ShadowView& shadowView,
     const std::string& commandName,
     const folly::dynamic& args) {
@@ -625,7 +624,7 @@ void Binding::schedulerDidDispatchCommand(
   mountingManager->dispatchCommand(shadowView, commandName, args);
 }
 
-void Binding::schedulerDidSendAccessibilityEvent(
+void FabricUIManagerBinding::schedulerDidSendAccessibilityEvent(
     const ShadowView& shadowView,
     const std::string& eventType) {
   auto mountingManager =
@@ -636,7 +635,7 @@ void Binding::schedulerDidSendAccessibilityEvent(
   mountingManager->sendAccessibilityEvent(shadowView, eventType);
 }
 
-void Binding::schedulerDidSetIsJSResponder(
+void FabricUIManagerBinding::schedulerDidSetIsJSResponder(
     const ShadowView& shadowView,
     bool isJSResponder,
     bool blockNativeResponder) {
@@ -648,7 +647,7 @@ void Binding::schedulerDidSetIsJSResponder(
       shadowView, isJSResponder, blockNativeResponder);
 }
 
-void Binding::onAnimationStarted() {
+void FabricUIManagerBinding::onAnimationStarted() {
   auto mountingManager = getMountingManager("onAnimationStarted");
   if (!mountingManager) {
     return;
@@ -656,7 +655,7 @@ void Binding::onAnimationStarted() {
   mountingManager->onAnimationStarted();
 }
 
-void Binding::onAllAnimationsComplete() {
+void FabricUIManagerBinding::onAllAnimationsComplete() {
   auto mountingManager = getMountingManager("onAnimationComplete");
   if (!mountingManager) {
     return;
@@ -664,31 +663,39 @@ void Binding::onAllAnimationsComplete() {
   mountingManager->onAllAnimationsComplete();
 }
 
-void Binding::registerNatives() {
+void FabricUIManagerBinding::registerNatives() {
   registerHybrid({
-      makeNativeMethod("initHybrid", Binding::initHybrid),
+      makeNativeMethod("initHybrid", FabricUIManagerBinding::initHybrid),
       makeNativeMethod(
-          "installFabricUIManager", Binding::installFabricUIManager),
-      makeNativeMethod("startSurface", Binding::startSurface),
+          "installFabricUIManager",
+          FabricUIManagerBinding::installFabricUIManager),
+      makeNativeMethod("startSurface", FabricUIManagerBinding::startSurface),
       makeNativeMethod(
-          "getInspectorDataForInstance", Binding::getInspectorDataForInstance),
+          "getInspectorDataForInstance",
+          FabricUIManagerBinding::getInspectorDataForInstance),
       makeNativeMethod(
-          "startSurfaceWithConstraints", Binding::startSurfaceWithConstraints),
-      makeNativeMethod("stopSurface", Binding::stopSurface),
-      makeNativeMethod("setConstraints", Binding::setConstraints),
-      makeNativeMethod("setPixelDensity", Binding::setPixelDensity),
-      makeNativeMethod("driveCxxAnimations", Binding::driveCxxAnimations),
+          "startSurfaceWithConstraints",
+          FabricUIManagerBinding::startSurfaceWithConstraints),
+      makeNativeMethod("stopSurface", FabricUIManagerBinding::stopSurface),
       makeNativeMethod(
-          "drainPreallocateViewsQueue", Binding::drainPreallocateViewsQueue),
-      makeNativeMethod("reportMount", Binding::reportMount),
+          "setConstraints", FabricUIManagerBinding::setConstraints),
       makeNativeMethod(
-          "uninstallFabricUIManager", Binding::uninstallFabricUIManager),
+          "setPixelDensity", FabricUIManagerBinding::setPixelDensity),
+      makeNativeMethod(
+          "driveCxxAnimations", FabricUIManagerBinding::driveCxxAnimations),
+      makeNativeMethod(
+          "drainPreallocateViewsQueue",
+          FabricUIManagerBinding::drainPreallocateViewsQueue),
+      makeNativeMethod("reportMount", FabricUIManagerBinding::reportMount),
+      makeNativeMethod(
+          "uninstallFabricUIManager",
+          FabricUIManagerBinding::uninstallFabricUIManager),
       makeNativeMethod(
           "startSurfaceWithSurfaceHandler",
-          Binding::startSurfaceWithSurfaceHandler),
+          FabricUIManagerBinding::startSurfaceWithSurfaceHandler),
       makeNativeMethod(
           "stopSurfaceWithSurfaceHandler",
-          Binding::stopSurfaceWithSurfaceHandler),
+          FabricUIManagerBinding::stopSurfaceWithSurfaceHandler),
   });
 }
 
