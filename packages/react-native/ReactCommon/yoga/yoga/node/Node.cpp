@@ -9,6 +9,7 @@
 #include <cstddef>
 #include <iostream>
 
+#include <yoga/algorithm/FlexDirection.h>
 #include <yoga/debug/AssertFatal.h>
 #include <yoga/debug/Log.h>
 #include <yoga/node/Node.h>
@@ -281,7 +282,7 @@ void Node::setPosition(
       crossAxisTrailingEdge);
 }
 
-Style::Length Node::resolveFlexBasisPtr() const {
+Style::Length Node::processFlexBasis() const {
   Style::Length flexBasis = style_.flexBasis();
   if (flexBasis.unit() != Unit::Auto && flexBasis.unit() != Unit::Undefined) {
     return flexBasis;
@@ -290,6 +291,25 @@ Style::Length Node::resolveFlexBasisPtr() const {
     return config_->useWebDefaults() ? value::ofAuto() : value::points(0);
   }
   return value::ofAuto();
+}
+
+FloatOptional Node::resolveFlexBasis(
+    Direction direction,
+    FlexDirection flexDirection,
+    float referenceLength) const {
+  FloatOptional value = processFlexBasis().resolve(referenceLength);
+  if (style_.boxSizing() == BoxSizing::BorderBox) {
+    return value;
+  }
+
+  Dimension dim = dimension(flexDirection);
+  FloatOptional dimensionPaddingAndBorder =
+      FloatOptional{style_.computePaddingAndBorderForDimension(
+          direction, dim, referenceLength)};
+
+  return value +
+      (dimensionPaddingAndBorder.isDefined() ? dimensionPaddingAndBorder
+                                             : FloatOptional{0.0});
 }
 
 void Node::processDimensions() {
