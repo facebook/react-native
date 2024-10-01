@@ -6125,12 +6125,12 @@ public final class com/facebook/react/uimanager/style/BoxShadow {
 	public final fun getOffsetY ()F
 	public final fun getSpreadDistance ()Ljava/lang/Float;
 	public fun hashCode ()I
-	public static final fun parse (Lcom/facebook/react/bridge/ReadableMap;)Lcom/facebook/react/uimanager/style/BoxShadow;
+	public static final fun parse (Lcom/facebook/react/bridge/ReadableMap;Landroid/content/Context;)Lcom/facebook/react/uimanager/style/BoxShadow;
 	public fun toString ()Ljava/lang/String;
 }
 
 public final class com/facebook/react/uimanager/style/BoxShadow$Companion {
-	public final fun parse (Lcom/facebook/react/bridge/ReadableMap;)Lcom/facebook/react/uimanager/style/BoxShadow;
+	public final fun parse (Lcom/facebook/react/bridge/ReadableMap;Landroid/content/Context;)Lcom/facebook/react/uimanager/style/BoxShadow;
 }
 
 public final class com/facebook/react/uimanager/style/ComputedBorderRadius {
