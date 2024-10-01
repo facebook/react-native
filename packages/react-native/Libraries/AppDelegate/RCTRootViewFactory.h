@@ -175,8 +175,7 @@ typedef void (^RCTHostLoadSourceWithProgressBlock)(
 @property (nonatomic, nullable) RCTHostLoadSourceWithProgressBlock loadSourceWithProgressForHost;
 
 /**
- * Similar to loadSourceForHost:onProgress:onComplete: but without progress
- * reporting.
+ * Similar to loadSourceWithProgressForHost but without progress reporting.
  */
 @property (nonatomic, nullable) RCTHostLoadSourceBlock loadSourceForHost;
 
