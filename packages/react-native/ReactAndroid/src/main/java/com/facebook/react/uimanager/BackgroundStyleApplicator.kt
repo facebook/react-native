@@ -255,7 +255,7 @@ public object BackgroundStyleApplicator {
 
     val shadowStyles = mutableListOf<BoxShadow>()
     for (i in 0..<shadows.size()) {
-      shadowStyles.add(checkNotNull(BoxShadow.parse(shadows.getMap(i))))
+      shadowStyles.add(checkNotNull(BoxShadow.parse(shadows.getMap(i), view.context)))
     }
     BackgroundStyleApplicator.setBoxShadow(view, shadowStyles)
   }
