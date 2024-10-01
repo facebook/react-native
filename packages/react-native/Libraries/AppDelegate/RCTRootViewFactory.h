@@ -37,11 +37,6 @@ typedef void (^RCTHostDidReceiveJSErrorStackBlock)(
     NSString *message,
     NSUInteger exceptionId,
     BOOL isFatal);
-typedef void (^RCTHostLoadSourceBlock)(RCTHost *host, RCTSourceLoadBlock loadCallback);
-typedef void (^RCTHostLoadSourceWithProgressBlock)(
-    RCTHost *host,
-    RCTSourceLoadProgressBlock onProgress,
-    RCTSourceLoadBlock loadCallback);
 
 #pragma mark - RCTRootViewFactory Configuration
 @interface RCTRootViewFactoryConfiguration : NSObject
@@ -168,21 +163,6 @@ typedef void (^RCTHostLoadSourceWithProgressBlock)(
  */
 @property (nonatomic, nullable) RCTHostDidReceiveJSErrorStackBlock hostDidReceiveJSErrorStackBlock;
 
-/**
- * Called when the `RCTInstance` will start loading the bundle.
- * @parameter: host - The `RCTHost` that owns the `RCTInstance`.
- * @parameter: loadCallback
- */
-@property (nonatomic, nullable) RCTHostLoadSourceBlock loadSourceForHost;
-
-/**
- * Called when the `RCTInstance` will start loading the bundle.
- * @parameter: host - The `RCTHost` that owns the `RCTInstance`.
- * @parameter: onProgress - block called with progress updates.
- * @parameter: loadCallback
- */
-@property (nonatomic, nullable) RCTHostLoadSourceWithProgressBlock loadSourceWithProgressForHost;
-
 @end
 
 #pragma mark - RCTRootViewFactory
@@ -201,7 +181,6 @@ typedef void (^RCTHostLoadSourceWithProgressBlock)(
 @property (nonatomic, strong, nullable) RCTBridge *bridge;
 @property (nonatomic, strong, nullable) RCTHost *reactHost;
 @property (nonatomic, strong, nullable) RCTSurfacePresenterBridgeAdapter *bridgeAdapter;
-@property (nonatomic, strong, nonnull) RCTRootViewFactoryConfiguration *configuration;
 
 - (instancetype)initWithConfiguration:(RCTRootViewFactoryConfiguration *)configuration
         andTurboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate> _Nullable)turboModuleManagerDelegate;

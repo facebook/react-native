@@ -238,7 +238,7 @@ typedef struct {
       NSMutableDictionary<NSString *, id<RCTBridgeModule>> *legacyInitializedModules = [NSMutableDictionary new];
 
       if ([_delegate respondsToSelector:@selector(extraModulesForBridge:)]) {
-        for (id<RCTBridgeModule> module in [_delegate extraModulesForBridge:nil]) {
+        for (id<RCTBridgeModule> module in [_delegate extraModulesForBridge:bridge ? (id)bridge : (id)bridgeProxy]) {
           if (!isTurboModuleInstance(module)) {
             [legacyInitializedModules setObject:module forKey:RCTBridgeModuleNameForClass([module class])];
           }
