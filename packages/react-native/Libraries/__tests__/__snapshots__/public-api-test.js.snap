@@ -427,7 +427,6 @@ export type AnimationConfig = {
 declare export default class Animation {
   __active: boolean;
   __isInteraction: boolean;
-  __onEnd: ?EndCallback;
   __iterations: number;
   __isLooping: ?boolean;
   _nativeId: number;
