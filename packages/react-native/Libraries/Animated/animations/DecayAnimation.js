@@ -81,12 +81,6 @@ export default class DecayAnimation extends Animation {
   ): void {
     super.start(fromValue, onUpdate, onEnd, previousAnimation, animatedValue);
 
-    this.__active = true;
-    this._lastValue = fromValue;
-    this._fromValue = fromValue;
-    this._onUpdate = onUpdate;
-    this._startTime = Date.now();
-
     if (!this._useNativeDriver && animatedValue.__isNative === true) {
       throw new Error(
         'Attempting to run JS driven animation on animated node ' +
@@ -94,6 +88,12 @@ export default class DecayAnimation extends Animation {
           'animation with `useNativeDriver: true`',
       );
     }
+
+    this.__active = true;
+    this._lastValue = fromValue;
+    this._fromValue = fromValue;
+    this._onUpdate = onUpdate;
+    this._startTime = Date.now();
 
     if (this._useNativeDriver) {
       this.__startNativeAnimation(animatedValue);
