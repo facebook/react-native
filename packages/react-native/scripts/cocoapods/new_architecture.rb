@@ -99,6 +99,7 @@ class NewArchitectureHelper
 
 
         ReactNativePodsUtils.add_flag_to_map_with_inheritance(current_config, "OTHER_CPLUSPLUSFLAGS", self.computeFlags(new_arch_enabled))
+        ReactNativePodsUtils.add_flag_to_map_with_inheritance(current_config, "OTHER_SWIFT_FLAGS", new_arch_enabled ? " -DRCT_NEW_ARCH_ENABLED" : "")
 
         spec.dependency "React-RCTFabric" # This is for Fabric Component
         spec.dependency "ReactCodegen"
