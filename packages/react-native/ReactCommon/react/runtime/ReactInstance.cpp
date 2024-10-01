@@ -255,6 +255,12 @@ void ReactInstance::callFunctionOnModule(
     const std::string& moduleName,
     const std::string& methodName,
     folly::dynamic&& args) {
+  if (bufferedRuntimeExecutor_ == nullptr) {
+    LOG(ERROR)
+        << "Calling callFunctionOnModule with null BufferedRuntimeExecutor";
+    return;
+  }
+
   bufferedRuntimeExecutor_->execute([this,
                                      moduleName = moduleName,
                                      methodName = methodName,
