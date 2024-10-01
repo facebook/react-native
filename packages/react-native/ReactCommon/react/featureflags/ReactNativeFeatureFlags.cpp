@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4efee607ab3716723debee8a451604ef>>
+ * @generated SignedSource<<844f004ddce387b7e65bd6e551f566fa>>
  */
 
 /**
@@ -47,10 +47,6 @@ bool ReactNativeFeatureFlags::enableAlignItemsBaselineOnFabricIOS() {
 
 bool ReactNativeFeatureFlags::enableAndroidLineHeightCentering() {
   return getAccessor().enableAndroidLineHeightCentering();
-}
-
-bool ReactNativeFeatureFlags::enableBackgroundStyleApplicator() {
-  return getAccessor().enableBackgroundStyleApplicator();
 }
 
 bool ReactNativeFeatureFlags::enableBridgelessArchitecture() {
@@ -199,10 +195,6 @@ bool ReactNativeFeatureFlags::useModernRuntimeScheduler() {
 
 bool ReactNativeFeatureFlags::useNativeViewConfigsInBridgelessMode() {
   return getAccessor().useNativeViewConfigsInBridgelessMode();
-}
-
-bool ReactNativeFeatureFlags::useNewReactImageViewBackgroundDrawing() {
-  return getAccessor().useNewReactImageViewBackgroundDrawing();
 }
 
 bool ReactNativeFeatureFlags::useOptimisedViewPreallocationOnAndroid() {

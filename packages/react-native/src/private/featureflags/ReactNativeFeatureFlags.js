@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e161b67cb919ad7e2e67ddcb3c501adb>>
+ * @generated SignedSource<<eae8bf8e1f529a034a65377353cda539>>
  * @flow strict
  */
 
@@ -56,7 +56,6 @@ export type ReactNativeFeatureFlags = {
   destroyFabricSurfacesInReactInstanceManager: Getter<boolean>,
   enableAlignItemsBaselineOnFabricIOS: Getter<boolean>,
   enableAndroidLineHeightCentering: Getter<boolean>,
-  enableBackgroundStyleApplicator: Getter<boolean>,
   enableBridgelessArchitecture: Getter<boolean>,
   enableCleanTextInputYogaNode: Getter<boolean>,
   enableDeletionOfUnmountedViews: Getter<boolean>,
@@ -94,7 +93,6 @@ export type ReactNativeFeatureFlags = {
   useImmediateExecutorInAndroidBridgeless: Getter<boolean>,
   useModernRuntimeScheduler: Getter<boolean>,
   useNativeViewConfigsInBridgelessMode: Getter<boolean>,
-  useNewReactImageViewBackgroundDrawing: Getter<boolean>,
   useOptimisedViewPreallocationOnAndroid: Getter<boolean>,
   useOptimizedEventBatchingOnAndroid: Getter<boolean>,
   useRuntimeShadowNodeReferenceUpdate: Getter<boolean>,
@@ -211,10 +209,6 @@ export const enableAlignItemsBaselineOnFabricIOS: Getter<boolean> = createNative
  * When enabled, custom line height calculation will be centered from top to bottom.
  */
 export const enableAndroidLineHeightCentering: Getter<boolean> = createNativeFlagGetter('enableAndroidLineHeightCentering', false);
-/**
- * Use BackgroundStyleApplicator in place of other background/border drawing code
- */
-export const enableBackgroundStyleApplicator: Getter<boolean> = createNativeFlagGetter('enableBackgroundStyleApplicator', true);
 /**
  * Feature flag to enable the new bridgeless architecture. Note: Enabling this will force enable the following flags: `useTurboModules` & `enableFabricRenderer.
  */
@@ -363,10 +357,6 @@ export const useModernRuntimeScheduler: Getter<boolean> = createNativeFlagGetter
  * When enabled, the native view configs are used in bridgeless mode.
  */
 export const useNativeViewConfigsInBridgelessMode: Getter<boolean> = createNativeFlagGetter('useNativeViewConfigsInBridgelessMode', false);
-/**
- * Use shared background drawing code for ReactImageView instead of using Fresco to manipulate the bitmap
- */
-export const useNewReactImageViewBackgroundDrawing: Getter<boolean> = createNativeFlagGetter('useNewReactImageViewBackgroundDrawing', false);
 /**
  * Moves more of the work in view preallocation to the main thread to free up JS thread.
  */

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e1352f772c20f824f636f1f73a541444>>
+ * @generated SignedSource<<f5ccd2e9c8f13f45e9dec1dc3fc2c325>>
  */
 
 /**
@@ -36,8 +36,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enableAlignItemsBaselineOnFabricIOS(): Boolean = true
 
   override fun enableAndroidLineHeightCentering(): Boolean = false
-
-  override fun enableBackgroundStyleApplicator(): Boolean = true
 
   override fun enableBridgelessArchitecture(): Boolean = false
 
@@ -112,8 +110,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun useModernRuntimeScheduler(): Boolean = false
 
   override fun useNativeViewConfigsInBridgelessMode(): Boolean = false
-
-  override fun useNewReactImageViewBackgroundDrawing(): Boolean = false
 
   override fun useOptimisedViewPreallocationOnAndroid(): Boolean = false
 
