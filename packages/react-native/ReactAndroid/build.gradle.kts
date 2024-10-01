@@ -360,8 +360,6 @@ val prepareGtest by
       into(File(thirdPartyNdkDir, "googletest"))
     }
 
-// Prepare glog sources to be compiled, this task will perform steps that normally should've been
-// executed by automake. This way we can avoid dependencies on make/automake
 val prepareGlog by
     tasks.registering(PrepareGlogTask::class) {
       dependsOn(if (dependenciesPath != null) emptyList() else listOf(downloadGlog))
