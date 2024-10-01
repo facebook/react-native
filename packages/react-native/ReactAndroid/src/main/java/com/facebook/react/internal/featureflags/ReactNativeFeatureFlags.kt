@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<346573dc832f9de6a2e29a4cfde558c5>>
+ * @generated SignedSource<<fd4f2e6d21254dbbecdf7d71135d55a1>>
  */
 
 /**
@@ -69,12 +69,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableAndroidLineHeightCentering(): Boolean = accessor.enableAndroidLineHeightCentering()
-
-  /**
-   * Use BackgroundStyleApplicator in place of other background/border drawing code
-   */
-  @JvmStatic
-  public fun enableBackgroundStyleApplicator(): Boolean = accessor.enableBackgroundStyleApplicator()
 
   /**
    * Feature flag to enable the new bridgeless architecture. Note: Enabling this will force enable the following flags: `useTurboModules` & `enableFabricRenderer.
@@ -297,12 +291,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun useNativeViewConfigsInBridgelessMode(): Boolean = accessor.useNativeViewConfigsInBridgelessMode()
-
-  /**
-   * Use shared background drawing code for ReactImageView instead of using Fresco to manipulate the bitmap
-   */
-  @JvmStatic
-  public fun useNewReactImageViewBackgroundDrawing(): Boolean = accessor.useNewReactImageViewBackgroundDrawing()
 
   /**
    * Moves more of the work in view preallocation to the main thread to free up JS thread.

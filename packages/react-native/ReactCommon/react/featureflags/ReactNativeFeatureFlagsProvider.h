@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ddd6b6977c8ee0e40d710947b4a23c3c>>
+ * @generated SignedSource<<317288fd521f74c3542457b991373662>>
  */
 
 /**
@@ -32,7 +32,6 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool destroyFabricSurfacesInReactInstanceManager() = 0;
   virtual bool enableAlignItemsBaselineOnFabricIOS() = 0;
   virtual bool enableAndroidLineHeightCentering() = 0;
-  virtual bool enableBackgroundStyleApplicator() = 0;
   virtual bool enableBridgelessArchitecture() = 0;
   virtual bool enableCleanTextInputYogaNode() = 0;
   virtual bool enableDeletionOfUnmountedViews() = 0;
@@ -70,7 +69,6 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool useImmediateExecutorInAndroidBridgeless() = 0;
   virtual bool useModernRuntimeScheduler() = 0;
   virtual bool useNativeViewConfigsInBridgelessMode() = 0;
-  virtual bool useNewReactImageViewBackgroundDrawing() = 0;
   virtual bool useOptimisedViewPreallocationOnAndroid() = 0;
   virtual bool useOptimizedEventBatchingOnAndroid() = 0;
   virtual bool useRuntimeShadowNodeReferenceUpdate() = 0;

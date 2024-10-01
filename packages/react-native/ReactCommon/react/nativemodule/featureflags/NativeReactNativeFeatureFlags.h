@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<447e801fe9b49d2413d8bfbc106019a0>>
+ * @generated SignedSource<<9a548d27906a420f179124f97197c25f>>
  */
 
 /**
@@ -48,8 +48,6 @@ class NativeReactNativeFeatureFlags
   bool enableAlignItemsBaselineOnFabricIOS(jsi::Runtime& runtime);
 
   bool enableAndroidLineHeightCentering(jsi::Runtime& runtime);
-
-  bool enableBackgroundStyleApplicator(jsi::Runtime& runtime);
 
   bool enableBridgelessArchitecture(jsi::Runtime& runtime);
 
@@ -124,8 +122,6 @@ class NativeReactNativeFeatureFlags
   bool useModernRuntimeScheduler(jsi::Runtime& runtime);
 
   bool useNativeViewConfigsInBridgelessMode(jsi::Runtime& runtime);
-
-  bool useNewReactImageViewBackgroundDrawing(jsi::Runtime& runtime);
 
   bool useOptimisedViewPreallocationOnAndroid(jsi::Runtime& runtime);
 

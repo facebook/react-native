@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<001d0b39664b190385442ca8661a08a8>>
+ * @generated SignedSource<<e8b849d614b943b044df611371c0d891>>
  */
 
 /**
@@ -53,10 +53,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
 
   bool enableAndroidLineHeightCentering() override {
     return false;
-  }
-
-  bool enableBackgroundStyleApplicator() override {
-    return true;
   }
 
   bool enableBridgelessArchitecture() override {
@@ -204,10 +200,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool useNativeViewConfigsInBridgelessMode() override {
-    return false;
-  }
-
-  bool useNewReactImageViewBackgroundDrawing() override {
     return false;
   }
 

@@ -27,7 +27,6 @@ import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.ReactConstants;
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.Role;
 import com.facebook.react.uimanager.annotations.ReactProp;
@@ -789,33 +788,25 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
 
   @ReactProp(name = ViewProps.OUTLINE_COLOR, customType = "Color")
   public void setOutlineColor(T view, @Nullable Integer color) {
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      BackgroundStyleApplicator.setOutlineColor(view, color);
-    }
+    BackgroundStyleApplicator.setOutlineColor(view, color);
   }
 
   @ReactProp(name = ViewProps.OUTLINE_OFFSET)
   public void setOutlineOffset(T view, float offset) {
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      BackgroundStyleApplicator.setOutlineOffset(view, offset);
-    }
+    BackgroundStyleApplicator.setOutlineOffset(view, offset);
   }
 
   @ReactProp(name = ViewProps.OUTLINE_STYLE)
   public void setOutlineStyle(T view, @Nullable String outlineStyle) {
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      @Nullable
-      OutlineStyle parsedOutlineStyle =
-          outlineStyle == null ? null : OutlineStyle.fromString(outlineStyle);
-      BackgroundStyleApplicator.setOutlineStyle(view, parsedOutlineStyle);
-    }
+    @Nullable
+    OutlineStyle parsedOutlineStyle =
+        outlineStyle == null ? null : OutlineStyle.fromString(outlineStyle);
+    BackgroundStyleApplicator.setOutlineStyle(view, parsedOutlineStyle);
   }
 
   @ReactProp(name = ViewProps.OUTLINE_WIDTH)
   public void setOutlineWidth(T view, float width) {
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      BackgroundStyleApplicator.setOutlineWidth(view, width);
-    }
+    BackgroundStyleApplicator.setOutlineWidth(view, width);
   }
 
   private void logUnsupportedPropertyWarning(String propName) {

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d2afeedcfb81ca31bd7f0c19fd406ae6>>
+ * @generated SignedSource<<284402d1a83bfc5e8ae0a4619c61e130>>
  */
 
 /**
@@ -71,11 +71,6 @@ class ReactNativeFeatureFlags {
    * When enabled, custom line height calculation will be centered from top to bottom.
    */
   RN_EXPORT static bool enableAndroidLineHeightCentering();
-
-  /**
-   * Use BackgroundStyleApplicator in place of other background/border drawing code
-   */
-  RN_EXPORT static bool enableBackgroundStyleApplicator();
 
   /**
    * Feature flag to enable the new bridgeless architecture. Note: Enabling this will force enable the following flags: `useTurboModules` & `enableFabricRenderer.
@@ -261,11 +256,6 @@ class ReactNativeFeatureFlags {
    * When enabled, the native view configs are used in bridgeless mode.
    */
   RN_EXPORT static bool useNativeViewConfigsInBridgelessMode();
-
-  /**
-   * Use shared background drawing code for ReactImageView instead of using Fresco to manipulate the bitmap
-   */
-  RN_EXPORT static bool useNewReactImageViewBackgroundDrawing();
 
   /**
    * Moves more of the work in view preallocation to the main thread to free up JS thread.

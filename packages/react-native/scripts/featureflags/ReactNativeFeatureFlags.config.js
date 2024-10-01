@@ -98,15 +98,6 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'experimentation',
       },
     },
-    enableBackgroundStyleApplicator: {
-      defaultValue: true,
-      metadata: {
-        dateAdded: '2024-07-29',
-        description:
-          'Use BackgroundStyleApplicator in place of other background/border drawing code',
-        purpose: 'experimentation',
-      },
-    },
     enableBridgelessArchitecture: {
       defaultValue: false,
       metadata: {
@@ -419,15 +410,6 @@ const definitions: FeatureFlagDefinitions = {
         dateAdded: '2024-04-03',
         description:
           'When enabled, the native view configs are used in bridgeless mode.',
-        purpose: 'experimentation',
-      },
-    },
-    useNewReactImageViewBackgroundDrawing: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-07-11',
-        description:
-          'Use shared background drawing code for ReactImageView instead of using Fresco to manipulate the bitmap',
         purpose: 'experimentation',
       },
     },

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0d8f65a06ed20f44e5de58b764635602>>
+ * @generated SignedSource<<a18b2e5cc10909f0cf7ec402f14da1e1>>
  */
 
 /**
@@ -31,7 +31,6 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var destroyFabricSurfacesInReactInstanceManagerCache: Boolean? = null
   private var enableAlignItemsBaselineOnFabricIOSCache: Boolean? = null
   private var enableAndroidLineHeightCenteringCache: Boolean? = null
-  private var enableBackgroundStyleApplicatorCache: Boolean? = null
   private var enableBridgelessArchitectureCache: Boolean? = null
   private var enableCleanTextInputYogaNodeCache: Boolean? = null
   private var enableDeletionOfUnmountedViewsCache: Boolean? = null
@@ -69,7 +68,6 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var useImmediateExecutorInAndroidBridgelessCache: Boolean? = null
   private var useModernRuntimeSchedulerCache: Boolean? = null
   private var useNativeViewConfigsInBridgelessModeCache: Boolean? = null
-  private var useNewReactImageViewBackgroundDrawingCache: Boolean? = null
   private var useOptimisedViewPreallocationOnAndroidCache: Boolean? = null
   private var useOptimizedEventBatchingOnAndroidCache: Boolean? = null
   private var useRuntimeShadowNodeReferenceUpdateCache: Boolean? = null
@@ -143,16 +141,6 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.enableAndroidLineHeightCentering()
       accessedFeatureFlags.add("enableAndroidLineHeightCentering")
       enableAndroidLineHeightCenteringCache = cached
-    }
-    return cached
-  }
-
-  override fun enableBackgroundStyleApplicator(): Boolean {
-    var cached = enableBackgroundStyleApplicatorCache
-    if (cached == null) {
-      cached = currentProvider.enableBackgroundStyleApplicator()
-      accessedFeatureFlags.add("enableBackgroundStyleApplicator")
-      enableBackgroundStyleApplicatorCache = cached
     }
     return cached
   }
@@ -523,16 +511,6 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.useNativeViewConfigsInBridgelessMode()
       accessedFeatureFlags.add("useNativeViewConfigsInBridgelessMode")
       useNativeViewConfigsInBridgelessModeCache = cached
-    }
-    return cached
-  }
-
-  override fun useNewReactImageViewBackgroundDrawing(): Boolean {
-    var cached = useNewReactImageViewBackgroundDrawingCache
-    if (cached == null) {
-      cached = currentProvider.useNewReactImageViewBackgroundDrawing()
-      accessedFeatureFlags.add("useNewReactImageViewBackgroundDrawing")
-      useNewReactImageViewBackgroundDrawingCache = cached
     }
     return cached
   }
