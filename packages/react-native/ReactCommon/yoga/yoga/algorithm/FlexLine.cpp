@@ -32,8 +32,9 @@ FlexLine calculateFlexLine(
   size_t firstElementInLineIndex = startOfLineIndex;
 
   float sizeConsumedIncludingMinConstraint = 0;
-  const FlexDirection mainAxis = resolveDirection(
-      node->style().flexDirection(), node->resolveDirection(ownerDirection));
+  const Direction direction = node->resolveDirection(ownerDirection);
+  const FlexDirection mainAxis =
+      resolveDirection(node->style().flexDirection(), direction);
   const bool isNodeFlexWrap = node->style().flexWrap() != Wrap::NoWrap;
   const float gap =
       node->style().computeGapForAxis(mainAxis, availableInnerMainDim);
@@ -67,6 +68,7 @@ FlexLine calculateFlexLine(
     const float flexBasisWithMinAndMaxConstraints =
         boundAxisWithinMinAndMax(
             child,
+            direction,
             mainAxis,
             child->getLayout().computedFlexBasis,
             mainAxisownerSize)
