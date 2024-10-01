@@ -8,8 +8,25 @@
 #include "PerformanceEntryReporter.h"
 
 #include <cxxreact/JSExecutor.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 
 namespace facebook::react {
+
+namespace {
+std::vector<PerformanceEntryType> getSupportedEntryTypesInternal() {
+  std::vector<PerformanceEntryType> supportedEntryTypes{
+      PerformanceEntryType::MARK,
+      PerformanceEntryType::MEASURE,
+      PerformanceEntryType::EVENT,
+  };
+
+  if (ReactNativeFeatureFlags::enableLongTaskAPI()) {
+    supportedEntryTypes.emplace_back(PerformanceEntryType::LONGTASK);
+  }
+
+  return supportedEntryTypes;
+}
+} // namespace
 
 std::shared_ptr<PerformanceEntryReporter>&
 PerformanceEntryReporter::getInstance() {
@@ -20,90 +37,93 @@ PerformanceEntryReporter::getInstance() {
 PerformanceEntryReporter::PerformanceEntryReporter()
     : observerRegistry_(std::make_unique<PerformanceObserverRegistry>()) {}
 
-#pragma mark - DOM Performance (High Resolution Time) (https://www.w3.org/TR/hr-time-3/#dom-performance)
-
 DOMHighResTimeStamp PerformanceEntryReporter::getCurrentTimeStamp() const {
   return timeStampProvider_ != nullptr ? timeStampProvider_()
                                        : JSExecutor::performanceNow();
 }
 
-#pragma mark - Performance Timeline (https://w3c.github.io/performance-timeline/)
-
-uint32_t PerformanceEntryReporter::getDroppedEntriesCount(
-    PerformanceEntryType type) const noexcept {
-  return getBuffer(type).droppedEntriesCount;
+std::vector<PerformanceEntryType>
+PerformanceEntryReporter::getSupportedEntryTypes() {
+  static std::vector<PerformanceEntryType> supportedEntries =
+      getSupportedEntryTypesInternal();
+  return supportedEntries;
 }
 
-void PerformanceEntryReporter::clearEntries(
-    std::optional<PerformanceEntryType> entryType,
-    std::optional<std::string_view> entryName) {
+uint32_t PerformanceEntryReporter::getDroppedEntriesCount(
+    PerformanceEntryType entryType) const noexcept {
   std::lock_guard lock(buffersMutex_);
 
-  // Clear all entry types
-  if (!entryType) {
-    if (entryName.has_value()) {
-      markBuffer_.clear(*entryName);
-      measureBuffer_.clear(*entryName);
-      eventBuffer_.clear(*entryName);
-      longTaskBuffer_.clear(*entryName);
-    } else {
-      markBuffer_.clear();
-      measureBuffer_.clear();
-      eventBuffer_.clear();
-      longTaskBuffer_.clear();
-    }
-    return;
-  }
-
-  auto& buffer = getBufferRef(*entryType);
-  if (entryName.has_value()) {
-    buffer.clear(*entryName);
-  } else {
-    buffer.clear();
-  }
+  return getBuffer(entryType).droppedEntriesCount;
 }
 
 std::vector<PerformanceEntry> PerformanceEntryReporter::getEntries() const {
-  std::vector<PerformanceEntry> res;
-  // Collect all entry types
-  for (int i = 1; i <= NUM_PERFORMANCE_ENTRY_TYPES; i++) {
-    getBuffer(static_cast<PerformanceEntryType>(i)).getEntries(res);
+  std::vector<PerformanceEntry> entries;
+  getEntries(entries);
+  return entries;
+}
+
+void PerformanceEntryReporter::getEntries(
+    std::vector<PerformanceEntry>& dest) const {
+  std::lock_guard lock(buffersMutex_);
+
+  for (auto entryType : getSupportedEntryTypes()) {
+    getBuffer(entryType).getEntries(dest);
   }
-  return res;
 }
 
-std::vector<PerformanceEntry> PerformanceEntryReporter::getEntriesByType(
+std::vector<PerformanceEntry> PerformanceEntryReporter::getEntries(
     PerformanceEntryType entryType) const {
-  std::vector<PerformanceEntry> res;
-  getEntriesByType(entryType, res);
-  return res;
+  std::vector<PerformanceEntry> dest;
+  getEntries(dest, entryType);
+  return dest;
 }
 
-void PerformanceEntryReporter::getEntriesByType(
+void PerformanceEntryReporter::getEntries(
+    std::vector<PerformanceEntry>& dest,
+    PerformanceEntryType entryType) const {
+  std::lock_guard lock(buffersMutex_);
+
+  getBuffer(entryType).getEntries(dest);
+}
+
+std::vector<PerformanceEntry> PerformanceEntryReporter::getEntries(
     PerformanceEntryType entryType,
-    std::vector<PerformanceEntry>& target) const {
-  getBuffer(entryType).getEntries(target);
+    const std::string& entryName) const {
+  std::vector<PerformanceEntry> entries;
+  getEntries(entries, entryType, entryName);
+  return entries;
 }
 
-std::vector<PerformanceEntry> PerformanceEntryReporter::getEntriesByName(
-    std::string_view entryName) const {
-  std::vector<PerformanceEntry> res;
-  // Collect all entry types
-  for (int i = 1; i <= NUM_PERFORMANCE_ENTRY_TYPES; i++) {
-    getBuffer(static_cast<PerformanceEntryType>(i)).getEntries(entryName, res);
+void PerformanceEntryReporter::getEntries(
+    std::vector<PerformanceEntry>& dest,
+    PerformanceEntryType entryType,
+    const std::string& entryName) const {
+  std::lock_guard lock(buffersMutex_);
+
+  getBuffer(entryType).getEntries(dest, entryName);
+}
+
+void PerformanceEntryReporter::clearEntries() {
+  std::lock_guard lock(buffersMutex_);
+
+  for (auto entryType : getSupportedEntryTypes()) {
+    getBufferRef(entryType).clear();
   }
-  return res;
 }
 
-std::vector<PerformanceEntry> PerformanceEntryReporter::getEntriesByName(
-    std::string_view entryName,
-    PerformanceEntryType entryType) const {
-  std::vector<PerformanceEntry> res;
-  getBuffer(entryType).getEntries(entryName, res);
-  return res;
+void PerformanceEntryReporter::clearEntries(PerformanceEntryType entryType) {
+  std::lock_guard lock(buffersMutex_);
+
+  getBufferRef(entryType).clear();
 }
 
-#pragma mark - User Timing Level 3 functions (https://w3c.github.io/user-timing/)
+void PerformanceEntryReporter::clearEntries(
+    PerformanceEntryType entryType,
+    const std::string& entryName) {
+  std::lock_guard lock(buffersMutex_);
+
+  getBufferRef(entryType).clear(entryName);
+}
 
 void PerformanceEntryReporter::reportMark(
     const std::string& name,
@@ -166,8 +186,6 @@ DOMHighResTimeStamp PerformanceEntryReporter::getMarkTime(
   }
 }
 
-#pragma mark - Event Timing API functions (https://www.w3.org/TR/event-timing/)
-
 void PerformanceEntryReporter::reportEvent(
     std::string name,
     DOMHighResTimeStamp startTime,
@@ -200,8 +218,6 @@ void PerformanceEntryReporter::reportEvent(
 
   observerRegistry_->queuePerformanceEntry(entry);
 }
-
-#pragma mark - Long Tasks API functions (https://w3c.github.io/longtasks/)
 
 void PerformanceEntryReporter::reportLongTask(
     DOMHighResTimeStamp startTime,

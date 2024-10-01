@@ -51,6 +51,7 @@ Pod::Spec.new do |s|
     s.header_mappings_dir  = "../../.."
   end
 
+  s.dependency "React-featureflags"
   s.dependency "React-timing"
   s.dependency "React-cxxreact"
   s.dependency "RCT-Folly", folly_version

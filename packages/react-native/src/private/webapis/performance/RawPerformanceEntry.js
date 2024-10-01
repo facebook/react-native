@@ -12,7 +12,7 @@ import type {PerformanceEntryType} from './PerformanceEntry';
 import type {
   RawPerformanceEntry,
   RawPerformanceEntryType,
-} from './specs/NativePerformanceObserver';
+} from './specs/NativePerformance';
 
 import {PerformanceEventTiming} from './EventTiming';
 import {PerformanceLongTaskTiming} from './LongTasks';

@@ -10,7 +10,6 @@
 #include <react/timing/primitives.h>
 #include <optional>
 #include <string>
-#include <string_view>
 #include <unordered_set>
 
 namespace facebook::react {
