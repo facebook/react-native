@@ -8,10 +8,10 @@
 #pragma once
 
 #include <react/renderer/attributedstring/AttributedString.h>
-#include <react/renderer/components/iostextinput/TextInputEventEmitter.h>
 #include <react/renderer/components/iostextinput/TextInputProps.h>
 #include <react/renderer/components/iostextinput/TextInputState.h>
 #include <react/renderer/components/text/BaseTextShadowNode.h>
+#include <react/renderer/components/textinput/TextInputEventEmitter.h>
 #include <react/renderer/components/view/ConcreteViewShadowNode.h>
 #include <react/renderer/textlayoutmanager/TextLayoutManager.h>
 #include <react/utils/ContextContainer.h>

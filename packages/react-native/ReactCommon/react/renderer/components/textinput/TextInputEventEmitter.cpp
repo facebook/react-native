@@ -19,6 +19,8 @@ static jsi::Value textInputMetricsPayload(
       "text",
       jsi::String::createFromUtf8(runtime, textInputMetrics.text));
 
+  payload.setProperty(runtime, "target", textInputMetrics.target);
+
   payload.setProperty(runtime, "eventCount", textInputMetrics.eventCount);
 
   {
@@ -81,7 +83,7 @@ static jsi::Value textInputMetricsScrollPayload(
   payload.setProperty(
       runtime,
       "zoomScale",
-      textInputMetrics.zoomScale ? textInputMetrics.zoomScale : 1);
+      textInputMetrics.zoomScale != 0.0f ? textInputMetrics.zoomScale : 1);
 
   return payload;
 };
