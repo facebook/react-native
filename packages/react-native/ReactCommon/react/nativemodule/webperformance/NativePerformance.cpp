@@ -88,7 +88,7 @@ void NativePerformance::mark(
     jsi::Runtime& rt,
     std::string name,
     double startTime) {
-  PerformanceEntryReporter::getInstance()->mark(name, startTime);
+  PerformanceEntryReporter::getInstance()->reportMark(name, startTime);
 
 #ifdef WITH_PERFETTO
   if (TRACE_EVENT_CATEGORY_ENABLED("react-native")) {
@@ -117,7 +117,7 @@ void NativePerformance::measure(
       eventName, (uint64_t)startTime, (uint64_t)endTime, trackName);
 #endif
 
-  PerformanceEntryReporter::getInstance()->measure(
+  PerformanceEntryReporter::getInstance()->reportMeasure(
       eventName, startTime, endTime, duration, startMark, endMark);
 
 #ifdef WITH_PERFETTO

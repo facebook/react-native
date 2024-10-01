@@ -38,7 +38,7 @@ TEST(PerformanceObserver, PerformanceObserverTestObserveFlushes) {
   // buffer is empty
   ASSERT_FALSE(callbackCalled);
 
-  reporter->mark("test", 10);
+  reporter->reportMark("test", 10);
   ASSERT_TRUE(callbackCalled);
 
   observer->disconnect();
@@ -51,7 +51,7 @@ TEST(PerformanceObserver, PerformanceObserverTestFilteredSingle) {
   auto observer =
       PerformanceObserver::create(reporter->getObserverRegistry(), [&]() {});
   observer->observe(PerformanceEntryType::MEASURE);
-  reporter->mark("test", 10);
+  reporter->reportMark("test", 10);
 
   // wrong type
   ASSERT_EQ(observer->takeRecords().size(), 0);
@@ -69,9 +69,9 @@ TEST(PerformanceObserver, PerformanceObserverTestFilterMulti) {
   observer->observe(
       {PerformanceEntryType::MEASURE, PerformanceEntryType::MARK});
 
-  reporter->logEventEntry("test1", 10, 10, 0, 0, 0);
-  reporter->logEventEntry("test2", 10, 10, 0, 0, 0);
-  reporter->logEventEntry("test3", 10, 10, 0, 0, 0);
+  reporter->reportEvent("test1", 10, 10, 0, 0, 0);
+  reporter->reportEvent("test2", 10, 10, 0, 0, 0);
+  reporter->reportEvent("test3", 10, 10, 0, 0, 0);
 
   ASSERT_EQ(observer->takeRecords().size(), 0);
   ASSERT_FALSE(callbackCalled);
@@ -89,7 +89,7 @@ TEST(
   auto observer = PerformanceObserver::create(
       reporter->getObserverRegistry(), [&]() { callbackCalled = true; });
   observer->observe(PerformanceEntryType::MEASURE);
-  reporter->mark("test", 10);
+  reporter->reportMark("test", 10);
 
   ASSERT_FALSE(callbackCalled);
 
@@ -105,9 +105,9 @@ TEST(PerformanceObserver, PerformanceObserverTestFilterMultiCallbackNotCalled) {
       reporter->getObserverRegistry(), [&]() { callbackCalled = true; });
   observer->observe(
       {PerformanceEntryType::MEASURE, PerformanceEntryType::MARK});
-  reporter->logEventEntry("test1", 10, 10, 0, 0, 0);
-  reporter->logEventEntry("test2", 10, 10, 0, 0, 0);
-  reporter->logEventEntry("off3", 10, 10, 0, 0, 0);
+  reporter->reportEvent("test1", 10, 10, 0, 0, 0);
+  reporter->reportEvent("test2", 10, 10, 0, 0, 0);
+  reporter->reportEvent("off3", 10, 10, 0, 0, 0);
 
   ASSERT_FALSE(callbackCalled);
 
@@ -121,10 +121,10 @@ TEST(PerformanceObserver, PerformanceObserverTestObserveTakeRecords) {
   auto observer =
       PerformanceObserver::create(reporter->getObserverRegistry(), [&]() {});
   observer->observe(PerformanceEntryType::MARK);
-  reporter->mark("test1", 10);
-  reporter->measure("off", 10, 20);
-  reporter->mark("test2", 20);
-  reporter->mark("test3", 30);
+  reporter->reportMark("test1", 10);
+  reporter->reportMeasure("off", 10, 20);
+  reporter->reportMark("test2", 20);
+  reporter->reportMark("test3", 30);
 
   const std::vector<PerformanceEntry> expected = {
       {.name = "test1",
@@ -150,11 +150,11 @@ TEST(PerformanceObserver, PerformanceObserverTestObserveDurationThreshold) {
   auto observer =
       PerformanceObserver::create(reporter->getObserverRegistry(), [&]() {});
   observer->observe(PerformanceEntryType::EVENT, {.durationThreshold = 50});
-  reporter->logEventEntry("test1", 0, 50, 0, 0, 0);
-  reporter->logEventEntry("test2", 0, 100, 0, 0, 0);
-  reporter->logEventEntry("off1", 0, 40, 0, 0, 0);
-  reporter->mark("off2", 100);
-  reporter->logEventEntry("test3", 0, 60, 0, 0, 0);
+  reporter->reportEvent("test1", 0, 50, 0, 0, 0);
+  reporter->reportEvent("test2", 0, 100, 0, 0, 0);
+  reporter->reportEvent("off1", 0, 40, 0, 0, 0);
+  reporter->reportMark("off2", 100);
+  reporter->reportEvent("test3", 0, 60, 0, 0, 0);
 
   const std::vector<PerformanceEntry> expected = {
       {.name = "test1",
@@ -186,10 +186,10 @@ TEST(PerformanceObserver, PerformanceObserverTestObserveBuffered) {
   auto reporter = PerformanceEntryReporter::getInstance();
   reporter->clearEntries();
 
-  reporter->logEventEntry("test1", 0, 50, 0, 0, 0);
-  reporter->logEventEntry("test2", 0, 100, 0, 0, 0);
-  reporter->logEventEntry("test3", 0, 40, 0, 0, 0);
-  reporter->logEventEntry("test4", 0, 100, 0, 0, 0);
+  reporter->reportEvent("test1", 0, 50, 0, 0, 0);
+  reporter->reportEvent("test2", 0, 100, 0, 0, 0);
+  reporter->reportEvent("test3", 0, 40, 0, 0, 0);
+  reporter->reportEvent("test4", 0, 100, 0, 0, 0);
 
   auto observer =
       PerformanceObserver::create(reporter->getObserverRegistry(), [&]() {});
@@ -235,11 +235,11 @@ TEST(PerformanceObserver, PerformanceObserverTestMultiple) {
   observer1->observe(PerformanceEntryType::EVENT, {.durationThreshold = 50});
   observer2->observe(PerformanceEntryType::EVENT, {.durationThreshold = 80});
 
-  reporter->measure("measure", 0, 50);
-  reporter->logEventEntry("event1", 0, 100, 0, 0, 0);
-  reporter->logEventEntry("event2", 0, 40, 0, 0, 0);
-  reporter->mark("mark1", 100);
-  reporter->logEventEntry("event3", 0, 60, 0, 0, 0);
+  reporter->reportMeasure("measure", 0, 50);
+  reporter->reportEvent("event1", 0, 100, 0, 0, 0);
+  reporter->reportEvent("event2", 0, 40, 0, 0, 0);
+  reporter->reportMark("mark1", 100);
+  reporter->reportEvent("event3", 0, 60, 0, 0, 0);
 
   const std::vector<PerformanceEntry> expected1 = {
       {.name = "event1",
