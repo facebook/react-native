@@ -88,7 +88,7 @@ static void computeFlexBasisForChild(
   SizingMode childHeightSizingMode;
 
   const FloatOptional resolvedFlexBasis =
-      child->resolveFlexBasisPtr().resolve(mainAxisownerSize);
+      child->resolveFlexBasis(direction, mainAxis, mainAxisownerSize);
   const bool isRowStyleDimDefined =
       child->hasDefiniteLength(Dimension::Width, ownerWidth);
   const bool isColumnStyleDimDefined =

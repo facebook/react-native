@@ -247,7 +247,11 @@ class YG_EXPORT Node : public ::YGNode {
   void setPosition(Direction direction, float ownerWidth, float ownerHeight);
 
   // Other methods
-  Style::Length resolveFlexBasisPtr() const;
+  Style::Length processFlexBasis() const;
+  FloatOptional resolveFlexBasis(
+      Direction direction,
+      FlexDirection flexDirection,
+      float referenceLength) const;
   void processDimensions();
   Direction resolveDirection(Direction ownerDirection);
   void clearChildren();
