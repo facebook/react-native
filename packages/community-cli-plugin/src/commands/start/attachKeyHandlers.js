@@ -10,12 +10,13 @@
  */
 
 import type {Config} from '@react-native-community/cli-types';
+import type TerminalReporter from 'metro/src/lib/TerminalReporter';
 
 import {KeyPressHandler} from '../../utils/KeyPressHandler';
 import {logger} from '../../utils/logger';
+import OpenDebuggerKeyboardHandler from './OpenDebuggerKeyboardHandler';
 import chalk from 'chalk';
 import execa from 'execa';
-import fetch from 'node-fetch';
 
 const CTRL_C = '\u0003';
 const CTRL_D = '\u0004';
@@ -36,6 +37,7 @@ export default function attachKeyHandlers({
   cliConfig,
   devServerUrl,
   messageSocket,
+  reporter,
 }: {
   cliConfig: Config,
   devServerUrl: string,
@@ -43,6 +45,7 @@ export default function attachKeyHandlers({
     broadcast: (type: string, params?: Record<string, mixed> | null) => void,
     ...
   }>,
+  reporter: TerminalReporter,
 }) {
   if (process.stdin.isTTY !== true) {
     logger.debug('Interactive mode is not supported in this environment');
@@ -58,7 +61,16 @@ export default function attachKeyHandlers({
     messageSocket.broadcast('reload', null);
   }, RELOAD_TIMEOUT);
 
+  const openDebuggerKeyboardHandler = new OpenDebuggerKeyboardHandler({
+    reporter,
+    devServerUrl,
+  });
+
   const onPress = async (key: string) => {
+    if (openDebuggerKeyboardHandler.maybeHandleTargetSelection(key)) {
+      return;
+    }
+
     switch (key.toLowerCase()) {
       case 'r':
         reload();
@@ -92,11 +104,11 @@ export default function attachKeyHandlers({
         ).stdout?.pipe(process.stdout);
         break;
       case 'j':
-        // TODO(T192878199): Add multi-target selection
-        await fetch(devServerUrl + '/open-debugger', {method: 'POST'});
+        await openDebuggerKeyboardHandler.handleOpenDebugger();
         break;
       case CTRL_C:
       case CTRL_D:
+        openDebuggerKeyboardHandler.dismiss();
         logger.info('Stopping server');
         keyPressHandler.stopInterceptingKeyStrokes();
         process.emit('SIGINT');

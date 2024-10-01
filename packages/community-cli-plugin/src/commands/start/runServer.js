@@ -130,6 +130,7 @@ async function runServer(
           cliConfig: ctx,
           devServerUrl,
           messageSocket: messageSocketEndpoint,
+          reporter: terminalReporter,
         });
       }
     },
