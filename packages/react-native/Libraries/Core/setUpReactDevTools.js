@@ -10,18 +10,18 @@
 
 'use strict';
 
-import type {Domain} from '../../src/private/fusebox/setUpFuseboxReactDevToolsDispatcher';
+import type {Domain} from '../../src/private/debugging/setUpFuseboxReactDevToolsDispatcher';
 
 if (__DEV__) {
   // Register dispatcher on global, which can be used later by Chrome DevTools frontend
-  require('../../src/private/fusebox/setUpFuseboxReactDevToolsDispatcher');
+  require('../../src/private/debugging/setUpFuseboxReactDevToolsDispatcher');
   const {
     initialize,
     connectToDevTools,
     connectWithCustomMessagingProtocol,
   } = require('react-devtools-core');
 
-  const reactDevToolsSettingsManager = require('../../src/private/reactdevtools/ReactDevToolsSettingsManager');
+  const reactDevToolsSettingsManager = require('../../src/private/debugging/ReactDevToolsSettingsManager');
   const serializedHookSettings =
     reactDevToolsSettingsManager.getGlobalHookSettings();
 
