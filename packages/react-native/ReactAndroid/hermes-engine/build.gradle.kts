@@ -134,6 +134,9 @@ val configureBuildForHermes by
       commandLine(
           windowsAwareCommandLine(
               cmakeBinaryPath,
+              // Suppress all warnings as this is the Hermes build and we can't fix them.
+              "--log-level=ERROR",
+              "-Wno-dev",
               if (Os.isFamily(Os.FAMILY_WINDOWS)) "-GNMake Makefiles" else "",
               "-S",
               ".",
@@ -160,6 +163,7 @@ val buildHermesC by
           ndkBuildJobs,
       )
       standardOutput = FileOutputStream("$buildDir/build-hermesc.log")
+      errorOutput = FileOutputStream("$buildDir/build-hermesc.error.log")
     }
 
 val prepareHeadersForPrefab by
