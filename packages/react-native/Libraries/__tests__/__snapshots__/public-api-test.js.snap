@@ -721,10 +721,18 @@ exports[`public API should not change unintentionally Libraries/Animated/createA
         >,
       }>)]: any,
 };
+export type StrictAnimatedProps<Props: { ... }> = $ReadOnly<{
+  ...$Exact<Props>,
+  passthroughAnimatedPropExplicitValues?: ?Props,
+}>;
 export type AnimatedComponentType<
   Props: { ... },
   +Instance = mixed,
 > = React.AbstractComponent<AnimatedProps<Props>, Instance>;
+export type StrictAnimatedComponentType<
+  Props: { ... },
+  +Instance = mixed,
+> = React.AbstractComponent<StrictAnimatedProps<Props>, Instance>;
 declare export default function createAnimatedComponent<
   TProps: { ... },
   TInstance,
@@ -737,7 +745,7 @@ declare export function unstable_createAnimatedComponentWithAllowlist<
 >(
   Component: React.AbstractComponent<TProps, TInstance>,
   allowlist: ?AnimatedPropsAllowlist
-): AnimatedComponentType<TProps, TInstance>;
+): StrictAnimatedComponentType<TProps, TInstance>;
 "
 `;
 
