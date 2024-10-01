@@ -202,12 +202,13 @@ export default class SpringAnimation extends Animation {
     previousAnimation: ?Animation,
     animatedValue: AnimatedValue,
   ): void {
+    super.start(fromValue, onUpdate, onEnd, previousAnimation, animatedValue);
+
     this.__active = true;
     this._startPosition = fromValue;
     this._lastPosition = this._startPosition;
 
     this._onUpdate = onUpdate;
-    this.__onEnd = onEnd;
     this._lastTime = Date.now();
     this._frameTime = 0.0;
 

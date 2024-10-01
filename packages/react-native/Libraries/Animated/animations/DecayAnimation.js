@@ -79,11 +79,12 @@ export default class DecayAnimation extends Animation {
     previousAnimation: ?Animation,
     animatedValue: AnimatedValue,
   ): void {
+    super.start(fromValue, onUpdate, onEnd, previousAnimation, animatedValue);
+
     this.__active = true;
     this._lastValue = fromValue;
     this._fromValue = fromValue;
     this._onUpdate = onUpdate;
-    this.__onEnd = onEnd;
     this._startTime = Date.now();
 
     if (!this._useNativeDriver && animatedValue.__isNative === true) {

@@ -36,9 +36,10 @@ let startNativeAnimationNextId = 1;
 // Once an animation has been stopped or finished its course, it will
 // not be reused.
 export default class Animation {
+  #onEnd: ?EndCallback;
+
   __active: boolean;
   __isInteraction: boolean;
-  __onEnd: ?EndCallback;
   __iterations: number;
   __isLooping: ?boolean;
 
@@ -50,7 +51,9 @@ export default class Animation {
     onEnd: ?EndCallback,
     previousAnimation: ?Animation,
     animatedValue: AnimatedValue,
-  ): void {}
+  ): void {
+    this.#onEnd = onEnd;
+  }
 
   stop(): void {
     if (this._nativeId) {
@@ -66,8 +69,8 @@ export default class Animation {
 
   // Helper function for subclasses to make sure onEnd is only called once.
   __debouncedOnEnd(result: EndResult): void {
-    const onEnd = this.__onEnd;
-    this.__onEnd = null;
+    const onEnd = this.#onEnd;
+    this.#onEnd = null;
     onEnd && onEnd(result);
   }
 
