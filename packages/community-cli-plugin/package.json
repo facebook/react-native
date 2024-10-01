@@ -25,7 +25,6 @@
     "@react-native/dev-middleware": "0.77.0-main",
     "@react-native/metro-babel-transformer": "0.77.0-main",
     "chalk": "^4.0.0",
-    "execa": "^5.1.1",
     "metro": "^0.81.0-alpha.2",
     "metro-config": "^0.81.0-alpha.2",
     "metro-core": "^0.81.0-alpha.2",

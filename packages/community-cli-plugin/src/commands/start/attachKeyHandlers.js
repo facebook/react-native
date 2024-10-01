@@ -16,7 +16,7 @@ import {KeyPressHandler} from '../../utils/KeyPressHandler';
 import {logger} from '../../utils/logger';
 import OpenDebuggerKeyboardHandler from './OpenDebuggerKeyboardHandler';
 import chalk from 'chalk';
-import execa from 'execa';
+import {spawn} from 'child_process';
 
 const CTRL_C = '\u0003';
 const CTRL_D = '\u0004';
@@ -31,6 +31,10 @@ const throttle = (callback: () => void, timeout: number) => {
       callback();
     }
   };
+};
+
+const spawnOptions = {
+  env: {...process.env, FORCE_COLOR: chalk.supportsColor ? 'true' : 'false'},
 };
 
 export default function attachKeyHandlers({
@@ -51,10 +55,6 @@ export default function attachKeyHandlers({
     logger.debug('Interactive mode is not supported in this environment');
     return;
   }
-
-  const execaOptions = {
-    env: {FORCE_COLOR: chalk.supportsColor ? 'true' : 'false'},
-  };
 
   const reload = throttle(() => {
     logger.info('Reloading connected app(s)...');
@@ -81,26 +81,26 @@ export default function attachKeyHandlers({
         break;
       case 'i':
         logger.info('Opening app on iOS...');
-        execa(
+        spawn(
           'npx',
           [
             'react-native',
             'run-ios',
             ...(cliConfig.project.ios?.watchModeCommandParams ?? []),
           ],
-          execaOptions,
+          spawnOptions,
         ).stdout?.pipe(process.stdout);
         break;
       case 'a':
         logger.info('Opening app on Android...');
-        execa(
+        spawn(
           'npx',
           [
             'react-native',
             'run-android',
             ...(cliConfig.project.android?.watchModeCommandParams ?? []),
           ],
-          execaOptions,
+          spawnOptions,
         ).stdout?.pipe(process.stdout);
         break;
       case 'j':
