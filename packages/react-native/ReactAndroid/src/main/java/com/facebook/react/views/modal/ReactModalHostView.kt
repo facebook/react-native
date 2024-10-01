@@ -306,7 +306,7 @@ public class ReactModalHostView(context: ThemedReactContext) :
     val dialogWindow =
         checkNotNull(dialog.window) { "dialog must have window when we call updateProperties" }
     val currentActivity = getCurrentActivity()
-    if (currentActivity == null || currentActivity.isFinishing) {
+    if (currentActivity == null || currentActivity.isFinishing || !dialogWindow.isActive) {
       // If the activity has disappeared, then we shouldn't update the window associated to the
       // Dialog.
       return
