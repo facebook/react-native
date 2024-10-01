@@ -72,7 +72,9 @@ async function runServer(
   const protocol = args.https === true ? 'https' : 'http';
   const devServerUrl = url.format({protocol, hostname, port});
 
-  console.info(`Welcome to React Native v${ctx.reactNativeVersion}`);
+  console.info(
+    chalk.blue(`\nWelcome to React Native v${ctx.reactNativeVersion}`),
+  );
 
   const serverStatus = await isDevServerRunning(devServerUrl, projectRoot);
 
@@ -89,7 +91,7 @@ async function runServer(
     return;
   }
 
-  console.info(`Starting dev server on port ${chalk.bold(String(port))}...`);
+  console.info(`Starting dev server on ${devServerUrl}\n`);
 
   if (args.assetPlugins) {
     // $FlowIgnore[cannot-write] Assigning to readonly property
@@ -129,7 +131,7 @@ async function runServer(
         terminalReporter.update({
           type: 'unstable_server_log',
           level: 'info',
-          data: 'Dev server ready',
+          data: `Dev server ready. ${chalk.dim('Press Ctrl+C to exit.')}`,
         });
         attachKeyHandlers({
           cliConfig: ctx,
