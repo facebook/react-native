@@ -28,8 +28,8 @@ void PerformanceEntryKeyedBuffer::getEntries(
 }
 
 void PerformanceEntryKeyedBuffer::getEntries(
-    std::string_view name,
-    std::vector<PerformanceEntry>& target) const {
+    std::vector<PerformanceEntry>& target,
+    const std::string& name) const {
   std::string nameStr{name};
 
   if (auto node = entryMap_.find(nameStr); node != entryMap_.end()) {
@@ -41,8 +41,8 @@ void PerformanceEntryKeyedBuffer::clear() {
   entryMap_.clear();
 }
 
-void PerformanceEntryKeyedBuffer::clear(std::string_view nameView) {
-  entryMap_.erase(std::string(nameView));
+void PerformanceEntryKeyedBuffer::clear(const std::string& name) {
+  entryMap_.erase(name);
 }
 
 std::optional<PerformanceEntry> PerformanceEntryKeyedBuffer::find(

@@ -16,10 +16,3 @@ export function warnNoNativePerformance() {
     'Missing native implementation of Performance',
   );
 }
-
-export function warnNoNativePerformanceObserver() {
-  warnOnce(
-    'missing-native-performance-observer',
-    'Missing native implementation of PerformanceObserver',
-  );
-}

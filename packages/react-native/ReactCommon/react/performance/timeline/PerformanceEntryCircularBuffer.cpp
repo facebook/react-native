@@ -21,8 +21,8 @@ void PerformanceEntryCircularBuffer::getEntries(
 }
 
 void PerformanceEntryCircularBuffer::getEntries(
-    std::string_view name,
-    std::vector<PerformanceEntry>& target) const {
+    std::vector<PerformanceEntry>& target,
+    const std::string& name) const {
   buffer_.getEntries(
       target, [&](const PerformanceEntry& e) { return e.name == name; });
 }
@@ -31,7 +31,7 @@ void PerformanceEntryCircularBuffer::clear() {
   buffer_.clear();
 }
 
-void PerformanceEntryCircularBuffer::clear(std::string_view name) {
+void PerformanceEntryCircularBuffer::clear(const std::string& name) {
   buffer_.clear([&](const PerformanceEntry& e) { return e.name == name; });
 }
 
