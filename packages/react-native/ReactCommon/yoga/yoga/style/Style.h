@@ -189,11 +189,45 @@ class YG_EXPORT Style {
     pool_.store(minDimensions_[yoga::to_underlying(axis)], value);
   }
 
+  FloatOptional resolvedMinDimension(
+      Direction direction,
+      Dimension axis,
+      float referenceLength) const {
+    FloatOptional value = minDimension(axis).resolve(referenceLength);
+    if (boxSizing() == BoxSizing::BorderBox) {
+      return value;
+    }
+
+    FloatOptional dimensionPaddingAndBorder = FloatOptional{
+        computePaddingAndBorderForDimension(direction, axis, referenceLength)};
+
+    return value +
+        (dimensionPaddingAndBorder.isDefined() ? dimensionPaddingAndBorder
+                                               : FloatOptional{0.0});
+  }
+
   Style::Length maxDimension(Dimension axis) const {
     return pool_.getLength(maxDimensions_[yoga::to_underlying(axis)]);
   }
   void setMaxDimension(Dimension axis, Style::Length value) {
     pool_.store(maxDimensions_[yoga::to_underlying(axis)], value);
+  }
+
+  FloatOptional resolvedMaxDimension(
+      Direction direction,
+      Dimension axis,
+      float referenceLength) const {
+    FloatOptional value = maxDimension(axis).resolve(referenceLength);
+    if (boxSizing() == BoxSizing::BorderBox) {
+      return value;
+    }
+
+    FloatOptional dimensionPaddingAndBorder = FloatOptional{
+        computePaddingAndBorderForDimension(direction, axis, referenceLength)};
+
+    return value +
+        (dimensionPaddingAndBorder.isDefined() ? dimensionPaddingAndBorder
+                                               : FloatOptional{0.0});
   }
 
   FloatOptional aspectRatio() const {
@@ -444,6 +478,20 @@ class YG_EXPORT Style {
       float widthSize) const {
     return computeFlexEndPadding(axis, direction, widthSize) +
         computeFlexEndBorder(axis, direction);
+  }
+
+  float computePaddingAndBorderForDimension(
+      Direction direction,
+      Dimension dimension,
+      float widthSize) const {
+    FlexDirection flexDirectionForDimension = dimension == Dimension::Width
+        ? FlexDirection::Row
+        : FlexDirection::Column;
+
+    return computeFlexStartPaddingAndBorder(
+               flexDirectionForDimension, direction, widthSize) +
+        computeFlexEndPaddingAndBorder(
+               flexDirectionForDimension, direction, widthSize);
   }
 
   float computeBorderForAxis(FlexDirection axis) const {
