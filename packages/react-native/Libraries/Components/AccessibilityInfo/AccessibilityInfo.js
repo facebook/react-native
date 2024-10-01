@@ -22,6 +22,7 @@ import NativeAccessibilityManagerIOS from './NativeAccessibilityManager';
 // Events that are only supported on Android.
 type AccessibilityEventDefinitionsAndroid = {
   accessibilityServiceChanged: [boolean],
+  highTextContrastChanged: [boolean],
 };
 
 // Events that are only supported on iOS.
@@ -51,6 +52,7 @@ const EventNames: Map<
   ? new Map([
       ['change', 'touchExplorationDidChange'],
       ['reduceMotionChanged', 'reduceMotionDidChange'],
+      ['highTextContrastChanged', 'highTextContrastDidChange'],
       ['screenReaderChanged', 'touchExplorationDidChange'],
       ['accessibilityServiceChanged', 'accessibilityServiceDidChange'],
     ])
@@ -175,6 +177,26 @@ const AccessibilityInfo = {
         } else {
           reject(null);
         }
+      }
+    });
+  },
+
+  /**
+   * Query whether high text contrast is currently enabled. Android only.
+   *
+   * Returns a promise which resolves to a boolean.
+   * The result is `true` when high text contrast is enabled and `false` otherwise.
+   */
+  isHighTextContrastEnabled(): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      if (Platform.OS === 'android') {
+        if (NativeAccessibilityInfoAndroid?.isHighTextContrastEnabled != null) {
+          NativeAccessibilityInfoAndroid.isHighTextContrastEnabled(resolve);
+        } else {
+          reject(null);
+        }
+      } else {
+        return Promise.resolve(false);
       }
     });
   },
@@ -319,6 +341,12 @@ const AccessibilityInfo = {
    *     - `announcement`: The string announced by the screen reader.
    *     - `success`: A boolean indicating whether the announcement was
    *       successfully made.
+   *
+   * These events are only supported on Android:
+   *
+   * - `highTextContrastChanged`: Android-only event. Fires when the state of the high text contrast
+   *   toggle changes. The argument to the event handler is a boolean. The boolean is `true` when
+   *   high text contrast is enabled and `false` otherwise.
    *
    * See https://reactnative.dev/docs/accessibilityinfo#addeventlistener
    */

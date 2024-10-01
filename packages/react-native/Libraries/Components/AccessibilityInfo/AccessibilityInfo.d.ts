@@ -17,6 +17,7 @@ type AccessibilityChangeEventName =
   | 'grayscaleChanged' // iOS-only Event
   | 'invertColorsChanged' // iOS-only Event
   | 'reduceMotionChanged'
+  | 'highTextContrastChanged' // Android-only Event
   | 'screenReaderChanged'
   | 'reduceTransparencyChanged'; // iOS-only Event
 
@@ -68,6 +69,14 @@ export interface AccessibilityInfoStatic {
    * Query whether reduce motion is currently enabled.
    */
   isReduceMotionEnabled: () => Promise<boolean>;
+
+  /**
+   *
+   * Query whether high text contrast is currently enabled.
+   *
+   * @platform android
+   */
+  isHighTextContrastEnabled: () => Promise<boolean>;
 
   /**
    * Query whether reduce motion and prefer cross-fade transitions settings are currently enabled.

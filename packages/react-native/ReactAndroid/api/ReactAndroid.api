@@ -3021,6 +3021,7 @@ public final class com/facebook/react/modules/accessibilityinfo/AccessibilityInf
 	public fun initialize ()V
 	public fun invalidate ()V
 	public fun isAccessibilityServiceEnabled (Lcom/facebook/react/bridge/Callback;)V
+	public fun isHighTextContrastEnabled (Lcom/facebook/react/bridge/Callback;)V
 	public fun isReduceMotionEnabled (Lcom/facebook/react/bridge/Callback;)V
 	public fun isTouchExplorationEnabled (Lcom/facebook/react/bridge/Callback;)V
 	public fun onHostDestroy ()V

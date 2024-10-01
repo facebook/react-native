@@ -62,6 +62,19 @@ public class AccessibilityInfoModule(context: ReactApplicationContext) :
           }
         }
       }
+  // Listener that is notified when the ACCESSIBILITY_HIGH_TEXT_CONTRAST_ENABLED changes.
+  private val highTextContrastObserver: ContentObserver =
+      object : ContentObserver(UiThreadUtil.getUiThreadHandler()) {
+        override fun onChange(selfChange: Boolean) {
+          this.onChange(selfChange, null)
+        }
+
+        override fun onChange(selfChange: Boolean, uri: Uri?) {
+          if (getReactApplicationContext().hasActiveReactInstance()) {
+            updateAndSendHighTextContrastChangeEvent()
+          }
+        }
+      }
   private val accessibilityManager: AccessibilityManager?
   private val touchExplorationStateChangeListener: ReactTouchExplorationStateChangeListener =
       ReactTouchExplorationStateChangeListener()
@@ -69,6 +82,7 @@ public class AccessibilityInfoModule(context: ReactApplicationContext) :
       ReactAccessibilityServiceChangeListener()
   private val contentResolver: ContentResolver
   private var reduceMotionEnabled = false
+  private var highTextContrastEnabled = false
   private var touchExplorationEnabled = false
   private var accessibilityServiceEnabled = false
   private var recommendedTimeout = 0
@@ -81,6 +95,7 @@ public class AccessibilityInfoModule(context: ReactApplicationContext) :
     touchExplorationEnabled = accessibilityManager.isTouchExplorationEnabled
     accessibilityServiceEnabled = accessibilityManager.isEnabled
     reduceMotionEnabled = isReduceMotionEnabledValue
+    highTextContrastEnabled = isHighTextContrastEnabledValue
   }
 
   @get:TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -96,8 +111,22 @@ public class AccessibilityInfoModule(context: ReactApplicationContext) :
       return parsedValue == 0f
     }
 
+  @get:TargetApi(Build.VERSION_CODES.LOLLIPOP)
+  private val isHighTextContrastEnabledValue: Boolean
+    get() {
+      return Settings.Secure.getInt(
+          contentResolver,
+          ACCESSIBILITY_HIGH_TEXT_CONTRAST_ENABLED_CONSTANT,
+          0,
+      ) != 0
+    }
+
   override fun isReduceMotionEnabled(successCallback: Callback) {
     successCallback.invoke(reduceMotionEnabled)
+  }
+
+  override fun isHighTextContrastEnabled(successCallback: Callback) {
+    successCallback.invoke(highTextContrastEnabled)
   }
 
   override fun isTouchExplorationEnabled(successCallback: Callback) {
@@ -115,6 +144,20 @@ public class AccessibilityInfoModule(context: ReactApplicationContext) :
       val reactApplicationContext = getReactApplicationContextIfActiveOrWarn()
       if (reactApplicationContext != null) {
         reactApplicationContext.emitDeviceEvent(REDUCE_MOTION_EVENT_NAME, reduceMotionEnabled)
+      }
+    }
+  }
+
+  private fun updateAndSendHighTextContrastChangeEvent() {
+    val isHighTextContrastEnabled = isHighTextContrastEnabledValue
+    if (highTextContrastEnabled != isHighTextContrastEnabled) {
+      highTextContrastEnabled = isHighTextContrastEnabled
+      val reactApplicationContext = getReactApplicationContextIfActiveOrWarn()
+      if (reactApplicationContext != null) {
+        reactApplicationContext.emitDeviceEvent(
+            HIGH_TEXT_CONTRAST_EVENT_NAME,
+            highTextContrastEnabled,
+        )
       }
     }
   }
@@ -148,10 +191,14 @@ public class AccessibilityInfoModule(context: ReactApplicationContext) :
     accessibilityManager?.addAccessibilityStateChangeListener(accessibilityServiceChangeListener)
     val transitionUri = Settings.Global.getUriFor(Settings.Global.TRANSITION_ANIMATION_SCALE)
     contentResolver.registerContentObserver(transitionUri, false, animationScaleObserver)
+    val highTextContrastUri =
+        Settings.Global.getUriFor(ACCESSIBILITY_HIGH_TEXT_CONTRAST_ENABLED_CONSTANT)
+    contentResolver.registerContentObserver(highTextContrastUri, false, highTextContrastObserver)
     updateAndSendTouchExplorationChangeEvent(
         accessibilityManager?.isTouchExplorationEnabled == true)
     updateAndSendAccessibilityServiceChangeEvent(accessibilityManager?.isEnabled == true)
     updateAndSendReduceMotionChangeEvent()
+    updateAndSendHighTextContrastChangeEvent()
   }
 
   @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -160,6 +207,7 @@ public class AccessibilityInfoModule(context: ReactApplicationContext) :
         touchExplorationStateChangeListener)
     accessibilityManager?.removeAccessibilityStateChangeListener(accessibilityServiceChangeListener)
     contentResolver.unregisterContentObserver(animationScaleObserver)
+    contentResolver.unregisterContentObserver(highTextContrastObserver)
   }
 
   override fun initialize() {
@@ -168,6 +216,7 @@ public class AccessibilityInfoModule(context: ReactApplicationContext) :
         accessibilityManager?.isTouchExplorationEnabled == true)
     updateAndSendAccessibilityServiceChangeEvent(accessibilityManager?.isEnabled == true)
     updateAndSendReduceMotionChangeEvent()
+    updateAndSendHighTextContrastChangeEvent()
   }
 
   override fun invalidate() {
@@ -200,13 +249,18 @@ public class AccessibilityInfoModule(context: ReactApplicationContext) :
     }
     recommendedTimeout =
         accessibilityManager?.getRecommendedTimeoutMillis(
-            originalTimeout.toInt(), AccessibilityManager.FLAG_CONTENT_CONTROLS) ?: 0
+            originalTimeout.toInt(),
+            AccessibilityManager.FLAG_CONTENT_CONTROLS,
+        ) ?: 0
     successCallback.invoke(recommendedTimeout)
   }
 
   private companion object {
     private const val REDUCE_MOTION_EVENT_NAME = "reduceMotionDidChange"
+    private const val HIGH_TEXT_CONTRAST_EVENT_NAME = "highTextContrastDidChange"
     private const val TOUCH_EXPLORATION_EVENT_NAME = "touchExplorationDidChange"
     private const val ACCESSIBILITY_SERVICE_EVENT_NAME = "accessibilityServiceDidChange"
+    private const val ACCESSIBILITY_HIGH_TEXT_CONTRAST_ENABLED_CONSTANT =
+        "high_text_contrast_enabled" // constant is marked with @hide
   }
 }
