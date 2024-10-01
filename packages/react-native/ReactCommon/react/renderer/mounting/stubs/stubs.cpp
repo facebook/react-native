@@ -43,7 +43,7 @@ static void calculateShadowViewMutationsForNewTree(
     ShadowViewMutation::List& mutations,
     ViewNodePairScope& scope,
     const ShadowView& parentShadowView,
-    ShadowViewNodePair::NonOwningList newChildPairs) {
+    std::vector<ShadowViewNodePair*> newChildPairs) {
   // Sorting pairs based on `orderIndex` if needed.
   reorderInPlaceIfNeeded(newChildPairs);
 
