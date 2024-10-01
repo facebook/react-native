@@ -33,6 +33,19 @@ const throttle = (callback: () => void, timeout: number) => {
   };
 };
 
+const showHelp = () =>
+  logger.log(
+    [
+      '',
+      `${chalk.bold('i')} - run on iOS`,
+      `${chalk.bold('a')} - run on Android`,
+      `${chalk.bold('r')} - reload app`,
+      `${chalk.bold('d')} - open Dev Menu`,
+      `${chalk.bold('j')} - open DevTools`,
+      '',
+    ].join('\n'),
+  );
+
 export default function attachKeyHandlers({
   cliConfig,
   devServerUrl,
@@ -72,6 +85,13 @@ export default function attachKeyHandlers({
     }
 
     switch (key.toLowerCase()) {
+      case '\n':
+        logger.info('');
+        break;
+      case 'h':
+      case '?':
+        showHelp();
+        break;
       case 'r':
         reload();
         break;
@@ -120,15 +140,5 @@ export default function attachKeyHandlers({
   keyPressHandler.createInteractionListener();
   keyPressHandler.startInterceptingKeyStrokes();
 
-  logger.log(
-    [
-      '',
-      `${chalk.bold('i')} - run on iOS`,
-      `${chalk.bold('a')} - run on Android`,
-      `${chalk.bold('r')} - reload app`,
-      `${chalk.bold('d')} - open Dev Menu`,
-      `${chalk.bold('j')} - open DevTools`,
-      '',
-    ].join('\n'),
-  );
+  showHelp();
 }
