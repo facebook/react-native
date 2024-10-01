@@ -354,7 +354,7 @@ export default class SpringAnimation extends Animation {
         this._onUpdate(this._toValue);
       }
 
-      this.__debouncedOnEnd({finished: true});
+      this.__notifyAnimationEnd({finished: true});
       return;
     }
     // $FlowFixMe[method-unbinding] added when improving typing for this parameters
@@ -367,6 +367,6 @@ export default class SpringAnimation extends Animation {
     if (this._animationFrame != null) {
       global.cancelAnimationFrame(this._animationFrame);
     }
-    this.__debouncedOnEnd({finished: false});
+    this.__notifyAnimationEnd({finished: false});
   }
 }

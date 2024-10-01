@@ -124,7 +124,7 @@ export default class TimingAnimation extends Animation {
         // not cause intermixed JS and native animations.
         if (this._duration === 0) {
           this._onUpdate(this._toValue);
-          this.__debouncedOnEnd({finished: true});
+          this.__notifyAnimationEnd({finished: true});
         } else {
           this._animationFrame = requestAnimationFrame(() => this.onUpdate());
         }
@@ -147,7 +147,7 @@ export default class TimingAnimation extends Animation {
           this._fromValue + this._easing(1) * (this._toValue - this._fromValue),
         );
       }
-      this.__debouncedOnEnd({finished: true});
+      this.__notifyAnimationEnd({finished: true});
       return;
     }
 
@@ -168,6 +168,6 @@ export default class TimingAnimation extends Animation {
     if (this._animationFrame != null) {
       global.cancelAnimationFrame(this._animationFrame);
     }
-    this.__debouncedOnEnd({finished: false});
+    this.__notifyAnimationEnd({finished: false});
   }
 }
