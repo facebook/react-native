@@ -109,10 +109,6 @@ export default class TimingAnimation extends Animation {
   ): void {
     super.start(fromValue, onUpdate, onEnd, previousAnimation, animatedValue);
 
-    this.__active = true;
-    this._fromValue = fromValue;
-    this._onUpdate = onUpdate;
-
     if (!this._useNativeDriver && animatedValue.__isNative === true) {
       throw new Error(
         'Attempting to run JS driven animation on animated node ' +
@@ -120,6 +116,10 @@ export default class TimingAnimation extends Animation {
           'animation with `useNativeDriver: true`',
       );
     }
+
+    this.__active = true;
+    this._fromValue = fromValue;
+    this._onUpdate = onUpdate;
 
     const start = () => {
       this._startTime = Date.now();

@@ -189,6 +189,45 @@ describe('Animated', () => {
       );
       console.warn.mockRestore();
     });
+
+    it('throws if `useNativeDriver` is incompatible with AnimatedValue', () => {
+      const value = new Animated.Value(0);
+      value.__makeNative();
+
+      const animation = Animated.spring(value, {
+        toValue: 0,
+        velocity: 0,
+        useNativeDriver: false,
+      });
+
+      expect(() => {
+        animation.start();
+      }).toThrow(
+        'Attempting to run JS driven animation on animated node that has ' +
+          'been moved to "native" earlier by starting an animation with ' +
+          '`useNativeDriver: true`',
+      );
+    });
+
+    it('synchronously throws on `useNativeDriver` incompatibility', () => {
+      const value = new Animated.Value(0);
+      value.__makeNative();
+
+      const animation = Animated.spring(value, {
+        delay: 100, // Even with a non-zero delay, error throws synchronously.
+        toValue: 0,
+        velocity: 0,
+        useNativeDriver: false,
+      });
+
+      expect(() => {
+        animation.start();
+      }).toThrow(
+        'Attempting to run JS driven animation on animated node that has ' +
+          'been moved to "native" earlier by starting an animation with ' +
+          '`useNativeDriver: true`',
+      );
+    });
   });
 
   describe('Animated Sequence', () => {
