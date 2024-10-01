@@ -668,6 +668,37 @@ function OutlineExample(): React.Node {
   );
 }
 
+function BoxSizingExample(): React.Node {
+  const styles = StyleSheet.create({
+    boxSizingBox: {
+      padding: 5,
+      backgroundColor: 'green',
+      borderWidth: 5,
+      margin: 10,
+      width: 50,
+      height: 25,
+    },
+    boxSizingChild: {
+      backgroundColor: 'red',
+      width: '100%',
+      height: '100%',
+    },
+  });
+
+  return (
+    <View testID={'view-test-box-sizing'}>
+      <Text>Content box 50x25</Text>
+      <View style={[styles.boxSizingBox, {boxSizing: 'content-box'}]}>
+        <View style={styles.boxSizingChild} />
+      </View>
+      <Text>Border box 50x25</Text>
+      <View style={[styles.boxSizingBox, {boxSizing: 'border-box'}]}>
+        <View style={styles.boxSizingChild} />
+      </View>
+    </View>
+  );
+}
+
 export default ({
   title: 'View',
   documentationURL: 'https://reactnative.dev/docs/view',
@@ -1311,6 +1342,11 @@ export default ({
       title: 'Outline',
       name: 'outline',
       render: OutlineExample,
+    },
+    {
+      title: 'Box Sizing',
+      name: 'box-sizing',
+      render: BoxSizingExample,
     },
   ],
 }: RNTesterModule);
