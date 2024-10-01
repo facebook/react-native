@@ -88,13 +88,6 @@ export default class Animation {
     throw new Error('This animation type cannot be offloaded to native');
   }
 
-  // Helper function for subclasses to make sure onEnd is only called once.
-  __debouncedOnEnd(result: EndResult): void {
-    const onEnd = this.#onEnd;
-    this.#onEnd = null;
-    onEnd && onEnd(result);
-  }
-
   __findAnimatedPropsNodes(node: AnimatedNode): Array<AnimatedProps> {
     const result = [];
 
@@ -129,7 +122,7 @@ export default class Animation {
         animatedValue.__getNativeTag(),
         config,
         result => {
-          this.__debouncedOnEnd(result);
+          this.__notifyAnimationEnd(result);
 
           // When using natively driven animations, once the animation completes,
           // we need to ensure that the JS side nodes are synced with the updated
@@ -161,6 +154,18 @@ export default class Animation {
       NativeAnimatedHelper.API.unsetWaitingForIdentifier(
         startNativeAnimationWaitId,
       );
+    }
+  }
+
+  /**
+   * Notify the completion callback that the animation has ended. The completion
+   * callback will never be called more than once.
+   */
+  __notifyAnimationEnd(result: EndResult): void {
+    const callback = this.#onEnd;
+    if (callback != null) {
+      this.#onEnd = null;
+      callback(result);
     }
   }
 }

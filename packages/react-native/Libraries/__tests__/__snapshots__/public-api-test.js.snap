@@ -443,9 +443,9 @@ declare export default class Animation {
     platformConfig: ?PlatformConfig,
     ...
   }>;
-  __debouncedOnEnd(result: EndResult): void;
   __findAnimatedPropsNodes(node: AnimatedNode): Array<AnimatedProps>;
   __startAnimationIfNative(animatedValue: AnimatedValue): boolean;
+  __notifyAnimationEnd(result: EndResult): void;
 }
 "
 `;
