@@ -114,7 +114,9 @@ function PerformanceObserverUserTimingExample(): React.Node {
 
   useEffect(() => {
     const observer = new PerformanceObserver(list => {
-      setEntries(list.getEntries());
+      setEntries(
+        list.getEntries().filter(entry => entry.name.startsWith('rntester-')),
+      );
     });
 
     observer.observe({entryTypes: ['mark', 'measure']});
@@ -123,9 +125,13 @@ function PerformanceObserverUserTimingExample(): React.Node {
   }, []);
 
   const onPress = useCallback(() => {
-    performance.mark('mark1');
-    performance.mark('mark2');
-    performance.measure('measure1', 'mark1', 'mark2');
+    performance.mark('rntester-mark1');
+    performance.mark('rntester-mark2');
+    performance.measure(
+      'rntester-measure1',
+      'rntester-mark1',
+      'rntester-mark2',
+    );
   }, []);
 
   return (
