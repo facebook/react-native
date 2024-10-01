@@ -8,6 +8,7 @@
 package com.facebook.react.views.view;
 
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.view.View;
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
@@ -228,10 +229,13 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
 
   @ReactProp(name = "nativeBackgroundAndroid")
   public void setNativeBackground(ReactViewGroup view, @Nullable ReadableMap bg) {
-    view.setTranslucentBackgroundDrawable(
-        bg == null
-            ? null
-            : ReactDrawableHelper.createDrawableFromJSDescription(view.getContext(), bg));
+    Drawable background;
+    if (bg != null) {
+      background = ReactDrawableHelper.createDrawableFromJSDescription(view.getContext(), bg);
+    } else {
+      background = null;
+    }
+    BackgroundStyleApplicator.setFeedbackUnderlay(view, background);
   }
 
   @ReactProp(name = "nativeForegroundAndroid")
