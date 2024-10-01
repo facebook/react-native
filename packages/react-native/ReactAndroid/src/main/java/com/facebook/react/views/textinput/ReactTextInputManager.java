@@ -987,6 +987,9 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     view.setPaintFlags(
         view.getPaintFlags() & ~(Paint.STRIKE_THRU_TEXT_FLAG | Paint.UNDERLINE_TEXT_FLAG));
 
+    if (textDecorationLineString == null) {
+      return;
+    }
     for (String token : textDecorationLineString.split(" ")) {
       if (token.equals("underline")) {
         view.setPaintFlags(view.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
