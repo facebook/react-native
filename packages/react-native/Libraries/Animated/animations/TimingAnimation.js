@@ -4,11 +4,9 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
-
-'use strict';
 
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 import type {RgbaValue} from '../nodes/AnimatedColor';
@@ -17,7 +15,6 @@ import type AnimatedValue from '../nodes/AnimatedValue';
 import type AnimatedValueXY from '../nodes/AnimatedValueXY';
 import type {AnimationConfig, EndCallback} from './Animation';
 
-import NativeAnimatedHelper from '../../../src/private/animated/NativeAnimatedHelper';
 import AnimatedColor from '../nodes/AnimatedColor';
 import Animation from './Animation';
 
@@ -26,11 +23,11 @@ export type TimingAnimationConfig = $ReadOnly<{
   toValue:
     | number
     | AnimatedValue
-    | {
+    | $ReadOnly<{
         x: number,
         y: number,
         ...
-      }
+      }>
     | AnimatedValueXY
     | RgbaValue
     | AnimatedColor
@@ -38,6 +35,7 @@ export type TimingAnimationConfig = $ReadOnly<{
   easing?: (value: number) => number,
   duration?: number,
   delay?: number,
+  ...
 }>;
 
 export type TimingAnimationConfigSingle = $ReadOnly<{
@@ -46,6 +44,7 @@ export type TimingAnimationConfigSingle = $ReadOnly<{
   easing?: (value: number) => number,
   duration?: number,
   delay?: number,
+  ...
 }>;
 
 let _easeInOut;
@@ -65,25 +64,28 @@ export default class TimingAnimation extends Animation {
   _delay: number;
   _easing: (value: number) => number;
   _onUpdate: (value: number) => void;
-  _animationFrame: any;
-  _timeout: any;
-  _useNativeDriver: boolean;
+  _animationFrame: ?AnimationFrameID;
+  _timeout: ?TimeoutID;
   _platformConfig: ?PlatformConfig;
 
   constructor(config: TimingAnimationConfigSingle) {
-    super();
+    super(config);
+
     this._toValue = config.toValue;
     this._easing = config.easing ?? easeInOut();
     this._duration = config.duration ?? 500;
     this._delay = config.delay ?? 0;
-    this.__iterations = config.iterations ?? 1;
-    this._useNativeDriver = NativeAnimatedHelper.shouldUseNativeDriver(config);
     this._platformConfig = config.platformConfig;
-    this.__isInteraction = config.isInteraction ?? !this._useNativeDriver;
-    this.__isLooping = config.isLooping;
   }
 
-  __getNativeAnimationConfig(): any {
+  __getNativeAnimationConfig(): $ReadOnly<{
+    type: 'frames',
+    frames: $ReadOnlyArray<number>,
+    toValue: number,
+    iterations: number,
+    platformConfig: ?PlatformConfig,
+    ...
+  }> {
     const frameDuration = 1000.0 / 60.0;
     const frames = [];
     const numFrames = Math.round(this._duration / frameDuration);
@@ -109,24 +111,14 @@ export default class TimingAnimation extends Animation {
   ): void {
     super.start(fromValue, onUpdate, onEnd, previousAnimation, animatedValue);
 
-    if (!this._useNativeDriver && animatedValue.__isNative === true) {
-      throw new Error(
-        'Attempting to run JS driven animation on animated node ' +
-          'that has been moved to "native" earlier by starting an ' +
-          'animation with `useNativeDriver: true`',
-      );
-    }
-
-    this.__active = true;
     this._fromValue = fromValue;
     this._onUpdate = onUpdate;
 
     const start = () => {
       this._startTime = Date.now();
 
-      if (this._useNativeDriver) {
-        this.__startNativeAnimation(animatedValue);
-      } else {
+      const useNativeDriver = this.__startAnimationIfNative(animatedValue);
+      if (!useNativeDriver) {
         // Animations that sometimes have 0 duration and sometimes do not
         // still need to use the native driver when duration is 0 so as to
         // not cause intermixed JS and native animations.
@@ -134,10 +126,7 @@ export default class TimingAnimation extends Animation {
           this._onUpdate(this._toValue);
           this.__debouncedOnEnd({finished: true});
         } else {
-          this._animationFrame = requestAnimationFrame(
-            // $FlowFixMe[method-unbinding] added when improving typing for this parameters
-            this.onUpdate.bind(this),
-          );
+          this._animationFrame = requestAnimationFrame(() => this.onUpdate());
         }
       }
     };
@@ -175,9 +164,10 @@ export default class TimingAnimation extends Animation {
 
   stop(): void {
     super.stop();
-    this.__active = false;
     clearTimeout(this._timeout);
-    global.cancelAnimationFrame(this._animationFrame);
+    if (this._animationFrame != null) {
+      global.cancelAnimationFrame(this._animationFrame);
+    }
     this.__debouncedOnEnd({finished: false});
   }
 }
