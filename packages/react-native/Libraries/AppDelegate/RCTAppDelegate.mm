@@ -12,7 +12,6 @@
 #import <React/RCTSurfacePresenterBridgeAdapter.h>
 #import <React/RCTUtils.h>
 #import <ReactCommon/RCTHost.h>
-#import <ReactCommon/RCTCustomBundlerProvider.h>
 #include <UIKit/UIKit.h>
 #import <objc/runtime.h>
 #import <react/featureflags/ReactNativeFeatureFlags.h>
@@ -35,7 +34,7 @@
 #endif
 #import <react/nativemodule/defaults/DefaultTurboModules.h>
 
-@interface RCTAppDelegate () <RCTComponentViewFactoryComponentProvider, RCTHostDelegate, RCTCustomBundlerProvider>
+@interface RCTAppDelegate () <RCTComponentViewFactoryComponentProvider, RCTHostDelegate>
 @end
 
 @implementation RCTAppDelegate

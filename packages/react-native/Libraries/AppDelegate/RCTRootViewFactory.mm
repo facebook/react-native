@@ -208,6 +208,16 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
   }
 }
 
+- (void)loadSourceForHost:(RCTHost *)host onProgress:(RCTSourceLoadProgressBlock)onProgress onComplete:(RCTSourceLoadBlock)loadCallback {
+  if (self->_configuration.loadSourceWithProgressForHost) {
+    self->_configuration.loadSourceWithProgressForHost(host, onProgress, loadCallback);
+  } else if (self->_configuration.loadSourceForHost) {
+    self->_configuration.loadSourceForHost(host, loadCallback);
+  } else {
+    [host loadBundle:onProgress onComplete:loadCallback];
+  }
+}
+
 #pragma mark - RCTCxxBridgeDelegate
 - (std::unique_ptr<facebook::react::JSExecutorFactory>)jsExecutorFactoryForBridge:(RCTBridge *)bridge
 {

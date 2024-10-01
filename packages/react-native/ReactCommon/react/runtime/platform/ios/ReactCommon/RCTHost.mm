@@ -21,7 +21,6 @@
 #import <React/RCTPausedInDebuggerOverlayController.h>
 #import <React/RCTPerformanceLogger.h>
 #import <React/RCTReloadCommand.h>
-#import <ReactCommon/RCTCustomBundlerProvider.h>
 #import <jsinspector-modern/InspectorFlags.h>
 #import <jsinspector-modern/InspectorInterfaces.h>
 #import <jsinspector-modern/ReactCdp.h>
@@ -104,7 +103,7 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
   RCTInstance *_instance;
 
   __weak id<RCTHostDelegate> _hostDelegate;
-  __weak id<RCTTurboModuleManagerDelegate, RCTCustomBundlerProvider> _turboModuleManagerDelegate;
+  __weak id<RCTTurboModuleManagerDelegate> _turboModuleManagerDelegate;
   __weak id<RCTContextContainerHandling> _contextContainerHandler;
 
   NSURL *_oldDelegateBundleURL;
@@ -151,7 +150,7 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
  */
 - (instancetype)initWithBundleURLProvider:(RCTHostBundleURLProvider)provider
                              hostDelegate:(id<RCTHostDelegate>)hostDelegate
-               turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate, RCTCustomBundlerProvider>)turboModuleManagerDelegate
+               turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
                          jsEngineProvider:(RCTHostJSEngineProvider)jsEngineProvider
                             launchOptions:(nullable NSDictionary *)launchOptions
 {
@@ -331,15 +330,17 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
 }
 
 - (void)loadSourceForInstance:(RCTInstance *)instance onProgress:(RCTSourceLoadProgressBlock)onProgress onComplete:(RCTSourceLoadBlock)loadCallback {
-  if ([_turboModuleManagerDelegate respondsToSelector:@selector(loadSourceForHost:onProgress:onComplete:)]) {
-    [_turboModuleManagerDelegate loadSourceForHost:self onProgress:onProgress onComplete:loadCallback];
-  } else if ([_turboModuleManagerDelegate respondsToSelector:@selector(loadSourceForHost:withBlock:)]) {
-    [_turboModuleManagerDelegate loadSourceForHost:self withBlock:loadCallback];
+  if ([_hostDelegate respondsToSelector:@selector(loadSourceForHost:onProgress:onComplete:)]) {
+    [_hostDelegate loadSourceForHost:self onProgress:onProgress onComplete:loadCallback];
   } else {
-    [RCTJavaScriptLoader loadBundleAtURL:[_bundleManager bundleURL]
-                              onProgress:onProgress
-                              onComplete:loadCallback];
+    [self loadBundle:onProgress onComplete:loadCallback];
   }
+}
+
+- (void)loadBundle:(RCTSourceLoadProgressBlock)onProgress onComplete:(RCTSourceLoadBlock)loadCallback {
+  [RCTJavaScriptLoader loadBundleAtURL:[_bundleManager bundleURL]
+                            onProgress:onProgress
+                            onComplete:loadCallback];
 }
 
 #pragma mark - RCTContextContainerHandling

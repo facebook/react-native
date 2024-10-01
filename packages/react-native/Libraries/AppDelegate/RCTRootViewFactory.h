@@ -37,6 +37,11 @@ typedef void (^RCTHostDidReceiveJSErrorStackBlock)(
     NSString *message,
     NSUInteger exceptionId,
     BOOL isFatal);
+typedef void (^RCTHostLoadSourceBlock)(RCTHost *host, RCTSourceLoadBlock loadCallback);
+typedef void (^RCTHostLoadSourceWithProgressBlock)(
+    RCTHost *host,
+    RCTSourceLoadProgressBlock onProgress,
+    RCTSourceLoadBlock loadCallback);
 
 #pragma mark - RCTRootViewFactory Configuration
 @interface RCTRootViewFactoryConfiguration : NSObject
@@ -162,6 +167,18 @@ typedef void (^RCTHostDidReceiveJSErrorStackBlock)(
  * @parameter: isFatal - YES if JS error is fatal.
  */
 @property (nonatomic, nullable) RCTHostDidReceiveJSErrorStackBlock hostDidReceiveJSErrorStackBlock;
+
+/**
+ * The `RCTInstance` will automatically attempt to load the JS source code , however, if you want
+ * to handle loading the JS yourself, you can do so by adding this block..
+ */
+@property (nonatomic, nullable) RCTHostLoadSourceWithProgressBlock loadSourceWithProgressForHost;
+
+/**
+ * Similar to loadSourceForHost:onProgress:onComplete: but without progress
+ * reporting.
+ */
+@property (nonatomic, nullable) RCTHostLoadSourceBlock loadSourceForHost;
 
 @end
 
