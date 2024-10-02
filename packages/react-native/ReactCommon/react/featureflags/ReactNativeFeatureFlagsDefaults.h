@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e8b849d614b943b044df611371c0d891>>
+ * @generated SignedSource<<37c9fda4f1bc361bde3ba3fce8f18eb9>>
  */
 
 /**
@@ -40,10 +40,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool completeReactInstanceCreationOnBgThreadOnAndroid() override {
-    return false;
-  }
-
-  bool destroyFabricSurfacesInReactInstanceManager() override {
     return false;
   }
 

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<284402d1a83bfc5e8ae0a4619c61e130>>
+ * @generated SignedSource<<ee081daa4d26ef5c8e336bd35aad5de7>>
  */
 
 /**
@@ -56,11 +56,6 @@ class ReactNativeFeatureFlags {
    * Do not wait for a main-thread dispatch to complete init to start executing work on the JS thread on Android
    */
   RN_EXPORT static bool completeReactInstanceCreationOnBgThreadOnAndroid();
-
-  /**
-   * When enabled, ReactInstanceManager will clean up Fabric surfaces on destroy().
-   */
-  RN_EXPORT static bool destroyFabricSurfacesInReactInstanceManager();
 
   /**
    * Kill-switch to turn off support for aling-items:baseline on Fabric iOS.
