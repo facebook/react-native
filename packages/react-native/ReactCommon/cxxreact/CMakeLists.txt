@@ -28,5 +28,4 @@ target_link_libraries(react_cxxreact
         logger
         reactperflogger
         runtimeexecutor
-        react_timing
         react_debug)
