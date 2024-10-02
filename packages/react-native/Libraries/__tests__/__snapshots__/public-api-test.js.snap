@@ -429,7 +429,6 @@ declare export default class Animation {
   __isInteraction: boolean;
   __iterations: number;
   __isLooping: ?boolean;
-  _nativeId: number;
   start(
     fromValue: number,
     onUpdate: (value: number) => void,

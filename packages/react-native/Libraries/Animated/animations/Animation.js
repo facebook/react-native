@@ -36,14 +36,13 @@ let startNativeAnimationNextId = 1;
 // Once an animation has been stopped or finished its course, it will
 // not be reused.
 export default class Animation {
+  #nativeID: ?number;
   #onEnd: ?EndCallback;
 
   __active: boolean;
   __isInteraction: boolean;
   __iterations: number;
   __isLooping: ?boolean;
-
-  _nativeId: number;
 
   start(
     fromValue: number,
@@ -56,8 +55,8 @@ export default class Animation {
   }
 
   stop(): void {
-    if (this._nativeId) {
-      NativeAnimatedHelper.API.stopAnimation(this._nativeId);
+    if (this.#nativeID != null) {
+      NativeAnimatedHelper.API.stopAnimation(this.#nativeID);
     }
   }
 
@@ -98,9 +97,9 @@ export default class Animation {
     try {
       const config = this.__getNativeAnimationConfig();
       animatedValue.__makeNative(config.platformConfig);
-      this._nativeId = NativeAnimatedHelper.generateNewAnimationId();
+      this.#nativeID = NativeAnimatedHelper.generateNewAnimationId();
       NativeAnimatedHelper.API.startAnimatingNode(
-        this._nativeId,
+        this.#nativeID,
         animatedValue.__getNativeTag(),
         config,
         result => {
