@@ -9,8 +9,8 @@
 
 #include <react/timing/primitives.h>
 #include <memory>
-#include <mutex>
 #include <optional>
+#include <shared_mutex>
 #include <vector>
 #include "PerformanceEntryCircularBuffer.h"
 #include "PerformanceEntryKeyedBuffer.h"
@@ -99,7 +99,7 @@ class PerformanceEntryReporter {
  private:
   std::unique_ptr<PerformanceObserverRegistry> observerRegistry_;
 
-  mutable std::mutex buffersMutex_;
+  mutable std::shared_mutex buffersMutex_;
   PerformanceEntryCircularBuffer eventBuffer_{EVENT_BUFFER_SIZE};
   PerformanceEntryCircularBuffer longTaskBuffer_{LONG_TASK_BUFFER_SIZE};
   PerformanceEntryKeyedBuffer markBuffer_;
