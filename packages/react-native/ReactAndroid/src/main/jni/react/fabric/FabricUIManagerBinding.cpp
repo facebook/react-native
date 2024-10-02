@@ -51,7 +51,7 @@ FabricUIManagerBinding::getInspectorDataForInstance(
     jni::alias_ref<EventEmitterWrapper::javaobject> eventEmitterWrapper) {
   auto scheduler = getScheduler();
   if (!scheduler) {
-    LOG(ERROR) << "Binding::startSurface: scheduler disappeared";
+    LOG(ERROR) << "FabricUIManagerBinding::startSurface: scheduler disappeared";
     return ReadableNativeMap::newObjectCxxArgs(folly::dynamic::object());
   }
 
@@ -124,14 +124,14 @@ void FabricUIManagerBinding::reportMount(SurfaceId surfaceId) {
         surfaceHandler->getMountingCoordinator()->didPerformAsyncTransactions();
       }
     } else {
-      LOG(ERROR) << "Binding::reportMount: Surface with id " << surfaceId
-                 << " is not found";
+      LOG(ERROR) << "FabricUIManagerBinding::reportMount: Surface with id "
+                 << surfaceId << " is not found";
     }
   }
 
   auto scheduler = getScheduler();
   if (!scheduler) {
-    LOG(ERROR) << "Binding::reportMount: scheduler disappeared";
+    LOG(ERROR) << "FabricUIManagerBinding::reportMount: scheduler disappeared";
     return;
   }
   scheduler->reportMount(surfaceId);
@@ -147,7 +147,7 @@ void FabricUIManagerBinding::startSurfaceWithSurfaceHandler(
   SystraceSection s("FabricUIManagerBinding::startSurfaceWithSurfaceHandler");
   if (enableFabricLogs_) {
     LOG(WARNING)
-        << "Binding::startSurfaceWithSurfaceHandler() was called (address: "
+        << "FabricUIManagerBinding::startSurfaceWithSurfaceHandler() was called (address: "
         << this << ", surfaceId: " << surfaceId << ").";
   }
 
@@ -160,7 +160,7 @@ void FabricUIManagerBinding::startSurfaceWithSurfaceHandler(
   auto scheduler = getScheduler();
   if (!scheduler) {
     LOG(ERROR)
-        << "Binding::startSurfaceWithSurfaceHandler: scheduler disappeared";
+        << "FabricUIManagerBinding::startSurfaceWithSurfaceHandler: scheduler disappeared";
     return;
   }
   scheduler->registerSurface(surfaceHandler);
@@ -191,13 +191,14 @@ void FabricUIManagerBinding::startSurface(
   SystraceSection s("FabricUIManagerBinding::startSurface");
 
   if (enableFabricLogs_) {
-    LOG(WARNING) << "Binding::startSurface() was called (address: " << this
-                 << ", surfaceId: " << surfaceId << ").";
+    LOG(WARNING)
+        << "FabricUIManagerBinding::startSurface() was called (address: "
+        << this << ", surfaceId: " << surfaceId << ").";
   }
 
   auto scheduler = getScheduler();
   if (!scheduler) {
-    LOG(ERROR) << "Binding::startSurface: scheduler disappeared";
+    LOG(ERROR) << "FabricUIManagerBinding::startSurface: scheduler disappeared";
     return;
   }
 
@@ -247,13 +248,14 @@ void FabricUIManagerBinding::startSurfaceWithConstraints(
 
   if (enableFabricLogs_) {
     LOG(WARNING)
-        << "Binding::startSurfaceWithConstraints() was called (address: "
+        << "FabricUIManagerBinding::startSurfaceWithConstraints() was called (address: "
         << this << ", surfaceId: " << surfaceId << ").";
   }
 
   auto scheduler = getScheduler();
   if (!scheduler) {
-    LOG(ERROR) << "Binding::startSurfaceWithConstraints: scheduler disappeared";
+    LOG(ERROR)
+        << "FabricUIManagerBinding::startSurfaceWithConstraints: scheduler disappeared";
     return;
   }
 
@@ -305,13 +307,14 @@ void FabricUIManagerBinding::startSurfaceWithConstraints(
 void FabricUIManagerBinding::stopSurface(jint surfaceId) {
   SystraceSection s("FabricUIManagerBinding::stopSurface");
   if (enableFabricLogs_) {
-    LOG(WARNING) << "Binding::stopSurface() was called (address: " << this
-                 << ", surfaceId: " << surfaceId << ").";
+    LOG(WARNING)
+        << "FabricUIManagerBinding::stopSurface() was called (address: " << this
+        << ", surfaceId: " << surfaceId << ").";
   }
 
   auto scheduler = getScheduler();
   if (!scheduler) {
-    LOG(ERROR) << "Binding::stopSurface: scheduler disappeared";
+    LOG(ERROR) << "FabricUIManagerBinding::stopSurface: scheduler disappeared";
     return;
   }
 
@@ -319,7 +322,8 @@ void FabricUIManagerBinding::stopSurface(jint surfaceId) {
     std::unique_lock lock(surfaceHandlerRegistryMutex_);
     auto iterator = surfaceHandlerRegistry_.find(surfaceId);
     if (iterator == surfaceHandlerRegistry_.end()) {
-      LOG(ERROR) << "Binding::stopSurface: Surface with given id is not found";
+      LOG(ERROR)
+          << "FabricUIManagerBinding::stopSurface: Surface with given id is not found";
       return;
     }
 
@@ -349,7 +353,7 @@ void FabricUIManagerBinding::stopSurfaceWithSurfaceHandler(
       surfaceHandlerBinding->cthis()->getSurfaceHandler();
   if (enableFabricLogs_) {
     LOG(WARNING)
-        << "Binding::stopSurfaceWithSurfaceHandler() was called (address: "
+        << "FabricUIManagerBinding::stopSurfaceWithSurfaceHandler() was called (address: "
         << this << ", surfaceId: " << surfaceHandler.getSurfaceId() << ").";
   }
 
@@ -357,7 +361,8 @@ void FabricUIManagerBinding::stopSurfaceWithSurfaceHandler(
 
   auto scheduler = getScheduler();
   if (!scheduler) {
-    LOG(ERROR) << "Binding::unregisterSurface: scheduler disappeared";
+    LOG(ERROR)
+        << "FabricUIManagerBinding::unregisterSurface: scheduler disappeared";
     return;
   }
   scheduler->unregisterSurface(surfaceHandler);
@@ -388,7 +393,8 @@ void FabricUIManagerBinding::setConstraints(
 
   auto scheduler = getScheduler();
   if (!scheduler) {
-    LOG(ERROR) << "Binding::setConstraints: scheduler disappeared";
+    LOG(ERROR)
+        << "FabricUIManagerBinding::setConstraints: scheduler disappeared";
     return;
   }
 
@@ -413,7 +419,7 @@ void FabricUIManagerBinding::setConstraints(
     auto iterator = surfaceHandlerRegistry_.find(surfaceId);
     if (iterator == surfaceHandlerRegistry_.end()) {
       LOG(ERROR)
-          << "Binding::setConstraints: Surface with given id is not found";
+          << "FabricUIManagerBinding::setConstraints: Surface with given id is not found";
       return;
     }
     auto* surfaceHandler = std::get_if<SurfaceHandler>(&iterator->second);
@@ -440,8 +446,9 @@ void FabricUIManagerBinding::installFabricUIManager(
   enableFabricLogs_ = ReactNativeFeatureFlags::enableFabricLogs();
 
   if (enableFabricLogs_) {
-    LOG(WARNING) << "Binding::installFabricUIManager() was called (address: "
-                 << this << ").";
+    LOG(WARNING)
+        << "FabricUIManagerBinding::installFabricUIManager() was called (address: "
+        << this << ").";
   }
 
   std::unique_lock lock(installMutex_);
@@ -507,8 +514,9 @@ void FabricUIManagerBinding::installFabricUIManager(
 
 void FabricUIManagerBinding::uninstallFabricUIManager() {
   if (enableFabricLogs_) {
-    LOG(WARNING) << "Binding::uninstallFabricUIManager() was called (address: "
-                 << this << ").";
+    LOG(WARNING)
+        << "FabricUIManagerBinding::uninstallFabricUIManager() was called (address: "
+        << this << ").";
   }
 
   std::unique_lock lock(installMutex_);
