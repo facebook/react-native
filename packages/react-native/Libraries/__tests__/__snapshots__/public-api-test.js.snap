@@ -416,19 +416,21 @@ declare export function fromBouncinessAndSpeed(
 exports[`public API should not change unintentionally Libraries/Animated/animations/Animation.js 1`] = `
 "export type EndResult = { finished: boolean, value?: number, ... };
 export type EndCallback = (result: EndResult) => void;
-export type AnimationConfig = {
+export type AnimationConfig = $ReadOnly<{
   isInteraction?: boolean,
   useNativeDriver: boolean,
   platformConfig?: PlatformConfig,
   onComplete?: ?EndCallback,
   iterations?: number,
   isLooping?: boolean,
-};
+  ...
+}>;
 declare export default class Animation {
   __active: boolean;
   __isInteraction: boolean;
-  __iterations: number;
   __isLooping: ?boolean;
+  __iterations: number;
+  constructor(config: AnimationConfig): void;
   start(
     fromValue: number,
     onUpdate: (value: number) => void,
@@ -437,31 +439,36 @@ declare export default class Animation {
     animatedValue: AnimatedValue
   ): void;
   stop(): void;
-  __getNativeAnimationConfig(): any;
+  __getNativeAnimationConfig(): $ReadOnly<{
+    platformConfig: ?PlatformConfig,
+    ...
+  }>;
   __debouncedOnEnd(result: EndResult): void;
   __findAnimatedPropsNodes(node: AnimatedNode): Array<AnimatedProps>;
-  __startNativeAnimation(animatedValue: AnimatedValue): void;
+  __startAnimationIfNative(animatedValue: AnimatedValue): boolean;
 }
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Animated/animations/DecayAnimation.js 1`] = `
-"export type DecayAnimationConfig = {
+"export type DecayAnimationConfig = $ReadOnly<{
   ...AnimationConfig,
   velocity:
     | number
-    | {
+    | $ReadOnly<{
         x: number,
         y: number,
         ...
-      },
+      }>,
   deceleration?: number,
-};
-export type DecayAnimationConfigSingle = {
+  ...
+}>;
+export type DecayAnimationConfigSingle = $ReadOnly<{
   ...AnimationConfig,
   velocity: number,
   deceleration?: number,
-};
+  ...
+}>;
 declare export default class DecayAnimation extends Animation {
   _startTime: number;
   _lastValue: number;
@@ -469,17 +476,17 @@ declare export default class DecayAnimation extends Animation {
   _deceleration: number;
   _velocity: number;
   _onUpdate: (value: number) => void;
-  _animationFrame: any;
-  _useNativeDriver: boolean;
+  _animationFrame: ?AnimationFrameID;
   _platformConfig: ?PlatformConfig;
   constructor(config: DecayAnimationConfigSingle): void;
-  __getNativeAnimationConfig(): {|
+  __getNativeAnimationConfig(): $ReadOnly<{
     deceleration: number,
     iterations: number,
     platformConfig: ?PlatformConfig,
-    type: $TEMPORARY$string<\\"decay\\">,
+    type: \\"decay\\",
     velocity: number,
-  |};
+    ...
+  }>;
   start(
     fromValue: number,
     onUpdate: (value: number) => void,
@@ -494,7 +501,7 @@ declare export default class DecayAnimation extends Animation {
 `;
 
 exports[`public API should not change unintentionally Libraries/Animated/animations/SpringAnimation.js 1`] = `
-"export type SpringAnimationConfig = {
+"export type SpringAnimationConfig = $ReadOnly<{
   ...AnimationConfig,
   toValue:
     | number
@@ -519,11 +526,11 @@ exports[`public API should not change unintentionally Libraries/Animated/animati
   restSpeedThreshold?: number,
   velocity?:
     | number
-    | {
+    | $ReadOnly<{
         x: number,
         y: number,
         ...
-      },
+      }>,
   bounciness?: number,
   speed?: number,
   tension?: number,
@@ -532,8 +539,9 @@ exports[`public API should not change unintentionally Libraries/Animated/animati
   damping?: number,
   mass?: number,
   delay?: number,
-};
-export type SpringAnimationConfigSingle = {
+  ...
+}>;
+export type SpringAnimationConfigSingle = $ReadOnly<{
   ...AnimationConfig,
   toValue: number,
   overshootClamping?: boolean,
@@ -548,7 +556,9 @@ export type SpringAnimationConfigSingle = {
   damping?: number,
   mass?: number,
   delay?: number,
-};
+  ...
+}>;
+declare opaque type SpringAnimationInternalState;
 declare export default class SpringAnimation extends Animation {
   _overshootClamping: boolean;
   _restDisplacementThreshold: number;
@@ -563,16 +573,15 @@ declare export default class SpringAnimation extends Animation {
   _mass: number;
   _initialVelocity: number;
   _delay: number;
-  _timeout: any;
+  _timeout: ?TimeoutID;
   _startTime: number;
   _lastTime: number;
   _frameTime: number;
   _onUpdate: (value: number) => void;
-  _animationFrame: any;
-  _useNativeDriver: boolean;
+  _animationFrame: ?AnimationFrameID;
   _platformConfig: ?PlatformConfig;
   constructor(config: SpringAnimationConfigSingle): void;
-  __getNativeAnimationConfig(): {|
+  __getNativeAnimationConfig(): $ReadOnly<{
     damping: number,
     initialVelocity: number,
     iterations: number,
@@ -582,9 +591,10 @@ declare export default class SpringAnimation extends Animation {
     restDisplacementThreshold: number,
     restSpeedThreshold: number,
     stiffness: number,
-    toValue: any,
-    type: $TEMPORARY$string<\\"spring\\">,
-  |};
+    toValue: number,
+    type: \\"spring\\",
+    ...
+  }>;
   start(
     fromValue: number,
     onUpdate: (value: number) => void,
@@ -592,7 +602,7 @@ declare export default class SpringAnimation extends Animation {
     previousAnimation: ?Animation,
     animatedValue: AnimatedValue
   ): void;
-  getInternalState(): Object;
+  getInternalState(): SpringAnimationInternalState;
   onUpdate(): void;
   stop(): void;
 }
@@ -605,11 +615,11 @@ exports[`public API should not change unintentionally Libraries/Animated/animati
   toValue:
     | number
     | AnimatedValue
-    | {
+    | $ReadOnly<{
         x: number,
         y: number,
         ...
-      }
+      }>
     | AnimatedValueXY
     | RgbaValue
     | AnimatedColor
@@ -617,6 +627,7 @@ exports[`public API should not change unintentionally Libraries/Animated/animati
   easing?: (value: number) => number,
   duration?: number,
   delay?: number,
+  ...
 }>;
 export type TimingAnimationConfigSingle = $ReadOnly<{
   ...AnimationConfig,
@@ -624,6 +635,7 @@ export type TimingAnimationConfigSingle = $ReadOnly<{
   easing?: (value: number) => number,
   duration?: number,
   delay?: number,
+  ...
 }>;
 declare export default class TimingAnimation extends Animation {
   _startTime: number;
@@ -633,12 +645,18 @@ declare export default class TimingAnimation extends Animation {
   _delay: number;
   _easing: (value: number) => number;
   _onUpdate: (value: number) => void;
-  _animationFrame: any;
-  _timeout: any;
-  _useNativeDriver: boolean;
+  _animationFrame: ?AnimationFrameID;
+  _timeout: ?TimeoutID;
   _platformConfig: ?PlatformConfig;
   constructor(config: TimingAnimationConfigSingle): void;
-  __getNativeAnimationConfig(): any;
+  __getNativeAnimationConfig(): $ReadOnly<{
+    type: \\"frames\\",
+    frames: $ReadOnlyArray<number>,
+    toValue: number,
+    iterations: number,
+    platformConfig: ?PlatformConfig,
+    ...
+  }>;
   start(
     fromValue: number,
     onUpdate: (value: number) => void,
