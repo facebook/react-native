@@ -14,6 +14,5 @@
 - (void)registerSegmentWithId:(NSNumber *)segmentId path:(NSString *)path;
 - (void)setBundleURLProvider:(RCTHostBundleURLProvider)bundleURLProvider;
 - (void)setContextContainerHandler:(id<RCTContextContainerHandling>)contextContainerHandler;
-- (void)loadBundle:(RCTSourceLoadProgressBlock)onProgress onComplete:(RCTSourceLoadBlock)loadCallback;
 
 @end

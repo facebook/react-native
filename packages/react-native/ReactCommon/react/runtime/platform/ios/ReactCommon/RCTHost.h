@@ -35,9 +35,10 @@ typedef NSURL *_Nullable (^RCTHostBundleURLProvider)(void);
 
 - (void)hostDidStart:(RCTHost *)host;
 
-- (void)loadSourceForHost:(RCTHost *)host
-               onProgress:(RCTSourceLoadProgressBlock)onProgress
-               onComplete:(RCTSourceLoadBlock)loadCallback;
+@optional
+- (void)loadBundleAtURL:(NSURL *)sourceURL
+             onProgress:(RCTSourceLoadProgressBlock)onProgress
+             onComplete:(RCTSourceLoadBlock)loadCallback;
 
 @end
 

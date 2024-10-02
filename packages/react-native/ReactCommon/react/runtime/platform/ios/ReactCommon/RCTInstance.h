@@ -45,9 +45,9 @@ RCT_EXTERN void RCTInstanceSetRuntimeDiagnosticFlags(NSString *_Nullable flags);
 
 - (void)instance:(RCTInstance *)instance didInitializeRuntime:(facebook::jsi::Runtime &)runtime;
 
-- (void)loadSourceForInstance:(RCTInstance *)instance
-                   onProgress:(RCTSourceLoadProgressBlock)onProgress
-                   onComplete:(RCTSourceLoadBlock)loadCallback;
+- (void)loadBundleAtURL:(NSURL *)sourceURL
+             onProgress:(RCTSourceLoadProgressBlock)onProgress
+             onComplete:(RCTSourceLoadBlock)loadCallback;
 
 @end
 

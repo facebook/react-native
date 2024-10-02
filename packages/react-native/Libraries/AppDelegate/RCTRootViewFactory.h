@@ -12,6 +12,7 @@
 @protocol RCTCxxBridgeDelegate;
 @protocol RCTComponentViewFactoryComponentProvider;
 @protocol RCTTurboModuleManagerDelegate;
+@protocol RCTHostDelegate;
 @class RCTBridge;
 @class RCTHost;
 @class RCTRootView;
@@ -37,11 +38,6 @@ typedef void (^RCTHostDidReceiveJSErrorStackBlock)(
     NSString *message,
     NSUInteger exceptionId,
     BOOL isFatal);
-typedef void (^RCTHostLoadSourceBlock)(RCTHost *host, RCTSourceLoadBlock loadCallback);
-typedef void (^RCTHostLoadSourceWithProgressBlock)(
-    RCTHost *host,
-    RCTSourceLoadProgressBlock onProgress,
-    RCTSourceLoadBlock loadCallback);
 
 #pragma mark - RCTRootViewFactory Configuration
 @interface RCTRootViewFactoryConfiguration : NSObject
@@ -168,17 +164,6 @@ typedef void (^RCTHostLoadSourceWithProgressBlock)(
  */
 @property (nonatomic, nullable) RCTHostDidReceiveJSErrorStackBlock hostDidReceiveJSErrorStackBlock;
 
-/**
- * The `RCTInstance` will automatically attempt to load the JS source code , however, if you want
- * to handle loading the JS yourself, you can do so by adding this block..
- */
-@property (nonatomic, nullable) RCTHostLoadSourceWithProgressBlock loadSourceWithProgressForHost;
-
-/**
- * Similar to loadSourceWithProgressForHost but without progress reporting.
- */
-@property (nonatomic, nullable) RCTHostLoadSourceBlock loadSourceForHost;
-
 @end
 
 #pragma mark - RCTRootViewFactory
@@ -202,6 +187,8 @@ typedef void (^RCTHostLoadSourceWithProgressBlock)(
         andTurboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate> _Nullable)turboModuleManagerDelegate;
 
 - (instancetype)initWithConfiguration:(RCTRootViewFactoryConfiguration *)configuration;
+
+- (instancetype)initWithTurboModuleDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate hostDelegate:(id<RCTHostDelegate>)hostdelegate configuration:(RCTRootViewFactoryConfiguration*)configuration;
 
 /**
  * This method can be used to create new RCTRootViews on demand.

@@ -95,8 +95,21 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
 @end
 
 @implementation RCTRootViewFactory {
-  RCTRootViewFactoryConfiguration *_configuration;
   __weak id<RCTTurboModuleManagerDelegate> _turboModuleManagerDelegate;
+  __weak id<RCTHostDelegate> _hostDelegate;
+  RCTRootViewFactoryConfiguration *_configuration;
+}
+
+- (instancetype)initWithTurboModuleDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate hostDelegate:(id<RCTHostDelegate>)hostdelegate configuration:(RCTRootViewFactoryConfiguration*)configuration {
+  if (self = [super init]) {
+    _configuration = configuration;
+    _hostDelegate = hostdelegate;
+    _contextContainer = std::make_shared<const facebook::react::ContextContainer>();
+    _reactNativeConfig = std::make_shared<const facebook::react::EmptyReactNativeConfig>();
+    _contextContainer->insert("ReactNativeConfig", _reactNativeConfig);
+    _turboModuleManagerDelegate = turboModuleManagerDelegate;
+  }
+  return self;
 }
 
 - (instancetype)initWithConfiguration:(RCTRootViewFactoryConfiguration *)configuration
@@ -205,16 +218,6 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
 {
   if (self->_configuration.hostDidReceiveJSErrorStackBlock) {
     self->_configuration.hostDidReceiveJSErrorStackBlock(host, stack, message, exceptionId, isFatal);
-  }
-}
-
-- (void)loadSourceForHost:(RCTHost *)host onProgress:(RCTSourceLoadProgressBlock)onProgress onComplete:(RCTSourceLoadBlock)loadCallback {
-  if (self->_configuration.loadSourceWithProgressForHost) {
-    self->_configuration.loadSourceWithProgressForHost(host, onProgress, loadCallback);
-  } else if (self->_configuration.loadSourceForHost) {
-    self->_configuration.loadSourceForHost(host, loadCallback);
-  } else {
-    [host loadBundle:onProgress onComplete:loadCallback];
   }
 }
 

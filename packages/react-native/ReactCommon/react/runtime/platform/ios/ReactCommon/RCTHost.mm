@@ -329,18 +329,14 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
   [self.runtimeDelegate host:self didInitializeRuntime:runtime];
 }
 
-- (void)loadSourceForInstance:(RCTInstance *)instance onProgress:(RCTSourceLoadProgressBlock)onProgress onComplete:(RCTSourceLoadBlock)loadCallback {
-  if ([_hostDelegate respondsToSelector:@selector(loadSourceForHost:onProgress:onComplete:)]) {
-    [_hostDelegate loadSourceForHost:self onProgress:onProgress onComplete:loadCallback];
+- (void)loadBundleAtURL:(NSURL *)sourceURL onProgress:(RCTSourceLoadProgressBlock)onProgress onComplete:(RCTSourceLoadBlock)loadCallback {
+  if ([_hostDelegate respondsToSelector:@selector(loadBundleAtURL:onProgress:onComplete:)]) {
+    [_hostDelegate loadBundleAtURL:sourceURL onProgress:onProgress onComplete:loadCallback];
   } else {
-    [self loadBundle:onProgress onComplete:loadCallback];
+    [RCTJavaScriptLoader loadBundleAtURL:sourceURL
+                              onProgress:onProgress
+                              onComplete:loadCallback];
   }
-}
-
-- (void)loadBundle:(RCTSourceLoadProgressBlock)onProgress onComplete:(RCTSourceLoadBlock)loadCallback {
-  [RCTJavaScriptLoader loadBundleAtURL:[_bundleManager bundleURL]
-                            onProgress:onProgress
-                            onComplete:loadCallback];
 }
 
 #pragma mark - RCTContextContainerHandling
