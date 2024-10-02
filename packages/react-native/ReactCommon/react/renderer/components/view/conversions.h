@@ -227,28 +227,6 @@ inline void fromRawValue(
 }
 
 inline void fromRawValue(
-    const PropsParserContext& /*context*/,
-    const RawValue& value,
-    yoga::BoxSizing& result) {
-  result = yoga::BoxSizing::BorderBox;
-  react_native_expect(value.hasType<std::string>());
-  if (!value.hasType<std::string>()) {
-    return;
-  }
-  auto stringValue = (std::string)value;
-  if (stringValue == "border-box") {
-    result = yoga::BoxSizing::BorderBox;
-    return;
-  }
-  if (stringValue == "content-box") {
-    result = yoga::BoxSizing::ContentBox;
-    return;
-  }
-
-  LOG(ERROR) << "Could not parse yoga::BoxSizing: " << stringValue;
-}
-
-inline void fromRawValue(
     const PropsParserContext& context,
     const RawValue& value,
     yoga::Justify& result) {
