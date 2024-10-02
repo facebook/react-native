@@ -12,7 +12,6 @@
 import type {Config} from '@react-native-community/cli-types';
 import type TerminalReporter from 'metro/src/lib/TerminalReporter';
 
-import {logger} from '../../utils/logger';
 import OpenDebuggerKeyboardHandler from './OpenDebuggerKeyboardHandler';
 import chalk from 'chalk';
 import {spawn} from 'child_process';
@@ -62,7 +61,11 @@ export default function attachKeyHandlers({
   reporter: TerminalReporter,
 }) {
   if (process.stdin.isTTY !== true) {
-    logger.debug('Interactive mode is not supported in this environment');
+    reporter.update({
+      type: 'unstable_server_log',
+      level: 'info',
+      data: 'Interactive mode is not supported in this environment',
+    });
     return;
   }
 
@@ -70,7 +73,11 @@ export default function attachKeyHandlers({
   setRawMode(true);
 
   const reload = throttle(() => {
-    logger.info('Reloading connected app(s)...');
+    reporter.update({
+      type: 'unstable_server_log',
+      level: 'info',
+      data: 'Reloading connected app(s)...',
+    });
     messageSocket.broadcast('reload', null);
   }, RELOAD_TIMEOUT);
 
@@ -80,8 +87,6 @@ export default function attachKeyHandlers({
   });
 
   process.stdin.on('keypress', (str: string, key: KeyEvent) => {
-    logger.debug(`Key pressed: ${key.sequence}`);
-
     if (openDebuggerKeyboardHandler.maybeHandleTargetSelection(key.name)) {
       return;
     }
@@ -91,11 +96,19 @@ export default function attachKeyHandlers({
         reload();
         break;
       case 'd':
-        logger.info('Opening Dev Menu...');
+        reporter.update({
+          type: 'unstable_server_log',
+          level: 'info',
+          data: 'Opening Dev Menu...',
+        });
         messageSocket.broadcast('devMenu', null);
         break;
       case 'i':
-        logger.info('Opening app on iOS...');
+        reporter.update({
+          type: 'unstable_server_log',
+          level: 'info',
+          data: 'Opening app on iOS...',
+        });
         spawn(
           'npx',
           [
@@ -107,7 +120,11 @@ export default function attachKeyHandlers({
         ).stdout?.pipe(process.stdout);
         break;
       case 'a':
-        logger.info('Opening app on Android...');
+        reporter.update({
+          type: 'unstable_server_log',
+          level: 'info',
+          data: 'Opening app on Android...',
+        });
         spawn(
           'npx',
           [
@@ -125,7 +142,11 @@ export default function attachKeyHandlers({
       case CTRL_C:
       case CTRL_D:
         openDebuggerKeyboardHandler.dismiss();
-        logger.info('Stopping server');
+        reporter.update({
+          type: 'unstable_server_log',
+          level: 'info',
+          data: 'Stopping server',
+        });
         setRawMode(false);
         process.stdin.pause();
         process.emit('SIGINT');
@@ -133,17 +154,18 @@ export default function attachKeyHandlers({
     }
   });
 
-  logger.log(
-    [
-      '',
-      `${chalk.bold('i')} - run on iOS`,
-      `${chalk.bold('a')} - run on Android`,
-      `${chalk.bold('r')} - reload app`,
-      `${chalk.bold('d')} - open Dev Menu`,
-      `${chalk.bold('j')} - open DevTools`,
-      '',
-    ].join('\n'),
-  );
+  reporter.update({
+    type: 'unstable_server_log',
+    level: 'info',
+    data: `Key commands available:
+
+  ${chalk.bold('i')} - run on iOS
+  ${chalk.bold('a')} - run on Android
+  ${chalk.bold('r')} - reload app(s)
+  ${chalk.bold('d')} - open Dev Menu
+  ${chalk.bold('j')} - open DevTools
+`,
+  });
 }
 
 function setRawMode(enable: boolean) {
