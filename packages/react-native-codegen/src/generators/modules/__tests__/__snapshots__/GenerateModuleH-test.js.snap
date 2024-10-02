@@ -31,8 +31,8 @@ public:
 template <typename T>
 class JSI_EXPORT NativeSampleTurboModuleCxxSpec : public TurboModule {
 public:
-  jsi::Value get(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
-    return delegate_.get(rt, propName);
+  jsi::Value create(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
+    return delegate_.create(rt, propName);
   }
 
   static constexpr std::string_view kModuleName = \\"SampleTurboModule\\";
@@ -103,8 +103,8 @@ public:
 template <typename T>
 class JSI_EXPORT NativeSampleTurboModuleCxxSpec : public TurboModule {
 public:
-  jsi::Value get(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
-    return delegate_.get(rt, propName);
+  jsi::Value create(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
+    return delegate_.create(rt, propName);
   }
 
   static constexpr std::string_view kModuleName = \\"SampleTurboModule\\";
@@ -703,8 +703,8 @@ public:
 template <typename T>
 class JSI_EXPORT NativeSampleTurboModuleCxxSpec : public TurboModule {
 public:
-  jsi::Value get(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
-    return delegate_.get(rt, propName);
+  jsi::Value create(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
+    return delegate_.create(rt, propName);
   }
 
   static constexpr std::string_view kModuleName = \\"SampleTurboModuleCxx\\";
@@ -984,8 +984,8 @@ public:
 template <typename T>
 class JSI_EXPORT NativeSampleTurboModuleCxxSpec : public TurboModule {
 public:
-  jsi::Value get(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
-    return delegate_.get(rt, propName);
+  jsi::Value create(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
+    return delegate_.create(rt, propName);
   }
 
   static constexpr std::string_view kModuleName = \\"SampleTurboModule\\";
@@ -1106,8 +1106,8 @@ public:
 template <typename T>
 class JSI_EXPORT NativeSampleTurboModuleCxxSpec : public TurboModule {
 public:
-  jsi::Value get(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
-    return delegate_.get(rt, propName);
+  jsi::Value create(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
+    return delegate_.create(rt, propName);
   }
 
   static constexpr std::string_view kModuleName = \\"SampleTurboModule\\";
@@ -1297,8 +1297,8 @@ public:
 template <typename T>
 class JSI_EXPORT AliasTurboModuleCxxSpec : public TurboModule {
 public:
-  jsi::Value get(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
-    return delegate_.get(rt, propName);
+  jsi::Value create(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
+    return delegate_.create(rt, propName);
   }
 
   static constexpr std::string_view kModuleName = \\"AliasTurboModule\\";
@@ -1642,8 +1642,8 @@ public:
 template <typename T>
 class JSI_EXPORT NativeCameraRollManagerCxxSpec : public TurboModule {
 public:
-  jsi::Value get(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
-    return delegate_.get(rt, propName);
+  jsi::Value create(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
+    return delegate_.create(rt, propName);
   }
 
   static constexpr std::string_view kModuleName = \\"CameraRollManager\\";
@@ -1886,8 +1886,8 @@ public:
 template <typename T>
 class JSI_EXPORT NativeExceptionsManagerCxxSpec : public TurboModule {
 public:
-  jsi::Value get(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
-    return delegate_.get(rt, propName);
+  jsi::Value create(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
+    return delegate_.create(rt, propName);
   }
 
   static constexpr std::string_view kModuleName = \\"ExceptionsManager\\";
@@ -2091,8 +2091,8 @@ public:
 template <typename T>
 class JSI_EXPORT NativeSampleTurboModuleCxxSpec : public TurboModule {
 public:
-  jsi::Value get(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
-    return delegate_.get(rt, propName);
+  jsi::Value create(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
+    return delegate_.create(rt, propName);
   }
 
   static constexpr std::string_view kModuleName = \\"SampleTurboModule\\";
@@ -2268,8 +2268,8 @@ public:
 template <typename T>
 class JSI_EXPORT NativeSampleTurboModuleCxxSpec : public TurboModule {
 public:
-  jsi::Value get(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
-    return delegate_.get(rt, propName);
+  jsi::Value create(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
+    return delegate_.create(rt, propName);
   }
 
   static constexpr std::string_view kModuleName = \\"SampleTurboModule\\";
@@ -2319,8 +2319,8 @@ public:
 template <typename T>
 class JSI_EXPORT NativeSampleTurboModule2CxxSpec : public TurboModule {
 public:
-  jsi::Value get(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
-    return delegate_.get(rt, propName);
+  jsi::Value create(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
+    return delegate_.create(rt, propName);
   }
 
   static constexpr std::string_view kModuleName = \\"SampleTurboModule2\\";

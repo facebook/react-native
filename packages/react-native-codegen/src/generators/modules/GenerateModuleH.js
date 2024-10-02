@@ -76,8 +76,8 @@ const ModuleSpecClassDeclarationTemplate = ({
   return `template <typename T>
 class JSI_EXPORT ${hasteModuleName}CxxSpec : public TurboModule {
 public:
-  jsi::Value get(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
-    return delegate_.get(rt, propName);
+  jsi::Value create(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
+    return delegate_.create(rt, propName);
   }
 
   static constexpr std::string_view kModuleName = "${moduleName}";

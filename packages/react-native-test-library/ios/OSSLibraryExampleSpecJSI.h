@@ -27,8 +27,8 @@ public:
 template <typename T>
 class JSI_EXPORT NativeSampleModuleCxxSpec : public TurboModule {
 public:
-  jsi::Value get(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
-    return delegate_.get(rt, propName);
+  jsi::Value create(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
+    return delegate_.create(rt, propName);
   }
 
   static constexpr std::string_view kModuleName = "NativeSampleModule";
