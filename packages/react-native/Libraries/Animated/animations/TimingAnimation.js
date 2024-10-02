@@ -107,10 +107,11 @@ export default class TimingAnimation extends Animation {
     previousAnimation: ?Animation,
     animatedValue: AnimatedValue,
   ): void {
+    super.start(fromValue, onUpdate, onEnd, previousAnimation, animatedValue);
+
     this.__active = true;
     this._fromValue = fromValue;
     this._onUpdate = onUpdate;
-    this.__onEnd = onEnd;
 
     const start = () => {
       if (!this._useNativeDriver && animatedValue.__isNative === true) {
