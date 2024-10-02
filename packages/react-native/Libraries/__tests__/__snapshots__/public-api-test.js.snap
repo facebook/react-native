@@ -1559,6 +1559,7 @@ declare module.exports: getData;
 exports[`public API should not change unintentionally Libraries/Components/AccessibilityInfo/AccessibilityInfo.js 1`] = `
 "type AccessibilityEventDefinitionsAndroid = {
   accessibilityServiceChanged: [boolean],
+  highTextContrastChanged: [boolean],
 };
 type AccessibilityEventDefinitionsIOS = {
   announcementFinished: [{ announcement: string, success: boolean }],
@@ -1580,6 +1581,7 @@ declare const AccessibilityInfo: {
   isGrayscaleEnabled(): Promise<boolean>,
   isInvertColorsEnabled(): Promise<boolean>,
   isReduceMotionEnabled(): Promise<boolean>,
+  isHighTextContrastEnabled(): Promise<boolean>,
   prefersCrossFadeTransitions(): Promise<boolean>,
   isReduceTransparencyEnabled(): Promise<boolean>,
   isScreenReaderEnabled(): Promise<boolean>,
