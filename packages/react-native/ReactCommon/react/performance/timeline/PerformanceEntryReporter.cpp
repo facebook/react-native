@@ -20,30 +20,18 @@ PerformanceEntryReporter::getInstance() {
 PerformanceEntryReporter::PerformanceEntryReporter()
     : observerRegistry_(std::make_unique<PerformanceObserverRegistry>()) {}
 
+#pragma mark - DOM Performance (High Resolution Time) (https://www.w3.org/TR/hr-time-3/#dom-performance)
+
 DOMHighResTimeStamp PerformanceEntryReporter::getCurrentTimeStamp() const {
   return timeStampProvider_ != nullptr ? timeStampProvider_()
                                        : JSExecutor::performanceNow();
 }
 
+#pragma mark - Performance Timeline (https://w3c.github.io/performance-timeline/)
+
 uint32_t PerformanceEntryReporter::getDroppedEntriesCount(
     PerformanceEntryType type) const noexcept {
   return getBuffer(type).droppedEntriesCount;
-}
-
-void PerformanceEntryReporter::mark(
-    const std::string& name,
-    const std::optional<DOMHighResTimeStamp>& startTime) {
-  const auto entry = PerformanceEntry{
-      .name = name,
-      .entryType = PerformanceEntryType::MARK,
-      .startTime = startTime ? *startTime : getCurrentTimeStamp()};
-
-  {
-    std::lock_guard lock(buffersMutex_);
-    markBuffer_.add(entry);
-  }
-
-  observerRegistry_->queuePerformanceEntry(entry);
 }
 
 void PerformanceEntryReporter::clearEntries(
@@ -115,7 +103,25 @@ std::vector<PerformanceEntry> PerformanceEntryReporter::getEntriesByName(
   return res;
 }
 
-void PerformanceEntryReporter::measure(
+#pragma mark - User Timing Level 3 functions (https://w3c.github.io/user-timing/)
+
+void PerformanceEntryReporter::reportMark(
+    const std::string& name,
+    const std::optional<DOMHighResTimeStamp>& startTime) {
+  const auto entry = PerformanceEntry{
+      .name = name,
+      .entryType = PerformanceEntryType::MARK,
+      .startTime = startTime ? *startTime : getCurrentTimeStamp()};
+
+  {
+    std::lock_guard lock(buffersMutex_);
+    markBuffer_.add(entry);
+  }
+
+  observerRegistry_->queuePerformanceEntry(entry);
+}
+
+void PerformanceEntryReporter::reportMeasure(
     const std::string_view& name,
     DOMHighResTimeStamp startTime,
     DOMHighResTimeStamp endTime,
@@ -160,7 +166,9 @@ DOMHighResTimeStamp PerformanceEntryReporter::getMarkTime(
   }
 }
 
-void PerformanceEntryReporter::logEventEntry(
+#pragma mark - Event Timing API functions (https://www.w3.org/TR/event-timing/)
+
+void PerformanceEntryReporter::reportEvent(
     std::string name,
     DOMHighResTimeStamp startTime,
     DOMHighResTimeStamp duration,
@@ -193,7 +201,9 @@ void PerformanceEntryReporter::logEventEntry(
   observerRegistry_->queuePerformanceEntry(entry);
 }
 
-void PerformanceEntryReporter::logLongTaskEntry(
+#pragma mark - Long Tasks API functions (https://w3c.github.io/longtasks/)
+
+void PerformanceEntryReporter::reportLongTask(
     DOMHighResTimeStamp startTime,
     DOMHighResTimeStamp duration) {
   const auto entry = PerformanceEntry{
