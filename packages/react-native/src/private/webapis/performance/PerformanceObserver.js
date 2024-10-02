@@ -11,20 +11,18 @@
 import type {
   DOMHighResTimeStamp,
   PerformanceEntryType,
+  PerformanceEntryList,
 } from './PerformanceEntry';
 
 import {PerformanceEventTiming} from './EventTiming';
-import {PerformanceEntry} from './PerformanceEntry';
 import {
   performanceEntryTypeToRaw,
   rawToPerformanceEntry,
   rawToPerformanceEntryType,
 } from './RawPerformanceEntry';
-import NativePerformanceObserver from './specs/NativePerformanceObserver';
-import type {OpaqueNativeObserverHandle} from './specs/NativePerformanceObserver';
-import {warnNoNativePerformanceObserver} from './Utilities';
-
-export type PerformanceEntryList = $ReadOnlyArray<PerformanceEntry>;
+import NativePerformance from './specs/NativePerformance';
+import type {OpaqueNativeObserverHandle} from './specs/NativePerformance';
+import {warnNoNativePerformance} from './Utilities';
 
 export {PerformanceEntry} from './PerformanceEntry';
 
@@ -76,15 +74,15 @@ export type PerformanceObserverInit = {
 };
 
 function getSupportedPerformanceEntryTypes(): $ReadOnlyArray<PerformanceEntryType> {
-  if (!NativePerformanceObserver) {
+  if (!NativePerformance) {
     return Object.freeze([]);
   }
-  if (!NativePerformanceObserver.getSupportedPerformanceEntryTypes) {
+  if (!NativePerformance.getSupportedPerformanceEntryTypes) {
     // fallback if getSupportedPerformanceEntryTypes is not defined on native side
     return Object.freeze(['mark', 'measure', 'event']);
   }
   return Object.freeze(
-    NativePerformanceObserver.getSupportedPerformanceEntryTypes().map(
+    NativePerformance.getSupportedPerformanceEntryTypes().map(
       rawToPerformanceEntryType,
     ),
   );
@@ -121,11 +119,8 @@ export class PerformanceObserver {
   }
 
   observe(options: PerformanceObserverInit): void {
-    if (
-      !NativePerformanceObserver ||
-      NativePerformanceObserver.observe == null
-    ) {
-      warnNoNativePerformanceObserver();
+    if (!NativePerformance || NativePerformance.observe == null) {
+      warnNoNativePerformance();
       return;
     }
 
@@ -137,12 +132,12 @@ export class PerformanceObserver {
 
     if (options.entryTypes) {
       this.#type = 'multiple';
-      NativePerformanceObserver.observe?.(this.#nativeObserverHandle, {
+      NativePerformance.observe?.(this.#nativeObserverHandle, {
         entryTypes: options.entryTypes.map(performanceEntryTypeToRaw),
       });
     } else if (options.type) {
       this.#type = 'single';
-      NativePerformanceObserver.observe?.(this.#nativeObserverHandle, {
+      NativePerformance.observe?.(this.#nativeObserverHandle, {
         type: performanceEntryTypeToRaw(options.type),
         buffered: options.buffered,
         durationThreshold: options.durationThreshold,
@@ -151,35 +146,28 @@ export class PerformanceObserver {
   }
 
   disconnect(): void {
-    if (!NativePerformanceObserver) {
-      warnNoNativePerformanceObserver();
+    if (!NativePerformance) {
+      warnNoNativePerformance();
       return;
     }
 
-    if (
-      this.#nativeObserverHandle == null ||
-      !NativePerformanceObserver.disconnect
-    ) {
+    if (this.#nativeObserverHandle == null || !NativePerformance.disconnect) {
       return;
     }
 
-    NativePerformanceObserver.disconnect(this.#nativeObserverHandle);
+    NativePerformance.disconnect(this.#nativeObserverHandle);
   }
 
   #createNativeObserver(): OpaqueNativeObserverHandle {
-    if (
-      !NativePerformanceObserver ||
-      !NativePerformanceObserver.createObserver
-    ) {
-      warnNoNativePerformanceObserver();
+    if (!NativePerformance || !NativePerformance.createObserver) {
+      warnNoNativePerformance();
       return;
     }
 
     this.#calledAtLeastOnce = false;
 
-    return NativePerformanceObserver.createObserver(() => {
-      // $FlowNotNull
-      const rawEntries = NativePerformanceObserver.takeRecords?.(
+    return NativePerformance.createObserver(() => {
+      const rawEntries = NativePerformance.takeRecords?.(
         this.#nativeObserverHandle,
         true, // sort records
       );
@@ -193,7 +181,7 @@ export class PerformanceObserver {
       let droppedEntriesCount = 0;
       if (!this.#calledAtLeastOnce) {
         droppedEntriesCount =
-          NativePerformanceObserver.getDroppedEntriesCount?.(
+          NativePerformance.getDroppedEntriesCount?.(
             this.#nativeObserverHandle,
           ) ?? 0;
         this.#calledAtLeastOnce = true;

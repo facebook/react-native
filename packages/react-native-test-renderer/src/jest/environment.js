@@ -63,7 +63,6 @@ module.exports = class ReactNativeEnvironment extends NodeEnv {
         Networking: {},
         ImageLoader: {},
         NativePerformanceCxx: {},
-        NativePerformanceObserverCxx: {},
         LogBox: {},
         SettingsManager: {
           getConstants: () => ({settings: {}}),
