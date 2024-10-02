@@ -10,6 +10,7 @@
 
 import type {
   HostComponent,
+  HostInstance,
   InternalInstanceHandle,
   Node,
 } from '../Renderer/shims/ReactNativeTypes';
@@ -61,7 +62,7 @@ export function renderElement({
 
 export function findHostInstance_DEPRECATED<TElementType: ElementType>(
   componentOrHandle: ?(ElementRef<TElementType> | number),
-): ?ElementRef<HostComponent<mixed>> {
+): ?HostInstance {
   return require('../Renderer/shims/ReactNative').findHostInstance_DEPRECATED(
     componentOrHandle,
   );
@@ -76,7 +77,7 @@ export function findNodeHandle<TElementType: ElementType>(
 }
 
 export function dispatchCommand(
-  handle: ElementRef<HostComponent<mixed>>,
+  handle: HostInstance,
   command: string,
   args: Array<mixed>,
 ): void {
@@ -98,7 +99,7 @@ export function dispatchCommand(
 }
 
 export function sendAccessibilityEvent(
-  handle: ElementRef<HostComponent<mixed>>,
+  handle: HostInstance,
   eventType: string,
 ): void {
   return require('../Renderer/shims/ReactNative').sendAccessibilityEvent(

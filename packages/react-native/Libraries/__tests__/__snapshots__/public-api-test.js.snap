@@ -1592,7 +1592,7 @@ declare const AccessibilityInfo: {
   ): EventSubscription,
   setAccessibilityFocus(reactTag: number): void,
   sendAccessibilityEvent(
-    handle: ElementRef<HostComponent<mixed>>,
+    handle: HostInstance,
     eventType: AccessibilityEventTypes
   ): void,
   announceForAccessibility(announcement: string): void,
@@ -2166,8 +2166,8 @@ declare class ScrollView extends React.Component<Props, State> {
   _subscribeToOnScroll: (
     callback: ({ x: number, y: number }) => void
   ) => EventSubscription;
-  scrollResponderScrollNativeHandleToKeyboard: <T>(
-    nodeHandle: number | React.ElementRef<HostComponent<T>>,
+  scrollResponderScrollNativeHandleToKeyboard: (
+    nodeHandle: number | HostInstance,
     additionalOffset?: number,
     preventNegativeScrollOffset?: boolean
   ) => void;
@@ -2770,8 +2770,7 @@ declare module.exports: PartialViewConfigWithoutName;
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/TextInput/TextInput.flow.js 1`] = `
-"type ComponentRef = React.ElementRef<HostComponent<mixed>>;
-type ReactRefSetter<T> =
+"type ReactRefSetter<T> =
   | { current: null | T, ... }
   | ((ref: null | T) => mixed);
 export type ChangeEvent = SyntheticEvent<
@@ -3053,9 +3052,7 @@ export type Props = $ReadOnly<{|
   contextMenuHidden?: ?boolean,
   defaultValue?: ?Stringish,
   editable?: ?boolean,
-  forwardedRef?: ?ReactRefSetter<
-    React.ElementRef<HostComponent<mixed>> & ImperativeMethods,
-  >,
+  forwardedRef?: ?ReactRefSetter<HostInstance & ImperativeMethods>,
   enterKeyHint?: ?enterKeyHintType,
   inputMode?: ?InputMode,
   keyboardType?: ?KeyboardType,
@@ -3097,22 +3094,22 @@ export type Props = $ReadOnly<{|
 type ImperativeMethods = $ReadOnly<{|
   clear: () => void,
   isFocused: () => boolean,
-  getNativeRef: () => ?React.ElementRef<HostComponent<mixed>>,
+  getNativeRef: () => ?HostInstance,
   setSelection: (start: number, end: number) => void,
 |}>;
 type InternalTextInput = (props: Props) => React.Node;
 export type TextInputComponentStatics = $ReadOnly<{|
   State: $ReadOnly<{|
-    currentlyFocusedInput: () => ?ComponentRef,
+    currentlyFocusedInput: () => ?HostInstance,
     currentlyFocusedField: () => ?number,
-    focusTextInput: (textField: ?ComponentRef) => void,
-    blurTextInput: (textField: ?ComponentRef) => void,
+    focusTextInput: (textField: ?HostInstance) => void,
+    blurTextInput: (textField: ?HostInstance) => void,
   |}>,
 |}>;
 export type TextInputType = React.AbstractComponent<
   React.ElementConfig<InternalTextInput>,
   $ReadOnly<{|
-    ...React.ElementRef<HostComponent<mixed>>,
+    ...HostInstance,
     ...ImperativeMethods,
   |}>,
 > &
@@ -3124,10 +3121,10 @@ exports[`public API should not change unintentionally Libraries/Components/TextI
 "type ReactRefSetter<T> =
   | { current: null | T, ... }
   | ((ref: null | T) => mixed);
-type TextInputInstance = React.ElementRef<HostComponent<mixed>> & {
+type TextInputInstance = HostInstance & {
   +clear: () => void,
   +isFocused: () => boolean,
-  +getNativeRef: () => ?React.ElementRef<HostComponent<mixed>>,
+  +getNativeRef: () => ?HostInstance,
   +setSelection: (start: number, end: number) => void,
 };
 export type ChangeEvent = SyntheticEvent<
@@ -3475,19 +3472,17 @@ declare export default typeof supportedCommands;
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/TextInput/TextInputState.js 1`] = `
-"declare const React: $FlowFixMe;
-type ComponentRef = React.ElementRef<HostComponent<mixed>>;
-declare function currentlyFocusedInput(): ?ComponentRef;
+"declare function currentlyFocusedInput(): ?HostInstance;
 declare function currentlyFocusedField(): ?number;
-declare function focusInput(textField: ?ComponentRef): void;
-declare function blurInput(textField: ?ComponentRef): void;
+declare function focusInput(textField: ?HostInstance): void;
+declare function blurInput(textField: ?HostInstance): void;
 declare function focusField(textFieldID: ?number): void;
 declare function blurField(textFieldID: ?number): void;
-declare function focusTextInput(textField: ?ComponentRef): void;
-declare function blurTextInput(textField: ?ComponentRef): void;
-declare function registerInput(textField: ComponentRef): void;
-declare function unregisterInput(textField: ComponentRef): void;
-declare function isTextInput(textField: ComponentRef): boolean;
+declare function focusTextInput(textField: ?HostInstance): void;
+declare function blurTextInput(textField: ?HostInstance): void;
+declare function registerInput(textField: HostInstance): void;
+declare function unregisterInput(textField: HostInstance): void;
+declare function isTextInput(textField: HostInstance): boolean;
 declare module.exports: {
   currentlyFocusedInput: currentlyFocusedInput,
   focusInput: focusInput,
@@ -4054,15 +4049,8 @@ exports[`public API should not change unintentionally Libraries/Components/View/
 "declare export const __INTERNAL_VIEW_CONFIG: PartialViewConfig;
 declare const ViewNativeComponent: HostComponent<Props>;
 interface NativeCommands {
-  +hotspotUpdate: (
-    viewRef: React.ElementRef<HostComponent<mixed>>,
-    x: number,
-    y: number
-  ) => void;
-  +setPressed: (
-    viewRef: React.ElementRef<HostComponent<mixed>>,
-    pressed: boolean
-  ) => void;
+  +hotspotUpdate: (viewRef: HostInstance, x: number, y: number) => void;
+  +setPressed: (viewRef: HostInstance, pressed: boolean) => void;
 }
 declare export const Commands: NativeCommands;
 declare export default typeof ViewNativeComponent;
@@ -5001,7 +4989,7 @@ exports[`public API should not change unintentionally Libraries/Image/ImageViewN
 }>;
 interface NativeCommands {
   +setIsVisible_EXPERIMENTAL: (
-    viewRef: ElementRef<HostComponent<mixed>>,
+    viewRef: HostInstance,
     isVisible: boolean,
     time: number
   ) => void;
@@ -5265,12 +5253,10 @@ declare module.exports: StyleInspector;
 `;
 
 exports[`public API should not change unintentionally Libraries/Inspector/getInspectorDataForViewAtPoint.js 1`] = `
-"declare const React: $FlowFixMe;
-export type HostRef = React.ElementRef<HostComponent<mixed>>;
-export type ReactRenderer = {
+"export type ReactRenderer = {
   rendererConfig: {
     getInspectorDataForViewAtPoint: (
-      inspectedView: ?HostRef,
+      inspectedView: ?HostInstance,
       locationX: number,
       locationY: number,
       callback: Function
@@ -5279,7 +5265,7 @@ export type ReactRenderer = {
   },
 };
 declare module.exports: (
-  inspectedView: ?HostRef,
+  inspectedView: ?HostInstance,
   locationX: number,
   locationY: number,
   callback: (viewData: TouchedViewDataAtPoint) => boolean
@@ -7092,7 +7078,7 @@ declare export default class Pressability {
   _longPressDelayTimeout: ?TimeoutID;
   _pressDelayTimeout: ?TimeoutID;
   _pressOutDelayTimeout: ?TimeoutID;
-  _responderID: ?number | React.ElementRef<HostComponent<mixed>>;
+  _responderID: ?number | HostInstance;
   _responderRegion: ?$ReadOnly<{|
     bottom: number,
     left: number,
@@ -7534,7 +7520,7 @@ exports[`public API should not change unintentionally Libraries/ReactNative/Reac
   measure(callback: MeasureOnSuccessCallback): void;
   measureInWindow(callback: MeasureInWindowOnSuccessCallback): void;
   measureLayout(
-    relativeToNativeNode: number | ElementRef<HostComponent<mixed>>,
+    relativeToNativeNode: number | HostInstance,
     onSuccess: MeasureLayoutOnSuccessCallback,
     onFail?: () => void
   ): void;
@@ -7621,17 +7607,17 @@ exports[`public API should not change unintentionally Libraries/ReactNative/Rend
 }): void;
 declare export function findHostInstance_DEPRECATED<TElementType: ElementType>(
   componentOrHandle: ?(ElementRef<TElementType> | number)
-): ?ElementRef<HostComponent<mixed>>;
+): ?HostInstance;
 declare export function findNodeHandle<TElementType: ElementType>(
   componentOrHandle: ?(ElementRef<TElementType> | number)
 ): ?number;
 declare export function dispatchCommand(
-  handle: ElementRef<HostComponent<mixed>>,
+  handle: HostInstance,
   command: string,
   args: Array<mixed>
 ): void;
 declare export function sendAccessibilityEvent(
-  handle: ElementRef<HostComponent<mixed>>,
+  handle: HostInstance,
   eventType: string
 ): void;
 declare export function unmountComponentAtNodeAndRemoveContainer(
@@ -8628,7 +8614,7 @@ exports[`public API should not change unintentionally Libraries/Types/CoreEventT
 "export type SyntheticEvent<+T> = $ReadOnly<{|
   bubbles: ?boolean,
   cancelable: ?boolean,
-  currentTarget: number | React.ElementRef<HostComponent<mixed>>,
+  currentTarget: number | HostInstance,
   defaultPrevented: ?boolean,
   dispatchConfig: $ReadOnly<{|
     registrationName: string,
@@ -8641,7 +8627,7 @@ exports[`public API should not change unintentionally Libraries/Types/CoreEventT
   isTrusted: ?boolean,
   nativeEvent: T,
   persist: () => void,
-  target: ?number | React.ElementRef<HostComponent<mixed>>,
+  target: ?number | HostInstance,
   timeStamp: number,
   type: ?string,
 |}>;
@@ -8709,7 +8695,7 @@ export interface NativeMouseEvent extends NativeUIEvent {
   +metaKey: boolean;
   +button: number;
   +buttons: number;
-  +relatedTarget: null | number | React.ElementRef<HostComponent<mixed>>;
+  +relatedTarget: null | number | HostInstance;
   +offsetX: number;
   +offsetY: number;
 }
@@ -9601,7 +9587,7 @@ declare export default class EventEmitter<TEventToArgsMap: { ... }>
 `;
 
 exports[`public API should not change unintentionally index.js 1`] = `
-"export type HostComponent<T> = _HostComponentInternal<T>;
+"export type { HostComponent, HostInstance };
 declare module.exports: {
   get registerCallableModule(): RegisterCallableModule,
   get AccessibilityInfo(): AccessibilityInfo,
