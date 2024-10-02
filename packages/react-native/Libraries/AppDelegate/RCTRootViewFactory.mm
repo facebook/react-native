@@ -115,14 +115,8 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
 - (instancetype)initWithConfiguration:(RCTRootViewFactoryConfiguration *)configuration
         andTurboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
 {
-  if (self = [super init]) {
-    _configuration = configuration;
-    _contextContainer = std::make_shared<const facebook::react::ContextContainer>();
-    _reactNativeConfig = std::make_shared<const facebook::react::EmptyReactNativeConfig>();
-    _contextContainer->insert("ReactNativeConfig", _reactNativeConfig);
-    _turboModuleManagerDelegate = turboModuleManagerDelegate;
-  }
-  return self;
+  id<RCTHostDelegate> hostDelegate = [turboModuleManagerDelegate conformsToProtocol:@protocol(RCTHostDelegate)] ? (id<RCTHostDelegate>)turboModuleManagerDelegate : nil;
+  return [self initWithTurboModuleDelegate:turboModuleManagerDelegate hostDelegate:hostDelegate configuration:configuration];
 }
 
 - (instancetype)initWithConfiguration:(RCTRootViewFactoryConfiguration *)configuration
