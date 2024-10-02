@@ -16,11 +16,8 @@
 #include <jsi/instrumentation.h>
 #include <react/performance/timeline/PerformanceEntryReporter.h>
 #include <react/performance/timeline/PerformanceObserver.h>
+#include <reactperflogger/ReactPerfLogger.h>
 
-#if __has_include(<reactperflogger/fusebox/FuseboxTracer.h>)
-#include <reactperflogger/fusebox/FuseboxTracer.h>
-#define HAS_FUSEBOX
-#endif
 #include "NativePerformance.h"
 
 #ifdef RN_DISABLE_OSS_PLUGIN_HEADER
@@ -124,18 +121,10 @@ void NativePerformance::mark(
     jsi::Runtime& rt,
     std::string name,
     double startTime) {
-  PerformanceEntryReporter::getInstance()->reportMark(name, startTime);
+  auto [trackName, eventName] = parseTrackName(name);
+  ReactPerfLogger::mark(eventName, startTime, trackName);
 
-#ifdef WITH_PERFETTO
-  if (TRACE_EVENT_CATEGORY_ENABLED("react-native")) {
-    auto [trackName, eventName] = parseTrackName(name);
-    TRACE_EVENT_INSTANT(
-        "react-native",
-        perfetto::DynamicString(eventName.data(), eventName.size()),
-        getPerfettoWebPerfTrackSync(trackName),
-        performanceNowToPerfettoTraceTime(startTime));
-  }
-#endif
+  PerformanceEntryReporter::getInstance()->reportMark(name, startTime);
 }
 
 void NativePerformance::measure(
@@ -148,29 +137,13 @@ void NativePerformance::measure(
     std::optional<std::string> endMark) {
   auto [trackName, eventName] = parseTrackName(name);
 
-#ifdef HAS_FUSEBOX
-  FuseboxTracer::getFuseboxTracer().addEvent(
-      eventName, (uint64_t)startTime, (uint64_t)endTime, trackName);
-#endif
+  // TODO T190600850 support startMark/endMark
+  if (!startMark && !endMark) {
+    ReactPerfLogger::measure(eventName, startTime, endTime, trackName);
+  }
 
   PerformanceEntryReporter::getInstance()->reportMeasure(
       eventName, startTime, endTime, duration, startMark, endMark);
-
-#ifdef WITH_PERFETTO
-  if (TRACE_EVENT_CATEGORY_ENABLED("react-native")) {
-    // TODO T190600850 support startMark/endMark
-    if (!startMark && !endMark) {
-      auto track = getPerfettoWebPerfTrackAsync(trackName);
-      TRACE_EVENT_BEGIN(
-          "react-native",
-          perfetto::DynamicString(eventName.data(), eventName.size()),
-          track,
-          performanceNowToPerfettoTraceTime(startTime));
-      TRACE_EVENT_END(
-          "react-native", track, performanceNowToPerfettoTraceTime(endTime));
-    }
-  }
-#endif
 }
 
 void NativePerformance::clearMarks(
