@@ -339,7 +339,7 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
       // Text field active region is below visible area with keyboard - update diff to bring into view
       contentDiff = endFrame.origin.y - focusEnd;
     } else {
-      UIView *inputAccessoryView = _firstResponderFocusView.inputAccessoryView;
+      UIView *inputAccessoryView = _firstResponderViewOffScrollView.inputAccessoryView;
       if (inputAccessoryView) {
         // Text input view is within the inputAccessoryView.
         contentDiff = endFrame.origin.y - beginFrame.origin.y;

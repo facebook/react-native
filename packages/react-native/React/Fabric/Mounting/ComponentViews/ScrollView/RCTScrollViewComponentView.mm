@@ -204,7 +204,7 @@ RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrollView, NSInt
                                                from:self
                                            forEvent:nil]) {
     if (CGRectEqualToRect(_firstResponderFocus, CGRectNull)) {
-      UIView *inputAccessoryView = _firstResponderFocusView.inputAccessoryView;
+      UIView *inputAccessoryView = _firstResponderViewOffScrollView.inputAccessoryView;
       if (inputAccessoryView) {
         // Text input view is within the inputAccessoryView.
         contentDiff = keyboardEndFrame.origin.y - keyboardBeginFrame.origin.y;

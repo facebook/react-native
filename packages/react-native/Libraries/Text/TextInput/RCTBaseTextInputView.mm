@@ -34,9 +34,9 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
 
 - (void)reactUpdateResponderOffsetForScrollView:(RCTScrollView *)scrollView
 {
-  scrollView.firstResponderFocusView = self.backedTextInputView;
   if (![self isDescendantOfView:scrollView]) {
     // View is outside scroll view
+    scrollView.firstResponderViewOffScrollView = self.backedTextInputView;
     return;
   }
 
