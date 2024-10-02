@@ -113,25 +113,26 @@ export default class TimingAnimation extends Animation {
     this._fromValue = fromValue;
     this._onUpdate = onUpdate;
 
-    const start = () => {
-      if (!this._useNativeDriver && animatedValue.__isNative === true) {
-        throw new Error(
-          'Attempting to run JS driven animation on animated node ' +
-            'that has been moved to "native" earlier by starting an ' +
-            'animation with `useNativeDriver: true`',
-        );
-      }
+    if (!this._useNativeDriver && animatedValue.__isNative === true) {
+      throw new Error(
+        'Attempting to run JS driven animation on animated node ' +
+          'that has been moved to "native" earlier by starting an ' +
+          'animation with `useNativeDriver: true`',
+      );
+    }
 
-      // Animations that sometimes have 0 duration and sometimes do not
-      // still need to use the native driver when duration is 0 so as to
-      // not cause intermixed JS and native animations.
-      if (this._duration === 0 && !this._useNativeDriver) {
-        this._onUpdate(this._toValue);
-        this.__debouncedOnEnd({finished: true});
+    const start = () => {
+      this._startTime = Date.now();
+
+      if (this._useNativeDriver) {
+        this.__startNativeAnimation(animatedValue);
       } else {
-        this._startTime = Date.now();
-        if (this._useNativeDriver) {
-          this.__startNativeAnimation(animatedValue);
+        // Animations that sometimes have 0 duration and sometimes do not
+        // still need to use the native driver when duration is 0 so as to
+        // not cause intermixed JS and native animations.
+        if (this._duration === 0) {
+          this._onUpdate(this._toValue);
+          this.__debouncedOnEnd({finished: true});
         } else {
           this._animationFrame = requestAnimationFrame(
             // $FlowFixMe[method-unbinding] added when improving typing for this parameters
