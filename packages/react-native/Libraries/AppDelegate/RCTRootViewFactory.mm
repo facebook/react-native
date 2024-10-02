@@ -201,26 +201,6 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
   return rootView;
 }
 
-#pragma mark - RCTHostDelegate
-
-- (void)hostDidStart:(RCTHost *)host
-{
-  if (self->_configuration.hostDidStartBlock) {
-    self->_configuration.hostDidStartBlock(host);
-  }
-}
-
-- (void)host:(RCTHost *)host
-    didReceiveJSErrorStack:(NSArray<NSDictionary<NSString *, id> *> *)stack
-                   message:(NSString *)message
-               exceptionId:(NSUInteger)exceptionId
-                   isFatal:(BOOL)isFatal
-{
-  if (self->_configuration.hostDidReceiveJSErrorStackBlock) {
-    self->_configuration.hostDidReceiveJSErrorStackBlock(host, stack, message, exceptionId, isFatal);
-  }
-}
-
 #pragma mark - RCTCxxBridgeDelegate
 - (std::unique_ptr<facebook::react::JSExecutorFactory>)jsExecutorFactoryForBridge:(RCTBridge *)bridge
 {
