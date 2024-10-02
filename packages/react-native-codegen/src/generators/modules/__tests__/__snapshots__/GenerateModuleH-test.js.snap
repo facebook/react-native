@@ -35,6 +35,10 @@ public:
     return delegate_.create(rt, propName);
   }
 
+  std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime& runtime) override {
+    return delegate_.getPropertyNames(runtime);
+  }
+
   static constexpr std::string_view kModuleName = \\"SampleTurboModule\\";
 
 protected:
@@ -105,6 +109,10 @@ class JSI_EXPORT NativeSampleTurboModuleCxxSpec : public TurboModule {
 public:
   jsi::Value create(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
     return delegate_.create(rt, propName);
+  }
+
+  std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime& runtime) override {
+    return delegate_.getPropertyNames(runtime);
   }
 
   static constexpr std::string_view kModuleName = \\"SampleTurboModule\\";
@@ -707,6 +715,10 @@ public:
     return delegate_.create(rt, propName);
   }
 
+  std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime& runtime) override {
+    return delegate_.getPropertyNames(runtime);
+  }
+
   static constexpr std::string_view kModuleName = \\"SampleTurboModuleCxx\\";
 
 protected:
@@ -988,6 +1000,10 @@ public:
     return delegate_.create(rt, propName);
   }
 
+  std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime& runtime) override {
+    return delegate_.getPropertyNames(runtime);
+  }
+
   static constexpr std::string_view kModuleName = \\"SampleTurboModule\\";
 
 protected:
@@ -1108,6 +1124,10 @@ class JSI_EXPORT NativeSampleTurboModuleCxxSpec : public TurboModule {
 public:
   jsi::Value create(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
     return delegate_.create(rt, propName);
+  }
+
+  std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime& runtime) override {
+    return delegate_.getPropertyNames(runtime);
   }
 
   static constexpr std::string_view kModuleName = \\"SampleTurboModule\\";
@@ -1299,6 +1319,10 @@ class JSI_EXPORT AliasTurboModuleCxxSpec : public TurboModule {
 public:
   jsi::Value create(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
     return delegate_.create(rt, propName);
+  }
+
+  std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime& runtime) override {
+    return delegate_.getPropertyNames(runtime);
   }
 
   static constexpr std::string_view kModuleName = \\"AliasTurboModule\\";
@@ -1646,6 +1670,10 @@ public:
     return delegate_.create(rt, propName);
   }
 
+  std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime& runtime) override {
+    return delegate_.getPropertyNames(runtime);
+  }
+
   static constexpr std::string_view kModuleName = \\"CameraRollManager\\";
 
 protected:
@@ -1890,6 +1918,10 @@ public:
     return delegate_.create(rt, propName);
   }
 
+  std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime& runtime) override {
+    return delegate_.getPropertyNames(runtime);
+  }
+
   static constexpr std::string_view kModuleName = \\"ExceptionsManager\\";
 
 protected:
@@ -2095,6 +2127,10 @@ public:
     return delegate_.create(rt, propName);
   }
 
+  std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime& runtime) override {
+    return delegate_.getPropertyNames(runtime);
+  }
+
   static constexpr std::string_view kModuleName = \\"SampleTurboModule\\";
 
 protected:
@@ -2272,6 +2308,10 @@ public:
     return delegate_.create(rt, propName);
   }
 
+  std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime& runtime) override {
+    return delegate_.getPropertyNames(runtime);
+  }
+
   static constexpr std::string_view kModuleName = \\"SampleTurboModule\\";
 
 protected:
@@ -2321,6 +2361,10 @@ class JSI_EXPORT NativeSampleTurboModule2CxxSpec : public TurboModule {
 public:
   jsi::Value create(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
     return delegate_.create(rt, propName);
+  }
+
+  std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime& runtime) override {
+    return delegate_.getPropertyNames(runtime);
   }
 
   static constexpr std::string_view kModuleName = \\"SampleTurboModule2\\";

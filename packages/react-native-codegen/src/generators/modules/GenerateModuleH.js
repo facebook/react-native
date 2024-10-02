@@ -80,6 +80,10 @@ public:
     return delegate_.create(rt, propName);
   }
 
+  std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime& runtime) override {
+    return delegate_.getPropertyNames(runtime);
+  }
+
   static constexpr std::string_view kModuleName = "${moduleName}";
 
 protected:
