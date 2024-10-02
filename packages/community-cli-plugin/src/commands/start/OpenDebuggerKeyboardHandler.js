@@ -18,7 +18,6 @@ type PageDescription = $ReadOnly<{
   id: string,
   title: string,
   description: string,
-  deviceName: string,
   ...
 }>;
 
@@ -53,9 +52,9 @@ export default class OpenDebuggerKeyboardHandler {
     } catch (e) {
       this.#log(
         'error',
-        'Failed to open debugger for %s on %s debug targets: %s',
+        'Failed to open debugger for %s (%s): %s',
+        target.title,
         target.description,
-        target.deviceName,
         e.message,
       );
       this.#clearTerminalMenu();
@@ -108,8 +107,8 @@ export default class OpenDebuggerKeyboardHandler {
           `Multiple debug targets available, please select:\n  ${targets
             .slice(0, 9)
             .map(
-              ({description, deviceName}, i) =>
-                `${chalk.white.inverse(` ${i + 1} `)} - "${description}" on "${deviceName}"`,
+              ({title}, i) =>
+                `${chalk.white.inverse(` ${i + 1} `)} - "${title}"`,
             )
             .join('\n  ')}`,
         );

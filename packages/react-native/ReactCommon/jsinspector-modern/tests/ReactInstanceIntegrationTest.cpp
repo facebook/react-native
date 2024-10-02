@@ -91,7 +91,7 @@ void ReactInstanceIntegrationTest::SetUp() {
     // Under modern CDP, the React host is responsible for adding itself as
     // the root target on startup.
     pageId_ = inspector.addPage(
-        "mock-title",
+        "mock-description",
         "mock-vm",
         [hostTargetIfModernCDP](std::unique_ptr<IRemoteConnection> remote)
             -> std::unique_ptr<ILocalConnection> {

@@ -214,8 +214,12 @@ public class DevServerHelper {
       @Override
       protected Void doInBackground(Void... params) {
         if (InspectorFlags.getFuseboxEnabled()) {
+          Map<String, String> metadata =
+              AndroidInfoHelpers.getInspectorHostMetadata(mApplicationContext);
+
           mInspectorPackagerConnection =
-              new CxxInspectorPackagerConnection(getInspectorDeviceUrl(), mPackageName);
+              new CxxInspectorPackagerConnection(
+                  getInspectorDeviceUrl(), metadata.get("deviceName"), mPackageName);
         } else {
           mInspectorPackagerConnection =
               new InspectorPackagerConnection(getInspectorDeviceUrl(), mPackageName);
