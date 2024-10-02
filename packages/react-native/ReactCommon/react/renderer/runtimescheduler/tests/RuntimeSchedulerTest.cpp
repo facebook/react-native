@@ -82,17 +82,17 @@ class RuntimeSchedulerTest : public testing::TestWithParam<bool> {
       return stubClock_->getNow();
     };
 
-    performanceEntryReporter_ = PerformanceEntryReporter::getInstance().get();
+    performanceEntryReporter_ = std::make_unique<PerformanceEntryReporter>();
 
     runtimeScheduler_ =
         std::make_unique<RuntimeScheduler>(runtimeExecutor, stubNow);
 
-    runtimeScheduler_->setPerformanceEntryReporter(performanceEntryReporter_);
+    runtimeScheduler_->setPerformanceEntryReporter(
+        performanceEntryReporter_.get());
   }
 
   void TearDown() override {
     ReactNativeFeatureFlags::dangerouslyReset();
-    performanceEntryReporter_->clearEntries();
   }
 
   jsi::Function createHostFunctionFromLambda(
@@ -119,7 +119,7 @@ class RuntimeSchedulerTest : public testing::TestWithParam<bool> {
   std::unique_ptr<StubQueue> stubQueue_;
   std::unique_ptr<RuntimeScheduler> runtimeScheduler_;
   std::shared_ptr<StubErrorUtils> stubErrorUtils_;
-  PerformanceEntryReporter* performanceEntryReporter_{};
+  std::unique_ptr<PerformanceEntryReporter> performanceEntryReporter_{};
 };
 
 TEST_P(RuntimeSchedulerTest, now) {
