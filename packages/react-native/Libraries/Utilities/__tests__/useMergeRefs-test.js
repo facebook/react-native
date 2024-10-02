@@ -9,7 +9,6 @@
  * @oncall react_native
  */
 
-import type {ViewProps} from '../../Components/View/ViewPropTypes';
 import type {HostInstance} from '../../Renderer/shims/ReactNativeTypes';
 
 import View from '../../Components/View/View';
