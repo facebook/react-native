@@ -100,7 +100,7 @@ export default class DecayAnimation extends Animation {
     this._onUpdate(value);
 
     if (Math.abs(this._lastValue - value) < 0.1) {
-      this.__debouncedOnEnd({finished: true});
+      this.__notifyAnimationEnd({finished: true});
       return;
     }
 
@@ -116,6 +116,6 @@ export default class DecayAnimation extends Animation {
     if (this._animationFrame != null) {
       global.cancelAnimationFrame(this._animationFrame);
     }
-    this.__debouncedOnEnd({finished: false});
+    this.__notifyAnimationEnd({finished: false});
   }
 }
