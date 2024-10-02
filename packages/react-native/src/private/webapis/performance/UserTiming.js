@@ -30,7 +30,7 @@ export type PerformanceMeasureInit = {
 };
 
 export class PerformanceMark extends PerformanceEntry {
-  detail: DetailType;
+  #detail: DetailType;
 
   constructor(markName: string, markOptions?: PerformanceMarkOptions) {
     super({
@@ -41,8 +41,12 @@ export class PerformanceMark extends PerformanceEntry {
     });
 
     if (markOptions) {
-      this.detail = markOptions.detail;
+      this.#detail = markOptions.detail;
     }
+  }
+
+  get detail(): DetailType {
+    return this.#detail;
   }
 }
 
