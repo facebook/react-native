@@ -83,7 +83,7 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
 
 @end
 
-@interface RCTRootViewFactory () <RCTContextContainerHandling, RCTHostDelegate> {
+@interface RCTRootViewFactory () <RCTContextContainerHandling> {
   std::shared_ptr<const facebook::react::ReactNativeConfig> _reactNativeConfig;
   facebook::react::ContextContainer::Shared _contextContainer;
 }
@@ -259,7 +259,7 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
   __weak __typeof(self) weakSelf = self;
   RCTHost *reactHost =
       [[RCTHost alloc] initWithBundleURLProvider:self->_configuration.bundleURLBlock
-                                    hostDelegate:self
+                                    hostDelegate:_hostDelegate
                       turboModuleManagerDelegate:_turboModuleManagerDelegate
                                 jsEngineProvider:^std::shared_ptr<facebook::react::JSRuntimeFactory>() {
                                   return [weakSelf createJSRuntimeFactory];
