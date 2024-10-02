@@ -33,6 +33,8 @@ export type RawPerformanceEntry = {
 export type OpaqueNativeObserverHandle = mixed;
 
 export type NativeBatchedObserverCallback = () => void;
+export type NativePerformanceMarkResult = number;
+export type NativePerformanceMeasureResult = $ReadOnlyArray<number>; // [startTime, duration]
 
 export type PerformanceObserverInit = {
   entryTypes?: $ReadOnlyArray<number>,
@@ -43,7 +45,7 @@ export type PerformanceObserverInit = {
 
 export interface Spec extends TurboModule {
   +now?: () => number;
-  +mark: (name: string, startTime: number) => void;
+  +mark: (name: string, startTime?: number) => NativePerformanceMarkResult;
   +measure: (
     name: string,
     startTime: number,
@@ -51,7 +53,7 @@ export interface Spec extends TurboModule {
     duration?: number,
     startMark?: string,
     endMark?: string,
-  ) => void;
+  ) => NativePerformanceMeasureResult;
   +clearMarks?: (entryName?: string) => void;
   +clearMeasures?: (entryName?: string) => void;
   +getEntries?: () => $ReadOnlyArray<RawPerformanceEntry>;

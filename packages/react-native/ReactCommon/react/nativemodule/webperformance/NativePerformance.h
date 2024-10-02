@@ -70,10 +70,10 @@ class NativePerformance : public NativePerformanceCxxSpec<NativePerformance> {
 #pragma mark - User Timing Level 3 functions (https://w3c.github.io/user-timing/)
 
   // https://w3c.github.io/user-timing/#mark-method
-  void mark(jsi::Runtime& rt, std::string name, double startTime);
+  double mark(jsi::Runtime& rt, std::string name, std::optional<double> startTime);
 
   // https://w3c.github.io/user-timing/#measure-method
-  void measure(
+  std::vector<double> measure(
       jsi::Runtime& rt,
       std::string name,
       double startTime,

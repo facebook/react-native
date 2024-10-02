@@ -16,6 +16,8 @@ import type {
   PerformanceObserverInit,
   OpaqueNativeObserverHandle,
   RawPerformanceEntryType,
+  NativePerformanceMarkResult,
+  NativePerformanceMeasureResult,
 } from '../NativePerformance';
 
 import typeof NativePerformance from '../NativePerformance';
@@ -109,14 +111,18 @@ const NativePerformanceMock = {
 
   now: (): number => currentTime,
 
-  mark: (name: string, startTime: number): void => {
-    marks.set(name, startTime);
+  mark: (name: string, startTime?: number): NativePerformanceMarkResult => {
+    const computedStartTime = startTime ?? performance.now();
+
+    marks.set(name, computedStartTime);
     reportEntry({
       entryType: RawPerformanceEntryTypeValues.MARK,
       name,
-      startTime,
+      startTime: computedStartTime,
       duration: 0,
     });
+    
+    return computedStartTime;
   },
 
   measure: (
@@ -126,15 +132,18 @@ const NativePerformanceMock = {
     duration?: number,
     startMark?: string,
     endMark?: string,
-  ): void => {
+  ): NativePerformanceMeasureResult => {
     const start = startMark != null ? marks.get(startMark) ?? 0 : startTime;
     const end = endMark != null ? marks.get(endMark) ?? 0 : endTime;
+    const computedDuration = duration ?? end - start;
     reportEntry({
       entryType: RawPerformanceEntryTypeValues.MEASURE,
       name,
       startTime: start,
-      duration: duration ?? end - start,
+      duration: computedDuration,
     });
+
+    return [start, computedDuration];
   },
 
   getSimpleMemoryInfo: (): NativeMemoryInfo => {

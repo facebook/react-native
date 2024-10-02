@@ -109,15 +109,18 @@ export default class Performance {
     markName: string,
     markOptions?: PerformanceMarkOptions,
   ): PerformanceMark {
-    const mark = new PerformanceMark(markName, markOptions);
-
+    let computedStartTime = 0;
     if (NativePerformance?.mark) {
-      NativePerformance.mark(markName, mark.startTime);
+      computedStartTime = NativePerformance.mark(markName, markOptions?.startTime);
     } else {
       warnNoNativePerformance();
+      computedStartTime = performance.now();
     }
 
-    return mark;
+    return new PerformanceMark(markName, { 
+      startTime: computedStartTime, 
+      detail: markOptions?.detail
+    });
   }
 
   clearMarks(markName?: string): void {
@@ -180,16 +183,9 @@ export default class Performance {
       duration = options.duration ?? duration;
     }
 
-    const measure = new PerformanceMeasure(measureName, {
-      // FIXME(T196011255): this is incorrect, as we're only assigning the
-      // start/end if they're specified as a number, but not if they're
-      // specified as previous mark names.
-      startTime,
-      duration,
-    });
-
+    let [computedStartTime, computedDuration] = [startTime, duration];
     if (NativePerformance?.measure) {
-      NativePerformance.measure(
+      [computedStartTime, computedDuration] = NativePerformance.measure(
         measureName,
         startTime,
         endTime,
@@ -200,6 +196,11 @@ export default class Performance {
     } else {
       warnNoNativePerformance();
     }
+
+    const measure = new PerformanceMeasure(measureName, {
+      startTime: computedStartTime,
+      duration: computedDuration,
+    });
 
     return measure;
   }
