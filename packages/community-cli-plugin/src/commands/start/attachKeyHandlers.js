@@ -159,11 +159,11 @@ export default function attachKeyHandlers({
     level: 'info',
     data: `Key commands available:
 
-  ${chalk.bold('i')} - run on iOS
-  ${chalk.bold('a')} - run on Android
-  ${chalk.bold('r')} - reload app(s)
-  ${chalk.bold('d')} - open Dev Menu
-  ${chalk.bold('j')} - open DevTools
+  ${chalk.bold.inverse(' i ')} - run on iOS
+  ${chalk.bold.inverse(' a ')} - run on Android
+  ${chalk.bold.inverse(' r ')} - reload app(s)
+  ${chalk.bold.inverse(' d ')} - open Dev Menu
+  ${chalk.bold.inverse(' j ')} - open DevTools
 `,
   });
 }
