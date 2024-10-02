@@ -16,16 +16,7 @@ let Animated = require('../Animated').default;
 const AnimatedProps = require('../nodes/AnimatedProps').default;
 const TestRenderer = require('react-test-renderer');
 
-jest.mock('../../BatchedBridge/NativeModules', () => ({
-  NativeAnimatedModule: {},
-  PlatformConstants: {
-    getConstants() {
-      return {};
-    },
-  },
-}));
-
-describe('Animated tests', () => {
+describe('Animated', () => {
   beforeEach(() => {
     jest.resetModules();
   });
