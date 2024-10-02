@@ -53,6 +53,8 @@ export type TargetCapabilityFlags = $ReadOnly<{
 export type PageFromDevice = $ReadOnly<{
   id: string,
   title: string,
+  /** Sent from modern targets only */
+  description?: string,
   /** @deprecated This is sent from legacy targets only */
   vm?: string,
   app: string,
@@ -119,6 +121,7 @@ export type PageDescription = $ReadOnly<{
   webSocketDebuggerUrl: string,
 
   // React Native specific fields
+  /** @deprecated Prefer `title` */
   deviceName: string,
   /** @deprecated This is sent from legacy targets only */
   vm?: string,

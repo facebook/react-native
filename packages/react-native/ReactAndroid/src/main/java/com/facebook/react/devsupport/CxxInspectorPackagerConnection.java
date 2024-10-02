@@ -28,12 +28,12 @@ import okhttp3.WebSocketListener;
 
   @DoNotStrip private final HybridData mHybridData;
 
-  public CxxInspectorPackagerConnection(String url, String packageName) {
-    mHybridData = initHybrid(url, packageName, new DelegateImpl());
+  public CxxInspectorPackagerConnection(String url, String deviceName, String packageName) {
+    mHybridData = initHybrid(url, deviceName, packageName, new DelegateImpl());
   }
 
   private static native HybridData initHybrid(
-      String url, String packageName, DelegateImpl delegate);
+      String url, String deviceName, String packageName, DelegateImpl delegate);
 
   public native void connect();
 

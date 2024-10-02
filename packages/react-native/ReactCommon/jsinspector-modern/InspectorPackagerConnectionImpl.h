@@ -31,7 +31,8 @@ class InspectorPackagerConnection::Impl
    */
   static std::shared_ptr<Impl> create(
       std::string url,
-      std::string app,
+      std::string deviceName,
+      std::string appName,
       std::unique_ptr<InspectorPackagerConnectionDelegate> delegate);
 
   // InspectorPackagerConnection's public API
@@ -61,7 +62,8 @@ class InspectorPackagerConnection::Impl
 
   Impl(
       std::string url,
-      std::string app,
+      std::string deviceName,
+      std::string appName,
       std::unique_ptr<InspectorPackagerConnectionDelegate> delegate);
   Impl(const Impl&) = delete;
   Impl& operator=(const Impl&) = delete;
@@ -91,7 +93,8 @@ class InspectorPackagerConnection::Impl
   virtual void onPageRemoved(int pageId) override;
 
   const std::string url_;
-  const std::string app_;
+  const std::string deviceName_;
+  const std::string appName_;
   const std::unique_ptr<InspectorPackagerConnectionDelegate> delegate_;
 
   std::unordered_map<std::string, Session> inspectorSessions_;
