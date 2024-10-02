@@ -102,6 +102,7 @@ export default function MyNativeView(props: {}): React.Node {
     useState<MeasureStruct>(MeasureStructZero);
   const [legacyMeasureLayout, setLegacyMeasureLayout] =
     useState<MeasureStruct>(MeasureStructZero);
+  const [legacyStyleEventCount, setLegacyStyleEventCount] = useState<number>(0);
 
   return (
     <View ref={containerRef} style={{flex: 1}}>
@@ -122,6 +123,7 @@ export default function MyNativeView(props: {}): React.Node {
           console.log(event.nativeEvent.multiArrays);
         }}
         onLegacyStyleEvent={event => {
+          setLegacyStyleEventCount(prevCount => prevCount + 1);
           console.log(event.nativeEvent.string);
         }}
       />
@@ -234,15 +236,6 @@ export default function MyNativeView(props: {}): React.Node {
           }
         }}
       />
-      <Button
-        title="Fire Legacy Style Event"
-        onPress={() => {
-          RNTMyNativeViewCommands.fireLagacyStyleEvent(
-            // $FlowFixMe[incompatible-call]
-            ref.current,
-          );
-        }}
-      />
       <Text style={{color: 'green', textAlign: 'center'}}>
         &gt; Interop Layer Measurements &lt;
       </Text>
@@ -254,6 +247,18 @@ export default function MyNativeView(props: {}): React.Node {
       </Text>
       <Text style={{color: 'green', textAlign: 'center'}}>
         InLayout {getTextFor(legacyMeasureLayout)}
+      </Text>
+      <Button
+        title="Fire Legacy Style Event"
+        onPress={() => {
+          RNTMyNativeViewCommands.fireLagacyStyleEvent(
+            // $FlowFixMe[incompatible-call]
+            ref.current,
+          );
+        }}
+      />
+      <Text style={{color: 'green', textAlign: 'center'}}>
+        Legacy Style Event Fired {legacyStyleEventCount} times
       </Text>
       <Button
         title="Test setNativeProps"
