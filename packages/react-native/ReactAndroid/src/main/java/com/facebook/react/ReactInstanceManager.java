@@ -942,22 +942,23 @@ public class ReactInstanceManager {
   @ThreadConfined(UI)
   public void attachRootView(ReactRoot reactRoot) {
     UiThreadUtil.assertOnUiThread();
+    synchronized (mAttachedReactRoots) {
+      // Calling clearReactRoot is necessary to initialize the Id on reactRoot
+      // This is necessary independently if the RN Bridge has been initialized or not.
+      // Ideally reactRoot should be initialized with id == NO_ID
+      if (mAttachedReactRoots.add(reactRoot)) {
+        clearReactRoot(reactRoot);
+      } else {
+        FLog.e(ReactConstants.TAG, "ReactRoot was attached multiple times");
+      }
 
-    // Calling clearReactRoot is necessary to initialize the Id on reactRoot
-    // This is necessary independently if the RN Bridge has been initialized or not.
-    // Ideally reactRoot should be initialized with id == NO_ID
-    if (mAttachedReactRoots.add(reactRoot)) {
-      clearReactRoot(reactRoot);
-    } else {
-      FLog.e(ReactConstants.TAG, "ReactRoot was attached multiple times");
-    }
-
-    // If react context is being created in the background, JS application will be started
-    // automatically when creation completes, as reactRoot is part of the attached
-    // reactRoot list.
-    ReactContext currentContext = getCurrentReactContext();
-    if (mCreateReactContextThread == null && currentContext != null) {
-      attachRootViewToInstance(reactRoot);
+      // If react context is being created in the background, JS application will be started
+      // automatically when creation completes, as reactRoot is part of the attached
+      // reactRoot list.
+      ReactContext currentContext = getCurrentReactContext();
+      if (mCreateReactContextThread == null && currentContext != null) {
+        attachRootViewToInstance(reactRoot);
+      }
     }
   }
 
