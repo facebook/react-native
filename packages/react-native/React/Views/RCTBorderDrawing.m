@@ -232,6 +232,8 @@ static UIImage *RCTGetSolidBorderImage(
 
   UIGraphicsImageRenderer *const imageRenderer =
       RCTUIGraphicsImageRenderer(size, backgroundColor, hasCornerRadii, drawToEdge);
+  
+  CGColorRetain(backgroundColor);
   UIImage *image = [imageRenderer imageWithActions:^(UIGraphicsImageRendererContext *_Nonnull rendererContext) {
     const CGContextRef context = rendererContext.CGContext;
     const CGRect rect = {.size = size};
@@ -242,6 +244,7 @@ static UIImage *RCTGetSolidBorderImage(
       CGContextAddPath(context, path);
       CGContextFillPath(context);
     }
+    CGColorRelease(backgroundColor);
 
     CGContextAddPath(context, path);
     CGPathRelease(path);
