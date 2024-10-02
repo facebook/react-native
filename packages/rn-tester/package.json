@@ -1,6 +1,6 @@
 {
   "name": "@react-native/tester",
-  "version": "0.74.87",
+  "version": "0.74.88",
   "private": true,
   "description": "React Native tester app.",
   "license": "MIT",
@@ -26,7 +26,7 @@
     "flow-enums-runtime": "^0.0.6",
     "invariant": "^2.2.4",
     "nullthrows": "^1.1.1",
-    "@react-native/popup-menu-android": "0.74.87"
+    "@react-native/popup-menu-android": "0.74.88"
   },
   "peerDependencies": {
     "react": "18.2.0",
