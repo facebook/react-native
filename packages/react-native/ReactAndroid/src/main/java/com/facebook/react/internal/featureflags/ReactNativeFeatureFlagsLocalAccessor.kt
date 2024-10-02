@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a18b2e5cc10909f0cf7ec402f14da1e1>>
+ * @generated SignedSource<<05002ec93dd47f1a1ca2716af08d9eed>>
  */
 
 /**
@@ -28,7 +28,6 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var allowRecursiveCommitsWithSynchronousMountOnAndroidCache: Boolean? = null
   private var batchRenderingUpdatesInEventLoopCache: Boolean? = null
   private var completeReactInstanceCreationOnBgThreadOnAndroidCache: Boolean? = null
-  private var destroyFabricSurfacesInReactInstanceManagerCache: Boolean? = null
   private var enableAlignItemsBaselineOnFabricIOSCache: Boolean? = null
   private var enableAndroidLineHeightCenteringCache: Boolean? = null
   private var enableBridgelessArchitectureCache: Boolean? = null
@@ -111,16 +110,6 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.completeReactInstanceCreationOnBgThreadOnAndroid()
       accessedFeatureFlags.add("completeReactInstanceCreationOnBgThreadOnAndroid")
       completeReactInstanceCreationOnBgThreadOnAndroidCache = cached
-    }
-    return cached
-  }
-
-  override fun destroyFabricSurfacesInReactInstanceManager(): Boolean {
-    var cached = destroyFabricSurfacesInReactInstanceManagerCache
-    if (cached == null) {
-      cached = currentProvider.destroyFabricSurfacesInReactInstanceManager()
-      accessedFeatureFlags.add("destroyFabricSurfacesInReactInstanceManager")
-      destroyFabricSurfacesInReactInstanceManagerCache = cached
     }
     return cached
   }

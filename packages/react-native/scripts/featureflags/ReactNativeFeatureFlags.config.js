@@ -71,15 +71,6 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'experimentation',
       },
     },
-    destroyFabricSurfacesInReactInstanceManager: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-04-23',
-        description:
-          'When enabled, ReactInstanceManager will clean up Fabric surfaces on destroy().',
-        purpose: 'experimentation',
-      },
-    },
     enableAlignItemsBaselineOnFabricIOS: {
       defaultValue: true,
       metadata: {

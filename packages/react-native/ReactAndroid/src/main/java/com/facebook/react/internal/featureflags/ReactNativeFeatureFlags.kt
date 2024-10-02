@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<fd4f2e6d21254dbbecdf7d71135d55a1>>
+ * @generated SignedSource<<47baae9ffdb4a5fa461ce2800ba53b02>>
  */
 
 /**
@@ -51,12 +51,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun completeReactInstanceCreationOnBgThreadOnAndroid(): Boolean = accessor.completeReactInstanceCreationOnBgThreadOnAndroid()
-
-  /**
-   * When enabled, ReactInstanceManager will clean up Fabric surfaces on destroy().
-   */
-  @JvmStatic
-  public fun destroyFabricSurfacesInReactInstanceManager(): Boolean = accessor.destroyFabricSurfacesInReactInstanceManager()
 
   /**
    * Kill-switch to turn off support for aling-items:baseline on Fabric iOS.

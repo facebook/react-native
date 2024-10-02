@@ -792,12 +792,10 @@ public class ReactInstanceManager {
     synchronized (mAttachedReactRoots) {
       synchronized (mReactContextLock) {
         if (mCurrentReactContext != null) {
-          if (ReactNativeFeatureFlags.destroyFabricSurfacesInReactInstanceManager()) {
-            for (ReactRoot reactRoot : mAttachedReactRoots) {
-              // Fabric surfaces must be cleaned up when React Native is destroyed.
-              if (reactRoot.getUIManagerType() == UIManagerType.FABRIC) {
-                detachRootViewFromInstance(reactRoot, mCurrentReactContext);
-              }
+          for (ReactRoot reactRoot : mAttachedReactRoots) {
+            // Fabric surfaces must be cleaned up when React Native is destroyed.
+            if (reactRoot.getUIManagerType() == UIManagerType.FABRIC) {
+              detachRootViewFromInstance(reactRoot, mCurrentReactContext);
             }
           }
 
