@@ -392,12 +392,15 @@ describe('inspector proxy HTTP API', () => {
       jest.advanceTimersByTime(PAGES_POLLING_DELAY);
 
       // Hook into `DefaultBrowserLauncher.launchDebuggerAppWindow` to ensure debugger was launched
-      const launchDebuggerSpy = jest.spyOn(DefaultBrowserLauncher, 'launchDebuggerAppWindow')
+      const launchDebuggerSpy = jest
+        .spyOn(DefaultBrowserLauncher, 'launchDebuggerAppWindow')
         .mockResolvedValueOnce();
 
       try {
         // Fetch the target information for the device
-        const pageListResponse = await fetchJson<JsonPagesListResponse>(`${serverRef.serverBaseUrl}/json`);
+        const pageListResponse = await fetchJson<JsonPagesListResponse>(
+          `${serverRef.serverBaseUrl}/json`,
+        );
         // Select the first target from the page list response
         expect(pageListResponse.length).toBeGreaterThanOrEqual(1);
         const firstPage = pageListResponse[0];
@@ -405,7 +408,10 @@ describe('inspector proxy HTTP API', () => {
         // Build the URL for the debugger
         const openUrl = new URL('/open-debugger', serverRef.serverBaseUrl);
         openUrl.searchParams.set('appId', firstPage.description);
-        openUrl.searchParams.set('device', firstPage.reactNative.logicalDeviceId);
+        openUrl.searchParams.set(
+          'device',
+          firstPage.reactNative.logicalDeviceId,
+        );
         openUrl.searchParams.set('target', firstPage.id);
         // Request to open the debugger for the first device
         const response = await fetchLocal(openUrl.toString(), {method: 'POST'});
@@ -413,9 +419,7 @@ describe('inspector proxy HTTP API', () => {
         // Ensure the request was handled properly
         expect(response.status).toBe(200);
         // Ensure the debugger was launched
-        expect(launchDebuggerSpy).toHaveBeenCalledWith(
-          expect.any(String)
-        );
+        expect(launchDebuggerSpy).toHaveBeenCalledWith(expect.any(String));
       } finally {
         device.close();
       }
