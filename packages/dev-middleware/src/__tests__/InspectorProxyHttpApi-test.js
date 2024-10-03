@@ -403,7 +403,7 @@ describe('inspector proxy HTTP API', () => {
         const response = await fetchLocal(openUrl.toString());
 
         // Ensure the request was handled properly
-        expect(response).toMatchObject({ ok: true });
+        expect(response).toContain({ ok: true });
         // Ensure the debugger was launched
         expect(DefaultBrowserLauncher.launchDebuggerAppWindow).toHaveBeenCalledWith(
           expect.any(String)
