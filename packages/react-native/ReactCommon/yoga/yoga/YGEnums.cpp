@@ -35,10 +35,10 @@ const char* YGAlignToString(const YGAlign value) {
 
 const char* YGBoxSizingToString(const YGBoxSizing value) {
   switch (value) {
-    case YGBoxSizingContentBox:
-      return "content-box";
     case YGBoxSizingBorderBox:
       return "border-box";
+    case YGBoxSizingContentBox:
+      return "content-box";
   }
   return "unknown";
 }

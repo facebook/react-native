@@ -227,7 +227,6 @@ const validAttributesForNonEventProps = {
   justifyContent: true,
   overflow: true,
   display: true,
-  boxSizing: true,
 
   margin: true,
   marginBlock: true,

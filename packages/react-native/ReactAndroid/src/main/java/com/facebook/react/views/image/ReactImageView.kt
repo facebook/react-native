@@ -48,7 +48,6 @@ import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.common.annotations.VisibleForTesting
 import com.facebook.react.common.build.ReactBuildConfig
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags.loadVectorDrawablesOnImages
 import com.facebook.react.modules.fresco.ReactNetworkImageRequest
 import com.facebook.react.uimanager.BackgroundStyleApplicator
 import com.facebook.react.uimanager.LengthPercentage
@@ -394,12 +393,7 @@ public class ReactImageView(
           else -> REMOTE_IMAGE_FADE_DURATION_MS
         }
 
-    val drawable = getDrawableIfUnsupported(imageSourceSafe)
-    if (drawable != null) {
-      maybeUpdateViewFromDrawable(drawable)
-    } else {
-      maybeUpdateViewFromRequest(doResize)
-    }
+    maybeUpdateViewFromRequest(doResize)
 
     isDirty = false
   }
@@ -474,34 +468,6 @@ public class ReactImageView(
     builder.reset()
   }
 
-  private fun maybeUpdateViewFromDrawable(drawable: Drawable) {
-    val shouldNotify = downloadListener != null
-
-    val eventDispatcher =
-        if (shouldNotify) {
-          UIManagerHelper.getEventDispatcherForReactTag((context as ReactContext), id)
-        } else {
-          null
-        }
-
-    eventDispatcher?.dispatchEvent(
-        createLoadStartEvent(UIManagerHelper.getSurfaceId(this@ReactImageView), id))
-
-    hierarchy.setImage(drawable, 1f, false)
-
-    if (eventDispatcher != null && imageSource != null) {
-      eventDispatcher.dispatchEvent(
-          createLoadEvent(
-              UIManagerHelper.getSurfaceId(this@ReactImageView),
-              id,
-              imageSource?.source,
-              width,
-              height))
-      eventDispatcher.dispatchEvent(
-          createLoadEndEvent(UIManagerHelper.getSurfaceId(this@ReactImageView), id))
-    }
-  }
-
   @VisibleForTesting
   public fun setControllerListener(controllerListener: ControllerListener<ImageInfo>?) {
     controllerForTesting = controllerListener
@@ -546,30 +512,6 @@ public class ReactImageView(
         ImageResizeMethod.RESIZE -> true
         else -> false
       }
-
-  /**
-   * Checks if the provided ImageSource should not be requested through Fresco and instead loaded
-   * directly from the resources table. Fresco explicitly does not support a number of drawable
-   * types like VectorDrawable but they can still be mounted in the image hierarchy.
-   *
-   * @param imageSource
-   * @return drawable resource if Fresco cannot load the image, null otherwise
-   */
-  private fun getDrawableIfUnsupported(imageSource: ImageSource): Drawable? {
-    if (!loadVectorDrawablesOnImages()) {
-      return null
-    }
-    val resourceName = imageSource.source
-    if (!imageSource.isResource || resourceName == null) {
-      return null
-    }
-    val drawableHelper = instance
-    val isVectorDrawable = drawableHelper.isVectorDrawable(context, resourceName)
-    if (!isVectorDrawable) {
-      return null
-    }
-    return drawableHelper.getResourceDrawable(context, resourceName)
-  }
 
   private val resizeOptions: ResizeOptions?
     get() {

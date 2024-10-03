@@ -348,7 +348,6 @@ const validAttributesForNonEventProps = {
   alignContent: true,
   position: true,
   aspectRatio: true,
-  boxSizing: true,
 
   // Also declared as ViewProps
   // overflow: true,

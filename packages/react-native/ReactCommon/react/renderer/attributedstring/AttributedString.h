@@ -76,6 +76,12 @@ class AttributedString : public Sealable, public DebugStringConvertible {
   void prependAttributedString(const AttributedString& attributedString);
 
   /*
+   * Sets attributes which would apply to hypothetical text not included in the
+   * AttributedString.
+   */
+  void setBaseTextAttributes(const TextAttributes& defaultAttributes);
+
+  /*
    * Returns a read-only reference to a list of fragments.
    */
   const Fragments& getFragments() const;
@@ -89,6 +95,8 @@ class AttributedString : public Sealable, public DebugStringConvertible {
    * Returns a string constructed from all strings in all fragments.
    */
   std::string getString() const;
+
+  const TextAttributes& getBaseTextAttributes() const;
 
   /*
    * Returns `true` if the string is empty (has no any fragments).
@@ -113,6 +121,7 @@ class AttributedString : public Sealable, public DebugStringConvertible {
 
  private:
   Fragments fragments_;
+  TextAttributes baseAttributes_;
 };
 
 } // namespace facebook::react

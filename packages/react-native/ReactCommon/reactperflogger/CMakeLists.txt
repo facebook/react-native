@@ -21,4 +21,7 @@ add_library(reactperflogger OBJECT ${reactperflogger_SRC})
 
 target_include_directories(reactperflogger PUBLIC .)
 
-target_link_libraries(reactperflogger folly_runtime)
+target_link_libraries(reactperflogger
+        react_timing
+        folly_runtime
+)

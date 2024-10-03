@@ -663,11 +663,6 @@ describe('VirtualizedList', () => {
       renderItem: ({item}) => <item value={item.key} />,
       getItem: (items, index) => items[index],
       getItemCount: items => items.length,
-      getItemLayout: (items, index) => ({
-        length: ITEM_HEIGHT,
-        offset: ITEM_HEIGHT * index,
-        index,
-      }),
       onEndReached,
     };
 
@@ -694,6 +689,15 @@ describe('VirtualizedList', () => {
     expect(onEndReached).not.toHaveBeenCalled();
 
     await act(() => {
+      for (let i = 0; i < 20; ++i) {
+        simulateCellLayout(component, data, i, {
+          width: 10,
+          height: ITEM_HEIGHT,
+          x: 0,
+          y: i * ITEM_HEIGHT,
+        });
+      }
+
       instance._onScroll({
         timeStamp: 1000,
         nativeEvent: {

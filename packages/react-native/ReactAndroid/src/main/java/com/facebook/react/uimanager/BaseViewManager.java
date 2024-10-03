@@ -14,6 +14,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewParent;
 import android.view.accessibility.AccessibilityEvent;
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
@@ -195,8 +196,8 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
       name = ViewProps.BACKGROUND_COLOR,
       defaultInt = Color.TRANSPARENT,
       customType = "Color")
-  public void setBackgroundColor(@NonNull T view, int backgroundColor) {
-    view.setBackgroundColor(backgroundColor);
+  public void setBackgroundColor(@NonNull T view, @ColorInt int backgroundColor) {
+    BackgroundStyleApplicator.setBackgroundColor(view, backgroundColor);
   }
 
   @Override

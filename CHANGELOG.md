@@ -1,5 +1,22 @@
 # Changelog
 
+## v0.75.4
+
+### Fixed
+
+#### Android specific
+
+- Fix Headless Crash `Tried to finish non-existent task with id` ([56a282c44d](https://github.com/facebook/react-native/commit/56a282c44d1a3ee5114c2cba36b902bc9ae123b9) by [@RodolfoGS](https://github.com/RodolfoGS))
+- TextInput's `contextMenuHidden` prop bug fix ([366f1d0df3](https://github.com/facebook/react-native/commit/366f1d0df302af860b1fa9ea5f0bd757f2dec7b3) by [@alanleedev](https://github.com/alanleedev))
+- RNGP - Sanitize the output of the config command ([0265ea0577](https://github.com/facebook/react-native/commit/0265ea0577963cca582682c3fc8ee97f3ebef65e) by [@cortinico](https://github.com/cortinico))
+
+#### iOS specific
+
+- Convert `NSNull` to `nil` before checking `type` in `readAsDataURL` ([99ab845a5c](https://github.com/facebook/react-native/commit/99ab845a5cf0fe3463ff39b03373b95d4f5c0fac) by [@haileyok](https://github.com/haileyok))
+- Add back the BUNDLE_COMMAND ([afd74ad89d](https://github.com/facebook/react-native/commit/afd74ad89de6e632eea776e6d2689e7381c4f78c) by [@Vin-Xi](https://github.com/Vin-Xi))
+- Use CONFIG_CMD if set ([a4ec49cbe6](https://github.com/facebook/react-native/commit/a4ec49cbe6d0157417276731ba1608e482f3f10e) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+- App crash happening when navigate to a new app screen with a displaying modal ([8ec672204d](https://github.com/facebook/react-native/commit/8ec672204d5dee2b967cac08adf03c082e36ad79) by [@zhouzh1](https://github.com/zhouzh1))
+
 ## v0.76.0-rc.2
 
 ### Added

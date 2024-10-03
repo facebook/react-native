@@ -15,4 +15,4 @@ add_compile_options(
 
 add_library(react_timing INTERFACE)
 
-target_include_directories(react_timing INTERFACE .)
+target_include_directories(react_timing INTERFACE ${REACT_COMMON_DIR})

@@ -29,7 +29,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
-import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.autofill.HintConstants;
 import androidx.core.content.ContextCompat;
@@ -1033,11 +1032,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   @ReactProp(name = ViewProps.BOX_SHADOW, customType = "BoxShadow")
   public void setBoxShadow(ReactEditText view, @Nullable ReadableArray shadows) {
     BackgroundStyleApplicator.setBoxShadow(view, shadows);
-  }
-
-  @Override
-  public void setBackgroundColor(ReactEditText view, @ColorInt int backgroundColor) {
-    BackgroundStyleApplicator.setBackgroundColor(view, backgroundColor);
   }
 
   @Override

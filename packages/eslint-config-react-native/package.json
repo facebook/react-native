@@ -31,7 +31,7 @@
     "eslint-plugin-react": "^7.30.1",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-native": "^4.0.0",
-    "hermes-eslint": "^0.23.1"
+    "hermes-eslint": "0.24.0"
   },
   "peerDependencies": {
     "eslint": ">=8",

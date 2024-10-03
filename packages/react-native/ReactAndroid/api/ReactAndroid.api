@@ -3443,6 +3443,12 @@ public final class com/facebook/react/modules/fresco/SystraceRequestListener : c
 	public fun requiresExtraMap (Ljava/lang/String;)Z
 }
 
+public final class com/facebook/react/modules/fresco/XmlFormat {
+	public static final field INSTANCE Lcom/facebook/react/modules/fresco/XmlFormat;
+	public final fun addDecodingCapability (Lcom/facebook/imagepipeline/decoder/ImageDecoderConfig$Builder;Landroid/content/Context;)Lcom/facebook/imagepipeline/decoder/ImageDecoderConfig$Builder;
+	public final fun getDrawableFactory ()Lcom/facebook/imagepipeline/drawable/DrawableFactory;
+}
+
 public final class com/facebook/react/modules/i18nmanager/I18nManagerModule : com/facebook/fbreact/specs/NativeI18nManagerSpec {
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
 	public fun allowRTL (Z)V
@@ -6674,8 +6680,6 @@ public final class com/facebook/react/views/image/ReactImageManager : com/facebo
 	public fun getName ()Ljava/lang/String;
 	public synthetic fun onAfterUpdateTransaction (Landroid/view/View;)V
 	public final fun setAccessible (Lcom/facebook/react/views/image/ReactImageView;Z)V
-	public synthetic fun setBackgroundColor (Landroid/view/View;I)V
-	public fun setBackgroundColor (Lcom/facebook/react/views/image/ReactImageView;I)V
 	public final fun setBlurRadius (Lcom/facebook/react/views/image/ReactImageView;F)V
 	public final fun setBorderColor (Lcom/facebook/react/views/image/ReactImageView;Ljava/lang/Integer;)V
 	public final fun setBorderRadius (Lcom/facebook/react/views/image/ReactImageView;IF)V
@@ -7102,8 +7106,6 @@ public class com/facebook/react/views/scroll/ReactHorizontalScrollViewManager : 
 	public synthetic fun scrollTo (Ljava/lang/Object;Lcom/facebook/react/views/scroll/ReactScrollViewCommandHelper$ScrollToCommandData;)V
 	public fun scrollToEnd (Lcom/facebook/react/views/scroll/ReactHorizontalScrollView;Lcom/facebook/react/views/scroll/ReactScrollViewCommandHelper$ScrollToEndCommandData;)V
 	public synthetic fun scrollToEnd (Ljava/lang/Object;Lcom/facebook/react/views/scroll/ReactScrollViewCommandHelper$ScrollToEndCommandData;)V
-	public synthetic fun setBackgroundColor (Landroid/view/View;I)V
-	public fun setBackgroundColor (Lcom/facebook/react/views/scroll/ReactHorizontalScrollView;I)V
 	public fun setBorderColor (Lcom/facebook/react/views/scroll/ReactHorizontalScrollView;ILjava/lang/Integer;)V
 	public fun setBorderRadius (Lcom/facebook/react/views/scroll/ReactHorizontalScrollView;IF)V
 	public fun setBorderStyle (Lcom/facebook/react/views/scroll/ReactHorizontalScrollView;Ljava/lang/String;)V
@@ -7345,8 +7347,6 @@ public class com/facebook/react/views/scroll/ReactScrollViewManager : com/facebo
 	public synthetic fun scrollTo (Ljava/lang/Object;Lcom/facebook/react/views/scroll/ReactScrollViewCommandHelper$ScrollToCommandData;)V
 	public fun scrollToEnd (Lcom/facebook/react/views/scroll/ReactScrollView;Lcom/facebook/react/views/scroll/ReactScrollViewCommandHelper$ScrollToEndCommandData;)V
 	public synthetic fun scrollToEnd (Ljava/lang/Object;Lcom/facebook/react/views/scroll/ReactScrollViewCommandHelper$ScrollToEndCommandData;)V
-	public synthetic fun setBackgroundColor (Landroid/view/View;I)V
-	public fun setBackgroundColor (Lcom/facebook/react/views/scroll/ReactScrollView;I)V
 	public fun setBorderColor (Lcom/facebook/react/views/scroll/ReactScrollView;ILjava/lang/Integer;)V
 	public fun setBorderRadius (Lcom/facebook/react/views/scroll/ReactScrollView;IF)V
 	public fun setBorderStyle (Lcom/facebook/react/views/scroll/ReactScrollView;Ljava/lang/String;)V
@@ -7646,7 +7646,6 @@ public abstract class com/facebook/react/views/text/ReactTextAnchorViewManager :
 	public fun setAccessible (Lcom/facebook/react/views/text/ReactTextView;Z)V
 	public fun setAdjustFontSizeToFit (Lcom/facebook/react/views/text/ReactTextView;Z)V
 	public fun setAndroidHyphenationFrequency (Lcom/facebook/react/views/text/ReactTextView;Ljava/lang/String;)V
-	public fun setBackgroundColor (Landroid/view/View;I)V
 	public fun setBorderColor (Lcom/facebook/react/views/text/ReactTextView;ILjava/lang/Integer;)V
 	public fun setBorderRadius (Lcom/facebook/react/views/text/ReactTextView;IF)V
 	public fun setBorderStyle (Lcom/facebook/react/views/text/ReactTextView;Ljava/lang/String;)V
@@ -7931,6 +7930,7 @@ public class com/facebook/react/views/text/TextAttributes {
 }
 
 public class com/facebook/react/views/text/TextLayoutManager {
+	public static final field AS_KEY_BASE_ATTRIBUTES S
 	public static final field AS_KEY_CACHE_ID S
 	public static final field AS_KEY_FRAGMENTS S
 	public static final field AS_KEY_HASH S
@@ -7950,11 +7950,8 @@ public class com/facebook/react/views/text/TextLayoutManager {
 	public static final field PA_KEY_MINIMUM_FONT_SIZE S
 	public static final field PA_KEY_TEXT_BREAK_STRATEGY S
 	public fun <init> ()V
-	public static fun adjustSpannableFontToFit (Landroid/text/Spannable;FLcom/facebook/yoga/YogaMeasureMode;FLcom/facebook/yoga/YogaMeasureMode;DIZIILandroid/text/Layout$Alignment;)V
-	public static fun createLayout (Landroid/content/Context;Lcom/facebook/react/common/mapbuffer/MapBuffer;Lcom/facebook/react/common/mapbuffer/MapBuffer;FFLcom/facebook/react/views/text/ReactTextViewManagerCallback;)Landroid/text/Layout;
 	public static fun deleteCachedSpannableForTag (I)V
 	public static fun getOrCreateSpannableForText (Landroid/content/Context;Lcom/facebook/react/common/mapbuffer/MapBuffer;Lcom/facebook/react/views/text/ReactTextViewManagerCallback;)Landroid/text/Spannable;
-	public static fun getTextAlignment (Lcom/facebook/react/common/mapbuffer/MapBuffer;Landroid/text/Spannable;)Landroid/text/Layout$Alignment;
 	public static fun getTextGravity (Lcom/facebook/react/common/mapbuffer/MapBuffer;Landroid/text/Spannable;I)I
 	public static fun isRTL (Lcom/facebook/react/common/mapbuffer/MapBuffer;)Z
 	public static fun measureLines (Landroid/content/Context;Lcom/facebook/react/common/mapbuffer/MapBuffer;Lcom/facebook/react/common/mapbuffer/MapBuffer;FF)Lcom/facebook/react/bridge/WritableArray;
@@ -8132,8 +8129,6 @@ public class com/facebook/react/views/textinput/ReactTextInputManager : com/face
 	public fun setAutoCapitalize (Lcom/facebook/react/views/textinput/ReactEditText;Lcom/facebook/react/bridge/Dynamic;)V
 	public fun setAutoCorrect (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/Boolean;)V
 	public fun setAutoFocus (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
-	public synthetic fun setBackgroundColor (Landroid/view/View;I)V
-	public fun setBackgroundColor (Lcom/facebook/react/views/textinput/ReactEditText;I)V
 	public fun setBorderColor (Lcom/facebook/react/views/textinput/ReactEditText;ILjava/lang/Integer;)V
 	public fun setBorderRadius (Lcom/facebook/react/views/textinput/ReactEditText;IF)V
 	public fun setBorderStyle (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
@@ -8339,8 +8334,6 @@ public class com/facebook/react/views/view/ReactViewManager : com/facebook/react
 	public fun receiveCommand (Lcom/facebook/react/views/view/ReactViewGroup;Ljava/lang/String;Lcom/facebook/react/bridge/ReadableArray;)V
 	public fun setAccessible (Lcom/facebook/react/views/view/ReactViewGroup;Z)V
 	public fun setBackfaceVisibility (Lcom/facebook/react/views/view/ReactViewGroup;Ljava/lang/String;)V
-	public synthetic fun setBackgroundColor (Landroid/view/View;I)V
-	public fun setBackgroundColor (Lcom/facebook/react/views/view/ReactViewGroup;I)V
 	public fun setBackgroundImage (Lcom/facebook/react/views/view/ReactViewGroup;Lcom/facebook/react/bridge/ReadableArray;)V
 	public fun setBorderColor (Lcom/facebook/react/views/view/ReactViewGroup;ILjava/lang/Integer;)V
 	public fun setBorderRadius (Lcom/facebook/react/views/view/ReactViewGroup;IF)V

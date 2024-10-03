@@ -275,19 +275,6 @@
     return [weakSelf sourceURLForBridge:bridge];
   };
 
-  configuration.hostDidStartBlock = ^(RCTHost *_Nonnull host) {
-    [weakSelf hostDidStart:host];
-  };
-
-  configuration.hostDidReceiveJSErrorStackBlock =
-      ^(RCTHost *_Nonnull host,
-        NSArray<NSDictionary<NSString *, id> *> *_Nonnull stack,
-        NSString *_Nonnull message,
-        NSUInteger exceptionId,
-        BOOL isFatal) {
-        [weakSelf host:host didReceiveJSErrorStack:stack message:message exceptionId:exceptionId isFatal:isFatal];
-      };
-
   if ([self respondsToSelector:@selector(extraModulesForBridge:)]) {
     configuration.extraModulesForBridge = ^NSArray<id<RCTBridgeModule>> *_Nonnull(RCTBridge *_Nonnull bridge)
     {
@@ -309,7 +296,7 @@
     };
   }
 
-  return [[RCTRootViewFactory alloc] initWithConfiguration:configuration andTurboModuleManagerDelegate:self];
+  return [[RCTRootViewFactory alloc] initWithTurboModuleDelegate:self hostDelegate:self configuration:configuration];
 }
 
 #pragma mark - Feature Flags
