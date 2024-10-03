@@ -26,8 +26,8 @@ YG_ENUM_DECL(
 
 YG_ENUM_DECL(
     YGBoxSizing,
-    YGBoxSizingContentBox,
-    YGBoxSizingBorderBox)
+    YGBoxSizingBorderBox,
+    YGBoxSizingContentBox)
 
 YG_ENUM_DECL(
     YGDimension,
