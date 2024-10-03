@@ -355,7 +355,7 @@ const definitions: FeatureFlagDefinitions = {
       },
     },
     setAndroidLayoutDirection: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
         dateAdded: '2024-05-17',
         description: 'Propagate layout direction to Android views.',
