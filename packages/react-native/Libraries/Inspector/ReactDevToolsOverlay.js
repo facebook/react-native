@@ -20,7 +20,6 @@ import StyleSheet from '../StyleSheet/StyleSheet';
 import ElementBox from './ElementBox';
 import * as React from 'react';
 
-const {findNodeHandle} = require('../ReactNative/RendererProxy');
 const getInspectorDataForViewAtPoint = require('./getInspectorDataForViewAtPoint');
 
 const {useEffect, useState, useCallback} = React;

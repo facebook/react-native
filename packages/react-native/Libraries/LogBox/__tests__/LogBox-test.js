@@ -31,7 +31,7 @@ function mockFilterResult(returnValues: $FlowFixMe) {
 }
 
 describe('LogBox', () => {
-  const {error, log, warn} = console;
+  const {error, warn} = console;
 
   beforeEach(() => {
     jest.resetModules();
