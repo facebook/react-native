@@ -192,14 +192,15 @@ class YG_EXPORT Style {
   FloatOptional resolvedMinDimension(
       Direction direction,
       Dimension axis,
-      float referenceLength) const {
+      float referenceLength,
+      float ownerWidth) const {
     FloatOptional value = minDimension(axis).resolve(referenceLength);
     if (boxSizing() == BoxSizing::BorderBox) {
       return value;
     }
 
     FloatOptional dimensionPaddingAndBorder = FloatOptional{
-        computePaddingAndBorderForDimension(direction, axis, referenceLength)};
+        computePaddingAndBorderForDimension(direction, axis, ownerWidth)};
 
     return value +
         (dimensionPaddingAndBorder.isDefined() ? dimensionPaddingAndBorder
@@ -216,14 +217,15 @@ class YG_EXPORT Style {
   FloatOptional resolvedMaxDimension(
       Direction direction,
       Dimension axis,
-      float referenceLength) const {
+      float referenceLength,
+      float ownerWidth) const {
     FloatOptional value = maxDimension(axis).resolve(referenceLength);
     if (boxSizing() == BoxSizing::BorderBox) {
       return value;
     }
 
     FloatOptional dimensionPaddingAndBorder = FloatOptional{
-        computePaddingAndBorderForDimension(direction, axis, referenceLength)};
+        computePaddingAndBorderForDimension(direction, axis, ownerWidth)};
 
     return value +
         (dimensionPaddingAndBorder.isDefined() ? dimensionPaddingAndBorder
