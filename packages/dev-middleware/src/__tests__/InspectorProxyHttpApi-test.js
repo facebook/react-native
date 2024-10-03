@@ -24,7 +24,6 @@ import DefaultBrowserLauncher from '../utils/DefaultBrowserLauncher';
 const PAGES_POLLING_DELAY = 1000;
 
 jest.useFakeTimers();
-jest.mock('../utils/DefaultBrowserLauncher');
 
 describe('inspector proxy HTTP API', () => {
   const serverRef = withServerForEachTest({
@@ -384,8 +383,17 @@ describe('inspector proxy HTTP API', () => {
           id: 'page1',
           title: 'bar-title',
           vm: 'bar-vm',
+          capabilities: {
+            // Ensure the device target can be found when launching the debugger
+            nativePageReloads: true,
+          },
         },
       ]);
+      jest.advanceTimersByTime(PAGES_POLLING_DELAY);
+
+      // Hook into `DefaultBrowserLauncher.launchDebuggerAppWindow` to ensure debugger was launched
+      const launchDebuggerSpy = jest.spyOn(DefaultBrowserLauncher, 'launchDebuggerAppWindow')
+        .mockResolvedValueOnce();
 
       try {
         // Fetch the target information for the device
@@ -400,12 +408,12 @@ describe('inspector proxy HTTP API', () => {
         openUrl.searchParams.set('device', firstPage.reactNative.logicalDeviceId);
         openUrl.searchParams.set('target', firstPage.id);
         // Request to open the debugger for the first device
-        const response = await fetchLocal(openUrl.toString());
+        const response = await fetchLocal(openUrl.toString(), {method: 'POST'});
 
         // Ensure the request was handled properly
-        expect(response).toContain({ ok: true });
+        expect(response.status).toBe(200);
         // Ensure the debugger was launched
-        expect(DefaultBrowserLauncher.launchDebuggerAppWindow).toHaveBeenCalledWith(
+        expect(launchDebuggerSpy).toHaveBeenCalledWith(
           expect.any(String)
         );
       } finally {
