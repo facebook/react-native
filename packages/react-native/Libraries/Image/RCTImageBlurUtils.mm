@@ -25,23 +25,22 @@ UIImage *RCTBlurredImageWithRadius(UIImage *inputImage, CGFloat radius)
 
   // convert to ARGB if it isn't
   if (CGImageGetBitsPerPixel(imageRef) != 32 || !((CGImageGetBitmapInfo(imageRef) & kCGBitmapAlphaInfoMask))) {
-#if !TARGET_OS_OSX // [macOS]
-    UIGraphicsImageRendererFormat *const rendererFormat = [UIGraphicsImageRendererFormat defaultFormat];
-    rendererFormat.scale = inputImage.scale;
-    UIGraphicsImageRenderer *const renderer = [[UIGraphicsImageRenderer alloc] initWithSize:inputImage.size
-                                                                                     format:rendererFormat];
+    RCTUIGraphicsImageRendererFormat *const rendererFormat = [RCTUIGraphicsImageRendererFormat defaultFormat]; // [macOS]
+    rendererFormat.scale = UIImageGetScale(inputImage); // [macOS]
+    RCTUIGraphicsImageRenderer *const renderer = [[RCTUIGraphicsImageRenderer alloc] initWithSize:inputImage.size // [macOS]
+                                                                                           format:rendererFormat];
 
+#if !TARGET_OS_OSX // [macOS]
     imageRef = [renderer imageWithActions:^(UIGraphicsImageRendererContext *_Nonnull context) {
                  [inputImage drawAtPoint:CGPointZero];
                }].CGImage;
 #else // [macOS
-    UIGraphicsBeginImageContextWithOptions(inputImage.size, NO, imageScale);
-    [inputImage drawAtPoint:CGPointZero fromRect:NSZeroRect operation:NSCompositingOperationSourceOver fraction:1.0];
-    imageRef = (CGImageRef)CFAutorelease(CGBitmapContextCreateImage(UIGraphicsGetCurrentContext()));
-    UIGraphicsEndImageContext();
+    NSImage *image = [renderer imageWithActions:^(RCTUIGraphicsImageRendererContext *_Nonnull context) {
+      [inputImage drawAtPoint:CGPointZero fromRect:NSZeroRect operation:NSCompositingOperationSourceOver fraction:1.0];
+    }];
+    imageRef = UIImageGetCGImageRef(image);
 #endif // macOS]
   }
-
   vImage_Buffer buffer1, buffer2;
   buffer1.width = buffer2.width = CGImageGetWidth(imageRef);
   buffer1.height = buffer2.height = CGImageGetHeight(imageRef);

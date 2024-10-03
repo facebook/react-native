@@ -382,25 +382,19 @@ UIImage *__nullable RCTTransformImage(UIImage *image, CGSize destSize, CGFloat d
   }
 
   BOOL opaque = !RCTUIImageHasAlpha(image); // [macOS]
-#if !TARGET_OS_OSX // [macOS]
-  UIGraphicsImageRendererFormat *const rendererFormat = [UIGraphicsImageRendererFormat defaultFormat];
+  RCTUIGraphicsImageRendererFormat *const rendererFormat = [RCTUIGraphicsImageRendererFormat defaultFormat]; // [macOS]
   rendererFormat.opaque = opaque;
   rendererFormat.scale = destScale;
-  UIGraphicsImageRenderer *const renderer = [[UIGraphicsImageRenderer alloc] initWithSize:destSize
+  RCTUIGraphicsImageRenderer *const renderer = [[RCTUIGraphicsImageRenderer alloc] initWithSize:destSize // [macOS]
                                                                                    format:rendererFormat];
-  return [renderer imageWithActions:^(UIGraphicsImageRendererContext *_Nonnull context) {
+  return [renderer imageWithActions:^(RCTUIGraphicsImageRendererContext *_Nonnull context) { // [macOS]
     CGContextConcatCTM(context.CGContext, transform);
+#if !TARGET_OS_OSX // [macOS]
     [image drawAtPoint:CGPointZero];
-  }];
 #else // [macOS
-  UIGraphicsBeginImageContextWithOptions(destSize, opaque, destScale);
-  CGContextRef currentContext = UIGraphicsGetCurrentContext();
-  CGContextConcatCTM(currentContext, transform);
-  [image drawAtPoint:CGPointZero fromRect:NSZeroRect operation:NSCompositingOperationSourceOver fraction:1.0];
-  UIImage *result = UIGraphicsGetImageFromCurrentImageContext();
-  UIGraphicsEndImageContext();
-  return result;
+    [image drawAtPoint:CGPointZero fromRect:NSZeroRect operation:NSCompositingOperationSourceOver fraction:1.0];
 #endif // macOS]
+  }];
 }
 
 BOOL RCTImageHasAlpha(CGImageRef image)

@@ -269,9 +269,6 @@ extern "C" {
 
 // UIGraphics.h
 CGContextRef UIGraphicsGetCurrentContext(void);
-void UIGraphicsBeginImageContextWithOptions(CGSize size, BOOL opaque, CGFloat scale);
-NSImage *UIGraphicsGetImageFromCurrentImageContext(void);
-void UIGraphicsEndImageContext(void);
 CGImageRef UIImageGetCGImageRef(NSImage *image);
 
 #ifdef __cplusplus
@@ -640,4 +637,32 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) UIViewContentMode contentMode;
 NS_ASSUME_NONNULL_END
 @end
+#endif
+
+#if !TARGET_OS_OSX
+typedef UIGraphicsImageRendererContext RCTUIGraphicsImageRendererContext;
+typedef UIGraphicsImageDrawingActions RCTUIGraphicsImageDrawingActions;
+typedef UIGraphicsImageRendererFormat RCTUIGraphicsImageRendererFormat;
+typedef UIGraphicsImageRenderer RCTUIGraphicsImageRenderer;
+#else
+NS_ASSUME_NONNULL_BEGIN
+typedef NSGraphicsContext RCTUIGraphicsImageRendererContext;
+typedef void (^RCTUIGraphicsImageDrawingActions)(RCTUIGraphicsImageRendererContext *rendererContext);
+
+@interface RCTUIGraphicsImageRendererFormat : NSObject
+
++ (instancetype)defaultFormat;
+
+@property (nonatomic) CGFloat scale;
+@property (nonatomic) BOOL opaque;
+
+@end
+
+@interface RCTUIGraphicsImageRenderer : NSObject
+
+- (instancetype)initWithSize:(CGSize)size format:(RCTUIGraphicsImageRendererFormat *)format;
+- (NSImage *)imageWithActions:(NS_NOESCAPE RCTUIGraphicsImageDrawingActions)actions;
+
+@end
+NS_ASSUME_NONNULL_END
 #endif
