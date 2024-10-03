@@ -85,6 +85,14 @@ function getTextFor(measureStruct: MeasureStruct): string {
     measureStruct.height,
   )}`;
 }
+const opacityDecrementCounter = 0.2;
+
+function getOpacity(opacity: number): number {
+  if (parseFloat(opacity.toFixed(1)) > 0.0) {
+    return opacity - opacityDecrementCounter;
+  }
+  return 1.0;
+}
 
 // This is an example component that migrates to use the new architecture.
 export default function MyNativeView(props: {}): React.Node {
@@ -201,7 +209,7 @@ export default function MyNativeView(props: {}): React.Node {
       <Button
         title="Set Opacity"
         onPress={() => {
-          setOpacity(Math.random());
+          setOpacity(getOpacity(opacity));
           setArrayValues([
             Math.floor(Math.random() * 100),
             Math.floor(Math.random() * 100),
