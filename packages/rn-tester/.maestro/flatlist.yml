@@ -9,3 +9,10 @@ appId: ${APP_ID} # iOS: com.meta.RNTester.localDevelopment | Android: com.facebo
     speed: 40
 - tapOn:
     id: "Flatlist"
+- tapOn:
+    id: "Basic"
+- scrollUntilVisible:
+    element:
+      id: "600"
+    direction: DOWN
+    speed: 40
