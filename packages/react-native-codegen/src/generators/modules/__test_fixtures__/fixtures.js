@@ -2575,6 +2575,67 @@ const SAMPLE_WITH_UPPERCASE_NAME: SchemaType = {
   },
 };
 
+const UNION_MODULE: SchemaType = {
+  modules: {
+    NativeSampleTurboModule: {
+      type: 'NativeModule',
+      aliasMap: {},
+      enumMap: {},
+      spec: {
+        eventEmitters: [],
+        methods: [
+          {
+            name: 'getUnion',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'UnionTypeAnnotation',
+                memberType: 'ObjectTypeAnnotation',
+              },
+              params: [
+                {
+                  name: 'chooseInt',
+                  optional: false,
+                  typeAnnotation: {
+                    type: 'UnionTypeAnnotation',
+                    memberType: 'NumberTypeAnnotation',
+                  },
+                },
+                {
+                  name: 'chooseFloat',
+                  optional: false,
+                  typeAnnotation: {
+                    type: 'UnionTypeAnnotation',
+                    memberType: 'NumberTypeAnnotation',
+                  },
+                },
+                {
+                  name: 'chooseObject',
+                  optional: false,
+                  typeAnnotation: {
+                    type: 'UnionTypeAnnotation',
+                    memberType: 'ObjectTypeAnnotation',
+                  },
+                },
+                {
+                  name: 'chooseString',
+                  optional: false,
+                  typeAnnotation: {
+                    type: 'UnionTypeAnnotation',
+                    memberType: 'StringTypeAnnotation',
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+      moduleName: 'SampleTurboModule',
+    },
+  },
+};
+
 module.exports = {
   complex_objects: COMPLEX_OBJECTS,
   two_modules_different_files: TWO_MODULES_DIFFERENT_FILES,
@@ -2585,4 +2646,5 @@ module.exports = {
   real_module_example: REAL_MODULE_EXAMPLE,
   cxx_only_native_modules: CXX_ONLY_NATIVE_MODULES,
   SampleWithUppercaseName: SAMPLE_WITH_UPPERCASE_NAME,
+  union_module: UNION_MODULE,
 };

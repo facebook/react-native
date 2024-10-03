@@ -2281,6 +2281,120 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_UNION 1`
 }"
 `;
 
+exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_UNION_RETURN_TYPES 1`] = `
+"{
+  'modules': {
+    'NativeSampleTurboModule': {
+      'type': 'NativeModule',
+      'aliasMap': {},
+      'enumMap': {},
+      'spec': {
+        'eventEmitters': [],
+        'methods': [
+          {
+            'name': 'getStringUnion',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'UnionTypeAnnotation',
+                'memberType': 'StringTypeAnnotation'
+              },
+              'params': []
+            }
+          },
+          {
+            'name': 'setStringUnion',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'VoidTypeAnnotation'
+              },
+              'params': [
+                {
+                  'name': 'strings',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'UnionTypeAnnotation',
+                    'memberType': 'StringTypeAnnotation'
+                  }
+                }
+              ]
+            }
+          },
+          {
+            'name': 'getNumberUnion',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'UnionTypeAnnotation',
+                'memberType': 'NumberTypeAnnotation'
+              },
+              'params': []
+            }
+          },
+          {
+            'name': 'setNumberUnion',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'VoidTypeAnnotation'
+              },
+              'params': [
+                {
+                  'name': 'numbers',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'UnionTypeAnnotation',
+                    'memberType': 'NumberTypeAnnotation'
+                  }
+                }
+              ]
+            }
+          },
+          {
+            'name': 'getObjectUnion',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'UnionTypeAnnotation',
+                'memberType': 'ObjectTypeAnnotation'
+              },
+              'params': []
+            }
+          },
+          {
+            'name': 'setObjectUnion',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'VoidTypeAnnotation'
+              },
+              'params': [
+                {
+                  'name': 'objects',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'UnionTypeAnnotation',
+                    'memberType': 'ObjectTypeAnnotation'
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      'moduleName': 'SampleTurboModule'
+    }
+  }
+}"
+`;
+
 exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_UNSAFE_OBJECT 1`] = `
 "{
   'modules': {
