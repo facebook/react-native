@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<01fab77f1ec0e0bf3c7d8c894bb558bc>>
+ * @generated SignedSource<<fdfe7360e02f319b1bae54c52e2bdf0b>>
  */
 
 /**
@@ -97,7 +97,7 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun removeNestedCallsToDispatchMountItemsOnAndroid(): Boolean = false
 
-  override fun setAndroidLayoutDirection(): Boolean = false
+  override fun setAndroidLayoutDirection(): Boolean = true
 
   override fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean = false
 

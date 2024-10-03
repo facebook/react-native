@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d55b5677cec27f850398f066c2908fa2>>
+ * @generated SignedSource<<a6f5238c0f123b0ede2b9de95bd98676>>
  * @flow strict
  */
 
@@ -337,7 +337,7 @@ export const removeNestedCallsToDispatchMountItemsOnAndroid: Getter<boolean> = c
 /**
  * Propagate layout direction to Android views.
  */
-export const setAndroidLayoutDirection: Getter<boolean> = createNativeFlagGetter('setAndroidLayoutDirection', false);
+export const setAndroidLayoutDirection: Getter<boolean> = createNativeFlagGetter('setAndroidLayoutDirection', true);
 /**
  * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.
  */
