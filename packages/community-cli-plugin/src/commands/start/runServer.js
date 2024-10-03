@@ -134,7 +134,6 @@ async function runServer(
           data: `Dev server ready. ${chalk.dim('Press Ctrl+C to exit.')}`,
         });
         attachKeyHandlers({
-          cliConfig: ctx,
           devServerUrl,
           messageSocket: messageSocketEndpoint,
           reporter: terminalReporter,

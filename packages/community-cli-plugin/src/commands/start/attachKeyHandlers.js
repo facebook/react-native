@@ -9,12 +9,10 @@
  * @oncall react_native
  */
 
-import type {Config} from '@react-native-community/cli-types';
 import type TerminalReporter from 'metro/src/lib/TerminalReporter';
 
 import OpenDebuggerKeyboardHandler from './OpenDebuggerKeyboardHandler';
 import chalk from 'chalk';
-import {spawn} from 'child_process';
 import invariant from 'invariant';
 import readline from 'readline';
 import {ReadStream} from 'tty';
@@ -42,17 +40,11 @@ type KeyEvent = {
   shift: boolean,
 };
 
-const spawnOptions = {
-  env: {...process.env, FORCE_COLOR: chalk.supportsColor ? 'true' : 'false'},
-};
-
 export default function attachKeyHandlers({
-  cliConfig,
   devServerUrl,
   messageSocket,
   reporter,
 }: {
-  cliConfig: Config,
   devServerUrl: string,
   messageSocket: $ReadOnly<{
     broadcast: (type: string, params?: Record<string, mixed> | null) => void,
@@ -103,38 +95,6 @@ export default function attachKeyHandlers({
         });
         messageSocket.broadcast('devMenu', null);
         break;
-      case 'i':
-        reporter.update({
-          type: 'unstable_server_log',
-          level: 'info',
-          data: 'Opening app on iOS...',
-        });
-        spawn(
-          'npx',
-          [
-            'react-native',
-            'run-ios',
-            ...(cliConfig.project.ios?.watchModeCommandParams ?? []),
-          ],
-          spawnOptions,
-        ).stdout?.pipe(process.stdout);
-        break;
-      case 'a':
-        reporter.update({
-          type: 'unstable_server_log',
-          level: 'info',
-          data: 'Opening app on Android...',
-        });
-        spawn(
-          'npx',
-          [
-            'react-native',
-            'run-android',
-            ...(cliConfig.project.android?.watchModeCommandParams ?? []),
-          ],
-          spawnOptions,
-        ).stdout?.pipe(process.stdout);
-        break;
       case 'j':
         // eslint-disable-next-line no-void
         void openDebuggerKeyboardHandler.handleOpenDebugger();
@@ -159,8 +119,6 @@ export default function attachKeyHandlers({
     level: 'info',
     data: `Key commands available:
 
-  ${chalk.bold.inverse(' i ')} - run on iOS
-  ${chalk.bold.inverse(' a ')} - run on Android
   ${chalk.bold.inverse(' r ')} - reload app(s)
   ${chalk.bold.inverse(' d ')} - open Dev Menu
   ${chalk.bold.inverse(' j ')} - open DevTools
