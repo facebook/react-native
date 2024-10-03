@@ -142,10 +142,10 @@ RCT_EXPORT_MODULE()
                                                  styleMask:NSWindowStyleMaskBorderless
                                                    backing:NSBackingStoreBuffered
                                                      defer:YES];
-      self->_window.releasedWhenClosed = NO;
       self->_window.backgroundColor = [NSColor clearColor];
 
       NSTextField *label = [[NSTextField alloc] initWithFrame:self->_window.contentView.bounds];
+      label.font = [NSFont monospacedDigitSystemFontOfSize:12.0 weight:NSFontWeightRegular];
       label.alignment = NSTextAlignmentCenter;
       label.bezeled = NO;
       label.editable = NO;
@@ -169,7 +169,11 @@ RCT_EXPORT_MODULE()
     self->_label.textColor = color;
 
     self->_label.backgroundColor = backgroundColor;
-    [RCTKeyWindow() beginSheet:self->_window completionHandler:nil];
+    if (![[RCTKeyWindow() sheets] doesContain:self->_window]) {
+      [RCTKeyWindow() beginSheet:self->_window completionHandler:^(NSModalResponse returnCode) {
+        [self->_window orderOut:self];
+      }];
+    }
 #endif // macOS]
   });
 
