@@ -871,6 +871,7 @@ constexpr static MapBuffer::Key AS_KEY_HASH = 0;
 constexpr static MapBuffer::Key AS_KEY_STRING = 1;
 constexpr static MapBuffer::Key AS_KEY_FRAGMENTS = 2;
 constexpr static MapBuffer::Key AS_KEY_CACHE_ID = 3;
+constexpr static MapBuffer::Key AS_KEY_BASE_ATTRIBUTES = 4;
 
 // constants for Fragment serialization
 constexpr static MapBuffer::Key FR_KEY_STRING = 0;
@@ -1117,6 +1118,9 @@ inline MapBuffer toMapBuffer(const AttributedString& attributedString) {
   // TODO: This truncates half the hash
   builder.putInt(AS_KEY_HASH, static_cast<int>(hash));
   builder.putString(AS_KEY_STRING, attributedString.getString());
+  builder.putMapBuffer(
+      AS_KEY_BASE_ATTRIBUTES,
+      toMapBuffer(attributedString.getBaseTextAttributes()));
   auto fragmentsMap = fragmentsBuilder.build();
   builder.putMapBuffer(AS_KEY_FRAGMENTS, fragmentsMap);
   return builder.build();
