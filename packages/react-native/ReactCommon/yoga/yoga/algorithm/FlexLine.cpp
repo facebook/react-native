@@ -16,6 +16,7 @@ namespace facebook::yoga {
 FlexLine calculateFlexLine(
     yoga::Node* const node,
     const Direction ownerDirection,
+    const float ownerWidth,
     const float mainAxisownerSize,
     const float availableInnerWidth,
     const float availableInnerMainDim,
@@ -71,7 +72,8 @@ FlexLine calculateFlexLine(
             direction,
             mainAxis,
             child->getLayout().computedFlexBasis,
-            mainAxisownerSize)
+            mainAxisownerSize,
+            ownerWidth)
             .unwrap();
 
     // If this is a multi-line flow and this item pushes us over the available
