@@ -242,9 +242,8 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
 
   // `shadowColor`
   if (oldViewProps.shadowColor != newViewProps.shadowColor) {
-    CGColorRef shadowColor = RCTCreateCGColorRefFromSharedColor(newViewProps.shadowColor);
-    self.layer.shadowColor = shadowColor;
-    CGColorRelease(shadowColor);
+    UIColor *shadowColor = RCTUIColorFromSharedColor(newViewProps.shadowColor);
+    self.layer.shadowColor = shadowColor.CGColor;
     needsInvalidateLayer = YES;
   }
 
