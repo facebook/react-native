@@ -17,6 +17,7 @@ type AccessibilityChangeEventName =
   | 'invertColorsChanged' // iOS-only Event
   | 'reduceMotionChanged'
   | 'highTextContrastChanged' // Android-only Event
+  | 'darkerSystemColorsChanged' // iOS-only Event
   | 'screenReaderChanged'
   | 'reduceTransparencyChanged'; // iOS-only Event
 
@@ -76,6 +77,13 @@ export interface AccessibilityInfoStatic {
    * @platform android
    */
   isHighTextContrastEnabled: () => Promise<boolean>;
+
+  /**
+   * Query whether darker system colors is currently enabled.
+   *
+   * @platform ios
+   */
+  isDarkerSystemColorsEnabled: () => Promise<boolean>;
 
   /**
    * Query whether reduce motion and prefer cross-fade transitions settings are currently enabled.
