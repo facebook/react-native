@@ -21,7 +21,7 @@ import com.facebook.react.defaults.DefaultReactActivityDelegate
 import java.io.FileDescriptor
 import java.io.PrintWriter
 
-class RNTesterActivity : ReactActivity() {
+internal class RNTesterActivity : ReactActivity() {
   class RNTesterActivityDelegate(val activity: ReactActivity, mainComponentName: String) :
       DefaultReactActivityDelegate(activity, mainComponentName, fabricEnabled) {
     private val PARAM_ROUTE = "route"
