@@ -244,10 +244,9 @@ function translateTypeAnnotation(
       return emitUnion(nullable, hasteModuleName, typeAnnotation, parser);
     }
     case 'StringLiteralTypeAnnotation': {
-      // 'a' is a special case for 'a' | 'b' but the type name is different
       return wrapNullable(nullable, {
-        type: 'UnionTypeAnnotation',
-        memberType: 'StringTypeAnnotation',
+        type: 'StringLiteralTypeAnnotation',
+        value: typeAnnotation.value,
       });
     }
     case 'EnumStringBody':

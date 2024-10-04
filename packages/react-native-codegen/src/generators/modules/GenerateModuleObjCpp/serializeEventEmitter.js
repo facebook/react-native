@@ -15,8 +15,12 @@ const {toPascalCase} = require('../../Utils');
 function getEventEmitterTypeObjCType(
   eventEmitter: NativeModuleEventEmitterShape,
 ): string {
-  switch (eventEmitter.typeAnnotation.typeAnnotation.type) {
+  const type = eventEmitter.typeAnnotation.typeAnnotation.type;
+
+  switch (type) {
     case 'StringTypeAnnotation':
+      return 'NSString *_Nonnull';
+    case 'StringLiteralTypeAnnotation':
       return 'NSString *_Nonnull';
     case 'NumberTypeAnnotation':
       return 'NSNumber *_Nonnull';
@@ -28,7 +32,16 @@ function getEventEmitterTypeObjCType(
       return 'NSDictionary *';
     case 'ArrayTypeAnnotation':
       return 'NSArray<id<NSObject>> *';
+    case 'DoubleTypeAnnotation':
+    case 'FloatTypeAnnotation':
+    case 'Int32TypeAnnotation':
+    case 'VoidTypeAnnotation':
+      // TODO: Add support for these types
+      throw new Error(
+        `Unsupported eventType for ${eventEmitter.name}. Found: ${eventEmitter.typeAnnotation.typeAnnotation.type}`,
+      );
     default:
+      (type: empty);
       throw new Error(
         `Unsupported eventType for ${eventEmitter.name}. Found: ${eventEmitter.typeAnnotation.typeAnnotation.type}`,
       );
