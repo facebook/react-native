@@ -184,6 +184,8 @@ android {
   }
 }
 
+kotlin { explicitApi() }
+
 afterEvaluate {
   if (project.findProperty("react.internal.useHermesNightly") == null ||
       project.findProperty("react.internal.useHermesNightly").toString() == "false") {
