@@ -1037,7 +1037,7 @@ const examples = [
   {
     title: 'Background Color and Border Width',
     name: 'background-border-width',
-    render: function (): React.Node {
+    render(): React.Node {
       return (
         <View testID="background-border-width">
           <Text
