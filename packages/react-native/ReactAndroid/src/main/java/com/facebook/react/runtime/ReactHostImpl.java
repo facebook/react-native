@@ -47,6 +47,7 @@ import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.build.ReactBuildConfig;
+import com.facebook.react.devsupport.BridgelessDevSupportManagerFactory;
 import com.facebook.react.devsupport.DevSupportManagerBase;
 import com.facebook.react.devsupport.InspectorFlags;
 import com.facebook.react.devsupport.ReleaseDevSupportManager;
@@ -156,7 +157,27 @@ public class ReactHostImpl implements ReactHost {
         Executors.newSingleThreadExecutor(),
         Task.UI_THREAD_EXECUTOR,
         allowPackagerServerAccess,
-        useDevSupport);
+        useDevSupport,
+        null);
+  }
+
+
+  public ReactHostImpl(
+    Context context,
+    ReactHostDelegate delegate,
+    ComponentFactory componentFactory,
+    boolean allowPackagerServerAccess,
+    boolean useDevSupport,
+    BridgelessDevSupportManagerFactory devSupportFactory) {
+    this(
+      context,
+      delegate,
+      componentFactory,
+      Executors.newSingleThreadExecutor(),
+      Task.UI_THREAD_EXECUTOR,
+      allowPackagerServerAccess,
+      useDevSupport,
+      devSupportFactory);
   }
 
   public ReactHostImpl(
@@ -166,7 +187,8 @@ public class ReactHostImpl implements ReactHost {
       Executor bgExecutor,
       Executor uiExecutor,
       boolean allowPackagerServerAccess,
-      boolean useDevSupport) {
+      boolean useDevSupport,
+      @Nullable BridgelessDevSupportManagerFactory devSupportFactory) {
     mContext = context;
     mReactHostDelegate = delegate;
     mComponentFactory = componentFactory;
@@ -177,9 +199,9 @@ public class ReactHostImpl implements ReactHost {
     mUseDevSupport = useDevSupport;
 
     if (mUseDevSupport) {
-      mDevSupportManager =
-          new BridgelessDevSupportManager(
-              ReactHostImpl.this, mContext, mReactHostDelegate.getJsMainModulePath());
+      mDevSupportManager = devSupportFactory != null
+        ? devSupportFactory.create(ReactHostImpl.this)
+        : new BridgelessDevSupportManager(this, mContext, mReactHostDelegate.getJsMainModulePath());
     } else {
       mDevSupportManager = new ReleaseDevSupportManager();
     }
@@ -561,7 +583,7 @@ public class ReactHostImpl implements ReactHost {
   }
 
   @Nullable
-  /* package */ Activity getLastUsedActivity() {
+  public Activity getLastUsedActivity() {
     @Nullable WeakReference<Activity> lastUsedActivityWeakRef = mLastUsedActivity.get();
     if (lastUsedActivityWeakRef != null) {
       return lastUsedActivityWeakRef.get();
@@ -777,7 +799,7 @@ public class ReactHostImpl implements ReactHost {
     };
   }
 
-  /* package */ Task<Boolean> loadBundle(final JSBundleLoader bundleLoader) {
+  public Task<Boolean> loadBundle(final JSBundleLoader bundleLoader) {
     final String method = "loadBundle()";
     log(method, "Schedule");
 
@@ -861,7 +883,7 @@ public class ReactHostImpl implements ReactHost {
     }
   }
 
-  /* package */ boolean isSurfaceWithModuleNameAttached(String moduleName) {
+  public boolean isSurfaceWithModuleNameAttached(String moduleName) {
     synchronized (mAttachedSurfaces) {
       for (ReactSurfaceImpl surface : mAttachedSurfaces) {
         if (surface.getModuleName().equals(moduleName)) {
