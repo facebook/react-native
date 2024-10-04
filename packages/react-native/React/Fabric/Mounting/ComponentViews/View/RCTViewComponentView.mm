@@ -682,7 +682,7 @@ static void RCTAddContourEffectToLayer(
     const RCTBorderStyle &contourStyle)
 {
   UIImage *image = RCTGetBorderImage(
-      contourStyle, layer.bounds.size, cornerRadii, contourInsets, contourColors, [UIColor clearColor].CGColor, NO);
+      contourStyle, layer.bounds.size, cornerRadii, contourInsets, contourColors, [UIColor clearColor], NO);
 
   if (image == nil) {
     layer.contents = nil;
@@ -711,18 +711,10 @@ static void RCTAddContourEffectToLayer(
 static RCTBorderColors RCTCreateRCTBorderColorsFromBorderColors(BorderColors borderColors)
 {
   return RCTBorderColors{
-      .top = RCTCreateCGColorRefFromSharedColor(borderColors.top),
-      .left = RCTCreateCGColorRefFromSharedColor(borderColors.left),
-      .bottom = RCTCreateCGColorRefFromSharedColor(borderColors.bottom),
-      .right = RCTCreateCGColorRefFromSharedColor(borderColors.right)};
-}
-
-static void RCTReleaseRCTBorderColors(RCTBorderColors borderColors)
-{
-  CGColorRelease(borderColors.top);
-  CGColorRelease(borderColors.left);
-  CGColorRelease(borderColors.bottom);
-  CGColorRelease(borderColors.right);
+      .top = RCTUIColorFromSharedColor(borderColors.top),
+      .left = RCTUIColorFromSharedColor(borderColors.left),
+      .bottom = RCTUIColorFromSharedColor(borderColors.bottom),
+      .right = RCTUIColorFromSharedColor(borderColors.right)};
 }
 
 static CALayerCornerCurve CornerCurveFromBorderCurve(BorderCurve borderCurve)
@@ -870,7 +862,7 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
            (*borderMetrics.borderColors.left).getUIColor() != nullptr));
 
   // background color
-  CGColorRef backgroundColor = [_backgroundColor resolvedColorWithTraitCollection:self.traitCollection].CGColor;
+  UIColor *backgroundColor = [_backgroundColor resolvedColorWithTraitCollection:self.traitCollection];
   // The reason we sometimes do not set self.layer's backgroundColor is because
   // we want to support non-uniform border radii, which apple does not natively
   // support. To get this behavior we need to create a CGPath in the shape that
@@ -880,7 +872,7 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
   if (useCoreAnimationBorderRendering) {
     [_backgroundColorLayer removeFromSuperlayer];
     _backgroundColorLayer = nil;
-    layer.backgroundColor = backgroundColor;
+    layer.backgroundColor = backgroundColor.CGColor;
   } else {
     layer.backgroundColor = nil;
     if (!_backgroundColorLayer) {
@@ -890,7 +882,7 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
       [self.layer addSublayer:_backgroundColorLayer];
     }
 
-    _backgroundColorLayer.backgroundColor = backgroundColor;
+    _backgroundColorLayer.backgroundColor = backgroundColor.CGColor;
     if (borderMetrics.borderRadii.isUniform()) {
       _backgroundColorLayer.mask = nil;
       _backgroundColorLayer.cornerRadius = borderMetrics.borderRadii.topLeft.horizontal;
@@ -911,9 +903,8 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
     _borderLayer = nil;
 
     layer.borderWidth = (CGFloat)borderMetrics.borderWidths.left;
-    CGColorRef borderColor = RCTCreateCGColorRefFromSharedColor(borderMetrics.borderColors.left);
-    layer.borderColor = borderColor;
-    CGColorRelease(borderColor);
+    UIColor *borderColor = RCTUIColorFromSharedColor(borderMetrics.borderColors.left);
+    layer.borderColor = borderColor.CGColor;
     layer.cornerRadius = (CGFloat)borderMetrics.borderRadii.topLeft.horizontal;
     layer.cornerCurve = CornerCurveFromBorderCurve(borderMetrics.borderCurves.topLeft);
   } else {
@@ -938,8 +929,6 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
         borderColors,
         RCTUIEdgeInsetsFromEdgeInsets(borderMetrics.borderWidths),
         RCTBorderStyleFromBorderStyle(borderMetrics.borderStyles.left));
-
-    RCTReleaseRCTBorderColors(borderColors);
   }
 
   // outline
@@ -958,12 +947,11 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
         layer.bounds, -_props->outlineOffset - _props->outlineWidth, -_props->outlineOffset - _props->outlineWidth);
 
     if (borderMetrics.borderRadii.isUniform() && borderMetrics.borderRadii.topLeft.horizontal == 0) {
-      CGColorRef outlineColor = RCTCreateCGColorRefFromSharedColor(_props->outlineColor);
+      UIColor *outlineColor = RCTUIColorFromSharedColor(_props->outlineColor);
       _outlineLayer.borderWidth = _props->outlineWidth;
-      _outlineLayer.borderColor = outlineColor;
-      CGColorRelease(outlineColor);
+      _outlineLayer.borderColor = outlineColor.CGColor;
     } else {
-      CGColorRef outlineColor = RCTCreateCGColorRefFromSharedColor(_props->outlineColor);
+      UIColor *outlineColor = RCTUIColorFromSharedColor(_props->outlineColor);
 
       RCTAddContourEffectToLayer(
           _outlineLayer,
@@ -971,8 +959,6 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
           RCTBorderColors{outlineColor, outlineColor, outlineColor, outlineColor},
           UIEdgeInsets{_props->outlineWidth, _props->outlineWidth, _props->outlineWidth, _props->outlineWidth},
           RCTBorderStyleFromOutlineStyle(_props->outlineStyle));
-
-      CGColorRelease(outlineColor);
     }
   }
 
