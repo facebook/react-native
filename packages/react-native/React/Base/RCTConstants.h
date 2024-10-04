@@ -14,6 +14,8 @@ RCT_EXTERN NSString *const RCTUserInterfaceStyleDidChangeNotificationTraitCollec
 
 RCT_EXTERN NSString *const RCTWindowFrameDidChangeNotification;
 
+RCT_EXTERN NSString *const RCTNotifyEventDispatcherObserversOfEvent_DEPRECATED;
+
 /**
  * This notification fires when the bridge initializes.
  */
