@@ -9,3 +9,13 @@ appId: ${APP_ID} # iOS: com.meta.RNTester.localDevelopment | Android: com.facebo
     speed: 60
 - tapOn:
     id: "Modal"
+- assertVisible:
+    text: "Show Modal"
+- tapOn:
+    text: "Show Modal"
+- assertVisible:
+    text: "Close"
+- tapOn:
+    text: "Close"
+- assertVisible:
+    text: "Show Modal"
