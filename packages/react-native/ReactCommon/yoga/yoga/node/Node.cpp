@@ -296,16 +296,16 @@ Style::Length Node::processFlexBasis() const {
 FloatOptional Node::resolveFlexBasis(
     Direction direction,
     FlexDirection flexDirection,
-    float referenceLength) const {
+    float referenceLength,
+    float ownerWidth) const {
   FloatOptional value = processFlexBasis().resolve(referenceLength);
   if (style_.boxSizing() == BoxSizing::BorderBox) {
     return value;
   }
 
   Dimension dim = dimension(flexDirection);
-  FloatOptional dimensionPaddingAndBorder =
-      FloatOptional{style_.computePaddingAndBorderForDimension(
-          direction, dim, referenceLength)};
+  FloatOptional dimensionPaddingAndBorder = FloatOptional{
+      style_.computePaddingAndBorderForDimension(direction, dim, ownerWidth)};
 
   return value +
       (dimensionPaddingAndBorder.isDefined() ? dimensionPaddingAndBorder

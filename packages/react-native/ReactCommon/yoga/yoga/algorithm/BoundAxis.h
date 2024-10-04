@@ -32,20 +32,21 @@ inline FloatOptional boundAxisWithinMinAndMax(
     const Direction direction,
     const FlexDirection axis,
     const FloatOptional value,
-    const float axisSize) {
+    const float axisSize,
+    const float widthSize) {
   FloatOptional min;
   FloatOptional max;
 
   if (isColumn(axis)) {
     min = node->style().resolvedMinDimension(
-        direction, Dimension::Height, axisSize);
+        direction, Dimension::Height, axisSize, widthSize);
     max = node->style().resolvedMaxDimension(
-        direction, Dimension::Height, axisSize);
+        direction, Dimension::Height, axisSize, widthSize);
   } else if (isRow(axis)) {
     min = node->style().resolvedMinDimension(
-        direction, Dimension::Width, axisSize);
+        direction, Dimension::Width, axisSize, widthSize);
     max = node->style().resolvedMaxDimension(
-        direction, Dimension::Width, axisSize);
+        direction, Dimension::Width, axisSize, widthSize);
   }
 
   if (max >= FloatOptional{0} && value > max) {
@@ -70,7 +71,7 @@ inline float boundAxis(
     const float widthSize) {
   return yoga::maxOrDefined(
       boundAxisWithinMinAndMax(
-          node, direction, axis, FloatOptional{value}, axisSize)
+          node, direction, axis, FloatOptional{value}, axisSize, widthSize)
           .unwrap(),
       paddingAndBorderForAxis(node, axis, direction, widthSize));
 }
