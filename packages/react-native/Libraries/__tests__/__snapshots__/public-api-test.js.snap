@@ -1583,6 +1583,7 @@ type AccessibilityEventDefinitionsIOS = {
   grayscaleChanged: [boolean],
   invertColorsChanged: [boolean],
   reduceTransparencyChanged: [boolean],
+  darkerSystemColorsChanged: [boolean],
 };
 type AccessibilityEventDefinitions = {
   ...AccessibilityEventDefinitionsAndroid,
@@ -1598,6 +1599,7 @@ declare const AccessibilityInfo: {
   isInvertColorsEnabled(): Promise<boolean>,
   isReduceMotionEnabled(): Promise<boolean>,
   isHighTextContrastEnabled(): Promise<boolean>,
+  isDarkerSystemColorsEnabled(): Promise<boolean>,
   prefersCrossFadeTransitions(): Promise<boolean>,
   isReduceTransparencyEnabled(): Promise<boolean>,
   isScreenReaderEnabled(): Promise<boolean>,
