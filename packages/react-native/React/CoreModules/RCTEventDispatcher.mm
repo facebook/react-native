@@ -58,7 +58,7 @@ RCT_EXPORT_MODULE()
   NSNotificationCenter *defaultCenter = [NSNotificationCenter defaultCenter];
   [defaultCenter addObserver:self
                     selector:@selector(_notifyEventDispatcherObserversOfEvent_DEPRECATED:)
-                        name:@"RCTNotifyEventDispatcherObserversOfEvent_DEPRECATED"
+                        name:RCTNotifyEventDispatcherObserversOfEvent_DEPRECATED
                       object:nil];
 }
 
