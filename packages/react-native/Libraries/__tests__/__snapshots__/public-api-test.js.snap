@@ -6748,6 +6748,7 @@ declare class XMLHttpRequest extends EventTarget {
   static LOADING: number;
   static DONE: number;
   static _interceptor: ?XHRInterceptor;
+  static _profiling: boolean;
   UNSENT: number;
   OPENED: number;
   HEADERS_RECEIVED: number;
@@ -6784,8 +6785,10 @@ declare class XMLHttpRequest extends EventTarget {
   _timedOut: boolean;
   _trackingName: string;
   _incrementalEvents: boolean;
+  _startTime: ?number;
   _performanceLogger: IPerformanceLogger;
   static setInterceptor(interceptor: ?XHRInterceptor): void;
+  static enableProfiling(enableProfiling: boolean): void;
   constructor(): void;
   _reset(): void;
   get responseType(): ResponseType;
@@ -6829,6 +6832,7 @@ declare class XMLHttpRequest extends EventTarget {
   setResponseHeaders(responseHeaders: ?Object): void;
   setReadyState(newState: number): void;
   addEventListener(type: string, listener: EventListener): void;
+  _getMeasureURL(): string;
 }
 declare module.exports: XMLHttpRequest;
 "
