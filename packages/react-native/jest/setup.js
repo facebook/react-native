@@ -146,6 +146,7 @@ jest
         remove: jest.fn(),
       })),
       announceForAccessibility: jest.fn(),
+      announceForAccessibilityWithOptions: jest.fn(),
       isAccessibilityServiceEnabled: jest.fn(() => Promise.resolve(false)),
       isBoldTextEnabled: jest.fn(() => Promise.resolve(false)),
       isGrayscaleEnabled: jest.fn(() => Promise.resolve(false)),
