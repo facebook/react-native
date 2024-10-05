@@ -74,10 +74,10 @@ JReactInstance::JReactInstance(
   timerManager->setRuntimeExecutor(bufferedRuntimeExecutor);
 
   // Set up the JS and native modules call invokers (for TurboModules)
-  auto jsInvoker = std::make_unique<RuntimeSchedulerCallInvoker>(
+  auto jsInvoker = std::make_shared<RuntimeSchedulerCallInvoker>(
       instance_->getRuntimeScheduler());
   jsCallInvokerHolder_ = jni::make_global(
-      CallInvokerHolder::newObjectCxxArgs(std::move(jsInvoker)));
+      CallInvokerHolder::newObjectCxxArgs(jsInvoker));
   auto nativeMethodCallInvoker =
       std::make_unique<BridgelessNativeMethodCallInvoker>(
           sharedNativeMessageQueueThread);
