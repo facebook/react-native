@@ -11,6 +11,7 @@ package com.facebook.react.views.switchview;
 import android.content.Context;
 import android.view.View;
 import android.widget.CompoundButton;
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReactContext;
@@ -115,6 +116,11 @@ public class ReactSwitchManager extends SimpleViewManager<ReactSwitch>
     ReactSwitch view = new ReactSwitch(context);
     view.setShowText(false);
     return view;
+  }
+
+  @Override
+  public void setBackgroundColor(ReactSwitch view, @ColorInt int backgroundColor) {
+    view.setBackgroundColor(backgroundColor);
   }
 
   @Override
