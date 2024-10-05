@@ -26,7 +26,6 @@ import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.proguard.annotations.DoNotStrip;
-import com.facebook.react.JSEngineResolutionAlgorithm;
 import com.facebook.react.MemoryPressureRouter;
 import com.facebook.react.ReactHost;
 import com.facebook.react.ReactInstanceEventListener;
@@ -131,7 +130,6 @@ public class ReactHostImpl implements ReactHost {
   private final ReactLifecycleStateManager mReactLifecycleStateManager =
       new ReactLifecycleStateManager(mBridgelessReactStateTracker);
   private final int mId = mCounter.getAndIncrement();
-  private @Nullable JSEngineResolutionAlgorithm mJSEngineResolutionAlgorithm = null;
   private @Nullable MemoryPressureListener mMemoryPressureListener;
   private @Nullable DefaultHardwareBackBtnHandler mDefaultHardwareBackBtnHandler;
 
