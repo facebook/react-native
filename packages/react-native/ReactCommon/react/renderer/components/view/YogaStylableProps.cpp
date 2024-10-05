@@ -533,6 +533,13 @@ YogaStylableProps::YogaStylableProps(
       sourceProps.yogaStyle.aspectRatio(),
       yogaStyle.aspectRatio()));
 
+  yogaStyle.setBoxSizing(convertRawProp(
+      context,
+      rawProps,
+      "boxSizing",
+      sourceProps.yogaStyle.boxSizing(),
+      yogaStyle.boxSizing()));
+
   convertRawPropAliases(context, sourceProps, rawProps);
 };
 

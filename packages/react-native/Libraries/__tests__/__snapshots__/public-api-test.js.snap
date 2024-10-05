@@ -8009,6 +8009,7 @@ type ____LayoutStyle_Internal = $ReadOnly<{
   flexShrink?: number,
   flexBasis?: number | string,
   aspectRatio?: number | string,
+  boxSizing?: \\"border-box\\" | \\"content-box\\",
   zIndex?: number,
   direction?: \\"inherit\\" | \\"ltr\\" | \\"rtl\\",
   rowGap?: number | string,
