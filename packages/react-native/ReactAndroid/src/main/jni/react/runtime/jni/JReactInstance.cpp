@@ -73,23 +73,6 @@ JReactInstance::JReactInstance(
   auto bufferedRuntimeExecutor = instance_->getBufferedRuntimeExecutor();
   timerManager->setRuntimeExecutor(bufferedRuntimeExecutor);
 
-  ReactInstance::JSRuntimeFlags options = {.isProfiling = isProfiling};
-  // TODO T194671568 Consider moving runtime init to the JS thread.
-  instance_->initializeRuntime(options, [this](jsi::Runtime& runtime) {
-    react::Logger androidLogger =
-        static_cast<void (*)(const std::string&, unsigned int)>(
-            &reactAndroidLoggingHook);
-    react::bindNativeLogger(runtime, androidLogger);
-    if (jBindingsInstaller_ != nullptr) {
-      auto appBindingInstaller =
-          jBindingsInstaller_->cthis()->getBindingsInstallFunc();
-      if (appBindingInstaller != nullptr) {
-        appBindingInstaller(runtime);
-      }
-    }
-  });
-
-  auto unbufferedRuntimeExecutor = instance_->getUnbufferedRuntimeExecutor();
   // Set up the JS and native modules call invokers (for TurboModules)
   auto jsInvoker = std::make_unique<RuntimeSchedulerCallInvoker>(
       instance_->getRuntimeScheduler());
@@ -102,6 +85,23 @@ JReactInstance::JReactInstance(
       jni::make_global(NativeMethodCallInvokerHolder::newObjectCxxArgs(
           std::move(nativeMethodCallInvoker)));
 
+  ReactInstance::JSRuntimeFlags options = {.isProfiling = isProfiling};
+  // TODO T194671568 Consider moving runtime init to the JS thread.
+  instance_->initializeRuntime(options, [this, jsInvoker](jsi::Runtime& runtime) {
+    react::Logger androidLogger =
+        static_cast<void (*)(const std::string&, unsigned int)>(
+            &reactAndroidLoggingHook);
+    react::bindNativeLogger(runtime, androidLogger);
+    if (jBindingsInstaller_ != nullptr) {
+      auto appBindingInstaller =
+          jBindingsInstaller_->cthis()->getBindingsInstallFunc();
+      if (appBindingInstaller != nullptr) {
+        appBindingInstaller(runtime, jsInvoker);
+      }
+    }
+  });
+
+  auto unbufferedRuntimeExecutor = instance_->getUnbufferedRuntimeExecutor();
   // Storing this here to make sure the Java reference doesn't get destroyed
   unbufferedRuntimeExecutor_ = jni::make_global(
       JRuntimeExecutor::newObjectCxxArgs(unbufferedRuntimeExecutor));

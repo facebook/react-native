@@ -22,7 +22,8 @@ void SampleTurboModuleJSIBindings::registerNatives() {
 jni::local_ref<BindingsInstallerHolder::javaobject>
 SampleTurboModuleJSIBindings::getBindingsInstaller(
     jni::alias_ref<SampleTurboModuleJSIBindings> /*jobj*/) {
-  return BindingsInstallerHolder::newObjectCxxArgs([](jsi::Runtime& runtime) {
+  return BindingsInstallerHolder::newObjectCxxArgs([](jsi::Runtime& runtime,
+                                                      std::shared_ptr<CallInvoker>) {
     runtime.global().setProperty(
         runtime, "__SampleTurboModuleJSIBindings", "Hello JSI!");
   });

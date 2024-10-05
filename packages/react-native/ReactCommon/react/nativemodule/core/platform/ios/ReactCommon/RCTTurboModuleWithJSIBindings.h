@@ -9,12 +9,14 @@
 
 #ifdef __cplusplus
 #include <jsi/jsi.h>
+#include <ReactCommon/CallInvoker.h>
 #endif
 
 @protocol RCTTurboModuleWithJSIBindings <NSObject>
 
 #ifdef __cplusplus
-- (void)installJSIBindingsWithRuntime:(facebook::jsi::Runtime &)runtime;
+- (void)installJSIBindingsWithRuntime:(facebook::jsi::Runtime &)runtime
+                          callInvoker:(std::shared_ptr<CallInvoker>)callinvoker;
 #endif
 
 @end

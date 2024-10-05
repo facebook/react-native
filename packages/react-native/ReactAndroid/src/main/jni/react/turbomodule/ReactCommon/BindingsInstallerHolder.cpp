@@ -11,8 +11,7 @@
 
 namespace facebook::react {
 
-BindingsInstallerHolder::BindingsInstallerHolder(
-    std::function<void(facebook::jsi::Runtime& runtime)> bindingsInstaller)
+BindingsInstallerHolder::BindingsInstallerHolder(BindingsInstallFunc bindingsInstaller)
     : bindingsInstaller_(std::move(bindingsInstaller)) {}
 
 void BindingsInstallerHolder::installBindings(jsi::Runtime& runtime) {

@@ -404,8 +404,8 @@ typedef struct {
     }
     _turboModuleCache.insert({moduleName, turboModule});
 
-    if ([module respondsToSelector:@selector(installJSIBindingsWithRuntime:)]) {
-      [(id<RCTTurboModuleWithJSIBindings>)module installJSIBindingsWithRuntime:*runtime];
+    if ([module respondsToSelector:@selector(installJSIBindingsWithRuntime:callInvoker:)]) {
+      [(id<RCTTurboModuleWithJSIBindings>)module installJSIBindingsWithRuntime:*runtime callInvoker:_jsInvoker];
     }
     return turboModule;
   }
