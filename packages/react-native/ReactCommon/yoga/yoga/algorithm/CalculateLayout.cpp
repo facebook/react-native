@@ -44,8 +44,9 @@ static void constrainMaxSizeForMode(
     float ownerWidth,
     /*in_out*/ SizingMode* mode,
     /*in_out*/ float* size) {
-  const FloatOptional maxSize = node->style().resolvedMaxDimension(
-                                    direction, dimension(axis), ownerAxisSize) +
+  const FloatOptional maxSize =
+      node->style().resolvedMaxDimension(
+          direction, dimension(axis), ownerAxisSize, ownerWidth) +
       FloatOptional(node->style().computeMarginForAxis(axis, ownerWidth));
   switch (*mode) {
     case SizingMode::StretchFit:
@@ -87,8 +88,8 @@ static void computeFlexBasisForChild(
   SizingMode childWidthSizingMode;
   SizingMode childHeightSizingMode;
 
-  const FloatOptional resolvedFlexBasis =
-      child->resolveFlexBasis(direction, mainAxis, mainAxisOwnerSize);
+  const FloatOptional resolvedFlexBasis = child->resolveFlexBasis(
+      direction, mainAxis, mainAxisOwnerSize, ownerWidth);
   const bool isRowStyleDimDefined =
       child->hasDefiniteLength(Dimension::Width, ownerWidth);
   const bool isColumnStyleDimDefined =
@@ -111,7 +112,8 @@ static void computeFlexBasisForChild(
             child, FlexDirection::Row, direction, ownerWidth));
 
     child->setLayoutComputedFlexBasis(yoga::maxOrDefined(
-        child->getResolvedDimension(direction, Dimension::Width, ownerWidth),
+        child->getResolvedDimension(
+            direction, Dimension::Width, ownerWidth, ownerWidth),
         paddingAndBorder));
   } else if (!isMainAxisRow && isColumnStyleDimDefined) {
     // The height is definite, so use that as the flex basis.
@@ -119,7 +121,8 @@ static void computeFlexBasisForChild(
         FloatOptional(paddingAndBorderForAxis(
             child, FlexDirection::Column, direction, ownerWidth));
     child->setLayoutComputedFlexBasis(yoga::maxOrDefined(
-        child->getResolvedDimension(direction, Dimension::Height, ownerHeight),
+        child->getResolvedDimension(
+            direction, Dimension::Height, ownerHeight, ownerWidth),
         paddingAndBorder));
   } else {
     // Compute the flex basis and hypothetical main size (i.e. the clamped flex
@@ -133,15 +136,18 @@ static void computeFlexBasisForChild(
         child->style().computeMarginForAxis(FlexDirection::Column, ownerWidth);
 
     if (isRowStyleDimDefined) {
-      childWidth =
-          child->getResolvedDimension(direction, Dimension::Width, ownerWidth)
-              .unwrap() +
+      childWidth = child
+                       ->getResolvedDimension(
+                           direction, Dimension::Width, ownerWidth, ownerWidth)
+                       .unwrap() +
           marginRow;
       childWidthSizingMode = SizingMode::StretchFit;
     }
     if (isColumnStyleDimDefined) {
       childHeight =
-          child->getResolvedDimension(direction, Dimension::Height, ownerHeight)
+          child
+              ->getResolvedDimension(
+                  direction, Dimension::Height, ownerHeight, ownerWidth)
               .unwrap() +
           marginColumn;
       childHeightSizingMode = SizingMode::StretchFit;
@@ -476,7 +482,8 @@ static float calculateAvailableInnerDimension(
     const Dimension dimension,
     const float availableDim,
     const float paddingAndBorder,
-    const float ownerDim) {
+    const float ownerDim,
+    const float ownerWidth) {
   float availableInnerDim = availableDim - paddingAndBorder;
   // Max dimension overrides predefined dimension value; Min dimension in turn
   // overrides both of the above
@@ -484,13 +491,15 @@ static float calculateAvailableInnerDimension(
     // We want to make sure our available height does not violate min and max
     // constraints
     const FloatOptional minDimensionOptional =
-        node->style().resolvedMinDimension(direction, dimension, ownerDim);
+        node->style().resolvedMinDimension(
+            direction, dimension, ownerDim, ownerWidth);
     const float minInnerDim = minDimensionOptional.isUndefined()
         ? 0.0f
         : minDimensionOptional.unwrap() - paddingAndBorder;
 
     const FloatOptional maxDimensionOptional =
-        node->style().resolvedMaxDimension(direction, dimension, ownerDim);
+        node->style().resolvedMaxDimension(
+            direction, dimension, ownerDim, ownerWidth);
 
     const float maxInnerDim = maxDimensionOptional.isUndefined()
         ? FLT_MAX
@@ -594,6 +603,7 @@ static float distributeFreeSpaceSecondPass(
     const FlexDirection mainAxis,
     const FlexDirection crossAxis,
     const Direction direction,
+    const float ownerWidth,
     const float mainAxisOwnerSize,
     const float availableInnerMainDim,
     const float availableInnerCrossDim,
@@ -618,7 +628,8 @@ static float distributeFreeSpaceSecondPass(
                          direction,
                          mainAxis,
                          currentLineChild->getLayout().computedFlexBasis,
-                         mainAxisOwnerSize)
+                         mainAxisOwnerSize,
+                         ownerWidth)
                          .unwrap();
     float updatedMainSize = childFlexBasis;
 
@@ -713,11 +724,13 @@ static float distributeFreeSpaceSecondPass(
           ? SizingMode::MaxContent
           : SizingMode::FitContent;
     } else {
-      childCrossSize =
-          currentLineChild
-              ->getResolvedDimension(
-                  direction, dimension(crossAxis), availableInnerCrossDim)
-              .unwrap() +
+      childCrossSize = currentLineChild
+                           ->getResolvedDimension(
+                               direction,
+                               dimension(crossAxis),
+                               availableInnerCrossDim,
+                               availableInnerWidth)
+                           .unwrap() +
           marginCross;
       const bool isLoosePercentageMeasurement =
           currentLineChild->getProcessedDimension(dimension(crossAxis))
@@ -808,6 +821,7 @@ static void distributeFreeSpaceFirstPass(
     FlexLine& flexLine,
     const Direction direction,
     const FlexDirection mainAxis,
+    const float ownerWidth,
     const float mainAxisOwnerSize,
     const float availableInnerMainDim,
     const float availableInnerWidth) {
@@ -823,7 +837,8 @@ static void distributeFreeSpaceFirstPass(
                                direction,
                                mainAxis,
                                currentLineChild->getLayout().computedFlexBasis,
-                               mainAxisOwnerSize)
+                               mainAxisOwnerSize,
+                               ownerWidth)
                                .unwrap();
 
     if (flexLine.layout.remainingFreeSpace < 0) {
@@ -917,6 +932,7 @@ static void resolveFlexibleLength(
     const FlexDirection mainAxis,
     const FlexDirection crossAxis,
     const Direction direction,
+    const float ownerWidth,
     const float mainAxisOwnerSize,
     const float availableInnerMainDim,
     const float availableInnerCrossDim,
@@ -934,6 +950,7 @@ static void resolveFlexibleLength(
       flexLine,
       direction,
       mainAxis,
+      ownerWidth,
       mainAxisOwnerSize,
       availableInnerMainDim,
       availableInnerWidth);
@@ -945,6 +962,7 @@ static void resolveFlexibleLength(
       mainAxis,
       crossAxis,
       direction,
+      ownerWidth,
       mainAxisOwnerSize,
       availableInnerMainDim,
       availableInnerCrossDim,
@@ -993,7 +1011,7 @@ static void justifyMainAxis(
     if (style.minDimension(dimension(mainAxis)).isDefined() &&
         style
             .resolvedMinDimension(
-                direction, dimension(mainAxis), mainAxisOwnerSize)
+                direction, dimension(mainAxis), mainAxisOwnerSize, ownerWidth)
             .isDefined()) {
       // This condition makes sure that if the size of main dimension(after
       // considering child nodes main dim, leading and trailing padding etc)
@@ -1005,7 +1023,7 @@ static void justifyMainAxis(
       const float minAvailableMainDim =
           style
               .resolvedMinDimension(
-                  direction, dimension(mainAxis), mainAxisOwnerSize)
+                  direction, dimension(mainAxis), mainAxisOwnerSize, ownerWidth)
               .unwrap() -
           leadingPaddingAndBorderMain - trailingPaddingAndBorderMain;
       const float occupiedSpaceByChildNodes =
@@ -1403,6 +1421,7 @@ static void calculateLayoutImpl(
       Dimension::Width,
       availableWidth - marginAxisRow,
       paddingAndBorderAxisRow,
+      ownerWidth,
       ownerWidth);
   float availableInnerHeight = calculateAvailableInnerDimension(
       node,
@@ -1410,7 +1429,8 @@ static void calculateLayoutImpl(
       Dimension::Height,
       availableHeight - marginAxisColumn,
       paddingAndBorderAxisColumn,
-      ownerHeight);
+      ownerHeight,
+      ownerWidth);
 
   float availableInnerMainDim =
       isMainAxisRow ? availableInnerWidth : availableInnerHeight;
@@ -1470,6 +1490,7 @@ static void calculateLayoutImpl(
     auto flexLine = calculateFlexLine(
         node,
         ownerDirection,
+        ownerWidth,
         mainAxisOwnerSize,
         availableInnerWidth,
         availableInnerMainDim,
@@ -1494,19 +1515,27 @@ static void calculateLayoutImpl(
     if (sizingModeMainDim != SizingMode::StretchFit) {
       const auto& style = node->style();
       const float minInnerWidth =
-          style.resolvedMinDimension(direction, Dimension::Width, ownerWidth)
+          style
+              .resolvedMinDimension(
+                  direction, Dimension::Width, ownerWidth, ownerWidth)
               .unwrap() -
           paddingAndBorderAxisRow;
       const float maxInnerWidth =
-          style.resolvedMaxDimension(direction, Dimension::Width, ownerWidth)
+          style
+              .resolvedMaxDimension(
+                  direction, Dimension::Width, ownerWidth, ownerWidth)
               .unwrap() -
           paddingAndBorderAxisRow;
       const float minInnerHeight =
-          style.resolvedMinDimension(direction, Dimension::Height, ownerHeight)
+          style
+              .resolvedMinDimension(
+                  direction, Dimension::Height, ownerHeight, ownerWidth)
               .unwrap() -
           paddingAndBorderAxisColumn;
       const float maxInnerHeight =
-          style.resolvedMaxDimension(direction, Dimension::Height, ownerHeight)
+          style
+              .resolvedMaxDimension(
+                  direction, Dimension::Height, ownerHeight, ownerWidth)
               .unwrap() -
           paddingAndBorderAxisColumn;
 
@@ -1559,6 +1588,7 @@ static void calculateLayoutImpl(
           mainAxis,
           crossAxis,
           direction,
+          ownerWidth,
           mainAxisOwnerSize,
           availableInnerMainDim,
           availableInnerCrossDim,
@@ -1802,7 +1832,10 @@ static void calculateLayoutImpl(
         ? availableInnerCrossDim + paddingAndBorderAxisCross
         : node->hasDefiniteLength(dimension(crossAxis), crossAxisOwnerSize)
         ? node->getResolvedDimension(
-                  direction, dimension(crossAxis), crossAxisOwnerSize)
+                  direction,
+                  dimension(crossAxis),
+                  crossAxisOwnerSize,
+                  ownerWidth)
               .unwrap()
         : totalLineCrossDim + paddingAndBorderAxisCross;
 
@@ -2058,7 +2091,8 @@ static void calculateLayoutImpl(
                     direction,
                     mainAxis,
                     FloatOptional{maxLineMainDim},
-                    mainAxisOwnerSize)
+                    mainAxisOwnerSize,
+                    ownerWidth)
                     .unwrap()),
             paddingAndBorderAxisMain),
         dimension(mainAxis));
@@ -2092,7 +2126,8 @@ static void calculateLayoutImpl(
                     crossAxis,
                     FloatOptional{
                         totalLineCrossDim + paddingAndBorderAxisCross},
-                    crossAxisOwnerSize)
+                    crossAxisOwnerSize,
+                    ownerWidth)
                     .unwrap()),
             paddingAndBorderAxisCross),
         dimension(crossAxis));
@@ -2384,13 +2419,20 @@ void calculateLayout(
   if (node->hasDefiniteLength(Dimension::Width, ownerWidth)) {
     width =
         (node->getResolvedDimension(
-                 direction, dimension(FlexDirection::Row), ownerWidth)
+                 direction,
+                 dimension(FlexDirection::Row),
+                 ownerWidth,
+                 ownerWidth)
              .unwrap() +
          node->style().computeMarginForAxis(FlexDirection::Row, ownerWidth));
     widthSizingMode = SizingMode::StretchFit;
-  } else if (style.resolvedMaxDimension(direction, Dimension::Width, ownerWidth)
+  } else if (style
+                 .resolvedMaxDimension(
+                     direction, Dimension::Width, ownerWidth, ownerWidth)
                  .isDefined()) {
-    width = style.resolvedMaxDimension(direction, Dimension::Width, ownerWidth)
+    width = style
+                .resolvedMaxDimension(
+                    direction, Dimension::Width, ownerWidth, ownerWidth)
                 .unwrap();
     widthSizingMode = SizingMode::FitContent;
   } else {
@@ -2404,17 +2446,21 @@ void calculateLayout(
   if (node->hasDefiniteLength(Dimension::Height, ownerHeight)) {
     height =
         (node->getResolvedDimension(
-                 direction, dimension(FlexDirection::Column), ownerHeight)
+                 direction,
+                 dimension(FlexDirection::Column),
+                 ownerHeight,
+                 ownerWidth)
              .unwrap() +
          node->style().computeMarginForAxis(FlexDirection::Column, ownerWidth));
     heightSizingMode = SizingMode::StretchFit;
   } else if (style
                  .resolvedMaxDimension(
-                     direction, Dimension::Height, ownerHeight)
+                     direction, Dimension::Height, ownerHeight, ownerWidth)
                  .isDefined()) {
-    height =
-        style.resolvedMaxDimension(direction, Dimension::Height, ownerHeight)
-            .unwrap();
+    height = style
+                 .resolvedMaxDimension(
+                     direction, Dimension::Height, ownerHeight, ownerWidth)
+                 .unwrap();
     heightSizingMode = SizingMode::FitContent;
   } else {
     height = ownerHeight;
