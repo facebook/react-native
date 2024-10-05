@@ -817,8 +817,8 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x)
     // or when the border is hidden.
 
     (borderInsets.top == 0 ||
-      (borderColors.top && CGColorGetAlpha(borderColors.top.CGColor) == 0)
-      || self.clipsToBounds);
+      (borderColors.top && CGColorGetAlpha(borderColors.top.CGColor) == 0) ||
+      self.clipsToBounds);
 
   // iOS clips to the outside of the border, but CSS clips to the inside. To
   // solve this, we'll need to add a container view inside the main view to
