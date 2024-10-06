@@ -134,6 +134,7 @@ inline static CGFloat RCTBaseSizeForDynamicTypeRamp(const DynamicTypeRamp &dynam
 
 inline static CGFloat RCTEffectiveFontSizeMultiplierFromTextAttributes(const TextAttributes &textAttributes)
 {
+  Float calculatedSizeMultiplier = 1.0;
   if (textAttributes.allowFontScaling.value_or(true)) {
     if (textAttributes.dynamicTypeRamp.has_value()) {
       DynamicTypeRamp dynamicTypeRamp = textAttributes.dynamicTypeRamp.value();
@@ -142,13 +143,17 @@ inline static CGFloat RCTEffectiveFontSizeMultiplierFromTextAttributes(const Tex
       // Using a specific font size reduces rounding errors from -scaledValueForValue:
       CGFloat requestedSize =
           isnan(textAttributes.fontSize) ? RCTBaseSizeForDynamicTypeRamp(dynamicTypeRamp) : textAttributes.fontSize;
-      return [fontMetrics scaledValueForValue:requestedSize] / requestedSize;
+      calculatedSizeMultiplier = [fontMetrics scaledValueForValue:requestedSize] / requestedSize;
     } else {
-      return textAttributes.fontSizeMultiplier;
+      calculatedSizeMultiplier = textAttributes.fontSizeMultiplier;
     }
-  } else {
-    return 1.0;
   }
+
+  if (!std::isnan(textAttributes.maxFontSizeMultiplier) && (floatEquality(textAttributes.maxFontSizeMultiplier, 1.0) || textAttributes.maxFontSizeMultiplier > 1.0)) {
+    calculatedSizeMultiplier = std::min(calculatedSizeMultiplier, textAttributes.maxFontSizeMultiplier);
+  }
+
+  return calculatedSizeMultiplier;
 }
 
 inline static UIFont *RCTEffectiveFontFromTextAttributes(const TextAttributes &textAttributes)
