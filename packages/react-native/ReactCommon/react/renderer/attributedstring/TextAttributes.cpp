@@ -36,6 +36,9 @@ void TextAttributes::apply(TextAttributes textAttributes) {
   fontSizeMultiplier = !std::isnan(textAttributes.fontSizeMultiplier)
       ? textAttributes.fontSizeMultiplier
       : fontSizeMultiplier;
+  maxFontSizeMultiplier = !std::isnan(textAttributes.maxFontSizeMultiplier)
+      ? textAttributes.maxFontSizeMultiplier
+      : maxFontSizeMultiplier;
   fontWeight = textAttributes.fontWeight.has_value() ? textAttributes.fontWeight
                                                      : fontWeight;
   fontStyle = textAttributes.fontStyle.has_value() ? textAttributes.fontStyle
@@ -171,6 +174,7 @@ bool TextAttributes::operator==(const TextAttributes& rhs) const {
       floatEquality(opacity, rhs.opacity) &&
       floatEquality(fontSize, rhs.fontSize) &&
       floatEquality(fontSizeMultiplier, rhs.fontSizeMultiplier) &&
+      floatEquality(maxFontSizeMultiplier, rhs.maxFontSizeMultiplier) &&
       floatEquality(letterSpacing, rhs.letterSpacing) &&
       floatEquality(lineHeight, rhs.lineHeight) &&
       floatEquality(textShadowRadius, rhs.textShadowRadius);
