@@ -217,11 +217,6 @@ void YogaLayoutableShadowNode::adoptYogaChild(size_t index) {
     // TODO: At this point, React has wrong reference to the node. (T138668036)
     auto clonedChildNode = childNode.clone({});
 
-    if (ReactNativeFeatureFlags::
-            useRuntimeShadowNodeReferenceUpdateOnLayout()) {
-      childNode.transferRuntimeShadowNodeReference(clonedChildNode);
-    }
-
     // Replace the child node with a newly cloned one in the children list.
     replaceChild(childNode, clonedChildNode, index);
   }
@@ -528,10 +523,6 @@ YogaLayoutableShadowNode& YogaLayoutableShadowNode::cloneChildInPlace(
       {ShadowNodeFragment::propsPlaceholder(),
        ShadowNodeFragment::childrenPlaceholder(),
        childNode.getState()});
-
-  if (ReactNativeFeatureFlags::useRuntimeShadowNodeReferenceUpdateOnLayout()) {
-    childNode.transferRuntimeShadowNodeReference(clonedChildNode);
-  }
 
   replaceChild(childNode, clonedChildNode, layoutableChildIndex);
   return static_cast<YogaLayoutableShadowNode&>(*clonedChildNode);
