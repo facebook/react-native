@@ -14,6 +14,9 @@ namespace facebook::react {
 BindingsInstallerHolder::BindingsInstallerHolder(BindingsInstallFunc bindingsInstaller)
     : bindingsInstaller_(std::move(bindingsInstaller)) {}
 
+BindingsInstallerHolder::BindingsInstallerHolder(std::function<void(jsi::Runtime& runtime)> oldBindingsInstaller)
+    : bindingsInstaller_([f = std::move(oldBindingsInstaller)](jsi::Runtime& runtime, std::shared_ptr<CallInvoker>) { f(runtime); }) {}
+
 void BindingsInstallerHolder::installBindings(jsi::Runtime& runtime, const std::shared_ptr<CallInvoker>&  callInvoker) {
   bindingsInstaller_(runtime, callInvoker);
 }

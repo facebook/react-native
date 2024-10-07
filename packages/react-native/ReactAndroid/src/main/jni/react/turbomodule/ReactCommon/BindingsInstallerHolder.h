@@ -24,8 +24,12 @@ class BindingsInstallerHolder
   void installBindings(jsi::Runtime& runtime, const std::shared_ptr<CallInvoker>& callInvoker);
 
  private:
-  friend HybridBase;
   BindingsInstallerHolder(BindingsInstallFunc bindingsInstaller);
+  [[deprecated("Use 'BindingsInstaller([](Runtime, CallInvoker) { ... })' instead")]]
+  BindingsInstallerHolder(std::function<void(jsi::Runtime& runtime)> oldBindingsInstaller);
+
+ private:
+  friend HybridBase;
   BindingsInstallFunc bindingsInstaller_;
 };
 
