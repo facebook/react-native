@@ -112,7 +112,6 @@ public class ReactModalHostView(context: ThemedReactContext) :
   private var createNewDialog = false
 
   init {
-    context.addLifecycleEventListener(this)
     dialogRootViewGroup = DialogRootViewGroup(context)
   }
 
@@ -131,9 +130,14 @@ public class ReactModalHostView(context: ThemedReactContext) :
     dialogRootViewGroup.id = id
   }
 
+  protected override fun onAttachedToWindow() {
+    super.onAttachedToWindow()
+    (context as ThemedReactContext).addLifecycleEventListener(this)
+  }
+
   protected override fun onDetachedFromWindow() {
     super.onDetachedFromWindow()
-    dismiss()
+    onDropInstance()
   }
 
   public override fun addView(child: View?, index: Int) {
