@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<05002ec93dd47f1a1ca2716af08d9eed>>
+ * @generated SignedSource<<a307a1f9b5064547ce32f9519bbf27c4>>
  */
 
 /**
@@ -70,7 +70,6 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var useOptimisedViewPreallocationOnAndroidCache: Boolean? = null
   private var useOptimizedEventBatchingOnAndroidCache: Boolean? = null
   private var useRuntimeShadowNodeReferenceUpdateCache: Boolean? = null
-  private var useRuntimeShadowNodeReferenceUpdateOnLayoutCache: Boolean? = null
   private var useTurboModuleInteropCache: Boolean? = null
   private var useTurboModulesCache: Boolean? = null
 
@@ -530,16 +529,6 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.useRuntimeShadowNodeReferenceUpdate()
       accessedFeatureFlags.add("useRuntimeShadowNodeReferenceUpdate")
       useRuntimeShadowNodeReferenceUpdateCache = cached
-    }
-    return cached
-  }
-
-  override fun useRuntimeShadowNodeReferenceUpdateOnLayout(): Boolean {
-    var cached = useRuntimeShadowNodeReferenceUpdateOnLayoutCache
-    if (cached == null) {
-      cached = currentProvider.useRuntimeShadowNodeReferenceUpdateOnLayout()
-      accessedFeatureFlags.add("useRuntimeShadowNodeReferenceUpdateOnLayout")
-      useRuntimeShadowNodeReferenceUpdateOnLayoutCache = cached
     }
     return cached
   }
