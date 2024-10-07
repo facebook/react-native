@@ -423,12 +423,11 @@ const definitions: FeatureFlagDefinitions = {
       },
     },
     useRuntimeShadowNodeReferenceUpdate: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
-        dateAdded: '2024-06-03',
         description:
           'When enabled, cloning shadow nodes within react native will update the reference held by the current JS fiber tree.',
-        purpose: 'experimentation',
+        purpose: 'release',
       },
     },
     useRuntimeShadowNodeReferenceUpdateOnLayout: {
