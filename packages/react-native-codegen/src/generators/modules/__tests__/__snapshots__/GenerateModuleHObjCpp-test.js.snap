@@ -1292,7 +1292,8 @@ Map {
 - (NSDictionary *)getUnion:(double)chooseInt
                chooseFloat:(double)chooseFloat
               chooseObject:(NSDictionary *)chooseObject
-              chooseString:(NSString *)chooseString;
+              chooseString:(NSString *)chooseString
+       chooseStringLiteral:(NSString *)chooseStringLiteral;
 
 @end
 

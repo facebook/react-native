@@ -35,6 +35,7 @@ import type {
   ReservedTypeAnnotation,
   StringTypeAnnotation,
   StringLiteralTypeAnnotation,
+  StringLiteralUnionTypeAnnotation,
   VoidTypeAnnotation,
 } from '../CodegenSchema';
 import type {Parser} from './parser';
@@ -409,7 +410,14 @@ function emitUnion(
   hasteModuleName: string,
   typeAnnotation: $FlowFixMe,
   parser: Parser,
-): Nullable<NativeModuleUnionTypeAnnotation> {
+): Nullable<
+  NativeModuleUnionTypeAnnotation | StringLiteralUnionTypeAnnotation,
+> {
+  // Get all the literals by type
+  // Verify they are all the same
+  // If string, persist as StringLiteralUnionType
+  // If number, persist as NumberTypeAnnotation (TODO: Number literal)
+
   const unionTypes = parser.remapUnionTypeAnnotationMemberNames(
     typeAnnotation.types,
   );
@@ -423,9 +431,39 @@ function emitUnion(
     );
   }
 
+  if (unionTypes[0] === 'StringTypeAnnotation') {
+    // Reprocess as a string literal union
+    return emitStringLiteralUnion(
+      nullable,
+      hasteModuleName,
+      typeAnnotation,
+      parser,
+    );
+  }
+
   return wrapNullable(nullable, {
     type: 'UnionTypeAnnotation',
     memberType: unionTypes[0],
+  });
+}
+
+function emitStringLiteralUnion(
+  nullable: boolean,
+  hasteModuleName: string,
+  typeAnnotation: $FlowFixMe,
+  parser: Parser,
+): Nullable<StringLiteralUnionTypeAnnotation> {
+  const stringLiterals =
+    parser.getStringLiteralUnionTypeAnnotationStringLiterals(
+      typeAnnotation.types,
+    );
+
+  return wrapNullable(nullable, {
+    type: 'StringLiteralUnionTypeAnnotation',
+    types: stringLiterals.map(stringLiteral => ({
+      type: 'StringLiteralTypeAnnotation',
+      value: stringLiteral,
+    })),
   });
 }
 

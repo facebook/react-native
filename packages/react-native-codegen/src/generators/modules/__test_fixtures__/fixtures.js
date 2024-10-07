@@ -2317,6 +2317,23 @@ const CXX_ONLY_NATIVE_MODULES: SchemaType = {
                   },
                 },
                 {
+                  name: 'y-literal',
+                  optional: false,
+                  typeAnnotation: {
+                    type: 'StringLiteralUnionTypeAnnotation',
+                    types: [
+                      {
+                        type: 'StringLiteralTypeAnnotation',
+                        value: 'foo',
+                      },
+                      {
+                        type: 'StringLiteralTypeAnnotation',
+                        value: 'bar',
+                      },
+                    ],
+                  },
+                },
+                {
                   name: 'z',
                   optional: false,
                   typeAnnotation: {
@@ -2624,6 +2641,23 @@ const UNION_MODULE: SchemaType = {
                   typeAnnotation: {
                     type: 'UnionTypeAnnotation',
                     memberType: 'StringTypeAnnotation',
+                  },
+                },
+                {
+                  name: 'chooseStringLiteral',
+                  optional: false,
+                  typeAnnotation: {
+                    type: 'StringLiteralUnionTypeAnnotation',
+                    types: [
+                      {
+                        type: 'StringLiteralTypeAnnotation',
+                        value: 'foo',
+                      },
+                      {
+                        type: 'StringLiteralTypeAnnotation',
+                        value: 'bar',
+                      },
+                    ],
                   },
                 },
               ],

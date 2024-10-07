@@ -133,6 +133,8 @@ function translateEventEmitterTypeToJavaType(
       return 'String';
     case 'StringLiteralTypeAnnotation':
       return 'String';
+    case 'StringLiteralUnionTypeAnnotation':
+      return 'String';
     case 'NumberTypeAnnotation':
     case 'FloatTypeAnnotation':
     case 'DoubleTypeAnnotation':
@@ -196,6 +198,8 @@ function translateFunctionParamToJavaType(
     case 'StringTypeAnnotation':
       return wrapOptional('String', isRequired);
     case 'StringLiteralTypeAnnotation':
+      return wrapOptional('String', isRequired);
+    case 'StringLiteralUnionTypeAnnotation':
       return wrapOptional('String', isRequired);
     case 'NumberTypeAnnotation':
       return wrapOptional('double', isRequired);
@@ -288,6 +292,8 @@ function translateFunctionReturnTypeToJavaType(
     case 'StringTypeAnnotation':
       return wrapOptional('String', isRequired);
     case 'StringLiteralTypeAnnotation':
+      return wrapOptional('String', isRequired);
+    case 'StringLiteralUnionTypeAnnotation':
       return wrapOptional('String', isRequired);
     case 'NumberTypeAnnotation':
       return wrapOptional('double', isRequired);
@@ -400,6 +406,8 @@ function getFalsyReturnStatementFromReturnType(
     case 'StringTypeAnnotation':
       return nullable ? 'return null;' : 'return "";';
     case 'StringLiteralTypeAnnotation':
+      return nullable ? 'return null;' : 'return "";';
+    case 'StringLiteralUnionTypeAnnotation':
       return nullable ? 'return null;' : 'return "";';
     case 'ObjectTypeAnnotation':
       return 'return null;';

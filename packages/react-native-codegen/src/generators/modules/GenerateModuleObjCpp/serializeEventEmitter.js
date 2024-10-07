@@ -22,6 +22,8 @@ function getEventEmitterTypeObjCType(
       return 'NSString *_Nonnull';
     case 'StringLiteralTypeAnnotation':
       return 'NSString *_Nonnull';
+    case 'StringLiteralUnionTypeAnnotation':
+      return 'NSString *_Nonnull';
     case 'NumberTypeAnnotation':
       return 'NSNumber *_Nonnull';
     case 'BooleanTypeAnnotation':

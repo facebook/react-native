@@ -23,6 +23,7 @@ import type {
   NativeModuleObjectTypeAnnotation,
   StringTypeAnnotation,
   StringLiteralTypeAnnotation,
+  StringLiteralUnionTypeAnnotation,
   NativeModuleTypeAliasTypeAnnotation,
   Nullable,
   ReservedTypeAnnotation,
@@ -60,6 +61,7 @@ export type StructProperty = $ReadOnly<{
 export type StructTypeAnnotation =
   | StringTypeAnnotation
   | StringLiteralTypeAnnotation
+  | StringLiteralUnionTypeAnnotation
   | NativeModuleNumberTypeAnnotation
   | Int32TypeAnnotation
   | DoubleTypeAnnotation

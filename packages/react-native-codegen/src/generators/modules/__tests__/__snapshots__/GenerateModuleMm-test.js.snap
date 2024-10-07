@@ -784,13 +784,13 @@ Map {
 namespace facebook::react {
   
     static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_getUnion(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, \\"getUnion\\", @selector(getUnion:chooseFloat:chooseObject:chooseString:), args, count);
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, \\"getUnion\\", @selector(getUnion:chooseFloat:chooseObject:chooseString:chooseStringLiteral:), args, count);
     }
 
   NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params)
     : ObjCTurboModule(params) {
       
-        methodMap_[\\"getUnion\\"] = MethodMetadata {4, __hostFunction_NativeSampleTurboModuleSpecJSI_getUnion};
+        methodMap_[\\"getUnion\\"] = MethodMetadata {5, __hostFunction_NativeSampleTurboModuleSpecJSI_getUnion};
         
   }
 } // namespace facebook::react
