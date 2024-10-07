@@ -2636,6 +2636,55 @@ const UNION_MODULE: SchemaType = {
   },
 };
 
+const STRING_LITERALS = {
+  modules: {
+    NativeSampleTurboModule: {
+      type: 'NativeModule',
+      aliasMap: {},
+      enumMap: {},
+      spec: {
+        eventEmitters: [
+          {
+            name: 'literalEvent',
+            optional: false,
+            typeAnnotation: {
+              type: 'EventEmitterTypeAnnotation',
+              typeAnnotation: {
+                type: 'StringLiteralTypeAnnotation',
+                value: 'A String Literal Event',
+              },
+            },
+          },
+        ],
+        methods: [
+          {
+            name: 'getStringLiteral',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'StringLiteralTypeAnnotation',
+                value: 'A String Literal Return',
+              },
+              params: [
+                {
+                  name: 'literalParam',
+                  optional: false,
+                  typeAnnotation: {
+                    type: 'StringLiteralTypeAnnotation',
+                    value: 'A String Literal Param',
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+      moduleName: 'SampleTurboModule',
+    },
+  },
+};
+
 module.exports = {
   complex_objects: COMPLEX_OBJECTS,
   two_modules_different_files: TWO_MODULES_DIFFERENT_FILES,
@@ -2647,4 +2696,5 @@ module.exports = {
   cxx_only_native_modules: CXX_ONLY_NATIVE_MODULES,
   SampleWithUppercaseName: SAMPLE_WITH_UPPERCASE_NAME,
   union_module: UNION_MODULE,
+  string_literals: STRING_LITERALS,
 };
