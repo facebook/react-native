@@ -19,7 +19,7 @@ import com.facebook.react.ReactInstanceManager
     message =
         "ReactNative/Flipper integration is deprecated. Please remove the call to initializeFlipper from your MainApplication.java",
     replaceWith = ReplaceWith(""),
-    level = DeprecationLevel.WARNING)
+    level = DeprecationLevel.ERROR)
 public object ReactNativeFlipper {
   @Suppress("UNUSED_PARAMETER")
   @JvmStatic
@@ -27,7 +27,7 @@ public object ReactNativeFlipper {
       message =
           "ReactNative/Flipper integration is deprecated. Please remove the call to initializeFlipper from your MainApplication.java",
       replaceWith = ReplaceWith(""),
-      level = DeprecationLevel.WARNING)
+      level = DeprecationLevel.ERROR)
   public fun initializeFlipper(context: Context, reactInstanceManager: ReactInstanceManager) {
     // no-op
   }
