@@ -406,6 +406,9 @@ typedef struct {
 
     if ([module respondsToSelector:@selector(installJSIBindingsWithRuntime:callInvoker:)]) {
       [(id<RCTTurboModuleWithJSIBindings>)module installJSIBindingsWithRuntime:*runtime callInvoker:_jsInvoker];
+    } else if ([module respondsToSelector:@selector(installJSIBindingsWithRuntime:)]) {
+      // Old API without CallInvoker (deprecated)
+      [(id<RCTTurboModuleWithJSIBindings>)module installJSIBindingsWithRuntime:*runtime];
     }
     return turboModule;
   }
