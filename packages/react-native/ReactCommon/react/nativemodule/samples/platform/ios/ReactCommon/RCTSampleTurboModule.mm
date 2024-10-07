@@ -73,7 +73,7 @@ RCT_EXPORT_MODULE()
 #pragma mark - RCTTurboModuleWithJSIBindings
 
 - (void)installJSIBindingsWithRuntime:(facebook::jsi::Runtime &)runtime
-                          callInvoker:(std::shared_ptr<CallInvoker>)callinvoker
+                          callInvoker:(const std::shared_ptr<CallInvoker>&)callinvoker
 {
   runtime.global().setProperty(runtime, "__SampleTurboModuleJSIBindings", "Hello JSI!");
 }
