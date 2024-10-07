@@ -20,6 +20,7 @@
 #include <jsireact/JSIExecutor.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
+#include <react/renderer/RuntimeSchedulerCallInvoker.h>
 #include <react/utils/jsi-utils.h>
 #include <iostream>
 #include <memory>
@@ -458,7 +459,8 @@ void ReactInstance::initializeRuntime(
 
     timerManager_->attachGlobals(runtime);
 
-    bindingsInstallFunc(runtime);
+    auto callInvoker = std::make_shared<RuntimeSchedulerCallInvoker>(runtimeScheduler_);
+    bindingsInstallFunc(runtime, callInvoker);
   });
 }
 
