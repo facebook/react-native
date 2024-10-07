@@ -16,7 +16,7 @@
 
 #ifdef __cplusplus
 - (void)installJSIBindingsWithRuntime:(facebook::jsi::Runtime &)runtime
-                          callInvoker:(std::shared_ptr<facebook::react::CallInvoker>)callinvoker;
+                          callInvoker:(const std::shared_ptr<facebook::react::CallInvoker> &)callinvoker;
 #endif
 
 @end
