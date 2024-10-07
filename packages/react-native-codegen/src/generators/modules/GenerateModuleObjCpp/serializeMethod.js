@@ -259,6 +259,8 @@ function getParamObjCType(
       return notStruct(wrapOptional('NSString *', !nullable));
     case 'StringLiteralTypeAnnotation':
       return notStruct(wrapOptional('NSString *', !nullable));
+    case 'StringLiteralUnionTypeAnnotation':
+      return notStruct(wrapOptional('NSString *', !nullable));
     case 'NumberTypeAnnotation':
       return notStruct(isRequired ? 'double' : 'NSNumber *');
     case 'FloatTypeAnnotation':
@@ -336,6 +338,10 @@ function getReturnObjCType(
       // TODO: Can NSString * returns not be _Nullable?
       // In the legacy codegen, we don't surround NSSTring * with _Nullable
       return wrapOptional('NSString *', isRequired);
+    case 'StringLiteralUnionTypeAnnotation':
+      // TODO: Can NSString * returns not be _Nullable?
+      // In the legacy codegen, we don't surround NSSTring * with _Nullable
+      return wrapOptional('NSString *', isRequired);
     case 'NumberTypeAnnotation':
       return wrapOptional('NSNumber *', isRequired);
     case 'FloatTypeAnnotation':
@@ -403,6 +409,8 @@ function getReturnJSType(
     case 'StringTypeAnnotation':
       return 'StringKind';
     case 'StringLiteralTypeAnnotation':
+      return 'StringKind';
+    case 'StringLiteralUnionTypeAnnotation':
       return 'StringKind';
     case 'NumberTypeAnnotation':
       return 'NumberKind';

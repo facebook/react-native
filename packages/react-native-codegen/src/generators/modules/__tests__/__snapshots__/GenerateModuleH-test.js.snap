@@ -693,7 +693,7 @@ public:
   virtual jsi::Object getObject(jsi::Runtime &rt, jsi::Object arg) = 0;
   virtual jsi::Array getSet(jsi::Runtime &rt, jsi::Array arg) = 0;
   virtual jsi::String getString(jsi::Runtime &rt, jsi::String arg) = 0;
-  virtual jsi::String getUnion(jsi::Runtime &rt, double x, jsi::String y, jsi::Object z) = 0;
+  virtual jsi::String getUnion(jsi::Runtime &rt, double x, jsi::String y, jsi::String y-literal, jsi::Object z) = 0;
   virtual jsi::Object getValue(jsi::Runtime &rt, double x, jsi::String y, jsi::Object z) = 0;
   virtual void getValueWithCallback(jsi::Runtime &rt, jsi::Function callback) = 0;
   virtual jsi::Value getValueWithPromise(jsi::Runtime &rt, bool error) = 0;
@@ -855,13 +855,13 @@ private:
       return bridging::callFromJs<jsi::String>(
           rt, &T::getString, jsInvoker_, instance_, std::move(arg));
     }
-    jsi::String getUnion(jsi::Runtime &rt, double x, jsi::String y, jsi::Object z) override {
+    jsi::String getUnion(jsi::Runtime &rt, double x, jsi::String y, jsi::String y-literal, jsi::Object z) override {
       static_assert(
-          bridging::getParameterCount(&T::getUnion) == 4,
-          \\"Expected getUnion(...) to have 4 parameters\\");
+          bridging::getParameterCount(&T::getUnion) == 5,
+          \\"Expected getUnion(...) to have 5 parameters\\");
 
       return bridging::callFromJs<jsi::String>(
-          rt, &T::getUnion, jsInvoker_, instance_, std::move(x), std::move(y), std::move(z));
+          rt, &T::getUnion, jsInvoker_, instance_, std::move(x), std::move(y), std::move(y-literal), std::move(z));
     }
     jsi::Object getValue(jsi::Runtime &rt, double x, jsi::String y, jsi::Object z) override {
       static_assert(
@@ -2520,7 +2520,7 @@ protected:
   NativeSampleTurboModuleCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
 
 public:
-  virtual jsi::Object getUnion(jsi::Runtime &rt, double chooseInt, double chooseFloat, jsi::Object chooseObject, jsi::String chooseString) = 0;
+  virtual jsi::Object getUnion(jsi::Runtime &rt, double chooseInt, double chooseFloat, jsi::Object chooseObject, jsi::String chooseString, jsi::String chooseStringLiteral) = 0;
 
 };
 
@@ -2551,13 +2551,13 @@ private:
 
     }
 
-    jsi::Object getUnion(jsi::Runtime &rt, double chooseInt, double chooseFloat, jsi::Object chooseObject, jsi::String chooseString) override {
+    jsi::Object getUnion(jsi::Runtime &rt, double chooseInt, double chooseFloat, jsi::Object chooseObject, jsi::String chooseString, jsi::String chooseStringLiteral) override {
       static_assert(
-          bridging::getParameterCount(&T::getUnion) == 5,
-          \\"Expected getUnion(...) to have 5 parameters\\");
+          bridging::getParameterCount(&T::getUnion) == 6,
+          \\"Expected getUnion(...) to have 6 parameters\\");
 
       return bridging::callFromJs<jsi::Object>(
-          rt, &T::getUnion, jsInvoker_, instance_, std::move(chooseInt), std::move(chooseFloat), std::move(chooseObject), std::move(chooseString));
+          rt, &T::getUnion, jsInvoker_, instance_, std::move(chooseInt), std::move(chooseFloat), std::move(chooseObject), std::move(chooseString), std::move(chooseStringLiteral));
     }
 
   private:

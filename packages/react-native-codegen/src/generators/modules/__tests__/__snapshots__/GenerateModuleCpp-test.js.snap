@@ -216,7 +216,8 @@ static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getUnion(jsi:
     rt,
     count <= 0 ? throw jsi::JSError(rt, \\"Expected argument in position 0 to be passed\\") : args[0].asNumber(),
     count <= 1 ? throw jsi::JSError(rt, \\"Expected argument in position 1 to be passed\\") : args[1].asString(rt),
-    count <= 2 ? throw jsi::JSError(rt, \\"Expected argument in position 2 to be passed\\") : args[2].asObject(rt)
+    count <= 2 ? throw jsi::JSError(rt, \\"Expected argument in position 2 to be passed\\") : args[2].asString(rt),
+    count <= 3 ? throw jsi::JSError(rt, \\"Expected argument in position 3 to be passed\\") : args[3].asObject(rt)
   );
 }
 static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getValue(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
@@ -309,7 +310,7 @@ NativeSampleTurboModuleCxxSpecJSI::NativeSampleTurboModuleCxxSpecJSI(std::shared
   methodMap_[\\"getObject\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getObject};
   methodMap_[\\"getSet\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getSet};
   methodMap_[\\"getString\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getString};
-  methodMap_[\\"getUnion\\"] = MethodMetadata {3, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getUnion};
+  methodMap_[\\"getUnion\\"] = MethodMetadata {4, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getUnion};
   methodMap_[\\"getValue\\"] = MethodMetadata {3, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getValue};
   methodMap_[\\"getValueWithCallback\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getValueWithCallback};
   methodMap_[\\"getValueWithPromise\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getValueWithPromise};
@@ -764,13 +765,14 @@ static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getUnion(jsi:
     count <= 0 ? throw jsi::JSError(rt, \\"Expected argument in position 0 to be passed\\") : args[0].asNumber(),
     count <= 1 ? throw jsi::JSError(rt, \\"Expected argument in position 1 to be passed\\") : args[1].asNumber(),
     count <= 2 ? throw jsi::JSError(rt, \\"Expected argument in position 2 to be passed\\") : args[2].asObject(rt),
-    count <= 3 ? throw jsi::JSError(rt, \\"Expected argument in position 3 to be passed\\") : args[3].asString(rt)
+    count <= 3 ? throw jsi::JSError(rt, \\"Expected argument in position 3 to be passed\\") : args[3].asString(rt),
+    count <= 4 ? throw jsi::JSError(rt, \\"Expected argument in position 4 to be passed\\") : args[4].asString(rt)
   );
 }
 
 NativeSampleTurboModuleCxxSpecJSI::NativeSampleTurboModuleCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker)
   : TurboModule(\\"SampleTurboModule\\", jsInvoker) {
-  methodMap_[\\"getUnion\\"] = MethodMetadata {4, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getUnion};
+  methodMap_[\\"getUnion\\"] = MethodMetadata {5, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getUnion};
 }
 
 

@@ -109,6 +109,12 @@ export class MockedParser implements Parser {
     return [];
   }
 
+  getStringLiteralUnionTypeAnnotationStringLiterals(
+    membersTypes: $FlowFixMe[],
+  ): string[] {
+    return [];
+  }
+
   parseFile(filename: string): SchemaType {
     return schemaMock;
   }

@@ -163,6 +163,8 @@ function serializeArg(
       return wrap(val => `${val}.asString(rt)`);
     case 'StringLiteralTypeAnnotation':
       return wrap(val => `${val}.asString(rt)`);
+    case 'StringLiteralUnionTypeAnnotation':
+      return wrap(val => `${val}.asString(rt)`);
     case 'BooleanTypeAnnotation':
       return wrap(val => `${val}.asBool()`);
     case 'EnumDeclaration':

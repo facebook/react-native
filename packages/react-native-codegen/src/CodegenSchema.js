@@ -46,6 +46,11 @@ export type StringLiteralTypeAnnotation = $ReadOnly<{
   value: string,
 }>;
 
+export type StringLiteralUnionTypeAnnotation = $ReadOnly<{
+  type: 'StringLiteralUnionTypeAnnotation',
+  types: $ReadOnlyArray<StringLiteralTypeAnnotation>,
+}>;
+
 export type StringEnumTypeAnnotation = $ReadOnly<{
   type: 'StringEnumTypeAnnotation',
   options: $ReadOnlyArray<string>,
@@ -363,6 +368,7 @@ type NativeModuleEventEmitterBaseTypeAnnotation =
   | NativeModuleNumberTypeAnnotation
   | StringTypeAnnotation
   | StringLiteralTypeAnnotation
+  | StringLiteralUnionTypeAnnotation
   | NativeModuleTypeAliasTypeAnnotation
   | NativeModuleGenericObjectTypeAnnotation
   | VoidTypeAnnotation;
@@ -377,6 +383,7 @@ export type NativeModuleEventEmitterTypeAnnotation =
 export type NativeModuleBaseTypeAnnotation =
   | StringTypeAnnotation
   | StringLiteralTypeAnnotation
+  | StringLiteralUnionTypeAnnotation
   | NativeModuleNumberTypeAnnotation
   | Int32TypeAnnotation
   | DoubleTypeAnnotation
