@@ -179,23 +179,23 @@ type MaximumOneOf<T, K extends keyof T = keyof T> = K extends keyof T
 
 export interface TransformsStyle {
   transform?:
-  | Readonly<
-      MaximumOneOf<
-        PerspectiveTransform &
-          RotateTransform &
-          RotateXTransform &
-          RotateYTransform &
-          RotateZTransform &
-          ScaleTransform &
-          ScaleXTransform &
-          ScaleYTransform &
-          TranslateXTransform &
-          TranslateYTransform &
-          SkewXTransform &
-          SkewYTransform &
-          MatrixTransform
-      >[]
-    >
+    | Readonly<
+        MaximumOneOf<
+          PerspectiveTransform &
+            RotateTransform &
+            RotateXTransform &
+            RotateYTransform &
+            RotateZTransform &
+            ScaleTransform &
+            ScaleXTransform &
+            ScaleYTransform &
+            TranslateXTransform &
+            TranslateYTransform &
+            SkewXTransform &
+            SkewYTransform &
+            MatrixTransform
+        >[]
+      >
     | string
     | undefined;
   transformOrigin?: Array<string | number> | string | undefined;
