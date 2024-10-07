@@ -1000,6 +1000,26 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_BASIC_PA
                 }
               ]
             }
+          },
+          {
+            'name': 'passStringLiteral',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'VoidTypeAnnotation'
+              },
+              'params': [
+                {
+                  'name': 'arg',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'StringLiteralTypeAnnotation',
+                    'value': 'A String Literal'
+                  }
+                }
+              ]
+            }
           }
         ]
       },
@@ -2469,8 +2489,8 @@ exports[`RN Codegen Flow Parser can generate fixture PROMISE_WITH_COMMONLY_USED_
               'name': 'type',
               'optional': false,
               'typeAnnotation': {
-                'type': 'UnionTypeAnnotation',
-                'memberType': 'StringTypeAnnotation'
+                'type': 'StringLiteralTypeAnnotation',
+                'value': 'A_String_Literal'
               }
             }
           ]

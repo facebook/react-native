@@ -34,6 +34,7 @@ import type {
   ObjectTypeAnnotation,
   ReservedTypeAnnotation,
   StringTypeAnnotation,
+  StringLiteralTypeAnnotation,
   VoidTypeAnnotation,
 } from '../CodegenSchema';
 import type {Parser} from './parser';
@@ -171,6 +172,16 @@ function emitMixed(
 function emitString(nullable: boolean): Nullable<StringTypeAnnotation> {
   return wrapNullable(nullable, {
     type: 'StringTypeAnnotation',
+  });
+}
+
+function emitStringLiteral(
+  nullable: boolean,
+  value: string,
+): Nullable<StringLiteralTypeAnnotation> {
+  return wrapNullable(nullable, {
+    type: 'StringLiteralTypeAnnotation',
+    value,
   });
 }
 
@@ -722,6 +733,7 @@ module.exports = {
   emitString,
   emitStringish,
   emitStringProp,
+  emitStringLiteral,
   emitMixed,
   emitUnion,
   emitPartial,

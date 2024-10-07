@@ -115,6 +115,7 @@ export interface Spec extends TurboModule {
   readonly passNumber: (arg: number) => void;
   readonly passString: (arg: string) => void;
   readonly passStringish: (arg: Stringish) => void;
+  readonly passStringLiteral: (arg: 'A String Literal') => void;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
