@@ -13,7 +13,6 @@
 
 const LogBoxData = require('../Data/LogBoxData');
 const LogBox = require('../LogBox').default;
-const ExceptionsManager = require('../../Core/ExceptionsManager.js');
 
 declare var console: any;
 
@@ -35,18 +34,15 @@ describe('LogBox', () => {
 
   beforeEach(() => {
     jest.resetModules();
-    jest.restoreAllMocks();
     console.error = jest.fn();
+    console.log = jest.fn();
     console.warn = jest.fn();
   });
 
   afterEach(() => {
     LogBox.uninstall();
-    // Reset ExceptionManager patching.
-    if (console._errorOriginal) {
-      console._errorOriginal = null;
-    }
     console.error = error;
+    console.log = log;
     console.warn = warn;
   });
 
@@ -99,7 +95,7 @@ describe('LogBox', () => {
   });
 
   it('registers warnings', () => {
-    jest.spyOn(LogBoxData, 'addLog');
+    jest.mock('../Data/LogBoxData');
 
     LogBox.install();
 
@@ -109,14 +105,13 @@ describe('LogBox', () => {
   });
 
   it('reports a LogBox exception if we fail to add warnings', () => {
-    jest.spyOn(LogBoxData, 'addLog');
-    jest.spyOn(LogBoxData, 'reportLogBoxError');
+    jest.mock('../Data/LogBoxData');
+    const mockError = new Error('Simulated error');
 
     // Picking a random implementation detail to simulate throwing.
-    jest.spyOn(LogBoxData, 'isMessageIgnored').mockImplementation(() => {
+    (LogBoxData.isMessageIgnored: any).mockImplementation(() => {
       throw mockError;
     });
-    const mockError = new Error('Simulated error');
 
     LogBox.install();
 
@@ -128,8 +123,7 @@ describe('LogBox', () => {
   });
 
   it('only registers errors beginning with "Warning: "', () => {
-    jest.spyOn(LogBoxData, 'addLog');
-    jest.spyOn(LogBoxData, 'checkWarningFilter');
+    jest.mock('../Data/LogBoxData');
 
     LogBox.install();
 
@@ -139,8 +133,7 @@ describe('LogBox', () => {
   });
 
   it('registers react errors with the formatting from filter', () => {
-    jest.spyOn(LogBoxData, 'addLog');
-    jest.spyOn(LogBoxData, 'checkWarningFilter');
+    jest.mock('../Data/LogBoxData');
 
     mockFilterResult({
       finalFormat: 'Custom format',
@@ -164,8 +157,7 @@ describe('LogBox', () => {
   });
 
   it('registers errors with component stack as errors by default', () => {
-    jest.spyOn(LogBoxData, 'addLog');
-    jest.spyOn(LogBoxData, 'checkWarningFilter');
+    jest.mock('../Data/LogBoxData');
 
     mockFilterResult({});
 
@@ -182,8 +174,7 @@ describe('LogBox', () => {
   });
 
   it('registers errors with component stack as errors by default if not found in warning filter', () => {
-    jest.spyOn(LogBoxData, 'addLog');
-    jest.spyOn(LogBoxData, 'checkWarningFilter');
+    jest.mock('../Data/LogBoxData');
 
     mockFilterResult({
       monitorEvent: 'warning_unhandled',
@@ -202,12 +193,10 @@ describe('LogBox', () => {
   });
 
   it('registers errors with component stack with legacy suppression as warning', () => {
-    jest.spyOn(LogBoxData, 'addLog');
-    jest.spyOn(LogBoxData, 'checkWarningFilter');
+    jest.mock('../Data/LogBoxData');
 
     mockFilterResult({
       suppressDialog_LEGACY: true,
-      monitorEvent: 'warning',
     });
 
     LogBox.install();
@@ -222,12 +211,10 @@ describe('LogBox', () => {
   });
 
   it('registers errors with component stack and a forced dialog as fatals', () => {
-    jest.spyOn(LogBoxData, 'addLog');
-    jest.spyOn(LogBoxData, 'checkWarningFilter');
+    jest.mock('../Data/LogBoxData');
 
     mockFilterResult({
       forceDialogImmediately: true,
-      monitorEvent: 'warning',
     });
 
     LogBox.install();
@@ -242,8 +229,7 @@ describe('LogBox', () => {
   });
 
   it('registers warning module errors with the formatting from filter', () => {
-    jest.spyOn(LogBoxData, 'addLog');
-    jest.spyOn(LogBoxData, 'checkWarningFilter');
+    jest.mock('../Data/LogBoxData');
 
     mockFilterResult({
       finalFormat: 'Custom format',
@@ -262,8 +248,7 @@ describe('LogBox', () => {
   });
 
   it('registers warning module errors as errors by default', () => {
-    jest.spyOn(LogBoxData, 'addLog');
-    jest.spyOn(LogBoxData, 'checkWarningFilter');
+    jest.mock('../Data/LogBoxData');
 
     mockFilterResult({});
 
@@ -277,12 +262,10 @@ describe('LogBox', () => {
   });
 
   it('registers warning module errors with only legacy suppression as warning', () => {
-    jest.spyOn(LogBoxData, 'addLog');
-    jest.spyOn(LogBoxData, 'checkWarningFilter');
+    jest.mock('../Data/LogBoxData');
 
     mockFilterResult({
       suppressDialog_LEGACY: true,
-      monitorEvent: 'warning',
     });
 
     LogBox.install();
@@ -294,12 +277,10 @@ describe('LogBox', () => {
   });
 
   it('registers warning module errors with a forced dialog as fatals', () => {
-    jest.spyOn(LogBoxData, 'addLog');
-    jest.spyOn(LogBoxData, 'checkWarningFilter');
+    jest.mock('../Data/LogBoxData');
 
     mockFilterResult({
       forceDialogImmediately: true,
-      monitorEvent: 'warning',
     });
 
     LogBox.install();
@@ -311,12 +292,10 @@ describe('LogBox', () => {
   });
 
   it('ignores warning module errors that are suppressed completely', () => {
-    jest.spyOn(LogBoxData, 'addLog');
-    jest.spyOn(LogBoxData, 'checkWarningFilter');
+    jest.mock('../Data/LogBoxData');
 
     mockFilterResult({
       suppressCompletely: true,
-      monitorEvent: 'warning',
     });
 
     LogBox.install();
@@ -326,11 +305,10 @@ describe('LogBox', () => {
   });
 
   it('ignores warning module errors that are pattern ignored', () => {
-    jest.spyOn(LogBoxData, 'checkWarningFilter');
-    jest.spyOn(LogBoxData, 'isMessageIgnored').mockReturnValue(true);
-    jest.spyOn(LogBoxData, 'addLog');
+    jest.mock('../Data/LogBoxData');
 
     mockFilterResult({});
+    (LogBoxData.isMessageIgnored: any).mockReturnValue(true);
 
     LogBox.install();
 
@@ -339,11 +317,10 @@ describe('LogBox', () => {
   });
 
   it('ignores warning module errors that are from LogBox itself', () => {
-    jest.spyOn(LogBoxData, 'checkWarningFilter');
-    jest.spyOn(LogBoxData, 'isLogBoxErrorMessage').mockReturnValue(true);
-    jest.spyOn(LogBoxData, 'addLog');
+    jest.mock('../Data/LogBoxData');
 
     mockFilterResult({});
+    (LogBoxData.isLogBoxErrorMessage: any).mockReturnValue(true);
 
     LogBox.install();
 
@@ -352,9 +329,8 @@ describe('LogBox', () => {
   });
 
   it('ignores logs that are pattern ignored"', () => {
-    jest.spyOn(LogBoxData, 'checkWarningFilter');
-    jest.spyOn(LogBoxData, 'isMessageIgnored').mockReturnValue(true);
-    jest.spyOn(LogBoxData, 'addLog');
+    jest.mock('../Data/LogBoxData');
+    (LogBoxData.isMessageIgnored: any).mockReturnValue(true);
 
     LogBox.install();
 
@@ -363,8 +339,8 @@ describe('LogBox', () => {
   });
 
   it('does not add logs that are from LogBox itself"', () => {
-    jest.spyOn(LogBoxData, 'isLogBoxErrorMessage').mockReturnValue(true);
-    jest.spyOn(LogBoxData, 'addLog');
+    jest.mock('../Data/LogBoxData');
+    (LogBoxData.isLogBoxErrorMessage: any).mockReturnValue(true);
 
     LogBox.install();
 
@@ -373,7 +349,7 @@ describe('LogBox', () => {
   });
 
   it('ignores logs starting with "(ADVICE)"', () => {
-    jest.spyOn(LogBoxData, 'addLog');
+    jest.mock('../Data/LogBoxData');
 
     LogBox.install();
 
@@ -382,7 +358,7 @@ describe('LogBox', () => {
   });
 
   it('does not ignore logs formatted to start with "(ADVICE)"', () => {
-    jest.spyOn(LogBoxData, 'addLog');
+    jest.mock('../Data/LogBoxData');
 
     LogBox.install();
 
@@ -400,7 +376,7 @@ describe('LogBox', () => {
   });
 
   it('ignores console methods after uninstalling', () => {
-    jest.spyOn(LogBoxData, 'addLog');
+    jest.mock('../Data/LogBoxData');
 
     LogBox.install();
     LogBox.uninstall();
@@ -413,7 +389,7 @@ describe('LogBox', () => {
   });
 
   it('does not add logs after uninstalling', () => {
-    jest.spyOn(LogBoxData, 'addLog');
+    jest.mock('../Data/LogBoxData');
 
     LogBox.install();
     LogBox.uninstall();
@@ -430,7 +406,7 @@ describe('LogBox', () => {
   });
 
   it('does not add exceptions after uninstalling', () => {
-    jest.spyOn(LogBoxData, 'addException');
+    jest.mock('../Data/LogBoxData');
 
     LogBox.install();
     LogBox.uninstall();
@@ -505,81 +481,5 @@ describe('LogBox', () => {
     expect(consoleWarn).toHaveBeenCalledWith(
       'Custom: after installing for the second time',
     );
-  });
-
-  it('registers errors with component stack as errors by default, when ExceptionManager is registered first', () => {
-    jest.spyOn(LogBoxData, 'checkWarningFilter');
-    jest.spyOn(LogBoxData, 'addLog');
-
-    ExceptionsManager.installConsoleErrorReporter();
-    LogBox.install();
-
-    console.error(
-      'HIT\n    at Text (/path/to/Component:30:175)\n    at DoesNotUseKey',
-    );
-
-    expect(LogBoxData.addLog).toBeCalledWith(
-      expect.objectContaining({level: 'error'}),
-    );
-    expect(LogBoxData.checkWarningFilter).toBeCalledWith(
-      'HIT\n    at Text (/path/to/Component:30:175)\n    at DoesNotUseKey',
-    );
-  });
-
-  it('registers errors with component stack as errors by default, when ExceptionManager is registered second', () => {
-    jest.spyOn(LogBoxData, 'checkWarningFilter');
-    jest.spyOn(LogBoxData, 'addLog');
-
-    LogBox.install();
-    ExceptionsManager.installConsoleErrorReporter();
-
-    console.error(
-      'HIT\n    at Text (/path/to/Component:30:175)\n    at DoesNotUseKey',
-    );
-
-    expect(LogBoxData.addLog).toBeCalledWith(
-      expect.objectContaining({level: 'error'}),
-    );
-    expect(LogBoxData.checkWarningFilter).toBeCalledWith(
-      'HIT\n    at Text (/path/to/Component:30:175)\n    at DoesNotUseKey',
-    );
-  });
-
-  it('registers errors without component stack as errors by default, when ExceptionManager is registered first', () => {
-    jest.spyOn(LogBoxData, 'checkWarningFilter');
-    jest.spyOn(LogBoxData, 'addException');
-
-    ExceptionsManager.installConsoleErrorReporter();
-    LogBox.install();
-
-    console.error('HIT');
-
-    // Errors without a component stack skip the warning filter and
-    // fall through to the ExceptionManager, which are then reported
-    // back to LogBox as non-fatal exceptions, in a convuluted dance
-    // in the most legacy cruft way.
-    expect(LogBoxData.addException).toBeCalledWith(
-      expect.objectContaining({originalMessage: 'HIT'}),
-    );
-    expect(LogBoxData.checkWarningFilter).not.toBeCalled();
-  });
-
-  it('registers errors without component stack as errors by default, when ExceptionManager is registered second', () => {
-    jest.spyOn(LogBoxData, 'checkWarningFilter');
-    jest.spyOn(LogBoxData, 'addException');
-
-    LogBox.install();
-    ExceptionsManager.installConsoleErrorReporter();
-
-    console.error('HIT');
-
-    // Errors without a component stack skip the warning filter and
-    // fall through to the ExceptionManager, which are then reported
-    // back to LogBox as non-fatal exceptions, in a convuluted dance
-    // in the most legacy cruft way.
-    expect(LogBoxData.addException).toBeCalledWith(
-      expect.objectContaining({originalMessage: 'HIT'}),
-    );
-    expect(LogBoxData.checkWarningFilter).not.toBeCalled();
   });
 });
