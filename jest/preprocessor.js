@@ -23,14 +23,14 @@ const {
 } = require('@babel/core');
 const generate = require('@babel/generator').default;
 
-try {
+if (process.env.FBSOURCE_ENV === '1') {
   // If we're running in the Meta-internal monorepo, use the central Babel
   // registration, which registers all of the relevant source directories
   // including Metro's root.
   //
   // $FlowExpectedError[cannot-resolve-module] - Won't resolve in OSS
   require('@fb-tools/babel-register');
-} catch {
+} else {
   // Register Babel to allow local packages to be loaded from source
   require('../scripts/build/babel-register').registerForMonorepo();
 }
