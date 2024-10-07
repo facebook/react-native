@@ -214,7 +214,7 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
         break;
       default:
         FLog.w(ReactConstants.TAG, "Invalid type for 'hitSlop' value " + hitSlop.getType());
-        /* falls through */
+      /* falls through */
       case Null:
         view.setHitSlopRect(null);
         break;
