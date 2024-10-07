@@ -21,7 +21,7 @@ class BindingsInstallerHolder
   using BindingsInstallFunc = std::function<void(jsi::Runtime& runtime,
                                                  std::shared_ptr<CallInvoker> callInvoker)>;
 
-  void installBindings(jsi::Runtime& runtime, std::shared_ptr<CallInvoker> callInvoker);
+  void installBindings(jsi::Runtime& runtime, const std::shared_ptr<CallInvoker>& callInvoker);
 
  private:
   friend HybridBase;
