@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<da9af24070e20310e81c38ffe608c345>>
+ * @generated SignedSource<<2cf7555474bd4808f9f451485da01d1a>>
  */
 
 /**
@@ -203,10 +203,6 @@ bool ReactNativeFeatureFlags::useOptimizedEventBatchingOnAndroid() {
 
 bool ReactNativeFeatureFlags::useRuntimeShadowNodeReferenceUpdate() {
   return getAccessor().useRuntimeShadowNodeReferenceUpdate();
-}
-
-bool ReactNativeFeatureFlags::useRuntimeShadowNodeReferenceUpdateOnLayout() {
-  return getAccessor().useRuntimeShadowNodeReferenceUpdateOnLayout();
 }
 
 bool ReactNativeFeatureFlags::useTurboModuleInterop() {

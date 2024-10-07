@@ -430,15 +430,6 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'release',
       },
     },
-    useRuntimeShadowNodeReferenceUpdateOnLayout: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-06-03',
-        description:
-          'When enabled, cloning shadow nodes during layout will update the reference held by the current JS fiber tree.',
-        purpose: 'experimentation',
-      },
-    },
     useTurboModuleInterop: {
       defaultValue: false,
       metadata: {
