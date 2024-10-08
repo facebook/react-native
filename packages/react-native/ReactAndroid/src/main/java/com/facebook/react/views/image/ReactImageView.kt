@@ -34,6 +34,7 @@ import com.facebook.drawee.generic.RoundingParams
 import com.facebook.drawee.view.GenericDraweeView
 import com.facebook.imagepipeline.bitmaps.PlatformBitmapFactory
 import com.facebook.imagepipeline.common.ResizeOptions
+import com.facebook.imagepipeline.core.DownsampleMode
 import com.facebook.imagepipeline.image.CloseableImage
 import com.facebook.imagepipeline.image.ImageInfo
 import com.facebook.imagepipeline.postprocessors.IterativeBoxBlurPostProcessor
@@ -415,6 +416,10 @@ public class ReactImageView(
             .setAutoRotateEnabled(true)
             .setProgressiveRenderingEnabled(progressiveRenderingEnabled)
 
+    if (resizeMethod == ImageResizeMethod.NONE) {
+      imageRequestBuilder.setDownsampleOverride(DownsampleMode.NEVER)
+    }
+
     val imageRequest: ImageRequest =
         ReactNetworkImageRequest.fromBuilderWithHeaders(imageRequestBuilder, headers)
 
@@ -435,14 +440,16 @@ public class ReactImageView(
     callerContext?.let { builder.setCallerContext(it) }
 
     cachedImageSource?.let { cachedSource ->
-      val cachedImageRequest =
+      val cachedImageRequestBuilder =
           ImageRequestBuilder.newBuilderWithSource(cachedSource.uri)
               .setPostprocessor(postprocessor)
               .setResizeOptions(resizeOptions)
               .setAutoRotateEnabled(true)
               .setProgressiveRenderingEnabled(progressiveRenderingEnabled)
-              .build()
-      builder.setLowResImageRequest(cachedImageRequest)
+      if (resizeMethod == ImageResizeMethod.NONE) {
+        cachedImageRequestBuilder.setDownsampleOverride(DownsampleMode.NEVER)
+      }
+      builder.setLowResImageRequest(cachedImageRequestBuilder.build())
     }
 
     if (downloadListener != null && controllerForTesting != null) {

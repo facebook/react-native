@@ -182,9 +182,9 @@ public constructor(
     when (resizeMethod) {
       null,
       "auto" -> view.setResizeMethod(ImageResizeMethod.AUTO)
-
       "resize" -> view.setResizeMethod(ImageResizeMethod.RESIZE)
       "scale" -> view.setResizeMethod(ImageResizeMethod.SCALE)
+      "none" -> view.setResizeMethod(ImageResizeMethod.NONE)
       else -> {
         view.setResizeMethod(ImageResizeMethod.AUTO)
         FLog.w(ReactConstants.TAG, "Invalid resize method: '$resizeMethod'")
