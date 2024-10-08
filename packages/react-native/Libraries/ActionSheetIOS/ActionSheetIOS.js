@@ -79,7 +79,9 @@ const ActionSheetIOS = {
 
     const processedTintColor = processColor(tintColor);
     const processedCancelButtonTintColor = processColor(cancelButtonTintColor);
-    const processedDisabledButtonTintColor = processColor(disabledButtonTintColor);
+    const processedDisabledButtonTintColor = processColor(
+      disabledButtonTintColor,
+    );
 
     invariant(
       processedTintColor == null || typeof processedTintColor === 'number',
