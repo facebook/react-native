@@ -147,6 +147,7 @@ class ActionSheetCancelButtonTintExample extends React.Component<
         destructiveButtonIndex: DESTRUCTIVE_INDEX,
         tintColor: 'green',
         cancelButtonTintColor: 'brown',
+        disabledButtonTintColor: 'gray',
       },
       buttonIndex => {
         this.setState({clicked: BUTTONS[buttonIndex]});
