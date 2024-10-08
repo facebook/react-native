@@ -123,8 +123,9 @@ internal class RNTesterApplication : Application(), ReactApplication {
     }
   }
 
-  override val reactHost: ReactHost
-    get() = DefaultReactHost.getDefaultReactHost(applicationContext, reactNativeHost)
+  override val reactHost: ReactHost by lazy {
+    MyReactHostWrapper(DefaultReactHost.getDefaultReactHost(applicationContext, reactNativeHost))
+  }
 
   override fun onCreate() {
     ReactFontManager.getInstance().addCustomFont(this, "Rubik", R.font.rubik)
