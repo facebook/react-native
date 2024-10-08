@@ -6636,6 +6636,7 @@ public final class com/facebook/react/views/image/ImageLoadEvent$Companion {
 
 public final class com/facebook/react/views/image/ImageResizeMethod : java/lang/Enum {
 	public static final field AUTO Lcom/facebook/react/views/image/ImageResizeMethod;
+	public static final field NONE Lcom/facebook/react/views/image/ImageResizeMethod;
 	public static final field RESIZE Lcom/facebook/react/views/image/ImageResizeMethod;
 	public static final field SCALE Lcom/facebook/react/views/image/ImageResizeMethod;
 	public static fun getEntries ()Lkotlin/enums/EnumEntries;
