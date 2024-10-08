@@ -6784,7 +6784,6 @@ public final class com/facebook/react/views/imagehelper/ResourceDrawableIdHelper
 	public final fun getResourceDrawable (Landroid/content/Context;Ljava/lang/String;)Landroid/graphics/drawable/Drawable;
 	public final fun getResourceDrawableId (Landroid/content/Context;Ljava/lang/String;)I
 	public final fun getResourceDrawableUri (Landroid/content/Context;Ljava/lang/String;)Landroid/net/Uri;
-	public final fun isVectorDrawable (Landroid/content/Context;Ljava/lang/String;)Z
 }
 
 public final class com/facebook/react/views/imagehelper/ResourceDrawableIdHelper$Companion {
