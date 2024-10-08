@@ -39,6 +39,9 @@ class InspectorPackagerConnection::Impl
   void connect();
   void closeQuietly();
   void sendEventToAllConnections(std::string event);
+  void sendWrappedEventToPackager(
+      const std::string& event,
+      const std::string& pageId);
   std::unique_ptr<ILocalConnection> removeConnectionForPage(std::string pageId);
 
   /**

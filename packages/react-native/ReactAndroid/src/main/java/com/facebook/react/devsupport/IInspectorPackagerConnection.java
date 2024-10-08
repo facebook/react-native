@@ -13,4 +13,6 @@ package com.facebook.react.devsupport;
   public void closeQuietly();
 
   public void sendEventToAllConnections(String event);
+
+  public void sendWrappedEventToPackager(String event, String pageId);
 }

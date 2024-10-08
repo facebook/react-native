@@ -464,6 +464,54 @@ TEST_F(InspectorPackagerConnectionTest, TestSendEventToAllConnections) {
   getInspectorInstance().removePage(pageId);
 }
 
+TEST_F(InspectorPackagerConnectionTest, TestSendWrappedEventToPackager) {
+  // Configure gmock to expect calls in a specific order.
+  InSequence mockCallsMustBeInSequence;
+
+  packagerConnection_->connect();
+  auto pageId = getInspectorInstance().addPage(
+      "mock-description",
+      "mock-vm",
+      localConnections_
+          .lazily_make_unique<std::unique_ptr<IRemoteConnection>>());
+
+  // Connect to the page.
+  webSockets_[0]->getDelegate().didReceiveMessage(sformat(
+      R"({{
+          "event": "connect",
+          "payload": {{
+            "pageId": {0}
+          }}
+        }})",
+      toJson(std::to_string(pageId))));
+  ASSERT_TRUE(localConnections_[0]);
+
+  // Send an event using sendWrappedEventToPackager and
+  // observe it being sent via the socket.
+  EXPECT_CALL(
+      *webSockets_[0],
+      send(JsonParsed(AllOf(
+          AtJsonPtr("/event", Eq("wrappedEvent")),
+          AtJsonPtr("/payload/pageId", Eq(std::to_string(pageId))),
+          AtJsonPtr(
+              "/payload/wrappedEvent",
+              JsonEq(
+                  R"({{
+                    "method": "FakeDomain.eventTriggered",
+                    "params": ["arg1", "arg2"]
+                  }})"))))))
+      .RetiresOnSaturation();
+  packagerConnection_->sendWrappedEventToPackager(
+      R"({{
+        "method": "FakeDomain.eventTriggered",
+        "params": ["arg1", "arg2"]
+      }})",
+      pageId);
+
+  EXPECT_CALL(*localConnections_[0], disconnect()).RetiresOnSaturation();
+  getInspectorInstance().removePage(pageId);
+}
+
 TEST_F(InspectorPackagerConnectionTest, TestConnectThenDisconnect) {
   // Configure gmock to expect calls in a specific order.
   InSequence mockCallsMustBeInSequence;

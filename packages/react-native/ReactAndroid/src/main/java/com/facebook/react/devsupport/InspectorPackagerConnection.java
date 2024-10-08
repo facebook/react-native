@@ -56,6 +56,14 @@ public class InspectorPackagerConnection implements IInspectorPackagerConnection
     }
   }
 
+  public void sendWrappedEventToPackager(String event, String pageId) {
+    try {
+      sendWrappedEvent(pageId, event);
+    } catch (JSONException e) {
+      FLog.w(TAG, "Couldn't send event to packager", e);
+    }
+  }
+
   void handleProxyMessage(JSONObject message) throws JSONException, IOException {
     String event = message.getString("event");
     switch (event) {
