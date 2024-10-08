@@ -1703,10 +1703,11 @@ exports[`public API should not change unintentionally Libraries/Components/Butto
 declare const Touchable:
   | typeof TouchableNativeFeedback
   | typeof TouchableOpacity;
-declare const Button: React.AbstractComponent<
-  ButtonProps,
-  React.ElementRef<typeof Touchable>,
->;
+type ButtonRef = React.ElementRef<typeof Touchable>;
+declare const Button: component(
+  ref: React.RefSetter<ButtonRef>,
+  ...props: ButtonProps
+);
 declare export default typeof Button;
 "
 `;
