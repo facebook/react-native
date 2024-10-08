@@ -181,7 +181,7 @@ export interface TransformsStyle {
   transform?:
     | Readonly<
         MaximumOneOf<
-          PerspectiveTransform &
+          PerpectiveTransform &
             RotateTransform &
             RotateXTransform &
             RotateYTransform &
