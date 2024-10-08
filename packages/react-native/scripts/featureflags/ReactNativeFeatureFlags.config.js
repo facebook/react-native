@@ -80,15 +80,6 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'experimentation',
       },
     },
-    enableAndroidLineHeightCentering: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-09-11',
-        description:
-          'When enabled, custom line height calculation will be centered from top to bottom.',
-        purpose: 'experimentation',
-      },
-    },
     enableBridgelessArchitecture: {
       defaultValue: false,
       metadata: {
@@ -177,6 +168,15 @@ const definitions: FeatureFlagDefinitions = {
         description:
           'When enabled, LayoutAnimations API will animate state changes on iOS.',
         purpose: 'release',
+      },
+    },
+    enableLineHeightCentering: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2024-09-11',
+        description:
+          'When enabled, custom line height calculation will be centered from top to bottom.',
+        purpose: 'experimentation',
       },
     },
     enableLongTaskAPI: {

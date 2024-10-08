@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<bda9e94a5fe61a16e7d001ea3acfed0c>>
+ * @generated SignedSource<<73688196634e93c5b6ea63181e13f738>>
  */
 
 /**
@@ -33,8 +33,6 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableAlignItemsBaselineOnFabricIOS(): Boolean
 
-  @DoNotStrip public fun enableAndroidLineHeightCentering(): Boolean
-
   @DoNotStrip public fun enableBridgelessArchitecture(): Boolean
 
   @DoNotStrip public fun enableCleanTextInputYogaNode(): Boolean
@@ -56,6 +54,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun enableIOSViewClipToPaddingBox(): Boolean
 
   @DoNotStrip public fun enableLayoutAnimationsOnIOS(): Boolean
+
+  @DoNotStrip public fun enableLineHeightCentering(): Boolean
 
   @DoNotStrip public fun enableLongTaskAPI(): Boolean
 

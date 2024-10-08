@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ca86e53cf26c0103d12e8800fd427845>>
+ * @generated SignedSource<<9a12487efaf492ac0289d2e2fc9e34d0>>
  */
 
 /**
@@ -36,7 +36,6 @@ class ReactNativeFeatureFlagsAccessor {
   bool batchRenderingUpdatesInEventLoop();
   bool completeReactInstanceCreationOnBgThreadOnAndroid();
   bool enableAlignItemsBaselineOnFabricIOS();
-  bool enableAndroidLineHeightCentering();
   bool enableBridgelessArchitecture();
   bool enableCleanTextInputYogaNode();
   bool enableDeletionOfUnmountedViews();
@@ -48,6 +47,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableGranularShadowTreeStateReconciliation();
   bool enableIOSViewClipToPaddingBox();
   bool enableLayoutAnimationsOnIOS();
+  bool enableLineHeightCentering();
   bool enableLongTaskAPI();
   bool enableMicrotasks();
   bool enablePreciseSchedulingForPremountItemsOnAndroid();
@@ -96,7 +96,6 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> batchRenderingUpdatesInEventLoop_;
   std::atomic<std::optional<bool>> completeReactInstanceCreationOnBgThreadOnAndroid_;
   std::atomic<std::optional<bool>> enableAlignItemsBaselineOnFabricIOS_;
-  std::atomic<std::optional<bool>> enableAndroidLineHeightCentering_;
   std::atomic<std::optional<bool>> enableBridgelessArchitecture_;
   std::atomic<std::optional<bool>> enableCleanTextInputYogaNode_;
   std::atomic<std::optional<bool>> enableDeletionOfUnmountedViews_;
@@ -108,6 +107,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableGranularShadowTreeStateReconciliation_;
   std::atomic<std::optional<bool>> enableIOSViewClipToPaddingBox_;
   std::atomic<std::optional<bool>> enableLayoutAnimationsOnIOS_;
+  std::atomic<std::optional<bool>> enableLineHeightCentering_;
   std::atomic<std::optional<bool>> enableLongTaskAPI_;
   std::atomic<std::optional<bool>> enableMicrotasks_;
   std::atomic<std::optional<bool>> enablePreciseSchedulingForPremountItemsOnAndroid_;
