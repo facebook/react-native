@@ -500,7 +500,7 @@ class CheckboxExample extends React.Component<
   };
 
   _onCheckboxPress = () => {
-    let checkboxState: boolean | $TEMPORARY$string<'mixed'> = false;
+    let checkboxState: boolean | string = false;
     if (this.state.checkboxState === false) {
       checkboxState = 'mixed';
     } else if (this.state.checkboxState === 'mixed') {
@@ -510,7 +510,7 @@ class CheckboxExample extends React.Component<
     }
 
     this.setState({
-      checkboxState: checkboxState,
+      checkboxState,
     });
   };
 
@@ -548,7 +548,7 @@ class SwitchExample extends React.Component<
     const switchState = !this.state.switchState;
 
     this.setState({
-      switchState: switchState,
+      switchState,
     });
   };
 
@@ -601,7 +601,7 @@ class SelectionExample extends React.Component<
     if (!isEnabled) {
       accessibilityHint = 'use the button on the right to enable selection';
     }
-    let buttonTitle = isEnabled ? 'Disable selection' : 'Enable selection';
+    const buttonTitle = isEnabled ? 'Disable selection' : 'Enable selection';
     const touchableHint = ` (touching the TouchableOpacity will ${
       isSelected ? 'disable' : 'enable'
     } accessibilityState.selected)`;
@@ -667,7 +667,7 @@ class ExpandableElementExample extends React.Component<
     const expandState = !this.state.expandState;
 
     this.setState({
-      expandState: expandState,
+      expandState,
     });
   };
 
@@ -719,7 +719,7 @@ class NestedCheckBox extends React.Component<
     }
     setTimeout(() => {
       this.setState({
-        checkbox1: checkbox1,
+        checkbox1,
         checkbox2: checkbox1,
         checkbox3: checkbox1,
       });
@@ -730,7 +730,7 @@ class NestedCheckBox extends React.Component<
     const checkbox2 = !this.state.checkbox2;
 
     this.setState({
-      checkbox2: checkbox2,
+      checkbox2,
       checkbox1:
         checkbox2 && this.state.checkbox3
           ? true
@@ -744,7 +744,7 @@ class NestedCheckBox extends React.Component<
     const checkbox3 = !this.state.checkbox3;
 
     this.setState({
-      checkbox3: checkbox3,
+      checkbox3,
       checkbox1:
         this.state.checkbox2 && checkbox3
           ? true
