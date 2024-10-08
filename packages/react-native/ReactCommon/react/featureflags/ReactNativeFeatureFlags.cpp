@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<013c1fa01cf029635c04b50f83cc80ef>>
+ * @generated SignedSource<<2cf7555474bd4808f9f451485da01d1a>>
  */
 
 /**
@@ -83,10 +83,6 @@ bool ReactNativeFeatureFlags::enableGranularShadowTreeStateReconciliation() {
 
 bool ReactNativeFeatureFlags::enableIOSViewClipToPaddingBox() {
   return getAccessor().enableIOSViewClipToPaddingBox();
-}
-
-bool ReactNativeFeatureFlags::enableLayoutAnimationsOnAndroid() {
-  return getAccessor().enableLayoutAnimationsOnAndroid();
 }
 
 bool ReactNativeFeatureFlags::enableLayoutAnimationsOnIOS() {

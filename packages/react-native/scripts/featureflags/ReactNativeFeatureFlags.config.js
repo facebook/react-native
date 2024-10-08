@@ -171,14 +171,6 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'experimentation',
       },
     },
-    enableLayoutAnimationsOnAndroid: {
-      defaultValue: false,
-      metadata: {
-        description:
-          'When enabled, LayoutAnimations API will animate state changes on Android.',
-        purpose: 'release',
-      },
-    },
     enableLayoutAnimationsOnIOS: {
       defaultValue: true,
       metadata: {
