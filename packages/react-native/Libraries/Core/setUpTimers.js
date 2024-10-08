@@ -29,14 +29,14 @@ if (global.RN$Bridgeless !== true) {
    */
   const defineLazyTimer = (
     name:
-      | $TEMPORARY$string<'cancelAnimationFrame'>
-      | $TEMPORARY$string<'cancelIdleCallback'>
-      | $TEMPORARY$string<'clearInterval'>
-      | $TEMPORARY$string<'clearTimeout'>
-      | $TEMPORARY$string<'requestAnimationFrame'>
-      | $TEMPORARY$string<'requestIdleCallback'>
-      | $TEMPORARY$string<'setInterval'>
-      | $TEMPORARY$string<'setTimeout'>,
+      | 'cancelAnimationFrame'
+      | 'cancelIdleCallback'
+      | 'clearInterval'
+      | 'clearTimeout'
+      | 'requestAnimationFrame'
+      | 'requestIdleCallback'
+      | 'setInterval'
+      | 'setTimeout',
   ) => {
     polyfillGlobal(name, () => require('./Timers/JSTimers')[name]);
   };
