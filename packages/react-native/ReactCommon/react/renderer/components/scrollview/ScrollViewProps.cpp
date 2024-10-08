@@ -117,7 +117,7 @@ ScrollViewProps::ScrollViewProps(
                     rawProps,
                     "endDraggingSensitivityMultiplier",
                     sourceProps.endDraggingSensitivityMultiplier,
-                    1)),
+                    (Float)1)),
       enableSyncOnScroll(
           CoreFeatures::enablePropIteratorSetter
               ? sourceProps.enableSyncOnScroll

@@ -125,6 +125,7 @@ class PerformanceEntryReporter {
       case PerformanceEntryType::_NEXT:
         throw std::logic_error("Cannot get buffer for _NEXT entry type");
     }
+    throw std::logic_error("Unhandled PerformanceEntryType");
   }
 
   inline PerformanceEntryBuffer& getBufferRef(PerformanceEntryType entryType) {
@@ -140,6 +141,7 @@ class PerformanceEntryReporter {
       case PerformanceEntryType::_NEXT:
         throw std::logic_error("Cannot get buffer for _NEXT entry type");
     }
+    throw std::logic_error("Unhandled PerformanceEntryType");
   }
 };
 
