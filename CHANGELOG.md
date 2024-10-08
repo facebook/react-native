@@ -1482,6 +1482,30 @@
 
 - Bump activesupport to minimum 6.1.7.5 CVE-2023-38037. ([07a159f279](https://github.com/facebook/react-native/commit/07a159f279cdcbed29c9c437dec1c0b8ac2d852f) by [@lunaleaps](https://github.com/lunaleaps))
 
+## v0.73.10
+
+### Removed
+
+#### Android specific
+
+- Stop emitting deprecated onTextInput events ([e6ad652c6a](https://github.com/facebook/react-native/commit/e6ad652c6ae2222e95b3dc351f28c0fa3a91d622) by [@javache](https://github.com/javache))
+- RGNP - Remove unnecessary dependency on gradle-tooling-api-builders - serviceOf failure ([069d8fc249](https://github.com/facebook/react-native/commit/069d8fc2495b63a233cb30712e888f29a185098c) by [@cortinico](https://github.com/cortinico))
+
+### Fixed
+
+- fix(TypeScript): Allow readonly arrays in transform ([b4015c1eaa](https://github.com/facebook/react-native/commit/b4015c1eaaed5fe7281314a9c5988a4c1cade3a6) by [@tjzel](https://github.com/tjzel))
+
+#### Android specific
+
+- Fix TextInput 'contextMenuHidden' prop ([08eed9f093](https://github.com/facebook/react-native/commit/08eed9f093d759fadbaef86dcf54c801917b4602) by [@alanleedev](https://github.com/alanleedev))
+
+#### iOS specific
+
+- Fix `<KeyboardAvoidingView>` with floating keyboard on iPadOS ([3c54e1ee45](https://github.com/facebook/react-native/commit/3c54e1ee4522b26698bb3f99262a2a621b26fb64) by [@renchap](https://github.com/renchap))
+- Fix the generation of .xcode.env.local ([88fb3daa7e](https://github.com/facebook/react-native/commit/88fb3daa7ef112a9e7500c32168a897d0d409456) by [@cipolleschi](https://github.com/cipolleschi))
+- Fix iOS crash occurring when navigating to a new app screen with a displaying modal ([33ca0204f5](https://github.com/facebook/react-native/commit/33ca0204f5491f27f00686e4eb966eb9fee3f7f9) by [@zhouzh1](https://github.com/zhouzh1))
+- Fabric: Fixes animations strict weak ordering sorted check failed ([f18ed7b6c7](https://github.com/facebook/react-native/commit/f18ed7b6c72d9b9443282b4c169bae56336dad8d) by [@zhongwuzw](https://github.com/zhongwuzw))
+
 ## v0.73.9
 
 ### Added
