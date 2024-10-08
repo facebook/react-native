@@ -262,16 +262,22 @@ describe('Pressability', () => {
 
     beforeEach(() => {
       originalPlatform = Platform.OS;
+      /* $FlowFixMe[incompatible-type] Error found due to incomplete typing of
+       * Platform.flow.js */
       Platform.OS = 'web';
       // $FlowExpectedError[prop-missing]
       HoverState.isHoverEnabled.mockReturnValue(true);
     });
 
     afterEach(() => {
+      /* $FlowFixMe[incompatible-type] Error found due to incomplete typing of
+       * Platform.flow.js */
       Platform.OS = originalPlatform;
     });
 
     it('is ignored on unsupported platforms`', () => {
+      /* $FlowFixMe[incompatible-type] Error found due to incomplete typing of
+       * Platform.flow.js */
       Platform.OS = 'ios';
       const {handlers} = createMockPressability();
       expect(handlers.onMouseEnter).toBeUndefined();
