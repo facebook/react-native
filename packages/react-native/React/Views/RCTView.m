@@ -774,10 +774,10 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x)
       [directionAwareBorderRightColor resolvedColorWithTraitCollection:self.traitCollection];
 
   return (RCTBorderColors){
-      (borderTopColor ?: borderColor).CGColor,
-      (directionAwareBorderLeftColor ?: borderColor).CGColor,
-      (borderBottomColor ?: borderColor).CGColor,
-      (directionAwareBorderRightColor ?: borderColor).CGColor,
+      (borderTopColor ?: borderColor),
+      (directionAwareBorderLeftColor ?: borderColor),
+      (borderBottomColor ?: borderColor),
+      (directionAwareBorderRightColor ?: borderColor),
   };
 }
 
