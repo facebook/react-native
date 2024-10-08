@@ -4826,7 +4826,7 @@ type AndroidImageProps = $ReadOnly<{|
   loadingIndicatorSource?: ?(number | $ReadOnly<{| uri: string |}>),
   progressiveRenderingEnabled?: ?boolean,
   fadeDuration?: ?number,
-  resizeMethod?: ?(\\"auto\\" | \\"resize\\" | \\"scale\\"),
+  resizeMethod?: ?(\\"auto\\" | \\"resize\\" | \\"scale\\" | \\"none\\"),
   resizeMultiplier?: ?number,
 |}>;
 export type ImageProps = {|

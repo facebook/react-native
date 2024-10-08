@@ -114,7 +114,7 @@ constructor(
     // the 'last' ReactActivity is being destroyed, which effectively means the app is being
     // backgrounded.
     if (hasBeenInitialized() && clearOnDestroy) {
-      imagePipeline!!.clearMemoryCaches()
+      imagePipeline?.clearMemoryCaches()
     }
   }
 

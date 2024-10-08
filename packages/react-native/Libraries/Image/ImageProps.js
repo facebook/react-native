@@ -65,7 +65,7 @@ type AndroidImageProps = $ReadOnly<{|
    * dimensions differ from the image view's dimensions. Defaults to `'auto'`.
    * See https://reactnative.dev/docs/image#resizemethod-android
    */
-  resizeMethod?: ?('auto' | 'resize' | 'scale'),
+  resizeMethod?: ?('auto' | 'resize' | 'scale' | 'none'),
 
   /**
    * When the `resizeMethod` is set to `resize`, the destination dimensions are
