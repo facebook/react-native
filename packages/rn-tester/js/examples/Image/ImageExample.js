@@ -853,6 +853,10 @@ const styles = StyleSheet.create({
     height: 64,
     width: 64,
   },
+  resizedImage: {
+    height: 100,
+    width: '500%',
+  },
 });
 
 exports.displayName = (undefined: ?string);
@@ -1605,6 +1609,36 @@ exports.examples = [
       'Demonstrating an example of loading a vector drawable asset by name',
     render: function (): React.Node {
       return <VectorDrawableExample />;
+    },
+    platform: 'android',
+  },
+  {
+    title: 'Large image with different resize methods',
+    description:
+      'Demonstrating the effects of loading a large image with different resize methods',
+    render: function (): React.Node {
+      const methods = ['auto', 'resize', 'scale', 'none'];
+      // Four copies of the same image so we don't serve cached copies of the same image
+      const images = [
+        require('../../assets/large-image-1.png'),
+        require('../../assets/large-image-2.png'),
+        require('../../assets/large-image-3.png'),
+        require('../../assets/large-image-4.png'),
+      ];
+      return (
+        <View>
+          {methods.map((method, index) => (
+            <View key={method} style={{display: 'flex', overflow: 'hidden'}}>
+              <Text>{method}</Text>
+              <Image
+                resizeMethod={method}
+                source={images[index]}
+                style={styles.resizedImage}
+              />
+            </View>
+          ))}
+        </View>
+      );
     },
     platform: 'android',
   },
