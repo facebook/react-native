@@ -99,7 +99,7 @@
     "@react-native/assets-registry": "0.73.1",
     "@react-native/community-cli-plugin": "0.73.18",
     "@react-native/codegen": "0.73.3",
-    "@react-native/gradle-plugin": "0.73.4",
+    "@react-native/gradle-plugin": "0.73.5",
     "@react-native/js-polyfills": "0.73.1",
     "@react-native/normalize-colors": "0.73.2",
     "@react-native/virtualized-lists": "0.73.4",
