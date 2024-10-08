@@ -147,6 +147,49 @@ class ActionSheetCancelButtonTintExample extends React.Component<
         destructiveButtonIndex: DESTRUCTIVE_INDEX,
         tintColor: 'green',
         cancelButtonTintColor: 'brown',
+      },
+      buttonIndex => {
+        this.setState({clicked: BUTTONS[buttonIndex]});
+      },
+    );
+  };
+}
+
+class ActionSheetDisabledButtonTintExample extends React.Component<
+  $FlowFixMeProps,
+  $FlowFixMeState,
+> {
+  state: any | {clicked: string} = {
+    clicked: 'none',
+  };
+
+  render(): React.Node {
+    return (
+      <RNTesterThemeContext.Consumer>
+        {theme => (
+          <View>
+            <Text
+              onPress={this.showActionSheet}
+              style={[style.button, {color: theme.SecondaryLabelColor}]}>
+              Click to show the ActionSheet
+            </Text>
+            <Text style={{color: theme.SecondaryLabelColor}}>
+              Clicked button: {this.state.clicked}
+            </Text>
+          </View>
+        )}
+      </RNTesterThemeContext.Consumer>
+    );
+  }
+
+  showActionSheet = () => {
+    ActionSheetIOS.showActionSheetWithOptions(
+      {
+        options: BUTTONS,
+        cancelButtonIndex: CANCEL_INDEX,
+        destructiveButtonIndex: DESTRUCTIVE_INDEX,
+        disabledButtonIndices: DISABLED_BUTTON_INDICES,
+        tintColor: 'black',
         disabledButtonTintColor: 'gray',
       },
       buttonIndex => {
@@ -479,6 +522,12 @@ exports.examples = [
     title: 'Show Action Sheet with cancel tinted button',
     render(): React.MixedElement {
       return <ActionSheetCancelButtonTintExample />;
+    },
+  },
+  {
+    title: 'Show Action Sheet with disabled tinted button',
+    render(): React.MixedElement {
+      return <ActionSheetDisabledButtonTintExample />;
     },
   },
   {
