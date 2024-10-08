@@ -32,6 +32,13 @@ class NewArchitectureHelper
                 config.build_settings[cxxBuildsettingsName] = Helpers::Constants::cxx_language_standard
             end
         end
+
+        # Override targets that would set spec.xcconfig to define c++ version
+        installer.aggregate_targets.each do |aggregate_target|
+            aggregate_target.xcconfigs.each do |config_name, config_file|
+                config_file.attributes[cxxBuildsettingsName] = Helpers::Constants::cxx_language_standard
+            end
+        end
     end
 
     def self.computeFlags(is_new_arch_enabled)
