@@ -12,6 +12,7 @@
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/core/LayoutableShadowNode.h>
 #include <algorithm>
+
 #include "ShadowView.h"
 
 #ifdef DEBUG_LOGS_DIFFER
@@ -38,6 +39,16 @@ enum class NoBreadcrumb {};
 #endif
 
 namespace facebook::react {
+
+enum class ReparentMode { Flatten, Unflatten };
+
+bool ShadowViewNodePair::operator==(const ShadowViewNodePair& rhs) const {
+  return this->shadowNode == rhs.shadowNode;
+}
+
+bool ShadowViewNodePair::operator!=(const ShadowViewNodePair& rhs) const {
+  return !(*this == rhs);
+}
 
 /*
  * Extremely simple and naive implementation of a map.
@@ -184,7 +195,7 @@ static bool shouldFirstPairComesBeforeSecondOne(
  * Reorders pairs in-place based on `orderIndex` using a stable sort algorithm.
  */
 static void reorderInPlaceIfNeeded(
-    ShadowViewNodePair::NonOwningList& pairs) noexcept {
+    std::vector<ShadowViewNodePair*>& pairs) noexcept {
   if (pairs.size() < 2) {
     return;
   }
@@ -206,7 +217,7 @@ static void reorderInPlaceIfNeeded(
 }
 
 static void sliceChildShadowNodeViewPairsRecursively(
-    ShadowViewNodePair::NonOwningList& pairList,
+    std::vector<ShadowViewNodePair*>& pairList,
     size_t& startOfStaticIndex,
     ViewNodePairScope& scope,
     Point layoutOffset,
@@ -232,24 +243,16 @@ static void sliceChildShadowNodeViewPairsRecursively(
     // This might not be a FormsView, or a FormsStackingContext. We let the
     // differ handle removal of flattened views from the Mounting layer and
     // shuffling their children around.
-    bool isConcreteView = false;
-    bool areChildrenFlattened = false;
-    if (ReactNativeFeatureFlags::allowCollapsableChildren()) {
-      bool childrenFormStackingContexts = shadowNode.getTraits().check(
-          ShadowNodeTraits::Trait::ChildrenFormStackingContext);
-      isConcreteView = childShadowNode.getTraits().check(
-                           ShadowNodeTraits::Trait::FormsView) ||
-          childrenFormStackingContexts;
-      areChildrenFlattened =
-          !childShadowNode.getTraits().check(
-              ShadowNodeTraits::Trait::FormsStackingContext) &&
-          !childrenFormStackingContexts;
-    } else {
-      isConcreteView =
-          childShadowNode.getTraits().check(ShadowNodeTraits::Trait::FormsView);
-      areChildrenFlattened = !childShadowNode.getTraits().check(
-          ShadowNodeTraits::Trait::FormsStackingContext);
-    }
+    bool childrenFormStackingContexts = shadowNode.getTraits().check(
+        ShadowNodeTraits::Trait::ChildrenFormStackingContext);
+    bool isConcreteView =
+        childShadowNode.getTraits().check(ShadowNodeTraits::Trait::FormsView) ||
+        childrenFormStackingContexts;
+    bool areChildrenFlattened =
+        !childShadowNode.getTraits().check(
+            ShadowNodeTraits::Trait::FormsStackingContext) &&
+        !childrenFormStackingContexts;
+
     Point storedOrigin = {};
     if (areChildrenFlattened) {
       storedOrigin = origin;
@@ -281,13 +284,13 @@ static void sliceChildShadowNodeViewPairsRecursively(
   }
 }
 
-ShadowViewNodePair::NonOwningList sliceChildShadowNodeViewPairs(
+std::vector<ShadowViewNodePair*> sliceChildShadowNodeViewPairs(
     const ShadowViewNodePair& shadowNodePair,
     ViewNodePairScope& scope,
     bool allowFlattened,
     Point layoutOffset) {
   const auto& shadowNode = *shadowNodePair.shadowNode;
-  auto pairList = ShadowViewNodePair::NonOwningList{};
+  auto pairList = std::vector<ShadowViewNodePair*>{};
 
   if (shadowNodePair.flattened && shadowNodePair.isConcreteView &&
       !allowFlattened) {
@@ -295,6 +298,7 @@ ShadowViewNodePair::NonOwningList sliceChildShadowNodeViewPairs(
   }
 
   size_t startOfStaticIndex = 0;
+
   sliceChildShadowNodeViewPairsRecursively(
       pairList, startOfStaticIndex, scope, layoutOffset, shadowNode);
 
@@ -315,7 +319,7 @@ ShadowViewNodePair::NonOwningList sliceChildShadowNodeViewPairs(
  * possible. This can account for adding parent LayoutMetrics that are
  * important to take into account, but tricky, in (un)flattening cases.
  */
-static ShadowViewNodePair::NonOwningList
+static std::vector<ShadowViewNodePair*>
 sliceChildShadowNodeViewPairsFromViewNodePair(
     const ShadowViewNodePair& shadowViewNodePair,
     ViewNodePairScope& scope,
@@ -341,8 +345,8 @@ static_assert(
     std::is_move_constructible<ShadowViewNodePair>::value,
     "`ShadowViewNodePair` must be `move constructible`.");
 static_assert(
-    std::is_move_constructible<ShadowViewNodePair::NonOwningList>::value,
-    "`ShadowViewNodePair::NonOwningList` must be `move constructible`.");
+    std::is_move_constructible<std::vector<ShadowViewNodePair*>>::value,
+    "`std::vector<ShadowViewNodePair*>` must be `move constructible`.");
 
 static_assert(
     std::is_move_assignable<ShadowViewMutation>::value,
@@ -353,17 +357,13 @@ static_assert(
 static_assert(
     std::is_move_assignable<ShadowViewNodePair>::value,
     "`ShadowViewNodePair` must be `move assignable`.");
-static_assert(
-    std::is_move_assignable<ShadowViewNodePair::NonOwningList>::value,
-    "`ShadowViewNodePair::NonOwningList` must be `move assignable`.");
 
 static void calculateShadowViewMutations(
     ViewNodePairScope& scope,
     ShadowViewMutation::List& mutations,
     const ShadowView& parentShadowView,
-    ShadowViewNodePair::NonOwningList&& oldChildPairs,
-    ShadowViewNodePair::NonOwningList&& newChildPairs,
-    bool isRecursionRedundant = false);
+    std::vector<ShadowViewNodePair*>&& oldChildPairs,
+    std::vector<ShadowViewNodePair*>&& newChildPairs);
 
 struct OrderedMutationInstructionContainer {
   ShadowViewMutation::List createMutations{};
@@ -379,7 +379,7 @@ static void updateMatchedPairSubtrees(
     ViewNodePairScope& scope,
     OrderedMutationInstructionContainer& mutationContainer,
     TinyMap<Tag, ShadowViewNodePair*>& newRemainingPairs,
-    ShadowViewNodePair::NonOwningList& oldChildPairs,
+    std::vector<ShadowViewNodePair*>& oldChildPairs,
     const ShadowView& parentShadowView,
     const ShadowViewNodePair& oldPair,
     const ShadowViewNodePair& newPair);
@@ -414,7 +414,7 @@ static void updateMatchedPairSubtrees(
     ViewNodePairScope& scope,
     OrderedMutationInstructionContainer& mutationContainer,
     TinyMap<Tag, ShadowViewNodePair*>& newRemainingPairs,
-    ShadowViewNodePair::NonOwningList& oldChildPairs,
+    std::vector<ShadowViewNodePair*>& oldChildPairs,
     const ShadowView& parentShadowView,
     const ShadowViewNodePair& oldPair,
     const ShadowViewNodePair& newPair) {
@@ -635,7 +635,7 @@ static void calculateShadowViewMutationsFlattener(
   });
 
   // Step 1: iterate through entire tree
-  ShadowViewNodePair::NonOwningList treeChildren =
+  std::vector<ShadowViewNodePair*> treeChildren =
       sliceChildShadowNodeViewPairsFromViewNodePair(node, scope);
 
   DEBUG_LOGS({
@@ -1051,9 +1051,8 @@ static void calculateShadowViewMutations(
     ViewNodePairScope& scope,
     ShadowViewMutation::List& mutations,
     const ShadowView& parentShadowView,
-    ShadowViewNodePair::NonOwningList&& oldChildPairs,
-    ShadowViewNodePair::NonOwningList&& newChildPairs,
-    bool isRecursionRedundant) {
+    std::vector<ShadowViewNodePair*>&& oldChildPairs,
+    std::vector<ShadowViewNodePair*>&& newChildPairs) {
   if (oldChildPairs.empty() && newChildPairs.empty()) {
     return;
   }
@@ -1171,39 +1170,13 @@ static void calculateShadowViewMutations(
         continue;
       }
 
-      // If we take this path, technically the operations and recursion below
-      // are redundant. However, some parts of the Fabric ecosystem (namely, as
-      // of writing this, LayoutAnimations) rely heavily on getting /explicit/
-      // Remove/Delete instructions for every single node in the tree. Thus, we
-      // generate the "RemoveDeleteTree" instruction as well as all of the
-      // individual Remove/Delete operations below, but we mark those as
-      // redundant. The platform layer can then discard the unnecessary
-      // instructions. RemoveDeleteTreeMutation is a significant performance
-      // improvement but could be improved significantly by eliminating the need
-      // for any of the redundant instructions in the future.
-      if (ShadowViewMutation::PlatformSupportsRemoveDeleteTreeInstruction &&
-          !isRecursionRedundant) {
-        mutationContainer.removeMutations.push_back(
-            ShadowViewMutation::RemoveDeleteTreeMutation(
-                parentShadowView,
-                oldChildPair.shadowView,
-                static_cast<int>(oldChildPair.mountIndex)));
-      }
-
       mutationContainer.deleteMutations.push_back(
-          ShadowViewMutation::DeleteMutation(
-              oldChildPair.shadowView,
-              isRecursionRedundant ||
-                  ShadowViewMutation::
-                      PlatformSupportsRemoveDeleteTreeInstruction));
+          ShadowViewMutation::DeleteMutation(oldChildPair.shadowView));
       mutationContainer.removeMutations.push_back(
           ShadowViewMutation::RemoveMutation(
               parentShadowView,
               oldChildPair.shadowView,
-              static_cast<int>(oldChildPair.mountIndex),
-              isRecursionRedundant ||
-                  ShadowViewMutation::
-                      PlatformSupportsRemoveDeleteTreeInstruction));
+              static_cast<int>(oldChildPair.mountIndex)));
 
       // We also have to call the algorithm recursively to clean up the entire
       // subtree starting from the removed view.
@@ -1214,8 +1187,7 @@ static void calculateShadowViewMutations(
           oldChildPair.shadowView,
           sliceChildShadowNodeViewPairsFromViewNodePair(
               oldChildPair, innerScope),
-          {},
-          ShadowViewMutation::PlatformSupportsRemoveDeleteTreeInstruction);
+          {});
     }
   } else if (index == oldChildPairs.size()) {
     // If we don't have any more existing children we can choose a fast path

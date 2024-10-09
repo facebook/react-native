@@ -14,10 +14,10 @@ void* TextLayoutManager::getNativeTextLayoutManager() const {
 }
 
 TextMeasurement TextLayoutManager::measure(
-    AttributedStringBox attributedStringBox,
-    ParagraphAttributes paragraphAttributes,
+    const AttributedStringBox& attributedStringBox,
+    const ParagraphAttributes& /*paragraphAttributes*/,
     const TextLayoutContext& /*layoutContext*/,
-    LayoutConstraints layoutConstraints) const {
+    const LayoutConstraints& /*layoutConstraints*/) const {
   TextMeasurement::Attachments attachments;
   for (const auto& fragment : attributedStringBox.getValue().getFragments()) {
     if (fragment.isAttachment()) {
@@ -31,15 +31,22 @@ TextMeasurement TextLayoutManager::measure(
 TextMeasurement TextLayoutManager::measureCachedSpannableById(
     int64_t /*cacheId*/,
     const ParagraphAttributes& /*paragraphAttributes*/,
-    LayoutConstraints /*layoutConstraints*/) const {
+    const LayoutConstraints& /*layoutConstraints*/) const {
   return {};
 }
 
 LinesMeasurements TextLayoutManager::measureLines(
-    AttributedString attributedString,
-    ParagraphAttributes paragraphAttributes,
-    Size size) const {
+    const AttributedStringBox& /*attributedStringBox*/,
+    const ParagraphAttributes& /*paragraphAttributes*/,
+    const Size& /*size*/) const {
   return {};
 };
+
+Float TextLayoutManager::baseline(
+    const AttributedStringBox& /*attributedStringBox*/,
+    const ParagraphAttributes& /*paragraphAttributes*/,
+    const Size& /*size*/) const {
+  return 0;
+}
 
 } // namespace facebook::react

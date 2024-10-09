@@ -11,9 +11,11 @@ import android.app.Activity
 import android.content.Context
 import com.facebook.react.bridge.WritableNativeArray
 import com.facebook.react.fabric.FabricUIManager
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsForTests
 import com.facebook.react.uimanager.UIManagerModule
 import com.facebook.testutils.shadows.ShadowArguments
 import com.facebook.testutils.shadows.ShadowNativeArray
+import com.facebook.testutils.shadows.ShadowNativeLoader
 import com.facebook.testutils.shadows.ShadowSoLoader
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -33,7 +35,12 @@ import org.robolectric.annotation.Config
 /** Tests [BridgelessReactContext] */
 @RunWith(RobolectricTestRunner::class)
 @Config(
-    shadows = [ShadowSoLoader::class, ShadowArguments::class, ShadowNativeArray.Writable::class])
+    shadows =
+        [
+            ShadowSoLoader::class,
+            ShadowNativeLoader::class,
+            ShadowArguments::class,
+            ShadowNativeArray.Writable::class])
 class BridgelessReactContextTest {
   private lateinit var context: Context
   private lateinit var reactHost: ReactHostImpl
@@ -41,6 +48,7 @@ class BridgelessReactContextTest {
 
   @Before
   fun setUp() {
+    ReactNativeFeatureFlagsForTests.setUp()
     context = Robolectric.buildActivity(Activity::class.java).create().get()
     reactHost = mock(ReactHostImpl::class.java)
     bridgelessReactContext = BridgelessReactContext(context, reactHost)

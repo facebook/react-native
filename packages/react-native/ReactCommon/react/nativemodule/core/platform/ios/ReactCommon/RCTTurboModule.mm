@@ -118,8 +118,8 @@ convertJSIArrayToNSArray(jsi::Runtime &runtime, const jsi::Array &value, std::sh
   NSMutableArray *result = [NSMutableArray new];
   for (size_t i = 0; i < size; i++) {
     // Insert kCFNull when it's `undefined` value to preserve the indices.
-    [result
-        addObject:convertJSIValueToObjCObject(runtime, value.getValueAtIndex(runtime, i), jsInvoker) ?: (id)kCFNull];
+    id convertedObject = convertJSIValueToObjCObject(runtime, value.getValueAtIndex(runtime, i), jsInvoker);
+    [result addObject:convertedObject ? convertedObject : (id)kCFNull];
   }
   return [result copy];
 }
@@ -813,5 +813,18 @@ void ObjCTurboModule::setMethodArgConversionSelector(NSString *methodName, size_
   methodArgConversionSelectors_[methodName][argIndex] = selectorValue;
 }
 
+void ObjCTurboModule::setEventEmitterCallback(EventEmitterCallback eventEmitterCallback)
+{
+  if ([instance_ conformsToProtocol:@protocol(RCTTurboModule)] &&
+      [instance_ respondsToSelector:@selector(setEventEmitterCallback:)]) {
+    EventEmitterCallbackWrapper *wrapper = [EventEmitterCallbackWrapper new];
+    wrapper->_eventEmitterCallback = std::move(eventEmitterCallback);
+    [(id<RCTTurboModule>)instance_ setEventEmitterCallback:wrapper];
+  }
+}
+
 } // namespace react
 } // namespace facebook
+
+@implementation EventEmitterCallbackWrapper
+@end

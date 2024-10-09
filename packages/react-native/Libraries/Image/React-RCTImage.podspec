@@ -42,10 +42,10 @@ Pod::Spec.new do |s|
   s.header_dir             = "RCTImage"
   s.pod_target_xcconfig    = {
                                "USE_HEADERMAP" => "YES",
-                               "CLANG_CXX_LANGUAGE_STANDARD" => "c++20",
+                               "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
                                "HEADER_SEARCH_PATHS" => header_search_paths.join(' ')
                              }
-  s.framework              = ["Accelerate", "UIKit"]
+  s.framework              = ["Accelerate", "UIKit", "QuartzCore", "ImageIO", "CoreGraphics"]
 
   s.dependency "RCT-Folly", folly_version
   s.dependency "RCTTypeSafety"

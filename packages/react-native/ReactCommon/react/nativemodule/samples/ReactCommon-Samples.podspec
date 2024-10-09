@@ -20,7 +20,8 @@ folly_config = get_folly_config()
 folly_compiler_flags = folly_config[:compiler_flags]
 folly_version = folly_config[:version]
 
-boost_compiler_flags = '-Wno-documentation'
+boost_config = get_boost_config()
+boost_compiler_flags = boost_config[:compiler_flags] 
 using_hermes = ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == "1"
 
 header_search_paths = [
@@ -47,8 +48,10 @@ Pod::Spec.new do |s|
   s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
   s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => header_search_paths,
                                "USE_HEADERMAP" => "YES",
-                               "CLANG_CXX_LANGUAGE_STANDARD" => "c++20",
+                               "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
                                "GCC_WARN_PEDANTIC" => "YES" }
+  s.framework = "UIKit"
+
   if ENV['USE_FRAMEWORKS']
     s.header_mappings_dir     = './'
   end

@@ -52,8 +52,6 @@ RCT_EXPORT_MODULE()
                                                name:RCTAccessibilityManagerDidUpdateMultiplierNotification
                                              object:[_moduleRegistry moduleForName:"AccessibilityManager"]];
 
-  _currentInterfaceOrientation = [RCTSharedApplication() statusBarOrientation];
-
   _currentInterfaceDimensions = [self _exportedDimensions];
 
   [[NSNotificationCenter defaultCenter] addObserver:self
@@ -70,10 +68,16 @@ RCT_EXPORT_MODULE()
                                            selector:@selector(interfaceFrameDidChange)
                                                name:RCTWindowFrameDidChangeNotification
                                              object:nil];
+
+#if TARGET_OS_IOS
+
+  _currentInterfaceOrientation = RCTKeyWindow().windowScene.interfaceOrientation;
+
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(interfaceFrameDidChange)
                                                name:UIDeviceOrientationDidChangeNotification
                                              object:nil];
+#endif
 
   // TODO T175901725 - Registering the RCTDeviceInfo module to the notification is a short-term fix to unblock 0.73
   // The actual behavior should be that the module is properly registered in the TurboModule/Bridge infrastructure
@@ -109,7 +113,9 @@ RCT_EXPORT_MODULE()
 
   [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTBridgeWillInvalidateModulesNotification object:nil];
 
+#if TARGET_OS_IOS
   [[NSNotificationCenter defaultCenter] removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
+#endif
 }
 
 static BOOL RCTIsIPhoneNotched()
@@ -117,12 +123,14 @@ static BOOL RCTIsIPhoneNotched()
   static BOOL isIPhoneNotched = NO;
   static dispatch_once_t onceToken;
 
+#if TARGET_OS_IOS
   dispatch_once(&onceToken, ^{
     RCTAssertMainQueue();
 
     // 20pt is the top safeArea value in non-notched devices
     isIPhoneNotched = RCTSharedApplication().keyWindow.safeAreaInsets.top > 20;
   });
+#endif
 
   return isIPhoneNotched;
 }
@@ -206,8 +214,9 @@ static NSDictionary *RCTExportedDimensions(CGFloat fontScale)
 
 - (void)_interfaceOrientationDidChange
 {
+#if TARGET_OS_IOS && !TARGET_OS_MACCATALYST
   UIApplication *application = RCTSharedApplication();
-  UIInterfaceOrientation nextOrientation = [application statusBarOrientation];
+  UIInterfaceOrientation nextOrientation = RCTKeyWindow().windowScene.interfaceOrientation;
 
   BOOL isRunningInFullScreen =
       CGRectEqualToRect(application.delegate.window.frame, application.delegate.window.screen.bounds);
@@ -235,6 +244,7 @@ static NSDictionary *RCTExportedDimensions(CGFloat fontScale)
     _isFullscreen = isRunningInFullScreen;
 #pragma clang diagnostic pop
   }
+#endif
 }
 
 - (void)interfaceFrameDidChange

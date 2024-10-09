@@ -19,9 +19,10 @@ end
 folly_config = get_folly_config()
 folly_compiler_flags = folly_config[:compiler_flags]
 folly_version = folly_config[:version]
-
-boost_compiler_flags = '-Wno-documentation'
+boost_config = get_boost_config()
+boost_compiler_flags = boost_config[:compiler_flags] 
 using_hermes = ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == "1"
+
 Pod::Spec.new do |s|
   s.name                   = "ReactCommon"
   s.module_name            = "ReactCommon"
@@ -37,7 +38,7 @@ Pod::Spec.new do |s|
   s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/fmt/include\" \"$(PODS_ROOT)/Headers/Private/React-Core\"",
                                "USE_HEADERMAP" => "YES",
                                "DEFINES_MODULE" => "YES",
-                               "CLANG_CXX_LANGUAGE_STANDARD" => "c++20",
+                               "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
                                "GCC_WARN_PEDANTIC" => "YES" }
   if ENV['USE_FRAMEWORKS']
     s.header_mappings_dir     = './'

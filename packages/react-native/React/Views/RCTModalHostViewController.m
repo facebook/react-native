@@ -50,11 +50,11 @@
   return _preferredStatusBarHidden;
 }
 
-#if RCT_DEV
+#if RCT_DEV && TARGET_OS_IOS
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
   UIInterfaceOrientationMask appSupportedOrientationsMask =
-      [RCTSharedApplication() supportedInterfaceOrientationsForWindow:[RCTSharedApplication() keyWindow]];
+      [RCTSharedApplication() supportedInterfaceOrientationsForWindow:RCTKeyWindow()];
   if (!(_supportedInterfaceOrientations & appSupportedOrientationsMask)) {
     RCTLogError(
         @"Modal was presented with 0x%x orientations mask but the application only supports 0x%x."

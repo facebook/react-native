@@ -203,7 +203,11 @@ RCT_EXPORT_MODULE()
 - (void)showOnShake
 {
   if ([((RCTDevSettings *)[_moduleRegistry moduleForName:"DevSettings"]) isShakeToShowDevMenuEnabled]) {
-    for (UIWindow *window in [RCTSharedApplication() windows]) {
+    NSMutableArray<UIWindow *> *windows = [NSMutableArray new];
+    for (UIWindowScene *scene in RCTSharedApplication().connectedScenes) {
+      [windows addObjectsFromArray:scene.windows];
+    }
+    for (UIWindow *window in windows) {
       NSString *recursiveDescription = [window valueForKey:@"recursiveDescription"];
       if ([recursiveDescription containsString:@"RCTView"]) {
         [self show];
@@ -272,7 +276,7 @@ RCT_EXPORT_MODULE()
       BOOL isDisconnected = RCTInspectorDevServerHelper.isPackagerDisconnected;
       NSString *title = isDisconnected
           ? [NSString stringWithFormat:@"Connect to %@ to debug JavaScript", RCT_PACKAGER_NAME]
-          : @"Open Debugger";
+          : @"Open DevTools";
       RCTDevMenuItem *item = [RCTDevMenuItem
           buttonItemWithTitle:title
                       handler:^{

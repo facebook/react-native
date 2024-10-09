@@ -16,7 +16,10 @@ module.exports = (moduleName, instanceMethods, isESModule) => {
   const React = require('react');
 
   const SuperClass =
-    typeof RealComponent === 'function' ? RealComponent : React.Component;
+    typeof RealComponent === 'function' &&
+    RealComponent.prototype.constructor instanceof React.Component
+      ? RealComponent
+      : React.Component;
 
   const name =
     RealComponent.displayName ||

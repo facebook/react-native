@@ -9,7 +9,7 @@ package com.facebook.react.util
 
 import com.facebook.react.bridge.JavaOnlyArray
 import com.facebook.react.bridge.JavaOnlyMap
-import org.junit.Assert
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
 class JSStackTraceTest {
@@ -82,9 +82,9 @@ class JSStackTraceTest {
                 "file",
                 "address at seg-3_198.js"))
     val message = JSStackTrace.format("Error", values)
-    Assert.assertEquals(
-        message,
-        """
+    assertThat(message)
+        .isEqualTo(
+            """
             Error, stack:
             method_from_bundle@7:11
             method_from_ram_bundle@199.js:18:13
@@ -95,6 +95,6 @@ class JSStackTraceTest {
             method_from_ram_segment_with_address@seg-3_198.js:10:20
             
             """
-            .trimIndent())
+                .trimIndent())
   }
 }

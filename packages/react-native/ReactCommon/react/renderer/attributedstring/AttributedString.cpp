@@ -91,6 +91,11 @@ void AttributedString::prependAttributedString(
       attributedString.fragments_.end());
 }
 
+void AttributedString::setBaseTextAttributes(
+    const TextAttributes& defaultAttributes) {
+  baseAttributes_ = defaultAttributes;
+}
+
 const Fragments& AttributedString::getFragments() const {
   return fragments_;
 }
@@ -105,6 +110,10 @@ std::string AttributedString::getString() const {
     string += fragment.string;
   }
   return string;
+}
+
+const TextAttributes& AttributedString::getBaseTextAttributes() const {
+  return baseAttributes_;
 }
 
 bool AttributedString::isEmpty() const {

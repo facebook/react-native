@@ -16,7 +16,7 @@
 namespace facebook::react {
 
 class DefaultComponentsRegistry
-    : public facebook::jni::HybridClass<DefaultComponentsRegistry> {
+    : public facebook::jni::JavaClass<DefaultComponentsRegistry> {
  public:
   constexpr static auto kJavaDescriptor =
       "Lcom/facebook/react/defaults/DefaultComponentsRegistry;";
@@ -27,17 +27,8 @@ class DefaultComponentsRegistry
       std::shared_ptr<const ComponentDescriptorProviderRegistry>)>
       registerComponentDescriptorsFromEntryPoint;
 
-  DefaultComponentsRegistry(ComponentFactory* delegate);
-
  private:
-  friend HybridBase;
-
-  static std::shared_ptr<const ComponentDescriptorProviderRegistry>
-  sharedProviderRegistry();
-
-  const ComponentFactory* delegate_;
-
-  static jni::local_ref<jhybriddata> initHybrid(
+  static void setRegistryRunction(
       jni::alias_ref<jclass>,
       ComponentFactory* delegate);
 };

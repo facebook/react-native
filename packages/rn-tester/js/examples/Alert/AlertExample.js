@@ -10,8 +10,8 @@
 
 import type {RNTesterModule} from '../../types/RNTesterTypes';
 
-import * as React from 'react';
 import {RNTesterThemeContext} from '../../components/RNTesterTheme';
+import * as React from 'react';
 import {Alert, Pressable, StyleSheet, Text, View} from 'react-native';
 
 // Shows log on the screen

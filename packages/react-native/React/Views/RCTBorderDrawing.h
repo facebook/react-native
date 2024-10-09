@@ -11,10 +11,14 @@
 #import <React/RCTDefines.h>
 
 typedef struct {
-  CGFloat topLeft;
-  CGFloat topRight;
-  CGFloat bottomLeft;
-  CGFloat bottomRight;
+  CGFloat topLeftHorizontal;
+  CGFloat topLeftVertical;
+  CGFloat topRightHorizontal;
+  CGFloat topRightVertical;
+  CGFloat bottomLeftHorizontal;
+  CGFloat bottomLeftVertical;
+  CGFloat bottomRightHorizontal;
+  CGFloat bottomRightVertical;
 } RCTCornerRadii;
 
 typedef struct {
@@ -35,7 +39,7 @@ typedef struct {
  * Determine if the border widths, colors and radii are all equal.
  */
 RCT_EXTERN BOOL RCTBorderInsetsAreEqual(UIEdgeInsets borderInsets);
-RCT_EXTERN BOOL RCTCornerRadiiAreEqual(RCTCornerRadii cornerRadii);
+RCT_EXTERN BOOL RCTCornerRadiiAreEqualAndSymmetrical(RCTCornerRadii cornerRadii);
 RCT_EXTERN BOOL RCTBorderColorsAreEqual(RCTBorderColors borderColors);
 
 /**

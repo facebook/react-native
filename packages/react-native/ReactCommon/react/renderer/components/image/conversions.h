@@ -80,6 +80,38 @@ inline void fromRawValue(
       result.type = ImageSource::Type::Local;
     }
 
+    if (items.find("headers") != items.end() &&
+        items.at("headers")
+            .hasType<std::unordered_map<std::string, std::string>>()) {
+      auto headers =
+          (std::unordered_map<std::string, std::string>)items.at("headers");
+      for (const auto& header : headers) {
+        result.headers.push_back(header);
+      }
+    }
+
+    if (items.find("body") != items.end() &&
+        items.at("body").hasType<std::string>()) {
+      result.body = (std::string)items.at("body");
+    }
+
+    if (items.find("method") != items.end() &&
+        items.at("method").hasType<std::string>()) {
+      result.method = (std::string)items.at("method");
+    }
+
+    if (items.find("cache") != items.end() &&
+        items.at("cache").hasType<std::string>()) {
+      auto cache = (std::string)items.at("cache");
+      if (cache == "reload") {
+        result.cache = ImageSource::CacheStategy::Reload;
+      } else if (cache == "force-cache") {
+        result.cache = ImageSource::CacheStategy::ForceCache;
+      } else if (cache == "only-if-cached") {
+        result.cache = ImageSource::CacheStategy::OnlyIfCached;
+      }
+    }
+
     return;
   }
 

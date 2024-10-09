@@ -7,8 +7,6 @@
 
 #pragma once
 
-#include "JOptional.h"
-
 #include <fbjni/fbjni.h>
 #include <jsinspector-modern/InspectorPackagerConnection.h>
 
@@ -29,7 +27,7 @@ class JCxxInspectorPackagerConnectionWebSocketDelegate
       "Lcom/facebook/react/devsupport/CxxInspectorPackagerConnection$WebSocketDelegate;";
 
   void didFailWithError(
-      jni::alias_ref<JOptionalInt::javaobject> posixCode,
+      jni::alias_ref<jni::JInteger> posixCode,
       const std::string& error);
 
   void didReceiveMessage(const std::string& message);

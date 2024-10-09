@@ -8,10 +8,10 @@
 #pragma once
 
 #include <react/renderer/attributedstring/AttributedString.h>
-#include <react/renderer/components/iostextinput/TextInputEventEmitter.h>
 #include <react/renderer/components/iostextinput/TextInputProps.h>
 #include <react/renderer/components/iostextinput/TextInputState.h>
 #include <react/renderer/components/text/BaseTextShadowNode.h>
+#include <react/renderer/components/textinput/TextInputEventEmitter.h>
 #include <react/renderer/components/view/ConcreteViewShadowNode.h>
 #include <react/renderer/textlayoutmanager/TextLayoutManager.h>
 #include <react/utils/ContextContainer.h>
@@ -40,6 +40,7 @@ class TextInputShadowNode final : public ConcreteViewShadowNode<
     auto traits = ConcreteViewShadowNode::BaseTraits();
     traits.set(ShadowNodeTraits::Trait::LeafYogaNode);
     traits.set(ShadowNodeTraits::Trait::MeasurableYogaNode);
+    traits.set(ShadowNodeTraits::Trait::BaselineYogaNode);
     return traits;
   }
 
@@ -57,6 +58,8 @@ class TextInputShadowNode final : public ConcreteViewShadowNode<
       const LayoutContext& layoutContext,
       const LayoutConstraints& layoutConstraints) const override;
   void layout(LayoutContext layoutContext) override;
+
+  Float baseline(const LayoutContext& layoutContext, Size size) const override;
 
  private:
   /*

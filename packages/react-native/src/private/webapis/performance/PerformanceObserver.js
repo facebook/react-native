@@ -8,19 +8,21 @@
  * @flow strict
  */
 
-import type {HighResTimeStamp, PerformanceEntryType} from './PerformanceEntry';
+import type {
+  DOMHighResTimeStamp,
+  PerformanceEntryType,
+  PerformanceEntryList,
+} from './PerformanceEntry';
 
-import warnOnce from '../../../../Libraries/Utilities/warnOnce';
-import {PerformanceEntry} from './PerformanceEntry';
-import PerformanceEventTiming from './PerformanceEventTiming';
+import {PerformanceEventTiming} from './EventTiming';
 import {
   performanceEntryTypeToRaw,
   rawToPerformanceEntry,
   rawToPerformanceEntryType,
 } from './RawPerformanceEntry';
-import NativePerformanceObserver from './specs/NativePerformanceObserver';
-
-export type PerformanceEntryList = $ReadOnlyArray<PerformanceEntry>;
+import NativePerformance from './specs/NativePerformance';
+import type {OpaqueNativeObserverHandle} from './specs/NativePerformance';
+import {warnNoNativePerformance} from './Utilities';
 
 export {PerformanceEntry} from './PerformanceEntry';
 
@@ -53,102 +55,34 @@ export class PerformanceObserverEntryList {
   }
 }
 
+export type PerformanceObserverCallbackOptions = {
+  droppedEntriesCount: number,
+};
+
 export type PerformanceObserverCallback = (
   list: PerformanceObserverEntryList,
   observer: PerformanceObserver,
   // The number of buffered entries which got dropped from the buffer due to the buffer being full:
-  droppedEntryCount?: number,
+  options?: PerformanceObserverCallbackOptions,
 ) => void;
 
-export type PerformanceObserverInit =
-  | {
-      entryTypes: Array<PerformanceEntryType>,
-    }
-  | {
-      type: PerformanceEntryType,
-      durationThreshold?: HighResTimeStamp,
-    };
-
-type PerformanceObserverConfig = {|
-  callback: PerformanceObserverCallback,
-  // Map of {entryType: durationThreshold}
-  entryTypes: $ReadOnlyMap<PerformanceEntryType, ?number>,
-|};
-
-const observerCountPerEntryType: Map<PerformanceEntryType, number> = new Map();
-const registeredObservers: Map<PerformanceObserver, PerformanceObserverConfig> =
-  new Map();
-let isOnPerformanceEntryCallbackSet: boolean = false;
-
-// This is a callback that gets scheduled and periodically called from the native side
-const onPerformanceEntry = () => {
-  if (!NativePerformanceObserver) {
-    return;
-  }
-  const entryResult = NativePerformanceObserver.popPendingEntries();
-  const rawEntries = entryResult?.entries ?? [];
-  const droppedEntriesCount = entryResult?.droppedEntriesCount;
-  if (rawEntries.length === 0) {
-    return;
-  }
-  const entries = rawEntries.map(rawToPerformanceEntry);
-  for (const [observer, observerConfig] of registeredObservers.entries()) {
-    const entriesForObserver: PerformanceEntryList = entries.filter(entry => {
-      if (!observerConfig.entryTypes.has(entry.entryType)) {
-        return false;
-      }
-      const durationThreshold = observerConfig.entryTypes.get(entry.entryType);
-      return entry.duration >= (durationThreshold ?? 0);
-    });
-    if (entriesForObserver.length !== 0) {
-      try {
-        observerConfig.callback(
-          new PerformanceObserverEntryList(entriesForObserver),
-          observer,
-          droppedEntriesCount,
-        );
-      } catch (error) {
-        console.error(error);
-      }
-    }
-  }
+export type PerformanceObserverInit = {
+  entryTypes?: Array<PerformanceEntryType>,
+  type?: PerformanceEntryType,
+  buffered?: boolean,
+  durationThreshold?: DOMHighResTimeStamp,
 };
 
-export function warnNoNativePerformanceObserver() {
-  warnOnce(
-    'missing-native-performance-observer',
-    'Missing native implementation of PerformanceObserver',
-  );
-}
-
-function applyDurationThresholds() {
-  const durationThresholds: Map<PerformanceEntryType, ?number> = Array.from(
-    registeredObservers.values(),
-  )
-    .map(config => config.entryTypes)
-    .reduce(
-      (accumulator, currentValue) => union(accumulator, currentValue),
-      new Map(),
-    );
-
-  for (const [entryType, durationThreshold] of durationThresholds) {
-    NativePerformanceObserver?.setDurationThreshold(
-      performanceEntryTypeToRaw(entryType),
-      durationThreshold ?? 0,
-    );
-  }
-}
-
 function getSupportedPerformanceEntryTypes(): $ReadOnlyArray<PerformanceEntryType> {
-  if (!NativePerformanceObserver) {
+  if (!NativePerformance) {
     return Object.freeze([]);
   }
-  if (!NativePerformanceObserver.getSupportedPerformanceEntryTypes) {
+  if (!NativePerformance.getSupportedPerformanceEntryTypes) {
     // fallback if getSupportedPerformanceEntryTypes is not defined on native side
     return Object.freeze(['mark', 'measure', 'event']);
   }
   return Object.freeze(
-    NativePerformanceObserver.getSupportedPerformanceEntryTypes().map(
+    NativePerformance.getSupportedPerformanceEntryTypes().map(
       rawToPerformanceEntryType,
     ),
   );
@@ -174,114 +108,87 @@ function getSupportedPerformanceEntryTypes(): $ReadOnlyArray<PerformanceEntryTyp
  * });
  * observer.observe({ type: "event" });
  */
-export default class PerformanceObserver {
+export class PerformanceObserver {
+  #nativeObserverHandle: OpaqueNativeObserverHandle | null = null;
   #callback: PerformanceObserverCallback;
   #type: 'single' | 'multiple' | void;
+  #calledAtLeastOnce = false;
 
   constructor(callback: PerformanceObserverCallback) {
     this.#callback = callback;
   }
 
   observe(options: PerformanceObserverInit): void {
-    if (!NativePerformanceObserver) {
-      warnNoNativePerformanceObserver();
+    if (!NativePerformance || NativePerformance.observe == null) {
+      warnNoNativePerformance();
       return;
     }
 
     this.#validateObserveOptions(options);
 
-    let requestedEntryTypes;
+    if (this.#nativeObserverHandle == null) {
+      this.#nativeObserverHandle = this.#createNativeObserver();
+    }
 
     if (options.entryTypes) {
       this.#type = 'multiple';
-      requestedEntryTypes = new Map(
-        options.entryTypes.map(t => [t, undefined]),
-      );
-    } else {
+      NativePerformance.observe?.(this.#nativeObserverHandle, {
+        entryTypes: options.entryTypes.map(performanceEntryTypeToRaw),
+      });
+    } else if (options.type) {
       this.#type = 'single';
-      requestedEntryTypes = new Map([
-        [options.type, options.durationThreshold],
-      ]);
+      NativePerformance.observe?.(this.#nativeObserverHandle, {
+        type: performanceEntryTypeToRaw(options.type),
+        buffered: options.buffered,
+        durationThreshold: options.durationThreshold,
+      });
     }
-
-    // The same observer may receive multiple calls to "observe", so we need
-    // to check what is new on this call vs. previous ones.
-    const currentEntryTypes = registeredObservers.get(this)?.entryTypes;
-    const nextEntryTypes = currentEntryTypes
-      ? union(requestedEntryTypes, currentEntryTypes)
-      : requestedEntryTypes;
-
-    // This `observe` call is a no-op because there are no new things to observe.
-    if (currentEntryTypes && currentEntryTypes.size === nextEntryTypes.size) {
-      return;
-    }
-
-    registeredObservers.set(this, {
-      callback: this.#callback,
-      entryTypes: nextEntryTypes,
-    });
-
-    if (!isOnPerformanceEntryCallbackSet) {
-      NativePerformanceObserver.setOnPerformanceEntryCallback(
-        onPerformanceEntry,
-      );
-      isOnPerformanceEntryCallbackSet = true;
-    }
-
-    // We only need to start listenening to new entry types being observed in
-    // this observer.
-    const newEntryTypes = currentEntryTypes
-      ? difference(
-          new Set(requestedEntryTypes.keys()),
-          new Set(currentEntryTypes.keys()),
-        )
-      : new Set(requestedEntryTypes.keys());
-    for (const type of newEntryTypes) {
-      if (!observerCountPerEntryType.has(type)) {
-        const rawType = performanceEntryTypeToRaw(type);
-        NativePerformanceObserver.startReporting(rawType);
-      }
-      observerCountPerEntryType.set(
-        type,
-        (observerCountPerEntryType.get(type) ?? 0) + 1,
-      );
-    }
-    applyDurationThresholds();
   }
 
   disconnect(): void {
-    if (!NativePerformanceObserver) {
-      warnNoNativePerformanceObserver();
+    if (!NativePerformance) {
+      warnNoNativePerformance();
       return;
     }
 
-    const observerConfig = registeredObservers.get(this);
-    if (!observerConfig) {
+    if (this.#nativeObserverHandle == null || !NativePerformance.disconnect) {
       return;
     }
 
-    // Disconnect this observer
-    for (const type of observerConfig.entryTypes.keys()) {
-      const numberOfObserversForThisType =
-        observerCountPerEntryType.get(type) ?? 0;
-      if (numberOfObserversForThisType === 1) {
-        observerCountPerEntryType.delete(type);
-        NativePerformanceObserver.stopReporting(
-          performanceEntryTypeToRaw(type),
-        );
-      } else if (numberOfObserversForThisType !== 0) {
-        observerCountPerEntryType.set(type, numberOfObserversForThisType - 1);
+    NativePerformance.disconnect(this.#nativeObserverHandle);
+  }
+
+  #createNativeObserver(): OpaqueNativeObserverHandle {
+    if (!NativePerformance || !NativePerformance.createObserver) {
+      warnNoNativePerformance();
+      return;
+    }
+
+    this.#calledAtLeastOnce = false;
+
+    return NativePerformance.createObserver(() => {
+      const rawEntries = NativePerformance.takeRecords?.(
+        this.#nativeObserverHandle,
+        true, // sort records
+      );
+      if (!rawEntries) {
+        return;
       }
-    }
 
-    // Disconnect all observers if this was the last one
-    registeredObservers.delete(this);
-    if (registeredObservers.size === 0) {
-      NativePerformanceObserver.setOnPerformanceEntryCallback(undefined);
-      isOnPerformanceEntryCallbackSet = false;
-    }
+      const entries = rawEntries.map(rawToPerformanceEntry);
+      const entryList = new PerformanceObserverEntryList(entries);
 
-    applyDurationThresholds();
+      let droppedEntriesCount = 0;
+      if (!this.#calledAtLeastOnce) {
+        droppedEntriesCount =
+          NativePerformance.getDroppedEntriesCount?.(
+            this.#nativeObserverHandle,
+          ) ?? 0;
+        this.#calledAtLeastOnce = true;
+      }
+
+      this.#callback(entryList, this, {droppedEntriesCount});
+    });
   }
 
   #validateObserveOptions(options: PerformanceObserverInit): void {
@@ -311,7 +218,7 @@ export default class PerformanceObserver {
       );
     }
 
-    if (entryTypes && durationThreshold !== undefined) {
+    if (entryTypes && durationThreshold != null) {
       throw new TypeError(
         "Failed to execute 'observe' on 'PerformanceObserver': An observe() call must not include both entryTypes and durationThreshold arguments.",
       );
@@ -320,26 +227,6 @@ export default class PerformanceObserver {
 
   static supportedEntryTypes: $ReadOnlyArray<PerformanceEntryType> =
     getSupportedPerformanceEntryTypes();
-}
-
-// As a Set union, except if value exists in both, we take minimum
-function union<T>(
-  a: $ReadOnlyMap<T, ?number>,
-  b: $ReadOnlyMap<T, ?number>,
-): Map<T, ?number> {
-  const res = new Map<T, ?number>();
-  for (const [k, v] of a) {
-    if (!b.has(k)) {
-      res.set(k, v);
-    } else {
-      res.set(k, Math.min(v ?? 0, b.get(k) ?? 0));
-    }
-  }
-  return res;
-}
-
-function difference<T>(a: $ReadOnlySet<T>, b: $ReadOnlySet<T>): Set<T> {
-  return new Set([...a].filter(x => !b.has(x)));
 }
 
 export {PerformanceEventTiming};

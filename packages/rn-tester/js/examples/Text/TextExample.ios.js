@@ -308,9 +308,6 @@ class TextBaseLineLayoutExample extends React.Component<{}, mixed> {
           {marker}
         </View>
 
-        {/* iOS-only because it relies on inline views being able to size to content.
-         * Android's implementation requires that a width and height be specified
-         * on the inline view. */}
         <Text style={subtitleStyle}>{'Interleaving <View> and <Text>:'}</Text>
         <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
           {marker}
@@ -345,6 +342,23 @@ class TextBaseLineLayoutExample extends React.Component<{}, mixed> {
             </View>{' '}
             , ante arcu vestibulum ligula, et scelerisque diam.
           </Text>
+        </View>
+
+        <Text style={subtitleStyle}>{'Multi-line <Text> alignment'}</Text>
+        <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
+          <View style={{width: 50, height: 50, backgroundColor: 'gray'}} />
+          <View style={{width: 125, backgroundColor: '#eee'}}>
+            <Text style={{fontSize: 15}}>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+              eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            </Text>
+          </View>
+          <View style={{width: 125, backgroundColor: '#eee'}}>
+            <Text style={{fontSize: 10}}>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+              eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            </Text>
+          </View>
         </View>
 
         <Text style={subtitleStyle}>{'<TextInput/>:'}</Text>
@@ -577,6 +591,68 @@ const examples = [
             Another text in a (inline) red box (which is inside the gray box).
           </Text>
         </Text>
+      );
+    },
+  },
+  {
+    title: 'Background Color and Border Width',
+    name: 'background-border-width',
+    render: function (): React.Node {
+      return (
+        <View testID="background-border-width">
+          <Text
+            style={{
+              backgroundColor: '#F000F0',
+              padding: 10,
+            }}>
+            Text with background color only
+          </Text>
+          <Text
+            style={{
+              backgroundColor: '#F000F0',
+              borderRadius: 10,
+              padding: 10,
+              marginTop: 10,
+            }}>
+            Text with background color and uniform borderRadii
+          </Text>
+          <Text
+            style={{
+              backgroundColor: '#F000F0',
+              borderTopRightRadius: 10,
+              borderTopLeftRadius: 20,
+              borderBottomRightRadius: 20,
+              borderBottomLeftRadius: 10,
+              padding: 10,
+              marginTop: 10,
+            }}>
+            Text with background color and non-uniform borders
+          </Text>
+          <Text
+            style={{
+              borderWidth: 1,
+              borderColor: 'red',
+              borderTopRightRadius: 10,
+              borderTopLeftRadius: 20,
+              borderBottomRightRadius: 20,
+              borderBottomLeftRadius: 10,
+              padding: 10,
+              marginTop: 10,
+            }}>
+            Text with borderWidth
+          </Text>
+          <Text
+            style={{
+              backgroundColor: '#00AA00',
+              borderWidth: 2,
+              borderColor: 'blue',
+              borderRadius: 10,
+              padding: 10,
+              marginTop: 10,
+            }}>
+            Text with background AND borderWidth
+          </Text>
+        </View>
       );
     },
   },
@@ -943,7 +1019,7 @@ const examples = [
   },
   {
     title: 'Toggling Attributes',
-    render: function (): React.Element<any> {
+    render: function (): React.MixedElement {
       return <AttributeToggler />;
     },
   },
@@ -1172,7 +1248,7 @@ const examples = [
   },
   {
     title: 'Dynamic Font Size Adjustment',
-    render: function (): React.Element<any> {
+    render: function (): React.MixedElement {
       return <AdjustingFontSize />;
     },
   },
@@ -1344,6 +1420,25 @@ const examples = [
               borderWidth: 5,
               overflow: 'hidden',
               fontSize: 16,
+            }}>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </Text>
+        </View>
+      );
+    },
+  },
+  {
+    title: 'Box Shadow',
+    name: 'boxShadow',
+    render: function (): React.Node {
+      return (
+        <View>
+          <Text
+            testID="text-box-shadow"
+            style={{
+              borderRadius: 10,
+              boxShadow: '0 0 10px red',
             }}>
             Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
             eiusmod tempor incididunt ut labore et dolore magna aliqua.

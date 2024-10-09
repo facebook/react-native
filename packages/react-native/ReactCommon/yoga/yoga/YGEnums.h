@@ -25,6 +25,11 @@ YG_ENUM_DECL(
     YGAlignSpaceEvenly)
 
 YG_ENUM_DECL(
+    YGBoxSizing,
+    YGBoxSizingBorderBox,
+    YGBoxSizingContentBox)
+
+YG_ENUM_DECL(
     YGDimension,
     YGDimensionWidth,
     YGDimensionHeight)

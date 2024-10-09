@@ -13,6 +13,8 @@
 #import <React/RCTConvert.h>
 #import <React/RCTFabricSurface.h>
 #import <React/RCTInspectorDevServerHelper.h>
+#import <React/RCTInspectorNetworkHelper.h>
+#import <React/RCTInspectorUtils.h>
 #import <React/RCTJSThread.h>
 #import <React/RCTLog.h>
 #import <React/RCTMockDef.h>
@@ -36,14 +38,23 @@ using namespace facebook::react;
 class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::HostTargetDelegate {
  public:
   RCTHostHostTargetDelegate(RCTHost *host)
-      : host_(host), pauseOverlayController_([[RCTPausedInDebuggerOverlayController alloc] init])
+      : host_(host),
+        pauseOverlayController_([[RCTPausedInDebuggerOverlayController alloc] init]),
+        networkHelper_([[RCTInspectorNetworkHelper alloc] init])
   {
   }
 
   jsinspector_modern::HostTargetMetadata getMetadata() override
   {
+    auto metadata = [RCTInspectorUtils getHostMetadata];
+
     return {
+        .appDisplayName = [metadata.appDisplayName UTF8String],
+        .appIdentifier = [metadata.appIdentifier UTF8String],
+        .deviceName = [metadata.deviceName UTF8String],
         .integrationName = "iOS Bridgeless (RCTHost)",
+        .platform = [metadata.platform UTF8String],
+        .reactNativeVersion = [metadata.reactNativeVersion UTF8String],
     };
   }
 
@@ -76,9 +87,16 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
     }
   }
 
+  void loadNetworkResource(const RCTInspectorLoadNetworkResourceRequest &params, RCTInspectorNetworkExecutor executor)
+      override
+  {
+    [networkHelper_ loadNetworkResourceWithParams:params executor:executor];
+  }
+
  private:
   __weak RCTHost *host_;
   RCTPausedInDebuggerOverlayController *pauseOverlayController_;
+  RCTInspectorNetworkHelper *networkHelper_;
 };
 
 @implementation RCTHost {
@@ -96,11 +114,6 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
 
   NSDictionary *_launchOptions;
 
-  // All the surfaces that need to be started after main bundle execution
-  NSMutableArray<RCTFabricSurface *> *_surfaceStartBuffer;
-  std::mutex _surfaceStartBufferMutex;
-
-  RCTInstanceInitialBundleLoadCompletionBlock _onInitialBundleLoad;
   std::vector<__weak RCTFabricSurface *> _attachedSurfaces;
 
   RCTModuleRegistry *_moduleRegistry;
@@ -144,7 +157,6 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
   if (self = [super init]) {
     _hostDelegate = hostDelegate;
     _turboModuleManagerDelegate = turboModuleManagerDelegate;
-    _surfaceStartBuffer = [NSMutableArray new];
     _bundleManager = [RCTBundleManager new];
     _moduleRegistry = [RCTModuleRegistry new];
     _jsEngineProvider = [jsEngineProvider copy];
@@ -177,33 +189,6 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
                                        andSetter:bundleURLSetter
                                 andDefaultGetter:defaultBundleURLGetter];
 
-    /**
-     * TODO (T108401473) Remove _onInitialBundleLoad, because it was initially
-     * introduced to start surfaces after the main JSBundle was fully executed.
-     * It is no longer needed because Fabric now dispatches all native-to-JS calls
-     * onto the JS thread, including JS calls to start Fabric surfaces.
-     * JS calls should be dispatched using the BufferedRuntimeExecutor, which can buffer
-     * JS calls before the main JSBundle finishes execution, and execute them after.
-     */
-    _onInitialBundleLoad = ^{
-      RCTHost *strongSelf = weakSelf;
-      if (!strongSelf) {
-        return;
-      }
-
-      NSArray<RCTFabricSurface *> *unstartedSurfaces = @[];
-
-      {
-        std::lock_guard<std::mutex> guard{strongSelf->_surfaceStartBufferMutex};
-        unstartedSurfaces = [NSArray arrayWithArray:strongSelf->_surfaceStartBuffer];
-        strongSelf->_surfaceStartBuffer = nil;
-      }
-
-      for (RCTFabricSurface *surface in unstartedSurfaces) {
-        [surface start];
-      }
-    };
-
     // Listen to reload commands
     dispatch_async(dispatch_get_main_queue(), ^{
       RCTRegisterReloadCommandListener(self);
@@ -231,7 +216,7 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
         });
     __weak RCTHost *weakSelf = self;
     _inspectorPageId = facebook::react::jsinspector_modern::getInspectorInstance().addPage(
-        "React Native Bridgeless (Experimental)",
+        "React Native Bridgeless",
         /* vm */ "",
         [weakSelf](std::unique_ptr<facebook::react::jsinspector_modern::IRemoteConnection> remote)
             -> std::unique_ptr<facebook::react::jsinspector_modern::ILocalConnection> {
@@ -253,7 +238,6 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
                                    jsRuntimeFactory:[self _provideJSEngine]
                                       bundleManager:_bundleManager
                          turboModuleManagerDelegate:_turboModuleManagerDelegate
-                                onInitialBundleLoad:_onInitialBundleLoad
                                      moduleRegistry:_moduleRegistry
                               parentInspectorTarget:_inspectorTarget.get()
                                       launchOptions:_launchOptions];
@@ -270,15 +254,7 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
   surface.surfaceHandler.setDisplayMode(displayMode);
   [self _attachSurface:surface];
 
-  {
-    std::lock_guard<std::mutex> guard{_surfaceStartBufferMutex};
-    if (_surfaceStartBuffer) {
-      [_surfaceStartBuffer addObject:surface];
-      return surface;
-    }
-  }
-
-  [surface start];
+  [_instance callFunctionOnBufferedRuntimeExecutor:[surface](facebook::jsi::Runtime &_) { [surface start]; }];
   return surface;
 }
 
@@ -312,17 +288,10 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
     [self _setBundleURL:_bundleURLProvider()];
   }
 
-  // Ensure all attached surfaces are restarted after reload
-  {
-    std::lock_guard<std::mutex> guard{_surfaceStartBufferMutex};
-    _surfaceStartBuffer = [NSMutableArray arrayWithArray:[self _getAttachedSurfaces]];
-  }
-
   _instance = [[RCTInstance alloc] initWithDelegate:self
                                    jsRuntimeFactory:[self _provideJSEngine]
                                       bundleManager:_bundleManager
                          turboModuleManagerDelegate:_turboModuleManagerDelegate
-                                onInitialBundleLoad:_onInitialBundleLoad
                                      moduleRegistry:_moduleRegistry
                               parentInspectorTarget:_inspectorTarget.get()
                                       launchOptions:_launchOptions];
@@ -330,6 +299,7 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
 
   for (RCTFabricSurface *surface in [self _getAttachedSurfaces]) {
     [surface resetWithSurfacePresenter:self.surfacePresenter];
+    [_instance callFunctionOnBufferedRuntimeExecutor:[surface](facebook::jsi::Runtime &_) { [surface start]; }];
   }
 }
 
@@ -357,6 +327,17 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
 - (void)instance:(RCTInstance *)instance didInitializeRuntime:(facebook::jsi::Runtime &)runtime
 {
   [self.runtimeDelegate host:self didInitializeRuntime:runtime];
+}
+
+- (void)loadBundleAtURL:(NSURL *)sourceURL
+             onProgress:(RCTSourceLoadProgressBlock)onProgress
+             onComplete:(RCTSourceLoadBlock)loadCallback
+{
+  if ([_hostDelegate respondsToSelector:@selector(loadBundleAtURL:onProgress:onComplete:)]) {
+    [_hostDelegate loadBundleAtURL:sourceURL onProgress:onProgress onComplete:loadCallback];
+  } else {
+    [RCTJavaScriptLoader loadBundleAtURL:sourceURL onProgress:onProgress onComplete:loadCallback];
+  }
 }
 
 #pragma mark - RCTContextContainerHandling

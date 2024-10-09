@@ -60,7 +60,7 @@ NS_ASSUME_NONNULL_BEGIN
  * When set to `YES`, the activity indicator is not automatically hidden when the Surface stage changes.
  * In this scenario, users should invoke `hideActivityIndicator` to remove it.
  *
- * @param disabled: if `YES`, the auto-hide is disabled. Otherwise the loading view will be hidden automatically
+ * @param disabled if `YES`, the auto-hide is disabled. Otherwise the loading view will be hidden automatically
  */
 - (void)disableActivityIndicatorAutoHide:(BOOL)disabled;
 @end

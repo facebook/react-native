@@ -44,12 +44,6 @@ export default function getDevToolsFrontendUrl(
   if (experiments.enableNetworkInspector) {
     searchParams.append('unstable_enableNetworkPanel', 'true');
   }
-  if (
-    options?.useFuseboxEntryPoint === true &&
-    experiments.useFuseboxInternalBranding
-  ) {
-    searchParams.append('unstable_useInternalBranding', 'true');
-  }
   if (options?.launchId != null && options.launchId !== '') {
     searchParams.append('launchId', options.launchId);
   }

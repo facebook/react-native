@@ -268,5 +268,123 @@ describe.each(['HTTP', 'HTTPS'])(
         debugger2?.close();
       }
     });
+
+    test('debugger connection to a nonexistent page is rejected', async () => {
+      let device, debugger_;
+      try {
+        device = await createDeviceMock(
+          `${serverRef.serverBaseWsUrl}/inspector/device?device=device1&name=foo&app=bar`,
+          autoCleanup.signal,
+        );
+        // Set up a page.
+        device.getPages.mockImplementation(() => [
+          {
+            app: 'bar-app',
+            id: 'page1',
+            title: 'bar-title',
+            vm: 'bar-vm',
+          },
+        ]);
+        let pageList: Array<PageDescription> = [];
+        await until(async () => {
+          pageList = (await fetchJson(
+            `${serverRef.serverBaseUrl}/json`,
+            // $FlowIgnore[unclear-type]
+          ): any);
+          expect(pageList).toHaveLength(1);
+        });
+        const [{webSocketDebuggerUrl}] = pageList;
+
+        // Connect the debugger to a nonexistent page.
+        debugger_ = await createDebuggerMock(
+          webSocketDebuggerUrl.replaceAll('page1', 'some-other-id'),
+          autoCleanup.signal,
+        );
+
+        // The debugger gets disconnected automatically.
+        await until(async () => {
+          expect([
+            // CLOSING
+            3,
+            // CLOSED
+            4,
+          ]).toContain(debugger_.socket.readyState);
+        });
+
+        expect(device.connect).not.toHaveBeenCalled();
+        expect(device.disconnect).not.toHaveBeenCalled();
+      } finally {
+        device?.close();
+        debugger_?.close();
+      }
+    });
+
+    test('debugger connection to a nonexistent page does not kill the current debugger connection', async () => {
+      let device, debugger1, debugger2;
+      try {
+        device = await createDeviceMock(
+          `${serverRef.serverBaseWsUrl}/inspector/device?device=device1&name=foo&app=bar`,
+          autoCleanup.signal,
+        );
+        // Set up a page.
+        device.getPages.mockImplementation(() => [
+          {
+            app: 'bar-app',
+            id: 'page1',
+            title: 'bar-title',
+            vm: 'bar-vm',
+          },
+        ]);
+        let pageList: Array<PageDescription> = [];
+        await until(async () => {
+          pageList = (await fetchJson(
+            `${serverRef.serverBaseUrl}/json`,
+            // $FlowIgnore[unclear-type]
+          ): any);
+          expect(pageList).toHaveLength(1);
+        });
+        const [{webSocketDebuggerUrl}] = pageList;
+
+        // Connect the first debugger.
+        debugger1 = await createDebuggerMock(
+          webSocketDebuggerUrl,
+          autoCleanup.signal,
+        );
+
+        // Connect a second debugger to a nonexistent page.
+        debugger2 = await createDebuggerMock(
+          webSocketDebuggerUrl.replaceAll('page1', 'some-other-id'),
+          autoCleanup.signal,
+        );
+
+        // The second debugger gets disconnected automatically.
+        await until(async () => {
+          expect([
+            // CLOSING
+            3,
+            // CLOSED
+            4,
+          ]).toContain(debugger2.socket.readyState);
+        });
+
+        // We can still send messages through the first debugger.
+        await sendFromDebuggerToTarget(debugger1, device, 'page1', {
+          method: 'Runtime.enable',
+          id: 0,
+        });
+
+        expect(device.connect).toHaveBeenCalledWith({
+          event: 'connect',
+          payload: {
+            pageId: 'page1',
+          },
+        });
+        expect(device.disconnect).not.toHaveBeenCalled();
+      } finally {
+        device?.close();
+        debugger1?.close();
+        debugger2?.close();
+      }
+    });
   },
 );

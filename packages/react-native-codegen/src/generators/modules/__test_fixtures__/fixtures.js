@@ -27,6 +27,129 @@ const EMPTY_NATIVE_MODULES: SchemaType = {
   },
 };
 
+const EVENT_EMITTER_MODULES: SchemaType = {
+  modules: {
+    NativeSampleTurboModule: {
+      type: 'NativeModule',
+      aliasMap: {
+        ObjectStruct: {
+          type: 'ObjectTypeAnnotation',
+          properties: [
+            {
+              name: 'a',
+              optional: false,
+              typeAnnotation: {
+                type: 'NumberTypeAnnotation',
+              },
+            },
+            {
+              name: 'b',
+              optional: false,
+              typeAnnotation: {
+                type: 'StringTypeAnnotation',
+              },
+            },
+            {
+              name: 'c',
+              optional: true,
+              typeAnnotation: {
+                type: 'NullableTypeAnnotation',
+                typeAnnotation: {
+                  type: 'StringTypeAnnotation',
+                },
+              },
+            },
+          ],
+        },
+      },
+      enumMap: {},
+      spec: {
+        eventEmitters: [
+          {
+            name: 'onEvent1',
+            optional: false,
+            typeAnnotation: {
+              type: 'EventEmitterTypeAnnotation',
+              typeAnnotation: {
+                type: 'VoidTypeAnnotation',
+              },
+            },
+          },
+          {
+            name: 'onEvent2',
+            optional: false,
+            typeAnnotation: {
+              type: 'EventEmitterTypeAnnotation',
+              typeAnnotation: {
+                type: 'StringTypeAnnotation',
+              },
+            },
+          },
+          {
+            name: 'onEvent3',
+            optional: false,
+            typeAnnotation: {
+              type: 'EventEmitterTypeAnnotation',
+              typeAnnotation: {
+                type: 'NumberTypeAnnotation',
+              },
+            },
+          },
+          {
+            name: 'onEvent4',
+            optional: false,
+            typeAnnotation: {
+              type: 'EventEmitterTypeAnnotation',
+              typeAnnotation: {
+                type: 'BooleanTypeAnnotation',
+              },
+            },
+          },
+          {
+            name: 'onEvent5',
+            optional: false,
+            typeAnnotation: {
+              type: 'EventEmitterTypeAnnotation',
+              typeAnnotation: {
+                type: 'TypeAliasTypeAnnotation',
+                name: 'ObjectStruct',
+              },
+            },
+          },
+          {
+            name: 'onEvent6',
+            optional: false,
+            typeAnnotation: {
+              type: 'EventEmitterTypeAnnotation',
+              typeAnnotation: {
+                type: 'ArrayTypeAnnotation',
+                elementType: {
+                  type: 'TypeAliasTypeAnnotation',
+                  name: 'ObjectStruct',
+                },
+              },
+            },
+          },
+        ],
+        methods: [
+          {
+            name: 'voidFunc',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'VoidTypeAnnotation',
+              },
+              params: [],
+            },
+          },
+        ],
+      },
+      moduleName: 'SampleTurboModule',
+    },
+  },
+};
+
 const SIMPLE_NATIVE_MODULES: SchemaType = {
   modules: {
     NativeSampleTurboModule: {
@@ -330,6 +453,9 @@ const SIMPLE_NATIVE_MODULES: SchemaType = {
               type: 'FunctionTypeAnnotation',
               returnTypeAnnotation: {
                 type: 'PromiseTypeAnnotation',
+                elementType: {
+                  type: 'VoidTypeAnnotation',
+                },
               },
               params: [
                 {
@@ -349,6 +475,9 @@ const SIMPLE_NATIVE_MODULES: SchemaType = {
               type: 'FunctionTypeAnnotation',
               returnTypeAnnotation: {
                 type: 'PromiseTypeAnnotation',
+                elementType: {
+                  type: 'VoidTypeAnnotation',
+                },
               },
               params: [
                 {
@@ -824,6 +953,9 @@ const COMPLEX_OBJECTS: SchemaType = {
                 type: 'NullableTypeAnnotation',
                 typeAnnotation: {
                   type: 'ArrayTypeAnnotation',
+                  elementType: {
+                    type: 'AnyTypeAnnotation',
+                  },
                 },
               },
               params: [],
@@ -1239,6 +1371,9 @@ const REAL_MODULE_EXAMPLE: SchemaType = {
               type: 'FunctionTypeAnnotation',
               returnTypeAnnotation: {
                 type: 'PromiseTypeAnnotation',
+                elementType: {
+                  type: 'VoidTypeAnnotation',
+                },
               },
               params: [
                 {
@@ -1259,6 +1394,9 @@ const REAL_MODULE_EXAMPLE: SchemaType = {
               type: 'FunctionTypeAnnotation',
               returnTypeAnnotation: {
                 type: 'PromiseTypeAnnotation',
+                elementType: {
+                  type: 'VoidTypeAnnotation',
+                },
               },
               params: [
                 {
@@ -1285,6 +1423,9 @@ const REAL_MODULE_EXAMPLE: SchemaType = {
               type: 'FunctionTypeAnnotation',
               returnTypeAnnotation: {
                 type: 'PromiseTypeAnnotation',
+                elementType: {
+                  type: 'VoidTypeAnnotation',
+                },
               },
               params: [
                 {
@@ -1846,6 +1987,9 @@ const CXX_ONLY_NATIVE_MODULES: SchemaType = {
               type: 'FunctionTypeAnnotation',
               returnTypeAnnotation: {
                 type: 'ArrayTypeAnnotation',
+                elementType: {
+                  type: 'AnyTypeAnnotation',
+                },
               },
               params: [
                 {
@@ -2173,6 +2317,23 @@ const CXX_ONLY_NATIVE_MODULES: SchemaType = {
                   },
                 },
                 {
+                  name: 'y-literal',
+                  optional: false,
+                  typeAnnotation: {
+                    type: 'StringLiteralUnionTypeAnnotation',
+                    types: [
+                      {
+                        type: 'StringLiteralTypeAnnotation',
+                        value: 'foo',
+                      },
+                      {
+                        type: 'StringLiteralTypeAnnotation',
+                        value: 'bar',
+                      },
+                    ],
+                  },
+                },
+                {
                   name: 'z',
                   optional: false,
                   typeAnnotation: {
@@ -2431,13 +2592,143 @@ const SAMPLE_WITH_UPPERCASE_NAME: SchemaType = {
   },
 };
 
+const UNION_MODULE: SchemaType = {
+  modules: {
+    NativeSampleTurboModule: {
+      type: 'NativeModule',
+      aliasMap: {},
+      enumMap: {},
+      spec: {
+        eventEmitters: [],
+        methods: [
+          {
+            name: 'getUnion',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'UnionTypeAnnotation',
+                memberType: 'ObjectTypeAnnotation',
+              },
+              params: [
+                {
+                  name: 'chooseInt',
+                  optional: false,
+                  typeAnnotation: {
+                    type: 'UnionTypeAnnotation',
+                    memberType: 'NumberTypeAnnotation',
+                  },
+                },
+                {
+                  name: 'chooseFloat',
+                  optional: false,
+                  typeAnnotation: {
+                    type: 'UnionTypeAnnotation',
+                    memberType: 'NumberTypeAnnotation',
+                  },
+                },
+                {
+                  name: 'chooseObject',
+                  optional: false,
+                  typeAnnotation: {
+                    type: 'UnionTypeAnnotation',
+                    memberType: 'ObjectTypeAnnotation',
+                  },
+                },
+                {
+                  name: 'chooseString',
+                  optional: false,
+                  typeAnnotation: {
+                    type: 'UnionTypeAnnotation',
+                    memberType: 'StringTypeAnnotation',
+                  },
+                },
+                {
+                  name: 'chooseStringLiteral',
+                  optional: false,
+                  typeAnnotation: {
+                    type: 'StringLiteralUnionTypeAnnotation',
+                    types: [
+                      {
+                        type: 'StringLiteralTypeAnnotation',
+                        value: 'foo',
+                      },
+                      {
+                        type: 'StringLiteralTypeAnnotation',
+                        value: 'bar',
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+      moduleName: 'SampleTurboModule',
+    },
+  },
+};
+
+const STRING_LITERALS = {
+  modules: {
+    NativeSampleTurboModule: {
+      type: 'NativeModule',
+      aliasMap: {},
+      enumMap: {},
+      spec: {
+        eventEmitters: [
+          {
+            name: 'literalEvent',
+            optional: false,
+            typeAnnotation: {
+              type: 'EventEmitterTypeAnnotation',
+              typeAnnotation: {
+                type: 'StringLiteralTypeAnnotation',
+                value: 'A String Literal Event',
+              },
+            },
+          },
+        ],
+        methods: [
+          {
+            name: 'getStringLiteral',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'StringLiteralTypeAnnotation',
+                value: 'A String Literal Return',
+              },
+              params: [
+                {
+                  name: 'literalParam',
+                  optional: false,
+                  typeAnnotation: {
+                    type: 'StringLiteralTypeAnnotation',
+                    value: 'A String Literal Param',
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+      moduleName: 'SampleTurboModule',
+    },
+  },
+};
+
 module.exports = {
   complex_objects: COMPLEX_OBJECTS,
   two_modules_different_files: TWO_MODULES_DIFFERENT_FILES,
   empty_native_modules: EMPTY_NATIVE_MODULES,
+  event_emitter_module: EVENT_EMITTER_MODULES,
   simple_native_modules: SIMPLE_NATIVE_MODULES,
   native_modules_with_type_aliases: NATIVE_MODULES_WITH_TYPE_ALIASES,
   real_module_example: REAL_MODULE_EXAMPLE,
   cxx_only_native_modules: CXX_ONLY_NATIVE_MODULES,
   SampleWithUppercaseName: SAMPLE_WITH_UPPERCASE_NAME,
+  union_module: UNION_MODULE,
+  string_literals: STRING_LITERALS,
 };

@@ -9,6 +9,7 @@
  * @oncall react_native
  */
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import type MemoryInfo from 'react-native/src/private/webapis/performance/MemoryInfo';
 import type ReactNativeStartupTiming from 'react-native/src/private/webapis/performance/ReactNativeStartupTiming';
 
@@ -17,9 +18,10 @@ import * as React from 'react';
 import {useContext, useEffect} from 'react';
 import {Button, StyleSheet, Text, View} from 'react-native';
 import Performance from 'react-native/src/private/webapis/performance/Performance';
-import PerformanceObserver, {
+import {
   type PerformanceEntry,
   type PerformanceEventTiming,
+  PerformanceObserver,
 } from 'react-native/src/private/webapis/performance/PerformanceObserver';
 
 const {useState, useCallback} = React;
@@ -112,7 +114,9 @@ function PerformanceObserverUserTimingExample(): React.Node {
 
   useEffect(() => {
     const observer = new PerformanceObserver(list => {
-      setEntries(list.getEntries());
+      setEntries(
+        list.getEntries().filter(entry => entry.name.startsWith('rntester-')),
+      );
     });
 
     observer.observe({entryTypes: ['mark', 'measure']});
@@ -121,9 +125,13 @@ function PerformanceObserverUserTimingExample(): React.Node {
   }, []);
 
   const onPress = useCallback(() => {
-    performance.mark('mark1');
-    performance.mark('mark2');
-    performance.measure('measure1', 'mark1', 'mark2');
+    performance.mark('rntester-mark1');
+    performance.mark('rntester-mark2');
+    performance.measure(
+      'rntester-measure1',
+      'rntester-mark1',
+      'rntester-mark2',
+    );
   }, []);
 
   return (
@@ -165,7 +173,7 @@ function PerformanceObserverEventTimingExample(): React.Node {
       setEntries(newEntries);
     });
 
-    observer.observe({entryTypes: ['event']});
+    observer.observe({type: 'event'});
 
     return () => observer.disconnect();
   }, []);
@@ -203,6 +211,41 @@ function PerformanceObserverEventTimingExample(): React.Node {
   );
 }
 
+function PerformanceObserverLongtaskExample(): React.Node {
+  const theme = useContext(RNTesterThemeContext);
+
+  const [entries, setEntries] = useState<$ReadOnlyArray<PerformanceEntry>>([]);
+
+  useEffect(() => {
+    const observer = new PerformanceObserver(list => {
+      setEntries(list.getEntries());
+    });
+
+    observer.observe({entryTypes: ['longtask']});
+
+    return () => observer.disconnect();
+  }, []);
+
+  const onPress = useCallback(() => {
+    // Wait 1s to force a long task
+    busyWait(1000);
+  }, []);
+
+  return (
+    <View style={styles.container}>
+      <Button onPress={onPress} title="Click to force a long task" />
+      <View>
+        {entries.map((entry, index) => (
+          <Text style={{color: theme.LabelColor}} key={index}>
+            Long task {entry.name}: {entry.startTime} -{' '}
+            {entry.startTime + entry.duration} ({entry.duration}ms)
+          </Text>
+        ))}
+      </View>
+    </View>
+  );
+}
+
 function busyWait(ms: number): void {
   const end = performance.now() + ms;
   while (performance.now() < end) {}
@@ -214,32 +257,40 @@ const styles = StyleSheet.create({
   },
 });
 
-exports.title = 'Performance API Examples';
-exports.category = 'Basic';
-exports.description = 'Shows the performance API provided in React Native';
-exports.examples = [
+export const title = 'Performance API Examples';
+export const category = 'Basic';
+export const description = 'Shows the performance API provided in React Native';
+export const examples: Array<RNTesterModuleExample> = ([
   {
     title: 'performance.memory',
-    render: function (): React.Element<typeof MemoryExample> {
+    render: (): React.Node => {
       return <MemoryExample />;
     },
   },
   {
     title: 'performance.reactNativeStartupTiming',
-    render: function (): React.Element<typeof StartupTimingExample> {
+    render: (): React.Node => {
       return <StartupTimingExample />;
     },
   },
   {
     title: 'PerformanceObserver (marks and measures)',
-    render: function (): React.Element<typeof StartupTimingExample> {
+    render: (): React.Node => {
       return <PerformanceObserverUserTimingExample />;
     },
   },
   {
     title: 'PerformanceObserver (events)',
-    render: function (): React.Element<typeof StartupTimingExample> {
+    render: (): React.Node => {
       return <PerformanceObserverEventTimingExample />;
     },
   },
-];
+  PerformanceObserver.supportedEntryTypes.includes('longtask')
+    ? {
+        title: 'PerformanceObserver (long tasks)',
+        render: (): React.Node => {
+          return <PerformanceObserverLongtaskExample />;
+        },
+      }
+    : null,
+]: Array<?RNTesterModuleExample>).filter(Boolean);

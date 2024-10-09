@@ -27,8 +27,8 @@ public:
 template <typename T>
 class JSI_EXPORT NativeSampleModuleCxxSpec : public TurboModule {
 public:
-  jsi::Value get(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
-    return delegate_.get(rt, propName);
+  jsi::Value create(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
+    return delegate_.create(rt, propName);
   }
 
   static constexpr std::string_view kModuleName = "NativeSampleModule";
@@ -38,11 +38,14 @@ protected:
     : TurboModule(std::string{NativeSampleModuleCxxSpec::kModuleName}, jsInvoker),
       delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
+
 private:
   class Delegate : public NativeSampleModuleCxxSpecJSI {
   public:
     Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      NativeSampleModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {}
+      NativeSampleModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+
+    }
 
     double getRandomNumber(jsi::Runtime &rt) override {
       static_assert(
@@ -54,6 +57,7 @@ private:
     }
 
   private:
+    friend class NativeSampleModuleCxxSpec;
     T *instance_;
   };
 

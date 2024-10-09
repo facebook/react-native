@@ -34,7 +34,7 @@ public class SampleNativeComponentManagerDelegate<T extends View, U extends Base
   }
 
   @Override
-  public void receiveCommand(T view, String commandName, ReadableArray args) {
+  public void receiveCommand(T view, String commandName, @Nullable ReadableArray args) {
     switch (commandName) {
       case "changeBackgroundColor":
         mViewManager.changeBackgroundColor(view, args.getString(0));

@@ -11,12 +11,13 @@
 package com.facebook.react.bridge.interop
 
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
-import com.facebook.react.config.ReactFeatureFlags
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsDefaults
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsForTests
 import com.facebook.react.modules.core.JSTimers
 import com.facebook.react.uimanager.events.RCTEventEmitter
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNull
-import org.junit.Assert.assertTrue
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 
@@ -28,69 +29,78 @@ class InteropModuleRegistryTest {
   @Before
   fun setup() {
     underTest = InteropModuleRegistry()
+    ReactNativeFeatureFlagsForTests.setUp()
+  }
+
+  @After
+  fun tearDown() {
+    ReactNativeFeatureFlags.dangerouslyReset()
   }
 
   @Test
   fun shouldReturnInteropModule_withFabricDisabled_returnsFalse() {
-    ReactFeatureFlags.enableFabricRenderer = false
+    overrideFeatureFlags(false, false)
 
-    assertFalse(underTest.shouldReturnInteropModule(RCTEventEmitter::class.java))
+    assertThat(underTest.shouldReturnInteropModule(RCTEventEmitter::class.java)).isFalse()
   }
 
   @Test
   fun shouldReturnInteropModule_withFabricInteropDisabled_returnsFalse() {
-    ReactFeatureFlags.enableFabricRenderer = true
-    ReactFeatureFlags.unstable_useFabricInterop = false
+    overrideFeatureFlags(false, true)
 
-    assertFalse(underTest.shouldReturnInteropModule(RCTEventEmitter::class.java))
+    assertThat(underTest.shouldReturnInteropModule(RCTEventEmitter::class.java)).isFalse()
   }
 
   @Test
   fun shouldReturnInteropModule_withUnregisteredClass_returnsFalse() {
-    ReactFeatureFlags.enableFabricRenderer = true
-    ReactFeatureFlags.unstable_useFabricInterop = true
+    overrideFeatureFlags(true, true)
 
-    assertFalse(underTest.shouldReturnInteropModule(JSTimers::class.java))
+    assertThat(underTest.shouldReturnInteropModule(JSTimers::class.java)).isFalse()
   }
 
   @Test
   fun shouldReturnInteropModule_withRegisteredClass_returnsTrue() {
-    ReactFeatureFlags.enableFabricRenderer = true
-    ReactFeatureFlags.unstable_useFabricInterop = true
+    overrideFeatureFlags(true, true)
 
     underTest.registerInteropModule(RCTEventEmitter::class.java, FakeRCTEventEmitter())
 
-    assertTrue(underTest.shouldReturnInteropModule(RCTEventEmitter::class.java))
+    assertThat(underTest.shouldReturnInteropModule(RCTEventEmitter::class.java)).isTrue()
   }
 
   @Test
   fun getInteropModule_withRegisteredClassAndInvalidFlags_returnsNull() {
-    ReactFeatureFlags.enableFabricRenderer = false
-    ReactFeatureFlags.unstable_useFabricInterop = false
+    overrideFeatureFlags(false, false)
     underTest.registerInteropModule(RCTEventEmitter::class.java, FakeRCTEventEmitter())
 
     val interopModule = underTest.getInteropModule(RCTEventEmitter::class.java)
 
-    assertNull(interopModule)
+    assertThat(interopModule).isNull()
   }
 
   @Test
   fun getInteropModule_withRegisteredClassAndValidFlags_returnsInteropModule() {
-    ReactFeatureFlags.enableFabricRenderer = true
-    ReactFeatureFlags.unstable_useFabricInterop = true
+    overrideFeatureFlags(true, true)
     underTest.registerInteropModule(RCTEventEmitter::class.java, FakeRCTEventEmitter())
 
     val interopModule = underTest.getInteropModule(RCTEventEmitter::class.java)
 
-    assertTrue(interopModule is FakeRCTEventEmitter)
+    assertThat(interopModule).isInstanceOf(FakeRCTEventEmitter::class.java)
   }
 
   @Test
   fun getInteropModule_withUnregisteredClass_returnsNull() {
-    ReactFeatureFlags.enableFabricRenderer = true
-    ReactFeatureFlags.unstable_useFabricInterop = true
+    overrideFeatureFlags(true, true)
     val missingModule = underTest.getInteropModule(JSTimers::class.java)
 
-    assertNull(missingModule)
+    assertThat(missingModule).isNull()
+  }
+
+  private fun overrideFeatureFlags(useFabricInterop: Boolean, enableFabricRenderer: Boolean) {
+    ReactNativeFeatureFlags.override(
+        object : ReactNativeFeatureFlagsDefaults() {
+          override fun useFabricInterop(): Boolean = useFabricInterop
+
+          override fun enableFabricRenderer(): Boolean = enableFabricRenderer
+        })
   }
 }

@@ -30,11 +30,13 @@ HostAgent::HostAgent(
     FrontendChannel frontendChannel,
     HostTargetController& targetController,
     HostTargetMetadata hostMetadata,
-    SessionState& sessionState)
+    SessionState& sessionState,
+    VoidExecutor executor)
     : frontendChannel_(frontendChannel),
       targetController_(targetController),
       hostMetadata_(std::move(hostMetadata)),
-      sessionState_(sessionState) {}
+      sessionState_(sessionState),
+      networkIOAgent_(NetworkIOAgent(frontendChannel, executor)) {}
 
 void HostAgent::handleRequest(const cdp::PreparsedRequest& req) {
   bool shouldSendOKResponse = false;
@@ -182,6 +184,12 @@ void HostAgent::handleRequest(const cdp::PreparsedRequest& req) {
     frontendChannel_(cdp::jsonNotification(
         "Tracing.tracingComplete",
         folly::dynamic::object("dataLossOccurred", false)));
+    shouldSendOKResponse = true;
+    isFinishedHandlingRequest = true;
+  }
+
+  if (!isFinishedHandlingRequest &&
+      networkIOAgent_.handleRequest(req, targetController_.getDelegate())) {
     return;
   }
 
@@ -195,10 +203,7 @@ void HostAgent::handleRequest(const cdp::PreparsedRequest& req) {
     return;
   }
 
-  frontendChannel_(cdp::jsonError(
-      req.id,
-      cdp::ErrorCode::MethodNotFound,
-      req.method + " not implemented yet"));
+  throw NotImplementedException(req.method);
 }
 
 HostAgent::~HostAgent() {
@@ -216,9 +221,9 @@ HostAgent::~HostAgent() {
 }
 
 void HostAgent::sendFuseboxNotice() {
-  static constexpr auto kFuseboxNotice = ANSI_COLOR_BG_YELLOW
-      "Welcome to " ANSI_WEIGHT_BOLD "React Native DevTools" ANSI_WEIGHT_RESET
-      " (experimental)"sv;
+  static constexpr auto kFuseboxNotice =
+      ANSI_COLOR_BG_YELLOW "Welcome to " ANSI_WEIGHT_BOLD
+                           "React Native DevTools" ANSI_WEIGHT_RESET ""sv;
 
   sendInfoLogEntry(kFuseboxNotice);
 }
@@ -228,7 +233,7 @@ void HostAgent::sendNonFuseboxNotice() {
       ANSI_COLOR_BG_YELLOW ANSI_WEIGHT_BOLD
       "NOTE: " ANSI_WEIGHT_RESET
       "You are using an unsupported debugging client. "
-      "Use the Dev Menu in your app (or type `j` in the Metro terminal) to open the latest, supported React Native debugger."sv;
+      "Use the Dev Menu in your app (or type `j` in the Metro terminal) to open React Native DevTools."sv;
 
   std::vector<std::string> args;
   args.emplace_back(kNonFuseboxNotice);

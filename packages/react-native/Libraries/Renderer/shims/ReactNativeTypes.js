@@ -7,10 +7,15 @@
  * @noformat
  * @nolint
  * @flow strict
- * @generated SignedSource<<e7a1421518e1d99f18c5b14e85f44843>>
+ * @generated SignedSource<<9e6c8931d3b0c36d35ad5da90b721b85>>
  */
 
-import type {ElementRef, ElementType, Element, AbstractComponent} from 'react';
+import type {
+  ElementRef,
+  ElementType,
+  MixedElement,
+  AbstractComponent,
+} from 'react';
 
 export type MeasureOnSuccessCallback = (
   x: number,
@@ -86,6 +91,7 @@ export type ViewConfig = $ReadOnly<{
     }>,
     ...
   }>,
+  supportsRawText?: boolean,
   uiViewClassName: string,
   validAttributes: AttributeConfiguration,
 }>;
@@ -93,6 +99,7 @@ export type ViewConfig = $ReadOnly<{
 export type PartialViewConfig = $ReadOnly<{
   bubblingEventTypes?: $PropertyType<ViewConfig, 'bubblingEventTypes'>,
   directEventTypes?: $PropertyType<ViewConfig, 'directEventTypes'>,
+  supportsRawText?: boolean,
   uiViewClassName: string,
   validAttributes?: PartialAttributeConfiguration,
 }>;
@@ -106,31 +113,32 @@ export interface INativeMethods {
   measure(callback: MeasureOnSuccessCallback): void;
   measureInWindow(callback: MeasureInWindowOnSuccessCallback): void;
   measureLayout(
-    relativeToNativeNode: number | ElementRef<HostComponent<mixed>>,
+    relativeToNativeNode: number | HostInstance,
     onSuccess: MeasureLayoutOnSuccessCallback,
     onFail?: () => void,
   ): void;
   setNativeProps(nativeProps: {...}): void;
 }
 
-export type NativeMethods = $ReadOnly<{|
+export type NativeMethods = $ReadOnly<{
   blur(): void,
   focus(): void,
   measure(callback: MeasureOnSuccessCallback): void,
   measureInWindow(callback: MeasureInWindowOnSuccessCallback): void,
   measureLayout(
-    relativeToNativeNode: number | ElementRef<HostComponent<mixed>>,
+    relativeToNativeNode: number | HostInstance,
     onSuccess: MeasureLayoutOnSuccessCallback,
     onFail?: () => void,
   ): void,
   setNativeProps(nativeProps: {...}): void,
-|}>;
+}>;
 
 // This validates that INativeMethods and NativeMethods stay in sync using Flow!
 declare const ensureNativeMethodsAreSynced: NativeMethods;
 (ensureNativeMethodsAreSynced: INativeMethods);
 
-export type HostComponent<T> = AbstractComponent<T, $ReadOnly<NativeMethods>>;
+export type HostInstance = NativeMethods;
+export type HostComponent<Config> = AbstractComponent<Config, HostInstance>;
 
 type SecretInternalsType = {
   computeComponentStackForErrorReporting(tag: number): string,
@@ -173,6 +181,7 @@ export type TouchedViewDataAtPoint = $ReadOnly<{
     width: number,
     height: number,
   }>,
+  closestPublicInstance?: PublicInstance,
   ...InspectorData,
 }>;
 
@@ -202,7 +211,7 @@ export type RenderRootOptions = {
 export type ReactNativeType = {
   findHostInstance_DEPRECATED<TElementType: ElementType>(
     componentOrHandle: ?(ElementRef<TElementType> | number),
-  ): ?ElementRef<HostComponent<mixed>>,
+  ): ?HostInstance,
   findNodeHandle<TElementType: ElementType>(
     componentOrHandle: ?(ElementRef<TElementType> | number),
   ): ?number,
@@ -211,24 +220,21 @@ export type ReactNativeType = {
     child: PublicInstance | HostComponent<mixed>,
   ): boolean,
   dispatchCommand(
-    handle: ElementRef<HostComponent<mixed>>,
+    handle: HostInstance,
     command: string,
     args: Array<mixed>,
   ): void,
-  sendAccessibilityEvent(
-    handle: ElementRef<HostComponent<mixed>>,
-    eventType: string,
-  ): void,
+  sendAccessibilityEvent(handle: HostInstance, eventType: string): void,
   render(
-    element: Element<ElementType>,
+    element: MixedElement,
     containerTag: number,
     callback: ?() => void,
     options: ?RenderRootOptions,
   ): ?ElementRef<ElementType>,
   unmountComponentAtNode(containerTag: number): void,
   unmountComponentAtNodeAndRemoveContainer(containerTag: number): void,
-  unstable_batchedUpdates: <T>(fn: (T) => void, bookkeeping: T) => void,
-  __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED: SecretInternalsType,
+  +unstable_batchedUpdates: <T>(fn: (T) => void, bookkeeping: T) => void,
+  +__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED: SecretInternalsType,
   ...
 };
 
@@ -240,22 +246,19 @@ type PublicTextInstance = mixed;
 export type ReactFabricType = {
   findHostInstance_DEPRECATED<TElementType: ElementType>(
     componentOrHandle: ?(ElementRef<TElementType> | number),
-  ): ?ElementRef<HostComponent<mixed>>,
+  ): ?HostInstance,
   findNodeHandle<TElementType: ElementType>(
     componentOrHandle: ?(ElementRef<TElementType> | number),
   ): ?number,
   dispatchCommand(
-    handle: ElementRef<HostComponent<mixed>>,
+    handle: HostInstance,
     command: string,
     args: Array<mixed>,
   ): void,
   isChildPublicInstance(parent: PublicInstance, child: PublicInstance): boolean,
-  sendAccessibilityEvent(
-    handle: ElementRef<HostComponent<mixed>>,
-    eventType: string,
-  ): void,
+  sendAccessibilityEvent(handle: HostInstance, eventType: string): void,
   render(
-    element: Element<ElementType>,
+    element: MixedElement,
     containerTag: number,
     callback: ?() => void,
     concurrentRoot: ?boolean,

@@ -9,7 +9,7 @@ package com.facebook.react.shell;
 
 import android.annotation.SuppressLint;
 import androidx.annotation.Nullable;
-import com.facebook.react.TurboReactPackage;
+import com.facebook.react.BaseReactPackage;
 import com.facebook.react.ViewManagerOnDemandReactPackage;
 import com.facebook.react.animated.NativeAnimatedModule;
 import com.facebook.react.bridge.ModuleSpec;
@@ -28,7 +28,6 @@ import com.facebook.react.modules.blob.FileReaderModule;
 import com.facebook.react.modules.camera.ImageStoreManager;
 import com.facebook.react.modules.clipboard.ClipboardModule;
 import com.facebook.react.modules.devloading.DevLoadingModule;
-import com.facebook.react.modules.devtoolssettings.DevToolsSettingsManagerModule;
 import com.facebook.react.modules.dialog.DialogModule;
 import com.facebook.react.modules.fresco.FrescoModule;
 import com.facebook.react.modules.i18nmanager.I18nManagerModule;
@@ -36,6 +35,7 @@ import com.facebook.react.modules.image.ImageLoaderModule;
 import com.facebook.react.modules.intent.IntentModule;
 import com.facebook.react.modules.network.NetworkingModule;
 import com.facebook.react.modules.permissions.PermissionsModule;
+import com.facebook.react.modules.reactdevtoolssettings.ReactDevToolsSettingsManagerModule;
 import com.facebook.react.modules.share.ShareModule;
 import com.facebook.react.modules.sound.SoundManagerModule;
 import com.facebook.react.modules.statusbar.StatusBarModule;
@@ -48,6 +48,7 @@ import com.facebook.react.views.drawer.ReactDrawerLayoutManager;
 import com.facebook.react.views.image.ReactImageManager;
 import com.facebook.react.views.modal.ReactModalHostManager;
 import com.facebook.react.views.progressbar.ReactProgressBarViewManager;
+import com.facebook.react.views.safeareaview.ReactSafeAreaViewManager;
 import com.facebook.react.views.scroll.ReactHorizontalScrollContainerViewManager;
 import com.facebook.react.views.scroll.ReactHorizontalScrollViewManager;
 import com.facebook.react.views.scroll.ReactScrollViewManager;
@@ -86,6 +87,7 @@ import javax.inject.Provider;
       NativeAnimatedModule.class,
       NetworkingModule.class,
       PermissionsModule.class,
+      ReactDevToolsSettingsManagerModule.class,
       ShareModule.class,
       SoundManagerModule.class,
       StatusBarModule.class,
@@ -93,7 +95,7 @@ import javax.inject.Provider;
       VibrationModule.class,
       WebSocketModule.class,
     })
-public class MainReactPackage extends TurboReactPackage implements ViewManagerOnDemandReactPackage {
+public class MainReactPackage extends BaseReactPackage implements ViewManagerOnDemandReactPackage {
 
   private MainPackageConfig mConfig;
   private @Nullable Map<String, ModuleSpec> mViewManagers;
@@ -152,8 +154,8 @@ public class MainReactPackage extends TurboReactPackage implements ViewManagerOn
         return new VibrationModule(context);
       case WebSocketModule.NAME:
         return new WebSocketModule(context);
-      case DevToolsSettingsManagerModule.NAME:
-        return new DevToolsSettingsManagerModule(context);
+      case ReactDevToolsSettingsManagerModule.NAME:
+        return new ReactDevToolsSettingsManagerModule(context);
       default:
         return null;
     }
@@ -169,6 +171,7 @@ public class MainReactPackage extends TurboReactPackage implements ViewManagerOn
     viewManagers.add(new ReactProgressBarViewManager());
     viewManagers.add(new ReactScrollViewManager());
     viewManagers.add(new ReactSwitchManager());
+    viewManagers.add(new ReactSafeAreaViewManager());
     viewManagers.add(new SwipeRefreshLayoutManager());
 
     // Native equivalents
@@ -209,6 +212,7 @@ public class MainReactPackage extends TurboReactPackage implements ViewManagerOn
           ReactHorizontalScrollContainerViewManager::new);
       appendMap(
           viewManagers, ReactProgressBarViewManager.REACT_CLASS, ReactProgressBarViewManager::new);
+      appendMap(viewManagers, ReactSafeAreaViewManager.REACT_CLASS, ReactSafeAreaViewManager::new);
       appendMap(viewManagers, ReactScrollViewManager.REACT_CLASS, ReactScrollViewManager::new);
       appendMap(viewManagers, ReactSwitchManager.REACT_CLASS, ReactSwitchManager::new);
       appendMap(
@@ -297,7 +301,7 @@ public class MainReactPackage extends TurboReactPackage implements ViewManagerOn
           NativeAnimatedModule.class,
           NetworkingModule.class,
           PermissionsModule.class,
-          DevToolsSettingsManagerModule.class,
+          ReactDevToolsSettingsManagerModule.class,
           ShareModule.class,
           StatusBarModule.class,
           SoundManagerModule.class,

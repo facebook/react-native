@@ -297,6 +297,14 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
       @"oneTimeCode" : UITextContentTypeOneTimeCode,
     }];
 
+    if (@available(iOS 15.0, *)) {
+      [mutableContentTypeMap addEntriesFromDictionary:@{
+        @"dateTime" : UITextContentTypeDateTime,
+        @"flightNumber" : UITextContentTypeFlightNumber,
+        @"shipmentTrackingNumber" : UITextContentTypeShipmentTrackingNumber,
+      }];
+    }
+
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 170000 /* __IPHONE_17_0 */
     if (@available(iOS 17.0, *)) {
       [mutableContentTypeMap addEntriesFromDictionary:@{
@@ -315,6 +323,15 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
         @"birthdateYear" : UITextContentTypeBirthdateYear,
       }];
     }
+
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 170400 /* __IPHONE_17_4 */
+    if (@available(iOS 17.4, *)) {
+      [mutableContentTypeMap addEntriesFromDictionary:@{
+        @"cellularEID" : UITextContentTypeCellularEID,
+        @"cellularIMEI" : UITextContentTypeCellularIMEI,
+      }];
+    }
+#endif
 #endif
 
     contentTypeMap = mutableContentTypeMap;
@@ -448,7 +465,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
         _maxLength.integerValue - (NSInteger)backedTextInputView.attributedText.string.length + (NSInteger)range.length,
         0);
 
-    if (text.length > allowedLength) {
+    if (text.length > _maxLength.integerValue) {
       // If we typed/pasted more than one character, limit the text inputted.
       if (text.length > 1) {
         if (allowedLength > 0) {
@@ -458,6 +475,9 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
             // the character at the length limit takes more than 16bits, truncation should end at the character before
             allowedLength = cutOffCharacterRange.location;
           }
+        }
+        if (allowedLength <= 0) {
+          return nil;
         }
         // Truncate the input string so the result is exactly maxLength
         NSString *limitedString = [text substringToIndex:allowedLength];
@@ -651,8 +671,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
 - (NSString *)returnKeyTypeToString:(UIReturnKeyType)returnKeyType
 {
   switch (returnKeyType) {
-    case UIReturnKeyDefault:
-      return @"Default";
     case UIReturnKeyGo:
       return @"Go";
     case UIReturnKeyNext:
@@ -680,7 +698,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
 {
   returnKeyTypesSet = [NSSet setWithObjects:@(UIReturnKeyDone),
                                             @(UIReturnKeyGo),
-                                            @(UIReturnKeyDefault),
                                             @(UIReturnKeyNext),
                                             @(UIReturnKeySearch),
                                             @(UIReturnKeySend),

@@ -80,12 +80,15 @@ export type ProgressBarAndroidProps = $ReadOnly<{|
  */
 const ProgressBarAndroid = (
   {
+    // $FlowFixMe[incompatible-type]
     styleAttr = 'Normal',
     indeterminate = true,
     animating = true,
     ...restProps
   }: ProgressBarAndroidProps,
-  forwardedRef: ?React.Ref<typeof ProgressBarAndroidNativeComponent>,
+  forwardedRef: ?React.RefSetter<
+    React.ElementRef<typeof ProgressBarAndroidNativeComponent>,
+  >,
 ) => {
   return (
     <ProgressBarAndroidNativeComponent

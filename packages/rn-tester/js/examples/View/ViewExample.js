@@ -452,6 +452,253 @@ function LayoutConformanceBox(): React.Node {
   );
 }
 
+function BoxShadowExample(): React.Node {
+  const defaultStyleSize = {width: 75, height: 75};
+
+  return (
+    <View testID="view-test-box-shadow" style={{gap: 20}}>
+      <View style={{flexDirection: 'row', gap: 15}}>
+        <View
+          style={{
+            ...defaultStyleSize,
+            borderRadius: 10,
+            borderWidth: 5,
+            borderColor: 'red',
+            boxShadow: '0 0 10px 0 black',
+          }}
+        />
+        <View
+          style={{
+            ...defaultStyleSize,
+            borderRadius: 30,
+            borderWidth: 5,
+            borderColor: 'red',
+            boxShadow: 'inset 0 0 10px 0 black',
+          }}
+        />
+        <View
+          style={{
+            ...defaultStyleSize,
+            borderRadius: 30,
+            borderWidth: 5,
+            borderColor: 'red',
+            boxShadow:
+              'inset 15px -5px 5px 5px cyan, inset 15px -5px 20px 10px orange, -5px 5px 5px 0px green, 0px -10px 0px 5px black',
+          }}
+        />
+      </View>
+      <View style={{flexDirection: 'row', gap: 15}}>
+        <View
+          style={{
+            ...defaultStyleSize,
+            boxShadow: '0px 0px 5px 5px black',
+          }}>
+          <View
+            style={{
+              left: -10,
+              width: 25,
+              height: 25,
+              backgroundColor: 'cyan',
+            }}
+          />
+        </View>
+        <View
+          style={{
+            ...defaultStyleSize,
+            backgroundColor: 'red',
+            boxShadow: 'inset 0px 0px 5px 5px black',
+          }}
+        />
+        <View style={{...defaultStyleSize, flexDirection: 'row'}}>
+          <View style={{width: 25, height: 25, backgroundColor: 'cyan'}} />
+          <View
+            style={{
+              ...defaultStyleSize,
+              boxShadow: ' 0px 0px 20px 5px black',
+            }}
+          />
+          <View style={{width: 25, height: 25, backgroundColor: 'cyan'}} />
+        </View>
+      </View>
+      <View style={{flexDirection: 'row', gap: 15}}>
+        <View
+          style={{
+            ...defaultStyleSize,
+            backgroundColor: 'green',
+            boxShadow: '0px 10px',
+          }}
+        />
+        <View
+          style={{
+            ...defaultStyleSize,
+            backgroundColor: 'orange',
+            boxShadow: '5px 5px 5px 0px rgba(0, 0, 0, 0)',
+          }}
+        />
+      </View>
+    </View>
+  );
+}
+
+function OutlineExample(): React.Node {
+  const defaultStyleSize = {width: 50, height: 50};
+
+  return (
+    <View
+      testID="view-test-outline"
+      style={{
+        padding: 10,
+        flexDirection: 'row',
+        gap: 20,
+        margin: 10,
+        flexWrap: 'wrap',
+      }}>
+      <View
+        style={[
+          defaultStyleSize,
+          {
+            borderColor: 'red',
+            borderWidth: 8,
+            outlineWidth: 8,
+            outlineColor: 'purple',
+          },
+        ]}
+      />
+      <View
+        style={[
+          defaultStyleSize,
+          {
+            borderColor: 'red',
+            borderWidth: 8,
+            outlineWidth: 8,
+            borderRadius: 20,
+            outlineColor: 'purple',
+          },
+        ]}
+      />
+      <View
+        style={[
+          defaultStyleSize,
+          {
+            borderColor: 'red',
+            borderWidth: 8,
+            outlineWidth: 8,
+            borderTopLeftRadius: 20,
+            borderBottomRightRadius: 20,
+            outlineColor: 'purple',
+          },
+        ]}
+      />
+      <View
+        style={[
+          defaultStyleSize,
+          {
+            borderColor: 'green',
+            borderWidth: 8,
+            outlineWidth: 8,
+            outlineColor: 'orange',
+            outlineStyle: 'solid',
+            outlineOffset: 5,
+            marginLeft: 5,
+          },
+        ]}
+      />
+      <View
+        style={[
+          defaultStyleSize,
+          {
+            borderColor: 'green',
+            borderWidth: 8,
+            outlineWidth: 8,
+            borderRadius: 20,
+            outlineColor: 'orange',
+            outlineStyle: 'dotted',
+          },
+        ]}
+      />
+      <View
+        style={[
+          defaultStyleSize,
+          {
+            borderColor: 'green',
+            borderWidth: 8,
+            outlineWidth: 8,
+            borderTopLeftRadius: 20,
+            borderBottomRightRadius: 20,
+            outlineColor: 'orange',
+            outlineStyle: 'dashed',
+          },
+        ]}
+      />
+      <View
+        style={[
+          defaultStyleSize,
+          {
+            width: 100,
+            borderColor: 'green',
+            borderWidth: 8,
+            outlineWidth: 8,
+            borderRadius: '100%',
+            outlineColor: 'orange',
+          },
+        ]}
+      />
+      <View
+        style={[
+          defaultStyleSize,
+          {
+            borderColor: 'green',
+            borderWidth: 12,
+            outlineWidth: 4,
+            outlineOffset: -8,
+            outlineColor: 'orange',
+          },
+        ]}
+      />
+      <View
+        style={[
+          defaultStyleSize,
+          {
+            outlineWidth: 9,
+            outlineColor: 'orange',
+          },
+        ]}
+      />
+    </View>
+  );
+}
+
+function BoxSizingExample(): React.Node {
+  const styles = StyleSheet.create({
+    boxSizingBox: {
+      padding: 5,
+      backgroundColor: 'green',
+      borderWidth: 5,
+      margin: 10,
+      width: 50,
+      height: 25,
+    },
+    boxSizingChild: {
+      backgroundColor: 'red',
+      width: '100%',
+      height: '100%',
+    },
+  });
+
+  return (
+    <View testID={'view-test-box-sizing'}>
+      <Text>Content box 50x25</Text>
+      <View style={[styles.boxSizingBox, {boxSizing: 'content-box'}]}>
+        <View style={styles.boxSizingChild} />
+      </View>
+      <Text>Border box 50x25</Text>
+      <View style={[styles.boxSizingBox, {boxSizing: 'border-box'}]}>
+        <View style={styles.boxSizingChild} />
+      </View>
+    </View>
+  );
+}
+
 export default ({
   title: 'View',
   documentationURL: 'https://reactnative.dev/docs/view',
@@ -731,6 +978,33 @@ export default ({
                 borderBottomWidth: 6,
                 borderRightWidth: 6,
                 borderBottomRightRadius: '40%',
+              }}
+            />
+            <View
+              style={{
+                width: 100,
+                height: 50,
+                borderWidth: 6,
+                borderRadius: '100%',
+              }}
+            />
+            <View
+              style={{
+                width: 100,
+                height: 50,
+                borderWidth: 6,
+                borderTopLeftRadius: '10%',
+                borderTopRightRadius: '20%',
+                borderBottomRightRadius: '50%',
+                borderBottomLeftRadius: '100%',
+              }}
+            />
+            <View
+              style={{
+                width: 100,
+                height: 50,
+                borderWidth: 6,
+                borderRadius: '0%',
               }}
             />
           </View>
@@ -1058,6 +1332,21 @@ export default ({
       title: 'Layout conformance',
       name: 'layout-conformance',
       render: LayoutConformanceExample,
+    },
+    {
+      title: 'Box Shadow',
+      name: 'box-shadow',
+      render: BoxShadowExample,
+    },
+    {
+      title: 'Outline',
+      name: 'outline',
+      render: OutlineExample,
+    },
+    {
+      title: 'Box Sizing',
+      name: 'box-sizing',
+      render: BoxSizingExample,
     },
   ],
 }: RNTesterModule);

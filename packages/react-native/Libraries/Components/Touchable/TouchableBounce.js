@@ -28,7 +28,7 @@ type Props = $ReadOnly<{|
   releaseVelocity?: ?number,
   style?: ?ViewStyleProp,
 
-  hostRef: React.Ref<typeof Animated.View>,
+  hostRef: React.RefSetter<React.ElementRef<typeof Animated.View>>,
 |}>;
 
 type State = $ReadOnly<{|

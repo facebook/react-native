@@ -196,10 +196,12 @@ RCT_EXPORT_MODULE()
                                                  name:@"RCTAccessibilityManagerDidUpdateMultiplierNotification"
                                                object:a11yManager];
   });
+#if TARGET_OS_IOS
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(namedOrientationDidChange)
                                                name:UIDeviceOrientationDidChangeNotification
                                              object:nil];
+#endif
   [RCTLayoutAnimation initializeStatics];
 }
 
@@ -265,6 +267,7 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
   };
 }
 
+#if TARGET_OS_IOS
 - (void)namedOrientationDidChange
 {
   NSDictionary *orientationEvent = deviceOrientationEventBody([UIDevice currentDevice].orientation);
@@ -278,6 +281,7 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
                                                                         body:orientationEvent];
 #pragma clang diagnostic pop
 }
+#endif
 
 - (dispatch_queue_t)methodQueue
 {

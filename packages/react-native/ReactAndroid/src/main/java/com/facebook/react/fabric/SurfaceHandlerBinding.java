@@ -10,17 +10,13 @@ package com.facebook.react.fabric;
 import static com.facebook.react.fabric.mounting.LayoutMetricsConversions.getMaxSize;
 import static com.facebook.react.fabric.mounting.LayoutMetricsConversions.getMinSize;
 
-import androidx.annotation.IntDef;
 import com.facebook.infer.annotation.Nullsafe;
-import com.facebook.jni.HybridData;
-import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.jni.HybridClassBase;
 import com.facebook.react.bridge.NativeMap;
 import com.facebook.react.interfaces.fabric.SurfaceHandler;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
-public class SurfaceHandlerBinding implements SurfaceHandler {
+public class SurfaceHandlerBinding extends HybridClassBase implements SurfaceHandler {
   static {
     FabricSoLoader.staticInit();
   }
@@ -32,59 +28,20 @@ public class SurfaceHandlerBinding implements SurfaceHandler {
   public static final int DISPLAY_MODE_SUSPENDED = 1;
   public static final int DISPLAY_MODE_HIDDEN = 2;
 
-  @Retention(RetentionPolicy.SOURCE)
-  @IntDef({DISPLAY_MODE_VISIBLE, DISPLAY_MODE_SUSPENDED, DISPLAY_MODE_HIDDEN})
-  public @interface DisplayModeTypeDef {}
-
-  @DoNotStrip private final HybridData mHybridData;
-
-  private static native HybridData initHybrid(int surfaceId, String moduleName);
+  private native void initHybrid(int surfaceId, String moduleName);
 
   public SurfaceHandlerBinding(String moduleName) {
-    mHybridData = initHybrid(NO_SURFACE_ID, moduleName);
+    initHybrid(NO_SURFACE_ID, moduleName);
   }
 
   @Override
-  public int getSurfaceId() {
-    return getSurfaceIdNative();
-  }
-
-  private native int getSurfaceIdNative();
+  public native int getSurfaceId();
 
   @Override
-  public void setSurfaceId(int surfaceId) {
-    setSurfaceIdNative(surfaceId);
-  }
-
-  private native void setSurfaceIdNative(int surfaceId);
+  public native String getModuleName();
 
   @Override
-  public String getModuleName() {
-    return getModuleNameNative();
-  }
-
-  private native String getModuleNameNative();
-
-  @Override
-  public void start() {
-    startNative();
-  }
-
-  private native void startNative();
-
-  @Override
-  public void stop() {
-    stopNative();
-  }
-
-  private native void stopNative();
-
-  @Override
-  public boolean isRunning() {
-    return isRunningNative();
-  }
-
-  private native boolean isRunningNative();
+  public native boolean isRunning();
 
   @Override
   public void setLayoutConstraints(
@@ -119,16 +76,12 @@ public class SurfaceHandlerBinding implements SurfaceHandler {
       float pixelDensity);
 
   @Override
-  public void setProps(NativeMap props) {
-    setPropsNative(props);
-  }
-
-  private native void setPropsNative(NativeMap props);
+  public native void setProps(NativeMap props);
 
   @Override
   public void setMountable(boolean mountable) {
-    setDisplayModeNative(mountable ? DISPLAY_MODE_VISIBLE : DISPLAY_MODE_SUSPENDED);
+    setDisplayMode(mountable ? DISPLAY_MODE_VISIBLE : DISPLAY_MODE_SUSPENDED);
   }
 
-  private native void setDisplayModeNative(@DisplayModeTypeDef int mode);
+  private native void setDisplayMode(int mode);
 }

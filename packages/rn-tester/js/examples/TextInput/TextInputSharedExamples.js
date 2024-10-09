@@ -77,6 +77,39 @@ const styles = StyleSheet.create({
   },
 });
 
+class AutoFocusWithSelectOnFocusTextExample extends React.Component<
+  $FlowFixMeProps,
+  any,
+> {
+  constructor(props: any | void) {
+    super(props);
+    this.state = {
+      autoFocusFalse: 'autoFocus: false - selectTextOnFocus: true',
+      autoFocusTrue: 'autoFocus: true - selectTextOnFocus: true',
+    };
+  }
+  render(): React.Node {
+    return (
+      <View>
+        <ExampleTextInput
+          autoFocus={false}
+          selectTextOnFocus={true}
+          value={this.state.autoFocusFalse}
+          onChangeText={text => this.setState({autoFocusFalse: text})}
+          accessibilityLabel="I am the accessibility label for text input"
+        />
+        <ExampleTextInput
+          autoFocus={true}
+          selectTextOnFocus={true}
+          value={this.state.autoFocusTrue}
+          onChangeText={text => this.setState({autoFocusTrue: text})}
+          accessibilityLabel="I am the accessibility label for text input"
+        />
+      </View>
+    );
+  }
+}
+
 class WithLabel extends React.Component<$FlowFixMeProps> {
   render(): React.Node {
     return (
@@ -815,27 +848,11 @@ function MultilineStyledTextInput({
 
 module.exports = ([
   {
-    title: 'MultiLineBug',
+    title: 'Auto-focus & select text on focus',
     render: function (): React.Node {
-      return (
-        <ExampleTextInput
-          autoFocus={true}
-          accessibilityLabel="I am the accessibility label for text input"
-        />
-      );
+      return <AutoFocusWithSelectOnFocusTextExample />;
     },
   },
-  // {
-  //   title: 'Auto-focus',
-  //   render: function (): React.Node {
-  //     return (
-  //       <ExampleTextInput
-  //         autoFocus={true}
-  //         accessibilityLabel="I am the accessibility label for text input"
-  //       />
-  //     );
-  //   },
-  // },
   {
     name: 'maxLength',
     title: "Live Re-Write (<sp>  ->  '_') + maxLength",
@@ -957,7 +974,7 @@ module.exports = ([
   },
   {
     title: 'Blur on submit',
-    render: function (): React.Element<any> {
+    render: function (): React.MixedElement {
       return <BlurOnSubmitExample />;
     },
   },
@@ -986,13 +1003,13 @@ module.exports = ([
   },
   {
     title: 'Submit behavior',
-    render: function (): React.Element<any> {
+    render: function (): React.MixedElement {
       return <SubmitBehaviorExample />;
     },
   },
   {
     title: 'Event handling',
-    render: function (): React.Element<any> {
+    render: function (): React.MixedElement {
       return <TextEventsExample />;
     },
   },

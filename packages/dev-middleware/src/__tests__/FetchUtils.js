@@ -10,10 +10,10 @@
  */
 
 import type {JSONSerializable} from '../inspector-proxy/types';
-import typeof * as NodeFetch from 'node-fetch';
 
-import https from 'https';
 import {Agent} from 'undici';
+
+declare var globalThis: $FlowFixMe;
 
 /**
  * A version of `fetch` that is usable with the HTTPS server created in
@@ -21,7 +21,7 @@ import {Agent} from 'undici';
  */
 export async function fetchLocal(
   url: string,
-  options?: Parameters<typeof fetch>[1] & {dispatcher?: mixed},
+  options?: Partial<Parameters<typeof fetch>[1] & {dispatcher?: mixed}>,
 ): ReturnType<typeof fetch> {
   return await fetch(url, {
     ...options,
@@ -46,25 +46,34 @@ export async function fetchJson<T: JSONSerializable>(url: string): Promise<T> {
   return response.json();
 }
 
-export function allowSelfSignedCertsInNodeFetch(): void {
-  jest.mock('node-fetch', () => {
-    const originalModule = jest.requireActual<NodeFetch>('node-fetch');
-    const nodeFetch = originalModule.default;
-    return {
-      __esModule: true,
-      ...originalModule,
-      default: (url, options) => {
-        if (
-          (url instanceof URL && url.protocol === 'https:') ||
-          (typeof url === 'string' && url.startsWith('https:'))
-        ) {
-          const agent = new https.Agent({
-            rejectUnauthorized: false,
-          });
-          return nodeFetch(url.toString(), {agent, ...options});
-        }
-        return nodeFetch(url, options);
-      },
-    };
+/**
+ * Change the global fetch dispatcher to allow self-signed certificates.
+ * This runs with Jest's `beforeAll` and `afterAll`, and restores the original dispatcher.
+ */
+export function withFetchSelfSignedCertsForAllTests() {
+  const fetchOriginal = globalThis.fetch;
+  const selfSignedCertDispatcher = new Agent({
+    connect: {
+      rejectUnauthorized: false,
+    },
+  });
+
+  let fetchSpy;
+
+  beforeAll(() => {
+    // For some reason, setting the `selfSignedCertDispatcher` with `setGlobalDispatcher` doesn't work.
+    // Instead of using `setGlobalDispatcher`, we'll use a spy to intercept the fetch calls and add the dispatcher.
+    fetchSpy = jest
+      .spyOn(globalThis, 'fetch')
+      .mockImplementation((url, options) =>
+        fetchOriginal(url, {
+          ...options,
+          dispatcher: options?.dispatcher ?? selfSignedCertDispatcher,
+        }),
+      );
+  });
+
+  afterAll(() => {
+    fetchSpy.mockRestore();
   });
 }

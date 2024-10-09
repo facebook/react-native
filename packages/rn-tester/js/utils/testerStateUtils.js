@@ -21,6 +21,7 @@ import RNTesterList from './RNTesterList';
 export const Screens = {
   COMPONENTS: 'components',
   APIS: 'apis',
+  PLAYGROUNDS: 'playgrounds',
 };
 
 export const initialNavigationState: RNTesterNavigationState = {
@@ -97,7 +98,9 @@ export const getExamplesListWithRecentlyUsed = ({
       },
       {
         key: 'COMPONENTS',
-        data: components,
+        data: components.sort((a, b) =>
+          a.module.title.localeCompare(b.module.title),
+        ),
         title: 'Components',
       },
     ],
@@ -109,7 +112,7 @@ export const getExamplesListWithRecentlyUsed = ({
       },
       {
         key: 'APIS',
-        data: apis,
+        data: apis.sort((a, b) => a.module.title.localeCompare(b.module.title)),
         title: 'APIs',
       },
     ],

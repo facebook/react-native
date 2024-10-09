@@ -368,7 +368,9 @@ RCT_EXPORT_METHOD(queueAndExecuteBatchedOperations : (NSArray *)operationsAndArg
 
 - (NSArray<NSString *> *)supportedEvents
 {
-  return @[ @"onAnimatedValueUpdate" ];
+  // We need to declare the `onUserDrivenAnimationEnded` for compatibility with the New Architecture
+  // even if it will never be fired in the Old Architecture.
+  return @[ @"onAnimatedValueUpdate", @"onUserDrivenAnimationEnded" ];
 }
 
 - (void)animatedNode:(RCTValueAnimatedNode *)node didUpdateValue:(CGFloat)value

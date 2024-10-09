@@ -51,7 +51,8 @@ void ReactInstanceIntegrationTest::SetUp() {
 
   auto jsRuntimeFactory = std::make_unique<react::HermesInstance>();
   std::unique_ptr<react::JSRuntime> runtime_ =
-      jsRuntimeFactory->createJSRuntime(nullptr, nullptr, messageQueueThread);
+      jsRuntimeFactory->createJSRuntime(
+          nullptr, nullptr, messageQueueThread, false);
   jsi::Runtime* jsiRuntime = &runtime_->getRuntime();
 
   // Error handler:
@@ -90,7 +91,7 @@ void ReactInstanceIntegrationTest::SetUp() {
     // Under modern CDP, the React host is responsible for adding itself as
     // the root target on startup.
     pageId_ = inspector.addPage(
-        "mock-title",
+        "mock-description",
         "mock-vm",
         [hostTargetIfModernCDP](std::unique_ptr<IRemoteConnection> remote)
             -> std::unique_ptr<ILocalConnection> {

@@ -9,8 +9,7 @@
  * @oncall react_native
  */
 
-import type {ViewProps} from '../../Components/View/ViewPropTypes';
-import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
+import type {HostInstance} from '../../Renderer/shims/ReactNativeTypes';
 
 import View from '../../Components/View/View';
 import useMergeRefs from '../useMergeRefs';
@@ -89,12 +88,7 @@ function mockRefRegistry<T>(): {
 test('accepts a callback ref', () => {
   let root;
 
-  const {mockCallbackRef, registry} = mockRefRegistry<React$ElementRef<
-    React$AbstractComponent<
-      ViewProps,
-      React.ElementRef<HostComponent<ViewProps>>,
-    >,
-  > | null>();
+  const {mockCallbackRef, registry} = mockRefRegistry<HostInstance | null>();
   const refA = mockCallbackRef('refA');
 
   act(() => {
@@ -126,12 +120,7 @@ test('accepts a callback ref', () => {
 test('accepts an object ref', () => {
   let root;
 
-  const {mockObjectRef, registry} = mockRefRegistry<React$ElementRef<
-    React$AbstractComponent<
-      ViewProps,
-      React.ElementRef<HostComponent<ViewProps>>,
-    >,
-  > | null>();
+  const {mockObjectRef, registry} = mockRefRegistry<HostInstance | null>();
   const refA = mockObjectRef('refA');
 
   act(() => {
@@ -164,12 +153,7 @@ test('invokes refs in order', () => {
   let root;
 
   const {mockCallbackRef, mockObjectRef, registry} =
-    mockRefRegistry<React$ElementRef<
-      React$AbstractComponent<
-        ViewProps,
-        React.ElementRef<HostComponent<ViewProps>>,
-      >,
-    > | null>();
+    mockRefRegistry<HostInstance | null>();
   const refA = mockCallbackRef('refA');
   const refB = mockObjectRef('refB');
   const refC = mockCallbackRef('refC');
@@ -207,12 +191,7 @@ test('invokes refs in order', () => {
 test('invokes all refs if any ref changes', () => {
   let root;
 
-  const {mockCallbackRef, registry} = mockRefRegistry<React$ElementRef<
-    React$AbstractComponent<
-      ViewProps,
-      React.ElementRef<HostComponent<ViewProps>>,
-    >,
-  > | null>();
+  const {mockCallbackRef, registry} = mockRefRegistry<HostInstance | null>();
   const refA = mockCallbackRef('refA');
   const refB = mockCallbackRef('refB');
 

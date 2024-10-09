@@ -32,108 +32,14 @@
  * Either the import or the reference only needs to appear once, anywhere in the project.
  */
 
-import {DimensionValue} from 'react-native/Libraries/StyleSheet/StyleSheetTypes';
+import {
+  GradientValue,
+  BlendMode,
+} from 'react-native/Libraries/StyleSheet/StyleSheetTypes';
 
 export {};
 
 declare module '.' {
-  export interface FlexStyle {
-    /**
-     * Equivalent to `top`, `bottom`, `right` and `left`
-     */
-    inset?: DimensionValue | undefined;
-
-    /**
-     * Equivalent to `top`, `bottom`
-     */
-    insetBlock?: DimensionValue | undefined;
-
-    /**
-     * Equivalent to `bottom`
-     */
-    insetBlockEnd?: DimensionValue | undefined;
-
-    /**
-     * Equivalent to `top`
-     */
-    insetBlockStart?: DimensionValue | undefined;
-
-    /**
-     * Equivalent to `right` and `left`
-     */
-    insetInline?: DimensionValue | undefined;
-
-    /**
-     * Equivalent to `right` or `left`
-     */
-    insetInlineEnd?: DimensionValue | undefined;
-
-    /**
-     * Equivalent to `right` or `left`
-     */
-    insetInlineStart?: DimensionValue | undefined;
-
-    /**
-     * Equivalent to `marginVertical`
-     */
-    marginBlock?: DimensionValue | undefined;
-
-    /**
-     * Equivalent to `marginBottom`
-     */
-    marginBlockEnd?: DimensionValue | undefined;
-
-    /**
-     * Equivalent to `marginTop`
-     */
-    marginBlockStart?: DimensionValue | undefined;
-
-    /**
-     * Equivalent to `marginHorizontal`
-     */
-    marginInline?: DimensionValue | undefined;
-
-    /**
-     * Equivalent to `marginEnd`
-     */
-    marginInlineEnd?: DimensionValue | undefined;
-
-    /**
-     * Equivalent to `marginStart`
-     */
-    marginInlineStart?: DimensionValue | undefined;
-
-    /**
-     * Equivalent to `paddingVertical`
-     */
-    paddingBlock?: DimensionValue | undefined;
-
-    /**
-     * Equivalent to `paddingBottom`
-     */
-    paddingBlockEnd?: DimensionValue | undefined;
-
-    /**
-     * Equivalent to `paddingTop`
-     */
-    paddingBlockStart?: DimensionValue | undefined;
-
-    /**
-     * Equivalent to `paddingHorizontal`
-     */
-    paddingInline?: DimensionValue | undefined;
-
-    /**
-     * Equivalent to `paddingEnd`
-     */
-    paddingInlineEnd?: DimensionValue | undefined;
-
-    /**
-     * Equivalent to `paddingStart`
-     */
-    paddingInlineStart?: DimensionValue | undefined;
-  }
-
   export interface ViewProps {
     /**
      * Contols whether this view, and its transitive children, are laid in a way
@@ -141,5 +47,13 @@ declare module '.' {
      * React Native code which may rely on incorrect behavior ('classic').
      */
     experimental_layoutConformance?: 'strict' | 'classic' | undefined;
+  }
+
+  export interface ViewStyle {
+    mixBlendMode?: BlendMode | undefined;
+    experimental_backgroundImage?:
+      | ReadonlyArray<GradientValue>
+      | string
+      | undefined;
   }
 }

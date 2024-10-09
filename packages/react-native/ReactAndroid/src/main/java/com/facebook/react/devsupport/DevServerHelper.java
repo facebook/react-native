@@ -214,8 +214,12 @@ public class DevServerHelper {
       @Override
       protected Void doInBackground(Void... params) {
         if (InspectorFlags.getFuseboxEnabled()) {
+          Map<String, String> metadata =
+              AndroidInfoHelpers.getInspectorHostMetadata(mApplicationContext);
+
           mInspectorPackagerConnection =
-              new CxxInspectorPackagerConnection(getInspectorDeviceUrl(), mPackageName);
+              new CxxInspectorPackagerConnection(
+                  getInspectorDeviceUrl(), metadata.get("deviceName"), mPackageName);
         } else {
           mInspectorPackagerConnection =
               new InspectorPackagerConnection(getInspectorDeviceUrl(), mPackageName);
@@ -385,6 +389,14 @@ public class DevServerHelper {
   private String createBundleURL(
       String mainModuleID, BundleType type, String host, boolean modulesOnly, boolean runModule) {
     boolean dev = getDevMode();
+    StringBuilder additionalOptionsBuilder = new StringBuilder();
+    for (Map.Entry<String, String> entry :
+        mPackagerConnectionSettings.getAdditionalOptionsForPackager().entrySet()) {
+      if (entry.getValue().length() == 0) {
+        continue;
+      }
+      additionalOptionsBuilder.append("&" + entry.getKey() + "=" + Uri.encode(entry.getValue()));
+    }
     return String.format(
             Locale.US,
             "http://%s/%s.%s?platform=android&dev=%s&lazy=%s&minify=%s&app=%s&modulesOnly=%s&runModule=%s",
@@ -397,7 +409,8 @@ public class DevServerHelper {
             mPackageName,
             modulesOnly ? "true" : "false",
             runModule ? "true" : "false")
-        + (InspectorFlags.getFuseboxEnabled() ? "&excludeSource=true&sourcePaths=url-server" : "");
+        + (InspectorFlags.getFuseboxEnabled() ? "&excludeSource=true&sourcePaths=url-server" : "")
+        + additionalOptionsBuilder.toString();
   }
 
   private String createBundleURL(String mainModuleID, BundleType type) {

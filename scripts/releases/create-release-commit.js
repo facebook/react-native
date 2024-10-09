@@ -9,7 +9,7 @@
  * @oncall react_native
  */
 
-const setVersion = require('../releases/set-version');
+const {setVersion} = require('../releases/set-version');
 const {getBranchName} = require('../scm-utils');
 const {parseVersion} = require('./utils/version-utils');
 const {execSync} = require('child_process');

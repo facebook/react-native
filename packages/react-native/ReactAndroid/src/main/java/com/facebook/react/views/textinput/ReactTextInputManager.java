@@ -45,8 +45,11 @@ import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.mapbuffer.MapBuffer;
 import com.facebook.react.module.annotations.ReactModule;
+import com.facebook.react.uimanager.BackgroundStyleApplicator;
 import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.LayoutShadowNode;
+import com.facebook.react.uimanager.LengthPercentage;
+import com.facebook.react.uimanager.LengthPercentageType;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.Spacing;
@@ -58,6 +61,9 @@ import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.uimanager.style.BorderRadiusProp;
+import com.facebook.react.uimanager.style.BorderStyle;
+import com.facebook.react.uimanager.style.LogicalEdge;
 import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper;
 import com.facebook.react.views.scroll.ScrollEvent;
 import com.facebook.react.views.scroll.ScrollEventType;
@@ -70,7 +76,6 @@ import com.facebook.react.views.text.TextAttributeProps;
 import com.facebook.react.views.text.TextLayoutManager;
 import com.facebook.react.views.text.TextTransform;
 import com.facebook.react.views.text.internal.span.TextInlineImageSpan;
-import com.facebook.yoga.YogaConstants;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -651,19 +656,12 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
   @ReactProp(name = "contextMenuHidden", defaultBoolean = false)
   public void setContextMenuHidden(ReactEditText view, boolean contextMenuHidden) {
-    final boolean _contextMenuHidden = contextMenuHidden;
-    view.setOnLongClickListener(
-        new View.OnLongClickListener() {
-          public boolean onLongClick(View v) {
-            return _contextMenuHidden;
-          }
-          ;
-        });
+    view.setContextMenuHidden(contextMenuHidden);
   }
 
   @ReactProp(name = "selectTextOnFocus", defaultBoolean = false)
   public void setSelectTextOnFocus(ReactEditText view, boolean selectTextOnFocus) {
-    view.setSelectAllOnFocus(selectTextOnFocus);
+    view.setSelectTextOnFocus(selectTextOnFocus);
   }
 
   @ReactProp(name = ViewProps.COLOR, customType = "Color")
@@ -709,16 +707,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     if (underlineColor == null) {
       drawableToMutate.clearColorFilter();
     } else {
-      // fixes underlineColor transparent not working on API 21
-      // re-sets the TextInput underlineColor https://bit.ly/3M4alr6
-      if (Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP) {
-        int bottomBorderColor = view.getBorderColor(Spacing.BOTTOM);
-        setBorderColor(view, Spacing.START, underlineColor);
-        drawableToMutate.setColorFilter(underlineColor, PorterDuff.Mode.SRC_IN);
-        setBorderColor(view, Spacing.START, bottomBorderColor);
-      } else {
-        drawableToMutate.setColorFilter(underlineColor, PorterDuff.Mode.SRC_IN);
-      }
+      drawableToMutate.setColorFilter(underlineColor, PorterDuff.Mode.SRC_IN);
     }
   }
 
@@ -964,22 +953,22 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         ViewProps.BORDER_BOTTOM_RIGHT_RADIUS,
         ViewProps.BORDER_BOTTOM_LEFT_RADIUS
       },
-      defaultFloat = YogaConstants.UNDEFINED)
+      defaultFloat = Float.NaN)
   public void setBorderRadius(ReactEditText view, int index, float borderRadius) {
-    if (!YogaConstants.isUndefined(borderRadius)) {
-      borderRadius = PixelUtil.toPixelFromDIP(borderRadius);
-    }
-
-    if (index == 0) {
-      view.setBorderRadius(borderRadius);
-    } else {
-      view.setBorderRadius(borderRadius, index - 1);
-    }
+    @Nullable
+    LengthPercentage radius =
+        Float.isNaN(borderRadius)
+            ? null
+            : new LengthPercentage(borderRadius, LengthPercentageType.POINT);
+    BackgroundStyleApplicator.setBorderRadius(view, BorderRadiusProp.values()[index], radius);
   }
 
   @ReactProp(name = "borderStyle")
   public void setBorderStyle(ReactEditText view, @Nullable String borderStyle) {
-    view.setBorderStyle(borderStyle);
+    @Nullable
+    BorderStyle parsedBorderStyle =
+        borderStyle == null ? null : BorderStyle.fromString(borderStyle);
+    BackgroundStyleApplicator.setBorderStyle(view, parsedBorderStyle);
   }
 
   @ReactProp(name = "showSoftInputOnFocus", defaultBoolean = true)
@@ -997,6 +986,9 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     view.setPaintFlags(
         view.getPaintFlags() & ~(Paint.STRIKE_THRU_TEXT_FLAG | Paint.UNDERLINE_TEXT_FLAG));
 
+    if (textDecorationLineString == null) {
+      return;
+    }
     for (String token : textDecorationLineString.split(" ")) {
       if (token.equals("underline")) {
         view.setPaintFlags(view.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
@@ -1014,12 +1006,9 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         ViewProps.BORDER_TOP_WIDTH,
         ViewProps.BORDER_BOTTOM_WIDTH,
       },
-      defaultFloat = YogaConstants.UNDEFINED)
+      defaultFloat = Float.NaN)
   public void setBorderWidth(ReactEditText view, int index, float width) {
-    if (!YogaConstants.isUndefined(width)) {
-      width = PixelUtil.toPixelFromDIP(width);
-    }
-    view.setBorderWidth(SPACING_TYPES[index], width);
+    BackgroundStyleApplicator.setBorderWidth(view, LogicalEdge.values()[index], width);
   }
 
   @ReactPropGroup(
@@ -1031,16 +1020,18 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         "borderBottomColor"
       },
       customType = "Color")
-  public void setBorderColor(ReactEditText view, int index, Integer color) {
-    float rgbComponent =
-        color == null ? YogaConstants.UNDEFINED : (float) ((int) color & 0x00FFFFFF);
-    float alphaComponent = color == null ? YogaConstants.UNDEFINED : (float) ((int) color >>> 24);
-    view.setBorderColor(SPACING_TYPES[index], rgbComponent, alphaComponent);
+  public void setBorderColor(ReactEditText view, int index, @Nullable Integer color) {
+    BackgroundStyleApplicator.setBorderColor(view, LogicalEdge.ALL, color);
   }
 
   @ReactProp(name = "overflow")
   public void setOverflow(ReactEditText view, @Nullable String overflow) {
     view.setOverflow(overflow);
+  }
+
+  @ReactProp(name = ViewProps.BOX_SHADOW, customType = "BoxShadow")
+  public void setBoxShadow(ReactEditText view, @Nullable ReadableArray shadows) {
+    BackgroundStyleApplicator.setBoxShadow(view, shadows);
   }
 
   @Override

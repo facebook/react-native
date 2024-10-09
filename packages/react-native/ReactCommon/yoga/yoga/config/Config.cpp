@@ -31,7 +31,10 @@ bool Config::useWebDefaults() const {
 void Config::setExperimentalFeatureEnabled(
     ExperimentalFeature feature,
     bool enabled) {
-  experimentalFeatures_.set(static_cast<size_t>(feature), enabled);
+  if (isExperimentalFeatureEnabled(feature) != enabled) {
+    experimentalFeatures_.set(static_cast<size_t>(feature), enabled);
+    version_++;
+  }
 }
 
 bool Config::isExperimentalFeatureEnabled(ExperimentalFeature feature) const {
@@ -43,15 +46,24 @@ ExperimentalFeatureSet Config::getEnabledExperiments() const {
 }
 
 void Config::setErrata(Errata errata) {
-  errata_ = errata;
+  if (errata_ != errata) {
+    errata_ = errata;
+    version_++;
+  }
 }
 
 void Config::addErrata(Errata errata) {
-  errata_ |= errata;
+  if (!hasErrata(errata)) {
+    errata_ |= errata;
+    version_++;
+  }
 }
 
 void Config::removeErrata(Errata errata) {
-  errata_ &= (~errata);
+  if (hasErrata(errata)) {
+    errata_ &= (~errata);
+    version_++;
+  }
 }
 
 Errata Config::getErrata() const {
@@ -63,7 +75,10 @@ bool Config::hasErrata(Errata errata) const {
 }
 
 void Config::setPointScaleFactor(float pointScaleFactor) {
-  pointScaleFactor_ = pointScaleFactor;
+  if (pointScaleFactor_ != pointScaleFactor) {
+    pointScaleFactor_ = pointScaleFactor;
+    version_++;
+  }
 }
 
 float Config::getPointScaleFactor() const {
@@ -76,6 +91,10 @@ void Config::setContext(void* context) {
 
 void* Config::getContext() const {
   return context_;
+}
+
+uint32_t Config::getVersion() const noexcept {
+  return version_;
 }
 
 void Config::setLogger(YGLogger logger) {

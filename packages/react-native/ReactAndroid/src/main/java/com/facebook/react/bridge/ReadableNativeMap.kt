@@ -9,7 +9,6 @@ package com.facebook.react.bridge
 
 import android.annotation.SuppressLint
 import com.facebook.infer.annotation.Assertions
-import com.facebook.jni.HybridData
 import com.facebook.proguard.annotations.DoNotStripAny
 
 /**
@@ -17,8 +16,7 @@ import com.facebook.proguard.annotations.DoNotStripAny
  * in native code so you shouldn't construct one yourself.
  */
 @DoNotStripAny
-public open class ReadableNativeMap protected constructor(hybridData: HybridData?) :
-    NativeMap(hybridData), ReadableMap {
+public open class ReadableNativeMap protected constructor() : NativeMap(), ReadableMap {
   private val keys: Array<String> by
       lazy(LazyThreadSafetyMode.SYNCHRONIZED) { importKeys().also { jniPassCounter++ } }
 
@@ -110,36 +108,36 @@ public open class ReadableNativeMap protected constructor(hybridData: HybridData
 
   override fun getDynamic(name: String): Dynamic = DynamicFromMap.create(this, name)
 
-  override fun getEntryIterator(): Iterator<Map.Entry<String, Any>> {
-    synchronized(this) {
-      val iteratorKeys = keys
-      val iteratorValues = importValues()
-      jniPassCounter++
-      return object : Iterator<Map.Entry<String, Any>> {
-        var currentIndex = 0
+  override val entryIterator: Iterator<Map.Entry<String, Any>>
+    get() =
+        synchronized(this) {
+          val iteratorKeys = keys
+          val iteratorValues = importValues()
+          jniPassCounter++
+          return object : Iterator<Map.Entry<String, Any>> {
+            var currentIndex = 0
 
-        override fun hasNext(): Boolean {
-          return currentIndex < iteratorKeys.size
-        }
+            override fun hasNext(): Boolean {
+              return currentIndex < iteratorKeys.size
+            }
 
-        override fun next(): Map.Entry<String, Any> {
-          val index = currentIndex++
-          return object : MutableMap.MutableEntry<String, Any> {
-            override val key: String
-              get() = iteratorKeys[index]
+            override fun next(): Map.Entry<String, Any> {
+              val index = currentIndex++
+              return object : MutableMap.MutableEntry<String, Any> {
+                override val key: String
+                  get() = iteratorKeys[index]
 
-            override val value: Any
-              get() = iteratorValues[index]
+                override val value: Any
+                  get() = iteratorValues[index]
 
-            override fun setValue(newValue: Any): Any {
-              throw UnsupportedOperationException(
-                  "Can't set a value while iterating over a ReadableNativeMap")
+                override fun setValue(newValue: Any): Any {
+                  throw UnsupportedOperationException(
+                      "Can't set a value while iterating over a ReadableNativeMap")
+                }
+              }
             }
           }
         }
-      }
-    }
-  }
 
   override fun keySetIterator(): ReadableMapKeySetIterator {
     val iteratorKeys = keys

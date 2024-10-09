@@ -14,10 +14,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.os.PowerManager;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.jstasks.HeadlessJsTaskConfig;
 import com.facebook.react.jstasks.HeadlessJsTaskContext;
 import com.facebook.react.jstasks.HeadlessJsTaskEventListener;
@@ -94,19 +96,11 @@ public abstract class HeadlessJsTaskService extends Service implements HeadlessJ
   protected void startTask(final HeadlessJsTaskConfig taskConfig) {
     UiThreadUtil.assertOnUiThread();
     acquireWakeLockNow(this);
-    final ReactInstanceManager reactInstanceManager =
-        getReactNativeHost().getReactInstanceManager();
-    ReactContext reactContext = reactInstanceManager.getCurrentReactContext();
+
+    ReactContext reactContext = getReactContext();
+
     if (reactContext == null) {
-      reactInstanceManager.addReactInstanceEventListener(
-          new ReactInstanceEventListener() {
-            @Override
-            public void onReactContextInitialized(ReactContext reactContext) {
-              invokeStartTask(reactContext, taskConfig);
-              reactInstanceManager.removeReactInstanceEventListener(this);
-            }
-          });
-      reactInstanceManager.createReactContextInBackground();
+      createReactContextAndScheduleTask(taskConfig);
     } else {
       invokeStartTask(reactContext, taskConfig);
     }
@@ -130,15 +124,11 @@ public abstract class HeadlessJsTaskService extends Service implements HeadlessJ
   @Override
   public void onDestroy() {
     super.onDestroy();
+    ReactContext reactContext = getReactContext();
 
-    if (getReactNativeHost().hasInstance()) {
-      ReactInstanceManager reactInstanceManager = getReactNativeHost().getReactInstanceManager();
-      ReactContext reactContext = reactInstanceManager.getCurrentReactContext();
-      if (reactContext != null) {
-        HeadlessJsTaskContext headlessJsTaskContext =
-            HeadlessJsTaskContext.getInstance(reactContext);
-        headlessJsTaskContext.removeTaskEventListener(this);
-      }
+    if (reactContext != null) {
+      HeadlessJsTaskContext headlessJsTaskContext = HeadlessJsTaskContext.getInstance(reactContext);
+      headlessJsTaskContext.removeTaskEventListener(this);
     }
     if (sWakeLock != null) {
       sWakeLock.release();
@@ -165,5 +155,55 @@ public abstract class HeadlessJsTaskService extends Service implements HeadlessJ
    */
   protected ReactNativeHost getReactNativeHost() {
     return ((ReactApplication) getApplication()).getReactNativeHost();
+  }
+
+  /**
+   * Get the {@link ReactHost} used by this app. By default, assumes {@link #getApplication()} is an
+   * instance of {@link ReactApplication} and calls {@link ReactApplication#getReactHost()}. This
+   * method assumes it is called in new architecture and returns null if not.
+   */
+  protected @Nullable ReactHost getReactHost() {
+    return ((ReactApplication) getApplication()).getReactHost();
+  }
+
+  protected ReactContext getReactContext() {
+    if (ReactNativeFeatureFlags.enableBridgelessArchitecture()) {
+      ReactHost reactHost = getReactHost();
+      Assertions.assertNotNull(reactHost, "getReactHost() is null in New Architecture");
+      return reactHost.getCurrentReactContext();
+    } else {
+      final ReactInstanceManager reactInstanceManager =
+          getReactNativeHost().getReactInstanceManager();
+      return reactInstanceManager.getCurrentReactContext();
+    }
+  }
+
+  private void createReactContextAndScheduleTask(final HeadlessJsTaskConfig taskConfig) {
+    final ReactHost reactHost = getReactHost();
+
+    if (reactHost == null) { // old arch
+      final ReactInstanceManager reactInstanceManager =
+          getReactNativeHost().getReactInstanceManager();
+
+      reactInstanceManager.addReactInstanceEventListener(
+          new ReactInstanceEventListener() {
+            @Override
+            public void onReactContextInitialized(@NonNull ReactContext reactContext) {
+              invokeStartTask(reactContext, taskConfig);
+              reactInstanceManager.removeReactInstanceEventListener(this);
+            }
+          });
+      reactInstanceManager.createReactContextInBackground();
+    } else { // new arch
+      reactHost.addReactInstanceEventListener(
+          new ReactInstanceEventListener() {
+            @Override
+            public void onReactContextInitialized(@NonNull ReactContext reactContext) {
+              invokeStartTask(reactContext, taskConfig);
+              reactHost.removeReactInstanceEventListener(this);
+            }
+          });
+      reactHost.start();
+    }
   }
 }

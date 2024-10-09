@@ -25,7 +25,6 @@
 #import <React/RCTDisplayLink.h>
 #import <React/RCTEventDispatcherProtocol.h>
 #import <React/RCTFollyConvert.h>
-#import <React/RCTJavaScriptLoader.h>
 #import <React/RCTLog.h>
 #import <React/RCTLogBox.h>
 #import <React/RCTModuleData.h>
@@ -37,7 +36,7 @@
 #import <cxxreact/ReactMarker.h>
 #import <jsinspector-modern/ReactCdp.h>
 #import <jsireact/JSIExecutor.h>
-#import <react/runtime/BridgelessJSCallInvoker.h>
+#import <react/renderer/runtimescheduler/RuntimeSchedulerCallInvoker.h>
 #import <react/utils/ContextContainer.h>
 #import <react/utils/ManagedObjectWrapper.h>
 
@@ -67,7 +66,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   sRuntimeDiagnosticFlags = [flags copy];
 }
 
-@interface RCTInstance () <RCTTurboModuleManagerDelegate, RCTTurboModuleManagerRuntimeHandler>
+@interface RCTInstance () <RCTTurboModuleManagerDelegate>
 @end
 
 @implementation RCTInstance {
@@ -78,7 +77,6 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   RCTSurfacePresenter *_surfacePresenter;
   RCTPerformanceLogger *_performanceLogger;
   RCTDisplayLink *_displayLink;
-  RCTInstanceInitialBundleLoadCompletionBlock _onInitialBundleLoad;
   RCTTurboModuleManager *_turboModuleManager;
   std::mutex _invalidationMutex;
   std::atomic<bool> _valid;
@@ -97,7 +95,6 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
                 jsRuntimeFactory:(std::shared_ptr<facebook::react::JSRuntimeFactory>)jsRuntimeFactory
                    bundleManager:(RCTBundleManager *)bundleManager
       turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)tmmDelegate
-             onInitialBundleLoad:(RCTInstanceInitialBundleLoadCompletionBlock)onInitialBundleLoad
                   moduleRegistry:(RCTModuleRegistry *)moduleRegistry
            parentInspectorTarget:(jsinspector_modern::HostTarget *)parentInspectorTarget
                    launchOptions:(nullable NSDictionary *)launchOptions
@@ -111,7 +108,6 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
     _jsRuntimeFactory = jsRuntimeFactory;
     _appTMMDelegate = tmmDelegate;
     _jsThreadManager = [RCTJSThreadManager new];
-    _onInitialBundleLoad = onInitialBundleLoad;
     _bridgeModuleDecorator = [[RCTBridgeModuleDecorator alloc] initWithViewRegistry:[RCTViewRegistry new]
                                                                      moduleRegistry:moduleRegistry
                                                                       bundleManager:bundleManager
@@ -137,7 +133,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
 {
   if (_valid) {
     _reactInstance->callFunctionOnModule(
-        [moduleName UTF8String], [method UTF8String], convertIdToFollyDynamic(args ?: @[]));
+        [moduleName UTF8String], [method UTF8String], convertIdToFollyDynamic(args ? args : @[]));
   }
 }
 
@@ -211,17 +207,6 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   return nullptr;
 }
 
-#pragma mark - RCTTurboModuleManagerRuntimeHandler
-
-- (RuntimeExecutor)runtimeExecutorForTurboModuleManager:(RCTTurboModuleManager *)turboModuleManager
-{
-  if (_valid) {
-    return _reactInstance->getBufferedRuntimeExecutor();
-  }
-
-  return nullptr;
-}
-
 #pragma mark - Private
 
 - (void)_start
@@ -249,7 +234,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   RuntimeExecutor bufferedRuntimeExecutor = _reactInstance->getBufferedRuntimeExecutor();
   timerManager->setRuntimeExecutor(bufferedRuntimeExecutor);
 
-  auto jsCallInvoker = make_shared<BridgelessJSCallInvoker>(bufferedRuntimeExecutor);
+  auto jsCallInvoker = make_shared<RuntimeSchedulerCallInvoker>(_reactInstance->getRuntimeScheduler());
   RCTBridgeProxy *bridgeProxy =
       [[RCTBridgeProxy alloc] initWithViewRegistry:_bridgeModuleDecorator.viewRegistry_DEPRECATED
           moduleRegistry:_bridgeModuleDecorator.moduleRegistry
@@ -277,7 +262,6 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
                                                      bridgeModuleDecorator:_bridgeModuleDecorator
                                                                   delegate:self
                                                                  jsInvoker:jsCallInvoker];
-  _turboModuleManager.runtimeHandler = self;
 
 #if RCT_DEV
   /**
@@ -393,6 +377,15 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   }
 }
 
+- (void)callFunctionOnBufferedRuntimeExecutor:(std::function<void(facebook::jsi::Runtime &)> &&)executor
+{
+  _reactInstance->getBufferedRuntimeExecutor()([=](jsi::Runtime &runtime) {
+    if (executor) {
+      executor(runtime);
+    }
+  });
+}
+
 - (void)handleBundleLoadingError:(NSError *)error
 {
   if (!_valid) {
@@ -422,7 +415,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
 #endif
 
   __weak __typeof(self) weakSelf = self;
-  [RCTJavaScriptLoader loadBundleAtURL:sourceURL
+  [_delegate loadBundleAtURL:sourceURL
       onProgress:^(RCTLoadingProgress *progressData) {
         __typeof(self) strongSelf = weakSelf;
         if (!strongSelf) {
@@ -467,11 +460,6 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   const auto *url = deriveSourceURL(source.url).UTF8String;
   _reactInstance->loadScript(std::move(script), url);
   [[NSNotificationCenter defaultCenter] postNotificationName:@"RCTInstanceDidLoadBundle" object:nil];
-
-  if (_onInitialBundleLoad) {
-    _onInitialBundleLoad();
-    _onInitialBundleLoad = nil;
-  }
 }
 
 - (void)_handleJSError:(const JsErrorHandler::ParsedError &)error

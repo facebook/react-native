@@ -166,9 +166,7 @@ const SectionSeparatorComponent = info => (
   <CustomSeparatorComponent {...info} text="SECTION SEPARATOR" />
 );
 
-export function SectionList_scrollable(Props: {
-  ...
-}): React.Element<typeof RNTesterPage> {
+export function SectionList_scrollable(Props: {...}): React.MixedElement {
   const scrollPos = new Animated.Value(0);
   const scrollSinkY = Animated.event(
     [{nativeEvent: {contentOffset: {y: scrollPos}}}],
@@ -360,7 +358,7 @@ const styles = StyleSheet.create({
 
 export default {
   title: 'SectionList scrollable',
-  name: 'SectionList-scrollable',
+  name: 'scrollable',
   render: function (): React.MixedElement {
     return <SectionList_scrollable />;
   },

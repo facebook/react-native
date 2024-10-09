@@ -29,7 +29,7 @@ export default ({
   description: ('Gesture events, chaining, 2D ' +
     'values, interrupting and transitioning ' +
     'animations, etc.': string),
-  render(): React.Element<typeof AnimatedContinuousInteractionsExample> {
+  render() {
     return <AnimatedContinuousInteractionsExample />;
   },
 }: RNTesterModuleExample);

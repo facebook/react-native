@@ -17,6 +17,7 @@ import com.facebook.react.R;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.common.mapbuffer.MapBuffer;
+import com.facebook.react.internal.SystraceSection;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.IViewManagerWithChildren;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate;
@@ -61,17 +62,16 @@ public class ReactTextViewManager
   }
 
   @Override
-  protected ReactTextView prepareToRecycleView(
+  protected @Nullable ReactTextView prepareToRecycleView(
       @NonNull ThemedReactContext reactContext, ReactTextView view) {
     // BaseViewManager
-    super.prepareToRecycleView(reactContext, view);
-
-    // Resets background and borders
-    view.recycleView();
-
-    // Defaults from ReactTextAnchorViewManager
-    setSelectionColor(view, null);
-
+    ReactTextView preparedView = super.prepareToRecycleView(reactContext, view);
+    if (preparedView != null) {
+      // Resets background and borders
+      preparedView.recycleView();
+      // Defaults from ReactTextAnchorViewManager
+      setSelectionColor(preparedView, null);
+    }
     return view;
   }
 
@@ -87,24 +87,26 @@ public class ReactTextViewManager
 
   @Override
   public void updateExtraData(ReactTextView view, Object extraData) {
-    ReactTextUpdate update = (ReactTextUpdate) extraData;
-    Spannable spannable = update.getText();
-    if (update.containsImages()) {
-      TextInlineImageSpan.possiblyUpdateInlineImageSpans(spannable, view);
-    }
-    view.setText(update);
+    try (SystraceSection s = new SystraceSection("ReactTextViewManager.updateExtraData")) {
+      ReactTextUpdate update = (ReactTextUpdate) extraData;
+      Spannable spannable = update.getText();
+      if (update.containsImages()) {
+        TextInlineImageSpan.possiblyUpdateInlineImageSpans(spannable, view);
+      }
+      view.setText(update);
 
-    // If this text view contains any clickable spans, set a view tag and reset the accessibility
-    // delegate so that these can be picked up by the accessibility system.
-    ReactClickableSpan[] clickableSpans =
-        spannable.getSpans(0, update.getText().length(), ReactClickableSpan.class);
+      // If this text view contains any clickable spans, set a view tag and reset the accessibility
+      // delegate so that these can be picked up by the accessibility system.
+      ReactClickableSpan[] clickableSpans =
+          spannable.getSpans(0, update.getText().length(), ReactClickableSpan.class);
 
-    if (clickableSpans.length > 0) {
-      view.setTag(
-          R.id.accessibility_links,
-          new ReactAccessibilityDelegate.AccessibilityLinks(clickableSpans, spannable));
-      ReactAccessibilityDelegate.resetDelegate(
-          view, view.isFocusable(), view.getImportantForAccessibility());
+      if (clickableSpans.length > 0) {
+        view.setTag(
+            R.id.accessibility_links,
+            new ReactAccessibilityDelegate.AccessibilityLinks(clickableSpans, spannable));
+        ReactAccessibilityDelegate.resetDelegate(
+            view, view.isFocusable(), view.getImportantForAccessibility());
+      }
     }
   }
 
@@ -136,11 +138,13 @@ public class ReactTextViewManager
   @Override
   public Object updateState(
       ReactTextView view, ReactStylesDiffMap props, StateWrapper stateWrapper) {
-    MapBuffer stateMapBuffer = stateWrapper.getStateDataMapBuffer();
-    if (stateMapBuffer != null) {
-      return getReactTextUpdate(view, props, stateMapBuffer);
-    } else {
-      return null;
+    try (SystraceSection s = new SystraceSection("ReactTextViewManager.updateState")) {
+      MapBuffer stateMapBuffer = stateWrapper.getStateDataMapBuffer();
+      if (stateMapBuffer != null) {
+        return getReactTextUpdate(view, props, stateMapBuffer);
+      } else {
+        return null;
+      }
     }
   }
 

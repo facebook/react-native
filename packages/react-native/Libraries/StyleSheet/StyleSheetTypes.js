@@ -11,7 +11,6 @@
 'use strict';
 
 import type AnimatedNode from '../Animated/nodes/AnimatedNode';
-import type {FilterPrimitive} from '../StyleSheet/processFilter';
 import type {
   ____DangerouslyImpreciseStyle_InternalOverrides,
   ____ImageStyle_InternalOverrides,
@@ -613,6 +612,19 @@ type ____LayoutStyle_Internal = $ReadOnly<{
    */
   aspectRatio?: number | string,
 
+  /**
+   * Box sizing controls whether certain size properties apply to the node's
+   * content box or border box. The size properties in question include `width`,
+   * `height`, `minWidth`, `minHeight`, `maxWidth`, `maxHeight`, and `flexBasis`.
+   *
+   * e.g: Say a node has 10px of padding and 10px of borders on all
+   * sides and a defined `width` and `height` of 100px and 50px. Then the total
+   * size of the node (content area + padding + border) would be 100px by 50px
+   * under `boxSizing: border-box` and 120px by 70px under
+   * `boxSizing: content-box`.
+   */
+  boxSizing?: 'border-box' | 'content-box',
+
   /** `zIndex` controls which components display on top of others.
    *  Normally, you don't use `zIndex`. Components render according to
    *  their order in the document tree, so later components draw over
@@ -691,15 +703,66 @@ export type ____ShadowStyle_Internal = $ReadOnly<{
   ...____ShadowStyle_InternalOverrides,
 }>;
 
-type ____FilterStyle_Internal = $ReadOnly<{
-  experimental_filter?: $ReadOnlyArray<FilterPrimitive>,
-}>;
+export type FilterFunction =
+  | {brightness: number | string}
+  | {blur: number | string}
+  | {contrast: number | string}
+  | {grayscale: number | string}
+  | {hueRotate: number | string}
+  | {invert: number | string}
+  | {opacity: number | string}
+  | {saturate: number | string}
+  | {sepia: number | string}
+  | {dropShadow: DropShadowValue | string};
+
+export type DropShadowValue = {
+  offsetX: number | string,
+  offsetY: number | string,
+  standardDeviation?: number | string,
+  color?: ____ColorValue_Internal,
+};
+
+export type GradientValue = {
+  type: 'linearGradient',
+  // Angle or direction enums
+  direction?: string,
+  colorStops: $ReadOnlyArray<{
+    color: ____ColorValue_Internal,
+    positions?: $ReadOnlyArray<string>,
+  }>,
+};
+
+export type BoxShadowValue = {
+  offsetX: number | string,
+  offsetY: number | string,
+  color?: ____ColorValue_Internal,
+  blurRadius?: number | string,
+  spreadDistance?: number | string,
+  inset?: boolean,
+};
+
+type ____BlendMode_Internal =
+  | 'normal'
+  | 'multiply'
+  | 'screen'
+  | 'overlay'
+  | 'darken'
+  | 'lighten'
+  | 'color-dodge'
+  | 'color-burn'
+  | 'hard-light'
+  | 'soft-light'
+  | 'difference'
+  | 'exclusion'
+  | 'hue'
+  | 'saturation'
+  | 'color'
+  | 'luminosity';
 
 export type ____ViewStyle_InternalCore = $ReadOnly<{
   ...$Exact<____LayoutStyle_Internal>,
   ...$Exact<____ShadowStyle_Internal>,
   ...$Exact<____TransformStyle_Internal>,
-  ...____FilterStyle_Internal,
   backfaceVisibility?: 'visible' | 'hidden',
   backgroundColor?: ____ColorValue_Internal,
   borderColor?: ____ColorValue_Internal,
@@ -735,9 +798,18 @@ export type ____ViewStyle_InternalCore = $ReadOnly<{
   borderStartWidth?: AnimatableNumericValue,
   borderTopWidth?: AnimatableNumericValue,
   opacity?: AnimatableNumericValue,
+  outlineColor?: ____ColorValue_Internal,
+  outlineOffset?: AnimatableNumericValue,
+  outlineStyle?: 'solid' | 'dotted' | 'dashed',
+  outlineWidth?: AnimatableNumericValue,
   elevation?: number,
   pointerEvents?: 'auto' | 'none' | 'box-none' | 'box-only',
   cursor?: CursorValue,
+  boxShadow?: $ReadOnlyArray<BoxShadowValue> | string,
+  filter?: $ReadOnlyArray<FilterFunction> | string,
+  mixBlendMode?: ____BlendMode_Internal,
+  experimental_backgroundImage?: $ReadOnlyArray<GradientValue> | string,
+  isolation?: 'auto' | 'isolate',
 }>;
 
 export type ____ViewStyle_Internal = $ReadOnly<{

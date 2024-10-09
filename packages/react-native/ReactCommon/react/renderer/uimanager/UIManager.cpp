@@ -36,19 +36,17 @@ std::unique_ptr<facebook::react::LeakChecker> constructLeakCheckerIfNeeded(
 
 namespace facebook::react {
 
-// Explicitly define destructors here, as they to exist in order to act as a
-// "key function" for the ShadowNodeWrapper class -- this allow for RTTI to work
-// properly across dynamic library boundaries (i.e. dynamic_cast that is used by
-// isHostObject method)
+// Explicitly define destructors here, as they have to exist in order to act as
+// a "key function" for the ShadowNodeWrapper class -- this allows for RTTI to
+// work properly across dynamic library boundaries (i.e. dynamic_cast that is
+// used by getNativeState method)
 ShadowNodeListWrapper::~ShadowNodeListWrapper() = default;
 
 UIManager::UIManager(
     const RuntimeExecutor& runtimeExecutor,
-    BackgroundExecutor backgroundExecutor,
     ContextContainer::Shared contextContainer)
     : runtimeExecutor_(runtimeExecutor),
       shadowTreeRegistry_(),
-      backgroundExecutor_(std::move(backgroundExecutor)),
       contextContainer_(std::move(contextContainer)),
       leakChecker_(constructLeakCheckerIfNeeded(runtimeExecutor)),
       lazyShadowTreeRevisionConsistencyManager_(
@@ -363,9 +361,6 @@ void UIManager::updateState(const StateUpdate& stateUpdate) const {
   auto& callback = stateUpdate.callback;
   auto& family = stateUpdate.family;
   auto& componentDescriptor = family->getComponentDescriptor();
-  auto clonedByNativeStateTraits = ShadowNodeTraits();
-  clonedByNativeStateTraits.set(
-      ShadowNodeTraits::Trait::ClonedByNativeStateUpdate);
 
   shadowTreeRegistry_.visit(
       family->getSurfaceId(), [&](const ShadowTree& shadowTree) {
@@ -374,8 +369,7 @@ void UIManager::updateState(const StateUpdate& stateUpdate) const {
               auto isValid = true;
 
               auto rootNode = oldRootShadowNode.cloneTree(
-                  *family,
-                  [&](const ShadowNode& oldShadowNode) {
+                  *family, [&](const ShadowNode& oldShadowNode) {
                     auto newData =
                         callback(oldShadowNode.getState()->getDataPointer());
 
@@ -391,10 +385,8 @@ void UIManager::updateState(const StateUpdate& stateUpdate) const {
                     return oldShadowNode.clone(
                         {.props = ShadowNodeFragment::propsPlaceholder(),
                          .children = ShadowNodeFragment::childrenPlaceholder(),
-                         .state = newState,
-                         .traits = clonedByNativeStateTraits});
-                  },
-                  clonedByNativeStateTraits);
+                         .state = newState});
+                  });
 
               return isValid
                   ? std::static_pointer_cast<RootShadowNode>(rootNode)
@@ -636,15 +628,15 @@ void UIManager::reportMount(SurfaceId surfaceId) const {
         shadowTree.getMountingCoordinator()->getBaseRevision().rootShadowNode;
   });
 
-  if (!rootShadowNode) {
-    return;
-  }
-
   {
     std::shared_lock lock(mountHookMutex_);
 
     for (auto* mountHook : mountHooks_) {
-      mountHook->shadowTreeDidMount(rootShadowNode, time);
+      if (rootShadowNode) {
+        mountHook->shadowTreeDidMount(rootShadowNode, time);
+      } else {
+        mountHook->shadowTreeDidUnmount(surfaceId, time);
+      }
     }
   }
 }

@@ -14,7 +14,7 @@
 const {
   createHermesPrebuiltArtifactsTarball,
 } = require('../../../packages/react-native/scripts/hermes/hermes-utils');
-const {echo, env, exec, exit, popd, pushd, test} = require('shelljs');
+const {echo, exec, exit, popd, pushd, test} = require('shelljs');
 
 /*::
 type BuildType = 'dry-run' | 'release' | 'nightly' | 'prealpha';
@@ -62,24 +62,45 @@ function publishAndroidArtifactsToMaven(
   releaseVersion /*: string */,
   buildType /*: BuildType */,
 ) {
-  // -------- Publish every artifact to Maven Central
-  // The GPG key is base64 encoded on CircleCI and then decoded here
-  // $FlowFixMe[prop-missing]
-  let buff = Buffer.from(env.ORG_GRADLE_PROJECT_SIGNING_KEY_ENCODED, 'base64');
-  // $FlowFixMe[prop-missing]
-  env.ORG_GRADLE_PROJECT_SIGNING_KEY = buff.toString('ascii');
-
   // We want to gate ourselves against accidentally publishing a 1.x or a 1000.x on
   // maven central which will break the semver for our artifacts.
   if (buildType === 'release' && releaseVersion.startsWith('0.')) {
     // -------- For stable releases, we also need to close and release the staging repository.
     if (
       exec(
-        './gradlew publishAllToSonatype closeAndReleaseSonatypeStagingRepository',
+        './gradlew findSonatypeStagingRepository closeAndReleaseSonatypeStagingRepository',
       ).code
     ) {
       echo(
-        'Failed to close and release the staging repository on Sonatype (Maven Central)',
+        'Failed to close and release the staging repository on Sonatype (Maven Central) for Android artifacts',
+      );
+      exit(1);
+    }
+  } else {
+    echo(
+      'Nothing to do as this is not a stable release - Nightlies Android artifacts are published by build_android',
+    );
+  }
+
+  echo('Finished publishing Android artifacts to Maven Central');
+}
+
+function publishExternalArtifactsToMaven(
+  releaseVersion /*: string */,
+  buildType /*: BuildType */,
+) {
+  // We want to gate ourselves against accidentally publishing a 1.x or a 1000.x on
+  // maven central which will break the semver for our artifacts.
+  if (buildType === 'release' && releaseVersion.startsWith('0.')) {
+    // -------- For stable releases, we do the publishing and close the staging repository.
+    // This can't be done earlier in build_android because this artifact are partially built by the iOS jobs.
+    if (
+      exec(
+        './gradlew :packages:react-native:ReactAndroid:external-artifacts:publishToSonatype closeAndReleaseSonatypeStagingRepository',
+      ).code
+    ) {
+      echo(
+        'Failed to close and release the staging repository on Sonatype (Maven Central) for external artifacts',
       );
       exit(1);
     }
@@ -88,15 +109,16 @@ function publishAndroidArtifactsToMaven(
     // -------- For nightly releases, we only need to publish the snapshot to Sonatype snapshot repo.
     if (
       exec(
-        './gradlew publishAllToSonatype -PisSnapshot=' + isSnapshot.toString(),
+        './gradlew :packages:react-native:ReactAndroid:external-artifacts:publishToSonatype -PisSnapshot=' +
+          isSnapshot.toString(),
       ).code
     ) {
-      echo('Failed to publish artifacts to Sonatype (Maven Central)');
+      echo('Failed to publish external artifacts to Sonatype (Maven Central)');
       exit(1);
     }
   }
 
-  echo('Published artifacts to Maven Central');
+  echo('Finished publishing external artifacts to Maven Central');
 }
 
 function generateiOSArtifacts(
@@ -156,5 +178,6 @@ module.exports = {
   generateAndroidArtifacts,
   generateiOSArtifacts,
   publishAndroidArtifactsToMaven,
+  publishExternalArtifactsToMaven,
   failIfTagExists,
 };

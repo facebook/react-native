@@ -500,7 +500,7 @@ class CheckboxExample extends React.Component<
   };
 
   _onCheckboxPress = () => {
-    let checkboxState: boolean | $TEMPORARY$string<'mixed'> = false;
+    let checkboxState: boolean | string = false;
     if (this.state.checkboxState === false) {
       checkboxState = 'mixed';
     } else if (this.state.checkboxState === 'mixed') {
@@ -510,7 +510,7 @@ class CheckboxExample extends React.Component<
     }
 
     this.setState({
-      checkboxState: checkboxState,
+      checkboxState,
     });
   };
 
@@ -548,7 +548,7 @@ class SwitchExample extends React.Component<
     const switchState = !this.state.switchState;
 
     this.setState({
-      switchState: switchState,
+      switchState,
     });
   };
 
@@ -601,7 +601,7 @@ class SelectionExample extends React.Component<
     if (!isEnabled) {
       accessibilityHint = 'use the button on the right to enable selection';
     }
-    let buttonTitle = isEnabled ? 'Disable selection' : 'Enable selection';
+    const buttonTitle = isEnabled ? 'Disable selection' : 'Enable selection';
     const touchableHint = ` (touching the TouchableOpacity will ${
       isSelected ? 'disable' : 'enable'
     } accessibilityState.selected)`;
@@ -667,7 +667,7 @@ class ExpandableElementExample extends React.Component<
     const expandState = !this.state.expandState;
 
     this.setState({
-      expandState: expandState,
+      expandState,
     });
   };
 
@@ -719,7 +719,7 @@ class NestedCheckBox extends React.Component<
     }
     setTimeout(() => {
       this.setState({
-        checkbox1: checkbox1,
+        checkbox1,
         checkbox2: checkbox1,
         checkbox3: checkbox1,
       });
@@ -730,7 +730,7 @@ class NestedCheckBox extends React.Component<
     const checkbox2 = !this.state.checkbox2;
 
     this.setState({
-      checkbox2: checkbox2,
+      checkbox2,
       checkbox1:
         checkbox2 && this.state.checkbox3
           ? true
@@ -744,7 +744,7 @@ class NestedCheckBox extends React.Component<
     const checkbox3 = !this.state.checkbox3;
 
     this.setState({
-      checkbox3: checkbox3,
+      checkbox3,
       checkbox1:
         this.state.checkbox2 && checkbox3
           ? true
@@ -1241,7 +1241,7 @@ class FakeSliderExample extends React.Component<{}, FakeSliderExampleState> {
                 max: 100,
               }}>
               <Text style={{color: theme.SecondaryLabelColor}}>
-                Fake Slider
+                Fake Slider {this.state.current}
               </Text>
             </View>
             <TouchableWithoutFeedback
@@ -1270,7 +1270,7 @@ class FakeSliderExample extends React.Component<{}, FakeSliderExampleState> {
               accessibilityValue={{text: this.state.textualValue}}>
               <View>
                 <Text style={{color: theme.SecondaryLabelColor}}>
-                  Equalizer
+                  Equalizer {this.state.textualValue}
                 </Text>
               </View>
             </TouchableWithoutFeedback>
@@ -1335,7 +1335,7 @@ class FakeSliderExampleForAccessibilityValue extends React.Component<
               aria-valuetext={'slider aria value text'}
               aria-valuenow={this.state.current}>
               <Text style={{color: theme.SecondaryLabelColor}}>
-                Fake Slider
+                Fake Slider {this.state.current}
               </Text>
             </View>
             <TouchableWithoutFeedback
@@ -1364,7 +1364,7 @@ class FakeSliderExampleForAccessibilityValue extends React.Component<
               accessibilityValue={{text: this.state.textualValue}}>
               <View>
                 <Text style={{color: theme.SecondaryLabelColor}}>
-                  Equalizer
+                  Equalizer {this.state.textualValue}
                 </Text>
               </View>
             </TouchableWithoutFeedback>
@@ -1809,80 +1809,80 @@ exports.description = 'Examples of using Accessibility APIs.';
 exports.examples = [
   {
     title: 'Accessibility expanded',
-    render(): React.Element<typeof AccessibilityExpandedExample> {
+    render(): React.MixedElement {
       return <AccessibilityExpandedExample />;
     },
   },
   {
     title: 'Accessibility elements',
-    render(): React.Element<typeof AccessibilityExample> {
+    render(): React.MixedElement {
       return <AccessibilityExample />;
     },
   },
   {
     title: 'Automatic Content Grouping',
-    render(): React.Element<typeof AutomaticContentGrouping> {
+    render(): React.MixedElement {
       return <AutomaticContentGrouping />;
     },
   },
   {
     title: 'New accessibility roles and states',
-    render(): React.Element<typeof AccessibilityRoleAndStateExample> {
+    render(): React.MixedElement {
       return <AccessibilityRoleAndStateExample />;
     },
   },
   {
     title: 'Accessibility action examples',
-    render(): React.Element<typeof AccessibilityActionsExample> {
+    render(): React.MixedElement {
       return <AccessibilityActionsExample />;
     },
   },
   {
     title: 'Fake Slider Example',
-    render(): React.Element<typeof FakeSliderExample> {
+    render(): React.MixedElement {
       return <FakeSliderExample />;
     },
   },
   {
     title: 'Fake SliderExample For AccessibilityValue',
-    render(): React.Element<typeof FakeSliderExampleForAccessibilityValue> {
+    render(): React.MixedElement {
       return <FakeSliderExampleForAccessibilityValue />;
     },
   },
   {
     title: 'Check if the display options are enabled',
-    render(): React.Element<typeof DisplayOptionsStatusExample> {
+    render(): React.MixedElement {
       return <DisplayOptionsStatusExample />;
     },
   },
   {
     title: 'Check if the screen reader announces',
-    render(): React.Element<typeof AnnounceForAccessibility> {
+    render(): React.MixedElement {
       return <AnnounceForAccessibility />;
     },
   },
   {
     title: 'Check if accessibility is focused',
-    render(): React.Element<typeof SetAccessibilityFocusExample> {
+    render(): React.MixedElement {
       return <SetAccessibilityFocusExample />;
     },
   },
   {
     title: 'Check if these properties are enabled',
-    render(): React.Element<typeof EnabledExamples> {
+    render(): React.MixedElement {
       return <EnabledExamples />;
     },
   },
   {
     title: 'Testing importantForAccessibility',
-    render(): React.Element<typeof ImportantForAccessibilityExamples> {
+    render(): React.MixedElement {
       return <ImportantForAccessibilityExamples />;
     },
   },
   {
     title:
       'Check if accessibilityState disabled is announced when the screenreader focus moves on the image',
-    render(): React.Element<typeof Image> {
+    render(): React.MixedElement {
       return (
         <Image
           accessible={true}
@@ -1896,9 +1896,7 @@ exports.examples = [
   },
   {
     title: 'TextInput with aria-labelledby attribute',
-    render(): React.Element<
-      typeof AccessibilityTextInputWithArialabelledByAttributeExample,
-    > {
+    render(): React.MixedElement {
       return <AccessibilityTextInputWithArialabelledByAttributeExample />;
     },
   },

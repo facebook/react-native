@@ -30,7 +30,6 @@ import type {
 import DeviceEventReporter from './DeviceEventReporter';
 import * as fs from 'fs';
 import invariant from 'invariant';
-import fetch from 'node-fetch';
 import * as path from 'path';
 import WS from 'ws';
 
@@ -308,16 +307,29 @@ export default class Device {
       userAgent: string | null,
     }>,
   ) {
+    const page: ?Page =
+      pageId === REACT_NATIVE_RELOADABLE_PAGE_ID
+        ? this.#createSyntheticPage()
+        : this.#pages.get(pageId);
+
+    if (!page) {
+      debug(
+        `Got new debugger connection for page ${pageId} of ${this.#name}, but no such page exists`,
+      );
+      socket.close();
+      return;
+    }
+
     // Clear any commands we were waiting on.
     this.#deviceEventReporter?.logDisconnection('debugger');
+
+    // Disconnect current debugger if we already have debugger connected.
+    this.#terminateDebuggerConnection();
 
     this.#deviceEventReporter?.logConnection('debugger', {
       pageId,
       frontendUserAgent: metadata.userAgent,
     });
-
-    // Disconnect current debugger if we already have debugger connected.
-    this.#terminateDebuggerConnection();
 
     const debuggerInfo = {
       socket,
@@ -327,18 +339,11 @@ export default class Device {
       customHandler: null,
     };
 
-    // TODO(moti): Handle null case explicitly, e.g. refuse to connect to
-    // unknown pages.
-    const page: ?Page =
-      pageId === REACT_NATIVE_RELOADABLE_PAGE_ID
-        ? this.#createSyntheticPage()
-        : this.#pages.get(pageId);
-
     this.#debuggerConnection = debuggerInfo;
 
     debug(`Got new debugger connection for page ${pageId} of ${this.#name}`);
 
-    if (page && this.#debuggerConnection && this.#createCustomMessageHandler) {
+    if (this.#debuggerConnection && this.#createCustomMessageHandler) {
       this.#debuggerConnection.customHandler = this.#createCustomMessageHandler(
         {
           page,
@@ -405,7 +410,7 @@ export default class Device {
         return;
       }
 
-      if (!page || !this.#pageHasCapability(page, 'nativeSourceCodeFetching')) {
+      if (!this.#pageHasCapability(page, 'nativeSourceCodeFetching')) {
         processedReq = this.#interceptClientMessageForSourceFetching(
           debuggerRequest,
           debuggerInfo,

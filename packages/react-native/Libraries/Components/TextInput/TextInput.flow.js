@@ -8,7 +8,7 @@
  * @format
  */
 
-import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
+import type {HostInstance} from '../../Renderer/shims/ReactNativeTypes';
 import type {
   PressEvent,
   ScrollEvent,
@@ -22,7 +22,6 @@ import {
   type ViewStyleProp,
 } from '../../StyleSheet/StyleSheet';
 import * as React from 'react';
-type ComponentRef = React.ElementRef<HostComponent<mixed>>;
 
 type ReactRefSetter<T> = {current: null | T, ...} | ((ref: null | T) => mixed);
 
@@ -198,7 +197,10 @@ export type TextContentType =
   | 'birthdate'
   | 'birthdateDay'
   | 'birthdateMonth'
-  | 'birthdateYear';
+  | 'birthdateYear'
+  | 'dateTime'
+  | 'flightNumber'
+  | 'shipmentTrackingNumber';
 
 export type enterKeyHintType =
   | 'enter'
@@ -311,6 +313,19 @@ type IOSProps = $ReadOnly<{|
    * @platform ios
    */
   lineBreakStrategyIOS?: ?('none' | 'standard' | 'hangul-word' | 'push-out'),
+
+  /**
+   * Set line break mode on iOS.
+   * @platform ios
+   */
+  lineBreakModeIOS?: ?(
+    | 'wordWrapping'
+    | 'char'
+    | 'clip'
+    | 'head'
+    | 'middle'
+    | 'tail'
+  ),
 
   /**
    * If `false`, the iOS system will not insert an extra space after a paste operation
@@ -608,9 +623,7 @@ export type Props = $ReadOnly<{|
    */
   editable?: ?boolean,
 
-  forwardedRef?: ?ReactRefSetter<
-    React.ElementRef<HostComponent<mixed>> & ImperativeMethods,
-  >,
+  forwardedRef?: ?ReactRefSetter<HostInstance & ImperativeMethods>,
 
   /**
    * `enterKeyHint` defines what action label (or icon) to present for the enter key on virtual keyboards.
@@ -956,7 +969,7 @@ export type Props = $ReadOnly<{|
 type ImperativeMethods = $ReadOnly<{|
   clear: () => void,
   isFocused: () => boolean,
-  getNativeRef: () => ?React.ElementRef<HostComponent<mixed>>,
+  getNativeRef: () => ?HostInstance,
   setSelection: (start: number, end: number) => void,
 |}>;
 
@@ -1075,17 +1088,17 @@ type InternalTextInput = (props: Props) => React.Node;
 
 export type TextInputComponentStatics = $ReadOnly<{|
   State: $ReadOnly<{|
-    currentlyFocusedInput: () => ?ComponentRef,
+    currentlyFocusedInput: () => ?HostInstance,
     currentlyFocusedField: () => ?number,
-    focusTextInput: (textField: ?ComponentRef) => void,
-    blurTextInput: (textField: ?ComponentRef) => void,
+    focusTextInput: (textField: ?HostInstance) => void,
+    blurTextInput: (textField: ?HostInstance) => void,
   |}>,
 |}>;
 
 export type TextInputType = React.AbstractComponent<
   React.ElementConfig<InternalTextInput>,
   $ReadOnly<{|
-    ...React.ElementRef<HostComponent<mixed>>,
+    ...HostInstance,
     ...ImperativeMethods,
   |}>,
 > &

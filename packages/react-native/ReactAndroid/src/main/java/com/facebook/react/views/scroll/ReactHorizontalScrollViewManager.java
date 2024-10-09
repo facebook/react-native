@@ -16,6 +16,9 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.RetryableMountingLayerException;
 import com.facebook.react.module.annotations.ReactModule;
+import com.facebook.react.uimanager.BackgroundStyleApplicator;
+import com.facebook.react.uimanager.LengthPercentage;
+import com.facebook.react.uimanager.LengthPercentageType;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.PointerEvents;
 import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
@@ -27,7 +30,9 @@ import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
-import com.facebook.yoga.YogaConstants;
+import com.facebook.react.uimanager.style.BorderRadiusProp;
+import com.facebook.react.uimanager.style.BorderStyle;
+import com.facebook.react.uimanager.style.LogicalEdge;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -80,7 +85,7 @@ public class ReactHorizontalScrollViewManager extends ViewGroupManager<ReactHori
     view.setScrollEnabled(value);
   }
 
-  @ReactProp(name = "showsHorizontalScrollIndicator")
+  @ReactProp(name = "showsHorizontalScrollIndicator", defaultBoolean = true)
   public void setShowsHorizontalScrollIndicator(ReactHorizontalScrollView view, boolean value) {
     view.setHorizontalScrollBarEnabled(value);
   }
@@ -255,22 +260,22 @@ public class ReactHorizontalScrollViewManager extends ViewGroupManager<ReactHori
         ViewProps.BORDER_BOTTOM_RIGHT_RADIUS,
         ViewProps.BORDER_BOTTOM_LEFT_RADIUS
       },
-      defaultFloat = YogaConstants.UNDEFINED)
+      defaultFloat = Float.NaN)
   public void setBorderRadius(ReactHorizontalScrollView view, int index, float borderRadius) {
-    if (!YogaConstants.isUndefined(borderRadius)) {
-      borderRadius = PixelUtil.toPixelFromDIP(borderRadius);
-    }
-
-    if (index == 0) {
-      view.setBorderRadius(borderRadius);
-    } else {
-      view.setBorderRadius(borderRadius, index - 1);
-    }
+    @Nullable
+    LengthPercentage radius =
+        Float.isNaN(borderRadius)
+            ? null
+            : new LengthPercentage(borderRadius, LengthPercentageType.POINT);
+    BackgroundStyleApplicator.setBorderRadius(view, BorderRadiusProp.values()[index], radius);
   }
 
   @ReactProp(name = "borderStyle")
   public void setBorderStyle(ReactHorizontalScrollView view, @Nullable String borderStyle) {
-    view.setBorderStyle(borderStyle);
+    @Nullable
+    BorderStyle parsedBorderStyle =
+        borderStyle == null ? null : BorderStyle.fromString(borderStyle);
+    BackgroundStyleApplicator.setBorderStyle(view, parsedBorderStyle);
   }
 
   @ReactPropGroup(
@@ -281,12 +286,9 @@ public class ReactHorizontalScrollViewManager extends ViewGroupManager<ReactHori
         ViewProps.BORDER_TOP_WIDTH,
         ViewProps.BORDER_BOTTOM_WIDTH,
       },
-      defaultFloat = YogaConstants.UNDEFINED)
+      defaultFloat = Float.NaN)
   public void setBorderWidth(ReactHorizontalScrollView view, int index, float width) {
-    if (!YogaConstants.isUndefined(width)) {
-      width = PixelUtil.toPixelFromDIP(width);
-    }
-    view.setBorderWidth(SPACING_TYPES[index], width);
+    BackgroundStyleApplicator.setBorderWidth(view, LogicalEdge.values()[index], width);
   }
 
   @ReactPropGroup(
@@ -298,11 +300,8 @@ public class ReactHorizontalScrollViewManager extends ViewGroupManager<ReactHori
         "borderBottomColor"
       },
       customType = "Color")
-  public void setBorderColor(ReactHorizontalScrollView view, int index, Integer color) {
-    float rgbComponent =
-        color == null ? YogaConstants.UNDEFINED : (float) ((int) color & 0x00FFFFFF);
-    float alphaComponent = color == null ? YogaConstants.UNDEFINED : (float) ((int) color >>> 24);
-    view.setBorderColor(SPACING_TYPES[index], rgbComponent, alphaComponent);
+  public void setBorderColor(ReactHorizontalScrollView view, int index, @Nullable Integer color) {
+    BackgroundStyleApplicator.setBorderColor(view, LogicalEdge.ALL, color);
   }
 
   @ReactProp(name = "overflow")
@@ -360,5 +359,10 @@ public class ReactHorizontalScrollViewManager extends ViewGroupManager<ReactHori
   @ReactProp(name = "horizontal")
   public void setHorizontal(ReactHorizontalScrollView view, boolean horizontal) {
     // Do Nothing: Align with static ViewConfigs
+  }
+
+  @ReactProp(name = ViewProps.BOX_SHADOW, customType = "BoxShadow")
+  public void setBoxShadow(ReactHorizontalScrollView view, @Nullable ReadableArray shadows) {
+    BackgroundStyleApplicator.setBoxShadow(view, shadows);
   }
 }

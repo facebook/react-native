@@ -9,33 +9,34 @@ require_relative "./utils.rb"
 require_relative "./helpers.rb"
 
 class NewArchitectureHelper
-    @@cplusplus_version = "c++20"
-
     @@NewArchWarningEmitted = false # Used not to spam warnings to the user.
 
     def self.set_clang_cxx_language_standard_if_needed(installer)
-        language_standard = nil
+        cxxBuildsettingsName = "CLANG_CXX_LANGUAGE_STANDARD"
+        projects = installer.aggregate_targets
+            .map{ |t| t.user_project }
+            .uniq{ |p| p.path }
 
-        installer.pods_project.targets.each do |target|
-            # The React-Core pod may have a suffix added by Cocoapods, so we test whether 'React-Core' is a substring, and do not require exact match
-            if target.name.include? 'React-Core'
-                language_standard = target.resolved_build_setting("CLANG_CXX_LANGUAGE_STANDARD", resolve_against_xcconfig: true).values[0]
+        projects.each do |project|
+            Pod::UI.puts("Setting #{cxxBuildsettingsName} to #{ Helpers::Constants::cxx_language_standard } on #{ project.path }")
+
+            project.build_configurations.each do |config|
+                config.build_settings[cxxBuildsettingsName] = Helpers::Constants::cxx_language_standard
+            end
+
+            project.save()
+        end
+
+        installer.target_installation_results.pod_target_installation_results.each do |pod_name, target_installation_result|
+            target_installation_result.native_target.build_configurations.each do |config|
+                config.build_settings[cxxBuildsettingsName] = Helpers::Constants::cxx_language_standard
             end
         end
 
-        unless language_standard.nil?
-            projects = installer.aggregate_targets
-                .map{ |t| t.user_project }
-                .uniq{ |p| p.path }
-
-            projects.each do |project|
-                Pod::UI.puts("Setting CLANG_CXX_LANGUAGE_STANDARD to #{ language_standard } on #{ project.path }")
-
-                project.build_configurations.each do |config|
-                    config.build_settings["CLANG_CXX_LANGUAGE_STANDARD"] = language_standard
-                end
-
-                project.save()
+        # Override targets that would set spec.xcconfig to define c++ version
+        installer.aggregate_targets.each do |aggregate_target|
+            aggregate_target.xcconfigs.each do |config_name, config_file|
+                config_file.attributes[cxxBuildsettingsName] = Helpers::Constants::cxx_language_standard
             end
         end
     end
@@ -103,7 +104,7 @@ class NewArchitectureHelper
         current_config["HEADER_SEARCH_PATHS"] = current_headers.empty? ?
             header_search_paths_string :
             "#{current_headers} #{header_search_paths_string}"
-        current_config["CLANG_CXX_LANGUAGE_STANDARD"] = @@cplusplus_version
+        current_config["CLANG_CXX_LANGUAGE_STANDARD"] = Helpers::Constants::cxx_language_standard
 
 
         spec.dependency "React-Core"
@@ -112,6 +113,7 @@ class NewArchitectureHelper
 
 
         ReactNativePodsUtils.add_flag_to_map_with_inheritance(current_config, "OTHER_CPLUSPLUSFLAGS", self.computeFlags(new_arch_enabled))
+        ReactNativePodsUtils.add_flag_to_map_with_inheritance(current_config, "OTHER_SWIFT_FLAGS", new_arch_enabled ? " -DRCT_NEW_ARCH_ENABLED" : "")
 
         spec.dependency "React-RCTFabric" # This is for Fabric Component
         spec.dependency "ReactCodegen"

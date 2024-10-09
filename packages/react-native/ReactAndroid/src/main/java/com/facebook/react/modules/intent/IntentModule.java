@@ -24,12 +24,15 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.module.annotations.ReactModule;
+import java.util.ArrayList;
+import java.util.List;
 
 /** Intent module. Launch other activities or open URLs. */
 @ReactModule(name = NativeIntentAndroidSpec.NAME)
 public class IntentModule extends NativeIntentAndroidSpec {
 
   private @Nullable LifecycleEventListener mInitialURLListener = null;
+  private final List<Promise> mPendingOpenURLPromises = new ArrayList<>();
 
   private static final String EXTRA_MAP_KEY_FOR_VALUE = "value";
 
@@ -39,9 +42,12 @@ public class IntentModule extends NativeIntentAndroidSpec {
 
   @Override
   public void invalidate() {
-    if (mInitialURLListener != null) {
-      getReactApplicationContext().removeLifecycleEventListener(mInitialURLListener);
-      mInitialURLListener = null;
+    synchronized (this) {
+      mPendingOpenURLPromises.clear();
+      if (mInitialURLListener != null) {
+        getReactApplicationContext().removeLifecycleEventListener(mInitialURLListener);
+        mInitialURLListener = null;
+      }
     }
     super.invalidate();
   }
@@ -79,11 +85,9 @@ public class IntentModule extends NativeIntentAndroidSpec {
     }
   }
 
-  private void waitForActivityAndGetInitialURL(final Promise promise) {
+  private synchronized void waitForActivityAndGetInitialURL(final Promise promise) {
+    mPendingOpenURLPromises.add(promise);
     if (mInitialURLListener != null) {
-      promise.reject(
-          new IllegalStateException(
-              "Cannot await activity from more than one call to getInitialURL"));
       return;
     }
 
@@ -91,10 +95,15 @@ public class IntentModule extends NativeIntentAndroidSpec {
         new LifecycleEventListener() {
           @Override
           public void onHostResume() {
-            getInitialURL(promise);
-
             getReactApplicationContext().removeLifecycleEventListener(this);
-            mInitialURLListener = null;
+            synchronized (IntentModule.this) {
+              for (Promise promise : mPendingOpenURLPromises) {
+                getInitialURL(promise);
+              }
+
+              mInitialURLListener = null;
+              mPendingOpenURLPromises.clear();
+            }
           }
 
           @Override

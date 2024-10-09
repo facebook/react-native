@@ -88,6 +88,7 @@ AttributedString TextInputShadowNode::getAttributedString(
   auto attachments = Attachments{};
   BaseTextShadowNode::buildAttributedString(
       textAttributes, *this, attributedString, attachments);
+  attributedString.setBaseTextAttributes(textAttributes);
 
   return attributedString;
 }
@@ -138,6 +139,35 @@ Size TextInputShadowNode::measureContent(
           textLayoutContext,
           layoutConstraints)
       .size;
+}
+
+Float TextInputShadowNode::baseline(
+    const LayoutContext& layoutContext,
+    Size size) const {
+  auto attributedString = getAttributedString(layoutContext);
+
+  if (attributedString.isEmpty()) {
+    auto placeholderString = !getConcreteProps().placeholder.empty()
+        ? getConcreteProps().placeholder
+        : BaseTextShadowNode::getEmptyPlaceholder();
+    auto textAttributes = getConcreteProps().getEffectiveTextAttributes(
+        layoutContext.fontSizeMultiplier);
+    attributedString.appendFragment(
+        {std::move(placeholderString), textAttributes, {}});
+  }
+
+  // Yoga expects a baseline relative to the Node's border-box edge instead of
+  // the content, so we need to adjust by the padding and border widths, which
+  // have already been set by the time of baseline alignment
+  auto top = YGNodeLayoutGetBorder(&yogaNode_, YGEdgeTop) +
+      YGNodeLayoutGetPadding(&yogaNode_, YGEdgeTop);
+
+  AttributedStringBox attributedStringBox{std::move(attributedString)};
+  return textLayoutManager_->baseline(
+             attributedStringBox,
+             getConcreteProps().getEffectiveParagraphAttributes(),
+             size) +
+      top;
 }
 
 void TextInputShadowNode::layout(LayoutContext layoutContext) {

@@ -8,62 +8,90 @@
  * @format
  */
 
-import composeStyles from '../../src/private/core/composeStyles';
+import type {AnimatedPropsAllowlist} from './nodes/AnimatedProps';
+
+import composeStyles from '../../src/private/styles/composeStyles';
 import View from '../Components/View/View';
 import useMergeRefs from '../Utilities/useMergeRefs';
 import useAnimatedProps from './useAnimatedProps';
 import * as React from 'react';
 import {useMemo} from 'react';
 
-// $FlowFixMe[deprecated-type]
-export type AnimatedProps<Props: {...}> = $ObjMap<
-  Props &
-    $ReadOnly<{
-      passthroughAnimatedPropExplicitValues?: React.ElementConfig<typeof View>,
-    }>,
-  () => any,
->;
+export type AnimatedProps<Props: {...}> = {
+  // eslint-disable-next-line no-unused-vars
+  +[_K in keyof (Props &
+      $ReadOnly<{
+        passthroughAnimatedPropExplicitValues?: React.ElementConfig<
+          typeof View,
+        >,
+      }>)]: any,
+};
+
+// We could use a mapped type here to introduce acceptable Animated variants
+// of properties, instead of doing so in the core StyleSheetTypes
+// Inexact Props are not supported, they'll be made exact here.
+export type StrictAnimatedProps<Props: {...}> = $ReadOnly<{
+  ...$Exact<Props>,
+  passthroughAnimatedPropExplicitValues?: ?Props,
+}>;
 
 export type AnimatedComponentType<
   Props: {...},
   +Instance = mixed,
 > = React.AbstractComponent<AnimatedProps<Props>, Instance>;
 
+export type StrictAnimatedComponentType<
+  Props: {...},
+  +Instance = mixed,
+> = React.AbstractComponent<StrictAnimatedProps<Props>, Instance>;
+
 export default function createAnimatedComponent<TProps: {...}, TInstance>(
   Component: React.AbstractComponent<TProps, TInstance>,
 ): AnimatedComponentType<TProps, TInstance> {
-  const AnimatedComponent = React.forwardRef<AnimatedProps<TProps>, TInstance>(
-    (props, forwardedRef) => {
-      const [reducedProps, callbackRef] = useAnimatedProps<TProps, TInstance>(
-        // $FlowFixMe[incompatible-call]
-        props,
-      );
-      const ref = useMergeRefs<TInstance>(callbackRef, forwardedRef);
+  return unstable_createAnimatedComponentWithAllowlist(Component, null);
+}
 
-      // Some components require explicit passthrough values for animation
-      // to work properly. For example, if an animated component is
-      // transformed and Pressable, onPress will not work after transform
-      // without these passthrough values.
-      // $FlowFixMe[prop-missing]
-      const {passthroughAnimatedPropExplicitValues, style} = reducedProps;
-      const passthroughStyle = passthroughAnimatedPropExplicitValues?.style;
-      const mergedStyle = useMemo(
-        () => composeStyles(style, passthroughStyle),
-        [passthroughStyle, style],
-      );
+export function unstable_createAnimatedComponentWithAllowlist<
+  TProps: {...},
+  TInstance,
+>(
+  Component: React.AbstractComponent<TProps, TInstance>,
+  allowlist: ?AnimatedPropsAllowlist,
+): StrictAnimatedComponentType<TProps, TInstance> {
+  const AnimatedComponent = React.forwardRef<
+    StrictAnimatedProps<TProps>,
+    TInstance,
+  >((props, forwardedRef) => {
+    const [reducedProps, callbackRef] = useAnimatedProps<TProps, TInstance>(
+      // $FlowFixMe[incompatible-call]
+      props,
+      allowlist,
+    );
+    const ref = useMergeRefs<TInstance>(callbackRef, forwardedRef);
 
-      // NOTE: It is important that `passthroughAnimatedPropExplicitValues` is
-      // spread after `reducedProps` but before `style`.
-      return (
-        <Component
-          {...reducedProps}
-          {...passthroughAnimatedPropExplicitValues}
-          style={mergedStyle}
-          ref={ref}
-        />
-      );
-    },
-  );
+    // Some components require explicit passthrough values for animation
+    // to work properly. For example, if an animated component is
+    // transformed and Pressable, onPress will not work after transform
+    // without these passthrough values.
+    // $FlowFixMe[prop-missing]
+    const {passthroughAnimatedPropExplicitValues, style} = reducedProps;
+    const passthroughStyle = passthroughAnimatedPropExplicitValues?.style;
+    const mergedStyle = useMemo(
+      () => composeStyles(style, passthroughStyle),
+      [passthroughStyle, style],
+    );
+
+    // NOTE: It is important that `passthroughAnimatedPropExplicitValues` is
+    // spread after `reducedProps` but before `style`.
+    return (
+      <Component
+        {...reducedProps}
+        {...passthroughAnimatedPropExplicitValues}
+        style={mergedStyle}
+        ref={ref}
+      />
+    );
+  });
 
   AnimatedComponent.displayName = `Animated(${
     Component.displayName || 'Anonymous'

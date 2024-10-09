@@ -21,7 +21,6 @@ import androidx.collection.SparseArrayCompat;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.ThreadConfined;
-import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
@@ -30,13 +29,10 @@ import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.build.ReactBuildConfig;
-import com.facebook.react.config.ReactFeatureFlags;
-import com.facebook.react.fabric.GuardedFrameCallback;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
 import com.facebook.react.fabric.mounting.MountingManager.MountItemExecutor;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
-import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.touch.JSResponderHandler;
 import com.facebook.react.uimanager.IViewGroupManager;
 import com.facebook.react.uimanager.IllegalViewOperationException;
@@ -50,13 +46,13 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.react.uimanager.events.EventCategoryDef;
+import com.facebook.systrace.Systrace;
 import java.util.ArrayDeque;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
-import java.util.Stack;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class SurfaceMountingManager {
@@ -78,17 +74,19 @@ public class SurfaceMountingManager {
   private RootViewManager mRootViewManager;
   private MountItemExecutor mMountItemExecutor;
 
-  // Stack of deferred-removal tags for Views that can be
-  // removed asynchronously. Guaranteed to be disconnected
-  // from the viewport and these tags will not be reused in the future.
-  @ThreadConfined(UI)
-  private final Stack<Integer> mReactTagsToRemove = new Stack<>();
-
   @ThreadConfined(UI)
   private final Set<Integer> mErroneouslyReaddedReactTags = new HashSet<>();
 
+  // This set is used to keep track of views that are currently being interacted with (i.e.
+  // views that saw a ACTION_DOWN but not a ACTION_UP event yet). This is used to prevent
+  // views from being removed while they are being interacted with as their event emitter will
+  // also be removed, and `Pressables` will look "stuck".
   @ThreadConfined(UI)
-  private @Nullable RemoveDeleteTreeUIFrameCallback mRemoveDeleteTreeUIFrameCallback;
+  private final Set<Integer> mViewsWithActiveTouches = new HashSet<>();
+
+  // This set contains the views that are scheduled to be removed after their touch finishes.
+  @ThreadConfined(UI)
+  private final Set<Integer> mViewsToDeleteAfterTouchFinishes = new HashSet<>();
 
   // This is null *until* StopSurface is called.
   private SparseArrayCompat<Object> mTagSetForStoppedSurface;
@@ -211,11 +209,22 @@ public class SurfaceMountingManager {
                     + " tag: [%d]",
                 rootView.getId(),
                 mSurfaceId);
-            throw new IllegalViewOperationException(
-                "Trying to add a root view with an explicit id already set. React Native uses the"
-                    + " id field to track react tags and will overwrite this field. If that is"
-                    + " fine, explicitly overwrite the id field to View.NO_ID before calling"
-                    + " addRootView.");
+            // This behavior can not be guaranteed in hybrid apps that have a native android layer
+            // over
+            // which reactRootViews are added and the native views need to have ids on them in order
+            // to
+            // work.
+            // Hence this can cause unnecessary crashes at runtime for hybrid apps.
+            // So converting this to a soft exception such that pure react-native devs can still see
+            // the
+            // warning while hybrid apps continue to run without crashes
+            ReactSoftExceptionLogger.logSoftException(
+                TAG,
+                new IllegalViewOperationException(
+                    "Trying to add a root view with an explicit id already set. React Native uses"
+                        + " the id field to track react tags and will overwrite this field. If that"
+                        + " is fine, explicitly overwrite the id field to View.NO_ID before calling"
+                        + " addRootView."));
           }
           rootView.setId(mSurfaceId);
 
@@ -296,6 +305,9 @@ public class SurfaceMountingManager {
 
     Runnable runnable =
         () -> {
+          if (ReactNativeFeatureFlags.enableViewRecycling()) {
+            mViewManagerRegistry.onSurfaceStopped(mSurfaceId);
+          }
           mTagSetForStoppedSurface = new SparseArrayCompat<>();
           for (Map.Entry<Integer, ViewState> entry : mTagToViewState.entrySet()) {
             // Using this as a placeholder value in the map. We're using SparseArrayCompat
@@ -313,14 +325,8 @@ public class SurfaceMountingManager {
           mRootViewManager = null;
           mMountItemExecutor = null;
           mThemedReactContext = null;
-          if (ReactNativeFeatureFlags.fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak()) {
-            mRemoveDeleteTreeUIFrameCallback = null;
-          }
           mOnViewAttachMountItems.clear();
 
-          if (ReactFeatureFlags.enableViewRecycling) {
-            mViewManagerRegistry.onSurfaceStopped(mSurfaceId);
-          }
           FLog.e(TAG, "Surface [" + mSurfaceId + "] was stopped on SurfaceMountingManager.");
         };
 
@@ -609,182 +615,6 @@ public class SurfaceMountingManager {
   }
 
   @UiThread
-  public void removeDeleteTreeAt(final int tag, final int parentTag, int index) {
-    if (isStopped()) {
-      return;
-    }
-
-    UiThreadUtil.assertOnUiThread();
-    ViewState parentViewState = getNullableViewState(parentTag);
-
-    // TODO: throw exception here?
-    if (parentViewState == null) {
-      ReactSoftExceptionLogger.logSoftException(
-          MountingManager.TAG,
-          new IllegalStateException(
-              "Unable to find viewState for tag: [" + parentTag + "] for removeDeleteTreeAt"));
-      return;
-    }
-
-    if (!(parentViewState.mView instanceof ViewGroup)) {
-      String message =
-          "Unable to remove+delete a view from a view that is not a ViewGroup. ParentTag: "
-              + parentTag
-              + " - Tag: "
-              + tag
-              + " - Index: "
-              + index;
-      FLog.e(TAG, message);
-      throw new IllegalStateException(message);
-    }
-
-    final ViewGroup parentView = (ViewGroup) parentViewState.mView;
-
-    if (parentView == null) {
-      throw new IllegalStateException("Unable to find view for tag [" + parentTag + "]");
-    }
-
-    if (SHOW_CHANGED_VIEW_HIERARCHIES) {
-      // Display children before deleting any
-      FLog.e(
-          TAG,
-          "removeDeleteTreeAt: [" + tag + "] -> [" + parentTag + "] idx: " + index + " BEFORE");
-      logViewHierarchy(parentView, false);
-    }
-
-    IViewGroupManager<ViewGroup> viewGroupManager = getViewGroupManager(parentViewState);
-
-    // Verify that the view we're about to remove has the same tag we expect
-    View view = viewGroupManager.getChildAt(parentView, index);
-    int actualTag = (view != null ? view.getId() : -1);
-    if (actualTag != tag) {
-      int tagActualIndex = -1;
-      int parentChildrenCount = parentView.getChildCount();
-      for (int i = 0; i < parentChildrenCount; i++) {
-        if (parentView.getChildAt(i).getId() == tag) {
-          tagActualIndex = i;
-          break;
-        }
-      }
-
-      // TODO T74425739: previously, we did not do this check and `removeViewAt` would be executed
-      // below, sometimes crashing there. *However*, interestingly enough, `removeViewAt` would not
-      // complain if you removed views from an already-empty parent. This seems necessary currently
-      // for certain ViewManagers that remove their own children - like BottomSheet?
-      // This workaround seems not-great, but for now, we just return here for
-      // backwards-compatibility. Essentially, if a view has already been removed from the
-      // hierarchy, we treat it as a noop.
-      if (tagActualIndex == -1) {
-        FLog.e(
-            TAG,
-            "removeDeleteTreeAt: ["
-                + tag
-                + "] -> ["
-                + parentTag
-                + "] @"
-                + index
-                + ": view already removed from parent! Children in parent: "
-                + parentChildrenCount);
-        return;
-      }
-
-      // Here we are guaranteed that the view is still in the View hierarchy, just
-      // at a different index. In debug mode we'll crash here; in production, we'll remove
-      // the child from the parent and move on.
-      // This is an issue that is safely recoverable 95% of the time. If this allows corruption
-      // of the view hierarchy and causes bugs or a crash after this point, there will be logs
-      // indicating that this happened.
-      // This is likely *only* necessary because of Fabric's LayoutAnimations implementation.
-      // If we can fix the bug there, or remove the need for LayoutAnimation index adjustment
-      // entirely, we can just throw this exception without regression user experience.
-      logViewHierarchy(parentView, true);
-      ReactSoftExceptionLogger.logSoftException(
-          TAG,
-          new IllegalStateException(
-              "Tried to remove+delete view ["
-                  + tag
-                  + "] of parent ["
-                  + parentTag
-                  + "] at index "
-                  + index
-                  + ", but got view tag "
-                  + actualTag
-                  + " - actual index of view: "
-                  + tagActualIndex));
-      index = tagActualIndex;
-    }
-
-    try {
-      viewGroupManager.removeViewAt(parentView, index);
-    } catch (RuntimeException e) {
-      // Note: `getChildCount` may not always be accurate!
-      // We don't currently have a good explanation other than, in situations where you
-      // would empirically expect to see childCount > 0, the childCount is reported as 0.
-      // This is likely due to a ViewManager overriding getChildCount or some other methods
-      // in a way that is strictly incorrect, but potentially only visible here.
-      // The failure mode is actually that in `removeViewAt`, a NullPointerException is
-      // thrown when we try to perform an operation on a View that doesn't exist, and
-      // is therefore null.
-      // We try to add some extra diagnostics here, but we always try to remove the View
-      // from the hierarchy first because detecting by looking at childCount will not work.
-      //
-      // Note that the lesson here is that `getChildCount` is not /required/ to adhere to
-      // any invariants. If you add 9 children to a parent, the `getChildCount` of the parent
-      // may not be equal to 9. This apparently causes no issues with Android and is common
-      // enough that we shouldn't try to change this invariant, without a lot of thought.
-      int childCount = viewGroupManager.getChildCount(parentView);
-
-      logViewHierarchy(parentView, true);
-
-      throw new IllegalStateException(
-          "Cannot remove child at index "
-              + index
-              + " from parent ViewGroup ["
-              + parentView.getId()
-              + "], only "
-              + childCount
-              + " children in parent. Warning: childCount may be incorrect!",
-          e);
-    }
-
-    // Display children after deleting any
-    if (SHOW_CHANGED_VIEW_HIERARCHIES) {
-      final int finalIndex = index;
-      UiThreadUtil.runOnUiThread(
-          new Runnable() {
-            @Override
-            public void run() {
-              FLog.e(
-                  TAG,
-                  "removeViewAt: ["
-                      + tag
-                      + "] -> ["
-                      + parentTag
-                      + "] idx: "
-                      + finalIndex
-                      + " AFTER");
-              logViewHierarchy(parentView, false);
-            }
-          });
-    }
-
-    // The View has been removed from the View hierarchy; now it
-    // and all of its children, if any, need to be deleted, recursively.
-    // Schedule the Runnable first, to detect if we need to schedule a Runnable at all.
-    // Since this current function and the Runnable both run on the UI thread, there is
-    // no race condition here.
-    if (mReactTagsToRemove.empty()) {
-      if (mRemoveDeleteTreeUIFrameCallback == null) {
-        mRemoveDeleteTreeUIFrameCallback = new RemoveDeleteTreeUIFrameCallback(mThemedReactContext);
-      }
-      ReactChoreographer.getInstance()
-          .postFrameCallback(
-              ReactChoreographer.CallbackType.IDLE_EVENT, mRemoveDeleteTreeUIFrameCallback);
-    }
-    mReactTagsToRemove.push(tag);
-  }
-
-  @UiThread
   public void createView(
       @NonNull String componentName,
       int reactTag,
@@ -830,25 +660,29 @@ public class SurfaceMountingManager {
       @Nullable StateWrapper stateWrapper,
       @Nullable EventEmitterWrapper eventEmitterWrapper,
       boolean isLayoutable) {
-    View view = null;
-    ViewManager viewManager = null;
+    Systrace.beginSection(
+        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+        "SurfaceMountingManager::createViewUnsafe(" + componentName + ")");
+    try {
+      ReactStylesDiffMap propMap = new ReactStylesDiffMap(props);
 
-    ReactStylesDiffMap propMap = new ReactStylesDiffMap(props);
+      ViewState viewState = new ViewState(reactTag);
+      viewState.mCurrentProps = propMap;
+      viewState.mStateWrapper = stateWrapper;
+      viewState.mEventEmitter = eventEmitterWrapper;
+      mTagToViewState.put(reactTag, viewState);
 
-    if (isLayoutable) {
-      viewManager = mViewManagerRegistry.get(componentName);
-      // View Managers are responsible for dealing with inital state and props.
-      view =
-          viewManager.createView(
-              reactTag, mThemedReactContext, propMap, stateWrapper, mJSResponderHandler);
+      if (isLayoutable) {
+        ViewManager viewManager = mViewManagerRegistry.get(componentName);
+        // View Managers are responsible for dealing with inital state and props.
+        viewState.mView =
+            viewManager.createView(
+                reactTag, mThemedReactContext, propMap, stateWrapper, mJSResponderHandler);
+        viewState.mViewManager = viewManager;
+      }
+    } finally {
+      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     }
-
-    ViewState viewState = new ViewState(reactTag, view, viewManager);
-    viewState.mCurrentProps = propMap;
-    viewState.mStateWrapper = stateWrapper;
-    viewState.mEventEmitter = eventEmitterWrapper;
-
-    mTagToViewState.put(reactTag, viewState);
   }
 
   public void updateProps(int reactTag, ReadableMap props) {
@@ -979,10 +813,28 @@ public class SurfaceMountingManager {
               : layoutDirection == 2 ? View.LAYOUT_DIRECTION_RTL : View.LAYOUT_DIRECTION_INHERIT);
     }
 
+    // Even though we have exact dimensions, we still call measure because some platform views (e.g.
+    // Switch) assume that method will always be called before onLayout and onDraw. They use it to
+    // calculate and cache information used in the draw pass. For most views, onMeasure can be
+    // stubbed out to only call setMeasuredDimensions. For ViewGroups, onLayout should be stubbed
+    // out to not recursively call layout on its children: React Native already handles doing
+    // that.
+    //
+    // Also, note measure and layout need to be called *after* all View properties have been updated
+    // because of caching and calculation that may occur in onMeasure and onLayout. Layout
+    // operations should also follow the native view hierarchy and go top to bottom for
+    // consistency with standard layout passes (some views may depend on this).
     viewToUpdate.measure(
         View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
         View.MeasureSpec.makeMeasureSpec(height, View.MeasureSpec.EXACTLY));
 
+    // We update the layout of the RootView when there is a change in the layout of its child. This
+    // is required to re-measure the size of the native View container (usually a FrameLayout) that
+    // is configured with layout_height = WRAP_CONTENT or layout_width = WRAP_CONTENT
+    //
+    // This code is going to be executed ONLY when there is a change in the size of the root view
+    // defined in the JS side. Changes in the layout of inner views will not trigger an update  on
+    // the layout of the root view.
     ViewParent parent = viewToUpdate.getParent();
     if (parent instanceof RootView) {
       parent.requestLayout();
@@ -1102,7 +954,7 @@ public class SurfaceMountingManager {
     if (viewState == null) {
       // TODO T62717437 - Use a flag to determine that these event emitters belong to virtual nodes
       // only.
-      viewState = new ViewState(reactTag, null, null);
+      viewState = new ViewState(reactTag);
       mTagToViewState.put(reactTag, viewState);
     }
     EventEmitterWrapper previousEventEmitterWrapper = viewState.mEventEmitter;
@@ -1195,12 +1047,22 @@ public class SurfaceMountingManager {
       return;
     }
 
-    // To delete we simply remove the tag from the registry.
-    // We want to rely on the correct set of MountInstructions being sent to the platform,
-    // or StopSurface being called, so we do not handle deleting descendents of the View.
-    mTagToViewState.remove(reactTag);
+    if (ReactNativeFeatureFlags.enableEventEmitterRetentionDuringGesturesOnAndroid()
+        && mViewsWithActiveTouches.contains(reactTag)) {
+      // If the view that went offscreen is still being touched, we can't delete it yet.
+      // We have to delay the deletion till the touch is completed.
+      // This is causing bugs like those otherwise:
+      // - https://github.com/facebook/react-native/issues/44610
+      // - https://github.com/facebook/react-native/issues/45126
+      mViewsToDeleteAfterTouchFinishes.add(reactTag);
+    } else {
+      // To delete we simply remove the tag from the registry.
+      // We want to rely on the correct set of MountInstructions being sent to the platform,
+      // or StopSurface being called, so we do not handle deleting descendants of the View.
+      mTagToViewState.remove(reactTag);
 
-    onViewStateDeleted(viewState);
+      onViewStateDeleted(viewState);
+    }
   }
 
   @UiThread
@@ -1209,7 +1071,6 @@ public class SurfaceMountingManager {
       int reactTag,
       @Nullable ReadableMap props,
       @Nullable StateWrapper stateWrapper,
-      @Nullable EventEmitterWrapper eventEmitterWrapper,
       boolean isLayoutable) {
     UiThreadUtil.assertOnUiThread();
 
@@ -1222,8 +1083,7 @@ public class SurfaceMountingManager {
       return;
     }
 
-    createViewUnsafe(
-        componentName, reactTag, props, stateWrapper, eventEmitterWrapper, isLayoutable);
+    createViewUnsafe(componentName, reactTag, props, stateWrapper, null, isLayoutable);
   }
 
   @AnyThread
@@ -1326,26 +1186,44 @@ public class SurfaceMountingManager {
         });
   }
 
+  public void markActiveTouchForTag(int reactTag) {
+    if (!ReactNativeFeatureFlags.enableEventEmitterRetentionDuringGesturesOnAndroid()) {
+      return;
+    }
+    mViewsWithActiveTouches.add(reactTag);
+  }
+
+  public void sweepActiveTouchForTag(int reactTag) {
+    if (!ReactNativeFeatureFlags.enableEventEmitterRetentionDuringGesturesOnAndroid()) {
+      return;
+    }
+    mViewsWithActiveTouches.remove(reactTag);
+    if (mViewsToDeleteAfterTouchFinishes.contains(reactTag)) {
+      mViewsToDeleteAfterTouchFinishes.remove(reactTag);
+      deleteView(reactTag);
+    }
+  }
+
   /**
    * This class holds view state for react tags. Objects of this class are stored into the {@link
    * #mTagToViewState}, and they should be updated in the same thread.
    */
   private static class ViewState {
-    @Nullable final View mView;
+    @Nullable View mView = null;
     final int mReactTag;
     final boolean mIsRoot;
-    @Nullable final ViewManager mViewManager;
-    @Nullable public ReactStylesDiffMap mCurrentProps = null;
-    @Nullable public ReadableMap mCurrentLocalData = null;
-    @Nullable public StateWrapper mStateWrapper = null;
-    @Nullable public EventEmitterWrapper mEventEmitter = null;
+    @Nullable ViewManager mViewManager = null;
+    @Nullable ReactStylesDiffMap mCurrentProps = null;
+    @Nullable ReadableMap mCurrentLocalData = null;
+    @Nullable StateWrapper mStateWrapper = null;
+    @Nullable EventEmitterWrapper mEventEmitter = null;
 
     @ThreadConfined(UI)
     @Nullable
-    public Queue<PendingViewEvent> mPendingEventQueue = null;
+    Queue<PendingViewEvent> mPendingEventQueue = null;
 
-    private ViewState(int reactTag, @Nullable View view, @Nullable ViewManager viewManager) {
-      this(reactTag, view, viewManager, false);
+    private ViewState(int reactTag) {
+      this(reactTag, null, null, false);
     }
 
     private ViewState(
@@ -1397,134 +1275,6 @@ public class SurfaceMountingManager {
         eventEmitter.dispatchUnique(mEventName, mParams);
       } else {
         eventEmitter.dispatch(mEventName, mParams, mEventCategory);
-      }
-    }
-  }
-
-  private class RemoveDeleteTreeUIFrameCallback extends GuardedFrameCallback {
-    private static final long FRAME_TIME_MS = 16;
-    private static final long MAX_TIME_IN_FRAME = 9;
-
-    private RemoveDeleteTreeUIFrameCallback(@NonNull ReactContext reactContext) {
-      super(reactContext);
-    }
-
-    /**
-     * Detect if we still have processing time left in this frame. Technically, it should be fine
-     * for this to take up to 15ms since it executes after all other important UI work.
-     */
-    private boolean haveExceededNonBatchedFrameTime(long frameTimeNanos) {
-      long timeLeftInFrame = FRAME_TIME_MS - ((System.nanoTime() - frameTimeNanos) / 1000000);
-      return timeLeftInFrame < MAX_TIME_IN_FRAME;
-    }
-
-    @Override
-    @UiThread
-    @ThreadConfined(UI)
-    public void doFrameGuarded(long frameTimeNanos) {
-      int deletedViews = 0;
-      Stack<Integer> localChildren = new Stack<>();
-      try {
-        while (!mReactTagsToRemove.empty()) {
-          int reactTag = mReactTagsToRemove.pop();
-          deletedViews++;
-
-          // This is "impossible". See comments above.
-          if (mErroneouslyReaddedReactTags.contains(reactTag)) {
-            ReactSoftExceptionLogger.logSoftException(
-                TAG,
-                new IllegalViewOperationException(
-                    "RemoveDeleteTree recursively tried to remove a React View that was actually"
-                        + " reused. This indicates a bug in the Differ. ["
-                        + reactTag
-                        + "]"));
-            continue;
-          }
-
-          localChildren.clear();
-
-          ViewState thisViewState = getNullableViewState(reactTag);
-          if (thisViewState != null) {
-            View thisView = thisViewState.mView;
-            ViewManager thisViewManager = thisViewState.mViewManager;
-            if (thisViewManager instanceof IViewGroupManager) {
-              IViewGroupManager viewManager = (IViewGroupManager) thisViewManager;
-
-              // Children are managed by React Native if both of the following are true:
-              // 1) There are 1 or more children of this View, which must be a ViewGroup
-              // 2) Those children are managed by RN (this is not the case for certain native
-              // components, like embedded Litho hierarchies)
-              boolean childrenAreManaged = false;
-
-              // For reasons documented elsewhere in this class, getChildCount is not
-              // necessarily reliable, and so we rely instead on requesting children directly.
-              View nextChild = null;
-              int numChildren = 0;
-              while ((nextChild = viewManager.getChildAt(thisView, numChildren)) != null) {
-                int childId = nextChild.getId();
-                childrenAreManaged = childrenAreManaged || getNullableViewState(childId) != null;
-                localChildren.push(nextChild.getId());
-                numChildren++;
-              }
-              // Removing all at once is more efficient than removing one-by-one
-              // If the children are not managed by RN, we simply drop the entire
-              // subtree instead of recursing further.
-              if (childrenAreManaged) {
-                try {
-                  // This can happen if the removeAllViews method is overridden to throw,
-                  // which it is explicitly in some cases (for example embedded Litho views,
-                  // but there could be other cases). In those cases, we want to fail silently
-                  // and then assume the subtree is /not/ managed by React Native.
-                  // In this case short-lived memory-leaks could occur if we aren't clearing
-                  // out the ViewState map properly; but the risk should be small.
-                  // In debug mode, the SoftException will cause a crash. In production it
-                  // will not. This should give good visibility into whether or not this is
-                  // a problem without causing user-facing errors.
-                  viewManager.removeAllViews(thisView);
-                } catch (RuntimeException e) {
-                  childrenAreManaged = false;
-                  ReactSoftExceptionLogger.logSoftException(TAG, e);
-                }
-              }
-
-              if (childrenAreManaged) {
-                // Push tags onto the stack so we process all children
-                mReactTagsToRemove.addAll(localChildren);
-              }
-            }
-
-            // Immediately remove tag and notify listeners.
-            // Note that this causes RemoveDeleteTree to call onViewStateDeleted
-            // in a top-down matter (parents first) vs a bottom-up matter (leaf nodes first).
-            // Hopefully this doesn't matter but you should ensure that any custom
-            // onViewStateDeleted logic is resilient to both semantics.
-            // In the initial version of RemoveDeleteTree we attempted to maintain
-            // the bottom-up event listener behavior but this causes additional
-            // memory pressure as well as complexity.
-            mTagToViewState.remove(reactTag);
-            onViewStateDeleted(thisViewState);
-
-            // Circuit breaker: after processing every N tags, check that we haven't
-            // exceeded the max allowed time. Since we don't know what other work needs
-            // to happen on the UI thread during this frame, and since this works tends to be
-            // low-priority, we only give this function a fraction of a frame to run.
-            if (deletedViews % 20 == 0 && haveExceededNonBatchedFrameTime(frameTimeNanos)) {
-              break;
-            }
-          }
-        }
-      } finally {
-        if (!mReactTagsToRemove.empty()) {
-          ReactChoreographer.getInstance()
-              .postFrameCallback(ReactChoreographer.CallbackType.IDLE_EVENT, this);
-        } else {
-          // If there are no more tags to process, then clear the "reused"
-          // tag set. Since the RemoveDeleteTree runner executes /after/ all
-          // other mounting instructions have been executed, all in-band Remove
-          // instructions have already had a chance to execute here.
-          mErroneouslyReaddedReactTags.clear();
-          mReactTagsToRemove.clear();
-        }
       }
     }
   }

@@ -58,72 +58,28 @@ target_compile_options(${CMAKE_PROJECT_NAME}
                 -fexceptions
                 -frtti
                 -std=c++20
-                -DLOG_TAG=\"ReactNative\")
+                -DLOG_TAG=\"ReactNative\"
+                -DFOLLY_NO_CONFIG=1
+)
 
 # Prefab packages from React Native
 find_package(ReactAndroid REQUIRED CONFIG)
-add_library(react_render_debug ALIAS ReactAndroid::react_render_debug)
-add_library(turbomodulejsijni ALIAS ReactAndroid::turbomodulejsijni)
-add_library(runtimeexecutor ALIAS ReactAndroid::runtimeexecutor)
-add_library(react_codegen_rncore ALIAS ReactAndroid::react_codegen_rncore)
-add_library(react_debug ALIAS ReactAndroid::react_debug)
-add_library(react_utils ALIAS ReactAndroid::react_utils)
-add_library(react_render_componentregistry ALIAS ReactAndroid::react_render_componentregistry)
-add_library(react_newarchdefaults ALIAS ReactAndroid::react_newarchdefaults)
-add_library(react_render_core ALIAS ReactAndroid::react_render_core)
-add_library(react_render_graphics ALIAS ReactAndroid::react_render_graphics)
-add_library(rrc_view ALIAS ReactAndroid::rrc_view)
-add_library(rrc_text ALIAS ReactAndroid::rrc_text)
-add_library(rrc_textinput ALIAS ReactAndroid::rrc_textinput)
 add_library(jsi ALIAS ReactAndroid::jsi)
-add_library(glog ALIAS ReactAndroid::glog)
-add_library(fabricjni ALIAS ReactAndroid::fabricjni)
-add_library(mapbufferjni ALIAS ReactAndroid::mapbufferjni)
-add_library(react_render_mapbuffer ALIAS ReactAndroid::react_render_mapbuffer)
-add_library(react_render_textlayoutmanager ALIAS ReactAndroid::react_render_textlayoutmanager)
-add_library(yoga ALIAS ReactAndroid::yoga)
-add_library(folly_runtime ALIAS ReactAndroid::folly_runtime)
-add_library(react_nativemodule_core ALIAS ReactAndroid::react_nativemodule_core)
-add_library(react_render_imagemanager ALIAS ReactAndroid::react_render_imagemanager)
-add_library(rrc_image ALIAS ReactAndroid::rrc_image)
-add_library(rrc_legacyviewmanagerinterop ALIAS ReactAndroid::rrc_legacyviewmanagerinterop)
+add_library(reactnative ALIAS ReactAndroid::reactnative)
 
 find_package(fbjni REQUIRED CONFIG)
 add_library(fbjni ALIAS fbjni::fbjni)
 
 target_link_libraries(${CMAKE_PROJECT_NAME}
-        fabricjni                           # prefab ready
-        mapbufferjni                        # prefab ready
         fbjni                               # via 3rd party prefab
-        folly_runtime                       # prefab ready
-        glog                                # prefab ready
         jsi                                 # prefab ready
-        react_codegen_rncore                # prefab ready
-        react_debug                         # prefab ready
-        react_utils                         # prefab ready
-        react_nativemodule_core             # prefab ready
-        react_newarchdefaults               # prefab ready
-        react_render_componentregistry      # prefab ready
-        react_render_core                   # prefab ready
-        react_render_debug                  # prefab ready
-        react_render_graphics               # prefab ready
-        react_render_imagemanager           # prefab ready
-        react_render_mapbuffer              # prefab ready
-        react_render_textlayoutmanager      # prefab ready
-        rrc_image                           # prefab ready
-        rrc_view                            # prefab ready
-        rrc_text                            # prefab ready
-        rrc_textinput                       # prefab ready
-        rrc_legacyviewmanagerinterop        # prefab ready
-        runtimeexecutor                     # prefab ready
-        turbomodulejsijni                   # prefab ready
-        yoga)                               # prefab ready
+        reactnative                         # prefab ready
+)
 
 # We use an interface target to propagate flags to all the generated targets
 # such as the folly flags or others.
 add_library(common_flags INTERFACE)
 target_compile_options(common_flags INTERFACE ${folly_FLAGS})
-target_link_libraries(ReactAndroid::react_codegen_rncore INTERFACE common_flags)
 
 # If project is on RN CLI v9, then we can use the following lines to link against the autolinked 3rd party libraries.
 if(EXISTS ${PROJECT_BUILD_DIR}/generated/autolinking/src/main/jni/Android-autolinking.cmake)
@@ -152,3 +108,7 @@ if(EXISTS ${PROJECT_BUILD_DIR}/generated/source/codegen/jni/CMakeLists.txt)
                 -DREACT_NATIVE_APP_MODULE_PROVIDER=${APP_CODEGEN_HEADER}_ModuleProvider
         )
 endif()
+
+# We set REACTNATIVE_MERGED_SO so libraries/apps can selectively decide to depend on either libreactnative.so
+# or link against a old prefab target (this is needed for React Native 0.76 on).
+set(REACTNATIVE_MERGED_SO true)

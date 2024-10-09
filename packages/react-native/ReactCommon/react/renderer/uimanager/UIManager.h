@@ -41,7 +41,6 @@ class UIManager final : public ShadowTreeDelegate {
  public:
   UIManager(
       const RuntimeExecutor& runtimeExecutor,
-      BackgroundExecutor backgroundExecutor,
       ContextContainer::Shared contextContainer);
 
   ~UIManager() override;
@@ -199,10 +198,6 @@ class UIManager final : public ShadowTreeDelegate {
 
   void reportMount(SurfaceId surfaceId) const;
 
-  bool hasBackgroundExecutor() const {
-    return backgroundExecutor_ != nullptr;
-  }
-
  private:
   friend class UIManagerBinding;
   friend class Scheduler;
@@ -227,7 +222,6 @@ class UIManager final : public ShadowTreeDelegate {
   UIManagerAnimationDelegate* animationDelegate_{nullptr};
   const RuntimeExecutor runtimeExecutor_{};
   ShadowTreeRegistry shadowTreeRegistry_{};
-  const BackgroundExecutor backgroundExecutor_{};
   ContextContainer::Shared contextContainer_;
 
   mutable std::shared_mutex commitHookMutex_;

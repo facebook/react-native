@@ -106,15 +106,15 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions
     if (controller == nil) {
       RCTLogError(
           @"Tried to display action sheet but there is no application window. options: %@", @{
-            @"title" : title,
-            @"message" : message,
+            @"title" : title ?: @"(null)",
+            @"message" : message ?: @"(null)",
             @"options" : buttons,
             @"cancelButtonIndex" : @(cancelButtonIndex),
             @"destructiveButtonIndices" : destructiveButtonIndices,
-            @"anchor" : anchor,
-            @"tintColor" : tintColor,
-            @"cancelButtonTintColor" : cancelButtonTintColor,
-            @"disabledButtonIndices" : disabledButtonIndices,
+            @"anchor" : anchor ?: @"(null)",
+            @"tintColor" : tintColor ?: @"(null)",
+            @"cancelButtonTintColor" : cancelButtonTintColor ?: @"(null)",
+            @"disabledButtonIndices" : disabledButtonIndices ?: @"(null)",
           });
       return;
     }

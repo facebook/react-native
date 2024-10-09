@@ -41,9 +41,10 @@ Pod::Spec.new do |s|
   s.header_dir             = "RCTLinking"
   s.pod_target_xcconfig    = {
                                "USE_HEADERMAP" => "YES",
-                               "CLANG_CXX_LANGUAGE_STANDARD" => "c++20",
+                               "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
                                "HEADER_SEARCH_PATHS" => header_search_paths.join(' ')
                              }
+  s.framework = "UIKit"
 
   s.dependency "React-Core/RCTLinkingHeaders", version
   s.dependency "ReactCommon/turbomodule/core", version

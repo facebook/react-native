@@ -109,6 +109,39 @@ BaseViewProps::BaseViewProps(
                                                        "Style",
                                                        sourceProps.borderStyles,
                                                        {})),
+      outlineColor(
+          CoreFeatures::enablePropIteratorSetter ? sourceProps.outlineColor
+                                                 : convertRawProp(
+                                                       context,
+                                                       rawProps,
+                                                       "outlineColor",
+                                                       sourceProps.outlineColor,
+                                                       {})),
+      outlineOffset(
+          CoreFeatures::enablePropIteratorSetter
+              ? sourceProps.outlineOffset
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "outlineOffset",
+                    sourceProps.outlineOffset,
+                    {})),
+      outlineStyle(
+          CoreFeatures::enablePropIteratorSetter ? sourceProps.outlineStyle
+                                                 : convertRawProp(
+                                                       context,
+                                                       rawProps,
+                                                       "outlineStyle",
+                                                       sourceProps.outlineStyle,
+                                                       {})),
+      outlineWidth(
+          CoreFeatures::enablePropIteratorSetter ? sourceProps.outlineWidth
+                                                 : convertRawProp(
+                                                       context,
+                                                       rawProps,
+                                                       "outlineWidth",
+                                                       sourceProps.outlineWidth,
+                                                       {})),
       shadowColor(
           CoreFeatures::enablePropIteratorSetter ? sourceProps.shadowColor
                                                  : convertRawProp(
@@ -150,13 +183,46 @@ BaseViewProps::BaseViewProps(
                                                        "cursor",
                                                        sourceProps.cursor,
                                                        {})),
+      boxShadow(
+          CoreFeatures::enablePropIteratorSetter ? sourceProps.boxShadow
+                                                 : convertRawProp(
+                                                       context,
+                                                       rawProps,
+                                                       "boxShadow",
+                                                       sourceProps.boxShadow,
+                                                       {})),
       filter(
           CoreFeatures::enablePropIteratorSetter ? sourceProps.filter
                                                  : convertRawProp(
                                                        context,
                                                        rawProps,
-                                                       "experimental_filter",
+                                                       "filter",
                                                        sourceProps.filter,
+                                                       {})),
+      backgroundImage(
+          CoreFeatures::enablePropIteratorSetter
+              ? sourceProps.backgroundImage
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "experimental_backgroundImage",
+                    sourceProps.backgroundImage,
+                    {})),
+      mixBlendMode(
+          CoreFeatures::enablePropIteratorSetter ? sourceProps.mixBlendMode
+                                                 : convertRawProp(
+                                                       context,
+                                                       rawProps,
+                                                       "mixBlendMode",
+                                                       sourceProps.mixBlendMode,
+                                                       {})),
+      isolation(
+          CoreFeatures::enablePropIteratorSetter ? sourceProps.isolation
+                                                 : convertRawProp(
+                                                       context,
+                                                       rawProps,
+                                                       "isolation",
+                                                       sourceProps.isolation,
                                                        {})),
       transform(
           CoreFeatures::enablePropIteratorSetter ? sourceProps.transform
@@ -294,6 +360,7 @@ void BaseViewProps::setProp(
   switch (hash) {
     RAW_SET_PROP_SWITCH_CASE_BASIC(opacity);
     RAW_SET_PROP_SWITCH_CASE_BASIC(backgroundColor);
+    RAW_SET_PROP_SWITCH_CASE(backgroundImage, "experimental_backgroundImage");
     RAW_SET_PROP_SWITCH_CASE_BASIC(shadowColor);
     RAW_SET_PROP_SWITCH_CASE_BASIC(shadowOffset);
     RAW_SET_PROP_SWITCH_CASE_BASIC(shadowOpacity);
@@ -303,6 +370,7 @@ void BaseViewProps::setProp(
     RAW_SET_PROP_SWITCH_CASE_BASIC(shouldRasterize);
     RAW_SET_PROP_SWITCH_CASE_BASIC(zIndex);
     RAW_SET_PROP_SWITCH_CASE_BASIC(pointerEvents);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(isolation);
     RAW_SET_PROP_SWITCH_CASE_BASIC(hitSlop);
     RAW_SET_PROP_SWITCH_CASE_BASIC(onLayout);
     RAW_SET_PROP_SWITCH_CASE_BASIC(collapsable);
@@ -310,6 +378,12 @@ void BaseViewProps::setProp(
     RAW_SET_PROP_SWITCH_CASE_BASIC(removeClippedSubviews);
     RAW_SET_PROP_SWITCH_CASE_BASIC(experimental_layoutConformance);
     RAW_SET_PROP_SWITCH_CASE_BASIC(cursor);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(outlineColor);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(outlineOffset);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(outlineStyle);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(outlineWidth);
+    RAW_SET_PROP_SWITCH_CASE(filter, "filter");
+    RAW_SET_PROP_SWITCH_CASE(boxShadow, "boxShadow");
     // events field
     VIEW_EVENT_CASE(PointerEnter);
     VIEW_EVENT_CASE(PointerEnterCapture);
@@ -352,36 +426,53 @@ static BorderRadii ensureNoOverlap(const BorderRadii& radii, const Size& size) {
   // Source: https://www.w3.org/TR/css-backgrounds-3/#corner-overlap
 
   auto insets = EdgeInsets{
-      /* .left = */ radii.topLeft + radii.bottomLeft,
-      /* .top = */ radii.topLeft + radii.topRight,
-      /* .right = */ radii.topRight + radii.bottomRight,
-      /* .bottom = */ radii.bottomLeft + radii.bottomRight,
+      .left = radii.topLeft.horizontal + radii.bottomLeft.horizontal,
+      .top = radii.topLeft.vertical + radii.topRight.vertical,
+      .right = radii.topRight.horizontal + radii.bottomRight.horizontal,
+      .bottom = radii.bottomLeft.vertical + radii.bottomRight.vertical,
   };
 
   auto insetsScale = EdgeInsets{
-      /* .left = */
-      insets.left > 0 ? std::min((Float)1.0, size.height / insets.left) : 0,
-      /* .top = */
-      insets.top > 0 ? std::min((Float)1.0, size.width / insets.top) : 0,
-      /* .right = */
-      insets.right > 0 ? std::min((Float)1.0, size.height / insets.right) : 0,
-      /* .bottom = */
-      insets.bottom > 0 ? std::min((Float)1.0, size.width / insets.bottom) : 0,
+      .left =
+          insets.left > 0 ? std::min((Float)1.0, size.height / insets.left) : 0,
+      .top = insets.top > 0 ? std::min((Float)1.0, size.width / insets.top) : 0,
+      .right = insets.right > 0
+          ? std::min((Float)1.0, size.height / insets.right)
+          : 0,
+      .bottom = insets.bottom > 0
+          ? std::min((Float)1.0, size.width / insets.bottom)
+          : 0,
   };
 
   return BorderRadii{
-      /* topLeft = */
-      static_cast<float>(
-          radii.topLeft * std::min(insetsScale.top, insetsScale.left)),
-      /* topRight = */
-      static_cast<float>(
-          radii.topRight * std::min(insetsScale.top, insetsScale.right)),
-      /* bottomLeft = */
-      static_cast<float>(
-          radii.bottomLeft * std::min(insetsScale.bottom, insetsScale.left)),
-      /* bottomRight = */
-      static_cast<float>(
-          radii.bottomRight * std::min(insetsScale.bottom, insetsScale.right)),
+      .topLeft =
+          {static_cast<float>(
+               radii.topLeft.horizontal *
+               std::min(insetsScale.top, insetsScale.left)),
+           static_cast<float>(
+               radii.topLeft.vertical *
+               std::min(insetsScale.top, insetsScale.left))},
+      .topRight =
+          {static_cast<float>(
+               radii.topRight.horizontal *
+               std::min(insetsScale.top, insetsScale.right)),
+           static_cast<float>(
+               radii.topRight.vertical *
+               std::min(insetsScale.top, insetsScale.right))},
+      .bottomLeft =
+          {static_cast<float>(
+               radii.bottomLeft.horizontal *
+               std::min(insetsScale.bottom, insetsScale.left)),
+           static_cast<float>(
+               radii.bottomLeft.vertical *
+               std::min(insetsScale.bottom, insetsScale.left))},
+      .bottomRight =
+          {static_cast<float>(
+               radii.bottomRight.horizontal *
+               std::min(insetsScale.bottom, insetsScale.right)),
+           static_cast<float>(
+               radii.bottomRight.vertical *
+               std::min(insetsScale.bottom, insetsScale.right))},
   };
 }
 
@@ -389,29 +480,35 @@ static BorderRadii radiiPercentToPoint(
     const RectangleCorners<ValueUnit>& radii,
     const Size& size) {
   return BorderRadii{
-      /* topLeft = */
-      (radii.topLeft.unit == UnitType::Percent)
-          ? static_cast<float>(
-                (radii.topLeft.value / 100) * std::max(size.width, size.height))
-          : static_cast<float>(radii.topLeft.value),
-      /* topRight = */
-      (radii.topRight.unit == UnitType::Percent)
-          ? static_cast<float>(
-                (radii.topRight.value / 100) *
-                std::max(size.width, size.height))
-          : static_cast<float>(radii.topRight.value),
-      /* bottomLeft = */
-      (radii.bottomLeft.unit == UnitType::Percent)
-          ? static_cast<float>(
-                (radii.bottomLeft.value / 100) *
-                std::max(size.width, size.height))
-          : static_cast<float>(radii.bottomLeft.value),
-      /* bottomRight = */
-      (radii.bottomRight.unit == UnitType::Percent)
-          ? static_cast<float>(
-                (radii.bottomRight.value / 100) *
-                std::max(size.width, size.height))
-          : static_cast<float>(radii.bottomRight.value),
+      .topLeft =
+          {radii.topLeft.resolve(size.width),
+           radii.topLeft.resolve(size.height)},
+      .topRight =
+          {radii.topRight.resolve(size.width),
+           radii.topRight.resolve(size.height)},
+      .bottomLeft =
+          {radii.bottomLeft.resolve(size.width),
+           radii.bottomLeft.resolve(size.height)},
+      .bottomRight =
+          {radii.bottomRight.resolve(size.width),
+           radii.bottomRight.resolve(size.height)},
+  };
+}
+
+CascadedBorderWidths BaseViewProps::getBorderWidths() const {
+  return CascadedBorderWidths{
+      .left = optionalFloatFromYogaValue(yogaStyle.border(yoga::Edge::Left)),
+      .top = optionalFloatFromYogaValue(yogaStyle.border(yoga::Edge::Top)),
+      .right = optionalFloatFromYogaValue(yogaStyle.border(yoga::Edge::Right)),
+      .bottom =
+          optionalFloatFromYogaValue(yogaStyle.border(yoga::Edge::Bottom)),
+      .start = optionalFloatFromYogaValue(yogaStyle.border(yoga::Edge::Start)),
+      .end = optionalFloatFromYogaValue(yogaStyle.border(yoga::Edge::End)),
+      .horizontal =
+          optionalFloatFromYogaValue(yogaStyle.border(yoga::Edge::Horizontal)),
+      .vertical =
+          optionalFloatFromYogaValue(yogaStyle.border(yoga::Edge::Vertical)),
+      .all = optionalFloatFromYogaValue(yogaStyle.border(yoga::Edge::All)),
   };
 }
 
@@ -420,39 +517,18 @@ BorderMetrics BaseViewProps::resolveBorderMetrics(
   auto isRTL =
       bool{layoutMetrics.layoutDirection == LayoutDirection::RightToLeft};
 
-  auto borderWidths = CascadedBorderWidths{
-      /* .left = */ optionalFloatFromYogaValue(
-          yogaStyle.border(yoga::Edge::Left)),
-      /* .top = */
-      optionalFloatFromYogaValue(yogaStyle.border(yoga::Edge::Top)),
-      /* .right = */
-      optionalFloatFromYogaValue(yogaStyle.border(yoga::Edge::Right)),
-      /* .bottom = */
-      optionalFloatFromYogaValue(yogaStyle.border(yoga::Edge::Bottom)),
-      /* .start = */
-      optionalFloatFromYogaValue(yogaStyle.border(yoga::Edge::Start)),
-      /* .end = */
-      optionalFloatFromYogaValue(yogaStyle.border(yoga::Edge::End)),
-      /* .horizontal = */
-      optionalFloatFromYogaValue(yogaStyle.border(yoga::Edge::Horizontal)),
-      /* .vertical = */
-      optionalFloatFromYogaValue(yogaStyle.border(yoga::Edge::Vertical)),
-      /* .all = */
-      optionalFloatFromYogaValue(yogaStyle.border(yoga::Edge::All)),
-  };
+  auto borderWidths = getBorderWidths();
 
   BorderRadii radii = radiiPercentToPoint(
       borderRadii.resolve(isRTL, ValueUnit{0.0f, UnitType::Point}),
       layoutMetrics.frame.size);
 
   return {
-      /* .borderColors = */ borderColors.resolve(isRTL, {}),
-      /* .borderWidths = */ borderWidths.resolve(isRTL, 0),
-      /* .borderRadii = */
-      ensureNoOverlap(radii, layoutMetrics.frame.size),
-      /* .borderCurves = */
-      borderCurves.resolve(isRTL, BorderCurve::Circular),
-      /* .borderStyles = */ borderStyles.resolve(isRTL, BorderStyle::Solid),
+      .borderColors = borderColors.resolve(isRTL, {}),
+      .borderWidths = borderWidths.resolve(isRTL, 0),
+      .borderRadii = ensureNoOverlap(radii, layoutMetrics.frame.size),
+      .borderCurves = borderCurves.resolve(isRTL, BorderCurve::Circular),
+      .borderStyles = borderStyles.resolve(isRTL, BorderStyle::Solid),
   };
 }
 

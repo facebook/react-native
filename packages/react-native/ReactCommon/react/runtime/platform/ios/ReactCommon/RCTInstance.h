@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import <React/RCTDefines.h>
+#import <React/RCTJavaScriptLoader.h>
 #import <jsinspector-modern/ReactCdp.h>
 #import <react/runtime/JSRuntimeFactory.h>
 #import <react/runtime/ReactInstance.h>
@@ -44,9 +45,11 @@ RCT_EXTERN void RCTInstanceSetRuntimeDiagnosticFlags(NSString *_Nullable flags);
 
 - (void)instance:(RCTInstance *)instance didInitializeRuntime:(facebook::jsi::Runtime &)runtime;
 
-@end
+- (void)loadBundleAtURL:(NSURL *)sourceURL
+             onProgress:(RCTSourceLoadProgressBlock)onProgress
+             onComplete:(RCTSourceLoadBlock)loadCallback;
 
-typedef void (^_Null_unspecified RCTInstanceInitialBundleLoadCompletionBlock)();
+@end
 
 /**
  * RCTInstance owns and manages most of the pieces of infrastructure required to display a screen powered by React
@@ -59,12 +62,12 @@ typedef void (^_Null_unspecified RCTInstanceInitialBundleLoadCompletionBlock)();
                 jsRuntimeFactory:(std::shared_ptr<facebook::react::JSRuntimeFactory>)jsRuntimeFactory
                    bundleManager:(RCTBundleManager *)bundleManager
       turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
-             onInitialBundleLoad:(RCTInstanceInitialBundleLoadCompletionBlock)onInitialBundleLoad
                   moduleRegistry:(RCTModuleRegistry *)moduleRegistry
            parentInspectorTarget:(facebook::react::jsinspector_modern::HostTarget *)parentInspectorTarget
                    launchOptions:(nullable NSDictionary *)launchOptions;
 
 - (void)callFunctionOnJSModule:(NSString *)moduleName method:(NSString *)method args:(NSArray *)args;
+- (void)callFunctionOnBufferedRuntimeExecutor:(std::function<void(facebook::jsi::Runtime &runtime)> &&)executor;
 
 - (void)registerSegmentWithId:(NSNumber *)segmentId path:(NSString *)path;
 

@@ -26,7 +26,7 @@ exports.examples = [
   {
     title: 'New App Screen Header',
     description: 'Displays a welcome to building a React Native app',
-    render(): React.Element<any> {
+    render(): React.MixedElement {
       return (
         <View style={{overflow: 'hidden'}}>
           <Header />
@@ -38,14 +38,14 @@ exports.examples = [
     title: 'Learn More Links',
     description:
       'Learn more about the tools and techniques for building React Native apps.',
-    render(): React.Element<any> {
+    render(): React.MixedElement {
       return <LearnMoreLinks />;
     },
   },
   {
     title: 'New App Screen Colors',
     description: 'Consistent colors to use throughout the new app screen.',
-    render(): React.Element<any> {
+    render(): React.MixedElement {
       return (
         <View style={{flexDirection: 'row'}}>
           {Object.keys(Colors).map(key => (
@@ -62,7 +62,7 @@ exports.examples = [
     title: 'Debug Instructions',
     description:
       'Platform-specific instructions on how to start debugging a React Native app.',
-    render(): React.Element<any> {
+    render(): React.MixedElement {
       return <DebugInstructions />;
     },
   },
@@ -70,7 +70,7 @@ exports.examples = [
     title: 'Reload Instructions',
     description:
       'Platform-specific instructions on how to reload a React Native app.',
-    render(): React.Element<any> {
+    render(): React.MixedElement {
       return <ReloadInstructions />;
     },
   },

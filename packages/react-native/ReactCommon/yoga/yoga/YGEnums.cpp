@@ -33,6 +33,16 @@ const char* YGAlignToString(const YGAlign value) {
   return "unknown";
 }
 
+const char* YGBoxSizingToString(const YGBoxSizing value) {
+  switch (value) {
+    case YGBoxSizingBorderBox:
+      return "border-box";
+    case YGBoxSizingContentBox:
+      return "content-box";
+  }
+  return "unknown";
+}
+
 const char* YGDimensionToString(const YGDimension value) {
   switch (value) {
     case YGDimensionWidth:

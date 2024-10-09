@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.ThreadConfined;
+import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.DeprecatedInNewArchitecture;
 import com.facebook.react.common.annotations.StableReactNativeAPI;
@@ -53,6 +54,8 @@ public abstract class BaseJavaModule implements NativeModule {
   public static final String METHOD_TYPE_ASYNC = "async";
   public static final String METHOD_TYPE_PROMISE = "promise";
   public static final String METHOD_TYPE_SYNC = "sync";
+
+  protected @Nullable CxxCallbackImpl mEventEmitterCallback;
 
   private final @Nullable ReactApplicationContext mReactApplicationContext;
 
@@ -128,5 +131,10 @@ public abstract class BaseJavaModule implements NativeModule {
       ReactSoftExceptionLogger.logSoftException(ReactConstants.TAG, new RuntimeException(msg));
     }
     return null;
+  }
+
+  @DoNotStrip
+  private final void setEventEmitterCallback(CxxCallbackImpl eventEmitterCallback) {
+    mEventEmitterCallback = eventEmitterCallback;
   }
 }

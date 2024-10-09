@@ -26,7 +26,7 @@ function processTransform(
 ): Array<Object> | Array<number> {
   if (typeof transform === 'string') {
     const regex = new RegExp(/(\w+)\(([^)]+)\)/g);
-    let transformArray: Array<Object> = [];
+    const transformArray: Array<Object> = [];
     let matches;
 
     while ((matches = regex.exec(transform))) {
@@ -50,23 +50,7 @@ function processTransform(
 }
 
 const _getKeyAndValueFromCSSTransform: (
-  key:
-    | string
-    | $TEMPORARY$string<'matrix'>
-    | $TEMPORARY$string<'perspective'>
-    | $TEMPORARY$string<'rotate'>
-    | $TEMPORARY$string<'rotateX'>
-    | $TEMPORARY$string<'rotateY'>
-    | $TEMPORARY$string<'rotateZ'>
-    | $TEMPORARY$string<'scale'>
-    | $TEMPORARY$string<'scaleX'>
-    | $TEMPORARY$string<'scaleY'>
-    | $TEMPORARY$string<'skewX'>
-    | $TEMPORARY$string<'skewY'>
-    | $TEMPORARY$string<'translate'>
-    | $TEMPORARY$string<'translate3d'>
-    | $TEMPORARY$string<'translateX'>
-    | $TEMPORARY$string<'translateY'>,
+  key: string,
   args: string,
 ) => {key: string, value?: Array<string | number> | number | string} = (
   key,
@@ -169,22 +153,7 @@ function _validateTransforms(transform: Array<Object>): void {
 }
 
 function _validateTransform(
-  key:
-    | string
-    | $TEMPORARY$string<'matrix'>
-    | $TEMPORARY$string<'perspective'>
-    | $TEMPORARY$string<'rotate'>
-    | $TEMPORARY$string<'rotateX'>
-    | $TEMPORARY$string<'rotateY'>
-    | $TEMPORARY$string<'rotateZ'>
-    | $TEMPORARY$string<'scale'>
-    | $TEMPORARY$string<'scaleX'>
-    | $TEMPORARY$string<'scaleY'>
-    | $TEMPORARY$string<'skewX'>
-    | $TEMPORARY$string<'skewY'>
-    | $TEMPORARY$string<'translate'>
-    | $TEMPORARY$string<'translateX'>
-    | $TEMPORARY$string<'translateY'>,
+  key: string,
   value: any | number | string,
   transformation: any,
 ) {

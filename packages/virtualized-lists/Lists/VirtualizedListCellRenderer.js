@@ -8,6 +8,7 @@
  * @format
  */
 
+import * as ReactNativeFeatureFlags from 'react-native/src/private/featureflags/ReactNativeFeatureFlags';
 import type {CellRendererProps, RenderItemType} from './VirtualizedListProps';
 import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 import type {
@@ -25,7 +26,7 @@ export type Props<ItemT> = {
   ItemSeparatorComponent: ?React.ComponentType<
     any | {highlighted: boolean, leadingItem: ?ItemT},
   >,
-  ListItemComponent?: ?(React.ComponentType<any> | React.Element<any>),
+  ListItemComponent?: ?(React.ComponentType<any> | React.MixedElement),
   cellKey: string,
   horizontal: ?boolean,
   index: number,
@@ -53,7 +54,7 @@ type State<ItemT> = {
   ...
 };
 
-export default class CellRenderer<ItemT> extends React.Component<
+export default class CellRenderer<ItemT> extends React.PureComponent<
   Props<ItemT>,
   State<ItemT>,
 > {
@@ -68,12 +69,24 @@ export default class CellRenderer<ItemT> extends React.Component<
     props: Props<ItemT>,
     prevState: State<ItemT>,
   ): ?State<ItemT> {
-    return {
-      separatorProps: {
-        ...prevState.separatorProps,
-        leadingItem: props.item,
-      },
-    };
+    if (ReactNativeFeatureFlags.enableOptimisedVirtualizedCells()) {
+      if (props.item !== prevState.separatorProps.leadingItem) {
+        return {
+          separatorProps: {
+            ...prevState.separatorProps,
+            leadingItem: props.item,
+          },
+        };
+      }
+      return null;
+    } else {
+      return {
+        separatorProps: {
+          ...prevState.separatorProps,
+          leadingItem: props.item,
+        },
+      };
+    }
   }
 
   // TODO: consider factoring separator stuff out of VirtualizedList into FlatList since it's not

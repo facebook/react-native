@@ -20,7 +20,8 @@ folly_config = get_folly_config()
 folly_compiler_flags = folly_config[:compiler_flags]
 folly_version = folly_config[:version]
 
-boost_compiler_flags = '-Wno-documentation'
+boost_config = get_boost_config()
+boost_compiler_flags = boost_config[:compiler_flags] 
 
 Pod::Spec.new do |s|
   source_files = "**/*.{m,mm,cpp,h}"
@@ -47,6 +48,7 @@ Pod::Spec.new do |s|
                              "platform/cxx",
                              "platform/windows",
   s.header_dir             = "react/renderer/graphics"
+  s.framework = "UIKit"
 
   if ENV['USE_FRAMEWORKS']
     s.module_name            = "React_graphics"
@@ -57,7 +59,7 @@ Pod::Spec.new do |s|
   s.pod_target_xcconfig  = { "USE_HEADERMAP" => "NO",
                              "HEADER_SEARCH_PATHS" => header_search_paths.join(" "),
                              "DEFINES_MODULE" => "YES",
-                             "CLANG_CXX_LANGUAGE_STANDARD" => "c++20" }
+                             "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard() }
 
   s.dependency "glog"
   s.dependency "RCT-Folly/Fabric", folly_version

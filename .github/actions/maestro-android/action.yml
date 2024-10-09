@@ -1,0 +1,84 @@
+name: Maestro E2E Android
+description: Runs E2E Tests on iOS using Maestro
+inputs:
+  app-path:
+    required: true
+    description: The path to the .apk file
+  app-id:
+    required: true
+    description: The id of the app to test
+  jsengine:
+    required: true
+    description: The js engine we are using
+  maestro-flow:
+    required: true
+    description: the folder that contains the maestro tests
+  install-java:
+    required: false
+    default: 'true'
+    description: whether this action has to install java 17 or not
+  flavor:
+    required: true
+    description: the flavor we want to run - either debug or release
+    default: release
+  working-directory:
+    required: false
+    default: "."
+    description: The directory from which metro should be started
+
+runs:
+  using: composite
+  steps:
+    - name: Installing Maestro
+      shell: bash
+      run: export MAESTRO_VERSION=1.36.0; curl -Ls "https://get.maestro.mobile.dev" | bash
+    - name: Set up JDK 17
+      if: ${{ inputs.install-java == 'true' }}
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'zulu'
+    - name: Enable KVM group perms
+      shell: bash
+      run: |
+        # ubuntu machines have hardware acceleration available and when we try to create an emulator, the script pauses asking for user input
+        # These lines set the rules to reply automatically to that question and unblock the creation of the emulator.
+        # source: https://github.com/ReactiveCircus/android-emulator-runner?tab=readme-ov-file#running-hardware-accelerated-emulators-on-linux-runners
+        echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+        sudo udevadm control --reload-rules
+        sudo udevadm trigger --name-match=kvm
+    - name: Build Codegen
+      shell: bash
+      if: ${{ inputs.flavor == 'debug' }}
+      run: ./packages/react-native-codegen/scripts/oss/build.sh
+    - name: Run e2e tests
+      uses: reactivecircus/android-emulator-runner@v2
+      with:
+        api-level: 24
+        arch: x86
+        ram-size: '4096M'
+        disk-size: '10G'
+        disable-animations: false
+        avd-name: e2e_emulator
+        script: node .github/workflow-scripts/maestro-android.js ${{ inputs.app-path }} ${{ inputs.app-id }} ${{ inputs.maestro-flow }} ${{ inputs.flavor }} ${{ inputs.working-directory }}
+    - name: Normalize APP_ID
+      id: normalize-app-id
+      shell: bash
+      if: always()
+      run: |
+        NORM_APP_ID=$(echo "${{ inputs.app-id }}" | tr '.' '-')
+        echo "app-id=$NORM_APP_ID" >> $GITHUB_OUTPUT
+    - name: Store tests result
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: e2e_android_${{ steps.normalize-app-id.outputs.app-id }}_report_${{ inputs.jsengine }}_${{ inputs.flavor }}
+        path: |
+          report.xml
+          screen.mp4
+    - name: Store Logs
+      if: failure() && steps.run-tests.outcome == 'failure'
+      uses: actions/upload-artifact@v4.3.4
+      with:
+        name: maestro-logs-android-${{ steps.normalize-app-id.outputs.app-id }}-${{ inputs.jsengine }}-${{ inputs.flavor }}
+        path: /tmp/MaestroLogs

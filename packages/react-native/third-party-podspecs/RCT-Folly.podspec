@@ -6,6 +6,7 @@
 folly_config = get_folly_config()
 folly_compiler_flags = folly_config[:compiler_flags]
 folly_release_version = folly_config[:version]
+folly_git_url = folly_config[:git]
 
 Pod::Spec.new do |spec|
   spec.name = 'RCT-Folly'
@@ -15,7 +16,7 @@ Pod::Spec.new do |spec|
   spec.homepage = 'https://github.com/facebook/folly'
   spec.summary = 'An open-source C++ library developed and used at Facebook.'
   spec.authors = 'Facebook'
-  spec.source = { :git => 'https://github.com/facebook/folly.git',
+  spec.source = { :git => folly_git_url,
                   :tag => "v#{folly_release_version}" }
   spec.module_name = 'folly'
   spec.header_mappings_dir = '.'
@@ -82,10 +83,11 @@ Pod::Spec.new do |spec|
   spec.libraries           = "c++abi" # NOTE Apple-only: Keep c++abi here due to https://github.com/react-native-community/releases/issues/251
   spec.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
                                "DEFINES_MODULE" => "YES",
-                               "CLANG_CXX_LANGUAGE_STANDARD" => "c++20",
+                               "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
                                "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)\" \"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/fmt/include\"",
                                # In dynamic framework (use_frameworks!) mode, ignore the unused and undefined boost symbols when generating the library.
-                               "OTHER_LDFLAGS" => "\"-Wl,-U,_jump_fcontext\" \"-Wl,-U,_make_fcontext\""
+                               "OTHER_LDFLAGS" => "\"-Wl,-U,_jump_fcontext\" \"-Wl,-U,_make_fcontext\"",
+                               "GCC_WARN_INHIBIT_ALL_WARNINGS" => "YES" # Disable warnings because we don't control this library
                              }
 
   # TODO: The boost spec should really be selecting these files so that dependents of Folly can also access the required headers.

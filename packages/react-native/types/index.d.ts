@@ -104,7 +104,6 @@ export * from '../Libraries/Components/View/ViewAccessibility';
 export * from '../Libraries/Components/View/ViewPropTypes';
 export * from '../Libraries/Components/Button';
 export * from '../Libraries/Core/registerCallableModule';
-export * from '../Libraries/DevToolsSettings/DevToolsSettingsManager';
 export * from '../Libraries/EventEmitter/NativeEventEmitter';
 export * from '../Libraries/EventEmitter/RCTDeviceEventEmitter';
 export * from '../Libraries/EventEmitter/RCTNativeAppEventEmitter';
@@ -142,6 +141,7 @@ export * as TurboModuleRegistry from '../Libraries/TurboModule/TurboModuleRegist
 export * from '../Libraries/Types/CoreEventTypes';
 export * from '../Libraries/Utilities/Appearance';
 export * from '../Libraries/Utilities/BackHandler';
+export * from '../src/private/devmenu/DevMenu';
 export * from '../Libraries/Utilities/DevSettings';
 export * from '../Libraries/Utilities/Dimensions';
 export * from '../Libraries/Utilities/PixelRatio';

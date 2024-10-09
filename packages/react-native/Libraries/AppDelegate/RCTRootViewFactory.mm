@@ -83,7 +83,7 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
 
 @end
 
-@interface RCTRootViewFactory () <RCTContextContainerHandling, RCTHostDelegate> {
+@interface RCTRootViewFactory () <RCTContextContainerHandling> {
   std::shared_ptr<const facebook::react::ReactNativeConfig> _reactNativeConfig;
   facebook::react::ContextContainer::Shared _contextContainer;
 }
@@ -95,21 +95,35 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
 @end
 
 @implementation RCTRootViewFactory {
-  RCTRootViewFactoryConfiguration *_configuration;
   __weak id<RCTTurboModuleManagerDelegate> _turboModuleManagerDelegate;
+  __weak id<RCTHostDelegate> _hostDelegate;
+  RCTRootViewFactoryConfiguration *_configuration;
 }
 
-- (instancetype)initWithConfiguration:(RCTRootViewFactoryConfiguration *)configuration
-        andTurboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
+- (instancetype)initWithTurboModuleDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
+                               hostDelegate:(id<RCTHostDelegate>)hostdelegate
+                              configuration:(RCTRootViewFactoryConfiguration *)configuration
 {
   if (self = [super init]) {
     _configuration = configuration;
+    _hostDelegate = hostdelegate;
     _contextContainer = std::make_shared<const facebook::react::ContextContainer>();
     _reactNativeConfig = std::make_shared<const facebook::react::EmptyReactNativeConfig>();
     _contextContainer->insert("ReactNativeConfig", _reactNativeConfig);
     _turboModuleManagerDelegate = turboModuleManagerDelegate;
   }
   return self;
+}
+
+- (instancetype)initWithConfiguration:(RCTRootViewFactoryConfiguration *)configuration
+        andTurboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
+{
+  id<RCTHostDelegate> hostDelegate = [turboModuleManagerDelegate conformsToProtocol:@protocol(RCTHostDelegate)]
+      ? (id<RCTHostDelegate>)turboModuleManagerDelegate
+      : nil;
+  return [self initWithTurboModuleDelegate:turboModuleManagerDelegate
+                              hostDelegate:hostDelegate
+                             configuration:configuration];
 }
 
 - (instancetype)initWithConfiguration:(RCTRootViewFactoryConfiguration *)configuration
@@ -188,26 +202,6 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
   return rootView;
 }
 
-#pragma mark - RCTHostDelegate
-
-- (void)hostDidStart:(RCTHost *)host
-{
-  if (self->_configuration.hostDidStartBlock) {
-    self->_configuration.hostDidStartBlock(host);
-  }
-}
-
-- (void)host:(RCTHost *)host
-    didReceiveJSErrorStack:(NSArray<NSDictionary<NSString *, id> *> *)stack
-                   message:(NSString *)message
-               exceptionId:(NSUInteger)exceptionId
-                   isFatal:(BOOL)isFatal
-{
-  if (self->_configuration.hostDidReceiveJSErrorStackBlock) {
-    self->_configuration.hostDidReceiveJSErrorStackBlock(host, stack, message, exceptionId, isFatal);
-  }
-}
-
 #pragma mark - RCTCxxBridgeDelegate
 - (std::unique_ptr<facebook::react::JSExecutorFactory>)jsExecutorFactoryForBridge:(RCTBridge *)bridge
 {
@@ -266,7 +260,7 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
   __weak __typeof(self) weakSelf = self;
   RCTHost *reactHost =
       [[RCTHost alloc] initWithBundleURLProvider:self->_configuration.bundleURLBlock
-                                    hostDelegate:self
+                                    hostDelegate:_hostDelegate
                       turboModuleManagerDelegate:_turboModuleManagerDelegate
                                 jsEngineProvider:^std::shared_ptr<facebook::react::JSRuntimeFactory>() {
                                   return [weakSelf createJSRuntimeFactory];
@@ -283,7 +277,8 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
 - (std::shared_ptr<facebook::react::JSRuntimeFactory>)createJSRuntimeFactory
 {
 #if USE_HERMES
-  return std::make_shared<facebook::react::RCTHermesInstance>(_reactNativeConfig, nullptr);
+  return std::make_shared<facebook::react::RCTHermesInstance>(
+      _reactNativeConfig, nullptr, /* allocInOldGenBeforeTTI */ false);
 #else
   return std::make_shared<facebook::react::RCTJscInstance>();
 #endif

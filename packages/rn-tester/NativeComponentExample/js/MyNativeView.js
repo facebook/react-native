@@ -22,7 +22,7 @@ import RNTMyNativeView, {
 } from './MyNativeViewNativeComponent';
 import * as React from 'react';
 import {useRef, useState} from 'react';
-import {Button, Text, UIManager, View} from 'react-native';
+import {Button, Platform, Text, UIManager, View} from 'react-native';
 const colors = [
   '#0000FF',
   '#FF0000',
@@ -91,6 +91,7 @@ export default function MyNativeView(props: {}): React.Node {
   const containerRef = useRef<React.ElementRef<typeof View> | null>(null);
   const ref = useRef<React.ElementRef<MyNativeViewType> | null>(null);
   const legacyRef = useRef<React.ElementRef<MyLegacyViewType> | null>(null);
+  const [currentBGColor, setCurrentBGColor] = useState<number>(0);
   const [opacity, setOpacity] = useState(1.0);
   const [arrayValues, setArrayValues] = useState([1, 2, 3]);
   const [hsba, setHsba] = useState<HSBA>(new HSBA());
@@ -101,6 +102,7 @@ export default function MyNativeView(props: {}): React.Node {
     useState<MeasureStruct>(MeasureStructZero);
   const [legacyMeasureLayout, setLegacyMeasureLayout] =
     useState<MeasureStruct>(MeasureStructZero);
+
   return (
     <View ref={containerRef} style={{flex: 1}}>
       <Text style={{color: 'red'}}>Fabric View</Text>
@@ -128,16 +130,24 @@ export default function MyNativeView(props: {}): React.Node {
         ref={legacyRef}
         style={{flex: 1}}
         opacity={opacity}
-        onColorChanged={event =>
+        onColorChanged={event => {
+          const normalizedHue =
+            Platform.OS === 'android'
+              ? event.nativeEvent.backgroundColor.hue
+              : event.nativeEvent.backgroundColor.hue * 360;
+          const normalizedAlpha =
+            Platform.OS === 'android'
+              ? event.nativeEvent.backgroundColor.alpha
+              : event.nativeEvent.backgroundColor.alpha * 255;
           setHsba(
             new HSBA(
-              event.nativeEvent.backgroundColor.hue,
+              normalizedHue,
               event.nativeEvent.backgroundColor.saturation,
               event.nativeEvent.backgroundColor.brightness,
-              event.nativeEvent.backgroundColor.alpha,
+              normalizedAlpha,
             ),
-          )
-        }
+          );
+        }}
       />
       <Text style={{color: 'green', textAlign: 'center'}}>
         HSBA: {hsba.toString()}
@@ -149,7 +159,9 @@ export default function MyNativeView(props: {}): React.Node {
       <Button
         title="Change Background"
         onPress={() => {
-          let newColor = colors[Math.floor(Math.random() * 5)];
+          let nextBGColor =
+            currentBGColor + 1 >= colors.length ? 0 : currentBGColor + 1;
+          let newColor = colors[nextBGColor];
           RNTMyNativeViewCommands.callNativeMethodToChangeBackgroundColor(
             // $FlowFixMe[incompatible-call]
             ref.current,
@@ -157,6 +169,7 @@ export default function MyNativeView(props: {}): React.Node {
           );
 
           callNativeMethodToChangeBackgroundColor(legacyRef.current, newColor);
+          setCurrentBGColor(nextBGColor);
         }}
       />
       <Button

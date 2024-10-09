@@ -224,6 +224,40 @@ NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(const ObjCTurboMo
   methodMap_["getObjectAssert"] = MethodMetadata{1, __hostFunction_NativeSampleTurboModuleSpecJSI_getObjectAssert};
   methodMap_["promiseAssert"] = MethodMetadata{0, __hostFunction_NativeSampleTurboModuleSpecJSI_promiseAssert};
   methodMap_["getConstants"] = MethodMetadata{0, __hostFunction_NativeSampleTurboModuleSpecJSI_getConstants};
+  eventEmitterMap_["onPress"] = std::make_shared<AsyncEventEmitter<id>>();
+  eventEmitterMap_["onClick"] = std::make_shared<AsyncEventEmitter<id>>();
+  eventEmitterMap_["onChange"] = std::make_shared<AsyncEventEmitter<id>>();
+  eventEmitterMap_["onSubmit"] = std::make_shared<AsyncEventEmitter<id>>();
+  setEventEmitterCallback([&](const std::string &name, id value) {
+    static_cast<AsyncEventEmitter<id> &>(*eventEmitterMap_[name]).emit(value);
+  });
 }
 
 } // namespace facebook::react
+
+@implementation NativeSampleTurboModuleSpecBase
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *_Nonnull)eventEmitterCallbackWrapper
+{
+  _eventEmitterCallback = std::move(eventEmitterCallbackWrapper->_eventEmitterCallback);
+}
+
+- (void)emitOnPress
+{
+  _eventEmitterCallback("onPress", nil);
+}
+
+- (void)emitOnClick:(NSString *)value
+{
+  _eventEmitterCallback("onClick", value);
+}
+
+- (void)emitOnChange:(NSDictionary *)value
+{
+  _eventEmitterCallback("onChange", value);
+}
+
+- (void)emitOnSubmit:(NSArray *)value
+{
+  _eventEmitterCallback("onSubmit", value);
+}
+@end

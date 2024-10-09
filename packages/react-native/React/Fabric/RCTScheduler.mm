@@ -8,6 +8,7 @@
 #import "RCTScheduler.h"
 
 #import <cxxreact/SystraceSection.h>
+#import <react/featureflags/ReactNativeFeatureFlags.h>
 #import <react/renderer/animations/LayoutAnimationDriver.h>
 #import <react/renderer/componentregistry/ComponentDescriptorFactory.h>
 #import <react/renderer/scheduler/Scheduler.h>
@@ -118,7 +119,7 @@ class LayoutAnimationDelegateProxy : public LayoutAnimationStatusDelegate, publi
 
     _delegateProxy = std::make_shared<SchedulerDelegateProxy>((__bridge void *)self);
 
-    if (reactNativeConfig->getBool("react_fabric:enabled_layout_animations_ios")) {
+    if (ReactNativeFeatureFlags::enableLayoutAnimationsOnIOS()) {
       _layoutAnimationDelegateProxy = std::make_shared<LayoutAnimationDelegateProxy>((__bridge void *)self);
       _animationDriver = std::make_shared<LayoutAnimationDriver>(
           toolbox.runtimeExecutor, toolbox.contextContainer, _layoutAnimationDelegateProxy.get());

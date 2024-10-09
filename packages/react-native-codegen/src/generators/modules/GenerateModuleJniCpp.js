@@ -12,6 +12,7 @@
 
 import type {
   NamedShape,
+  NativeModuleEventEmitterShape,
   NativeModuleFunctionTypeAnnotation,
   NativeModuleParamTypeAnnotation,
   NativeModulePropertyShape,
@@ -54,9 +55,11 @@ const HostFunctionTemplate = ({
 
 const ModuleClassConstructorTemplate = ({
   hasteModuleName,
+  eventEmitters,
   methods,
 }: $ReadOnly<{
   hasteModuleName: string,
+  eventEmitters: $ReadOnlyArray<NativeModuleEventEmitterShape>,
   methods: $ReadOnlyArray<{
     propertyName: string,
     argCount: number,
@@ -69,7 +72,21 @@ ${methods
   .map(({propertyName, argCount}) => {
     return `  methodMap_["${propertyName}"] = MethodMetadata {${argCount}, __hostFunction_${hasteModuleName}SpecJSI_${propertyName}};`;
   })
-  .join('\n')}
+  .join('\n')}${
+    eventEmitters.length > 0
+      ? eventEmitters
+          .map(eventEmitter => {
+            return `
+  eventEmitterMap_["${eventEmitter.name}"] = std::make_shared<AsyncEventEmitter<folly::dynamic>>();`;
+          })
+          .join('')
+      : ''
+  }${
+    eventEmitters.length > 0
+      ? `
+  setEventEmitterCallback(params.instance);`
+      : ''
+  }
 }`.trim();
 };
 
@@ -147,6 +164,10 @@ function translateReturnTypeToKind(
     case 'VoidTypeAnnotation':
       return 'VoidKind';
     case 'StringTypeAnnotation':
+      return 'StringKind';
+    case 'StringLiteralTypeAnnotation':
+      return 'StringKind';
+    case 'StringLiteralUnionTypeAnnotation':
       return 'StringKind';
     case 'BooleanTypeAnnotation':
       return 'BooleanKind';
@@ -227,6 +248,10 @@ function translateParamTypeToJniType(
       }
     case 'StringTypeAnnotation':
       return 'Ljava/lang/String;';
+    case 'StringLiteralTypeAnnotation':
+      return 'Ljava/lang/String;';
+    case 'StringLiteralUnionTypeAnnotation':
+      return 'Ljava/lang/String;';
     case 'BooleanTypeAnnotation':
       return !isRequired ? 'Ljava/lang/Boolean;' : 'Z';
     case 'EnumDeclaration':
@@ -303,6 +328,10 @@ function translateReturnTypeToJniType(
       return 'V';
     case 'StringTypeAnnotation':
       return 'Ljava/lang/String;';
+    case 'StringLiteralTypeAnnotation':
+      return 'Ljava/lang/String;';
+    case 'StringLiteralUnionTypeAnnotation':
+      return 'Ljava/lang/String;';
     case 'BooleanTypeAnnotation':
       return nullable ? 'Ljava/lang/Boolean;' : 'Z';
     case 'EnumDeclaration':
@@ -334,9 +363,9 @@ function translateReturnTypeToJniType(
     case 'DoubleTypeAnnotation':
       return nullable ? 'Ljava/lang/Double;' : 'D';
     case 'FloatTypeAnnotation':
-      return nullable ? 'Ljava/lang/Float;' : 'F';
+      return nullable ? 'Ljava/lang/Double;' : 'D';
     case 'Int32TypeAnnotation':
-      return nullable ? 'Ljava/lang/Integer;' : 'I';
+      return nullable ? 'Ljava/lang/Double;' : 'D';
     case 'PromiseTypeAnnotation':
       return 'Lcom/facebook/react/bridge/Promise;';
     case 'GenericObjectTypeAnnotation':
@@ -438,7 +467,7 @@ module.exports = {
       .map(hasteModuleName => {
         const {
           aliasMap,
-          spec: {methods},
+          spec: {eventEmitters, methods},
         } = nativeModules[hasteModuleName];
         const resolveAlias = createAliasResolver(aliasMap);
 
@@ -457,6 +486,7 @@ module.exports = {
           '\n\n' +
           ModuleClassConstructorTemplate({
             hasteModuleName,
+            eventEmitters,
             methods: methods
               .map(({name: propertyName, typeAnnotation}) => {
                 const [{returnTypeAnnotation, params}] =

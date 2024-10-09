@@ -413,7 +413,7 @@ inline void fromRawValue(
   react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
-    if (string == "auto") {
+    if (string == "auto" || string == "start") {
       result = TextAlignment::Natural;
     } else if (string == "left") {
       result = TextAlignment::Left;
@@ -425,7 +425,6 @@ inline void fromRawValue(
       result = TextAlignment::Justified;
     } else {
       LOG(ERROR) << "Unsupported TextAlignment value: " << string;
-      react_native_expect(false);
       // sane default for prod
       result = TextAlignment::Natural;
     }
@@ -588,6 +587,60 @@ inline std::string toString(const LineBreakStrategy& lineBreakStrategy) {
   LOG(ERROR) << "Unsupported LineBreakStrategy value";
   // sane default for prod
   return "none";
+}
+
+inline void fromRawValue(
+    const PropsParserContext& /*context*/,
+    const RawValue& value,
+    LineBreakMode& result) {
+  react_native_expect(value.hasType<std::string>());
+  if (value.hasType<std::string>()) {
+    auto string = (std::string)value;
+    if (string == "wordWrapping") {
+      result = LineBreakMode::Word;
+    } else if (string == "char") {
+      result = LineBreakMode::Char;
+    } else if (string == "clip") {
+      result = LineBreakMode::Clip;
+    } else if (string == "head") {
+      result = LineBreakMode::Head;
+    } else if (string == "middle") {
+      result = LineBreakMode::Middle;
+    } else if (string == "tail") {
+      result = LineBreakMode::Tail;
+    } else {
+      LOG(ERROR) << "Unsupported LineBreakStrategy value: " << string;
+      react_native_expect(false);
+      // sane default for prod
+      result = LineBreakMode::Word;
+    }
+    return;
+  }
+
+  LOG(ERROR) << "Unsupported LineBreakStrategy type";
+  // sane default for prod
+  result = LineBreakMode::Word;
+}
+
+inline std::string toString(const LineBreakMode& lineBreakMode) {
+  switch (lineBreakMode) {
+    case LineBreakMode::Word:
+      return "wordWrapping";
+    case LineBreakMode::Char:
+      return "char";
+    case LineBreakMode::Clip:
+      return "clip";
+    case LineBreakMode::Head:
+      return "head";
+    case LineBreakMode::Middle:
+      return "middle";
+    case LineBreakMode::Tail:
+      return "tail";
+  }
+
+  LOG(ERROR) << "Unsupported LineBreakStrategy value";
+  // sane default for prod
+  return "wordWrapping";
 }
 
 inline void fromRawValue(
@@ -818,6 +871,7 @@ constexpr static MapBuffer::Key AS_KEY_HASH = 0;
 constexpr static MapBuffer::Key AS_KEY_STRING = 1;
 constexpr static MapBuffer::Key AS_KEY_FRAGMENTS = 2;
 constexpr static MapBuffer::Key AS_KEY_CACHE_ID = 3;
+constexpr static MapBuffer::Key AS_KEY_BASE_ATTRIBUTES = 4;
 
 // constants for Fragment serialization
 constexpr static MapBuffer::Key FR_KEY_STRING = 0;
@@ -1064,6 +1118,9 @@ inline MapBuffer toMapBuffer(const AttributedString& attributedString) {
   // TODO: This truncates half the hash
   builder.putInt(AS_KEY_HASH, static_cast<int>(hash));
   builder.putString(AS_KEY_STRING, attributedString.getString());
+  builder.putMapBuffer(
+      AS_KEY_BASE_ATTRIBUTES,
+      toMapBuffer(attributedString.getBaseTextAttributes()));
   auto fragmentsMap = fragmentsBuilder.build();
   builder.putMapBuffer(AS_KEY_FRAGMENTS, fragmentsMap);
   return builder.build();

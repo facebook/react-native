@@ -30,10 +30,11 @@ class MountingOverrideDelegate {
    * - Calling
    * - Telemetry, if appropriate
    *
-   * @param surfaceId
-   * @param number
-   * @param mountingCoordinator
-   * @return
+   * @param surfaceId the Id of the surface to be mounted
+   * @param number of the transaction
+   * @param telemetry object associated with the transaction
+   * @param mutations list of the mutations from the ShadowTree
+   * @return the mounting transaction, if it was created
    */
   virtual std::optional<MountingTransaction> pullTransaction(
       SurfaceId surfaceId,

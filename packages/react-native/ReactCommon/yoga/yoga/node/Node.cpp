@@ -9,6 +9,7 @@
 #include <cstddef>
 #include <iostream>
 
+#include <yoga/algorithm/FlexDirection.h>
 #include <yoga/debug/AssertFatal.h>
 #include <yoga/debug/Log.h>
 #include <yoga/node/Node.h>
@@ -43,7 +44,7 @@ Node::Node(Node&& node) noexcept
       owner_(node.owner_),
       children_(std::move(node.children_)),
       config_(node.config_),
-      resolvedDimensions_(node.resolvedDimensions_) {
+      processedDimensions_(node.processedDimensions_) {
   for (auto c : children_) {
     c->setOwner(this);
   }
@@ -136,6 +137,11 @@ void Node::setConfig(yoga::Config* config) {
 
   if (yoga::configUpdateInvalidatesLayout(*config_, *config)) {
     markDirtyAndPropagate();
+    layout_.configVersion = 0;
+  } else {
+    // If the config is functionally the same, then align the configVersion so
+    // that we can reuse the layout cache
+    layout_.configVersion = config->getVersion();
   }
 
   config_ = config;
@@ -221,7 +227,8 @@ float Node::relativePosition(
   if (style_.positionType() == PositionType::Static) {
     return 0;
   }
-  if (style_.isInlineStartPositionDefined(axis, direction)) {
+  if (style_.isInlineStartPositionDefined(axis, direction) &&
+      !style_.isInlineStartPositionAuto(axis, direction)) {
     return style_.computeInlineStartPosition(axis, direction, axisSize);
   }
 
@@ -275,7 +282,7 @@ void Node::setPosition(
       crossAxisTrailingEdge);
 }
 
-Style::Length Node::resolveFlexBasisPtr() const {
+Style::Length Node::processFlexBasis() const {
   Style::Length flexBasis = style_.flexBasis();
   if (flexBasis.unit() != Unit::Auto && flexBasis.unit() != Unit::Undefined) {
     return flexBasis;
@@ -286,14 +293,33 @@ Style::Length Node::resolveFlexBasisPtr() const {
   return value::ofAuto();
 }
 
-void Node::resolveDimension() {
+FloatOptional Node::resolveFlexBasis(
+    Direction direction,
+    FlexDirection flexDirection,
+    float referenceLength,
+    float ownerWidth) const {
+  FloatOptional value = processFlexBasis().resolve(referenceLength);
+  if (style_.boxSizing() == BoxSizing::BorderBox) {
+    return value;
+  }
+
+  Dimension dim = dimension(flexDirection);
+  FloatOptional dimensionPaddingAndBorder = FloatOptional{
+      style_.computePaddingAndBorderForDimension(direction, dim, ownerWidth)};
+
+  return value +
+      (dimensionPaddingAndBorder.isDefined() ? dimensionPaddingAndBorder
+                                             : FloatOptional{0.0});
+}
+
+void Node::processDimensions() {
   for (auto dim : {Dimension::Width, Dimension::Height}) {
     if (style_.maxDimension(dim).isDefined() &&
         yoga::inexactEquals(
             style_.maxDimension(dim), style_.minDimension(dim))) {
-      resolvedDimensions_[yoga::to_underlying(dim)] = style_.maxDimension(dim);
+      processedDimensions_[yoga::to_underlying(dim)] = style_.maxDimension(dim);
     } else {
-      resolvedDimensions_[yoga::to_underlying(dim)] = style_.dimension(dim);
+      processedDimensions_[yoga::to_underlying(dim)] = style_.dimension(dim);
     }
   }
 }

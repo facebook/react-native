@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e45c35dee2c9e2135995ccf2c8a6def3>>
+ * @generated SignedSource<<3bbe3eb333030be7f32c0965c9db4a5c>>
  */
 
 /**
@@ -43,11 +43,6 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool commonTestFlag();
 
   /**
-   * Enables the differentiator to understand the "collapsableChildren" prop
-   */
-  RN_EXPORT static bool allowCollapsableChildren();
-
-  /**
    * Adds support for recursively processing commits that mount synchronously (Android only).
    */
   RN_EXPORT static bool allowRecursiveCommitsWithSynchronousMountOnAndroid();
@@ -58,14 +53,24 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool batchRenderingUpdatesInEventLoop();
 
   /**
-   * When enabled, ReactInstanceManager will clean up Fabric surfaces on destroy().
+   * Do not wait for a main-thread dispatch to complete init to start executing work on the JS thread on Android
    */
-  RN_EXPORT static bool destroyFabricSurfacesInReactInstanceManager();
+  RN_EXPORT static bool completeReactInstanceCreationOnBgThreadOnAndroid();
 
   /**
-   * Enables the use of a background executor to compute layout and commit updates on Fabric (this system is deprecated and should not be used).
+   * Kill-switch to turn off support for aling-items:baseline on Fabric iOS.
    */
-  RN_EXPORT static bool enableBackgroundExecutor();
+  RN_EXPORT static bool enableAlignItemsBaselineOnFabricIOS();
+
+  /**
+   * When enabled, custom line height calculation will be centered from top to bottom.
+   */
+  RN_EXPORT static bool enableAndroidLineHeightCentering();
+
+  /**
+   * Feature flag to enable the new bridgeless architecture. Note: Enabling this will force enable the following flags: `useTurboModules` & `enableFabricRenderer.
+   */
+  RN_EXPORT static bool enableBridgelessArchitecture();
 
   /**
    * Clean yoga node when <TextInput /> does not change.
@@ -73,9 +78,59 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableCleanTextInputYogaNode();
 
   /**
+   * Deletes views that were pre-allocated but never mounted on the screen.
+   */
+  RN_EXPORT static bool enableDeletionOfUnmountedViews();
+
+  /**
+   * Feature flag to configure eager attachment of the root view/initialisation of the JS code.
+   */
+  RN_EXPORT static bool enableEagerRootViewAttachment();
+
+  /**
+   * Enables the retention of EventEmitterWrapper on Android till the touch gesture is over to fix a bug on pressable (#44610)
+   */
+  RN_EXPORT static bool enableEventEmitterRetentionDuringGesturesOnAndroid();
+
+  /**
+   * This feature flag enables logs for Fabric.
+   */
+  RN_EXPORT static bool enableFabricLogs();
+
+  /**
+   * Enables the use of the Fabric renderer in the whole app.
+   */
+  RN_EXPORT static bool enableFabricRenderer();
+
+  /**
+   * When the app is completely migrated to Fabric, set this flag to true to disable parts of Paper infrastructure that are not needed anymore but consume memory and CPU. Specifically, UIViewOperationQueue and EventDispatcherImpl will no longer work as they will not subscribe to ReactChoreographer for updates.
+   */
+  RN_EXPORT static bool enableFabricRendererExclusively();
+
+  /**
    * When enabled, the renderer would only fail commits when they propagate state and the last commit that updated state changed before committing.
    */
   RN_EXPORT static bool enableGranularShadowTreeStateReconciliation();
+
+  /**
+   * iOS Views will clip to their padding box vs border box
+   */
+  RN_EXPORT static bool enableIOSViewClipToPaddingBox();
+
+  /**
+   * When enabled, LayoutAnimations API will animate state changes on Android.
+   */
+  RN_EXPORT static bool enableLayoutAnimationsOnAndroid();
+
+  /**
+   * When enabled, LayoutAnimations API will animate state changes on iOS.
+   */
+  RN_EXPORT static bool enableLayoutAnimationsOnIOS();
+
+  /**
+   * Enables the reporting of long tasks through `PerformanceObserver`. Only works if the event loop is enabled.
+   */
+  RN_EXPORT static bool enableLongTaskAPI();
 
   /**
    * Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).
@@ -83,9 +138,29 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableMicrotasks();
 
   /**
+   * Moves execution of pre-mount items to outside the choregrapher in the main thread, so we can estimate idle time more precisely (Android only).
+   */
+  RN_EXPORT static bool enablePreciseSchedulingForPremountItemsOnAndroid();
+
+  /**
+   * When enabled, Android will receive prop updates based on the differences between the last rendered shadow node and the last committed shadow node.
+   */
+  RN_EXPORT static bool enablePropsUpdateReconciliationAndroid();
+
+  /**
+   * Report paint time inside the Event Timing API implementation (PerformanceObserver).
+   */
+  RN_EXPORT static bool enableReportEventPaintTime();
+
+  /**
    * Dispatches state updates synchronously in Fabric (e.g.: updates the scroll position in the shadow tree synchronously from the main thread).
    */
   RN_EXPORT static bool enableSynchronousStateUpdates();
+
+  /**
+   * Text preallocation optimisation where unnecessary work is removed.
+   */
+  RN_EXPORT static bool enableTextPreallocationOptimisation();
 
   /**
    * Ensures that JavaScript always has a consistent view of the state of the UI (e.g.: commits done in other threads are not immediately propagated to JS during its execution).
@@ -93,14 +168,29 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableUIConsistency();
 
   /**
+   * Enables View Recycling. When enabled, individual ViewManagers must still opt-in.
+   */
+  RN_EXPORT static bool enableViewRecycling();
+
+  /**
+   * When enabled, rawProps in Props will not include Yoga specific props.
+   */
+  RN_EXPORT static bool excludeYogaFromRawProps();
+
+  /**
+   * Start image fetching during view preallocation instead of waiting for layout pass
+   */
+  RN_EXPORT static bool fetchImagesInViewPreallocation();
+
+  /**
    * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.
    */
   RN_EXPORT static bool fixMappingOfEventPrioritiesBetweenFabricAndReact();
 
   /**
-   * Fixes a leak in SurfaceMountingManager.mRemoveDeleteTreeUIFrameCallback
+   * Fixes a limitation on Android where the mounting coordinator would report there are no pending transactions but some of them were actually not processed due to the use of the push model.
    */
-  RN_EXPORT static bool fixStoppedSurfaceRemoveDeleteTreeUIFrameCallbackLeak();
+  RN_EXPORT static bool fixMountingCoordinatorReportedPendingTransactionsOnAndroid();
 
   /**
    * Forces the mounting layer on Android to always batch mount items instead of dispatching them immediately. This might fix some crashes related to synchronous state updates, where some views dispatch state updates during mount.
@@ -118,19 +208,39 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool fuseboxEnabledRelease();
 
   /**
+   * Construct modules that requires eager init on the dedicate native modules thread
+   */
+  RN_EXPORT static bool initEagerTurboModulesOnNativeModulesQueueAndroid();
+
+  /**
    * Only enqueue Choreographer calls if there is an ongoing animation, instead of enqueueing every frame.
    */
   RN_EXPORT static bool lazyAnimationCallbacks();
 
   /**
-   * When enabled, ParagraphShadowNode will no longer call measure twice.
+   * Adds support for loading vector drawable assets in the Image component (only on Android)
    */
-  RN_EXPORT static bool preventDoubleTextMeasure();
+  RN_EXPORT static bool loadVectorDrawablesOnImages();
+
+  /**
+   * Removes nested calls to MountItemDispatcher.dispatchMountItems on Android, so we do less work per frame on the UI thread.
+   */
+  RN_EXPORT static bool removeNestedCallsToDispatchMountItemsOnAndroid();
 
   /**
    * Propagate layout direction to Android views.
    */
   RN_EXPORT static bool setAndroidLayoutDirection();
+
+  /**
+   * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.
+   */
+  RN_EXPORT static bool traceTurboModulePromiseRejectionsOnAndroid();
+
+  /**
+   * Should this application enable the Fabric Interop Layer for Android? If yes, the application will behave so that it can accept non-Fabric components and render them on Fabric. This toggle is controlling extra logic such as custom event dispatching that are needed for the Fabric Interop Layer to work correctly.
+   */
+  RN_EXPORT static bool useFabricInterop();
 
   /**
    * Invoke callbacks immediately on the ReactInstance rather than going through a background thread for synchronization
@@ -148,19 +258,29 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool useNativeViewConfigsInBridgelessMode();
 
   /**
+   * Moves more of the work in view preallocation to the main thread to free up JS thread.
+   */
+  RN_EXPORT static bool useOptimisedViewPreallocationOnAndroid();
+
+  /**
+   * Uses an optimized mechanism for event batching on Android that does not need to wait for a Choreographer frame callback.
+   */
+  RN_EXPORT static bool useOptimizedEventBatchingOnAndroid();
+
+  /**
    * When enabled, cloning shadow nodes within react native will update the reference held by the current JS fiber tree.
    */
   RN_EXPORT static bool useRuntimeShadowNodeReferenceUpdate();
 
   /**
-   * When enabled, cloning shadow nodes during layout will update the reference held by the current JS fiber tree.
+   * In Bridgeless mode, should legacy NativeModules use the TurboModule system?
    */
-  RN_EXPORT static bool useRuntimeShadowNodeReferenceUpdateOnLayout();
+  RN_EXPORT static bool useTurboModuleInterop();
 
   /**
-   * When enabled, it uses optimised state reconciliation algorithm.
+   * When enabled, NativeModules will be executed by using the TurboModule system
    */
-  RN_EXPORT static bool useStateAlignmentMechanism();
+  RN_EXPORT static bool useTurboModules();
 
   /**
    * Overrides the feature flags with the ones provided by the given provider

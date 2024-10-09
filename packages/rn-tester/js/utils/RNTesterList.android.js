@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {RNTesterModuleInfo} from '../types/RNTesterTypes';
+import type {RNTesterModuleInfo, RNTesterModule} from '../types/RNTesterTypes';
 
 import ReactNativeFeatureFlags from 'react-native/Libraries/ReactNative/ReactNativeFeatureFlags';
 
@@ -312,6 +312,16 @@ const APIs: Array<RNTesterModuleInfo> = ([
     module: require('../examples/Filter/FilterExample'),
   },
   {
+    key: 'LinearGradient',
+    category: 'UI',
+    module: require('../examples/LinearGradient/LinearGradientExample'),
+  },
+  {
+    key: 'MixBlendModeExample',
+    category: 'UI',
+    module: require('../examples/MixBlendMode/MixBlendModeExample'),
+  },
+  {
     key: 'VibrationExample',
     category: 'Basic',
     module: require('../examples/Vibration/VibrationExample'),
@@ -355,9 +365,16 @@ if (ReactNativeFeatureFlags.shouldEmitW3CPointerEvents()) {
   });
 }
 
-const Modules: any = {};
+const Playgrounds: Array<RNTesterModuleInfo> = [
+  {
+    key: 'PlaygroundExample',
+    module: require('../examples/Playground/PlaygroundExample'),
+  },
+];
 
-APIs.concat(Components).forEach(Example => {
+const Modules: {[key: string]: RNTesterModule} = {};
+
+[...APIs, ...Components, ...Playgrounds].forEach(Example => {
   Modules[Example.key] = Example.module;
 });
 

@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include <functional>
 #include <memory>
+#include <vector>
 
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/core/ComponentDescriptor.h>
@@ -112,21 +112,29 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
 
     rawProps.parse(rawPropsParser_);
 
-    // Call old-style constructor
-    auto shadowNodeProps = ShadowNodeT::Props(context, rawProps, props);
-
     // Use the new-style iterator
     // Note that we just check if `Props` has this flag set, no matter
     // the type of ShadowNode; it acts as the single global flag.
     if (CoreFeatures::enablePropIteratorSetter) {
-      rawProps.iterateOverValues([&](RawPropsPropNameHash hash,
-                                     const char* propName,
-                                     const RawValue& fn) {
-        shadowNodeProps.get()->setProp(context, hash, propName, fn);
-      });
+      auto shadowNodeProps = ShadowNodeT::Props(context, rawProps, props);
+#ifdef ANDROID
+      const auto& dynamic = shadowNodeProps->rawProps;
+#else
+      const auto& dynamic = static_cast<folly::dynamic>(rawProps);
+#endif
+      for (const auto& pair : dynamic.items()) {
+        const auto& name = pair.first.getString();
+        shadowNodeProps->setProp(
+            context,
+            RAW_PROPS_KEY_HASH(name),
+            name.c_str(),
+            RawValue(pair.second));
+      }
+      return shadowNodeProps;
+    } else {
+      // Call old-style constructor
+      return ShadowNodeT::Props(context, rawProps, props);
     }
-
-    return shadowNodeProps;
   };
 
   virtual State::Shared createInitialState(
@@ -161,7 +169,8 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
   ShadowNodeFamily::Shared createFamily(
       const ShadowNodeFamilyFragment& fragment) const override {
     auto eventEmitter = std::make_shared<const ConcreteEventEmitter>(
-        std::make_shared<EventTarget>(fragment.instanceHandle),
+        std::make_shared<EventTarget>(
+            fragment.instanceHandle, fragment.surfaceId),
         eventDispatcher_);
     return std::make_shared<ShadowNodeFamily>(
         fragment, std::move(eventEmitter), eventDispatcher_, *this);

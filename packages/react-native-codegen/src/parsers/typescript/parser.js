@@ -117,6 +117,12 @@ class TypeScriptParser implements Parser {
     return [...new Set(membersTypes.map(remapLiteral))];
   }
 
+  getStringLiteralUnionTypeAnnotationStringLiterals(
+    membersTypes: $FlowFixMe[],
+  ): string[] {
+    return membersTypes.map((item: $FlowFixMe) => item.literal.value);
+  }
+
   parseFile(filename: string): SchemaType {
     const contents = fs.readFileSync(filename, 'utf8');
 
@@ -337,6 +343,8 @@ class TypeScriptParser implements Parser {
 
   convertKeywordToTypeAnnotation(keyword: string): string {
     switch (keyword) {
+      case 'TSArrayType':
+        return 'ArrayTypeAnnotation';
       case 'TSBooleanKeyword':
         return 'BooleanTypeAnnotation';
       case 'TSNumberKeyword':
@@ -345,6 +353,8 @@ class TypeScriptParser implements Parser {
         return 'VoidTypeAnnotation';
       case 'TSStringKeyword':
         return 'StringTypeAnnotation';
+      case 'TSTypeLiteral':
+        return 'ObjectTypeAnnotation';
       case 'TSUnknownKeyword':
         return 'MixedTypeAnnotation';
     }

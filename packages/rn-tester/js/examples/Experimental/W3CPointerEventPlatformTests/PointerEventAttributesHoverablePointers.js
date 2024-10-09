@@ -9,8 +9,7 @@
  */
 
 import type {PlatformTestComponentBaseProps} from '../PlatformTest/RNTesterPlatformTestTypes';
-import type {ViewProps} from 'react-native/Libraries/Components/View/ViewPropTypes';
-import type {HostComponent} from 'react-native/Libraries/Renderer/shims/ReactNativeTypes';
+import type {HostInstance} from 'react-native/Libraries/Renderer/shims/ReactNativeTypes';
 import type {
   Layout,
   PointerEvent,
@@ -172,13 +171,7 @@ function PointerEventAttributesHoverablePointersTestCase(
     [harness],
   );
 
-  const square1Ref =
-    useRef<?React$ElementRef<
-      React$AbstractComponent<
-        ViewProps,
-        React.ElementRef<HostComponent<ViewProps>>,
-      >,
-    >>();
+  const square1Ref = useRef<?HostInstance>();
   const square1Handlers = useTestEventHandler(eventList, (event, eventType) => {
     if (!square1Visible) {
       return;
@@ -207,13 +200,7 @@ function PointerEventAttributesHoverablePointersTestCase(
     }
   });
 
-  const square2Ref =
-    useRef<?React$ElementRef<
-      React$AbstractComponent<
-        ViewProps,
-        React.ElementRef<HostComponent<ViewProps>>,
-      >,
-    >>();
+  const square2Ref = useRef<?HostInstance>();
   const square2Handlers = useTestEventHandler(eventList, (event, eventType) => {
     const square2Elem = square2Ref.current;
     if (square2Elem != null) {

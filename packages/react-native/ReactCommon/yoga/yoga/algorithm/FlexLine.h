@@ -68,6 +68,7 @@ struct FlexLine {
 FlexLine calculateFlexLine(
     yoga::Node* node,
     Direction ownerDirection,
+    float ownerWidth,
     float mainAxisownerSize,
     float availableInnerWidth,
     float availableInnerMainDim,

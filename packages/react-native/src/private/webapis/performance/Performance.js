@@ -10,53 +10,41 @@
 
 // flowlint unsafe-getters-setters:off
 
-import type {HighResTimeStamp, PerformanceEntryType} from './PerformanceEntry';
-import type {PerformanceEntryList} from './PerformanceObserver';
 import type {
-  PerformanceMarkOptions,
-  PerformanceMeasureOptions,
-} from './UserTiming';
+  DOMHighResTimeStamp,
+  PerformanceEntryType,
+  PerformanceEntryList,
+} from './PerformanceEntry';
+import type {DetailType, PerformanceMarkOptions} from './UserTiming';
 
-import warnOnce from '../../../../Libraries/Utilities/warnOnce';
-import EventCounts from './EventCounts';
+import {EventCounts} from './EventTiming';
 import MemoryInfo from './MemoryInfo';
-import {ALWAYS_LOGGED_ENTRY_TYPES} from './PerformanceEntry';
-import {warnNoNativePerformanceObserver} from './PerformanceObserver';
 import {
   performanceEntryTypeToRaw,
   rawToPerformanceEntry,
 } from './RawPerformanceEntry';
-import {RawPerformanceEntryTypeValues} from './RawPerformanceEntry';
 import ReactNativeStartupTiming from './ReactNativeStartupTiming';
 import NativePerformance from './specs/NativePerformance';
-import NativePerformanceObserver from './specs/NativePerformanceObserver';
 import {PerformanceMark, PerformanceMeasure} from './UserTiming';
+import {warnNoNativePerformance} from './Utilities';
 
 declare var global: {
   // This value is defined directly via JSI, if available.
   +nativePerformanceNow?: ?() => number,
 };
 
-const getCurrentTimeStamp: () => HighResTimeStamp =
+const getCurrentTimeStamp: () => DOMHighResTimeStamp =
   NativePerformance?.now ?? global.nativePerformanceNow ?? (() => Date.now());
 
-// We want some of the performance entry types to be always logged,
-// even if they are not currently observed - this is either to be able to
-// retrieve them at any time via Performance.getEntries* or to refer by other entries
-// (such as when measures may refer to marks, even if the latter are not observed)
-if (NativePerformanceObserver?.setIsBuffered) {
-  NativePerformanceObserver?.setIsBuffered(
-    ALWAYS_LOGGED_ENTRY_TYPES.map(performanceEntryTypeToRaw),
-    true,
-  );
-}
+export type PerformanceMeasureOptions = {
+  detail?: DetailType,
+  start?: DOMHighResTimeStamp,
+  duration?: DOMHighResTimeStamp,
+  end?: DOMHighResTimeStamp,
+};
 
-function warnNoNativePerformance() {
-  warnOnce(
-    'missing-native-performance',
-    'Missing native implementation of Performance',
-  );
-}
+const ENTRY_TYPES_AVAILABLE_FROM_TIMELINE: $ReadOnlyArray<PerformanceEntryType> =
+  ['mark', 'measure'];
 
 /**
  * Partial implementation of the Performance interface for RN,
@@ -133,15 +121,12 @@ export default class Performance {
   }
 
   clearMarks(markName?: string): void {
-    if (!NativePerformanceObserver?.clearEntries) {
-      warnNoNativePerformanceObserver();
+    if (!NativePerformance?.clearMarks) {
+      warnNoNativePerformance();
       return;
     }
 
-    NativePerformanceObserver?.clearEntries(
-      RawPerformanceEntryTypeValues.MARK,
-      markName,
-    );
+    NativePerformance.clearMarks(markName);
   }
 
   measure(
@@ -195,7 +180,13 @@ export default class Performance {
       duration = options.duration ?? duration;
     }
 
-    const measure = new PerformanceMeasure(measureName, options);
+    const measure = new PerformanceMeasure(measureName, {
+      // FIXME(T196011255): this is incorrect, as we're only assigning the
+      // start/end if they're specified as a number, but not if they're
+      // specified as previous mark names.
+      startTime,
+      duration,
+    });
 
     if (NativePerformance?.measure) {
       NativePerformance.measure(
@@ -214,22 +205,19 @@ export default class Performance {
   }
 
   clearMeasures(measureName?: string): void {
-    if (!NativePerformanceObserver?.clearEntries) {
-      warnNoNativePerformanceObserver();
+    if (!NativePerformance?.clearMeasures) {
+      warnNoNativePerformance();
       return;
     }
 
-    NativePerformanceObserver?.clearEntries(
-      RawPerformanceEntryTypeValues.MEASURE,
-      measureName,
-    );
+    NativePerformance?.clearMeasures(measureName);
   }
 
   /**
    * Returns a double, measured in milliseconds.
    * https://developer.mozilla.org/en-US/docs/Web/API/Performance/now
    */
-  now(): HighResTimeStamp {
+  now(): DOMHighResTimeStamp {
     return getCurrentTimeStamp();
   }
 
@@ -239,28 +227,28 @@ export default class Performance {
    * https://www.w3.org/TR/performance-timeline/#extensions-to-the-performance-interface
    */
   getEntries(): PerformanceEntryList {
-    if (!NativePerformanceObserver?.getEntries) {
-      warnNoNativePerformanceObserver();
+    if (!NativePerformance?.getEntries) {
+      warnNoNativePerformance();
       return [];
     }
-    return NativePerformanceObserver.getEntries().map(rawToPerformanceEntry);
+    return NativePerformance.getEntries().map(rawToPerformanceEntry);
   }
 
   getEntriesByType(entryType: PerformanceEntryType): PerformanceEntryList {
-    if (!ALWAYS_LOGGED_ENTRY_TYPES.includes(entryType)) {
-      console.warn(
-        `Performance.getEntriesByType: Only valid for ${JSON.stringify(
-          ALWAYS_LOGGED_ENTRY_TYPES,
-        )} entry types, got ${entryType}`,
-      );
+    if (
+      entryType != null &&
+      !ENTRY_TYPES_AVAILABLE_FROM_TIMELINE.includes(entryType)
+    ) {
+      console.warn('Deprecated API for given entry type.');
       return [];
     }
 
-    if (!NativePerformanceObserver?.getEntries) {
-      warnNoNativePerformanceObserver();
+    if (!NativePerformance?.getEntriesByType) {
+      warnNoNativePerformance();
       return [];
     }
-    return NativePerformanceObserver.getEntries(
+
+    return NativePerformance.getEntriesByType(
       performanceEntryTypeToRaw(entryType),
     ).map(rawToPerformanceEntry);
   }
@@ -270,24 +258,21 @@ export default class Performance {
     entryType?: PerformanceEntryType,
   ): PerformanceEntryList {
     if (
-      entryType !== undefined &&
-      !ALWAYS_LOGGED_ENTRY_TYPES.includes(entryType)
+      entryType != null &&
+      !ENTRY_TYPES_AVAILABLE_FROM_TIMELINE.includes(entryType)
     ) {
-      console.warn(
-        `Performance.getEntriesByName: Only valid for ${JSON.stringify(
-          ALWAYS_LOGGED_ENTRY_TYPES,
-        )} entry types, got ${entryType}`,
-      );
+      console.warn('Deprecated API for given entry type.');
       return [];
     }
 
-    if (!NativePerformanceObserver?.getEntries) {
-      warnNoNativePerformanceObserver();
+    if (!NativePerformance?.getEntriesByName) {
+      warnNoNativePerformance();
       return [];
     }
-    return NativePerformanceObserver.getEntries(
-      entryType != null ? performanceEntryTypeToRaw(entryType) : undefined,
+
+    return NativePerformance.getEntriesByName(
       entryName,
+      entryType != null ? performanceEntryTypeToRaw(entryType) : undefined,
     ).map(rawToPerformanceEntry);
   }
 }

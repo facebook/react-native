@@ -16,6 +16,7 @@ export type RNTesterModuleExample = $ReadOnly<{|
   platform?: 'ios' | 'android',
   description?: string,
   expect?: string,
+  hidden?: boolean,
   render: ({testID?: ?string}) => React.Node,
 |}>;
 
@@ -52,7 +53,7 @@ export type ExamplesList = $ReadOnly<{|
   apis: $ReadOnlyArray<SectionData<RNTesterModuleInfo>>,
 |}>;
 
-export type ScreenTypes = 'components' | 'apis' | null;
+export type ScreenTypes = 'components' | 'apis' | 'playgrounds' | null;
 
 export type ComponentList = null | {components: string[], apis: string[]};
 

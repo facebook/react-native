@@ -19,8 +19,12 @@ end
 folly_config = get_folly_config()
 folly_compiler_flags = folly_config[:compiler_flags]
 folly_version = folly_config[:version]
-socket_rocket_version = '0.7.0'
-boost_compiler_flags = '-Wno-documentation'
+
+socket_rocket_config = get_socket_rocket_config()
+socket_rocket_version = socket_rocket_config[:version] 
+
+boost_config = get_boost_config()
+boost_compiler_flags = boost_config[:compiler_flags] 
 
 use_hermes = ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == '1'
 use_hermes_flag = use_hermes ? "-DUSE_HERMES=1" : ""
@@ -72,7 +76,7 @@ Pod::Spec.new do |s|
                                "HEADER_SEARCH_PATHS" => header_search_paths,
                                "DEFINES_MODULE" => "YES",
                                "GCC_PREPROCESSOR_DEFINITIONS" => "RCT_METRO_PORT=${RCT_METRO_PORT}",
-                               "CLANG_CXX_LANGUAGE_STANDARD" => "c++20",
+                               "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
                                "FRAMEWORK_SEARCH_PATHS" => frameworks_search_paths.join(" ")
                              }
   s.user_target_xcconfig   = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/Headers/Private/React-Core\""}

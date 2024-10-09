@@ -90,7 +90,9 @@ public class BridgelessCatalystInstance(private val reactHost: ReactHostImpl) : 
   override public val javaScriptContextHolder: JavaScriptContextHolder
     get() = reactHost.getJavaScriptContextHolder()!!
 
-  override public val jSCallInvokerHolder: CallInvokerHolder
+  @Suppress("INAPPLICABLE_JVM_NAME")
+  @get:JvmName("getJSCallInvokerHolder") // This is needed to keep backward compatibility
+  override public val jsCallInvokerHolder: CallInvokerHolder
     get() = reactHost.getJSCallInvokerHolder()!!
 
   override public val nativeMethodCallInvokerHolder: NativeMethodCallInvokerHolder

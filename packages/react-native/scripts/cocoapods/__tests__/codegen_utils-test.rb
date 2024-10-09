@@ -21,7 +21,7 @@ require_relative "./test_utils/FileUtilsMock.rb"
 # without incurring in circular deps
 # TODO: move `min_ios_version_supported` to utils.rb
 def min_ios_version_supported
-    return '13.4'
+    return '15.1'
 end
 
 def min_supported_versions
@@ -61,10 +61,10 @@ class CodegenUtilsTests < Test::Unit::TestCase
         CodegenUtils.set_react_codegen_podspec_generated(true)
 
         # Act
-        CodegenUtils.new().generate_react_codegen_podspec!(spec, codegen_output_dir, file_manager: FileMock)
+        CodegenUtils.new().generate_react_codegen_podspec!(spec, codegen_output_dir, file_manager: FileMock, logger: Pod::UI)
 
         # Assert
-        assert_equal(Pod::UI.collected_messages, ["[Codegen] Skipping ReactCodegen podspec generation."])
+        assert_equal(Pod::UI.collected_messages, ["Skipping ReactCodegen podspec generation."])
         assert_equal(Pathname.pwd_invocation_count, 0)
         assert_equal(Pod::Executable.executed_commands, [])
         assert_equal(Pod::Config.instance.installation_root.relative_path_from_invocation_count, 0)
@@ -77,13 +77,13 @@ class CodegenUtilsTests < Test::Unit::TestCase
         codegen_output_dir = "build"
 
         # Act
-        CodegenUtils.new().generate_react_codegen_podspec!(spec, codegen_output_dir, file_manager: FileMock)
+        CodegenUtils.new().generate_react_codegen_podspec!(spec, codegen_output_dir, file_manager: FileMock, logger: Pod::UI)
 
         # Assert
         assert_equal(Pathname.pwd_invocation_count, 1)
         assert_equal(Pod::Config.instance.installation_root.relative_path_from_invocation_count, 1)
         assert_equal(Pod::Executable.executed_commands, [{ "command" => 'mkdir', "arguments" => ["-p", "~/app/ios/build"]}])
-        assert_equal(Pod::UI.collected_messages, ["[Codegen] Generating ~/app/ios/build/ReactCodegen.podspec.json"])
+        assert_equal(Pod::UI.collected_messages, ["Generating ~/app/ios/build/ReactCodegen.podspec.json"])
         assert_equal(FileMock.open_files_with_mode["~/app/ios/build/ReactCodegen.podspec.json"], 'w')
         assert_equal(FileMock.open_files[0].collected_write, ['{"name":"Test Podspec"}'])
         assert_equal(FileMock.open_files[0].fsync_invocation_count, 1)
@@ -103,12 +103,13 @@ class CodegenUtilsTests < Test::Unit::TestCase
             'package.json',
             :hermes_enabled => true,
             :script_phases => "echo Test Script Phase",
-            :file_manager => FileMock
+            :file_manager => FileMock,
+            :logger => Pod::UI
         )
 
         # Assert
         assert_equal(podspec, get_podspec_fabric_and_script_phases("echo Test Script Phase"))
-        assert_equal(Pod::UI.collected_messages, ["[Codegen] Adding script_phases to ReactCodegen."])
+        assert_equal(Pod::UI.collected_messages, ["Adding script_phases to ReactCodegen."])
     end
 
     def testGetReactCodegenSpec_whenUseFrameworksAndNewArch_generatesAPodspec
@@ -238,10 +239,10 @@ class CodegenUtilsTests < Test::Unit::TestCase
 
         # Act
         assert_raises() {
-            CodegenUtils.new().get_react_codegen_script_phases(nil, file_manager: FileMock)
+            CodegenUtils.new().get_react_codegen_script_phases(nil, file_manager: FileMock, logger: Pod::UI)
         }
         # Assert
-        assert_equal(Pod::UI.collected_warns, ["[Codegen] error: app_path is required to use codegen discovery."])
+        assert_equal(Pod::UI.collected_warns, ["error: app_path is required to use codegen discovery."])
     end
 
     def testGetReactCodegenScriptPhases_returnTheScriptObject
@@ -308,11 +309,11 @@ class CodegenUtilsTests < Test::Unit::TestCase
         CodegenUtils.set_react_codegen_discovery_done(true)
 
         # Act
-        CodegenUtils.new().use_react_native_codegen_discovery!(false, nil, file_manager: FileMock)
+        CodegenUtils.new().use_react_native_codegen_discovery!(false, nil, file_manager: FileMock, logger: Pod::UI)
 
         # Assert
         assert_true(CodegenUtils.react_codegen_discovery_done())
-        assert_equal(Pod::UI.collected_messages, ["[Codegen] Skipping use_react_native_codegen_discovery."])
+        assert_equal(Pod::UI.collected_messages, ["Skipping use_react_native_codegen_discovery."])
         assert_equal(Pod::UI.collected_warns, [])
     end
 
@@ -321,15 +322,15 @@ class CodegenUtilsTests < Test::Unit::TestCase
 
         # Act
         assert_raises(){
-            CodegenUtils.new().use_react_native_codegen_discovery!(false, nil, file_manager: FileMock)
+            CodegenUtils.new().use_react_native_codegen_discovery!(false, nil, file_manager: FileMock, logger: Pod::UI)
         }
 
         # Assert
         assert_false(CodegenUtils.react_codegen_discovery_done())
         assert_equal(Pod::UI.collected_messages, [])
         assert_equal(Pod::UI.collected_warns, [
-            '[Codegen] Error: app_path is required for use_react_native_codegen_discovery.',
-            '[Codegen] If you are calling use_react_native_codegen_discovery! in your Podfile, please remove the call and pass `app_path` and/or `config_file_dir` to `use_react_native!`.'
+            'Error: app_path is required for use_react_native_codegen_discovery.',
+            'If you are calling use_react_native_codegen_discovery! in your Podfile, please remove the call and pass `app_path` and/or `config_file_dir` to `use_react_native!`.'
         ])
     end
 
@@ -349,13 +350,14 @@ class CodegenUtilsTests < Test::Unit::TestCase
             false,
             app_path,
             :codegen_utils => codegen_utils_mock,
-            :file_manager => FileMock
+            :file_manager => FileMock,
+            :logger => Pod::UI
         )
 
         # Assert
         assert_true(CodegenUtils.react_codegen_discovery_done())
         assert_equal(Pod::UI.collected_warns, [
-            '[Codegen] warn: using experimental new codegen integration'
+            'warn: using experimental new codegen integration'
         ])
         assert_equal(codegen_utils_mock.get_react_codegen_script_phases_params,  [{
             :app_path => app_path,

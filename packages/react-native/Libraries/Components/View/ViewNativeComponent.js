@@ -10,6 +10,7 @@
 
 import type {
   HostComponent,
+  HostInstance,
   PartialViewConfig,
 } from '../../Renderer/shims/ReactNativeTypes';
 
@@ -17,7 +18,6 @@ import * as NativeComponentRegistry from '../../NativeComponent/NativeComponentR
 import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
 import Platform from '../../Utilities/Platform';
 import {type ViewProps as Props} from './ViewPropTypes';
-import * as React from 'react';
 
 export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
   Platform.OS === 'android'
@@ -94,7 +94,6 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
           borderBlockStartColor: {
             process: require('../../StyleSheet/processColor').default,
           },
-
           focusable: true,
           overflow: true,
           backfaceVisibility: true,
@@ -109,15 +108,8 @@ const ViewNativeComponent: HostComponent<Props> =
   NativeComponentRegistry.get<Props>('RCTView', () => __INTERNAL_VIEW_CONFIG);
 
 interface NativeCommands {
-  +hotspotUpdate: (
-    viewRef: React.ElementRef<HostComponent<mixed>>,
-    x: number,
-    y: number,
-  ) => void;
-  +setPressed: (
-    viewRef: React.ElementRef<HostComponent<mixed>>,
-    pressed: boolean,
-  ) => void;
+  +hotspotUpdate: (viewRef: HostInstance, x: number, y: number) => void;
+  +setPressed: (viewRef: HostInstance, pressed: boolean) => void;
 }
 
 export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({

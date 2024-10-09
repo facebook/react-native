@@ -32,6 +32,7 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
   private static final byte LAYOUT_BORDER_START_INDEX = 14;
 
   @Nullable private YogaNodeJNIBase mOwner;
+  @Nullable private YogaConfig mConfig;
   @Nullable private List<YogaNodeJNIBase> mChildren;
   @Nullable private YogaMeasureFunction mMeasureFunction;
   @Nullable private YogaBaselineFunction mBaselineFunction;
@@ -57,6 +58,7 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
 
   YogaNodeJNIBase(YogaConfig config) {
     this(YogaNative.jni_YGNodeNewWithConfigJNI(((YogaConfigJNIBase) config).mNativePointer));
+    mConfig = config; // makes sure the YogaConfig is not garbage collected
   }
 
   public void reset() {
@@ -299,6 +301,14 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
     YogaNative.jni_YGNodeStyleSetPositionTypeJNI(mNativePointer, positionType.intValue());
   }
 
+  public YogaBoxSizing getBoxSizing() {
+    return YogaBoxSizing.fromInt(YogaNative.jni_YGNodeStyleGetBoxSizingJNI(mNativePointer));
+  }
+
+  public void setBoxSizing(YogaBoxSizing boxSizing) {
+    YogaNative.jni_YGNodeStyleSetBoxSizingJNI(mNativePointer, boxSizing.intValue());
+  }
+
   public YogaWrap getWrap() {
     return YogaWrap.fromInt(YogaNative.jni_YGNodeStyleGetFlexWrapJNI(mNativePointer));
   }
@@ -409,6 +419,10 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
 
   public void setPositionPercent(YogaEdge edge, float percent) {
     YogaNative.jni_YGNodeStyleSetPositionPercentJNI(mNativePointer, edge.intValue(), percent);
+  }
+
+  public void setPositionAuto(YogaEdge edge) {
+    YogaNative.jni_YGNodeStyleSetPositionAutoJNI(mNativePointer, edge.intValue());
   }
 
   public YogaValue getWidth() {

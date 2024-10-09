@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <folly/json.h>
+#include <fstream>
 #include <mutex>
 #include <unordered_map>
 
@@ -83,15 +85,28 @@ bool FuseboxTracer::stopTracing(
 }
 
 void FuseboxTracer::addEvent(
-    const std::string& name,
+    const std::string_view& name,
     uint64_t start,
     uint64_t end,
-    const std::string& track) {
+    const std::string_view& track) {
   std::lock_guard<std::mutex> lock(mutex_);
   if (!tracing_) {
     return;
   }
-  buffer_.push_back(BufferEvent{start, end, name, track});
+  buffer_.push_back(
+      BufferEvent{start, end, std::string(name), std::string(track)});
+}
+
+bool FuseboxTracer::stopTracingAndWriteToFile(const std::string& path) {
+  auto file = std::ofstream(path);
+  folly::dynamic traceEvents = folly::dynamic::array();
+  bool result = stopTracing([&traceEvents](const folly::dynamic& eventsChunk) {
+    traceEvents.insert(
+        traceEvents.end(), eventsChunk.begin(), eventsChunk.end());
+  });
+  file << folly::toJson(traceEvents) << std::endl;
+  file.close();
+  return result;
 }
 
 /* static */ FuseboxTracer& FuseboxTracer::getFuseboxTracer() {

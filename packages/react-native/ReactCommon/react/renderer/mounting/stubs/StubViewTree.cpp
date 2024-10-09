@@ -205,11 +205,6 @@ void StubViewTree::mutate(const ShadowViewMutationList& mutations) {
         break;
       }
 
-      case ShadowViewMutation::RemoveDeleteTree: {
-        // TODO: do something here
-        break;
-      }
-
       case ShadowViewMutation::Update: {
         STUB_VIEW_LOG({
           LOG(ERROR) << "StubView: Update [" << mutation.newChildShadowView.tag
@@ -262,9 +257,9 @@ void StubViewTree::mutate(const ShadowViewMutationList& mutations) {
   google::FlushLogFiles(google::GLOG_INFO);
 }
 
-std::ostream& StubViewTree::dumpTags(std::ostream& stream) {
+std::ostream& StubViewTree::dumpTags(std::ostream& stream) const {
   for (const auto& pair : registry_) {
-    auto& stubView = *registry_.at(pair.first);
+    auto& stubView = *pair.second;
     stream << "[" << stubView.tag << "]##"
            << std::hash<ShadowView>{}((ShadowView)stubView) << " ";
   }
@@ -278,10 +273,10 @@ bool operator==(const StubViewTree& lhs, const StubViewTree& rhs) {
                  << lhs.registry_.size() << " RHS: " << rhs.registry_.size();
 
       LOG(ERROR) << "Tags in LHS: ";
-      lhs.dumpTagsHash(LOG(ERROR));
+      lhs.dumpTags(LOG(ERROR));
 
       LOG(ERROR) << "Tags in RHS: ";
-      rhs.dumpTagsHash(LOG(ERROR));
+      rhs.dumpTags(LOG(ERROR));
     });
 
     return false;

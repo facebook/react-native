@@ -18,7 +18,7 @@ import android.view.KeyEvent;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Callback;
-import com.facebook.react.config.ReactFeatureFlags;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.modules.core.PermissionListener;
 
 /**
@@ -70,7 +70,7 @@ public class ReactActivityDelegate {
    *
    * <p>Not used on bridgeless
    */
-  protected ReactRootView createRootView() {
+  protected @Nullable ReactRootView createRootView() {
     return null;
   }
 
@@ -107,7 +107,7 @@ public class ReactActivityDelegate {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && isWideColorGamutEnabled()) {
       mActivity.getWindow().setColorMode(ActivityInfo.COLOR_MODE_WIDE_COLOR_GAMUT);
     }
-    if (ReactFeatureFlags.enableBridgelessArchitecture) {
+    if (ReactNativeFeatureFlags.enableBridgelessArchitecture()) {
       mReactDelegate =
           new ReactDelegate(getPlainActivity(), getReactHost(), mainComponentName, launchOptions);
     } else {
@@ -136,6 +136,12 @@ public class ReactActivityDelegate {
   protected void loadApp(String appKey) {
     mReactDelegate.loadApp(appKey);
     getPlainActivity().setContentView(mReactDelegate.getReactRootView());
+  }
+
+  public void onUserLeaveHint() {
+    if (mReactDelegate != null) {
+      mReactDelegate.onUserLeaveHint();
+    }
   }
 
   public void onPause() {
@@ -220,7 +226,7 @@ public class ReactActivityDelegate {
    * @return true if Fabric is enabled for this Activity, false otherwise.
    */
   protected boolean isFabricEnabled() {
-    return ReactFeatureFlags.enableFabricRenderer;
+    return ReactNativeFeatureFlags.enableFabricRenderer();
   }
 
   /**

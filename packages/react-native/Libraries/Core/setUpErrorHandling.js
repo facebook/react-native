@@ -21,7 +21,13 @@ ExceptionsManager.installConsoleErrorReporter();
 if (!global.__fbDisableExceptionsManager) {
   const handleError = (e: mixed, isFatal: boolean) => {
     try {
-      ExceptionsManager.handleException(e, isFatal);
+      // TODO(T196834299): We should really use a c++ turbomodule for this
+      if (
+        !global.RN$handleException ||
+        !global.RN$handleException(e, isFatal)
+      ) {
+        ExceptionsManager.handleException(e, isFatal);
+      }
     } catch (ee) {
       console.log('Failed to print error: ', ee.message);
       throw e;

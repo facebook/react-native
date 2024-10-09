@@ -31,20 +31,29 @@ function use_env_var_or_ruby_prop {
   fi
 }
 
+function use_env_var {
+  if [[ -n "$1" ]]; then
+    echo "$1"
+  else
+    echo "error: Missing $2 environment variable"
+    exit 1
+  fi
+}
+
 function get_release_version {
   use_env_var_or_ruby_prop "${RELEASE_VERSION}" "version"
 }
 
 function get_ios_deployment_target {
-  use_env_var_or_ruby_prop "${IOS_DEPLOYMENT_TARGET}" "deployment_target('ios')"
+  use_env_var "${IOS_DEPLOYMENT_TARGET}" "IOS_DEPLOYMENT_TARGET"
 }
 
 function get_visionos_deployment_target {
-  use_env_var_or_ruby_prop "${XROS_DEPLOYMENT_TARGET}" "deployment_target('visionos')"
+  use_env_var "${XROS_DEPLOYMENT_TARGET}" "XROS_DEPLOYMENT_TARGET"
 }
 
 function get_mac_deployment_target {
-  use_env_var_or_ruby_prop "${MAC_DEPLOYMENT_TARGET}" "deployment_target('osx')"
+  use_env_var "${MAC_DEPLOYMENT_TARGET}" "MAC_DEPLOYMENT_TARGET"
 }
 
 # Build host hermes compiler for internal bytecode
@@ -198,19 +207,7 @@ function create_universal_framework {
   for i in "${!platforms[@]}"; do
     local platform="${platforms[$i]}"
     local hermes_framework_path="${platform}/hermes.framework"
-    local dSYM_path="$hermes_framework_path"
-    local dSYM_base_path="$HERMES_PATH/destroot/Library/Frameworks"
-
-    # If the dSYM rename has failed, the dSYM are generated as 0.dSYM
-    # (Apple default name) rather then hermes.framework.dSYM.
-    if [[ -e "$dSYM_base_path/${platform}/0.dSYM" ]]; then
-      dSYM_path="${platform}/0"
-    fi
-
     args+="-framework $hermes_framework_path "
-
-    # Path to dSYM must be absolute
-    args+="-debug-symbols $dSYM_base_path/$dSYM_path.dSYM "
   done
 
   mkdir -p universal

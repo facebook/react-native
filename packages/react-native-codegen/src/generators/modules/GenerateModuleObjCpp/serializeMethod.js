@@ -257,6 +257,10 @@ function getParamObjCType(
       }
     case 'StringTypeAnnotation':
       return notStruct(wrapOptional('NSString *', !nullable));
+    case 'StringLiteralTypeAnnotation':
+      return notStruct(wrapOptional('NSString *', !nullable));
+    case 'StringLiteralUnionTypeAnnotation':
+      return notStruct(wrapOptional('NSString *', !nullable));
     case 'NumberTypeAnnotation':
       return notStruct(isRequired ? 'double' : 'NSNumber *');
     case 'FloatTypeAnnotation':
@@ -305,7 +309,7 @@ function getReturnObjCType(
     case 'TypeAliasTypeAnnotation':
       return wrapOptional('NSDictionary *', isRequired);
     case 'ArrayTypeAnnotation':
-      if (typeAnnotation.elementType == null) {
+      if (typeAnnotation.elementType.type === 'AnyTypeAnnotation') {
         return wrapOptional('NSArray<id<NSObject>> *', isRequired);
       }
 
@@ -327,6 +331,14 @@ function getReturnObjCType(
           );
       }
     case 'StringTypeAnnotation':
+      // TODO: Can NSString * returns not be _Nullable?
+      // In the legacy codegen, we don't surround NSSTring * with _Nullable
+      return wrapOptional('NSString *', isRequired);
+    case 'StringLiteralTypeAnnotation':
+      // TODO: Can NSString * returns not be _Nullable?
+      // In the legacy codegen, we don't surround NSSTring * with _Nullable
+      return wrapOptional('NSString *', isRequired);
+    case 'StringLiteralUnionTypeAnnotation':
       // TODO: Can NSString * returns not be _Nullable?
       // In the legacy codegen, we don't surround NSSTring * with _Nullable
       return wrapOptional('NSString *', isRequired);
@@ -395,6 +407,10 @@ function getReturnJSType(
     case 'ReservedTypeAnnotation':
       return 'NumberKind';
     case 'StringTypeAnnotation':
+      return 'StringKind';
+    case 'StringLiteralTypeAnnotation':
+      return 'StringKind';
+    case 'StringLiteralUnionTypeAnnotation':
       return 'StringKind';
     case 'NumberTypeAnnotation':
       return 'NumberKind';

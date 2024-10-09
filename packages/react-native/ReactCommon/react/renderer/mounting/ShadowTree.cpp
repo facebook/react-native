@@ -26,115 +26,6 @@ namespace facebook::react {
 using CommitStatus = ShadowTree::CommitStatus;
 using CommitMode = ShadowTree::CommitMode;
 
-// --- State Alignment Mechanism algorithm ---
-// Note: Ideally, we don't have to const_cast but our use of constness in
-// C++ is overly restrictive. We do const_cast here but the only place where
-// we change ShadowNode is by calling `ShadowNode::progressStateIfNecessary`
-// where checks are in place to avoid manipulating a sealed ShadowNode.
-
-static void progressStateIfNecessary(
-    ShadowNode& newShadowNode,
-    const ShadowNode& baseShadowNode);
-
-/*
- * Looks at the new parent, new child and base child node to determine how to
- * reconcile the state.
- *
- * Only to be called when baseChildNode has trait `ClonedByNativeStateUpdate`.
- */
-static void progressStateIfNecessary(
-    ShadowNode& newShadowNode,
-    const ShadowNode& newChildNode,
-    const ShadowNode& baseChildNode,
-    size_t suggestedIndex) {
-  auto& shadowNode = const_cast<ShadowNode&>(newChildNode);
-  if (shadowNode.progressStateIfNecessary()) {
-    // State was progressed without the need to clone.
-    // We are done with this node, but need to keep traversing.
-    progressStateIfNecessary(shadowNode, baseChildNode);
-  } else if (newChildNode.getHasBeenPromoted()) {
-    // `newShadowNode` was cloned from react and cloned from a native state
-    // update. This child node was cloned only from a native state update.
-    // This is branching and it is safe to promote the new branch from
-    // native state update.
-    auto clonedChildNode = baseChildNode.clone({});
-    newShadowNode.replaceChild(newChildNode, clonedChildNode, suggestedIndex);
-  } else {
-    // `newShadowNode` was cloned from react and cloned from a native state
-    // update. This child node was cloned also by react.
-    // we can't reason about this on this layer and need to keep traversing.
-    progressStateIfNecessary(shadowNode, baseChildNode);
-  }
-}
-
-static void progressStateIfNecessary(
-    ShadowNode& newShadowNode,
-    const ShadowNode& baseShadowNode) {
-  auto& newChildren = newShadowNode.getChildren();
-  auto& baseChildren = baseShadowNode.getChildren();
-
-  auto newChildrenSize = newChildren.size();
-  auto baseChildrenSize = baseChildren.size();
-  auto index = size_t{0};
-
-  for (index = 0; index < newChildrenSize && index < baseChildrenSize;
-       ++index) {
-    const auto& newChildNode = *newChildren[index];
-    const auto& baseChildNode = *baseChildren[index];
-
-    if (&newChildNode == &baseChildNode) {
-      // Nodes are identical. They are shared between `newShadowNode` and
-      // `baseShadowNode` and it is safe to skipping.
-      continue;
-    }
-
-    if (!ShadowNode::sameFamily(newChildNode, baseChildNode)) {
-      // React has changed the structure of the tree. We will realign the
-      // structure below.
-      break;
-    }
-
-    if (!baseChildNode.getTraits().check(
-            ShadowNodeTraits::Trait::ClonedByNativeStateUpdate)) {
-      // was not cloned with a new state, we can continue.
-      continue;
-    }
-
-    progressStateIfNecessary(newShadowNode, newChildNode, baseChildNode, index);
-  }
-
-  // === Realigning the tree ===
-
-  auto unprocessedBaseChildren = baseChildren.begin();
-  std::advance(unprocessedBaseChildren, index);
-  for (; index < newChildrenSize; ++index) {
-    const auto& newChildNode = *newChildren[index];
-    auto baseChildNodeIterator = std::find_if(
-        unprocessedBaseChildren,
-        baseChildren.end(),
-        [&newChildNode](auto baseChildNode) {
-          return ShadowNode::sameFamily(newChildNode, *baseChildNode);
-        });
-    if (baseChildNodeIterator == baseChildren.end()) {
-      // This must never happen and there is a mismatch between the two trees.
-      // No way of recover from this, let's just continue.
-      continue;
-    }
-
-    const auto& baseChildNode = *(*baseChildNodeIterator);
-
-    if (!baseChildNode.getTraits().check(
-            ShadowNodeTraits::Trait::ClonedByNativeStateUpdate)) {
-      // was not cloned with a new state, we can continue.
-      continue;
-    }
-
-    progressStateIfNecessary(newShadowNode, newChildNode, baseChildNode, index);
-  }
-}
-
-// --- End of State Alignment Mechanism algorithm ---
-
 /*
  * Generates (possibly) a new tree where all nodes with non-obsolete `State`
  * objects. If all `State` objects in the tree are not obsolete for the moment
@@ -347,8 +238,6 @@ MountingCoordinator::Shared ShadowTree::getMountingCoordinator() const {
 CommitStatus ShadowTree::commit(
     const ShadowTreeCommitTransaction& transaction,
     const CommitOptions& commitOptions) const {
-  SystraceSection s("ShadowTree::commit");
-
   [[maybe_unused]] int attempts = 0;
 
   while (true) {
@@ -368,7 +257,7 @@ CommitStatus ShadowTree::commit(
 CommitStatus ShadowTree::tryCommit(
     const ShadowTreeCommitTransaction& transaction,
     const CommitOptions& commitOptions) const {
-  SystraceSection s("ShadowTree::tryCommit");
+  SystraceSection s("ShadowTree::commit");
 
   auto telemetry = TransactionTelemetry{};
   telemetry.willCommit();
@@ -395,15 +284,11 @@ CommitStatus ShadowTree::tryCommit(
   }
 
   if (commitOptions.enableStateReconciliation) {
-    if (ReactNativeFeatureFlags::useStateAlignmentMechanism()) {
-      progressStateIfNecessary(*newRootShadowNode, *oldRootShadowNode);
-    } else {
-      auto updatedNewRootShadowNode =
-          progressState(*newRootShadowNode, *oldRootShadowNode);
-      if (updatedNewRootShadowNode) {
-        newRootShadowNode =
-            std::static_pointer_cast<RootShadowNode>(updatedNewRootShadowNode);
-      }
+    auto updatedNewRootShadowNode =
+        progressState(*newRootShadowNode, *oldRootShadowNode);
+    if (updatedNewRootShadowNode) {
+      newRootShadowNode =
+          std::static_pointer_cast<RootShadowNode>(updatedNewRootShadowNode);
     }
   }
 

@@ -111,6 +111,7 @@ protected constructor(
           packages,
           jsMainModuleName,
           bundleAssetName ?: "index",
+          null,
           isHermesEnabled ?: true,
           useDeveloperSupport,
       )

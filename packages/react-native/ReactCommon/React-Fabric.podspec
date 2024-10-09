@@ -19,9 +19,10 @@ end
 folly_config = get_folly_config()
 folly_compiler_flags = folly_config[:compiler_flags]
 folly_version = folly_config[:version]
+folly_dep_name = folly_config[:dep_name]
 
-folly_dep_name = 'RCT-Folly/Fabric'
-boost_compiler_flags = '-Wno-documentation'
+boost_config = get_boost_config()
+boost_compiler_flags = boost_config[:compiler_flags] 
 react_native_path = ".."
 
 Pod::Spec.new do |s|
@@ -35,7 +36,7 @@ Pod::Spec.new do |s|
   s.source                 = source
   s.source_files           = "dummyFile.cpp"
   s.pod_target_xcconfig = { "USE_HEADERMAP" => "YES",
-                            "CLANG_CXX_LANGUAGE_STANDARD" => "c++20",
+                            "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
                             "DEFINES_MODULE" => "YES" }
 
   if ENV['USE_FRAMEWORKS']

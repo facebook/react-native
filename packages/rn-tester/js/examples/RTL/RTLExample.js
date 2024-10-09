@@ -701,13 +701,13 @@ exports.description = 'Examples to show how to apply components to RTL layout.';
 exports.examples = [
   {
     title: 'Current Layout Direction',
-    render: function (): React.Element<any> {
+    render: function (): React.MixedElement {
       return <RTLToggleExample />;
     },
   },
   {
     title: 'A Simple List Item Layout',
-    render: function (): React.Element<any> {
+    render: function (): React.MixedElement {
       return <SimpleListItemExample />;
     },
   },
@@ -715,7 +715,7 @@ exports.examples = [
     title: 'Default Text Alignment',
     description: ('In iOS, it depends on active language. ' +
       'In Android, it depends on the text content.': string),
-    render: function (): React.Element<any> {
+    render: function (): React.MixedElement {
       return <TextAlignmentExample style={styles.fontSizeSmall} />;
     },
   },
@@ -723,7 +723,7 @@ exports.examples = [
     title: "Using textAlign: 'left'",
     description: ('In iOS/Android, text alignment flips regardless of ' +
       'languages or text content.': string),
-    render: function (): React.Element<any> {
+    render: function (): React.MixedElement {
       return (
         <TextAlignmentExample
           style={[styles.fontSizeSmall, styles.textAlignLeft]}
@@ -735,7 +735,7 @@ exports.examples = [
     title: "Using textAlign: 'right'",
     description: ('In iOS/Android, text alignment flips regardless of ' +
       'languages or text content.': string),
-    render: function (): React.Element<any> {
+    render: function (): React.MixedElement {
       return (
         <TextAlignmentExample
           style={[styles.fontSizeSmall, styles.textAlignRight]}
@@ -746,68 +746,68 @@ exports.examples = [
   {
     title: "Using textAlign: 'right' for TextInput",
     description: ('Flip TextInput direction to RTL': string),
-    render: function (): React.Element<any> {
+    render: function (): React.MixedElement {
       return <TextInputExample style={[styles.textAlignRight]} />;
     },
   },
   {
     title: 'Working With Icons',
-    render: function (): React.Element<any> {
+    render: function (): React.MixedElement {
       return <IconsExample />;
     },
   },
   {
     title: 'Controlling Animation',
     description: 'Animation direction according to layout',
-    render: function (): React.Element<any> {
+    render: function (): React.MixedElement {
       return <AnimationContainer />;
     },
   },
   {
     title: 'Padding Start/End',
-    render: function (): React.Element<any> {
+    render: function (): React.MixedElement {
       return <PaddingExample />;
     },
   },
   {
     title: 'Margin Start/End',
-    render: function (): React.Element<any> {
+    render: function (): React.MixedElement {
       return <MarginExample />;
     },
   },
   {
     title: 'Position Start/End',
-    render: function (): React.Element<any> {
+    render: function (): React.MixedElement {
       return <PositionExample />;
     },
   },
   {
     title: 'Border Width Start/End',
-    render: function (): React.Element<any> {
+    render: function (): React.MixedElement {
       return <BorderWidthExample />;
     },
   },
   {
     title: 'Border Color Start/End',
-    render: function (): React.Element<any> {
+    render: function (): React.MixedElement {
       return <BorderColorExample />;
     },
   },
   {
     title: 'Border Radii Start/End',
-    render: function (): React.Element<any> {
+    render: function (): React.MixedElement {
       return <BorderRadiiExample />;
     },
   },
   {
     title: 'Logical Border Radii Start/End',
-    render: function (): React.Element<any> {
+    render: function (): React.MixedElement {
       return <LogicalBorderRadiiExample />;
     },
   },
   {
     title: 'Border',
-    render: function (): React.Element<any> {
+    render: function (): React.MixedElement {
       return <BorderExample />;
     },
   },

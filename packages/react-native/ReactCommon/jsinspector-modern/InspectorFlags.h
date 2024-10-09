@@ -32,7 +32,7 @@ class InspectorFlags {
 
  private:
   struct Values {
-    bool fuseboxEnabledDebug;
+    bool fuseboxEnabled;
     bool operator==(const Values&) const = default;
   };
 
