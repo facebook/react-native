@@ -7,7 +7,7 @@
 
 package com.facebook.react.devsupport;
 
-/* package */ interface IInspectorPackagerConnection {
+public interface IInspectorPackagerConnection {
   public void connect();
 
   public void closeQuietly();
