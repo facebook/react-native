@@ -101,6 +101,10 @@
 
 - (CGPoint)calculateDrawingPointWithTextStorage:(NSTextStorage *)textStorage
                                    contentFrame:(CGRect)contentFrame {
+  if ([textStorage length] == 0) {
+    return contentFrame.origin;
+  }
+
   UIFont *font = [textStorage attribute:NSFontAttributeName atIndex:0 effectiveRange:NULL];
   if (!font) {
       font = [UIFont systemFontOfSize:14];
