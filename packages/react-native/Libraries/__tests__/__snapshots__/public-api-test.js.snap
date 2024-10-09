@@ -2529,12 +2529,13 @@ export type Props = $ReadOnly<{|
   onChange?: ?(event: SwitchChangeEvent) => Promise<void> | void,
   onValueChange?: ?(value: boolean) => Promise<void> | void,
 |}>;
-declare const SwitchWithForwardedRef: React.AbstractComponent<
-  Props,
-  React.ElementRef<
-    typeof SwitchNativeComponent | typeof AndroidSwitchNativeComponent,
-  >,
+type SwitchRef = React.ElementRef<
+  typeof SwitchNativeComponent | typeof AndroidSwitchNativeComponent,
 >;
+declare const SwitchWithForwardedRef: component(
+  ref: React.RefSetter<SwitchRef>,
+  ...props: Props
+);
 declare export default typeof SwitchWithForwardedRef;
 "
 `;
