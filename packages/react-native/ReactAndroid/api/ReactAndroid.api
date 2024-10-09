@@ -4141,6 +4141,7 @@ public abstract class com/facebook/react/uimanager/BaseViewManager : com/faceboo
 	public fun setBorderRadius (Landroid/view/View;F)V
 	public fun setBorderTopLeftRadius (Landroid/view/View;F)V
 	public fun setBorderTopRightRadius (Landroid/view/View;F)V
+	public fun setBoxShadow (Landroid/view/View;Lcom/facebook/react/bridge/ReadableArray;)V
 	public fun setClick (Landroid/view/View;Z)V
 	public fun setClickCapture (Landroid/view/View;Z)V
 	public fun setElevation (Landroid/view/View;F)V
@@ -6653,7 +6654,6 @@ public final class com/facebook/react/views/image/ReactImageManager : com/facebo
 	public final fun setBorderColor (Lcom/facebook/react/views/image/ReactImageView;Ljava/lang/Integer;)V
 	public final fun setBorderRadius (Lcom/facebook/react/views/image/ReactImageView;IF)V
 	public final fun setBorderWidth (Lcom/facebook/react/views/image/ReactImageView;F)V
-	public final fun setBoxShadow (Lcom/facebook/react/views/image/ReactImageView;Lcom/facebook/react/bridge/ReadableArray;)V
 	public final fun setDefaultSource (Lcom/facebook/react/views/image/ReactImageView;Ljava/lang/String;)V
 	public final fun setFadeDuration (Lcom/facebook/react/views/image/ReactImageView;I)V
 	public final fun setHeaders (Lcom/facebook/react/views/image/ReactImageView;Lcom/facebook/react/bridge/ReadableMap;)V
@@ -7079,7 +7079,6 @@ public class com/facebook/react/views/scroll/ReactHorizontalScrollViewManager : 
 	public fun setBorderStyle (Lcom/facebook/react/views/scroll/ReactHorizontalScrollView;Ljava/lang/String;)V
 	public fun setBorderWidth (Lcom/facebook/react/views/scroll/ReactHorizontalScrollView;IF)V
 	public fun setBottomFillColor (Lcom/facebook/react/views/scroll/ReactHorizontalScrollView;I)V
-	public fun setBoxShadow (Lcom/facebook/react/views/scroll/ReactHorizontalScrollView;Lcom/facebook/react/bridge/ReadableArray;)V
 	public fun setContentOffset (Lcom/facebook/react/views/scroll/ReactHorizontalScrollView;Lcom/facebook/react/bridge/ReadableMap;)V
 	public fun setDecelerationRate (Lcom/facebook/react/views/scroll/ReactHorizontalScrollView;F)V
 	public fun setDisableIntervalMomentum (Lcom/facebook/react/views/scroll/ReactHorizontalScrollView;Z)V
@@ -7320,7 +7319,6 @@ public class com/facebook/react/views/scroll/ReactScrollViewManager : com/facebo
 	public fun setBorderStyle (Lcom/facebook/react/views/scroll/ReactScrollView;Ljava/lang/String;)V
 	public fun setBorderWidth (Lcom/facebook/react/views/scroll/ReactScrollView;IF)V
 	public fun setBottomFillColor (Lcom/facebook/react/views/scroll/ReactScrollView;I)V
-	public fun setBoxShadow (Lcom/facebook/react/views/scroll/ReactScrollView;Lcom/facebook/react/bridge/ReadableArray;)V
 	public fun setContentOffset (Lcom/facebook/react/views/scroll/ReactScrollView;Lcom/facebook/react/bridge/ReadableMap;)V
 	public fun setDecelerationRate (Lcom/facebook/react/views/scroll/ReactScrollView;F)V
 	public fun setDisableIntervalMomentum (Lcom/facebook/react/views/scroll/ReactScrollView;Z)V
@@ -7620,7 +7618,6 @@ public abstract class com/facebook/react/views/text/ReactTextAnchorViewManager :
 	public fun setBorderRadius (Lcom/facebook/react/views/text/ReactTextView;IF)V
 	public fun setBorderStyle (Lcom/facebook/react/views/text/ReactTextView;Ljava/lang/String;)V
 	public fun setBorderWidth (Lcom/facebook/react/views/text/ReactTextView;IF)V
-	public fun setBoxShadow (Lcom/facebook/react/views/text/ReactTextView;Lcom/facebook/react/bridge/ReadableArray;)V
 	public fun setDataDetectorType (Lcom/facebook/react/views/text/ReactTextView;Ljava/lang/String;)V
 	public fun setDisabled (Lcom/facebook/react/views/text/ReactTextView;Z)V
 	public fun setEllipsizeMode (Lcom/facebook/react/views/text/ReactTextView;Ljava/lang/String;)V
@@ -8103,7 +8100,6 @@ public class com/facebook/react/views/textinput/ReactTextInputManager : com/face
 	public fun setBorderRadius (Lcom/facebook/react/views/textinput/ReactEditText;IF)V
 	public fun setBorderStyle (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
 	public fun setBorderWidth (Lcom/facebook/react/views/textinput/ReactEditText;IF)V
-	public fun setBoxShadow (Lcom/facebook/react/views/textinput/ReactEditText;Lcom/facebook/react/bridge/ReadableArray;)V
 	public fun setCaretHidden (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
 	public fun setColor (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/Integer;)V
 	public fun setContextMenuHidden (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
@@ -8310,7 +8306,6 @@ public class com/facebook/react/views/view/ReactViewManager : com/facebook/react
 	public fun setBorderRadius (Lcom/facebook/react/views/view/ReactViewGroup;ILcom/facebook/react/bridge/Dynamic;)V
 	public fun setBorderStyle (Lcom/facebook/react/views/view/ReactViewGroup;Ljava/lang/String;)V
 	public fun setBorderWidth (Lcom/facebook/react/views/view/ReactViewGroup;IF)V
-	public fun setBoxShadow (Lcom/facebook/react/views/view/ReactViewGroup;Lcom/facebook/react/bridge/ReadableArray;)V
 	public fun setCollapsable (Lcom/facebook/react/views/view/ReactViewGroup;Z)V
 	public fun setCollapsableChildren (Lcom/facebook/react/views/view/ReactViewGroup;Z)V
 	public fun setFocusable (Lcom/facebook/react/views/view/ReactViewGroup;Z)V
