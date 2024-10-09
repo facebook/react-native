@@ -605,4 +605,5 @@ const definitions: FeatureFlagDefinitions = {
   },
 };
 
-export default definitions;
+// Keep it as a CommonJS module so we can easily import it from Node.js
+module.exports = definitions;
