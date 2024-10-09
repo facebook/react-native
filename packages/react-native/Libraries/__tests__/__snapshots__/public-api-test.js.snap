@@ -1703,10 +1703,11 @@ exports[`public API should not change unintentionally Libraries/Components/Butto
 declare const Touchable:
   | typeof TouchableNativeFeedback
   | typeof TouchableOpacity;
-declare const Button: React.AbstractComponent<
-  ButtonProps,
-  React.ElementRef<typeof Touchable>,
->;
+type ButtonRef = React.ElementRef<typeof Touchable>;
+declare const Button: component(
+  ref: React.RefSetter<ButtonRef>,
+  ...props: ButtonProps
+);
 declare export default typeof Button;
 "
 `;
@@ -4825,7 +4826,7 @@ type AndroidImageProps = $ReadOnly<{|
   loadingIndicatorSource?: ?(number | $ReadOnly<{| uri: string |}>),
   progressiveRenderingEnabled?: ?boolean,
   fadeDuration?: ?number,
-  resizeMethod?: ?(\\"auto\\" | \\"resize\\" | \\"scale\\"),
+  resizeMethod?: ?(\\"auto\\" | \\"resize\\" | \\"scale\\" | \\"none\\"),
   resizeMultiplier?: ?number,
 |}>;
 export type ImageProps = {|
@@ -9096,7 +9097,7 @@ exports[`public API should not change unintentionally Libraries/Utilities/Platfo
 };
 type IOSPlatform = {
   __constants: null,
-  OS: $TEMPORARY$string<\\"ios\\">,
+  OS: \\"ios\\",
   get Version(): string,
   get constants(): {|
     forceTouchAvailable: boolean,
@@ -9123,7 +9124,7 @@ type IOSPlatform = {
 };
 type AndroidPlatform = {
   __constants: null,
-  OS: $TEMPORARY$string<\\"android\\">,
+  OS: \\"android\\",
   get Version(): number,
   get constants(): {|
     isTesting: boolean,

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a7cb522874eb4c35814135bdce7c9b5a>>
+ * @generated SignedSource<<75865f1371182e1ed3bce0f8f367faeb>>
  * @flow strict
  */
 
@@ -65,6 +65,7 @@ export type ReactNativeFeatureFlags = {
   enableFabricRendererExclusively: Getter<boolean>,
   enableGranularShadowTreeStateReconciliation: Getter<boolean>,
   enableIOSViewClipToPaddingBox: Getter<boolean>,
+  enableLayoutAnimationsOnAndroid: Getter<boolean>,
   enableLayoutAnimationsOnIOS: Getter<boolean>,
   enableLineHeightCentering: Getter<boolean>,
   enableLongTaskAPI: Getter<boolean>,
@@ -245,6 +246,10 @@ export const enableGranularShadowTreeStateReconciliation: Getter<boolean> = crea
  * iOS Views will clip to their padding box vs border box
  */
 export const enableIOSViewClipToPaddingBox: Getter<boolean> = createNativeFlagGetter('enableIOSViewClipToPaddingBox', false);
+/**
+ * When enabled, LayoutAnimations API will animate state changes on Android.
+ */
+export const enableLayoutAnimationsOnAndroid: Getter<boolean> = createNativeFlagGetter('enableLayoutAnimationsOnAndroid', false);
 /**
  * When enabled, LayoutAnimations API will animate state changes on iOS.
  */

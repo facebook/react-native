@@ -1181,12 +1181,6 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     if (hiPriInProgress) {
       this._hiPriInProgress = false;
     }
-
-    // We only call `onEndReached` after we render the last cell, but when
-    // getItemLayout is present, we can scroll past the last rendered cell, and
-    // never trigger a new layout or bounds change, so we need to check again
-    // after rendering more cells.
-    this._maybeCallOnEdgeReached();
   }
 
   _cellRefs: {[string]: null | CellRenderer<any>} = {};
@@ -1497,20 +1491,11 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     const {
       data,
       getItemCount,
-      getItemLayout,
       onStartReached,
       onStartReachedThreshold,
       onEndReached,
       onEndReachedThreshold,
     } = this.props;
-    // Wait until we have real metrics
-    if (
-      !this._listMetrics.hasContentLength() ||
-      this._scrollMetrics.visibleLength === 0
-    ) {
-      return;
-    }
-
     // If we have any pending scroll updates it means that the scroll metrics
     // are out of date and we should not call any of the edge reached callbacks.
     if (this.state.pendingScrollUpdateCount > 0) {
@@ -1553,9 +1538,6 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     if (
       onEndReached &&
       this.state.cellsAroundViewport.last === getItemCount(data) - 1 &&
-      (getItemLayout != null ||
-        this._listMetrics.getHighestMeasuredCellIndex() ===
-          getItemCount(data) - 1) &&
       isWithinEndThreshold &&
       this._listMetrics.getContentLength() !== this._sentEndForContentLength
     ) {

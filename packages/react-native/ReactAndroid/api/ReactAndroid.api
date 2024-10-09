@@ -6636,6 +6636,7 @@ public final class com/facebook/react/views/image/ImageLoadEvent$Companion {
 
 public final class com/facebook/react/views/image/ImageResizeMethod : java/lang/Enum {
 	public static final field AUTO Lcom/facebook/react/views/image/ImageResizeMethod;
+	public static final field NONE Lcom/facebook/react/views/image/ImageResizeMethod;
 	public static final field RESIZE Lcom/facebook/react/views/image/ImageResizeMethod;
 	public static final field SCALE Lcom/facebook/react/views/image/ImageResizeMethod;
 	public static fun getEntries ()Lkotlin/enums/EnumEntries;
@@ -6784,7 +6785,6 @@ public final class com/facebook/react/views/imagehelper/ResourceDrawableIdHelper
 	public final fun getResourceDrawable (Landroid/content/Context;Ljava/lang/String;)Landroid/graphics/drawable/Drawable;
 	public final fun getResourceDrawableId (Landroid/content/Context;Ljava/lang/String;)I
 	public final fun getResourceDrawableUri (Landroid/content/Context;Ljava/lang/String;)Landroid/net/Uri;
-	public final fun isVectorDrawable (Landroid/content/Context;Ljava/lang/String;)Z
 }
 
 public final class com/facebook/react/views/imagehelper/ResourceDrawableIdHelper$Companion {

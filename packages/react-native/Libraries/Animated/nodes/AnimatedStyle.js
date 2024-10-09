@@ -135,6 +135,8 @@ export default class AnimatedStyle extends AnimatedWithChildren {
       }
     }
 
+    /* $FlowFixMe[incompatible-type] Error found due to incomplete typing of
+     * Platform.flow.js */
     return Platform.OS === 'web' ? [this.#inputStyle, style] : style;
   }
 
@@ -172,6 +174,8 @@ export default class AnimatedStyle extends AnimatedWithChildren {
       }
     }
 
+    /* $FlowFixMe[incompatible-type] Error found due to incomplete typing of
+     * Platform.flow.js */
     return Platform.OS === 'web' ? [this.#inputStyle, style] : style;
   }
 

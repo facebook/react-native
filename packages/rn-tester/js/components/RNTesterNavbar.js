@@ -8,8 +8,8 @@
  * @flow strict-local
  */
 
-import type {RNTesterTheme} from './RNTesterTheme';
 import type {ScreenTypes} from '../types/RNTesterTypes';
+import type {RNTesterTheme} from './RNTesterTheme';
 
 import {RNTesterThemeContext} from './RNTesterTheme';
 import * as React from 'react';
@@ -56,7 +56,7 @@ const ComponentTab = ({
   isComponentActive,
   handleNavBarPress,
   theme,
-}: $TEMPORARY$object<{
+}: $ReadOnly<{
   handleNavBarPress: NavBarOnPressHandler,
   isComponentActive: boolean,
   theme: RNTesterTheme,
@@ -77,7 +77,7 @@ const PlaygroundTab = ({
   isComponentActive,
   handleNavBarPress,
   theme,
-}: $TEMPORARY$object<{
+}: $ReadOnly<{
   handleNavBarPress: NavBarOnPressHandler,
   isComponentActive: boolean,
   theme: RNTesterTheme,
@@ -98,7 +98,7 @@ const APITab = ({
   isAPIActive,
   handleNavBarPress,
   theme,
-}: $TEMPORARY$object<{
+}: $ReadOnly<{
   handleNavBarPress: NavBarOnPressHandler,
   isAPIActive: boolean,
   theme: RNTesterTheme,

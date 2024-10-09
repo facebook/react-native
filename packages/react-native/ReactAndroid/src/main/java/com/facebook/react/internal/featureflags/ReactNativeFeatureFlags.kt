@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ac76caa581b2c41bc95ed973bbd27b99>>
+ * @generated SignedSource<<8c1e36bc5a0baac0def70ea35dcb9e59>>
  */
 
 /**
@@ -117,6 +117,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableIOSViewClipToPaddingBox(): Boolean = accessor.enableIOSViewClipToPaddingBox()
+
+  /**
+   * When enabled, LayoutAnimations API will animate state changes on Android.
+   */
+  @JvmStatic
+  public fun enableLayoutAnimationsOnAndroid(): Boolean = accessor.enableLayoutAnimationsOnAndroid()
 
   /**
    * When enabled, LayoutAnimations API will animate state changes on iOS.

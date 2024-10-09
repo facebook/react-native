@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6e09f66dad928bb19bc74919318acc6c>>
+ * @generated SignedSource<<a1350a6f18522255cadc713cfa7fefd7>>
  */
 
 /**
@@ -110,6 +110,11 @@ bool NativeReactNativeFeatureFlags::enableGranularShadowTreeStateReconciliation(
 bool NativeReactNativeFeatureFlags::enableIOSViewClipToPaddingBox(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableIOSViewClipToPaddingBox();
+}
+
+bool NativeReactNativeFeatureFlags::enableLayoutAnimationsOnAndroid(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableLayoutAnimationsOnAndroid();
 }
 
 bool NativeReactNativeFeatureFlags::enableLayoutAnimationsOnIOS(

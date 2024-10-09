@@ -44,7 +44,7 @@ module.exports = {
     return <SectionList renderItem={renderMyListItem} sections={sections} />;
   },
 
-  testBadRenderItemFunction(): $TEMPORARY$array<React.Node> {
+  testBadRenderItemFunction(): $ReadOnlyArray<React.Node> {
     const sections = [
       {
         key: 'a',
