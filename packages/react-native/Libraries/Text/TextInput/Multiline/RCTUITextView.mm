@@ -587,7 +587,7 @@ static RCTUIColor *defaultPlaceholderColor(void) // [macOS]
 }
 #else // [macOS
 - (BOOL)performKeyEquivalent:(NSEvent *)event {
-  if (!self.hasMarkedText && ![self.textInputDelegate textInputShouldHandleKeyEvent:event]) {
+  if (self.window.firstResponder == self && !self.hasMarkedText && ![self.textInputDelegate textInputShouldHandleKeyEvent:event]) {
     return YES;
   }
 
