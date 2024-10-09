@@ -15,7 +15,6 @@ import type {InspectedElement} from './Inspector';
 
 const View = require('../Components/View/View');
 const StyleSheet = require('../StyleSheet/StyleSheet');
-const Dimensions = require('../Utilities/Dimensions').default;
 const ElementBox = require('./ElementBox');
 const React = require('react');
 
@@ -46,7 +45,7 @@ function InspectorOverlay({inspected, onTouchPoint}: Props): React.Node {
       onStartShouldSetResponder={handleStartShouldSetResponder}
       onResponderMove={findViewForTouchEvent}
       nativeID="inspectorOverlay" /* TODO: T68258846. */
-      style={[styles.inspector, {height: Dimensions.get('window').height}]}>
+      style={styles.inspector}>
       {content}
     </View>
   );
@@ -59,6 +58,7 @@ const styles = StyleSheet.create({
     left: 0,
     top: 0,
     right: 0,
+    bottom: 0,
   },
 });
 

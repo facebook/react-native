@@ -112,7 +112,7 @@ const addPoolingTo = function <T>(
 } {
   // Casting as any so that flow ignores the actual implementation and trusts
   // it to match the type we declared
-  const NewKlass = (CopyConstructor: any);
+  const NewKlass: any = CopyConstructor;
   NewKlass.instancePool = [];
   NewKlass.getPooled = pooler || DEFAULT_POOLER;
   if (!NewKlass.poolSize) {

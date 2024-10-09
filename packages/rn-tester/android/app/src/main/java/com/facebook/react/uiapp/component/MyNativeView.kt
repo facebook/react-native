@@ -6,6 +6,7 @@
  */
 
 @file:Suppress("DEPRECATION") // As we want to test RCTEventEmitter here
+
 package com.facebook.react.uiapp.component
 
 import android.graphics.Color
@@ -123,12 +124,28 @@ class MyNativeView(context: ThemedReactContext) : View(context) {
     eventDispatcher?.dispatchEvent(event)
   }
 
+  fun emitLegacyStyleEvent() {
+    val reactContext = context as ReactContext
+    val surfaceId = UIManagerHelper.getSurfaceId(reactContext)
+    val eventDispatcher = UIManagerHelper.getEventDispatcherForReactTag(reactContext, id)
+    val payload = Arguments.createMap().apply { putString("string", "Legacy Style Event Fired.") }
+    val event = OnLegacyStyleEvent(surfaceId, id, payload)
+    eventDispatcher?.dispatchEvent(event)
+  }
+
   inner class OnIntArrayChangedEvent(
       surfaceId: Int,
       viewId: Int,
       private val payload: WritableMap
   ) : Event<OnIntArrayChangedEvent>(surfaceId, viewId) {
     override fun getEventName() = "topIntArrayChanged"
+
+    override fun getEventData() = payload
+  }
+
+  inner class OnLegacyStyleEvent(surfaceId: Int, viewId: Int, private val payload: WritableMap) :
+      Event<OnLegacyStyleEvent>(surfaceId, viewId) {
+    override fun getEventName() = "alternativeLegacyName"
 
     override fun getEventData() = payload
   }

@@ -7,6 +7,7 @@
 
 package com.facebook.react.config;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.proguard.annotations.DoNotStripAny;
 import com.facebook.react.common.build.ReactBuildConfig;
 
@@ -17,12 +18,14 @@ import com.facebook.react.common.build.ReactBuildConfig;
  *
  * <p>These values are safe defaults and should not require manual changes.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
+@Deprecated(since = "Use com.facebook.react.internal.featureflags.ReactNativeFeatureFlags instead.")
 @DoNotStripAny
 public class ReactFeatureFlags {
   /**
    * Should this application use TurboModules? If yes, then any module that inherits {@link
-   * com.facebook.react.internal.turbomodule.core.interfaces.TurboModule} will NOT be passed in to
-   * C++ CatalystInstanceImpl
+   * com.facebook.react.turbomodule.core.interfaces.TurboModule} will NOT be passed in to C++
+   * CatalystInstanceImpl
    */
   public static volatile boolean useTurboModules = false;
 
@@ -63,33 +66,13 @@ public class ReactFeatureFlags {
    */
   public static boolean enableBridgelessArchitecture = false;
 
-  /** Server-side gating for a hacky fix to an ANR in the bridgeless core, related to Bolts task. */
-  public static boolean unstable_bridgelessArchitectureMemoryPressureHackyBoltsFix = false;
-
-  /**
-   * Does the bridgeless architecture log soft exceptions. Could be useful for tracking down issues.
-   */
-  public static volatile boolean enableBridgelessArchitectureSoftExceptions = false;
-
-  /** Does the bridgeless architecture use the new create/reload/destroy routines */
-  public static volatile boolean enableBridgelessArchitectureNewCreateReloadDestroy = true;
-
   /** This feature flag enables logs for Fabric */
   public static boolean enableFabricLogs = false;
 
   /** Feature flag to configure eager attachment of the root view/initialisation of the JS code */
   public static boolean enableEagerRootViewAttachment = false;
 
-  /** Enables or disables calculation of Transformed Frames */
-  public static boolean calculateTransformedFramesEnabled = false;
-
   public static boolean dispatchPointerEvents = false;
-
-  /** Feature Flag to enable a cache of Spannable objects used by TextLayoutManagerMapBuffer */
-  public static boolean enableTextSpannableCache = false;
-
-  /** Feature Flag to enable the pending event queue in fabric before mounting views */
-  public static boolean enableFabricPendingEventQueue = false;
 
   /**
    * Feature Flag to enable View Recycling. When enabled, individual ViewManagers must still opt-in.
@@ -106,56 +89,8 @@ public class ReactFeatureFlags {
    */
   public static boolean enableRemoveDeleteTreeInstruction = false;
 
-  /**
-   * Allow fix in layout animation to drop delete...create mutations which could cause missing view
-   * state in Fabric SurfaceMountingManager.
-   */
-  public static boolean reduceDeleteCreateMutationLayoutAnimation = true;
-
-  /**
-   * Allow fix to drop delete...create mutations which could cause missing view state in Fabric
-   * SurfaceMountingManager.
-   */
-  public static boolean reduceDeleteCreateMutation = false;
-
-  /** Report mount operations from the host platform to notify mount hooks. */
-  public static boolean enableMountHooks = false;
-
-  /** Fixes a leak in SurfaceMountingManager.mTagSetForStoppedSurface */
-  public static boolean fixStoppedSurfaceTagSetLeak = true;
-
-  /** Disable the background executor for layout in Fabric */
-  public static boolean enableBackgroundExecutor = false;
-
-  /** Use native view configs in bridgeless mode. */
-  public static boolean useNativeViewConfigsInBridgelessMode = false;
-
-  /** Only swap left and right on Android in RTL scripts. */
-  public static boolean doNotSwapLeftAndRightOnAndroidInLTR = false;
-
-  /** Clean yoga node when <Text /> does not change. */
-  public static boolean enableCleanParagraphYogaNode = false;
-
-  /** Default state updates and events to async batched priority. */
-  public static boolean enableDefaultAsyncBatchedPriority = false;
-
-  /** Utilize shared Event C++ pipeline with fabric's renderer */
-  public static boolean enableFabricSharedEventPipeline = true;
-
-  /** When enabled, Fabric will avoid cloning notes to perform state progression. */
-  public static boolean enableClonelessStateProgression = false;
-
   /** When enabled, rawProps in Props will not include Yoga specific props. */
   public static boolean excludeYogaFromRawProps = false;
-
-  /** Enables Stable API for TurboModule (removal of ReactModule, ReactModuleInfoProvider). */
-  public static boolean enableTurboModuleStableAPI = false;
-
-  /**
-   * When enabled, it uses the modern fork of RuntimeScheduler that allows scheduling tasks with
-   * priorities from any thread.
-   */
-  public static boolean useModernRuntimeScheduler = false;
 
   /**
    * Enables storing js caller stack when creating promise in native module. This is useful in case
@@ -171,15 +106,9 @@ public class ReactFeatureFlags {
 
   /*
    * When the app is completely migrated to Fabric, set this flag to true to
-   * disable parts of Paper infrastructre that are not needed anymore but consume
+   * disable parts of Paper infrastructure that are not needed anymore but consume
    * memory and CPU. Specifically, UIViewOperationQueue and EventDispatcherImpl will no
-   * longer work as they won't subscribe to ReactChoregrapher for updates.
+   * longer work as they won't subscribe to ReactChoreographer for updates.
    */
   public static boolean enableFabricRendererExclusively = false;
-
-  /*
-   * When enabled, uses of ReactChoreographer (e.g. FabricUIManager) will only post callback
-   *  when there is work to do.
-   */
-  public static boolean enableOnDemandReactChoreographer = false;
 }

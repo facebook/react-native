@@ -20,8 +20,6 @@
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
 /**
@@ -39,10 +37,6 @@ struct TestState {
 
   folly::dynamic getDynamic() const {
     return {};
-  }
-
-  MapBuffer getMapBuffer() const {
-    return MapBufferBuilder::EMPTY();
   }
 #endif
 };
@@ -82,7 +76,8 @@ class TestShadowNode final : public ConcreteViewShadowNode<
 
   facebook::react::Point _contentOriginOffset{};
 
-  facebook::react::Point getContentOriginOffset() const override {
+  facebook::react::Point getContentOriginOffset(
+      bool /*includeTransform*/) const override {
     return _contentOriginOffset;
   }
 };

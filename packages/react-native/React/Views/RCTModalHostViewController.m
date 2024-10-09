@@ -24,8 +24,8 @@
 
   self.modalInPresentation = YES;
 
-  _preferredStatusBarStyle = [RCTSharedApplication() statusBarStyle];
-  _preferredStatusBarHidden = [RCTSharedApplication() isStatusBarHidden];
+  _preferredStatusBarStyle = [RCTUIStatusBarManager() statusBarStyle];
+  _preferredStatusBarHidden = [RCTUIStatusBarManager() isStatusBarHidden];
 
   return self;
 }

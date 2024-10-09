@@ -10,10 +10,10 @@
 
 // flowlint unsafe-getters-setters:off
 
-import type ReactNativeElement from '../DOM/Nodes/ReactNativeElement';
+import type ReactNativeElement from '../../src/private/webapis/dom/nodes/ReactNativeElement';
 import type {NativeIntersectionObserverEntry} from './NativeIntersectionObserver';
 
-import DOMRectReadOnly from '../DOM/Geometry/DOMRectReadOnly';
+import DOMRectReadOnly from '../../src/private/webapis/dom/geometry/DOMRectReadOnly';
 
 /**
  * The [`IntersectionObserverEntry`](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserverEntry)

@@ -248,7 +248,10 @@ class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): any) {
         } else if (this._response === '') {
           this._cachedResponse = BlobManager.createFromParts([]);
         } else {
-          throw new Error(`Invalid response for blob: ${this._response}`);
+          throw new Error(
+            'Invalid response for blob - expecting object, was ' +
+              `${typeof this._response}: ${this._response.trim()}`,
+          );
         }
         break;
 
@@ -627,6 +630,7 @@ class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): any) {
     this._lowerCaseResponseHeaders = Object.keys(headers).reduce<{
       [string]: any,
     }>((lcaseHeaders, headerName) => {
+      // $FlowFixMe[invalid-computed-prop]
       lcaseHeaders[headerName.toLowerCase()] = headers[headerName];
       return lcaseHeaders;
     }, {});

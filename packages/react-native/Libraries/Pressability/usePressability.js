@@ -18,6 +18,13 @@ import {useEffect, useRef} from 'react';
  * Creates a persistent instance of `Pressability` that automatically configures
  * itself and resets. Accepts null `config` to support lazy initialization. Once
  * initialized, will not un-initialize until the component has been unmounted.
+ *
+ * In order to use `usePressability`, do the following:
+ *
+ *   const config = useMemo(...);
+ *   const eventHandlers = usePressability(config);
+ *   const pressableView = <View {...eventHandlers} />;
+ *
  */
 export default function usePressability(
   config: ?PressabilityConfig,

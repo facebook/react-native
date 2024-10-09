@@ -11,47 +11,112 @@
 #import <React/RCTLog.h>
 #import <React/RCTUtils.h>
 
-@implementation RCTDebuggingOverlay
+@implementation TraceUpdateTuple
 
-- (void)draw:(NSString *)serializedNodes
+- (instancetype)initWithView:(UIView *)view cleanupBlock:(dispatch_block_t)cleanupBlock
 {
-  NSArray *subViewsToRemove = [self subviews];
-  for (UIView *v in subViewsToRemove) {
-    [v removeFromSuperview];
+  if (self = [super init]) {
+    _view = view;
+    _cleanupBlock = cleanupBlock;
   }
 
-  NSError *error = nil;
-  id deserializedNodes = RCTJSONParse(serializedNodes, &error);
+  return self;
+}
 
-  if (error) {
-    RCTLogError(@"Failed to parse serialized nodes passed to RCTDebuggingOverlay");
-    return;
+@end
+
+@implementation RCTDebuggingOverlay {
+  NSMutableArray<UIView *> *_highlightedElements;
+  NSMutableDictionary<NSNumber *, TraceUpdateTuple *> *_idToTraceUpdateMap;
+}
+
+- (instancetype)initWithFrame:(CGRect)frame
+{
+  self = [super initWithFrame:frame];
+  if (self) {
+    _idToTraceUpdateMap = [NSMutableDictionary new];
   }
+  return self;
+}
 
-  if (![deserializedNodes isKindOfClass:[NSArray class]]) {
-    RCTLogError(@"Expected to receive nodes as an array, got %@", NSStringFromClass([deserializedNodes class]));
-    return;
-  }
+- (void)highlightTraceUpdates:(NSArray *)updates
+{
+  for (NSDictionary *update in updates) {
+    NSNumber *identifier = [RCTConvert NSNumber:update[@"id"]];
+    NSDictionary *nodeRectangle = update[@"rectangle"];
+    UIColor *nodeColor = [RCTConvert UIColor:update[@"color"]];
 
-  for (NSDictionary *node in deserializedNodes) {
-    NSDictionary *nodeRectangle = node[@"rect"];
-    NSNumber *nodeColor = node[@"color"];
+    CGRect rect = [RCTConvert CGRect:nodeRectangle];
 
-    NSNumber *x = nodeRectangle[@"left"];
-    NSNumber *y = nodeRectangle[@"top"];
-    NSNumber *width = nodeRectangle[@"width"];
-    NSNumber *height = nodeRectangle[@"height"];
+    TraceUpdateTuple *possiblyRegisteredTraceUpdateTuple = [_idToTraceUpdateMap objectForKey:identifier];
+    if (possiblyRegisteredTraceUpdateTuple != nil) {
+      dispatch_block_t cleanupBlock = [possiblyRegisteredTraceUpdateTuple cleanupBlock];
+      UIView *view = [possiblyRegisteredTraceUpdateTuple view];
 
-    CGRect rect = CGRectMake(x.doubleValue, y.doubleValue, width.doubleValue, height.doubleValue);
+      dispatch_block_cancel(cleanupBlock);
+
+      view.frame = rect;
+      view.layer.borderColor = nodeColor.CGColor;
+
+      dispatch_block_t newCleanupBlock = dispatch_block_create(0, ^{
+        [self->_idToTraceUpdateMap removeObjectForKey:identifier];
+        [view removeFromSuperview];
+      });
+
+      [_idToTraceUpdateMap setObject:[[TraceUpdateTuple alloc] initWithView:view cleanupBlock:newCleanupBlock]
+                              forKey:identifier];
+
+      dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_main_queue(), newCleanupBlock);
+
+      continue;
+    }
 
     UIView *box = [[UIView alloc] initWithFrame:rect];
     box.backgroundColor = [UIColor clearColor];
 
     box.layer.borderWidth = 2.0f;
-    box.layer.borderColor = [RCTConvert UIColor:nodeColor].CGColor;
+    box.layer.borderColor = nodeColor.CGColor;
 
+    dispatch_block_t unmountViewAndPerformCleanup = dispatch_block_create(0, ^{
+      [self->_idToTraceUpdateMap removeObjectForKey:identifier];
+      [box removeFromSuperview];
+    });
+
+    TraceUpdateTuple *traceUpdateTuple = [[TraceUpdateTuple alloc] initWithView:box
+                                                                   cleanupBlock:unmountViewAndPerformCleanup];
+
+    [_idToTraceUpdateMap setObject:traceUpdateTuple forKey:identifier];
     [self addSubview:box];
+
+    dispatch_after(
+        dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_main_queue(), unmountViewAndPerformCleanup);
   }
+}
+
+- (void)highlightElements:(NSArray *)rectangles
+{
+  if (_highlightedElements == nil) {
+    _highlightedElements = [NSMutableArray new];
+  }
+
+  for (NSDictionary *rectangle in rectangles) {
+    UIView *view = [[UIView alloc] initWithFrame:[RCTConvert CGRect:rectangle]];
+    view.backgroundColor = [UIColor colorWithRed:200 / 255.0 green:230 / 255.0 blue:255 / 255.0 alpha:0.8];
+
+    [self addSubview:view];
+    [_highlightedElements addObject:view];
+  }
+}
+
+- (void)clearElementsHighlights
+{
+  if (_highlightedElements != nil) {
+    for (UIView *v in _highlightedElements) {
+      [v removeFromSuperview];
+    }
+  }
+
+  _highlightedElements = nil;
 }
 
 @end

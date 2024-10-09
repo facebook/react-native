@@ -58,16 +58,6 @@ export default function ScrollViewPressableStickyHeaderExample(): React.Node {
   }
   return (
     <View style={styles.container}>
-      <ScrollView
-        nestedScrollEnabled={true}
-        ref={scrollRef}
-        style={{flex: 1}}
-        stickyHeaderIndices={[0]}
-        showsVerticalScrollIndicator={false}
-        testID="scroll_pressable_sticky_header">
-        <StickyHeader />
-        {components}
-      </ScrollView>
       <View>
         <Button
           title="scroll to top"
@@ -84,6 +74,16 @@ export default function ScrollViewPressableStickyHeaderExample(): React.Node {
           testID="scroll_to_bottom_button"
         />
       </View>
+      <ScrollView
+        nestedScrollEnabled={true}
+        ref={scrollRef}
+        style={{flex: 1}}
+        stickyHeaderIndices={[0]}
+        showsVerticalScrollIndicator={false}
+        testID="scroll_pressable_sticky_header">
+        <StickyHeader />
+        {components}
+      </ScrollView>
     </View>
   );
 }

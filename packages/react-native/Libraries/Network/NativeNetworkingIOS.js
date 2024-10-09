@@ -4,34 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
 
-import type {TurboModule} from '../TurboModule/RCTExport';
-
-import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
-
-export interface Spec extends TurboModule {
-  +sendRequest: (
-    query: {|
-      method: string,
-      url: string,
-      data: Object,
-      headers: Object,
-      responseType: string,
-      incrementalUpdates: boolean,
-      timeout: number,
-      withCredentials: boolean,
-    |},
-    callback: (requestId: number) => void,
-  ) => void;
-  +abortRequest: (requestId: number) => void;
-  +clearCookies: (callback: (result: boolean) => void) => void;
-
-  // RCTEventEmitter
-  +addListener: (eventName: string) => void;
-  +removeListeners: (count: number) => void;
-}
-
-export default (TurboModuleRegistry.getEnforcing<Spec>('Networking'): Spec);
+export * from '../../src/private/specs/modules/NativeNetworkingIOS';
+import NativeNetworkingIOS from '../../src/private/specs/modules/NativeNetworkingIOS';
+export default NativeNetworkingIOS;

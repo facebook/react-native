@@ -10,18 +10,17 @@
 #include "RuntimeScheduler_Modern.h"
 #include "SchedulerPriorityUtils.h"
 
-#include <react/renderer/debug/SystraceSection.h>
+#include <cxxreact/SystraceSection.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <utility>
-#include "ErrorUtils.h"
 
 namespace facebook::react {
 
 namespace {
 std::unique_ptr<RuntimeSchedulerBase> getRuntimeSchedulerImplementation(
     RuntimeExecutor runtimeExecutor,
-    bool useModernRuntimeScheduler,
     std::function<RuntimeSchedulerTimePoint()> now) {
-  if (useModernRuntimeScheduler) {
+  if (ReactNativeFeatureFlags::useModernRuntimeScheduler()) {
     return std::make_unique<RuntimeScheduler_Modern>(
         std::move(runtimeExecutor), std::move(now));
   } else {
@@ -33,11 +32,9 @@ std::unique_ptr<RuntimeSchedulerBase> getRuntimeSchedulerImplementation(
 
 RuntimeScheduler::RuntimeScheduler(
     RuntimeExecutor runtimeExecutor,
-    bool useModernRuntimeScheduler,
     std::function<RuntimeSchedulerTimePoint()> now)
     : runtimeSchedulerImpl_(getRuntimeSchedulerImplementation(
           std::move(runtimeExecutor),
-          useModernRuntimeScheduler,
           std::move(now))) {}
 
 void RuntimeScheduler::scheduleWork(RawCallback&& callback) noexcept {
@@ -56,12 +53,20 @@ std::shared_ptr<Task> RuntimeScheduler::scheduleTask(
   return runtimeSchedulerImpl_->scheduleTask(priority, std::move(callback));
 }
 
-bool RuntimeScheduler::getShouldYield() const noexcept {
-  return runtimeSchedulerImpl_->getShouldYield();
+std::shared_ptr<Task> RuntimeScheduler::scheduleIdleTask(
+    jsi::Function&& callback,
+    RuntimeSchedulerTimeout timeout) noexcept {
+  return runtimeSchedulerImpl_->scheduleIdleTask(std::move(callback), timeout);
 }
 
-bool RuntimeScheduler::getIsSynchronous() const noexcept {
-  return runtimeSchedulerImpl_->getIsSynchronous();
+std::shared_ptr<Task> RuntimeScheduler::scheduleIdleTask(
+    RawCallback&& callback,
+    RuntimeSchedulerTimeout timeout) noexcept {
+  return runtimeSchedulerImpl_->scheduleIdleTask(std::move(callback), timeout);
+}
+
+bool RuntimeScheduler::getShouldYield() const noexcept {
+  return runtimeSchedulerImpl_->getShouldYield();
 }
 
 void RuntimeScheduler::cancelTask(Task& task) noexcept {
@@ -88,6 +93,13 @@ void RuntimeScheduler::scheduleRenderingUpdate(
     RuntimeSchedulerRenderingUpdate&& renderingUpdate) {
   return runtimeSchedulerImpl_->scheduleRenderingUpdate(
       std::move(renderingUpdate));
+}
+
+void RuntimeScheduler::setShadowTreeRevisionConsistencyManager(
+    ShadowTreeRevisionConsistencyManager*
+        shadowTreeRevisionConsistencyManager) {
+  return runtimeSchedulerImpl_->setShadowTreeRevisionConsistencyManager(
+      shadowTreeRevisionConsistencyManager);
 }
 
 } // namespace facebook::react

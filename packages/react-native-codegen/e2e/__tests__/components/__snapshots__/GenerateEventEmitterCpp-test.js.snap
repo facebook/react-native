@@ -190,7 +190,7 @@ Object {
 namespace facebook::react {
 
 void EventPropsNativeComponentViewEventEmitter::onChange(OnChange $event) const {
-  dispatchEvent(\\"change\\", [$event=std::move($event)](jsi::Runtime &runtime) {
+  dispatchEvent(\\"paperDirectName\\", [$event=std::move($event)](jsi::Runtime &runtime) {
     auto $payload = jsi::Object(runtime);
     $payload.setProperty(runtime, \\"value\\", $event.value);
 $payload.setProperty(runtime, \\"source\\", $event.source);
@@ -211,7 +211,7 @@ void EventPropsNativeComponentViewEventEmitter::onEventDirect(OnEventDirect $eve
 
 
 void EventPropsNativeComponentViewEventEmitter::onEventDirectWithPaperName(OnEventDirectWithPaperName $event) const {
-  dispatchEvent(\\"eventDirectWithPaperName\\", [$event=std::move($event)](jsi::Runtime &runtime) {
+  dispatchEvent(\\"paperDirectName\\", [$event=std::move($event)](jsi::Runtime &runtime) {
     auto $payload = jsi::Object(runtime);
     $payload.setProperty(runtime, \\"value\\", $event.value);
     return $payload;
@@ -220,7 +220,7 @@ void EventPropsNativeComponentViewEventEmitter::onEventDirectWithPaperName(OnEve
 
 
 void EventPropsNativeComponentViewEventEmitter::onOrientationChange(OnOrientationChange $event) const {
-  dispatchEvent(\\"orientationChange\\", [$event=std::move($event)](jsi::Runtime &runtime) {
+  dispatchEvent(\\"paperBubblingName\\", [$event=std::move($event)](jsi::Runtime &runtime) {
     auto $payload = jsi::Object(runtime);
     $payload.setProperty(runtime, \\"orientation\\", toString($event.orientation));
     return $payload;
@@ -238,7 +238,7 @@ void EventPropsNativeComponentViewEventEmitter::onEnd(OnEnd $event) const {
 
 
 void EventPropsNativeComponentViewEventEmitter::onEventBubblingWithPaperName(OnEventBubblingWithPaperName $event) const {
-  dispatchEvent(\\"eventBubblingWithPaperName\\", [](jsi::Runtime &runtime) {
+  dispatchEvent(\\"paperBubblingName\\", [](jsi::Runtime &runtime) {
     auto $payload = jsi::Object(runtime);
     
     return $payload;

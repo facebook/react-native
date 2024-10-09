@@ -21,6 +21,7 @@ Map {
 
 Class<RCTComponentViewProtocol> RCTThirdPartyFabricComponentsProvider(const char *name) {
   static std::unordered_map<std::string, Class (*)(void)> sFabricComponentsClassMap = {
+    #if RCT_NEW_ARCH_ENABLED
     #ifndef RCT_DYNAMIC_FRAMEWORKS
 
     {\\"NoPropsNoEventsComponent\\", NoPropsNoEventsComponentCls}, // NO_PROPS_NO_EVENTS
@@ -70,7 +71,8 @@ Class<RCTComponentViewProtocol> RCTThirdPartyFabricComponentsProvider(const char
     {\\"MultiComponent1NativeComponent\\", MultiComponent1NativeComponentCls}, // TWO_COMPONENTS_SAME_FILE,
     {\\"MultiComponent2NativeComponent\\", MultiComponent2NativeComponentCls}, // TWO_COMPONENTS_SAME_FILE
 
-    {\\"MultiFile1NativeComponent\\", MultiFile1NativeComponentCls}, // TWO_COMPONENTS_DIFFERENT_FILES,
+    {\\"MultiFile1NativeComponent\\", MultiFile1NativeComponentCls}, // TWO_COMPONENTS_DIFFERENT_FILES
+
     {\\"MultiFile2NativeComponent\\", MultiFile2NativeComponentCls}, // TWO_COMPONENTS_DIFFERENT_FILES
 
     {\\"CommandNativeComponent\\", CommandNativeComponentCls}, // COMMANDS
@@ -81,6 +83,7 @@ Class<RCTComponentViewProtocol> RCTThirdPartyFabricComponentsProvider(const char
 
 
     {\\"MultiFileIncludedNativeComponent\\", MultiFileIncludedNativeComponentCls}, // EXCLUDE_IOS_TWO_COMPONENTS_DIFFERENT_FILES
+    #endif
     #endif
   };
 

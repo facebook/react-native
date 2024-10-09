@@ -27,6 +27,7 @@
 #include "JJSTimerExecutor.h"
 #include "JJavaTimerManager.h"
 #include "JReactExceptionManager.h"
+#include "JReactHostInspectorTarget.h"
 
 namespace facebook::react {
 
@@ -46,7 +47,8 @@ class JReactInstance : public jni::HybridClass<JReactInstance> {
       jni::alias_ref<JReactExceptionManager::javaobject> jReactExceptionManager,
       jni::alias_ref<JBindingsInstaller::javaobject> jBindingsInstaller,
       bool isProfiling,
-      bool useModernRuntimeScheduler);
+      jni::alias_ref<JReactHostInspectorTarget::javaobject>
+          jReactHostInspectorTarget);
 
   /*
    * Instantiates and returns an instance of `JSTimerExecutor`.
@@ -79,6 +81,8 @@ class JReactInstance : public jni::HybridClass<JReactInstance> {
 
   void handleMemoryPressureJs(jint level);
 
+  void unregisterFromInspector();
+
  private:
   friend HybridBase;
 
@@ -92,7 +96,8 @@ class JReactInstance : public jni::HybridClass<JReactInstance> {
       jni::alias_ref<JReactExceptionManager::javaobject> jReactExceptionManager,
       jni::alias_ref<JBindingsInstaller::javaobject> jBindingsInstaller,
       bool isProfiling,
-      bool useModernRuntimeScheduler) noexcept;
+      jni::alias_ref<JReactHostInspectorTarget::javaobject>
+          jReactHostInspectorTarget) noexcept;
 
   jni::alias_ref<CallInvokerHolder::javaobject> getJSCallInvokerHolder();
   jni::alias_ref<NativeMethodCallInvokerHolder::javaobject>
@@ -107,6 +112,8 @@ class JReactInstance : public jni::HybridClass<JReactInstance> {
       nativeMethodCallInvokerHolder_;
   jni::global_ref<JReactExceptionManager::javaobject> jReactExceptionManager_;
   jni::global_ref<JBindingsInstaller::javaobject> jBindingsInstaller_;
+
+  jlong getJavaScriptContext();
 };
 
 } // namespace facebook::react

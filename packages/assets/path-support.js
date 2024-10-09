@@ -29,6 +29,7 @@ const ANDROID_BASE_DENSITY = 160;
  */
 function getAndroidAssetSuffix(scale: number): string {
   if (scale.toString() in androidScaleSuffix) {
+    // $FlowFixMe[invalid-computed-prop]
     return androidScaleSuffix[scale.toString()];
   }
   // NOTE: Android Gradle Plugin does not fully support the nnndpi format.

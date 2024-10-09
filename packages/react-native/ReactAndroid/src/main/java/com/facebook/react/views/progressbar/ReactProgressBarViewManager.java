@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.module.annotations.ReactModule;
@@ -35,6 +36,7 @@ import java.util.WeakHashMap;
  * ProgressBar changes, we have to drop the existing ProgressBar (if there is one) and create a new
  * one with the style given.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @ReactModule(name = ReactProgressBarViewManager.REACT_CLASS)
 public class ReactProgressBarViewManager
     extends BaseViewManager<ProgressBarContainerView, ProgressBarShadowNode>

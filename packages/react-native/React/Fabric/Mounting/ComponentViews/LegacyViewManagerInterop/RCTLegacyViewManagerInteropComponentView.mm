@@ -41,17 +41,6 @@ static NSString *const kRCTLegacyInteropChildIndexKey = @"index";
   return self;
 }
 
-- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
-{
-  UIView *result = [super hitTest:point withEvent:event];
-
-  if (result == _adapter.paperView) {
-    return self;
-  }
-
-  return result;
-}
-
 - (RCTLegacyViewManagerInteropCoordinator *)_coordinator
 {
   if (_state != nullptr) {
@@ -91,7 +80,6 @@ static NSString *const kRCTLegacyInteropChildIndexKey = @"index";
 {
   static NSMutableSet<NSString *> *supported = [NSMutableSet setWithObjects:@"DatePicker",
                                                                             @"ProgressView",
-                                                                            @"SegmentedControl",
                                                                             @"MaskedView",
                                                                             @"ARTSurfaceView",
                                                                             @"ARTText",
@@ -130,6 +118,7 @@ static NSString *const kRCTLegacyInteropChildIndexKey = @"index";
   }
 
   // Step 3: check if the module has been registered
+  // TODO(T174674274): Implement lazy loading of legacy view managers in the new architecture.
   NSArray<Class> *registeredModules = RCTGetModuleClasses();
   NSMutableDictionary<NSString *, Class> *supportedLegacyViewComponents =
       [RCTLegacyViewManagerInteropComponentView _supportedLegacyViewComponents];
@@ -147,7 +136,8 @@ static NSString *const kRCTLegacyInteropChildIndexKey = @"index";
       supportedLegacyViewComponents[moduleName] = moduleClass;
     }
 
-    if ([moduleName isEqualToString:componentName]) {
+    if ([moduleName isEqualToString:componentName] ||
+        [moduleName isEqualToString:[@"RCT" stringByAppendingString:componentName]]) {
       return YES;
     }
   }
@@ -188,8 +178,8 @@ static NSString *const kRCTLegacyInteropChildIndexKey = @"index";
 
 - (void)unmountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
 {
-  if (_adapter) {
-    [_adapter.paperView removeReactSubview:childComponentView];
+  if (_adapter && index < _adapter.paperView.reactSubviews.count) {
+    [_adapter.paperView removeReactSubview:_adapter.paperView.reactSubviews[index]];
   } else {
     [_viewsToBeUnmounted addObject:childComponentView];
   }
@@ -202,25 +192,41 @@ static NSString *const kRCTLegacyInteropChildIndexKey = @"index";
 
 - (void)updateState:(const State::Shared &)state oldState:(const State::Shared &)oldState
 {
-  _state = std::static_pointer_cast<LegacyViewManagerInteropShadowNode::ConcreteState const>(state);
+  _state = std::static_pointer_cast<const LegacyViewManagerInteropShadowNode::ConcreteState>(state);
 }
 
 - (void)finalizeUpdates:(RNComponentViewUpdateMask)updateMask
 {
   [super finalizeUpdates:updateMask];
+  __block BOOL propsUpdated = NO;
+
+  __weak __typeof(self) weakSelf = self;
+  void (^updatePropsIfNeeded)(RNComponentViewUpdateMask) = ^void(RNComponentViewUpdateMask mask) {
+    __typeof(self) strongSelf = weakSelf;
+    if (!propsUpdated) {
+      [strongSelf _setPropsWithUpdateMask:mask];
+      propsUpdated = YES;
+    }
+  };
 
   if (!_adapter) {
     _adapter = [[RCTLegacyViewManagerInteropCoordinatorAdapter alloc] initWithCoordinator:[self _coordinator]
                                                                                  reactTag:self.tag];
-    __weak __typeof(self) weakSelf = self;
     _adapter.eventInterceptor = ^(std::string eventName, folly::dynamic event) {
       if (weakSelf) {
         __typeof(self) strongSelf = weakSelf;
         const auto &eventEmitter =
-            static_cast<LegacyViewManagerInteropViewEventEmitter const &>(*strongSelf->_eventEmitter);
+            static_cast<const LegacyViewManagerInteropViewEventEmitter &>(*strongSelf->_eventEmitter);
         eventEmitter.dispatchEvent(eventName, event);
       }
     };
+    // Set props immediately. This is required to set the initial state of the view.
+    // In the case where some events are fired in relationship of a change in the frame
+    // or layout of the view, they will fire as soon as the contentView is set and if the
+    // event block is nil, the app will crash.
+    updatePropsIfNeeded(updateMask);
+    propsUpdated = YES;
+
     self.contentView = _adapter.paperView;
   }
 
@@ -245,10 +251,20 @@ static NSString *const kRCTLegacyInteropChildIndexKey = @"index";
 
   [_adapter.paperView didUpdateReactSubviews];
 
+  updatePropsIfNeeded(updateMask);
+}
+
+- (void)_setPropsWithUpdateMask:(RNComponentViewUpdateMask)updateMask
+{
   if (updateMask & RNComponentViewUpdateMaskProps) {
     const auto &newProps = static_cast<const LegacyViewManagerInteropViewProps &>(*_props);
     [_adapter setProps:newProps.otherProps];
   }
+}
+
+- (UIView *)paperView
+{
+  return _adapter.paperView;
 }
 
 #pragma mark - Native Commands

@@ -1,5 +1,9 @@
 blank_issues_enabled: false
 contact_links:
+    - name: ⬆️ Upgrade - Build Regression
+      url: https://github.com/reactwg/react-native-releases/issues/new/choose
+      about: |
+        If you are upgrading to a new React Native version (stable or pre-release) and encounter a build regression.
     - name: 🚀 Expo Issue
       url: https://github.com/expo/expo/issues/new
       about: |

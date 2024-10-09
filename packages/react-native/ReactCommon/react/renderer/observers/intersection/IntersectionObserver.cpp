@@ -10,7 +10,6 @@
 #include <react/renderer/core/LayoutMetrics.h>
 #include <react/renderer/core/LayoutableShadowNode.h>
 #include <react/renderer/core/ShadowNodeFamily.h>
-#include <react/renderer/core/TraitCast.h>
 #include <utility>
 
 namespace facebook::react {
@@ -93,7 +92,7 @@ IntersectionObserver::updateIntersectionObservation(
     const RootShadowNode& rootShadowNode,
     double mountTime) {
   const auto layoutableRootShadowNode =
-      traitCast<const LayoutableShadowNode*>(&rootShadowNode);
+      dynamic_cast<const LayoutableShadowNode*>(&rootShadowNode);
 
   react_native_assert(
       layoutableRootShadowNode != nullptr &&

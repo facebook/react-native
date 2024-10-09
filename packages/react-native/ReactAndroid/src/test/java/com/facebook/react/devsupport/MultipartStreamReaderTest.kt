@@ -132,7 +132,7 @@ class MultipartStreamReaderTest {
       callCount++
     }
 
-    override fun onChunkProgress(headers: Map<String, String>, loaded: Long, total: Long) {}
+    override fun onChunkProgress(headers: Map<String, String>, loaded: Long, total: Long) = Unit
   }
 
   private fun encodeUtf8(input: String): ByteString =

@@ -20,15 +20,15 @@ import until from 'wait-for-expect';
 import WebSocket from 'ws';
 
 export class DebuggerAgent {
-  _ws: ?WebSocket;
-  _readyPromise: Promise<void>;
+  #ws: ?WebSocket;
+  #readyPromise: Promise<void>;
 
   constructor(url: string, signal?: AbortSignal) {
     const ws = new WebSocket(url, {
       // The mock server uses a self-signed certificate.
       rejectUnauthorized: false,
     });
-    this._ws = ws;
+    this.#ws = ws;
     ws.on('message', data => {
       this.__handle(JSON.parse(data.toString()));
     });
@@ -37,7 +37,7 @@ export class DebuggerAgent {
         this.close();
       });
     }
-    this._readyPromise = new Promise<void>((resolve, reject) => {
+    this.#readyPromise = new Promise<void>((resolve, reject) => {
       ws.once('open', () => {
         resolve();
       });
@@ -50,29 +50,29 @@ export class DebuggerAgent {
   __handle(message: JSONSerializable): void {}
 
   send(message: JSONSerializable) {
-    if (!this._ws) {
+    if (!this.#ws) {
       return;
     }
-    this._ws.send(JSON.stringify(message));
+    this.#ws.send(JSON.stringify(message));
   }
 
   ready(): Promise<void> {
-    return this._readyPromise;
+    return this.#readyPromise;
   }
 
   close() {
-    if (!this._ws) {
+    if (!this.#ws) {
       return;
     }
     try {
-      this._ws.terminate();
+      this.#ws.terminate();
     } catch {}
-    this._ws = null;
+    this.#ws = null;
   }
 
   // $FlowIgnore[unsafe-getters-setters]
   get socket(): WebSocket {
-    return nullthrows(this._ws);
+    return nullthrows(this.#ws);
   }
 }
 

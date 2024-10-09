@@ -19,7 +19,7 @@ module.exports = {
     },
   },
 
-  extends: ['plugin:prettier/recommended'],
+  extends: ['prettier'],
 
   plugins: [
     'eslint-comments',
@@ -255,7 +255,6 @@ module.exports = {
     // These rules are purely matters of style and are quite subjective.
 
     'key-spacing': 0,
-    'keyword-spacing': 1, // enforce spacing before and after keywords
     'jsx-quotes': [1, 'prefer-double'], // enforces the usage of double quotes for all JSX attribute values which doesn’t contain a double quote
     'comma-spacing': 0,
     'no-multi-spaces': 0,
@@ -313,7 +312,7 @@ module.exports = {
     'react/no-did-mount-set-state': 1,
     'react/no-did-update-set-state': 1,
     'react/no-multi-comp': 0,
-    'react/no-string-refs': 1,
+    'react/no-string-refs': 2,
     'react/no-unknown-property': 0,
     'react/no-unstable-nested-components': 1,
     'react/prop-types': 0,

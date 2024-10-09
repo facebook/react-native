@@ -121,6 +121,8 @@ static NSUInteger RCTDeviceFreeMemory(void)
     // Calculate max buffer size
     [self calculateMaxBufferCount];
 
+    [self prefetchNextFrame:nil fetchFrameIndex:1];
+
     if ([self paused]) {
       [self start];
     }
@@ -167,6 +169,21 @@ static NSUInteger RCTDeviceFreeMemory(void)
   return _displayLink;
 }
 
+- (void)prefetchNextFrame:(UIImage *)fetchFrame fetchFrameIndex:(NSInteger)fetchFrameIndex
+{
+  if (!fetchFrame && !(self.frameBuffer.count == self.totalFrameCount) && self.fetchQueue.operationCount == 0) {
+    // Prefetch next frame in background queue
+    UIImage<RCTAnimatedImage> *animatedImage = self.animatedImage;
+    NSOperation *operation = [NSBlockOperation blockOperationWithBlock:^{
+      UIImage *frame = [animatedImage animatedImageFrameAtIndex:fetchFrameIndex];
+      dispatch_semaphore_wait(self.lock, DISPATCH_TIME_FOREVER);
+      self.frameBuffer[@(fetchFrameIndex)] = frame;
+      dispatch_semaphore_signal(self.lock);
+    }];
+    [self.fetchQueue addOperation:operation];
+  }
+}
+
 #pragma mark - Animation
 
 - (void)start
@@ -186,15 +203,10 @@ static NSUInteger RCTDeviceFreeMemory(void)
 
 - (void)displayDidRefresh:(CADisplayLink *)displayLink
 {
-#if TARGET_OS_UIKITFORMAC
-  // TODO: `displayLink.frameInterval` is not available on UIKitForMac
-  NSTimeInterval durationToNextRefresh = displayLink.duration;
-#else
   // displaylink.duration -- time interval between frames, assuming maximumFramesPerSecond
   // displayLink.preferredFramesPerSecond (>= iOS 10) -- Set to 30 for displayDidRefresh to be called at 30 fps
   // durationToNextRefresh -- Time interval to the next time displayDidRefresh is called
   NSTimeInterval durationToNextRefresh = displayLink.targetTimestamp - displayLink.timestamp;
-#endif
   NSUInteger totalFrameCount = self.totalFrameCount;
   NSUInteger currentFrameIndex = self.currentFrameIndex;
   NSUInteger nextFrameIndex = (currentFrameIndex + 1) % totalFrameCount;
@@ -215,6 +227,9 @@ static NSUInteger RCTDeviceFreeMemory(void)
       // Do not skip frame
       self.currentTime = nextDuration;
     }
+    currentFrameIndex = nextFrameIndex;
+    self.currentFrameIndex = nextFrameIndex;
+    nextFrameIndex = (currentFrameIndex + 1) % totalFrameCount;
   }
 
   // Update the current frame
@@ -224,20 +239,14 @@ static NSUInteger RCTDeviceFreeMemory(void)
   currentFrame = self.frameBuffer[@(currentFrameIndex)];
   fetchFrame = currentFrame ? self.frameBuffer[@(nextFrameIndex)] : nil;
   dispatch_semaphore_signal(self.lock);
-  BOOL bufferFull = NO;
   if (currentFrame) {
     dispatch_semaphore_wait(self.lock, DISPATCH_TIME_FOREVER);
     // Remove the frame buffer if need
     if (self.frameBuffer.count > self.maxBufferCount) {
       self.frameBuffer[@(currentFrameIndex)] = nil;
     }
-    // Check whether we can stop fetch
-    if (self.frameBuffer.count == totalFrameCount) {
-      bufferFull = YES;
-    }
     dispatch_semaphore_signal(self.lock);
     self.currentFrame = currentFrame;
-    self.currentFrameIndex = nextFrameIndex;
     self.bufferMiss = NO;
     [self.layer setNeedsDisplay];
   } else {
@@ -266,17 +275,7 @@ static NSUInteger RCTDeviceFreeMemory(void)
     fetchFrameIndex = nextFrameIndex;
   }
 
-  if (!fetchFrame && !bufferFull && self.fetchQueue.operationCount == 0) {
-    // Prefetch next frame in background queue
-    UIImage<RCTAnimatedImage> *animatedImage = self.animatedImage;
-    NSOperation *operation = [NSBlockOperation blockOperationWithBlock:^{
-      UIImage *frame = [animatedImage animatedImageFrameAtIndex:fetchFrameIndex];
-      dispatch_semaphore_wait(self.lock, DISPATCH_TIME_FOREVER);
-      self.frameBuffer[@(fetchFrameIndex)] = frame;
-      dispatch_semaphore_signal(self.lock);
-    }];
-    [self.fetchQueue addOperation:operation];
-  }
+  [self prefetchNextFrame:fetchFrame fetchFrameIndex:fetchFrameIndex];
 }
 
 #pragma mark - CALayerDelegate

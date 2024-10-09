@@ -22,7 +22,6 @@ public class YogaNative {
   static native void jni_YGConfigFreeJNI(long nativePointer);
   static native void jni_YGConfigSetExperimentalFeatureEnabledJNI(long nativePointer, int feature, boolean enabled);
   static native void jni_YGConfigSetUseWebDefaultsJNI(long nativePointer, boolean useWebDefaults);
-  static native void jni_YGConfigSetPrintTreeFlagJNI(long nativePointer, boolean enable);
   static native void jni_YGConfigSetPointScaleFactorJNI(long nativePointer, float pixelsInPoint);
   static native void jni_YGConfigSetErrataJNI(long nativePointer, int errata);
   static native int jni_YGConfigGetErrataJNI(long nativePointer);
@@ -109,9 +108,10 @@ public class YogaNative {
   static native void jni_YGNodeStyleSetAspectRatioJNI(long nativePointer, float aspectRatio);
   static native float jni_YGNodeStyleGetGapJNI(long nativePointer, int gutter);
   static native void jni_YGNodeStyleSetGapJNI(long nativePointer, int gutter, float gapLength);
+  static native void jni_YGNodeStyleSetGapPercentJNI(long nativePointer, int gutter, float gapLength);
   static native void jni_YGNodeSetHasMeasureFuncJNI(long nativePointer, boolean hasMeasureFunc);
   static native void jni_YGNodeSetHasBaselineFuncJNI(long nativePointer, boolean hasMeasureFunc);
-  static native void jni_YGNodePrintJNI(long nativePointer);
   static native void jni_YGNodeSetStyleInputsJNI(long nativePointer, float[] styleInputsArray, int size);
   static native long jni_YGNodeCloneJNI(long nativePointer);
+  static native void jni_YGNodeSetAlwaysFormsContainingBlockJNI(long nativePointer, boolean alwaysFormContainingBlock);
 }

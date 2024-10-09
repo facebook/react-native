@@ -7,10 +7,12 @@
 
 package com.facebook.react.animated;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.JSApplicationCausedNativeException;
 import com.facebook.react.bridge.ReadableMap;
 
-/*package*/ class DiffClampAnimatedNode extends ValueAnimatedNode {
+/*package*/ @Nullsafe(Nullsafe.Mode.LOCAL)
+class DiffClampAnimatedNode extends ValueAnimatedNode {
   private final NativeAnimatedNodesManager mNativeAnimatedNodesManager;
   private final int mInputNodeTag;
   private final double mMin;

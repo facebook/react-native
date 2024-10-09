@@ -26,85 +26,87 @@ import com.facebook.yoga.YogaWrap
 
 /** A fake [YogaNode] that allows us to test Yoga without using the real JNI. */
 class FakeYogaNode : YogaNode() {
-  override fun setWidth(width: Float) {}
+  override fun setWidth(width: Float) = Unit
 
-  override fun setWidthPercent(percent: Float) {}
+  override fun setWidthPercent(percent: Float) = Unit
 
-  override fun setMinWidth(minWidth: Float) {}
+  override fun setMinWidth(minWidth: Float) = Unit
 
-  override fun setMinWidthPercent(percent: Float) {}
+  override fun setMinWidthPercent(percent: Float) = Unit
 
-  override fun setMaxWidth(maxWidth: Float) {}
+  override fun setMaxWidth(maxWidth: Float) = Unit
 
-  override fun setMaxWidthPercent(percent: Float) {}
+  override fun setMaxWidthPercent(percent: Float) = Unit
 
-  override fun setWidthAuto() {}
+  override fun setWidthAuto() = Unit
 
-  override fun setHeight(height: Float) {}
+  override fun setHeight(height: Float) = Unit
 
-  override fun setHeightPercent(percent: Float) {}
+  override fun setHeightPercent(percent: Float) = Unit
 
-  override fun setMinHeight(minHeight: Float) {}
+  override fun setMinHeight(minHeight: Float) = Unit
 
-  override fun setMinHeightPercent(percent: Float) {}
+  override fun setMinHeightPercent(percent: Float) = Unit
 
-  override fun setMaxHeight(maxheight: Float) {}
+  override fun setMaxHeight(maxheight: Float) = Unit
 
-  override fun setMaxHeightPercent(percent: Float) {}
+  override fun setMaxHeightPercent(percent: Float) = Unit
 
-  override fun setHeightAuto() {}
+  override fun setHeightAuto() = Unit
 
-  override fun setMargin(edge: YogaEdge?, margin: Float) {}
+  override fun setMargin(edge: YogaEdge?, margin: Float) = Unit
 
-  override fun setMarginPercent(edge: YogaEdge?, percent: Float) {}
+  override fun setMarginPercent(edge: YogaEdge?, percent: Float) = Unit
 
-  override fun setMarginAuto(edge: YogaEdge?) {}
+  override fun setMarginAuto(edge: YogaEdge?) = Unit
 
-  override fun setPadding(edge: YogaEdge?, padding: Float) {}
+  override fun setPadding(edge: YogaEdge?, padding: Float) = Unit
 
-  override fun setPaddingPercent(edge: YogaEdge?, percent: Float) {}
+  override fun setPaddingPercent(edge: YogaEdge?, percent: Float) = Unit
 
-  override fun setPositionType(positionType: YogaPositionType?) {}
+  override fun setPositionType(positionType: YogaPositionType?) = Unit
 
-  override fun setPosition(edge: YogaEdge?, position: Float) {}
+  override fun setPosition(edge: YogaEdge?, position: Float) = Unit
 
-  override fun setPositionPercent(edge: YogaEdge?, percent: Float) {}
+  override fun setPositionPercent(edge: YogaEdge?, percent: Float) = Unit
 
-  override fun setAlignContent(alignContent: YogaAlign?) {}
+  override fun setAlignContent(alignContent: YogaAlign?) = Unit
 
-  override fun setAlignItems(alignItems: YogaAlign?) {}
+  override fun setAlignItems(alignItems: YogaAlign?) = Unit
 
-  override fun setAlignSelf(alignSelf: YogaAlign?) {}
+  override fun setAlignSelf(alignSelf: YogaAlign?) = Unit
 
-  override fun setFlex(flex: Float) {}
+  override fun setFlex(flex: Float) = Unit
 
-  override fun setFlexBasisAuto() {}
+  override fun setFlexBasisAuto() = Unit
 
-  override fun setFlexBasisPercent(percent: Float) {}
+  override fun setFlexBasisPercent(percent: Float) = Unit
 
-  override fun setFlexBasis(flexBasis: Float) {}
+  override fun setFlexBasis(flexBasis: Float) = Unit
 
-  override fun setFlexDirection(flexDirection: YogaFlexDirection?) {}
+  override fun setFlexDirection(flexDirection: YogaFlexDirection?) = Unit
 
-  override fun setFlexGrow(flexGrow: Float) {}
+  override fun setFlexGrow(flexGrow: Float) = Unit
 
-  override fun setFlexShrink(flexShrink: Float) {}
+  override fun setFlexShrink(flexShrink: Float) = Unit
 
-  override fun setJustifyContent(justifyContent: YogaJustify?) {}
+  override fun setJustifyContent(justifyContent: YogaJustify?) = Unit
 
-  override fun setDirection(direction: YogaDirection?) {}
+  override fun setDirection(direction: YogaDirection?) = Unit
 
-  override fun setBorder(edge: YogaEdge?, border: Float) {}
+  override fun setBorder(edge: YogaEdge?, border: Float) = Unit
 
-  override fun setWrap(flexWrap: YogaWrap?) {}
+  override fun setWrap(flexWrap: YogaWrap?) = Unit
 
-  override fun setAspectRatio(aspectRatio: Float) {}
+  override fun setAspectRatio(aspectRatio: Float) = Unit
 
-  override fun setIsReferenceBaseline(isReferenceBaseline: Boolean) {}
+  override fun setIsReferenceBaseline(isReferenceBaseline: Boolean) = Unit
 
-  override fun setMeasureFunction(measureFunction: YogaMeasureFunction?) {}
+  override fun setMeasureFunction(measureFunction: YogaMeasureFunction?) = Unit
 
-  override fun setBaselineFunction(baselineFunction: YogaBaselineFunction?) {}
+  override fun setBaselineFunction(baselineFunction: YogaBaselineFunction?) = Unit
+
+  override fun setAlwaysFormsContainingBlock(alwaysFormsContainingBlock: Boolean) = Unit
 
   override fun getWidth(): YogaValue = YogaValue(YogaConstants.UNDEFINED, YogaUnit.UNDEFINED)
 
@@ -215,6 +217,10 @@ class FakeYogaNode : YogaNode() {
     // no-op
   }
 
+  override fun setGapPercent(gutter: YogaGutter?, gapLength: Float) {
+    // no-op
+  }
+
   override fun getLayoutX(): Float = 0f
 
   override fun getLayoutY(): Float = 0f
@@ -240,10 +246,6 @@ class FakeYogaNode : YogaNode() {
   }
 
   override fun getData(): Any? = null
-
-  override fun print() {
-    // no-op
-  }
 
   override fun cloneWithoutChildren(): YogaNode = FakeYogaNode()
 

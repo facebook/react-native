@@ -11,7 +11,7 @@ import com.facebook.react.bridge.JavaScriptExecutor
 import com.facebook.react.bridge.JavaScriptExecutorFactory
 import com.facebook.react.bridge.WritableNativeMap
 
-class JSCExecutorFactory(private val appName: String, private val deviceName: String) :
+public class JSCExecutorFactory(private val appName: String, private val deviceName: String) :
     JavaScriptExecutorFactory {
 
   @Throws(Exception::class)

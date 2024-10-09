@@ -23,21 +23,14 @@ class YogaStylableProps : public Props {
       const YogaStylableProps& sourceProps,
       const RawProps& rawProps);
 
-  static const yoga::Style& defaultStyle();
-
   void setProp(
       const PropsParserContext& context,
       RawPropsPropNameHash hash,
       const char* propName,
       const RawValue& value);
 
-#ifdef ANDROID
-  void propsDiffMapBuffer(const Props* oldProps, MapBufferBuilder& builder)
-      const override;
-#endif
-
 #pragma mark - Props
-  yoga::Style yogaStyle{defaultStyle()};
+  yoga::Style yogaStyle{};
 
   // Duplicates of existing properties with different names, taking
   // precedence. E.g. "marginBlock" instead of "marginVertical"

@@ -8,11 +8,7 @@
  */
 
 import type * as React from 'react';
-import {Constructor} from '../../../types/private/Utilities';
-import {TimerMixin} from '../../../types/private/TimerMixin';
-import {NativeMethods} from '../../../types/public/ReactNativeTypes';
-import {TVParallaxProperties} from '../View/ViewPropTypes';
-import {TouchableMixin} from './Touchable';
+import {View} from '../../Components/View/View';
 import {TouchableWithoutFeedbackProps} from './TouchableWithoutFeedback';
 
 export interface TVProps {
@@ -70,22 +66,6 @@ export interface TouchableOpacityProps
    * Defaults to 0.2
    */
   activeOpacity?: number | undefined;
-
-  /**
-   * *(Apple TV only)* Object with properties to control Apple TV parallax effects.
-   *
-   * enabled: If true, parallax effects are enabled.  Defaults to true.
-   * shiftDistanceX: Defaults to 2.0.
-   * shiftDistanceY: Defaults to 2.0.
-   * tiltAngle: Defaults to 0.05.
-   * magnification: Defaults to 1.0.
-   * pressMagnification: Defaults to 1.0.
-   * pressDuration: Defaults to 0.3.
-   * pressDelay: Defaults to 0.0.
-   *
-   * @platform android
-   */
-  tvParallaxProperties?: TVParallaxProperties | undefined;
 }
 
 /**
@@ -96,14 +76,6 @@ export interface TouchableOpacityProps
  *
  * @see https://reactnative.dev/docs/touchableopacity
  */
-declare class TouchableOpacityComponent extends React.Component<TouchableOpacityProps> {}
-declare const TouchableOpacityBase: Constructor<TimerMixin> &
-  Constructor<TouchableMixin> &
-  Constructor<NativeMethods> &
-  typeof TouchableOpacityComponent;
-export class TouchableOpacity extends TouchableOpacityBase {
-  /**
-   * Animate the touchable to a new opacity.
-   */
-  setOpacityTo: (value: number) => void;
-}
+export const TouchableOpacity: React.ForwardRefExoticComponent<
+  React.PropsWithoutRef<TouchableOpacityProps> & React.RefAttributes<View>
+>;

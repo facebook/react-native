@@ -31,6 +31,7 @@ import com.facebook.react.devsupport.DevSupportManagerFactory;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.DevLoadingViewManager;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
+import com.facebook.react.devsupport.interfaces.PausedInDebuggerOverlayManager;
 import com.facebook.react.devsupport.interfaces.RedBoxHandler;
 import com.facebook.react.internal.ChoreographerProvider;
 import com.facebook.react.jscexecutor.JSCExecutor;
@@ -57,6 +58,7 @@ public class ReactInstanceManagerBuilder {
   private boolean mUseDeveloperSupport;
   private @Nullable DevSupportManagerFactory mDevSupportManagerFactory;
   private boolean mRequireActivity;
+  private boolean mKeepActivity;
   private @Nullable LifecycleState mInitialLifecycleState;
   private @Nullable JSExceptionHandler mJSExceptionHandler;
   private @Nullable Activity mCurrentActivity;
@@ -74,6 +76,7 @@ public class ReactInstanceManagerBuilder {
   private @Nullable DevLoadingViewManager mDevLoadingViewManager;
   private @Nullable JSEngineResolutionAlgorithm mJSEngineResolutionAlgorithm = null;
   private @Nullable ChoreographerProvider mChoreographerProvider = null;
+  private @Nullable PausedInDebuggerOverlayManager mPausedInDebuggerOverlayManager = null;
 
   /* package protected */ ReactInstanceManagerBuilder() {}
 
@@ -208,6 +211,11 @@ public class ReactInstanceManagerBuilder {
     return this;
   }
 
+  public ReactInstanceManagerBuilder setKeepActivity(boolean keepActivity) {
+    mKeepActivity = keepActivity;
+    return this;
+  }
+
   /**
    * When the {@link SurfaceDelegateFactory} is provided, it will be used for native modules to get
    * a {@link SurfaceDelegate} to interact with the platform specific surface that they that needs
@@ -229,6 +237,12 @@ public class ReactInstanceManagerBuilder {
     return this;
   }
 
+  public ReactInstanceManagerBuilder setPausedInDebuggerOverlayManager(
+      @Nullable PausedInDebuggerOverlayManager pausedInDebuggerOverlayManager) {
+    mPausedInDebuggerOverlayManager = pausedInDebuggerOverlayManager;
+    return this;
+  }
+
   /**
    * Sets the initial lifecycle state of the host. For example, if the host is already resumed at
    * creation time, we wouldn't expect an onResume call until we get an onPause call.
@@ -244,7 +258,7 @@ public class ReactInstanceManagerBuilder {
    * DevSupportManager} will be used, which shows a redbox in dev mode and rethrows (crashes the
    * app) in prod mode.
    */
-  public ReactInstanceManagerBuilder setJSExceptionHandler(JSExceptionHandler handler) {
+  public ReactInstanceManagerBuilder setJSExceptionHandler(@Nullable JSExceptionHandler handler) {
     mJSExceptionHandler = handler;
     return this;
   }
@@ -345,6 +359,7 @@ public class ReactInstanceManagerBuilder {
             ? new DefaultDevSupportManagerFactory()
             : mDevSupportManagerFactory,
         mRequireActivity,
+        mKeepActivity,
         mBridgeIdleDebugListener,
         Assertions.assertNotNull(mInitialLifecycleState, "Initial lifecycle state was not set"),
         mJSExceptionHandler,
@@ -358,7 +373,8 @@ public class ReactInstanceManagerBuilder {
         mTMMDelegateBuilder,
         mSurfaceDelegateFactory,
         mDevLoadingViewManager,
-        mChoreographerProvider);
+        mChoreographerProvider,
+        mPausedInDebuggerOverlayManager);
   }
 
   private JavaScriptExecutorFactory getDefaultJSExecutorFactory(

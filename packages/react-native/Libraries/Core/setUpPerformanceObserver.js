@@ -12,5 +12,7 @@ import {polyfillGlobal} from '../Utilities/PolyfillFunctions';
 
 polyfillGlobal(
   'PerformanceObserver',
-  () => require('../WebPerformance/PerformanceObserver').default,
+  () =>
+    require('../../src/private/webapis/performance/PerformanceObserver')
+      .default,
 );

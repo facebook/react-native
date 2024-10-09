@@ -96,6 +96,9 @@ static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char 
         (bool)class_respondsToSelector(viewClass, @selector(mountingTransactionWillMount:withSurfaceTelemetry:)),
     .observesMountingTransactionDidMount =
         (bool)class_respondsToSelector(viewClass, @selector(mountingTransactionDidMount:withSurfaceTelemetry:)),
+    .shouldBeRecycled = [viewClass respondsToSelector:@selector(shouldBeRecycled)]
+        ? (bool)[viewClass performSelector:@selector(shouldBeRecycled)]
+        : true,
   };
 #pragma clang diagnostic pop
 }
@@ -132,6 +135,7 @@ static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char 
   }
 
   // Fallback 3: Try to use Paper Interop.
+  // TODO(T174674274): Implement lazy loading of legacy view managers in the new architecture.
   if (RCTFabricInteropLayerEnabled() && [RCTLegacyViewManagerInteropComponentView isSupported:componentNameString]) {
     RCTLogNewArchitectureValidation(
         RCTNotAllowedInBridgeless,
@@ -141,7 +145,7 @@ static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char 
                 @"Legacy ViewManagers should be migrated to Fabric ComponentViews in the new architecture to reduce risk. Component using interop layer: %@",
                 componentNameString]);
 
-    auto flavor = std::make_shared<std::string const>(name);
+    auto flavor = std::make_shared<const std::string>(name);
     auto componentName = ComponentName{flavor->c_str()};
     auto componentHandle = reinterpret_cast<ComponentHandle>(componentName);
     auto constructor = [RCTLegacyViewManagerInteropComponentView componentDescriptorProvider].constructor;
@@ -155,7 +159,7 @@ static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char 
   }
 
   // Fallback 4: use <UnimplementedView> if component doesn't exist.
-  auto flavor = std::make_shared<std::string const>(name);
+  auto flavor = std::make_shared<const std::string>(name);
   auto componentName = ComponentName{flavor->c_str()};
   auto componentHandle = reinterpret_cast<ComponentHandle>(componentName);
   auto constructor = [RCTUnimplementedViewComponentView componentDescriptorProvider].constructor;
@@ -210,6 +214,7 @@ static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char 
       .view = [viewClass new],
       .observesMountingTransactionWillMount = componentViewClassDescriptor.observesMountingTransactionWillMount,
       .observesMountingTransactionDidMount = componentViewClassDescriptor.observesMountingTransactionDidMount,
+      .shouldBeRecycled = componentViewClassDescriptor.shouldBeRecycled,
   };
 }
 

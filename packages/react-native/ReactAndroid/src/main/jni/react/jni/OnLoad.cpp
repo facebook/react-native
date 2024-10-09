@@ -10,17 +10,16 @@
 #include <glog/logging.h>
 
 #include <fb/glog_init.h>
-#include <fb/log.h>
 #include <fbjni/fbjni.h>
 
 #include "CatalystInstanceImpl.h"
 #include "CxxModuleWrapperBase.h"
 #include "JCallback.h"
 #include "JInspector.h"
-#include "JInspectorFlags.h"
 #include "JReactMarker.h"
 #include "JavaScriptExecutorHolder.h"
 #include "ProxyExecutor.h"
+#include "ReactInstanceManagerInspectorTarget.h"
 #include "WritableNativeArray.h"
 #include "WritableNativeMap.h"
 
@@ -28,27 +27,29 @@
 #define WITH_GLOGINIT 1
 #endif
 
-using namespace facebook::jni;
+#ifdef WITH_XPLATINIT
+#include <fb/xplat_init.h>
+#endif
 
 namespace facebook::react {
 
 namespace {
 
-struct JavaJSExecutor : public JavaClass<JavaJSExecutor> {
+struct JavaJSExecutor : public jni::JavaClass<JavaJSExecutor> {
   static constexpr auto kJavaDescriptor =
       "Lcom/facebook/react/bridge/JavaJSExecutor;";
 };
 
-class ProxyJavaScriptExecutorHolder : public HybridClass<
-                                          ProxyJavaScriptExecutorHolder,
-                                          JavaScriptExecutorHolder> {
+class ProxyJavaScriptExecutorHolder
+    : public jni::
+          HybridClass<ProxyJavaScriptExecutorHolder, JavaScriptExecutorHolder> {
  public:
   static constexpr auto kJavaDescriptor =
       "Lcom/facebook/react/bridge/ProxyJavaScriptExecutor;";
 
-  static local_ref<jhybriddata> initHybrid(
-      alias_ref<jclass>,
-      alias_ref<JavaJSExecutor::javaobject> executorInstance) {
+  static jni::local_ref<jhybriddata> initHybrid(
+      jni::alias_ref<jclass>,
+      jni::alias_ref<JavaJSExecutor::javaobject> executorInstance) {
     return makeCxxInstance(std::make_shared<ProxyExecutorOneTimeFactory>(
         make_global(executorInstance)));
   }
@@ -68,11 +69,16 @@ class ProxyJavaScriptExecutorHolder : public HybridClass<
 } // namespace
 
 extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
-  return initialize(vm, [] {
+#ifdef WITH_XPLATINIT
+  return facebook::xplat::initialize(vm, [] {
+#else
+  return jni::initialize(vm, [] {
+#endif
 #if WITH_GLOGINIT
     gloginit::initialize();
     FLAGS_minloglevel = 0;
 #endif
+
     ProxyJavaScriptExecutorHolder::registerNatives();
     CatalystInstanceImpl::registerNatives();
     CxxModuleWrapperBase::registerNatives();
@@ -85,7 +91,7 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     WritableNativeMap::registerNatives();
     JReactMarker::registerNatives();
     JInspector::registerNatives();
-    JInspectorFlags::registerNatives();
+    ReactInstanceManagerInspectorTarget::registerNatives();
   });
 }
 

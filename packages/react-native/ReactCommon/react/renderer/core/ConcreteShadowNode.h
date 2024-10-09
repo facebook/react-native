@@ -29,7 +29,8 @@ template <
     typename BaseShadowNodeT,
     typename PropsT,
     typename EventEmitterT = EventEmitter,
-    typename StateDataT = StateData>
+    typename StateDataT = StateData,
+    bool usesMapBufferForStateData = false>
 class ConcreteShadowNode : public BaseShadowNodeT {
   static_assert(
       std::is_base_of<ShadowNode, BaseShadowNodeT>::value,
@@ -51,7 +52,7 @@ class ConcreteShadowNode : public BaseShadowNodeT {
   using ConcreteEventEmitter = EventEmitterT;
   using SharedConcreteEventEmitter = std::shared_ptr<const EventEmitterT>;
   using SharedConcreteShadowNode = std::shared_ptr<const ConcreteShadowNode>;
-  using ConcreteState = ConcreteState<StateDataT>;
+  using ConcreteState = ConcreteState<StateDataT, usesMapBufferForStateData>;
   using ConcreteStateData = StateDataT;
 
   static ComponentName Name() {
@@ -68,10 +69,6 @@ class ConcreteShadowNode : public BaseShadowNodeT {
    */
   static ShadowNodeTraits BaseTraits() {
     return BaseShadowNodeT::BaseTraits();
-  }
-
-  static ShadowNodeTraits::Trait IdentifierTrait() {
-    return BaseShadowNodeT::IdentifierTrait();
   }
 
   static UnsharedConcreteProps Props(

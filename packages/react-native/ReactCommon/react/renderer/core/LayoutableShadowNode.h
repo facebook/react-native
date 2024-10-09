@@ -39,9 +39,6 @@ class LayoutableShadowNode : public ShadowNode {
       const ShadowNode& sourceShadowNode,
       const ShadowNodeFragment& fragment);
 
-  static ShadowNodeTraits BaseTraits();
-  static ShadowNodeTraits::Trait IdentifierTrait();
-
   struct LayoutInspectingPolicy {
     bool includeTransform{true};
     bool includeViewportOffset{false};
@@ -125,8 +122,11 @@ class LayoutableShadowNode : public ShadowNode {
    * Returns offset which is applied to children's origin in
    * `LayoutableShadowNode::getRelativeLayoutMetrics` and
    * `LayoutableShadowNode::findNodeAtPoint`.
+   * i`ncludeTransform` is a flag to include the transform in the offset. This
+   * is a rare case but needed for case where transform is involved for e.g. in
+   * ScrollView.
    */
-  virtual Point getContentOriginOffset() const;
+  virtual Point getContentOriginOffset(bool includeTransform) const;
 
   /*
    * Sets layout metrics for the shadow node.
@@ -155,6 +155,9 @@ class LayoutableShadowNode : public ShadowNode {
    */
   virtual Float firstBaseline(Size size) const;
   virtual Float lastBaseline(Size size) const;
+
+  virtual bool canBeTouchTarget() const;
+  virtual bool canChildrenBeTouchTarget() const;
 
   /*
    * Returns layoutable children to iterate on.

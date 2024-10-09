@@ -13,6 +13,7 @@
 #include <yoga/enums/Dimension.h>
 #include <yoga/enums/Direction.h>
 #include <yoga/enums/Edge.h>
+#include <yoga/enums/PhysicalEdge.h>
 #include <yoga/node/CachedMeasurement.h>
 #include <yoga/numeric/FloatOptional.h>
 
@@ -68,44 +69,36 @@ struct LayoutResults {
     measuredDimensions_[yoga::to_underlying(axis)] = dimension;
   }
 
-  float position(Edge cardinalEdge) const {
-    assertCardinalEdge(cardinalEdge);
-    return position_[yoga::to_underlying(cardinalEdge)];
+  float position(PhysicalEdge physicalEdge) const {
+    return position_[yoga::to_underlying(physicalEdge)];
   }
 
-  void setPosition(Edge cardinalEdge, float dimension) {
-    assertCardinalEdge(cardinalEdge);
-    position_[yoga::to_underlying(cardinalEdge)] = dimension;
+  void setPosition(PhysicalEdge physicalEdge, float dimension) {
+    position_[yoga::to_underlying(physicalEdge)] = dimension;
   }
 
-  float margin(Edge cardinalEdge) const {
-    assertCardinalEdge(cardinalEdge);
-    return margin_[yoga::to_underlying(cardinalEdge)];
+  float margin(PhysicalEdge physicalEdge) const {
+    return margin_[yoga::to_underlying(physicalEdge)];
   }
 
-  void setMargin(Edge cardinalEdge, float dimension) {
-    assertCardinalEdge(cardinalEdge);
-    margin_[yoga::to_underlying(cardinalEdge)] = dimension;
+  void setMargin(PhysicalEdge physicalEdge, float dimension) {
+    margin_[yoga::to_underlying(physicalEdge)] = dimension;
   }
 
-  float border(Edge cardinalEdge) const {
-    assertCardinalEdge(cardinalEdge);
-    return border_[yoga::to_underlying(cardinalEdge)];
+  float border(PhysicalEdge physicalEdge) const {
+    return border_[yoga::to_underlying(physicalEdge)];
   }
 
-  void setBorder(Edge cardinalEdge, float dimension) {
-    assertCardinalEdge(cardinalEdge);
-    border_[yoga::to_underlying(cardinalEdge)] = dimension;
+  void setBorder(PhysicalEdge physicalEdge, float dimension) {
+    border_[yoga::to_underlying(physicalEdge)] = dimension;
   }
 
-  float padding(Edge cardinalEdge) const {
-    assertCardinalEdge(cardinalEdge);
-    return padding_[yoga::to_underlying(cardinalEdge)];
+  float padding(PhysicalEdge physicalEdge) const {
+    return padding_[yoga::to_underlying(physicalEdge)];
   }
 
-  void setPadding(Edge cardinalEdge, float dimension) {
-    assertCardinalEdge(cardinalEdge);
-    padding_[yoga::to_underlying(cardinalEdge)] = dimension;
+  void setPadding(PhysicalEdge physicalEdge, float dimension) {
+    padding_[yoga::to_underlying(physicalEdge)] = dimension;
   }
 
   bool operator==(LayoutResults layout) const;
@@ -114,11 +107,6 @@ struct LayoutResults {
   }
 
  private:
-  static inline void assertCardinalEdge(Edge edge) {
-    assertFatal(
-        static_cast<int>(edge) <= 3, "Edge must be top/left/bottom/right");
-  }
-
   Direction direction_ : bitCount<Direction>() = Direction::Inherit;
   bool hadOverflow_ : 1 = false;
 

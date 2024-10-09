@@ -364,7 +364,7 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
                       options:animationOptionsWithCurve(curve)
                    animations:^{
                      self->_scrollView.contentInset = newEdgeInsets;
-                     self->_scrollView.scrollIndicatorInsets = newEdgeInsets;
+                     self->_scrollView.verticalScrollIndicatorInsets = newEdgeInsets;
                      [self scrollToOffset:newContentOffset animated:NO];
                    }
                    completion:nil];
@@ -939,19 +939,19 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
     BOOL horz = [self isHorizontal:self->_scrollView];
     NSUInteger minIdx = [self->_maintainVisibleContentPosition[@"minIndexForVisible"] integerValue];
     for (NSUInteger ii = minIdx; ii < self->_contentView.subviews.count; ++ii) {
-      // Find the first entirely visible view. This must be done after we update the content offset
+      // Find the first partially or fully visible view. This must be done after we update the content offset
       // or it will tend to grab rows that were made visible by the shift in position
       UIView *subview = self->_contentView.subviews[ii];
       BOOL hasNewView = NO;
       if (horz) {
         CGFloat leftInset = self.inverted ? self->_scrollView.contentInset.right : self->_scrollView.contentInset.left;
         CGFloat x = self->_scrollView.contentOffset.x + leftInset;
-        hasNewView = subview.frame.origin.x > x;
+        hasNewView = subview.frame.origin.x + subview.frame.size.width > x;
       } else {
         CGFloat bottomInset =
             self.inverted ? self->_scrollView.contentInset.top : self->_scrollView.contentInset.bottom;
         CGFloat y = self->_scrollView.contentOffset.y + bottomInset;
-        hasNewView = subview.frame.origin.y > y;
+        hasNewView = subview.frame.origin.y + subview.frame.size.height > y;
       }
       if (hasNewView || ii == self->_contentView.subviews.count - 1) {
         self->_prevFirstVisibleFrame = subview.frame;
@@ -1034,7 +1034,6 @@ RCT_SET_AND_PRESERVE_OFFSET(setScrollsToTop, scrollsToTop, BOOL)
 RCT_SET_AND_PRESERVE_OFFSET(setShowsHorizontalScrollIndicator, showsHorizontalScrollIndicator, BOOL)
 RCT_SET_AND_PRESERVE_OFFSET(setShowsVerticalScrollIndicator, showsVerticalScrollIndicator, BOOL)
 RCT_SET_AND_PRESERVE_OFFSET(setZoomScale, zoomScale, CGFloat);
-RCT_SET_AND_PRESERVE_OFFSET(setScrollIndicatorInsets, scrollIndicatorInsets, UIEdgeInsets);
 
 - (void)setAutomaticallyAdjustsScrollIndicatorInsets:(BOOL)automaticallyAdjusts API_AVAILABLE(ios(13.0))
 {

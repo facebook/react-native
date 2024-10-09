@@ -16,9 +16,16 @@ else
   source[:tag] = "v#{version}"
 end
 
-folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -DFOLLY_HAVE_CLOCK_GETTIME=1 -Wno-comma -Wno-shorten-64-to-32'
-folly_version = '2023.08.07.00'
-boost_compiler_flags = '-Wno-documentation'
+folly_config = get_folly_config()
+folly_compiler_flags = folly_config[:compiler_flags]
+folly_version = folly_config[:version]
+
+header_search_paths = [
+  "\"$(PODS_TARGET_SRCROOT)/..\"",
+  "\"$(PODS_ROOT)/RCT-Folly\"",
+  "\"$(PODS_ROOT)/DoubleConversion\"",
+  "\"$(PODS_ROOT)/fmt/include\""
+]
 
 Pod::Spec.new do |s|
   s.name                   = "React-perflogger"
@@ -29,7 +36,15 @@ Pod::Spec.new do |s|
   s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = min_supported_versions
   s.source                 = source
-  s.source_files           = "**/*.{cpp,h}"
+  s.source_files           = "reactperflogger/*.{cpp,h}", "fusebox/*.{cpp,h}"
   s.header_dir             = "reactperflogger"
   s.pod_target_xcconfig    = { "CLANG_CXX_LANGUAGE_STANDARD" => "c++20" }
+  s.compiler_flags         = folly_compiler_flags
+  s.pod_target_xcconfig    = {
+    "CLANG_CXX_LANGUAGE_STANDARD" => "c++20",
+    "HEADER_SEARCH_PATHS" => header_search_paths.join(' '),
+  }
+
+  s.dependency "RCT-Folly", folly_version
+  s.dependency "DoubleConversion"
 end

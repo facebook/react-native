@@ -7,10 +7,12 @@
 
 #pragma once
 
+#include <folly/executors/ScheduledExecutor.h>
 #include <gmock/gmock.h>
 
 #include <jsinspector-modern/InspectorInterfaces.h>
 #include <jsinspector-modern/InspectorPackagerConnection.h>
+#include <jsinspector-modern/ReactCdp.h>
 
 #include <chrono>
 #include <functional>
@@ -48,6 +50,15 @@ class MockWebSocket : public IWebSocket {
   MOCK_METHOD(void, send, (std::string_view message), (override));
 };
 
+class MockRemoteConnection : public IRemoteConnection {
+ public:
+  MockRemoteConnection() = default;
+
+  // IRemoteConnection methods
+  MOCK_METHOD(void, onMessage, (std::string message), (override));
+  MOCK_METHOD(void, onDisconnect, (), (override));
+};
+
 class MockLocalConnection : public ILocalConnection {
  public:
   explicit MockLocalConnection(
@@ -56,6 +67,10 @@ class MockLocalConnection : public ILocalConnection {
 
   IRemoteConnection& getRemoteConnection() {
     return *remoteConnection_;
+  }
+
+  std::unique_ptr<IRemoteConnection> dangerouslyReleaseRemoteConnection() {
+    return std::move(remoteConnection_);
   }
 
   // ILocalConnection methods
@@ -69,9 +84,19 @@ class MockLocalConnection : public ILocalConnection {
 class MockInspectorPackagerConnectionDelegate
     : public InspectorPackagerConnectionDelegate {
  public:
-  MockInspectorPackagerConnectionDelegate() {
+  explicit MockInspectorPackagerConnectionDelegate(folly::Executor& executor)
+      : executor_(executor) {
     using namespace testing;
-    ON_CALL(*this, scheduleCallback(_, _)).WillByDefault(InvokeArgument<0>());
+    ON_CALL(*this, scheduleCallback(_, _))
+        .WillByDefault(Invoke<>([this](auto callback, auto delay) {
+          if (auto scheduledExecutor =
+                  dynamic_cast<folly::ScheduledExecutor*>(&executor_)) {
+            scheduledExecutor->scheduleAt(
+                callback, scheduledExecutor->now() + delay);
+          } else {
+            executor_.add(callback);
+          }
+        }));
   }
 
   // InspectorPackagerConnectionDelegate methods
@@ -85,6 +110,75 @@ class MockInspectorPackagerConnectionDelegate
       scheduleCallback,
       (std::function<void(void)> callback, std::chrono::milliseconds delayMs),
       (override));
+
+ private:
+  folly::Executor& executor_;
+};
+
+class MockHostTargetDelegate : public HostTargetDelegate {
+ public:
+  // HostTargetDelegate methods
+  HostTargetMetadata getMetadata() override {
+    return {.integrationName = "MockHostTargetDelegate"};
+  }
+  MOCK_METHOD(void, onReload, (const PageReloadRequest& request), (override));
+  MOCK_METHOD(
+      void,
+      onSetPausedInDebuggerMessage,
+      (const OverlaySetPausedInDebuggerMessageRequest& request),
+      (override));
+};
+
+class MockInstanceTargetDelegate : public InstanceTargetDelegate {};
+
+class MockRuntimeTargetDelegate : public RuntimeTargetDelegate {
+ public:
+  // RuntimeTargetDelegate methods
+  MOCK_METHOD(
+      std::unique_ptr<RuntimeAgentDelegate>,
+      createAgentDelegate,
+      (FrontendChannel channel,
+       SessionState& sessionState,
+       std::unique_ptr<RuntimeAgentDelegate::ExportedState>
+           previouslyExportedState,
+       const ExecutionContextDescription&,
+       RuntimeExecutor),
+      (override));
+  MOCK_METHOD(
+      void,
+      addConsoleMessage,
+      (jsi::Runtime & runtime, ConsoleMessage message),
+      (override));
+  MOCK_METHOD(bool, supportsConsole, (), (override, const));
+  MOCK_METHOD(
+      std::unique_ptr<StackTrace>,
+      captureStackTrace,
+      (jsi::Runtime & runtime, size_t framesToSkip),
+      (override));
+};
+
+class MockRuntimeAgentDelegate : public RuntimeAgentDelegate {
+ public:
+  inline MockRuntimeAgentDelegate(
+      FrontendChannel frontendChannel,
+      SessionState& sessionState,
+      std::unique_ptr<RuntimeAgentDelegate::ExportedState>,
+      ExecutionContextDescription executionContextDescription,
+      const RuntimeExecutor& /*runtimeExecutor*/)
+      : frontendChannel(std::move(frontendChannel)),
+        sessionState(sessionState),
+        executionContextDescription(std::move(executionContextDescription)) {}
+
+  // RuntimeAgentDelegate methods
+  MOCK_METHOD(
+      bool,
+      handleRequest,
+      (const cdp::PreparsedRequest& req),
+      (override));
+
+  const FrontendChannel frontendChannel;
+  SessionState& sessionState;
+  const ExecutionContextDescription executionContextDescription;
 };
 
 } // namespace facebook::react::jsinspector_modern

@@ -12,7 +12,6 @@ add_compile_options(
         -std=c++20
         -Wall
         -Wpedantic
-        -Wno-gnu-zero-variadic-macro-arguments
         -DLOG_TAG=\"Fabric\")
 
 file(GLOB rrc_modal_SRC CONFIGURE_DEPENDS *.cpp)
@@ -30,7 +29,6 @@ target_link_libraries(rrc_modal
         react_render_debug
         react_render_graphics
         react_render_imagemanager
-        react_render_mapbuffer
         react_render_uimanager
         rrc_image
         rrc_view

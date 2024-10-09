@@ -26,8 +26,8 @@ import com.facebook.react.common.annotations.StableReactNativeAPI
  *   achieved by retrieving [MapBuffer.Entry] with [entryAt] on known offsets.
  */
 @StableReactNativeAPI
-interface MapBuffer : Iterable<MapBuffer.Entry> {
-  companion object {
+public interface MapBuffer : Iterable<MapBuffer.Entry> {
+  public companion object {
     /**
      * Key are represented as 2 byte values, and typed as Int for ease of access. The serialization
      * format only allows to store [UShort] values.
@@ -39,12 +39,13 @@ interface MapBuffer : Iterable<MapBuffer.Entry> {
    * Data types supported by [MapBuffer]. Keep in sync with definition in
    * `<react/renderer/mapbuffer/MapBuffer.h>`, as enum serialization relies on correct order.
    */
-  enum class DataType {
+  public enum class DataType {
     BOOL,
     INT,
     DOUBLE,
     STRING,
-    MAP
+    MAP,
+    LONG
   }
 
   /**
@@ -52,7 +53,7 @@ interface MapBuffer : Iterable<MapBuffer.Entry> {
    *
    * @return number of elements in the [MapBuffer]
    */
-  val count: Int
+  public val count: Int
 
   /**
    * Checks whether entry for given key exists in MapBuffer.
@@ -60,7 +61,7 @@ interface MapBuffer : Iterable<MapBuffer.Entry> {
    * @param key key to lookup the entry
    * @return whether entry for the given key exists in the MapBuffer.
    */
-  fun contains(key: Int): Boolean
+  public fun contains(key: Int): Boolean
 
   /**
    * Provides offset of the key to use for [entryAt], for cases when offset is not statically known
@@ -69,7 +70,7 @@ interface MapBuffer : Iterable<MapBuffer.Entry> {
    * @param key key to lookup offset for
    * @return offset for the given key to be used for entry access, -1 if key wasn't found.
    */
-  fun getKeyOffset(key: Int): Int
+  public fun getKeyOffset(key: Int): Int
 
   /**
    * Provides parsed access to a MapBuffer without additional lookups for provided offset.
@@ -78,7 +79,7 @@ interface MapBuffer : Iterable<MapBuffer.Entry> {
    *   [getKeyOffset].
    * @return parsed entry for structured access for given offset
    */
-  fun entryAt(offset: Int): MapBuffer.Entry
+  public fun entryAt(offset: Int): MapBuffer.Entry
 
   /**
    * Provides parsed [DataType] annotation associated with the given key.
@@ -87,7 +88,7 @@ interface MapBuffer : Iterable<MapBuffer.Entry> {
    * @return data type of the given key.
    * @throws IllegalArgumentException if the key doesn't exist
    */
-  fun getType(key: Int): DataType
+  public fun getType(key: Int): DataType
 
   /**
    * Provides parsed [Boolean] value if the entry for given key exists with [DataType.BOOL] type
@@ -97,7 +98,7 @@ interface MapBuffer : Iterable<MapBuffer.Entry> {
    * @throws IllegalArgumentException if the key doesn't exist
    * @throws IllegalStateException if the data type doesn't match
    */
-  fun getBoolean(key: Int): Boolean
+  public fun getBoolean(key: Int): Boolean
 
   /**
    * Provides parsed [Int] value if the entry for given key exists with [DataType.INT] type
@@ -107,7 +108,17 @@ interface MapBuffer : Iterable<MapBuffer.Entry> {
    * @throws IllegalArgumentException if the key doesn't exist
    * @throws IllegalStateException if the data type doesn't match
    */
-  fun getInt(key: Int): Int
+  public fun getInt(key: Int): Int
+
+  /**
+   * Provides parsed [Long] value if the entry for given key exists with [DataType.LONG] type
+   *
+   * @param key key to lookup [Long] value for
+   * @return value associated with the requested key
+   * @throws IllegalArgumentException if the key doesn't exist
+   * @throws IllegalStateException if the data type doesn't match
+   */
+  public fun getLong(key: Int): Long
 
   /**
    * Provides parsed [Double] value if the entry for given key exists with [DataType.DOUBLE] type
@@ -117,7 +128,7 @@ interface MapBuffer : Iterable<MapBuffer.Entry> {
    * @throws IllegalArgumentException if the key doesn't exist
    * @throws IllegalStateException if the data type doesn't match
    */
-  fun getDouble(key: Int): Double
+  public fun getDouble(key: Int): Double
 
   /**
    * Provides parsed [String] value if the entry for given key exists with [DataType.STRING] type
@@ -127,7 +138,7 @@ interface MapBuffer : Iterable<MapBuffer.Entry> {
    * @throws IllegalArgumentException if the key doesn't exist
    * @throws IllegalStateException if the data type doesn't match
    */
-  fun getString(key: Int): String
+  public fun getString(key: Int): String
 
   /**
    * Provides parsed [MapBuffer] value if the entry for given key exists with [DataType.MAP] type
@@ -137,7 +148,7 @@ interface MapBuffer : Iterable<MapBuffer.Entry> {
    * @throws IllegalArgumentException if the key doesn't exist
    * @throws IllegalStateException if the data type doesn't match
    */
-  fun getMapBuffer(key: Int): MapBuffer
+  public fun getMapBuffer(key: Int): MapBuffer
 
   /**
    * Provides parsed [List<MapBuffer>] value if the entry for given key exists with [DataType.MAP]
@@ -148,52 +159,59 @@ interface MapBuffer : Iterable<MapBuffer.Entry> {
    * @throws IllegalArgumentException if the key doesn't exist
    * @throws IllegalStateException if the data type doesn't match
    */
-  fun getMapBufferList(key: Int): List<MapBuffer>
+  public fun getMapBufferList(key: Int): List<MapBuffer>
 
   /** Iterable entry representing parsed MapBuffer values */
-  interface Entry {
+  public interface Entry {
     /**
      * Key of the given entry. Usually represented as 2 byte unsigned integer with the value range
      * of [0,65536)
      */
-    val key: Int
+    public val key: Int
 
     /** Parsed [DataType] of the entry */
-    val type: DataType
+    public val type: DataType
 
     /**
      * Entry value represented as [Boolean]
      *
      * @throws IllegalStateException if the data type doesn't match [DataType.BOOL]
      */
-    val booleanValue: Boolean
+    public val booleanValue: Boolean
 
     /**
      * Entry value represented as [Int]
      *
      * @throws IllegalStateException if the data type doesn't match [DataType.INT]
      */
-    val intValue: Int
+    public val intValue: Int
+
+    /**
+     * Entry value represented as [Long]
+     *
+     * @throws IllegalStateException if the data type doesn't match [DataType.LONG]
+     */
+    public val longValue: Long
 
     /**
      * Entry value represented as [Double]
      *
      * @throws IllegalStateException if the data type doesn't match [DataType.DOUBLE]
      */
-    val doubleValue: Double
+    public val doubleValue: Double
 
     /**
      * Entry value represented as [String]
      *
      * @throws IllegalStateException if the data type doesn't match [DataType.STRING]
      */
-    val stringValue: String
+    public val stringValue: String
 
     /**
      * Entry value represented as [MapBuffer]
      *
      * @throws IllegalStateException if the data type doesn't match [DataType.MAP]
      */
-    val mapBufferValue: MapBuffer
+    public val mapBufferValue: MapBuffer
   }
 }

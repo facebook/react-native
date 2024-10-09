@@ -23,20 +23,25 @@ extern const char AndroidTextInputComponentName[];
 /*
  * `ShadowNode` for <AndroidTextInput> component.
  */
-class AndroidTextInputShadowNode final : public ConcreteViewShadowNode<
-                                             AndroidTextInputComponentName,
-                                             AndroidTextInputProps,
-                                             AndroidTextInputEventEmitter,
-                                             AndroidTextInputState> {
+class AndroidTextInputShadowNode final
+    : public ConcreteViewShadowNode<
+          AndroidTextInputComponentName,
+          AndroidTextInputProps,
+          AndroidTextInputEventEmitter,
+          AndroidTextInputState,
+          /* usesMapBufferForStateData */ true> {
  public:
   static ShadowNodeTraits BaseTraits() {
     auto traits = ConcreteViewShadowNode::BaseTraits();
-    traits.set(ShadowNodeTraits::Trait::TextKind);
     traits.set(ShadowNodeTraits::Trait::LeafYogaNode);
     return traits;
   }
 
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
+
+  AndroidTextInputShadowNode(
+      const ShadowNode& sourceShadowNode,
+      const ShadowNodeFragment& fragment);
 
   void setContextContainer(ContextContainer* contextContainer);
 

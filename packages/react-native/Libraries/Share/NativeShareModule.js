@@ -8,16 +8,6 @@
  * @format
  */
 
-import type {TurboModule} from '../TurboModule/RCTExport';
-
-import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
-
-export interface Spec extends TurboModule {
-  +getConstants: () => {||};
-  +share: (
-    content: {|title?: string, message?: string|},
-    dialogTitle?: string,
-  ) => Promise<{|action: string|}>;
-}
-
-export default (TurboModuleRegistry.get<Spec>('ShareModule'): ?Spec);
+export * from '../../src/private/specs/modules/NativeShareModule';
+import NativeShareModule from '../../src/private/specs/modules/NativeShareModule';
+export default NativeShareModule;

@@ -20,7 +20,8 @@ static inline void setFlexStartLayoutPosition(
     const FlexDirection axis,
     const float containingBlockWidth) {
   child->setLayoutPosition(
-      child->getFlexStartMargin(axis, direction, containingBlockWidth) +
+      child->style().computeFlexStartMargin(
+          axis, direction, containingBlockWidth) +
           parent->getLayout().border(flexStartEdge(axis)) +
           parent->getLayout().padding(flexStartEdge(axis)),
       flexStartEdge(axis));
@@ -36,7 +37,8 @@ static inline void setFlexEndLayoutPosition(
       getPositionOfOppositeEdge(
           parent->getLayout().border(flexEndEdge(axis)) +
               parent->getLayout().padding(flexEndEdge(axis)) +
-              child->getFlexEndMargin(axis, direction, containingBlockWidth),
+              child->style().computeFlexEndMargin(
+                  axis, direction, containingBlockWidth),
           axis,
           parent,
           child),
@@ -57,12 +59,13 @@ static inline void setCenterLayoutPosition(
       parent->getLayout().padding(flexEndEdge(axis));
   const float childOuterSize =
       child->getLayout().measuredDimension(dimension(axis)) +
-      child->getMarginForAxis(axis, containingBlockWidth);
+      child->style().computeMarginForAxis(axis, containingBlockWidth);
   child->setLayoutPosition(
       (parentContentBoxSize - childOuterSize) / 2.0f +
           parent->getLayout().border(flexStartEdge(axis)) +
           parent->getLayout().padding(flexStartEdge(axis)) +
-          child->getFlexStartMargin(axis, direction, containingBlockWidth),
+          child->style().computeFlexStartMargin(
+              axis, direction, containingBlockWidth),
       flexStartEdge(axis));
 }
 
@@ -72,7 +75,7 @@ static void justifyAbsoluteChild(
     const Direction direction,
     const FlexDirection mainAxis,
     const float containingBlockWidth) {
-  const Justify parentJustifyContent = parent->getStyle().justifyContent();
+  const Justify parentJustifyContent = parent->style().justifyContent();
   switch (parentJustifyContent) {
     case Justify::FlexStart:
     case Justify::SpaceBetween:
@@ -99,7 +102,7 @@ static void alignAbsoluteChild(
     const FlexDirection crossAxis,
     const float containingBlockWidth) {
   Align itemAlign = resolveChildAlignment(parent, child);
-  const Wrap parentWrap = parent->getStyle().flexWrap();
+  const Wrap parentWrap = parent->style().flexWrap();
   if (parentWrap == Wrap::WrapReverse) {
     if (itemAlign == Align::FlexEnd) {
       itemAlign = Align::FlexStart;
@@ -143,55 +146,42 @@ static void positionAbsoluteChildLegacy(
     const float containingBlockHeight) {
   const bool isAxisRow = isRow(axis);
   const bool shouldCenter = isMainAxis
-      ? parent->getStyle().justifyContent() == Justify::Center
+      ? parent->style().justifyContent() == Justify::Center
       : resolveChildAlignment(parent, child) == Align::Center;
   const bool shouldFlexEnd = isMainAxis
-      ? parent->getStyle().justifyContent() == Justify::FlexEnd
+      ? parent->style().justifyContent() == Justify::FlexEnd
       : ((resolveChildAlignment(parent, child) == Align::FlexEnd) ^
-         (parent->getStyle().flexWrap() == Wrap::WrapReverse));
+         (parent->style().flexWrap() == Wrap::WrapReverse));
 
-  if (child->isFlexEndPositionDefined(axis, direction) &&
-      !child->isFlexStartPositionDefined(axis, direction)) {
+  if (child->style().isFlexEndPositionDefined(axis, direction) &&
+      !child->style().isFlexStartPositionDefined(axis, direction)) {
     child->setLayoutPosition(
         containingNode->getLayout().measuredDimension(dimension(axis)) -
             child->getLayout().measuredDimension(dimension(axis)) -
-            containingNode->getFlexEndBorder(axis, direction) -
-            child->getFlexEndMargin(
+            containingNode->style().computeFlexEndBorder(axis, direction) -
+            child->style().computeFlexEndMargin(
                 axis,
                 direction,
                 isAxisRow ? containingBlockWidth : containingBlockHeight) -
-            child->getFlexEndPosition(
+            child->style().computeFlexEndPosition(
                 axis,
                 direction,
                 isAxisRow ? containingBlockWidth : containingBlockHeight),
         flexStartEdge(axis));
   } else if (
-      !child->isFlexStartPositionDefined(axis, direction) && shouldCenter) {
+      !child->style().isFlexStartPositionDefined(axis, direction) &&
+      shouldCenter) {
     child->setLayoutPosition(
         (parent->getLayout().measuredDimension(dimension(axis)) -
          child->getLayout().measuredDimension(dimension(axis))) /
             2.0f,
         flexStartEdge(axis));
   } else if (
-      !child->isFlexStartPositionDefined(axis, direction) && shouldFlexEnd) {
+      !child->style().isFlexStartPositionDefined(axis, direction) &&
+      shouldFlexEnd) {
     child->setLayoutPosition(
         (parent->getLayout().measuredDimension(dimension(axis)) -
          child->getLayout().measuredDimension(dimension(axis))),
-        flexStartEdge(axis));
-  } else if (
-      parent->getConfig()->isExperimentalFeatureEnabled(
-          ExperimentalFeature::AbsolutePercentageAgainstPaddingEdge) &&
-      child->isFlexStartPositionDefined(axis, direction)) {
-    child->setLayoutPosition(
-        child->getFlexStartPosition(
-            axis,
-            direction,
-            containingNode->getLayout().measuredDimension(dimension(axis))) +
-            containingNode->getFlexStartBorder(axis, direction) +
-            child->getFlexStartMargin(
-                axis,
-                direction,
-                isAxisRow ? containingBlockWidth : containingBlockHeight),
         flexStartEdge(axis));
   }
 }
@@ -233,11 +223,13 @@ static void positionAbsoluteChildImpl(
   // to the flex-start edge because this algorithm works by positioning on the
   // flex-start edge and then filling in the flex-end direction at the end if
   // necessary.
-  if (child->isInlineStartPositionDefined(axis, direction)) {
+  if (child->style().isInlineStartPositionDefined(axis, direction)) {
     const float positionRelativeToInlineStart =
-        child->getInlineStartPosition(axis, direction, containingBlockSize) +
-        containingNode->getInlineStartBorder(axis, direction) +
-        child->getInlineStartMargin(axis, direction, containingBlockSize);
+        child->style().computeInlineStartPosition(
+            axis, direction, containingBlockSize) +
+        containingNode->style().computeInlineStartBorder(axis, direction) +
+        child->style().computeInlineStartMargin(
+            axis, direction, containingBlockSize);
     const float positionRelativeToFlexStart =
         inlineStartEdge(axis, direction) != flexStartEdge(axis)
         ? getPositionOfOppositeEdge(
@@ -245,13 +237,15 @@ static void positionAbsoluteChildImpl(
         : positionRelativeToInlineStart;
 
     child->setLayoutPosition(positionRelativeToFlexStart, flexStartEdge(axis));
-  } else if (child->isInlineEndPositionDefined(axis, direction)) {
+  } else if (child->style().isInlineEndPositionDefined(axis, direction)) {
     const float positionRelativeToInlineStart =
         containingNode->getLayout().measuredDimension(dimension(axis)) -
         child->getLayout().measuredDimension(dimension(axis)) -
-        containingNode->getInlineEndBorder(axis, direction) -
-        child->getInlineEndMargin(axis, direction, containingBlockSize) -
-        child->getInlineEndPosition(axis, direction, containingBlockSize);
+        containingNode->style().computeInlineEndBorder(axis, direction) -
+        child->style().computeInlineEndMargin(
+            axis, direction, containingBlockSize) -
+        child->style().computeInlineEndPosition(
+            axis, direction, containingBlockSize);
     const float positionRelativeToFlexStart =
         inlineStartEdge(axis, direction) != flexStartEdge(axis)
         ? getPositionOfOppositeEdge(
@@ -276,24 +270,25 @@ static void positionAbsoluteChild(
     const bool isMainAxis,
     const float containingBlockWidth,
     const float containingBlockHeight) {
-  child->hasErrata(Errata::AbsolutePositioning) ? positionAbsoluteChildLegacy(
-                                                      containingNode,
-                                                      parent,
-                                                      child,
-                                                      direction,
-                                                      axis,
-                                                      isMainAxis,
-                                                      containingBlockWidth,
-                                                      containingBlockHeight)
-                                                : positionAbsoluteChildImpl(
-                                                      containingNode,
-                                                      parent,
-                                                      child,
-                                                      direction,
-                                                      axis,
-                                                      isMainAxis,
-                                                      containingBlockWidth,
-                                                      containingBlockHeight);
+  child->hasErrata(Errata::AbsolutePositioningIncorrect)
+      ? positionAbsoluteChildLegacy(
+            containingNode,
+            parent,
+            child,
+            direction,
+            axis,
+            isMainAxis,
+            containingBlockWidth,
+            containingBlockHeight)
+      : positionAbsoluteChildImpl(
+            containingNode,
+            parent,
+            child,
+            direction,
+            axis,
+            isMainAxis,
+            containingBlockWidth,
+            containingBlockHeight);
 }
 
 void layoutAbsoluteChild(
@@ -308,7 +303,7 @@ void layoutAbsoluteChild(
     const uint32_t depth,
     const uint32_t generationCount) {
   const FlexDirection mainAxis =
-      resolveDirection(node->getStyle().flexDirection(), direction);
+      resolveDirection(node->style().flexDirection(), direction);
   const FlexDirection crossAxis = resolveCrossDirection(mainAxis, direction);
   const bool isMainAxisRow = isRow(mainAxis);
 
@@ -317,10 +312,10 @@ void layoutAbsoluteChild(
   SizingMode childWidthSizingMode = SizingMode::MaxContent;
   SizingMode childHeightSizingMode = SizingMode::MaxContent;
 
-  auto marginRow =
-      child->getMarginForAxis(FlexDirection::Row, containingBlockWidth);
-  auto marginColumn =
-      child->getMarginForAxis(FlexDirection::Column, containingBlockWidth);
+  auto marginRow = child->style().computeMarginForAxis(
+      FlexDirection::Row, containingBlockWidth);
+  auto marginColumn = child->style().computeMarginForAxis(
+      FlexDirection::Column, containingBlockWidth);
 
   if (child->hasDefiniteLength(Dimension::Width, containingBlockWidth)) {
     childWidth = child->getResolvedDimension(Dimension::Width)
@@ -330,19 +325,24 @@ void layoutAbsoluteChild(
   } else {
     // If the child doesn't have a specified width, compute the width based on
     // the left/right offsets if they're defined.
-    if (child->isFlexStartPositionDefined(FlexDirection::Row, direction) &&
-        child->isFlexEndPositionDefined(FlexDirection::Row, direction)) {
+    if (child->style().isFlexStartPositionDefined(
+            FlexDirection::Row, direction) &&
+        child->style().isFlexEndPositionDefined(
+            FlexDirection::Row, direction)) {
       childWidth =
           containingNode->getLayout().measuredDimension(Dimension::Width) -
-          (containingNode->getFlexStartBorder(FlexDirection::Row, direction) +
-           containingNode->getFlexEndBorder(FlexDirection::Row, direction)) -
-          (child->getFlexStartPosition(
+          (containingNode->style().computeFlexStartBorder(
+               FlexDirection::Row, direction) +
+           containingNode->style().computeFlexEndBorder(
+               FlexDirection::Row, direction)) -
+          (child->style().computeFlexStartPosition(
                FlexDirection::Row, direction, containingBlockWidth) +
-           child->getFlexEndPosition(
+           child->style().computeFlexEndPosition(
                FlexDirection::Row, direction, containingBlockWidth));
       childWidth = boundAxis(
           child,
           FlexDirection::Row,
+          direction,
           childWidth,
           containingBlockWidth,
           containingBlockWidth);
@@ -357,20 +357,24 @@ void layoutAbsoluteChild(
   } else {
     // If the child doesn't have a specified height, compute the height based
     // on the top/bottom offsets if they're defined.
-    if (child->isFlexStartPositionDefined(FlexDirection::Column, direction) &&
-        child->isFlexEndPositionDefined(FlexDirection::Column, direction)) {
+    if (child->style().isFlexStartPositionDefined(
+            FlexDirection::Column, direction) &&
+        child->style().isFlexEndPositionDefined(
+            FlexDirection::Column, direction)) {
       childHeight =
           containingNode->getLayout().measuredDimension(Dimension::Height) -
-          (containingNode->getFlexStartBorder(
+          (containingNode->style().computeFlexStartBorder(
                FlexDirection::Column, direction) +
-           containingNode->getFlexEndBorder(FlexDirection::Column, direction)) -
-          (child->getFlexStartPosition(
+           containingNode->style().computeFlexEndBorder(
+               FlexDirection::Column, direction)) -
+          (child->style().computeFlexStartPosition(
                FlexDirection::Column, direction, containingBlockHeight) +
-           child->getFlexEndPosition(
+           child->style().computeFlexEndPosition(
                FlexDirection::Column, direction, containingBlockHeight));
       childHeight = boundAxis(
           child,
           FlexDirection::Column,
+          direction,
           childHeight,
           containingBlockHeight,
           containingBlockWidth);
@@ -380,7 +384,7 @@ void layoutAbsoluteChild(
   // Exactly one dimension needs to be defined for us to be able to do aspect
   // ratio calculation. One dimension being the anchor and the other being
   // flexible.
-  const auto& childStyle = child->getStyle();
+  const auto& childStyle = child->style();
   if (yoga::isUndefined(childWidth) ^ yoga::isUndefined(childHeight)) {
     if (childStyle.aspectRatio().isDefined()) {
       if (yoga::isUndefined(childWidth)) {
@@ -428,9 +432,11 @@ void layoutAbsoluteChild(
         depth,
         generationCount);
     childWidth = child->getLayout().measuredDimension(Dimension::Width) +
-        child->getMarginForAxis(FlexDirection::Row, containingBlockWidth);
+        child->style().computeMarginForAxis(
+            FlexDirection::Row, containingBlockWidth);
     childHeight = child->getLayout().measuredDimension(Dimension::Height) +
-        child->getMarginForAxis(FlexDirection::Column, containingBlockWidth);
+        child->style().computeMarginForAxis(
+            FlexDirection::Column, containingBlockWidth);
   }
 
   calculateLayoutInternal(
@@ -476,67 +482,105 @@ void layoutAbsoluteDescendants(
     LayoutData& layoutMarkerData,
     uint32_t currentDepth,
     uint32_t generationCount,
-    float currentNodeMainOffsetFromContainingBlock,
-    float currentNodeCrossOffsetFromContainingBlock) {
-  const FlexDirection mainAxis = resolveDirection(
-      currentNode->getStyle().flexDirection(), currentNodeDirection);
-  const FlexDirection crossAxis =
-      resolveCrossDirection(mainAxis, currentNodeDirection);
+    float currentNodeLeftOffsetFromContainingBlock,
+    float currentNodeTopOffsetFromContainingBlock,
+    float containingNodeAvailableInnerWidth,
+    float containingNodeAvailableInnerHeight) {
   for (auto child : currentNode->getChildren()) {
-    if (child->getStyle().display() == Display::None) {
+    if (child->style().display() == Display::None) {
       continue;
-    } else if (child->getStyle().positionType() == PositionType::Absolute) {
+    } else if (child->style().positionType() == PositionType::Absolute) {
+      const bool absoluteErrata =
+          currentNode->hasErrata(Errata::AbsolutePercentAgainstInnerSize);
+      const float containingBlockWidth = absoluteErrata
+          ? containingNodeAvailableInnerWidth
+          : containingNode->getLayout().measuredDimension(Dimension::Width) -
+              containingNode->style().computeBorderForAxis(FlexDirection::Row);
+      const float containingBlockHeight = absoluteErrata
+          ? containingNodeAvailableInnerHeight
+          : containingNode->getLayout().measuredDimension(Dimension::Height) -
+              containingNode->style().computeBorderForAxis(
+                  FlexDirection::Column);
+
       layoutAbsoluteChild(
           containingNode,
           currentNode,
           child,
-          containingNode->getLayout().measuredDimension(Dimension::Width) -
-              containingNode->getBorderForAxis(FlexDirection::Row),
-          containingNode->getLayout().measuredDimension(Dimension::Height) -
-              containingNode->getBorderForAxis(FlexDirection::Column),
+          containingBlockWidth,
+          containingBlockHeight,
           widthSizingMode,
           currentNodeDirection,
           layoutMarkerData,
           currentDepth,
           generationCount);
 
-      const bool isMainAxisRow = isRow(mainAxis);
-      const bool mainInsetsDefined = isMainAxisRow
-          ? child->getStyle().horizontalInsetsDefined()
-          : child->getStyle().verticalInsetsDefined();
-      const bool crossInsetsDefined = isMainAxisRow
-          ? child->getStyle().verticalInsetsDefined()
-          : child->getStyle().horizontalInsetsDefined();
+      /*
+       * At this point the child has its position set but only on its the
+       * parent's flexStart edge. Additionally, this position should be
+       * interpreted relative to the containing block of the child if it had
+       * insets defined. So we need to adjust the position by subtracting the
+       * the parents offset from the containing block. However, getting that
+       * offset is complicated since the two nodes can have different main/cross
+       * axes.
+       */
+      const FlexDirection parentMainAxis = resolveDirection(
+          currentNode->style().flexDirection(), currentNodeDirection);
+      const FlexDirection parentCrossAxis =
+          resolveCrossDirection(parentMainAxis, currentNodeDirection);
 
-      const float childMainOffsetFromParent = mainInsetsDefined
-          ? (child->getLayout().position(flexStartEdge(mainAxis)) -
-             currentNodeMainOffsetFromContainingBlock)
-          : child->getLayout().position(flexStartEdge(mainAxis));
-      const float childCrossOffsetFromParent = crossInsetsDefined
-          ? (child->getLayout().position(flexStartEdge(crossAxis)) -
-             currentNodeCrossOffsetFromContainingBlock)
-          : child->getLayout().position(flexStartEdge(crossAxis));
-
-      child->setLayoutPosition(
-          childMainOffsetFromParent, flexStartEdge(mainAxis));
-      child->setLayoutPosition(
-          childCrossOffsetFromParent, flexStartEdge(crossAxis));
-
-      if (needsTrailingPosition(mainAxis)) {
-        setChildTrailingPosition(currentNode, child, mainAxis);
+      if (needsTrailingPosition(parentMainAxis)) {
+        const bool mainInsetsDefined = isRow(parentMainAxis)
+            ? child->style().horizontalInsetsDefined()
+            : child->style().verticalInsetsDefined();
+        setChildTrailingPosition(
+            mainInsetsDefined ? containingNode : currentNode,
+            child,
+            parentMainAxis);
       }
-      if (needsTrailingPosition(crossAxis)) {
-        setChildTrailingPosition(currentNode, child, crossAxis);
+      if (needsTrailingPosition(parentCrossAxis)) {
+        const bool crossInsetsDefined = isRow(parentCrossAxis)
+            ? child->style().horizontalInsetsDefined()
+            : child->style().verticalInsetsDefined();
+        setChildTrailingPosition(
+            crossInsetsDefined ? containingNode : currentNode,
+            child,
+            parentCrossAxis);
       }
-    } else if (child->getStyle().positionType() == PositionType::Static) {
+
+      /*
+       * At this point we know the left and top physical edges of the child are
+       * set with positions that are relative to the containing block if insets
+       * are defined
+       */
+      const float childLeftPosition =
+          child->getLayout().position(PhysicalEdge::Left);
+      const float childTopPosition =
+          child->getLayout().position(PhysicalEdge::Top);
+
+      const float childLeftOffsetFromParent =
+          child->style().horizontalInsetsDefined()
+          ? (childLeftPosition - currentNodeLeftOffsetFromContainingBlock)
+          : childLeftPosition;
+      const float childTopOffsetFromParent =
+          child->style().verticalInsetsDefined()
+          ? (childTopPosition - currentNodeTopOffsetFromContainingBlock)
+          : childTopPosition;
+
+      child->setLayoutPosition(childLeftOffsetFromParent, PhysicalEdge::Left);
+      child->setLayoutPosition(childTopOffsetFromParent, PhysicalEdge::Top);
+    } else if (
+        child->style().positionType() == PositionType::Static &&
+        !child->alwaysFormsContainingBlock()) {
       const Direction childDirection =
           child->resolveDirection(currentNodeDirection);
-      const float childMainOffsetFromContainingBlock =
-          currentNodeMainOffsetFromContainingBlock +
-          child->getLayout().position(flexStartEdge(mainAxis));
-      const float childCrossOffsetFromContainingBlock =
-          currentNodeCrossOffsetFromContainingBlock +
-          child->getLayout().position(flexStartEdge(crossAxis));
+      // By now all descendants of the containing block that are not absolute
+      // will have their positions set for left and top.
+      const float childLeftOffsetFromContainingBlock =
+          currentNodeLeftOffsetFromContainingBlock +
+          child->getLayout().position(PhysicalEdge::Left);
+      const float childTopOffsetFromContainingBlock =
+          currentNodeTopOffsetFromContainingBlock +
+          child->getLayout().position(PhysicalEdge::Top);
 
       layoutAbsoluteDescendants(
           containingNode,
@@ -546,8 +590,10 @@ void layoutAbsoluteDescendants(
           layoutMarkerData,
           currentDepth + 1,
           generationCount,
-          childMainOffsetFromContainingBlock,
-          childCrossOffsetFromContainingBlock);
+          childLeftOffsetFromContainingBlock,
+          childTopOffsetFromContainingBlock,
+          containingNodeAvailableInnerWidth,
+          containingNodeAvailableInnerHeight);
     }
   }
 }

@@ -8,6 +8,7 @@
 package com.facebook.react.uimanager.events;
 
 import android.util.SparseIntArray;
+import com.facebook.infer.annotation.Nullsafe;
 
 /**
  * Utility for determining coalescing keys for TouchEvents. To preserve proper ordering of events,
@@ -41,6 +42,7 @@ import android.util.SparseIntArray;
  *
  * <p>NB: this class should only be used from the UI thread.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class TouchEventCoalescingKeyHelper {
 
   private final SparseIntArray mDownTimeToCoalescingKey = new SparseIntArray();

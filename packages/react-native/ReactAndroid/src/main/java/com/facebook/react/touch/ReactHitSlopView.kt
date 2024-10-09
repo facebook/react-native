@@ -13,6 +13,6 @@ import android.graphics.Rect
  * This interface should be implemented by all [View] subclasses that want to use the hitSlop prop
  * to extend their touch areas.
  */
-interface ReactHitSlopView {
-  val hitSlopRect: Rect?
+public interface ReactHitSlopView {
+  public val hitSlopRect: Rect?
 }

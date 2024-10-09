@@ -28,7 +28,7 @@ public class ReactCookieJarContainer implements CookieJarContainer {
 
   @Override
   public void removeCookieJar() {
-    this.cookieJar = null;
+    cookieJar = null;
   }
 
   @Override

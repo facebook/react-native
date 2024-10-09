@@ -46,6 +46,7 @@ describe('RNCodegen.generate', () => {
           'EventEmitters.h': componentsOutputDir,
           'EventEmitters.cpp': componentsOutputDir,
           'ComponentDescriptors.h': componentsOutputDir,
+          'ComponentDescriptors.cpp': componentsOutputDir,
         };
 
         let receivedDir = path.dirname(location);
@@ -53,6 +54,7 @@ describe('RNCodegen.generate', () => {
 
         let expectedPath = path.join(
           outputDirectory,
+          // $FlowFixMe[invalid-computed-prop]
           expectedPaths[receivedBasename],
         );
         expect(receivedDir).toEqual(expectedPath);

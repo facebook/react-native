@@ -319,7 +319,7 @@ inline std::vector<PropNameID> PropNameID::names(
 
 template <size_t N>
 inline std::vector<PropNameID> PropNameID::names(
-    PropNameID(&&propertyNames)[N]) {
+    PropNameID (&&propertyNames)[N]) {
   std::vector<PropNameID> result;
   result.reserve(N);
   for (auto& name : propertyNames) {

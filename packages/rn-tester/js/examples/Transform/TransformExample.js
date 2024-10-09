@@ -139,6 +139,10 @@ function Flip() {
   );
 }
 
+function TranslatePercentage() {
+  return <View style={styles.translatePercentageView} />;
+}
+
 const styles = StyleSheet.create({
   container: {
     height: 500,
@@ -247,6 +251,7 @@ const styles = StyleSheet.create({
     marginVertical: 40,
     flex: 1,
     alignSelf: 'center',
+    zIndex: 0,
   },
   flipCard: {
     width: 200,
@@ -255,7 +260,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: 'blue',
     backfaceVisibility: 'hidden',
-    zIndex: 1024,
   },
   flipCard1: {
     position: 'absolute',
@@ -276,6 +280,12 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     transformOrigin: 'top left',
+  },
+  translatePercentageView: {
+    transform: 'translate(50%)',
+    padding: 50,
+    alignSelf: 'flex-start',
+    backgroundColor: 'lightblue',
   },
 });
 
@@ -394,6 +404,13 @@ exports.examples = [
     description: "transformOrigin: 'top left'",
     render(): Node {
       return <TransformOriginExample />;
+    },
+  },
+  {
+    title: 'Translate Percentage',
+    description: "transform: 'translate(50%)'",
+    render(): Node {
+      return <TranslatePercentage />;
     },
   },
 ];

@@ -5,10 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <glog/logging.h>
-#include <cassert>
-
 #include "InspectorFlags.h"
+
+#include <glog/logging.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 
 namespace facebook::react::jsinspector_modern {
 
@@ -17,41 +17,40 @@ InspectorFlags& InspectorFlags::getInstance() {
   return instance;
 }
 
-void InspectorFlags::initFromConfig(
-    const ReactNativeConfig& reactNativeConfig) {
-  bool enableModernCDPRegistry =
-      reactNativeConfig.getBool("react_native_devx:enable_modern_cdp_registry");
-  if (enableModernCDPRegistry_.has_value()) {
-    assert(
-        *enableModernCDPRegistry_ == enableModernCDPRegistry &&
-        "Flag value was changed after init");
-  }
-  enableModernCDPRegistry_ = enableModernCDPRegistry;
-  bool enableCxxInspectorPackagerConnection = reactNativeConfig.getBool(
-      "react_native_devx:enable_cxx_inspector_packager_connection");
-  if (enableCxxInspectorPackagerConnection_.has_value()) {
-    assert(
-        *enableCxxInspectorPackagerConnection_ ==
-            enableCxxInspectorPackagerConnection &&
-        "Flag value was changed after init");
-  }
-  enableCxxInspectorPackagerConnection_ = enableCxxInspectorPackagerConnection;
+bool InspectorFlags::getFuseboxEnabled() const {
+  return loadFlagsAndAssertUnchanged().fuseboxEnabledDebug;
 }
 
-bool InspectorFlags::getEnableModernCDPRegistry() const {
-  if (!enableModernCDPRegistry_.has_value()) {
-    LOG(WARNING)
-        << "InspectorFlags::getEnableModernCDPRegistry was called before init";
-  }
-  return enableModernCDPRegistry_.value_or(false);
+void InspectorFlags::dangerouslyResetFlags() {
+  *this = InspectorFlags{};
 }
 
-bool InspectorFlags::getEnableCxxInspectorPackagerConnection() const {
-  if (!enableCxxInspectorPackagerConnection_.has_value()) {
-    LOG(WARNING)
-        << "InspectorFlags::getEnableCxxInspectorPackagerConnection was called before init";
+const InspectorFlags::Values& InspectorFlags::loadFlagsAndAssertUnchanged()
+    const {
+  InspectorFlags::Values newValues = {
+      .fuseboxEnabledDebug =
+#ifdef REACT_NATIVE_FORCE_ENABLE_FUSEBOX
+          true,
+#elif defined(HERMES_ENABLE_DEBUGGER)
+          ReactNativeFeatureFlags::fuseboxEnabledDebug(),
+#else
+          ReactNativeFeatureFlags::fuseboxEnabledRelease(),
+#endif
+  };
+
+  if (cachedValues_.has_value() && !inconsistentFlagsStateLogged_) {
+    if (cachedValues_ != newValues) {
+      LOG(ERROR)
+          << "[InspectorFlags] Error: One or more ReactNativeFeatureFlags values "
+          << "have changed during the global app lifetime. This may lead to "
+          << "inconsistent inspector behaviour. Please quit and restart the app.";
+      inconsistentFlagsStateLogged_ = true;
+    }
   }
-  return enableCxxInspectorPackagerConnection_.value_or(false);
+
+  cachedValues_ = newValues;
+
+  return cachedValues_.value();
 }
 
 } // namespace facebook::react::jsinspector_modern

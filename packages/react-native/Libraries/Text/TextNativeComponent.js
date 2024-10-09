@@ -8,15 +8,16 @@
  * @format
  */
 
+import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
+import type {ProcessedColorValue} from '../StyleSheet/processColor';
+import type {PressEvent} from '../Types/CoreEventTypes';
+import type {TextProps} from './TextProps';
+
 import {createViewConfig} from '../NativeComponent/ViewConfig';
 import UIManager from '../ReactNative/UIManager';
 import createReactNativeComponentClass from '../Renderer/shims/createReactNativeComponentClass';
-import {type HostComponent} from '../Renderer/shims/ReactNativeTypes';
-import {type ProcessedColorValue} from '../StyleSheet/processColor';
-import {type PressEvent} from '../Types/CoreEventTypes';
-import {type TextProps} from './TextProps';
 
-type NativeTextProps = $ReadOnly<{
+export type NativeTextProps = $ReadOnly<{
   ...TextProps,
   isHighlighted?: ?boolean,
   selectionColor?: ?ProcessedColorValue,

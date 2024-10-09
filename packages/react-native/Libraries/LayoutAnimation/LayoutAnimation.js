@@ -16,8 +16,8 @@ import type {
   LayoutAnimationType,
 } from '../Renderer/shims/ReactNativeTypes';
 
+import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNativeFeatureFlags';
 import {getFabricUIManager} from '../ReactNative/FabricUIManager';
-import ReactNativeFeatureFlags from '../ReactNative/ReactNativeFeatureFlags';
 import Platform from '../Utilities/Platform';
 
 const UIManager = require('../ReactNative/UIManager');

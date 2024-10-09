@@ -46,7 +46,7 @@ using namespace facebook::react;
 - (instancetype)initWithComponentData:(RCTComponentData *)componentData
                                bridge:(nullable RCTBridge *)bridge
                           bridgeProxy:(nullable RCTBridgeProxy *)bridgeProxy
-                bridgelessInteropData:(RCTBridgeModuleDecorator *)bridgelessInteropData;
+                bridgelessInteropData:(RCTBridgeModuleDecorator *)bridgelessInteropData
 {
   if (self = [super init]) {
     _componentData = componentData;
@@ -89,7 +89,7 @@ using namespace facebook::react;
   [_eventInterceptors removeObjectForKey:[NSNumber numberWithInteger:tag]];
 }
 
-- (UIView *)createPaperViewWithTag:(NSInteger)tag;
+- (UIView *)createPaperViewWithTag:(NSInteger)tag
 {
   UIView *view = [_componentData createViewWithTag:[NSNumber numberWithInteger:tag] rootTag:NULL];
   [_bridgelessInteropData attachInteropAPIsToModule:(id<RCTBridgeModule>)_componentData.bridgelessViewManager];
@@ -145,31 +145,6 @@ using namespace facebook::react;
   } else {
     [self _handleCommandsOnBridgeless:method withArgs:newArgs];
   }
-}
-
-- (void)addViewToRegistry:(UIView *)view withTag:(NSInteger)tag
-{
-  [self _addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
-    if ([viewRegistry objectForKey:@(tag)] != NULL) {
-      return;
-    }
-    NSMutableDictionary<NSNumber *, UIView *> *mutableViewRegistry =
-        (NSMutableDictionary<NSNumber *, UIView *> *)viewRegistry;
-    [mutableViewRegistry setObject:view forKey:@(tag)];
-  }];
-}
-
-- (void)removeViewFromRegistryWithTag:(NSInteger)tag
-{
-  [self _addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
-    if ([viewRegistry objectForKey:@(tag)] == NULL) {
-      return;
-    }
-
-    NSMutableDictionary<NSNumber *, UIView *> *mutableViewRegistry =
-        (NSMutableDictionary<NSNumber *, UIView *> *)viewRegistry;
-    [mutableViewRegistry removeObjectForKey:@(tag)];
-  }];
 }
 
 #pragma mark - Private

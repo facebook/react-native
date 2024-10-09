@@ -30,6 +30,7 @@ class FrameBasedAnimationDriver extends AnimationDriver {
   private double mFromValue;
   private int mIterations;
   private int mCurrentLoop;
+  private int logCount = 0;
 
   FrameBasedAnimationDriver(ReadableMap config) {
     resetConfig(config);
@@ -81,7 +82,10 @@ class FrameBasedAnimationDriver extends AnimationDriver {
       if (ReactBuildConfig.DEBUG) {
         throw new IllegalStateException(message);
       } else {
-        FLog.w(ReactConstants.TAG, message);
+        if (logCount < 100) {
+          FLog.w(ReactConstants.TAG, message);
+          logCount++;
+        }
         return;
       }
     } else if (mHasFinished) {

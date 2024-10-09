@@ -1,0 +1,18 @@
+{
+  "name": "@react-native/test-renderer",
+  "private": true,
+  "version": "0.75.0-main",
+  "description": "A Test rendering library for React Native",
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/core": "^7.20.0",
+    "@babel/plugin-transform-react-jsx": "^7.0.0",
+    "@babel/preset-env": "^7.20.0",
+    "@babel/preset-flow": "^7.20.0"
+  },
+  "dependencies": {},
+  "main": "src/index.js",
+  "peerDependencies": {
+    "jest": "^29.7.0"
+  }
+}

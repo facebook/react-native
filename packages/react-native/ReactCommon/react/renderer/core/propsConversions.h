@@ -13,7 +13,6 @@
 #include <react/renderer/core/RawProps.h>
 #include <react/renderer/core/RawPropsKey.h>
 #include <react/renderer/core/graphicsConversions.h>
-#include <react/renderer/graphics/Color.h>
 
 namespace facebook::react {
 
@@ -64,9 +63,9 @@ void fromRawValue(
     auto length = items.size();
     result.clear();
     result.reserve(length);
-    for (size_t i = 0; i < length; i++) {
+    for (auto& item : items) {
       T itemResult;
-      fromRawValue(context, items.at(i), itemResult);
+      fromRawValue(context, item, itemResult);
       result.push_back(itemResult);
     }
     return;
@@ -90,9 +89,9 @@ void fromRawValue(
     auto length = items.size();
     result.clear();
     result.reserve(length);
-    for (int i = 0; i < length; i++) {
+    for (auto& item : items) {
       T itemResult;
-      fromRawValue(context, items.at(i), itemResult);
+      fromRawValue(context, item, itemResult);
       result.push_back(itemResult);
     }
     return;
@@ -111,8 +110,8 @@ T convertRawProp(
     const PropsParserContext& context,
     const RawProps& rawProps,
     const char* name,
-    T const& sourceValue,
-    U const& defaultValue,
+    const T& sourceValue,
+    const U& defaultValue,
     const char* namePrefix = nullptr,
     const char* nameSuffix = nullptr) {
   const auto* rawValue = rawProps.at(name, namePrefix, nameSuffix);

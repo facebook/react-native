@@ -19,6 +19,7 @@
 #include "JSLoader.h"
 #include "JavaModuleWrapper.h"
 #include "ModuleRegistryBuilder.h"
+#include "ReactInstanceManagerInspectorTarget.h"
 
 namespace facebook::react {
 
@@ -59,7 +60,9 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
           jni::JCollection<JavaModuleWrapper::javaobject>::javaobject>
           javaModules,
       jni::alias_ref<jni::JCollection<ModuleHolder::javaobject>::javaobject>
-          cxxModules);
+          cxxModules,
+      jni::alias_ref<ReactInstanceManagerInspectorTarget::javaobject>
+          inspectorTarget);
 
   void extendNativeModules(
       jni::alias_ref<jni::JCollection<
@@ -101,6 +104,13 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
   void handleMemoryPressure(int pressureLevel);
 
   void createAndInstallRuntimeSchedulerIfNecessary();
+
+  /**
+   * Unregisters the instance from the inspector. This method must be called
+   * on the main thread, after initializeBridge has finished executing and
+   * before the destructor for Instance has started.
+   */
+  void unregisterFromInspector();
 
   // This should be the only long-lived strong reference, but every C++ class
   // will have a weak reference.

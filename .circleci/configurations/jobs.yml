@@ -96,8 +96,6 @@ jobs:
       - run:
           name: "Run Tests: JavaScript Tests"
           command: node ./scripts/run-ci-javascript-tests.js --maxWorkers 2
-      - run_e2e:
-          platform: js
 
       # Optionally, run disabled tests
       - when:
@@ -108,140 +106,6 @@ jobs:
 
       - store_test_results:
           path: ./reports/junit
-
-  # -------------------------
-  #     JOBS: iOS E2E Tests
-  # -------------------------
-  test_e2e_ios:
-    executor: reactnativeios
-    parameters:
-      ruby_version:
-        default: "2.7.7"
-        description: The version of ruby that must be used
-        type: string
-    steps:
-      - checkout_code_with_cache
-      - run_yarn
-      - setup_hermes_version
-      - run:
-          name: Install appium
-          command: npm install appium@2.0.0 -g
-      - run:
-          name: Install appium drivers
-          command: |
-            appium driver install uiautomator2
-            appium driver install xcuitest
-      - run:
-          name: Start Appium server
-          command: appium --base-path /wd/hub
-          background: true
-      - run:
-          name: Start Metro
-          command: |
-            cd packages/rn-tester
-            yarn start
-          background: true
-      - brew_install:
-          package: cmake
-      - setup_ruby:
-          ruby_version: << parameters.ruby_version >>
-      - run:
-          name: Boot iOS Simulator
-          command: source scripts/.tests.env && xcrun simctl boot "$IOS_DEVICE" || true
-      - with_xcodebuild_cache:
-          steps:
-            - run:
-                name: Install Bundler
-                command: |
-                  cd packages/rn-tester
-                  bundle check || bundle install
-                  bundle exec pod setup
-                  RCT_NEW_ARCH_ENABLED=1 bundle exec pod install --verbose
-            - run:
-                name: Build app
-                command: |
-                    xcodebuild build \
-                      -workspace packages/rn-tester/RNTesterPods.xcworkspace \
-                      -configuration Debug \
-                      -scheme RNTester \
-                      -sdk iphonesimulator \
-                      -derivedDataPath /tmp/e2e/
-            - run:
-                name: Move app to correct directory
-                command: mv /tmp/e2e/Build/Products/Debug-iphonesimulator/RNTester.app packages/rn-tester-e2e/apps/rn-tester.app
-            - run:
-                name: Check Appium server status
-                command: scripts/circleci/check_appium_server_status.sh
-            - run:
-                name: Run E2E tests
-                no_output_timeout: 30m
-                command: |
-                  cd packages/rn-tester-e2e
-                  (yarn test-e2e ios 2>&1 | tee /tmp/test_log) || true
-            - store_artifacts:
-                path: /tmp/test_log
-
-  # -------------------------
-  #     JOBS: Android E2E Tests
-  # -------------------------
-  test_e2e_android:
-    executor:
-      name: android/android-machine
-      tag: 2023.07.1
-    steps:
-      - checkout_code_with_cache
-      - run_yarn
-      - android/create-avd:
-          avd-name: e2e_emulator
-          system-image: system-images;android-34;google_apis;x86_64
-          install: true
-      - android/start-emulator:
-          avd-name: e2e_emulator
-          no-window: true
-          restore-gradle-cache-prefix: v1a
-          post-emulator-launch-assemble-command: ""
-      - run:
-          name: Install appium
-          command: npm install appium@2.0.0 -g
-      - run:
-          name: Install appium drivers
-          command: |
-            appium driver install uiautomator2@2.29.1
-            appium driver install xcuitest@4.32.10
-      - run:
-          name: Start Appium server
-          command: appium --base-path /wd/hub
-          background: true
-      - run:
-          name: Start Metro
-          command: |
-            cd packages/rn-tester
-            yarn start
-          background: true
-      - with_gradle_cache:
-          steps:
-            - run:
-                name: Build app
-                command: |
-                  ./gradlew :packages:rn-tester:android:app:assembleHermesDebug -PreactNativeArchitectures=x86_64
-      - run:
-          name: Move app to correct directory
-          command: mv packages/rn-tester/android/app/build/outputs/apk/hermes/debug/app-hermes-x86_64-debug.apk packages/rn-tester-e2e/apps/rn-tester.apk
-      - run:
-          name: Check Appium server status
-          command: |
-            if ! nc -z 127.0.0.1 4723; then
-              echo Could not find Appium server
-              exit 1
-            fi
-      - run:
-          name: Run E2E tests
-          no_output_timeout: 30m
-          command: |
-            cd packages/rn-tester-e2e
-            (yarn test-e2e android 2>&1 | tee /tmp/test_log) || true
-      - store_artifacts:
-          path: /tmp/test_log
 
   # -------------------------
   #    JOBS: Build Android
@@ -259,7 +123,7 @@ jobs:
       - run_yarn
       - run:
           name: Set React Native Version
-          command: node ./scripts/set-rn-version.js --build-type << parameters.release_type >>
+          command: node ./scripts/releases/set-rn-version.js --build-type << parameters.release_type >>
 
       - with_gradle_cache:
           steps:
@@ -303,7 +167,7 @@ jobs:
           name: Set React Native Version to "dry-run"
           # test_android executes only for dry-run builds. We need to bump the version for caching
           # reasons otherwise we won't reuse the artifacts from the build_android job.
-          command: node ./scripts/set-rn-version.js --build-type "dry-run"
+          command: node ./scripts/releases/set-rn-version.js --build-type "dry-run"
       - attach_workspace:
           at: .
 
@@ -327,9 +191,9 @@ jobs:
           destination: rntester-apk
 
   # -------------------------
-  #    JOBS: Test Android Template
+  #    JOBS: Test Android HelloWorld
   # -------------------------
-  test_android_template:
+  test_android_helloworld:
     executor: reactnativeandroid-large
     parameters:
       flavor:
@@ -348,44 +212,45 @@ jobs:
         type: enum
         enum: ["Hermes", "JSC"]
     environment:
+      - LC_ALL: C.UTF8
       - PROJECT_NAME: "AndroidTemplateProject"
+      - YARN_ENABLE_IMMUTABLE_INSTALLS: false
+      - TARGET_ARCHITECTURE: "arm64-v8a"
     steps:
       - checkout_code_with_cache
       - run_yarn
       - attach_workspace:
           at: .
       - run:
-          name: Create Android template project
+          name: Build codegen js scripts from flow -> JS
           command: |
-            REPO_ROOT=$(pwd)
-            node ./scripts/update-template-package.js "{\"react-native\":\"file:$REPO_ROOT/build/$(cat build/react-native-package-version)\"}"
-            node ./scripts/template/initialize.js --reactNativeRootPath $REPO_ROOT --templateName $PROJECT_NAME --templateConfigPath "$REPO_ROOT/packages/react-native" --directory "/tmp/$PROJECT_NAME"
+            cd packages/react-native-codegen
+            yarn run build
       - with_gradle_cache:
           steps:
             - run:
-                name: Build the template application for << parameters.flavor >> with Architecture set to << parameters.architecture >>, and using the << parameters.jsengine>> JS engine.
+                name: Build the Helloworld application for << parameters.flavor >> with Architecture set to << parameters.architecture >>, and using the << parameters.jsengine>> JS engine.
                 command: |
-                  cd /tmp/$PROJECT_NAME/android/
-                  if [[ << parameters.architecture >> == "NewArch" ]]; then
-                    export ORG_GRADLE_PROJECT_newArchEnabled=true
-                  else
-                    export ORG_GRADLE_PROJECT_newArchEnabled=false
+                  cd packages/helloworld/android
+                  args=()
+                  if [[ << parameters.architecture >> == "OldArch" ]]; then
+                    args+=(--arch old)
                   fi
-                  if [[ << parameters.jsengine >> == "Hermes" ]]; then
-                    export ORG_GRADLE_PROJECT_hermesEnabled=true
-                  else
-                    export ORG_GRADLE_PROJECT_hermesEnabled=false
+                  if [[ << parameters.jsengine >> == "JSC" ]]; then
+                    args+=(--jsvm jsc)
                   fi
-                  ./gradlew assemble<< parameters.flavor >> -Preact.internal.mavenLocalRepo=/root/react-native/maven-local
-
+                  if [[ << parameters.flavor >> == "Release" ]]; then
+                    args+=(--prod)
+                  fi
+                  yarn build android "${args[@]}" -P reactNativeArchitectures="$TARGET_ARCHITECTURE"
       - store_artifacts:
           path: /tmp/AndroidTemplateProject/android/app/build/outputs/apk/
           destination: template-apk
 
   # -------------------------
-  #    JOBS: Test iOS Template
+  #    JOBS: Test iOS HelloWorld
   # -------------------------
-  test_ios_template:
+  test_ios_helloworld:
     parameters:
       flavor:
         default: "Debug"
@@ -411,26 +276,20 @@ jobs:
         default: "2.6.10"
         description: The version of ruby that must be used
         type: string
-      podfile_lock_path:
-        type: string
-        default: "/tmp/iOSTemplateProject/ios/Podfile.lock"
-      pods_build_folder:
-        type: string
-        default: "/tmp/iOSTemplateProject/ios/Pods"
       podfile_lock_cache_key:
         type: string
-        default: *template_podfile_lock_cache_key
+        default: *helloworld_podfile_lock_cache_key
       cocoapods_cache_key:
         type: string
-        default: *template_cocoapods_cache_key
+        default: *helloworld_cocoapods_cache_key
       executor:
         description: The executor to use
         default: reactnativeios
         type: string
     executor: << parameters.executor >>
     environment:
-      - PROJECT_NAME: "iOSTemplateProject"
       - HERMES_WS_DIR: *hermes_workspace_root
+      - YARN_ENABLE_IMMUTABLE_INSTALLS: false
     steps:
       - checkout_code_with_cache
       - run_yarn
@@ -449,48 +308,37 @@ jobs:
                   BUILD_TYPE="<< parameters.flavor >>"
                   TARBALL_FILENAME=$(node ./packages/react-native/scripts/hermes/get-tarball-name.js --buildType "$BUILD_TYPE")
                   echo "export HERMES_ENGINE_TARBALL_PATH=$HERMES_WS_DIR/hermes-runtime-darwin/$TARBALL_FILENAME" >> $BASH_ENV
-      - run:
-          name: Create iOS template project
-          command: |
-            REPO_ROOT=$(pwd)
-            PACKAGE=$(cat build/react-native-package-version)
-            PATH_TO_PACKAGE="$REPO_ROOT/build/$PACKAGE"
-            node ./scripts/update-template-package.js "{\"react-native\":\"file:$PATH_TO_PACKAGE\"}"
-            node ./scripts/template/initialize.js --reactNativeRootPath $REPO_ROOT --templateName $PROJECT_NAME --templateConfigPath "$REPO_ROOT/packages/react-native" --directory "/tmp/$PROJECT_NAME"
       - with_xcodebuild_cache:
-          podfile_lock_path: << parameters.podfile_lock_path >>
-          pods_build_folder: << parameters.pods_build_folder >>
+          podfile_lock_path: packages/helloworld/ios/Podfile.lock
+          pods_build_folder: packages/helloworld/ios/Pods
           cocoapods_cache_key: << parameters.cocoapods_cache_key >>
           podfile_lock_cache_key: << parameters.podfile_lock_cache_key >>
           steps:
             - run:
                 name: Install iOS dependencies - Configuration << parameters.flavor >>; New Architecture << parameters.architecture >>; JS Engine << parameters.jsengine>>
                 command: |
-                  cd /tmp/$PROJECT_NAME/ios
-
-                  if [[ << parameters.architecture >> == "NewArch" ]]; then
-                    export RCT_NEW_ARCH_ENABLED=1
+                  cd packages/helloworld
+                  args=()
+                  if [[ << parameters.architecture >> == "OldArch" ]]; then
+                    args+=(--arch old)
                   fi
-
                   if [[ << parameters.jsengine >> == "JSC" ]]; then
-                    export USE_HERMES=0
+                    args+=(--jsvm jsc)
                   fi
-
                   if [[ << parameters.use_frameworks >> == "DynamicFrameworks" ]]; then
-                    export USE_FRAMEWORKS=dynamic
+                    args+=(--frameworks dynamic)
                   fi
-
-                  cd ..
-                  bundle install
-                  bundle exec pod install --project-directory=ios
+                  yarn bootstrap ios "${args[@]}" | cat
             - run:
-                name: Build template project
+                name: Build helloworld project
                 command: |
-                  xcodebuild build \
-                    -configuration << parameters.flavor >> \
-                    -workspace /tmp/$PROJECT_NAME/ios/$PROJECT_NAME.xcworkspace \
-                    -scheme $PROJECT_NAME \
-                    -sdk iphonesimulator
+                  cd packages/helloworld
+                  args=()
+                  if [[ << parameters.flavor >> == "Release" ]]; then
+                    args+=(--prod)
+                  fi
+                  yarn build ios "${args[@]}" | cat
+                  yarn bundle ios "${args[@]}" | cat
 
   # -------------------------
   #    JOBS: Test iOS RNTester
@@ -503,16 +351,16 @@ jobs:
         description: Which JavaScript engine to use. Must be one of "Hermes", "JSC".
         type: enum
         enum: ["Hermes", "JSC"]
-      architecture:
-        default: "OldArch"
-        description: Which React Native architecture to use. Must be one of "OldArch", "NewArch".
-        type: enum
-        enum: ["NewArch", "OldArch"]
       use_frameworks:
         default: "StaticLibraries"
         description: The dependency building and linking strategy to use. Must be one of "StaticLibraries", "DynamicFrameworks"
         type: enum
         enum: ["StaticLibraries", "DynamicFrameworks"]
+      architecture:
+        default: "NewArch"
+        description: "The React Native architecture to Test. RNTester has always Fabric enabled, but we want to run integration test with the old arch setup"
+        type: enum
+        enum: ["OldArch", "NewArch"]
       ruby_version:
         default: "2.6.10"
         description: The version of ruby that must be used
@@ -550,11 +398,8 @@ jobs:
             - with_xcodebuild_cache:
                 steps:
                   - run:
-                      name: Install CocoaPods dependencies - Architecture << parameters.architecture >>
+                      name: Install CocoaPods dependencies
                       command: |
-                        if [[ << parameters.architecture >> == "NewArch" ]]; then
-                          export RCT_NEW_ARCH_ENABLED=1
-                        fi
 
                         if [[ << parameters.jsengine >> == "JSC" ]]; then
                           export USE_HERMES=0
@@ -562,6 +407,10 @@ jobs:
 
                         if [[ << parameters.use_frameworks >> == "DynamicFrameworks" ]]; then
                           export USE_FRAMEWORKS=dynamic
+                        fi
+
+                        if [[ << parameters.architecture >> == "NewArch" ]]; then
+                          export RCT_NEW_ARCH_ENABLED=1
                         fi
 
                         cd packages/rn-tester
@@ -588,81 +437,6 @@ jobs:
                           - run_ios_tests
 
   # -------------------------
-  #    JOBS: Windows
-  # -------------------------
-  test_windows:
-    executor:
-      name: win/default
-    environment:
-      - CHOCO_CACHE_DIR: "C:\\ChocoCache"
-    steps:
-      - checkout_code_with_cache
-
-      - restore_cache:
-          keys:
-            - *windows_choco_cache_key
-
-      - run:
-          name: Choco cache
-          # Cache our dependencies which can be flakey to download
-          command: |
-            if (!Test-Path $env:CHOCO_CACHE_DIR) {
-              mkdir $env:CHOCO_CACHE_DIR
-            }
-            choco config set --name cacheLocation --value $env:CHOCO_CACHE_DIR
-
-      - run:
-          name: Disable NVM
-          # Use choco to manage node versions due to https://github.com/npm/cli/issues/4234
-          command: nvm off
-
-      - run:
-          name: Install Node JS
-          # Note: Version set separately for non-Windows builds, see above.
-          command: choco install nodejs --version=18.18.0 --allow-downgrade
-
-      # Setup Dependencies
-      - run:
-          name: Enable Yarn with corepack
-          command: corepack enable
-
-      # it looks like that, last week, envinfo released version 7.9.0 which does not works
-      # with Windows. I have opened an issue here: https://github.com/tabrindle/envinfo/issues/238
-      # TODO: T156811874 - Revert this to npx envinfo@latest when the issue is addressed
-      - run:
-          name: Display Environment info
-          command: |
-            npm install -g envinfo
-            envinfo -v
-            envinfo
-
-      - restore_cache:
-          keys:
-            - *windows_yarn_cache_key
-      - run:
-          name: "Yarn: Install Dependencies"
-          command: yarn install --frozen-lockfile --non-interactive
-
-      - save_cache:
-          key: *windows_yarn_cache_key
-          paths:
-            - C:\Users\circleci\AppData\Local\Yarn
-
-      - save_cache:
-          key: *windows_choco_cache_key
-          paths:
-            - $env:CHOCO_CACHE_DIR
-
-      # -------------------------
-      # Run Tests
-      - run:
-          name: "Flow Check"
-          command: yarn flow-check
-      - run:
-          name: "Run Tests: JavaScript Tests"
-          command: yarn test
-
-  # -------------------------
   #      JOBS: Build Hermes
   # -------------------------
   prepare_hermes_workspace:
@@ -671,7 +445,7 @@ jobs:
     environment:
       - HERMES_WS_DIR: *hermes_workspace_root
       - HERMES_VERSION_FILE: "packages/react-native/sdks/.hermesversion"
-      - BUILD_FROM_SOURCE: true
+      - RCT_BUILD_HERMES_FROM_SOURCE: true
     steps:
       - run:
           name: Install dependencies
@@ -852,7 +626,7 @@ jobs:
         default: "iphoneos"
         description: The Hermes Slice that this job has to build
         type: enum
-        enum: ["macosx", "iphoneos", "iphonesimulator", "catalyst"]
+        enum: ["macosx", "iphoneos", "iphonesimulator", "catalyst", "xros", "xrsimulator"]
     executor: reactnativeios
     environment:
       - HERMES_WS_DIR: *hermes_workspace_root
@@ -885,13 +659,19 @@ jobs:
               exit 0
             fi
 
+            export RELEASE_VERSION=$(cat /tmp/react-native-version)
             if [[ "$SLICE" == "macosx" ]]; then
               echo "[HERMES] Building Hermes for MacOS"
+              export MAC_DEPLOYMENT_TARGET=10.13
               BUILD_TYPE="<< parameters.flavor >>" ./utils/build-mac-framework.sh
+              unset MAC_DEPLOYMENT_TARGET
             else
               echo "[HERMES] Building Hermes for iOS: $SLICE"
+              export IOS_DEPLOYMENT_TARGET=13.4
               BUILD_TYPE="<< parameters.flavor >>" ./utils/build-ios-framework.sh "$SLICE"
+              unset IOS_DEPLOYMENT_TARGET
             fi
+            unset RELEASE_VERSION
 
             echo "Moving from build_$SLICE to $FINAL_PATH"
             mv build_"$SLICE" "$FINAL_PATH"
@@ -951,6 +731,10 @@ jobs:
           key: << parameters.slice_base_cache_key >>-iphonesimulator-<< parameters.flavor >>
       - restore_cache:
           key: << parameters.slice_base_cache_key >>-catalyst-<< parameters.flavor >>
+      - restore_cache:
+          key: << parameters.slice_base_cache_key >>-xros-<< parameters.flavor >>
+      - restore_cache:
+          key: << parameters.slice_base_cache_key >>-xrsimulator-<< parameters.flavor >>
       - run:
           name: "Move back build folders"
           command: |
@@ -959,6 +743,8 @@ jobs:
             mv build_iphoneos_<< parameters.flavor >> build_iphoneos
             mv build_iphonesimulator_<< parameters.flavor >> build_iphonesimulator
             mv build_catalyst_<< parameters.flavor >> build_catalyst
+            mv build_xros_<< parameters.flavor >> build_xros
+            mv build_xrsimulator_<< parameters.flavor >> build_xrsimulator
       - run:
           name: "Prepare destroot folder"
           command: |
@@ -970,7 +756,11 @@ jobs:
           command: |
             cd ./packages/react-native/sdks/hermes || exit 1
             echo "[HERMES] Creating the universal framework"
+            export IOS_DEPLOYMENT_TARGET=13.4
+            export RELEASE_VERSION=$(cat /tmp/react-native-version)
             ./utils/build-ios-framework.sh build_framework
+            unset RELEASE_VERSION
+            unset IOS_DEPLOYMENT_TARGET
       - run:
           name: Package the Hermes Apple frameworks
           command: |
@@ -1005,6 +795,8 @@ jobs:
             mkdir -p "$WORKING_DIR/catalyst"
             mkdir -p "$WORKING_DIR/iphoneos"
             mkdir -p "$WORKING_DIR/iphonesimulator"
+            mkdir -p "$WORKING_DIR/xros"
+            mkdir -p "$WORKING_DIR/xrsimulator"
 
             cd ./packages/react-native/sdks/hermes || exit 1
 
@@ -1013,6 +805,8 @@ jobs:
             cp -r build_catalyst/$DSYM_FILE_PATH "$WORKING_DIR/catalyst/"
             cp -r build_iphoneos/$DSYM_FILE_PATH "$WORKING_DIR/iphoneos/"
             cp -r build_iphonesimulator/$DSYM_FILE_PATH "$WORKING_DIR/iphonesimulator/"
+            cp -r build_xrsimulator/$DSYM_FILE_PATH "$WORKING_DIR/xrsimulator/"
+            cp -r build_xros/$DSYM_FILE_PATH "$WORKING_DIR/xros/"
 
             DEST_DIR="/tmp/hermes/dSYM/$FLAVOR"
             tar -C "$WORKING_DIR" -czvf "hermes.framework.dSYM" .
@@ -1097,7 +891,7 @@ jobs:
           name: Build HermesC for Windows
           command: |
             if (-not(Test-Path -Path $Env:HERMES_WS_DIR\win64-bin\hermesc.exe)) {
-              choco install --no-progress cmake --version 3.14.7
+              choco install --no-progress cmake -y
               if (-not $?) { throw "Failed to install CMake" }
 
               cd $Env:HERMES_WS_DIR\icu
@@ -1148,36 +942,65 @@ jobs:
   # -------------------------
   #      JOBS: Releases
   # -------------------------
-  prepare_package_for_release:
+
+  # Writes a new commit and tag(s), which will trigger the `publish_release`
+  # and `publish_bumped_packages` workflows.
+  prepare_release:
     parameters:
       version:
         type: string
-      latest:
+      # TODO(T182538198): Required for 0.74.x, where workspace packages are out
+      # of sync with react-native. This will be removed for 0.75+.
+      monorepo_packages_version:
+        type: string
+      tag:
+        type: string
+      dry_run:
         type: boolean
         default: false
-      dryrun:
-        type: boolean
-        default: false
-    executor: reactnativeios
+    executor: nodelts
     steps:
       - checkout_code_with_cache
       - run_yarn
       - add_ssh_keys:
           fingerprints:
             - "1f:c7:61:c4:e2:ff:77:e3:cc:ca:a7:34:c2:79:e3:3c"
-      - brew_install:
-          package: cmake
       - run:
-          name: "Set new react-native version and commit changes"
+          name: Versioning workspace packages
           command: |
-            VERSION=<< parameters.version >>
+            node scripts/releases/set-version "<< parameters.monorepo_packages_version >>" --skip-react-native-version
+      - run:
+          name: Versioning react-native package
+          command: |
+            node scripts/releases/set-rn-version.js -v "<< parameters.version >>" --build-type "release"
+      - run:
+          name: Creating release commit
+          command: |
+            # I'm seeing failures in automatically detect the email for the
+            # agent that should push the commit.
+            git config --global user.name "Distiller"
+            git config --global user.email "distiller@circleci.com"
 
-            if [[ -z "$VERSION" ]]; then
-              VERSION=$(grep '"version"' package.json | cut -d '"' -f 4 | head -1)
-              echo "Using the version from the package.json: $VERSION"
-            fi
-
-            node ./scripts/prepare-package-for-release.js -v "$VERSION" -l << parameters.latest >> --dry-run << parameters.dryrun >>
+            git commit -a -m "Release << parameters.version >>" -m "#publish-packages-to-npm&<< parameters.tag >>"
+            git tag -a "v<< parameters.version >>" -m "v<< parameters.version >>"
+            GIT_PAGER=cat git show HEAD
+      - when:
+          condition:
+            equal: ["latest", << parameters.tag >>]
+          steps:
+            - run:
+                name: Updating "latest" tag
+                command: |
+                  git tag -d "latest"
+                  git push origin :latest
+                  git tag -a "latest" -m "latest"
+      - unless:
+          condition: << parameters.dry_run >>
+          steps:
+            run:
+              name: Pushing release commit
+              command: |
+                git push origin $CIRCLE_BRANCH --follow-tags
 
   build_npm_package:
     parameters:
@@ -1247,7 +1070,7 @@ jobs:
                   else
                     export ORG_GRADLE_PROJECT_reactNativeArchitectures="armeabi-v7a,arm64-v8a,x86,x86_64"
                   fi
-                  node ./scripts/publish-npm.js -t << parameters.release_type >>
+                  node ./scripts/releases-ci/publish-npm.js -t << parameters.release_type >>
 
       - run:
           name: Zip Maven Artifacts from /tmp/maven-local
@@ -1322,4 +1145,4 @@ jobs:
           command: echo "//registry.npmjs.org/:_authToken=${CIRCLE_NPM_TOKEN}" > ~/.npmrc
       - run:
           name: Find and publish all bumped packages
-          command: node ./scripts/monorepo/find-and-publish-all-bumped-packages.js
+          command: node ./scripts/releases-ci/publish-updated-packages.js

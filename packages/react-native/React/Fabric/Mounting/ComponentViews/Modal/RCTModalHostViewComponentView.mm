@@ -141,6 +141,7 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
                      animated:(BOOL)animated
                    completion:(void (^)(void))completion
 {
+  _modalContentsSnapshot = [self.viewController.view snapshotViewAfterScreenUpdates:NO];
   [modalViewController dismissViewControllerAnimated:animated completion:completion];
 }
 
@@ -165,7 +166,10 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
     // To animate dismissal of view controller, snapshot of
     // view hierarchy needs to be added to the UIViewController.
     UIView *snapshot = _modalContentsSnapshot;
-    [self.viewController.view addSubview:snapshot];
+
+    if (_shouldPresent) {
+      [self.viewController.view addSubview:snapshot];
+    }
 
     [self dismissViewController:self.viewController
                        animated:_shouldAnimatePresentation
@@ -187,14 +191,6 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
 
   assert(std::dynamic_pointer_cast<const ModalHostViewEventEmitter>(_eventEmitter));
   return std::static_pointer_cast<const ModalHostViewEventEmitter>(_eventEmitter);
-}
-
-#pragma mark - RCTMountingTransactionObserving
-
-- (void)mountingTransactionWillMount:(const MountingTransaction &)transaction
-                withSurfaceTelemetry:(const facebook::react::SurfaceTelemetry &)surfaceTelemetry
-{
-  _modalContentsSnapshot = [self.viewController.view snapshotViewAfterScreenUpdates:NO];
 }
 
 #pragma mark - UIView methods

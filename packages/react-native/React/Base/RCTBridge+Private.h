@@ -141,12 +141,6 @@ RCT_EXTERN void RCTRegisterModule(Class);
 
 @end
 
-@interface RCTBridge (Inspector)
-
-@property (nonatomic, readonly, getter=isInspectable) BOOL inspectable;
-
-@end
-
 @interface RCTCxxBridge : RCTBridge
 
 // TODO(cjhopman): this seems unsafe unless we require that it is only called on the main js queue.

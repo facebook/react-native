@@ -8,6 +8,7 @@
 package com.facebook.react.common.futures;
 
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -18,6 +19,7 @@ import java.util.concurrent.TimeoutException;
  * A super simple Future-like class that can safely notify another Thread when a value is ready.
  * Does not support canceling.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class SimpleSettableFuture<T> implements Future<T> {
   private final CountDownLatch mReadyLatch = new CountDownLatch(1);
   private @Nullable T mResult;

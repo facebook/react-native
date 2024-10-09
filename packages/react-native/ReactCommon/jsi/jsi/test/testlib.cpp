@@ -1358,6 +1358,38 @@ TEST_P(JSITest, JSErrorTest) {
       JSIException);
 }
 
+TEST_P(JSITest, MicrotasksTest) {
+  try {
+    rt.global().setProperty(rt, "globalValue", String::createFromAscii(rt, ""));
+
+    auto microtask1 =
+        function("function microtask1() { globalValue += 'hello'; }");
+    auto microtask2 =
+        function("function microtask2() { globalValue += ' world' }");
+
+    rt.queueMicrotask(microtask1);
+    rt.queueMicrotask(microtask2);
+
+    EXPECT_EQ(
+        rt.global().getProperty(rt, "globalValue").asString(rt).utf8(rt), "");
+
+    rt.drainMicrotasks();
+
+    EXPECT_EQ(
+        rt.global().getProperty(rt, "globalValue").asString(rt).utf8(rt),
+        "hello world");
+
+    // Microtasks shouldn't run again
+    rt.drainMicrotasks();
+
+    EXPECT_EQ(
+        rt.global().getProperty(rt, "globalValue").asString(rt).utf8(rt),
+        "hello world");
+  } catch (const JSINativeException& ex) {
+    // queueMicrotask() is unimplemented by some runtimes, ignore such failures.
+  }
+}
+
 //----------------------------------------------------------------------
 // Test that multiple levels of delegation in DecoratedHostObjects works.
 
@@ -1444,8 +1476,13 @@ TEST_P(JSITest, ArrayBufferSizeTest) {
   auto ab =
       eval("var x = new ArrayBuffer(10); x").getObject(rt).getArrayBuffer(rt);
   EXPECT_EQ(ab.size(rt), 10);
-  // Ensure we can safely write some data to the buffer.
-  memset(ab.data(rt), 0xab, 10);
+
+  try {
+    // Ensure we can safely write some data to the buffer.
+    memset(ab.data(rt), 0xab, 10);
+  } catch (const JSINativeException& ex) {
+    // data() is unimplemented by some runtimes, ignore such failures.
+  }
 
   // Ensure that setting the byteLength property does not change the length.
   eval("Object.defineProperty(x, 'byteLength', {value: 20})");

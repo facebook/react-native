@@ -55,6 +55,7 @@ function stringify(obj: mixed): string {
       return Object.keys(value ?? {})
         .sort()
         .reduce((sorted: {[key: string]: mixed}, key: string) => {
+          // $FlowFixMe[invalid-computed-prop]
           sorted[key] = (value ?? {})[key];
           return sorted;
         }, {});

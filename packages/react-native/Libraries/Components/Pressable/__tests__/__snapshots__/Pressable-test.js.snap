@@ -72,18 +72,6 @@ exports[`<Pressable /> should render as expected: should deep render when not mo
 </View>
 `;
 
-exports[`<Pressable /> should render as expected: should shallow render as <Pressable /> when mocked 1`] = `
-<Memo(Pressable)>
-  <View />
-</Memo(Pressable)>
-`;
-
-exports[`<Pressable /> should render as expected: should shallow render as <Pressable /> when not mocked 1`] = `
-<Memo(Pressable)>
-  <View />
-</Memo(Pressable)>
-`;
-
 exports[`<Pressable disabled={true} /> should be disabled when disabled is true: should deep render when mocked (please verify output manually) 1`] = `
 <View
   accessibilityState={
@@ -154,22 +142,6 @@ exports[`<Pressable disabled={true} /> should be disabled when disabled is true:
 >
   <View />
 </View>
-`;
-
-exports[`<Pressable disabled={true} /> should be disabled when disabled is true: should shallow render as <Pressable /> when mocked 1`] = `
-<Memo(Pressable)
-  disabled={true}
->
-  <View />
-</Memo(Pressable)>
-`;
-
-exports[`<Pressable disabled={true} /> should be disabled when disabled is true: should shallow render as <Pressable /> when not mocked 1`] = `
-<Memo(Pressable)
-  disabled={true}
->
-  <View />
-</Memo(Pressable)>
 `;
 
 exports[`<Pressable disabled={true} accessibilityState={{}} /> should be disabled when disabled is true and accessibilityState is empty: should deep render when mocked (please verify output manually) 1`] = `
@@ -244,24 +216,6 @@ exports[`<Pressable disabled={true} accessibilityState={{}} /> should be disable
 </View>
 `;
 
-exports[`<Pressable disabled={true} accessibilityState={{}} /> should be disabled when disabled is true and accessibilityState is empty: should shallow render as <Pressable /> when mocked 1`] = `
-<Memo(Pressable)
-  accessibilityState={Object {}}
-  disabled={true}
->
-  <View />
-</Memo(Pressable)>
-`;
-
-exports[`<Pressable disabled={true} accessibilityState={{}} /> should be disabled when disabled is true and accessibilityState is empty: should shallow render as <Pressable /> when not mocked 1`] = `
-<Memo(Pressable)
-  accessibilityState={Object {}}
-  disabled={true}
->
-  <View />
-</Memo(Pressable)>
-`;
-
 exports[`<Pressable disabled={true} accessibilityState={{checked: true}} /> should keep accessibilityState when disabled is true: should deep render when mocked (please verify output manually) 1`] = `
 <View
   accessibilityState={
@@ -334,32 +288,6 @@ exports[`<Pressable disabled={true} accessibilityState={{checked: true}} /> shou
 </View>
 `;
 
-exports[`<Pressable disabled={true} accessibilityState={{checked: true}} /> should keep accessibilityState when disabled is true: should shallow render as <Pressable /> when mocked 1`] = `
-<Memo(Pressable)
-  accessibilityState={
-    Object {
-      "checked": true,
-    }
-  }
-  disabled={true}
->
-  <View />
-</Memo(Pressable)>
-`;
-
-exports[`<Pressable disabled={true} accessibilityState={{checked: true}} /> should keep accessibilityState when disabled is true: should shallow render as <Pressable /> when not mocked 1`] = `
-<Memo(Pressable)
-  accessibilityState={
-    Object {
-      "checked": true,
-    }
-  }
-  disabled={true}
->
-  <View />
-</Memo(Pressable)>
-`;
-
 exports[`<Pressable disabled={true} accessibilityState={{disabled: false}} /> should overwrite accessibilityState with value of disabled prop: should deep render when mocked (please verify output manually) 1`] = `
 <View
   accessibilityState={
@@ -430,30 +358,4 @@ exports[`<Pressable disabled={true} accessibilityState={{disabled: false}} /> sh
 >
   <View />
 </View>
-`;
-
-exports[`<Pressable disabled={true} accessibilityState={{disabled: false}} /> should overwrite accessibilityState with value of disabled prop: should shallow render as <Pressable /> when mocked 1`] = `
-<Memo(Pressable)
-  accessibilityState={
-    Object {
-      "disabled": false,
-    }
-  }
-  disabled={true}
->
-  <View />
-</Memo(Pressable)>
-`;
-
-exports[`<Pressable disabled={true} accessibilityState={{disabled: false}} /> should overwrite accessibilityState with value of disabled prop: should shallow render as <Pressable /> when not mocked 1`] = `
-<Memo(Pressable)
-  accessibilityState={
-    Object {
-      "disabled": false,
-    }
-  }
-  disabled={true}
->
-  <View />
-</Memo(Pressable)>
 `;

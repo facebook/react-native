@@ -95,12 +95,10 @@ const char* YGErrataToString(const YGErrata value) {
       return "none";
     case YGErrataStretchFlexBasis:
       return "stretch-flex-basis";
-    case YGErrataStartingEndingEdgeFromFlexDirection:
-      return "starting-ending-edge-from-flex-direction";
-    case YGErrataPositionStaticBehavesLikeRelative:
-      return "position-static-behaves-like-relative";
-    case YGErrataAbsolutePositioning:
-      return "absolute-positioning";
+    case YGErrataAbsolutePositioningIncorrect:
+      return "absolute-positioning-incorrect";
+    case YGErrataAbsolutePercentAgainstInnerSize:
+      return "absolute-percent-against-inner-size";
     case YGErrataAll:
       return "all";
     case YGErrataClassic:
@@ -113,8 +111,6 @@ const char* YGExperimentalFeatureToString(const YGExperimentalFeature value) {
   switch (value) {
     case YGExperimentalFeatureWebFlexBasis:
       return "web-flex-basis";
-    case YGExperimentalFeatureAbsolutePercentageAgainstPaddingEdge:
-      return "absolute-percentage-against-padding-edge";
   }
   return "unknown";
 }
@@ -223,18 +219,6 @@ const char* YGPositionTypeToString(const YGPositionType value) {
       return "relative";
     case YGPositionTypeAbsolute:
       return "absolute";
-  }
-  return "unknown";
-}
-
-const char* YGPrintOptionsToString(const YGPrintOptions value) {
-  switch (value) {
-    case YGPrintOptionsLayout:
-      return "layout";
-    case YGPrintOptionsStyle:
-      return "style";
-    case YGPrintOptionsChildren:
-      return "children";
   }
   return "unknown";
 }

@@ -98,6 +98,11 @@ public class ReadableNativeArray extends NativeArray implements ReadableArray {
   }
 
   @Override
+  public long getLong(int index) {
+    return ((Long) getLocalArray()[index]).longValue();
+  }
+
+  @Override
   public @NonNull String getString(int index) {
     return (String) getLocalArray()[index];
   }

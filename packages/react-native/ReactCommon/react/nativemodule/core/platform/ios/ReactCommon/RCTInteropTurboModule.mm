@@ -192,11 +192,11 @@ ObjCInteropTurboModule::ObjCInteropTurboModule(const ObjCTurboModule::InitParams
   methodArgumentTypeNames_ = methodArgTypeNames;
 
   for (const ExportedMethod &method : methods) {
-    const int numArgs = [method.argumentTypes count];
+    const size_t numArgs = [method.argumentTypes count];
     const bool isPromiseMethod =
         numArgs >= 2 && [method.argumentTypes[numArgs - 1] isEqualToString:@"RCTPromiseRejectBlock"];
 
-    const int jsArgCount = isPromiseMethod ? numArgs - 2 : numArgs;
+    const size_t jsArgCount = isPromiseMethod ? numArgs - 2 : numArgs;
 
     /**
      * In the TurboModule system, only promises and voids are special. So, set those.
@@ -330,7 +330,7 @@ void ObjCInteropTurboModule::setInvocationArg(
   NSString *methodName = @(methodNameCStr);
   std::string methodJsSignature = name_ + "." + methodNameCStr + "()";
 
-  NSString *argumentType = getArgumentTypeName(runtime, methodName, index);
+  NSString *argumentType = getArgumentTypeName(runtime, methodName, static_cast<int>(index));
   std::string errorPrefix = methodJsSignature + ": Error while converting JavaScript argument " +
       std::to_string(index) + " to Objective C type " + [argumentType UTF8String] + ". ";
 
@@ -586,7 +586,7 @@ NSString *ObjCInteropTurboModule::getArgumentTypeName(jsi::Runtime &runtime, NSS
   }
 
   if ([methodArgumentTypeNames_[methodName] count] <= argIndex) {
-    int paramCount = [methodArgumentTypeNames_[methodName] count];
+    size_t paramCount = [methodArgumentTypeNames_[methodName] count];
     throw jsi::JSError(runtime, errorPrefix + "Method has only " + std::to_string(paramCount) + " parameter types.");
   }
 

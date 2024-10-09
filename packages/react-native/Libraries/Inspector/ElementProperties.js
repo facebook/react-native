@@ -12,12 +12,10 @@
 
 import type {InspectorData} from '../Renderer/shims/ReactNativeTypes';
 import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
-import type {InspectedElementSource} from './Inspector';
 
 const TouchableHighlight = require('../Components/Touchable/TouchableHighlight');
 const TouchableWithoutFeedback = require('../Components/Touchable/TouchableWithoutFeedback');
 const View = require('../Components/View/View');
-const openFileInEditor = require('../Core/Devtools/openFileInEditor');
 const flattenStyle = require('../StyleSheet/flattenStyle');
 const StyleSheet = require('../StyleSheet/StyleSheet');
 const Text = require('../Text/Text');
@@ -29,7 +27,6 @@ const React = require('react');
 type Props = $ReadOnly<{|
   hierarchy: ?InspectorData['hierarchy'],
   style?: ?ViewStyleProp,
-  source?: ?InspectedElementSource,
   frame?: ?Object,
   selection?: ?number,
   setSelection?: number => mixed,
@@ -39,22 +36,7 @@ class ElementProperties extends React.Component<Props> {
   render(): React.Node {
     const style = flattenStyle(this.props.style);
     const selection = this.props.selection;
-    let openFileButton;
-    const source = this.props.source;
-    const {fileName, lineNumber} = source || {};
-    if (fileName && lineNumber) {
-      const parts = fileName.split('/');
-      const fileNameShort = parts[parts.length - 1];
-      openFileButton = (
-        <TouchableHighlight
-          style={styles.openButton}
-          onPress={openFileInEditor.bind(null, fileName, lineNumber)}>
-          <Text style={styles.openButtonTitle} numberOfLines={1}>
-            {fileNameShort}:{lineNumber}
-          </Text>
-        </TouchableHighlight>
-      );
-    }
+
     // Without the `TouchableWithoutFeedback`, taps on this inspector pane
     // would change the inspected element to whatever is under the inspector
     return (
@@ -88,9 +70,8 @@ class ElementProperties extends React.Component<Props> {
           <View style={styles.row}>
             <View style={styles.col}>
               <StyleInspector style={style} />
-              {openFileButton}
             </View>
-            {<BoxInspector style={style} frame={this.props.frame} />}
+            <BoxInspector style={style} frame={this.props.frame} />
           </View>
         </View>
       </TouchableWithoutFeedback>
@@ -133,17 +114,6 @@ const styles = StyleSheet.create({
   },
   info: {
     padding: 10,
-  },
-  openButton: {
-    padding: 10,
-    backgroundColor: '#000',
-    marginVertical: 5,
-    marginRight: 5,
-    borderRadius: 2,
-  },
-  openButtonTitle: {
-    color: 'white',
-    fontSize: 8,
   },
 });
 

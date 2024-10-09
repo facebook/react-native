@@ -44,27 +44,4 @@ void Props::setProp(
   }
 }
 
-#ifdef ANDROID
-
-constexpr MapBuffer::Key PROPS_NATIVE_ID = 1;
-
-void Props::propsDiffMapBuffer(
-    const Props* oldPropsPtr,
-    MapBufferBuilder& builder) const {
-  // Call with default props if necessary
-  if (oldPropsPtr == nullptr) {
-    Props defaultProps{};
-    propsDiffMapBuffer(&defaultProps, builder);
-    return;
-  }
-
-  const Props& oldProps = *oldPropsPtr;
-  const Props& newProps = *this;
-
-  if (oldProps.nativeId != newProps.nativeId) {
-    builder.putString(PROPS_NATIVE_ID, nativeId);
-  }
-}
-#endif
-
 } // namespace facebook::react

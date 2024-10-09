@@ -2,7 +2,7 @@ name: On Issue Labeled
 # This workflow is triggered when a label is added to an issue.
 on:
   issues:
-    types: labeled
+    types: [labeled]
 
 permissions:
   contents: write
@@ -16,7 +16,7 @@ jobs:
     if: "${{ github.repository == 'facebook/react-native' && contains(github.event.label.name, 'Needs: Triage :mag:') }}"
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Verify RN version
         uses: actions/github-script@v6
@@ -49,7 +49,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.repository == 'facebook/react-native'
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/github-script@v6
         with:
           script: |

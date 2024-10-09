@@ -90,7 +90,3 @@ void YGConfigSetCloneNodeFunc(
     const YGCloneNodeFunc callback) {
   resolveRef(config)->setCloneNodeCallback(callback);
 }
-
-void YGConfigSetPrintTreeFlag(YGConfigRef config, bool enabled) {
-  resolveRef(config)->setShouldPrintTree(enabled);
-}

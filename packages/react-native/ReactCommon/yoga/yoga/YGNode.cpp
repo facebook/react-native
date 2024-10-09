@@ -11,7 +11,6 @@
 #include <yoga/algorithm/CalculateLayout.h>
 #include <yoga/debug/AssertFatal.h>
 #include <yoga/debug/Log.h>
-#include <yoga/debug/NodeToString.h>
 #include <yoga/event/event.h>
 #include <yoga/node/Node.h>
 
@@ -217,12 +216,12 @@ void YGNodeSetChildren(
   auto owner = resolveRef(ownerRef);
   auto children = reinterpret_cast<yoga::Node* const*>(childrenRefs);
 
-  if (!owner) {
+  if (owner == nullptr) {
     return;
   }
 
   const std::vector<yoga::Node*> childrenVector = {children, children + count};
-  if (childrenVector.size() == 0) {
+  if (childrenVector.empty()) {
     if (owner->getChildCount() > 0) {
       for (auto* child : owner->getChildren()) {
         child->setLayout({});
@@ -324,15 +323,15 @@ YGNodeType YGNodeGetNodeType(YGNodeConstRef node) {
   return unscopedEnum(resolveRef(node)->getNodeType());
 }
 
-void YGNodeSetPrintFunc(YGNodeRef node, YGPrintFunc printFunc) {
-  resolveRef(node)->setPrintFunc(printFunc);
+void YGNodeSetAlwaysFormsContainingBlock(
+    YGNodeRef node,
+    bool alwaysFormsContainingBlock) {
+  resolveRef(node)->setAlwaysFormsContainingBlock(alwaysFormsContainingBlock);
 }
 
-#ifdef DEBUG
-void YGNodePrint(const YGNodeConstRef node, const YGPrintOptions options) {
-  yoga::print(resolveRef(node), scopedEnum(options));
+bool YGNodeGetAlwaysFormsContainingBlock(YGNodeConstRef node) {
+  return resolveRef(node)->alwaysFormsContainingBlock();
 }
-#endif
 
 // TODO: This leaks internal details to the public API. Remove after removing
 // ComponentKit usage of it.

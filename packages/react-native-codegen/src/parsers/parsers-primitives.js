@@ -603,6 +603,7 @@ function emitCommonTypes(
     typeAnnotation.type,
   );
 
+  // $FlowFixMe[invalid-computed-prop]
   const simpleEmitter = typeMap[typeAnnotationName];
   if (simpleEmitter) {
     return simpleEmitter(nullable);
@@ -611,6 +612,7 @@ function emitCommonTypes(
   const genericTypeAnnotationName =
     parser.getTypeAnnotationName(typeAnnotation);
 
+  // $FlowFixMe[invalid-computed-prop]
   const emitter = typeMap[genericTypeAnnotationName];
   if (!emitter) {
     return null;

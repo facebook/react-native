@@ -49,7 +49,6 @@ def pods(target_name, options = {})
     app_path: "#{Dir.pwd}",
     config_file_dir: "#{Dir.pwd}/node_modules",
     production: false, #deprecated
-    ios_folder: '.',
   )
   pod 'ReactCommon-Samples', :path => "#{@prefix_path}/ReactCommon/react/nativemodule/samples"
 
@@ -61,6 +60,7 @@ def pods(target_name, options = {})
   pod 'ScreenshotManager', :path => "NativeModuleExample"
   pod 'MyNativeView', :path => "NativeComponentExample"
   pod 'NativeCxxModuleExample', :path => "NativeCxxModuleExample"
+  pod 'OSSLibraryExample', :path => '../react-native-test-library'
 end
 
 target 'RNTester' do

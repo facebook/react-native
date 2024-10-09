@@ -4,30 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
 
-import type {TurboModule} from '../TurboModule/RCTExport';
-
-import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
-
-export type AppStateConstants = {|
-  initialAppState: string,
-|};
-
-export type AppState = {|app_state: string|};
-
-export interface Spec extends TurboModule {
-  +getConstants: () => AppStateConstants;
-  +getCurrentAppState: (
-    success: (appState: AppState) => void,
-    error: (error: Object) => void,
-  ) => void;
-
-  // Events
-  +addListener: (eventName: string) => void;
-  +removeListeners: (count: number) => void;
-}
-
-export default (TurboModuleRegistry.getEnforcing<Spec>('AppState'): Spec);
+export * from '../../src/private/specs/modules/NativeAppState';
+import NativeAppState from '../../src/private/specs/modules/NativeAppState';
+export default NativeAppState;

@@ -9,11 +9,13 @@ package com.facebook.react.animated;
 
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Nullsafe;
 import java.util.ArrayList;
 import java.util.List;
 
 /** Base class for all Animated.js library node types that can be created on the "native" side. */
-/*package*/ abstract class AnimatedNode {
+/*package*/ @Nullsafe(Nullsafe.Mode.LOCAL)
+abstract class AnimatedNode {
 
   public static final int INITIAL_BFS_COLOR = 0;
 

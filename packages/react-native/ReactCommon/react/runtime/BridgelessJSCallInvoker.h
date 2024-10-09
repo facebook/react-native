@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#pragma once
+
 #include <ReactCommon/CallInvoker.h>
 #include <ReactCommon/RuntimeExecutor.h>
 #include <functional>
@@ -18,8 +20,8 @@ namespace facebook::react {
 class BridgelessJSCallInvoker : public CallInvoker {
  public:
   explicit BridgelessJSCallInvoker(RuntimeExecutor runtimeExecutor);
-  void invokeAsync(std::function<void()>&& func) noexcept override;
-  void invokeSync(std::function<void()>&& func) override;
+  void invokeAsync(CallFunc&& func) noexcept override;
+  void invokeSync(CallFunc&& func) override;
 
  private:
   RuntimeExecutor runtimeExecutor_;

@@ -53,7 +53,8 @@ class IWebSocketDelegate {
   virtual void didReceiveMessage(std::string_view message) = 0;
 
   /**
-   * Called when the socket has been closed.
+   * Called when the socket has been closed. The call is not required if
+   * didFailWithError was called instead.
    */
   virtual void didClose() = 0;
 };

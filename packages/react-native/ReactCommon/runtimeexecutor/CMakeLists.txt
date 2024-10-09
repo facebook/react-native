@@ -11,8 +11,7 @@ add_compile_options(
         -frtti
         -std=c++20
         -Wall
-        -Wpedantic
-        -Wno-gnu-zero-variadic-macro-arguments)
+        -Wpedantic)
 
 file(GLOB_RECURSE runtimeexecutor_SRC CONFIGURE_DEPENDS *.cpp *.h)
 

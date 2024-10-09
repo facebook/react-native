@@ -9,13 +9,12 @@
 
 #include <react/renderer/core/LayoutMetrics.h>
 #include <react/renderer/core/LayoutableShadowNode.h>
-#include <react/renderer/core/TraitCast.h>
 
 namespace facebook::react {
 
 static LayoutMetrics layoutMetricsFromShadowNode(const ShadowNode& shadowNode) {
   auto layoutableShadowNode =
-      traitCast<const LayoutableShadowNode*>(&shadowNode);
+      dynamic_cast<const LayoutableShadowNode*>(&shadowNode);
   return layoutableShadowNode != nullptr
       ? layoutableShadowNode->getLayoutMetrics()
       : EmptyLayoutMetrics;
@@ -83,16 +82,6 @@ bool ShadowViewNodePair::operator==(const ShadowViewNodePair& rhs) const {
 }
 
 bool ShadowViewNodePair::operator!=(const ShadowViewNodePair& rhs) const {
-  return !(*this == rhs);
-}
-
-bool ShadowViewNodePairLegacy::operator==(
-    const ShadowViewNodePairLegacy& rhs) const {
-  return this->shadowNode == rhs.shadowNode;
-}
-
-bool ShadowViewNodePairLegacy::operator!=(
-    const ShadowViewNodePairLegacy& rhs) const {
   return !(*this == rhs);
 }
 

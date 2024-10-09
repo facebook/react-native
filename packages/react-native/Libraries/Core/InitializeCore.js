@@ -27,7 +27,7 @@
 const start = Date.now();
 
 require('./setUpGlobals');
-require('./setUpDOM');
+require('../../src/private/core/setUpDOM');
 require('./setUpPerformance');
 require('./setUpErrorHandling');
 require('./polyfillPromise');

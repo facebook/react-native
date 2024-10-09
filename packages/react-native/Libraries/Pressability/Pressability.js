@@ -136,33 +136,6 @@ export type PressabilityConfig = $ReadOnly<{|
    * while this pressable is responder.
    */
   blockNativeResponder?: ?boolean,
-
-  /**
-   * Returns whether a long press gesture should cancel the press gesture.
-   * Defaults to true.
-   *
-   * @deprecated
-   */
-  onLongPressShouldCancelPress_DEPRECATED?: ?() => boolean,
-
-  /**
-   * If `cancelable` is set, this will be ignored.
-   *
-   * Returns whether to yield to a lock termination request (e.g. if a native
-   * scroll gesture attempts to steal the responder lock).
-   *
-   * @deprecated
-   */
-  onResponderTerminationRequest_DEPRECATED?: ?() => boolean,
-
-  /**
-   * If `disabled` is set, this will be ignored.
-   *
-   * Returns whether to start a press gesture.
-   *
-   * @deprecated
-   */
-  onStartShouldSetResponder_DEPRECATED?: ?() => boolean,
 |}>;
 
 export type EventHandlers = $ReadOnly<{|
@@ -293,6 +266,7 @@ const DEFAULT_MIN_PRESS_DURATION = 130;
 
 const DEFAULT_LONG_PRESS_DEACTIVATION_DISTANCE = 10;
 let longPressDeactivationDistance = DEFAULT_LONG_PRESS_DEACTIVATION_DISTANCE;
+
 /**
  * Pressability implements press handling capabilities.
  *
@@ -313,7 +287,8 @@ let longPressDeactivationDistance = DEFAULT_LONG_PRESS_DEACTIVATION_DISTANCE;
  * bounds should trigger deactivation, but moving the same finger back within an
  * element's bounds should trigger reactivation.
  *
- * In order to use `Pressability`, do the following:
+ * This should be consumed by functional components using `usePressability`. The
+ * following steps are only relevant for using `Pressability` in classes:
  *
  * 1. Instantiate `Pressability` and store it on your component's state.
  *
@@ -330,7 +305,15 @@ let longPressDeactivationDistance = DEFAULT_LONG_PRESS_DEACTIVATION_DISTANCE;
  *      <View {...this.state.pressability.getEventHandlers()} />
  *    );
  *
- * 3. Reset `Pressability` when your component unmounts.
+ * 3. Update `Pressability` when your component mounts, updates, and unmounts.
+ *
+ *    componentDidMount() {
+ *      this.state.pressability.configure(...);
+ *    }
+ *
+ *    componentDidUpdate() {
+ *      this.state.pressability.configure(...);
+ *    }
  *
  *    componentWillUnmount() {
  *      this.state.pressability.reset();
@@ -465,13 +448,7 @@ export default class Pressability {
     const responderEventHandlers = {
       onStartShouldSetResponder: (): boolean => {
         const {disabled} = this._config;
-        if (disabled == null) {
-          const {onStartShouldSetResponder_DEPRECATED} = this._config;
-          return onStartShouldSetResponder_DEPRECATED == null
-            ? true
-            : onStartShouldSetResponder_DEPRECATED();
-        }
-        return !disabled;
+        return !disabled ?? true;
       },
 
       onResponderGrant: (event: PressEvent): void | boolean => {
@@ -549,13 +526,7 @@ export default class Pressability {
 
       onResponderTerminationRequest: (): boolean => {
         const {cancelable} = this._config;
-        if (cancelable == null) {
-          const {onResponderTerminationRequest_DEPRECATED} = this._config;
-          return onResponderTerminationRequest_DEPRECATED == null
-            ? true
-            : onResponderTerminationRequest_DEPRECATED();
-        }
-        return cancelable;
+        return cancelable ?? true;
       },
 
       onClick: (event: PressEvent): void => {
@@ -779,9 +750,7 @@ export default class Pressability {
       const {onLongPress, onPress, android_disableSound} = this._config;
       if (onPress != null) {
         const isPressCanceledByLongPress =
-          onLongPress != null &&
-          prevState === 'RESPONDER_ACTIVE_LONG_PRESS_IN' &&
-          this._shouldLongPressCancelPress();
+          onLongPress != null && prevState === 'RESPONDER_ACTIVE_LONG_PRESS_IN';
         if (!isPressCanceledByLongPress) {
           if (Platform.OS === 'android' && android_disableSound !== true) {
             SoundManager.playTouchSound();
@@ -913,13 +882,6 @@ export default class Pressability {
     ) {
       this._receiveSignal('LONG_PRESS_DETECTED', event);
     }
-  }
-
-  _shouldLongPressCancelPress(): boolean {
-    return (
-      this._config.onLongPressShouldCancelPress_DEPRECATED == null ||
-      this._config.onLongPressShouldCancelPress_DEPRECATED()
-    );
   }
 
   _cancelHoverInDelayTimeout(): void {

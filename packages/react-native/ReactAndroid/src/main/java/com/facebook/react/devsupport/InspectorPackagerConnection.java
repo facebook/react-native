@@ -27,7 +27,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class InspectorPackagerConnection {
+public class InspectorPackagerConnection implements IInspectorPackagerConnection {
   private static final String TAG = "InspectorPackagerConnection";
 
   private final Connection mConnection;

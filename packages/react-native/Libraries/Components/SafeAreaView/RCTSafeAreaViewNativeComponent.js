@@ -8,18 +8,6 @@
  * @flow strict-local
  */
 
-import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
-import type {ViewProps} from '../View/ViewPropTypes';
-
-import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
-
-type NativeProps = $ReadOnly<{|
-  ...ViewProps,
-
-  // No props
-|}>;
-
-export default (codegenNativeComponent<NativeProps>('SafeAreaView', {
-  paperComponentName: 'RCTSafeAreaView',
-  interfaceOnly: true,
-}): HostComponent<NativeProps>);
+export * from '../../../src/private/specs/components/RCTSafeAreaViewNativeComponent';
+import RCTSafeAreaViewNativeComponent from '../../../src/private/specs/components/RCTSafeAreaViewNativeComponent';
+export default RCTSafeAreaViewNativeComponent;

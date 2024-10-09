@@ -34,4 +34,13 @@ class ImageResponse final {
   std::shared_ptr<void> metadata_{};
 };
 
+class ImageLoadError {
+ public:
+  explicit ImageLoadError(std::shared_ptr<void> error);
+  std::shared_ptr<void> getError() const;
+
+ private:
+  std::shared_ptr<void> error_{};
+};
+
 } // namespace facebook::react

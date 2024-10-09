@@ -10,11 +10,12 @@
 #include <glog/logging.h>
 #include <jsi/jsi.h>
 
+#include <cxxreact/SystraceSection.h>
 #include <react/debug/react_native_assert.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
 #include <react/renderer/core/EventQueueProcessor.h>
 #include <react/renderer/core/LayoutContext.h>
-#include <react/renderer/debug/SystraceSection.h>
 #include <react/renderer/mounting/MountingOverrideDelegate.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
 #include <react/renderer/runtimescheduler/RuntimeScheduler.h>
@@ -42,6 +43,14 @@ Scheduler::Scheduler(
   // Creating a container for future `EventDispatcher` instance.
   eventDispatcher_ = std::make_shared<std::optional<const EventDispatcher>>();
 
+  // TODO(T182293888): remove singleton from PerformanceEntryReporter and move
+  // creation here.
+  auto performanceEntryReporter = PerformanceEntryReporter::getInstance();
+  performanceEntryReporter_ = performanceEntryReporter;
+
+  eventPerformanceLogger_ =
+      std::make_shared<EventPerformanceLogger>(performanceEntryReporter_);
+
   auto uiManager = std::make_shared<UIManager>(
       runtimeExecutor_, schedulerToolbox.backgroundExecutor, contextContainer_);
   auto eventOwnerBox = std::make_shared<EventBeat::OwnerBox>();
@@ -54,6 +63,11 @@ Scheduler::Scheduler(
       ? weakRuntimeScheduler.value().lock()
       : nullptr;
 
+  if (runtimeScheduler && ReactNativeFeatureFlags::enableUIConsistency()) {
+    runtimeScheduler->setShadowTreeRevisionConsistencyManager(
+        uiManager->getShadowTreeRevisionConsistencyManager());
+  }
+
   auto eventPipe = [uiManager, runtimeScheduler = runtimeScheduler.get()](
                        jsi::Runtime& runtime,
                        const EventTarget* eventTarget,
@@ -61,24 +75,16 @@ Scheduler::Scheduler(
                        ReactEventPriority priority,
                        const EventPayload& payload) {
     uiManager->visitBinding(
-        [&](UIManagerBinding const& uiManagerBinding) {
+        [&](const UIManagerBinding& uiManagerBinding) {
           uiManagerBinding.dispatchEvent(
               runtime, eventTarget, type, priority, payload);
         },
         runtime);
-
-    // We only want to run this per-event if we are not batching by default
-    if (!CoreFeatures::enableDefaultAsyncBatchedPriority) {
-      if (runtimeScheduler != nullptr) {
-        runtimeScheduler->callExpiredTasks(runtime);
-      }
-    }
   };
 
   auto eventPipeConclusion =
       [runtimeScheduler = runtimeScheduler.get()](jsi::Runtime& runtime) {
-        if (CoreFeatures::enableDefaultAsyncBatchedPriority &&
-            runtimeScheduler != nullptr) {
+        if (runtimeScheduler != nullptr) {
           runtimeScheduler->callExpiredTasks(runtime);
         }
       };
@@ -90,10 +96,13 @@ Scheduler::Scheduler(
   // Creating an `EventDispatcher` instance inside the already allocated
   // container (inside the optional).
   eventDispatcher_->emplace(
-      EventQueueProcessor(eventPipe, eventPipeConclusion, statePipe),
-      schedulerToolbox.synchronousEventBeatFactory,
+      EventQueueProcessor(
+          eventPipe, eventPipeConclusion, statePipe, eventPerformanceLogger_),
       schedulerToolbox.asynchronousEventBeatFactory,
-      eventOwnerBox);
+      eventOwnerBox,
+      *runtimeScheduler,
+      statePipe,
+      eventPerformanceLogger_);
 
   // Casting to `std::shared_ptr<EventDispatcher const>`.
   auto eventDispatcher =
@@ -129,44 +138,25 @@ Scheduler::Scheduler(
     uiManager->registerCommitHook(*commitHook);
   }
 
+  if (animationDelegate != nullptr) {
+    animationDelegate->setComponentDescriptorRegistry(
+        componentDescriptorRegistry_);
+  }
+  uiManager_->setAnimationDelegate(animationDelegate);
+
 #ifdef ANDROID
   removeOutstandingSurfacesOnDestruction_ = true;
-  reduceDeleteCreateMutationLayoutAnimation_ = reactNativeConfig_->getBool(
-      "react_fabric:reduce_delete_create_mutation_layout_animation_android");
 #else
   removeOutstandingSurfacesOnDestruction_ = reactNativeConfig_->getBool(
       "react_fabric:remove_outstanding_surfaces_on_destruction_ios");
-  reduceDeleteCreateMutationLayoutAnimation_ = true;
 #endif
-
-#ifdef ANDROID
-  CoreFeatures::enableMicrotasks =
-      reactNativeConfig_->getBool("react_fabric:enable_microtasks_android");
-#else
-  CoreFeatures::enableMicrotasks =
-      reactNativeConfig_->getBool("react_fabric:enable_microtasks_ios");
-#endif
-
-  CoreFeatures::blockPaintForUseLayoutEffect = reactNativeConfig_->getBool(
-      "react_fabric:block_paint_for_use_layout_effect");
-
-  CoreFeatures::cacheLastTextMeasurement =
-      reactNativeConfig_->getBool("react_fabric:enable_text_measure_cache");
-
-  CoreFeatures::enableGranularShadowTreeStateReconciliation =
-      reactNativeConfig_->getBool(
-          "react_fabric:enable_granular_shadow_tree_state_reconciliation");
 
   CoreFeatures::enableReportEventPaintTime = reactNativeConfig_->getBool(
       "rn_responsiveness_performance:enable_paint_time_reporting");
 
-  if (animationDelegate != nullptr) {
-    animationDelegate->setComponentDescriptorRegistry(
-        componentDescriptorRegistry_);
-    animationDelegate->setReduceDeleteCreateMutation(
-        reduceDeleteCreateMutationLayoutAnimation_);
+  if (CoreFeatures::enableReportEventPaintTime) {
+    uiManager->registerMountHook(*eventPerformanceLogger_);
   }
-  uiManager_->setAnimationDelegate(animationDelegate);
 }
 
 Scheduler::~Scheduler() {
@@ -297,6 +287,10 @@ void Scheduler::uiManagerDidFinishTransaction(
   SystraceSection s("Scheduler::uiManagerDidFinishTransaction");
 
   if (delegate_ != nullptr) {
+    // This is no-op on all platforms except for Android where we need to
+    // observe each transaction to be able to mount correctly.
+    delegate_->schedulerDidFinishTransaction(mountingCoordinator);
+
     auto weakRuntimeScheduler =
         contextContainer_->find<std::weak_ptr<RuntimeScheduler>>(
             "RuntimeScheduler");
@@ -307,19 +301,17 @@ void Scheduler::uiManagerDidFinishTransaction(
       runtimeScheduler->scheduleRenderingUpdate(
           [delegate = delegate_,
            mountingCoordinator = std::move(mountingCoordinator)]() {
-            delegate->schedulerDidFinishTransaction(mountingCoordinator);
+            delegate->schedulerShouldRenderTransactions(mountingCoordinator);
           });
     } else {
-      delegate_->schedulerDidFinishTransaction(mountingCoordinator);
+      delegate_->schedulerShouldRenderTransactions(mountingCoordinator);
     }
   }
 }
-void Scheduler::uiManagerDidCreateShadowNode(const ShadowNode& shadowNode) {
-  SystraceSection s("Scheduler::uiManagerDidCreateShadowNode");
 
+void Scheduler::uiManagerDidCreateShadowNode(const ShadowNode& shadowNode) {
   if (delegate_ != nullptr) {
-    delegate_->schedulerDidRequestPreliminaryViewAllocation(
-        shadowNode.getSurfaceId(), shadowNode);
+    delegate_->schedulerDidRequestPreliminaryViewAllocation(shadowNode);
   }
 }
 

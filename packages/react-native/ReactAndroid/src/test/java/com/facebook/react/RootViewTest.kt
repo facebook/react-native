@@ -6,6 +6,7 @@
  */
 
 @file:Suppress("DEPRECATION") // Suppressing as we want to test RCTEventEmitter here
+
 package com.facebook.react
 
 import android.app.Activity
@@ -15,11 +16,10 @@ import android.view.MotionEvent
 import android.view.WindowInsets
 import android.view.WindowManager
 import com.facebook.react.bridge.Arguments
+import com.facebook.react.bridge.BridgeReactContext
 import com.facebook.react.bridge.CatalystInstance
 import com.facebook.react.bridge.JavaOnlyArray
 import com.facebook.react.bridge.JavaOnlyMap
-import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.ReactTestHelper
 import com.facebook.react.bridge.WritableArray
 import com.facebook.react.bridge.WritableMap
@@ -48,7 +48,7 @@ import org.robolectric.RuntimeEnvironment
 @RunWith(RobolectricTestRunner::class)
 class RootViewTest {
 
-  private lateinit var reactContext: ReactContext
+  private lateinit var reactContext: BridgeReactContext
   private lateinit var catalystInstanceMock: CatalystInstance
 
   private lateinit var arguments: MockedStatic<Arguments>
@@ -65,7 +65,7 @@ class RootViewTest {
     systemClock.`when`<Long> { SystemClock.uptimeMillis() }.thenReturn(ts)
 
     catalystInstanceMock = ReactTestHelper.createMockCatalystInstance()
-    reactContext = spy(ReactApplicationContext(RuntimeEnvironment.getApplication()))
+    reactContext = spy(BridgeReactContext(RuntimeEnvironment.getApplication()))
     reactContext.initializeWithInstance(catalystInstanceMock)
 
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(reactContext)

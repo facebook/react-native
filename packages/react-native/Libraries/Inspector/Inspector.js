@@ -10,6 +10,7 @@
 
 'use strict';
 
+import type {InspectedViewRef} from '../ReactNative/AppContainer-dev';
 import type {
   InspectorData,
   TouchedViewDataAtPoint,
@@ -37,16 +38,14 @@ type SelectedTab =
   | 'performance-profiling';
 
 export type InspectedElementFrame = TouchedViewDataAtPoint['frame'];
-export type InspectedElementSource = InspectorData['source'];
 export type InspectedElement = $ReadOnly<{
   frame: InspectedElementFrame,
-  source?: InspectedElementSource,
   style?: ViewStyleProp,
 }>;
 export type ElementsHierarchy = InspectorData['hierarchy'];
 
 type Props = {
-  inspectedViewRef: React.RefObject<React.ElementRef<typeof View> | null>,
+  inspectedViewRef: InspectedViewRef,
   onRequestRerenderApp: () => void,
   reactDevToolsAgent?: ReactDevToolsAgent,
 };
@@ -73,14 +72,12 @@ function Inspector({
     }
 
     // We pass in findNodeHandle as the method is injected
-    const {measure, props, source} =
-      hierarchyItem.getInspectorData(findNodeHandle);
+    const {measure, props} = hierarchyItem.getInspectorData(findNodeHandle);
 
     measure((x, y, width, height, left, top) => {
       // $FlowFixMe[incompatible-call] `props` from InspectorData are defined as <string, string> dictionary, which is incompatible with ViewStyleProp
       setInspectedElement({
         frame: {left, top, width, height},
-        source,
         style: props.style,
       });
 
@@ -94,7 +91,6 @@ function Inspector({
         hierarchy,
         props,
         selectedIndex,
-        source,
         frame,
         pointerY,
         touchedViewTag,
@@ -119,7 +115,6 @@ function Inspector({
       // $FlowFixMe[incompatible-call] `props` from InspectorData are defined as <string, string> dictionary, which is incompatible with ViewStyleProp
       setInspectedElement({
         frame,
-        source,
         style: props.style,
       });
     };

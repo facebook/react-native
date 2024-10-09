@@ -287,7 +287,9 @@ class TouchableOpacity extends React.Component<Props, State> {
         hasTVPreferredFocus={this.props.hasTVPreferredFocus}
         hitSlop={this.props.hitSlop}
         focusable={
-          this.props.focusable !== false && this.props.onPress !== undefined
+          this.props.focusable !== false &&
+          this.props.onPress !== undefined &&
+          !this.props.disabled
         }
         ref={this.props.hostRef}
         {...eventHandlersWithoutBlurAndFocus}>
@@ -320,12 +322,16 @@ class TouchableOpacity extends React.Component<Props, State> {
 
   componentWillUnmount(): void {
     this.state.pressability.reset();
+    this.state.anim.resetAnimation();
   }
 }
 
-const Touchable = (React.forwardRef((props, ref) => (
+const Touchable: React.AbstractComponent<
+  Props,
+  React.ElementRef<typeof Animated.View>,
+> = React.forwardRef((props, ref) => (
   <TouchableOpacity {...props} hostRef={ref} />
-)): React.AbstractComponent<Props, React.ElementRef<typeof Animated.View>>);
+));
 
 Touchable.displayName = 'TouchableOpacity';
 

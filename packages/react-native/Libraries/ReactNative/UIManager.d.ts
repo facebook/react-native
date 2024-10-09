@@ -16,33 +16,6 @@ import {
 
 export interface UIManagerStatic {
   /**
-   * Capture an image of the screen, window or an individual view. The image
-   * will be stored in a temporary file that will only exist for as long as the
-   * app is running.
-   *
-   * The `view` argument can be the literal string `window` if you want to
-   * capture the entire window, or it can be a reference to a specific
-   * React Native component.
-   *
-   * The `options` argument may include:
-   * - width/height (number) - the width and height of the image to capture.
-   * - format (string) - either 'png' or 'jpeg'. Defaults to 'png'.
-   * - quality (number) - the quality when using jpeg. 0.0 - 1.0 (default).
-   *
-   * Returns a Promise<string> (tempFilePath)
-   * @platform ios
-   */
-  takeSnapshot: (
-    view?: 'window' | React.ReactElement | number,
-    options?: {
-      width?: number | undefined;
-      height?: number | undefined;
-      format?: 'png' | 'jpeg' | undefined;
-      quality?: number | undefined;
-    },
-  ) => Promise<string>;
-
-  /**
    * Determines the location on screen, width, and height of the given view and
    * returns the values via an async callback. If successful, the callback will
    * be called with the following arguments:
@@ -112,26 +85,9 @@ export interface UIManagerStatic {
    *
    *     UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
    */
-  setLayoutAnimationEnabledExperimental(value: boolean): void;
-
-  /**
-   * Used to display an Android PopupMenu. If a menu item is pressed, the success callback will
-   * be called with the following arguments:
-   *
-   *  - item - the menu item.
-   *  - index - index of the pressed item in array. Returns `undefined` if cancelled.
-   *
-   * To obtain a native node handle for a component, you can use
-   * `React.findNodeHandle(component)`.
-   *
-   * Note that this works only on Android
-   */
-  showPopupMenu(
-    node: number,
-    items: string[],
-    error: () => void /* currently unused */,
-    success: (item: string, index: number | undefined) => void,
-  ): void;
+  setLayoutAnimationEnabledExperimental?:
+    | ((value: boolean) => void)
+    | undefined;
 
   getViewManagerConfig: (name: string) => {
     Commands: {[key: string]: number};

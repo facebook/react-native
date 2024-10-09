@@ -8,13 +8,6 @@
  * @format
  */
 
-import type {TurboModule} from '../../TurboModule/RCTExport';
-
-import * as TurboModuleRegistry from '../../TurboModule/TurboModuleRegistry';
-
-export interface Spec extends TurboModule {
-  +show: () => void;
-  +hide: () => void;
-}
-
-export default (TurboModuleRegistry.get<Spec>('LogBox'): ?Spec);
+export * from '../../../src/private/specs/modules/NativeLogBox';
+import NativeLogBox from '../../../src/private/specs/modules/NativeLogBox';
+export default NativeLogBox;

@@ -486,15 +486,6 @@ export interface TextInputSubmitEditingEventData {
 }
 
 /**
- * @see TextInputProps.onTextInput
- */
-export interface TextInputTextInputEventData {
-  text: string;
-  previousText: string;
-  range: {start: number; end: number};
-}
-
-/**
  * @see https://reactnative.dev/docs/textinput#props
  */
 export interface TextInputProps
@@ -785,16 +776,6 @@ export interface TextInputProps
    */
   onSubmitEditing?:
     | ((e: NativeSyntheticEvent<TextInputSubmitEditingEventData>) => void)
-    | undefined;
-
-  /**
-   * Callback that is called on new text input with the argument
-   *  `{ nativeEvent: { text, previousText, range: { start, end } } }`.
-   *
-   * This prop requires multiline={true} to be set.
-   */
-  onTextInput?:
-    | ((e: NativeSyntheticEvent<TextInputTextInputEventData>) => void)
     | undefined;
 
   /**

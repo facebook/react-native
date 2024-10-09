@@ -78,6 +78,7 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
       const ShadowNode& sourceShadowNode,
       const ShadowNodeFragment& fragment) const override {
     auto shadowNode = std::make_shared<ShadowNodeT>(sourceShadowNode, fragment);
+    sourceShadowNode.transferRuntimeShadowNodeReference(shadowNode, fragment);
 
     adopt(*shadowNode);
     return shadowNode;
@@ -105,11 +106,8 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
       return ShadowNodeT::defaultSharedProps();
     }
 
-    if (CoreFeatures::excludeYogaFromRawProps) {
-      if (ShadowNodeT::IdentifierTrait() ==
-          ShadowNodeTraits::Trait::YogaLayoutableKind) {
-        rawProps.filterYogaStylePropsInDynamicConversion();
-      }
+    if constexpr (RawPropsFilterable<ShadowNodeT>) {
+      ShadowNodeT::filterRawProps(rawProps);
     }
 
     rawProps.parse(rawPropsParser_);

@@ -9,7 +9,7 @@
 
 #if RCT_DEV || RCT_REMOTE_PROFILE
 
-#include <jsinspector-modern/InspectorInterfaces.h>
+#import <jsinspector-modern/InspectorInterfaces.h>
 
 #import <React/RCTDefines.h>
 #import <React/RCTInspectorPackagerConnection.h>
@@ -67,7 +67,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
 + (NSArray<RCTInspectorPage *> *)pages
 {
-  std::vector<InspectorPage> pages = getInstance()->getPages();
+  std::vector<InspectorPageDescription> pages = getInstance()->getPages();
   NSMutableArray<RCTInspectorPage *> *array = [NSMutableArray arrayWithCapacity:pages.size()];
   for (size_t i = 0; i < pages.size(); i++) {
     RCTInspectorPage *pageWrapper = [[RCTInspectorPage alloc] initWithId:pages[i].id

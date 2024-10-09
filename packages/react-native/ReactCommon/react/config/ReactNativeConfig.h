@@ -27,7 +27,7 @@ class ReactNativeConfig {
 };
 
 /**
- * Empty configuration that will provide hardcoded values.
+ * Empty configuration that will provide hardcoded default values.
  */
 class EmptyReactNativeConfig : public ReactNativeConfig {
  public:

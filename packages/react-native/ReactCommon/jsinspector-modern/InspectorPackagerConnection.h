@@ -48,9 +48,8 @@ class InspectorPackagerConnection {
 
  private:
   class Impl;
-  class RemoteConnectionImpl;
 
-  std::shared_ptr<Impl> impl_;
+  const std::shared_ptr<Impl> impl_;
 };
 
 /**
@@ -72,10 +71,11 @@ class InspectorPackagerConnectionDelegate {
   /**
    * Schedules a function to run after a delay. If the function is called
    * asynchronously, the implementer of InspectorPackagerConnectionDelegate
-   * is responsible for thread safety (e.g. scheduling the callback on the same
-   * thread that called scheduleCallback, or otherwise ensuring
-   * synchronization). The callback MAY be dropped and never called, e.g. if the
-   * application is terminating.
+   * is responsible for thread safety (e.g. scheduling the callback on a thread
+   * that has unique access to the InspectorPackagerConnection instance, or
+   * otherwise ensuring synchronization). The callback MAY be dropped and never
+   * called if no further callbacks are being accepted, e.g. if the application
+   * is terminating.
    */
   virtual void scheduleCallback(
       std::function<void(void)> callback,

@@ -14,13 +14,12 @@ import Text from '../../../Text/Text';
 import View from '../../View/View';
 import TouchableNativeFeedback from '../TouchableNativeFeedback';
 import * as React from 'react';
-import ReactTestRenderer from 'react-test-renderer';
 
 const render = require('../../../../jest/renderer');
 
 describe('TouchableWithoutFeedback', () => {
-  it('renders correctly', () => {
-    const instance = render.create(
+  it('renders correctly', async () => {
+    const instance = await render.create(
       <TouchableNativeFeedback style={{}}>
         <Text>Touchable</Text>
       </TouchableNativeFeedback>,
@@ -37,8 +36,8 @@ describe('TouchableWithoutFeedback', () => {
 });
 
 describe('<TouchableNativeFeedback />', () => {
-  it('should render as expected', () => {
-    const instance = ReactTestRenderer.create(
+  it('should render as expected', async () => {
+    const instance = await render.create(
       <TouchableNativeFeedback>
         <View />
       </TouchableNativeFeedback>,
@@ -49,9 +48,9 @@ describe('<TouchableNativeFeedback />', () => {
 });
 
 describe('<TouchableNativeFeedback disabled={true}>', () => {
-  it('should be disabled when disabled is true', () => {
+  it('should be disabled when disabled is true', async () => {
     expect(
-      ReactTestRenderer.create(
+      await render.create(
         <TouchableNativeFeedback disabled={true}>
           <View />
         </TouchableNativeFeedback>,
@@ -61,9 +60,9 @@ describe('<TouchableNativeFeedback disabled={true}>', () => {
 });
 
 describe('<TouchableNativeFeedback disabled={true} accessibilityState={{}}>', () => {
-  it('should be disabled when disabled is true and accessibilityState is empty', () => {
+  it('should be disabled when disabled is true and accessibilityState is empty', async () => {
     expect(
-      ReactTestRenderer.create(
+      await render.create(
         <TouchableNativeFeedback disabled={true} accessibilityState={{}}>
           <View />
         </TouchableNativeFeedback>,
@@ -73,9 +72,9 @@ describe('<TouchableNativeFeedback disabled={true} accessibilityState={{}}>', ()
 });
 
 describe('<TouchableNativeFeedback disabled={true} accessibilityState={{checked: true}}>', () => {
-  it('should keep accessibilityState when disabled is true', () => {
+  it('should keep accessibilityState when disabled is true', async () => {
     expect(
-      ReactTestRenderer.create(
+      await render.create(
         <TouchableNativeFeedback
           disabled={true}
           accessibilityState={{checked: true}}>
@@ -87,9 +86,9 @@ describe('<TouchableNativeFeedback disabled={true} accessibilityState={{checked:
 });
 
 describe('<TouchableNativeFeedback disabled={true} accessibilityState={{disabled:false}}>', () => {
-  it('should overwrite accessibilityState with value of disabled prop', () => {
+  it('should overwrite accessibilityState with value of disabled prop', async () => {
     expect(
-      ReactTestRenderer.create(
+      await render.create(
         <TouchableNativeFeedback
           disabled={true}
           accessibilityState={{disabled: false}}>
@@ -101,9 +100,9 @@ describe('<TouchableNativeFeedback disabled={true} accessibilityState={{disabled
 });
 
 describe('<TouchableNativeFeedback disabled={false} accessibilityState={{disabled:true}}>', () => {
-  it('should overwrite accessibilityState with value of disabled prop', () => {
+  it('should overwrite accessibilityState with value of disabled prop', async () => {
     expect(
-      ReactTestRenderer.create(
+      await render.create(
         <TouchableNativeFeedback
           disabled={false}
           accessibilityState={{disabled: true}}>

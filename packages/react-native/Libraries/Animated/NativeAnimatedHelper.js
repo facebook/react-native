@@ -18,9 +18,9 @@ import type {
 } from './NativeAnimatedModule';
 import type {InterpolationConfigType} from './nodes/AnimatedInterpolation';
 
+import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNativeFeatureFlags';
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
 import RCTDeviceEventEmitter from '../EventEmitter/RCTDeviceEventEmitter';
-import ReactNativeFeatureFlags from '../ReactNative/ReactNativeFeatureFlags';
 import Platform from '../Utilities/Platform';
 import NativeAnimatedNonTurboModule from './NativeAnimatedModule';
 import NativeAnimatedTurboModule from './NativeAnimatedTurboModule';
@@ -455,18 +455,22 @@ function addWhitelistedInterpolationParam(param: string): void {
 }
 
 function isSupportedColorStyleProp(prop: string): boolean {
+  // $FlowFixMe[invalid-computed-prop]
   return SUPPORTED_COLOR_STYLES[prop] === true;
 }
 
 function isSupportedStyleProp(prop: string): boolean {
+  // $FlowFixMe[invalid-computed-prop]
   return SUPPORTED_STYLES[prop] === true;
 }
 
 function isSupportedTransformProp(prop: string): boolean {
+  // $FlowFixMe[invalid-computed-prop]
   return SUPPORTED_TRANSFORMS[prop] === true;
 }
 
 function isSupportedInterpolationParam(param: string): boolean {
+  // $FlowFixMe[invalid-computed-prop]
   return SUPPORTED_INTERPOLATION_PARAMS[param] === true;
 }
 

@@ -16,25 +16,15 @@ require_relative './cocoapods/new_architecture.rb'
 require_relative './cocoapods/local_podspec_patch.rb'
 require_relative './cocoapods/runtime.rb'
 require_relative './cocoapods/helpers.rb'
+require_relative './cocoapods/privacy_manifest_utils.rb'
+# Importing to expose use_native_modules!
+require_relative './cocoapods/autolinking.rb'
 
 $CODEGEN_OUTPUT_DIR = 'build/generated/ios'
 $CODEGEN_COMPONENT_DIR = 'react/renderer/components'
 $CODEGEN_MODULE_DIR = '.'
-$FOLLY_VERSION = '2023.08.07.00'
 
 $START_TIME = Time.now.to_i
-
-# `@react-native-community/cli-platform-ios/native_modules` defines
-# use_native_modules. We use node to resolve its path to allow for
-# different packager and workspace setups. This is reliant on
-# `@react-native-community/cli-platform-ios` being a direct dependency
-# of `react-native`.
-require Pod::Executable.execute_command('node', ['-p',
-  'require.resolve(
-    "@react-native-community/cli-platform-ios/native_modules.rb",
-    {paths: [process.argv[1]]},
-  )', __dir__]).strip
-
 
 def min_ios_version_supported
   return Helpers::Constants.min_ios_version_supported
@@ -67,7 +57,6 @@ end
 # - hermes_enabled: whether Hermes should be enabled or not.
 # - app_path: path to the React Native app. Required by the New Architecture.
 # - config_file_dir: directory of the `package.json` file, required by the New Architecture.
-# - ios_folder: the folder where the iOS code base lives. For a template app, it is `ios`, the default. For RNTester, it is `.`.
 def use_react_native! (
   path: "../node_modules/react-native",
   fabric_enabled: false,
@@ -76,29 +65,31 @@ def use_react_native! (
   hermes_enabled: ENV['USE_HERMES'] && ENV['USE_HERMES'] == '0' ? false : true,
   app_path: '..',
   config_file_dir: '',
-  ios_folder: 'ios'
+  privacy_file_aggregation_enabled: true
 )
 
   # Set the app_path as env variable so the podspecs can access it.
   ENV['APP_PATH'] = app_path
   ENV['REACT_NATIVE_PATH'] = path
 
+  ReactNativePodsUtils.check_minimum_required_xcode()
+
   # Current target definition is provided by Cocoapods and it refers to the target
   # that has invoked the `use_react_native!` function.
   ReactNativePodsUtils.detect_use_frameworks(current_target_definition)
 
-  CodegenUtils.clean_up_build_folder(path, app_path, ios_folder, $CODEGEN_OUTPUT_DIR)
+  CodegenUtils.clean_up_build_folder(path, $CODEGEN_OUTPUT_DIR)
 
   # We are relying on this flag also in third parties libraries to proper install dependencies.
   # Better to rely and enable this environment flag if the new architecture is turned on using flags.
   relative_path_from_current = Pod::Config.instance.installation_root.relative_path_from(Pathname.pwd)
   react_native_version = NewArchitectureHelper.extract_react_native_version(File.join(relative_path_from_current, path))
-  ENV['USE_NEW_ARCH'] = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, react_native_version)
+  ENV['RCT_NEW_ARCH_ENABLED'] = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, react_native_version)
   fabric_enabled = fabric_enabled || NewArchitectureHelper.new_arch_enabled
 
-  ENV['RCT_NEW_ARCH_ENABLED'] = "1"
   ENV['RCT_FABRIC_ENABLED'] = fabric_enabled ? "1" : "0"
   ENV['USE_HERMES'] = hermes_enabled ? "1" : "0"
+  ENV['RCT_AGGREGATE_PRIVACY_FILES'] = privacy_file_aggregation_enabled ? "1" : "0"
 
   prefix = path
 
@@ -128,6 +119,12 @@ def use_react_native! (
   pod 'React-cxxreact', :path => "#{prefix}/ReactCommon/cxxreact"
   pod 'React-debug', :path => "#{prefix}/ReactCommon/react/debug"
   pod 'React-utils', :path => "#{prefix}/ReactCommon/react/utils"
+  pod 'React-featureflags', :path => "#{prefix}/ReactCommon/react/featureflags"
+  pod 'React-featureflagsnativemodule', :path => "#{prefix}/ReactCommon/react/nativemodule/featureflags"
+  pod 'React-microtasksnativemodule', :path => "#{prefix}/ReactCommon/react/nativemodule/microtasks"
+  pod 'React-idlecallbacksnativemodule', :path => "#{prefix}/ReactCommon/react/nativemodule/idlecallbacks"
+  pod 'React-domnativemodule', :path => "#{prefix}/ReactCommon/react/nativemodule/dom"
+  pod 'React-defaultsnativemodule', :path => "#{prefix}/ReactCommon/react/nativemodule/defaults"
   pod 'React-Mapbuffer', :path => "#{prefix}/ReactCommon"
   pod 'React-jserrorhandler', :path => "#{prefix}/ReactCommon/jserrorhandler"
   pod 'React-nativeconfig', :path => "#{prefix}/ReactCommon"
@@ -143,9 +140,11 @@ def use_react_native! (
   pod 'React-jsinspector', :path => "#{prefix}/ReactCommon/jsinspector-modern"
 
   pod 'React-callinvoker', :path => "#{prefix}/ReactCommon/callinvoker"
+  pod 'React-performancetimeline', :path => "#{prefix}/ReactCommon/react/performance/timeline"
   pod 'React-runtimeexecutor', :path => "#{prefix}/ReactCommon/runtimeexecutor"
   pod 'React-runtimescheduler', :path => "#{prefix}/ReactCommon/react/renderer/runtimescheduler"
   pod 'React-rendererdebug', :path => "#{prefix}/ReactCommon/react/renderer/debug"
+  pod 'React-rendererconsistency', :path => "#{prefix}/ReactCommon/react/renderer/consistency"
   pod 'React-perflogger', :path => "#{prefix}/ReactCommon/reactperflogger"
   pod 'React-logger', :path => "#{prefix}/ReactCommon/logger"
   pod 'ReactCommon/turbomodule/core', :path => "#{prefix}/ReactCommon", :modular_headers => true
@@ -158,6 +157,7 @@ def use_react_native! (
   pod 'fmt', :podspec => "#{prefix}/third-party-podspecs/fmt.podspec"
   pod 'RCT-Folly', :podspec => "#{prefix}/third-party-podspecs/RCT-Folly.podspec", :modular_headers => true
 
+  folly_config = get_folly_config()
   run_codegen!(
     app_path,
     config_file_dir,
@@ -168,10 +168,10 @@ def use_react_native! (
     :hermes_enabled => hermes_enabled,
     :codegen_output_dir => $CODEGEN_OUTPUT_DIR,
     :package_json_file => File.join(__dir__, "..", "package.json"),
-    :folly_version => $FOLLY_VERSION
+    :folly_version => folly_config[:version]
   )
 
-  pod 'React-Codegen', :path => $CODEGEN_OUTPUT_DIR, :modular_headers => true
+  pod 'ReactCodegen', :path => $CODEGEN_OUTPUT_DIR, :modular_headers => true
 
   # Always need fabric to access the RCTSurfacePresenterBridgeAdapter which allow to enable the RuntimeScheduler
   # If the New Arch is turned off, we will use the Old Renderer, though.
@@ -238,7 +238,8 @@ end
 # - spec: The spec that has to be configured with the New Architecture code
 # - new_arch_enabled: Whether the module should install dependencies for the new architecture
 def install_modules_dependencies(spec, new_arch_enabled: NewArchitectureHelper.new_arch_enabled)
-  NewArchitectureHelper.install_modules_dependencies(spec, new_arch_enabled, $FOLLY_VERSION)
+  folly_config = get_folly_config()
+  NewArchitectureHelper.install_modules_dependencies(spec, new_arch_enabled, folly_config[:version])
 end
 
 # It returns the default flags.
@@ -247,6 +248,15 @@ def get_default_flags()
   warn 'get_default_flags is deprecated. Please remove the keys from the `use_react_native!` function'
   warn 'if you are using the default already and pass the value you need in case you don\'t want the default'
   return ReactNativePodsUtils.get_default_flags()
+end
+
+# This method returns an hash with the folly version and the folli compiler flags
+# that can be used to configure libraries.
+# In this way, we can update those values in react native, and all the libraries will benefit
+# from it.
+# @return an hash with the `:version` and `:compiler_flags` fields.
+def get_folly_config()
+  return Helpers::Constants.folly_config
 end
 
 # Function that executes after React Native has been installed to configure some flags and build settings.
@@ -268,6 +278,7 @@ def react_native_post_install(
 
   fabric_enabled = ENV['RCT_FABRIC_ENABLED'] == '1'
   hermes_enabled = ENV['USE_HERMES'] == '1'
+  privacy_file_aggregation_enabled = ENV['RCT_AGGREGATE_PRIVACY_FILES'] == '1'
 
   if hermes_enabled
     ReactNativePodsUtils.set_gcc_preprocessor_definition_for_React_hermes(installer)
@@ -275,14 +286,23 @@ def react_native_post_install(
 
   ReactNativePodsUtils.fix_library_search_paths(installer)
   ReactNativePodsUtils.update_search_paths(installer)
-  ReactNativePodsUtils.set_use_hermes_build_setting(installer, hermes_enabled)
-  ReactNativePodsUtils.set_node_modules_user_settings(installer, react_native_path)
+  ReactNativePodsUtils.set_build_setting(installer, build_setting: "USE_HERMES", value: hermes_enabled)
+  ReactNativePodsUtils.set_build_setting(installer, build_setting: "REACT_NATIVE_PATH", value: File.join("${PODS_ROOT}", "..", react_native_path))
+  ReactNativePodsUtils.set_build_setting(installer, build_setting: "SWIFT_ACTIVE_COMPILATION_CONDITIONS", value: ['$(inherited)', 'DEBUG'], config_name: "Debug")
+
   ReactNativePodsUtils.set_ccache_compiler_and_linker_build_settings(installer, react_native_path, ccache_enabled)
-  ReactNativePodsUtils.apply_xcode_15_patch(installer)
-  ReactNativePodsUtils.apply_ats_config(installer)
+  if Environment.new().ruby_platform().include?('darwin')
+    ReactNativePodsUtils.apply_xcode_15_patch(installer)
+  end
   ReactNativePodsUtils.updateOSDeploymentTarget(installer)
   ReactNativePodsUtils.set_dynamic_frameworks_flags(installer)
   ReactNativePodsUtils.add_ndebug_flag_to_pods_in_release(installer)
+
+  if privacy_file_aggregation_enabled
+    PrivacyManifestUtils.add_aggregated_privacy_manifest(installer)
+  else
+    PrivacyManifestUtils.add_privacy_manifest_if_needed(installer)
+  end
 
   NewArchitectureHelper.set_clang_cxx_language_standard_if_needed(installer)
   NewArchitectureHelper.modify_flags_for_new_architecture(installer, NewArchitectureHelper.new_arch_enabled)

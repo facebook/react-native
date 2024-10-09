@@ -15,8 +15,8 @@ import com.facebook.react.common.annotations.DeprecatedInNewArchitecture
  * in isolation of others part of the new architecture of React Native.
  */
 @DeprecatedInNewArchitecture
-fun interface UIManagerProvider {
+public fun interface UIManagerProvider {
 
   /* Provides a {@link com.facebook.react.bridge.UIManager} for the context received as a parameter. */
-  fun createUIManager(context: ReactApplicationContext): UIManager?
+  public fun createUIManager(context: ReactApplicationContext): UIManager?
 }

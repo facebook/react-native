@@ -33,9 +33,10 @@ namespace facebook::yoga::vanillajni {
  *
  * This class is very explicit in its behavior, and it does not allow to perform
  * unexpected conversions or unexpected ownership transfer. In practice, this
- * class acts as a unique pointer where the underying JNI reference can have one
- * and just one owner. Transferring ownership is allowed but it is an explicit
- * operation (implemented via move semantics and also via explicitly API calls).
+ * class acts as a unique pointer where the underlying JNI reference can have
+ * one and just one owner. Transferring ownership is allowed but it is an
+ * explicit operation (implemented via move semantics and also via explicitly
+ * API calls).
  *
  * Note that this class doesn't receive an explicit JNIEnv at construction time.
  * At destruction time it uses vanillajni::getCurrentEnv() to retrieve the
@@ -62,7 +63,7 @@ class ScopedGlobalRef {
    *
    * @param globalRef the global reference to wrap. Can be NULL.
    */
-  ScopedGlobalRef(T globalRef) : mGlobalRef(globalRef) {}
+  explicit ScopedGlobalRef(T globalRef) : mGlobalRef(globalRef) {}
 
   /**
    * Equivalent to ScopedGlobalRef(NULL)
@@ -72,12 +73,12 @@ class ScopedGlobalRef {
   /**
    * Move construction is allowed.
    */
-  ScopedGlobalRef(ScopedGlobalRef&& s) : mGlobalRef(s.release()) {}
+  ScopedGlobalRef(ScopedGlobalRef&& s) noexcept : mGlobalRef(s.release()) {}
 
   /**
    * Move assignment is allowed.
    */
-  ScopedGlobalRef& operator=(ScopedGlobalRef&& s) {
+  ScopedGlobalRef& operator=(ScopedGlobalRef&& s) noexcept {
     reset(s.release());
     return *this;
   }

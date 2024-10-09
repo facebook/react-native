@@ -12,38 +12,38 @@ import android.view.ViewGroup
 import com.facebook.react.interfaces.TaskInterface
 
 /** Represents a Surface in React Native. */
-interface ReactSurface {
+public interface ReactSurface {
 
   // the API of this interface will be completed as we analyze and refactor API of ReactSurface,
   // ReactRootView, etc.
 
   // Returns surface ID of this surface
-  val surfaceID: Int
+  public val surfaceID: Int
 
   // Returns module name of this surface
-  val moduleName: String
+  public val moduleName: String
 
   // Returns whether the surface is running or not
-  val isRunning: Boolean
+  public val isRunning: Boolean
 
   // Returns React root view of this surface
-  val view: ViewGroup?
+  public val view: ViewGroup?
 
   // Returns context associated with the surface
-  val context: Context
+  public val context: Context
 
   // Prerender this surface
-  fun prerender(): TaskInterface<Void>
+  public fun prerender(): TaskInterface<Void>
 
   // Start running this surface
-  fun start(): TaskInterface<Void>
+  public fun start(): TaskInterface<Void>
 
   // Stop running this surface
-  fun stop(): TaskInterface<Void>
+  public fun stop(): TaskInterface<Void>
 
   // Clear surface
-  fun clear()
+  public fun clear()
 
   // Detach surface from Host
-  fun detach()
+  public fun detach()
 }

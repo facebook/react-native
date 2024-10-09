@@ -68,8 +68,8 @@ void roundLayoutResultsToPixelGrid(
     const double absoluteTop) {
   const auto pointScaleFactor = node->getConfig()->getPointScaleFactor();
 
-  const double nodeLeft = node->getLayout().position(Edge::Left);
-  const double nodeTop = node->getLayout().position(Edge::Top);
+  const double nodeLeft = node->getLayout().position(PhysicalEdge::Left);
+  const double nodeTop = node->getLayout().position(PhysicalEdge::Top);
 
   const double nodeWidth = node->getLayout().dimension(Dimension::Width);
   const double nodeHeight = node->getLayout().dimension(Dimension::Height);
@@ -87,11 +87,11 @@ void roundLayoutResultsToPixelGrid(
 
     node->setLayoutPosition(
         roundValueToPixelGrid(nodeLeft, pointScaleFactor, false, textRounding),
-        Edge::Left);
+        PhysicalEdge::Left);
 
     node->setLayoutPosition(
         roundValueToPixelGrid(nodeTop, pointScaleFactor, false, textRounding),
-        Edge::Top);
+        PhysicalEdge::Top);
 
     // We multiply dimension by scale factor and if the result is close to the
     // whole number, we don't have any fraction To verify if the result is close

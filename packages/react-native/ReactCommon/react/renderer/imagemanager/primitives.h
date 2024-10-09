@@ -44,4 +44,11 @@ enum class ImageResizeMode {
   Repeat,
 };
 
+class ImageErrorInfo {
+ public:
+  std::string error{};
+  int responseCode{};
+  std::vector<std::pair<std::string, std::string>> httpResponseHeaders{};
+};
+
 } // namespace facebook::react

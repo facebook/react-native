@@ -8,6 +8,7 @@
 package com.facebook.react.animated;
 
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.JavaOnlyArray;
 import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.ReadableArray;
@@ -19,7 +20,8 @@ import com.facebook.react.bridge.ReadableType;
  * Native counterpart of object animated node (see AnimatedObject class in
  * AnimatedImplementation.js)
  */
-/* package */ class ObjectAnimatedNode extends AnimatedNode {
+/* package */ @Nullsafe(Nullsafe.Mode.LOCAL)
+class ObjectAnimatedNode extends AnimatedNode {
 
   private static final String VALUE_KEY = "value";
   private static final String NODE_TAG_KEY = "nodeTag";

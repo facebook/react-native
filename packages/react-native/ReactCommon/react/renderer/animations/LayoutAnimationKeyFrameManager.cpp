@@ -16,7 +16,6 @@
 
 #include <react/renderer/animations/conversions.h>
 #include <react/renderer/animations/utils.h>
-#include <react/renderer/componentregistry/ComponentDescriptorFactory.h>
 #include <react/renderer/components/image/ImageProps.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/components/view/ViewPropsInterpolation.h>
@@ -145,11 +144,6 @@ void LayoutAnimationKeyFrameManager::setComponentDescriptorRegistry(
   componentDescriptorRegistry_ = componentDescriptorRegistry;
 }
 
-void LayoutAnimationKeyFrameManager::setReduceDeleteCreateMutation(
-    const bool reduceDeleteCreateMutation) {
-  reduceDeleteCreateMutation_ = reduceDeleteCreateMutation;
-}
-
 bool LayoutAnimationKeyFrameManager::shouldAnimateFrame() const {
   std::scoped_lock lock(currentAnimationMutex_);
   return currentAnimation_ || !inflightAnimations_.empty();
@@ -191,7 +185,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
     };
 #endif
 
-      // DEBUG ONLY: list existing inflight animations
+    // DEBUG ONLY: list existing inflight animations
 #ifdef LAYOUT_ANIMATION_VERBOSE_LOGGING
     LOG(ERROR) << "BEGINNING DISPLAYING ONGOING inflightAnimations_!";
     int i = 0;
@@ -734,40 +728,6 @@ LayoutAnimationKeyFrameManager::pullTransaction(
 
       auto finalConflictingMutations = ShadowViewMutationList{};
       for (auto& keyFrame : conflictingAnimations) {
-        // Special-case: if the next conflicting animation contain "delete",
-        // while the final mutation has the same tag with "create", we should
-        // remove both the delete and create as they have no effect when
-        // combined in the same frame. The Fabric mount layer assumes no such
-        // combinations in the final mutations either.
-        if (reduceDeleteCreateMutation_) {
-          for (auto itMutation = immediateMutations.begin();
-               itMutation != immediateMutations.end();) {
-            auto& mutation = *itMutation;
-            bool hasCreateMutationDeletedWithSameTag = false;
-            if (mutation.newChildShadowView.tag == keyFrame.tag &&
-                mutation.type == ShadowViewMutation::Create) {
-              for (auto itKeyFrame = keyFrame.finalMutationsForKeyFrame.begin();
-                   itKeyFrame != keyFrame.finalMutationsForKeyFrame.end();) {
-                auto& conflictFinalMutation = *itKeyFrame;
-                if (conflictFinalMutation.type == ShadowViewMutation::Delete) {
-                  itKeyFrame =
-                      keyFrame.finalMutationsForKeyFrame.erase(itKeyFrame);
-                  hasCreateMutationDeletedWithSameTag = true;
-                  break;
-                } else {
-                  itKeyFrame++;
-                }
-              }
-            }
-
-            if (hasCreateMutationDeletedWithSameTag) {
-              itMutation = immediateMutations.erase(itMutation);
-            } else {
-              itMutation++;
-            }
-          }
-        }
-
         // Special-case: if we have some (1) ongoing UPDATE animation,
         // (2) it conflicted with a new MOVE operation (REMOVE+INSERT)
         // without another corresponding UPDATE, we should re-queue the
@@ -1152,12 +1112,14 @@ ShadowView LayoutAnimationKeyFrameManager::createInterpolatedShadowView(
   // Animate opacity or scale/transform
   PropsParserContext propsParserContext{
       finalView.surfaceId, *contextContainer_};
+  const auto& finalViewSize = finalView.layoutMetrics.frame.size;
   mutatedShadowView.props = interpolateProps(
       componentDescriptor,
       propsParserContext,
       progress,
       startingView.props,
-      finalView.props);
+      finalView.props,
+      finalViewSize);
 
   react_native_assert(mutatedShadowView.props != nullptr);
   if (mutatedShadowView.props == nullptr) {
@@ -1666,7 +1628,8 @@ Props::Shared LayoutAnimationKeyFrameManager::interpolateProps(
     const PropsParserContext& context,
     Float animationProgress,
     const Props::Shared& props,
-    const Props::Shared& newProps) const {
+    const Props::Shared& newProps,
+    const Size& size) const {
 #ifdef ANDROID
   // On Android only, the merged props should have the same RawProps as the
   // final props struct
@@ -1683,7 +1646,7 @@ Props::Shared LayoutAnimationKeyFrameManager::interpolateProps(
   if (componentDescriptor.getTraits().check(
           ShadowNodeTraits::Trait::ViewKind)) {
     interpolateViewProps(
-        animationProgress, props, newProps, interpolatedPropsShared);
+        animationProgress, props, newProps, interpolatedPropsShared, size);
   }
 
   return interpolatedPropsShared;

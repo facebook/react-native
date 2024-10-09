@@ -16,9 +16,14 @@ else
   source[:tag] = "v#{version}"
 end
 
-folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -DFOLLY_HAVE_CLOCK_GETTIME=1 -DFOLLY_HAVE_CLOCK_GETTIME=1 -Wno-comma -Wno-shorten-64-to-32'
-folly_version = '2023.08.07.00'
+folly_config = get_folly_config()
+folly_compiler_flags = folly_config[:compiler_flags]
+folly_version = folly_config[:version]
 
+use_frameworks = ENV['USE_FRAMEWORKS'] != nil
+
+header_dir = 'jsinspector-modern'
+module_name = "jsinspector_modern"
 Pod::Spec.new do |s|
   s.name                   = "React-jsinspector"
   s.version                = version
@@ -28,14 +33,30 @@ Pod::Spec.new do |s|
   s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = min_supported_versions
   s.source                 = source
-  s.source_files           = "*.{cpp,h}"
-  s.header_dir             = 'jsinspector'
+  s.source_files           = "*.{cpp,h,def}"
+  s.header_dir             = 'jsinspector-modern'
   s.compiler_flags         = folly_compiler_flags
   s.pod_target_xcconfig    = {
                                "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/..\" \"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/fmt/include\"",
-                               "CLANG_CXX_LANGUAGE_STANDARD" => "c++20"
-                             }
+                               "CLANG_CXX_LANGUAGE_STANDARD" => "c++20",
+                               "DEFINES_MODULE" => "YES"
+  }.merge!(use_frameworks ? {
+    "PUBLIC_HEADERS_FOLDER_PATH" => "#{module_name}.framework/Headers/#{header_dir}"
+  } : {})
+
+  if use_frameworks
+    s.module_name = module_name
+  end
+
   s.dependency "glog"
   s.dependency "RCT-Folly", folly_version
-  s.dependency "React-nativeconfig"
+  s.dependency "React-featureflags"
+  s.dependency "DoubleConversion"
+  s.dependency "React-runtimeexecutor", version
+  s.dependency "React-jsi"
+  s.dependency "React-perflogger", version
+  if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
+    s.dependency "hermes-engine"
+  end
+
 end

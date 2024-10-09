@@ -10,7 +10,7 @@
  */
 
 import type {InspectorProxyQueries} from '../inspector-proxy/InspectorProxy';
-import type {BrowserLauncher, LaunchedBrowser} from '../types/BrowserLauncher';
+import type {BrowserLauncher} from '../types/BrowserLauncher';
 import type {EventReporter} from '../types/EventReporter';
 import type {Experiments} from '../types/Experiments';
 import type {Logger} from '../types/Logger';
@@ -19,8 +19,6 @@ import type {IncomingMessage, ServerResponse} from 'http';
 
 import getDevToolsFrontendUrl from '../utils/getDevToolsFrontendUrl';
 import url from 'url';
-
-const debuggerInstances = new Map<string, ?LaunchedBrowser>();
 
 type Options = $ReadOnly<{
   serverBaseUrl: string,
@@ -57,12 +55,17 @@ export default function openDebuggerMiddleware({
       (experiments.enableOpenDebuggerRedirect && req.method === 'GET')
     ) {
       const {query} = url.parse(req.url, true);
-      const {appId, device}: {appId?: string, device?: string, ...} = query;
+      const {
+        appId,
+        device,
+        launchId,
+      }: {appId?: string, device?: string, launchId?: string, ...} = query;
 
       const targets = inspectorProxy.getPageDescriptions().filter(
         // Only use targets with better reloading support
         app =>
-          app.title === 'React Native Experimental (Improved Chrome Reloads)',
+          app.title === 'React Native Experimental (Improved Chrome Reloads)' ||
+          app.reactNative.capabilities?.nativePageReloads === true,
       );
 
       let target;
@@ -83,12 +86,12 @@ export default function openDebuggerMiddleware({
         if (!target && typeof appId === 'string') {
           target = targets.find(_target => _target.description === appId);
         }
-      } else {
+      } else if (targets.length > 0) {
         logger?.info(
           (launchType === 'launch' ? 'Launching' : 'Redirecting to') +
-            ' JS debugger for first available target...',
+            ` JS debugger${targets.length === 1 ? '' : ' for most recently connected target'}...`,
         );
-        target = targets[0];
+        target = targets[targets.length - 1];
       }
 
       if (!target) {
@@ -106,22 +109,18 @@ export default function openDebuggerMiddleware({
         return;
       }
 
+      const useFuseboxEntryPoint =
+        target.reactNative.capabilities?.prefersFuseboxFrontend;
+
       try {
         switch (launchType) {
           case 'launch':
-            const frontendInstanceId =
-              device != null
-                ? 'device:' + device
-                : 'app:' + (appId ?? '<null>');
-            await debuggerInstances.get(frontendInstanceId)?.kill();
-            debuggerInstances.set(
-              frontendInstanceId,
-              await browserLauncher.launchDebuggerAppWindow(
-                getDevToolsFrontendUrl(
-                  experiments,
-                  target.webSocketDebuggerUrl,
-                  serverBaseUrl,
-                ),
+            await browserLauncher.launchDebuggerAppWindow(
+              getDevToolsFrontendUrl(
+                experiments,
+                target.webSocketDebuggerUrl,
+                serverBaseUrl,
+                {launchId, useFuseboxEntryPoint},
               ),
             );
             res.end();
@@ -131,8 +130,8 @@ export default function openDebuggerMiddleware({
               Location: getDevToolsFrontendUrl(
                 experiments,
                 target.webSocketDebuggerUrl,
-                // Use a relative URL.
-                '',
+                serverBaseUrl,
+                {relative: true, launchId, useFuseboxEntryPoint},
               ),
             });
             res.end();
@@ -146,6 +145,8 @@ export default function openDebuggerMiddleware({
           status: 'success',
           appId: appId ?? null,
           deviceId: device ?? null,
+          resolvedTargetDescription: target.description,
+          prefersFuseboxFrontend: useFuseboxEntryPoint ?? false,
         });
         return;
       } catch (e) {
@@ -159,6 +160,7 @@ export default function openDebuggerMiddleware({
           launchType,
           status: 'error',
           error: e,
+          prefersFuseboxFrontend: useFuseboxEntryPoint ?? false,
         });
         return;
       }

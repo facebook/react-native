@@ -28,7 +28,7 @@ import type {
   Spec,
 } from '../NativeMutationObserver';
 
-import ReadOnlyNode from '../../DOM/Nodes/ReadOnlyNode';
+import ReadOnlyNode from '../../../src/private/webapis/dom/nodes/ReadOnlyNode';
 import {
   type NodeMock,
   type UIManagerCommitHook,

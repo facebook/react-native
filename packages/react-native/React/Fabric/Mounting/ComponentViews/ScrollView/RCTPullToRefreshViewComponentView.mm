@@ -37,14 +37,18 @@ using namespace facebook::react;
     self.hidden = YES;
 
     _props = PullToRefreshViewShadowNode::defaultSharedProps();
-
-    _refreshControl = [UIRefreshControl new];
-    [_refreshControl addTarget:self
-                        action:@selector(handleUIControlEventValueChanged)
-              forControlEvents:UIControlEventValueChanged];
+    [self _initializeUIRefreshControl];
   }
 
   return self;
+}
+
+- (void)_initializeUIRefreshControl
+{
+  _refreshControl = [UIRefreshControl new];
+  [_refreshControl addTarget:self
+                      action:@selector(handleUIControlEventValueChanged)
+            forControlEvents:UIControlEventValueChanged];
 }
 
 #pragma mark - RCTComponentViewProtocol
@@ -52,6 +56,13 @@ using namespace facebook::react;
 + (ComponentDescriptorProvider)componentDescriptorProvider
 {
   return concreteComponentDescriptorProvider<PullToRefreshViewComponentDescriptor>();
+}
+
+- (void)prepareForRecycle
+{
+  [super prepareForRecycle];
+  _scrollViewComponentView = nil;
+  [self _initializeUIRefreshControl];
 }
 
 - (void)updateProps:(const Props::Shared &)props oldProps:(const Props::Shared &)oldProps
@@ -113,6 +124,7 @@ using namespace facebook::react;
 
 - (void)didMoveToWindow
 {
+  [super didMoveToWindow];
   if (self.window) {
     [self _attach];
   } else {

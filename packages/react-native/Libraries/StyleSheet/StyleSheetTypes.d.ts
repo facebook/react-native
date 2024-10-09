@@ -27,6 +27,8 @@ export type DimensionValue =
 type AnimatableNumericValue = number | Animated.AnimatedNode;
 type AnimatableStringValue = string | Animated.AnimatedNode;
 
+export type CursorValue = 'auto' | 'pointer';
+
 /**
  * Flex Prop Types
  * @see https://reactnative.dev/docs/flexbox
@@ -63,9 +65,9 @@ export interface FlexStyle {
     | 'row-reverse'
     | 'column-reverse'
     | undefined;
-  rowGap?: number | undefined;
-  gap?: number | undefined;
-  columnGap?: number | undefined;
+  rowGap?: number | string | undefined;
+  gap?: number | string | undefined;
+  columnGap?: number | string | undefined;
   flexGrow?: number | undefined;
   flexShrink?: number | undefined;
   flexWrap?: 'wrap' | 'nowrap' | 'wrap-reverse' | undefined;
@@ -102,7 +104,7 @@ export interface FlexStyle {
   paddingStart?: DimensionValue | undefined;
   paddingTop?: DimensionValue | undefined;
   paddingVertical?: DimensionValue | undefined;
-  position?: 'absolute' | 'relative' | undefined;
+  position?: 'absolute' | 'relative' | 'static' | undefined;
   right?: DimensionValue | undefined;
   start?: DimensionValue | undefined;
   top?: DimensionValue | undefined;
@@ -155,11 +157,11 @@ interface ScaleYTransform {
 }
 
 interface TranslateXTransform {
-  translateX: AnimatableNumericValue;
+  translateX: AnimatableNumericValue | `${number}%`;
 }
 
 interface TranslateYTransform {
-  translateY: AnimatableNumericValue;
+  translateY: AnimatableNumericValue | `${number}%`;
 }
 
 interface SkewXTransform {
@@ -235,10 +237,10 @@ export interface ViewStyle extends FlexStyle, ShadowStyleIOS, TransformsStyle {
   borderBlockEndColor?: ColorValue | undefined;
   borderBlockStartColor?: ColorValue | undefined;
   borderBottomColor?: ColorValue | undefined;
-  borderBottomEndRadius?: AnimatableNumericValue | undefined;
-  borderBottomLeftRadius?: AnimatableNumericValue | undefined;
-  borderBottomRightRadius?: AnimatableNumericValue | undefined;
-  borderBottomStartRadius?: AnimatableNumericValue | undefined;
+  borderBottomEndRadius?: AnimatableNumericValue | string | undefined;
+  borderBottomLeftRadius?: AnimatableNumericValue | string | undefined;
+  borderBottomRightRadius?: AnimatableNumericValue | string | undefined;
+  borderBottomStartRadius?: AnimatableNumericValue | string | undefined;
   borderColor?: ColorValue | undefined;
   /**
    * On iOS 13+, it is possible to change the corner curve of borders.
@@ -246,20 +248,20 @@ export interface ViewStyle extends FlexStyle, ShadowStyleIOS, TransformsStyle {
    */
   borderCurve?: 'circular' | 'continuous' | undefined;
   borderEndColor?: ColorValue | undefined;
-  borderEndEndRadius?: AnimatableNumericValue | undefined;
-  borderEndStartRadius?: AnimatableNumericValue | undefined;
+  borderEndEndRadius?: AnimatableNumericValue | string | undefined;
+  borderEndStartRadius?: AnimatableNumericValue | string | undefined;
   borderLeftColor?: ColorValue | undefined;
-  borderRadius?: AnimatableNumericValue | undefined;
+  borderRadius?: AnimatableNumericValue | string | undefined;
   borderRightColor?: ColorValue | undefined;
   borderStartColor?: ColorValue | undefined;
-  borderStartEndRadius?: AnimatableNumericValue | undefined;
-  borderStartStartRadius?: AnimatableNumericValue | undefined;
+  borderStartEndRadius?: AnimatableNumericValue | string | undefined;
+  borderStartStartRadius?: AnimatableNumericValue | string | undefined;
   borderStyle?: 'solid' | 'dotted' | 'dashed' | undefined;
   borderTopColor?: ColorValue | undefined;
-  borderTopEndRadius?: AnimatableNumericValue | undefined;
-  borderTopLeftRadius?: AnimatableNumericValue | undefined;
-  borderTopRightRadius?: AnimatableNumericValue | undefined;
-  borderTopStartRadius?: AnimatableNumericValue | undefined;
+  borderTopEndRadius?: AnimatableNumericValue | string | undefined;
+  borderTopLeftRadius?: AnimatableNumericValue | string | undefined;
+  borderTopRightRadius?: AnimatableNumericValue | string | undefined;
+  borderTopStartRadius?: AnimatableNumericValue | string | undefined;
   opacity?: AnimatableNumericValue | undefined;
   /**
    * Sets the elevation of a view, using Android's underlying
@@ -274,6 +276,7 @@ export interface ViewStyle extends FlexStyle, ShadowStyleIOS, TransformsStyle {
    * Controls whether the View can be the target of touch events.
    */
   pointerEvents?: 'box-none' | 'none' | 'box-only' | 'auto' | undefined;
+  cursor?: CursorValue | undefined;
 }
 
 export type FontVariant =
@@ -281,7 +284,6 @@ export type FontVariant =
   | 'oldstyle-nums'
   | 'lining-nums'
   | 'tabular-nums'
-  | 'proportional-nums'
   | 'common-ligatures'
   | 'no-common-ligatures'
   | 'discretionary-ligatures'
@@ -289,7 +291,28 @@ export type FontVariant =
   | 'historical-ligatures'
   | 'no-historical-ligatures'
   | 'contextual'
-  | 'no-contextual';
+  | 'no-contextual'
+  | 'proportional-nums'
+  | 'stylistic-one'
+  | 'stylistic-two'
+  | 'stylistic-three'
+  | 'stylistic-four'
+  | 'stylistic-five'
+  | 'stylistic-six'
+  | 'stylistic-seven'
+  | 'stylistic-eight'
+  | 'stylistic-nine'
+  | 'stylistic-ten'
+  | 'stylistic-eleven'
+  | 'stylistic-twelve'
+  | 'stylistic-thirteen'
+  | 'stylistic-fourteen'
+  | 'stylistic-fifteen'
+  | 'stylistic-sixteen'
+  | 'stylistic-seventeen'
+  | 'stylistic-eighteen'
+  | 'stylistic-nineteen'
+  | 'stylistic-twenty';
 export interface TextStyleIOS extends ViewStyle {
   fontVariant?: FontVariant[] | undefined;
   textDecorationColor?: ColorValue | undefined;
@@ -326,6 +349,25 @@ export interface TextStyle extends TextStyleIOS, TextStyleAndroid, ViewStyle {
     | '700'
     | '800'
     | '900'
+    | 100
+    | 200
+    | 300
+    | 400
+    | 500
+    | 600
+    | 700
+    | 800
+    | 900
+    | 'ultralight'
+    | 'thin'
+    | 'light'
+    | 'medium'
+    | 'regular'
+    | 'semibold'
+    | 'condensedBold'
+    | 'condensed'
+    | 'heavy'
+    | 'black'
     | undefined;
   letterSpacing?: number | undefined;
   lineHeight?: number | undefined;
@@ -352,16 +394,17 @@ export interface TextStyle extends TextStyleIOS, TextStyleAndroid, ViewStyle {
 export interface ImageStyle extends FlexStyle, ShadowStyleIOS, TransformsStyle {
   resizeMode?: ImageResizeMode | undefined;
   backfaceVisibility?: 'visible' | 'hidden' | undefined;
-  borderBottomLeftRadius?: AnimatableNumericValue | undefined;
-  borderBottomRightRadius?: AnimatableNumericValue | undefined;
+  borderBottomLeftRadius?: AnimatableNumericValue | string | undefined;
+  borderBottomRightRadius?: AnimatableNumericValue | string | undefined;
   backgroundColor?: ColorValue | undefined;
   borderColor?: ColorValue | undefined;
-  borderRadius?: AnimatableNumericValue | undefined;
-  borderTopLeftRadius?: AnimatableNumericValue | undefined;
-  borderTopRightRadius?: AnimatableNumericValue | undefined;
+  borderRadius?: AnimatableNumericValue | string | undefined;
+  borderTopLeftRadius?: AnimatableNumericValue | string | undefined;
+  borderTopRightRadius?: AnimatableNumericValue | string | undefined;
   overflow?: 'visible' | 'hidden' | undefined;
   overlayColor?: ColorValue | undefined;
   tintColor?: ColorValue | undefined;
   opacity?: AnimatableNumericValue | undefined;
   objectFit?: 'cover' | 'contain' | 'fill' | 'scale-down' | undefined;
+  cursor?: CursorValue | undefined;
 }

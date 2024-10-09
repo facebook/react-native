@@ -55,8 +55,6 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
   void setComponentDescriptorRegistry(const SharedComponentDescriptorRegistry&
                                           componentDescriptorRegistry) override;
 
-  void setReduceDeleteCreateMutation(bool reduceDeleteCreateMutation) override;
-
   // TODO: add SurfaceId to this API as well
   bool shouldAnimateFrame() const override;
 
@@ -145,7 +143,6 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
   mutable LayoutAnimationStatusDelegate* layoutAnimationStatusDelegate_{};
   mutable std::mutex surfaceIdsToStopMutex_;
   mutable std::unordered_set<SurfaceId> surfaceIdsToStop_{};
-  bool reduceDeleteCreateMutation_{false};
 
   // Function that returns current time in milliseconds
   std::function<uint64_t()> now_;
@@ -182,7 +179,8 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
       const PropsParserContext& context,
       Float animationProgress,
       const Props::Shared& props,
-      const Props::Shared& newProps) const;
+      const Props::Shared& newProps,
+      const Size& size) const;
 };
 
 } // namespace facebook::react

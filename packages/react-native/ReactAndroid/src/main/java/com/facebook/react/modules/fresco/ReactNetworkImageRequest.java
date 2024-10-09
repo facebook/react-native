@@ -24,7 +24,7 @@ public class ReactNetworkImageRequest extends ImageRequest {
 
   protected ReactNetworkImageRequest(ImageRequestBuilder builder, ReadableMap headers) {
     super(builder);
-    this.mHeaders = headers;
+    mHeaders = headers;
   }
 
   public ReadableMap getHeaders() {

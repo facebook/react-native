@@ -8,14 +8,12 @@
 #import "RCTRedBox.h"
 
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
-#import <React/RCTBridge.h>
 #import <React/RCTConvert.h>
 #import <React/RCTDefines.h>
 #import <React/RCTErrorInfo.h>
 #import <React/RCTEventDispatcherProtocol.h>
 #import <React/RCTJSStackFrame.h>
 #import <React/RCTRedBoxExtraDataViewController.h>
-#import <React/RCTRedBoxSetEnabled.h>
 #import <React/RCTReloadCommand.h>
 #import <React/RCTUtils.h>
 
@@ -97,6 +95,7 @@
 
 - (void)viewDidLoad
 {
+  [super viewDidLoad];
   self.view.backgroundColor = [UIColor blackColor];
 
   const CGFloat buttonHeight = 60;
@@ -143,18 +142,18 @@
                                     selector:@selector(showExtraDataViewController)
                                        block:nil];
 
-  [dismissButton.heightAnchor constraintEqualToConstant:buttonHeight].active = YES;
-  [reloadButton.heightAnchor constraintEqualToConstant:buttonHeight].active = YES;
-  [copyButton.heightAnchor constraintEqualToConstant:buttonHeight].active = YES;
-  [extraButton.heightAnchor constraintEqualToConstant:buttonHeight].active = YES;
+  [NSLayoutConstraint activateConstraints:@[
+    [dismissButton.heightAnchor constraintEqualToConstant:buttonHeight],
+    [reloadButton.heightAnchor constraintEqualToConstant:buttonHeight],
+    [copyButton.heightAnchor constraintEqualToConstant:buttonHeight],
+    [extraButton.heightAnchor constraintEqualToConstant:buttonHeight]
+  ]];
 
   UIStackView *buttonStackView = [[UIStackView alloc] init];
   buttonStackView.translatesAutoresizingMaskIntoConstraints = NO;
   buttonStackView.axis = UILayoutConstraintAxisHorizontal;
   buttonStackView.distribution = UIStackViewDistributionFillEqually;
   buttonStackView.alignment = UIStackViewAlignmentTop;
-
-  [buttonStackView.heightAnchor constraintEqualToConstant:buttonHeight + [self bottomSafeViewHeight]].active = YES;
   buttonStackView.backgroundColor = [UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:1];
 
   [buttonStackView addArrangedSubview:dismissButton];
@@ -164,29 +163,12 @@
 
   [self.view addSubview:buttonStackView];
 
-  [self.view addConstraint:[NSLayoutConstraint constraintWithItem:buttonStackView
-                                                        attribute:NSLayoutAttributeLeading
-                                                        relatedBy:NSLayoutRelationEqual
-                                                           toItem:self.view
-                                                        attribute:NSLayoutAttributeLeading
-                                                       multiplier:1.0
-                                                         constant:0]];
-
-  [self.view addConstraint:[NSLayoutConstraint constraintWithItem:buttonStackView
-                                                        attribute:NSLayoutAttributeTrailing
-                                                        relatedBy:NSLayoutRelationEqual
-                                                           toItem:self.view
-                                                        attribute:NSLayoutAttributeTrailing
-                                                       multiplier:1.0
-                                                         constant:0]];
-
-  [self.view addConstraint:[NSLayoutConstraint constraintWithItem:buttonStackView
-                                                        attribute:NSLayoutAttributeBottom
-                                                        relatedBy:NSLayoutRelationEqual
-                                                           toItem:self.view
-                                                        attribute:NSLayoutAttributeBottom
-                                                       multiplier:1.0
-                                                         constant:0]];
+  [NSLayoutConstraint activateConstraints:@[
+    [buttonStackView.heightAnchor constraintEqualToConstant:buttonHeight + [self bottomSafeViewHeight]],
+    [buttonStackView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
+    [buttonStackView.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor],
+    [buttonStackView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor]
+  ]];
 
   for (NSUInteger i = 0; i < [_customButtonTitles count]; i++) {
     UIButton *button = [self redBoxButton:_customButtonTitles[i]
@@ -204,29 +186,11 @@
 
   [self.view addSubview:topBorder];
 
-  [self.view addConstraint:[NSLayoutConstraint constraintWithItem:topBorder
-                                                        attribute:NSLayoutAttributeLeading
-                                                        relatedBy:NSLayoutRelationEqual
-                                                           toItem:self.view
-                                                        attribute:NSLayoutAttributeLeading
-                                                       multiplier:1.0
-                                                         constant:0]];
-
-  [self.view addConstraint:[NSLayoutConstraint constraintWithItem:topBorder
-                                                        attribute:NSLayoutAttributeTrailing
-                                                        relatedBy:NSLayoutRelationEqual
-                                                           toItem:self.view
-                                                        attribute:NSLayoutAttributeTrailing
-                                                       multiplier:1.0
-                                                         constant:0]];
-
-  [self.view addConstraint:[NSLayoutConstraint constraintWithItem:topBorder
-                                                        attribute:NSLayoutAttributeBottom
-                                                        relatedBy:NSLayoutRelationEqual
-                                                           toItem:buttonStackView
-                                                        attribute:NSLayoutAttributeTop
-                                                       multiplier:1.0
-                                                         constant:0]];
+  [NSLayoutConstraint activateConstraints:@[
+    [topBorder.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
+    [topBorder.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor],
+    [topBorder.bottomAnchor constraintEqualToAnchor:buttonStackView.topAnchor],
+  ]];
 }
 
 - (UIButton *)redBoxButton:(NSString *)title
@@ -309,7 +273,13 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 
 - (void)reload
 {
-  [_actionDelegate reloadFromRedBoxController:self];
+  if (_actionDelegate != nil) {
+    [_actionDelegate reloadFromRedBoxController:self];
+  } else {
+    // In bridgeless mode `RCTRedBox` gets deallocated, we need to notify listeners anyway.
+    RCTTriggerReloadCommandListeners(@"Redbox");
+    [self dismiss];
+  }
 }
 
 - (void)showExtraDataViewController
@@ -741,24 +711,6 @@ RCT_EXPORT_METHOD(dismiss)
 
 @end
 
-@implementation RCTBridge (RCTRedBox)
-
-- (RCTRedBox *)redBox
-{
-  return RCTRedBoxGetEnabled() ? [self moduleForClass:[RCTRedBox class]] : nil;
-}
-
-@end
-
-@implementation RCTBridgeProxy (RCTRedBox)
-
-- (RCTRedBox *)redBox
-{
-  return RCTRedBoxGetEnabled() ? [self moduleForClass:[RCTRedBox class]] : nil;
-}
-
-@end
-
 #else // Disabled
 
 @interface RCTRedBox () <NativeRedBoxSpec>
@@ -831,24 +783,6 @@ RCT_EXPORT_METHOD(dismiss)
     (const facebook::react::ObjCTurboModule::InitParams &)params
 {
   return std::make_shared<facebook::react::NativeRedBoxSpecJSI>(params);
-}
-
-@end
-
-@implementation RCTBridge (RCTRedBox)
-
-- (RCTRedBox *)redBox
-{
-  return nil;
-}
-
-@end
-
-@implementation RCTBridgeProxy (RCTRedBox)
-
-- (RCTRedBox *)redBox
-{
-  return nil;
 }
 
 @end

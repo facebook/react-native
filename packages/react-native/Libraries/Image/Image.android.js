@@ -23,7 +23,9 @@ import {
 import {getImageSourcesFromImageProps} from './ImageSourceUtils';
 import {convertObjectFitToResizeMode} from './ImageUtils';
 import ImageViewNativeComponent from './ImageViewNativeComponent';
-import NativeImageLoaderAndroid from './NativeImageLoaderAndroid';
+import NativeImageLoaderAndroid, {
+  type ImageSize,
+} from './NativeImageLoaderAndroid';
 import resolveAssetSource from './resolveAssetSource';
 import TextInlineImageNativeComponent from './TextInlineImageNativeComponent';
 import * as React from 'react';
@@ -40,13 +42,15 @@ function generateRequestId() {
  */
 function getSize(
   url: string,
-  success: (width: number, height: number) => void,
+  success?: (width: number, height: number) => void,
   failure?: (error: mixed) => void,
-): void {
-  NativeImageLoaderAndroid.getSize(url)
-    .then(function (sizes) {
-      success(sizes.width, sizes.height);
-    })
+): void | Promise<ImageSize> {
+  const promise = NativeImageLoaderAndroid.getSize(url);
+  if (typeof success !== 'function') {
+    return promise;
+  }
+  promise
+    .then(sizes => success(sizes.width, sizes.height))
     .catch(
       failure ||
         function () {
@@ -64,13 +68,15 @@ function getSize(
 function getSizeWithHeaders(
   url: string,
   headers: {[string]: string, ...},
-  success: (width: number, height: number) => void,
+  success?: (width: number, height: number) => void,
   failure?: (error: mixed) => void,
-): void {
-  NativeImageLoaderAndroid.getSizeWithHeaders(url, headers)
-    .then(function (sizes) {
-      success(sizes.width, sizes.height);
-    })
+): void | Promise<ImageSize> {
+  const promise = NativeImageLoaderAndroid.getSizeWithHeaders(url, headers);
+  if (typeof success !== 'function') {
+    return promise;
+  }
+  promise
+    .then(sizes => success(sizes.width, sizes.height))
     .catch(
       failure ||
         function () {
@@ -171,7 +177,11 @@ let BaseImage: AbstractImageAndroid = React.forwardRef(
       ...restProps,
       style,
       shouldNotifyLoadEvents: !!(onLoadStart || onLoad || onLoadEnd || onError),
+      // Both iOS and C++ sides expect to have "source" prop, whereas on Android it's "src"
+      // (for historical reasons). So in the latter case we populate both "src" and "source",
+      // in order to have a better alignment between platforms in the future.
       src: sources,
+      source: sources,
       /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
        * when making Flow check .android.js files. */
       headers: (source?.[0]?.headers || source?.headers: ?{[string]: string}),

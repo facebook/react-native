@@ -16,16 +16,17 @@ else
   source[:tag] = "v#{version}"
 end
 
-folly_flags = ' -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -DFOLLY_HAVE_CLOCK_GETTIME=1'
-folly_compiler_flags = folly_flags + ' ' + '-Wno-comma -Wno-shorten-64-to-32'
+folly_config = get_folly_config()
+folly_compiler_flags = folly_config[:compiler_flags]
+folly_version = folly_config[:version]
 
-is_new_arch_enabled = ENV["USE_NEW_ARCH"] == "1"
-use_hermes =  ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == '1'
+is_new_arch_enabled = ENV["RCT_NEW_ARCH_ENABLED"] == "1"
+use_hermes = ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == '1'
 
-new_arch_enabled_flag = (is_new_arch_enabled ? " -DUSE_NEW_ARCH" : "")
-is_fabric_enabled = is_new_arch_enabled || ENV["RCT_FABRIC_ENABLED"]
+new_arch_enabled_flag = (is_new_arch_enabled ? " -DRCT_NEW_ARCH_ENABLED" : "")
+is_fabric_enabled = true #is_new_arch_enabled || ENV["RCT_FABRIC_ENABLED"]
 hermes_flag = (use_hermes ? " -DUSE_HERMES" : "")
-other_cflags = "$(inherited)" + folly_flags + new_arch_enabled_flag + hermes_flag
+other_cflags = "$(inherited)" + folly_compiler_flags + new_arch_enabled_flag + hermes_flag
 
 header_search_paths = [
   "$(PODS_TARGET_SRCROOT)/../../ReactCommon",
@@ -65,16 +66,16 @@ Pod::Spec.new do |s|
   }
   s.user_target_xcconfig   = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/Headers/Private/React-Core\""}
 
-  use_hermes = ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == "1"
-
   s.dependency "React-Core"
-  s.dependency "RCT-Folly"
+  s.dependency "RCT-Folly", folly_version
   s.dependency "RCTRequired"
   s.dependency "RCTTypeSafety"
   s.dependency "React-RCTNetwork"
   s.dependency "React-RCTImage"
   s.dependency "React-CoreModules"
   s.dependency "React-nativeconfig"
+  s.dependency "ReactCodegen"
+  s.dependency "React-defaultsnativemodule"
 
   add_dependency(s, "ReactCommon", :subspec => "turbomodule/core", :additional_framework_paths => ["react/nativemodule/core"])
   add_dependency(s, "React-NativeModulesApple")
@@ -87,7 +88,7 @@ Pod::Spec.new do |s|
   add_dependency(s, "React-utils")
   add_dependency(s, "React-debug")
   add_dependency(s, "React-rendererdebug")
-  add_dependency(s, "React-jsinspector")
+  add_dependency(s, "React-featureflags")
 
   if use_hermes
     s.dependency "React-hermes"

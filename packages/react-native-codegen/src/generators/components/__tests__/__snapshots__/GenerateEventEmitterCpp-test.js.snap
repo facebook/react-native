@@ -361,7 +361,7 @@ Map {
 namespace facebook::react {
 
 void InterfaceOnlyComponentEventEmitter::onChange(OnChange $event) const {
-  dispatchEvent(\\"change\\", [$event=std::move($event)](jsi::Runtime &runtime) {
+  dispatchEvent(\\"paperChange\\", [$event=std::move($event)](jsi::Runtime &runtime) {
     auto $payload = jsi::Object(runtime);
     $payload.setProperty(runtime, \\"value\\", $event.value);
     return $payload;
@@ -370,7 +370,7 @@ void InterfaceOnlyComponentEventEmitter::onChange(OnChange $event) const {
 
 
 void InterfaceOnlyComponentEventEmitter::onDirectChange(OnDirectChange $event) const {
-  dispatchEvent(\\"directChange\\", [$event=std::move($event)](jsi::Runtime &runtime) {
+  dispatchEvent(\\"paperDirectChange\\", [$event=std::move($event)](jsi::Runtime &runtime) {
     auto $payload = jsi::Object(runtime);
     $payload.setProperty(runtime, \\"value\\", $event.value);
     return $payload;

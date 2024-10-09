@@ -23,7 +23,8 @@ static __weak ShimRCTInstance *weakShim = nil;
         [RCTInstance class],
         [ShimRCTInstance class],
         @selector(initWithDelegate:
-                  jsRuntimeFactory:bundleManager:turboModuleManagerDelegate:onInitialBundleLoad:moduleRegistry:));
+                  jsRuntimeFactory:bundleManager:turboModuleManagerDelegate:onInitialBundleLoad:moduleRegistry
+                                  :parentInspectorTarget:launchOptions:));
     RCTSwizzleInstanceSelector([RCTInstance class], [ShimRCTInstance class], @selector(invalidate));
     RCTSwizzleInstanceSelector(
         [RCTInstance class], [ShimRCTInstance class], @selector(callFunctionOnJSModule:method:args:));
@@ -38,7 +39,8 @@ static __weak ShimRCTInstance *weakShim = nil;
       [RCTInstance class],
       [ShimRCTInstance class],
       @selector(initWithDelegate:
-                jsRuntimeFactory:bundleManager:turboModuleManagerDelegate:onInitialBundleLoad:moduleRegistry:));
+                jsRuntimeFactory:bundleManager:turboModuleManagerDelegate:onInitialBundleLoad:moduleRegistry
+                                :parentInspectorTarget:launchOptions:));
   RCTSwizzleInstanceSelector([RCTInstance class], [ShimRCTInstance class], @selector(invalidate));
   RCTSwizzleInstanceSelector(
       [RCTInstance class], [ShimRCTInstance class], @selector(callFunctionOnJSModule:method:args:));
@@ -52,6 +54,8 @@ static __weak ShimRCTInstance *weakShim = nil;
       turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)tmmDelegate
              onInitialBundleLoad:(RCTInstanceInitialBundleLoadCompletionBlock)onInitialBundleLoad
                   moduleRegistry:(RCTModuleRegistry *)moduleRegistry
+           parentInspectorTarget:(facebook::react::jsinspector_modern::HostTarget *)parentInspectorTarget
+                   launchOptions:(NSDictionary *)launchOptions
 {
   weakShim.initCount++;
   return self;

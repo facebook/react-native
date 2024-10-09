@@ -17,23 +17,28 @@ import com.facebook.react.fabric.ComponentFactory
  *
  * This class works together with the [DefaultNewArchitectureEntryPoint] and it's C++ implementation
  * is hosted inside the React Native framework
+ *
+ * TODO(T186951312): Should this be @UnstableReactNativeAPI?
  */
 @DoNotStrip
-class DefaultComponentsRegistry
+public class DefaultComponentsRegistry
 @DoNotStrip
 private constructor(componentFactory: ComponentFactory) {
 
-  @DoNotStrip private val hybridData: HybridData = initHybrid(componentFactory)
+  @DoNotStrip
+  @Suppress("NoHungarianNotation")
+  private val mHybridData: HybridData = initHybrid(componentFactory)
 
   @DoNotStrip private external fun initHybrid(componentFactory: ComponentFactory): HybridData
 
-  init {
-    DefaultSoLoader.maybeLoadSoLibrary()
-  }
+  public companion object {
+    init {
+      DefaultSoLoader.maybeLoadSoLibrary()
+    }
 
-  companion object {
     @JvmStatic
     @DoNotStrip
-    fun register(componentFactory: ComponentFactory) = DefaultComponentsRegistry(componentFactory)
+    public fun register(componentFactory: ComponentFactory): DefaultComponentsRegistry =
+        DefaultComponentsRegistry(componentFactory)
   }
 }

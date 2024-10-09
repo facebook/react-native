@@ -6,19 +6,22 @@
  */
 
 @file:Suppress("DEPRECATION") // Suppressing as we want to fake a RCTEventEmitter here
+
 package com.facebook.react.bridge.interop
 
 import com.facebook.react.bridge.WritableArray
 import com.facebook.react.bridge.WritableMap
+import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.uimanager.events.RCTEventEmitter
 
+@UnstableReactNativeAPI
 class FakeRCTEventEmitter : RCTEventEmitter {
 
-  override fun receiveEvent(targetReactTag: Int, eventName: String, event: WritableMap?) {}
+  override fun receiveEvent(targetReactTag: Int, eventName: String, event: WritableMap?) = Unit
 
   override fun receiveTouches(
       eventName: String,
       touches: WritableArray,
       changedIndices: WritableArray
-  ) {}
+  ) = Unit
 }

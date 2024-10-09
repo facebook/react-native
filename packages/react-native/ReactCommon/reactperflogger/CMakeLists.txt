@@ -11,10 +11,14 @@ add_compile_options(
         -frtti
         -std=c++20
         -Wall
-        -Wpedantic
-        -Wno-gnu-zero-variadic-macro-arguments)
+        -Wpedantic)
 
-file(GLOB reactperflogger_SRC CONFIGURE_DEPENDS reactperflogger/*.cpp)
+
+file(GLOB reactperflogger_SRC CONFIGURE_DEPENDS
+        reactperflogger/*.cpp
+        fusebox/*.cpp)
 add_library(reactperflogger STATIC ${reactperflogger_SRC})
 
 target_include_directories(reactperflogger PUBLIC .)
+
+target_link_libraries(reactperflogger folly_runtime)

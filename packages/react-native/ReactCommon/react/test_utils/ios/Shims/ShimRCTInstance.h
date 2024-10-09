@@ -11,7 +11,7 @@
 
 @property int initCount;
 @property int invalidateCount;
-
+@property NSDictionary *launchOptions;
 @property NSString *jsModuleName;
 @property NSString *method;
 @property NSArray *args;

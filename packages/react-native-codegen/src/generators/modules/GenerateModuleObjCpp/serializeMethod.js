@@ -260,11 +260,11 @@ function getParamObjCType(
     case 'NumberTypeAnnotation':
       return notStruct(isRequired ? 'double' : 'NSNumber *');
     case 'FloatTypeAnnotation':
-      return notStruct(isRequired ? 'double' : 'NSNumber *');
+      return notStruct(isRequired ? 'float' : 'NSNumber *');
     case 'DoubleTypeAnnotation':
       return notStruct(isRequired ? 'double' : 'NSNumber *');
     case 'Int32TypeAnnotation':
-      return notStruct(isRequired ? 'double' : 'NSNumber *');
+      return notStruct(isRequired ? 'NSInteger' : 'NSNumber *');
     case 'BooleanTypeAnnotation':
       return notStruct(isRequired ? 'BOOL' : 'NSNumber *');
     case 'EnumDeclaration':

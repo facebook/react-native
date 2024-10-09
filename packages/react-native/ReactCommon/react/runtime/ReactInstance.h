@@ -11,6 +11,7 @@
 #include <cxxreact/MessageQueueThread.h>
 #include <jserrorhandler/JsErrorHandler.h>
 #include <jsi/jsi.h>
+#include <jsinspector-modern/ReactCdp.h>
 #include <jsireact/JSIExecutor.h>
 #include <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #include <react/runtime/BufferedRuntimeExecutor.h>
@@ -19,13 +20,7 @@
 
 namespace facebook::react {
 
-struct CallableModule {
-  explicit CallableModule(jsi::Function factory)
-      : factory(std::move(factory)) {}
-  jsi::Function factory;
-};
-
-class ReactInstance final {
+class ReactInstance final : private jsinspector_modern::InstanceTargetDelegate {
  public:
   using BindingsInstallFunc = std::function<void(jsi::Runtime& runtime)>;
 
@@ -33,8 +28,8 @@ class ReactInstance final {
       std::unique_ptr<JSRuntime> runtime,
       std::shared_ptr<MessageQueueThread> jsMessageQueueThread,
       std::shared_ptr<TimerManager> timerManager,
-      JsErrorHandler::JsErrorHandlingFunc JsErrorHandlingFunc,
-      bool useModernRuntimeScheduler = false);
+      JsErrorHandler::OnJsError onJsError,
+      jsinspector_modern::HostTarget* parentInspectorTarget = nullptr);
 
   RuntimeExecutor getUnbufferedRuntimeExecutor() noexcept;
 
@@ -60,21 +55,31 @@ class ReactInstance final {
   void callFunctionOnModule(
       const std::string& moduleName,
       const std::string& methodName,
-      const folly::dynamic& args);
+      folly::dynamic&& args);
 
   void handleMemoryPressureJs(int pressureLevel);
+
+  /**
+   * Unregisters the instance from the inspector. This method must be called
+   * on the main (non-JS) thread.
+   */
+  void unregisterFromInspector();
+
+  void* getJavaScriptContext();
 
  private:
   std::shared_ptr<JSRuntime> runtime_;
   std::shared_ptr<MessageQueueThread> jsMessageQueueThread_;
   std::shared_ptr<BufferedRuntimeExecutor> bufferedRuntimeExecutor_;
   std::shared_ptr<TimerManager> timerManager_;
-  std::unordered_map<std::string, std::shared_ptr<CallableModule>> modules_;
+  std::unordered_map<std::string, std::variant<jsi::Function, jsi::Object>>
+      callableModules_;
   std::shared_ptr<RuntimeScheduler> runtimeScheduler_;
-  JsErrorHandler jsErrorHandler_;
+  std::shared_ptr<JsErrorHandler> jsErrorHandler_;
 
-  // Whether there are errors caught during bundle loading
-  std::shared_ptr<bool> hasFatalJsError_;
+  jsinspector_modern::InstanceTarget* inspectorTarget_{nullptr};
+  jsinspector_modern::RuntimeTarget* runtimeInspectorTarget_{nullptr};
+  jsinspector_modern::HostTarget* parentInspectorTarget_{nullptr};
 };
 
 } // namespace facebook::react

@@ -8,6 +8,7 @@
 package com.facebook.react.devsupport;
 
 import com.facebook.common.logging.FLog;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
 import java.io.IOException;
@@ -21,6 +22,7 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 /** Use this class to check if the JavaScript packager is running on the provided host. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class PackagerStatusCheck {
 
   private static final String PACKAGER_OK_STATUS = "packager-status:running";

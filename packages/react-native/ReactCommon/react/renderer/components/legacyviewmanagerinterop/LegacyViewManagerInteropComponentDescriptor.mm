@@ -109,7 +109,7 @@ static const std::shared_ptr<void> constructCoordinator(
     bridgeProxy = unwrapManagedObjectWeakly(optionalBridgeProxy.value());
   }
 
-  auto componentName = *std::static_pointer_cast<std::string const>(flavor);
+  auto componentName = *std::static_pointer_cast<const std::string>(flavor);
   Class viewManagerClass = getViewManagerClass(componentName, bridge, bridgeProxy);
   assert(viewManagerClass);
 

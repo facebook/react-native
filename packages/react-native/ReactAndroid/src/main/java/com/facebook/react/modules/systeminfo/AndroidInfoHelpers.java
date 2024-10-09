@@ -52,10 +52,6 @@ public class AndroidInfoHelpers {
     return getAdbReverseTcpCommand(getDevServerPort(context));
   }
 
-  public static String getInspectorProxyHost(Context context) {
-    return getServerIpAddress(getInspectorProxyPort(context));
-  }
-
   // WARNING(festevezga): This RN helper method has been copied to another FB-only target. Any
   // changes should be applied to both.
   public static String getFriendlyDeviceName() {
@@ -68,11 +64,6 @@ public class AndroidInfoHelpers {
   }
 
   private static Integer getDevServerPort(Context context) {
-    Resources resources = context.getResources();
-    return resources.getInteger(R.integer.react_native_dev_server_port);
-  }
-
-  private static Integer getInspectorProxyPort(Context context) {
     Resources resources = context.getResources();
     return resources.getInteger(R.integer.react_native_dev_server_port);
   }

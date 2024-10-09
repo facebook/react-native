@@ -20,7 +20,6 @@ import com.facebook.debug.tags.ReactDebugOverlayTags;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.common.ReactConstants;
-import com.facebook.react.internal.turbomodule.core.interfaces.TurboModule;
 import com.facebook.react.module.model.ReactModuleInfo;
 import com.facebook.systrace.SystraceMessage;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -73,7 +72,7 @@ public class ModuleHolder {
             nativeModule.canOverrideExistingModule(),
             true,
             CxxModuleWrapper.class.isAssignableFrom(nativeModule.getClass()),
-            TurboModule.class.isAssignableFrom(nativeModule.getClass()));
+            ReactModuleInfo.classIsTurboModule(nativeModule.getClass()));
 
     mModule = nativeModule;
     PrinterHolder.getPrinter()

@@ -8,13 +8,15 @@
 package com.facebook.react.internal.turbomodule.core;
 
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.NativeModule;
-import com.facebook.react.internal.turbomodule.core.interfaces.TurboModule;
+import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import java.util.ArrayList;
 import java.util.List;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public abstract class TurboModuleManagerDelegate {
   @DoNotStrip
   @SuppressWarnings("unused")
@@ -45,8 +47,6 @@ public abstract class TurboModuleManagerDelegate {
 
   public abstract boolean unstable_isModuleRegistered(String moduleName);
 
-  public abstract boolean unstable_isLazyTurboModuleDelegate();
-
   /**
    * Create an return a legacy NativeModule with name `moduleName`. If `moduleName` is a
    * TurboModule, return null.
@@ -58,7 +58,8 @@ public abstract class TurboModuleManagerDelegate {
 
   public boolean unstable_isLegacyModuleRegistered(String moduleName) {
     return false;
-  };
+  }
+  ;
 
   public List<String> getEagerInitModuleNames() {
     return new ArrayList<>();
