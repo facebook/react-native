@@ -20,7 +20,7 @@ import type {
 import type {LayoutEvent, SyntheticEvent} from '../Types/CoreEventTypes';
 import typeof Image from './Image';
 import type {ImageSource} from './ImageSource';
-import type {Node, Ref} from 'react';
+import type {ElementRef, Node, RefSetter} from 'react';
 
 export type ImageLoadEvent = SyntheticEvent<
   $ReadOnly<{|
@@ -291,5 +291,5 @@ export type ImageBackgroundProps = $ReadOnly<{|
    *
    * See https://reactnative.dev/docs/imagebackground#imageref
    */
-  imageRef?: Ref<Image>,
+  imageRef?: RefSetter<ElementRef<Image>>,
 |}>;
