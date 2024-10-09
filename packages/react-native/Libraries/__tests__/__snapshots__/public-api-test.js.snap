@@ -8488,7 +8488,10 @@ exports[`public API should not change unintentionally Libraries/Text/Text.js 1`]
 "type TextForwardRef = React.ElementRef<
   typeof NativeText | typeof NativeVirtualText,
 >;
-declare const Text: React.AbstractComponent<TextProps, TextForwardRef>;
+declare const Text: component(
+  ref: React.RefSetter<TextForwardRef>,
+  ...props: TextProps
+);
 declare module.exports: Text;
 "
 `;
