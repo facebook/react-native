@@ -178,6 +178,22 @@ inline static UIColor *RCTEffectiveBackgroundColorFromTextAttributes(const TextA
   return effectiveBackgroundColor ?: [UIColor clearColor];
 }
 
+NSDictionary<NSAttributedStringKey, id> *RCTDefaultTextAttributes() {
+    static NSDictionary<NSAttributedStringKey, id> *defaultAttributes;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        defaultAttributes = @{
+            NSFontAttributeName : [UIFont systemFontOfSize:14.0f],
+            NSForegroundColorAttributeName : [UIColor blackColor],
+            NSBackgroundColorAttributeName : [UIColor clearColor],
+            NSParagraphStyleAttributeName  : [NSParagraphStyle defaultParagraphStyle],
+            NSShadowAttributeName : [NSShadow new],
+            // Add other missing attributes as needed
+        };
+    });
+    return defaultAttributes;
+}
+
 NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttributes(const TextAttributes &textAttributes)
 {
   NSMutableDictionary<NSAttributedStringKey, id> *attributes = [NSMutableDictionary dictionaryWithCapacity:10];
@@ -300,6 +316,14 @@ NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttributes(c
   } else if (textAttributes.accessibilityRole.has_value()) {
     std::string roleStr = toString(textAttributes.accessibilityRole.value());
     attributes[RCTTextAttributesAccessibilityRoleAttributeName] = [NSString stringWithUTF8String:roleStr.c_str()];
+  }
+
+  // Apply default attributes if they're missing
+  NSDictionary<NSAttributedStringKey, id> *defaultAttributes = RCTDefaultTextAttributes();
+  for (NSAttributedStringKey key in defaultAttributes) {
+      if (![attributes objectForKey:key]) {
+          attributes[key] = defaultAttributes[key];
+      }
   }
 
   return [attributes copy];
