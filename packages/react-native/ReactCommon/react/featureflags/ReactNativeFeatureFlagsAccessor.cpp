@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<087de432d750fea45c0c564e626ce1d9>>
+ * @generated SignedSource<<778bffd71d93673c5690febb473350b1>>
  */
 
 /**
@@ -308,7 +308,7 @@ bool ReactNativeFeatureFlagsAccessor::enableLayoutAnimationsOnAndroid() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(16, "enableLayoutAnimationsOnAndroid");
+    markFlagAsAccessed(15, "enableLayoutAnimationsOnAndroid");
 
     flagValue = currentProvider_->enableLayoutAnimationsOnAndroid();
     enableLayoutAnimationsOnAndroid_ = flagValue;
@@ -326,7 +326,7 @@ bool ReactNativeFeatureFlagsAccessor::enableLayoutAnimationsOnIOS() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(17, "enableLayoutAnimationsOnIOS");
+    markFlagAsAccessed(16, "enableLayoutAnimationsOnIOS");
 
     flagValue = currentProvider_->enableLayoutAnimationsOnIOS();
     enableLayoutAnimationsOnIOS_ = flagValue;
@@ -344,7 +344,7 @@ bool ReactNativeFeatureFlagsAccessor::enableLineHeightCentering() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(16, "enableLineHeightCentering");
+    markFlagAsAccessed(17, "enableLineHeightCentering");
 
     flagValue = currentProvider_->enableLineHeightCentering();
     enableLineHeightCentering_ = flagValue;
