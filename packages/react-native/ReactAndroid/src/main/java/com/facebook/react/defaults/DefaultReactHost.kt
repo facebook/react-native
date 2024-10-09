@@ -59,6 +59,7 @@ public object DefaultReactHost {
       isHermesEnabled: Boolean = true,
       useDevSupport: Boolean = ReactBuildConfig.DEBUG,
       cxxReactPackageProviders: List<(ReactContext) -> CxxReactPackage> = emptyList(),
+      componentFactory: ComponentFactory = ComponentFactory(),
   ): ReactHost {
     if (reactHost == null) {
       val jsBundleLoader =
@@ -81,7 +82,6 @@ public object DefaultReactHost {
               reactPackages = packageList,
               jsRuntimeFactory = jsRuntimeFactory,
               turboModuleManagerDelegateBuilder = defaultTmmDelegateBuilder)
-      val componentFactory = ComponentFactory()
       DefaultComponentsRegistry.register(componentFactory)
       // TODO: T164788699 find alternative of accessing ReactHostImpl for initialising reactHost
       reactHost =
