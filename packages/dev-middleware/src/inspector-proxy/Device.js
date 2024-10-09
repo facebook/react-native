@@ -609,8 +609,14 @@ export default class Device {
         this.#debuggerConnection,
         pageId,
       );
-      const messageToSend = JSON.stringify(parsedPayload);
-      debuggerSocket.send(messageToSend);
+      if (this.#debuggerConnection) {
+        const messageToSend = JSON.stringify(parsedPayload);
+        debuggerSocket.send(messageToSend);
+      } else {
+        // Connection with the device could have terminated
+        // at this point after the async call returns.
+        sendOriginalMessage();
+      }
     }
   }
 
