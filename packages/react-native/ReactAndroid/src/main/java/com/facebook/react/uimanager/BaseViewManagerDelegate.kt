@@ -19,9 +19,11 @@ import com.facebook.yoga.YogaConstants
  * This is a base implementation of [ViewManagerDelegate] which supports setting properties that
  * every view should support, such as rotation, background color, etc.
  */
-public abstract class BaseViewManagerDelegate<T : View, U : BaseViewManagerInterface<T>>(
+public abstract class BaseViewManagerDelegate<
+    T : View, U : BaseViewManager<T, out LayoutShadowNode>>(
     @Suppress("NoHungarianNotation") @JvmField protected val mViewManager: U
 ) : ViewManagerDelegate<T> {
+  @Suppress("DEPRECATION")
   override public fun setProperty(view: T, propName: String, value: Any?) {
     when (propName) {
       ViewProps.ACCESSIBILITY_ACTIONS ->
