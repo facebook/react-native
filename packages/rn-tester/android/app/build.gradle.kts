@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
   id("com.facebook.react")
   alias(libs.plugins.android.application)
@@ -185,6 +187,18 @@ android {
 }
 
 kotlin { explicitApi() }
+
+tasks.withType<JavaCompile>().configureEach {
+  options.compilerArgs.add("-Xlint:deprecation,unchecked")
+  options.compilerArgs.add("-Werror")
+}
+
+tasks.withType<KotlinCompile>().configureEach {
+  kotlinOptions {
+    allWarningsAsErrors =
+        project.properties["enableWarningsAsErrors"]?.toString()?.toBoolean() ?: false
+  }
+}
 
 afterEvaluate {
   if (project.findProperty("react.internal.useHermesNightly") == null ||
