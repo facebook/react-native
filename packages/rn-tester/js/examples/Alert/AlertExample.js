@@ -11,6 +11,7 @@
 import type {RNTesterModule} from '../../types/RNTesterTypes';
 
 import {RNTesterThemeContext} from '../../components/RNTesterTheme';
+import RNTesterText from '../../components/RNTesterText';
 import * as React from 'react';
 import {Alert, Pressable, StyleSheet, Text, View} from 'react-native';
 
@@ -18,9 +19,9 @@ import {Alert, Pressable, StyleSheet, Text, View} from 'react-native';
 const Log = ({message}: {message: string}) =>
   message ? (
     <View style={styles.logContainer}>
-      <Text>
-        <Text style={styles.bold}>Log</Text>: {message}
-      </Text>
+      <RNTesterText>
+        <RNTesterText style={styles.bold}>Log</RNTesterText>: {message}
+      </RNTesterText>
     </View>
   ) : null;
 

@@ -16,12 +16,12 @@ import NativeCxxModuleExample, {
   EnumNone,
 } from '../../../NativeCxxModuleExample/NativeCxxModuleExample';
 import styles from './TurboModuleExampleCommon';
+import RNTesterText from '../../components/RNTesterText';
 import * as React from 'react';
 import {
   DeviceEventEmitter,
   FlatList,
   RootTagContext,
-  Text,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -252,8 +252,10 @@ class NativeCxxModuleExampleExample extends React.Component<{||}, State> {
     const result = this.state.testResults[name] || {};
     return (
       <View style={styles.result}>
-        <Text style={[styles.value]}>{JSON.stringify(result.value)}</Text>
-        <Text style={[styles.type]}>{result.type}</Text>
+        <RNTesterText style={[styles.value]}>
+          {JSON.stringify(result.value)}
+        </RNTesterText>
+        <RNTesterText style={[styles.type]}>{result.type}</RNTesterText>
       </View>
     );
   }
@@ -309,12 +311,16 @@ class NativeCxxModuleExampleExample extends React.Component<{||}, State> {
                 this._setResult(item, this._tests[item]()),
               )
             }>
-            <Text style={styles.buttonTextLarge}>Run function call tests</Text>
+            <RNTesterText style={styles.buttonTextLarge}>
+              Run function call tests
+            </RNTesterText>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => this.setState({testResults: {}})}
             style={[styles.column, styles.button]}>
-            <Text style={styles.buttonTextLarge}>Clear results</Text>
+            <RNTesterText style={styles.buttonTextLarge}>
+              Clear results
+            </RNTesterText>
           </TouchableOpacity>
         </View>
         <FlatList
@@ -326,14 +332,16 @@ class NativeCxxModuleExampleExample extends React.Component<{||}, State> {
               <TouchableOpacity
                 style={[styles.column, styles.button]}
                 onPress={e => this._setResult(item, this._tests[item]())}>
-                <Text style={styles.buttonText}>{item}</Text>
+                <RNTesterText style={styles.buttonText}>{item}</RNTesterText>
               </TouchableOpacity>
               <View style={[styles.column]}>{this._renderResult(item)}</View>
             </View>
           )}
         />
         <View style={styles.item}>
-          <Text style={styles.buttonTextLarge}>Report errors tests</Text>
+          <RNTesterText style={styles.buttonTextLarge}>
+            Report errors tests
+          </RNTesterText>
         </View>
         <FlatList
           // $FlowFixMe[incompatible-type-arg]
@@ -344,7 +352,7 @@ class NativeCxxModuleExampleExample extends React.Component<{||}, State> {
               <TouchableOpacity
                 style={[styles.column, styles.button]}
                 onPress={e => this._setResult(item, this._errorTests[item]())}>
-                <Text style={styles.buttonText}>{item}</Text>
+                <RNTesterText style={styles.buttonText}>{item}</RNTesterText>
               </TouchableOpacity>
               <View style={[styles.column]}>{this._renderResult(item)}</View>
             </View>

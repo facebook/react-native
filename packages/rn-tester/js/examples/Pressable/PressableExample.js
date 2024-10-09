@@ -50,7 +50,7 @@ function ContentPress() {
             setTimesPressed(current => current + 1);
           }}>
           {({pressed}) => (
-            <Text testID="one_press_me_button" style={styles.text}>
+            <Text testID="one_press_me_button" style={styles.button}>
               {pressed ? 'Pressed!' : 'Press Me'}
             </Text>
           )}
@@ -242,7 +242,7 @@ function PressableNativeMethods() {
         <Pressable ref={ref}>
           <View />
         </Pressable>
-        <Text>
+        <Text style={styles.button}>
           {status == null
             ? 'Missing Ref!'
             : status === true

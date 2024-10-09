@@ -11,6 +11,7 @@
 import type {ColorSchemeName} from 'react-native/Libraries/Utilities/NativeAppearance';
 
 import {RNTesterThemeContext, themes} from '../../components/RNTesterTheme';
+import RNTesterText from '../../components/RNTesterText';
 import * as React from 'react';
 import {useEffect, useState} from 'react';
 import {Appearance, Button, Text, View, useColorScheme} from 'react-native';
@@ -143,8 +144,8 @@ const ToggleNativeAppearance = () => {
 
   return (
     <View>
-      <Text>Native colorScheme: {nativeColorScheme}</Text>
-      <Text>Current colorScheme: {colorScheme}</Text>
+      <RNTesterText>Native colorScheme: {nativeColorScheme}</RNTesterText>
+      <RNTesterText>Current colorScheme: {colorScheme}</RNTesterText>
       <Button
         title="Set to light"
         onPress={() => setNativeColorScheme('light')}

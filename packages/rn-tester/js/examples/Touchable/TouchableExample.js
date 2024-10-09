@@ -10,19 +10,19 @@
 
 import {useEffect, useRef, useState} from 'react';
 
-const React = require('react');
-const {
+import React from 'react';
+import {
   Animated,
   Image,
   Platform,
   StyleSheet,
-  Text,
   TouchableHighlight,
   TouchableNativeFeedback,
   TouchableOpacity,
   TouchableWithoutFeedback,
   View,
-} = require('react-native');
+} from 'react-native';
+import RNTesterText from '../../components/RNTesterText';
 
 const forceTouchAvailable =
   (Platform.OS === 'ios' && Platform.constants.forceTouchAvailable) || false;
@@ -62,12 +62,16 @@ class TouchableHighlightBox extends React.Component<{...}, $FlowFixMeState> {
             underlayColor="rgb(210, 230, 255)"
             onPress={this.touchableOnPress}>
             <View style={styles.wrapperCustom}>
-              <Text style={styles.text}>Tap Here For Custom Highlight!</Text>
+              <RNTesterText style={styles.text}>
+                Tap Here For Custom Highlight!
+              </RNTesterText>
             </View>
           </TouchableHighlight>
         </View>
         <View style={styles.logBox}>
-          <Text testID="touchable_highlight_console">{textLog}</Text>
+          <RNTesterText testID="touchable_highlight_console">
+            {textLog}
+          </RNTesterText>
         </View>
       </View>
     );
@@ -102,11 +106,15 @@ class TouchableWithoutFeedbackBox extends React.Component<
           onPress={this.textOnPress}
           testID="touchable_without_feedback_button">
           <View style={styles.wrapperCustom}>
-            <Text style={styles.text}>Tap Here For No Feedback!</Text>
+            <RNTesterText style={styles.text}>
+              Tap Here For No Feedback!
+            </RNTesterText>
           </View>
         </TouchableWithoutFeedback>
         <View style={styles.logBox}>
-          <Text testID="touchable_without_feedback_console">{textLog}</Text>
+          <RNTesterText testID="touchable_without_feedback_console">
+            {textLog}
+          </RNTesterText>
         </View>
       </View>
     );
@@ -134,14 +142,14 @@ class TextOnPressBox extends React.Component<{...}, $FlowFixMeState> {
 
     return (
       <View>
-        <Text
+        <RNTesterText
           style={styles.textBlock}
           testID="tappable_text"
           onPress={this.textOnPress}>
           Text has built-in onPress handling
-        </Text>
+        </RNTesterText>
         <View style={styles.logBox}>
-          <Text testID="tappable_text_console">{textLog}</Text>
+          <RNTesterText testID="tappable_text_console">{textLog}</RNTesterText>
         </View>
       </View>
     );
@@ -166,14 +174,14 @@ class TouchableFeedbackEvents extends React.Component<{...}, $FlowFixMeState> {
             onPressIn={() => this._appendEvent('pressIn')}
             onPressOut={() => this._appendEvent('pressOut')}
             onLongPress={() => this._appendEvent('longPress')}>
-            <Text style={styles.button}>Press Me</Text>
+            <RNTesterText style={styles.button}>Press Me</RNTesterText>
           </TouchableOpacity>
         </View>
         <View
           testID="touchable_feedback_events_console"
           style={styles.eventLogBox}>
           {this.state.eventLog.map((e, ii) => (
-            <Text key={ii}>{e}</Text>
+            <RNTesterText key={ii}>{e}</RNTesterText>
           ))}
         </View>
       </View>
@@ -207,14 +215,14 @@ class TouchableDelayEvents extends React.Component<{...}, $FlowFixMeState> {
             onPressOut={() => this._appendEvent('pressOut - 1000ms delay')}
             delayLongPress={800}
             onLongPress={() => this._appendEvent('longPress - 800ms delay')}>
-            <Text style={styles.button}>Press Me</Text>
+            <RNTesterText style={styles.button}>Press Me</RNTesterText>
           </TouchableOpacity>
         </View>
         <View
           style={styles.eventLogBox}
           testID="touchable_delay_events_console">
           {this.state.eventLog.map((e, ii) => (
-            <Text key={ii}>{e}</Text>
+            <RNTesterText key={ii}>{e}</RNTesterText>
           ))}
         </View>
       </View>
@@ -244,7 +252,7 @@ class ForceTouchExample extends React.Component<{...}, $FlowFixMeState> {
     return (
       <View testID="touchable_3dtouch_event">
         <View style={styles.forceTouchBox} testID="touchable_3dtouch_output">
-          <Text>{this._renderConsoleText()}</Text>
+          <RNTesterText>{this._renderConsoleText()}</RNTesterText>
         </View>
         <View style={[styles.row, styles.centered]}>
           <View
@@ -255,7 +263,7 @@ class ForceTouchExample extends React.Component<{...}, $FlowFixMeState> {
               this.setState({force: event.nativeEvent.force})
             }
             onResponderRelease={event => this.setState({force: 0})}>
-            <Text style={styles.button}>Press Me</Text>
+            <RNTesterText style={styles.button}>Press Me</RNTesterText>
           </View>
         </View>
       </View>
@@ -290,11 +298,13 @@ class TouchableHitSlop extends React.Component<{...}, $FlowFixMeState> {
             style={styles.hitSlopWrapper}
             hitSlop={{top: 30, bottom: 30, left: 60, right: 60}}
             testID="touchable_hit_slop_button">
-            <Text style={styles.hitSlopButton}>Press Outside This View</Text>
+            <RNTesterText style={styles.hitSlopButton}>
+              Press Outside This View
+            </RNTesterText>
           </TouchableOpacity>
         </View>
         <View style={styles.logBox}>
-          <Text>{log}</Text>
+          <RNTesterText>{log}</RNTesterText>
         </View>
       </View>
     );
@@ -316,14 +326,14 @@ function TouchableNativeMethodChecker<
       <props.Component ref={ref}>
         <View />
       </props.Component>
-      <Text>
+      <RNTesterText>
         {props.name + ': '}
         {status == null
           ? 'Missing Ref!'
           : status === true
             ? 'Native Methods Exist'
             : 'Native Methods Missing!'}
-      </Text>
+      </RNTesterText>
     </View>
   );
 }
@@ -348,11 +358,15 @@ class TouchableDisabled extends React.Component<{...}> {
     return (
       <View>
         <TouchableOpacity disabled={true} style={[styles.row, styles.block]}>
-          <Text style={styles.disabledButton}>Disabled TouchableOpacity</Text>
+          <RNTesterText style={styles.disabledButton}>
+            Disabled TouchableOpacity
+          </RNTesterText>
         </TouchableOpacity>
 
         <TouchableOpacity disabled={false} style={[styles.row, styles.block]}>
-          <Text style={styles.button}>Enabled TouchableOpacity</Text>
+          <RNTesterText style={styles.button}>
+            Enabled TouchableOpacity
+          </RNTesterText>
         </TouchableOpacity>
 
         <TouchableHighlight
@@ -361,7 +375,9 @@ class TouchableDisabled extends React.Component<{...}> {
           underlayColor="rgb(210, 230, 255)"
           style={[styles.row, styles.block]}
           onPress={() => console.log('custom THW text - highlight')}>
-          <Text style={styles.disabledButton}>Disabled TouchableHighlight</Text>
+          <RNTesterText style={styles.disabledButton}>
+            Disabled TouchableHighlight
+          </RNTesterText>
         </TouchableHighlight>
 
         <TouchableHighlight
@@ -369,21 +385,23 @@ class TouchableDisabled extends React.Component<{...}> {
           underlayColor="rgb(210, 230, 255)"
           style={[styles.row, styles.block]}
           onPress={() => console.log('custom THW text - highlight')}>
-          <Text style={styles.button}>Enabled TouchableHighlight</Text>
+          <RNTesterText style={styles.button}>
+            Enabled TouchableHighlight
+          </RNTesterText>
         </TouchableHighlight>
 
         <TouchableWithoutFeedback
           onPress={() => console.log('TWOF has been clicked')}
           disabled={true}>
           <View style={styles.wrapperCustom}>
-            <Text
+            <RNTesterText
               style={[
                 styles.button,
                 styles.nativeFeedbackButton,
                 styles.disabledButton,
               ]}>
               Disabled TouchableWithoutFeedback
-            </Text>
+            </RNTesterText>
           </View>
         </TouchableWithoutFeedback>
 
@@ -391,9 +409,9 @@ class TouchableDisabled extends React.Component<{...}> {
           onPress={() => console.log('TWOF has been clicked')}
           disabled={false}>
           <View style={styles.wrapperCustom}>
-            <Text style={[styles.button, styles.nativeFeedbackButton]}>
+            <RNTesterText style={[styles.button, styles.nativeFeedbackButton]}>
               Enabled TouchableWithoutFeedback
-            </Text>
+            </RNTesterText>
           </View>
         </TouchableWithoutFeedback>
 
@@ -403,9 +421,10 @@ class TouchableDisabled extends React.Component<{...}> {
               onPress={() => console.log('custom TNF has been clicked')}
               background={TouchableNativeFeedback.SelectableBackground()}>
               <View style={[styles.row, styles.block]}>
-                <Text style={[styles.button, styles.nativeFeedbackButton]}>
+                <RNTesterText
+                  style={[styles.button, styles.nativeFeedbackButton]}>
                   Enabled TouchableNativeFeedback
-                </Text>
+                </RNTesterText>
               </View>
             </TouchableNativeFeedback>
 
@@ -414,10 +433,10 @@ class TouchableDisabled extends React.Component<{...}> {
               onPress={() => console.log('custom TNF has been clicked')}
               background={TouchableNativeFeedback.SelectableBackground()}>
               <View style={[styles.row, styles.block]}>
-                <Text
+                <RNTesterText
                   style={[styles.disabledButton, styles.nativeFeedbackButton]}>
                   Disabled TouchableNativeFeedback
-                </Text>
+                </RNTesterText>
               </View>
             </TouchableNativeFeedback>
           </>
@@ -441,9 +460,9 @@ function CustomRippleRadius() {
         onPress={() => console.log('custom TNF has been clicked')}
         background={TouchableNativeFeedback.Ripple('orange', true, 30)}>
         <View>
-          <Text style={[styles.button, styles.nativeFeedbackButton]}>
+          <RNTesterText style={[styles.button, styles.nativeFeedbackButton]}>
             radius 30
-          </Text>
+          </RNTesterText>
         </View>
       </TouchableNativeFeedback>
 
@@ -453,9 +472,9 @@ function CustomRippleRadius() {
           150,
         )}>
         <View>
-          <Text style={[styles.button, styles.nativeFeedbackButton]}>
+          <RNTesterText style={[styles.button, styles.nativeFeedbackButton]}>
             radius 150
-          </Text>
+          </RNTesterText>
         </View>
       </TouchableNativeFeedback>
 
@@ -463,9 +482,9 @@ function CustomRippleRadius() {
         onPress={() => console.log('custom TNF has been clicked')}
         background={TouchableNativeFeedback.SelectableBackground(70)}>
         <View style={styles.block}>
-          <Text style={[styles.button, styles.nativeFeedbackButton]}>
+          <RNTesterText style={[styles.button, styles.nativeFeedbackButton]}>
             radius 70, with border
-          </Text>
+          </RNTesterText>
         </View>
       </TouchableNativeFeedback>
     </View>
@@ -497,7 +516,7 @@ const TouchableHighlightUnderlayMethods = () => {
       onPress={() => {
         console.log('TouchableHighlight underlay shown!');
       }}>
-      <Text style={styles.textBlock}>{underlayVisible}</Text>
+      <RNTesterText style={styles.textBlock}>{underlayVisible}</RNTesterText>
     </TouchableHighlight>
   );
 };
@@ -514,12 +533,12 @@ const TouchableTouchSoundDisabled = () => {
           <TouchableWithoutFeedback
             touchSoundDisabled={soundEnabled}
             onPress={() => console.log('touchSoundDisabled pressed!')}>
-            <Text
+            <RNTesterText
               style={{
                 padding: 10,
               }}>
               Touchables make a sound on Android, which can be turned off.
-            </Text>
+            </RNTesterText>
           </TouchableWithoutFeedback>
           <TouchableOpacity
             style={{
@@ -527,11 +546,11 @@ const TouchableTouchSoundDisabled = () => {
             }}
             onPress={toggleTouchableSound}
             touchSoundDisabled={soundEnabled}>
-            <Text style={styles.button}>
+            <RNTesterText style={styles.button}>
               {soundEnabled
                 ? 'Disable Touchable Sound'
                 : 'Enable Touchable Sound'}
-            </Text>
+            </RNTesterText>
           </TouchableOpacity>
         </>
       ) : null}
@@ -567,11 +586,11 @@ function TouchableOnFocus<T: React.AbstractComponent<any, any>>() {
       ref={ref}
       onFocus={toggleFocus}
       onPress={focusTouchable}>
-      <Text>
+      <RNTesterText>
         {focusStatus}
         {'\n'}
         {isBlurred}
-      </Text>
+      </RNTesterText>
     </TouchableHighlight>
   );
 }
@@ -624,7 +643,6 @@ const styles = StyleSheet.create({
     margin: 10,
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: '#f0f0f0',
-    backgroundColor: '#f9f9f9',
   },
   eventLogBox: {
     padding: 10,
@@ -632,7 +650,6 @@ const styles = StyleSheet.create({
     height: 120,
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: '#f0f0f0',
-    backgroundColor: '#f9f9f9',
   },
   forceTouchBox: {
     padding: 10,
