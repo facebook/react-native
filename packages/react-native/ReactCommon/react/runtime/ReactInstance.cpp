@@ -431,6 +431,47 @@ void ReactInstance::initializeRuntime(
 
     defineReadOnlyGlobal(
         runtime,
+        "RN$registerExceptionListener",
+        jsi::Function::createFromHostFunction(
+            runtime,
+            jsi::PropNameID::forAscii(runtime, "registerExceptionListener"),
+            1,
+            [errorListeners = std::vector<std::shared_ptr<jsi::Function>>(),
+             jsErrorHandler = jsErrorHandler_](
+                jsi::Runtime& runtime,
+                const jsi::Value& /*unused*/,
+                const jsi::Value* args,
+                size_t count) mutable {
+              if (count < 1) {
+                throw jsi::JSError(
+                    runtime,
+                    "registerExceptionListener: requires 1 argument: fn");
+              }
+
+              if (!args[0].isObject() ||
+                  !args[0].getObject(runtime).isFunction(runtime)) {
+                throw jsi::JSError(
+                    runtime,
+                    "registerExceptionListener: The first argument must be a function");
+              }
+
+              auto errorListener = std::make_shared<jsi::Function>(
+                  args[0].getObject(runtime).getFunction(runtime));
+              errorListeners.emplace_back(errorListener);
+
+              jsErrorHandler->registerErrorListener(
+                  [weakErrorListener = std::weak_ptr<jsi::Function>(
+                       errorListener)](jsi::Runtime& runtime, jsi::Value data) {
+                    if (auto strongErrorListener = weakErrorListener.lock()) {
+                      strongErrorListener->call(runtime, data);
+                    }
+                  });
+
+              return jsi::Value::undefined();
+            }));
+
+    defineReadOnlyGlobal(
+        runtime,
         "RN$registerCallableModule",
         jsi::Function::createFromHostFunction(
             runtime,
