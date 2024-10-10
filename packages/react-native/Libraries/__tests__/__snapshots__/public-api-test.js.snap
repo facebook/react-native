@@ -2258,11 +2258,11 @@ type RefForwarder<TNativeInstance, TPublicInstance> = {
   nativeInstance: TNativeInstance | null,
   publicInstance: TPublicInstance | null,
 };
-declare module.exports: React.AbstractComponent<
-  React.ElementConfig<typeof ScrollView>,
-  PublicScrollViewInstance,
-> &
-  ScrollViewComponentStatics;
+declare const Wrapper: component(
+  ref: React.RefSetter<PublicScrollViewInstance>,
+  ...props: Props
+);
+declare module.exports: typeof Wrapper & ScrollViewComponentStatics;
 "
 `;
 

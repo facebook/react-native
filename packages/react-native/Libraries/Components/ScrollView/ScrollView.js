@@ -1935,7 +1935,10 @@ function createRefForwarder<TNativeInstance, TPublicInstance>(
 // NOTE: This wrapper component is necessary because `ScrollView` is a class
 // component and we need to map `ref` to a differently named prop. This can be
 // removed when `ScrollView` is a functional component.
-const Wrapper = React.forwardRef(function Wrapper(
+const Wrapper: component(
+  ref: React.RefSetter<PublicScrollViewInstance>,
+  ...props: Props
+) = React.forwardRef(function Wrapper(
   props: Props,
   ref: ?React.RefSetter<PublicScrollViewInstance>,
 ): React.Node {
@@ -1949,8 +1952,5 @@ Wrapper.displayName = 'ScrollView';
 // $FlowExpectedError[prop-missing]
 Wrapper.Context = ScrollViewContext;
 
-module.exports = ((Wrapper: $FlowFixMe): React.AbstractComponent<
-  React.ElementConfig<typeof ScrollView>,
-  PublicScrollViewInstance,
-> &
+module.exports = ((Wrapper: $FlowFixMe): typeof Wrapper &
   ScrollViewComponentStatics);
