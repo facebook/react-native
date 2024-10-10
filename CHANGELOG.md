@@ -1,5 +1,37 @@
 # Changelog
 
+## v0.76.0-rc.4
+
+### Breaking
+
+#### iOS specific
+
+- Add ability to control bundle loading on the new architecture similar to `loadSourceForBridge`. Removed some properties from the `RCTRootViewFactory`. ([056a39f68f](https://github.com/facebook/react-native/commit/056a39f68fc99988953c78f1a6cd5211bb820853) by [@alanjhughes](https://github.com/alanjhughes))
+
+### Added
+
+- Expose `MetroConfig` type directly from `react-native/metro-config`. ([0c007793d8](https://github.com/facebook/react-native/commit/0c007793d8953a18fc756f4c7fffc3544452340f) by [@tjzel](https://github.com/tjzel))
+
+### Changed
+
+- Update debugger-frontend from e8c7943...ce5d32a ([7a601f428e](https://github.com/facebook/react-native/commit/7a601f428e171827ecb79cb0829d018835229d92) by [@huntie](https://github.com/huntie))
+- Update ReactNativeFlipper deprecation to ERROR ([531657b394](https://github.com/facebook/react-native/commit/531657b394aa0fac70f26d9facdb32d23a1b05d6) by [@cortinico](https://github.com/cortinico))
+
+#### iOS specific
+
+- Rename `RCTUIGraphicsImageRenderer` to `RCTMakeUIGraphicsImageRenderer` ([3a38e3b25e](https://github.com/facebook/react-native/commit/3a38e3b25e828d18ec27422a400c80fd6d78784c) by [@Saadnajmi](https://github.com/Saadnajmi))
+- Passed correct title and titleColor prop to updateTitle function ([5c7a166dca](https://github.com/facebook/react-native/commit/5c7a166dcaf5400fbc4c12d4c8b451228157c036) by [@shubhamguptadream11](https://github.com/shubhamguptadream11))
+
+### Fixed
+
+- Restore Metro log forwarding, change notice to signal future removal ([6047f9cc09](https://github.com/facebook/react-native/commit/6047f9cc09a7a86b79084a3ff1b4303c4583d2ce) by [@huntie](https://github.com/huntie))
+- Fix logbox reporting React errors as Warnings ([cbb313253f](https://github.com/facebook/react-native/commit/cbb313253fdf96c4fca06a24ed4cbd3f3df9db80) by [@rickhanlonii](https://github.com/rickhanlonii))
+- Respond with status code `200` when successfully launching RNDT ([6a26fc639a](https://github.com/facebook/react-native/commit/6a26fc639a53ba0ccbe51f8acb4a0508cb898c2f) by [@byCedric](https://github.com/byCedric))
+
+#### iOS specific
+
+- Properly retain/release backgroundColor in RCTBorderDrawing ([bf7e289396](https://github.com/facebook/react-native/commit/bf7e289396b0373817e199e068803fd0e035d636) by [@Saadnajmi](https://github.com/Saadnajmi))
+
 ## v0.75.4
 
 ### Fixed
