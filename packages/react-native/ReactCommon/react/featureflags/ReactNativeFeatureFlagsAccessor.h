@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<447de2c56cd16e313210f14d0ee3e9e9>>
+ * @generated SignedSource<<06d779d6de89ab49186d9a9e1144bbe1>>
  */
 
 /**
@@ -33,8 +33,8 @@ class ReactNativeFeatureFlagsAccessor {
 
   bool commonTestFlag();
   bool allowRecursiveCommitsWithSynchronousMountOnAndroid();
-  bool batchRenderingUpdatesInEventLoop();
   bool completeReactInstanceCreationOnBgThreadOnAndroid();
+  bool disableEventLoopOnBridgeless();
   bool enableAlignItemsBaselineOnFabricIOS();
   bool enableAndroidLineHeightCentering();
   bool enableBridgelessArchitecture();
@@ -50,7 +50,6 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableLayoutAnimationsOnAndroid();
   bool enableLayoutAnimationsOnIOS();
   bool enableLongTaskAPI();
-  bool enableMicrotasks();
   bool enablePreciseSchedulingForPremountItemsOnAndroid();
   bool enablePropsUpdateReconciliationAndroid();
   bool enableReportEventPaintTime();
@@ -73,7 +72,6 @@ class ReactNativeFeatureFlagsAccessor {
   bool traceTurboModulePromiseRejectionsOnAndroid();
   bool useFabricInterop();
   bool useImmediateExecutorInAndroidBridgeless();
-  bool useModernRuntimeScheduler();
   bool useNativeViewConfigsInBridgelessMode();
   bool useOptimisedViewPreallocationOnAndroid();
   bool useOptimizedEventBatchingOnAndroid();
@@ -90,12 +88,12 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 49> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 47> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> allowRecursiveCommitsWithSynchronousMountOnAndroid_;
-  std::atomic<std::optional<bool>> batchRenderingUpdatesInEventLoop_;
   std::atomic<std::optional<bool>> completeReactInstanceCreationOnBgThreadOnAndroid_;
+  std::atomic<std::optional<bool>> disableEventLoopOnBridgeless_;
   std::atomic<std::optional<bool>> enableAlignItemsBaselineOnFabricIOS_;
   std::atomic<std::optional<bool>> enableAndroidLineHeightCentering_;
   std::atomic<std::optional<bool>> enableBridgelessArchitecture_;
@@ -111,7 +109,6 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableLayoutAnimationsOnAndroid_;
   std::atomic<std::optional<bool>> enableLayoutAnimationsOnIOS_;
   std::atomic<std::optional<bool>> enableLongTaskAPI_;
-  std::atomic<std::optional<bool>> enableMicrotasks_;
   std::atomic<std::optional<bool>> enablePreciseSchedulingForPremountItemsOnAndroid_;
   std::atomic<std::optional<bool>> enablePropsUpdateReconciliationAndroid_;
   std::atomic<std::optional<bool>> enableReportEventPaintTime_;
@@ -134,7 +131,6 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> traceTurboModulePromiseRejectionsOnAndroid_;
   std::atomic<std::optional<bool>> useFabricInterop_;
   std::atomic<std::optional<bool>> useImmediateExecutorInAndroidBridgeless_;
-  std::atomic<std::optional<bool>> useModernRuntimeScheduler_;
   std::atomic<std::optional<bool>> useNativeViewConfigsInBridgelessMode_;
   std::atomic<std::optional<bool>> useOptimisedViewPreallocationOnAndroid_;
   std::atomic<std::optional<bool>> useOptimizedEventBatchingOnAndroid_;

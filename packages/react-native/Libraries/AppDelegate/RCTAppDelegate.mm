@@ -303,18 +303,6 @@
 
 class RCTAppDelegateBridgelessFeatureFlags : public facebook::react::ReactNativeFeatureFlagsDefaults {
  public:
-  bool useModernRuntimeScheduler() override
-  {
-    return true;
-  }
-  bool enableMicrotasks() override
-  {
-    return true;
-  }
-  bool batchRenderingUpdatesInEventLoop() override
-  {
-    return true;
-  }
 };
 
 - (void)_setUpFeatureFlags

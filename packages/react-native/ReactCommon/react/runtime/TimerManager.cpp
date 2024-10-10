@@ -226,7 +226,7 @@ void TimerManager::attachGlobals(jsi::Runtime& runtime) {
 
   // Ensure that we don't define `setImmediate` and `clearImmediate` if
   // microtasks are enabled (as we polyfill them using `queueMicrotask` then).
-  if (!ReactNativeFeatureFlags::enableMicrotasks()) {
+  if (ReactNativeFeatureFlags::disableEventLoopOnBridgeless()) {
     runtime.global().setProperty(
         runtime,
         "setImmediate",
