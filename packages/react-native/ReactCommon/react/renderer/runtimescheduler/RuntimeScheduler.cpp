@@ -22,7 +22,8 @@ std::unique_ptr<RuntimeSchedulerBase> getRuntimeSchedulerImplementation(
     RuntimeExecutor runtimeExecutor,
     std::function<RuntimeSchedulerTimePoint()> now,
     RuntimeSchedulerTaskErrorHandler onTaskError) {
-  if (ReactNativeFeatureFlags::useModernRuntimeScheduler()) {
+  if (ReactNativeFeatureFlags::enableBridgelessArchitecture() &&
+      !ReactNativeFeatureFlags::disableEventLoopOnBridgeless()) {
     return std::make_unique<RuntimeScheduler_Modern>(
         std::move(runtimeExecutor), std::move(now), std::move(onTaskError));
   } else {

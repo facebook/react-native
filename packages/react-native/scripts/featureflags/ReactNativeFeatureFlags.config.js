@@ -54,14 +54,6 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'experimentation',
       },
     },
-    batchRenderingUpdatesInEventLoop: {
-      defaultValue: false,
-      metadata: {
-        description:
-          'When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.',
-        purpose: 'release',
-      },
-    },
     completeReactInstanceCreationOnBgThreadOnAndroid: {
       defaultValue: false,
       metadata: {
@@ -69,6 +61,14 @@ const definitions: FeatureFlagDefinitions = {
         description:
           'Do not wait for a main-thread dispatch to complete init to start executing work on the JS thread on Android',
         purpose: 'experimentation',
+      },
+    },
+    disableEventLoopOnBridgeless: {
+      defaultValue: false,
+      metadata: {
+        description:
+          'The bridgeless architecture enables the event loop by default. This feature flag allows us to force disabling it in specific instances.',
+        purpose: 'release',
       },
     },
     enableAlignItemsBaselineOnFabricIOS: {
@@ -192,14 +192,6 @@ const definitions: FeatureFlagDefinitions = {
       metadata: {
         description:
           'Enables the reporting of long tasks through `PerformanceObserver`. Only works if the event loop is enabled.',
-        purpose: 'release',
-      },
-    },
-    enableMicrotasks: {
-      defaultValue: false,
-      metadata: {
-        description:
-          'Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).',
         purpose: 'release',
       },
     },
@@ -393,14 +385,6 @@ const definitions: FeatureFlagDefinitions = {
         description:
           'Invoke callbacks immediately on the ReactInstance rather than going through a background thread for synchronization',
         purpose: 'experimentation',
-      },
-    },
-    useModernRuntimeScheduler: {
-      defaultValue: false,
-      metadata: {
-        description:
-          'When enabled, it uses the modern fork of RuntimeScheduler that allows scheduling tasks with priorities from any thread.',
-        purpose: 'release',
       },
     },
     useNativeViewConfigsInBridgelessMode: {

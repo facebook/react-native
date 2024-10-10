@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a1350a6f18522255cadc713cfa7fefd7>>
+ * @generated SignedSource<<91b26bd5cacb773d4bea4bbfa3919f37>>
  */
 
 /**
@@ -47,14 +47,14 @@ bool NativeReactNativeFeatureFlags::allowRecursiveCommitsWithSynchronousMountOnA
   return ReactNativeFeatureFlags::allowRecursiveCommitsWithSynchronousMountOnAndroid();
 }
 
-bool NativeReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop();
-}
-
 bool NativeReactNativeFeatureFlags::completeReactInstanceCreationOnBgThreadOnAndroid(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::completeReactInstanceCreationOnBgThreadOnAndroid();
+}
+
+bool NativeReactNativeFeatureFlags::disableEventLoopOnBridgeless(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::disableEventLoopOnBridgeless();
 }
 
 bool NativeReactNativeFeatureFlags::enableAlignItemsBaselineOnFabricIOS(
@@ -130,11 +130,6 @@ bool NativeReactNativeFeatureFlags::enableLayoutAnimationsOnIOS(
 bool NativeReactNativeFeatureFlags::enableLongTaskAPI(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableLongTaskAPI();
-}
-
-bool NativeReactNativeFeatureFlags::enableMicrotasks(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::enableMicrotasks();
 }
 
 bool NativeReactNativeFeatureFlags::enablePreciseSchedulingForPremountItemsOnAndroid(
@@ -245,11 +240,6 @@ bool NativeReactNativeFeatureFlags::useFabricInterop(
 bool NativeReactNativeFeatureFlags::useImmediateExecutorInAndroidBridgeless(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::useImmediateExecutorInAndroidBridgeless();
-}
-
-bool NativeReactNativeFeatureFlags::useModernRuntimeScheduler(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::useModernRuntimeScheduler();
 }
 
 bool NativeReactNativeFeatureFlags::useNativeViewConfigsInBridgelessMode(

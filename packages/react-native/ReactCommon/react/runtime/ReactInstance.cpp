@@ -78,7 +78,7 @@ ReactInstance::ReactInstance(
 
           // If we have first-class support for microtasks,
           // they would've been called as part of the previous callback.
-          if (!ReactNativeFeatureFlags::enableMicrotasks()) {
+          if (ReactNativeFeatureFlags::disableEventLoopOnBridgeless()) {
             if (auto timerManager = weakTimerManager.lock()) {
               timerManager->callReactNativeMicrotasks(jsiRuntime);
             }
