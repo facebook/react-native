@@ -194,7 +194,7 @@ tasks.withType<JavaCompile>().configureEach {
 }
 
 tasks.withType<KotlinCompile>().configureEach {
-  kotlinOptions {
+  compilerOptions {
     allWarningsAsErrors =
         project.properties["enableWarningsAsErrors"]?.toString()?.toBoolean() ?: false
   }

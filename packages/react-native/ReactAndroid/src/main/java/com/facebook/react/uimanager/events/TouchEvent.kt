@@ -110,6 +110,7 @@ public class TouchEvent private constructor() : Event<TouchEvent>() {
 
   override fun getCoalescingKey(): Short = coalescingKey
 
+  @Deprecated("Deprecated in Java")
   override fun dispatch(rctEventEmitter: RCTEventEmitter) {
     if (verifyMotionEvent()) {
       TouchesHelper.sendTouchesLegacy(rctEventEmitter, this)

@@ -18,6 +18,8 @@ import com.facebook.react.R
  * be triggered through the developers option menu displayed by [DevSupportManager].
  */
 public class DevSettingsActivity : PreferenceActivity() {
+
+  @Deprecated("Deprecated in Java")
   public override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     title = application.resources.getString(R.string.catalyst_settings_title)

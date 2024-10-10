@@ -105,6 +105,7 @@ internal class OutlineDrawable(
     invalidateSelf()
   }
 
+  @Deprecated("Deprecated in Java")
   override fun getOpacity(): Int =
       ((outlinePaint.alpha / 255f) / (Color.alpha(outlineColor) / 255f) * 255f).roundToInt()
 

@@ -34,6 +34,7 @@ public class BlackHoleEventDispatcher private constructor() : EventDispatcher {
       listener: BatchEventDispatchedListener
   ): Unit = Unit
 
+  @Deprecated("Deprecated in Java")
   @Suppress("DEPRECATION")
   public override fun registerEventEmitter(
       uiManagerType: Int,
