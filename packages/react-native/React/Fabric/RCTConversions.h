@@ -40,6 +40,12 @@ inline UIColor *_Nullable RCTUIColorFromSharedColor(const facebook::react::Share
   return RCTPlatformColorFromColor(*sharedColor);
 }
 
+inline CF_RETURNS_RETAINED CGColorRef _Nullable RCTCreateCGColorRefFromSharedColor(
+    const facebook::react::SharedColor &sharedColor)
+{
+  return CGColorRetain(RCTUIColorFromSharedColor(sharedColor).CGColor);
+}
+
 inline CGPoint RCTCGPointFromPoint(const facebook::react::Point &point)
 {
   return {point.x, point.y};
