@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4dc2364f5bcd765d7b61dbcab0d9533d>>
+ * @generated SignedSource<<30d2773236646a70210f58ac99dea454>>
  */
 
 /**
@@ -576,5 +576,9 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   override fun dangerouslyReset() {
     // We don't need to do anything here because `ReactNativeFeatureFlags` will
     // just create a new instance of this class.
+  }
+
+  override fun dangerouslyForceOverride(provider: ReactNativeFeatureFlagsProvider) {
+    currentProvider = provider
   }
 }

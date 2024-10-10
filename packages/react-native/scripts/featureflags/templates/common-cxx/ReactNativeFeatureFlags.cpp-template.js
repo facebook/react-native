@@ -29,33 +29,37 @@ ${DO_NOT_MODIFY_COMMENT}
 
 namespace facebook::react {
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wglobal-constructors"
+std::unique_ptr<ReactNativeFeatureFlagsAccessor> accessor_ =
+    std::make_unique<ReactNativeFeatureFlagsAccessor>();
+#pragma GCC diagnostic pop
+
 ${Object.entries(definitions.common)
   .map(
     ([flagName, flagConfig]) =>
       `${getCxxTypeFromDefaultValue(
         flagConfig.defaultValue,
       )} ReactNativeFeatureFlags::${flagName}() {
-  return getAccessor().${flagName}();
+  return accessor_->${flagName}();
 }`,
   )
   .join('\n\n')}
 
 void ReactNativeFeatureFlags::override(
     std::unique_ptr<ReactNativeFeatureFlagsProvider> provider) {
-  getAccessor().override(std::move(provider));
+  accessor_->override(std::move(provider));
 }
 
 void ReactNativeFeatureFlags::dangerouslyReset() {
-  getAccessor(true);
+  accessor_ = std::make_unique<ReactNativeFeatureFlagsAccessor>();
 }
 
-ReactNativeFeatureFlagsAccessor& ReactNativeFeatureFlags::getAccessor(
-    bool reset) {
-  static std::unique_ptr<ReactNativeFeatureFlagsAccessor> accessor;
-  if (accessor == nullptr || reset) {
-    accessor = std::make_unique<ReactNativeFeatureFlagsAccessor>();
-  }
-  return *accessor;
+void ReactNativeFeatureFlags::dangerouslyForceOverride(
+    std::unique_ptr<ReactNativeFeatureFlagsProvider> provider) {
+  auto newAccessor = std::make_unique<ReactNativeFeatureFlagsAccessor>();
+  newAccessor->override(std::move(provider));
+  accessor_ = std::move(newAccessor);
 }
 
 } // namespace facebook::react
