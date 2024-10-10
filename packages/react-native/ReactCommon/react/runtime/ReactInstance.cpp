@@ -84,7 +84,7 @@ ReactInstance::ReactInstance(
             }
           }
         } catch (jsi::JSError& originalError) {
-          jsErrorHandler->handleFatalError(jsiRuntime, originalError);
+          jsErrorHandler->handleError(jsiRuntime, originalError, true);
         }
       });
     }
@@ -129,7 +129,7 @@ ReactInstance::ReactInstance(
       RuntimeSchedulerClock::now,
       [jsErrorHandler = jsErrorHandler_](
           jsi::Runtime& runtime, jsi::JSError& error) {
-        jsErrorHandler->handleFatalError(runtime, error);
+        jsErrorHandler->handleError(runtime, error, true);
       });
   runtimeScheduler_->setPerformanceEntryReporter(
       // FIXME: Move creation of PerformanceEntryReporter to here and guarantee
@@ -422,14 +422,11 @@ void ReactInstance::initializeRuntime(
                 return jsi::Value(false);
               }
 
-              if (isFatal) {
-                auto jsError = jsi::JSError(
-                    runtime, wrapInErrorIfNecessary(runtime, args[0]));
-                jsErrorHandler->handleFatalError(runtime, jsError);
-                return jsi::Value(true);
-              }
+              auto jsError = jsi::JSError(
+                  runtime, wrapInErrorIfNecessary(runtime, args[0]));
+              jsErrorHandler->handleError(runtime, jsError, isFatal);
 
-              return jsi::Value(false);
+              return jsi::Value(true);
             }));
 
     defineReadOnlyGlobal(
