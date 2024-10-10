@@ -23,14 +23,15 @@ import com.facebook.react.uimanager.style.ComputedBorderRadius
 import com.facebook.react.uimanager.style.CornerRadii
 import com.facebook.react.uimanager.style.OutlineStyle
 import kotlin.math.roundToInt
-import kotlin.properties.ObservableProperty
-import kotlin.properties.ReadWriteProperty
-import kotlin.reflect.KProperty
 
 /** Draws outline https://drafts.csswg.org/css-ui/#outline */
 internal class OutlineDrawable(
     private val context: Context,
-    borderRadius: BorderRadiusStyle? = null,
+    /*
+     * We assume borderRadius to be shared across multiple drawables
+     * therefore we should manually invalidate this drawable when changing it
+     */
+    var borderRadius: BorderRadiusStyle? = null,
     outlineColor: Int,
     outlineOffset: Float,
     outlineStyle: OutlineStyle,
@@ -43,17 +44,14 @@ internal class OutlineDrawable(
    */
   private val gapBetweenPaths = 0.8f
 
-  private fun <T> invalidatingChange(initialValue: T): ReadWriteProperty<Any?, T> =
-      object : ObservableProperty<T>(initialValue) {
-        override fun afterChange(property: KProperty<*>, oldValue: T, newValue: T) {
-          if (oldValue != newValue) {
-            invalidateSelf()
-          }
-        }
+  public var outlineOffset: Float = outlineOffset
+    set(value) {
+      if (value != field) {
+        field = value
+        invalidateSelf()
       }
+    }
 
-  public var borderRadius: BorderRadiusStyle? by invalidatingChange(borderRadius)
-  public var outlineOffset: Float by invalidatingChange(outlineOffset)
   public var outlineStyle: OutlineStyle = outlineStyle
     set(value) {
       if (value != field) {
