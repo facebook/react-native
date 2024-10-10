@@ -43,6 +43,12 @@ void JCxxInspectorPackagerConnection::sendEventToAllConnections(
   cxxImpl_.sendEventToAllConnections(event);
 }
 
+void JCxxInspectorPackagerConnection::sendWrappedEventToPackager(
+    const std::string& event,
+    const std::string& pageId) {
+  cxxImpl_.sendWrappedEventToPackager(event, pageId);
+}
+
 void JCxxInspectorPackagerConnection::registerNatives() {
   registerHybrid(
       {makeNativeMethod(
@@ -52,6 +58,9 @@ void JCxxInspectorPackagerConnection::registerNatives() {
            "closeQuietly", JCxxInspectorPackagerConnection::closeQuietly),
        makeNativeMethod(
            "sendEventToAllConnections",
-           JCxxInspectorPackagerConnection::sendEventToAllConnections)});
+           JCxxInspectorPackagerConnection::sendEventToAllConnections),
+       makeNativeMethod(
+           "sendWrappedEventToPackager",
+           JCxxInspectorPackagerConnection::sendWrappedEventToPackager)});
 }
 } // namespace facebook::react::jsinspector_modern

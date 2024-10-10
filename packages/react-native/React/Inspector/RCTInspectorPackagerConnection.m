@@ -80,6 +80,11 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
   }
 }
 
+- (void)sendWrappedEventToPackager:(NSString *)event pageId:(NSString *)pageId
+{
+  [self sendWrappedEvent:pageId message:event];
+}
+
 - (void)closeAllConnections
 {
   for (NSString *pageId in _inspectorConnections) {
