@@ -106,6 +106,10 @@ val preparePrefab by
                       Pair("../ReactCommon/cxxreact/", "cxxreact/"),
                       // react_featureflags
                       Pair("../ReactCommon/react/featureflags/", "react/featureflags/"),
+                      // react_devtoolsruntimesettings
+                      Pair(
+                          "../ReactCommon/react/devtoolsruntimesettings/",
+                          "react/devtoolsruntimesettings/"),
                       // react_render_animations
                       Pair(
                           "../ReactCommon/react/renderer/animations/",

@@ -28,6 +28,7 @@ import com.facebook.react.modules.blob.FileReaderModule;
 import com.facebook.react.modules.camera.ImageStoreManager;
 import com.facebook.react.modules.clipboard.ClipboardModule;
 import com.facebook.react.modules.devloading.DevLoadingModule;
+import com.facebook.react.modules.devtoolsruntimesettings.ReactDevToolsRuntimeSettingsModule;
 import com.facebook.react.modules.dialog.DialogModule;
 import com.facebook.react.modules.fresco.FrescoModule;
 import com.facebook.react.modules.i18nmanager.I18nManagerModule;
@@ -88,6 +89,7 @@ import javax.inject.Provider;
       NetworkingModule.class,
       PermissionsModule.class,
       ReactDevToolsSettingsManagerModule.class,
+      ReactDevToolsRuntimeSettingsModule.class,
       ShareModule.class,
       SoundManagerModule.class,
       StatusBarModule.class,
@@ -156,6 +158,8 @@ public class MainReactPackage extends BaseReactPackage implements ViewManagerOnD
         return new WebSocketModule(context);
       case ReactDevToolsSettingsManagerModule.NAME:
         return new ReactDevToolsSettingsManagerModule(context);
+      case ReactDevToolsRuntimeSettingsModule.NAME:
+        return new ReactDevToolsRuntimeSettingsModule(context);
       default:
         return null;
     }
@@ -302,6 +306,7 @@ public class MainReactPackage extends BaseReactPackage implements ViewManagerOnD
           NetworkingModule.class,
           PermissionsModule.class,
           ReactDevToolsSettingsManagerModule.class,
+          ReactDevToolsRuntimeSettingsModule.class,
           ShareModule.class,
           StatusBarModule.class,
           SoundManagerModule.class,
