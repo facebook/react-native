@@ -1035,11 +1035,17 @@ public class ReactEditText extends AppCompatEditText {
   public void onAttachedToWindow() {
     super.onAttachedToWindow();
 
+    int selectionStart = getSelectionStart();
+    int selectionEnd = getSelectionEnd();
+
     // Used to ensure that text is selectable inside of removeClippedSubviews
     // See https://github.com/facebook/react-native/issues/6805 for original
     // fix that was ported to here.
 
     super.setTextIsSelectable(true);
+
+    // Restore the selection since `setTextIsSelectable` changed it.
+    setSelection(selectionStart, selectionEnd);
 
     if (mContainsImages) {
       Spanned text = getText();
