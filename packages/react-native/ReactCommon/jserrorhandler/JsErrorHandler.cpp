@@ -91,16 +91,19 @@ JsErrorHandler::JsErrorHandler(JsErrorHandler::OnJsError onJsError)
 
 JsErrorHandler::~JsErrorHandler() {}
 
-void JsErrorHandler::handleFatalError(
+void JsErrorHandler::handleError(
     jsi::Runtime& runtime,
-    jsi::JSError& error) {
+    jsi::JSError& error,
+    bool isFatal) {
   // TODO: Current error parsing works and is stable. Can investigate using
   // REGEX_HERMES to get additional Hermes data, though it requires JS setup.
-  _hasHandledFatalError = true;
+  if (isFatal) {
+    _hasHandledFatalError = true;
+  }
 
   if (_isRuntimeReady) {
     try {
-      handleJSError(runtime, error, true);
+      handleJSError(runtime, error, isFatal);
       return;
     } catch (jsi::JSError& e) {
       LOG(ERROR)
@@ -175,7 +178,7 @@ void JsErrorHandler::handleFatalError(
       .componentStack = componentStack,
       .stack = stackFrames,
       .id = id,
-      .isFatal = true,
+      .isFatal = isFatal,
       .extraData = std::move(extraData),
   };
 
