@@ -81,10 +81,6 @@ def hermes_engine_tarball_envvar_defined()
     return ENV.has_key?('HERMES_ENGINE_TARBALL_PATH')
 end
 
-def react_native_maven_namespace()
-    return 'com.facebook.react'
-end
-
 def hermes_commit_envvar_defined()
     return ENV.has_key?('HERMES_COMMIT')
 end
@@ -207,7 +203,7 @@ end
 
 def release_tarball_url(version, build_type)
     maven_repo_url = "https://repo1.maven.org/maven2"
-    namespace = react_native_maven_namespace()
+    namespace = "com/facebook/react"
     # Sample url from Maven:
     # https://repo1.maven.org/maven2/com/facebook/react/react-native-artifacts/0.71.0/react-native-artifacts-0.71.0-hermes-ios-debug.tar.gz
     return "#{maven_repo_url}/#{namespace}/react-native-artifacts/#{version}/react-native-artifacts-#{version}-hermes-ios-#{build_type.to_s}.tar.gz"
