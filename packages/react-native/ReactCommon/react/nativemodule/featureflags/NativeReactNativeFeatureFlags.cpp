@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a1350a6f18522255cadc713cfa7fefd7>>
+ * @generated SignedSource<<245ba233d0a20c3cf980bc5782816fc5>>
  */
 
 /**
@@ -60,11 +60,6 @@ bool NativeReactNativeFeatureFlags::completeReactInstanceCreationOnBgThreadOnAnd
 bool NativeReactNativeFeatureFlags::enableAlignItemsBaselineOnFabricIOS(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableAlignItemsBaselineOnFabricIOS();
-}
-
-bool NativeReactNativeFeatureFlags::enableAndroidLineHeightCentering(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::enableAndroidLineHeightCentering();
 }
 
 bool NativeReactNativeFeatureFlags::enableBridgelessArchitecture(
@@ -125,6 +120,11 @@ bool NativeReactNativeFeatureFlags::enableLayoutAnimationsOnAndroid(
 bool NativeReactNativeFeatureFlags::enableLayoutAnimationsOnIOS(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableLayoutAnimationsOnIOS();
+}
+
+bool NativeReactNativeFeatureFlags::enableLineHeightCentering(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableLineHeightCentering();
 }
 
 bool NativeReactNativeFeatureFlags::enableLongTaskAPI(

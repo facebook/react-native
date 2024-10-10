@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0bb021affcef5162b578ad3f1e45508f>>
+ * @generated SignedSource<<6eaab890a1d747ce2c8ba7b0c255ec7a>>
  */
 
 /**
@@ -66,12 +66,6 @@ class ReactNativeFeatureFlagsProviderHolder
   bool enableAlignItemsBaselineOnFabricIOS() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableAlignItemsBaselineOnFabricIOS");
-    return method(javaProvider_);
-  }
-
-  bool enableAndroidLineHeightCentering() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableAndroidLineHeightCentering");
     return method(javaProvider_);
   }
 
@@ -144,6 +138,12 @@ class ReactNativeFeatureFlagsProviderHolder
   bool enableLayoutAnimationsOnIOS() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableLayoutAnimationsOnIOS");
+    return method(javaProvider_);
+  }
+
+  bool enableLineHeightCentering() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableLineHeightCentering");
     return method(javaProvider_);
   }
 
@@ -362,11 +362,6 @@ bool JReactNativeFeatureFlagsCxxInterop::enableAlignItemsBaselineOnFabricIOS(
   return ReactNativeFeatureFlags::enableAlignItemsBaselineOnFabricIOS();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::enableAndroidLineHeightCentering(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::enableAndroidLineHeightCentering();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::enableBridgelessArchitecture(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableBridgelessArchitecture();
@@ -425,6 +420,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableLayoutAnimationsOnAndroid(
 bool JReactNativeFeatureFlagsCxxInterop::enableLayoutAnimationsOnIOS(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableLayoutAnimationsOnIOS();
+}
+
+bool JReactNativeFeatureFlagsCxxInterop::enableLineHeightCentering(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableLineHeightCentering();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::enableLongTaskAPI(
@@ -615,9 +615,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
         "enableAlignItemsBaselineOnFabricIOS",
         JReactNativeFeatureFlagsCxxInterop::enableAlignItemsBaselineOnFabricIOS),
       makeNativeMethod(
-        "enableAndroidLineHeightCentering",
-        JReactNativeFeatureFlagsCxxInterop::enableAndroidLineHeightCentering),
-      makeNativeMethod(
         "enableBridgelessArchitecture",
         JReactNativeFeatureFlagsCxxInterop::enableBridgelessArchitecture),
       makeNativeMethod(
@@ -653,6 +650,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableLayoutAnimationsOnIOS",
         JReactNativeFeatureFlagsCxxInterop::enableLayoutAnimationsOnIOS),
+      makeNativeMethod(
+        "enableLineHeightCentering",
+        JReactNativeFeatureFlagsCxxInterop::enableLineHeightCentering),
       makeNativeMethod(
         "enableLongTaskAPI",
         JReactNativeFeatureFlagsCxxInterop::enableLongTaskAPI),

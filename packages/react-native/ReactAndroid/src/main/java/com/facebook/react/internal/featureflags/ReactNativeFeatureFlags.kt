@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<405d53cd6aba78616b8690c26a0accad>>
+ * @generated SignedSource<<8c1e36bc5a0baac0def70ea35dcb9e59>>
  */
 
 /**
@@ -57,12 +57,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableAlignItemsBaselineOnFabricIOS(): Boolean = accessor.enableAlignItemsBaselineOnFabricIOS()
-
-  /**
-   * When enabled, custom line height calculation will be centered from top to bottom.
-   */
-  @JvmStatic
-  public fun enableAndroidLineHeightCentering(): Boolean = accessor.enableAndroidLineHeightCentering()
 
   /**
    * Feature flag to enable the new bridgeless architecture. Note: Enabling this will force enable the following flags: `useTurboModules` & `enableFabricRenderer.
@@ -135,6 +129,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableLayoutAnimationsOnIOS(): Boolean = accessor.enableLayoutAnimationsOnIOS()
+
+  /**
+   * When enabled, custom line height calculation will be centered from top to bottom.
+   */
+  @JvmStatic
+  public fun enableLineHeightCentering(): Boolean = accessor.enableLineHeightCentering()
 
   /**
    * Enables the reporting of long tasks through `PerformanceObserver`. Only works if the event loop is enabled.
