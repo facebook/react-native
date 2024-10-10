@@ -12,6 +12,8 @@
 
 import type {PlatformConfig} from './AnimatedPlatformConfig';
 
+import AnimatedNode from './nodes/AnimatedNode';
+import AnimatedProps from './nodes/AnimatedProps';
 import {findNodeHandle} from '../ReactNative/RendererProxy';
 import NativeAnimatedHelper from '../../src/private/animated/NativeAnimatedHelper';
 import AnimatedValue from './nodes/AnimatedValue';
@@ -22,11 +24,42 @@ export type Mapping =
   | {[key: string]: Mapping, ...}
   | AnimatedValue
   | AnimatedValueXY;
+export type EventMapping = {
+  nativeEventPath: Array<string>,
+  animatedValue: AnimatedValue | AnimatedValueXY,
+  valueListenerId?: string,
+}
 export type EventConfig = {
   listener?: ?Function,
   useNativeDriver: boolean,
   platformConfig?: PlatformConfig,
 };
+
+const dummyListener = () => {};
+
+// Find animated values in `argMapping` and create an array representing their
+// key path inside the `nativeEvent` object. Ex.: ['contentOffset', 'x'].
+function traverse(argMapping: mixed, path: Array<string>, mapping: ?Array<EventMapping>): Array<EventMapping> {
+  if (!mapping) {
+    mapping = [];
+  }
+
+  if (argMapping instanceof AnimatedValue) {
+    mapping.push({
+      nativeEventPath: path,
+      animatedValue: argMapping,
+    });
+  } else if (argMapping instanceof AnimatedValueXY) {
+    traverse(argMapping.x, path.concat('x'), mapping);
+    traverse(argMapping.y, path.concat('y'), mapping);
+  } else if (typeof argMapping === 'object') {
+    for (const key in argMapping) {
+      traverse(argMapping[key], path.concat(key), mapping);
+    }
+  }
+
+  return mapping;
+}
 
 export function attachNativeEvent(
   viewRef: any,
@@ -34,44 +67,29 @@ export function attachNativeEvent(
   argMapping: $ReadOnlyArray<?Mapping>,
   platformConfig: ?PlatformConfig,
 ): {detach: () => void} {
-  // Find animated values in `argMapping` and create an array representing their
-  // key path inside the `nativeEvent` object. Ex.: ['contentOffset', 'x'].
-  const eventMappings = [];
-
-  const traverse = (value: mixed, path: Array<string>) => {
-    if (value instanceof AnimatedValue) {
-      value.__makeNative(platformConfig);
-
-      eventMappings.push({
-        nativeEventPath: path,
-        animatedValueTag: value.__getNativeTag(),
-      });
-    } else if (value instanceof AnimatedValueXY) {
-      traverse(value.x, path.concat('x'));
-      traverse(value.y, path.concat('y'));
-    } else if (typeof value === 'object') {
-      for (const key in value) {
-        traverse(value[key], path.concat(key));
-      }
-    }
-  };
-
   invariant(
     argMapping[0] && argMapping[0].nativeEvent,
     'Native driven events only support animated values contained inside `nativeEvent`.',
   );
 
   // Assume that the event containing `nativeEvent` is always the first argument.
-  traverse(argMapping[0].nativeEvent, []);
+  const eventMappings = traverse(argMapping[0].nativeEvent, []);
 
   const viewTag = findNodeHandle(viewRef);
   if (viewTag != null) {
     eventMappings.forEach(mapping => {
+      mapping.animatedValue.__makeNative(platformConfig);
+
       NativeAnimatedHelper.API.addAnimatedEventToView(
         viewTag,
         eventName,
-        mapping,
+        {
+          nativeEventPath: mapping.nativeEventPath,
+          animatedValueTag: mapping.animatedValue.__getNativeTag(),
+        },
       );
+
+      mapping.valueListenerId = mapping.animatedValue.addListener(dummyListener);
     });
   }
 
@@ -83,8 +101,12 @@ export function attachNativeEvent(
             viewTag,
             eventName,
             // $FlowFixMe[incompatible-call]
-            mapping.animatedValueTag,
+            mapping.animatedValue.__getNativeTag(),
           );
+
+          if (mapping.valueListenerId !== undefined) {
+            mapping.animatedValue.removeListener(mapping.valueListenerId);
+          }
         });
       }
     },
@@ -145,6 +167,8 @@ function validateMapping(argMapping: $ReadOnlyArray<?Mapping>, args: any) {
 
 export class AnimatedEvent {
   _argMapping: $ReadOnlyArray<?Mapping>;
+  _dependantAnimatedProps: Array<AnimatedProps> = [];
+  _flushUpdatesTimer: any;
   _listeners: Array<Function> = [];
   _attachedEvent: ?{detach: () => void, ...};
   __isNative: boolean;
@@ -186,6 +210,8 @@ export class AnimatedEvent {
       this._argMapping,
       this.__platformConfig,
     );
+
+    this._dependantAnimatedProps = this.__findAnimatedPropsNodes();
   }
 
   __detach(viewTag: any, eventName: string): void {
@@ -250,7 +276,53 @@ export class AnimatedEvent {
     };
   }
 
+  __findAnimatedPropsNodesForValue(node: AnimatedNode): Array<AnimatedProps> {
+    const result = [];
+
+    if (node instanceof AnimatedProps) {
+      result.push(node);
+      return result;
+    }
+
+    for (const child of node.__getChildren()) {
+      result.push(...this.__findAnimatedPropsNodesForValue(child));
+    }
+
+    return result;
+  }
+
+  __findAnimatedPropsNodes(): Array<AnimatedProps> {
+    invariant(
+      this._argMapping[0] && this._argMapping[0].nativeEvent,
+      'Native driven events only support animated values contained inside `nativeEvent`.',
+    );
+
+    // Assume that the event containing `nativeEvent` is always the first argument.
+    const eventMappings = traverse(this._argMapping[0].nativeEvent, []);
+    const result: Array<AnimatedProps> = [];
+
+    for (const mapping of eventMappings) {
+      const animatedProps = this.__findAnimatedPropsNodesForValue(mapping.animatedValue)
+      result.push(...animatedProps);
+    }
+
+    return result;
+  }
+
   _callListeners = (...args: any) => {
+    if (this._flushUpdatesTimer) {
+      clearTimeout(this._flushUpdatesTimer);
+    }
+
+    // Don't update immediately in case more events will follow. Rendering on every frame
+    // defeats the purpose of the native driver and we realistically want to commit once the
+    // event stream ends.
+    this._flushUpdatesTimer = setTimeout(() => {
+      this._dependantAnimatedProps.forEach((node) => {
+        node.update();
+      });
+    }, 64);
+
     this._listeners.forEach(listener => listener(...args));
   };
 }
