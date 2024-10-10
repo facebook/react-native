@@ -3804,10 +3804,10 @@ type Props = $ReadOnly<{|
   style?: ?ViewStyleProp,
   hostRef?: ?React.RefSetter<React.ElementRef<typeof Animated.View>>,
 |}>;
-declare const Touchable: React.AbstractComponent<
-  Props,
-  React.ElementRef<typeof Animated.View>,
->;
+declare const Touchable: component(
+  ref: React.RefSetter<React.ElementRef<typeof Animated.View>>,
+  ...props: Props
+);
 declare module.exports: Touchable;
 "
 `;
