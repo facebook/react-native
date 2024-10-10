@@ -11,6 +11,10 @@
 'use strict';
 
 import type {Domain} from '../../src/private/debugging/setUpFuseboxReactDevToolsDispatcher';
+import type {
+  PartialReloadAndProfileConfig,
+  Spec as NativeReactDevToolsRuntimeSettingsModuleSpec,
+} from '../../src/private/fusebox/specs/NativeReactDevToolsRuntimeSettingsModule';
 
 if (__DEV__) {
   // Register dispatcher on global, which can be used later by Chrome DevTools frontend
@@ -24,6 +28,8 @@ if (__DEV__) {
   const reactDevToolsSettingsManager = require('../../src/private/debugging/ReactDevToolsSettingsManager');
   const serializedHookSettings =
     reactDevToolsSettingsManager.getGlobalHookSettings();
+  const maybeReactDevToolsRuntimeSettingsModuleModule =
+    require('../../src/private/fusebox/specs/NativeReactDevToolsRuntimeSettingsModule').default;
 
   let hookSettings = null;
   if (serializedHookSettings != null) {
@@ -36,8 +42,17 @@ if (__DEV__) {
       );
     }
   }
+
+  const reloadAndProfileConfigPersistence =
+    makeReloadAndProfileConfigPersistence(
+      maybeReactDevToolsRuntimeSettingsModuleModule,
+    );
+
   // Install hook before React is loaded.
-  initialize(hookSettings);
+  initialize(
+    hookSettings,
+    reloadAndProfileConfigPersistence?.getReloadAndProfileConfig(),
+  );
 
   // This should be defined in DEV, otherwise error is expected.
   const fuseboxReactDevToolsDispatcher =
@@ -76,6 +91,9 @@ if (__DEV__) {
       nativeStyleEditorValidAttributes: Object.keys(ReactNativeStyleAttributes),
       resolveRNStyle,
       onSettingsUpdated: handleReactDevToolsSettingsUpdate,
+      isReloadAndProfileSupported:
+        maybeReactDevToolsRuntimeSettingsModuleModule != null,
+      reloadAndProfileConfigPersistence,
     });
   }
 
@@ -135,6 +153,9 @@ if (__DEV__) {
         ),
         websocket: ws,
         onSettingsUpdated: handleReactDevToolsSettingsUpdate,
+        isReloadAndProfileSupported:
+          maybeReactDevToolsRuntimeSettingsModuleModule != null,
+        reloadAndProfileConfigPersistence,
       });
     }
   }
@@ -165,4 +186,21 @@ if (__DEV__) {
     connectToWSBasedReactDevToolsFrontend,
   );
   connectToWSBasedReactDevToolsFrontend(); // Try connecting once on load
+}
+
+function makeReloadAndProfileConfigPersistence(
+  maybeModule: ?NativeReactDevToolsRuntimeSettingsModuleSpec,
+) {
+  if (maybeModule == null) {
+    return;
+  }
+
+  return {
+    setReloadAndProfileConfig(config: PartialReloadAndProfileConfig): void {
+      maybeModule.setReloadAndProfileConfig(config);
+    },
+    getReloadAndProfileConfig() {
+      return maybeModule.getReloadAndProfileConfig();
+    },
+  };
 }
