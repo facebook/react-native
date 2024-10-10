@@ -45,6 +45,8 @@ public object DefaultReactHost {
    * @param useDevSupport whether to enable dev support, default to ReactBuildConfig.DEBUG.
    * @param cxxReactPackageProviders a list of cxxreactpackage providers (to register c++ turbo
    *   modules)
+   * @param externalComponentFactory temporary way to register C++ view managers that are not using
+   *   the DefaultComponentsRegistry.
    *
    * TODO(T186951312): Should this be @UnstableReactNativeAPI?
    */
@@ -59,6 +61,7 @@ public object DefaultReactHost {
       isHermesEnabled: Boolean = true,
       useDevSupport: Boolean = ReactBuildConfig.DEBUG,
       cxxReactPackageProviders: List<(ReactContext) -> CxxReactPackage> = emptyList(),
+      externalComponentFactory: ComponentFactory? = null,
   ): ReactHost {
     if (reactHost == null) {
       val jsBundleLoader =
@@ -81,19 +84,47 @@ public object DefaultReactHost {
               reactPackages = packageList,
               jsRuntimeFactory = jsRuntimeFactory,
               turboModuleManagerDelegateBuilder = defaultTmmDelegateBuilder)
-      val componentFactory = ComponentFactory()
-      DefaultComponentsRegistry.register(componentFactory)
+
+      val defaultComponentFactory = ComponentFactory()
+      if (externalComponentFactory == null) {
+        DefaultComponentsRegistry.register(defaultComponentFactory)
+      }
+
       // TODO: T164788699 find alternative of accessing ReactHostImpl for initialising reactHost
       reactHost =
           ReactHostImpl(
               context,
               defaultReactHostDelegate,
-              componentFactory,
+              externalComponentFactory ?: defaultComponentFactory,
               true /* allowPackagerServerAccess */,
               useDevSupport,
           )
     }
     return reactHost as ReactHost
+  }
+
+  @OptIn(UnstableReactNativeAPI::class)
+  @JvmStatic
+  public fun getDefaultReactHost(
+      context: Context,
+      packageList: List<ReactPackage>,
+      jsMainModulePath: String = "index",
+      jsBundleAssetPath: String = "index",
+      jsBundleFilePath: String? = null,
+      isHermesEnabled: Boolean = true,
+      useDevSupport: Boolean = ReactBuildConfig.DEBUG,
+      cxxReactPackageProviders: List<(ReactContext) -> CxxReactPackage> = emptyList(),
+  ): ReactHost {
+    return getDefaultReactHost(
+        context,
+        packageList,
+        jsMainModulePath,
+        jsBundleAssetPath,
+        jsBundleFilePath,
+        isHermesEnabled,
+        useDevSupport,
+        cxxReactPackageProviders,
+        null)
   }
 
   /**
