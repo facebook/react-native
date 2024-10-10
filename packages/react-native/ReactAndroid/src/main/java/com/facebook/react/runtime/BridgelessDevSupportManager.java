@@ -18,13 +18,20 @@ import com.facebook.react.bridge.JavaJSExecutor;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.common.SurfaceDelegateFactory;
 import com.facebook.react.devsupport.DevSupportManagerBase;
 import com.facebook.react.devsupport.HMRClient;
 import com.facebook.react.devsupport.ReactInstanceDevHelper;
+import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
+import com.facebook.react.devsupport.interfaces.DevLoadingViewManager;
 import com.facebook.react.devsupport.interfaces.DevSplitBundleCallback;
+import com.facebook.react.devsupport.interfaces.PausedInDebuggerOverlayManager;
+import com.facebook.react.devsupport.interfaces.RedBoxHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.facebook.react.packagerconnection.RequestHandler;
 import com.facebook.react.runtime.internal.bolts.Continuation;
 import com.facebook.react.runtime.internal.bolts.Task;
+import java.util.Map;
 
 /**
  * An implementation of {@link com.facebook.react.devsupport.interfaces.DevSupportManager} that
@@ -32,13 +39,14 @@ import com.facebook.react.runtime.internal.bolts.Task;
  * APIs for asynchronously loading the JS bundle.
  */
 @Nullsafe(Nullsafe.Mode.LOCAL)
-class BridgelessDevSupportManager extends DevSupportManagerBase {
+public class BridgelessDevSupportManager extends DevSupportManagerBase {
 
   private final ReactHostImpl mReactHost;
 
   public BridgelessDevSupportManager(
       ReactHostImpl host, Context context, @Nullable String packagerPathForJSBundleName) {
-    super(
+    this(
+        host,
         context.getApplicationContext(),
         createInstanceDevHelper(host),
         packagerPathForJSBundleName,
@@ -50,6 +58,37 @@ class BridgelessDevSupportManager extends DevSupportManagerBase {
         null /* surfaceDelegateFactory */,
         null /* devLoadingViewManager */,
         null /* pausedInDebuggerOverlayManager */);
+  }
+
+  /**
+   * This constructor mirrors the same constructor we have for {@link BridgeDevSupportManager} and
+   * is kept for backward compatibility.
+   */
+  public BridgelessDevSupportManager(
+      ReactHostImpl host,
+      Context applicationContext,
+      ReactInstanceDevHelper reactInstanceManagerHelper,
+      @Nullable String packagerPathForJSBundleName,
+      boolean enableOnCreate,
+      @Nullable RedBoxHandler redBoxHandler,
+      @Nullable DevBundleDownloadListener devBundleDownloadListener,
+      int minNumShakes,
+      @Nullable Map<String, RequestHandler> customPackagerCommandHandlers,
+      @Nullable SurfaceDelegateFactory surfaceDelegateFactory,
+      @Nullable DevLoadingViewManager devLoadingViewManager,
+      @Nullable PausedInDebuggerOverlayManager pausedInDebuggerOverlayManager) {
+    super(
+        applicationContext,
+        reactInstanceManagerHelper,
+        packagerPathForJSBundleName,
+        enableOnCreate,
+        redBoxHandler,
+        devBundleDownloadListener,
+        minNumShakes,
+        customPackagerCommandHandlers,
+        surfaceDelegateFactory,
+        devLoadingViewManager,
+        pausedInDebuggerOverlayManager);
     mReactHost = host;
   }
 
@@ -102,7 +141,7 @@ class BridgelessDevSupportManager extends DevSupportManagerBase {
     mReactHost.reload("BridgelessDevSupportManager.handleReloadJS()");
   }
 
-  private static ReactInstanceDevHelper createInstanceDevHelper(final ReactHostImpl reactHost) {
+  public static ReactInstanceDevHelper createInstanceDevHelper(final ReactHostImpl reactHost) {
     return new ReactInstanceDevHelper() {
       @Override
       public void onReloadWithJSDebugger(JavaJSExecutor.Factory proxyExecutorFactory) {

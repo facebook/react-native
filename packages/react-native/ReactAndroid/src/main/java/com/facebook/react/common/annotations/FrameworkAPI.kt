@@ -8,7 +8,7 @@
 package com.facebook.react.common.annotations
 
 @Retention(AnnotationRetention.RUNTIME)
-@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
+@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.CONSTRUCTOR)
 @RequiresOptIn(
     level = RequiresOptIn.Level.ERROR,
     message =
