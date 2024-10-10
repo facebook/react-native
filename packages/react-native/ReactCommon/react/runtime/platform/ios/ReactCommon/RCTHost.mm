@@ -318,10 +318,22 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
 - (void)instance:(RCTInstance *)instance
     didReceiveJSErrorStack:(NSArray<NSDictionary<NSString *, id> *> *)stack
                    message:(NSString *)message
+           originalMessage:(NSString *_Nullable)originalMessage
+                      name:(NSString *_Nullable)name
+            componentStack:(NSString *_Nullable)componentStack
                exceptionId:(NSUInteger)exceptionId
                    isFatal:(BOOL)isFatal
+                 extraData:(NSDictionary<NSString *, id> *)extraData
 {
-  [_hostDelegate host:self didReceiveJSErrorStack:stack message:message exceptionId:exceptionId isFatal:isFatal];
+  [_hostDelegate host:self
+      didReceiveJSErrorStack:stack
+                     message:message
+             originalMessage:originalMessage
+                        name:name
+              componentStack:componentStack
+                 exceptionId:exceptionId
+                     isFatal:isFatal
+                   extraData:extraData];
 }
 
 - (void)instance:(RCTInstance *)instance didInitializeRuntime:(facebook::jsi::Runtime &)runtime
