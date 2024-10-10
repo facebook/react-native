@@ -4880,7 +4880,7 @@ export type ImageBackgroundProps = $ReadOnly<{|
   children?: Node,
   style?: ?ViewStyleProp,
   imageStyle?: ?ImageStyleProp,
-  imageRef?: Ref<Image>,
+  imageRef?: RefSetter<ElementRef<Image>>,
 |}>;
 "
 `;
