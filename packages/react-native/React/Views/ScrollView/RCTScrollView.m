@@ -1057,9 +1057,7 @@ RCT_SET_AND_PRESERVE_OFFSET(setZoomScale, zoomScale, CGFloat);
 
 - (void)setScrollIndicatorInsets:(UIEdgeInsets)value
 {
-  CGPoint contentOffset = _scrollView.contentOffset;
   [_scrollView setScrollIndicatorInsets:value];
-  _scrollView.contentOffset = contentOffset;
 }
 
 - (UIEdgeInsets)scrollIndicatorInsets
