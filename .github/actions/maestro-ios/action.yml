@@ -44,6 +44,7 @@ runs:
       run: |
         cd ${{ inputs.working-directory }}
         yarn start &
+        sleep 5 # to give metro time to load
     - name: Run tests
       id: run-tests
       shell: bash
@@ -68,8 +69,13 @@ runs:
         echo "Launch the app"
         xcrun simctl launch $UDID ${{ inputs.app-id }}
 
+        if [[ ${{ inputs.flavor }} == 'Debug' ]]; then
+          # To give the app time to warm the metro's cache
+          sleep 5
+        fi
+
         echo "Running tests with Maestro"
-        export MAESTRO_DRIVER_STARTUP_TIMEOUT=1800000 # 30 min. CI is extremely slow
+        export MAESTRO_DRIVER_STARTUP_TIMEOUT=1200000 # 20 min. CI is extremely slow
 
         # Add retries for flakyness
         MAX_ATTEMPTS=5
@@ -112,6 +118,8 @@ runs:
           video_record_1.mov
           video_record_2.mov
           video_record_3.mov
+          video_record_4.mov
+          video_record_5.mov
           report.xml
     - name: Store Logs
       if: failure() && steps.run-tests.outcome == 'failure'
