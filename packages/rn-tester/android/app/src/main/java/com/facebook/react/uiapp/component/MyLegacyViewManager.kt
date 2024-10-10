@@ -65,6 +65,7 @@ internal class MyLegacyViewManager(reactContext: ReactApplicationContext) :
     }
   }
 
+  @Deprecated("Deprecated in Java")
   @Suppress("DEPRECATION") // We intentionally want to test against the legacy API here.
   override fun receiveCommand(view: MyNativeView, commandId: Int, args: ReadableArray?) {
     when (commandId) {

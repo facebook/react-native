@@ -73,6 +73,7 @@ internal class OutsetBoxShadowDrawable(
     invalidateSelf()
   }
 
+  @Deprecated("Deprecated in Java")
   override fun getOpacity(): Int {
     val alpha = Color.alpha(shadowColor)
     return if (alpha == 0) PixelFormat.TRANSPARENT
