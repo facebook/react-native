@@ -19,8 +19,9 @@ import {
 import {NativeSampleModule} from '@react-native/oss-library-example';
 import * as React from 'react';
 import {useRef, useState} from 'react';
-import {Button, Text, View} from 'react-native';
+import {Button, View} from 'react-native';
 import {StyleSheet} from 'react-native';
+import RNTesterText from '../../components/RNTesterText';
 
 const colors = [
   '#0000FF',
@@ -105,7 +106,7 @@ function NativeSampleModuleWrapper(props: {}): React.Node {
           }
         }}
       />
-      <Text style={styles.column}>{randomNumber}</Text>
+      <RNTesterText style={styles.column}>{randomNumber}</RNTesterText>
     </View>
   );
 }

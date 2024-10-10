@@ -12,8 +12,10 @@
 
 import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 
+import RNTesterText from '../../components/RNTesterText';
+
 import React from 'react';
-import {Platform, PlatformColor, StyleSheet, Text, View} from 'react-native';
+import {Platform, PlatformColor, StyleSheet, View} from 'react-native';
 
 type Props = $ReadOnly<{
   style: ViewStyleProp,
@@ -23,7 +25,7 @@ type Props = $ReadOnly<{
 function GradientBox(props: Props): React.Node {
   return (
     <View style={[styles.box, props.style]} testID={props.testID}>
-      <Text style={styles.text}>Linear Gradient</Text>
+      <RNTesterText style={styles.text}>Linear Gradient</RNTesterText>
     </View>
   );
 }

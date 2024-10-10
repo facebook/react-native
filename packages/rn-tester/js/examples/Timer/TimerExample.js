@@ -10,9 +10,10 @@
 
 'use strict';
 
-const RNTesterButton = require('../../components/RNTesterButton');
-const React = require('react');
-const {Alert, Platform, Text, ToastAndroid, View} = require('react-native');
+import RNTesterText from '../../components/RNTesterText';
+import RNTesterButton from '../../components/RNTesterButton';
+import React from 'react';
+import {Alert, Platform, ToastAndroid, View} from 'react-native';
 
 function burnCPU(milliseconds: number) {
   const start = global.performance.now();
@@ -67,7 +68,7 @@ class RequestIdleCallbackTester extends React.Component<
           Stop background task
         </RNTesterButton>
 
-        <Text>{this.state.message}</Text>
+        <RNTesterText>{this.state.message}</RNTesterText>
       </View>
     );
   }

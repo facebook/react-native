@@ -10,8 +10,9 @@
 
 'use strict';
 
-const React = require('react');
-const {
+import RNTesterText from './RNTesterText';
+import React from 'react';
+import {
   ActivityIndicator,
   Animated,
   Image,
@@ -22,7 +23,7 @@ const {
   TextInput,
   TouchableHighlight,
   View,
-} = require('react-native');
+} from 'react-native';
 
 export type Item = {
   title: string,
@@ -260,7 +261,7 @@ function renderSmallSwitchOption(
   }
   return (
     <View style={styles.option}>
-      <Text>{label}:</Text>
+      <RNTesterText>{label}:</RNTesterText>
       <Switch
         style={styles.smallSwitch}
         value={value}

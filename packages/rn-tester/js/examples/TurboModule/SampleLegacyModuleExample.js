@@ -11,13 +11,13 @@
 import type {RootTag} from 'react-native/Libraries/ReactNative/RootTag';
 
 import styles from './TurboModuleExampleCommon';
+import RNTesterText from '../../components/RNTesterText';
 import * as React from 'react';
 import {
   FlatList,
   NativeModules,
   Platform,
   RootTagContext,
-  Text,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -197,10 +197,10 @@ class SampleLegacyModuleExample extends React.Component<{||}, State> {
     const result = this.state.testResults[name] || {};
     return (
       <View style={styles.result}>
-        <Text testID={name + '-result'} style={[styles.value]}>
+        <RNTesterText testID={name + '-result'} style={[styles.value]}>
           {stringify(result.value)}
-        </Text>
-        <Text style={[styles.type]}>{result.type}</Text>
+        </RNTesterText>
+        <RNTesterText style={[styles.type]}>{result.type}</RNTesterText>
       </View>
     );
   }
@@ -225,12 +225,16 @@ class SampleLegacyModuleExample extends React.Component<{||}, State> {
                 }
               })
             }>
-            <Text style={styles.buttonTextLarge}>Run all tests</Text>
+            <RNTesterText style={styles.buttonTextLarge}>
+              Run all tests
+            </RNTesterText>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => this.setState({testResults: {}})}
             style={[styles.column, styles.button]}>
-            <Text style={styles.buttonTextLarge}>Clear results</Text>
+            <RNTesterText style={styles.buttonTextLarge}>
+              Clear results
+            </RNTesterText>
           </TouchableOpacity>
         </View>
         <FlatList
@@ -241,7 +245,7 @@ class SampleLegacyModuleExample extends React.Component<{||}, State> {
               <TouchableOpacity
                 style={[styles.column, styles.button]}
                 onPress={e => this._setResult(item, this._tests[item]())}>
-                <Text style={styles.buttonText}>{item}</Text>
+                <RNTesterText style={styles.buttonText}>{item}</RNTesterText>
               </TouchableOpacity>
               <View style={[styles.column]}>{this._renderResult(item)}</View>
             </View>

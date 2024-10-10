@@ -11,11 +11,11 @@
 'use strict';
 
 import type {AppStateValues} from 'react-native/Libraries/AppState/AppState';
+import type {EventSubscription} from 'react-native/Libraries/vendor/emitter/EventEmitter';
 
-import {type EventSubscription} from 'react-native/Libraries/vendor/emitter/EventEmitter';
-
-const React = require('react');
-const {AppState, Platform, Text, View} = require('react-native');
+import React from 'react';
+import {AppState, Platform, View} from 'react-native';
+import RNTesterText from '../../components/RNTesterText';
 
 class AppStateSubscription extends React.Component<
   $FlowFixMeProps,
@@ -85,27 +85,31 @@ class AppStateSubscription extends React.Component<
     if (this.props.showMemoryWarnings) {
       return (
         <View>
-          <Text>{this.state.memoryWarnings}</Text>
+          <RNTesterText>{this.state.memoryWarnings}</RNTesterText>
         </View>
       );
     }
     if (this.props.showCurrentOnly) {
       return (
         <View>
-          <Text>{this.state.appState}</Text>
+          <RNTesterText>{this.state.appState}</RNTesterText>
         </View>
       );
     }
     if (this.props.detectEvents) {
       return (
         <View>
-          <Text>{JSON.stringify(this.state.eventsDetected)}</Text>
+          <RNTesterText>
+            {JSON.stringify(this.state.eventsDetected)}
+          </RNTesterText>
         </View>
       );
     }
     return (
       <View>
-        <Text>{JSON.stringify(this.state.previousAppStates)}</Text>
+        <RNTesterText>
+          {JSON.stringify(this.state.previousAppStates)}
+        </RNTesterText>
       </View>
     );
   }
@@ -120,7 +124,7 @@ exports.examples = [
     title: 'AppState.currentState',
     description: 'Can be null on app initialization',
     render(): React.Node {
-      return <Text>{AppState.currentState}</Text>;
+      return <RNTesterText>{AppState.currentState}</RNTesterText>;
     },
   },
   {
