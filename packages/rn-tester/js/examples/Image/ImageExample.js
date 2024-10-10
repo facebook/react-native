@@ -10,6 +10,7 @@
 
 'use strict';
 
+import type {ImageProps} from 'react-native/Libraries/Image/ImageProps';
 import type {LayoutEvent} from 'react-native/Libraries/Types/CoreEventTypes';
 
 import * as ReactNativeFeatureFlags from 'react-native/src/private/featureflags/ReactNativeFeatureFlags';
@@ -228,12 +229,8 @@ type NetworkImageExampleState = {|
   progress: $ReadOnlyArray<number>,
 |};
 
-type NetworkImageExampleProps = $ReadOnly<{|
-  source: ImageSource,
-|}>;
-
 class NetworkImageExample extends React.Component<
-  NetworkImageExampleProps,
+  ImageProps,
   NetworkImageExampleState,
 > {
   state: NetworkImageExampleState = {
@@ -248,7 +245,7 @@ class NetworkImageExample extends React.Component<
     ) : (
       <>
         <Image
-          source={this.props.source}
+          {...this.props}
           style={[styles.base, styles.visibleOverflow]}
           onLoadStart={e => this.setState({loading: true})}
           onError={e =>
@@ -965,6 +962,20 @@ exports.examples = [
         <NetworkImageExample
           source={{
             uri: IMAGE1 + '_TYPO',
+          }}
+        />
+      );
+    },
+  },
+  {
+    title: 'Error Handler for Large Images',
+    render: function (): React.Node {
+      return (
+        <NetworkImageExample
+          resizeMethod="none"
+          source={{
+            // 15400x6940, 106,876,000 pixels, > 100MB bitmap
+            uri: 'https://upload.wikimedia.org/wikipedia/commons/2/2c/Mars_topography_%28MOLA_dataset%29_with_poles_HiRes.jpg',
           }}
         />
       );
