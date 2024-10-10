@@ -88,6 +88,7 @@ type State = {
   firstVisibleItemKey: ?string,
   // When > 0 the scroll position available in JS is considered stale and should not be used.
   pendingScrollUpdateCount: number,
+  lastItemCount: number,
 };
 
 function getScrollingThreshold(threshold: number, visibleLength: number) {
@@ -403,12 +404,13 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
 
     const minIndexForVisible =
       this.props.maintainVisibleContentPosition?.minIndexForVisible ?? 0;
+    const itemCount = this.props.getItemCount(this.props.data);
 
     this.state = {
       cellsAroundViewport: initialRenderRegion,
       renderMask: VirtualizedList._createRenderMask(props, initialRenderRegion),
       firstVisibleItemKey:
-        this.props.getItemCount(this.props.data) > minIndexForVisible
+        itemCount > minIndexForVisible
           ? VirtualizedList._getItemKey(this.props, minIndexForVisible)
           : null,
       // When we have a non-zero initialScrollIndex, we will receive a
@@ -419,6 +421,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
         this.props.initialScrollIndex > 0
           ? 1
           : 0,
+      lastItemCount: itemCount,
     };
   }
 
@@ -700,16 +703,18 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     // first and last could be stale (e.g. if a new, shorter items props is passed in), so we make
     // sure we're rendering a reasonable range here.
     const itemCount = newProps.getItemCount(newProps.data);
-    if (itemCount === prevState.renderMask.numCells()) {
+    if (
+      itemCount === prevState.renderMask.numCells() &&
+      itemCount === prevState.lastItemCount
+    ) {
       return prevState;
     }
-
     let maintainVisibleContentPositionAdjustment: ?number = null;
     const prevFirstVisibleItemKey = prevState.firstVisibleItemKey;
     const minIndexForVisible =
       newProps.maintainVisibleContentPosition?.minIndexForVisible ?? 0;
     const newFirstVisibleItemKey =
-      newProps.getItemCount(newProps.data) > minIndexForVisible
+      itemCount > minIndexForVisible
         ? VirtualizedList._getItemKey(newProps, minIndexForVisible)
         : null;
     if (
@@ -757,6 +762,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
         maintainVisibleContentPositionAdjustment != null
           ? prevState.pendingScrollUpdateCount + 1
           : prevState.pendingScrollUpdateCount,
+      lastItemCount: itemCount,
     };
   }
 
@@ -1159,7 +1165,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     }
   }
 
-  componentDidUpdate(prevProps: Props) {
+  componentDidUpdate(prevProps: Props, prevState: State) {
     const {data, extraData} = this.props;
     if (data !== prevProps.data || extraData !== prevProps.extraData) {
       // clear the viewableIndices cache to also trigger
@@ -1180,6 +1186,14 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     // is triggered with `this._hiPriInProgress = true`
     if (hiPriInProgress) {
       this._hiPriInProgress = false;
+    }
+
+    if (
+      this.state.cellsAroundViewport.first !==
+        prevState.cellsAroundViewport.first ||
+      this.state.cellsAroundViewport.last !== prevState.cellsAroundViewport.last
+    ) {
+      this._maybeCallOnEdgeReached();
     }
   }
 
