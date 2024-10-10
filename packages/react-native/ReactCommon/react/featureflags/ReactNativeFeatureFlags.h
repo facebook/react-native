@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3bbe3eb333030be7f32c0965c9db4a5c>>
+ * @generated SignedSource<<f0ab2ae215c4cb0654538f723c0d6349>>
  */
 
 /**
@@ -319,7 +319,6 @@ class ReactNativeFeatureFlags {
 
  private:
   ReactNativeFeatureFlags() = delete;
-  static ReactNativeFeatureFlagsAccessor& getAccessor(bool reset = false);
 };
 
 } // namespace facebook::react

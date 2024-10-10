@@ -92,7 +92,6 @@ ${Object.entries(definitions.common)
 
  private:
   ReactNativeFeatureFlags() = delete;
-  static ReactNativeFeatureFlagsAccessor& getAccessor(bool reset = false);
 };
 
 } // namespace facebook::react
