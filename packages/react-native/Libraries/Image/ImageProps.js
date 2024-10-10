@@ -77,7 +77,7 @@ type AndroidImageProps = $ReadOnly<{|
   resizeMultiplier?: ?number,
 |}>;
 
-export type ImageProps = {|
+export type ImageProps = $ReadOnly<{|
   ...$Diff<ViewProps, $ReadOnly<{|style: ?ViewStyleProp|}>>,
   ...IOSImageProps,
   ...AndroidImageProps,
@@ -266,7 +266,7 @@ export type ImageProps = {|
    */
   srcSet?: ?string,
   children?: empty,
-|};
+|}>;
 
 export type ImageBackgroundProps = $ReadOnly<{|
   ...ImageProps,

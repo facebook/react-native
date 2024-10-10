@@ -4830,7 +4830,7 @@ type AndroidImageProps = $ReadOnly<{|
   resizeMethod?: ?(\\"auto\\" | \\"resize\\" | \\"scale\\" | \\"none\\"),
   resizeMultiplier?: ?number,
 |}>;
-export type ImageProps = {|
+export type ImageProps = $ReadOnly<{|
   ...$Diff<ViewProps, $ReadOnly<{| style: ?ViewStyleProp |}>>,
   ...IOSImageProps,
   ...AndroidImageProps,
@@ -4874,7 +4874,7 @@ export type ImageProps = {|
   src?: ?string,
   srcSet?: ?string,
   children?: empty,
-|};
+|}>;
 export type ImageBackgroundProps = $ReadOnly<{|
   ...ImageProps,
   children?: Node,
@@ -4969,16 +4969,18 @@ type ImageComponentStaticsAndroid = $ReadOnly<{
   ...ImageComponentStaticsIOS,
   abortPrefetch(requestId: number): void,
 }>;
-export type AbstractImageAndroid = React.AbstractComponent<
-  ImagePropsType,
-  | React.ElementRef<TextInlineImageNativeComponent>
-  | React.ElementRef<ImageViewNativeComponent>,
->;
+export type AbstractImageAndroid = component(
+  ref: React.RefSetter<
+    | React.ElementRef<TextInlineImageNativeComponent>
+    | React.ElementRef<ImageViewNativeComponent>,
+  >,
+  ...props: ImagePropsType
+);
 export type ImageAndroid = AbstractImageAndroid & ImageComponentStaticsAndroid;
-export type AbstractImageIOS = React.AbstractComponent<
-  ImagePropsType,
-  React.ElementRef<ImageViewNativeComponent>,
->;
+export type AbstractImageIOS = component(
+  ref: React.RefSetter<React.ElementRef<ImageViewNativeComponent>>,
+  ...props: ImagePropsType
+);
 export type ImageIOS = AbstractImageIOS & ImageComponentStaticsIOS;
 export type Image = ImageIOS | ImageAndroid;
 export type { ImageProps } from \\"./ImageProps\\";
