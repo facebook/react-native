@@ -84,7 +84,7 @@ ReactInstance::ReactInstance(
             }
           }
         } catch (jsi::JSError& originalError) {
-          jsErrorHandler->handleFatalError(jsiRuntime, originalError);
+          jsErrorHandler->handleError(jsiRuntime, originalError, true);
         }
       });
     }
@@ -129,7 +129,7 @@ ReactInstance::ReactInstance(
       RuntimeSchedulerClock::now,
       [jsErrorHandler = jsErrorHandler_](
           jsi::Runtime& runtime, jsi::JSError& error) {
-        jsErrorHandler->handleFatalError(runtime, error);
+        jsErrorHandler->handleError(runtime, error, true);
       });
   runtimeScheduler_->setPerformanceEntryReporter(
       // FIXME: Move creation of PerformanceEntryReporter to here and guarantee
@@ -365,6 +365,17 @@ bool isTruthy(jsi::Runtime& runtime, const jsi::Value& value) {
   return Boolean.call(runtime, value).getBool();
 }
 
+jsi::Value wrapInErrorIfNecessary(
+    jsi::Runtime& runtime,
+    const jsi::Value& value) {
+  auto Error = runtime.global().getPropertyAsFunction(runtime, "Error");
+  auto isError =
+      value.isObject() && value.asObject(runtime).instanceOf(runtime, Error);
+  auto error = isError ? value.getObject(runtime)
+                       : Error.callAsConstructor(runtime, value);
+  return jsi::Value(runtime, error);
+}
+
 } // namespace
 
 void ReactInstance::initializeRuntime(
@@ -411,14 +422,11 @@ void ReactInstance::initializeRuntime(
                 return jsi::Value(false);
               }
 
-              if (isFatal) {
-                auto jsError =
-                    jsi::JSError(runtime, jsi::Value(runtime, args[0]));
-                jsErrorHandler->handleFatalError(runtime, jsError);
-                return jsi::Value(true);
-              }
+              auto jsError = jsi::JSError(
+                  runtime, wrapInErrorIfNecessary(runtime, args[0]));
+              jsErrorHandler->handleError(runtime, jsError, isFatal);
 
-              return jsi::Value(false);
+              return jsi::Value(true);
             }));
 
     defineReadOnlyGlobal(
