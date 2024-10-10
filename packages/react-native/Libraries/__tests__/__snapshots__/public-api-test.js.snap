@@ -1891,10 +1891,10 @@ type Props = $ReadOnly<{|
   unstable_pressDelay?: ?number,
   \\"aria-label\\"?: ?string,
 |}>;
-declare export default React.AbstractComponent<
-  Props,
-  React.ElementRef<typeof View>,
->;
+declare export default component(
+  ref: React.RefSetter<React.ElementRef<typeof View>>,
+  ...props: Props
+);
 "
 `;
 
