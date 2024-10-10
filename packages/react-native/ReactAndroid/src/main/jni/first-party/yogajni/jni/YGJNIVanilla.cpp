@@ -429,6 +429,28 @@ static void jni_YGNodeCopyStyleJNI(
     YGNodeStyleSet##name##Auto(_jlong2YGNodeRef(nativePointer)); \
   }
 
+#define YG_NODE_JNI_STYLE_UNIT_PROP_AUTO_INTRINSIC(name) \
+  YG_NODE_JNI_STYLE_UNIT_PROP_AUTO(name)                 \
+  YG_NODE_JNI_STYLE_UNIT_INTRINSIC(name)
+
+#define YG_NODE_JNI_STYLE_UNIT_PROP_INTRINSIC(name) \
+  YG_NODE_JNI_STYLE_UNIT_PROP(name)                 \
+  YG_NODE_JNI_STYLE_UNIT_INTRINSIC(name)
+
+#define YG_NODE_JNI_STYLE_UNIT_INTRINSIC(name)                         \
+  static void jni_YGNodeStyleSet##name##MaxContentJNI(                 \
+      JNIEnv* /*env*/, jobject /*obj*/, jlong nativePointer) {         \
+    YGNodeStyleSet##name##MaxContent(_jlong2YGNodeRef(nativePointer)); \
+  }                                                                    \
+  static void jni_YGNodeStyleSet##name##FitContentJNI(                 \
+      JNIEnv* /*env*/, jobject /*obj*/, jlong nativePointer) {         \
+    YGNodeStyleSet##name##FitContent(_jlong2YGNodeRef(nativePointer)); \
+  }                                                                    \
+  static void jni_YGNodeStyleSet##name##StretchJNI(                    \
+      JNIEnv* /*env*/, jobject /*obj*/, jlong nativePointer) {         \
+    YGNodeStyleSet##name##Stretch(_jlong2YGNodeRef(nativePointer));    \
+  }
+
 #define YG_NODE_JNI_STYLE_EDGE_UNIT_PROP(name)                            \
   static jlong jni_YGNodeStyleGet##name##JNI(                             \
       JNIEnv* /*env*/, jobject /*obj*/, jlong nativePointer, jint edge) { \
@@ -483,13 +505,13 @@ YG_NODE_JNI_STYLE_PROP(jfloat, float, Flex);
 YG_NODE_JNI_STYLE_PROP(jfloat, float, FlexGrow);
 YG_NODE_JNI_STYLE_PROP(jfloat, float, FlexShrink);
 
-YG_NODE_JNI_STYLE_UNIT_PROP_AUTO(FlexBasis);
-YG_NODE_JNI_STYLE_UNIT_PROP_AUTO(Width);
-YG_NODE_JNI_STYLE_UNIT_PROP(MinWidth);
-YG_NODE_JNI_STYLE_UNIT_PROP(MaxWidth);
-YG_NODE_JNI_STYLE_UNIT_PROP_AUTO(Height);
-YG_NODE_JNI_STYLE_UNIT_PROP(MinHeight);
-YG_NODE_JNI_STYLE_UNIT_PROP(MaxHeight);
+YG_NODE_JNI_STYLE_UNIT_PROP_AUTO_INTRINSIC(FlexBasis);
+YG_NODE_JNI_STYLE_UNIT_PROP_AUTO_INTRINSIC(Width);
+YG_NODE_JNI_STYLE_UNIT_PROP_INTRINSIC(MinWidth);
+YG_NODE_JNI_STYLE_UNIT_PROP_INTRINSIC(MaxWidth);
+YG_NODE_JNI_STYLE_UNIT_PROP_AUTO_INTRINSIC(Height);
+YG_NODE_JNI_STYLE_UNIT_PROP_INTRINSIC(MinHeight);
+YG_NODE_JNI_STYLE_UNIT_PROP_INTRINSIC(MaxHeight);
 
 YG_NODE_JNI_STYLE_EDGE_UNIT_PROP_AUTO(Position);
 
@@ -870,6 +892,15 @@ static JNINativeMethod methods[] = {
     {"jni_YGNodeStyleSetFlexBasisAutoJNI",
      "(J)V",
      (void*)jni_YGNodeStyleSetFlexBasisAutoJNI},
+    {"jni_YGNodeStyleSetFlexBasisMaxContentJNI",
+     "(J)V",
+     (void*)jni_YGNodeStyleSetFlexBasisMaxContentJNI},
+    {"jni_YGNodeStyleSetFlexBasisFitContentJNI",
+     "(J)V",
+     (void*)jni_YGNodeStyleSetFlexBasisFitContentJNI},
+    {"jni_YGNodeStyleSetFlexBasisStretchJNI",
+     "(J)V",
+     (void*)jni_YGNodeStyleSetFlexBasisStretchJNI},
     {"jni_YGNodeStyleGetMarginJNI",
      "(JI)J",
      (void*)jni_YGNodeStyleGetMarginJNI},
@@ -917,6 +948,15 @@ static JNINativeMethod methods[] = {
     {"jni_YGNodeStyleSetWidthAutoJNI",
      "(J)V",
      (void*)jni_YGNodeStyleSetWidthAutoJNI},
+    {"jni_YGNodeStyleSetWidthMaxContentJNI",
+     "(J)V",
+     (void*)jni_YGNodeStyleSetWidthMaxContentJNI},
+    {"jni_YGNodeStyleSetWidthFitContentJNI",
+     "(J)V",
+     (void*)jni_YGNodeStyleSetWidthFitContentJNI},
+    {"jni_YGNodeStyleSetWidthStretchJNI",
+     "(J)V",
+     (void*)jni_YGNodeStyleSetWidthStretchJNI},
     {"jni_YGNodeStyleGetHeightJNI", "(J)J", (void*)jni_YGNodeStyleGetHeightJNI},
     {"jni_YGNodeStyleSetHeightJNI",
      "(JF)V",
@@ -927,6 +967,15 @@ static JNINativeMethod methods[] = {
     {"jni_YGNodeStyleSetHeightAutoJNI",
      "(J)V",
      (void*)jni_YGNodeStyleSetHeightAutoJNI},
+    {"jni_YGNodeStyleSetHeightMaxContentJNI",
+     "(J)V",
+     (void*)jni_YGNodeStyleSetHeightMaxContentJNI},
+    {"jni_YGNodeStyleSetHeightFitContentJNI",
+     "(J)V",
+     (void*)jni_YGNodeStyleSetHeightFitContentJNI},
+    {"jni_YGNodeStyleSetHeightStretchJNI",
+     "(J)V",
+     (void*)jni_YGNodeStyleSetHeightStretchJNI},
     {"jni_YGNodeStyleGetMinWidthJNI",
      "(J)J",
      (void*)jni_YGNodeStyleGetMinWidthJNI},
@@ -936,6 +985,15 @@ static JNINativeMethod methods[] = {
     {"jni_YGNodeStyleSetMinWidthPercentJNI",
      "(JF)V",
      (void*)jni_YGNodeStyleSetMinWidthPercentJNI},
+    {"jni_YGNodeStyleSetMinWidthMaxContentJNI",
+     "(J)V",
+     (void*)jni_YGNodeStyleSetMinWidthMaxContentJNI},
+    {"jni_YGNodeStyleSetMinWidthFitContentJNI",
+     "(J)V",
+     (void*)jni_YGNodeStyleSetMinWidthFitContentJNI},
+    {"jni_YGNodeStyleSetMinWidthStretchJNI",
+     "(J)V",
+     (void*)jni_YGNodeStyleSetMinWidthStretchJNI},
     {"jni_YGNodeStyleGetMinHeightJNI",
      "(J)J",
      (void*)jni_YGNodeStyleGetMinHeightJNI},
@@ -945,6 +1003,15 @@ static JNINativeMethod methods[] = {
     {"jni_YGNodeStyleSetMinHeightPercentJNI",
      "(JF)V",
      (void*)jni_YGNodeStyleSetMinHeightPercentJNI},
+    {"jni_YGNodeStyleSetMinHeightMaxContentJNI",
+     "(J)V",
+     (void*)jni_YGNodeStyleSetMinHeightMaxContentJNI},
+    {"jni_YGNodeStyleSetMinHeightFitContentJNI",
+     "(J)V",
+     (void*)jni_YGNodeStyleSetMinHeightFitContentJNI},
+    {"jni_YGNodeStyleSetMinHeightStretchJNI",
+     "(J)V",
+     (void*)jni_YGNodeStyleSetMinHeightStretchJNI},
     {"jni_YGNodeStyleGetMaxWidthJNI",
      "(J)J",
      (void*)jni_YGNodeStyleGetMaxWidthJNI},
@@ -954,6 +1021,15 @@ static JNINativeMethod methods[] = {
     {"jni_YGNodeStyleSetMaxWidthPercentJNI",
      "(JF)V",
      (void*)jni_YGNodeStyleSetMaxWidthPercentJNI},
+    {"jni_YGNodeStyleSetMaxWidthMaxContentJNI",
+     "(J)V",
+     (void*)jni_YGNodeStyleSetMaxWidthMaxContentJNI},
+    {"jni_YGNodeStyleSetMaxWidthFitContentJNI",
+     "(J)V",
+     (void*)jni_YGNodeStyleSetMaxWidthFitContentJNI},
+    {"jni_YGNodeStyleSetMaxWidthStretchJNI",
+     "(J)V",
+     (void*)jni_YGNodeStyleSetMaxWidthStretchJNI},
     {"jni_YGNodeStyleGetMaxHeightJNI",
      "(J)J",
      (void*)jni_YGNodeStyleGetMaxHeightJNI},
@@ -963,6 +1039,15 @@ static JNINativeMethod methods[] = {
     {"jni_YGNodeStyleSetMaxHeightPercentJNI",
      "(JF)V",
      (void*)jni_YGNodeStyleSetMaxHeightPercentJNI},
+    {"jni_YGNodeStyleSetMaxHeightMaxContentJNI",
+     "(J)V",
+     (void*)jni_YGNodeStyleSetMaxHeightMaxContentJNI},
+    {"jni_YGNodeStyleSetMaxHeightFitContentJNI",
+     "(J)V",
+     (void*)jni_YGNodeStyleSetMaxHeightFitContentJNI},
+    {"jni_YGNodeStyleSetMaxHeightStretchJNI",
+     "(J)V",
+     (void*)jni_YGNodeStyleSetMaxHeightStretchJNI},
     {"jni_YGNodeStyleGetAspectRatioJNI",
      "(J)F",
      (void*)jni_YGNodeStyleGetAspectRatioJNI},
