@@ -23,31 +23,6 @@ import com.facebook.react.packagerconnection.RequestHandler
  */
 public class DefaultDevSupportManagerFactory : DevSupportManagerFactory {
 
-  @Deprecated(
-      "in favor of the customisable create for DevSupportManagerFactory",
-      ReplaceWith(
-          "create(applicationContext, reactInstanceManagerHelper, packagerPathForJSBundleName, enableOnCreate, redBoxHandler, devBundleDownloadListener, minNumShakes, customPackagerCommandHandlers, surfaceDelegateFactory, devLoadingViewManager, pausedInDebuggerOverlayManager)"))
-  public fun create(
-      applicationContext: Context,
-      reactInstanceDevHelper: ReactInstanceDevHelper,
-      packagerPathForJSBundleName: String?,
-      enableOnCreate: Boolean,
-      minNumShakes: Int
-  ): DevSupportManager {
-    return create(
-        applicationContext,
-        reactInstanceDevHelper,
-        packagerPathForJSBundleName,
-        enableOnCreate,
-        null,
-        null,
-        minNumShakes,
-        null,
-        null,
-        null,
-        null)
-  }
-
   public override fun create(
       applicationContext: Context,
       reactInstanceManagerHelper: ReactInstanceDevHelper,
