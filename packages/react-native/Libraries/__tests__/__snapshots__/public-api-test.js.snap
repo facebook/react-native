@@ -2258,11 +2258,11 @@ type RefForwarder<TNativeInstance, TPublicInstance> = {
   nativeInstance: TNativeInstance | null,
   publicInstance: TPublicInstance | null,
 };
-declare module.exports: React.AbstractComponent<
-  React.ElementConfig<typeof ScrollView>,
-  PublicScrollViewInstance,
-> &
-  ScrollViewComponentStatics;
+declare const Wrapper: component(
+  ref: React.RefSetter<PublicScrollViewInstance>,
+  ...props: Props
+);
+declare module.exports: typeof Wrapper & ScrollViewComponentStatics;
 "
 `;
 
@@ -2396,10 +2396,10 @@ type Instance = {
   setNextHeaderY: (number) => void,
   ...
 };
-declare const ScrollViewStickyHeaderWithForwardedRef: React.AbstractComponent<
-  Props,
-  Instance,
->;
+declare const ScrollViewStickyHeaderWithForwardedRef: component(
+  ref: React.RefSetter<Instance>,
+  ...props: Props
+);
 declare export default typeof ScrollViewStickyHeaderWithForwardedRef;
 "
 `;
@@ -3687,9 +3687,10 @@ exports[`public API should not change unintentionally Libraries/Components/Touch
   style?: ?ViewStyleProp,
   hostRef: React.RefSetter<React.ElementRef<typeof Animated.View>>,
 |}>;
-declare module.exports: React.AbstractComponent<
-  $ReadOnly<$Diff<Props, {| hostRef: mixed |}>>,
->;
+declare module.exports: component(
+  ref: React.RefSetter<mixed>,
+  ...props: $ReadOnly<$Diff<Props, {| hostRef: mixed |}>>
+);
 "
 `;
 
@@ -3716,10 +3717,10 @@ type Props = $ReadOnly<{|
   testOnly_pressed?: ?boolean,
   hostRef: React.RefSetter<React.ElementRef<typeof View>>,
 |}>;
-declare const Touchable: React.AbstractComponent<
-  $ReadOnly<$Diff<Props, {| +hostRef: mixed |}>>,
-  React.ElementRef<typeof View>,
->;
+declare const Touchable: component(
+  ref: React.RefSetter<React.ElementRef<typeof View>>,
+  ...props: $ReadOnly<$Diff<Props, {| +hostRef: mixed |}>>
+);
 declare module.exports: Touchable;
 "
 `;
@@ -3804,10 +3805,10 @@ type Props = $ReadOnly<{|
   style?: ?ViewStyleProp,
   hostRef?: ?React.RefSetter<React.ElementRef<typeof Animated.View>>,
 |}>;
-declare const Touchable: React.AbstractComponent<
-  Props,
-  React.ElementRef<typeof Animated.View>,
->;
+declare const Touchable: component(
+  ref: React.RefSetter<React.ElementRef<typeof Animated.View>>,
+  ...props: Props
+);
 declare module.exports: Touchable;
 "
 `;
@@ -4538,11 +4539,10 @@ exports[`public API should not change unintentionally Libraries/Debugging/Debugg
   highlightElements(elements: ElementRectangle[]): void,
   clearElementsHighlight(): void,
 };
-declare const DebuggingOverlayWithForwardedRef: React.AbstractComponent<
-  {},
-  DebuggingOverlayHandle,
-  React.Node,
->;
+declare const DebuggingOverlayWithForwardedRef: component(
+  ref: React.RefSetter<DebuggingOverlayHandle>,
+  ...props: {}
+);
 declare export default typeof DebuggingOverlayWithForwardedRef;
 "
 `;
