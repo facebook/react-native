@@ -124,7 +124,8 @@ class ReactInstanceTest : public ::testing::Test {
     auto mockRegistry = std::make_unique<MockTimerRegistry>();
     mockRegistry_ = mockRegistry.get();
     timerManager_ = std::make_shared<TimerManager>(std::move(mockRegistry));
-    auto onJsError = [](const JsErrorHandler::ParsedError& errorMap) noexcept {
+    auto onJsError = [](jsi::Runtime& /*runtime*/,
+                        const JsErrorHandler::ParsedError& /*error*/) noexcept {
       // Do nothing
     };
 
