@@ -41,6 +41,15 @@ bool isTruthy(jsi::Runtime& runtime, const jsi::Value& value) {
   auto Boolean = runtime.global().getPropertyAsFunction(runtime, "Boolean");
   return Boolean.call(runtime, value).getBool();
 }
+
+void objectAssign(
+    jsi::Runtime& runtime,
+    jsi::Object& target,
+    const jsi::Object& value) {
+  auto Object = runtime.global().getPropertyAsObject(runtime, "Object");
+  auto assign = Object.getPropertyAsFunction(runtime, "assign");
+  assign.callWithThis(runtime, Object, target, value);
+}
 } // namespace
 
 namespace facebook::react {
@@ -199,8 +208,14 @@ void JsErrorHandler::emitError(
     message += ", js engine: " + stringifyToCpp(runtime, jsEngineValue);
   }
 
-  // TODO: What about spreading in decoratedExtraDataKey?
+  auto extraDataKey = jsi::PropNameID::forUtf8(runtime, "RN$ErrorExtraDataKey");
+  auto extraDataValue = errorObj.getProperty(runtime, extraDataKey);
+
   auto extraData = jsi::Object(runtime);
+  if (extraDataValue.isObject()) {
+    objectAssign(runtime, extraData, extraDataValue.asObject(runtime));
+  }
+
   extraData.setProperty(runtime, "jsEngine", jsEngineValue);
   extraData.setProperty(runtime, "rawStack", error.getStack());
 
