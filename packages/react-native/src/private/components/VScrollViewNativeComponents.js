@@ -23,11 +23,10 @@ import * as React from 'react';
 import {forwardRef} from 'react';
 
 // TODO: After upgrading to React 19, remove `forwardRef` from this component.
-export const VScrollViewNativeComponent: React.AbstractComponent<
-  ScrollViewNativeProps,
-  TScrollViewNativeImperativeHandle,
-  // $FlowExpectedError[incompatible-type] - Flow cannot model imperative handles, yet.
-> = forwardRef(function VScrollViewNativeComponent(
+export const VScrollViewNativeComponent: component(
+  ref: React.RefSetter<TScrollViewNativeImperativeHandle>,
+  ...props: ScrollViewNativeProps
+) = forwardRef(function VScrollViewNativeComponent(
   props: ScrollViewNativeProps,
   ref: ?React.RefSetter<TScrollViewNativeImperativeHandle | null>,
 ): React.Node {
