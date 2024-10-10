@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d44c7d51caea5eaa3074217361959b3a>>
+ * @generated SignedSource<<9e0db1a47596fec77c29122620b8f633>>
  */
 
 /**
@@ -115,7 +115,7 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun useOptimizedEventBatchingOnAndroid(): Boolean = false
 
-  override fun useRuntimeShadowNodeReferenceUpdate(): Boolean = true
+  override fun useRuntimeShadowNodeReferenceUpdate(): Boolean = false
 
   override fun useTurboModuleInterop(): Boolean = false
 
