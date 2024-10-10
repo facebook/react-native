@@ -37,8 +37,8 @@ void EventDispatcher::dispatchEvent(RawEvent&& rawEvent) const {
 
   auto eventLogger = eventLogger_.lock();
   if (eventLogger != nullptr) {
-    rawEvent.loggingTag =
-        eventLogger->onEventStart(rawEvent.type, rawEvent.eventTarget);
+    rawEvent.loggingTag = eventLogger->onEventStart(
+        rawEvent.type, rawEvent.eventTarget, rawEvent.eventStartTimeStamp);
   }
   eventQueue_.enqueueEvent(std::move(rawEvent));
 }

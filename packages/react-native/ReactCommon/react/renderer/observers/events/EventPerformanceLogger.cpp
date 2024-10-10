@@ -103,7 +103,8 @@ EventPerformanceLogger::EventPerformanceLogger(
 
 EventTag EventPerformanceLogger::onEventStart(
     std::string_view name,
-    SharedEventTarget target) {
+    SharedEventTarget target,
+    DOMHighResTimeStamp eventStartTimeStamp) {
   auto performanceEntryReporter = performanceEntryReporter_.lock();
   if (performanceEntryReporter == nullptr) {
     return EMPTY_EVENT_TAG;
@@ -119,7 +120,11 @@ EventTag EventPerformanceLogger::onEventStart(
 
   auto eventTag = createEventTag();
 
-  auto timeStamp = performanceEntryReporter->getCurrentTimeStamp();
+  // The event start timestamp may be provided by the caller in order to
+  // specify the platform specific event start time.
+  auto timeStamp = eventStartTimeStamp == DOM_HIGH_RES_TIME_STAMP_UNSET
+      ? performanceEntryReporter->getCurrentTimeStamp()
+      : eventStartTimeStamp;
   {
     std::lock_guard lock(eventsInFlightMutex_);
     eventsInFlight_.emplace(
