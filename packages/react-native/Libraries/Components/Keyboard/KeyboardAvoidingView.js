@@ -192,6 +192,7 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
 
   componentDidMount(): void {
     if (!Keyboard.isVisible()) {
+      this._keyboardEvent = null;
       this._setBottom(0);
     }
 
