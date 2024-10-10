@@ -115,7 +115,7 @@ const Text: component(
 
     // TODO: Move this processing to the view configuration.
     const _selectionColor =
-      selectionColor == null ? null : processColor(selectionColor);
+      selectionColor != null ? processColor(selectionColor) : undefined;
 
     let _style = style;
     if (__DEV__) {
@@ -208,8 +208,6 @@ const Text: component(
           {...restProps}
           accessibilityLabel={_accessibilityLabel}
           accessibilityState={_accessibilityState}
-          isHighlighted={false}
-          isPressable={false}
           nativeID={_nativeID}
           numberOfLines={_numberOfLines}
           ref={forwardedRef}
@@ -288,7 +286,6 @@ const Text: component(
           allowFontScaling={allowFontScaling !== false}
           disabled={_disabled}
           ellipsizeMode={ellipsizeMode ?? 'tail'}
-          isHighlighted={false}
           nativeID={_nativeID}
           numberOfLines={_numberOfLines}
           ref={forwardedRef}
