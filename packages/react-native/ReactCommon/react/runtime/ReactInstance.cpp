@@ -365,6 +365,17 @@ bool isTruthy(jsi::Runtime& runtime, const jsi::Value& value) {
   return Boolean.call(runtime, value).getBool();
 }
 
+jsi::Value wrapInErrorIfNecessary(
+    jsi::Runtime& runtime,
+    const jsi::Value& value) {
+  auto Error = runtime.global().getPropertyAsFunction(runtime, "Error");
+  auto isError =
+      value.isObject() && value.asObject(runtime).instanceOf(runtime, Error);
+  auto error = isError ? value.getObject(runtime)
+                       : Error.callAsConstructor(runtime, value);
+  return jsi::Value(runtime, error);
+}
+
 } // namespace
 
 void ReactInstance::initializeRuntime(
@@ -412,8 +423,8 @@ void ReactInstance::initializeRuntime(
               }
 
               if (isFatal) {
-                auto jsError =
-                    jsi::JSError(runtime, jsi::Value(runtime, args[0]));
+                auto jsError = jsi::JSError(
+                    runtime, wrapInErrorIfNecessary(runtime, args[0]));
                 jsErrorHandler->handleFatalError(runtime, jsError);
                 return jsi::Value(true);
               }

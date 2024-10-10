@@ -8,14 +8,32 @@
 #include "JsErrorHandler.h"
 #include <cxxreact/ErrorUtils.h>
 #include <glog/logging.h>
-#include <regex>
-#include <sstream>
 #include <string>
-#include <vector>
+#include "StackTraceParser.h"
+
+using namespace facebook;
 
 namespace {
 std::string quote(const std::string& view) {
   return "\"" + view + "\"";
+}
+
+int nextExceptionId() {
+  static int exceptionId = 0;
+  return exceptionId++;
+}
+
+bool isLooselyNull(const jsi::Value& value) {
+  return value.isNull() || value.isUndefined();
+}
+
+bool isEmptyString(jsi::Runtime& runtime, const jsi::Value& value) {
+  return jsi::Value::strictEquals(
+      runtime, value, jsi::String::createFromUtf8(runtime, ""));
+}
+
+std::string stringifyToCpp(jsi::Runtime& runtime, const jsi::Value& value) {
+  return value.toString(runtime).utf8(runtime);
 }
 } // namespace
 
@@ -65,97 +83,6 @@ std::ostream& operator<<(
   return os;
 }
 
-// TODO(T198763073): Migrate away from std::regex in this function
-static JsErrorHandler::ParsedError parseErrorStack(
-    jsi::Runtime& runtime,
-    const jsi::JSError& error,
-    bool isFatal,
-    bool isHermes) {
-  /**
-   * This parses the different stack traces and puts them into one format
-   * This borrows heavily from TraceKit (https://github.com/occ/TraceKit)
-   * This is the same regex from stacktrace-parser.js.
-   */
-  // @lint-ignore CLANGTIDY facebook-hte-StdRegexIsAwful
-  const std::regex REGEX_CHROME(
-      R"(^\s*at (?:(?:(?:Anonymous function)?|((?:\[object object\])?\S+(?: \[as \S+\])?)) )?\(?((?:file|http|https):.*?):(\d+)(?::(\d+))?\)?\s*$)");
-  // @lint-ignore CLANGTIDY facebook-hte-StdRegexIsAwful
-  const std::regex REGEX_GECKO(
-      R"(^(?:\s*([^@]*)(?:\((.*?)\))?@)?(\S.*?):(\d+)(?::(\d+))?\s*$)");
-  // @lint-ignore CLANGTIDY facebook-hte-StdRegexIsAwful
-  const std::regex REGEX_NODE(
-      R"(^\s*at (?:((?:\[object object\])?\S+(?: \[as \S+\])?) )?\(?(.*?):(\d+)(?::(\d+))?\)?\s*$)");
-
-  // Capture groups for Hermes (from parseHermesStack.js):
-  // 1. function name
-  // 2. is this a native stack frame?
-  // 3. is this a bytecode address or a source location?
-  // 4. source URL (filename)
-  // 5. line number (1 based)
-  // 6. column number (1 based) or virtual offset (0 based)
-  // @lint-ignore CLANGTIDY facebook-hte-StdRegexIsAwful
-  const std::regex REGEX_HERMES(
-      R"(^ {4}at (.+?)(?: \((native)\)?| \((address at )?(.*?):(\d+):(\d+)\))$)");
-
-  std::string line;
-  std::stringstream strStream(error.getStack());
-
-  std::vector<JsErrorHandler::ParsedError::StackFrame> frames;
-
-  while (std::getline(strStream, line, '\n')) {
-    auto searchResults = std::smatch{};
-
-    if (isHermes) {
-      // @lint-ignore CLANGTIDY facebook-hte-StdRegexIsAwful
-      if (std::regex_search(line, searchResults, REGEX_HERMES)) {
-        std::string str2 = std::string(searchResults[2]);
-        if (str2.compare("native")) {
-          frames.push_back({
-              .file = std::string(searchResults[4]),
-              .methodName = std::string(searchResults[1]),
-              .lineNumber = std::stoi(searchResults[5]),
-              .column = std::stoi(searchResults[6]),
-          });
-        }
-      }
-    } else {
-      // @lint-ignore CLANGTIDY facebook-hte-StdRegexIsAwful
-      if (std::regex_search(line, searchResults, REGEX_GECKO)) {
-        frames.push_back({
-            .file = std::string(searchResults[3]),
-            .methodName = std::string(searchResults[1]),
-            .lineNumber = std::stoi(searchResults[4]),
-            .column = std::stoi(searchResults[5]),
-        });
-      } else if (
-          // @lint-ignore CLANGTIDY facebook-hte-StdRegexIsAwful
-          std::regex_search(line, searchResults, REGEX_CHROME) ||
-          // @lint-ignore CLANGTIDY facebook-hte-StdRegexIsAwful
-          std::regex_search(line, searchResults, REGEX_NODE)) {
-        frames.push_back({
-            .file = std::string(searchResults[2]),
-            .methodName = std::string(searchResults[1]),
-            .lineNumber = std::stoi(searchResults[3]),
-            .column = std::stoi(searchResults[4]),
-        });
-      } else {
-        continue;
-      }
-    }
-  }
-
-  return {
-      .message = "EarlyJsError: " + error.getMessage(),
-      .originalMessage = std::nullopt,
-      .name = std::nullopt,
-      .componentStack = std::nullopt,
-      .stack = std::move(frames),
-      .id = 0,
-      .isFatal = isFatal,
-      .extraData = jsi::Object(runtime),
-  };
-}
-
 JsErrorHandler::JsErrorHandler(JsErrorHandler::OnJsError onJsError)
     : _onJsError(std::move(onJsError)),
       _hasHandledFatalError(false){
@@ -183,8 +110,75 @@ void JsErrorHandler::handleFatalError(
           << "Original js error: " << error.getMessage() << std::endl;
     }
   }
-  // This is a hacky way to get Hermes stack trace.
-  ParsedError parsedError = parseErrorStack(runtime, error, true, false);
+
+  auto message = error.getMessage();
+  auto errorObj = error.value().getObject(runtime);
+  auto componentStackValue = errorObj.getProperty(runtime, "componentStack");
+  if (!isLooselyNull(componentStackValue)) {
+    message += "\n" + stringifyToCpp(runtime, componentStackValue);
+  }
+
+  auto nameValue = errorObj.getProperty(runtime, "name");
+  auto name = (isLooselyNull(nameValue) || isEmptyString(runtime, nameValue))
+      ? std::nullopt
+      : std::optional(stringifyToCpp(runtime, nameValue));
+
+  if (name && !message.starts_with(*name + ": ")) {
+    message = *name + ": " + message;
+  }
+
+  auto jsEngineValue = errorObj.getProperty(runtime, "jsEngine");
+
+  if (!isLooselyNull(jsEngineValue)) {
+    message += ", js engine: " + stringifyToCpp(runtime, jsEngineValue);
+  }
+
+  // TODO: What about spreading in decoratedExtraDataKey?
+  auto extraData = jsi::Object(runtime);
+  extraData.setProperty(runtime, "jsEngine", jsEngineValue);
+  extraData.setProperty(runtime, "rawStack", error.getStack());
+
+  auto cause = errorObj.getProperty(runtime, "cause");
+  if (cause.isObject()) {
+    auto causeObj = cause.asObject(runtime);
+    // TODO: Consider just forwarding all properties. For now, just forward the
+    // stack properties to maintain symmetry with js pipeline
+    auto stackSymbols = causeObj.getProperty(runtime, "stackSymbols");
+    extraData.setProperty(runtime, "stackSymbols", stackSymbols);
+
+    auto stackReturnAddresses =
+        causeObj.getProperty(runtime, "stackReturnAddresses");
+    extraData.setProperty(
+        runtime, "stackReturnAddresses", stackReturnAddresses);
+
+    auto stackElements = causeObj.getProperty(runtime, "stackElements");
+    extraData.setProperty(runtime, "stackElements", stackElements);
+  }
+
+  auto originalMessage = message == error.getMessage()
+      ? std::nullopt
+      : std::optional(error.getMessage());
+
+  auto componentStack = !componentStackValue.isString()
+      ? std::nullopt
+      : std::optional(componentStackValue.asString(runtime).utf8(runtime));
+
+  auto isHermes = runtime.global().hasProperty(runtime, "HermesInternal");
+  auto stackFrames = StackTraceParser::parse(isHermes, error.getStack());
+
+  auto id = nextExceptionId();
+
+  ParsedError parsedError = {
+      .message = "EarlyJsError: " + message,
+      .originalMessage = originalMessage,
+      .name = name,
+      .componentStack = componentStack,
+      .stack = stackFrames,
+      .id = id,
+      .isFatal = true,
+      .extraData = std::move(extraData),
+  };
+
   _onJsError(runtime, parsedError);
 }
 
