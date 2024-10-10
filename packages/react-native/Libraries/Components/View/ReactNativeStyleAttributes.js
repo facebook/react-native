@@ -186,6 +186,7 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
    */
   color: colorAttributes,
   fontFamily: true,
+  fontVariationSettings: true,
   fontSize: true,
   fontStyle: true,
   fontVariant: {process: processFontVariant},

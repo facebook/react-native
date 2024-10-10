@@ -394,6 +394,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     view.setFontFamily(fontFamily);
   }
 
+  @ReactProp(name = ViewProps.FONT_VARIATION_SETTINGS)
+  public void setFontVariationSettings(ReactEditText view, String fontVariationSettings) {
+    view.setFontVariationSettings(fontVariationSettings);
+  }
+
   @ReactProp(name = ViewProps.MAX_FONT_SIZE_MULTIPLIER, defaultFloat = Float.NaN)
   public void setMaxFontSizeMultiplier(ReactEditText view, float maxFontSizeMultiplier) {
     view.setMaxFontSizeMultiplier(maxFontSizeMultiplier);
