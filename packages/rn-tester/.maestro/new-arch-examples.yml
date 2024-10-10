@@ -14,3 +14,8 @@ appId: ${APP_ID} # iOS: com.meta.RNTester.localDevelopment | Android: com.facebo
 - tapOn: "Change Background"
 - assertVisible:
     text: "HSBA: h: 0, s: 1, b: 1, a: 255"
+- assertVisible: "Legacy Style Event Fired 0 times"
+- tapOn:
+    text: "Fire Legacy Style Event"
+    repeat: 10
+- assertVisible: "Legacy Style Event Fired 10 times"
