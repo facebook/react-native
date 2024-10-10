@@ -8,6 +8,7 @@
 #include "JsErrorHandler.h"
 #include <cxxreact/ErrorUtils.h>
 #include <glog/logging.h>
+#include <react/bridging/Bridging.h>
 #include <string>
 #include "StackTraceParser.h"
 
@@ -35,9 +36,64 @@ bool isEmptyString(jsi::Runtime& runtime, const jsi::Value& value) {
 std::string stringifyToCpp(jsi::Runtime& runtime, const jsi::Value& value) {
   return value.toString(runtime).utf8(runtime);
 }
+
+bool isTruthy(jsi::Runtime& runtime, const jsi::Value& value) {
+  auto Boolean = runtime.global().getPropertyAsFunction(runtime, "Boolean");
+  return Boolean.call(runtime, value).getBool();
+}
 } // namespace
 
 namespace facebook::react {
+
+template <>
+struct Bridging<JsErrorHandler::ParsedError::StackFrame> {
+  static jsi::Value toJs(
+      jsi::Runtime& runtime,
+      const JsErrorHandler::ParsedError::StackFrame& frame) {
+    auto stackFrame = jsi::Object(runtime);
+    auto file = bridging::toJs(runtime, frame.file, nullptr);
+    auto lineNumber = bridging::toJs(runtime, frame.lineNumber, nullptr);
+    auto column = bridging::toJs(runtime, frame.column, nullptr);
+
+    stackFrame.setProperty(runtime, "file", file);
+    stackFrame.setProperty(runtime, "methodName", frame.methodName);
+    stackFrame.setProperty(runtime, "lineNumber", lineNumber);
+    stackFrame.setProperty(runtime, "column", column);
+    return stackFrame;
+  }
+};
+
+template <>
+struct Bridging<JsErrorHandler::ParsedError> {
+  static jsi::Value toJs(
+      jsi::Runtime& runtime,
+      const JsErrorHandler::ParsedError& error) {
+    auto data = jsi::Object(runtime);
+    data.setProperty(runtime, "message", error.message);
+    data.setProperty(
+        runtime,
+        "originalMessage",
+        bridging::toJs(runtime, error.originalMessage, nullptr));
+    data.setProperty(
+        runtime, "name", bridging::toJs(runtime, error.name, nullptr));
+    data.setProperty(
+        runtime,
+        "componentStack",
+        bridging::toJs(runtime, error.componentStack, nullptr));
+
+    auto stack = jsi::Array(runtime, error.stack.size());
+    for (size_t i = 0; i < error.stack.size(); i++) {
+      auto& frame = error.stack[i];
+      stack.setValueAtIndex(runtime, i, bridging::toJs(runtime, frame));
+    }
+
+    data.setProperty(runtime, "stack", stack);
+    data.setProperty(runtime, "id", error.id);
+    data.setProperty(runtime, "isFatal", error.isFatal);
+    data.setProperty(runtime, "extraData", error.extraData);
+    return data;
+  }
+};
 
 std::ostream& operator<<(
     std::ostream& os,
@@ -96,12 +152,12 @@ void JsErrorHandler::handleError(
     jsi::JSError& error,
     bool isFatal) {
   // TODO: Current error parsing works and is stable. Can investigate using
-  // REGEX_HERMES to get additional Hermes data, though it requires JS setup.
-  if (isFatal) {
-    _hasHandledFatalError = true;
-  }
-
+  // REGEX_HERMES to get additional Hermes data, though it requires JS setup
   if (_isRuntimeReady) {
+    if (isFatal) {
+      _hasHandledFatalError = true;
+    }
+
     try {
       handleJSError(runtime, error, isFatal);
       return;
@@ -114,6 +170,13 @@ void JsErrorHandler::handleError(
     }
   }
 
+  emitError(runtime, error, isFatal);
+}
+
+void JsErrorHandler::emitError(
+    jsi::Runtime& runtime,
+    jsi::JSError& error,
+    bool isFatal) {
   auto message = error.getMessage();
   auto errorObj = error.value().getObject(runtime);
   auto componentStackValue = errorObj.getProperty(runtime, "componentStack");
@@ -182,7 +245,46 @@ void JsErrorHandler::handleError(
       .extraData = std::move(extraData),
   };
 
+  auto data = bridging::toJs(runtime, parsedError).asObject(runtime);
+
+  auto isComponentError =
+      isTruthy(runtime, errorObj.getProperty(runtime, "isComponentError"));
+  data.setProperty(runtime, "isComponentError", isComponentError);
+
+  std::shared_ptr<bool> shouldPreventDefault = std::make_shared<bool>(false);
+  auto preventDefault = jsi::Function::createFromHostFunction(
+      runtime,
+      jsi::PropNameID::forAscii(runtime, "preventDefault"),
+      0,
+      [shouldPreventDefault](
+          jsi::Runtime& /*rt*/,
+          const jsi::Value& /*thisVal*/,
+          const jsi::Value* /*args*/,
+          size_t /*count*/) {
+        *shouldPreventDefault = true;
+        return jsi::Value::undefined();
+      });
+
+  data.setProperty(runtime, "preventDefault", preventDefault);
+
+  for (auto& errorListener : _errorListeners) {
+    errorListener(runtime, jsi::Value(runtime, data));
+  }
+
+  if (*shouldPreventDefault) {
+    return;
+  }
+
+  if (isFatal) {
+    _hasHandledFatalError = true;
+  }
+
   _onJsError(runtime, parsedError);
+}
+
+void JsErrorHandler::registerErrorListener(
+    const std::function<void(jsi::Runtime&, jsi::Value)>& errorListener) {
+  _errorListeners.push_back(errorListener);
 }
 
 bool JsErrorHandler::hasHandledFatalError() {

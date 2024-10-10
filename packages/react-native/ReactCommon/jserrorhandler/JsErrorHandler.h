@@ -45,6 +45,8 @@ class JsErrorHandler {
 
   void handleError(jsi::Runtime& runtime, jsi::JSError& error, bool isFatal);
   bool hasHandledFatalError();
+  void registerErrorListener(
+      const std::function<void(jsi::Runtime&, jsi::Value)>& listener);
   void setRuntimeReady();
   bool isRuntimeReady();
   void notifyOfFatalError();
@@ -60,6 +62,9 @@ class JsErrorHandler {
   OnJsError _onJsError;
   bool _hasHandledFatalError;
   bool _isRuntimeReady{};
+  std::vector<std::function<void(jsi::Runtime&, jsi::Value)>> _errorListeners;
+
+  void emitError(jsi::Runtime& runtime, jsi::JSError& error, bool isFatal);
 };
 
 } // namespace facebook::react
