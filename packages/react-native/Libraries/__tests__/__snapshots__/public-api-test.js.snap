@@ -3716,10 +3716,10 @@ type Props = $ReadOnly<{|
   testOnly_pressed?: ?boolean,
   hostRef: React.RefSetter<React.ElementRef<typeof View>>,
 |}>;
-declare const Touchable: React.AbstractComponent<
-  $ReadOnly<$Diff<Props, {| +hostRef: mixed |}>>,
-  React.ElementRef<typeof View>,
->;
+declare const Touchable: component(
+  ref: React.RefSetter<React.ElementRef<typeof View>>,
+  ...props: $ReadOnly<$Diff<Props, {| +hostRef: mixed |}>>
+);
 declare module.exports: Touchable;
 "
 `;
