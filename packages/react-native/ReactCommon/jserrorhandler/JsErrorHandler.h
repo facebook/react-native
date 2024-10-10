@@ -8,6 +8,8 @@
 #pragma once
 
 #include <jsi/jsi.h>
+#include <iostream>
+#include <optional>
 
 namespace facebook::react {
 
@@ -15,19 +17,28 @@ class JsErrorHandler {
  public:
   struct ParsedError {
     struct StackFrame {
-      std::string fileName;
+      std::optional<std::string> file;
       std::string methodName;
-      int lineNumber;
-      int columnNumber;
+      std::optional<int> lineNumber;
+      std::optional<int> column;
+      friend std::ostream& operator<<(
+          std::ostream& os,
+          const StackFrame& frame);
     };
 
-    std::vector<StackFrame> frames;
     std::string message;
-    int exceptionId;
+    std::optional<std::string> originalMessage;
+    std::optional<std::string> name;
+    std::optional<std::string> componentStack;
+    std::vector<StackFrame> stack;
+    int id;
     bool isFatal;
+    jsi::Object extraData;
+    friend std::ostream& operator<<(std::ostream& os, const ParsedError& error);
   };
 
-  using OnJsError = std::function<void(const ParsedError& error)>;
+  using OnJsError =
+      std::function<void(jsi::Runtime& runtime, const ParsedError& error)>;
 
   explicit JsErrorHandler(OnJsError onJsError);
   ~JsErrorHandler();

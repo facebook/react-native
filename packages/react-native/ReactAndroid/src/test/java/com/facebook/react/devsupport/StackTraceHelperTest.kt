@@ -7,6 +7,7 @@
 
 package com.facebook.react.devsupport
 
+import com.facebook.react.bridge.JavaOnlyMap
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.interfaces.exceptionmanager.ReactJsExceptionHandler.*
@@ -98,27 +99,31 @@ class StackTraceHelperTest {
   private fun getParsedErrorTestData(): ParsedError {
     val frame1 =
         object : ParsedError.StackFrame {
-          override val fileName = "file1"
+          override val file = "file1"
           override val methodName = "method1"
           override val lineNumber = 1
-          override val columnNumber = 10
+          override val column = 10
         }
 
     val frame2 =
         object : ParsedError.StackFrame {
-          override val fileName = "file2"
+          override val file = "file2"
           override val methodName = "method2"
           override val lineNumber = 2
-          override val columnNumber = 20
+          override val column = 20
         }
 
     val frames = listOf(frame1, frame2)
 
     return object : ParsedError {
-      override val frames = frames
       override val message = "error message"
-      override val exceptionId = 123
+      override val originalMessage = null
+      override val name = null
+      override val componentStack = null
+      override val stack = frames
+      override val id = 123
       override val isFatal = true
+      override val extraData = JavaOnlyMap()
     }
   }
 }
