@@ -38,10 +38,10 @@ type Instance = {
   ...
 };
 
-const ScrollViewStickyHeaderWithForwardedRef: React.AbstractComponent<
-  Props,
-  Instance,
-> = React.forwardRef(function ScrollViewStickyHeader(props, forwardedRef) {
+const ScrollViewStickyHeaderWithForwardedRef: component(
+  ref: React.RefSetter<Instance>,
+  ...props: Props
+) = React.forwardRef(function ScrollViewStickyHeader(props, forwardedRef) {
   const {
     inverted,
     scrollViewHeight,
