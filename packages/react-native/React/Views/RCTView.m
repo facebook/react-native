@@ -774,10 +774,10 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x)
       [directionAwareBorderRightColor resolvedColorWithTraitCollection:self.traitCollection];
 
   return (RCTBorderColors){
-      (borderTopColor ?: borderColor),
-      (directionAwareBorderLeftColor ?: borderColor),
-      (borderBottomColor ?: borderColor),
-      (directionAwareBorderRightColor ?: borderColor),
+      (borderTopColor ?: borderColor).CGColor,
+      (directionAwareBorderLeftColor ?: borderColor).CGColor,
+      (borderBottomColor ?: borderColor).CGColor,
+      (directionAwareBorderRightColor ?: borderColor).CGColor,
   };
 }
 
@@ -814,20 +814,21 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x)
       // the content. For this reason, only use iOS border drawing when clipping
       // or when the border is hidden.
 
-      (borderInsets.top == 0 || (borderColors.top && CGColorGetAlpha(borderColors.top.CGColor) == 0) ||
-       self.clipsToBounds);
+      (borderInsets.top == 0 || (borderColors.top && CGColorGetAlpha(borderColors.top) == 0) || self.clipsToBounds);
 
   // iOS clips to the outside of the border, but CSS clips to the inside. To
   // solve this, we'll need to add a container view inside the main view to
   // correctly clip the subviews.
 
-  UIColor *backgroundColor = [_backgroundColor resolvedColorWithTraitCollection:self.traitCollection];
+  CGColorRef backgroundColor;
+
+  backgroundColor = [_backgroundColor resolvedColorWithTraitCollection:self.traitCollection].CGColor;
 
   if (useIOSBorderRendering) {
     layer.cornerRadius = cornerRadii.topLeftHorizontal;
-    layer.borderColor = borderColors.left.CGColor;
+    layer.borderColor = borderColors.left;
     layer.borderWidth = borderInsets.left;
-    layer.backgroundColor = backgroundColor.CGColor;
+    layer.backgroundColor = backgroundColor;
     layer.contents = nil;
     layer.needsDisplayOnBoundsChange = NO;
     layer.mask = nil;
