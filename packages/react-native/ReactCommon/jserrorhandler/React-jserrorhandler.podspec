@@ -22,7 +22,7 @@ folly_version = folly_config[:version]
 folly_dep_name = folly_config[:dep_name]
 
 boost_config = get_boost_config()
-boost_compiler_flags = boost_config[:compiler_flags] 
+boost_compiler_flags = boost_config[:compiler_flags]
 react_native_path = ".."
 
 Pod::Spec.new do |s|
@@ -35,7 +35,7 @@ Pod::Spec.new do |s|
   s.platforms              = min_supported_versions
   s.source                 = source
   s.header_dir             = "jserrorhandler"
-  s.source_files           = "JsErrorHandler.{cpp,h}"
+  s.source_files           = "JsErrorHandler.{cpp,h}", "StackTraceParser.{cpp,h}"
   s.pod_target_xcconfig = {
     "USE_HEADERMAP" => "YES",
     "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard()
@@ -52,7 +52,7 @@ Pod::Spec.new do |s|
   s.dependency "React-cxxreact"
   s.dependency "glog"
   add_dependency(s, "React-debug")
-  
+
   if ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == "1"
     s.dependency 'hermes-engine'
   end
