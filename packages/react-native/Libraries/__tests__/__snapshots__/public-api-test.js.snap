@@ -3687,9 +3687,10 @@ exports[`public API should not change unintentionally Libraries/Components/Touch
   style?: ?ViewStyleProp,
   hostRef: React.RefSetter<React.ElementRef<typeof Animated.View>>,
 |}>;
-declare module.exports: React.AbstractComponent<
-  $ReadOnly<$Diff<Props, {| hostRef: mixed |}>>,
->;
+declare module.exports: component(
+  ref: React.RefSetter<mixed>,
+  ...props: $ReadOnly<$Diff<Props, {| hostRef: mixed |}>>
+);
 "
 `;
 
