@@ -87,7 +87,7 @@ function getTextFor(measureStruct: MeasureStruct): string {
 }
 const opacityDecrementCounter = 0.2;
 
-function getOpacity(opacity: number): number {
+function computeNextOpacity(opacity: number): number {
   if (parseFloat(opacity.toFixed(1)) > 0.0) {
     return opacity - opacityDecrementCounter;
   }
@@ -209,7 +209,7 @@ export default function MyNativeView(props: {}): React.Node {
       <Button
         title="Set Opacity"
         onPress={() => {
-          setOpacity(getOpacity(opacity));
+          setOpacity(computeNextOpacity(opacity));
           setArrayValues([
             Math.floor(Math.random() * 100),
             Math.floor(Math.random() * 100),
