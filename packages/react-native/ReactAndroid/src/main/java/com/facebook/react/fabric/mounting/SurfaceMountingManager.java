@@ -411,7 +411,7 @@ public class SurfaceMountingManager {
 
     try {
       getViewGroupManager(parentViewState).addView(parentView, view, index);
-    } catch (IllegalStateException e) {
+    } catch (IllegalStateException | IndexOutOfBoundsException e) {
       // Wrap error with more context for debugging
       throw new IllegalStateException(
           "addViewAt: failed to insert view ["
