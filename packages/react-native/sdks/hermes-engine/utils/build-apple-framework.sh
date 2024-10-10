@@ -17,7 +17,7 @@ REACT_NATIVE_PATH=${REACT_NATIVE_PATH:-$CURR_SCRIPT_DIR/../../..}
 
 NUM_CORES=$(sysctl -n hw.ncpu)
 
-PLATFORMS=("macosx" "iphoneos" "iphonesimulator" "catalyst" "xros" "xrsimulator")
+PLATFORMS=("macosx" "iphoneos" "iphonesimulator" "catalyst" "xros" "xrsimulator" "appletvos" "appletvsimulator")
 
 if [[ -z "$JSI_PATH" ]]; then
   JSI_PATH="$REACT_NATIVE_PATH/ReactCommon/jsi"

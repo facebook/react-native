@@ -9,7 +9,7 @@ inputs:
     description: The version of Hermes
   slice:
     required: true
-    description: The slice of hermes you want to build. It could be iphone, iphonesimulator, macos, catalyst, xros, or xrossimulator
+    description: The slice of hermes you want to build. It could be iphone, iphonesimulator, macos, catalyst, appletvos, appletvsimulator, xros, or xrossimulator
   flavor:
     required: true
     description: The flavor we want to build. It can be Debug or Release

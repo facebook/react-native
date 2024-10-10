@@ -66,6 +66,18 @@ runs:
       with:
         path: ./packages/react-native/sdks/hermes/
         name: slice-iphonesimulator-${{ inputs.flavor }}
+    - name: Slice cache appletvos
+      if: ${{ steps.check_if_apple_artifacts_are_there.outputs.ARTIFACTS_EXIST != 'true' }}
+      uses: actions/download-artifact@v4
+      with:
+        path: ./packages/react-native/sdks/hermes/
+        name: slice-appletvos-${{ inputs.flavor }}
+    - name: Slice cache appletvsimulator
+      if: ${{ steps.check_if_apple_artifacts_are_there.outputs.ARTIFACTS_EXIST != 'true' }}
+      uses: actions/download-artifact@v4
+      with:
+        path: ./packages/react-native/sdks/hermes/
+        name: slice-appletvsimulator-${{ inputs.flavor }}
     - name: Slice cache catalyst
       if: ${{ steps.check_if_apple_artifacts_are_there.outputs.ARTIFACTS_EXIST != 'true' }}
       uses: actions/download-artifact@v4
@@ -93,6 +105,8 @@ runs:
         tar -xzv -f build_catalyst_${{ matrix.flavor }}.tar.gz
         tar -xzv -f build_iphoneos_${{ matrix.flavor }}.tar.gz
         tar -xzv -f build_iphonesimulator_${{ matrix.flavor }}.tar.gz
+        tar -xzv -f build_appletvos_${{ matrix.flavor }}.tar.gz
+        tar -xzv -f build_appletvsimulator_${{ matrix.flavor }}.tar.gz
         tar -xzv -f build_macosx_${{ matrix.flavor }}.tar.gz
         tar -xzv -f build_xros_${{ matrix.flavor }}.tar.gz
         tar -xzv -f build_xrsimulator_${{ matrix.flavor }}.tar.gz
