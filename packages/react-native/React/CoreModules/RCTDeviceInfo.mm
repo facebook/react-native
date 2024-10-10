@@ -68,6 +68,10 @@ RCT_EXPORT_MODULE()
                                            selector:@selector(interfaceFrameDidChange)
                                                name:RCTWindowFrameDidChangeNotification
                                              object:nil];
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(interfaceFrameDidChange)
+                                               name:UIApplicationDidBecomeActiveNotification
+                                             object:nil];
 
 #if TARGET_OS_IOS
 
