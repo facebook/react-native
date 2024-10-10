@@ -231,11 +231,6 @@ public constructor(
     }
   }
 
-  @ReactProp(name = ViewProps.BOX_SHADOW, customType = "BoxShadow")
-  public fun setBoxShadow(view: ReactImageView, shadows: ReadableArray?): Unit {
-    BackgroundStyleApplicator.setBoxShadow(view, shadows)
-  }
-
   public override fun getExportedCustomDirectEventTypeConstants(): MutableMap<String, Any> =
       (super.getExportedCustomDirectEventTypeConstants() ?: mutableMapOf<String, Any>()).apply {
         put(

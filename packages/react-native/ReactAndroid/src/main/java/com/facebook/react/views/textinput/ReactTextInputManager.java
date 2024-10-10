@@ -1029,11 +1029,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     view.setOverflow(overflow);
   }
 
-  @ReactProp(name = ViewProps.BOX_SHADOW, customType = "BoxShadow")
-  public void setBoxShadow(ReactEditText view, @Nullable ReadableArray shadows) {
-    BackgroundStyleApplicator.setBoxShadow(view, shadows);
-  }
-
   @Override
   protected void onAfterUpdateTransaction(ReactEditText view) {
     super.onAfterUpdateTransaction(view);

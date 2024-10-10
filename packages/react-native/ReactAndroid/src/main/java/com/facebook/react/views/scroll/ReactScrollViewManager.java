@@ -342,11 +342,6 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
     }
   }
 
-  @ReactProp(name = ViewProps.BOX_SHADOW, customType = "BoxShadow")
-  public void setBoxShadow(ReactScrollView view, @Nullable ReadableArray shadows) {
-    BackgroundStyleApplicator.setBoxShadow(view, shadows);
-  }
-
   @Override
   public @Nullable Object updateState(
       ReactScrollView view, ReactStylesDiffMap props, StateWrapper stateWrapper) {
