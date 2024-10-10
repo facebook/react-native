@@ -64,18 +64,18 @@ const Item = ({item, section, separators}) => {
   );
 };
 
-type Props = {
+type Props = $ReadOnly<{
   exampleProps: Partial<React.ElementConfig<typeof SectionList>>,
   onTest?: ?() => void,
   testLabel?: ?string,
   testOutput?: ?string,
   children?: ?React.Node,
-};
+}>;
 
-const SectionListBaseExample: React.AbstractComponent<
-  Props,
-  React.ElementRef<typeof SectionList>,
-> = React.forwardRef((props: Props, ref): React.Node => {
+const SectionListBaseExample: component(
+  ref: React.RefSetter<React.ElementRef<typeof SectionList>>,
+  ...props: Props
+) = React.forwardRef((props: Props, ref): React.Node => {
   return (
     <View style={styles.container}>
       {props.testOutput != null ? (
