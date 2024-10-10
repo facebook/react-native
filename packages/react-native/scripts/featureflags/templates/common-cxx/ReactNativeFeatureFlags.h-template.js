@@ -90,9 +90,23 @@ ${Object.entries(definitions.common)
    */
   RN_EXPORT static void dangerouslyReset();
 
+  /**
+   * This is a combination of \`dangerouslyReset\` and \`override\` that reduces
+   * the likeliness of a race condition between the two calls.
+   *
+   * This is **dangerous** because it can introduce consistency issues that will
+   * be much harder to debug. For example, it could hide the fact that feature
+   * flags are read before you set the values you want to use everywhere. It
+   * could also cause a workflow to suddently have different feature flags for
+   * behaviors that were configured with different values before.
+   *
+   * Please see the documentation of \`dangerouslyReset\` for additional details.
+   */
+  RN_EXPORT static void dangerouslyForceOverride(
+      std::unique_ptr<ReactNativeFeatureFlagsProvider> provider);
+
  private:
   ReactNativeFeatureFlags() = delete;
-  static ReactNativeFeatureFlagsAccessor& getAccessor(bool reset = false);
 };
 
 } // namespace facebook::react

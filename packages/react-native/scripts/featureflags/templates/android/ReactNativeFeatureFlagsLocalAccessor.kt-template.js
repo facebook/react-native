@@ -71,6 +71,10 @@ ${Object.entries(definitions.common)
     // We don't need to do anything here because \`ReactNativeFeatureFlags\` will
     // just create a new instance of this class.
   }
+
+  override fun dangerouslyForceOverride(provider: ReactNativeFeatureFlagsProvider) {
+    currentProvider = provider
+  }
 }
 `);
 }

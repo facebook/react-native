@@ -121,4 +121,13 @@ TEST_F(ReactNativeFeatureFlagsTest, allowsOverridingAgainAfterReset) {
   EXPECT_EQ(ReactNativeFeatureFlags::commonTestFlag(), true);
 }
 
+TEST_F(ReactNativeFeatureFlagsTest, allowsDangerouslyForcingOverrides) {
+  EXPECT_EQ(ReactNativeFeatureFlags::commonTestFlag(), false);
+
+  ReactNativeFeatureFlags::dangerouslyForceOverride(
+      std::make_unique<ReactNativeFeatureFlagsTestOverrides>());
+
+  EXPECT_EQ(ReactNativeFeatureFlags::commonTestFlag(), true);
+}
+
 } // namespace facebook::react
