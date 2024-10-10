@@ -22,10 +22,11 @@ type ExceptionDecorator = ExceptionData => ExceptionData;
 let userExceptionDecorator: ?ExceptionDecorator;
 let inUserExceptionDecorator = false;
 
-// This Symbol is used to decorate an ExtendedError with extra data in select usecases.
+// This string is used to decorate an ExtendedError with extra data in select usecases.
 // Note that data passed using this method should be strictly contained,
 // as data that's not serializable/too large may cause issues with passing the error to the native code.
-const decoratedExtraDataKey: symbol = Symbol('decoratedExtraDataKey');
+// TODO(T204185517): We should use a Symbol for this, but jsi through jsc doesn't support it yet.
+const decoratedExtraDataKey = 'RN$ErrorExtraDataKey';
 
 /**
  * Allows the app to add information to the exception report before it is sent

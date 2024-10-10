@@ -4338,7 +4338,7 @@ exports[`public API should not change unintentionally Libraries/Core/ExceptionsM
   name: string;
 }
 type ExceptionDecorator = (ExceptionData) => ExceptionData;
-declare const decoratedExtraDataKey: symbol;
+declare const decoratedExtraDataKey: \\"RN$ErrorExtraDataKey\\";
 declare function unstable_setExceptionDecorator(
   exceptionDecorator: ?ExceptionDecorator
 ): void;
