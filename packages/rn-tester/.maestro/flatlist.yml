@@ -13,6 +13,9 @@ appId: ${APP_ID} # iOS: com.meta.RNTester.localDevelopment | Android: com.facebo
     id: "Basic"
 - scrollUntilVisible:
     element:
-      id: "600"
+      text: ".*Item 600.*"
     direction: DOWN
-    speed: 40
+    centerElement: false
+    visibilityPercentage: 40
+    speed: 5
+    timeout: 90000
