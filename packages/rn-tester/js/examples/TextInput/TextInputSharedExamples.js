@@ -1187,9 +1187,7 @@ module.exports = ([
     title: 'Dynamic content width',
     name: 'dynamicWidth',
     render: function (): React.Node {
-      return (
-        <DynamicContentWidth />
-      );
+      return <DynamicContentWidth />;
     },
   },
 ]: Array<RNTesterModuleExample>);
