@@ -482,10 +482,9 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
   if (value && ![value isEqualToString:_backedTextInputView.attributedText.string]) {
     NSAttributedString *attributedString =
         [[NSAttributedString alloc] initWithString:value attributes:_backedTextInputView.defaultTextAttributes];
-    [self _setAttributedString:attributedString];
-    [self _updateState];
+    [self _updateStateWithString:attributedString];
   }
-
+  
   UITextPosition *startPosition = [_backedTextInputView positionFromPosition:_backedTextInputView.beginningOfDocument
                                                                       offset:start];
   UITextPosition *endPosition = [_backedTextInputView positionFromPosition:_backedTextInputView.beginningOfDocument
@@ -493,8 +492,10 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
 
   if (startPosition && endPosition) {
     UITextRange *range = [_backedTextInputView textRangeFromPosition:startPosition toPosition:endPosition];
+    // _updateStateWithString executes any state updates sync, so its safe to update the selection as the attributedString is already updated!
     [_backedTextInputView setSelectedTextRange:range notifyDelegate:NO];
   }
+  
   _comingFromJS = NO;
 }
 
@@ -615,16 +616,26 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
 
 - (void)_updateState
 {
+    NSAttributedString *attributedString = _backedTextInputView.attributedText;
+    [self _updateStateWithString:attributedString];
+}
+
+- (void)_updateStateWithString:(NSAttributedString*)attributedString
+{
   if (!_state) {
     return;
   }
-  NSAttributedString *attributedString = _backedTextInputView.attributedText;
   auto data = _state->getData();
   _lastStringStateWasUpdatedWith = attributedString;
   data.attributedStringBox = RCTAttributedStringBoxFromNSAttributedString(attributedString);
   _mostRecentEventCount += _comingFromJS ? 0 : 1;
   data.mostRecentEventCount = _mostRecentEventCount;
-  _state->updateState(std::move(data));
+  const auto &textInputEventEmitter = static_cast<const TextInputEventEmitter &>(*_eventEmitter);
+  // When the textInputDidChange gets called, the text is already updated
+  // in the UI. We execute the state update synchronously so that the layout gets calculated immediately.
+  textInputEventEmitter.experimental_flushSync([state = _state, data = std::move(data)]() mutable {
+    state->updateState(std::move(data));
+  });
 }
 
 - (AttributedString::Range)_selectionRange
