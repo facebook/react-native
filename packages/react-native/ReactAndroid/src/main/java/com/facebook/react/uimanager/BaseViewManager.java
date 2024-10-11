@@ -779,6 +779,11 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     BackgroundStyleApplicator.setOutlineWidth(view, width);
   }
 
+  @ReactProp(name = ViewProps.BOX_SHADOW, customType = "BoxShadow")
+  public void setBoxShadow(T view, @Nullable ReadableArray shadows) {
+    BackgroundStyleApplicator.setBoxShadow(view, shadows);
+  }
+
   private void logUnsupportedPropertyWarning(String propName) {
     FLog.w(ReactConstants.TAG, "%s doesn't support property '%s'", getName(), propName);
   }

@@ -69,6 +69,8 @@ public abstract class BaseViewManagerDelegate<
           mViewManager.setBorderTopRightRadius(
               view, (value as Double?)?.toFloat() ?: YogaConstants.UNDEFINED)
 
+      ViewProps.BOX_SHADOW -> mViewManager.setBoxShadow(view, value as ReadableArray?)
+
       ViewProps.ELEVATION -> mViewManager.setElevation(view, (value as Double?)?.toFloat() ?: 0.0f)
 
       ViewProps.FILTER -> mViewManager.setFilter(view, value as ReadableArray?)

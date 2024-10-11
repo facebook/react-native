@@ -350,11 +350,6 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
     view.setBackfaceVisibilityDependantOpacity();
   }
 
-  @ReactProp(name = ViewProps.BOX_SHADOW, customType = "BoxShadow")
-  public void setBoxShadow(ReactViewGroup view, @Nullable ReadableArray shadows) {
-    BackgroundStyleApplicator.setBoxShadow(view, shadows);
-  }
-
   @Override
   public String getName() {
     return REACT_CLASS;
