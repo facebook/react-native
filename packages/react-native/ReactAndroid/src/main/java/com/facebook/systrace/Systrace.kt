@@ -32,6 +32,16 @@ public object Systrace {
   @JvmStatic public fun traceInstant(tag: Long, title: String?, scope: EventScope?): Unit = Unit
 
   @JvmStatic
+  public fun traceSection(tag: Long, sectionName: String, block: () -> T) {
+    beginSection(sectionName)
+    try {
+      return block()
+    } finally {
+      endSection(sectionName)
+    }
+  }
+
+  @JvmStatic
   public fun beginSection(tag: Long, sectionName: String) {
     Trace.beginSection(sectionName)
   }

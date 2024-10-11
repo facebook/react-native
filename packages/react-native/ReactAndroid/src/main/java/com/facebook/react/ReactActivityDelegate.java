@@ -20,6 +20,7 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.modules.core.PermissionListener;
+import com.facebook.systrace.Systrace;
 
 /**
  * Delegate class for {@link ReactActivity}. You can subclass this to provide custom implementations
@@ -102,35 +103,41 @@ public class ReactActivityDelegate {
   }
 
   public void onCreate(Bundle savedInstanceState) {
-    String mainComponentName = getMainComponentName();
-    final Bundle launchOptions = composeLaunchOptions();
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && isWideColorGamutEnabled()) {
-      mActivity.getWindow().setColorMode(ActivityInfo.COLOR_MODE_WIDE_COLOR_GAMUT);
-    }
-    if (ReactNativeFeatureFlags.enableBridgelessArchitecture()) {
-      mReactDelegate =
-          new ReactDelegate(getPlainActivity(), getReactHost(), mainComponentName, launchOptions);
-    } else {
-      mReactDelegate =
-          new ReactDelegate(
-              getPlainActivity(),
-              getReactNativeHost(),
-              mainComponentName,
-              launchOptions,
-              isFabricEnabled()) {
-            @Override
-            protected ReactRootView createRootView() {
-              ReactRootView rootView = ReactActivityDelegate.this.createRootView();
-              if (rootView == null) {
-                rootView = super.createRootView();
-              }
-              return rootView;
-            }
-          };
-    }
-    if (mainComponentName != null) {
-      loadApp(mainComponentName);
-    }
+    Systrace.traceSection(
+        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+        "ReactActivityDelegate.onCreate::init",
+        () -> {
+          String mainComponentName = getMainComponentName();
+          final Bundle launchOptions = composeLaunchOptions();
+          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && isWideColorGamutEnabled()) {
+            mActivity.getWindow().setColorMode(ActivityInfo.COLOR_MODE_WIDE_COLOR_GAMUT);
+          }
+          if (ReactNativeFeatureFlags.enableBridgelessArchitecture()) {
+            mReactDelegate =
+                new ReactDelegate(
+                    getPlainActivity(), getReactHost(), mainComponentName, launchOptions);
+          } else {
+            mReactDelegate =
+                new ReactDelegate(
+                    getPlainActivity(),
+                    getReactNativeHost(),
+                    mainComponentName,
+                    launchOptions,
+                    isFabricEnabled()) {
+                  @Override
+                  protected ReactRootView createRootView() {
+                    ReactRootView rootView = ReactActivityDelegate.this.createRootView();
+                    if (rootView == null) {
+                      rootView = super.createRootView();
+                    }
+                    return rootView;
+                  }
+                };
+          }
+          if (mainComponentName != null) {
+            loadApp(mainComponentName);
+          }
+        });
   }
 
   protected void loadApp(String appKey) {
