@@ -484,7 +484,7 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
         [[NSAttributedString alloc] initWithString:value attributes:_backedTextInputView.defaultTextAttributes];
     [self _updateStateWithString:attributedString];
   }
-  
+
   UITextPosition *startPosition = [_backedTextInputView positionFromPosition:_backedTextInputView.beginningOfDocument
                                                                       offset:start];
   UITextPosition *endPosition = [_backedTextInputView positionFromPosition:_backedTextInputView.beginningOfDocument
@@ -495,7 +495,6 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
     // _updateStateWithString executes any state updates sync, so its safe to update the selection as the attributedString is already updated!
     [_backedTextInputView setSelectedTextRange:range notifyDelegate:NO];
   }
-  
   _comingFromJS = NO;
 }
 
