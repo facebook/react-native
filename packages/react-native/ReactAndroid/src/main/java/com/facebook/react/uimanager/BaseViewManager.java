@@ -938,4 +938,6 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   public void setTouchCancel(@NonNull T view, boolean value) {
     // no-op, handled by JSResponder
   }
+
+  // Please add new props to BaseViewManagerDelegate as well!
 }
