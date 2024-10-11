@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9c219debffe0fa013bea41deb6c01db2>>
+ * @generated SignedSource<<6c4322adf33ac5b1bc921b306b2f5f8f>>
  */
 
 /**
@@ -125,7 +125,12 @@ class ReactNativeFeatureFlags {
   /**
    * When enabled, custom line height calculation will be centered from top to bottom.
    */
-  RN_EXPORT static bool enableLineHeightCentering();
+  RN_EXPORT static bool enableLineHeightCenteringOnAndroid();
+
+  /**
+   * When enabled, custom line height calculation will be centered from top to bottom.
+   */
+  RN_EXPORT static bool enableLineHeightCenteringOnIOS();
 
   /**
    * Enables the reporting of long tasks through `PerformanceObserver`. Only works if the event loop is enabled.

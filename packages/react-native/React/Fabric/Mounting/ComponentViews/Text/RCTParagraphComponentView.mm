@@ -378,7 +378,7 @@ Class<RCTComponentViewProtocol> RCTParagraphCls(void)
 
   CGRect frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
 
-  if (ReactNativeFeatureFlags::enableLineHeightCentering()) {
+  if (ReactNativeFeatureFlags::enableLineHeightCenteringOnIOS()) {
     NSAttributedString *attributedText = RCTNSAttributedStringFromAttributedString(_state->getData().attributedString);
     frame = [self calculateCenteredFrameWithAttributedText:attributedText frame:frame];
   }

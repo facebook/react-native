@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a958631ee6706d85d8cd7e0222873b44>>
+ * @generated SignedSource<<02f9fa1fd92a89a823e8fd35e1a2409b>>
  */
 
 /**
@@ -37,7 +37,8 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
   private var enableIOSViewClipToPaddingBoxCache: Boolean? = null
   private var enableLayoutAnimationsOnAndroidCache: Boolean? = null
   private var enableLayoutAnimationsOnIOSCache: Boolean? = null
-  private var enableLineHeightCenteringCache: Boolean? = null
+  private var enableLineHeightCenteringOnAndroidCache: Boolean? = null
+  private var enableLineHeightCenteringOnIOSCache: Boolean? = null
   private var enableLongTaskAPICache: Boolean? = null
   private var enableMicrotasksCache: Boolean? = null
   private var enablePreciseSchedulingForPremountItemsOnAndroidCache: Boolean? = null
@@ -223,11 +224,20 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
     return cached
   }
 
-  override fun enableLineHeightCentering(): Boolean {
-    var cached = enableLineHeightCenteringCache
+  override fun enableLineHeightCenteringOnAndroid(): Boolean {
+    var cached = enableLineHeightCenteringOnAndroidCache
     if (cached == null) {
-      cached = ReactNativeFeatureFlagsCxxInterop.enableLineHeightCentering()
-      enableLineHeightCenteringCache = cached
+      cached = ReactNativeFeatureFlagsCxxInterop.enableLineHeightCenteringOnAndroid()
+      enableLineHeightCenteringOnAndroidCache = cached
+    }
+    return cached
+  }
+
+  override fun enableLineHeightCenteringOnIOS(): Boolean {
+    var cached = enableLineHeightCenteringOnIOSCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.enableLineHeightCenteringOnIOS()
+      enableLineHeightCenteringOnIOSCache = cached
     }
     return cached
   }

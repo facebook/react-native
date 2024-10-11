@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<06a9b5f6baba48ae66b19b621e6b871a>>
+ * @generated SignedSource<<7b875c6b1b7120f664ab511a4b91c8d8>>
  */
 
 /**
@@ -48,7 +48,8 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableIOSViewClipToPaddingBox();
   bool enableLayoutAnimationsOnAndroid();
   bool enableLayoutAnimationsOnIOS();
-  bool enableLineHeightCentering();
+  bool enableLineHeightCenteringOnAndroid();
+  bool enableLineHeightCenteringOnIOS();
   bool enableLongTaskAPI();
   bool enableMicrotasks();
   bool enablePreciseSchedulingForPremountItemsOnAndroid();
@@ -90,7 +91,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 49> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 50> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> allowRecursiveCommitsWithSynchronousMountOnAndroid_;
@@ -109,7 +110,8 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableIOSViewClipToPaddingBox_;
   std::atomic<std::optional<bool>> enableLayoutAnimationsOnAndroid_;
   std::atomic<std::optional<bool>> enableLayoutAnimationsOnIOS_;
-  std::atomic<std::optional<bool>> enableLineHeightCentering_;
+  std::atomic<std::optional<bool>> enableLineHeightCenteringOnAndroid_;
+  std::atomic<std::optional<bool>> enableLineHeightCenteringOnIOS_;
   std::atomic<std::optional<bool>> enableLongTaskAPI_;
   std::atomic<std::optional<bool>> enableMicrotasks_;
   std::atomic<std::optional<bool>> enablePreciseSchedulingForPremountItemsOnAndroid_;

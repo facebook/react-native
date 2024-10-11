@@ -156,7 +156,7 @@
 
   NSRange glyphRange = [layoutManager glyphRangeForTextContainer:textContainer];
 
-  if (facebook::react::ReactNativeFeatureFlags::enableLineHeightCentering()) {
+  if (facebook::react::ReactNativeFeatureFlags::enableLineHeightCenteringOnIOS()) {
     CGPoint drawingPoint = [self calculateDrawingPointWithTextStorage:_textStorage contentFrame:_contentFrame];
     [layoutManager drawBackgroundForGlyphRange:glyphRange atPoint:drawingPoint];
     [layoutManager drawGlyphsForGlyphRange:glyphRange atPoint:drawingPoint];

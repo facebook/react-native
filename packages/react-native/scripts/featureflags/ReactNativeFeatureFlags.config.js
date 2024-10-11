@@ -178,10 +178,19 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'release',
       },
     },
-    enableLineHeightCentering: {
+    enableLineHeightCenteringOnAndroid: {
       defaultValue: false,
       metadata: {
         dateAdded: '2024-09-11',
+        description:
+          'When enabled, custom line height calculation will be centered from top to bottom.',
+        purpose: 'experimentation',
+      },
+    },
+    enableLineHeightCenteringOnIOS: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2024-10-11',
         description:
           'When enabled, custom line height calculation will be centered from top to bottom.',
         purpose: 'experimentation',

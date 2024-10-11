@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<35e08c715ee1214f787861796945985a>>
+ * @generated SignedSource<<c93f4b6990973a606b73314e608cee38>>
  * @flow strict
  */
 
@@ -40,7 +40,8 @@ export interface Spec extends TurboModule {
   +enableIOSViewClipToPaddingBox?: () => boolean;
   +enableLayoutAnimationsOnAndroid?: () => boolean;
   +enableLayoutAnimationsOnIOS?: () => boolean;
-  +enableLineHeightCentering?: () => boolean;
+  +enableLineHeightCenteringOnAndroid?: () => boolean;
+  +enableLineHeightCenteringOnIOS?: () => boolean;
   +enableLongTaskAPI?: () => boolean;
   +enableMicrotasks?: () => boolean;
   +enablePreciseSchedulingForPremountItemsOnAndroid?: () => boolean;

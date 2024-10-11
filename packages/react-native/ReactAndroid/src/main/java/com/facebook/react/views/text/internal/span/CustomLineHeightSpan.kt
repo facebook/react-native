@@ -107,7 +107,7 @@ public class CustomLineHeightSpan(height: Float) : LineHeightSpan, ReactSpan {
       v: Int,
       fm: FontMetricsInt,
   ) {
-    if (ReactNativeFeatureFlags.enableLineHeightCentering()) chooseCenteredHeight(fm)
+    if (ReactNativeFeatureFlags.enableLineHeightCenteringOnAndroid()) chooseCenteredHeight(fm)
     else chooseOriginalHeight(fm)
   }
 }

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f0d29ccab0003772054a5c9dd48b9fd0>>
+ * @generated SignedSource<<a4c7777c4e0ced198d3cd0a64e434a6d>>
  * @flow strict
  */
 
@@ -67,7 +67,8 @@ export type ReactNativeFeatureFlags = {
   enableIOSViewClipToPaddingBox: Getter<boolean>,
   enableLayoutAnimationsOnAndroid: Getter<boolean>,
   enableLayoutAnimationsOnIOS: Getter<boolean>,
-  enableLineHeightCentering: Getter<boolean>,
+  enableLineHeightCenteringOnAndroid: Getter<boolean>,
+  enableLineHeightCenteringOnIOS: Getter<boolean>,
   enableLongTaskAPI: Getter<boolean>,
   enableMicrotasks: Getter<boolean>,
   enablePreciseSchedulingForPremountItemsOnAndroid: Getter<boolean>,
@@ -257,7 +258,11 @@ export const enableLayoutAnimationsOnIOS: Getter<boolean> = createNativeFlagGett
 /**
  * When enabled, custom line height calculation will be centered from top to bottom.
  */
-export const enableLineHeightCentering: Getter<boolean> = createNativeFlagGetter('enableLineHeightCentering', false);
+export const enableLineHeightCenteringOnAndroid: Getter<boolean> = createNativeFlagGetter('enableLineHeightCenteringOnAndroid', false);
+/**
+ * When enabled, custom line height calculation will be centered from top to bottom.
+ */
+export const enableLineHeightCenteringOnIOS: Getter<boolean> = createNativeFlagGetter('enableLineHeightCenteringOnIOS', false);
 /**
  * Enables the reporting of long tasks through `PerformanceObserver`. Only works if the event loop is enabled.
  */
