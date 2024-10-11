@@ -338,7 +338,16 @@ public class ReactImageView(
 
   public override fun onDraw(canvas: Canvas) {
     BackgroundStyleApplicator.clipToPaddingBox(this, canvas)
-    super.onDraw(canvas)
+    try {
+      super.onDraw(canvas)
+    } catch (e: RuntimeException) {
+      // Only provide updates if downloadListener is set (shouldNotify is true)
+      if (downloadListener != null) {
+        val eventDispatcher =
+            UIManagerHelper.getEventDispatcherForReactTag(context as ReactContext, id)
+        eventDispatcher?.dispatchEvent(createErrorEvent(UIManagerHelper.getSurfaceId(this), id, e))
+      }
+    }
   }
 
   public fun maybeUpdateView() {
