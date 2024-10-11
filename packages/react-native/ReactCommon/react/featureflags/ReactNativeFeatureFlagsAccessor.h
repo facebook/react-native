@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<447de2c56cd16e313210f14d0ee3e9e9>>
+ * @generated SignedSource<<0c9cfdad6a33dd4044a5945befb45522>>
  */
 
 /**
@@ -24,6 +24,7 @@
 #include <atomic>
 #include <memory>
 #include <optional>
+#include <string>
 
 namespace facebook::react {
 
@@ -82,6 +83,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool useTurboModules();
 
   void override(std::unique_ptr<ReactNativeFeatureFlagsProvider> provider);
+  std::optional<std::string> getAccessedFeatureFlagNames() const;
 
  private:
   void markFlagAsAccessed(int position, const char* flagName);

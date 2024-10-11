@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<013c1fa01cf029635c04b50f83cc80ef>>
+ * @generated SignedSource<<14957b53f50e3ea943f0e3631475f336>>
  */
 
 /**
@@ -20,6 +20,11 @@
 #include "ReactNativeFeatureFlags.h"
 
 namespace facebook::react {
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wglobal-constructors"
+std::unique_ptr<ReactNativeFeatureFlagsAccessor> accessor_;
+#pragma GCC diagnostic pop
 
 bool ReactNativeFeatureFlags::commonTestFlag() {
   return getAccessor().commonTestFlag();
@@ -223,16 +228,26 @@ void ReactNativeFeatureFlags::override(
 }
 
 void ReactNativeFeatureFlags::dangerouslyReset() {
-  getAccessor(true);
+  accessor_ = std::make_unique<ReactNativeFeatureFlagsAccessor>();
 }
 
-ReactNativeFeatureFlagsAccessor& ReactNativeFeatureFlags::getAccessor(
-    bool reset) {
-  static std::unique_ptr<ReactNativeFeatureFlagsAccessor> accessor;
-  if (accessor == nullptr || reset) {
-    accessor = std::make_unique<ReactNativeFeatureFlagsAccessor>();
+std::optional<std::string> ReactNativeFeatureFlags::dangerouslyForceOverride(
+    std::unique_ptr<ReactNativeFeatureFlagsProvider> provider) {
+  auto accessor = std::make_unique<ReactNativeFeatureFlagsAccessor>();
+  accessor->override(std::move(provider));
+
+  std::swap(accessor_, accessor);
+
+  // Now accessor is the old accessor
+  return accessor == nullptr ? std::nullopt
+                             : accessor->getAccessedFeatureFlagNames();
+}
+
+ReactNativeFeatureFlagsAccessor& ReactNativeFeatureFlags::getAccessor() {
+  if (accessor_ == nullptr) {
+    accessor_ = std::make_unique<ReactNativeFeatureFlagsAccessor>();
   }
-  return *accessor;
+  return *accessor_;
 }
 
 } // namespace facebook::react
