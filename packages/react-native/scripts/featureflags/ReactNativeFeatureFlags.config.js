@@ -431,7 +431,7 @@ const definitions: FeatureFlagDefinitions = {
       },
     },
     useRuntimeShadowNodeReferenceUpdate: {
-      defaultValue: true,
+      defaultValue: false,
       metadata: {
         dateAdded: '2024-06-03',
         description:
