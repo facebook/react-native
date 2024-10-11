@@ -17,6 +17,39 @@
 - Use CONFIG_CMD if set ([a4ec49cbe6](https://github.com/facebook/react-native/commit/a4ec49cbe6d0157417276731ba1608e482f3f10e) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 - App crash happening when navigate to a new app screen with a displaying modal ([8ec672204d](https://github.com/facebook/react-native/commit/8ec672204d5dee2b967cac08adf03c082e36ad79) by [@zhouzh1](https://github.com/zhouzh1))
 
+## v0.76.0-rc.3
+
+### Added
+
+- Add CLI selection of multiple debug targets ([6a24df7eaa](https://github.com/facebook/react-native/commit/6a24df7eaab2420e91b9a4fc9202c175c0802441) by [@huntie](https://github.com/huntie))
+
+#### iOS specific
+
+- Improve RCTAppDelegate usage for brownfield, add `automaticallyLoadReactNativeWindow` flag ([391680fe84](https://github.com/facebook/react-native/commit/391680fe844aad887e497912378c699aed13464b) by [@okwasniewski](https://github.com/okwasniewski))
+
+### Changed
+
+- Use Metro terminal reporter for dev-middleware logs ([2f04dfe795](https://github.com/facebook/react-native/commit/2f04dfe7951e5f4c63f94c74d7ad10cd53969da0) by [@huntie](https://github.com/huntie))
+- Simplify key handling in start command ([5a0df6d0bf](https://github.com/facebook/react-native/commit/5a0df6d0bf5e84d3f7d2a6f000e617e00b8bef02) by [@huntie](https://github.com/huntie))
+- Update Metro to 0.81.0-alpha.2 ([2a344a9580](https://github.com/facebook/react-native/commit/2a344a95806c62bbc708b5466760b009eae0c579) by [@huntie](https://github.com/huntie))
+
+### Fixed
+
+- Fix parsing of modern Flow syntax when `transformer.hermesParser = false` is configured in Metro config ([1387f521fd](https://github.com/facebook/react-native/commit/1387f521fdd8f187eab7a4a6a05d4d75a96b4f88) by [@huntie](https://github.com/huntie))
+- Fix ReactFragment on New Architecture ([52322fbd0e](https://github.com/facebook/react-native/commit/52322fbd0e641726b224b2b9b89d99d93dbc6e33) by [@cortinico](https://github.com/cortinico))
+
+#### Android specific
+
+- Add missing Android implementation for DevMenu Module ([1bdae07d89](https://github.com/facebook/react-native/commit/1bdae07d89fdda486d3f9dbcc4aa5cbb026fc8b6) by [@cortinico](https://github.com/cortinico))
+- Fix measuring text with incorrect hyphenationFrequency ([fc8224036b](https://github.com/facebook/react-native/commit/fc8224036b4b5880c881f471e432ee5b47113b0b) by [@NickGerleman](https://github.com/NickGerleman))
+- Properly set `REACTNATIVE_MERGED_SO` for autolinked libraries ([c005609b01](https://github.com/facebook/react-native/commit/c005609b0155223f3ae778c5cd96bc78c4dfe399) by [@cortinico](https://github.com/cortinico))
+
+#### iOS specific
+
+- Fix applying of tintColor and progressViewOffset props for RefreshControl component with New Architecture enabled ([19d468fed9](https://github.com/facebook/react-native/commit/19d468fed966f2adb973ad3f19a97a5ec0372e3a) by [@TuTejsy](https://github.com/TuTejsy))
+- Convert `NSNull` to `nil` before checking `type` in `readAsDataURL` ([99ab845a5c](https://github.com/facebook/react-native/commit/99ab845a5cf0fe3463ff39b03373b95d4f5c0fac) by [@haileyok](https://github.com/haileyok))
+- Fix `<KeyboardAvoidingView>` with floating keyboard on iPadOS ([3c54e1ee45](https://github.com/facebook/react-native/commit/3c54e1ee4522b26698bb3f99262a2a621b26fb64) by [@renchap](https://github.com/renchap))
+
 ## v0.76.0-rc.2
 
 ### Added
