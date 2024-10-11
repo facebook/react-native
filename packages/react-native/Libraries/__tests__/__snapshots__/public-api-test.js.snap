@@ -1657,10 +1657,10 @@ type Props = $ReadOnly<{|
   color?: ?ColorValue,
   size?: ?IndicatorSize,
 |}>;
-declare const ActivityIndicatorWithRef: React.AbstractComponent<
-  Props,
-  HostComponent<mixed>,
->;
+declare const ActivityIndicatorWithRef: component(
+  ref: React.RefSetter<HostComponent<mixed>>,
+  ...props: Props
+);
 declare export default typeof ActivityIndicatorWithRef;
 "
 `;
