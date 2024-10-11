@@ -17,6 +17,7 @@ import com.facebook.react.uimanager.events.TouchEvent
 import com.facebook.systrace.Systrace
 
 public class FabricEventEmitter(private val uiManager: FabricUIManager) : RCTModernEventEmitter {
+  @Deprecated("Deprecated in Java")
   public override fun receiveEvent(reactTag: Int, eventName: String, params: WritableMap?): Unit {
     receiveEvent(ViewUtil.NO_SURFACE_ID, reactTag, eventName, params)
   }
@@ -49,6 +50,7 @@ public class FabricEventEmitter(private val uiManager: FabricUIManager) : RCTMod
   }
 
   /** Touches are dispatched by [.receiveTouches] */
+  @Deprecated("Deprecated in Java")
   public override fun receiveTouches(
       eventName: String,
       touches: WritableArray,
@@ -57,6 +59,7 @@ public class FabricEventEmitter(private val uiManager: FabricUIManager) : RCTMod
     throw UnsupportedOperationException("EventEmitter#receiveTouches is not supported by Fabric")
   }
 
+  @Deprecated("Deprecated in Java")
   public override fun receiveTouches(event: TouchEvent): Unit {
     // Calls are expected to go via TouchesHelper
     throw UnsupportedOperationException("EventEmitter#receiveTouches is not supported by Fabric")

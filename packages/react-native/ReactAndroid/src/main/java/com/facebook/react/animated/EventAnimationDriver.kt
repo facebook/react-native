@@ -24,6 +24,7 @@ internal class EventAnimationDriver(
     private val eventPath: List<String>,
     @JvmField internal var valueNode: ValueAnimatedNode
 ) : RCTModernEventEmitter {
+  @Deprecated("Deprecated in Java")
   override fun receiveEvent(targetReactTag: Int, eventName: String, event: WritableMap?) =
       receiveEvent(-1, targetReactTag, eventName, event)
 
@@ -36,6 +37,7 @@ internal class EventAnimationDriver(
       // We assume this event can't be coalesced. `customCoalesceKey` has no meaning in Fabric.
       receiveEvent(surfaceId, targetTag, eventName, false, 0, event, EventCategoryDef.UNSPECIFIED)
 
+  @Deprecated("Deprecated in Java")
   override fun receiveTouches(
       eventName: String,
       touches: WritableArray,
@@ -44,6 +46,7 @@ internal class EventAnimationDriver(
     throw UnsupportedOperationException("receiveTouches is not support by native animated events")
   }
 
+  @Deprecated("Deprecated in Java")
   override fun receiveTouches(touchEvent: TouchEvent) {
     throw UnsupportedOperationException("receiveTouches is not support by native animated events")
   }
