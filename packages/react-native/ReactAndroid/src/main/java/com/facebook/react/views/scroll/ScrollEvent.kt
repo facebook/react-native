@@ -7,6 +7,7 @@
 
 package com.facebook.react.views.scroll
 
+import android.os.SystemClock
 import androidx.core.util.Pools.SynchronizedPool
 import com.facebook.infer.annotation.Assertions
 import com.facebook.react.bridge.Arguments
@@ -27,6 +28,7 @@ public class ScrollEvent private constructor() : Event<ScrollEvent>() {
   private var scrollViewWidth = 0
   private var scrollViewHeight = 0
   private var scrollEventType: ScrollEventType? = null
+  private var timestamp: Long = 0
   private var experimental_isSynchronous = false
 
   override fun onDispose() {
@@ -63,6 +65,7 @@ public class ScrollEvent private constructor() : Event<ScrollEvent>() {
     this.contentHeight = contentHeight
     this.scrollViewWidth = scrollViewWidth
     this.scrollViewHeight = scrollViewHeight
+    this.timestamp = SystemClock.uptimeMillis()
     this.experimental_isSynchronous = experimental_isSynchronous
   }
 
@@ -100,6 +103,7 @@ public class ScrollEvent private constructor() : Event<ScrollEvent>() {
     event.putMap("layoutMeasurement", layoutMeasurement)
     event.putMap("velocity", velocity)
     event.putInt("target", viewTag)
+    event.putDouble("timestamp", timestamp.toDouble())
     event.putBoolean("responderIgnoreScroll", true)
     return event
   }
