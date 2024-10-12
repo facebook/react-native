@@ -8,6 +8,7 @@
 package com.facebook.systrace
 
 import androidx.tracing.Trace
+import java.lang.Runnable
 import kotlin.text.StringBuilder
 
 /**
@@ -32,12 +33,12 @@ public object Systrace {
   @JvmStatic public fun traceInstant(tag: Long, title: String?, scope: EventScope?): Unit = Unit
 
   @JvmStatic
-  public fun traceSection(tag: Long, sectionName: String, block: () -> T) {
-    beginSection(sectionName)
+  public fun traceSection(tag: Long, sectionName: String, block: Runnable) {
+    beginSection(tag, sectionName)
     try {
-      return block()
+      block.run()
     } finally {
-      endSection(sectionName)
+      endSection(tag)
     }
   }
 
