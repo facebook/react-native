@@ -59,10 +59,6 @@ type TBackHandler = {|
     eventName: BackPressEventName,
     handler: () => ?boolean,
   ) => {remove: () => void, ...},
-  +removeEventListener: (
-    eventName: BackPressEventName,
-    handler: () => ?boolean,
-  ) => void,
 |};
 const BackHandler: TBackHandler = {
   exitApp: function (): void {
@@ -86,21 +82,13 @@ const BackHandler: TBackHandler = {
       _backPressSubscriptions.push(handler);
     }
     return {
-      remove: (): void => BackHandler.removeEventListener(eventName, handler),
+      remove: (): void => {
+        const index = _backPressSubscriptions.indexOf(handler);
+        if (index !== -1) {
+          _backPressSubscriptions.splice(index, 1);
+        }
+      },
     };
-  },
-
-  /**
-   * Removes the event handler.
-   */
-  removeEventListener: function (
-    eventName: BackPressEventName,
-    handler: () => ?boolean,
-  ): void {
-    const index = _backPressSubscriptions.indexOf(handler);
-    if (index !== -1) {
-      _backPressSubscriptions.splice(index, 1);
-    }
   },
 };
 

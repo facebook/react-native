@@ -18,10 +18,6 @@ type TBackHandler = {|
     eventName: BackPressEventName,
     handler: () => ?boolean,
   ) => {remove: () => void, ...},
-  +removeEventListener: (
-    eventName: BackPressEventName,
-    handler: () => ?boolean,
-  ) => void,
 |};
 
 declare module.exports: TBackHandler;
