@@ -75,7 +75,9 @@ RCT_EXPORT_MODULE()
       restorationHandler:(nonnull void (^)(NSArray<id<UIUserActivityRestoring>> *_Nullable))restorationHandler
 {
   if ([userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
-    NSDictionary *payload = @{@"url" : userActivity.webpageURL.absoluteString};
+    // This can be nullish when launching an App Clip.
+    NSString *urlString = userActivity.webpageURL ? userActivity.webpageURL.absoluteString : @"";
+    NSDictionary *payload = @{@"url" : urlString};
     [[NSNotificationCenter defaultCenter] postNotificationName:kOpenURLNotification object:self userInfo:payload];
   }
   return YES;
