@@ -14,10 +14,17 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.module.annotations.ReactModule;
 
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CodingErrorAction;
+
 @ReactModule(name = NativeFileReaderModuleSpec.NAME)
 public class FileReaderModule extends NativeFileReaderModuleSpec {
 
   private static final String ERROR_INVALID_BLOB = "ERROR_INVALID_BLOB";
+  private static final String ERROR_DECODE_ERROR = "ERROR_DECODE_ERROR";
 
   public FileReaderModule(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -55,9 +62,14 @@ public class FileReaderModule extends NativeFileReaderModuleSpec {
     }
 
     try {
-      promise.resolve(new String(bytes, encoding));
+      CharsetDecoder decoder = Charset.forName(encoding).newDecoder()
+              .onMalformedInput(CodingErrorAction.REPORT)
+              .onUnmappableCharacter(CodingErrorAction.REPORT);
+
+      CharBuffer decodedBytes = decoder.decode(ByteBuffer.wrap(bytes));
+      promise.resolve(String.valueOf(decodedBytes));
     } catch (Exception e) {
-      promise.reject(e);
+      promise.reject(ERROR_DECODE_ERROR, "Invalid encoding, unable to decode blob to text, for: " + encoding, e);
     }
   }
 

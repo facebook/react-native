@@ -50,8 +50,16 @@ RCT_EXPORT_METHOD(readAsText
       }
 
       NSString *text = [[NSString alloc] initWithData:data encoding:stringEncoding];
-
-      resolve(text);
+      
+      if (!text) {
+        reject(@"ERROR_DECODE_ERROR",
+               [NSString stringWithFormat:@"Invalid encoding, unable to decode blob to text, for: %@", 
+                  [NSString localizedNameOfStringEncoding:NSUTF8StringEncoding]],
+               nil);
+      } else {
+        resolve(text);
+      }
+      
     }
   });
 }
