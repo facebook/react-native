@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		08E25EBE4A584CD7B70FBB1E /* libPods-RNTester.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D74056A5352F0925816E50E0 /* libPods-RNTester.a */; };
+		0EA618032BE537D3001875EF /* RNTesterBundle.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 0EA618022BE537D3001875EF /* RNTesterBundle.bundle */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		2DDEF0101F84BF7B00DBDF73 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2DDEF00F1F84BF7B00DBDF73 /* Images.xcassets */; };
 		383889DA23A7398900D06C3E /* RCTConvert_UIColorTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 383889D923A7398900D06C3E /* RCTConvert_UIColorTests.m */; };
@@ -78,6 +79,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0EA618022BE537D3001875EF /* RNTesterBundle.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = RNTesterBundle.bundle; path = RNTester/RNTesterBundle.bundle; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* RNTester.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RNTester.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = RNTester/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = RNTester/Info.plist; sourceTree = "<group>"; };
@@ -280,6 +282,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				0EA618022BE537D3001875EF /* RNTesterBundle.bundle */,
 				13B07FAE1A68108700A75B9A /* RNTester */,
 				E7DB20A022B2BA84005AC45F /* RNTesterUnitTests */,
 				E7DB215422B2F332005AC45F /* RNTesterIntegrationTests */,
@@ -483,6 +486,7 @@
 			files = (
 				2DDEF0101F84BF7B00DBDF73 /* Images.xcassets in Resources */,
 				8145AE06241172D900A3F8DA /* LaunchScreen.storyboard in Resources */,
+				0EA618032BE537D3001875EF /* RNTesterBundle.bundle in Resources */,
 				F0D621C32BBB9E38005960AC /* PrivacyInfo.xcprivacy in Resources */,
 				3D2AFAF51D646CF80089D1A3 /* legacy_image@2x.png in Resources */,
 			);
