@@ -260,9 +260,8 @@ using namespace facebook::react;
 
   // `shadowColor`
   if (oldViewProps.shadowColor != newViewProps.shadowColor) {
-    CGColorRef shadowColor = RCTCreateCGColorRefFromSharedColor(newViewProps.shadowColor);
-    self.layer.shadowColor = shadowColor;
-    CGColorRelease(shadowColor);
+    RCTUIColor *shadowColor = RCTUIColorFromSharedColor(newViewProps.shadowColor); // [macOS]
+    self.layer.shadowColor = shadowColor.CGColor;
     needsInvalidateLayer = YES;
   }
 
@@ -584,18 +583,10 @@ static RCTCornerRadii RCTCornerRadiiFromBorderRadii(BorderRadii borderRadii)
 static RCTBorderColors RCTCreateRCTBorderColorsFromBorderColors(BorderColors borderColors)
 {
   return RCTBorderColors{
-      .top = RCTCreateCGColorRefFromSharedColor(borderColors.top),
-      .left = RCTCreateCGColorRefFromSharedColor(borderColors.left),
-      .bottom = RCTCreateCGColorRefFromSharedColor(borderColors.bottom),
-      .right = RCTCreateCGColorRefFromSharedColor(borderColors.right)};
-}
-
-static void RCTReleaseRCTBorderColors(RCTBorderColors borderColors)
-{
-  CGColorRelease(borderColors.top);
-  CGColorRelease(borderColors.left);
-  CGColorRelease(borderColors.bottom);
-  CGColorRelease(borderColors.right);
+      .top = RCTUIColorFromSharedColor(borderColors.top),
+      .left = RCTUIColorFromSharedColor(borderColors.left),
+      .bottom = RCTUIColorFromSharedColor(borderColors.bottom),
+      .right = RCTUIColorFromSharedColor(borderColors.right)};
 }
 
 static CALayerCornerCurve CornerCurveFromBorderCurve(BorderCurve borderCurve)
@@ -800,9 +791,9 @@ static RCTCursor RCTCursorFromCursor(Cursor cursor)
            (*borderMetrics.borderColors.left).getUIColor() != nullptr));
 
 #if !TARGET_OS_OSX // [macOS]
-  CGColorRef backgroundColor = [_backgroundColor resolvedColorWithTraitCollection:self.traitCollection].CGColor;
+  RCTUIColor *backgroundColor = [_backgroundColor resolvedColorWithTraitCollection:self.traitCollection];
 #else // [macOS
-  CGColorRef backgroundColor = _backgroundColor.CGColor;
+  RCTUIColor *backgroundColor = _backgroundColor;
 #endif // macOS]
 
   if (useCoreAnimationBorderRendering) {
@@ -810,14 +801,12 @@ static RCTCursor RCTCursorFromCursor(Cursor cursor)
     [_borderLayer removeFromSuperlayer];
 
     layer.borderWidth = (CGFloat)borderMetrics.borderWidths.left;
-    CGColorRef borderColor = RCTCreateCGColorRefFromSharedColor(borderMetrics.borderColors.left);
-    layer.borderColor = borderColor;
-    CGColorRelease(borderColor);
+    layer.borderColor = RCTUIColorFromSharedColor(borderMetrics.borderColors.left).CGColor;
     layer.cornerRadius = (CGFloat)borderMetrics.borderRadii.topLeft;
 
     layer.cornerCurve = CornerCurveFromBorderCurve(borderMetrics.borderCurves.topLeft);
 
-    layer.backgroundColor = backgroundColor;
+    layer.backgroundColor = backgroundColor.CGColor;
   } else {
     if (!_borderLayer) {
       CALayer *borderLayer = [CALayer new];
@@ -835,12 +824,6 @@ static RCTCursor RCTCursorFromCursor(Cursor cursor)
 
     RCTBorderColors borderColors = RCTCreateRCTBorderColorsFromBorderColors(borderMetrics.borderColors);
 
-#if TARGET_OS_OSX // [macOS
-  CGFloat scaleFactor = _layoutMetrics.pointScaleFactor;
-#else
-  // On iOS setting the scaleFactor to 0.0 will default to the device's native scale factor.
-  CGFloat scaleFactor = 0.0;
-#endif // macOS]
     UIImage *image = RCTGetBorderImage(
         RCTBorderStyleFromBorderStyle(borderMetrics.borderStyles.left),
         layer.bounds.size,
@@ -848,10 +831,8 @@ static RCTCursor RCTCursorFromCursor(Cursor cursor)
         RCTUIEdgeInsetsFromEdgeInsets(borderMetrics.borderWidths),
         borderColors,
         backgroundColor,
-        self.clipsToBounds,
-        scaleFactor); // [macOS]
+        self.clipsToBounds);
 
-    RCTReleaseRCTBorderColors(borderColors);
 
     if (image == nil) {
       _borderLayer.contents = nil;
@@ -866,6 +847,7 @@ static RCTCursor RCTCursorFromCursor(Cursor cursor)
         _borderLayer.contents = (id)image.CGImage;
         _borderLayer.contentsScale = image.scale;
 #else // [macOS
+        CGFloat scaleFactor = _layoutMetrics.pointScaleFactor;
         _borderLayer.contents = [image layerContentsForContentsScale:scaleFactor];
         _borderLayer.contentsScale = scaleFactor;
 #endif // macOS]
