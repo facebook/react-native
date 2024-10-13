@@ -229,6 +229,30 @@ jni::local_ref<jobject> getProps(
     auto diffProps = newShadowView.props->getDiffProps(oldProps);
     return ReadableNativeMap::newObjectCxxArgs(diffProps);
   }
+
+  if (oldShadowView.traits.check(ShadowNodeTraits::Trait::ViewKind)) {
+    const auto& oldViewProps =
+        static_cast<const ViewProps&>(*oldShadowView.props);
+    const auto& newViewProps =
+        static_cast<const ViewProps&>(*newShadowView.props);
+
+    if (oldViewProps.yogaStyle.display() != newViewProps.yogaStyle.display()) {
+      // This branch is to prevent a UI flicker where React is committing
+      // older revision of a View. This happens when <Suspense /> is used
+      // together with transition APIs: `useTransition` , `startTransition` and
+      // `useDeferredValue`. React will hide a View by setting {display: 'none'}
+      // on shadow node revision 2. It will show the View by using shadow node
+      // revision 1. This is all correct but Android's mounting layer does not
+      // handle this because it only consumes changesets coming from React.
+
+      // For convenience, this is where React clones the Suspense boundary:
+      // https://github.com/facebook/react/blob/f603426f917314561c4289734f39b972be3814af/packages/react-native-renderer/src/ReactFiberConfigFabric.js#L433
+      auto changeset = newShadowView.props->rawProps;
+      changeset["display"] = yoga::toString(newViewProps.yogaStyle.display());
+      return ReadableNativeMap::newObjectCxxArgs(changeset);
+    }
+  }
+
   return ReadableNativeMap::newObjectCxxArgs(newShadowView.props->rawProps);
 }
 
