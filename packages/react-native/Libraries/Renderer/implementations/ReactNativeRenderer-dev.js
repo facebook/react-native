@@ -8924,7 +8924,7 @@ __DEV__ &&
             current = requiredContext(rootInstanceStackCursor.current);
             if (!requiredContext(contextStackCursor.current).isInAParentText)
               throw Error(
-                "Text strings must be rendered within a <Text> component."
+                "Text strings must be rendered within a <Text> component. Text: " + newProps
               );
             renderLanes = allocateTag();
             ReactNativePrivateInterface.UIManager.createView(
