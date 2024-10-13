@@ -7,13 +7,15 @@
 
 #pragma once
 
-#include <jsi/jsi.h>
 #include <atomic>
 #include <functional>
 #include <memory>
 
-namespace facebook::react {
+namespace facebook::jsi {
+class Runtime;
+}
 
+namespace facebook::react {
 /*
  * Event Beat serves two interleaving purposes: synchronization of event queues
  * and ensuring that event dispatching happens on proper threads.
@@ -58,17 +60,6 @@ class EventBeat {
   virtual void request() const;
 
   /*
-   * Induces the next beat to happen as soon as possible. If the method
-   * is called on the proper thread, the beat must happen synchronously.
-   * Subclasses might override this method to implement specific
-   * out-of-turn beat scheduling.
-   * Some types of Event Beats do not support inducing, hence the default
-   * implementation does nothing.
-   * Receiver might ignore the call if a beat was not requested.
-   */
-  virtual void induce() const;
-
-  /*
    * Sets the beat callback function.
    * The callback is must be called on the proper thread.
    */
@@ -76,10 +67,10 @@ class EventBeat {
 
  protected:
   /*
-   * Should be used by subclasses to send a beat.
+   * Induces the next beat to happen as soon as possible.
    * Receiver might ignore the call if a beat was not requested.
    */
-  void beat(jsi::Runtime& runtime) const;
+  virtual void induce() const;
 
   BeatCallback beatCallback_;
   SharedOwnerBox ownerBox_;

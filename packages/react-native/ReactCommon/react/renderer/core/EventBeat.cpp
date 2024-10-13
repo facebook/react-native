@@ -18,18 +18,6 @@ void EventBeat::request() const {
   isRequested_ = true;
 }
 
-void EventBeat::beat(jsi::Runtime& runtime) const {
-  if (!this->isRequested_) {
-    return;
-  }
-
-  isRequested_ = false;
-
-  if (beatCallback_) {
-    beatCallback_(runtime);
-  }
-}
-
 void EventBeat::induce() const {
   // Default implementation does nothing.
 }
