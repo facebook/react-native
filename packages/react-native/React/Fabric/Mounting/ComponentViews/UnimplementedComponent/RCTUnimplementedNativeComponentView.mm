@@ -11,6 +11,8 @@
 #import <react/renderer/components/rncore/EventEmitters.h>
 #import <react/renderer/components/rncore/Props.h>
 
+#import "RCTFabricComponentsPlugins.h"
+
 using namespace facebook::react;
 
 @implementation RCTUnimplementedNativeComponentView {
@@ -54,6 +56,11 @@ using namespace facebook::react;
   }
 
   [super updateProps:props oldProps:oldProps];
+}
+
+Class<RCTComponentViewProtocol> RCTUnimplementedNativeViewCls(void)
+{
+  return RCTUnimplementedNativeComponentView.class;
 }
 
 @end
