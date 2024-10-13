@@ -64,6 +64,19 @@ class FormData {
     this._parts.push([key, value]);
   }
 
+  set(key: string, value: FormDataValue) {
+    this.delete(key);
+    this.append(key, value);
+  }
+
+  delete(key: string) {
+    this._parts = this._parts.filter(([name]) => name !== key);
+  }
+
+  entries(): Iterable<FormDataNameValuePair> {
+    return this._parts.entries();
+  }
+
   getAll(key: string): Array<FormDataValue> {
     return this._parts
       .filter(([name]) => name === key)
