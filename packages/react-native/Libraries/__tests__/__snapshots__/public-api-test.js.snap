@@ -8372,10 +8372,12 @@ declare module.exports: processAspectRatio;
 `;
 
 exports[`public API should not change unintentionally Libraries/StyleSheet/processBackgroundImage.js 1`] = `
-"type ParsedGradientValue = {
+"type LinearGradientOrientation =
+  | { type: \\"angle\\", value: number }
+  | { type: \\"direction\\", value: string };
+type ParsedGradientValue = {
   type: \\"linearGradient\\",
-  start: { x: number, y: number },
-  end: { x: number, y: number },
+  orientation: LinearGradientOrientation,
   colorStops: $ReadOnlyArray<{
     color: ProcessedColorValue,
     position: number,
