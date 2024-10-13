@@ -170,7 +170,7 @@ describe('FlowParser', () => {
       const expected = [
         {
           name: 'a',
-          optional: true,
+          optional: false,
           typeAnnotation: {type: 'StringTypeAnnotation'},
         },
         {
@@ -623,7 +623,7 @@ describe('TypeScriptParser', () => {
       const expected = [
         {
           name: 'a',
-          optional: true,
+          optional: false,
           typeAnnotation: {properties: [], type: 'ObjectTypeAnnotation'},
         },
         {

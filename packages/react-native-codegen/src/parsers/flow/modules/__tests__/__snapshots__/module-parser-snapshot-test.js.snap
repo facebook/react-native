@@ -1943,7 +1943,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_PARTIALS
                 'properties': [
                   {
                     'name': 'a',
-                    'optional': true,
+                    'optional': false,
                     'typeAnnotation': {
                       'type': 'StringTypeAnnotation'
                     }
@@ -1978,7 +1978,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_PARTIALS
                     'properties': [
                       {
                         'name': 'a',
-                        'optional': true,
+                        'optional': false,
                         'typeAnnotation': {
                           'type': 'StringTypeAnnotation'
                         }
@@ -2052,7 +2052,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_PARTIALS
                     'properties': [
                       {
                         'name': 'a',
-                        'optional': true,
+                        'optional': false,
                         'typeAnnotation': {
                           'type': 'StringTypeAnnotation'
                         }
@@ -2075,7 +2075,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_PARTIALS
                     'properties': [
                       {
                         'name': 'a',
-                        'optional': true,
+                        'optional': false,
                         'typeAnnotation': {
                           'type': 'StringTypeAnnotation'
                         }
