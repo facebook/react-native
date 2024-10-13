@@ -25,7 +25,7 @@ internal class CompositeBackgroundDrawable(
     public val originalBackground: Drawable? = null,
 
     /** Non-inset box shadows */
-    public val outerShadows: List<Drawable> = emptyList(),
+    public val outerShadows: LayerDrawable? = null,
 
     /**
      * CSS background layer and border rendering
@@ -39,24 +39,23 @@ internal class CompositeBackgroundDrawable(
     public val feedbackUnderlay: Drawable? = null,
 
     /** Inset box-shadows */
-    public val innerShadows: List<Drawable> = emptyList(),
+    public val innerShadows: LayerDrawable? = null,
 
     /** Outline */
     public val outline: OutlineDrawable? = null,
 ) :
     LayerDrawable(
-        listOfNotNull(
+        listOf(
                 originalBackground,
                 // z-ordering of user-provided shadow-list is opposite direction of LayerDrawable
                 // z-ordering
                 // https://drafts.csswg.org/css-backgrounds/#shadow-layers
-                *outerShadows.asReversed().toTypedArray(),
+                outerShadows,
                 cssBackground,
                 feedbackUnderlay,
-                *innerShadows.asReversed().toTypedArray(),
+                innerShadows,
                 outline)
             .toTypedArray()) {
-
   // Holder value for currently set insets
   public var borderInsets: BorderInsets? = null
 
@@ -75,8 +74,8 @@ internal class CompositeBackgroundDrawable(
   }
 
   public fun withNewShadows(
-      outerShadows: List<Drawable>,
-      innerShadows: List<Drawable>
+      outerShadows: LayerDrawable,
+      innerShadows: LayerDrawable
   ): CompositeBackgroundDrawable {
     return CompositeBackgroundDrawable(
         originalBackground, outerShadows, cssBackground, feedbackUnderlay, innerShadows, outline)
