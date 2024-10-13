@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.modules.network;
+package com.facebook.react.modules.network
 
 /**
  * The class purpose is to weaken too strict OkHttp restriction on http headers. See:
@@ -13,19 +13,17 @@ package com.facebook.react.modules.network;
  * information. It is better to get 401 from the server in this case, rather than non descriptive
  * error as 401 could be handled to invalidate the wrong token in the client code.
  */
-class HeaderUtil {
-
-  public static String stripHeaderName(String name) {
-    StringBuilder builder = new StringBuilder(name.length());
-    boolean modified = false;
-    for (int i = 0, length = name.length(); i < length; i++) {
-      char c = name.charAt(i);
+internal object HeaderUtil {
+  public fun stripHeaderName(name: String): String {
+    val builder = StringBuilder(name.length)
+    var modified = false
+    name.forEach { c ->
       if (c > '\u0020' && c < '\u007f') {
-        builder.append(c);
+        builder.append(c)
       } else {
-        modified = true;
+        modified = true
       }
     }
-    return modified ? builder.toString() : name;
+    return if (modified) builder.toString() else name
   }
 }
