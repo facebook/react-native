@@ -109,7 +109,7 @@ export default class Performance {
     markName: string,
     markOptions?: PerformanceMarkOptions,
   ): PerformanceMark {
-    let computedStartTime = 0;
+    let computedStartTime;
     if (NativePerformance?.mark) {
       computedStartTime = NativePerformance.mark(markName, markOptions?.startTime);
     } else {
@@ -117,9 +117,9 @@ export default class Performance {
       computedStartTime = performance.now();
     }
 
-    return new PerformanceMark(markName, { 
-      startTime: computedStartTime, 
-      detail: markOptions?.detail
+    return new PerformanceMark(markName, {
+      startTime: computedStartTime,
+      detail: markOptions?.detail,
     });
   }
 

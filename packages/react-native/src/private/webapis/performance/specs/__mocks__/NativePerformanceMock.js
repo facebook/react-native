@@ -121,7 +121,7 @@ const NativePerformanceMock = {
       startTime: computedStartTime,
       duration: 0,
     });
-    
+
     return computedStartTime;
   },
 
@@ -133,8 +133,17 @@ const NativePerformanceMock = {
     startMark?: string,
     endMark?: string,
   ): NativePerformanceMeasureResult => {
-    const start = startMark != null ? marks.get(startMark) ?? 0 : startTime;
-    const end = endMark != null ? marks.get(endMark) ?? 0 : endTime;
+    const start = startMark != null ? marks.get(startMark) : startTime;
+    const end = endMark != null ? marks.get(endMark) : endTime;
+
+    if (start === undefined) {
+      throw new Error('startMark does not exist');
+    }
+
+    if (end === undefined) {
+      throw new Error('endMark does not exist');
+    }
+
     const computedDuration = duration ?? end - start;
     reportEntry({
       entryType: RawPerformanceEntryTypeValues.MEASURE,
