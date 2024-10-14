@@ -73,7 +73,7 @@ class NativePerformance : public NativePerformanceCxxSpec<NativePerformance> {
   double mark(jsi::Runtime& rt, std::string name, std::optional<double> startTime);
 
   // https://w3c.github.io/user-timing/#measure-method
-  std::vector<double> measure(
+  std::tuple<double, double> measure(
       jsi::Runtime& rt,
       std::string name,
       double startTime,

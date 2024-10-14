@@ -128,7 +128,7 @@ double NativePerformance::mark(
   return entry.startTime;
 }
 
-std::vector<double> NativePerformance::measure(
+std::tuple<double, double> NativePerformance::measure(
     jsi::Runtime& rt,
     std::string name,
     double startTime,
@@ -146,7 +146,7 @@ std::vector<double> NativePerformance::measure(
   auto entry = PerformanceEntryReporter::getInstance()->reportMeasure(
       eventName, startTime, endTime, duration, startMark, endMark);
 
-  return {entry.startTime, entry.duration};
+  return std::tuple{entry.startTime, entry.duration};
 }
 
 void NativePerformance::clearMarks(
