@@ -15,7 +15,7 @@ import android.preference.PreferenceManager
 import com.facebook.common.logging.FLog
 import com.facebook.react.modules.systeminfo.AndroidInfoHelpers
 
-public class PackagerConnectionSettings(private val appContext: Context) {
+public open class PackagerConnectionSettings(private val appContext: Context) {
   private val preferences: SharedPreferences =
       PreferenceManager.getDefaultSharedPreferences(appContext)
   public val packageName: String = appContext.packageName

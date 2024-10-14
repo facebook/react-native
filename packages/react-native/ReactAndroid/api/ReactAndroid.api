@@ -3770,13 +3770,13 @@ public abstract class com/facebook/react/packagerconnection/NotificationOnlyHand
 	public final fun onRequest (Ljava/lang/Object;Lcom/facebook/react/packagerconnection/Responder;)V
 }
 
-public final class com/facebook/react/packagerconnection/PackagerConnectionSettings {
+public class com/facebook/react/packagerconnection/PackagerConnectionSettings {
 	public fun <init> (Landroid/content/Context;)V
-	public final fun getAdditionalOptionsForPackager ()Ljava/util/Map;
-	public final fun getDebugServerHost ()Ljava/lang/String;
-	public final fun getPackageName ()Ljava/lang/String;
-	public final fun setAdditionalOptionForPackager (Ljava/lang/String;Ljava/lang/String;)V
-	public final fun setDebugServerHost (Ljava/lang/String;)V
+	public fun getAdditionalOptionsForPackager ()Ljava/util/Map;
+	public fun getDebugServerHost ()Ljava/lang/String;
+	public fun getPackageName ()Ljava/lang/String;
+	public fun setAdditionalOptionForPackager (Ljava/lang/String;Ljava/lang/String;)V
+	public fun setDebugServerHost (Ljava/lang/String;)V
 }
 
 public final class com/facebook/react/packagerconnection/ReconnectingWebSocket : okhttp3/WebSocketListener {
