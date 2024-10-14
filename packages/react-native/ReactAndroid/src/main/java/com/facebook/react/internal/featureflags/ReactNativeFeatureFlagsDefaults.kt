@@ -117,7 +117,7 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun useOptimizedEventBatchingOnAndroid(): Boolean = false
 
-  override fun useRuntimeShadowNodeReferenceUpdate(): Boolean = true
+  override fun useRuntimeShadowNodeReferenceUpdate(): Boolean = false
 
   override fun useTurboModuleInterop(): Boolean = false
 

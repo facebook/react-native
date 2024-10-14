@@ -24,6 +24,7 @@
 #include <atomic>
 #include <memory>
 #include <optional>
+#include <string>
 
 namespace facebook::react {
 
@@ -83,6 +84,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool useTurboModules();
 
   void override(std::unique_ptr<ReactNativeFeatureFlagsProvider> provider);
+  std::optional<std::string> getAccessedFeatureFlagNames() const;
 
  private:
   void markFlagAsAccessed(int position, const char* flagName);

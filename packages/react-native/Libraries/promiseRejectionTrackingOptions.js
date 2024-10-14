@@ -36,7 +36,7 @@ let rejectionTrackingOptions: $NonMaybeType<Parameters<enable>[0]> = {
       }
       // It could although this object is not a standard error, it still has stack information to unwind
       // $FlowFixMe ignore types just check if stack is there
-      if (rejection.stack && typeof rejection.stack === 'string') {
+      if (rejection?.stack && typeof rejection.stack === 'string') {
         stack = rejection.stack;
       }
     }

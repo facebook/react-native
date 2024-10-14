@@ -215,4 +215,7 @@ class TouchableBounce extends React.Component<Props, State> {
 
 module.exports = (React.forwardRef((props, hostRef) => (
   <TouchableBounce {...props} hostRef={hostRef} />
-)): React.AbstractComponent<$ReadOnly<$Diff<Props, {|hostRef: mixed|}>>>);
+)): component(
+  ref: React.RefSetter<mixed>,
+  ...props: $ReadOnly<$Diff<Props, {|hostRef: mixed|}>>
+));

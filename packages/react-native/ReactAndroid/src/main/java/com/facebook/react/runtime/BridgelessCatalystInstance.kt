@@ -87,10 +87,12 @@ public class BridgelessCatalystInstance(private val reactHost: ReactHostImpl) : 
   override fun <T : JavaScriptModule> getJSModule(jsInterface: Class<T>): T? =
       reactHost.currentReactContext?.getJSModule(jsInterface)
 
+  @get:Deprecated("Deprecated in Java")
   override public val javaScriptContextHolder: JavaScriptContextHolder
     get() = reactHost.getJavaScriptContextHolder()!!
 
   @Suppress("INAPPLICABLE_JVM_NAME")
+  @get:Deprecated("Deprecated in Java")
   @get:JvmName("getJSCallInvokerHolder") // This is needed to keep backward compatibility
   override public val jsCallInvokerHolder: CallInvokerHolder
     get() = reactHost.getJSCallInvokerHolder()!!

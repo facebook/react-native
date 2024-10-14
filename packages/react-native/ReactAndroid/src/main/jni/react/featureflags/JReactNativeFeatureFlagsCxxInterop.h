@@ -187,6 +187,10 @@ class JReactNativeFeatureFlagsCxxInterop
   static void dangerouslyReset(
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
+  static jni::local_ref<jstring> dangerouslyForceOverride(
+      facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>,
+      jni::alias_ref<jobject> provider);
+
   static void registerNatives();
 };
 

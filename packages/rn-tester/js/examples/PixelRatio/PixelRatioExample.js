@@ -10,15 +10,10 @@
 
 'use strict';
 
+import RNTesterText from '../../components/RNTesterText';
+
 import React, {useState} from 'react';
-import {
-  Button,
-  PixelRatio,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import {Button, PixelRatio, StyleSheet, TextInput, View} from 'react-native';
 
 function LayoutSizeToPixel() {
   const [layoutDPSize, setLayoutDPSize] = useState<number>(0);
@@ -35,7 +30,9 @@ function LayoutSizeToPixel() {
     <View style={styles.cardContainer}>
       <View style={styles.card}>
         <View style={styles.row}>
-          <Text style={styles.inputLabel}>Layout Size(dp): </Text>
+          <RNTesterText style={styles.inputLabel}>
+            Layout Size(dp):{' '}
+          </RNTesterText>
           <TextInput
             style={styles.input}
             value={layoutDPSize ? layoutDPSize.toString() : ''}
@@ -44,8 +41,8 @@ function LayoutSizeToPixel() {
           />
         </View>
         <View style={[styles.row, styles.outputContainer]}>
-          <Text style={styles.inputLabel}>Pixel Size: </Text>
-          <Text>{pixelSize}px</Text>
+          <RNTesterText style={styles.inputLabel}>Pixel Size: </RNTesterText>
+          <RNTesterText>{pixelSize}px</RNTesterText>
         </View>
       </View>
     </View>
@@ -68,7 +65,9 @@ function RoundToNearestPixel() {
     <View style={styles.cardContainer}>
       <View style={styles.card}>
         <View style={styles.row}>
-          <Text style={styles.inputLabel}>Layout Size(dp): </Text>
+          <RNTesterText style={styles.inputLabel}>
+            Layout Size(dp):{' '}
+          </RNTesterText>
           <TextInput
             style={styles.input}
             value={layoutDPSizeText ? layoutDPSizeText.toString() : ''}
@@ -77,8 +76,10 @@ function RoundToNearestPixel() {
           />
         </View>
         <View style={[styles.row, styles.outputContainer]}>
-          <Text style={styles.inputLabel}>Nearest Layout Size: </Text>
-          <Text>{pixelSize}dp</Text>
+          <RNTesterText style={styles.inputLabel}>
+            Nearest Layout Size:{' '}
+          </RNTesterText>
+          <RNTesterText>{pixelSize}dp</RNTesterText>
         </View>
       </View>
     </View>
@@ -98,8 +99,10 @@ function GetPixelRatio() {
         <Button onPress={getPixelDensityCallback} title={'Get Pixel Density'} />
         {pixelDensity ? (
           <View style={[styles.row, styles.outputContainer]}>
-            <Text style={styles.inputLabel}>Pixel Density: </Text>
-            <Text>{pixelDensity}</Text>
+            <RNTesterText style={styles.inputLabel}>
+              Pixel Density:{' '}
+            </RNTesterText>
+            <RNTesterText>{pixelDensity}</RNTesterText>
           </View>
         ) : null}
       </View>
@@ -120,8 +123,8 @@ function GetFontScale() {
         <Button onPress={getPixelDensityCallback} title={'Get Font Scale'} />
         {fontScale ? (
           <View style={[styles.row, styles.outputContainer]}>
-            <Text style={styles.inputLabel}>Font scale: </Text>
-            <Text>{fontScale}</Text>
+            <RNTesterText style={styles.inputLabel}>Font scale: </RNTesterText>
+            <RNTesterText>{fontScale}</RNTesterText>
           </View>
         ) : null}
       </View>
@@ -157,7 +160,6 @@ const styles = StyleSheet.create({
   },
   card: {
     width: 200,
-    height: 200,
     alignItems: 'center',
     justifyContent: 'center',
     backfaceVisibility: 'hidden',

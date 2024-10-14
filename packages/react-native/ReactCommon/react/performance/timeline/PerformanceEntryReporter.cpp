@@ -53,7 +53,7 @@ uint32_t PerformanceEntryReporter::getDroppedEntriesCount(
     PerformanceEntryType entryType) const noexcept {
   std::shared_lock lock(buffersMutex_);
 
-  return getBuffer(entryType).droppedEntriesCount;
+  return (uint32_t)getBuffer(entryType).droppedEntriesCount;
 }
 
 std::vector<PerformanceEntry> PerformanceEntryReporter::getEntries() const {

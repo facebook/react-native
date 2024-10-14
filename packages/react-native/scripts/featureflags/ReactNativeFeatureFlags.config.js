@@ -440,7 +440,7 @@ const definitions: FeatureFlagDefinitions = {
       },
     },
     useRuntimeShadowNodeReferenceUpdate: {
-      defaultValue: true,
+      defaultValue: false,
       metadata: {
         dateAdded: '2024-06-03',
         description:
@@ -614,4 +614,5 @@ const definitions: FeatureFlagDefinitions = {
   },
 };
 
-export default definitions;
+// Keep it as a CommonJS module so we can easily import it from Node.js
+module.exports = definitions;

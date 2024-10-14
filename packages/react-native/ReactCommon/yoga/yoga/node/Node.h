@@ -302,7 +302,7 @@ class YG_EXPORT Node : public ::YGNode {
   std::vector<Node*> children_;
   const Config* config_;
   std::array<Style::Length, 2> processedDimensions_{
-      {value::undefined(), value::undefined()}};
+      {StyleLength::undefined(), StyleLength::undefined()}};
 };
 
 inline Node* resolveRef(const YGNodeRef ref) {

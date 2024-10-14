@@ -216,7 +216,7 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool useRuntimeShadowNodeReferenceUpdate() override {
-    return true;
+    return false;
   }
 
   bool useTurboModuleInterop() override {
