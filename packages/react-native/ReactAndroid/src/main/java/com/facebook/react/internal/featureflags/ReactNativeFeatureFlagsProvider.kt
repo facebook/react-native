@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<193bb7803261004003d9009b44810c2c>>
+ * @generated SignedSource<<3e2f26110d27e8654640f7bf4f66b5eb>>
  */
 
 /**
@@ -27,9 +27,9 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun allowRecursiveCommitsWithSynchronousMountOnAndroid(): Boolean
 
-  @DoNotStrip public fun batchRenderingUpdatesInEventLoop(): Boolean
-
   @DoNotStrip public fun completeReactInstanceCreationOnBgThreadOnAndroid(): Boolean
+
+  @DoNotStrip public fun disableEventLoopOnBridgeless(): Boolean
 
   @DoNotStrip public fun enableAlignItemsBaselineOnFabricIOS(): Boolean
 
@@ -60,8 +60,6 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun enableLayoutAnimationsOnIOS(): Boolean
 
   @DoNotStrip public fun enableLongTaskAPI(): Boolean
-
-  @DoNotStrip public fun enableMicrotasks(): Boolean
 
   @DoNotStrip public fun enablePreciseSchedulingForPremountItemsOnAndroid(): Boolean
 
@@ -106,8 +104,6 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun useFabricInterop(): Boolean
 
   @DoNotStrip public fun useImmediateExecutorInAndroidBridgeless(): Boolean
-
-  @DoNotStrip public fun useModernRuntimeScheduler(): Boolean
 
   @DoNotStrip public fun useNativeViewConfigsInBridgelessMode(): Boolean
 

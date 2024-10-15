@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<83fc6efe6c6c5c52ffe081b9696919e1>>
+ * @generated SignedSource<<57dd370978815368d98526138a54116b>>
  */
 
 /**
@@ -39,9 +39,9 @@ class NativeReactNativeFeatureFlags
 
   bool allowRecursiveCommitsWithSynchronousMountOnAndroid(jsi::Runtime& runtime);
 
-  bool batchRenderingUpdatesInEventLoop(jsi::Runtime& runtime);
-
   bool completeReactInstanceCreationOnBgThreadOnAndroid(jsi::Runtime& runtime);
+
+  bool disableEventLoopOnBridgeless(jsi::Runtime& runtime);
 
   bool enableAlignItemsBaselineOnFabricIOS(jsi::Runtime& runtime);
 
@@ -72,8 +72,6 @@ class NativeReactNativeFeatureFlags
   bool enableLayoutAnimationsOnIOS(jsi::Runtime& runtime);
 
   bool enableLongTaskAPI(jsi::Runtime& runtime);
-
-  bool enableMicrotasks(jsi::Runtime& runtime);
 
   bool enablePreciseSchedulingForPremountItemsOnAndroid(jsi::Runtime& runtime);
 
@@ -118,8 +116,6 @@ class NativeReactNativeFeatureFlags
   bool useFabricInterop(jsi::Runtime& runtime);
 
   bool useImmediateExecutorInAndroidBridgeless(jsi::Runtime& runtime);
-
-  bool useModernRuntimeScheduler(jsi::Runtime& runtime);
 
   bool useNativeViewConfigsInBridgelessMode(jsi::Runtime& runtime);
 
