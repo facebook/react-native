@@ -48,12 +48,7 @@ if (global.RN$Bridgeless !== true) {
   defineLazyTimer('cancelAnimationFrame');
   defineLazyTimer('requestIdleCallback');
   defineLazyTimer('cancelIdleCallback');
-} else if (
-  // TODO remove this condition when bridgeless == modern scheduler everywhere.
-  NativeReactNativeFeatureFlags != null &&
-  // eslint-disable-next-line react-hooks/rules-of-hooks -- false positive due to `use` prefix
-  ReactNativeFeatureFlags.useModernRuntimeScheduler()
-) {
+} else if (!ReactNativeFeatureFlags.disableEventLoopOnBridgeless()) {
   polyfillGlobal(
     'requestIdleCallback',
     () =>
@@ -69,12 +64,9 @@ if (global.RN$Bridgeless !== true) {
   );
 }
 
-// We need to check if the native module is available before accessing the
-// feature flag, because otherwise the API would throw an error in the legacy
-// architecture in OSS, where the native module isn't available.
 if (
-  NativeReactNativeFeatureFlags != null &&
-  ReactNativeFeatureFlags.enableMicrotasks()
+  global.RN$Bridgeless === true &&
+  !ReactNativeFeatureFlags.disableEventLoopOnBridgeless()
 ) {
   // This is the flag that tells React to use `queueMicrotask` to batch state
   // updates, instead of using the scheduler to schedule a regular task.

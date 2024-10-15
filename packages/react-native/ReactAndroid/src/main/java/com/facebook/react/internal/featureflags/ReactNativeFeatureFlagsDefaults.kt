@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9e0db1a47596fec77c29122620b8f633>>
+ * @generated SignedSource<<ec1ab854ff870946198de0fd4c0314ae>>
  */
 
 /**
@@ -27,9 +27,9 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun allowRecursiveCommitsWithSynchronousMountOnAndroid(): Boolean = false
 
-  override fun batchRenderingUpdatesInEventLoop(): Boolean = false
-
   override fun completeReactInstanceCreationOnBgThreadOnAndroid(): Boolean = false
+
+  override fun disableEventLoopOnBridgeless(): Boolean = false
 
   override fun enableAlignItemsBaselineOnFabricIOS(): Boolean = true
 
@@ -60,8 +60,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enableLayoutAnimationsOnIOS(): Boolean = true
 
   override fun enableLongTaskAPI(): Boolean = false
-
-  override fun enableMicrotasks(): Boolean = false
 
   override fun enablePreciseSchedulingForPremountItemsOnAndroid(): Boolean = false
 
@@ -106,8 +104,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun useFabricInterop(): Boolean = false
 
   override fun useImmediateExecutorInAndroidBridgeless(): Boolean = false
-
-  override fun useModernRuntimeScheduler(): Boolean = false
 
   override fun useNativeViewConfigsInBridgelessMode(): Boolean = false
 
