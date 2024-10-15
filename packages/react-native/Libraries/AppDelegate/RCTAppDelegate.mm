@@ -319,6 +319,18 @@ class RCTAppDelegateBridgelessFeatureFlags : public facebook::react::ReactNative
   {
     return true;
   }
+  bool enableBridgelessArchitecture() override
+  {
+    return true;
+  }
+  bool enableFabricRenderer() override
+  {
+    return true;
+  }
+  bool useTurboModules() override
+  {
+    return true;
+  }
 };
 
 - (void)_setUpFeatureFlags
