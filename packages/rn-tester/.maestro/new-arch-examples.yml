@@ -25,3 +25,8 @@ appId: ${APP_ID} # iOS: com.meta.RNTester.localDevelopment | Android: com.facebo
     text: "InWindow x: 0, y: 0, width: 0, height: 0"
 - assertNotVisible:
     text: "InLayout x: 0, y: 0, width: 0, height: 0"
+- assertVisible: "Legacy Style Event Fired 0 times"
+- tapOn:
+    text: "Fire Legacy Style Event"
+    repeat: 10
+- assertVisible: "Legacy Style Event Fired 10 times"
