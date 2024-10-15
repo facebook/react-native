@@ -153,6 +153,39 @@ static void positionAbsoluteChildLegacy(
       : ((resolveChildAlignment(parent, child) == Align::FlexEnd) ^
          (parent->style().flexWrap() == Wrap::WrapReverse));
 
+  // If the child is absolutely positioned and has a
+  // top/left/bottom/right set, override all the previously computed
+  // positions to set it correctly.
+  const bool isChildLeadingPosDefined =
+      child->style().isFlexStartPositionDefined(axis, direction) &&
+      !child->style().isFlexStartPositionAuto(axis, direction);
+  if (isChildLeadingPosDefined) {
+    child->setLayoutPosition(
+        child->style().computeFlexStartPosition(
+            axis,
+            direction,
+            isAxisRow ? containingBlockWidth : containingBlockHeight) +
+            containingNode->style().computeFlexStartBorder(axis, direction) +
+            child->style().computeFlexStartMargin(
+                axis,
+                direction,
+                isAxisRow ? containingBlockWidth : containingBlockHeight),
+        flexStartEdge(axis));
+  }
+
+  // If leading position is not defined or calculations result in Nan,
+  // default to border + margin
+  if (!isChildLeadingPosDefined ||
+      yoga::isUndefined(child->getLayout().position(flexStartEdge(axis)))) {
+    child->setLayoutPosition(
+        containingNode->style().computeFlexStartBorder(axis, direction) +
+            child->style().computeFlexStartMargin(
+                axis,
+                direction,
+                isAxisRow ? containingBlockWidth : containingBlockHeight),
+        flexStartEdge(axis));
+  }
+
   if (child->style().isFlexEndPositionDefined(axis, direction) &&
       (!child->style().isFlexStartPositionDefined(axis, direction) ||
        child->style().isFlexStartPositionAuto(axis, direction))) {
