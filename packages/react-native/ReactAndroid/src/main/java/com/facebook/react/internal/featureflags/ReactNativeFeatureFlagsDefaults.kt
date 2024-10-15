@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ec1ab854ff870946198de0fd4c0314ae>>
+ * @generated SignedSource<<45065c5d8f78528edc1665fb405860b8>>
  */
 
 /**
@@ -94,8 +94,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun lazyAnimationCallbacks(): Boolean = false
 
   override fun loadVectorDrawablesOnImages(): Boolean = false
-
-  override fun removeNestedCallsToDispatchMountItemsOnAndroid(): Boolean = false
 
   override fun setAndroidLayoutDirection(): Boolean = true
 

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<11cda86070e0fe7d7aca96a8c6e1302b>>
+ * @generated SignedSource<<b90c5068a1ec0e40631ebdc1dfd61aa9>>
  */
 
 /**
@@ -218,11 +218,6 @@ class ReactNativeFeatureFlags {
    * Adds support for loading vector drawable assets in the Image component (only on Android)
    */
   RN_EXPORT static bool loadVectorDrawablesOnImages();
-
-  /**
-   * Removes nested calls to MountItemDispatcher.dispatchMountItems on Android, so we do less work per frame on the UI thread.
-   */
-  RN_EXPORT static bool removeNestedCallsToDispatchMountItemsOnAndroid();
 
   /**
    * Propagate layout direction to Android views.
