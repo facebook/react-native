@@ -418,6 +418,7 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
 
 - (void)textInputDidChangeSelection
 {
+  [self _updateTypingAttributes];
   if (_comingFromJS) {
     return;
   }
@@ -674,7 +675,24 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
     [_backedTextInputView scrollRangeToVisible:NSMakeRange(offsetStart, 0)];
   }
   [self _restoreTextSelection];
+  [self _updateTypingAttributes];
   _lastStringStateWasUpdatedWith = attributedString;
+}
+
+// Ensure that newly typed text will inherit any custom attributes. We follow the logic of RN Android, where attributes
+// to the left of the cursor are copied into new text, unless we are at the start of the field, in which case we will
+// copy the attributes from text to the right. This allows consistency between backed input and new AttributedText
+// https://github.com/facebook/react-native/blob/3102a58df38d96f3dacef0530e4dbb399037fcd2/packages/react-native/ReactAndroid/src/main/java/com/facebook/react/views/text/internal/span/SetSpanOperation.kt#L30
+- (void)_updateTypingAttributes
+{
+  if (_backedTextInputView.attributedText.length > 0) {
+    NSUInteger offsetStart = [_backedTextInputView offsetFromPosition:_backedTextInputView.beginningOfDocument
+                                                           toPosition:_backedTextInputView.selectedTextRange.start];
+
+    NSUInteger samplePoint = offsetStart == 0 ? 0 : offsetStart - 1;
+    _backedTextInputView.typingAttributes = [_backedTextInputView.attributedText attributesAtIndex:samplePoint
+                                                                                    effectiveRange:NULL];
+  }
 }
 
 - (void)_setMultiline:(BOOL)multiline
