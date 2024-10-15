@@ -135,6 +135,8 @@ function parseCSSLinearGradient(
 ): $ReadOnlyArray<ParsedGradientValue> {
   const gradients = [];
   let match;
+
+  // matches one or more linear-gradient functions in CSS
   const linearGradientRegex = /linear-gradient\s*\(((?:\([^)]*\)|[^())])*)\)/gi;
 
   while ((match = linearGradientRegex.exec(cssString))) {
@@ -142,6 +144,11 @@ function parseCSSLinearGradient(
     const parts = gradientContent.split(',');
     let orientation: LinearGradientOrientation = DEFAULT_ORIENTATION;
     const trimmedDirection = parts[0].trim().toLowerCase();
+
+    // matches individual color stops in a gradient function
+    // supports various color formats: named colors, hex colors, rgb(a), and hsl(a)
+    // e.g. "red 20%", "blue 50%", "rgba(0, 0, 0, 0.5) 30% 50%"
+    // TODO: does not support color hint syntax yet. It is WIP.
     const colorStopRegex =
       /\s*((?:(?:rgba?|hsla?)\s*\([^)]+\))|#[0-9a-fA-F]+|[a-zA-Z]+)(?:\s+(-?[0-9.]+%?)(?:\s+(-?[0-9.]+%?))?)?\s*/gi;
 
