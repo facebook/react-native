@@ -103,7 +103,7 @@ jobs:
               displayName: Download visionOS SDDK
               inputs:
                 script: |
-                  set -eox
+                  set -eox pipefail
                   # https://github.com/actions/runner-images/issues/10559
                   sudo xcodebuild -runFirstLaunch
                   sudo xcrun simctl list

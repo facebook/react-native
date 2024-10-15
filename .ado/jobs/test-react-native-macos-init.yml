@@ -13,6 +13,22 @@ jobs:
 
       - template: /.ado/templates/apple-tools-setup.yml@self
 
+      - task: CmdLine@2
+        displayName: yarn install react-native-macos-init
+        inputs:
+          script: |
+            set -eox pipefail
+            cd packages/react-native-macos-init
+            yarn install
+
+      - task: CmdLine@2
+        displayName: Build react-native-macos-init
+        inputs:
+          script: |
+            set -eox pipefail
+            cd packages/react-native-macos-init
+            yarn build
+
       - template: /.ado/templates/verdaccio-init.yml@self
 
       - template: /.ado/templates/verdaccio-publish.yml@self
@@ -21,12 +37,15 @@ jobs:
       - task: CmdLine@2
         displayName: yarn install (local react-native-macos)
         inputs:
-          script: yarn install --immutable
+          script:  |
+            set -eox pipefail
+            yarn install --immutable
 
       - task: CmdLine@2
         displayName: yarn install (local react-native-macos-init)
         inputs:
           script: |
+            set -eox pipefail
             cd packages/react-native-macos-init
             yarn install --immutable
 
@@ -34,29 +53,40 @@ jobs:
         displayName: yarn build (local react-native-macos-init)
         inputs:
           script: |
+            set -eox pipefail
             cd packages/react-native-macos-init
             yarn build
 
       - task: CmdLine@2
         displayName: Init new project
         inputs:
-          script: npx --yes react-native@0.71.5 init testcli --template react-native@0.71.5 --skip-install
+          script: |
+            set -eox pipefail
+            npx --yes @react-native-community/cli init testcli --version 0.75 --skip-install
           workingDirectory: $(Agent.BuildDirectory)
 
       - task: CmdLine@2
-        displayName: yarn install (local react-native-macos-init)
+        displayName: yarn install (testcli)
         inputs:
-          script: yarn install --immutable
+          script: |
+            set -eox pipefail
+            yarn install --mode=update-lockfile
+            # `update-lockfile` skips the linking step, so we need to run `yarn install` again
+            yarn install
           workingDirectory: $(Agent.BuildDirectory)/testcli
 
       - task: CmdLine@2
         displayName: Apply macos template
         inputs:
-          script: npx react-native-macos-init --version latest --overwrite --prerelease
+          script: |
+            set -eox pipefail
+            npx react-native-macos-init --version latest --overwrite --prerelease
           workingDirectory: $(Agent.BuildDirectory)/testcli
 
       - task: CmdLine@2
         displayName: Run macos [test]
         inputs:
-          script: npx react-native run-macos
+          script: |
+            set -eox pipefail
+            npx react-native run-macos
           workingDirectory: $(Agent.BuildDirectory)/testcli
