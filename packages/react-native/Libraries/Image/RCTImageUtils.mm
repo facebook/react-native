@@ -249,6 +249,7 @@ BOOL RCTUpscalingRequired(
 
     case RCTResizeModeRepeat:
     case RCTResizeModeCenter:
+    case RCTResizeModeNone:
 
       return NO;
   }

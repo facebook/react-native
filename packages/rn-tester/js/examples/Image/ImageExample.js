@@ -766,6 +766,9 @@ const styles = StyleSheet.create({
   objectFitScaleDown: {
     objectFit: 'scale-down',
   },
+  objectFitNone: {
+    objectFit: 'none',
+  },
   imageInBundle: {
     borderColor: 'yellow',
     borderWidth: 4,
@@ -1387,6 +1390,17 @@ exports.examples = [
                     </RNTesterText>
                     <Image
                       style={[styles.resizeMode, styles.objectFitScaleDown]}
+                      source={image}
+                    />
+                  </View>
+                </View>
+                <View style={styles.horizontal}>
+                  <View>
+                    <RNTesterText style={styles.resizeModeText}>
+                      None
+                    </RNTesterText>
+                    <Image
+                      style={[styles.resizeMode, styles.objectFitNone]}
                       source={image}
                     />
                   </View>
