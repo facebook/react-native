@@ -14,3 +14,14 @@ appId: ${APP_ID} # iOS: com.meta.RNTester.localDevelopment | Android: com.facebo
 - tapOn: "Change Background"
 - assertVisible:
     text: "HSBA: h: 0, s: 1, b: 1, a: 255"
+- assertVisible:
+    text: "> Interop Layer Measurements <"
+- assertVisible:
+    text: "measure x: 0, y: 0, width: 0, height: 0"
+- tapOn: "Console.log Measure"
+- assertNotVisible:
+    text: "measure x: 0, y: 0, width: 0, height: 0"
+- assertNotVisible:
+    text: "InWindow x: 0, y: 0, width: 0, height: 0"
+- assertNotVisible:
+    text: "InLayout x: 0, y: 0, width: 0, height: 0"
