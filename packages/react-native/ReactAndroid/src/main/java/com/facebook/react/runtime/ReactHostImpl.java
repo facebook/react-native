@@ -171,8 +171,9 @@ public class ReactHostImpl implements ReactHost {
     mBGExecutor = bgExecutor;
     mUIExecutor = uiExecutor;
     mMemoryPressureRouter = new MemoryPressureRouter(context);
-    mAllowPackagerServerAccess = allowPackagerServerAccess;
-    mUseDevSupport = useDevSupport;
+    mAllowPackagerServerAccess =
+        allowPackagerServerAccess || ReactBuildConfig.UNSTABLE_ENABLE_FUSEBOX_RELEASE;
+    mUseDevSupport = useDevSupport || ReactBuildConfig.UNSTABLE_ENABLE_FUSEBOX_RELEASE;
 
     if (mUseDevSupport) {
       mDevSupportManager =

@@ -19,6 +19,7 @@ import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.SurfaceDelegate;
 import com.facebook.react.common.SurfaceDelegateFactory;
 import com.facebook.react.common.annotations.DeprecatedInNewArchitecture;
+import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.devsupport.DevSupportManagerFactory;
 import com.facebook.react.devsupport.interfaces.DevLoadingViewManager;
 import com.facebook.react.devsupport.interfaces.PausedInDebuggerOverlayManager;
@@ -92,7 +93,8 @@ public abstract class ReactNativeHost {
         ReactInstanceManager.builder()
             .setApplication(mApplication)
             .setJSMainModulePath(getJSMainModuleName())
-            .setUseDeveloperSupport(getUseDeveloperSupport())
+            .setUseDeveloperSupport(
+                getUseDeveloperSupport() || ReactBuildConfig.UNSTABLE_ENABLE_FUSEBOX_RELEASE)
             .setDevSupportManagerFactory(getDevSupportManagerFactory())
             .setDevLoadingViewManager(getDevLoadingViewManager())
             .setRequireActivity(getShouldRequireActivity())
