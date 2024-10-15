@@ -61,6 +61,13 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
    */
   BOOL _comingFromJS;
   BOOL _didMoveToWindow;
+
+  /*
+   * Newly initialized default typing attributes contain a no-op NSParagraphStyle and NSShadow. These cause inequality
+   * between the AttributedString backing the input and those generated from state. We store these attributes to make
+   * later comparison insensitive to them.
+   */
+  NSDictionary<NSAttributedStringKey, id> *_originalTypingAttributes;
 }
 
 #pragma mark - UIView overrides
@@ -76,12 +83,27 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
     _ignoreNextTextInputCall = NO;
     _comingFromJS = NO;
     _didMoveToWindow = NO;
+    _originalTypingAttributes = [_backedTextInputView.typingAttributes copy];
 
     [self addSubview:_backedTextInputView];
     [self initializeReturnKeyType];
   }
 
   return self;
+}
+
+- (void)updateEventEmitter:(const EventEmitter::Shared &)eventEmitter
+{
+  [super updateEventEmitter:eventEmitter];
+
+  NSMutableDictionary<NSAttributedStringKey, id> *defaultAttributes =
+      [_backedTextInputView.defaultTextAttributes mutableCopy];
+
+  RCTWeakEventEmitterWrapper *eventEmitterWrapper = [RCTWeakEventEmitterWrapper new];
+  eventEmitterWrapper.eventEmitter = _eventEmitter;
+  defaultAttributes[RCTAttributedStringEventEmitterKey] = eventEmitterWrapper;
+
+  _backedTextInputView.defaultTextAttributes = defaultAttributes;
 }
 
 - (void)didMoveToWindow
@@ -236,8 +258,11 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
   }
 
   if (newTextInputProps.textAttributes != oldTextInputProps.textAttributes) {
-    _backedTextInputView.defaultTextAttributes =
+    NSMutableDictionary<NSAttributedStringKey, id> *defaultAttributes =
         RCTNSTextAttributesFromTextAttributes(newTextInputProps.getEffectiveTextAttributes(RCTFontSizeMultiplier()));
+    defaultAttributes[RCTAttributedStringEventEmitterKey] =
+        _backedTextInputView.defaultTextAttributes[RCTAttributedStringEventEmitterKey];
+    _backedTextInputView.defaultTextAttributes = defaultAttributes;
   }
 
   if (newTextInputProps.selectionColor != oldTextInputProps.selectionColor) {
@@ -732,9 +757,10 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
       _backedTextInputView.markedTextRange || _backedTextInputView.isSecureTextEntry || fontHasBeenUpdatedBySystem;
 
   if (shouldFallbackToBareTextComparison) {
-    return ([newText.string isEqualToString:oldText.string]);
+    return [newText.string isEqualToString:oldText.string];
   } else {
-    return ([newText isEqualToAttributedString:oldText]);
+    return RCTIsAttributedStringEffectivelySame(
+        newText, oldText, _originalTypingAttributes, static_cast<const TextInputProps &>(*_props).textAttributes);
   }
 }
 
