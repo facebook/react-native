@@ -1,8 +1,16 @@
 # Change Log - react-native-macos-init
 
-This log was last generated on Mon, 18 May 2020 23:31:12 GMT and should not be manually modified.
+This log was last generated on Tue, 15 Oct 2024 20:02:42 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.1.3
+
+Tue, 15 Oct 2024 20:02:42 GMT
+
+### Patches
+
+- fix: Properly import `npm-registry-fetch` in `react-native-macos-init` (sanajmi@microsoft.com)
 
 ## 2.1.0
 

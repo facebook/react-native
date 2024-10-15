@@ -2,6 +2,21 @@
   "name": "react-native-macos-init",
   "entries": [
     {
+      "date": "Tue, 15 Oct 2024 20:02:42 GMT",
+      "version": "2.1.3",
+      "tag": "react-native-macos-init_v2.1.3",
+      "comments": {
+        "patch": [
+          {
+            "author": "sanajmi@microsoft.com",
+            "package": "react-native-macos-init",
+            "commit": "b86ac5239832d7d72e22cb84b1878ce2f73138fe",
+            "comment": "fix: Properly import `npm-registry-fetch` in `react-native-macos-init`"
+          }
+        ]
+      }
+    },
+    {
       "date": "Mon, 18 May 2020 23:31:12 GMT",
       "tag": "react-native-macos-init_v2.1.0",
       "version": "2.1.0",

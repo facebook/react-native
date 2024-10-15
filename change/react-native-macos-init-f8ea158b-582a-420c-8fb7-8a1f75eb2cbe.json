@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "fix: Properly import `npm-registry-fetch` in `react-native-macos-init`",
-  "packageName": "react-native-macos-init",
-  "email": "sanajmi@microsoft.com",
-  "dependentChangeType": "patch"
-}
