@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a88154d1c074b2fdab8704d2b209d204>>
+ * @generated SignedSource<<079a09e6be3d2154e1cb65d58cfe792f>>
  */
 
 /**
@@ -172,10 +172,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool loadVectorDrawablesOnImages() override {
-    return false;
-  }
-
-  bool removeNestedCallsToDispatchMountItemsOnAndroid() override {
     return false;
   }
 

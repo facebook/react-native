@@ -353,15 +353,6 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'experimentation',
       },
     },
-    removeNestedCallsToDispatchMountItemsOnAndroid: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-09-19',
-        description:
-          'Removes nested calls to MountItemDispatcher.dispatchMountItems on Android, so we do less work per frame on the UI thread.',
-        purpose: 'experimentation',
-      },
-    },
     setAndroidLayoutDirection: {
       defaultValue: true,
       metadata: {
