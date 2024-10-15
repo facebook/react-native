@@ -71,11 +71,11 @@ runs:
 
         if [[ ${{ inputs.flavor }} == 'Debug' ]]; then
           # To give the app time to warm the metro's cache
-          sleep 5
+          sleep 20
         fi
 
         echo "Running tests with Maestro"
-        export MAESTRO_DRIVER_STARTUP_TIMEOUT=1200000 # 20 min. CI is extremely slow
+        export MAESTRO_DRIVER_STARTUP_TIMEOUT=1500000 # 25 min. CI is extremely slow
 
         # Add retries for flakyness
         MAX_ATTEMPTS=5
@@ -83,11 +83,6 @@ runs:
         RESULT=1
 
         while [[ $CURR_ATTEMPT -lt $MAX_ATTEMPTS ]] && [[ $RESULT -ne 0 ]]; do
-          if [[ $CURR_ATTEMPT -ne 0 ]]; then
-            echo "Rebooting simulator for stability"
-            xcrun simctl boot "iPhone 15 Pro"
-          fi
-
           CURR_ATTEMPT=$((CURR_ATTEMPT+1))
           echo "Attempt number $CURR_ATTEMPT"
 
@@ -103,9 +98,6 @@ runs:
 
           # Stop video
           kill -SIGINT $(cat video_record_${{ inputs.jsengine }}_$CURR_ATTEMPT.pid)
-
-          echo "Shutting down simulator for stability"
-          xcrun simctl shutdown "iPhone 15 Pro"
         done
 
         exit $RESULT
