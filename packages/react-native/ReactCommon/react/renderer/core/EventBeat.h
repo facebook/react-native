@@ -38,17 +38,17 @@ class EventBeat {
    * creation of some other object that owns an `EventBeat`.
    */
   using Owner = std::weak_ptr<const void>;
+
   struct OwnerBox {
     Owner owner;
   };
-  using SharedOwnerBox = std::shared_ptr<OwnerBox>;
 
-  using Factory =
-      std::function<std::unique_ptr<EventBeat>(const SharedOwnerBox& ownerBox)>;
+  using Factory = std::function<std::unique_ptr<EventBeat>(
+      std::shared_ptr<OwnerBox> ownerBox)>;
 
   using BeatCallback = std::function<void(jsi::Runtime& runtime)>;
 
-  EventBeat(SharedOwnerBox ownerBox);
+  explicit EventBeat(std::shared_ptr<OwnerBox> ownerBox);
 
   virtual ~EventBeat() = default;
 
@@ -73,7 +73,7 @@ class EventBeat {
   virtual void induce() const;
 
   BeatCallback beatCallback_;
-  SharedOwnerBox ownerBox_;
+  std::shared_ptr<OwnerBox> ownerBox_;
   mutable std::atomic<bool> isRequested_{false};
 };
 
