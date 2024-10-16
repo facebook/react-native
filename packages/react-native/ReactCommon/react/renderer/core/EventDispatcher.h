@@ -32,8 +32,7 @@ class EventDispatcher {
 
   EventDispatcher(
       const EventQueueProcessor& eventProcessor,
-      const EventBeat::Factory& eventBeatFactory,
-      std::shared_ptr<EventBeat::OwnerBox> ownerBox,
+      std::unique_ptr<EventBeat> eventBeat,
       RuntimeScheduler& runtimeScheduler,
       StatePipe statePipe,
       std::weak_ptr<EventLogger> eventLogger);
