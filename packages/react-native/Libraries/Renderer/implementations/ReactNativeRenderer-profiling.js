@@ -2198,7 +2198,8 @@ function pushHostContext(fiber) {
     "RCTMultilineTextInputView" === JSCompiler_inline_result ||
     "RCTSinglelineTextInputView" === JSCompiler_inline_result ||
     "RCTText" === JSCompiler_inline_result ||
-    "RCTVirtualText" === JSCompiler_inline_result;
+    "RCTVirtualText" === JSCompiler_inline_result ||
+    JSCompiler_inline_result.startsWith("RCTTextExtension-");
   JSCompiler_inline_result =
     context.isInAParentText !== JSCompiler_inline_result
       ? { isInAParentText: JSCompiler_inline_result }
