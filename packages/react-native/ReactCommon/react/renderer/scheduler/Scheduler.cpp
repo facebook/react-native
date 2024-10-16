@@ -98,7 +98,7 @@ Scheduler::Scheduler(
   eventDispatcher_->emplace(
       EventQueueProcessor(
           eventPipe, eventPipeConclusion, statePipe, eventPerformanceLogger_),
-      schedulerToolbox.asynchronousEventBeatFactory,
+      schedulerToolbox.eventBeatFactory,
       eventOwnerBox,
       *runtimeScheduler,
       statePipe,
