@@ -69,11 +69,19 @@ public object PixelUtil {
       DisplayMetricsHolder.getWindowDisplayMetrics().density
 
   /* Kotlin extensions */
-  public fun Float.dpToPx(): Float = PixelUtil.toPixelFromDIP(this)
+  public fun Int.dpToPx(): Float = toPixelFromDIP(this.toFloat())
 
-  public fun Double.dpToPx(): Float = PixelUtil.toPixelFromDIP(this)
+  public fun Long.dpToPx(): Float = toPixelFromDIP(this.toFloat())
 
-  public fun Float.pxToDp(): Float = PixelUtil.toDIPFromPixel(this)
+  public fun Float.dpToPx(): Float = toPixelFromDIP(this)
 
-  public fun Double.pxToDp(): Float = PixelUtil.toDIPFromPixel(this.toFloat())
+  public fun Double.dpToPx(): Float = toPixelFromDIP(this.toFloat())
+
+  public fun Int.pxToDp(): Float = toDIPFromPixel(this.toFloat())
+
+  public fun Long.pxToDp(): Float = toDIPFromPixel(this.toFloat())
+
+  public fun Float.pxToDp(): Float = toDIPFromPixel(this)
+
+  public fun Double.pxToDp(): Float = toDIPFromPixel(this.toFloat())
 }
