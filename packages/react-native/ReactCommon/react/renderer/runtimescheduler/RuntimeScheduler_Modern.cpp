@@ -195,7 +195,13 @@ void RuntimeScheduler_Modern::executeNowOnTheSameThread(
 }
 
 void RuntimeScheduler_Modern::callExpiredTasks(jsi::Runtime& runtime) {
-  // No-op in the event loop implementation.
+  // If we have first-class support for microtasks, this a no-op.
+  if (ReactNativeFeatureFlags::enableMicrotasks()) {
+    return;
+  }
+
+  SystraceSection s("RuntimeScheduler::callExpiredTasks");
+  runEventLoop(runtime, true);
 }
 
 void RuntimeScheduler_Modern::scheduleRenderingUpdate(
@@ -203,8 +209,14 @@ void RuntimeScheduler_Modern::scheduleRenderingUpdate(
     RuntimeSchedulerRenderingUpdate&& renderingUpdate) {
   SystraceSection s("RuntimeScheduler::scheduleRenderingUpdate");
 
-  surfaceIdsWithPendingRenderingUpdates_.insert(surfaceId);
-  pendingRenderingUpdates_.push(renderingUpdate);
+  if (ReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop()) {
+    surfaceIdsWithPendingRenderingUpdates_.insert(surfaceId);
+    pendingRenderingUpdates_.push(renderingUpdate);
+  } else {
+    if (renderingUpdate != nullptr) {
+      renderingUpdate();
+    }
+  }
 }
 
 void RuntimeScheduler_Modern::setShadowTreeRevisionConsistencyManager(
@@ -325,8 +337,10 @@ void RuntimeScheduler_Modern::runEventLoopTick(
   auto didUserCallbackTimeout = task.expirationTime <= taskStartTime;
   executeTask(runtime, task, didUserCallbackTimeout);
 
-  // "Perform a microtask checkpoint" step.
-  performMicrotaskCheckpoint(runtime);
+  if (ReactNativeFeatureFlags::enableMicrotasks()) {
+    // "Perform a microtask checkpoint" step.
+    performMicrotaskCheckpoint(runtime);
+  }
 
   if (ReactNativeFeatureFlags::enableLongTaskAPI()) {
     auto taskEndTime = now_();
@@ -334,8 +348,10 @@ void RuntimeScheduler_Modern::runEventLoopTick(
     reportLongTasks(task, taskStartTime, taskEndTime);
   }
 
-  // "Update the rendering" step.
-  updateRendering();
+  if (ReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop()) {
+    // "Update the rendering" step.
+    updateRendering();
+  }
 
   currentTask_ = nullptr;
 }

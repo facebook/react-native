@@ -28,11 +28,19 @@ static bool forcedBatchRenderingUpdatesInEventLoop = false;
 class RuntimeSchedulerTestFeatureFlags
     : public ReactNativeFeatureFlagsDefaults {
  public:
-  explicit RuntimeSchedulerTestFeatureFlags(bool enableEventLoop)
-      : enableEventLoop_(enableEventLoop) {}
+  RuntimeSchedulerTestFeatureFlags(bool useModernRuntimeScheduler)
+      : useModernRuntimeScheduler_(useModernRuntimeScheduler) {}
 
-  bool enableBridgelessArchitecture() override {
-    return enableEventLoop_;
+  bool useModernRuntimeScheduler() override {
+    return useModernRuntimeScheduler_;
+  }
+
+  bool enableMicrotasks() override {
+    return useModernRuntimeScheduler_;
+  }
+
+  bool batchRenderingUpdatesInEventLoop() override {
+    return forcedBatchRenderingUpdatesInEventLoop;
   }
 
   bool enableLongTaskAPI() override {
@@ -40,7 +48,7 @@ class RuntimeSchedulerTestFeatureFlags
   }
 
  private:
-  bool enableEventLoop_;
+  bool useModernRuntimeScheduler_;
 };
 
 class RuntimeSchedulerTest : public testing::TestWithParam<bool> {
@@ -154,10 +162,21 @@ TEST_P(RuntimeSchedulerTest, scheduleSingleTask) {
   EXPECT_EQ(stubQueue_->size(), 0);
 }
 
+TEST_P(RuntimeSchedulerTest, scheduleNonBatchedRenderingUpdate) {
+  forcedBatchRenderingUpdatesInEventLoop = false;
+
+  bool didRunRenderingUpdate = false;
+
+  runtimeScheduler_->scheduleRenderingUpdate(
+      0, [&]() { didRunRenderingUpdate = true; });
+
+  EXPECT_TRUE(didRunRenderingUpdate);
+}
+
 TEST_P(
     RuntimeSchedulerTest,
     scheduleSingleTaskWithMicrotasksAndBatchedRenderingUpdate) {
-  // Only for event loop
+  // Only for modern runtime scheduler
   if (!GetParam()) {
     return;
   }
@@ -597,7 +616,7 @@ TEST_P(RuntimeSchedulerTest, immediateTaskDoesntYieldToPlatformEvent) {
 }
 
 TEST_P(RuntimeSchedulerTest, scheduleTaskWithYielding) {
-  // Only for event loop
+  // Only for modern runtime scheduler
   if (!GetParam()) {
     return;
   }
@@ -621,7 +640,7 @@ TEST_P(RuntimeSchedulerTest, scheduleTaskWithYielding) {
 }
 
 TEST_P(RuntimeSchedulerTest, normalTaskYieldsToSynchronousAccess) {
-  // Only for event loop
+  // Only for modern runtime scheduler
   if (!GetParam()) {
     return;
   }
@@ -690,7 +709,7 @@ TEST_P(RuntimeSchedulerTest, normalTaskYieldsToSynchronousAccess) {
 }
 
 TEST_P(RuntimeSchedulerTest, normalTaskYieldsToSynchronousAccessAndResumes) {
-  // Only for event loop
+  // Only for modern runtime scheduler
   if (!GetParam()) {
     return;
   }
@@ -747,7 +766,7 @@ TEST_P(RuntimeSchedulerTest, normalTaskYieldsToSynchronousAccessAndResumes) {
 }
 
 TEST_P(RuntimeSchedulerTest, immediateTaskYieldsToSynchronousAccess) {
-  // Only for event loop
+  // Only for modern runtime scheduler
   if (!GetParam()) {
     return;
   }
@@ -1071,7 +1090,7 @@ TEST_P(RuntimeSchedulerTest, legacyTwoThreadsRequestAccessToTheRuntime) {
 }
 
 TEST_P(RuntimeSchedulerTest, modernTwoThreadsRequestAccessToTheRuntime) {
-  // Only for event loop
+  // Only for modern runtime scheduler
   if (!GetParam()) {
     return;
   }
@@ -1154,7 +1173,7 @@ TEST_P(RuntimeSchedulerTest, modernTwoThreadsRequestAccessToTheRuntime) {
 }
 
 TEST_P(RuntimeSchedulerTest, errorInTaskShouldNotStopMicrotasks) {
-  // Only for event loop
+  // Only for modern runtime scheduler
   if (!GetParam()) {
     return;
   }
@@ -1200,7 +1219,7 @@ TEST_P(RuntimeSchedulerTest, errorInTaskShouldNotStopMicrotasks) {
 }
 
 TEST_P(RuntimeSchedulerTest, reportsLongTasks) {
-  // Only for event loop
+  // Only for modern runtime scheduler
   if (!GetParam()) {
     return;
   }
@@ -1252,7 +1271,7 @@ TEST_P(RuntimeSchedulerTest, reportsLongTasks) {
 }
 
 TEST_P(RuntimeSchedulerTest, reportsLongTasksWithYielding) {
-  // Only for event loop
+  // Only for modern runtime scheduler
   if (!GetParam()) {
     return;
   }

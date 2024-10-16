@@ -18,14 +18,14 @@ Example contents:
 ```javascript
 module.exports = {
   common: {
-    enableNativeBehavior: {
-      description: 'Enable some behavior both in native and in JS.',
+    enableMicrotasks: {
+      description: 'Enable the use of microtasks in the JS runtime.',
       defaultValue: false
     }
   },
   jsOnly: {
-    enableJSBehavior: {
-      description: 'Enables some behavior in the JS layer.',
+    enableAccessToHostTreeInFabric: {
+      description: 'Enables access to the host tree in Fabric using DOM-compatible APIs.',
       defaultValue: false
     }
   }
@@ -57,7 +57,7 @@ from JavaScript.
 ```c++
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 
-if (ReactNativeFeatureFlags::enableNativeBehavior()) {
+if (ReactNativeFeatureFlags::enableMicrotasks()) {
   // do something
 }
 ```
@@ -68,7 +68,7 @@ if (ReactNativeFeatureFlags::enableNativeBehavior()) {
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 
 fun someMethod() {
-  if (ReactNativeFeatureFlags.enableNativeBehavior()) {
+  if (ReactNativeFeatureFlags.enableMicrotasks()) {
     // do something
   }
 }
@@ -79,11 +79,11 @@ fun someMethod() {
 ```javascript
 import * as ReactNativeFeatureFlags from 'react-native/src/private/featureflags/ReactNativeFeatureFlags';
 
-if (ReactNativeFeatureFlags.enableNativeBehavior()) {
+if (ReactNativeFeatureFlags.enableMicrotasks()) {
   // Native flag
 }
 
-if (ReactNativeFeatureFlags.enableJSBehavior()) {
+if (ReactNativeFeatureFlags.enableAccessToHostTreeInFabric()) {
   // JS-only flag
 }
 ```
@@ -109,7 +109,7 @@ class CustomReactNativeFeatureFlags : public ReactNativeFeatureFlagsDefaults {
  public:
   CustomReactNativeFeatureFlags();
 
-  bool enableNativeBehavior() override {
+  bool enableMicrotasks() override {
     return true;
   }
 }
@@ -136,7 +136,7 @@ fun overrideFeatureFlags() {
 import * as ReactNativeFeatureFlags from 'react-native/src/private/featureflags/ReactNativeFeatureFlags';
 
 ReactNativeFeatureFlags.override({
-  enableJSBehavior: () => true,
+  enableAccessToHostTreeInFabric: () => true,
 });
 ```
 

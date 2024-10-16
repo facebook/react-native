@@ -147,9 +147,7 @@ std::unique_ptr<JSRuntime> HermesInstance::createJSRuntime(
       ::hermes::vm::RuntimeConfig::Builder()
           .withGCConfig(gcConfig.build())
           .withEnableSampleProfiling(true)
-          .withMicrotaskQueue(
-              ReactNativeFeatureFlags::enableBridgelessArchitecture() &&
-              !ReactNativeFeatureFlags::disableEventLoopOnBridgeless())
+          .withMicrotaskQueue(ReactNativeFeatureFlags::enableMicrotasks())
           .withVMExperimentFlags(vmExperimentFlags);
 
   if (crashManager) {
