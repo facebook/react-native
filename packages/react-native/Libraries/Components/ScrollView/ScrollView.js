@@ -502,6 +502,8 @@ export type Props = $ReadOnly<{|
   maintainVisibleContentPosition?: ?$ReadOnly<{|
     minIndexForVisible: number,
     autoscrollToTopThreshold?: ?number,
+    viewOffset?: ?number,
+    viewPosition?: ?number,
   |}>,
   /**
    * Called when the momentum scroll starts (scroll which occurs as the ScrollView glides to a stop).
