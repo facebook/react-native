@@ -106,7 +106,7 @@ class LayoutAnimationDelegateProxy : public LayoutAnimationStatusDelegate, publi
 @implementation RCTScheduler {
   std::unique_ptr<Scheduler> _scheduler;
   std::shared_ptr<LayoutAnimationDriver> _animationDriver;
-  std::shared_ptr<SchedulerDelegateProxy> _delegateProxy;
+  std::unique_ptr<SchedulerDelegateProxy> _delegateProxy;
   std::shared_ptr<LayoutAnimationDelegateProxy> _layoutAnimationDelegateProxy;
   RunLoopObserver::Unique _uiRunLoopObserver;
 }
@@ -117,7 +117,7 @@ class LayoutAnimationDelegateProxy : public LayoutAnimationStatusDelegate, publi
     auto reactNativeConfig =
         toolbox.contextContainer->at<std::shared_ptr<const ReactNativeConfig>>("ReactNativeConfig");
 
-    _delegateProxy = std::make_shared<SchedulerDelegateProxy>((__bridge void *)self);
+    _delegateProxy = std::make_unique<SchedulerDelegateProxy>((__bridge void *)self);
 
     if (ReactNativeFeatureFlags::enableLayoutAnimationsOnIOS()) {
       _layoutAnimationDelegateProxy = std::make_shared<LayoutAnimationDelegateProxy>((__bridge void *)self);
