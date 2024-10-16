@@ -38,7 +38,6 @@ class EventBeat {
    * creation of some other object that owns an `EventBeat`.
    */
   using Owner = std::weak_ptr<const void>;
-
   struct OwnerBox {
     Owner owner;
   };
@@ -52,6 +51,10 @@ class EventBeat {
 
   virtual ~EventBeat() = default;
 
+  // not copyable
+  EventBeat(const EventBeat& other) = delete;
+  EventBeat& operator=(const EventBeat& other) = delete;
+
   /*
    * Communicates to the Beat that a consumer is waiting for the coming beat.
    * A consumer must request coming beat after the previous beat happened
@@ -60,7 +63,6 @@ class EventBeat {
   virtual void request() const;
 
   /*
-   * Sets the beat callback function.
    * The callback is must be called on the proper thread.
    */
   void setBeatCallback(BeatCallback beatCallback);
@@ -70,7 +72,7 @@ class EventBeat {
    * Induces the next beat to happen as soon as possible.
    * Receiver might ignore the call if a beat was not requested.
    */
-  virtual void induce() const;
+  virtual void induce() const = 0;
 
   BeatCallback beatCallback_;
   std::shared_ptr<OwnerBox> ownerBox_;

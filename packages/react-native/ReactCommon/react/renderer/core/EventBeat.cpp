@@ -18,10 +18,6 @@ void EventBeat::request() const {
   isRequested_ = true;
 }
 
-void EventBeat::induce() const {
-  // Default implementation does nothing.
-}
-
 void EventBeat::setBeatCallback(BeatCallback beatCallback) {
   beatCallback_ = std::move(beatCallback);
 }
