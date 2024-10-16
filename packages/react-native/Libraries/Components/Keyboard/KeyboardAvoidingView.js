@@ -164,7 +164,7 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
     const {duration, easing, endCoordinates} = this._keyboardEvent;
     const height = await this._relativeKeyboardHeight(endCoordinates);
 
-    if (this._bottom === height) {
+    if (this._bottom === height || (Platform.OS === 'ios' && this._keyboardEvent.duration === 0)) {
       return;
     }
 
