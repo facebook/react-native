@@ -218,7 +218,7 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
 
   if (_state != nullptr) {
     auto newState = ModalHostViewState{RCTSizeFromCGSize(newBounds.size)};
-    _state->updateState(std::move(newState));
+    _state->updateState(std::move(newState), EventPriority::Sync);
   }
 }
 
