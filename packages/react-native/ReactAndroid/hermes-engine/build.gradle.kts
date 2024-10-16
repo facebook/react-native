@@ -228,6 +228,7 @@ android {
             "-DHERMES_IS_ANDROID=True",
             "-DANDROID_STL=c++_shared",
             "-DANDROID_PIE=True",
+            "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON",
             "-DIMPORT_HERMESC=${File(hermesBuildDir, "ImportHermesc.cmake").toString()}",
             "-DJSI_DIR=${jsiDir}",
             "-DHERMES_SLOW_DEBUG=False",
