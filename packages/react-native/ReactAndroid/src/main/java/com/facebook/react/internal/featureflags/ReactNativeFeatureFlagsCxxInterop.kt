@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<fde4302e82485beb6a4f7eb9cc5612aa>>
+ * @generated SignedSource<<a33dc98ce1ea67c87d03f4a7390f4c3a>>
  */
 
 /**
@@ -103,8 +103,6 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun lazyAnimationCallbacks(): Boolean
 
   @DoNotStrip @JvmStatic public external fun loadVectorDrawablesOnImages(): Boolean
-
-  @DoNotStrip @JvmStatic public external fun removeNestedCallsToDispatchMountItemsOnAndroid(): Boolean
 
   @DoNotStrip @JvmStatic public external fun setAndroidLayoutDirection(): Boolean
 

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7b875c6b1b7120f664ab511a4b91c8d8>>
+ * @generated SignedSource<<8a51ea4d038abf17da8f113109d73989>>
  */
 
 /**
@@ -70,7 +70,6 @@ class ReactNativeFeatureFlagsAccessor {
   bool initEagerTurboModulesOnNativeModulesQueueAndroid();
   bool lazyAnimationCallbacks();
   bool loadVectorDrawablesOnImages();
-  bool removeNestedCallsToDispatchMountItemsOnAndroid();
   bool setAndroidLayoutDirection();
   bool traceTurboModulePromiseRejectionsOnAndroid();
   bool useFabricInterop();
@@ -93,7 +92,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 50> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 49> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> allowRecursiveCommitsWithSynchronousMountOnAndroid_;
@@ -133,7 +132,6 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> initEagerTurboModulesOnNativeModulesQueueAndroid_;
   std::atomic<std::optional<bool>> lazyAnimationCallbacks_;
   std::atomic<std::optional<bool>> loadVectorDrawablesOnImages_;
-  std::atomic<std::optional<bool>> removeNestedCallsToDispatchMountItemsOnAndroid_;
   std::atomic<std::optional<bool>> setAndroidLayoutDirection_;
   std::atomic<std::optional<bool>> traceTurboModulePromiseRejectionsOnAndroid_;
   std::atomic<std::optional<bool>> useFabricInterop_;

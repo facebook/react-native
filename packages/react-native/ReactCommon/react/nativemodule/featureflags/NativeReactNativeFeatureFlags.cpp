@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5518b21fe37b29322a1f32036e1c5f98>>
+ * @generated SignedSource<<27fdafbfd349a23f7d608b447d1605ba>>
  */
 
 /**
@@ -225,11 +225,6 @@ bool NativeReactNativeFeatureFlags::lazyAnimationCallbacks(
 bool NativeReactNativeFeatureFlags::loadVectorDrawablesOnImages(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::loadVectorDrawablesOnImages();
-}
-
-bool NativeReactNativeFeatureFlags::removeNestedCallsToDispatchMountItemsOnAndroid(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::removeNestedCallsToDispatchMountItemsOnAndroid();
 }
 
 bool NativeReactNativeFeatureFlags::setAndroidLayoutDirection(

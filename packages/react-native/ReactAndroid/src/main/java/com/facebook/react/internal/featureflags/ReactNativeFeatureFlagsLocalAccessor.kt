@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f0f8c57691724d5ace09b10df2afa890>>
+ * @generated SignedSource<<f2021e49af8befd54a69b43b20abe730>>
  */
 
 /**
@@ -62,7 +62,6 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var initEagerTurboModulesOnNativeModulesQueueAndroidCache: Boolean? = null
   private var lazyAnimationCallbacksCache: Boolean? = null
   private var loadVectorDrawablesOnImagesCache: Boolean? = null
-  private var removeNestedCallsToDispatchMountItemsOnAndroidCache: Boolean? = null
   private var setAndroidLayoutDirectionCache: Boolean? = null
   private var traceTurboModulePromiseRejectionsOnAndroidCache: Boolean? = null
   private var useFabricInteropCache: Boolean? = null
@@ -451,16 +450,6 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.loadVectorDrawablesOnImages()
       accessedFeatureFlags.add("loadVectorDrawablesOnImages")
       loadVectorDrawablesOnImagesCache = cached
-    }
-    return cached
-  }
-
-  override fun removeNestedCallsToDispatchMountItemsOnAndroid(): Boolean {
-    var cached = removeNestedCallsToDispatchMountItemsOnAndroidCache
-    if (cached == null) {
-      cached = currentProvider.removeNestedCallsToDispatchMountItemsOnAndroid()
-      accessedFeatureFlags.add("removeNestedCallsToDispatchMountItemsOnAndroid")
-      removeNestedCallsToDispatchMountItemsOnAndroidCache = cached
     }
     return cached
   }

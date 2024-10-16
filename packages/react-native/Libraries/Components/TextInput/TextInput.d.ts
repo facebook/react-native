@@ -255,6 +255,8 @@ export interface TextInputIOSProps {
    *  - `'birthdateDay'` (iOS 17+)
    *  - `'birthdateMonth'` (iOS 17+)
    *  - `'birthdateYear'` (iOS 17+)
+   *  - `'cellularEID'` (iOS 17.4+)
+   *  - `'cellularIMEI'` (iOS 17.4+)
    *  - `'dateTime'` (iOS 15+)
    *  - `'flightNumber'` (iOS 15+)
    *  - `'shipmentTrackingNumber'` (iOS 15+)
@@ -302,6 +304,8 @@ export interface TextInputIOSProps {
     | 'birthdateDay'
     | 'birthdateMonth'
     | 'birthdateYear'
+    | 'cellularEID'
+    | 'cellularIMEI'
     | 'dateTime'
     | 'flightNumber'
     | 'shipmentTrackingNumber'

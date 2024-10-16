@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a4c7777c4e0ced198d3cd0a64e434a6d>>
+ * @generated SignedSource<<eae1ab77b3d6b8614b53c8c3d2e5081e>>
  * @flow strict
  */
 
@@ -88,7 +88,6 @@ export type ReactNativeFeatureFlags = {
   initEagerTurboModulesOnNativeModulesQueueAndroid: Getter<boolean>,
   lazyAnimationCallbacks: Getter<boolean>,
   loadVectorDrawablesOnImages: Getter<boolean>,
-  removeNestedCallsToDispatchMountItemsOnAndroid: Getter<boolean>,
   setAndroidLayoutDirection: Getter<boolean>,
   traceTurboModulePromiseRejectionsOnAndroid: Getter<boolean>,
   useFabricInterop: Getter<boolean>,
@@ -339,10 +338,6 @@ export const lazyAnimationCallbacks: Getter<boolean> = createNativeFlagGetter('l
  * Adds support for loading vector drawable assets in the Image component (only on Android)
  */
 export const loadVectorDrawablesOnImages: Getter<boolean> = createNativeFlagGetter('loadVectorDrawablesOnImages', false);
-/**
- * Removes nested calls to MountItemDispatcher.dispatchMountItems on Android, so we do less work per frame on the UI thread.
- */
-export const removeNestedCallsToDispatchMountItemsOnAndroid: Getter<boolean> = createNativeFlagGetter('removeNestedCallsToDispatchMountItemsOnAndroid', false);
 /**
  * Propagate layout direction to Android views.
  */

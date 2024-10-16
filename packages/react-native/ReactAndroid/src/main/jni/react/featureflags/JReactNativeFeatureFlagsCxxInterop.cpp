@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0908596d167df88df2a2ab2d4b8c06ec>>
+ * @generated SignedSource<<72b89194c4713236e4607870e5c9eed8>>
  */
 
 /**
@@ -264,12 +264,6 @@ class ReactNativeFeatureFlagsProviderHolder
   bool loadVectorDrawablesOnImages() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("loadVectorDrawablesOnImages");
-    return method(javaProvider_);
-  }
-
-  bool removeNestedCallsToDispatchMountItemsOnAndroid() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("removeNestedCallsToDispatchMountItemsOnAndroid");
     return method(javaProvider_);
   }
 
@@ -533,11 +527,6 @@ bool JReactNativeFeatureFlagsCxxInterop::loadVectorDrawablesOnImages(
   return ReactNativeFeatureFlags::loadVectorDrawablesOnImages();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::removeNestedCallsToDispatchMountItemsOnAndroid(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::removeNestedCallsToDispatchMountItemsOnAndroid();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::setAndroidLayoutDirection(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::setAndroidLayoutDirection();
@@ -738,9 +727,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "loadVectorDrawablesOnImages",
         JReactNativeFeatureFlagsCxxInterop::loadVectorDrawablesOnImages),
-      makeNativeMethod(
-        "removeNestedCallsToDispatchMountItemsOnAndroid",
-        JReactNativeFeatureFlagsCxxInterop::removeNestedCallsToDispatchMountItemsOnAndroid),
       makeNativeMethod(
         "setAndroidLayoutDirection",
         JReactNativeFeatureFlagsCxxInterop::setAndroidLayoutDirection),

@@ -121,7 +121,10 @@ void FabricUIManagerBinding::reportMount(SurfaceId surfaceId) {
         }
       }
       if (surfaceHandler != nullptr) {
-        surfaceHandler->getMountingCoordinator()->didPerformAsyncTransactions();
+        auto mountingCoordinator = surfaceHandler->getMountingCoordinator();
+        if (mountingCoordinator != nullptr) {
+          mountingCoordinator->didPerformAsyncTransactions();
+        }
       }
     } else {
       LOG(ERROR) << "FabricUIManagerBinding::reportMount: Surface with id "

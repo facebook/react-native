@@ -1651,10 +1651,17 @@ exports.examples = [
   },
   {
     title: 'Large image with different resize methods',
+    name: 'resize-method',
     description:
       'Demonstrating the effects of loading a large image with different resize methods',
+    scrollable: true,
     render: function (): React.Node {
-      const methods = ['auto', 'resize', 'scale', 'none'];
+      const methods: Array<ImageProps['resizeMethod']> = [
+        'auto',
+        'resize',
+        'scale',
+        'none',
+      ];
       // Four copies of the same image so we don't serve cached copies of the same image
       const images = [
         require('../../assets/large-image-1.png'),
@@ -1663,10 +1670,13 @@ exports.examples = [
         require('../../assets/large-image-4.png'),
       ];
       return (
-        <View>
+        <View testID="resize-method-example">
           {methods.map((method, index) => (
-            <View key={method} style={{display: 'flex', overflow: 'hidden'}}>
-              <RNTesterText>`{method}`</RNTesterText>
+            <View
+              key={method}
+              style={{display: 'flex', overflow: 'hidden'}}
+              testID={`resize-method-example-${method ?? ''}`}>
+              <RNTesterText>{method}</RNTesterText>
               <Image
                 resizeMethod={method}
                 source={images[index]}

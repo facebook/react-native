@@ -35,6 +35,11 @@ if(CMAKE_HOST_WIN32)
         string(REPLACE "\\" "/" BUILD_DIR ${BUILD_DIR})
 endif()
 
+if (PROJECT_ROOT_DIR)
+# This empty `if` is just to silence a CMake warning and make sure the `PROJECT_ROOT_DIR`
+# variable is defined if user need to access it.
+endif ()
+
 file(GLOB input_SRC CONFIGURE_DEPENDS
         *.cpp
         ${BUILD_DIR}/generated/autolinking/src/main/jni/*.cpp)

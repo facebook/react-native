@@ -254,17 +254,29 @@ function findExternalLibraries(pkgJson, projectRoot) {
   );
   // Handle third-party libraries
   return Object.keys(dependencies).flatMap(dependency => {
+    let configFilePath = '';
     try {
-      const configFilePath = require.resolve(
-        path.join(dependency, 'package.json'),
-        {paths: [projectRoot]},
-      );
-      const configFile = JSON.parse(fs.readFileSync(configFilePath));
-      const codegenConfigFileDir = path.dirname(configFilePath);
-      return extractLibrariesFromJSON(configFile, codegenConfigFileDir);
+      configFilePath = require.resolve(path.join(dependency, 'package.json'), {
+        paths: [projectRoot],
+      });
     } catch (e) {
-      return [];
+      // require.resolve fails if the dependency is a local node module.
+      if (
+        dependencies[dependency].startsWith('.') || // handles relative paths
+        dependencies[dependency].startsWith('/') // handles absolute paths
+      ) {
+        configFilePath = path.join(
+          projectRoot,
+          pkgJson.dependencies[dependency],
+          'package.json',
+        );
+      } else {
+        return [];
+      }
     }
+    const configFile = JSON.parse(fs.readFileSync(configFilePath));
+    const codegenConfigFileDir = path.dirname(configFilePath);
+    return extractLibrariesFromJSON(configFile, codegenConfigFileDir);
   });
 }
 
