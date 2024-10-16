@@ -2134,6 +2134,7 @@ public final class com/facebook/react/devsupport/DefaultDevLoadingViewImplementa
 public final class com/facebook/react/devsupport/DefaultDevSupportManagerFactory : com/facebook/react/devsupport/DevSupportManagerFactory {
 	public fun <init> ()V
 	public fun create (Landroid/content/Context;Lcom/facebook/react/devsupport/ReactInstanceDevHelper;Ljava/lang/String;ZLcom/facebook/react/devsupport/interfaces/RedBoxHandler;Lcom/facebook/react/devsupport/interfaces/DevBundleDownloadListener;ILjava/util/Map;Lcom/facebook/react/common/SurfaceDelegateFactory;Lcom/facebook/react/devsupport/interfaces/DevLoadingViewManager;Lcom/facebook/react/devsupport/interfaces/PausedInDebuggerOverlayManager;)Lcom/facebook/react/devsupport/interfaces/DevSupportManager;
+	public fun create (Landroid/content/Context;Lcom/facebook/react/devsupport/ReactInstanceDevHelper;Ljava/lang/String;ZLcom/facebook/react/devsupport/interfaces/RedBoxHandler;Lcom/facebook/react/devsupport/interfaces/DevBundleDownloadListener;ILjava/util/Map;Lcom/facebook/react/common/SurfaceDelegateFactory;Lcom/facebook/react/devsupport/interfaces/DevLoadingViewManager;Lcom/facebook/react/devsupport/interfaces/PausedInDebuggerOverlayManager;Z)Lcom/facebook/react/devsupport/interfaces/DevSupportManager;
 }
 
 public class com/facebook/react/devsupport/DevServerHelper {
@@ -2173,6 +2174,7 @@ public final class com/facebook/react/devsupport/DevSettingsActivity : android/p
 }
 
 public abstract class com/facebook/react/devsupport/DevSupportManagerBase : com/facebook/react/devsupport/interfaces/DevSupportManager {
+	protected final field mReactInstanceDevHelper Lcom/facebook/react/devsupport/ReactInstanceDevHelper;
 	public fun <init> (Landroid/content/Context;Lcom/facebook/react/devsupport/ReactInstanceDevHelper;Ljava/lang/String;ZLcom/facebook/react/devsupport/interfaces/RedBoxHandler;Lcom/facebook/react/devsupport/interfaces/DevBundleDownloadListener;ILjava/util/Map;Lcom/facebook/react/common/SurfaceDelegateFactory;Lcom/facebook/react/devsupport/interfaces/DevLoadingViewManager;Lcom/facebook/react/devsupport/interfaces/PausedInDebuggerOverlayManager;)V
 	public fun addCustomDevOption (Ljava/lang/String;Lcom/facebook/react/devsupport/interfaces/DevOptionHandler;)V
 	public fun createRootView (Ljava/lang/String;)Landroid/view/View;
@@ -2236,6 +2238,7 @@ public abstract interface class com/facebook/react/devsupport/DevSupportManagerB
 
 public abstract interface class com/facebook/react/devsupport/DevSupportManagerFactory {
 	public abstract fun create (Landroid/content/Context;Lcom/facebook/react/devsupport/ReactInstanceDevHelper;Ljava/lang/String;ZLcom/facebook/react/devsupport/interfaces/RedBoxHandler;Lcom/facebook/react/devsupport/interfaces/DevBundleDownloadListener;ILjava/util/Map;Lcom/facebook/react/common/SurfaceDelegateFactory;Lcom/facebook/react/devsupport/interfaces/DevLoadingViewManager;Lcom/facebook/react/devsupport/interfaces/PausedInDebuggerOverlayManager;)Lcom/facebook/react/devsupport/interfaces/DevSupportManager;
+	public abstract fun create (Landroid/content/Context;Lcom/facebook/react/devsupport/ReactInstanceDevHelper;Ljava/lang/String;ZLcom/facebook/react/devsupport/interfaces/RedBoxHandler;Lcom/facebook/react/devsupport/interfaces/DevBundleDownloadListener;ILjava/util/Map;Lcom/facebook/react/common/SurfaceDelegateFactory;Lcom/facebook/react/devsupport/interfaces/DevLoadingViewManager;Lcom/facebook/react/devsupport/interfaces/PausedInDebuggerOverlayManager;Z)Lcom/facebook/react/devsupport/interfaces/DevSupportManager;
 }
 
 public final class com/facebook/react/devsupport/DoubleTapReloadRecognizer {
@@ -2327,9 +2330,12 @@ public abstract interface class com/facebook/react/devsupport/ReactInstanceDevHe
 	public abstract fun createRootView (Ljava/lang/String;)Landroid/view/View;
 	public abstract fun destroyRootView (Landroid/view/View;)V
 	public abstract fun getCurrentActivity ()Landroid/app/Activity;
+	public abstract fun getCurrentReactContext ()Lcom/facebook/react/bridge/ReactContext;
 	public abstract fun getJavaScriptExecutorFactory ()Lcom/facebook/react/bridge/JavaScriptExecutorFactory;
+	public abstract fun loadBundle (Lcom/facebook/react/bridge/JSBundleLoader;)Lcom/facebook/react/interfaces/TaskInterface;
 	public abstract fun onJSBundleLoadedFromServer ()V
 	public abstract fun onReloadWithJSDebugger (Lcom/facebook/react/bridge/JavaJSExecutor$Factory;)V
+	public abstract fun reload (Ljava/lang/String;)V
 	public abstract fun toggleElementInspector ()V
 }
 
@@ -3887,6 +3893,7 @@ public abstract class com/facebook/react/runtime/JSRuntimeFactory {
 
 public class com/facebook/react/runtime/ReactHostImpl : com/facebook/react/ReactHost {
 	public fun <init> (Landroid/content/Context;Lcom/facebook/react/runtime/ReactHostDelegate;Lcom/facebook/react/fabric/ComponentFactory;Ljava/util/concurrent/Executor;Ljava/util/concurrent/Executor;ZZ)V
+	public fun <init> (Landroid/content/Context;Lcom/facebook/react/runtime/ReactHostDelegate;Lcom/facebook/react/fabric/ComponentFactory;Ljava/util/concurrent/Executor;Ljava/util/concurrent/Executor;ZZLcom/facebook/react/devsupport/DevSupportManagerFactory;)V
 	public fun <init> (Landroid/content/Context;Lcom/facebook/react/runtime/ReactHostDelegate;Lcom/facebook/react/fabric/ComponentFactory;ZZ)V
 	public fun addBeforeDestroyListener (Lkotlin/jvm/functions/Function0;)V
 	public fun addReactInstanceEventListener (Lcom/facebook/react/ReactInstanceEventListener;)V
@@ -3918,7 +3925,7 @@ public class com/facebook/react/runtime/ReactHostImpl : com/facebook/react/React
 
 public class com/facebook/react/runtime/ReactSurfaceImpl : com/facebook/react/interfaces/fabric/ReactSurface {
 	public fun <init> (Landroid/content/Context;Ljava/lang/String;Landroid/os/Bundle;)V
-	public fun attach (Lcom/facebook/react/runtime/ReactHostImpl;)V
+	public fun attach (Lcom/facebook/react/ReactHost;)V
 	public fun attachView (Lcom/facebook/react/runtime/ReactSurfaceView;)V
 	public fun clear ()V
 	public static fun createWithView (Landroid/content/Context;Ljava/lang/String;Landroid/os/Bundle;)Lcom/facebook/react/runtime/ReactSurfaceImpl;
