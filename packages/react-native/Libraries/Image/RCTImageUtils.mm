@@ -145,6 +145,14 @@ CGRect RCTTargetRect(CGSize sourceSize, CGSize destSize, CGFloat destScale, RCTR
               RCTFloorValue((destSize.height - sourceSize.height) / 2, destScale),
           },
           RCTCeilSize(sourceSize, destScale)};
+    case RCTResizeModeNone:
+      
+      return (CGRect){
+          {
+              0,
+              0,
+          },
+          RCTCeilSize(sourceSize, destScale)};
   }
 }
 
@@ -167,6 +175,7 @@ CGSize RCTTargetSize(
 {
   switch (resizeMode) {
     case RCTResizeModeCenter:
+    case RCTResizeModeNone:
 
       return RCTTargetRect(sourceSize, destSize, destScale, resizeMode).size;
 

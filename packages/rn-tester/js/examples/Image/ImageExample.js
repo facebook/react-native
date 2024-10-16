@@ -659,8 +659,8 @@ const styles = StyleSheet.create({
     color: 'white',
   },
   resizeMode: {
-    width: 90,
-    height: 60,
+    width: 416,
+    height: 416,
     borderWidth: 0.5,
     borderColor: 'black',
   },
@@ -1472,6 +1472,18 @@ exports.examples = [
                     <Image
                       style={styles.resizeMode}
                       resizeMode="center"
+                      source={image}
+                    />
+                  </View>
+                </View>
+                <View style={styles.horizontal}>
+                  <View>
+                    <RNTesterText style={styles.resizeModeText}>
+                      None
+                    </RNTesterText>
+                    <Image
+                      style={styles.resizeMode}
+                      resizeMode="none"
                       source={image}
                     />
                   </View>
