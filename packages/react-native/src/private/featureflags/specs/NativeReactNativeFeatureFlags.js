@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ffb8175268a4344864ef80d5ad9968c2>>
+ * @generated SignedSource<<2dea79097b1952f97d9e5dda86a38e58>>
  * @flow strict
  */
 
@@ -51,7 +51,6 @@ export interface Spec extends TurboModule {
   +enableUIConsistency?: () => boolean;
   +enableViewRecycling?: () => boolean;
   +excludeYogaFromRawProps?: () => boolean;
-  +fetchImagesInViewPreallocation?: () => boolean;
   +fixMappingOfEventPrioritiesBetweenFabricAndReact?: () => boolean;
   +fixMountingCoordinatorReportedPendingTransactionsOnAndroid?: () => boolean;
   +forceBatchingMountItemsOnAndroid?: () => boolean;
