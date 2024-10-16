@@ -27,20 +27,22 @@ public open class ReactNativeNewArchitectureFeatureFlagsDefaults(
   override fun batchRenderingUpdatesInEventLoop(): Boolean =
       newArchitectureEnabled || super.batchRenderingUpdatesInEventLoop()
 
-  override fun useTurboModuleInterop(): Boolean =
-      newArchitectureEnabled || super.useTurboModuleInterop()
-
-  override fun useModernRuntimeScheduler(): Boolean =
-      newArchitectureEnabled || super.useModernRuntimeScheduler()
-
   override fun enableBridgelessArchitecture(): Boolean = newArchitectureEnabled
 
   override fun enableMicrotasks(): Boolean = newArchitectureEnabled || super.enableMicrotasks()
 
   override fun enableFabricRenderer(): Boolean = newArchitectureEnabled
 
+  override fun useFabricInterop(): Boolean = newArchitectureEnabled
+
+  override fun useModernRuntimeScheduler(): Boolean =
+      newArchitectureEnabled || super.useModernRuntimeScheduler()
+
   override fun useNativeViewConfigsInBridgelessMode(): Boolean =
       newArchitectureEnabled || super.useNativeViewConfigsInBridgelessMode()
+
+  override fun useTurboModuleInterop(): Boolean =
+      newArchitectureEnabled || super.useTurboModuleInterop()
 
   override fun useTurboModules(): Boolean = newArchitectureEnabled
 }
