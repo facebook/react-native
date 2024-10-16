@@ -130,7 +130,7 @@ public class PermissionsModule(reactContext: ReactApplicationContext?) :
               val callbackActivity = args[1] as PermissionAwareActivity
               for (j in permissionsToCheck.indices) {
                 val permission = permissionsToCheck[j]
-                if (results.size > 0 && results[j] == PackageManager.PERMISSION_GRANTED) {
+                if (results.size > j && results[j] == PackageManager.PERMISSION_GRANTED) {
                   grantedPermissions.putString(permission, GRANTED)
                 } else {
                   if (callbackActivity.shouldShowRequestPermissionRationale(permission)) {
