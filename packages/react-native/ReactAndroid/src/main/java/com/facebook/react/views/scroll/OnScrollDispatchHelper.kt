@@ -30,13 +30,21 @@ public class OnScrollDispatchHelper {
    * Call from a ScrollView in onScrollChanged, returns true if this onScrollChanged is legit (not a
    * duplicate) and should be dispatched.
    */
-  public fun onScrollChanged(x: Int, y: Int): Boolean {
+  public fun onScrollChanged(x: Int, y: Int, duringGesture: Boolean): Boolean {
     val eventTime = SystemClock.uptimeMillis()
     val shouldDispatch =
         eventTime - lastScrollEventTimeMs > MIN_EVENT_SEPARATION_MS || prevX != x || prevY != y
-    if (eventTime - lastScrollEventTimeMs != 0L) {
-      xFlingVelocity = (x - prevX).toFloat() / (eventTime - lastScrollEventTimeMs)
-      yFlingVelocity = (y - prevY).toFloat() / (eventTime - lastScrollEventTimeMs)
+    if (duringGesture) {
+      if (eventTime - lastScrollEventTimeMs != 0L) {
+        xFlingVelocity = (x - prevX).toFloat() / (eventTime - lastScrollEventTimeMs)
+        yFlingVelocity = (y - prevY).toFloat() / (eventTime - lastScrollEventTimeMs)
+      }
+    } else {
+      // Reset velocity if scroll change was not caused by a gesture, but e.g.:
+      // - manual scrollTo() call
+      // - internal scrollTo() call (e.g. in rtl, when list resizes)
+      xFlingVelocity = 0f
+      yFlingVelocity = 0f
     }
     lastScrollEventTimeMs = eventTime
     prevX = x
