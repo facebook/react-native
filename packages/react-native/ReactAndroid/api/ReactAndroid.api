@@ -4490,9 +4490,13 @@ public final class com/facebook/react/uimanager/PixelUtil {
 	public static final field INSTANCE Lcom/facebook/react/uimanager/PixelUtil;
 	public final fun dpToPx (D)F
 	public final fun dpToPx (F)F
+	public final fun dpToPx (I)F
+	public final fun dpToPx (J)F
 	public static final fun getDisplayMetricDensity ()F
 	public final fun pxToDp (D)F
 	public final fun pxToDp (F)F
+	public final fun pxToDp (I)F
+	public final fun pxToDp (J)F
 	public static final fun toDIPFromPixel (F)F
 	public static final fun toPixelFromDIP (D)F
 	public static final fun toPixelFromDIP (F)F
