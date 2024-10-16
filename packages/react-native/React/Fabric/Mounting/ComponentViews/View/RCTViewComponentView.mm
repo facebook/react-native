@@ -878,6 +878,7 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
       _backgroundColorLayer = [CALayer layer];
       _backgroundColorLayer.frame = CGRectMake(0, 0, self.frame.size.width, self.frame.size.height);
       _backgroundColorLayer.zPosition = BACKGROUND_COLOR_ZPOSITION;
+      _backgroundColorLayer.actions = @{@"backgroundColor" : [NSNull null]};
       [self.layer addSublayer:_backgroundColorLayer];
     }
 
