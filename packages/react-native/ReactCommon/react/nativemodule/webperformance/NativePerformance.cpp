@@ -122,9 +122,10 @@ double NativePerformance::mark(
     std::string name,
     std::optional<double> startTime) {
   auto [trackName, eventName] = parseTrackName(name);
-  ReactPerfLogger::mark(eventName, startTime, trackName);
-
   auto entry = PerformanceEntryReporter::getInstance()->reportMark(name, startTime);
+
+  ReactPerfLogger::mark(eventName, entry.startTime, trackName);
+
   return entry.startTime;
 }
 
