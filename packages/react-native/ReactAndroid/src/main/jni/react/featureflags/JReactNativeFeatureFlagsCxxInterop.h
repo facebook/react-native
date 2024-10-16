@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<879ef38c2b34bc6cd15d6361abef1548>>
+ * @generated SignedSource<<f2c31e543498ab343a2b11dbb1a01ae3>>
  */
 
 /**
@@ -112,9 +112,6 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool excludeYogaFromRawProps(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
-
-  static bool fetchImagesInViewPreallocation(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool fixMappingOfEventPrioritiesBetweenFabricAndReact(

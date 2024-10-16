@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f99453feaef7994f46278d40af544771>>
+ * @generated SignedSource<<5613f8d9d9403d005becbbd9348882c6>>
  */
 
 /**
@@ -78,8 +78,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enableViewRecycling(): Boolean = false
 
   override fun excludeYogaFromRawProps(): Boolean = false
-
-  override fun fetchImagesInViewPreallocation(): Boolean = false
 
   override fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean = false
 
