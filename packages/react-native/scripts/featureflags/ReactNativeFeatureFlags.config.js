@@ -171,6 +171,14 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'experimentation',
       },
     },
+    enableLayoutAnimationsOnAndroid: {
+      defaultValue: false,
+      metadata: {
+        description:
+          'When enabled, LayoutAnimations API will animate state changes on Android.',
+        purpose: 'release',
+      },
+    },
     enableLayoutAnimationsOnIOS: {
       defaultValue: true,
       metadata: {
@@ -345,15 +353,6 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'experimentation',
       },
     },
-    removeNestedCallsToDispatchMountItemsOnAndroid: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-09-19',
-        description:
-          'Removes nested calls to MountItemDispatcher.dispatchMountItems on Android, so we do less work per frame on the UI thread.',
-        purpose: 'experimentation',
-      },
-    },
     setAndroidLayoutDirection: {
       defaultValue: true,
       metadata: {
@@ -428,15 +427,6 @@ const definitions: FeatureFlagDefinitions = {
         dateAdded: '2024-06-03',
         description:
           'When enabled, cloning shadow nodes within react native will update the reference held by the current JS fiber tree.',
-        purpose: 'experimentation',
-      },
-    },
-    useRuntimeShadowNodeReferenceUpdateOnLayout: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-06-03',
-        description:
-          'When enabled, cloning shadow nodes during layout will update the reference held by the current JS fiber tree.',
         purpose: 'experimentation',
       },
     },
@@ -606,4 +596,5 @@ const definitions: FeatureFlagDefinitions = {
   },
 };
 
-export default definitions;
+// Keep it as a CommonJS module so we can easily import it from Node.js
+module.exports = definitions;

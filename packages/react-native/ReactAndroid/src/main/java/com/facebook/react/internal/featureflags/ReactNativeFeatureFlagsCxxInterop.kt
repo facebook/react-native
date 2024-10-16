@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c64a6ab675deefabc00c7a2876de2bee>>
+ * @generated SignedSource<<2f1e29ca29c3679e5a87be1d0944efd9>>
  */
 
 /**
@@ -60,6 +60,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun enableIOSViewClipToPaddingBox(): Boolean
 
+  @DoNotStrip @JvmStatic public external fun enableLayoutAnimationsOnAndroid(): Boolean
+
   @DoNotStrip @JvmStatic public external fun enableLayoutAnimationsOnIOS(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableLongTaskAPI(): Boolean
@@ -100,8 +102,6 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun loadVectorDrawablesOnImages(): Boolean
 
-  @DoNotStrip @JvmStatic public external fun removeNestedCallsToDispatchMountItemsOnAndroid(): Boolean
-
   @DoNotStrip @JvmStatic public external fun setAndroidLayoutDirection(): Boolean
 
   @DoNotStrip @JvmStatic public external fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean
@@ -120,8 +120,6 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun useRuntimeShadowNodeReferenceUpdate(): Boolean
 
-  @DoNotStrip @JvmStatic public external fun useRuntimeShadowNodeReferenceUpdateOnLayout(): Boolean
-
   @DoNotStrip @JvmStatic public external fun useTurboModuleInterop(): Boolean
 
   @DoNotStrip @JvmStatic public external fun useTurboModules(): Boolean
@@ -129,4 +127,6 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun override(provider: Any)
 
   @DoNotStrip @JvmStatic public external fun dangerouslyReset()
+
+  @DoNotStrip @JvmStatic public external fun dangerouslyForceOverride(provider: Any): String?
 }

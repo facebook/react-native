@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8cfb46b02812980196f70cfce43e4124>>
+ * @generated SignedSource<<879ef38c2b34bc6cd15d6361abef1548>>
  */
 
 /**
@@ -78,6 +78,9 @@ class JReactNativeFeatureFlagsCxxInterop
   static bool enableIOSViewClipToPaddingBox(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
+  static bool enableLayoutAnimationsOnAndroid(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
   static bool enableLayoutAnimationsOnIOS(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
@@ -138,9 +141,6 @@ class JReactNativeFeatureFlagsCxxInterop
   static bool loadVectorDrawablesOnImages(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
-  static bool removeNestedCallsToDispatchMountItemsOnAndroid(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
-
   static bool setAndroidLayoutDirection(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
@@ -168,9 +168,6 @@ class JReactNativeFeatureFlagsCxxInterop
   static bool useRuntimeShadowNodeReferenceUpdate(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
-  static bool useRuntimeShadowNodeReferenceUpdateOnLayout(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
-
   static bool useTurboModuleInterop(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
@@ -183,6 +180,10 @@ class JReactNativeFeatureFlagsCxxInterop
 
   static void dangerouslyReset(
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
+  static jni::local_ref<jstring> dangerouslyForceOverride(
+      facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>,
+      jni::alias_ref<jobject> provider);
 
   static void registerNatives();
 };

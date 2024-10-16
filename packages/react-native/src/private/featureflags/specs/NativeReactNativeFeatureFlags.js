@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<aa2a12756ea3c1bd2be05dab06b296d7>>
+ * @generated SignedSource<<ffb8175268a4344864ef80d5ad9968c2>>
  * @flow strict
  */
 
@@ -39,6 +39,7 @@ export interface Spec extends TurboModule {
   +enableFabricRendererExclusively?: () => boolean;
   +enableGranularShadowTreeStateReconciliation?: () => boolean;
   +enableIOSViewClipToPaddingBox?: () => boolean;
+  +enableLayoutAnimationsOnAndroid?: () => boolean;
   +enableLayoutAnimationsOnIOS?: () => boolean;
   +enableLongTaskAPI?: () => boolean;
   +enableMicrotasks?: () => boolean;
@@ -59,7 +60,6 @@ export interface Spec extends TurboModule {
   +initEagerTurboModulesOnNativeModulesQueueAndroid?: () => boolean;
   +lazyAnimationCallbacks?: () => boolean;
   +loadVectorDrawablesOnImages?: () => boolean;
-  +removeNestedCallsToDispatchMountItemsOnAndroid?: () => boolean;
   +setAndroidLayoutDirection?: () => boolean;
   +traceTurboModulePromiseRejectionsOnAndroid?: () => boolean;
   +useFabricInterop?: () => boolean;
@@ -69,7 +69,6 @@ export interface Spec extends TurboModule {
   +useOptimisedViewPreallocationOnAndroid?: () => boolean;
   +useOptimizedEventBatchingOnAndroid?: () => boolean;
   +useRuntimeShadowNodeReferenceUpdate?: () => boolean;
-  +useRuntimeShadowNodeReferenceUpdateOnLayout?: () => boolean;
   +useTurboModuleInterop?: () => boolean;
   +useTurboModules?: () => boolean;
 }

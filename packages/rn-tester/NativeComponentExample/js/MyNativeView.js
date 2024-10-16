@@ -85,6 +85,14 @@ function getTextFor(measureStruct: MeasureStruct): string {
     measureStruct.height,
   )}`;
 }
+const opacityDecrementCounter = 0.2;
+
+function computeNextOpacity(opacity: number): number {
+  if (parseFloat(opacity.toFixed(1)) > 0.0) {
+    return opacity - opacityDecrementCounter;
+  }
+  return 1.0;
+}
 
 // This is an example component that migrates to use the new architecture.
 export default function MyNativeView(props: {}): React.Node {
@@ -102,6 +110,7 @@ export default function MyNativeView(props: {}): React.Node {
     useState<MeasureStruct>(MeasureStructZero);
   const [legacyMeasureLayout, setLegacyMeasureLayout] =
     useState<MeasureStruct>(MeasureStructZero);
+  const [legacyStyleEventCount, setLegacyStyleEventCount] = useState<number>(0);
 
   return (
     <View ref={containerRef} style={{flex: 1}}>
@@ -122,6 +131,7 @@ export default function MyNativeView(props: {}): React.Node {
           console.log(event.nativeEvent.multiArrays);
         }}
         onLegacyStyleEvent={event => {
+          setLegacyStyleEventCount(prevCount => prevCount + 1);
           console.log(event.nativeEvent.string);
         }}
       />
@@ -201,7 +211,7 @@ export default function MyNativeView(props: {}): React.Node {
       <Button
         title="Set Opacity"
         onPress={() => {
-          setOpacity(Math.random());
+          setOpacity(computeNextOpacity(opacity));
           setArrayValues([
             Math.floor(Math.random() * 100),
             Math.floor(Math.random() * 100),
@@ -234,15 +244,6 @@ export default function MyNativeView(props: {}): React.Node {
           }
         }}
       />
-      <Button
-        title="Fire Legacy Style Event"
-        onPress={() => {
-          RNTMyNativeViewCommands.fireLagacyStyleEvent(
-            // $FlowFixMe[incompatible-call]
-            ref.current,
-          );
-        }}
-      />
       <Text style={{color: 'green', textAlign: 'center'}}>
         &gt; Interop Layer Measurements &lt;
       </Text>
@@ -254,6 +255,18 @@ export default function MyNativeView(props: {}): React.Node {
       </Text>
       <Text style={{color: 'green', textAlign: 'center'}}>
         InLayout {getTextFor(legacyMeasureLayout)}
+      </Text>
+      <Button
+        title="Fire Legacy Style Event"
+        onPress={() => {
+          RNTMyNativeViewCommands.fireLagacyStyleEvent(
+            // $FlowFixMe[incompatible-call]
+            ref.current,
+          );
+        }}
+      />
+      <Text style={{color: 'green', textAlign: 'center'}}>
+        Legacy Style Event Fired {legacyStyleEventCount} times
       </Text>
       <Button
         title="Test setNativeProps"

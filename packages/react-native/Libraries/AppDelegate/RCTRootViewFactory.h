@@ -59,12 +59,16 @@ typedef BOOL (^RCTBridgeDidNotFindModuleBlock)(RCTBridge *bridge, NSString *modu
 - (instancetype)initWithBundleURLBlock:(RCTBundleURLBlock)bundleURLBlock
                         newArchEnabled:(BOOL)newArchEnabled
                     turboModuleEnabled:(BOOL)turboModuleEnabled
-                     bridgelessEnabled:(BOOL)bridgelessEnabled NS_DESIGNATED_INITIALIZER;
+                     bridgelessEnabled:(BOOL)bridgelessEnabled NS_DESIGNATED_INITIALIZER __deprecated;
 
 - (instancetype)initWithBundleURL:(NSURL *)bundleURL
                    newArchEnabled:(BOOL)newArchEnabled
                turboModuleEnabled:(BOOL)turboModuleEnabled
                 bridgelessEnabled:(BOOL)bridgelessEnabled __deprecated;
+
+- (instancetype)initWithBundleURLBlock:(RCTBundleURLBlock)bundleURLBlock newArchEnabled:(BOOL)newArchEnabled;
+
+- (instancetype)initWithBundleURL:(NSURL *)bundleURL newArchEnabled:(BOOL)newArchEnabled;
 
 /**
  * Block that allows to override logic of creating root view instance.

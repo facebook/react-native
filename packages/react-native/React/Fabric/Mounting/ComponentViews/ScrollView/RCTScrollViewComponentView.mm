@@ -539,6 +539,7 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
   metrics.contentInset = RCTEdgeInsetsFromUIEdgeInsets(_scrollView.contentInset);
   metrics.containerSize = RCTSizeFromCGSize(_scrollView.bounds.size);
   metrics.zoomScale = _scrollView.zoomScale;
+  metrics.timestamp = CACurrentMediaTime();
 
   if (_layoutMetrics.layoutDirection == LayoutDirection::RightToLeft) {
     metrics.contentOffset.x = metrics.contentSize.width - metrics.containerSize.width - metrics.contentOffset.x;
@@ -554,12 +555,17 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
   }
 
   auto contentOffset = RCTPointFromCGPoint(_scrollView.contentOffset);
-  auto data = _state->getData();
-
-  if (contentOffset != data.contentOffset) {
-    data.contentOffset = contentOffset;
-    _state->updateState(std::move(data));
-  }
+  _state->updateState(
+      [contentOffset](
+          const ScrollViewShadowNode::ConcreteState::Data &oldData) -> ScrollViewShadowNode::ConcreteState::SharedData {
+        if (oldData.contentOffset == contentOffset) {
+          // avoid doing a state update if content offset didn't change.
+          return nullptr;
+        }
+        auto newData = oldData;
+        newData.contentOffset = contentOffset;
+        return std::make_shared<const ScrollViewShadowNode::ConcreteState::Data>(newData);
+      });
 }
 
 - (void)prepareForRecycle

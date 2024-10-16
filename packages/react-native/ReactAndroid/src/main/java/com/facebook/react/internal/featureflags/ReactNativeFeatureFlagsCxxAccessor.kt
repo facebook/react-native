@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<03a0cabe6d50fe943f98299777790e72>>
+ * @generated SignedSource<<b0a0f792ea56ce65a44de3ce90ec72ee>>
  */
 
 /**
@@ -36,6 +36,7 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
   private var enableFabricRendererExclusivelyCache: Boolean? = null
   private var enableGranularShadowTreeStateReconciliationCache: Boolean? = null
   private var enableIOSViewClipToPaddingBoxCache: Boolean? = null
+  private var enableLayoutAnimationsOnAndroidCache: Boolean? = null
   private var enableLayoutAnimationsOnIOSCache: Boolean? = null
   private var enableLongTaskAPICache: Boolean? = null
   private var enableMicrotasksCache: Boolean? = null
@@ -56,7 +57,6 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
   private var initEagerTurboModulesOnNativeModulesQueueAndroidCache: Boolean? = null
   private var lazyAnimationCallbacksCache: Boolean? = null
   private var loadVectorDrawablesOnImagesCache: Boolean? = null
-  private var removeNestedCallsToDispatchMountItemsOnAndroidCache: Boolean? = null
   private var setAndroidLayoutDirectionCache: Boolean? = null
   private var traceTurboModulePromiseRejectionsOnAndroidCache: Boolean? = null
   private var useFabricInteropCache: Boolean? = null
@@ -66,7 +66,6 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
   private var useOptimisedViewPreallocationOnAndroidCache: Boolean? = null
   private var useOptimizedEventBatchingOnAndroidCache: Boolean? = null
   private var useRuntimeShadowNodeReferenceUpdateCache: Boolean? = null
-  private var useRuntimeShadowNodeReferenceUpdateOnLayoutCache: Boolean? = null
   private var useTurboModuleInteropCache: Boolean? = null
   private var useTurboModulesCache: Boolean? = null
 
@@ -210,6 +209,15 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enableIOSViewClipToPaddingBox()
       enableIOSViewClipToPaddingBoxCache = cached
+    }
+    return cached
+  }
+
+  override fun enableLayoutAnimationsOnAndroid(): Boolean {
+    var cached = enableLayoutAnimationsOnAndroidCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.enableLayoutAnimationsOnAndroid()
+      enableLayoutAnimationsOnAndroidCache = cached
     }
     return cached
   }
@@ -394,15 +402,6 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
     return cached
   }
 
-  override fun removeNestedCallsToDispatchMountItemsOnAndroid(): Boolean {
-    var cached = removeNestedCallsToDispatchMountItemsOnAndroidCache
-    if (cached == null) {
-      cached = ReactNativeFeatureFlagsCxxInterop.removeNestedCallsToDispatchMountItemsOnAndroid()
-      removeNestedCallsToDispatchMountItemsOnAndroidCache = cached
-    }
-    return cached
-  }
-
   override fun setAndroidLayoutDirection(): Boolean {
     var cached = setAndroidLayoutDirectionCache
     if (cached == null) {
@@ -484,15 +483,6 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
     return cached
   }
 
-  override fun useRuntimeShadowNodeReferenceUpdateOnLayout(): Boolean {
-    var cached = useRuntimeShadowNodeReferenceUpdateOnLayoutCache
-    if (cached == null) {
-      cached = ReactNativeFeatureFlagsCxxInterop.useRuntimeShadowNodeReferenceUpdateOnLayout()
-      useRuntimeShadowNodeReferenceUpdateOnLayoutCache = cached
-    }
-    return cached
-  }
-
   override fun useTurboModuleInterop(): Boolean {
     var cached = useTurboModuleInteropCache
     if (cached == null) {
@@ -515,4 +505,7 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
       ReactNativeFeatureFlagsCxxInterop.override(provider as Any)
 
   override fun dangerouslyReset(): Unit = ReactNativeFeatureFlagsCxxInterop.dangerouslyReset()
+
+  override fun dangerouslyForceOverride(provider: ReactNativeFeatureFlagsProvider): String? =
+      ReactNativeFeatureFlagsCxxInterop.dangerouslyForceOverride(provider as Any)
 }

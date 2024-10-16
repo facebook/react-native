@@ -128,13 +128,11 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
     isKeyDown = [event _isKeyDown];
   }
 
-  BOOL hasFirstResponder = NO;
   if (isKeyDown && modifiedInput.length > 0) {
     UIResponder *firstResponder = nil;
     for (UIWindow *window in [self allWindows]) {
       firstResponder = [window valueForKey:@"firstResponder"];
       if (firstResponder) {
-        hasFirstResponder = YES;
         break;
       }
     }

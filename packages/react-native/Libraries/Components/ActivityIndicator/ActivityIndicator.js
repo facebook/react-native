@@ -153,10 +153,10 @@ const ActivityIndicator = (
 ```
 */
 
-const ActivityIndicatorWithRef: React.AbstractComponent<
-  Props,
-  HostComponent<mixed>,
-> = React.forwardRef(ActivityIndicator);
+const ActivityIndicatorWithRef: component(
+  ref: React.RefSetter<HostComponent<mixed>>,
+  ...props: Props
+) = React.forwardRef(ActivityIndicator);
 ActivityIndicatorWithRef.displayName = 'ActivityIndicator';
 
 const styles = StyleSheet.create({

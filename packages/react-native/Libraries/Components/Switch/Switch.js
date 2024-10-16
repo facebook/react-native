@@ -130,12 +130,14 @@ const returnsTrue = () => true;
   ```
  */
 
-const SwitchWithForwardedRef: React.AbstractComponent<
-  Props,
-  React.ElementRef<
-    typeof SwitchNativeComponent | typeof AndroidSwitchNativeComponent,
-  >,
-> = React.forwardRef(function Switch(props, forwardedRef): React.Node {
+type SwitchRef = React.ElementRef<
+  typeof SwitchNativeComponent | typeof AndroidSwitchNativeComponent,
+>;
+
+const SwitchWithForwardedRef: component(
+  ref: React.RefSetter<SwitchRef>,
+  ...props: Props
+) = React.forwardRef(function Switch(props, forwardedRef): React.Node {
   const {
     disabled,
     ios_backgroundColor,

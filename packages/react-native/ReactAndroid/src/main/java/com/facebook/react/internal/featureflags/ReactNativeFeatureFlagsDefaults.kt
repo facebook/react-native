@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<fdfe7360e02f319b1bae54c52e2bdf0b>>
+ * @generated SignedSource<<f99453feaef7994f46278d40af544771>>
  */
 
 /**
@@ -55,6 +55,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableIOSViewClipToPaddingBox(): Boolean = false
 
+  override fun enableLayoutAnimationsOnAndroid(): Boolean = false
+
   override fun enableLayoutAnimationsOnIOS(): Boolean = true
 
   override fun enableLongTaskAPI(): Boolean = false
@@ -95,8 +97,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun loadVectorDrawablesOnImages(): Boolean = false
 
-  override fun removeNestedCallsToDispatchMountItemsOnAndroid(): Boolean = false
-
   override fun setAndroidLayoutDirection(): Boolean = true
 
   override fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean = false
@@ -114,8 +114,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun useOptimizedEventBatchingOnAndroid(): Boolean = false
 
   override fun useRuntimeShadowNodeReferenceUpdate(): Boolean = false
-
-  override fun useRuntimeShadowNodeReferenceUpdateOnLayout(): Boolean = false
 
   override fun useTurboModuleInterop(): Boolean = false
 

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a6f5238c0f123b0ede2b9de95bd98676>>
+ * @generated SignedSource<<0d6a473cc1c76dc73fe70eb557b6da60>>
  * @flow strict
  */
 
@@ -66,6 +66,7 @@ export type ReactNativeFeatureFlags = {
   enableFabricRendererExclusively: Getter<boolean>,
   enableGranularShadowTreeStateReconciliation: Getter<boolean>,
   enableIOSViewClipToPaddingBox: Getter<boolean>,
+  enableLayoutAnimationsOnAndroid: Getter<boolean>,
   enableLayoutAnimationsOnIOS: Getter<boolean>,
   enableLongTaskAPI: Getter<boolean>,
   enableMicrotasks: Getter<boolean>,
@@ -86,7 +87,6 @@ export type ReactNativeFeatureFlags = {
   initEagerTurboModulesOnNativeModulesQueueAndroid: Getter<boolean>,
   lazyAnimationCallbacks: Getter<boolean>,
   loadVectorDrawablesOnImages: Getter<boolean>,
-  removeNestedCallsToDispatchMountItemsOnAndroid: Getter<boolean>,
   setAndroidLayoutDirection: Getter<boolean>,
   traceTurboModulePromiseRejectionsOnAndroid: Getter<boolean>,
   useFabricInterop: Getter<boolean>,
@@ -96,7 +96,6 @@ export type ReactNativeFeatureFlags = {
   useOptimisedViewPreallocationOnAndroid: Getter<boolean>,
   useOptimizedEventBatchingOnAndroid: Getter<boolean>,
   useRuntimeShadowNodeReferenceUpdate: Getter<boolean>,
-  useRuntimeShadowNodeReferenceUpdateOnLayout: Getter<boolean>,
   useTurboModuleInterop: Getter<boolean>,
   useTurboModules: Getter<boolean>,
 }
@@ -251,6 +250,10 @@ export const enableGranularShadowTreeStateReconciliation: Getter<boolean> = crea
  */
 export const enableIOSViewClipToPaddingBox: Getter<boolean> = createNativeFlagGetter('enableIOSViewClipToPaddingBox', false);
 /**
+ * When enabled, LayoutAnimations API will animate state changes on Android.
+ */
+export const enableLayoutAnimationsOnAndroid: Getter<boolean> = createNativeFlagGetter('enableLayoutAnimationsOnAndroid', false);
+/**
  * When enabled, LayoutAnimations API will animate state changes on iOS.
  */
 export const enableLayoutAnimationsOnIOS: Getter<boolean> = createNativeFlagGetter('enableLayoutAnimationsOnIOS', true);
@@ -331,10 +334,6 @@ export const lazyAnimationCallbacks: Getter<boolean> = createNativeFlagGetter('l
  */
 export const loadVectorDrawablesOnImages: Getter<boolean> = createNativeFlagGetter('loadVectorDrawablesOnImages', false);
 /**
- * Removes nested calls to MountItemDispatcher.dispatchMountItems on Android, so we do less work per frame on the UI thread.
- */
-export const removeNestedCallsToDispatchMountItemsOnAndroid: Getter<boolean> = createNativeFlagGetter('removeNestedCallsToDispatchMountItemsOnAndroid', false);
-/**
  * Propagate layout direction to Android views.
  */
 export const setAndroidLayoutDirection: Getter<boolean> = createNativeFlagGetter('setAndroidLayoutDirection', true);
@@ -370,10 +369,6 @@ export const useOptimizedEventBatchingOnAndroid: Getter<boolean> = createNativeF
  * When enabled, cloning shadow nodes within react native will update the reference held by the current JS fiber tree.
  */
 export const useRuntimeShadowNodeReferenceUpdate: Getter<boolean> = createNativeFlagGetter('useRuntimeShadowNodeReferenceUpdate', false);
-/**
- * When enabled, cloning shadow nodes during layout will update the reference held by the current JS fiber tree.
- */
-export const useRuntimeShadowNodeReferenceUpdateOnLayout: Getter<boolean> = createNativeFlagGetter('useRuntimeShadowNodeReferenceUpdateOnLayout', false);
 /**
  * In Bridgeless mode, should legacy NativeModules use the TurboModule system?
  */

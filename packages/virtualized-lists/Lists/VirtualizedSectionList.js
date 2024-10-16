@@ -601,11 +601,13 @@ function ItemWithSeparator(props: ItemWithSeparatorProps): React.Node {
 /* $FlowFixMe[class-object-subtyping] added when improving typing for this
  * parameters */
 // $FlowFixMe[method-unbinding]
-module.exports = (VirtualizedSectionList: React.AbstractComponent<
-  React.ElementConfig<typeof VirtualizedSectionList>,
-  $ReadOnly<{
-    getListRef: () => ?React.ElementRef<typeof VirtualizedList>,
-    scrollToLocation: (params: ScrollToLocationParamsType) => void,
-    ...
-  }>,
->);
+module.exports = VirtualizedSectionList as component(
+  ref: React.RefSetter<
+    $ReadOnly<{
+      +getListRef: () => ?React.ElementRef<typeof VirtualizedList>,
+      +scrollToLocation: (params: ScrollToLocationParamsType) => void,
+      ...
+    }>,
+  >,
+  ...React.ElementConfig<typeof VirtualizedSectionList>
+);

@@ -43,6 +43,9 @@ internal object NdkConfiguratorUtils {
         if (cmakeArgs.none { it.startsWith("-DPROJECT_BUILD_DIR") }) {
           cmakeArgs.add("-DPROJECT_BUILD_DIR=${project.layout.buildDirectory.get().asFile}")
         }
+        if (cmakeArgs.none { it.startsWith("-DPROJECT_ROOT_DIR") }) {
+          cmakeArgs.add("-DPROJECT_ROOT_DIR=${project.rootProject.layout.projectDirectory.asFile}")
+        }
         if (cmakeArgs.none { it.startsWith("-DREACT_ANDROID_DIR") }) {
           cmakeArgs.add(
               "-DREACT_ANDROID_DIR=${extension.reactNativeDir.file("ReactAndroid").get().asFile}")

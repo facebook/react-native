@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<fe87cf0165da5f6d643dfba4cecbbe19>>
+ * @generated SignedSource<<ff095a4e258bbdd4ad194a4b82bfd614>>
  */
 
 /**
@@ -41,6 +41,7 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool enableFabricRendererExclusively() = 0;
   virtual bool enableGranularShadowTreeStateReconciliation() = 0;
   virtual bool enableIOSViewClipToPaddingBox() = 0;
+  virtual bool enableLayoutAnimationsOnAndroid() = 0;
   virtual bool enableLayoutAnimationsOnIOS() = 0;
   virtual bool enableLongTaskAPI() = 0;
   virtual bool enableMicrotasks() = 0;
@@ -61,7 +62,6 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool initEagerTurboModulesOnNativeModulesQueueAndroid() = 0;
   virtual bool lazyAnimationCallbacks() = 0;
   virtual bool loadVectorDrawablesOnImages() = 0;
-  virtual bool removeNestedCallsToDispatchMountItemsOnAndroid() = 0;
   virtual bool setAndroidLayoutDirection() = 0;
   virtual bool traceTurboModulePromiseRejectionsOnAndroid() = 0;
   virtual bool useFabricInterop() = 0;
@@ -71,7 +71,6 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool useOptimisedViewPreallocationOnAndroid() = 0;
   virtual bool useOptimizedEventBatchingOnAndroid() = 0;
   virtual bool useRuntimeShadowNodeReferenceUpdate() = 0;
-  virtual bool useRuntimeShadowNodeReferenceUpdateOnLayout() = 0;
   virtual bool useTurboModuleInterop() = 0;
   virtual bool useTurboModules() = 0;
 };

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<bae4296b2dc7665b26622ce379b4bd3b>>
+ * @generated SignedSource<<079a09e6be3d2154e1cb65d58cfe792f>>
  */
 
 /**
@@ -91,6 +91,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool enableLayoutAnimationsOnAndroid() override {
+    return false;
+  }
+
   bool enableLayoutAnimationsOnIOS() override {
     return true;
   }
@@ -171,10 +175,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool removeNestedCallsToDispatchMountItemsOnAndroid() override {
-    return false;
-  }
-
   bool setAndroidLayoutDirection() override {
     return true;
   }
@@ -208,10 +208,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool useRuntimeShadowNodeReferenceUpdate() override {
-    return false;
-  }
-
-  bool useRuntimeShadowNodeReferenceUpdateOnLayout() override {
     return false;
   }
 

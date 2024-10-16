@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<71e220a992b035e3e7ec39b54eb4cd6c>>
+ * @generated SignedSource<<c6952fdf8a3bd4fb7d5d8e4b3d4134ac>>
  */
 
 /**
@@ -24,6 +24,7 @@
 #include <atomic>
 #include <memory>
 #include <optional>
+#include <string>
 
 namespace facebook::react {
 
@@ -47,6 +48,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableFabricRendererExclusively();
   bool enableGranularShadowTreeStateReconciliation();
   bool enableIOSViewClipToPaddingBox();
+  bool enableLayoutAnimationsOnAndroid();
   bool enableLayoutAnimationsOnIOS();
   bool enableLongTaskAPI();
   bool enableMicrotasks();
@@ -67,7 +69,6 @@ class ReactNativeFeatureFlagsAccessor {
   bool initEagerTurboModulesOnNativeModulesQueueAndroid();
   bool lazyAnimationCallbacks();
   bool loadVectorDrawablesOnImages();
-  bool removeNestedCallsToDispatchMountItemsOnAndroid();
   bool setAndroidLayoutDirection();
   bool traceTurboModulePromiseRejectionsOnAndroid();
   bool useFabricInterop();
@@ -77,11 +78,11 @@ class ReactNativeFeatureFlagsAccessor {
   bool useOptimisedViewPreallocationOnAndroid();
   bool useOptimizedEventBatchingOnAndroid();
   bool useRuntimeShadowNodeReferenceUpdate();
-  bool useRuntimeShadowNodeReferenceUpdateOnLayout();
   bool useTurboModuleInterop();
   bool useTurboModules();
 
   void override(std::unique_ptr<ReactNativeFeatureFlagsProvider> provider);
+  std::optional<std::string> getAccessedFeatureFlagNames() const;
 
  private:
   void markFlagAsAccessed(int position, const char* flagName);
@@ -90,7 +91,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 49> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 48> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> allowRecursiveCommitsWithSynchronousMountOnAndroid_;
@@ -108,6 +109,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableFabricRendererExclusively_;
   std::atomic<std::optional<bool>> enableGranularShadowTreeStateReconciliation_;
   std::atomic<std::optional<bool>> enableIOSViewClipToPaddingBox_;
+  std::atomic<std::optional<bool>> enableLayoutAnimationsOnAndroid_;
   std::atomic<std::optional<bool>> enableLayoutAnimationsOnIOS_;
   std::atomic<std::optional<bool>> enableLongTaskAPI_;
   std::atomic<std::optional<bool>> enableMicrotasks_;
@@ -128,7 +130,6 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> initEagerTurboModulesOnNativeModulesQueueAndroid_;
   std::atomic<std::optional<bool>> lazyAnimationCallbacks_;
   std::atomic<std::optional<bool>> loadVectorDrawablesOnImages_;
-  std::atomic<std::optional<bool>> removeNestedCallsToDispatchMountItemsOnAndroid_;
   std::atomic<std::optional<bool>> setAndroidLayoutDirection_;
   std::atomic<std::optional<bool>> traceTurboModulePromiseRejectionsOnAndroid_;
   std::atomic<std::optional<bool>> useFabricInterop_;
@@ -138,7 +139,6 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> useOptimisedViewPreallocationOnAndroid_;
   std::atomic<std::optional<bool>> useOptimizedEventBatchingOnAndroid_;
   std::atomic<std::optional<bool>> useRuntimeShadowNodeReferenceUpdate_;
-  std::atomic<std::optional<bool>> useRuntimeShadowNodeReferenceUpdateOnLayout_;
   std::atomic<std::optional<bool>> useTurboModuleInterop_;
   std::atomic<std::optional<bool>> useTurboModules_;
 };

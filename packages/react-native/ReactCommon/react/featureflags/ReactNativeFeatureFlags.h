@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ee081daa4d26ef5c8e336bd35aad5de7>>
+ * @generated SignedSource<<9170ab789417914123e11ecb836aaa9a>>
  */
 
 /**
@@ -22,6 +22,8 @@
 #include <react/featureflags/ReactNativeFeatureFlagsAccessor.h>
 #include <react/featureflags/ReactNativeFeatureFlagsProvider.h>
 #include <memory>
+#include <optional>
+#include <string>
 
 #ifndef RN_EXPORT
 #define RN_EXPORT __attribute__((visibility("default")))
@@ -116,6 +118,11 @@ class ReactNativeFeatureFlags {
    * iOS Views will clip to their padding box vs border box
    */
   RN_EXPORT static bool enableIOSViewClipToPaddingBox();
+
+  /**
+   * When enabled, LayoutAnimations API will animate state changes on Android.
+   */
+  RN_EXPORT static bool enableLayoutAnimationsOnAndroid();
 
   /**
    * When enabled, LayoutAnimations API will animate state changes on iOS.
@@ -218,11 +225,6 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool loadVectorDrawablesOnImages();
 
   /**
-   * Removes nested calls to MountItemDispatcher.dispatchMountItems on Android, so we do less work per frame on the UI thread.
-   */
-  RN_EXPORT static bool removeNestedCallsToDispatchMountItemsOnAndroid();
-
-  /**
    * Propagate layout direction to Android views.
    */
   RN_EXPORT static bool setAndroidLayoutDirection();
@@ -266,11 +268,6 @@ class ReactNativeFeatureFlags {
    * When enabled, cloning shadow nodes within react native will update the reference held by the current JS fiber tree.
    */
   RN_EXPORT static bool useRuntimeShadowNodeReferenceUpdate();
-
-  /**
-   * When enabled, cloning shadow nodes during layout will update the reference held by the current JS fiber tree.
-   */
-  RN_EXPORT static bool useRuntimeShadowNodeReferenceUpdateOnLayout();
 
   /**
    * In Bridgeless mode, should legacy NativeModules use the TurboModule system?
@@ -317,9 +314,24 @@ class ReactNativeFeatureFlags {
    */
   RN_EXPORT static void dangerouslyReset();
 
+  /**
+   * This is a combination of `dangerouslyReset` and `override` that reduces
+   * the likeliness of a race condition between the two calls.
+   *
+   * This is **dangerous** because it can introduce consistency issues that will
+   * be much harder to debug. For example, it could hide the fact that feature
+   * flags are read before you set the values you want to use everywhere. It
+   * could also cause a workflow to suddently have different feature flags for
+   * behaviors that were configured with different values before.
+   *
+   * Please see the documentation of `dangerouslyReset` for additional details.
+   */
+  RN_EXPORT static std::optional<std::string> dangerouslyForceOverride(
+      std::unique_ptr<ReactNativeFeatureFlagsProvider> provider);
+
  private:
   ReactNativeFeatureFlags() = delete;
-  static ReactNativeFeatureFlagsAccessor& getAccessor(bool reset = false);
+  static ReactNativeFeatureFlagsAccessor& getAccessor();
 };
 
 } // namespace facebook::react

@@ -288,24 +288,25 @@ Style::Length Node::processFlexBasis() const {
     return flexBasis;
   }
   if (style_.flex().isDefined() && style_.flex().unwrap() > 0.0f) {
-    return config_->useWebDefaults() ? value::ofAuto() : value::points(0);
+    return config_->useWebDefaults() ? StyleLength::ofAuto()
+                                     : StyleLength::points(0);
   }
-  return value::ofAuto();
+  return StyleLength::ofAuto();
 }
 
 FloatOptional Node::resolveFlexBasis(
     Direction direction,
     FlexDirection flexDirection,
-    float referenceLength) const {
+    float referenceLength,
+    float ownerWidth) const {
   FloatOptional value = processFlexBasis().resolve(referenceLength);
   if (style_.boxSizing() == BoxSizing::BorderBox) {
     return value;
   }
 
   Dimension dim = dimension(flexDirection);
-  FloatOptional dimensionPaddingAndBorder =
-      FloatOptional{style_.computePaddingAndBorderForDimension(
-          direction, dim, referenceLength)};
+  FloatOptional dimensionPaddingAndBorder = FloatOptional{
+      style_.computePaddingAndBorderForDimension(direction, dim, ownerWidth)};
 
   return value +
       (dimensionPaddingAndBorder.isDefined() ? dimensionPaddingAndBorder

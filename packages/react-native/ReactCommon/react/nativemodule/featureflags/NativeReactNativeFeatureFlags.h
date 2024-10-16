@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0713247957f6ec9c4c024ab040fb89b5>>
+ * @generated SignedSource<<7abbf20a370e97c2ef0e59bef4f6164a>>
  */
 
 /**
@@ -67,6 +67,8 @@ class NativeReactNativeFeatureFlags
 
   bool enableIOSViewClipToPaddingBox(jsi::Runtime& runtime);
 
+  bool enableLayoutAnimationsOnAndroid(jsi::Runtime& runtime);
+
   bool enableLayoutAnimationsOnIOS(jsi::Runtime& runtime);
 
   bool enableLongTaskAPI(jsi::Runtime& runtime);
@@ -107,8 +109,6 @@ class NativeReactNativeFeatureFlags
 
   bool loadVectorDrawablesOnImages(jsi::Runtime& runtime);
 
-  bool removeNestedCallsToDispatchMountItemsOnAndroid(jsi::Runtime& runtime);
-
   bool setAndroidLayoutDirection(jsi::Runtime& runtime);
 
   bool traceTurboModulePromiseRejectionsOnAndroid(jsi::Runtime& runtime);
@@ -126,8 +126,6 @@ class NativeReactNativeFeatureFlags
   bool useOptimizedEventBatchingOnAndroid(jsi::Runtime& runtime);
 
   bool useRuntimeShadowNodeReferenceUpdate(jsi::Runtime& runtime);
-
-  bool useRuntimeShadowNodeReferenceUpdateOnLayout(jsi::Runtime& runtime);
 
   bool useTurboModuleInterop(jsi::Runtime& runtime);
 

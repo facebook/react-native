@@ -31,6 +31,7 @@ type AccessibilityEventDefinitionsIOS = {
   grayscaleChanged: [boolean],
   invertColorsChanged: [boolean],
   reduceTransparencyChanged: [boolean],
+  darkerSystemColorsChanged: [boolean],
 };
 
 type AccessibilityEventDefinitions = {
@@ -64,6 +65,7 @@ const EventNames: Map<
       ['reduceMotionChanged', 'reduceMotionChanged'],
       ['reduceTransparencyChanged', 'reduceTransparencyChanged'],
       ['screenReaderChanged', 'screenReaderChanged'],
+      ['darkerSystemColorsChanged', 'darkerSystemColorsChanged'],
     ]);
 
 /**
@@ -196,6 +198,32 @@ const AccessibilityInfo = {
         }
       } else {
         return Promise.resolve(false);
+      }
+    });
+  },
+
+  /**
+   * Query whether dark system colors is currently enabled. iOS only.
+   *
+   * Returns a promise which resolves to a boolean.
+   * The result is `true` when dark system colors is enabled and `false` otherwise.
+   */
+  isDarkerSystemColorsEnabled(): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      if (Platform.OS === 'android') {
+        return Promise.resolve(false);
+      } else {
+        if (
+          NativeAccessibilityManagerIOS?.getCurrentDarkerSystemColorsState !=
+          null
+        ) {
+          NativeAccessibilityManagerIOS.getCurrentDarkerSystemColorsState(
+            resolve,
+            reject,
+          );
+        } else {
+          reject(null);
+        }
       }
     });
   },
@@ -340,6 +368,9 @@ const AccessibilityInfo = {
    *     - `announcement`: The string announced by the screen reader.
    *     - `success`: A boolean indicating whether the announcement was
    *       successfully made.
+   * - `darkerSystemColorsChanged`: iOS-only event. Fires when the state of the dark system colors
+   *   toggle changes. The argument to the event handler is a boolean. The boolean is `true` when
+   *   dark system colors is enabled and `false` otherwise.
    *
    * These events are only supported on Android:
    *

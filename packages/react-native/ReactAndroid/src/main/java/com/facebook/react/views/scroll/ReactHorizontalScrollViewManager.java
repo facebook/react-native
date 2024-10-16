@@ -360,9 +360,4 @@ public class ReactHorizontalScrollViewManager extends ViewGroupManager<ReactHori
   public void setHorizontal(ReactHorizontalScrollView view, boolean horizontal) {
     // Do Nothing: Align with static ViewConfigs
   }
-
-  @ReactProp(name = ViewProps.BOX_SHADOW, customType = "BoxShadow")
-  public void setBoxShadow(ReactHorizontalScrollView view, @Nullable ReadableArray shadows) {
-    BackgroundStyleApplicator.setBoxShadow(view, shadows);
-  }
 }

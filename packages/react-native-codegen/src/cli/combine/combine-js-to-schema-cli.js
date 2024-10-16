@@ -17,11 +17,17 @@ const {
 const yargs = require('yargs');
 
 const argv = yargs
+  .usage('Usage: $0 <outfile> <file1> [<file2> ...]')
   .option('p', {
+    describe:
+      'Platforms to generate schema for, this works on filenames: <filename>[.<platform>].(js|tsx?)',
     alias: 'platform',
+    default: null,
   })
   .option('e', {
+    describe: 'Regular expression to exclude files from schema generation',
     alias: 'exclude',
+    default: null,
   })
   .parseSync();
 

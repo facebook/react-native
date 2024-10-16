@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<da9af24070e20310e81c38ffe608c345>>
+ * @generated SignedSource<<204e18de128eb47f29ef5383e592e181>>
  */
 
 /**
@@ -20,6 +20,11 @@
 #include "ReactNativeFeatureFlags.h"
 
 namespace facebook::react {
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wglobal-constructors"
+std::unique_ptr<ReactNativeFeatureFlagsAccessor> accessor_;
+#pragma GCC diagnostic pop
 
 bool ReactNativeFeatureFlags::commonTestFlag() {
   return getAccessor().commonTestFlag();
@@ -83,6 +88,10 @@ bool ReactNativeFeatureFlags::enableGranularShadowTreeStateReconciliation() {
 
 bool ReactNativeFeatureFlags::enableIOSViewClipToPaddingBox() {
   return getAccessor().enableIOSViewClipToPaddingBox();
+}
+
+bool ReactNativeFeatureFlags::enableLayoutAnimationsOnAndroid() {
+  return getAccessor().enableLayoutAnimationsOnAndroid();
 }
 
 bool ReactNativeFeatureFlags::enableLayoutAnimationsOnIOS() {
@@ -165,10 +174,6 @@ bool ReactNativeFeatureFlags::loadVectorDrawablesOnImages() {
   return getAccessor().loadVectorDrawablesOnImages();
 }
 
-bool ReactNativeFeatureFlags::removeNestedCallsToDispatchMountItemsOnAndroid() {
-  return getAccessor().removeNestedCallsToDispatchMountItemsOnAndroid();
-}
-
 bool ReactNativeFeatureFlags::setAndroidLayoutDirection() {
   return getAccessor().setAndroidLayoutDirection();
 }
@@ -205,10 +210,6 @@ bool ReactNativeFeatureFlags::useRuntimeShadowNodeReferenceUpdate() {
   return getAccessor().useRuntimeShadowNodeReferenceUpdate();
 }
 
-bool ReactNativeFeatureFlags::useRuntimeShadowNodeReferenceUpdateOnLayout() {
-  return getAccessor().useRuntimeShadowNodeReferenceUpdateOnLayout();
-}
-
 bool ReactNativeFeatureFlags::useTurboModuleInterop() {
   return getAccessor().useTurboModuleInterop();
 }
@@ -223,16 +224,26 @@ void ReactNativeFeatureFlags::override(
 }
 
 void ReactNativeFeatureFlags::dangerouslyReset() {
-  getAccessor(true);
+  accessor_ = std::make_unique<ReactNativeFeatureFlagsAccessor>();
 }
 
-ReactNativeFeatureFlagsAccessor& ReactNativeFeatureFlags::getAccessor(
-    bool reset) {
-  static std::unique_ptr<ReactNativeFeatureFlagsAccessor> accessor;
-  if (accessor == nullptr || reset) {
-    accessor = std::make_unique<ReactNativeFeatureFlagsAccessor>();
+std::optional<std::string> ReactNativeFeatureFlags::dangerouslyForceOverride(
+    std::unique_ptr<ReactNativeFeatureFlagsProvider> provider) {
+  auto accessor = std::make_unique<ReactNativeFeatureFlagsAccessor>();
+  accessor->override(std::move(provider));
+
+  std::swap(accessor_, accessor);
+
+  // Now accessor is the old accessor
+  return accessor == nullptr ? std::nullopt
+                             : accessor->getAccessedFeatureFlagNames();
+}
+
+ReactNativeFeatureFlagsAccessor& ReactNativeFeatureFlags::getAccessor() {
+  if (accessor_ == nullptr) {
+    accessor_ = std::make_unique<ReactNativeFeatureFlagsAccessor>();
   }
-  return *accessor;
+  return *accessor_;
 }
 
 } // namespace facebook::react

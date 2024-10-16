@@ -30,7 +30,12 @@ function registerForMonorepo() {
     return;
   }
 
-  require('metro-babel-register')([PACKAGES_DIR]);
+  if (process.env.FBSOURCE_ENV === '1') {
+    // $FlowExpectedError[cannot-resolve-module] - Won't resolve in OSS
+    require('@fb-tools/babel-register');
+  } else {
+    require('metro-babel-register')([PACKAGES_DIR]);
+  }
 
   isRegisteredForMonorepo = true;
 }

@@ -435,6 +435,7 @@ public class TextLayoutManager {
     // hypothetical height of a new line after a trailing newline charater (considered part of the
     // previous line).
     paint.reset();
+    paint.setAntiAlias(true);
     if (baseTextAttributes.getEffectiveFontSize() != ReactConstants.UNSET) {
       paint.setTextSize(baseTextAttributes.getEffectiveFontSize());
     }

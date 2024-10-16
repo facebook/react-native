@@ -1160,7 +1160,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
   }
 
   componentDidUpdate(prevProps: Props) {
-    const {data, extraData} = this.props;
+    const {data, extraData, getItemLayout} = this.props;
     if (data !== prevProps.data || extraData !== prevProps.extraData) {
       // clear the viewableIndices cache to also trigger
       // the onViewableItemsChanged callback with the new data
@@ -1186,7 +1186,9 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     // getItemLayout is present, we can scroll past the last rendered cell, and
     // never trigger a new layout or bounds change, so we need to check again
     // after rendering more cells.
-    this._maybeCallOnEdgeReached();
+    if (getItemLayout != null) {
+      this._maybeCallOnEdgeReached();
+    }
   }
 
   _cellRefs: {[string]: null | CellRenderer<any>} = {};
@@ -1497,7 +1499,6 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     const {
       data,
       getItemCount,
-      getItemLayout,
       onStartReached,
       onStartReachedThreshold,
       onEndReached,
@@ -1553,9 +1554,6 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     if (
       onEndReached &&
       this.state.cellsAroundViewport.last === getItemCount(data) - 1 &&
-      (getItemLayout != null ||
-        this._listMetrics.getHighestMeasuredCellIndex() ===
-          getItemCount(data) - 1) &&
       isWithinEndThreshold &&
       this._listMetrics.getContentLength() !== this._sentEndForContentLength
     ) {

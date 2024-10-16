@@ -227,6 +227,28 @@ inline void fromRawValue(
 }
 
 inline void fromRawValue(
+    const PropsParserContext& /*context*/,
+    const RawValue& value,
+    yoga::BoxSizing& result) {
+  result = yoga::BoxSizing::BorderBox;
+  react_native_expect(value.hasType<std::string>());
+  if (!value.hasType<std::string>()) {
+    return;
+  }
+  auto stringValue = (std::string)value;
+  if (stringValue == "border-box") {
+    result = yoga::BoxSizing::BorderBox;
+    return;
+  }
+  if (stringValue == "content-box") {
+    result = yoga::BoxSizing::ContentBox;
+    return;
+  }
+
+  LOG(ERROR) << "Could not parse yoga::BoxSizing: " << stringValue;
+}
+
+inline void fromRawValue(
     const PropsParserContext& context,
     const RawValue& value,
     yoga::Justify& result) {
@@ -415,31 +437,31 @@ inline void fromRawValue(
     const RawValue& value,
     yoga::Style::Length& result) {
   if (value.hasType<Float>()) {
-    result = yoga::value::points((float)value);
+    result = yoga::StyleLength::points((float)value);
     return;
   } else if (value.hasType<std::string>()) {
     const auto stringValue = (std::string)value;
     if (stringValue == "auto") {
-      result = yoga::value::ofAuto();
+      result = yoga::StyleLength::ofAuto();
       return;
     } else {
       if (stringValue.back() == '%') {
         auto tryValue = folly::tryTo<float>(
             std::string_view(stringValue).substr(0, stringValue.length() - 1));
         if (tryValue.hasValue()) {
-          result = yoga::value::percent(tryValue.value());
+          result = yoga::StyleLength::percent(tryValue.value());
           return;
         }
       } else {
         auto tryValue = folly::tryTo<float>(stringValue);
         if (tryValue.hasValue()) {
-          result = yoga::value::points(tryValue.value());
+          result = yoga::StyleLength::points(tryValue.value());
           return;
         }
       }
     }
   }
-  result = yoga::value::undefined();
+  result = yoga::StyleLength::undefined();
 }
 
 inline void fromRawValue(

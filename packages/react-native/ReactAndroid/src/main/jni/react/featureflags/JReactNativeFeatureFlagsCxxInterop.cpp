@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<26d63ed84fb805148374dd23a637fdcf>>
+ * @generated SignedSource<<9f5e1568b62ca76e5771fade759d42e5>>
  */
 
 /**
@@ -135,6 +135,12 @@ class ReactNativeFeatureFlagsProviderHolder
     return method(javaProvider_);
   }
 
+  bool enableLayoutAnimationsOnAndroid() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableLayoutAnimationsOnAndroid");
+    return method(javaProvider_);
+  }
+
   bool enableLayoutAnimationsOnIOS() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableLayoutAnimationsOnIOS");
@@ -255,12 +261,6 @@ class ReactNativeFeatureFlagsProviderHolder
     return method(javaProvider_);
   }
 
-  bool removeNestedCallsToDispatchMountItemsOnAndroid() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("removeNestedCallsToDispatchMountItemsOnAndroid");
-    return method(javaProvider_);
-  }
-
   bool setAndroidLayoutDirection() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("setAndroidLayoutDirection");
@@ -312,12 +312,6 @@ class ReactNativeFeatureFlagsProviderHolder
   bool useRuntimeShadowNodeReferenceUpdate() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useRuntimeShadowNodeReferenceUpdate");
-    return method(javaProvider_);
-  }
-
-  bool useRuntimeShadowNodeReferenceUpdateOnLayout() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useRuntimeShadowNodeReferenceUpdateOnLayout");
     return method(javaProvider_);
   }
 
@@ -415,6 +409,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableGranularShadowTreeStateReconcilia
 bool JReactNativeFeatureFlagsCxxInterop::enableIOSViewClipToPaddingBox(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableIOSViewClipToPaddingBox();
+}
+
+bool JReactNativeFeatureFlagsCxxInterop::enableLayoutAnimationsOnAndroid(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableLayoutAnimationsOnAndroid();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::enableLayoutAnimationsOnIOS(
@@ -517,11 +516,6 @@ bool JReactNativeFeatureFlagsCxxInterop::loadVectorDrawablesOnImages(
   return ReactNativeFeatureFlags::loadVectorDrawablesOnImages();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::removeNestedCallsToDispatchMountItemsOnAndroid(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::removeNestedCallsToDispatchMountItemsOnAndroid();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::setAndroidLayoutDirection(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::setAndroidLayoutDirection();
@@ -567,11 +561,6 @@ bool JReactNativeFeatureFlagsCxxInterop::useRuntimeShadowNodeReferenceUpdate(
   return ReactNativeFeatureFlags::useRuntimeShadowNodeReferenceUpdate();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::useRuntimeShadowNodeReferenceUpdateOnLayout(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::useRuntimeShadowNodeReferenceUpdateOnLayout();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::useTurboModuleInterop(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::useTurboModuleInterop();
@@ -594,11 +583,25 @@ void JReactNativeFeatureFlagsCxxInterop::dangerouslyReset(
   ReactNativeFeatureFlags::dangerouslyReset();
 }
 
+jni::local_ref<jstring> JReactNativeFeatureFlagsCxxInterop::dangerouslyForceOverride(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/,
+    jni::alias_ref<jobject> provider) {
+  auto accessedFlags = ReactNativeFeatureFlags::dangerouslyForceOverride(
+             std::make_unique<ReactNativeFeatureFlagsProviderHolder>(provider));
+  if (accessedFlags.has_value()) {
+    return jni::make_jstring(accessedFlags.value());
+  }
+  return nullptr;
+}
+
 void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
   javaClassLocal()->registerNatives({
       makeNativeMethod(
           "override", JReactNativeFeatureFlagsCxxInterop::override),
       makeNativeMethod("dangerouslyReset", JReactNativeFeatureFlagsCxxInterop::dangerouslyReset),
+      makeNativeMethod(
+          "dangerouslyForceOverride",
+          JReactNativeFeatureFlagsCxxInterop::dangerouslyForceOverride),
       makeNativeMethod(
         "commonTestFlag",
         JReactNativeFeatureFlagsCxxInterop::commonTestFlag),
@@ -647,6 +650,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableIOSViewClipToPaddingBox",
         JReactNativeFeatureFlagsCxxInterop::enableIOSViewClipToPaddingBox),
+      makeNativeMethod(
+        "enableLayoutAnimationsOnAndroid",
+        JReactNativeFeatureFlagsCxxInterop::enableLayoutAnimationsOnAndroid),
       makeNativeMethod(
         "enableLayoutAnimationsOnIOS",
         JReactNativeFeatureFlagsCxxInterop::enableLayoutAnimationsOnIOS),
@@ -708,9 +714,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
         "loadVectorDrawablesOnImages",
         JReactNativeFeatureFlagsCxxInterop::loadVectorDrawablesOnImages),
       makeNativeMethod(
-        "removeNestedCallsToDispatchMountItemsOnAndroid",
-        JReactNativeFeatureFlagsCxxInterop::removeNestedCallsToDispatchMountItemsOnAndroid),
-      makeNativeMethod(
         "setAndroidLayoutDirection",
         JReactNativeFeatureFlagsCxxInterop::setAndroidLayoutDirection),
       makeNativeMethod(
@@ -737,9 +740,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "useRuntimeShadowNodeReferenceUpdate",
         JReactNativeFeatureFlagsCxxInterop::useRuntimeShadowNodeReferenceUpdate),
-      makeNativeMethod(
-        "useRuntimeShadowNodeReferenceUpdateOnLayout",
-        JReactNativeFeatureFlagsCxxInterop::useRuntimeShadowNodeReferenceUpdateOnLayout),
       makeNativeMethod(
         "useTurboModuleInterop",
         JReactNativeFeatureFlagsCxxInterop::useTurboModuleInterop),

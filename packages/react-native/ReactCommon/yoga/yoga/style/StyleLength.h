@@ -104,36 +104,4 @@ inline bool inexactEquals(const StyleLength& a, const StyleLength& b) {
   return a.unit() == b.unit() && inexactEquals(a.value(), b.value());
 }
 
-namespace value {
-
-/**
- * Canonical unit (one YGUnitPoint)
- */
-constexpr StyleLength points(float value) {
-  return StyleLength::points(value);
-}
-
-/**
- * Percent of reference
- */
-constexpr StyleLength percent(float value) {
-  return StyleLength::percent(value);
-}
-
-/**
- * "auto" keyword
- */
-constexpr StyleLength ofAuto() {
-  return StyleLength::ofAuto();
-}
-
-/**
- * Undefined
- */
-constexpr StyleLength undefined() {
-  return StyleLength::undefined();
-}
-
-} // namespace value
-
 } // namespace facebook::yoga

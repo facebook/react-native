@@ -34,6 +34,7 @@ import com.facebook.drawee.generic.RoundingParams
 import com.facebook.drawee.view.GenericDraweeView
 import com.facebook.imagepipeline.bitmaps.PlatformBitmapFactory
 import com.facebook.imagepipeline.common.ResizeOptions
+import com.facebook.imagepipeline.core.DownsampleMode
 import com.facebook.imagepipeline.image.CloseableImage
 import com.facebook.imagepipeline.image.ImageInfo
 import com.facebook.imagepipeline.postprocessors.IterativeBoxBlurPostProcessor
@@ -337,7 +338,16 @@ public class ReactImageView(
 
   public override fun onDraw(canvas: Canvas) {
     BackgroundStyleApplicator.clipToPaddingBox(this, canvas)
-    super.onDraw(canvas)
+    try {
+      super.onDraw(canvas)
+    } catch (e: RuntimeException) {
+      // Only provide updates if downloadListener is set (shouldNotify is true)
+      if (downloadListener != null) {
+        val eventDispatcher =
+            UIManagerHelper.getEventDispatcherForReactTag(context as ReactContext, id)
+        eventDispatcher?.dispatchEvent(createErrorEvent(UIManagerHelper.getSurfaceId(this), id, e))
+      }
+    }
   }
 
   public fun maybeUpdateView() {
@@ -415,6 +425,10 @@ public class ReactImageView(
             .setAutoRotateEnabled(true)
             .setProgressiveRenderingEnabled(progressiveRenderingEnabled)
 
+    if (resizeMethod == ImageResizeMethod.NONE) {
+      imageRequestBuilder.setDownsampleOverride(DownsampleMode.NEVER)
+    }
+
     val imageRequest: ImageRequest =
         ReactNetworkImageRequest.fromBuilderWithHeaders(imageRequestBuilder, headers)
 
@@ -435,14 +449,16 @@ public class ReactImageView(
     callerContext?.let { builder.setCallerContext(it) }
 
     cachedImageSource?.let { cachedSource ->
-      val cachedImageRequest =
+      val cachedImageRequestBuilder =
           ImageRequestBuilder.newBuilderWithSource(cachedSource.uri)
               .setPostprocessor(postprocessor)
               .setResizeOptions(resizeOptions)
               .setAutoRotateEnabled(true)
               .setProgressiveRenderingEnabled(progressiveRenderingEnabled)
-              .build()
-      builder.setLowResImageRequest(cachedImageRequest)
+      if (resizeMethod == ImageResizeMethod.NONE) {
+        cachedImageRequestBuilder.setDownsampleOverride(DownsampleMode.NEVER)
+      }
+      builder.setLowResImageRequest(cachedImageRequestBuilder.build())
     }
 
     if (downloadListener != null && controllerForTesting != null) {

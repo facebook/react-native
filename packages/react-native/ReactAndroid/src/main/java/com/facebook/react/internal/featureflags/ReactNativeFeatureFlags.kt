@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<47baae9ffdb4a5fa461ce2800ba53b02>>
+ * @generated SignedSource<<af80868112a7748983aaa6e638d0068e>>
  */
 
 /**
@@ -123,6 +123,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableIOSViewClipToPaddingBox(): Boolean = accessor.enableIOSViewClipToPaddingBox()
+
+  /**
+   * When enabled, LayoutAnimations API will animate state changes on Android.
+   */
+  @JvmStatic
+  public fun enableLayoutAnimationsOnAndroid(): Boolean = accessor.enableLayoutAnimationsOnAndroid()
 
   /**
    * When enabled, LayoutAnimations API will animate state changes on iOS.
@@ -245,12 +251,6 @@ public object ReactNativeFeatureFlags {
   public fun loadVectorDrawablesOnImages(): Boolean = accessor.loadVectorDrawablesOnImages()
 
   /**
-   * Removes nested calls to MountItemDispatcher.dispatchMountItems on Android, so we do less work per frame on the UI thread.
-   */
-  @JvmStatic
-  public fun removeNestedCallsToDispatchMountItemsOnAndroid(): Boolean = accessor.removeNestedCallsToDispatchMountItemsOnAndroid()
-
-  /**
    * Propagate layout direction to Android views.
    */
   @JvmStatic
@@ -305,12 +305,6 @@ public object ReactNativeFeatureFlags {
   public fun useRuntimeShadowNodeReferenceUpdate(): Boolean = accessor.useRuntimeShadowNodeReferenceUpdate()
 
   /**
-   * When enabled, cloning shadow nodes during layout will update the reference held by the current JS fiber tree.
-   */
-  @JvmStatic
-  public fun useRuntimeShadowNodeReferenceUpdateOnLayout(): Boolean = accessor.useRuntimeShadowNodeReferenceUpdateOnLayout()
-
-  /**
    * In Bridgeless mode, should legacy NativeModules use the TurboModule system?
    */
   @JvmStatic
@@ -356,6 +350,32 @@ public object ReactNativeFeatureFlags {
 
     // This discards the cached values and the overrides set in the JVM.
     accessor = accessorProvider()
+  }
+
+  /**
+   * This is a combination of `dangerouslyReset` and `override` that reduces
+   * the likeliness of a race condition between the two calls.
+   *
+   * This is **dangerous** because it can introduce consistency issues that will
+   * be much harder to debug. For example, it could hide the fact that feature
+   * flags are read before you set the values you want to use everywhere. It
+   * could also cause a workflow to suddently have different feature flags for
+   * behaviors that were configured with different values before.
+   *
+   * It returns a string that contains the feature flags that were accessed
+   * before this call (or between the last call to `dangerouslyReset` and this
+   * call). If you are using this method, you do not want the hard crash that
+   * you would get from using `dangerouslyReset` and `override` separately,
+   * but you should still log this somehow.
+   *
+   * Please see the documentation of `dangerouslyReset` for additional details.
+   */
+  @JvmStatic
+  public fun dangerouslyForceOverride(provider: ReactNativeFeatureFlagsProvider): String? {
+    val newAccessor = accessorProvider()
+    val previouslyAccessedFlags = newAccessor.dangerouslyForceOverride(provider)
+    accessor = newAccessor
+    return previouslyAccessedFlags
   }
 
   /**

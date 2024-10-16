@@ -159,7 +159,8 @@ class YG_EXPORT Node : public ::YGNode {
   FloatOptional getResolvedDimension(
       Direction direction,
       Dimension dimension,
-      float referenceLength) const {
+      float referenceLength,
+      float ownerWidth) const {
     FloatOptional value =
         getProcessedDimension(dimension).resolve(referenceLength);
     if (style_.boxSizing() == BoxSizing::BorderBox) {
@@ -168,7 +169,7 @@ class YG_EXPORT Node : public ::YGNode {
 
     FloatOptional dimensionPaddingAndBorder =
         FloatOptional{style_.computePaddingAndBorderForDimension(
-            direction, dimension, referenceLength)};
+            direction, dimension, ownerWidth)};
 
     return value +
         (dimensionPaddingAndBorder.isDefined() ? dimensionPaddingAndBorder
@@ -251,7 +252,8 @@ class YG_EXPORT Node : public ::YGNode {
   FloatOptional resolveFlexBasis(
       Direction direction,
       FlexDirection flexDirection,
-      float referenceLength) const;
+      float referenceLength,
+      float ownerWidth) const;
   void processDimensions();
   Direction resolveDirection(Direction ownerDirection);
   void clearChildren();
@@ -300,7 +302,7 @@ class YG_EXPORT Node : public ::YGNode {
   std::vector<Node*> children_;
   const Config* config_;
   std::array<Style::Length, 2> processedDimensions_{
-      {value::undefined(), value::undefined()}};
+      {StyleLength::undefined(), StyleLength::undefined()}};
 };
 
 inline Node* resolveRef(const YGNodeRef ref) {

@@ -121,7 +121,10 @@ void FabricUIManagerBinding::reportMount(SurfaceId surfaceId) {
         }
       }
       if (surfaceHandler != nullptr) {
-        surfaceHandler->getMountingCoordinator()->didPerformAsyncTransactions();
+        auto mountingCoordinator = surfaceHandler->getMountingCoordinator();
+        if (mountingCoordinator != nullptr) {
+          mountingCoordinator->didPerformAsyncTransactions();
+        }
       }
     } else {
       LOG(ERROR) << "FabricUIManagerBinding::reportMount: Surface with id "
@@ -167,8 +170,10 @@ void FabricUIManagerBinding::startSurfaceWithSurfaceHandler(
 
   surfaceHandler.start();
 
-  surfaceHandler.getMountingCoordinator()->setMountingOverrideDelegate(
-      animationDriver_);
+  if (ReactNativeFeatureFlags::enableLayoutAnimationsOnAndroid()) {
+    surfaceHandler.getMountingCoordinator()->setMountingOverrideDelegate(
+        animationDriver_);
+  }
 
   {
     std::unique_lock lock(surfaceHandlerRegistryMutex_);
@@ -214,8 +219,10 @@ void FabricUIManagerBinding::startSurface(
 
   surfaceHandler.start();
 
-  surfaceHandler.getMountingCoordinator()->setMountingOverrideDelegate(
-      animationDriver_);
+  if (ReactNativeFeatureFlags::enableLayoutAnimationsOnAndroid()) {
+    surfaceHandler.getMountingCoordinator()->setMountingOverrideDelegate(
+        animationDriver_);
+  }
 
   {
     SystraceSection s2("FabricUIManagerBinding::startSurface::surfaceId::lock");
@@ -284,8 +291,10 @@ void FabricUIManagerBinding::startSurfaceWithConstraints(
 
   surfaceHandler.start();
 
-  surfaceHandler.getMountingCoordinator()->setMountingOverrideDelegate(
-      animationDriver_);
+  if (ReactNativeFeatureFlags::enableLayoutAnimationsOnAndroid()) {
+    surfaceHandler.getMountingCoordinator()->setMountingOverrideDelegate(
+        animationDriver_);
+  }
 
   {
     SystraceSection s2(

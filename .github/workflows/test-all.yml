@@ -83,7 +83,7 @@ jobs:
       fail-fast: false
       matrix:
         flavor: [Debug, Release]
-        slice: [macosx, iphoneos, iphonesimulator, catalyst, xros, xrsimulator]
+        slice: [macosx, iphoneos, iphonesimulator, appletvos, appletvsimulator, catalyst, xros, xrsimulator]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -184,7 +184,7 @@ jobs:
 
   test_e2e_ios_rntester:
     if: ${{ github.ref == 'refs/heads/main' || contains(github.ref,  'stable') || inputs.run-e2e-tests }}
-    runs-on: macos-13
+    runs-on: macos-13-large
     needs:
       [build_apple_slices_hermes, prepare_hermes_workspace, build_hermes_macos]
     env:
@@ -222,7 +222,7 @@ jobs:
 
   test_e2e_ios_templateapp:
     if: ${{ github.ref == 'refs/heads/main' || contains(github.ref,  'stable') || inputs.run-e2e-tests }}
-    runs-on: macos-13
+    runs-on: macos-13-large
     needs: build_npm_package
     env:
       HERMES_WS_DIR: /tmp/hermes

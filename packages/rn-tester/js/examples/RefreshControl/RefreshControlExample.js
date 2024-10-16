@@ -9,15 +9,15 @@
 
 'use strict';
 
-const React = require('react');
-const {
+import React from 'react';
+import {
   RefreshControl,
   ScrollView,
   StyleSheet,
-  Text,
   TouchableWithoutFeedback,
   View,
-} = require('react-native');
+} from 'react-native';
+import RNTesterText from '../../components/RNTesterText';
 
 const styles = StyleSheet.create({
   row: {
@@ -45,9 +45,9 @@ class Row extends React.Component {
     return (
       <TouchableWithoutFeedback onPress={this._onClick}>
         <View style={styles.row}>
-          <Text testID="refresh_control_row" style={styles.text}>
+          <RNTesterText testID="refresh_control_row" style={styles.text}>
             {this.props.data.text + ' (' + this.props.data.clicks + ' clicks)'}
-          </Text>
+          </RNTesterText>
         </View>
       </TouchableWithoutFeedback>
     );

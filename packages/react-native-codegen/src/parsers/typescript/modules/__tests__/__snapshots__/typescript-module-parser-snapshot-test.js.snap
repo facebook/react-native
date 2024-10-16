@@ -387,8 +387,21 @@ exports[`RN Codegen TypeScript Parser can generate fixture CXX_ONLY_NATIVE_MODUL
                   'name': 'chooseString',
                   'optional': false,
                   'typeAnnotation': {
-                    'type': 'UnionTypeAnnotation',
-                    'memberType': 'StringTypeAnnotation'
+                    'type': 'StringLiteralUnionTypeAnnotation',
+                    'types': [
+                      {
+                        'type': 'StringLiteralTypeAnnotation',
+                        'value': 'One'
+                      },
+                      {
+                        'type': 'StringLiteralTypeAnnotation',
+                        'value': 'Two'
+                      },
+                      {
+                        'type': 'StringLiteralTypeAnnotation',
+                        'value': 'Three'
+                      }
+                    ]
                   }
                 }
               ]
@@ -1141,6 +1154,26 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_BA
                   'optional': false,
                   'typeAnnotation': {
                     'type': 'StringTypeAnnotation'
+                  }
+                }
+              ]
+            }
+          },
+          {
+            'name': 'passStringLiteral',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'VoidTypeAnnotation'
+              },
+              'params': [
+                {
+                  'name': 'arg',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'StringLiteralTypeAnnotation',
+                    'value': 'A String Literal'
                   }
                 }
               ]
@@ -2744,8 +2777,153 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_UN
                   'name': 'chooseString',
                   'optional': false,
                   'typeAnnotation': {
+                    'type': 'StringLiteralUnionTypeAnnotation',
+                    'types': [
+                      {
+                        'type': 'StringLiteralTypeAnnotation',
+                        'value': 'One'
+                      },
+                      {
+                        'type': 'StringLiteralTypeAnnotation',
+                        'value': 'Two'
+                      },
+                      {
+                        'type': 'StringLiteralTypeAnnotation',
+                        'value': 'Three'
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      'moduleName': 'SampleTurboModule'
+    }
+  }
+}"
+`;
+
+exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_UNION_RETURN_TYPES 1`] = `
+"{
+  'modules': {
+    'NativeSampleTurboModule': {
+      'type': 'NativeModule',
+      'aliasMap': {},
+      'enumMap': {},
+      'spec': {
+        'eventEmitters': [],
+        'methods': [
+          {
+            'name': 'getStringUnion',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'StringLiteralUnionTypeAnnotation',
+                'types': [
+                  {
+                    'type': 'StringLiteralTypeAnnotation',
+                    'value': 'light'
+                  },
+                  {
+                    'type': 'StringLiteralTypeAnnotation',
+                    'value': 'dark'
+                  }
+                ]
+              },
+              'params': []
+            }
+          },
+          {
+            'name': 'setStringUnion',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'VoidTypeAnnotation'
+              },
+              'params': [
+                {
+                  'name': 'strings',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'StringLiteralUnionTypeAnnotation',
+                    'types': [
+                      {
+                        'type': 'StringLiteralTypeAnnotation',
+                        'value': 'light'
+                      },
+                      {
+                        'type': 'StringLiteralTypeAnnotation',
+                        'value': 'dark'
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            'name': 'getNumberUnion',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'UnionTypeAnnotation',
+                'memberType': 'NumberTypeAnnotation'
+              },
+              'params': []
+            }
+          },
+          {
+            'name': 'setNumberUnion',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'VoidTypeAnnotation'
+              },
+              'params': [
+                {
+                  'name': 'numbers',
+                  'optional': false,
+                  'typeAnnotation': {
                     'type': 'UnionTypeAnnotation',
-                    'memberType': 'StringTypeAnnotation'
+                    'memberType': 'NumberTypeAnnotation'
+                  }
+                }
+              ]
+            }
+          },
+          {
+            'name': 'getObjectUnion',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'UnionTypeAnnotation',
+                'memberType': 'ObjectTypeAnnotation'
+              },
+              'params': []
+            }
+          },
+          {
+            'name': 'setObjectUnion',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'VoidTypeAnnotation'
+              },
+              'params': [
+                {
+                  'name': 'objects',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'UnionTypeAnnotation',
+                    'memberType': 'ObjectTypeAnnotation'
                   }
                 }
               ]

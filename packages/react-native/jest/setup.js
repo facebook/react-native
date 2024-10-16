@@ -153,6 +153,7 @@ jest
       isInvertColorsEnabled: jest.fn(() => Promise.resolve(false)),
       isReduceMotionEnabled: jest.fn(() => Promise.resolve(false)),
       isHighTextContrastEnabled: jest.fn(() => Promise.resolve(false)),
+      isDarkerSystemColorsEnabled: jest.fn(() => Promise.resolve(false)),
       prefersCrossFadeTransitions: jest.fn(() => Promise.resolve(false)),
       isReduceTransparencyEnabled: jest.fn(() => Promise.resolve(false)),
       isScreenReaderEnabled: jest.fn(() => Promise.resolve(false)),

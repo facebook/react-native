@@ -17,6 +17,7 @@ export type RNTesterModuleExample = $ReadOnly<{|
   description?: string,
   expect?: string,
   hidden?: boolean,
+  scrollable?: boolean,
   render: ({testID?: ?string}) => React.Node,
 |}>;
 

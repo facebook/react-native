@@ -1583,6 +1583,7 @@ type AccessibilityEventDefinitionsIOS = {
   grayscaleChanged: [boolean],
   invertColorsChanged: [boolean],
   reduceTransparencyChanged: [boolean],
+  darkerSystemColorsChanged: [boolean],
 };
 type AccessibilityEventDefinitions = {
   ...AccessibilityEventDefinitionsAndroid,
@@ -1598,6 +1599,7 @@ declare const AccessibilityInfo: {
   isInvertColorsEnabled(): Promise<boolean>,
   isReduceMotionEnabled(): Promise<boolean>,
   isHighTextContrastEnabled(): Promise<boolean>,
+  isDarkerSystemColorsEnabled(): Promise<boolean>,
   prefersCrossFadeTransitions(): Promise<boolean>,
   isReduceTransparencyEnabled(): Promise<boolean>,
   isScreenReaderEnabled(): Promise<boolean>,
@@ -1655,10 +1657,10 @@ type Props = $ReadOnly<{|
   color?: ?ColorValue,
   size?: ?IndicatorSize,
 |}>;
-declare const ActivityIndicatorWithRef: React.AbstractComponent<
-  Props,
-  HostComponent<mixed>,
->;
+declare const ActivityIndicatorWithRef: component(
+  ref: React.RefSetter<HostComponent<mixed>>,
+  ...props: Props
+);
 declare export default typeof ActivityIndicatorWithRef;
 "
 `;
@@ -1701,10 +1703,11 @@ exports[`public API should not change unintentionally Libraries/Components/Butto
 declare const Touchable:
   | typeof TouchableNativeFeedback
   | typeof TouchableOpacity;
-declare const Button: React.AbstractComponent<
-  ButtonProps,
-  React.ElementRef<typeof Touchable>,
->;
+type ButtonRef = React.ElementRef<typeof Touchable>;
+declare const Button: component(
+  ref: React.RefSetter<ButtonRef>,
+  ...props: ButtonProps
+);
 declare export default typeof Button;
 "
 `;
@@ -1888,10 +1891,10 @@ type Props = $ReadOnly<{|
   unstable_pressDelay?: ?number,
   \\"aria-label\\"?: ?string,
 |}>;
-declare export default React.AbstractComponent<
-  Props,
-  React.ElementRef<typeof View>,
->;
+declare export default component(
+  ref: React.RefSetter<React.ElementRef<typeof View>>,
+  ...props: Props
+);
 "
 `;
 
@@ -1992,10 +1995,10 @@ declare export default typeof RCTSafeAreaViewNativeComponent;
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/SafeAreaView/SafeAreaView.js 1`] = `
-"declare const exported: React.AbstractComponent<
-  ViewProps,
-  React.ElementRef<typeof View>,
->;
+"declare const exported: component(
+  ref: React.RefSetter<React.ElementRef<typeof View>>,
+  ...props: ViewProps
+);
 declare export default typeof exported;
 "
 `;
@@ -2255,11 +2258,11 @@ type RefForwarder<TNativeInstance, TPublicInstance> = {
   nativeInstance: TNativeInstance | null,
   publicInstance: TPublicInstance | null,
 };
-declare module.exports: React.AbstractComponent<
-  React.ElementConfig<typeof ScrollView>,
-  PublicScrollViewInstance,
-> &
-  ScrollViewComponentStatics;
+declare const Wrapper: component(
+  ref: React.RefSetter<PublicScrollViewInstance>,
+  ...props: Props
+);
+declare module.exports: typeof Wrapper & ScrollViewComponentStatics;
 "
 `;
 
@@ -2393,10 +2396,10 @@ type Instance = {
   setNextHeaderY: (number) => void,
   ...
 };
-declare const ScrollViewStickyHeaderWithForwardedRef: React.AbstractComponent<
-  Props,
-  Instance,
->;
+declare const ScrollViewStickyHeaderWithForwardedRef: component(
+  ref: React.RefSetter<Instance>,
+  ...props: Props
+);
 declare export default typeof ScrollViewStickyHeaderWithForwardedRef;
 "
 `;
@@ -2526,12 +2529,13 @@ export type Props = $ReadOnly<{|
   onChange?: ?(event: SwitchChangeEvent) => Promise<void> | void,
   onValueChange?: ?(value: boolean) => Promise<void> | void,
 |}>;
-declare const SwitchWithForwardedRef: React.AbstractComponent<
-  Props,
-  React.ElementRef<
-    typeof SwitchNativeComponent | typeof AndroidSwitchNativeComponent,
-  >,
+type SwitchRef = React.ElementRef<
+  typeof SwitchNativeComponent | typeof AndroidSwitchNativeComponent,
 >;
+declare const SwitchWithForwardedRef: component(
+  ref: React.RefSetter<SwitchRef>,
+  ...props: Props
+);
 declare export default typeof SwitchWithForwardedRef;
 "
 `;
@@ -2940,6 +2944,8 @@ export type TextContentType =
   | \\"birthdateDay\\"
   | \\"birthdateMonth\\"
   | \\"birthdateYear\\"
+  | \\"cellularEID\\"
+  | \\"cellularIMEI\\"
   | \\"dateTime\\"
   | \\"flightNumber\\"
   | \\"shipmentTrackingNumber\\";
@@ -3294,6 +3300,8 @@ export type TextContentType =
   | \\"birthdateDay\\"
   | \\"birthdateMonth\\"
   | \\"birthdateYear\\"
+  | \\"cellularEID\\"
+  | \\"cellularIMEI\\"
   | \\"dateTime\\"
   | \\"flightNumber\\"
   | \\"shipmentTrackingNumber\\";
@@ -3683,9 +3691,10 @@ exports[`public API should not change unintentionally Libraries/Components/Touch
   style?: ?ViewStyleProp,
   hostRef: React.RefSetter<React.ElementRef<typeof Animated.View>>,
 |}>;
-declare module.exports: React.AbstractComponent<
-  $ReadOnly<$Diff<Props, {| hostRef: mixed |}>>,
->;
+declare module.exports: component(
+  ref: React.RefSetter<mixed>,
+  ...props: $ReadOnly<$Diff<Props, {| hostRef: mixed |}>>
+);
 "
 `;
 
@@ -3712,10 +3721,10 @@ type Props = $ReadOnly<{|
   testOnly_pressed?: ?boolean,
   hostRef: React.RefSetter<React.ElementRef<typeof View>>,
 |}>;
-declare const Touchable: React.AbstractComponent<
-  $ReadOnly<$Diff<Props, {| +hostRef: mixed |}>>,
-  React.ElementRef<typeof View>,
->;
+declare const Touchable: component(
+  ref: React.RefSetter<React.ElementRef<typeof View>>,
+  ...props: $ReadOnly<$Diff<Props, {| +hostRef: mixed |}>>
+);
 declare module.exports: Touchable;
 "
 `;
@@ -3800,10 +3809,10 @@ type Props = $ReadOnly<{|
   style?: ?ViewStyleProp,
   hostRef?: ?React.RefSetter<React.ElementRef<typeof Animated.View>>,
 |}>;
-declare const Touchable: React.AbstractComponent<
-  Props,
-  React.ElementRef<typeof Animated.View>,
->;
+declare const Touchable: component(
+  ref: React.RefSetter<React.ElementRef<typeof Animated.View>>,
+  ...props: Props
+);
 declare module.exports: Touchable;
 "
 `;
@@ -3920,10 +3929,10 @@ declare module.exports: ReactNativeViewAttributes;
 
 exports[`public API should not change unintentionally Libraries/Components/View/View.js 1`] = `
 "export type Props = ViewProps;
-declare const View: React.AbstractComponent<
-  ViewProps,
-  React.ElementRef<typeof ViewNativeComponent>,
->;
+declare const View: component(
+  ref: React.RefSetter<React.ElementRef<typeof ViewNativeComponent>>,
+  ...props: ViewProps
+);
 declare module.exports: View;
 "
 `;
@@ -4333,7 +4342,7 @@ exports[`public API should not change unintentionally Libraries/Core/ExceptionsM
   name: string;
 }
 type ExceptionDecorator = (ExceptionData) => ExceptionData;
-declare const decoratedExtraDataKey: symbol;
+declare const decoratedExtraDataKey: \\"RN$ErrorExtraDataKey\\";
 declare function unstable_setExceptionDecorator(
   exceptionDecorator: ?ExceptionDecorator
 ): void;
@@ -4534,11 +4543,10 @@ exports[`public API should not change unintentionally Libraries/Debugging/Debugg
   highlightElements(elements: ElementRectangle[]): void,
   clearElementsHighlight(): void,
 };
-declare const DebuggingOverlayWithForwardedRef: React.AbstractComponent<
-  {},
-  DebuggingOverlayHandle,
-  React.Node,
->;
+declare const DebuggingOverlayWithForwardedRef: component(
+  ref: React.RefSetter<DebuggingOverlayHandle>,
+  ...props: {}
+);
 declare export default typeof DebuggingOverlayWithForwardedRef;
 "
 `;
@@ -4823,10 +4831,10 @@ type AndroidImageProps = $ReadOnly<{|
   loadingIndicatorSource?: ?(number | $ReadOnly<{| uri: string |}>),
   progressiveRenderingEnabled?: ?boolean,
   fadeDuration?: ?number,
-  resizeMethod?: ?(\\"auto\\" | \\"resize\\" | \\"scale\\"),
+  resizeMethod?: ?(\\"auto\\" | \\"resize\\" | \\"scale\\" | \\"none\\"),
   resizeMultiplier?: ?number,
 |}>;
-export type ImageProps = {|
+export type ImageProps = $ReadOnly<{|
   ...$Diff<ViewProps, $ReadOnly<{| style: ?ViewStyleProp |}>>,
   ...IOSImageProps,
   ...AndroidImageProps,
@@ -4870,13 +4878,13 @@ export type ImageProps = {|
   src?: ?string,
   srcSet?: ?string,
   children?: empty,
-|};
+|}>;
 export type ImageBackgroundProps = $ReadOnly<{|
   ...ImageProps,
   children?: Node,
   style?: ?ViewStyleProp,
   imageStyle?: ?ImageStyleProp,
-  imageRef?: Ref<Image>,
+  imageRef?: RefSetter<ElementRef<Image>>,
 |}>;
 "
 `;
@@ -4965,16 +4973,18 @@ type ImageComponentStaticsAndroid = $ReadOnly<{
   ...ImageComponentStaticsIOS,
   abortPrefetch(requestId: number): void,
 }>;
-export type AbstractImageAndroid = React.AbstractComponent<
-  ImagePropsType,
-  | React.ElementRef<TextInlineImageNativeComponent>
-  | React.ElementRef<ImageViewNativeComponent>,
->;
+export type AbstractImageAndroid = component(
+  ref: React.RefSetter<
+    | React.ElementRef<TextInlineImageNativeComponent>
+    | React.ElementRef<ImageViewNativeComponent>,
+  >,
+  ...props: ImagePropsType
+);
 export type ImageAndroid = AbstractImageAndroid & ImageComponentStaticsAndroid;
-export type AbstractImageIOS = React.AbstractComponent<
-  ImagePropsType,
-  React.ElementRef<ImageViewNativeComponent>,
->;
+export type AbstractImageIOS = component(
+  ref: React.RefSetter<React.ElementRef<ImageViewNativeComponent>>,
+  ...props: ImagePropsType
+);
 export type ImageIOS = AbstractImageIOS & ImageComponentStaticsIOS;
 export type Image = ImageIOS | ImageAndroid;
 export type { ImageProps } from \\"./ImageProps\\";
@@ -5537,7 +5547,7 @@ type EnableArgs = {
   ...
 };
 declare class NetworkAgent extends InspectorAgent {
-  static DOMAIN: $TEMPORARY$string<\\"Network\\">;
+  static DOMAIN: string;
   _sendEvent: EventSender;
   _interceptor: ?Interceptor;
   enable(EnableArgs): void;
@@ -6748,6 +6758,7 @@ declare class XMLHttpRequest extends EventTarget {
   static LOADING: number;
   static DONE: number;
   static _interceptor: ?XHRInterceptor;
+  static _profiling: boolean;
   UNSENT: number;
   OPENED: number;
   HEADERS_RECEIVED: number;
@@ -6784,8 +6795,10 @@ declare class XMLHttpRequest extends EventTarget {
   _timedOut: boolean;
   _trackingName: string;
   _incrementalEvents: boolean;
+  _startTime: ?number;
   _performanceLogger: IPerformanceLogger;
   static setInterceptor(interceptor: ?XHRInterceptor): void;
+  static enableProfiling(enableProfiling: boolean): void;
   constructor(): void;
   _reset(): void;
   get responseType(): ResponseType;
@@ -6829,6 +6842,7 @@ declare class XMLHttpRequest extends EventTarget {
   setResponseHeaders(responseHeaders: ?Object): void;
   setReadyState(newState: number): void;
   addEventListener(type: string, listener: EventListener): void;
+  _getMeasureURL(): string;
 }
 declare module.exports: XMLHttpRequest;
 "
@@ -8003,6 +8017,7 @@ type ____LayoutStyle_Internal = $ReadOnly<{
   flexShrink?: number,
   flexBasis?: number | string,
   aspectRatio?: number | string,
+  boxSizing?: \\"border-box\\" | \\"content-box\\",
   zIndex?: number,
   direction?: \\"inherit\\" | \\"ltr\\" | \\"rtl\\",
   rowGap?: number | string,
@@ -8479,7 +8494,10 @@ exports[`public API should not change unintentionally Libraries/Text/Text.js 1`]
 "type TextForwardRef = React.ElementRef<
   typeof NativeText | typeof NativeVirtualText,
 >;
-declare const Text: React.AbstractComponent<TextProps, TextForwardRef>;
+declare const Text: component(
+  ref: React.RefSetter<TextForwardRef>,
+  ...props: TextProps
+);
 declare module.exports: Text;
 "
 `;
@@ -9089,7 +9107,7 @@ exports[`public API should not change unintentionally Libraries/Utilities/Platfo
 };
 type IOSPlatform = {
   __constants: null,
-  OS: $TEMPORARY$string<\\"ios\\">,
+  OS: \\"ios\\",
   get Version(): string,
   get constants(): {|
     forceTouchAvailable: boolean,
@@ -9116,7 +9134,7 @@ type IOSPlatform = {
 };
 type AndroidPlatform = {
   __constants: null,
-  OS: $TEMPORARY$string<\\"android\\">,
+  OS: \\"android\\",
   get Version(): number,
   get constants(): {|
     isTesting: boolean,

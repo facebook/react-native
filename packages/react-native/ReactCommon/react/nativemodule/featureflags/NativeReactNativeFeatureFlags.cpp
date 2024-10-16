@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<785a20a1ed79dc6a5f74dccfda1c8429>>
+ * @generated SignedSource<<78ccaa6556b191a1e86aee8b74d8939f>>
  */
 
 /**
@@ -117,6 +117,11 @@ bool NativeReactNativeFeatureFlags::enableIOSViewClipToPaddingBox(
   return ReactNativeFeatureFlags::enableIOSViewClipToPaddingBox();
 }
 
+bool NativeReactNativeFeatureFlags::enableLayoutAnimationsOnAndroid(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableLayoutAnimationsOnAndroid();
+}
+
 bool NativeReactNativeFeatureFlags::enableLayoutAnimationsOnIOS(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableLayoutAnimationsOnIOS();
@@ -217,11 +222,6 @@ bool NativeReactNativeFeatureFlags::loadVectorDrawablesOnImages(
   return ReactNativeFeatureFlags::loadVectorDrawablesOnImages();
 }
 
-bool NativeReactNativeFeatureFlags::removeNestedCallsToDispatchMountItemsOnAndroid(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::removeNestedCallsToDispatchMountItemsOnAndroid();
-}
-
 bool NativeReactNativeFeatureFlags::setAndroidLayoutDirection(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::setAndroidLayoutDirection();
@@ -265,11 +265,6 @@ bool NativeReactNativeFeatureFlags::useOptimizedEventBatchingOnAndroid(
 bool NativeReactNativeFeatureFlags::useRuntimeShadowNodeReferenceUpdate(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::useRuntimeShadowNodeReferenceUpdate();
-}
-
-bool NativeReactNativeFeatureFlags::useRuntimeShadowNodeReferenceUpdateOnLayout(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::useRuntimeShadowNodeReferenceUpdateOnLayout();
 }
 
 bool NativeReactNativeFeatureFlags::useTurboModuleInterop(
