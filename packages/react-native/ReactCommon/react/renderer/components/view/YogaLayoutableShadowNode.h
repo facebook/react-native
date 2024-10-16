@@ -102,6 +102,11 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
 
  private:
   /*
+   * Sets initial traits on the node.
+   */
+  void initialize();
+    
+  /*
    * Goes over `yogaNode_.getChildren()` and in case child's owner is
    * equal to address of `yogaNode_`, it sets child's owner address
    * to `0xBADC0FFEE0DDF00D`. This is magic constant, the intention
