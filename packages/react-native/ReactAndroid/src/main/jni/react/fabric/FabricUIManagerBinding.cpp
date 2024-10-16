@@ -7,7 +7,7 @@
 
 #include "FabricUIManagerBinding.h"
 
-#include "AsyncEventBeat.h"
+#include "AndroidEventBeat.h"
 #include "ComponentFactory.h"
 #include "EventBeatManager.h"
 #include "EventEmitterWrapper.h"
@@ -489,7 +489,7 @@ void FabricUIManagerBinding::installFabricUIManager(
       [eventBeatManager, runtimeExecutor, globalJavaUiManager](
           std::shared_ptr<EventBeat::OwnerBox> ownerBox)
       -> std::unique_ptr<EventBeat> {
-    return std::make_unique<AsyncEventBeat>(
+    return std::make_unique<AndroidEventBeat>(
         std::move(ownerBox),
         eventBeatManager,
         runtimeExecutor,
