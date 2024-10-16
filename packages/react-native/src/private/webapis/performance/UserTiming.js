@@ -36,7 +36,7 @@ export class PerformanceMark extends PerformanceEntry {
     super({
       name: markName,
       entryType: 'mark',
-      startTime: markOptions?.startTime ?? 0,
+      startTime: markOptions?.startTime ?? performance.now(),
       duration: 0,
     });
 

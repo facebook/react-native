@@ -146,6 +146,7 @@ export default class Performance {
 
     if (typeof startMarkOrOptions === 'string') {
       startMarkName = startMarkOrOptions;
+      options = {};
     } else if (startMarkOrOptions !== undefined) {
       options = startMarkOrOptions;
       if (endMark !== undefined) {
@@ -183,7 +184,9 @@ export default class Performance {
       duration = options.duration ?? duration;
     }
 
-    let [computedStartTime, computedDuration] = [startTime, duration];
+    let computedStartTime = startTime,
+        computedDuration = duration;
+
     if (NativePerformance?.measure) {
       [computedStartTime, computedDuration] = NativePerformance.measure(
         measureName,
@@ -200,6 +203,7 @@ export default class Performance {
     const measure = new PerformanceMeasure(measureName, {
       startTime: computedStartTime,
       duration: computedDuration,
+      detail: options?.detail,
     });
 
     return measure;
