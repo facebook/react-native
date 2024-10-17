@@ -185,6 +185,7 @@ describe('inspector proxy HTTP API', () => {
         );
         expect(json).toEqual([
           {
+            appId: 'bar-app',
             description: 'bar-app',
             deviceName: 'foo',
             devtoolsFrontendUrl: expect.any(String),
@@ -199,6 +200,7 @@ describe('inspector proxy HTTP API', () => {
             webSocketDebuggerUrl: expect.any(String),
           },
           {
+            appId: 'bar-app',
             description: 'bar-app',
             deviceName: 'foo',
             devtoolsFrontendUrl: expect.any(String),
