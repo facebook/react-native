@@ -234,7 +234,14 @@ export type ImageProps = $ReadOnly<{|
    *
    * See https://reactnative.dev/docs/image#resizemode
    */
-  resizeMode?: ?('cover' | 'contain' | 'stretch' | 'repeat' | 'center' | 'none'),
+  resizeMode?: ?(
+    | 'cover'
+    | 'contain'
+    | 'stretch'
+    | 'repeat'
+    | 'center'
+    | 'none'
+  ),
 
   /**
    * A unique identifier for this element to be used in UI Automation
