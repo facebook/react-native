@@ -11,10 +11,8 @@
 
 namespace facebook::react {
 
-RunLoopObserver::RunLoopObserver(
-    Activity activities,
-    const WeakOwner& owner) noexcept
-    : activities_(activities), owner_(owner) {}
+RunLoopObserver::RunLoopObserver(Activity activities, WeakOwner owner) noexcept
+    : activities_(activities), owner_(std::move(owner)) {}
 
 void RunLoopObserver::setDelegate(const Delegate* delegate) const noexcept {
   // We need these constraints to ensure basic thread-safety.
