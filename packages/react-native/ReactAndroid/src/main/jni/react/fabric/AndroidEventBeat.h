@@ -13,15 +13,16 @@
 
 namespace facebook::react {
 
-class AsyncEventBeat final : public EventBeat, public EventBeatManagerObserver {
+class AndroidEventBeat final : public EventBeat,
+                               public EventBeatManagerObserver {
  public:
-  AsyncEventBeat(
+  AndroidEventBeat(
       std::shared_ptr<OwnerBox> ownerBox,
       EventBeatManager* eventBeatManager,
       RuntimeExecutor runtimeExecutor,
       jni::global_ref<jobject> javaUIManager);
 
-  ~AsyncEventBeat() override;
+  ~AndroidEventBeat() override;
 
   void tick() const override;
 
