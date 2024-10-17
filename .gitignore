@@ -22,6 +22,14 @@ DerivedData
 project.xcworkspace
 **/.xcode.env.local
 
+# Yarn
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
 # Gradle
 /build/
 /packages/rn-tester/build
