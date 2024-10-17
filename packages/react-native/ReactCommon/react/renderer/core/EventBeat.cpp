@@ -11,7 +11,7 @@
 
 namespace facebook::react {
 
-EventBeat::EventBeat(SharedOwnerBox ownerBox)
+EventBeat::EventBeat(std::shared_ptr<OwnerBox> ownerBox)
     : ownerBox_(std::move(ownerBox)) {}
 
 void EventBeat::request() const {
