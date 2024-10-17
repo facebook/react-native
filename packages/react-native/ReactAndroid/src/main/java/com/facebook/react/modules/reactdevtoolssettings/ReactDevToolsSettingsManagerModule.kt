@@ -26,7 +26,8 @@ public class ReactDevToolsSettingsManagerModule(reactContext: ReactApplicationCo
   public override fun getGlobalHookSettings(): String? =
       sharedPreferences.getString(KEY_HOOK_SETTINGS, null)
 
-  private companion object {
+  public companion object {
+    public const val NAME: String = NativeReactDevToolsSettingsManagerSpec.NAME
     private const val SHARED_PREFERENCES_PREFIX = "ReactNative__DevToolsSettings"
     private const val KEY_HOOK_SETTINGS = "HookSettings"
   }
