@@ -46,7 +46,7 @@ export type PerformanceObserverInit = {
 export interface Spec extends TurboModule {
   +now?: () => number;
   // TODO: remove when `markWithResult` is fully rolled out.
-  +mark?: (name: string, startTime?: number) => void;
+  +mark?: (name: string, startTime: number) => void;
   // TODO: remove when `measureWithResult` is fully rolled out.
   +measure?: (
     name: string,
