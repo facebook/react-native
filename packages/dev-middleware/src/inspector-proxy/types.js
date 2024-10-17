@@ -115,6 +115,7 @@ export type MessageToDevice =
 export type PageDescription = $ReadOnly<{
   id: string,
   title: string,
+  appId: string,
   description: string,
   type: string,
   devtoolsFrontendUrl: string,
