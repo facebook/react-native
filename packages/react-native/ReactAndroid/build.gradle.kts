@@ -565,7 +565,6 @@ android {
         listOf(
             "src/main/res/devsupport",
             "src/main/res/shell",
-            "src/main/res/views/alert",
             "src/main/res/views/modal",
             "src/main/res/views/uimanager"))
     java.exclude("com/facebook/react/processing")
