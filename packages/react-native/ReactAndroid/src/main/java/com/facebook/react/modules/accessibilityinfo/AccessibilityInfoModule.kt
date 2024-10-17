@@ -255,7 +255,8 @@ public class AccessibilityInfoModule(context: ReactApplicationContext) :
     successCallback.invoke(recommendedTimeout)
   }
 
-  private companion object {
+  public companion object {
+    public const val NAME: String = NativeAccessibilityInfoSpec.NAME
     private const val REDUCE_MOTION_EVENT_NAME = "reduceMotionDidChange"
     private const val HIGH_TEXT_CONTRAST_EVENT_NAME = "highTextContrastDidChange"
     private const val TOUCH_EXPLORATION_EVENT_NAME = "touchExplorationDidChange"
