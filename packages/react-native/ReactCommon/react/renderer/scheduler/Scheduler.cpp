@@ -93,13 +93,14 @@ Scheduler::Scheduler(
     uiManager->updateState(stateUpdate);
   };
 
+  auto eventBeat = schedulerToolbox.eventBeatFactory(std::move(eventOwnerBox));
+
   // Creating an `EventDispatcher` instance inside the already allocated
   // container (inside the optional).
   eventDispatcher_->emplace(
       EventQueueProcessor(
           eventPipe, eventPipeConclusion, statePipe, eventPerformanceLogger_),
-      schedulerToolbox.eventBeatFactory,
-      eventOwnerBox,
+      std::move(eventBeat),
       *runtimeScheduler,
       statePipe,
       eventPerformanceLogger_);
