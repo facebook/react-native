@@ -18,8 +18,6 @@ namespace facebook::react {
  */
 class RunLoopObserver {
  public:
-  using Unique = std::unique_ptr<const RunLoopObserver>;
-
   /*
    * The concept of an owner.
    * A run loop observer normally observes a run loop running on a different

@@ -22,7 +22,7 @@ class AppleEventBeat : public EventBeat, public RunLoopObserver::Delegate {
  public:
   AppleEventBeat(
       std::shared_ptr<OwnerBox> ownerBox,
-      RunLoopObserver::Unique uiRunLoopObserver,
+      std::unique_ptr<const RunLoopObserver> uiRunLoopObserver,
       RuntimeExecutor runtimeExecutor);
 
 #pragma mark - RunLoopObserver::Delegate
@@ -32,7 +32,7 @@ class AppleEventBeat : public EventBeat, public RunLoopObserver::Delegate {
       RunLoopObserver::Activity activity) const noexcept override;
 
  private:
-  RunLoopObserver::Unique uiRunLoopObserver_;
+  std::unique_ptr<const RunLoopObserver> uiRunLoopObserver_;
 };
 
 } // namespace facebook::react
