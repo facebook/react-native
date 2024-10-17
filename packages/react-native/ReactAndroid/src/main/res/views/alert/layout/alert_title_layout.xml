@@ -6,9 +6,10 @@
     android:orientation="horizontal"
     android:paddingStart="?android:attr/dialogPreferredPadding"
     android:paddingTop="18dp"
-    android:paddingEnd="?android:attr/dialogPreferredPadding">
+    android:paddingEnd="?android:attr/dialogPreferredPadding"
+    >
 
-    <TextView
+    <com.facebook.react.modules.dialog.DialogTitle
         android:id="@+id/alert_title"
         style="?android:attr/windowTitleStyle"
         android:layout_width="match_parent"
@@ -16,7 +17,6 @@
         android:ellipsize="end"
         android:singleLine="true"
         android:textAlignment="viewStart"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textSize="18sp" />
+        />
 
 </LinearLayout>
