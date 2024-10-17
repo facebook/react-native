@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.76.0-rc.6
+
+### Fixed
+
+#### Android Specific
+- Undo breaking change on ViewManagerDelegate.kt String params ([ce1620616c](https://github.com/facebook/react-native/commit/ce1620616c5e5d83bfbcd1ce297d95e1c1c66e8c) by [@cortinico](https://github.com/cortinico))
+- Undo breaking change on UIManager eventDispatcher accessor ([55671c00e5](https://github.com/facebook/react-native/commit/55671c00e5567845ffe467e50a4b9dfa562e48db) by [@cortinico](https://github.com/cortinico))
+- Revert "Fix Android AlertFragment Title Accessibility" as it was breaking the layout of Alerts ([c967deaa2d](https://github.com/facebook/react-native/commit/c967deaa2d52abf2ffcf101f3ee0f23c593b6959) by [@cipolleschi](https://github.com/cipolleschi))
+
 ## v0.76.0-rc.5
 
 ### Changed
