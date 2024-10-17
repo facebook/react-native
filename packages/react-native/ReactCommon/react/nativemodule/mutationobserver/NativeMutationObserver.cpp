@@ -142,7 +142,8 @@ void NativeMutationObserver::notifyMutationObserversIfNecessary() {
 
   if (dispatchNotification) {
     SystraceSection s("NativeMutationObserver::notifyObservers");
-    if (ReactNativeFeatureFlags::enableMicrotasks()) {
+    if (ReactNativeFeatureFlags::enableBridgelessArchitecture() &&
+        !ReactNativeFeatureFlags::disableEventLoopOnBridgeless()) {
       runtime_->queueMicrotask(notifyMutationObservers_.value());
     } else {
       jsInvoker_->invokeAsync([&](jsi::Runtime& runtime) {

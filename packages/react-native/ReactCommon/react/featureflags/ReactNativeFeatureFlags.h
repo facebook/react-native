@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5a537adba978cd74ba62e69d4aeb72b0>>
+ * @generated SignedSource<<42056925ce0f349d1d27090b0750f414>>
  */
 
 /**
@@ -50,14 +50,14 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool allowRecursiveCommitsWithSynchronousMountOnAndroid();
 
   /**
-   * When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.
-   */
-  RN_EXPORT static bool batchRenderingUpdatesInEventLoop();
-
-  /**
    * Do not wait for a main-thread dispatch to complete init to start executing work on the JS thread on Android
    */
   RN_EXPORT static bool completeReactInstanceCreationOnBgThreadOnAndroid();
+
+  /**
+   * The bridgeless architecture enables the event loop by default. This feature flag allows us to force disabling it in specific instances.
+   */
+  RN_EXPORT static bool disableEventLoopOnBridgeless();
 
   /**
    * Kill-switch to turn off support for aling-items:baseline on Fabric iOS.
@@ -133,11 +133,6 @@ class ReactNativeFeatureFlags {
    * Enables the reporting of long tasks through `PerformanceObserver`. Only works if the event loop is enabled.
    */
   RN_EXPORT static bool enableLongTaskAPI();
-
-  /**
-   * Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).
-   */
-  RN_EXPORT static bool enableMicrotasks();
 
   /**
    * Moves execution of pre-mount items to outside the choregrapher in the main thread, so we can estimate idle time more precisely (Android only).
@@ -238,11 +233,6 @@ class ReactNativeFeatureFlags {
    * Invoke callbacks immediately on the ReactInstance rather than going through a background thread for synchronization
    */
   RN_EXPORT static bool useImmediateExecutorInAndroidBridgeless();
-
-  /**
-   * When enabled, it uses the modern fork of RuntimeScheduler that allows scheduling tasks with priorities from any thread.
-   */
-  RN_EXPORT static bool useModernRuntimeScheduler();
 
   /**
    * When enabled, the native view configs are used in bridgeless mode.

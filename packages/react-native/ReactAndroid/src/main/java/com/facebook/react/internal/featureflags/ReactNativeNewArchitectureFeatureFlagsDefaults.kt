@@ -23,20 +23,11 @@ package com.facebook.react.internal.featureflags
 public open class ReactNativeNewArchitectureFeatureFlagsDefaults(
     private val newArchitectureEnabled: Boolean = true
 ) : ReactNativeFeatureFlagsDefaults() {
-
-  override fun batchRenderingUpdatesInEventLoop(): Boolean =
-      newArchitectureEnabled || super.batchRenderingUpdatesInEventLoop()
-
   override fun enableBridgelessArchitecture(): Boolean = newArchitectureEnabled
-
-  override fun enableMicrotasks(): Boolean = newArchitectureEnabled || super.enableMicrotasks()
 
   override fun enableFabricRenderer(): Boolean = newArchitectureEnabled
 
   override fun useFabricInterop(): Boolean = newArchitectureEnabled
-
-  override fun useModernRuntimeScheduler(): Boolean =
-      newArchitectureEnabled || super.useModernRuntimeScheduler()
 
   override fun useNativeViewConfigsInBridgelessMode(): Boolean =
       newArchitectureEnabled || super.useNativeViewConfigsInBridgelessMode()
