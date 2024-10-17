@@ -18,10 +18,9 @@ namespace facebook::react {
  * The beat is called on `RuntimeExecutor`'s thread induced by the UI thread
  * event loop.
  */
-class AsynchronousEventBeat : public EventBeat,
-                              public RunLoopObserver::Delegate {
+class AppleEventBeat : public EventBeat, public RunLoopObserver::Delegate {
  public:
-  AsynchronousEventBeat(
+  AppleEventBeat(
       RunLoopObserver::Unique uiRunLoopObserver,
       RuntimeExecutor runtimeExecutor);
 
