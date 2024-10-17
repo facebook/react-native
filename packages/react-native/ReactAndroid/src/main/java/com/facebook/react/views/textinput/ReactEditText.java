@@ -40,6 +40,8 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.TextView;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatEditText;
 import androidx.core.util.Predicate;
@@ -547,7 +549,7 @@ public class ReactEditText extends AppCompatEditText {
     /**
      * If set forces multiline on input, because of a restriction on Android source that enables
      * multiline only for inputs of type Text and Multiline on method {@link
-     * android.widget.TextView#isMultilineInputType(int)}} Source: {@Link <a
+     * TextView#isMultilineInputType(int)}} Source: {@Link <a
      * href='https://android.googlesource.com/platform/frameworks/base/+/jb-release/core/java/android/widget/TextView.java'>TextView.java</a>}
      */
     if (isMultiline()) {
@@ -618,6 +620,7 @@ public class ReactEditText extends AppCompatEditText {
     if (mFontStyle != ReactConstants.UNSET
         || mFontWeight != ReactConstants.UNSET
         || mFontFamily != null
+        || getFontVariationSettingsInternal() != null
         || getFontFeatureSettings() != null) {
       setPaintFlags(getPaintFlags() | Paint.SUBPIXEL_TEXT_FLAG);
     } else {
@@ -793,8 +796,18 @@ public class ReactEditText extends AppCompatEditText {
           return span.getStyle() == mFontStyle
               && Objects.equals(span.getFontFamily(), mFontFamily)
               && span.getWeight() == mFontWeight
+              && Objects.equals(span.getFontVariationSettings(), getFontVariationSettingsInternal())
               && Objects.equals(span.getFontFeatureSettings(), getFontFeatureSettings());
         });
+  }
+
+  // Font variation settings is only available on API 26+, we return null if not available
+  private @Nullable String getFontVariationSettingsInternal() {
+    String fontVariationSettings = null;
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      fontVariationSettings = super.getFontVariationSettings();
+    }
+    return fontVariationSettings;
   }
 
   private <T> void stripSpansOfKind(
@@ -851,6 +864,7 @@ public class ReactEditText extends AppCompatEditText {
     if (mFontStyle != ReactConstants.UNSET
         || mFontWeight != ReactConstants.UNSET
         || mFontFamily != null
+        || getFontVariationSettingsInternal() != null
         || getFontFeatureSettings() != null) {
       workingText.setSpan(
           new CustomStyleSpan(
@@ -858,6 +872,7 @@ public class ReactEditText extends AppCompatEditText {
               mFontWeight,
               getFontFeatureSettings(),
               mFontFamily,
+              getFontVariationSettingsInternal(),
               getContext().getAssets()),
           0,
           workingText.length(),

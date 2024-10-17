@@ -31,6 +31,8 @@ void TextAttributes::apply(TextAttributes textAttributes) {
   // Font
   fontFamily = !textAttributes.fontFamily.empty() ? textAttributes.fontFamily
                                                   : fontFamily;
+  fontVariationSettings = !textAttributes.fontVariationSettings.empty() ? textAttributes.fontVariationSettings
+                                                  : fontVariationSettings;
   fontSize =
       !std::isnan(textAttributes.fontSize) ? textAttributes.fontSize : fontSize;
   fontSizeMultiplier = !std::isnan(textAttributes.fontSizeMultiplier)
@@ -124,6 +126,7 @@ bool TextAttributes::operator==(const TextAttributes& rhs) const {
              foregroundColor,
              backgroundColor,
              fontFamily,
+             fontVariationSettings,
              fontWeight,
              fontStyle,
              fontVariant,
@@ -148,6 +151,7 @@ bool TextAttributes::operator==(const TextAttributes& rhs) const {
              rhs.foregroundColor,
              rhs.backgroundColor,
              rhs.fontFamily,
+             rhs.fontVariationSettings,
              rhs.fontWeight,
              rhs.fontStyle,
              rhs.fontVariant,
@@ -205,6 +209,7 @@ SharedDebugStringConvertibleList TextAttributes::getDebugProps() const {
 
       // Font
       debugStringConvertibleItem("fontFamily", fontFamily),
+      debugStringConvertibleItem("fontVariationSettings", fontVariationSettings),
       debugStringConvertibleItem("fontSize", fontSize),
       debugStringConvertibleItem("fontSizeMultiplier", fontSizeMultiplier),
       debugStringConvertibleItem("fontWeight", fontWeight),

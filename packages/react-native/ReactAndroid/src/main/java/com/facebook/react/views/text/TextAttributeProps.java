@@ -61,6 +61,8 @@ public class TextAttributeProps {
   public static final short TA_KEY_LINE_BREAK_STRATEGY = 25;
   public static final short TA_KEY_ROLE = 26;
   public static final short TA_KEY_TEXT_TRANSFORM = 27;
+  public static final short TA_KEY_ALIGNMENT_VERTICAL = 28;
+  public static final short TA_KEY_FONT_VARIATION_SETTINGS = 29;
 
   public static final int UNSET = -1;
 
@@ -135,6 +137,12 @@ public class TextAttributeProps {
    * </pre>
    */
   protected @Nullable String mFontFamily = null;
+
+  /**
+   * mFontVariationSettings can be used for variable font features e.g: 'wght' 850
+   * This works for Android 8.1 and above.
+   */
+  protected @Nullable String mFontVariationSettings = null;
 
   /**
    * @see android.graphics.Paint#setFontFeatureSettings
@@ -227,6 +235,9 @@ public class TextAttributeProps {
         case TA_KEY_TEXT_TRANSFORM:
           result.setTextTransform(entry.getStringValue());
           break;
+        case TA_KEY_FONT_VARIATION_SETTINGS:
+          result.setFontVariationSettings(entry.getStringValue());
+          break;
       }
     }
 
@@ -255,6 +266,7 @@ public class TextAttributeProps {
             : null);
     result.setOpacity(getFloatProp(props, ViewProps.OPACITY, Float.NaN));
     result.setFontFamily(getStringProp(props, ViewProps.FONT_FAMILY));
+    result.setFontVariationSettings(getStringProp(props, ViewProps.FONT_VARIATION_SETTINGS));
     result.setFontWeight(getStringProp(props, ViewProps.FONT_WEIGHT));
     result.setFontStyle(getStringProp(props, ViewProps.FONT_STYLE));
     result.setFontVariant(getArrayProp(props, ViewProps.FONT_VARIANT));
@@ -476,8 +488,16 @@ public class TextAttributeProps {
     return mFontFamily;
   }
 
+  public String getFontVariationSettings() {
+    return mFontVariationSettings;
+  }
+
   private void setFontFamily(@Nullable String fontFamily) {
     mFontFamily = fontFamily;
+  }
+
+  private void setFontVariationSettings(String fontVariationSettings) {
+    mFontVariationSettings = fontVariationSettings;
   }
 
   private void setFontVariant(@Nullable ReadableArray fontVariant) {

@@ -10,6 +10,7 @@ package com.facebook.react.views.text.internal.span
 import android.content.res.AssetManager
 import android.graphics.Paint
 import android.graphics.Typeface
+import android.os.Build
 import android.text.TextPaint
 import android.text.style.MetricAffectingSpan
 import com.facebook.react.common.ReactConstants
@@ -32,14 +33,15 @@ public class CustomStyleSpan(
     private val privateWeight: Int,
     public val fontFeatureSettings: String?,
     public val fontFamily: String?,
+    public val fontVariationSettings: String?,
     private val assetManager: AssetManager
 ) : MetricAffectingSpan(), ReactSpan {
   public override fun updateDrawState(ds: TextPaint) {
-    apply(ds, privateStyle, privateWeight, fontFeatureSettings, fontFamily, assetManager)
+    apply(ds, privateStyle, privateWeight, fontFeatureSettings, fontFamily, fontVariationSettings, assetManager)
   }
 
   public override fun updateMeasureState(paint: TextPaint) {
-    apply(paint, privateStyle, privateWeight, fontFeatureSettings, fontFamily, assetManager)
+    apply(paint, privateStyle, privateWeight, fontFeatureSettings, fontFamily, fontVariationSettings, assetManager)
   }
 
   public val style: Int
@@ -59,12 +61,14 @@ public class CustomStyleSpan(
         }
 
   public companion object {
+    private val TAG = CustomStyleSpan::class.simpleName
     private fun apply(
         paint: Paint,
         style: Int,
         weight: Int,
         fontFeatureSettingsParam: String?,
         family: String?,
+        fontVariationSettingsParam: String?,
         assetManager: AssetManager
     ) {
       val typeface =
@@ -72,6 +76,13 @@ public class CustomStyleSpan(
       paint.apply {
         fontFeatureSettings = fontFeatureSettingsParam
         setTypeface(typeface)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+          try {
+            fontVariationSettings = fontVariationSettingsParam
+          } catch (e: IllegalArgumentException) {
+            // Do nothing
+          }
+        }
         isSubpixelText = true
       }
     }
