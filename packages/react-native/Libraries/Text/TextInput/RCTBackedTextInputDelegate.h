@@ -39,7 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
  * reject the change completely. To change the replacement, return the changed version of the `text`. To accept the
  * change, return `text` argument as-is. To reject the change, return `nil`.
  */
-- (NSString *)textInputShouldChangeText:(NSString *)text inRange:(NSRange)range;
+- (nullable NSString *)textInputShouldChangeText:(NSString *)text inRange:(NSRange)range; // [macOS]
 - (void)textInputDidChange;
 
 - (void)textInputDidChangeSelection;
