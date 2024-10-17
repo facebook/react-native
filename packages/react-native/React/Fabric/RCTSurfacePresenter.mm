@@ -261,7 +261,7 @@ using namespace facebook::react;
       [runtimeExecutor](std::shared_ptr<EventBeat::OwnerBox> ownerBox) -> std::unique_ptr<EventBeat> {
     auto runLoopObserver =
         std::make_unique<const MainRunLoopObserver>(RunLoopObserver::Activity::BeforeWaiting, ownerBox->owner);
-    return std::make_unique<AppleEventBeat>(std::move(runLoopObserver), runtimeExecutor);
+    return std::make_unique<AppleEventBeat>(std::move(ownerBox), std::move(runLoopObserver), runtimeExecutor);
   };
 
   RCTScheduler *scheduler = [[RCTScheduler alloc] initWithToolbox:toolbox];

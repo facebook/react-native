@@ -21,10 +21,9 @@ namespace facebook::react {
 class AppleEventBeat : public EventBeat, public RunLoopObserver::Delegate {
  public:
   AppleEventBeat(
+      std::shared_ptr<OwnerBox> ownerBox,
       RunLoopObserver::Unique uiRunLoopObserver,
       RuntimeExecutor runtimeExecutor);
-
-  void induce() const override;
 
 #pragma mark - RunLoopObserver::Delegate
 
@@ -34,9 +33,6 @@ class AppleEventBeat : public EventBeat, public RunLoopObserver::Delegate {
 
  private:
   RunLoopObserver::Unique uiRunLoopObserver_;
-  RuntimeExecutor runtimeExecutor_;
-
-  mutable std::atomic<bool> isBeatCallbackScheduled_{false};
 };
 
 } // namespace facebook::react

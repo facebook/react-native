@@ -12,11 +12,11 @@
 namespace facebook::react {
 
 AppleEventBeat::AppleEventBeat(
+    std::shared_ptr<OwnerBox> ownerBox,
     RunLoopObserver::Unique uiRunLoopObserver,
     RuntimeExecutor runtimeExecutor)
-    : EventBeat({}),
-      uiRunLoopObserver_(std::move(uiRunLoopObserver)),
-      runtimeExecutor_(std::move(runtimeExecutor)) {
+    : EventBeat(std::move(ownerBox), std::move(runtimeExecutor)),
+      uiRunLoopObserver_(std::move(uiRunLoopObserver)) {
   uiRunLoopObserver_->setDelegate(this);
   uiRunLoopObserver_->enable();
 }
@@ -28,30 +28,4 @@ void AppleEventBeat::activityDidChange(
   induce();
 }
 
-void AppleEventBeat::induce() const {
-  if (!isRequested_ || isBeatCallbackScheduled_) {
-    return;
-  }
-
-  isRequested_ = false;
-
-  // Here we know that `this` object exists because the caller has a strong
-  // pointer to `owner`. To ensure the object will exist inside
-  // `runtimeExecutor_` callback, we need to copy the  pointer there.
-  auto weakOwner = uiRunLoopObserver_->getOwner();
-
-  isBeatCallbackScheduled_ = true;
-
-  runtimeExecutor_([this, weakOwner](jsi::Runtime& runtime) {
-    auto owner = weakOwner.lock();
-    if (!owner) {
-      return;
-    }
-
-    isBeatCallbackScheduled_ = false;
-    if (beatCallback_) {
-      beatCallback_(runtime);
-    }
-  });
-}
 } // namespace facebook::react
