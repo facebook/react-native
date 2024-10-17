@@ -5,13 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "AsynchronousEventBeat.h"
+#include "AppleEventBeat.h"
 
 #include <react/debug/react_native_assert.h>
 
 namespace facebook::react {
 
-AsynchronousEventBeat::AsynchronousEventBeat(
+AppleEventBeat::AppleEventBeat(
     RunLoopObserver::Unique uiRunLoopObserver,
     RuntimeExecutor runtimeExecutor)
     : EventBeat({}),
@@ -21,14 +21,14 @@ AsynchronousEventBeat::AsynchronousEventBeat(
   uiRunLoopObserver_->enable();
 }
 
-void AsynchronousEventBeat::activityDidChange(
+void AppleEventBeat::activityDidChange(
     const RunLoopObserver::Delegate* delegate,
     RunLoopObserver::Activity /*activity*/) const noexcept {
   react_native_assert(delegate == this);
   induce();
 }
 
-void AsynchronousEventBeat::induce() const {
+void AppleEventBeat::induce() const {
   if (!isRequested_ || isBeatCallbackScheduled_) {
     return;
   }
