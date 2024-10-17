@@ -71,9 +71,12 @@ internal class OutsetBoxShadowDrawable(
 
   @Deprecated("Deprecated in Java")
   override fun getOpacity(): Int {
-    val alpha = Color.alpha(shadowColor)
-    return if (alpha == 0) PixelFormat.TRANSPARENT
-    else ((shadowPaint.alpha / 255f) / (alpha / 255f) * 255f).roundToInt()
+    val alpha = shadowPaint.alpha
+    return when (alpha) {
+      255 -> PixelFormat.OPAQUE
+      in 1..254 -> PixelFormat.TRANSLUCENT
+      else -> PixelFormat.TRANSPARENT
+    }
   }
 
   override fun draw(canvas: Canvas) {

@@ -15,6 +15,7 @@ import android.graphics.DashPathEffect
 import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.PathEffect
+import android.graphics.PixelFormat
 import android.graphics.RectF
 import android.graphics.drawable.Drawable
 import com.facebook.react.uimanager.PixelUtil.dpToPx
@@ -104,8 +105,14 @@ internal class OutlineDrawable(
   }
 
   @Deprecated("Deprecated in Java")
-  override fun getOpacity(): Int =
-      ((outlinePaint.alpha / 255f) / (Color.alpha(outlineColor) / 255f) * 255f).roundToInt()
+  override fun getOpacity(): Int {
+    val alpha = outlinePaint.alpha
+    return when (alpha) {
+      255 -> PixelFormat.OPAQUE
+      in 1..254 -> PixelFormat.TRANSLUCENT
+      else -> PixelFormat.TRANSPARENT
+    }
+  }
 
   override fun draw(canvas: Canvas) {
     if (outlineWidth == 0f) {
