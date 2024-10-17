@@ -156,6 +156,7 @@ export default function openDebuggerMiddleware({
           appId: appId ?? null,
           deviceId: device ?? null,
           resolvedTargetDescription: target.description,
+          resolvedTargetAppId: target.appId,
           prefersFuseboxFrontend: useFuseboxEntryPoint ?? false,
         });
         return;
