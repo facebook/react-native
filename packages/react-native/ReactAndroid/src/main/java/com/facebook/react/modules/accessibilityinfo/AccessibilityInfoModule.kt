@@ -28,7 +28,7 @@ import com.facebook.react.module.annotations.ReactModule
  * device. For API >= 19.
  */
 @ReactModule(name = NativeAccessibilityInfoSpec.NAME)
-public class AccessibilityInfoModule(context: ReactApplicationContext) :
+internal class AccessibilityInfoModule(context: ReactApplicationContext) :
     NativeAccessibilityInfoSpec(context), LifecycleEventListener {
   @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   private inner class ReactTouchExplorationStateChangeListener :
