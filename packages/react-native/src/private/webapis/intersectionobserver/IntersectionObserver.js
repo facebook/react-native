@@ -13,6 +13,8 @@
 import type IntersectionObserverEntry from './IntersectionObserverEntry';
 import type {IntersectionObserverId} from './IntersectionObserverManager';
 
+import warnOnce from '../../../../Libraries/Utilities/warnOnce';
+import * as ReactNativeFeatureFlags from '../../featureflags/ReactNativeFeatureFlags';
 import ReactNativeElement from '../dom/nodes/ReactNativeElement';
 import * as IntersectionObserverManager from './IntersectionObserverManager';
 
@@ -56,6 +58,13 @@ export default class IntersectionObserver {
     callback: IntersectionObserverCallback,
     options?: IntersectionObserverInit,
   ): void {
+    if (
+      !ReactNativeFeatureFlags.enableAccessToHostTreeInFabric() ||
+      !ReactNativeFeatureFlags.enableFabricRenderer()
+    ) {
+      warnDisabledFeatureFlags();
+    }
+
     if (callback == null) {
       throw new TypeError(
         "Failed to construct 'IntersectionObserver': 1 argument required, but only 0 present.",
@@ -251,4 +260,11 @@ function normalizeThresholdValue(threshold: mixed): number {
   }
 
   return thresholdAsNumber;
+}
+
+function warnDisabledFeatureFlags(): void {
+  warnOnce(
+    'disabled-feature-flags-intersection-observer',
+    'Missing 1 or more feature flags for IntersectionObserver: enableAccessToHostTreeInFabric, enableFabricRenderer',
+  );
 }
