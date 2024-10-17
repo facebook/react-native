@@ -74,6 +74,36 @@ test('accepts a ref callback', () => {
   ]);
 });
 
+test('accepts a ref callback that returns a cleanup function', () => {
+  const screen = new Screen();
+  const ledger: Array<{[string]: string | null}> = [];
+
+  // TODO: Remove `| null` after Flow supports ref cleanup functions.
+  const ref = (current: HostInstance | null) => {
+    ledger.push({ref: id(current)});
+    return () => {
+      ledger.push({ref: null});
+    };
+  };
+
+  screen.render(() => <View id="foo" key="foo" ref={useMergeRefs(ref)} />);
+
+  expect(ledger).toEqual([{ref: 'foo'}]);
+
+  screen.render(() => <View id="bar" key="bar" ref={useMergeRefs(ref)} />);
+
+  expect(ledger).toEqual([{ref: 'foo'}, {ref: null}, {ref: 'bar'}]);
+
+  screen.unmount();
+
+  expect(ledger).toEqual([
+    {ref: 'foo'},
+    {ref: null},
+    {ref: 'bar'},
+    {ref: null},
+  ]);
+});
+
 test('accepts a ref object', () => {
   const screen = new Screen();
   const ledger: Array<{[string]: string | null}> = [];
