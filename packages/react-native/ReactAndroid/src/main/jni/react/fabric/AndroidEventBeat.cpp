@@ -18,9 +18,8 @@ AndroidEventBeat::AndroidEventBeat(
     EventBeatManager* eventBeatManager,
     RuntimeExecutor runtimeExecutor,
     jni::global_ref<jobject> javaUIManager)
-    : EventBeat(std::move(ownerBox)),
+    : EventBeat(std::move(ownerBox), std::move(runtimeExecutor)),
       eventBeatManager_(eventBeatManager),
-      runtimeExecutor_(std::move(runtimeExecutor)),
       javaUIManager_(std::move(javaUIManager)) {
   eventBeatManager->addObserver(*this);
 }
@@ -30,28 +29,7 @@ AndroidEventBeat::~AndroidEventBeat() {
 }
 
 void AndroidEventBeat::tick() const {
-  if (!isRequested_ || isBeatCallbackScheduled_) {
-    return;
-  }
-
-  isRequested_ = false;
-  isBeatCallbackScheduled_ = true;
-
-  runtimeExecutor_([this, ownerBox = ownerBox_](jsi::Runtime& runtime) {
-    auto owner = ownerBox->owner.lock();
-    if (!owner) {
-      return;
-    }
-
-    isBeatCallbackScheduled_ = false;
-    if (beatCallback_) {
-      beatCallback_(runtime);
-    }
-  });
-}
-
-void AndroidEventBeat::induce() const {
-  tick();
+  induce();
 }
 
 void AndroidEventBeat::request() const {

@@ -108,7 +108,7 @@ class LayoutAnimationDelegateProxy : public LayoutAnimationStatusDelegate, publi
   std::shared_ptr<LayoutAnimationDriver> _animationDriver;
   std::unique_ptr<SchedulerDelegateProxy> _delegateProxy;
   std::shared_ptr<LayoutAnimationDelegateProxy> _layoutAnimationDelegateProxy;
-  RunLoopObserver::Unique _uiRunLoopObserver;
+  std::unique_ptr<const PlatformRunLoopObserver> _uiRunLoopObserver;
 }
 
 - (instancetype)initWithToolbox:(SchedulerToolbox)toolbox
