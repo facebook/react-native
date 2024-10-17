@@ -1,5 +1,28 @@
 # Changelog
 
+## v0.76.0-rc.5
+
+### Changed
+
+- Fix server.end() usage following Metro bump ([02b879b1e2](https://github.com/facebook/react-native/commit/02b879b1e22dd03f52ff77d82cac3fe167aaea84) by [@huntie](https://github.com/huntie))
+- Update Metro to "^0.81.0" ([3f8d1fa286](https://github.com/facebook/react-native/commit/3f8d1fa2862814cc8e2b091786e80231670bb876) by [@robhogan](https://github.com/robhogan))
+
+#### Android specific
+
+- Make PackagerConnectionSettings class open again ([4dd47eeb9e](https://github.com/facebook/react-native/commit/4dd47eeb9ea91455efcd0db23a02162ab338a53f) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Fix crash for Modal not attached to window manager ([73ce1984e8](https://github.com/facebook/react-native/commit/73ce1984e8411a6b4aec440a5e7aa9d2b7474984) by [@alanleedev](https://github.com/alanleedev))
+- Gradle to 8.10.2 ([60a2706e97](https://github.com/facebook/react-native/commit/60a2706e9716d955fc0d7e15b02ad0d6efe58fc2) by [@cortinico](https://github.com/cortinico))
+
+#### iOS specific
+
+- Enforce we use the correct C++ version for all, even if dependency tries to set it ([d7a8aae9ac](https://github.com/facebook/react-native/commit/d7a8aae9acc441d9b6c52484e35ba158e90b4b60) by [@Titozzz](https://github.com/Titozzz))
+
+## Fixed
+
+#### iOS specific
+
+- Exclude dSYM from the archive ([7e14ec5177f](https://github.com/facebook/react-native/commit/7e14ec5177fd17ca9f1db384026b26ae90ab0b00) by [@cipolleschi](https://github.com/cipolleschi))
+
 ## v0.76.0-rc.4
 
 ### Breaking
