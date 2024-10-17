@@ -45,6 +45,9 @@ class InspectorPackagerConnection {
   void connect();
   void closeQuietly();
   void sendEventToAllConnections(std::string event);
+  void sendWrappedEventToPackager(
+      const std::string& event,
+      const std::string& pageId);
 
  private:
   class Impl;

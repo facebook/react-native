@@ -17,6 +17,7 @@
 - (void)connect;
 - (void)closeQuietly;
 - (void)sendEventToAllConnections:(NSString *)event;
+- (void)sendWrappedEventToPackager:(NSString *)event pageId:(NSString *)pageId;
 @end
 
 @interface RCTInspectorPackagerConnection : NSObject <RCTInspectorPackagerConnectionProtocol>

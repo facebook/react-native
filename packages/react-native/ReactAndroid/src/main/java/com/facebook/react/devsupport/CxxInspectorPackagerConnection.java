@@ -41,6 +41,8 @@ import okhttp3.WebSocketListener;
 
   public native void sendEventToAllConnections(String event);
 
+  public native void sendWrappedEventToPackager(String event, String pageId);
+
   /** Java wrapper around a C++ IWebSocketDelegate, allowing us to call the interface from Java. */
   @DoNotStrip
   private static class WebSocketDelegate implements Closeable {
