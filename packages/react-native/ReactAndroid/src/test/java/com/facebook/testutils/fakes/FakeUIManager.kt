@@ -17,6 +17,7 @@ import com.facebook.react.bridge.UIManagerListener
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.fabric.interop.UIBlockViewResolver
+import com.facebook.react.uimanager.events.EventDispatcher
 
 @OptIn(UnstableReactNativeAPI::class)
 class FakeUIManager : UIManager, UIBlockViewResolver {
@@ -65,7 +66,10 @@ class FakeUIManager : UIManager, UIBlockViewResolver {
     error("Not yet implemented")
   }
 
-  override fun <T : Any?> getEventDispatcher(): T {
+  override val eventDispatcher: EventDispatcher
+    get() = TODO("Not yet implemented")
+
+  fun <T : Any?> getEventDispatcher(): T {
     error("Not yet implemented")
   }
 

@@ -86,7 +86,7 @@ class NativeAnimatedNodeTraversalTest {
 
     uiManagerMock = mock(UIManagerModule::class.java)
     eventDispatcherMock = mock(EventDispatcher::class.java)
-    whenever(uiManagerMock.getEventDispatcher()).thenAnswer { eventDispatcherMock }
+    whenever(uiManagerMock.eventDispatcher).thenAnswer { eventDispatcherMock }
     whenever(uiManagerMock.constants).thenAnswer {
       mapOf("customDirectEventTypes" to emptyMap<Any, Any>())
     }
