@@ -119,6 +119,8 @@ runs:
         mv build_macosx_${{ inputs.flavor }} build_macosx
         mv build_iphoneos_${{ inputs.flavor }} build_iphoneos
         mv build_iphonesimulator_${{ inputs.flavor }} build_iphonesimulator
+        mv build_appletvos_${{ inputs.flavor }} build_appletvos
+        mv build_appletvsimulator_${{ inputs.flavor }} build_appletvsimulator
         mv build_catalyst_${{ inputs.flavor }} build_catalyst
         mv build_xros_${{ inputs.flavor }} build_xros
         mv build_xrsimulator_${{ inputs.flavor }} build_xrsimulator
