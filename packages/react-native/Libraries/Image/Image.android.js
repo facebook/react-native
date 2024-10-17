@@ -166,11 +166,9 @@ let BaseImage: AbstractImageAndroid = React.forwardRef(
       sources = [source];
     }
 
-    const {height, width, ...restProps} = props;
-
     const {onLoadStart, onLoad, onLoadEnd, onError} = props;
     const nativeProps = {
-      ...restProps,
+      ...props,
       style,
       shouldNotifyLoadEvents: !!(onLoadStart || onLoad || onLoadEnd || onError),
       // Both iOS and C++ sides expect to have "source" prop, whereas on Android it's "src"
