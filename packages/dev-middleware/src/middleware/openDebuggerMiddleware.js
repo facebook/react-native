@@ -92,7 +92,7 @@ export default function openDebuggerMiddleware({
         target = targets.find(
           _target =>
             (targetId == null || _target.id === targetId) &&
-            (appId == null || _target.description === appId) &&
+            (appId == null || _target.appId === appId) &&
             (device == null || _target.reactNative.logicalDeviceId === device),
         );
       } else if (targets.length > 0) {
