@@ -26,11 +26,8 @@ SET(folly_FLAGS
 SET(folly_runtime_SRC
         folly/Conv.cpp
         folly/Demangle.cpp
-        folly/dynamic.cpp
         folly/FileUtil.cpp
         folly/Format.cpp
-        folly/json_pointer.cpp
-        folly/json.cpp
         folly/ScopeGuard.cpp
         folly/SharedMutex.cpp
         folly/String.cpp
@@ -42,6 +39,9 @@ SET(folly_runtime_SRC
         folly/detail/SplitStringSimd.cpp
         folly/detail/UniqueInstance.cpp
         folly/hash/SpookyHashV2.cpp
+        folly/json/dynamic.cpp
+        folly/json/json_pointer.cpp
+        folly/json/json.cpp
         folly/lang/CString.cpp
         folly/lang/SafeAssert.cpp
         folly/lang/ToAscii.cpp
