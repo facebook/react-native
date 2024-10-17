@@ -971,6 +971,7 @@ public class com/facebook/react/bridge/JavaOnlyMap : com/facebook/react/bridge/R
 	public fun putMap (Ljava/lang/String;Lcom/facebook/react/bridge/ReadableMap;)V
 	public fun putNull (Ljava/lang/String;)V
 	public fun putString (Ljava/lang/String;Ljava/lang/String;)V
+	public fun remove (Ljava/lang/String;)V
 	public fun toHashMap ()Ljava/util/HashMap;
 	public fun toString ()Ljava/lang/String;
 }
