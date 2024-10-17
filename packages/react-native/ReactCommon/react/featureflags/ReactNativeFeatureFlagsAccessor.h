@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3accca8a4ee3ca498f3de148b5c9865f>>
+ * @generated SignedSource<<6aa2b711cc803fad68cb57fedfa65950>>
  */
 
 /**
@@ -37,7 +37,6 @@ class ReactNativeFeatureFlagsAccessor {
   bool batchRenderingUpdatesInEventLoop();
   bool completeReactInstanceCreationOnBgThreadOnAndroid();
   bool enableAlignItemsBaselineOnFabricIOS();
-  bool enableAndroidLineHeightCentering();
   bool enableBridgelessArchitecture();
   bool enableCleanTextInputYogaNode();
   bool enableDeletionOfUnmountedViews();
@@ -50,6 +49,8 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableIOSViewClipToPaddingBox();
   bool enableLayoutAnimationsOnAndroid();
   bool enableLayoutAnimationsOnIOS();
+  bool enableLineHeightCenteringOnAndroid();
+  bool enableLineHeightCenteringOnIOS();
   bool enableLongTaskAPI();
   bool enableMicrotasks();
   bool enablePreciseSchedulingForPremountItemsOnAndroid();
@@ -90,14 +91,13 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 47> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 48> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> allowRecursiveCommitsWithSynchronousMountOnAndroid_;
   std::atomic<std::optional<bool>> batchRenderingUpdatesInEventLoop_;
   std::atomic<std::optional<bool>> completeReactInstanceCreationOnBgThreadOnAndroid_;
   std::atomic<std::optional<bool>> enableAlignItemsBaselineOnFabricIOS_;
-  std::atomic<std::optional<bool>> enableAndroidLineHeightCentering_;
   std::atomic<std::optional<bool>> enableBridgelessArchitecture_;
   std::atomic<std::optional<bool>> enableCleanTextInputYogaNode_;
   std::atomic<std::optional<bool>> enableDeletionOfUnmountedViews_;
@@ -110,6 +110,8 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableIOSViewClipToPaddingBox_;
   std::atomic<std::optional<bool>> enableLayoutAnimationsOnAndroid_;
   std::atomic<std::optional<bool>> enableLayoutAnimationsOnIOS_;
+  std::atomic<std::optional<bool>> enableLineHeightCenteringOnAndroid_;
+  std::atomic<std::optional<bool>> enableLineHeightCenteringOnIOS_;
   std::atomic<std::optional<bool>> enableLongTaskAPI_;
   std::atomic<std::optional<bool>> enableMicrotasks_;
   std::atomic<std::optional<bool>> enablePreciseSchedulingForPremountItemsOnAndroid_;

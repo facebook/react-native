@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5a537adba978cd74ba62e69d4aeb72b0>>
+ * @generated SignedSource<<6ae9655ca02befd10203fab9c4cf21aa>>
  */
 
 /**
@@ -65,11 +65,6 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableAlignItemsBaselineOnFabricIOS();
 
   /**
-   * When enabled, custom line height calculation will be centered from top to bottom.
-   */
-  RN_EXPORT static bool enableAndroidLineHeightCentering();
-
-  /**
    * Feature flag to enable the new bridgeless architecture. Note: Enabling this will force enable the following flags: `useTurboModules` & `enableFabricRenderer.
    */
   RN_EXPORT static bool enableBridgelessArchitecture();
@@ -128,6 +123,16 @@ class ReactNativeFeatureFlags {
    * When enabled, LayoutAnimations API will animate state changes on iOS.
    */
   RN_EXPORT static bool enableLayoutAnimationsOnIOS();
+
+  /**
+   * When enabled, custom line height calculation will be centered from top to bottom.
+   */
+  RN_EXPORT static bool enableLineHeightCenteringOnAndroid();
+
+  /**
+   * When enabled, custom line height calculation will be centered from top to bottom.
+   */
+  RN_EXPORT static bool enableLineHeightCenteringOnIOS();
 
   /**
    * Enables the reporting of long tasks through `PerformanceObserver`. Only works if the event loop is enabled.
