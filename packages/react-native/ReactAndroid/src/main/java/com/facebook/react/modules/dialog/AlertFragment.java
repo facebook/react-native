@@ -12,20 +12,11 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.TypedArray;
-import android.os.Build;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.view.AccessibilityDelegateCompat;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.fragment.app.DialogFragment;
-import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.Nullsafe;
-import com.facebook.react.R;
 
 /** A fragment used to display the dialog. */
 @Nullsafe(Nullsafe.Mode.LOCAL)
@@ -76,54 +67,14 @@ public class AlertFragment extends DialogFragment implements DialogInterface.OnC
   }
 
   /**
-   * Creates a custom dialog title View that has the role of "Heading" and focusable for
-   * accessibility purposes.
-   *
-   * @returns accessible TextView title
-   */
-  private static View getAccessibleTitle(Context activityContext, String titleText) {
-    LayoutInflater inflater = LayoutInflater.from(activityContext);
-
-    // This layout matches the sizing and styling of AlertDialog's title_template (minus the icon)
-    // since the whole thing gets tossed out when setting a custom title
-    View titleContainer = inflater.inflate(R.layout.alert_title_layout, null);
-
-    TextView accessibleTitle =
-        Assertions.assertNotNull(titleContainer.findViewById(R.id.alert_title));
-    accessibleTitle.setText(titleText);
-    accessibleTitle.setFocusable(true);
-
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-      accessibleTitle.setAccessibilityHeading(true);
-    } else {
-      ViewCompat.setAccessibilityDelegate(
-          accessibleTitle,
-          new AccessibilityDelegateCompat() {
-            @Override
-            public void onInitializeAccessibilityNodeInfo(
-                View view, AccessibilityNodeInfoCompat info) {
-              super.onInitializeAccessibilityNodeInfo(accessibleTitle, info);
-              info.setHeading(true);
-            }
-          });
-    }
-
-    return titleContainer;
-  }
-
-  /**
    * Creates a dialog compatible only with AppCompat activities. This function should be kept in
    * sync with {@link createAppDialog}.
    */
   private static Dialog createAppCompatDialog(
       Context activityContext, Bundle arguments, DialogInterface.OnClickListener fragment) {
-    AlertDialog.Builder builder = new AlertDialog.Builder(activityContext);
+    AlertDialog.Builder builder =
+        new AlertDialog.Builder(activityContext).setTitle(arguments.getString(ARG_TITLE));
 
-    if (arguments.containsKey(ARG_TITLE)) {
-      String title = Assertions.assertNotNull(arguments.getString(ARG_TITLE));
-      View accessibleTitle = getAccessibleTitle(activityContext, title);
-      builder.setCustomTitle(accessibleTitle);
-    }
     if (arguments.containsKey(ARG_BUTTON_POSITIVE)) {
       builder.setPositiveButton(arguments.getString(ARG_BUTTON_POSITIVE), fragment);
     }
@@ -154,13 +105,10 @@ public class AlertFragment extends DialogFragment implements DialogInterface.OnC
   @Deprecated(since = "0.75.0", forRemoval = true)
   private static Dialog createAppDialog(
       Context activityContext, Bundle arguments, DialogInterface.OnClickListener fragment) {
-    android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(activityContext);
+    android.app.AlertDialog.Builder builder =
+        new android.app.AlertDialog.Builder(activityContext)
+            .setTitle(arguments.getString(ARG_TITLE));
 
-    if (arguments.containsKey(ARG_TITLE)) {
-      String title = Assertions.assertNotNull(arguments.getString(ARG_TITLE));
-      View accessibleTitle = getAccessibleTitle(activityContext, title);
-      builder.setCustomTitle(accessibleTitle);
-    }
     if (arguments.containsKey(ARG_BUTTON_POSITIVE)) {
       builder.setPositiveButton(arguments.getString(ARG_BUTTON_POSITIVE), fragment);
     }
