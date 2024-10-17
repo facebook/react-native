@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <ReactCommon/RuntimeExecutor.h>
 #include <atomic>
 #include <functional>
 #include <memory>
@@ -47,7 +48,9 @@ class EventBeat {
 
   using BeatCallback = std::function<void(jsi::Runtime& runtime)>;
 
-  explicit EventBeat(std::shared_ptr<OwnerBox> ownerBox);
+  explicit EventBeat(
+      std::shared_ptr<OwnerBox> ownerBox,
+      RuntimeExecutor runtimeExecutor);
 
   virtual ~EventBeat() = default;
 
@@ -72,11 +75,15 @@ class EventBeat {
    * Induces the next beat to happen as soon as possible.
    * Receiver might ignore the call if a beat was not requested.
    */
-  virtual void induce() const = 0;
+  void induce() const;
 
   BeatCallback beatCallback_;
   std::shared_ptr<OwnerBox> ownerBox_;
   mutable std::atomic<bool> isRequested_{false};
+
+ private:
+  RuntimeExecutor runtimeExecutor_;
+  mutable std::atomic<bool> isBeatCallbackScheduled_{false};
 };
 
 } // namespace facebook::react
