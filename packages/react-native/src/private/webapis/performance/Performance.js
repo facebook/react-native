@@ -116,13 +116,15 @@ export default class Performance {
         markOptions?.startTime,
       );
     } else if (NativePerformance?.mark) {
-      NativePerformance.mark(markName, markOptions?.startTime);
+      computedStartTime = markOptions?.startTime ?? performance.now();
+      NativePerformance?.mark?.(markName, computedStartTime);
     } else {
       warnNoNativePerformance();
+      computedStartTime = performance.now();
     }
 
     return new PerformanceMark(markName, {
-      startTime: computedStartTime ?? performance.now(),
+      startTime: computedStartTime,
       detail: markOptions?.detail,
     });
   }
