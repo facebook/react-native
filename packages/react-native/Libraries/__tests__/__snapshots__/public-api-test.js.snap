@@ -4071,8 +4071,7 @@ export type AccessibilityValue = $ReadOnly<{|
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/View/ViewNativeComponent.js 1`] = `
-"declare export const __INTERNAL_VIEW_CONFIG: PartialViewConfig;
-declare const ViewNativeComponent: HostComponent<Props>;
+"declare const ViewNativeComponent: HostComponent<Props>;
 interface NativeCommands {
   +hotspotUpdate: (viewRef: HostInstance, x: number, y: number) => void;
   +setPressed: (viewRef: HostInstance, pressed: boolean) => void;
