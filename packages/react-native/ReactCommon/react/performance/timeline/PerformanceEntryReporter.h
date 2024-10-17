@@ -74,11 +74,11 @@ class PerformanceEntryReporter {
     return eventCounts_;
   }
 
-  void reportMark(
+  PerformanceEntry reportMark(
       const std::string& name,
       const std::optional<DOMHighResTimeStamp>& startTime = std::nullopt);
 
-  void reportMeasure(
+  PerformanceEntry reportMeasure(
       const std::string_view& name,
       double startTime,
       double endTime,
