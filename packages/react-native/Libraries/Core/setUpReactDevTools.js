@@ -11,10 +11,7 @@
 'use strict';
 
 import type {Domain} from '../../src/private/debugging/setUpFuseboxReactDevToolsDispatcher';
-import type {
-  PartialReloadAndProfileConfig,
-  Spec as NativeReactDevToolsRuntimeSettingsModuleSpec,
-} from '../../src/private/fusebox/specs/NativeReactDevToolsRuntimeSettingsModule';
+import type {Spec as NativeReactDevToolsRuntimeSettingsModuleSpec} from '../../src/private/fusebox/specs/NativeReactDevToolsRuntimeSettingsModule';
 
 if (__DEV__) {
   // Register dispatcher on global, which can be used later by Chrome DevTools frontend
@@ -43,22 +40,13 @@ if (__DEV__) {
     }
   }
 
-  const reloadAndProfileConfigPersistence =
-    makeReloadAndProfileConfigPersistence(
-      maybeReactDevToolsRuntimeSettingsModuleModule,
-    );
+  const {
+    isProfiling: shouldStartProfilingNow,
+    profilingSettings: initialProfilingSettings,
+  } = readReloadAndProfileConfig(maybeReactDevToolsRuntimeSettingsModuleModule);
 
-  const shouldStartProfilingNow =
-    reloadAndProfileConfigPersistence?.getReloadAndProfileConfig()
-      ?.shouldReloadAndProfile === true;
-  const profilingSettings = {
-    recordChangeDescriptions:
-      reloadAndProfileConfigPersistence?.getReloadAndProfileConfig()
-        ?.recordChangeDescriptions === true,
-    recordTimeline: false,
-  };
   // Install hook before React is loaded.
-  initialize(hookSettings, shouldStartProfilingNow, profilingSettings);
+  initialize(hookSettings, shouldStartProfilingNow, initialProfilingSettings);
 
   // This should be defined in DEV, otherwise error is expected.
   const fuseboxReactDevToolsDispatcher =
@@ -84,6 +72,14 @@ if (__DEV__) {
   }
 
   function connectToReactDevToolsInFusebox(domain: Domain) {
+    const {
+      isReloadAndProfileSupported,
+      isProfiling,
+      onReloadAndProfile,
+      onReloadAndProfileFlagsReset,
+    } = readReloadAndProfileConfig(
+      maybeReactDevToolsRuntimeSettingsModuleModule,
+    );
     disconnect = connectWithCustomMessagingProtocol({
       onSubscribe: listener => {
         domain.onMessage.addEventListener(listener);
@@ -97,23 +93,10 @@ if (__DEV__) {
       nativeStyleEditorValidAttributes: Object.keys(ReactNativeStyleAttributes),
       resolveRNStyle,
       onSettingsUpdated: handleReactDevToolsSettingsUpdate,
-      isReloadAndProfileSupported:
-        maybeReactDevToolsRuntimeSettingsModuleModule != null,
-      isProfiling:
-        reloadAndProfileConfigPersistence?.getReloadAndProfileConfig()
-          ?.shouldReloadAndProfile === true,
-      onReloadAndProfile: (recordChangeDescriptions: boolean) => {
-        reloadAndProfileConfigPersistence?.setReloadAndProfileConfig({
-          shouldReloadAndProfile: true,
-          recordChangeDescriptions,
-        });
-      },
-      onReloadAndProfileFlagsReset: () => {
-        reloadAndProfileConfigPersistence?.setReloadAndProfileConfig({
-          shouldReloadAndProfile: false,
-          recordChangeDescriptions: false,
-        });
-      },
+      isReloadAndProfileSupported,
+      isProfiling,
+      onReloadAndProfile,
+      onReloadAndProfileFlagsReset,
     });
   }
 
@@ -165,6 +148,14 @@ if (__DEV__) {
         isWebSocketOpen = true;
       });
 
+      const {
+        isReloadAndProfileSupported,
+        isProfiling,
+        onReloadAndProfile,
+        onReloadAndProfileFlagsReset,
+      } = readReloadAndProfileConfig(
+        maybeReactDevToolsRuntimeSettingsModuleModule,
+      );
       connectToDevTools({
         isAppActive,
         resolveRNStyle,
@@ -173,23 +164,10 @@ if (__DEV__) {
         ),
         websocket: ws,
         onSettingsUpdated: handleReactDevToolsSettingsUpdate,
-        isReloadAndProfileSupported:
-          maybeReactDevToolsRuntimeSettingsModuleModule != null,
-        isProfiling:
-          reloadAndProfileConfigPersistence?.getReloadAndProfileConfig()
-            ?.shouldReloadAndProfile === true,
-        onReloadAndProfile: (recordChangeDescriptions: boolean) => {
-          reloadAndProfileConfigPersistence?.setReloadAndProfileConfig({
-            shouldReloadAndProfile: true,
-            recordChangeDescriptions,
-          });
-        },
-        onReloadAndProfileFlagsReset: () => {
-          reloadAndProfileConfigPersistence?.setReloadAndProfileConfig({
-            shouldReloadAndProfile: false,
-            recordChangeDescriptions: false,
-          });
-        },
+        isReloadAndProfileSupported,
+        isProfiling,
+        onReloadAndProfile,
+        onReloadAndProfileFlagsReset,
       });
     }
   }
@@ -222,19 +200,42 @@ if (__DEV__) {
   connectToWSBasedReactDevToolsFrontend(); // Try connecting once on load
 }
 
-function makeReloadAndProfileConfigPersistence(
+function readReloadAndProfileConfig(
   maybeModule: ?NativeReactDevToolsRuntimeSettingsModuleSpec,
 ) {
-  if (maybeModule == null) {
-    return;
-  }
+  const isReloadAndProfileSupported = maybeModule != null;
+  const config = maybeModule?.getReloadAndProfileConfig();
+  const isProfiling = config?.shouldReloadAndProfile === true;
+  const profilingSettings = {
+    recordChangeDescriptions: config?.recordChangeDescriptions === true,
+    recordTimeline: false,
+  };
+  const onReloadAndProfile = (recordChangeDescriptions: boolean) => {
+    if (maybeModule == null) {
+      return;
+    }
+
+    maybeModule.setReloadAndProfileConfig({
+      shouldReloadAndProfile: true,
+      recordChangeDescriptions,
+    });
+  };
+  const onReloadAndProfileFlagsReset = () => {
+    if (maybeModule == null) {
+      return;
+    }
+
+    maybeModule.setReloadAndProfileConfig({
+      shouldReloadAndProfile: false,
+      recordChangeDescriptions: false,
+    });
+  };
 
   return {
-    setReloadAndProfileConfig(config: PartialReloadAndProfileConfig): void {
-      maybeModule.setReloadAndProfileConfig(config);
-    },
-    getReloadAndProfileConfig() {
-      return maybeModule.getReloadAndProfileConfig();
-    },
+    isReloadAndProfileSupported,
+    isProfiling,
+    profilingSettings,
+    onReloadAndProfile,
+    onReloadAndProfileFlagsReset,
   };
 }

@@ -94,7 +94,7 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
   private final BroadcastReceiver mReloadAppBroadcastReceiver;
   private final DevServerHelper mDevServerHelper;
   private final LinkedHashMap<String, DevOptionHandler> mCustomDevOptions = new LinkedHashMap<>();
-  private final ReactInstanceDevHelper mReactInstanceDevHelper;
+  protected final ReactInstanceDevHelper mReactInstanceDevHelper;
   private final @Nullable String mJSAppBundleName;
   private final File mJSBundleDownloadedFile;
   private final File mJSSplitBundlesDir;

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<eae1ab77b3d6b8614b53c8c3d2e5081e>>
+ * @generated SignedSource<<c5409bebf989881699e66c4f6a4e1cfe>>
  * @flow strict
  */
 
@@ -79,7 +79,6 @@ export type ReactNativeFeatureFlags = {
   enableUIConsistency: Getter<boolean>,
   enableViewRecycling: Getter<boolean>,
   excludeYogaFromRawProps: Getter<boolean>,
-  fetchImagesInViewPreallocation: Getter<boolean>,
   fixMappingOfEventPrioritiesBetweenFabricAndReact: Getter<boolean>,
   fixMountingCoordinatorReportedPendingTransactionsOnAndroid: Getter<boolean>,
   forceBatchingMountItemsOnAndroid: Getter<boolean>,
@@ -302,10 +301,6 @@ export const enableViewRecycling: Getter<boolean> = createNativeFlagGetter('enab
  * When enabled, rawProps in Props will not include Yoga specific props.
  */
 export const excludeYogaFromRawProps: Getter<boolean> = createNativeFlagGetter('excludeYogaFromRawProps', false);
-/**
- * Start image fetching during view preallocation instead of waiting for layout pass
- */
-export const fetchImagesInViewPreallocation: Getter<boolean> = createNativeFlagGetter('fetchImagesInViewPreallocation', false);
 /**
  * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.
  */

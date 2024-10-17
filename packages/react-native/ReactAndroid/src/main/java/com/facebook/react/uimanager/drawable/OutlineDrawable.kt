@@ -118,10 +118,7 @@ internal class OutlineDrawable(
 
     computedBorderRadius =
         borderRadius?.resolve(
-            layoutDirection,
-            context,
-            bounds.width().toFloat().dpToPx(),
-            bounds.height().toFloat().dpToPx())
+            layoutDirection, context, bounds.width().dpToPx(), bounds.height().dpToPx())
 
     updateOutlineRect()
     if (computedBorderRadius != null && computedBorderRadius?.hasRoundedBorders() == true) {

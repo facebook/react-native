@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<050d7e7fa1d91657a2a40cefada260d8>>
+ * @generated SignedSource<<9b84b5ff1e2dc0a597f1cbfd06613867>>
  */
 
 /**
@@ -201,12 +201,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun excludeYogaFromRawProps(): Boolean = accessor.excludeYogaFromRawProps()
-
-  /**
-   * Start image fetching during view preallocation instead of waiting for layout pass
-   */
-  @JvmStatic
-  public fun fetchImagesInViewPreallocation(): Boolean = accessor.fetchImagesInViewPreallocation()
 
   /**
    * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.

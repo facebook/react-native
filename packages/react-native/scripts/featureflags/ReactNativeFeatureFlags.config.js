@@ -283,15 +283,6 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'experimentation',
       },
     },
-    fetchImagesInViewPreallocation: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-07-09',
-        description:
-          'Start image fetching during view preallocation instead of waiting for layout pass',
-        purpose: 'experimentation',
-      },
-    },
     fixMappingOfEventPrioritiesBetweenFabricAndReact: {
       defaultValue: false,
       metadata: {

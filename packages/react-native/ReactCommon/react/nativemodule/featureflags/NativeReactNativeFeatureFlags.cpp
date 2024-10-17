@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<27fdafbfd349a23f7d608b447d1605ba>>
+ * @generated SignedSource<<9c36d171aa60a6d0d594ffb1a3389a28>>
  */
 
 /**
@@ -180,11 +180,6 @@ bool NativeReactNativeFeatureFlags::enableViewRecycling(
 bool NativeReactNativeFeatureFlags::excludeYogaFromRawProps(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::excludeYogaFromRawProps();
-}
-
-bool NativeReactNativeFeatureFlags::fetchImagesInViewPreallocation(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::fetchImagesInViewPreallocation();
 }
 
 bool NativeReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact(
