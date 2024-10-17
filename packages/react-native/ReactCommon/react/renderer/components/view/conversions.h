@@ -119,6 +119,17 @@ static inline PositionType positionTypeFromYogaPositionType(
   }
 }
 
+inline DisplayType displayTypeFromYGDisplay(yoga::Display display) {
+  switch (display) {
+    case yoga::Display::None:
+      return DisplayType::None;
+    case yoga::Display::Contents:
+      return DisplayType::Contents;
+    default:
+      return DisplayType::Flex;
+  }
+}
+
 inline LayoutMetrics layoutMetricsFromYogaNode(yoga::Node& yogaNode) {
   auto layoutMetrics = LayoutMetrics{};
 
@@ -146,9 +157,7 @@ inline LayoutMetrics layoutMetricsFromYogaNode(yoga::Node& yogaNode) {
       layoutMetrics.borderWidth.bottom +
           floatFromYogaFloat(YGNodeLayoutGetPadding(&yogaNode, YGEdgeBottom))};
 
-  layoutMetrics.displayType = yogaNode.style().display() == yoga::Display::None
-      ? DisplayType::None
-      : DisplayType::Flex;
+  layoutMetrics.displayType = displayTypeFromYGDisplay(yogaNode.style().display());
 
   layoutMetrics.positionType =
       positionTypeFromYogaPositionType(yogaNode.style().positionType());
@@ -427,6 +436,10 @@ inline void fromRawValue(
   }
   if (stringValue == "none") {
     result = yoga::Display::None;
+    return;
+  }
+  if (stringValue == "contents") {
+    result = yoga::Display::Contents;
     return;
   }
   LOG(ERROR) << "Could not parse yoga::Display: " << stringValue;

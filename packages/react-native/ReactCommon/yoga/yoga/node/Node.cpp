@@ -41,6 +41,7 @@ Node::Node(Node&& node) noexcept
       style_(std::move(node.style_)),
       layout_(node.layout_),
       lineIndex_(node.lineIndex_),
+      contentsChildrenCount_(node.contentsChildrenCount_),
       owner_(node.owner_),
       children_(std::move(node.children_)),
       config_(node.config_),
@@ -116,14 +117,37 @@ void Node::setMeasureFunc(YGMeasureFunc measureFunc) {
 }
 
 void Node::replaceChild(Node* child, size_t index) {
+  auto previousChild = children_[index];
+  if (previousChild->style().display() == Display::Contents &&
+      child->style().display() != Display::Contents) {
+    contentsChildrenCount_--;
+  } else if (
+      previousChild->style().display() != Display::Contents &&
+      child->style().display() == Display::Contents) {
+    contentsChildrenCount_++;
+  }
+
   children_[index] = child;
 }
 
 void Node::replaceChild(Node* oldChild, Node* newChild) {
+  if (oldChild->style().display() == Display::Contents &&
+      newChild->style().display() != Display::Contents) {
+    contentsChildrenCount_--;
+  } else if (
+      oldChild->style().display() != Display::Contents &&
+      newChild->style().display() == Display::Contents) {
+    contentsChildrenCount_++;
+  }
+
   std::replace(children_.begin(), children_.end(), oldChild, newChild);
 }
 
 void Node::insertChild(Node* child, size_t index) {
+  if (child->style().display() == Display::Contents) {
+    contentsChildrenCount_++;
+  }
+
   children_.insert(children_.begin() + static_cast<ptrdiff_t>(index), child);
 }
 
@@ -160,6 +184,10 @@ void Node::setDirty(bool isDirty) {
 bool Node::removeChild(Node* child) {
   auto p = std::find(children_.begin(), children_.end(), child);
   if (p != children_.end()) {
+    if (child->style().display() == Display::Contents) {
+      contentsChildrenCount_--;
+    }
+
     children_.erase(p);
     return true;
   }
@@ -167,6 +195,10 @@ bool Node::removeChild(Node* child) {
 }
 
 void Node::removeChild(size_t index) {
+  if (children_[index]->style().display() == Display::Contents) {
+    contentsChildrenCount_--;
+  }
+
   children_.erase(children_.begin() + static_cast<ptrdiff_t>(index));
 }
 
