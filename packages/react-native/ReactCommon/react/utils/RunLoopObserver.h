@@ -76,7 +76,7 @@ class RunLoopObserver {
   /*
    * Constructs a run loop observer.
    */
-  RunLoopObserver(Activity activities, const WeakOwner& owner) noexcept;
+  RunLoopObserver(Activity activities, WeakOwner owner) noexcept;
   virtual ~RunLoopObserver() noexcept = default;
 
   /*
