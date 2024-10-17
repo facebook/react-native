@@ -23,6 +23,9 @@ import invariant from 'invariant';
 import * as React from 'react';
 
 let getRuntimeConfig;
+let defaultStaticViewConfigPatcher = (name: string, viewConfig: ViewConfig) =>
+  viewConfig;
+let patchStaticViewConfig = defaultStaticViewConfigPatcher;
 
 /**
  * Configures a function that is called to determine whether a given component
@@ -39,6 +42,14 @@ export function setRuntimeConfigProvider(
 ): void {
   if (getRuntimeConfig === undefined) {
     getRuntimeConfig = runtimeConfigProvider;
+  }
+}
+
+export function setStaticViewConfigPatcher_EXPERIMENTAL(
+  staticViewConfigPatcher: (name: string, viewConfig: ViewConfig) => ViewConfig,
+) {
+  if (patchStaticViewConfig === defaultStaticViewConfigPatcher) {
+    patchStaticViewConfig = staticViewConfigPatcher;
   }
 }
 
@@ -62,10 +73,10 @@ export function get<Config>(
     if (native) {
       viewConfig =
         getNativeComponentAttributes(name) ??
-        createViewConfig(viewConfigProvider());
+        patchStaticViewConfig(name, createViewConfig(viewConfigProvider()));
     } else {
       viewConfig =
-        createViewConfig(viewConfigProvider()) ??
+        patchStaticViewConfig(name, createViewConfig(viewConfigProvider())) ??
         getNativeComponentAttributes(name);
     }
 
@@ -86,7 +97,7 @@ export function get<Config>(
       }
 
       const staticViewConfig: ViewConfig = native
-        ? createViewConfig(viewConfigProvider())
+        ? patchStaticViewConfig(name, createViewConfig(viewConfigProvider()))
         : viewConfig;
 
       const validationOutput = StaticViewConfigValidator.validate(

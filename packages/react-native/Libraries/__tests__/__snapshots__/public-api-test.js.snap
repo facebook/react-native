@@ -6479,6 +6479,9 @@ exports[`public API should not change unintentionally Libraries/NativeComponent/
     verify: boolean,
   }
 ): void;
+declare export function setStaticViewConfigPatcher_EXPERIMENTAL(
+  staticViewConfigPatcher: (name: string, viewConfig: ViewConfig) => ViewConfig
+): void;
 declare export function get<Config>(
   name: string,
   viewConfigProvider: () => PartialViewConfig
