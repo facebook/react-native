@@ -75,7 +75,7 @@ CGRect RCTTargetRect(CGSize sourceSize, CGSize destSize, CGFloat destScale, RCTR
 
   // Calculate target aspect ratio if needed
   CGFloat targetAspect = 0.0;
-  if (resizeMode != RCTResizeModeCenter && resizeMode != RCTResizeModeStretch) {
+  if (resizeMode != RCTResizeModeCenter && resizeMode != RCTResizeModeStretch && resizeMode != RCTResizeModeNone) {
     targetAspect = destSize.width / destSize.height;
     if (aspect == targetAspect) {
       resizeMode = RCTResizeModeStretch;
@@ -146,12 +146,10 @@ CGRect RCTTargetRect(CGSize sourceSize, CGSize destSize, CGFloat destScale, RCTR
           },
           RCTCeilSize(sourceSize, destScale)};
     case RCTResizeModeNone:
-      
+      // print something
+      NSLog(@"Testing RCTResizeModeNone");
       return (CGRect){
-          {
-              0,
-              0,
-          },
+          CGPointZero,
           RCTCeilSize(sourceSize, destScale)};
   }
 }
@@ -174,9 +172,8 @@ CGSize RCTTargetSize(
     BOOL allowUpscaling)
 {
   switch (resizeMode) {
-    case RCTResizeModeCenter:
     case RCTResizeModeNone:
-
+    case RCTResizeModeCenter:
       return RCTTargetRect(sourceSize, destSize, destScale, resizeMode).size;
 
     case RCTResizeModeStretch:
@@ -257,8 +254,8 @@ BOOL RCTUpscalingRequired(
       }
 
     case RCTResizeModeRepeat:
-    case RCTResizeModeCenter:
     case RCTResizeModeNone:
+    case RCTResizeModeCenter:
 
       return NO;
   }
