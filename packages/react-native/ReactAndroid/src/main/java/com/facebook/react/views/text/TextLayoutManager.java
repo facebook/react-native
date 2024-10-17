@@ -432,10 +432,11 @@ public class TextLayoutManager {
   private static void updateTextPaint(
       TextPaint paint, TextAttributeProps baseTextAttributes, Context context) {
     // TextPaint attributes will be used for content outside the Spannable, like for the
-    // hypothetical height of a new line after a trailing newline charater (considered part of the
+    // hypothetical height of a new line after a trailing newline character (considered part of the
     // previous line).
     paint.reset();
     paint.setAntiAlias(true);
+
     if (baseTextAttributes.getEffectiveFontSize() != ReactConstants.UNSET) {
       paint.setTextSize(baseTextAttributes.getEffectiveFontSize());
     }
@@ -459,6 +460,8 @@ public class TextLayoutManager {
         paint.setFakeBoldText((missingStyle & Typeface.BOLD) != 0);
         paint.setTextSkewX((missingStyle & Typeface.ITALIC) != 0 ? -0.25f : 0);
       }
+    } else {
+      paint.setTypeface(null);
     }
   }
 
