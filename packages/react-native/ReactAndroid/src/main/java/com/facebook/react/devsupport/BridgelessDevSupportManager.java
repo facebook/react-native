@@ -100,6 +100,7 @@ class BridgelessDevSupportManager extends DevSupportManagerBase {
               }
               callback.onSuccess();
             } catch (InterruptedException e) {
+              Thread.currentThread().interrupt();
               throw new RuntimeException(
                   "[BridgelessDevSupportManager]: Got interrupted while loading bundle", e);
             }
