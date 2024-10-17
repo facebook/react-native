@@ -75,6 +75,7 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
                   "Spannable element has not been prepared in onBeforeLayout");
 
           Layout layout = measureSpannedText(text, width, widthMode);
+          TextPaint paint = new TextPaint(sTextPaintInstance);
 
           if (mAdjustsFontSizeToFit) {
             int initialFontSize = mTextAttributes.getEffectiveFontSize();
@@ -83,8 +84,9 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
             int minimumFontSize =
                 (int) Math.max(mMinimumFontScale * initialFontSize, PixelUtil.toPixelFromDIP(4));
             while (currentFontSize > minimumFontSize
-                && (mNumberOfLines != ReactConstants.UNSET && layout.getLineCount() > mNumberOfLines
-                    || heightMode != YogaMeasureMode.UNDEFINED && layout.getHeight() > height)) {
+                && ((mNumberOfLines != ReactConstants.UNSET && layout.getLineCount() > mNumberOfLines
+                    || heightMode != YogaMeasureMode.UNDEFINED && layout.getHeight() > height)
+                  || (text.length() == 1 && paint.measureText(text.toString()) > width))) {
               // TODO: We could probably use a smarter algorithm here. This will require 0(n)
               // measurements
               // based on the number of points the font size needs to be reduced by.
@@ -94,13 +96,15 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
               ReactAbsoluteSizeSpan[] sizeSpans =
                   text.getSpans(0, text.length(), ReactAbsoluteSizeSpan.class);
               for (ReactAbsoluteSizeSpan span : sizeSpans) {
+                int newSize = (int) Math.max((span.getSize() * ratio), minimumFontSize);
                 text.setSpan(
-                    new ReactAbsoluteSizeSpan(
-                        (int) Math.max((span.getSize() * ratio), minimumFontSize)),
+                    new ReactAbsoluteSizeSpan(newSize),
                     text.getSpanStart(span),
                     text.getSpanEnd(span),
                     text.getSpanFlags(span));
                 text.removeSpan(span);
+
+                paint.setTextSize(newSize);
               }
               layout = measureSpannedText(text, width, widthMode);
             }
