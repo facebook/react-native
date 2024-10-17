@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8260155b1822cf4906660d3ad9b298a4>>
+ * @generated SignedSource<<68423ab013e1357ec176da0fbef4f7e8>>
  */
 
 /**
@@ -36,6 +36,8 @@ class NativeReactNativeFeatureFlags
   NativeReactNativeFeatureFlags(std::shared_ptr<CallInvoker> jsInvoker);
 
   bool commonTestFlag(jsi::Runtime& runtime);
+
+  bool commonTestFlagWithoutNativeImplementation(jsi::Runtime& runtime);
 
   bool allowRecursiveCommitsWithSynchronousMountOnAndroid(jsi::Runtime& runtime);
 
