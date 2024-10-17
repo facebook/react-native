@@ -680,6 +680,8 @@ kotlin {
   explicitApi()
 }
 
+tasks.withType<Test> { jvmArgs = listOf("-Xshare:off") }
+
 /* Publishing Configuration */
 apply(from = "./publish.gradle")
 
