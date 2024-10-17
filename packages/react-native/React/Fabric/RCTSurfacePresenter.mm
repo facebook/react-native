@@ -31,11 +31,11 @@
 #import <react/renderer/componentregistry/ComponentDescriptorFactory.h>
 #import <react/renderer/components/text/BaseTextProps.h>
 #import <react/renderer/runtimescheduler/RuntimeScheduler.h>
-#import <react/renderer/scheduler/AsynchronousEventBeat.h>
 #import <react/renderer/scheduler/SchedulerToolbox.h>
 #import <react/utils/ContextContainer.h>
 #import <react/utils/CoreFeatures.h>
 #import <react/utils/ManagedObjectWrapper.h>
+#import "AppleEventBeat.h"
 
 #import "PlatformRunLoopObserver.h"
 #import "RCTConversions.h"
@@ -261,7 +261,7 @@ using namespace facebook::react;
       [runtimeExecutor](std::shared_ptr<EventBeat::OwnerBox> ownerBox) -> std::unique_ptr<EventBeat> {
     auto runLoopObserver =
         std::make_unique<const MainRunLoopObserver>(RunLoopObserver::Activity::BeforeWaiting, ownerBox->owner);
-    return std::make_unique<AsynchronousEventBeat>(std::move(runLoopObserver), runtimeExecutor);
+    return std::make_unique<AppleEventBeat>(std::move(runLoopObserver), runtimeExecutor);
   };
 
   RCTScheduler *scheduler = [[RCTScheduler alloc] initWithToolbox:toolbox];
