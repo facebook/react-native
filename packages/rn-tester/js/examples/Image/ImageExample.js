@@ -659,8 +659,8 @@ const styles = StyleSheet.create({
     color: 'white',
   },
   resizeMode: {
-    width: 416,
-    height: 416,
+    width: 90,
+    height: 60,
     borderWidth: 0.5,
     borderColor: 'black',
   },
