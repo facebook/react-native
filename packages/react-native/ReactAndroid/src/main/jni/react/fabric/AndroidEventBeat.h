@@ -26,15 +26,11 @@ class AndroidEventBeat final : public EventBeat,
 
   void tick() const override;
 
-  void induce() const override;
-
   void request() const override;
 
  private:
   EventBeatManager* eventBeatManager_;
-  RuntimeExecutor runtimeExecutor_;
   jni::global_ref<jobject> javaUIManager_;
-  mutable std::atomic<bool> isBeatCallbackScheduled_{false};
 };
 
 } // namespace facebook::react
