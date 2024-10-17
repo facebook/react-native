@@ -9423,7 +9423,7 @@ exports[`public API should not change unintentionally Libraries/Utilities/useCol
 exports[`public API should not change unintentionally Libraries/Utilities/useMergeRefs.js 1`] = `
 "declare export default function useMergeRefs<Instance>(
   ...refs: $ReadOnlyArray<?React.RefSetter<Instance>>
-): (Instance | null) => void;
+): React.RefSetter<Instance>;
 "
 `;
 

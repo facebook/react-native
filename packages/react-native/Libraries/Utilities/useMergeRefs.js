@@ -8,6 +8,7 @@
  * @format
  */
 
+import useRefEffect from './useRefEffect';
 import * as React from 'react';
 import {useCallback} from 'react';
 
@@ -22,19 +23,37 @@ import {useCallback} from 'react';
  */
 export default function useMergeRefs<Instance>(
   ...refs: $ReadOnlyArray<?React.RefSetter<Instance>>
-): (Instance | null) => void {
-  return useCallback(
-    (current: Instance | null) => {
-      for (const ref of refs) {
-        if (ref != null) {
+): React.RefSetter<Instance> {
+  const refEffect = useCallback(
+    (current: Instance) => {
+      const cleanups: $ReadOnlyArray<void | (() => void)> = refs.map(ref => {
+        if (ref == null) {
+          return undefined;
+        } else {
           if (typeof ref === 'function') {
-            ref(current);
+            // $FlowIssue[incompatible-type] - Flow does not understand ref cleanup.
+            const cleanup: void | (() => void) = ref(current);
+            return typeof cleanup === 'function'
+              ? cleanup
+              : () => {
+                  ref(null);
+                };
           } else {
             ref.current = current;
+            return () => {
+              ref.current = null;
+            };
           }
         }
-      }
+      });
+
+      return () => {
+        for (const cleanup of cleanups) {
+          cleanup?.();
+        }
+      };
     },
     [...refs], // eslint-disable-line react-hooks/exhaustive-deps
   );
+  return useRefEffect(refEffect);
 }
