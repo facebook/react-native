@@ -11,29 +11,41 @@
 export type FeatureFlagValue = boolean | number | string;
 
 export type FeatureFlagDefinitions = {
-  common: FeatureFlagList,
-  jsOnly: FeatureFlagList,
+  common: CommonFeatureFlagList,
+  jsOnly: JsOnlyFeatureFlagList,
 };
 
-type FeatureFlagList = {
+type CommonFeatureFlagList = {
   [flagName: string]: {
     defaultValue: FeatureFlagValue,
-    metadata:
-      | {
-          purpose: 'experimentation',
-          /**
-           * Aproximate date when the flag was added.
-           * Used to help prioritize feature flags that need to be cleaned up.
-           */
-          dateAdded: string,
-          description: string,
-        }
-      | {
-          purpose: 'operational' | 'release',
-          description: string,
-        },
+    metadata: FeatureFlagMetadata,
+    // Indicates if this API should only be defined in JavaScript, only to
+    // preserve backwards compatibility with existing native code temporarily.
+    skipNativeAPI?: true,
   },
 };
+
+type JsOnlyFeatureFlagList = {
+  [flagName: string]: {
+    defaultValue: FeatureFlagValue,
+    metadata: FeatureFlagMetadata,
+  },
+};
+
+type FeatureFlagMetadata =
+  | {
+      purpose: 'experimentation',
+      /**
+       * Aproximate date when the flag was added.
+       * Used to help prioritize feature flags that need to be cleaned up.
+       */
+      dateAdded: string,
+      description: string,
+    }
+  | {
+      purpose: 'operational' | 'release',
+      description: string,
+    };
 
 export type GeneratorConfig = {
   featureFlagDefinitions: FeatureFlagDefinitions,

@@ -30,6 +30,15 @@ const testDefinitions: FeatureFlagDefinitions = {
         purpose: 'operational',
       },
     },
+    commonTestFlagWithoutNativeImplementation: {
+      defaultValue: false,
+      metadata: {
+        description:
+          'Common flag for testing (without native implementation). Do NOT modify.',
+        purpose: 'operational',
+      },
+      skipNativeAPI: true,
+    },
   },
   jsOnly: {
     jsOnlyTestFlag: {
