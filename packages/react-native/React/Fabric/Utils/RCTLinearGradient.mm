@@ -23,7 +23,7 @@ using namespace facebook::react;
   UIImage *gradientImage = [renderer imageWithActions:^(UIGraphicsImageRendererContext * _Nonnull rendererContext) {
     CGContextRef context = rendererContext.CGContext;
     NSMutableArray *colors = [NSMutableArray array];
-    CGFloat *locations = (CGFloat *)malloc(sizeof(CGFloat) * colorStops.size());
+    CGFloat locations[colorStops.size()];
     
     for (size_t i = 0; i < colorStops.size(); ++i) {
       const auto &colorStop = colorStops[i];
@@ -34,7 +34,7 @@ using namespace facebook::react;
     
     auto colorSpace = getDefaultColorSpace() == ColorSpace::sRGB ? CGColorSpaceCreateDeviceRGB() : CGColorSpaceCreateWithName(kCGColorSpaceDisplayP3);
     
-    CGGradientRef gradient = CGGradientCreateWithColors(colorSpace, (__bridge CFArrayRef)colors, locations);
+    CGGradientRef cgGradient = CGGradientCreateWithColors(colorSpace, (__bridge CFArrayRef)colors, locations);
     
     CGPoint startPoint;
     CGPoint endPoint;
@@ -52,11 +52,10 @@ using namespace facebook::react;
       endPoint = CGPointMake(0.0, size.height);
     }
     
-    CGContextDrawLinearGradient(context, gradient, startPoint, endPoint, 0);
+    CGContextDrawLinearGradient(context, cgGradient, startPoint, endPoint, 0);
     
     CGColorSpaceRelease(colorSpace);
-    CGGradientRelease(gradient);
-    free(locations);
+    CGGradientRelease(cgGradient);
   }];
   
   CALayer *gradientLayer = [CALayer layer];

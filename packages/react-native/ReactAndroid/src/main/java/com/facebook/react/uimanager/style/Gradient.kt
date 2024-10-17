@@ -14,7 +14,7 @@ import com.facebook.react.bridge.ColorPropConverter
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.ReadableType
 
-public class Gradient(gradient: ReadableMap?, context: Context) {
+internal class Gradient(gradient: ReadableMap?, context: Context) {
   private enum class GradientType {
     LINEAR_GRADIENT
   }

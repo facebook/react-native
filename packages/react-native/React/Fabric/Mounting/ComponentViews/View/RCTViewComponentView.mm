@@ -1025,22 +1025,16 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
         CALayer *backgroundImageLayer = [RCTLinearGradient gradientLayerWithSize:self.layer.bounds.size gradient:linearGradient];
         backgroundImageLayer.frame = layer.bounds;
         backgroundImageLayer.masksToBounds = YES;
-        // border styling to work with gradient layers
-        if (useCoreAnimationBorderRendering) {
-            backgroundImageLayer.borderWidth = layer.borderWidth;
-            backgroundImageLayer.borderColor = layer.borderColor;
-            backgroundImageLayer.cornerRadius = layer.cornerRadius;
-            backgroundImageLayer.cornerCurve = layer.cornerCurve;
+        // To make border radius work with gradient layers
+        if (borderMetrics.borderRadii.isUniform()) {
+          backgroundImageLayer.cornerRadius = layer.cornerRadius;
+          backgroundImageLayer.cornerCurve = layer.cornerCurve;
+          backgroundImageLayer.mask = nil;
         } else {
-            CAShapeLayer *maskLayer = [CAShapeLayer layer];
-            CGPathRef path = RCTPathCreateWithRoundedRect(
-                self.bounds,
-                RCTGetCornerInsets(RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii), UIEdgeInsetsZero),
-                nil);
-            maskLayer.path = path;
-            CGPathRelease(path);
-            backgroundImageLayer.mask = maskLayer;
-          }
+          CAShapeLayer *maskLayer = [self createMaskLayer:self.bounds cornerInsets:RCTGetCornerInsets(RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii), UIEdgeInsetsZero)];
+          backgroundImageLayer.mask = maskLayer;
+          backgroundImageLayer.cornerRadius = 0;
+        }
 
         backgroundImageLayer.zPosition = BACKGROUND_COLOR_ZPOSITION;
 

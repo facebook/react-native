@@ -1237,11 +1237,11 @@ inline void fromRawValue(
           orientationIt->second.hasType<std::unordered_map<std::string, RawValue>>()) {
         auto orientationMap = static_cast<std::unordered_map<std::string, RawValue>>(orientationIt->second);
         
-        auto typeIt = orientationMap.find("type");
+        auto orientationTypeIt = orientationMap.find("type");
         auto valueIt = orientationMap.find("value");
         
-        if (typeIt != orientationMap.end() && valueIt != orientationMap.end()) {
-          std::string orientationType = (std::string)(typeIt->second);
+        if (orientationTypeIt != orientationMap.end() && valueIt != orientationMap.end()) {
+          std::string orientationType = (std::string)(orientationTypeIt->second);
           
           if (orientationType == "angle") {
             linearGradient.orientation.type = GradientOrientationType::Angle;

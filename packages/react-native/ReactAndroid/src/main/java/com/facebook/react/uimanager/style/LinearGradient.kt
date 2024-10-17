@@ -13,7 +13,7 @@ import com.facebook.react.bridge.ReadableMap
 import kotlin.math.atan
 import kotlin.math.tan
 
-public class LinearGradient(
+internal class LinearGradient(
   private val orientationMap: ReadableMap,
   private val colors: IntArray,
   private val positions: FloatArray
@@ -23,23 +23,19 @@ public class LinearGradient(
     public data class Direction(val value: String) : Orientation()
   }
 
-  private val orientation: Orientation
-
-  init {
-    orientation = when (val type = orientationMap.getString("type")) {
-      "angle" -> {
-        val angle = orientationMap.getDouble("value")
-        Orientation.Angle(angle)
-      }
-
-      "direction" -> {
-        val direction = orientationMap.getString("value")
-          ?: throw IllegalArgumentException("Direction value cannot be null")
-        Orientation.Direction(direction)
-      }
-
-      else -> throw IllegalArgumentException("Invalid orientation type: $type")
+  private val orientation: Orientation = when (val type = orientationMap.getString("type")) {
+    "angle" -> {
+      val angle = orientationMap.getDouble("value")
+      Orientation.Angle(angle)
     }
+
+    "direction" -> {
+      val direction = orientationMap.getString("value")
+        ?: throw IllegalArgumentException("Direction value cannot be null")
+      Orientation.Direction(direction)
+    }
+
+    else -> throw IllegalArgumentException("Invalid orientation type: $type")
   }
 
   public fun getShader(width: Float, height: Float): Shader {
