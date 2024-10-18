@@ -34,7 +34,7 @@ export function SectionList_inverted_stickySectionHeadersEnabled(): React.Node {
       exampleProps={{...exampleProps, inverted: true}}
       testOutput={output}
       onTest={onTest}
-      renderSectionFooter
+      sectionFooterEnabled
       testLabel={
         exampleProps.stickySectionHeadersEnabled ? 'Sticky Off' : 'Sticky On'
       }
