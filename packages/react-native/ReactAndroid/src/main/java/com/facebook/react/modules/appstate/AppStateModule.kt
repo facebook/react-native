@@ -18,7 +18,7 @@ import com.facebook.react.common.LifecycleState
 import com.facebook.react.module.annotations.ReactModule
 
 @ReactModule(name = NativeAppStateSpec.NAME)
-public class AppStateModule(reactContext: ReactApplicationContext) :
+internal class AppStateModule(reactContext: ReactApplicationContext) :
     NativeAppStateSpec(reactContext), LifecycleEventListener, WindowFocusChangeListener {
 
   private var appState: String
