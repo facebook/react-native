@@ -436,7 +436,7 @@ public class TextLayoutManager {
       // Is used for multiline, boring text and the width is known.
       StaticLayout.Builder builder =
           StaticLayout.Builder.obtain(text, 0, spanLength, paint, (int) Math.ceil(width))
-              .setAlignment(Layout.Alignment.ALIGN_CENTER)
+              .setAlignment(alignment)
               .setLineSpacing(0.f, 1.f)
               .setIncludePad(includeFontPadding)
               .setBreakStrategy(textBreakStrategy)
