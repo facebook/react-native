@@ -93,13 +93,39 @@ ReactInstance::ReactInstance(
   if (parentInspectorTarget_) {
     auto executor = parentInspectorTarget_->executorFromThis();
 
-    auto runtimeExecutorThatWaitsForInspectorSetup =
+    auto bufferedRuntimeExecutorThatWaitsForInspectorSetup =
         std::make_shared<BufferedRuntimeExecutor>(runtimeExecutor);
+    auto runtimeExecutorThatExecutesAfterInspectorSetup =
+        [bufferedRuntimeExecutorThatWaitsForInspectorSetup](
+            std::function<void(jsi::Runtime & runtime)>&& callback) {
+          bufferedRuntimeExecutorThatWaitsForInspectorSetup->execute(
+              std::move(callback));
+        };
+
+    runtimeScheduler_ = std::make_shared<RuntimeScheduler>(
+        runtimeExecutorThatExecutesAfterInspectorSetup,
+        RuntimeSchedulerClock::now,
+        [jsErrorHandler = jsErrorHandler_](
+            jsi::Runtime& runtime, jsi::JSError& error) {
+          jsErrorHandler->handleError(runtime, error, true);
+        });
+    runtimeScheduler_->setPerformanceEntryReporter(
+        // FIXME: Move creation of PerformanceEntryReporter to here and
+        // guarantee that its lifetime is the same as the runtime.
+        PerformanceEntryReporter::getInstance().get());
+
+    auto runtimeExecutorThatGoesThroughRuntimeScheduler =
+        [runtimeScheduler = runtimeScheduler_.get()](
+            std::function<void(jsi::Runtime & runtime)>&& callback) {
+          runtimeScheduler->scheduleWork(std::move(callback));
+        };
 
     // This code can execute from any thread, so we need to make sure we set up
     // the inspector logic in the right one. The callback executes immediately
     // if we are already in the right thread.
-    executor([this, runtimeExecutor, runtimeExecutorThatWaitsForInspectorSetup](
+    executor([this,
+              runtimeExecutorThatGoesThroughRuntimeScheduler,
+              bufferedRuntimeExecutorThatWaitsForInspectorSetup](
                  jsinspector_modern::HostTarget& hostTarget) {
       // Callbacks scheduled through the page target executor are generally
       // not guaranteed to run (e.g.: if the page target is destroyed)
@@ -110,31 +136,23 @@ ReactInstance::ReactInstance(
       //   creation task to finish before starting the destruction.
       inspectorTarget_ = &hostTarget.registerInstance(*this);
       runtimeInspectorTarget_ = &inspectorTarget_->registerRuntime(
-          runtime_->getRuntimeTargetDelegate(), runtimeExecutor);
-      runtimeExecutorThatWaitsForInspectorSetup->flush();
+          runtime_->getRuntimeTargetDelegate(),
+          runtimeExecutorThatGoesThroughRuntimeScheduler);
+      bufferedRuntimeExecutorThatWaitsForInspectorSetup->flush();
     });
-
-    // We decorate the runtime executor used everywhere else to wait for the
-    // inspector to finish its setup.
-    runtimeExecutor =
-        [runtimeExecutorThatWaitsForInspectorSetup](
-            std::function<void(jsi::Runtime & runtime)>&& callback) {
-          runtimeExecutorThatWaitsForInspectorSetup->execute(
-              std::move(callback));
-        };
+  } else {
+    runtimeScheduler_ = std::make_shared<RuntimeScheduler>(
+        runtimeExecutor,
+        RuntimeSchedulerClock::now,
+        [jsErrorHandler = jsErrorHandler_](
+            jsi::Runtime& runtime, jsi::JSError& error) {
+          jsErrorHandler->handleError(runtime, error, true);
+        });
+    runtimeScheduler_->setPerformanceEntryReporter(
+        // FIXME: Move creation of PerformanceEntryReporter to here and
+        // guarantee that its lifetime is the same as the runtime.
+        PerformanceEntryReporter::getInstance().get());
   }
-
-  runtimeScheduler_ = std::make_shared<RuntimeScheduler>(
-      runtimeExecutor,
-      RuntimeSchedulerClock::now,
-      [jsErrorHandler = jsErrorHandler_](
-          jsi::Runtime& runtime, jsi::JSError& error) {
-        jsErrorHandler->handleError(runtime, error, true);
-      });
-  runtimeScheduler_->setPerformanceEntryReporter(
-      // FIXME: Move creation of PerformanceEntryReporter to here and guarantee
-      // that its lifetime is the same as the runtime.
-      PerformanceEntryReporter::getInstance().get());
 
   bufferedRuntimeExecutor_ = std::make_shared<BufferedRuntimeExecutor>(
       [runtimeScheduler = runtimeScheduler_.get()](
