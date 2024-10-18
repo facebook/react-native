@@ -29,6 +29,15 @@ type FormDataPart =
     };
 
 /**
+ * Encode a FormData filename compliant with RFC 2183
+ *
+ * https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition#directives
+ */
+function encodeFilename(filename: string): string {
+  return encodeURIComponent(filename.replace(/\//g, '_'));
+}
+
+/**
  * Polyfill for XMLHttpRequest2 FormData API, allowing multipart POST requests
  * with mixed data (string, native files) to be submitted via XMLHttpRequest.
  *
@@ -82,9 +91,8 @@ class FormData {
       // content type (cf. web Blob interface.)
       if (typeof value === 'object' && !Array.isArray(value) && value) {
         if (typeof value.name === 'string') {
-          headers['content-disposition'] += `; filename="${
-            value.name
-          }"; filename*=utf-8''${encodeURI(value.name)}`;
+          headers['content-disposition'] +=
+            `; filename="${encodeFilename(value.name)}"`;
         }
         if (typeof value.type === 'string') {
           headers['content-type'] = value.type;
