@@ -28,8 +28,7 @@ describe('processBackgroundImage', () => {
     expect(result).toEqual([
       {
         type: 'linearGradient',
-        start: {x: 0, y: 0.5},
-        end: {x: 1, y: 0.5},
+        orientation: {type: 'direction', value: 'to right'},
         colorStops: [
           {color: processColor('red'), position: 0},
           {color: processColor('blue'), position: 1},
@@ -44,8 +43,7 @@ describe('processBackgroundImage', () => {
     expect(result).toEqual([
       {
         type: 'linearGradient',
-        start: {x: 0, y: 0},
-        end: {x: 1, y: 1},
+        orientation: {type: 'direction', value: 'to bottom right'},
         colorStops: [
           {color: processColor('red'), position: 0},
           {color: processColor('blue'), position: 1},
@@ -74,8 +72,7 @@ describe('processBackgroundImage', () => {
     expect(result).toEqual([
       {
         type: 'linearGradient',
-        start: {x: 0, y: 0},
-        end: {x: 1, y: 1},
+        orientation: {type: 'direction', value: 'to bottom right'},
         colorStops: [
           {color: processColor('red'), position: 0},
           {color: processColor('blue'), position: 1},
@@ -91,8 +88,7 @@ describe('processBackgroundImage', () => {
     expect(result).toEqual([
       {
         type: 'linearGradient',
-        start: {x: 0, y: 0},
-        end: {x: 1, y: 1},
+        orientation: {type: 'direction', value: 'to bottom right'},
         colorStops: [
           {color: processColor('red'), position: 0.3},
           {color: processColor('blue'), position: 0.8},
@@ -105,10 +101,7 @@ describe('processBackgroundImage', () => {
     const input = 'linear-gradient(45deg, red, blue)';
     const result = processBackgroundImage(input);
     expect(result[0].type).toBe('linearGradient');
-    expect(result[0].start.x).toBeCloseTo(0.146447, 5);
-    expect(result[0].start.y).toBeCloseTo(0.853553, 5);
-    expect(result[0].end.x).toBeCloseTo(0.853553, 5);
-    expect(result[0].end.y).toBeCloseTo(0.146447, 5);
+    expect(result[0].orientation).toEqual({type: 'angle', value: 45});
     expect(result[0].colorStops).toEqual([
       {color: processColor('red'), position: 0},
       {color: processColor('blue'), position: 1},
@@ -119,10 +112,7 @@ describe('processBackgroundImage', () => {
     const input = 'linear-gradient(45Deg, red, blue)';
     const result = processBackgroundImage(input);
     expect(result[0].type).toBe('linearGradient');
-    expect(result[0].start.x).toBeCloseTo(0.146447, 5);
-    expect(result[0].start.y).toBeCloseTo(0.853553, 5);
-    expect(result[0].end.x).toBeCloseTo(0.853553, 5);
-    expect(result[0].end.y).toBeCloseTo(0.146447, 5);
+    expect(result[0].orientation).toEqual({type: 'angle', value: 45});
     expect(result[0].colorStops).toEqual([
       {color: processColor('red'), position: 0},
       {color: processColor('blue'), position: 1},
@@ -133,8 +123,10 @@ describe('processBackgroundImage', () => {
     const input = 'LiNeAr-GradieNt(To Bottom, Red, Blue)';
     const result = processBackgroundImage(input);
     expect(result[0].type).toBe('linearGradient');
-    expect(result[0].start).toEqual({x: 0.5, y: 0});
-    expect(result[0].end).toEqual({x: 0.5, y: 1});
+    expect(result[0].orientation).toEqual({
+      type: 'direction',
+      value: 'to bottom',
+    });
     expect(result[0].colorStops).toEqual([
       {color: processColor('red'), position: 0},
       {color: processColor('blue'), position: 1},
@@ -144,8 +136,10 @@ describe('processBackgroundImage', () => {
   it('should process a linear gradient with case-insensitive direction enum', () => {
     const input = 'linear-gradient(tO Right, red, blue)';
     const result = processBackgroundImage(input);
-    expect(result[0].start).toEqual({x: 0, y: 0.5});
-    expect(result[0].end).toEqual({x: 1, y: 0.5});
+    expect(result[0].orientation).toEqual({
+      type: 'direction',
+      value: 'to right',
+    });
     expect(result[0].colorStops).toEqual([
       {color: processColor('red'), position: 0},
       {color: processColor('blue'), position: 1},
@@ -156,8 +150,10 @@ describe('processBackgroundImage', () => {
     const input =
       'linear-gradient(to right, Rgba(0, 0, 0, 0.5), Blue, Hsla(0, 100%, 50%, 0.5))';
     const result = processBackgroundImage(input);
-    expect(result[0].start).toEqual({x: 0, y: 0.5});
-    expect(result[0].end).toEqual({x: 1, y: 0.5});
+    expect(result[0].orientation).toEqual({
+      type: 'direction',
+      value: 'to right',
+    });
     expect(result[0].colorStops).toEqual([
       {color: processColor('rgba(0, 0, 0, 0.5)'), position: 0},
       {color: processColor('blue'), position: 0.5},
@@ -172,15 +168,19 @@ describe('processBackgroundImage', () => {
     const result = processBackgroundImage(input);
     expect(result).toHaveLength(2);
     expect(result[0].type).toEqual('linearGradient');
-    expect(result[0].start).toEqual({x: 0, y: 0.5});
-    expect(result[0].end).toEqual({x: 1, y: 0.5});
+    expect(result[0].orientation).toEqual({
+      type: 'direction',
+      value: 'to right',
+    });
     expect(result[0].colorStops).toEqual([
       {color: processColor('red'), position: 0},
       {color: processColor('blue'), position: 1},
     ]);
     expect(result[1].type).toEqual('linearGradient');
-    expect(result[1].start).toEqual({x: 0.5, y: 0});
-    expect(result[1].end).toEqual({x: 0.5, y: 1});
+    expect(result[1].orientation).toEqual({
+      type: 'direction',
+      value: 'to bottom',
+    });
 
     expect(result[1].colorStops).toEqual([
       {color: processColor('green'), position: 0},
@@ -195,15 +195,19 @@ describe('processBackgroundImage', () => {
     const result = processBackgroundImage(input);
     expect(result).toHaveLength(2);
     expect(result[0].type).toEqual('linearGradient');
-    expect(result[0].start).toEqual({x: 0, y: 0.5});
-    expect(result[0].end).toEqual({x: 1, y: 0.5});
+    expect(result[0].orientation).toEqual({
+      type: 'direction',
+      value: 'to right',
+    });
     expect(result[0].colorStops).toEqual([
       {color: processColor('red'), position: 0},
       {color: processColor('blue'), position: 1},
     ]);
     expect(result[1].type).toEqual('linearGradient');
-    expect(result[1].start).toEqual({x: 0.5, y: 0});
-    expect(result[1].end).toEqual({x: 0.5, y: 1});
+    expect(result[1].orientation).toEqual({
+      type: 'direction',
+      value: 'to bottom',
+    });
 
     expect(result[1].colorStops).toEqual([
       {color: processColor('green'), position: 0},
@@ -268,10 +272,14 @@ describe('processBackgroundImage', () => {
               linear-gradient(to bottom , rgba(255,0,0,0.9)  , rgba(0,0,255,0.2)  )`;
     const result = processBackgroundImage(input);
     expect(result).toHaveLength(2);
-    expect(result[0].start).toEqual({x: 0, y: 0.5});
-    expect(result[0].end).toEqual({x: 1, y: 0.5});
-    expect(result[1].start).toEqual({x: 0.5, y: 0});
-    expect(result[1].end).toEqual({x: 0.5, y: 1});
+    expect(result[0].orientation).toEqual({
+      type: 'direction',
+      value: 'to right',
+    });
+    expect(result[1].orientation).toEqual({
+      type: 'direction',
+      value: 'to bottom',
+    });
     expect(result[0].colorStops).toEqual([
       {color: processColor('rgba(255,0,0,0.5)'), position: 0},
       {color: processColor('rgba(0,0,255,0.8)'), position: 1},
@@ -321,8 +329,7 @@ describe('processBackgroundImage', () => {
     expect(result).toEqual([
       {
         type: 'linearGradient',
-        start: {x: 0, y: 0},
-        end: {x: 1, y: 1},
+        orientation: {type: 'direction', value: 'to bottom right'},
         colorStops: [
           {color: processColor('red'), position: 0},
           {color: processColor('blue'), position: 1},
@@ -339,8 +346,10 @@ describe('processBackgroundImage', () => {
       },
     ];
     const result = processBackgroundImage(input);
-    expect(result[0].start).toEqual({x: 0.5, y: 0});
-    expect(result[0].end).toEqual({x: 0.5, y: 1});
+    expect(result[0].orientation).toEqual({
+      type: 'angle',
+      value: 180,
+    });
   });
 
   it('should process style object with direction enum', () => {
@@ -352,8 +361,10 @@ describe('processBackgroundImage', () => {
       },
     ];
     const result = processBackgroundImage(input);
-    expect(result[0].start).toEqual({x: 0, y: 0.5});
-    expect(result[0].end).toEqual({x: 1, y: 0.5});
+    expect(result[0].orientation).toEqual({
+      type: 'direction',
+      value: 'to right',
+    });
   });
 
   it('should process style object with direction angle', () => {
@@ -365,10 +376,10 @@ describe('processBackgroundImage', () => {
       },
     ];
     const result = processBackgroundImage(input);
-    expect(result[0].start.x).toBeCloseTo(0.146447, 5);
-    expect(result[0].start.y).toBeCloseTo(0.853553, 5);
-    expect(result[0].end.x).toBeCloseTo(0.853553, 5);
-    expect(result[0].end.y).toBeCloseTo(0.146447, 5);
+    expect(result[0].orientation).toEqual({
+      type: 'angle',
+      value: 45,
+    });
   });
 
   it('should fix up stop positions #1', () => {
