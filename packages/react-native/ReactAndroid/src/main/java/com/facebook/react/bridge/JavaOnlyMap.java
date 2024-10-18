@@ -246,6 +246,10 @@ public class JavaOnlyMap implements ReadableMap, WritableMap {
     return mBackingMap.toString();
   }
 
+  public void remove(@NonNull String key) {
+    mBackingMap.remove(key);
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
