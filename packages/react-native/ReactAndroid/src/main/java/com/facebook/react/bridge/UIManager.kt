@@ -78,7 +78,7 @@ public interface UIManager : PerformanceCounter {
   public fun dispatchCommand(reactTag: Int, commandId: String, commandArgs: ReadableArray?)
 
   /** @return the [EventDispatcher] object that is used by this class. */
-  public fun <T> getEventDispatcher(): T
+  public val eventDispatcher: Any?
 
   /**
    * Used by native animated module to bypass the process of updating the values through the shadow

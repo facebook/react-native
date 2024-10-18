@@ -577,20 +577,19 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
         UIManager uiManager =
             UIManagerHelper.getUIManager(reactContext, ViewUtil.getUIManagerType(reactTag));
         if (uiManager != null) {
-          uiManager
-              .<EventDispatcher>getEventDispatcher()
-              .dispatchEvent(
-                  new Event(surfaceId, reactTag) {
-                    @Override
-                    public String getEventName() {
-                      return TOP_ACCESSIBILITY_ACTION_EVENT;
-                    }
+          EventDispatcher eventDispatcher = (EventDispatcher) uiManager.getEventDispatcher();
+          eventDispatcher.dispatchEvent(
+              new Event(surfaceId, reactTag) {
+                @Override
+                public String getEventName() {
+                  return TOP_ACCESSIBILITY_ACTION_EVENT;
+                }
 
-                    @Override
-                    protected WritableMap getEventData() {
-                      return event;
-                    }
-                  });
+                @Override
+                protected WritableMap getEventData() {
+                  return event;
+                }
+              });
         }
       } else {
         ReactSoftExceptionLogger.logSoftException(
