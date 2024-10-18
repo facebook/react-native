@@ -224,6 +224,9 @@ class Modal extends React.Component<Props, State> {
   }
 
   componentWillUnmount() {
+    if (Platform.OS === 'ios') {
+      this.setState({isRendered: false});
+    }
     if (this._eventSubscription) {
       this._eventSubscription.remove();
     }
