@@ -11,22 +11,22 @@
 'use strict';
 
 import type {
-  NativeModuleArrayTypeAnnotation,
-  NativeModuleBaseTypeAnnotation,
   BooleanTypeAnnotation,
   DoubleTypeAnnotation,
-  NativeModuleEnumDeclaration,
   FloatTypeAnnotation,
-  NativeModuleGenericObjectTypeAnnotation,
   Int32TypeAnnotation,
+  NativeModuleArrayTypeAnnotation,
+  NativeModuleBaseTypeAnnotation,
+  NativeModuleEnumDeclaration,
+  NativeModuleGenericObjectTypeAnnotation,
   NativeModuleNumberTypeAnnotation,
   NativeModuleObjectTypeAnnotation,
-  StringTypeAnnotation,
-  StringLiteralTypeAnnotation,
-  StringLiteralUnionTypeAnnotation,
   NativeModuleTypeAliasTypeAnnotation,
   Nullable,
   ReservedTypeAnnotation,
+  StringLiteralTypeAnnotation,
+  StringLiteralUnionTypeAnnotation,
+  StringTypeAnnotation,
 } from '../../../CodegenSchema';
 import type {AliasResolver} from '../Utils';
 

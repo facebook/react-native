@@ -10,8 +10,8 @@
 
 'use strict';
 
-import RNTesterText from '../../components/RNTesterText';
 import RNTesterButton from '../../components/RNTesterButton';
+import RNTesterText from '../../components/RNTesterText';
 import React from 'react';
 import {Alert, Platform, ToastAndroid, View} from 'react-native';
 

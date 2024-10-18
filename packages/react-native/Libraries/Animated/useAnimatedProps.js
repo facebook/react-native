@@ -8,14 +8,15 @@
  * @format
  */
 
-import type {AnimatedPropsAllowlist} from './nodes/AnimatedProps';
 import type {EventSubscription} from '../EventEmitter/NativeEventEmitter';
+import type {AnimatedPropsAllowlist} from './nodes/AnimatedProps';
 
+import NativeAnimatedHelper from '../../src/private/animated/NativeAnimatedHelper';
+import {useAnimatedPropsMemo} from '../../src/private/animated/useAnimatedPropsMemo';
 import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNativeFeatureFlags';
 import {isPublicInstance as isFabricPublicInstance} from '../ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstanceUtils';
 import useRefEffect from '../Utilities/useRefEffect';
 import {AnimatedEvent} from './AnimatedEvent';
-import NativeAnimatedHelper from '../../src/private/animated/NativeAnimatedHelper';
 import AnimatedNode from './nodes/AnimatedNode';
 import AnimatedProps from './nodes/AnimatedProps';
 import AnimatedValue from './nodes/AnimatedValue';
@@ -28,7 +29,6 @@ import {
   useReducer,
   useRef,
 } from 'react';
-import {useAnimatedPropsMemo} from '../../src/private/animated/useAnimatedPropsMemo';
 
 type ReducedProps<TProps> = {
   ...TProps,

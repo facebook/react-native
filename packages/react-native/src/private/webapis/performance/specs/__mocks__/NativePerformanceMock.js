@@ -11,15 +11,14 @@
 import type {
   NativeBatchedObserverCallback,
   NativeMemoryInfo,
-  RawPerformanceEntry,
-  ReactNativeStartupTiming,
-  PerformanceObserverInit,
-  OpaqueNativeObserverHandle,
-  RawPerformanceEntryType,
   NativePerformanceMarkResult,
   NativePerformanceMeasureResult,
+  OpaqueNativeObserverHandle,
+  PerformanceObserverInit,
+  RawPerformanceEntry,
+  RawPerformanceEntryType,
+  ReactNativeStartupTiming,
 } from '../NativePerformance';
-
 import typeof NativePerformance from '../NativePerformance';
 
 import {RawPerformanceEntryTypeValues} from '../../RawPerformanceEntry';

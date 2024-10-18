@@ -11,7 +11,6 @@
 'use strict';
 
 import RNTesterText from '../../components/RNTesterText';
-
 import React from 'react';
 import {Pressable, StyleSheet, ToastAndroid} from 'react-native';
 

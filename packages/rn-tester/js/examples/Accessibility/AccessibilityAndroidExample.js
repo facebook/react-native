@@ -13,8 +13,8 @@
 import RNTesterBlock from '../../components/RNTesterBlock';
 import RNTesterPage from '../../components/RNTesterPage';
 import RNTesterText from '../../components/RNTesterText';
-import {Alert, StyleSheet, TouchableWithoutFeedback, View} from 'react-native';
 import React from 'react';
+import {Alert, StyleSheet, TouchableWithoutFeedback, View} from 'react-native';
 
 const importantForAccessibilityValues = [
   'auto',

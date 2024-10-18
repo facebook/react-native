@@ -13,10 +13,10 @@
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import type {Props as ModalProps} from 'react-native/Libraries/Modal/Modal';
 
-import RNTOption from '../../components/RNTOption';
 import RNTesterButton from '../../components/RNTesterButton';
 import RNTesterText from '../../components/RNTesterText';
 import {RNTesterThemeContext} from '../../components/RNTesterTheme';
+import RNTOption from '../../components/RNTOption';
 import * as React from 'react';
 import {useCallback, useContext, useState} from 'react';
 import {Modal, Platform, StyleSheet, Switch, Text, View} from 'react-native';
