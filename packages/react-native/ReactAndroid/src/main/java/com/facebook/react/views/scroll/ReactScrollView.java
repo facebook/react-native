@@ -432,6 +432,10 @@ public class ReactScrollView extends ScrollView
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     }
+
+    if (mMaintainVisibleContentPositionHelper != null) {
+      mMaintainVisibleContentPositionHelper.onScroll();
+    }
   }
 
   @Override
@@ -1236,7 +1240,7 @@ public class ReactScrollView extends ScrollView
     }
 
     if (mMaintainVisibleContentPositionHelper != null) {
-      mMaintainVisibleContentPositionHelper.updateScrollPosition();
+      mMaintainVisibleContentPositionHelper.onLayout();
     }
 
     if (isShown() && isContentReady()) {
