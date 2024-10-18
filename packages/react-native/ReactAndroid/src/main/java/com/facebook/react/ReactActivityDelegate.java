@@ -76,8 +76,8 @@ public class ReactActivityDelegate {
   }
 
   /**
-   * Get the {@link ReactNativeHost} used by this app. By default, assumes {@link
-   * Activity#getApplication()} is an instance of {@link ReactApplication} and calls {@link
+   * Get the {@link ReactNativeHost} used by this app with Bridge enabled. By default, assumes
+   * {@link Activity#getApplication()} is an instance of {@link ReactApplication} and calls {@link
    * ReactApplication#getReactNativeHost()}. Override this method if your application class does not
    * implement {@code ReactApplication} or you simply have a different mechanism for storing a
    * {@code ReactNativeHost}, e.g. as a static field somewhere.
@@ -86,6 +86,13 @@ public class ReactActivityDelegate {
     return ((ReactApplication) getPlainActivity().getApplication()).getReactNativeHost();
   }
 
+  /**
+   * Get the {@link ReactHost} used by this app with Bridgeless enabled. By default, assumes {@link
+   * Activity#getApplication()} is an instance of {@link ReactApplication} and calls {@link
+   * ReactApplication#getReactHost()}. Override this method if your application class does not
+   * implement {@code ReactApplication} or you simply have a different mechanism for storing a
+   * {@code ReactHost}, e.g. as a static field somewhere.
+   */
   public ReactHost getReactHost() {
     return ((ReactApplication) getPlainActivity().getApplication()).getReactHost();
   }
@@ -224,6 +231,10 @@ public class ReactActivityDelegate {
 
   protected Activity getPlainActivity() {
     return ((Activity) getContext());
+  }
+
+  protected ReactActivity getReactActivity() {
+    return ((ReactActivity) getContext());
   }
 
   /**
