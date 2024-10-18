@@ -72,35 +72,49 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
   [_backedTextInputView.textInputDelegate textInputDidEndEditing];
 }
 
-- (BOOL)textField:(__unused UITextField *)textField
-    shouldChangeCharactersInRange:(NSRange)range
-                replacementString:(NSString *)string
-{
-  NSString *newText = [_backedTextInputView.textInputDelegate textInputShouldChangeText:string inRange:range];
+- (BOOL)textField:(__unused UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
+    // Step 1: Handle secureTextEntry to avoid text clearing
+    if (textField.isSecureTextEntry) {
+        // Setting the new text to avoid the text clearing issue
+        NSString *updatedString = [textField.text stringByReplacingCharactersInRange:range withString:string];
+        textField.text = updatedString;
 
-  if (newText == nil) {
+        // Step 2: Set the cursor at the right place
+        NSRange selectedRange = NSMakeRange(range.location + string.length, 0);
+        UITextPosition* from = [textField positionFromPosition:textField.beginningOfDocument offset:selectedRange.location];
+        UITextPosition* to = [textField positionFromPosition:from offset:selectedRange.length];
+        textField.selectedTextRange = [textField textRangeFromPosition:from toPosition:to];
+
+        // Step 3: Send an action to notify of the change
+        [textField sendActionsForControlEvents:UIControlEventEditingChanged];
+
+        return NO;
+    }
+
+    // Step 4: Handle regular text entry to support swipe gestures
+    NSString *newText = [_backedTextInputView.textInputDelegate textInputShouldChangeText:string inRange:range];
+    if (newText == nil) {
+        return NO;
+    }
+
+    if ([newText isEqualToString:string]) {
+        _textDidChangeIsComing = YES;
+        return YES;
+    }
+
+    NSMutableAttributedString *attributedString = [_backedTextInputView.attributedText mutableCopy];
+    [attributedString replaceCharactersInRange:range withString:newText];
+    [_backedTextInputView setAttributedText:[attributedString copy]];
+
+    // Setting selection to the end of the replaced text.
+    UITextPosition *position = [_backedTextInputView positionFromPosition:_backedTextInputView.beginningOfDocument offset:(range.location + newText.length)];
+    [_backedTextInputView setSelectedTextRange:[_backedTextInputView textRangeFromPosition:position toPosition:position] notifyDelegate:YES];
+
+    [self textFieldDidChange];
+
     return NO;
-  }
-
-  if ([newText isEqualToString:string]) {
-    _textDidChangeIsComing = YES;
-    return YES;
-  }
-
-  NSMutableAttributedString *attributedString = [_backedTextInputView.attributedText mutableCopy];
-  [attributedString replaceCharactersInRange:range withString:newText];
-  [_backedTextInputView setAttributedText:[attributedString copy]];
-
-  // Setting selection to the end of the replaced text.
-  UITextPosition *position = [_backedTextInputView positionFromPosition:_backedTextInputView.beginningOfDocument
-                                                                 offset:(range.location + newText.length)];
-  [_backedTextInputView setSelectedTextRange:[_backedTextInputView textRangeFromPosition:position toPosition:position]
-                              notifyDelegate:YES];
-
-  [self textFieldDidChange];
-
-  return NO;
 }
+
 
 - (BOOL)textFieldShouldReturn:(__unused UITextField *)textField
 {
