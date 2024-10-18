@@ -33,6 +33,9 @@ class JCxxInspectorPackagerConnection
   void connect();
   void closeQuietly();
   void sendEventToAllConnections(const std::string& event);
+  void sendWrappedEventToPackager(
+      const std::string& event,
+      const std::string& pageId);
 
  private:
   friend HybridBase;

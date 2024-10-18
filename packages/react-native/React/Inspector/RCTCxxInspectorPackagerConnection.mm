@@ -49,6 +49,11 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
   _cxxImpl->sendEventToAllConnections(event.UTF8String);
 }
 
+- (void)sendWrappedEventToPackager:(NSString *)event pageId:(NSString *)pageId
+{
+  _cxxImpl->sendWrappedEventToPackager(event.UTF8String, pageId.UTF8String);
+}
+
 - (bool)isConnected
 {
   return _cxxImpl->isConnected();

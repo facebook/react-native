@@ -69,6 +69,25 @@ void InspectorPackagerConnection::Impl::sendEventToAllConnections(
   }
 }
 
+void InspectorPackagerConnection::Impl::sendWrappedEventToPackager(
+    const std::string& event,
+    const std::string& pageId) {
+  delegate_->scheduleCallback(
+      [weakSelf = weak_from_this(),
+       event = std::move(event),
+       pageId = std::move(pageId)]() {
+        auto strongSelf = weakSelf.lock();
+        if (!strongSelf) {
+          return;
+        }
+        strongSelf->sendToPackager(folly::dynamic::object(
+            "event", "wrappedEvent")(
+            "payload",
+            folly::dynamic::object("pageId", pageId)("wrappedEvent", event)));
+      },
+      0ms);
+}
+
 void InspectorPackagerConnection::Impl::closeAllConnections() {
   for (auto& connection : inspectorSessions_) {
     connection.second.localConnection->disconnect();
@@ -359,6 +378,12 @@ void InspectorPackagerConnection::closeQuietly() {
 
 void InspectorPackagerConnection::sendEventToAllConnections(std::string event) {
   impl_->sendEventToAllConnections(event);
+}
+
+void InspectorPackagerConnection::sendWrappedEventToPackager(
+    const std::string& event,
+    const std::string& pageId) {
+  impl_->sendWrappedEventToPackager(event, pageId);
 }
 
 } // namespace facebook::react::jsinspector_modern

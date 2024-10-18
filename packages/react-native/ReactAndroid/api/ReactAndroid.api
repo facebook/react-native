@@ -2251,6 +2251,13 @@ public abstract interface class com/facebook/react/devsupport/HMRClient : com/fa
 	public abstract fun setup (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IZ)V
 }
 
+public abstract interface class com/facebook/react/devsupport/IInspectorPackagerConnection {
+  public abstract fun connect ()V
+  public abstract fun closeQuietly ()V
+  public abstract fun sendEventToAllConnections (Ljava/lang/String;)V
+  public abstract fun sendWrappedEventToPackager (Ljava/lang/String;Ljava/lang/String;)V
+}
+
 public final class com/facebook/react/devsupport/InspectorFlags {
 	public static final field INSTANCE Lcom/facebook/react/devsupport/InspectorFlags;
 	public static final fun getFuseboxEnabled ()Z
