@@ -9,6 +9,7 @@
 
 'use strict';
 
+import RNTesterText from '../../components/RNTesterText';
 import React from 'react';
 import {
   RefreshControl,
@@ -17,7 +18,6 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
-import RNTesterText from '../../components/RNTesterText';
 
 const styles = StyleSheet.create({
   row: {

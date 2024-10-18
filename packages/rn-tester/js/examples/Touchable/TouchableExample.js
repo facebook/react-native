@@ -8,9 +8,9 @@
  * @flow
  */
 
-import {useEffect, useRef, useState} from 'react';
-
+import RNTesterText from '../../components/RNTesterText';
 import React from 'react';
+import {useEffect, useRef, useState} from 'react';
 import {
   Animated,
   Image,
@@ -22,7 +22,6 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
-import RNTesterText from '../../components/RNTesterText';
 
 const forceTouchAvailable =
   (Platform.OS === 'ios' && Platform.constants.forceTouchAvailable) || false;

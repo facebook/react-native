@@ -12,8 +12,8 @@
 
 import type {
   DOMHighResTimeStamp,
-  PerformanceEntryType,
   PerformanceEntryList,
+  PerformanceEntryType,
 } from './PerformanceEntry';
 import type {DetailType, PerformanceMarkOptions} from './UserTiming';
 

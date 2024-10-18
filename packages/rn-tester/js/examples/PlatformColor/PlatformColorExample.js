@@ -8,11 +8,10 @@
  * @flow
  */
 
-import Platform from 'react-native/Libraries/Utilities/Platform';
-
+import RNTesterText from '../../components/RNTesterText';
 import React from 'react';
 import {DynamicColorIOS, PlatformColor, StyleSheet, View} from 'react-native';
-import RNTesterText from '../../components/RNTesterText';
+import Platform from 'react-native/Libraries/Utilities/Platform';
 
 function PlatformColorsExample() {
   function createTable() {

@@ -10,9 +10,9 @@
 
 'use strict';
 
+import RNTesterText from '../../components/RNTesterText';
 import * as React from 'react';
 import {View} from 'react-native';
-import RNTesterText from '../../components/RNTesterText';
 
 export const title = 'Invalid Props';
 export const category = 'Other';

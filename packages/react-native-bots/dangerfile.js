@@ -9,10 +9,10 @@
 
 'use strict';
 
-const {danger, fail, /*message,*/ warn} = require('danger');
-const includes = require('lodash.includes');
 const {validate: validateChangelog} =
   require('@rnx-kit/rn-changelog-generator').default;
+const {danger, fail, /*message,*/ warn} = require('danger');
+const includes = require('lodash.includes');
 
 const isFromPhabricator =
   danger.github.pr.body &&
