@@ -30,6 +30,7 @@ module.exports = {
         // These rules are not required with hermes-eslint
         'ft-flow/define-flow-type': 0,
         'ft-flow/use-flow-type': 0,
+        'lint/sort-imports': 1,
         // flow handles this check for us, so it's not required
         'no-undef': 0,
       },
