@@ -373,7 +373,7 @@ describe('inspector proxy HTTP API', () => {
   });
 
   describe('/open-debugger endpoint', () => {
-    it('opens requested device using appId, device, and target', async () => {
+    test('opens requested device using device and target query params', async () => {
       // Connect a device to use when opening the debugger
       const device = await createDeviceMock(
         `${serverRef.serverBaseWsUrl}/inspector/device?device=device1&name=foo&app=bar`,
@@ -409,7 +409,6 @@ describe('inspector proxy HTTP API', () => {
 
         // Build the URL for the debugger
         const openUrl = new URL('/open-debugger', serverRef.serverBaseUrl);
-        openUrl.searchParams.set('appId', firstPage.description);
         openUrl.searchParams.set(
           'device',
           firstPage.reactNative.logicalDeviceId,
