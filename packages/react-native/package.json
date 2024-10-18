@@ -100,7 +100,7 @@
   },
   "peerDependencies": {
     "@types/react": "^18.2.6",
-    "react": "^19.0.0-rc-fb9a90fa48-20240614"
+    "react": "^18.2.0 || ^19.0.0-rc-fb9a90fa48-20240614"
   },
   "peerDependenciesMeta": {
     "@types/react": {
