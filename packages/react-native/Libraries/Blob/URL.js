@@ -54,96 +54,104 @@ if (
 
 export {URLSearchParams} from './URLSearchParams';
 
-function validateBaseUrl(url: string) {
-  // from this MIT-licensed gist: https://gist.github.com/dperini/729294
-  return /^(?:(?:(?:https?|ftp):)?\/\/)(?:(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z0-9\u00a1-\uffff][a-z0-9\u00a1-\uffff_-]{0,62})?[a-z0-9\u00a1-\uffff]\.)*(?:[a-z\u00a1-\uffff]{2,}\.?))(?::\d{2,5})?(?:[/?#]\S*)?$/.test(
-    url,
-  );
+function resolveRelativeUrl(relative: string, base: string): string {
+  const baseUrl = new URL(base);
+
+  if (relative.startsWith('http://') || relative.startsWith('https://')) {
+    return relative;
+  }
+
+  if (relative.startsWith('/')) {
+    return baseUrl.protocol + '//' + baseUrl.host + encodeURI(relative);
+  }
+
+  const baseParts = baseUrl.pathname.split('/');
+  const relativeParts = relative.split('/');
+
+  baseParts.pop();
+
+  for (const part of relativeParts) {
+    if (part === '.') continue;
+    if (part === '..') baseParts.pop();
+    else baseParts.push(part);
+  }
+
+  return baseUrl.protocol + '//' + baseUrl.host + baseParts.join('/');
 }
 
 export class URL {
+  protocol: string;
+  username: string;
+  password: string;
+  host: string;
+  hostname: string;
+  port: string;
+  pathname: string;
+  search: string;
+  hash: string;
+  origin: string;
   _url: string;
   _searchParamsInstance: ?URLSearchParams = null;
 
-  static createObjectURL(blob: Blob): string {
-    if (BLOB_URL_PREFIX === null) {
-      throw new Error('Cannot create URL for blob!');
-    }
-    return `${BLOB_URL_PREFIX}${blob.data.blobId}?offset=${blob.data.offset}&size=${blob.size}`;
-  }
-
-  static revokeObjectURL(url: string) {
-    // Do nothing.
-  }
-
-  // $FlowFixMe[missing-local-annot]
-  constructor(url: string, base: string | URL) {
-    let baseUrl = null;
-    if (!base || validateBaseUrl(url)) {
-      this._url = url;
-      if (!this._url.endsWith('/')) {
-        this._url += '/';
-      }
-    } else {
+  constructor(url: string, base?: string | URL) {
+    if (base) {
       if (typeof base === 'string') {
-        baseUrl = base;
-        if (!validateBaseUrl(baseUrl)) {
-          throw new TypeError(`Invalid base URL: ${baseUrl}`);
-        }
-      } else {
-        baseUrl = base.toString();
+        base = new URL(base);
       }
-      if (baseUrl.endsWith('/')) {
-        baseUrl = baseUrl.slice(0, baseUrl.length - 1);
-      }
-      if (!url.startsWith('/')) {
-        url = `/${url}`;
-      }
-      if (baseUrl.endsWith(url)) {
-        url = '';
-      }
-      this._url = `${baseUrl}${url}`;
+      url = resolveRelativeUrl(url, base.href);
+    } else {
+      url = encodeURI(url);
     }
+
+    const parser = this.parseURL(url);
+    this._url = url;
+    this.protocol = parser.protocol;
+    this.username = parser.username;
+    this.password = parser.password;
+    this.host = parser.host;
+    this.hostname = parser.hostname;
+    this.port = parser.port;
+    this.pathname = parser.pathname;
+    this.search = parser.search;
+    this.hash = parser.hash;
+    this.origin = parser.origin;
+
+    if (this.pathname === '/' && !this.href.endsWith('/')) {
+      this._url += '/';
+    }
+
+    this._searchParamsInstance = new URLSearchParams(this.search);
   }
 
-  get hash(): string {
-    throw new Error('URL.hash is not implemented');
-  }
+  parseURL(url: string): {
+    protocol: string,
+    username: string,
+    password: string,
+    host: string,
+    hostname: string,
+    port: string,
+    pathname: string,
+    search: string,
+    hash: string,
+    origin: string,
+  } {
+    const urlPattern =
+      /^(https?:\/\/)?(([^:\/?#]*)(?::([^:\/?#]*))?@)?([^:\/?#]*)(?::(\d+))?((?:\/[^?#]*)*)(\?[^#]*)?(#.*)?$/;
 
-  get host(): string {
-    throw new Error('URL.host is not implemented');
-  }
+    const matches = url.match(urlPattern);
 
-  get hostname(): string {
-    throw new Error('URL.hostname is not implemented');
-  }
-
-  get href(): string {
-    return this.toString();
-  }
-
-  get origin(): string {
-    throw new Error('URL.origin is not implemented');
-  }
-
-  get password(): string {
-    throw new Error('URL.password is not implemented');
-  }
-
-  get pathname(): string {
-    throw new Error('URL.pathname not implemented');
-  }
-
-  get port(): string {
-    throw new Error('URL.port is not implemented');
-  }
-
-  get protocol(): string {
-    throw new Error('URL.protocol is not implemented');
-  }
-
-  get search(): string {
-    throw new Error('URL.search is not implemented');
+    return {
+      protocol: matches?.[1] ? matches[1].slice(0, -2) : '',
+      username: matches?.[3] || '',
+      password: matches?.[4] || '',
+      host: matches?.[6] ? matches[5] + ':' + matches[6] : matches?.[5] || '',
+      hostname: matches?.[5] || '',
+      port: matches?.[6] || '',
+      pathname: matches?.[7] || '/',
+      search: matches?.[8] || '',
+      hash: matches?.[9] || '',
+      origin: matches?.[1] ? matches[1] + matches[5] : '',
+    };
   }
 
   get searchParams(): URLSearchParams {
@@ -153,7 +161,7 @@ export class URL {
     return this._searchParamsInstance;
   }
 
-  toJSON(): string {
+  get href(): string {
     return this.toString();
   }
 
@@ -161,13 +169,12 @@ export class URL {
     if (this._searchParamsInstance === null) {
       return this._url;
     }
-    // $FlowFixMe[incompatible-use]
     const instanceString = this._searchParamsInstance.toString();
     const separator = this._url.indexOf('?') > -1 ? '&' : '?';
     return this._url + separator + instanceString;
   }
 
-  get username(): string {
-    throw new Error('URL.username is not implemented');
+  toJSON(): string {
+    return this.toString();
   }
 }
