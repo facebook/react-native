@@ -10,7 +10,6 @@ package com.facebook.react.views.text;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
-import android.graphics.text.LineBreaker;
 import android.os.Build;
 import android.text.Layout;
 import android.text.Spannable;
