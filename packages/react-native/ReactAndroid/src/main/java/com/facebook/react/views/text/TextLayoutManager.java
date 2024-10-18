@@ -146,6 +146,29 @@ public class TextLayoutManager {
         == LayoutDirection.RTL;
   }
 
+  private static int getTextJustificationMode(MapBuffer attributedString) {
+    int justificationMode = (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) ? 0 : Layout.JUSTIFICATION_MODE_NONE;
+    if (!attributedString.contains(AS_KEY_FRAGMENTS)) {
+      return justificationMode;
+    }
+
+    MapBuffer fragments = attributedString.getMapBuffer(AS_KEY_FRAGMENTS);
+    if (fragments.getCount() != 0) {
+      MapBuffer fragment = fragments.getMapBuffer(0);
+      MapBuffer textAttributes = fragment.getMapBuffer(FR_KEY_TEXT_ATTRIBUTES);
+
+      if (textAttributes.contains(TextAttributeProps.TA_KEY_ALIGNMENT)) {
+        String alignmentAttr = textAttributes.getString(TextAttributeProps.TA_KEY_ALIGNMENT);
+
+        if (alignmentAttr.equals("justified")) {
+          justificationMode = (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) ? 1 : Layout.JUSTIFICATION_MODE_INTER_WORD;
+        }
+      }
+    }
+
+    return justificationMode;
+  }
+
   private static Layout.Alignment getTextAlignment(MapBuffer attributedString, Spannable spanned) {
     // TODO: Don't read AS_KEY_FRAGMENTS, which may be expensive, and is not present when using
     // cached Spannable
@@ -363,6 +386,7 @@ public class TextLayoutManager {
       int textBreakStrategy,
       int hyphenationFrequency,
       Layout.Alignment alignment,
+      int justificationMode,
       TextPaint paint) {
     Layout layout;
 
@@ -419,6 +443,10 @@ public class TextLayoutManager {
               .setHyphenationFrequency(hyphenationFrequency)
               .setTextDirection(
                   isScriptRTL ? TextDirectionHeuristics.RTL : TextDirectionHeuristics.LTR);
+
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        builder.setJustificationMode(justificationMode);
+      }
 
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
         builder.setUseLineSpacingFromFallbacks(true);
@@ -507,6 +535,7 @@ public class TextLayoutManager {
             : ReactConstants.UNSET;
 
     Layout.Alignment alignment = getTextAlignment(attributedString, text);
+    int justificationMode = getTextJustificationMode(attributedString);
 
     if (adjustFontSizeToFit) {
       double minimumFontSize =
@@ -526,6 +555,7 @@ public class TextLayoutManager {
           textBreakStrategy,
           hyphenationFrequency,
           alignment,
+          justificationMode,
           paint);
     }
 
@@ -538,6 +568,7 @@ public class TextLayoutManager {
         textBreakStrategy,
         hyphenationFrequency,
         alignment,
+        justificationMode,
         paint);
   }
 
@@ -553,6 +584,7 @@ public class TextLayoutManager {
       int textBreakStrategy,
       int hyphenationFrequency,
       Layout.Alignment alignment,
+      int justificationMode,
       TextPaint paint) {
     BoringLayout.Metrics boring = BoringLayout.isBoring(text, paint);
     Layout layout =
@@ -565,6 +597,7 @@ public class TextLayoutManager {
             textBreakStrategy,
             hyphenationFrequency,
             alignment,
+            justificationMode,
             paint);
 
     // Minimum font size is 4pts to match the iOS implementation.
@@ -613,6 +646,7 @@ public class TextLayoutManager {
               textBreakStrategy,
               hyphenationFrequency,
               alignment,
+              justificationMode,
               paint);
     }
   }
