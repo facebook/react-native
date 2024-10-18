@@ -38,6 +38,10 @@ extends:
       image: windows-latest
       os: windows
     sdl:
+      componentgovernance:
+        ignoreDirectories: $(Build.SourcesDirectory)/packages/helloworld
+      credscan:
+        suppressionsFile: .ado/CredScanSuppressions.json
       eslint:
         configuration: 'recommended'
         parser: '@typescript-eslint/parser'
@@ -45,8 +49,6 @@ extends:
         enableExclusions: true
         # Justification: js files in this repo are flow files. the built-in eslint does not support this. Adding a separate step to run the sdl rules for flow files.
         exclusionPatterns: '**/*.js'
-      credscan:
-          suppressionsFile: .ado/CredScanSuppressions.json
     stages:
       - stage: main
         jobs:
