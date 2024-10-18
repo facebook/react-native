@@ -26,6 +26,8 @@ inline static UIViewContentMode RCTContentModeFromImageResizeMode(facebook::reac
       // Repeat resize mode is handled by the UIImage. Use scale to fill
       // so the repeated image fills the UIImageView.
       return UIViewContentModeScaleToFill;
+    case facebook::react::ImageResizeMode::None:
+      return UIViewContentModeTopLeft;
   }
 }
 
@@ -42,6 +44,8 @@ inline std::string toString(const facebook::react::ImageResizeMode &value)
       return "center";
     case facebook::react::ImageResizeMode::Repeat:
       return "repeat";
+    case facebook::react::ImageResizeMode::None:
+      return "none";
   }
 }
 

@@ -33,4 +33,7 @@ export type ImageResizeMode =
 
   // Resize by stretching it to fill the entire frame of the view without
   // clipping. This may change the aspect ratio of the image, distorting it.
-  | 'stretch';
+  | 'stretch'
+
+  // The image will not be resized at all.
+  | 'none';

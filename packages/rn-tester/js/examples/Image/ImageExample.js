@@ -765,6 +765,9 @@ const styles = StyleSheet.create({
   objectFitScaleDown: {
     objectFit: 'scale-down',
   },
+  objectFitNone: {
+    objectFit: 'none',
+  },
   imageInBundle: {
     borderColor: 'yellow',
     borderWidth: 4,
@@ -1390,6 +1393,17 @@ exports.examples = [
                     />
                   </View>
                 </View>
+                <View style={styles.horizontal}>
+                  <View>
+                    <RNTesterText style={styles.resizeModeText}>
+                      None
+                    </RNTesterText>
+                    <Image
+                      style={[styles.resizeMode, styles.objectFitNone]}
+                      source={image}
+                    />
+                  </View>
+                </View>
               </View>
             );
           })}
@@ -1457,6 +1471,18 @@ exports.examples = [
                     <Image
                       style={styles.resizeMode}
                       resizeMode="center"
+                      source={image}
+                    />
+                  </View>
+                </View>
+                <View style={styles.horizontal}>
+                  <View>
+                    <RNTesterText style={styles.resizeModeText}>
+                      None
+                    </RNTesterText>
+                    <Image
+                      style={styles.resizeMode}
+                      resizeMode="none"
                       source={image}
                     />
                   </View>

@@ -8,13 +8,20 @@
  * @format
  */
 
-type ResizeMode = 'cover' | 'contain' | 'stretch' | 'repeat' | 'center';
+type ResizeMode =
+  | 'cover'
+  | 'contain'
+  | 'stretch'
+  | 'repeat'
+  | 'center'
+  | 'none';
 
 const objectFitMap: {[string]: ResizeMode} = {
   contain: 'contain',
   cover: 'cover',
   fill: 'stretch',
   'scale-down': 'contain',
+  none: 'none',
 };
 
 export function convertObjectFitToResizeMode(objectFit: ?string): ?ResizeMode {
