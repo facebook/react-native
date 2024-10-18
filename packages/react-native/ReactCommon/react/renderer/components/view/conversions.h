@@ -94,6 +94,10 @@ inline std::optional<Float> optionalFloatFromYogaValue(
     std::optional<Float> base = {}) {
   switch (length.unit()) {
     case yoga::Unit::Undefined:
+    case yoga::Unit::Auto:
+    case yoga::Unit::MaxContent:
+    case yoga::Unit::Stretch:
+    case yoga::Unit::FitContent:
       return {};
     case yoga::Unit::Point:
       return floatFromYogaOptionalFloat(length.value());
@@ -102,8 +106,6 @@ inline std::optional<Float> optionalFloatFromYogaValue(
           ? std::optional<Float>(
                 base.value() * floatFromYogaOptionalFloat(length.value()))
           : std::optional<Float>();
-    case yoga::Unit::Auto:
-      return {};
   }
 }
 
@@ -430,6 +432,47 @@ inline void fromRawValue(
     return;
   }
   LOG(ERROR) << "Could not parse yoga::Display: " << stringValue;
+}
+
+inline void fromRawValue(
+    const PropsParserContext& /*context*/,
+    const RawValue& value,
+    yoga::Style::SizeValue& result) {
+  if (value.hasType<Float>()) {
+    result = yoga::StyleSizeValue::points((float)value);
+    return;
+  } else if (value.hasType<std::string>()) {
+    const auto stringValue = (std::string)value;
+    if (stringValue == "auto") {
+      result = yoga::StyleSizeValue::ofAuto();
+      return;
+    } else if (stringValue == "maxContent") {
+      result = yoga::StyleSizeValue::ofMaxContent();
+      return;
+    } else if (stringValue == "stretch") {
+      result = yoga::StyleSizeValue::ofStretch();
+      return;
+    } else if (stringValue == "fitContent") {
+      result = yoga::StyleSizeValue::ofFitContent();
+      return;
+    } else {
+      if (stringValue.back() == '%') {
+        auto tryValue = folly::tryTo<float>(
+            std::string_view(stringValue).substr(0, stringValue.length() - 1));
+        if (tryValue.hasValue()) {
+          result = yoga::StyleSizeValue::percent(tryValue.value());
+          return;
+        }
+      } else {
+        auto tryValue = folly::tryTo<float>(stringValue);
+        if (tryValue.hasValue()) {
+          result = yoga::StyleSizeValue::points(tryValue.value());
+          return;
+        }
+      }
+    }
+  }
+  result = yoga::StyleSizeValue::undefined();
 }
 
 inline void fromRawValue(
@@ -1365,6 +1408,31 @@ inline std::string toString(const yoga::Style::Length& length) {
       return std::to_string(length.value().unwrap()) + "%";
     case yoga::Unit::Auto:
       return "auto";
+    case yoga::Unit::FitContent:
+      return "fitContent";
+    case yoga::Unit::MaxContent:
+      return "maxContent";
+    case yoga::Unit::Stretch:
+      return "stretch";
+  }
+}
+
+inline std::string toString(const yoga::Style::SizeValue& length) {
+  switch (length.unit()) {
+    case yoga::Unit::Undefined:
+      return "undefined";
+    case yoga::Unit::Point:
+      return std::to_string(length.value().unwrap());
+    case yoga::Unit::Percent:
+      return std::to_string(length.value().unwrap()) + "%";
+    case yoga::Unit::Auto:
+      return "auto";
+    case yoga::Unit::FitContent:
+      return "fitContent";
+    case yoga::Unit::MaxContent:
+      return "maxContent";
+    case yoga::Unit::Stretch:
+      return "stretch";
   }
 }
 
