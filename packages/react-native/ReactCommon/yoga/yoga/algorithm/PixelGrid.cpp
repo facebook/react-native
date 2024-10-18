@@ -124,7 +124,7 @@ void roundLayoutResultsToPixelGrid(
         Dimension::Height);
   }
 
-  for (yoga::Node* child : node->getChildren()) {
+  for (yoga::Node* child : node->getLayoutChildren()) {
     roundLayoutResultsToPixelGrid(child, absoluteNodeLeft, absoluteNodeTop);
   }
 }
