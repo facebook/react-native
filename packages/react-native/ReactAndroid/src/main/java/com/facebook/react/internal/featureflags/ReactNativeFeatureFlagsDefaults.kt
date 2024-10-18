@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<246695bd5949b60404bf5fa9d1c6a9da>>
+ * @generated SignedSource<<1ce9496b005924d8a421899ce55f6d81>>
  */
 
 /**
@@ -60,6 +60,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enableLayoutAnimationsOnIOS(): Boolean = true
 
   override fun enableLongTaskAPI(): Boolean = false
+
+  override fun enableNewBackgroundAndBorderDrawables(): Boolean = false
 
   override fun enablePreciseSchedulingForPremountItemsOnAndroid(): Boolean = false
 
