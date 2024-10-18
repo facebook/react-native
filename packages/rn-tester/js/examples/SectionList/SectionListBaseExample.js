@@ -71,7 +71,7 @@ type Props = $ReadOnly<{
   onTest?: ?() => void,
   testLabel?: ?string,
   testOutput?: ?string,
-  renderSectionFooter?: ?boolean,
+  sectionHeaderInverted?: ?boolean,
   children?: ?React.Node,
 }>;
 
@@ -79,6 +79,7 @@ const SectionListBaseExample: component(
   ref: React.RefSetter<SectionList<SectionBase<mixed>>>,
   ...props: Props
 ) = React.forwardRef((props: Props, ref): React.Node => {
+  const sectionHeaderInverted = sectionHeaderInverted ?? false;
   return (
     <View style={styles.container}>
       {props.testOutput != null ? (
@@ -107,12 +108,12 @@ const SectionListBaseExample: component(
         renderItem={Item}
         /* $FlowFixMe[prop-missing] Error revealed after improved builtin React
          * utility types */
-        renderSectionHeader={!(renderSectionFooter ?? false) ? ({section: {title}}) => (
+        renderSectionHeader={!sectionHeaderInverted ? ({section: {title}}) => (
           <Text style={styles.header}>{title}</Text>
         ) : undefined}
         /* $FlowFixMe[prop-missing] Error revealed after improved builtin React
          * utility types */
-        renderSectionFooter={(renderSectionFooter ?? false) ? ({section: {title}}) => (
+        renderSectionFooter={sectionHeaderInverted ? ({section: {title}}) => (
           <Text style={styles.header}>{title}</Text>
         ) : undefined}
         {...props.exampleProps}
