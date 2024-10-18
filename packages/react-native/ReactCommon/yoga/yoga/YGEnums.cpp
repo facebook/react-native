@@ -105,8 +105,8 @@ const char* YGErrataToString(const YGErrata value) {
       return "none";
     case YGErrataStretchFlexBasis:
       return "stretch-flex-basis";
-    case YGErrataAbsolutePositioningIncorrect:
-      return "absolute-positioning-incorrect";
+    case YGErrataAbsolutePositionWithoutInsetsExcludesPadding:
+      return "absolute-position-without-insets-excludes-padding";
     case YGErrataAbsolutePercentAgainstInnerSize:
       return "absolute-percent-against-inner-size";
     case YGErrataAll:
