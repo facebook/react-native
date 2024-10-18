@@ -589,26 +589,28 @@ export default class Device {
         });
       }
 
-      const debuggerConnection = this.#debuggerConnection;
-      if (debuggerConnection != null) {
-        if (
-          debuggerConnection.customHandler?.handleDeviceMessage(
-            parsedPayload,
-          ) === true
-        ) {
-          return;
-        }
-
-        await this.#processMessageFromDeviceLegacy(
+      if (
+        this.#debuggerConnection?.customHandler?.handleDeviceMessage(
           parsedPayload,
-          debuggerConnection,
-          pageId,
-        );
-        const messageToSend = JSON.stringify(parsedPayload);
-        debuggerSocket.send(messageToSend);
-      } else {
-        debuggerSocket.send(message.payload.wrappedEvent);
+        ) === true
+      ) {
+        return;
       }
+
+      const sendOriginalMessage = () =>
+        debuggerSocket.send(message.payload.wrappedEvent);
+      if (this.#debuggerConnection == null) {
+        sendOriginalMessage();
+        return;
+      }
+
+      await this.#processMessageFromDeviceLegacy(
+        parsedPayload,
+        this.#debuggerConnection,
+        pageId,
+      );
+      const messageToSend = JSON.stringify(parsedPayload);
+      debuggerSocket.send(messageToSend);
     }
   }
 
