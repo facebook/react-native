@@ -13,6 +13,7 @@ import type {RNTesterModule} from '../../types/RNTesterTypes';
 import RNTesterText from '../../components/RNTesterText';
 import {RNTesterThemeContext} from '../../components/RNTesterTheme';
 import * as React from 'react';
+import {RNTesterThemeContext} from '../../components/RNTesterTheme';
 import {Alert, Pressable, StyleSheet, Text, View} from 'react-native';
 
 // Shows log on the screen
@@ -232,6 +233,8 @@ const PromptOptions = () => {
   const [promptValue, setPromptValue] = React.useState<
     string | {login: string, password: string},
   >('');
+
+  const theme = React.useContext(RNTesterThemeContext);
 
   const customButtons = [
     {

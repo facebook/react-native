@@ -13,6 +13,7 @@
 const {RNTesterThemeContext} = require('../../components/RNTesterTheme');
 const React = require('react');
 const {Alert, Text, View} = require('react-native');
+const {RNTesterThemeContext} = require('../../components/RNTesterTheme');
 
 type Props = $ReadOnly<{||}>;
 class AccessibilityIOSExample extends React.Component<Props> {
