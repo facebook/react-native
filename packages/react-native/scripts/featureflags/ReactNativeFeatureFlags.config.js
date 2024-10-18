@@ -224,6 +224,15 @@ const definitions: FeatureFlagDefinitions = {
       // We're preparing to clean up this feature flag.
       skipNativeAPI: true,
     },
+    enableNewBackgroundAndBorderDrawables: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2024-09-24',
+        description:
+          'Use BackgroundDrawable and BorderDrawable instead of CSSBackgroundDrawable',
+        purpose: 'experimentation',
+      },
+    },
     enablePreciseSchedulingForPremountItemsOnAndroid: {
       defaultValue: false,
       metadata: {

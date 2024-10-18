@@ -7,8 +7,13 @@
 
 package com.facebook.react.uimanager.drawable
 
+import android.content.Context
+import android.graphics.Outline
+import android.graphics.Path
+import android.graphics.RectF
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.LayerDrawable
+import android.os.Build
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.uimanager.style.BorderInsets
 import com.facebook.react.uimanager.style.BorderRadiusStyle
@@ -19,6 +24,7 @@ import com.facebook.react.uimanager.style.BorderRadiusStyle
  */
 @OptIn(UnstableReactNativeAPI::class)
 internal class CompositeBackgroundDrawable(
+    private val context: Context,
     /**
      * Any non-react-managed background already part of the view, like one set as Android style on a
      * TextInput
@@ -35,6 +41,12 @@ internal class CompositeBackgroundDrawable(
      *   ColorDrawable in the common cases
      */
     public val cssBackground: CSSBackgroundDrawable? = null,
+
+    /** Background rendering Layer */
+    public val background: BackgroundDrawable? = null,
+
+    /** Border rendering Layer */
+    public val border: BorderDrawable? = null,
 
     /** TouchableNativeFeeback set selection background, like "SelectableBackground" */
     public val feedbackUnderlay: Drawable? = null,
@@ -53,6 +65,8 @@ internal class CompositeBackgroundDrawable(
                 // https://drafts.csswg.org/css-backgrounds/#shadow-layers
                 *outerShadows.asReversed().toTypedArray(),
                 cssBackground,
+                background,
+                border,
                 feedbackUnderlay,
                 *innerShadows.asReversed().toTypedArray(),
                 outline)
@@ -74,9 +88,29 @@ internal class CompositeBackgroundDrawable(
       cssBackground: CSSBackgroundDrawable?
   ): CompositeBackgroundDrawable {
     return CompositeBackgroundDrawable(
+            context,
             originalBackground,
             outerShadows,
             cssBackground,
+            background,
+            border,
+            feedbackUnderlay,
+            innerShadows,
+            outline)
+        .also { composite ->
+          composite.borderInsets = this.borderInsets
+          composite.borderRadius = this.borderRadius
+        }
+  }
+
+  public fun withNewBackground(background: BackgroundDrawable?): CompositeBackgroundDrawable {
+    return CompositeBackgroundDrawable(
+            context,
+            originalBackground,
+            outerShadows,
+            cssBackground,
+            background,
+            border,
             feedbackUnderlay,
             innerShadows,
             outline)
@@ -91,9 +125,29 @@ internal class CompositeBackgroundDrawable(
       innerShadows: List<Drawable>
   ): CompositeBackgroundDrawable {
     return CompositeBackgroundDrawable(
+            context,
             originalBackground,
             outerShadows,
             cssBackground,
+            background,
+            border,
+            feedbackUnderlay,
+            innerShadows,
+            outline)
+        .also { composite ->
+          composite.borderInsets = this.borderInsets
+          composite.borderRadius = this.borderRadius
+        }
+  }
+
+  public fun withNewBorder(border: BorderDrawable): CompositeBackgroundDrawable {
+    return CompositeBackgroundDrawable(
+            context,
+            originalBackground,
+            outerShadows,
+            cssBackground,
+            background,
+            border,
             feedbackUnderlay,
             innerShadows,
             outline)
@@ -105,9 +159,12 @@ internal class CompositeBackgroundDrawable(
 
   public fun withNewOutline(outline: OutlineDrawable): CompositeBackgroundDrawable {
     return CompositeBackgroundDrawable(
+            context,
             originalBackground,
             outerShadows,
             cssBackground,
+            background,
+            border,
             feedbackUnderlay,
             innerShadows,
             outline)
@@ -119,10 +176,55 @@ internal class CompositeBackgroundDrawable(
 
   public fun withNewFeedbackUnderlay(newUnderlay: Drawable?): CompositeBackgroundDrawable {
     return CompositeBackgroundDrawable(
-            originalBackground, outerShadows, cssBackground, newUnderlay, innerShadows, outline)
-        .apply {
-          borderInsets = this@CompositeBackgroundDrawable.borderInsets
-          borderRadius = this@CompositeBackgroundDrawable.borderRadius
+            context,
+            originalBackground,
+            outerShadows,
+            cssBackground,
+            background,
+            border,
+            newUnderlay,
+            innerShadows,
+            outline)
+        .also { composite ->
+          composite.borderInsets = this.borderInsets
+          composite.borderRadius = this.borderRadius
         }
+  }
+
+  /* Android's elevation implementation requires this to be implemented to know where to draw the
+  elevation shadow. */
+  override fun getOutline(outline: Outline) {
+    if (borderRadius?.hasRoundedBorders() == true) {
+      val pathForOutline = Path()
+
+      val computedBorderRadius =
+          borderRadius?.resolve(
+              layoutDirection, context, bounds.width().toFloat(), bounds.height().toFloat())
+
+      val computedBorderInsets = borderInsets?.resolve(layoutDirection, context)
+
+      computedBorderRadius?.let {
+        pathForOutline.addRoundRect(
+            RectF(bounds),
+            floatArrayOf(
+                it.topLeft.horizontal + (computedBorderInsets?.left ?: 0f),
+                it.topLeft.vertical + (computedBorderInsets?.top ?: 0f),
+                it.topRight.horizontal + (computedBorderInsets?.right ?: 0f),
+                it.topRight.vertical + (computedBorderInsets?.top ?: 0f),
+                it.bottomRight.horizontal + (computedBorderInsets?.right ?: 0f),
+                it.bottomRight.vertical + (computedBorderInsets?.bottom ?: 0f),
+                it.bottomLeft.horizontal + (computedBorderInsets?.left ?: 0f),
+                it.bottomLeft.vertical) + (computedBorderInsets?.bottom ?: 0f),
+            Path.Direction.CW)
+      }
+
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        outline.setPath(pathForOutline)
+      } else {
+        @Suppress("DEPRECATION") outline.setConvexPath(pathForOutline)
+      }
+    } else {
+      outline.setRect(bounds)
+    }
   }
 }
