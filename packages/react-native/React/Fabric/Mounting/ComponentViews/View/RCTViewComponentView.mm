@@ -365,22 +365,18 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
 
   // `accessibilityShowsLargeContentViewer`
   if (oldViewProps.accessibilityShowsLargeContentViewer != newViewProps.accessibilityShowsLargeContentViewer) {
-    if (@available(iOS 13.0, *)) {
-      if (newViewProps.accessibilityShowsLargeContentViewer) {
-        self.showsLargeContentViewer = YES;
-        UILargeContentViewerInteraction *interaction = [[UILargeContentViewerInteraction alloc] init];
-        [self addInteraction:interaction];
-      } else {
-        self.showsLargeContentViewer = NO;
-      }
+    if (newViewProps.accessibilityShowsLargeContentViewer) {
+      self.showsLargeContentViewer = YES;
+      UILargeContentViewerInteraction *interaction = [[UILargeContentViewerInteraction alloc] init];
+      [self addInteraction:interaction];
+    } else {
+      self.showsLargeContentViewer = NO;
     }
   }
 
   // `accessibilityLargeContentTitle`
   if (oldViewProps.accessibilityLargeContentTitle != newViewProps.accessibilityLargeContentTitle) {
-    if (@available(iOS 13.0, *)) {
       self.largeContentTitle = RCTNSStringFromStringNilIfEmpty(newViewProps.accessibilityLargeContentTitle);
-    }
   }
 
   // `accessibilityTraits`
