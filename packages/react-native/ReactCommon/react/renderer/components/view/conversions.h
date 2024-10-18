@@ -119,6 +119,17 @@ static inline PositionType positionTypeFromYogaPositionType(
   }
 }
 
+inline DisplayType displayTypeFromYGDisplay(YGDisplay display) {
+  switch (display) {
+    case YGDisplayNone:
+      return DisplayType::None;
+    case YGDisplayContents:
+      return DisplayType::Contents;
+    case YGDisplayFlex:
+      return DisplayType::Flex;
+  }
+}
+
 inline LayoutMetrics layoutMetricsFromYogaNode(yoga::Node& yogaNode) {
   auto layoutMetrics = LayoutMetrics{};
 
@@ -146,9 +157,8 @@ inline LayoutMetrics layoutMetricsFromYogaNode(yoga::Node& yogaNode) {
       layoutMetrics.borderWidth.bottom +
           floatFromYogaFloat(YGNodeLayoutGetPadding(&yogaNode, YGEdgeBottom))};
 
-  layoutMetrics.displayType = yogaNode.style().display() == yoga::Display::None
-      ? DisplayType::None
-      : DisplayType::Flex;
+  layoutMetrics.displayType =
+      displayTypeFromYGDisplay(YGNodeStyleGetDisplay(&yogaNode));
 
   layoutMetrics.positionType =
       positionTypeFromYogaPositionType(yogaNode.style().positionType());

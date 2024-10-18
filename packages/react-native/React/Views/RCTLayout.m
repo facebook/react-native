@@ -132,5 +132,8 @@ RCTDisplayType RCTReactDisplayTypeFromYogaDisplayType(YGDisplay displayType)
       return RCTDisplayTypeFlex;
     case YGDisplayNone:
       return RCTDisplayTypeNone;
+    case YGDisplayContents:
+      RCTAssert(NO, @"YGDisplayContents cannot be converted to RCTDisplayType value.");
+      return RCTDisplayTypeNone;
   }
 }

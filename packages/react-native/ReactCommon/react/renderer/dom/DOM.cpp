@@ -380,8 +380,7 @@ DOMSizeRounded getScrollSize(
       *shadowNodeInCurrentRevision,
       {.includeTransform = false});
 
-  if (layoutMetrics == EmptyLayoutMetrics ||
-      layoutMetrics.displayType == DisplayType::Inline) {
+  if (layoutMetrics == EmptyLayoutMetrics) {
     return DOMSizeRounded{};
   }
 
@@ -417,8 +416,7 @@ DOMSizeRounded getInnerSize(
       *shadowNodeInCurrentRevision,
       {.includeTransform = false});
 
-  if (layoutMetrics == EmptyLayoutMetrics ||
-      layoutMetrics.displayType == DisplayType::Inline) {
+  if (layoutMetrics == EmptyLayoutMetrics) {
     return DOMSizeRounded{};
   }
 
@@ -445,8 +443,7 @@ DOMBorderWidthRounded getBorderWidth(
       *shadowNodeInCurrentRevision,
       {.includeTransform = false});
 
-  if (layoutMetrics == EmptyLayoutMetrics ||
-      layoutMetrics.displayType == DisplayType::Inline) {
+  if (layoutMetrics == EmptyLayoutMetrics) {
     return DOMBorderWidthRounded{};
   }
 

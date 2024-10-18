@@ -434,7 +434,7 @@ bool layoutAbsoluteDescendants(
     float containingNodeAvailableInnerWidth,
     float containingNodeAvailableInnerHeight) {
   bool hasNewLayout = false;
-  for (auto child : currentNode->getChildren()) {
+  for (auto child : currentNode->getLayoutChildren()) {
     if (child->style().display() == Display::None) {
       continue;
     } else if (child->style().positionType() == PositionType::Absolute) {
