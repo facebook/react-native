@@ -144,7 +144,7 @@ class NewArchitectureTests < Test::Unit::TestCase
         spec = SpecMock.new
 
         # Act
-        NewArchitectureHelper.install_modules_dependencies(spec, true, '2024.01.01.00')
+        NewArchitectureHelper.install_modules_dependencies(spec, true, '2024.10.14.00')
 
         # Assert
         folly_config = Helpers::Constants.folly_config
@@ -158,7 +158,7 @@ class NewArchitectureTests < Test::Unit::TestCase
             spec.dependencies,
             [
                 { :dependency_name => "React-Core" },
-                { :dependency_name => "RCT-Folly", "version"=>"2024.01.01.00" },
+                { :dependency_name => "RCT-Folly", "version"=>"2024.10.14.00" },
                 { :dependency_name => "glog" },
                 { :dependency_name => "React-RCTFabric" },
                 { :dependency_name => "ReactCodegen" },
@@ -190,7 +190,7 @@ class NewArchitectureTests < Test::Unit::TestCase
         }
 
         # Act
-        NewArchitectureHelper.install_modules_dependencies(spec, false, '2024.01.01.00')
+        NewArchitectureHelper.install_modules_dependencies(spec, false, '2024.10.14.00')
 
         # Assert
         assert_equal(Helpers::Constants.folly_config[:compiler_flags], "#{NewArchitectureHelper.folly_compiler_flags}")
@@ -200,7 +200,7 @@ class NewArchitectureTests < Test::Unit::TestCase
             spec.dependencies,
             [
                 { :dependency_name => "React-Core" },
-                { :dependency_name => "RCT-Folly", "version"=>"2024.01.01.00" },
+                { :dependency_name => "RCT-Folly", "version"=>"2024.10.14.00" },
                 { :dependency_name => "glog" },
                 { :dependency_name => "React-RCTFabric" },
                 { :dependency_name => "ReactCodegen" },
