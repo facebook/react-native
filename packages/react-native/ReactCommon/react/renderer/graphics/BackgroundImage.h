@@ -7,40 +7,22 @@
 
 #pragma once
 
-#include <react/renderer/graphics/Color.h>
-#include <react/renderer/graphics/Float.h>
-#include <optional>
-#include <string>
+#include <react/renderer/graphics/ColorComponents.h>
+#include <react/renderer/graphics/LinearGradient.h>
+#include <vector>
 
 namespace facebook::react {
 
-struct ColorStop {
-  bool operator==(const ColorStop& other) const = default;
-  SharedColor color;
-  std::optional<Float> position;
-};
-
-enum class GradientType {
+enum class BackgroundImageType {
   LinearGradient,
 };
 
-struct GradientValue {
-  bool operator==(const GradientValue& other) const = default;
-
-  GradientType type;
-  Float startX;
-  Float startY;
-  Float endX;
-  Float endY;
-  std::vector<ColorStop> colorStops;
-};
-
-inline GradientType gradientTypeFromString(const std::string& gradientType) {
-  if (gradientType == "linearGradient") {
-    return GradientType::LinearGradient;
-  } else {
-    throw std::invalid_argument(std::string(gradientType));
+struct BackgroundImage {
+  BackgroundImageType type;
+  std::variant<LinearGradient> value;
+  bool operator==(const BackgroundImage& other) const {
+    return type == other.type && value == other.value;
   }
-}
+};
 
 }; // namespace facebook::react
