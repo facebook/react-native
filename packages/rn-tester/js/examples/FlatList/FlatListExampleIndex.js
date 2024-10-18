@@ -13,6 +13,7 @@ import type {RNTesterModule} from '../../types/RNTesterTypes';
 import BasicExample from './FlatList-basic';
 import ContentInsetExample from './FlatList-contentInset';
 import InvertedExample from './FlatList-inverted';
+import MaintainVisibleContentPosition from './FlatList-maintainVisibleContentPosition';
 import MultiColumnExample from './FlatList-multiColumn';
 import NestedExample from './FlatList-nested';
 import OnEndReachedExample from './FlatList-onEndReached';
@@ -36,6 +37,7 @@ export default ({
   showIndividualExamples: true,
   examples: [
     BasicExample,
+    MaintainVisibleContentPosition,
     OnStartReachedExample,
     OnEndReachedExample,
     ContentInsetExample,
