@@ -58,7 +58,7 @@ type ____LayoutStyle_Internal = $ReadOnly<{
    *  It works similarly to `display` in CSS, but only support 'flex' and 'none'.
    *  'flex' is the default.
    */
-  display?: 'none' | 'flex',
+  display?: 'none' | 'flex' | 'contents',
 
   /** `width` sets the width of this component.
    *

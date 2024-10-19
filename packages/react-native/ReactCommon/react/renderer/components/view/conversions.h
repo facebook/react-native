@@ -439,6 +439,10 @@ inline void fromRawValue(
     result = yoga::Display::None;
     return;
   }
+  if (stringValue == "contents") {
+    result = yoga::Display::Contents;
+    return;
+  }
   LOG(ERROR) << "Could not parse yoga::Display: " << stringValue;
 }
 

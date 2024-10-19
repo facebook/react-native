@@ -7927,7 +7927,7 @@ export type DimensionValue = number | string | \\"auto\\" | AnimatedNode | null;
 export type AnimatableNumericValue = number | AnimatedNode;
 export type CursorValue = \\"auto\\" | \\"pointer\\";
 type ____LayoutStyle_Internal = $ReadOnly<{
-  display?: \\"none\\" | \\"flex\\",
+  display?: \\"none\\" | \\"flex\\" | \\"contents\\",
   width?: DimensionValue,
   height?: DimensionValue,
   bottom?: DimensionValue,
