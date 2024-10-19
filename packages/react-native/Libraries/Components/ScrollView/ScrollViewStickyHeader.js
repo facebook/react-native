@@ -35,6 +35,7 @@ export type Props = $ReadOnly<{
 
 type Instance = {
   ...React.ElementRef<typeof Animated.View>,
+  setPrevHeaderY: number => void,
   setNextHeaderY: number => void,
   ...
 };
@@ -58,7 +59,7 @@ const ScrollViewStickyHeaderWithForwardedRef: component(
   const [translateY, setTranslateY] = useState<?number>(null);
   const [nextHeaderLayoutY, setNextHeaderLayoutY] =
     useState<?number>(_nextHeaderLayoutY);
-  const [prevHeaderLayoutY, setprevHeaderLayoutY ] =
+  const [prevHeaderLayoutY, setPrevHeaderLayoutY ] =
     useState<?number>(_prevHeaderLayoutY);
   const [isFabric, setIsFabric] = useState<boolean>(false);
 
@@ -66,6 +67,7 @@ const ScrollViewStickyHeaderWithForwardedRef: component(
     if (ref == null) {
       return;
     }
+    ref.setPrevHeaderY = setPrevHeaderLayoutY;
     ref.setNextHeaderY = setNextHeaderLayoutY;
     setIsFabric(isFabricPublicInstance(ref));
   }, []);

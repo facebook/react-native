@@ -367,7 +367,7 @@ type AndroidProps = $ReadOnly<{|
 |}>;
 
 type StickyHeaderComponentType = component(
-  ref?: React.RefSetter<$ReadOnly<interface {setNextHeaderY: number => void}>>,
+  ref?: React.RefSetter<$ReadOnly<interface {setNextHeaderY: number => void; setPrevHeaderY: number => void}>>,
   ...ScrollViewStickyHeaderProps
 );
 
@@ -1125,6 +1125,16 @@ class ScrollView extends React.Component<Props, State> {
       previousHeader &&
         previousHeader.setNextHeaderY &&
         previousHeader.setNextHeaderY(layoutY);
+    }
+
+    const nextHeaderIndex = stickyHeaderIndices[indexOfIndex + 1];
+    if (nextHeaderIndex != null) {
+      const nextHeader = this._stickyHeaderRefs.get(
+        this._getKeyForIndex(nextHeaderIndex, childArray),
+      );
+      nextHeader &&
+      nextHeader.setPrevHeaderY &&
+      nextHeader.setPrevHeaderY(layoutY);
     }
   }
 
