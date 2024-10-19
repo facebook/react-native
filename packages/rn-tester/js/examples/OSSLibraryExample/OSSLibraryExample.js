@@ -12,6 +12,7 @@
 
 import type {NativeComponentType} from '@react-native/oss-library-example';
 
+import RNTesterText from '../../components/RNTesterText';
 import {
   SampleNativeComponent,
   SampleNativeComponentCommands,
@@ -21,7 +22,6 @@ import * as React from 'react';
 import {useRef, useState} from 'react';
 import {Button, View} from 'react-native';
 import {StyleSheet} from 'react-native';
-import RNTesterText from '../../components/RNTesterText';
 
 const colors = [
   '#0000FF',

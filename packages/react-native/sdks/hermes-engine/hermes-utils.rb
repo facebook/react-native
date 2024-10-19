@@ -202,9 +202,11 @@ def hermestag_file(react_native_path)
 end
 
 def release_tarball_url(version, build_type)
+    maven_repo_url = "https://repo1.maven.org/maven2"
+    namespace = "com/facebook/react"
     # Sample url from Maven:
     # https://repo1.maven.org/maven2/com/facebook/react/react-native-artifacts/0.71.0/react-native-artifacts-0.71.0-hermes-ios-debug.tar.gz
-    return "https://repo1.maven.org/maven2/com/facebook/react/react-native-artifacts/#{version}/react-native-artifacts-#{version}-hermes-ios-#{build_type.to_s}.tar.gz"
+    return "#{maven_repo_url}/#{namespace}/react-native-artifacts/#{version}/react-native-artifacts-#{version}-hermes-ios-#{build_type.to_s}.tar.gz"
 end
 
 def download_stable_hermes(react_native_path, version, configuration)

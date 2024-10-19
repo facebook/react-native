@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5e36046d2c9a29263261bd56f3ea5283>>
+ * @generated SignedSource<<1c91049b99046065031ca8b826ab20a6>>
  * @flow strict
  */
 
@@ -51,7 +51,9 @@ export type ReactNativeFeatureFlagsJsOnlyOverrides = OverridesFor<ReactNativeFea
 export type ReactNativeFeatureFlags = {
   ...ReactNativeFeatureFlagsJsOnly,
   commonTestFlag: Getter<boolean>,
+  commonTestFlagWithoutNativeImplementation: Getter<boolean>,
   allowRecursiveCommitsWithSynchronousMountOnAndroid: Getter<boolean>,
+  batchRenderingUpdatesInEventLoop: Getter<boolean>,
   completeReactInstanceCreationOnBgThreadOnAndroid: Getter<boolean>,
   disableEventLoopOnBridgeless: Getter<boolean>,
   enableAlignItemsBaselineOnFabricIOS: Getter<boolean>,
@@ -69,6 +71,7 @@ export type ReactNativeFeatureFlags = {
   enableLayoutAnimationsOnAndroid: Getter<boolean>,
   enableLayoutAnimationsOnIOS: Getter<boolean>,
   enableLongTaskAPI: Getter<boolean>,
+  enableMicrotasks: Getter<boolean>,
   enablePreciseSchedulingForPremountItemsOnAndroid: Getter<boolean>,
   enablePropsUpdateReconciliationAndroid: Getter<boolean>,
   enableReportEventPaintTime: Getter<boolean>,
@@ -77,7 +80,6 @@ export type ReactNativeFeatureFlags = {
   enableUIConsistency: Getter<boolean>,
   enableViewRecycling: Getter<boolean>,
   excludeYogaFromRawProps: Getter<boolean>,
-  fetchImagesInViewPreallocation: Getter<boolean>,
   fixMappingOfEventPrioritiesBetweenFabricAndReact: Getter<boolean>,
   fixMountingCoordinatorReportedPendingTransactionsOnAndroid: Getter<boolean>,
   forceBatchingMountItemsOnAndroid: Getter<boolean>,
@@ -90,6 +92,7 @@ export type ReactNativeFeatureFlags = {
   traceTurboModulePromiseRejectionsOnAndroid: Getter<boolean>,
   useFabricInterop: Getter<boolean>,
   useImmediateExecutorInAndroidBridgeless: Getter<boolean>,
+  useModernRuntimeScheduler: Getter<boolean>,
   useNativeViewConfigsInBridgelessMode: Getter<boolean>,
   useOptimisedViewPreallocationOnAndroid: Getter<boolean>,
   useOptimizedEventBatchingOnAndroid: Getter<boolean>,
@@ -188,9 +191,17 @@ export const useRefsForTextInputState: Getter<boolean> = createJavaScriptFlagGet
  */
 export const commonTestFlag: Getter<boolean> = createNativeFlagGetter('commonTestFlag', false);
 /**
+ * Common flag for testing (without native implementation). Do NOT modify.
+ */
+export const commonTestFlagWithoutNativeImplementation: Getter<boolean> = createNativeFlagGetter('commonTestFlagWithoutNativeImplementation', false);
+/**
  * Adds support for recursively processing commits that mount synchronously (Android only).
  */
 export const allowRecursiveCommitsWithSynchronousMountOnAndroid: Getter<boolean> = createNativeFlagGetter('allowRecursiveCommitsWithSynchronousMountOnAndroid', false);
+/**
+ * When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.
+ */
+export const batchRenderingUpdatesInEventLoop: Getter<boolean> = createNativeFlagGetter('batchRenderingUpdatesInEventLoop', false);
 /**
  * Do not wait for a main-thread dispatch to complete init to start executing work on the JS thread on Android
  */
@@ -260,6 +271,10 @@ export const enableLayoutAnimationsOnIOS: Getter<boolean> = createNativeFlagGett
  */
 export const enableLongTaskAPI: Getter<boolean> = createNativeFlagGetter('enableLongTaskAPI', false);
 /**
+ * Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).
+ */
+export const enableMicrotasks: Getter<boolean> = createNativeFlagGetter('enableMicrotasks', false);
+/**
  * Moves execution of pre-mount items to outside the choregrapher in the main thread, so we can estimate idle time more precisely (Android only).
  */
 export const enablePreciseSchedulingForPremountItemsOnAndroid: Getter<boolean> = createNativeFlagGetter('enablePreciseSchedulingForPremountItemsOnAndroid', false);
@@ -291,10 +306,6 @@ export const enableViewRecycling: Getter<boolean> = createNativeFlagGetter('enab
  * When enabled, rawProps in Props will not include Yoga specific props.
  */
 export const excludeYogaFromRawProps: Getter<boolean> = createNativeFlagGetter('excludeYogaFromRawProps', false);
-/**
- * Start image fetching during view preallocation instead of waiting for layout pass
- */
-export const fetchImagesInViewPreallocation: Getter<boolean> = createNativeFlagGetter('fetchImagesInViewPreallocation', false);
 /**
  * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.
  */
@@ -343,6 +354,10 @@ export const useFabricInterop: Getter<boolean> = createNativeFlagGetter('useFabr
  * Invoke callbacks immediately on the ReactInstance rather than going through a background thread for synchronization
  */
 export const useImmediateExecutorInAndroidBridgeless: Getter<boolean> = createNativeFlagGetter('useImmediateExecutorInAndroidBridgeless', false);
+/**
+ * When enabled, it uses the modern fork of RuntimeScheduler that allows scheduling tasks with priorities from any thread.
+ */
+export const useModernRuntimeScheduler: Getter<boolean> = createNativeFlagGetter('useModernRuntimeScheduler', false);
 /**
  * When enabled, the native view configs are used in bridgeless mode.
  */

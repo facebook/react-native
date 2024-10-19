@@ -23,15 +23,17 @@ package com.facebook.react.internal.featureflags
 public open class ReactNativeNewArchitectureFeatureFlagsDefaults(
     private val newArchitectureEnabled: Boolean = true
 ) : ReactNativeFeatureFlagsDefaults() {
-  override fun useTurboModuleInterop(): Boolean =
-      newArchitectureEnabled || super.useTurboModuleInterop()
-
   override fun enableBridgelessArchitecture(): Boolean = newArchitectureEnabled
 
   override fun enableFabricRenderer(): Boolean = newArchitectureEnabled
 
+  override fun useFabricInterop(): Boolean = newArchitectureEnabled
+
   override fun useNativeViewConfigsInBridgelessMode(): Boolean =
       newArchitectureEnabled || super.useNativeViewConfigsInBridgelessMode()
+
+  override fun useTurboModuleInterop(): Boolean =
+      newArchitectureEnabled || super.useTurboModuleInterop()
 
   override fun useTurboModules(): Boolean = newArchitectureEnabled
 }

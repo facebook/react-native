@@ -12,8 +12,8 @@
 import {AnimatedEvent} from '../../../../Libraries/Animated/AnimatedEvent';
 import AnimatedValue from '../../../../Libraries/Animated/nodes/AnimatedValue';
 import {
-  createCompositeKeyForProps,
   areCompositeKeysEqual,
+  createCompositeKeyForProps,
 } from '../useAnimatedPropsMemo';
 
 describe('createCompositeKeyForProps', () => {

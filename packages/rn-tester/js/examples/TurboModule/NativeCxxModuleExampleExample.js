@@ -15,8 +15,8 @@ import NativeCxxModuleExample, {
   EnumInt,
   EnumNone,
 } from '../../../NativeCxxModuleExample/NativeCxxModuleExample';
-import styles from './TurboModuleExampleCommon';
 import RNTesterText from '../../components/RNTesterText';
+import styles from './TurboModuleExampleCommon';
 import * as React from 'react';
 import {
   DeviceEventEmitter,

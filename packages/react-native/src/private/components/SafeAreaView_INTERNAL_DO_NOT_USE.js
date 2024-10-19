@@ -10,9 +10,10 @@
  */
 
 import type {ViewProps} from '../../../Libraries/Components/View/ViewPropTypes';
-import Platform from '../../../Libraries/Utilities/Platform';
+
 import View from '../../../Libraries/Components/View/View';
 import UIManager from '../../../Libraries/ReactNative/UIManager';
+import Platform from '../../../Libraries/Utilities/Platform';
 import * as React from 'react';
 
 const exported: React.AbstractComponent<

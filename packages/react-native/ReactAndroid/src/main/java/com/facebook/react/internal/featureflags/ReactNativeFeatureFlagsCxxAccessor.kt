@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c1299f04cde6bff791f355e12ccf4df8>>
+ * @generated SignedSource<<dcbe660a6bb8b4dbfaf8f349b3350448>>
  */
 
 /**
@@ -47,7 +47,6 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
   private var enableUIConsistencyCache: Boolean? = null
   private var enableViewRecyclingCache: Boolean? = null
   private var excludeYogaFromRawPropsCache: Boolean? = null
-  private var fetchImagesInViewPreallocationCache: Boolean? = null
   private var fixMappingOfEventPrioritiesBetweenFabricAndReactCache: Boolean? = null
   private var fixMountingCoordinatorReportedPendingTransactionsOnAndroidCache: Boolean? = null
   private var forceBatchingMountItemsOnAndroidCache: Boolean? = null
@@ -306,15 +305,6 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.excludeYogaFromRawProps()
       excludeYogaFromRawPropsCache = cached
-    }
-    return cached
-  }
-
-  override fun fetchImagesInViewPreallocation(): Boolean {
-    var cached = fetchImagesInViewPreallocationCache
-    if (cached == null) {
-      cached = ReactNativeFeatureFlagsCxxInterop.fetchImagesInViewPreallocation()
-      fetchImagesInViewPreallocationCache = cached
     }
     return cached
   }

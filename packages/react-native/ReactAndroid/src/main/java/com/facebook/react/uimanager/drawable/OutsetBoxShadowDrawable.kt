@@ -37,21 +37,17 @@ private const val BLUR_RADIUS_SIGMA_SCALE = 0.5f
 @RequiresApi(MIN_OUTSET_BOX_SHADOW_SDK_VERSION)
 internal class OutsetBoxShadowDrawable(
     private val context: Context,
-    borderRadius: BorderRadiusStyle? = null,
     private val shadowColor: Int,
     private val offsetX: Float,
     private val offsetY: Float,
     private val blurRadius: Float,
     private val spread: Float,
+    /*
+     * We assume borderRadius to be shared across multiple drawables
+     * therefore we should manually invalidate this drawable when changing it
+     */
+    var borderRadius: BorderRadiusStyle? = null,
 ) : Drawable() {
-  public var borderRadius = borderRadius
-    set(value) {
-      if (value != field) {
-        field = value
-        invalidateSelf()
-      }
-    }
-
   private val shadowPaint =
       Paint().apply {
         color = shadowColor
@@ -75,9 +71,12 @@ internal class OutsetBoxShadowDrawable(
 
   @Deprecated("Deprecated in Java")
   override fun getOpacity(): Int {
-    val alpha = Color.alpha(shadowColor)
-    return if (alpha == 0) PixelFormat.TRANSPARENT
-    else ((shadowPaint.alpha / 255f) / (alpha / 255f) * 255f).roundToInt()
+    val alpha = shadowPaint.alpha
+    return when (alpha) {
+      255 -> PixelFormat.OPAQUE
+      in 1..254 -> PixelFormat.TRANSLUCENT
+      else -> PixelFormat.TRANSPARENT
+    }
   }
 
   override fun draw(canvas: Canvas) {

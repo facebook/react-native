@@ -92,6 +92,7 @@ import com.facebook.react.devsupport.interfaces.DevSupportManager.PausedInDebugg
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
 import com.facebook.react.devsupport.interfaces.PausedInDebuggerOverlayManager;
 import com.facebook.react.devsupport.interfaces.RedBoxHandler;
+import com.facebook.react.interfaces.TaskInterface;
 import com.facebook.react.internal.AndroidChoreographerProvider;
 import com.facebook.react.internal.ChoreographerProvider;
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
@@ -368,6 +369,23 @@ public class ReactInstanceManager {
         if (rootView instanceof ReactRootView) {
           ((ReactRootView) rootView).unmountReactApplication();
         }
+      }
+
+      @Override
+      public void reload(String s) {
+        // no-op not implemented for Bridge Mode
+      }
+
+      @Override
+      public TaskInterface<Boolean> loadBundle(JSBundleLoader bundleLoader) {
+        // no-op not implemented for Bridge Mode
+        return null;
+      }
+
+      @Override
+      public ReactContext getCurrentReactContext() {
+        // no-op not implemented for Bridge Mode
+        return null;
       }
     };
   }

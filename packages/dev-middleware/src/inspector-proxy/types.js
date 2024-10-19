@@ -18,9 +18,10 @@ export type TargetCapabilityFlags = $ReadOnly<{
    * The target supports a stable page representation across reloads.
    *
    * In the proxy, this disables legacy page reload emulation and the
-   * additional '(Experimental)' target in `/json/list`.
+   * additional 'React Native Experimental' target in `/json/list`.
    *
-   * In the launch flow, this allows targets to be matched directly by `appId`.
+   * In the launch flow, this allows targets to be matched directly by
+   * `logicalDeviceId`.
    */
   nativePageReloads?: boolean,
 
@@ -115,6 +116,7 @@ export type MessageToDevice =
 export type PageDescription = $ReadOnly<{
   id: string,
   title: string,
+  appId: string,
   description: string,
   type: string,
   devtoolsFrontendUrl: string,

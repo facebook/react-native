@@ -18,6 +18,7 @@ import android.graphics.Outline;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PathEffect;
+import android.graphics.PixelFormat;
 import android.graphics.PointF;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
@@ -189,7 +190,15 @@ public class CSSBackgroundDrawable extends Drawable {
 
   @Override
   public int getOpacity() {
-    return (Color.alpha(mColor) * mAlpha) >> 8;
+    int alpha = (Color.alpha(mColor) * mAlpha) >> 8;
+    switch (alpha) {
+      case 255:
+        return PixelFormat.OPAQUE;
+      case 0:
+        return PixelFormat.TRANSPARENT;
+      default:
+        return PixelFormat.TRANSLUCENT;
+    }
   }
 
   /* Android's elevation implementation requires this to be implemented to know where to draw the shadow. */
@@ -385,7 +394,7 @@ public class CSSBackgroundDrawable extends Drawable {
     canvas.clipPath(Preconditions.checkNotNull(mOuterClipPathForBorderRadius), Region.Op.INTERSECT);
 
     // Draws the View without its border first (with background color fill)
-    int useColor = ColorUtils.setAlphaComponent(mColor, getOpacity());
+    int useColor = ColorUtils.setAlphaComponent(mColor, (Color.alpha(mColor) * mAlpha) >> 8);
     if (Color.alpha(useColor) != 0) {
       mPaint.setColor(useColor);
       mPaint.setStyle(Paint.Style.FILL);

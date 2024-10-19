@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b5f60f734e89d2512fa1e1cc75ff2a62>>
+ * @generated SignedSource<<adf1eaf33e1d85dfd15e2d4e8c740d2f>>
  */
 
 /**
@@ -59,7 +59,6 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableUIConsistency();
   bool enableViewRecycling();
   bool excludeYogaFromRawProps();
-  bool fetchImagesInViewPreallocation();
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact();
   bool fixMountingCoordinatorReportedPendingTransactionsOnAndroid();
   bool forceBatchingMountItemsOnAndroid();
@@ -89,7 +88,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 46> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 45> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> allowRecursiveCommitsWithSynchronousMountOnAndroid_;
@@ -118,7 +117,6 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableUIConsistency_;
   std::atomic<std::optional<bool>> enableViewRecycling_;
   std::atomic<std::optional<bool>> excludeYogaFromRawProps_;
-  std::atomic<std::optional<bool>> fetchImagesInViewPreallocation_;
   std::atomic<std::optional<bool>> fixMappingOfEventPrioritiesBetweenFabricAndReact_;
   std::atomic<std::optional<bool>> fixMountingCoordinatorReportedPendingTransactionsOnAndroid_;
   std::atomic<std::optional<bool>> forceBatchingMountItemsOnAndroid_;

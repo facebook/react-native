@@ -65,8 +65,8 @@ const ScrollViewStickyHeaderWithForwardedRef: component(
     ref.setNextHeaderY = setNextHeaderLayoutY;
     setIsFabric(isFabricPublicInstance(ref));
   }, []);
-  const ref: (React.ElementRef<typeof Animated.View> | null) => void =
-    // $FlowFixMe[incompatible-type] - Ref is mutated by `callbackRef`.
+  const ref: React.RefSetter<React.ElementRef<typeof Animated.View>> =
+    // $FlowFixMe[prop-missing] - Instance is mutated to have `setNextHeaderY`.
     useMergeRefs<Instance>(callbackRef, forwardedRef);
 
   const offset = useMemo(

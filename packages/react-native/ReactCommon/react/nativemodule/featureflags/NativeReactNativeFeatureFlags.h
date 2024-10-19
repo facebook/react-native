@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a48d9585615fc7f0464f45de9c24ec46>>
+ * @generated SignedSource<<d1eb5cf3f1e06563852ac1a587489ec2>>
  */
 
 /**
@@ -37,7 +37,11 @@ class NativeReactNativeFeatureFlags
 
   bool commonTestFlag(jsi::Runtime& runtime);
 
+  bool commonTestFlagWithoutNativeImplementation(jsi::Runtime& runtime);
+
   bool allowRecursiveCommitsWithSynchronousMountOnAndroid(jsi::Runtime& runtime);
+
+  bool batchRenderingUpdatesInEventLoop(jsi::Runtime& runtime);
 
   bool completeReactInstanceCreationOnBgThreadOnAndroid(jsi::Runtime& runtime);
 
@@ -73,6 +77,8 @@ class NativeReactNativeFeatureFlags
 
   bool enableLongTaskAPI(jsi::Runtime& runtime);
 
+  bool enableMicrotasks(jsi::Runtime& runtime);
+
   bool enablePreciseSchedulingForPremountItemsOnAndroid(jsi::Runtime& runtime);
 
   bool enablePropsUpdateReconciliationAndroid(jsi::Runtime& runtime);
@@ -88,8 +94,6 @@ class NativeReactNativeFeatureFlags
   bool enableViewRecycling(jsi::Runtime& runtime);
 
   bool excludeYogaFromRawProps(jsi::Runtime& runtime);
-
-  bool fetchImagesInViewPreallocation(jsi::Runtime& runtime);
 
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact(jsi::Runtime& runtime);
 
@@ -114,6 +118,8 @@ class NativeReactNativeFeatureFlags
   bool useFabricInterop(jsi::Runtime& runtime);
 
   bool useImmediateExecutorInAndroidBridgeless(jsi::Runtime& runtime);
+
+  bool useModernRuntimeScheduler(jsi::Runtime& runtime);
 
   bool useNativeViewConfigsInBridgelessMode(jsi::Runtime& runtime);
 

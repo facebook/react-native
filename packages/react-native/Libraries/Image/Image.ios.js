@@ -145,9 +145,7 @@ let BaseImage: AbstractImageIOS = React.forwardRef((props, forwardedRef) => {
     'aria-disabled': ariaDisabled,
     'aria-expanded': ariaExpanded,
     'aria-selected': ariaSelected,
-    height,
     src,
-    width,
     ...restProps
   } = props;
 

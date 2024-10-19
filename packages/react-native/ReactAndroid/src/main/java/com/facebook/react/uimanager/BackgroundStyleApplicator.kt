@@ -105,13 +105,14 @@ public object BackgroundStyleApplicator {
   ): Unit {
     ensureCSSBackground(view).setBorderRadius(corner, radius)
     val compositeBackgroundDrawable = ensureCompositeBackgroundDrawable(view)
+    compositeBackgroundDrawable.borderRadius =
+        compositeBackgroundDrawable.borderRadius ?: BorderRadiusStyle()
+    compositeBackgroundDrawable.borderRadius?.set(corner, radius)
 
     if (Build.VERSION.SDK_INT >= MIN_OUTSET_BOX_SHADOW_SDK_VERSION) {
       for (shadow in compositeBackgroundDrawable.outerShadows) {
         if (shadow is OutsetBoxShadowDrawable) {
-          shadow.borderRadius = shadow.borderRadius ?: BorderRadiusStyle()
-          shadow.borderRadius?.set(corner, radius)
-          shadow.invalidateSelf()
+          shadow.borderRadius = compositeBackgroundDrawable.borderRadius
         }
       }
     }
@@ -119,19 +120,13 @@ public object BackgroundStyleApplicator {
     if (Build.VERSION.SDK_INT >= MIN_INSET_BOX_SHADOW_SDK_VERSION) {
       for (shadow in compositeBackgroundDrawable.innerShadows) {
         if (shadow is InsetBoxShadowDrawable) {
-          shadow.borderRadius = shadow.borderRadius ?: BorderRadiusStyle()
-          shadow.borderRadius?.set(corner, radius)
-          shadow.invalidateSelf()
+          shadow.borderRadius = compositeBackgroundDrawable.borderRadius
         }
       }
     }
 
-    val outline = compositeBackgroundDrawable.outline
-    if (outline != null) {
-      outline.borderRadius = outline.borderRadius ?: BorderRadiusStyle()
-      outline.borderRadius?.set(corner, radius)
-      outline.invalidateSelf()
-    }
+    compositeBackgroundDrawable.outline?.borderRadius = compositeBackgroundDrawable.borderRadius
+    compositeBackgroundDrawable.invalidateSelf()
   }
 
   @JvmStatic
@@ -207,7 +202,9 @@ public object BackgroundStyleApplicator {
     val outerShadows = mutableListOf<OutsetBoxShadowDrawable>()
     val innerShadows = mutableListOf<InsetBoxShadowDrawable>()
 
-    val borderInsets = ensureCompositeBackgroundDrawable(view).borderInsets
+    val compositeBackgroundDrawable = ensureCompositeBackgroundDrawable(view)
+    val borderInsets = compositeBackgroundDrawable.borderInsets
+    val borderRadius = compositeBackgroundDrawable.borderRadius
 
     for (boxShadow in shadows) {
       val offsetX = boxShadow.offsetX
@@ -221,7 +218,7 @@ public object BackgroundStyleApplicator {
         innerShadows.add(
             InsetBoxShadowDrawable(
                 context = view.context,
-                borderRadius = ensureCSSBackground(view).borderRadius,
+                borderRadius = borderRadius,
                 borderInsets = borderInsets,
                 shadowColor = color,
                 offsetX = offsetX,
@@ -232,7 +229,7 @@ public object BackgroundStyleApplicator {
         outerShadows.add(
             OutsetBoxShadowDrawable(
                 context = view.context,
-                borderRadius = ensureCSSBackground(view).borderRadius,
+                borderRadius = borderRadius,
                 shadowColor = color,
                 offsetX = offsetX,
                 offsetY = offsetY,
@@ -329,7 +326,7 @@ public object BackgroundStyleApplicator {
       outline =
           OutlineDrawable(
               context = view.context,
-              borderRadius = ensureCSSBackground(view).borderRadius.copy(),
+              borderRadius = compositeBackgroundDrawable.borderRadius,
               outlineColor = Color.BLACK,
               outlineOffset = 0f,
               outlineStyle = OutlineStyle.SOLID,

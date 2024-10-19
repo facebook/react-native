@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6cede23013ea7b304643ee356d871848>>
+ * @generated SignedSource<<ec4a50c15ab1924abb959413c42b4e6d>>
  */
 
 /**
@@ -198,12 +198,6 @@ class ReactNativeFeatureFlagsProviderHolder
   bool excludeYogaFromRawProps() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("excludeYogaFromRawProps");
-    return method(javaProvider_);
-  }
-
-  bool fetchImagesInViewPreallocation() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("fetchImagesInViewPreallocation");
     return method(javaProvider_);
   }
 
@@ -454,11 +448,6 @@ bool JReactNativeFeatureFlagsCxxInterop::excludeYogaFromRawProps(
   return ReactNativeFeatureFlags::excludeYogaFromRawProps();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::fetchImagesInViewPreallocation(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::fetchImagesInViewPreallocation();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::fixMappingOfEventPrioritiesBetweenFabricAndReact(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact();
@@ -661,9 +650,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "excludeYogaFromRawProps",
         JReactNativeFeatureFlagsCxxInterop::excludeYogaFromRawProps),
-      makeNativeMethod(
-        "fetchImagesInViewPreallocation",
-        JReactNativeFeatureFlagsCxxInterop::fetchImagesInViewPreallocation),
       makeNativeMethod(
         "fixMappingOfEventPrioritiesBetweenFabricAndReact",
         JReactNativeFeatureFlagsCxxInterop::fixMappingOfEventPrioritiesBetweenFabricAndReact),

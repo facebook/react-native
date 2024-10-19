@@ -10,13 +10,16 @@ package com.facebook.react.devsupport;
 import android.app.Activity;
 import android.view.View;
 import androidx.annotation.Nullable;
+import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.JavaJSExecutor;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
+import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.interfaces.TaskInterface;
 
 /**
  * Interface used by {@link DevSupportManager} for accessing some fields and methods of {@link
- * ReactInstanceManager} or {@link ReactHostImpl} for the purpose of displaying and handling
- * developer menu options.
+ * ReactInstanceManager} or {@link ReactHost} for the purpose of displaying and handling developer
+ * menu options.
  */
 public interface ReactInstanceDevHelper {
 
@@ -39,4 +42,11 @@ public interface ReactInstanceDevHelper {
   View createRootView(String appKey);
 
   void destroyRootView(View rootView);
+
+  void reload(String s);
+
+  TaskInterface<Boolean> loadBundle(JSBundleLoader bundleLoader);
+
+  @Nullable
+  ReactContext getCurrentReactContext();
 }

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b90c5068a1ec0e40631ebdc1dfd61aa9>>
+ * @generated SignedSource<<42056925ce0f349d1d27090b0750f414>>
  */
 
 /**
@@ -173,11 +173,6 @@ class ReactNativeFeatureFlags {
    * When enabled, rawProps in Props will not include Yoga specific props.
    */
   RN_EXPORT static bool excludeYogaFromRawProps();
-
-  /**
-   * Start image fetching during view preallocation instead of waiting for layout pass
-   */
-  RN_EXPORT static bool fetchImagesInViewPreallocation();
 
   /**
    * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.

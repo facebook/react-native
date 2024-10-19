@@ -7,7 +7,7 @@
 
 #include "FabricUIManagerBinding.h"
 
-#include "AsyncEventBeat.h"
+#include "AndroidEventBeat.h"
 #include "ComponentFactory.h"
 #include "EventBeatManager.h"
 #include "EventEmitterWrapper.h"
@@ -485,12 +485,15 @@ void FabricUIManagerBinding::installFabricUIManager(
     }
   }
 
-  EventBeat::Factory asynchronousBeatFactory =
+  EventBeat::Factory eventBeatFactory =
       [eventBeatManager, runtimeExecutor, globalJavaUiManager](
-          const EventBeat::SharedOwnerBox& ownerBox)
+          std::shared_ptr<EventBeat::OwnerBox> ownerBox)
       -> std::unique_ptr<EventBeat> {
-    return std::make_unique<AsyncEventBeat>(
-        ownerBox, eventBeatManager, runtimeExecutor, globalJavaUiManager);
+    return std::make_unique<AndroidEventBeat>(
+        std::move(ownerBox),
+        eventBeatManager,
+        runtimeExecutor,
+        globalJavaUiManager);
   };
 
   contextContainer->insert("ReactNativeConfig", config);
@@ -513,7 +516,7 @@ void FabricUIManagerBinding::installFabricUIManager(
   toolbox.bridgelessBindingsExecutor = std::nullopt;
   toolbox.runtimeExecutor = runtimeExecutor;
 
-  toolbox.asynchronousEventBeatFactory = asynchronousBeatFactory;
+  toolbox.eventBeatFactory = eventBeatFactory;
 
   animationDriver_ = std::make_shared<LayoutAnimationDriver>(
       runtimeExecutor, contextContainer, this);

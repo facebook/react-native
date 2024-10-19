@@ -11,6 +11,7 @@
 
 /* eslint-env browser */
 
+import RNTesterText from '../../components/RNTesterText';
 import React from 'react';
 import {
   Image,
@@ -21,7 +22,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import RNTesterText from '../../components/RNTesterText';
 
 const DEFAULT_WS_URL = 'ws://localhost:5555/';
 const DEFAULT_HTTP_URL = 'http://localhost:5556/';

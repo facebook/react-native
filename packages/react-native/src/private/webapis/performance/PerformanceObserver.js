@@ -10,9 +10,10 @@
 
 import type {
   DOMHighResTimeStamp,
-  PerformanceEntryType,
   PerformanceEntryList,
+  PerformanceEntryType,
 } from './PerformanceEntry';
+import type {OpaqueNativeObserverHandle} from './specs/NativePerformance';
 
 import {PerformanceEventTiming} from './EventTiming';
 import {
@@ -21,7 +22,6 @@ import {
   rawToPerformanceEntryType,
 } from './RawPerformanceEntry';
 import NativePerformance from './specs/NativePerformance';
-import type {OpaqueNativeObserverHandle} from './specs/NativePerformance';
 import {warnNoNativePerformance} from './Utilities';
 
 export {PerformanceEntry} from './PerformanceEntry';

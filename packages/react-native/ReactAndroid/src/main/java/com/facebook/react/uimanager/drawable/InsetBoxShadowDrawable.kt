@@ -40,30 +40,18 @@ private val ZERO_RADII = floatArrayOf(0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f)
 @RequiresApi(MIN_INSET_BOX_SHADOW_SDK_VERSION)
 internal class InsetBoxShadowDrawable(
     private val context: Context,
-    borderRadius: BorderRadiusStyle? = null,
-    borderInsets: BorderInsets? = null,
     private val shadowColor: Int,
     private val offsetX: Float,
     private val offsetY: Float,
     private val blurRadius: Float,
     private val spread: Float,
+    /*
+     * We assume borderRadius & borderInsets to be shared across multiple drawables
+     * therefore user should invalidate this drawable when changing either of them
+     */
+    var borderInsets: BorderInsets? = null,
+    var borderRadius: BorderRadiusStyle? = null,
 ) : Drawable() {
-  public var borderRadius = borderRadius
-    set(value) {
-      if (value != field) {
-        field = value
-        invalidateSelf()
-      }
-    }
-
-  public var borderInsets = borderInsets
-    set(value) {
-      if (value != field) {
-        field = value
-        invalidateSelf()
-      }
-    }
-
   private val shadowPaint =
       Paint().apply {
         color = shadowColor
@@ -87,9 +75,12 @@ internal class InsetBoxShadowDrawable(
 
   @Deprecated("Deprecated in Java")
   override fun getOpacity(): Int {
-    val alpha = Color.alpha(shadowColor)
-    return if (alpha == 0) PixelFormat.TRANSPARENT
-    else ((shadowPaint.alpha / 255f) / (alpha / 255f) * 255f).roundToInt()
+    val alpha = shadowPaint.alpha
+    return when (alpha) {
+      255 -> PixelFormat.OPAQUE
+      in 1..254 -> PixelFormat.TRANSLUCENT
+      else -> PixelFormat.TRANSPARENT
+    }
   }
 
   override fun draw(canvas: Canvas) {

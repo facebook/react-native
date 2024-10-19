@@ -30,6 +30,15 @@ const testDefinitions: FeatureFlagDefinitions = {
         purpose: 'operational',
       },
     },
+    commonTestFlagWithoutNativeImplementation: {
+      defaultValue: false,
+      metadata: {
+        description:
+          'Common flag for testing (without native implementation). Do NOT modify.',
+        purpose: 'operational',
+      },
+      skipNativeAPI: true,
+    },
   },
   jsOnly: {
     jsOnlyTestFlag: {
@@ -53,6 +62,16 @@ const definitions: FeatureFlagDefinitions = {
           'Adds support for recursively processing commits that mount synchronously (Android only).',
         purpose: 'experimentation',
       },
+    },
+    batchRenderingUpdatesInEventLoop: {
+      defaultValue: false,
+      metadata: {
+        description:
+          'When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.',
+        purpose: 'release',
+      },
+      // We're preparing to clean up this feature flag.
+      skipNativeAPI: true,
     },
     completeReactInstanceCreationOnBgThreadOnAndroid: {
       defaultValue: false,
@@ -195,6 +214,16 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'release',
       },
     },
+    enableMicrotasks: {
+      defaultValue: false,
+      metadata: {
+        description:
+          'Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).',
+        purpose: 'release',
+      },
+      // We're preparing to clean up this feature flag.
+      skipNativeAPI: true,
+    },
     enablePreciseSchedulingForPremountItemsOnAndroid: {
       defaultValue: false,
       metadata: {
@@ -263,15 +292,6 @@ const definitions: FeatureFlagDefinitions = {
         dateAdded: '2024-07-22',
         description:
           'When enabled, rawProps in Props will not include Yoga specific props.',
-        purpose: 'experimentation',
-      },
-    },
-    fetchImagesInViewPreallocation: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-07-09',
-        description:
-          'Start image fetching during view preallocation instead of waiting for layout pass',
         purpose: 'experimentation',
       },
     },
@@ -377,6 +397,16 @@ const definitions: FeatureFlagDefinitions = {
           'Invoke callbacks immediately on the ReactInstance rather than going through a background thread for synchronization',
         purpose: 'experimentation',
       },
+    },
+    useModernRuntimeScheduler: {
+      defaultValue: false,
+      metadata: {
+        description:
+          'When enabled, it uses the modern fork of RuntimeScheduler that allows scheduling tasks with priorities from any thread.',
+        purpose: 'release',
+      },
+      // We're preparing to clean up this feature flag.
+      skipNativeAPI: true,
     },
     useNativeViewConfigsInBridgelessMode: {
       defaultValue: false,

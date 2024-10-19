@@ -1,5 +1,37 @@
 # Changelog
 
+## v0.76.0-rc.6
+
+### Fixed
+
+#### Android Specific
+- Undo breaking change on ViewManagerDelegate.kt String params ([ce1620616c](https://github.com/facebook/react-native/commit/ce1620616c5e5d83bfbcd1ce297d95e1c1c66e8c) by [@cortinico](https://github.com/cortinico))
+- Undo breaking change on UIManager eventDispatcher accessor ([55671c00e5](https://github.com/facebook/react-native/commit/55671c00e5567845ffe467e50a4b9dfa562e48db) by [@cortinico](https://github.com/cortinico))
+- Revert "Fix Android AlertFragment Title Accessibility" as it was breaking the layout of Alerts ([c967deaa2d](https://github.com/facebook/react-native/commit/c967deaa2d52abf2ffcf101f3ee0f23c593b6959) by [@cipolleschi](https://github.com/cipolleschi))
+
+## v0.76.0-rc.5
+
+### Changed
+
+- Fix server.end() usage following Metro bump ([02b879b1e2](https://github.com/facebook/react-native/commit/02b879b1e22dd03f52ff77d82cac3fe167aaea84) by [@huntie](https://github.com/huntie))
+- Update Metro to "^0.81.0" ([3f8d1fa286](https://github.com/facebook/react-native/commit/3f8d1fa2862814cc8e2b091786e80231670bb876) by [@robhogan](https://github.com/robhogan))
+
+#### Android specific
+
+- Make PackagerConnectionSettings class open again ([4dd47eeb9e](https://github.com/facebook/react-native/commit/4dd47eeb9ea91455efcd0db23a02162ab338a53f) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Fix crash for Modal not attached to window manager ([73ce1984e8](https://github.com/facebook/react-native/commit/73ce1984e8411a6b4aec440a5e7aa9d2b7474984) by [@alanleedev](https://github.com/alanleedev))
+- Gradle to 8.10.2 ([60a2706e97](https://github.com/facebook/react-native/commit/60a2706e9716d955fc0d7e15b02ad0d6efe58fc2) by [@cortinico](https://github.com/cortinico))
+
+#### iOS specific
+
+- Enforce we use the correct C++ version for all, even if dependency tries to set it ([d7a8aae9ac](https://github.com/facebook/react-native/commit/d7a8aae9acc441d9b6c52484e35ba158e90b4b60) by [@Titozzz](https://github.com/Titozzz))
+
+## Fixed
+
+#### iOS specific
+
+- Exclude dSYM from the archive ([7e14ec5177f](https://github.com/facebook/react-native/commit/7e14ec5177fd17ca9f1db384026b26ae90ab0b00) by [@cipolleschi](https://github.com/cipolleschi))
+
 ## v0.76.0-rc.4
 
 ### Breaking
@@ -51,23 +83,6 @@
 
 - Properly retain/release backgroundColor in RCTBorderDrawing ([47748c7935](https://github.com/facebook/react-native/commit/47748c7935540014abed03b4d2ff809b471c4fe3) by [@Saadnajmi](https://github.com/Saadnajmi))
 - Fix applying of tintColor and progressViewOffset props for RefreshControl component with New Architecture enabled ([19d468fed9](https://github.com/facebook/react-native/commit/19d468fed966f2adb973ad3f19a97a5ec0372e3a) by [@TuTejsy](https://github.com/TuTejsy))
-
-## v0.75.4
-
-### Fixed
-
-#### Android specific
-
-- Fix Headless Crash `Tried to finish non-existent task with id` ([56a282c44d](https://github.com/facebook/react-native/commit/56a282c44d1a3ee5114c2cba36b902bc9ae123b9) by [@RodolfoGS](https://github.com/RodolfoGS))
-- TextInput's `contextMenuHidden` prop bug fix ([366f1d0df3](https://github.com/facebook/react-native/commit/366f1d0df302af860b1fa9ea5f0bd757f2dec7b3) by [@alanleedev](https://github.com/alanleedev))
-- RNGP - Sanitize the output of the config command ([0265ea0577](https://github.com/facebook/react-native/commit/0265ea0577963cca582682c3fc8ee97f3ebef65e) by [@cortinico](https://github.com/cortinico))
-
-#### iOS specific
-
-- Convert `NSNull` to `nil` before checking `type` in `readAsDataURL` ([99ab845a5c](https://github.com/facebook/react-native/commit/99ab845a5cf0fe3463ff39b03373b95d4f5c0fac) by [@haileyok](https://github.com/haileyok))
-- Add back the BUNDLE_COMMAND ([afd74ad89d](https://github.com/facebook/react-native/commit/afd74ad89de6e632eea776e6d2689e7381c4f78c) by [@Vin-Xi](https://github.com/Vin-Xi))
-- Use CONFIG_CMD if set ([a4ec49cbe6](https://github.com/facebook/react-native/commit/a4ec49cbe6d0157417276731ba1608e482f3f10e) by [@krystofwoldrich](https://github.com/krystofwoldrich))
-- App crash happening when navigate to a new app screen with a displaying modal ([8ec672204d](https://github.com/facebook/react-native/commit/8ec672204d5dee2b967cac08adf03c082e36ad79) by [@zhouzh1](https://github.com/zhouzh1))
 
 ## v0.76.0-rc.3
 
@@ -500,6 +515,23 @@
 - Update RNTester and HelloWorld template app to `min iOS 15.1` ([e1a1cdacf2](https://github.com/facebook/react-native/commit/e1a1cdacf2d210353c06e7ab65f971f6592e8c00) by [@realsoelynn](https://github.com/realsoelynn))
 - Ve[RN][Android] Convert StyleAnimatedNode.java->.kt ([ef9149b4fc](https://github.com/facebook/react-native/commit/ef9149b4fc989827ad4b781fa89f556a1fd20db4) by [@rshest](https://github.com/rshest))
 - Fixes ellipsis carries background from trimmed text ([9e2f8859c4](https://github.com/facebook/react-native/commit/9e2f8859c4d237ae2bee4679da45038405b7074e) by [@zhongwuzw](https://github.com/zhongwuzw))
+
+## v0.75.4
+
+### Fixed
+
+#### Android specific
+
+- Fix Headless Crash `Tried to finish non-existent task with id` ([56a282c44d](https://github.com/facebook/react-native/commit/56a282c44d1a3ee5114c2cba36b902bc9ae123b9) by [@RodolfoGS](https://github.com/RodolfoGS))
+- TextInput's `contextMenuHidden` prop bug fix ([366f1d0df3](https://github.com/facebook/react-native/commit/366f1d0df302af860b1fa9ea5f0bd757f2dec7b3) by [@alanleedev](https://github.com/alanleedev))
+- RNGP - Sanitize the output of the config command ([0265ea0577](https://github.com/facebook/react-native/commit/0265ea0577963cca582682c3fc8ee97f3ebef65e) by [@cortinico](https://github.com/cortinico))
+
+#### iOS specific
+
+- Convert `NSNull` to `nil` before checking `type` in `readAsDataURL` ([99ab845a5c](https://github.com/facebook/react-native/commit/99ab845a5cf0fe3463ff39b03373b95d4f5c0fac) by [@haileyok](https://github.com/haileyok))
+- Add back the BUNDLE_COMMAND ([afd74ad89d](https://github.com/facebook/react-native/commit/afd74ad89de6e632eea776e6d2689e7381c4f78c) by [@Vin-Xi](https://github.com/Vin-Xi))
+- Use CONFIG_CMD if set ([a4ec49cbe6](https://github.com/facebook/react-native/commit/a4ec49cbe6d0157417276731ba1608e482f3f10e) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+- App crash happening when navigate to a new app screen with a displaying modal ([8ec672204d](https://github.com/facebook/react-native/commit/8ec672204d5dee2b967cac08adf03c082e36ad79) by [@zhouzh1](https://github.com/zhouzh1))
 
 ## v0.75.3
 

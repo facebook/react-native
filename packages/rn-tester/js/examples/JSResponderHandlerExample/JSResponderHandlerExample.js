@@ -9,8 +9,8 @@
  */
 
 import RNTesterText from '../../components/RNTesterText';
-import {PanResponder, ScrollView, StyleSheet, View} from 'react-native';
 import React from 'react';
+import {PanResponder, ScrollView, StyleSheet, View} from 'react-native';
 
 exports.displayName = 'JSResponderHandlerExample';
 exports.framework = 'React';

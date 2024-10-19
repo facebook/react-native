@@ -13,7 +13,6 @@
 import type {RNTesterModule} from '../../types/RNTesterTypes';
 
 import RNTesterText from '../../components/RNTesterText';
-
 import * as React from 'react';
 import {Platform, Pressable, StyleSheet, View} from 'react-native';
 
