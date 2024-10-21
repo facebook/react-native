@@ -16,10 +16,10 @@ import UIManager from '../../../Libraries/ReactNative/UIManager';
 import Platform from '../../../Libraries/Utilities/Platform';
 import * as React from 'react';
 
-const exported: React.AbstractComponent<
-  ViewProps,
-  React.ElementRef<typeof View>,
-> = Platform.select({
+const exported: component(
+  ref?: React.RefSetter<React.ElementRef<typeof View>>,
+  ...ViewProps
+) = Platform.select({
   ios: require('../../../src/private/specs/components/RCTSafeAreaViewNativeComponent')
     .default,
   android: UIManager.hasViewManagerConfig('RCTSafeAreaView')

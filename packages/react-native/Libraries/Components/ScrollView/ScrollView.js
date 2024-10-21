@@ -371,10 +371,10 @@ type AndroidProps = $ReadOnly<{|
   fadingEdgeLength?: ?number,
 |}>;
 
-type StickyHeaderComponentType = React.AbstractComponent<
-  ScrollViewStickyHeaderProps,
-  $ReadOnly<interface {setNextHeaderY: number => void}>,
->;
+type StickyHeaderComponentType = component(
+  ref?: React.RefSetter<$ReadOnly<interface {setNextHeaderY: number => void}>>,
+  ...ScrollViewStickyHeaderProps
+);
 
 export type Props = $ReadOnly<{|
   ...ViewProps,
