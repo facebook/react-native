@@ -246,7 +246,6 @@ static UIImage *RCTGetSolidBorderImage(
       CGContextAddPath(context, path);
       CGContextFillPath(context);
     }
-    CGColorRelease(backgroundColor);
 
     CGContextAddPath(context, path);
     CGPathRelease(path);

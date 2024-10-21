@@ -12,7 +12,7 @@
 #import <React/RCTSurfacePresenterBridgeAdapter.h>
 #import <React/RCTUtils.h>
 #import <ReactCommon/RCTHost.h>
-#include <UIKit/UIKit.h>
+#include <React/RCTUIKit.h>
 #import <objc/runtime.h>
 #import <react/featureflags/ReactNativeFeatureFlags.h>
 #import <react/featureflags/ReactNativeFeatureFlagsDefaults.h>
@@ -71,7 +71,9 @@
     [self loadReactNativeWindow:launchOptions];
   }
 
+#if !TARGET_OS_OSX // [macOS]
   return YES;
+#endif // macOS]
 }
 
 - (void)loadReactNativeWindow:(NSDictionary *)launchOptions

@@ -772,6 +772,7 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
 
 - (void)_handleScrollEndIfNeeded
 {
+#if !TARGET_OS_OSX // [macOS] TODO - Do we want to shim this on macOS?
   if (_scrollView.isDecelerating || !_scrollView.isTracking) {
     if (!_eventEmitter) {
       return;
@@ -781,6 +782,7 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
     [self _updateStateWithContentOffset];
     _isUserTriggeredScrolling = NO;
   }
+#endif // [macOS]
 }
 
 - (void)_handleFinishedScrolling:(RCTUIScrollView *)scrollView // [macOS]
