@@ -26,7 +26,7 @@ cd packages/rn-tester
 yarn clean-ios
 ```
 
-If you are still having a problem after doing the clean up (which can happen if you have built RNTester with older React Native versions where files were generated inside the react-native folder.), the best way might be to clean-install react-native (e.g. remove node_modules and yarn install).
+If you are still having a problem after doing the clean up (which can happen if you have built RNTester with older React Native versions where files were generated inside the react-native folder.), the best way might be to clean-install react-native (e.g. remove node_modules and yarn install). If after cleaning up, you are still having issues, you might also want to try `RCT_NEW_ARCH_ENABLED=0 bundle exec pod install` to disable the new architecture as it might be conflicting.
 
 Both macOS and Xcode are required.
 1. `cd packages/rn-tester`
