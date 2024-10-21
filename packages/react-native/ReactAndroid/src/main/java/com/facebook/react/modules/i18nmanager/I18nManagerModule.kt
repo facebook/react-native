@@ -35,4 +35,8 @@ public class I18nManagerModule(context: ReactApplicationContext?) : NativeI18nMa
   override fun swapLeftAndRightInRTL(value: Boolean) {
     I18nUtil.instance.swapLeftAndRightInRTL(getReactApplicationContext(), value)
   }
+
+  public companion object {
+    public const val NAME: String = NativeI18nManagerSpec.NAME
+  }
 }

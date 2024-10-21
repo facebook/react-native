@@ -115,9 +115,7 @@ class MaintainVisibleScrollPositionHelper<ScrollViewT extends ViewGroup & HasSmo
     firstVisibleView.getHitRect(newFrame);
 
     if (mHorizontal) {
-      int deltaX =
-          (newFrame.left - mPrevFirstVisibleFrame.left)
-              + (newFrame.width() - mPrevFirstVisibleFrame.width());
+      int deltaX = newFrame.left - mPrevFirstVisibleFrame.left;
       if (deltaX != 0) {
         int scrollX = mScrollView.getScrollX();
         mScrollView.scrollToPreservingMomentum(scrollX + deltaX, mScrollView.getScrollY());
@@ -128,9 +126,7 @@ class MaintainVisibleScrollPositionHelper<ScrollViewT extends ViewGroup & HasSmo
         }
       }
     } else {
-      int deltaY =
-          (newFrame.top - mPrevFirstVisibleFrame.top)
-              + (newFrame.height() - mPrevFirstVisibleFrame.height());
+      int deltaY = newFrame.top - mPrevFirstVisibleFrame.top;
       if (deltaY != 0) {
         int scrollY = mScrollView.getScrollY();
         mScrollView.scrollToPreservingMomentum(mScrollView.getScrollX(), scrollY + deltaY);

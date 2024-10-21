@@ -12,8 +12,8 @@ import type {PlatformConfig} from '../AnimatedPlatformConfig';
 import type AnimatedNode from '../nodes/AnimatedNode';
 import type AnimatedValue from '../nodes/AnimatedValue';
 
-import * as ReactNativeFeatureFlags from '../../../src/private/featureflags/ReactNativeFeatureFlags';
 import NativeAnimatedHelper from '../../../src/private/animated/NativeAnimatedHelper';
+import * as ReactNativeFeatureFlags from '../../../src/private/featureflags/ReactNativeFeatureFlags';
 import AnimatedProps from '../nodes/AnimatedProps';
 
 export type EndResult = {finished: boolean, value?: number, ...};

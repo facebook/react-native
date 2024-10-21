@@ -11,9 +11,9 @@
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 import type {AnimatedStyleAllowlist} from './AnimatedStyle';
 
+import NativeAnimatedHelper from '../../../src/private/animated/NativeAnimatedHelper';
 import {findNodeHandle} from '../../ReactNative/RendererProxy';
 import {AnimatedEvent} from '../AnimatedEvent';
-import NativeAnimatedHelper from '../../../src/private/animated/NativeAnimatedHelper';
 import AnimatedNode from './AnimatedNode';
 import AnimatedObject from './AnimatedObject';
 import AnimatedStyle from './AnimatedStyle';

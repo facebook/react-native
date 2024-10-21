@@ -10,8 +10,8 @@
 
 import type {RootTag} from 'react-native/Libraries/ReactNative/RootTag';
 
-import styles from './TurboModuleExampleCommon';
 import RNTesterText from '../../components/RNTesterText';
+import styles from './TurboModuleExampleCommon';
 import * as React from 'react';
 import {
   FlatList,

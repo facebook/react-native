@@ -15,9 +15,9 @@ import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {NativeColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 
+import NativeAnimatedHelper from '../../../src/private/animated/NativeAnimatedHelper';
 import normalizeColor from '../../StyleSheet/normalizeColor';
 import {processColorObject} from '../../StyleSheet/PlatformColorValueTypes';
-import NativeAnimatedHelper from '../../../src/private/animated/NativeAnimatedHelper';
 import AnimatedValue, {flushValue} from './AnimatedValue';
 import AnimatedWithChildren from './AnimatedWithChildren';
 

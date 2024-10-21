@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1b85aeb9f0c1c2db409cbf4cffbf2136>>
+ * @generated SignedSource<<566f5ce7fe00d1cdb8d0721c253d655f>>
  */
 
 /**
@@ -27,8 +27,8 @@ class ReactNativeFeatureFlagsProvider {
 
   virtual bool commonTestFlag() = 0;
   virtual bool allowRecursiveCommitsWithSynchronousMountOnAndroid() = 0;
-  virtual bool batchRenderingUpdatesInEventLoop() = 0;
   virtual bool completeReactInstanceCreationOnBgThreadOnAndroid() = 0;
+  virtual bool disableEventLoopOnBridgeless() = 0;
   virtual bool enableAlignItemsBaselineOnFabricIOS() = 0;
   virtual bool enableBridgelessArchitecture() = 0;
   virtual bool enableCleanTextInputYogaNode() = 0;
@@ -45,7 +45,6 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool enableLineHeightCenteringOnAndroid() = 0;
   virtual bool enableLineHeightCenteringOnIOS() = 0;
   virtual bool enableLongTaskAPI() = 0;
-  virtual bool enableMicrotasks() = 0;
   virtual bool enablePreciseSchedulingForPremountItemsOnAndroid() = 0;
   virtual bool enablePropsUpdateReconciliationAndroid() = 0;
   virtual bool enableReportEventPaintTime() = 0;
@@ -66,7 +65,6 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool traceTurboModulePromiseRejectionsOnAndroid() = 0;
   virtual bool useFabricInterop() = 0;
   virtual bool useImmediateExecutorInAndroidBridgeless() = 0;
-  virtual bool useModernRuntimeScheduler() = 0;
   virtual bool useNativeViewConfigsInBridgelessMode() = 0;
   virtual bool useOptimisedViewPreallocationOnAndroid() = 0;
   virtual bool useOptimizedEventBatchingOnAndroid() = 0;

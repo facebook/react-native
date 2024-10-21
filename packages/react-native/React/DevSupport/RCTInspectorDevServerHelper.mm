@@ -142,15 +142,11 @@ static void sendEventToAllConnections(NSString *event)
 
 + (void)openDebugger:(NSURL *)bundleURL withErrorMessage:(NSString *)errorMessage
 {
-  NSString *appId = [[[NSBundle mainBundle] bundleIdentifier]
-      stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLQueryAllowedCharacterSet];
-
   NSString *escapedInspectorDeviceId = [getInspectorDeviceId()
       stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLQueryAllowedCharacterSet];
 
-  NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://%@/open-debugger?appId=%@&device=%@",
+  NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://%@/open-debugger?device=%@",
                                                                getServerHost(bundleURL),
-                                                               appId,
                                                                escapedInspectorDeviceId]];
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
   [request setHTTPMethod:@"POST"];

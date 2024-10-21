@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1e6c8bec2f050812b646da65d04f53bd>>
+ * @generated SignedSource<<8ae04f3557cef4ea1a3a695a055852bc>>
  */
 
 /**
@@ -35,11 +35,11 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool batchRenderingUpdatesInEventLoop() override {
+  bool completeReactInstanceCreationOnBgThreadOnAndroid() override {
     return false;
   }
 
-  bool completeReactInstanceCreationOnBgThreadOnAndroid() override {
+  bool disableEventLoopOnBridgeless() override {
     return false;
   }
 
@@ -104,10 +104,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableLongTaskAPI() override {
-    return false;
-  }
-
-  bool enableMicrotasks() override {
     return false;
   }
 
@@ -188,10 +184,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool useImmediateExecutorInAndroidBridgeless() override {
-    return false;
-  }
-
-  bool useModernRuntimeScheduler() override {
     return false;
   }
 

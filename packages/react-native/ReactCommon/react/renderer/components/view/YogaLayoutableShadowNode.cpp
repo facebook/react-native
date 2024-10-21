@@ -388,6 +388,12 @@ void YogaLayoutableShadowNode::updateYogaProps() {
         !viewProps.filter.empty();
     YGNodeSetAlwaysFormsContainingBlock(&yogaNode_, alwaysFormsContainingBlock);
   }
+
+  if (yogaNode_.style().display() == yoga::Display::Contents) {
+    ShadowNode::traits_.set(ShadowNodeTraits::ForceFlattenView);
+  } else {
+    ShadowNode::traits_.unset(ShadowNodeTraits::ForceFlattenView);
+  }
 }
 
 /*static*/ yoga::Style YogaLayoutableShadowNode::applyAliasedProps(

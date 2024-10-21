@@ -11,7 +11,6 @@
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 
 import RNTesterText from '../../components/RNTesterText';
-
 import * as React from 'react';
 import {useState} from 'react';
 import {Modal, Pressable, StyleSheet, Text, View} from 'react-native';

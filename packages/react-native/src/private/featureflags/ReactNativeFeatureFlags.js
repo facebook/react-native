@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c5409bebf989881699e66c4f6a4e1cfe>>
+ * @generated SignedSource<<7720626925990b68193207bb1ce18c4b>>
  * @flow strict
  */
 
@@ -51,9 +51,11 @@ export type ReactNativeFeatureFlagsJsOnlyOverrides = OverridesFor<ReactNativeFea
 export type ReactNativeFeatureFlags = {
   ...ReactNativeFeatureFlagsJsOnly,
   commonTestFlag: Getter<boolean>,
+  commonTestFlagWithoutNativeImplementation: Getter<boolean>,
   allowRecursiveCommitsWithSynchronousMountOnAndroid: Getter<boolean>,
   batchRenderingUpdatesInEventLoop: Getter<boolean>,
   completeReactInstanceCreationOnBgThreadOnAndroid: Getter<boolean>,
+  disableEventLoopOnBridgeless: Getter<boolean>,
   enableAlignItemsBaselineOnFabricIOS: Getter<boolean>,
   enableBridgelessArchitecture: Getter<boolean>,
   enableCleanTextInputYogaNode: Getter<boolean>,
@@ -190,6 +192,10 @@ export const useRefsForTextInputState: Getter<boolean> = createJavaScriptFlagGet
  */
 export const commonTestFlag: Getter<boolean> = createNativeFlagGetter('commonTestFlag', false);
 /**
+ * Common flag for testing (without native implementation). Do NOT modify.
+ */
+export const commonTestFlagWithoutNativeImplementation: Getter<boolean> = createNativeFlagGetter('commonTestFlagWithoutNativeImplementation', false);
+/**
  * Adds support for recursively processing commits that mount synchronously (Android only).
  */
 export const allowRecursiveCommitsWithSynchronousMountOnAndroid: Getter<boolean> = createNativeFlagGetter('allowRecursiveCommitsWithSynchronousMountOnAndroid', false);
@@ -201,6 +207,10 @@ export const batchRenderingUpdatesInEventLoop: Getter<boolean> = createNativeFla
  * Do not wait for a main-thread dispatch to complete init to start executing work on the JS thread on Android
  */
 export const completeReactInstanceCreationOnBgThreadOnAndroid: Getter<boolean> = createNativeFlagGetter('completeReactInstanceCreationOnBgThreadOnAndroid', false);
+/**
+ * The bridgeless architecture enables the event loop by default. This feature flag allows us to force disabling it in specific instances.
+ */
+export const disableEventLoopOnBridgeless: Getter<boolean> = createNativeFlagGetter('disableEventLoopOnBridgeless', false);
 /**
  * Kill-switch to turn off support for aling-items:baseline on Fabric iOS.
  */

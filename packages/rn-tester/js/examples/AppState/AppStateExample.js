@@ -13,9 +13,9 @@
 import type {AppStateValues} from 'react-native/Libraries/AppState/AppState';
 import type {EventSubscription} from 'react-native/Libraries/vendor/emitter/EventEmitter';
 
+import RNTesterText from '../../components/RNTesterText';
 import React from 'react';
 import {AppState, Platform, View} from 'react-native';
-import RNTesterText from '../../components/RNTesterText';
 
 class AppStateSubscription extends React.Component<
   $FlowFixMeProps,

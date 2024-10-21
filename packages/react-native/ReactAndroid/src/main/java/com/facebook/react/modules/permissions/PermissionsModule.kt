@@ -183,7 +183,8 @@ public class PermissionsModule(reactContext: ReactApplicationContext?) :
       return activity
     }
 
-  private companion object {
+  public companion object {
+    public const val NAME: String = NativePermissionsAndroidSpec.NAME
     private const val ERROR_INVALID_ACTIVITY = "E_INVALID_ACTIVITY"
   }
 }

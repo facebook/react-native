@@ -245,13 +245,17 @@ static void sliceChildShadowNodeViewPairsRecursively(
     // shuffling their children around.
     bool childrenFormStackingContexts = shadowNode.getTraits().check(
         ShadowNodeTraits::Trait::ChildrenFormStackingContext);
-    bool isConcreteView =
-        childShadowNode.getTraits().check(ShadowNodeTraits::Trait::FormsView) ||
-        childrenFormStackingContexts;
-    bool areChildrenFlattened =
+    bool isConcreteView = (childShadowNode.getTraits().check(
+                               ShadowNodeTraits::Trait::FormsView) ||
+                           childrenFormStackingContexts) &&
         !childShadowNode.getTraits().check(
-            ShadowNodeTraits::Trait::FormsStackingContext) &&
-        !childrenFormStackingContexts;
+            ShadowNodeTraits::Trait::ForceFlattenView);
+    bool areChildrenFlattened =
+        (!childShadowNode.getTraits().check(
+             ShadowNodeTraits::Trait::FormsStackingContext) &&
+         !childrenFormStackingContexts) ||
+        childShadowNode.getTraits().check(
+            ShadowNodeTraits::Trait::ForceFlattenView);
 
     Point storedOrigin = {};
     if (areChildrenFlattened) {

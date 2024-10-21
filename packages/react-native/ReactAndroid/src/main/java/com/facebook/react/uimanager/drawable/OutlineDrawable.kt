@@ -15,6 +15,7 @@ import android.graphics.DashPathEffect
 import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.PathEffect
+import android.graphics.PixelFormat
 import android.graphics.RectF
 import android.graphics.drawable.Drawable
 import com.facebook.react.uimanager.PixelUtil.dpToPx
@@ -23,14 +24,15 @@ import com.facebook.react.uimanager.style.ComputedBorderRadius
 import com.facebook.react.uimanager.style.CornerRadii
 import com.facebook.react.uimanager.style.OutlineStyle
 import kotlin.math.roundToInt
-import kotlin.properties.ObservableProperty
-import kotlin.properties.ReadWriteProperty
-import kotlin.reflect.KProperty
 
 /** Draws outline https://drafts.csswg.org/css-ui/#outline */
 internal class OutlineDrawable(
     private val context: Context,
-    borderRadius: BorderRadiusStyle? = null,
+    /*
+     * We assume borderRadius to be shared across multiple drawables
+     * therefore we should manually invalidate this drawable when changing it
+     */
+    var borderRadius: BorderRadiusStyle? = null,
     outlineColor: Int,
     outlineOffset: Float,
     outlineStyle: OutlineStyle,
@@ -43,17 +45,14 @@ internal class OutlineDrawable(
    */
   private val gapBetweenPaths = 0.8f
 
-  private fun <T> invalidatingChange(initialValue: T): ReadWriteProperty<Any?, T> =
-      object : ObservableProperty<T>(initialValue) {
-        override fun afterChange(property: KProperty<*>, oldValue: T, newValue: T) {
-          if (oldValue != newValue) {
-            invalidateSelf()
-          }
-        }
+  public var outlineOffset: Float = outlineOffset
+    set(value) {
+      if (value != field) {
+        field = value
+        invalidateSelf()
       }
+    }
 
-  public var borderRadius: BorderRadiusStyle? by invalidatingChange(borderRadius)
-  public var outlineOffset: Float by invalidatingChange(outlineOffset)
   public var outlineStyle: OutlineStyle = outlineStyle
     set(value) {
       if (value != field) {
@@ -106,8 +105,14 @@ internal class OutlineDrawable(
   }
 
   @Deprecated("Deprecated in Java")
-  override fun getOpacity(): Int =
-      ((outlinePaint.alpha / 255f) / (Color.alpha(outlineColor) / 255f) * 255f).roundToInt()
+  override fun getOpacity(): Int {
+    val alpha = outlinePaint.alpha
+    return when (alpha) {
+      255 -> PixelFormat.OPAQUE
+      in 1..254 -> PixelFormat.TRANSLUCENT
+      else -> PixelFormat.TRANSPARENT
+    }
+  }
 
   override fun draw(canvas: Canvas) {
     if (outlineWidth == 0f) {

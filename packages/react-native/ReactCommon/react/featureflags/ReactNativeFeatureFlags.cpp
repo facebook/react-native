@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b988bf1951938333fb314fa691dc4a4a>>
+ * @generated SignedSource<<cf1310c233584488a104009c30226600>>
  */
 
 /**
@@ -34,12 +34,12 @@ bool ReactNativeFeatureFlags::allowRecursiveCommitsWithSynchronousMountOnAndroid
   return getAccessor().allowRecursiveCommitsWithSynchronousMountOnAndroid();
 }
 
-bool ReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop() {
-  return getAccessor().batchRenderingUpdatesInEventLoop();
-}
-
 bool ReactNativeFeatureFlags::completeReactInstanceCreationOnBgThreadOnAndroid() {
   return getAccessor().completeReactInstanceCreationOnBgThreadOnAndroid();
+}
+
+bool ReactNativeFeatureFlags::disableEventLoopOnBridgeless() {
+  return getAccessor().disableEventLoopOnBridgeless();
 }
 
 bool ReactNativeFeatureFlags::enableAlignItemsBaselineOnFabricIOS() {
@@ -104,10 +104,6 @@ bool ReactNativeFeatureFlags::enableLineHeightCenteringOnIOS() {
 
 bool ReactNativeFeatureFlags::enableLongTaskAPI() {
   return getAccessor().enableLongTaskAPI();
-}
-
-bool ReactNativeFeatureFlags::enableMicrotasks() {
-  return getAccessor().enableMicrotasks();
 }
 
 bool ReactNativeFeatureFlags::enablePreciseSchedulingForPremountItemsOnAndroid() {
@@ -188,10 +184,6 @@ bool ReactNativeFeatureFlags::useFabricInterop() {
 
 bool ReactNativeFeatureFlags::useImmediateExecutorInAndroidBridgeless() {
   return getAccessor().useImmediateExecutorInAndroidBridgeless();
-}
-
-bool ReactNativeFeatureFlags::useModernRuntimeScheduler() {
-  return getAccessor().useModernRuntimeScheduler();
 }
 
 bool ReactNativeFeatureFlags::useNativeViewConfigsInBridgelessMode() {

@@ -8,9 +8,9 @@
  * @flow
  */
 
+import RNTesterText from '../../components/RNTesterText';
 import React, {useEffect, useState} from 'react';
 import {Dimensions, useWindowDimensions} from 'react-native';
-import RNTesterText from '../../components/RNTesterText';
 
 type Props = {dim: string};
 

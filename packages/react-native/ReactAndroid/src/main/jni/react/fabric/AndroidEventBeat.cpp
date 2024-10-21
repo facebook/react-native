@@ -9,52 +9,30 @@
 #include <react/renderer/core/EventBeat.h>
 #include <react/renderer/uimanager/primitives.h>
 
-#include "AsyncEventBeat.h"
+#include "AndroidEventBeat.h"
 
 namespace facebook::react {
 
-AsyncEventBeat::AsyncEventBeat(
-    const EventBeat::SharedOwnerBox& ownerBox,
+AndroidEventBeat::AndroidEventBeat(
+    std::shared_ptr<OwnerBox> ownerBox,
     EventBeatManager* eventBeatManager,
     RuntimeExecutor runtimeExecutor,
     jni::global_ref<jobject> javaUIManager)
-    : EventBeat(ownerBox),
+    : EventBeat(std::move(ownerBox), std::move(runtimeExecutor)),
       eventBeatManager_(eventBeatManager),
-      runtimeExecutor_(std::move(runtimeExecutor)),
       javaUIManager_(std::move(javaUIManager)) {
   eventBeatManager->addObserver(*this);
 }
 
-AsyncEventBeat::~AsyncEventBeat() {
+AndroidEventBeat::~AndroidEventBeat() {
   eventBeatManager_->removeObserver(*this);
 }
 
-void AsyncEventBeat::tick() const {
-  if (!isRequested_ || isBeatCallbackScheduled_) {
-    return;
-  }
-
-  isRequested_ = false;
-  isBeatCallbackScheduled_ = true;
-
-  runtimeExecutor_([this, ownerBox = ownerBox_](jsi::Runtime& runtime) {
-    auto owner = ownerBox->owner.lock();
-    if (!owner) {
-      return;
-    }
-
-    isBeatCallbackScheduled_ = false;
-    if (beatCallback_) {
-      beatCallback_(runtime);
-    }
-  });
+void AndroidEventBeat::tick() const {
+  induce();
 }
 
-void AsyncEventBeat::induce() const {
-  tick();
-}
-
-void AsyncEventBeat::request() const {
+void AndroidEventBeat::request() const {
   bool alreadyRequested = isRequested_;
   EventBeat::request();
   if (!alreadyRequested) {

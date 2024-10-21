@@ -15,8 +15,8 @@ import type {InterpolationConfigType} from './AnimatedInterpolation';
 import type AnimatedNode from './AnimatedNode';
 import type AnimatedTracking from './AnimatedTracking';
 
-import InteractionManager from '../../Interaction/InteractionManager';
 import NativeAnimatedHelper from '../../../src/private/animated/NativeAnimatedHelper';
+import InteractionManager from '../../Interaction/InteractionManager';
 import AnimatedInterpolation from './AnimatedInterpolation';
 import AnimatedWithChildren from './AnimatedWithChildren';
 

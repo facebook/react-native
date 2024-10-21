@@ -11,7 +11,6 @@
 'use strict';
 
 import RNTesterText from '../../components/RNTesterText';
-
 import React, {useState} from 'react';
 import {Button, PixelRatio, StyleSheet, TextInput, View} from 'react-native';
 

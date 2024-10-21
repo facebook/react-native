@@ -12,16 +12,16 @@
 
 'use strict';
 
-const metroBabelRegister = require('metro-babel-register');
-const nullthrows = require('nullthrows');
-const createCacheKeyFunction =
-  require('@jest/create-cache-key-function').default;
-
+// eslint-disable-next-line lint/sort-imports
 const {
-  transformSync: babelTransformSync,
   transformFromAstSync: babelTransformFromAstSync,
+  transformSync: babelTransformSync,
 } = require('@babel/core');
 const generate = require('@babel/generator').default;
+const createCacheKeyFunction =
+  require('@jest/create-cache-key-function').default;
+const metroBabelRegister = require('metro-babel-register');
+const nullthrows = require('nullthrows');
 
 if (process.env.FBSOURCE_ENV === '1') {
   // If we're running in the Meta-internal monorepo, use the central Babel
