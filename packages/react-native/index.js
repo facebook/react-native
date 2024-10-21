@@ -375,7 +375,7 @@ module.exports = {
   get processColor(): processColor {
     return require('./Libraries/StyleSheet/processColor').default;
   },
-  get requireNativeComponent(): <T>(
+  get requireNativeComponent(): <T: {...}>(
     uiViewClassName: string,
   ) => HostComponent<T> {
     return require('./Libraries/ReactNative/requireNativeComponent').default;
