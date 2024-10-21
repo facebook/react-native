@@ -6976,7 +6976,7 @@ exports[`public API should not change unintentionally Libraries/PermissionsAndro
   ...
 };
 declare class PermissionsAndroid {
-  PERMISSIONS: {|
+  PERMISSIONS: $ReadOnly<{|
     ACCEPT_HANDOVER: string,
     ACCESS_BACKGROUND_LOCATION: string,
     ACCESS_COARSE_LOCATION: string,
@@ -7020,12 +7020,12 @@ declare class PermissionsAndroid {
     WRITE_CALL_LOG: string,
     WRITE_CONTACTS: string,
     WRITE_EXTERNAL_STORAGE: string,
-  |};
-  RESULTS: {|
+  |}>;
+  RESULTS: $ReadOnly<{|
     DENIED: \\"denied\\",
     GRANTED: \\"granted\\",
     NEVER_ASK_AGAIN: \\"never_ask_again\\",
-  |};
+  |}>;
   checkPermission(permission: PermissionType): Promise<boolean>;
   check(permission: PermissionType): Promise<boolean>;
   requestPermission(
@@ -7418,7 +7418,7 @@ declare module.exports: UIManagerJS;
 
 exports[`public API should not change unintentionally Libraries/ReactNative/DisplayMode.js 1`] = `
 "declare export opaque type DisplayModeType;
-declare const DisplayMode: { [string]: DisplayModeType };
+declare const DisplayMode: { +[string]: DisplayModeType };
 declare export function coerceDisplayMode(value: ?number): DisplayModeType;
 declare export default typeof DisplayMode;
 "
