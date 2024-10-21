@@ -37,11 +37,10 @@ const {logger, CLIError, getDefaultUserTerminal} = (() => {
 })();
 
 /**
- * @param {string[]} _
- * @param {Record<string, unknown>} _ctx
  * @param {Options} args
+ * @returns {{ xcodeProject: XcodeProject, scheme: string }}
  */
-function runMacOS(_, _ctx, args) {
+function parseArgs(args) {
   if (!fs.existsSync(args.projectPath)) {
     throw new CLIError(
       'macOS project folder not found. Are you sure this is a React Native project?',
@@ -78,6 +77,26 @@ function runMacOS(_, _ctx, args) {
     } "${chalk.bold(xcodeProject.name)}"`,
   );
 
+  return {xcodeProject, scheme};
+}
+
+/**
+ * @param {string[]} _
+ * @param {Record<string, unknown>} _ctx
+ * @param {Options} args
+ */
+function buildMacOS(_, _ctx, args) {
+  const {xcodeProject, scheme} = parseArgs(args);
+  return buildProject(xcodeProject, scheme, {...args, packager: false});
+}
+
+/**
+ * @param {string[]} _
+ * @param {Record<string, unknown>} _ctx
+ * @param {Options} args
+ */
+function runMacOS(_, _ctx, args) {
+  const {xcodeProject, scheme} = parseArgs(args);
   return run(xcodeProject, scheme, args);
 }
 
@@ -113,7 +132,7 @@ async function run(xcodeProject, scheme, args) {
 
   child_process.exec(
     'open -b ' + bundleID + ' -a ' + '"' + appPath + '"',
-    (error, stdout, stderr) => {
+    (error, _stdout, stderr) => {
       if (error) {
         logger.error('Failed to launch the app', stderr);
       } else {
@@ -272,58 +291,75 @@ function getProcessOptions({packager, terminal, port}) {
   };
 }
 
-module.exports = {
-  name: 'run-macos',
-  description: 'builds your app and starts it',
-  func: runMacOS,
-  examples: [
-    {
-      desc: 'Run the macOS app',
-      cmd: 'react-native run-macos',
-    },
-  ],
-  options: [
-    {
-      name: '--configuration [string]',
-      description:
-        '[Deprecated] Explicitly set the scheme configuration to use',
-      default: 'Debug',
-    },
-    {
-      name: '--mode [string]',
-      description:
-        'Explicitly set the scheme configuration to use, corresponds to `--configuration` in `xcodebuild` command, e.g. Debug, Release.',
-    },
-    {
-      name: '--scheme [string]',
-      description:
-        'Explicitly set Xcode scheme to use, corresponds to `--scheme` in `xcodebuild` command.',
-    },
-    {
-      name: '--project-path [string]',
-      description:
-        'Path relative to project root where the Xcode project ' +
-        '(.xcodeproj) lives.',
-      default: 'macos',
-    },
-    {
-      name: '--no-packager',
-      description: 'Do not launch packager while building',
-    },
-    {
-      name: '--verbose',
-      description: 'Do not use xcpretty even if installed',
-    },
-    {
-      name: '--port [number]',
-      default: process.env.RCT_METRO_PORT || 8081,
-      parse: val => Number(val),
-    },
-    {
-      name: '--terminal [string]',
-      description:
-        'Launches the Metro Bundler in a new window using the specified terminal path.',
-      default: getDefaultUserTerminal,
-    },
-  ],
-};
+const commonOptions = [
+  {
+    name: '--mode [string]',
+    description:
+      'Explicitly set the scheme configuration to use, corresponds to `--configuration` in `xcodebuild` command, e.g. Debug, Release.',
+  },
+  {
+    name: '--scheme [string]',
+    description:
+      'Explicitly set Xcode scheme to use, corresponds to `--scheme` in `xcodebuild` command.',
+  },
+  {
+    name: '--project-path [string]',
+    description:
+      'Path relative to project root where the Xcode project (.xcodeproj) lives.',
+    default: 'macos',
+  },
+  {
+    name: '--verbose',
+    description: 'Do not use xcpretty even if installed',
+  },
+];
+
+module.exports = [
+  {
+    name: 'build-macos',
+    description: 'builds your app',
+    func: buildMacOS,
+    examples: [
+      {
+        desc: 'Build the macOS app',
+        cmd: 'react-native build-macos',
+      },
+    ],
+    options: commonOptions,
+  },
+  {
+    name: 'run-macos',
+    description: 'builds your app and starts it',
+    func: runMacOS,
+    examples: [
+      {
+        desc: 'Run the macOS app',
+        cmd: 'react-native run-macos',
+      },
+    ],
+    options: [
+      {
+        name: '--configuration [string]',
+        description:
+          '[Deprecated] Explicitly set the scheme configuration to use',
+        default: 'Debug',
+      },
+      ...commonOptions,
+      {
+        name: '--no-packager',
+        description: 'Do not launch packager while building',
+      },
+      {
+        name: '--port [number]',
+        default: process.env.RCT_METRO_PORT || 8081,
+        parse: val => Number(val),
+      },
+      {
+        name: '--terminal [string]',
+        description:
+          'Launches the Metro Bundler in a new window using the specified terminal path.',
+        default: getDefaultUserTerminal,
+      },
+    ],
+  },
+];

@@ -42,7 +42,7 @@ try {
   }
 }
 
-const macosCommands = [require('./local-cli/runMacOS/runMacOS')]; // [macOS]
+const macosCommands = require('./local-cli/runMacOS/runMacOS'); // [macOS]
 const {
   bundleCommand,
   startCommand,
