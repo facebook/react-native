@@ -15,7 +15,7 @@ public enum class ComputedBorderRadiusProp {
   COMPUTED_BORDER_BOTTOM_LEFT_RADIUS,
 }
 
-/** Phsysical edge lengths (in DIPs) for a border-radius. */
+/** Physical edge lengths (in DIPs) for a border-radius. */
 public data class ComputedBorderRadius(
     val topLeft: CornerRadii,
     val topRight: CornerRadii,
@@ -30,6 +30,10 @@ public data class ComputedBorderRadius(
         bottomLeft.horizontal > 0f ||
         bottomLeft.vertical > 0f ||
         bottomRight.horizontal > 0f
+  }
+
+  public fun isUniform(): Boolean {
+    return topLeft == topRight && topLeft == bottomLeft && topLeft == bottomRight
   }
 
   public fun get(property: ComputedBorderRadiusProp): CornerRadii {
