@@ -93,7 +93,7 @@ type OptionalProps<SectionT: SectionBase<any>> = {|
   removeClippedSubviews?: boolean,
 |};
 
-export type Props<SectionT> = {|
+export type Props<SectionT: SectionBase<any>> = $ReadOnly<{|
   ...$Diff<
     VirtualizedSectionListProps<SectionT>,
     {
@@ -115,7 +115,7 @@ export type Props<SectionT> = {|
   >,
   ...RequiredProps<SectionT>,
   ...OptionalProps<SectionT>,
-|};
+|}>;
 
 /**
  * A performant interface for rendering sectioned lists, supporting the most handy features:
@@ -172,10 +172,10 @@ export type Props<SectionT> = {|
  *   Alternatively, you can provide a custom `keyExtractor` prop.
  *
  */
-const SectionList: AbstractComponent<Props<SectionBase<any>>, any> = forwardRef<
-  Props<SectionBase<any>>,
-  any,
->((props, ref) => {
+const SectionList: component(
+  ref?: React.RefSetter<any>,
+  ...Props<SectionBase<any>>
+) = forwardRef<Props<SectionBase<any>>, any>((props, ref) => {
   const propsWithDefaults = {
     stickySectionHeadersEnabled: Platform.OS === 'ios',
     ...props,
