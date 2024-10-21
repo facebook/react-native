@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<255e1fec50a4c211c3cc814eaf92ee9b>>
+ * @generated SignedSource<<15f7e1de5286bbb63d11f55819d23a68>>
  * @flow strict
  */
 
@@ -45,6 +45,7 @@ export interface Spec extends TurboModule {
   +enableLayoutAnimationsOnIOS?: () => boolean;
   +enableLongTaskAPI?: () => boolean;
   +enableMicrotasks?: () => boolean;
+  +enableNewBackgroundAndBorderDrawables?: () => boolean;
   +enablePreciseSchedulingForPremountItemsOnAndroid?: () => boolean;
   +enablePropsUpdateReconciliationAndroid?: () => boolean;
   +enableReportEventPaintTime?: () => boolean;

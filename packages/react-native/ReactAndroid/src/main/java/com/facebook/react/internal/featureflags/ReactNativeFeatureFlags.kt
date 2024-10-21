@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9735aa2b6c596980927a6899b528cad7>>
+ * @generated SignedSource<<6eb9ba14445c1ce6b54a690941171485>>
  */
 
 /**
@@ -141,6 +141,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableLongTaskAPI(): Boolean = accessor.enableLongTaskAPI()
+
+  /**
+   * Use BackgroundDrawable and BorderDrawable instead of CSSBackgroundDrawable
+   */
+  @JvmStatic
+  public fun enableNewBackgroundAndBorderDrawables(): Boolean = accessor.enableNewBackgroundAndBorderDrawables()
 
   /**
    * Moves execution of pre-mount items to outside the choregrapher in the main thread, so we can estimate idle time more precisely (Android only).

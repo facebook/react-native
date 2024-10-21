@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6b0da530cc8e7a846b5a9527bc5e3648>>
+ * @generated SignedSource<<b6dd6a5d02c9070c3f35f70d5d1b7e35>>
  */
 
 /**
@@ -43,6 +43,7 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var enableLayoutAnimationsOnAndroidCache: Boolean? = null
   private var enableLayoutAnimationsOnIOSCache: Boolean? = null
   private var enableLongTaskAPICache: Boolean? = null
+  private var enableNewBackgroundAndBorderDrawablesCache: Boolean? = null
   private var enablePreciseSchedulingForPremountItemsOnAndroidCache: Boolean? = null
   private var enablePropsUpdateReconciliationAndroidCache: Boolean? = null
   private var enableReportEventPaintTimeCache: Boolean? = null
@@ -256,6 +257,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.enableLongTaskAPI()
       accessedFeatureFlags.add("enableLongTaskAPI")
       enableLongTaskAPICache = cached
+    }
+    return cached
+  }
+
+  override fun enableNewBackgroundAndBorderDrawables(): Boolean {
+    var cached = enableNewBackgroundAndBorderDrawablesCache
+    if (cached == null) {
+      cached = currentProvider.enableNewBackgroundAndBorderDrawables()
+      accessedFeatureFlags.add("enableNewBackgroundAndBorderDrawables")
+      enableNewBackgroundAndBorderDrawablesCache = cached
     }
     return cached
   }

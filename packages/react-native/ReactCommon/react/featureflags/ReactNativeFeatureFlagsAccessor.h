@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<adf1eaf33e1d85dfd15e2d4e8c740d2f>>
+ * @generated SignedSource<<e6092a90044213cc3b88f995a301aeb6>>
  */
 
 /**
@@ -51,6 +51,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableLayoutAnimationsOnAndroid();
   bool enableLayoutAnimationsOnIOS();
   bool enableLongTaskAPI();
+  bool enableNewBackgroundAndBorderDrawables();
   bool enablePreciseSchedulingForPremountItemsOnAndroid();
   bool enablePropsUpdateReconciliationAndroid();
   bool enableReportEventPaintTime();
@@ -88,7 +89,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 45> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 46> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> allowRecursiveCommitsWithSynchronousMountOnAndroid_;
@@ -109,6 +110,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableLayoutAnimationsOnAndroid_;
   std::atomic<std::optional<bool>> enableLayoutAnimationsOnIOS_;
   std::atomic<std::optional<bool>> enableLongTaskAPI_;
+  std::atomic<std::optional<bool>> enableNewBackgroundAndBorderDrawables_;
   std::atomic<std::optional<bool>> enablePreciseSchedulingForPremountItemsOnAndroid_;
   std::atomic<std::optional<bool>> enablePropsUpdateReconciliationAndroid_;
   std::atomic<std::optional<bool>> enableReportEventPaintTime_;
