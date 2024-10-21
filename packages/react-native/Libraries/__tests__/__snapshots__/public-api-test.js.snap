@@ -1793,10 +1793,12 @@ declare class KeyboardAvoidingView extends React.Component<Props, State> {
   viewRef: { current: React.ElementRef<typeof View> | null, ... };
   _initialFrameHeight: number;
   _bottom: number;
+  _windowWidth: number;
   constructor(props: Props): void;
   _relativeKeyboardHeight(keyboardFrame: KeyboardMetrics): Promise<number>;
   _onKeyboardChange: $FlowFixMe;
   _onLayout: $FlowFixMe;
+  _onDimensionsChange: $FlowFixMe;
   _setBottom: $FlowFixMe;
   _updateBottomIfNecessary: $FlowFixMe;
   componentDidUpdate(_: Props, prevState: State): void;
@@ -8540,8 +8542,8 @@ export type FilterFunction =
   | { opacity: number | string }
   | { saturate: number | string }
   | { sepia: number | string }
-  | { dropShadow: DropShadowPrimitive | string };
-export type DropShadowPrimitive = {
+  | { dropShadow: DropShadowValue | string };
+export type DropShadowValue = {
   offsetX: number | string,
   offsetY: number | string,
   standardDeviation?: number | string,
@@ -8555,7 +8557,7 @@ export type GradientValue = {
     positions?: $ReadOnlyArray<string>,
   }>,
 };
-export type BoxShadowPrimitive = {
+export type BoxShadowValue = {
   offsetX: number | string,
   offsetY: number | string,
   color?: ____ColorValue_Internal,
@@ -8622,8 +8624,8 @@ export type ____ViewStyle_InternalCore = $ReadOnly<{
   elevation?: number,
   pointerEvents?: \\"auto\\" | \\"none\\" | \\"box-none\\" | \\"box-only\\",
   cursor?: CursorValue,
-  experimental_boxShadow?: $ReadOnlyArray<BoxShadowPrimitive> | string,
-  experimental_filter?: $ReadOnlyArray<FilterFunction> | string,
+  boxShadow?: $ReadOnlyArray<BoxShadowValue> | string,
+  filter?: $ReadOnlyArray<FilterFunction> | string,
   experimental_mixBlendMode?: ____BlendMode_Internal,
   experimental_backgroundImage?: $ReadOnlyArray<GradientValue> | string,
   isolation?: \\"auto\\" | \\"isolate\\",
@@ -8895,7 +8897,7 @@ exports[`public API should not change unintentionally Libraries/StyleSheet/proce
   inset?: boolean,
 };
 declare export default function processBoxShadow(
-  rawBoxShadows: ?($ReadOnlyArray<BoxShadowPrimitive> | string)
+  rawBoxShadows: ?($ReadOnlyArray<BoxShadowValue> | string)
 ): Array<ParsedBoxShadow>;
 "
 `;

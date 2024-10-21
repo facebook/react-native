@@ -10,20 +10,44 @@
  */
 
 import type {Config} from '@react-native-community/cli-types';
+import type TerminalReporter from 'metro/src/lib/TerminalReporter';
 
-import {KeyPressHandler} from '../../utils/KeyPressHandler';
 import {logger} from '../../utils/logger';
+import OpenDebuggerKeyboardHandler from './OpenDebuggerKeyboardHandler';
 import chalk from 'chalk';
 import execa from 'execa';
-import fetch from 'node-fetch';
+import invariant from 'invariant';
+import readline from 'readline';
+import {ReadStream} from 'tty';
 
 const CTRL_C = '\u0003';
 const CTRL_D = '\u0004';
+const RELOAD_TIMEOUT = 500;
+
+const throttle = (callback: () => void, timeout: number) => {
+  let previousCallTimestamp = 0;
+  return () => {
+    const currentCallTimestamp = new Date().getTime();
+    if (currentCallTimestamp - previousCallTimestamp > timeout) {
+      previousCallTimestamp = currentCallTimestamp;
+      callback();
+    }
+  };
+};
+
+type KeyEvent = {
+  sequence: string,
+  name: string,
+  ctrl: boolean,
+  meta: boolean,
+  shift: boolean,
+};
 
 export default function attachKeyHandlers({
   cliConfig,
   devServerUrl,
   messageSocket,
+  reporter,
 }: {
   cliConfig: Config,
   devServerUrl: string,
@@ -31,21 +55,40 @@ export default function attachKeyHandlers({
     broadcast: (type: string, params?: Record<string, mixed> | null) => void,
     ...
   }>,
+  reporter: TerminalReporter,
 }) {
   if (process.stdin.isTTY !== true) {
     logger.debug('Interactive mode is not supported in this environment');
     return;
   }
 
+  readline.emitKeypressEvents(process.stdin);
+  setRawMode(true);
+
   const execaOptions = {
     env: {FORCE_COLOR: chalk.supportsColor ? 'true' : 'false'},
   };
 
-  const onPress = async (key: string) => {
-    switch (key.toLowerCase()) {
+  const reload = throttle(() => {
+    logger.info('Reloading connected app(s)...');
+    messageSocket.broadcast('reload', null);
+  }, RELOAD_TIMEOUT);
+
+  const openDebuggerKeyboardHandler = new OpenDebuggerKeyboardHandler({
+    reporter,
+    devServerUrl,
+  });
+
+  process.stdin.on('keypress', (str: string, key: KeyEvent) => {
+    logger.debug(`Key pressed: ${key.sequence}`);
+
+    if (openDebuggerKeyboardHandler.maybeHandleTargetSelection(key.name)) {
+      return;
+    }
+
+    switch (key.sequence) {
       case 'r':
-        logger.info('Reloading connected app(s)...');
-        messageSocket.broadcast('reload', null);
+        reload();
         break;
       case 'd':
         logger.info('Opening Dev Menu...');
@@ -76,21 +119,19 @@ export default function attachKeyHandlers({
         ).stdout?.pipe(process.stdout);
         break;
       case 'j':
-        // TODO(T192878199): Add multi-target selection
-        await fetch(devServerUrl + '/open-debugger', {method: 'POST'});
+        // eslint-disable-next-line no-void
+        void openDebuggerKeyboardHandler.handleOpenDebugger();
         break;
       case CTRL_C:
       case CTRL_D:
+        openDebuggerKeyboardHandler.dismiss();
         logger.info('Stopping server');
-        keyPressHandler.stopInterceptingKeyStrokes();
+        setRawMode(false);
+        process.stdin.pause();
         process.emit('SIGINT');
         process.exit();
     }
-  };
-
-  const keyPressHandler = new KeyPressHandler(onPress);
-  keyPressHandler.createInteractionListener();
-  keyPressHandler.startInterceptingKeyStrokes();
+  });
 
   logger.log(
     [
@@ -103,4 +144,12 @@ export default function attachKeyHandlers({
       '',
     ].join('\n'),
   );
+}
+
+function setRawMode(enable: boolean) {
+  invariant(
+    process.stdin instanceof ReadStream,
+    'process.stdin must be a readable stream to modify raw mode',
+  );
+  process.stdin.setRawMode(enable);
 }

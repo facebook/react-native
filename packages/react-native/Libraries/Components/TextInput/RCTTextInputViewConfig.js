@@ -85,8 +85,15 @@ const RCTTextInputViewConfig = {
     topContentSizeChange: {
       registrationName: 'onContentSizeChange',
     },
+    topChangeSync: {
+      registrationName: 'onChangeSync',
+    },
+    topKeyPressSync: {
+      registrationName: 'onKeyPressSync',
+    },
   },
   validAttributes: {
+    dynamicTypeRamp: true,
     fontSize: true,
     fontWeight: true,
     fontVariant: true,
@@ -97,6 +104,7 @@ const RCTTextInputViewConfig = {
     textTransform: true,
     textAlign: true,
     fontFamily: true,
+    lineBreakModeIOS: true,
     lineHeight: true,
     isHighlighted: true,
     writingDirection: true,
@@ -159,6 +167,8 @@ const RCTTextInputViewConfig = {
       onSelectionChange: true,
       onContentSizeChange: true,
       onScroll: true,
+      onChangeSync: true,
+      onKeyPressSync: true,
       // [macOS
       onPaste: true,
       onAutoCorrectChange: true,

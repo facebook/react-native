@@ -831,10 +831,10 @@ const styles = StyleSheet.create({
   },
   boxShadowWithBackground: {
     backgroundColor: 'lightblue',
-    experimental_boxShadow: '0px 0px 10px 0px rgba(0, 0, 0, 0.5)',
+    boxShadow: '0px 0px 10px 0px rgba(0, 0, 0, 0.5)',
   },
   boxShadowMultiOutsetInset: {
-    experimental_boxShadow:
+    boxShadow:
       '-5px -5px 10px 2px rgba(0, 128, 0, 0.5), 5px 5px 10px 2px rgba(128, 0, 0, 0.5), inset orange 0px 0px 20px 0px, black 0px 0px 5px 1px',
     borderColor: 'blue',
     borderWidth: 1,
@@ -847,7 +847,7 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 20,
     marginRight: 80,
     marginTop: 40,
-    experimental_boxShadow: '80px 0px 10px 0px hotpink',
+    boxShadow: '80px 0px 10px 0px hotpink',
     transform: 'rotate(-15deg)',
   },
 });

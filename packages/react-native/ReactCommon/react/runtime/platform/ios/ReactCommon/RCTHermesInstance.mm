@@ -13,6 +13,13 @@ RCTHermesInstance::RCTHermesInstance() : RCTHermesInstance(nullptr, nullptr, fal
 
 RCTHermesInstance::RCTHermesInstance(
     std::shared_ptr<const ReactNativeConfig> reactNativeConfig,
+    CrashManagerProvider crashManagerProvider)
+    : RCTHermesInstance(reactNativeConfig, std::move(crashManagerProvider), false)
+{
+}
+
+RCTHermesInstance::RCTHermesInstance(
+    std::shared_ptr<const ReactNativeConfig> reactNativeConfig,
     CrashManagerProvider crashManagerProvider,
     bool allocInOldGenBeforeTTI)
     : _reactNativeConfig(std::move(reactNativeConfig)),

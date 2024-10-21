@@ -132,6 +132,7 @@ export default function openDebuggerMiddleware({
                 {launchId, useFuseboxEntryPoint},
               ),
             );
+            res.writeHead(200);
             res.end();
             break;
           case 'redirect':

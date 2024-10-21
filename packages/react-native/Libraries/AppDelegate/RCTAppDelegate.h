@@ -67,6 +67,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, nullable) NSDictionary *initialProps;
 @property (nonatomic, strong, nonnull) RCTRootViewFactory *rootViewFactory;
 
+/// If `automaticallyLoadReactNativeWindow` is set to `true`, the React Native window will be loaded automatically.
+@property (nonatomic, assign) BOOL automaticallyLoadReactNativeWindow;
+
 @property (nonatomic, nullable) RCTSurfacePresenterBridgeAdapter *bridgeAdapter;
 
 /**

@@ -153,11 +153,12 @@ const HMRClient: HMRClientNativeInterface = {
         level: 'info',
         data: [
           '\n' +
-            '\x1b[7m' +
-            ' \x1b[1mJavaScript logs have moved!\x1b[22m They will now appear in the debugger console. ' +
-            'Tip: Type \x1b[1mj\x1b[22m in the terminal to open the debugger (requires Google Chrome ' +
-            'or Microsoft Edge).' +
-            '\x1b[27m' +
+            '\u001B[7m' +
+            ' \u001B[1m💡 JavaScript logs will be removed from Metro in React ' +
+            'Native 0.77!\u001B[22m Please use React Native DevTools as your ' +
+            'default tool. Tip: Type \u001B[1mj\u001B[22m in the terminal to ' +
+            'open (requires Google Chrome or Microsoft Edge).' +
+            '\u001B[27m' +
             '\n',
         ],
       }),

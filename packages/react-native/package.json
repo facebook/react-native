@@ -1,6 +1,6 @@
 {
   "name": "react-native-macos",
-  "version": "1000.0.0",
+  "version": "0.76.0-rc.6",
   "description": "React Native for macOS",
   "license": "MIT",
   "repository": {
@@ -84,7 +84,6 @@
     "scripts/update-ruby.sh",
     "sdks/.hermesversion",
     "sdks/hermes-engine",
-    "sdks/ossonly-soloader",
     "sdks/hermesc",
     "settings.gradle.kts",
     "src",
@@ -103,7 +102,7 @@
   },
   "peerDependencies": {
     "@types/react": "^18.2.6",
-    "react": "^19.0.0-rc-fb9a90fa48-20240614"
+    "react": "^18.2.0"
   },
   "peerDependenciesMeta": {
     "@types/react": {
@@ -112,16 +111,18 @@
   },
   "dependencies": {
     "@jest/create-cache-key-function": "^29.6.3",
-    "@react-native-mac/virtualized-lists": "0.76.0-main",
-    "@react-native/assets-registry": "0.76.0-main",
-    "@react-native/codegen": "0.76.0-main",
-    "@react-native/community-cli-plugin": "0.76.0-main",
-    "@react-native/gradle-plugin": "0.76.0-main",
-    "@react-native/js-polyfills": "0.76.0-main",
-    "@react-native/normalize-colors": "0.76.0-main",
+    "@react-native-mac/virtualized-lists": "0.76.0-rc.6",
+    "@react-native/assets-registry": "0.76.0-rc.6",
+    "@react-native/codegen": "0.76.0-rc.6",
+    "@react-native/community-cli-plugin": "0.76.0-rc.6",
+    "@react-native/gradle-plugin": "0.76.0-rc.6",
+    "@react-native/js-polyfills": "0.76.0-rc.6",
+    "@react-native/normalize-colors": "0.76.0-rc.6",
     "abort-controller": "^3.0.0",
     "anser": "^1.4.9",
     "ansi-regex": "^5.0.0",
+    "babel-jest": "^29.7.0",
+    "babel-plugin-syntax-hermes-parser": "^0.23.1",
     "base64-js": "^1.5.1",
     "chalk": "^4.0.0",
     "commander": "^12.0.0",
@@ -132,8 +133,8 @@
     "jest-environment-node": "^29.6.3",
     "jsc-android": "^250231.0.0",
     "memoize-one": "^5.0.0",
-    "metro-runtime": "^0.80.10",
-    "metro-source-map": "^0.80.10",
+    "metro-runtime": "^0.81.0",
+    "metro-source-map": "^0.81.0",
     "mkdirp": "^0.5.1",
     "nullthrows": "^1.1.1",
     "pretty-format": "^29.7.0",
@@ -141,7 +142,7 @@
     "react-devtools-core": "^5.3.1",
     "react-refresh": "^0.14.0",
     "regenerator-runtime": "^0.13.2",
-    "scheduler": "0.25.0-rc-fb9a90fa48-20240614",
+    "scheduler": "0.24.0-canary-efb381bbf-20230505",
     "semver": "^7.1.3",
     "stacktrace-parser": "^0.1.10",
     "whatwg-fetch": "^3.0.0",

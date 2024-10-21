@@ -14,6 +14,7 @@ import type {Reporter} from 'metro/src/lib/reporting';
 import type {TerminalReportableEvent} from 'metro/src/lib/TerminalReporter';
 import typeof TerminalReporter from 'metro/src/lib/TerminalReporter';
 
+import createDevMiddlewareLogger from '../../utils/createDevMiddlewareLogger';
 import isDevServerRunning from '../../utils/isDevServerRunning';
 import loadMetroConfig from '../../utils/loadMetroConfig';
 import {logger} from '../../utils/logger';
@@ -98,6 +99,11 @@ async function runServer(
     );
   }
 
+  let reportEvent: (event: TerminalReportableEvent) => void;
+  const terminal = new Terminal(process.stdout);
+  const ReporterImpl = getReporterImpl(args.customLogReporterPath);
+  const terminalReporter = new ReporterImpl(terminal);
+
   const {
     middleware: communityMiddleware,
     websocketEndpoints: communityWebsocketEndpoints,
@@ -111,13 +117,9 @@ async function runServer(
   const {middleware, websocketEndpoints} = createDevMiddleware({
     projectRoot,
     serverBaseUrl: devServerUrl,
-    logger,
+    logger: createDevMiddlewareLogger(terminalReporter),
   });
 
-  let reportEvent: (event: TerminalReportableEvent) => void;
-  const terminal = new Terminal(process.stdout);
-  const ReporterImpl = getReporterImpl(args.customLogReporterPath);
-  const terminalReporter = new ReporterImpl(terminal);
   const reporter: Reporter = {
     update(event: TerminalReportableEvent) {
       terminalReporter.update(event);
@@ -130,6 +132,7 @@ async function runServer(
           cliConfig: ctx,
           devServerUrl,
           messageSocket: messageSocketEndpoint,
+          reporter: terminalReporter,
         });
       }
     },

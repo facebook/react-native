@@ -104,7 +104,7 @@ function publishExternalArtifactsToMaven(
     // This can't be done earlier in build_android because this artifact are partially built by the iOS jobs.
     if (
       exec(
-        './gradlew :packages:react-native:ReactAndroid:external-artifacts:publishToSonatype :packages:react-native:ReactAndroid:external-artifacts:closeAndReleaseSonatypeStagingRepository',
+        './gradlew :packages:react-native:ReactAndroid:external-artifacts:publishToSonatype closeAndReleaseSonatypeStagingRepository',
       ).code
     ) {
       echo(

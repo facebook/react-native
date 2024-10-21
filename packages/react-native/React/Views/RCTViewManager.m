@@ -571,18 +571,19 @@ RCT_CUSTOM_VIEW_PROPERTY(experimental_layoutConformance, NSString *, RCTView)
   // filtered by view configs.
 }
 
-RCT_CUSTOM_VIEW_PROPERTY(experimental_filter, NSArray *, RCTView)
+typedef NSArray *FilterArray; // Custom type to make the StaticViewConfigValidator Happy
+RCT_CUSTOM_VIEW_PROPERTY(filter, FilterArray, RCTView)
 {
-  // Property is only to be used in the new renderer.
-  // It is necessary to add it here, otherwise it gets
-  // filtered by view configs.
+  //   Property is only to be used in the new renderer.
+  //   It is necessary to add it here, otherwise it gets
+  //   filtered by view configs.
 }
-
-RCT_CUSTOM_VIEW_PROPERTY(experimental_boxShadow, NSArray *, RCTView)
+typedef NSArray *BoxShadowArray; // Custom type to make the StaticViewConfigValidator Happy
+RCT_CUSTOM_VIEW_PROPERTY(boxShadow, BoxShadowArray, RCTView)
 {
-  // Property is only to be used in the new renderer.
-  // It is necessary to add it here, otherwise it gets
-  // filtered by view configs.
+  //   Property is only to be used in the new renderer.
+  //   It is necessary to add it here, otherwise it gets
+  //   filtered by view configs.
 }
 
 RCT_CUSTOM_VIEW_PROPERTY(experimental_mixBlendMode, NSString *, RCTView)

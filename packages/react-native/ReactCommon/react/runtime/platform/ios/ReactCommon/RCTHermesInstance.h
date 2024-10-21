@@ -24,6 +24,9 @@ class RCTHermesInstance : public JSRuntimeFactory {
   RCTHermesInstance();
   RCTHermesInstance(
       std::shared_ptr<const ReactNativeConfig> reactNativeConfig,
+      CrashManagerProvider crashManagerProvider);
+  RCTHermesInstance(
+      std::shared_ptr<const ReactNativeConfig> reactNativeConfig,
       CrashManagerProvider crashManagerProvider,
       bool allocInOldGenBeforeTTI);
 

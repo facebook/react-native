@@ -52,6 +52,11 @@ using namespace facebook::react;
   [_refreshControl addTarget:self
                       action:@selector(handleUIControlEventValueChanged)
             forControlEvents:UIControlEventValueChanged];
+
+  const auto &concreteProps = static_cast<const PullToRefreshViewProps &>(*_props);
+
+  _refreshControl.tintColor = RCTUIColorFromSharedColor(concreteProps.tintColor);
+  [self _updateProgressViewOffset:concreteProps.progressViewOffset];
 #endif // [macOS]
 }
 
@@ -84,6 +89,14 @@ using namespace facebook::react;
 #endif // [macOS]
   }
 
+  if (newConcreteProps.tintColor != oldConcreteProps.tintColor) {
+    _refreshControl.tintColor = RCTUIColorFromSharedColor(newConcreteProps.tintColor);
+  }
+
+  if (newConcreteProps.progressViewOffset != oldConcreteProps.progressViewOffset) {
+    [self _updateProgressViewOffset:newConcreteProps.progressViewOffset];
+  }
+
   BOOL needsUpdateTitle = NO;
 
   if (newConcreteProps.title != oldConcreteProps.title) {
@@ -94,11 +107,11 @@ using namespace facebook::react;
     needsUpdateTitle = YES;
   }
 
+  [super updateProps:props oldProps:oldProps];
+
   if (needsUpdateTitle) {
     [self _updateTitle];
   }
-
-  [super updateProps:props oldProps:oldProps];
 }
 
 #pragma mark -
@@ -106,6 +119,17 @@ using namespace facebook::react;
 - (void)handleUIControlEventValueChanged
 {
   static_cast<const PullToRefreshViewEventEmitter &>(*_eventEmitter).onRefresh({});
+}
+
+- (void)_updateProgressViewOffset:(Float)progressViewOffset
+{
+#if !TARGET_OS_OSX // [macOS]
+  _refreshControl.bounds = CGRectMake(
+      _refreshControl.bounds.origin.x,
+      -progressViewOffset,
+      _refreshControl.bounds.size.width,
+      _refreshControl.bounds.size.height);
+#endif // [macOS]
 }
 
 - (void)_updateTitle

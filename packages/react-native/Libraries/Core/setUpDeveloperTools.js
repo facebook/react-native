@@ -42,9 +42,13 @@ if (__DEV__) {
   if (!Platform.isTesting) {
     const HMRClient = require('../Utilities/HMRClient');
 
+    // [0.76 only] When under React Native DevTools, log "JavaScript logs will
+    // be removed from Metro..." warning, and continue to forward logs.
     if (global.__FUSEBOX_HAS_FULL_CONSOLE_SUPPORT__) {
       HMRClient.unstable_notifyFuseboxConsoleEnabled();
-    } else if (console._isPolyfilled) {
+    }
+
+    if (console._isPolyfilled) {
       // We assume full control over the console and send JavaScript logs to Metro.
       [
         'trace',

@@ -121,14 +121,15 @@ async function publishNpm(buildType /*: BuildType */) /*: Promise<void> */ {
   }
 
   /* [macOS Skip the Android Artifact and NPM Publish here as we do that in our Azure Pipeline
-  // We first publish on Maven Central the external artifacts
-  // produced by iOS
-  publishExternalArtifactsToMaven(version, buildType);
+  // We first publish on Maven Central all the Android artifacts.
+  // Those were built by the `build-android` CI job.
+  publishAndroidArtifactsToMaven(version, buildType);
+  macOS] */
 
-  // We the publish on Maven Central all the Android artifacts.
+  // And we then publish on Maven Central the external artifacts
+  // produced by iOS
   // NPM publishing is done just after.
-  // publishAndroidArtifactsToMaven(version, buildType);
-    macOS] */
+  publishExternalArtifactsToMaven(version, buildType);
 
   const packagePath = path.join(REPO_ROOT, 'packages', 'react-native');
   const result = publishPackage(packagePath, {
