@@ -20,11 +20,14 @@ enum class Unit : uint8_t {
   Point = YGUnitPoint,
   Percent = YGUnitPercent,
   Auto = YGUnitAuto,
+  MaxContent = YGUnitMaxContent,
+  FitContent = YGUnitFitContent,
+  Stretch = YGUnitStretch,
 };
 
 template <>
 constexpr int32_t ordinalCount<Unit>() {
-  return 4;
+  return 7;
 }
 
 constexpr Unit scopedEnum(YGUnit unscoped) {

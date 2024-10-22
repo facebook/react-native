@@ -172,7 +172,7 @@ class YG_EXPORT Node : public ::YGNode {
     return isDirty_;
   }
 
-  Style::Length getProcessedDimension(Dimension dimension) const {
+  Style::SizeValue getProcessedDimension(Dimension dimension) const {
     return processedDimensions_[static_cast<size_t>(dimension)];
   }
 
@@ -268,7 +268,7 @@ class YG_EXPORT Node : public ::YGNode {
   void setPosition(Direction direction, float ownerWidth, float ownerHeight);
 
   // Other methods
-  Style::Length processFlexBasis() const;
+  Style::SizeValue processFlexBasis() const;
   FloatOptional resolveFlexBasis(
       Direction direction,
       FlexDirection flexDirection,
@@ -322,8 +322,8 @@ class YG_EXPORT Node : public ::YGNode {
   Node* owner_ = nullptr;
   std::vector<Node*> children_;
   const Config* config_;
-  std::array<Style::Length, 2> processedDimensions_{
-      {StyleLength::undefined(), StyleLength::undefined()}};
+  std::array<Style::SizeValue, 2> processedDimensions_{
+      {StyleSizeValue::undefined(), StyleSizeValue::undefined()}};
 };
 
 inline Node* resolveRef(const YGNodeRef ref) {
