@@ -6149,6 +6149,7 @@ public final class com/facebook/react/uimanager/style/ComputedBorderRadius {
 	public final fun getTopRight ()Lcom/facebook/react/uimanager/style/CornerRadii;
 	public final fun hasRoundedBorders ()Z
 	public fun hashCode ()I
+	public final fun isUniform ()Z
 	public fun toString ()Ljava/lang/String;
 }
 
