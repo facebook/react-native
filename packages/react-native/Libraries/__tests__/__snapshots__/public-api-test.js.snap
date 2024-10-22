@@ -1658,7 +1658,7 @@ type Props = $ReadOnly<{|
   size?: ?IndicatorSize,
 |}>;
 declare const ActivityIndicatorWithRef: component(
-  ref: React.RefSetter<HostComponent<mixed>>,
+  ref: React.RefSetter<HostComponent<empty>>,
   ...props: Props
 );
 declare export default typeof ActivityIndicatorWithRef;
@@ -2269,7 +2269,7 @@ declare module.exports: typeof Wrapper & ScrollViewComponentStatics;
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/ScrollView/ScrollViewCommands.js 1`] = `
-"type ScrollViewNativeComponentType = HostComponent<mixed>;
+"type ScrollViewNativeComponentType = HostComponent<{ ... }>;
 interface NativeCommands {
   +flashScrollIndicators: (
     viewRef: React.ElementRef<ScrollViewNativeComponentType>
@@ -2765,20 +2765,20 @@ declare export default typeof RCTInputAccessoryViewNativeComponent;
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/TextInput/RCTMultilineTextInputNativeComponent.js 1`] = `
-"type NativeType = HostComponent<mixed>;
+"type NativeType = HostComponent<{ ... }>;
 type NativeCommands = TextInputNativeCommands<NativeType>;
 declare export const Commands: NativeCommands;
 declare export const __INTERNAL_VIEW_CONFIG: PartialViewConfig;
-declare export default HostComponent<mixed>;
+declare export default HostComponent<{ ... }>;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/TextInput/RCTSingelineTextInputNativeComponent.js 1`] = `
-"type NativeType = HostComponent<mixed>;
+"type NativeType = HostComponent<{ ... }>;
 type NativeCommands = TextInputNativeCommands<NativeType>;
 declare export const Commands: NativeCommands;
 declare export const __INTERNAL_VIEW_CONFIG: PartialViewConfig;
-declare export default HostComponent<mixed>;
+declare export default HostComponent<{ ... }>;
 "
 `;
 
@@ -6479,11 +6479,11 @@ exports[`public API should not change unintentionally Libraries/NativeComponent/
     verify: boolean,
   }
 ): void;
-declare export function get<Config>(
+declare export function get<Config: { ... }>(
   name: string,
   viewConfigProvider: () => PartialViewConfig
 ): HostComponent<Config>;
-declare export function getWithFallback_DEPRECATED<Config>(
+declare export function getWithFallback_DEPRECATED<Config: { ... }>(
   name: string,
   viewConfigProvider: () => PartialViewConfig
 ): React.ComponentType<Config>;
@@ -7659,8 +7659,8 @@ declare export function unstable_batchedUpdates<T>(
 ): void;
 declare export function isProfilingRenderer(): boolean;
 declare export function isChildPublicInstance(
-  parentInstance: ReactFabricHostComponent | HostComponent<mixed>,
-  childInstance: ReactFabricHostComponent | HostComponent<mixed>
+  parentInstance: ReactFabricHostComponent | HostComponent<empty>,
+  childInstance: ReactFabricHostComponent | HostComponent<empty>
 ): boolean;
 declare export function getNodeFromInternalInstanceHandle(
   internalInstanceHandle: InternalInstanceHandle
@@ -7727,7 +7727,7 @@ exports[`public API should not change unintentionally Libraries/ReactNative/rend
 `;
 
 exports[`public API should not change unintentionally Libraries/ReactNative/requireNativeComponent.js 1`] = `
-"declare const requireNativeComponent: <T>(
+"declare const requireNativeComponent: <T: { ... }>(
   uiViewClassName: string
 ) => HostComponent<T>;
 declare export default typeof requireNativeComponent;
@@ -9280,7 +9280,7 @@ exports[`public API should not change unintentionally Libraries/Utilities/codege
   excludedPlatforms?: $ReadOnlyArray<\\"iOS\\" | \\"android\\">,
 |}>;
 export type NativeComponentType<T> = HostComponent<T>;
-declare function codegenNativeComponent<Props>(
+declare function codegenNativeComponent<Props: { ... }>(
   componentName: string,
   options?: Options
 ): NativeComponentType<Props>;
@@ -9702,7 +9702,7 @@ declare module.exports: {
   get Platform(): Platform,
   get PlatformColor(): PlatformColor,
   get processColor(): processColor,
-  get requireNativeComponent(): <T>(
+  get requireNativeComponent(): <T: { ... }>(
     uiViewClassName: string
   ) => HostComponent<T>,
   get RootTagContext(): RootTagContext,
