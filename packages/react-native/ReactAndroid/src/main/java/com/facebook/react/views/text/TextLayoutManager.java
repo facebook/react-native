@@ -146,10 +146,11 @@ public class TextLayoutManager {
         == LayoutDirection.RTL;
   }
 
-  private static int getTextJustificationMode(MapBuffer attributedString) {
-    int justificationMode = (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) ? 0 : Layout.JUSTIFICATION_MODE_NONE;
+  @Nullable
+  private static String getTextAlignmentAttr(MapBuffer attributedString) {
+    // TODO: Don't read AS_KEY_FRAGMENTS, which may be expensive, and is not present when using
     if (!attributedString.contains(AS_KEY_FRAGMENTS)) {
-      return justificationMode;
+      return null;
     }
 
     MapBuffer fragments = attributedString.getMapBuffer(AS_KEY_FRAGMENTS);
@@ -158,24 +159,29 @@ public class TextLayoutManager {
       MapBuffer textAttributes = fragment.getMapBuffer(FR_KEY_TEXT_ATTRIBUTES);
 
       if (textAttributes.contains(TextAttributeProps.TA_KEY_ALIGNMENT)) {
-        String alignmentAttr = textAttributes.getString(TextAttributeProps.TA_KEY_ALIGNMENT);
-
-        if (alignmentAttr.equals("justified")) {
-          justificationMode = (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) ? 1 : Layout.JUSTIFICATION_MODE_INTER_WORD;
+        return textAttributes.getString(TextAttributeProps.TA_KEY_ALIGNMENT);
         }
       }
+
+    return null;
+  }
+
+
+  private static int getTextJustificationMode(@Nullable String alignmentAttr) {
+    int justificationMode = (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) ? 0 : Layout.JUSTIFICATION_MODE_NONE;
+
+    if (alignmentAttr != null && alignmentAttr.equals("justified")) {
+      justificationMode = (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) ? 1 : Layout.JUSTIFICATION_MODE_INTER_WORD;
     }
 
     return justificationMode;
   }
 
-  private static Layout.Alignment getTextAlignment(MapBuffer attributedString, Spannable spanned) {
-    // TODO: Don't read AS_KEY_FRAGMENTS, which may be expensive, and is not present when using
+  private static Layout.Alignment getTextAlignment(
+    MapBuffer attributedString,
+    Spannable spanned,
+    @Nullable String alignmentAttr) {
     // cached Spannable
-    if (!attributedString.contains(AS_KEY_FRAGMENTS)) {
-      return Layout.Alignment.ALIGN_NORMAL;
-    }
-
     // Android will align text based on the script, so normal and opposite alignment needs to be
     // swapped when the directions of paragraph and script don't match.
     // I.e. paragraph is LTR but script is RTL, text needs to be aligned to the left, which means
@@ -188,23 +194,17 @@ public class TextLayoutManager {
     Layout.Alignment alignment =
         swapNormalAndOpposite ? Layout.Alignment.ALIGN_OPPOSITE : Layout.Alignment.ALIGN_NORMAL;
 
-    MapBuffer fragments = attributedString.getMapBuffer(AS_KEY_FRAGMENTS);
-    if (fragments.getCount() != 0) {
-      MapBuffer fragment = fragments.getMapBuffer(0);
-      MapBuffer textAttributes = fragment.getMapBuffer(FR_KEY_TEXT_ATTRIBUTES);
+    if (alignmentAttr == null) {
+      return alignment;
+    }
 
-      if (textAttributes.contains(TextAttributeProps.TA_KEY_ALIGNMENT)) {
-        String alignmentAttr = textAttributes.getString(TextAttributeProps.TA_KEY_ALIGNMENT);
-
-        if (alignmentAttr.equals("center")) {
-          alignment = Layout.Alignment.ALIGN_CENTER;
-        } else if (alignmentAttr.equals("right")) {
-          alignment =
-              swapNormalAndOpposite
-                  ? Layout.Alignment.ALIGN_NORMAL
-                  : Layout.Alignment.ALIGN_OPPOSITE;
-        }
-      }
+    if (alignmentAttr.equals("center")) {
+      alignment = Layout.Alignment.ALIGN_CENTER;
+    } else if (alignmentAttr.equals("right")) {
+      alignment =
+        swapNormalAndOpposite
+          ? Layout.Alignment.ALIGN_NORMAL
+          : Layout.Alignment.ALIGN_OPPOSITE;
     }
 
     return alignment;
@@ -213,7 +213,8 @@ public class TextLayoutManager {
   public static int getTextGravity(
       MapBuffer attributedString, Spannable spanned, int defaultValue) {
     int gravity = defaultValue;
-    Layout.Alignment alignment = getTextAlignment(attributedString, spanned);
+    @Nullable String alignmentAttr = getTextAlignmentAttr(attributedString);
+    Layout.Alignment alignment = getTextAlignment(attributedString, spanned, alignmentAttr);
 
     // depending on whether the script is LTR or RTL, ALIGN_NORMAL and ALIGN_OPPOSITE may mean
     // different things
@@ -531,8 +532,9 @@ public class TextLayoutManager {
             ? paragraphAttributes.getInt(PA_KEY_MAX_NUMBER_OF_LINES)
             : ReactConstants.UNSET;
 
-    Layout.Alignment alignment = getTextAlignment(attributedString, text);
-    int justificationMode = getTextJustificationMode(attributedString);
+    @Nullable String alignmentAttr = getTextAlignmentAttr(attributedString);
+    Layout.Alignment alignment = getTextAlignment(attributedString, text, alignmentAttr);
+    int justificationMode = getTextJustificationMode(alignmentAttr);
 
     if (adjustFontSizeToFit) {
       double minimumFontSize =
