@@ -184,6 +184,14 @@ function confirmProps(props: Props) {
         `Modal with '${props.presentationStyle}' presentation style and 'transparent' value is not supported.`,
       );
     }
+    if (
+      props.navigationBarTranslucent === true &&
+      props.statusBarTranslucent !== true
+    ) {
+      console.warn(
+        'Modal with translucent navigation bar and without translucent status bar is not supported.',
+      );
+    }
   }
 }
 

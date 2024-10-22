@@ -19,15 +19,7 @@ import {RNTesterThemeContext} from '../../components/RNTesterTheme';
 import RNTOption from '../../components/RNTOption';
 import * as React from 'react';
 import {useCallback, useContext, useState} from 'react';
-import {
-  Modal,
-  Platform,
-  StatusBar,
-  StyleSheet,
-  Switch,
-  Text,
-  View,
-} from 'react-native';
+import {Modal, Platform, StyleSheet, Switch, Text, View} from 'react-native';
 
 const animationTypes = ['slide', 'none', 'fade'];
 const presentationStyles = [
