@@ -160,8 +160,8 @@ public class TextLayoutManager {
 
       if (textAttributes.contains(TextAttributeProps.TA_KEY_ALIGNMENT)) {
         return textAttributes.getString(TextAttributeProps.TA_KEY_ALIGNMENT);
-        }
       }
+    }
 
     return null;
   }
