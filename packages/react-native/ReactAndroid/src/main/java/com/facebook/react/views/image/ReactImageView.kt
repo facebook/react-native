@@ -11,6 +11,8 @@ package com.facebook.react.views.image
 
 import android.content.Context
 import android.graphics.Bitmap
+import com.facebook.common.logging.FLog
+import com.facebook.react.common.ReactConstants
 import android.graphics.BitmapShader
 import android.graphics.Canvas
 import android.graphics.Color
@@ -103,6 +105,7 @@ public class ReactImageView(
   private var headers: ReadableMap? = null
   private var resizeMultiplier = 1.0f
   private var resizeMethod = ImageResizeMethod.AUTO
+  private var cacheControl = ImageCacheControl.DEFAULT
 
   init {
     // Workaround Android bug where ImageView visibility is not propagated to the Drawable, so you
@@ -268,7 +271,13 @@ public class ReactImageView(
     } else if (sources.size() == 1) {
       // Optimize for the case where we have just one uri, case in which we don't need the sizes
       val source = sources.getMap(0)
-      var imageSource = ImageSource(context, source.getString("uri"))
+      var imageSource =
+          ImageSource(
+              context,
+              source.getString("uri"),
+              0.0,
+              0.0,
+              source.getString("cache"))
       if (Uri.EMPTY == imageSource.uri) {
         warnImageSource(source.getString("uri"))
         imageSource = getTransparentBitmapImageSource(context)
@@ -282,7 +291,8 @@ public class ReactImageView(
                 context,
                 source.getString("uri"),
                 source.getDouble("width"),
-                source.getDouble("height"))
+                source.getDouble("height"),
+                source.getString("cache"))
         if (Uri.EMPTY == imageSource.uri) {
           warnImageSource(source.getString("uri"))
           imageSource = getTransparentBitmapImageSource(context)

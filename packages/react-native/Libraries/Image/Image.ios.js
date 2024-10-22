@@ -149,6 +149,8 @@ let BaseImage: AbstractImageIOS = React.forwardRef((props, forwardedRef) => {
     ...restProps
   } = props;
 
+  console.log({ cache: props.source });
+
   const _accessibilityState = {
     busy: ariaBusy ?? props.accessibilityState?.busy,
     checked: ariaChecked ?? props.accessibilityState?.checked,

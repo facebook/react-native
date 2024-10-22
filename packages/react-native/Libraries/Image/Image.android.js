@@ -150,6 +150,8 @@ let BaseImage: AbstractImageAndroid = React.forwardRef(
       );
     }
 
+    console.log({source: props.source});
+
     let style: ImageStyleProp;
     let sources;
     if (Array.isArray(source)) {
