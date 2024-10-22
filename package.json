@@ -104,8 +104,5 @@
   },
   "resolutions": {
     "react-is": "19.0.0-rc-fb9a90fa48-20240614"
-  },
-  "dependencies": {
-    "metro": "^0.81.0"
   }
 }
