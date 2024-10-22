@@ -386,7 +386,7 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
   private static final String STATE_CHECKED = "checked";
 
   public ReactAccessibilityDelegate(
-      final View view, boolean originalFocus, int originalImportantForAccessibility) {
+    final View view, boolean originalFocus, int originalImportantForAccessibility) {
     super(view);
     mView = view;
     mAccessibilityActionsMap = new HashMap<Integer, String>();
@@ -423,14 +423,9 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     }
     final AccessibilityRole accessibilityRole = AccessibilityRole.fromViewTag(host);
     final String accessibilityHint = (String) host.getTag(R.id.accessibility_hint);
-    if (accessibilityRole != null) {
-      setRole(info, accessibilityRole, host.getContext());
-    }
 
-    if (accessibilityHint != null) {
-      info.setTooltipText(accessibilityHint);
-    }
 
+    //set announcement for accessibilityLabelBy for TalkBack
     final Object accessibilityLabelledBy = host.getTag(R.id.labelled_by);
     if (accessibilityLabelledBy != null) {
       mAccessibilityLabelledBy =
@@ -445,6 +440,20 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     if (accessibilityState != null) {
       setState(info, accessibilityState, host.getContext());
     }
+    
+    //set announcement for accessibilityRole for TalkBack
+    if (accessibilityRole != null) {
+      setRole(info, accessibilityRole, host.getContext());
+    }
+
+
+    //set announcement for accessibilityHint for TalkBack
+    if (accessibilityHint != null) {
+      info.setTooltipText(accessibilityHint);
+    }
+
+
+
     final ReadableArray accessibilityActions =
         (ReadableArray) host.getTag(R.id.accessibility_actions);
 
