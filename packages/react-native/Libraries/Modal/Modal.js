@@ -96,6 +96,14 @@ export type Props = $ReadOnly<{|
   statusBarTranslucent?: ?boolean,
 
   /**
+   * The `navigationBarTranslucent` prop determines whether your modal should go under
+   * the system navigationbar.
+   *
+   * See https://reactnative.dev/docs/modal.html#navigationbartranslucent-android
+   */
+  navigationBarTranslucent?: ?boolean,
+
+  /**
    * The `hardwareAccelerated` prop controls whether to force hardware
    * acceleration for the underlying window.
    *
@@ -301,6 +309,7 @@ class Modal extends React.Component<Props, State> {
         onDismiss={onDismiss}
         visible={this.props.visible}
         statusBarTranslucent={this.props.statusBarTranslucent}
+        navigationBarTranslucent={this.props.navigationBarTranslucent}
         identifier={this._identifier}
         style={styles.modal}
         // $FlowFixMe[method-unbinding] added when improving typing for this parameters

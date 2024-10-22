@@ -6411,6 +6411,7 @@ export type Props = $ReadOnly<{|
   ),
   transparent?: ?boolean,
   statusBarTranslucent?: ?boolean,
+  navigationBarTranslucent?: ?boolean,
   hardwareAccelerated?: ?boolean,
   visible?: ?boolean,
   onRequestClose?: ?DirectEventHandler<null>,

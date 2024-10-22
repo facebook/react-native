@@ -27,6 +27,7 @@
 
 // Android only
 @property (nonatomic, assign) BOOL statusBarTranslucent;
+@property (nonatomic, assign) BOOL navigationBarTranslucent;
 @property (nonatomic, assign) BOOL hardwareAccelerated;
 @property (nonatomic, assign) BOOL animated;
 

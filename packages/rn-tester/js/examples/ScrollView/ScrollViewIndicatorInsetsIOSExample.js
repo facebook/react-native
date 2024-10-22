@@ -32,6 +32,7 @@ export function ScrollViewIndicatorInsetsExample() {
           onRequestClose={() => setModalVisible(false)}
           presentationStyle="fullScreen"
           statusBarTranslucent={false}
+          navigationBarTranslucent={false}
           supportedOrientations={['portrait', 'landscape']}>
           <View style={styles.modal}>
             <ScrollView
