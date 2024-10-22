@@ -23,10 +23,12 @@ import * as React from 'react';
 // require BackHandler so it sets the default handler that exits the app if no listeners respond
 import '../Utilities/BackHandler';
 
-type ActivityType = React.AbstractComponent<{
-  mode: 'visible' | 'hidden',
-  children: React.Node,
-}>;
+type ActivityType = component(
+  ...{
+    mode: 'visible' | 'hidden',
+    children: React.Node,
+  }
+);
 
 export default function renderApplication<Props: Object>(
   RootComponent: React.ComponentType<Props>,

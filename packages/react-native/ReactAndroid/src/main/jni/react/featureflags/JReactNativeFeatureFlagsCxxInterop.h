@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<65488578668e410c298d086490bc8ba4>>
+ * @generated SignedSource<<e73f7d0d68f72202aaea8a29e3e30f64>>
  */
 
 /**
@@ -88,6 +88,9 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool enableLongTaskAPI(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
+  static bool enableNewBackgroundAndBorderDrawables(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool enablePreciseSchedulingForPremountItemsOnAndroid(

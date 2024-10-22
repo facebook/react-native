@@ -1086,7 +1086,10 @@ type ImperativeMethods = $ReadOnly<{|
  * or control this param programmatically with native code.
  *
  */
-type InternalTextInput = (props: Props) => React.Node;
+type InternalTextInput = component(
+  ref: React.RefSetter<$ReadOnly<{...HostInstance, ...ImperativeMethods}>>,
+  ...Props
+);
 
 export type TextInputComponentStatics = $ReadOnly<{|
   State: $ReadOnly<{|
@@ -1097,11 +1100,4 @@ export type TextInputComponentStatics = $ReadOnly<{|
   |}>,
 |}>;
 
-export type TextInputType = React.AbstractComponent<
-  React.ElementConfig<InternalTextInput>,
-  $ReadOnly<{|
-    ...HostInstance,
-    ...ImperativeMethods,
-  |}>,
-> &
-  TextInputComponentStatics;
+export type TextInputType = InternalTextInput & TextInputComponentStatics;

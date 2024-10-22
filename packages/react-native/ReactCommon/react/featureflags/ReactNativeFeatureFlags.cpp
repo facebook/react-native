@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<cf1310c233584488a104009c30226600>>
+ * @generated SignedSource<<18b5021dc18fd8f3a97451cf229af885>>
  */
 
 /**
@@ -104,6 +104,10 @@ bool ReactNativeFeatureFlags::enableLineHeightCenteringOnIOS() {
 
 bool ReactNativeFeatureFlags::enableLongTaskAPI() {
   return getAccessor().enableLongTaskAPI();
+}
+
+bool ReactNativeFeatureFlags::enableNewBackgroundAndBorderDrawables() {
+  return getAccessor().enableNewBackgroundAndBorderDrawables();
 }
 
 bool ReactNativeFeatureFlags::enablePreciseSchedulingForPremountItemsOnAndroid() {

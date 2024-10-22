@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f145a4d21b2a4fd3ec122ac4ea6003ef>>
+ * @generated SignedSource<<b43c7b8cc4b0947ac58771ee832ba86b>>
  */
 
 /**
@@ -156,6 +156,11 @@ bool NativeReactNativeFeatureFlags::enableMicrotasks(
   // This flag is configured with `skipNativeAPI: true`.
   // TODO(T204838867): Implement support for optional methods in C++ TM codegen and remove the method definition altogether.
   return false;
+}
+
+bool NativeReactNativeFeatureFlags::enableNewBackgroundAndBorderDrawables(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableNewBackgroundAndBorderDrawables();
 }
 
 bool NativeReactNativeFeatureFlags::enablePreciseSchedulingForPremountItemsOnAndroid(

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a6526d14d976f2b3f277ddd85a3c4915>>
+ * @generated SignedSource<<99121b1d111045965bf8cf2eccb80c11>>
  */
 
 /**
@@ -80,6 +80,8 @@ class NativeReactNativeFeatureFlags
   bool enableLongTaskAPI(jsi::Runtime& runtime);
 
   bool enableMicrotasks(jsi::Runtime& runtime);
+
+  bool enableNewBackgroundAndBorderDrawables(jsi::Runtime& runtime);
 
   bool enablePreciseSchedulingForPremountItemsOnAndroid(jsi::Runtime& runtime);
 

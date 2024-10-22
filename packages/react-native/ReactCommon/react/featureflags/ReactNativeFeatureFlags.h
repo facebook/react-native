@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b9d3f97efb570a9c326b44ed350f5bca>>
+ * @generated SignedSource<<e2177255f6402d15b14033c04a815e86>>
  */
 
 /**
@@ -138,6 +138,11 @@ class ReactNativeFeatureFlags {
    * Enables the reporting of long tasks through `PerformanceObserver`. Only works if the event loop is enabled.
    */
   RN_EXPORT static bool enableLongTaskAPI();
+
+  /**
+   * Use BackgroundDrawable and BorderDrawable instead of CSSBackgroundDrawable
+   */
+  RN_EXPORT static bool enableNewBackgroundAndBorderDrawables();
 
   /**
    * Moves execution of pre-mount items to outside the choregrapher in the main thread, so we can estimate idle time more precisely (Android only).

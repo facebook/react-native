@@ -189,6 +189,7 @@ class TouchableBounce extends React.Component<Props, State> {
           this.props.onPress !== undefined &&
           !this.props.disabled
         }
+        // $FlowFixMe[prop-missing]
         ref={this.props.hostRef}
         {...eventHandlersWithoutBlurAndFocus}>
         {this.props.children}

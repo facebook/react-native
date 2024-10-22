@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7720626925990b68193207bb1ce18c4b>>
+ * @generated SignedSource<<29751f6542220bc60e5745155fa8940b>>
  * @flow strict
  */
 
@@ -73,6 +73,7 @@ export type ReactNativeFeatureFlags = {
   enableLineHeightCenteringOnIOS: Getter<boolean>,
   enableLongTaskAPI: Getter<boolean>,
   enableMicrotasks: Getter<boolean>,
+  enableNewBackgroundAndBorderDrawables: Getter<boolean>,
   enablePreciseSchedulingForPremountItemsOnAndroid: Getter<boolean>,
   enablePropsUpdateReconciliationAndroid: Getter<boolean>,
   enableReportEventPaintTime: Getter<boolean>,
@@ -279,6 +280,10 @@ export const enableLongTaskAPI: Getter<boolean> = createNativeFlagGetter('enable
  * Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).
  */
 export const enableMicrotasks: Getter<boolean> = createNativeFlagGetter('enableMicrotasks', false);
+/**
+ * Use BackgroundDrawable and BorderDrawable instead of CSSBackgroundDrawable
+ */
+export const enableNewBackgroundAndBorderDrawables: Getter<boolean> = createNativeFlagGetter('enableNewBackgroundAndBorderDrawables', false);
 /**
  * Moves execution of pre-mount items to outside the choregrapher in the main thread, so we can estimate idle time more precisely (Android only).
  */

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<63a01490e9322448118e0a51e5720a0b>>
+ * @generated SignedSource<<5bca414b4dfb3f6ba7b7ae7acea561b4>>
  */
 
 /**
@@ -156,6 +156,12 @@ class ReactNativeFeatureFlagsProviderHolder
   bool enableLongTaskAPI() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableLongTaskAPI");
+    return method(javaProvider_);
+  }
+
+  bool enableNewBackgroundAndBorderDrawables() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableNewBackgroundAndBorderDrawables");
     return method(javaProvider_);
   }
 
@@ -419,6 +425,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableLongTaskAPI(
   return ReactNativeFeatureFlags::enableLongTaskAPI();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::enableNewBackgroundAndBorderDrawables(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableNewBackgroundAndBorderDrawables();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::enablePreciseSchedulingForPremountItemsOnAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enablePreciseSchedulingForPremountItemsOnAndroid();
@@ -640,6 +651,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableLongTaskAPI",
         JReactNativeFeatureFlagsCxxInterop::enableLongTaskAPI),
+      makeNativeMethod(
+        "enableNewBackgroundAndBorderDrawables",
+        JReactNativeFeatureFlagsCxxInterop::enableNewBackgroundAndBorderDrawables),
       makeNativeMethod(
         "enablePreciseSchedulingForPremountItemsOnAndroid",
         JReactNativeFeatureFlagsCxxInterop::enablePreciseSchedulingForPremountItemsOnAndroid),
