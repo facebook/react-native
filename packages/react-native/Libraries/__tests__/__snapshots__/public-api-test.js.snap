@@ -744,22 +744,22 @@ export type StrictAnimatedProps<Props: { ... }> = $ReadOnly<{
 export type AnimatedComponentType<
   Props: { ... },
   +Instance = mixed,
-> = React.AbstractComponent<AnimatedProps<Props>, Instance>;
+> = component(ref: React.RefSetter<Instance>, ...AnimatedProps<Props>);
 export type StrictAnimatedComponentType<
   Props: { ... },
   +Instance = mixed,
-> = React.AbstractComponent<StrictAnimatedProps<Props>, Instance>;
+> = component(ref: React.RefSetter<Instance>, ...StrictAnimatedProps<Props>);
 declare export default function createAnimatedComponent<
   TProps: { ... },
   TInstance,
 >(
-  Component: React.AbstractComponent<TProps, TInstance>
+  Component: component(ref: React.RefSetter<TInstance>, ...TProps)
 ): AnimatedComponentType<TProps, TInstance>;
 declare export function unstable_createAnimatedComponentWithAllowlist<
   TProps: { ... },
   TInstance,
 >(
-  Component: React.AbstractComponent<TProps, TInstance>,
+  Component: component(ref: React.RefSetter<TInstance>, ...TProps),
   allowlist: ?AnimatedPropsAllowlist
 ): StrictAnimatedComponentType<TProps, TInstance>;
 "

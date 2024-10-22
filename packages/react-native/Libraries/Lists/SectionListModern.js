@@ -16,7 +16,7 @@ import type {
   SectionBase as _SectionBase,
   VirtualizedSectionListProps,
 } from '@react-native/virtualized-lists';
-import type {AbstractComponent, ElementRef} from 'react';
+import type {ElementRef} from 'react';
 
 import Platform from '../Utilities/Platform';
 import {VirtualizedSectionList} from '@react-native/virtualized-lists';
