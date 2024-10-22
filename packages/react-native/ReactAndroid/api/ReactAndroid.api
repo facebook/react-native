@@ -3056,26 +3056,6 @@ public abstract interface class com/facebook/react/modules/appregistry/AppRegist
 	public abstract fun unmountApplicationComponentAtRootTag (I)V
 }
 
-public final class com/facebook/react/modules/appstate/AppStateModule : com/facebook/fbreact/specs/NativeAppStateSpec, com/facebook/react/bridge/LifecycleEventListener, com/facebook/react/bridge/WindowFocusChangeListener {
-	public static final field APP_STATE_ACTIVE Ljava/lang/String;
-	public static final field APP_STATE_BACKGROUND Ljava/lang/String;
-	public static final field Companion Lcom/facebook/react/modules/appstate/AppStateModule$Companion;
-	public static final field NAME Ljava/lang/String;
-	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
-	public fun addListener (Ljava/lang/String;)V
-	public fun getCurrentAppState (Lcom/facebook/react/bridge/Callback;Lcom/facebook/react/bridge/Callback;)V
-	public fun getTypedExportedConstants ()Ljava/util/Map;
-	public fun invalidate ()V
-	public fun onHostDestroy ()V
-	public fun onHostPause ()V
-	public fun onHostResume ()V
-	public fun onWindowFocusChange (Z)V
-	public fun removeListeners (D)V
-}
-
-public final class com/facebook/react/modules/appstate/AppStateModule$Companion {
-}
-
 public class com/facebook/react/modules/blob/BlobModule : com/facebook/fbreact/specs/NativeBlobModuleSpec {
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
 	public fun addNetworkingHandler ()V
@@ -6169,6 +6149,7 @@ public final class com/facebook/react/uimanager/style/ComputedBorderRadius {
 	public final fun getTopRight ()Lcom/facebook/react/uimanager/style/CornerRadii;
 	public final fun hasRoundedBorders ()Z
 	public fun hashCode ()I
+	public final fun isUniform ()Z
 	public fun toString ()Ljava/lang/String;
 }
 

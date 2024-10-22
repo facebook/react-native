@@ -71,7 +71,7 @@ export type MixedTypeAnnotation = $ReadOnly<{
   type: 'MixedTypeAnnotation',
 }>;
 
-type EventEmitterTypeAnnotation = $ReadOnly<{
+export type EventEmitterTypeAnnotation = $ReadOnly<{
   type: 'EventEmitterTypeAnnotation',
   typeAnnotation: NativeModuleEventEmitterTypeAnnotation | $FlowFixMe,
 }>;
@@ -424,4 +424,5 @@ export type CompleteTypeAnnotation =
   | NativeModuleTypeAnnotation
   | NativeModuleFunctionTypeAnnotation
   | NullableTypeAnnotation<NativeModuleTypeAnnotation>
+  | EventEmitterTypeAnnotation
   | UnsafeAnyTypeAnnotation;
