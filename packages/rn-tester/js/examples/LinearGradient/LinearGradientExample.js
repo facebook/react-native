@@ -159,6 +159,19 @@ exports.examples = [
     },
   },
   {
+    title: 'Color transition hints',
+    render(): React.Node {
+      return (
+        <GradientBox
+          testID="linear-gradient-color-transition-hints"
+          style={{
+            experimental_backgroundImage: 'linear-gradient(red, 20%, green)',
+          }}
+        />
+      );
+    },
+  },
+  {
     title: 'Gradient with Platform colors',
     render(): React.Node {
       return (
