@@ -29,11 +29,12 @@ function Item(props: {data: ItemDataType}): React.Node {
   );
 }
 
-interface ItemListProps {
-  data: ItemDataType[];
-  useFlatList?: boolean;
-  onScroll?: (evt: ScrollEvent) => void;
-}
+type ItemListProps = $ReadOnly<{
+  data: ItemDataType[],
+  useFlatList?: boolean,
+  onScroll?: (evt: ScrollEvent) => void,
+  ...
+}>;
 
 function renderItem({item}: {item: ItemDataType, ...}): React.MixedElement {
   return <Item data={item} />;
