@@ -1,16 +1,8 @@
 name: Run Danger on PR
 
 on:
-  pull_request_target:
+  pull_request:
     types: [opened, edited, reopened, synchronize]
-
-permissions:
-  actions: write
-  checks: write
-  contents: write
-  issues: write
-  pull-requests: write
-  statuses: write
 
 jobs:
   danger:
