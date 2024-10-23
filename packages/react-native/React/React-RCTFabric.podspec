@@ -20,13 +20,14 @@ folly_config = get_folly_config()
 folly_compiler_flags = folly_config[:compiler_flags]
 folly_version = folly_config[:version]
 boost_config = get_boost_config()
-boost_compiler_flags = boost_config[:compiler_flags] 
+boost_compiler_flags = boost_config[:compiler_flags]
 new_arch_flags = ENV['RCT_NEW_ARCH_ENABLED'] == '1' ? ' -DRCT_NEW_ARCH_ENABLED=1' : ''
 
 header_search_paths = [
   "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"",
   "\"$(PODS_ROOT)/boost\"",
   "\"$(PODS_ROOT)/DoubleConversion\"",
+  "\"$(PODS_ROOT)/fast_float/include\"",
   "\"$(PODS_ROOT)/fmt/include\"",
   "\"$(PODS_ROOT)/RCT-Folly\"",
   "\"$(PODS_ROOT)/Headers/Private/React-Core\"",
