@@ -19,12 +19,12 @@ appId: ${APP_ID} # iOS: com.meta.RNTester.localDevelopment | Android: com.facebo
 - assertVisible:
     text: "measure x: 0, y: 0, width: 0, height: 0"
 - tapOn: "Console.log Measure"
-- assertNotVisible:
-    text: "measure x: 0, y: 0, width: 0, height: 0"
-- assertNotVisible:
-    text: "InWindow x: 0, y: 0, width: 0, height: 0"
-- assertNotVisible:
-    text: "InLayout x: 0, y: 0, width: 0, height: 0"
+- assertVisible:
+    text: "measure x: 0, y: 134, width: 393, height: 99.67"
+- assertVisible:
+    text: "InWindow x: 0, y: 287.67, width: 393, height: 99.67"
+- assertVisible:
+    text: "InLayout x: 0, y: 134, width: 393, height: 99.67"
 - assertVisible: "Legacy Style Event Fired 0 times"
 - tapOn:
     text: "Fire Legacy Style Event"
