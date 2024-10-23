@@ -105,7 +105,6 @@ public class ReactImageView(
   private var headers: ReadableMap? = null
   private var resizeMultiplier = 1.0f
   private var resizeMethod = ImageResizeMethod.AUTO
-  private var cacheControl = ImageCacheControl.DEFAULT
 
   init {
     // Workaround Android bug where ImageView visibility is not propagated to the Drawable, so you
@@ -458,17 +457,25 @@ public class ReactImageView(
 
     callerContext?.let { builder.setCallerContext(it) }
 
-    cachedImageSource?.let { cachedSource ->
-      val cachedImageRequestBuilder =
-          ImageRequestBuilder.newBuilderWithSource(cachedSource.uri)
-              .setPostprocessor(postprocessor)
-              .setResizeOptions(resizeOptions)
-              .setAutoRotateEnabled(true)
-              .setProgressiveRenderingEnabled(progressiveRenderingEnabled)
-      if (resizeMethod == ImageResizeMethod.NONE) {
-        cachedImageRequestBuilder.setDownsampleOverride(DownsampleMode.NEVER)
+    val cacheControl = imageSource?.cacheControl
+
+    FLog.w(ReactConstants.TAG, "landing here with $cacheControl")
+
+    if (cacheControl != ImageCacheControl.RELOAD) {
+      cachedImageSource?.let { cachedSource ->
+        val cachedImageRequestBuilder =
+            ImageRequestBuilder.newBuilderWithSource(cachedSource.uri)
+                .setPostprocessor(postprocessor)
+                .setResizeOptions(resizeOptions)
+                .setAutoRotateEnabled(true)
+                .setProgressiveRenderingEnabled(progressiveRenderingEnabled)
+        if (resizeMethod == ImageResizeMethod.NONE) {
+          cachedImageRequestBuilder.setDownsampleOverride(DownsampleMode.NEVER)
+        }
+        builder.setLowResImageRequest(cachedImageRequestBuilder.build())
       }
-      builder.setLowResImageRequest(cachedImageRequestBuilder.build())
+    } else {
+      FLog.w(ReactConstants.TAG, "skipping cache for $uri with $cacheControl")
     }
 
     if (downloadListener != null && controllerForTesting != null) {
@@ -522,8 +529,11 @@ public class ReactImageView(
       val multiSource = getBestSourceForSize(width, height, sources)
       imageSource = multiSource.bestResult
       cachedImageSource = multiSource.bestResultInCache
+
+      FLog.w(ReactConstants.TAG, "bestResult: ${imageSource?.uri}, bestResultInCache: ${cachedImageSource?.uri}")
       return
     }
+    FLog.w(ReactConstants.TAG, "bestResult sources: ${sources[0].uri}")
     imageSource = sources[0]
   }
 

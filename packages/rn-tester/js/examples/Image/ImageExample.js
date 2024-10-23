@@ -1033,6 +1033,14 @@ exports.examples = [
             }}
             style={styles.base}
           />
+          <Image
+            defaultSource={require('../../assets/bunny.png')}
+            source={{
+              uri: smallImage.uri,
+              cache: 'default',
+            }}
+            style={styles.base}
+          />
         </View>
       );
     },
