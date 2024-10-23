@@ -13,10 +13,18 @@
 import type {ImageProps} from 'react-native/Libraries/Image/ImageProps';
 import type {LayoutEvent} from 'react-native/Libraries/Types/CoreEventTypes';
 
+import RNTesterButton from '../../components/RNTesterButton';
 import RNTesterText from '../../components/RNTesterText';
 import ImageCapInsetsExample from './ImageCapInsetsExample';
 import React from 'react';
-import {Image, ImageBackground, StyleSheet, Text, View} from 'react-native';
+import {
+  Button,
+  Image,
+  ImageBackground,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import * as ReactNativeFeatureFlags from 'react-native/src/private/featureflags/ReactNativeFeatureFlags';
 
 const IMAGE1 =
@@ -626,6 +634,51 @@ class VectorDrawableExample extends React.Component<
   }
 }
 
+function CacheControlAndroidExample(): React.Node {
+  const [reload, setReload] = React.useState(0);
+
+  const onReload = () => {
+    setReload(reload + 1);
+  };
+
+  return (
+    <>
+      <View style={styles.horizontal}>
+        <View>
+          <RNTesterText style={styles.resizeModeText}>Default</RNTesterText>
+          <Image
+            source={{
+              uri: fullImage.uri + '?cacheBust=default',
+              cache: 'default',
+            }}
+            style={styles.base}
+            key={reload}
+          />
+        </View>
+        <View style={styles.leftMargin}>
+          <RNTesterText style={styles.resizeModeText}>Reload</RNTesterText>
+          <Image
+            source={{
+              uri: fullImage.uri + '?cacheBust=reload',
+              cache: 'reload',
+            }}
+            style={styles.base}
+            key={reload}
+          />
+        </View>
+      </View>
+
+      <View style={styles.horizontal}>
+        <View style={styles.cachePolicyAndroidButtonContainer}>
+          <RNTesterButton onPress={onReload}>
+            Re-render image components
+          </RNTesterButton>
+        </View>
+      </View>
+    </>
+  );
+}
+
 const fullImage: ImageSource = {
   uri: IMAGE2,
 };
@@ -863,6 +916,11 @@ const styles = StyleSheet.create({
     height: 100,
     width: '500%',
   },
+  cachePolicyAndroidButtonContainer: {
+    flex: 1,
+    alignItems: 'center',
+    marginTop: 10,
+  },
 });
 
 exports.displayName = (undefined: ?string);
@@ -1009,7 +1067,7 @@ exports.examples = [
   //   platform: 'ios',
   // },
   {
-    title: 'Cache Policy',
+    title: 'Cache Policy iOS',
     description:
       ('First image has never been loaded before and is instructed not to load unless in cache.' +
         'Placeholder image from above will stay. Second image is the same but forced to load regardless of' +
@@ -1033,18 +1091,19 @@ exports.examples = [
             }}
             style={styles.base}
           />
-          <Image
-            defaultSource={require('../../assets/bunny.png')}
-            source={{
-              uri: smallImage.uri,
-              cache: 'default',
-            }}
-            style={styles.base}
-          />
         </View>
       );
     },
-    // platform: 'ios',
+    platform: 'ios',
+  },
+  {
+    title: 'Cache Policy Android',
+    description:
+      ('First image will be loaded and will be cached. Second image is the same but will be reloaded as the cache policy is set to reload.': string),
+    render: function (): React.Node {
+      return <CacheControlAndroidExample />;
+    },
+    platform: 'android',
   },
   // {
   //   title: 'Borders',

@@ -52,6 +52,7 @@ import com.facebook.react.common.annotations.VisibleForTesting
 import com.facebook.react.common.build.ReactBuildConfig
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.modules.fresco.ReactNetworkImageRequest
+import com.facebook.drawee.backends.pipeline.Fresco
 import com.facebook.react.uimanager.BackgroundStyleApplicator
 import com.facebook.react.uimanager.LengthPercentage
 import com.facebook.react.uimanager.LengthPercentageType
@@ -419,6 +420,7 @@ public class ReactImageView(
 
   private fun maybeUpdateViewFromRequest(doResize: Boolean) {
     val uri = this.imageSource?.uri ?: return
+    val cacheControl = this.imageSource?.cacheControl
 
     val postprocessorList = mutableListOf<Postprocessor>()
     iterativeBoxBlurPostProcessor?.let { postprocessorList.add(it) }
@@ -426,6 +428,17 @@ public class ReactImageView(
     val postprocessor = from(postprocessorList)
 
     val resizeOptions = if (doResize) resizeOptions else null
+
+    if (cacheControl == ImageCacheControl.RELOAD) {
+      FLog.w(ReactConstants.TAG, "disabling disk cache for $uri with $cacheControl")
+      // imageRequestBuilder.disableDiskCache()
+      // imageRequestBuilder.disableMemoryCache()
+      // imageRequestBuilder.setCacheChoice(ImageRequest.CacheChoice.SMALL)
+
+      // clears the cache before the request is executed
+      val imagePipeline = Fresco.getImagePipeline()
+      imagePipeline.evictFromCache(uri)
+    }
 
     val imageRequestBuilder =
         ImageRequestBuilder.newBuilderWithSource(uri)
@@ -456,8 +469,6 @@ public class ReactImageView(
     builder.setImageRequest(imageRequest).setAutoPlayAnimations(true).setOldController(controller)
 
     callerContext?.let { builder.setCallerContext(it) }
-
-    val cacheControl = imageSource?.cacheControl
 
     FLog.w(ReactConstants.TAG, "landing here with $cacheControl")
 
