@@ -2347,6 +2347,8 @@ exports[`public API should not change unintentionally Libraries/Components/Scrol
   maintainVisibleContentPosition?: ?$ReadOnly<{
     minIndexForVisible: number,
     autoscrollToTopThreshold?: ?number,
+    viewOffset?: ?number,
+    viewPosition?: ?number,
   }>,
   maximumZoomScale?: ?number,
   minimumZoomScale?: ?number,

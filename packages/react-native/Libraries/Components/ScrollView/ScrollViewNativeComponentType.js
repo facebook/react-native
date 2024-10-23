@@ -46,6 +46,8 @@ export type ScrollViewNativeProps = $ReadOnly<{
   maintainVisibleContentPosition?: ?$ReadOnly<{
     minIndexForVisible: number,
     autoscrollToTopThreshold?: ?number,
+    viewOffset?: ?number,
+    viewPosition?: ?number,
   }>,
   maximumZoomScale?: ?number,
   minimumZoomScale?: ?number,
