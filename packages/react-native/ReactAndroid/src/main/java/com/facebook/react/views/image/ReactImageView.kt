@@ -475,7 +475,7 @@ public class ReactImageView(
       }
       builder.setLowResImageRequest(cachedImageRequestBuilder.build())
     }
-   
+
     if (downloadListener != null && controllerForTesting != null) {
       val combinedListener: ForwardingControllerListener<ImageInfo> =
           ForwardingControllerListener<ImageInfo>()
@@ -527,7 +527,6 @@ public class ReactImageView(
       val multiSource = getBestSourceForSize(width, height, sources)
       imageSource = multiSource.bestResult
       cachedImageSource = multiSource.bestResultInCache
-
       return
     }
     imageSource = sources[0]

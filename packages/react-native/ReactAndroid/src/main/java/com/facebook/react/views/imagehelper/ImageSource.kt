@@ -11,7 +11,6 @@ import android.content.Context
 import android.net.Uri
 import com.facebook.react.views.image.ImageCacheControl
 import java.util.Objects
-import android.util.Log
 
 /** Class describing an image source (network URI or resource) and size. */
 public open class ImageSource

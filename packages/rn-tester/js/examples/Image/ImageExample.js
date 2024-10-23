@@ -631,7 +631,7 @@ function CacheControlAndroidExample(): React.Node {
   const [reload, setReload] = React.useState(0);
 
   const onReload = () => {
-    setReload(reload + 1);
+    setReload(prevReload => prevReload + 1);
   };
 
   return (
