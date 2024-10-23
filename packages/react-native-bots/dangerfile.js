@@ -10,7 +10,7 @@
 'use strict';
 
 const {validate: validateChangelog} =
-  require('@rnx-kit/rn-changelog-generator').default;
+  require('@rnx-kit/rn-changelog-generator');
 const {danger, fail, /*message,*/ warn} = require('danger');
 const includes = require('lodash.includes');
 
