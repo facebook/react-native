@@ -1092,7 +1092,7 @@ exports.examples = [
   {
     title: 'Cache Policy',
     description: ('First image will be loaded and will be cached. ' +
-      'Second image is the same but will be reloaded if re-rendered' +
+      'Second image is the same but will be reloaded if re-rendered ' +
       'as the cache policy is set to reload.': string),
     render: function (): React.Node {
       return <CacheControlAndroidExample />;
