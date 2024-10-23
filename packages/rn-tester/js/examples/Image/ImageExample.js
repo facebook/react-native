@@ -17,14 +17,7 @@ import RNTesterButton from '../../components/RNTesterButton';
 import RNTesterText from '../../components/RNTesterText';
 import ImageCapInsetsExample from './ImageCapInsetsExample';
 import React from 'react';
-import {
-  Button,
-  Image,
-  ImageBackground,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import {Image, ImageBackground, StyleSheet, Text, View} from 'react-native';
 import * as ReactNativeFeatureFlags from 'react-native/src/private/featureflags/ReactNativeFeatureFlags';
 
 const IMAGE1 =
@@ -931,143 +924,143 @@ exports.description =
   'Base component for displaying different types of images.';
 
 exports.examples = [
-  // {
-  //   title: 'Plain Network Image with `source` prop.',
-  //   description: ('If the `source` prop `uri` property is prefixed with ' +
-  //     '"http", then it will be downloaded from the network.': string),
-  //   render: function (): React.Node {
-  //     return <Image source={fullImage} style={styles.base} />;
-  //   },
-  // },
-  // {
-  //   title: 'Plain Network Image with `src` prop.',
-  //   description: ('If the `src` prop is defined with ' +
-  //     '"http", then it will be downloaded from the network.': string),
-  //   render: function (): React.Node {
-  //     return <Image src={fullImage.uri} style={styles.base} />;
-  //   },
-  // },
-  // {
-  //   title: 'Multiple Image Source using the `srcSet` prop.',
-  //   description:
-  //     ('A list of comma seperated uris along with scale are provided in `srcSet`.' +
-  //       'An appropriate value will be used based on the scale of the device.': string),
-  //   render: function (): React.Node {
-  //     return (
-  //       <Image
-  //         width={64}
-  //         height={64}
-  //         srcSet={`${IMAGE2} 4x, ${IMAGE1} 2x`}
-  //         style={styles.base}
-  //       />
-  //     );
-  //   },
-  // },
-  // {
-  //   title: 'Plain Blob Image',
-  //   description: ('If the `source` prop `uri` property is an object URL, ' +
-  //     'then it will be resolved using `BlobProvider` (Android) or `RCTBlobManager` (iOS).': string),
-  //   render: function (): React.Node {
-  //     return <BlobImageExample urls={[IMAGE1, IMAGE2]} />;
-  //   },
-  // },
-  // {
-  //   title: 'Plain Static Image',
-  //   description:
-  //     ('Static assets should be placed in the source code tree, and ' +
-  //       'required in the same way as JavaScript modules.': string),
-  //   render: function (): React.Node {
-  //     return (
-  //       <View style={styles.horizontal}>
-  //         <Image
-  //           source={require('../../assets/uie_thumb_normal.png')}
-  //           style={styles.icon}
-  //         />
-  //         <Image
-  //           source={require('../../assets/uie_thumb_selected.png')}
-  //           style={styles.icon}
-  //         />
-  //         <Image
-  //           source={require('../../assets/uie_comment_normal.png')}
-  //           style={styles.icon}
-  //         />
-  //         <Image
-  //           source={require('../../assets/uie_comment_highlighted.png')}
-  //           style={styles.icon}
-  //         />
-  //       </View>
-  //     );
-  //   },
-  // },
-  // {
-  //   title: 'Image Loading Events',
-  //   render: function (): React.Node {
-  //     return (
-  //       <NetworkImageCallbackExample
-  //         source={{
-  //           uri: `${IMAGE1}?r=1&t=${Date.now()}`,
-  //         }}
-  //         prefetchedSource={{uri: IMAGE_PREFETCH_URL}}
-  //       />
-  //     );
-  //   },
-  // },
-  // {
-  //   title: 'Error Handler',
-  //   render: function (): React.Node {
-  //     return (
-  //       <NetworkImageExample
-  //         source={{
-  //           uri: IMAGE1 + '_TYPO',
-  //         }}
-  //       />
-  //     );
-  //   },
-  // },
-  // {
-  //   title: 'Error Handler for Large Images',
-  //   render: function (): React.Node {
-  //     return (
-  //       <NetworkImageExample
-  //         resizeMethod="none"
-  //         // 6000x5340 ~ 128 MB
-  //         source={require('../../assets/very-large-image.png')}
-  //       />
-  //     );
-  //   },
-  // },
-  // {
-  //   title: 'Image Download Progress',
-  //   render: function (): React.Node {
-  //     return (
-  //       <NetworkImageExample
-  //         source={{
-  //           uri: `${IMAGE1}?r=1`,
-  //         }}
-  //       />
-  //     );
-  //   },
-  // },
-  // {
-  //   title: 'defaultSource',
-  //   description: 'Show a placeholder image when a network image is loading',
-  //   render: function (): React.Node {
-  //     return (
-  //       <Image
-  //         defaultSource={require('../../assets/bunny.png')}
-  //         source={{
-  //           // Note: Use a large image and bust cache so we can in fact
-  //           // visualize the `defaultSource` image.
-  //           uri: fullImage.uri + '?cacheBust=notinCache' + Date.now(),
-  //         }}
-  //         style={styles.base}
-  //       />
-  //     );
-  //   },
-  //   platform: 'ios',
-  // },
   {
-    title: 'Cache Policy iOS',
+    title: 'Plain Network Image with `source` prop.',
+    description: ('If the `source` prop `uri` property is prefixed with ' +
+      '"http", then it will be downloaded from the network.': string),
+    render: function (): React.Node {
+      return <Image source={fullImage} style={styles.base} />;
+    },
+  },
+  {
+    title: 'Plain Network Image with `src` prop.',
+    description: ('If the `src` prop is defined with ' +
+      '"http", then it will be downloaded from the network.': string),
+    render: function (): React.Node {
+      return <Image src={fullImage.uri} style={styles.base} />;
+    },
+  },
+  {
+    title: 'Multiple Image Source using the `srcSet` prop.',
+    description:
+      ('A list of comma seperated uris along with scale are provided in `srcSet`.' +
+        'An appropriate value will be used based on the scale of the device.': string),
+    render: function (): React.Node {
+      return (
+        <Image
+          width={64}
+          height={64}
+          srcSet={`${IMAGE2} 4x, ${IMAGE1} 2x`}
+          style={styles.base}
+        />
+      );
+    },
+  },
+  {
+    title: 'Plain Blob Image',
+    description: ('If the `source` prop `uri` property is an object URL, ' +
+      'then it will be resolved using `BlobProvider` (Android) or `RCTBlobManager` (iOS).': string),
+    render: function (): React.Node {
+      return <BlobImageExample urls={[IMAGE1, IMAGE2]} />;
+    },
+  },
+  {
+    title: 'Plain Static Image',
+    description:
+      ('Static assets should be placed in the source code tree, and ' +
+        'required in the same way as JavaScript modules.': string),
+    render: function (): React.Node {
+      return (
+        <View style={styles.horizontal}>
+          <Image
+            source={require('../../assets/uie_thumb_normal.png')}
+            style={styles.icon}
+          />
+          <Image
+            source={require('../../assets/uie_thumb_selected.png')}
+            style={styles.icon}
+          />
+          <Image
+            source={require('../../assets/uie_comment_normal.png')}
+            style={styles.icon}
+          />
+          <Image
+            source={require('../../assets/uie_comment_highlighted.png')}
+            style={styles.icon}
+          />
+        </View>
+      );
+    },
+  },
+  {
+    title: 'Image Loading Events',
+    render: function (): React.Node {
+      return (
+        <NetworkImageCallbackExample
+          source={{
+            uri: `${IMAGE1}?r=1&t=${Date.now()}`,
+          }}
+          prefetchedSource={{uri: IMAGE_PREFETCH_URL}}
+        />
+      );
+    },
+  },
+  {
+    title: 'Error Handler',
+    render: function (): React.Node {
+      return (
+        <NetworkImageExample
+          source={{
+            uri: IMAGE1 + '_TYPO',
+          }}
+        />
+      );
+    },
+  },
+  {
+    title: 'Error Handler for Large Images',
+    render: function (): React.Node {
+      return (
+        <NetworkImageExample
+          resizeMethod="none"
+          // 6000x5340 ~ 128 MB
+          source={require('../../assets/very-large-image.png')}
+        />
+      );
+    },
+  },
+  {
+    title: 'Image Download Progress',
+    render: function (): React.Node {
+      return (
+        <NetworkImageExample
+          source={{
+            uri: `${IMAGE1}?r=1`,
+          }}
+        />
+      );
+    },
+  },
+  {
+    title: 'defaultSource',
+    description: 'Show a placeholder image when a network image is loading',
+    render: function (): React.Node {
+      return (
+        <Image
+          defaultSource={require('../../assets/bunny.png')}
+          source={{
+            // Note: Use a large image and bust cache so we can in fact
+            // visualize the `defaultSource` image.
+            uri: fullImage.uri + '?cacheBust=notinCache' + Date.now(),
+          }}
+          style={styles.base}
+        />
+      );
+    },
+    platform: 'ios',
+  },
+  {
+    title: 'Cache Policy',
     description:
       ('First image has never been loaded before and is instructed not to load unless in cache.' +
         'Placeholder image from above will stay. Second image is the same but forced to load regardless of' +
@@ -1097,662 +1090,663 @@ exports.examples = [
     platform: 'ios',
   },
   {
-    title: 'Cache Policy Android',
-    description:
-      ('First image will be loaded and will be cached. Second image is the same but will be reloaded as the cache policy is set to reload.': string),
+    title: 'Cache Policy',
+    description: ('First image will be loaded and will be cached. ' +
+      'Second image is the same but will be reloaded if re-rendered' +
+      'as the cache policy is set to reload.': string),
     render: function (): React.Node {
       return <CacheControlAndroidExample />;
     },
     platform: 'android',
   },
-  // {
-  //   title: 'Borders',
-  //   name: 'borders',
-  //   render: function (): React.Node {
-  //     return (
-  //       <View style={styles.horizontal} testID="borders-example">
-  //         <Image
-  //           source={smallImage}
-  //           style={[styles.base, styles.background, styles.customBorderColor]}
-  //         />
-  //       </View>
-  //     );
-  //   },
-  // },
-  // {
-  //   title: 'Border Radius',
-  //   name: 'border-radius',
-  //   render: function (): React.Node {
-  //     return (
-  //       <View style={styles.horizontal} testID="border-radius-example">
-  //         <Image
-  //           style={[styles.base, styles.imageWithBorderRadius]}
-  //           source={fullImage}
-  //         />
-  //         <Image
-  //           style={[styles.base, styles.borderRadius1]}
-  //           source={fullImage}
-  //         />
-  //         <Image
-  //           style={[styles.base, styles.borderTopLeftRadius]}
-  //           source={fullImage}
-  //         />
-  //         <Image
-  //           style={[styles.base, styles.borderRadius2]}
-  //           source={fullImage}
-  //         />
-  //         <Image
-  //           style={[styles.base, styles.borderRadius3]}
-  //           source={fullImage}
-  //         />
-  //         <Image
-  //           style={[styles.base, styles.borderRadius4]}
-  //           source={fullImage}
-  //         />
-  //         <Image
-  //           style={[styles.base, styles.borderRadius5]}
-  //           source={fullImage}
-  //         />
-  //       </View>
-  //     );
-  //   },
-  // },
-  // {
-  //   title: 'Background Color',
-  //   name: 'background-color',
-  //   render: function (): React.Node {
-  //     return (
-  //       <View style={styles.horizontal} testID="background-color-example">
-  //         <Image source={smallImage} style={styles.base} />
-  //         <Image
-  //           style={[styles.base, styles.backgroundColor1]}
-  //           source={smallImage}
-  //         />
-  //         <Image
-  //           style={[styles.base, styles.backgroundColor2]}
-  //           source={smallImage}
-  //         />
-  //         <Image
-  //           style={[styles.base, styles.backgroundColor3]}
-  //           source={smallImage}
-  //         />
-  //       </View>
-  //     );
-  //   },
-  // },
-  // {
-  //   title: 'Box Shadow',
-  //   name: 'box-shadow',
-  //   render: function (): React.Node {
-  //     return (
-  //       <View style={styles.horizontal} testID="box-shadow-example">
-  //         <Image
-  //           style={[
-  //             styles.base,
-  //             styles.boxShadow,
-  //             styles.boxShadowWithBackground,
-  //           ]}
-  //           source={smallImage}
-  //         />
-  //         <Image
-  //           style={[
-  //             styles.base,
-  //             styles.boxShadow,
-  //             styles.boxShadowMultiOutsetInset,
-  //           ]}
-  //           source={smallImage}
-  //         />
-  //         <Image
-  //           style={[
-  //             styles.base,
-  //             styles.boxShadow,
-  //             styles.boxShadowAsymetricallyRounded,
-  //           ]}
-  //           source={fullImage}
-  //         />
-  //       </View>
-  //     );
-  //   },
-  // },
-  // {
-  //   title: 'Opacity',
-  //   render: function (): React.Node {
-  //     return (
-  //       <View style={styles.horizontal}>
-  //         <Image style={[styles.base, styles.opacity1]} source={fullImage} />
-  //         <Image style={[styles.base, styles.opacity2]} source={fullImage} />
-  //         <Image style={[styles.base, styles.opacity3]} source={fullImage} />
-  //         <Image style={[styles.base, styles.opacity4]} source={fullImage} />
-  //         <Image style={[styles.base, styles.opacity5]} source={fullImage} />
-  //         <Image style={[styles.base, styles.opacity6]} source={fullImage} />
-  //       </View>
-  //     );
-  //   },
-  // },
-  // {
-  //   title: 'Nesting content inside <Image> component',
-  //   render: function (): React.Node {
-  //     return (
-  //       <View style={styles.base}>
-  //         <Image
-  //           style={{...StyleSheet.absoluteFillObject}}
-  //           source={fullImage}
-  //         />
-  //         <Text style={styles.nestedText}>React</Text>
-  //       </View>
-  //     );
-  //   },
-  // },
-  // {
-  //   title: 'Nesting content inside <ImageBackground> component',
-  //   render: function (): React.Node {
-  //     return (
-  //       <ImageBackground
-  //         style={styles.transparentImageBackground}
-  //         source={fullImage}>
-  //         <Text style={styles.nestedText}>React</Text>
-  //       </ImageBackground>
-  //     );
-  //   },
-  // },
-  // {
-  //   title: 'Tint Color',
-  //   description: ('The `tintColor` prop changes all the non-alpha ' +
-  //     'pixels to the tint color.': string),
-  //   render: function (): React.Node {
-  //     return (
-  //       <View>
-  //         <View style={styles.horizontal}>
-  //           <Image
-  //             source={require('../../assets/uie_thumb_normal.png')}
-  //             style={[
-  //               styles.icon,
-  //               styles.imageWithBorderRadius,
-  //               styles.tintColor1,
-  //             ]}
-  //             tintColor={'#5ac8fa'}
-  //           />
-  //           <Image
-  //             source={require('../../assets/uie_thumb_normal.png')}
-  //             style={[styles.icon, styles.imageWithBorderRadius]}
-  //             tintColor={'#4cd964'}
-  //           />
-  //           <Image
-  //             source={require('../../assets/uie_thumb_normal.png')}
-  //             style={[styles.icon, styles.imageWithBorderRadius]}
-  //             tintColor={'#ff2d55'}
-  //           />
-  //           <Image
-  //             source={require('../../assets/uie_thumb_normal.png')}
-  //             style={[styles.icon, styles.imageWithBorderRadius]}
-  //             tintColor={'#8e8e93'}
-  //           />
-  //         </View>
-  //         <RNTesterText style={styles.sectionText} variant="label">
-  //           It also works using the `tintColor` style prop
-  //         </RNTesterText>
-  //         <View style={styles.horizontal}>
-  //           <Image
-  //             source={require('../../assets/uie_thumb_normal.png')}
-  //             style={[
-  //               styles.icon,
-  //               styles.imageWithBorderRadius,
-  //               styles.tintColor2,
-  //             ]}
-  //           />
-  //           <Image
-  //             source={require('../../assets/uie_thumb_normal.png')}
-  //             style={[
-  //               styles.icon,
-  //               styles.imageWithBorderRadius,
-  //               styles.tintColor3,
-  //             ]}
-  //           />
-  //           <Image
-  //             source={require('../../assets/uie_thumb_normal.png')}
-  //             style={[
-  //               styles.icon,
-  //               styles.imageWithBorderRadius,
-  //               styles.tintColor1,
-  //             ]}
-  //           />
-  //           <Image
-  //             source={require('../../assets/uie_thumb_normal.png')}
-  //             style={[
-  //               styles.icon,
-  //               styles.imageWithBorderRadius,
-  //               styles.tintColor4,
-  //             ]}
-  //           />
-  //         </View>
-  //         <RNTesterText style={styles.sectionText} variant="label">
-  //           The `tintColor` prop has precedence over the `tintColor` style prop
-  //         </RNTesterText>
-  //         <View style={styles.horizontal}>
-  //           <Image
-  //             source={require('../../assets/uie_thumb_normal.png')}
-  //             style={[
-  //               styles.icon,
-  //               styles.imageWithBorderRadius,
-  //               styles.tintColor2,
-  //             ]}
-  //             tintColor={'#5ac8fa'}
-  //           />
-  //           <Image
-  //             source={require('../../assets/uie_thumb_normal.png')}
-  //             style={[
-  //               styles.icon,
-  //               styles.imageWithBorderRadius,
-  //               styles.tintColor3,
-  //             ]}
-  //             tintColor={'#5ac8fa'}
-  //           />
-  //           <Image
-  //             source={require('../../assets/uie_thumb_normal.png')}
-  //             style={[
-  //               styles.icon,
-  //               styles.imageWithBorderRadius,
-  //               styles.tintColor1,
-  //             ]}
-  //             tintColor={'#5ac8fa'}
-  //           />
-  //           <Image
-  //             source={require('../../assets/uie_thumb_normal.png')}
-  //             style={[
-  //               styles.icon,
-  //               styles.imageWithBorderRadius,
-  //               styles.tintColor4,
-  //             ]}
-  //             tintColor={'#5ac8fa'}
-  //           />
-  //         </View>
-  //         <RNTesterText style={styles.sectionText} variant="label">
-  //           It also works with downloaded images:
-  //         </RNTesterText>
-  //         <View style={styles.horizontal}>
-  //           <Image
-  //             source={smallImage}
-  //             style={[
-  //               styles.base,
-  //               styles.imageWithBorderRadius,
-  //               styles.tintColor2,
-  //             ]}
-  //           />
-  //           <Image
-  //             source={smallImage}
-  //             style={[
-  //               styles.base,
-  //               styles.imageWithBorderRadius,
-  //               styles.tintColor3,
-  //             ]}
-  //           />
-  //           <Image
-  //             source={smallImage}
-  //             style={[
-  //               styles.base,
-  //               styles.imageWithBorderRadius,
-  //               styles.tintColor1,
-  //             ]}
-  //           />
-  //           <Image
-  //             source={smallImage}
-  //             style={[
-  //               styles.base,
-  //               styles.imageWithBorderRadius,
-  //               styles.tintColor4,
-  //             ]}
-  //           />
-  //         </View>
-  //       </View>
-  //     );
-  //   },
-  // },
-  // {
-  //   title: 'Object Fit',
-  //   description: ('The `objectFit` style prop controls how the image is ' +
-  //     'rendered within the frame.': string),
-  //   render: function (): React.Node {
-  //     return (
-  //       <View>
-  //         {[smallImage, fullImage].map((image, index) => {
-  //           return (
-  //             <View key={index}>
-  //               <View style={styles.horizontal}>
-  //                 <View>
-  //                   <RNTesterText style={styles.resizeModeText}>
-  //                     Contain
-  //                   </RNTesterText>
-  //                   <Image
-  //                     style={[styles.resizeMode, styles.objectFitContain]}
-  //                     source={image}
-  //                   />
-  //                 </View>
-  //                 <View style={styles.leftMargin}>
-  //                   <RNTesterText style={styles.resizeModeText}>
-  //                     Cover
-  //                   </RNTesterText>
-  //                   <Image
-  //                     style={[styles.resizeMode, styles.objectFitCover]}
-  //                     source={image}
-  //                   />
-  //                 </View>
-  //               </View>
-  //               <View style={styles.horizontal}>
-  //                 <View>
-  //                   <RNTesterText style={styles.resizeModeText}>
-  //                     Fill
-  //                   </RNTesterText>
-  //                   <Image
-  //                     style={[styles.resizeMode, styles.objectFitFill]}
-  //                     source={image}
-  //                   />
-  //                 </View>
-  //                 <View style={styles.leftMargin}>
-  //                   <RNTesterText style={styles.resizeModeText}>
-  //                     Scale Down
-  //                   </RNTesterText>
-  //                   <Image
-  //                     style={[styles.resizeMode, styles.objectFitScaleDown]}
-  //                     source={image}
-  //                   />
-  //                 </View>
-  //               </View>
-  //             </View>
-  //           );
-  //         })}
-  //       </View>
-  //     );
-  //   },
-  // },
-  // {
-  //   title: 'Resize Mode',
-  //   description: ('The `resizeMode` style prop controls how the image is ' +
-  //     'rendered within the frame.': string),
-  //   render: function (): React.Node {
-  //     return (
-  //       <View>
-  //         {[smallImage, fullImage].map((image, index) => {
-  //           return (
-  //             <View key={index}>
-  //               <View style={styles.horizontal}>
-  //                 <View>
-  //                   <RNTesterText style={styles.resizeModeText}>
-  //                     Contain
-  //                   </RNTesterText>
-  //                   <Image
-  //                     style={styles.resizeMode}
-  //                     resizeMode="contain"
-  //                     source={image}
-  //                   />
-  //                 </View>
-  //                 <View style={styles.leftMargin}>
-  //                   <RNTesterText style={styles.resizeModeText}>
-  //                     Cover
-  //                   </RNTesterText>
-  //                   <Image
-  //                     style={styles.resizeMode}
-  //                     resizeMode="cover"
-  //                     source={image}
-  //                   />
-  //                 </View>
-  //               </View>
-  //               <View style={styles.horizontal}>
-  //                 <View>
-  //                   <RNTesterText style={styles.resizeModeText}>
-  //                     Stretch
-  //                   </RNTesterText>
-  //                   <Image
-  //                     style={styles.resizeMode}
-  //                     resizeMode="stretch"
-  //                     source={image}
-  //                   />
-  //                 </View>
-  //                 <View style={styles.leftMargin}>
-  //                   <RNTesterText style={styles.resizeModeText}>
-  //                     Repeat
-  //                   </RNTesterText>
-  //                   <Image
-  //                     style={styles.resizeMode}
-  //                     resizeMode="repeat"
-  //                     source={image}
-  //                   />
-  //                 </View>
-  //                 <View style={styles.leftMargin}>
-  //                   <RNTesterText style={styles.resizeModeText}>
-  //                     Center
-  //                   </RNTesterText>
-  //                   <Image
-  //                     style={styles.resizeMode}
-  //                     resizeMode="center"
-  //                     source={image}
-  //                   />
-  //                 </View>
-  //               </View>
-  //             </View>
-  //           );
-  //         })}
-  //       </View>
-  //     );
-  //   },
-  // },
-  // {
-  //   title: 'Animated GIF',
-  //   render: function (): React.Node {
-  //     return (
-  //       <Image
-  //         style={styles.gif}
-  //         source={require('../../assets/tumblr_mfqekpMktw1rn90umo1_500.gif')}
-  //       />
-  //     );
-  //   },
-  //   platform: 'ios',
-  // },
-  // {
-  //   title: 'Base64 image',
-  //   render: function (): React.Node {
-  //     return (
-  //       <Image style={styles.base64} source={{uri: base64Icon, scale: 3}} />
-  //     );
-  //   },
-  //   platform: 'ios',
-  // },
-  // {
-  //   title: 'Cap Insets',
-  //   description:
-  //     ('When the image is resized, the corners of the size specified ' +
-  //       'by capInsets will stay a fixed size, but the center content and ' +
-  //       'borders of the image will be stretched. This is useful for creating ' +
-  //       'resizable rounded buttons, shadows, and other resizable assets.': string),
-  //   render: function (): React.Node {
-  //     return <ImageCapInsetsExample />;
-  //   },
-  //   platform: 'ios',
-  // },
-  // {
-  //   title: 'Image Size',
-  //   render: function (): React.Node {
-  //     return <ImageSizeExample source={fullImage} />;
-  //   },
-  // },
-  // {
-  //   title: 'MultipleSourcesExample',
-  //   description:
-  //     ('The `source` prop allows passing in an array of uris, so that native to choose which image ' +
-  //       'to diplay based on the size of the of the target image': string),
-  //   render: function (): React.Node {
-  //     return <MultipleSourcesExample />;
-  //   },
-  // },
-  // {
-  //   title: 'Legacy local image',
-  //   description: ('Images shipped with the native bundle, but not managed ' +
-  //     'by the JS packager': string),
-  //   render: function (): React.Node {
-  //     return <Image source={{uri: 'legacy_image', width: 120, height: 120}} />;
-  //   },
-  // },
-  // {
-  //   title: 'Bundled images',
-  //   description: 'Images shipped in a separate native bundle',
-  //   render: function (): React.Node {
-  //     return (
-  //       <View style={styles.flexRow}>
-  //         <Image
-  //           source={{
-  //             uri: 'ImageInBundle',
-  //             bundle: 'RNTesterBundle',
-  //             width: 100,
-  //             height: 100,
-  //           }}
-  //           style={styles.imageInBundle}
-  //         />
-  //         <Image
-  //           source={{
-  //             uri: 'ImageInAssetCatalog',
-  //             bundle: 'RNTesterBundle',
-  //             width: 100,
-  //             height: 100,
-  //           }}
-  //           style={styles.imageInAssetCatalog}
-  //         />
-  //       </View>
-  //     );
-  //   },
-  //   platform: 'ios',
-  // },
-  // {
-  //   title: 'Blur Radius',
-  //   render: function (): React.Node {
-  //     return (
-  //       <View style={styles.horizontal}>
-  //         <Image style={styles.base} source={fullImage} blurRadius={0} />
-  //         <Image style={styles.base} source={fullImage} blurRadius={5} />
-  //         <Image style={styles.base} source={fullImage} blurRadius={10} />
-  //         <Image style={styles.base} source={fullImage} blurRadius={15} />
-  //         <Image style={styles.base} source={fullImage} blurRadius={20} />
-  //         <Image style={styles.base} source={fullImage} blurRadius={25} />
-  //       </View>
-  //     );
-  //   },
-  // },
-  // {
-  //   title: 'Accessibility',
-  //   description:
-  //     ('If the `accessible` (boolean) prop is set to True, the image will be indicated as an accessbility element.': string),
-  //   render: function (): React.Node {
-  //     return <Image accessible source={fullImage} style={styles.base} />;
-  //   },
-  // },
-  // {
-  //   title: 'Accessibility Label',
-  //   description:
-  //     ('When an element is marked as accessibile (using the accessibility prop), it is good practice to set an accessibilityLabel on the image to provide a description of the element to people who use VoiceOver. VoiceOver will read this string when people select this element.': string),
-  //   render: function (): React.Node {
-  //     return (
-  //       <Image
-  //         accessible
-  //         accessibilityLabel="Picture of people standing around a table"
-  //         source={fullImage}
-  //         style={styles.base}
-  //       />
-  //     );
-  //   },
-  // },
-  // {
-  //   title: 'Accessibility Label via alt prop',
-  //   description:
-  //     'Using the alt prop markes an element as being accessibile, and passes the alt text to accessibilityLabel',
-  //   render: function (): React.Node {
-  //     return (
-  //       <Image
-  //         alt="Picture of people standing around a table"
-  //         source={fullImage}
-  //         style={styles.base}
-  //       />
-  //     );
-  //   },
-  // },
-  // {
-  //   title: 'Fade Duration',
-  //   description:
-  //     ('The time (in miliseconds) that an image will fade in for when it appears (default = 300).': string),
-  //   render: function (): React.Node {
-  //     return <FadeDurationExample />;
-  //   },
-  //   platform: 'android',
-  // },
-  // {
-  //   title: 'Loading Indicator Source',
-  //   description:
-  //     ('This prop is used to set the resource that will be used as the loading indicator for the image (displayed until the image is ready to be displayed).': string),
-  //   render: function (): React.Node {
-  //     return <LoadingIndicatorSourceExample />;
-  //   },
-  // },
-  // {
-  //   title: 'On Layout',
-  //   description:
-  //     ('This prop is used to set the handler function to be called when the image is mounted or its layout changes. The function receives an event with `{nativeEvent: {layout: {x, y, width, height}}}`': string),
-  //   render: function (): React.Node {
-  //     return <OnLayoutExample />;
-  //   },
-  // },
-  // {
-  //   title: 'On Partial Load',
-  //   description:
-  //     ('This prop is used to set the handler function to be called when the partial load of the image is complete. This is meant for progressive JPEG loads.': string),
-  //   render: function (): React.Node {
-  //     return <OnPartialLoadExample />;
-  //   },
-  //   platform: 'ios',
-  // },
-  // {
-  //   title: 'Vector Drawable',
-  //   description:
-  //     'Demonstrating an example of loading a vector drawable asset by name',
-  //   render: function (): React.Node {
-  //     return <VectorDrawableExample />;
-  //   },
-  //   platform: 'android',
-  // },
-  // {
-  //   title: 'Large image with different resize methods',
-  //   name: 'resize-method',
-  //   description:
-  //     'Demonstrating the effects of loading a large image with different resize methods',
-  //   scrollable: true,
-  //   render: function (): React.Node {
-  //     const methods: Array<ImageProps['resizeMethod']> = [
-  //       'auto',
-  //       'resize',
-  //       'scale',
-  //       'none',
-  //     ];
-  //     // Four copies of the same image so we don't serve cached copies of the same image
-  //     const images = [
-  //       require('../../assets/large-image-1.png'),
-  //       require('../../assets/large-image-2.png'),
-  //       require('../../assets/large-image-3.png'),
-  //       require('../../assets/large-image-4.png'),
-  //     ];
-  //     return (
-  //       <View testID="resize-method-example">
-  //         {methods.map((method, index) => (
-  //           <View
-  //             key={method}
-  //             style={{display: 'flex', overflow: 'hidden'}}
-  //             testID={`resize-method-example-${method ?? ''}`}>
-  //             <RNTesterText>{method}</RNTesterText>
-  //             <Image
-  //               resizeMethod={method}
-  //               source={images[index]}
-  //               style={styles.resizedImage}
-  //             />
-  //           </View>
-  //         ))}
-  //       </View>
-  //     );
-  //   },
-  //   platform: 'android',
-  // },
+  {
+    title: 'Borders',
+    name: 'borders',
+    render: function (): React.Node {
+      return (
+        <View style={styles.horizontal} testID="borders-example">
+          <Image
+            source={smallImage}
+            style={[styles.base, styles.background, styles.customBorderColor]}
+          />
+        </View>
+      );
+    },
+  },
+  {
+    title: 'Border Radius',
+    name: 'border-radius',
+    render: function (): React.Node {
+      return (
+        <View style={styles.horizontal} testID="border-radius-example">
+          <Image
+            style={[styles.base, styles.imageWithBorderRadius]}
+            source={fullImage}
+          />
+          <Image
+            style={[styles.base, styles.borderRadius1]}
+            source={fullImage}
+          />
+          <Image
+            style={[styles.base, styles.borderTopLeftRadius]}
+            source={fullImage}
+          />
+          <Image
+            style={[styles.base, styles.borderRadius2]}
+            source={fullImage}
+          />
+          <Image
+            style={[styles.base, styles.borderRadius3]}
+            source={fullImage}
+          />
+          <Image
+            style={[styles.base, styles.borderRadius4]}
+            source={fullImage}
+          />
+          <Image
+            style={[styles.base, styles.borderRadius5]}
+            source={fullImage}
+          />
+        </View>
+      );
+    },
+  },
+  {
+    title: 'Background Color',
+    name: 'background-color',
+    render: function (): React.Node {
+      return (
+        <View style={styles.horizontal} testID="background-color-example">
+          <Image source={smallImage} style={styles.base} />
+          <Image
+            style={[styles.base, styles.backgroundColor1]}
+            source={smallImage}
+          />
+          <Image
+            style={[styles.base, styles.backgroundColor2]}
+            source={smallImage}
+          />
+          <Image
+            style={[styles.base, styles.backgroundColor3]}
+            source={smallImage}
+          />
+        </View>
+      );
+    },
+  },
+  {
+    title: 'Box Shadow',
+    name: 'box-shadow',
+    render: function (): React.Node {
+      return (
+        <View style={styles.horizontal} testID="box-shadow-example">
+          <Image
+            style={[
+              styles.base,
+              styles.boxShadow,
+              styles.boxShadowWithBackground,
+            ]}
+            source={smallImage}
+          />
+          <Image
+            style={[
+              styles.base,
+              styles.boxShadow,
+              styles.boxShadowMultiOutsetInset,
+            ]}
+            source={smallImage}
+          />
+          <Image
+            style={[
+              styles.base,
+              styles.boxShadow,
+              styles.boxShadowAsymetricallyRounded,
+            ]}
+            source={fullImage}
+          />
+        </View>
+      );
+    },
+  },
+  {
+    title: 'Opacity',
+    render: function (): React.Node {
+      return (
+        <View style={styles.horizontal}>
+          <Image style={[styles.base, styles.opacity1]} source={fullImage} />
+          <Image style={[styles.base, styles.opacity2]} source={fullImage} />
+          <Image style={[styles.base, styles.opacity3]} source={fullImage} />
+          <Image style={[styles.base, styles.opacity4]} source={fullImage} />
+          <Image style={[styles.base, styles.opacity5]} source={fullImage} />
+          <Image style={[styles.base, styles.opacity6]} source={fullImage} />
+        </View>
+      );
+    },
+  },
+  {
+    title: 'Nesting content inside <Image> component',
+    render: function (): React.Node {
+      return (
+        <View style={styles.base}>
+          <Image
+            style={{...StyleSheet.absoluteFillObject}}
+            source={fullImage}
+          />
+          <Text style={styles.nestedText}>React</Text>
+        </View>
+      );
+    },
+  },
+  {
+    title: 'Nesting content inside <ImageBackground> component',
+    render: function (): React.Node {
+      return (
+        <ImageBackground
+          style={styles.transparentImageBackground}
+          source={fullImage}>
+          <Text style={styles.nestedText}>React</Text>
+        </ImageBackground>
+      );
+    },
+  },
+  {
+    title: 'Tint Color',
+    description: ('The `tintColor` prop changes all the non-alpha ' +
+      'pixels to the tint color.': string),
+    render: function (): React.Node {
+      return (
+        <View>
+          <View style={styles.horizontal}>
+            <Image
+              source={require('../../assets/uie_thumb_normal.png')}
+              style={[
+                styles.icon,
+                styles.imageWithBorderRadius,
+                styles.tintColor1,
+              ]}
+              tintColor={'#5ac8fa'}
+            />
+            <Image
+              source={require('../../assets/uie_thumb_normal.png')}
+              style={[styles.icon, styles.imageWithBorderRadius]}
+              tintColor={'#4cd964'}
+            />
+            <Image
+              source={require('../../assets/uie_thumb_normal.png')}
+              style={[styles.icon, styles.imageWithBorderRadius]}
+              tintColor={'#ff2d55'}
+            />
+            <Image
+              source={require('../../assets/uie_thumb_normal.png')}
+              style={[styles.icon, styles.imageWithBorderRadius]}
+              tintColor={'#8e8e93'}
+            />
+          </View>
+          <RNTesterText style={styles.sectionText} variant="label">
+            It also works using the `tintColor` style prop
+          </RNTesterText>
+          <View style={styles.horizontal}>
+            <Image
+              source={require('../../assets/uie_thumb_normal.png')}
+              style={[
+                styles.icon,
+                styles.imageWithBorderRadius,
+                styles.tintColor2,
+              ]}
+            />
+            <Image
+              source={require('../../assets/uie_thumb_normal.png')}
+              style={[
+                styles.icon,
+                styles.imageWithBorderRadius,
+                styles.tintColor3,
+              ]}
+            />
+            <Image
+              source={require('../../assets/uie_thumb_normal.png')}
+              style={[
+                styles.icon,
+                styles.imageWithBorderRadius,
+                styles.tintColor1,
+              ]}
+            />
+            <Image
+              source={require('../../assets/uie_thumb_normal.png')}
+              style={[
+                styles.icon,
+                styles.imageWithBorderRadius,
+                styles.tintColor4,
+              ]}
+            />
+          </View>
+          <RNTesterText style={styles.sectionText} variant="label">
+            The `tintColor` prop has precedence over the `tintColor` style prop
+          </RNTesterText>
+          <View style={styles.horizontal}>
+            <Image
+              source={require('../../assets/uie_thumb_normal.png')}
+              style={[
+                styles.icon,
+                styles.imageWithBorderRadius,
+                styles.tintColor2,
+              ]}
+              tintColor={'#5ac8fa'}
+            />
+            <Image
+              source={require('../../assets/uie_thumb_normal.png')}
+              style={[
+                styles.icon,
+                styles.imageWithBorderRadius,
+                styles.tintColor3,
+              ]}
+              tintColor={'#5ac8fa'}
+            />
+            <Image
+              source={require('../../assets/uie_thumb_normal.png')}
+              style={[
+                styles.icon,
+                styles.imageWithBorderRadius,
+                styles.tintColor1,
+              ]}
+              tintColor={'#5ac8fa'}
+            />
+            <Image
+              source={require('../../assets/uie_thumb_normal.png')}
+              style={[
+                styles.icon,
+                styles.imageWithBorderRadius,
+                styles.tintColor4,
+              ]}
+              tintColor={'#5ac8fa'}
+            />
+          </View>
+          <RNTesterText style={styles.sectionText} variant="label">
+            It also works with downloaded images:
+          </RNTesterText>
+          <View style={styles.horizontal}>
+            <Image
+              source={smallImage}
+              style={[
+                styles.base,
+                styles.imageWithBorderRadius,
+                styles.tintColor2,
+              ]}
+            />
+            <Image
+              source={smallImage}
+              style={[
+                styles.base,
+                styles.imageWithBorderRadius,
+                styles.tintColor3,
+              ]}
+            />
+            <Image
+              source={smallImage}
+              style={[
+                styles.base,
+                styles.imageWithBorderRadius,
+                styles.tintColor1,
+              ]}
+            />
+            <Image
+              source={smallImage}
+              style={[
+                styles.base,
+                styles.imageWithBorderRadius,
+                styles.tintColor4,
+              ]}
+            />
+          </View>
+        </View>
+      );
+    },
+  },
+  {
+    title: 'Object Fit',
+    description: ('The `objectFit` style prop controls how the image is ' +
+      'rendered within the frame.': string),
+    render: function (): React.Node {
+      return (
+        <View>
+          {[smallImage, fullImage].map((image, index) => {
+            return (
+              <View key={index}>
+                <View style={styles.horizontal}>
+                  <View>
+                    <RNTesterText style={styles.resizeModeText}>
+                      Contain
+                    </RNTesterText>
+                    <Image
+                      style={[styles.resizeMode, styles.objectFitContain]}
+                      source={image}
+                    />
+                  </View>
+                  <View style={styles.leftMargin}>
+                    <RNTesterText style={styles.resizeModeText}>
+                      Cover
+                    </RNTesterText>
+                    <Image
+                      style={[styles.resizeMode, styles.objectFitCover]}
+                      source={image}
+                    />
+                  </View>
+                </View>
+                <View style={styles.horizontal}>
+                  <View>
+                    <RNTesterText style={styles.resizeModeText}>
+                      Fill
+                    </RNTesterText>
+                    <Image
+                      style={[styles.resizeMode, styles.objectFitFill]}
+                      source={image}
+                    />
+                  </View>
+                  <View style={styles.leftMargin}>
+                    <RNTesterText style={styles.resizeModeText}>
+                      Scale Down
+                    </RNTesterText>
+                    <Image
+                      style={[styles.resizeMode, styles.objectFitScaleDown]}
+                      source={image}
+                    />
+                  </View>
+                </View>
+              </View>
+            );
+          })}
+        </View>
+      );
+    },
+  },
+  {
+    title: 'Resize Mode',
+    description: ('The `resizeMode` style prop controls how the image is ' +
+      'rendered within the frame.': string),
+    render: function (): React.Node {
+      return (
+        <View>
+          {[smallImage, fullImage].map((image, index) => {
+            return (
+              <View key={index}>
+                <View style={styles.horizontal}>
+                  <View>
+                    <RNTesterText style={styles.resizeModeText}>
+                      Contain
+                    </RNTesterText>
+                    <Image
+                      style={styles.resizeMode}
+                      resizeMode="contain"
+                      source={image}
+                    />
+                  </View>
+                  <View style={styles.leftMargin}>
+                    <RNTesterText style={styles.resizeModeText}>
+                      Cover
+                    </RNTesterText>
+                    <Image
+                      style={styles.resizeMode}
+                      resizeMode="cover"
+                      source={image}
+                    />
+                  </View>
+                </View>
+                <View style={styles.horizontal}>
+                  <View>
+                    <RNTesterText style={styles.resizeModeText}>
+                      Stretch
+                    </RNTesterText>
+                    <Image
+                      style={styles.resizeMode}
+                      resizeMode="stretch"
+                      source={image}
+                    />
+                  </View>
+                  <View style={styles.leftMargin}>
+                    <RNTesterText style={styles.resizeModeText}>
+                      Repeat
+                    </RNTesterText>
+                    <Image
+                      style={styles.resizeMode}
+                      resizeMode="repeat"
+                      source={image}
+                    />
+                  </View>
+                  <View style={styles.leftMargin}>
+                    <RNTesterText style={styles.resizeModeText}>
+                      Center
+                    </RNTesterText>
+                    <Image
+                      style={styles.resizeMode}
+                      resizeMode="center"
+                      source={image}
+                    />
+                  </View>
+                </View>
+              </View>
+            );
+          })}
+        </View>
+      );
+    },
+  },
+  {
+    title: 'Animated GIF',
+    render: function (): React.Node {
+      return (
+        <Image
+          style={styles.gif}
+          source={require('../../assets/tumblr_mfqekpMktw1rn90umo1_500.gif')}
+        />
+      );
+    },
+    platform: 'ios',
+  },
+  {
+    title: 'Base64 image',
+    render: function (): React.Node {
+      return (
+        <Image style={styles.base64} source={{uri: base64Icon, scale: 3}} />
+      );
+    },
+    platform: 'ios',
+  },
+  {
+    title: 'Cap Insets',
+    description:
+      ('When the image is resized, the corners of the size specified ' +
+        'by capInsets will stay a fixed size, but the center content and ' +
+        'borders of the image will be stretched. This is useful for creating ' +
+        'resizable rounded buttons, shadows, and other resizable assets.': string),
+    render: function (): React.Node {
+      return <ImageCapInsetsExample />;
+    },
+    platform: 'ios',
+  },
+  {
+    title: 'Image Size',
+    render: function (): React.Node {
+      return <ImageSizeExample source={fullImage} />;
+    },
+  },
+  {
+    title: 'MultipleSourcesExample',
+    description:
+      ('The `source` prop allows passing in an array of uris, so that native to choose which image ' +
+        'to diplay based on the size of the of the target image': string),
+    render: function (): React.Node {
+      return <MultipleSourcesExample />;
+    },
+  },
+  {
+    title: 'Legacy local image',
+    description: ('Images shipped with the native bundle, but not managed ' +
+      'by the JS packager': string),
+    render: function (): React.Node {
+      return <Image source={{uri: 'legacy_image', width: 120, height: 120}} />;
+    },
+  },
+  {
+    title: 'Bundled images',
+    description: 'Images shipped in a separate native bundle',
+    render: function (): React.Node {
+      return (
+        <View style={styles.flexRow}>
+          <Image
+            source={{
+              uri: 'ImageInBundle',
+              bundle: 'RNTesterBundle',
+              width: 100,
+              height: 100,
+            }}
+            style={styles.imageInBundle}
+          />
+          <Image
+            source={{
+              uri: 'ImageInAssetCatalog',
+              bundle: 'RNTesterBundle',
+              width: 100,
+              height: 100,
+            }}
+            style={styles.imageInAssetCatalog}
+          />
+        </View>
+      );
+    },
+    platform: 'ios',
+  },
+  {
+    title: 'Blur Radius',
+    render: function (): React.Node {
+      return (
+        <View style={styles.horizontal}>
+          <Image style={styles.base} source={fullImage} blurRadius={0} />
+          <Image style={styles.base} source={fullImage} blurRadius={5} />
+          <Image style={styles.base} source={fullImage} blurRadius={10} />
+          <Image style={styles.base} source={fullImage} blurRadius={15} />
+          <Image style={styles.base} source={fullImage} blurRadius={20} />
+          <Image style={styles.base} source={fullImage} blurRadius={25} />
+        </View>
+      );
+    },
+  },
+  {
+    title: 'Accessibility',
+    description:
+      ('If the `accessible` (boolean) prop is set to True, the image will be indicated as an accessbility element.': string),
+    render: function (): React.Node {
+      return <Image accessible source={fullImage} style={styles.base} />;
+    },
+  },
+  {
+    title: 'Accessibility Label',
+    description:
+      ('When an element is marked as accessibile (using the accessibility prop), it is good practice to set an accessibilityLabel on the image to provide a description of the element to people who use VoiceOver. VoiceOver will read this string when people select this element.': string),
+    render: function (): React.Node {
+      return (
+        <Image
+          accessible
+          accessibilityLabel="Picture of people standing around a table"
+          source={fullImage}
+          style={styles.base}
+        />
+      );
+    },
+  },
+  {
+    title: 'Accessibility Label via alt prop',
+    description:
+      'Using the alt prop markes an element as being accessibile, and passes the alt text to accessibilityLabel',
+    render: function (): React.Node {
+      return (
+        <Image
+          alt="Picture of people standing around a table"
+          source={fullImage}
+          style={styles.base}
+        />
+      );
+    },
+  },
+  {
+    title: 'Fade Duration',
+    description:
+      ('The time (in miliseconds) that an image will fade in for when it appears (default = 300).': string),
+    render: function (): React.Node {
+      return <FadeDurationExample />;
+    },
+    platform: 'android',
+  },
+  {
+    title: 'Loading Indicator Source',
+    description:
+      ('This prop is used to set the resource that will be used as the loading indicator for the image (displayed until the image is ready to be displayed).': string),
+    render: function (): React.Node {
+      return <LoadingIndicatorSourceExample />;
+    },
+  },
+  {
+    title: 'On Layout',
+    description:
+      ('This prop is used to set the handler function to be called when the image is mounted or its layout changes. The function receives an event with `{nativeEvent: {layout: {x, y, width, height}}}`': string),
+    render: function (): React.Node {
+      return <OnLayoutExample />;
+    },
+  },
+  {
+    title: 'On Partial Load',
+    description:
+      ('This prop is used to set the handler function to be called when the partial load of the image is complete. This is meant for progressive JPEG loads.': string),
+    render: function (): React.Node {
+      return <OnPartialLoadExample />;
+    },
+    platform: 'ios',
+  },
+  {
+    title: 'Vector Drawable',
+    description:
+      'Demonstrating an example of loading a vector drawable asset by name',
+    render: function (): React.Node {
+      return <VectorDrawableExample />;
+    },
+    platform: 'android',
+  },
+  {
+    title: 'Large image with different resize methods',
+    name: 'resize-method',
+    description:
+      'Demonstrating the effects of loading a large image with different resize methods',
+    scrollable: true,
+    render: function (): React.Node {
+      const methods: Array<ImageProps['resizeMethod']> = [
+        'auto',
+        'resize',
+        'scale',
+        'none',
+      ];
+      // Four copies of the same image so we don't serve cached copies of the same image
+      const images = [
+        require('../../assets/large-image-1.png'),
+        require('../../assets/large-image-2.png'),
+        require('../../assets/large-image-3.png'),
+        require('../../assets/large-image-4.png'),
+      ];
+      return (
+        <View testID="resize-method-example">
+          {methods.map((method, index) => (
+            <View
+              key={method}
+              style={{display: 'flex', overflow: 'hidden'}}
+              testID={`resize-method-example-${method ?? ''}`}>
+              <RNTesterText>{method}</RNTesterText>
+              <Image
+                resizeMethod={method}
+                source={images[index]}
+                style={styles.resizedImage}
+              />
+            </View>
+          ))}
+        </View>
+      );
+    },
+    platform: 'android',
+  },
 ];

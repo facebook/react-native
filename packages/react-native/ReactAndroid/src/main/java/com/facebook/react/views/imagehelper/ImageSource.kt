@@ -9,8 +9,6 @@ package com.facebook.react.views.imagehelper
 
 import android.content.Context
 import android.net.Uri
-import com.facebook.common.logging.FLog
-import com.facebook.react.common.ReactConstants
 import com.facebook.react.views.image.ImageCacheControl
 import java.util.Objects
 import android.util.Log
@@ -26,11 +24,6 @@ constructor(
     height: Double = 0.0,
     cacheControl: String? = null
 ) {
-
-  init {
-    // Log cache control to ensure it's set correctly
-    Log.d("ImageSource", "CacheControl set to: $cacheControl")
-  }
 
   /** Get the URI for this image - can be either a parsed network URI or a resource URI. */
   public open val uri: Uri = computeUri(context)
@@ -82,7 +75,6 @@ constructor(
       "default" -> ImageCacheControl.DEFAULT
       "reload" -> ImageCacheControl.RELOAD
       else -> {
-        FLog.w(ReactConstants.TAG, "Invalid resize method $cacheControl")
         return ImageCacheControl.DEFAULT
       }
     }

@@ -11,8 +11,6 @@ package com.facebook.react.views.image
 
 import android.content.Context
 import android.graphics.Bitmap
-import com.facebook.common.logging.FLog
-import com.facebook.react.common.ReactConstants
 import android.graphics.BitmapShader
 import android.graphics.Canvas
 import android.graphics.Color
@@ -26,6 +24,7 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import com.facebook.common.references.CloseableReference
 import com.facebook.common.util.UriUtil
+import com.facebook.drawee.backends.pipeline.Fresco
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder
 import com.facebook.drawee.controller.ControllerListener
 import com.facebook.drawee.controller.ForwardingControllerListener
@@ -52,7 +51,6 @@ import com.facebook.react.common.annotations.VisibleForTesting
 import com.facebook.react.common.build.ReactBuildConfig
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.modules.fresco.ReactNetworkImageRequest
-import com.facebook.drawee.backends.pipeline.Fresco
 import com.facebook.react.uimanager.BackgroundStyleApplicator
 import com.facebook.react.uimanager.LengthPercentage
 import com.facebook.react.uimanager.LengthPercentageType
@@ -430,13 +428,8 @@ public class ReactImageView(
     val resizeOptions = if (doResize) resizeOptions else null
 
     if (cacheControl == ImageCacheControl.RELOAD) {
-      FLog.w(ReactConstants.TAG, "disabling disk cache for $uri with $cacheControl")
-      // imageRequestBuilder.disableDiskCache()
-      // imageRequestBuilder.disableMemoryCache()
-      // imageRequestBuilder.setCacheChoice(ImageRequest.CacheChoice.SMALL)
-
-      // clears the cache before the request is executed
       val imagePipeline = Fresco.getImagePipeline()
+
       imagePipeline.evictFromCache(uri)
     }
 
@@ -470,25 +463,19 @@ public class ReactImageView(
 
     callerContext?.let { builder.setCallerContext(it) }
 
-    FLog.w(ReactConstants.TAG, "landing here with $cacheControl")
-
-    if (cacheControl != ImageCacheControl.RELOAD) {
-      cachedImageSource?.let { cachedSource ->
-        val cachedImageRequestBuilder =
-            ImageRequestBuilder.newBuilderWithSource(cachedSource.uri)
-                .setPostprocessor(postprocessor)
-                .setResizeOptions(resizeOptions)
-                .setAutoRotateEnabled(true)
-                .setProgressiveRenderingEnabled(progressiveRenderingEnabled)
-        if (resizeMethod == ImageResizeMethod.NONE) {
-          cachedImageRequestBuilder.setDownsampleOverride(DownsampleMode.NEVER)
-        }
-        builder.setLowResImageRequest(cachedImageRequestBuilder.build())
+    cachedImageSource?.let { cachedSource ->
+      val cachedImageRequestBuilder =
+          ImageRequestBuilder.newBuilderWithSource(cachedSource.uri)
+              .setPostprocessor(postprocessor)
+              .setResizeOptions(resizeOptions)
+              .setAutoRotateEnabled(true)
+              .setProgressiveRenderingEnabled(progressiveRenderingEnabled)
+      if (resizeMethod == ImageResizeMethod.NONE) {
+        cachedImageRequestBuilder.setDownsampleOverride(DownsampleMode.NEVER)
       }
-    } else {
-      FLog.w(ReactConstants.TAG, "skipping cache for $uri with $cacheControl")
+      builder.setLowResImageRequest(cachedImageRequestBuilder.build())
     }
-
+   
     if (downloadListener != null && controllerForTesting != null) {
       val combinedListener: ForwardingControllerListener<ImageInfo> =
           ForwardingControllerListener<ImageInfo>()
@@ -541,10 +528,8 @@ public class ReactImageView(
       imageSource = multiSource.bestResult
       cachedImageSource = multiSource.bestResultInCache
 
-      FLog.w(ReactConstants.TAG, "bestResult: ${imageSource?.uri}, bestResultInCache: ${cachedImageSource?.uri}")
       return
     }
-    FLog.w(ReactConstants.TAG, "bestResult sources: ${sources[0].uri}")
     imageSource = sources[0]
   }
 

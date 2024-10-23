@@ -101,14 +101,11 @@ public constructor(
   // In JS this is Image.props.source
   @ReactProp(name = "src")
   public fun setSrc(view: ReactImageView, sources: ReadableArray?) {
-    FLog.w(ReactConstants.TAG, "setSrc called with $sources")
     setSource(view, sources)
   }
 
   @ReactProp(name = "source")
   public fun setSource(view: ReactImageView, sources: ReadableArray?) {
-    // log the params
-    FLog.w(ReactConstants.TAG, "setSource called with $sources")
     view.setSource(sources)
   }
 
