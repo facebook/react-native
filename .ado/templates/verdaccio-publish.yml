@@ -1,6 +1,0 @@
-# Publishes local packages to our verdaccio server.
-
-steps:
-  - script: |
-      npx beachball publish --branch origin/$(System.PullRequest.TargetBranch) --no-push --registry http://localhost:4873 --yes --access public
-    displayName: Publish react-native-macos-init to verdaccio

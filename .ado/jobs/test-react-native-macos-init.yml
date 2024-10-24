@@ -1,6 +1,6 @@
 jobs:
   - job: CliInit
-    displayName: Verify react-native-macos-init
+    displayName: Verify react-native-macos in a new project
     pool:
       vmImage: $(VmImageApple)
     steps:
@@ -13,80 +13,59 @@ jobs:
 
       - template: /.ado/templates/apple-tools-setup.yml@self
 
-      - task: CmdLine@2
-        displayName: yarn install react-native-macos-init
-        inputs:
-          script: |
-            set -eox pipefail
-            cd packages/react-native-macos-init
-            yarn install
+      - script: |
+          set -eox pipefail
+          yarn install
+        displayName: Install npm dependencies
 
-      - task: CmdLine@2
+      - script: |
+          set -eox pipefail
+          yarn build
+        displayName: Build @react-native/community-cli-plugin
+
+      - script: |
+          set -eox pipefail
+          yarn build
+        workingDirectory: packages/react-native-macos-init
         displayName: Build react-native-macos-init
-        inputs:
-          script: |
-            set -eox pipefail
-            cd packages/react-native-macos-init
-            yarn build
 
       - template: /.ado/templates/verdaccio-init.yml@self
 
-      - template: /.ado/templates/verdaccio-publish.yml@self
+      - script: |
+          .ado/scripts/verdaccio.sh publish --branch origin/$(System.PullRequest.TargetBranch)
+        displayName: Publish react-native-macos to Verdaccio
 
-      # First do a build of the local package, since we point the cli at the local files, it needs to be pre-built
-      - task: CmdLine@2
-        displayName: yarn install (local react-native-macos)
-        inputs:
-          script:  |
-            set -eox pipefail
-            yarn install --immutable
+      - script: |
+          set -eox pipefail
+          npx --yes @react-native-community/cli init testcli --version 0.75 --skip-install
+        workingDirectory: $(Agent.BuildDirectory)
+        displayName: Initialize a new project
 
-      - task: CmdLine@2
-        displayName: yarn install (local react-native-macos-init)
-        inputs:
-          script: |
-            set -eox pipefail
-            cd packages/react-native-macos-init
-            yarn install --immutable
+      - script: |
+          set -eox pipefail
+          yarn install --mode=update-lockfile
+          # `update-lockfile` skips the linking step, so we need to run `yarn install` again
+          yarn install
+        workingDirectory: $(Agent.BuildDirectory)/testcli
+        displayName: Install npm dependencies (new project)
 
-      - task: CmdLine@2
-        displayName: yarn build (local react-native-macos-init)
-        inputs:
-          script: |
-            set -eox pipefail
-            cd packages/react-native-macos-init
-            yarn build
+      - script: |
+          set -eox pipefail
+          # We need to set the npm registry here otherwise it won't stick
+          $(Build.Repository.LocalPath)/.ado/scripts/verdaccio.sh configure
+          node $(Build.Repository.LocalPath)/packages/react-native-macos-init/bin.js --verbose --version latest --overwrite --prerelease
+          yarn why react-native-macos
+        workingDirectory: $(Agent.BuildDirectory)/testcli
+        displayName: Apply macOS template (new project)
 
-      - task: CmdLine@2
-        displayName: Init new project
-        inputs:
-          script: |
-            set -eox pipefail
-            npx --yes @react-native-community/cli init testcli --version 0.75 --skip-install
-          workingDirectory: $(Agent.BuildDirectory)
+      - script: |
+          set -eox pipefail
+          npx react-native build-macos
+        workingDirectory: $(Agent.BuildDirectory)/testcli
+        displayName: Build macOS app (new project)
 
-      - task: CmdLine@2
-        displayName: yarn install (testcli)
-        inputs:
-          script: |
-            set -eox pipefail
-            yarn install --mode=update-lockfile
-            # `update-lockfile` skips the linking step, so we need to run `yarn install` again
-            yarn install
-          workingDirectory: $(Agent.BuildDirectory)/testcli
-
-      - task: CmdLine@2
-        displayName: Apply macos template
-        inputs:
-          script: |
-            set -eox pipefail
-            npx react-native-macos-init --version latest --overwrite --prerelease
-          workingDirectory: $(Agent.BuildDirectory)/testcli
-
-      - task: CmdLine@2
-        displayName: Run macos [test]
-        inputs:
-          script: |
-            set -eox pipefail
-            npx react-native run-macos
-          workingDirectory: $(Agent.BuildDirectory)/testcli
+      - script: |
+          set -eox pipefail
+          npx react-native run-macos
+        workingDirectory: $(Agent.BuildDirectory)/testcli
+        displayName: Run macOS app (new project)

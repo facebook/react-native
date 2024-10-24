@@ -180,4 +180,8 @@ vendor/
 # Ccache
 .ccache
 
+# ADO
+.ado/Brewfile.lock.json
+.ado/verdaccio/htpasswd
+.ado/verdaccio/storage/.verdaccio-db.json
 # macOS]
