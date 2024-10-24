@@ -33,7 +33,6 @@
 #import <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #import <react/renderer/scheduler/SchedulerToolbox.h>
 #import <react/utils/ContextContainer.h>
-#import <react/utils/CoreFeatures.h>
 #import <react/utils/ManagedObjectWrapper.h>
 #import "AppleEventBeat.h"
 
@@ -228,10 +227,6 @@ using namespace facebook::react;
 - (RCTScheduler *)_createScheduler
 {
   auto reactNativeConfig = _contextContainer->at<std::shared_ptr<const ReactNativeConfig>>("ReactNativeConfig");
-
-  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_cpp_props_iterator_setter_ios")) {
-    CoreFeatures::enablePropIteratorSetter = true;
-  }
 
   auto componentRegistryFactory =
       [factory = wrapManagedObject(_mountingManager.componentViewRegistry.componentViewFactory)](

@@ -16,7 +16,6 @@
 #import <react/renderer/components/image/ImageProps.h>
 #import <react/renderer/imagemanager/ImageRequest.h>
 #import <react/renderer/imagemanager/RCTImagePrimitivesConversions.h>
-#import <react/utils/CoreFeatures.h>
 
 using namespace facebook::react;
 

@@ -11,6 +11,7 @@
 #include <vector>
 
 #include <react/debug/react_native_assert.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/core/ComponentDescriptor.h>
 #include <react/renderer/core/EventDispatcher.h>
 #include <react/renderer/core/Props.h>
@@ -19,7 +20,6 @@
 #include <react/renderer/core/ShadowNodeFragment.h>
 #include <react/renderer/core/State.h>
 #include <react/renderer/graphics/Float.h>
-#include <react/utils/CoreFeatures.h>
 
 namespace facebook::react {
 
@@ -115,7 +115,7 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
     // Use the new-style iterator
     // Note that we just check if `Props` has this flag set, no matter
     // the type of ShadowNode; it acts as the single global flag.
-    if (CoreFeatures::enablePropIteratorSetter) {
+    if (ReactNativeFeatureFlags::enableCppPropsIteratorSetter()) {
       auto shadowNodeProps = ShadowNodeT::Props(context, rawProps, props);
 #ifdef ANDROID
       const auto& dynamic = shadowNodeProps->rawProps;

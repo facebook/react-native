@@ -11,7 +11,6 @@
 #include <react/renderer/components/view/propsConversions.h>
 #include <react/renderer/core/propsConversions.h>
 #include <react/renderer/debug/debugStringConvertibleUtils.h>
-#include <react/utils/CoreFeatures.h>
 #include <yoga/Yoga.h>
 
 namespace facebook::react {

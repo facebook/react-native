@@ -30,7 +30,6 @@
 #include <react/renderer/scheduler/SchedulerToolbox.h>
 #include <react/renderer/uimanager/primitives.h>
 #include <react/utils/ContextContainer.h>
-#include <react/utils/CoreFeatures.h>
 
 namespace facebook::react {
 
@@ -71,16 +70,6 @@ FabricUIManagerBinding::getInspectorDataForInstance(
   }
   result["hierarchy"] = hierarchy;
   return ReadableNativeMap::newObjectCxxArgs(result);
-}
-
-constexpr static auto kReactFeatureFlagsJavaDescriptor =
-    "com/facebook/react/config/ReactFeatureFlags";
-
-static bool getFeatureFlagValue(const char* name) {
-  static const auto reactFeatureFlagsClass =
-      jni::findClassStatic(kReactFeatureFlagsJavaDescriptor);
-  const auto field = reactFeatureFlagsClass->getStaticField<jboolean>(name);
-  return reactFeatureFlagsClass->getStaticFieldValue(field) != 0;
 }
 
 void FabricUIManagerBinding::setPixelDensity(float pointScaleFactor) {
@@ -501,11 +490,6 @@ void FabricUIManagerBinding::installFabricUIManager(
 
   // Keep reference to config object and cache some feature flags here
   reactNativeConfig_ = config;
-
-  CoreFeatures::enablePropIteratorSetter =
-      getFeatureFlagValue("enableCppPropsIteratorSetter");
-  CoreFeatures::excludeYogaFromRawProps =
-      ReactNativeFeatureFlags::excludeYogaFromRawProps();
 
   auto toolbox = SchedulerToolbox{};
   toolbox.contextContainer = contextContainer;
