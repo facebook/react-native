@@ -471,25 +471,28 @@ void FabricUIManagerBinding::installFabricUIManager(
 
   auto runtimeExecutor = runtimeExecutorHolder->cthis()->get();
 
-  auto runtimeScheduler = runtimeSchedulerHolder->cthis()->get().lock();
-  if (runtimeScheduler) {
-    runtimeExecutor =
-        [runtimeScheduler](
-            std::function<void(jsi::Runtime & runtime)>&& callback) {
-          runtimeScheduler->scheduleWork(std::move(callback));
-        };
-    contextContainer->insert(
-        "RuntimeScheduler", std::weak_ptr<RuntimeScheduler>(runtimeScheduler));
+  if (runtimeSchedulerHolder) {
+    auto runtimeScheduler = runtimeSchedulerHolder->cthis()->get().lock();
+    if (runtimeScheduler) {
+      runtimeExecutor =
+          [runtimeScheduler](
+              std::function<void(jsi::Runtime & runtime)>&& callback) {
+            runtimeScheduler->scheduleWork(std::move(callback));
+          };
+      contextContainer->insert(
+          "RuntimeScheduler",
+          std::weak_ptr<RuntimeScheduler>(runtimeScheduler));
+    }
   }
 
   EventBeat::Factory eventBeatFactory =
-      [eventBeatManager, &runtimeScheduler, globalJavaUiManager](
+      [eventBeatManager, runtimeExecutor, globalJavaUiManager](
           std::shared_ptr<EventBeat::OwnerBox> ownerBox)
       -> std::unique_ptr<EventBeat> {
     return std::make_unique<AndroidEventBeat>(
         std::move(ownerBox),
         eventBeatManager,
-        *runtimeScheduler,
+        runtimeExecutor,
         globalJavaUiManager);
   };
 

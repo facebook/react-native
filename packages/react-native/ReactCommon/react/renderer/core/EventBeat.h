@@ -7,13 +7,10 @@
 
 #pragma once
 
+#include <ReactCommon/RuntimeExecutor.h>
 #include <atomic>
 #include <functional>
 #include <memory>
-
-namespace facebook::react {
-class RuntimeScheduler;
-}
 
 namespace facebook::jsi {
 class Runtime;
@@ -59,7 +56,7 @@ class EventBeat {
 
   explicit EventBeat(
       std::shared_ptr<OwnerBox> ownerBox,
-      RuntimeScheduler& runtimeScheduler);
+      RuntimeExecutor runtimeExecutor);
 
   virtual ~EventBeat() = default;
 
@@ -91,7 +88,7 @@ class EventBeat {
   mutable std::atomic<bool> isRequested_{false};
 
  private:
-  RuntimeScheduler& runtimeScheduler_;
+  RuntimeExecutor runtimeExecutor_;
   mutable std::atomic<bool> isBeatCallbackScheduled_{false};
 };
 

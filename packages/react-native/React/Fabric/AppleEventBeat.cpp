@@ -14,8 +14,8 @@ namespace facebook::react {
 AppleEventBeat::AppleEventBeat(
     std::shared_ptr<OwnerBox> ownerBox,
     std::unique_ptr<const RunLoopObserver> uiRunLoopObserver,
-    RuntimeScheduler& runtimeScheduler)
-    : EventBeat(std::move(ownerBox), runtimeScheduler),
+    RuntimeExecutor runtimeExecutor)
+    : EventBeat(std::move(ownerBox), std::move(runtimeExecutor)),
       uiRunLoopObserver_(std::move(uiRunLoopObserver)) {
   uiRunLoopObserver_->setDelegate(this);
   uiRunLoopObserver_->enable();

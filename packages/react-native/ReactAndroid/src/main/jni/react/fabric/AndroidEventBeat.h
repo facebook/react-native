@@ -19,7 +19,7 @@ class AndroidEventBeat final : public EventBeat,
   AndroidEventBeat(
       std::shared_ptr<OwnerBox> ownerBox,
       EventBeatManager* eventBeatManager,
-      RuntimeScheduler& runtimeScheduler,
+      RuntimeExecutor runtimeExecutor,
       jni::global_ref<jobject> javaUIManager);
 
   ~AndroidEventBeat() override;
