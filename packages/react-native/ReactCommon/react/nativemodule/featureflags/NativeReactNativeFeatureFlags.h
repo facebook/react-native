@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<00421354f8b4b982f5eac771592d418f>>
+ * @generated SignedSource<<0885affcf6782a59b0f4a3d1370ffc90>>
  */
 
 /**
@@ -54,6 +54,8 @@ class NativeReactNativeFeatureFlags
   bool enableBridgelessArchitecture(jsi::Runtime& runtime);
 
   bool enableCleanTextInputYogaNode(jsi::Runtime& runtime);
+
+  bool enableCppPropsIteratorSetter(jsi::Runtime& runtime);
 
   bool enableDeletionOfUnmountedViews(jsi::Runtime& runtime);
 

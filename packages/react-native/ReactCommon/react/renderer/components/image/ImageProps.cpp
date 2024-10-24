@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/components/image/ImageProps.h>
 #include <react/renderer/components/image/conversions.h>
 #include <react/renderer/core/propsConversions.h>
@@ -18,15 +19,16 @@ ImageProps::ImageProps(
     const RawProps& rawProps)
     : ViewProps(context, sourceProps, rawProps),
       sources(
-          CoreFeatures::enablePropIteratorSetter ? sourceProps.sources
-                                                 : convertRawProp(
-                                                       context,
-                                                       rawProps,
-                                                       "source",
-                                                       sourceProps.sources,
-                                                       {})),
+          ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
+              ? sourceProps.sources
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "source",
+                    sourceProps.sources,
+                    {})),
       defaultSources(
-          CoreFeatures::enablePropIteratorSetter
+          ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
               ? sourceProps.defaultSources
               : convertRawProp(
                     context,
@@ -35,7 +37,7 @@ ImageProps::ImageProps(
                     sourceProps.defaultSources,
                     {})),
       resizeMode(
-          CoreFeatures::enablePropIteratorSetter
+          ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
               ? sourceProps.resizeMode
               : convertRawProp(
                     context,
@@ -44,31 +46,34 @@ ImageProps::ImageProps(
                     sourceProps.resizeMode,
                     ImageResizeMode::Stretch)),
       blurRadius(
-          CoreFeatures::enablePropIteratorSetter ? sourceProps.blurRadius
-                                                 : convertRawProp(
-                                                       context,
-                                                       rawProps,
-                                                       "blurRadius",
-                                                       sourceProps.blurRadius,
-                                                       {})),
+          ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
+              ? sourceProps.blurRadius
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "blurRadius",
+                    sourceProps.blurRadius,
+                    {})),
       capInsets(
-          CoreFeatures::enablePropIteratorSetter ? sourceProps.capInsets
-                                                 : convertRawProp(
-                                                       context,
-                                                       rawProps,
-                                                       "capInsets",
-                                                       sourceProps.capInsets,
-                                                       {})),
+          ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
+              ? sourceProps.capInsets
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "capInsets",
+                    sourceProps.capInsets,
+                    {})),
       tintColor(
-          CoreFeatures::enablePropIteratorSetter ? sourceProps.tintColor
-                                                 : convertRawProp(
-                                                       context,
-                                                       rawProps,
-                                                       "tintColor",
-                                                       sourceProps.tintColor,
-                                                       {})),
+          ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
+              ? sourceProps.tintColor
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "tintColor",
+                    sourceProps.tintColor,
+                    {})),
       internal_analyticTag(
-          CoreFeatures::enablePropIteratorSetter
+          ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
               ? sourceProps.internal_analyticTag
               : convertRawProp(
                     context,

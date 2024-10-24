@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1ce9496b005924d8a421899ce55f6d81>>
+ * @generated SignedSource<<ee5400241a72652a2f8ff343a06e4e8c>>
  */
 
 /**
@@ -38,6 +38,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enableBridgelessArchitecture(): Boolean = false
 
   override fun enableCleanTextInputYogaNode(): Boolean = false
+
+  override fun enableCppPropsIteratorSetter(): Boolean = false
 
   override fun enableDeletionOfUnmountedViews(): Boolean = false
 
