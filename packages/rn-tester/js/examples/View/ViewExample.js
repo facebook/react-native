@@ -62,6 +62,24 @@ class ViewBorderStyleExample extends React.Component<
               Dotted border style
             </RNTesterText>
           </View>
+          <View
+            style={[
+              {
+                marginTop: 5,
+                borderWidth: 1,
+                borderRadius: 5,
+                padding: 5,
+              },
+              this.state.showBorder
+                ? {
+                    borderStyle: 'none',
+                  }
+                : null,
+            ]}>
+            <RNTesterText style={{fontSize: 11}}>
+              None border style
+            </RNTesterText>
+          </View>
         </View>
       </Pressable>
     );

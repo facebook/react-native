@@ -172,6 +172,7 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
 
   @ReactProp(name = "borderStyle")
   public open fun setBorderStyle(view: ReactViewGroup, borderStyle: String?) {
+    FLog.w("ReactNative", "parsing border style in ReactViewManager: $borderStyle")
     val parsedBorderStyle = if (borderStyle == null) null else BorderStyle.fromString(borderStyle)
     BackgroundStyleApplicator.setBorderStyle(view, parsedBorderStyle)
   }

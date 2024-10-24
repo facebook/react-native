@@ -22,6 +22,7 @@ import android.graphics.RectF
 import android.graphics.Region
 import android.graphics.drawable.Drawable
 import android.os.Build
+import com.facebook.common.logging.FLog
 import com.facebook.react.uimanager.FloatUtil.floatsEqual
 import com.facebook.react.uimanager.LengthPercentage
 import com.facebook.react.uimanager.PixelUtil
@@ -209,6 +210,8 @@ internal class BorderDrawable(
   }
 
   fun setBorderStyle(style: String?) {
+    FLog.w("ReactNative", "setBorderStyle")
+
     val borderStyle = if (style == null) null else BorderStyle.valueOf(style.uppercase())
     this.borderStyle = borderStyle
     needUpdatePath = true
@@ -233,6 +236,8 @@ internal class BorderDrawable(
   }
 
   private fun drawRectangularBorders(canvas: Canvas) {
+    FLog.w("ReactNative", "drawRectangularBorders")
+
     val borderWidth = computeBorderInsets()
     val borderLeft = borderWidth.left.roundToInt()
     val borderTop = borderWidth.top.roundToInt()
@@ -547,6 +552,10 @@ internal class BorderDrawable(
 
   /** For rounded borders we use default "borderWidth" property. */
   private fun getFullBorderWidth(): Float {
+    if (this.borderStyle == BorderStyle.NONE) {
+      return 0f
+    }
+
     val borderWidth = this.borderWidth?.getRaw(Spacing.ALL) ?: Float.NaN
     return if (!borderWidth.isNaN()) borderWidth else 0f
   }
@@ -570,6 +579,7 @@ internal class BorderDrawable(
 
   private fun getPathEffect(style: BorderStyle, borderWidth: Float): PathEffect? {
     return when (style) {
+      BorderStyle.NONE,
       BorderStyle.SOLID -> null
       BorderStyle.DASHED ->
           DashPathEffect(
@@ -650,11 +660,21 @@ internal class BorderDrawable(
   }
 
   private fun updatePath() {
+    FLog.w("ReactNative", "Updating Path with border style: $borderStyle")
+
     if (!needUpdatePath) {
       return
     }
 
     needUpdatePath = false
+
+    FLog.w("ReactNative", "Updating Path with border style: $borderStyle")
+
+    // if borderStyle is none, we don't need to draw anything
+    if (this.borderStyle == BorderStyle.NONE) {
+      FLog.w("ReactNative", "Skipping drawing border as borderStyle is none")
+      return
+    }
 
     // Path
     innerClipPathForBorderRadius = innerClipPathForBorderRadius ?: Path()

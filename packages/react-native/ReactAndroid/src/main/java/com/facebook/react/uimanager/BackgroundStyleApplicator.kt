@@ -17,6 +17,7 @@ import android.os.Build
 import android.view.View
 import android.widget.ImageView
 import androidx.annotation.ColorInt
+import com.facebook.common.logging.FLog
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
@@ -118,6 +119,8 @@ public object BackgroundStyleApplicator {
 
   @JvmStatic
   public fun getBorderWidth(view: View, edge: LogicalEdge): Float? {
+    FLog.w("ReactNative", "getBorderWidth")
+
     return if (ReactNativeFeatureFlags.enableNewBackgroundAndBorderDrawables()) {
       val width = getBorder(view)?.borderWidth?.getRaw(edge.toSpacingType())
       if (width == null || width.isNaN()) null else width.pxToDp()
@@ -203,9 +206,13 @@ public object BackgroundStyleApplicator {
 
   @JvmStatic
   public fun setBorderStyle(view: View, borderStyle: BorderStyle?): Unit {
+    FLog.w("ReactNative", "setBorderStyle in BackgroundStyleApplicator $borderStyle")
+
     if (ReactNativeFeatureFlags.enableNewBackgroundAndBorderDrawables()) {
+      FLog.w("ReactNative", "enableNewBackgroundAndBorderDrawables enabled")
       ensureBorderDrawable(view).borderStyle = borderStyle
     } else {
+      FLog.w("ReactNative", "enableNewBackgroundAndBorderDrawables disabled")
       ensureCSSBackground(view).borderStyle = borderStyle
     }
   }
@@ -473,6 +480,8 @@ public object BackgroundStyleApplicator {
           )
       view.background = compositeBackgroundDrawable.withNewBorder(border)
     }
+
+    FLog.w("ReactNative", "ensureBorderDrawable $border")
 
     return border
   }
