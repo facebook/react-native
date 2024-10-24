@@ -483,9 +483,7 @@ jsi::Value UIManagerBinding::get(
           uiManager->completeSurface(
               surfaceId,
               shadowNodeList,
-              {.enableStateReconciliation = true,
-               .mountSynchronously = false,
-               .shouldYield = nullptr});
+              {.enableStateReconciliation = true, .mountSynchronously = false});
 
           return jsi::Value::undefined();
         });
