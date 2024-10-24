@@ -7889,11 +7889,11 @@ export type ImageStyle = ____ImageStyle_Internal;
 export type DangerouslyImpreciseStyle = ____DangerouslyImpreciseStyle_Internal;
 declare let hairlineWidth: number;
 declare const absoluteFill: {
-  position: \\"absolute\\",
-  left: 0,
-  right: 0,
-  top: 0,
-  bottom: 0,
+  +bottom: 0,
+  +left: 0,
+  +position: \\"absolute\\",
+  +right: 0,
+  +top: 0,
 };
 declare module.exports: {
   hairlineWidth: hairlineWidth,
