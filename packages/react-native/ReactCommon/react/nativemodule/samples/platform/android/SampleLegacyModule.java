@@ -13,12 +13,14 @@ import android.widget.Toast;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeArray;
@@ -153,6 +155,44 @@ public class SampleLegacyModule extends ReactContextBaseJavaModule {
     map.merge(arg);
     log("getUnsafeObject", arg, map);
     return map;
+  }
+
+  @SuppressWarnings("unused")
+  @ReactMethod(isBlockingSynchronousMethod = true)
+  public WritableMap getDynamic(Dynamic dynamic) {
+    WritableNativeMap resultMap = new WritableNativeMap();
+    ReadableType type = dynamic.getType();
+    if (type == ReadableType.Null) {
+      log("getDynamic as Null", dynamic, dynamic);
+      resultMap.putString("type", "Null");
+      resultMap.putNull("value");
+    } else if (type == ReadableType.Boolean) {
+      boolean result = dynamic.asBoolean();
+      log("getDynamic as Boolean", dynamic, result);
+      resultMap.putString("type", "Boolean");
+      resultMap.putBoolean("value", result);
+    } else if (type == ReadableType.Number) {
+      int result = dynamic.asInt();
+      log("getDynamic as Number", dynamic, result);
+      resultMap.putString("type", "Number");
+      resultMap.putInt("value", result);
+    } else if (type == ReadableType.String) {
+      String result = dynamic.asString();
+      log("getDynamic as String", dynamic, result);
+      resultMap.putString("type", "String");
+      resultMap.putString("value", result);
+    } else if (type == ReadableType.Array) {
+      ReadableArray result = dynamic.asArray();
+      log("getDynamic as Array", dynamic, result);
+      resultMap.putString("type", "Array");
+      resultMap.putArray("value", result);
+    } else if (type == ReadableType.Map) {
+      ReadableMap result = dynamic.asMap();
+      log("getDynamic as Map", dynamic, result);
+      resultMap.putString("type", "Map");
+      resultMap.putMap("value", result);
+    }
+    return resultMap;
   }
 
   @DoNotStrip

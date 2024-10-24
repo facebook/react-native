@@ -32,11 +32,16 @@ exports[`Image should render as <RCTImageView> when not mocked 1`] = `
     ]
   }
   style={
-    Object {
-      "height": undefined,
-      "overflow": "hidden",
-      "width": undefined,
-    }
+    Array [
+      Object {
+        "height": undefined,
+        "width": undefined,
+      },
+      Object {
+        "overflow": "hidden",
+      },
+      undefined,
+    ]
   }
 />
 `;

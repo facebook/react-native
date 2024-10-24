@@ -43,44 +43,50 @@ ReactInstance::ReactInstance(
                                          std::weak_ptr(timerManager_),
                                      weakJsThread =
                                          std::weak_ptr(jsMessageQueueThread_),
-                                     weakJsErrorHander = std::weak_ptr(
-                                         jsErrorHandler_)](auto callback) {
-    auto jsErrorHandler = weakJsErrorHander.lock();
-    if (weakRuntime.expired() || !jsErrorHandler) {
+                                     jsErrorHandler =
+                                         jsErrorHandler_](auto callback) {
+    if (weakRuntime.expired()) {
       return;
     }
 
-    if (jsErrorHandler->hasHandledFatalError()) {
+    /**
+     * If a fatal error was caught while executing the main bundle, assume the
+     * js runtime is invalid. And stop executing any more js.
+     */
+    if (!jsErrorHandler->isRuntimeReady() &&
+        jsErrorHandler->hasHandledFatalError()) {
       LOG(INFO)
-          << "RuntimeExecutor: Detected fatal js error. Dropping work on non-js thread."
+          << "RuntimeExecutor: Detected fatal error. Dropping work on non-js thread."
           << std::endl;
       return;
     }
 
     if (auto jsThread = weakJsThread.lock()) {
-      jsThread->runOnQueue(
-          [weakRuntime, weakTimerManager, callback = std::move(callback)]() {
-            auto runtime = weakRuntime.lock();
-            if (!runtime) {
-              return;
-            }
+      jsThread->runOnQueue([jsErrorHandler,
+                            weakRuntime,
+                            weakTimerManager,
+                            callback = std::move(callback)]() {
+        auto runtime = weakRuntime.lock();
+        if (!runtime) {
+          return;
+        }
 
-            jsi::Runtime& jsiRuntime = runtime->getRuntime();
-            SystraceSection s("ReactInstance::_runtimeExecutor[Callback]");
-            try {
-              callback(jsiRuntime);
+        jsi::Runtime& jsiRuntime = runtime->getRuntime();
+        SystraceSection s("ReactInstance::_runtimeExecutor[Callback]");
+        try {
+          callback(jsiRuntime);
 
-              // If we have first-class support for microtasks,
-              // they would've been called as part of the previous callback.
-              if (!ReactNativeFeatureFlags::enableMicrotasks()) {
-                if (auto timerManager = weakTimerManager.lock()) {
-                  timerManager->callReactNativeMicrotasks(jsiRuntime);
-                }
-              }
-            } catch (jsi::JSError& originalError) {
-              handleJSError(jsiRuntime, originalError, true);
+          // If we have first-class support for microtasks,
+          // they would've been called as part of the previous callback.
+          if (!ReactNativeFeatureFlags::enableMicrotasks()) {
+            if (auto timerManager = weakTimerManager.lock()) {
+              timerManager->callReactNativeMicrotasks(jsiRuntime);
             }
-          });
+          }
+        } catch (jsi::JSError& originalError) {
+          jsErrorHandler->handleFatalError(jsiRuntime, originalError);
+        }
+      });
     }
   };
 
@@ -118,7 +124,17 @@ ReactInstance::ReactInstance(
         };
   }
 
-  runtimeScheduler_ = std::make_shared<RuntimeScheduler>(runtimeExecutor);
+  runtimeScheduler_ = std::make_shared<RuntimeScheduler>(
+      runtimeExecutor,
+      RuntimeSchedulerClock::now,
+      [jsErrorHandler = jsErrorHandler_](
+          jsi::Runtime& runtime, jsi::JSError& error) {
+        jsErrorHandler->handleFatalError(runtime, error);
+      });
+  runtimeScheduler_->setPerformanceEntryReporter(
+      // FIXME: Move creation of PerformanceEntryReporter to here and guarantee
+      // that its lifetime is the same as the runtime.
+      PerformanceEntryReporter::getInstance().get());
 
   bufferedRuntimeExecutor_ = std::make_shared<BufferedRuntimeExecutor>(
       [runtimeScheduler = runtimeScheduler_.get()](
@@ -148,8 +164,8 @@ RuntimeExecutor ReactInstance::getUnbufferedRuntimeExecutor() noexcept {
 
 // This BufferedRuntimeExecutor ensures that the main JS bundle finished
 // execution before any JS queued into it from C++ are executed. Use
-// getBufferedRuntimeExecutor() instead if you do not need the main JS bundle to
-// have finished. e.g. setting global variables into JS runtime.
+// getUnbufferedRuntimeExecutor() instead if you do not need the main JS bundle
+// to have finished. e.g. setting global variables into JS runtime.
 RuntimeExecutor ReactInstance::getBufferedRuntimeExecutor() noexcept {
   return [weakBufferedRuntimeExecutor_ =
               std::weak_ptr<BufferedRuntimeExecutor>(bufferedRuntimeExecutor_)](
@@ -199,28 +215,34 @@ void ReactInstance::loadScript(
        buffer = std::move(buffer),
        weakBufferedRuntimeExecuter = std::weak_ptr<BufferedRuntimeExecutor>(
            bufferedRuntimeExecutor_)](jsi::Runtime& runtime) {
-        try {
-          SystraceSection s("ReactInstance::loadScript");
-          bool hasLogger(ReactMarker::logTaggedMarkerBridgelessImpl);
-          if (hasLogger) {
-            ReactMarker::logTaggedMarkerBridgeless(
-                ReactMarker::RUN_JS_BUNDLE_START, scriptName.c_str());
-          }
+        SystraceSection s("ReactInstance::loadScript");
+        bool hasLogger(ReactMarker::logTaggedMarkerBridgelessImpl);
+        if (hasLogger) {
+          ReactMarker::logTaggedMarkerBridgeless(
+              ReactMarker::RUN_JS_BUNDLE_START, scriptName.c_str());
+        }
 
-          runtime.evaluateJavaScript(buffer, sourceURL);
-          if (hasLogger) {
-            ReactMarker::logTaggedMarkerBridgeless(
-                ReactMarker::RUN_JS_BUNDLE_STOP, scriptName.c_str());
-            ReactMarker::logMarkerBridgeless(
-                ReactMarker::INIT_REACT_RUNTIME_STOP);
-            ReactMarker::logMarkerBridgeless(ReactMarker::APP_STARTUP_STOP);
-          }
-          if (auto strongBufferedRuntimeExecuter =
-                  weakBufferedRuntimeExecuter.lock()) {
-            strongBufferedRuntimeExecuter->flush();
-          }
-        } catch (jsi::JSError& error) {
-          jsErrorHandler_->handleFatalError(error);
+        runtime.evaluateJavaScript(buffer, sourceURL);
+
+        /**
+         * TODO(T183610671): We need a safe/reliable way to enable the js
+         * pipeline from javascript. Remove this after we figure that out, or
+         * after we just remove the js pipeline.
+         */
+        if (!jsErrorHandler_->hasHandledFatalError()) {
+          jsErrorHandler_->setRuntimeReady();
+        }
+
+        if (hasLogger) {
+          ReactMarker::logTaggedMarkerBridgeless(
+              ReactMarker::RUN_JS_BUNDLE_STOP, scriptName.c_str());
+          ReactMarker::logMarkerBridgeless(
+              ReactMarker::INIT_REACT_RUNTIME_STOP);
+          ReactMarker::logMarkerBridgeless(ReactMarker::APP_STARTUP_STOP);
+        }
+        if (auto strongBufferedRuntimeExecuter =
+                weakBufferedRuntimeExecuter.lock()) {
+          strongBufferedRuntimeExecuter->flush();
         }
       });
 }
@@ -332,6 +354,11 @@ void defineReactInstanceFlags(
   }
 }
 
+bool isTruthy(jsi::Runtime& runtime, const jsi::Value& value) {
+  auto Boolean = runtime.global().getPropertyAsFunction(runtime, "Boolean");
+  return Boolean.call(runtime, value).getBool();
+}
+
 } // namespace
 
 void ReactInstance::initializeRuntime(
@@ -346,7 +373,47 @@ void ReactInstance::initializeRuntime(
     RuntimeSchedulerBinding::createAndInstallIfNeeded(
         runtime, runtimeScheduler_);
 
+    runtime_->unstable_initializeOnJsThread();
+
     defineReactInstanceFlags(runtime, options);
+
+    // TODO(T196834299): We should really use a C++ turbomodule for this
+    defineReadOnlyGlobal(
+        runtime,
+        "RN$handleException",
+        jsi::Function::createFromHostFunction(
+            runtime,
+            jsi::PropNameID::forAscii(runtime, "handleException"),
+            2,
+            [jsErrorHandler = jsErrorHandler_](
+                jsi::Runtime& runtime,
+                const jsi::Value& /*unused*/,
+                const jsi::Value* args,
+                size_t count) {
+              if (count < 2) {
+                throw jsi::JSError(
+                    runtime,
+                    "handleException requires 2 arguments: error, isFatal");
+              }
+
+              auto isFatal = isTruthy(runtime, args[1]);
+              if (jsErrorHandler->isRuntimeReady()) {
+                if (isFatal) {
+                  jsErrorHandler->notifyOfFatalError();
+                }
+
+                return jsi::Value(false);
+              }
+
+              if (isFatal) {
+                auto jsError =
+                    jsi::JSError(runtime, jsi::Value(runtime, args[0]));
+                jsErrorHandler->handleFatalError(runtime, jsError);
+                return jsi::Value(true);
+              }
+
+              return jsi::Value(false);
+            }));
 
     defineReadOnlyGlobal(
         runtime,

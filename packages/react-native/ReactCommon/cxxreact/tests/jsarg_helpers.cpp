@@ -105,7 +105,7 @@ TEST(JsArgumentHelpersTest, args) {
   EXPECT_JSAE(
       jsArgAsInt(args, 4),
       "Error converting javascript arg 4 to C++: "
-      "TypeError: expected dynamic type `int/double/bool/string', but had type `array'");
+      "TypeError: expected dynamic type 'int/double/bool/string', but had type 'array'");
   // type predicate failure
   EXPECT_JSAE(
       jsArgAsObject(args, 4),

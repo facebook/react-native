@@ -8,7 +8,6 @@
 package com.facebook.react.modules.debug
 
 import com.facebook.react.bridge.NotThreadSafeBridgeIdleDebugListener
-import com.facebook.react.common.LongArray
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener
 
 /**
@@ -19,10 +18,10 @@ import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugL
  */
 internal class DidJSUpdateUiDuringFrameDetector :
     NotThreadSafeBridgeIdleDebugListener, NotThreadSafeViewHierarchyUpdateDebugListener {
-  private val transitionToIdleEvents = LongArray.createWithInitialCapacity(20)
-  private val transitionToBusyEvents = LongArray.createWithInitialCapacity(20)
-  private val viewHierarchyUpdateEnqueuedEvents = LongArray.createWithInitialCapacity(20)
-  private val viewHierarchyUpdateFinishedEvents = LongArray.createWithInitialCapacity(20)
+  private val transitionToIdleEvents = ArrayList<Long>(20)
+  private val transitionToBusyEvents = ArrayList<Long>(20)
+  private val viewHierarchyUpdateEnqueuedEvents = ArrayList<Long>(20)
+  private val viewHierarchyUpdateFinishedEvents = ArrayList<Long>(20)
   @Volatile private var wasIdleAtEndOfLastFrame = true
 
   @Synchronized
@@ -106,53 +105,42 @@ internal class DidJSUpdateUiDuringFrameDetector :
       wasIdleAtEndOfLastFrame
     } else lastIdleTransition > lastBusyTransition
   }
+}
 
-  companion object {
-    private fun hasEventBetweenTimestamps(
-        eventArray: LongArray,
-        startTime: Long,
-        endTime: Long
-    ): Boolean {
-      for (i in 0 until eventArray.size()) {
-        val time = eventArray[i]
-        if (time in startTime until endTime) {
-          return true
-        }
-      }
-      return false
-    }
+private fun hasEventBetweenTimestamps(
+    eventArray: ArrayList<Long>,
+    startTime: Long,
+    endTime: Long
+): Boolean = eventArray.any { time -> time in startTime until endTime }
 
-    private fun getLastEventBetweenTimestamps(
-        eventArray: LongArray,
-        startTime: Long,
-        endTime: Long
-    ): Long {
-      var lastEvent: Long = -1
-      for (i in 0 until eventArray.size()) {
-        val time = eventArray[i]
-        if (time in startTime until endTime) {
-          lastEvent = time
-        } else if (time >= endTime) {
-          break
-        }
-      }
-      return lastEvent
+private fun getLastEventBetweenTimestamps(
+    eventArray: ArrayList<Long>,
+    startTime: Long,
+    endTime: Long
+): Long {
+  var lastEvent: Long = -1
+  for (time in eventArray) {
+    if (time in startTime until endTime) {
+      lastEvent = time
+    } else if (time >= endTime) {
+      break
     }
+  }
+  return lastEvent
+}
 
-    private fun cleanUp(eventArray: LongArray, endTime: Long) {
-      val size = eventArray.size()
-      var indicesToRemove = 0
-      for (i in 0 until size) {
-        if (eventArray[i] < endTime) {
-          indicesToRemove++
-        }
-      }
-      if (indicesToRemove > 0) {
-        for (i in 0 until size - indicesToRemove) {
-          eventArray[i] = eventArray[i + indicesToRemove]
-        }
-        eventArray.dropTail(indicesToRemove)
-      }
+private fun cleanUp(eventArray: ArrayList<Long>, endTime: Long) {
+  val size = eventArray.size
+  var indicesToRemove = 0
+  for (i in 0 until size) {
+    if (eventArray[i] < endTime) {
+      indicesToRemove++
     }
+  }
+  if (indicesToRemove > 0) {
+    for (i in 0 until size - indicesToRemove) {
+      eventArray[i] = eventArray[i + indicesToRemove]
+    }
+    eventArray.dropLast(indicesToRemove)
   }
 }

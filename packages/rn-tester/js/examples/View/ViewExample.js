@@ -452,6 +452,87 @@ function LayoutConformanceBox(): React.Node {
   );
 }
 
+function BoxShadowExample(): React.Node {
+  const defaultStyleSize = {width: 75, height: 75};
+
+  return (
+    <View testID="view-test-box-shadow" style={{gap: 20}}>
+      <View style={{flexDirection: 'row', gap: 15}}>
+        <View
+          style={{
+            ...defaultStyleSize,
+            borderRadius: 10,
+            borderWidth: 5,
+            borderColor: 'red',
+            experimental_boxShadow: '0 0 10px 0 black',
+          }}
+        />
+        <View
+          style={{
+            ...defaultStyleSize,
+            borderRadius: 30,
+            borderWidth: 5,
+            borderColor: 'red',
+            experimental_boxShadow: 'inset 0 0 10px 0 black',
+          }}
+        />
+        <View
+          style={{
+            ...defaultStyleSize,
+            borderRadius: 30,
+            borderWidth: 5,
+            borderColor: 'red',
+            experimental_boxShadow:
+              'inset 15px -5px 5px 5px cyan, inset 15px -5px 20px 10px orange, -5px 5px 5px 0px green, 0px -10px 0px 5px black',
+          }}
+        />
+      </View>
+      <View style={{flexDirection: 'row', gap: 15}}>
+        <View
+          style={{
+            ...defaultStyleSize,
+            experimental_boxShadow: '0px 0px 5px 5px black',
+          }}>
+          <View
+            style={{
+              left: -10,
+              width: 25,
+              height: 25,
+              backgroundColor: 'cyan',
+            }}
+          />
+        </View>
+        <View
+          style={{
+            ...defaultStyleSize,
+            backgroundColor: 'red',
+            experimental_boxShadow: 'inset 0px 0px 5px 5px black',
+          }}
+        />
+        <View style={{...defaultStyleSize, flexDirection: 'row'}}>
+          <View style={{width: 25, height: 25, backgroundColor: 'cyan'}} />
+          <View
+            style={{
+              ...defaultStyleSize,
+              experimental_boxShadow: ' 0px 0px 20px 5px black',
+            }}
+          />
+          <View style={{width: 25, height: 25, backgroundColor: 'cyan'}} />
+        </View>
+      </View>
+      <View style={{flexDirection: 'row', gap: 15}}>
+        <View
+          style={{
+            ...defaultStyleSize,
+            backgroundColor: 'green',
+            experimental_boxShadow: '0px 10px',
+          }}
+        />
+      </View>
+    </View>
+  );
+}
+
 export default ({
   title: 'View',
   documentationURL: 'https://reactnative.dev/docs/view',
@@ -731,6 +812,33 @@ export default ({
                 borderBottomWidth: 6,
                 borderRightWidth: 6,
                 borderBottomRightRadius: '40%',
+              }}
+            />
+            <View
+              style={{
+                width: 100,
+                height: 50,
+                borderWidth: 6,
+                borderRadius: '100%',
+              }}
+            />
+            <View
+              style={{
+                width: 100,
+                height: 50,
+                borderWidth: 6,
+                borderTopLeftRadius: '10%',
+                borderTopRightRadius: '20%',
+                borderBottomRightRadius: '50%',
+                borderBottomLeftRadius: '100%',
+              }}
+            />
+            <View
+              style={{
+                width: 100,
+                height: 50,
+                borderWidth: 6,
+                borderRadius: '0%',
               }}
             />
           </View>
@@ -1058,6 +1166,11 @@ export default ({
       title: 'Layout conformance',
       name: 'layout-conformance',
       render: LayoutConformanceExample,
+    },
+    {
+      title: 'Box Shadow',
+      name: 'box-shadow',
+      render: BoxShadowExample,
     },
   ],
 }: RNTesterModule);

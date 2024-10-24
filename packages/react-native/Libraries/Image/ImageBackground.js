@@ -55,14 +55,7 @@ class ImageBackground extends React.Component<ImageBackgroundProps> {
 
   _viewRef: ?React.ElementRef<typeof View> = null;
 
-  _captureRef = (
-    ref: null | React$ElementRef<
-      React$AbstractComponent<
-        ViewProps,
-        React.ElementRef<HostComponent<ViewProps>>,
-      >,
-    >,
-  ) => {
+  _captureRef = (ref: null | React.ElementRef<HostComponent<ViewProps>>) => {
     this._viewRef = ref;
   };
 

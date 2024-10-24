@@ -35,6 +35,17 @@ import {
   View,
   useColorScheme,
 } from 'react-native';
+import * as NativeComponentRegistry from 'react-native/Libraries/NativeComponent/NativeComponentRegistry';
+
+// In Bridgeless mode, in dev, enable static view config validator
+if (global.RN$Bridgeless === true && __DEV__) {
+  NativeComponentRegistry.setRuntimeConfigProvider(() => {
+    return {
+      native: false,
+      verify: true,
+    };
+  });
+}
 
 // RNTester App currently uses in memory storage for storing navigation state
 

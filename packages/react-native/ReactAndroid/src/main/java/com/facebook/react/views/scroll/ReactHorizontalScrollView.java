@@ -33,11 +33,17 @@ import androidx.core.view.ViewCompat;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.Nullsafe;
+import com.facebook.react.animated.NativeAnimatedModule;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
+import com.facebook.react.uimanager.BackgroundStyleApplicator;
+import com.facebook.react.uimanager.LengthPercentage;
+import com.facebook.react.uimanager.LengthPercentageType;
 import com.facebook.react.uimanager.MeasureSpecAssertions;
+import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.PointerEvents;
 import com.facebook.react.uimanager.ReactClippingViewGroup;
 import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
@@ -45,6 +51,10 @@ import com.facebook.react.uimanager.ReactOverflowViewWithInset;
 import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.events.NativeGestureUtil;
+import com.facebook.react.uimanager.style.BorderRadiusProp;
+import com.facebook.react.uimanager.style.BorderStyle;
+import com.facebook.react.uimanager.style.LogicalEdge;
+import com.facebook.react.uimanager.style.Overflow;
 import com.facebook.react.views.scroll.ReactScrollViewHelper.HasFlingAnimator;
 import com.facebook.react.views.scroll.ReactScrollViewHelper.HasScrollEventThrottle;
 import com.facebook.react.views.scroll.ReactScrollViewHelper.HasScrollState;
@@ -88,7 +98,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
 
   private boolean mActivelyScrolling;
   private @Nullable Rect mClippingRect;
-  private @Nullable String mOverflow = ViewProps.HIDDEN;
+  private Overflow mOverflow = Overflow.SCROLL;
   private boolean mDragging;
   private boolean mPagingEnabled = false;
   private @Nullable Runnable mPostTouchRunnable;
@@ -272,8 +282,15 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   }
 
   public void setOverflow(@Nullable String overflow) {
-    mOverflow = overflow;
+    if (overflow == null) {
+      mOverflow = Overflow.SCROLL;
+    } else {
+      @Nullable Overflow parsedOverflow = Overflow.fromString(overflow);
+      mOverflow = parsedOverflow == null ? Overflow.SCROLL : parsedOverflow;
+    }
+
     mReactBackgroundManager.setOverflow(overflow == null ? ViewProps.SCROLL : overflow);
+    invalidate();
   }
 
   public void setMaintainVisibleContentPosition(
@@ -292,7 +309,16 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
 
   @Override
   public @Nullable String getOverflow() {
-    return mOverflow;
+    switch (mOverflow) {
+      case HIDDEN:
+        return "hidden";
+      case SCROLL:
+        return "scroll";
+      case VISIBLE:
+        return "visible";
+    }
+
+    return null;
   }
 
   @Override
@@ -307,7 +333,13 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
 
   @Override
   public void onDraw(Canvas canvas) {
-    mReactBackgroundManager.maybeClipToPaddingBox(canvas);
+    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
+      if (mOverflow != Overflow.VISIBLE) {
+        BackgroundStyleApplicator.clipToPaddingBox(this, canvas);
+      }
+    } else {
+      mReactBackgroundManager.maybeClipToPaddingBox(canvas);
+    }
     super.onDraw(canvas);
   }
 
@@ -927,6 +959,15 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
                 if (mSendMomentumEvents) {
                   ReactScrollViewHelper.emitScrollMomentumEndEvent(ReactHorizontalScrollView.this);
                 }
+
+                ReactContext context = (ReactContext) getContext();
+                if (context != null) {
+                  NativeAnimatedModule nativeAnimated =
+                      context.getNativeModule(NativeAnimatedModule.class);
+                  if (nativeAnimated != null) {
+                    nativeAnimated.userDrivenScrollEnded(ReactHorizontalScrollView.this.getId());
+                  }
+                }
                 disableFpsListener();
               } else {
                 if (mPagingEnabled && !mSnappingToPage) {
@@ -1276,27 +1317,55 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
 
   @Override
   public void setBackgroundColor(int color) {
-    mReactBackgroundManager.setBackgroundColor(color);
+    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
+      BackgroundStyleApplicator.setBackgroundColor(this, color);
+    } else {
+      mReactBackgroundManager.setBackgroundColor(color);
+    }
   }
 
   public void setBorderWidth(int position, float width) {
-    mReactBackgroundManager.setBorderWidth(position, width);
+    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
+      BackgroundStyleApplicator.setBorderWidth(
+          this, LogicalEdge.values()[position], PixelUtil.toDIPFromPixel(width));
+    } else {
+      mReactBackgroundManager.setBorderWidth(position, width);
+    }
   }
 
-  public void setBorderColor(int position, float color, float alpha) {
-    mReactBackgroundManager.setBorderColor(position, color, alpha);
+  public void setBorderColor(int position, @Nullable Integer color) {
+    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
+      BackgroundStyleApplicator.setBorderColor(this, LogicalEdge.values()[position], color);
+    } else {
+      mReactBackgroundManager.setBorderColor(position, color);
+    }
   }
 
   public void setBorderRadius(float borderRadius) {
-    mReactBackgroundManager.setBorderRadius(borderRadius);
+    setBorderRadius(borderRadius, BorderRadiusProp.BORDER_RADIUS.ordinal());
   }
 
   public void setBorderRadius(float borderRadius, int position) {
-    mReactBackgroundManager.setBorderRadius(borderRadius, position);
+    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
+      @Nullable
+      LengthPercentage radius =
+          Float.isNaN(borderRadius)
+              ? null
+              : new LengthPercentage(
+                  PixelUtil.toDIPFromPixel(borderRadius), LengthPercentageType.POINT);
+      BackgroundStyleApplicator.setBorderRadius(this, BorderRadiusProp.values()[position], radius);
+    } else {
+      mReactBackgroundManager.setBorderRadius(borderRadius, position);
+    }
   }
 
   public void setBorderStyle(@Nullable String style) {
-    mReactBackgroundManager.setBorderStyle(style);
+    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
+      BackgroundStyleApplicator.setBorderStyle(
+          this, style == null ? null : BorderStyle.fromString(style));
+    } else {
+      mReactBackgroundManager.setBorderStyle(style);
+    }
   }
 
   /**

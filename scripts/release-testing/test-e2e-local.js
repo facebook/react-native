@@ -18,18 +18,15 @@
  */
 
 const {REPO_ROOT} = require('../consts');
-const {initNewProjectFromSource} = require('../e2e/init-template-e2e');
-const updateTemplatePackage = require('../releases/update-template-package');
+const {initNewProjectFromSource} = require('../e2e/init-project-e2e');
 const {
   checkPackagerRunning,
   launchPackagerInSeparateWindow,
   maybeLaunchAndroidEmulator,
   prepareArtifacts,
-  setupCircleCIArtifacts,
   setupGHAArtifacts,
 } = require('./utils/testing-utils');
 const chalk = require('chalk');
-const debug = require('debug')('test-e2e-local');
 const fs = require('fs');
 const path = require('path');
 const {cd, exec, popd, pushd, pwd, sed} = require('shelljs');
@@ -79,7 +76,7 @@ const argv = yargs
  * - @onReleaseBranch whether we are on a release branch or not
  */
 async function testRNTesterIOS(
-  ciArtifacts /*: Unwrap<ReturnType<typeof setupCircleCIArtifacts>> */,
+  ciArtifacts /*: Unwrap<ReturnType<typeof setupGHAArtifacts>> */,
   onReleaseBranch /*: boolean */,
 ) {
   console.info(
@@ -131,7 +128,7 @@ async function testRNTesterIOS(
  * - @circleCIArtifacts manager object to manage all the download of CircleCIArtifacts. If null, it will fallback not to use them.
  */
 async function testRNTesterAndroid(
-  ciArtifacts /*: Unwrap<ReturnType<typeof setupCircleCIArtifacts>> */,
+  ciArtifacts /*: Unwrap<ReturnType<typeof setupGHAArtifacts>> */,
 ) {
   maybeLaunchAndroidEmulator();
 
@@ -157,27 +154,18 @@ async function testRNTesterAndroid(
     // Github Actions zips all the APKs in a single archive
     console.info('Start Downloading APK');
     const rntesterAPKURL =
-      await ciArtifacts.artifactURLForHermesRNTesterAPK(emulatorArch);
+      argv.hermes === true
+        ? await ciArtifacts.artifactURLForHermesRNTesterAPK(emulatorArch)
+        : await ciArtifacts.artifactURLForJSCRNTesterAPK(emulatorArch);
+
     ciArtifacts.downloadArtifact(rntesterAPKURL, downloadPath);
     const unzipFolder = path.join(ciArtifacts.baseTmpPath(), 'rntester-apks');
     exec(`rm -rf ${unzipFolder}`);
     exec(`unzip ${downloadPath} -d ${unzipFolder}`);
-    let apkPath;
-    if (argv.hermes === true) {
-      apkPath = path.join(
-        unzipFolder,
-        'hermes',
-        'release',
-        `app-hermes-${emulatorArch}-release.apk`,
-      );
-    } else {
-      apkPath = path.join(
-        unzipFolder,
-        'jsc',
-        'release',
-        `app-jsc-${emulatorArch}-release.apk`,
-      );
-    }
+    let apkPath = path.join(
+      unzipFolder,
+      `app-${argv.hermes === true ? 'hermes' : 'jsc'}-${emulatorArch}-release.apk`,
+    );
 
     exec(`adb install ${apkPath}`);
   } else {
@@ -207,7 +195,7 @@ async function testRNTesterAndroid(
  * - @onReleaseBranch whether we are on a release branch or not
  */
 async function testRNTester(
-  circleCIArtifacts /*:Unwrap<ReturnType<typeof setupCircleCIArtifacts>> */,
+  circleCIArtifacts /*:Unwrap<ReturnType<typeof setupGHAArtifacts>> */,
   onReleaseBranch /*: boolean */,
 ) {
   // FIXME: make sure that the commands retains colors
@@ -226,7 +214,7 @@ async function testRNTester(
 // === RNTestProject === //
 
 async function testRNTestProject(
-  ciArtifacts /*: Unwrap<ReturnType<typeof setupCircleCIArtifacts>> */,
+  ciArtifacts /*: Unwrap<ReturnType<typeof setupGHAArtifacts>> */,
 ) {
   console.info("We're going to test a fresh new RN project");
 
@@ -282,30 +270,27 @@ async function testRNTestProject(
     }
   }
 
-  updateTemplatePackage({
-    'react-native': `file://${newLocalNodeTGZ}`,
-  });
+  const currentBranch = exec('git rev-parse --abbrev-ref HEAD')
+    .toString()
+    .trim();
 
   pushd('/tmp/');
 
-  debug('Creating RNTestProject from template');
+  // Cleanup RNTestProject folder. This makes it easier to rerun the script when it fails
+  exec('rm -rf /tmp/RNTestProject');
 
   await initNewProjectFromSource({
     projectName: 'RNTestProject',
     directory: '/tmp/RNTestProject',
-    templatePath: reactNativePackagePath,
+    pathToLocalReactNative: newLocalNodeTGZ,
+    currentBranch,
   });
 
   cd('RNTestProject');
 
-  // When using CircleCI artifacts, the CI will zip maven local into a
-  // /tmp/maven-local subfolder struct.
-  // When we generate the project manually, there is no such structure.
-  const expandedMavenLocal =
-    ciArtifacts == null ? mavenLocalPath : `${mavenLocalPath}/maven-local`;
   // need to do this here so that Android will be properly setup either way
   exec(
-    `echo "react.internal.mavenLocalRepo=${expandedMavenLocal}" >> android/gradle.properties`,
+    `echo "react.internal.mavenLocalRepo=${mavenLocalPath}" >> android/gradle.properties`,
   );
 
   // Only build the simulator architecture. CI is however generating only that one.

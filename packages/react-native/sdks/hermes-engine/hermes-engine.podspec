@@ -6,7 +6,13 @@
 require "json"
 require_relative "./hermes-utils.rb"
 
-react_native_path = File.join(__dir__, "..", "..")
+# [macOS]
+react_native_path = File.dirname(Pod::Executable.execute_command('node', ['-p',
+  'require.resolve(
+  "react-native-macos",
+    {paths: [process.argv[1]]},
+  )', __dir__]).strip
+)
 
 # package.json
 package = JSON.parse(File.read(File.join(react_native_path, "package.json")))
@@ -27,7 +33,7 @@ Pod::Spec.new do |spec|
   spec.license     = package['license']
   spec.author      = "Facebook"
   spec.source      = source
-  spec.platforms   = { :osx => "10.13", :ios => "13.4", :visionos => "1.0" }
+  spec.platforms   = { :osx => "10.13", :ios => "15.1", :visionos => "1.0" }
 
   spec.preserve_paths      = '**/*.*'
   spec.source_files        = ''
@@ -39,6 +45,7 @@ Pod::Spec.new do |spec|
 
   spec.ios.vendored_frameworks = "destroot/Library/Frameworks/ios/hermes.framework"
   spec.osx.vendored_frameworks = "destroot/Library/Frameworks/macosx/hermes.framework"
+  spec.visionos.vendored_frameworks = "destroot/Library/Frameworks/xros/hermes.framework"
 
   if HermesEngineSourceType::isPrebuilt(source_type) then
 
@@ -117,7 +124,7 @@ Pod::Spec.new do |spec|
       'HERMES_CLI_PATH' => "#{hermesc_path}/bin/hermesc"
     }
 
-    spec.prepare_command = ". #{react_native_path}/sdks/hermes-engine/utils/create-dummy-hermes-xcframework.sh"
+    spec.prepare_command = ". '#{react_native_path}/sdks/hermes-engine/utils/create-dummy-hermes-xcframework.sh'"
 
     # This podspec is also run in CI to build Hermes without using Pod install
     # and sometimes CI fails because `Pod::Executable` does not exist if it is not run with Pod Install.

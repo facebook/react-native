@@ -8,10 +8,7 @@
  * @flow
  */
 
-import type {
-  AppearancePreferences,
-  ColorSchemeName,
-} from 'react-native/Libraries/Utilities/NativeAppearance';
+import type {ColorSchemeName} from 'react-native/Libraries/Utilities/NativeAppearance';
 
 import {RNTesterThemeContext, themes} from '../../components/RNTesterTheme';
 import * as React from 'react';
@@ -19,20 +16,18 @@ import {useEffect, useState} from 'react';
 import {Appearance, Button, Text, View, useColorScheme} from 'react-native';
 
 function ColorSchemeSubscription() {
-  const [colorScheme, setScheme] = useState<?ColorSchemeName | string>(
+  const [colorScheme, setColorScheme] = useState<?ColorSchemeName | string>(
     Appearance.getColorScheme(),
   );
 
   useEffect(() => {
     const subscription = Appearance.addChangeListener(
-      (preferences: AppearancePreferences) => {
-        const {colorScheme: scheme} = preferences;
-        setScheme(scheme);
+      ({colorScheme: newColorScheme}: {colorScheme: ?ColorSchemeName}) => {
+        setColorScheme(newColorScheme);
       },
     );
-
-    return () => subscription?.remove();
-  }, [setScheme]);
+    return () => subscription.remove();
+  }, [setColorScheme]);
 
   return (
     <RNTesterThemeContext.Consumer>
@@ -176,13 +171,13 @@ exports.examples = [
   },
   {
     title: 'Non-component `getColorScheme` API',
-    render(): React.Element<any> {
+    render(): React.MixedElement {
       return <ColorSchemeSubscription />;
     },
   },
   {
     title: 'Consuming Context',
-    render(): React.Element<any> {
+    render(): React.MixedElement {
       return (
         <RNTesterThemeContext.Consumer>
           {theme => {
@@ -200,7 +195,7 @@ exports.examples = [
   },
   {
     title: 'Context forced to light theme',
-    render(): React.Element<any> {
+    render(): React.MixedElement {
       return (
         <RNTesterThemeContext.Provider value={themes.light}>
           <ThemedContainer>
@@ -214,7 +209,7 @@ exports.examples = [
   },
   {
     title: 'Context forced to dark theme',
-    render(): React.Element<any> {
+    render(): React.MixedElement {
       return (
         <RNTesterThemeContext.Provider value={themes.dark}>
           <ThemedContainer>
@@ -229,7 +224,7 @@ exports.examples = [
   {
     title: 'RNTester App Colors',
     description: 'A light and a dark theme based on standard iOS 13 colors.',
-    render(): React.Element<any> {
+    render(): React.MixedElement {
       return (
         <View>
           <RNTesterThemeContext.Provider value={themes.light}>
@@ -245,7 +240,7 @@ exports.examples = [
   {
     title: 'Toggle native appearance',
     description: 'Overwrite application-level appearance mode',
-    render(): React.Element<any> {
+    render(): React.MixedElement {
       return <ToggleNativeAppearance />;
     },
   },

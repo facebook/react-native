@@ -42,15 +42,43 @@ try {
   }
 }
 
+// [macOS
+let apple;
+try {
+  apple = require('@react-native-community/cli-platform-apple');
+} catch {
+  if (verbose) {
+    console.warn(
+      '@react-native-community/cli-platform-apple not found, the react-native.config.js may be unusable.',
+    );
+  }
+}
+// macOS]
+
 const macosCommands = require('./local-cli/runMacOS/runMacOS'); // [macOS]
-const {
-  getDependencyConfig,
-  getProjectConfig,
-} = require('@react-native-community/cli-platform-apple'); // [macOS]
-const {
-  bundleCommand,
-  startCommand,
-} = require('@react-native/community-cli-plugin');
+const commands = [];
+
+try {
+  const {
+    bundleCommand,
+    startCommand,
+  } = require('@react-native/community-cli-plugin');
+  commands.push(bundleCommand, startCommand);
+} catch (e) {
+  const known =
+    e.code === 'MODULE_NOT_FOUND' &&
+    e.message.includes('@react-native-community/cli-server-api');
+
+  if (!known) {
+    throw e;
+  }
+
+  if (verbose) {
+    console.warn(
+      '@react-native-community/cli-server-api not found, the react-native.config.js may be unusable.',
+    );
+  }
+}
 
 const codegenCommand = {
   name: 'codegen',
@@ -79,8 +107,10 @@ const codegenCommand = {
     ),
 };
 
+commands.push(codegenCommand);
+
 const config = {
-  commands: [bundleCommand, startCommand, codegenCommand],
+  commands,
   platforms: {},
 };
 
@@ -132,8 +162,8 @@ config.platforms.macos = {
       ) => {},
     };
   },
-  projectConfig: getProjectConfig({platformName: 'macos'}),
-  dependencyConfig: getDependencyConfig({platformName: 'macos'}),
+  projectConfig: apple.getProjectConfig({platformName: 'macos'}),
+  dependencyConfig: apple.getProjectConfig({platformName: 'macos'}),
   npmPackageName: 'react-native-macos',
 };
 // macOS]

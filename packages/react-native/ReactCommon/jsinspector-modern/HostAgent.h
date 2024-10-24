@@ -7,7 +7,9 @@
 
 #pragma once
 
+#include "CdpJson.h"
 #include "HostTarget.h"
+#include "NetworkIOAgent.h"
 #include "SessionState.h"
 
 #include <jsinspector-modern/InspectorInterfaces.h>
@@ -39,12 +41,14 @@ class HostAgent final {
    * HostTargetDelegate and underlying HostTarget both outlive the agent.
    * \param hostMetadata Metadata about the host that created this agent.
    * \param sessionState The state of the session that created this agent.
+   * \param executor A void executor to be used by async-aware handlers.
    */
   HostAgent(
       FrontendChannel frontendChannel,
       HostTargetController& targetController,
       HostTargetMetadata hostMetadata,
-      SessionState& sessionState);
+      SessionState& sessionState,
+      VoidExecutor executor);
 
   HostAgent(const HostAgent&) = delete;
   HostAgent(HostAgent&&) = delete;
@@ -104,6 +108,8 @@ class HostAgent final {
    * during handleRequest and other method calls on the same thread.
    */
   SessionState& sessionState_;
+
+  NetworkIOAgent networkIOAgent_;
 };
 
 } // namespace facebook::react::jsinspector_modern

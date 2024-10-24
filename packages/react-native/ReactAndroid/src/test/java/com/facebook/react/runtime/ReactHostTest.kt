@@ -84,12 +84,7 @@ class ReactHostTest {
     Mockito.doReturn(jSBundleLoader).`when`(reactHostDelegate).jsBundleLoader
     reactHost =
         ReactHostImpl(
-            activityController.get().application,
-            reactHostDelegate,
-            componentFactory,
-            false,
-            {},
-            false)
+            activityController.get().application, reactHostDelegate, componentFactory, false, false)
     val taskCompletionSource = TaskCompletionSource<Boolean>().apply { setResult(true) }
     mockedTaskCompletionSourceCtor =
         Mockito.mockConstruction(

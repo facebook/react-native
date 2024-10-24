@@ -89,7 +89,8 @@ Size measureAndroidComponent(
 TextLayoutManager::TextLayoutManager(
     const ContextContainer::Shared& contextContainer)
     : contextContainer_(contextContainer),
-      measureCache_(kSimpleThreadSafeCacheSizeCap) {}
+      textMeasureCache_(kSimpleThreadSafeCacheSizeCap),
+      lineMeasureCache_(kSimpleThreadSafeCacheSizeCap) {}
 
 void* TextLayoutManager::getNativeTextLayoutManager() const {
   return self_;
@@ -99,10 +100,10 @@ TextMeasurement TextLayoutManager::measure(
     const AttributedStringBox& attributedStringBox,
     const ParagraphAttributes& paragraphAttributes,
     const TextLayoutContext& layoutContext,
-    LayoutConstraints layoutConstraints) const {
+    const LayoutConstraints& layoutConstraints) const {
   auto& attributedString = attributedStringBox.getValue();
 
-  auto measurement = measureCache_.get(
+  auto measurement = textMeasureCache_.get(
       {attributedString, paragraphAttributes, layoutConstraints},
       [&](const TextMeasureCacheKey& /*key*/) {
         auto telemetry = TransactionTelemetry::threadLocalTelemetry();
@@ -127,7 +128,7 @@ TextMeasurement TextLayoutManager::measure(
 TextMeasurement TextLayoutManager::measureCachedSpannableById(
     int64_t cacheId,
     const ParagraphAttributes& paragraphAttributes,
-    LayoutConstraints layoutConstraints) const {
+    const LayoutConstraints& layoutConstraints) const {
   auto env = Environment::current();
   auto attachmentPositions = env->NewFloatArray(0);
   auto minimumSize = layoutConstraints.minimumSize;
@@ -161,58 +162,87 @@ TextMeasurement TextLayoutManager::measureCachedSpannableById(
 }
 
 LinesMeasurements TextLayoutManager::measureLines(
-    const AttributedString& attributedString,
+    const AttributedStringBox& attributedStringBox,
     const ParagraphAttributes& paragraphAttributes,
-    Size size) const {
-  const jni::global_ref<jobject>& fabricUIManager =
-      contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
-  static auto measureLines =
-      jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
-          ->getMethod<NativeArray::javaobject(
-              JReadableMapBuffer::javaobject,
-              JReadableMapBuffer::javaobject,
-              jfloat,
-              jfloat)>("measureLines");
+    const Size& size) const {
+  react_native_assert(
+      attributedStringBox.getMode() == AttributedStringBox::Mode::Value);
+  const auto& attributedString = attributedStringBox.getValue();
 
-  auto attributedStringMB =
-      JReadableMapBuffer::createWithContents(toMapBuffer(attributedString));
-  auto paragraphAttributesMB =
-      JReadableMapBuffer::createWithContents(toMapBuffer(paragraphAttributes));
+  auto lineMeasurements = lineMeasureCache_.get(
+      {attributedString, paragraphAttributes, size},
+      [&](const LineMeasureCacheKey& /*key*/) {
+        const jni::global_ref<jobject>& fabricUIManager =
+            contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
+        static auto measureLines =
+            jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
+                ->getMethod<NativeArray::javaobject(
+                    JReadableMapBuffer::javaobject,
+                    JReadableMapBuffer::javaobject,
+                    jfloat,
+                    jfloat)>("measureLines");
 
-  auto array = measureLines(
-      fabricUIManager,
-      attributedStringMB.get(),
-      paragraphAttributesMB.get(),
-      size.width,
-      size.height);
+        auto attributedStringMB = JReadableMapBuffer::createWithContents(
+            toMapBuffer(attributedString));
+        auto paragraphAttributesMB = JReadableMapBuffer::createWithContents(
+            toMapBuffer(paragraphAttributes));
 
-  auto dynamicArray = cthis(array)->consume();
-  LinesMeasurements lineMeasurements;
-  lineMeasurements.reserve(dynamicArray.size());
+        auto array = measureLines(
+            fabricUIManager,
+            attributedStringMB.get(),
+            paragraphAttributesMB.get(),
+            size.width,
+            size.height);
 
-  for (const auto& data : dynamicArray) {
-    lineMeasurements.push_back(LineMeasurement(data));
-  }
+        auto dynamicArray = cthis(array)->consume();
+        LinesMeasurements lineMeasurements;
+        lineMeasurements.reserve(dynamicArray.size());
 
-  // Explicitly release smart pointers to free up space faster in JNI tables
-  attributedStringMB.reset();
-  paragraphAttributesMB.reset();
+        for (const auto& data : dynamicArray) {
+          lineMeasurements.push_back(LineMeasurement(data));
+        }
+
+        // Explicitly release smart pointers to free up space faster in JNI
+        // tables
+        attributedStringMB.reset();
+        paragraphAttributesMB.reset();
+
+        return lineMeasurements;
+      });
 
   return lineMeasurements;
 }
 
-TextMeasurement TextLayoutManager::doMeasure(
-    AttributedString attributedString,
+Float TextLayoutManager::baseline(
+    const AttributedStringBox& attributedStringBox,
     const ParagraphAttributes& paragraphAttributes,
-    LayoutConstraints layoutConstraints) const {
-  layoutConstraints.maximumSize.height = std::numeric_limits<Float>::infinity();
+    const Size& size) const {
+  auto lines =
+      this->measureLines(attributedStringBox, paragraphAttributes, size);
 
+  if (!lines.empty()) {
+    return lines[0].ascender;
+  } else {
+    return 0;
+  }
+}
+
+TextMeasurement TextLayoutManager::doMeasure(
+    const AttributedString& attributedString,
+    const ParagraphAttributes& paragraphAttributes,
+    const LayoutConstraints& layoutConstraints) const {
   const int attachmentCount = countAttachments(attributedString);
   auto env = Environment::current();
   auto attachmentPositions = env->NewFloatArray(attachmentCount * 2);
 
   auto minimumSize = layoutConstraints.minimumSize;
   auto maximumSize = layoutConstraints.maximumSize;
+
+  // We assume max height will have no effect on measurement, so we override it
+  // with a constant value with no constraints, to enable cache reuse later down
+  // in the stack.
+  // TODO: This is suss, and not at the right layer
+  maximumSize.height = std::numeric_limits<Float>::infinity();
 
   auto attributedStringMap = toMapBuffer(attributedString);
   auto paragraphAttributesMap = toMapBuffer(paragraphAttributes);

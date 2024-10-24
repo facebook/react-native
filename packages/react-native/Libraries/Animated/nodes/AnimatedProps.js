@@ -14,44 +14,74 @@ import type {PlatformConfig} from '../AnimatedPlatformConfig';
 
 import {findNodeHandle} from '../../ReactNative/RendererProxy';
 import {AnimatedEvent} from '../AnimatedEvent';
-import NativeAnimatedHelper from '../NativeAnimatedHelper';
+import NativeAnimatedHelper from '../../../src/private/animated/NativeAnimatedHelper';
 import AnimatedNode from './AnimatedNode';
-import AnimatedObject, {hasAnimatedNode} from './AnimatedObject';
+import AnimatedObject from './AnimatedObject';
 import AnimatedStyle from './AnimatedStyle';
 import invariant from 'invariant';
 
-function createAnimatedProps(inputProps: Object): Object {
+function createAnimatedProps(
+  inputProps: Object,
+): [$ReadOnlyArray<string>, $ReadOnlyArray<AnimatedNode>, Object] {
+  const nodeKeys: Array<string> = [];
+  const nodes: Array<AnimatedNode> = [];
   const props: Object = {};
-  for (const key in inputProps) {
+
+  const keys = Object.keys(inputProps);
+  for (let ii = 0, length = keys.length; ii < length; ii++) {
+    const key = keys[ii];
     const value = inputProps[key];
+
     if (key === 'style') {
-      props[key] = new AnimatedStyle(value);
+      const node = new AnimatedStyle(value);
+      nodeKeys.push(key);
+      nodes.push(node);
+      props[key] = node;
     } else if (value instanceof AnimatedNode) {
-      props[key] = value;
-    } else if (hasAnimatedNode(value)) {
-      props[key] = new AnimatedObject(value);
+      const node = value;
+      nodeKeys.push(key);
+      nodes.push(node);
+      props[key] = node;
     } else {
-      props[key] = value;
+      const node = AnimatedObject.from(value);
+      if (node == null) {
+        props[key] = value;
+      } else {
+        nodeKeys.push(key);
+        nodes.push(node);
+        props[key] = node;
+      }
     }
   }
-  return props;
+
+  return [nodeKeys, nodes, props];
 }
 
 export default class AnimatedProps extends AnimatedNode {
+  #nodeKeys: $ReadOnlyArray<string>;
+  #nodes: $ReadOnlyArray<AnimatedNode>;
+
+  _animatedView: any = null;
   _props: Object;
-  _animatedView: any;
   _callback: () => void;
 
-  constructor(props: Object, callback: () => void) {
+  constructor(inputProps: Object, callback: () => void) {
     super();
-    this._props = createAnimatedProps(props);
+    const [nodeKeys, nodes, props] = createAnimatedProps(inputProps);
+    this.#nodeKeys = nodeKeys;
+    this.#nodes = nodes;
+    this._props = props;
     this._callback = callback;
   }
 
   __getValue(): Object {
     const props: {[string]: any | ((...args: any) => void)} = {};
-    for (const key in this._props) {
+
+    const keys = Object.keys(this._props);
+    for (let ii = 0, length = keys.length; ii < length; ii++) {
+      const key = keys[ii];
       const value = this._props[key];
+
       if (value instanceof AnimatedNode) {
         props[key] = value.__getValue();
       } else if (value instanceof AnimatedEvent) {
@@ -66,21 +96,23 @@ export default class AnimatedProps extends AnimatedNode {
 
   __getAnimatedValue(): Object {
     const props: {[string]: any} = {};
-    for (const key in this._props) {
-      const value = this._props[key];
-      if (value instanceof AnimatedNode) {
-        props[key] = value.__getAnimatedValue();
-      }
+
+    const nodeKeys = this.#nodeKeys;
+    const nodes = this.#nodes;
+    for (let ii = 0, length = nodes.length; ii < length; ii++) {
+      const key = nodeKeys[ii];
+      const node = nodes[ii];
+      props[key] = node.__getAnimatedValue();
     }
+
     return props;
   }
 
   __attach(): void {
-    for (const key in this._props) {
-      const value = this._props[key];
-      if (value instanceof AnimatedNode) {
-        value.__addChild(this);
-      }
+    const nodes = this.#nodes;
+    for (let ii = 0, length = nodes.length; ii < length; ii++) {
+      const node = nodes[ii];
+      node.__addChild(this);
     }
   }
 
@@ -88,12 +120,14 @@ export default class AnimatedProps extends AnimatedNode {
     if (this.__isNative && this._animatedView) {
       this.__disconnectAnimatedView();
     }
-    for (const key in this._props) {
-      const value = this._props[key];
-      if (value instanceof AnimatedNode) {
-        value.__removeChild(this);
-      }
+    this._animatedView = null;
+
+    const nodes = this.#nodes;
+    for (let ii = 0, length = nodes.length; ii < length; ii++) {
+      const node = nodes[ii];
+      node.__removeChild(this);
     }
+
     super.__detach();
   }
 
@@ -102,11 +136,10 @@ export default class AnimatedProps extends AnimatedNode {
   }
 
   __makeNative(platformConfig: ?PlatformConfig): void {
-    for (const key in this._props) {
-      const value = this._props[key];
-      if (value instanceof AnimatedNode) {
-        value.__makeNative(platformConfig);
-      }
+    const nodes = this.#nodes;
+    for (let ii = 0, length = nodes.length; ii < length; ii++) {
+      const node = nodes[ii];
+      node.__makeNative(platformConfig);
     }
 
     if (!this.__isNative) {
@@ -170,14 +203,18 @@ export default class AnimatedProps extends AnimatedNode {
   }
 
   __getNativeConfig(): Object {
+    const platformConfig = this.__getPlatformConfig();
     const propsConfig: {[string]: number} = {};
-    for (const propKey in this._props) {
-      const value = this._props[propKey];
-      if (value instanceof AnimatedNode) {
-        value.__makeNative(this.__getPlatformConfig());
-        propsConfig[propKey] = value.__getNativeTag();
-      }
+
+    const nodeKeys = this.#nodeKeys;
+    const nodes = this.#nodes;
+    for (let ii = 0, length = nodes.length; ii < length; ii++) {
+      const key = nodeKeys[ii];
+      const node = nodes[ii];
+      node.__makeNative(platformConfig);
+      propsConfig[key] = node.__getNativeTag();
     }
+
     return {
       type: 'props',
       props: propsConfig,

@@ -10,6 +10,7 @@
 #include <jsi/jsi.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/featureflags/ReactNativeFeatureFlagsDefaults.h>
+#include <react/performance/timeline/PerformanceEntryReporter.h>
 #include <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #include <memory>
 #include <semaphore>
@@ -40,6 +41,10 @@ class RuntimeSchedulerTestFeatureFlags
 
   bool batchRenderingUpdatesInEventLoop() override {
     return forcedBatchRenderingUpdatesInEventLoop;
+  }
+
+  bool enableLongTaskAPI() override {
+    return true;
   }
 
  private:
@@ -77,12 +82,19 @@ class RuntimeSchedulerTest : public testing::TestWithParam<bool> {
       return stubClock_->getNow();
     };
 
+    performanceEntryReporter_ = PerformanceEntryReporter::getInstance().get();
+
+    performanceEntryReporter_->startReporting(PerformanceEntryType::LONGTASK);
+
     runtimeScheduler_ =
         std::make_unique<RuntimeScheduler>(runtimeExecutor, stubNow);
+
+    runtimeScheduler_->setPerformanceEntryReporter(performanceEntryReporter_);
   }
 
   void TearDown() override {
     ReactNativeFeatureFlags::dangerouslyReset();
+    performanceEntryReporter_->popPendingEntries();
   }
 
   jsi::Function createHostFunctionFromLambda(
@@ -109,6 +121,7 @@ class RuntimeSchedulerTest : public testing::TestWithParam<bool> {
   std::unique_ptr<StubQueue> stubQueue_;
   std::unique_ptr<RuntimeScheduler> runtimeScheduler_;
   std::shared_ptr<StubErrorUtils> stubErrorUtils_;
+  PerformanceEntryReporter* performanceEntryReporter_{};
 };
 
 TEST_P(RuntimeSchedulerTest, now) {
@@ -157,7 +170,7 @@ TEST_P(RuntimeSchedulerTest, scheduleNonBatchedRenderingUpdate) {
   bool didRunRenderingUpdate = false;
 
   runtimeScheduler_->scheduleRenderingUpdate(
-      [&]() { didRunRenderingUpdate = true; });
+      0, [&]() { didRunRenderingUpdate = true; });
 
   EXPECT_TRUE(didRunRenderingUpdate);
 }
@@ -182,7 +195,7 @@ TEST_P(
     taskPosition = nextOperationPosition;
     nextOperationPosition++;
 
-    runtimeScheduler_->scheduleRenderingUpdate([&]() {
+    runtimeScheduler_->scheduleRenderingUpdate(0, [&]() {
       updateRenderingPosition = nextOperationPosition;
       nextOperationPosition++;
     });
@@ -330,6 +343,71 @@ TEST_P(RuntimeSchedulerTest, scheduleTwoTasksWithDifferentPriorities) {
   EXPECT_EQ(userBlockingPriorityTaskCallOrder, 1);
   EXPECT_EQ(stubQueue_->size(), 0);
   EXPECT_EQ(hostFunctionCallCount_, 2);
+}
+
+TEST_P(RuntimeSchedulerTest, scheduleTwoTasksWithAllPriorities) {
+  uint idlePriorityTaskCallOrder = 0;
+  auto idlePriTask = createHostFunctionFromLambda(
+      [this, &idlePriorityTaskCallOrder](bool /*unused*/) {
+        idlePriorityTaskCallOrder = hostFunctionCallCount_;
+        return jsi::Value::undefined();
+      });
+
+  uint lowPriorityTaskCallOrder = 0;
+  auto lowPriTask = createHostFunctionFromLambda(
+      [this, &lowPriorityTaskCallOrder](bool /*unused*/) {
+        lowPriorityTaskCallOrder = hostFunctionCallCount_;
+        return jsi::Value::undefined();
+      });
+
+  uint normalPriorityTaskCallOrder = 0;
+  auto normalPriTask = createHostFunctionFromLambda(
+      [this, &normalPriorityTaskCallOrder](bool /*unused*/) {
+        normalPriorityTaskCallOrder = hostFunctionCallCount_;
+        return jsi::Value::undefined();
+      });
+
+  uint userBlockingPriorityTaskCallOrder = 0;
+  auto userBlockingPriTask = createHostFunctionFromLambda(
+      [this, &userBlockingPriorityTaskCallOrder](bool /*unused*/) {
+        userBlockingPriorityTaskCallOrder = hostFunctionCallCount_;
+        return jsi::Value::undefined();
+      });
+
+  uint immediatePriorityTaskCallOrder = 0;
+  auto immediatePriTask = createHostFunctionFromLambda(
+      [this, &immediatePriorityTaskCallOrder](bool /*unused*/) {
+        immediatePriorityTaskCallOrder = hostFunctionCallCount_;
+        return jsi::Value::undefined();
+      });
+
+  runtimeScheduler_->scheduleTask(
+      SchedulerPriority::IdlePriority, std::move(idlePriTask));
+  runtimeScheduler_->scheduleTask(
+      SchedulerPriority::LowPriority, std::move(lowPriTask));
+  runtimeScheduler_->scheduleTask(
+      SchedulerPriority::NormalPriority, std::move(normalPriTask));
+  runtimeScheduler_->scheduleTask(
+      SchedulerPriority::UserBlockingPriority, std::move(userBlockingPriTask));
+  runtimeScheduler_->scheduleTask(
+      SchedulerPriority::ImmediatePriority, std::move(immediatePriTask));
+
+  EXPECT_EQ(idlePriorityTaskCallOrder, 0);
+  EXPECT_EQ(lowPriorityTaskCallOrder, 0);
+  EXPECT_EQ(normalPriorityTaskCallOrder, 0);
+  EXPECT_EQ(userBlockingPriorityTaskCallOrder, 0);
+  EXPECT_EQ(immediatePriorityTaskCallOrder, 0);
+  EXPECT_EQ(stubQueue_->size(), 1);
+
+  stubQueue_->tick();
+
+  EXPECT_EQ(idlePriorityTaskCallOrder, 5);
+  EXPECT_EQ(lowPriorityTaskCallOrder, 4);
+  EXPECT_EQ(normalPriorityTaskCallOrder, 3);
+  EXPECT_EQ(userBlockingPriorityTaskCallOrder, 2);
+  EXPECT_EQ(immediatePriorityTaskCallOrder, 1);
+  EXPECT_EQ(stubQueue_->size(), 0);
+  EXPECT_EQ(hostFunctionCallCount_, 5);
 }
 
 TEST_P(RuntimeSchedulerTest, cancelTask) {
@@ -1099,6 +1177,140 @@ TEST_P(RuntimeSchedulerTest, errorInTaskShouldNotStopMicrotasks) {
   EXPECT_EQ(microtaskRan, 1);
   EXPECT_EQ(stubQueue_->size(), 0);
   EXPECT_EQ(stubErrorUtils_->getReportFatalCallCount(), 1);
+}
+
+TEST_P(RuntimeSchedulerTest, reportsLongTasks) {
+  // Only for modern runtime scheduler
+  if (!GetParam()) {
+    return;
+  }
+
+  bool didRunTask1 = false;
+  stubClock_->setTimePoint(10ms);
+
+  auto callback1 = createHostFunctionFromLambda([&](bool /* unused */) {
+    didRunTask1 = true;
+
+    stubClock_->advanceTimeBy(10ms);
+
+    return jsi::Value::undefined();
+  });
+
+  runtimeScheduler_->scheduleTask(
+      SchedulerPriority::NormalPriority, std::move(callback1));
+
+  stubQueue_->tick();
+
+  EXPECT_EQ(didRunTask1, 1);
+  EXPECT_EQ(stubQueue_->size(), 0);
+  auto pendingEntries = performanceEntryReporter_->popPendingEntries();
+  EXPECT_EQ(pendingEntries.entries.size(), 0);
+
+  bool didRunTask2 = false;
+  stubClock_->setTimePoint(100ms);
+
+  auto callback2 = createHostFunctionFromLambda([&](bool /* unused */) {
+    didRunTask2 = true;
+
+    stubClock_->advanceTimeBy(50ms);
+
+    return jsi::Value::undefined();
+  });
+
+  runtimeScheduler_->scheduleTask(
+      SchedulerPriority::NormalPriority, std::move(callback2));
+
+  stubQueue_->tick();
+
+  EXPECT_EQ(didRunTask2, 1);
+  EXPECT_EQ(stubQueue_->size(), 0);
+  pendingEntries = performanceEntryReporter_->popPendingEntries();
+  EXPECT_EQ(pendingEntries.entries.size(), 1);
+  EXPECT_EQ(
+      pendingEntries.entries[0].entryType, PerformanceEntryType::LONGTASK);
+  EXPECT_EQ(pendingEntries.entries[0].startTime, 100);
+  EXPECT_EQ(pendingEntries.entries[0].duration, 50);
+}
+
+TEST_P(RuntimeSchedulerTest, reportsLongTasksWithYielding) {
+  // Only for modern runtime scheduler
+  if (!GetParam()) {
+    return;
+  }
+
+  bool didRunTask1 = false;
+  stubClock_->setTimePoint(10ms);
+
+  auto callback1 = createHostFunctionFromLambda([&](bool /* unused */) {
+    // The task executes for 80ms, but all the interval between getShouldYield
+    // are shorter than 50ms
+    didRunTask1 = true;
+
+    stubClock_->advanceTimeBy(20ms);
+
+    runtimeScheduler_->getShouldYield();
+
+    stubClock_->advanceTimeBy(20ms);
+
+    runtimeScheduler_->getShouldYield();
+
+    stubClock_->advanceTimeBy(20ms);
+
+    runtimeScheduler_->getShouldYield();
+
+    stubClock_->advanceTimeBy(20ms);
+
+    return jsi::Value::undefined();
+  });
+
+  runtimeScheduler_->scheduleTask(
+      SchedulerPriority::NormalPriority, std::move(callback1));
+
+  stubQueue_->tick();
+
+  EXPECT_EQ(didRunTask1, 1);
+  EXPECT_EQ(stubQueue_->size(), 0);
+  auto pendingEntries = performanceEntryReporter_->popPendingEntries();
+  EXPECT_EQ(pendingEntries.entries.size(), 0);
+
+  bool didRunTask2 = false;
+  stubClock_->setTimePoint(100ms);
+
+  auto callback2 = createHostFunctionFromLambda([&](bool /* unused */) {
+    // The task executes for 100ms, and one of the intervals is longer than 50.
+    didRunTask2 = true;
+
+    stubClock_->advanceTimeBy(20ms);
+
+    runtimeScheduler_->getShouldYield();
+
+    // Long period!
+    stubClock_->advanceTimeBy(60ms);
+
+    runtimeScheduler_->getShouldYield();
+
+    stubClock_->advanceTimeBy(20ms);
+
+    runtimeScheduler_->getShouldYield();
+
+    stubClock_->advanceTimeBy(20ms);
+
+    return jsi::Value::undefined();
+  });
+
+  runtimeScheduler_->scheduleTask(
+      SchedulerPriority::NormalPriority, std::move(callback2));
+
+  stubQueue_->tick();
+
+  EXPECT_EQ(didRunTask2, 1);
+  EXPECT_EQ(stubQueue_->size(), 0);
+  pendingEntries = performanceEntryReporter_->popPendingEntries();
+  EXPECT_EQ(pendingEntries.entries.size(), 1);
+  EXPECT_EQ(
+      pendingEntries.entries[0].entryType, PerformanceEntryType::LONGTASK);
+  EXPECT_EQ(pendingEntries.entries[0].startTime, 100);
+  EXPECT_EQ(pendingEntries.entries[0].duration, 120);
 }
 
 INSTANTIATE_TEST_SUITE_P(

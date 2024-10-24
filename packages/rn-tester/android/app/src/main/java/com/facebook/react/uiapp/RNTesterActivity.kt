@@ -8,6 +8,12 @@
 package com.facebook.react.uiapp
 
 import android.os.Bundle
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.view.View
+import android.widget.FrameLayout
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import com.facebook.react.FBRNTesterEndToEndHelper
 import com.facebook.react.ReactActivity
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.fabricEnabled
@@ -35,6 +41,28 @@ class RNTesterActivity : ReactActivity() {
 
     override fun getLaunchOptions() =
         if (this::initialProps.isInitialized) initialProps else Bundle()
+  }
+
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    // set background color so it will show below transparent system bars on forced edge-to-edge
+    this.window?.setBackgroundDrawable(ColorDrawable(Color.BLACK))
+    // register insets listener to update margins on the ReactRootView to avoid overlap w/ system bars
+    getReactDelegate()?.getReactRootView()?.let { rootView ->
+      val insetsType: Int =
+          WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()
+
+      val windowInsetsListener = { view: View, windowInsets: WindowInsetsCompat ->
+        val insets = windowInsets.getInsets(insetsType)
+
+        (view.layoutParams as FrameLayout.LayoutParams).apply {
+          setMargins(insets.left, insets.top, insets.right, insets.bottom)
+        }
+
+        WindowInsetsCompat.CONSUMED
+      }
+      ViewCompat.setOnApplyWindowInsetsListener(rootView, windowInsetsListener)
+    }
   }
 
   override fun createReactActivityDelegate() = RNTesterActivityDelegate(this, mainComponentName)

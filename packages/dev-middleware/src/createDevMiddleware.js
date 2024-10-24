@@ -17,7 +17,6 @@ import type {Logger} from './types/Logger';
 import type {NextHandleFunction} from 'connect';
 
 import InspectorProxy from './inspector-proxy/InspectorProxy';
-import deprecated_openFlipperMiddleware from './middleware/deprecated_openFlipperMiddleware';
 import openDebuggerMiddleware from './middleware/openDebuggerMiddleware';
 import DefaultBrowserLauncher from './utils/DefaultBrowserLauncher';
 import reactNativeDebuggerFrontendPath from '@react-native/debugger-frontend';
@@ -97,18 +96,21 @@ export default function createDevMiddleware({
   const middleware = connect()
     .use(
       '/open-debugger',
-      experiments.enableNewDebugger
-        ? openDebuggerMiddleware({
-            serverBaseUrl,
-            inspectorProxy,
-            browserLauncher: unstable_browserLauncher,
-            eventReporter: unstable_eventReporter,
-            experiments,
-            logger,
-          })
-        : deprecated_openFlipperMiddleware({
-            logger,
-          }),
+      openDebuggerMiddleware({
+        serverBaseUrl,
+        inspectorProxy,
+        browserLauncher: unstable_browserLauncher,
+        eventReporter: unstable_eventReporter,
+        experiments,
+        logger,
+      }),
+    )
+    .use(
+      '/debugger-frontend/embedder-static/embedderScript.js',
+      (_req, res) => {
+        res.setHeader('Content-Type', 'application/javascript');
+        res.end('');
+      },
     )
     .use(
       '/debugger-frontend',
@@ -126,9 +128,7 @@ export default function createDevMiddleware({
 
 function getExperiments(config: ExperimentsConfig): Experiments {
   return {
-    enableNewDebugger: config.enableNewDebugger ?? false,
     enableOpenDebuggerRedirect: config.enableOpenDebuggerRedirect ?? false,
     enableNetworkInspector: config.enableNetworkInspector ?? false,
-    useFuseboxInternalBranding: config.useFuseboxInternalBranding ?? false,
   };
 }

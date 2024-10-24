@@ -26,7 +26,7 @@ static bool hasPrefix(const std::string& str, const std::string& prefix) {
  * "top" prefix. E.g. "eventName" becomes "topEventName", "onEventName" also
  * becomes "topEventName".
  */
-static std::string normalizeEventType(std::string type) {
+/* static */ std::string EventEmitter::normalizeEventType(std::string type) {
   auto prefixedType = std::move(type);
   if (facebook::react::hasPrefix(prefixedType, "top")) {
     return prefixedType;

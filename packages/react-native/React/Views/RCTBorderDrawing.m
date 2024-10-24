@@ -17,11 +17,15 @@ BOOL RCTBorderInsetsAreEqual(UIEdgeInsets borderInsets)
       ABS(borderInsets.left - borderInsets.top) < RCTViewBorderThreshold;
 }
 
-BOOL RCTCornerRadiiAreEqual(RCTCornerRadii cornerRadii)
+BOOL RCTCornerRadiiAreEqualAndSymmetrical(RCTCornerRadii cornerRadii)
 {
-  return ABS(cornerRadii.topLeft - cornerRadii.topRight) < RCTViewBorderThreshold &&
-      ABS(cornerRadii.topLeft - cornerRadii.bottomLeft) < RCTViewBorderThreshold &&
-      ABS(cornerRadii.topLeft - cornerRadii.bottomRight) < RCTViewBorderThreshold;
+  return cornerRadii.topLeftHorizontal == cornerRadii.topLeftHorizontal &&
+      cornerRadii.topRightHorizontal == cornerRadii.topRightVertical &&
+      cornerRadii.bottomLeftHorizontal == cornerRadii.bottomLeftVertical &&
+      cornerRadii.bottomRightHorizontal == cornerRadii.bottomRightVertical &&
+      ABS(cornerRadii.topLeftHorizontal - cornerRadii.topRightHorizontal) < RCTViewBorderThreshold &&
+      ABS(cornerRadii.topLeftHorizontal - cornerRadii.bottomLeftHorizontal) < RCTViewBorderThreshold &&
+      ABS(cornerRadii.topLeftHorizontal - cornerRadii.bottomRightHorizontal) < RCTViewBorderThreshold;
 }
 
 BOOL RCTBorderColorsAreEqual(RCTBorderColors borderColors)
@@ -35,20 +39,20 @@ RCTCornerInsets RCTGetCornerInsets(RCTCornerRadii cornerRadii, UIEdgeInsets edge
 {
   return (RCTCornerInsets){
       {
-          MAX(0, cornerRadii.topLeft - edgeInsets.left),
-          MAX(0, cornerRadii.topLeft - edgeInsets.top),
+          MAX(0, cornerRadii.topLeftHorizontal - edgeInsets.left),
+          MAX(0, cornerRadii.topLeftVertical - edgeInsets.top),
       },
       {
-          MAX(0, cornerRadii.topRight - edgeInsets.right),
-          MAX(0, cornerRadii.topRight - edgeInsets.top),
+          MAX(0, cornerRadii.topRightHorizontal - edgeInsets.right),
+          MAX(0, cornerRadii.topRightVertical - edgeInsets.top),
       },
       {
-          MAX(0, cornerRadii.bottomLeft - edgeInsets.left),
-          MAX(0, cornerRadii.bottomLeft - edgeInsets.bottom),
+          MAX(0, cornerRadii.bottomLeftHorizontal - edgeInsets.left),
+          MAX(0, cornerRadii.bottomLeftVertical - edgeInsets.bottom),
       },
       {
-          MAX(0, cornerRadii.bottomRight - edgeInsets.right),
-          MAX(0, cornerRadii.bottomRight - edgeInsets.bottom),
+          MAX(0, cornerRadii.bottomRightHorizontal - edgeInsets.right),
+          MAX(0, cornerRadii.bottomRightVertical - edgeInsets.bottom),
       }};
 }
 
@@ -158,8 +162,13 @@ RCTEllipseGetIntersectionsWithLine(CGRect ellipseBounds, CGPoint lineStart, CGPo
 NS_INLINE BOOL RCTCornerRadiiAreAboveThreshold(RCTCornerRadii cornerRadii)
 {
   return (
-      cornerRadii.topLeft > RCTViewBorderThreshold || cornerRadii.topRight > RCTViewBorderThreshold ||
-      cornerRadii.bottomLeft > RCTViewBorderThreshold || cornerRadii.bottomRight > RCTViewBorderThreshold);
+      cornerRadii.topLeftHorizontal > RCTViewBorderThreshold || cornerRadii.topLeftVertical > RCTViewBorderThreshold ||
+      cornerRadii.topRightHorizontal > RCTViewBorderThreshold ||
+      cornerRadii.topRightVertical > RCTViewBorderThreshold ||
+      cornerRadii.bottomLeftHorizontal > RCTViewBorderThreshold ||
+      cornerRadii.bottomLeftVertical > RCTViewBorderThreshold ||
+      cornerRadii.bottomRightHorizontal > RCTViewBorderThreshold ||
+      cornerRadii.bottomRightVertical > RCTViewBorderThreshold);
 }
 
 static CGPathRef RCTPathCreateOuterOutline(BOOL drawToEdge, CGRect rect, RCTCornerRadii cornerRadii)

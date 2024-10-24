@@ -9,8 +9,8 @@ package com.facebook.react.modules.i18nmanager
 
 import android.content.Context
 import android.content.pm.ApplicationInfo
+import android.view.View
 import androidx.core.text.TextUtilsCompat
-import androidx.core.view.ViewCompat
 import java.util.Locale
 
 public class I18nUtil private constructor() {
@@ -53,7 +53,8 @@ public class I18nUtil private constructor() {
 
   /** Could be used to test RTL layout with English Used for development and testing purpose */
   private fun isRTLForced(context: Context): Boolean =
-      isPrefSet(context, KEY_FOR_PREFS_FORCERTL, false)
+      isPrefSet(context, KEY_FOR_PREFS_FORCERTL, false) ||
+          System.getProperty("FORCE_RTL_FOR_TESTING", "false").equals("true", ignoreCase = true)
 
   public fun forceRTL(context: Context, forceRTL: Boolean) {
     setPref(context, KEY_FOR_PREFS_FORCERTL, forceRTL)
@@ -63,7 +64,7 @@ public class I18nUtil private constructor() {
     // Check if the current device language is RTL
     get() {
       val directionality = TextUtilsCompat.getLayoutDirectionFromLocale(Locale.getDefault())
-      return directionality == ViewCompat.LAYOUT_DIRECTION_RTL
+      return directionality == View.LAYOUT_DIRECTION_RTL
     }
 
   private fun isPrefSet(context: Context, key: String, defaultValue: Boolean): Boolean =
@@ -86,5 +87,16 @@ public class I18nUtil private constructor() {
     private const val KEY_FOR_PREFS_FORCERTL = "RCTI18nUtil_forceRTL"
     private const val KEY_FOR_PERFS_MAKE_RTL_FLIP_LEFT_AND_RIGHT_STYLES =
         "RCTI18nUtil_makeRTLFlipLeftAndRightStyles"
+
+    /**
+     * We're just re-adding this to reduce a breaking change for libraries in React Native 0.75.
+     *
+     * @deprecated Use instance instead
+     */
+    @Deprecated(
+        "Use .instance instead, this API is only for backward compat", ReplaceWith("instance"))
+    @JvmName(
+        "DEPRECATED\$getInstance") // We intentionally don't want to expose this accessor to Java.
+    public fun getInstance(): I18nUtil = instance
   }
 }

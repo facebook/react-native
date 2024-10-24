@@ -205,6 +205,11 @@ void YGNodeStyleSetPositionPercent(YGNodeRef node, YGEdge edge, float percent) {
       node, scopedEnum(edge), value::percent(percent));
 }
 
+void YGNodeStyleSetPositionAuto(YGNodeRef node, YGEdge edge) {
+  updateStyle<&Style::position, &Style::setPosition>(
+      node, scopedEnum(edge), value::ofAuto());
+}
+
 YGValue YGNodeStyleGetPosition(YGNodeConstRef node, YGEdge edge) {
   return (YGValue)resolveRef(node)->style().position(scopedEnum(edge));
 }

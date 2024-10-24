@@ -7,6 +7,7 @@
 
 #include "RawProps.h"
 
+#include <cxxreact/SystraceSection.h>
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/core/RawPropsKey.h>
 #include <react/renderer/core/RawPropsParser.h>
@@ -207,12 +208,6 @@ const RawValue* RawProps::at(
       parser_ &&
       "The object is not parsed. `parse` must be called before `at`.");
   return parser_->at(*this, RawPropsKey{prefix, name, suffix});
-}
-
-void RawProps::iterateOverValues(
-    const std::function<
-        void(RawPropsPropNameHash, const char*, const RawValue&)>& fn) const {
-  return parser_->iterateOverValues(*this, fn);
 }
 
 } // namespace facebook::react

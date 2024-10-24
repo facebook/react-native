@@ -11,6 +11,7 @@
 #include "HostCommand.h"
 #include "InspectorInterfaces.h"
 #include "InstanceTarget.h"
+#include "NetworkIOAgent.h"
 #include "ScopedExecutor.h"
 #include "WeakList.h"
 
@@ -37,7 +38,12 @@ class HostCommandSender;
 class HostTarget;
 
 struct HostTargetMetadata {
+  std::optional<std::string> appDisplayName;
+  std::optional<std::string> appIdentifier;
+  std::optional<std::string> deviceName;
   std::optional<std::string> integrationName;
+  std::optional<std::string> platform;
+  std::optional<std::string> reactNativeVersion;
 };
 
 /**
@@ -45,13 +51,13 @@ struct HostTargetMetadata {
  * React Native platform needs to implement in order to integrate with the
  * debugging stack.
  */
-class HostTargetDelegate {
+class HostTargetDelegate : public LoadNetworkResourceDelegate {
  public:
   HostTargetDelegate() = default;
   HostTargetDelegate(const HostTargetDelegate&) = delete;
-  HostTargetDelegate(HostTargetDelegate&&) = default;
+  HostTargetDelegate(HostTargetDelegate&&) = delete;
   HostTargetDelegate& operator=(const HostTargetDelegate&) = delete;
-  HostTargetDelegate& operator=(HostTargetDelegate&&) = default;
+  HostTargetDelegate& operator=(HostTargetDelegate&&) = delete;
 
   // TODO(moti): This is 1:1 the shape of the corresponding CDP message -
   // consider reusing typed/generated CDP interfaces when we have those.
@@ -87,10 +93,11 @@ class HostTargetDelegate {
     }
   };
 
-  virtual ~HostTargetDelegate();
+  virtual ~HostTargetDelegate() override;
 
   /**
-   * Returns a metadata object describing the host.
+   * Returns a metadata object describing the host. This is called on an
+   * initial response to @cdp ReactNativeApplication.enable.
    */
   virtual HostTargetMetadata getMetadata() = 0;
 
@@ -113,6 +120,19 @@ class HostTargetDelegate {
    */
   virtual void onSetPausedInDebuggerMessage(
       const OverlaySetPausedInDebuggerMessageRequest& request) = 0;
+
+  /**
+   * Called by NetworkIOAgent on handling a `Network.loadNetworkResource` CDP
+   * request. Platform implementations should override this to perform a
+   * network request of the given URL, and use listener's callbacks on receipt
+   * of headers, data chunks, and errors.
+   */
+  void loadNetworkResource(
+      const LoadNetworkResourceRequest& /*params*/,
+      ScopedExecutor<NetworkRequestListener> /*executor*/) override {
+    throw NotImplementedException(
+        "LoadNetworkResourceDelegate.loadNetworkResource is not implemented by this host target delegate.");
+  }
 };
 
 /**

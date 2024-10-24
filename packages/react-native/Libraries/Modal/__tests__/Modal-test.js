@@ -17,6 +17,10 @@ const Modal = require('../Modal');
 const React = require('react');
 
 describe('Modal', () => {
+  beforeEach(() => {
+    jest.resetModules();
+  });
+
   it('should render as <Modal> when mocked', async () => {
     const instance = await render.create(
       <Modal>

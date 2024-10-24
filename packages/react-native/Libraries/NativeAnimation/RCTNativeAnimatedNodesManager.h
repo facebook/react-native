@@ -88,6 +88,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)stopListeningToAnimatedNodeValue:(NSNumber *)tag;
 
+- (NSSet<NSNumber *> *)getTagsOfConnectedNodesFrom:(NSNumber *)tag andEvent:(NSString *)eventName;
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -375,6 +375,14 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)decoder)
       @"oneTimeCode" : UITextContentTypeOneTimeCode,
     }];
 
+    if (@available(iOS 15.0, *)) {
+      [mutableContentTypeMap addEntriesFromDictionary:@{
+        @"dateTime" : UITextContentTypeDateTime,
+        @"flightNumber" : UITextContentTypeFlightNumber,
+        @"shipmentTrackingNumber" : UITextContentTypeShipmentTrackingNumber,
+      }];
+    }
+
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 170000 /* __IPHONE_17_0 */
     if (@available(iOS 17.0, *)) {
       [mutableContentTypeMap addEntriesFromDictionary:@{
@@ -456,27 +464,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)decoder)
 
 - (void)textInputDidBeginEditing
 {
-#if TARGET_OS_OSX // [macOS consolidate duplicate callbacks
-  if (_isCurrentlyEditing) {
-    return;
-  }
-  _isCurrentlyEditing = YES;
-#endif // macOS]
-
-  if (_clearTextOnFocus) {
-    self.backedTextInputView.attributedText = [NSAttributedString new];
-  }
-
-  if (_selectTextOnFocus) {
-    if ([self.backedTextInputView respondsToSelector:@selector(selectAll:)]) {
-      [self.backedTextInputView selectAll:nil];
-    }
-#if TARGET_OS_OSX // [macOS
-  } else {
-    [self.backedTextInputView setSelectedTextRange:NSMakeRange(NSNotFound, 0) notifyDelegate:NO];
-#endif // macOS]
-  }
-
   [_eventDispatcher sendTextEventWithType:RCTTextEventTypeFocus
                                  reactTag:self.reactTag
                                      text:[self.backedTextInputView.attributedText.string copy]
@@ -624,7 +611,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)decoder)
         _maxLength.integerValue - (NSInteger)backedTextInputView.attributedText.string.length + (NSInteger)range.length,
         0);
 
-    if (text.length > allowedLength) {
+    if (text.length > _maxLength.integerValue) {
       // If we typed/pasted more than one character, limit the text inputted.
       if (text.length > 1) {
         if (allowedLength > 0) {
@@ -634,6 +621,9 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)decoder)
             // the character at the length limit takes more than 16bits, truncation should end at the character before
             allowedLength = cutOffCharacterRange.location;
           }
+        }
+        if (allowedLength <= 0) {
+          return nil;
         }
         // Truncate the input string so the result is exactly maxLength
         NSString *limitedString = [text substringToIndex:allowedLength];
@@ -848,6 +838,18 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)decoder)
 - (void)reactFocus
 {
   [self.backedTextInputView reactFocus];
+
+  if (_clearTextOnFocus) {
+    self.backedTextInputView.attributedText = [NSAttributedString new];
+  }
+
+  if (_selectTextOnFocus) {
+    [self.backedTextInputView selectAll:nil];
+#if TARGET_OS_OSX // [macOS
+  } else {
+    [self.backedTextInputView setSelectedTextRange:NSMakeRange(NSNotFound, 0) notifyDelegate:NO];
+#endif // macOS]
+  }
 }
 
 - (void)reactBlur
@@ -902,8 +904,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)decoder)
 - (NSString *)returnKeyTypeToString:(UIReturnKeyType)returnKeyType
 {
   switch (returnKeyType) {
-    case UIReturnKeyDefault:
-      return @"Default";
     case UIReturnKeyGo:
       return @"Go";
     case UIReturnKeyNext:
@@ -931,7 +931,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)decoder)
 {
   returnKeyTypesSet = [NSSet setWithObjects:@(UIReturnKeyDone),
                                             @(UIReturnKeyGo),
-                                            @(UIReturnKeyDefault),
                                             @(UIReturnKeyNext),
                                             @(UIReturnKeySearch),
                                             @(UIReturnKeySend),

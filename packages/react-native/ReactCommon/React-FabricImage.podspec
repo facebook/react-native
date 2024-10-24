@@ -56,7 +56,7 @@ Pod::Spec.new do |s|
   s.header_dir           = "react/renderer/components/image"
   s.compiler_flags       = folly_compiler_flags
   s.pod_target_xcconfig = { "USE_HEADERMAP" => "YES",
-                            "CLANG_CXX_LANGUAGE_STANDARD" => "c++20",
+                            "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
                             "HEADER_SEARCH_PATHS" => header_search_path.join(" ")
                           }
 

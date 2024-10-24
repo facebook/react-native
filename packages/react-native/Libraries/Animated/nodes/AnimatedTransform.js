@@ -12,119 +12,154 @@
 
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 
-import NativeAnimatedHelper from '../NativeAnimatedHelper';
+import {validateTransform} from '../../../src/private/animated/NativeAnimatedValidation';
+import NativeAnimatedHelper from '../../../src/private/animated/NativeAnimatedHelper';
 import AnimatedNode from './AnimatedNode';
 import AnimatedWithChildren from './AnimatedWithChildren';
 
-export default class AnimatedTransform extends AnimatedWithChildren {
-  _transforms: $ReadOnlyArray<Object>;
+type Transform<T = AnimatedNode> = {
+  [string]:
+    | number
+    | string
+    | T
+    | $ReadOnlyArray<number | string | T>
+    | {[string]: number | string | T},
+};
 
-  constructor(transforms: $ReadOnlyArray<Object>) {
+export default class AnimatedTransform extends AnimatedWithChildren {
+  // NOTE: For potentially historical reasons, some operations only operate on
+  // the first level of AnimatedNode instances. This optimizes that bevavior.
+  #shallowNodes: $ReadOnlyArray<AnimatedNode>;
+
+  _transforms: $ReadOnlyArray<Transform<>>;
+
+  constructor(transforms: $ReadOnlyArray<Transform<>>) {
     super();
     this._transforms = transforms;
+
+    const shallowNodes = [];
+    // NOTE: This check should not be necessary, but the types are not enforced
+    // as of this writing. This check should be hoisted to instantiation sites.
+    if (Array.isArray(transforms)) {
+      for (let ii = 0, length = transforms.length; ii < length; ii++) {
+        const transform = transforms[ii];
+        // There should be exactly one property in `transform`.
+        for (const key in transform) {
+          const value = transform[key];
+          if (value instanceof AnimatedNode) {
+            shallowNodes.push(value);
+          }
+        }
+      }
+    }
+    this.#shallowNodes = shallowNodes;
   }
 
   __makeNative(platformConfig: ?PlatformConfig) {
-    this._transforms.forEach(transform => {
-      for (const key in transform) {
-        const value = transform[key];
-        if (value instanceof AnimatedNode) {
-          value.__makeNative(platformConfig);
-        }
-      }
-    });
+    const nodes = this.#shallowNodes;
+    for (let ii = 0, length = nodes.length; ii < length; ii++) {
+      const node = nodes[ii];
+      node.__makeNative(platformConfig);
+    }
     super.__makeNative(platformConfig);
   }
 
-  __getValue(): $ReadOnlyArray<Object> {
-    return this._get(animatedNode => animatedNode.__getValue());
+  __getValue(): $ReadOnlyArray<Transform<any>> {
+    return mapTransforms(this._transforms, animatedNode =>
+      animatedNode.__getValue(),
+    );
   }
 
-  __getAnimatedValue(): $ReadOnlyArray<Object> {
-    return this._get(animatedNode => animatedNode.__getAnimatedValue());
+  __getAnimatedValue(): $ReadOnlyArray<Transform<any>> {
+    return mapTransforms(this._transforms, animatedNode =>
+      animatedNode.__getAnimatedValue(),
+    );
   }
 
   __attach(): void {
-    this._transforms.forEach(transform => {
-      for (const key in transform) {
-        const value = transform[key];
-        if (value instanceof AnimatedNode) {
-          value.__addChild(this);
-        }
-      }
-    });
+    const nodes = this.#shallowNodes;
+    for (let ii = 0, length = nodes.length; ii < length; ii++) {
+      const node = nodes[ii];
+      node.__addChild(this);
+    }
   }
 
   __detach(): void {
-    this._transforms.forEach(transform => {
-      for (const key in transform) {
-        const value = transform[key];
-        if (value instanceof AnimatedNode) {
-          value.__removeChild(this);
-        }
-      }
-    });
+    const nodes = this.#shallowNodes;
+    for (let ii = 0, length = nodes.length; ii < length; ii++) {
+      const node = nodes[ii];
+      node.__removeChild(this);
+    }
     super.__detach();
   }
 
   __getNativeConfig(): any {
-    const transConfigs: Array<any> = [];
+    const transformsConfig: Array<any> = [];
 
-    this._transforms.forEach(transform => {
+    const transforms = this._transforms;
+    for (let ii = 0, length = transforms.length; ii < length; ii++) {
+      const transform = transforms[ii];
+      // There should be exactly one property in `transform`.
       for (const key in transform) {
         const value = transform[key];
         if (value instanceof AnimatedNode) {
-          transConfigs.push({
+          transformsConfig.push({
             type: 'animated',
             property: key,
             nodeTag: value.__getNativeTag(),
           });
         } else {
-          transConfigs.push({
+          transformsConfig.push({
             type: 'static',
             property: key,
+            /* $FlowFixMe[incompatible-call] - `value` can be an array or an
+               object. This is not currently handled by `transformDataType`.
+               Migrating to `TransformObject` might solve this. */
             value: NativeAnimatedHelper.transformDataType(value),
           });
         }
       }
-    });
+    }
 
-    NativeAnimatedHelper.validateTransform(transConfigs);
+    if (__DEV__) {
+      validateTransform(transformsConfig);
+    }
     return {
       type: 'transform',
-      transforms: transConfigs,
+      transforms: transformsConfig,
     };
   }
+}
 
-  _get(getter: AnimatedNode => any): $ReadOnlyArray<Object> {
-    return this._transforms.map(transform => {
-      const result: {[string]: any} = {};
-      for (const key in transform) {
-        const value = transform[key];
-        if (value instanceof AnimatedNode) {
-          result[key] = getter(value);
-        } else if (Array.isArray(value)) {
-          result[key] = value.map(element => {
-            if (element instanceof AnimatedNode) {
-              return getter(element);
-            } else {
-              return element;
-            }
-          });
-        } else if (typeof value === 'object') {
-          result[key] = {};
-          for (const [nestedKey, nestedValue] of Object.entries(value)) {
-            if (nestedValue instanceof AnimatedNode) {
-              result[key][nestedKey] = getter(nestedValue);
-            } else {
-              result[key][nestedKey] = nestedValue;
-            }
-          }
-        } else {
-          result[key] = value;
+function mapTransforms<T>(
+  transforms: $ReadOnlyArray<Transform<>>,
+  mapFunction: AnimatedNode => T,
+): $ReadOnlyArray<Transform<T>> {
+  return transforms.map(transform => {
+    const result: Transform<T> = {};
+    // There should be exactly one property in `transform`.
+    for (const key in transform) {
+      const value = transform[key];
+      if (value instanceof AnimatedNode) {
+        result[key] = mapFunction(value);
+      } else if (Array.isArray(value)) {
+        result[key] = value.map(element =>
+          element instanceof AnimatedNode ? mapFunction(element) : element,
+        );
+      } else if (typeof value === 'object') {
+        const object: {[string]: number | string | T} = {};
+        for (const propertyName in value) {
+          const propertyValue = value[propertyName];
+          object[propertyName] =
+            propertyValue instanceof AnimatedNode
+              ? mapFunction(propertyValue)
+              : propertyValue;
         }
+        result[key] = object;
+      } else {
+        result[key] = value;
       }
-      return result;
-    });
-  }
+    }
+    return result;
+  });
 }

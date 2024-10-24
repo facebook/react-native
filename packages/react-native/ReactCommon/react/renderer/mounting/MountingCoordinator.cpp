@@ -78,8 +78,8 @@ void MountingCoordinator::resetLatestRevision() const {
   lastRevision_.reset();
 }
 
-std::optional<MountingTransaction> MountingCoordinator::pullTransaction()
-    const {
+std::optional<MountingTransaction> MountingCoordinator::pullTransaction(
+    bool willPerformAsynchronously) const {
   SystraceSection section("MountingCoordinator::pullTransaction");
 
   std::scoped_lock lock(mutex_);
@@ -184,13 +184,20 @@ std::optional<MountingTransaction> MountingCoordinator::pullTransaction()
   if (lastRevision_.has_value()) {
     baseRevision_ = std::move(*lastRevision_);
     lastRevision_.reset();
+
+    hasPendingTransactionsOverride_ = willPerformAsynchronously;
   }
   return transaction;
 }
 
 bool MountingCoordinator::hasPendingTransactions() const {
   std::scoped_lock lock(mutex_);
-  return lastRevision_.has_value();
+  return lastRevision_.has_value() || hasPendingTransactionsOverride_;
+}
+
+void MountingCoordinator::didPerformAsyncTransactions() const {
+  std::scoped_lock lock(mutex_);
+  hasPendingTransactionsOverride_ = false;
 }
 
 const TelemetryController& MountingCoordinator::getTelemetryController() const {

@@ -7,12 +7,29 @@
 
 #include "EventPerformanceLogger.h"
 
+#include <react/featureflags/ReactNativeFeatureFlags.h>
+#include <react/timing/primitives.h>
 #include <react/utils/CoreFeatures.h>
 #include <unordered_map>
 
 namespace facebook::react {
 
 namespace {
+
+bool isTargetInRootShadowNode(
+    const SharedEventTarget& target,
+    const RootShadowNode::Shared& rootShadowNode) {
+  return target && rootShadowNode &&
+      target->getSurfaceId() == rootShadowNode->getSurfaceId();
+}
+
+bool hasPendingRenderingUpdates(
+    const SharedEventTarget& target,
+    const std::unordered_set<SurfaceId>&
+        surfaceIdsWithPendingRenderingUpdates) {
+  return target != nullptr &&
+      surfaceIdsWithPendingRenderingUpdates.contains(target->getSurfaceId());
+}
 
 struct StrKey {
   size_t key;
@@ -84,7 +101,9 @@ EventPerformanceLogger::EventPerformanceLogger(
     std::weak_ptr<PerformanceEntryReporter> performanceEntryReporter)
     : performanceEntryReporter_(std::move(performanceEntryReporter)) {}
 
-EventTag EventPerformanceLogger::onEventStart(std::string_view name) {
+EventTag EventPerformanceLogger::onEventStart(
+    std::string_view name,
+    SharedEventTarget target) {
   auto performanceEntryReporter = performanceEntryReporter_.lock();
   if (performanceEntryReporter == nullptr) {
     return EMPTY_EVENT_TAG;
@@ -103,7 +122,8 @@ EventTag EventPerformanceLogger::onEventStart(std::string_view name) {
   auto timeStamp = performanceEntryReporter->getCurrentTimeStamp();
   {
     std::lock_guard lock(eventsInFlightMutex_);
-    eventsInFlight_.emplace(eventTag, EventEntry{reportedName, timeStamp, 0.0});
+    eventsInFlight_.emplace(
+        eventTag, EventEntry{reportedName, target, timeStamp, 0.0});
   }
   return eventTag;
 }
@@ -137,12 +157,13 @@ void EventPerformanceLogger::onEventProcessingEnd(EventTag tag) {
     if (it == eventsInFlight_.end()) {
       return;
     }
+
     auto& entry = it->second;
     entry.processingEndTime = timeStamp;
 
-    if (CoreFeatures::enableReportEventPaintTime) {
+    if (ReactNativeFeatureFlags::enableReportEventPaintTime()) {
       // If reporting paint time, don't send the entry just yet and wait for the
-      // mount hook callback to be called
+      // task to finish.
       return;
     }
 
@@ -159,10 +180,47 @@ void EventPerformanceLogger::onEventProcessingEnd(EventTag tag) {
   }
 }
 
+void EventPerformanceLogger::dispatchPendingEventTimingEntries(
+    const std::unordered_set<SurfaceId>&
+        surfaceIdsWithPendingRenderingUpdates) {
+  if (!ReactNativeFeatureFlags::enableReportEventPaintTime()) {
+    return;
+  }
+
+  auto performanceEntryReporter = performanceEntryReporter_.lock();
+  if (performanceEntryReporter == nullptr) {
+    return;
+  }
+
+  std::lock_guard lock(eventsInFlightMutex_);
+  auto it = eventsInFlight_.begin();
+  while (it != eventsInFlight_.end()) {
+    auto& entry = it->second;
+
+    if (entry.isWaitingForDispatch() || entry.isWaitingForMount) {
+      ++it;
+    } else if (hasPendingRenderingUpdates(
+                   entry.target, surfaceIdsWithPendingRenderingUpdates)) {
+      // We'll wait for mount to report the event
+      entry.isWaitingForMount = true;
+      ++it;
+    } else {
+      performanceEntryReporter->logEventEntry(
+          std::string(entry.name),
+          entry.startTime,
+          performanceEntryReporter->getCurrentTimeStamp() - entry.startTime,
+          entry.processingStartTime,
+          entry.processingEndTime,
+          entry.interactionId);
+      it = eventsInFlight_.erase(it);
+    }
+  }
+}
+
 void EventPerformanceLogger::shadowTreeDidMount(
-    const RootShadowNode::Shared& /*rootShadowNode*/,
+    const RootShadowNode::Shared& rootShadowNode,
     double mountTime) noexcept {
-  if (!CoreFeatures::enableReportEventPaintTime) {
+  if (!ReactNativeFeatureFlags::enableReportEventPaintTime()) {
     return;
   }
 
@@ -175,20 +233,19 @@ void EventPerformanceLogger::shadowTreeDidMount(
   auto it = eventsInFlight_.begin();
   while (it != eventsInFlight_.end()) {
     const auto& entry = it->second;
-    if (entry.processingEndTime == 0.0 || entry.processingEndTime > mountTime) {
-      // This mount doesn't correspond to the event
+    if (entry.isWaitingForMount &&
+        isTargetInRootShadowNode(entry.target, rootShadowNode)) {
+      performanceEntryReporter->logEventEntry(
+          std::string(entry.name),
+          entry.startTime,
+          mountTime - entry.startTime,
+          entry.processingStartTime,
+          entry.processingEndTime,
+          entry.interactionId);
+      it = eventsInFlight_.erase(it);
+    } else {
       ++it;
-      continue;
     }
-
-    performanceEntryReporter->logEventEntry(
-        std::string(entry.name),
-        entry.startTime,
-        mountTime - entry.startTime,
-        entry.processingStartTime,
-        entry.processingEndTime,
-        entry.interactionId);
-    it = eventsInFlight_.erase(it);
   }
 }
 

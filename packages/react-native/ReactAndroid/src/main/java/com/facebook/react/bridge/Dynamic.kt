@@ -12,6 +12,10 @@ package com.facebook.react.bridge
  * pass one of multiple types down to the native layer.
  */
 public interface Dynamic {
+  public val type: ReadableType
+
+  public val isNull: Boolean
+
   public fun asArray(): ReadableArray
 
   public fun asBoolean(): Boolean
@@ -23,10 +27,6 @@ public interface Dynamic {
   public fun asMap(): ReadableMap
 
   public fun asString(): String
-
-  public fun getType(): ReadableType
-
-  public fun isNull(): Boolean
 
   public fun recycle(): Unit
 }

@@ -35,7 +35,7 @@ Pod::Spec.new do |s|
   s.ios.frameworks         = "MobileCoreServices" 
   s.visionos.frameworks    = "MobileCoreServices"
   # macOS]
-  s.pod_target_xcconfig    = { "CLANG_CXX_LANGUAGE_STANDARD" => "c++20" }
+  s.pod_target_xcconfig    = { "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard() }
 
   s.dependency "Yoga"
   s.dependency "React-Core/RCTTextHeaders", version

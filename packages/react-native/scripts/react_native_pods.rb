@@ -17,6 +17,7 @@ require_relative './cocoapods/local_podspec_patch.rb'
 require_relative './cocoapods/runtime.rb'
 require_relative './cocoapods/helpers.rb'
 require_relative './cocoapods/privacy_manifest_utils.rb'
+require_relative './cocoapods/spm.rb'
 # Importing to expose use_native_modules!
 require_relative './cocoapods/autolinking.rb'
 
@@ -153,6 +154,7 @@ def use_react_native! (
 
   pod 'React-callinvoker', :path => "#{prefix}/ReactCommon/callinvoker"
   pod 'React-performancetimeline', :path => "#{prefix}/ReactCommon/react/performance/timeline"
+  pod 'React-timing', :path => "#{prefix}/ReactCommon/react/timing"
   pod 'React-runtimeexecutor', :path => "#{prefix}/ReactCommon/runtimeexecutor"
   pod 'React-runtimescheduler', :path => "#{prefix}/ReactCommon/react/renderer/runtimescheduler"
   pod 'React-rendererdebug', :path => "#{prefix}/ReactCommon/react/renderer/debug"
@@ -255,6 +257,18 @@ def install_modules_dependencies(spec, new_arch_enabled: NewArchitectureHelper.n
   NewArchitectureHelper.install_modules_dependencies(spec, new_arch_enabled, folly_config[:version])
 end
 
+
+# This function can be used by library developer to declare a SwiftPackageManager dependency.
+#
+# Parameters:
+# - spec: The spec the Swift Package Manager dependency has to be added to
+# - url: The URL of the Swift Package Manager dependency
+# - requirement: The version requirement of the Swift Package Manager dependency (eg. ` {kind: 'upToNextMajorVersion', minimumVersion: '5.9.1'},`)
+# - products: The product/target of the Swift Package Manager dependency (eg. AlamofireDynamic)
+def spm_dependency(spec, url:, requirement:, products:)
+  SPM.dependency(spec, url: url, requirement: requirement, products: products)
+end
+
 # It returns the default flags.
 # deprecated.
 def get_default_flags()
@@ -263,13 +277,87 @@ def get_default_flags()
   return ReactNativePodsUtils.get_default_flags()
 end
 
-# This method returns an hash with the folly version and the folli compiler flags
+# This method returns an hash with the folly version, folly git url and the folly compiler flags
 # that can be used to configure libraries.
 # In this way, we can update those values in react native, and all the libraries will benefit
 # from it.
-# @return an hash with the `:version` and `:compiler_flags` fields.
+# @return an hash with the `:version`, `:git` and `:compiler_flags` fields.
 def get_folly_config()
   return Helpers::Constants.folly_config
+end
+
+# This method returns an hash with the glog git url
+# that can be used to configure libraries.
+# @return an hash with the `:git` field.
+def get_glog_config()
+  return Helpers::Constants.glog_config
+end
+
+# This method returns an hash with the fmt git url
+# that can be used to configure libraries.
+# @return an hash with the `:git` field.
+def get_fmt_config()
+  return Helpers::Constants.fmt_config
+end
+
+# This method returns an hash with the double conversion git url
+# that can be used to configure libraries.
+# @return an hash with the `:git` field.
+def get_double_conversion_config()
+  return Helpers::Constants.double_conversion_config
+end
+
+# This method returns an hash with the double conversion git url
+# that can be used to configure libraries.
+# @return an hash with the `:git` field.
+def get_boost_config()
+  return Helpers::Constants.boost_config
+end
+
+# This method returns an hash with the socket rocket version
+# @return an hash with the `:version` field.
+def get_socket_rocket_config()
+  return Helpers::Constants.socket_rocket_config
+end
+
+# This method can be used to set the glog config
+# that can be used to configure libraries.
+def set_folly_config(folly_config)
+   Helpers::Constants.set_folly_config(folly_config)
+end
+
+# This method can be used to set the glog config
+# that can be used to configure libraries.
+def set_glog_config(glog_config)
+   Helpers::Constants.set_glog_config(glog_config)
+end
+
+# This method can be used to set the fmt config
+# that can be used to configure libraries.
+def set_fmt_config(fmt_config)
+   Helpers::Constants.set_fmt_config(fmt_config)
+end
+
+# This method can be used to set the double conversion config
+# that can be used to configure libraries.
+def set_double_conversion_config(double_conversion_config)
+   Helpers::Constants.set_double_conversion_config(double_conversion_config)
+end
+
+# This method can be used to set the boost config
+# that can be used to configure libraries.
+def set_boost_config(boost_config)
+   Helpers::Constants.set_boost_config(boost_config)
+end
+
+# This method can be used to set the socket rocket config
+# that can be used to configure libraries.
+def set_socket_rocket_config(socket_rocket_config)
+   Helpers::Constants.set_socket_rocket_config(socket_rocket_config)
+end
+
+def rct_cxx_language_standard()
+  return Helpers::Constants.cxx_language_standard
 end
 
 # Function that executes after React Native has been installed to configure some flags and build settings.
@@ -310,6 +398,7 @@ def react_native_post_install(
   ReactNativePodsUtils.updateOSDeploymentTarget(installer)
   ReactNativePodsUtils.set_dynamic_frameworks_flags(installer)
   ReactNativePodsUtils.add_ndebug_flag_to_pods_in_release(installer)
+  SPM.apply_on_post_install(installer)
 
   if privacy_file_aggregation_enabled
     PrivacyManifestUtils.add_aggregated_privacy_manifest(installer)

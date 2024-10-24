@@ -17,9 +17,11 @@ import android.graphics.drawable.LayerDrawable;
 import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
+import com.facebook.react.common.annotations.UnstableReactNativeAPI;
 import com.facebook.react.uimanager.drawable.CSSBackgroundDrawable;
 
 /** Class that manages the background for views and borders. */
+@UnstableReactNativeAPI
 public class ReactViewBackgroundManager {
   private static enum Overflow {
     VISIBLE,
@@ -76,8 +78,8 @@ public class ReactViewBackgroundManager {
     getOrCreateReactViewBackground().setBorderWidth(position, width);
   }
 
-  public void setBorderColor(int position, float color, float alpha) {
-    getOrCreateReactViewBackground().setBorderColor(position, color, alpha);
+  public void setBorderColor(int position, @Nullable Integer color) {
+    getOrCreateReactViewBackground().setBorderColor(position, color);
   }
 
   public int getBorderColor(int position) {
@@ -113,8 +115,8 @@ public class ReactViewBackgroundManager {
   }
 
   /**
-   * Sets the canvas clipping region to exclude any area below or outide of borders if "overflow" is
-   * set to clip to padding box.
+   * Sets the canvas clipping region to exclude any area below or outside of borders if "overflow"
+   * is set to clip to padding box.
    */
   public void maybeClipToPaddingBox(Canvas canvas) {
     if (mOverflow == Overflow.VISIBLE) {

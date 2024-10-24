@@ -11,10 +11,18 @@ import android.view.View
 import com.facebook.react.uimanager.annotations.ReactProp
 import com.facebook.react.uimanager.annotations.ReactPropGroup
 import com.facebook.testutils.shadows.ShadowSoLoader
-import com.facebook.testutils.shadows.ShadowYogaConfigProvider
-import com.facebook.testutils.shadows.ShadowYogaNodeFactory
+import com.facebook.yoga.YogaConfig
+import com.facebook.yoga.YogaConfigFactory
+import com.facebook.yoga.YogaNode
+import com.facebook.yoga.YogaNodeFactory
+import org.junit.After
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.MockedStatic
+import org.mockito.Mockito.any
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.mockStatic
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
@@ -23,10 +31,30 @@ import org.robolectric.annotation.Config
  * correct
  */
 @RunWith(RobolectricTestRunner::class)
-@Config(
-    shadows =
-        [ShadowYogaConfigProvider::class, ShadowSoLoader::class, ShadowYogaNodeFactory::class])
+@Config(shadows = [ShadowSoLoader::class])
 class ReactPropForShadowNodeSpecTest {
+
+  private lateinit var yogaNodeFactory: MockedStatic<YogaNodeFactory>
+  private lateinit var yogaConfigFactory: MockedStatic<YogaConfigFactory>
+
+  @Before
+  fun setup() {
+    yogaNodeFactory = mockStatic(YogaNodeFactory::class.java)
+    yogaNodeFactory
+        .`when`<YogaNode> { YogaNodeFactory.create(any()) }
+        .thenReturn(mock(YogaNode::class.java))
+    yogaConfigFactory = mockStatic(YogaConfigFactory::class.java)
+    yogaConfigFactory
+        .`when`<YogaConfig> { YogaConfigFactory.create() }
+        .thenReturn(mock(YogaConfig::class.java))
+  }
+
+  @After()
+  fun tearDown() {
+    yogaNodeFactory.close()
+    yogaConfigFactory.close()
+  }
+
   @Test(expected = RuntimeException::class)
   fun testMethodWithWrongNumberOfParams() {
     BaseViewManager(
@@ -109,6 +137,8 @@ class ReactPropForShadowNodeSpecTest {
           shadowNodeClass
 
       override fun createViewInstance(reactContext: ThemedReactContext): View = View(null)
+
+      override fun prepareToRecycleView(reactContext: ThemedReactContext, view: View): View? = null
 
       override fun updateExtraData(root: View, extraData: Any?) = Unit
     }

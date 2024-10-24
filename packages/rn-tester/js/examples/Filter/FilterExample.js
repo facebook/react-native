@@ -15,11 +15,13 @@ import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 import React from 'react';
 import {Image, StyleSheet, Text, View} from 'react-native';
 
+const alphaHotdog = require('../../assets/alpha-hotdog.png');
 const hotdog = require('../../assets/hotdog.jpg');
 
 type Props = $ReadOnly<{
   style: ViewStyleProp,
   testID?: string,
+  imageSource?: number,
 }>;
 
 function StaticViewAndImage(props: Props): React.Node {
@@ -40,8 +42,16 @@ function StaticViewAndImage(props: Props): React.Node {
         </View>
       </View>
       <View style={styles.container}>
-        <Image source={hotdog} style={[props.style, styles.commonImage]} />
-        <Image source={hotdog} style={styles.commonImage} />
+        <Image
+          source={props.imageSource ?? hotdog}
+          style={[props.style, styles.commonImage]}
+          resizeMode="contain"
+        />
+        <Image
+          source={props.imageSource ? props.imageSource : hotdog}
+          style={styles.commonImage}
+          resizeMode="contain"
+        />
       </View>
     </>
   );
@@ -191,6 +201,23 @@ exports.examples = [
         <StaticViewAndImage
           style={{experimental_filter: [{blur: 10}]}}
           testID="filter-test-blur"
+        />
+      );
+    },
+  },
+  {
+    title: 'Drop Shadow',
+    description: 'drop-shadow(30px 10px 4px #4444dd)',
+    name: 'drop-shadow',
+    platform: 'android',
+    render(): React.Node {
+      return (
+        <StaticViewAndImage
+          style={{
+            experimental_filter: [{dropShadow: '30px 10px 4px #4444dd'}],
+          }}
+          testID="filter-test-drop-shadow"
+          imageSource={alphaHotdog}
         />
       );
     },

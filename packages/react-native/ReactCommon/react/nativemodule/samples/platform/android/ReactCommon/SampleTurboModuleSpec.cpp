@@ -351,6 +351,15 @@ NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(
       1, __hostFunction_NativeSampleTurboModuleSpecJSI_getObjectAssert};
   methodMap_["promiseAssert"] = MethodMetadata{
       0, __hostFunction_NativeSampleTurboModuleSpecJSI_promiseAssert};
+  eventEmitterMap_["onPress"] =
+      std::make_shared<AsyncEventEmitter<folly::dynamic>>();
+  eventEmitterMap_["onClick"] =
+      std::make_shared<AsyncEventEmitter<folly::dynamic>>();
+  eventEmitterMap_["onChange"] =
+      std::make_shared<AsyncEventEmitter<folly::dynamic>>();
+  eventEmitterMap_["onSubmit"] =
+      std::make_shared<AsyncEventEmitter<folly::dynamic>>();
+  setEventEmitterCallback(params.instance);
 }
 
 std::shared_ptr<TurboModule> SampleTurboModuleSpec_ModuleProvider(

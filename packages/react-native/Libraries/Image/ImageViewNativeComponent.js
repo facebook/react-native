@@ -50,6 +50,7 @@ interface NativeCommands {
   +setIsVisible_EXPERIMENTAL: (
     viewRef: ElementRef<HostComponent<mixed>>,
     isVisible: boolean,
+    time: number,
   ) => void;
 }
 

@@ -160,15 +160,27 @@ IntersectionObserverManager::takeRecords() {
   return entries;
 }
 
+#pragma mark - UIManagerMountHook
+
 void IntersectionObserverManager::shadowTreeDidMount(
     const RootShadowNode::Shared& rootShadowNode,
-    double mountTime) noexcept {
-  updateIntersectionObservations(*rootShadowNode, mountTime);
+    double time) noexcept {
+  updateIntersectionObservations(
+      rootShadowNode->getSurfaceId(), rootShadowNode.get(), time);
 }
 
+void IntersectionObserverManager::shadowTreeDidUnmount(
+    SurfaceId surfaceId,
+    double time) noexcept {
+  updateIntersectionObservations(surfaceId, nullptr, time);
+}
+
+#pragma mark - Private methods
+
 void IntersectionObserverManager::updateIntersectionObservations(
-    const RootShadowNode& rootShadowNode,
-    double mountTime) {
+    SurfaceId surfaceId,
+    const RootShadowNode* rootShadowNode,
+    double time) {
   SystraceSection s(
       "IntersectionObserverManager::updateIntersectionObservations");
 
@@ -178,8 +190,6 @@ void IntersectionObserverManager::updateIntersectionObservations(
   {
     std::shared_lock lock(observersMutex_);
 
-    auto surfaceId = rootShadowNode.getSurfaceId();
-
     auto observersIt = observersBySurfaceId_.find(surfaceId);
     if (observersIt == observersBySurfaceId_.end()) {
       return;
@@ -187,8 +197,14 @@ void IntersectionObserverManager::updateIntersectionObservations(
 
     auto& observers = observersIt->second;
     for (auto& observer : observers) {
-      auto entry =
-          observer.updateIntersectionObservation(rootShadowNode, mountTime);
+      std::optional<IntersectionObserverEntry> entry;
+
+      if (rootShadowNode != nullptr) {
+        entry = observer.updateIntersectionObservation(*rootShadowNode, time);
+      } else {
+        entry = observer.updateIntersectionObservationForSurfaceUnmount(time);
+      }
+
       if (entry) {
         entries.push_back(std::move(entry).value());
       }

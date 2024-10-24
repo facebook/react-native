@@ -15,6 +15,7 @@ import com.facebook.react.bridge.ModuleSpec;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.config.ReactFeatureFlags;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.internal.turbomodule.core.TurboModuleManagerDelegate;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.module.model.ReactModuleInfo;
@@ -37,14 +38,7 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
 
   private final boolean mShouldEnableLegacyModuleInterop =
       ReactFeatureFlags.enableBridgelessArchitecture
-          && ReactFeatureFlags.unstable_useTurboModuleInterop;
-
-  private final boolean mShouldRouteTurboModulesThroughLegacyModuleInterop =
-      mShouldEnableLegacyModuleInterop
-          && ReactFeatureFlags.unstable_useTurboModuleInteropForAllTurboModules;
-
-  private final boolean mEnableTurboModuleSyncVoidMethods =
-      ReactFeatureFlags.unstable_enableTurboModuleSyncVoidMethods;
+          && ReactNativeFeatureFlags.useTurboModuleInterop();
 
   // Lazy Props
   private List<ReactPackage> mPackages;
@@ -145,15 +139,6 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
   @Override
   public boolean unstable_shouldEnableLegacyModuleInterop() {
     return mShouldEnableLegacyModuleInterop;
-  }
-
-  @Override
-  public boolean unstable_shouldRouteTurboModulesThroughLegacyModuleInterop() {
-    return mShouldRouteTurboModulesThroughLegacyModuleInterop;
-  }
-
-  public boolean unstable_enableSyncVoidMethods() {
-    return mEnableTurboModuleSyncVoidMethods;
   }
 
   @Nullable

@@ -12,7 +12,10 @@ import type {
   RootTag,
   TurboModule,
 } from '../../../../Libraries/TurboModule/RCTExport';
-import type {UnsafeObject} from '../../../../Libraries/Types/CodegenTypes';
+import type {
+  EventEmitter,
+  UnsafeObject,
+} from '../../../../Libraries/Types/CodegenTypes';
 
 import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboModuleRegistry';
 
@@ -21,7 +24,17 @@ export enum EnumInt {
   B = 42,
 }
 
+export type ObjectStruct = {
+  a: number,
+  b: string,
+  c?: ?string,
+};
+
 export interface Spec extends TurboModule {
+  +onPress: EventEmitter<void>;
+  +onClick: EventEmitter<string>;
+  +onChange: EventEmitter<ObjectStruct>;
+  +onSubmit: EventEmitter<ObjectStruct[]>;
   // Exported methods.
   +getConstants: () => {|
     const1: boolean,

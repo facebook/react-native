@@ -533,32 +533,32 @@ exports.description =
 exports.examples = [
   {
     title: 'Platform Colors',
-    render(): React.Element<any> {
+    render(): React.MixedElement {
       return <PlatformColorsExample />;
     },
   },
   {
     title: 'Fallback Colors',
-    render(): React.Element<any> {
+    render(): React.MixedElement {
       return <FallbackColorsExample />;
     },
   },
   {
-    title: 'Dynamic Colors', // [macOS]
-    render(): React.Element<any> {
+    title: 'iOS Dynamic Colors',
+    render(): React.MixedElement {
       return <DynamicColorsExample />;
     },
   },
   {
     title: 'Variant Colors',
-    render(): React.Element<any> {
+    render(): React.MixedElement {
       return <VariantColorsExample />;
     },
   },
   // [macOS
   {
     title: 'Color With System Effect macOS',
-    render(): React.Element<any> {
+    render(): React.Node {
       return <ColorWithSystemEffectMacOSExample />;
     },
   }, // macOS]

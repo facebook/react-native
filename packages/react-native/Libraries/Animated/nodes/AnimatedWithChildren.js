@@ -12,26 +12,29 @@
 
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 
-import NativeAnimatedHelper from '../NativeAnimatedHelper';
+import NativeAnimatedHelper from '../../../src/private/animated/NativeAnimatedHelper';
 import AnimatedNode from './AnimatedNode';
 
-export default class AnimatedWithChildren extends AnimatedNode {
-  _children: Array<AnimatedNode>;
+const {connectAnimatedNodes, disconnectAnimatedNodes} =
+  NativeAnimatedHelper.API;
 
-  constructor() {
-    super();
-    this._children = [];
-  }
+export default class AnimatedWithChildren extends AnimatedNode {
+  _children: Array<AnimatedNode> = [];
 
   __makeNative(platformConfig: ?PlatformConfig) {
     if (!this.__isNative) {
       this.__isNative = true;
-      for (const child of this._children) {
-        child.__makeNative(platformConfig);
-        NativeAnimatedHelper.API.connectAnimatedNodes(
-          this.__getNativeTag(),
-          child.__getNativeTag(),
-        );
+
+      const children = this._children;
+      let length = children.length;
+      if (length > 0) {
+        const nativeTag = this.__getNativeTag();
+
+        for (let ii = 0; ii < length; ii++) {
+          const child = children[ii];
+          child.__makeNative(platformConfig);
+          connectAnimatedNodes(nativeTag, child.__getNativeTag());
+        }
       }
     }
     super.__makeNative(platformConfig);
@@ -45,10 +48,7 @@ export default class AnimatedWithChildren extends AnimatedNode {
     if (this.__isNative) {
       // Only accept "native" animated nodes as children
       child.__makeNative(this.__getPlatformConfig());
-      NativeAnimatedHelper.API.connectAnimatedNodes(
-        this.__getNativeTag(),
-        child.__getNativeTag(),
-      );
+      connectAnimatedNodes(this.__getNativeTag(), child.__getNativeTag());
     }
   }
 
@@ -59,10 +59,7 @@ export default class AnimatedWithChildren extends AnimatedNode {
       return;
     }
     if (this.__isNative && child.__isNative) {
-      NativeAnimatedHelper.API.disconnectAnimatedNodes(
-        this.__getNativeTag(),
-        child.__getNativeTag(),
-      );
+      disconnectAnimatedNodes(this.__getNativeTag(), child.__getNativeTag());
     }
     this._children.splice(index, 1);
     if (this._children.length === 0) {
@@ -77,7 +74,9 @@ export default class AnimatedWithChildren extends AnimatedNode {
   __callListeners(value: number): void {
     super.__callListeners(value);
     if (!this.__isNative) {
-      for (const child of this._children) {
+      const children = this._children;
+      for (let ii = 0, length = children.length; ii < length; ii++) {
+        const child = children[ii];
         // $FlowFixMe[method-unbinding] added when improving typing for this parameters
         if (child.__getValue) {
           child.__callListeners(child.__getValue());

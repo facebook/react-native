@@ -78,7 +78,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
     return;
   }
 
-  UIInterfaceOrientation currentOrientation = [RCTSharedApplication() statusBarOrientation];
+  UIInterfaceOrientation currentOrientation = RCTKeyWindow().windowScene.interfaceOrientation;
   if (currentOrientation == _lastKnownOrientation) {
     return;
   }
@@ -122,6 +122,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
   if (_isPresented) {
     [_delegate dismissModalHostView:self withViewController:_modalViewController animated:[self hasAnimationType]];
     _isPresented = NO;
+    [self setVisible:NO];
   }
 }
 

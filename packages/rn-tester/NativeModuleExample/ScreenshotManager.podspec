@@ -21,6 +21,11 @@ Pod::Spec.new do |s|
 
   s.source_files    = "**/*.{h,m,mm,swift}"
   s.requires_arc    = true
+  # [macOS Restrict UIKit to iOS and visionOS
+  s.ios.framework = ["UIKit", "CoreGraphics"] 
+  s.visionos.framework = ["UIKit", "CoreGraphics"]
+  s.osx.framework = ["Appkit", "CoreGraphics"]
+  # macOS]
 
   install_modules_dependencies(s)
 end

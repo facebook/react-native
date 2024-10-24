@@ -236,7 +236,7 @@ describe('inspector proxy React Native reloads', () => {
        * We can reuse our existing debugger connection to the synthetic page.
        * Messages from the updated page will be routed to the debugger.
        */
-      device1.sendWrappedEvent('originalPage-initial', {
+      device1.sendWrappedEvent('originalPage-updated', {
         error: 'Another mock error',
       });
 

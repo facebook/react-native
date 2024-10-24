@@ -66,7 +66,7 @@ exports.description = 'Examples of focus rings enabled and disabled.';
 exports.examples = [
   {
     title: '<View> Example',
-    render: function (): React.Element<any> {
+    render: function (): React.Node {
       return <ViewFocusRingExample />;
     },
   },

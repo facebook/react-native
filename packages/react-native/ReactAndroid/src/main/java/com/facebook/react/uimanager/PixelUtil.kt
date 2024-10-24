@@ -15,6 +15,10 @@ public object PixelUtil {
   /** Convert from DIP to PX */
   @JvmStatic
   public fun toPixelFromDIP(value: Float): Float {
+    if (value.isNaN()) {
+      return Float.NaN
+    }
+
     return TypedValue.applyDimension(
         TypedValue.COMPLEX_UNIT_DIP, value, DisplayMetricsHolder.getWindowDisplayMetrics())
   }
@@ -29,6 +33,10 @@ public object PixelUtil {
   @JvmOverloads
   @JvmStatic
   public fun toPixelFromSP(value: Float, maxFontScale: Float = Float.NaN): Float {
+    if (value.isNaN()) {
+      return Float.NaN
+    }
+
     val displayMetrics = DisplayMetricsHolder.getWindowDisplayMetrics()
     val scaledValue = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, value, displayMetrics)
 
@@ -48,6 +56,10 @@ public object PixelUtil {
   /** Convert from PX to DP */
   @JvmStatic
   public fun toDIPFromPixel(value: Float): Float {
+    if (value.isNaN()) {
+      return Float.NaN
+    }
+
     return value / DisplayMetricsHolder.getWindowDisplayMetrics().density
   }
 
@@ -55,4 +67,13 @@ public object PixelUtil {
   @JvmStatic
   public fun getDisplayMetricDensity(): Float =
       DisplayMetricsHolder.getWindowDisplayMetrics().density
+
+  /* Kotlin extensions */
+  public fun Float.dpToPx(): Float = PixelUtil.toPixelFromDIP(this)
+
+  public fun Double.dpToPx(): Float = PixelUtil.toPixelFromDIP(this)
+
+  public fun Float.pxToDp(): Float = PixelUtil.toDIPFromPixel(this)
+
+  public fun Double.pxToDp(): Float = PixelUtil.toDIPFromPixel(this.toFloat())
 }

@@ -55,8 +55,28 @@ class MountingCoordinator final {
    * The method is thread-safe and can be called from any thread.
    * However, a consumer should always call it on the same thread (e.g. on the
    * main thread) or ensure sequentiality of mount transactions separately.
+   *
+   * `willPerformAsynchronously` indicates if this transaction is going to be
+   * applied asynchronously after this call. The preferred model is to apply
+   * them synchronously but Android doesn't follow it yet (it calls
+   * `pullTransaction` from the JS thread and schedules the updates
+   * asynchronously on the UI thread).
+   * If this is `true`, then `hasPendingTransactions` will continue returning
+   * `true` until `didPerformAsyncTransactions` is called.
    */
-  std::optional<MountingTransaction> pullTransaction() const;
+  std::optional<MountingTransaction> pullTransaction(
+      // TODO: Clean up this parameter when Android migrates to a pull model.
+      bool willPerformAsynchronously = false) const;
+
+  /*
+   * This method is used to notify that transactions that weren't performed
+   * synchronously when calling `pullTransaction` were effectively applied
+   * on the UI thread.
+   *
+   * NOTE: This is only necessary on Android and can be removed when it's
+   * migrated to a pull model (as the rest of platforms).
+   */
+  void didPerformAsyncTransactions() const;
 
   /*
    * Indicates if there are transactions waiting to be consumed and mounted on
@@ -116,6 +136,7 @@ class MountingCoordinator final {
   // `mountingOverrideDelegate_`.
   mutable std::mutex mutex_;
   mutable ShadowTreeRevision baseRevision_;
+  mutable bool hasPendingTransactionsOverride_{false};
   mutable std::optional<ShadowTreeRevision> lastRevision_{};
   mutable MountingTransaction::Number number_{0};
   mutable std::condition_variable signal_;

@@ -1,0 +1,166 @@
+name: test-ios-rntester
+description: Test iOS RNTester
+inputs:
+  jsengine:
+    description: Which JavaScript engine to use. Must be one of "Hermes", "JSC".
+    default: Hermes
+  use-frameworks:
+    description: The dependency building and linking strategy to use. Must be one of "StaticLibraries", "DynamicFrameworks"
+    default: StaticLibraries
+  architecture:
+    description: The React Native architecture to Test. RNTester has always Fabric enabled, but we want to run integration test with the old arch setup
+    default: NewArch
+  ruby-version:
+    description: The version of ruby that must be used
+    default: 2.6.10
+  run-unit-tests:
+    description: whether unit tests should run or not.
+    default: "false"
+  hermes-tarball-artifacts-dir:
+    description: The directory where the hermes tarball artifacts are stored
+    default: /tmp/hermes/hermes-runtime-darwin
+  flavor:
+    description: The flavor of the build. Must be one of "Debug", "Release".
+    default: Debug
+  hermes-version:
+    description: The version of hermes
+    required: true
+  react-native-version:
+    description: The version of react-native
+    required: true
+  run-e2e-tests:
+    description: Whether we want to run E2E tests or not
+    required: false
+    default: false
+
+runs:
+  using: composite
+  steps:
+    - name: Setup xcode
+      uses: ./.github/actions/setup-xcode
+    - name: Setup node.js
+      uses: ./.github/actions/setup-node
+    - name: Run yarn
+      uses: ./.github/actions/yarn-install-with-cache
+    - name: Download Hermes
+      uses: actions/download-artifact@v4
+      with:
+        name: hermes-darwin-bin-${{ inputs.flavor }}
+        path: ${{ inputs.hermes-tarball-artifacts-dir }}
+    - name: Setup ruby
+      uses: ruby/setup-ruby@v1.170.0
+      with:
+        ruby-version: ${{ inputs.ruby-version }}
+    - name: Prepare IOS Tests
+      if: ${{ inputs.run-unit-tests == 'true' }}
+      uses: ./.github/actions/prepare-ios-tests
+    - name: Set HERMES_ENGINE_TARBALL_PATH envvar if Hermes tarball is present
+      shell: bash
+      run: |
+        HERMES_TARBALL_ARTIFACTS_DIR=${{ inputs.hermes-tarball-artifacts-dir }}
+        if [ ! -d $HERMES_TARBALL_ARTIFACTS_DIR ]; then
+          echo "Hermes tarball artifacts dir not present ($HERMES_TARBALL_ARTIFACTS_DIR). Build Hermes from source."
+          exit 0
+        fi
+
+        TARBALL_FILENAME=$(node ./packages/react-native/scripts/hermes/get-tarball-name.js --buildType "${{ inputs.flavor }}")
+        TARBALL_PATH=$HERMES_TARBALL_ARTIFACTS_DIR/$TARBALL_FILENAME
+
+        echo "Looking for $TARBALL_FILENAME in $HERMES_TARBALL_ARTIFACTS_DIR"
+        echo "$TARBALL_PATH"
+
+        if [ ! -f $TARBALL_PATH ]; then
+          echo "Hermes tarball not present ($TARBALL_PATH). Build Hermes from source."
+          exit 0
+        fi
+
+        echo "Found Hermes tarball at $TARBALL_PATH"
+        echo "HERMES_ENGINE_TARBALL_PATH=$TARBALL_PATH" >> $GITHUB_ENV
+    - name: Print Hermes version
+      shell: bash
+      run: |
+        HERMES_TARBALL_ARTIFACTS_DIR=${{ inputs.hermes-tarball-artifacts-dir }}
+        TARBALL_FILENAME=$(node ./packages/react-native/scripts/hermes/get-tarball-name.js --buildType "${{ inputs.flavor }}")
+        TARBALL_PATH=$HERMES_TARBALL_ARTIFACTS_DIR/$TARBALL_FILENAME
+        if [[ -e $TARBALL_PATH ]]; then
+          tar -xf $TARBALL_PATH
+          echo 'print(HermesInternal?.getRuntimeProperties?.()["OSS Release Version"])' > test.js
+          chmod +x ./destroot/bin/hermes
+          ./destroot/bin/hermes test.js
+          rm test.js
+          rm -rf destroot
+        else
+          echo 'No Hermes tarball found.'
+        fi
+    - name: Setup xcode build cache
+      uses: ./.github/actions/setup-xcode-build-cache
+      with:
+        hermes-version: ${{ inputs.hermes-version }}
+    - name: Install CocoaPods dependencies
+      shell: bash
+      run: |
+        if [[ ${{ inputs.jsengine }} == "JSC" ]]; then
+          export USE_HERMES=0
+        else
+          export HERMES_ENGINE_TARBALL_PATH=$HERMES_ENGINE_TARBALL_PATH
+        fi
+
+        if [[ ${{ inputs.use-frameworks }} == "DynamicFrameworks" ]]; then
+          export USE_FRAMEWORKS=dynamic
+        fi
+
+        if [[ ${{ inputs.architecture }} == "NewArch" ]]; then
+          export RCT_NEW_ARCH_ENABLED=1
+        fi
+
+        cd packages/rn-tester
+
+        bundle install
+        bundle exec pod install
+    - name: Build RNTester
+      if: ${{ inputs.run-unit-tests != 'true' && inputs.run-e2e-tests == 'false' }}
+      shell: bash
+      run: |
+        set -o pipefail && xcodebuild build \
+          -workspace packages/rn-tester/RNTesterPods.xcworkspace \
+          -scheme RNTester \
+          -sdk iphonesimulator | xcbeautify
+    - name: Build RNTester (E2E Tests)
+      shell: bash
+      if: ${{ inputs.run-e2e-tests == 'true' }}
+      run: |
+        set -o pipefail && xcodebuild \
+          -scheme "RNTester" \
+          -workspace packages/rn-tester/RNTesterPods.xcworkspace \
+          -configuration "Release" \
+          -sdk "iphonesimulator" \
+          -destination "generic/platform=iOS Simulator" \
+          -derivedDataPath "/tmp/RNTesterBuild" | xcbeautify
+
+          echo "Print path to *.app file"
+          find "/tmp/RNTesterBuild" -type d -name "*.app"
+    - name: "Run Tests: iOS Unit and Integration Tests"
+      if: ${{ inputs.run-unit-tests == 'true' }}
+      shell: bash
+      run: yarn test-ios
+
+    - name: Zip Derived data folder
+      if: ${{ inputs.run-unit-tests == 'true' }}
+      shell: bash
+      run: |
+        echo "zipping tests results"
+        cd /Users/distiller/Library/Developer/Xcode
+        XCRESULT_PATH=$(find . -name '*.xcresult')
+        tar -zcvf xcresults.tar.gz $XCRESULT_PATH
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4.3.4
+      if: ${{ inputs.run-unit-tests == 'true' }}
+      with:
+        name: xcresults
+        path: /Users/distiller/Library/Developer/Xcode/xcresults.tar.gz
+    - name: Store test results
+      if: ${{ inputs.run-unit-tests == 'true' }}
+      uses: actions/upload-artifact@v4.3.4
+      with:
+        name: test-results
+        path: ./reports/junit

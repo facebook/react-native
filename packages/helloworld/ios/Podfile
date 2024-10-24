@@ -10,7 +10,7 @@ if linkage != nil
 end
 
 target 'HelloWorld' do
-  config = use_native_modules!
+  config = use_native_modules!(['sh', '../scripts/config.sh'])
 
   use_react_native!(
     :path => "../../react-native",

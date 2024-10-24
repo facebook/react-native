@@ -256,33 +256,11 @@ jsi::Value UIManagerBinding::get(
                     stringFromValue(runtime, arguments[1]),
                     surfaceIdFromValue(runtime, arguments[2]),
                     RawProps(runtime, arguments[3]),
-                    std::move(instanceHandle)));
+                    std::move(instanceHandle)),
+                true);
           } catch (const std::logic_error& ex) {
             LOG(FATAL) << "logic_error in createNode: " << ex.what();
           }
-        });
-  }
-
-  // Semantic: Clones the node with *same* props and *same* children.
-  if (methodName == "cloneNode") {
-    auto paramCount = 1;
-    return jsi::Function::createFromHostFunction(
-        runtime,
-        name,
-        paramCount,
-        [uiManager, methodName, paramCount](
-            jsi::Runtime& runtime,
-            const jsi::Value& /*thisValue*/,
-            const jsi::Value* arguments,
-            size_t count) -> jsi::Value {
-          validateArgumentCount(runtime, methodName, paramCount, count);
-
-          return valueFromShadowNode(
-              runtime,
-              uiManager->cloneNode(
-                  *shadowNodeFromValue(runtime, arguments[0]),
-                  nullptr,
-                  RawProps()));
         });
   }
 
@@ -369,7 +347,8 @@ jsi::Value UIManagerBinding::get(
                   *shadowNodeFromValue(runtime, arguments[0]),
                   count > 1 ? shadowNodeListFromValue(runtime, arguments[1])
                             : ShadowNode::emptySharedShadowNodeSharedList(),
-                  RawProps()));
+                  RawProps()),
+              true);
         });
   }
 
@@ -392,7 +371,8 @@ jsi::Value UIManagerBinding::get(
               uiManager->cloneNode(
                   *shadowNodeFromValue(runtime, arguments[0]),
                   nullptr,
-                  RawProps(runtime, arguments[1])));
+                  RawProps(runtime, arguments[1])),
+              true);
         });
   }
 
@@ -420,7 +400,8 @@ jsi::Value UIManagerBinding::get(
                   hasChildrenArg
                       ? shadowNodeListFromValue(runtime, arguments[1])
                       : ShadowNode::emptySharedShadowNodeSharedList(),
-                  RawProps(runtime, arguments[hasChildrenArg ? 2 : 1])));
+                  RawProps(runtime, arguments[hasChildrenArg ? 2 : 1])),
+              true);
         });
   }
 
@@ -483,14 +464,11 @@ jsi::Value UIManagerBinding::get(
 
   if (methodName == "completeRoot") {
     auto paramCount = 2;
-    std::weak_ptr<UIManager> weakUIManager = uiManager_;
-    // Enhanced version of the method that uses `backgroundExecutor` and
-    // captures a shared pointer to `UIManager`.
     return jsi::Function::createFromHostFunction(
         runtime,
         name,
         paramCount,
-        [weakUIManager, uiManager, methodName, paramCount](
+        [uiManager, methodName, paramCount](
             jsi::Runtime& runtime,
             const jsi::Value& /*thisValue*/,
             const jsi::Value* arguments,
@@ -501,47 +479,13 @@ jsi::Value UIManagerBinding::get(
               RuntimeSchedulerBinding::getBinding(runtime);
           auto surfaceId = surfaceIdFromValue(runtime, arguments[0]);
 
-          if (uiManager->backgroundExecutor_) {
-            auto weakShadowNodeList =
-                weakShadowNodeListFromValue(runtime, arguments[1]);
-            static std::atomic_uint_fast8_t completeRootEventCounter{0};
-            static std::atomic_uint_fast32_t mostRecentSurfaceId{0};
-            completeRootEventCounter += 1;
-            mostRecentSurfaceId = surfaceId;
-            uiManager->backgroundExecutor_(
-                [weakUIManager,
-                 weakShadowNodeList,
-                 surfaceId,
-                 eventCount = completeRootEventCounter.load()] {
-                  auto shouldYield = [=]() -> bool {
-                    // If `completeRootEventCounter` was incremented, another
-                    // `completeSurface` call has been scheduled and current
-                    // `completeSurface` should yield to it.
-                    return completeRootEventCounter > eventCount &&
-                        mostRecentSurfaceId == surfaceId;
-                  };
-                  auto shadowNodeList =
-                      shadowNodeListFromWeakList(weakShadowNodeList);
-                  auto strongUIManager = weakUIManager.lock();
-                  if (shadowNodeList && strongUIManager) {
-                    strongUIManager->completeSurface(
-                        surfaceId,
-                        shadowNodeList,
-                        {.enableStateReconciliation = true,
-                         .mountSynchronously = false,
-                         .shouldYield = shouldYield});
-                  }
-                });
-          } else {
-            auto shadowNodeList =
-                shadowNodeListFromValue(runtime, arguments[1]);
-            uiManager->completeSurface(
-                surfaceId,
-                shadowNodeList,
-                {.enableStateReconciliation = true,
-                 .mountSynchronously = false,
-                 .shouldYield = nullptr});
-          }
+          auto shadowNodeList = shadowNodeListFromValue(runtime, arguments[1]);
+          uiManager->completeSurface(
+              surfaceId,
+              shadowNodeList,
+              {.enableStateReconciliation = true,
+               .mountSynchronously = false,
+               .shouldYield = nullptr});
 
           return jsi::Value::undefined();
         });

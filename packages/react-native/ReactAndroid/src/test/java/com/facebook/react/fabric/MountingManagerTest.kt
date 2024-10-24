@@ -13,7 +13,6 @@ import com.facebook.react.bridge.ReactTestHelper.createMockCatalystInstance
 import com.facebook.react.fabric.mounting.MountingManager
 import com.facebook.react.fabric.mounting.MountingManager.MountItemExecutor
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsForTests
-import com.facebook.react.uimanager.IllegalViewOperationException
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.ViewManager
 import com.facebook.react.uimanager.ViewManagerRegistry
@@ -68,11 +67,13 @@ class MountingManagerTest {
     mountingManager.startSurface(rootReactTag, themedReactContext, reactRootView)
   }
 
-  @Test(expected = IllegalViewOperationException::class)
   fun unableToAddHandledRootView() {
     val reactRootView = ReactRootView(themedReactContext)
     reactRootView.id = 1234567
     val rootReactTag = nextRootTag++
+
+    // As above this is also a SoftException.
+    // See https://github.com/facebook/react-native/pull/34785 for more context.
     mountingManager.startSurface(rootReactTag, themedReactContext, reactRootView)
   }
 }

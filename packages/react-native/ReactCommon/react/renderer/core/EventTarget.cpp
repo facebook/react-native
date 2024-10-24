@@ -13,8 +13,11 @@ namespace facebook::react {
 
 using Tag = EventTarget::Tag;
 
-EventTarget::EventTarget(InstanceHandle::Shared instanceHandle)
+EventTarget::EventTarget(
+    InstanceHandle::Shared instanceHandle,
+    SurfaceId surfaceId)
     : instanceHandle_(std::move(instanceHandle)),
+      surfaceId_(surfaceId),
       strongInstanceHandle_(jsi::Value::null()) {}
 
 void EventTarget::setEnabled(bool enabled) const {
@@ -62,6 +65,10 @@ jsi::Value EventTarget::getInstanceHandle(jsi::Runtime& runtime) const {
   }
 
   return jsi::Value(runtime, strongInstanceHandle_);
+}
+
+SurfaceId EventTarget::getSurfaceId() const {
+  return surfaceId_;
 }
 
 Tag EventTarget::getTag() const {

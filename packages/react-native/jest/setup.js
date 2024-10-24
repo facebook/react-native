@@ -146,17 +146,17 @@ jest
         remove: jest.fn(),
       })),
       announceForAccessibility: jest.fn(),
-      isAccessibilityServiceEnabled: jest.fn(),
-      isBoldTextEnabled: jest.fn(),
-      isGrayscaleEnabled: jest.fn(),
-      isInvertColorsEnabled: jest.fn(),
-      isReduceMotionEnabled: jest.fn(),
-      prefersCrossFadeTransitions: jest.fn(),
-      isReduceTransparencyEnabled: jest.fn(),
+      isAccessibilityServiceEnabled: jest.fn(() => Promise.resolve(false)),
+      isBoldTextEnabled: jest.fn(() => Promise.resolve(false)),
+      isGrayscaleEnabled: jest.fn(() => Promise.resolve(false)),
+      isInvertColorsEnabled: jest.fn(() => Promise.resolve(false)),
+      isReduceMotionEnabled: jest.fn(() => Promise.resolve(false)),
+      prefersCrossFadeTransitions: jest.fn(() => Promise.resolve(false)),
+      isReduceTransparencyEnabled: jest.fn(() => Promise.resolve(false)),
       isScreenReaderEnabled: jest.fn(() => Promise.resolve(false)),
       setAccessibilityFocus: jest.fn(),
       sendAccessibilityEvent: jest.fn(),
-      getRecommendedTimeoutMillis: jest.fn(),
+      getRecommendedTimeoutMillis: jest.fn(() => Promise.resolve(false)),
     },
   }))
   .mock('../Libraries/Components/Clipboard/Clipboard', () => ({
@@ -287,7 +287,14 @@ jest
     },
     PlatformConstants: {
       getConstants() {
-        return {};
+        return {
+          reactNativeVersion: {
+            major: 1000,
+            minor: 0,
+            patch: 0,
+            prerelease: undefined,
+          },
+        };
       },
     },
     PushNotificationManager: {
@@ -385,10 +392,6 @@ jest
   .mock('../Libraries/ReactNative/requireNativeComponent', () => {
     return jest.requireActual('./mockNativeComponent');
   })
-  .mock(
-    '../Libraries/Utilities/verifyComponentAttributeEquivalence',
-    () => function () {},
-  )
   .mock('../Libraries/Vibration/Vibration', () => ({
     vibrate: jest.fn(),
     cancel: jest.fn(),

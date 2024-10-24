@@ -36,7 +36,6 @@ class JSI_EXPORT JavaTurboModule : public TurboModule {
     jni::alias_ref<jobject> instance;
     std::shared_ptr<CallInvoker> jsInvoker;
     std::shared_ptr<NativeMethodCallInvoker> nativeMethodCallInvoker;
-    bool shouldVoidMethodsExecuteSync;
   };
 
   JavaTurboModule(const InitParams& params);
@@ -51,11 +50,12 @@ class JSI_EXPORT JavaTurboModule : public TurboModule {
       size_t argCount,
       jmethodID& cachedMethodID);
 
+  void setEventEmitterCallback(jni::alias_ref<jobject> instance);
+
  private:
   // instance_ can be of type JTurboModule, or JNativeModule
   jni::global_ref<jobject> instance_;
   std::shared_ptr<NativeMethodCallInvoker> nativeMethodCallInvoker_;
-  bool shouldVoidMethodsExecuteSync_;
 };
 
 } // namespace facebook::react

@@ -330,7 +330,7 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
     flexBasis.recycle();
   }
 
-  @ReactProp(name = ViewProps.ASPECT_RATIO, defaultFloat = YogaConstants.UNDEFINED)
+  @ReactProp(name = ViewProps.ASPECT_RATIO, defaultFloat = Float.NaN)
   public void setAspectRatio(float aspectRatio) {
     setStyleAspectRatio(aspectRatio);
   }
@@ -863,7 +863,7 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
         ViewProps.BORDER_LEFT_WIDTH,
         ViewProps.BORDER_RIGHT_WIDTH,
       },
-      defaultFloat = YogaConstants.UNDEFINED)
+      defaultFloat = Float.NaN)
   public void setBorderWidths(int index, float borderWidth) {
     if (isVirtual()) {
       return;

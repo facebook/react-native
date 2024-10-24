@@ -21,6 +21,8 @@
 #import <jsinspector-modern/ReactCdp.h>
 #import <optional>
 #import "RCTDevLoadingViewProtocol.h"
+#import "RCTInspectorNetworkHelper.h"
+#import "RCTInspectorUtils.h"
 #import "RCTJSThread.h"
 #import "RCTLog.h"
 #import "RCTModuleData.h"
@@ -182,14 +184,23 @@ void RCTUIManagerSetDispatchAccessibilityManagerInitOntoMain(BOOL enabled)
 class RCTBridgeHostTargetDelegate : public facebook::react::jsinspector_modern::HostTargetDelegate {
  public:
   RCTBridgeHostTargetDelegate(RCTBridge *bridge)
-      : bridge_(bridge), pauseOverlayController_([[RCTPausedInDebuggerOverlayController alloc] init])
+      : bridge_(bridge),
+        pauseOverlayController_([[RCTPausedInDebuggerOverlayController alloc] init]),
+        networkHelper_([[RCTInspectorNetworkHelper alloc] init])
   {
   }
 
   facebook::react::jsinspector_modern::HostTargetMetadata getMetadata() override
   {
+    auto metadata = [RCTInspectorUtils getHostMetadata];
+
     return {
+        .appDisplayName = [metadata.appDisplayName UTF8String],
+        .appIdentifier = [metadata.appIdentifier UTF8String],
+        .deviceName = [metadata.deviceName UTF8String],
         .integrationName = "iOS Bridge (RCTBridge)",
+        .platform = [metadata.platform UTF8String],
+        .reactNativeVersion = [metadata.reactNativeVersion UTF8String],
     };
   }
 
@@ -222,9 +233,16 @@ class RCTBridgeHostTargetDelegate : public facebook::react::jsinspector_modern::
     }
   }
 
+  void loadNetworkResource(const RCTInspectorLoadNetworkResourceRequest &params, RCTInspectorNetworkExecutor executor)
+      override
+  {
+    [networkHelper_ loadNetworkResourceWithParams:params executor:executor];
+  }
+
  private:
   __weak RCTBridge *bridge_;
   RCTPausedInDebuggerOverlayController *pauseOverlayController_;
+  RCTInspectorNetworkHelper *networkHelper_;
 };
 
 @interface RCTBridge () <RCTReloadListener>
@@ -455,7 +473,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
         });
     __weak RCTBridge *weakSelf = self;
     _inspectorPageId = facebook::react::jsinspector_modern::getInspectorInstance().addPage(
-        "React Native Bridge (Experimental)",
+        "React Native Bridge",
         /* vm */ "",
         [weakSelf](std::unique_ptr<facebook::react::jsinspector_modern::IRemoteConnection> remote)
             -> std::unique_ptr<facebook::react::jsinspector_modern::ILocalConnection> {

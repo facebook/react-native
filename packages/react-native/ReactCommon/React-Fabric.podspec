@@ -35,7 +35,7 @@ Pod::Spec.new do |s|
   s.source                 = source
   s.source_files           = "dummyFile.cpp"
   s.pod_target_xcconfig = { "USE_HEADERMAP" => "YES",
-                            "CLANG_CXX_LANGUAGE_STANDARD" => "c++20",
+                            "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
                             "DEFINES_MODULE" => "YES" }
 
   if ENV['USE_FRAMEWORKS']

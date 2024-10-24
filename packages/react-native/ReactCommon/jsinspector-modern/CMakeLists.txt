@@ -7,14 +7,18 @@ cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
 add_compile_options(
+        $<$<CONFIG:Debug>:-DHERMES_ENABLE_DEBUGGER=1>
         -fexceptions
         -std=c++20)
+
+include(${REACT_ANDROID_DIR}/src/main/jni/first-party/jni-lib-merge/SoMerging-utils.cmake)
 
 file(GLOB jsinspector_SRC CONFIGURE_DEPENDS *.cpp)
 # jsinspector contains singletons that hold app-global state (InspectorFlags, InspectorImpl).
 # Placing it in a shared library makes the singletons safe to use from arbitrary shared libraries
 # (even ones that don't depend on one another).
-add_library(jsinspector SHARED ${jsinspector_SRC})
+add_library(jsinspector OBJECT ${jsinspector_SRC})
+target_merge_so(jsinspector)
 
 target_include_directories(jsinspector PUBLIC ${REACT_COMMON_DIR})
 
@@ -23,4 +27,5 @@ target_link_libraries(jsinspector
         glog
         react_featureflags
         runtimeexecutor
+        reactperflogger
 )

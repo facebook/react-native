@@ -30,7 +30,7 @@ type Options = $ReadOnly<{
 }>;
 
 /**
- * Open the JavaScript debugger for a given CDP target (direct Hermes debugging).
+ * Open the debugger frontend for a given CDP target.
  *
  * Currently supports Hermes targets, opening debugger websocket URL in Chrome
  * DevTools.
@@ -59,7 +59,14 @@ export default function openDebuggerMiddleware({
         appId,
         device,
         launchId,
-      }: {appId?: string, device?: string, launchId?: string, ...} = query;
+        target: targetId,
+      }: {
+        appId?: string,
+        device?: string,
+        launchId?: string,
+        target?: string,
+        ...
+      } = query;
 
       const targets = inspectorProxy.getPageDescriptions().filter(
         // Only use targets with better reloading support
@@ -73,32 +80,34 @@ export default function openDebuggerMiddleware({
       const launchType: 'launch' | 'redirect' =
         req.method === 'POST' ? 'launch' : 'redirect';
 
-      if (typeof appId === 'string' || typeof device === 'string') {
+      if (
+        typeof targetId === 'string' ||
+        typeof appId === 'string' ||
+        typeof device === 'string'
+      ) {
         logger?.info(
           (launchType === 'launch' ? 'Launching' : 'Redirecting to') +
-            ' JS debugger (experimental)...',
+            ' DevTools...',
         );
-        if (typeof device === 'string') {
-          target = targets.find(
-            _target => _target.reactNative.logicalDeviceId === device,
-          );
-        }
-        if (!target && typeof appId === 'string') {
-          target = targets.find(_target => _target.description === appId);
-        }
-      } else {
+        target = targets.find(
+          _target =>
+            (targetId == null || _target.id === targetId) &&
+            (appId == null || _target.description === appId) &&
+            (device == null || _target.reactNative.logicalDeviceId === device),
+        );
+      } else if (targets.length > 0) {
         logger?.info(
           (launchType === 'launch' ? 'Launching' : 'Redirecting to') +
-            ' JS debugger for first available target...',
+            ` DevTools${targets.length === 1 ? '' : ' for most recently connected target'}...`,
         );
-        target = targets[0];
+        target = targets[targets.length - 1];
       }
 
       if (!target) {
         res.writeHead(404);
-        res.end('Unable to find Chrome DevTools inspector target');
+        res.end('Unable to find debugger target');
         logger?.warn(
-          'No compatible apps connected. JavaScript debugging can only be used with the Hermes engine.',
+          'No compatible apps connected. React Native DevTools can only be used with the Hermes engine.',
         );
         eventReporter?.logEvent({
           type: 'launch_debugger_frontend',
@@ -151,7 +160,7 @@ export default function openDebuggerMiddleware({
         return;
       } catch (e) {
         logger?.error(
-          'Error launching JS debugger: ' + e.message ?? 'Unknown error',
+          'Error launching DevTools: ' + e.message ?? 'Unknown error',
         );
         res.writeHead(500);
         res.end();

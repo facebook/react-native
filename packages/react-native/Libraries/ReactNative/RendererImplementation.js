@@ -8,15 +8,19 @@
  * @flow strict-local
  */
 
-import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
+import type {
+  HostComponent,
+  InternalInstanceHandle,
+  Node,
+} from '../Renderer/shims/ReactNativeTypes';
 import type ReactFabricHostComponent from './ReactFabricPublicInstance/ReactFabricHostComponent';
-import type {Element, ElementRef, ElementType} from 'react';
+import type {ElementRef, ElementType} from 'react';
 
 import {
   onCaughtError,
   onRecoverableError,
   onUncaughtError,
-} from '../Core/ErrorHandlers';
+} from '../../src/private/renderer/errorhandling/ErrorHandlers';
 import {type RootTag} from './RootTag';
 export function renderElement({
   element,
@@ -24,7 +28,7 @@ export function renderElement({
   useFabric,
   useConcurrentRoot,
 }: {
-  element: Element<ElementType>,
+  element: React.MixedElement,
   rootTag: number,
   useFabric: boolean,
   useConcurrentRoot: boolean,
@@ -137,5 +141,23 @@ export function isChildPublicInstance(
   return require('../Renderer/shims/ReactNative').isChildPublicInstance(
     parentInstance,
     childInstance,
+  );
+}
+
+export function getNodeFromInternalInstanceHandle(
+  internalInstanceHandle: InternalInstanceHandle,
+): ?Node {
+  // This is only available in Fabric
+  return require('../Renderer/shims/ReactFabric').getNodeFromInternalInstanceHandle(
+    internalInstanceHandle,
+  );
+}
+
+export function getPublicInstanceFromInternalInstanceHandle(
+  internalInstanceHandle: InternalInstanceHandle,
+): mixed /*PublicInstance | PublicTextInstance | null*/ {
+  // This is only available in Fabric
+  return require('../Renderer/shims/ReactFabric').getPublicInstanceFromInternalInstanceHandle(
+    internalInstanceHandle,
   );
 }

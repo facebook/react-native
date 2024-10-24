@@ -9,35 +9,36 @@
  * @oncall react_native
  */
 
+import type {JSONSerializable} from '../types';
 import type {Commands, Events} from './protocol';
 
 // Note: A CDP event is a JSON-RPC notification with no `id` member.
-export type CDPEvent<TEvent: $Keys<Events> = 'unknown'> = $ReadOnly<{
+export type CDPEvent<TEvent: $Keys<Events> = 'unknown'> = {
   method: TEvent,
   params: Events[TEvent],
-}>;
+};
 
-export type CDPRequest<TCommand: $Keys<Commands> = 'unknown'> = $ReadOnly<{
+export type CDPRequest<TCommand: $Keys<Commands> = 'unknown'> = {
   method: TCommand,
   params: Commands[TCommand]['paramsType'],
   id: number,
-}>;
+};
 
 export type CDPResponse<TCommand: $Keys<Commands> = 'unknown'> =
-  | $ReadOnly<{
+  | {
       result: Commands[TCommand]['resultType'],
       id: number,
-    }>
-  | $ReadOnly<{
+    }
+  | {
       error: CDPRequestError,
       id: number,
-    }>;
+    };
 
-export type CDPRequestError = $ReadOnly<{
+export type CDPRequestError = {
   code: number,
   message: string,
-  data?: mixed,
-}>;
+  data?: JSONSerializable,
+};
 
 export type CDPClientMessage =
   | CDPRequest<'Debugger.getScriptSource'>

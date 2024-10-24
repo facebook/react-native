@@ -36,10 +36,6 @@ if (__DEV__) {
     register: ReactRefreshRuntime.register,
 
     performReactRefresh() {
-      if (ReactRefreshRuntime.hasUnrecoverableErrors()) {
-        DevSettings.reload('Fast Refresh - Unrecoverable');
-        return;
-      }
       ReactRefreshRuntime.performReactRefresh();
       DevSettings.onFastRefresh();
     },

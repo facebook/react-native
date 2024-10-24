@@ -8,9 +8,13 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 
 add_compile_options(-fexceptions -frtti -std=c++20 -Wall -DLOG_TAG=\"ReactNative\")
 
+include(${REACT_ANDROID_DIR}/src/main/jni/first-party/jni-lib-merge/SoMerging-utils.cmake)
+
 file(GLOB react_devsupportjni_SRC CONFIGURE_DEPENDS *.cpp)
 
-add_library(react_devsupportjni SHARED ${react_devsupportjni_SRC})
+add_library(react_devsupportjni OBJECT ${react_devsupportjni_SRC})
+
+target_merge_so(react_devsupportjni)
 
 target_include_directories(react_devsupportjni PUBLIC .)
 

@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <react/timing/primitives.h>
 #include "BoundedConsumableBuffer.h"
 
 #include <array>
@@ -20,8 +21,6 @@
 
 namespace facebook::react {
 
-using DOMHighResTimeStamp = double;
-
 using PerformanceEntryInteractionId = uint32_t;
 
 enum class PerformanceEntryType {
@@ -29,7 +28,8 @@ enum class PerformanceEntryType {
   MARK = 1,
   MEASURE = 2,
   EVENT = 3,
-  _NEXT = 4,
+  LONGTASK = 4,
+  _NEXT = 5,
 };
 
 struct PerformanceEntry {
@@ -80,6 +80,8 @@ struct PerformanceEntryBuffer {
 
 constexpr size_t NUM_PERFORMANCE_ENTRY_TYPES =
     (size_t)PerformanceEntryType::_NEXT - 1; // Valid types start from 1.
+
+constexpr DOMHighResTimeStamp LONG_TASK_DURATION_THRESHOLD_MS = 50.0;
 
 class PerformanceEntryReporter {
  public:
@@ -135,7 +137,7 @@ class PerformanceEntryReporter {
       const std::optional<double>& startTime = std::nullopt);
 
   void measure(
-      const std::string& name,
+      const std::string_view& name,
       double startTime,
       double endTime,
       const std::optional<double>& duration = std::nullopt,
@@ -157,6 +159,8 @@ class PerformanceEntryReporter {
       double processingStart,
       double processingEnd,
       uint32_t interactionId);
+
+  void logLongTaskEntry(double startTime, double duration);
 
   const std::unordered_map<std::string, uint32_t>& getEventCounts() const {
     return eventCounts_;

@@ -49,10 +49,19 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.build.ReactBuildConfig;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
+import com.facebook.react.uimanager.BackgroundStyleApplicator;
+import com.facebook.react.uimanager.LengthPercentage;
+import com.facebook.react.uimanager.LengthPercentageType;
+import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate;
 import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.uimanager.style.BorderRadiusProp;
+import com.facebook.react.uimanager.style.BorderStyle;
+import com.facebook.react.uimanager.style.LogicalEdge;
+import com.facebook.react.uimanager.style.Overflow;
 import com.facebook.react.views.text.ReactTextUpdate;
 import com.facebook.react.views.text.ReactTypefaceUtils;
 import com.facebook.react.views.text.TextAttributes;
@@ -118,8 +127,11 @@ public class ReactEditText extends AppCompatEditText {
   private int mFontWeight = ReactConstants.UNSET;
   private int mFontStyle = ReactConstants.UNSET;
   private boolean mAutoFocus = false;
+  private boolean mContextMenuHidden = false;
   private boolean mDidAttachToWindow = false;
+  private boolean mSelectTextOnFocus = false;
   private @Nullable String mPlaceholder = null;
+  private Overflow mOverflow = Overflow.VISIBLE;
 
   private final ReactViewBackgroundManager mReactBackgroundManager;
 
@@ -191,6 +203,9 @@ public class ReactEditText extends AppCompatEditText {
            */
           @Override
           public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            if (mContextMenuHidden) {
+              return false;
+            }
             menu.removeItem(android.R.id.pasteAsPlainText);
             return true;
           }
@@ -234,6 +249,12 @@ public class ReactEditText extends AppCompatEditText {
   @Override
   protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
     onContentSizeChange();
+    if (mSelectTextOnFocus && isFocused()) {
+      // Explicitly call this method to select text when layout is drawn
+      selectAll();
+      // Prevent text on being selected for next layout pass
+      mSelectTextOnFocus = false;
+    }
   }
 
   @Override
@@ -1066,31 +1087,66 @@ public class ReactEditText extends AppCompatEditText {
 
   @Override
   public void setBackgroundColor(int color) {
-    mReactBackgroundManager.setBackgroundColor(color);
+    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
+      BackgroundStyleApplicator.setBackgroundColor(this, color);
+    } else {
+      mReactBackgroundManager.setBackgroundColor(color);
+    }
   }
 
   public void setBorderWidth(int position, float width) {
-    mReactBackgroundManager.setBorderWidth(position, width);
+    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
+      BackgroundStyleApplicator.setBorderWidth(
+          this, LogicalEdge.values()[position], PixelUtil.toDIPFromPixel(width));
+    } else {
+      mReactBackgroundManager.setBorderWidth(position, width);
+    }
   }
 
-  public void setBorderColor(int position, float color, float alpha) {
-    mReactBackgroundManager.setBorderColor(position, color, alpha);
+  public void setBorderColor(int position, @Nullable Integer color) {
+    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
+      BackgroundStyleApplicator.setBorderColor(this, LogicalEdge.values()[position], color);
+    } else {
+      mReactBackgroundManager.setBorderColor(position, color);
+    }
   }
 
   public int getBorderColor(int position) {
-    return mReactBackgroundManager.getBorderColor(position);
+    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
+      @Nullable
+      Integer borderColor =
+          BackgroundStyleApplicator.getBorderColor(this, LogicalEdge.values()[position]);
+      return borderColor == null ? Color.TRANSPARENT : borderColor;
+    } else {
+      return mReactBackgroundManager.getBorderColor(position);
+    }
   }
 
   public void setBorderRadius(float borderRadius) {
-    mReactBackgroundManager.setBorderRadius(borderRadius);
+    setBorderRadius(borderRadius, BorderRadiusProp.BORDER_RADIUS.ordinal());
   }
 
   public void setBorderRadius(float borderRadius, int position) {
-    mReactBackgroundManager.setBorderRadius(borderRadius, position);
+    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
+      @Nullable
+      LengthPercentage radius =
+          Float.isNaN(borderRadius)
+              ? null
+              : new LengthPercentage(
+                  PixelUtil.toDIPFromPixel(borderRadius), LengthPercentageType.POINT);
+      BackgroundStyleApplicator.setBorderRadius(this, BorderRadiusProp.values()[position], radius);
+    } else {
+      mReactBackgroundManager.setBorderRadius(borderRadius, position);
+    }
   }
 
   public void setBorderStyle(@Nullable String style) {
-    mReactBackgroundManager.setBorderStyle(style);
+    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
+      BackgroundStyleApplicator.setBorderStyle(
+          this, style == null ? null : BorderStyle.fromString(style));
+    } else {
+      mReactBackgroundManager.setBorderStyle(style);
+    }
   }
 
   public void setLetterSpacingPt(float letterSpacingPt) {
@@ -1119,6 +1175,15 @@ public class ReactEditText extends AppCompatEditText {
 
   public void setAutoFocus(boolean autoFocus) {
     mAutoFocus = autoFocus;
+  }
+
+  public void setSelectTextOnFocus(boolean selectTextOnFocus) {
+    super.setSelectAllOnFocus(selectTextOnFocus);
+    mSelectTextOnFocus = selectTextOnFocus;
+  }
+
+  public void setContextMenuHidden(boolean contextMenuHidden) {
+    mContextMenuHidden = contextMenuHidden;
   }
 
   protected void applyTextAttributes() {
@@ -1228,12 +1293,27 @@ public class ReactEditText extends AppCompatEditText {
   }
 
   public void setOverflow(@Nullable String overflow) {
+    if (overflow == null) {
+      mOverflow = Overflow.VISIBLE;
+    } else {
+      @Nullable Overflow parsedOverflow = Overflow.fromString(overflow);
+      mOverflow = parsedOverflow == null ? Overflow.VISIBLE : parsedOverflow;
+    }
+
     mReactBackgroundManager.setOverflow(overflow);
+    invalidate();
   }
 
   @Override
   public void onDraw(Canvas canvas) {
-    mReactBackgroundManager.maybeClipToPaddingBox(canvas);
+    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
+      if (mOverflow != Overflow.VISIBLE) {
+        BackgroundStyleApplicator.clipToPaddingBox(this, canvas);
+      }
+    } else {
+      mReactBackgroundManager.maybeClipToPaddingBox(canvas);
+    }
+
     super.onDraw(canvas);
   }
 

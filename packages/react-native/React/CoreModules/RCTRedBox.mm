@@ -358,15 +358,11 @@
 
 - (NSInteger)bottomSafeViewHeight
 {
-#if !TARGET_OS_OSX // [macOS]
+#if TARGET_OS_MACCATALYST || TARGET_OS_OSX // [macOS]
+  return 0;
+#else
   return RCTSharedApplication().delegate.window.safeAreaInsets.bottom;
-#else // [macOS
-  if (@available(macOS 12.0, *)) {
-    return RCTSharedApplication().keyWindow.screen.safeAreaInsets.bottom;
-  } else {
-    return 0;
-  }
-#endif // macOS]
+#endif
 }
 
 RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)

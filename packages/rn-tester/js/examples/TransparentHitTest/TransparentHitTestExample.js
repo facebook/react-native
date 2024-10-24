@@ -44,7 +44,7 @@ exports.description = 'Transparent view receiving touch events';
 exports.examples = [
   {
     title: 'TransparentHitTestExample',
-    render(): React.Element<any> {
+    render(): React.MixedElement {
       return <TransparentHitTestExample />;
     },
   },

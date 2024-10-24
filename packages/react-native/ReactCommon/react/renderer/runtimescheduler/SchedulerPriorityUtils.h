@@ -41,15 +41,15 @@ static inline std::chrono::milliseconds timeoutForSchedulerPriority(
     SchedulerPriority schedulerPriority) noexcept {
   switch (schedulerPriority) {
     case SchedulerPriority::ImmediatePriority:
-      return std::chrono::milliseconds(-1);
+      return std::chrono::milliseconds(0);
     case SchedulerPriority::UserBlockingPriority:
       return std::chrono::milliseconds(250);
     case SchedulerPriority::NormalPriority:
-      return std::chrono::milliseconds(5000);
+      return std::chrono::seconds(5);
     case SchedulerPriority::LowPriority:
-      return std::chrono::milliseconds(10'000);
+      return std::chrono::seconds(10);
     case SchedulerPriority::IdlePriority:
-      return std::chrono::milliseconds::max();
+      return std::chrono::minutes(5);
   }
 }
 

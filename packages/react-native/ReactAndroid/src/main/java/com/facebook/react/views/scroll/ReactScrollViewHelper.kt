@@ -14,19 +14,19 @@ import android.graphics.Point
 import android.view.View
 import android.view.ViewGroup
 import android.widget.OverScroller
-import androidx.core.view.ViewCompat
 import com.facebook.common.logging.FLog
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.WritableNativeMap
 import com.facebook.react.common.ReactConstants
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.uimanager.PixelUtil.toDIPFromPixel
 import com.facebook.react.uimanager.StateWrapper
 import com.facebook.react.uimanager.UIManagerHelper
 import com.facebook.react.uimanager.common.UIManagerType
 import com.facebook.react.uimanager.common.ViewUtil
-import java.util.Collections
-import java.util.WeakHashMap
+import java.lang.ref.WeakReference
+import java.util.concurrent.CopyOnWriteArrayList
 
 /** Helper class that deals with emitting Scroll Events. */
 public object ReactScrollViewHelper {
@@ -46,7 +46,7 @@ public object ReactScrollViewHelper {
   public const val SNAP_ALIGNMENT_END: Int = 3
 
   // Support global native listeners for scroll events
-  private val scrollListeners = Collections.newSetFromMap(WeakHashMap<ScrollListener, Boolean>())
+  private val scrollListeners = CopyOnWriteArrayList<WeakReference<ScrollListener>>()
 
   // If all else fails, this is the hardcoded value in OverScroller.java, in AOSP.
   // The default is defined here (as of this diff):
@@ -114,7 +114,7 @@ public object ReactScrollViewHelper {
     }
     val contentView = scrollView.getChildAt(0) ?: return
     for (scrollListener in scrollListeners) {
-      scrollListener.onScroll(scrollView, scrollEventType, xVelocity, yVelocity)
+      scrollListener.get()?.onScroll(scrollView, scrollEventType, xVelocity, yVelocity)
     }
     val reactContext = scrollView.context as ReactContext
     val surfaceId = UIManagerHelper.getSurfaceId(reactContext)
@@ -147,7 +147,7 @@ public object ReactScrollViewHelper {
   @JvmStatic
   public fun emitLayoutEvent(scrollView: ViewGroup) {
     for (scrollListener in scrollListeners) {
-      scrollListener.onLayout(scrollView)
+      scrollListener.get()?.onLayout(scrollView)
     }
   }
 
@@ -205,17 +205,13 @@ public object ReactScrollViewHelper {
    * @param listener
    */
   @JvmStatic
-  public fun addScrollListener(listener: ScrollListener?) {
-    if (listener != null) {
-      scrollListeners.add(listener)
-    }
+  public fun addScrollListener(listener: ScrollListener) {
+    scrollListeners.add(WeakReference(listener))
   }
 
   @JvmStatic
-  public fun removeScrollListener(listener: ScrollListener?) {
-    if (listener != null) {
-      scrollListeners.remove(listener)
-    }
+  public fun removeScrollListener(listener: ScrollListener) {
+    scrollListeners.remove(WeakReference(listener))
   }
 
   /**
@@ -250,7 +246,9 @@ public object ReactScrollViewHelper {
     if (scrollY != y) {
       scrollView.startFlingAnimator(scrollY, y)
     }
-    updateFabricScrollState<T>(scrollView, x, y)
+    if (ReactNativeFeatureFlags.fixIncorrectScrollViewStateUpdateOnAndroid()) {
+      updateFabricScrollState<T>(scrollView, x, y)
+    }
   }
 
   /** Get current position or position after current animation finishes, if any. */
@@ -291,7 +289,6 @@ public object ReactScrollViewHelper {
    * Called on any stabilized onScroll change to propagate content offset value to a Shadow Node.
    */
   public fun <T> updateFabricScrollState(scrollView: T, scrollX: Int, scrollY: Int) where
-  T : HasFlingAnimator?,
   T : HasScrollState?,
   T : HasStateWrapper?,
   T : ViewGroup {
@@ -308,13 +305,11 @@ public object ReactScrollViewHelper {
       return
     }
     scrollState.setLastStateUpdateScroll(scrollX, scrollY)
-    forceUpdateState<T>(scrollView)
-    return
+    forceUpdateState(scrollView)
   }
 
   @JvmStatic
   public fun <T> forceUpdateState(scrollView: T) where
-  T : HasFlingAnimator?,
   T : HasScrollState?,
   T : HasStateWrapper?,
   T : ViewGroup {
@@ -323,9 +318,8 @@ public object ReactScrollViewHelper {
     val scrollPos = scrollState.lastStateUpdateScroll
     val scrollX = scrollPos.x
     val scrollY = scrollPos.y
-    val fabricScrollX: Int
     val layoutDirection = scrollState.layoutDirection
-    fabricScrollX =
+    val fabricScrollX =
         if (layoutDirection == View.LAYOUT_DIRECTION_RTL) {
           // getScrollX returns offset from left even when layout direction is RTL.
           // The following line calculates offset from right.
@@ -338,7 +332,7 @@ public object ReactScrollViewHelper {
     if (DEBUG_MODE) {
       FLog.i(
           TAG,
-          "updateFabricScrollState[%d] scrollX %d scrollY %d fabricScrollX",
+          "updateFabricScrollState[%d] scrollX %d scrollY %d fabricScrollX %d",
           scrollView.id,
           scrollX,
           scrollY,
@@ -385,7 +379,7 @@ public object ReactScrollViewHelper {
     // when JS processes the scroll event, the C++ ShadowNode representation will have a
     // "more correct" scroll position. It will frequently be /incorrect/ but this decreases
     // the error as much as possible.
-    updateFabricScrollState(scrollView)
+    updateFabricScrollState(scrollView, scrollView.scrollX, scrollView.scrollY)
     emitScrollEvent(
         scrollView, ScrollEventType.SCROLL, xVelocity, yVelocity, experimental_synchronous)
   }
@@ -434,10 +428,7 @@ public object ReactScrollViewHelper {
     scroller.setFriction(1.0f - scrollState.decelerationRate)
 
     // predict where a fling would end up so we can scroll to the nearest snap offset
-    val width =
-        (scrollView.width -
-            ViewCompat.getPaddingStart(scrollView) -
-            ViewCompat.getPaddingEnd(scrollView))
+    val width = scrollView.width - scrollView.getPaddingStart() - scrollView.getPaddingEnd()
     val height = scrollView.height - scrollView.paddingBottom - scrollView.paddingTop
     val finalAnimatedPositionScroll = scrollState.finalAnimatedPositionScroll
     scroller.fling(
@@ -516,7 +507,7 @@ public object ReactScrollViewHelper {
         finalAnimatedPositionScrollX: Int,
         finalAnimatedPositionScrollY: Int
     ): ReactScrollViewScrollState {
-      finalAnimatedPositionScroll[finalAnimatedPositionScrollX] = finalAnimatedPositionScrollY
+      finalAnimatedPositionScroll.set(finalAnimatedPositionScrollX, finalAnimatedPositionScrollY)
       return this
     }
 
@@ -525,7 +516,7 @@ public object ReactScrollViewHelper {
         lastStateUpdateScrollX: Int,
         lastStateUpdateScrollY: Int
     ): ReactScrollViewScrollState {
-      lastStateUpdateScroll[lastStateUpdateScrollX] = lastStateUpdateScrollY
+      lastStateUpdateScroll.set(lastStateUpdateScrollX, lastStateUpdateScrollY)
       return this
     }
   }
@@ -550,15 +541,13 @@ public object ReactScrollViewHelper {
   }
 
   public interface HasScrollEventThrottle {
-    /** Get the scroll event throttle in ms. */
     /**
-     * Set the scroll event throttle in ms. This number is used to throttle the scroll events. The
+     * The scroll event throttle in ms. This number is used to throttle the scroll events. The
      * default value is zero, which means the scroll events are sent with no throttle.
      */
     public var scrollEventThrottle: Int
 
-    /** Get the scroll view dispatch time for throttling */
-    /** Set the scroll view's last dispatch time for throttling */
+    /** The scroll view's last dispatch time for throttling */
     public var lastScrollDispatchTime: Long
   }
 

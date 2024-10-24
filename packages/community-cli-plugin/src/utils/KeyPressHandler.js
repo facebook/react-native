@@ -9,7 +9,8 @@
  * @oncall react_native
  */
 
-import {CLIError, logger} from '@react-native-community/cli-tools';
+import {CLIError} from './errors';
+import {logger} from './logger';
 
 const CTRL_C = '\u0003';
 

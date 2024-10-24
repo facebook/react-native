@@ -232,24 +232,16 @@ static void sliceChildShadowNodeViewPairsRecursively(
     // This might not be a FormsView, or a FormsStackingContext. We let the
     // differ handle removal of flattened views from the Mounting layer and
     // shuffling their children around.
-    bool isConcreteView = false;
-    bool areChildrenFlattened = false;
-    if (ReactNativeFeatureFlags::allowCollapsableChildren()) {
-      bool childrenFormStackingContexts = shadowNode.getTraits().check(
-          ShadowNodeTraits::Trait::ChildrenFormStackingContext);
-      isConcreteView = childShadowNode.getTraits().check(
-                           ShadowNodeTraits::Trait::FormsView) ||
-          childrenFormStackingContexts;
-      areChildrenFlattened =
-          !childShadowNode.getTraits().check(
-              ShadowNodeTraits::Trait::FormsStackingContext) &&
-          !childrenFormStackingContexts;
-    } else {
-      isConcreteView =
-          childShadowNode.getTraits().check(ShadowNodeTraits::Trait::FormsView);
-      areChildrenFlattened = !childShadowNode.getTraits().check(
-          ShadowNodeTraits::Trait::FormsStackingContext);
-    }
+    bool childrenFormStackingContexts = shadowNode.getTraits().check(
+        ShadowNodeTraits::Trait::ChildrenFormStackingContext);
+    bool isConcreteView =
+        childShadowNode.getTraits().check(ShadowNodeTraits::Trait::FormsView) ||
+        childrenFormStackingContexts;
+    bool areChildrenFlattened =
+        !childShadowNode.getTraits().check(
+            ShadowNodeTraits::Trait::FormsStackingContext) &&
+        !childrenFormStackingContexts;
+
     Point storedOrigin = {};
     if (areChildrenFlattened) {
       storedOrigin = origin;
@@ -362,8 +354,7 @@ static void calculateShadowViewMutations(
     ShadowViewMutation::List& mutations,
     const ShadowView& parentShadowView,
     ShadowViewNodePair::NonOwningList&& oldChildPairs,
-    ShadowViewNodePair::NonOwningList&& newChildPairs,
-    bool isRecursionRedundant = false);
+    ShadowViewNodePair::NonOwningList&& newChildPairs);
 
 struct OrderedMutationInstructionContainer {
   ShadowViewMutation::List createMutations{};
@@ -1052,8 +1043,7 @@ static void calculateShadowViewMutations(
     ShadowViewMutation::List& mutations,
     const ShadowView& parentShadowView,
     ShadowViewNodePair::NonOwningList&& oldChildPairs,
-    ShadowViewNodePair::NonOwningList&& newChildPairs,
-    bool isRecursionRedundant) {
+    ShadowViewNodePair::NonOwningList&& newChildPairs) {
   if (oldChildPairs.empty() && newChildPairs.empty()) {
     return;
   }
@@ -1171,39 +1161,13 @@ static void calculateShadowViewMutations(
         continue;
       }
 
-      // If we take this path, technically the operations and recursion below
-      // are redundant. However, some parts of the Fabric ecosystem (namely, as
-      // of writing this, LayoutAnimations) rely heavily on getting /explicit/
-      // Remove/Delete instructions for every single node in the tree. Thus, we
-      // generate the "RemoveDeleteTree" instruction as well as all of the
-      // individual Remove/Delete operations below, but we mark those as
-      // redundant. The platform layer can then discard the unnecessary
-      // instructions. RemoveDeleteTreeMutation is a significant performance
-      // improvement but could be improved significantly by eliminating the need
-      // for any of the redundant instructions in the future.
-      if (ShadowViewMutation::PlatformSupportsRemoveDeleteTreeInstruction &&
-          !isRecursionRedundant) {
-        mutationContainer.removeMutations.push_back(
-            ShadowViewMutation::RemoveDeleteTreeMutation(
-                parentShadowView,
-                oldChildPair.shadowView,
-                static_cast<int>(oldChildPair.mountIndex)));
-      }
-
       mutationContainer.deleteMutations.push_back(
-          ShadowViewMutation::DeleteMutation(
-              oldChildPair.shadowView,
-              isRecursionRedundant ||
-                  ShadowViewMutation::
-                      PlatformSupportsRemoveDeleteTreeInstruction));
+          ShadowViewMutation::DeleteMutation(oldChildPair.shadowView));
       mutationContainer.removeMutations.push_back(
           ShadowViewMutation::RemoveMutation(
               parentShadowView,
               oldChildPair.shadowView,
-              static_cast<int>(oldChildPair.mountIndex),
-              isRecursionRedundant ||
-                  ShadowViewMutation::
-                      PlatformSupportsRemoveDeleteTreeInstruction));
+              static_cast<int>(oldChildPair.mountIndex)));
 
       // We also have to call the algorithm recursively to clean up the entire
       // subtree starting from the removed view.
@@ -1214,8 +1178,7 @@ static void calculateShadowViewMutations(
           oldChildPair.shadowView,
           sliceChildShadowNodeViewPairsFromViewNodePair(
               oldChildPair, innerScope),
-          {},
-          ShadowViewMutation::PlatformSupportsRemoveDeleteTreeInstruction);
+          {});
     }
   } else if (index == oldChildPairs.size()) {
     // If we don't have any more existing children we can choose a fast path

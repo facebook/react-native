@@ -51,8 +51,8 @@ Scheduler::Scheduler(
   eventPerformanceLogger_ =
       std::make_shared<EventPerformanceLogger>(performanceEntryReporter_);
 
-  auto uiManager = std::make_shared<UIManager>(
-      runtimeExecutor_, schedulerToolbox.backgroundExecutor, contextContainer_);
+  auto uiManager =
+      std::make_shared<UIManager>(runtimeExecutor_, contextContainer_);
   auto eventOwnerBox = std::make_shared<EventBeat::OwnerBox>();
   eventOwnerBox->owner = eventDispatcher_;
 
@@ -66,6 +66,11 @@ Scheduler::Scheduler(
   if (runtimeScheduler && ReactNativeFeatureFlags::enableUIConsistency()) {
     runtimeScheduler->setShadowTreeRevisionConsistencyManager(
         uiManager->getShadowTreeRevisionConsistencyManager());
+  }
+
+  if (runtimeScheduler &&
+      ReactNativeFeatureFlags::enableReportEventPaintTime()) {
+    runtimeScheduler->setEventTimingDelegate(eventPerformanceLogger_.get());
   }
 
   auto eventPipe = [uiManager, runtimeScheduler = runtimeScheduler.get()](
@@ -144,17 +149,7 @@ Scheduler::Scheduler(
   }
   uiManager_->setAnimationDelegate(animationDelegate);
 
-#ifdef ANDROID
-  removeOutstandingSurfacesOnDestruction_ = true;
-#else
-  removeOutstandingSurfacesOnDestruction_ = reactNativeConfig_->getBool(
-      "react_fabric:remove_outstanding_surfaces_on_destruction_ios");
-#endif
-
-  CoreFeatures::enableReportEventPaintTime = reactNativeConfig_->getBool(
-      "rn_responsiveness_performance:enable_paint_time_reporting");
-
-  if (CoreFeatures::enableReportEventPaintTime) {
+  if (ReactNativeFeatureFlags::enableReportEventPaintTime()) {
     uiManager->registerMountHook(*eventPerformanceLogger_);
   }
 }
@@ -162,6 +157,19 @@ Scheduler::Scheduler(
 Scheduler::~Scheduler() {
   LOG(WARNING) << "Scheduler::~Scheduler() was called (address: " << this
                << ").";
+
+  if (ReactNativeFeatureFlags::enableReportEventPaintTime()) {
+    auto weakRuntimeScheduler =
+        contextContainer_->find<std::weak_ptr<RuntimeScheduler>>(
+            "RuntimeScheduler");
+    auto runtimeScheduler = weakRuntimeScheduler.has_value()
+        ? weakRuntimeScheduler.value().lock()
+        : nullptr;
+
+    if (runtimeScheduler) {
+      runtimeScheduler->setEventTimingDelegate(nullptr);
+    }
+  }
 
   for (auto& commitHook : commitHooks_) {
     uiManager_->unregisterCommitHook(*commitHook);
@@ -206,11 +214,9 @@ Scheduler::~Scheduler() {
         surfaceId,
         [](const ShadowTree& shadowTree) { shadowTree.commitEmptyTree(); });
 
-    // Removing surfaces is gated because it acquires mutex waiting for commits
-    // in flight; in theory, it can deadlock.
-    if (removeOutstandingSurfacesOnDestruction_) {
-      uiManager_->getShadowTreeRegistry().remove(surfaceId);
-    }
+    // Removing surfaces acquires mutex waiting for commits in flight; in
+    // theory, it can deadlock.
+    uiManager_->getShadowTreeRegistry().remove(surfaceId);
   }
 }
 
@@ -298,7 +304,10 @@ void Scheduler::uiManagerDidFinishTransaction(
         ? weakRuntimeScheduler.value().lock()
         : nullptr;
     if (runtimeScheduler && !mountSynchronously) {
+      auto surfaceId = mountingCoordinator->getSurfaceId();
+
       runtimeScheduler->scheduleRenderingUpdate(
+          surfaceId,
           [delegate = delegate_,
            mountingCoordinator = std::move(mountingCoordinator)]() {
             delegate->schedulerShouldRenderTransactions(mountingCoordinator);
@@ -310,8 +319,6 @@ void Scheduler::uiManagerDidFinishTransaction(
 }
 
 void Scheduler::uiManagerDidCreateShadowNode(const ShadowNode& shadowNode) {
-  SystraceSection s("Scheduler::uiManagerDidCreateShadowNode");
-
   if (delegate_ != nullptr) {
     delegate_->schedulerDidRequestPreliminaryViewAllocation(shadowNode);
   }
@@ -366,9 +373,9 @@ std::shared_ptr<UIManager> Scheduler::getUIManager() const {
 }
 
 void Scheduler::addEventListener(
-    const std::shared_ptr<const EventListener>& listener) {
+    std::shared_ptr<const EventListener> listener) {
   if (eventDispatcher_->has_value()) {
-    eventDispatcher_->value().addListener(listener);
+    eventDispatcher_->value().addListener(std::move(listener));
   }
 }
 

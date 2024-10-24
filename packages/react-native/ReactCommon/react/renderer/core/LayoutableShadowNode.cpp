@@ -240,11 +240,9 @@ Size LayoutableShadowNode::measure(
   return layoutableShadowNode.getLayoutMetrics().frame.size;
 }
 
-Float LayoutableShadowNode::firstBaseline(Size /*size*/) const {
-  return 0;
-}
-
-Float LayoutableShadowNode::lastBaseline(Size /*size*/) const {
+Float LayoutableShadowNode::baseline(
+    const LayoutContext& /*layoutContext*/,
+    Size /*size*/) const {
   return 0;
 }
 
@@ -263,14 +261,36 @@ ShadowNode::Shared LayoutableShadowNode::findNodeAtPoint(
     return nullptr;
   }
 
+  auto transform = layoutableShadowNode->getTransform();
   auto frame = layoutableShadowNode->getLayoutMetrics().frame;
-  auto transformedFrame = frame * layoutableShadowNode->getTransform();
+  auto transformedFrame = frame * transform;
   auto isPointInside = transformedFrame.containsPoint(point);
 
   if (!isPointInside) {
     return nullptr;
   } else if (!layoutableShadowNode->canChildrenBeTouchTarget()) {
     return node;
+  }
+
+  if (Transform::isVerticalInversion(transform) ||
+      Transform::isHorizontalInversion(transform)) {
+    auto centerX =
+        transformedFrame.origin.x + transformedFrame.size.width / 2.0;
+    auto centerY =
+        transformedFrame.origin.y + transformedFrame.size.height / 2.0;
+
+    auto relativeX = float(point.x - centerX);
+    auto relativeY = float(point.y - centerY);
+
+    if (Transform::isVerticalInversion(transform)) {
+      relativeY = -relativeY;
+    }
+    if (Transform::isHorizontalInversion(transform)) {
+      relativeX = -relativeX;
+    }
+
+    point.x = centerX + relativeX;
+    point.y = centerY + relativeY;
   }
 
   auto newPoint = point - transformedFrame.origin -
