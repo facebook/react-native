@@ -75,12 +75,6 @@ class EventBeat {
   virtual void request() const;
 
   /*
-   * Communicates to the Beat that a consumer is waiting synchronously for the
-   * coming beat.
-   */
-  virtual void requestSynchronous() const;
-
-  /*
    * The callback is must be called on the proper thread.
    */
   void setBeatCallback(BeatCallback beatCallback);
@@ -99,7 +93,6 @@ class EventBeat {
  private:
   RuntimeScheduler& runtimeScheduler_;
   mutable std::atomic<bool> isBeatCallbackScheduled_{false};
-  mutable std::atomic<bool> isSynchronousRequested_{false};
 };
 
 } // namespace facebook::react

@@ -18,9 +18,11 @@ namespace facebook::react {
 EventDispatcher::EventDispatcher(
     const EventQueueProcessor& eventProcessor,
     std::unique_ptr<EventBeat> eventBeat,
+    RuntimeScheduler& runtimeScheduler,
     StatePipe statePipe,
     std::weak_ptr<EventLogger> eventLogger)
-    : eventQueue_(EventQueue(eventProcessor, std::move(eventBeat))),
+    : eventQueue_(
+          EventQueue(eventProcessor, std::move(eventBeat), runtimeScheduler)),
       statePipe_(std::move(statePipe)),
       eventLogger_(std::move(eventLogger)) {}
 
