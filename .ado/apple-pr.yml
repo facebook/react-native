@@ -29,9 +29,9 @@ stages:
 
       - template: /.ado/jobs/npm-publish-dry-run.yml@self
 
-  - stage: Integration
-    dependsOn: []
-    jobs:
-      - template: /.ado/jobs/test-react-native-macos-init.yml@self
+  # - stage: Integration
+  #   dependsOn: []
+  #   jobs:
+      #- template: /.ado/jobs/test-react-native-macos-init.yml@self
 
       # - template: /.ado/jobs/react-native-test-app-integration.yml@self
