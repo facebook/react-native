@@ -1444,6 +1444,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     } else if (mMaintainVisibleContentPositionHelper != null) {
       mMaintainVisibleContentPositionHelper.updateScrollPosition();
     }
+    ReactScrollViewHelper.emitLayoutChangeEvent(this);
   }
 
   /**

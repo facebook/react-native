@@ -7248,7 +7248,9 @@ public final class com/facebook/react/views/scroll/ReactScrollViewHelper {
 	public static final field SNAP_ALIGNMENT_DISABLED I
 	public static final field SNAP_ALIGNMENT_END I
 	public static final field SNAP_ALIGNMENT_START I
+	public static final fun addLayoutChangeListener (Lcom/facebook/react/views/scroll/ReactScrollViewHelper$LayoutChangeListener;)V
 	public static final fun addScrollListener (Lcom/facebook/react/views/scroll/ReactScrollViewHelper$ScrollListener;)V
+	public static final fun emitLayoutChangeEvent (Landroid/view/ViewGroup;)V
 	public static final fun emitLayoutEvent (Landroid/view/ViewGroup;)V
 	public static final fun emitScrollBeginDragEvent (Landroid/view/ViewGroup;)V
 	public static final fun emitScrollEndDragEvent (Landroid/view/ViewGroup;FF)V
@@ -7262,6 +7264,7 @@ public final class com/facebook/react/views/scroll/ReactScrollViewHelper {
 	public static final fun parseSnapToAlignment (Ljava/lang/String;)I
 	public static final fun predictFinalScrollPosition (Landroid/view/ViewGroup;IIII)Landroid/graphics/Point;
 	public final fun registerFlingAnimator (Landroid/view/ViewGroup;)V
+	public static final fun removeLayoutChangeListener (Lcom/facebook/react/views/scroll/ReactScrollViewHelper$LayoutChangeListener;)V
 	public static final fun removeScrollListener (Lcom/facebook/react/views/scroll/ReactScrollViewHelper$ScrollListener;)V
 	public static final fun smoothScrollTo (Landroid/view/ViewGroup;II)V
 	public static final fun updateFabricScrollState (Landroid/view/ViewGroup;)V
@@ -7294,6 +7297,10 @@ public abstract interface class com/facebook/react/views/scroll/ReactScrollViewH
 
 public abstract interface class com/facebook/react/views/scroll/ReactScrollViewHelper$HasStateWrapper {
 	public abstract fun getStateWrapper ()Lcom/facebook/react/uimanager/StateWrapper;
+}
+
+public abstract interface class com/facebook/react/views/scroll/ReactScrollViewHelper$LayoutChangeListener {
+	public abstract fun onLayoutChange (Landroid/view/ViewGroup;)V
 }
 
 public final class com/facebook/react/views/scroll/ReactScrollViewHelper$ReactScrollViewScrollState {
