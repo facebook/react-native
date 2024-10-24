@@ -99,27 +99,6 @@ RCT_EXPORT_METHOD(reportFatalException
   [self reportFatal:message stack:stack exceptionId:exceptionId extraDataAsJSON:nil];
 }
 
-RCT_EXPORT_METHOD(updateExceptionMessage
-                  : (NSString *)message stack
-                  : (NSArray<NSDictionary *> *)stack exceptionId
-                  : (double)exceptionId)
-{
-  if (RCTRedBoxGetEnabled()) {
-    RCTRedBox *redbox = [_moduleRegistry moduleForName:"RedBox"];
-    [redbox updateErrorMessage:message withStack:stack errorCookie:(int)exceptionId];
-  }
-
-  if (_delegate && [_delegate respondsToSelector:@selector(updateJSExceptionWithMessage:stack:exceptionId:)]) {
-    [_delegate updateJSExceptionWithMessage:message stack:stack exceptionId:[NSNumber numberWithDouble:exceptionId]];
-  }
-}
-
-// Deprecated.  Use reportFatalException directly instead.
-RCT_EXPORT_METHOD(reportUnhandledException : (NSString *)message stack : (NSArray<NSDictionary *> *)stack)
-{
-  [self reportFatalException:message stack:stack exceptionId:-1];
-}
-
 RCT_EXPORT_METHOD(dismissRedbox) {}
 
 RCT_EXPORT_METHOD(reportException : (JS::NativeExceptionsManager::ExceptionData &)data)
@@ -154,18 +133,6 @@ RCT_EXPORT_METHOD(reportException : (JS::NativeExceptionsManager::ExceptionData 
     [self reportFatal:message stack:stackArray exceptionId:exceptionId extraDataAsJSON:extraDataAsJSON];
   } else {
     [self reportSoft:message stack:stackArray exceptionId:exceptionId extraDataAsJSON:extraDataAsJSON];
-  }
-}
-
-- (void)reportJsException:(nullable NSString *)message
-                    stack:(nullable NSArray<NSDictionary *> *)stack
-              exceptionId:(double)exceptionId
-                  isFatal:(bool)isFatal
-{
-  if (isFatal) {
-    [self reportFatalException:message stack:stack exceptionId:exceptionId];
-  } else {
-    [self reportSoftException:message stack:stack exceptionId:exceptionId];
   }
 }
 

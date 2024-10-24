@@ -115,51 +115,6 @@ static ShimRCTInstance *shimmedRCTInstance;
   XCTAssertEqualObjects(shimmedRCTInstance.args, args);
 }
 
-- (void)testDidReceiveErrorStack
-{
-  id<RCTInstanceDelegate> instanceDelegate = (id<RCTInstanceDelegate>)_subject;
-
-  NSMutableArray<NSDictionary<NSString *, id> *> *stack = [NSMutableArray array];
-
-  NSMutableDictionary<NSString *, id> *stackFrame0 = [NSMutableDictionary dictionary];
-  stackFrame0[@"linenumber"] = @(3);
-  stackFrame0[@"column"] = @(4);
-  stackFrame0[@"methodname"] = @"method1";
-  stackFrame0[@"file"] = @"file1.js";
-  [stack addObject:stackFrame0];
-
-  NSMutableDictionary<NSString *, id> *stackFrame1 = [NSMutableDictionary dictionary];
-  stackFrame0[@"linenumber"] = @(63);
-  stackFrame0[@"column"] = @(44);
-  stackFrame0[@"methodname"] = @"method2";
-  stackFrame0[@"file"] = @"file2.js";
-  [stack addObject:stackFrame1];
-
-  id extraData = [NSDictionary dictionary];
-
-  [instanceDelegate instance:[OCMArg any]
-      didReceiveJSErrorStack:stack
-                     message:@"message"
-             originalMessage:nil
-                        name:nil
-              componentStack:nil
-                 exceptionId:5
-                     isFatal:YES
-                   extraData:extraData];
-
-  OCMVerify(
-      OCMTimes(1),
-      [_mockHostDelegate host:_subject
-          didReceiveJSErrorStack:stack
-                         message:@"message"
-                 originalMessage:nil
-                            name:nil
-                  componentStack:nil
-                     exceptionId:5
-                         isFatal:YES
-                       extraData:extraData]);
-}
-
 - (void)testDidInitializeRuntime
 {
   id<RCTHostRuntimeDelegate> mockRuntimeDelegate = OCMProtocolMock(@protocol(RCTHostRuntimeDelegate));
