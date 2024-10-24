@@ -846,6 +846,40 @@ function MultilineStyledTextInput({
   );
 }
 
+function DynamicContentWidth() {
+  const [text, setText] = useState('');
+  const update = () => {
+    const randomNumber = Math.floor(Math.random() * 10);
+    setText(text + randomNumber);
+  };
+
+  return (
+    <View>
+      <Text>Uncontrolled:</Text>
+      <TextInput
+        placeholder="Type..."
+        style={{
+          fontSize: 16,
+          alignSelf: 'center',
+          backgroundColor: 'orange',
+        }}
+      />
+      <Text>Controlled:</Text>
+      <TextInput
+        placeholder="..."
+        value={text}
+        onChangeText={setText}
+        style={{
+          fontSize: 16,
+          alignSelf: 'center',
+          backgroundColor: 'orange',
+        }}
+      />
+      <Button title="Update controlled Input" onPress={update} />
+    </View>
+  );
+}
+
 module.exports = ([
   {
     title: 'Auto-focus & select text on focus',
@@ -1147,6 +1181,13 @@ module.exports = ([
           </ExampleTextInput>
         </View>
       );
+    },
+  },
+  {
+    title: 'Dynamic content width',
+    name: 'dynamicWidth',
+    render: function (): React.Node {
+      return <DynamicContentWidth />;
     },
   },
 ]: Array<RNTesterModuleExample>);
