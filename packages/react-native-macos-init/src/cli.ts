@@ -5,20 +5,14 @@
  * @format
  */
 
-import * as yargs from 'yargs';
-import * as fs from 'fs';
-import * as semver from 'semver';
+import chalk from 'chalk';
 import {execSync} from 'child_process';
-import * as validUrl from 'valid-url';
-import * as prompts from 'prompts';
 import * as findUp from 'find-up';
-import * as chalk from 'chalk';
+import * as fs from 'fs';
 import * as npmFetch from 'npm-registry-fetch';
-
-const npmConfReg = execSync('npm config get registry').toString().trim();
-const NPM_REGISTRY_URL = validUrl.isUri(npmConfReg)
-  ? npmConfReg
-  : 'http://registry.npmjs.org';
+import prompts from 'prompts';
+import * as semver from 'semver';
+import * as yargs from 'yargs';
 
 const argv = yargs.version(false).options({
   version: {
@@ -50,6 +44,19 @@ function reactNativeMacOSGeneratePath() {
   return require.resolve(`${MACOSPKG}/local-cli/generate-macos.js`, {
     paths: [process.cwd()],
   });
+}
+
+function getNpmRegistryUrl(): string {
+  const reg = execSync('npm config get registry', {encoding: 'utf-8'}).trim();
+  try {
+    const url = new URL(reg);
+    if (url) {
+      return reg;
+    }
+  } catch (_) {
+    // ignore
+  }
+  return 'https://registry.npmjs.org';
 }
 
 function getReactNativeAppName() {
@@ -104,9 +111,12 @@ function getReactNativeMacOSVersion() {
   return getPackageVersion(MACOSPKG, false);
 }
 
-function errorOutOnUnsupportedVersionOfReactNative(rnVersion: string) {
-  printError(`Unsupported version of ${RNPKG}: ${chalk.cyan(rnVersion)}
-${MACOSPKG} supports ${RNPKG} versions ${chalk.cyan('>=0.60')}`);
+function errorOutOnUnsupportedVersionOfReactNative(rnVersion: string): never {
+  const version = chalk.cyan(rnVersion);
+  const supportedVersions = chalk.cyan('>=0.60');
+  printError(
+    `Unsupported version of ${RNPKG}: ${version}\n${MACOSPKG} supports ${RNPKG} versions ${supportedVersions}`,
+  );
   process.exit(EXITCODE_UNSUPPORTED_VERION_RN);
 }
 
@@ -147,7 +157,7 @@ async function getLatestMatchingVersion(
   pkg: string,
   versionSemVer: string,
 ): Promise<string> {
-  const npmResponse = await npmFetch.json(pkg, {registry: NPM_REGISTRY_URL});
+  const npmResponse = await npmFetch.json(pkg, {registry: getNpmRegistryUrl()});
 
   // Check if versionSemVer is a tag (i.e. 'canary', 'latest', 'preview', etc.)
   if ('dist-tags' in npmResponse) {
@@ -306,7 +316,7 @@ You can either downgrade your version of ${chalk.yellow(RNPKG)} to ${chalk.cyan(
       verbose,
     });
   } catch (error) {
-    printError(error.message, error);
+    printError(`${error}`, error);
     process.exit(EXITCODE_UNKNOWN_ERROR);
   }
 })();

@@ -2,9 +2,13 @@
   "name": "react-native-macos-init",
   "version": "2.1.3",
   "description": "CLI to add react-native-macos to an existing react-native project",
-  "main": "index.js",
-  "repository": "https://github.com/microsoft/react-native-macos",
   "license": "MIT",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/microsoft/react-native-macos",
+    "directory": "packages/react-native-macos-init"
+  },
   "scripts": {
     "change": "beachball change",
     "check": "beachball check",
@@ -22,10 +26,10 @@
     "npm-registry-fetch": "^14.0.0",
     "prompts": "^2.3.0",
     "semver": "^7.5.2",
-    "valid-url": "^1.0.9",
     "yargs": "^15.1.0"
   },
   "devDependencies": {
+    "@rnx-kit/tsconfig": "^2.0.0",
     "@types/chalk": "^2.2.0",
     "@types/npm-registry-fetch": "^8.0.0",
     "@types/prompts": "^2.0.3",

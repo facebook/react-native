@@ -1,15 +1,4 @@
 {
-    "compilerOptions": {
-      "baseUrl": ".",
-      "target": "es6",
-      "sourceMap": true,
-      "noImplicitAny": true,
-      "preserveConstEnums": true,
-      "moduleResolution": "node",
-      "noUnusedLocals": true,
-      "skipLibCheck": true,
-      "rootDirs": ["src"],
-    },
-    "include": ["src"],
-    "exclude": ["node_modules"]
-  }
+  "extends": "@rnx-kit/tsconfig/tsconfig.json",
+  "include": ["src"]
+}

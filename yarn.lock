@@ -4132,6 +4132,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rnx-kit/tsconfig@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "@rnx-kit/tsconfig@npm:2.0.0"
+  checksum: 10c0/b31353cb1a3b75d4827373887806f5495eccb9e38e9edcf111a85a3e6967256e13f18a7acfbb9eabd7bfbe04b6b5e6ac3ec0a638d31b55f9231ffd3d946c735c
+  languageName: node
+  linkType: hard
+
 "@rushstack/node-core-library@npm:3.61.0":
   version: 3.61.0
   resolution: "@rushstack/node-core-library@npm:3.61.0"
@@ -12909,6 +12916,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "react-native-macos-init@workspace:packages/react-native-macos-init"
   dependencies:
+    "@rnx-kit/tsconfig": "npm:^2.0.0"
     "@types/chalk": "npm:^2.2.0"
     "@types/npm-registry-fetch": "npm:^8.0.0"
     "@types/prompts": "npm:^2.0.3"
@@ -12923,7 +12931,6 @@ __metadata:
     prompts: "npm:^2.3.0"
     semver: "npm:^7.5.2"
     typescript: "npm:^5.6.3"
-    valid-url: "npm:^1.0.9"
     yargs: "npm:^15.1.0"
   bin:
     react-native-macos-init: ./bin.js
@@ -14888,13 +14895,6 @@ __metadata:
     "@types/istanbul-lib-coverage": "npm:^2.0.1"
     convert-source-map: "npm:^2.0.0"
   checksum: 10c0/7acfc460731b629a0d547b231e9d510aaa826df67f4deeaeeb991b492f78faf3bb1aa4b54fa0f9b06d815bc69eb0a04a6c2180c16ba43a83cc5e5490fa160a96
-  languageName: node
-  linkType: hard
-
-"valid-url@npm:^1.0.9":
-  version: 1.0.9
-  resolution: "valid-url@npm:1.0.9"
-  checksum: 10c0/3995e65f9942dbcb1621754c0f9790335cec61e9e9310c0a809e9ae0e2ae91bb7fc6a471fba788e979db0418d9806639f681ecebacc869bc8c3de88efa562ee6
   languageName: node
   linkType: hard
 
