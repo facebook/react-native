@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<12ecbb280bde10b2d74376a2a890cf97>>
+ * @generated SignedSource<<b43c7b8cc4b0947ac58771ee832ba86b>>
  */
 
 /**
@@ -76,11 +76,6 @@ bool NativeReactNativeFeatureFlags::enableAlignItemsBaselineOnFabricIOS(
   return ReactNativeFeatureFlags::enableAlignItemsBaselineOnFabricIOS();
 }
 
-bool NativeReactNativeFeatureFlags::enableAndroidLineHeightCentering(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::enableAndroidLineHeightCentering();
-}
-
 bool NativeReactNativeFeatureFlags::enableBridgelessArchitecture(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableBridgelessArchitecture();
@@ -139,6 +134,16 @@ bool NativeReactNativeFeatureFlags::enableLayoutAnimationsOnAndroid(
 bool NativeReactNativeFeatureFlags::enableLayoutAnimationsOnIOS(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableLayoutAnimationsOnIOS();
+}
+
+bool NativeReactNativeFeatureFlags::enableLineHeightCenteringOnAndroid(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableLineHeightCenteringOnAndroid();
+}
+
+bool NativeReactNativeFeatureFlags::enableLineHeightCenteringOnIOS(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableLineHeightCenteringOnIOS();
 }
 
 bool NativeReactNativeFeatureFlags::enableLongTaskAPI(

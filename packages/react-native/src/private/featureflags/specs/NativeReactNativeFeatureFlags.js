@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<15f7e1de5286bbb63d11f55819d23a68>>
+ * @generated SignedSource<<8d73d318e16d835d881e58f3e6c33192>>
  * @flow strict
  */
 
@@ -30,7 +30,6 @@ export interface Spec extends TurboModule {
   +completeReactInstanceCreationOnBgThreadOnAndroid?: () => boolean;
   +disableEventLoopOnBridgeless?: () => boolean;
   +enableAlignItemsBaselineOnFabricIOS?: () => boolean;
-  +enableAndroidLineHeightCentering?: () => boolean;
   +enableBridgelessArchitecture?: () => boolean;
   +enableCleanTextInputYogaNode?: () => boolean;
   +enableDeletionOfUnmountedViews?: () => boolean;
@@ -43,6 +42,8 @@ export interface Spec extends TurboModule {
   +enableIOSViewClipToPaddingBox?: () => boolean;
   +enableLayoutAnimationsOnAndroid?: () => boolean;
   +enableLayoutAnimationsOnIOS?: () => boolean;
+  +enableLineHeightCenteringOnAndroid?: () => boolean;
+  +enableLineHeightCenteringOnIOS?: () => boolean;
   +enableLongTaskAPI?: () => boolean;
   +enableMicrotasks?: () => boolean;
   +enableNewBackgroundAndBorderDrawables?: () => boolean;

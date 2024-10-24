@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2797dcc4840b0f60670760231f51d459>>
+ * @generated SignedSource<<18b5021dc18fd8f3a97451cf229af885>>
  */
 
 /**
@@ -44,10 +44,6 @@ bool ReactNativeFeatureFlags::disableEventLoopOnBridgeless() {
 
 bool ReactNativeFeatureFlags::enableAlignItemsBaselineOnFabricIOS() {
   return getAccessor().enableAlignItemsBaselineOnFabricIOS();
-}
-
-bool ReactNativeFeatureFlags::enableAndroidLineHeightCentering() {
-  return getAccessor().enableAndroidLineHeightCentering();
 }
 
 bool ReactNativeFeatureFlags::enableBridgelessArchitecture() {
@@ -96,6 +92,14 @@ bool ReactNativeFeatureFlags::enableLayoutAnimationsOnAndroid() {
 
 bool ReactNativeFeatureFlags::enableLayoutAnimationsOnIOS() {
   return getAccessor().enableLayoutAnimationsOnIOS();
+}
+
+bool ReactNativeFeatureFlags::enableLineHeightCenteringOnAndroid() {
+  return getAccessor().enableLineHeightCenteringOnAndroid();
+}
+
+bool ReactNativeFeatureFlags::enableLineHeightCenteringOnIOS() {
+  return getAccessor().enableLineHeightCenteringOnIOS();
 }
 
 bool ReactNativeFeatureFlags::enableLongTaskAPI() {

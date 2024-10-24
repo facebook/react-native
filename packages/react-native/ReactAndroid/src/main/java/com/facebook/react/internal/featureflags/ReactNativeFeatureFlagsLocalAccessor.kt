@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b6dd6a5d02c9070c3f35f70d5d1b7e35>>
+ * @generated SignedSource<<01968a9286c652699faf75abf75ccfc7>>
  */
 
 /**
@@ -29,7 +29,6 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var completeReactInstanceCreationOnBgThreadOnAndroidCache: Boolean? = null
   private var disableEventLoopOnBridgelessCache: Boolean? = null
   private var enableAlignItemsBaselineOnFabricIOSCache: Boolean? = null
-  private var enableAndroidLineHeightCenteringCache: Boolean? = null
   private var enableBridgelessArchitectureCache: Boolean? = null
   private var enableCleanTextInputYogaNodeCache: Boolean? = null
   private var enableDeletionOfUnmountedViewsCache: Boolean? = null
@@ -42,6 +41,8 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var enableIOSViewClipToPaddingBoxCache: Boolean? = null
   private var enableLayoutAnimationsOnAndroidCache: Boolean? = null
   private var enableLayoutAnimationsOnIOSCache: Boolean? = null
+  private var enableLineHeightCenteringOnAndroidCache: Boolean? = null
+  private var enableLineHeightCenteringOnIOSCache: Boolean? = null
   private var enableLongTaskAPICache: Boolean? = null
   private var enableNewBackgroundAndBorderDrawablesCache: Boolean? = null
   private var enablePreciseSchedulingForPremountItemsOnAndroidCache: Boolean? = null
@@ -117,16 +118,6 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.enableAlignItemsBaselineOnFabricIOS()
       accessedFeatureFlags.add("enableAlignItemsBaselineOnFabricIOS")
       enableAlignItemsBaselineOnFabricIOSCache = cached
-    }
-    return cached
-  }
-
-  override fun enableAndroidLineHeightCentering(): Boolean {
-    var cached = enableAndroidLineHeightCenteringCache
-    if (cached == null) {
-      cached = currentProvider.enableAndroidLineHeightCentering()
-      accessedFeatureFlags.add("enableAndroidLineHeightCentering")
-      enableAndroidLineHeightCenteringCache = cached
     }
     return cached
   }
@@ -247,6 +238,26 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.enableLayoutAnimationsOnIOS()
       accessedFeatureFlags.add("enableLayoutAnimationsOnIOS")
       enableLayoutAnimationsOnIOSCache = cached
+    }
+    return cached
+  }
+
+  override fun enableLineHeightCenteringOnAndroid(): Boolean {
+    var cached = enableLineHeightCenteringOnAndroidCache
+    if (cached == null) {
+      cached = currentProvider.enableLineHeightCenteringOnAndroid()
+      accessedFeatureFlags.add("enableLineHeightCenteringOnAndroid")
+      enableLineHeightCenteringOnAndroidCache = cached
+    }
+    return cached
+  }
+
+  override fun enableLineHeightCenteringOnIOS(): Boolean {
+    var cached = enableLineHeightCenteringOnIOSCache
+    if (cached == null) {
+      cached = currentProvider.enableLineHeightCenteringOnIOS()
+      accessedFeatureFlags.add("enableLineHeightCenteringOnIOS")
+      enableLineHeightCenteringOnIOSCache = cached
     }
     return cached
   }

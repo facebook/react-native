@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f9cc95d2f503b66dd39c89b641c96c79>>
+ * @generated SignedSource<<29751f6542220bc60e5745155fa8940b>>
  * @flow strict
  */
 
@@ -57,7 +57,6 @@ export type ReactNativeFeatureFlags = {
   completeReactInstanceCreationOnBgThreadOnAndroid: Getter<boolean>,
   disableEventLoopOnBridgeless: Getter<boolean>,
   enableAlignItemsBaselineOnFabricIOS: Getter<boolean>,
-  enableAndroidLineHeightCentering: Getter<boolean>,
   enableBridgelessArchitecture: Getter<boolean>,
   enableCleanTextInputYogaNode: Getter<boolean>,
   enableDeletionOfUnmountedViews: Getter<boolean>,
@@ -70,6 +69,8 @@ export type ReactNativeFeatureFlags = {
   enableIOSViewClipToPaddingBox: Getter<boolean>,
   enableLayoutAnimationsOnAndroid: Getter<boolean>,
   enableLayoutAnimationsOnIOS: Getter<boolean>,
+  enableLineHeightCenteringOnAndroid: Getter<boolean>,
+  enableLineHeightCenteringOnIOS: Getter<boolean>,
   enableLongTaskAPI: Getter<boolean>,
   enableMicrotasks: Getter<boolean>,
   enableNewBackgroundAndBorderDrawables: Getter<boolean>,
@@ -216,10 +217,6 @@ export const disableEventLoopOnBridgeless: Getter<boolean> = createNativeFlagGet
  */
 export const enableAlignItemsBaselineOnFabricIOS: Getter<boolean> = createNativeFlagGetter('enableAlignItemsBaselineOnFabricIOS', true);
 /**
- * When enabled, custom line height calculation will be centered from top to bottom.
- */
-export const enableAndroidLineHeightCentering: Getter<boolean> = createNativeFlagGetter('enableAndroidLineHeightCentering', false);
-/**
  * Feature flag to enable the new bridgeless architecture. Note: Enabling this will force enable the following flags: `useTurboModules` & `enableFabricRenderer.
  */
 export const enableBridgelessArchitecture: Getter<boolean> = createNativeFlagGetter('enableBridgelessArchitecture', false);
@@ -267,6 +264,14 @@ export const enableLayoutAnimationsOnAndroid: Getter<boolean> = createNativeFlag
  * When enabled, LayoutAnimations API will animate state changes on iOS.
  */
 export const enableLayoutAnimationsOnIOS: Getter<boolean> = createNativeFlagGetter('enableLayoutAnimationsOnIOS', true);
+/**
+ * When enabled, custom line height calculation will be centered from top to bottom.
+ */
+export const enableLineHeightCenteringOnAndroid: Getter<boolean> = createNativeFlagGetter('enableLineHeightCenteringOnAndroid', false);
+/**
+ * When enabled, custom line height calculation will be centered from top to bottom.
+ */
+export const enableLineHeightCenteringOnIOS: Getter<boolean> = createNativeFlagGetter('enableLineHeightCenteringOnIOS', false);
 /**
  * Enables the reporting of long tasks through `PerformanceObserver`. Only works if the event loop is enabled.
  */
