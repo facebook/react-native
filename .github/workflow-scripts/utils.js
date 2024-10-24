@@ -9,7 +9,7 @@
 
 const {execSync} = require('child_process');
 
-function run(...cmd) {
+function run(cmd) {
   return execSync(cmd, 'utf8').toString().trim();
 }
 module.exports.run = run;
