@@ -77,6 +77,11 @@ class XHRExampleDownload extends React.Component<{...}, Object> {
         progressLoaded: event.loaded,
       });
     };
+    const onerror = (event: ProgressEvent) => {
+      this.setState({downloading: false});
+
+      Alert.alert('Error downloading file', JSON.stringify(event));
+    };
 
     if (this.state.readystateHandler) {
       xhr.onreadystatechange = onreadystatechange;
@@ -87,6 +92,7 @@ class XHRExampleDownload extends React.Component<{...}, Object> {
     if (this.state.arraybuffer) {
       xhr.responseType = 'arraybuffer';
     }
+    xhr.onerror = onerror;
     xhr.onload = () => {
       this.setState({downloading: false});
       if (this.cancelled) {
@@ -116,7 +122,7 @@ class XHRExampleDownload extends React.Component<{...}, Object> {
     } else {
       xhr.open(
         'GET',
-        'http://aleph.gutenberg.org/cache/epub/100/pg100-images.html.utf8',
+        'https://filesamples.com/samples/document/txt/sample3.txt',
       );
       // Avoid gzip so we can actually show progress
       xhr.setRequestHeader('Accept-Encoding', '');
@@ -144,7 +150,7 @@ class XHRExampleDownload extends React.Component<{...}, Object> {
           <Text>
             {this.state.chunked
               ? 'Download 10MB File'
-              : 'Download 19KB pdf File'}
+              : 'Download 3KB TXT File'}
           </Text>
         </View>
       </TouchableHighlight>
