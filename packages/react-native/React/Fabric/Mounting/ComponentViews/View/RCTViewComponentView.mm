@@ -1136,20 +1136,24 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
 
 static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 {
-  NSMutableString *result = [NSMutableString stringWithString:@""];
+  // Result string is initialized lazily to prevent useless but costly allocations.
+  NSMutableString *result = nil;
   for (UIView *subview in view.subviews) {
     NSString *label = subview.accessibilityLabel;
     if (!label) {
       label = RCTRecursiveAccessibilityLabel(subview);
     }
     if (label && label.length > 0) {
+      if (result == nil) {
+        result = [NSMutableString string];
+      }
       if (result.length > 0) {
         [result appendString:@" "];
       }
       [result appendString:label];
     }
   }
-  return result;
+  return result == nil ? @"" : result;
 }
 
 - (NSString *)accessibilityLabel
