@@ -42,6 +42,16 @@ static jsi::Value touchEventPayload(
   return object;
 }
 
+static jsi::Value pointerEventPayload(
+    jsi::Runtime& runtime,
+    const PointerEvent& event) {
+  auto object = jsi::Object(runtime);
+  object.setProperty(runtime, "pageX", event.screenPoint.x);
+  object.setProperty(runtime, "pageY", event.screenPoint.y);
+
+  return object;
+}
+
 void TouchEventEmitter::dispatchTouchEvent(
     std::string type,
     const TouchEvent& event,
@@ -95,7 +105,9 @@ void TouchEventEmitter::onPointerDown(const PointerEvent& event) const {
 }
 
 void TouchEventEmitter::onPointerMove(const PointerEvent& event) const {
-  dispatchUniqueEvent("pointerMove", std::make_shared<PointerEvent>(event));
+  dispatchUniqueEvent("pointerMove", [event](jsi::Runtime& runtime) {
+    return pointerEventPayload(runtime, event);
+  });
 }
 
 void TouchEventEmitter::onPointerUp(const PointerEvent& event) const {
