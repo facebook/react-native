@@ -168,13 +168,15 @@ public class TextLayoutManager {
 
 
   private static int getTextJustificationMode(@Nullable String alignmentAttr) {
-    int justificationMode = (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) ? 0 : Layout.JUSTIFICATION_MODE_NONE;
-
-    if (alignmentAttr != null && alignmentAttr.equals("justified")) {
-      justificationMode = (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) ? 1 : Layout.JUSTIFICATION_MODE_INTER_WORD;
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+      return -1;
     }
 
-    return justificationMode;
+    if (alignmentAttr != null && alignmentAttr.equals("justified")) {
+      return Layout.JUSTIFICATION_MODE_INTER_WORD;
+    }
+
+    return Layout.JUSTIFICATION_MODE_NONE;
   }
 
   private static Layout.Alignment getTextAlignment(
