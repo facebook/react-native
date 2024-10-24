@@ -53,12 +53,6 @@ public open class ReleaseDevSupportManager : DevSupportManager {
 
   override public fun destroyRootView(rootView: View?): Unit = Unit
 
-  override public fun updateJSError(
-      message: String?,
-      details: ReadableArray?,
-      errorCookie: Int
-  ): Unit = Unit
-
   override public fun hideRedboxDialog(): Unit = Unit
 
   override public fun showDevOptionsDialog(): Unit = Unit

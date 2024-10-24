@@ -178,18 +178,6 @@
 {
 }
 
-- (void)host:(RCTHost *)host
-    didReceiveJSErrorStack:(NSArray<NSDictionary<NSString *, id> *> *)stack
-                   message:(NSString *)message
-           originalMessage:(NSString *_Nullable)originalMessage
-                      name:(NSString *_Nullable)name
-            componentStack:(NSString *_Nullable)componentStack
-               exceptionId:(NSUInteger)exceptionId
-                   isFatal:(BOOL)isFatal
-                 extraData:(NSDictionary<NSString *, id> *)extraData
-{
-}
-
 #pragma mark - Bridge and Bridge Adapter properties
 
 - (RCTBridge *)bridge

@@ -47,11 +47,6 @@ export interface Spec extends TurboModule {
     exceptionId: number,
   ) => void;
   +reportException?: (data: ExceptionData) => void;
-  +updateExceptionMessage: (
-    message: string,
-    stack: Array<StackFrame>,
-    exceptionId: number,
-  ) => void;
   // TODO(T53311281): This is a noop on iOS now. Implement it.
   +dismissRedbox?: () => void;
 }
@@ -73,13 +68,6 @@ const ExceptionsManager = {
     exceptionId: number,
   ) {
     NativeModule.reportSoftException(message, stack, exceptionId);
-  },
-  updateExceptionMessage(
-    message: string,
-    stack: Array<StackFrame>,
-    exceptionId: number,
-  ) {
-    NativeModule.updateExceptionMessage(message, stack, exceptionId);
   },
   dismissRedbox(): void {
     if (Platform.OS !== 'ios' && NativeModule.dismissRedbox) {
