@@ -149,6 +149,11 @@ public class TextLayoutManager {
   @Nullable
   private static String getTextAlignmentAttr(MapBuffer attributedString) {
     // TODO: Don't read AS_KEY_FRAGMENTS, which may be expensive, and is not present when using
+    // cached Spannable
+    // Android will align text based on the script, so normal and opposite alignment needs to be
+    // swapped when the directions of paragraph and script don't match.
+    // I.e. paragraph is LTR but script is RTL, text needs to be aligned to the left, which means
+    // ALIGN_OPPOSITE needs to be used to align RTL script to the left
     if (!attributedString.contains(AS_KEY_FRAGMENTS)) {
       return null;
     }
@@ -183,11 +188,6 @@ public class TextLayoutManager {
     MapBuffer attributedString,
     Spannable spanned,
     @Nullable String alignmentAttr) {
-    // cached Spannable
-    // Android will align text based on the script, so normal and opposite alignment needs to be
-    // swapped when the directions of paragraph and script don't match.
-    // I.e. paragraph is LTR but script is RTL, text needs to be aligned to the left, which means
-    // ALIGN_OPPOSITE needs to be used to align RTL script to the left
     boolean isParagraphRTL = isRTL(attributedString);
     boolean isScriptRTL =
         TextDirectionHeuristics.FIRSTSTRONG_LTR.isRtl(spanned, 0, spanned.length());
