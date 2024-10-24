@@ -11,7 +11,6 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @protocol RCTExceptionsManagerDelegate <NSObject>
-
 - (void)handleSoftJSExceptionWithMessage:(nullable NSString *)message
                                    stack:(nullable NSArray *)stack
                              exceptionId:(NSNumber *)exceptionId
@@ -20,12 +19,6 @@ NS_ASSUME_NONNULL_BEGIN
                                     stack:(nullable NSArray *)stack
                               exceptionId:(NSNumber *)exceptionId
                           extraDataAsJSON:(nullable NSString *)extraDataAsJSON;
-
-@optional
-- (void)updateJSExceptionWithMessage:(nullable NSString *)message
-                               stack:(nullable NSArray *)stack
-                         exceptionId:(NSNumber *)exceptionId;
-
 @end
 
 @interface RCTExceptionsManager : NSObject <RCTBridgeModule>
