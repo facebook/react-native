@@ -35,8 +35,9 @@ yoga-proguard-annotations = "1.19.0"
 # Native Dependencies
 boost="1_83_0"
 doubleconversion="1.1.6"
-fmt="9.1.0"
-folly="2024.01.01.00"
+fastFloat="6.1.4"
+fmt="11.0.2"
+folly="2024.10.14.00"
 glog="0.3.5"
 gtest="1.12.1"
 
