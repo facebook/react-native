@@ -35,6 +35,10 @@ const DATA = [
     title: 'Desserts',
     data: ['Cheesecake', 'Brownie'],
   },
+  {
+    title: 'Sushi',
+    data: ['Aji', 'Maguro', 'Saba', 'Ika'],
+  },
 ];
 
 /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
@@ -69,6 +73,7 @@ type Props = $ReadOnly<{
   onTest?: ?() => void,
   testLabel?: ?string,
   testOutput?: ?string,
+  sectionFooterEnabled?: ?boolean,
   children?: ?React.Node,
 }>;
 
@@ -76,6 +81,7 @@ const SectionListBaseExample: component(
   ref: React.RefSetter<React.ElementRef<typeof SectionList>>,
   ...props: Props
 ) = React.forwardRef((props: Props, ref): React.Node => {
+  const sectionFooterEnabled = props.sectionFooterEnabled ?? false;
   return (
     <View style={styles.container}>
       {props.testOutput != null ? (
@@ -104,9 +110,14 @@ const SectionListBaseExample: component(
         renderItem={Item}
         /* $FlowFixMe[prop-missing] Error revealed after improved builtin React
          * utility types */
-        renderSectionHeader={({section: {title}}) => (
+        renderSectionHeader={(!sectionFooterEnabled) ? ({section: {title}}) => (
           <Text style={styles.header}>{title}</Text>
-        )}
+        ) : undefined}
+        /* $FlowFixMe[prop-missing] Error revealed after improved builtin React
+         * utility types */
+        renderSectionFooter={sectionFooterEnabled ? ({section: {title}}) => (
+          <Text style={styles.header}>{title}</Text>
+        ) : undefined}
         {...props.exampleProps}
       />
     </View>
