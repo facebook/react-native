@@ -1246,6 +1246,8 @@ public class ReactScrollView extends ScrollView
         scrollTo(getScrollX(), maxScrollY);
       }
     }
+
+    ReactScrollViewHelper.emitLayoutChangeEvent(this);
   }
 
   @Override
