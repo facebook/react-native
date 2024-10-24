@@ -24,6 +24,7 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import com.facebook.common.references.CloseableReference
 import com.facebook.common.util.UriUtil
+import com.facebook.drawee.backends.pipeline.Fresco
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder
 import com.facebook.drawee.controller.ControllerListener
 import com.facebook.drawee.controller.ForwardingControllerListener
@@ -268,7 +269,13 @@ public class ReactImageView(
     } else if (sources.size() == 1) {
       // Optimize for the case where we have just one uri, case in which we don't need the sizes
       val source = sources.getMap(0)
-      var imageSource = ImageSource(context, source.getString("uri"))
+      var imageSource =
+          ImageSource(
+              context,
+              source.getString("uri"),
+              0.0,
+              0.0,
+              source.getString("cache"))
       if (Uri.EMPTY == imageSource.uri) {
         warnImageSource(source.getString("uri"))
         imageSource = getTransparentBitmapImageSource(context)
@@ -282,7 +289,8 @@ public class ReactImageView(
                 context,
                 source.getString("uri"),
                 source.getDouble("width"),
-                source.getDouble("height"))
+                source.getDouble("height"),
+                source.getString("cache"))
         if (Uri.EMPTY == imageSource.uri) {
           warnImageSource(source.getString("uri"))
           imageSource = getTransparentBitmapImageSource(context)
@@ -410,6 +418,7 @@ public class ReactImageView(
 
   private fun maybeUpdateViewFromRequest(doResize: Boolean) {
     val uri = this.imageSource?.uri ?: return
+    val cacheControl = this.imageSource?.cacheControl
 
     val postprocessorList = mutableListOf<Postprocessor>()
     iterativeBoxBlurPostProcessor?.let { postprocessorList.add(it) }
@@ -417,6 +426,12 @@ public class ReactImageView(
     val postprocessor = from(postprocessorList)
 
     val resizeOptions = if (doResize) resizeOptions else null
+
+    if (cacheControl == ImageCacheControl.RELOAD) {
+      val imagePipeline = Fresco.getImagePipeline()
+
+      imagePipeline.evictFromCache(uri)
+    }
 
     val imageRequestBuilder =
         ImageRequestBuilder.newBuilderWithSource(uri)
