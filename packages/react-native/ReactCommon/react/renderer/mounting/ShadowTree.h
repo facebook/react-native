@@ -66,10 +66,6 @@ class ShadowTree final {
     // will then let React run layout effects and apply updates before paint.
     // For all other commits, should be true.
     bool mountSynchronously{true};
-
-    // Called during `tryCommit` phase. Returning true indicates current commit
-    // should yield to the next commit.
-    std::function<bool()> shouldYield;
   };
 
   /*
