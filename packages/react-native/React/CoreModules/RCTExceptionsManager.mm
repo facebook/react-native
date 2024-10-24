@@ -161,11 +161,13 @@ RCT_EXPORT_METHOD(reportException : (JS::NativeExceptionsManager::ExceptionData 
                     stack:(nullable NSArray<NSDictionary *> *)stack
               exceptionId:(double)exceptionId
                   isFatal:(bool)isFatal
+                extraData:(NSDictionary *)extraData
 {
+  NSString *extraDataAsJSON = RCTJSONStringify(extraData, NULL);
   if (isFatal) {
-    [self reportFatalException:message stack:stack exceptionId:exceptionId];
+    [self reportFatal:message stack:stack exceptionId:exceptionId extraDataAsJSON:extraDataAsJSON];
   } else {
-    [self reportSoftException:message stack:stack exceptionId:exceptionId];
+    [self reportSoft:message stack:stack exceptionId:exceptionId extraDataAsJSON:extraDataAsJSON];
   }
 }
 

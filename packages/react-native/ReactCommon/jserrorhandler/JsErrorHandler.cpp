@@ -50,6 +50,25 @@ void objectAssign(
   auto assign = Object.getPropertyAsFunction(runtime, "assign");
   assign.callWithThis(runtime, Object, target, value);
 }
+
+jsi::Value getBundleMetadata(jsi::Runtime& runtime) {
+  auto __getBundleMetadataValue =
+      runtime.global().getProperty(runtime, "__getBundleMetadata");
+
+  if (!__getBundleMetadataValue.isObject() ||
+      !__getBundleMetadataValue.asObject(runtime).isFunction(runtime)) {
+    return jsi::Value::null();
+  }
+
+  auto bundleMetadataValue =
+      __getBundleMetadataValue.asObject(runtime).asFunction(runtime).call(
+          runtime);
+  if (!bundleMetadataValue.isObject()) {
+    return jsi::Value::null();
+  }
+
+  return bundleMetadataValue;
+}
 } // namespace
 
 namespace facebook::react {
@@ -216,8 +235,13 @@ void JsErrorHandler::emitError(
     objectAssign(runtime, extraData, extraDataValue.asObject(runtime));
   }
 
+  auto isDEV =
+      isTruthy(runtime, runtime.global().getProperty(runtime, "__DEV__"));
+
   extraData.setProperty(runtime, "jsEngine", jsEngineValue);
   extraData.setProperty(runtime, "rawStack", error.getStack());
+  extraData.setProperty(runtime, "__DEV__", isDEV);
+  extraData.setProperty(runtime, "bundleMetadata", getBundleMetadata(runtime));
 
   auto cause = errorObj.getProperty(runtime, "cause");
   if (cause.isObject()) {

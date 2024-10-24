@@ -74,6 +74,8 @@ typedef std::shared_ptr<facebook::react::JSRuntimeFactory> (^RCTHostJSEngineProv
 
 @property (nonatomic, readonly) RCTModuleRegistry *moduleRegistry;
 
+@property (nonatomic, readonly) RCTBundleManager *bundleManager;
+
 - (void)start;
 
 - (void)callFunctionOnJSModule:(NSString *)moduleName method:(NSString *)method args:(NSArray *)args;
