@@ -20,7 +20,7 @@
  *
  * @typedef {{
  *   name: string;
- *   path: string;
+ *   path?: string;
  *   isWorkspace: boolean;
  * }} XcodeProject
  *
@@ -162,7 +162,7 @@ function buildProject(sourceDir, xcodeProject, scheme, args) {
   return new Promise((resolve, reject) => {
     const xcodebuildArgs = [
       xcodeProject.isWorkspace ? '-workspace' : '-project',
-      path.join(sourceDir, xcodeProject.path, xcodeProject.name),
+      path.join(sourceDir, xcodeProject.path || '.', xcodeProject.name),
       '-configuration',
       args.mode,
       '-scheme',
