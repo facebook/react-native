@@ -379,10 +379,10 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
             getIncludeFontPadding(),
             getBreakStrategy(),
             getHyphenationFrequency(),
-            // always passing ALIGN_NORMAL and JUSTIFICATION_MODE_NONE here should be fine, since this method doesn't depend on
+            // always passing ALIGN_NORMAL here should be fine, since this method doesn't depend on
             // how exactly lines are aligned, just their width
             Layout.Alignment.ALIGN_NORMAL,
-            (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) ? 0 : Layout.JUSTIFICATION_MODE_NONE,
+            (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) ? -1 : getJustificationMode(),
             getPaint());
         setText(getSpanned());
       }
