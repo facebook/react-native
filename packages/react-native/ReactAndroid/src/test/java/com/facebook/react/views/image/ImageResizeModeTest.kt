@@ -28,6 +28,8 @@ class ImageResizeModeTest {
         .isEqualTo(ScalingUtils.ScaleType.FIT_XY)
     Assertions.assertThat(ImageResizeMode.toScaleType("center"))
         .isEqualTo(ScalingUtils.ScaleType.CENTER_INSIDE)
+    Assertions.assertThat(ImageResizeMode.toScaleType("none"))
+        .isEqualTo(ScaleTypeStartInside.INSTANCE)
 
     // No resizeMode set
     Assertions.assertThat(ImageResizeMode.defaultValue())

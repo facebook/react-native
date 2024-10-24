@@ -47,6 +47,7 @@ enum class ImageResizeMode {
   Stretch,
   Center,
   Repeat,
+  None,
 };
 
 class ImageErrorInfo {
