@@ -14,7 +14,6 @@ import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.ComposeShader;
 import android.graphics.DashPathEffect;
-import com.facebook.common.logging.FLog;
 import android.graphics.Outline;
 import android.graphics.Paint;
 import android.graphics.Path;
@@ -629,12 +628,6 @@ public class CSSBackgroundDrawable extends Drawable {
 
     final RectF borderWidth = getDirectionAwareBorderInsets();
 
-    FLog.w(
-        "ReactNative",
-        "updatePathForBorderRadius: borderWidth: %s, borderRadius: %s",
-        borderWidth,
-        mBorderRadius);
-
     int colorLeft = getBorderColor(Spacing.LEFT);
     int colorTop = getBorderColor(Spacing.TOP);
     int colorRight = getBorderColor(Spacing.RIGHT);
@@ -1054,15 +1047,6 @@ public class CSSBackgroundDrawable extends Drawable {
   }
 
   public float getBorderWidthOrDefaultTo(final float defaultValue, final int spacingType) {
-    @Nullable BorderStyle borderStyle = getBorderStyle();
-
-    FLog.w("ReactNative", "getBorderWidthOrDefaultTo called in CSSBackgroundDrawable with " + borderStyle);
-
-    // THIS IS WORKING NOW!! We gotta clean up non needed places and duplicate the logic in the other drawables
-    if (borderStyle == BorderStyle.NONE) {
-      return defaultValue;
-    }
-
     @Nullable Float width = getBorderWidth(spacingType);
     if (width == null) {
       return defaultValue;
@@ -1087,7 +1071,6 @@ public class CSSBackgroundDrawable extends Drawable {
 
   /** Set type of border */
   private void updatePathEffect() {
-    FLog.w("ReactNative", "updatePathEffect called in CSSBackgroundDrawable with " + mBorderStyle);
     // Used for rounded border and rounded background
     PathEffect mPathEffectForBorderStyle =
         mBorderStyle != null ? getPathEffect(mBorderStyle, getFullBorderWidth()) : null;
@@ -1405,6 +1388,12 @@ public class CSSBackgroundDrawable extends Drawable {
   }
 
   public RectF getDirectionAwareBorderInsets() {
+    @Nullable BorderStyle borderStyle = getBorderStyle();
+
+    if (borderStyle == BorderStyle.NONE) {
+      return new RectF(0, 0, 0, 0);
+    }
+
     final float borderWidth = getBorderWidthOrDefaultTo(0, Spacing.ALL);
     final float borderTopWidth = getBorderWidthOrDefaultTo(borderWidth, Spacing.TOP);
     final float borderBottomWidth = getBorderWidthOrDefaultTo(borderWidth, Spacing.BOTTOM);

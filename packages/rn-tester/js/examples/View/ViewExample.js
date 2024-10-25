@@ -51,6 +51,7 @@ class ViewBorderStyleExample extends React.Component<
                 borderWidth: 1,
                 borderRadius: 5,
                 padding: 5,
+                backgroundColor: 'red',
               },
               this.state.showBorder
                 ? {
@@ -62,24 +63,33 @@ class ViewBorderStyleExample extends React.Component<
               Dotted border style
             </RNTesterText>
           </View>
-          <View
-            style={[
-              {
-                marginTop: 5,
-                borderWidth: 1,
-                borderRadius: 5,
-                padding: 5,
-              },
-              this.state.showBorder
-                ? {
-                    borderStyle: 'none',
-                  }
-                : null,
-            ]}>
-            <RNTesterText style={{fontSize: 11}}>
-              None border style
-            </RNTesterText>
-          </View>
+          {Platform.OS === 'android' ? (
+            <View
+              // $FlowFixMe[incompatible-type] - Suppressing missing `none` type in `borderStyle` as it's not fully supported yet
+              style={[
+                {
+                  marginTop: 5,
+                  borderWidth: 1,
+                  borderRadius: 5,
+                  padding: 5,
+                  backgroundColor: 'red',
+                },
+                this.state.showBorder
+                  ? {
+                      borderStyle: 'none',
+                    }
+                  : null,
+              ]}>
+              <RNTesterText
+                style={{
+                  fontSize: 11,
+                  borderWidth: 1,
+                  borderStyle: 'dotted',
+                }}>
+                None border style
+              </RNTesterText>
+            </View>
+          ) : null}
         </View>
       </Pressable>
     );
