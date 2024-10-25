@@ -186,7 +186,7 @@ static void RCTPerformMountInstructions(
                                           componentViewDescriptor:rootViewDescriptor];
 }
 
-- (void)scheduleTransaction:(MountingCoordinator::Shared)mountingCoordinator
+- (void)scheduleTransaction:(std::shared_ptr<const MountingCoordinator>)mountingCoordinator
 {
   if (RCTIsMainQueue()) {
     // Already on the proper thread, so:
