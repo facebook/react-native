@@ -47,7 +47,6 @@ add_library(
         turbomodulejsijni
         OBJECT
         ReactCommon/BindingsInstallerHolder.cpp
-        ReactCommon/CompositeTurboModuleManagerDelegate.cpp
         ReactCommon/OnLoad.cpp
         ReactCommon/TurboModuleManager.cpp
         $<TARGET_OBJECTS:logger>
