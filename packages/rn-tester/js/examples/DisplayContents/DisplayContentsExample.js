@@ -10,6 +10,8 @@
 
 'use strict';
 
+import type {RNTesterModule} from '../../types/RNTesterTypes';
+
 import * as React from 'react';
 import {
   StyleSheet,
