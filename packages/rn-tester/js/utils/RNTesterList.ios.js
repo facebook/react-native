@@ -214,7 +214,8 @@ const APIs: Array<RNTesterModuleInfo> = ([
   {
     key: 'DisplayContentsExample',
     category: 'UI',
-    module: require('../examples/DisplayContents/DisplayContentsExample').default,
+    module: require('../examples/DisplayContents/DisplayContentsExample')
+      .default,
   },
   // Only show the link for the example if the API is available.
   typeof IntersectionObserver === 'function'
