@@ -151,26 +151,6 @@
   "beachball": {
     "shouldPublish": false
   },
-  "resolutions": {
-    "@grpc/proto-loader": "^0.7.8",
-    "async": "^3.2.2",
-    "debug": ">=3.1.0",
-    "es5-ext": "0.10.53",
-    "micromatch": "^4.0.0",
-    "readable-stream": "^4.0.0",
-    "shell-quote": "^1.7.3",
-    "tough-cookie": "^4.1.3"
-  },
-  "_justification": {
-    "@grpc/proto-loader": "Resolves a security issue with protobufjs, one of its dependencies",
-    "async": "Versions of async prior to 3.2.2 are vulnerable to prototype pollution",
-    "debug": "ReDoS vulnerability in older versions, plus the dependents that pull in debug@<1.0.0 haven't been updated in years",
-    "es5-ext": "Packages after 0.10.54 and at the moment up until 0.10.59 contain a protest message. A policy prevents us from using packages with protestware, therefore downgrading to the latest release without the message.",
-    "micromatch": "Version 3.x.x depends on decode-uri-component 0.2.0, which has a DoS vulnerability",
-    "readable-stream": "Eliminates dependency on outdated string_decoder component",
-    "shell-quote": "Versions prior to 1.7.3 have an RCE vulnerability. Should be removable once we upgrade CLI tools to ^8.0.0 with RN 0.69.",
-    "tough-cookie": "@definitelytyped/dtslint indirectly depends on this through an out-of-date library, and our particular use case doesn't need cookies"
-  },
   "codegenConfig": {
     "libraries": [
       {

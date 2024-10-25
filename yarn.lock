@@ -3406,7 +3406,7 @@ __metadata:
   peerDependencies:
     "@types/react": ^18.2.6
     react: "*"
-    react-native-macos: "*"
+    react-native: "*"
   peerDependenciesMeta:
     "@types/react":
       optional: true
