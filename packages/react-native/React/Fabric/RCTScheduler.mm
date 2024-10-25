@@ -26,13 +26,13 @@ class SchedulerDelegateProxy : public SchedulerDelegate {
  public:
   SchedulerDelegateProxy(void *scheduler) : scheduler_(scheduler) {}
 
-  void schedulerDidFinishTransaction(const MountingCoordinator::Shared &mountingCoordinator) override
+  void schedulerDidFinishTransaction(const std::shared_ptr<const MountingCoordinator> &mountingCoordinator) override
   {
     RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
     [scheduler.delegate schedulerDidFinishTransaction:mountingCoordinator];
   }
 
-  void schedulerShouldRenderTransactions(const MountingCoordinator::Shared &mountingCoordinator) override
+  void schedulerShouldRenderTransactions(const std::shared_ptr<const MountingCoordinator> &mountingCoordinator) override
   {
     RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
     [scheduler.delegate schedulerShouldRenderTransactions:mountingCoordinator];

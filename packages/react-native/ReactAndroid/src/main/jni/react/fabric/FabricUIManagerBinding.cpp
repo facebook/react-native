@@ -535,7 +535,7 @@ FabricUIManagerBinding::getMountingManager(const char* locationHint) {
 }
 
 void FabricUIManagerBinding::schedulerDidFinishTransaction(
-    const MountingCoordinator::Shared& mountingCoordinator) {
+    const std::shared_ptr<const MountingCoordinator>& mountingCoordinator) {
   // We shouldn't be pulling the transaction here (which triggers diffing of
   // the trees to determine the mutations to run on the host platform),
   // but we have to due to current limitations in the Android implementation.
@@ -564,7 +564,8 @@ void FabricUIManagerBinding::schedulerDidFinishTransaction(
 }
 
 void FabricUIManagerBinding::schedulerShouldRenderTransactions(
-    const MountingCoordinator::Shared& /* mountingCoordinator */) {
+    const std::shared_ptr<
+        const MountingCoordinator>& /* mountingCoordinator */) {
   auto mountingManager =
       getMountingManager("schedulerShouldRenderTransactions");
   if (!mountingManager) {

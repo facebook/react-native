@@ -231,7 +231,8 @@ CommitMode ShadowTree::getCommitMode() const {
   return commitMode_;
 }
 
-MountingCoordinator::Shared ShadowTree::getMountingCoordinator() const {
+std::shared_ptr<const MountingCoordinator> ShadowTree::getMountingCoordinator()
+    const {
   return mountingCoordinator_;
 }
 

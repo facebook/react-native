@@ -292,12 +292,12 @@ using namespace facebook::react;
 
 #pragma mark - RCTSchedulerDelegate
 
-- (void)schedulerDidFinishTransaction:(MountingCoordinator::Shared)mountingCoordinator
+- (void)schedulerDidFinishTransaction:(std::shared_ptr<const MountingCoordinator>)mountingCoordinator
 {
   // no-op, we will flush the transaction from schedulerShouldRenderTransactions
 }
 
-- (void)schedulerShouldRenderTransactions:(MountingCoordinator::Shared)mountingCoordinator
+- (void)schedulerShouldRenderTransactions:(std::shared_ptr<const MountingCoordinator>)mountingCoordinator
 {
   [_mountingManager scheduleTransaction:mountingCoordinator];
 }
