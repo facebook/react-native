@@ -99,21 +99,6 @@ RCT_EXPORT_METHOD(reportFatalException
   [self reportFatal:message stack:stack exceptionId:exceptionId extraDataAsJSON:nil];
 }
 
-RCT_EXPORT_METHOD(updateExceptionMessage
-                  : (NSString *)message stack
-                  : (NSArray<NSDictionary *> *)stack exceptionId
-                  : (double)exceptionId)
-{
-  if (RCTRedBoxGetEnabled()) {
-    RCTRedBox *redbox = [_moduleRegistry moduleForName:"RedBox"];
-    [redbox updateErrorMessage:message withStack:stack errorCookie:(int)exceptionId];
-  }
-
-  if (_delegate && [_delegate respondsToSelector:@selector(updateJSExceptionWithMessage:stack:exceptionId:)]) {
-    [_delegate updateJSExceptionWithMessage:message stack:stack exceptionId:[NSNumber numberWithDouble:exceptionId]];
-  }
-}
-
 RCT_EXPORT_METHOD(dismissRedbox) {}
 
 RCT_EXPORT_METHOD(reportException : (JS::NativeExceptionsManager::ExceptionData &)data)
