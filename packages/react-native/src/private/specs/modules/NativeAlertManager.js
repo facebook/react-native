@@ -13,15 +13,15 @@ import type {TurboModule} from '../../../../Libraries/TurboModule/RCTExport';
 import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboModuleRegistry';
 
 export type Args = {|
-  title?: string,
-  message?: string,
-  buttons?: Array<Object>, // TODO(T67565166): have a better type
-  type?: string,
   defaultValue?: string,
+  message?: string,
+  title?: string,
   cancelButtonKey?: string,
   destructiveButtonKey?: string,
   preferredButtonKey?: string,
   keyboardType?: string,
+  buttons?: Array<Object>, // TODO(T67565166): have a better type
+  type?: string,
   userInterfaceStyle?: string,
 |};
 
