@@ -22,7 +22,6 @@ import android.graphics.RectF
 import android.graphics.Region
 import android.graphics.drawable.Drawable
 import android.os.Build
-import com.facebook.common.logging.FLog
 import com.facebook.react.uimanager.FloatUtil.floatsEqual
 import com.facebook.react.uimanager.LengthPercentage
 import com.facebook.react.uimanager.PixelUtil
@@ -168,11 +167,7 @@ internal class BorderDrawable(
   }
 
   override fun draw(canvas: Canvas) {
-    FLog.w("ReactNative", "draw called")
-
     if (this.borderStyle == BorderStyle.NONE) {
-      FLog.w("ReactNative", "draw called with BorderStyle.NONE")
-
       return
     }
 

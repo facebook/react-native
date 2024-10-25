@@ -51,7 +51,6 @@ class ViewBorderStyleExample extends React.Component<
                 borderWidth: 1,
                 borderRadius: 5,
                 padding: 5,
-                backgroundColor: 'red',
               },
               this.state.showBorder
                 ? {
@@ -72,7 +71,6 @@ class ViewBorderStyleExample extends React.Component<
                   borderWidth: 1,
                   borderRadius: 5,
                   padding: 5,
-                  backgroundColor: 'red',
                 },
                 this.state.showBorder
                   ? {
@@ -80,12 +78,7 @@ class ViewBorderStyleExample extends React.Component<
                     }
                   : null,
               ]}>
-              <RNTesterText
-                style={{
-                  fontSize: 11,
-                  borderWidth: 1,
-                  borderStyle: 'dotted',
-                }}>
+              <RNTesterText style={{fontSize: 11}}>
                 None border style
               </RNTesterText>
             </View>

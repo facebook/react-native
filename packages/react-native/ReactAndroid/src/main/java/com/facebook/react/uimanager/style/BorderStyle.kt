@@ -17,7 +17,7 @@ public enum class BorderStyle {
     @JvmStatic
     public fun fromString(borderStyle: String): BorderStyle? {
       return when (borderStyle.lowercase()) {
-        "none"  -> NONE
+        "none" -> NONE
         "solid" -> SOLID
         "dashed" -> DASHED
         "dotted" -> DOTTED

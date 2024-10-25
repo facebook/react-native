@@ -76,8 +76,6 @@ public class CSSBackgroundDrawable extends Drawable {
   private static @Nullable PathEffect getPathEffect(BorderStyle style, float borderWidth) {
     switch (style) {
       case NONE:
-        return null;
-
       case SOLID:
         return null;
 
