@@ -9,7 +9,6 @@
 #include <react/renderer/components/image/ImageProps.h>
 #include <react/renderer/components/image/conversions.h>
 #include <react/renderer/core/propsConversions.h>
-#include <react/utils/CoreFeatures.h>
 
 namespace facebook::react {
 

@@ -20,7 +20,6 @@
 #include <react/renderer/core/ShadowNodeFragment.h>
 #include <react/renderer/core/State.h>
 #include <react/renderer/graphics/Float.h>
-#include <react/utils/CoreFeatures.h>
 
 namespace facebook::react {
 
