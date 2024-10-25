@@ -50,6 +50,18 @@ void objectAssign(
   auto assign = Object.getPropertyAsFunction(runtime, "assign");
   assign.callWithThis(runtime, Object, target, value);
 }
+
+jsi::Object wrapInErrorIfNecessary(
+    jsi::Runtime& runtime,
+    const jsi::Value& value) {
+  auto Error = runtime.global().getPropertyAsFunction(runtime, "Error");
+  auto isError =
+      value.isObject() && value.asObject(runtime).instanceOf(runtime, Error);
+  auto error = isError
+      ? value.getObject(runtime)
+      : Error.callAsConstructor(runtime, value).getObject(runtime);
+  return error;
+}
 } // namespace
 
 namespace facebook::react {
@@ -187,7 +199,7 @@ void JsErrorHandler::emitError(
     jsi::JSError& error,
     bool isFatal) {
   auto message = error.getMessage();
-  auto errorObj = error.value().getObject(runtime);
+  auto errorObj = wrapInErrorIfNecessary(runtime, error.value());
   auto componentStackValue = errorObj.getProperty(runtime, "componentStack");
   if (!isLooselyNull(componentStackValue)) {
     message += "\n" + stringifyToCpp(runtime, componentStackValue);
