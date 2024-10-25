@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6eb9ba14445c1ce6b54a690941171485>>
+ * @generated SignedSource<<f98a6ddd268fb59b5ee5edb4997b3a63>>
  */
 
 /**
@@ -75,6 +75,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableCleanTextInputYogaNode(): Boolean = accessor.enableCleanTextInputYogaNode()
+
+  /**
+   * Enable prop iterator setter-style construction of Props in C++ (this flag is not used in Java).
+   */
+  @JvmStatic
+  public fun enableCppPropsIteratorSetter(): Boolean = accessor.enableCppPropsIteratorSetter()
 
   /**
    * Deletes views that were pre-allocated but never mounted on the screen.

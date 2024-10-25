@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f9cc95d2f503b66dd39c89b641c96c79>>
+ * @generated SignedSource<<f78f43e37af86d21faf92f4fea89f351>>
  * @flow strict
  */
 
@@ -60,6 +60,7 @@ export type ReactNativeFeatureFlags = {
   enableAndroidLineHeightCentering: Getter<boolean>,
   enableBridgelessArchitecture: Getter<boolean>,
   enableCleanTextInputYogaNode: Getter<boolean>,
+  enableCppPropsIteratorSetter: Getter<boolean>,
   enableDeletionOfUnmountedViews: Getter<boolean>,
   enableEagerRootViewAttachment: Getter<boolean>,
   enableEventEmitterRetentionDuringGesturesOnAndroid: Getter<boolean>,
@@ -227,6 +228,10 @@ export const enableBridgelessArchitecture: Getter<boolean> = createNativeFlagGet
  * Clean yoga node when <TextInput /> does not change.
  */
 export const enableCleanTextInputYogaNode: Getter<boolean> = createNativeFlagGetter('enableCleanTextInputYogaNode', false);
+/**
+ * Enable prop iterator setter-style construction of Props in C++ (this flag is not used in Java).
+ */
+export const enableCppPropsIteratorSetter: Getter<boolean> = createNativeFlagGetter('enableCppPropsIteratorSetter', false);
 /**
  * Deletes views that were pre-allocated but never mounted on the screen.
  */

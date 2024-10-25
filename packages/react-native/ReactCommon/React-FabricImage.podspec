@@ -78,6 +78,7 @@ Pod::Spec.new do |s|
   s.dependency "DoubleConversion"
   s.dependency "fast_float", "6.1.4"
   s.dependency "fmt", "11.0.2"
+  s.dependency "React-featureflags"
   s.dependency "React-ImageManager"
   s.dependency "React-utils"
   s.dependency "Yoga"

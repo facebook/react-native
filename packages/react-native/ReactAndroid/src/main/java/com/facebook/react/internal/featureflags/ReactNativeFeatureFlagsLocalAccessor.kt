@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b6dd6a5d02c9070c3f35f70d5d1b7e35>>
+ * @generated SignedSource<<949f5cdf6d0a4015fbd680ba718dce6d>>
  */
 
 /**
@@ -32,6 +32,7 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var enableAndroidLineHeightCenteringCache: Boolean? = null
   private var enableBridgelessArchitectureCache: Boolean? = null
   private var enableCleanTextInputYogaNodeCache: Boolean? = null
+  private var enableCppPropsIteratorSetterCache: Boolean? = null
   private var enableDeletionOfUnmountedViewsCache: Boolean? = null
   private var enableEagerRootViewAttachmentCache: Boolean? = null
   private var enableEventEmitterRetentionDuringGesturesOnAndroidCache: Boolean? = null
@@ -147,6 +148,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.enableCleanTextInputYogaNode()
       accessedFeatureFlags.add("enableCleanTextInputYogaNode")
       enableCleanTextInputYogaNodeCache = cached
+    }
+    return cached
+  }
+
+  override fun enableCppPropsIteratorSetter(): Boolean {
+    var cached = enableCppPropsIteratorSetterCache
+    if (cached == null) {
+      cached = currentProvider.enableCppPropsIteratorSetter()
+      accessedFeatureFlags.add("enableCppPropsIteratorSetter")
+      enableCppPropsIteratorSetterCache = cached
     }
     return cached
   }
