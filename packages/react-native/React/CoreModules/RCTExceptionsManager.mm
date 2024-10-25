@@ -114,12 +114,6 @@ RCT_EXPORT_METHOD(updateExceptionMessage
   }
 }
 
-// Deprecated.  Use reportFatalException directly instead.
-RCT_EXPORT_METHOD(reportUnhandledException : (NSString *)message stack : (NSArray<NSDictionary *> *)stack)
-{
-  [self reportFatalException:message stack:stack exceptionId:-1];
-}
-
 RCT_EXPORT_METHOD(dismissRedbox) {}
 
 RCT_EXPORT_METHOD(reportException : (JS::NativeExceptionsManager::ExceptionData &)data)
