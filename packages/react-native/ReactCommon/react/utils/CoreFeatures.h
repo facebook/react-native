@@ -16,9 +16,6 @@ namespace facebook::react {
  */
 class CoreFeatures {
  public:
-  // Specifies whether the iterator-style prop parsing is enabled.
-  static bool enablePropIteratorSetter;
-
   // When enabled, rawProps in Props will not include Yoga specific props.
   static bool excludeYogaFromRawProps;
 };

@@ -124,6 +124,15 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'experimentation',
       },
     },
+    enableCppPropsIteratorSetter: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2024-09-13',
+        description:
+          'Enable prop iterator setter-style construction of Props in C++ (this flag is not used in Java).',
+        purpose: 'experimentation',
+      },
+    },
     enableDeletionOfUnmountedViews: {
       defaultValue: false,
       metadata: {

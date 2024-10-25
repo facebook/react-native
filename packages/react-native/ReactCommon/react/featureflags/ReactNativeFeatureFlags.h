@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<64ea086a7c847e822595983867cdf776>>
+ * @generated SignedSource<<29b98e3d5daf7ad09cdee366ef38753e>>
  */
 
 /**
@@ -78,6 +78,11 @@ class ReactNativeFeatureFlags {
    * Clean yoga node when <TextInput /> does not change.
    */
   RN_EXPORT static bool enableCleanTextInputYogaNode();
+
+  /**
+   * Enable prop iterator setter-style construction of Props in C++ (this flag is not used in Java).
+   */
+  RN_EXPORT static bool enableCppPropsIteratorSetter();
 
   /**
    * Deletes views that were pre-allocated but never mounted on the screen.
