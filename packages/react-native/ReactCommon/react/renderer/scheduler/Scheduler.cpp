@@ -21,7 +21,6 @@
 #include <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #include <react/renderer/uimanager/UIManager.h>
 #include <react/renderer/uimanager/UIManagerBinding.h>
-#include <react/utils/CoreFeatures.h>
 
 namespace facebook::react {
 

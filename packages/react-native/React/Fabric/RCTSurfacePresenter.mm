@@ -33,7 +33,6 @@
 #import <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #import <react/renderer/scheduler/SchedulerToolbox.h>
 #import <react/utils/ContextContainer.h>
-#import <react/utils/CoreFeatures.h>
 #import <react/utils/ManagedObjectWrapper.h>
 #import "AppleEventBeat.h"
 
