@@ -1,16 +1,8 @@
 name: Run Danger on PR
 
 on:
-  pull_request_target:
+  pull_request:
     types: [opened, edited, reopened, synchronize]
-
-permissions:
-  actions: write
-  checks: write
-  contents: write
-  issues: write
-  pull-requests: write
-  statuses: write
 
 jobs:
   danger:
@@ -18,9 +10,10 @@ jobs:
     if: github.repository == 'facebook/react-native'
     steps:
       - uses: actions/checkout@v4
-      - name: Run Yarn Install on Root
-        run: yarn install
-        working-directory: .
+      - name: Setup node.js
+        uses: ./.github/actions/setup-node
+      - name: Run yarn
+        uses: ./.github/actions/yarn-install-with-cache
       - name: Danger
         run: yarn danger ci --use-github-checks --failOnErrors
         working-directory: packages/react-native-bots
