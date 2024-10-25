@@ -2044,7 +2044,6 @@ public final class com/facebook/react/common/network/OkHttpCallUtil {
 
 public class com/facebook/react/config/ReactFeatureFlags {
 	public static field dispatchPointerEvents Z
-	public static field enableCppPropsIteratorSetter Z
 	public fun <init> ()V
 }
 

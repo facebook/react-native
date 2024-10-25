@@ -9,7 +9,6 @@
 
 namespace facebook::react {
 
-bool CoreFeatures::enablePropIteratorSetter = false;
 bool CoreFeatures::excludeYogaFromRawProps = false;
 
 } // namespace facebook::react
