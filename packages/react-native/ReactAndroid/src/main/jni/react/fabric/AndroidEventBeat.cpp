@@ -16,9 +16,9 @@ namespace facebook::react {
 AndroidEventBeat::AndroidEventBeat(
     std::shared_ptr<OwnerBox> ownerBox,
     EventBeatManager* eventBeatManager,
-    RuntimeExecutor runtimeExecutor,
+    RuntimeScheduler& runtimeScheduler,
     jni::global_ref<jobject> javaUIManager)
-    : EventBeat(std::move(ownerBox), std::move(runtimeExecutor)),
+    : EventBeat(std::move(ownerBox), runtimeScheduler),
       eventBeatManager_(eventBeatManager),
       javaUIManager_(std::move(javaUIManager)) {
   eventBeatManager->addObserver(*this);

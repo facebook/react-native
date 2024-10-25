@@ -7,15 +7,15 @@
 
 #include "EventBeat.h"
 
+#include <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #include <utility>
 
 namespace facebook::react {
 
 EventBeat::EventBeat(
     std::shared_ptr<OwnerBox> ownerBox,
-    RuntimeExecutor runtimeExecutor)
-    : ownerBox_(std::move(ownerBox)),
-      runtimeExecutor_(std::move(runtimeExecutor)) {}
+    RuntimeScheduler& runtimeScheduler)
+    : ownerBox_(std::move(ownerBox)), runtimeScheduler_(runtimeScheduler) {}
 
 void EventBeat::request() const {
   isRequested_ = true;
@@ -33,17 +33,18 @@ void EventBeat::induce() const {
   isRequested_ = false;
   isBeatCallbackScheduled_ = true;
 
-  runtimeExecutor_([this, ownerBox = ownerBox_](jsi::Runtime& runtime) {
-    auto owner = ownerBox->owner.lock();
-    if (!owner) {
-      return;
-    }
+  runtimeScheduler_.scheduleWork(
+      [this, ownerBox = ownerBox_](jsi::Runtime& runtime) {
+        auto owner = ownerBox->owner.lock();
+        if (!owner) {
+          return;
+        }
 
-    isBeatCallbackScheduled_ = false;
-    if (beatCallback_) {
-      beatCallback_(runtime);
-    }
-  });
+        isBeatCallbackScheduled_ = false;
+        if (beatCallback_) {
+          beatCallback_(runtime);
+        }
+      });
 }
 
 } // namespace facebook::react
