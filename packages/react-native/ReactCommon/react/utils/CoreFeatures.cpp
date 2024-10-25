@@ -7,8 +7,4 @@
 
 #include "CoreFeatures.h"
 
-namespace facebook::react {
-
-bool CoreFeatures::excludeYogaFromRawProps = false;
-
-} // namespace facebook::react
+namespace facebook::react {} // namespace facebook::react
