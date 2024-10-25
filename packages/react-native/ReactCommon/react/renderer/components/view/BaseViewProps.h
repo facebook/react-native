@@ -71,8 +71,8 @@ class BaseViewProps : public YogaStylableProps, public AccessibilityProps {
   // Filter
   std::vector<FilterFunction> filter{};
 
-  // Gradient
-  std::vector<GradientValue> backgroundImage{};
+  // Background Image
+  std::vector<BackgroundImage> backgroundImage{};
 
   // MixBlendMode
   BlendMode mixBlendMode{BlendMode::Normal};
