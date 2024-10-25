@@ -671,6 +671,7 @@ dependencies {
   testImplementation(libs.junit)
   testImplementation(libs.assertj)
   testImplementation(libs.mockito)
+  testImplementation(libs.mockito.kotlin)
   testImplementation(libs.robolectric)
   testImplementation(libs.thoughtworks)
 }
