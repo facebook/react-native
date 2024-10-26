@@ -3314,6 +3314,15 @@ public final class com/facebook/react/modules/core/TimingModule : com/facebook/f
 public final class com/facebook/react/modules/core/TimingModule$Companion {
 }
 
+public final class com/facebook/react/modules/debug/DevMenuModule : com/facebook/fbreact/specs/NativeDevMenuSpec {
+	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;Lcom/facebook/react/devsupport/interfaces/DevSupportManager;)V
+	public fun debugRemotely (Z)V
+	public fun reload ()V
+	public fun setHotLoadingEnabled (Z)V
+	public fun setProfilingEnabled (Z)V
+	public fun show ()V
+}
+
 public final class com/facebook/react/modules/debug/DevSettingsModule : com/facebook/fbreact/specs/NativeDevSettingsSpec {
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;Lcom/facebook/react/devsupport/interfaces/DevSupportManager;)V
 	public fun addListener (Ljava/lang/String;)V
@@ -3789,13 +3798,13 @@ public abstract class com/facebook/react/packagerconnection/NotificationOnlyHand
 	public final fun onRequest (Ljava/lang/Object;Lcom/facebook/react/packagerconnection/Responder;)V
 }
 
-public final class com/facebook/react/packagerconnection/PackagerConnectionSettings {
+public class com/facebook/react/packagerconnection/PackagerConnectionSettings {
 	public fun <init> (Landroid/content/Context;)V
 	public final fun getAdditionalOptionsForPackager ()Ljava/util/Map;
-	public final fun getDebugServerHost ()Ljava/lang/String;
+	public fun getDebugServerHost ()Ljava/lang/String;
 	public final fun getPackageName ()Ljava/lang/String;
 	public final fun setAdditionalOptionForPackager (Ljava/lang/String;Ljava/lang/String;)V
-	public final fun setDebugServerHost (Ljava/lang/String;)V
+	public fun setDebugServerHost (Ljava/lang/String;)V
 }
 
 public final class com/facebook/react/packagerconnection/ReconnectingWebSocket : okhttp3/WebSocketListener {
@@ -4045,6 +4054,33 @@ public class com/facebook/react/shell/MainReactPackage : com/facebook/react/Base
 public class com/facebook/react/shell/MainReactPackage$$ReactModuleInfoProvider : com/facebook/react/module/model/ReactModuleInfoProvider {
 	public fun <init> ()V
 	public fun getReactModuleInfos ()Ljava/util/Map;
+}
+
+public final class com/facebook/react/soloader/OpenSourceMergedSoMapping : com/facebook/soloader/ExternalSoMapping {
+	public static final field INSTANCE Lcom/facebook/react/soloader/OpenSourceMergedSoMapping;
+	public fun invokeJniOnload (Ljava/lang/String;)V
+	public final fun libfabricjni_so ()I
+	public final fun libhermes_executor_so ()I
+	public final fun libhermesinstancejni_so ()I
+	public final fun libhermestooling_so ()I
+	public final fun libjscexecutor_so ()I
+	public final fun libjscinstance_so ()I
+	public final fun libjscruntime_so ()I
+	public final fun libjsctooling_so ()I
+	public final fun libjsijniprofiler_so ()I
+	public final fun libjsinspector_so ()I
+	public final fun libmapbufferjni_so ()I
+	public final fun libreact_devsupportjni_so ()I
+	public final fun libreact_featureflagsjni_so ()I
+	public final fun libreact_newarchdefaults_so ()I
+	public final fun libreactnative_so ()I
+	public final fun libreactnativeblob_so ()I
+	public final fun libreactnativejni_so ()I
+	public final fun librninstance_so ()I
+	public final fun libturbomodulejsijni_so ()I
+	public final fun libuimanagerjni_so ()I
+	public final fun libyoga_so ()I
+	public fun mapLibName (Ljava/lang/String;)Ljava/lang/String;
 }
 
 public final class com/facebook/react/touch/JSResponderHandler : com/facebook/react/touch/OnInterceptTouchEventListener {

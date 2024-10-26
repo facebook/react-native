@@ -29,6 +29,7 @@ nexus-publish = "1.3.0"
 okhttp = "4.9.2"
 okio = "2.9.0"
 robolectric = "4.9.2"
+soloader = "0.12.1"
 xstream = "1.4.20"
 yoga-proguard-annotations = "1.19.0"
 # Native Dependencies
@@ -55,6 +56,7 @@ fresco-middleware = { module = "com.facebook.fresco:middleware", version.ref = "
 fresco-imagepipeline-okhttp3 = { module = "com.facebook.fresco:imagepipeline-okhttp3", version.ref = "fresco" }
 fresco-ui-common = { module = "com.facebook.fresco:ui-common", version.ref = "fresco" }
 infer-annotation = { module = "com.facebook.infer.annotation:infer-annotation", version.ref = "infer-annotation" }
+soloader = { module = "com.facebook.soloader:soloader", version.ref = "soloader" }
 yoga-proguard-annotations = { module = "com.facebook.yoga:proguard-annotations", version.ref = "yoga-proguard-annotations" }
 
 jsr305 = { module = "com.google.code.findbugs:jsr305", version.ref = "jsr305" }

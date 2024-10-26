@@ -289,10 +289,7 @@ public class ReactDelegate {
     // With Bridgeless enabled, create and start the surface
     if (ReactFeatureFlags.enableBridgelessArchitecture) {
       if (mReactSurface == null) {
-        // Create a ReactSurface
         mReactSurface = mReactHost.createSurface(mActivity, appKey, mLaunchOptions);
-        // Set main Activity's content view
-        mActivity.setContentView(mReactSurface.getView());
       }
       mReactSurface.start();
     } else {

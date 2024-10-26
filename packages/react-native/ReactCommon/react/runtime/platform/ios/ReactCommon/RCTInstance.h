@@ -8,6 +8,7 @@
 #import <React/RCTUIKit.h> // [macOS]
 
 #import <React/RCTDefines.h>
+#import <React/RCTJavaScriptLoader.h>
 #import <jsinspector-modern/ReactCdp.h>
 #import <react/runtime/JSRuntimeFactory.h>
 #import <react/runtime/ReactInstance.h>
@@ -43,6 +44,10 @@ RCT_EXTERN void RCTInstanceSetRuntimeDiagnosticFlags(NSString *_Nullable flags);
                    isFatal:(BOOL)isFatal;
 
 - (void)instance:(RCTInstance *)instance didInitializeRuntime:(facebook::jsi::Runtime &)runtime;
+
+- (void)loadBundleAtURL:(NSURL *)sourceURL
+             onProgress:(RCTSourceLoadProgressBlock)onProgress
+             onComplete:(RCTSourceLoadBlock)loadCallback;
 
 @end
 

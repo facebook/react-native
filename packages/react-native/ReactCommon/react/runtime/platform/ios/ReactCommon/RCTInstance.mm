@@ -25,7 +25,6 @@
 #import <React/RCTDisplayLink.h>
 #import <React/RCTEventDispatcherProtocol.h>
 #import <React/RCTFollyConvert.h>
-#import <React/RCTJavaScriptLoader.h>
 #import <React/RCTLog.h>
 #import <React/RCTLogBox.h>
 #import <React/RCTModuleData.h>
@@ -428,7 +427,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
 #endif
 
   __weak __typeof(self) weakSelf = self;
-  [RCTJavaScriptLoader loadBundleAtURL:sourceURL
+  [_delegate loadBundleAtURL:sourceURL
       onProgress:^(RCTLoadingProgress *progressData) {
         __typeof(self) strongSelf = weakSelf;
         if (!strongSelf) {

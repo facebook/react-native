@@ -94,6 +94,8 @@ fi
 
 [ -z "$CLI_PATH" ] && CLI_PATH="$REACT_NATIVE_DIR/scripts/bundle.js"
 
+[ -z "$BUNDLE_COMMAND" ] && BUNDLE_COMMAND="bundle"
+
 [ -z "$COMPOSE_SOURCEMAP_PATH" ] && COMPOSE_SOURCEMAP_PATH="$REACT_NATIVE_DIR/scripts/compose-source-maps.js"
 
 if [[ -z "$BUNDLE_CONFIG" ]]; then

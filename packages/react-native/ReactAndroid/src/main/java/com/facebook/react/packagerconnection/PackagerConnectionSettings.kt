@@ -15,13 +15,13 @@ import android.preference.PreferenceManager
 import com.facebook.common.logging.FLog
 import com.facebook.react.modules.systeminfo.AndroidInfoHelpers
 
-public class PackagerConnectionSettings(private val appContext: Context) {
+public open class PackagerConnectionSettings(private val appContext: Context) {
   private val preferences: SharedPreferences =
       PreferenceManager.getDefaultSharedPreferences(appContext)
   public val packageName: String = appContext.packageName
   private val _additionalOptionsForPackager: MutableMap<String, String> = mutableMapOf()
 
-  public var debugServerHost: String
+  public open var debugServerHost: String
     get() {
       // Check host setting first. If empty try to detect emulator type and use default
       // hostname for those

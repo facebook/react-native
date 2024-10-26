@@ -11,6 +11,8 @@
 
 import type {ConfigT} from 'metro-config';
 
+export type {MetroConfig} from 'metro-config';
+
 import {getDefaultConfig as getBaseConfig, mergeConfig} from 'metro-config';
 
 const INTERNAL_CALLSITES_REGEX = new RegExp(

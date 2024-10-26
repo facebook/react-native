@@ -12,18 +12,32 @@ class NewArchitectureHelper
     @@NewArchWarningEmitted = false # Used not to spam warnings to the user.
 
     def self.set_clang_cxx_language_standard_if_needed(installer)
+        cxxBuildsettingsName = "CLANG_CXX_LANGUAGE_STANDARD"
         projects = installer.aggregate_targets
             .map{ |t| t.user_project }
             .uniq{ |p| p.path }
 
         projects.each do |project|
-            Pod::UI.puts("Setting CLANG_CXX_LANGUAGE_STANDARD to #{ Helpers::Constants::cxx_language_standard } on #{ project.path }")
+            Pod::UI.puts("Setting #{cxxBuildsettingsName} to #{ Helpers::Constants::cxx_language_standard } on #{ project.path }")
 
             project.build_configurations.each do |config|
-                config.build_settings["CLANG_CXX_LANGUAGE_STANDARD"] = Helpers::Constants::cxx_language_standard
+                config.build_settings[cxxBuildsettingsName] = Helpers::Constants::cxx_language_standard
             end
 
             project.save()
+        end
+
+        installer.target_installation_results.pod_target_installation_results.each do |pod_name, target_installation_result|
+            target_installation_result.native_target.build_configurations.each do |config|
+                config.build_settings[cxxBuildsettingsName] = Helpers::Constants::cxx_language_standard
+            end
+        end
+
+        # Override targets that would set spec.xcconfig to define c++ version
+        installer.aggregate_targets.each do |aggregate_target|
+            aggregate_target.xcconfigs.each do |config_name, config_file|
+                config_file.attributes[cxxBuildsettingsName] = Helpers::Constants::cxx_language_standard
+            end
         end
     end
 

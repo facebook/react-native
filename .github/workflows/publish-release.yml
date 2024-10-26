@@ -191,46 +191,23 @@ jobs:
           gha-npm-token: ${{ env.GHA_NPM_TOKEN }}
       - name: Publish @react-native-community/template
         id: publish-template-to-npm
-        shell: bash
-        run: |
-          COMMIT_MSG=$(git log -n1 --pretty=%B);
-          if grep -q '#publish-packages-to-npm&latest' <<< "$COMMIT_MSG"; then
-            echo "TAG=latest" >> $GITHUB_OUTPUT
-            IS_LATEST=true
-          else
-            IS_LATEST=false
-          fi
-          # Go from v0.75.0-rc.4 -> 0.75-stable, which is the template's branching scheme
-          VERSION=$(grep -oE '\d+\.\d+' <<< "${{ github.ref_name }}" | { read version; echo "$version-stable"; })
-          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
-
-          curl -L https://api.github.com/repos/react-native-community/template/actions/workflows/release.yaml/dispatches
-            -H "Accept: application/vnd.github.v3+json" \
-            -H "Authorization: Bearer $REACT_NATIVE_BOT_GITHUB_TOKEN" \
-            -d "{\"ref\":\"$VERSION\",\"inputs\":{\"version\":\"${{ github.ref_name }}\",\"is_latest_on_npm\":\"$IS_LATEST\"}}"
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.REACT_NATIVE_BOT_GITHUB_TOKEN }}
+          script: |
+            const {publishTemplate} = require('./.github/workflow-scripts/publishTemplate.js')
+            const version = "${{ github.ref_name }}"
+            const isDryRun = false
+            await publishTemplate(github, version, isDryRun);
       - name: Wait for template to be published
         timeout-minutes: 3
-        env:
-          VERSION: ${{ steps.publish-template-to-npm.outputs.VERSION }}
-          TAG: ${{ steps.publish-template-to-npm.outputs.TAG }}
-        shell: bash
-        run: |
-          echo "Waiting until @react-native-community/template is published to npm"
-          while true; do
-            if curl -o /dev/null -s -f "https://registry.npmjs.org/@react-native-community/template/$VERSION"; then
-              echo "Confirm that @react-native-community/template@$VERSION is published on npm"
-              break
-            fi
-            sleep 10
-          done
-          while [ "$TAG" == "latest" ]; do
-            CURRENT=$(curl -s "https://registry.npmjs.org/react-native/latest" | jq -r '.version');
-            if [ "$CURRENT" == "$VERSION" ]; then
-              echo "Confirm that @react-native-community/template@latest == $VERSION on npm"
-              break
-            fi
-            sleep 10
-          done
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.REACT_NATIVE_BOT_GITHUB_TOKEN }}
+          script: |
+            const {verifyPublished, isLatest} = require('./.github/workflow-scripts/publishTemplate.js')
+            const version = "${{ github.ref_name }}"
+            await verifyPublished(version, isLatest());
       - name: Update rn-diff-purge to generate upgrade-support diff
         run: |
           curl -X POST https://api.github.com/repos/react-native-community/rn-diff-purge/dispatches \

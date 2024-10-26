@@ -446,7 +446,7 @@ public class TextLayoutManager {
             ? paragraphAttributes.getBoolean(PA_KEY_INCLUDE_FONT_PADDING)
             : DEFAULT_INCLUDE_FONT_PADDING;
     int hyphenationFrequency =
-        TextAttributeProps.getTextBreakStrategy(
+        TextAttributeProps.getHyphenationFrequency(
             paragraphAttributes.getString(PA_KEY_HYPHENATION_FREQUENCY));
     boolean adjustFontSizeToFit =
         paragraphAttributes.contains(PA_KEY_ADJUST_FONT_SIZE_TO_FIT)

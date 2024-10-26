@@ -1967,19 +1967,22 @@ function createRefForwarder<TNativeInstance, TPublicInstance>(
   return state;
 }
 
+// TODO: After upgrading to React 19, remove `forwardRef` from this component.
 // NOTE: This wrapper component is necessary because `ScrollView` is a class
 // component and we need to map `ref` to a differently named prop. This can be
 // removed when `ScrollView` is a functional component.
-function Wrapper({
-  ref,
-  ...props
-}: {
-  ...Props,
-  ref: React.RefSetter<PublicScrollViewInstance>,
-}): React.Node {
-  return <ScrollView {...props} scrollViewRef={ref} />;
-}
+const Wrapper = React.forwardRef(function Wrapper(
+  props: Props,
+  ref: ?React.RefSetter<PublicScrollViewInstance>,
+): React.Node {
+  return ref == null ? (
+    <ScrollView {...props} />
+  ) : (
+    <ScrollView {...props} scrollViewRef={ref} />
+  );
+});
 Wrapper.displayName = 'ScrollView';
+// $FlowExpectedError[prop-missing]
 Wrapper.Context = ScrollViewContext;
 
 module.exports = ((Wrapper: $FlowFixMe): React.AbstractComponent<

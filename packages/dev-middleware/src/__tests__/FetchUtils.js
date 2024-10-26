@@ -21,7 +21,7 @@ declare var globalThis: $FlowFixMe;
  */
 export async function fetchLocal(
   url: string,
-  options?: Parameters<typeof fetch>[1] & {dispatcher?: mixed},
+  options?: Partial<Parameters<typeof fetch>[1] & {dispatcher?: mixed}>,
 ): ReturnType<typeof fetch> {
   return await fetch(url, {
     ...options,
