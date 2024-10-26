@@ -96,7 +96,8 @@ using namespace facebook::react;
   if (_surfaceHandler->getStatus() != SurfaceHandler::Status::Registered) {
     return;
   }
-
+  
+  id semaphore = dispatch_semaphore_create(0);
   // We need to register a root view component here synchronously because right after
   // we start a surface, it can initiate an update that can query the root component.
   RCTExecuteOnMainQueue(^{
@@ -107,8 +108,11 @@ using namespace facebook::react;
       [self _propagateStageChange];
 
       [self->_surfacePresenter setupAnimationDriverWithSurfaceHandler:*self->_surfaceHandler];
+      dispatch_semaphore_signal(semaphore);
     });
   });
+  
+  dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
 }
 
 - (void)stop
