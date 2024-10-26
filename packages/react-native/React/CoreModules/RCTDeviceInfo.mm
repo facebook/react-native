@@ -128,7 +128,7 @@ static BOOL RCTIsIPhoneNotched()
     RCTAssertMainQueue();
 
     // 20pt is the top safeArea value in non-notched devices
-    isIPhoneNotched = RCTSharedApplication().keyWindow.safeAreaInsets.top > 20;
+    isIPhoneNotched = RCTKeyWindow().safeAreaInsets.top > 20;
   });
 #endif
 
