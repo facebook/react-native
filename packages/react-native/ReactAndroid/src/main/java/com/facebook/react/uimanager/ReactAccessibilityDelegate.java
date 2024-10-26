@@ -413,23 +413,6 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
   @Override
   public void onInitializeAccessibilityNodeInfo(View host, AccessibilityNodeInfoCompat info) {
     super.onInitializeAccessibilityNodeInfo(host, info);
-    if (host.getTag(R.id.accessibility_state_expanded) != null) {
-      final boolean accessibilityStateExpanded =
-          (boolean) host.getTag(R.id.accessibility_state_expanded);
-      info.addAction(
-          accessibilityStateExpanded
-              ? AccessibilityNodeInfoCompat.ACTION_COLLAPSE
-              : AccessibilityNodeInfoCompat.ACTION_EXPAND);
-    }
-    final AccessibilityRole accessibilityRole = AccessibilityRole.fromViewTag(host);
-    final String accessibilityHint = (String) host.getTag(R.id.accessibility_hint);
-    if (accessibilityRole != null) {
-      setRole(info, accessibilityRole, host.getContext());
-    }
-
-    if (accessibilityHint != null) {
-      info.setTooltipText(accessibilityHint);
-    }
 
     final Object accessibilityLabelledBy = host.getTag(R.id.labelled_by);
     if (accessibilityLabelledBy != null) {
@@ -445,6 +428,26 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     if (accessibilityState != null) {
       setState(info, accessibilityState, host.getContext());
     }
+
+    if (host.getTag(R.id.accessibility_state_expanded) != null) {
+      final boolean accessibilityStateExpanded =
+          (boolean) host.getTag(R.id.accessibility_state_expanded);
+      info.addAction(
+          accessibilityStateExpanded
+              ? AccessibilityNodeInfoCompat.ACTION_COLLAPSE
+              : AccessibilityNodeInfoCompat.ACTION_EXPAND);
+    }
+    
+    final AccessibilityRole accessibilityRole = AccessibilityRole.fromViewTag(host);
+    final String accessibilityHint = (String) host.getTag(R.id.accessibility_hint);
+    if (accessibilityRole != null) {
+      setRole(info, accessibilityRole, host.getContext());
+    }
+
+    if (accessibilityHint != null) {
+      info.setTooltipText(accessibilityHint);
+    }
+
     final ReadableArray accessibilityActions =
         (ReadableArray) host.getTag(R.id.accessibility_actions);
 
@@ -1188,21 +1191,27 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
 
       StringBuilder talkbackSegments = new StringBuilder();
 
-      // EditText's prioritize their own text content over a contentDescription so skip this
-      if (!TextUtils.isEmpty(contentDescription) && (!isEditText || !hasNodeText)) {
-        // next add content description
-        talkbackSegments.append(contentDescription);
-        return talkbackSegments;
-      }
-
       // EditText
+      //Prioritize their own text
       if (hasNodeText) {
         // skipped status checks above for EditText
 
         // description
         talkbackSegments.append(nodeText);
+        if (!TextUtils.isEmpty(contentDescription) && !isEditText) {
+          // next add content description
+          talkbackSegments.append(contentDescription);
+        }
+
         return talkbackSegments;
       }
+
+      // EditText's prioritize their own text content over a contentDescription so skip this
+      // if (!TextUtils.isEmpty(contentDescription) && !isEditText) {
+      //   // next add content description
+      //   talkbackSegments.append(contentDescription);
+      //   return talkbackSegments;
+      // }
 
       // If there are child views and no contentDescription the text of all non-focusable children,
       // comma separated, becomes the description.
