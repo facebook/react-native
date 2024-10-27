@@ -762,8 +762,10 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
     switch (recognizer.state) {
       case UIGestureRecognizerStateEnded:
         eventEmitter->onPointerLeave(event);
+        break;
       default:
         eventEmitter->onPointerMove(event);
+        break;
     }
   }
 }
