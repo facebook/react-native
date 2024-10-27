@@ -208,11 +208,15 @@ export interface ImagePropsBase
    * should be used if the image is smaller than the view. It should also be used if the
    * image is slightly bigger than the view.
    *
+   * - `none`: No sampling is performed and the image is displayed in its full resolution.
+   * This should only be used in rare circumstances because it is considered unsafe
+   * as Android will throw a runtime exception when trying to render images that consume too much memory.
+   *
    * More details about `resize` and `scale` can be found at http://frescolib.org/docs/resizing-rotating.html.
    *
    * @platform android
    */
-  resizeMethod?: 'auto' | 'resize' | 'scale' | undefined;
+  resizeMethod?: 'auto' | 'resize' | 'scale' | 'none' | undefined;
 
   /**
    * The image source (either a remote URL or a local file resource).
