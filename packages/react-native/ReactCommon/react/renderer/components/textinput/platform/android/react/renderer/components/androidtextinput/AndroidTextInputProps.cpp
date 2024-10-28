@@ -8,6 +8,7 @@
 #include "AndroidTextInputProps.h"
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/components/image/conversions.h>
+#include <react/renderer/components/textinput/baseConversions.h>
 #include <react/renderer/core/graphicsConversions.h>
 #include <react/renderer/core/propsConversions.h>
 
@@ -322,7 +323,7 @@ folly::dynamic AndroidTextInputProps::getDynamic() const {
   props["value"] = value;
   props["defaultValue"] = defaultValue;
   props["selectTextOnFocus"] = selectTextOnFocus;
-  props["submitBehavior"] = submitBehavior;
+  props["submitBehavior"] = toDynamic(submitBehavior);
   props["caretHidden"] = caretHidden;
   props["contextMenuHidden"] = contextMenuHidden;
   props["textShadowColor"] = toAndroidRepr(textShadowColor);
