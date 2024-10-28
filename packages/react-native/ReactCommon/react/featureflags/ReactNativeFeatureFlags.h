@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<29b98e3d5daf7ad09cdee366ef38753e>>
+ * @generated SignedSource<<c6419e8e932f65c7be43425e01776dc9>>
  */
 
 /**
@@ -58,6 +58,11 @@ class ReactNativeFeatureFlags {
    * The bridgeless architecture enables the event loop by default. This feature flag allows us to force disabling it in specific instances.
    */
   RN_EXPORT static bool disableEventLoopOnBridgeless();
+
+  /**
+   * Prevent FabricMountingManager from reordering mountitems, which may lead to invalid state on the UI thread
+   */
+  RN_EXPORT static bool disableMountItemReorderingAndroid();
 
   /**
    * Kill-switch to turn off support for aling-items:baseline on Fabric iOS.

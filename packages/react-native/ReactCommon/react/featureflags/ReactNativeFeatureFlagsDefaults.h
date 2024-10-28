@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<116547f17bc1b3d16a8de7c92c5a9d53>>
+ * @generated SignedSource<<631c825e33e07674e19a084a33637a50>>
  */
 
 /**
@@ -40,6 +40,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool disableEventLoopOnBridgeless() override {
+    return false;
+  }
+
+  bool disableMountItemReorderingAndroid() override {
     return false;
   }
 

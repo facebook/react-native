@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f98a6ddd268fb59b5ee5edb4997b3a63>>
+ * @generated SignedSource<<575eeb1e291c1a372eba7aabcdd948e3>>
  */
 
 /**
@@ -51,6 +51,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun disableEventLoopOnBridgeless(): Boolean = accessor.disableEventLoopOnBridgeless()
+
+  /**
+   * Prevent FabricMountingManager from reordering mountitems, which may lead to invalid state on the UI thread
+   */
+  @JvmStatic
+  public fun disableMountItemReorderingAndroid(): Boolean = accessor.disableMountItemReorderingAndroid()
 
   /**
    * Kill-switch to turn off support for aling-items:baseline on Fabric iOS.
