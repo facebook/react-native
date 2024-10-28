@@ -87,11 +87,11 @@ extends:
                    build_type: nightly
              - ${{ elseif endsWith(variables['Build.SourceBranchName'], '0.76-stable') }}:
                 - task: CmdLine@2
-                 displayName: "Skip 0.76-stable"
-                 inputs:
-                   script: |
-                     echo "Skipping publish for branch $(Build.SourceBranchName)"
-                     exit 1
+                  displayName: "Skip 0.76-stable"
+                  inputs:
+                    script: |
+                      echo "Skipping publish for branch $(Build.SourceBranchName)"
+                      exit 1
              - ${{ elseif endsWith(variables['Build.SourceBranchName'], '-stable') }}:
                - template: .ado/templates/apple-steps-publish.yml@self
                  parameters:
