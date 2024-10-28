@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<bd1ac64b5e417e4b35a9916bbfdb23ff>>
+ * @generated SignedSource<<6f5d74e7ec13afa88fbd088182f0ba2b>>
  */
 
 /**
@@ -77,8 +77,6 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun enableReportEventPaintTime(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableSynchronousStateUpdates(): Boolean
-
-  @DoNotStrip @JvmStatic public external fun enableTextPreallocationOptimisation(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableUIConsistency(): Boolean
 

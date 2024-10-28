@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ee131e636744e18cf1e94f803c8f8c01>>
+ * @generated SignedSource<<e51d7efeeff83508fa5f1a7a46ee859d>>
  */
 
 /**
@@ -186,12 +186,6 @@ class ReactNativeFeatureFlagsProviderHolder
   bool enableSynchronousStateUpdates() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableSynchronousStateUpdates");
-    return method(javaProvider_);
-  }
-
-  bool enableTextPreallocationOptimisation() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableTextPreallocationOptimisation");
     return method(javaProvider_);
   }
 
@@ -450,11 +444,6 @@ bool JReactNativeFeatureFlagsCxxInterop::enableSynchronousStateUpdates(
   return ReactNativeFeatureFlags::enableSynchronousStateUpdates();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::enableTextPreallocationOptimisation(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::enableTextPreallocationOptimisation();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::enableUIConsistency(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableUIConsistency();
@@ -666,9 +655,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableSynchronousStateUpdates",
         JReactNativeFeatureFlagsCxxInterop::enableSynchronousStateUpdates),
-      makeNativeMethod(
-        "enableTextPreallocationOptimisation",
-        JReactNativeFeatureFlagsCxxInterop::enableTextPreallocationOptimisation),
       makeNativeMethod(
         "enableUIConsistency",
         JReactNativeFeatureFlagsCxxInterop::enableUIConsistency),

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3cecc3e497cf661d56c143138ee7e377>>
+ * @generated SignedSource<<337a399929dd2a198b1b7d99ff395236>>
  */
 
 /**
@@ -57,7 +57,6 @@ class ReactNativeFeatureFlagsAccessor {
   bool enablePropsUpdateReconciliationAndroid();
   bool enableReportEventPaintTime();
   bool enableSynchronousStateUpdates();
-  bool enableTextPreallocationOptimisation();
   bool enableUIConsistency();
   bool enableViewRecycling();
   bool excludeYogaFromRawProps();
@@ -90,7 +89,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 47> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 46> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> allowRecursiveCommitsWithSynchronousMountOnAndroid_;
@@ -117,7 +116,6 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enablePropsUpdateReconciliationAndroid_;
   std::atomic<std::optional<bool>> enableReportEventPaintTime_;
   std::atomic<std::optional<bool>> enableSynchronousStateUpdates_;
-  std::atomic<std::optional<bool>> enableTextPreallocationOptimisation_;
   std::atomic<std::optional<bool>> enableUIConsistency_;
   std::atomic<std::optional<bool>> enableViewRecycling_;
   std::atomic<std::optional<bool>> excludeYogaFromRawProps_;

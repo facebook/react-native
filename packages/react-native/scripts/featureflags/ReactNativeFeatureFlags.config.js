@@ -278,15 +278,6 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'experimentation',
       },
     },
-    enableTextPreallocationOptimisation: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-09-12',
-        description:
-          'Text preallocation optimisation where unnecessary work is removed.',
-        purpose: 'experimentation',
-      },
-    },
     enableUIConsistency: {
       defaultValue: false,
       metadata: {
