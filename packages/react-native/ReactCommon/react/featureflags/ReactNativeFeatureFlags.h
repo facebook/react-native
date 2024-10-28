@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c6419e8e932f65c7be43425e01776dc9>>
+ * @generated SignedSource<<949ad7c2be176afd6109b527579f9569>>
  */
 
 /**
@@ -78,11 +78,6 @@ class ReactNativeFeatureFlags {
    * Feature flag to enable the new bridgeless architecture. Note: Enabling this will force enable the following flags: `useTurboModules` & `enableFabricRenderer.
    */
   RN_EXPORT static bool enableBridgelessArchitecture();
-
-  /**
-   * Clean yoga node when <TextInput /> does not change.
-   */
-  RN_EXPORT static bool enableCleanTextInputYogaNode();
 
   /**
    * Enable prop iterator setter-style construction of Props in C++ (this flag is not used in Java).

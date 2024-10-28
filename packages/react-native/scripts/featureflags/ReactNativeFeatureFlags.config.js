@@ -125,14 +125,6 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'release',
       },
     },
-    enableCleanTextInputYogaNode: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-04-06',
-        description: 'Clean yoga node when <TextInput /> does not change.',
-        purpose: 'experimentation',
-      },
-    },
     enableCppPropsIteratorSetter: {
       defaultValue: false,
       metadata: {

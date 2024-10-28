@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<096ac17a630f7b29d3a029c704dbd8db>>
+ * @generated SignedSource<<c941bd4991da0c5ba6d30b1b8433c864>>
  * @flow strict
  */
 
@@ -60,7 +60,6 @@ export type ReactNativeFeatureFlags = {
   enableAlignItemsBaselineOnFabricIOS: Getter<boolean>,
   enableAndroidLineHeightCentering: Getter<boolean>,
   enableBridgelessArchitecture: Getter<boolean>,
-  enableCleanTextInputYogaNode: Getter<boolean>,
   enableCppPropsIteratorSetter: Getter<boolean>,
   enableDeletionOfUnmountedViews: Getter<boolean>,
   enableEagerRootViewAttachment: Getter<boolean>,
@@ -229,10 +228,6 @@ export const enableAndroidLineHeightCentering: Getter<boolean> = createNativeFla
  * Feature flag to enable the new bridgeless architecture. Note: Enabling this will force enable the following flags: `useTurboModules` & `enableFabricRenderer.
  */
 export const enableBridgelessArchitecture: Getter<boolean> = createNativeFlagGetter('enableBridgelessArchitecture', false);
-/**
- * Clean yoga node when <TextInput /> does not change.
- */
-export const enableCleanTextInputYogaNode: Getter<boolean> = createNativeFlagGetter('enableCleanTextInputYogaNode', false);
 /**
  * Enable prop iterator setter-style construction of Props in C++ (this flag is not used in Java).
  */
