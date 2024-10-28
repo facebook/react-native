@@ -923,17 +923,19 @@ public class ReactHostImpl implements ReactHost {
     final String method = "getOrCreateStartTask()";
     if (mStartTask == null) {
       log(method, "Schedule");
-      Assertions.assertCondition(
-          ReactNativeFeatureFlags.enableBridgelessArchitecture(),
-          "enableBridgelessArchitecture FeatureFlag must be set to start ReactNative.");
+      if (ReactBuildConfig.DEBUG) {
+        Assertions.assertCondition(
+            ReactNativeFeatureFlags.enableBridgelessArchitecture(),
+            "enableBridgelessArchitecture FeatureFlag must be set to start ReactNative.");
 
-      Assertions.assertCondition(
-          ReactNativeFeatureFlags.enableFabricRenderer(),
-          "enableFabricRenderer FeatureFlag must be set to start ReactNative.");
+        Assertions.assertCondition(
+            ReactNativeFeatureFlags.enableFabricRenderer(),
+            "enableFabricRenderer FeatureFlag must be set to start ReactNative.");
 
-      Assertions.assertCondition(
-          ReactNativeFeatureFlags.useTurboModules(),
-          "useTurboModules FeatureFlag must be set to start ReactNative.");
+        Assertions.assertCondition(
+            ReactNativeFeatureFlags.useTurboModules(),
+            "useTurboModules FeatureFlag must be set to start ReactNative.");
+      }
       mStartTask =
           waitThenCallGetOrCreateReactInstanceTask()
               .continueWithTask(
