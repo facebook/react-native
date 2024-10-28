@@ -76,6 +76,7 @@
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
   UIViewController *rootViewController = [self createRootViewController];
   [self setRootView:rootView toRootViewController:rootViewController];
+  _window.windowScene.delegate = self;
   _window.rootViewController = rootViewController;
   [_window makeKeyAndVisible];
 }
