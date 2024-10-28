@@ -90,11 +90,9 @@ class AndroidTextInputProps final : public BaseTextInputProps {
   Float maxFontSizeMultiplier{0.0};
   std::string keyboardType{};
   std::string returnKeyType{};
-  bool multiline{false};
   bool secureTextEntry{false};
   std::string value{};
   bool selectTextOnFocus{false};
-  SubmitBehavior submitBehavior{};
   bool caretHidden{false};
   bool contextMenuHidden{false};
   SharedColor textShadowColor{};
