@@ -66,8 +66,13 @@ inline static bool operator!=(
 }
 
 struct AccessibilityState {
+  // This allow the Native side distinguish between boolean and undefine state.
+  // The boolean value indicate the component is selected or not
+  // The undefined indicate that the component is not selectable
+  // However since the Native side (before) only aware of boolean
+  // => With this change Native side will regconize the undefine state (not just boolean)
+  std::optional<bool> selected{std::nullopt};
   bool disabled{false};
-  bool selected{false};
   bool busy{false};
   std::optional<bool> expanded{std::nullopt};
   enum { Unchecked, Checked, Mixed, None } checked{None};
