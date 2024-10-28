@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "chore(0.76): Merge up to 0.76.0 (#2232)",
+  "packageName": "@react-native-mac/virtualized-lists",
+  "email": "sanajmi@microsoft.com",
+  "dependentChangeType": "patch"
+}
