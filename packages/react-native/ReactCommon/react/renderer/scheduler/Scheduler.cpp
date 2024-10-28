@@ -284,7 +284,7 @@ void Scheduler::animationTick() const {
 #pragma mark - UIManagerDelegate
 
 void Scheduler::uiManagerDidFinishTransaction(
-    MountingCoordinator::Shared mountingCoordinator,
+    std::shared_ptr<const MountingCoordinator> mountingCoordinator,
     bool mountSynchronously) {
   SystraceSection s("Scheduler::uiManagerDidFinishTransaction");
 

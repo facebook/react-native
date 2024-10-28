@@ -21,7 +21,7 @@ folly_config = get_folly_config()
 folly_compiler_flags = folly_config[:compiler_flags]
 folly_version = folly_config[:version]
 boost_config = get_boost_config()
-boost_compiler_flags = boost_config[:compiler_flags] 
+boost_compiler_flags = boost_config[:compiler_flags]
 
 Pod::Spec.new do |s|
   s.name                   = "React-cxxreact"
@@ -36,14 +36,15 @@ Pod::Spec.new do |s|
   s.exclude_files          = "SampleCxxModule.*"
   s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
   s.pod_target_xcconfig    = {
-    "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/fmt/include\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-debug/React_debug.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-runtimeexecutor/React_runtimeexecutor.framework/Headers\"",
+    "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/fas_float/include\" \"$(PODS_ROOT)/fmt/include\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-debug/React_debug.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-runtimeexecutor/React_runtimeexecutor.framework/Headers\"",
     "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard()
   }
   s.header_dir             = "cxxreact"
 
   s.dependency "boost"
   s.dependency "DoubleConversion"
-  s.dependency "fmt", "9.1.0"
+  s.dependency "fast_float", "6.1.4"
+  s.dependency "fmt", "11.0.2"
   s.dependency "RCT-Folly", folly_version
   s.dependency "glog"
   add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')

@@ -280,26 +280,6 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
   }
 
   @Override
-  public void updateJSError(
-      final String message, final ReadableArray details, final int errorCookie) {
-    UiThreadUtil.runOnUiThread(
-        () -> {
-          // Since we only show the first JS error in a succession of JS errors, make sure we only
-          // update the error message for that error message. This assumes that updateJSError
-          // belongs to the most recent showNewJSError
-          if ((mRedBoxSurfaceDelegate != null && !mRedBoxSurfaceDelegate.isShowing())
-              || errorCookie != mLastErrorCookie) {
-            return;
-          }
-
-          // The RedBox surface delegate will always show the latest error
-          updateLastErrorInfo(
-              message, StackTraceHelper.convertJsStackTrace(details), errorCookie, ErrorType.JS);
-          mRedBoxSurfaceDelegate.show();
-        });
-  }
-
-  @Override
   public void hideRedboxDialog() {
     if (mRedBoxSurfaceDelegate == null) {
       return;

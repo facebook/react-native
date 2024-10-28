@@ -26,7 +26,8 @@ class SchedulerDelegate {
    * to construct a new one.
    */
   virtual void schedulerDidFinishTransaction(
-      const MountingCoordinator::Shared& mountingCoordinator) = 0;
+      const std::shared_ptr<const MountingCoordinator>&
+          mountingCoordinator) = 0;
 
   /*
    * Called when the runtime scheduler decides that one-or-more previously
@@ -37,7 +38,8 @@ class SchedulerDelegate {
    * correctly apply changes, due to changes in Props representation.
    */
   virtual void schedulerShouldRenderTransactions(
-      const MountingCoordinator::Shared& mountingCoordinator) = 0;
+      const std::shared_ptr<const MountingCoordinator>&
+          mountingCoordinator) = 0;
 
   /*
    * Called right after a new ShadowNode was created.

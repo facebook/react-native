@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<29751f6542220bc60e5745155fa8940b>>
+ * @generated SignedSource<<096ac17a630f7b29d3a029c704dbd8db>>
  * @flow strict
  */
 
@@ -56,9 +56,11 @@ export type ReactNativeFeatureFlags = {
   batchRenderingUpdatesInEventLoop: Getter<boolean>,
   completeReactInstanceCreationOnBgThreadOnAndroid: Getter<boolean>,
   disableEventLoopOnBridgeless: Getter<boolean>,
+  disableMountItemReorderingAndroid: Getter<boolean>,
   enableAlignItemsBaselineOnFabricIOS: Getter<boolean>,
   enableBridgelessArchitecture: Getter<boolean>,
   enableCleanTextInputYogaNode: Getter<boolean>,
+  enableCppPropsIteratorSetter: Getter<boolean>,
   enableDeletionOfUnmountedViews: Getter<boolean>,
   enableEagerRootViewAttachment: Getter<boolean>,
   enableEventEmitterRetentionDuringGesturesOnAndroid: Getter<boolean>,
@@ -213,6 +215,10 @@ export const completeReactInstanceCreationOnBgThreadOnAndroid: Getter<boolean> =
  */
 export const disableEventLoopOnBridgeless: Getter<boolean> = createNativeFlagGetter('disableEventLoopOnBridgeless', false);
 /**
+ * Prevent FabricMountingManager from reordering mountitems, which may lead to invalid state on the UI thread
+ */
+export const disableMountItemReorderingAndroid: Getter<boolean> = createNativeFlagGetter('disableMountItemReorderingAndroid', false);
+/**
  * Kill-switch to turn off support for aling-items:baseline on Fabric iOS.
  */
 export const enableAlignItemsBaselineOnFabricIOS: Getter<boolean> = createNativeFlagGetter('enableAlignItemsBaselineOnFabricIOS', true);
@@ -224,6 +230,10 @@ export const enableBridgelessArchitecture: Getter<boolean> = createNativeFlagGet
  * Clean yoga node when <TextInput /> does not change.
  */
 export const enableCleanTextInputYogaNode: Getter<boolean> = createNativeFlagGetter('enableCleanTextInputYogaNode', false);
+/**
+ * Enable prop iterator setter-style construction of Props in C++ (this flag is not used in Java).
+ */
+export const enableCppPropsIteratorSetter: Getter<boolean> = createNativeFlagGetter('enableCppPropsIteratorSetter', false);
 /**
  * Deletes views that were pre-allocated but never mounted on the screen.
  */

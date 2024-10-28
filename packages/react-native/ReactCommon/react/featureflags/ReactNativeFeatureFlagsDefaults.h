@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c9282f64450a8b7f1a9d98636105c884>>
+ * @generated SignedSource<<631c825e33e07674e19a084a33637a50>>
  */
 
 /**
@@ -43,6 +43,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool disableMountItemReorderingAndroid() override {
+    return false;
+  }
+
   bool enableAlignItemsBaselineOnFabricIOS() override {
     return true;
   }
@@ -52,6 +56,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableCleanTextInputYogaNode() override {
+    return false;
+  }
+
+  bool enableCppPropsIteratorSetter() override {
     return false;
   }
 

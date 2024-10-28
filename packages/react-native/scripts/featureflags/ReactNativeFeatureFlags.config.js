@@ -90,6 +90,15 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'release',
       },
     },
+    disableMountItemReorderingAndroid: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2024-10-26',
+        description:
+          'Prevent FabricMountingManager from reordering mountitems, which may lead to invalid state on the UI thread',
+        purpose: 'experimentation',
+      },
+    },
     enableAlignItemsBaselineOnFabricIOS: {
       defaultValue: true,
       metadata: {
@@ -112,6 +121,15 @@ const definitions: FeatureFlagDefinitions = {
       metadata: {
         dateAdded: '2024-04-06',
         description: 'Clean yoga node when <TextInput /> does not change.',
+        purpose: 'experimentation',
+      },
+    },
+    enableCppPropsIteratorSetter: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2024-09-13',
+        description:
+          'Enable prop iterator setter-style construction of Props in C++ (this flag is not used in Java).',
         purpose: 'experimentation',
       },
     },

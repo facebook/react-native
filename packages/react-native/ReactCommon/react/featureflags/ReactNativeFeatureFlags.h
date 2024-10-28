@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e2177255f6402d15b14033c04a815e86>>
+ * @generated SignedSource<<c6419e8e932f65c7be43425e01776dc9>>
  */
 
 /**
@@ -60,6 +60,11 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool disableEventLoopOnBridgeless();
 
   /**
+   * Prevent FabricMountingManager from reordering mountitems, which may lead to invalid state on the UI thread
+   */
+  RN_EXPORT static bool disableMountItemReorderingAndroid();
+
+  /**
    * Kill-switch to turn off support for aling-items:baseline on Fabric iOS.
    */
   RN_EXPORT static bool enableAlignItemsBaselineOnFabricIOS();
@@ -73,6 +78,11 @@ class ReactNativeFeatureFlags {
    * Clean yoga node when <TextInput /> does not change.
    */
   RN_EXPORT static bool enableCleanTextInputYogaNode();
+
+  /**
+   * Enable prop iterator setter-style construction of Props in C++ (this flag is not used in Java).
+   */
+  RN_EXPORT static bool enableCppPropsIteratorSetter();
 
   /**
    * Deletes views that were pre-allocated but never mounted on the screen.

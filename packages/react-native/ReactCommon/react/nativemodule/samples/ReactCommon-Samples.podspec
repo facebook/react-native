@@ -21,13 +21,14 @@ folly_compiler_flags = folly_config[:compiler_flags]
 folly_version = folly_config[:version]
 
 boost_config = get_boost_config()
-boost_compiler_flags = boost_config[:compiler_flags] 
+boost_compiler_flags = boost_config[:compiler_flags]
 using_hermes = ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == "1"
 
 header_search_paths = [
   "\"$(PODS_ROOT)/boost\"",
   "\"$(PODS_ROOT)/RCT-Folly\"",
   "\"$(PODS_ROOT)/DoubleConversion\"",
+  "\"$(PODS_ROOT)/fast_float/include\"",
   "\"$(PODS_ROOT)/fmt/include\"",
   "\"$(PODS_ROOT)/Headers/Private/React-Core\"",
 ]
@@ -63,7 +64,8 @@ Pod::Spec.new do |s|
 
   s.dependency "RCT-Folly"
   s.dependency "DoubleConversion"
-  s.dependency "fmt", "9.1.0"
+  s.dependency "fast_float", "6.1.4"
+  s.dependency "fmt", "11.0.2"
   s.dependency "React-Core"
   s.dependency "React-cxxreact"
   s.dependency "React-jsi"

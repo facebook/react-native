@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1a01cc9c27ffcf327ce7b769c9371636>>
+ * @generated SignedSource<<afdb4fb4d8419dca361ca8bf7dbc4fb3>>
  */
 
 /**
@@ -36,9 +36,11 @@ class ReactNativeFeatureFlagsAccessor {
   bool allowRecursiveCommitsWithSynchronousMountOnAndroid();
   bool completeReactInstanceCreationOnBgThreadOnAndroid();
   bool disableEventLoopOnBridgeless();
+  bool disableMountItemReorderingAndroid();
   bool enableAlignItemsBaselineOnFabricIOS();
   bool enableBridgelessArchitecture();
   bool enableCleanTextInputYogaNode();
+  bool enableCppPropsIteratorSetter();
   bool enableDeletionOfUnmountedViews();
   bool enableEagerRootViewAttachment();
   bool enableEventEmitterRetentionDuringGesturesOnAndroid();
@@ -90,15 +92,17 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 47> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 48> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> allowRecursiveCommitsWithSynchronousMountOnAndroid_;
   std::atomic<std::optional<bool>> completeReactInstanceCreationOnBgThreadOnAndroid_;
   std::atomic<std::optional<bool>> disableEventLoopOnBridgeless_;
+  std::atomic<std::optional<bool>> disableMountItemReorderingAndroid_;
   std::atomic<std::optional<bool>> enableAlignItemsBaselineOnFabricIOS_;
   std::atomic<std::optional<bool>> enableBridgelessArchitecture_;
   std::atomic<std::optional<bool>> enableCleanTextInputYogaNode_;
+  std::atomic<std::optional<bool>> enableCppPropsIteratorSetter_;
   std::atomic<std::optional<bool>> enableDeletionOfUnmountedViews_;
   std::atomic<std::optional<bool>> enableEagerRootViewAttachment_;
   std::atomic<std::optional<bool>> enableEventEmitterRetentionDuringGesturesOnAndroid_;

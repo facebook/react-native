@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a75271b9180da40a7ebae5119dbcfe52>>
+ * @generated SignedSource<<f93759a639dbbb95d3307003e4907c86>>
  */
 
 /**
@@ -24,9 +24,11 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
   private var allowRecursiveCommitsWithSynchronousMountOnAndroidCache: Boolean? = null
   private var completeReactInstanceCreationOnBgThreadOnAndroidCache: Boolean? = null
   private var disableEventLoopOnBridgelessCache: Boolean? = null
+  private var disableMountItemReorderingAndroidCache: Boolean? = null
   private var enableAlignItemsBaselineOnFabricIOSCache: Boolean? = null
   private var enableBridgelessArchitectureCache: Boolean? = null
   private var enableCleanTextInputYogaNodeCache: Boolean? = null
+  private var enableCppPropsIteratorSetterCache: Boolean? = null
   private var enableDeletionOfUnmountedViewsCache: Boolean? = null
   private var enableEagerRootViewAttachmentCache: Boolean? = null
   private var enableEventEmitterRetentionDuringGesturesOnAndroidCache: Boolean? = null
@@ -104,6 +106,15 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
     return cached
   }
 
+  override fun disableMountItemReorderingAndroid(): Boolean {
+    var cached = disableMountItemReorderingAndroidCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.disableMountItemReorderingAndroid()
+      disableMountItemReorderingAndroidCache = cached
+    }
+    return cached
+  }
+
   override fun enableAlignItemsBaselineOnFabricIOS(): Boolean {
     var cached = enableAlignItemsBaselineOnFabricIOSCache
     if (cached == null) {
@@ -127,6 +138,15 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enableCleanTextInputYogaNode()
       enableCleanTextInputYogaNodeCache = cached
+    }
+    return cached
+  }
+
+  override fun enableCppPropsIteratorSetter(): Boolean {
+    var cached = enableCppPropsIteratorSetterCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.enableCppPropsIteratorSetter()
+      enableCppPropsIteratorSetterCache = cached
     }
     return cached
   }

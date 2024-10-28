@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<18b5021dc18fd8f3a97451cf229af885>>
+ * @generated SignedSource<<abba7ef1f3108b195eef7bfc0a9a26db>>
  */
 
 /**
@@ -42,6 +42,10 @@ bool ReactNativeFeatureFlags::disableEventLoopOnBridgeless() {
   return getAccessor().disableEventLoopOnBridgeless();
 }
 
+bool ReactNativeFeatureFlags::disableMountItemReorderingAndroid() {
+  return getAccessor().disableMountItemReorderingAndroid();
+}
+
 bool ReactNativeFeatureFlags::enableAlignItemsBaselineOnFabricIOS() {
   return getAccessor().enableAlignItemsBaselineOnFabricIOS();
 }
@@ -52,6 +56,10 @@ bool ReactNativeFeatureFlags::enableBridgelessArchitecture() {
 
 bool ReactNativeFeatureFlags::enableCleanTextInputYogaNode() {
   return getAccessor().enableCleanTextInputYogaNode();
+}
+
+bool ReactNativeFeatureFlags::enableCppPropsIteratorSetter() {
+  return getAccessor().enableCppPropsIteratorSetter();
 }
 
 bool ReactNativeFeatureFlags::enableDeletionOfUnmountedViews() {

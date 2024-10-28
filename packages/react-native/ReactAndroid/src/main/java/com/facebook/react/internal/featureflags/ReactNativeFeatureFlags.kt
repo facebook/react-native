@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7978ab9ad7eb168a0973277e61251d57>>
+ * @generated SignedSource<<575eeb1e291c1a372eba7aabcdd948e3>>
  */
 
 /**
@@ -53,6 +53,12 @@ public object ReactNativeFeatureFlags {
   public fun disableEventLoopOnBridgeless(): Boolean = accessor.disableEventLoopOnBridgeless()
 
   /**
+   * Prevent FabricMountingManager from reordering mountitems, which may lead to invalid state on the UI thread
+   */
+  @JvmStatic
+  public fun disableMountItemReorderingAndroid(): Boolean = accessor.disableMountItemReorderingAndroid()
+
+  /**
    * Kill-switch to turn off support for aling-items:baseline on Fabric iOS.
    */
   @JvmStatic
@@ -69,6 +75,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableCleanTextInputYogaNode(): Boolean = accessor.enableCleanTextInputYogaNode()
+
+  /**
+   * Enable prop iterator setter-style construction of Props in C++ (this flag is not used in Java).
+   */
+  @JvmStatic
+  public fun enableCppPropsIteratorSetter(): Boolean = accessor.enableCppPropsIteratorSetter()
 
   /**
    * Deletes views that were pre-allocated but never mounted on the screen.

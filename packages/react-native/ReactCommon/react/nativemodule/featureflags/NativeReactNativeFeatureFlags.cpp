@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b43c7b8cc4b0947ac58771ee832ba86b>>
+ * @generated SignedSource<<43e3b8b18dec356b5121b581ab8ffa02>>
  */
 
 /**
@@ -71,6 +71,11 @@ bool NativeReactNativeFeatureFlags::disableEventLoopOnBridgeless(
   return ReactNativeFeatureFlags::disableEventLoopOnBridgeless();
 }
 
+bool NativeReactNativeFeatureFlags::disableMountItemReorderingAndroid(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::disableMountItemReorderingAndroid();
+}
+
 bool NativeReactNativeFeatureFlags::enableAlignItemsBaselineOnFabricIOS(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableAlignItemsBaselineOnFabricIOS();
@@ -84,6 +89,11 @@ bool NativeReactNativeFeatureFlags::enableBridgelessArchitecture(
 bool NativeReactNativeFeatureFlags::enableCleanTextInputYogaNode(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableCleanTextInputYogaNode();
+}
+
+bool NativeReactNativeFeatureFlags::enableCppPropsIteratorSetter(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableCppPropsIteratorSetter();
 }
 
 bool NativeReactNativeFeatureFlags::enableDeletionOfUnmountedViews(

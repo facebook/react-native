@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<94e61dbab5656830365f22958993ceae>>
+ * @generated SignedSource<<18597e1e2a88be3d80b8747f72576d5f>>
  */
 
 /**
@@ -29,9 +29,11 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool allowRecursiveCommitsWithSynchronousMountOnAndroid() = 0;
   virtual bool completeReactInstanceCreationOnBgThreadOnAndroid() = 0;
   virtual bool disableEventLoopOnBridgeless() = 0;
+  virtual bool disableMountItemReorderingAndroid() = 0;
   virtual bool enableAlignItemsBaselineOnFabricIOS() = 0;
   virtual bool enableBridgelessArchitecture() = 0;
   virtual bool enableCleanTextInputYogaNode() = 0;
+  virtual bool enableCppPropsIteratorSetter() = 0;
   virtual bool enableDeletionOfUnmountedViews() = 0;
   virtual bool enableEagerRootViewAttachment() = 0;
   virtual bool enableEventEmitterRetentionDuringGesturesOnAndroid() = 0;

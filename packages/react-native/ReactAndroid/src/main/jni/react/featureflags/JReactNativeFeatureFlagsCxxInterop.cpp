@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5bca414b4dfb3f6ba7b7ae7acea561b4>>
+ * @generated SignedSource<<aaf6af36813ab1895bf2bf8a6c8bcf1c>>
  */
 
 /**
@@ -63,6 +63,12 @@ class ReactNativeFeatureFlagsProviderHolder
     return method(javaProvider_);
   }
 
+  bool disableMountItemReorderingAndroid() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("disableMountItemReorderingAndroid");
+    return method(javaProvider_);
+  }
+
   bool enableAlignItemsBaselineOnFabricIOS() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableAlignItemsBaselineOnFabricIOS");
@@ -78,6 +84,12 @@ class ReactNativeFeatureFlagsProviderHolder
   bool enableCleanTextInputYogaNode() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableCleanTextInputYogaNode");
+    return method(javaProvider_);
+  }
+
+  bool enableCppPropsIteratorSetter() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableCppPropsIteratorSetter");
     return method(javaProvider_);
   }
 
@@ -345,6 +357,11 @@ bool JReactNativeFeatureFlagsCxxInterop::disableEventLoopOnBridgeless(
   return ReactNativeFeatureFlags::disableEventLoopOnBridgeless();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::disableMountItemReorderingAndroid(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::disableMountItemReorderingAndroid();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::enableAlignItemsBaselineOnFabricIOS(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableAlignItemsBaselineOnFabricIOS();
@@ -358,6 +375,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableBridgelessArchitecture(
 bool JReactNativeFeatureFlagsCxxInterop::enableCleanTextInputYogaNode(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableCleanTextInputYogaNode();
+}
+
+bool JReactNativeFeatureFlagsCxxInterop::enableCppPropsIteratorSetter(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableCppPropsIteratorSetter();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::enableDeletionOfUnmountedViews(
@@ -604,6 +626,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
         "disableEventLoopOnBridgeless",
         JReactNativeFeatureFlagsCxxInterop::disableEventLoopOnBridgeless),
       makeNativeMethod(
+        "disableMountItemReorderingAndroid",
+        JReactNativeFeatureFlagsCxxInterop::disableMountItemReorderingAndroid),
+      makeNativeMethod(
         "enableAlignItemsBaselineOnFabricIOS",
         JReactNativeFeatureFlagsCxxInterop::enableAlignItemsBaselineOnFabricIOS),
       makeNativeMethod(
@@ -612,6 +637,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableCleanTextInputYogaNode",
         JReactNativeFeatureFlagsCxxInterop::enableCleanTextInputYogaNode),
+      makeNativeMethod(
+        "enableCppPropsIteratorSetter",
+        JReactNativeFeatureFlagsCxxInterop::enableCppPropsIteratorSetter),
       makeNativeMethod(
         "enableDeletionOfUnmountedViews",
         JReactNativeFeatureFlagsCxxInterop::enableDeletionOfUnmountedViews),

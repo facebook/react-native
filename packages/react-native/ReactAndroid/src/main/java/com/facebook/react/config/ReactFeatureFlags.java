@@ -23,9 +23,4 @@ import com.facebook.proguard.annotations.DoNotStripAny;
 public class ReactFeatureFlags {
 
   public static boolean dispatchPointerEvents = false;
-
-  /**
-   * Enable prop iterator setter-style construction of Props in C++ (this flag is not used in Java).
-   */
-  public static boolean enableCppPropsIteratorSetter = false;
 }
