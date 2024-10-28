@@ -21,15 +21,20 @@ void BaseViewEventEmitter::onAccessibilityAction(
 }
 
 void BaseViewEventEmitter::onAccessibilityTap() const {
-  dispatchEvent("accessibilityTap");
+  dispatchEvent("accessibilityTap", [](jsi::Runtime& runtime) {
+    return jsi::Object(runtime);
+  });
 }
 
 void BaseViewEventEmitter::onAccessibilityMagicTap() const {
-  dispatchEvent("magicTap");
+  dispatchEvent(
+      "magicTap", [](jsi::Runtime& runtime) { return jsi::Object(runtime); });
 }
 
 void BaseViewEventEmitter::onAccessibilityEscape() const {
-  dispatchEvent("accessibilityEscape");
+  dispatchEvent("accessibilityEscape", [](jsi::Runtime& runtime) {
+    return jsi::Object(runtime);
+  });
 }
 
 #pragma mark - Layout
