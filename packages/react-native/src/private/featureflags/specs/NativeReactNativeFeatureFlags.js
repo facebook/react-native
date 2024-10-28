@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ecde28c685e74022e2dcee6dcec41d0b>>
+ * @generated SignedSource<<4bf5a93d2e8eb1b7d329262e27bb1694>>
  * @flow strict
  */
 
@@ -33,7 +33,6 @@ export interface Spec extends TurboModule {
   +enableAlignItemsBaselineOnFabricIOS?: () => boolean;
   +enableAndroidLineHeightCentering?: () => boolean;
   +enableBridgelessArchitecture?: () => boolean;
-  +enableCleanTextInputYogaNode?: () => boolean;
   +enableCppPropsIteratorSetter?: () => boolean;
   +enableDeletionOfUnmountedViews?: () => boolean;
   +enableEagerRootViewAttachment?: () => boolean;

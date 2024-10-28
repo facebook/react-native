@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<43e3b8b18dec356b5121b581ab8ffa02>>
+ * @generated SignedSource<<1aacbafbfcec498cf0b0f4b1e2c50280>>
  */
 
 /**
@@ -89,11 +89,6 @@ bool NativeReactNativeFeatureFlags::enableAndroidLineHeightCentering(
 bool NativeReactNativeFeatureFlags::enableBridgelessArchitecture(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableBridgelessArchitecture();
-}
-
-bool NativeReactNativeFeatureFlags::enableCleanTextInputYogaNode(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::enableCleanTextInputYogaNode();
 }
 
 bool NativeReactNativeFeatureFlags::enableCppPropsIteratorSetter(

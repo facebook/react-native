@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f93759a639dbbb95d3307003e4907c86>>
+ * @generated SignedSource<<3f65a56497c8ac9822f0c9e9ae91d32c>>
  */
 
 /**
@@ -28,7 +28,6 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
   private var enableAlignItemsBaselineOnFabricIOSCache: Boolean? = null
   private var enableAndroidLineHeightCenteringCache: Boolean? = null
   private var enableBridgelessArchitectureCache: Boolean? = null
-  private var enableCleanTextInputYogaNodeCache: Boolean? = null
   private var enableCppPropsIteratorSetterCache: Boolean? = null
   private var enableDeletionOfUnmountedViewsCache: Boolean? = null
   private var enableEagerRootViewAttachmentCache: Boolean? = null
@@ -137,15 +136,6 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enableBridgelessArchitecture()
       enableBridgelessArchitectureCache = cached
-    }
-    return cached
-  }
-
-  override fun enableCleanTextInputYogaNode(): Boolean {
-    var cached = enableCleanTextInputYogaNodeCache
-    if (cached == null) {
-      cached = ReactNativeFeatureFlagsCxxInterop.enableCleanTextInputYogaNode()
-      enableCleanTextInputYogaNodeCache = cached
     }
     return cached
   }

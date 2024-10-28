@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<575eeb1e291c1a372eba7aabcdd948e3>>
+ * @generated SignedSource<<86cca801335d059b3d0625229cea3057>>
  */
 
 /**
@@ -75,12 +75,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableBridgelessArchitecture(): Boolean = accessor.enableBridgelessArchitecture()
-
-  /**
-   * Clean yoga node when <TextInput /> does not change.
-   */
-  @JvmStatic
-  public fun enableCleanTextInputYogaNode(): Boolean = accessor.enableCleanTextInputYogaNode()
 
   /**
    * Enable prop iterator setter-style construction of Props in C++ (this flag is not used in Java).
