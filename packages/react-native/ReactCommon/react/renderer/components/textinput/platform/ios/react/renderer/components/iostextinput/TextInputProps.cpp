@@ -65,7 +65,7 @@ TextAttributes TextInputProps::getEffectiveTextAttributes(
 ParagraphAttributes TextInputProps::getEffectiveParagraphAttributes() const {
   auto result = paragraphAttributes;
 
-  if (!traits.multiline) {
+  if (!multiline) {
     result.maximumNumberOfLines = 1;
   }
 

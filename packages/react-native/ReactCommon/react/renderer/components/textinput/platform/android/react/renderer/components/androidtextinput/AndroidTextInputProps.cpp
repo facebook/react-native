@@ -96,10 +96,6 @@ AndroidTextInputProps::AndroidTextInputProps(
           "returnKeyType",
           sourceProps.returnKeyType,
           {})),
-      multiline(ReactNativeFeatureFlags::enableCppPropsIteratorSetter()? sourceProps.multiline : convertRawProp(context, rawProps,
-          "multiline",
-          sourceProps.multiline,
-          {false})),
       secureTextEntry(ReactNativeFeatureFlags::enableCppPropsIteratorSetter()? sourceProps.secureTextEntry : convertRawProp(context, rawProps,
           "secureTextEntry",
           sourceProps.secureTextEntry,
@@ -109,10 +105,6 @@ AndroidTextInputProps::AndroidTextInputProps(
           "selectTextOnFocus",
           sourceProps.selectTextOnFocus,
           {false})),
-      submitBehavior(ReactNativeFeatureFlags::enableCppPropsIteratorSetter()? sourceProps.submitBehavior : convertRawProp(context, rawProps,
-           "submitBehavior",
-          sourceProps.submitBehavior,
-          {})),
       caretHidden(ReactNativeFeatureFlags::enableCppPropsIteratorSetter()? sourceProps.caretHidden : convertRawProp(context, rawProps,
           "caretHidden",
           sourceProps.caretHidden,
@@ -224,10 +216,8 @@ void AndroidTextInputProps::setProp(
     RAW_SET_PROP_SWITCH_CASE_BASIC(maxFontSizeMultiplier);
     RAW_SET_PROP_SWITCH_CASE_BASIC(keyboardType);
     RAW_SET_PROP_SWITCH_CASE_BASIC(returnKeyType);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(multiline);
     RAW_SET_PROP_SWITCH_CASE_BASIC(secureTextEntry);
     RAW_SET_PROP_SWITCH_CASE_BASIC(selectTextOnFocus);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(submitBehavior);
     RAW_SET_PROP_SWITCH_CASE_BASIC(caretHidden);
     RAW_SET_PROP_SWITCH_CASE_BASIC(contextMenuHidden);
     RAW_SET_PROP_SWITCH_CASE_BASIC(textShadowColor);

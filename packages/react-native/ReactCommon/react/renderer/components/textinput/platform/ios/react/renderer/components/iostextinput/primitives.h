@@ -89,12 +89,6 @@ class TextInputTraits final {
  public:
   /*
    * iOS & Android
-   * Default value: `false`.
-   */
-  bool multiline{false};
-
-  /*
-   * iOS & Android
    * Default value: `Sentences`.
    */
   AutocapitalizationType autocapitalizationType{
@@ -167,12 +161,6 @@ class TextInputTraits final {
    * Default value: `false`.
    */
   bool secureTextEntry{false};
-
-  /*
-   * iOS & Android
-   * Default value: `Default`.
-   */
-  SubmitBehavior submitBehavior{SubmitBehavior::Default};
 
   /*
    * iOS-only (implemented only on iOS for now)
