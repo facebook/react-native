@@ -13,6 +13,7 @@
 #include <react/renderer/attributedstring/TextAttributes.h>
 #include <react/renderer/attributedstring/conversions.h>
 #include <react/renderer/components/textinput/BaseTextInputProps.h>
+#include <react/renderer/components/textinput/basePrimitives.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/propsConversions.h>
 #include <react/renderer/graphics/Color.h>
@@ -93,7 +94,7 @@ class AndroidTextInputProps final : public BaseTextInputProps {
   bool secureTextEntry{false};
   std::string value{};
   bool selectTextOnFocus{false};
-  std::string submitBehavior{};
+  SubmitBehavior submitBehavior{};
   bool caretHidden{false};
   bool contextMenuHidden{false};
   SharedColor textShadowColor{};
