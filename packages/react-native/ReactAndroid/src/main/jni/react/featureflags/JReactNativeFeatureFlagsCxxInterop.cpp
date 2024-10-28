@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<732d1ea726d8a08859bd153dc767ec7a>>
+ * @generated SignedSource<<aaf6af36813ab1895bf2bf8a6c8bcf1c>>
  */
 
 /**
@@ -60,6 +60,12 @@ class ReactNativeFeatureFlagsProviderHolder
   bool disableEventLoopOnBridgeless() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("disableEventLoopOnBridgeless");
+    return method(javaProvider_);
+  }
+
+  bool disableMountItemReorderingAndroid() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("disableMountItemReorderingAndroid");
     return method(javaProvider_);
   }
 
@@ -345,6 +351,11 @@ bool JReactNativeFeatureFlagsCxxInterop::disableEventLoopOnBridgeless(
   return ReactNativeFeatureFlags::disableEventLoopOnBridgeless();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::disableMountItemReorderingAndroid(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::disableMountItemReorderingAndroid();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::enableAlignItemsBaselineOnFabricIOS(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableAlignItemsBaselineOnFabricIOS();
@@ -603,6 +614,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "disableEventLoopOnBridgeless",
         JReactNativeFeatureFlagsCxxInterop::disableEventLoopOnBridgeless),
+      makeNativeMethod(
+        "disableMountItemReorderingAndroid",
+        JReactNativeFeatureFlagsCxxInterop::disableMountItemReorderingAndroid),
       makeNativeMethod(
         "enableAlignItemsBaselineOnFabricIOS",
         JReactNativeFeatureFlagsCxxInterop::enableAlignItemsBaselineOnFabricIOS),

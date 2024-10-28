@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<949f5cdf6d0a4015fbd680ba718dce6d>>
+ * @generated SignedSource<<2ad36465b1a411cb55d85416bd8ba823>>
  */
 
 /**
@@ -28,6 +28,7 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var allowRecursiveCommitsWithSynchronousMountOnAndroidCache: Boolean? = null
   private var completeReactInstanceCreationOnBgThreadOnAndroidCache: Boolean? = null
   private var disableEventLoopOnBridgelessCache: Boolean? = null
+  private var disableMountItemReorderingAndroidCache: Boolean? = null
   private var enableAlignItemsBaselineOnFabricIOSCache: Boolean? = null
   private var enableAndroidLineHeightCenteringCache: Boolean? = null
   private var enableBridgelessArchitectureCache: Boolean? = null
@@ -108,6 +109,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.disableEventLoopOnBridgeless()
       accessedFeatureFlags.add("disableEventLoopOnBridgeless")
       disableEventLoopOnBridgelessCache = cached
+    }
+    return cached
+  }
+
+  override fun disableMountItemReorderingAndroid(): Boolean {
+    var cached = disableMountItemReorderingAndroidCache
+    if (cached == null) {
+      cached = currentProvider.disableMountItemReorderingAndroid()
+      accessedFeatureFlags.add("disableMountItemReorderingAndroid")
+      disableMountItemReorderingAndroidCache = cached
     }
     return cached
   }

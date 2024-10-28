@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f78f43e37af86d21faf92f4fea89f351>>
+ * @generated SignedSource<<096ac17a630f7b29d3a029c704dbd8db>>
  * @flow strict
  */
 
@@ -56,6 +56,7 @@ export type ReactNativeFeatureFlags = {
   batchRenderingUpdatesInEventLoop: Getter<boolean>,
   completeReactInstanceCreationOnBgThreadOnAndroid: Getter<boolean>,
   disableEventLoopOnBridgeless: Getter<boolean>,
+  disableMountItemReorderingAndroid: Getter<boolean>,
   enableAlignItemsBaselineOnFabricIOS: Getter<boolean>,
   enableAndroidLineHeightCentering: Getter<boolean>,
   enableBridgelessArchitecture: Getter<boolean>,
@@ -212,6 +213,10 @@ export const completeReactInstanceCreationOnBgThreadOnAndroid: Getter<boolean> =
  * The bridgeless architecture enables the event loop by default. This feature flag allows us to force disabling it in specific instances.
  */
 export const disableEventLoopOnBridgeless: Getter<boolean> = createNativeFlagGetter('disableEventLoopOnBridgeless', false);
+/**
+ * Prevent FabricMountingManager from reordering mountitems, which may lead to invalid state on the UI thread
+ */
+export const disableMountItemReorderingAndroid: Getter<boolean> = createNativeFlagGetter('disableMountItemReorderingAndroid', false);
 /**
  * Kill-switch to turn off support for aling-items:baseline on Fabric iOS.
  */
