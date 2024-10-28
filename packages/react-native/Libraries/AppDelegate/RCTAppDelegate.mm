@@ -316,6 +316,10 @@ class RCTAppDelegateBridgelessFeatureFlags : public facebook::react::ReactNative
   {
     return true;
   }
+  bool useFabricInterop() override
+  {
+    return true;
+  }
   bool useTurboModules() override
   {
     return true;

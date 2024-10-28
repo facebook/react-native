@@ -9,8 +9,8 @@
 
 #include "componentNameByReactViewName.h"
 
-#include <react/config/ReactNativeConfig.h>
 #include <react/debug/react_native_assert.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/renderer/components/legacyviewmanagerinterop/UnstableLegacyViewManagerAutomaticComponentDescriptor.h>
 #include <react/renderer/components/legacyviewmanagerinterop/UnstableLegacyViewManagerAutomaticShadowNode.h>
@@ -84,11 +84,7 @@ const ComponentDescriptor& ComponentDescriptorRegistry::at(
   }
 
   if (it == _registryByName.end()) {
-    auto reactNativeConfig_ =
-        contextContainer_->at<std::shared_ptr<const ReactNativeConfig>>(
-            "ReactNativeConfig");
-    if (reactNativeConfig_->getBool(
-            "react_fabric:enabled_automatic_interop_android")) {
+    if (ReactNativeFeatureFlags::useFabricInterop()) {
       auto componentDescriptor = std::make_shared<
           const UnstableLegacyViewManagerAutomaticComponentDescriptor>(
           parameters_, unifiedComponentName);
