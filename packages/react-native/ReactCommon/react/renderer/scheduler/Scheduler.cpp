@@ -102,7 +102,6 @@ Scheduler::Scheduler(
       EventQueueProcessor(
           eventPipe, eventPipeConclusion, statePipe, eventPerformanceLogger_),
       std::move(eventBeat),
-      *runtimeScheduler,
       statePipe,
       eventPerformanceLogger_);
 
