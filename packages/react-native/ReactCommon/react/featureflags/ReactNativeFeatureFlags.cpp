@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6a62793678276e28e04ebe3d1b8b0d46>>
+ * @generated SignedSource<<e510ad161d5c9473e9f8d9b898c7d727>>
  */
 
 /**
@@ -34,12 +34,12 @@ bool ReactNativeFeatureFlags::allowRecursiveCommitsWithSynchronousMountOnAndroid
   return getAccessor().allowRecursiveCommitsWithSynchronousMountOnAndroid();
 }
 
-bool ReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop() {
-  return getAccessor().batchRenderingUpdatesInEventLoop();
-}
-
 bool ReactNativeFeatureFlags::completeReactInstanceCreationOnBgThreadOnAndroid() {
   return getAccessor().completeReactInstanceCreationOnBgThreadOnAndroid();
+}
+
+bool ReactNativeFeatureFlags::disableEventLoopOnBridgeless() {
+  return getAccessor().disableEventLoopOnBridgeless();
 }
 
 bool ReactNativeFeatureFlags::enableAlignItemsBaselineOnFabricIOS() {
@@ -56,6 +56,10 @@ bool ReactNativeFeatureFlags::enableBridgelessArchitecture() {
 
 bool ReactNativeFeatureFlags::enableCleanTextInputYogaNode() {
   return getAccessor().enableCleanTextInputYogaNode();
+}
+
+bool ReactNativeFeatureFlags::enableCppPropsIteratorSetter() {
+  return getAccessor().enableCppPropsIteratorSetter();
 }
 
 bool ReactNativeFeatureFlags::enableDeletionOfUnmountedViews() {
@@ -102,8 +106,8 @@ bool ReactNativeFeatureFlags::enableLongTaskAPI() {
   return getAccessor().enableLongTaskAPI();
 }
 
-bool ReactNativeFeatureFlags::enableMicrotasks() {
-  return getAccessor().enableMicrotasks();
+bool ReactNativeFeatureFlags::enableNewBackgroundAndBorderDrawables() {
+  return getAccessor().enableNewBackgroundAndBorderDrawables();
 }
 
 bool ReactNativeFeatureFlags::enablePreciseSchedulingForPremountItemsOnAndroid() {
@@ -184,10 +188,6 @@ bool ReactNativeFeatureFlags::useFabricInterop() {
 
 bool ReactNativeFeatureFlags::useImmediateExecutorInAndroidBridgeless() {
   return getAccessor().useImmediateExecutorInAndroidBridgeless();
-}
-
-bool ReactNativeFeatureFlags::useModernRuntimeScheduler() {
-  return getAccessor().useModernRuntimeScheduler();
 }
 
 bool ReactNativeFeatureFlags::useNativeViewConfigsInBridgelessMode() {

@@ -879,10 +879,50 @@ function CustomFontsExample(props: {}): React.Node {
 function LineHeightExample(props: {}): React.Node {
   return (
     <>
-      <Text style={[{lineHeight: 35}, styles.wrappedText]}>
+      <Text
+        style={[
+          {
+            fontSize: 16,
+            lineHeight: 35,
+            borderColor: 'black',
+            borderWidth: 1,
+            marginBottom: 5,
+          },
+          styles.wrappedText,
+        ]}
+        testID="line-height-greater-than-fonst-size">
         Holisticly formulate inexpensive ideas before best-of-breed benefits.{' '}
         <Text style={{fontSize: 20}}>Continually</Text> expedite magnetic
         potentialities rather than client-focused interfaces.
+      </Text>
+      <Text
+        style={[
+          {
+            fontSize: 16,
+            lineHeight: 8,
+            borderColor: 'black',
+            borderWidth: 1,
+            marginBottom: 5,
+          },
+          styles.wrappedText,
+        ]}
+        testID="line-height-less-than-fonst-size">
+        Holisticly formulate inexpensive ideas before best-of-breed benefits.{' '}
+        <Text style={{fontSize: 20}}>Continually</Text> expedite magnetic
+        potentialities rather than client-focused interfaces.
+      </Text>
+      <Text
+        style={[
+          {
+            fontSize: 24,
+            lineHeight: 8,
+            borderColor: 'black',
+            borderWidth: 1,
+          },
+          styles.wrappedText,
+        ]}
+        testID="line-height-single-line-less-than-fonst-size">
+        Holisticly formulate
       </Text>
     </>
   );

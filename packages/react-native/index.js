@@ -88,7 +88,6 @@ import typeof UTFSequence from './Libraries/UTFSequence';
 import typeof * as Appearance from './Libraries/Utilities/Appearance';
 import typeof BackHandler from './Libraries/Utilities/BackHandler';
 import typeof DeviceInfo from './Libraries/Utilities/DeviceInfo';
-import typeof DevMenu from './src/private/devmenu/DevMenu';
 import typeof DevSettings from './Libraries/Utilities/DevSettings';
 import typeof Dimensions from './Libraries/Utilities/Dimensions';
 import typeof PixelRatio from './Libraries/Utilities/PixelRatio';
@@ -97,6 +96,7 @@ import typeof useColorScheme from './Libraries/Utilities/useColorScheme';
 import typeof useWindowDimensions from './Libraries/Utilities/useWindowDimensions';
 import typeof Vibration from './Libraries/Vibration/Vibration';
 import typeof YellowBox from './Libraries/YellowBox/YellowBoxDeprecated';
+import typeof DevMenu from './src/private/devmenu/DevMenu';
 
 const warnOnce = require('./Libraries/Utilities/warnOnce');
 const invariant = require('invariant');
@@ -375,7 +375,7 @@ module.exports = {
   get processColor(): processColor {
     return require('./Libraries/StyleSheet/processColor').default;
   },
-  get requireNativeComponent(): <T>(
+  get requireNativeComponent(): <T: {...}>(
     uiViewClassName: string,
   ) => HostComponent<T> {
     return require('./Libraries/ReactNative/requireNativeComponent').default;

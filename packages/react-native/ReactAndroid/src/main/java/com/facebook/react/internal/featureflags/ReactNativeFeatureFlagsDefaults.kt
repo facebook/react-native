@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5613f8d9d9403d005becbbd9348882c6>>
+ * @generated SignedSource<<ee5400241a72652a2f8ff343a06e4e8c>>
  */
 
 /**
@@ -27,9 +27,9 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun allowRecursiveCommitsWithSynchronousMountOnAndroid(): Boolean = false
 
-  override fun batchRenderingUpdatesInEventLoop(): Boolean = false
-
   override fun completeReactInstanceCreationOnBgThreadOnAndroid(): Boolean = false
+
+  override fun disableEventLoopOnBridgeless(): Boolean = false
 
   override fun enableAlignItemsBaselineOnFabricIOS(): Boolean = true
 
@@ -38,6 +38,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enableBridgelessArchitecture(): Boolean = false
 
   override fun enableCleanTextInputYogaNode(): Boolean = false
+
+  override fun enableCppPropsIteratorSetter(): Boolean = false
 
   override fun enableDeletionOfUnmountedViews(): Boolean = false
 
@@ -61,7 +63,7 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableLongTaskAPI(): Boolean = false
 
-  override fun enableMicrotasks(): Boolean = false
+  override fun enableNewBackgroundAndBorderDrawables(): Boolean = false
 
   override fun enablePreciseSchedulingForPremountItemsOnAndroid(): Boolean = false
 
@@ -102,8 +104,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun useFabricInterop(): Boolean = false
 
   override fun useImmediateExecutorInAndroidBridgeless(): Boolean = false
-
-  override fun useModernRuntimeScheduler(): Boolean = false
 
   override fun useNativeViewConfigsInBridgelessMode(): Boolean = false
 

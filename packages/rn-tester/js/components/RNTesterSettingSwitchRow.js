@@ -9,7 +9,6 @@
  */
 
 import RNTesterText from './RNTesterText';
-
 import * as React from 'react';
 import {StyleSheet, Switch, View} from 'react-native';
 

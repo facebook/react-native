@@ -20,17 +20,17 @@ FlexLine calculateFlexLine(
     const float mainAxisownerSize,
     const float availableInnerWidth,
     const float availableInnerMainDim,
-    const size_t startOfLineIndex,
+    Node::LayoutableChildren::Iterator& iterator,
     const size_t lineCount) {
   std::vector<yoga::Node*> itemsInFlow;
-  itemsInFlow.reserve(node->getChildren().size());
+  itemsInFlow.reserve(node->getChildCount());
 
   float sizeConsumed = 0.0f;
   float totalFlexGrowFactors = 0.0f;
   float totalFlexShrinkScaledFactors = 0.0f;
   size_t numberOfAutoMargins = 0;
-  size_t endOfLineIndex = startOfLineIndex;
-  size_t firstElementInLineIndex = startOfLineIndex;
+  size_t endOfLineIndex = iterator.index();
+  size_t firstElementInLineIndex = iterator.index();
 
   float sizeConsumedIncludingMinConstraint = 0;
   const Direction direction = node->resolveDirection(ownerDirection);
@@ -41,8 +41,9 @@ FlexLine calculateFlexLine(
       node->style().computeGapForAxis(mainAxis, availableInnerMainDim);
 
   // Add items to the current line until it's full or we run out of items.
-  for (; endOfLineIndex < node->getChildren().size(); endOfLineIndex++) {
-    auto child = node->getChild(endOfLineIndex);
+  for (; iterator != node->getLayoutChildren().end();
+       iterator++, endOfLineIndex = iterator.index()) {
+    auto child = *iterator;
     if (child->style().display() == Display::None ||
         child->style().positionType() == PositionType::Absolute) {
       if (firstElementInLineIndex == endOfLineIndex) {

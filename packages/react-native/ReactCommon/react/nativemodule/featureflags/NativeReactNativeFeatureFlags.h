@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8260155b1822cf4906660d3ad9b298a4>>
+ * @generated SignedSource<<0885affcf6782a59b0f4a3d1370ffc90>>
  */
 
 /**
@@ -37,11 +37,15 @@ class NativeReactNativeFeatureFlags
 
   bool commonTestFlag(jsi::Runtime& runtime);
 
+  bool commonTestFlagWithoutNativeImplementation(jsi::Runtime& runtime);
+
   bool allowRecursiveCommitsWithSynchronousMountOnAndroid(jsi::Runtime& runtime);
 
   bool batchRenderingUpdatesInEventLoop(jsi::Runtime& runtime);
 
   bool completeReactInstanceCreationOnBgThreadOnAndroid(jsi::Runtime& runtime);
+
+  bool disableEventLoopOnBridgeless(jsi::Runtime& runtime);
 
   bool enableAlignItemsBaselineOnFabricIOS(jsi::Runtime& runtime);
 
@@ -50,6 +54,8 @@ class NativeReactNativeFeatureFlags
   bool enableBridgelessArchitecture(jsi::Runtime& runtime);
 
   bool enableCleanTextInputYogaNode(jsi::Runtime& runtime);
+
+  bool enableCppPropsIteratorSetter(jsi::Runtime& runtime);
 
   bool enableDeletionOfUnmountedViews(jsi::Runtime& runtime);
 
@@ -74,6 +80,8 @@ class NativeReactNativeFeatureFlags
   bool enableLongTaskAPI(jsi::Runtime& runtime);
 
   bool enableMicrotasks(jsi::Runtime& runtime);
+
+  bool enableNewBackgroundAndBorderDrawables(jsi::Runtime& runtime);
 
   bool enablePreciseSchedulingForPremountItemsOnAndroid(jsi::Runtime& runtime);
 

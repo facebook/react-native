@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7d0c7d2dac41c4a64c3c8301b3865fdd>>
+ * @generated SignedSource<<f98a6ddd268fb59b5ee5edb4997b3a63>>
  */
 
 /**
@@ -41,16 +41,16 @@ public object ReactNativeFeatureFlags {
   public fun allowRecursiveCommitsWithSynchronousMountOnAndroid(): Boolean = accessor.allowRecursiveCommitsWithSynchronousMountOnAndroid()
 
   /**
-   * When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.
-   */
-  @JvmStatic
-  public fun batchRenderingUpdatesInEventLoop(): Boolean = accessor.batchRenderingUpdatesInEventLoop()
-
-  /**
    * Do not wait for a main-thread dispatch to complete init to start executing work on the JS thread on Android
    */
   @JvmStatic
   public fun completeReactInstanceCreationOnBgThreadOnAndroid(): Boolean = accessor.completeReactInstanceCreationOnBgThreadOnAndroid()
+
+  /**
+   * The bridgeless architecture enables the event loop by default. This feature flag allows us to force disabling it in specific instances.
+   */
+  @JvmStatic
+  public fun disableEventLoopOnBridgeless(): Boolean = accessor.disableEventLoopOnBridgeless()
 
   /**
    * Kill-switch to turn off support for aling-items:baseline on Fabric iOS.
@@ -75,6 +75,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableCleanTextInputYogaNode(): Boolean = accessor.enableCleanTextInputYogaNode()
+
+  /**
+   * Enable prop iterator setter-style construction of Props in C++ (this flag is not used in Java).
+   */
+  @JvmStatic
+  public fun enableCppPropsIteratorSetter(): Boolean = accessor.enableCppPropsIteratorSetter()
 
   /**
    * Deletes views that were pre-allocated but never mounted on the screen.
@@ -143,10 +149,10 @@ public object ReactNativeFeatureFlags {
   public fun enableLongTaskAPI(): Boolean = accessor.enableLongTaskAPI()
 
   /**
-   * Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).
+   * Use BackgroundDrawable and BorderDrawable instead of CSSBackgroundDrawable
    */
   @JvmStatic
-  public fun enableMicrotasks(): Boolean = accessor.enableMicrotasks()
+  public fun enableNewBackgroundAndBorderDrawables(): Boolean = accessor.enableNewBackgroundAndBorderDrawables()
 
   /**
    * Moves execution of pre-mount items to outside the choregrapher in the main thread, so we can estimate idle time more precisely (Android only).
@@ -267,12 +273,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun useImmediateExecutorInAndroidBridgeless(): Boolean = accessor.useImmediateExecutorInAndroidBridgeless()
-
-  /**
-   * When enabled, it uses the modern fork of RuntimeScheduler that allows scheduling tasks with priorities from any thread.
-   */
-  @JvmStatic
-  public fun useModernRuntimeScheduler(): Boolean = accessor.useModernRuntimeScheduler()
 
   /**
    * When enabled, the native view configs are used in bridgeless mode.

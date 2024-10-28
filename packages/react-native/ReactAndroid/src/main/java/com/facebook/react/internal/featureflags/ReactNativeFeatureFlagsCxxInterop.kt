@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b3c3d5419ec8999d61c562e6db8d5289>>
+ * @generated SignedSource<<0ef9a66ccabeb0357f4b15c3e897f8fb>>
  */
 
 /**
@@ -32,9 +32,9 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun allowRecursiveCommitsWithSynchronousMountOnAndroid(): Boolean
 
-  @DoNotStrip @JvmStatic public external fun batchRenderingUpdatesInEventLoop(): Boolean
-
   @DoNotStrip @JvmStatic public external fun completeReactInstanceCreationOnBgThreadOnAndroid(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun disableEventLoopOnBridgeless(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableAlignItemsBaselineOnFabricIOS(): Boolean
 
@@ -43,6 +43,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun enableBridgelessArchitecture(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableCleanTextInputYogaNode(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun enableCppPropsIteratorSetter(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableDeletionOfUnmountedViews(): Boolean
 
@@ -66,7 +68,7 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun enableLongTaskAPI(): Boolean
 
-  @DoNotStrip @JvmStatic public external fun enableMicrotasks(): Boolean
+  @DoNotStrip @JvmStatic public external fun enableNewBackgroundAndBorderDrawables(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enablePreciseSchedulingForPremountItemsOnAndroid(): Boolean
 
@@ -107,8 +109,6 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun useFabricInterop(): Boolean
 
   @DoNotStrip @JvmStatic public external fun useImmediateExecutorInAndroidBridgeless(): Boolean
-
-  @DoNotStrip @JvmStatic public external fun useModernRuntimeScheduler(): Boolean
 
   @DoNotStrip @JvmStatic public external fun useNativeViewConfigsInBridgelessMode(): Boolean
 

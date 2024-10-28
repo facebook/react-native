@@ -520,9 +520,8 @@ public class DevServerHelper {
     String requestUrl =
         String.format(
             Locale.US,
-            "http://%s/open-debugger?appId=%s&device=%s",
+            "http://%s/open-debugger?device=%s",
             mPackagerConnectionSettings.getDebugServerHost(),
-            Uri.encode(mPackageName),
             Uri.encode(getInspectorDeviceId()));
     Request request =
         new Request.Builder().url(requestUrl).method("POST", RequestBody.create(null, "")).build();

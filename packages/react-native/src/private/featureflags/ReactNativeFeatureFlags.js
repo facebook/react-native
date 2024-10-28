@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5f8a62b797980987ce7f415fa00c0965>>
+ * @generated SignedSource<<f78f43e37af86d21faf92f4fea89f351>>
  * @flow strict
  */
 
@@ -51,13 +51,16 @@ export type ReactNativeFeatureFlagsJsOnlyOverrides = OverridesFor<ReactNativeFea
 export type ReactNativeFeatureFlags = {
   ...ReactNativeFeatureFlagsJsOnly,
   commonTestFlag: Getter<boolean>,
+  commonTestFlagWithoutNativeImplementation: Getter<boolean>,
   allowRecursiveCommitsWithSynchronousMountOnAndroid: Getter<boolean>,
   batchRenderingUpdatesInEventLoop: Getter<boolean>,
   completeReactInstanceCreationOnBgThreadOnAndroid: Getter<boolean>,
+  disableEventLoopOnBridgeless: Getter<boolean>,
   enableAlignItemsBaselineOnFabricIOS: Getter<boolean>,
   enableAndroidLineHeightCentering: Getter<boolean>,
   enableBridgelessArchitecture: Getter<boolean>,
   enableCleanTextInputYogaNode: Getter<boolean>,
+  enableCppPropsIteratorSetter: Getter<boolean>,
   enableDeletionOfUnmountedViews: Getter<boolean>,
   enableEagerRootViewAttachment: Getter<boolean>,
   enableEventEmitterRetentionDuringGesturesOnAndroid: Getter<boolean>,
@@ -70,6 +73,7 @@ export type ReactNativeFeatureFlags = {
   enableLayoutAnimationsOnIOS: Getter<boolean>,
   enableLongTaskAPI: Getter<boolean>,
   enableMicrotasks: Getter<boolean>,
+  enableNewBackgroundAndBorderDrawables: Getter<boolean>,
   enablePreciseSchedulingForPremountItemsOnAndroid: Getter<boolean>,
   enablePropsUpdateReconciliationAndroid: Getter<boolean>,
   enableReportEventPaintTime: Getter<boolean>,
@@ -189,6 +193,10 @@ export const useRefsForTextInputState: Getter<boolean> = createJavaScriptFlagGet
  */
 export const commonTestFlag: Getter<boolean> = createNativeFlagGetter('commonTestFlag', false);
 /**
+ * Common flag for testing (without native implementation). Do NOT modify.
+ */
+export const commonTestFlagWithoutNativeImplementation: Getter<boolean> = createNativeFlagGetter('commonTestFlagWithoutNativeImplementation', false);
+/**
  * Adds support for recursively processing commits that mount synchronously (Android only).
  */
 export const allowRecursiveCommitsWithSynchronousMountOnAndroid: Getter<boolean> = createNativeFlagGetter('allowRecursiveCommitsWithSynchronousMountOnAndroid', false);
@@ -200,6 +208,10 @@ export const batchRenderingUpdatesInEventLoop: Getter<boolean> = createNativeFla
  * Do not wait for a main-thread dispatch to complete init to start executing work on the JS thread on Android
  */
 export const completeReactInstanceCreationOnBgThreadOnAndroid: Getter<boolean> = createNativeFlagGetter('completeReactInstanceCreationOnBgThreadOnAndroid', false);
+/**
+ * The bridgeless architecture enables the event loop by default. This feature flag allows us to force disabling it in specific instances.
+ */
+export const disableEventLoopOnBridgeless: Getter<boolean> = createNativeFlagGetter('disableEventLoopOnBridgeless', false);
 /**
  * Kill-switch to turn off support for aling-items:baseline on Fabric iOS.
  */
@@ -216,6 +228,10 @@ export const enableBridgelessArchitecture: Getter<boolean> = createNativeFlagGet
  * Clean yoga node when <TextInput /> does not change.
  */
 export const enableCleanTextInputYogaNode: Getter<boolean> = createNativeFlagGetter('enableCleanTextInputYogaNode', false);
+/**
+ * Enable prop iterator setter-style construction of Props in C++ (this flag is not used in Java).
+ */
+export const enableCppPropsIteratorSetter: Getter<boolean> = createNativeFlagGetter('enableCppPropsIteratorSetter', false);
 /**
  * Deletes views that were pre-allocated but never mounted on the screen.
  */
@@ -264,6 +280,10 @@ export const enableLongTaskAPI: Getter<boolean> = createNativeFlagGetter('enable
  * Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).
  */
 export const enableMicrotasks: Getter<boolean> = createNativeFlagGetter('enableMicrotasks', false);
+/**
+ * Use BackgroundDrawable and BorderDrawable instead of CSSBackgroundDrawable
+ */
+export const enableNewBackgroundAndBorderDrawables: Getter<boolean> = createNativeFlagGetter('enableNewBackgroundAndBorderDrawables', false);
 /**
  * Moves execution of pre-mount items to outside the choregrapher in the main thread, so we can estimate idle time more precisely (Android only).
  */

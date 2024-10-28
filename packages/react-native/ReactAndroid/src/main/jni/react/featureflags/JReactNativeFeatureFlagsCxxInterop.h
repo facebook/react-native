@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f2c31e543498ab343a2b11dbb1a01ae3>>
+ * @generated SignedSource<<88fc1d08894dc2f774ed8c64b20bdaeb>>
  */
 
 /**
@@ -36,10 +36,10 @@ class JReactNativeFeatureFlagsCxxInterop
   static bool allowRecursiveCommitsWithSynchronousMountOnAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
-  static bool batchRenderingUpdatesInEventLoop(
+  static bool completeReactInstanceCreationOnBgThreadOnAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
-  static bool completeReactInstanceCreationOnBgThreadOnAndroid(
+  static bool disableEventLoopOnBridgeless(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool enableAlignItemsBaselineOnFabricIOS(
@@ -52,6 +52,9 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool enableCleanTextInputYogaNode(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
+  static bool enableCppPropsIteratorSetter(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool enableDeletionOfUnmountedViews(
@@ -87,7 +90,7 @@ class JReactNativeFeatureFlagsCxxInterop
   static bool enableLongTaskAPI(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
-  static bool enableMicrotasks(
+  static bool enableNewBackgroundAndBorderDrawables(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool enablePreciseSchedulingForPremountItemsOnAndroid(
@@ -148,9 +151,6 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool useImmediateExecutorInAndroidBridgeless(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
-
-  static bool useModernRuntimeScheduler(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool useNativeViewConfigsInBridgelessMode(

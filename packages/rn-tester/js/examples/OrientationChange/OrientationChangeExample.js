@@ -8,11 +8,10 @@
  * @flow
  */
 
-import {type EventSubscription} from 'react-native/Libraries/vendor/emitter/EventEmitter';
-
+import RNTesterText from '../../components/RNTesterText';
 import React from 'react';
 import {DeviceEventEmitter, View} from 'react-native';
-import RNTesterText from '../../components/RNTesterText';
+import {type EventSubscription} from 'react-native/Libraries/vendor/emitter/EventEmitter';
 
 class OrientationChangeExample extends React.Component<{...}, $FlowFixMeState> {
   _orientationSubscription: EventSubscription;

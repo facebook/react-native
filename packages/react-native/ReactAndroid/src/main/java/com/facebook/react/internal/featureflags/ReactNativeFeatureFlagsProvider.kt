@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d66f664325c6b52649f9759d8ef26d2d>>
+ * @generated SignedSource<<4e42e76c98b7434273e4f11212f0527b>>
  */
 
 /**
@@ -27,9 +27,9 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun allowRecursiveCommitsWithSynchronousMountOnAndroid(): Boolean
 
-  @DoNotStrip public fun batchRenderingUpdatesInEventLoop(): Boolean
-
   @DoNotStrip public fun completeReactInstanceCreationOnBgThreadOnAndroid(): Boolean
+
+  @DoNotStrip public fun disableEventLoopOnBridgeless(): Boolean
 
   @DoNotStrip public fun enableAlignItemsBaselineOnFabricIOS(): Boolean
 
@@ -38,6 +38,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun enableBridgelessArchitecture(): Boolean
 
   @DoNotStrip public fun enableCleanTextInputYogaNode(): Boolean
+
+  @DoNotStrip public fun enableCppPropsIteratorSetter(): Boolean
 
   @DoNotStrip public fun enableDeletionOfUnmountedViews(): Boolean
 
@@ -61,7 +63,7 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableLongTaskAPI(): Boolean
 
-  @DoNotStrip public fun enableMicrotasks(): Boolean
+  @DoNotStrip public fun enableNewBackgroundAndBorderDrawables(): Boolean
 
   @DoNotStrip public fun enablePreciseSchedulingForPremountItemsOnAndroid(): Boolean
 
@@ -102,8 +104,6 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun useFabricInterop(): Boolean
 
   @DoNotStrip public fun useImmediateExecutorInAndroidBridgeless(): Boolean
-
-  @DoNotStrip public fun useModernRuntimeScheduler(): Boolean
 
   @DoNotStrip public fun useNativeViewConfigsInBridgelessMode(): Boolean
 

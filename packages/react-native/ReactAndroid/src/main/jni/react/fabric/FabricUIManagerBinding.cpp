@@ -7,7 +7,7 @@
 
 #include "FabricUIManagerBinding.h"
 
-#include "AsyncEventBeat.h"
+#include "AndroidEventBeat.h"
 #include "ComponentFactory.h"
 #include "EventBeatManager.h"
 #include "EventEmitterWrapper.h"
@@ -30,7 +30,6 @@
 #include <react/renderer/scheduler/SchedulerToolbox.h>
 #include <react/renderer/uimanager/primitives.h>
 #include <react/utils/ContextContainer.h>
-#include <react/utils/CoreFeatures.h>
 
 namespace facebook::react {
 
@@ -71,16 +70,6 @@ FabricUIManagerBinding::getInspectorDataForInstance(
   }
   result["hierarchy"] = hierarchy;
   return ReadableNativeMap::newObjectCxxArgs(result);
-}
-
-constexpr static auto kReactFeatureFlagsJavaDescriptor =
-    "com/facebook/react/config/ReactFeatureFlags";
-
-static bool getFeatureFlagValue(const char* name) {
-  static const auto reactFeatureFlagsClass =
-      jni::findClassStatic(kReactFeatureFlagsJavaDescriptor);
-  const auto field = reactFeatureFlagsClass->getStaticField<jboolean>(name);
-  return reactFeatureFlagsClass->getStaticFieldValue(field) != 0;
 }
 
 void FabricUIManagerBinding::setPixelDensity(float pointScaleFactor) {
@@ -485,12 +474,15 @@ void FabricUIManagerBinding::installFabricUIManager(
     }
   }
 
-  EventBeat::Factory asynchronousBeatFactory =
+  EventBeat::Factory eventBeatFactory =
       [eventBeatManager, runtimeExecutor, globalJavaUiManager](
-          const EventBeat::SharedOwnerBox& ownerBox)
+          std::shared_ptr<EventBeat::OwnerBox> ownerBox)
       -> std::unique_ptr<EventBeat> {
-    return std::make_unique<AsyncEventBeat>(
-        ownerBox, eventBeatManager, runtimeExecutor, globalJavaUiManager);
+    return std::make_unique<AndroidEventBeat>(
+        std::move(ownerBox),
+        eventBeatManager,
+        runtimeExecutor,
+        globalJavaUiManager);
   };
 
   contextContainer->insert("ReactNativeConfig", config);
@@ -498,11 +490,6 @@ void FabricUIManagerBinding::installFabricUIManager(
 
   // Keep reference to config object and cache some feature flags here
   reactNativeConfig_ = config;
-
-  CoreFeatures::enablePropIteratorSetter =
-      getFeatureFlagValue("enableCppPropsIteratorSetter");
-  CoreFeatures::excludeYogaFromRawProps =
-      ReactNativeFeatureFlags::excludeYogaFromRawProps();
 
   auto toolbox = SchedulerToolbox{};
   toolbox.contextContainer = contextContainer;
@@ -513,7 +500,7 @@ void FabricUIManagerBinding::installFabricUIManager(
   toolbox.bridgelessBindingsExecutor = std::nullopt;
   toolbox.runtimeExecutor = runtimeExecutor;
 
-  toolbox.asynchronousEventBeatFactory = asynchronousBeatFactory;
+  toolbox.eventBeatFactory = eventBeatFactory;
 
   animationDriver_ = std::make_shared<LayoutAnimationDriver>(
       runtimeExecutor, contextContainer, this);
@@ -548,7 +535,7 @@ FabricUIManagerBinding::getMountingManager(const char* locationHint) {
 }
 
 void FabricUIManagerBinding::schedulerDidFinishTransaction(
-    const MountingCoordinator::Shared& mountingCoordinator) {
+    const std::shared_ptr<const MountingCoordinator>& mountingCoordinator) {
   // We shouldn't be pulling the transaction here (which triggers diffing of
   // the trees to determine the mutations to run on the host platform),
   // but we have to due to current limitations in the Android implementation.
@@ -577,7 +564,8 @@ void FabricUIManagerBinding::schedulerDidFinishTransaction(
 }
 
 void FabricUIManagerBinding::schedulerShouldRenderTransactions(
-    const MountingCoordinator::Shared& /* mountingCoordinator */) {
+    const std::shared_ptr<
+        const MountingCoordinator>& /* mountingCoordinator */) {
   auto mountingManager =
       getMountingManager("schedulerShouldRenderTransactions");
   if (!mountingManager) {

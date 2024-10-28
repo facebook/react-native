@@ -48,8 +48,6 @@ public interface DevSupportManager : JSExceptionHandler {
 
   public fun showNewJSError(message: String?, details: ReadableArray?, errorCookie: Int)
 
-  public fun updateJSError(message: String?, details: ReadableArray?, errorCookie: Int)
-
   public fun hideRedboxDialog()
 
   public fun showDevOptionsDialog()

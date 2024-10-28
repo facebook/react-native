@@ -8,11 +8,8 @@
  */
 
 'use strict';
-
 const {danger, fail, /*message,*/ warn} = require('danger');
 const includes = require('lodash.includes');
-const {validate: validateChangelog} =
-  require('@rnx-kit/rn-changelog-generator').default;
 
 const isFromPhabricator =
   danger.github.pr.body &&
@@ -60,7 +57,9 @@ if (!includesTestPlan && !isFromPhabricator) {
 
 // Check if there is a changelog and validate it
 if (!isFromPhabricator) {
-  const status = validateChangelog(danger.github.pr.body);
+  const status = require('@rnx-kit/rn-changelog-generator').default.validate(
+    danger.github.pr.body,
+  );
   const changelogInstructions =
     'See <a target="_blank" href="https://reactnative.dev/contributing/changelogs-in-pull-requests">Changelog format</a>';
   if (status === 'missing') {

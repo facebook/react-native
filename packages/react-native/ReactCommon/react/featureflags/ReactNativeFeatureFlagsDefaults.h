@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<868e09dabcb458d56f73d5c6ef9ed05b>>
+ * @generated SignedSource<<116547f17bc1b3d16a8de7c92c5a9d53>>
  */
 
 /**
@@ -35,11 +35,11 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool batchRenderingUpdatesInEventLoop() override {
+  bool completeReactInstanceCreationOnBgThreadOnAndroid() override {
     return false;
   }
 
-  bool completeReactInstanceCreationOnBgThreadOnAndroid() override {
+  bool disableEventLoopOnBridgeless() override {
     return false;
   }
 
@@ -56,6 +56,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableCleanTextInputYogaNode() override {
+    return false;
+  }
+
+  bool enableCppPropsIteratorSetter() override {
     return false;
   }
 
@@ -103,7 +107,7 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool enableMicrotasks() override {
+  bool enableNewBackgroundAndBorderDrawables() override {
     return false;
   }
 
@@ -184,10 +188,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool useImmediateExecutorInAndroidBridgeless() override {
-    return false;
-  }
-
-  bool useModernRuntimeScheduler() override {
     return false;
   }
 

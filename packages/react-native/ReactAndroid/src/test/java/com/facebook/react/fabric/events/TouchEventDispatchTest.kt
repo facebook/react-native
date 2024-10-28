@@ -488,7 +488,7 @@ class TouchEventDispatchTest {
         spy(FabricUIManager(reactContext, viewManagerRegistry, batchEventDispatchedListener))
     uiManager.initialize()
 
-    eventDispatcher = uiManager.getEventDispatcher()
+    eventDispatcher = uiManager.eventDispatcher
 
     // Ignore scheduled choreographer work
     val reactChoreographerMock = mock(ReactChoreographer::class.java)

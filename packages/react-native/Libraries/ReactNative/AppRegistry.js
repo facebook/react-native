@@ -13,8 +13,8 @@ import type {RootTag} from '../Types/RootTagTypes';
 import type {IPerformanceLogger} from '../Utilities/createPerformanceLogger';
 import type {DisplayModeType} from './DisplayMode';
 
-import registerCallableModule from '../Core/registerCallableModule';
 import BugReporting from '../BugReporting/BugReporting';
+import registerCallableModule from '../Core/registerCallableModule';
 import createPerformanceLogger from '../Utilities/createPerformanceLogger';
 import infoLog from '../Utilities/infoLog';
 import SceneTracker from '../Utilities/SceneTracker';

@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {RNTesterModuleInfo, RNTesterModule} from '../types/RNTesterTypes';
+import type {RNTesterModule, RNTesterModuleInfo} from '../types/RNTesterTypes';
 
 declare const APIs: Array<RNTesterModuleInfo>;
 declare const Components: Array<RNTesterModuleInfo>;

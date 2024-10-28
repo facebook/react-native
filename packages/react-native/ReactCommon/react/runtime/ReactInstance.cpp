@@ -27,6 +27,24 @@
 
 namespace facebook::react {
 
+namespace {
+
+std::shared_ptr<RuntimeScheduler> createRuntimeScheduler(
+    RuntimeExecutor runtimeExecutor,
+    RuntimeSchedulerTaskErrorHandler taskErrorHandler) {
+  std::shared_ptr<RuntimeScheduler> scheduler =
+      std::make_shared<RuntimeScheduler>(
+          runtimeExecutor, RuntimeSchedulerClock::now, taskErrorHandler);
+  scheduler->setPerformanceEntryReporter(
+      // FIXME: Move creation of PerformanceEntryReporter to here and
+      // guarantee that its lifetime is the same as the runtime.
+      PerformanceEntryReporter::getInstance().get());
+
+  return scheduler;
+}
+
+} // namespace
+
 ReactInstance::ReactInstance(
     std::unique_ptr<JSRuntime> runtime,
     std::shared_ptr<MessageQueueThread> jsMessageQueueThread,
@@ -78,7 +96,7 @@ ReactInstance::ReactInstance(
 
           // If we have first-class support for microtasks,
           // they would've been called as part of the previous callback.
-          if (!ReactNativeFeatureFlags::enableMicrotasks()) {
+          if (ReactNativeFeatureFlags::disableEventLoopOnBridgeless()) {
             if (auto timerManager = weakTimerManager.lock()) {
               timerManager->callReactNativeMicrotasks(jsiRuntime);
             }
@@ -93,13 +111,34 @@ ReactInstance::ReactInstance(
   if (parentInspectorTarget_) {
     auto executor = parentInspectorTarget_->executorFromThis();
 
-    auto runtimeExecutorThatWaitsForInspectorSetup =
+    auto bufferedRuntimeExecutorThatWaitsForInspectorSetup =
         std::make_shared<BufferedRuntimeExecutor>(runtimeExecutor);
+    auto runtimeExecutorThatExecutesAfterInspectorSetup =
+        [bufferedRuntimeExecutorThatWaitsForInspectorSetup](
+            std::function<void(jsi::Runtime & runtime)>&& callback) {
+          bufferedRuntimeExecutorThatWaitsForInspectorSetup->execute(
+              std::move(callback));
+        };
+
+    runtimeScheduler_ = createRuntimeScheduler(
+        runtimeExecutorThatExecutesAfterInspectorSetup,
+        [jsErrorHandler = jsErrorHandler_](
+            jsi::Runtime& runtime, jsi::JSError& error) {
+          jsErrorHandler->handleError(runtime, error, true);
+        });
+
+    auto runtimeExecutorThatGoesThroughRuntimeScheduler =
+        [runtimeScheduler = runtimeScheduler_.get()](
+            std::function<void(jsi::Runtime & runtime)>&& callback) {
+          runtimeScheduler->scheduleWork(std::move(callback));
+        };
 
     // This code can execute from any thread, so we need to make sure we set up
     // the inspector logic in the right one. The callback executes immediately
     // if we are already in the right thread.
-    executor([this, runtimeExecutor, runtimeExecutorThatWaitsForInspectorSetup](
+    executor([this,
+              runtimeExecutorThatGoesThroughRuntimeScheduler,
+              bufferedRuntimeExecutorThatWaitsForInspectorSetup](
                  jsinspector_modern::HostTarget& hostTarget) {
       // Callbacks scheduled through the page target executor are generally
       // not guaranteed to run (e.g.: if the page target is destroyed)
@@ -110,31 +149,18 @@ ReactInstance::ReactInstance(
       //   creation task to finish before starting the destruction.
       inspectorTarget_ = &hostTarget.registerInstance(*this);
       runtimeInspectorTarget_ = &inspectorTarget_->registerRuntime(
-          runtime_->getRuntimeTargetDelegate(), runtimeExecutor);
-      runtimeExecutorThatWaitsForInspectorSetup->flush();
+          runtime_->getRuntimeTargetDelegate(),
+          runtimeExecutorThatGoesThroughRuntimeScheduler);
+      bufferedRuntimeExecutorThatWaitsForInspectorSetup->flush();
     });
-
-    // We decorate the runtime executor used everywhere else to wait for the
-    // inspector to finish its setup.
-    runtimeExecutor =
-        [runtimeExecutorThatWaitsForInspectorSetup](
-            std::function<void(jsi::Runtime & runtime)>&& callback) {
-          runtimeExecutorThatWaitsForInspectorSetup->execute(
-              std::move(callback));
-        };
+  } else {
+    runtimeScheduler_ = createRuntimeScheduler(
+        runtimeExecutor,
+        [jsErrorHandler = jsErrorHandler_](
+            jsi::Runtime& runtime, jsi::JSError& error) {
+          jsErrorHandler->handleError(runtime, error, true);
+        });
   }
-
-  runtimeScheduler_ = std::make_shared<RuntimeScheduler>(
-      runtimeExecutor,
-      RuntimeSchedulerClock::now,
-      [jsErrorHandler = jsErrorHandler_](
-          jsi::Runtime& runtime, jsi::JSError& error) {
-        jsErrorHandler->handleError(runtime, error, true);
-      });
-  runtimeScheduler_->setPerformanceEntryReporter(
-      // FIXME: Move creation of PerformanceEntryReporter to here and guarantee
-      // that its lifetime is the same as the runtime.
-      PerformanceEntryReporter::getInstance().get());
 
   bufferedRuntimeExecutor_ = std::make_shared<BufferedRuntimeExecutor>(
       [runtimeScheduler = runtimeScheduler_.get()](
@@ -365,17 +391,6 @@ bool isTruthy(jsi::Runtime& runtime, const jsi::Value& value) {
   return Boolean.call(runtime, value).getBool();
 }
 
-jsi::Value wrapInErrorIfNecessary(
-    jsi::Runtime& runtime,
-    const jsi::Value& value) {
-  auto Error = runtime.global().getPropertyAsFunction(runtime, "Error");
-  auto isError =
-      value.isObject() && value.asObject(runtime).instanceOf(runtime, Error);
-  auto error = isError ? value.getObject(runtime)
-                       : Error.callAsConstructor(runtime, value);
-  return jsi::Value(runtime, error);
-}
-
 } // namespace
 
 void ReactInstance::initializeRuntime(
@@ -422,8 +437,8 @@ void ReactInstance::initializeRuntime(
                 return jsi::Value(false);
               }
 
-              auto jsError = jsi::JSError(
-                  runtime, wrapInErrorIfNecessary(runtime, args[0]));
+              auto jsError =
+                  jsi::JSError(runtime, jsi::Value(runtime, args[0]));
               jsErrorHandler->handleError(runtime, jsError, isFatal);
 
               return jsi::Value(true);

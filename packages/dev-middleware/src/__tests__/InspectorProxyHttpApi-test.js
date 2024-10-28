@@ -14,11 +14,11 @@ import type {
   JsonVersionResponse,
 } from '../inspector-proxy/types';
 
+import DefaultBrowserLauncher from '../utils/DefaultBrowserLauncher';
 import {fetchJson, fetchLocal} from './FetchUtils';
 import {createDeviceMock} from './InspectorDeviceUtils';
 import {withAbortSignalForEachTest} from './ResourceUtils';
 import {withServerForEachTest} from './ServerUtils';
-import DefaultBrowserLauncher from '../utils/DefaultBrowserLauncher';
 
 // Must be greater than or equal to PAGES_POLLING_INTERVAL in `InspectorProxy.js`.
 const PAGES_POLLING_DELAY = 1000;
@@ -185,6 +185,7 @@ describe('inspector proxy HTTP API', () => {
         );
         expect(json).toEqual([
           {
+            appId: 'bar-app',
             description: 'bar-app',
             deviceName: 'foo',
             devtoolsFrontendUrl: expect.any(String),
@@ -199,6 +200,7 @@ describe('inspector proxy HTTP API', () => {
             webSocketDebuggerUrl: expect.any(String),
           },
           {
+            appId: 'bar-app',
             description: 'bar-app',
             deviceName: 'foo',
             devtoolsFrontendUrl: expect.any(String),
@@ -371,7 +373,7 @@ describe('inspector proxy HTTP API', () => {
   });
 
   describe('/open-debugger endpoint', () => {
-    it('opens requested device using appId, device, and target', async () => {
+    test('opens requested device using device and target query params', async () => {
       // Connect a device to use when opening the debugger
       const device = await createDeviceMock(
         `${serverRef.serverBaseWsUrl}/inspector/device?device=device1&name=foo&app=bar`,
@@ -407,7 +409,6 @@ describe('inspector proxy HTTP API', () => {
 
         // Build the URL for the debugger
         const openUrl = new URL('/open-debugger', serverRef.serverBaseUrl);
-        openUrl.searchParams.set('appId', firstPage.description);
         openUrl.searchParams.set(
           'device',
           firstPage.reactNative.logicalDeviceId,

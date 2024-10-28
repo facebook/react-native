@@ -47,6 +47,7 @@ public object ReactScrollViewHelper {
 
   // Support global native listeners for scroll events
   private val scrollListeners = CopyOnWriteArrayList<WeakReference<ScrollListener>>()
+  private val layoutChangeListeners = CopyOnWriteArrayList<WeakReference<LayoutChangeListener>>()
 
   // If all else fails, this is the hardcoded value in OverScroller.java, in AOSP.
   // The default is defined here (as of this diff):
@@ -152,6 +153,13 @@ public object ReactScrollViewHelper {
   }
 
   @JvmStatic
+  public fun emitLayoutChangeEvent(scrollView: ViewGroup) {
+    for (listener in layoutChangeListeners) {
+      listener.get()?.onLayoutChange(scrollView)
+    }
+  }
+
+  @JvmStatic
   public fun parseOverScrollMode(jsOverScrollMode: String?): Int {
     return if (jsOverScrollMode == null || jsOverScrollMode == AUTO) {
       View.OVER_SCROLL_IF_CONTENT_SCROLLS
@@ -212,6 +220,16 @@ public object ReactScrollViewHelper {
   @JvmStatic
   public fun removeScrollListener(listener: ScrollListener) {
     scrollListeners.remove(WeakReference(listener))
+  }
+
+  @JvmStatic
+  public fun addLayoutChangeListener(listener: LayoutChangeListener) {
+    layoutChangeListeners.add(WeakReference(listener))
+  }
+
+  @JvmStatic
+  public fun removeLayoutChangeListener(listener: LayoutChangeListener) {
+    layoutChangeListeners.remove(WeakReference(listener))
   }
 
   /**
@@ -454,6 +472,10 @@ public object ReactScrollViewHelper {
     )
 
     public fun onLayout(scrollView: ViewGroup?)
+  }
+
+  public interface LayoutChangeListener {
+    public fun onLayoutChange(scrollView: ViewGroup)
   }
 
   public interface HasStateWrapper {

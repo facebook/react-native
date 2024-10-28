@@ -65,9 +65,8 @@ class FakeUIManager : UIManager, UIBlockViewResolver {
     error("Not yet implemented")
   }
 
-  override fun <T : Any?> getEventDispatcher(): T {
-    error("Not yet implemented")
-  }
+  override val eventDispatcher: Any?
+    get() = TODO("Not yet implemented")
 
   override fun synchronouslyUpdateViewOnUIThread(reactTag: Int, props: ReadableMap?) {
     error("Not yet implemented")

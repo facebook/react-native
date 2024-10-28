@@ -117,6 +117,38 @@ double NativePerformance::now(jsi::Runtime& /*rt*/) {
   return JSExecutor::performanceNow();
 }
 
+double NativePerformance::markWithResult(
+    jsi::Runtime& rt,
+    std::string name,
+    std::optional<double> startTime) {
+  auto [trackName, eventName] = parseTrackName(name);
+  auto entry =
+      PerformanceEntryReporter::getInstance()->reportMark(name, startTime);
+
+  ReactPerfLogger::mark(eventName, entry.startTime, trackName);
+
+  return entry.startTime;
+}
+
+std::tuple<double, double> NativePerformance::measureWithResult(
+    jsi::Runtime& rt,
+    std::string name,
+    double startTime,
+    double endTime,
+    std::optional<double> duration,
+    std::optional<std::string> startMark,
+    std::optional<std::string> endMark) {
+  auto [trackName, eventName] = parseTrackName(name);
+
+  auto entry = PerformanceEntryReporter::getInstance()->reportMeasure(
+      eventName, startTime, endTime, duration, startMark, endMark);
+
+  ReactPerfLogger::measure(
+      eventName, entry.startTime, entry.startTime + entry.duration, trackName);
+
+  return std::tuple{entry.startTime, entry.duration};
+}
+
 void NativePerformance::mark(
     jsi::Runtime& rt,
     std::string name,

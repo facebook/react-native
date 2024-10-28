@@ -12,8 +12,8 @@
 
 import type {PlatformConfig} from './AnimatedPlatformConfig';
 
-import {findNodeHandle} from '../ReactNative/RendererProxy';
 import NativeAnimatedHelper from '../../src/private/animated/NativeAnimatedHelper';
+import {findNodeHandle} from '../ReactNative/RendererProxy';
 import AnimatedValue from './nodes/AnimatedValue';
 import AnimatedValueXY from './nodes/AnimatedValueXY';
 import invariant from 'invariant';

@@ -11,6 +11,7 @@
 'use strict';
 
 import processBackgroundImage from '../processBackgroundImage';
+
 const {OS} = require('../../Utilities/Platform');
 const PlatformColorAndroid =
   require('../PlatformColorValueTypes.android').PlatformColor;

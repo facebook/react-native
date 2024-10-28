@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2dea79097b1952f97d9e5dda86a38e58>>
+ * @generated SignedSource<<8472e224a5a49da4d706820c89262b6b>>
  * @flow strict
  */
 
@@ -24,13 +24,16 @@ import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboMod
 
 export interface Spec extends TurboModule {
   +commonTestFlag?: () => boolean;
+  +commonTestFlagWithoutNativeImplementation?: () => boolean;
   +allowRecursiveCommitsWithSynchronousMountOnAndroid?: () => boolean;
   +batchRenderingUpdatesInEventLoop?: () => boolean;
   +completeReactInstanceCreationOnBgThreadOnAndroid?: () => boolean;
+  +disableEventLoopOnBridgeless?: () => boolean;
   +enableAlignItemsBaselineOnFabricIOS?: () => boolean;
   +enableAndroidLineHeightCentering?: () => boolean;
   +enableBridgelessArchitecture?: () => boolean;
   +enableCleanTextInputYogaNode?: () => boolean;
+  +enableCppPropsIteratorSetter?: () => boolean;
   +enableDeletionOfUnmountedViews?: () => boolean;
   +enableEagerRootViewAttachment?: () => boolean;
   +enableEventEmitterRetentionDuringGesturesOnAndroid?: () => boolean;
@@ -43,6 +46,7 @@ export interface Spec extends TurboModule {
   +enableLayoutAnimationsOnIOS?: () => boolean;
   +enableLongTaskAPI?: () => boolean;
   +enableMicrotasks?: () => boolean;
+  +enableNewBackgroundAndBorderDrawables?: () => boolean;
   +enablePreciseSchedulingForPremountItemsOnAndroid?: () => boolean;
   +enablePropsUpdateReconciliationAndroid?: () => boolean;
   +enableReportEventPaintTime?: () => boolean;
