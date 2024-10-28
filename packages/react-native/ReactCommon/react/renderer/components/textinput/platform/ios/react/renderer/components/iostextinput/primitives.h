@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <react/renderer/components/textinput/basePrimitives.h>
 #include <optional>
 #include <string>
 
@@ -45,14 +46,6 @@ enum class ReturnKeyType {
   Route,
   Yahoo,
   Continue,
-};
-
-// iOS & Android.
-enum class SubmitBehavior {
-  Default,
-  Submit,
-  BlurAndSubmit,
-  Newline,
 };
 
 // iOS-only
