@@ -90,7 +90,7 @@ enum class BackfaceVisibility : uint8_t { Auto, Visible, Hidden };
 
 enum class BorderCurve : uint8_t { Circular, Continuous };
 
-enum class BorderStyle : uint8_t { Solid, Dotted, Dashed };
+enum class BorderStyle : uint8_t { None, Solid, Dotted, Dashed };
 
 enum class OutlineStyle : uint8_t { Solid, Dotted, Dashed };
 

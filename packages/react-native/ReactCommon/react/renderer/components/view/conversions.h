@@ -449,6 +449,35 @@ inline void fromRawValue(
 inline void fromRawValue(
     const PropsParserContext& context,
     const RawValue& value,
+    yoga::BorderStyle& result) {
+  result = yoga::BorderStyle::Solid;
+  react_native_expect(value.hasType<std::string>());
+  if (!value.hasType<std::string>()) {
+    return;
+  }
+  auto stringValue = (std::string)value;
+  if (stringValue == "none") {
+    result = yoga::BorderStyle::None;
+    return;
+  }
+  if (stringValue == "solid") {
+    result = yoga::BorderStyle::Solid;
+    return;
+  }
+  if (stringValue == "dotted") {
+    result = yoga::BorderStyle::Dotted;
+    return;
+  }
+  if (stringValue == "dashed") {
+    result = yoga::BorderStyle::Dashed;
+    return;
+  }
+  LOG(ERROR) << "Could not parse yoga::BorderStyle: " << stringValue;
+}
+
+inline void fromRawValue(
+    const PropsParserContext& context,
+    const RawValue& value,
     yoga::Style::Length& result) {
   if (value.hasType<Float>()) {
     result = yoga::StyleLength::points((float)value);
@@ -775,6 +804,10 @@ inline void fromRawValue(
     return;
   }
   auto stringValue = (std::string)value;
+  if (stringValue == "none") {
+    result = BorderStyle::None;
+    return;
+  }
   if (stringValue == "solid") {
     result = BorderStyle::Solid;
     return;
@@ -1367,6 +1400,10 @@ inline std::string toString(const yoga::Overflow& value) {
 
 inline std::string toString(const yoga::Display& value) {
   return YGDisplayToString(yoga::unscopedEnum(value));
+}
+
+inline std::string toString(const yoga::BorderStyle& value) {
+  return YGBorderStyleToString(yoga::unscopedEnum(value));
 }
 
 inline std::string toString(const yoga::Style::Length& length) {
