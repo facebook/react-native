@@ -36,7 +36,7 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
 {
   if (![self isDescendantOfView:scrollView]) {
     // View is outside scroll view
-    scrollView.firstResponderViewOffScrollView = self.backedTextInputView;
+    scrollView.firstResponderViewOutsideScrollView = self.backedTextInputView;
     return;
   }
 

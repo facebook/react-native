@@ -39,7 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) CGRect firstResponderFocus;
 
 /** newly-activated text input outside of the scroll view */
-@property (nonatomic, weak) UIView *firstResponderViewOffScrollView;
+@property (nonatomic, weak) UIView *firstResponderViewOutsideScrollView;
 
 /*
  * Returns the subview of the scroll view that the component uses to mount all subcomponents into. That's useful to
