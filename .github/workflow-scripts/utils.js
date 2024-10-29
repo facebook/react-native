@@ -21,7 +21,7 @@ module.exports.sleep = sleep;
 
 async function getNpmPackageInfo(pkg, versionOrTag) {
   return fetch(`https://registry.npmjs.org/${pkg}/${versionOrTag}`).then(resp =>
-    res.json(),
+    resp.json(),
   );
 }
 module.exports.getNpmPackageInfo = getNpmPackageInfo;
