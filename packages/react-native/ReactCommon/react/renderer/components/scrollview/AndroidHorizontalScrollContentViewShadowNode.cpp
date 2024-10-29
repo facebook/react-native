@@ -17,8 +17,11 @@ void AndroidHorizontalScrollContentViewShadowNode::layout(
   ConcreteViewShadowNode::layout(layoutContext);
 
   // When the layout direction is RTL, we expect Yoga to give us a layout
-  // that extends off the screen to the left so we re-center it with left=0
-  if (layoutMetrics_.layoutDirection == LayoutDirection::RightToLeft) {
+  // that extends off the screen to the left so we re-center it to be at most
+  // zero (where the scrolling offset will be adjusted to match if larger than
+  // parent width on the Android component side).
+  if (layoutMetrics_.layoutDirection == LayoutDirection::RightToLeft &&
+      layoutMetrics_.frame.origin.x < 0) {
     layoutMetrics_.frame.origin.x = 0;
   }
 }
