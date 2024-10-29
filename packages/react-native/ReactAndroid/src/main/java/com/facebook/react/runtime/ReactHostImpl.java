@@ -26,7 +26,6 @@ import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.proguard.annotations.DoNotStrip;
-import com.facebook.react.JSEngineResolutionAlgorithm;
 import com.facebook.react.MemoryPressureRouter;
 import com.facebook.react.ReactHost;
 import com.facebook.react.ReactInstanceEventListener;
@@ -47,9 +46,10 @@ import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.build.ReactBuildConfig;
+import com.facebook.react.devsupport.DefaultDevSupportManagerFactory;
 import com.facebook.react.devsupport.DevSupportManagerBase;
+import com.facebook.react.devsupport.DevSupportManagerFactory;
 import com.facebook.react.devsupport.InspectorFlags;
-import com.facebook.react.devsupport.ReleaseDevSupportManager;
 import com.facebook.react.devsupport.inspector.InspectorNetworkHelper;
 import com.facebook.react.devsupport.inspector.InspectorNetworkRequestListener;
 import com.facebook.react.devsupport.interfaces.BundleLoadCallback;
@@ -107,7 +107,7 @@ public class ReactHostImpl implements ReactHost {
   private final Context mContext;
   private final ReactHostDelegate mReactHostDelegate;
   private final ComponentFactory mComponentFactory;
-  private final DevSupportManager mDevSupportManager;
+  private DevSupportManager mDevSupportManager;
   private final Executor mBGExecutor;
   private final Executor mUIExecutor;
   private final Set<ReactSurfaceImpl> mAttachedSurfaces = new HashSet<>();
@@ -131,7 +131,6 @@ public class ReactHostImpl implements ReactHost {
   private final ReactLifecycleStateManager mReactLifecycleStateManager =
       new ReactLifecycleStateManager(mBridgelessReactStateTracker);
   private final int mId = mCounter.getAndIncrement();
-  private @Nullable JSEngineResolutionAlgorithm mJSEngineResolutionAlgorithm = null;
   private @Nullable MemoryPressureListener mMemoryPressureListener;
   private @Nullable DefaultHardwareBackBtnHandler mDefaultHardwareBackBtnHandler;
 
@@ -167,6 +166,26 @@ public class ReactHostImpl implements ReactHost {
       Executor uiExecutor,
       boolean allowPackagerServerAccess,
       boolean useDevSupport) {
+    this(
+        context,
+        delegate,
+        componentFactory,
+        bgExecutor,
+        uiExecutor,
+        allowPackagerServerAccess,
+        useDevSupport,
+        null);
+  }
+
+  public ReactHostImpl(
+      Context context,
+      ReactHostDelegate delegate,
+      ComponentFactory componentFactory,
+      Executor bgExecutor,
+      Executor uiExecutor,
+      boolean allowPackagerServerAccess,
+      boolean useDevSupport,
+      @Nullable DevSupportManagerFactory devSupportManagerFactory) {
     mContext = context;
     mReactHostDelegate = delegate;
     mComponentFactory = componentFactory;
@@ -175,14 +194,24 @@ public class ReactHostImpl implements ReactHost {
     mMemoryPressureRouter = new MemoryPressureRouter(context);
     mAllowPackagerServerAccess = allowPackagerServerAccess;
     mUseDevSupport = useDevSupport;
-
-    if (mUseDevSupport) {
-      mDevSupportManager =
-          new BridgelessDevSupportManager(
-              ReactHostImpl.this, mContext, mReactHostDelegate.getJsMainModulePath());
-    } else {
-      mDevSupportManager = new ReleaseDevSupportManager();
+    if (devSupportManagerFactory == null) {
+      devSupportManagerFactory = new DefaultDevSupportManagerFactory();
     }
+
+    mDevSupportManager =
+        devSupportManagerFactory.create(
+            /* applicationContext */ context.getApplicationContext(),
+            /* reactInstanceManagerHelper */ new ReactHostImplDevHelper(ReactHostImpl.this),
+            /* packagerPathForJSBundleName */ mReactHostDelegate.getJsMainModulePath(),
+            /* enableOnCreate */ true,
+            /* redBoxHandler */ null,
+            /* devBundleDownloadListener */ null,
+            /* minNumShakes */ 2,
+            /* customPackagerCommandHandlers */ null,
+            /* surfaceDelegateFactory */ null,
+            /* devLoadingViewManager */ null,
+            /* pausedInDebuggerOverlayManager */ null,
+            mUseDevSupport);
   }
 
   @Override
@@ -894,6 +923,19 @@ public class ReactHostImpl implements ReactHost {
     final String method = "getOrCreateStartTask()";
     if (mStartTask == null) {
       log(method, "Schedule");
+      if (ReactBuildConfig.DEBUG) {
+        Assertions.assertCondition(
+            ReactNativeFeatureFlags.enableBridgelessArchitecture(),
+            "enableBridgelessArchitecture FeatureFlag must be set to start ReactNative.");
+
+        Assertions.assertCondition(
+            ReactNativeFeatureFlags.enableFabricRenderer(),
+            "enableFabricRenderer FeatureFlag must be set to start ReactNative.");
+
+        Assertions.assertCondition(
+            ReactNativeFeatureFlags.useTurboModules(),
+            "useTurboModules FeatureFlag must be set to start ReactNative.");
+      }
       mStartTask =
           waitThenCallGetOrCreateReactInstanceTask()
               .continueWithTask(

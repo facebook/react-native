@@ -18,5 +18,7 @@ if (__DEV__) {
 }
 export default ScrollViewContext;
 
+// $FlowFixMe[incompatible-type] frozen objects are readonly
 export const HORIZONTAL: Value = Object.freeze({horizontal: true});
+// $FlowFixMe[incompatible-type] frozen objects are readonly
 export const VERTICAL: Value = Object.freeze({horizontal: false});

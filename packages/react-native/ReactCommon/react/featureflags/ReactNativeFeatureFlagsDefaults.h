@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<fb3d7a930222a40e9a8c377989713b07>>
+ * @generated SignedSource<<631c825e33e07674e19a084a33637a50>>
  */
 
 /**
@@ -35,15 +35,15 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool batchRenderingUpdatesInEventLoop() override {
-    return false;
-  }
-
   bool completeReactInstanceCreationOnBgThreadOnAndroid() override {
     return false;
   }
 
-  bool destroyFabricSurfacesInReactInstanceManager() override {
+  bool disableEventLoopOnBridgeless() override {
+    return false;
+  }
+
+  bool disableMountItemReorderingAndroid() override {
     return false;
   }
 
@@ -55,19 +55,15 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool enableAndroidMixBlendModeProp() override {
-    return false;
-  }
-
-  bool enableBackgroundStyleApplicator() override {
-    return true;
-  }
-
   bool enableBridgelessArchitecture() override {
     return false;
   }
 
   bool enableCleanTextInputYogaNode() override {
+    return false;
+  }
+
+  bool enableCppPropsIteratorSetter() override {
     return false;
   }
 
@@ -103,6 +99,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool enableLayoutAnimationsOnAndroid() override {
+    return false;
+  }
+
   bool enableLayoutAnimationsOnIOS() override {
     return true;
   }
@@ -111,7 +111,7 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool enableMicrotasks() override {
+  bool enableNewBackgroundAndBorderDrawables() override {
     return false;
   }
 
@@ -147,10 +147,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool fetchImagesInViewPreallocation() override {
-    return false;
-  }
-
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact() override {
     return false;
   }
@@ -183,12 +179,8 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool removeNestedCallsToDispatchMountItemsOnAndroid() override {
-    return false;
-  }
-
   bool setAndroidLayoutDirection() override {
-    return false;
+    return true;
   }
 
   bool traceTurboModulePromiseRejectionsOnAndroid() override {
@@ -203,15 +195,7 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool useModernRuntimeScheduler() override {
-    return false;
-  }
-
   bool useNativeViewConfigsInBridgelessMode() override {
-    return false;
-  }
-
-  bool useNewReactImageViewBackgroundDrawing() override {
     return false;
   }
 
@@ -224,14 +208,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool useRuntimeShadowNodeReferenceUpdate() override {
-    return false;
-  }
-
-  bool useRuntimeShadowNodeReferenceUpdateOnLayout() override {
-    return false;
-  }
-
-  bool useStateAlignmentMechanism() override {
     return false;
   }
 

@@ -16,8 +16,12 @@
     "react-native"
   ],
   "bugs": "https://github.com/facebook/react-native/issues",
+  "main": "index.js",
+  "devDependencies": {
+    "babel-plugin-syntax-hermes-parser": "0.24.0",
+    "hermes-eslint": "0.24.0"
+  },
   "engines": {
     "node": ">=18"
-  },
-  "main": "index.js"
+  }
 }

@@ -41,6 +41,16 @@ export type StringTypeAnnotation = $ReadOnly<{
   type: 'StringTypeAnnotation',
 }>;
 
+export type StringLiteralTypeAnnotation = $ReadOnly<{
+  type: 'StringLiteralTypeAnnotation',
+  value: string,
+}>;
+
+export type StringLiteralUnionTypeAnnotation = $ReadOnly<{
+  type: 'StringLiteralUnionTypeAnnotation',
+  types: $ReadOnlyArray<StringLiteralTypeAnnotation>,
+}>;
+
 export type StringEnumTypeAnnotation = $ReadOnly<{
   type: 'StringEnumTypeAnnotation',
   options: $ReadOnlyArray<string>,
@@ -61,7 +71,7 @@ export type MixedTypeAnnotation = $ReadOnly<{
   type: 'MixedTypeAnnotation',
 }>;
 
-type EventEmitterTypeAnnotation = $ReadOnly<{
+export type EventEmitterTypeAnnotation = $ReadOnly<{
   type: 'EventEmitterTypeAnnotation',
   typeAnnotation: NativeModuleEventEmitterTypeAnnotation | $FlowFixMe,
 }>;
@@ -333,7 +343,7 @@ export type NativeModuleTypeAliasTypeAnnotation = $ReadOnly<{
 
 export type NativeModulePromiseTypeAnnotation = $ReadOnly<{
   type: 'PromiseTypeAnnotation',
-  elementType?: Nullable<NativeModuleBaseTypeAnnotation>,
+  elementType: VoidTypeAnnotation | Nullable<NativeModuleBaseTypeAnnotation>,
 }>;
 
 export type UnionTypeAnnotationMemberType =
@@ -357,6 +367,8 @@ type NativeModuleEventEmitterBaseTypeAnnotation =
   | Int32TypeAnnotation
   | NativeModuleNumberTypeAnnotation
   | StringTypeAnnotation
+  | StringLiteralTypeAnnotation
+  | StringLiteralUnionTypeAnnotation
   | NativeModuleTypeAliasTypeAnnotation
   | NativeModuleGenericObjectTypeAnnotation
   | VoidTypeAnnotation;
@@ -370,6 +382,8 @@ export type NativeModuleEventEmitterTypeAnnotation =
 
 export type NativeModuleBaseTypeAnnotation =
   | StringTypeAnnotation
+  | StringLiteralTypeAnnotation
+  | StringLiteralUnionTypeAnnotation
   | NativeModuleNumberTypeAnnotation
   | Int32TypeAnnotation
   | DoubleTypeAnnotation
@@ -410,4 +424,5 @@ export type CompleteTypeAnnotation =
   | NativeModuleTypeAnnotation
   | NativeModuleFunctionTypeAnnotation
   | NullableTypeAnnotation<NativeModuleTypeAnnotation>
+  | EventEmitterTypeAnnotation
   | UnsafeAnyTypeAnnotation;

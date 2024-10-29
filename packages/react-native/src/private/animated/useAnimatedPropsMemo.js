@@ -17,7 +17,6 @@ import {AnimatedEvent} from '../../../Libraries/Animated/AnimatedEvent';
 import AnimatedNode from '../../../Libraries/Animated/nodes/AnimatedNode';
 import {isPlainObject} from '../../../Libraries/Animated/nodes/AnimatedObject';
 import flattenStyle from '../../../Libraries/StyleSheet/flattenStyle';
-
 import nullthrows from 'nullthrows';
 import {useMemo, useState} from 'react';
 

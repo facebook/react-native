@@ -24,6 +24,7 @@ import type {ParserErrorCapturer, TypeDeclarationMap} from '../../utils';
 const {
   UnsupportedEnumDeclarationParserError,
   UnsupportedGenericParserError,
+  UnsupportedObjectPropertyWithIndexerTypeAnnotationParserError,
   UnsupportedTypeAnnotationParserError,
 } = require('../../errors');
 const {
@@ -162,6 +163,14 @@ function translateTypeAnnotation(
         const indexers = typeAnnotation.indexers.filter(
           member => member.type === 'ObjectTypeIndexer',
         );
+
+        if (indexers.length > 0 && typeAnnotation.properties.length > 0) {
+          throw new UnsupportedObjectPropertyWithIndexerTypeAnnotationParserError(
+            hasteModuleName,
+            typeAnnotation,
+          );
+        }
+
         if (indexers.length > 0) {
           // check the property type to prevent developers from using unsupported types
           // the return value from `translateTypeAnnotation` is unused
@@ -235,10 +244,9 @@ function translateTypeAnnotation(
       return emitUnion(nullable, hasteModuleName, typeAnnotation, parser);
     }
     case 'StringLiteralTypeAnnotation': {
-      // 'a' is a special case for 'a' | 'b' but the type name is different
       return wrapNullable(nullable, {
-        type: 'UnionTypeAnnotation',
-        memberType: 'StringTypeAnnotation',
+        type: 'StringLiteralTypeAnnotation',
+        value: typeAnnotation.value,
       });
     }
     case 'EnumStringBody':

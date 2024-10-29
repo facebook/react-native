@@ -9,18 +9,16 @@
  */
 
 import type {
-  HostComponent,
+  HostInstance,
   TouchedViewDataAtPoint,
 } from '../Renderer/shims/ReactNativeTypes';
 
 const invariant = require('invariant');
-const React = require('react');
 
-export type HostRef = React.ElementRef<HostComponent<mixed>>;
 export type ReactRenderer = {
   rendererConfig: {
     getInspectorDataForViewAtPoint: (
-      inspectedView: ?HostRef,
+      inspectedView: ?HostInstance,
       locationX: number,
       locationY: number,
       callback: Function,
@@ -52,7 +50,7 @@ function validateRenderers(): void {
 }
 
 module.exports = function getInspectorDataForViewAtPoint(
-  inspectedView: ?HostRef,
+  inspectedView: ?HostInstance,
   locationX: number,
   locationY: number,
   callback: (viewData: TouchedViewDataAtPoint) => boolean,

@@ -30,6 +30,15 @@ const testDefinitions: FeatureFlagDefinitions = {
         purpose: 'operational',
       },
     },
+    commonTestFlagWithoutNativeImplementation: {
+      defaultValue: false,
+      metadata: {
+        description:
+          'Common flag for testing (without native implementation). Do NOT modify.',
+        purpose: 'operational',
+      },
+      skipNativeAPI: true,
+    },
   },
   jsOnly: {
     jsOnlyTestFlag: {
@@ -61,6 +70,8 @@ const definitions: FeatureFlagDefinitions = {
           'When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.',
         purpose: 'release',
       },
+      // We're preparing to clean up this feature flag.
+      skipNativeAPI: true,
     },
     completeReactInstanceCreationOnBgThreadOnAndroid: {
       defaultValue: false,
@@ -71,12 +82,20 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'experimentation',
       },
     },
-    destroyFabricSurfacesInReactInstanceManager: {
+    disableEventLoopOnBridgeless: {
       defaultValue: false,
       metadata: {
-        dateAdded: '2024-04-23',
         description:
-          'When enabled, ReactInstanceManager will clean up Fabric surfaces on destroy().',
+          'The bridgeless architecture enables the event loop by default. This feature flag allows us to force disabling it in specific instances.',
+        purpose: 'release',
+      },
+    },
+    disableMountItemReorderingAndroid: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2024-10-26',
+        description:
+          'Prevent FabricMountingManager from reordering mountitems, which may lead to invalid state on the UI thread',
         purpose: 'experimentation',
       },
     },
@@ -98,23 +117,6 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'experimentation',
       },
     },
-    enableAndroidMixBlendModeProp: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-08-16',
-        description: 'Enables mix-blend-mode prop on Android.',
-        purpose: 'experimentation',
-      },
-    },
-    enableBackgroundStyleApplicator: {
-      defaultValue: true,
-      metadata: {
-        dateAdded: '2024-07-29',
-        description:
-          'Use BackgroundStyleApplicator in place of other background/border drawing code',
-        purpose: 'experimentation',
-      },
-    },
     enableBridgelessArchitecture: {
       defaultValue: false,
       metadata: {
@@ -128,6 +130,15 @@ const definitions: FeatureFlagDefinitions = {
       metadata: {
         dateAdded: '2024-04-06',
         description: 'Clean yoga node when <TextInput /> does not change.',
+        purpose: 'experimentation',
+      },
+    },
+    enableCppPropsIteratorSetter: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2024-09-13',
+        description:
+          'Enable prop iterator setter-style construction of Props in C++ (this flag is not used in Java).',
         purpose: 'experimentation',
       },
     },
@@ -197,6 +208,14 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'experimentation',
       },
     },
+    enableLayoutAnimationsOnAndroid: {
+      defaultValue: false,
+      metadata: {
+        description:
+          'When enabled, LayoutAnimations API will animate state changes on Android.',
+        purpose: 'release',
+      },
+    },
     enableLayoutAnimationsOnIOS: {
       defaultValue: true,
       metadata: {
@@ -219,6 +238,17 @@ const definitions: FeatureFlagDefinitions = {
         description:
           'Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).',
         purpose: 'release',
+      },
+      // We're preparing to clean up this feature flag.
+      skipNativeAPI: true,
+    },
+    enableNewBackgroundAndBorderDrawables: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2024-09-24',
+        description:
+          'Use BackgroundDrawable and BorderDrawable instead of CSSBackgroundDrawable',
+        purpose: 'experimentation',
       },
     },
     enablePreciseSchedulingForPremountItemsOnAndroid: {
@@ -292,15 +322,6 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'experimentation',
       },
     },
-    fetchImagesInViewPreallocation: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-07-09',
-        description:
-          'Start image fetching during view preallocation instead of waiting for layout pass',
-        purpose: 'experimentation',
-      },
-    },
     fixMappingOfEventPrioritiesBetweenFabricAndReact: {
       defaultValue: false,
       metadata: {
@@ -371,17 +392,8 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'experimentation',
       },
     },
-    removeNestedCallsToDispatchMountItemsOnAndroid: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-09-19',
-        description:
-          'Removes nested calls to MountItemDispatcher.dispatchMountItems on Android, so we do less work per frame on the UI thread.',
-        purpose: 'experimentation',
-      },
-    },
     setAndroidLayoutDirection: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
         dateAdded: '2024-05-17',
         description: 'Propagate layout direction to Android views.',
@@ -420,6 +432,8 @@ const definitions: FeatureFlagDefinitions = {
           'When enabled, it uses the modern fork of RuntimeScheduler that allows scheduling tasks with priorities from any thread.',
         purpose: 'release',
       },
+      // We're preparing to clean up this feature flag.
+      skipNativeAPI: true,
     },
     useNativeViewConfigsInBridgelessMode: {
       defaultValue: false,
@@ -427,15 +441,6 @@ const definitions: FeatureFlagDefinitions = {
         dateAdded: '2024-04-03',
         description:
           'When enabled, the native view configs are used in bridgeless mode.',
-        purpose: 'experimentation',
-      },
-    },
-    useNewReactImageViewBackgroundDrawing: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-07-11',
-        description:
-          'Use shared background drawing code for ReactImageView instead of using Fresco to manipulate the bitmap',
         purpose: 'experimentation',
       },
     },
@@ -463,24 +468,6 @@ const definitions: FeatureFlagDefinitions = {
         dateAdded: '2024-06-03',
         description:
           'When enabled, cloning shadow nodes within react native will update the reference held by the current JS fiber tree.',
-        purpose: 'experimentation',
-      },
-    },
-    useRuntimeShadowNodeReferenceUpdateOnLayout: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-06-03',
-        description:
-          'When enabled, cloning shadow nodes during layout will update the reference held by the current JS fiber tree.',
-        purpose: 'experimentation',
-      },
-    },
-    useStateAlignmentMechanism: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-04-12',
-        description:
-          'When enabled, it uses optimised state reconciliation algorithm.',
         purpose: 'experimentation',
       },
     },
@@ -576,6 +563,15 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'release',
       },
     },
+    scheduleAnimatedEndCallbackInMicrotask: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2024-09-27',
+        description:
+          'Changes the completion callback supplied via `Animation#start` to be scheduled in a microtask instead of synchronously executed.',
+        purpose: 'experimentation',
+      },
+    },
     shouldSkipStateUpdatesForLoopingAnimations: {
       defaultValue: false,
       metadata: {
@@ -641,4 +637,5 @@ const definitions: FeatureFlagDefinitions = {
   },
 };
 
-export default definitions;
+// Keep it as a CommonJS module so we can easily import it from Node.js
+module.exports = definitions;

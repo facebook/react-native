@@ -55,7 +55,8 @@ export interface FlexStyle {
   borderTopWidth?: number | undefined;
   borderWidth?: number | undefined;
   bottom?: DimensionValue | undefined;
-  display?: 'none' | 'flex' | undefined;
+  boxSizing?: 'border-box' | 'content-box' | undefined;
+  display?: 'none' | 'flex' | 'contents' | undefined;
   end?: DimensionValue | undefined;
   flex?: number | undefined;
   flexBasis?: DimensionValue | undefined;

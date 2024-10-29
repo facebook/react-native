@@ -11,9 +11,9 @@
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 import type {AnimatedStyleAllowlist} from './AnimatedStyle';
 
+import NativeAnimatedHelper from '../../../src/private/animated/NativeAnimatedHelper';
 import {findNodeHandle} from '../../ReactNative/RendererProxy';
 import {AnimatedEvent} from '../AnimatedEvent';
-import NativeAnimatedHelper from '../../../src/private/animated/NativeAnimatedHelper';
 import AnimatedNode from './AnimatedNode';
 import AnimatedObject from './AnimatedObject';
 import AnimatedStyle from './AnimatedStyle';
@@ -212,11 +212,14 @@ export default class AnimatedProps extends AnimatedNode {
 
   __connectAnimatedView(): void {
     invariant(this.__isNative, 'Expected node to be marked as "native"');
-    const nativeViewTag: ?number = findNodeHandle(this.#animatedView);
-    invariant(
-      nativeViewTag != null,
-      'Unable to locate attached view in the native tree',
-    );
+    let nativeViewTag: ?number = findNodeHandle(this.#animatedView);
+    if (nativeViewTag == null) {
+      if (process.env.NODE_ENV === 'test') {
+        nativeViewTag = -1;
+      } else {
+        throw new Error('Unable to locate attached view in the native tree');
+      }
+    }
     NativeAnimatedHelper.API.connectAnimatedNodeToView(
       this.__getNativeTag(),
       nativeViewTag,
@@ -225,11 +228,14 @@ export default class AnimatedProps extends AnimatedNode {
 
   __disconnectAnimatedView(): void {
     invariant(this.__isNative, 'Expected node to be marked as "native"');
-    const nativeViewTag: ?number = findNodeHandle(this.#animatedView);
-    invariant(
-      nativeViewTag != null,
-      'Unable to locate attached view in the native tree',
-    );
+    let nativeViewTag: ?number = findNodeHandle(this.#animatedView);
+    if (nativeViewTag == null) {
+      if (process.env.NODE_ENV === 'test') {
+        nativeViewTag = -1;
+      } else {
+        throw new Error('Unable to locate attached view in the native tree');
+      }
+    }
     NativeAnimatedHelper.API.disconnectAnimatedNodeFromView(
       this.__getNativeTag(),
       nativeViewTag,

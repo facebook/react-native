@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
   id("com.facebook.react")
   alias(libs.plugins.android.application)
@@ -181,6 +183,20 @@ android {
         path("src/main/jni/CMakeLists.txt")
       }
     }
+  }
+}
+
+kotlin { explicitApi() }
+
+tasks.withType<JavaCompile>().configureEach {
+  options.compilerArgs.add("-Xlint:deprecation,unchecked")
+  options.compilerArgs.add("-Werror")
+}
+
+tasks.withType<KotlinCompile>().configureEach {
+  compilerOptions {
+    allWarningsAsErrors =
+        project.properties["enableWarningsAsErrors"]?.toString()?.toBoolean() ?: false
   }
 }
 

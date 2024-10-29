@@ -11,7 +11,7 @@
 'use strict';
 import type {Item} from '../../components/ListExampleShared';
 
-const {
+import {
   FooterComponent,
   HeaderComponent,
   ItemComponent,
@@ -22,10 +22,11 @@ const {
   pressItem,
   renderSmallSwitchOption,
   renderStackedItem,
-} = require('../../components/ListExampleShared');
-const RNTesterPage = require('../../components/RNTesterPage');
-const React = require('react');
-const {
+} from '../../components/ListExampleShared';
+import RNTesterPage from '../../components/RNTesterPage';
+import RNTesterText from '../../components/RNTesterText';
+import React from 'react';
+import {
   Alert,
   Animated,
   Button,
@@ -33,8 +34,8 @@ const {
   StyleSheet,
   Text,
   View,
-} = require('react-native');
-const infoLog = require('react-native/Libraries/Utilities/infoLog');
+} from 'react-native';
+import infoLog from 'react-native/Libraries/Utilities/infoLog';
 
 const VIEWABILITY_CONFIG = {
   minimumViewTime: 3000,
@@ -109,7 +110,9 @@ const CustomSeparatorComponent = ({highlighted, text}) => (
 
 const EmptySectionList = () => (
   <View style={{alignItems: 'center'}}>
-    <Text style={{fontSize: 20}}>This is rendered when the list is empty</Text>
+    <RNTesterText style={{fontSize: 20}}>
+      This is rendered when the list is empty
+    </RNTesterText>
   </View>
 );
 
@@ -254,7 +257,7 @@ export function SectionList_scrollable(Props: {...}): React.MixedElement {
           <Spindicator value={scrollPos} />
         </View>
         <View style={styles.scrollToColumn}>
-          <Text>scroll to:</Text>
+          <RNTesterText>scroll to:</RNTesterText>
           <View style={styles.button}>
             <Button
               title="Top"

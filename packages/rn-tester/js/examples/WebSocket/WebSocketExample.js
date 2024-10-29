@@ -11,17 +11,17 @@
 
 /* eslint-env browser */
 
-const React = require('react');
-const {
+import RNTesterText from '../../components/RNTesterText';
+import React from 'react';
+import {
   Image,
   PixelRatio,
   ScrollView,
   StyleSheet,
-  Text,
   TextInput,
   TouchableOpacity,
   View,
-} = require('react-native');
+} from 'react-native';
 
 const DEFAULT_WS_URL = 'ws://localhost:5555/';
 const DEFAULT_HTTP_URL = 'http://localhost:5556/';
@@ -35,7 +35,9 @@ const WS_STATES = [
 
 class Button extends React.Component {
   render(): React.MixedElement {
-    const label = <Text style={styles.buttonLabel}>{this.props.label}</Text>;
+    const label = (
+      <RNTesterText style={styles.buttonLabel}>{this.props.label}</RNTesterText>
+    );
     if (this.props.disabled) {
       return (
         <View style={[styles.button, styles.disabledButton]}>{label}</View>
@@ -53,8 +55,10 @@ class Row extends React.Component {
   render(): React.MixedElement {
     return (
       <View style={styles.row}>
-        <Text>{this.props.label}</Text>
-        {this.props.value ? <Text>{this.props.value}</Text> : null}
+        <RNTesterText>{this.props.label}</RNTesterText>
+        {this.props.value ? (
+          <RNTesterText>{this.props.value}</RNTesterText>
+        ) : null}
         {this.props.children}
       </View>
     );
@@ -209,10 +213,10 @@ class WebSocketExample extends React.Component<any, any, State> {
     return (
       <ScrollView style={styles.container}>
         <View style={styles.note}>
-          <Text>To start the WS test server:</Text>
-          <Text style={styles.monospace}>
+          <RNTesterText>To start the WS test server:</RNTesterText>
+          <RNTesterText style={styles.monospace}>
             ./RNTester/js/examples/WebSocket/websocket_test_server.js
-          </Text>
+          </RNTesterText>
         </View>
         <Row label="Current WebSocket state" value={showValue(socketState)} />
         <Row
@@ -265,10 +269,10 @@ class WebSocketExample extends React.Component<any, any, State> {
           />
         </View>
         <View style={styles.note}>
-          <Text>To start the HTTP test server:</Text>
-          <Text style={styles.monospace}>
+          <RNTesterText>To start the HTTP test server:</RNTesterText>
+          <RNTesterText style={styles.monospace}>
             ./RNTester/js/examples/WebSocket/http_test_server.js
-          </Text>
+          </RNTesterText>
         </View>
         <TextInput
           style={styles.textInput}
@@ -285,11 +289,11 @@ class WebSocketExample extends React.Component<any, any, State> {
           />
         </View>
         <View style={styles.note}>
-          <Text>
+          <RNTesterText>
             {this.state.fetchStatus === 'OK'
               ? 'Done. Check your WS server console to see if the next WS requests include the cookie (should be "wstest=OK")'
               : '-'}
-          </Text>
+          </RNTesterText>
         </View>
       </ScrollView>
     );
@@ -303,7 +307,6 @@ const styles = StyleSheet.create({
   note: {
     padding: 8,
     margin: 4,
-    backgroundColor: 'white',
   },
   monospace: {
     fontFamily: 'courier',
@@ -312,7 +315,6 @@ const styles = StyleSheet.create({
   row: {
     height: 40,
     padding: 4,
-    backgroundColor: 'white',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',

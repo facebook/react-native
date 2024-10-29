@@ -119,6 +119,17 @@ static inline PositionType positionTypeFromYogaPositionType(
   }
 }
 
+inline DisplayType displayTypeFromYGDisplay(YGDisplay display) {
+  switch (display) {
+    case YGDisplayNone:
+      return DisplayType::None;
+    case YGDisplayContents:
+      return DisplayType::Contents;
+    case YGDisplayFlex:
+      return DisplayType::Flex;
+  }
+}
+
 inline LayoutMetrics layoutMetricsFromYogaNode(yoga::Node& yogaNode) {
   auto layoutMetrics = LayoutMetrics{};
 
@@ -146,9 +157,8 @@ inline LayoutMetrics layoutMetricsFromYogaNode(yoga::Node& yogaNode) {
       layoutMetrics.borderWidth.bottom +
           floatFromYogaFloat(YGNodeLayoutGetPadding(&yogaNode, YGEdgeBottom))};
 
-  layoutMetrics.displayType = yogaNode.style().display() == yoga::Display::None
-      ? DisplayType::None
-      : DisplayType::Flex;
+  layoutMetrics.displayType =
+      displayTypeFromYGDisplay(YGNodeStyleGetDisplay(&yogaNode));
 
   layoutMetrics.positionType =
       positionTypeFromYogaPositionType(yogaNode.style().positionType());
@@ -224,6 +234,28 @@ inline void fromRawValue(
     return;
   }
   LOG(ERROR) << "Could not parse yoga::FlexDirection: " << stringValue;
+}
+
+inline void fromRawValue(
+    const PropsParserContext& /*context*/,
+    const RawValue& value,
+    yoga::BoxSizing& result) {
+  result = yoga::BoxSizing::BorderBox;
+  react_native_expect(value.hasType<std::string>());
+  if (!value.hasType<std::string>()) {
+    return;
+  }
+  auto stringValue = (std::string)value;
+  if (stringValue == "border-box") {
+    result = yoga::BoxSizing::BorderBox;
+    return;
+  }
+  if (stringValue == "content-box") {
+    result = yoga::BoxSizing::ContentBox;
+    return;
+  }
+
+  LOG(ERROR) << "Could not parse yoga::BoxSizing: " << stringValue;
 }
 
 inline void fromRawValue(
@@ -407,6 +439,10 @@ inline void fromRawValue(
     result = yoga::Display::None;
     return;
   }
+  if (stringValue == "contents") {
+    result = yoga::Display::Contents;
+    return;
+  }
   LOG(ERROR) << "Could not parse yoga::Display: " << stringValue;
 }
 
@@ -415,31 +451,31 @@ inline void fromRawValue(
     const RawValue& value,
     yoga::Style::Length& result) {
   if (value.hasType<Float>()) {
-    result = yoga::value::points((float)value);
+    result = yoga::StyleLength::points((float)value);
     return;
   } else if (value.hasType<std::string>()) {
     const auto stringValue = (std::string)value;
     if (stringValue == "auto") {
-      result = yoga::value::ofAuto();
+      result = yoga::StyleLength::ofAuto();
       return;
     } else {
       if (stringValue.back() == '%') {
         auto tryValue = folly::tryTo<float>(
             std::string_view(stringValue).substr(0, stringValue.length() - 1));
         if (tryValue.hasValue()) {
-          result = yoga::value::percent(tryValue.value());
+          result = yoga::StyleLength::percent(tryValue.value());
           return;
         }
       } else {
         auto tryValue = folly::tryTo<float>(stringValue);
         if (tryValue.hasValue()) {
-          result = yoga::value::points(tryValue.value());
+          result = yoga::StyleLength::points(tryValue.value());
           return;
         }
       }
     }
   }
-  result = yoga::value::undefined();
+  result = yoga::StyleLength::undefined();
 }
 
 inline void fromRawValue(

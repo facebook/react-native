@@ -40,10 +40,9 @@ import com.facebook.react.bridge.queue.ReactQueueConfigurationImpl;
 import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
 import com.facebook.react.devsupport.StackTraceHelper;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
-import com.facebook.react.fabric.Binding;
-import com.facebook.react.fabric.BindingImpl;
 import com.facebook.react.fabric.ComponentFactory;
 import com.facebook.react.fabric.FabricUIManager;
+import com.facebook.react.fabric.FabricUIManagerBinding;
 import com.facebook.react.fabric.events.EventBeatManager;
 import com.facebook.react.interfaces.exceptionmanager.ReactJsExceptionHandler;
 import com.facebook.react.internal.AndroidChoreographerProvider;
@@ -272,7 +271,7 @@ final class ReactInstance {
     // Misc initialization that needs to be done before Fabric init
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(mBridgelessReactContext);
 
-    Binding binding = new BindingImpl();
+    FabricUIManagerBinding binding = new FabricUIManagerBinding();
     binding.register(
         getBufferedRuntimeExecutor(),
         getRuntimeScheduler(),

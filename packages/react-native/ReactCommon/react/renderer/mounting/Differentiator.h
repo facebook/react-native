@@ -19,8 +19,6 @@ namespace facebook::react {
  * This is not exposed to the mounting layer.
  */
 struct ShadowViewNodePair final {
-  using NonOwningList = std::vector<ShadowViewNodePair*>;
-
   ShadowView shadowView;
   const ShadowNode* shadowNode;
 
@@ -94,7 +92,7 @@ ShadowViewMutation::List calculateShadowViewMutations(
  * flattened view hierarchy. The V2 version preserves nodes even if they do
  * not form views and their children are flattened.
  */
-ShadowViewNodePair::NonOwningList sliceChildShadowNodeViewPairs(
+std::vector<ShadowViewNodePair*> sliceChildShadowNodeViewPairs(
     const ShadowViewNodePair& shadowNodePair,
     ViewNodePairScope& viewNodePairScope,
     bool allowFlattened = false,

@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {RNTesterModuleInfo, RNTesterModule} from '../types/RNTesterTypes';
+import type {RNTesterModule, RNTesterModuleInfo} from '../types/RNTesterTypes';
 
 import ReactNativeFeatureFlags from 'react-native/Libraries/ReactNative/ReactNativeFeatureFlags';
 

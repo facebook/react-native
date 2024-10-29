@@ -290,6 +290,16 @@ export interface NativeModuleStringTypeAnnotation {
   readonly type: 'StringTypeAnnotation';
 }
 
+export interface NativeModuleStringLiteralTypeAnnotation {
+  readonly type: 'StringLiteralTypeAnnotation';
+  readonly value: string;
+}
+
+export interface NativeModuleStringLiteralUnionTypeAnnotation {
+  readonly type: 'StringLiteralUnionTypeAnnotation';
+  readonly types: NativeModuleStringLiteralTypeAnnotation[];
+}
+
 export interface NativeModuleNumberTypeAnnotation {
   readonly type: 'NumberTypeAnnotation';
 }
@@ -347,7 +357,7 @@ export interface NativeModuleTypeAliasTypeAnnotation {
 
 export interface NativeModulePromiseTypeAnnotation {
   readonly type: 'PromiseTypeAnnotation';
-  readonly elementType?: Nullable<NativeModuleBaseTypeAnnotation> | undefined;
+  readonly elementType: Nullable<NativeModuleBaseTypeAnnotation> | VoidTypeAnnotation;
 }
 
 export type UnionTypeAnnotationMemberType =
@@ -371,6 +381,8 @@ export type NativeModuleEventEmitterBaseTypeAnnotation =
   | NativeModuleInt32TypeAnnotation
   | NativeModuleNumberTypeAnnotation
   | NativeModuleStringTypeAnnotation
+  | NativeModuleStringLiteralTypeAnnotation
+  | NativeModuleStringLiteralUnionTypeAnnotation
   | NativeModuleTypeAliasTypeAnnotation
   | NativeModuleGenericObjectTypeAnnotation
   | VoidTypeAnnotation;
@@ -384,6 +396,8 @@ export type NativeModuleEventEmitterTypeAnnotation =
 
 export type NativeModuleBaseTypeAnnotation =
   | NativeModuleStringTypeAnnotation
+  | NativeModuleStringLiteralTypeAnnotation
+  | NativeModuleStringLiteralUnionTypeAnnotation
   | NativeModuleNumberTypeAnnotation
   | NativeModuleInt32TypeAnnotation
   | NativeModuleDoubleTypeAnnotation

@@ -584,9 +584,15 @@ UIWindow *__nullable RCTKeyWindow(void)
   }
 
   UIScene *sceneToUse = foregroundActiveScene ? foregroundActiveScene : foregroundInactiveScene;
-  UIWindowScene *windowScene = (UIWindowScene *)sceneToUse;
 
-  return windowScene.keyWindow;
+  if ([sceneToUse respondsToSelector:@selector(keyWindow)]) {
+    // We have apps internally that might use UIScenes which are not window scenes.
+    // Calling keyWindow on a UIScene which is not a UIWindowScene can cause a crash
+    UIWindowScene *windowScene = (UIWindowScene *)sceneToUse;
+    return windowScene.keyWindow;
+  }
+
+  return nil;
 }
 
 UIStatusBarManager *__nullable RCTUIStatusBarManager(void)

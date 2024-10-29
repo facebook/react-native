@@ -879,10 +879,50 @@ function CustomFontsExample(props: {}): React.Node {
 function LineHeightExample(props: {}): React.Node {
   return (
     <>
-      <Text style={[{lineHeight: 35}, styles.wrappedText]}>
+      <Text
+        style={[
+          {
+            fontSize: 16,
+            lineHeight: 35,
+            borderColor: 'black',
+            borderWidth: 1,
+            marginBottom: 5,
+          },
+          styles.wrappedText,
+        ]}
+        testID="line-height-greater-than-fonst-size">
         Holisticly formulate inexpensive ideas before best-of-breed benefits.{' '}
         <Text style={{fontSize: 20}}>Continually</Text> expedite magnetic
         potentialities rather than client-focused interfaces.
+      </Text>
+      <Text
+        style={[
+          {
+            fontSize: 16,
+            lineHeight: 8,
+            borderColor: 'black',
+            borderWidth: 1,
+            marginBottom: 5,
+          },
+          styles.wrappedText,
+        ]}
+        testID="line-height-less-than-fonst-size">
+        Holisticly formulate inexpensive ideas before best-of-breed benefits.{' '}
+        <Text style={{fontSize: 20}}>Continually</Text> expedite magnetic
+        potentialities rather than client-focused interfaces.
+      </Text>
+      <Text
+        style={[
+          {
+            fontSize: 24,
+            lineHeight: 8,
+            borderColor: 'black',
+            borderWidth: 1,
+          },
+          styles.wrappedText,
+        ]}
+        testID="line-height-single-line-less-than-fonst-size">
+        Holisticly formulate
       </Text>
     </>
   );
@@ -1034,6 +1074,68 @@ function TextBaseLineLayoutExample(props: {}): React.Node {
 }
 
 const examples = [
+  {
+    title: 'Background Color and Border Width',
+    name: 'background-border-width',
+    render(): React.Node {
+      return (
+        <View testID="background-border-width">
+          <Text
+            style={{
+              backgroundColor: '#F000F0',
+              padding: 10,
+            }}>
+            Text with background color only
+          </Text>
+          <Text
+            style={{
+              backgroundColor: '#F000F0',
+              borderRadius: 10,
+              padding: 10,
+              marginTop: 10,
+            }}>
+            Text with background color and uniform borderRadii
+          </Text>
+          <Text
+            style={{
+              backgroundColor: '#F000F0',
+              borderTopRightRadius: 10,
+              borderTopLeftRadius: 20,
+              borderBottomRightRadius: 20,
+              borderBottomLeftRadius: 10,
+              padding: 10,
+              marginTop: 10,
+            }}>
+            Text with background color and non-uniform borders
+          </Text>
+          <Text
+            style={{
+              borderWidth: 1,
+              borderColor: 'red',
+              borderTopRightRadius: 10,
+              borderTopLeftRadius: 20,
+              borderBottomRightRadius: 20,
+              borderBottomLeftRadius: 10,
+              padding: 10,
+              marginTop: 10,
+            }}>
+            Text with borderWidth
+          </Text>
+          <Text
+            style={{
+              backgroundColor: '#00AA00',
+              borderWidth: 2,
+              borderColor: 'blue',
+              borderRadius: 10,
+              padding: 10,
+              marginTop: 10,
+            }}>
+            Text with background AND borderWidth
+          </Text>
+        </View>
+      );
+    },
+  },
   {
     title: 'Dynamic Font Size Adjustment',
     name: 'ajustingFontSize',

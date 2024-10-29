@@ -88,6 +88,7 @@ AttributedString TextInputShadowNode::getAttributedString(
   auto attachments = Attachments{};
   BaseTextShadowNode::buildAttributedString(
       textAttributes, *this, attributedString, attachments);
+  attributedString.setBaseTextAttributes(textAttributes);
 
   return attributedString;
 }

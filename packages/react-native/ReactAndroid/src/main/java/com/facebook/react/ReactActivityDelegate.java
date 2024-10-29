@@ -20,6 +20,7 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.modules.core.PermissionListener;
+import com.facebook.systrace.Systrace;
 
 /**
  * Delegate class for {@link ReactActivity}. You can subclass this to provide custom implementations
@@ -75,8 +76,8 @@ public class ReactActivityDelegate {
   }
 
   /**
-   * Get the {@link ReactNativeHost} used by this app. By default, assumes {@link
-   * Activity#getApplication()} is an instance of {@link ReactApplication} and calls {@link
+   * Get the {@link ReactNativeHost} used by this app with Bridge enabled. By default, assumes
+   * {@link Activity#getApplication()} is an instance of {@link ReactApplication} and calls {@link
    * ReactApplication#getReactNativeHost()}. Override this method if your application class does not
    * implement {@code ReactApplication} or you simply have a different mechanism for storing a
    * {@code ReactNativeHost}, e.g. as a static field somewhere.
@@ -85,6 +86,13 @@ public class ReactActivityDelegate {
     return ((ReactApplication) getPlainActivity().getApplication()).getReactNativeHost();
   }
 
+  /**
+   * Get the {@link ReactHost} used by this app with Bridgeless enabled. By default, assumes {@link
+   * Activity#getApplication()} is an instance of {@link ReactApplication} and calls {@link
+   * ReactApplication#getReactHost()}. Override this method if your application class does not
+   * implement {@code ReactApplication} or you simply have a different mechanism for storing a
+   * {@code ReactHost}, e.g. as a static field somewhere.
+   */
   public ReactHost getReactHost() {
     return ((ReactApplication) getPlainActivity().getApplication()).getReactHost();
   }
@@ -102,35 +110,41 @@ public class ReactActivityDelegate {
   }
 
   public void onCreate(Bundle savedInstanceState) {
-    String mainComponentName = getMainComponentName();
-    final Bundle launchOptions = composeLaunchOptions();
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && isWideColorGamutEnabled()) {
-      mActivity.getWindow().setColorMode(ActivityInfo.COLOR_MODE_WIDE_COLOR_GAMUT);
-    }
-    if (ReactNativeFeatureFlags.enableBridgelessArchitecture()) {
-      mReactDelegate =
-          new ReactDelegate(getPlainActivity(), getReactHost(), mainComponentName, launchOptions);
-    } else {
-      mReactDelegate =
-          new ReactDelegate(
-              getPlainActivity(),
-              getReactNativeHost(),
-              mainComponentName,
-              launchOptions,
-              isFabricEnabled()) {
-            @Override
-            protected ReactRootView createRootView() {
-              ReactRootView rootView = ReactActivityDelegate.this.createRootView();
-              if (rootView == null) {
-                rootView = super.createRootView();
-              }
-              return rootView;
-            }
-          };
-    }
-    if (mainComponentName != null) {
-      loadApp(mainComponentName);
-    }
+    Systrace.traceSection(
+        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+        "ReactActivityDelegate.onCreate::init",
+        () -> {
+          String mainComponentName = getMainComponentName();
+          final Bundle launchOptions = composeLaunchOptions();
+          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && isWideColorGamutEnabled()) {
+            mActivity.getWindow().setColorMode(ActivityInfo.COLOR_MODE_WIDE_COLOR_GAMUT);
+          }
+          if (ReactNativeFeatureFlags.enableBridgelessArchitecture()) {
+            mReactDelegate =
+                new ReactDelegate(
+                    getPlainActivity(), getReactHost(), mainComponentName, launchOptions);
+          } else {
+            mReactDelegate =
+                new ReactDelegate(
+                    getPlainActivity(),
+                    getReactNativeHost(),
+                    mainComponentName,
+                    launchOptions,
+                    isFabricEnabled()) {
+                  @Override
+                  protected ReactRootView createRootView() {
+                    ReactRootView rootView = ReactActivityDelegate.this.createRootView();
+                    if (rootView == null) {
+                      rootView = super.createRootView();
+                    }
+                    return rootView;
+                  }
+                };
+          }
+          if (mainComponentName != null) {
+            loadApp(mainComponentName);
+          }
+        });
   }
 
   protected void loadApp(String appKey) {
@@ -217,6 +231,10 @@ public class ReactActivityDelegate {
 
   protected Activity getPlainActivity() {
     return ((Activity) getContext());
+  }
+
+  protected ReactActivity getReactActivity() {
+    return ((ReactActivity) getContext());
   }
 
   /**

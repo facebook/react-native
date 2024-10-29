@@ -11,8 +11,8 @@
 
 let FlowParser, TypeScriptParser, RNCodegen;
 
-const {basename} = require('path');
 const {cheap: traverseCheap} = require('@babel/traverse').default;
+const {basename} = require('path');
 
 try {
   FlowParser =

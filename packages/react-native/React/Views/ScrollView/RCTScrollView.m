@@ -1061,6 +1061,23 @@ RCT_SET_AND_PRESERVE_OFFSET(setShowsHorizontalScrollIndicator, showsHorizontalSc
 RCT_SET_AND_PRESERVE_OFFSET(setShowsVerticalScrollIndicator, showsVerticalScrollIndicator, BOOL)
 RCT_SET_AND_PRESERVE_OFFSET(setZoomScale, zoomScale, CGFloat);
 
+- (void)setScrollIndicatorInsets:(UIEdgeInsets)value
+{
+  [_scrollView setScrollIndicatorInsets:value];
+}
+
+- (UIEdgeInsets)scrollIndicatorInsets
+{
+  UIEdgeInsets verticalScrollIndicatorInsets = [_scrollView verticalScrollIndicatorInsets];
+  UIEdgeInsets horizontalScrollIndicatorInsets = [_scrollView horizontalScrollIndicatorInsets];
+
+  return UIEdgeInsetsMake(
+      verticalScrollIndicatorInsets.top,
+      horizontalScrollIndicatorInsets.left,
+      verticalScrollIndicatorInsets.bottom,
+      horizontalScrollIndicatorInsets.right);
+}
+
 - (void)setAutomaticallyAdjustsScrollIndicatorInsets:(BOOL)automaticallyAdjusts API_AVAILABLE(ios(13.0))
 {
   // `automaticallyAdjustsScrollIndicatorInsets` is available since iOS 13.

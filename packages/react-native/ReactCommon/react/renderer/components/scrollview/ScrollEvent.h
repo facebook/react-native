@@ -21,6 +21,11 @@ struct ScrollEvent : public EventPayload {
   Size containerSize;
   Float zoomScale{};
 
+  /*
+   * The time in seconds when the touch occurred or when it was last mutated.
+   */
+  Float timestamp{};
+
   ScrollEvent() = default;
 
   folly::dynamic asDynamic() const;

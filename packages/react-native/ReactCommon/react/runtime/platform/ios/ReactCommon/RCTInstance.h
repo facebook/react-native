@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import <React/RCTDefines.h>
+#import <React/RCTJavaScriptLoader.h>
 #import <jsinspector-modern/ReactCdp.h>
 #import <react/runtime/JSRuntimeFactory.h>
 #import <react/runtime/ReactInstance.h>
@@ -39,10 +40,18 @@ RCT_EXTERN void RCTInstanceSetRuntimeDiagnosticFlags(NSString *_Nullable flags);
 - (void)instance:(RCTInstance *)instance
     didReceiveJSErrorStack:(NSArray<NSDictionary<NSString *, id> *> *)stack
                    message:(NSString *)message
+           originalMessage:(NSString *_Nullable)originalMessage
+                      name:(NSString *_Nullable)name
+            componentStack:(NSString *_Nullable)componentStack
                exceptionId:(NSUInteger)exceptionId
-                   isFatal:(BOOL)isFatal;
+                   isFatal:(BOOL)isFatal
+                 extraData:(NSDictionary<NSString *, id> *)extraData;
 
 - (void)instance:(RCTInstance *)instance didInitializeRuntime:(facebook::jsi::Runtime &)runtime;
+
+- (void)loadBundleAtURL:(NSURL *)sourceURL
+             onProgress:(RCTSourceLoadProgressBlock)onProgress
+             onComplete:(RCTSourceLoadBlock)loadCallback;
 
 @end
 

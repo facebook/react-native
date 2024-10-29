@@ -7,7 +7,6 @@
 
 package com.facebook.react.uimanager
 
-import android.graphics.drawable.ColorDrawable
 import android.view.View
 import com.facebook.react.bridge.BridgeReactContext
 import com.facebook.react.bridge.CatalystInstance
@@ -72,17 +71,6 @@ class SimpleViewPropertyTest {
     Assertions.assertThat(view.alpha).isEqualTo(0.31f, Assertions.offset(1e-5f))
     manager.updateProperties(view, buildStyles("opacity", null))
     Assertions.assertThat(view.alpha).isEqualTo(1.0f)
-  }
-
-  @Test
-  fun testBackgroundColor() {
-    val view = manager.createView(viewTag, themedContext, buildStyles(), null, JSResponderHandler())
-    manager.updateProperties(view, buildStyles())
-    Assertions.assertThat(view.background).isEqualTo(null)
-    manager.updateProperties(view, buildStyles("backgroundColor", 12))
-    Assertions.assertThat((view.background as ColorDrawable).color).isEqualTo(12)
-    manager.updateProperties(view, buildStyles("backgroundColor", null))
-    Assertions.assertThat((view.background as ColorDrawable).color).isEqualTo(0)
   }
 
   @Test

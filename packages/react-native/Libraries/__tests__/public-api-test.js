@@ -26,11 +26,10 @@ const IGNORE_PATTERNS = [
   '**/*.fb.js',
   '**/*.macos.js',
   '**/*.windows.js',
+  // Non source files
+  'Libraries/Renderer/implementations/**',
+  'Libraries/Renderer/shims/**',
 ];
-
-// Exclude list for files that fail to parse under flow-api-translator. Please
-// review your changes before adding new entries.
-const FILES_WITH_KNOWN_ERRORS = new Set<string>([]);
 
 const sourceFiles = [
   'index.js',
@@ -46,47 +45,36 @@ describe('public API', () => {
     test.each(sourceFiles)('%s', async (file: string) => {
       const source = await fs.readFile(path.join(PACKAGE_ROOT, file), 'utf-8');
 
-      if (/@flow/.test(source)) {
-        // Require and use adjacent .js.flow file when source file includes an
-        // unsupported-syntax suppression
-        if (source.includes('// $FlowFixMe[unsupported-syntax]')) {
-          const flowDefPath = path.join(
-            PACKAGE_ROOT,
-            file.replace('.js', '.js.flow'),
+      if (!/@flow/.test(source)) {
+        throw new Error(
+          file +
+            ' is untyped. All source files in the react-native package must be written using Flow (// @flow).',
+        );
+      }
+
+      // Require and use adjacent .js.flow file when source file includes an
+      // unsupported-syntax suppression
+      if (source.includes('// $FlowFixMe[unsupported-syntax]')) {
+        const flowDefPath = path.join(
+          PACKAGE_ROOT,
+          file.replace('.js', '.js.flow'),
+        );
+
+        if (!existsSync(flowDefPath)) {
+          throw new Error(
+            'Found an unsupported-syntax suppression in ' +
+              file +
+              ', meaning types cannot be parsed. Add an adjacent <module>.js.flow file to fix this!',
           );
-
-          if (!existsSync(flowDefPath)) {
-            throw new Error(
-              'Found an unsupported-syntax suppression in ' +
-                file +
-                ', meaning types cannot be parsed. Add an adjacent <module>.js.flow file to fix this!',
-            );
-          }
-
-          return;
         }
 
-        let success = false;
-        try {
-          expect(await translateFlowToExportedAPI(source)).toMatchSnapshot();
+        return;
+      }
 
-          success = true;
-        } catch (e) {
-          if (!FILES_WITH_KNOWN_ERRORS.has(file)) {
-            throw new Error(
-              'Unable to parse file: ' + file + '\n\n' + e.message,
-            );
-          }
-        } finally {
-          if (success && FILES_WITH_KNOWN_ERRORS.has(file)) {
-            throw new Error(
-              'Expected parse error, please remove file exclude from FILES_WITH_KNOWN_ERRORS: ' +
-                file,
-            );
-          }
-        }
-      } else {
-        expect('UNTYPED MODULE').toMatchSnapshot();
+      try {
+        expect(await translateFlowToExportedAPI(source)).toMatchSnapshot();
+      } catch (e) {
+        throw new Error('Unable to parse file: ' + file + '\n\n' + e.message);
       }
     });
   });

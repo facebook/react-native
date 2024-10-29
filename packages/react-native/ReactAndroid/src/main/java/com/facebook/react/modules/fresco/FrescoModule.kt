@@ -8,17 +8,20 @@
 package com.facebook.react.modules.fresco
 
 import com.facebook.common.logging.FLog
+import com.facebook.drawee.backends.pipeline.DraweeConfig
 import com.facebook.drawee.backends.pipeline.Fresco
 import com.facebook.imagepipeline.backends.okhttp3.OkHttpImagePipelineConfigFactory.newBuilder
 import com.facebook.imagepipeline.core.DownsampleMode
 import com.facebook.imagepipeline.core.ImagePipeline
 import com.facebook.imagepipeline.core.ImagePipelineConfig
+import com.facebook.imagepipeline.decoder.ImageDecoderConfig
 import com.facebook.imagepipeline.listener.RequestListener
 import com.facebook.react.bridge.LifecycleEventListener
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.common.ReactConstants
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.modules.common.ModuleDataCleaner
 import com.facebook.react.modules.network.ForwardingCookieHandler
@@ -75,10 +78,16 @@ constructor(
     val reactContext = reactApplicationContext
     reactContext.addLifecycleEventListener(this)
     if (!hasBeenInitialized()) {
-      if (config == null) {
-        config = getDefaultConfig(reactContext)
+      val pipelineConfig = config ?: getDefaultConfig(reactContext)
+      val draweeConfigBuilder = DraweeConfig.newBuilder()
+      if (ReactNativeFeatureFlags.loadVectorDrawablesOnImages()) {
+        draweeConfigBuilder.addCustomDrawableFactory(XmlFormat.getDrawableFactory())
       }
-      Fresco.initialize(reactContext.applicationContext, config)
+      Fresco.initialize(
+          reactContext.applicationContext,
+          pipelineConfig,
+          draweeConfigBuilder.build(),
+      )
       hasBeenInitialized = true
     } else if (config != null) {
       FLog.w(
@@ -105,7 +114,7 @@ constructor(
     // the 'last' ReactActivity is being destroyed, which effectively means the app is being
     // backgrounded.
     if (hasBeenInitialized() && clearOnDestroy) {
-      imagePipeline!!.clearMemoryCaches()
+      imagePipeline?.clearMemoryCaches()
     }
   }
 
@@ -123,7 +132,7 @@ constructor(
   }
 
   public companion object {
-    internal const val NAME = "FrescoModule"
+    public const val NAME: String = "FrescoModule"
     private var hasBeenInitialized = false
 
     /**
@@ -149,6 +158,12 @@ constructor(
       requestListeners.add(SystraceRequestListener())
       val client = OkHttpClientProvider.createClient()
 
+      // Add support for XML drawable images
+      val decoderConfigBuilder = ImageDecoderConfig.Builder()
+      if (ReactNativeFeatureFlags.loadVectorDrawablesOnImages()) {
+        XmlFormat.addDecodingCapability(decoderConfigBuilder, context)
+      }
+
       // make sure to forward cookies for any requests via the okHttpClient
       // so that image requests to endpoints that use cookies still work
       val container = OkHttpCompat.getCookieJarContainer(client)
@@ -156,6 +171,7 @@ constructor(
       container.setCookieJar(JavaNetCookieJar(handler))
       return newBuilder(context.applicationContext, client)
           .setNetworkFetcher(ReactOkHttpNetworkFetcher(client))
+          .setImageDecoderConfig(decoderConfigBuilder.build())
           .setDownsampleMode(DownsampleMode.AUTO)
           .setRequestListeners(requestListeners)
     }

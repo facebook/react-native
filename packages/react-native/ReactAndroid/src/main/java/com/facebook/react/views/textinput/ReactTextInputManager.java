@@ -29,7 +29,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
-import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.autofill.HintConstants;
 import androidx.core.content.ContextCompat;
@@ -987,6 +986,9 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     view.setPaintFlags(
         view.getPaintFlags() & ~(Paint.STRIKE_THRU_TEXT_FLAG | Paint.UNDERLINE_TEXT_FLAG));
 
+    if (textDecorationLineString == null) {
+      return;
+    }
     for (String token : textDecorationLineString.split(" ")) {
       if (token.equals("underline")) {
         view.setPaintFlags(view.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
@@ -1025,16 +1027,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   @ReactProp(name = "overflow")
   public void setOverflow(ReactEditText view, @Nullable String overflow) {
     view.setOverflow(overflow);
-  }
-
-  @ReactProp(name = ViewProps.BOX_SHADOW, customType = "BoxShadow")
-  public void setBoxShadow(ReactEditText view, @Nullable ReadableArray shadows) {
-    BackgroundStyleApplicator.setBoxShadow(view, shadows);
-  }
-
-  @Override
-  public void setBackgroundColor(ReactEditText view, @ColorInt int backgroundColor) {
-    BackgroundStyleApplicator.setBackgroundColor(view, backgroundColor);
   }
 
   @Override

@@ -668,9 +668,9 @@ jsi::PropNameID JSCRuntime::createPropNameIDFromString(const jsi::String& str) {
 }
 
 jsi::PropNameID JSCRuntime::createPropNameIDFromSymbol(const jsi::Symbol& sym) {
-  // TODO: Support for symbols through the native API in JSC is very limited.
-  // While we could construct a PropNameID here, we would not be able to get a
-  // symbol property through the C++ API.
+  // TODO(T204185517): Support for symbols through the native API in JSC is very
+  // limited. While we could construct a PropNameID here, we would not be able
+  // to get a symbol property through the C++ API.
   throw std::logic_error("Not implemented");
 }
 

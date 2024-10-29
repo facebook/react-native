@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ea2c2d19e83630b549e719057cd1982e>>
+ * @generated SignedSource<<c6419e8e932f65c7be43425e01776dc9>>
  */
 
 /**
@@ -22,6 +22,8 @@
 #include <react/featureflags/ReactNativeFeatureFlagsAccessor.h>
 #include <react/featureflags/ReactNativeFeatureFlagsProvider.h>
 #include <memory>
+#include <optional>
+#include <string>
 
 #ifndef RN_EXPORT
 #define RN_EXPORT __attribute__((visibility("default")))
@@ -48,19 +50,19 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool allowRecursiveCommitsWithSynchronousMountOnAndroid();
 
   /**
-   * When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.
-   */
-  RN_EXPORT static bool batchRenderingUpdatesInEventLoop();
-
-  /**
    * Do not wait for a main-thread dispatch to complete init to start executing work on the JS thread on Android
    */
   RN_EXPORT static bool completeReactInstanceCreationOnBgThreadOnAndroid();
 
   /**
-   * When enabled, ReactInstanceManager will clean up Fabric surfaces on destroy().
+   * The bridgeless architecture enables the event loop by default. This feature flag allows us to force disabling it in specific instances.
    */
-  RN_EXPORT static bool destroyFabricSurfacesInReactInstanceManager();
+  RN_EXPORT static bool disableEventLoopOnBridgeless();
+
+  /**
+   * Prevent FabricMountingManager from reordering mountitems, which may lead to invalid state on the UI thread
+   */
+  RN_EXPORT static bool disableMountItemReorderingAndroid();
 
   /**
    * Kill-switch to turn off support for aling-items:baseline on Fabric iOS.
@@ -73,16 +75,6 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableAndroidLineHeightCentering();
 
   /**
-   * Enables mix-blend-mode prop on Android.
-   */
-  RN_EXPORT static bool enableAndroidMixBlendModeProp();
-
-  /**
-   * Use BackgroundStyleApplicator in place of other background/border drawing code
-   */
-  RN_EXPORT static bool enableBackgroundStyleApplicator();
-
-  /**
    * Feature flag to enable the new bridgeless architecture. Note: Enabling this will force enable the following flags: `useTurboModules` & `enableFabricRenderer.
    */
   RN_EXPORT static bool enableBridgelessArchitecture();
@@ -91,6 +83,11 @@ class ReactNativeFeatureFlags {
    * Clean yoga node when <TextInput /> does not change.
    */
   RN_EXPORT static bool enableCleanTextInputYogaNode();
+
+  /**
+   * Enable prop iterator setter-style construction of Props in C++ (this flag is not used in Java).
+   */
+  RN_EXPORT static bool enableCppPropsIteratorSetter();
 
   /**
    * Deletes views that were pre-allocated but never mounted on the screen.
@@ -133,6 +130,11 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableIOSViewClipToPaddingBox();
 
   /**
+   * When enabled, LayoutAnimations API will animate state changes on Android.
+   */
+  RN_EXPORT static bool enableLayoutAnimationsOnAndroid();
+
+  /**
    * When enabled, LayoutAnimations API will animate state changes on iOS.
    */
   RN_EXPORT static bool enableLayoutAnimationsOnIOS();
@@ -143,9 +145,9 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableLongTaskAPI();
 
   /**
-   * Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).
+   * Use BackgroundDrawable and BorderDrawable instead of CSSBackgroundDrawable
    */
-  RN_EXPORT static bool enableMicrotasks();
+  RN_EXPORT static bool enableNewBackgroundAndBorderDrawables();
 
   /**
    * Moves execution of pre-mount items to outside the choregrapher in the main thread, so we can estimate idle time more precisely (Android only).
@@ -188,11 +190,6 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool excludeYogaFromRawProps();
 
   /**
-   * Start image fetching during view preallocation instead of waiting for layout pass
-   */
-  RN_EXPORT static bool fetchImagesInViewPreallocation();
-
-  /**
    * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.
    */
   RN_EXPORT static bool fixMappingOfEventPrioritiesBetweenFabricAndReact();
@@ -233,11 +230,6 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool loadVectorDrawablesOnImages();
 
   /**
-   * Removes nested calls to MountItemDispatcher.dispatchMountItems on Android, so we do less work per frame on the UI thread.
-   */
-  RN_EXPORT static bool removeNestedCallsToDispatchMountItemsOnAndroid();
-
-  /**
    * Propagate layout direction to Android views.
    */
   RN_EXPORT static bool setAndroidLayoutDirection();
@@ -258,19 +250,9 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool useImmediateExecutorInAndroidBridgeless();
 
   /**
-   * When enabled, it uses the modern fork of RuntimeScheduler that allows scheduling tasks with priorities from any thread.
-   */
-  RN_EXPORT static bool useModernRuntimeScheduler();
-
-  /**
    * When enabled, the native view configs are used in bridgeless mode.
    */
   RN_EXPORT static bool useNativeViewConfigsInBridgelessMode();
-
-  /**
-   * Use shared background drawing code for ReactImageView instead of using Fresco to manipulate the bitmap
-   */
-  RN_EXPORT static bool useNewReactImageViewBackgroundDrawing();
 
   /**
    * Moves more of the work in view preallocation to the main thread to free up JS thread.
@@ -286,16 +268,6 @@ class ReactNativeFeatureFlags {
    * When enabled, cloning shadow nodes within react native will update the reference held by the current JS fiber tree.
    */
   RN_EXPORT static bool useRuntimeShadowNodeReferenceUpdate();
-
-  /**
-   * When enabled, cloning shadow nodes during layout will update the reference held by the current JS fiber tree.
-   */
-  RN_EXPORT static bool useRuntimeShadowNodeReferenceUpdateOnLayout();
-
-  /**
-   * When enabled, it uses optimised state reconciliation algorithm.
-   */
-  RN_EXPORT static bool useStateAlignmentMechanism();
 
   /**
    * In Bridgeless mode, should legacy NativeModules use the TurboModule system?
@@ -342,9 +314,24 @@ class ReactNativeFeatureFlags {
    */
   RN_EXPORT static void dangerouslyReset();
 
+  /**
+   * This is a combination of `dangerouslyReset` and `override` that reduces
+   * the likeliness of a race condition between the two calls.
+   *
+   * This is **dangerous** because it can introduce consistency issues that will
+   * be much harder to debug. For example, it could hide the fact that feature
+   * flags are read before you set the values you want to use everywhere. It
+   * could also cause a workflow to suddently have different feature flags for
+   * behaviors that were configured with different values before.
+   *
+   * Please see the documentation of `dangerouslyReset` for additional details.
+   */
+  RN_EXPORT static std::optional<std::string> dangerouslyForceOverride(
+      std::unique_ptr<ReactNativeFeatureFlagsProvider> provider);
+
  private:
   ReactNativeFeatureFlags() = delete;
-  static ReactNativeFeatureFlagsAccessor& getAccessor(bool reset = false);
+  static ReactNativeFeatureFlagsAccessor& getAccessor();
 };
 
 } // namespace facebook::react

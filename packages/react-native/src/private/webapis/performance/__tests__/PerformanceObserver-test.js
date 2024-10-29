@@ -9,30 +9,26 @@
  * @oncall react_native
  */
 
-import type {PerformanceEntryList} from '../PerformanceObserver';
-
 jest.mock(
   '../specs/NativePerformance',
-  () => require('../specs/__mocks__/NativePerformance').default,
+  () => require('../specs/__mocks__/NativePerformanceMock').default,
 );
-
-jest.mock(
-  '../specs/NativePerformanceObserver',
-  () => require('../specs/__mocks__/NativePerformanceObserver').default,
-);
-
-// // NOTE: Jest mocks of transitive dependencies don't appear to work with
-// // ES6 module imports, therefore forced to use commonjs style imports here.
-const {PerformanceObserver} = require('../PerformanceObserver');
-const NativePerformanceMock =
-  require('../specs/__mocks__/NativePerformance').default;
 
 describe('PerformanceObserver', () => {
+  beforeEach(() => {
+    jest.resetModules();
+
+    const Performance = require('../Performance').default;
+    // $FlowExpectedError[cannot-write]
+    global.performance = new Performance();
+    global.PerformanceObserver =
+      require('../PerformanceObserver').PerformanceObserver;
+  });
+
   it('prevents durationThreshold to be used together with entryTypes', async () => {
     const observer = new PerformanceObserver((list, _observer) => {});
 
     expect(() =>
-      // $FlowExpectedError[incompatible-call]
       observer.observe({entryTypes: ['event', 'mark'], durationThreshold: 100}),
     ).toThrow();
   });
@@ -46,7 +42,10 @@ describe('PerformanceObserver', () => {
 
     observer.observe({type: 'measure', durationThreshold: 100});
 
-    NativePerformanceMock?.measure('measure1', 0, 200);
+    performance.measure('measure1', {
+      start: 0,
+      duration: 10,
+    });
 
     await jest.runAllTicks();
     expect(entries).toHaveLength(1);

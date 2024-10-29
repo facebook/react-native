@@ -158,7 +158,7 @@ public class FabricUIManager
     FabricSoLoader.staticInit();
   }
 
-  @Nullable private Binding mBinding;
+  @Nullable private FabricUIManagerBinding mBinding;
   @NonNull private final ReactApplicationContext mReactApplicationContext;
   @NonNull private final MountingManager mMountingManager;
   @NonNull private final EventDispatcher mEventDispatcher;
@@ -328,12 +328,11 @@ public class FabricUIManager
             mReactApplicationContext, context, surfaceHandler.getModuleName(), rootTag);
     mMountingManager.startSurface(rootTag, reactContext, rootView);
 
-    surfaceHandler.setSurfaceId(rootTag);
-    if (surfaceHandler instanceof SurfaceHandlerBinding) {
-      mBinding.registerSurface((SurfaceHandlerBinding) surfaceHandler);
+    if (!(surfaceHandler instanceof SurfaceHandlerBinding)) {
+      throw new IllegalArgumentException("Invalid SurfaceHandler");
     }
-    surfaceHandler.setMountable(rootView != null);
-    surfaceHandler.start();
+    mBinding.startSurfaceWithSurfaceHandler(
+        rootTag, (SurfaceHandlerBinding) surfaceHandler, rootView != null);
   }
 
   public void attachRootView(final SurfaceHandler surfaceHandler, final View rootView) {
@@ -357,12 +356,10 @@ public class FabricUIManager
     }
 
     mMountingManager.stopSurface(surfaceHandler.getSurfaceId());
-
-    surfaceHandler.stop();
-
-    if (surfaceHandler instanceof SurfaceHandlerBinding) {
-      mBinding.unregisterSurface((SurfaceHandlerBinding) surfaceHandler);
+    if (!(surfaceHandler instanceof SurfaceHandlerBinding)) {
+      throw new IllegalArgumentException("Invalid SurfaceHandler");
     }
+    mBinding.stopSurfaceWithSurfaceHandler((SurfaceHandlerBinding) surfaceHandler);
   }
 
   /** Method called when an event has been dispatched on the C++ side. */
@@ -875,7 +872,7 @@ public class FabricUIManager
     }
   }
 
-  public void setBinding(Binding binding) {
+  public void setBinding(FabricUIManagerBinding binding) {
     mBinding = binding;
   }
 
@@ -1028,7 +1025,6 @@ public class FabricUIManager
 
   @Override
   @NonNull
-  @SuppressWarnings("unchecked")
   public EventDispatcher getEventDispatcher() {
     return mEventDispatcher;
   }
@@ -1274,7 +1270,7 @@ public class FabricUIManager
                   public void run() {
                     mMountNotificationScheduled = false;
 
-                    final @Nullable Binding binding = mBinding;
+                    final @Nullable FabricUIManagerBinding binding = mBinding;
                     if (binding == null || mDestroyed) {
                       mMountedSurfaceIds.clear();
                       return;

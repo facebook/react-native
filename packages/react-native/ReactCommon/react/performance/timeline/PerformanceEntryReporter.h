@@ -9,8 +9,9 @@
 
 #include <react/timing/primitives.h>
 #include <memory>
-#include <mutex>
 #include <optional>
+#include <shared_mutex>
+#include <vector>
 #include "PerformanceEntryCircularBuffer.h"
 #include "PerformanceEntryKeyedBuffer.h"
 #include "PerformanceObserverRegistry.h"
@@ -36,64 +37,48 @@ class PerformanceEntryReporter {
     return *observerRegistry_;
   }
 
-  uint32_t getDroppedEntriesCount(PerformanceEntryType type) const noexcept;
+  std::vector<PerformanceEntry> getEntries() const;
+  void getEntries(std::vector<PerformanceEntry>& dest) const;
 
-  /*
-   * DOM Performance (High Resolution Time)
-   * https://www.w3.org/TR/hr-time-3/#dom-performance
-   */
-  // https://www.w3.org/TR/hr-time-3/#now-method
+  std::vector<PerformanceEntry> getEntries(
+      PerformanceEntryType entryType) const;
+  void getEntries(
+      std::vector<PerformanceEntry>& dest,
+      PerformanceEntryType entryType) const;
+
+  std::vector<PerformanceEntry> getEntries(
+      PerformanceEntryType entryType,
+      const std::string& entryName) const;
+  void getEntries(
+      std::vector<PerformanceEntry>& dest,
+      PerformanceEntryType entryType,
+      const std::string& entryName) const;
+
+  void clearEntries();
+  void clearEntries(PerformanceEntryType entryType);
+  void clearEntries(
+      PerformanceEntryType entryType,
+      const std::string& entryName);
+
   DOMHighResTimeStamp getCurrentTimeStamp() const;
 
   void setTimeStampProvider(std::function<DOMHighResTimeStamp()> provider) {
     timeStampProvider_ = std::move(provider);
   }
 
-  // https://www.w3.org/TR/performance-timeline/#getentries-method
-  // https://www.w3.org/TR/performance-timeline/#getentriesbytype-method
-  // https://www.w3.org/TR/performance-timeline/#getentriesbyname-method
-  std::vector<PerformanceEntry> getEntries() const;
-  std::vector<PerformanceEntry> getEntriesByType(
-      PerformanceEntryType entryType) const;
-  void getEntriesByType(
-      PerformanceEntryType entryType,
-      std::vector<PerformanceEntry>& target) const;
-  std::vector<PerformanceEntry> getEntriesByName(
-      std::string_view entryName) const;
-  std::vector<PerformanceEntry> getEntriesByName(
-      std::string_view entryName,
-      PerformanceEntryType entryType) const;
+  static std::vector<PerformanceEntryType> getSupportedEntryTypes();
 
-  void logEventEntry(
-      std::string name,
-      double startTime,
-      double duration,
-      double processingStart,
-      double processingEnd,
-      uint32_t interactionId);
+  uint32_t getDroppedEntriesCount(PerformanceEntryType type) const noexcept;
 
-  void logLongTaskEntry(double startTime, double duration);
-
-  /*
-   * Event Timing API functions
-   * https://www.w3.org/TR/event-timing/
-   */
-  // https://www.w3.org/TR/event-timing/#dom-performance-eventcounts
   const std::unordered_map<std::string, uint32_t>& getEventCounts() const {
     return eventCounts_;
   }
 
-  /*
-   * User Timing Level 3 functions
-   * https://w3c.github.io/user-timing/
-   */
-  // https://w3c.github.io/user-timing/#mark-method
-  void mark(
+  PerformanceEntry reportMark(
       const std::string& name,
       const std::optional<DOMHighResTimeStamp>& startTime = std::nullopt);
 
-  // https://w3c.github.io/user-timing/#measure-method
-  void measure(
+  PerformanceEntry reportMeasure(
       const std::string_view& name,
       double startTime,
       double endTime,
@@ -101,16 +86,20 @@ class PerformanceEntryReporter {
       const std::optional<std::string>& startMark = std::nullopt,
       const std::optional<std::string>& endMark = std::nullopt);
 
-  // https://w3c.github.io/user-timing/#clearmarks-method
-  // https://w3c.github.io/user-timing/#clearmeasures-method
-  void clearEntries(
-      std::optional<PerformanceEntryType> entryType = std::nullopt,
-      std::optional<std::string_view> entryName = std::nullopt);
+  void reportEvent(
+      std::string name,
+      double startTime,
+      double duration,
+      double processingStart,
+      double processingEnd,
+      uint32_t interactionId);
+
+  void reportLongTask(double startTime, double duration);
 
  private:
   std::unique_ptr<PerformanceObserverRegistry> observerRegistry_;
 
-  mutable std::mutex buffersMutex_;
+  mutable std::shared_mutex buffersMutex_;
   PerformanceEntryCircularBuffer eventBuffer_{EVENT_BUFFER_SIZE};
   PerformanceEntryCircularBuffer longTaskBuffer_{LONG_TASK_BUFFER_SIZE};
   PerformanceEntryKeyedBuffer markBuffer_;
@@ -121,21 +110,6 @@ class PerformanceEntryReporter {
   std::function<double()> timeStampProvider_ = nullptr;
 
   double getMarkTime(const std::string& markName) const;
-
-  inline PerformanceEntryBuffer& getBufferRef(PerformanceEntryType entryType) {
-    switch (entryType) {
-      case PerformanceEntryType::EVENT:
-        return eventBuffer_;
-      case PerformanceEntryType::MARK:
-        return markBuffer_;
-      case PerformanceEntryType::MEASURE:
-        return measureBuffer_;
-      case PerformanceEntryType::LONGTASK:
-        return longTaskBuffer_;
-      case PerformanceEntryType::_NEXT:
-        throw std::logic_error("Cannot get buffer for _NEXT entry type");
-    }
-  }
 
   const inline PerformanceEntryBuffer& getBuffer(
       PerformanceEntryType entryType) const {
@@ -151,6 +125,23 @@ class PerformanceEntryReporter {
       case PerformanceEntryType::_NEXT:
         throw std::logic_error("Cannot get buffer for _NEXT entry type");
     }
+    throw std::logic_error("Unhandled PerformanceEntryType");
+  }
+
+  inline PerformanceEntryBuffer& getBufferRef(PerformanceEntryType entryType) {
+    switch (entryType) {
+      case PerformanceEntryType::EVENT:
+        return eventBuffer_;
+      case PerformanceEntryType::MARK:
+        return markBuffer_;
+      case PerformanceEntryType::MEASURE:
+        return measureBuffer_;
+      case PerformanceEntryType::LONGTASK:
+        return longTaskBuffer_;
+      case PerformanceEntryType::_NEXT:
+        throw std::logic_error("Cannot get buffer for _NEXT entry type");
+    }
+    throw std::logic_error("Unhandled PerformanceEntryType");
   }
 };
 

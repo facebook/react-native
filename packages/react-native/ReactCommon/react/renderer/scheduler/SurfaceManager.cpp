@@ -64,9 +64,9 @@ Size SurfaceManager::measureSurface(
   return size;
 }
 
-MountingCoordinator::Shared SurfaceManager::findMountingCoordinator(
-    SurfaceId surfaceId) const noexcept {
-  auto mountingCoordinator = MountingCoordinator::Shared{};
+std::shared_ptr<const MountingCoordinator>
+SurfaceManager::findMountingCoordinator(SurfaceId surfaceId) const noexcept {
+  auto mountingCoordinator = std::shared_ptr<const MountingCoordinator>{};
 
   visit(surfaceId, [&](const SurfaceHandler& surfaceHandler) {
     mountingCoordinator = surfaceHandler.getMountingCoordinator();

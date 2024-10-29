@@ -76,8 +76,12 @@ const ModuleSpecClassDeclarationTemplate = ({
   return `template <typename T>
 class JSI_EXPORT ${hasteModuleName}CxxSpec : public TurboModule {
 public:
-  jsi::Value get(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
-    return delegate_.get(rt, propName);
+  jsi::Value create(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
+    return delegate_.create(rt, propName);
+  }
+
+  std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime& runtime) override {
+    return delegate_.getPropertyNames(runtime);
   }
 
   static constexpr std::string_view kModuleName = "${moduleName}";
@@ -168,6 +172,10 @@ function translatePrimitiveJSTypeToCpp(
     case 'VoidTypeAnnotation':
       return 'void';
     case 'StringTypeAnnotation':
+      return wrapOptional('jsi::String', isRequired);
+    case 'StringLiteralTypeAnnotation':
+      return wrapOptional('jsi::String', isRequired);
+    case 'StringLiteralUnionTypeAnnotation':
       return wrapOptional('jsi::String', isRequired);
     case 'NumberTypeAnnotation':
       return wrapOptional('double', isRequired);

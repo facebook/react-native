@@ -18,7 +18,7 @@ import * as NativeComponentRegistry from '../../NativeComponent/NativeComponentR
 import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
 import RCTTextInputViewConfig from './RCTTextInputViewConfig';
 
-type NativeType = HostComponent<mixed>;
+type NativeType = HostComponent<{...}>;
 
 type NativeCommands = TextInputNativeCommands<NativeType>;
 
@@ -31,11 +31,13 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig = {
   ...RCTTextInputViewConfig,
 };
 
-const SinglelineTextInputNativeComponent: HostComponent<mixed> =
-  NativeComponentRegistry.get<mixed>(
+const SinglelineTextInputNativeComponent: HostComponent<{...}> =
+  NativeComponentRegistry.get<{...}>(
     'RCTSinglelineTextInputView',
     () => __INTERNAL_VIEW_CONFIG,
   );
 
 // flowlint-next-line unclear-type:off
-export default ((SinglelineTextInputNativeComponent: any): HostComponent<mixed>);
+export default ((SinglelineTextInputNativeComponent: any): HostComponent<{
+  ...
+}>);

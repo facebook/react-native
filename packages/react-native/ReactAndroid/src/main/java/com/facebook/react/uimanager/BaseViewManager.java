@@ -14,6 +14,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewParent;
 import android.view.accessibility.AccessibilityEvent;
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
@@ -27,7 +28,6 @@ import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.ReactConstants;
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.Role;
 import com.facebook.react.uimanager.annotations.ReactProp;
@@ -47,7 +47,7 @@ import java.util.Objects;
  * provides support for base view properties such as backgroundColor, opacity, etc.
  */
 public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode>
-    extends ViewManager<T, C> implements BaseViewManagerInterface<T>, View.OnLayoutChangeListener {
+    extends ViewManager<T, C> implements View.OnLayoutChangeListener {
 
   private static final int PERSPECTIVE_ARRAY_INVERTED_CAMERA_DISTANCE_INDEX = 2;
   private static final float CAMERA_DISTANCE_NORMALIZATION_MULTIPLIER = (float) Math.sqrt(5);
@@ -191,16 +191,14 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     }
   }
 
-  @Override
   @ReactProp(
       name = ViewProps.BACKGROUND_COLOR,
       defaultInt = Color.TRANSPARENT,
       customType = "Color")
-  public void setBackgroundColor(@NonNull T view, int backgroundColor) {
-    view.setBackgroundColor(backgroundColor);
+  public void setBackgroundColor(@NonNull T view, @ColorInt int backgroundColor) {
+    BackgroundStyleApplicator.setBackgroundColor(view, backgroundColor);
   }
 
-  @Override
   @ReactProp(name = ViewProps.FILTER, customType = "Filter")
   public void setFilter(@NonNull T view, @Nullable ReadableArray filter) {
     if (ViewUtil.getUIManagerType(view) == UIManagerType.FABRIC) {
@@ -208,15 +206,18 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     }
   }
 
-  @Override
   @ReactProp(name = ViewProps.MIX_BLEND_MODE)
   public void setMixBlendMode(@NonNull T view, @Nullable String mixBlendMode) {
     if (ViewUtil.getUIManagerType(view) == UIManagerType.FABRIC) {
       view.setTag(R.id.mix_blend_mode, BlendModeHelper.parseMixBlendMode(mixBlendMode));
+      // We need to trigger drawChild for the parent ViewGroup which will set the
+      // mixBlendMode compositing on the child
+      if (view.getParent() instanceof View) {
+        ((View) view.getParent()).invalidate();
+      }
     }
   }
 
-  @Override
   @ReactProp(name = ViewProps.TRANSFORM)
   public void setTransform(@NonNull T view, @Nullable ReadableArray matrix) {
     @Nullable ReadableArray currentTransform = (ReadableArray) view.getTag(R.id.transform);
@@ -226,7 +227,6 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     }
   }
 
-  @Override
   @ReactProp(name = ViewProps.TRANSFORM_ORIGIN)
   public void setTransformOrigin(@NonNull T view, @Nullable ReadableArray transformOrigin) {
     @Nullable
@@ -237,19 +237,16 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     }
   }
 
-  @Override
   @ReactProp(name = ViewProps.OPACITY, defaultFloat = 1.f)
   public void setOpacity(@NonNull T view, float opacity) {
     view.setAlpha(opacity);
   }
 
-  @Override
   @ReactProp(name = ViewProps.ELEVATION)
   public void setElevation(@NonNull T view, float elevation) {
     ViewCompat.setElevation(view, PixelUtil.toPixelFromDIP(elevation));
   }
 
-  @Override
   @ReactProp(name = ViewProps.SHADOW_COLOR, defaultInt = Color.BLACK, customType = "Color")
   public void setShadowColor(@NonNull T view, int shadowColor) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
@@ -258,7 +255,6 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     }
   }
 
-  @Override
   @ReactProp(name = ViewProps.Z_INDEX)
   public void setZIndex(@NonNull T view, float zIndex) {
     int integerZIndex = Math.round(zIndex);
@@ -269,13 +265,11 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     }
   }
 
-  @Override
   @ReactProp(name = ViewProps.RENDER_TO_HARDWARE_TEXTURE)
   public void setRenderToHardwareTexture(@NonNull T view, boolean useHWTexture) {
     view.setTag(R.id.use_hardware_layer, useHWTexture);
   }
 
-  @Override
   @ReactProp(name = ViewProps.TEST_ID)
   public void setTestId(@NonNull T view, @Nullable String testId) {
     view.setTag(R.id.react_test_id, testId);
@@ -284,14 +278,12 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     view.setTag(testId);
   }
 
-  @Override
   @ReactProp(name = ViewProps.NATIVE_ID)
   public void setNativeId(@NonNull T view, @Nullable String nativeId) {
     view.setTag(R.id.view_tag_native_id, nativeId);
     ReactFindViewUtil.notifyViewRendered(view);
   }
 
-  @Override
   @ReactProp(name = ViewProps.ACCESSIBILITY_LABELLED_BY)
   public void setAccessibilityLabelledBy(@NonNull T view, @Nullable Dynamic nativeId) {
     if (nativeId.isNull()) {
@@ -306,21 +298,18 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     }
   }
 
-  @Override
   @ReactProp(name = ViewProps.ACCESSIBILITY_LABEL)
   public void setAccessibilityLabel(@NonNull T view, @Nullable String accessibilityLabel) {
     view.setTag(R.id.accessibility_label, accessibilityLabel);
     updateViewContentDescription(view);
   }
 
-  @Override
   @ReactProp(name = ViewProps.ACCESSIBILITY_HINT)
   public void setAccessibilityHint(@NonNull T view, @Nullable String accessibilityHint) {
     view.setTag(R.id.accessibility_hint, accessibilityHint);
     updateViewContentDescription(view);
   }
 
-  @Override
   @ReactProp(name = ViewProps.ACCESSIBILITY_ROLE)
   public void setAccessibilityRole(@NonNull T view, @Nullable String accessibilityRole) {
     if (accessibilityRole == null) {
@@ -330,21 +319,18 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     }
   }
 
-  @Override
   @ReactProp(name = ViewProps.ACCESSIBILITY_COLLECTION)
   public void setAccessibilityCollection(
       @NonNull T view, @Nullable ReadableMap accessibilityCollection) {
     view.setTag(R.id.accessibility_collection, accessibilityCollection);
   }
 
-  @Override
   @ReactProp(name = ViewProps.ACCESSIBILITY_COLLECTION_ITEM)
   public void setAccessibilityCollectionItem(
       @NonNull T view, @Nullable ReadableMap accessibilityCollectionItem) {
     view.setTag(R.id.accessibility_collection_item, accessibilityCollectionItem);
   }
 
-  @Override
   @ReactProp(name = ViewProps.ACCESSIBILITY_STATE)
   public void setViewState(@NonNull T view, @Nullable ReadableMap accessibilityState) {
     if (accessibilityState == null) {
@@ -432,7 +418,6 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     }
   }
 
-  @Override
   @ReactProp(name = ViewProps.ACCESSIBILITY_ACTIONS)
   public void setAccessibilityActions(T view, ReadableArray accessibilityActions) {
     if (accessibilityActions == null) {
@@ -455,7 +440,6 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     }
   }
 
-  @Override
   @ReactProp(name = ViewProps.IMPORTANT_FOR_ACCESSIBILITY)
   public void setImportantForAccessibility(
       @NonNull T view, @Nullable String importantForAccessibility) {
@@ -471,7 +455,6 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     }
   }
 
-  @Override
   @ReactProp(name = ViewProps.ROLE)
   public void setRole(@NonNull T view, @Nullable String role) {
     if (role == null) {
@@ -481,42 +464,36 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     }
   }
 
-  @Override
   @Deprecated
   @ReactProp(name = ViewProps.ROTATION)
   public void setRotation(@NonNull T view, float rotation) {
     view.setRotation(rotation);
   }
 
-  @Override
   @Deprecated
   @ReactProp(name = ViewProps.SCALE_X, defaultFloat = 1f)
   public void setScaleX(@NonNull T view, float scaleX) {
     view.setScaleX(scaleX);
   }
 
-  @Override
   @Deprecated
   @ReactProp(name = ViewProps.SCALE_Y, defaultFloat = 1f)
   public void setScaleY(@NonNull T view, float scaleY) {
     view.setScaleY(scaleY);
   }
 
-  @Override
   @Deprecated
   @ReactProp(name = ViewProps.TRANSLATE_X, defaultFloat = 0f)
   public void setTranslateX(@NonNull T view, float translateX) {
     view.setTranslationX(PixelUtil.toPixelFromDIP(translateX));
   }
 
-  @Override
   @Deprecated
   @ReactProp(name = ViewProps.TRANSLATE_Y, defaultFloat = 0f)
   public void setTranslateY(@NonNull T view, float translateY) {
     view.setTranslationY(PixelUtil.toPixelFromDIP(translateY));
   }
 
-  @Override
   @ReactProp(name = ViewProps.ACCESSIBILITY_LIVE_REGION)
   public void setAccessibilityLiveRegion(@NonNull T view, @Nullable String liveRegion) {
     if (liveRegion == null || liveRegion.equals("none")) {
@@ -757,60 +734,54 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     return eventTypeConstants;
   }
 
-  @Override
+  // TODO: These are all pretty silly, since they do nothing, support less props and shapes than
+  // View, and the only external usage is RNSVG which just calls the superclass ViewManager version.
   public void setBorderRadius(T view, float borderRadius) {
     logUnsupportedPropertyWarning(ViewProps.BORDER_RADIUS);
   }
 
-  @Override
   public void setBorderBottomLeftRadius(T view, float borderRadius) {
     logUnsupportedPropertyWarning(ViewProps.BORDER_BOTTOM_LEFT_RADIUS);
   }
 
-  @Override
   public void setBorderBottomRightRadius(T view, float borderRadius) {
     logUnsupportedPropertyWarning(ViewProps.BORDER_BOTTOM_RIGHT_RADIUS);
   }
 
-  @Override
   public void setBorderTopLeftRadius(T view, float borderRadius) {
     logUnsupportedPropertyWarning(ViewProps.BORDER_TOP_LEFT_RADIUS);
   }
 
-  @Override
   public void setBorderTopRightRadius(T view, float borderRadius) {
     logUnsupportedPropertyWarning(ViewProps.BORDER_TOP_RIGHT_RADIUS);
   }
 
   @ReactProp(name = ViewProps.OUTLINE_COLOR, customType = "Color")
   public void setOutlineColor(T view, @Nullable Integer color) {
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      BackgroundStyleApplicator.setOutlineColor(view, color);
-    }
+    BackgroundStyleApplicator.setOutlineColor(view, color);
   }
 
   @ReactProp(name = ViewProps.OUTLINE_OFFSET)
   public void setOutlineOffset(T view, float offset) {
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      BackgroundStyleApplicator.setOutlineOffset(view, offset);
-    }
+    BackgroundStyleApplicator.setOutlineOffset(view, offset);
   }
 
   @ReactProp(name = ViewProps.OUTLINE_STYLE)
   public void setOutlineStyle(T view, @Nullable String outlineStyle) {
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      @Nullable
-      OutlineStyle parsedOutlineStyle =
-          outlineStyle == null ? null : OutlineStyle.fromString(outlineStyle);
-      BackgroundStyleApplicator.setOutlineStyle(view, parsedOutlineStyle);
-    }
+    @Nullable
+    OutlineStyle parsedOutlineStyle =
+        outlineStyle == null ? null : OutlineStyle.fromString(outlineStyle);
+    BackgroundStyleApplicator.setOutlineStyle(view, parsedOutlineStyle);
   }
 
   @ReactProp(name = ViewProps.OUTLINE_WIDTH)
   public void setOutlineWidth(T view, float width) {
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      BackgroundStyleApplicator.setOutlineWidth(view, width);
-    }
+    BackgroundStyleApplicator.setOutlineWidth(view, width);
+  }
+
+  @ReactProp(name = ViewProps.BOX_SHADOW, customType = "BoxShadow")
+  public void setBoxShadow(T view, @Nullable ReadableArray shadows) {
+    BackgroundStyleApplicator.setBoxShadow(view, shadows);
   }
 
   private void logUnsupportedPropertyWarning(String propName) {
@@ -972,4 +943,6 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   public void setTouchCancel(@NonNull T view, boolean value) {
     // no-op, handled by JSResponder
   }
+
+  // Please add new props to BaseViewManagerDelegate as well!
 }

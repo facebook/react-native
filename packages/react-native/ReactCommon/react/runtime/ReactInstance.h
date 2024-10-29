@@ -17,6 +17,7 @@
 #include <react/runtime/BufferedRuntimeExecutor.h>
 #include <react/runtime/JSRuntimeFactory.h>
 #include <react/runtime/TimerManager.h>
+#include <vector>
 
 namespace facebook::react {
 

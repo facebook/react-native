@@ -43,6 +43,7 @@ jsi::Value ScrollEvent::asJSIValue(jsi::Runtime& runtime) const {
   }
 
   payload.setProperty(runtime, "zoomScale", zoomScale);
+  payload.setProperty(runtime, "timestamp", timestamp * 1000);
 
   return payload;
 }
@@ -61,11 +62,12 @@ folly::dynamic ScrollEvent::asDynamic() const {
   auto containerSizeObj = folly::dynamic::object("width", containerSize.width)(
       "height", containerSize.height);
 
-  auto metrics = folly::dynamic::object(
-      "contentOffset", std::move(contentOffsetObj))(
-      "contentInset", std::move(contentInsetObj))(
-      "contentSize", std::move(contentSizeObj))(
-      "layoutMeasurement", std::move(containerSizeObj))("zoomScale", zoomScale);
+  auto metrics =
+      folly::dynamic::object("contentOffset", std::move(contentOffsetObj))(
+          "contentInset", std::move(contentInsetObj))(
+          "contentSize", std::move(contentSizeObj))(
+          "layoutMeasurement", std::move(containerSizeObj))(
+          "zoomScale", zoomScale)("timestamp", timestamp * 1000);
 
   return metrics;
 };
@@ -91,7 +93,7 @@ std::vector<DebugStringConvertibleObject> getDebugProps(
       {"layoutMeasurement",
        getDebugDescription(scrollEvent.layoutMeasurement, options)},
       {"zoomScale", getDebugDescription(scrollEvent.zoomScale, options)},
-  };
+      {"timestamp", getDebugDescription(scrollEvent.timestamp, options)}};
 }
 
 #endif

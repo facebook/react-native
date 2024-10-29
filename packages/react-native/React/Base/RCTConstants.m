@@ -21,6 +21,9 @@ NSString *const RCTJavaScriptWillStartLoadingNotification = @"RCTJavaScriptWillS
 
 NSString *const RCTDidInitializeModuleNotification = @"RCTDidInitializeModuleNotification";
 
+NSString *const RCTNotifyEventDispatcherObserversOfEvent_DEPRECATED =
+    @"RCTNotifyEventDispatcherObserversOfEvent_DEPRECATED";
+
 /*
  * W3C Pointer Events
  */

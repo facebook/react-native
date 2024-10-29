@@ -24,7 +24,7 @@ export type Props = $ReadOnly<{|
   internal_excludeInspector?: boolean,
 |}>;
 
-const AppContainer: React.AbstractComponent<Props> = __DEV__
+const AppContainer: component(...Props) = __DEV__
   ? require('./AppContainer-dev').default
   : require('./AppContainer-prod').default;
 

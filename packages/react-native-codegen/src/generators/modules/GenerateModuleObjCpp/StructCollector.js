@@ -11,20 +11,22 @@
 'use strict';
 
 import type {
-  NativeModuleArrayTypeAnnotation,
-  NativeModuleBaseTypeAnnotation,
   BooleanTypeAnnotation,
   DoubleTypeAnnotation,
-  NativeModuleEnumDeclaration,
   FloatTypeAnnotation,
-  NativeModuleGenericObjectTypeAnnotation,
   Int32TypeAnnotation,
+  NativeModuleArrayTypeAnnotation,
+  NativeModuleBaseTypeAnnotation,
+  NativeModuleEnumDeclaration,
+  NativeModuleGenericObjectTypeAnnotation,
   NativeModuleNumberTypeAnnotation,
   NativeModuleObjectTypeAnnotation,
-  StringTypeAnnotation,
   NativeModuleTypeAliasTypeAnnotation,
   Nullable,
   ReservedTypeAnnotation,
+  StringLiteralTypeAnnotation,
+  StringLiteralUnionTypeAnnotation,
+  StringTypeAnnotation,
 } from '../../../CodegenSchema';
 import type {AliasResolver} from '../Utils';
 
@@ -58,6 +60,8 @@ export type StructProperty = $ReadOnly<{
 
 export type StructTypeAnnotation =
   | StringTypeAnnotation
+  | StringLiteralTypeAnnotation
+  | StringLiteralUnionTypeAnnotation
   | NativeModuleNumberTypeAnnotation
   | Int32TypeAnnotation
   | DoubleTypeAnnotation
@@ -121,7 +125,28 @@ class StructCollector {
       case 'MixedTypeAnnotation':
         throw new Error('Mixed types are unsupported in structs');
       case 'UnionTypeAnnotation':
-        throw new Error('Union types are unsupported in structs');
+        switch (typeAnnotation.memberType) {
+          case 'StringTypeAnnotation':
+            return wrapNullable(nullable, {
+              type: 'StringTypeAnnotation',
+            });
+          case 'NumberTypeAnnotation':
+            return wrapNullable(nullable, {
+              type: 'NumberTypeAnnotation',
+            });
+          case 'ObjectTypeAnnotation':
+            // This isn't smart enough to actually know how to generate the
+            // options on the native side. So we just treat it as an unknown object type
+            return wrapNullable(nullable, {
+              type: 'GenericObjectTypeAnnotation',
+            });
+          default:
+            (typeAnnotation.memberType: empty);
+            throw new Error(
+              'Union types are unsupported in structs' +
+                JSON.stringify(typeAnnotation),
+            );
+        }
       default: {
         return wrapNullable(nullable, typeAnnotation);
       }

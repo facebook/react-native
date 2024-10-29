@@ -70,14 +70,14 @@ class ShadowNodeTraits {
     // to be cloned before the first mutation.
     ChildrenAreShared = 1 << 8,
 
-    // Indicates that the node was cloned because of native state update.
-    ClonedByNativeStateUpdate = 1 << 9,
-
     // Indicates that direct children of the node should not be collapsed
-    ChildrenFormStackingContext = 1 << 10,
+    ChildrenFormStackingContext = 1 << 9,
 
     // Inherits `YogaLayoutableShadowNode` and has a custom baseline function.
-    BaselineYogaNode = 1 << 11,
+    BaselineYogaNode = 1 << 10,
+
+    // Forces the node not to form a host view.
+    ForceFlattenView = 1 << 11,
   };
 
   /*

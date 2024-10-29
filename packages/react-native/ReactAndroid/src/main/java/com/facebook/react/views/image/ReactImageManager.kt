@@ -9,7 +9,6 @@ package com.facebook.react.views.image
 
 import android.graphics.Color
 import android.graphics.PorterDuff
-import androidx.annotation.ColorInt
 import com.facebook.common.logging.FLog
 import com.facebook.drawee.backends.pipeline.Fresco
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder
@@ -183,9 +182,9 @@ public constructor(
     when (resizeMethod) {
       null,
       "auto" -> view.setResizeMethod(ImageResizeMethod.AUTO)
-
       "resize" -> view.setResizeMethod(ImageResizeMethod.RESIZE)
       "scale" -> view.setResizeMethod(ImageResizeMethod.SCALE)
+      "none" -> view.setResizeMethod(ImageResizeMethod.NONE)
       else -> {
         view.setResizeMethod(ImageResizeMethod.AUTO)
         FLog.w(ReactConstants.TAG, "Invalid resize method: '$resizeMethod'")
@@ -230,18 +229,6 @@ public constructor(
     if (headers != null) {
       view.setHeaders(headers)
     }
-  }
-
-  @ReactProp(name = ViewProps.BOX_SHADOW, customType = "BoxShadow")
-  public fun setBoxShadow(view: ReactImageView, shadows: ReadableArray?): Unit {
-    BackgroundStyleApplicator.setBoxShadow(view, shadows)
-  }
-
-  public override fun setBackgroundColor(
-      view: ReactImageView,
-      @ColorInt backgroundColor: Int
-  ): Unit {
-    BackgroundStyleApplicator.setBackgroundColor(view, backgroundColor)
   }
 
   public override fun getExportedCustomDirectEventTypeConstants(): MutableMap<String, Any> =

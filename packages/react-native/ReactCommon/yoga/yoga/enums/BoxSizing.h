@@ -16,8 +16,8 @@
 namespace facebook::yoga {
 
 enum class BoxSizing : uint8_t {
-  ContentBox = YGBoxSizingContentBox,
   BorderBox = YGBoxSizingBorderBox,
+  ContentBox = YGBoxSizingContentBox,
 };
 
 template <>

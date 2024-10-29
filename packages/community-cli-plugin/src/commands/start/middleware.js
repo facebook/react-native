@@ -12,7 +12,7 @@
 import type {NextHandleFunction, Server} from 'connect';
 import type {TerminalReportableEvent} from 'metro/src/lib/TerminalReporter';
 
-import {logger} from '../../utils/logger';
+const debug = require('debug')('ReactNative:CommunityCliPlugin');
 
 type MiddlewareReturn = {
   middleware: Server,
@@ -71,7 +71,7 @@ try {
   communityMiddlewareFallback.createDevServerMiddleware =
     community.createDevServerMiddleware;
 } catch {
-  logger.debug(`⚠️ Unable to find @react-native-community/cli-server-api
+  debug(`⚠️ Unable to find @react-native-community/cli-server-api
 Starting the server without the community middleware.`);
 }
 

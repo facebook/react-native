@@ -54,17 +54,18 @@ Scheduler::Scheduler(
   auto weakRuntimeScheduler =
       contextContainer_->find<std::weak_ptr<RuntimeScheduler>>(
           "RuntimeScheduler");
-  auto runtimeScheduler = weakRuntimeScheduler.has_value()
-      ? weakRuntimeScheduler.value().lock()
-      : nullptr;
+  react_native_assert(
+      weakRuntimeScheduler.has_value() &&
+      "Unexpected state: RuntimeScheduler was not provided.");
 
-  if (runtimeScheduler && ReactNativeFeatureFlags::enableUIConsistency()) {
+  auto runtimeScheduler = weakRuntimeScheduler.value().lock();
+
+  if (ReactNativeFeatureFlags::enableUIConsistency()) {
     runtimeScheduler->setShadowTreeRevisionConsistencyManager(
         uiManager->getShadowTreeRevisionConsistencyManager());
   }
 
-  if (runtimeScheduler &&
-      ReactNativeFeatureFlags::enableReportEventPaintTime()) {
+  if (ReactNativeFeatureFlags::enableReportEventPaintTime()) {
     runtimeScheduler->setEventTimingDelegate(eventPerformanceLogger_.get());
   }
 
@@ -93,13 +94,14 @@ Scheduler::Scheduler(
     uiManager->updateState(stateUpdate);
   };
 
+  auto eventBeat = schedulerToolbox.eventBeatFactory(std::move(eventOwnerBox));
+
   // Creating an `EventDispatcher` instance inside the already allocated
   // container (inside the optional).
   eventDispatcher_->emplace(
       EventQueueProcessor(
           eventPipe, eventPipeConclusion, statePipe, eventPerformanceLogger_),
-      schedulerToolbox.asynchronousEventBeatFactory,
-      eventOwnerBox,
+      std::move(eventBeat),
       *runtimeScheduler,
       statePipe,
       eventPerformanceLogger_);
@@ -283,7 +285,7 @@ void Scheduler::animationTick() const {
 #pragma mark - UIManagerDelegate
 
 void Scheduler::uiManagerDidFinishTransaction(
-    MountingCoordinator::Shared mountingCoordinator,
+    std::shared_ptr<const MountingCoordinator> mountingCoordinator,
     bool mountSynchronously) {
   SystraceSection s("Scheduler::uiManagerDidFinishTransaction");
 

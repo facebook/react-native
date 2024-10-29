@@ -102,8 +102,8 @@ class ShadowNode : public Sealable,
    */
   Unshared cloneTree(
       const ShadowNodeFamily& shadowNodeFamily,
-      const std::function<Unshared(const ShadowNode& oldShadowNode)>& callback,
-      ShadowNodeTraits traits = {}) const;
+      const std::function<Unshared(const ShadowNode& oldShadowNode)>& callback)
+      const;
 
 #pragma mark - Getters
 
@@ -177,17 +177,6 @@ class ShadowNode : public Sealable,
    * tree.
    */
   bool getHasBeenPromoted() const;
-
-  /*
-   * Applies the most recent state to the ShadowNode if following conditions are
-   * met:
-   * - ShadowNode has a state.
-   * - ShadowNode has not been mounted before.
-   * - ShadowNode's current state is obsolete.
-   *
-   * Returns true if the state was applied, false otherwise.
-   */
-  bool progressStateIfNecessary();
 
   /*
    * Bind the runtime reference to this `ShadowNode` with a weak pointer,

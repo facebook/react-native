@@ -11,7 +11,6 @@
 #include <react/renderer/components/view/propsConversions.h>
 #include <react/renderer/core/propsConversions.h>
 #include <react/renderer/debug/debugStringConvertibleUtils.h>
-#include <react/utils/CoreFeatures.h>
 #include <yoga/Yoga.h>
 
 namespace facebook::react {
@@ -533,6 +532,13 @@ YogaStylableProps::YogaStylableProps(
       sourceProps.yogaStyle.aspectRatio(),
       yogaStyle.aspectRatio()));
 
+  yogaStyle.setBoxSizing(convertRawProp(
+      context,
+      rawProps,
+      "boxSizing",
+      sourceProps.yogaStyle.boxSizing(),
+      yogaStyle.boxSizing()));
+
   convertRawPropAliases(context, sourceProps, rawProps);
 };
 
@@ -783,98 +789,98 @@ void YogaStylableProps::convertRawPropAliases(
       rawProps,
       "insetBlockEnd",
       sourceProps.insetBlockEnd,
-      yoga::value::undefined());
+      yoga::StyleLength::undefined());
   insetBlockStart = convertRawProp(
       context,
       rawProps,
       "insetBlockStart",
       sourceProps.insetBlockStart,
-      yoga::value::undefined());
+      yoga::StyleLength::undefined());
   insetInlineEnd = convertRawProp(
       context,
       rawProps,
       "insetInlineEnd",
       sourceProps.insetInlineEnd,
-      yoga::value::undefined());
+      yoga::StyleLength::undefined());
   insetInlineStart = convertRawProp(
       context,
       rawProps,
       "insetInlineStart",
       sourceProps.insetInlineStart,
-      yoga::value::undefined());
+      yoga::StyleLength::undefined());
   marginInline = convertRawProp(
       context,
       rawProps,
       "marginInline",
       sourceProps.marginInline,
-      yoga::value::undefined());
+      yoga::StyleLength::undefined());
   marginInlineStart = convertRawProp(
       context,
       rawProps,
       "marginInlineStart",
       sourceProps.marginInlineStart,
-      yoga::value::undefined());
+      yoga::StyleLength::undefined());
   marginInlineEnd = convertRawProp(
       context,
       rawProps,
       "marginInlineEnd",
       sourceProps.marginInlineEnd,
-      yoga::value::undefined());
+      yoga::StyleLength::undefined());
   marginBlock = convertRawProp(
       context,
       rawProps,
       "marginBlock",
       sourceProps.marginBlock,
-      yoga::value::undefined());
+      yoga::StyleLength::undefined());
   marginBlockStart = convertRawProp(
       context,
       rawProps,
       "marginBlockStart",
       sourceProps.marginBlockStart,
-      yoga::value::undefined());
+      yoga::StyleLength::undefined());
   marginBlockEnd = convertRawProp(
       context,
       rawProps,
       "marginBlockEnd",
       sourceProps.marginBlockEnd,
-      yoga::value::undefined());
+      yoga::StyleLength::undefined());
 
   paddingInline = convertRawProp(
       context,
       rawProps,
       "paddingInline",
       sourceProps.paddingInline,
-      yoga::value::undefined());
+      yoga::StyleLength::undefined());
   paddingInlineStart = convertRawProp(
       context,
       rawProps,
       "paddingInlineStart",
       sourceProps.paddingInlineStart,
-      yoga::value::undefined());
+      yoga::StyleLength::undefined());
   paddingInlineEnd = convertRawProp(
       context,
       rawProps,
       "paddingInlineEnd",
       sourceProps.paddingInlineEnd,
-      yoga::value::undefined());
+      yoga::StyleLength::undefined());
   paddingBlock = convertRawProp(
       context,
       rawProps,
       "paddingBlock",
       sourceProps.paddingBlock,
-      yoga::value::undefined());
+      yoga::StyleLength::undefined());
   paddingBlockStart = convertRawProp(
       context,
       rawProps,
       "paddingBlockStart",
       sourceProps.paddingBlockStart,
-      yoga::value::undefined());
+      yoga::StyleLength::undefined());
   paddingBlockEnd = convertRawProp(
       context,
       rawProps,
       "paddingBlockEnd",
       sourceProps.paddingBlockEnd,
-      yoga::value::undefined());
+      yoga::StyleLength::undefined());
 }
 
 } // namespace facebook::react

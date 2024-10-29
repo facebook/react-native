@@ -22,6 +22,7 @@ const base64 = require('base64-js');
 const invariant = require('invariant');
 
 const DEBUG_NETWORK_SEND_DELAY: false = false; // Set to a number of milliseconds when debugging
+const LABEL_FOR_MISSING_URL_FOR_PROFILING = 'Unknown URL';
 
 export type NativeResponseType = 'base64' | 'blob' | 'text';
 export type ResponseType =
@@ -101,6 +102,7 @@ class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): typeof EventTarget) {
   static DONE: number = DONE;
 
   static _interceptor: ?XHRInterceptor = null;
+  static _profiling: boolean = false;
 
   UNSENT: number = UNSENT;
   OPENED: number = OPENED;
@@ -144,10 +146,15 @@ class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): typeof EventTarget) {
   _timedOut: boolean = false;
   _trackingName: string = 'unknown';
   _incrementalEvents: boolean = false;
+  _startTime: ?number = null;
   _performanceLogger: IPerformanceLogger = GlobalPerformanceLogger;
 
   static setInterceptor(interceptor: ?XHRInterceptor) {
     XMLHttpRequest._interceptor = interceptor;
+  }
+
+  static enableProfiling(enableProfiling: boolean): void {
+    XMLHttpRequest._profiling = enableProfiling;
   }
 
   constructor() {
@@ -356,6 +363,11 @@ class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): typeof EventTarget) {
       this._response += responseText;
     }
 
+    if (XMLHttpRequest._profiling) {
+      performance.mark(
+        'Track:XMLHttpRequest:Incremental Data: ' + this._getMeasureURL(),
+      );
+    }
     XMLHttpRequest._interceptor &&
       XMLHttpRequest._interceptor.dataReceived(requestId, responseText);
 
@@ -398,7 +410,13 @@ class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): typeof EventTarget) {
       this._clearSubscriptions();
       this._requestId = null;
       this.setReadyState(this.DONE);
-
+      if (XMLHttpRequest._profiling && this._startTime != null) {
+        const start = this._startTime;
+        performance.measure('Track:XMLHttpRequest:' + this._getMeasureURL(), {
+          start,
+          end: performance.now(),
+        });
+      }
       if (error) {
         XMLHttpRequest._interceptor &&
           XMLHttpRequest._interceptor.loadingFailed(requestId, error);
@@ -572,6 +590,7 @@ class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): typeof EventTarget) {
         this._trackingName !== 'unknown' ? this._trackingName : this._url;
       this._perfKey = 'network_XMLHttpRequest_' + String(friendlyName);
       this._performanceLogger.startTimespan(this._perfKey);
+      this._startTime = performance.now();
       invariant(
         this._method,
         'XMLHttpRequest method needs to be defined (%s).',
@@ -667,6 +686,12 @@ class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): typeof EventTarget) {
       this._incrementalEvents = true;
     }
     super.addEventListener(type, listener);
+  }
+
+  _getMeasureURL(): string {
+    return (
+      this._trackingName ?? this._url ?? LABEL_FOR_MISSING_URL_FOR_PROFILING
+    );
   }
 }
 

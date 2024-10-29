@@ -17,7 +17,6 @@
 #include <react/renderer/core/LayoutConstraints.h>
 #include <react/renderer/core/LayoutContext.h>
 #include <react/renderer/debug/DebugStringConvertibleItem.h>
-#include <react/utils/CoreFeatures.h>
 #include <yoga/Yoga.h>
 #include <algorithm>
 #include <limits>
@@ -217,11 +216,6 @@ void YogaLayoutableShadowNode::adoptYogaChild(size_t index) {
     // TODO: At this point, React has wrong reference to the node. (T138668036)
     auto clonedChildNode = childNode.clone({});
 
-    if (ReactNativeFeatureFlags::
-            useRuntimeShadowNodeReferenceUpdateOnLayout()) {
-      childNode.transferRuntimeShadowNodeReference(clonedChildNode);
-    }
-
     // Replace the child node with a newly cloned one in the children list.
     replaceChild(childNode, clonedChildNode, index);
   }
@@ -393,6 +387,12 @@ void YogaLayoutableShadowNode::updateYogaProps() {
         !viewProps.filter.empty();
     YGNodeSetAlwaysFormsContainingBlock(&yogaNode_, alwaysFormsContainingBlock);
   }
+
+  if (yogaNode_.style().display() == yoga::Display::Contents) {
+    ShadowNode::traits_.set(ShadowNodeTraits::ForceFlattenView);
+  } else {
+    ShadowNode::traits_.unset(ShadowNodeTraits::ForceFlattenView);
+  }
 }
 
 /*static*/ yoga::Style YogaLayoutableShadowNode::applyAliasedProps(
@@ -529,10 +529,6 @@ YogaLayoutableShadowNode& YogaLayoutableShadowNode::cloneChildInPlace(
        ShadowNodeFragment::childrenPlaceholder(),
        childNode.getState()});
 
-  if (ReactNativeFeatureFlags::useRuntimeShadowNodeReferenceUpdateOnLayout()) {
-    childNode.transferRuntimeShadowNodeReference(clonedChildNode);
-  }
-
   replaceChild(childNode, clonedChildNode, layoutableChildIndex);
   return static_cast<YogaLayoutableShadowNode&>(*clonedChildNode);
 }
@@ -541,8 +537,10 @@ void YogaLayoutableShadowNode::setSize(Size size) const {
   ensureUnsealed();
 
   auto style = yogaNode_.style();
-  style.setDimension(yoga::Dimension::Width, yoga::value::points(size.width));
-  style.setDimension(yoga::Dimension::Height, yoga::value::points(size.height));
+  style.setDimension(
+      yoga::Dimension::Width, yoga::StyleLength::points(size.width));
+  style.setDimension(
+      yoga::Dimension::Height, yoga::StyleLength::points(size.height));
   yogaNode_.setStyle(style);
   yogaNode_.setDirty(true);
 }
@@ -552,19 +550,21 @@ void YogaLayoutableShadowNode::setPadding(RectangleEdges<Float> padding) const {
 
   auto style = yogaNode_.style();
 
-  auto leftPadding = yoga::value::points(padding.left);
-  auto topPadding = yoga::value::points(padding.top);
-  auto rightPadding = yoga::value::points(padding.right);
-  auto bottomPadding = yoga::value::points(padding.bottom);
+  auto leftPadding = yoga::StyleLength::points(padding.left);
+  auto topPadding = yoga::StyleLength::points(padding.top);
+  auto rightPadding = yoga::StyleLength::points(padding.right);
+  auto bottomPadding = yoga::StyleLength::points(padding.bottom);
 
   if (leftPadding != style.padding(yoga::Edge::Left) ||
       topPadding != style.padding(yoga::Edge::Top) ||
       rightPadding != style.padding(yoga::Edge::Right) ||
       bottomPadding != style.padding(yoga::Edge::Bottom)) {
-    style.setPadding(yoga::Edge::Top, yoga::value::points(padding.top));
-    style.setPadding(yoga::Edge::Left, yoga::value::points(padding.left));
-    style.setPadding(yoga::Edge::Right, yoga::value::points(padding.right));
-    style.setPadding(yoga::Edge::Bottom, yoga::value::points(padding.bottom));
+    style.setPadding(yoga::Edge::Top, yoga::StyleLength::points(padding.top));
+    style.setPadding(yoga::Edge::Left, yoga::StyleLength::points(padding.left));
+    style.setPadding(
+        yoga::Edge::Right, yoga::StyleLength::points(padding.right));
+    style.setPadding(
+        yoga::Edge::Bottom, yoga::StyleLength::points(padding.bottom));
     yogaNode_.setStyle(style);
     yogaNode_.setDirty(true);
   }
@@ -631,16 +631,16 @@ void YogaLayoutableShadowNode::layoutTree(
   auto ownerHeight = yogaFloatFromFloat(maximumSize.height);
 
   yogaStyle.setMaxDimension(
-      yoga::Dimension::Width, yoga::value::points(maximumSize.width));
+      yoga::Dimension::Width, yoga::StyleLength::points(maximumSize.width));
 
   yogaStyle.setMaxDimension(
-      yoga::Dimension::Height, yoga::value::points(maximumSize.height));
+      yoga::Dimension::Height, yoga::StyleLength::points(maximumSize.height));
 
   yogaStyle.setMinDimension(
-      yoga::Dimension::Width, yoga::value::points(minimumSize.width));
+      yoga::Dimension::Width, yoga::StyleLength::points(minimumSize.width));
 
   yogaStyle.setMinDimension(
-      yoga::Dimension::Height, yoga::value::points(minimumSize.height));
+      yoga::Dimension::Height, yoga::StyleLength::points(minimumSize.height));
 
   auto direction =
       yogaDirectionFromLayoutDirection(layoutConstraints.layoutDirection);
@@ -785,7 +785,7 @@ Rect YogaLayoutableShadowNode::getContentBounds() const {
 }
 
 /*static*/ void YogaLayoutableShadowNode::filterRawProps(RawProps& rawProps) {
-  if (CoreFeatures::excludeYogaFromRawProps) {
+  if (ReactNativeFeatureFlags::excludeYogaFromRawProps()) {
     // TODO: this shouldn't live in RawProps
     rawProps.filterYogaStylePropsInDynamicConversion();
   }
@@ -903,44 +903,44 @@ void YogaLayoutableShadowNode::swapLeftAndRightInYogaStyleProps() {
   if (yogaStyle.position(yoga::Edge::Left).isDefined()) {
     yogaStyle.setPosition(
         yoga::Edge::Start, yogaStyle.position(yoga::Edge::Left));
-    yogaStyle.setPosition(yoga::Edge::Left, yoga::value::undefined());
+    yogaStyle.setPosition(yoga::Edge::Left, yoga::StyleLength::undefined());
   }
 
   if (yogaStyle.position(yoga::Edge::Right).isDefined()) {
     yogaStyle.setPosition(
         yoga::Edge::End, yogaStyle.position(yoga::Edge::Right));
-    yogaStyle.setPosition(yoga::Edge::Right, yoga::value::undefined());
+    yogaStyle.setPosition(yoga::Edge::Right, yoga::StyleLength::undefined());
   }
 
   if (yogaStyle.padding(yoga::Edge::Left).isDefined()) {
     yogaStyle.setPadding(
         yoga::Edge::Start, yogaStyle.padding(yoga::Edge::Left));
-    yogaStyle.setPadding(yoga::Edge::Left, yoga::value::undefined());
+    yogaStyle.setPadding(yoga::Edge::Left, yoga::StyleLength::undefined());
   }
 
   if (yogaStyle.padding(yoga::Edge::Right).isDefined()) {
     yogaStyle.setPadding(yoga::Edge::End, yogaStyle.padding(yoga::Edge::Right));
-    yogaStyle.setPadding(yoga::Edge::Right, yoga::value::undefined());
+    yogaStyle.setPadding(yoga::Edge::Right, yoga::StyleLength::undefined());
   }
 
   if (yogaStyle.margin(yoga::Edge::Left).isDefined()) {
     yogaStyle.setMargin(yoga::Edge::Start, yogaStyle.margin(yoga::Edge::Left));
-    yogaStyle.setMargin(yoga::Edge::Left, yoga::value::undefined());
+    yogaStyle.setMargin(yoga::Edge::Left, yoga::StyleLength::undefined());
   }
 
   if (yogaStyle.margin(yoga::Edge::Right).isDefined()) {
     yogaStyle.setMargin(yoga::Edge::End, yogaStyle.margin(yoga::Edge::Right));
-    yogaStyle.setMargin(yoga::Edge::Right, yoga::value::undefined());
+    yogaStyle.setMargin(yoga::Edge::Right, yoga::StyleLength::undefined());
   }
 
   if (yogaStyle.border(yoga::Edge::Left).isDefined()) {
     yogaStyle.setBorder(yoga::Edge::Start, yogaStyle.border(yoga::Edge::Left));
-    yogaStyle.setBorder(yoga::Edge::Left, yoga::value::undefined());
+    yogaStyle.setBorder(yoga::Edge::Left, yoga::StyleLength::undefined());
   }
 
   if (yogaStyle.border(yoga::Edge::Right).isDefined()) {
     yogaStyle.setBorder(yoga::Edge::End, yogaStyle.border(yoga::Edge::Right));
-    yogaStyle.setBorder(yoga::Edge::Right, yoga::value::undefined());
+    yogaStyle.setBorder(yoga::Edge::Right, yoga::StyleLength::undefined());
   }
 
   yogaNode_.setStyle(yogaStyle);

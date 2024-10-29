@@ -10,8 +10,8 @@
 package com.facebook.yoga;
 
 public enum YogaBoxSizing {
-  CONTENT_BOX(0),
-  BORDER_BOX(1);
+  BORDER_BOX(0),
+  CONTENT_BOX(1);
 
   private final int mIntValue;
 
@@ -25,8 +25,8 @@ public enum YogaBoxSizing {
 
   public static YogaBoxSizing fromInt(int value) {
     switch (value) {
-      case 0: return CONTENT_BOX;
-      case 1: return BORDER_BOX;
+      case 0: return BORDER_BOX;
+      case 1: return CONTENT_BOX;
       default: throw new IllegalArgumentException("Unknown enum value: " + value);
     }
   }

@@ -59,7 +59,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
       newEvent);
 
   BOOL newEventIsMoreRecent = NO;
-  BOOL oldEventIsMoreRecent = NO;
+  __unused BOOL oldEventIsMoreRecent = NO;
   NSInteger count = _reactTouches.count;
   for (int i = 0; i < count; i++) {
     NSDictionary *touch = _reactTouches[i];

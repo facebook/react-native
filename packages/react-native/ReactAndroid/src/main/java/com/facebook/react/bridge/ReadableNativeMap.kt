@@ -9,7 +9,6 @@ package com.facebook.react.bridge
 
 import android.annotation.SuppressLint
 import com.facebook.infer.annotation.Assertions
-import com.facebook.jni.HybridData
 import com.facebook.proguard.annotations.DoNotStripAny
 
 /**
@@ -17,8 +16,7 @@ import com.facebook.proguard.annotations.DoNotStripAny
  * in native code so you shouldn't construct one yourself.
  */
 @DoNotStripAny
-public open class ReadableNativeMap protected constructor(hybridData: HybridData?) :
-    NativeMap(hybridData), ReadableMap {
+public open class ReadableNativeMap protected constructor() : NativeMap(), ReadableMap {
   private val keys: Array<String> by
       lazy(LazyThreadSafetyMode.SYNCHRONIZED) { importKeys().also { jniPassCounter++ } }
 

@@ -9,6 +9,7 @@ package com.facebook.react.views.text;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Build;
 import android.text.BoringLayout;
 import android.text.Layout;
@@ -23,6 +24,7 @@ import android.view.Gravity;
 import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.util.Preconditions;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
@@ -43,6 +45,7 @@ import com.facebook.react.views.text.internal.span.ReactForegroundColorSpan;
 import com.facebook.react.views.text.internal.span.ReactOpacitySpan;
 import com.facebook.react.views.text.internal.span.ReactStrikethroughSpan;
 import com.facebook.react.views.text.internal.span.ReactTagSpan;
+import com.facebook.react.views.text.internal.span.ReactTextPaintHolderSpan;
 import com.facebook.react.views.text.internal.span.ReactUnderlineSpan;
 import com.facebook.react.views.text.internal.span.SetSpanOperation;
 import com.facebook.react.views.text.internal.span.ShadowStyleSpan;
@@ -62,6 +65,7 @@ public class TextLayoutManager {
   public static final short AS_KEY_STRING = 1;
   public static final short AS_KEY_FRAGMENTS = 2;
   public static final short AS_KEY_CACHE_ID = 3;
+  public static final short AS_KEY_BASE_ATTRIBUTES = 4;
 
   // constants for Fragment serialization
   public static final short FR_KEY_STRING = 0;
@@ -85,10 +89,15 @@ public class TextLayoutManager {
 
   private static final String TAG = TextLayoutManager.class.getSimpleName();
 
-  // It's important to pass the ANTI_ALIAS_FLAG flag to the constructor rather than setting it
-  // later by calling setFlags. This is because the latter approach triggers a bug on Android 4.4.2.
-  // The bug is that unicode emoticons aren't measured properly which causes text to be clipped.
-  private static final TextPaint sTextPaintInstance = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
+  // Each thread has its own copy of scratch TextPaint so that TextLayoutManager
+  // measurement/Spannable creation can be free-threaded.
+  private static final ThreadLocal<TextPaint> sTextPaintInstance =
+      new ThreadLocal<TextPaint>() {
+        @Override
+        protected TextPaint initialValue() {
+          return new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
+        }
+      };
 
   private static final String INLINE_VIEW_PLACEHOLDER = "0";
 
@@ -137,7 +146,7 @@ public class TextLayoutManager {
         == LayoutDirection.RTL;
   }
 
-  public static Layout.Alignment getTextAlignment(MapBuffer attributedString, Spannable spanned) {
+  private static Layout.Alignment getTextAlignment(MapBuffer attributedString, Spannable spanned) {
     // TODO: Don't read AS_KEY_FRAGMENTS, which may be expensive, and is not present when using
     // cached Spannable
     if (!attributedString.contains(AS_KEY_FRAGMENTS)) {
@@ -353,21 +362,13 @@ public class TextLayoutManager {
       boolean includeFontPadding,
       int textBreakStrategy,
       int hyphenationFrequency,
-      Layout.Alignment alignment) {
+      Layout.Alignment alignment,
+      TextPaint paint) {
     Layout layout;
-    // StaticLayout returns wrong metrics for the last line if it's empty, add something to the
-    // last line so it's measured correctly
-    if (text.toString().endsWith("\n")) {
-      SpannableStringBuilder sb = new SpannableStringBuilder(text);
-      sb.append("I");
-
-      text = sb;
-    }
 
     int spanLength = text.length();
     boolean unconstrainedWidth = widthYogaMeasureMode == YogaMeasureMode.UNDEFINED || width < 0;
-    float desiredWidth =
-        boring == null ? Layout.getDesiredWidth(text, sTextPaintInstance) : Float.NaN;
+    float desiredWidth = boring == null ? Layout.getDesiredWidth(text, paint) : Float.NaN;
     boolean isScriptRTL = TextDirectionHeuristics.FIRSTSTRONG_LTR.isRtl(text, 0, spanLength);
 
     if (boring == null
@@ -382,7 +383,7 @@ public class TextLayoutManager {
 
       int hintWidth = (int) Math.ceil(desiredWidth);
       layout =
-          StaticLayout.Builder.obtain(text, 0, spanLength, sTextPaintInstance, hintWidth)
+          StaticLayout.Builder.obtain(text, 0, spanLength, paint, hintWidth)
               .setAlignment(alignment)
               .setLineSpacing(0.f, 1.f)
               .setIncludePad(includeFontPadding)
@@ -406,19 +407,11 @@ public class TextLayoutManager {
       // than the width of the text.
       layout =
           BoringLayout.make(
-              text,
-              sTextPaintInstance,
-              boringLayoutWidth,
-              alignment,
-              1.f,
-              0.f,
-              boring,
-              includeFontPadding);
+              text, paint, boringLayoutWidth, alignment, 1.f, 0.f, boring, includeFontPadding);
     } else {
       // Is used for multiline, boring text and the width is known.
       StaticLayout.Builder builder =
-          StaticLayout.Builder.obtain(
-                  text, 0, spanLength, sTextPaintInstance, (int) Math.ceil(width))
+          StaticLayout.Builder.obtain(text, 0, spanLength, paint, (int) Math.ceil(width))
               .setAlignment(alignment)
               .setLineSpacing(0.f, 1.f)
               .setIncludePad(includeFontPadding)
@@ -436,7 +429,43 @@ public class TextLayoutManager {
     return layout;
   }
 
-  public static Layout createLayout(
+  private static void updateTextPaint(
+      TextPaint paint, TextAttributeProps baseTextAttributes, Context context) {
+    // TextPaint attributes will be used for content outside the Spannable, like for the
+    // hypothetical height of a new line after a trailing newline character (considered part of the
+    // previous line).
+    paint.reset();
+    paint.setAntiAlias(true);
+
+    if (baseTextAttributes.getEffectiveFontSize() != ReactConstants.UNSET) {
+      paint.setTextSize(baseTextAttributes.getEffectiveFontSize());
+    }
+
+    if (baseTextAttributes.getFontStyle() != ReactConstants.UNSET
+        || baseTextAttributes.getFontWeight() != ReactConstants.UNSET
+        || baseTextAttributes.getFontFamily() != null) {
+      Typeface typeface =
+          ReactTypefaceUtils.applyStyles(
+              null,
+              baseTextAttributes.getFontStyle(),
+              baseTextAttributes.getFontWeight(),
+              baseTextAttributes.getFontFamily(),
+              context.getAssets());
+      paint.setTypeface(typeface);
+
+      if (baseTextAttributes.getFontStyle() != ReactConstants.UNSET
+          && baseTextAttributes.getFontStyle() != typeface.getStyle()) {
+        // https://cs.android.com/android/platform/superproject/main/+/main:frameworks/base/core/java/android/widget/TextView.java;l=2536;drc=d262a68a1e0c3b640274b094a7f1e3a5b75563e9
+        int missingStyle = baseTextAttributes.getFontStyle() & ~typeface.getStyle();
+        paint.setFakeBoldText((missingStyle & Typeface.BOLD) != 0);
+        paint.setTextSkewX((missingStyle & Typeface.ITALIC) != 0 ? -0.25f : 0);
+      }
+    } else {
+      paint.setTypeface(null);
+    }
+  }
+
+  private static Layout createLayout(
       @NonNull Context context,
       MapBuffer attributedString,
       MapBuffer paragraphAttributes,
@@ -445,7 +474,18 @@ public class TextLayoutManager {
       ReactTextViewManagerCallback reactTextViewManagerCallback) {
     Spannable text =
         getOrCreateSpannableForText(context, attributedString, reactTextViewManagerCallback);
-    BoringLayout.Metrics boring = BoringLayout.isBoring(text, sTextPaintInstance);
+
+    TextPaint paint;
+    if (attributedString.contains(AS_KEY_CACHE_ID)) {
+      paint = text.getSpans(0, 0, ReactTextPaintHolderSpan.class)[0].getTextPaint();
+    } else {
+      TextAttributeProps baseTextAttributes =
+          TextAttributeProps.fromMapBuffer(attributedString.getMapBuffer(AS_KEY_BASE_ATTRIBUTES));
+      paint = Preconditions.checkNotNull(sTextPaintInstance.get());
+      updateTextPaint(paint, baseTextAttributes, context);
+    }
+
+    BoringLayout.Metrics boring = BoringLayout.isBoring(text, paint);
 
     int textBreakStrategy =
         TextAttributeProps.getTextBreakStrategy(
@@ -485,7 +525,8 @@ public class TextLayoutManager {
           includeFontPadding,
           textBreakStrategy,
           hyphenationFrequency,
-          alignment);
+          alignment,
+          paint);
     }
 
     return createLayout(
@@ -496,10 +537,11 @@ public class TextLayoutManager {
         includeFontPadding,
         textBreakStrategy,
         hyphenationFrequency,
-        alignment);
+        alignment,
+        paint);
   }
 
-  public static void adjustSpannableFontToFit(
+  /*package*/ static void adjustSpannableFontToFit(
       Spannable text,
       float width,
       YogaMeasureMode widthYogaMeasureMode,
@@ -510,8 +552,9 @@ public class TextLayoutManager {
       boolean includeFontPadding,
       int textBreakStrategy,
       int hyphenationFrequency,
-      Layout.Alignment alignment) {
-    BoringLayout.Metrics boring = BoringLayout.isBoring(text, sTextPaintInstance);
+      Layout.Alignment alignment,
+      TextPaint paint) {
+    BoringLayout.Metrics boring = BoringLayout.isBoring(text, paint);
     Layout layout =
         createLayout(
             text,
@@ -521,7 +564,8 @@ public class TextLayoutManager {
             includeFontPadding,
             textBreakStrategy,
             hyphenationFrequency,
-            alignment);
+            alignment,
+            paint);
 
     // Minimum font size is 4pts to match the iOS implementation.
     int minimumFontSize =
@@ -547,6 +591,8 @@ public class TextLayoutManager {
       currentFontSize -= Math.max(1, (int) PixelUtil.toPixelFromDIP(1));
 
       float ratio = (float) currentFontSize / (float) initialFontSize;
+      paint.setTextSize(Math.max((paint.getTextSize() * ratio), minimumFontSize));
+
       ReactAbsoluteSizeSpan[] sizeSpans =
           text.getSpans(0, text.length(), ReactAbsoluteSizeSpan.class);
       for (ReactAbsoluteSizeSpan span : sizeSpans) {
@@ -566,7 +612,8 @@ public class TextLayoutManager {
               includeFontPadding,
               textBreakStrategy,
               hyphenationFrequency,
-              alignment);
+              alignment,
+              paint);
     }
   }
 
@@ -580,7 +627,6 @@ public class TextLayoutManager {
       YogaMeasureMode heightYogaMeasureMode,
       ReactTextViewManagerCallback reactTextViewManagerCallback,
       @Nullable float[] attachmentsPositions) {
-
     // TODO(5578671): Handle text direction (see View#getTextDirectionHeuristic)
     Layout layout =
         createLayout(
@@ -753,9 +799,9 @@ public class TextLayoutManager {
       MapBuffer paragraphAttributes,
       float width,
       float height) {
-
     Layout layout =
         createLayout(context, attributedString, paragraphAttributes, width, height, null);
-    return FontMetricsUtil.getFontMetrics(layout.getText(), layout, sTextPaintInstance, context);
+    return FontMetricsUtil.getFontMetrics(
+        layout.getText(), layout, Preconditions.checkNotNull(sTextPaintInstance.get()), context);
   }
 }

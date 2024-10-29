@@ -76,6 +76,7 @@
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
   UIViewController *rootViewController = [self createRootViewController];
   [self setRootView:rootView toRootViewController:rootViewController];
+  _window.windowScene.delegate = self;
   _window.rootViewController = rootViewController;
   [_window makeKeyAndVisible];
 }
@@ -181,8 +182,12 @@
 - (void)host:(RCTHost *)host
     didReceiveJSErrorStack:(NSArray<NSDictionary<NSString *, id> *> *)stack
                    message:(NSString *)message
+           originalMessage:(NSString *_Nullable)originalMessage
+                      name:(NSString *_Nullable)name
+            componentStack:(NSString *_Nullable)componentStack
                exceptionId:(NSUInteger)exceptionId
                    isFatal:(BOOL)isFatal
+                 extraData:(NSDictionary<NSString *, id> *)extraData
 {
 }
 
@@ -275,19 +280,6 @@
     return [weakSelf sourceURLForBridge:bridge];
   };
 
-  configuration.hostDidStartBlock = ^(RCTHost *_Nonnull host) {
-    [weakSelf hostDidStart:host];
-  };
-
-  configuration.hostDidReceiveJSErrorStackBlock =
-      ^(RCTHost *_Nonnull host,
-        NSArray<NSDictionary<NSString *, id> *> *_Nonnull stack,
-        NSString *_Nonnull message,
-        NSUInteger exceptionId,
-        BOOL isFatal) {
-        [weakSelf host:host didReceiveJSErrorStack:stack message:message exceptionId:exceptionId isFatal:isFatal];
-      };
-
   if ([self respondsToSelector:@selector(extraModulesForBridge:)]) {
     configuration.extraModulesForBridge = ^NSArray<id<RCTBridgeModule>> *_Nonnull(RCTBridge *_Nonnull bridge)
     {
@@ -309,22 +301,22 @@
     };
   }
 
-  return [[RCTRootViewFactory alloc] initWithConfiguration:configuration andTurboModuleManagerDelegate:self];
+  return [[RCTRootViewFactory alloc] initWithTurboModuleDelegate:self hostDelegate:self configuration:configuration];
 }
 
 #pragma mark - Feature Flags
 
 class RCTAppDelegateBridgelessFeatureFlags : public facebook::react::ReactNativeFeatureFlagsDefaults {
  public:
-  bool useModernRuntimeScheduler() override
+  bool enableBridgelessArchitecture() override
   {
     return true;
   }
-  bool enableMicrotasks() override
+  bool enableFabricRenderer() override
   {
     return true;
   }
-  bool batchRenderingUpdatesInEventLoop() override
+  bool useTurboModules() override
   {
     return true;
   }

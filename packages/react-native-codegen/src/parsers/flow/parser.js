@@ -117,6 +117,12 @@ class FlowParser implements Parser {
     return [...new Set(membersTypes.map(remapLiteral))];
   }
 
+  getStringLiteralUnionTypeAnnotationStringLiterals(
+    membersTypes: $FlowFixMe[],
+  ): string[] {
+    return membersTypes.map((item: $FlowFixMe) => item.value);
+  }
+
   parseFile(filename: string): SchemaType {
     const contents = fs.readFileSync(filename, 'utf8');
 

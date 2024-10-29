@@ -25,13 +25,13 @@
 #import <React/RCTDisplayLink.h>
 #import <React/RCTEventDispatcherProtocol.h>
 #import <React/RCTFollyConvert.h>
-#import <React/RCTJavaScriptLoader.h>
 #import <React/RCTLog.h>
 #import <React/RCTLogBox.h>
 #import <React/RCTModuleData.h>
 #import <React/RCTPerformanceLogger.h>
 #import <React/RCTRedBox.h>
 #import <React/RCTSurfacePresenter.h>
+#import <ReactCommon/RCTTurboModule.h>
 #import <ReactCommon/RCTTurboModuleManager.h>
 #import <ReactCommon/RuntimeExecutor.h>
 #import <cxxreact/ReactMarker.h>
@@ -221,7 +221,9 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   objCTimerRegistryRawPtr->setTimerManager(timerManager);
 
   __weak __typeof(self) weakSelf = self;
-  auto onJsError = [=](const JsErrorHandler::ParsedError &error) { [weakSelf _handleJSError:error]; };
+  auto onJsError = [=](jsi::Runtime &runtime, const JsErrorHandler::ParsedError &error) {
+    [weakSelf _handleJSError:error withRuntime:runtime];
+  };
 
   // Create the React Instance
   _reactInstance = std::make_unique<ReactInstance>(
@@ -416,7 +418,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
 #endif
 
   __weak __typeof(self) weakSelf = self;
-  [RCTJavaScriptLoader loadBundleAtURL:sourceURL
+  [_delegate loadBundleAtURL:sourceURL
       onProgress:^(RCTLoadingProgress *progressData) {
         __typeof(self) strongSelf = weakSelf;
         if (!strongSelf) {
@@ -463,23 +465,34 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   [[NSNotificationCenter defaultCenter] postNotificationName:@"RCTInstanceDidLoadBundle" object:nil];
 }
 
-- (void)_handleJSError:(const JsErrorHandler::ParsedError &)error
+- (void)_handleJSError:(const JsErrorHandler::ParsedError &)error withRuntime:(jsi::Runtime &)runtime
 {
-  NSString *message = [NSString stringWithCString:error.message.c_str() encoding:[NSString defaultCStringEncoding]];
+  NSString *message = @(error.message.c_str());
   NSMutableArray<NSDictionary<NSString *, id> *> *stack = [NSMutableArray new];
-  for (const JsErrorHandler::ParsedError::StackFrame &frame : error.frames) {
+  for (const JsErrorHandler::ParsedError::StackFrame &frame : error.stack) {
     [stack addObject:@{
-      @"file" : [NSString stringWithCString:frame.fileName.c_str() encoding:[NSString defaultCStringEncoding]],
-      @"methodName" : [NSString stringWithCString:frame.methodName.c_str() encoding:[NSString defaultCStringEncoding]],
-      @"lineNumber" : [NSNumber numberWithInt:frame.lineNumber],
-      @"column" : [NSNumber numberWithInt:frame.columnNumber],
+      @"file" : frame.file ? @((*frame.file).c_str()) : [NSNull null],
+      @"methodName" : @(frame.methodName.c_str()),
+      @"lineNumber" : frame.lineNumber ? @(*frame.lineNumber) : [NSNull null],
+      @"column" : frame.column ? @(*frame.column) : [NSNull null],
     }];
   }
+
+  NSString *originalMessage = error.originalMessage ? @(error.originalMessage->c_str()) : nil;
+  NSString *name = error.name ? @(error.name->c_str()) : nil;
+  NSString *componentStack = error.componentStack ? @(error.componentStack->c_str()) : nil;
+  id extraData =
+      TurboModuleConvertUtils::convertJSIValueToObjCObject(runtime, jsi::Value(runtime, error.extraData), nullptr);
+
   [_delegate instance:self
       didReceiveJSErrorStack:stack
                      message:message
-                 exceptionId:error.exceptionId
-                     isFatal:error.isFatal];
+             originalMessage:originalMessage
+                        name:name
+              componentStack:componentStack
+                 exceptionId:error.id
+                     isFatal:error.isFatal
+                   extraData:extraData];
 }
 
 @end

@@ -29,11 +29,7 @@ describe('Keyboard', () => {
   describe('scheduling layout animation', () => {
     const scheduleLayoutAnimation = (
       duration: null | number,
-      easing:
-        | null
-        | $TEMPORARY$string<'linear'>
-        | $TEMPORARY$string<'some-unknown-animation-type'>
-        | $TEMPORARY$string<'spring'>,
+      easing: null | string,
     ): void =>
       // $FlowFixMe[incompatible-call]
       Keyboard.scheduleLayoutAnimation({duration, easing});
@@ -60,9 +56,7 @@ describe('Keyboard', () => {
     });
 
     describe('animation update type', () => {
-      const assertAnimationUpdateType = (
-        type: $TEMPORARY$string<'keyboard'> | $TEMPORARY$string<'linear'>,
-      ) =>
+      const assertAnimationUpdateType = (type: string) =>
         expect(LayoutAnimation.configureNext).toHaveBeenCalledWith(
           expect.objectContaining({
             duration: expect.anything(),

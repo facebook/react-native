@@ -10,7 +10,6 @@ package com.facebook.react.bridge;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
-import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,9 +24,7 @@ public class ReadableNativeArray extends NativeArray implements ReadableArray {
     ReactBridge.staticInit();
   }
 
-  protected ReadableNativeArray(HybridData hybridData) {
-    super(hybridData);
-  }
+  protected ReadableNativeArray() {}
 
   // WriteOnce but not in the constructor fields
   private @Nullable Object[] mLocalArray;

@@ -68,10 +68,11 @@ struct FlexLine {
 FlexLine calculateFlexLine(
     yoga::Node* node,
     Direction ownerDirection,
+    float ownerWidth,
     float mainAxisownerSize,
     float availableInnerWidth,
     float availableInnerMainDim,
-    size_t startOfLineIndex,
+    Node::LayoutableChildren::Iterator& iterator,
     size_t lineCount);
 
 } // namespace facebook::yoga

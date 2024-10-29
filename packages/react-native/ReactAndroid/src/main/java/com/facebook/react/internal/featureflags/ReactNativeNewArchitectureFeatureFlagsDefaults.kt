@@ -23,22 +23,24 @@ package com.facebook.react.internal.featureflags
 public open class ReactNativeNewArchitectureFeatureFlagsDefaults(
     private val newArchitectureEnabled: Boolean = true
 ) : ReactNativeFeatureFlagsDefaults() {
-
-  override fun batchRenderingUpdatesInEventLoop(): Boolean =
-      newArchitectureEnabled || super.batchRenderingUpdatesInEventLoop()
-
-  override fun useTurboModuleInterop(): Boolean =
-      newArchitectureEnabled || super.useTurboModuleInterop()
-
-  override fun useModernRuntimeScheduler(): Boolean = true
-
   override fun enableBridgelessArchitecture(): Boolean = newArchitectureEnabled
 
-  override fun enableMicrotasks(): Boolean = true
+  override fun enableDeletionOfUnmountedViews(): Boolean = newArchitectureEnabled
+
+  // We turn this feature flag to true to fix #44610 and #45126 and other
+  // similar bugs related to pressable.
+  override fun enableEventEmitterRetentionDuringGesturesOnAndroid(): Boolean =
+      newArchitectureEnabled
 
   override fun enableFabricRenderer(): Boolean = newArchitectureEnabled
 
-  override fun useNativeViewConfigsInBridgelessMode(): Boolean = true
+  override fun useFabricInterop(): Boolean = newArchitectureEnabled
+
+  override fun useNativeViewConfigsInBridgelessMode(): Boolean =
+      newArchitectureEnabled || super.useNativeViewConfigsInBridgelessMode()
+
+  override fun useTurboModuleInterop(): Boolean =
+      newArchitectureEnabled || super.useTurboModuleInterop()
 
   override fun useTurboModules(): Boolean = newArchitectureEnabled
 }

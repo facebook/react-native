@@ -8,8 +8,25 @@
 #include "PerformanceEntryReporter.h"
 
 #include <cxxreact/JSExecutor.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 
 namespace facebook::react {
+
+namespace {
+std::vector<PerformanceEntryType> getSupportedEntryTypesInternal() {
+  std::vector<PerformanceEntryType> supportedEntryTypes{
+      PerformanceEntryType::MARK,
+      PerformanceEntryType::MEASURE,
+      PerformanceEntryType::EVENT,
+  };
+
+  if (ReactNativeFeatureFlags::enableLongTaskAPI()) {
+    supportedEntryTypes.emplace_back(PerformanceEntryType::LONGTASK);
+  }
+
+  return supportedEntryTypes;
+}
+} // namespace
 
 std::shared_ptr<PerformanceEntryReporter>&
 PerformanceEntryReporter::getInstance() {
@@ -25,12 +42,90 @@ DOMHighResTimeStamp PerformanceEntryReporter::getCurrentTimeStamp() const {
                                        : JSExecutor::performanceNow();
 }
 
-uint32_t PerformanceEntryReporter::getDroppedEntriesCount(
-    PerformanceEntryType type) const noexcept {
-  return getBuffer(type).droppedEntriesCount;
+std::vector<PerformanceEntryType>
+PerformanceEntryReporter::getSupportedEntryTypes() {
+  static std::vector<PerformanceEntryType> supportedEntries =
+      getSupportedEntryTypesInternal();
+  return supportedEntries;
 }
 
-void PerformanceEntryReporter::mark(
+uint32_t PerformanceEntryReporter::getDroppedEntriesCount(
+    PerformanceEntryType entryType) const noexcept {
+  std::shared_lock lock(buffersMutex_);
+
+  return (uint32_t)getBuffer(entryType).droppedEntriesCount;
+}
+
+std::vector<PerformanceEntry> PerformanceEntryReporter::getEntries() const {
+  std::vector<PerformanceEntry> entries;
+  getEntries(entries);
+  return entries;
+}
+
+void PerformanceEntryReporter::getEntries(
+    std::vector<PerformanceEntry>& dest) const {
+  std::shared_lock lock(buffersMutex_);
+
+  for (auto entryType : getSupportedEntryTypes()) {
+    getBuffer(entryType).getEntries(dest);
+  }
+}
+
+std::vector<PerformanceEntry> PerformanceEntryReporter::getEntries(
+    PerformanceEntryType entryType) const {
+  std::vector<PerformanceEntry> dest;
+  getEntries(dest, entryType);
+  return dest;
+}
+
+void PerformanceEntryReporter::getEntries(
+    std::vector<PerformanceEntry>& dest,
+    PerformanceEntryType entryType) const {
+  std::shared_lock lock(buffersMutex_);
+
+  getBuffer(entryType).getEntries(dest);
+}
+
+std::vector<PerformanceEntry> PerformanceEntryReporter::getEntries(
+    PerformanceEntryType entryType,
+    const std::string& entryName) const {
+  std::vector<PerformanceEntry> entries;
+  getEntries(entries, entryType, entryName);
+  return entries;
+}
+
+void PerformanceEntryReporter::getEntries(
+    std::vector<PerformanceEntry>& dest,
+    PerformanceEntryType entryType,
+    const std::string& entryName) const {
+  std::shared_lock lock(buffersMutex_);
+
+  getBuffer(entryType).getEntries(dest, entryName);
+}
+
+void PerformanceEntryReporter::clearEntries() {
+  std::unique_lock lock(buffersMutex_);
+
+  for (auto entryType : getSupportedEntryTypes()) {
+    getBufferRef(entryType).clear();
+  }
+}
+
+void PerformanceEntryReporter::clearEntries(PerformanceEntryType entryType) {
+  std::unique_lock lock(buffersMutex_);
+
+  getBufferRef(entryType).clear();
+}
+
+void PerformanceEntryReporter::clearEntries(
+    PerformanceEntryType entryType,
+    const std::string& entryName) {
+  std::unique_lock lock(buffersMutex_);
+
+  getBufferRef(entryType).clear(entryName);
+}
+
+PerformanceEntry PerformanceEntryReporter::reportMark(
     const std::string& name,
     const std::optional<DOMHighResTimeStamp>& startTime) {
   const auto entry = PerformanceEntry{
@@ -39,83 +134,15 @@ void PerformanceEntryReporter::mark(
       .startTime = startTime ? *startTime : getCurrentTimeStamp()};
 
   {
-    std::lock_guard lock(buffersMutex_);
+    std::unique_lock lock(buffersMutex_);
     markBuffer_.add(entry);
   }
 
   observerRegistry_->queuePerformanceEntry(entry);
+  return entry;
 }
 
-void PerformanceEntryReporter::clearEntries(
-    std::optional<PerformanceEntryType> entryType,
-    std::optional<std::string_view> entryName) {
-  std::lock_guard lock(buffersMutex_);
-
-  // Clear all entry types
-  if (!entryType) {
-    if (entryName.has_value()) {
-      markBuffer_.clear(*entryName);
-      measureBuffer_.clear(*entryName);
-      eventBuffer_.clear(*entryName);
-      longTaskBuffer_.clear(*entryName);
-    } else {
-      markBuffer_.clear();
-      measureBuffer_.clear();
-      eventBuffer_.clear();
-      longTaskBuffer_.clear();
-    }
-    return;
-  }
-
-  auto& buffer = getBufferRef(*entryType);
-  if (entryName.has_value()) {
-    buffer.clear(*entryName);
-  } else {
-    buffer.clear();
-  }
-}
-
-std::vector<PerformanceEntry> PerformanceEntryReporter::getEntries() const {
-  std::vector<PerformanceEntry> res;
-  // Collect all entry types
-  for (int i = 1; i <= NUM_PERFORMANCE_ENTRY_TYPES; i++) {
-    getBuffer(static_cast<PerformanceEntryType>(i)).getEntries(res);
-  }
-  return res;
-}
-
-std::vector<PerformanceEntry> PerformanceEntryReporter::getEntriesByType(
-    PerformanceEntryType entryType) const {
-  std::vector<PerformanceEntry> res;
-  getEntriesByType(entryType, res);
-  return res;
-}
-
-void PerformanceEntryReporter::getEntriesByType(
-    PerformanceEntryType entryType,
-    std::vector<PerformanceEntry>& target) const {
-  getBuffer(entryType).getEntries(target);
-}
-
-std::vector<PerformanceEntry> PerformanceEntryReporter::getEntriesByName(
-    std::string_view entryName) const {
-  std::vector<PerformanceEntry> res;
-  // Collect all entry types
-  for (int i = 1; i <= NUM_PERFORMANCE_ENTRY_TYPES; i++) {
-    getBuffer(static_cast<PerformanceEntryType>(i)).getEntries(entryName, res);
-  }
-  return res;
-}
-
-std::vector<PerformanceEntry> PerformanceEntryReporter::getEntriesByName(
-    std::string_view entryName,
-    PerformanceEntryType entryType) const {
-  std::vector<PerformanceEntry> res;
-  getBuffer(entryType).getEntries(entryName, res);
-  return res;
-}
-
-void PerformanceEntryReporter::measure(
+PerformanceEntry PerformanceEntryReporter::reportMeasure(
     const std::string_view& name,
     DOMHighResTimeStamp startTime,
     DOMHighResTimeStamp endTime,
@@ -142,16 +169,17 @@ void PerformanceEntryReporter::measure(
       .duration = durationVal};
 
   {
-    std::lock_guard lock(buffersMutex_);
+    std::unique_lock lock(buffersMutex_);
     measureBuffer_.add(entry);
   }
 
   observerRegistry_->queuePerformanceEntry(entry);
+  return entry;
 }
 
 DOMHighResTimeStamp PerformanceEntryReporter::getMarkTime(
     const std::string& markName) const {
-  std::lock_guard lock(buffersMutex_);
+  std::shared_lock lock(buffersMutex_);
 
   if (auto it = markBuffer_.find(markName); it) {
     return it->startTime;
@@ -160,7 +188,7 @@ DOMHighResTimeStamp PerformanceEntryReporter::getMarkTime(
   }
 }
 
-void PerformanceEntryReporter::logEventEntry(
+void PerformanceEntryReporter::reportEvent(
     std::string name,
     DOMHighResTimeStamp startTime,
     DOMHighResTimeStamp duration,
@@ -168,6 +196,12 @@ void PerformanceEntryReporter::logEventEntry(
     DOMHighResTimeStamp processingEnd,
     uint32_t interactionId) {
   eventCounts_[name]++;
+
+  if (duration < eventBuffer_.durationThreshold) {
+    // The entries duration is lower than the desired reporting threshold,
+    // skip
+    return;
+  }
 
   const auto entry = PerformanceEntry{
       .name = std::move(name),
@@ -179,21 +213,14 @@ void PerformanceEntryReporter::logEventEntry(
       .interactionId = interactionId};
 
   {
-    std::lock_guard lock(buffersMutex_);
-
-    if (entry.duration < eventBuffer_.durationThreshold) {
-      // The entries duration is lower than the desired reporting threshold,
-      // skip
-      return;
-    }
-
+    std::unique_lock lock(buffersMutex_);
     eventBuffer_.add(entry);
   }
 
   observerRegistry_->queuePerformanceEntry(entry);
 }
 
-void PerformanceEntryReporter::logLongTaskEntry(
+void PerformanceEntryReporter::reportLongTask(
     DOMHighResTimeStamp startTime,
     DOMHighResTimeStamp duration) {
   const auto entry = PerformanceEntry{
@@ -203,7 +230,7 @@ void PerformanceEntryReporter::logLongTaskEntry(
       .duration = duration};
 
   {
-    std::lock_guard lock(buffersMutex_);
+    std::unique_lock lock(buffersMutex_);
     longTaskBuffer_.add(entry);
   }
 

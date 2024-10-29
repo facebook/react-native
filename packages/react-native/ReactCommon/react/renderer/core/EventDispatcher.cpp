@@ -17,15 +17,12 @@ namespace facebook::react {
 
 EventDispatcher::EventDispatcher(
     const EventQueueProcessor& eventProcessor,
-    const EventBeat::Factory& asynchronousEventBeatFactory,
-    const EventBeat::SharedOwnerBox& ownerBox,
+    std::unique_ptr<EventBeat> eventBeat,
     RuntimeScheduler& runtimeScheduler,
     StatePipe statePipe,
     std::weak_ptr<EventLogger> eventLogger)
-    : eventQueue_(EventQueue(
-          eventProcessor,
-          asynchronousEventBeatFactory(ownerBox),
-          runtimeScheduler)),
+    : eventQueue_(
+          EventQueue(eventProcessor, std::move(eventBeat), runtimeScheduler)),
       statePipe_(std::move(statePipe)),
       eventLogger_(std::move(eventLogger)) {}
 
@@ -37,8 +34,8 @@ void EventDispatcher::dispatchEvent(RawEvent&& rawEvent) const {
 
   auto eventLogger = eventLogger_.lock();
   if (eventLogger != nullptr) {
-    rawEvent.loggingTag =
-        eventLogger->onEventStart(rawEvent.type, rawEvent.eventTarget);
+    rawEvent.loggingTag = eventLogger->onEventStart(
+        rawEvent.type, rawEvent.eventTarget, rawEvent.eventStartTimeStamp);
   }
   eventQueue_.enqueueEvent(std::move(rawEvent));
 }

@@ -11,4 +11,6 @@ public interface ReactNativeFeatureFlagsAccessor : ReactNativeFeatureFlagsProvid
   public fun override(provider: ReactNativeFeatureFlagsProvider)
 
   public fun dangerouslyReset()
+
+  public fun dangerouslyForceOverride(provider: ReactNativeFeatureFlagsProvider): String?
 }

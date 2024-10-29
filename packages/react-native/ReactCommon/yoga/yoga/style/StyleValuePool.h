@@ -49,9 +49,9 @@ class StyleValuePool {
 
   StyleLength getLength(StyleValueHandle handle) const {
     if (handle.isUndefined()) {
-      return value::undefined();
+      return StyleLength::undefined();
     } else if (handle.isAuto()) {
-      return value::ofAuto();
+      return StyleLength::ofAuto();
     } else {
       assert(
           handle.type() == StyleValueHandle::Type::Point ||
@@ -61,8 +61,8 @@ class StyleValuePool {
           : unpackInlineInteger(handle.value());
 
       return handle.type() == StyleValueHandle::Type::Point
-          ? value::points(value)
-          : value::percent(value);
+          ? StyleLength::points(value)
+          : StyleLength::percent(value);
     }
   }
 

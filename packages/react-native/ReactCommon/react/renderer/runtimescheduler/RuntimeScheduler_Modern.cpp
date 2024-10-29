@@ -195,13 +195,7 @@ void RuntimeScheduler_Modern::executeNowOnTheSameThread(
 }
 
 void RuntimeScheduler_Modern::callExpiredTasks(jsi::Runtime& runtime) {
-  // If we have first-class support for microtasks, this a no-op.
-  if (ReactNativeFeatureFlags::enableMicrotasks()) {
-    return;
-  }
-
-  SystraceSection s("RuntimeScheduler::callExpiredTasks");
-  runEventLoop(runtime, true);
+  // No-op in the event loop implementation.
 }
 
 void RuntimeScheduler_Modern::scheduleRenderingUpdate(
@@ -209,14 +203,8 @@ void RuntimeScheduler_Modern::scheduleRenderingUpdate(
     RuntimeSchedulerRenderingUpdate&& renderingUpdate) {
   SystraceSection s("RuntimeScheduler::scheduleRenderingUpdate");
 
-  if (ReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop()) {
-    surfaceIdsWithPendingRenderingUpdates_.insert(surfaceId);
-    pendingRenderingUpdates_.push(renderingUpdate);
-  } else {
-    if (renderingUpdate != nullptr) {
-      renderingUpdate();
-    }
-  }
+  surfaceIdsWithPendingRenderingUpdates_.insert(surfaceId);
+  pendingRenderingUpdates_.push(renderingUpdate);
 }
 
 void RuntimeScheduler_Modern::setShadowTreeRevisionConsistencyManager(
@@ -337,10 +325,8 @@ void RuntimeScheduler_Modern::runEventLoopTick(
   auto didUserCallbackTimeout = task.expirationTime <= taskStartTime;
   executeTask(runtime, task, didUserCallbackTimeout);
 
-  if (ReactNativeFeatureFlags::enableMicrotasks()) {
-    // "Perform a microtask checkpoint" step.
-    performMicrotaskCheckpoint(runtime);
-  }
+  // "Perform a microtask checkpoint" step.
+  performMicrotaskCheckpoint(runtime);
 
   if (ReactNativeFeatureFlags::enableLongTaskAPI()) {
     auto taskEndTime = now_();
@@ -348,10 +334,8 @@ void RuntimeScheduler_Modern::runEventLoopTick(
     reportLongTasks(task, taskStartTime, taskEndTime);
   }
 
-  if (ReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop()) {
-    // "Update the rendering" step.
-    updateRendering();
-  }
+  // "Update the rendering" step.
+  updateRendering();
 
   currentTask_ = nullptr;
 }
@@ -459,7 +443,7 @@ void RuntimeScheduler_Modern::reportLongTasks(
   if (checkedDurationMs >= LONG_TASK_DURATION_THRESHOLD_MS) {
     auto durationMs = chronoToDOMHighResTimeStamp(endTime - startTime);
     auto startTimeMs = chronoToDOMHighResTimeStamp(startTime);
-    reporter->logLongTaskEntry(startTimeMs, durationMs);
+    reporter->reportLongTask(startTimeMs, durationMs);
   }
 }
 

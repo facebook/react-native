@@ -19,9 +19,8 @@ namespace facebook::react {
 /**
  * Called from Java constructor through the JNI.
  */
-jni::local_ref<StateWrapperImpl::jhybriddata> StateWrapperImpl::initHybrid(
-    jni::alias_ref<jclass>) {
-  return makeCxxInstance();
+void StateWrapperImpl::initHybrid(jni::alias_ref<jhybridobject> jobj) {
+  return setCxxInstance(jobj);
 }
 
 jni::local_ref<ReadableNativeMap::jhybridobject>

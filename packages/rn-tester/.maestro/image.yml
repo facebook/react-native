@@ -1,0 +1,12 @@
+appId: ${APP_ID} # iOS: com.meta.RNTester.localDevelopment | Android: com.facebook.react.uiapp
+---
+- launchApp
+- assertVisible: "Components"
+- scrollUntilVisible:
+    element:
+      id: "Image"
+    direction: DOWN
+    speed: 40
+- tapOn:
+    id: "Image"
+- assertVisible: "Plain Network Image with `source` prop."

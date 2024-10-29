@@ -231,7 +231,7 @@ const validAttributesForNonEventProps = {
   boxShadow: {
     process: require('../StyleSheet/processBoxShadow').default,
   },
-  experimental_mixBlendMode: true,
+  mixBlendMode: true,
   isolation: true,
 
   borderTopWidth: true,
@@ -348,6 +348,7 @@ const validAttributesForNonEventProps = {
   alignContent: true,
   position: true,
   aspectRatio: true,
+  boxSizing: true,
 
   // Also declared as ViewProps
   // overflow: true,

@@ -12,23 +12,19 @@
 
 import type {
   DOMHighResTimeStamp,
+  PerformanceEntryList,
   PerformanceEntryType,
 } from './PerformanceEntry';
-import type {PerformanceEntryList} from './PerformanceObserver';
 import type {DetailType, PerformanceMarkOptions} from './UserTiming';
 
 import {EventCounts} from './EventTiming';
 import MemoryInfo from './MemoryInfo';
-import {ALWAYS_LOGGED_ENTRY_TYPES} from './PerformanceEntry';
-import {warnNoNativePerformanceObserver} from './Utilities';
 import {
   performanceEntryTypeToRaw,
   rawToPerformanceEntry,
 } from './RawPerformanceEntry';
-import {RawPerformanceEntryTypeValues} from './RawPerformanceEntry';
 import ReactNativeStartupTiming from './ReactNativeStartupTiming';
 import NativePerformance from './specs/NativePerformance';
-import NativePerformanceObserver from './specs/NativePerformanceObserver';
 import {PerformanceMark, PerformanceMeasure} from './UserTiming';
 import {warnNoNativePerformance} from './Utilities';
 
@@ -46,6 +42,9 @@ export type PerformanceMeasureOptions = {
   duration?: DOMHighResTimeStamp,
   end?: DOMHighResTimeStamp,
 };
+
+const ENTRY_TYPES_AVAILABLE_FROM_TIMELINE: $ReadOnlyArray<PerformanceEntryType> =
+  ['mark', 'measure'];
 
 /**
  * Partial implementation of the Performance interface for RN,
@@ -110,27 +109,33 @@ export default class Performance {
     markName: string,
     markOptions?: PerformanceMarkOptions,
   ): PerformanceMark {
-    const mark = new PerformanceMark(markName, markOptions);
-
-    if (NativePerformance?.mark) {
-      NativePerformance.mark(markName, mark.startTime);
+    let computedStartTime;
+    if (NativePerformance?.markWithResult) {
+      computedStartTime = NativePerformance.markWithResult(
+        markName,
+        markOptions?.startTime,
+      );
+    } else if (NativePerformance?.mark) {
+      computedStartTime = markOptions?.startTime ?? performance.now();
+      NativePerformance?.mark?.(markName, computedStartTime);
     } else {
       warnNoNativePerformance();
+      computedStartTime = performance.now();
     }
 
-    return mark;
+    return new PerformanceMark(markName, {
+      startTime: computedStartTime,
+      detail: markOptions?.detail,
+    });
   }
 
   clearMarks(markName?: string): void {
-    if (!NativePerformanceObserver?.clearEntries) {
-      warnNoNativePerformanceObserver();
+    if (!NativePerformance?.clearMarks) {
+      warnNoNativePerformance();
       return;
     }
 
-    NativePerformanceObserver.clearEntries(
-      RawPerformanceEntryTypeValues.MARK,
-      markName,
-    );
+    NativePerformance.clearMarks(markName);
   }
 
   measure(
@@ -147,6 +152,7 @@ export default class Performance {
 
     if (typeof startMarkOrOptions === 'string') {
       startMarkName = startMarkOrOptions;
+      options = {};
     } else if (startMarkOrOptions !== undefined) {
       options = startMarkOrOptions;
       if (endMark !== undefined) {
@@ -184,15 +190,20 @@ export default class Performance {
       duration = options.duration ?? duration;
     }
 
-    const measure = new PerformanceMeasure(measureName, {
-      // FIXME(T196011255): this is incorrect, as we're only assigning the
-      // start/end if they're specified as a number, but not if they're
-      // specified as previous mark names.
-      startTime,
-      duration,
-    });
+    let computedStartTime = startTime;
+    let computedDuration = duration;
 
-    if (NativePerformance?.measure) {
+    if (NativePerformance?.measureWithResult) {
+      [computedStartTime, computedDuration] =
+        NativePerformance.measureWithResult(
+          measureName,
+          startTime,
+          endTime,
+          duration,
+          startMarkName,
+          endMarkName,
+        );
+    } else if (NativePerformance?.measure) {
       NativePerformance.measure(
         measureName,
         startTime,
@@ -205,19 +216,22 @@ export default class Performance {
       warnNoNativePerformance();
     }
 
+    const measure = new PerformanceMeasure(measureName, {
+      startTime: computedStartTime,
+      duration: computedDuration,
+      detail: options?.detail,
+    });
+
     return measure;
   }
 
   clearMeasures(measureName?: string): void {
-    if (!NativePerformanceObserver?.clearEntries) {
-      warnNoNativePerformanceObserver();
+    if (!NativePerformance?.clearMeasures) {
+      warnNoNativePerformance();
       return;
     }
 
-    NativePerformanceObserver?.clearEntries(
-      RawPerformanceEntryTypeValues.MEASURE,
-      measureName,
-    );
+    NativePerformance?.clearMeasures(measureName);
   }
 
   /**
@@ -234,28 +248,28 @@ export default class Performance {
    * https://www.w3.org/TR/performance-timeline/#extensions-to-the-performance-interface
    */
   getEntries(): PerformanceEntryList {
-    if (!NativePerformanceObserver?.getEntries) {
-      warnNoNativePerformanceObserver();
+    if (!NativePerformance?.getEntries) {
+      warnNoNativePerformance();
       return [];
     }
-    return NativePerformanceObserver.getEntries().map(rawToPerformanceEntry);
+    return NativePerformance.getEntries().map(rawToPerformanceEntry);
   }
 
   getEntriesByType(entryType: PerformanceEntryType): PerformanceEntryList {
-    if (!ALWAYS_LOGGED_ENTRY_TYPES.includes(entryType)) {
-      console.warn(
-        `Performance.getEntriesByType: Only valid for ${JSON.stringify(
-          ALWAYS_LOGGED_ENTRY_TYPES,
-        )} entry types, got ${entryType}`,
-      );
+    if (
+      entryType != null &&
+      !ENTRY_TYPES_AVAILABLE_FROM_TIMELINE.includes(entryType)
+    ) {
+      console.warn('Deprecated API for given entry type.');
       return [];
     }
 
-    if (!NativePerformanceObserver?.getEntries) {
-      warnNoNativePerformanceObserver();
+    if (!NativePerformance?.getEntriesByType) {
+      warnNoNativePerformance();
       return [];
     }
-    return NativePerformanceObserver.getEntries(
+
+    return NativePerformance.getEntriesByType(
       performanceEntryTypeToRaw(entryType),
     ).map(rawToPerformanceEntry);
   }
@@ -265,24 +279,21 @@ export default class Performance {
     entryType?: PerformanceEntryType,
   ): PerformanceEntryList {
     if (
-      entryType !== undefined &&
-      !ALWAYS_LOGGED_ENTRY_TYPES.includes(entryType)
+      entryType != null &&
+      !ENTRY_TYPES_AVAILABLE_FROM_TIMELINE.includes(entryType)
     ) {
-      console.warn(
-        `Performance.getEntriesByName: Only valid for ${JSON.stringify(
-          ALWAYS_LOGGED_ENTRY_TYPES,
-        )} entry types, got ${entryType}`,
-      );
+      console.warn('Deprecated API for given entry type.');
       return [];
     }
 
-    if (!NativePerformanceObserver?.getEntries) {
-      warnNoNativePerformanceObserver();
+    if (!NativePerformance?.getEntriesByName) {
+      warnNoNativePerformance();
       return [];
     }
-    return NativePerformanceObserver.getEntries(
-      entryType != null ? performanceEntryTypeToRaw(entryType) : undefined,
+
+    return NativePerformance.getEntriesByName(
       entryName,
+      entryType != null ? performanceEntryTypeToRaw(entryType) : undefined,
     ).map(rawToPerformanceEntry);
   }
 }
