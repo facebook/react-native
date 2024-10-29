@@ -55,9 +55,7 @@ extends:
          - job: RNGithubNpmJSPublish
            displayName: NPM Publish React-native-macos
            pool:
-             name: Azure Pipelines
-             vmImage: macos-13
-             os: macOS
+             vmImage: $(vmImageApple)
            variables:
              - name: BUILDSECMON_OPT_IN
                value: true
