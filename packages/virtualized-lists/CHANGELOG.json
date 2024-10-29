@@ -2,6 +2,21 @@
   "name": "@react-native-mac/virtualized-lists",
   "entries": [
     {
+      "date": "Tue, 29 Oct 2024 22:18:55 GMT",
+      "version": "0.76.0",
+      "tag": "@react-native-mac/virtualized-lists_v0.76.0",
+      "comments": {
+        "minor": [
+          {
+            "author": "sanajmi@microsoft.com",
+            "package": "@react-native-mac/virtualized-lists",
+            "commit": "74eacf73237c296712e8886a23e42fed58021c71",
+            "comment": "chore(0.76): Merge up to 0.76.0 (#2232)"
+          }
+        ]
+      }
+    },
+    {
       "date": "Wed, 06 Sep 2023 19:59:04 GMT",
       "tag": "@react-native-mac/virtualized-lists_v0.72.1",
       "version": "0.72.1",
