@@ -55,9 +55,7 @@ extends:
          - job: RNGithubNpmJSPublish
            displayName: NPM Publish React-native-macos
            pool:
-             name: Azure Pipelines
-             vmImage: macos-13
-             os: macOS
+             vmImage: $(vmImageApple)
            variables:
              - name: BUILDSECMON_OPT_IN
                value: true
@@ -87,11 +85,11 @@ extends:
                    build_type: nightly
              - ${{ elseif endsWith(variables['Build.SourceBranchName'], '0.76-stable') }}:
                 - task: CmdLine@2
-                 displayName: "Skip 0.76-stable"
-                 inputs:
-                   script: |
-                     echo "Skipping publish for branch $(Build.SourceBranchName)"
-                     exit 1
+                  displayName: "Skip 0.76-stable"
+                  inputs:
+                    script: |
+                      echo "Skipping publish for branch $(Build.SourceBranchName)"
+                      exit 1
              - ${{ elseif endsWith(variables['Build.SourceBranchName'], '-stable') }}:
                - template: .ado/templates/apple-steps-publish.yml@self
                  parameters:
