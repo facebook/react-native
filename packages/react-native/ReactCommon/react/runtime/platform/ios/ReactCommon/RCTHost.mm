@@ -315,7 +315,7 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
 
 #pragma mark - RCTInstanceDelegate
 
-- (void)instance:(RCTInstance *)instance
+- (BOOL)instance:(RCTInstance *)instance
     didReceiveJSErrorStack:(NSArray<NSDictionary<NSString *, id> *> *)stack
                    message:(NSString *)message
            originalMessage:(NSString *_Nullable)originalMessage
@@ -325,6 +325,12 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
                    isFatal:(BOOL)isFatal
                  extraData:(NSDictionary<NSString *, id> *)extraData
 {
+  if (![_hostDelegate respondsToSelector:@selector(host:
+                                             didReceiveJSErrorStack:message:originalMessage:name:componentStack
+                                                                   :exceptionId:isFatal:extraData:)]) {
+    return NO;
+  }
+
   [_hostDelegate host:self
       didReceiveJSErrorStack:stack
                      message:message
@@ -334,6 +340,7 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
                  exceptionId:exceptionId
                      isFatal:isFatal
                    extraData:extraData];
+  return YES;
 }
 
 - (void)instance:(RCTInstance *)instance didInitializeRuntime:(facebook::jsi::Runtime &)runtime

@@ -27,6 +27,15 @@ typedef NSURL *_Nullable (^RCTHostBundleURLProvider)(void);
 
 @protocol RCTHostDelegate <NSObject>
 
+- (void)hostDidStart:(RCTHost *)host;
+
+@optional
+- (void)loadBundleAtURL:(NSURL *)sourceURL
+             onProgress:(RCTSourceLoadProgressBlock)onProgress
+             onComplete:(RCTSourceLoadBlock)loadCallback;
+
+// TODO(T205780509): Remove this api in react native v0.78
+// The bridgeless js error handling api will just call into exceptionsmanager directly
 - (void)host:(RCTHost *)host
     didReceiveJSErrorStack:(NSArray<NSDictionary<NSString *, id> *> *)stack
                    message:(NSString *)message
@@ -35,15 +44,7 @@ typedef NSURL *_Nullable (^RCTHostBundleURLProvider)(void);
             componentStack:(NSString *_Nullable)componentStack
                exceptionId:(NSUInteger)exceptionId
                    isFatal:(BOOL)isFatal
-                 extraData:(NSDictionary<NSString *, id> *)extraData;
-
-- (void)hostDidStart:(RCTHost *)host;
-
-@optional
-- (void)loadBundleAtURL:(NSURL *)sourceURL
-             onProgress:(RCTSourceLoadProgressBlock)onProgress
-             onComplete:(RCTSourceLoadBlock)loadCallback;
-
+                 extraData:(NSDictionary<NSString *, id> *)extraData __attribute__((deprecated));
 @end
 
 @protocol RCTHostRuntimeDelegate <NSObject>

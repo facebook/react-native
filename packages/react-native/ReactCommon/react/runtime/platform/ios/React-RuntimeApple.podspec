@@ -71,6 +71,8 @@ Pod::Spec.new do |s|
   s.dependency "React-jsinspector"
   s.dependency "React-featureflags"
 
+  add_dependency(s, "ReactCodegen")
+
   if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
     s.dependency "hermes-engine"
     s.dependency "React-RuntimeHermes"
