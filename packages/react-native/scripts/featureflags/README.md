@@ -37,7 +37,7 @@ must be regenerated running this from the `react-native`
 repository:
 
 ```shell
-yarn featureflags-update
+yarn featureflags --update
 ```
 
 ## Access
