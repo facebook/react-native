@@ -83,7 +83,7 @@ AttributedString TextInputShadowNode::getAttributedString(
       .string = getConcreteProps().text,
       .textAttributes = textAttributes,
       // TODO: Is this really meant to be by value?
-      .parentShadowView = ShadowView{}});
+      .parentShadowView = ShadowView(*this)});
 
   auto attachments = Attachments{};
   BaseTextShadowNode::buildAttributedString(
@@ -110,7 +110,8 @@ void TextInputShadowNode::updateStateIfNeeded(
       (!state.layoutManager || state.layoutManager == textLayoutManager_) &&
       "`StateData` refers to a different `TextLayoutManager`");
 
-  if (state.reactTreeAttributedString == reactTreeAttributedString &&
+  if (state.reactTreeAttributedString.isContentEqual(
+          reactTreeAttributedString) &&
       state.layoutManager == textLayoutManager_) {
     return;
   }
