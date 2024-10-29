@@ -16,6 +16,8 @@ if (require.main === module) {
     command = 'update';
   } else if (process.argv.includes('--verify-unchanged')) {
     command = 'verify-unchanged';
+  } else if (process.argv.includes('--print')) {
+    command = 'print';
   }
 
   switch (command) {
@@ -24,6 +26,9 @@ if (require.main === module) {
       break;
     case 'verify-unchanged':
       require('./update').default(true);
+      break;
+    case 'print':
+      require('./print').default(process.argv.includes('--json'));
       break;
     default:
       console.error(
