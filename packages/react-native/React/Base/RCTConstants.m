@@ -54,18 +54,3 @@ void RCTSetMemoryPressureUnloadLevel(int value)
 {
   RCTMemoryPressureUnloadLevel = value;
 }
-
-/*
- * Use native view configs in bridgeless mode
- */
-static BOOL RCTUseNativeViewConfigsInBridgelessMode = NO;
-
-BOOL RCTGetUseNativeViewConfigsInBridgelessMode(void)
-{
-  return RCTUseNativeViewConfigsInBridgelessMode;
-}
-
-void RCTSetUseNativeViewConfigsInBridgelessMode(BOOL value)
-{
-  RCTUseNativeViewConfigsInBridgelessMode = value;
-}
