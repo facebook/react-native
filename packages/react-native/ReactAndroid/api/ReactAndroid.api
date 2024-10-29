@@ -2025,9 +2025,9 @@ public final class com/facebook/react/common/network/OkHttpCallUtil {
 	public static final fun cancelTag (Lokhttp3/OkHttpClient;Ljava/lang/Object;)V
 }
 
-public class com/facebook/react/config/ReactFeatureFlags {
+public final class com/facebook/react/config/ReactFeatureFlags {
+	public static final field INSTANCE Lcom/facebook/react/config/ReactFeatureFlags;
 	public static field dispatchPointerEvents Z
-	public fun <init> ()V
 }
 
 public final class com/facebook/react/defaults/DefaultComponentsRegistry {
