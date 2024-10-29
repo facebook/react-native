@@ -70,7 +70,6 @@ function getFileName(file: ?string) {
 
 const styles = StyleSheet.create({
   frameContainer: {
-    direction: 'ltr',
     flexDirection: 'row',
     paddingHorizontal: 15,
   },
