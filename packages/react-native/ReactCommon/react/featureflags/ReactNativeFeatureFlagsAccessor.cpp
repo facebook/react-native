@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3ee70c854f08a871c4951e231f5c27c2>>
+ * @generated SignedSource<<e7300b3d99a21db2f8afbe99e4c32356>>
  */
 
 /**
@@ -14,7 +14,7 @@
  *   packages/react-native/scripts/featureflags/ReactNativeFeatureFlags.config.js.
  *
  * To regenerate this code, run the following script from the repo root:
- *   yarn featureflags-update
+ *   yarn featureflags --update
  */
 
 #include <react/featureflags/ReactNativeFeatureFlagsDefaults.h>
