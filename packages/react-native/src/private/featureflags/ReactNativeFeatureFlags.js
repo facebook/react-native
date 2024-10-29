@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4aeb1a4c162c49501c765f4c5892b09e>>
+ * @generated SignedSource<<27ae96c2bc3459bd89e52063a8ed9490>>
  * @flow strict
  */
 
@@ -223,7 +223,7 @@ export const enableAlignItemsBaselineOnFabricIOS: Getter<boolean> = createNative
 /**
  * When enabled, custom line height calculation will be centered from top to bottom.
  */
-export const enableAndroidLineHeightCentering: Getter<boolean> = createNativeFlagGetter('enableAndroidLineHeightCentering', false);
+export const enableAndroidLineHeightCentering: Getter<boolean> = createNativeFlagGetter('enableAndroidLineHeightCentering', true);
 /**
  * Feature flag to enable the new bridgeless architecture. Note: Enabling this will force enable the following flags: `useTurboModules` & `enableFabricRenderer.
  */
