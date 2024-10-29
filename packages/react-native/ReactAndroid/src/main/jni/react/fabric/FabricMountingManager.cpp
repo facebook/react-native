@@ -967,7 +967,6 @@ void FabricMountingManager::preallocateShadowView(
   // Updating state on Android side has a cost and doing it unnecessarily for
   // dummy state is wasteful.
   bool preventPassingStateWrapperForText =
-      ReactNativeFeatureFlags::enableTextPreallocationOptimisation() &&
       strcmp(shadowView.componentName, "Paragraph") == 0;
   if (shadowView.state != nullptr && !preventPassingStateWrapperForText) {
     javaStateWrapper = StateWrapperImpl::newObjectJavaArgs();

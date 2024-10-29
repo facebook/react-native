@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<eca7a82e2006f902f143c78fd2a12e4f>>
+ * @generated SignedSource<<65bca35ca4b820d9b311b4d9a194fdab>>
  */
 
 /**
@@ -124,10 +124,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableSynchronousStateUpdates() override {
-    return false;
-  }
-
-  bool enableTextPreallocationOptimisation() override {
     return false;
   }
 
