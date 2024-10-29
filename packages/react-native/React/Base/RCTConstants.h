@@ -56,9 +56,3 @@ RCT_EXTERN void RCTSetDispatchW3CPointerEvents(BOOL value);
  */
 RCT_EXTERN int RCTGetMemoryPressureUnloadLevel(void);
 RCT_EXTERN void RCTSetMemoryPressureUnloadLevel(int value);
-
-/*
- * Use native view configs in bridgeless mode
- */
-RCT_EXTERN BOOL RCTGetUseNativeViewConfigsInBridgelessMode(void);
-RCT_EXTERN void RCTSetUseNativeViewConfigsInBridgelessMode(BOOL value);
