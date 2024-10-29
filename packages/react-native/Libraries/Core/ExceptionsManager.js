@@ -142,7 +142,11 @@ let inExceptionHandler = false;
  */
 function handleException(e: mixed, isFatal: boolean) {
   // TODO(T196834299): We should really use a c++ turbomodule for this
-  if (!global.RN$handleException || !global.RN$handleException(e, isFatal)) {
+  const reportToConsole = true;
+  if (
+    !global.RN$handleException ||
+    !global.RN$handleException(e, isFatal, reportToConsole)
+  ) {
     let error: Error;
     if (e instanceof Error) {
       error = e;
@@ -158,7 +162,7 @@ function handleException(e: mixed, isFatal: boolean) {
       /* $FlowFixMe[class-object-subtyping] added when improving typing for this
        * parameters */
       // $FlowFixMe[incompatible-call]
-      reportException(error, isFatal, /*reportToConsole*/ true);
+      reportException(error, isFatal, reportToConsole);
     } finally {
       inExceptionHandler = false;
     }
@@ -173,7 +177,10 @@ function reactConsoleErrorHandler(...args) {
   if (!console.reportErrorsAsExceptions) {
     return;
   }
-  if (inExceptionHandler) {
+  if (
+    inExceptionHandler ||
+    (global.RN$inExceptionHandler && global.RN$inExceptionHandler())
+  ) {
     // The fundamental trick here is that are multiple entry point to logging errors:
     // (see D19743075 for more background)
     //
@@ -227,14 +234,21 @@ function reactConsoleErrorHandler(...args) {
     error.name = 'console.error';
   }
 
-  reportException(
-    /* $FlowFixMe[class-object-subtyping] added when improving typing for this
-     * parameters */
-    // $FlowFixMe[incompatible-call]
-    error,
-    false, // isFatal
-    false, // reportToConsole
-  );
+  const isFatal = false;
+  const reportToConsole = false;
+  if (
+    !global.RN$handleException ||
+    !global.RN$handleException(error, isFatal, reportToConsole)
+  ) {
+    reportException(
+      /* $FlowFixMe[class-object-subtyping] added when improving typing for this
+       * parameters */
+      // $FlowFixMe[incompatible-call]
+      error,
+      isFatal,
+      reportToConsole,
+    );
+  }
 }
 
 /**
