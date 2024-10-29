@@ -409,6 +409,21 @@ void ReactInstance::initializeRuntime(
 
     defineReactInstanceFlags(runtime, options);
 
+    defineReadOnlyGlobal(
+        runtime,
+        "RN$inExceptionHandler",
+        jsi::Function::createFromHostFunction(
+            runtime,
+            jsi::PropNameID::forAscii(runtime, "inExceptionHandler"),
+            0,
+            [jsErrorHandler = jsErrorHandler_](
+                jsi::Runtime& /*runtime*/,
+                const jsi::Value& /*unused*/,
+                const jsi::Value* /*args*/,
+                size_t /*count*/) {
+              return jsErrorHandler->inErrorHandler();
+            }));
+
     // TODO(T196834299): We should really use a C++ turbomodule for this
     defineReadOnlyGlobal(
         runtime,
@@ -416,7 +431,7 @@ void ReactInstance::initializeRuntime(
         jsi::Function::createFromHostFunction(
             runtime,
             jsi::PropNameID::forAscii(runtime, "handleException"),
-            2,
+            3,
             [jsErrorHandler = jsErrorHandler_](
                 jsi::Runtime& runtime,
                 const jsi::Value& /*unused*/,
@@ -425,7 +440,7 @@ void ReactInstance::initializeRuntime(
               if (count < 2) {
                 throw jsi::JSError(
                     runtime,
-                    "handleException requires 2 arguments: error, isFatal");
+                    "handleException requires 3 arguments: error, isFatal, logToConsole (optional)");
               }
 
               auto isFatal = isTruthy(runtime, args[1]);
@@ -439,7 +454,14 @@ void ReactInstance::initializeRuntime(
 
               auto jsError =
                   jsi::JSError(runtime, jsi::Value(runtime, args[0]));
-              jsErrorHandler->handleError(runtime, jsError, isFatal);
+
+              if (count == 2) {
+                jsErrorHandler->handleError(runtime, jsError, isFatal);
+              } else {
+                auto logToConsole = isTruthy(runtime, args[2]);
+                jsErrorHandler->handleError(
+                    runtime, jsError, isFatal, logToConsole);
+              }
 
               return jsi::Value(true);
             }));
