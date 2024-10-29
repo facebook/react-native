@@ -34,7 +34,7 @@ try {
   echo('Executing JavaScript tests');
 
   describe('Test: feature flags codegen');
-  if (exec(`${YARN_BINARY} run featureflags-check`).code) {
+  if (exec(`${YARN_BINARY} run featureflags --verify-unchanged`).code) {
     echo('Failed to run featureflags check.');
     exitCode = 1;
     throw Error(exitCode);

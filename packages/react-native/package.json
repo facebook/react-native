@@ -95,8 +95,7 @@
   ],
   "scripts": {
     "prepack": "node ./scripts/prepack.js",
-    "featureflags-check": "node ./scripts/featureflags/index.js --verify-unchanged",
-    "featureflags-update": "node ./scripts/featureflags/index.js"
+    "featureflags": "node ./scripts/featureflags/index.js"
   },
   "peerDependencies": {
     "@types/react": "^18.2.6",
