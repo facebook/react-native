@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<18597e1e2a88be3d80b8747f72576d5f>>
+ * @generated SignedSource<<75364a85af2f0a1da6d39f88459ce5c5>>
  */
 
 /**
@@ -33,7 +33,6 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool enableAlignItemsBaselineOnFabricIOS() = 0;
   virtual bool enableAndroidLineHeightCentering() = 0;
   virtual bool enableBridgelessArchitecture() = 0;
-  virtual bool enableCleanTextInputYogaNode() = 0;
   virtual bool enableCppPropsIteratorSetter() = 0;
   virtual bool enableDeletionOfUnmountedViews() = 0;
   virtual bool enableEagerRootViewAttachment() = 0;
