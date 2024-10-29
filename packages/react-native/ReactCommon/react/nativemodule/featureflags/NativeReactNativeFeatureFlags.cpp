@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<825b50d1d5ed20c468511b6cc9f7299d>>
+ * @generated SignedSource<<3a530491b7f90f1c0a1e75a6d618f586>>
  */
 
 /**
@@ -246,6 +246,11 @@ bool NativeReactNativeFeatureFlags::setAndroidLayoutDirection(
 bool NativeReactNativeFeatureFlags::traceTurboModulePromiseRejectionsOnAndroid(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::traceTurboModulePromiseRejectionsOnAndroid();
+}
+
+bool NativeReactNativeFeatureFlags::useAlwaysAvailableJSErrorHandling(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::useAlwaysAvailableJSErrorHandling();
 }
 
 bool NativeReactNativeFeatureFlags::useFabricInterop(

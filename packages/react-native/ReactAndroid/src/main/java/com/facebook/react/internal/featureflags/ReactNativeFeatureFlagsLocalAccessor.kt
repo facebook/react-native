@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8688972dbd3246bbdea8d6c9f3fa1eae>>
+ * @generated SignedSource<<7e78a7ec91d557297f869b964cc91eac>>
  */
 
 /**
@@ -62,6 +62,7 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var loadVectorDrawablesOnImagesCache: Boolean? = null
   private var setAndroidLayoutDirectionCache: Boolean? = null
   private var traceTurboModulePromiseRejectionsOnAndroidCache: Boolean? = null
+  private var useAlwaysAvailableJSErrorHandlingCache: Boolean? = null
   private var useFabricInteropCache: Boolean? = null
   private var useImmediateExecutorInAndroidBridgelessCache: Boolean? = null
   private var useNativeViewConfigsInBridgelessModeCache: Boolean? = null
@@ -447,6 +448,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.traceTurboModulePromiseRejectionsOnAndroid()
       accessedFeatureFlags.add("traceTurboModulePromiseRejectionsOnAndroid")
       traceTurboModulePromiseRejectionsOnAndroidCache = cached
+    }
+    return cached
+  }
+
+  override fun useAlwaysAvailableJSErrorHandling(): Boolean {
+    var cached = useAlwaysAvailableJSErrorHandlingCache
+    if (cached == null) {
+      cached = currentProvider.useAlwaysAvailableJSErrorHandling()
+      accessedFeatureFlags.add("useAlwaysAvailableJSErrorHandling")
+      useAlwaysAvailableJSErrorHandlingCache = cached
     }
     return cached
   }
