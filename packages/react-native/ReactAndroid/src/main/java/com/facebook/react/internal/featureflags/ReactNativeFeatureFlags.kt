@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a562b334fd2ce1cc4686535f73560f0d>>
+ * @generated SignedSource<<b7f79cb934f8bf2519439339fc7562d3>>
  */
 
 /**
@@ -255,6 +255,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean = accessor.traceTurboModulePromiseRejectionsOnAndroid()
+
+  /**
+   * In Bridgeless mode, use the always available javascript error reporting pipeline.
+   */
+  @JvmStatic
+  public fun useAlwaysAvailableJSErrorHandling(): Boolean = accessor.useAlwaysAvailableJSErrorHandling()
 
   /**
    * Should this application enable the Fabric Interop Layer for Android? If yes, the application will behave so that it can accept non-Fabric components and render them on Fabric. This toggle is controlling extra logic such as custom event dispatching that are needed for the Fabric Interop Layer to work correctly.
