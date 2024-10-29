@@ -696,7 +696,7 @@ function NestedExample(props: {}): React.Node {
 
 function TextAlignExample(props: {}): React.Node {
   return (
-    <>
+    <View testID="text-align-example">
       <Text>auto (default) - english LTR</Text>
       <Text>أحب اللغة العربية auto (default) - arabic RTL</Text>
       <Text style={{textAlign: 'left'}}>
@@ -717,7 +717,7 @@ function TextAlignExample(props: {}): React.Node {
         as you can see all of the lines except the last one span the available
         width of the parent container.
       </Text>
-    </>
+    </View>
   );
 }
 
