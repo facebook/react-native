@@ -25,6 +25,14 @@ void EventBeat::request() const {
   isRequested_ = true;
 }
 
+void EventBeat::requestSynchronous() const {
+  react_native_assert(
+      beatCallback_ &&
+      "Unexpected state: EventBeat::setBeatCallback was not called before EventBeat::requestSynchronous.");
+  isSynchronousRequested_ = true;
+  request();
+}
+
 void EventBeat::setBeatCallback(BeatCallback beatCallback) {
   beatCallback_ = std::move(beatCallback);
 }
@@ -37,7 +45,7 @@ void EventBeat::induce() const {
   isRequested_ = false;
   isBeatCallbackScheduled_ = true;
 
-  runtimeScheduler_.scheduleWork(
+  auto beat = std::function<void(jsi::Runtime&)>(
       [this, ownerBox = ownerBox_](jsi::Runtime& runtime) {
         auto owner = ownerBox->owner.lock();
         if (!owner) {
@@ -49,6 +57,13 @@ void EventBeat::induce() const {
           beatCallback_(runtime);
         }
       });
+
+  if (isSynchronousRequested_) {
+    isSynchronousRequested_ = false;
+    runtimeScheduler_.executeNowOnTheSameThread(std::move(beat));
+  } else {
+    runtimeScheduler_.scheduleWork(std::move(beat));
+  }
 }
 
 } // namespace facebook::react
