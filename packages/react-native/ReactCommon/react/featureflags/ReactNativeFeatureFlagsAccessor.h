@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e4a3bfe61673016256590c7989856aa7>>
+ * @generated SignedSource<<ef77bba170be911320a9f8f2c1c98a9f>>
  */
 
 /**
@@ -70,6 +70,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool loadVectorDrawablesOnImages();
   bool setAndroidLayoutDirection();
   bool traceTurboModulePromiseRejectionsOnAndroid();
+  bool useAlwaysAvailableJSErrorHandling();
   bool useFabricInterop();
   bool useImmediateExecutorInAndroidBridgeless();
   bool useNativeViewConfigsInBridgelessMode();
@@ -89,7 +90,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 46> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 47> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> allowRecursiveCommitsWithSynchronousMountOnAndroid_;
@@ -129,6 +130,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> loadVectorDrawablesOnImages_;
   std::atomic<std::optional<bool>> setAndroidLayoutDirection_;
   std::atomic<std::optional<bool>> traceTurboModulePromiseRejectionsOnAndroid_;
+  std::atomic<std::optional<bool>> useAlwaysAvailableJSErrorHandling_;
   std::atomic<std::optional<bool>> useFabricInterop_;
   std::atomic<std::optional<bool>> useImmediateExecutorInAndroidBridgeless_;
   std::atomic<std::optional<bool>> useNativeViewConfigsInBridgelessMode_;

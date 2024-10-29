@@ -391,6 +391,14 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'operational',
       },
     },
+    useAlwaysAvailableJSErrorHandling: {
+      defaultValue: false,
+      metadata: {
+        description:
+          'In Bridgeless mode, use the always available javascript error reporting pipeline.',
+        purpose: 'release',
+      },
+    },
     useFabricInterop: {
       defaultValue: false,
       metadata: {
