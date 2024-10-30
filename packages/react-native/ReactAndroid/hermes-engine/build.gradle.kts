@@ -330,6 +330,11 @@ afterEvaluate {
   tasks.getByName("preBuild").dependsOn(prepareHeadersForPrefab)
 }
 
+tasks.withType<JavaCompile>().configureEach {
+  options.compilerArgs.add("-Xlint:deprecation,unchecked")
+  options.compilerArgs.add("-Werror")
+}
+
 /* Publishing Configuration */
 apply(from = "../publish.gradle")
 
