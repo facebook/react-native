@@ -20,9 +20,17 @@
 
 const verbose = process.env.DEBUG && process.env.DEBUG.includes('react-native');
 
+function findCommunityPlatformPackage(spec, startDir = process.cwd()) {
+  // In a pnpm setup, we won't be able to find `@react-native-community/*`
+  // starting from the `react-native` directory. Instead, we must use the
+  // project's root.
+  const main = require.resolve(spec, { paths: [startDir] });
+  return require(main);
+}
+
 let android;
 try {
-  android = require('@react-native-community/cli-platform-android');
+  android = findCommunityPlatformPackage('@react-native-community/cli-platform-android');
 } catch {
   if (verbose) {
     console.warn(
@@ -33,7 +41,7 @@ try {
 
 let ios;
 try {
-  ios = require('@react-native-community/cli-platform-ios');
+  ios = findCommunityPlatformPackage('@react-native-community/cli-platform-ios');
 } catch {
   if (verbose) {
     console.warn(
