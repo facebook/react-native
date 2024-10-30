@@ -890,7 +890,7 @@ function LineHeightExample(props: {}): React.Node {
           },
           styles.wrappedText,
         ]}
-        testID="line-height-greater-than-fonst-size">
+        testID="line-height-greater-than-font-size">
         Holisticly formulate inexpensive ideas before best-of-breed benefits.{' '}
         <Text style={{fontSize: 20}}>Continually</Text> expedite magnetic
         potentialities rather than client-focused interfaces.
@@ -906,7 +906,7 @@ function LineHeightExample(props: {}): React.Node {
           },
           styles.wrappedText,
         ]}
-        testID="line-height-less-than-fonst-size">
+        testID="line-height-less-than-font-size">
         Holisticly formulate inexpensive ideas before best-of-breed benefits.{' '}
         <Text style={{fontSize: 20}}>Continually</Text> expedite magnetic
         potentialities rather than client-focused interfaces.
@@ -921,7 +921,20 @@ function LineHeightExample(props: {}): React.Node {
           },
           styles.wrappedText,
         ]}
-        testID="line-height-single-line-less-than-fonst-size">
+        testID="line-height-single-line-less-than-font-size">
+        Holisticly formulate
+      </Text>
+      <Text
+        style={[
+          {
+            fontSize: 16,
+            lineHeight: 20,
+            borderColor: 'black',
+            borderWidth: 1,
+          },
+          styles.wrappedText,
+        ]}
+        testID="line-height-single-line-greater-than-font-size">
         Holisticly formulate
       </Text>
     </>
