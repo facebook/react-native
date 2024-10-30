@@ -21,7 +21,7 @@ variables:
     value: production,externalfacing
   # Remember to update this in previous stable branches when creating a new stable branch
   - name : latestStableBranch
-    value: '0.75-stable'
+    value: '0.76-stable'
 
 resources:
   repositories:
@@ -55,7 +55,9 @@ extends:
          - job: RNGithubNpmJSPublish
            displayName: NPM Publish React-native-macos
            pool:
-             vmImage: $(vmImageApple)
+             name: cxeiss-ubuntu-20-04-large
+             image: cxe-ubuntu-20-04-1es-pt
+             os: linux
            variables:
              - name: BUILDSECMON_OPT_IN
                value: true
@@ -83,13 +85,6 @@ extends:
                - template: .ado/templates/apple-steps-publish.yml@self
                  parameters:
                    build_type: nightly
-             - ${{ elseif endsWith(variables['Build.SourceBranchName'], '0.76-stable') }}:
-                - task: CmdLine@2
-                  displayName: "Skip 0.76-stable"
-                  inputs:
-                    script: |
-                      echo "Skipping publish for branch $(Build.SourceBranchName)"
-                      exit 1
              - ${{ elseif endsWith(variables['Build.SourceBranchName'], '-stable') }}:
                - template: .ado/templates/apple-steps-publish.yml@self
                  parameters:

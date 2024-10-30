@@ -2,8 +2,6 @@ parameters:
   build_type: ''
 
 steps:
-  - template: /.ado/templates/apple-tools-setup.yml@self
-
   - task: CmdLine@2
     displayName: yarn install (local react-native-macos)
     inputs:
