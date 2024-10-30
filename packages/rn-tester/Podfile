@@ -54,7 +54,6 @@ def pods(target_name, options = {})
 
   # Additional Pods which aren't included in the default Podfile
   pod 'React-RCTPushNotification', :path => "#{@prefix_path}/Libraries/PushNotificationIOS"
-  pod 'React-featureflags', :path => "#{@prefix_path}/ReactCommon/react/featureflags"
   # Additional Pods which are classed as unstable
 
   # RNTester native modules and components
