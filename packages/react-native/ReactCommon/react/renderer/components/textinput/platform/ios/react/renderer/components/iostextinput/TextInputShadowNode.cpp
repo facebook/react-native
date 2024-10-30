@@ -104,7 +104,7 @@ void TextInputShadowNode::updateStateIfNeeded(
   newState.paragraphAttributes = getConcreteProps().paragraphAttributes;
   newState.reactTreeAttributedString = reactTreeAttributedString;
   newState.layoutManager = textLayoutManager_;
-  newState.mostRecentEventCount = getConcreteProps().mostRecentEventCount;
+  newState.mostRecentEventCount = state.mostRecentEventCount;
   setStateData(std::move(newState));
 }
 
