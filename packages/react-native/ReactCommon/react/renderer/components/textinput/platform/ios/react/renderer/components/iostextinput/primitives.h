@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <react/renderer/components/textinput/basePrimitives.h>
 #include <optional>
 #include <string>
 
@@ -45,14 +46,6 @@ enum class ReturnKeyType {
   Route,
   Yahoo,
   Continue,
-};
-
-// iOS & Android.
-enum class SubmitBehavior {
-  Default,
-  Submit,
-  BlurAndSubmit,
-  Newline,
 };
 
 // iOS-only
@@ -94,12 +87,6 @@ class Selection final {
  */
 class TextInputTraits final {
  public:
-  /*
-   * iOS & Android
-   * Default value: `false`.
-   */
-  bool multiline{false};
-
   /*
    * iOS & Android
    * Default value: `Sentences`.
@@ -174,12 +161,6 @@ class TextInputTraits final {
    * Default value: `false`.
    */
   bool secureTextEntry{false};
-
-  /*
-   * iOS & Android
-   * Default value: `Default`.
-   */
-  SubmitBehavior submitBehavior{SubmitBehavior::Default};
 
   /*
    * iOS-only (implemented only on iOS for now)

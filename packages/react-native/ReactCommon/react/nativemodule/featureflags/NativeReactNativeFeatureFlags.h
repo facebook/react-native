@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<73fcebd2eedf9a2034f8509cd9ae3abc>>
+ * @generated SignedSource<<4c476d0f5a9657387dd5f49db4ebde2c>>
  */
 
 /**
@@ -14,7 +14,7 @@
  *   packages/react-native/scripts/featureflags/ReactNativeFeatureFlags.config.js.
  *
  * To regenerate this code, run the following script from the repo root:
- *   yarn featureflags-update
+ *   yarn featureflags --update
  */
 
 #pragma once
@@ -52,8 +52,6 @@ class NativeReactNativeFeatureFlags
   bool enableAlignItemsBaselineOnFabricIOS(jsi::Runtime& runtime);
 
   bool enableBridgelessArchitecture(jsi::Runtime& runtime);
-
-  bool enableCleanTextInputYogaNode(jsi::Runtime& runtime);
 
   bool enableCppPropsIteratorSetter(jsi::Runtime& runtime);
 
@@ -95,8 +93,6 @@ class NativeReactNativeFeatureFlags
 
   bool enableSynchronousStateUpdates(jsi::Runtime& runtime);
 
-  bool enableTextPreallocationOptimisation(jsi::Runtime& runtime);
-
   bool enableUIConsistency(jsi::Runtime& runtime);
 
   bool enableViewRecycling(jsi::Runtime& runtime);
@@ -122,6 +118,8 @@ class NativeReactNativeFeatureFlags
   bool setAndroidLayoutDirection(jsi::Runtime& runtime);
 
   bool traceTurboModulePromiseRejectionsOnAndroid(jsi::Runtime& runtime);
+
+  bool useAlwaysAvailableJSErrorHandling(jsi::Runtime& runtime);
 
   bool useFabricInterop(jsi::Runtime& runtime);
 

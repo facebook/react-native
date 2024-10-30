@@ -62,6 +62,22 @@ jsi::Object wrapInErrorIfNecessary(
       : Error.callAsConstructor(runtime, value).getObject(runtime);
   return error;
 }
+
+class SetFalseOnDestruct {
+  std::shared_ptr<bool> _value;
+
+ public:
+  SetFalseOnDestruct(const SetFalseOnDestruct&) = delete;
+  SetFalseOnDestruct& operator=(const SetFalseOnDestruct&) = delete;
+  SetFalseOnDestruct(SetFalseOnDestruct&&) = delete;
+  SetFalseOnDestruct& operator=(SetFalseOnDestruct&&) = delete;
+  explicit SetFalseOnDestruct(std::shared_ptr<bool> value)
+      : _value(std::move(value)) {}
+  ~SetFalseOnDestruct() {
+    *_value = false;
+  }
+};
+
 } // namespace
 
 namespace facebook::react {
@@ -162,7 +178,7 @@ std::ostream& operator<<(
 
 JsErrorHandler::JsErrorHandler(JsErrorHandler::OnJsError onJsError)
     : _onJsError(std::move(onJsError)),
-      _hasHandledFatalError(false){
+      _inErrorHandler(std::make_shared<bool>(false)){
 
       };
 
@@ -171,7 +187,8 @@ JsErrorHandler::~JsErrorHandler() {}
 void JsErrorHandler::handleError(
     jsi::Runtime& runtime,
     jsi::JSError& error,
-    bool isFatal) {
+    bool isFatal,
+    bool logToConsole) {
   // TODO: Current error parsing works and is stable. Can investigate using
   // REGEX_HERMES to get additional Hermes data, though it requires JS setup
   if (_isRuntimeReady) {
@@ -191,13 +208,17 @@ void JsErrorHandler::handleError(
     }
   }
 
-  emitError(runtime, error, isFatal);
+  handleErrorWithCppPipeline(runtime, error, isFatal, logToConsole);
 }
 
-void JsErrorHandler::emitError(
+void JsErrorHandler::handleErrorWithCppPipeline(
     jsi::Runtime& runtime,
     jsi::JSError& error,
-    bool isFatal) {
+    bool isFatal,
+    bool logToConsole) {
+  *_inErrorHandler = true;
+  SetFalseOnDestruct temp{_inErrorHandler};
+
   auto message = error.getMessage();
   auto errorObj = wrapInErrorIfNecessary(runtime, error.value());
   auto componentStackValue = errorObj.getProperty(runtime, "componentStack");
@@ -278,6 +299,14 @@ void JsErrorHandler::emitError(
       isTruthy(runtime, errorObj.getProperty(runtime, "isComponentError"));
   data.setProperty(runtime, "isComponentError", isComponentError);
 
+  if (logToConsole) {
+    auto console = runtime.global().getPropertyAsObject(runtime, "console");
+    auto errorFn = console.getPropertyAsFunction(runtime, "error");
+    auto finalMessage =
+        jsi::String::createFromUtf8(runtime, parsedError.message);
+    errorFn.callWithThis(runtime, console, finalMessage);
+  }
+
   std::shared_ptr<bool> shouldPreventDefault = std::make_shared<bool>(false);
   auto preventDefault = jsi::Function::createFromHostFunction(
       runtime,
@@ -328,6 +357,10 @@ bool JsErrorHandler::isRuntimeReady() {
 
 void JsErrorHandler::notifyOfFatalError() {
   _hasHandledFatalError = true;
+}
+
+bool JsErrorHandler::inErrorHandler() {
+  return *_inErrorHandler;
 }
 
 } // namespace facebook::react

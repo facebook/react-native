@@ -2025,9 +2025,9 @@ public final class com/facebook/react/common/network/OkHttpCallUtil {
 	public static final fun cancelTag (Lokhttp3/OkHttpClient;Ljava/lang/Object;)V
 }
 
-public class com/facebook/react/config/ReactFeatureFlags {
+public final class com/facebook/react/config/ReactFeatureFlags {
+	public static final field INSTANCE Lcom/facebook/react/config/ReactFeatureFlags;
 	public static field dispatchPointerEvents Z
-	public fun <init> ()V
 }
 
 public final class com/facebook/react/defaults/DefaultComponentsRegistry {
@@ -2573,11 +2573,6 @@ public final class com/facebook/react/fabric/ComponentFactory {
 }
 
 public class com/facebook/react/fabric/DevToolsReactPerfLogger : com/facebook/react/bridge/ReactMarker$FabricMarkerListener {
-	public static final field mStreamingBatchExecutionStats Lcom/facebook/react/fabric/LongStreamingStats;
-	public static final field mStreamingCommitStats Lcom/facebook/react/fabric/LongStreamingStats;
-	public static final field mStreamingDiffStats Lcom/facebook/react/fabric/LongStreamingStats;
-	public static final field mStreamingLayoutStats Lcom/facebook/react/fabric/LongStreamingStats;
-	public static final field mStreamingTransactionEndStats Lcom/facebook/react/fabric/LongStreamingStats;
 	public fun <init> ()V
 	public fun addDevToolsReactPerfLoggerListener (Lcom/facebook/react/fabric/DevToolsReactPerfLogger$DevToolsReactPerfLoggerListener;)V
 	public fun logFabricMarker (Lcom/facebook/react/bridge/ReactMarkerConstants;Ljava/lang/String;IJ)V
@@ -2611,12 +2606,6 @@ public class com/facebook/react/fabric/DevToolsReactPerfLogger$FabricCommitPoint
 	public fun getUpdateUIMainThreadEnd ()J
 	public fun getUpdateUIMainThreadStart ()J
 	public fun toString ()Ljava/lang/String;
-}
-
-public class com/facebook/react/fabric/DevToolsReactPerfLogger$FabricCommitPointData {
-	public fun <init> (JI)V
-	public fun getCounter ()I
-	public fun getTimeStamp ()J
 }
 
 public final class com/facebook/react/fabric/EmptyReactNativeConfig : com/facebook/react/fabric/ReactNativeConfig {
@@ -6970,6 +6959,9 @@ public final class com/facebook/react/views/scroll/ReactHorizontalScrollContaine
 	public static final field Companion Lcom/facebook/react/views/scroll/ReactHorizontalScrollContainerViewManager$Companion;
 	public static final field REACT_CLASS Ljava/lang/String;
 	public fun <init> ()V
+	public synthetic fun createViewInstance (ILcom/facebook/react/uimanager/ThemedReactContext;Lcom/facebook/react/uimanager/ReactStylesDiffMap;Lcom/facebook/react/uimanager/StateWrapper;)Landroid/view/View;
+	public synthetic fun createViewInstance (Lcom/facebook/react/uimanager/ThemedReactContext;)Landroid/view/View;
+	public fun createViewInstance (Lcom/facebook/react/uimanager/ThemedReactContext;)Lcom/facebook/react/views/view/ReactViewGroup;
 	public fun getName ()Ljava/lang/String;
 }
 

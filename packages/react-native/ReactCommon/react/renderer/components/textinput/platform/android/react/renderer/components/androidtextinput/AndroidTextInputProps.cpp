@@ -8,6 +8,7 @@
 #include "AndroidTextInputProps.h"
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/components/image/conversions.h>
+#include <react/renderer/components/textinput/baseConversions.h>
 #include <react/renderer/core/graphicsConversions.h>
 #include <react/renderer/core/propsConversions.h>
 
@@ -95,10 +96,6 @@ AndroidTextInputProps::AndroidTextInputProps(
           "returnKeyType",
           sourceProps.returnKeyType,
           {})),
-      multiline(ReactNativeFeatureFlags::enableCppPropsIteratorSetter()? sourceProps.multiline : convertRawProp(context, rawProps,
-          "multiline",
-          sourceProps.multiline,
-          {false})),
       secureTextEntry(ReactNativeFeatureFlags::enableCppPropsIteratorSetter()? sourceProps.secureTextEntry : convertRawProp(context, rawProps,
           "secureTextEntry",
           sourceProps.secureTextEntry,
@@ -108,10 +105,6 @@ AndroidTextInputProps::AndroidTextInputProps(
           "selectTextOnFocus",
           sourceProps.selectTextOnFocus,
           {false})),
-      submitBehavior(ReactNativeFeatureFlags::enableCppPropsIteratorSetter()? sourceProps.submitBehavior : convertRawProp(context, rawProps,
-           "submitBehavior",
-          sourceProps.submitBehavior,
-          {})),
       caretHidden(ReactNativeFeatureFlags::enableCppPropsIteratorSetter()? sourceProps.caretHidden : convertRawProp(context, rawProps,
           "caretHidden",
           sourceProps.caretHidden,
@@ -223,10 +216,8 @@ void AndroidTextInputProps::setProp(
     RAW_SET_PROP_SWITCH_CASE_BASIC(maxFontSizeMultiplier);
     RAW_SET_PROP_SWITCH_CASE_BASIC(keyboardType);
     RAW_SET_PROP_SWITCH_CASE_BASIC(returnKeyType);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(multiline);
     RAW_SET_PROP_SWITCH_CASE_BASIC(secureTextEntry);
     RAW_SET_PROP_SWITCH_CASE_BASIC(selectTextOnFocus);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(submitBehavior);
     RAW_SET_PROP_SWITCH_CASE_BASIC(caretHidden);
     RAW_SET_PROP_SWITCH_CASE_BASIC(contextMenuHidden);
     RAW_SET_PROP_SWITCH_CASE_BASIC(textShadowColor);
@@ -322,7 +313,7 @@ folly::dynamic AndroidTextInputProps::getDynamic() const {
   props["value"] = value;
   props["defaultValue"] = defaultValue;
   props["selectTextOnFocus"] = selectTextOnFocus;
-  props["submitBehavior"] = submitBehavior;
+  props["submitBehavior"] = toDynamic(submitBehavior);
   props["caretHidden"] = caretHidden;
   props["contextMenuHidden"] = contextMenuHidden;
   props["textShadowColor"] = toAndroidRepr(textShadowColor);

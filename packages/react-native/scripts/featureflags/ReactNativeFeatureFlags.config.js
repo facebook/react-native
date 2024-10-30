@@ -17,7 +17,7 @@ import type {FeatureFlagDefinitions} from './types';
  *
  * If you modify this file, you need to update all the generated files
  * running the following script from the repo root:
- *   yarn featureflags-update
+ *   yarn featureflags --update
  */
 
 // These flags are only used in tests for the feature flags system
@@ -108,20 +108,20 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'experimentation',
       },
     },
+    enableAndroidLineHeightCentering: {
+      defaultValue: true,
+      metadata: {
+        description:
+          'When enabled, custom line height calculation will be centered from top to bottom.',
+        purpose: 'release',
+      },
+    },
     enableBridgelessArchitecture: {
       defaultValue: false,
       metadata: {
         description:
           'Feature flag to enable the new bridgeless architecture. Note: Enabling this will force enable the following flags: `useTurboModules` & `enableFabricRenderer.',
         purpose: 'release',
-      },
-    },
-    enableCleanTextInputYogaNode: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-04-06',
-        description: 'Clean yoga node when <TextInput /> does not change.',
-        purpose: 'experimentation',
       },
     },
     enableCppPropsIteratorSetter: {
@@ -295,15 +295,6 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'experimentation',
       },
     },
-    enableTextPreallocationOptimisation: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-09-12',
-        description:
-          'Text preallocation optimisation where unnecessary work is removed.',
-        purpose: 'experimentation',
-      },
-    },
     enableUIConsistency: {
       defaultValue: false,
       metadata: {
@@ -415,6 +406,14 @@ const definitions: FeatureFlagDefinitions = {
         description:
           'Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.',
         purpose: 'operational',
+      },
+    },
+    useAlwaysAvailableJSErrorHandling: {
+      defaultValue: false,
+      metadata: {
+        description:
+          'In Bridgeless mode, use the always available javascript error reporting pipeline.',
+        purpose: 'release',
       },
     },
     useFabricInterop: {

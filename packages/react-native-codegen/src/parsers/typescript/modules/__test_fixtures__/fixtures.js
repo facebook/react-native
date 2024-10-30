@@ -900,7 +900,7 @@ export type CustomDeviceEvent = {
 export interface Spec extends TurboModule {
   readonly getCallback: () => () => void;
   readonly getMixed: (arg: unknown) => unknown;
-  readonly getEnums: (quality: Quality, resolution?: Resolution, stringOptions: StringOptions) => string;
+  readonly getEnums: (quality: Quality, resolution?: Resolution, stringOptions: StringOptions) => Quality;
   readonly getBinaryTreeNode: (arg: BinaryTreeNode) => BinaryTreeNode;
   readonly getGraphNode: (arg: GraphNode) => GraphNode;
   readonly getMap: (arg: {[a: string]: number | null;}) => {[b: string]: number | null;};

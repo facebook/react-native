@@ -288,6 +288,19 @@ const examples: Array<RNTesterModuleExample> = [
     },
   },
   {
+    name: 'stubbyHorizontalScrollView',
+    title: '<ScrollView> (horizontal = true) in RTL not filling content\n',
+    description:
+      'A horizontal RTL ScrollView whose content is smaller thatn its containner',
+    render(): React.Node {
+      return (
+        <View testID="stubby-horizontal-rtl-scrollview">
+          <HorizontalScrollView direction="rtl" itemCount={1} />
+        </View>
+      );
+    },
+  },
+  {
     title: '<ScrollView> enable & disable\n',
     description: 'ScrollView scrolling behaviour can be disabled and enabled',
     render(): React.Node {
@@ -541,10 +554,16 @@ const AndroidScrollBarOptions = () => {
   );
 };
 
-const HorizontalScrollView = (props: {direction: 'ltr' | 'rtl'}) => {
+const HorizontalScrollView = (props: {
+  direction: 'ltr' | 'rtl',
+  itemCount?: number,
+}) => {
   const {direction} = props;
   const scrollRef = React.useRef<?React.ElementRef<typeof ScrollView>>();
   const title = direction === 'ltr' ? 'LTR Layout' : 'RTL Layout';
+  const items =
+    props.itemCount == null ? ITEMS : ITEMS.slice(0, props.itemCount);
+
   return (
     <View style={{direction}}>
       <RNTesterText style={styles.text}>{title}</RNTesterText>
@@ -555,7 +574,7 @@ const HorizontalScrollView = (props: {direction: 'ltr' | 'rtl'}) => {
         horizontal={true}
         style={[styles.scrollView, styles.horizontalScrollView]}
         testID={'scroll_horizontal'}>
-        {ITEMS.map(createItemRow)}
+        {items.map(createItemRow)}
       </ScrollView>
       <Button
         label="Scroll to start"

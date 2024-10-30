@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<fb9aaa744fdec9a307fa155ec7698700>>
+ * @generated SignedSource<<2964ff45378547dd40a9b0df440f8869>>
  */
 
 /**
@@ -14,7 +14,7 @@
  *   packages/react-native/scripts/featureflags/ReactNativeFeatureFlags.config.js.
  *
  * To regenerate this code, run the following script from the repo root:
- *   yarn featureflags-update
+ *   yarn featureflags --update
  */
 
 #pragma once
@@ -51,11 +51,11 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return true;
   }
 
-  bool enableBridgelessArchitecture() override {
-    return false;
+  bool enableAndroidLineHeightCentering() override {
+    return true;
   }
 
-  bool enableCleanTextInputYogaNode() override {
+  bool enableBridgelessArchitecture() override {
     return false;
   }
 
@@ -135,10 +135,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool enableTextPreallocationOptimisation() override {
-    return false;
-  }
-
   bool enableUIConsistency() override {
     return false;
   }
@@ -188,6 +184,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool traceTurboModulePromiseRejectionsOnAndroid() override {
+    return false;
+  }
+
+  bool useAlwaysAvailableJSErrorHandling() override {
     return false;
   }
 

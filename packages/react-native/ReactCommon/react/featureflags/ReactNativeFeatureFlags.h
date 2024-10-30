@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<78b22c7bd96a32f5a661ef0c3f8e0011>>
+ * @generated SignedSource<<e81b275213e8668a8cd22cd40eea70af>>
  */
 
 /**
@@ -14,7 +14,7 @@
  *   packages/react-native/scripts/featureflags/ReactNativeFeatureFlags.config.js.
  *
  * To regenerate this code, run the following script from the repo root:
- *   yarn featureflags-update
+ *   yarn featureflags --update
  */
 
 #pragma once
@@ -73,11 +73,6 @@ class ReactNativeFeatureFlags {
    * Feature flag to enable the new bridgeless architecture. Note: Enabling this will force enable the following flags: `useTurboModules` & `enableFabricRenderer.
    */
   RN_EXPORT static bool enableBridgelessArchitecture();
-
-  /**
-   * Clean yoga node when <TextInput /> does not change.
-   */
-  RN_EXPORT static bool enableCleanTextInputYogaNode();
 
   /**
    * Enable prop iterator setter-style construction of Props in C++ (this flag is not used in Java).
@@ -175,11 +170,6 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableSynchronousStateUpdates();
 
   /**
-   * Text preallocation optimisation where unnecessary work is removed.
-   */
-  RN_EXPORT static bool enableTextPreallocationOptimisation();
-
-  /**
    * Ensures that JavaScript always has a consistent view of the state of the UI (e.g.: commits done in other threads are not immediately propagated to JS during its execution).
    */
   RN_EXPORT static bool enableUIConsistency();
@@ -243,6 +233,11 @@ class ReactNativeFeatureFlags {
    * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.
    */
   RN_EXPORT static bool traceTurboModulePromiseRejectionsOnAndroid();
+
+  /**
+   * In Bridgeless mode, use the always available javascript error reporting pipeline.
+   */
+  RN_EXPORT static bool useAlwaysAvailableJSErrorHandling();
 
   /**
    * Should this application enable the Fabric Interop Layer for Android? If yes, the application will behave so that it can accept non-Fabric components and render them on Fabric. This toggle is controlling extra logic such as custom event dispatching that are needed for the Fabric Interop Layer to work correctly.

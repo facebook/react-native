@@ -9,6 +9,7 @@
 
 #include <react/renderer/attributedstring/ParagraphAttributes.h>
 #include <react/renderer/components/text/BaseTextProps.h>
+#include <react/renderer/components/textinput/basePrimitives.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/graphics/Color.h>
@@ -66,6 +67,12 @@ class BaseTextInputProps : public ViewProps, public BaseTextProps {
 
   bool editable{true};
   bool readOnly{false};
+
+  SubmitBehavior submitBehavior{SubmitBehavior::Default};
+
+  bool multiline{false};
+
+  SubmitBehavior getNonDefaultSubmitBehavior() const;
 };
 
 } // namespace facebook::react

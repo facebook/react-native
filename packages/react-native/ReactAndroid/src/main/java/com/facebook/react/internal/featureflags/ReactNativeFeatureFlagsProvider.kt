@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3cb50720967bff1ec7b9744e60b9a295>>
+ * @generated SignedSource<<0c6450697814b66ae910d66f278213ef>>
  */
 
 /**
@@ -14,7 +14,7 @@
  *   packages/react-native/scripts/featureflags/ReactNativeFeatureFlags.config.js.
  *
  * To regenerate this code, run the following script from the repo root:
- *   yarn featureflags-update
+ *   yarn featureflags --update
  */
 
 package com.facebook.react.internal.featureflags
@@ -36,8 +36,6 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun enableAlignItemsBaselineOnFabricIOS(): Boolean
 
   @DoNotStrip public fun enableBridgelessArchitecture(): Boolean
-
-  @DoNotStrip public fun enableCleanTextInputYogaNode(): Boolean
 
   @DoNotStrip public fun enableCppPropsIteratorSetter(): Boolean
 
@@ -77,8 +75,6 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableSynchronousStateUpdates(): Boolean
 
-  @DoNotStrip public fun enableTextPreallocationOptimisation(): Boolean
-
   @DoNotStrip public fun enableUIConsistency(): Boolean
 
   @DoNotStrip public fun enableViewRecycling(): Boolean
@@ -104,6 +100,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun setAndroidLayoutDirection(): Boolean
 
   @DoNotStrip public fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean
+
+  @DoNotStrip public fun useAlwaysAvailableJSErrorHandling(): Boolean
 
   @DoNotStrip public fun useFabricInterop(): Boolean
 
