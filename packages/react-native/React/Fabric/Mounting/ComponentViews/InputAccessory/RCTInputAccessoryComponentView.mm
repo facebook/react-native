@@ -77,6 +77,14 @@ static UIView<RCTBackedTextInputViewProtocol> *_Nullable RCTFindTextInputWithNat
   }
 }
 
+- (void)willMoveToSuperview:(UIView *)newSuperview
+{
+  [super willMoveToSuperview:newSuperview];
+  if (!newSuperview) {
+    [_contentView removeFromSuperview];
+  }
+}
+
 - (BOOL)canBecomeFirstResponder
 {
   return true;
