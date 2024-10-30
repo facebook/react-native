@@ -10,6 +10,7 @@
 #import <UIKit/UIKit.h>
 #import "RCTRootViewFactory.h"
 #import "RCTUIConfiguratorProtocol.h"
+#import "RCTArchConfiguratorProtocol.h"
 
 @class RCTBridge;
 @protocol RCTBridgeDelegate;
@@ -57,7 +58,7 @@ NS_ASSUME_NONNULL_BEGIN
  *   - (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass
  */
 @interface RCTAppDelegate
-    : UIResponder <UIApplicationDelegate, UISceneDelegate, RCTBridgeDelegate, RCTUIConfiguratorProtocol>
+    : UIResponder <UIApplicationDelegate, UISceneDelegate, RCTBridgeDelegate, RCTUIConfiguratorProtocol, RCTArchConfiguratorProtocol>
 
 /// The window object, used to render the UViewControllers
 @property (nonatomic, strong, nonnull) UIWindow *window;
@@ -106,27 +107,6 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 /// @return a dictionary that associate a component for the new renderer with his descriptor.
 - (NSDictionary<NSString *, Class<RCTComponentViewProtocol>> *)thirdPartyFabricComponents;
-
-/// This method controls whether the `turboModules` feature of the New Architecture is turned on or off.
-///
-/// @note: This is required to be rendering on Fabric (i.e. on the New Architecture).
-/// @return: `true` if the Turbo Native Module are enabled. Otherwise, it returns `false`.
-- (BOOL)turboModuleEnabled __attribute__((deprecated("Use newArchEnabled instead")));
-
-/// This method controls whether the App will use the Fabric renderer of the New Architecture or not.
-///
-/// @return: `true` if the Fabric Renderer is enabled. Otherwise, it returns `false`.
-- (BOOL)fabricEnabled __attribute__((deprecated("Use newArchEnabled instead")));
-
-/// This method controls whether React Native's new initialization layer is enabled.
-///
-/// @return: `true` if the new initialization layer is enabled. Otherwise returns `false`.
-- (BOOL)bridgelessEnabled __attribute__((deprecated("Use newArchEnabled instead")));
-
-/// This method controls whether React Native uses new Architecture.
-///
-/// @return: `true` if the new architecture is enabled. Otherwise returns `false`.
-- (BOOL)newArchEnabled;
 
 /// Return the bundle URL for the main bundle.
 - (NSURL *__nullable)bundleURL;
