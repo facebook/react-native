@@ -9,6 +9,7 @@
 #import <React/RCTConvert.h>
 #import <UIKit/UIKit.h>
 #import "RCTRootViewFactory.h"
+#import "RCTUIConfiguratorProtocol.h"
 
 @class RCTBridge;
 @protocol RCTBridgeDelegate;
@@ -55,7 +56,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                          (const facebook::react::ObjCTurboModule::InitParams &)params
  *   - (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass
  */
-@interface RCTAppDelegate : UIResponder <UIApplicationDelegate, UISceneDelegate, RCTBridgeDelegate>
+@interface RCTAppDelegate
+    : UIResponder <UIApplicationDelegate, UISceneDelegate, RCTBridgeDelegate, RCTUIConfiguratorProtocol>
 
 /// The window object, used to render the UViewControllers
 @property (nonatomic, strong, nonnull) UIWindow *window;
@@ -96,48 +98,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (UIView *)createRootViewWithBridge:(RCTBridge *)bridge
                           moduleName:(NSString *)moduleName
                            initProps:(NSDictionary *)initProps;
-/**
- * This method can be used to customize the rootView that is passed to React Native.
- * A typical example is to override this method in the AppDelegate to change the background color.
- * To achieve this, add in your `AppDelegate.mm`:
- * ```
- * - (void)customizeRootView:(RCTRootView *)rootView
- * {
- *   rootView.backgroundColor = [UIColor colorWithDynamicProvider:^UIColor *(UITraitCollection *traitCollection) {
- *     if ([traitCollection userInterfaceStyle] == UIUserInterfaceStyleDark) {
- *       return [UIColor blackColor];
- *     } else {
- *       return [UIColor whiteColor];
- *     }
- *   }];
- * }
- * ```
- *
- * @parameter: rootView - The root view to customize.
- */
-- (void)customizeRootView:(RCTRootView *)rootView;
-
-/**
- * It creates the RootViewController.
- * By default, it creates a new instance of a `UIViewController`.
- * You can override it to provide your own initial ViewController.
- *
- * @return: an instance of `UIViewController`.
- */
-- (UIViewController *)createRootViewController;
-
-/**
- * It assigns the rootView to the rootViewController
- * By default, it assigns the rootView to the view property of the rootViewController
- * If you are not using a simple UIViewController, then there could be other methods to use to setup the rootView.
- * For example: UISplitViewController requires `setViewController(_:for:)`
- */
-- (void)setRootView:(UIView *)rootView toRootViewController:(UIViewController *)rootViewController;
-
-/**
- * The default `RCTColorSpace` for the app. It defaults to `RCTColorSpaceSRGB`.
- */
-@property (nonatomic, readonly) RCTColorSpace defaultColorSpace;
 
 /// This method returns a map of Component Descriptors and Components classes that needs to be registered in the
 /// new renderer. The Component Descriptor is a string which represent the name used in JS to refer to the native
