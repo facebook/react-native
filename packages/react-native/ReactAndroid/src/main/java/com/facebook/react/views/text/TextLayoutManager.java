@@ -404,7 +404,7 @@ public class TextLayoutManager {
       }
 
       int hintWidth = (int) Math.ceil(desiredWidth);
-      layout =
+      StaticLayout.Builder builder =
           StaticLayout.Builder.obtain(text, 0, spanLength, paint, hintWidth)
               .setAlignment(alignment)
               .setLineSpacing(0.f, 1.f)
@@ -412,8 +412,13 @@ public class TextLayoutManager {
               .setBreakStrategy(textBreakStrategy)
               .setHyphenationFrequency(hyphenationFrequency)
               .setTextDirection(
-                  isScriptRTL ? TextDirectionHeuristics.RTL : TextDirectionHeuristics.LTR)
-              .build();
+                  isScriptRTL ? TextDirectionHeuristics.RTL : TextDirectionHeuristics.LTR);
+
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+        builder.setUseLineSpacingFromFallbacks(true);
+      }
+
+      layout = builder.build();
 
     } else if (boring != null && (unconstrainedWidth || boring.width <= width)) {
       int boringLayoutWidth = boring.width;
