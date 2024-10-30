@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7e78a7ec91d557297f869b964cc91eac>>
+ * @generated SignedSource<<9e5b9c5916fb4ed5d74205b6b3d78242>>
  */
 
 /**
@@ -30,6 +30,7 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var disableEventLoopOnBridgelessCache: Boolean? = null
   private var disableMountItemReorderingAndroidCache: Boolean? = null
   private var enableAlignItemsBaselineOnFabricIOSCache: Boolean? = null
+  private var enableAndroidLineHeightCenteringCache: Boolean? = null
   private var enableBridgelessArchitectureCache: Boolean? = null
   private var enableCppPropsIteratorSetterCache: Boolean? = null
   private var enableDeletionOfUnmountedViewsCache: Boolean? = null
@@ -129,6 +130,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.enableAlignItemsBaselineOnFabricIOS()
       accessedFeatureFlags.add("enableAlignItemsBaselineOnFabricIOS")
       enableAlignItemsBaselineOnFabricIOSCache = cached
+    }
+    return cached
+  }
+
+  override fun enableAndroidLineHeightCentering(): Boolean {
+    var cached = enableAndroidLineHeightCenteringCache
+    if (cached == null) {
+      cached = currentProvider.enableAndroidLineHeightCentering()
+      accessedFeatureFlags.add("enableAndroidLineHeightCentering")
+      enableAndroidLineHeightCenteringCache = cached
     }
     return cached
   }

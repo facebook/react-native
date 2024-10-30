@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ef77bba170be911320a9f8f2c1c98a9f>>
+ * @generated SignedSource<<0967b77da2fb7a064d563f1a6c43056f>>
  */
 
 /**
@@ -38,6 +38,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool disableEventLoopOnBridgeless();
   bool disableMountItemReorderingAndroid();
   bool enableAlignItemsBaselineOnFabricIOS();
+  bool enableAndroidLineHeightCentering();
   bool enableBridgelessArchitecture();
   bool enableCppPropsIteratorSetter();
   bool enableDeletionOfUnmountedViews();
@@ -91,7 +92,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 47> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 49> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> allowRecursiveCommitsWithSynchronousMountOnAndroid_;
@@ -99,6 +100,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> disableEventLoopOnBridgeless_;
   std::atomic<std::optional<bool>> disableMountItemReorderingAndroid_;
   std::atomic<std::optional<bool>> enableAlignItemsBaselineOnFabricIOS_;
+  std::atomic<std::optional<bool>> enableAndroidLineHeightCentering_;
   std::atomic<std::optional<bool>> enableBridgelessArchitecture_;
   std::atomic<std::optional<bool>> enableCppPropsIteratorSetter_;
   std::atomic<std::optional<bool>> enableDeletionOfUnmountedViews_;
