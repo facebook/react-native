@@ -54,18 +54,17 @@ Scheduler::Scheduler(
   auto weakRuntimeScheduler =
       contextContainer_->find<std::weak_ptr<RuntimeScheduler>>(
           "RuntimeScheduler");
-  react_native_assert(
-      weakRuntimeScheduler.has_value() &&
-      "Unexpected state: RuntimeScheduler was not provided.");
+  auto runtimeScheduler = weakRuntimeScheduler.has_value()
+      ? weakRuntimeScheduler.value().lock()
+      : nullptr;
 
-  auto runtimeScheduler = weakRuntimeScheduler.value().lock();
-
-  if (ReactNativeFeatureFlags::enableUIConsistency()) {
+  if (runtimeScheduler && ReactNativeFeatureFlags::enableUIConsistency()) {
     runtimeScheduler->setShadowTreeRevisionConsistencyManager(
         uiManager->getShadowTreeRevisionConsistencyManager());
   }
 
-  if (ReactNativeFeatureFlags::enableReportEventPaintTime()) {
+  if (runtimeScheduler &&
+      ReactNativeFeatureFlags::enableReportEventPaintTime()) {
     runtimeScheduler->setEventTimingDelegate(eventPerformanceLogger_.get());
   }
 
