@@ -126,6 +126,7 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
 {
   if (![self isDescendantOfView:scrollView.scrollView] || !_backedTextInputView.isFirstResponder) {
     // View is outside scroll view or it's not a first responder.
+    scrollView.firstResponderViewOutsideScrollView = _backedTextInputView;
     return;
   }
 
