@@ -388,7 +388,6 @@ const LOG_LEVELS = {
   error: 3,
 };
 
-
 function getNativeLogFunction(level) {
   return function () {
     let str;
