@@ -15,7 +15,7 @@ import type {
   NamedShape,
   NativeModuleAliasMap,
   NativeModuleEnumMap,
-  NativeModuleEnumMembers,
+  NativeModuleEnumMember,
   NativeModuleEnumMemberType,
   NativeModuleParamTypeAnnotation,
   Nullable,
@@ -240,7 +240,9 @@ export interface Parser {
   /**
    * Calculates enum's members
    */
-  parseEnumMembers(typeAnnotation: $FlowFixMe): NativeModuleEnumMembers;
+  parseEnumMembers(
+    typeAnnotation: $FlowFixMe,
+  ): $ReadOnlyArray<NativeModuleEnumMember>;
 
   /**
    * Given a node, it returns true if it is a module interface

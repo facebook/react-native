@@ -15,7 +15,7 @@ import type {
   NamedShape,
   NativeModuleAliasMap,
   NativeModuleEnumMap,
-  NativeModuleEnumMembers,
+  NativeModuleEnumMember,
   NativeModuleEnumMemberType,
   NativeModuleParamTypeAnnotation,
   Nullable,
@@ -223,7 +223,9 @@ class TypeScriptParser implements Parser {
     });
   }
 
-  parseEnumMembers(typeAnnotation: $FlowFixMe): NativeModuleEnumMembers {
+  parseEnumMembers(
+    typeAnnotation: $FlowFixMe,
+  ): $ReadOnlyArray<NativeModuleEnumMember> {
     return typeAnnotation.members.map(member => ({
       name: member.id.name,
       value: member.initializer?.value ?? member.id.name,

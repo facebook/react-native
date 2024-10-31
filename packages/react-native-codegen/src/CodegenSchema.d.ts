@@ -325,10 +325,10 @@ export interface NativeModuleBooleanTypeAnnotation {
   readonly type: 'BooleanTypeAnnotation';
 }
 
-export type NativeModuleEnumMembers = readonly {
+export type NativeModuleEnumMember = {
   readonly name: string;
   readonly value: string | number;
-}[];
+};
 
 export type NativeModuleEnumMemberType =
   | 'NumberTypeAnnotation'
@@ -344,7 +344,7 @@ export interface NativeModuleEnumDeclarationWithMembers {
   name: string;
   type: 'EnumDeclarationWithMembers';
   memberType: NativeModuleEnumMemberType;
-  members: NativeModuleEnumMembers;
+  members: readonly NativeModuleEnumMember[];
 }
 
 export interface NativeModuleGenericObjectTypeAnnotation {
