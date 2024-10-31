@@ -158,14 +158,16 @@ abstract class ReactExtension @Inject constructor(val project: Project) {
    * This function will read the autolinking configuration file and add Gradle dependencies to the
    * app. This function should be invoked inside the react {} block in the app's build.gradle and is
    * necessary for libraries to be linked correctly.
+   *
+   * @param method The method to use for linking dependencies. By default, it is `implementation`.
    */
-  fun autolinkLibrariesWithApp() {
+  fun autolinkLibrariesWithApp(method: String?) {
     val inputFile =
         project.rootProject.layout.buildDirectory
             .file("generated/autolinking/autolinking.json")
             .get()
             .asFile
-    val dependenciesToApply = getGradleDependenciesToApply(inputFile)
+    val dependenciesToApply = getGradleDependenciesToApply(inputFile, method ?: "implementation")
     dependenciesToApply.forEach { (configuration, path) ->
       project.dependencies.add(configuration, project.dependencies.project(mapOf("path" to path)))
     }
@@ -179,9 +181,10 @@ abstract class ReactExtension @Inject constructor(val project: Project) {
      * They will be applied to the Gradle project for linking the libraries.
      *
      * @param inputFile The file to read the autolinking configuration from.
+     * @param method The method to use for linking dependencies. By default, it is `implementation`.
      * @return A list of Gradle Configuration <-> Project name pairs.
      */
-    internal fun getGradleDependenciesToApply(inputFile: File): MutableList<Pair<String, String>> {
+    internal fun getGradleDependenciesToApply(inputFile: File, method: String = "implementation"): MutableList<Pair<String, String>> {
       val model = JsonUtils.fromAutolinkingConfigJson(inputFile)
       val result = mutableListOf<Pair<String, String>>()
       model
@@ -194,11 +197,11 @@ abstract class ReactExtension @Inject constructor(val project: Project) {
             val dependencyConfiguration = deps.platforms?.android?.dependencyConfiguration
             val buildTypes = deps.platforms?.android?.buildTypes ?: emptyList()
             if (buildTypes.isEmpty()) {
-              result.add((dependencyConfiguration ?: "implementation") to ":$nameCleansed")
+              result.add((dependencyConfiguration ?: method) to ":$nameCleansed")
             } else {
               buildTypes.forEach { buildType ->
                 result.add(
-                    (dependencyConfiguration ?: "${buildType}Implementation") to ":$nameCleansed")
+                    (dependencyConfiguration ?: "${buildType}${method.replaceFirstChar(Char::titlecase)}") to ":$nameCleansed")
               }
             }
           }
