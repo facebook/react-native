@@ -159,9 +159,8 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
 
     RCTFabricSurface *surface = [self.reactHost createSurfaceWithModuleName:moduleName initialProperties:initProps];
 
-    RCTSurfaceHostingProxyRootView *surfaceHostingProxyRootView = [[RCTSurfaceHostingProxyRootView alloc]
-        initWithSurface:surface
-        sizeMeasureMode:RCTSurfaceSizeMeasureModeWidthExact | RCTSurfaceSizeMeasureModeHeightExact];
+    RCTSurfaceHostingProxyRootView *surfaceHostingProxyRootView =
+        [[RCTSurfaceHostingProxyRootView alloc] initWithSurface:surface];
 
     surfaceHostingProxyRootView.backgroundColor = [UIColor systemBackgroundColor];
     if (self->_configuration.customizeRootView != nil) {

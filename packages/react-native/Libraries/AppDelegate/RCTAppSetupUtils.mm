@@ -53,7 +53,9 @@ RCTAppSetupDefaultRootView(RCTBridge *bridge, NSString *moduleName, NSDictionary
     id<RCTSurfaceProtocol> surface = [[RCTFabricSurface alloc] initWithBridge:bridge
                                                                    moduleName:moduleName
                                                             initialProperties:initialProperties];
-    return [[RCTSurfaceHostingProxyRootView alloc] initWithSurface:surface];
+    UIView *rootView = [[RCTSurfaceHostingProxyRootView alloc] initWithSurface:surface];
+    [surface start];
+    return rootView;
   }
   return [[RCTRootView alloc] initWithBridge:bridge moduleName:moduleName initialProperties:initialProperties];
 }
