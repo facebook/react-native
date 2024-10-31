@@ -55,6 +55,7 @@ const EventNames: Map<
       ['highTextContrastChanged', 'highTextContrastDidChange'],
       ['screenReaderChanged', 'touchExplorationDidChange'],
       ['accessibilityServiceChanged', 'accessibilityServiceDidChange'],
+      ['invertColorsChanged', 'invertColorDidChanged'],
     ])
   : new Map([
       ['announcementFinished', 'announcementFinished'],
@@ -138,7 +139,13 @@ const AccessibilityInfo = {
    */
   isInvertColorsEnabled(): Promise<boolean> {
     if (Platform.OS === 'android') {
-      return Promise.resolve(false);
+      return new Promise((resolve, reject) => {
+        if (NativeAccessibilityInfoAndroid != null) {
+          NativeAccessibilityInfoAndroid.isInvertColorsEnabled(resolve);
+        } else {
+          reject(null);
+        }
+      });
     } else {
       return new Promise((resolve, reject) => {
         if (NativeAccessibilityManagerIOS != null) {
