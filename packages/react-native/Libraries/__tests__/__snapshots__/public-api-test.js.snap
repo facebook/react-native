@@ -683,7 +683,7 @@ exports[`public API should not change unintentionally Libraries/Animated/bezier.
 exports[`public API should not change unintentionally Libraries/Animated/components/AnimatedFlatList.js 1`] = `
 "declare export default AnimatedComponentType<
   React.ElementConfig<typeof FlatList>,
-  React.ElementRef<typeof FlatList>,
+  FlatList<mixed>,
 >;
 "
 `;
@@ -5725,7 +5725,7 @@ declare class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
   setNativeProps(props: { [string]: mixed, ... }): void;
   constructor(props: Props<ItemT>): void;
   componentDidUpdate(prevProps: Props<ItemT>): void;
-  _listRef: ?React.ElementRef<typeof VirtualizedList>;
+  _listRef: ?VirtualizedList;
   _virtualizedListPairs: Array<ViewabilityConfigCallbackPair>;
   _captureRef: $FlowFixMe;
   _checkProps(props: Props<ItemT>): void;
