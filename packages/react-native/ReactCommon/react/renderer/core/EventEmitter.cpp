@@ -55,14 +55,6 @@ EventEmitter::EventEmitter(
     : eventTarget_(std::move(eventTarget)),
       eventDispatcher_(std::move(eventDispatcher)) {}
 
-void EventEmitter::dispatchUniqueEvent(
-    std::string type,
-    const folly::dynamic& payload) const {
-  dispatchUniqueEvent(std::move(type), [payload](jsi::Runtime& runtime) {
-    return valueFromDynamic(runtime, payload);
-  });
-}
-
 void EventEmitter::dispatchEvent(
     std::string type,
     const folly::dynamic& payload,
@@ -75,9 +67,27 @@ void EventEmitter::dispatchEvent(
       category);
 }
 
+void EventEmitter::dispatchUniqueEvent(
+    std::string type,
+    const folly::dynamic& payload) const {
+  dispatchUniqueEvent(std::move(type), [payload](jsi::Runtime& runtime) {
+    return valueFromDynamic(runtime, payload);
+  });
+}
+
 void EventEmitter::dispatchEvent(
     std::string type,
     const ValueFactory& payloadFactory,
+    RawEvent::Category category) const {
+  dispatchEvent(
+      std::move(type),
+      std::make_shared<ValueFactoryEventPayload>(payloadFactory),
+      category);
+}
+
+void EventEmitter::dispatchEvent(
+    std::string type,
+    SharedEventPayload payload,
     RawEvent::Category category) const {
   SystraceSection s("EventEmitter::dispatchEvent", "type", type);
 
@@ -88,7 +98,7 @@ void EventEmitter::dispatchEvent(
 
   eventDispatcher->dispatchEvent(RawEvent(
       normalizeEventType(std::move(type)),
-      std::make_shared<ValueFactoryEventPayload>(payloadFactory),
+      std::move(payload),
       eventTarget_,
       category));
 }
@@ -96,6 +106,14 @@ void EventEmitter::dispatchEvent(
 void EventEmitter::dispatchUniqueEvent(
     std::string type,
     const ValueFactory& payloadFactory) const {
+  dispatchUniqueEvent(
+      std::move(type),
+      std::make_shared<ValueFactoryEventPayload>(payloadFactory));
+}
+
+void EventEmitter::dispatchUniqueEvent(
+    std::string type,
+    SharedEventPayload payload) const {
   SystraceSection s("EventEmitter::dispatchUniqueEvent");
 
   auto eventDispatcher = eventDispatcher_.lock();
@@ -105,7 +123,7 @@ void EventEmitter::dispatchUniqueEvent(
 
   eventDispatcher->dispatchUniqueEvent(RawEvent(
       normalizeEventType(std::move(type)),
-      std::make_shared<ValueFactoryEventPayload>(payloadFactory),
+      std::move(payload),
       eventTarget_,
       RawEvent::Category::Continuous));
 }
