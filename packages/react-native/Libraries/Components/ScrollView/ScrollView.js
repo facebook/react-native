@@ -1675,6 +1675,8 @@ class ScrollView extends React.Component<Props, State> {
           const prevIndex = stickyHeaderIndices[indexOfIndex - 1];
           const nextKey = this._getKeyForIndex(nextIndex, children);
           const prevKey = this._getKeyForIndex(prevIndex, children);
+          const prevHeaderLayoutY = prevKey !== undefined ? this._headerLayoutYs.get(prevKey) : undefined;
+          const prevHeaderLayoutHeight = prevKey !== undefined ? this._headerLayoutHeights.get(prevKey) : undefined;
           const StickyHeaderComponent =
             this.props.StickyHeaderComponent || ScrollViewStickyHeader;
           return (
@@ -1683,9 +1685,8 @@ class ScrollView extends React.Component<Props, State> {
               ref={ref => this._setStickyHeaderRef(key, ref)}
               nextHeaderLayoutY={this._headerLayoutYs.get(nextKey)}
               prevHeaderLayoutY={
-                prevKey !== undefined
-                  ? (this._headerLayoutYs.get(prevKey) ?? 0) +
-                    (this._headerLayoutHeights.get(prevKey) ?? 0)
+                prevHeaderLayoutY !== undefined && prevHeaderLayoutHeight !== undefined
+                  ? prevHeaderLayoutY + prevHeaderLayoutHeight
                   : undefined
               }
               onLayout={event => this._onStickyHeaderLayout(index, event, key)}
