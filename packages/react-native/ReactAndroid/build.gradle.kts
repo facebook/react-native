@@ -533,9 +533,7 @@ android {
             "-DREACT_BUILD_DIR=$buildDir",
             "-DANDROID_STL=c++_shared",
             "-DANDROID_TOOLCHAIN=clang",
-            // Due to https://github.com/android/ndk/issues/1693 we're losing Android
-            // specific compilation flags. This can be removed once we moved to NDK 25/26
-            "-DANDROID_USE_LEGACY_TOOLCHAIN_FILE=ON")
+            "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON")
 
         targets(
             "reactnative",
