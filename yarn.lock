@@ -5571,15 +5571,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"builtins@npm:^5.0.0":
-  version: 5.0.1
-  resolution: "builtins@npm:5.0.1"
-  dependencies:
-    semver: "npm:^7.0.0"
-  checksum: 10c0/9390a51a9abbc0233dac79c66715f927508b9d0c62cb7a42448fe8c52def60c707e6e9eb2cc4c9b7aba11601899935bca4e4064ae5e19c04c7e1bb9309e69134
-  languageName: node
-  linkType: hard
-
 "bytes@npm:3.0.0":
   version: 3.0.0
   resolution: "bytes@npm:3.0.0"
@@ -6664,6 +6655,13 @@ __metadata:
   version: 1.0.2
   resolution: "encodeurl@npm:1.0.2"
   checksum: 10c0/f6c2387379a9e7c1156c1c3d4f9cb7bb11cf16dd4c1682e1f6746512564b053df5781029b6061296832b59fb22f459dbe250386d217c2f6e203601abb2ee0bec
+  languageName: node
+  linkType: hard
+
+"encodeurl@npm:~2.0.0":
+  version: 2.0.0
+  resolution: "encodeurl@npm:2.0.0"
+  checksum: 10c0/5d317306acb13e6590e28e27924c754163946a2480de11865c991a3a7eed4315cd3fba378b543ca145829569eefe9b899f3d84bb09870f675ae60bc924b01ceb
   languageName: node
   linkType: hard
 
@@ -8582,6 +8580,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ip-address@npm:^9.0.5":
+  version: 9.0.5
+  resolution: "ip-address@npm:9.0.5"
+  dependencies:
+    jsbn: "npm:1.1.0"
+    sprintf-js: "npm:^1.1.3"
+  checksum: 10c0/331cd07fafcb3b24100613e4b53e1a2b4feab11e671e655d46dc09ee233da5011284d09ca40c4ecbdfe1d0004f462958675c224a804259f2f78d2465a87824bc
+  languageName: node
+  linkType: hard
+
 "ip@npm:^2.0.0":
   version: 2.0.0
   resolution: "ip@npm:2.0.0"
@@ -9601,6 +9609,13 @@ __metadata:
   bin:
     js-yaml: bin/js-yaml.js
   checksum: 10c0/184a24b4eaacfce40ad9074c64fd42ac83cf74d8c8cd137718d456ced75051229e5061b8633c3366b8aada17945a7a356b337828c19da92b51ae62126575018f
+  languageName: node
+  linkType: hard
+
+"jsbn@npm:1.1.0":
+  version: 1.1.0
+  resolution: "jsbn@npm:1.1.0"
+  checksum: 10c0/4f907fb78d7b712e11dea8c165fe0921f81a657d3443dde75359ed52eb2b5d33ce6773d97985a089f09a65edd80b11cb75c767b57ba47391fee4c969f7215c96
   languageName: node
   linkType: hard
 
@@ -10776,12 +10791,12 @@ __metadata:
   linkType: hard
 
 "minipass-json-stream@npm:^1.0.1":
-  version: 1.0.1
-  resolution: "minipass-json-stream@npm:1.0.1"
+  version: 1.0.2
+  resolution: "minipass-json-stream@npm:1.0.2"
   dependencies:
     jsonparse: "npm:^1.3.1"
     minipass: "npm:^3.0.0"
-  checksum: 10c0/9285cbbea801e7bd6a923e7fb66d9c47c8bad880e70b29f0b8ba220c283d065f47bfa887ef87fd1b735d39393ecd53bb13d40c260354e8fcf93d47cf4bf64e9c
+  checksum: 10c0/c2fc0d9719dd445d08de82bb449b51c59c3609a08064dd270da8bc76e4e542f4f354b5b1ef3b6e2f2f5b621b25e21ffbd0f0fa26ba6a80121fc19c3ad0d4db2c
   languageName: node
   linkType: hard
 
@@ -12578,9 +12593,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"send@npm:0.18.0":
-  version: 0.18.0
-  resolution: "send@npm:0.18.0"
+"send@npm:0.19.0":
+  version: 0.19.0
+  resolution: "send@npm:0.19.0"
   dependencies:
     debug: "npm:2.6.9"
     depd: "npm:2.0.0"
@@ -12595,7 +12610,7 @@ __metadata:
     on-finished: "npm:2.4.1"
     range-parser: "npm:~1.2.1"
     statuses: "npm:2.0.1"
-  checksum: 10c0/0eb134d6a51fc13bbcb976a1f4214ea1e33f242fae046efc311e80aff66c7a43603e26a79d9d06670283a13000e51be6e0a2cb80ff0942eaf9f1cd30b7ae736a
+  checksum: 10c0/ea3f8a67a8f0be3d6bf9080f0baed6d2c51d11d4f7b4470de96a5029c598a7011c497511ccc28968b70ef05508675cebff27da9151dd2ceadd60be4e6cf845e3
   languageName: node
   linkType: hard
 
@@ -12607,14 +12622,14 @@ __metadata:
   linkType: hard
 
 "serve-static@npm:^1.13.1":
-  version: 1.15.0
-  resolution: "serve-static@npm:1.15.0"
+  version: 1.16.2
+  resolution: "serve-static@npm:1.16.2"
   dependencies:
-    encodeurl: "npm:~1.0.2"
+    encodeurl: "npm:~2.0.0"
     escape-html: "npm:~1.0.3"
     parseurl: "npm:~1.3.3"
-    send: "npm:0.18.0"
-  checksum: 10c0/fa9f0e21a540a28f301258dfe1e57bb4f81cd460d28f0e973860477dd4acef946a1f41748b5bd41c73b621bea2029569c935faa38578fd34cd42a9b4947088ba
+    send: "npm:0.19.0"
+  checksum: 10c0/528fff6f5e12d0c5a391229ad893910709bc51b5705962b09404a1d813857578149b8815f35d3ee5752f44cd378d0f31669d4b1d7e2d11f41e08283d5134bd1f
   languageName: node
   linkType: hard
 
@@ -12788,7 +12803,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"socks@npm:^2.6.2, socks@npm:^2.7.1":
+"socks@npm:^2.6.2":
+  version: 2.8.3
+  resolution: "socks@npm:2.8.3"
+  dependencies:
+    ip-address: "npm:^9.0.5"
+    smart-buffer: "npm:^4.2.0"
+  checksum: 10c0/d54a52bf9325165770b674a67241143a3d8b4e4c8884560c4e0e078aace2a728dffc7f70150660f51b85797c4e1a3b82f9b7aa25e0a0ceae1a243365da5c51a7
+  languageName: node
+  linkType: hard
+
+"socks@npm:^2.7.1":
   version: 2.7.1
   resolution: "socks@npm:2.7.1"
   dependencies:
@@ -12879,6 +12904,13 @@ __metadata:
   version: 1.1.0
   resolution: "split-on-first@npm:1.1.0"
   checksum: 10c0/56df8344f5a5de8521898a5c090023df1d8b8c75be6228f56c52491e0fc1617a5236f2ac3a066adb67a73231eac216ccea7b5b4a2423a543c277cb2f48d24c29
+  languageName: node
+  linkType: hard
+
+"sprintf-js@npm:^1.1.3":
+  version: 1.1.3
+  resolution: "sprintf-js@npm:1.1.3"
+  checksum: 10c0/09270dc4f30d479e666aee820eacd9e464215cdff53848b443964202bf4051490538e5dd1b42e1a65cf7296916ca17640aebf63dae9812749c7542ee5f288dec
   languageName: node
   linkType: hard
 
@@ -13863,11 +13895,9 @@ __metadata:
   linkType: hard
 
 "validate-npm-package-name@npm:^5.0.0":
-  version: 5.0.0
-  resolution: "validate-npm-package-name@npm:5.0.0"
-  dependencies:
-    builtins: "npm:^5.0.0"
-  checksum: 10c0/36a9067650f5b90c573a0d394b89ddffb08fe58a60507d7938ad7c38f25055cc5c6bf4a10fbd604abe1f4a31062cbe0dfa8e7ccad37b249da32e7b71889c079e
+  version: 5.0.1
+  resolution: "validate-npm-package-name@npm:5.0.1"
+  checksum: 10c0/903e738f7387404bb72f7ac34e45d7010c877abd2803dc2d614612527927a40a6d024420033132e667b1bade94544b8a1f65c9431a4eb30d0ce0d80093cd1f74
   languageName: node
   linkType: hard
 
@@ -14151,22 +14181,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ws@npm:^7":
-  version: 7.5.9
-  resolution: "ws@npm:7.5.9"
-  peerDependencies:
-    bufferutil: ^4.0.1
-    utf-8-validate: ^5.0.2
-  peerDependenciesMeta:
-    bufferutil:
-      optional: true
-    utf-8-validate:
-      optional: true
-  checksum: 10c0/aec4ef4eb65821a7dde7b44790f8699cfafb7978c9b080f6d7a98a7f8fc0ce674c027073a78574c94786ba7112cc90fa2cc94fc224ceba4d4b1030cff9662494
-  languageName: node
-  linkType: hard
-
-"ws@npm:^7.5.10":
+"ws@npm:^7, ws@npm:^7.5.10":
   version: 7.5.10
   resolution: "ws@npm:7.5.10"
   peerDependencies:
