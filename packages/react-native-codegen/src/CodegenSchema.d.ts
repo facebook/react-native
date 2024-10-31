@@ -286,6 +286,11 @@ export interface UnsafeAnyTypeAnnotation {
   readonly type: 'AnyTypeAnnotation',
 }
 
+export interface NativeModuleNumberLiteralTypeAnnotation {
+  readonly type: 'NumberLiteralTypeAnnotation';
+  readonly value: number;
+}
+
 export interface NativeModuleStringTypeAnnotation {
   readonly type: 'StringTypeAnnotation';
 }
@@ -380,6 +385,7 @@ export type NativeModuleEventEmitterBaseTypeAnnotation =
   | NativeModuleFloatTypeAnnotation
   | NativeModuleInt32TypeAnnotation
   | NativeModuleNumberTypeAnnotation
+  | NativeModuleNumberLiteralTypeAnnotation
   | NativeModuleStringTypeAnnotation
   | NativeModuleStringLiteralTypeAnnotation
   | NativeModuleStringLiteralUnionTypeAnnotation
@@ -399,6 +405,7 @@ export type NativeModuleBaseTypeAnnotation =
   | NativeModuleStringLiteralTypeAnnotation
   | NativeModuleStringLiteralUnionTypeAnnotation
   | NativeModuleNumberTypeAnnotation
+  | NativeModuleNumberLiteralTypeAnnotation
   | NativeModuleInt32TypeAnnotation
   | NativeModuleDoubleTypeAnnotation
   | NativeModuleFloatTypeAnnotation
