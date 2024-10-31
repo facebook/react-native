@@ -260,7 +260,9 @@ class ReactPlugin : Plugin<Project> {
     project.tasks.named("preBuild", Task::class.java).dependsOn(generatePackageListTask)
 
     // We tell Android Gradle Plugin that inside /build/generated/autolinking/src/main/java there
-    // are sources to be compiled as well.
+    // are sources to be compiled as well. We only compile this code if project is not a library.
+    // Without this, the compiler will link the generated files to each of the library including
+    // the ones from OSS, which is not expected.
     if (!isLibrary) {
       project.extensions.getByType(AndroidComponentsExtension::class.java).apply {
         onVariants(selector().all()) { variant ->
