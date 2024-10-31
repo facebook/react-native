@@ -12,6 +12,7 @@
 
 import ContentInset from './SectionList-contentInset';
 import inverted from './SectionList-inverted';
+import invertedStickyHeadersEnabled from './SectionList-inverted-stickyHeadersEnabled';
 import onEndReached from './SectionList-onEndReached';
 import onViewableItemsChanged from './SectionList-onViewableItemsChanged';
 import onViewableItemsChanged_horizontal_noWaitForInteraction from './SectionList-onViewableItemsChanged-horizontal-noWaitForInteraction';
@@ -22,7 +23,6 @@ import onViewableItemsChanged_offScreen_noWaitForInteraction from './SectionList
 import onViewableItemsChanged_waitForInteraction from './SectionList-onViewableItemsChanged-waitForInteraction';
 import Scrollable from './SectionList-scrollable';
 import stickyHeadersEnabled from './SectionList-stickyHeadersEnabled';
-import invertedStickyHeadersEnabled from './SectionList-inverted-stickyHeadersEnabled';
 import withSeparators from './SectionList-withSeparators';
 
 exports.title = 'SectionList';
