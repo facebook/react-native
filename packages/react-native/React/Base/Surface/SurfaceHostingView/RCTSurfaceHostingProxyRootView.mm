@@ -53,11 +53,8 @@ static RCTRootViewSizeFlexibility convertToRootViewSizeFlexibility(RCTSurfaceSiz
 
 - (instancetype)initWithSurface:(id<RCTSurfaceProtocol>)surface
 {
-  if (self = [super initWithSurface:surface
-                    sizeMeasureMode:RCTSurfaceSizeMeasureModeWidthExact | RCTSurfaceSizeMeasureModeHeightExact]) {
-    [surface start];
-  }
-  return self;
+  return [super initWithSurface:surface
+                sizeMeasureMode:RCTSurfaceSizeMeasureModeWidthExact | RCTSurfaceSizeMeasureModeHeightExact];
 }
 
 RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
