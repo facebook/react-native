@@ -60,7 +60,9 @@ void TouchEventEmitter::dispatchPointerEvent(
     RawEvent::Category category) const {
   dispatchEvent(
       std::move(type),
-      std::make_shared<PointerEvent>(std::move(event)),
+      [event = std::move(event)](jsi::Runtime& runtime) {
+        return event.asJSIValue(runtime);
+      },
       category);
 }
 
@@ -102,7 +104,9 @@ void TouchEventEmitter::onPointerDown(PointerEvent event) const {
 
 void TouchEventEmitter::onPointerMove(PointerEvent event) const {
   dispatchUniqueEvent(
-      "pointerMove", std::make_shared<PointerEvent>(std::move(event)));
+      "touchMove", [event = std::move(event)](jsi::Runtime& runtime) {
+        return event.asJSIValue(runtime);
+      });
 }
 
 void TouchEventEmitter::onPointerUp(PointerEvent event) const {

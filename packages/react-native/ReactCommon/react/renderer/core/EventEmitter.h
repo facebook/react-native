@@ -88,11 +88,6 @@ class EventEmitter {
       const folly::dynamic& payload,
       RawEvent::Category category = RawEvent::Category::Unspecified) const;
 
-  void dispatchEvent(
-      std::string type,
-      SharedEventPayload payload,
-      RawEvent::Category category = RawEvent::Category::Unspecified) const;
-
   void dispatchUniqueEvent(std::string type, const folly::dynamic& payload)
       const;
 
@@ -100,8 +95,6 @@ class EventEmitter {
       std::string type,
       const ValueFactory& payloadFactory =
           EventEmitter::defaultPayloadFactory()) const;
-
-  void dispatchUniqueEvent(std::string type, SharedEventPayload payload) const;
 
  private:
   friend class UIManagerBinding;
