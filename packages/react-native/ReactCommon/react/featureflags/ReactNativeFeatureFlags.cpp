@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0ce2cf26cad2385dc49eb4bcfa0cceec>>
+ * @generated SignedSource<<f2175cbbe38a66b9aa5c3f0feaa07462>>
  */
 
 /**
@@ -14,7 +14,7 @@
  *   packages/react-native/scripts/featureflags/ReactNativeFeatureFlags.config.js.
  *
  * To regenerate this code, run the following script from the repo root:
- *   yarn featureflags-update
+ *   yarn featureflags --update
  */
 
 #include "ReactNativeFeatureFlags.h"
@@ -42,6 +42,10 @@ bool ReactNativeFeatureFlags::disableEventLoopOnBridgeless() {
   return getAccessor().disableEventLoopOnBridgeless();
 }
 
+bool ReactNativeFeatureFlags::disableMountItemReorderingAndroid() {
+  return getAccessor().disableMountItemReorderingAndroid();
+}
+
 bool ReactNativeFeatureFlags::enableAlignItemsBaselineOnFabricIOS() {
   return getAccessor().enableAlignItemsBaselineOnFabricIOS();
 }
@@ -54,8 +58,8 @@ bool ReactNativeFeatureFlags::enableBridgelessArchitecture() {
   return getAccessor().enableBridgelessArchitecture();
 }
 
-bool ReactNativeFeatureFlags::enableCleanTextInputYogaNode() {
-  return getAccessor().enableCleanTextInputYogaNode();
+bool ReactNativeFeatureFlags::enableCppPropsIteratorSetter() {
+  return getAccessor().enableCppPropsIteratorSetter();
 }
 
 bool ReactNativeFeatureFlags::enableDeletionOfUnmountedViews() {
@@ -102,6 +106,10 @@ bool ReactNativeFeatureFlags::enableLongTaskAPI() {
   return getAccessor().enableLongTaskAPI();
 }
 
+bool ReactNativeFeatureFlags::enableNewBackgroundAndBorderDrawables() {
+  return getAccessor().enableNewBackgroundAndBorderDrawables();
+}
+
 bool ReactNativeFeatureFlags::enablePreciseSchedulingForPremountItemsOnAndroid() {
   return getAccessor().enablePreciseSchedulingForPremountItemsOnAndroid();
 }
@@ -116,10 +124,6 @@ bool ReactNativeFeatureFlags::enableReportEventPaintTime() {
 
 bool ReactNativeFeatureFlags::enableSynchronousStateUpdates() {
   return getAccessor().enableSynchronousStateUpdates();
-}
-
-bool ReactNativeFeatureFlags::enableTextPreallocationOptimisation() {
-  return getAccessor().enableTextPreallocationOptimisation();
 }
 
 bool ReactNativeFeatureFlags::enableUIConsistency() {
@@ -172,6 +176,10 @@ bool ReactNativeFeatureFlags::setAndroidLayoutDirection() {
 
 bool ReactNativeFeatureFlags::traceTurboModulePromiseRejectionsOnAndroid() {
   return getAccessor().traceTurboModulePromiseRejectionsOnAndroid();
+}
+
+bool ReactNativeFeatureFlags::useAlwaysAvailableJSErrorHandling() {
+  return getAccessor().useAlwaysAvailableJSErrorHandling();
 }
 
 bool ReactNativeFeatureFlags::useFabricInterop() {

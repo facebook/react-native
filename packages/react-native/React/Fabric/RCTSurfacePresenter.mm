@@ -26,14 +26,12 @@
 #import <React/RCTSurfaceView.h>
 #import <React/RCTUtils.h>
 
-#import <react/config/ReactNativeConfig.h>
 #import <react/featureflags/ReactNativeFeatureFlags.h>
 #import <react/renderer/componentregistry/ComponentDescriptorFactory.h>
 #import <react/renderer/components/text/BaseTextProps.h>
 #import <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #import <react/renderer/scheduler/SchedulerToolbox.h>
 #import <react/utils/ContextContainer.h>
-#import <react/utils/CoreFeatures.h>
 #import <react/utils/ManagedObjectWrapper.h>
 #import "AppleEventBeat.h"
 
@@ -227,12 +225,6 @@ using namespace facebook::react;
 
 - (RCTScheduler *)_createScheduler
 {
-  auto reactNativeConfig = _contextContainer->at<std::shared_ptr<const ReactNativeConfig>>("ReactNativeConfig");
-
-  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_cpp_props_iterator_setter_ios")) {
-    CoreFeatures::enablePropIteratorSetter = true;
-  }
-
   auto componentRegistryFactory =
       [factory = wrapManagedObject(_mountingManager.componentViewRegistry.componentViewFactory)](
           const EventDispatcher::Weak &eventDispatcher, const ContextContainer::Shared &contextContainer) {
@@ -258,10 +250,10 @@ using namespace facebook::react;
   toolbox.bridgelessBindingsExecutor = _bridgelessBindingsExecutor;
 
   toolbox.eventBeatFactory =
-      [runtimeExecutor](std::shared_ptr<EventBeat::OwnerBox> ownerBox) -> std::unique_ptr<EventBeat> {
+      [runtimeScheduler](std::shared_ptr<EventBeat::OwnerBox> ownerBox) -> std::unique_ptr<EventBeat> {
     auto runLoopObserver =
         std::make_unique<const MainRunLoopObserver>(RunLoopObserver::Activity::BeforeWaiting, ownerBox->owner);
-    return std::make_unique<AppleEventBeat>(std::move(ownerBox), std::move(runLoopObserver), runtimeExecutor);
+    return std::make_unique<AppleEventBeat>(std::move(ownerBox), std::move(runLoopObserver), *runtimeScheduler);
   };
 
   RCTScheduler *scheduler = [[RCTScheduler alloc] initWithToolbox:toolbox];
@@ -297,12 +289,12 @@ using namespace facebook::react;
 
 #pragma mark - RCTSchedulerDelegate
 
-- (void)schedulerDidFinishTransaction:(MountingCoordinator::Shared)mountingCoordinator
+- (void)schedulerDidFinishTransaction:(std::shared_ptr<const MountingCoordinator>)mountingCoordinator
 {
   // no-op, we will flush the transaction from schedulerShouldRenderTransactions
 }
 
-- (void)schedulerShouldRenderTransactions:(MountingCoordinator::Shared)mountingCoordinator
+- (void)schedulerShouldRenderTransactions:(std::shared_ptr<const MountingCoordinator>)mountingCoordinator
 {
   [_mountingManager scheduleTransaction:mountingCoordinator];
 }

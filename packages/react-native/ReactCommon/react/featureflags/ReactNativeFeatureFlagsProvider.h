@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<27f8bf0762a51825e7fb93df268ae3f0>>
+ * @generated SignedSource<<5e45e15376ce8426cb5d4ddbfe599066>>
  */
 
 /**
@@ -14,7 +14,7 @@
  *   packages/react-native/scripts/featureflags/ReactNativeFeatureFlags.config.js.
  *
  * To regenerate this code, run the following script from the repo root:
- *   yarn featureflags-update
+ *   yarn featureflags --update
  */
 
 #pragma once
@@ -29,10 +29,11 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool allowRecursiveCommitsWithSynchronousMountOnAndroid() = 0;
   virtual bool completeReactInstanceCreationOnBgThreadOnAndroid() = 0;
   virtual bool disableEventLoopOnBridgeless() = 0;
+  virtual bool disableMountItemReorderingAndroid() = 0;
   virtual bool enableAlignItemsBaselineOnFabricIOS() = 0;
   virtual bool enableAndroidLineHeightCentering() = 0;
   virtual bool enableBridgelessArchitecture() = 0;
-  virtual bool enableCleanTextInputYogaNode() = 0;
+  virtual bool enableCppPropsIteratorSetter() = 0;
   virtual bool enableDeletionOfUnmountedViews() = 0;
   virtual bool enableEagerRootViewAttachment() = 0;
   virtual bool enableEventEmitterRetentionDuringGesturesOnAndroid() = 0;
@@ -44,11 +45,11 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool enableLayoutAnimationsOnAndroid() = 0;
   virtual bool enableLayoutAnimationsOnIOS() = 0;
   virtual bool enableLongTaskAPI() = 0;
+  virtual bool enableNewBackgroundAndBorderDrawables() = 0;
   virtual bool enablePreciseSchedulingForPremountItemsOnAndroid() = 0;
   virtual bool enablePropsUpdateReconciliationAndroid() = 0;
   virtual bool enableReportEventPaintTime() = 0;
   virtual bool enableSynchronousStateUpdates() = 0;
-  virtual bool enableTextPreallocationOptimisation() = 0;
   virtual bool enableUIConsistency() = 0;
   virtual bool enableViewRecycling() = 0;
   virtual bool excludeYogaFromRawProps() = 0;
@@ -62,6 +63,7 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool loadVectorDrawablesOnImages() = 0;
   virtual bool setAndroidLayoutDirection() = 0;
   virtual bool traceTurboModulePromiseRejectionsOnAndroid() = 0;
+  virtual bool useAlwaysAvailableJSErrorHandling() = 0;
   virtual bool useFabricInterop() = 0;
   virtual bool useImmediateExecutorInAndroidBridgeless() = 0;
   virtual bool useNativeViewConfigsInBridgelessMode() = 0;

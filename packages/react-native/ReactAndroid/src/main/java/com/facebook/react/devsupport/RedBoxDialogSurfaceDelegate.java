@@ -144,7 +144,12 @@ class RedBoxDialogSurfaceDelegate implements SurfaceDelegate {
   public void hide() {
     // dismiss redbox if exists
     if (mDialog != null) {
-      mDialog.dismiss();
+      try {
+        mDialog.dismiss();
+      } catch (IllegalArgumentException e) {
+        FLog.e(
+            ReactConstants.TAG, "RedBoxDialogSurfaceDelegate: error while dismissing dialog: ", e);
+      }
       destroyContentView();
       mDialog = null;
     }

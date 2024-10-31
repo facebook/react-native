@@ -20,24 +20,6 @@ namespace facebook::react {
 
 extern const char TextInputComponentName[] = "TextInput";
 
-TextInputShadowNode::TextInputShadowNode(
-    const ShadowNode& sourceShadowNode,
-    const ShadowNodeFragment& fragment)
-    : ConcreteViewShadowNode(sourceShadowNode, fragment) {
-  auto& sourceTextInputShadowNode =
-      static_cast<const TextInputShadowNode&>(sourceShadowNode);
-
-  if (ReactNativeFeatureFlags::enableCleanTextInputYogaNode()) {
-    if (!fragment.children && !fragment.props &&
-        sourceTextInputShadowNode.getIsLayoutClean()) {
-      // This ParagraphShadowNode was cloned but did not change
-      // in a way that affects its layout. Let's mark it clean
-      // to stop Yoga from traversing it.
-      cleanLayout();
-    }
-  }
-}
-
 AttributedStringBox TextInputShadowNode::attributedStringBoxToMeasure(
     const LayoutContext& layoutContext) const {
   bool hasMeaningfulState =
@@ -83,7 +65,7 @@ AttributedString TextInputShadowNode::getAttributedString(
       .string = getConcreteProps().text,
       .textAttributes = textAttributes,
       // TODO: Is this really meant to be by value?
-      .parentShadowView = ShadowView{}});
+      .parentShadowView = ShadowView(*this)});
 
   auto attachments = Attachments{};
   BaseTextShadowNode::buildAttributedString(
@@ -111,7 +93,8 @@ void TextInputShadowNode::updateStateIfNeeded(
       (!state.layoutManager || state.layoutManager == textLayoutManager_) &&
       "`StateData` refers to a different `TextLayoutManager`");
 
-  if (state.reactTreeAttributedString == reactTreeAttributedString &&
+  if (state.reactTreeAttributedString.isContentEqual(
+          reactTreeAttributedString) &&
       state.layoutManager == textLayoutManager_) {
     return;
   }

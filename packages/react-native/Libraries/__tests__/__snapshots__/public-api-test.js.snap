@@ -744,22 +744,22 @@ export type StrictAnimatedProps<Props: { ... }> = $ReadOnly<{
 export type AnimatedComponentType<
   Props: { ... },
   +Instance = mixed,
-> = React.AbstractComponent<AnimatedProps<Props>, Instance>;
+> = component(ref: React.RefSetter<Instance>, ...AnimatedProps<Props>);
 export type StrictAnimatedComponentType<
   Props: { ... },
   +Instance = mixed,
-> = React.AbstractComponent<StrictAnimatedProps<Props>, Instance>;
+> = component(ref: React.RefSetter<Instance>, ...StrictAnimatedProps<Props>);
 declare export default function createAnimatedComponent<
   TProps: { ... },
   TInstance,
 >(
-  Component: React.AbstractComponent<TProps, TInstance>
+  Component: component(ref: React.RefSetter<TInstance>, ...TProps)
 ): AnimatedComponentType<TProps, TInstance>;
 declare export function unstable_createAnimatedComponentWithAllowlist<
   TProps: { ... },
   TInstance,
 >(
-  Component: React.AbstractComponent<TProps, TInstance>,
+  Component: component(ref: React.RefSetter<TInstance>, ...TProps),
   allowlist: ?AnimatedPropsAllowlist
 ): StrictAnimatedComponentType<TProps, TInstance>;
 "
@@ -1658,7 +1658,7 @@ type Props = $ReadOnly<{|
   size?: ?IndicatorSize,
 |}>;
 declare const ActivityIndicatorWithRef: component(
-  ref: React.RefSetter<HostComponent<mixed>>,
+  ref: React.RefSetter<HostComponent<empty>>,
   ...props: Props
 );
 declare export default typeof ActivityIndicatorWithRef;
@@ -2084,10 +2084,12 @@ type AndroidProps = $ReadOnly<{|
   persistentScrollbar?: ?boolean,
   fadingEdgeLength?: ?number,
 |}>;
-type StickyHeaderComponentType = React.AbstractComponent<
-  ScrollViewStickyHeaderProps,
-  $ReadOnly<interface { setNextHeaderY: (number) => void }>,
->;
+type StickyHeaderComponentType = component(
+  ref?: React.RefSetter<
+    $ReadOnly<interface { setNextHeaderY: (number) => void }>,
+  >,
+  ...ScrollViewStickyHeaderProps
+);
 export type Props = $ReadOnly<{|
   ...ViewProps,
   ...IOSProps,
@@ -2267,7 +2269,7 @@ declare module.exports: typeof Wrapper & ScrollViewComponentStatics;
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/ScrollView/ScrollViewCommands.js 1`] = `
-"type ScrollViewNativeComponentType = HostComponent<mixed>;
+"type ScrollViewNativeComponentType = HostComponent<{ ... }>;
 interface NativeCommands {
   +flashScrollIndicators: (
     viewRef: React.ElementRef<ScrollViewNativeComponentType>
@@ -2751,7 +2753,7 @@ exports[`public API should not change unintentionally Libraries/Components/TextI
   style?: ?ViewStyleProp,
   backgroundColor?: ?ColorValue,
 |}>;
-declare const InputAccessoryView: React.AbstractComponent<Props>;
+declare const InputAccessoryView: React.ComponentType<Props>;
 declare export default typeof InputAccessoryView;
 "
 `;
@@ -2763,20 +2765,20 @@ declare export default typeof RCTInputAccessoryViewNativeComponent;
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/TextInput/RCTMultilineTextInputNativeComponent.js 1`] = `
-"type NativeType = HostComponent<mixed>;
+"type NativeType = HostComponent<{ ... }>;
 type NativeCommands = TextInputNativeCommands<NativeType>;
 declare export const Commands: NativeCommands;
 declare export const __INTERNAL_VIEW_CONFIG: PartialViewConfig;
-declare export default HostComponent<mixed>;
+declare export default HostComponent<{ ... }>;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/TextInput/RCTSingelineTextInputNativeComponent.js 1`] = `
-"type NativeType = HostComponent<mixed>;
+"type NativeType = HostComponent<{ ... }>;
 type NativeCommands = TextInputNativeCommands<NativeType>;
 declare export const Commands: NativeCommands;
 declare export const __INTERNAL_VIEW_CONFIG: PartialViewConfig;
-declare export default HostComponent<mixed>;
+declare export default HostComponent<{ ... }>;
 "
 `;
 
@@ -3119,7 +3121,10 @@ type ImperativeMethods = $ReadOnly<{|
   getNativeRef: () => ?HostInstance,
   setSelection: (start: number, end: number) => void,
 |}>;
-type InternalTextInput = (props: Props) => React.Node;
+type InternalTextInput = component(
+  ref: React.RefSetter<$ReadOnly<{ ...HostInstance, ...ImperativeMethods }>>,
+  ...Props
+);
 export type TextInputComponentStatics = $ReadOnly<{|
   State: $ReadOnly<{|
     currentlyFocusedInput: () => ?HostInstance,
@@ -3128,14 +3133,7 @@ export type TextInputComponentStatics = $ReadOnly<{|
     blurTextInput: (textField: ?HostInstance) => void,
   |}>,
 |}>;
-export type TextInputType = React.AbstractComponent<
-  React.ElementConfig<InternalTextInput>,
-  $ReadOnly<{|
-    ...HostInstance,
-    ...ImperativeMethods,
-  |}>,
-> &
-  TextInputComponentStatics;
+export type TextInputType = InternalTextInput & TextInputComponentStatics;
 "
 `;
 
@@ -5842,7 +5840,7 @@ type OptionalProps<SectionT: SectionBase<any>> = {|
   onEndReached?: ?(info: { distanceFromEnd: number, ... }) => void,
   removeClippedSubviews?: boolean,
 |};
-export type Props<SectionT> = {|
+export type Props<SectionT: SectionBase<any>> = $ReadOnly<{|
   ...$Diff<
     VirtualizedSectionListProps<SectionT>,
     {
@@ -5864,8 +5862,11 @@ export type Props<SectionT> = {|
   >,
   ...RequiredProps<SectionT>,
   ...OptionalProps<SectionT>,
-|};
-declare const SectionList: AbstractComponent<Props<SectionBase<any>>, any>;
+|}>;
+declare const SectionList: component(
+  ref?: React.RefSetter<any>,
+  ...Props<SectionBase<any>>
+);
 declare export default typeof SectionList;
 "
 `;
@@ -5979,7 +5980,7 @@ declare export function addIgnorePatterns(
 declare export function setDisabled(value: boolean): void;
 declare export function isDisabled(): boolean;
 declare export function observe(observer: Observer): Subscription;
-type SubscribedComponent = React.AbstractComponent<
+type SubscribedComponent = React.ComponentType<
   $ReadOnly<{|
     logs: $ReadOnlyArray<LogBoxLog>,
     isDisabled: boolean,
@@ -5988,7 +5989,7 @@ type SubscribedComponent = React.AbstractComponent<
 >;
 declare export function withSubscription(
   WrappedComponent: SubscribedComponent
-): React.AbstractComponent<{||}>;
+): React.ComponentType<{||}>;
 "
 `;
 
@@ -6148,7 +6149,7 @@ declare export class _LogBoxInspectorContainer extends React.Component<Props> {
   _handleMinimize: $FlowFixMe;
   _handleSetSelectedLog: $FlowFixMe;
 }
-declare export default React.AbstractComponent<{||}>;
+declare export default React.ComponentType<{||}>;
 "
 `;
 
@@ -6159,7 +6160,7 @@ exports[`public API should not change unintentionally Libraries/LogBox/LogBoxNot
   isDisabled?: ?boolean,
 |}>;
 declare export function _LogBoxNotificationContainer(props: Props): React.Node;
-declare export default React.AbstractComponent<{||}>;
+declare export default React.ComponentType<{||}>;
 "
 `;
 
@@ -6441,7 +6442,7 @@ declare class Modal extends React.Component<Props, State> {
   render(): React.Node;
   _shouldSetResponder(): boolean;
 }
-declare const ExportedModal: React.AbstractComponent<
+declare const ExportedModal: React.ComponentType<
   React.ElementConfig<typeof Modal>,
 >;
 declare module.exports: ExportedModal;
@@ -6478,14 +6479,14 @@ exports[`public API should not change unintentionally Libraries/NativeComponent/
     verify: boolean,
   }
 ): void;
-declare export function get<Config>(
+declare export function get<Config: { ... }>(
   name: string,
   viewConfigProvider: () => PartialViewConfig
 ): HostComponent<Config>;
-declare export function getWithFallback_DEPRECATED<Config>(
+declare export function getWithFallback_DEPRECATED<Config: { ... }>(
   name: string,
   viewConfigProvider: () => PartialViewConfig
-): React.AbstractComponent<Config>;
+): React.ComponentType<Config>;
 declare export function unstable_hasStaticViewConfig(name: string): boolean;
 "
 `;
@@ -6976,7 +6977,7 @@ exports[`public API should not change unintentionally Libraries/PermissionsAndro
   ...
 };
 declare class PermissionsAndroid {
-  PERMISSIONS: {|
+  PERMISSIONS: $ReadOnly<{|
     ACCEPT_HANDOVER: string,
     ACCESS_BACKGROUND_LOCATION: string,
     ACCESS_COARSE_LOCATION: string,
@@ -7020,12 +7021,12 @@ declare class PermissionsAndroid {
     WRITE_CALL_LOG: string,
     WRITE_CONTACTS: string,
     WRITE_EXTERNAL_STORAGE: string,
-  |};
-  RESULTS: {|
+  |}>;
+  RESULTS: $ReadOnly<{|
     DENIED: \\"denied\\",
     GRANTED: \\"granted\\",
     NEVER_ASK_AGAIN: \\"never_ask_again\\",
-  |};
+  |}>;
   checkPermission(permission: PermissionType): Promise<boolean>;
   check(permission: PermissionType): Promise<boolean>;
   requestPermission(
@@ -7304,7 +7305,7 @@ exports[`public API should not change unintentionally Libraries/ReactNative/AppC
   internal_excludeLogBox?: boolean,
   internal_excludeInspector?: boolean,
 |}>;
-declare const AppContainer: React.AbstractComponent<Props>;
+declare const AppContainer: component(...Props);
 declare module.exports: AppContainer;
 "
 `;
@@ -7418,7 +7419,7 @@ declare module.exports: UIManagerJS;
 
 exports[`public API should not change unintentionally Libraries/ReactNative/DisplayMode.js 1`] = `
 "declare export opaque type DisplayModeType;
-declare const DisplayMode: { [string]: DisplayModeType };
+declare const DisplayMode: { +[string]: DisplayModeType };
 declare export function coerceDisplayMode(value: ?number): DisplayModeType;
 declare export default typeof DisplayMode;
 "
@@ -7658,8 +7659,8 @@ declare export function unstable_batchedUpdates<T>(
 ): void;
 declare export function isProfilingRenderer(): boolean;
 declare export function isChildPublicInstance(
-  parentInstance: ReactFabricHostComponent | HostComponent<mixed>,
-  childInstance: ReactFabricHostComponent | HostComponent<mixed>
+  parentInstance: ReactFabricHostComponent | HostComponent<empty>,
+  childInstance: ReactFabricHostComponent | HostComponent<empty>
 ): boolean;
 declare export function getNodeFromInternalInstanceHandle(
   internalInstanceHandle: InternalInstanceHandle
@@ -7694,7 +7695,7 @@ exports[`public API should not change unintentionally Libraries/ReactNative/UIMa
 `;
 
 exports[`public API should not change unintentionally Libraries/ReactNative/getCachedComponentWithDebugName.js 1`] = `
-"type NoopComponent = AbstractComponent<{ children: React.Node }>;
+"type NoopComponent = component(children: React.Node);
 declare export default function getCachedComponentWithDisplayName(
   displayName: string
 ): NoopComponent;
@@ -7726,7 +7727,7 @@ exports[`public API should not change unintentionally Libraries/ReactNative/rend
 `;
 
 exports[`public API should not change unintentionally Libraries/ReactNative/requireNativeComponent.js 1`] = `
-"declare const requireNativeComponent: <T>(
+"declare const requireNativeComponent: <T: { ... }>(
   uiViewClassName: string
 ) => HostComponent<T>;
 declare export default typeof requireNativeComponent;
@@ -7888,11 +7889,11 @@ export type ImageStyle = ____ImageStyle_Internal;
 export type DangerouslyImpreciseStyle = ____DangerouslyImpreciseStyle_Internal;
 declare let hairlineWidth: number;
 declare const absoluteFill: {
-  position: \\"absolute\\",
-  left: 0,
-  right: 0,
-  top: 0,
-  bottom: 0,
+  +bottom: 0,
+  +left: 0,
+  +position: \\"absolute\\",
+  +right: 0,
+  +top: 0,
 };
 declare module.exports: {
   hairlineWidth: hairlineWidth,
@@ -9279,7 +9280,7 @@ exports[`public API should not change unintentionally Libraries/Utilities/codege
   excludedPlatforms?: $ReadOnlyArray<\\"iOS\\" | \\"android\\">,
 |}>;
 export type NativeComponentType<T> = HostComponent<T>;
-declare function codegenNativeComponent<Props>(
+declare function codegenNativeComponent<Props: { ... }>(
   componentName: string,
   options?: Options
 ): NativeComponentType<Props>;
@@ -9701,7 +9702,7 @@ declare module.exports: {
   get Platform(): Platform,
   get PlatformColor(): PlatformColor,
   get processColor(): processColor,
-  get requireNativeComponent(): <T>(
+  get requireNativeComponent(): <T: { ... }>(
     uiViewClassName: string
   ) => HostComponent<T>,
   get RootTagContext(): RootTagContext,

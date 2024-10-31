@@ -24,7 +24,9 @@ const getNativeComponentAttributes = require('./getNativeComponentAttributes');
  *
  */
 
-const requireNativeComponent = <T>(uiViewClassName: string): HostComponent<T> =>
+const requireNativeComponent = <T: {...}>(
+  uiViewClassName: string,
+): HostComponent<T> =>
   ((createReactNativeComponentClass(uiViewClassName, () =>
     getNativeComponentAttributes(uiViewClassName),
   ): any): HostComponent<T>);

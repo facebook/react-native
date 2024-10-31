@@ -67,8 +67,6 @@ function runExceptionsManagerTests() {
         return {
           default: {
             reportException: jest.fn(),
-            // Used to show symbolicated messages, not part of this test.
-            updateExceptionMessage: () => {},
           },
         };
       });

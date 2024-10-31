@@ -275,12 +275,12 @@ const ScrollViewStickyHeaderWithForwardedRef: component(
       : null;
 
   return (
-    /* $FlowFixMe[prop-missing] passthroughAnimatedPropExplicitValues isn't properly
-       included in the Animated.View flow type. */
     <Animated.View
       collapsable={false}
       nativeID={props.nativeID}
       onLayout={_onLayout}
+      /* $FlowFixMe[prop-missing] passthroughAnimatedPropExplicitValues isn't properly
+         included in the Animated.View flow type. */
       ref={ref}
       style={[
         child.props.style,

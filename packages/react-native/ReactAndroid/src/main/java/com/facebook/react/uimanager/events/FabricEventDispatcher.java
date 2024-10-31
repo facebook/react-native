@@ -143,6 +143,9 @@ public class FabricEventDispatcher implements EventDispatcher, LifecycleEventLis
   @Override
   public void onHostResume() {
     scheduleDispatchOfBatchedEvents();
+    if (!ReactNativeFeatureFlags.useOptimizedEventBatchingOnAndroid()) {
+      mCurrentFrameCallback.resume();
+    }
   }
 
   @Override
@@ -214,6 +217,10 @@ public class FabricEventDispatcher implements EventDispatcher, LifecycleEventLis
 
     public void stop() {
       mShouldStop = true;
+    }
+
+    public void resume() {
+      mShouldStop = false;
     }
 
     public void maybeDispatchBatchedEvents() {

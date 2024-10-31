@@ -8,6 +8,7 @@
 #import "RCTComponentData.h"
 
 #import <objc/message.h>
+#import <react/featureflags/ReactNativeFeatureFlags.h>
 
 #import "RCTBridge.h"
 #import "RCTBridgeModule.h"
@@ -288,9 +289,9 @@ static RCTPropBlock createNSInvocationSetter(NSMethodSignature *typeSignature, S
   case _value: {                                                      \
     __block BOOL setDefaultValue = NO;                                \
     __block _type defaultValue;                                       \
-    _type (*convert)(id, SEL, id) = (typeof(convert))objc_msgSend;    \
-    _type (*get)(id, SEL) = (typeof(get))objc_msgSend;                \
-    void (*set)(id, SEL, _type) = (typeof(set))objc_msgSend;          \
+    _type (*convert)(id, SEL, id) = (__typeof(convert))objc_msgSend;  \
+    _type (*get)(id, SEL) = (__typeof(get))objc_msgSend;              \
+    void (*set)(id, SEL, _type) = (__typeof(set))objc_msgSend;        \
     setterBlock = ^(id target, id json) {                             \
       if (json) {                                                     \
         if (!setDefaultValue && target) {                             \
@@ -522,7 +523,7 @@ static RCTPropBlock createNSInvocationSetter(NSMethodSignature *typeSignature, S
     @"baseModuleName" : superClass == [NSObject class] ? (id)kCFNull : RCTViewManagerModuleNameForClass(superClass),
   }];
 
-  if (RCTGetUseNativeViewConfigsInBridgelessMode()) {
+  if (facebook::react::ReactNativeFeatureFlags::useNativeViewConfigsInBridgelessMode()) {
     result[@"Commands"] = [self commandsForViewMangerClass:managerClass methods:methods methodCount:count];
     result[@"Constants"] = [self constantsForViewMangerClass:managerClass];
   }

@@ -102,4 +102,4 @@ const styles = StyleSheet.create({
 
 export default (LogBoxData.withSubscription(
   _LogBoxNotificationContainer,
-): React.AbstractComponent<{||}>);
+): React.ComponentType<{||}>);

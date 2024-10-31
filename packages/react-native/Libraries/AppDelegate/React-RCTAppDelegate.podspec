@@ -32,6 +32,7 @@ header_search_paths = [
   "$(PODS_ROOT)/Headers/Private/React-Core",
   "$(PODS_ROOT)/boost",
   "$(PODS_ROOT)/DoubleConversion",
+  "$(PODS_ROOT)/fast_float/include",
   "$(PODS_ROOT)/fmt/include",
   "$(PODS_ROOT)/RCT-Folly",
   "${PODS_ROOT}/Headers/Public/FlipperKit",
@@ -63,7 +64,7 @@ Pod::Spec.new do |s|
     "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
     "DEFINES_MODULE" => "YES"
   }
-  s.user_target_xcconfig   = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/Headers/Private/React-Core\""}
+  s.user_target_xcconfig   = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/Headers/Private/React-Core\" \"$(PODS_ROOT)/Headers/Private/Yoga\""}
 
   s.dependency "React-Core"
   s.dependency "RCT-Folly", folly_version

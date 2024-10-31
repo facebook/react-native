@@ -161,12 +161,9 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
              initialProperties:(NSDictionary *)initialProperties
                  launchOptions:(NSDictionary *)launchOptions
 {
-  NSDictionary *initProps = updateInitialProps(initialProperties, self->_configuration.fabricEnabled);
+  NSDictionary *initProps = updateInitialProps(initialProperties, _configuration.fabricEnabled);
 
-  if (self->_configuration.bridgelessEnabled) {
-    // Enable native view config interop only if both bridgeless mode and Fabric is enabled.
-    RCTSetUseNativeViewConfigsInBridgelessMode(self->_configuration.fabricEnabled);
-
+  if (_configuration.bridgelessEnabled) {
     // Enable TurboModule interop by default in Bridgeless mode
     RCTEnableTurboModuleInterop(YES);
     RCTEnableTurboModuleInteropBridgeProxy(YES);
@@ -175,9 +172,8 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
 
     RCTFabricSurface *surface = [self.reactHost createSurfaceWithModuleName:moduleName initialProperties:initProps];
 
-    RCTSurfaceHostingProxyRootView *surfaceHostingProxyRootView = [[RCTSurfaceHostingProxyRootView alloc]
-        initWithSurface:surface
-        sizeMeasureMode:RCTSurfaceSizeMeasureModeWidthExact | RCTSurfaceSizeMeasureModeHeightExact];
+    RCTSurfaceHostingProxyRootView *surfaceHostingProxyRootView =
+        [[RCTSurfaceHostingProxyRootView alloc] initWithSurface:surface];
 
     surfaceHostingProxyRootView.backgroundColor = [UIColor systemBackgroundColor];
     if (self->_configuration.customizeRootView != nil) {
@@ -190,8 +186,8 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
   [self createBridgeAdapterIfNeeded];
 
   UIView *rootView;
-  if (self->_configuration.createRootViewWithBridge != nil) {
-    rootView = self->_configuration.createRootViewWithBridge(self.bridge, moduleName, initProps);
+  if (_configuration.createRootViewWithBridge != nil) {
+    rootView = _configuration.createRootViewWithBridge(self.bridge, moduleName, initProps);
   } else {
     rootView = [self createRootViewWithBridge:self.bridge moduleName:moduleName initProps:initProps];
   }

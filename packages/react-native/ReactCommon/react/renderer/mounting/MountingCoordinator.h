@@ -33,8 +33,6 @@ namespace facebook::react {
  */
 class MountingCoordinator final {
  public:
-  using Shared = std::shared_ptr<const MountingCoordinator>;
-
   /*
    * The constructor is meant to be used only inside `ShadowTree`, and it's
    * `public` only to enable using with `std::make_shared<>`.

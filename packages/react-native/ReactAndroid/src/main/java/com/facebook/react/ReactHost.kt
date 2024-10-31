@@ -84,7 +84,7 @@ public interface ReactHost {
       context: Context,
       moduleName: String,
       initialProps: Bundle?
-  ): ReactSurface?
+  ): ReactSurface
 
   /**
    * This function can be used to initialize the ReactInstance in a background thread before a

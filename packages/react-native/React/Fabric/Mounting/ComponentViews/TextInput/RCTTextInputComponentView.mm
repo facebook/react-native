@@ -78,7 +78,7 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
     const auto &defaultProps = TextInputShadowNode::defaultSharedProps();
     _props = defaultProps;
 
-    _backedTextInputView = defaultProps->traits.multiline ? [RCTUITextView new] : [RCTUITextField new];
+    _backedTextInputView = defaultProps->multiline ? [RCTUITextView new] : [RCTUITextField new];
     _backedTextInputView.textInputDelegate = self;
     _ignoreNextTextInputCall = NO;
     _comingFromJS = NO;
@@ -126,6 +126,7 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
 {
   if (![self isDescendantOfView:scrollView.scrollView] || !_backedTextInputView.isFirstResponder) {
     // View is outside scroll view or it's not a first responder.
+    scrollView.firstResponderViewOutsideScrollView = _backedTextInputView;
     return;
   }
 
@@ -166,8 +167,8 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
   const auto &newTextInputProps = static_cast<const TextInputProps &>(*props);
 
   // Traits:
-  if (newTextInputProps.traits.multiline != oldTextInputProps.traits.multiline) {
-    [self _setMultiline:newTextInputProps.traits.multiline];
+  if (newTextInputProps.multiline != oldTextInputProps.multiline) {
+    [self _setMultiline:newTextInputProps.multiline];
   }
 
   if (newTextInputProps.traits.autocapitalizationType != oldTextInputProps.traits.autocapitalizationType) {
@@ -448,7 +449,7 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
     return;
   }
   const auto &props = static_cast<const TextInputProps &>(*_props);
-  if (props.traits.multiline && ![_lastStringStateWasUpdatedWith isEqual:_backedTextInputView.attributedText]) {
+  if (props.multiline && ![_lastStringStateWasUpdatedWith isEqual:_backedTextInputView.attributedText]) {
     [self textInputDidChange];
     _ignoreNextTextInputCall = YES;
   }
@@ -785,14 +786,7 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
 - (SubmitBehavior)getSubmitBehavior
 {
   const auto &props = static_cast<const TextInputProps &>(*_props);
-  const SubmitBehavior submitBehaviorDefaultable = props.traits.submitBehavior;
-
-  // We should always have a non-default `submitBehavior`, but in case we don't, set it based on multiline.
-  if (submitBehaviorDefaultable == SubmitBehavior::Default) {
-    return props.traits.multiline ? SubmitBehavior::Newline : SubmitBehavior::BlurAndSubmit;
-  }
-
-  return submitBehaviorDefaultable;
+  return props.getNonDefaultSubmitBehavior();
 }
 
 @end

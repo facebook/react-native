@@ -13,6 +13,7 @@
 import type {ImageProps} from 'react-native/Libraries/Image/ImageProps';
 import type {LayoutEvent} from 'react-native/Libraries/Types/CoreEventTypes';
 
+import RNTesterButton from '../../components/RNTesterButton';
 import RNTesterText from '../../components/RNTesterText';
 import ImageCapInsetsExample from './ImageCapInsetsExample';
 import React from 'react';
@@ -626,6 +627,51 @@ class VectorDrawableExample extends React.Component<
   }
 }
 
+function CacheControlAndroidExample(): React.Node {
+  const [reload, setReload] = React.useState(0);
+
+  const onReload = () => {
+    setReload(prevReload => prevReload + 1);
+  };
+
+  return (
+    <>
+      <View style={styles.horizontal}>
+        <View>
+          <RNTesterText style={styles.resizeModeText}>Default</RNTesterText>
+          <Image
+            source={{
+              uri: fullImage.uri + '?cacheBust=default',
+              cache: 'default',
+            }}
+            style={styles.base}
+            key={reload}
+          />
+        </View>
+        <View style={styles.leftMargin}>
+          <RNTesterText style={styles.resizeModeText}>Reload</RNTesterText>
+          <Image
+            source={{
+              uri: fullImage.uri + '?cacheBust=reload',
+              cache: 'reload',
+            }}
+            style={styles.base}
+            key={reload}
+          />
+        </View>
+      </View>
+
+      <View style={styles.horizontal}>
+        <View style={styles.cachePolicyAndroidButtonContainer}>
+          <RNTesterButton onPress={onReload}>
+            Re-render image components
+          </RNTesterButton>
+        </View>
+      </View>
+    </>
+  );
+}
+
 const fullImage: ImageSource = {
   uri: IMAGE2,
 };
@@ -863,6 +909,11 @@ const styles = StyleSheet.create({
     height: 100,
     width: '500%',
   },
+  cachePolicyAndroidButtonContainer: {
+    flex: 1,
+    alignItems: 'center',
+    marginTop: 10,
+  },
 });
 
 exports.displayName = (undefined: ?string);
@@ -1037,6 +1088,16 @@ exports.examples = [
       );
     },
     platform: 'ios',
+  },
+  {
+    title: 'Cache Policy',
+    description: ('First image will be loaded and will be cached. ' +
+      'Second image is the same but will be reloaded if re-rendered ' +
+      'as the cache policy is set to reload.': string),
+    render: function (): React.Node {
+      return <CacheControlAndroidExample />;
+    },
+    platform: 'android',
   },
   {
     title: 'Borders',

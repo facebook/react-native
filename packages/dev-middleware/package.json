@@ -31,7 +31,7 @@
     "nullthrows": "^1.1.1",
     "open": "^7.0.3",
     "selfsigned": "^2.4.1",
-    "serve-static": "^1.13.1",
+    "serve-static": "^1.16.2",
     "ws": "^6.2.3"
   },
   "engines": {

@@ -26,6 +26,11 @@ exports[`LogBoxInspectorCodeFrame should render a code frame 1`] = `
       }
     >
       <ScrollView
+        contentContainerStyle={
+          Object {
+            "minWidth": "100%",
+          }
+        }
         horizontal={true}
       >
         <Ansi
@@ -108,6 +113,11 @@ exports[`LogBoxInspectorCodeFrame should render a code frame without a location 
       }
     >
       <ScrollView
+        contentContainerStyle={
+          Object {
+            "minWidth": "100%",
+          }
+        }
         horizontal={true}
       >
         <Ansi

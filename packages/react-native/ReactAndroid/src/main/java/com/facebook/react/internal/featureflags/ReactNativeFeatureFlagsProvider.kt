@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e76048e494ae00fa5d13b45af95c0a3b>>
+ * @generated SignedSource<<0c6450697814b66ae910d66f278213ef>>
  */
 
 /**
@@ -14,7 +14,7 @@
  *   packages/react-native/scripts/featureflags/ReactNativeFeatureFlags.config.js.
  *
  * To regenerate this code, run the following script from the repo root:
- *   yarn featureflags-update
+ *   yarn featureflags --update
  */
 
 package com.facebook.react.internal.featureflags
@@ -31,13 +31,15 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun disableEventLoopOnBridgeless(): Boolean
 
+  @DoNotStrip public fun disableMountItemReorderingAndroid(): Boolean
+
   @DoNotStrip public fun enableAlignItemsBaselineOnFabricIOS(): Boolean
 
   @DoNotStrip public fun enableAndroidLineHeightCentering(): Boolean
 
   @DoNotStrip public fun enableBridgelessArchitecture(): Boolean
 
-  @DoNotStrip public fun enableCleanTextInputYogaNode(): Boolean
+  @DoNotStrip public fun enableCppPropsIteratorSetter(): Boolean
 
   @DoNotStrip public fun enableDeletionOfUnmountedViews(): Boolean
 
@@ -61,6 +63,8 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableLongTaskAPI(): Boolean
 
+  @DoNotStrip public fun enableNewBackgroundAndBorderDrawables(): Boolean
+
   @DoNotStrip public fun enablePreciseSchedulingForPremountItemsOnAndroid(): Boolean
 
   @DoNotStrip public fun enablePropsUpdateReconciliationAndroid(): Boolean
@@ -68,8 +72,6 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun enableReportEventPaintTime(): Boolean
 
   @DoNotStrip public fun enableSynchronousStateUpdates(): Boolean
-
-  @DoNotStrip public fun enableTextPreallocationOptimisation(): Boolean
 
   @DoNotStrip public fun enableUIConsistency(): Boolean
 
@@ -96,6 +98,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun setAndroidLayoutDirection(): Boolean
 
   @DoNotStrip public fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean
+
+  @DoNotStrip public fun useAlwaysAvailableJSErrorHandling(): Boolean
 
   @DoNotStrip public fun useFabricInterop(): Boolean
 

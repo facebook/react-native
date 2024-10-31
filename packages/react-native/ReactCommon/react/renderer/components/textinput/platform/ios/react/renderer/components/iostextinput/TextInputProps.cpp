@@ -9,6 +9,7 @@
 
 #include <react/renderer/attributedstring/conversions.h>
 #include <react/renderer/components/iostextinput/propsConversions.h>
+#include <react/renderer/components/textinput/baseConversions.h>
 #include <react/renderer/core/graphicsConversions.h>
 #include <react/renderer/core/propsConversions.h>
 
@@ -64,7 +65,7 @@ TextAttributes TextInputProps::getEffectiveTextAttributes(
 ParagraphAttributes TextInputProps::getEffectiveParagraphAttributes() const {
   auto result = paragraphAttributes;
 
-  if (!traits.multiline) {
+  if (!multiline) {
     result.maximumNumberOfLines = 1;
   }
 

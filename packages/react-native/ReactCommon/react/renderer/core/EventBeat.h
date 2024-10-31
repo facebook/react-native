@@ -7,10 +7,13 @@
 
 #pragma once
 
-#include <ReactCommon/RuntimeExecutor.h>
 #include <atomic>
 #include <functional>
 #include <memory>
+
+namespace facebook::react {
+class RuntimeScheduler;
+}
 
 namespace facebook::jsi {
 class Runtime;
@@ -20,6 +23,9 @@ namespace facebook::react {
 /*
  * Event Beat serves two interleaving purposes: synchronization of event queues
  * and ensuring that event dispatching happens on proper threads.
+ *
+ * You must set beat callback by calling `EventBeat::setBeatCallback` before
+ * calling `EventBeat::request` and `EventBeat::requestSynchronous`.
  *
  * EventBeat is meant to be subclassed by platform-specific implementations.
  * The platform-specific implementation must call EventBeat::induce(). The
@@ -56,7 +62,7 @@ class EventBeat {
 
   explicit EventBeat(
       std::shared_ptr<OwnerBox> ownerBox,
-      RuntimeExecutor runtimeExecutor);
+      RuntimeScheduler& runtimeScheduler);
 
   virtual ~EventBeat() = default;
 
@@ -65,14 +71,53 @@ class EventBeat {
   EventBeat& operator=(const EventBeat& other) = delete;
 
   /*
-   * Communicates to the Beat that a consumer is waiting for the coming beat.
-   * A consumer must request coming beat after the previous beat happened
-   * to receive a next coming one.
+   * Communicates to the Beat that a consumer (for example EventQueue) is
+   * waiting for the coming beat. A consumer must request coming beat after the
+   * previous beat happened to receive a next coming one.
+   *
+   * Callback, that was set by `setBeatCallback`, will be dispatched to
+   * JavaScript thread asynchronously via `RuntimeScheduler::scheduleWork`.
+   *
+   *                tick (provided by host platform)
+   *   UI             │
+   * thread─┬───────┬─▼──────┬─────────────────────────────▶
+   *        │request│ │induce│  ┌────────────┐
+   *        └───────┘ └──────┴─▶│scheduleWork│
+   *                            └───────────┬┘
+   *   JS                                   │
+   * thread─────────────────────────────────▼─────────────┬▶
+   *                                        │beat callback│
+   *                                        └─────────────┘
+   *
    */
   virtual void request() const;
 
   /*
-   * The callback is must be called on the proper thread.
+   * Communicates to the Beat that a consumer (for example EventQueue) is
+   * waiting for the coming beat. A consumer must request coming beat after the
+   * previous beat happened to receive a next coming one.
+   *
+   * Callback, that was set by `setBeatCallback`, will be called on the thread
+   * where `induce` is called synchronously via via
+   * `RuntimeScheduler::executeNowOnTheSameThread`. Both threads are blocked
+   * until beat callback finishes.
+   *
+   *                tick
+   *   UI             │
+   * thread─┬───────┬─▼──────┬─┬─────────────────────────┬▶
+   *        │request│ │induce│ │executeNowOnTheSameThread│
+   *        └───────┘ └──────┴▶├─────────────────────────┤
+   *   JS                      │      beat callback      │
+   * thread────────────────────┴─────────────────────────┴▶
+   *                            Both JS and UI thread are
+   *                            blocked.
+   */
+  virtual void requestSynchronous() const;
+
+  /*
+   * The callback will be executed once a consumer (for example EventQueue)
+   * calls either `EventBeat::request` or `EventBeat::requestSynchronous`. The
+   * callback will be executed on the proper thread.
    */
   void setBeatCallback(BeatCallback beatCallback);
 
@@ -88,8 +133,9 @@ class EventBeat {
   mutable std::atomic<bool> isRequested_{false};
 
  private:
-  RuntimeExecutor runtimeExecutor_;
+  RuntimeScheduler& runtimeScheduler_;
   mutable std::atomic<bool> isBeatCallbackScheduled_{false};
+  mutable std::atomic<bool> isSynchronousRequested_{false};
 };
 
 } // namespace facebook::react

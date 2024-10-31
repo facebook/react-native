@@ -421,7 +421,7 @@ type State = $ReadOnly<{|
   selectedLogIndex: number,
 |}>;
 
-type SubscribedComponent = React.AbstractComponent<
+type SubscribedComponent = React.ComponentType<
   $ReadOnly<{|
     logs: $ReadOnlyArray<LogBoxLog>,
     isDisabled: boolean,
@@ -431,7 +431,7 @@ type SubscribedComponent = React.AbstractComponent<
 
 export function withSubscription(
   WrappedComponent: SubscribedComponent,
-): React.AbstractComponent<{||}> {
+): React.ComponentType<{||}> {
   class LogBoxStateSubscription extends React.Component<Props, State> {
     static getDerivedStateFromError(): {hasError: boolean} {
       return {hasError: true};

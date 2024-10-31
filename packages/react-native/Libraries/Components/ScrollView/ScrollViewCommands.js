@@ -14,7 +14,7 @@ import type {Double} from '../../Types/CodegenTypes';
 import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
 import * as React from 'react';
 
-type ScrollViewNativeComponentType = HostComponent<mixed>;
+type ScrollViewNativeComponentType = HostComponent<{...}>;
 interface NativeCommands {
   +flashScrollIndicators: (
     viewRef: React.ElementRef<ScrollViewNativeComponentType>,

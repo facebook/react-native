@@ -146,7 +146,7 @@ class VirtualizedSectionList<
     this._listRef.scrollToIndex(toIndexParams);
   }
 
-  getListRef(): ?React.ElementRef<typeof VirtualizedList> {
+  getListRef(): ?VirtualizedList {
     return this._listRef;
   }
 
@@ -598,16 +598,12 @@ function ItemWithSeparator(props: ItemWithSeparatorProps): React.Node {
   );
 }
 
-/* $FlowFixMe[class-object-subtyping] added when improving typing for this
- * parameters */
-// $FlowFixMe[method-unbinding]
 module.exports = VirtualizedSectionList as component(
   ref: React.RefSetter<
-    $ReadOnly<{
-      +getListRef: () => ?React.ElementRef<typeof VirtualizedList>,
-      +scrollToLocation: (params: ScrollToLocationParamsType) => void,
-      ...
-    }>,
+    interface {
+      getListRef(): ?VirtualizedList,
+      scrollToLocation(params: ScrollToLocationParamsType): void,
+    },
   >,
-  ...React.ElementConfig<typeof VirtualizedSectionList>
+  ...Props<SectionBase<any>>
 );

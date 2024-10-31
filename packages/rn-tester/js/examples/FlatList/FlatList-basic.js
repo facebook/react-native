@@ -363,6 +363,7 @@ class FlatListExample extends React.PureComponent<Props, State> {
     const renderProp = ({item, separators}: RenderItemProps<Item>) => {
       return (
         <ItemComponent
+          testID={`item_${item.key}`}
           item={item}
           horizontal={this.state.horizontal}
           fixedHeight={this.state.fixedHeight}
