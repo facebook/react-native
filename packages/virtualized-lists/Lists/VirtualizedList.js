@@ -356,7 +356,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
 
   _registerAsNestedChild = (childList: {
     cellKey: string,
-    ref: React.ElementRef<typeof VirtualizedList>,
+    ref: VirtualizedList,
   }): void => {
     this._nestedChildLists.add(childList.ref, childList.cellKey);
     if (this._hasInteracted) {
@@ -364,9 +364,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     }
   };
 
-  _unregisterAsNestedChild = (childList: {
-    ref: React.ElementRef<typeof VirtualizedList>,
-  }): void => {
+  _unregisterAsNestedChild = (childList: {ref: VirtualizedList}): void => {
     this._nestedChildLists.remove(childList.ref);
   };
 
