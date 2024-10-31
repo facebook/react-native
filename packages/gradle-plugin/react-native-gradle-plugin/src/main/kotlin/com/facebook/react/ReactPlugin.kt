@@ -81,7 +81,7 @@ class ReactPlugin : Plugin<Project> {
           project.configureReactTasks(variant = variant, config = extension)
         }
       }
-      configureAutolinking(project, extension)
+      configureAutolinking(project, extension, isLibrary = false)
       configureCodegen(project, extension, rootExtension, isLibrary = false)
     }
 
@@ -89,6 +89,7 @@ class ReactPlugin : Plugin<Project> {
     configureBuildConfigFieldsForLibraries(project)
     configureNamespaceForLibraries(project)
     project.pluginManager.withPlugin("com.android.library") {
+      configureAutolinking(project, extension, isLibrary = true)
       configureCodegen(project, extension, rootExtension, isLibrary = true)
     }
   }
@@ -218,6 +219,7 @@ class ReactPlugin : Plugin<Project> {
   private fun configureAutolinking(
       project: Project,
       extension: ReactExtension,
+      isLibrary: Boolean
   ) {
     val generatedAutolinkingJavaDir: Provider<Directory> =
         project.layout.buildDirectory.dir("generated/autolinking/src/main/java")
@@ -259,10 +261,12 @@ class ReactPlugin : Plugin<Project> {
 
     // We tell Android Gradle Plugin that inside /build/generated/autolinking/src/main/java there
     // are sources to be compiled as well.
-    project.extensions.getByType(AndroidComponentsExtension::class.java).apply {
-      onVariants(selector().all()) { variant ->
-        variant.sources.java?.addStaticSourceDirectory(
+    if (!isLibrary) {
+      project.extensions.getByType(AndroidComponentsExtension::class.java).apply {
+        onVariants(selector().all()) { variant ->
+          variant.sources.java?.addStaticSourceDirectory(
             generatedAutolinkingJavaDir.get().asFile.absolutePath)
+        }
       }
     }
   }
