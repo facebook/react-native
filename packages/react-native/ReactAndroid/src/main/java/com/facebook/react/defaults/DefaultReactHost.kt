@@ -45,6 +45,7 @@ public object DefaultReactHost {
    * @param useDevSupport whether to enable dev support, default to ReactBuildConfig.DEBUG.
    * @param cxxReactPackageProviders a list of cxxreactpackage providers (to register c++ turbo
    *   modules)
+   * @param jsBundleLoader a [JSBundleLoader] to use for creating the [ReactHost]
    *
    * TODO(T186951312): Should this be @UnstableReactNativeAPI?
    */
@@ -59,25 +60,28 @@ public object DefaultReactHost {
       isHermesEnabled: Boolean = true,
       useDevSupport: Boolean = ReactBuildConfig.DEBUG,
       cxxReactPackageProviders: List<(ReactContext) -> CxxReactPackage> = emptyList(),
+      jsBundleLoader: JSBundleLoader? = null,
   ): ReactHost {
     if (reactHost == null) {
-      val jsBundleLoader =
-          if (jsBundleFilePath != null) {
-            if (jsBundleFilePath.startsWith("assets://")) {
-              JSBundleLoader.createAssetLoader(context, jsBundleFilePath, true)
-            } else {
-              JSBundleLoader.createFileLoader(jsBundleFilePath)
-            }
-          } else {
-            JSBundleLoader.createAssetLoader(context, "assets://$jsBundleAssetPath", true)
-          }
+
+      val bundleLoader =
+          jsBundleLoader
+              ?: if (jsBundleFilePath != null) {
+                if (jsBundleFilePath.startsWith("assets://")) {
+                  JSBundleLoader.createAssetLoader(context, jsBundleFilePath, true)
+                } else {
+                  JSBundleLoader.createFileLoader(jsBundleFilePath)
+                }
+              } else {
+                JSBundleLoader.createAssetLoader(context, "assets://$jsBundleAssetPath", true)
+              }
       val jsRuntimeFactory = if (isHermesEnabled) HermesInstance() else JSCInstance()
       val defaultTmmDelegateBuilder = DefaultTurboModuleManagerDelegate.Builder()
       cxxReactPackageProviders.forEach { defaultTmmDelegateBuilder.addCxxReactPackage(it) }
       val defaultReactHostDelegate =
           DefaultReactHostDelegate(
               jsMainModulePath = jsMainModulePath,
-              jsBundleLoader = jsBundleLoader,
+              jsBundleLoader = bundleLoader,
               reactPackages = packageList,
               jsRuntimeFactory = jsRuntimeFactory,
               turboModuleManagerDelegateBuilder = defaultTmmDelegateBuilder)

@@ -32,12 +32,14 @@ import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.common.mapbuffer.MapBuffer;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.Role;
 import com.facebook.react.views.text.internal.span.CustomLetterSpacingSpan;
 import com.facebook.react.views.text.internal.span.CustomLineHeightSpan;
 import com.facebook.react.views.text.internal.span.CustomStyleSpan;
+import com.facebook.react.views.text.internal.span.LegacyLineHeightSpan;
 import com.facebook.react.views.text.internal.span.ReactAbsoluteSizeSpan;
 import com.facebook.react.views.text.internal.span.ReactBackgroundColorSpan;
 import com.facebook.react.views.text.internal.span.ReactClickableSpan;
@@ -146,13 +148,41 @@ public class TextLayoutManager {
         == LayoutDirection.RTL;
   }
 
-  private static Layout.Alignment getTextAlignment(MapBuffer attributedString, Spannable spanned) {
+  @Nullable
+  private static String getTextAlignmentAttr(MapBuffer attributedString) {
     // TODO: Don't read AS_KEY_FRAGMENTS, which may be expensive, and is not present when using
     // cached Spannable
     if (!attributedString.contains(AS_KEY_FRAGMENTS)) {
-      return Layout.Alignment.ALIGN_NORMAL;
+      return null;
     }
 
+    MapBuffer fragments = attributedString.getMapBuffer(AS_KEY_FRAGMENTS);
+    if (fragments.getCount() != 0) {
+      MapBuffer fragment = fragments.getMapBuffer(0);
+      MapBuffer textAttributes = fragment.getMapBuffer(FR_KEY_TEXT_ATTRIBUTES);
+
+      if (textAttributes.contains(TextAttributeProps.TA_KEY_ALIGNMENT)) {
+        return textAttributes.getString(TextAttributeProps.TA_KEY_ALIGNMENT);
+      }
+    }
+
+    return null;
+  }
+
+  private static int getTextJustificationMode(@Nullable String alignmentAttr) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+      return -1;
+    }
+
+    if (alignmentAttr != null && alignmentAttr.equals("justified")) {
+      return Layout.JUSTIFICATION_MODE_INTER_WORD;
+    }
+
+    return Layout.JUSTIFICATION_MODE_NONE;
+  }
+
+  private static Layout.Alignment getTextAlignment(
+      MapBuffer attributedString, Spannable spanned, @Nullable String alignmentAttr) {
     // Android will align text based on the script, so normal and opposite alignment needs to be
     // swapped when the directions of paragraph and script don't match.
     // I.e. paragraph is LTR but script is RTL, text needs to be aligned to the left, which means
@@ -165,23 +195,15 @@ public class TextLayoutManager {
     Layout.Alignment alignment =
         swapNormalAndOpposite ? Layout.Alignment.ALIGN_OPPOSITE : Layout.Alignment.ALIGN_NORMAL;
 
-    MapBuffer fragments = attributedString.getMapBuffer(AS_KEY_FRAGMENTS);
-    if (fragments.getCount() != 0) {
-      MapBuffer fragment = fragments.getMapBuffer(0);
-      MapBuffer textAttributes = fragment.getMapBuffer(FR_KEY_TEXT_ATTRIBUTES);
+    if (alignmentAttr == null) {
+      return alignment;
+    }
 
-      if (textAttributes.contains(TextAttributeProps.TA_KEY_ALIGNMENT)) {
-        String alignmentAttr = textAttributes.getString(TextAttributeProps.TA_KEY_ALIGNMENT);
-
-        if (alignmentAttr.equals("center")) {
-          alignment = Layout.Alignment.ALIGN_CENTER;
-        } else if (alignmentAttr.equals("right")) {
-          alignment =
-              swapNormalAndOpposite
-                  ? Layout.Alignment.ALIGN_NORMAL
-                  : Layout.Alignment.ALIGN_OPPOSITE;
-        }
-      }
+    if (alignmentAttr.equals("center")) {
+      alignment = Layout.Alignment.ALIGN_CENTER;
+    } else if (alignmentAttr.equals("right")) {
+      alignment =
+          swapNormalAndOpposite ? Layout.Alignment.ALIGN_NORMAL : Layout.Alignment.ALIGN_OPPOSITE;
     }
 
     return alignment;
@@ -190,7 +212,8 @@ public class TextLayoutManager {
   public static int getTextGravity(
       MapBuffer attributedString, Spannable spanned, int defaultValue) {
     int gravity = defaultValue;
-    Layout.Alignment alignment = getTextAlignment(attributedString, spanned);
+    @Nullable String alignmentAttr = getTextAlignmentAttr(attributedString);
+    Layout.Alignment alignment = getTextAlignment(attributedString, spanned, alignmentAttr);
 
     // depending on whether the script is LTR or RTL, ALIGN_NORMAL and ALIGN_OPPOSITE may mean
     // different things
@@ -296,9 +319,15 @@ public class TextLayoutManager {
                       textAttributes.mTextShadowColor)));
         }
         if (!Float.isNaN(textAttributes.getEffectiveLineHeight())) {
-          ops.add(
-              new SetSpanOperation(
-                  start, end, new CustomLineHeightSpan(textAttributes.getEffectiveLineHeight())));
+          if (ReactNativeFeatureFlags.enableAndroidLineHeightCentering()) {
+            ops.add(
+                new SetSpanOperation(
+                    start, end, new CustomLineHeightSpan(textAttributes.getEffectiveLineHeight())));
+          } else {
+            ops.add(
+                new SetSpanOperation(
+                    start, end, new LegacyLineHeightSpan(textAttributes.getEffectiveLineHeight())));
+          }
         }
 
         ops.add(new SetSpanOperation(start, end, new ReactTagSpan(reactTag)));
@@ -363,6 +392,7 @@ public class TextLayoutManager {
       int textBreakStrategy,
       int hyphenationFrequency,
       Layout.Alignment alignment,
+      int justificationMode,
       TextPaint paint) {
     Layout layout;
 
@@ -382,7 +412,7 @@ public class TextLayoutManager {
       }
 
       int hintWidth = (int) Math.ceil(desiredWidth);
-      layout =
+      StaticLayout.Builder builder =
           StaticLayout.Builder.obtain(text, 0, spanLength, paint, hintWidth)
               .setAlignment(alignment)
               .setLineSpacing(0.f, 1.f)
@@ -390,8 +420,13 @@ public class TextLayoutManager {
               .setBreakStrategy(textBreakStrategy)
               .setHyphenationFrequency(hyphenationFrequency)
               .setTextDirection(
-                  isScriptRTL ? TextDirectionHeuristics.RTL : TextDirectionHeuristics.LTR)
-              .build();
+                  isScriptRTL ? TextDirectionHeuristics.RTL : TextDirectionHeuristics.LTR);
+
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+        builder.setUseLineSpacingFromFallbacks(true);
+      }
+
+      layout = builder.build();
 
     } else if (boring != null && (unconstrainedWidth || boring.width <= width)) {
       int boringLayoutWidth = boring.width;
@@ -419,6 +454,10 @@ public class TextLayoutManager {
               .setHyphenationFrequency(hyphenationFrequency)
               .setTextDirection(
                   isScriptRTL ? TextDirectionHeuristics.RTL : TextDirectionHeuristics.LTR);
+
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        builder.setJustificationMode(justificationMode);
+      }
 
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
         builder.setUseLineSpacingFromFallbacks(true);
@@ -506,7 +545,9 @@ public class TextLayoutManager {
             ? paragraphAttributes.getInt(PA_KEY_MAX_NUMBER_OF_LINES)
             : ReactConstants.UNSET;
 
-    Layout.Alignment alignment = getTextAlignment(attributedString, text);
+    @Nullable String alignmentAttr = getTextAlignmentAttr(attributedString);
+    Layout.Alignment alignment = getTextAlignment(attributedString, text, alignmentAttr);
+    int justificationMode = getTextJustificationMode(alignmentAttr);
 
     if (adjustFontSizeToFit) {
       double minimumFontSize =
@@ -526,6 +567,7 @@ public class TextLayoutManager {
           textBreakStrategy,
           hyphenationFrequency,
           alignment,
+          justificationMode,
           paint);
     }
 
@@ -538,6 +580,7 @@ public class TextLayoutManager {
         textBreakStrategy,
         hyphenationFrequency,
         alignment,
+        justificationMode,
         paint);
   }
 
@@ -553,6 +596,7 @@ public class TextLayoutManager {
       int textBreakStrategy,
       int hyphenationFrequency,
       Layout.Alignment alignment,
+      int justificationMode,
       TextPaint paint) {
     BoringLayout.Metrics boring = BoringLayout.isBoring(text, paint);
     Layout layout =
@@ -565,6 +609,7 @@ public class TextLayoutManager {
             textBreakStrategy,
             hyphenationFrequency,
             alignment,
+            justificationMode,
             paint);
 
     // Minimum font size is 4pts to match the iOS implementation.
@@ -613,6 +658,7 @@ public class TextLayoutManager {
               textBreakStrategy,
               hyphenationFrequency,
               alignment,
+              justificationMode,
               paint);
     }
   }

@@ -85,7 +85,7 @@ class Scheduler final : public UIManagerDelegate {
 #pragma mark - UIManagerDelegate
 
   void uiManagerDidFinishTransaction(
-      MountingCoordinator::Shared mountingCoordinator,
+      std::shared_ptr<const MountingCoordinator> mountingCoordinator,
       bool mountSynchronously) override;
   void uiManagerDidCreateShadowNode(const ShadowNode& shadowNode) override;
   void uiManagerDidDispatchCommand(

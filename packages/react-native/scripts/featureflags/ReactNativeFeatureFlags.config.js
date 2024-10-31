@@ -17,7 +17,7 @@ import type {FeatureFlagDefinitions} from './types';
  *
  * If you modify this file, you need to update all the generated files
  * running the following script from the repo root:
- *   yarn featureflags-update
+ *   yarn featureflags --update
  */
 
 // These flags are only used in tests for the feature flags system
@@ -90,6 +90,15 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'release',
       },
     },
+    disableMountItemReorderingAndroid: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2024-10-26',
+        description:
+          'Prevent FabricMountingManager from reordering mountitems, which may lead to invalid state on the UI thread',
+        purpose: 'experimentation',
+      },
+    },
     enableAlignItemsBaselineOnFabricIOS: {
       defaultValue: true,
       metadata: {
@@ -100,12 +109,11 @@ const definitions: FeatureFlagDefinitions = {
       },
     },
     enableAndroidLineHeightCentering: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
-        dateAdded: '2024-09-11',
         description:
           'When enabled, custom line height calculation will be centered from top to bottom.',
-        purpose: 'experimentation',
+        purpose: 'release',
       },
     },
     enableBridgelessArchitecture: {
@@ -116,11 +124,12 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'release',
       },
     },
-    enableCleanTextInputYogaNode: {
+    enableCppPropsIteratorSetter: {
       defaultValue: false,
       metadata: {
-        dateAdded: '2024-04-06',
-        description: 'Clean yoga node when <TextInput /> does not change.',
+        dateAdded: '2024-09-13',
+        description:
+          'Enable prop iterator setter-style construction of Props in C++ (this flag is not used in Java).',
         purpose: 'experimentation',
       },
     },
@@ -268,15 +277,6 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'experimentation',
       },
     },
-    enableTextPreallocationOptimisation: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-09-12',
-        description:
-          'Text preallocation optimisation where unnecessary work is removed.',
-        purpose: 'experimentation',
-      },
-    },
     enableUIConsistency: {
       defaultValue: false,
       metadata: {
@@ -388,6 +388,14 @@ const definitions: FeatureFlagDefinitions = {
         description:
           'Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.',
         purpose: 'operational',
+      },
+    },
+    useAlwaysAvailableJSErrorHandling: {
+      defaultValue: false,
+      metadata: {
+        description:
+          'In Bridgeless mode, use the always available javascript error reporting pipeline.',
+        purpose: 'release',
       },
     },
     useFabricInterop: {

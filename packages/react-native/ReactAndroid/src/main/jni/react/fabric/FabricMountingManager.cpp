@@ -19,7 +19,6 @@
 #include <react/renderer/mounting/MountingTransaction.h>
 #include <react/renderer/mounting/ShadowView.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
-#include <react/utils/CoreFeatures.h>
 
 #include <fbjni/fbjni.h>
 #include <glog/logging.h>
@@ -38,7 +37,8 @@ FabricMountingManager::FabricMountingManager(
 
 void FabricMountingManager::onSurfaceStart(SurfaceId surfaceId) {
   std::lock_guard lock(allocatedViewsMutex_);
-  allocatedViewRegistry_.emplace(surfaceId, std::unordered_set<Tag>{});
+  allocatedViewRegistry_.emplace(
+      surfaceId, std::unordered_set<Tag>({surfaceId}));
 }
 
 void FabricMountingManager::onSurfaceStop(SurfaceId surfaceId) {
@@ -466,6 +466,9 @@ void FabricMountingManager::executeMount(
   auto surfaceId = transaction.getSurfaceId();
   auto& mutations = transaction.getMutations();
 
+  bool maintainMutationOrder =
+      ReactNativeFeatureFlags::disableMountItemReorderingAndroid();
+
   auto revisionNumber = telemetry.getRevisionNumber();
 
   std::vector<CppMountItem> cppCommonMountItems;
@@ -487,7 +490,7 @@ void FabricMountingManager::executeMount(
     // operand is a value type, the compiler will decide the expression to be a
     // value type, an unnecessary (sometimes expensive) copy will happen as a
     // result.
-    const auto& allocatedViewTags =
+    auto& allocatedViewTags =
         allocatedViewsIterator != allocatedViewRegistry_.end()
         ? allocatedViewsIterator->second
         : defaultAllocatedViews;
@@ -511,6 +514,7 @@ void FabricMountingManager::executeMount(
           if (shouldCreateView) {
             cppCommonMountItems.push_back(
                 CppMountItem::CreateMountItem(newChildShadowView));
+            allocatedViewTags.insert(newChildShadowView.tag);
           }
           break;
         }
@@ -522,20 +526,32 @@ void FabricMountingManager::executeMount(
           break;
         }
         case ShadowViewMutation::Delete: {
-          cppDeleteMountItems.push_back(
-              CppMountItem::DeleteMountItem(oldChildShadowView));
+          (maintainMutationOrder ? cppCommonMountItems : cppDeleteMountItems)
+              .push_back(CppMountItem::DeleteMountItem(oldChildShadowView));
+          if (allocatedViewTags.erase(oldChildShadowView.tag) != 1) {
+            LOG(ERROR) << "Emitting delete for unallocated view. "
+                       << oldChildShadowView.tag;
+          }
           break;
         }
         case ShadowViewMutation::Update: {
           if (!isVirtual) {
+            if (!allocatedViewTags.contains(newChildShadowView.tag)) {
+              LOG(FATAL) << "Emitting update for unallocated view. "
+                         << newChildShadowView.tag;
+            }
+
             if (oldChildShadowView.props != newChildShadowView.props) {
-              cppUpdatePropsMountItems.push_back(
-                  CppMountItem::UpdatePropsMountItem(
+              (maintainMutationOrder ? cppCommonMountItems
+                                     : cppUpdatePropsMountItems)
+                  .push_back(CppMountItem::UpdatePropsMountItem(
                       oldChildShadowView, newChildShadowView));
             }
             if (oldChildShadowView.state != newChildShadowView.state) {
-              cppUpdateStateMountItems.push_back(
-                  CppMountItem::UpdateStateMountItem(newChildShadowView));
+              (maintainMutationOrder ? cppCommonMountItems
+                                     : cppUpdateStateMountItems)
+                  .push_back(
+                      CppMountItem::UpdateStateMountItem(newChildShadowView));
             }
 
             // Padding: padding mountItems must be executed before layout props
@@ -544,14 +560,17 @@ void FabricMountingManager::executeMount(
             // padding information.
             if (oldChildShadowView.layoutMetrics.contentInsets !=
                 newChildShadowView.layoutMetrics.contentInsets) {
-              cppUpdatePaddingMountItems.push_back(
-                  CppMountItem::UpdatePaddingMountItem(newChildShadowView));
+              (maintainMutationOrder ? cppCommonMountItems
+                                     : cppUpdatePaddingMountItems)
+                  .push_back(
+                      CppMountItem::UpdatePaddingMountItem(newChildShadowView));
             }
 
             if (oldChildShadowView.layoutMetrics !=
                 newChildShadowView.layoutMetrics) {
-              cppUpdateLayoutMountItems.push_back(
-                  CppMountItem::UpdateLayoutMountItem(
+              (maintainMutationOrder ? cppCommonMountItems
+                                     : cppUpdateLayoutMountItems)
+                  .push_back(CppMountItem::UpdateLayoutMountItem(
                       mutation.newChildShadowView, parentShadowView));
             }
 
@@ -561,16 +580,18 @@ void FabricMountingManager::executeMount(
             // pack too much data there.
             if ((oldChildShadowView.layoutMetrics.overflowInset !=
                  newChildShadowView.layoutMetrics.overflowInset)) {
-              cppUpdateOverflowInsetMountItems.push_back(
-                  CppMountItem::UpdateOverflowInsetMountItem(
+              (maintainMutationOrder ? cppCommonMountItems
+                                     : cppUpdateOverflowInsetMountItems)
+                  .push_back(CppMountItem::UpdateOverflowInsetMountItem(
                       newChildShadowView));
             }
           }
 
           if (oldChildShadowView.eventEmitter !=
               newChildShadowView.eventEmitter) {
-            cppUpdateEventEmitterMountItems.push_back(
-                CppMountItem::UpdateEventEmitterMountItem(
+            (maintainMutationOrder ? cppCommonMountItems
+                                   : cppUpdatePropsMountItems)
+                .push_back(CppMountItem::UpdateEventEmitterMountItem(
                     mutation.newChildShadowView));
           }
           break;
@@ -581,19 +602,23 @@ void FabricMountingManager::executeMount(
             cppCommonMountItems.push_back(CppMountItem::InsertMountItem(
                 parentShadowView, newChildShadowView, index));
 
-            bool allocationCheck =
-                allocatedViewTags.find(newChildShadowView.tag) ==
-                allocatedViewTags.end();
-            bool shouldCreateView = allocationCheck;
+            bool shouldCreateView =
+                !allocatedViewTags.contains(newChildShadowView.tag);
             if (shouldCreateView) {
-              cppUpdatePropsMountItems.push_back(
-                  CppMountItem::UpdatePropsMountItem({}, newChildShadowView));
+              LOG(ERROR) << "Emitting insert for unallocated view. "
+                         << newChildShadowView.tag;
+              (maintainMutationOrder ? cppCommonMountItems
+                                     : cppUpdatePropsMountItems)
+                  .push_back(CppMountItem::UpdatePropsMountItem(
+                      {}, newChildShadowView));
             }
 
             // State
             if (newChildShadowView.state) {
-              cppUpdateStateMountItems.push_back(
-                  CppMountItem::UpdateStateMountItem(newChildShadowView));
+              (maintainMutationOrder ? cppCommonMountItems
+                                     : cppUpdateStateMountItems)
+                  .push_back(
+                      CppMountItem::UpdateStateMountItem(newChildShadowView));
             }
 
             // Padding: padding mountItems must be executed before layout props
@@ -602,13 +627,16 @@ void FabricMountingManager::executeMount(
             // padding information.
             if (newChildShadowView.layoutMetrics.contentInsets !=
                 EdgeInsets::ZERO) {
-              cppUpdatePaddingMountItems.push_back(
-                  CppMountItem::UpdatePaddingMountItem(newChildShadowView));
+              (maintainMutationOrder ? cppCommonMountItems
+                                     : cppUpdatePaddingMountItems)
+                  .push_back(
+                      CppMountItem::UpdatePaddingMountItem(newChildShadowView));
             }
 
             // Layout
-            cppUpdateLayoutMountItems.push_back(
-                CppMountItem::UpdateLayoutMountItem(
+            (maintainMutationOrder ? cppCommonMountItems
+                                   : cppUpdateLayoutMountItems)
+                .push_back(CppMountItem::UpdateLayoutMountItem(
                     newChildShadowView, parentShadowView));
 
             // OverflowInset: This is the values indicating boundaries including
@@ -617,37 +645,25 @@ void FabricMountingManager::executeMount(
             // pack too much data there.
             if (newChildShadowView.layoutMetrics.overflowInset !=
                 EdgeInsets::ZERO) {
-              cppUpdateOverflowInsetMountItems.push_back(
-                  CppMountItem::UpdateOverflowInsetMountItem(
+              (maintainMutationOrder ? cppCommonMountItems
+                                     : cppUpdateOverflowInsetMountItems)
+                  .push_back(CppMountItem::UpdateOverflowInsetMountItem(
                       newChildShadowView));
             }
           }
 
           // EventEmitter
-          cppUpdateEventEmitterMountItems.push_back(
-              CppMountItem::UpdateEventEmitterMountItem(
+          // On insert we always update the event emitter, as we do not pass
+          // it in when preallocating views
+          (maintainMutationOrder ? cppCommonMountItems
+                                 : cppUpdateEventEmitterMountItems)
+              .push_back(CppMountItem::UpdateEventEmitterMountItem(
                   mutation.newChildShadowView));
 
           break;
         }
         default: {
           break;
-        }
-      }
-    }
-
-    if (allocatedViewsIterator != allocatedViewRegistry_.end()) {
-      auto& views = allocatedViewsIterator->second;
-      for (const auto& mutation : mutations) {
-        switch (mutation.type) {
-          case ShadowViewMutation::Create:
-            views.insert(mutation.newChildShadowView.tag);
-            break;
-          case ShadowViewMutation::Delete:
-            views.erase(mutation.oldChildShadowView.tag);
-            break;
-          default:
-            break;
         }
       }
     }
@@ -729,11 +745,32 @@ void FabricMountingManager::executeMount(
       case CppMountItem::Type::Create:
         writeCreateMountItem(buffer, mountItem);
         break;
+      case CppMountItem::Type::Delete:
+        writeDeleteMountItem(buffer, mountItem);
+        break;
       case CppMountItem::Type::Insert:
         writeInsertMountItem(buffer, mountItem);
         break;
       case CppMountItem::Type::Remove:
         writeRemoveMountItem(buffer, mountItem);
+        break;
+      case CppMountItem::Type::UpdateProps:
+        writeUpdatePropsMountItem(buffer, mountItem);
+        break;
+      case CppMountItem::Type::UpdateState:
+        writeUpdateStateMountItem(buffer, mountItem);
+        break;
+      case CppMountItem::Type::UpdateLayout:
+        writeUpdateLayoutMountItem(buffer, mountItem);
+        break;
+      case CppMountItem::Type::UpdateEventEmitter:
+        writeUpdateEventEmitterMountItem(buffer, mountItem);
+        break;
+      case CppMountItem::Type::UpdatePadding:
+        writeUpdatePaddingMountItem(buffer, mountItem);
+        break;
+      case CppMountItem::Type::UpdateOverflowInset:
+        writeUpdateOverflowInsetMountItem(buffer, mountItem);
         break;
       default:
         LOG(FATAL) << "Unexpected CppMountItem type: " << mountItemType;
@@ -907,11 +944,11 @@ void FabricMountingManager::preallocateShadowView(
     if (allocatedViewsIterator == allocatedViewRegistry_.end()) {
       return;
     }
-    auto& allocatedViews = allocatedViewsIterator->second;
-    if (allocatedViews.find(shadowView.tag) != allocatedViews.end()) {
+    const auto [_, inserted] =
+        allocatedViewsIterator->second.insert(shadowView.tag);
+    if (!inserted) {
       return;
     }
-    allocatedViews.insert(shadowView.tag);
   }
 
   bool isLayoutableShadowNode = shadowView.layoutMetrics != EmptyLayoutMetrics;
@@ -930,7 +967,6 @@ void FabricMountingManager::preallocateShadowView(
   // Updating state on Android side has a cost and doing it unnecessarily for
   // dummy state is wasteful.
   bool preventPassingStateWrapperForText =
-      ReactNativeFeatureFlags::enableTextPreallocationOptimisation() &&
       strcmp(shadowView.componentName, "Paragraph") == 0;
   if (shadowView.state != nullptr && !preventPassingStateWrapperForText) {
     javaStateWrapper = StateWrapperImpl::newObjectJavaArgs();

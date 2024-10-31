@@ -20,7 +20,6 @@
 #import <react/renderer/core/LayoutableShadowNode.h>
 #import <react/renderer/core/RawProps.h>
 #import <react/renderer/mounting/TelemetryController.h>
-#import <react/utils/CoreFeatures.h>
 
 #import <React/RCTComponentViewProtocol.h>
 #import <React/RCTComponentViewRegistry.h>
@@ -187,7 +186,7 @@ static void RCTPerformMountInstructions(
                                           componentViewDescriptor:rootViewDescriptor];
 }
 
-- (void)scheduleTransaction:(MountingCoordinator::Shared)mountingCoordinator
+- (void)scheduleTransaction:(std::shared_ptr<const MountingCoordinator>)mountingCoordinator
 {
   if (RCTIsMainQueue()) {
     // Already on the proper thread, so:

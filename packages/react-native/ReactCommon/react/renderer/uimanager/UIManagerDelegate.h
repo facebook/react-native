@@ -23,7 +23,7 @@ class UIManagerDelegate {
    * For this moment the tree is already laid out and sealed.
    */
   virtual void uiManagerDidFinishTransaction(
-      MountingCoordinator::Shared mountingCoordinator,
+      std::shared_ptr<const MountingCoordinator> mountingCoordinator,
       bool mountSynchronously) = 0;
 
   /*

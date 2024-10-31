@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<15f7e1de5286bbb63d11f55819d23a68>>
+ * @generated SignedSource<<d4297e2a804f238f538463d3d9af480a>>
  * @flow strict
  */
 
@@ -15,7 +15,7 @@
  *   packages/react-native/scripts/featureflags/ReactNativeFeatureFlags.config.js.
  *
  * To regenerate this code, run the following script from the repo root:
- *   yarn featureflags-update
+ *   yarn featureflags --update
  */
 
 import type {TurboModule} from '../../../../Libraries/TurboModule/RCTExport';
@@ -29,10 +29,11 @@ export interface Spec extends TurboModule {
   +batchRenderingUpdatesInEventLoop?: () => boolean;
   +completeReactInstanceCreationOnBgThreadOnAndroid?: () => boolean;
   +disableEventLoopOnBridgeless?: () => boolean;
+  +disableMountItemReorderingAndroid?: () => boolean;
   +enableAlignItemsBaselineOnFabricIOS?: () => boolean;
   +enableAndroidLineHeightCentering?: () => boolean;
   +enableBridgelessArchitecture?: () => boolean;
-  +enableCleanTextInputYogaNode?: () => boolean;
+  +enableCppPropsIteratorSetter?: () => boolean;
   +enableDeletionOfUnmountedViews?: () => boolean;
   +enableEagerRootViewAttachment?: () => boolean;
   +enableEventEmitterRetentionDuringGesturesOnAndroid?: () => boolean;
@@ -50,7 +51,6 @@ export interface Spec extends TurboModule {
   +enablePropsUpdateReconciliationAndroid?: () => boolean;
   +enableReportEventPaintTime?: () => boolean;
   +enableSynchronousStateUpdates?: () => boolean;
-  +enableTextPreallocationOptimisation?: () => boolean;
   +enableUIConsistency?: () => boolean;
   +enableViewRecycling?: () => boolean;
   +excludeYogaFromRawProps?: () => boolean;
@@ -64,6 +64,7 @@ export interface Spec extends TurboModule {
   +loadVectorDrawablesOnImages?: () => boolean;
   +setAndroidLayoutDirection?: () => boolean;
   +traceTurboModulePromiseRejectionsOnAndroid?: () => boolean;
+  +useAlwaysAvailableJSErrorHandling?: () => boolean;
   +useFabricInterop?: () => boolean;
   +useImmediateExecutorInAndroidBridgeless?: () => boolean;
   +useModernRuntimeScheduler?: () => boolean;

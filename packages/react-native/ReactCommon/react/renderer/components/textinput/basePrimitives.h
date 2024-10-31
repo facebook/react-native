@@ -5,11 +5,15 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "CoreFeatures.h"
+#pragma once
 
 namespace facebook::react {
 
-bool CoreFeatures::enablePropIteratorSetter = false;
-bool CoreFeatures::excludeYogaFromRawProps = false;
+enum class SubmitBehavior {
+  Default,
+  Submit,
+  BlurAndSubmit,
+  Newline,
+};
 
 } // namespace facebook::react

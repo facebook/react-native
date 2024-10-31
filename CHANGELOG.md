@@ -1,5 +1,22 @@
 # Changelog
 
+## v0.76.1
+
+### Fixed
+
+#### Android specific
+
+- **runtime** Made AppRegistry callable from Native code in Bridgeless (fixes headless tasks) ([f3fee67c54](https://github.com/facebook/react-native/commit/f3fee67c547ace5e08bc9e119bcb80e0f3454d30) by [@robik](https://github.com/robik))
+- **runtime** Add jsBundleFile to DefaultReactNativeHost.kt ([e56bd89ef](https://github.com/facebook/react-native/commit/e56bd89eff72f1d38d2940b9dbd8f7b97037dc22))
+
+#### iOS specific
+
+- **codegen** Do not generate the ComponentCls function in the RCTThirdPartyFabricComponentsProvider for components deined in the app. ([dc7e9e2d83](https://github.com/facebook/react-native/commit/dc7e9e2d83f5af3d2a970521af4fcc7f86d2168d) by [@cipolleschi](https://github.com/cipolleschi))
+- **infra** Generated NODE_BINARY in .xcode.env.local now supports paths with a space ([eeaa3ff458](https://github.com/facebook/react-native/commit/eeaa3ff458a3e5c902075bb45161d6ccde31fe53) by [@blakef](https://github.com/blakef))
+- **infra** Pin Xcodeproj to < 1.26.0 ([e8776240b41](https://github.com/facebook/react-native/commit/e8776240b41a3147e95713299b69c813be60b8e8))
+- **runtime** Fixed bug where background colors would sometimes animate when changing on Views ([1d6ac09530](https://github.com/facebook/react-native/commit/1d6ac09530145e6d2bf1e4dd9d40f51542d9e7f6) by [@joevilches](https://github.com/joevilches))
+- **runtime** Fixes regression of RCTWindowFrameDidChangeNotification not fired ([e271b23fad](https://github.com/facebook/react-native/commit/e271b23fad89e1e7da2e91a8f1e5cbb295406c74) by [@zhongwuzw](https://github.com/zhongwuzw))
+
 ## v0.76.0
 
 ### Breaking

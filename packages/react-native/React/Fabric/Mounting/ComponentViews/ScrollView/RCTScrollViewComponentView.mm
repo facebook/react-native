@@ -182,6 +182,7 @@ RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrollView, NSInt
   UIViewAnimationCurve curve =
       (UIViewAnimationCurve)[notification.userInfo[UIKeyboardAnimationCurveUserInfoKey] unsignedIntegerValue];
   CGRect keyboardEndFrame = [notification.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
+  CGRect keyboardBeginFrame = [notification.userInfo[UIKeyboardFrameBeginUserInfoKey] CGRectValue];
 
   CGPoint absoluteViewOrigin = [self convertPoint:self.bounds.origin toView:nil];
   CGFloat scrollViewLowerY = isInverted ? absoluteViewOrigin.y : absoluteViewOrigin.y + self.bounds.size.height;
@@ -203,21 +204,24 @@ RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrollView, NSInt
                                                from:self
                                            forEvent:nil]) {
     if (CGRectEqualToRect(_firstResponderFocus, CGRectNull)) {
-      // Text input view is outside of the scroll view.
-      return;
-    }
+      UIView *inputAccessoryView = _firstResponderViewOutsideScrollView.inputAccessoryView;
+      if (inputAccessoryView) {
+        // Text input view is within the inputAccessoryView.
+        contentDiff = keyboardEndFrame.origin.y - keyboardBeginFrame.origin.y;
+      }
+    } else {
+      CGRect viewIntersection = CGRectIntersection(self.firstResponderFocus, keyboardEndFrame);
 
-    CGRect viewIntersection = CGRectIntersection(self.firstResponderFocus, keyboardEndFrame);
+      if (CGRectIsNull(viewIntersection)) {
+        return;
+      }
 
-    if (CGRectIsNull(viewIntersection)) {
-      return;
-    }
-
-    // Inner text field focused
-    CGFloat focusEnd = CGRectGetMaxY(self.firstResponderFocus);
-    if (focusEnd > keyboardEndFrame.origin.y) {
-      // Text field active region is below visible area with keyboard - update diff to bring into view
-      contentDiff = keyboardEndFrame.origin.y - focusEnd;
+      // Inner text field focused
+      CGFloat focusEnd = CGRectGetMaxY(self.firstResponderFocus);
+      if (focusEnd > keyboardEndFrame.origin.y) {
+        // Text field active region is below visible area with keyboard - update diff to bring into view
+        contentDiff = keyboardEndFrame.origin.y - focusEnd;
+      }
     }
   }
 

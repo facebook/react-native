@@ -43,7 +43,7 @@ void IntersectionObserverManager::observe(
   // (like on the Web) and we'd send the initial notification there, but as
   // we don't have it we have to run this check once and manually dispatch.
   auto& shadowTreeRegistry = uiManager.getShadowTreeRegistry();
-  MountingCoordinator::Shared mountingCoordinator = nullptr;
+  std::shared_ptr<const MountingCoordinator> mountingCoordinator = nullptr;
   RootShadowNode::Shared rootShadowNode = nullptr;
   shadowTreeRegistry.visit(surfaceId, [&](const ShadowTree& shadowTree) {
     mountingCoordinator = shadowTree.getMountingCoordinator();

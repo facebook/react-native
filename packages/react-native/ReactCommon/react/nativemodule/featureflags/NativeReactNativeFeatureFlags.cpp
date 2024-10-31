@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<12ecbb280bde10b2d74376a2a890cf97>>
+ * @generated SignedSource<<3a530491b7f90f1c0a1e75a6d618f586>>
  */
 
 /**
@@ -14,7 +14,7 @@
  *   packages/react-native/scripts/featureflags/ReactNativeFeatureFlags.config.js.
  *
  * To regenerate this code, run the following script from the repo root:
- *   yarn featureflags-update
+ *   yarn featureflags --update
  */
 
 #include "NativeReactNativeFeatureFlags.h"
@@ -71,6 +71,11 @@ bool NativeReactNativeFeatureFlags::disableEventLoopOnBridgeless(
   return ReactNativeFeatureFlags::disableEventLoopOnBridgeless();
 }
 
+bool NativeReactNativeFeatureFlags::disableMountItemReorderingAndroid(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::disableMountItemReorderingAndroid();
+}
+
 bool NativeReactNativeFeatureFlags::enableAlignItemsBaselineOnFabricIOS(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableAlignItemsBaselineOnFabricIOS();
@@ -86,9 +91,9 @@ bool NativeReactNativeFeatureFlags::enableBridgelessArchitecture(
   return ReactNativeFeatureFlags::enableBridgelessArchitecture();
 }
 
-bool NativeReactNativeFeatureFlags::enableCleanTextInputYogaNode(
+bool NativeReactNativeFeatureFlags::enableCppPropsIteratorSetter(
     jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::enableCleanTextInputYogaNode();
+  return ReactNativeFeatureFlags::enableCppPropsIteratorSetter();
 }
 
 bool NativeReactNativeFeatureFlags::enableDeletionOfUnmountedViews(
@@ -178,11 +183,6 @@ bool NativeReactNativeFeatureFlags::enableSynchronousStateUpdates(
   return ReactNativeFeatureFlags::enableSynchronousStateUpdates();
 }
 
-bool NativeReactNativeFeatureFlags::enableTextPreallocationOptimisation(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::enableTextPreallocationOptimisation();
-}
-
 bool NativeReactNativeFeatureFlags::enableUIConsistency(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableUIConsistency();
@@ -246,6 +246,11 @@ bool NativeReactNativeFeatureFlags::setAndroidLayoutDirection(
 bool NativeReactNativeFeatureFlags::traceTurboModulePromiseRejectionsOnAndroid(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::traceTurboModulePromiseRejectionsOnAndroid();
+}
+
+bool NativeReactNativeFeatureFlags::useAlwaysAvailableJSErrorHandling(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::useAlwaysAvailableJSErrorHandling();
 }
 
 bool NativeReactNativeFeatureFlags::useFabricInterop(

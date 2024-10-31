@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1ce9496b005924d8a421899ce55f6d81>>
+ * @generated SignedSource<<09dd6fb517b7b965c5cc554a075e5590>>
  */
 
 /**
@@ -14,7 +14,7 @@
  *   packages/react-native/scripts/featureflags/ReactNativeFeatureFlags.config.js.
  *
  * To regenerate this code, run the following script from the repo root:
- *   yarn featureflags-update
+ *   yarn featureflags --update
  */
 
 package com.facebook.react.internal.featureflags
@@ -31,13 +31,15 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun disableEventLoopOnBridgeless(): Boolean = false
 
+  override fun disableMountItemReorderingAndroid(): Boolean = false
+
   override fun enableAlignItemsBaselineOnFabricIOS(): Boolean = true
 
-  override fun enableAndroidLineHeightCentering(): Boolean = false
+  override fun enableAndroidLineHeightCentering(): Boolean = true
 
   override fun enableBridgelessArchitecture(): Boolean = false
 
-  override fun enableCleanTextInputYogaNode(): Boolean = false
+  override fun enableCppPropsIteratorSetter(): Boolean = false
 
   override fun enableDeletionOfUnmountedViews(): Boolean = false
 
@@ -71,8 +73,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableSynchronousStateUpdates(): Boolean = false
 
-  override fun enableTextPreallocationOptimisation(): Boolean = false
-
   override fun enableUIConsistency(): Boolean = false
 
   override fun enableViewRecycling(): Boolean = false
@@ -98,6 +98,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun setAndroidLayoutDirection(): Boolean = true
 
   override fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean = false
+
+  override fun useAlwaysAvailableJSErrorHandling(): Boolean = false
 
   override fun useFabricInterop(): Boolean = false
 
