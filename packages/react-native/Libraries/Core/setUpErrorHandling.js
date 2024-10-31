@@ -21,7 +21,7 @@ ExceptionsManager.installConsoleErrorReporter();
 if (!global.__fbDisableExceptionsManager) {
   const handleError = (e: mixed, isFatal: boolean) => {
     try {
-        ExceptionsManager.handleException(e, isFatal);
+      ExceptionsManager.handleException(e, isFatal);
     } catch (ee) {
       console.log('Failed to print error: ', ee.message);
       throw e;
