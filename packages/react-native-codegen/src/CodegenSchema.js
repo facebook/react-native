@@ -37,6 +37,11 @@ export type Int32TypeAnnotation = $ReadOnly<{
   type: 'Int32TypeAnnotation',
 }>;
 
+export type NumberLiteralTypeAnnotation = $ReadOnly<{
+  type: 'NumberLiteralTypeAnnotation',
+  value: number,
+}>;
+
 export type StringTypeAnnotation = $ReadOnly<{
   type: 'StringTypeAnnotation',
 }>;
@@ -366,6 +371,7 @@ type NativeModuleEventEmitterBaseTypeAnnotation =
   | FloatTypeAnnotation
   | Int32TypeAnnotation
   | NativeModuleNumberTypeAnnotation
+  | NumberLiteralTypeAnnotation
   | StringTypeAnnotation
   | StringLiteralTypeAnnotation
   | StringLiteralUnionTypeAnnotation
@@ -385,6 +391,7 @@ export type NativeModuleBaseTypeAnnotation =
   | StringLiteralTypeAnnotation
   | StringLiteralUnionTypeAnnotation
   | NativeModuleNumberTypeAnnotation
+  | NumberLiteralTypeAnnotation
   | Int32TypeAnnotation
   | DoubleTypeAnnotation
   | FloatTypeAnnotation

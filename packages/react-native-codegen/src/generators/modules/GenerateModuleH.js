@@ -179,6 +179,8 @@ function translatePrimitiveJSTypeToCpp(
       return wrapOptional('jsi::String', isRequired);
     case 'NumberTypeAnnotation':
       return wrapOptional('double', isRequired);
+    case 'NumberLiteralTypeAnnotation':
+      return wrapOptional('double', isRequired);
     case 'DoubleTypeAnnotation':
       return wrapOptional('double', isRequired);
     case 'FloatTypeAnnotation':
