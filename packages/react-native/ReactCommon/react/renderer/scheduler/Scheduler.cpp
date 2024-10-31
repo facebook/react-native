@@ -31,10 +31,6 @@ Scheduler::Scheduler(
   runtimeExecutor_ = schedulerToolbox.runtimeExecutor;
   contextContainer_ = schedulerToolbox.contextContainer;
 
-  reactNativeConfig_ =
-      contextContainer_->at<std::shared_ptr<const ReactNativeConfig>>(
-          "ReactNativeConfig");
-
   // Creating a container for future `EventDispatcher` instance.
   eventDispatcher_ = std::make_shared<std::optional<const EventDispatcher>>();
 

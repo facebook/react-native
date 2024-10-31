@@ -11,7 +11,6 @@
 #include <mutex>
 
 #include <ReactCommon/RuntimeExecutor.h>
-#include <react/config/ReactNativeConfig.h>
 #include <react/performance/timeline/PerformanceEntryReporter.h>
 #include <react/renderer/componentregistry/ComponentDescriptorFactory.h>
 #include <react/renderer/components/root/RootComponentDescriptor.h>
@@ -120,7 +119,6 @@ class Scheduler final : public UIManagerDelegate {
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
   RuntimeExecutor runtimeExecutor_;
   std::shared_ptr<UIManager> uiManager_;
-  std::shared_ptr<const ReactNativeConfig> reactNativeConfig_;
 
   std::vector<std::shared_ptr<UIManagerCommitHook>> commitHooks_;
 
