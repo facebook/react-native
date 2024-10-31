@@ -12,12 +12,15 @@
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 
 import * as React from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, View} from 'react-native';
+import RNTesterText from '../../components/RNTesterText';
 
 function Playground() {
   return (
     <View style={styles.container}>
-      <Text>Edit "RNTesterPlayground.js" to change this file</Text>
+      <RNTesterText>
+        Edit "RNTesterPlayground.js" to change this file
+      </RNTesterText>
     </View>
   );
 }
