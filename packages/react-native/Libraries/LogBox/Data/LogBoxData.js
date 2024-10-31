@@ -82,9 +82,9 @@ let warningFilter: WarningFilter = function (format) {
   return {
     finalFormat: format,
     forceDialogImmediately: false,
-    suppressDialog_LEGACY: true,
+    suppressDialog_LEGACY: false,
     suppressCompletely: false,
-    monitorEvent: 'unknown',
+    monitorEvent: 'warning_unhandled',
     monitorListVersion: 0,
     monitorSampleRate: 1,
   };
