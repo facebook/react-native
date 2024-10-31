@@ -19,7 +19,7 @@ BOOL RCTBorderInsetsAreEqual(UIEdgeInsets borderInsets)
 
 BOOL RCTCornerRadiiAreEqualAndSymmetrical(RCTCornerRadii cornerRadii)
 {
-  return cornerRadii.topLeftHorizontal == cornerRadii.topLeftHorizontal &&
+  return cornerRadii.topLeftHorizontal == cornerRadii.topLeftVertical &&
       cornerRadii.topRightHorizontal == cornerRadii.topRightVertical &&
       cornerRadii.bottomLeftHorizontal == cornerRadii.bottomLeftVertical &&
       cornerRadii.bottomRightHorizontal == cornerRadii.bottomRightVertical &&
