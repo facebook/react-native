@@ -1684,8 +1684,8 @@ class ScrollView extends React.Component<Props, State> {
               nextHeaderLayoutY={this._headerLayoutYs.get(nextKey)}
               prevHeaderLayoutY={
                 prevKey !== undefined
-                  ? this._headerLayoutYs.get(prevKey) +
-                    this._headerLayoutHeights.get(prevKey)
+                  ? (this._headerLayoutYs.get(prevKey) ?? 0) +
+                    (this._headerLayoutHeights.get(prevKey) ?? 0)
                   : undefined
               }
               onLayout={event => this._onStickyHeaderLayout(index, event, key)}
