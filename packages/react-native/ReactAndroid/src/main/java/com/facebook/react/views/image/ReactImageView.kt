@@ -22,8 +22,12 @@ import android.graphics.Shader.TileMode
 import android.graphics.drawable.Animatable
 import android.graphics.drawable.Drawable
 import android.net.Uri
+import com.facebook.common.executors.CallerThreadExecutor
 import com.facebook.common.references.CloseableReference
 import com.facebook.common.util.UriUtil
+import com.facebook.datasource.DataSource
+import com.facebook.datasource.BaseDataSubscriber
+import com.facebook.datasource.DataSubscriber
 import com.facebook.drawee.backends.pipeline.Fresco
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder
 import com.facebook.drawee.controller.ControllerListener
@@ -311,6 +315,7 @@ public class ReactImageView(
       null,
       "default" -> ImageCacheControl.DEFAULT
       "reload" -> ImageCacheControl.RELOAD
+      "only-if-cached" -> ImageCacheControl.ONLY_IF_CACHED
       else -> ImageCacheControl.DEFAULT
     }
   }
@@ -439,6 +444,38 @@ public class ReactImageView(
       imagePipeline.evictFromCache(uri)
     }
 
+    if (cacheControl == ImageCacheControl.ONLY_IF_CACHED) {
+      val imagePipeline = Fresco.getImagePipeline()
+      val dataSource = imagePipeline.isInDiskCache(uri)
+
+      dataSource.subscribe(object : BaseDataSubscriber<Boolean>() {
+        override fun onNewResultImpl(dataSource: DataSource<Boolean>) {
+          if (!dataSource.isFinished()) return
+
+          val isInCache: Boolean = dataSource.getResult() ?: false
+
+          if (isInCache) {
+            setupImageRequest(uri, cacheControl, postprocessor, resizeOptions)
+          }
+
+          dataSource.close()
+        }
+
+        override fun onFailureImpl(dataSource: DataSource<Boolean>) {}
+      }, CallerThreadExecutor.getInstance())
+
+      return
+    }
+
+    setupImageRequest(uri, cacheControl, postprocessor, resizeOptions)
+  }
+
+  private fun setupImageRequest(
+    uri: Uri,
+    cacheControl: ImageCacheControl,
+    postprocessor: Postprocessor?,
+    resizeOptions: ResizeOptions?
+  ) {
     val imageRequestBuilder =
         ImageRequestBuilder.newBuilderWithSource(uri)
             .setPostprocessor(postprocessor)
