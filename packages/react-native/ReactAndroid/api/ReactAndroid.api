@@ -3377,14 +3377,25 @@ public final class com/facebook/react/modules/fresco/FrescoModule$Companion {
 	public final fun hasBeenInitialized ()Z
 }
 
+public final class com/facebook/react/modules/fresco/ImageCacheControl : java/lang/Enum {
+	public static final field DEFAULT Lcom/facebook/react/modules/fresco/ImageCacheControl;
+	public static final field RELOAD Lcom/facebook/react/modules/fresco/ImageCacheControl;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcom/facebook/react/modules/fresco/ImageCacheControl;
+	public static fun values ()[Lcom/facebook/react/modules/fresco/ImageCacheControl;
+}
+
 public final class com/facebook/react/modules/fresco/ReactNetworkImageRequest : com/facebook/imagepipeline/request/ImageRequest {
 	public static final field Companion Lcom/facebook/react/modules/fresco/ReactNetworkImageRequest$Companion;
-	public synthetic fun <init> (Lcom/facebook/imagepipeline/request/ImageRequestBuilder;Lcom/facebook/react/bridge/ReadableMap;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Lcom/facebook/imagepipeline/request/ImageRequestBuilder;Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/modules/fresco/ImageCacheControl;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public static final fun fromBuilderWithHeaders (Lcom/facebook/imagepipeline/request/ImageRequestBuilder;Lcom/facebook/react/bridge/ReadableMap;)Lcom/facebook/react/modules/fresco/ReactNetworkImageRequest;
+	public static final fun fromBuilderWithHeaders (Lcom/facebook/imagepipeline/request/ImageRequestBuilder;Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/modules/fresco/ImageCacheControl;)Lcom/facebook/react/modules/fresco/ReactNetworkImageRequest;
 }
 
 public final class com/facebook/react/modules/fresco/ReactNetworkImageRequest$Companion {
 	public final fun fromBuilderWithHeaders (Lcom/facebook/imagepipeline/request/ImageRequestBuilder;Lcom/facebook/react/bridge/ReadableMap;)Lcom/facebook/react/modules/fresco/ReactNetworkImageRequest;
+	public final fun fromBuilderWithHeaders (Lcom/facebook/imagepipeline/request/ImageRequestBuilder;Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/modules/fresco/ImageCacheControl;)Lcom/facebook/react/modules/fresco/ReactNetworkImageRequest;
+	public static synthetic fun fromBuilderWithHeaders$default (Lcom/facebook/react/modules/fresco/ReactNetworkImageRequest$Companion;Lcom/facebook/imagepipeline/request/ImageRequestBuilder;Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/modules/fresco/ImageCacheControl;ILjava/lang/Object;)Lcom/facebook/react/modules/fresco/ReactNetworkImageRequest;
 }
 
 public final class com/facebook/react/modules/fresco/SystraceRequestListener : com/facebook/imagepipeline/listener/BaseRequestListener {
@@ -6707,8 +6718,10 @@ public class com/facebook/react/views/imagehelper/ImageSource {
 	public fun <init> (Landroid/content/Context;Ljava/lang/String;)V
 	public fun <init> (Landroid/content/Context;Ljava/lang/String;D)V
 	public fun <init> (Landroid/content/Context;Ljava/lang/String;DD)V
-	public synthetic fun <init> (Landroid/content/Context;Ljava/lang/String;DDILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Landroid/content/Context;Ljava/lang/String;DDLcom/facebook/react/modules/fresco/ImageCacheControl;)V
+	public synthetic fun <init> (Landroid/content/Context;Ljava/lang/String;DDLcom/facebook/react/modules/fresco/ImageCacheControl;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCacheControl ()Lcom/facebook/react/modules/fresco/ImageCacheControl;
 	public final fun getSize ()D
 	public final fun getSource ()Ljava/lang/String;
 	public static final fun getTransparentBitmapImageSource (Landroid/content/Context;)Lcom/facebook/react/views/imagehelper/ImageSource;
