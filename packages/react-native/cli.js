@@ -204,7 +204,7 @@ async function main() {
 
     const proc = spawn(
       'npx',
-      ['@react-native-community/cli', ...process.argv.slice(2)],
+      ['@react-native-community/cli@latest', ...process.argv.slice(2)],
       {
         stdio: 'inherit',
       },
