@@ -259,6 +259,7 @@ const ScrollViewStickyHeaderWithForwardedRef: component(
       }
     };
   }, [
+    prevHeaderLayoutY,
     nextHeaderLayoutY,
     measured,
     layoutHeight,
