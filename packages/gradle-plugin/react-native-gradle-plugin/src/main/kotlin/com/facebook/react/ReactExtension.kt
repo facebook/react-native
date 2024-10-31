@@ -161,7 +161,7 @@ abstract class ReactExtension @Inject constructor(val project: Project) {
    *
    * @param method The method to use for linking dependencies. By default, it is `implementation`.
    */
-  fun autolinkLibrariesWithApp(method: String?) {
+  fun autolinkLibrariesWithApp(method: String? = "implementation") {
     val inputFile =
         project.rootProject.layout.buildDirectory
             .file("generated/autolinking/autolinking.json")
