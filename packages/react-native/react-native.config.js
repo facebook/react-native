@@ -21,9 +21,14 @@
 const verbose = process.env.DEBUG && process.env.DEBUG.includes('react-native');
 
 function findCommunityPlatformPackage(spec, startDir = process.cwd()) {
-  // In a pnpm setup, we won't be able to find `@react-native-community/*`
-  // starting from the `react-native` directory. Instead, we must use the
-  // project's root.
+  // In monorepos, we cannot make any assumptions on where
+  // `@react-native-community/*` gets installed. The safest way to find it
+  // (barring adding an optional peer dependency) is to start from the project
+  // root.
+  //
+  // Note that we're assuming that the current working directory is the project
+  // root. This is also what `@react-native-community/cli` assumes (see
+  // https://github.com/react-native-community/cli/blob/14.x/packages/cli-tools/src/findProjectRoot.ts).
   const main = require.resolve(spec, { paths: [startDir] });
   return require(main);
 }
