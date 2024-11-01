@@ -31,8 +31,8 @@ internal class Gradient(gradient: ReadableMap?, context: Context) {
       else -> throw IllegalArgumentException("Unsupported gradient type: $typeString")
     }
 
-    val orientationMap = gradient.getMap("orientation")
-      ?: throw IllegalArgumentException("Gradient must have orientation")
+    val directionMap = gradient.getMap("direction")
+      ?: throw IllegalArgumentException("Gradient must have direction")
 
     val colorStops = gradient.getArray("colorStops")
       ?: throw IllegalArgumentException("Invalid colorStops array")
@@ -51,7 +51,7 @@ internal class Gradient(gradient: ReadableMap?, context: Context) {
       positions[i] = colorStop.getDouble("position").toFloat()
     }
 
-    linearGradient = LinearGradient(orientationMap, colors, positions)
+    linearGradient = LinearGradient(directionMap, colors, positions)
   }
 
   public fun getShader(bounds: Rect): Shader? {

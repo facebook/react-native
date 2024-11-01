@@ -17,7 +17,7 @@ using namespace facebook::react;
                           gradient:(const LinearGradient&) gradient {
   
   UIGraphicsImageRenderer *renderer = [[UIGraphicsImageRenderer alloc] initWithSize:size];
-  auto orientation = gradient.orientation;
+  auto direction = gradient.direction;
   auto colorStops = gradient.colorStops;
   
   UIImage *gradientImage = [renderer imageWithActions:^(UIGraphicsImageRendererContext * _Nonnull rendererContext) {
@@ -39,12 +39,12 @@ using namespace facebook::react;
     CGPoint startPoint;
     CGPoint endPoint;
     
-    if (orientation.type == GradientOrientationType::Angle) {
-      CGFloat angle = std::get<Float>(orientation.value);
+    if (direction.type == GradientDirectionType::Angle) {
+      CGFloat angle = std::get<Float>(direction.value);
       setPointsFromAngle(angle, size, &startPoint, &endPoint);
-    } else if (orientation.type == GradientOrientationType::Direction) {
-      NSString *direction = [NSString stringWithUTF8String:std::get<std::string>(orientation.value).c_str()];
-      CGFloat angle = getAngleFromDirection(direction, size);
+    } else if (direction.type == GradientDirectionType::Keyword) {
+      NSString *keyword = [NSString stringWithUTF8String:std::get<std::string>(direction.value).c_str()];
+      CGFloat angle = getAngleForKeyword(keyword, size);
       setPointsFromAngle(angle, size, &startPoint, &endPoint);
     } else {
       // Default to top-to-bottom gradient
@@ -122,23 +122,18 @@ static void setPointsFromAngle(CGFloat angle, CGSize size, CGPoint *startPoint, 
 
 // Spec: https://www.w3.org/TR/css-images-3/#linear-gradient-syntax
 // Refer `using keywords` section
-static CGFloat getAngleFromDirection(NSString *direction, CGSize size) {
-  if ([direction isEqualToString:@"to top"]) return 0.0;
-  if ([direction isEqualToString:@"to right"]) return 90.0;
-  if ([direction isEqualToString:@"to bottom"]) return 180.0;
-  if ([direction isEqualToString:@"to left"]) return 270.0;
-  
-  if ([direction isEqualToString:@"to top right"] || [direction isEqualToString:@"to right top"]) {
+static CGFloat getAngleForKeyword(NSString *keyword, CGSize size) {
+  if ([keyword isEqualToString:@"to top right"]) {
     CGFloat angleDeg = atan(size.width / size.height) * 180.0 / M_PI;
     return 90.0 - angleDeg;
   }
-  if ([direction isEqualToString:@"to bottom right"] || [direction isEqualToString:@"to right bottom"]) {
+  if ([keyword isEqualToString:@"to bottom right"]) {
     return atan(size.width / size.height) * 180.0 / M_PI + 90.0;
   }
-  if ([direction isEqualToString:@"to top left"] || [direction isEqualToString:@"to left top"]) {
+  if ([keyword isEqualToString:@"to top left"]) {
     return atan(size.width / size.height) * 180.0 / M_PI + 270.0;
   }
-  if ([direction isEqualToString:@"to bottom left"] || [direction isEqualToString:@"to left bottom"]) {
+  if ([keyword isEqualToString:@"to bottom left"]) {
     return atan(size.height / size.width) * 180.0 / M_PI + 180.0;
   }
   

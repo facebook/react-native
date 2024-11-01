@@ -1232,26 +1232,26 @@ inline void fromRawValue(
     if (type == "linearGradient") {
       LinearGradient linearGradient;
 
-      auto orientationIt = rawBackgroundImageMap.find("orientation");
-      if (orientationIt != rawBackgroundImageMap.end() && 
-          orientationIt->second.hasType<std::unordered_map<std::string, RawValue>>()) {
-        auto orientationMap = static_cast<std::unordered_map<std::string, RawValue>>(orientationIt->second);
+      auto directionIt = rawBackgroundImageMap.find("direction");
+      if (directionIt != rawBackgroundImageMap.end() && 
+          directionIt->second.hasType<std::unordered_map<std::string, RawValue>>()) {
+        auto directionMap = static_cast<std::unordered_map<std::string, RawValue>>(directionIt->second);
         
-        auto orientationTypeIt = orientationMap.find("type");
-        auto valueIt = orientationMap.find("value");
+        auto directionTypeIt = directionMap.find("type");
+        auto valueIt = directionMap.find("value");
         
-        if (orientationTypeIt != orientationMap.end() && valueIt != orientationMap.end()) {
-          std::string orientationType = (std::string)(orientationTypeIt->second);
+        if (directionTypeIt != directionMap.end() && valueIt != directionMap.end()) {
+          std::string directionType = (std::string)(directionTypeIt->second);
           
-          if (orientationType == "angle") {
-            linearGradient.orientation.type = GradientOrientationType::Angle;
+          if (directionType == "angle") {
+            linearGradient.direction.type = GradientDirectionType::Angle;
             if (valueIt->second.hasType<Float>()) {
-              linearGradient.orientation.value = (Float)(valueIt->second);
+              linearGradient.direction.value = (Float)(valueIt->second);
             }
-          } else if (orientationType == "direction") {
-            linearGradient.orientation.type = GradientOrientationType::Direction;
+          } else if (directionType == "keyword") {
+            linearGradient.direction.type = GradientDirectionType::Keyword;
             if (valueIt->second.hasType<std::string>()) {
-              linearGradient.orientation.value = (std::string)(valueIt->second);
+              linearGradient.direction.value = (std::string)(valueIt->second);
             }
           }
         }

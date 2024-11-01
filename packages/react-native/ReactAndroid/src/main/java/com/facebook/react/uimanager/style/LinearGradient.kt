@@ -14,35 +14,35 @@ import kotlin.math.atan
 import kotlin.math.tan
 
 internal class LinearGradient(
-  private val orientationMap: ReadableMap,
+  private val directionMap: ReadableMap,
   private val colors: IntArray,
   private val positions: FloatArray
 ) {
-  private sealed class Orientation {
-    public data class Angle(val value: Double) : Orientation()
-    public data class Direction(val value: String) : Orientation()
+  private sealed class Direction {
+    public data class Angle(val value: Double) : Direction()
+    public data class Keyword(val value: String) : Direction()
   }
 
-  private val orientation: Orientation = when (val type = orientationMap.getString("type")) {
+  private val direction: Direction = when (val type = directionMap.getString("type")) {
     "angle" -> {
-      val angle = orientationMap.getDouble("value")
-      Orientation.Angle(angle)
+      val angle = directionMap.getDouble("value")
+      Direction.Angle(angle)
     }
 
-    "direction" -> {
-      val direction = orientationMap.getString("value")
-        ?: throw IllegalArgumentException("Direction value cannot be null")
-      Orientation.Direction(direction)
+    "keyword" -> {
+      val keyword = directionMap.getString("value")
+        ?: throw IllegalArgumentException("Linear gradient direction keyword value cannot be null")
+      Direction.Keyword(keyword)
     }
 
-    else -> throw IllegalArgumentException("Invalid orientation type: $type")
+    else -> throw IllegalArgumentException("Invalid direction type: $type")
   }
 
   public fun getShader(width: Float, height: Float): Shader {
-    val angle = when (orientation) {
-      is Orientation.Angle -> orientation.value
-      is Orientation.Direction -> getAngleFromDirection(
-        orientation.value,
+    val angle = when (direction) {
+      is Direction.Angle -> direction.value
+      is Direction.Keyword -> getAngleForKeyword(
+        direction.value,
         width.toDouble(),
         height.toDouble()
       )
@@ -61,20 +61,15 @@ internal class LinearGradient(
 
   // Spec: https://www.w3.org/TR/css-images-3/#linear-gradient-syntax
   // Refer `using keywords` section
-  private fun getAngleFromDirection(direction: String, width: Double, height: Double): Double {
+  private fun getAngleForKeyword(direction: String, width: Double, height: Double): Double {
     return when (direction) {
-      "to top" -> 0.0
-      "to right" -> 90.0
-      "to bottom" -> 180.0
-      "to left" -> 270.0
-      "to top right", "to right top" -> {
+      "to top right" -> {
         val angleDeg = Math.toDegrees(atan(width / height))
         90 - angleDeg
       }
-
-      "to bottom right", "to right bottom" -> Math.toDegrees(atan(width / height)) + 90
-      "to top left", "to left top" -> Math.toDegrees(atan(width / height)) + 270
-      "to bottom left", "to left bottom" -> Math.toDegrees(atan(height / width)) + 180
+      "to bottom right" -> Math.toDegrees(atan(width / height)) + 90
+      "to top left" -> Math.toDegrees(atan(width / height)) + 270
+      "to bottom left" -> Math.toDegrees(atan(height / width)) + 180
       else -> 180.0
     }
   }

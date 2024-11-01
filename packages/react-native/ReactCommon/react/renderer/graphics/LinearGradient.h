@@ -14,16 +14,16 @@
 
 namespace facebook::react {
 
-enum class GradientOrientationType {
+enum class GradientDirectionType {
   Angle,
-  Direction
+  Keyword
 };
 
-struct GradientOrientation {
-  GradientOrientationType type;
+struct GradientDirection {
+  GradientDirectionType type;
   std::variant<Float, std::string> value;
 
-  bool operator==(const GradientOrientation& other) const {
+  bool operator==(const GradientDirection& other) const {
     return type == other.type && value == other.value;
   }
 };
@@ -35,11 +35,11 @@ struct ColorStop {
 };
 
 struct LinearGradient {
-  GradientOrientation orientation;
+  GradientDirection direction;
   std::vector<ColorStop> colorStops;
 
   bool operator==(const LinearGradient& other) const {
-    return orientation == other.orientation && colorStops == other.colorStops;
+    return direction == other.direction && colorStops == other.colorStops;
   }
 };
 

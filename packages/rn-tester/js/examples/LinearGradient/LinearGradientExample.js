@@ -61,6 +61,22 @@ exports.examples = [
     },
   },
   {
+    title: 'Linear Gradient with corner angle',
+    description: 'Rectangular Linear gradient with corner angle',
+    render(): React.Node {
+      return (
+        <GradientBox
+          style={{
+            experimental_backgroundImage: 'linear-gradient(45deg, red, blue);',
+            height: 300,
+            width: 140,
+          }}
+          testID="linear-gradient-rectangular-with-corner-angle"
+        />
+      );
+    },
+  },
+  {
     title: 'Multiple linear gradients',
     render(): React.Node {
       return (

@@ -14,36 +14,24 @@ import type {ProcessedColorValue} from './processColor';
 import type {GradientValue} from './StyleSheetTypes';
 
 const processColor = require('./processColor').default;
-const DIRECTION_REGEX =
-  /^to\s+(?:top|bottom|left|right)(?:\s+(?:top|bottom|left|right))?/;
+const DIRECTION_KEYWORD_REGEX =
+  /^to\s+(?:top|bottom|left|right)(?:\s+(?:top|bottom|left|right))?/i;
 const ANGLE_UNIT_REGEX = /^([+-]?\d*\.?\d+)(deg|grad|rad|turn)$/i;
-const VALID_DIRECTIONS = new Set([
-  'to top',
-  'to bottom',
-  'to left',
-  'to right',
-  'to top right',
-  'to right top',
-  'to top left',
-  'to left top',
-  'to bottom right',
-  'to right bottom',
-]);
 
-type LinearGradientOrientation =
+type LinearGradientDirection =
   | {type: 'angle', value: number}
-  | {type: 'direction', value: string};
+  | {type: 'keyword', value: string};
 
 type ParsedGradientValue = {
   type: 'linearGradient',
-  orientation: LinearGradientOrientation,
+  direction: LinearGradientDirection,
   colorStops: $ReadOnlyArray<{
     color: ProcessedColorValue,
     position: number,
   }>,
 };
 
-const DEFAULT_ORIENTATION: LinearGradientOrientation = {
+const DEFAULT_DIRECTION: LinearGradientDirection = {
   type: 'angle',
   value: 180,
 };
@@ -91,29 +79,33 @@ export default function processBackgroundImage(
         }
       }
 
-      let orientation: LinearGradientOrientation = DEFAULT_ORIENTATION;
+      let direction: LinearGradientDirection = DEFAULT_DIRECTION;
+      const bgDirection =
+        bgImage.direction != null ? bgImage.direction.toLowerCase() : null;
 
-      if (
-        bgImage.direction != null &&
-        ANGLE_UNIT_REGEX.test(bgImage.direction)
-      ) {
-        const parsedAngle = getAngleInDegrees(bgImage.direction);
-        if (parsedAngle != null) {
-          orientation = {
-            type: 'angle',
-            value: parsedAngle,
-          };
-        }
-      } else if (
-        bgImage.direction != null &&
-        DIRECTION_REGEX.test(bgImage.direction)
-      ) {
-        const parsedDirection = getDirectionString(bgImage.direction);
-        if (parsedDirection != null) {
-          orientation = {
-            type: 'direction',
-            value: parsedDirection,
-          };
+      if (bgDirection != null) {
+        if (ANGLE_UNIT_REGEX.test(bgDirection)) {
+          const parsedAngle = getAngleInDegrees(bgDirection);
+          if (parsedAngle != null) {
+            direction = {
+              type: 'angle',
+              value: parsedAngle,
+            };
+          } else {
+            // If an angle is invalid, return an empty array and do not apply any gradient. Same as web.
+            return [];
+          }
+        } else if (DIRECTION_KEYWORD_REGEX.test(bgDirection)) {
+          const parsedDirection = getDirectionForKeyword(bgDirection);
+          if (parsedDirection != null) {
+            direction = parsedDirection;
+          } else {
+            // If a direction is invalid, return an empty array and do not apply any gradient. Same as web.
+            return [];
+          }
+        } else {
+          // If a direction is invalid, return an empty array and do not apply any gradient. Same as web.
+          return [];
         }
       }
 
@@ -121,7 +113,7 @@ export default function processBackgroundImage(
 
       result = result.concat({
         type: 'linearGradient',
-        orientation,
+        direction,
         colorStops: fixedColorStops,
       });
     }
@@ -142,7 +134,7 @@ function parseCSSLinearGradient(
   while ((match = linearGradientRegex.exec(cssString))) {
     const gradientContent = match[1];
     const parts = gradientContent.split(',');
-    let orientation: LinearGradientOrientation = DEFAULT_ORIENTATION;
+    let direction: LinearGradientDirection = DEFAULT_DIRECTION;
     const trimmedDirection = parts[0].trim().toLowerCase();
 
     // matches individual color stops in a gradient function
@@ -155,7 +147,7 @@ function parseCSSLinearGradient(
     if (ANGLE_UNIT_REGEX.test(trimmedDirection)) {
       const parsedAngle = getAngleInDegrees(trimmedDirection);
       if (parsedAngle != null) {
-        orientation = {
+        direction = {
           type: 'angle',
           value: parsedAngle,
         };
@@ -164,13 +156,10 @@ function parseCSSLinearGradient(
         // If an angle is invalid, return an empty array and do not apply any gradient. Same as web.
         return [];
       }
-    } else if (DIRECTION_REGEX.test(trimmedDirection)) {
-      const parsedDirection = getDirectionString(trimmedDirection);
+    } else if (DIRECTION_KEYWORD_REGEX.test(trimmedDirection)) {
+      const parsedDirection = getDirectionForKeyword(trimmedDirection);
       if (parsedDirection != null) {
-        orientation = {
-          type: 'direction',
-          value: parsedDirection,
-        };
+        direction = parsedDirection;
         parts.shift();
       } else {
         // If a direction is invalid, return an empty array and do not apply any gradient. Same as web.
@@ -227,7 +216,7 @@ function parseCSSLinearGradient(
 
     gradients.push({
       type: 'linearGradient',
-      orientation,
+      direction,
       colorStops: fixedColorStops,
     });
   }
@@ -235,13 +224,37 @@ function parseCSSLinearGradient(
   return gradients;
 }
 
-function getDirectionString(direction?: string): ?string {
+function getDirectionForKeyword(direction?: string): ?LinearGradientDirection {
   if (direction == null) {
     return null;
   }
   // Remove extra whitespace
-  const normalizedDirection = direction.replace(/\s+/g, ' ');
-  return VALID_DIRECTIONS.has(normalizedDirection) ? normalizedDirection : null;
+  const normalized = direction.replace(/\s+/g, ' ').toLowerCase();
+
+  switch (normalized) {
+    case 'to top':
+      return {type: 'angle', value: 0};
+    case 'to right':
+      return {type: 'angle', value: 90};
+    case 'to bottom':
+      return {type: 'angle', value: 180};
+    case 'to left':
+      return {type: 'angle', value: 270};
+    case 'to top right':
+    case 'to right top':
+      return {type: 'keyword', value: 'to top right'};
+    case 'to bottom right':
+    case 'to right bottom':
+      return {type: 'keyword', value: 'to bottom right'};
+    case 'to top left':
+    case 'to left top':
+      return {type: 'keyword', value: 'to top left'};
+    case 'to bottom left':
+    case 'to left bottom':
+      return {type: 'keyword', value: 'to bottom left'};
+    default:
+      return null;
+  }
 }
 
 function getAngleInDegrees(angle?: string): ?number {
