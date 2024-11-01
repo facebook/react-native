@@ -11,6 +11,7 @@
 #include "HostTarget.h"
 #include "NetworkIOAgent.h"
 #include "SessionState.h"
+#include "TracingAgent.h"
 
 #include <jsinspector-modern/InspectorInterfaces.h>
 #include <jsinspector-modern/InstanceAgent.h>
@@ -110,6 +111,8 @@ class HostAgent final {
   SessionState& sessionState_;
 
   NetworkIOAgent networkIOAgent_;
+
+  TracingAgent tracingAgent_;
 };
 
 } // namespace facebook::react::jsinspector_modern

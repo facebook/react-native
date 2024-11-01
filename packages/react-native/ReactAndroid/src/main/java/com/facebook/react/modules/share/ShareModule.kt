@@ -59,6 +59,7 @@ public class ShareModule(reactContext: ReactApplicationContext) :
   }
 
   public companion object {
+    public const val NAME: String = NativeShareModuleSpec.NAME
     const private val ACTION_SHARED: String = "sharedAction"
     const public val ERROR_INVALID_CONTENT: String = "E_INVALID_CONTENT"
     const private val ERROR_UNABLE_TO_OPEN_DIALOG: String = "E_UNABLE_TO_OPEN_DIALOG"

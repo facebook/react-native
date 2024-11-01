@@ -314,7 +314,11 @@ class FlatListExample extends React.PureComponent<Props, State> {
     return getItemLayout(data, index, this.state.horizontal);
   };
   _onStartReached = () => {
-    if (this.state.first <= 0 || this.state.previousLoading) {
+    if (
+      this.state.empty ||
+      this.state.first <= 0 ||
+      this.state.previousLoading
+    ) {
       return;
     }
 
@@ -328,7 +332,11 @@ class FlatListExample extends React.PureComponent<Props, State> {
     }, LOAD_TIME);
   };
   _onEndReached = () => {
-    if (this.state.last >= PAGE_SIZE * NUM_PAGES || this.state.nextLoading) {
+    if (
+      this.state.empty ||
+      this.state.last >= PAGE_SIZE * NUM_PAGES ||
+      this.state.nextLoading
+    ) {
       return;
     }
 
@@ -355,6 +363,7 @@ class FlatListExample extends React.PureComponent<Props, State> {
     const renderProp = ({item, separators}: RenderItemProps<Item>) => {
       return (
         <ItemComponent
+          testID={`item_${item.key}`}
           item={item}
           horizontal={this.state.horizontal}
           fixedHeight={this.state.fixedHeight}

@@ -218,7 +218,9 @@ exports[`RN Codegen TypeScript Parser can generate fixture CXX_ONLY_NATIVE_MODUL
             'typeAnnotation': {
               'type': 'FunctionTypeAnnotation',
               'returnTypeAnnotation': {
-                'type': 'StringTypeAnnotation'
+                'name': 'Quality',
+                'type': 'EnumDeclaration',
+                'memberType': 'StringTypeAnnotation'
               },
               'params': [
                 {
@@ -387,8 +389,21 @@ exports[`RN Codegen TypeScript Parser can generate fixture CXX_ONLY_NATIVE_MODUL
                   'name': 'chooseString',
                   'optional': false,
                   'typeAnnotation': {
-                    'type': 'UnionTypeAnnotation',
-                    'memberType': 'StringTypeAnnotation'
+                    'type': 'StringLiteralUnionTypeAnnotation',
+                    'types': [
+                      {
+                        'type': 'StringLiteralTypeAnnotation',
+                        'value': 'One'
+                      },
+                      {
+                        'type': 'StringLiteralTypeAnnotation',
+                        'value': 'Two'
+                      },
+                      {
+                        'type': 'StringLiteralTypeAnnotation',
+                        'value': 'Three'
+                      }
+                    ]
                   }
                 }
               ]
@@ -1141,6 +1156,26 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_BA
                   'optional': false,
                   'typeAnnotation': {
                     'type': 'StringTypeAnnotation'
+                  }
+                }
+              ]
+            }
+          },
+          {
+            'name': 'passStringLiteral',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'VoidTypeAnnotation'
+              },
+              'params': [
+                {
+                  'name': 'arg',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'StringLiteralTypeAnnotation',
+                    'value': 'A String Literal'
                   }
                 }
               ]
@@ -2744,8 +2779,21 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_UN
                   'name': 'chooseString',
                   'optional': false,
                   'typeAnnotation': {
-                    'type': 'UnionTypeAnnotation',
-                    'memberType': 'StringTypeAnnotation'
+                    'type': 'StringLiteralUnionTypeAnnotation',
+                    'types': [
+                      {
+                        'type': 'StringLiteralTypeAnnotation',
+                        'value': 'One'
+                      },
+                      {
+                        'type': 'StringLiteralTypeAnnotation',
+                        'value': 'Two'
+                      },
+                      {
+                        'type': 'StringLiteralTypeAnnotation',
+                        'value': 'Three'
+                      }
+                    ]
                   }
                 }
               ]
@@ -2775,8 +2823,17 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_UN
             'typeAnnotation': {
               'type': 'FunctionTypeAnnotation',
               'returnTypeAnnotation': {
-                'type': 'UnionTypeAnnotation',
-                'memberType': 'StringTypeAnnotation'
+                'type': 'StringLiteralUnionTypeAnnotation',
+                'types': [
+                  {
+                    'type': 'StringLiteralTypeAnnotation',
+                    'value': 'light'
+                  },
+                  {
+                    'type': 'StringLiteralTypeAnnotation',
+                    'value': 'dark'
+                  }
+                ]
               },
               'params': []
             }
@@ -2794,8 +2851,17 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_UN
                   'name': 'strings',
                   'optional': false,
                   'typeAnnotation': {
-                    'type': 'UnionTypeAnnotation',
-                    'memberType': 'StringTypeAnnotation'
+                    'type': 'StringLiteralUnionTypeAnnotation',
+                    'types': [
+                      {
+                        'type': 'StringLiteralTypeAnnotation',
+                        'value': 'light'
+                      },
+                      {
+                        'type': 'StringLiteralTypeAnnotation',
+                        'value': 'dark'
+                      }
+                    ]
                   }
                 }
               ]

@@ -12,21 +12,15 @@ import type {TurboModule} from '../../../../Libraries/TurboModule/RCTExport';
 
 import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboModuleRegistry';
 
-export type ColorSchemeName = 'light' | 'dark';
+export type ColorSchemeName = 'light' | 'dark' | 'unspecified';
 
 export type AppearancePreferences = {
-  // TODO: (hramos) T52919652 Use ?ColorSchemeName once codegen supports union
-  // types.
-  /* 'light' | 'dark' */
-  colorScheme?: ?string,
+  colorScheme?: ?ColorSchemeName,
 };
 
 export interface Spec extends TurboModule {
-  // TODO: (hramos) T52919652 Use ?ColorSchemeName once codegen supports union
-  // types.
-  /* 'light' | 'dark' */
-  +getColorScheme: () => ?string;
-  +setColorScheme: (colorScheme: string) => void;
+  +getColorScheme: () => ?ColorSchemeName;
+  +setColorScheme: (colorScheme: ColorSchemeName) => void;
 
   // RCTEventEmitter
   +addListener: (eventName: string) => void;

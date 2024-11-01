@@ -399,6 +399,9 @@ class JSI_EXPORT Runtime {
       const jsi::Object& obj,
       size_t amount) = 0;
 
+  virtual std::u16string utf16(const String& str);
+  virtual std::u16string utf16(const PropNameID& sym);
+
   // These exist so derived classes can access the private parts of
   // Value, Symbol, String, and Object, which are all friends of Runtime.
   template <typename T>
@@ -499,6 +502,11 @@ class JSI_EXPORT PropNameID : public Pointer {
   /// Copies the data in a PropNameID as utf8 into a C++ string.
   std::string utf8(Runtime& runtime) const {
     return runtime.utf8(*this);
+  }
+
+  /// Copies the data in a PropNameID as utf16 into a C++ string.
+  std::u16string utf16(Runtime& runtime) const {
+    return runtime.utf16(*this);
   }
 
   static bool compare(
@@ -649,6 +657,11 @@ class JSI_EXPORT String : public Pointer {
   /// Copies the data in a JS string as utf8 into a C++ string.
   std::string utf8(Runtime& runtime) const {
     return runtime.utf8(*this);
+  }
+
+  /// Copies the data in a JS string as utf16 into a C++ string.
+  std::u16string utf16(Runtime& runtime) const {
+    return runtime.utf16(*this);
   }
 
   friend class Runtime;

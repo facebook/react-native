@@ -31,10 +31,6 @@ Scheduler::Scheduler(
   runtimeExecutor_ = schedulerToolbox.runtimeExecutor;
   contextContainer_ = schedulerToolbox.contextContainer;
 
-  reactNativeConfig_ =
-      contextContainer_->at<std::shared_ptr<const ReactNativeConfig>>(
-          "ReactNativeConfig");
-
   // Creating a container for future `EventDispatcher` instance.
   eventDispatcher_ = std::make_shared<std::optional<const EventDispatcher>>();
 
@@ -93,14 +89,14 @@ Scheduler::Scheduler(
     uiManager->updateState(stateUpdate);
   };
 
+  auto eventBeat = schedulerToolbox.eventBeatFactory(std::move(eventOwnerBox));
+
   // Creating an `EventDispatcher` instance inside the already allocated
   // container (inside the optional).
   eventDispatcher_->emplace(
       EventQueueProcessor(
           eventPipe, eventPipeConclusion, statePipe, eventPerformanceLogger_),
-      schedulerToolbox.asynchronousEventBeatFactory,
-      eventOwnerBox,
-      *runtimeScheduler,
+      std::move(eventBeat),
       statePipe,
       eventPerformanceLogger_);
 
@@ -283,7 +279,7 @@ void Scheduler::animationTick() const {
 #pragma mark - UIManagerDelegate
 
 void Scheduler::uiManagerDidFinishTransaction(
-    MountingCoordinator::Shared mountingCoordinator,
+    std::shared_ptr<const MountingCoordinator> mountingCoordinator,
     bool mountSynchronously) {
   SystraceSection s("Scheduler::uiManagerDidFinishTransaction");
 

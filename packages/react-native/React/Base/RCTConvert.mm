@@ -307,6 +307,7 @@ RCT_ENUM_CONVERTER(
       @"tail" : @(NSLineBreakByTruncatingTail),
       @"middle" : @(NSLineBreakByTruncatingMiddle),
       @"wordWrapping" : @(NSLineBreakByWordWrapping),
+      @"char" : @(NSLineBreakByCharWrapping),
     }),
     NSLineBreakByTruncatingTail,
     integerValue)

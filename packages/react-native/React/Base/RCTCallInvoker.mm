@@ -11,6 +11,11 @@
   std::shared_ptr<facebook::react::CallInvoker> _callInvoker;
 }
 
+- (instancetype)init
+{
+  return [self initWithCallInvoker:nullptr];
+}
+
 - (instancetype)initWithCallInvoker:(std::shared_ptr<facebook::react::CallInvoker>)callInvoker
 {
   if (self = [super init]) {

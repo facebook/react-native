@@ -90,7 +90,7 @@ public class ReactViewGroup extends ViewGroup
    */
   private static final class ChildrenLayoutChangeListener implements View.OnLayoutChangeListener {
 
-    private final ReactViewGroup mParent;
+    @Nullable private ReactViewGroup mParent;
 
     private ChildrenLayoutChangeListener(ReactViewGroup parent) {
       mParent = parent;
@@ -107,11 +107,17 @@ public class ReactViewGroup extends ViewGroup
         int oldTop,
         int oldRight,
         int oldBottom) {
-      if (mParent.getRemoveClippedSubviews()) {
+      if (mParent != null && mParent.getRemoveClippedSubviews()) {
         mParent.updateSubviewClipStatus(v);
       }
     }
+
+    public void shutdown() {
+      mParent = null;
+    }
   }
+
+  private int mRecycleCount = 0;
 
   // Following properties are here to support the option {@code removeClippedSubviews}. This is a
   // temporary optimization/hack that is mainly applicable to the large list of images. The way
@@ -145,7 +151,7 @@ public class ReactViewGroup extends ViewGroup
   /**
    * Set all default values here as opposed to in the constructor or field defaults. It is important
    * that these properties are set during the constructor, but also on-demand whenever an existing
-   * ReactTextView is recycled.
+   * ReactViewGroup is recycled.
    */
   private void initView() {
     setClipChildren(false);
@@ -168,8 +174,10 @@ public class ReactViewGroup extends ViewGroup
   }
 
   /* package */ void recycleView() {
+    mRecycleCount++;
     // Remove dangling listeners
     if (mAllChildren != null && mChildrenLayoutChangeListener != null) {
+      mChildrenLayoutChangeListener.shutdown();
       for (int i = 0; i < mAllChildrenCount; i++) {
         mAllChildren[i].removeOnLayoutChangeListener(mChildrenLayoutChangeListener);
       }
@@ -403,7 +411,22 @@ public class ReactViewGroup extends ViewGroup
     Assertions.assertNotNull(mAllChildren);
     int clippedSoFar = 0;
     for (int i = 0; i < mAllChildrenCount; i++) {
-      updateSubviewClipStatus(clippingRect, i, clippedSoFar);
+      try {
+        updateSubviewClipStatus(clippingRect, i, clippedSoFar);
+      } catch (IndexOutOfBoundsException e) {
+        throw new IllegalStateException(
+            "Invalid clipping state. i="
+                + i
+                + " clippedSoFar="
+                + clippedSoFar
+                + " count="
+                + getChildCount()
+                + " allChildrenCount="
+                + mAllChildrenCount
+                + " recycleCount="
+                + mRecycleCount,
+            e);
+      }
       if (mAllChildren[i].getParent() == null) {
         clippedSoFar++;
       }

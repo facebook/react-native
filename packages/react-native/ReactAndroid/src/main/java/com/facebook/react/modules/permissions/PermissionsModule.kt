@@ -130,7 +130,7 @@ public class PermissionsModule(reactContext: ReactApplicationContext?) :
               val callbackActivity = args[1] as PermissionAwareActivity
               for (j in permissionsToCheck.indices) {
                 val permission = permissionsToCheck[j]
-                if (results.size > 0 && results[j] == PackageManager.PERMISSION_GRANTED) {
+                if (results.size > j && results[j] == PackageManager.PERMISSION_GRANTED) {
                   grantedPermissions.putString(permission, GRANTED)
                 } else {
                   if (callbackActivity.shouldShowRequestPermissionRationale(permission)) {
@@ -183,7 +183,8 @@ public class PermissionsModule(reactContext: ReactApplicationContext?) :
       return activity
     }
 
-  private companion object {
+  public companion object {
+    public const val NAME: String = NativePermissionsAndroidSpec.NAME
     private const val ERROR_INVALID_ACTIVITY = "E_INVALID_ACTIVITY"
   }
 }

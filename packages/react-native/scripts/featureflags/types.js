@@ -10,44 +10,56 @@
 
 export type FeatureFlagValue = boolean | number | string;
 
-export type FeatureFlagDefinitions = {
-  common: FeatureFlagList,
-  jsOnly: FeatureFlagList,
-};
+export type FeatureFlagDefinitions = $ReadOnly<{
+  common: CommonFeatureFlagList,
+  jsOnly: JsOnlyFeatureFlagList,
+}>;
 
-type FeatureFlagList = {
-  [flagName: string]: {
+export type CommonFeatureFlagList = $ReadOnly<{
+  [flagName: string]: $ReadOnly<{
     defaultValue: FeatureFlagValue,
-    metadata:
-      | {
-          purpose: 'experimentation',
-          /**
-           * Aproximate date when the flag was added.
-           * Used to help prioritize feature flags that need to be cleaned up.
-           */
-          dateAdded: string,
-          description: string,
-        }
-      | {
-          purpose: 'operational' | 'release',
-          description: string,
-        },
-  },
-};
+    metadata: FeatureFlagMetadata,
+    // Indicates if this API should only be defined in JavaScript, only to
+    // preserve backwards compatibility with existing native code temporarily.
+    skipNativeAPI?: true,
+  }>,
+}>;
 
-export type GeneratorConfig = {
+export type JsOnlyFeatureFlagList = $ReadOnly<{
+  [flagName: string]: $ReadOnly<{
+    defaultValue: FeatureFlagValue,
+    metadata: FeatureFlagMetadata,
+  }>,
+}>;
+
+export type FeatureFlagMetadata =
+  | $ReadOnly<{
+      purpose: 'experimentation',
+      /**
+       * Aproximate date when the flag was added.
+       * Used to help prioritize feature flags that need to be cleaned up.
+       */
+      dateAdded: string,
+      description: string,
+    }>
+  | $ReadOnly<{
+      purpose: 'operational' | 'release',
+      description: string,
+    }>;
+
+export type GeneratorConfig = $ReadOnly<{
   featureFlagDefinitions: FeatureFlagDefinitions,
   jsPath: string,
   commonCxxPath: string,
   commonNativeModuleCxxPath: string,
   androidPath: string,
   androidJniPath: string,
-};
+}>;
 
-export type GeneratorOptions = {
+export type GeneratorOptions = $ReadOnly<{
   verifyUnchanged: boolean,
-};
+}>;
 
-export type GeneratorResult = {
+export type GeneratorResult = $ReadOnly<{
   [path: string]: string /* content */,
-};
+}>;

@@ -44,6 +44,7 @@ runs:
       run: |
         cd ${{ inputs.working-directory }}
         yarn start &
+        sleep 5 # to give metro time to load
     - name: Run tests
       id: run-tests
       shell: bash
@@ -68,8 +69,13 @@ runs:
         echo "Launch the app"
         xcrun simctl launch $UDID ${{ inputs.app-id }}
 
+        if [[ ${{ inputs.flavor }} == 'Debug' ]]; then
+          # To give the app time to warm the metro's cache
+          sleep 20
+        fi
+
         echo "Running tests with Maestro"
-        export MAESTRO_DRIVER_STARTUP_TIMEOUT=1800000 # 30 min. CI is extremely slow
+        export MAESTRO_DRIVER_STARTUP_TIMEOUT=1500000 # 25 min. CI is extremely slow
 
         # Add retries for flakyness
         MAX_ATTEMPTS=5
@@ -77,11 +83,6 @@ runs:
         RESULT=1
 
         while [[ $CURR_ATTEMPT -lt $MAX_ATTEMPTS ]] && [[ $RESULT -ne 0 ]]; do
-          if [[ $CURR_ATTEMPT -ne 0 ]]; then
-            echo "Rebooting simulator for stability"
-            xcrun simctl boot "iPhone 15 Pro"
-          fi
-
           CURR_ATTEMPT=$((CURR_ATTEMPT+1))
           echo "Attempt number $CURR_ATTEMPT"
 
@@ -97,9 +98,6 @@ runs:
 
           # Stop video
           kill -SIGINT $(cat video_record_${{ inputs.jsengine }}_$CURR_ATTEMPT.pid)
-
-          echo "Shutting down simulator for stability"
-          xcrun simctl shutdown "iPhone 15 Pro"
         done
 
         exit $RESULT
@@ -112,6 +110,8 @@ runs:
           video_record_1.mov
           video_record_2.mov
           video_record_3.mov
+          video_record_4.mov
+          video_record_5.mov
           report.xml
     - name: Store Logs
       if: failure() && steps.run-tests.outcome == 'failure'

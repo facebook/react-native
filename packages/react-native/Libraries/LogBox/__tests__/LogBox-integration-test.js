@@ -16,10 +16,9 @@ import {
 } from './__fixtures__/ReactWarningFixtures';
 import * as React from 'react';
 
+const ExceptionsManager = require('../../Core/ExceptionsManager.js');
 const LogBoxData = require('../Data/LogBoxData');
 const TestRenderer = require('react-test-renderer');
-
-const ExceptionsManager = require('../../Core/ExceptionsManager.js');
 
 const installLogBox = () => {
   const LogBox = require('../LogBox').default;

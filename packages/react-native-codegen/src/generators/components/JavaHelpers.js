@@ -66,12 +66,7 @@ function getImports(
       | 'EdgeInsetsPrimitive'
       | 'ImageSourcePrimitive'
       | 'PointPrimitive'
-      | 'DimensionPrimitive'
-      | $TEMPORARY$string<'ColorPrimitive'>
-      | $TEMPORARY$string<'EdgeInsetsPrimitive'>
-      | $TEMPORARY$string<'ImageSourcePrimitive'>
-      | $TEMPORARY$string<'PointPrimitive'>
-      | $TEMPORARY$string<'DimensionPrimitive'>,
+      | 'DimensionPrimitive',
   ) {
     switch (name) {
       case 'ColorPrimitive':
@@ -107,6 +102,7 @@ function getImports(
     const typeAnnotation = prop.typeAnnotation;
 
     if (typeAnnotation.type === 'ReservedPropTypeAnnotation') {
+      // $FlowFixMe[incompatible-call]
       addImportsForNativeName(typeAnnotation.name);
     }
 

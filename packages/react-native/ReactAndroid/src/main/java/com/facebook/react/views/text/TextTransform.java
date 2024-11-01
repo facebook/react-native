@@ -48,13 +48,8 @@ public enum TextTransform {
     StringBuilder res = new StringBuilder(text.length());
     int start = wordIterator.first();
     for (int end = wordIterator.next(); end != BreakIterator.DONE; end = wordIterator.next()) {
-      String word = text.substring(start, end);
-      if (Character.isLetterOrDigit(word.charAt(0))) {
-        res.append(Character.toUpperCase(word.charAt(0)));
-        res.append(word.substring(1).toLowerCase());
-      } else {
-        res.append(word);
-      }
+      res.append(Character.toUpperCase(text.charAt(start)));
+      res.append(text.substring(start + 1, end));
       start = end;
     }
 

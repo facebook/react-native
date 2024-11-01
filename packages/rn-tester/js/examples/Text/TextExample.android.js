@@ -696,7 +696,7 @@ function NestedExample(props: {}): React.Node {
 
 function TextAlignExample(props: {}): React.Node {
   return (
-    <>
+    <View testID="text-align-example">
       <Text>auto (default) - english LTR</Text>
       <Text>أحب اللغة العربية auto (default) - arabic RTL</Text>
       <Text style={{textAlign: 'left'}}>
@@ -717,7 +717,7 @@ function TextAlignExample(props: {}): React.Node {
         as you can see all of the lines except the last one span the available
         width of the parent container.
       </Text>
-    </>
+    </View>
   );
 }
 
@@ -879,10 +879,63 @@ function CustomFontsExample(props: {}): React.Node {
 function LineHeightExample(props: {}): React.Node {
   return (
     <>
-      <Text style={[{lineHeight: 35}, styles.wrappedText]}>
+      <Text
+        style={[
+          {
+            fontSize: 16,
+            lineHeight: 35,
+            borderColor: 'black',
+            borderWidth: 1,
+            marginBottom: 5,
+          },
+          styles.wrappedText,
+        ]}
+        testID="line-height-greater-than-font-size">
         Holisticly formulate inexpensive ideas before best-of-breed benefits.{' '}
         <Text style={{fontSize: 20}}>Continually</Text> expedite magnetic
         potentialities rather than client-focused interfaces.
+      </Text>
+      <Text
+        style={[
+          {
+            fontSize: 16,
+            lineHeight: 8,
+            borderColor: 'black',
+            borderWidth: 1,
+            marginBottom: 5,
+          },
+          styles.wrappedText,
+        ]}
+        testID="line-height-less-than-font-size">
+        Holisticly formulate inexpensive ideas before best-of-breed benefits.{' '}
+        <Text style={{fontSize: 20}}>Continually</Text> expedite magnetic
+        potentialities rather than client-focused interfaces.
+      </Text>
+      <Text
+        style={[
+          {
+            fontSize: 24,
+            lineHeight: 8,
+            borderColor: 'black',
+            borderWidth: 1,
+          },
+          styles.wrappedText,
+        ]}
+        testID="line-height-single-line-less-than-font-size">
+        Holisticly formulate
+      </Text>
+      <Text
+        style={[
+          {
+            fontSize: 16,
+            lineHeight: 20,
+            borderColor: 'black',
+            borderWidth: 1,
+          },
+          styles.wrappedText,
+        ]}
+        testID="line-height-single-line-greater-than-font-size">
+        Holisticly formulate
       </Text>
     </>
   );

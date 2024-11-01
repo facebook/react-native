@@ -12,8 +12,8 @@
 
 import type {
   DOMHighResTimeStamp,
-  PerformanceEntryType,
   PerformanceEntryList,
+  PerformanceEntryType,
 } from './PerformanceEntry';
 import type {DetailType, PerformanceMarkOptions} from './UserTiming';
 
@@ -109,15 +109,24 @@ export default class Performance {
     markName: string,
     markOptions?: PerformanceMarkOptions,
   ): PerformanceMark {
-    const mark = new PerformanceMark(markName, markOptions);
-
-    if (NativePerformance?.mark) {
-      NativePerformance.mark(markName, mark.startTime);
+    let computedStartTime;
+    if (NativePerformance?.markWithResult) {
+      computedStartTime = NativePerformance.markWithResult(
+        markName,
+        markOptions?.startTime,
+      );
+    } else if (NativePerformance?.mark) {
+      computedStartTime = markOptions?.startTime ?? performance.now();
+      NativePerformance?.mark?.(markName, computedStartTime);
     } else {
       warnNoNativePerformance();
+      computedStartTime = performance.now();
     }
 
-    return mark;
+    return new PerformanceMark(markName, {
+      startTime: computedStartTime,
+      detail: markOptions?.detail,
+    });
   }
 
   clearMarks(markName?: string): void {
@@ -143,6 +152,7 @@ export default class Performance {
 
     if (typeof startMarkOrOptions === 'string') {
       startMarkName = startMarkOrOptions;
+      options = {};
     } else if (startMarkOrOptions !== undefined) {
       options = startMarkOrOptions;
       if (endMark !== undefined) {
@@ -180,15 +190,20 @@ export default class Performance {
       duration = options.duration ?? duration;
     }
 
-    const measure = new PerformanceMeasure(measureName, {
-      // FIXME(T196011255): this is incorrect, as we're only assigning the
-      // start/end if they're specified as a number, but not if they're
-      // specified as previous mark names.
-      startTime,
-      duration,
-    });
+    let computedStartTime = startTime;
+    let computedDuration = duration;
 
-    if (NativePerformance?.measure) {
+    if (NativePerformance?.measureWithResult) {
+      [computedStartTime, computedDuration] =
+        NativePerformance.measureWithResult(
+          measureName,
+          startTime,
+          endTime,
+          duration,
+          startMarkName,
+          endMarkName,
+        );
+    } else if (NativePerformance?.measure) {
       NativePerformance.measure(
         measureName,
         startTime,
@@ -200,6 +215,12 @@ export default class Performance {
     } else {
       warnNoNativePerformance();
     }
+
+    const measure = new PerformanceMeasure(measureName, {
+      startTime: computedStartTime,
+      duration: computedDuration ?? 0,
+      detail: options?.detail,
+    });
 
     return measure;
   }

@@ -135,11 +135,29 @@ static ShimRCTInstance *shimmedRCTInstance;
   stackFrame0[@"file"] = @"file2.js";
   [stack addObject:stackFrame1];
 
-  [instanceDelegate instance:[OCMArg any] didReceiveJSErrorStack:stack message:@"message" exceptionId:5 isFatal:YES];
+  id extraData = [NSDictionary dictionary];
+
+  [instanceDelegate instance:[OCMArg any]
+      didReceiveJSErrorStack:stack
+                     message:@"message"
+             originalMessage:nil
+                        name:nil
+              componentStack:nil
+                 exceptionId:5
+                     isFatal:YES
+                   extraData:extraData];
 
   OCMVerify(
       OCMTimes(1),
-      [_mockHostDelegate host:_subject didReceiveJSErrorStack:stack message:@"message" exceptionId:5 isFatal:YES]);
+      [_mockHostDelegate host:_subject
+          didReceiveJSErrorStack:stack
+                         message:@"message"
+                 originalMessage:nil
+                            name:nil
+                  componentStack:nil
+                     exceptionId:5
+                         isFatal:YES
+                       extraData:extraData]);
 }
 
 - (void)testDidInitializeRuntime

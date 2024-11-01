@@ -28,7 +28,7 @@ import com.facebook.react.module.annotations.ReactModule
  * device. For API >= 19.
  */
 @ReactModule(name = NativeAccessibilityInfoSpec.NAME)
-public class AccessibilityInfoModule(context: ReactApplicationContext) :
+internal class AccessibilityInfoModule(context: ReactApplicationContext) :
     NativeAccessibilityInfoSpec(context), LifecycleEventListener {
   @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   private inner class ReactTouchExplorationStateChangeListener :
@@ -255,7 +255,8 @@ public class AccessibilityInfoModule(context: ReactApplicationContext) :
     successCallback.invoke(recommendedTimeout)
   }
 
-  private companion object {
+  public companion object {
+    public const val NAME: String = NativeAccessibilityInfoSpec.NAME
     private const val REDUCE_MOTION_EVENT_NAME = "reduceMotionDidChange"
     private const val HIGH_TEXT_CONTRAST_EVENT_NAME = "highTextContrastDidChange"
     private const val TOUCH_EXPLORATION_EVENT_NAME = "touchExplorationDidChange"

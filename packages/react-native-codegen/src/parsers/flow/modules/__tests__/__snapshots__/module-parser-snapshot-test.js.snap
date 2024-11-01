@@ -227,7 +227,9 @@ exports[`RN Codegen Flow Parser can generate fixture CXX_ONLY_NATIVE_MODULE 1`] 
             'typeAnnotation': {
               'type': 'FunctionTypeAnnotation',
               'returnTypeAnnotation': {
-                'type': 'StringTypeAnnotation'
+                'name': 'Quality',
+                'type': 'EnumDeclaration',
+                'memberType': 'StringTypeAnnotation'
               },
               'params': [
                 {
@@ -396,8 +398,21 @@ exports[`RN Codegen Flow Parser can generate fixture CXX_ONLY_NATIVE_MODULE 1`] 
                   'name': 'chooseString',
                   'optional': false,
                   'typeAnnotation': {
-                    'type': 'UnionTypeAnnotation',
-                    'memberType': 'StringTypeAnnotation'
+                    'type': 'StringLiteralUnionTypeAnnotation',
+                    'types': [
+                      {
+                        'type': 'StringLiteralTypeAnnotation',
+                        'value': 'One'
+                      },
+                      {
+                        'type': 'StringLiteralTypeAnnotation',
+                        'value': 'Two'
+                      },
+                      {
+                        'type': 'StringLiteralTypeAnnotation',
+                        'value': 'Three'
+                      }
+                    ]
                   }
                 }
               ]
@@ -996,6 +1011,26 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_BASIC_PA
                   'optional': false,
                   'typeAnnotation': {
                     'type': 'StringTypeAnnotation'
+                  }
+                }
+              ]
+            }
+          },
+          {
+            'name': 'passStringLiteral',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'VoidTypeAnnotation'
+              },
+              'params': [
+                {
+                  'name': 'arg',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'StringLiteralTypeAnnotation',
+                    'value': 'A String Literal'
                   }
                 }
               ]
@@ -2266,8 +2301,21 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_UNION 1`
                   'name': 'chooseString',
                   'optional': false,
                   'typeAnnotation': {
-                    'type': 'UnionTypeAnnotation',
-                    'memberType': 'StringTypeAnnotation'
+                    'type': 'StringLiteralUnionTypeAnnotation',
+                    'types': [
+                      {
+                        'type': 'StringLiteralTypeAnnotation',
+                        'value': 'One'
+                      },
+                      {
+                        'type': 'StringLiteralTypeAnnotation',
+                        'value': 'Two'
+                      },
+                      {
+                        'type': 'StringLiteralTypeAnnotation',
+                        'value': 'Three'
+                      }
+                    ]
                   }
                 }
               ]
@@ -2297,8 +2345,17 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_UNION_RE
             'typeAnnotation': {
               'type': 'FunctionTypeAnnotation',
               'returnTypeAnnotation': {
-                'type': 'UnionTypeAnnotation',
-                'memberType': 'StringTypeAnnotation'
+                'type': 'StringLiteralUnionTypeAnnotation',
+                'types': [
+                  {
+                    'type': 'StringLiteralTypeAnnotation',
+                    'value': 'light'
+                  },
+                  {
+                    'type': 'StringLiteralTypeAnnotation',
+                    'value': 'dark'
+                  }
+                ]
               },
               'params': []
             }
@@ -2316,8 +2373,17 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_UNION_RE
                   'name': 'strings',
                   'optional': false,
                   'typeAnnotation': {
-                    'type': 'UnionTypeAnnotation',
-                    'memberType': 'StringTypeAnnotation'
+                    'type': 'StringLiteralUnionTypeAnnotation',
+                    'types': [
+                      {
+                        'type': 'StringLiteralTypeAnnotation',
+                        'value': 'light'
+                      },
+                      {
+                        'type': 'StringLiteralTypeAnnotation',
+                        'value': 'dark'
+                      }
+                    ]
                   }
                 }
               ]
@@ -2469,8 +2535,8 @@ exports[`RN Codegen Flow Parser can generate fixture PROMISE_WITH_COMMONLY_USED_
               'name': 'type',
               'optional': false,
               'typeAnnotation': {
-                'type': 'UnionTypeAnnotation',
-                'memberType': 'StringTypeAnnotation'
+                'type': 'StringLiteralTypeAnnotation',
+                'value': 'A_String_Literal'
               }
             }
           ]
@@ -2582,8 +2648,25 @@ exports[`RN Codegen Flow Parser can generate fixture PROMISE_WITH_COMMONLY_USED_
               'returnTypeAnnotation': {
                 'type': 'PromiseTypeAnnotation',
                 'elementType': {
-                  'type': 'UnionTypeAnnotation',
-                  'memberType': 'StringTypeAnnotation'
+                  'type': 'StringLiteralUnionTypeAnnotation',
+                  'types': [
+                    {
+                      'type': 'StringLiteralTypeAnnotation',
+                      'value': 'Spring'
+                    },
+                    {
+                      'type': 'StringLiteralTypeAnnotation',
+                      'value': 'Summer'
+                    },
+                    {
+                      'type': 'StringLiteralTypeAnnotation',
+                      'value': 'Autumn'
+                    },
+                    {
+                      'type': 'StringLiteralTypeAnnotation',
+                      'value': 'Winter'
+                    }
+                  ]
                 }
               },
               'params': []

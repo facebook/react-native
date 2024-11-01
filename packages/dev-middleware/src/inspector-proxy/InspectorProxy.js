@@ -161,6 +161,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
       id: `${deviceId}-${page.id}`,
       title: page.title,
       description: page.description ?? page.app,
+      appId: page.app,
       type: 'node',
       devtoolsFrontendUrl,
       webSocketDebuggerUrl,

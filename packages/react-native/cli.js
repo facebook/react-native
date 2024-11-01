@@ -12,10 +12,10 @@
 
 const {name, version: currentVersion} = require('./package.json');
 const chalk = require('chalk');
+const {spawn} = require('child_process');
 const {get} = require('https');
 const semver = require('semver');
 const {URL} = require('url');
-const {spawn} = require('child_process');
 
 const deprecated = () => {
   throw new Error(

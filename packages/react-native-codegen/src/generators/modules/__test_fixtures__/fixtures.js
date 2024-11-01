@@ -496,7 +496,9 @@ const SIMPLE_NATIVE_MODULES: SchemaType = {
             typeAnnotation: {
               type: 'FunctionTypeAnnotation',
               returnTypeAnnotation: {
-                type: 'StringTypeAnnotation',
+                name: 'StringEnum',
+                type: 'EnumDeclaration',
+                memberType: 'StringTypeAnnotation',
               },
               params: [
                 {
@@ -2317,6 +2319,23 @@ const CXX_ONLY_NATIVE_MODULES: SchemaType = {
                   },
                 },
                 {
+                  name: 'y-literal',
+                  optional: false,
+                  typeAnnotation: {
+                    type: 'StringLiteralUnionTypeAnnotation',
+                    types: [
+                      {
+                        type: 'StringLiteralTypeAnnotation',
+                        value: 'foo',
+                      },
+                      {
+                        type: 'StringLiteralTypeAnnotation',
+                        value: 'bar',
+                      },
+                    ],
+                  },
+                },
+                {
                   name: 'z',
                   optional: false,
                   typeAnnotation: {
@@ -2626,6 +2645,72 @@ const UNION_MODULE: SchemaType = {
                     memberType: 'StringTypeAnnotation',
                   },
                 },
+                {
+                  name: 'chooseStringLiteral',
+                  optional: false,
+                  typeAnnotation: {
+                    type: 'StringLiteralUnionTypeAnnotation',
+                    types: [
+                      {
+                        type: 'StringLiteralTypeAnnotation',
+                        value: 'foo',
+                      },
+                      {
+                        type: 'StringLiteralTypeAnnotation',
+                        value: 'bar',
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+      moduleName: 'SampleTurboModule',
+    },
+  },
+};
+
+const STRING_LITERALS = {
+  modules: {
+    NativeSampleTurboModule: {
+      type: 'NativeModule',
+      aliasMap: {},
+      enumMap: {},
+      spec: {
+        eventEmitters: [
+          {
+            name: 'literalEvent',
+            optional: false,
+            typeAnnotation: {
+              type: 'EventEmitterTypeAnnotation',
+              typeAnnotation: {
+                type: 'StringLiteralTypeAnnotation',
+                value: 'A String Literal Event',
+              },
+            },
+          },
+        ],
+        methods: [
+          {
+            name: 'getStringLiteral',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'StringLiteralTypeAnnotation',
+                value: 'A String Literal Return',
+              },
+              params: [
+                {
+                  name: 'literalParam',
+                  optional: false,
+                  typeAnnotation: {
+                    type: 'StringLiteralTypeAnnotation',
+                    value: 'A String Literal Param',
+                  },
+                },
               ],
             },
           },
@@ -2647,4 +2732,5 @@ module.exports = {
   cxx_only_native_modules: CXX_ONLY_NATIVE_MODULES,
   SampleWithUppercaseName: SAMPLE_WITH_UPPERCASE_NAME,
   union_module: UNION_MODULE,
+  string_literals: STRING_LITERALS,
 };

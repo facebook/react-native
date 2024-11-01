@@ -224,6 +224,9 @@ class Modal extends React.Component<Props, State> {
   }
 
   componentWillUnmount() {
+    if (Platform.OS === 'ios') {
+      this.setState({isRendered: false});
+    }
     if (this._eventSubscription) {
       this._eventSubscription.remove();
     }
@@ -339,8 +342,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const ExportedModal: React.AbstractComponent<
-  React.ElementConfig<typeof Modal>,
-> = ModalInjection.unstable_Modal ?? Modal;
+const ExportedModal: React.ComponentType<React.ElementConfig<typeof Modal>> =
+  ModalInjection.unstable_Modal ?? Modal;
 
 module.exports = ExportedModal;

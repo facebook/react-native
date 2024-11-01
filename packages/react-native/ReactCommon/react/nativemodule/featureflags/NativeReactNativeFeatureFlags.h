@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0713247957f6ec9c4c024ab040fb89b5>>
+ * @generated SignedSource<<4c476d0f5a9657387dd5f49db4ebde2c>>
  */
 
 /**
@@ -14,7 +14,7 @@
  *   packages/react-native/scripts/featureflags/ReactNativeFeatureFlags.config.js.
  *
  * To regenerate this code, run the following script from the repo root:
- *   yarn featureflags-update
+ *   yarn featureflags --update
  */
 
 #pragma once
@@ -37,11 +37,17 @@ class NativeReactNativeFeatureFlags
 
   bool commonTestFlag(jsi::Runtime& runtime);
 
+  bool commonTestFlagWithoutNativeImplementation(jsi::Runtime& runtime);
+
   bool allowRecursiveCommitsWithSynchronousMountOnAndroid(jsi::Runtime& runtime);
 
   bool batchRenderingUpdatesInEventLoop(jsi::Runtime& runtime);
 
   bool completeReactInstanceCreationOnBgThreadOnAndroid(jsi::Runtime& runtime);
+
+  bool disableEventLoopOnBridgeless(jsi::Runtime& runtime);
+
+  bool disableMountItemReorderingAndroid(jsi::Runtime& runtime);
 
   bool enableAlignItemsBaselineOnFabricIOS(jsi::Runtime& runtime);
 
@@ -49,7 +55,7 @@ class NativeReactNativeFeatureFlags
 
   bool enableBridgelessArchitecture(jsi::Runtime& runtime);
 
-  bool enableCleanTextInputYogaNode(jsi::Runtime& runtime);
+  bool enableCppPropsIteratorSetter(jsi::Runtime& runtime);
 
   bool enableDeletionOfUnmountedViews(jsi::Runtime& runtime);
 
@@ -67,11 +73,15 @@ class NativeReactNativeFeatureFlags
 
   bool enableIOSViewClipToPaddingBox(jsi::Runtime& runtime);
 
+  bool enableLayoutAnimationsOnAndroid(jsi::Runtime& runtime);
+
   bool enableLayoutAnimationsOnIOS(jsi::Runtime& runtime);
 
   bool enableLongTaskAPI(jsi::Runtime& runtime);
 
   bool enableMicrotasks(jsi::Runtime& runtime);
+
+  bool enableNewBackgroundAndBorderDrawables(jsi::Runtime& runtime);
 
   bool enablePreciseSchedulingForPremountItemsOnAndroid(jsi::Runtime& runtime);
 
@@ -81,15 +91,11 @@ class NativeReactNativeFeatureFlags
 
   bool enableSynchronousStateUpdates(jsi::Runtime& runtime);
 
-  bool enableTextPreallocationOptimisation(jsi::Runtime& runtime);
-
   bool enableUIConsistency(jsi::Runtime& runtime);
 
   bool enableViewRecycling(jsi::Runtime& runtime);
 
   bool excludeYogaFromRawProps(jsi::Runtime& runtime);
-
-  bool fetchImagesInViewPreallocation(jsi::Runtime& runtime);
 
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact(jsi::Runtime& runtime);
 
@@ -107,11 +113,11 @@ class NativeReactNativeFeatureFlags
 
   bool loadVectorDrawablesOnImages(jsi::Runtime& runtime);
 
-  bool removeNestedCallsToDispatchMountItemsOnAndroid(jsi::Runtime& runtime);
-
   bool setAndroidLayoutDirection(jsi::Runtime& runtime);
 
   bool traceTurboModulePromiseRejectionsOnAndroid(jsi::Runtime& runtime);
+
+  bool useAlwaysAvailableJSErrorHandling(jsi::Runtime& runtime);
 
   bool useFabricInterop(jsi::Runtime& runtime);
 
@@ -126,8 +132,6 @@ class NativeReactNativeFeatureFlags
   bool useOptimizedEventBatchingOnAndroid(jsi::Runtime& runtime);
 
   bool useRuntimeShadowNodeReferenceUpdate(jsi::Runtime& runtime);
-
-  bool useRuntimeShadowNodeReferenceUpdateOnLayout(jsi::Runtime& runtime);
 
   bool useTurboModuleInterop(jsi::Runtime& runtime);
 

@@ -74,13 +74,8 @@ void ReactNativeFeatureFlagsAccessor::override(
   currentProvider_ = std::move(provider);
 }
 
-void ReactNativeFeatureFlagsAccessor::markFlagAsAccessed(
-    int position,
-    const char* flagName) {
-  accessedFeatureFlags_[position] = flagName;
-}
-
-void ReactNativeFeatureFlagsAccessor::ensureFlagsNotAccessed() {
+std::optional<std::string>
+ReactNativeFeatureFlagsAccessor::getAccessedFeatureFlagNames() const {
   std::ostringstream featureFlagListBuilder;
   for (const auto& featureFlagName : accessedFeatureFlags_) {
     if (featureFlagName != nullptr) {
@@ -94,10 +89,24 @@ void ReactNativeFeatureFlagsAccessor::ensureFlagsNotAccessed() {
         accessedFeatureFlagNames.substr(0, accessedFeatureFlagNames.size() - 2);
   }
 
-  if (!accessedFeatureFlagNames.empty()) {
+  return accessedFeatureFlagNames.empty()
+      ? std::nullopt
+      : std::optional{accessedFeatureFlagNames};
+}
+
+void ReactNativeFeatureFlagsAccessor::markFlagAsAccessed(
+    int position,
+    const char* flagName) {
+  accessedFeatureFlags_[position] = flagName;
+}
+
+void ReactNativeFeatureFlagsAccessor::ensureFlagsNotAccessed() {
+  auto accessedFeatureFlagNames = getAccessedFeatureFlagNames();
+
+  if (accessedFeatureFlagNames.has_value()) {
     throw std::runtime_error(
         "Feature flags were accessed before being overridden: " +
-        accessedFeatureFlagNames);
+        accessedFeatureFlagNames.value());
   }
 }
 

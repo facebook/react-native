@@ -32,6 +32,7 @@ ${DO_NOT_MODIFY_COMMENT}
 #include <atomic>
 #include <memory>
 #include <optional>
+#include <string>
 
 namespace facebook::react {
 
@@ -47,6 +48,7 @@ ${Object.entries(definitions.common)
   .join('\n')}
 
   void override(std::unique_ptr<ReactNativeFeatureFlagsProvider> provider);
+  std::optional<std::string> getAccessedFeatureFlagNames() const;
 
  private:
   void markFlagAsAccessed(int position, const char* flagName);

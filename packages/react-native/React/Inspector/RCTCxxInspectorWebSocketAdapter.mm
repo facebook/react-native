@@ -50,7 +50,7 @@ NSString *NSStringFromUTF8StringView(std::string_view view)
   dispatch_async(dispatch_get_main_queue(), ^{
     RCTCxxInspectorWebSocketAdapter *strongSelf = weakSelf;
     if (strongSelf) {
-      [strongSelf->_webSocket send:messageStr];
+      [strongSelf->_webSocket sendString:messageStr error:NULL];
     }
   });
 }

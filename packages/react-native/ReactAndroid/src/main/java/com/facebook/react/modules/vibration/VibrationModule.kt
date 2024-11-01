@@ -61,4 +61,8 @@ public class VibrationModule(reactContext: ReactApplicationContext) :
         @Suppress("DEPRECATION")
         getReactApplicationContext().getSystemService(Context.VIBRATOR_SERVICE) as Vibrator?
       }
+
+  public companion object {
+    public const val NAME: String = NativeVibrationSpec.NAME
+  }
 }

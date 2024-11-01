@@ -12,15 +12,9 @@
 
 import RNTesterBlock from '../../components/RNTesterBlock';
 import RNTesterPage from '../../components/RNTesterPage';
-import {
-  Alert,
-  StyleSheet,
-  Text,
-  TouchableWithoutFeedback,
-  View,
-} from 'react-native';
-
-const React = require('react');
+import RNTesterText from '../../components/RNTesterText';
+import React from 'react';
+import {Alert, StyleSheet, TouchableWithoutFeedback, View} from 'react-native';
 
 const importantForAccessibilityValues = [
   'auto',
@@ -67,27 +61,27 @@ class AccessibilityAndroidExample extends React.Component<
     return (
       <RNTesterPage title={'Accessibility Android APIs'}>
         <RNTesterBlock title="Ellipsized Accessible Links">
-          <Text numberOfLines={3}>
-            <Text>
+          <RNTesterText numberOfLines={3}>
+            <RNTesterText>
               Bacon {this.state.count} Ipsum{'\n'}
-            </Text>
-            <Text>Dolor sit amet{'\n'}</Text>
-            <Text>Eggsecetur{'\n'}</Text>
-            <Text>{'\n'}</Text>
-            <Text accessibilityRole="link" onPress={this._addOne}>
+            </RNTesterText>
+            <RNTesterText>Dolor sit amet{'\n'}</RNTesterText>
+            <RNTesterText>Eggsecetur{'\n'}</RNTesterText>
+            <RNTesterText>{'\n'}</RNTesterText>
+            <RNTesterText accessibilityRole="link" onPress={this._addOne}>
               http://github.com
-            </Text>
-          </Text>
+            </RNTesterText>
+          </RNTesterText>
         </RNTesterBlock>
 
         <RNTesterBlock title="LiveRegion">
           <TouchableWithoutFeedback onPress={this._addOne}>
             <View style={styles.embedded}>
-              <Text>Click me</Text>
+              <RNTesterText style={styles.buttonText}>Click me</RNTesterText>
             </View>
           </TouchableWithoutFeedback>
           <View accessibilityLiveRegion="polite">
-            <Text>Clicked {this.state.count} times</Text>
+            <RNTesterText>Clicked {this.state.count} times</RNTesterText>
           </View>
         </RNTesterBlock>
 
@@ -102,7 +96,7 @@ class AccessibilityAndroidExample extends React.Component<
                 ]
               }>
               <View accessible={true} style={styles.touchableContainer}>
-                <Text style={{fontSize: 25}}>Hello</Text>
+                <RNTesterText style={{fontSize: 25}}>Hello</RNTesterText>
               </View>
             </TouchableWithoutFeedback>
             <View
@@ -123,117 +117,121 @@ class AccessibilityAndroidExample extends React.Component<
                 ]
               }>
               <View accessible={true}>
-                <Text style={{fontSize: 20}}>world</Text>
+                <RNTesterText style={{fontSize: 20}}>world</RNTesterText>
               </View>
             </View>
           </View>
           <TouchableWithoutFeedback
             onPress={this._changeBackgroundImportantForAcc}>
             <View style={styles.embedded}>
-              <Text>
+              <RNTesterText style={styles.buttonText}>
                 Change importantForAccessibility for background layout.
-              </Text>
+              </RNTesterText>
             </View>
           </TouchableWithoutFeedback>
           <View accessible={true}>
-            <Text>Background layout importantForAccessibility</Text>
-            <Text>
+            <RNTesterText>
+              Background layout importantForAccessibility
+            </RNTesterText>
+            <RNTesterText>
               {
                 importantForAccessibilityValues[
                   this.state.backgroundImportantForAcc
                 ]
               }
-            </Text>
+            </RNTesterText>
           </View>
           <TouchableWithoutFeedback
             onPress={this._changeForgroundImportantForAcc}>
             <View style={styles.embedded}>
-              <Text>
+              <RNTesterText style={styles.buttonText}>
                 Change importantForAccessibility for forground layout.
-              </Text>
+              </RNTesterText>
             </View>
           </TouchableWithoutFeedback>
           <View accessible={true}>
-            <Text>Forground layout importantForAccessibility</Text>
-            <Text>
+            <RNTesterText>
+              Forground layout importantForAccessibility
+            </RNTesterText>
+            <RNTesterText>
               {
                 importantForAccessibilityValues[
                   this.state.forgroundImportantForAcc
                 ]
               }
-            </Text>
+            </RNTesterText>
           </View>
         </RNTesterBlock>
         <RNTesterBlock title="Links">
-          <Text style={styles.paragraph}>
+          <RNTesterText style={styles.paragraph}>
             In the following example, the words "test", "inline links", "another
             link", and "link that spans multiple lines because the text is so
             long", should each be independently focusable elements, announced as
             their content followed by ", Link".
-          </Text>
-          <Text style={styles.paragraph}>
+          </RNTesterText>
+          <RNTesterText style={styles.paragraph}>
             They should be focused in order from top to bottom *after* the
             contents of the entire paragraph.
-          </Text>
-          <Text style={styles.paragraph}>
+          </RNTesterText>
+          <RNTesterText style={styles.paragraph}>
             Focusing on the paragraph itself should also announce that there are
             "links available", and opening Talkback's links menu should show
             these same links.
-          </Text>
-          <Text style={styles.paragraph}>
+          </RNTesterText>
+          <RNTesterText style={styles.paragraph}>
             Clicking on each link, or selecting the link From Talkback's links
             menu should trigger an alert.
-          </Text>
-          <Text style={styles.paragraph}>
+          </RNTesterText>
+          <RNTesterText style={styles.paragraph}>
             The links that wraps to multiple lines will intentionally only draw
             a focus outline around the first line, but using the "explore by
             touch" tap-and-drag gesture should move focus to this link even if
             the second line is touched.
-          </Text>
-          <Text style={styles.paragraph}>
+          </RNTesterText>
+          <RNTesterText style={styles.paragraph}>
             Using the "Explore by touch" gesture and touching an area that is
             *not* a link should move focus to the entire paragraph.
-          </Text>
-          <Text style={styles.exampleTitle}>Example</Text>
-          <Text style={styles.paragraph} accessible={true}>
+          </RNTesterText>
+          <RNTesterText style={styles.exampleTitle}>Example</RNTesterText>
+          <RNTesterText style={styles.paragraph} accessible={true}>
             This is a{' '}
-            <Text
+            <RNTesterText
               style={styles.link}
               accessibilityRole="link"
               onPress={() => {
                 Alert.alert('pressed test');
               }}>
               test
-            </Text>{' '}
+            </RNTesterText>{' '}
             of{' '}
-            <Text
+            <RNTesterText
               style={styles.link}
               accessibilityRole="link"
               onPress={() => {
                 Alert.alert('pressed Inline Links');
               }}>
               inline links
-            </Text>{' '}
+            </RNTesterText>{' '}
             in React Native. Here's{' '}
-            <Text
+            <RNTesterText
               style={styles.link}
               accessibilityRole="link"
               onPress={() => {
                 Alert.alert('pressed another link');
               }}>
               another link
-            </Text>
+            </RNTesterText>
             . Here is a{' '}
-            <Text
+            <RNTesterText
               style={styles.link}
               accessibilityRole="link"
               onPress={() => {
                 Alert.alert('pressed long link');
               }}>
               link that spans multiple lines because the text is so long.
-            </Text>
+            </RNTesterText>
             This sentence has no links in it.
-          </Text>
+          </RNTesterText>
         </RNTesterBlock>
       </RNTesterPage>
     );
@@ -241,6 +239,9 @@ class AccessibilityAndroidExample extends React.Component<
 }
 
 const styles = StyleSheet.create({
+  buttonText: {
+    color: 'black',
+  },
   touchableContainer: {
     position: 'absolute',
     left: 10,

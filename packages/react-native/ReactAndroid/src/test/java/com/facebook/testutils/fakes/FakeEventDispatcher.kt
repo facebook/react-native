@@ -38,6 +38,7 @@ class FakeEventDispatcher : EventDispatcher {
 
   override fun removeBatchEventDispatchedListener(listener: BatchEventDispatchedListener) = Unit
 
+  @Deprecated("Deprecated in Java")
   override fun registerEventEmitter(uiManagerType: Int, eventEmitter: RCTEventEmitter) = Unit
 
   override fun registerEventEmitter(uiManagerType: Int, eventEmitter: RCTModernEventEmitter) = Unit

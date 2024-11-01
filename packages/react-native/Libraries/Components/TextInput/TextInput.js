@@ -239,6 +239,8 @@ export type TextContentType =
   | 'birthdateDay'
   | 'birthdateMonth'
   | 'birthdateYear'
+  | 'cellularEID'
+  | 'cellularIMEI'
   | 'dateTime'
   | 'flightNumber'
   | 'shipmentTrackingNumber';
@@ -1787,11 +1789,11 @@ const autoCompleteWebToTextContentTypeMap = {
   username: 'username',
 };
 
-const ExportedForwardRef: React.AbstractComponent<
-  React.ElementConfig<typeof InternalTextInput>,
-  TextInputInstance,
+const ExportedForwardRef: component(
+  ref: React.RefSetter<TextInputInstance>,
+  ...props: React.ElementConfig<typeof InternalTextInput>
   // $FlowFixMe[incompatible-call]
-> = React.forwardRef(function TextInput(
+) = React.forwardRef(function TextInput(
   {
     allowFontScaling = true,
     rejectResponderTermination = true,

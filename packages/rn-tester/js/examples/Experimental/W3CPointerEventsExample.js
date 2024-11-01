@@ -103,7 +103,7 @@ function RelativeChildExample({log}: {log: string => void}) {
 function PointerEventScaffolding({
   Example,
 }: {
-  Example: React.AbstractComponent<{log: string => void}>,
+  Example: component(log: (string) => void),
 }) {
   const [eventsLog, setEventsLog] = React.useState('');
   const clear = () => setEventsLog('');

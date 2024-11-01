@@ -7,35 +7,59 @@
 
 #include "EventBeat.h"
 
+#include <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #include <utility>
 
 namespace facebook::react {
 
-EventBeat::EventBeat(SharedOwnerBox ownerBox)
-    : ownerBox_(std::move(ownerBox)) {}
+EventBeat::EventBeat(
+    std::shared_ptr<OwnerBox> ownerBox,
+    RuntimeScheduler& runtimeScheduler)
+    : ownerBox_(std::move(ownerBox)), runtimeScheduler_(runtimeScheduler) {}
 
 void EventBeat::request() const {
   isRequested_ = true;
 }
 
-void EventBeat::beat(jsi::Runtime& runtime) const {
-  if (!this->isRequested_) {
-    return;
-  }
-
-  isRequested_ = false;
-
-  if (beatCallback_) {
-    beatCallback_(runtime);
-  }
-}
-
-void EventBeat::induce() const {
-  // Default implementation does nothing.
+void EventBeat::requestSynchronous() const {
+  react_native_assert(
+      beatCallback_ &&
+      "Unexpected state: EventBeat::setBeatCallback was not called before EventBeat::requestSynchronous.");
+  isSynchronousRequested_ = true;
+  request();
 }
 
 void EventBeat::setBeatCallback(BeatCallback beatCallback) {
   beatCallback_ = std::move(beatCallback);
+}
+
+void EventBeat::induce() const {
+  if (!isRequested_ || isBeatCallbackScheduled_) {
+    return;
+  }
+
+  isRequested_ = false;
+  isBeatCallbackScheduled_ = true;
+
+  auto beat = std::function<void(jsi::Runtime&)>(
+      [this, ownerBox = ownerBox_](jsi::Runtime& runtime) {
+        auto owner = ownerBox->owner.lock();
+        if (!owner) {
+          return;
+        }
+
+        isBeatCallbackScheduled_ = false;
+        if (beatCallback_) {
+          beatCallback_(runtime);
+        }
+      });
+
+  if (isSynchronousRequested_) {
+    isSynchronousRequested_ = false;
+    runtimeScheduler_.executeNowOnTheSameThread(std::move(beat));
+  } else {
+    runtimeScheduler_.scheduleWork(std::move(beat));
+  }
 }
 
 } // namespace facebook::react

@@ -41,6 +41,7 @@ export type ReportableEvent =
             appId: string | null,
             deviceId: string | null,
             resolvedTargetDescription: string,
+            resolvedTargetAppId: string,
             prefersFuseboxFrontend: boolean,
           }>
         | ErrorResult<mixed>

@@ -74,11 +74,11 @@ class PerformanceEntryReporter {
     return eventCounts_;
   }
 
-  void reportMark(
+  PerformanceEntry reportMark(
       const std::string& name,
       const std::optional<DOMHighResTimeStamp>& startTime = std::nullopt);
 
-  void reportMeasure(
+  PerformanceEntry reportMeasure(
       const std::string_view& name,
       double startTime,
       double endTime,
@@ -125,6 +125,7 @@ class PerformanceEntryReporter {
       case PerformanceEntryType::_NEXT:
         throw std::logic_error("Cannot get buffer for _NEXT entry type");
     }
+    throw std::logic_error("Unhandled PerformanceEntryType");
   }
 
   inline PerformanceEntryBuffer& getBufferRef(PerformanceEntryType entryType) {
@@ -140,6 +141,7 @@ class PerformanceEntryReporter {
       case PerformanceEntryType::_NEXT:
         throw std::logic_error("Cannot get buffer for _NEXT entry type");
     }
+    throw std::logic_error("Unhandled PerformanceEntryType");
   }
 };
 

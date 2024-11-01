@@ -34,6 +34,8 @@
 #endif
 #import <react/nativemodule/defaults/DefaultTurboModules.h>
 
+using namespace facebook::react;
+
 @interface RCTAppDelegate () <RCTComponentViewFactoryComponentProvider, RCTHostDelegate>
 @end
 
@@ -76,6 +78,7 @@
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
   UIViewController *rootViewController = [self createRootViewController];
   [self setRootView:rootView toRootViewController:rootViewController];
+  _window.windowScene.delegate = self;
   _window.rootViewController = rootViewController;
   [_window makeKeyAndVisible];
 }
@@ -178,14 +181,6 @@
 {
 }
 
-- (void)host:(RCTHost *)host
-    didReceiveJSErrorStack:(NSArray<NSDictionary<NSString *, id> *> *)stack
-                   message:(NSString *)message
-               exceptionId:(NSUInteger)exceptionId
-                   isFatal:(BOOL)isFatal
-{
-}
-
 #pragma mark - Bridge and Bridge Adapter properties
 
 - (RCTBridge *)bridge
@@ -219,15 +214,14 @@
 #endif
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
-                                                      jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+- (std::shared_ptr<TurboModule>)getTurboModule:(const std::string &)name
+                                     jsInvoker:(std::shared_ptr<CallInvoker>)jsInvoker
 {
-  return facebook::react::DefaultTurboModules::getTurboModule(name, jsInvoker);
+  return DefaultTurboModules::getTurboModule(name, jsInvoker);
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
-                                                     initParams:
-                                                         (const facebook::react::ObjCTurboModule::InitParams &)params
+- (std::shared_ptr<TurboModule>)getTurboModule:(const std::string &)name
+                                    initParams:(const ObjCTurboModule::InitParams &)params
 {
   return nullptr;
 }
@@ -301,17 +295,21 @@
 
 #pragma mark - Feature Flags
 
-class RCTAppDelegateBridgelessFeatureFlags : public facebook::react::ReactNativeFeatureFlagsDefaults {
+class RCTAppDelegateBridgelessFeatureFlags : public ReactNativeFeatureFlagsDefaults {
  public:
-  bool useModernRuntimeScheduler() override
+  bool enableBridgelessArchitecture() override
   {
     return true;
   }
-  bool enableMicrotasks() override
+  bool enableFabricRenderer() override
   {
     return true;
   }
-  bool batchRenderingUpdatesInEventLoop() override
+  bool useTurboModules() override
+  {
+    return true;
+  }
+  bool useNativeViewConfigsInBridgelessMode() override
   {
     return true;
   }
@@ -320,7 +318,7 @@ class RCTAppDelegateBridgelessFeatureFlags : public facebook::react::ReactNative
 - (void)_setUpFeatureFlags
 {
   if ([self bridgelessEnabled]) {
-    facebook::react::ReactNativeFeatureFlags::override(std::make_unique<RCTAppDelegateBridgelessFeatureFlags>());
+    ReactNativeFeatureFlags::override(std::make_unique<RCTAppDelegateBridgelessFeatureFlags>());
   }
 }
 

@@ -53,7 +53,7 @@ uint32_t PerformanceEntryReporter::getDroppedEntriesCount(
     PerformanceEntryType entryType) const noexcept {
   std::shared_lock lock(buffersMutex_);
 
-  return getBuffer(entryType).droppedEntriesCount;
+  return (uint32_t)getBuffer(entryType).droppedEntriesCount;
 }
 
 std::vector<PerformanceEntry> PerformanceEntryReporter::getEntries() const {
@@ -125,7 +125,7 @@ void PerformanceEntryReporter::clearEntries(
   getBufferRef(entryType).clear(entryName);
 }
 
-void PerformanceEntryReporter::reportMark(
+PerformanceEntry PerformanceEntryReporter::reportMark(
     const std::string& name,
     const std::optional<DOMHighResTimeStamp>& startTime) {
   const auto entry = PerformanceEntry{
@@ -139,9 +139,10 @@ void PerformanceEntryReporter::reportMark(
   }
 
   observerRegistry_->queuePerformanceEntry(entry);
+  return entry;
 }
 
-void PerformanceEntryReporter::reportMeasure(
+PerformanceEntry PerformanceEntryReporter::reportMeasure(
     const std::string_view& name,
     DOMHighResTimeStamp startTime,
     DOMHighResTimeStamp endTime,
@@ -173,6 +174,7 @@ void PerformanceEntryReporter::reportMeasure(
   }
 
   observerRegistry_->queuePerformanceEntry(entry);
+  return entry;
 }
 
 DOMHighResTimeStamp PerformanceEntryReporter::getMarkTime(

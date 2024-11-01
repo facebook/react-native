@@ -43,6 +43,9 @@ internal object NdkConfiguratorUtils {
         if (cmakeArgs.none { it.startsWith("-DPROJECT_BUILD_DIR") }) {
           cmakeArgs.add("-DPROJECT_BUILD_DIR=${project.layout.buildDirectory.get().asFile}")
         }
+        if (cmakeArgs.none { it.startsWith("-DPROJECT_ROOT_DIR") }) {
+          cmakeArgs.add("-DPROJECT_ROOT_DIR=${project.rootProject.layout.projectDirectory.asFile}")
+        }
         if (cmakeArgs.none { it.startsWith("-DREACT_ANDROID_DIR") }) {
           cmakeArgs.add(
               "-DREACT_ANDROID_DIR=${extension.reactNativeDir.file("ReactAndroid").get().asFile}")
@@ -50,11 +53,8 @@ internal object NdkConfiguratorUtils {
         if (cmakeArgs.none { it.startsWith("-DANDROID_STL") }) {
           cmakeArgs.add("-DANDROID_STL=c++_shared")
         }
-        // Due to the new NDK toolchain file, the C++ flags gets overridden between compilation
-        // units. This is causing some libraries to don't be compiled with -DANDROID and other
-        // crucial flags. This can be revisited once we bump to NDK 25/26
-        if (cmakeArgs.none { it.startsWith("-DANDROID_USE_LEGACY_TOOLCHAIN_FILE") }) {
-          cmakeArgs.add("-DANDROID_USE_LEGACY_TOOLCHAIN_FILE=ON")
+        if (cmakeArgs.none { it.startsWith("-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES") }) {
+          cmakeArgs.add("-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON")
         }
 
         val architectures = project.getReactNativeArchitectures()

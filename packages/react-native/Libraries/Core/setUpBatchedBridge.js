@@ -16,16 +16,7 @@ if (global.RN$Bridgeless === true && global.RN$registerCallableModule) {
 } else {
   const BatchedBridge = require('../BatchedBridge/BatchedBridge');
   registerModule = (
-    moduleName:
-      | $TEMPORARY$string<'GlobalPerformanceLogger'>
-      | $TEMPORARY$string<'HMRClient'>
-      | $TEMPORARY$string<'HeapCapture'>
-      | $TEMPORARY$string<'JSTimers'>
-      | $TEMPORARY$string<'RCTDeviceEventEmitter'>
-      | $TEMPORARY$string<'RCTLog'>
-      | $TEMPORARY$string<'RCTNativeAppEventEmitter'>
-      | $TEMPORARY$string<'SamplingProfiler'>
-      | $TEMPORARY$string<'Systrace'>,
+    moduleName: string,
     /* $FlowFixMe[missing-local-annot] The type annotation(s) required by
      * Flow's LTI update could not be added via codemod */
     factory,

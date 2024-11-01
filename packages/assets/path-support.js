@@ -55,7 +55,7 @@ const drawableFileTypes = new Set([
 function getAndroidResourceFolderName(
   asset: PackagerAsset,
   scale: number,
-): string | $TEMPORARY$string<'raw'> {
+): string {
   if (!drawableFileTypes.has(asset.type)) {
     return 'raw';
   }

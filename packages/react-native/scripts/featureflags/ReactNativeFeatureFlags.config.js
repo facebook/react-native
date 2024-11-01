@@ -17,7 +17,7 @@ import type {FeatureFlagDefinitions} from './types';
  *
  * If you modify this file, you need to update all the generated files
  * running the following script from the repo root:
- *   yarn featureflags-update
+ *   yarn featureflags --update
  */
 
 // These flags are only used in tests for the feature flags system
@@ -29,6 +29,15 @@ const testDefinitions: FeatureFlagDefinitions = {
         description: 'Common flag for testing. Do NOT modify.',
         purpose: 'operational',
       },
+    },
+    commonTestFlagWithoutNativeImplementation: {
+      defaultValue: false,
+      metadata: {
+        description:
+          'Common flag for testing (without native implementation). Do NOT modify.',
+        purpose: 'operational',
+      },
+      skipNativeAPI: true,
     },
   },
   jsOnly: {
@@ -61,6 +70,8 @@ const definitions: FeatureFlagDefinitions = {
           'When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.',
         purpose: 'release',
       },
+      // We're preparing to clean up this feature flag.
+      skipNativeAPI: true,
     },
     completeReactInstanceCreationOnBgThreadOnAndroid: {
       defaultValue: false,
@@ -68,6 +79,23 @@ const definitions: FeatureFlagDefinitions = {
         dateAdded: '2024-07-22',
         description:
           'Do not wait for a main-thread dispatch to complete init to start executing work on the JS thread on Android',
+        purpose: 'experimentation',
+      },
+    },
+    disableEventLoopOnBridgeless: {
+      defaultValue: false,
+      metadata: {
+        description:
+          'The bridgeless architecture enables the event loop by default. This feature flag allows us to force disabling it in specific instances.',
+        purpose: 'release',
+      },
+    },
+    disableMountItemReorderingAndroid: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2024-10-26',
+        description:
+          'Prevent FabricMountingManager from reordering mountitems, which may lead to invalid state on the UI thread',
         purpose: 'experimentation',
       },
     },
@@ -81,12 +109,11 @@ const definitions: FeatureFlagDefinitions = {
       },
     },
     enableAndroidLineHeightCentering: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
-        dateAdded: '2024-09-11',
         description:
           'When enabled, custom line height calculation will be centered from top to bottom.',
-        purpose: 'experimentation',
+        purpose: 'release',
       },
     },
     enableBridgelessArchitecture: {
@@ -97,11 +124,12 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'release',
       },
     },
-    enableCleanTextInputYogaNode: {
+    enableCppPropsIteratorSetter: {
       defaultValue: false,
       metadata: {
-        dateAdded: '2024-04-06',
-        description: 'Clean yoga node when <TextInput /> does not change.',
+        dateAdded: '2024-09-13',
+        description:
+          'Enable prop iterator setter-style construction of Props in C++ (this flag is not used in Java).',
         purpose: 'experimentation',
       },
     },
@@ -171,6 +199,14 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'experimentation',
       },
     },
+    enableLayoutAnimationsOnAndroid: {
+      defaultValue: false,
+      metadata: {
+        description:
+          'When enabled, LayoutAnimations API will animate state changes on Android.',
+        purpose: 'release',
+      },
+    },
     enableLayoutAnimationsOnIOS: {
       defaultValue: true,
       metadata: {
@@ -193,6 +229,17 @@ const definitions: FeatureFlagDefinitions = {
         description:
           'Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).',
         purpose: 'release',
+      },
+      // We're preparing to clean up this feature flag.
+      skipNativeAPI: true,
+    },
+    enableNewBackgroundAndBorderDrawables: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2024-09-24',
+        description:
+          'Use BackgroundDrawable and BorderDrawable instead of CSSBackgroundDrawable',
+        purpose: 'experimentation',
       },
     },
     enablePreciseSchedulingForPremountItemsOnAndroid: {
@@ -230,15 +277,6 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'experimentation',
       },
     },
-    enableTextPreallocationOptimisation: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-09-12',
-        description:
-          'Text preallocation optimisation where unnecessary work is removed.',
-        purpose: 'experimentation',
-      },
-    },
     enableUIConsistency: {
       defaultValue: false,
       metadata: {
@@ -263,15 +301,6 @@ const definitions: FeatureFlagDefinitions = {
         dateAdded: '2024-07-22',
         description:
           'When enabled, rawProps in Props will not include Yoga specific props.',
-        purpose: 'experimentation',
-      },
-    },
-    fetchImagesInViewPreallocation: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-07-09',
-        description:
-          'Start image fetching during view preallocation instead of waiting for layout pass',
         purpose: 'experimentation',
       },
     },
@@ -345,15 +374,6 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'experimentation',
       },
     },
-    removeNestedCallsToDispatchMountItemsOnAndroid: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-09-19',
-        description:
-          'Removes nested calls to MountItemDispatcher.dispatchMountItems on Android, so we do less work per frame on the UI thread.',
-        purpose: 'experimentation',
-      },
-    },
     setAndroidLayoutDirection: {
       defaultValue: true,
       metadata: {
@@ -368,6 +388,14 @@ const definitions: FeatureFlagDefinitions = {
         description:
           'Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.',
         purpose: 'operational',
+      },
+    },
+    useAlwaysAvailableJSErrorHandling: {
+      defaultValue: false,
+      metadata: {
+        description:
+          'In Bridgeless mode, use the always available javascript error reporting pipeline.',
+        purpose: 'release',
       },
     },
     useFabricInterop: {
@@ -394,6 +422,8 @@ const definitions: FeatureFlagDefinitions = {
           'When enabled, it uses the modern fork of RuntimeScheduler that allows scheduling tasks with priorities from any thread.',
         purpose: 'release',
       },
+      // We're preparing to clean up this feature flag.
+      skipNativeAPI: true,
     },
     useNativeViewConfigsInBridgelessMode: {
       defaultValue: false,
@@ -428,15 +458,6 @@ const definitions: FeatureFlagDefinitions = {
         dateAdded: '2024-06-03',
         description:
           'When enabled, cloning shadow nodes within react native will update the reference held by the current JS fiber tree.',
-        purpose: 'experimentation',
-      },
-    },
-    useRuntimeShadowNodeReferenceUpdateOnLayout: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-06-03',
-        description:
-          'When enabled, cloning shadow nodes during layout will update the reference held by the current JS fiber tree.',
         purpose: 'experimentation',
       },
     },
@@ -606,4 +627,5 @@ const definitions: FeatureFlagDefinitions = {
   },
 };
 
-export default definitions;
+// Keep it as a CommonJS module so we can easily import it from Node.js
+module.exports = definitions;

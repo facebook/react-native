@@ -338,6 +338,12 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
     if (!didFocusExternalTextField && focusEnd > endFrame.origin.y) {
       // Text field active region is below visible area with keyboard - update diff to bring into view
       contentDiff = endFrame.origin.y - focusEnd;
+    } else {
+      UIView *inputAccessoryView = _firstResponderViewOutsideScrollView.inputAccessoryView;
+      if (inputAccessoryView) {
+        // Text input view is within the inputAccessoryView.
+        contentDiff = endFrame.origin.y - beginFrame.origin.y;
+      }
     }
   } else if (endFrame.origin.y <= beginFrame.origin.y) {
     // Keyboard opened for other reason
@@ -1054,6 +1060,23 @@ RCT_SET_AND_PRESERVE_OFFSET(setScrollsToTop, scrollsToTop, BOOL)
 RCT_SET_AND_PRESERVE_OFFSET(setShowsHorizontalScrollIndicator, showsHorizontalScrollIndicator, BOOL)
 RCT_SET_AND_PRESERVE_OFFSET(setShowsVerticalScrollIndicator, showsVerticalScrollIndicator, BOOL)
 RCT_SET_AND_PRESERVE_OFFSET(setZoomScale, zoomScale, CGFloat);
+
+- (void)setScrollIndicatorInsets:(UIEdgeInsets)value
+{
+  [_scrollView setScrollIndicatorInsets:value];
+}
+
+- (UIEdgeInsets)scrollIndicatorInsets
+{
+  UIEdgeInsets verticalScrollIndicatorInsets = [_scrollView verticalScrollIndicatorInsets];
+  UIEdgeInsets horizontalScrollIndicatorInsets = [_scrollView horizontalScrollIndicatorInsets];
+
+  return UIEdgeInsetsMake(
+      verticalScrollIndicatorInsets.top,
+      horizontalScrollIndicatorInsets.left,
+      verticalScrollIndicatorInsets.bottom,
+      horizontalScrollIndicatorInsets.right);
+}
 
 - (void)setAutomaticallyAdjustsScrollIndicatorInsets:(BOOL)automaticallyAdjusts API_AVAILABLE(ios(13.0))
 {

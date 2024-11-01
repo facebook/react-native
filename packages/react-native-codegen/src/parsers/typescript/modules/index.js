@@ -39,6 +39,7 @@ const {
   emitFunction,
   emitPromise,
   emitRootTag,
+  emitStringLiteral,
   emitUnion,
   translateArrayTypeAnnotation,
   typeAliasResolution,
@@ -395,6 +396,21 @@ function translateTypeAnnotation(
     }
     case 'TSUnionType': {
       return emitUnion(nullable, hasteModuleName, typeAnnotation, parser);
+    }
+    case 'TSLiteralType': {
+      const literal = typeAnnotation.literal;
+      switch (literal.type) {
+        case 'StringLiteral': {
+          return emitStringLiteral(nullable, literal.value);
+        }
+        default: {
+          throw new UnsupportedTypeAnnotationParserError(
+            hasteModuleName,
+            typeAnnotation,
+            parser.language(),
+          );
+        }
+      }
     }
     default: {
       const commonType = emitCommonTypes(

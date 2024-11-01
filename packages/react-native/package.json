@@ -95,8 +95,7 @@
   ],
   "scripts": {
     "prepack": "node ./scripts/prepack.js",
-    "featureflags-check": "node ./scripts/featureflags/index.js --verify-unchanged",
-    "featureflags-update": "node ./scripts/featureflags/index.js"
+    "featureflags": "node ./scripts/featureflags/index.js"
   },
   "peerDependencies": {
     "@types/react": "^18.2.6",
@@ -131,12 +130,12 @@
     "jest-environment-node": "^29.6.3",
     "jsc-android": "^250231.0.0",
     "memoize-one": "^5.0.0",
-    "metro-runtime": "^0.81.0-alpha.2",
-    "metro-source-map": "^0.81.0-alpha.2",
+    "metro-runtime": "^0.81.0",
+    "metro-source-map": "^0.81.0",
     "nullthrows": "^1.1.1",
     "pretty-format": "^29.7.0",
     "promise": "^8.3.0",
-    "react-devtools-core": "^6.0.0",
+    "react-devtools-core": "^6.0.1",
     "react-refresh": "^0.14.0",
     "regenerator-runtime": "^0.13.2",
     "scheduler": "0.25.0-rc-fb9a90fa48-20240614",

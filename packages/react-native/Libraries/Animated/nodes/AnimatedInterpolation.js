@@ -15,11 +15,11 @@
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 import type AnimatedNode from './AnimatedNode';
 
+import NativeAnimatedHelper from '../../../src/private/animated/NativeAnimatedHelper';
 import {validateInterpolation} from '../../../src/private/animated/NativeAnimatedValidation';
 import normalizeColor from '../../StyleSheet/normalizeColor';
 import processColor from '../../StyleSheet/processColor';
 import Easing from '../Easing';
-import NativeAnimatedHelper from '../../../src/private/animated/NativeAnimatedHelper';
 import AnimatedWithChildren from './AnimatedWithChildren';
 import invariant from 'invariant';
 

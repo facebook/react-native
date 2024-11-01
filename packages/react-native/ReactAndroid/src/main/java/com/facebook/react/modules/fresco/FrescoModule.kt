@@ -114,7 +114,7 @@ constructor(
     // the 'last' ReactActivity is being destroyed, which effectively means the app is being
     // backgrounded.
     if (hasBeenInitialized() && clearOnDestroy) {
-      imagePipeline!!.clearMemoryCaches()
+      imagePipeline?.clearMemoryCaches()
     }
   }
 
@@ -132,7 +132,7 @@ constructor(
   }
 
   public companion object {
-    internal const val NAME = "FrescoModule"
+    public const val NAME: String = "FrescoModule"
     private var hasBeenInitialized = false
 
     /**

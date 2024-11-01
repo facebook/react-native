@@ -9,6 +9,7 @@
 
 #import <memory>
 
+#import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/NSDataBigString.h>
 #import <React/RCTAssert.h>
 #import <React/RCTBridge+Inspector.h>
@@ -31,11 +32,13 @@
 #import <React/RCTPerformanceLogger.h>
 #import <React/RCTRedBox.h>
 #import <React/RCTSurfacePresenter.h>
+#import <ReactCommon/RCTTurboModule.h>
 #import <ReactCommon/RCTTurboModuleManager.h>
 #import <ReactCommon/RuntimeExecutor.h>
 #import <cxxreact/ReactMarker.h>
 #import <jsinspector-modern/ReactCdp.h>
 #import <jsireact/JSIExecutor.h>
+#import <react/featureflags/ReactNativeFeatureFlags.h>
 #import <react/renderer/runtimescheduler/RuntimeSchedulerCallInvoker.h>
 #import <react/utils/ContextContainer.h>
 #import <react/utils/ManagedObjectWrapper.h>
@@ -220,7 +223,9 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   objCTimerRegistryRawPtr->setTimerManager(timerManager);
 
   __weak __typeof(self) weakSelf = self;
-  auto onJsError = [=](const JsErrorHandler::ParsedError &error) { [weakSelf _handleJSError:error]; };
+  auto onJsError = [=](jsi::Runtime &runtime, const JsErrorHandler::ParsedError &error) {
+    [weakSelf _handleJSError:error withRuntime:runtime];
+  };
 
   // Create the React Instance
   _reactInstance = std::make_unique<ReactInstance>(
@@ -324,7 +329,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
     });
     RCTInstallNativeComponentRegistryBinding(runtime);
 
-    if (RCTGetUseNativeViewConfigsInBridgelessMode()) {
+    if (ReactNativeFeatureFlags::useNativeViewConfigsInBridgelessMode()) {
       installLegacyUIManagerConstantsProviderBinding(runtime);
     }
 
@@ -462,23 +467,59 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   [[NSNotificationCenter defaultCenter] postNotificationName:@"RCTInstanceDidLoadBundle" object:nil];
 }
 
-- (void)_handleJSError:(const JsErrorHandler::ParsedError &)error
+- (void)_handleJSError:(const JsErrorHandler::ParsedError &)error withRuntime:(jsi::Runtime &)runtime
 {
-  NSString *message = [NSString stringWithCString:error.message.c_str() encoding:[NSString defaultCStringEncoding]];
-  NSMutableArray<NSDictionary<NSString *, id> *> *stack = [NSMutableArray new];
-  for (const JsErrorHandler::ParsedError::StackFrame &frame : error.frames) {
-    [stack addObject:@{
-      @"file" : [NSString stringWithCString:frame.fileName.c_str() encoding:[NSString defaultCStringEncoding]],
-      @"methodName" : [NSString stringWithCString:frame.methodName.c_str() encoding:[NSString defaultCStringEncoding]],
-      @"lineNumber" : [NSNumber numberWithInt:frame.lineNumber],
-      @"column" : [NSNumber numberWithInt:frame.columnNumber],
-    }];
+  NSMutableDictionary<NSString *, id> *errorData = [NSMutableDictionary new];
+  errorData[@"message"] = @(error.message.c_str());
+  if (error.originalMessage) {
+    errorData[@"originalMessage"] = @(error.originalMessage->c_str());
   }
-  [_delegate instance:self
-      didReceiveJSErrorStack:stack
-                     message:message
-                 exceptionId:error.exceptionId
-                     isFatal:error.isFatal];
+  if (error.name) {
+    errorData[@"name"] = @(error.name->c_str());
+  }
+  if (error.componentStack) {
+    errorData[@"componentStack"] = @(error.componentStack->c_str());
+  }
+
+  NSMutableArray<NSDictionary<NSString *, id> *> *stack = [NSMutableArray new];
+  for (const JsErrorHandler::ParsedError::StackFrame &frame : error.stack) {
+    NSMutableDictionary<NSString *, id> *stackFrame = [NSMutableDictionary new];
+    if (frame.file) {
+      stackFrame[@"file"] = @(frame.file->c_str());
+    }
+    stackFrame[@"methodName"] = @(frame.methodName.c_str());
+    if (frame.lineNumber) {
+      stackFrame[@"lineNumber"] = @(*frame.lineNumber);
+    }
+    if (frame.column) {
+      stackFrame[@"column"] = @(*frame.column);
+    }
+    [stack addObject:stackFrame];
+  }
+
+  errorData[@"stack"] = stack;
+  errorData[@"id"] = @(error.id);
+  errorData[@"isFatal"] = @(error.isFatal);
+
+  id extraData =
+      TurboModuleConvertUtils::convertJSIValueToObjCObject(runtime, jsi::Value(runtime, error.extraData), nullptr);
+  if (extraData) {
+    errorData[@"extraData"] = extraData;
+  }
+
+  if (![_delegate instance:self
+          didReceiveJSErrorStack:errorData[@"stack"]
+                         message:errorData[@"message"]
+                 originalMessage:errorData[@"originalMessage"]
+                            name:errorData[@"name"]
+                  componentStack:errorData[@"componentStack"]
+                     exceptionId:error.id
+                         isFatal:errorData[@"isFatal"]
+                       extraData:errorData[@"extraData"]]) {
+    JS::NativeExceptionsManager::ExceptionData jsErrorData{errorData};
+    id<NativeExceptionsManagerSpec> exceptionsManager = [_turboModuleManager moduleForName:"ExceptionsManager"];
+    [exceptionsManager reportException:jsErrorData];
+  }
 }
 
 @end

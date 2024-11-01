@@ -14,13 +14,13 @@ import type {
   BooleanTypeAnnotation,
   DoubleTypeAnnotation,
   EventTypeAnnotation,
+  FloatTypeAnnotation,
   Int32TypeAnnotation,
   NamedShape,
   NativeModuleAliasMap,
   NativeModuleBaseTypeAnnotation,
   NativeModuleEnumDeclaration,
   NativeModuleEnumMap,
-  FloatTypeAnnotation,
   NativeModuleFunctionTypeAnnotation,
   NativeModuleGenericObjectTypeAnnotation,
   NativeModuleMixedTypeAnnotation,
@@ -33,6 +33,8 @@ import type {
   Nullable,
   ObjectTypeAnnotation,
   ReservedTypeAnnotation,
+  StringLiteralTypeAnnotation,
+  StringLiteralUnionTypeAnnotation,
   StringTypeAnnotation,
   VoidTypeAnnotation,
 } from '../CodegenSchema';
@@ -171,6 +173,16 @@ function emitMixed(
 function emitString(nullable: boolean): Nullable<StringTypeAnnotation> {
   return wrapNullable(nullable, {
     type: 'StringTypeAnnotation',
+  });
+}
+
+function emitStringLiteral(
+  nullable: boolean,
+  value: string,
+): Nullable<StringLiteralTypeAnnotation> {
+  return wrapNullable(nullable, {
+    type: 'StringLiteralTypeAnnotation',
+    value,
   });
 }
 
@@ -398,7 +410,14 @@ function emitUnion(
   hasteModuleName: string,
   typeAnnotation: $FlowFixMe,
   parser: Parser,
-): Nullable<NativeModuleUnionTypeAnnotation> {
+): Nullable<
+  NativeModuleUnionTypeAnnotation | StringLiteralUnionTypeAnnotation,
+> {
+  // Get all the literals by type
+  // Verify they are all the same
+  // If string, persist as StringLiteralUnionType
+  // If number, persist as NumberTypeAnnotation (TODO: Number literal)
+
   const unionTypes = parser.remapUnionTypeAnnotationMemberNames(
     typeAnnotation.types,
   );
@@ -412,9 +431,39 @@ function emitUnion(
     );
   }
 
+  if (unionTypes[0] === 'StringTypeAnnotation') {
+    // Reprocess as a string literal union
+    return emitStringLiteralUnion(
+      nullable,
+      hasteModuleName,
+      typeAnnotation,
+      parser,
+    );
+  }
+
   return wrapNullable(nullable, {
     type: 'UnionTypeAnnotation',
     memberType: unionTypes[0],
+  });
+}
+
+function emitStringLiteralUnion(
+  nullable: boolean,
+  hasteModuleName: string,
+  typeAnnotation: $FlowFixMe,
+  parser: Parser,
+): Nullable<StringLiteralUnionTypeAnnotation> {
+  const stringLiterals =
+    parser.getStringLiteralUnionTypeAnnotationStringLiterals(
+      typeAnnotation.types,
+    );
+
+  return wrapNullable(nullable, {
+    type: 'StringLiteralUnionTypeAnnotation',
+    types: stringLiterals.map(stringLiteral => ({
+      type: 'StringLiteralTypeAnnotation',
+      value: stringLiteral,
+    })),
   });
 }
 
@@ -722,6 +771,7 @@ module.exports = {
   emitString,
   emitStringish,
   emitStringProp,
+  emitStringLiteral,
   emitMixed,
   emitUnion,
   emitPartial,

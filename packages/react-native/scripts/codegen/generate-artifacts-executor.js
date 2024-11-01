@@ -254,17 +254,29 @@ function findExternalLibraries(pkgJson, projectRoot) {
   );
   // Handle third-party libraries
   return Object.keys(dependencies).flatMap(dependency => {
+    let configFilePath = '';
     try {
-      const configFilePath = require.resolve(
-        path.join(dependency, 'package.json'),
-        {paths: [projectRoot]},
-      );
-      const configFile = JSON.parse(fs.readFileSync(configFilePath));
-      const codegenConfigFileDir = path.dirname(configFilePath);
-      return extractLibrariesFromJSON(configFile, codegenConfigFileDir);
+      configFilePath = require.resolve(path.join(dependency, 'package.json'), {
+        paths: [projectRoot],
+      });
     } catch (e) {
-      return [];
+      // require.resolve fails if the dependency is a local node module.
+      if (
+        dependencies[dependency].startsWith('.') || // handles relative paths
+        dependencies[dependency].startsWith('/') // handles absolute paths
+      ) {
+        configFilePath = path.join(
+          projectRoot,
+          pkgJson.dependencies[dependency],
+          'package.json',
+        );
+      } else {
+        return [];
+      }
     }
+    const configFile = JSON.parse(fs.readFileSync(configFilePath));
+    const codegenConfigFileDir = path.dirname(configFilePath);
+    return extractLibrariesFromJSON(configFile, codegenConfigFileDir);
   });
 }
 
@@ -507,11 +519,22 @@ function rootCodegenTargetNeedsThirdPartyComponentProvider(pkgJson, platform) {
   return !pkgJsonIncludesGeneratedCode(pkgJson) && platform === 'ios';
 }
 
-function dependencyNeedsThirdPartyComponentProvider(schemaInfo, platform) {
+function dependencyNeedsThirdPartyComponentProvider(
+  schemaInfo,
+  platform,
+  appCondegenConfigSpec,
+) {
   // Filter the react native core library out.
   // In the future, core library and third party library should
   // use the same way to generate/register the fabric components.
-  return !isReactNativeCoreLibrary(schemaInfo.library.config.name, platform);
+  // We also have to filter out the the components defined in the app
+  // because the RCTThirdPartyComponentProvider is generated inside Fabric,
+  // which lives in a different target from the app and it has no visibility over
+  // the symbols defined in the app.
+  return (
+    !isReactNativeCoreLibrary(schemaInfo.library.config.name, platform) &&
+    schemaInfo.library.config.name !== appCondegenConfigSpec
+  );
 }
 
 function mustGenerateNativeCode(includeLibraryPath, schemaInfo) {
@@ -720,8 +743,12 @@ function execute(projectRoot, targetPlatform, baseOutputPath) {
       if (
         rootCodegenTargetNeedsThirdPartyComponentProvider(pkgJson, platform)
       ) {
-        const filteredSchemas = schemaInfos.filter(
-          dependencyNeedsThirdPartyComponentProvider,
+        const filteredSchemas = schemaInfos.filter(schemaInfo =>
+          dependencyNeedsThirdPartyComponentProvider(
+            schemaInfo,
+            platform,
+            pkgJson.codegenConfig?.appCondegenConfigSpec,
+          ),
         );
         const schemas = filteredSchemas.map(schemaInfo => schemaInfo.schema);
         const supportedApplePlatforms = filteredSchemas.map(

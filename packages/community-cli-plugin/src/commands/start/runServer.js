@@ -51,10 +51,10 @@ export type StartCommandArgs = {
 
 async function runServer(
   _argv: Array<string>,
-  ctx: Config,
+  cliConfig: Config,
   args: StartCommandArgs,
 ) {
-  const metroConfig = await loadMetroConfig(ctx, {
+  const metroConfig = await loadMetroConfig(cliConfig, {
     config: args.config,
     maxWorkers: args.maxWorkers,
     port: args.port,
@@ -73,7 +73,7 @@ async function runServer(
   const devServerUrl = url.format({protocol, hostname, port});
 
   console.info(
-    chalk.blue(`\nWelcome to React Native v${ctx.reactNativeVersion}`),
+    chalk.blue(`\nWelcome to React Native v${cliConfig.reactNativeVersion}`),
   );
 
   const serverStatus = await isDevServerRunning(devServerUrl, projectRoot);
@@ -174,7 +174,7 @@ async function runServer(
   //
   serverInstance.keepAliveTimeout = 30000;
 
-  await version.logIfUpdateAvailable(ctx.root, terminalReporter);
+  await version.logIfUpdateAvailable(cliConfig, terminalReporter);
 }
 
 function getReporterImpl(customLogReporterPath?: string): TerminalReporter {

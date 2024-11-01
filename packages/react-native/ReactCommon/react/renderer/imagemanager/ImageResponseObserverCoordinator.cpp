@@ -13,6 +13,12 @@
 
 namespace facebook::react {
 
+ImageResponseObserverCoordinator::ImageResponseObserverCoordinator(
+    SharedFunction<> resumeFunction,
+    SharedFunction<> cancelationFunction)
+    : resumeRequest_(std::move(resumeFunction)),
+      cancelRequest_(std::move(cancelationFunction)) {}
+
 void ImageResponseObserverCoordinator::addObserver(
     const ImageResponseObserver& observer) const {
   mutex_.lock();
@@ -35,6 +41,13 @@ void ImageResponseObserverCoordinator::addObserver(
       observer.didReceiveFailure(ImageLoadError{imageErrorData});
       break;
     }
+    case ImageResponse::Status::Cancelled: {
+      observers_.push_back(&observer);
+      status_ = ImageResponse::Status::Loading;
+      mutex_.unlock();
+      resumeRequest_();
+      break;
+    }
   }
 }
 
@@ -46,6 +59,11 @@ void ImageResponseObserverCoordinator::removeObserver(
   auto position = std::find(observers_.begin(), observers_.end(), &observer);
   if (position != observers_.end()) {
     observers_.erase(position, observers_.end());
+
+    if (observers_.empty() && status_ == ImageResponse::Status::Loading) {
+      status_ = ImageResponse::Status::Cancelled;
+      cancelRequest_();
+    }
   }
 }
 

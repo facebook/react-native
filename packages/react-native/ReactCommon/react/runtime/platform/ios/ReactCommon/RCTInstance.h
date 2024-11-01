@@ -37,18 +37,23 @@ RCT_EXTERN void RCTInstanceSetRuntimeDiagnosticFlags(NSString *_Nullable flags);
 
 @protocol RCTInstanceDelegate <RCTContextContainerHandling>
 
-- (void)instance:(RCTInstance *)instance
-    didReceiveJSErrorStack:(NSArray<NSDictionary<NSString *, id> *> *)stack
-                   message:(NSString *)message
-               exceptionId:(NSUInteger)exceptionId
-                   isFatal:(BOOL)isFatal;
-
 - (void)instance:(RCTInstance *)instance didInitializeRuntime:(facebook::jsi::Runtime &)runtime;
 
 - (void)loadBundleAtURL:(NSURL *)sourceURL
              onProgress:(RCTSourceLoadProgressBlock)onProgress
              onComplete:(RCTSourceLoadBlock)loadCallback;
 
+// TODO(T205780509): Remove this api in react native v0.78
+// The bridgeless js error handling api will just call into exceptionsmanager directly
+- (BOOL)instance:(RCTInstance *)instance
+    didReceiveJSErrorStack:(NSArray<NSDictionary<NSString *, id> *> *)stack
+                   message:(NSString *)message
+           originalMessage:(NSString *_Nullable)originalMessage
+                      name:(NSString *_Nullable)name
+            componentStack:(NSString *_Nullable)componentStack
+               exceptionId:(NSUInteger)exceptionId
+                   isFatal:(BOOL)isFatal
+                 extraData:(NSDictionary<NSString *, id> *)extraData __attribute__((deprecated));
 @end
 
 /**

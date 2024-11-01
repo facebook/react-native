@@ -1025,7 +1025,6 @@ public class FabricUIManager
 
   @Override
   @NonNull
-  @SuppressWarnings("unchecked")
   public EventDispatcher getEventDispatcher() {
     return mEventDispatcher;
   }

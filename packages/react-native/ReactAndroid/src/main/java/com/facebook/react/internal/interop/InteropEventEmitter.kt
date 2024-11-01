@@ -39,6 +39,7 @@ public class InteropEventEmitter(private val reactContext: ReactContext) : RCTEv
     dispatcher?.dispatchEvent(InteropEvent(eventName, eventData, surfaceId, targetReactTag))
   }
 
+  @Deprecated("Deprecated in Java")
   override fun receiveTouches(
       eventName: String,
       touches: WritableArray,

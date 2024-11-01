@@ -3,6 +3,8 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
+require 'shellwords'
+
 require_relative "./helpers.rb"
 
 # Utilities class for React Native Cocoapods
@@ -237,8 +239,8 @@ class ReactNativePodsUtils
             # When installing pods with a yarn alias, yarn creates a fake yarn and node executables
             # in a temporary folder.
             # Using `node --print "process.argv[0]";` we are able to retrieve the actual path from which node is running.
-            # see https://github.com/facebook/react-native/issues/43285 for more info
-            node_binary = `node --print "process.argv[0]";`
+            # see https://github.com/facebook/react-native/issues/43285 for more info. We've tweaked this slightly.
+            node_binary = Shellwords.escape(`node --print "process.argv[0]"`.strip)
             system("echo 'export NODE_BINARY=#{node_binary}' > #{file_path}.local")
         end
     end
@@ -562,6 +564,7 @@ class ReactNativePodsUtils
         ReactNativePodsUtils.update_header_paths_if_depends_on(target_installation_result, "RCT-Folly", [
             "\"$(PODS_ROOT)/RCT-Folly\"",
             "\"$(PODS_ROOT)/DoubleConversion\"",
+            "\"$(PODS_ROOT)/fast_float/include\"",
             "\"$(PODS_ROOT)/fmt/include\"",
             "\"$(PODS_ROOT)/boost\""
         ])
@@ -637,6 +640,7 @@ class ReactNativePodsUtils
             "ReactCommon",
             "Yoga",
             "boost",
+            "fast_float",
             "fmt",
             "glog",
             "hermes-engine",

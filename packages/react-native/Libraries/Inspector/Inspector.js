@@ -17,6 +17,7 @@ import type {
 } from '../Renderer/shims/ReactNativeTypes';
 import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
 import type {ReactDevToolsAgent} from '../Types/ReactDevToolsTypes';
+
 import SafeAreaView from '../../src/private/components/SafeAreaView_INTERNAL_DO_NOT_USE';
 
 const View = require('../Components/View/View');

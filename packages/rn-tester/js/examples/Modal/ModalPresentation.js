@@ -13,12 +13,13 @@
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import type {Props as ModalProps} from 'react-native/Libraries/Modal/Modal';
 
+import RNTesterButton from '../../components/RNTesterButton';
+import RNTesterText from '../../components/RNTesterText';
+import {RNTesterThemeContext} from '../../components/RNTesterTheme';
 import RNTOption from '../../components/RNTOption';
 import * as React from 'react';
-import {useCallback, useState} from 'react';
+import {useCallback, useContext, useState} from 'react';
 import {Modal, Platform, StyleSheet, Switch, Text, View} from 'react-native';
-
-const RNTesterButton = require('../../components/RNTesterButton');
 
 const animationTypes = ['slide', 'none', 'fade'];
 const presentationStyles = [
@@ -72,6 +73,7 @@ function ModalPresentation() {
   const hardwareAccelerated = props.hardwareAccelerated;
   const statusBarTranslucent = props.statusBarTranslucent;
   const backdropColor = props.backdropColor;
+  const backgroundColor = useContext(RNTesterThemeContext).BackgroundColor;
 
   const [currentOrientation, setCurrentOrientation] = useState('unknown');
 
@@ -84,7 +86,9 @@ function ModalPresentation() {
   const controls = (
     <>
       <View style={styles.inlineBlock}>
-        <Text style={styles.title}>Status Bar Translucent 🟢</Text>
+        <RNTesterText style={styles.title}>
+          Status Bar Translucent 🟢
+        </RNTesterText>
         <Switch
           value={statusBarTranslucent}
           onValueChange={enabled =>
@@ -93,7 +97,9 @@ function ModalPresentation() {
         />
       </View>
       <View style={styles.inlineBlock}>
-        <Text style={styles.title}>Hardware Acceleration 🟢</Text>
+        <RNTesterText style={styles.title}>
+          Hardware Acceleration 🟢
+        </RNTesterText>
         <Switch
           value={hardwareAccelerated}
           onValueChange={enabled =>
@@ -105,7 +111,7 @@ function ModalPresentation() {
         />
       </View>
       <View style={styles.block}>
-        <Text style={styles.title}>Presentation Style ⚫️</Text>
+        <RNTesterText style={styles.title}>Presentation Style ⚫️</RNTesterText>
         <View style={styles.row}>
           {presentationStyles.map(type => (
             <RNTOption
@@ -137,7 +143,7 @@ function ModalPresentation() {
       </View>
       <View style={styles.block}>
         <View style={styles.rowWithSpaceBetween}>
-          <Text style={styles.title}>Transparent</Text>
+          <RNTesterText style={styles.title}>Transparent</RNTesterText>
           <Switch
             value={props.transparent}
             onValueChange={enabled =>
@@ -146,14 +152,16 @@ function ModalPresentation() {
           />
         </View>
         {Platform.OS === 'ios' && presentationStyle !== 'overFullScreen' ? (
-          <Text style={styles.warning}>
+          <RNTesterText style={styles.warning}>
             iOS Modal can only be transparent with 'overFullScreen' Presentation
             Style
-          </Text>
+          </RNTesterText>
         ) : null}
       </View>
       <View style={styles.block}>
-        <Text style={styles.title}>Supported Orientation ⚫️</Text>
+        <RNTesterText style={styles.title}>
+          Supported Orientation ⚫️
+        </RNTesterText>
         <View style={styles.row}>
           {supportedOrientations.map(orientation => (
             <RNTOption
@@ -187,7 +195,7 @@ function ModalPresentation() {
         </View>
       </View>
       <View style={styles.block}>
-        <Text style={styles.title}>Actions</Text>
+        <RNTesterText style={styles.title}>Actions</RNTesterText>
         <View style={styles.row}>
           <RNTOption
             key="onShow"
@@ -218,7 +226,7 @@ function ModalPresentation() {
         </View>
       </View>
       <View style={styles.block}>
-        <Text style={styles.title}>Backdrop Color ⚫️</Text>
+        <RNTesterText style={styles.title}>Backdrop Color ⚫️</RNTesterText>
         <View style={styles.row}>
           {backdropColors.map(type => (
             <RNTOption
@@ -251,7 +259,7 @@ function ModalPresentation() {
         onRequestClose={onRequestClose}
         onOrientationChange={onOrientationChange}>
         <View style={styles.modalContainer}>
-          <View style={styles.modalInnerContainer}>
+          <View style={[styles.modalInnerContainer, {backgroundColor}]}>
             <Text testID="modal_animationType_text">
               This modal was presented with animationType: '
               {props.animationType}'
@@ -270,7 +278,7 @@ function ModalPresentation() {
         </View>
       </Modal>
       <View style={styles.block}>
-        <Text style={styles.title}>Animation Type</Text>
+        <RNTesterText style={styles.title}>Animation Type</RNTesterText>
         <View style={styles.row}>
           {animationTypes.map(type => (
             <RNTOption
@@ -325,7 +333,6 @@ const styles = StyleSheet.create({
   },
   modalInnerContainer: {
     borderRadius: 10,
-    backgroundColor: '#fff',
     padding: 10,
   },
   warning: {

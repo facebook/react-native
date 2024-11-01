@@ -165,6 +165,10 @@ function translateReturnTypeToKind(
       return 'VoidKind';
     case 'StringTypeAnnotation':
       return 'StringKind';
+    case 'StringLiteralTypeAnnotation':
+      return 'StringKind';
+    case 'StringLiteralUnionTypeAnnotation':
+      return 'StringKind';
     case 'BooleanTypeAnnotation':
       return 'BooleanKind';
     case 'EnumDeclaration':
@@ -244,6 +248,10 @@ function translateParamTypeToJniType(
       }
     case 'StringTypeAnnotation':
       return 'Ljava/lang/String;';
+    case 'StringLiteralTypeAnnotation':
+      return 'Ljava/lang/String;';
+    case 'StringLiteralUnionTypeAnnotation':
+      return 'Ljava/lang/String;';
     case 'BooleanTypeAnnotation':
       return !isRequired ? 'Ljava/lang/Boolean;' : 'Z';
     case 'EnumDeclaration':
@@ -319,6 +327,10 @@ function translateReturnTypeToJniType(
     case 'VoidTypeAnnotation':
       return 'V';
     case 'StringTypeAnnotation':
+      return 'Ljava/lang/String;';
+    case 'StringLiteralTypeAnnotation':
+      return 'Ljava/lang/String;';
+    case 'StringLiteralUnionTypeAnnotation':
       return 'Ljava/lang/String;';
     case 'BooleanTypeAnnotation':
       return nullable ? 'Ljava/lang/Boolean;' : 'Z';

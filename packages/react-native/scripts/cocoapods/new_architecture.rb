@@ -32,6 +32,13 @@ class NewArchitectureHelper
                 config.build_settings[cxxBuildsettingsName] = Helpers::Constants::cxx_language_standard
             end
         end
+
+        # Override targets that would set spec.xcconfig to define c++ version
+        installer.aggregate_targets.each do |aggregate_target|
+            aggregate_target.xcconfigs.each do |config_name, config_file|
+                config_file.attributes[cxxBuildsettingsName] = Helpers::Constants::cxx_language_standard
+            end
+        end
     end
 
     def self.computeFlags(is_new_arch_enabled)
@@ -76,6 +83,7 @@ class NewArchitectureHelper
         header_search_paths = ["\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/Headers/Private/Yoga\""]
         if ENV['USE_FRAMEWORKS']
             header_search_paths << "\"$(PODS_ROOT)/DoubleConversion\""
+            header_search_paths << "\"$(PODS_ROOT)/fast_float/include\""
             header_search_paths << "\"$(PODS_ROOT)/fmt/include\""
             ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-graphics", "React_graphics", ["react/renderer/graphics/platform/ios"])
                 .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-Fabric", "React_Fabric", ["react/renderer/components/view/platform/cxx"]))

@@ -11,20 +11,22 @@
 'use strict';
 
 import type {
-  NativeModuleArrayTypeAnnotation,
-  NativeModuleBaseTypeAnnotation,
   BooleanTypeAnnotation,
   DoubleTypeAnnotation,
-  NativeModuleEnumDeclaration,
   FloatTypeAnnotation,
-  NativeModuleGenericObjectTypeAnnotation,
   Int32TypeAnnotation,
+  NativeModuleArrayTypeAnnotation,
+  NativeModuleBaseTypeAnnotation,
+  NativeModuleEnumDeclaration,
+  NativeModuleGenericObjectTypeAnnotation,
   NativeModuleNumberTypeAnnotation,
   NativeModuleObjectTypeAnnotation,
-  StringTypeAnnotation,
   NativeModuleTypeAliasTypeAnnotation,
   Nullable,
   ReservedTypeAnnotation,
+  StringLiteralTypeAnnotation,
+  StringLiteralUnionTypeAnnotation,
+  StringTypeAnnotation,
 } from '../../../CodegenSchema';
 import type {AliasResolver} from '../Utils';
 
@@ -58,6 +60,8 @@ export type StructProperty = $ReadOnly<{
 
 export type StructTypeAnnotation =
   | StringTypeAnnotation
+  | StringLiteralTypeAnnotation
+  | StringLiteralUnionTypeAnnotation
   | NativeModuleNumberTypeAnnotation
   | Int32TypeAnnotation
   | DoubleTypeAnnotation

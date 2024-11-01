@@ -19,7 +19,7 @@ BOOL RCTBorderInsetsAreEqual(UIEdgeInsets borderInsets)
 
 BOOL RCTCornerRadiiAreEqualAndSymmetrical(RCTCornerRadii cornerRadii)
 {
-  return cornerRadii.topLeftHorizontal == cornerRadii.topLeftHorizontal &&
+  return cornerRadii.topLeftHorizontal == cornerRadii.topLeftVertical &&
       cornerRadii.topRightHorizontal == cornerRadii.topRightVertical &&
       cornerRadii.bottomLeftHorizontal == cornerRadii.bottomLeftVertical &&
       cornerRadii.bottomRightHorizontal == cornerRadii.bottomRightVertical &&
@@ -30,9 +30,9 @@ BOOL RCTCornerRadiiAreEqualAndSymmetrical(RCTCornerRadii cornerRadii)
 
 BOOL RCTBorderColorsAreEqual(RCTBorderColors borderColors)
 {
-  return CGColorEqualToColor(borderColors.left, borderColors.right) &&
-      CGColorEqualToColor(borderColors.left, borderColors.top) &&
-      CGColorEqualToColor(borderColors.left, borderColors.bottom);
+  return CGColorEqualToColor(borderColors.left.CGColor, borderColors.right.CGColor) &&
+      CGColorEqualToColor(borderColors.left.CGColor, borderColors.top.CGColor) &&
+      CGColorEqualToColor(borderColors.left.CGColor, borderColors.bottom.CGColor);
 }
 
 RCTCornerInsets RCTGetCornerInsets(RCTCornerRadii cornerRadii, UIEdgeInsets edgeInsets)
@@ -182,9 +182,9 @@ static CGPathRef RCTPathCreateOuterOutline(BOOL drawToEdge, CGRect rect, RCTCorn
 }
 
 static UIGraphicsImageRenderer *
-RCTMakeUIGraphicsImageRenderer(CGSize size, CGColorRef backgroundColor, BOOL hasCornerRadii, BOOL drawToEdge)
+RCTMakeUIGraphicsImageRenderer(CGSize size, UIColor *backgroundColor, BOOL hasCornerRadii, BOOL drawToEdge)
 {
-  const CGFloat alpha = CGColorGetAlpha(backgroundColor);
+  const CGFloat alpha = CGColorGetAlpha(backgroundColor.CGColor);
   const BOOL opaque = (drawToEdge || !hasCornerRadii) && alpha == 1.0;
   UIGraphicsImageRendererFormat *const rendererFormat = [UIGraphicsImageRendererFormat defaultFormat];
   rendererFormat.opaque = opaque;
@@ -197,7 +197,7 @@ static UIImage *RCTGetSolidBorderImage(
     CGSize viewSize,
     UIEdgeInsets borderInsets,
     RCTBorderColors borderColors,
-    CGColorRef backgroundColor,
+    UIColor *backgroundColor,
     BOOL drawToEdge)
 {
   const BOOL hasCornerRadii = RCTCornerRadiiAreAboveThreshold(cornerRadii);
@@ -233,18 +233,16 @@ static UIImage *RCTGetSolidBorderImage(
   UIGraphicsImageRenderer *const imageRenderer =
       RCTMakeUIGraphicsImageRenderer(size, backgroundColor, hasCornerRadii, drawToEdge);
 
-  CGColorRetain(backgroundColor);
   UIImage *image = [imageRenderer imageWithActions:^(UIGraphicsImageRendererContext *_Nonnull rendererContext) {
     const CGContextRef context = rendererContext.CGContext;
     const CGRect rect = {.size = size};
     CGPathRef path = RCTPathCreateOuterOutline(drawToEdge, rect, cornerRadii);
 
     if (backgroundColor) {
-      CGContextSetFillColorWithColor(context, backgroundColor);
+      CGContextSetFillColorWithColor(context, backgroundColor.CGColor);
       CGContextAddPath(context, path);
       CGContextFillPath(context);
     }
-    CGColorRelease(backgroundColor);
 
     CGContextAddPath(context, path);
     CGPathRelease(path);
@@ -256,7 +254,7 @@ static UIImage *RCTGetSolidBorderImage(
 
     BOOL hasEqualColors = RCTBorderColorsAreEqual(borderColors);
     if ((drawToEdge || !hasCornerRadii) && hasEqualColors) {
-      CGContextSetFillColorWithColor(context, borderColors.left);
+      CGContextSetFillColorWithColor(context, borderColors.left.CGColor);
       CGContextAddRect(context, rect);
       CGContextAddPath(context, insetPath);
       CGContextEOFillPath(context);
@@ -321,7 +319,7 @@ static UIImage *RCTGetSolidBorderImage(
         }
       }
 
-      CGColorRef currentColor = NULL;
+      UIColor *currentColor = nil;
 
       // RIGHT
       if (borderInsets.right > 0) {
@@ -345,8 +343,8 @@ static UIImage *RCTGetSolidBorderImage(
             (CGPoint){size.width, size.height},
         };
 
-        if (!CGColorEqualToColor(currentColor, borderColors.bottom)) {
-          CGContextSetFillColorWithColor(context, currentColor);
+        if (!CGColorEqualToColor(currentColor.CGColor, borderColors.bottom.CGColor)) {
+          CGContextSetFillColorWithColor(context, currentColor.CGColor);
           CGContextFillPath(context);
           currentColor = borderColors.bottom;
         }
@@ -362,8 +360,8 @@ static UIImage *RCTGetSolidBorderImage(
             (CGPoint){0, size.height},
         };
 
-        if (!CGColorEqualToColor(currentColor, borderColors.left)) {
-          CGContextSetFillColorWithColor(context, currentColor);
+        if (!CGColorEqualToColor(currentColor.CGColor, borderColors.left.CGColor)) {
+          CGContextSetFillColorWithColor(context, currentColor.CGColor);
           CGContextFillPath(context);
           currentColor = borderColors.left;
         }
@@ -379,15 +377,15 @@ static UIImage *RCTGetSolidBorderImage(
             (CGPoint){size.width, 0},
         };
 
-        if (!CGColorEqualToColor(currentColor, borderColors.top)) {
-          CGContextSetFillColorWithColor(context, currentColor);
+        if (!CGColorEqualToColor(currentColor.CGColor, borderColors.top.CGColor)) {
+          CGContextSetFillColorWithColor(context, currentColor.CGColor);
           CGContextFillPath(context);
           currentColor = borderColors.top;
         }
         CGContextAddLines(context, points, sizeof(points) / sizeof(*points));
       }
 
-      CGContextSetFillColorWithColor(context, currentColor);
+      CGContextSetFillColorWithColor(context, currentColor.CGColor);
       CGContextFillPath(context);
     }
 
@@ -467,7 +465,7 @@ static UIImage *RCTGetDashedOrDottedBorderImage(
     CGSize viewSize,
     UIEdgeInsets borderInsets,
     RCTBorderColors borderColors,
-    CGColorRef backgroundColor,
+    UIColor *backgroundColor,
     BOOL drawToEdge)
 {
   NSCParameterAssert(borderStyle == RCTBorderStyleDashed || borderStyle == RCTBorderStyleDotted);
@@ -494,7 +492,7 @@ static UIImage *RCTGetDashedOrDottedBorderImage(
       CGContextAddPath(context, outerPath);
       CGPathRelease(outerPath);
 
-      CGContextSetFillColorWithColor(context, backgroundColor);
+      CGContextSetFillColorWithColor(context, backgroundColor.CGColor);
       CGContextFillPath(context);
     }
 
@@ -513,7 +511,7 @@ static UIImage *RCTGetDashedOrDottedBorderImage(
     CGContextSetStrokeColorWithColor(context, [UIColor yellowColor].CGColor);
 
     CGContextAddPath(context, path);
-    CGContextSetStrokeColorWithColor(context, borderColors.top);
+    CGContextSetStrokeColorWithColor(context, borderColors.top.CGColor);
     CGContextStrokePath(context);
 
     CGPathRelease(path);
@@ -526,7 +524,7 @@ UIImage *RCTGetBorderImage(
     RCTCornerRadii cornerRadii,
     UIEdgeInsets borderInsets,
     RCTBorderColors borderColors,
-    CGColorRef backgroundColor,
+    UIColor *backgroundColor,
     BOOL drawToEdge)
 {
   switch (borderStyle) {
