@@ -1295,7 +1295,7 @@ inline void fromRawValue(
         }
       }
 
-      backgroundImage.push_back(BackgroundImage{BackgroundImageType::LinearGradient, linearGradient});
+      backgroundImage.push_back(linearGradient);
     }
   }
 

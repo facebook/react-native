@@ -10,6 +10,7 @@
 #import <CoreGraphics/CoreGraphics.h>
 #import <QuartzCore/QuartzCore.h>
 #import <objc/runtime.h>
+#import <ranges>
 
 #import <React/RCTAssert.h>
 #import <React/RCTBorderDrawing.h>
@@ -1005,10 +1006,9 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
   [self clearExistingBackgroundImageLayers];
   if (!_props->backgroundImage.empty()) {
     // iterate in reverse to match CSS specification
-    for (auto it = _props->backgroundImage.rbegin(); it != _props->backgroundImage.rend(); ++it) {
-      const auto& backgroundImage = *it;
-      if (backgroundImage.type == BackgroundImageType::LinearGradient) {
-        const auto& linearGradient = std::get<LinearGradient>(backgroundImage.value);
+    for (const auto& backgroundImage : std::ranges::reverse_view(_props->backgroundImage)) {
+      if (std::holds_alternative<LinearGradient>(backgroundImage)) {
+        const auto& linearGradient = std::get<LinearGradient>(backgroundImage);
         CALayer *backgroundImageLayer = [RCTLinearGradient gradientLayerWithSize:self.layer.bounds.size gradient:linearGradient];
         backgroundImageLayer.frame = layer.bounds;
         backgroundImageLayer.masksToBounds = YES;

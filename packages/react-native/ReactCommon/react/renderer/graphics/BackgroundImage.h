@@ -13,16 +13,6 @@
 
 namespace facebook::react {
 
-enum class BackgroundImageType {
-  LinearGradient,
-};
-
-struct BackgroundImage {
-  BackgroundImageType type;
-  std::variant<LinearGradient> value;
-  bool operator==(const BackgroundImage& other) const {
-    return type == other.type && value == other.value;
-  }
-};
+using BackgroundImage = std::variant<LinearGradient>;
 
 }; // namespace facebook::react
