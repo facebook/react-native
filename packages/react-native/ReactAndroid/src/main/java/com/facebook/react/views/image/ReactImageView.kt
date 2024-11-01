@@ -25,8 +25,8 @@ import android.net.Uri
 import com.facebook.common.executors.CallerThreadExecutor
 import com.facebook.common.references.CloseableReference
 import com.facebook.common.util.UriUtil
-import com.facebook.datasource.DataSource
 import com.facebook.datasource.BaseDataSubscriber
+import com.facebook.datasource.DataSource
 import com.facebook.datasource.DataSubscriber
 import com.facebook.drawee.backends.pipeline.Fresco
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder
@@ -439,6 +439,13 @@ public class ReactImageView(
 
     val resizeOptions = if (doResize) resizeOptions else null
 
+    val imageRequestBuilder =
+      ImageRequestBuilder.newBuilderWithSource(uri)
+        .setPostprocessor(postprocessor)
+        .setResizeOptions(resizeOptions)
+        .setAutoRotateEnabled(true)
+        .setProgressiveRenderingEnabled(progressiveRenderingEnabled)
+
     if (cacheControl == ImageCacheControl.RELOAD) {
       val imagePipeline = Fresco.getImagePipeline()
       imagePipeline.evictFromCache(uri)
@@ -446,43 +453,62 @@ public class ReactImageView(
 
     if (cacheControl == ImageCacheControl.ONLY_IF_CACHED) {
       val imagePipeline = Fresco.getImagePipeline()
-      val dataSource = imagePipeline.isInDiskCache(uri)
+      val imageRequest = imageRequestBuilder.build()
+      val dataSource = imagePipeline.isInDiskCache(imageRequest)
+      val inBitmapCache = imagePipeline.isInBitmapMemoryCache(imageRequest)
+      val inEncodedMemoryCache = imagePipeline.isInEncodedMemoryCache(imageRequest)
 
       dataSource.subscribe(object : BaseDataSubscriber<Boolean>() {
         override fun onNewResultImpl(dataSource: DataSource<Boolean>) {
           if (!dataSource.isFinished()) return
 
-          val isInCache: Boolean = dataSource.getResult() ?: false
+          val isInDiskCache: Boolean = dataSource.getResult() ?: false
+          val isInCache: Boolean = inBitmapCache || inEncodedMemoryCache || isInDiskCache
 
           if (isInCache) {
-            setupImageRequest(uri, cacheControl, postprocessor, resizeOptions)
+            setupImageRequest(imageRequestBuilder, uri, cacheControl, postprocessor, resizeOptions)
+          } else {
+            val eventDispatcher =
+              UIManagerHelper.getEventDispatcherForReactTag(context as ReactContext, id)
+            eventDispatcher?.dispatchEvent(
+              createErrorEvent(
+                UIManagerHelper.getSurfaceId(this@ReactImageView),
+                id,
+                Exception("Image not found in cache for uri $uri")
+              )
+            )
           }
 
           dataSource.close()
         }
 
-        override fun onFailureImpl(dataSource: DataSource<Boolean>) {}
+        override fun onFailureImpl(dataSource: DataSource<Boolean>) {
+          val failureCause = dataSource.failureCause
+            ?: Throwable("Unknown error occurred while checking if image is in cache for uri $uri")
+
+          val eventDispatcher =
+            UIManagerHelper.getEventDispatcherForReactTag(context as ReactContext, id)
+          eventDispatcher?.dispatchEvent(
+            createErrorEvent(
+              UIManagerHelper.getSurfaceId(this@ReactImageView), id, failureCause
+            )
+          )
+        }
       }, CallerThreadExecutor.getInstance())
 
       return
     }
 
-    setupImageRequest(uri, cacheControl, postprocessor, resizeOptions)
+    setupImageRequest(imageRequestBuilder, uri, cacheControl, postprocessor, resizeOptions)
   }
 
   private fun setupImageRequest(
+    imageRequestBuilder: ImageRequestBuilder,
     uri: Uri,
     cacheControl: ImageCacheControl,
     postprocessor: Postprocessor?,
     resizeOptions: ResizeOptions?
   ) {
-    val imageRequestBuilder =
-        ImageRequestBuilder.newBuilderWithSource(uri)
-            .setPostprocessor(postprocessor)
-            .setResizeOptions(resizeOptions)
-            .setAutoRotateEnabled(true)
-            .setProgressiveRenderingEnabled(progressiveRenderingEnabled)
-
     if (resizeMethod == ImageResizeMethod.NONE) {
       imageRequestBuilder.setDownsampleOverride(DownsampleMode.NEVER)
     }
