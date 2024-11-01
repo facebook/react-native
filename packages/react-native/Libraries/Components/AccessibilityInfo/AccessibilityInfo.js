@@ -55,7 +55,7 @@ const EventNames: Map<
       ['highTextContrastChanged', 'highTextContrastDidChange'],
       ['screenReaderChanged', 'touchExplorationDidChange'],
       ['accessibilityServiceChanged', 'accessibilityServiceDidChange'],
-      ['invertColorsChanged', 'invertColorDidChanged'],
+      ['invertColorsChanged', 'invertColorDidChange'],
     ])
   : new Map([
       ['announcementFinished', 'announcementFinished'],
