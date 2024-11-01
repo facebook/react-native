@@ -39,7 +39,7 @@ module.exports = {
   overrides: [
     {
       files: ['*.js'],
-      parser: 'hermes-eslint',
+      parser: '@babel/eslint-parser',
       plugins: ['ft-flow'],
       rules: {
         // Flow Plugin
@@ -51,7 +51,7 @@ module.exports = {
     },
     {
       files: ['*.jsx'],
-      parser: 'hermes-eslint',
+      parser: '@babel/eslint-parser',
     },
     {
       files: ['*.ts', '*.tsx'],
