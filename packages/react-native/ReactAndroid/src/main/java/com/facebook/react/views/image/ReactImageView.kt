@@ -456,12 +456,30 @@ public class ReactImageView(
 
           if (isInCache) {
             setupImageRequest(uri, cacheControl, postprocessor, resizeOptions)
+          } else {
+            val eventDispatcher =
+              UIManagerHelper.getEventDispatcherForReactTag(context as ReactContext, id)
+            eventDispatcher?.dispatchEvent(
+              createErrorEvent(
+                UIManagerHelper.getSurfaceId(this@ReactImageView),
+                id,
+                Exception("Image not found in cache for uri $uri")
+              )
+            )
           }
 
           dataSource.close()
         }
 
-        override fun onFailureImpl(dataSource: DataSource<Boolean>) {}
+        override fun onFailureImpl(dataSource: DataSource<Boolean>) {
+          val failureCause = dataSource.failureCause ?: Throwable("Unknown error occurred while checking if image is in cache")
+
+          val eventDispatcher =
+              UIManagerHelper.getEventDispatcherForReactTag(context as ReactContext, id)
+          eventDispatcher?.dispatchEvent(
+              createErrorEvent(
+                  UIManagerHelper.getSurfaceId(this@ReactImageView), id, failureCause))
+        }
       }, CallerThreadExecutor.getInstance())
 
       return

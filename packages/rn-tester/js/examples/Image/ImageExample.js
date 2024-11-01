@@ -670,6 +670,7 @@ function CacheControlAndroidExample(): React.Node {
             }}
             style={styles.base}
             key={reload}
+            onError={e => console.log(e.nativeEvent.error)}
           />
         </View>
       </View>
