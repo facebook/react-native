@@ -10,26 +10,21 @@
 namespace facebook::react {
 
 void ScrollViewEventEmitter::onScroll(const ScrollEvent& scrollEvent) const {
-  dispatchUniqueEvent("scroll", [scrollEvent](jsi::Runtime& runtime) {
-    return scrollEvent.asJSIValue(runtime);
-  });
+  dispatchUniqueEvent("scroll", std::make_shared<ScrollEvent>(scrollEvent));
 }
 
 void ScrollViewEventEmitter::experimental_onDiscreteScroll(
     const ScrollEvent& scrollEvent) const {
   dispatchEvent(
       "scroll",
-      [scrollEvent](jsi::Runtime& runtime) {
-        return scrollEvent.asJSIValue(runtime);
-      },
+      std::make_shared<ScrollEvent>(scrollEvent),
       RawEvent::Category::Discrete);
 }
 
 void ScrollViewEventEmitter::onScrollToTop(
     const ScrollEvent& scrollEvent) const {
-  dispatchUniqueEvent("scrollToTop", [scrollEvent](jsi::Runtime& runtime) {
-    return scrollEvent.asJSIValue(runtime);
-  });
+  dispatchUniqueEvent(
+      "scrollToTop", std::make_shared<ScrollEvent>(scrollEvent));
 }
 
 void ScrollViewEventEmitter::onScrollBeginDrag(
@@ -55,9 +50,7 @@ void ScrollViewEventEmitter::onMomentumScrollEnd(
 void ScrollViewEventEmitter::dispatchScrollViewEvent(
     std::string name,
     const ScrollEvent& scrollEvent) const {
-  dispatchEvent(std::move(name), [scrollEvent](jsi::Runtime& runtime) {
-    return scrollEvent.asJSIValue(runtime);
-  });
+  dispatchEvent(std::move(name), std::make_shared<ScrollEvent>(scrollEvent));
 }
 
 } // namespace facebook::react
