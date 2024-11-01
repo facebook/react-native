@@ -540,7 +540,7 @@ static float computeFlexBasisForChildren(
     const uint32_t generationCount) {
   float totalOuterFlexBasis = 0.0f;
   YGNodeRef singleFlexChild = nullptr;
-  const auto& children = node->getLayoutChildren();
+  auto children = node->getLayoutChildren();
   SizingMode sizingModeMainDim =
       isRow(mainAxis) ? widthSizingMode : heightSizingMode;
   // If there is only one child with flexGrow + flexShrink it means we can set
