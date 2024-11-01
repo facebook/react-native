@@ -2,10 +2,17 @@ parameters:
   build_type: ''
 
 steps:
-  - task: CmdLine@2
-    displayName: yarn install (local react-native-macos)
-    inputs:
-      script: yarn install --immutable
+  - script: |
+      yarn install
+    displayName: yarn install
+
+  # `Npm publish` will call `packages/react-native/scripts/prepack.js`, which will build codegen if needed
+  # Let's just do it first anyway.
+  - script: |
+      set -eox pipefail
+      cd packages/react-native-codegen
+      yarn build
+    displayName: yarn build
 
   # Extra steps needed for *-stable releases
   - ${{ if eq( parameters['build_type'], 'release') }}:
@@ -30,14 +37,9 @@ steps:
         script: |
           set -eox pipefail
           node scripts/releases/set-version.js $RNM_PACKAGE_VERSION
+          # A followup mutable yarn install is needed to update the lock since version numbers have changes
+          yarn install --mode=update-lockfile
+          # `update-lockfile` skips the linking step, so we need to run `yarn install` again
+          yarn install
 
-  # Note: This won't actually publish to NPM as we've commented that bit out.
-  # We do that as a separate step in `.ado/publish.yml`. 
-  - task: CmdLine@2
-    displayName: Run publish-npm.js
-    inputs:
-      script: |
-        node ./scripts/releases-ci/publish-npm.js -t ${{ parameters.build_type }}
-    env:
-      # Map the corresponding CircleCI variable since `publish-npm.js` depends on it.
-      CIRCLE_TAG: $(RNM_PACKAGE_VERSION)
+
