@@ -1,6 +1,6 @@
 {
   "name": "react-native-macos",
-  "version": "0.76.0-ready",
+  "version": "0.76.0",
   "description": "React Native for macOS",
   "license": "MIT",
   "repository": {
