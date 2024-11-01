@@ -1,3 +1,4 @@
+// @lint-ignore-every LICENSELINT
 /*
  * Copyright (c) 2015 Daniel Kirchner
  *
