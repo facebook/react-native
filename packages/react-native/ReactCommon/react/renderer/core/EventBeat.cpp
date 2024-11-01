@@ -7,6 +7,7 @@
 
 #include "EventBeat.h"
 
+#include <react/debug/react_native_assert.h>
 #include <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #include <utility>
 
@@ -18,6 +19,9 @@ EventBeat::EventBeat(
     : ownerBox_(std::move(ownerBox)), runtimeScheduler_(runtimeScheduler) {}
 
 void EventBeat::request() const {
+  react_native_assert(
+      beatCallback_ &&
+      "Unexpected state: EventBeat::setBeatCallback was not called before EventBeat::request.");
   isRequested_ = true;
 }
 
