@@ -117,7 +117,7 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
     get() {
       try {
         return Settings.Secure.getInt(
-            context.contentResolver,
+            contentResolver,
             Settings.Secure.ACCESSIBILITY_DISPLAY_INVERSION_ENABLED
         ) == 1
       } catch (e: Settings.SettingNotFoundException) {
