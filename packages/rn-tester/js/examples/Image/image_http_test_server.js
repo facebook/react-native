@@ -11,6 +11,8 @@
 
 'use strict';
 
+/* eslint-env node */
+
 const connect = require('connect');
 const fs = require('fs');
 const http = require('http');
@@ -22,7 +24,7 @@ const pokeImagePath = path.join(__dirname, '../../assets/poke.png');
 const partyImagePath = path.join(__dirname, '../../assets/party.png');
 const defaultImagePath = path.join(__dirname, '../../assets/uie_thumb_big.png');
 
-function serveLocalImage(imagePath, res) {
+function serveLocalImage(imagePath: string, res: http.ServerResponse) {
   fs.readFile(imagePath, (err, data) => {
     if (err) {
       console.log('Failed to load local image:', err);

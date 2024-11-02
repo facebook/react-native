@@ -672,18 +672,20 @@ function CacheControlAndroidExample(): React.Node {
   );
 }
 
-const HeadersExample = () => {
+type HeadersType = {[key: string]: string} | void;
+
+function HeadersExample() {
   const imageTypes = {
     poke: 'poke',
     party: 'party',
   };
 
-  const [headers, setHeaders] = React.useState(undefined);
+  const [headers, setHeaders] = React.useState<HeadersType>(undefined);
   const [reload, setReload] = React.useState(0);
 
-  const setCustomHeader = imageType => {
+  const setCustomHeader = (imageType: ?string) => {
     setHeaders(
-      imageType
+      imageType !== undefined && imageType !== null
         ? {
             'Custom-Header': imageType,
           }
@@ -724,7 +726,7 @@ const HeadersExample = () => {
       </View>
     </>
   );
-};
+}
 
 const fullImage: ImageSource = {
   uri: IMAGE2,
