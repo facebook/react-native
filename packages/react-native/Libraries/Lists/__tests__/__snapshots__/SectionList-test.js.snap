@@ -32,6 +32,7 @@ exports[`SectionList rendering empty section headers is fine 1`] = `
   stickyHeaderIndices={
     Array [
       0,
+      3,
     ]
   }
 >
@@ -93,6 +94,7 @@ exports[`SectionList renders a footer when there is no data 1`] = `
   stickyHeaderIndices={
     Array [
       0,
+      1,
     ]
   }
 >
@@ -144,6 +146,7 @@ exports[`SectionList renders a footer when there is no data and no header 1`] = 
   stickyHeaderIndices={
     Array [
       0,
+      1,
     ]
   }
 >
@@ -235,8 +238,11 @@ exports[`SectionList renders all the bells and whistles 1`] = `
   stickyHeaderIndices={
     Array [
       1,
+      4,
       5,
+      8,
       9,
+      12,
     ]
   }
 >
@@ -414,5 +420,159 @@ exports[`SectionList renders empty list 1`] = `
   stickyHeaderIndices={Array []}
 >
   <View />
+</RCTScrollView>
+`;
+
+exports[`SectionList renders footers 1`] = `
+<RCTScrollView
+  data={
+    Array [
+      Object {
+        "data": Array [
+          Object {
+            "key": "i1s1",
+          },
+          Object {
+            "key": "i2s1",
+          },
+        ],
+        "key": "s1",
+      },
+      Object {
+        "data": Array [
+          Object {
+            "key": "i1s2",
+          },
+          Object {
+            "key": "i2s2",
+          },
+          Object {
+            "key": "i3s2",
+          },
+        ],
+        "key": "s2",
+      },
+      Object {
+        "data": Array [
+          Object {
+            "key": "i1s3",
+          },
+          Object {
+            "key": "i2s3",
+          },
+        ],
+        "key": "s3",
+      },
+    ]
+  }
+  getItem={[Function]}
+  getItemCount={[Function]}
+  keyExtractor={[Function]}
+  onContentSizeChange={[Function]}
+  onLayout={[Function]}
+  onMomentumScrollBegin={[Function]}
+  onMomentumScrollEnd={[Function]}
+  onScroll={[Function]}
+  onScrollBeginDrag={[Function]}
+  onScrollEndDrag={[Function]}
+  renderItem={[Function]}
+  scrollEventThrottle={0.0001}
+  stickyHeaderIndices={
+    Array [
+      0,
+      3,
+      4,
+      8,
+      9,
+    ]
+  }
+>
+  <View>
+    <View
+      onFocusCapture={[Function]}
+      onLayout={[Function]}
+      style={null}
+    />
+    <View
+      onFocusCapture={[Function]}
+      onLayout={[Function]}
+      style={null}
+    >
+      <item
+        v="i1s1"
+      />
+    </View>
+    <View
+      onFocusCapture={[Function]}
+      onLayout={[Function]}
+      style={null}
+    >
+      <item
+        v="i2s1"
+      />
+    </View>
+    <View
+      onFocusCapture={[Function]}
+      onLayout={[Function]}
+      style={null}
+    >
+      <sectionFooter
+        v="section:s1"
+      />
+    </View>
+    <View
+      onFocusCapture={[Function]}
+      onLayout={[Function]}
+      style={null}
+    />
+    <View
+      onFocusCapture={[Function]}
+      onLayout={[Function]}
+      style={null}
+    >
+      <item
+        v="i1s2"
+      />
+    </View>
+    <View
+      onFocusCapture={[Function]}
+      onLayout={[Function]}
+      style={null}
+    >
+      <item
+        v="i2s2"
+      />
+    </View>
+    <View
+      onFocusCapture={[Function]}
+      onLayout={[Function]}
+      style={null}
+    >
+      <item
+        v="i3s2"
+      />
+    </View>
+    <View
+      onFocusCapture={[Function]}
+      onLayout={[Function]}
+      style={null}
+    >
+      <sectionFooter
+        v="section:s2"
+      />
+    </View>
+    <View
+      onFocusCapture={[Function]}
+      onLayout={[Function]}
+      style={null}
+    />
+    <View
+      style={
+        Object {
+          "height": 0,
+        }
+      }
+    />
+  </View>
 </RCTScrollView>
 `;

@@ -75,6 +75,29 @@ describe('SectionList', () => {
     );
     expect(component).toMatchSnapshot();
   });
+  it('renders footers', async () => {
+    const component = await create(
+      <SectionList
+        sections={[
+          {
+            key: 's1',
+            data: [{key: 'i1s1'}, {key: 'i2s1'}],
+          },
+          {
+            key: 's2',
+            data: [{key: 'i1s2'}, {key: 'i2s2'}, {key: 'i3s2'}],
+          },
+          {
+            key: 's3',
+            data: [{key: 'i1s3'}, {key: 'i2s3'}],
+          },
+        ]}
+        renderItem={({item}) => <item v={item.key} />}
+        renderSectionFooter={props => <sectionFooter v={propStr(props)} />}
+      />,
+    );
+    expect(component).toMatchSnapshot();
+  });
   it('renders a footer when there is no data', async () => {
     const component = await create(
       <SectionList
