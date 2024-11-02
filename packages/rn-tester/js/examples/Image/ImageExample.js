@@ -672,6 +672,60 @@ function CacheControlAndroidExample(): React.Node {
   );
 }
 
+const HeadersExample = () => {
+  const imageTypes = {
+    poke: 'poke',
+    party: 'party',
+  };
+
+  const [headers, setHeaders] = React.useState(undefined);
+  const [reload, setReload] = React.useState(0);
+
+  const setCustomHeader = imageType => {
+    setHeaders(
+      imageType
+        ? {
+            'Custom-Header': imageType,
+          }
+        : undefined,
+    );
+
+    setReload(prevReload => prevReload + 1);
+  };
+
+  return (
+    <>
+      <View style={{flexDirection: 'row', alignItems: 'center'}}>
+        <Image
+          style={styles.base}
+          source={{
+            uri: 'http://localhost:5556',
+            headers,
+            cache: 'reload',
+          }}
+          key={reload}
+        />
+
+        <RNTesterText style={styles.leftMargin}>
+          Headers: {headers ? JSON.stringify(headers) : 'empty'}
+        </RNTesterText>
+      </View>
+
+      <View style={styles.headersButtonsContainer}>
+        <RNTesterButton onPress={() => setCustomHeader(imageTypes.poke)}>
+          Poke Header
+        </RNTesterButton>
+        <RNTesterButton onPress={() => setCustomHeader(imageTypes.party)}>
+          Party Header
+        </RNTesterButton>
+        <RNTesterButton onPress={() => setCustomHeader(undefined)}>
+          Clear Headers
+        </RNTesterButton>
+      </View>
+    </>
+  );
+};
+
 const fullImage: ImageSource = {
   uri: IMAGE2,
 };
@@ -912,6 +966,12 @@ const styles = StyleSheet.create({
   cachePolicyAndroidButtonContainer: {
     flex: 1,
     alignItems: 'center',
+    marginTop: 10,
+  },
+  headersButtonsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     marginTop: 10,
   },
 });
@@ -1748,5 +1808,14 @@ exports.examples = [
       );
     },
     platform: 'android',
+  },
+  {
+    title: 'Source Headers',
+    description:
+      ('Demonstrating an example of loading an image with custom headers.' +
+        'Start the test server with `yarn start:image-server`': string),
+    render: function (): React.Node {
+      return <HeadersExample />;
+    },
   },
 ];

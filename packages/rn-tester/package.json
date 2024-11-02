@@ -24,7 +24,8 @@
     "e2e-build-android": "../../gradlew :packages:rn-tester:android:app:installHermesRelease -PreactNativeArchitectures=arm64-v8a",
     "e2e-build-ios": "./scripts/maestro-build-ios.sh",
     "e2e-test-android": "maestro test .maestro/ -e APP_ID=com.facebook.react.uiapp",
-    "e2e-test-ios": "./scripts/maestro-test-ios.sh"
+    "e2e-test-ios": "./scripts/maestro-test-ios.sh",
+    "start:image-server": "node ./js/examples/Image/image_http_test_server.js"
   },
   "dependencies": {
     "@react-native/oss-library-example": "0.77.0-main",
