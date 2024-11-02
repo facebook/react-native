@@ -17,8 +17,8 @@ using namespace facebook::react;
                           gradient:(const LinearGradient&) gradient {
   
   UIGraphicsImageRenderer *renderer = [[UIGraphicsImageRenderer alloc] initWithSize:size];
-  auto direction = gradient.direction;
-  auto colorStops = gradient.colorStops;
+  const auto& direction = gradient.direction;
+  const auto& colorStops = gradient.colorStops;
   
   UIImage *gradientImage = [renderer imageWithActions:^(UIGraphicsImageRendererContext * _Nonnull rendererContext) {
     CGContextRef context = rendererContext.CGContext;
@@ -27,25 +27,23 @@ using namespace facebook::react;
     
     for (size_t i = 0; i < colorStops.size(); ++i) {
       const auto &colorStop = colorStops[i];
-      UIColor *color = RCTUIColorFromSharedColor(colorStop.color);
-      [colors addObject:(id)color.CGColor];
+      CGColorRef cgColor = RCTCreateCGColorRefFromSharedColor(colorStop.color);
+      [colors addObject: (__bridge id)cgColor];
       locations[i] = colorStop.position;
     }
     
-    auto colorSpace = getDefaultColorSpace() == ColorSpace::sRGB ? CGColorSpaceCreateDeviceRGB() : CGColorSpaceCreateWithName(kCGColorSpaceDisplayP3);
-    
-    CGGradientRef cgGradient = CGGradientCreateWithColors(colorSpace, (__bridge CFArrayRef)colors, locations);
+    CGGradientRef cgGradient = CGGradientCreateWithColors(NULL, (__bridge CFArrayRef)colors, locations);
     
     CGPoint startPoint;
     CGPoint endPoint;
     
     if (direction.type == GradientDirectionType::Angle) {
       CGFloat angle = std::get<Float>(direction.value);
-      setPointsFromAngle(angle, size, &startPoint, &endPoint);
+      std::tie(startPoint, endPoint) = getPointsFromAngle(angle, size);
     } else if (direction.type == GradientDirectionType::Keyword) {
-      NSString *keyword = [NSString stringWithUTF8String:std::get<std::string>(direction.value).c_str()];
+      auto keyword = std::get<GradientKeyword>(direction.value);
       CGFloat angle = getAngleForKeyword(keyword, size);
-      setPointsFromAngle(angle, size, &startPoint, &endPoint);
+      std::tie(startPoint, endPoint) = getPointsFromAngle(angle, size);
     } else {
       // Default to top-to-bottom gradient
       startPoint = CGPointMake(0.0, 0.0);
@@ -54,7 +52,9 @@ using namespace facebook::react;
     
     CGContextDrawLinearGradient(context, cgGradient, startPoint, endPoint, 0);
     
-    CGColorSpaceRelease(colorSpace);
+    for (id color in colors) {
+      CGColorRelease((__bridge CGColorRef)color);
+    }
     CGGradientRelease(cgGradient);
   }];
   
@@ -67,31 +67,23 @@ using namespace facebook::react;
 
 // Spec: https://www.w3.org/TR/css-images-3/#linear-gradient-syntax
 // Reference: https://github.com/chromium/chromium/blob/d32abbe13f5d52be7127fe25d5b778498165fab8/third_party/blink/renderer/core/css/css_gradient_value.cc#L1057
-static void setPointsFromAngle(CGFloat angle, CGSize size, CGPoint *startPoint, CGPoint *endPoint) {
+static std::pair<CGPoint, CGPoint> getPointsFromAngle(CGFloat angle, CGSize size) {
   angle = fmod(angle, 360.0);
   if (angle < 0) {
     angle += 360.0;
   }
   
   if (angle == 0.0) {
-    *startPoint = CGPointMake(0, size.height);
-    *endPoint = CGPointMake(0, 0);
-    return;
+    return {CGPointMake(0, size.height), CGPointMake(0, 0)};
   }
   if (angle == 90.0) {
-    *startPoint = CGPointMake(0, 0);
-    *endPoint = CGPointMake(size.width, 0);
-    return;
+    return {CGPointMake(0, 0), CGPointMake(size.width, 0)};
   }
   if (angle == 180.0) {
-    *startPoint = CGPointMake(0, 0);
-    *endPoint = CGPointMake(0, size.height);
-    return;
+    return {CGPointMake(0, 0), CGPointMake(0, size.height)};
   }
   if (angle == 270.0) {
-    *startPoint = CGPointMake(size.width, 0);
-    *endPoint = CGPointMake(0, 0);
-    return;
+    return {CGPointMake(size.width, 0), CGPointMake(0, 0)};
   }
   
   CGFloat radians = (90 - angle) * M_PI / 180.0;
@@ -115,29 +107,30 @@ static void setPointsFromAngle(CGFloat angle, CGSize size, CGPoint *startPoint, 
   CGFloat c = endCorner.y - perpendicularSlope * endCorner.x;
   CGFloat endX = c / (slope - perpendicularSlope);
   CGFloat endY = perpendicularSlope * endX + c;
-  
-  *endPoint = CGPointMake(halfWidth + endX, halfHeight - endY);
-  *startPoint = CGPointMake(halfWidth - endX, halfHeight + endY);
+
+  return {
+    CGPointMake(halfWidth - endX, halfHeight + endY),
+    CGPointMake(halfWidth + endX, halfHeight - endY)
+  };
 }
 
 // Spec: https://www.w3.org/TR/css-images-3/#linear-gradient-syntax
 // Refer `using keywords` section
-static CGFloat getAngleForKeyword(NSString *keyword, CGSize size) {
-  if ([keyword isEqualToString:@"to top right"]) {
-    CGFloat angleDeg = atan(size.width / size.height) * 180.0 / M_PI;
-    return 90.0 - angleDeg;
+static CGFloat getAngleForKeyword(GradientKeyword keyword, CGSize size) {
+  switch (keyword) {
+    case GradientKeyword::ToTopRight: {
+      CGFloat angleDeg = atan(size.width / size.height) * 180.0 / M_PI;
+      return 90.0 - angleDeg;
+    }
+    case GradientKeyword::ToBottomRight:
+      return atan(size.width / size.height) * 180.0 / M_PI + 90.0;
+    case GradientKeyword::ToTopLeft:
+      return atan(size.width / size.height) * 180.0 / M_PI + 270.0;
+    case GradientKeyword::ToBottomLeft:
+      return atan(size.height / size.width) * 180.0 / M_PI + 180.0;
+    default:
+      return 180.0;
   }
-  if ([keyword isEqualToString:@"to bottom right"]) {
-    return atan(size.width / size.height) * 180.0 / M_PI + 90.0;
-  }
-  if ([keyword isEqualToString:@"to top left"]) {
-    return atan(size.width / size.height) * 180.0 / M_PI + 270.0;
-  }
-  if ([keyword isEqualToString:@"to bottom left"]) {
-    return atan(size.height / size.width) * 180.0 / M_PI + 180.0;
-  }
-  
-  return 180.0;
 }
 
 

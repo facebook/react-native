@@ -19,9 +19,16 @@ enum class GradientDirectionType {
   Keyword
 };
 
+enum class GradientKeyword {
+  ToTopRight,
+  ToBottomRight,
+  ToTopLeft,
+  ToBottomLeft,
+};
+
 struct GradientDirection {
   GradientDirectionType type;
-  std::variant<Float, std::string> value;
+  std::variant<Float, GradientKeyword> value;
 
   bool operator==(const GradientDirection& other) const {
     return type == other.type && value == other.value;
@@ -31,7 +38,7 @@ struct GradientDirection {
 struct ColorStop {
   bool operator==(const ColorStop& other) const = default;
   SharedColor color;
-  Float position;
+  Float position = 0.0f;
 };
 
 struct LinearGradient {
@@ -42,5 +49,13 @@ struct LinearGradient {
     return direction == other.direction && colorStops == other.colorStops;
   }
 };
+
+inline GradientKeyword parseGradientKeyword(const std::string& keyword) {
+  if (keyword == "to top right") return GradientKeyword::ToTopRight;
+  if (keyword == "to bottom right") return GradientKeyword::ToBottomRight;
+  if (keyword == "to top left") return GradientKeyword::ToTopLeft;
+  if (keyword == "to bottom left") return GradientKeyword::ToBottomLeft;
+  throw std::invalid_argument("Invalid gradient keyword: " + keyword);
+}
 
 }; // namespace facebook::react

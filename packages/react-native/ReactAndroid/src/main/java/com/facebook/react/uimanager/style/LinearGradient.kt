@@ -14,13 +14,19 @@ import kotlin.math.atan
 import kotlin.math.tan
 
 internal class LinearGradient(
-  private val directionMap: ReadableMap,
+  directionMap: ReadableMap,
   private val colors: IntArray,
   private val positions: FloatArray
 ) {
   private sealed class Direction {
     public data class Angle(val value: Double) : Direction()
-    public data class Keyword(val value: String) : Direction()
+    enum class Keywords {
+      TO_TOP_RIGHT,
+      TO_BOTTOM_RIGHT,
+      TO_TOP_LEFT,
+      TO_BOTTOM_LEFT
+    }
+    public data class Keyword(val value: Keywords) : Direction()
   }
 
   private val direction: Direction = when (val type = directionMap.getString("type")) {
@@ -30,8 +36,13 @@ internal class LinearGradient(
     }
 
     "keyword" -> {
-      val keyword = directionMap.getString("value")
-        ?: throw IllegalArgumentException("Linear gradient direction keyword value cannot be null")
+      val keyword = when (directionMap.getString("value")) {
+        "to top right" -> Direction.Keywords.TO_TOP_RIGHT
+        "to bottom right" -> Direction.Keywords.TO_BOTTOM_RIGHT
+        "to top left" -> Direction.Keywords.TO_TOP_LEFT
+        "to bottom left" -> Direction.Keywords.TO_BOTTOM_LEFT
+        else -> throw IllegalArgumentException("Invalid linear gradient direction keyword: ${directionMap.getString("value")}")
+      }
       Direction.Keyword(keyword)
     }
 
@@ -61,15 +72,15 @@ internal class LinearGradient(
 
   // Spec: https://www.w3.org/TR/css-images-3/#linear-gradient-syntax
   // Refer `using keywords` section
-  private fun getAngleForKeyword(direction: String, width: Double, height: Double): Double {
-    return when (direction) {
-      "to top right" -> {
+  private fun getAngleForKeyword(keyword: Direction.Keywords, width: Double, height: Double): Double {
+    return when (keyword) {
+      Direction.Keywords.TO_TOP_RIGHT -> {
         val angleDeg = Math.toDegrees(atan(width / height))
         90 - angleDeg
       }
-      "to bottom right" -> Math.toDegrees(atan(width / height)) + 90
-      "to top left" -> Math.toDegrees(atan(width / height)) + 270
-      "to bottom left" -> Math.toDegrees(atan(height / width)) + 180
+      Direction.Keywords.TO_BOTTOM_RIGHT -> Math.toDegrees(atan(width / height)) + 90
+      Direction.Keywords.TO_TOP_LEFT -> Math.toDegrees(atan(width / height)) + 270
+      Direction.Keywords.TO_BOTTOM_LEFT -> Math.toDegrees(atan(height / width)) + 180
       else -> 180.0
     }
   }

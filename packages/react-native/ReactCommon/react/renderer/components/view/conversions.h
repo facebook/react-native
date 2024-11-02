@@ -1265,7 +1265,7 @@ inline void fromRawValue(
           } else if (directionType == "keyword") {
             linearGradient.direction.type = GradientDirectionType::Keyword;
             if (valueIt->second.hasType<std::string>()) {
-              linearGradient.direction.value = (std::string)(valueIt->second);
+              linearGradient.direction.value = parseGradientKeyword((std::string)(valueIt->second));
             }
           }
         }
@@ -1295,7 +1295,7 @@ inline void fromRawValue(
         }
       }
 
-      backgroundImage.push_back(linearGradient);
+      backgroundImage.push_back(std::move(linearGradient));
     }
   }
 
