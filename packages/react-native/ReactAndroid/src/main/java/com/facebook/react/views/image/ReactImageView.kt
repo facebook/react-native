@@ -22,12 +22,8 @@ import android.graphics.Shader.TileMode
 import android.graphics.drawable.Animatable
 import android.graphics.drawable.Drawable
 import android.net.Uri
-import com.facebook.common.executors.CallerThreadExecutor
 import com.facebook.common.references.CloseableReference
 import com.facebook.common.util.UriUtil
-import com.facebook.datasource.BaseDataSubscriber
-import com.facebook.datasource.DataSource
-import com.facebook.datasource.DataSubscriber
 import com.facebook.drawee.backends.pipeline.Fresco
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder
 import com.facebook.drawee.controller.ControllerListener
@@ -45,6 +41,7 @@ import com.facebook.imagepipeline.image.ImageInfo
 import com.facebook.imagepipeline.postprocessors.IterativeBoxBlurPostProcessor
 import com.facebook.imagepipeline.request.BasePostprocessor
 import com.facebook.imagepipeline.request.ImageRequest
+import com.facebook.imagepipeline.request.ImageRequest.RequestLevel
 import com.facebook.imagepipeline.request.ImageRequestBuilder
 import com.facebook.imagepipeline.request.Postprocessor
 import com.facebook.react.bridge.ReactContext
@@ -320,6 +317,13 @@ public class ReactImageView(
     }
   }
 
+  private fun computeRequestLevel(cacheControl: ImageCacheControl): RequestLevel {
+    return when (cacheControl) {
+      ImageCacheControl.ONLY_IF_CACHED -> RequestLevel.DISK_CACHE
+      else -> RequestLevel.FULL_FETCH
+    }
+  }
+
   public fun setDefaultSource(name: String?) {
     val newDefaultDrawable = instance.getResourceDrawable(context, name)
     if (defaultImageDrawable != newDefaultDrawable) {
@@ -431,6 +435,7 @@ public class ReactImageView(
     val imageSource = this.imageSource ?: return
     val uri = imageSource.uri
     val cacheControl = imageSource.cacheControl
+    val requestLevel = computeRequestLevel(cacheControl)
 
     val postprocessorList = mutableListOf<Postprocessor>()
     iterativeBoxBlurPostProcessor?.let { postprocessorList.add(it) }
@@ -439,76 +444,19 @@ public class ReactImageView(
 
     val resizeOptions = if (doResize) resizeOptions else null
 
-    val imageRequestBuilder =
-      ImageRequestBuilder.newBuilderWithSource(uri)
-        .setPostprocessor(postprocessor)
-        .setResizeOptions(resizeOptions)
-        .setAutoRotateEnabled(true)
-        .setProgressiveRenderingEnabled(progressiveRenderingEnabled)
-
     if (cacheControl == ImageCacheControl.RELOAD) {
       val imagePipeline = Fresco.getImagePipeline()
       imagePipeline.evictFromCache(uri)
     }
 
-    if (cacheControl == ImageCacheControl.ONLY_IF_CACHED) {
-      val imagePipeline = Fresco.getImagePipeline()
-      val imageRequest = imageRequestBuilder.build()
-      val dataSource = imagePipeline.isInDiskCache(imageRequest)
-      val inBitmapCache = imagePipeline.isInBitmapMemoryCache(imageRequest)
-      val inEncodedMemoryCache = imagePipeline.isInEncodedMemoryCache(imageRequest)
+    val imageRequestBuilder =
+        ImageRequestBuilder.newBuilderWithSource(uri)
+            .setPostprocessor(postprocessor)
+            .setResizeOptions(resizeOptions)
+            .setAutoRotateEnabled(true)
+            .setProgressiveRenderingEnabled(progressiveRenderingEnabled)
+            .setLowestPermittedRequestLevel(requestLevel)
 
-      dataSource.subscribe(object : BaseDataSubscriber<Boolean>() {
-        override fun onNewResultImpl(dataSource: DataSource<Boolean>) {
-          if (!dataSource.isFinished()) return
-
-          val isInDiskCache: Boolean = dataSource.getResult() ?: false
-          val isInCache: Boolean = inBitmapCache || inEncodedMemoryCache || isInDiskCache
-
-          if (isInCache) {
-            setupImageRequest(imageRequestBuilder, uri, cacheControl, postprocessor, resizeOptions)
-          } else {
-            val eventDispatcher =
-              UIManagerHelper.getEventDispatcherForReactTag(context as ReactContext, id)
-            eventDispatcher?.dispatchEvent(
-              createErrorEvent(
-                UIManagerHelper.getSurfaceId(this@ReactImageView),
-                id,
-                Exception("Image not found in cache for uri $uri")
-              )
-            )
-          }
-
-          dataSource.close()
-        }
-
-        override fun onFailureImpl(dataSource: DataSource<Boolean>) {
-          val failureCause = dataSource.failureCause
-            ?: Throwable("Unknown error occurred while checking if image is in cache for uri $uri")
-
-          val eventDispatcher =
-            UIManagerHelper.getEventDispatcherForReactTag(context as ReactContext, id)
-          eventDispatcher?.dispatchEvent(
-            createErrorEvent(
-              UIManagerHelper.getSurfaceId(this@ReactImageView), id, failureCause
-            )
-          )
-        }
-      }, CallerThreadExecutor.getInstance())
-
-      return
-    }
-
-    setupImageRequest(imageRequestBuilder, uri, cacheControl, postprocessor, resizeOptions)
-  }
-
-  private fun setupImageRequest(
-    imageRequestBuilder: ImageRequestBuilder,
-    uri: Uri,
-    cacheControl: ImageCacheControl,
-    postprocessor: Postprocessor?,
-    resizeOptions: ResizeOptions?
-  ) {
     if (resizeMethod == ImageResizeMethod.NONE) {
       imageRequestBuilder.setDownsampleOverride(DownsampleMode.NEVER)
     }
