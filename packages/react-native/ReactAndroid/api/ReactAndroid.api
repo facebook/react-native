@@ -5685,11 +5685,6 @@ public final class com/facebook/react/uimanager/common/ViewUtil {
 	public static final fun isRootTag (I)Z
 }
 
-public abstract interface class com/facebook/react/uimanager/debug/NotThreadSafeViewHierarchyUpdateDebugListener {
-	public abstract fun onViewHierarchyUpdateEnqueued ()V
-	public abstract fun onViewHierarchyUpdateFinished ()V
-}
-
 public abstract interface class com/facebook/react/uimanager/events/BatchEventDispatchedListener {
 	public abstract fun onBatchEventDispatched ()V
 }
