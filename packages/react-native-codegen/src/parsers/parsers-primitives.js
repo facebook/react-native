@@ -31,6 +31,7 @@ import type {
   NativeModuleTypeAnnotation,
   NativeModuleUnionTypeAnnotation,
   Nullable,
+  NumberLiteralTypeAnnotation,
   ObjectTypeAnnotation,
   ReservedTypeAnnotation,
   StringLiteralTypeAnnotation,
@@ -167,6 +168,16 @@ function emitMixed(
 ): Nullable<NativeModuleMixedTypeAnnotation> {
   return wrapNullable(nullable, {
     type: 'MixedTypeAnnotation',
+  });
+}
+
+function emitNumberLiteral(
+  nullable: boolean,
+  value: number,
+): Nullable<NumberLiteralTypeAnnotation> {
+  return wrapNullable(nullable, {
+    type: 'NumberLiteralTypeAnnotation',
+    value,
   });
 }
 
@@ -762,6 +773,7 @@ module.exports = {
   emitInt32Prop,
   emitMixedProp,
   emitNumber,
+  emitNumberLiteral,
   emitGenericObject,
   emitDictionary,
   emitObject,

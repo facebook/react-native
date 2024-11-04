@@ -979,6 +979,26 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_BASIC_PA
             }
           },
           {
+            'name': 'passNumberLiteral',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'VoidTypeAnnotation'
+              },
+              'params': [
+                {
+                  'name': 'arg',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'NumberLiteralTypeAnnotation',
+                    'value': 4
+                  }
+                }
+              ]
+            }
+          },
+          {
             'name': 'passString',
             'optional': false,
             'typeAnnotation': {

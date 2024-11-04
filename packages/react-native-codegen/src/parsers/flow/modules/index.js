@@ -38,6 +38,7 @@ const {
   emitCommonTypes,
   emitDictionary,
   emitFunction,
+  emitNumberLiteral,
   emitPromise,
   emitRootTag,
   emitUnion,
@@ -242,6 +243,9 @@ function translateTypeAnnotation(
     }
     case 'UnionTypeAnnotation': {
       return emitUnion(nullable, hasteModuleName, typeAnnotation, parser);
+    }
+    case 'NumberLiteralTypeAnnotation': {
+      return emitNumberLiteral(nullable, typeAnnotation.value);
     }
     case 'StringLiteralTypeAnnotation': {
       return wrapNullable(nullable, {
