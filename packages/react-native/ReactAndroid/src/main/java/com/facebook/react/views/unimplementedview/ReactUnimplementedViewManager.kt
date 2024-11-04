@@ -14,7 +14,7 @@ import com.facebook.react.uimanager.annotations.ReactProp
 
 /** ViewManager for [ReactUnimplementedView] to represent a component that is not yet supported. */
 @ReactModule(name = ReactUnimplementedViewManager.REACT_CLASS)
-public class ReactUnimplementedViewManager : ViewGroupManager<ReactUnimplementedView>() {
+internal class ReactUnimplementedViewManager : ViewGroupManager<ReactUnimplementedView>() {
 
   protected override fun createViewInstance(
       reactContext: ThemedReactContext
@@ -27,7 +27,7 @@ public class ReactUnimplementedViewManager : ViewGroupManager<ReactUnimplemented
     view.setName(name)
   }
 
-  public companion object {
+  internal companion object {
     public const val REACT_CLASS: String = "UnimplementedNativeView"
   }
 }
