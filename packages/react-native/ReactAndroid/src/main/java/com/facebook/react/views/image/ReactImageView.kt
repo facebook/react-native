@@ -41,6 +41,7 @@ import com.facebook.imagepipeline.image.ImageInfo
 import com.facebook.imagepipeline.postprocessors.IterativeBoxBlurPostProcessor
 import com.facebook.imagepipeline.request.BasePostprocessor
 import com.facebook.imagepipeline.request.ImageRequest
+import com.facebook.imagepipeline.request.ImageRequest.RequestLevel
 import com.facebook.imagepipeline.request.ImageRequestBuilder
 import com.facebook.imagepipeline.request.Postprocessor
 import com.facebook.react.bridge.ReactContext
@@ -311,7 +312,15 @@ public class ReactImageView(
       null,
       "default" -> ImageCacheControl.DEFAULT
       "reload" -> ImageCacheControl.RELOAD
+      "only-if-cached" -> ImageCacheControl.ONLY_IF_CACHED
       else -> ImageCacheControl.DEFAULT
+    }
+  }
+
+  private fun computeRequestLevel(cacheControl: ImageCacheControl): RequestLevel {
+    return when (cacheControl) {
+      ImageCacheControl.ONLY_IF_CACHED -> RequestLevel.DISK_CACHE
+      else -> RequestLevel.FULL_FETCH
     }
   }
 
@@ -426,6 +435,7 @@ public class ReactImageView(
     val imageSource = this.imageSource ?: return
     val uri = imageSource.uri
     val cacheControl = imageSource.cacheControl
+    val requestLevel = computeRequestLevel(cacheControl)
 
     val postprocessorList = mutableListOf<Postprocessor>()
     iterativeBoxBlurPostProcessor?.let { postprocessorList.add(it) }
@@ -445,6 +455,7 @@ public class ReactImageView(
             .setResizeOptions(resizeOptions)
             .setAutoRotateEnabled(true)
             .setProgressiveRenderingEnabled(progressiveRenderingEnabled)
+            .setLowestPermittedRequestLevel(requestLevel)
 
     if (resizeMethod == ImageResizeMethod.NONE) {
       imageRequestBuilder.setDownsampleOverride(DownsampleMode.NEVER)

@@ -3379,6 +3379,7 @@ public final class com/facebook/react/modules/fresco/FrescoModule$Companion {
 
 public final class com/facebook/react/modules/fresco/ImageCacheControl : java/lang/Enum {
 	public static final field DEFAULT Lcom/facebook/react/modules/fresco/ImageCacheControl;
+	public static final field ONLY_IF_CACHED Lcom/facebook/react/modules/fresco/ImageCacheControl;
 	public static final field RELOAD Lcom/facebook/react/modules/fresco/ImageCacheControl;
 	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public static fun valueOf (Ljava/lang/String;)Lcom/facebook/react/modules/fresco/ImageCacheControl;
