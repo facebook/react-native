@@ -1644,13 +1644,6 @@ public final class com/facebook/react/bridge/WritableNativeMap : com/facebook/re
 	public fun putString (Ljava/lang/String;Ljava/lang/String;)V
 }
 
-public class com/facebook/react/bridge/interop/InteropModuleRegistry {
-	public fun <init> ()V
-	public fun getInteropModule (Ljava/lang/Class;)Lcom/facebook/react/bridge/JavaScriptModule;
-	public fun registerInteropModule (Ljava/lang/Class;Ljava/lang/Object;)V
-	public fun shouldReturnInteropModule (Ljava/lang/Class;)Z
-}
-
 public abstract interface class com/facebook/react/bridge/queue/MessageQueueThread {
 	public abstract fun assertIsOnThread ()V
 	public abstract fun assertIsOnThread (Ljava/lang/String;)V
