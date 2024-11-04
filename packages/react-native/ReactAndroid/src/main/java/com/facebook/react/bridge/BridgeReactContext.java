@@ -18,7 +18,6 @@ import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.common.ReactConstants;
-import com.facebook.react.common.annotations.DeprecatedInNewArchitecture;
 import com.facebook.react.common.annotations.FrameworkAPI;
 import com.facebook.react.common.annotations.UnstableReactNativeAPI;
 import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder;
@@ -30,7 +29,10 @@ import java.util.Collection;
  * CatalystInstance. If you need to create a ReactContext within an "bridge context", please create
  * BridgeReactContext.
  */
-@DeprecatedInNewArchitecture
+@Deprecated(
+    since =
+        "BridgeReactContext is deprecated, please to migrate to new architecture using"
+            + " [com.facebook.react.defaults.DefaultReactHost] instead.")
 public class BridgeReactContext extends ReactApplicationContext {
   @DoNotStrip
   public interface RCTDeviceEventEmitter extends JavaScriptModule {
@@ -255,10 +257,8 @@ public class BridgeReactContext extends ReactApplicationContext {
     return null;
   }
 
-  @DeprecatedInNewArchitecture(
-      message =
-          "This method will be deprecated later as part of Stable APIs with bridge removal and not"
-              + " encouraged usage.")
+  @Deprecated(
+      since = "This method is deprecated, please use UIManagerHelper.getUIManager() instead.")
   /**
    * Get the UIManager for Fabric from the CatalystInstance.
    *
