@@ -16,7 +16,7 @@ import type {
 import type {
   NativeModuleAliasMap,
   NativeModuleEnumMap,
-  NativeModuleEnumMembers,
+  NativeModuleEnumMember,
   NativeModuleEnumMemberType,
   NativeModuleEventEmitterShape,
   NativeModuleFunctionTypeAnnotation,
@@ -409,7 +409,7 @@ struct Bridging<${enumName}> {
 function generateEnum(
   hasteModuleName: string,
   origEnumName: string,
-  members: NativeModuleEnumMembers,
+  members: $ReadOnlyArray<NativeModuleEnumMember>,
   memberType: NativeModuleEnumMemberType,
 ): string {
   const enumName = getEnumName(hasteModuleName, origEnumName);
