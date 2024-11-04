@@ -7,8 +7,6 @@
 
 package com.facebook.react;
 
-import com.facebook.react.common.annotations.DeprecatedInNewArchitecture;
-
 /** This will eventually replace {@link LazyReactPackage} when TurboModules are finally done. */
-@DeprecatedInNewArchitecture(message = "Use BaseReactPackage instead")
+@Deprecated(message = "Use BaseReactPackage instead")
 public abstract class TurboReactPackage extends BaseReactPackage {}
