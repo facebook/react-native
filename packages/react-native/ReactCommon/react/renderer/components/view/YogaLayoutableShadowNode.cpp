@@ -538,9 +538,9 @@ void YogaLayoutableShadowNode::setSize(Size size) const {
 
   auto style = yogaNode_.style();
   style.setDimension(
-      yoga::Dimension::Width, yoga::StyleLength::points(size.width));
+      yoga::Dimension::Width, yoga::StyleSizeLength::points(size.width));
   style.setDimension(
-      yoga::Dimension::Height, yoga::StyleLength::points(size.height));
+      yoga::Dimension::Height, yoga::StyleSizeLength::points(size.height));
   yogaNode_.setStyle(style);
   yogaNode_.setDirty(true);
 }
@@ -631,16 +631,18 @@ void YogaLayoutableShadowNode::layoutTree(
   auto ownerHeight = yogaFloatFromFloat(maximumSize.height);
 
   yogaStyle.setMaxDimension(
-      yoga::Dimension::Width, yoga::StyleLength::points(maximumSize.width));
+      yoga::Dimension::Width, yoga::StyleSizeLength::points(maximumSize.width));
 
   yogaStyle.setMaxDimension(
-      yoga::Dimension::Height, yoga::StyleLength::points(maximumSize.height));
+      yoga::Dimension::Height,
+      yoga::StyleSizeLength::points(maximumSize.height));
 
   yogaStyle.setMinDimension(
-      yoga::Dimension::Width, yoga::StyleLength::points(minimumSize.width));
+      yoga::Dimension::Width, yoga::StyleSizeLength::points(minimumSize.width));
 
   yogaStyle.setMinDimension(
-      yoga::Dimension::Height, yoga::StyleLength::points(minimumSize.height));
+      yoga::Dimension::Height,
+      yoga::StyleSizeLength::points(minimumSize.height));
 
   auto direction =
       yogaDirectionFromLayoutDirection(layoutConstraints.layoutDirection);
