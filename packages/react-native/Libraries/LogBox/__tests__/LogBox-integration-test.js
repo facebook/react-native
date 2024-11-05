@@ -80,7 +80,7 @@ describe('LogBox', () => {
     expect(mockWarn).not.toBeCalled();
     expect(console.error).toBeCalledTimes(1);
     expect(console.error.mock.calls[0]).toEqual([
-      'Warning: Each child in a list should have a unique "key" prop.%s%s See https://react.dev/link/warning-keys for more information.%s',
+      'Warning: Each child in a list should have a unique "key" prop.%s%s See https://reactjs.org/link/warning-keys for more information.%s',
       '\n\nCheck the render method of `DoesNotUseKey`.',
       '',
       expect.stringMatching('at DoesNotUseKey'),
