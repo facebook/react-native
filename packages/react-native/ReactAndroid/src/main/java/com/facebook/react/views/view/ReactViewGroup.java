@@ -143,7 +143,13 @@ public class ReactViewGroup extends ViewGroup
   private float mBackfaceOpacity;
   private String mBackfaceVisibility;
 
-  public ReactViewGroup(Context context) {
+  /**
+   * Creates a new `ReactViewGroup` instance.
+   *
+   * @param context A {@link Context} instance. It's Nullable to not break compatibility with OSS
+   *     users (could be made non-null in the future but requires proper comms).
+   */
+  public ReactViewGroup(@Nullable Context context) {
     super(context);
     initView();
   }
