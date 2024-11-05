@@ -106,7 +106,7 @@ describe('LogBox', () => {
     // We also interpolate the string before passing to the underlying console method.
     expect(mockError.mock.calls[0]).toEqual([
       expect.stringMatching(
-        'Warning: Each child in a list should have a unique "key" prop.\n\nCheck the render method of `DoesNotUseKey`. See https://react.dev/link/warning-keys for more information.\n    at ',
+        'Warning: Each child in a list should have a unique "key" prop.\n\nCheck the render method of `DoesNotUseKey`. See https://reactjs.org/link/warning-keys for more information.\n    at ',
       ),
     ]);
   });
