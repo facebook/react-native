@@ -3774,22 +3774,6 @@ public abstract interface class com/facebook/react/packagerconnection/Responder 
 	public abstract fun respond (Ljava/lang/Object;)V
 }
 
-public abstract class com/facebook/react/reactperflogger/NativeModulePerfLogger {
-	protected fun <init> ()V
-	protected abstract fun initHybrid ()Lcom/facebook/jni/HybridData;
-	protected final fun maybeLoadOtherSoLibraries ()V
-	public abstract fun moduleCreateCacheHit (Ljava/lang/String;I)V
-	public abstract fun moduleCreateConstructEnd (Ljava/lang/String;I)V
-	public abstract fun moduleCreateConstructStart (Ljava/lang/String;I)V
-	public abstract fun moduleCreateEnd (Ljava/lang/String;I)V
-	public abstract fun moduleCreateFail (Ljava/lang/String;I)V
-	public abstract fun moduleCreateSetUpEnd (Ljava/lang/String;I)V
-	public abstract fun moduleCreateSetUpStart (Ljava/lang/String;I)V
-	public abstract fun moduleCreateStart (Ljava/lang/String;I)V
-	public abstract fun moduleDataCreateEnd (Ljava/lang/String;I)V
-	public abstract fun moduleDataCreateStart (Ljava/lang/String;I)V
-}
-
 public abstract class com/facebook/react/runtime/BindingsInstaller {
 	public fun <init> (Lcom/facebook/jni/HybridData;)V
 }
