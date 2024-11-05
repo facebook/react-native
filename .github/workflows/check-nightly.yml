@@ -24,3 +24,5 @@ jobs:
           else
             echo 'Nightly Worked, All Good!'
           fi
+      - name: Test Libraries
+        uses: ./.github/workflows/test-libraries-on-nightlies.yml
