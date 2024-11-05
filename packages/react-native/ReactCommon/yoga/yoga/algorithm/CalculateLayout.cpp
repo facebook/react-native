@@ -749,7 +749,7 @@ static float distributeFreeSpaceSecondPass(
           marginCross;
       const bool isLoosePercentageMeasurement =
           currentLineChild->getProcessedDimension(dimension(crossAxis))
-                  .unit() == Unit::Percent &&
+              .isPercent() &&
           sizingModeCrossDim != SizingMode::StretchFit;
       childCrossSizingMode =
           yoga::isUndefined(childCrossSize) || isLoosePercentageMeasurement
