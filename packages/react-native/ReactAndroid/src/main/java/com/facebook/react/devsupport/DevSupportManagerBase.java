@@ -707,7 +707,7 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
     }
   }
 
-  protected @Nullable ReactContext getCurrentReactContext() {
+  public @Nullable ReactContext getCurrentReactContext() {
     return mCurrentReactContext;
   }
 
