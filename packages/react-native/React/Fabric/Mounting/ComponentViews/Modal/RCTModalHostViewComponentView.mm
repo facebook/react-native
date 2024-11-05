@@ -105,6 +105,7 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
   BOOL _shouldPresent;
   BOOL _isPresented;
   UIView *_modalContentsSnapshot;
+  BOOL _shouldTriggerDidDismissOnSwipeDown;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -143,6 +144,16 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
 {
   _modalContentsSnapshot = [self.viewController.view snapshotViewAfterScreenUpdates:NO];
   [modalViewController dismissViewControllerAnimated:animated completion:completion];
+}
+
+- (void)modalHostViewControllerDidDismiss
+{
+  if (_shouldTriggerDidDismissOnSwipeDown && _isPresented) {
+    auto eventEmitter = [self modalEventEmitter];
+    if (eventEmitter) {
+      eventEmitter->onDismiss(ModalHostViewEventEmitter::OnDismiss{});
+    }
+  }
 }
 
 - (void)ensurePresentedOnlyIfNeeded
@@ -251,6 +262,9 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
   self.viewController.modalTransitionStyle = transitionStyle;
 
   self.viewController.modalPresentationStyle = presentationConfiguration(newProps);
+
+  self.viewController.modalInPresentation = !newProps.dismissOnSwipeDown;
+  _shouldTriggerDidDismissOnSwipeDown = newProps.dismissOnSwipeDown;
 
   _shouldPresent = newProps.visible;
   [self ensurePresentedOnlyIfNeeded];

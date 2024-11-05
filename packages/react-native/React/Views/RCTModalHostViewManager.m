@@ -71,6 +71,15 @@ RCT_EXPORT_MODULE()
   });
 }
 
+- (void)modalHostViewDidDismiss:(RCTModalHostView *)modalHostView
+{
+  dispatch_async(dispatch_get_main_queue(), ^{
+    if (modalHostView.identifier) {
+      [[self.bridge moduleForClass:[RCTModalManager class]] modalDismissed:modalHostView.identifier];
+    }
+  });
+}
+
 - (void)dismissModalHostView:(RCTModalHostView *)modalHostView
           withViewController:(RCTModalHostViewController *)viewController
                     animated:(BOOL)animated
@@ -119,6 +128,7 @@ RCT_EXPORT_VIEW_PROPERTY(supportedOrientations, NSArray)
 RCT_EXPORT_VIEW_PROPERTY(onOrientationChange, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(visible, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(onRequestClose, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(dismissOnSwipeDown, BOOL)
 
 // Fabric only
 RCT_EXPORT_VIEW_PROPERTY(onDismiss, RCTDirectEventBlock)

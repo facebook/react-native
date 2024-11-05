@@ -25,6 +25,7 @@
   UIView *_reactSubview;
   UIInterfaceOrientation _lastKnownOrientation;
   RCTDirectEventBlock _onRequestClose;
+  BOOL _shouldTriggerDidDismissOnSwipeDown;
 }
 
 RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
@@ -67,6 +68,15 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
 {
   if (_onRequestClose != nil) {
     _onRequestClose(nil);
+  }
+}
+
+- (void)presentationControllerDidDismiss:(UIPresentationController *)presentationController
+{
+  if (_shouldTriggerDidDismissOnSwipeDown && _isPresented) {
+    [_delegate modalHostViewDidDismiss:self];
+    _isPresented = NO;
+    [self setVisible:NO];
   }
 }
 
@@ -174,6 +184,8 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
     RCTAssert(self.reactViewController, @"Can't present modal view controller without a presenting view controller");
 
     _modalViewController.supportedInterfaceOrientations = [self supportedOrientationsMask];
+    _modalViewController.modalInPresentation = !self.dismissOnSwipeDown;
+    _shouldTriggerDidDismissOnSwipeDown = self.dismissOnSwipeDown;
 
     if ([self.animationType isEqualToString:@"fade"]) {
       _modalViewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;

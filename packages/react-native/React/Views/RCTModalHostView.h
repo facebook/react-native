@@ -24,6 +24,7 @@
 
 @property (nonatomic, copy) RCTDirectEventBlock onShow;
 @property (nonatomic, assign) BOOL visible;
+@property (nonatomic, assign) BOOL dismissOnSwipeDown;
 
 // Android only
 @property (nonatomic, assign) BOOL statusBarTranslucent;
@@ -52,5 +53,6 @@
 - (void)dismissModalHostView:(RCTModalHostView *)modalHostView
           withViewController:(RCTModalHostViewController *)viewController
                     animated:(BOOL)animated;
+- (void)modalHostViewDidDismiss:(RCTModalHostView *)modalHostView;
 
 @end

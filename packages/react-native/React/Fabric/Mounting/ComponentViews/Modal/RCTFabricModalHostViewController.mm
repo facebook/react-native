@@ -51,6 +51,10 @@
 {
   [super viewDidDisappear:animated];
   _lastViewBounds = CGRectZero;
+
+  if ([_delegate respondsToSelector:@selector(modalHostViewControllerDidDismiss)]) {
+    [_delegate modalHostViewControllerDidDismiss];
+  }
 }
 
 - (BOOL)prefersStatusBarHidden
