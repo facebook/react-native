@@ -660,6 +660,18 @@ function CacheControlAndroidExample(): React.Node {
           />
         </View>
         <View style={styles.leftMargin}>
+          <RNTesterText style={styles.resizeModeText}>Force-cache</RNTesterText>
+          <Image
+            source={{
+              uri: fullImage.uri + '?cacheBust=force-cache',
+              cache: 'force-cache',
+            }}
+            style={styles.base}
+            key={reload}
+            onError={e => console.log(e.nativeEvent.error)}
+          />
+        </View>
+        <View style={styles.leftMargin}>
           <RNTesterText style={styles.resizeModeText}>
             Only-if-cached
           </RNTesterText>

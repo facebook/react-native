@@ -12,6 +12,7 @@ import com.facebook.imagepipeline.backends.okhttp3.OkHttpNetworkFetcher
 import com.facebook.imagepipeline.producers.NetworkFetcher
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.modules.network.OkHttpCompat
+import java.util.concurrent.TimeUnit
 import okhttp3.CacheControl
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -42,6 +43,11 @@ internal class ReactOkHttpNetworkFetcher(private val okHttpClient: OkHttpClient)
       when (networkImageRequest.cacheControl) {
         ImageCacheControl.RELOAD -> {
           cacheControlBuilder.noCache()
+        }
+        ImageCacheControl.FORCE_CACHE -> {
+          cacheControlBuilder
+            .onlyIfCached()
+            .maxStale(Integer.MAX_VALUE, TimeUnit.SECONDS)
         }
         ImageCacheControl.ONLY_IF_CACHED -> {
           cacheControlBuilder.onlyIfCached()
