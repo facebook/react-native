@@ -78,6 +78,43 @@ class SetFalseOnDestruct {
   }
 };
 
+void logErrorWhileReporting(
+    std::string message,
+    jsi::JSError& error,
+    jsi::JSError& originalError) {
+  LOG(ERROR) << "JsErrorHandler::" << message << std::endl
+             << "Js error message: " << error.getMessage() << std::endl
+             << "Original js error message: " << originalError.getMessage()
+             << std::endl;
+}
+
+jsi::Value getBundleMetadata(jsi::Runtime& runtime, jsi::JSError& error) {
+  auto jsGetBundleMetadataValue =
+      runtime.global().getProperty(runtime, "__getBundleMetadata");
+
+  if (!jsGetBundleMetadataValue.isObject() ||
+      !jsGetBundleMetadataValue.asObject(runtime).isFunction(runtime)) {
+    return jsi::Value::null();
+  }
+
+  auto jsGetBundleMetadataValueFn =
+      jsGetBundleMetadataValue.asObject(runtime).asFunction(runtime);
+
+  try {
+    auto bundleMetadataValue = jsGetBundleMetadataValueFn.call(runtime);
+    if (bundleMetadataValue.isObject()) {
+      return bundleMetadataValue;
+    }
+    return bundleMetadataValue;
+  } catch (jsi::JSError& ex) {
+    logErrorWhileReporting(
+        "getBundleMetadata(): Error raised while calling __getBundleMetadata(). Returning null.",
+        ex,
+        error);
+  }
+
+  return jsi::Value::null();
+}
 } // namespace
 
 namespace facebook::react {
@@ -199,12 +236,11 @@ void JsErrorHandler::handleError(
     try {
       handleJSError(runtime, error, isFatal);
       return;
-    } catch (jsi::JSError& e) {
-      LOG(ERROR)
-          << "JsErrorHandler: Failed to report js error using js pipeline. Using C++ pipeline instead."
-          << std::endl
-          << "Reporting failure: " << e.getMessage() << std::endl
-          << "Original js error: " << error.getMessage() << std::endl;
+    } catch (jsi::JSError& ex) {
+      logErrorWhileReporting(
+          "handleError(): Error raised while reporting using js pipeline. Using c++ pipeline instead.",
+          ex,
+          error);
     }
   }
 
@@ -249,8 +285,14 @@ void JsErrorHandler::handleErrorWithCppPipeline(
     objectAssign(runtime, extraData, extraDataValue.asObject(runtime));
   }
 
+  auto isDEV =
+      isTruthy(runtime, runtime.global().getProperty(runtime, "__DEV__"));
+
   extraData.setProperty(runtime, "jsEngine", jsEngineValue);
   extraData.setProperty(runtime, "rawStack", error.getStack());
+  extraData.setProperty(runtime, "__DEV__", isDEV);
+  extraData.setProperty(
+      runtime, "bundleMetadata", getBundleMetadata(runtime, error));
 
   auto cause = errorObj.getProperty(runtime, "cause");
   if (cause.isObject()) {
@@ -324,7 +366,14 @@ void JsErrorHandler::handleErrorWithCppPipeline(
   data.setProperty(runtime, "preventDefault", preventDefault);
 
   for (auto& errorListener : _errorListeners) {
-    errorListener(runtime, jsi::Value(runtime, data));
+    try {
+      errorListener(runtime, jsi::Value(runtime, data));
+    } catch (jsi::JSError& ex) {
+      logErrorWhileReporting(
+          "handleErrorWithCppPipeline(): Error raised inside an error listener. Executing next listener.",
+          ex,
+          error);
+    }
   }
 
   if (*shouldPreventDefault) {
