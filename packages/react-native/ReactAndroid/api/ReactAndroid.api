@@ -3673,18 +3673,6 @@ public final class com/facebook/react/modules/toast/ToastModule : com/facebook/f
 public final class com/facebook/react/modules/toast/ToastModule$Companion {
 }
 
-public final class com/facebook/react/modules/vibration/VibrationModule : com/facebook/fbreact/specs/NativeVibrationSpec {
-	public static final field Companion Lcom/facebook/react/modules/vibration/VibrationModule$Companion;
-	public static final field NAME Ljava/lang/String;
-	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
-	public fun cancel ()V
-	public fun vibrate (D)V
-	public fun vibrateByPattern (Lcom/facebook/react/bridge/ReadableArray;D)V
-}
-
-public final class com/facebook/react/modules/vibration/VibrationModule$Companion {
-}
-
 public final class com/facebook/react/modules/websocket/WebSocketModule : com/facebook/fbreact/specs/NativeWebSocketModuleSpec {
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
 	public fun addListener (Ljava/lang/String;)V
