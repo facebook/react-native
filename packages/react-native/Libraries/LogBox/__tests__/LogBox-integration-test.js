@@ -94,7 +94,7 @@ describe('LogBox', () => {
       componentStackType: 'stack',
       message: {
         content:
-          'Warning: Each child in a list should have a unique "key" prop.\n\nCheck the render method of `DoesNotUseKey`. See https://react.dev/link/warning-keys for more information.',
+          'Warning: Each child in a list should have a unique "key" prop.\n\nCheck the render method of `DoesNotUseKey`. See https://reactjs.org/link/warning-keys for more information.',
         substitutions: [
           {length: 45, offset: 62},
           {length: 0, offset: 107},
