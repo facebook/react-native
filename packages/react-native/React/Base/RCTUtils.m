@@ -239,7 +239,10 @@ NSString *RCTMD5Hash(NSString *string)
 {
   const char *str = string.UTF8String;
   unsigned char result[CC_MD5_DIGEST_LENGTH];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
   CC_MD5(str, (CC_LONG)strlen(str), result);
+#pragma clang diagnostic pop
 
   return [NSString stringWithFormat:@"%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
                                     result[0],
