@@ -8,15 +8,18 @@
  * @format
  */
 
-type ResizeMode = 'cover' | 'contain' | 'stretch' | 'repeat' | 'center';
+import type {ImageResizeMode} from './ImageResizeMode';
 
-const objectFitMap: {[string]: ResizeMode} = {
+const objectFitMap: {[string]: ImageResizeMode} = {
   contain: 'contain',
   cover: 'cover',
   fill: 'stretch',
   'scale-down': 'contain',
+  none: 'none',
 };
 
-export function convertObjectFitToResizeMode(objectFit: ?string): ?ResizeMode {
+export function convertObjectFitToResizeMode(
+  objectFit: ?string,
+): ?ImageResizeMode {
   return objectFit != null ? objectFitMap[objectFit] : undefined;
 }

@@ -4869,7 +4869,7 @@ export type ImageProps = $ReadOnly<{|
     | \\"strict-origin-when-cross-origin\\"
     | \\"unsafe-url\\"
   ),
-  resizeMode?: ?(\\"cover\\" | \\"contain\\" | \\"stretch\\" | \\"repeat\\" | \\"center\\"),
+  resizeMode?: ?ImageResizeMode,
   testID?: ?string,
   tintColor?: ColorValue,
   src?: ?string,
@@ -4892,7 +4892,8 @@ exports[`public API should not change unintentionally Libraries/Image/ImageResiz
   | \\"contain\\"
   | \\"cover\\"
   | \\"repeat\\"
-  | \\"stretch\\";
+  | \\"stretch\\"
+  | \\"none\\";
 "
 `;
 
@@ -4989,10 +4990,9 @@ export type { ImageProps } from \\"./ImageProps\\";
 `;
 
 exports[`public API should not change unintentionally Libraries/Image/ImageUtils.js 1`] = `
-"type ResizeMode = \\"cover\\" | \\"contain\\" | \\"stretch\\" | \\"repeat\\" | \\"center\\";
-declare export function convertObjectFitToResizeMode(
+"declare export function convertObjectFitToResizeMode(
   objectFit: ?string
-): ?ResizeMode;
+): ?ImageResizeMode;
 "
 `;
 
@@ -8261,8 +8261,8 @@ export type ____TextStyle_Internal = $ReadOnly<{
 }>;
 export type ____ImageStyle_InternalCore = $ReadOnly<{
   ...$Exact<____ViewStyle_Internal>,
-  resizeMode?: \\"contain\\" | \\"cover\\" | \\"stretch\\" | \\"center\\" | \\"repeat\\",
-  objectFit?: \\"cover\\" | \\"contain\\" | \\"fill\\" | \\"scale-down\\",
+  resizeMode?: ImageResizeMode,
+  objectFit?: \\"cover\\" | \\"contain\\" | \\"fill\\" | \\"scale-down\\" | \\"none\\",
   tintColor?: ____ColorValue_Internal,
   overlayColor?: string,
 }>;
@@ -8272,8 +8272,8 @@ export type ____ImageStyle_Internal = $ReadOnly<{
 }>;
 export type ____DangerouslyImpreciseStyle_InternalCore = $ReadOnly<{
   ...$Exact<____TextStyle_Internal>,
-  resizeMode?: \\"contain\\" | \\"cover\\" | \\"stretch\\" | \\"center\\" | \\"repeat\\",
-  objectFit?: \\"cover\\" | \\"contain\\" | \\"fill\\" | \\"scale-down\\",
+  resizeMode?: ImageResizeMode,
+  objectFit?: \\"cover\\" | \\"contain\\" | \\"fill\\" | \\"scale-down\\" | \\"none\\",
   tintColor?: ____ColorValue_Internal,
   overlayColor?: string,
 }>;
