@@ -8154,30 +8154,6 @@ public abstract interface class com/facebook/react/views/textinput/ScrollWatcher
 	public abstract fun onScrollChanged (IIII)V
 }
 
-public final class com/facebook/react/views/unimplementedview/ReactUnimplementedView : android/widget/LinearLayout {
-	public fun <init> (Landroid/content/Context;)V
-	public final fun setName (Ljava/lang/String;)V
-}
-
-public final class com/facebook/react/views/unimplementedview/ReactUnimplementedViewManager : com/facebook/react/uimanager/ViewGroupManager {
-	public static final field Companion Lcom/facebook/react/views/unimplementedview/ReactUnimplementedViewManager$Companion;
-	public static final field REACT_CLASS Ljava/lang/String;
-	public fun <init> ()V
-	public synthetic fun createViewInstance (Lcom/facebook/react/uimanager/ThemedReactContext;)Landroid/view/View;
-	public fun getName ()Ljava/lang/String;
-	public final fun setName (Lcom/facebook/react/views/unimplementedview/ReactUnimplementedView;Ljava/lang/String;)V
-}
-
-public class com/facebook/react/views/unimplementedview/ReactUnimplementedViewManager$$PropsSetter : com/facebook/react/uimanager/ViewManagerPropertyUpdater$ViewManagerSetter {
-	public fun <init> ()V
-	public fun getProperties (Ljava/util/Map;)V
-	public synthetic fun setProperty (Lcom/facebook/react/uimanager/ViewManager;Landroid/view/View;Ljava/lang/String;Ljava/lang/Object;)V
-	public fun setProperty (Lcom/facebook/react/views/unimplementedview/ReactUnimplementedViewManager;Lcom/facebook/react/views/unimplementedview/ReactUnimplementedView;Ljava/lang/String;Ljava/lang/Object;)V
-}
-
-public final class com/facebook/react/views/unimplementedview/ReactUnimplementedViewManager$Companion {
-}
-
 public final class com/facebook/react/views/view/ColorUtil {
 	public static final field INSTANCE Lcom/facebook/react/views/view/ColorUtil;
 	public static final fun normalize (DDDD)I
