@@ -59,7 +59,7 @@ const ScrollViewStickyHeaderWithForwardedRef: component(
   const [translateY, setTranslateY] = useState<?number>(null);
   const [nextHeaderLayoutY, setNextHeaderLayoutY] =
     useState<?number>(_nextHeaderLayoutY);
-  const [prevHeaderLayoutY, setPrevHeaderLayoutY ] =
+  const [prevHeaderLayoutY, setPrevHeaderLayoutY] =
     useState<?number>(_prevHeaderLayoutY);
   const [isFabric, setIsFabric] = useState<boolean>(false);
 

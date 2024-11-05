@@ -174,12 +174,10 @@ class VirtualizedSectionList<
       // Track the section header indices
       if (stickyHeaderIndices != null) {
         // Headers
-        stickyHeaderIndices.push(
-          itemCount + listHeaderOffset
-        );
+        stickyHeaderIndices.push(itemCount + listHeaderOffset);
         // Footers
         stickyHeaderIndices.push(
-          itemCount + listHeaderOffset + sectionItemCount + 1
+          itemCount + listHeaderOffset + sectionItemCount + 1,
         );
       }
 

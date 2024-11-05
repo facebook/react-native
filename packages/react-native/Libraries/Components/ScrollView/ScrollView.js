@@ -367,7 +367,14 @@ type AndroidProps = $ReadOnly<{|
 |}>;
 
 type StickyHeaderComponentType = component(
-  ref?: React.RefSetter<$ReadOnly<interface {setNextHeaderY: number => void; setPrevHeaderY: number => void}>>,
+  ref?: React.RefSetter<
+    $ReadOnly<
+      interface {
+        setNextHeaderY: number => void,
+        setPrevHeaderY: number => void,
+      },
+    >,
+  >,
   ...ScrollViewStickyHeaderProps
 );
 
@@ -1133,8 +1140,8 @@ class ScrollView extends React.Component<Props, State> {
         this._getKeyForIndex(nextHeaderIndex, childArray),
       );
       nextHeader &&
-      nextHeader.setPrevHeaderY &&
-      nextHeader.setPrevHeaderY(layoutY);
+        nextHeader.setPrevHeaderY &&
+        nextHeader.setPrevHeaderY(layoutY);
     }
   }
 
@@ -1675,8 +1682,14 @@ class ScrollView extends React.Component<Props, State> {
           const prevIndex = stickyHeaderIndices[indexOfIndex - 1];
           const nextKey = this._getKeyForIndex(nextIndex, children);
           const prevKey = this._getKeyForIndex(prevIndex, children);
-          const prevHeaderLayoutY = prevKey !== undefined ? this._headerLayoutYs.get(prevKey) : undefined;
-          const prevHeaderLayoutHeight = prevKey !== undefined ? this._headerLayoutHeights.get(prevKey) : undefined;
+          const prevHeaderLayoutY =
+            prevKey !== undefined
+              ? this._headerLayoutYs.get(prevKey)
+              : undefined;
+          const prevHeaderLayoutHeight =
+            prevKey !== undefined
+              ? this._headerLayoutHeights.get(prevKey)
+              : undefined;
           const StickyHeaderComponent =
             this.props.StickyHeaderComponent || ScrollViewStickyHeader;
           return (
@@ -1685,7 +1698,8 @@ class ScrollView extends React.Component<Props, State> {
               ref={ref => this._setStickyHeaderRef(key, ref)}
               nextHeaderLayoutY={this._headerLayoutYs.get(nextKey)}
               prevHeaderLayoutY={
-                prevHeaderLayoutY !== undefined && prevHeaderLayoutHeight !== undefined
+                prevHeaderLayoutY !== undefined &&
+                prevHeaderLayoutHeight !== undefined
                   ? prevHeaderLayoutY + prevHeaderLayoutHeight
                   : undefined
               }
