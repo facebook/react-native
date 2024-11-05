@@ -5,26 +5,22 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.uimanager.debug;
+package com.facebook.react.uimanager.debug
 
-import com.facebook.react.common.annotations.DeprecatedInNewArchitecture;
-import com.facebook.react.uimanager.UIManagerModule;
+import com.facebook.react.common.annotations.DeprecatedInNewArchitecture
 
 /**
  * A listener that is notified about view hierarchy update events. This listener should only be used
  * for debug purposes and should not affect application state.
  *
- * <p>NB: while onViewHierarchyUpdateFinished will always be called from the UI thread, there are no
+ * NB: while [onViewHierarchyUpdateFinished] will always be called from the UI thread, there are no
  * guarantees what thread onViewHierarchyUpdateEnqueued is called on.
  */
 @DeprecatedInNewArchitecture
-public interface NotThreadSafeViewHierarchyUpdateDebugListener {
-
-  /**
-   * Called when {@link UIManagerModule} enqueues a UI batch to be dispatched to the main thread.
-   */
-  void onViewHierarchyUpdateEnqueued();
+internal interface NotThreadSafeViewHierarchyUpdateDebugListener {
+  /** Called when `UIManagerModule` enqueues a UI batch to be dispatched to the main thread. */
+  fun onViewHierarchyUpdateEnqueued()
 
   /** Called from the main thread after a UI batch has been applied to all root views. */
-  void onViewHierarchyUpdateFinished();
+  fun onViewHierarchyUpdateFinished()
 }

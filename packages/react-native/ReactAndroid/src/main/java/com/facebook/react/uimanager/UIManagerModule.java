@@ -687,6 +687,8 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     }
   }
 
+  // NOTE: When converted to Kotlin this method should be `internal` due to
+  // visibility restriction for `NotThreadSafeViewHierarchyUpdateDebugListener`
   public void setViewHierarchyUpdateDebugListener(
       @Nullable NotThreadSafeViewHierarchyUpdateDebugListener listener) {
     mUIImplementation.setViewHierarchyUpdateDebugListener(listener);
