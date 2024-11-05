@@ -418,7 +418,7 @@ class JSI_EXPORT Runtime {
 // Base class for pointer-storing types.
 class JSI_EXPORT Pointer {
  protected:
-  explicit Pointer(Pointer&& other) : ptr_(other.ptr_) {
+  explicit Pointer(Pointer&& other) noexcept : ptr_(other.ptr_) {
     other.ptr_ = nullptr;
   }
 
@@ -428,7 +428,7 @@ class JSI_EXPORT Pointer {
     }
   }
 
-  Pointer& operator=(Pointer&& other);
+  Pointer& operator=(Pointer&& other) noexcept;
 
   friend class Runtime;
   friend class Value;
