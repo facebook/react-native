@@ -3303,17 +3303,6 @@ public final class com/facebook/react/modules/deviceinfo/DeviceInfoModule : com/
 	public fun onHostResume ()V
 }
 
-public final class com/facebook/react/modules/devloading/DevLoadingModule : com/facebook/fbreact/specs/NativeDevLoadingViewSpec {
-	public static final field Companion Lcom/facebook/react/modules/devloading/DevLoadingModule$Companion;
-	public static final field NAME Ljava/lang/String;
-	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
-	public fun hide ()V
-	public fun showMessage (Ljava/lang/String;Ljava/lang/Double;Ljava/lang/Double;)V
-}
-
-public final class com/facebook/react/modules/devloading/DevLoadingModule$Companion {
-}
-
 public class com/facebook/react/modules/dialog/AlertFragment : androidx/fragment/app/DialogFragment, android/content/DialogInterface$OnClickListener {
 	public fun <init> ()V
 	public fun <init> (Lcom/facebook/react/modules/dialog/DialogModule$AlertFragmentListener;Landroid/os/Bundle;)V
