@@ -477,10 +477,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image, CGSize size, CGFloat scal
 
     // Add missing png extension
     if (request.URL.fileURL && request.URL.pathExtension.length == 0) {
-      NSURL *pngRequestURL = [request.URL URLByAppendingPathExtension:@"png"];
-      if ([[NSFileManager defaultManager] fileExistsAtPath:pngRequestURL.path]) {
-        mutableRequest.URL = pngRequestURL;
-      }
+      mutableRequest.URL = [request.URL URLByAppendingPathExtension:@"png"];
     }
     if (_redirectDelegate != nil) {
       mutableRequest.URL = [_redirectDelegate redirectAssetsURL:mutableRequest.URL];
