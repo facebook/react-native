@@ -147,6 +147,9 @@ public open class ReleaseDevSupportManager : DevSupportManager {
   override public val currentActivity: Activity?
     get() = null
 
+  override public val currentReactContext: ReactContext?
+    get() = null
+
   override public fun createSurfaceDelegate(moduleName: String?): SurfaceDelegate? = null
 
   override public fun openDebugger(): Unit = Unit
