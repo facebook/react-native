@@ -107,7 +107,7 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
   private @Nullable DebugOverlayController mDebugOverlayController;
   private boolean mDevLoadingViewVisible = false;
   private int mPendingJSSplitBundleRequests = 0;
-  private @Nullable ReactContext mCurrentContext;
+  private @Nullable ReactContext mCurrentReactContext;
   private final DeveloperSettings mDevSettings;
   private boolean mIsReceiverRegistered = false;
   private boolean mIsShakeDetectorStarted = false;
@@ -429,11 +429,11 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
         () -> {
           boolean nextEnabled = !mDevSettings.isHotModuleReplacementEnabled();
           mDevSettings.setHotModuleReplacementEnabled(nextEnabled);
-          if (mCurrentContext != null) {
+          if (mCurrentReactContext != null) {
             if (nextEnabled) {
-              mCurrentContext.getJSModule(HMRClient.class).enable();
+              mCurrentReactContext.getJSModule(HMRClient.class).enable();
             } else {
-              mCurrentContext.getJSModule(HMRClient.class).disable();
+              mCurrentReactContext.getJSModule(HMRClient.class).disable();
             }
           }
           if (nextEnabled && !mDevSettings.isJSDevModeEnabled()) {
@@ -542,8 +542,10 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
             .setOnCancelListener(dialog -> mDevOptionsDialog = null)
             .create();
     mDevOptionsDialog.show();
-    if (mCurrentContext != null) {
-      mCurrentContext.getJSModule(RCTNativeAppEventEmitter.class).emit("RCTDevMenuShown", null);
+    if (mCurrentReactContext != null) {
+      mCurrentReactContext
+          .getJSModule(RCTNativeAppEventEmitter.class)
+          .emit("RCTDevMenuShown", null);
     }
   }
 
@@ -588,7 +590,7 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
 
   @Override
   public void onReactInstanceDestroyed(ReactContext reactContext) {
-    if (reactContext == mCurrentContext) {
+    if (reactContext == mCurrentReactContext) {
       // only call reset context when the destroyed context matches the one that is currently set
       // for this manager
       resetCurrentContext(null);
@@ -664,12 +666,12 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
   }
 
   private void resetCurrentContext(@Nullable ReactContext reactContext) {
-    if (mCurrentContext == reactContext) {
+    if (mCurrentReactContext == reactContext) {
       // new context is the same as the old one - do nothing
       return;
     }
 
-    mCurrentContext = reactContext;
+    mCurrentReactContext = reactContext;
 
     // Recreate debug overlay controller with new CatalystInstance object
     if (mDebugOverlayController != null) {
@@ -679,13 +681,13 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
       mDebugOverlayController = new DebugOverlayController(reactContext);
     }
 
-    if (mCurrentContext != null) {
+    if (mCurrentReactContext != null) {
       try {
         URL sourceUrl = new URL(getSourceUrl());
         String path = sourceUrl.getPath().substring(1); // strip initial slash in path
         String host = sourceUrl.getHost();
         int port = sourceUrl.getPort() != -1 ? sourceUrl.getPort() : sourceUrl.getDefaultPort();
-        mCurrentContext
+        mCurrentReactContext
             .getJSModule(HMRClient.class)
             .setup("android", path, host, port, mDevSettings.isHotModuleReplacementEnabled());
       } catch (MalformedURLException e) {
@@ -705,8 +707,8 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
     }
   }
 
-  protected @Nullable ReactContext getCurrentContext() {
-    return mCurrentContext;
+  protected @Nullable ReactContext getCurrentReactContext() {
+    return mCurrentReactContext;
   }
 
   public @Nullable String getJSAppBundleName() {
@@ -783,7 +785,7 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
                 public void onSuccess() {
                   UiThreadUtil.runOnUiThread(() -> hideSplitBundleDevLoadingView());
 
-                  @Nullable ReactContext context = mCurrentContext;
+                  @Nullable ReactContext context = mCurrentReactContext;
                   if (context == null || !context.hasActiveReactInstance()) {
                     return;
                   }
@@ -864,10 +866,10 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
   }
 
   private void handleCaptureHeap(final Responder responder) {
-    if (mCurrentContext == null) {
+    if (mCurrentReactContext == null) {
       return;
     }
-    JSCHeapCapture heapCapture = mCurrentContext.getNativeModule(JSCHeapCapture.class);
+    JSCHeapCapture heapCapture = mCurrentReactContext.getNativeModule(JSCHeapCapture.class);
 
     if (heapCapture != null) {
       heapCapture.captureHeap(
@@ -1160,7 +1162,7 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
   @Override
   public void openDebugger() {
     mDevServerHelper.openDebugger(
-        mCurrentContext, mApplicationContext.getString(R.string.catalyst_open_debugger_error));
+        mCurrentReactContext, mApplicationContext.getString(R.string.catalyst_open_debugger_error));
   }
 
   @Override

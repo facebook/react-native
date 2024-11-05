@@ -97,8 +97,8 @@ public final class BridgeDevSupportManager extends DevSupportManagerBase {
         new CallbackWithBundleLoader() {
           @Override
           public void onSuccess(JSBundleLoader bundleLoader) {
-            bundleLoader.loadScript(getCurrentContext().getCatalystInstance());
-            getCurrentContext()
+            bundleLoader.loadScript(getCurrentReactContext().getCatalystInstance());
+            getCurrentReactContext()
                 .getJSModule(HMRClient.class)
                 .registerBundle(getDevServerHelper().getDevServerSplitBundleURL(bundlePath));
             callback.onSuccess();
