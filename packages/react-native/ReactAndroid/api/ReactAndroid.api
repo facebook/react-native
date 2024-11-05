@@ -6862,41 +6862,6 @@ public final class com/facebook/react/views/progressbar/ReactProgressBarViewMana
 	public final fun createProgressBar (Landroid/content/Context;I)Landroid/widget/ProgressBar;
 }
 
-public final class com/facebook/react/views/safeareaview/ReactSafeAreaView : android/view/ViewGroup {
-	public fun <init> (Lcom/facebook/react/uimanager/ThemedReactContext;)V
-	public final fun getReactContext ()Lcom/facebook/react/uimanager/ThemedReactContext;
-}
-
-public final class com/facebook/react/views/safeareaview/ReactSafeAreaViewManager : com/facebook/react/uimanager/ViewGroupManager, com/facebook/react/viewmanagers/SafeAreaViewManagerInterface {
-	public static final field Companion Lcom/facebook/react/views/safeareaview/ReactSafeAreaViewManager$Companion;
-	public static final field REACT_CLASS Ljava/lang/String;
-	public fun <init> ()V
-	public fun createShadowNodeInstance ()Lcom/facebook/react/uimanager/LayoutShadowNode;
-	public synthetic fun createShadowNodeInstance ()Lcom/facebook/react/uimanager/ReactShadowNode;
-	public synthetic fun createViewInstance (Lcom/facebook/react/uimanager/ThemedReactContext;)Landroid/view/View;
-	public fun getName ()Ljava/lang/String;
-	public fun getShadowNodeClass ()Ljava/lang/Class;
-	public synthetic fun updateState (Landroid/view/View;Lcom/facebook/react/uimanager/ReactStylesDiffMap;Lcom/facebook/react/uimanager/StateWrapper;)Ljava/lang/Object;
-	public fun updateState (Lcom/facebook/react/views/safeareaview/ReactSafeAreaView;Lcom/facebook/react/uimanager/ReactStylesDiffMap;Lcom/facebook/react/uimanager/StateWrapper;)Ljava/lang/Object;
-}
-
-public class com/facebook/react/views/safeareaview/ReactSafeAreaViewManager$$PropsSetter : com/facebook/react/uimanager/ViewManagerPropertyUpdater$ViewManagerSetter {
-	public fun <init> ()V
-	public fun getProperties (Ljava/util/Map;)V
-	public synthetic fun setProperty (Lcom/facebook/react/uimanager/ViewManager;Landroid/view/View;Ljava/lang/String;Ljava/lang/Object;)V
-	public fun setProperty (Lcom/facebook/react/views/safeareaview/ReactSafeAreaViewManager;Lcom/facebook/react/views/safeareaview/ReactSafeAreaView;Ljava/lang/String;Ljava/lang/Object;)V
-}
-
-public final class com/facebook/react/views/safeareaview/ReactSafeAreaViewManager$Companion {
-}
-
-public class com/facebook/react/views/safeareaview/ReactSafeAreaViewShadowNode$$PropsSetter : com/facebook/react/uimanager/ViewManagerPropertyUpdater$ShadowNodeSetter {
-	public fun <init> ()V
-	public fun getProperties (Ljava/util/Map;)V
-	public synthetic fun setProperty (Lcom/facebook/react/uimanager/ReactShadowNode;Ljava/lang/String;Ljava/lang/Object;)V
-	public fun setProperty (Lcom/facebook/react/views/safeareaview/ReactSafeAreaViewShadowNode;Ljava/lang/String;Ljava/lang/Object;)V
-}
-
 public abstract interface class com/facebook/react/views/scroll/FpsListener {
 	public abstract fun disable (Ljava/lang/String;)V
 	public abstract fun enable (Ljava/lang/String;)V
