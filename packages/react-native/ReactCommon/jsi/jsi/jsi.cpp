@@ -258,7 +258,7 @@ std::u16string Runtime::utf16(const String& str) {
   return convertUTF8ToUTF16(utf8Str);
 }
 
-Pointer& Pointer::operator=(Pointer&& other) {
+Pointer& Pointer::operator=(Pointer&& other) noexcept {
   if (ptr_) {
     ptr_->invalidate();
   }
