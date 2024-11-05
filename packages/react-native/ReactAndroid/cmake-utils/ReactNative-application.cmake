@@ -41,7 +41,7 @@ if (PROJECT_ROOT_DIR)
 endif ()
 
 file(GLOB input_SRC CONFIGURE_DEPENDS
-        *.cpp
+        ${REACT_ANDROID_DIR}/cmake-utils/default-app-setup/*.cpp
         ${BUILD_DIR}/generated/autolinking/src/main/jni/*.cpp)
 
 add_library(${CMAKE_PROJECT_NAME} SHARED ${input_SRC})
