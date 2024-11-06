@@ -25,3 +25,9 @@ appId: ${APP_ID} # iOS: com.meta.RNTester.localDevelopment | Android: com.facebo
           timeout: 1000
 - assertVisible:
     id: "item_600"
+- assertVisible: 
+    text: "Empty"
+- tapOn:
+    id: "switch_empty_option"
+- assertVisible:
+    text: "The list is empty :o"
