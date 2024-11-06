@@ -9,6 +9,7 @@
 #include <cxxreact/ErrorUtils.h>
 #include <glog/logging.h>
 #include <react/bridging/Bridging.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <string>
 #include "StackTraceParser.h"
 
@@ -228,7 +229,9 @@ void JsErrorHandler::handleError(
     bool logToConsole) {
   // TODO: Current error parsing works and is stable. Can investigate using
   // REGEX_HERMES to get additional Hermes data, though it requires JS setup
-  if (_isRuntimeReady) {
+
+  if (!ReactNativeFeatureFlags::useAlwaysAvailableJSErrorHandling() &&
+      _isRuntimeReady) {
     if (isFatal) {
       _hasHandledFatalError = true;
     }
@@ -325,7 +328,7 @@ void JsErrorHandler::handleErrorWithCppPipeline(
   auto id = nextExceptionId();
 
   ParsedError parsedError = {
-      .message = "EarlyJsError: " + message,
+      .message = _isRuntimeReady ? message : ("EarlyJsError: " + message),
       .originalMessage = originalMessage,
       .name = name,
       .componentStack = componentStack,

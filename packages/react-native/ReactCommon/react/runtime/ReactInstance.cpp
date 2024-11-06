@@ -411,6 +411,27 @@ void ReactInstance::initializeRuntime(
 
     defineReadOnlyGlobal(
         runtime,
+        "RN$useAlwaysAvailableJSErrorHandling",
+        jsi::Value(
+            ReactNativeFeatureFlags::useAlwaysAvailableJSErrorHandling()));
+
+    defineReadOnlyGlobal(
+        runtime,
+        "RN$isRuntimeReady",
+        jsi::Function::createFromHostFunction(
+            runtime,
+            jsi::PropNameID::forAscii(runtime, "isRuntimeReady"),
+            0,
+            [jsErrorHandler = jsErrorHandler_](
+                jsi::Runtime& /*runtime*/,
+                const jsi::Value& /*unused*/,
+                const jsi::Value* /*args*/,
+                size_t /*count*/) {
+              return jsErrorHandler->isRuntimeReady();
+            }));
+
+    defineReadOnlyGlobal(
+        runtime,
         "RN$inExceptionHandler",
         jsi::Function::createFromHostFunction(
             runtime,
@@ -444,12 +465,16 @@ void ReactInstance::initializeRuntime(
               }
 
               auto isFatal = isTruthy(runtime, args[1]);
-              if (jsErrorHandler->isRuntimeReady()) {
-                if (isFatal) {
-                  jsErrorHandler->notifyOfFatalError();
-                }
 
-                return jsi::Value(false);
+              if (!ReactNativeFeatureFlags::
+                      useAlwaysAvailableJSErrorHandling()) {
+                if (jsErrorHandler->isRuntimeReady()) {
+                  if (isFatal) {
+                    jsErrorHandler->notifyOfFatalError();
+                  }
+
+                  return jsi::Value(false);
+                }
               }
 
               auto jsError =
