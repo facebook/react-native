@@ -16,7 +16,7 @@ import kotlin.collections.Map
  * Kotlin.
  */
 public interface ReadableMap {
-  public val entryIterator: Iterator<Map.Entry<String, Any?>>
+  public val entryIterator: Iterator<Map.Entry<String, Any>>
 
   public fun getArray(name: String): ReadableArray?
 
@@ -42,5 +42,5 @@ public interface ReadableMap {
 
   public fun keySetIterator(): ReadableMapKeySetIterator
 
-  public fun toHashMap(): HashMap<String, Any?>
+  public fun toHashMap(): HashMap<String, Any>
 }
