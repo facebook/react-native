@@ -7527,16 +7527,6 @@ public class com/facebook/react/views/text/ReactVirtualTextShadowNode : com/face
 	public fun isVirtual ()Z
 }
 
-public class com/facebook/react/views/text/ReactVirtualTextViewManager : com/facebook/react/uimanager/BaseViewManager {
-	public fun <init> ()V
-	public synthetic fun createShadowNodeInstance ()Lcom/facebook/react/uimanager/ReactShadowNode;
-	public fun createShadowNodeInstance ()Lcom/facebook/react/views/text/ReactVirtualTextShadowNode;
-	public fun createViewInstance (Lcom/facebook/react/uimanager/ThemedReactContext;)Landroid/view/View;
-	public fun getName ()Ljava/lang/String;
-	public fun getShadowNodeClass ()Ljava/lang/Class;
-	public fun updateExtraData (Landroid/view/View;Ljava/lang/Object;)V
-}
-
 public class com/facebook/react/views/text/TextAttributeProps {
 	public static final field TA_KEY_ACCESSIBILITY_ROLE S
 	public static final field TA_KEY_ALIGNMENT S
