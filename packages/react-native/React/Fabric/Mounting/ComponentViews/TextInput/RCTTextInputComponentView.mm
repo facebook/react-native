@@ -273,6 +273,10 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
   if (newTextInputProps.inputAccessoryViewID != oldTextInputProps.inputAccessoryViewID) {
     _backedTextInputView.inputAccessoryViewID = RCTNSStringFromString(newTextInputProps.inputAccessoryViewID);
   }
+
+  if (newTextInputProps.inputAccessoryViewButtonLabel != oldTextInputProps.inputAccessoryViewButtonLabel) {
+    _backedTextInputView.inputAccessoryViewButtonLabel = RCTNSStringFromString(newTextInputProps.inputAccessoryViewButtonLabel);
+  }
   [super updateProps:props oldProps:oldProps];
 
   [self setDefaultInputAccessoryView];
@@ -581,22 +585,24 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
 
   UIKeyboardType keyboardType = _backedTextInputView.keyboardType;
   UIReturnKeyType returnKeyType = _backedTextInputView.returnKeyType;
+  NSString *inputAccessoryViewButtonLabel = _backedTextInputView.inputAccessoryViewButtonLabel;
 
   BOOL containsKeyType = [returnKeyTypesSet containsObject:@(returnKeyType)];
+  BOOL containsInputAccessoryViewButtonLabel = inputAccessoryViewButtonLabel != nil;
 
   // These keyboard types (all are number pads) don't have a "returnKey" button by default,
   // so we create an `inputAccessoryView` with this button for them.
   BOOL shouldHaveInputAccessoryView =
       (keyboardType == UIKeyboardTypeNumberPad || keyboardType == UIKeyboardTypePhonePad ||
        keyboardType == UIKeyboardTypeDecimalPad || keyboardType == UIKeyboardTypeASCIICapableNumberPad) &&
-      containsKeyType;
+      (containsKeyType || containsInputAccessoryViewButtonLabel);
 
   if ((_backedTextInputView.inputAccessoryView != nil) == shouldHaveInputAccessoryView) {
     return;
   }
 
   if (shouldHaveInputAccessoryView) {
-    NSString *buttonLabel = [self returnKeyTypeToString:returnKeyType];
+    NSString *buttonLabel = inputAccessoryViewButtonLabel != nil ? inputAccessoryViewButtonLabel : [self returnKeyTypeToString:returnKeyType];
 
     UIToolbar *toolbarView = [UIToolbar new];
     [toolbarView sizeToFit];
