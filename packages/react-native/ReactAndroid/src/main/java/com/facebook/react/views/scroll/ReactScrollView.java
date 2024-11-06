@@ -781,7 +781,7 @@ public class ReactScrollView extends ScrollView
         } else {
           // There has not been a scroll update since the last time this Runnable executed.
           ReactScrollViewHelper.emitScrollMomentumEndEvent(ReactScrollView.this);
-          ReactScrollView.this.mPostSmoothScrollRunnable = null;
+          mPostSmoothScrollRunnable = null;
           disableFpsListener();
         }
       }
