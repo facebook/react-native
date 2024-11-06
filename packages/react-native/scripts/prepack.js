@@ -10,6 +10,7 @@
  */
 
 const {
+  generateFBReactNativeSpecIOS,
   generateRNCoreComponentsIOS,
 } = require('./codegen/generate-artifacts-executor');
 const fs = require('fs');
@@ -18,6 +19,7 @@ function main() {
   console.info('[Prepack] Copying README.md');
   fs.copyFileSync('../../README.md', './README.md');
   generateRNCoreComponentsIOS('.');
+  generateFBReactNativeSpecIOS('.');
 }
 
 if (require.main === module) {

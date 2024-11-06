@@ -71,7 +71,7 @@ Pod::Spec.new do |s|
   s.dependency "SocketRocket", socket_rocket_version
   add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')
 
-  add_dependency(s, "ReactCodegen")
+  add_dependency(s, "React-RCTFBReactNativeSpec")
   add_dependency(s, "ReactCommon", :subspec => "turbomodule/core", :additional_framework_paths => ["react/nativemodule/core"])
   add_dependency(s, "React-NativeModulesApple")
 end
