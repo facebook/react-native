@@ -6149,15 +6149,15 @@ public final class com/facebook/react/uimanager/style/Overflow$Companion {
 	public final fun fromString (Ljava/lang/String;)Lcom/facebook/react/uimanager/style/Overflow;
 }
 
-public class com/facebook/react/uimanager/util/ReactFindViewUtil {
-	public fun <init> ()V
-	public static fun addViewListener (Lcom/facebook/react/uimanager/util/ReactFindViewUtil$OnViewFoundListener;)V
-	public static fun addViewsListener (Lcom/facebook/react/uimanager/util/ReactFindViewUtil$OnMultipleViewsFoundListener;Ljava/util/Set;)V
-	public static fun findView (Landroid/view/View;Lcom/facebook/react/uimanager/util/ReactFindViewUtil$OnViewFoundListener;)V
-	public static fun findView (Landroid/view/View;Ljava/lang/String;)Landroid/view/View;
-	public static fun notifyViewRendered (Landroid/view/View;)V
-	public static fun removeViewListener (Lcom/facebook/react/uimanager/util/ReactFindViewUtil$OnViewFoundListener;)V
-	public static fun removeViewsListener (Lcom/facebook/react/uimanager/util/ReactFindViewUtil$OnMultipleViewsFoundListener;)V
+public final class com/facebook/react/uimanager/util/ReactFindViewUtil {
+	public static final field INSTANCE Lcom/facebook/react/uimanager/util/ReactFindViewUtil;
+	public static final fun addViewListener (Lcom/facebook/react/uimanager/util/ReactFindViewUtil$OnViewFoundListener;)V
+	public static final fun addViewsListener (Lcom/facebook/react/uimanager/util/ReactFindViewUtil$OnMultipleViewsFoundListener;Ljava/util/Set;)V
+	public static final fun findView (Landroid/view/View;Lcom/facebook/react/uimanager/util/ReactFindViewUtil$OnViewFoundListener;)V
+	public static final fun findView (Landroid/view/View;Ljava/lang/String;)Landroid/view/View;
+	public static final fun notifyViewRendered (Landroid/view/View;)V
+	public static final fun removeViewListener (Lcom/facebook/react/uimanager/util/ReactFindViewUtil$OnViewFoundListener;)V
+	public static final fun removeViewsListener (Lcom/facebook/react/uimanager/util/ReactFindViewUtil$OnMultipleViewsFoundListener;)V
 }
 
 public abstract interface class com/facebook/react/uimanager/util/ReactFindViewUtil$OnMultipleViewsFoundListener {
