@@ -197,6 +197,7 @@ class FlatListExample extends React.PureComponent<Props, State> {
                 'Empty',
                 this.state.empty,
                 this._setBooleanValue('empty'),
+                'switch_empty_option'
               )}
               {renderSmallSwitchOption(
                 'Debug',
