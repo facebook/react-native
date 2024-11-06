@@ -6801,14 +6801,16 @@ public final class com/facebook/react/views/scroll/OnScrollDispatchHelper {
 	public final fun onScrollChanged (II)Z
 }
 
-public final class com/facebook/react/views/scroll/ReactHorizontalScrollContainerViewManager : com/facebook/react/views/view/ReactViewManager {
+public final class com/facebook/react/views/scroll/ReactHorizontalScrollContainerViewManager : com/facebook/react/views/view/ReactViewManager, com/facebook/react/viewmanagers/AndroidHorizontalScrollContentViewManagerInterface {
 	public static final field Companion Lcom/facebook/react/views/scroll/ReactHorizontalScrollContainerViewManager$Companion;
 	public static final field REACT_CLASS Ljava/lang/String;
 	public fun <init> ()V
 	public synthetic fun createViewInstance (ILcom/facebook/react/uimanager/ThemedReactContext;Lcom/facebook/react/uimanager/ReactStylesDiffMap;Lcom/facebook/react/uimanager/StateWrapper;)Landroid/view/View;
 	public synthetic fun createViewInstance (Lcom/facebook/react/uimanager/ThemedReactContext;)Landroid/view/View;
 	public fun createViewInstance (Lcom/facebook/react/uimanager/ThemedReactContext;)Lcom/facebook/react/views/view/ReactViewGroup;
+	public fun getDelegate ()Lcom/facebook/react/uimanager/ViewManagerDelegate;
 	public fun getName ()Ljava/lang/String;
+	public synthetic fun setRemoveClippedSubviews (Landroid/view/View;Z)V
 }
 
 public final class com/facebook/react/views/scroll/ReactHorizontalScrollContainerViewManager$Companion {
