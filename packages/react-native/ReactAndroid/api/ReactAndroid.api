@@ -1907,19 +1907,6 @@ public final class com/facebook/react/common/build/ReactBuildConfig {
 	public static final field IS_INTERNAL_BUILD Z
 }
 
-public final class com/facebook/react/common/futures/SimpleSettableFuture : java/util/concurrent/Future {
-	public fun <init> ()V
-	public fun cancel (Z)Z
-	public fun get ()Ljava/lang/Object;
-	public fun get (JLjava/util/concurrent/TimeUnit;)Ljava/lang/Object;
-	public final fun getOrThrow ()Ljava/lang/Object;
-	public final fun getOrThrow (JLjava/util/concurrent/TimeUnit;)Ljava/lang/Object;
-	public fun isCancelled ()Z
-	public fun isDone ()Z
-	public final fun set (Ljava/lang/Object;)V
-	public final fun setException (Ljava/lang/Exception;)V
-}
-
 public abstract interface class com/facebook/react/common/mapbuffer/MapBuffer : java/lang/Iterable, kotlin/jvm/internal/markers/KMappedMarker {
 	public static final field Companion Lcom/facebook/react/common/mapbuffer/MapBuffer$Companion;
 	public abstract fun contains (I)Z
