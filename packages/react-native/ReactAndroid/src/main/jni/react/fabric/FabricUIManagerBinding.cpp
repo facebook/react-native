@@ -473,7 +473,6 @@ void FabricUIManagerBinding::installFabricUIManager(
         globalJavaUiManager);
   };
 
-  contextContainer->insert("ReactNativeConfig", config);
   contextContainer->insert("FabricUIManager", globalJavaUiManager);
 
   // Keep reference to config object and cache some feature flags here
