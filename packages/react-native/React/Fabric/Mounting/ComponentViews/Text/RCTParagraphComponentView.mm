@@ -306,10 +306,10 @@ using namespace facebook::react;
                                         error:nil];
 
   if (rtf) {
-    [item setObject:rtf forKey:(id)kUTTypeFlatRTFD];
+    [item setObject:rtf forKey:(id)UTTypeFlatRTFD];
   }
 
-  [item setObject:attributedText.string forKey:(id)kUTTypeUTF8PlainText];
+  [item setObject:attributedText.string forKey:(id)UTTypeUTF8PlainText];
 
   UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
   pasteboard.items = @[ item ];
