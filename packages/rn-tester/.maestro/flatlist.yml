@@ -26,7 +26,7 @@ appId: ${APP_ID} # iOS: com.meta.RNTester.localDevelopment | Android: com.facebo
 - assertVisible:
     id: "item_600"
 - assertVisible: 
-    text: "Empty"
+    text: "Empty:"
 - tapOn:
     id: "switch_empty_option"
 - assertVisible:
