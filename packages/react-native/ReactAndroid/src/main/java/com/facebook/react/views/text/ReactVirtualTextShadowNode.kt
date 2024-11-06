@@ -5,15 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.views.text;
+package com.facebook.react.views.text
 
 /** A virtual text node. */
-public class ReactVirtualTextShadowNode extends ReactBaseTextShadowNode {
+internal class ReactVirtualTextShadowNode : ReactBaseTextShadowNode() {
 
-  @Override
-  public boolean isVirtual() {
-    return true;
-  }
-
-  public ReactVirtualTextShadowNode() {}
+  override fun isVirtual(): Boolean = true
 }
