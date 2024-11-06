@@ -336,6 +336,14 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     if (accessibilityState == null) {
       return;
     }
+    
+    ReadableMapKeySetIterator iterator = accessibilityState.keySetIterator();
+    if(!iterator.hasNextKey()) {
+      //AccessibilityState is empty but not null, for example
+      // <Button accessibilityState={{}}></Button>
+      return;
+    }
+
     if (accessibilityState.hasKey("expanded")) {
       view.setTag(R.id.accessibility_state_expanded, accessibilityState.getBoolean("expanded"));
     }
