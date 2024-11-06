@@ -15,4 +15,6 @@
 - (void)setBundleURLProvider:(RCTHostBundleURLProvider)bundleURLProvider;
 - (void)setContextContainerHandler:(id<RCTContextContainerHandling>)contextContainerHandler;
 
+@property (nonatomic, readonly) RCTBundleManager *bundleManager;
+
 @end

@@ -273,6 +273,11 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
   return [_instance surfacePresenter];
 }
 
+- (RCTBundleManager *)bundleManager
+{
+  return _bundleManager;
+}
+
 - (void)callFunctionOnJSModule:(NSString *)moduleName method:(NSString *)method args:(NSArray *)args
 {
   [_instance callFunctionOnJSModule:moduleName method:method args:args];
