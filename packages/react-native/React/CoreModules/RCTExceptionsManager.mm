@@ -155,7 +155,7 @@ RCT_EXPORT_METHOD(reportException : (JS::NativeExceptionsManager::ExceptionData 
   NSArray<NSDictionary<NSString *, id> *> *stack = errorData[@"stack"];
   double exceptionId = [errorData[@"id"] doubleValue];
 
-  if (errorData[@"isFatal"]) {
+  if ([errorData[@"isFatal"] boolValue]) {
     [self reportFatal:message stack:stack exceptionId:exceptionId extraDataAsJSON:extraDataAsJSON];
   } else {
     [self reportSoft:message stack:stack exceptionId:exceptionId extraDataAsJSON:extraDataAsJSON];
