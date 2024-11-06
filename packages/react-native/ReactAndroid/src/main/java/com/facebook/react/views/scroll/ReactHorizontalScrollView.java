@@ -107,6 +107,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   private boolean mPreventReentry = false;
   private boolean mEnableSyncOnScroll = false;
   private boolean mSendMomentumEvents;
+  private boolean mMomentumScrollBeginFired = false;
   private @Nullable FpsListener mFpsListener = null;
   private @Nullable String mScrollPerfTag;
   private @Nullable Drawable mEndBackground;
@@ -991,33 +992,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
         this, mPostTouchRunnable, ReactScrollViewHelper.MOMENTUM_DELAY);
   }
 
-  public void handleSmoothScrollMomentumEvents() {
-    if (!mSendMomentumEvents || null != mPostSmoothScrollRunnable) {
-      return;
-    }
-
-    enableFpsListener();
-    mActivelyScrolling = false;
-    mPostSmoothScrollRunnable = new Runnable() {
-
-      @Override
-      public void run() {
-        if (mActivelyScrolling) {
-          // We are still scrolling so we just post to check again a frame later
-          mActivelyScrolling = false;
-          ViewCompat.postOnAnimationDelayed(
-            ReactHorizontalScrollView.this, this, ReactScrollViewHelper.MOMENTUM_DELAY);
-        } else {
-          ReactScrollViewHelper.emitScrollMomentumEndEvent(ReactHorizontalScrollView.this);
-          ReactHorizontalScrollView.this.mPostSmoothScrollRunnable = null;
-          disableFpsListener();
-        }
-      }
-    };
-    ViewCompat.postOnAnimationDelayed(
-      ReactHorizontalScrollView.this, mPostSmoothScrollRunnable, ReactScrollViewHelper.MOMENTUM_DELAY);
-
-  }
+  
 
   private void cancelPostTouchScrolling() {
     if (mPostTouchRunnable != null) {
@@ -1041,6 +1016,42 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
                 velocityX)
             + getFlingExtrapolatedDistance(velocityX);
   }
+
+  public void handleSmoothScrollMomentumEvents() {
+    if (!mSendMomentumEvents || mPostSmoothScrollRunnable != null) {
+        return;
+    }
+    enableFpsListener();
+    mActivelyScrolling = false;
+    mPostSmoothScrollRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (mActivelyScrolling) {
+                mActivelyScrolling = false;
+                ViewCompat.postOnAnimationDelayed(
+                    ReactHorizontalScrollView.this, this, ReactScrollViewHelper.MOMENTUM_DELAY);
+            } else {
+                if (mMomentumScrollBeginFired) {
+                    ReactScrollViewHelper.emitScrollMomentumEndEvent(ReactHorizontalScrollView.this);
+                    mMomentumScrollBeginFired = false;
+                }
+                ReactHorizontalScrollView.this.mPostSmoothScrollRunnable = null;
+                disableFpsListener();
+            }
+        }
+    };
+    ViewCompat.postOnAnimationDelayed(
+        ReactHorizontalScrollView.this, mPostSmoothScrollRunnable, ReactScrollViewHelper.MOMENTUM_DELAY);
+}
+
+@Override
+public void fling(int velocityX) {
+    super.fling(velocityX);
+    if (mSendMomentumEvents) {
+        ReactScrollViewHelper.emitScrollMomentumBeginEvent(this, velocityX, 0);
+        mMomentumScrollBeginFired = true;
+    }
+}
 
   /**
    * This will smooth scroll us to the nearest snap offset point. It currently just looks at where
