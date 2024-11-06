@@ -11,24 +11,15 @@ import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.ReactStylesDiffMap
 import com.facebook.react.uimanager.StateWrapper
 import com.facebook.react.uimanager.ThemedReactContext
-import com.facebook.react.uimanager.ViewManagerDelegate
 import com.facebook.react.uimanager.common.UIManagerType
 import com.facebook.react.uimanager.common.ViewUtil
-import com.facebook.react.viewmanagers.AndroidHorizontalScrollContentViewManagerDelegate
-import com.facebook.react.viewmanagers.AndroidHorizontalScrollContentViewManagerInterface
 import com.facebook.react.views.view.ReactViewGroup
 import com.facebook.react.views.view.ReactViewManager
 
 /** View manager for {@link ReactHorizontalScrollContainerView} components. */
 @ReactModule(name = ReactHorizontalScrollContainerViewManager.REACT_CLASS)
-public class ReactHorizontalScrollContainerViewManager :
-    ReactViewManager(), AndroidHorizontalScrollContentViewManagerInterface<ReactViewGroup> {
+public class ReactHorizontalScrollContainerViewManager : ReactViewManager() {
   override public fun getName(): String = REACT_CLASS
-
-  private val delegate: ViewManagerDelegate<ReactViewGroup> =
-      AndroidHorizontalScrollContentViewManagerDelegate(this)
-
-  public override fun getDelegate(): ViewManagerDelegate<ReactViewGroup> = delegate
 
   protected override fun createViewInstance(
       reactTag: Int,
