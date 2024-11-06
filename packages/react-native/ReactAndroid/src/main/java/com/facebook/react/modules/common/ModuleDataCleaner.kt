@@ -15,7 +15,7 @@ import com.facebook.react.common.ReactConstants
  * Cleans sensitive user data from native modules that implement the [Cleanable] interface. This is
  * useful e.g. when a user logs out from an app.
  */
-public object ModuleDataCleaner {
+internal object ModuleDataCleaner {
 
   @JvmStatic
   public fun cleanDataFromModules(reactContext: ReactContext) {

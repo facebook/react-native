@@ -3048,15 +3048,6 @@ public final class com/facebook/react/modules/camera/ImageStoreManager : com/fac
 public final class com/facebook/react/modules/camera/ImageStoreManager$Companion {
 }
 
-public final class com/facebook/react/modules/common/ModuleDataCleaner {
-	public static final field INSTANCE Lcom/facebook/react/modules/common/ModuleDataCleaner;
-	public static final fun cleanDataFromModules (Lcom/facebook/react/bridge/ReactContext;)V
-}
-
-public abstract interface class com/facebook/react/modules/common/ModuleDataCleaner$Cleanable {
-	public abstract fun clearSensitiveData ()V
-}
-
 public class com/facebook/react/modules/core/ChoreographerCompat {
 	public fun <init> ()V
 }
