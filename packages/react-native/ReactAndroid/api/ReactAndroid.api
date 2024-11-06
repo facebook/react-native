@@ -7522,11 +7522,6 @@ public class com/facebook/react/views/text/ReactTypefaceUtils {
 	public static fun parseFontWeight (Ljava/lang/String;)I
 }
 
-public class com/facebook/react/views/text/ReactVirtualTextShadowNode : com/facebook/react/views/text/ReactBaseTextShadowNode {
-	public fun <init> ()V
-	public fun isVirtual ()Z
-}
-
 public class com/facebook/react/views/text/TextAttributeProps {
 	public static final field TA_KEY_ACCESSIBILITY_ROLE S
 	public static final field TA_KEY_ALIGNMENT S
