@@ -763,7 +763,7 @@ public class ReactScrollView extends ScrollView
   }
 
   public void handleSmoothScrollMomentumEvents() {
-    if (!mSendMomentumEvents || null != mPostSmoothScrollRunnable) {
+    if (!mSendMomentumEvents || mPostSmoothScrollRunnable != null) {
       return;
     }
 
