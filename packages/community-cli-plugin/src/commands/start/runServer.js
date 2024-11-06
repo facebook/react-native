@@ -22,7 +22,7 @@ import attachKeyHandlers from './attachKeyHandlers';
 import {
   createDevServerMiddleware,
   indexPageMiddleware,
-} from '@react-native-community/cli-server-api';
+} from './middleware';
 import {createDevMiddleware} from '@react-native/dev-middleware';
 import chalk from 'chalk';
 import Metro from 'metro';
