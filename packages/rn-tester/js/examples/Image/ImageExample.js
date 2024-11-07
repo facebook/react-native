@@ -131,6 +131,11 @@ class NetworkImageCallbackExample extends React.Component<
         <Image
           source={this.props.source}
           style={[styles.base, styles.visibleOverflow]}
+          onError={event => {
+            this._loadEventFired(
+              `✘ onError "${event.nativeEvent.error}" (+${Date.now() - mountTime}ms)`,
+            );
+          }}
           onLoadStart={() =>
             this._loadEventFired(`✔ onLoadStart (+${Date.now() - mountTime}ms)`)
           }
@@ -465,7 +470,9 @@ class FadeDurationExample extends React.Component<
           </Text>
         </View>
         <Image fadeDuration={1500} source={loadingImage} style={styles.base} />
-        <Text>This image will fade in over the time of 1.5s.</Text>
+        <RNTesterText>
+          This image will fade in over the time of 1.5s.
+        </RNTesterText>
       </View>
     );
   }
