@@ -2042,7 +2042,7 @@ exports[`public API should not change unintentionally Libraries/Components/Scrol
 export type DecelerationRateType = \\"fast\\" | \\"normal\\" | number;
 export type ScrollResponderType = ScrollViewImperativeMethods;
 type PublicScrollViewInstance = $ReadOnly<{|
-  ...$Exact<TScrollViewNativeComponentInstance>,
+  ...HostInstance,
   ...ScrollViewImperativeMethods,
 |}>;
 type InnerViewInstance = React.ElementRef<View>;
@@ -2169,7 +2169,7 @@ declare class ScrollView extends React.Component<Props, State> {
   getScrollableNode: () => ?number;
   getInnerViewNode: () => ?number;
   getInnerViewRef: () => InnerViewInstance | null;
-  getNativeScrollRef: () => TScrollViewNativeComponentInstance | null;
+  getNativeScrollRef: () => HostInstance | null;
   scrollTo: (
     options?:
       | {
@@ -2184,9 +2184,6 @@ declare class ScrollView extends React.Component<Props, State> {
   ) => void;
   scrollToEnd: (options?: ?{ animated?: boolean, ... }) => void;
   flashScrollIndicators: () => void;
-  _subscribeToOnScroll: (
-    callback: ({ x: number, y: number }) => void
-  ) => EventSubscription;
   scrollResponderScrollNativeHandleToKeyboard: (
     nodeHandle: number | HostInstance,
     additionalOffset?: number,
@@ -2224,10 +2221,7 @@ declare class ScrollView extends React.Component<Props, State> {
   _handleLayout: $FlowFixMe;
   _handleContentOnLayout: $FlowFixMe;
   _innerView: RefForwarder<InnerViewInstance, InnerViewInstance>;
-  _scrollView: RefForwarder<
-    TScrollViewNativeImperativeHandle,
-    PublicScrollViewInstance | null,
-  >;
+  _scrollView: RefForwarder<HostInstance, PublicScrollViewInstance | null>;
   scrollResponderKeyboardWillShow: (e: KeyboardEvent) => void;
   scrollResponderKeyboardWillHide: (e: KeyboardEvent) => void;
   scrollResponderKeyboardDidShow: (e: KeyboardEvent) => void;

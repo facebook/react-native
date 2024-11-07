@@ -103,8 +103,6 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   private @Nullable Runnable mPostTouchRunnable;
   private boolean mRemoveClippedSubviews;
   private boolean mScrollEnabled = true;
-  private boolean mPreventReentry = false;
-  private boolean mEnableSyncOnScroll = false;
   private boolean mSendMomentumEvents;
   private @Nullable FpsListener mFpsListener = null;
   private @Nullable String mScrollPerfTag;
@@ -229,10 +227,6 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
 
   public void setScrollEnabled(boolean scrollEnabled) {
     mScrollEnabled = scrollEnabled;
-  }
-
-  public void setEnableSyncOnScroll(boolean enableSyncOnScroll) {
-    mEnableSyncOnScroll = enableSyncOnScroll;
   }
 
   public void setPagingEnabled(boolean pagingEnabled) {
@@ -492,16 +486,10 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
         if (mRemoveClippedSubviews) {
           updateClippingRect();
         }
-        if (mPreventReentry) {
-          return;
-        }
-        mPreventReentry = true;
         ReactScrollViewHelper.updateStateOnScrollChanged(
             this,
             mOnScrollDispatchHelper.getXFlingVelocity(),
-            mOnScrollDispatchHelper.getYFlingVelocity(),
-            mEnableSyncOnScroll);
-        mPreventReentry = false;
+            mOnScrollDispatchHelper.getYFlingVelocity());
       }
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
