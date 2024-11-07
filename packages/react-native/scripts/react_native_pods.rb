@@ -130,6 +130,7 @@ def use_react_native! (
   pod 'React-jserrorhandler', :path => "#{prefix}/ReactCommon/jserrorhandler"
   pod 'React-nativeconfig', :path => "#{prefix}/ReactCommon"
   pod 'RCTDeprecation', :path => "#{prefix}/ReactApple/Libraries/RCTFoundation/RCTDeprecation"
+  pod 'React-RCTFBReactNativeSpec', :path => "#{prefix}/React"
 
   if hermes_enabled
     setup_hermes!(:react_native_path => prefix)

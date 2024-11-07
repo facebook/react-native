@@ -50,7 +50,7 @@ Pod::Spec.new do |s|
   s.dependency "React-Core/RCTPushNotificationHeaders"
   s.dependency "React-jsi"
 
-  add_dependency(s, "ReactCodegen", :additional_framework_paths => ["build/generated/ios"])
+  add_dependency(s, "React-RCTFBReactNativeSpec")
   add_dependency(s, "ReactCommon", :subspec => "turbomodule/core", :additional_framework_paths => ["react/nativemodule/core"])
   add_dependency(s, "React-NativeModulesApple")
 end
