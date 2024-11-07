@@ -1378,10 +1378,7 @@ class EnabledExamples extends React.Component<{}> {
           />
         </RNTesterBlock>
         <RNTesterBlock title="isGrayScaleEnabled()">
-          <EnabledExample
-            test="gray scale"
-            eventListener="grayscaleChanged"
-          />
+          <EnabledExample test="gray scale" eventListener="grayscaleChanged" />
         </RNTesterBlock>
       </View>
     );
