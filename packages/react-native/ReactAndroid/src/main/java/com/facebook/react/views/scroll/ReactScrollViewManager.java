@@ -167,11 +167,6 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
     view.setScrollPerfTag(scrollPerfTag);
   }
 
-  @ReactProp(name = "enableSyncOnScroll")
-  public void setEnableSyncOnScroll(ReactScrollView view, boolean value) {
-    view.setEnableSyncOnScroll(value);
-  }
-
   @ReactProp(name = "pagingEnabled")
   public void setPagingEnabled(ReactScrollView view, boolean pagingEnabled) {
     view.setPagingEnabled(pagingEnabled);

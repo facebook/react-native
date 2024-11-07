@@ -120,15 +120,6 @@ ScrollViewProps::ScrollViewProps(
                     "endDraggingSensitivityMultiplier",
                     sourceProps.endDraggingSensitivityMultiplier,
                     (Float)1)),
-      enableSyncOnScroll(
-          ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
-              ? sourceProps.enableSyncOnScroll
-              : convertRawProp(
-                    context,
-                    rawProps,
-                    "enableSyncOnScroll",
-                    sourceProps.enableSyncOnScroll,
-                    false)),
       directionalLockEnabled(
           ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
               ? sourceProps.directionalLockEnabled
@@ -411,7 +402,6 @@ void ScrollViewProps::setProp(
     RAW_SET_PROP_SWITCH_CASE_BASIC(maximumZoomScale);
     RAW_SET_PROP_SWITCH_CASE_BASIC(minimumZoomScale);
     RAW_SET_PROP_SWITCH_CASE_BASIC(scrollEnabled);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(enableSyncOnScroll);
     RAW_SET_PROP_SWITCH_CASE_BASIC(endDraggingSensitivityMultiplier);
     RAW_SET_PROP_SWITCH_CASE_BASIC(pagingEnabled);
     RAW_SET_PROP_SWITCH_CASE_BASIC(pinchGestureEnabled);
