@@ -288,7 +288,7 @@ class JSI_EXPORT Runtime {
   // rvalue arguments/methods would also reduce the number of clones.
 
   struct PointerValue {
-    virtual void invalidate() = 0;
+    virtual void invalidate() noexcept = 0;
 
    protected:
     virtual ~PointerValue() = default;
