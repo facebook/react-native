@@ -20,10 +20,10 @@ public open class ReadableNativeMap protected constructor() : NativeMap(), Reada
   private val keys: Array<String> by
       lazy(LazyThreadSafetyMode.SYNCHRONIZED) { importKeys().also { jniPassCounter++ } }
 
-  private val localMap: HashMap<String, Any> by
+  private val localMap: HashMap<String, Any?> by
       lazy(LazyThreadSafetyMode.SYNCHRONIZED) {
         val length = keys.size
-        val res = HashMap<String, Any>(length)
+        val res = HashMap<String, Any?>(length)
         val values = importValues()
         jniPassCounter++
         for (i in 0 until length) {
@@ -157,7 +157,7 @@ public open class ReadableNativeMap protected constructor() : NativeMap(), Reada
         false
       } else localMap == other.localMap
 
-  override fun toHashMap(): HashMap<String, Any> {
+  override fun toHashMap(): HashMap<String, Any?> {
     // we can almost just return getLocalMap(), but we need to convert nested arrays and maps to the
     // correct types first
     val hashMap = HashMap(localMap)
