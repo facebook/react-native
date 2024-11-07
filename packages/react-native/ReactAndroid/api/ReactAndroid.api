@@ -7302,14 +7302,20 @@ public abstract class com/facebook/react/views/text/ReactBaseTextShadowNode : co
 	protected fun spannedFromShadowNode (Lcom/facebook/react/views/text/ReactBaseTextShadowNode;Ljava/lang/String;ZLcom/facebook/react/uimanager/NativeViewHierarchyOptimizer;)Landroid/text/Spannable;
 }
 
-public class com/facebook/react/views/text/ReactFontManager {
-	public fun addCustomFont (Landroid/content/Context;Ljava/lang/String;I)V
-	public fun addCustomFont (Ljava/lang/String;Landroid/graphics/Typeface;)V
-	public static fun getInstance ()Lcom/facebook/react/views/text/ReactFontManager;
-	public fun getTypeface (Ljava/lang/String;IILandroid/content/res/AssetManager;)Landroid/graphics/Typeface;
-	public fun getTypeface (Ljava/lang/String;ILandroid/content/res/AssetManager;)Landroid/graphics/Typeface;
-	public fun getTypeface (Ljava/lang/String;IZLandroid/content/res/AssetManager;)Landroid/graphics/Typeface;
-	public fun setTypeface (Ljava/lang/String;ILandroid/graphics/Typeface;)V
+public final class com/facebook/react/views/text/ReactFontManager {
+	public static final field Companion Lcom/facebook/react/views/text/ReactFontManager$Companion;
+	public synthetic fun <init> (Lcom/facebook/react/views/text/ReactFontManager;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun addCustomFont (Landroid/content/Context;Ljava/lang/String;I)V
+	public final fun addCustomFont (Ljava/lang/String;Landroid/graphics/Typeface;)V
+	public static final fun getInstance ()Lcom/facebook/react/views/text/ReactFontManager;
+	public final fun getTypeface (Ljava/lang/String;IILandroid/content/res/AssetManager;)Landroid/graphics/Typeface;
+	public final fun getTypeface (Ljava/lang/String;ILandroid/content/res/AssetManager;)Landroid/graphics/Typeface;
+	public final fun getTypeface (Ljava/lang/String;IZLandroid/content/res/AssetManager;)Landroid/graphics/Typeface;
+	public final fun setTypeface (Ljava/lang/String;ILandroid/graphics/Typeface;)V
+}
+
+public final class com/facebook/react/views/text/ReactFontManager$Companion {
+	public final fun getInstance ()Lcom/facebook/react/views/text/ReactFontManager;
 }
 
 public class com/facebook/react/views/text/ReactRawTextManager : com/facebook/react/uimanager/ViewManager {
