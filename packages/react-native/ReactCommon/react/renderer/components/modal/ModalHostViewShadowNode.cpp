@@ -18,8 +18,6 @@ extern const char ModalHostViewComponentName[] = "ModalHostView";
 void ModalHostViewShadowNode::setScreenSize(float width, float height) {
     ensureUnsealed();
 
-    __android_log_print(ANDROID_LOG_ERROR, "Metrics", "%s %s", toString(width).c_str(), toString(height).c_str());
-
     setStateData(ModalHostViewState{
         Size{
             .width =  width,
