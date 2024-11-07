@@ -110,17 +110,17 @@ const SectionListBaseExample: component(
         keyExtractor={(item, index) => item + index}
         style={styles.list}
         renderItem={Item}
-        /* $FlowFixMe[prop-missing] Error revealed after improved builtin React
-         * utility types */
         renderSectionHeader={
           !sectionFooterEnabled
+            /* $FlowFixMe[prop-missing] Error revealed after improved builtin React
+            * utility types */
             ? ({section: {title}}) => <Text style={styles.header}>{title}</Text>
             : undefined
         }
-        /* $FlowFixMe[prop-missing] Error revealed after improved builtin React
-         * utility types */
         renderSectionFooter={
           sectionFooterEnabled
+            /* $FlowFixMe[prop-missing] Error revealed after improved builtin React
+            * utility types */
             ? ({section: {title}}) => <Text style={styles.header}>{title}</Text>
             : undefined
         }
