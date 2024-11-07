@@ -36,20 +36,17 @@ class ModalHostViewComponentDescriptor final
 
       static auto getScreenMetrics =
               jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
-                      ->getMethod<NativeArray::javaobject(jint)>("getScreenMetrics");
+                      ->getMethod<NativeMap::javaobject(jint)>("getScreenMetrics");
 
       auto metrics = getScreenMetrics(fabricUIManager, -1);
       if (metrics != nullptr) {
           std::vector<double> sizes;
-          auto dynamicArray = cthis(metrics)->consume();
-
-          for (const auto& data : dynamicArray) {
-              auto m = data.asDouble();
-              sizes.push_back(m);
-          }
+          auto dynamicMap = cthis(metrics)->consume();
+          auto height = static_cast<Float>(dynamicMap.getDefault("height", 0).getDouble());
+          auto width = static_cast<Float>(dynamicMap.getDefault("width", 0).getDouble());
 
           auto &modalHostViewShadowNode = dynamic_cast<ModalHostViewShadowNode &>(shadowNode);
-          modalHostViewShadowNode.setScreenSize((float)sizes[0], (float)sizes[1]);
+          modalHostViewShadowNode.setScreenSize(width, height);
       }
 
     layoutableShadowNode.setSize(

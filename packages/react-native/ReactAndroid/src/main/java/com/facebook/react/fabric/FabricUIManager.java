@@ -589,7 +589,7 @@ public class FabricUIManager
 
   @SuppressWarnings("unused")
   @Nullable
-  private NativeArray getScreenMetrics(int surfaceId) {
+  private NativeMap getScreenMetrics(int surfaceId) {
     ReactContext context;
     if (surfaceId > 0) {
       SurfaceMountingManager surfaceMountingManager =
@@ -614,15 +614,15 @@ public class FabricUIManager
     }
 
     activity.getWindow().getDecorView().getWindowVisibleDisplayFrame(rectangle);
-    float topOffset = PixelUtil.toDIPFromPixel(rectangle.top);
-    float bottomOffset = PixelUtil.toDIPFromPixel(rectangle.bottom);
-    float leftOffset = PixelUtil.toDIPFromPixel(rectangle.left);
-    float rightOffset = PixelUtil.toDIPFromPixel(rectangle.right);
-    float height = bottomOffset - topOffset;
-    float width = rightOffset - leftOffset;
+    double topOffset = PixelUtil.toDIPFromPixel(rectangle.top);
+    double bottomOffset = PixelUtil.toDIPFromPixel(rectangle.bottom);
+    double leftOffset = PixelUtil.toDIPFromPixel(rectangle.left);
+    double rightOffset = PixelUtil.toDIPFromPixel(rectangle.right);
 
-    float[] sizes = {width, height};
-    return Arguments.makeNativeArray(sizes);
+    WritableMap sizes = Arguments.createMap();
+    sizes.putDouble("height", bottomOffset - topOffset);
+    sizes.putDouble("width", rightOffset - leftOffset);
+    return (NativeMap) sizes;
   }
 
   @SuppressWarnings("unused")

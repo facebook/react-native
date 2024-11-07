@@ -9,7 +9,6 @@
 
 #include <react/renderer/components/modal/ModalHostViewShadowNode.h>
 #include <react/renderer/core/LayoutContext.h>
-#include <android/log.h>
 
 namespace facebook::react {
 
