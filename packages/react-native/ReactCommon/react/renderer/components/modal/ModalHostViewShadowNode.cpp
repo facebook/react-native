@@ -9,9 +9,24 @@
 
 #include <react/renderer/components/modal/ModalHostViewShadowNode.h>
 #include <react/renderer/core/LayoutContext.h>
+#include <android/log.h>
 
 namespace facebook::react {
 
 extern const char ModalHostViewComponentName[] = "ModalHostView";
 
+void ModalHostViewShadowNode::setScreenSize(float width, float height) {
+    ensureUnsealed();
+
+    __android_log_print(ANDROID_LOG_ERROR, "Metrics", "%s %s", toString(width).c_str(), toString(height).c_str());
+
+    setStateData(ModalHostViewState{
+        Size{
+            .width =  width,
+            .height =  height
+        }
+    });
+}
+
 } // namespace facebook::react
+

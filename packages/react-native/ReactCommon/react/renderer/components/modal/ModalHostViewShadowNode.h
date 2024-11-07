@@ -32,6 +32,8 @@ class ModalHostViewShadowNode final : public ConcreteViewShadowNode<
     traits.set(ShadowNodeTraits::Trait::RootNodeKind);
     return traits;
   }
+
+  void setScreenSize(float width, float height);
 };
 
 } // namespace facebook::react

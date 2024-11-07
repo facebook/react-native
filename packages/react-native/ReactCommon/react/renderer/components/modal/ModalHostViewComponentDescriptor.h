@@ -10,6 +10,7 @@
 #include <glog/logging.h>
 #include <react/renderer/components/modal/ModalHostViewShadowNode.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
+#include <react/jni/ReadableNativeMap.h>
 
 namespace facebook::react {
 
@@ -29,6 +30,27 @@ class ModalHostViewComponentDescriptor final
         static_cast<const ModalHostViewShadowNode::ConcreteState&>(
             *shadowNode.getState())
             .getData();
+
+      const jni::global_ref<jobject>& fabricUIManager =
+              contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
+
+      static auto getScreenMetrics =
+              jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
+                      ->getMethod<NativeArray::javaobject(jint)>("getScreenMetrics");
+
+      auto metrics = getScreenMetrics(fabricUIManager, -1);
+      if (metrics != nullptr) {
+          std::vector<double> sizes;
+          auto dynamicArray = cthis(metrics)->consume();
+
+          for (const auto& data : dynamicArray) {
+              auto m = data.asDouble();
+              sizes.push_back(m);
+          }
+
+          auto &modalHostViewShadowNode = dynamic_cast<ModalHostViewShadowNode &>(shadowNode);
+          modalHostViewShadowNode.setScreenSize((float)sizes[0], (float)sizes[1]);
+      }
 
     layoutableShadowNode.setSize(
         Size{stateData.screenSize.width, stateData.screenSize.height});
