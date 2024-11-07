@@ -34,14 +34,13 @@ class ModalHostViewComponentDescriptor final
       const jni::global_ref<jobject>& fabricUIManager =
               contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
 
-      static auto getScreenMetrics =
+      static auto getDisplaySizes =
               jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
-                      ->getMethod<NativeMap::javaobject(jint)>("getScreenMetrics");
+                      ->getMethod<NativeMap::javaobject(jint)>("getDisplaySizes");
 
-      auto metrics = getScreenMetrics(fabricUIManager, -1);
-      if (metrics != nullptr) {
-          std::vector<double> sizes;
-          auto dynamicMap = cthis(metrics)->consume();
+      auto sizes = getDisplaySizes(fabricUIManager, -1);
+      if (sizes != nullptr) {
+          auto dynamicMap = cthis(sizes)->consume();
           auto height = static_cast<Float>(dynamicMap.getDefault("height", 0).getDouble());
           auto width = static_cast<Float>(dynamicMap.getDefault("width", 0).getDouble());
 

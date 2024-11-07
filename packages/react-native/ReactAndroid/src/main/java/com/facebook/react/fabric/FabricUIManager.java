@@ -589,7 +589,7 @@ public class FabricUIManager
 
   @SuppressWarnings("unused")
   @Nullable
-  private NativeMap getScreenMetrics(int surfaceId) {
+  private NativeMap getDisplaySizes(int surfaceId) {
     ReactContext context;
     if (surfaceId > 0) {
       SurfaceMountingManager surfaceMountingManager =
