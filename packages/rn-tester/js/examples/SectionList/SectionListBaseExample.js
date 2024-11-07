@@ -112,16 +112,16 @@ const SectionListBaseExample: component(
         renderItem={Item}
         renderSectionHeader={
           !sectionFooterEnabled
-            /* $FlowFixMe[prop-missing] Error revealed after improved builtin React
-            * utility types */
-            ? ({section: {title}}) => <Text style={styles.header}>{title}</Text>
+            ? /* $FlowFixMe[prop-missing] Error revealed after improved builtin React
+               * utility types */
+              ({section: {title}}) => <Text style={styles.header}>{title}</Text>
             : undefined
         }
         renderSectionFooter={
           sectionFooterEnabled
-            /* $FlowFixMe[prop-missing] Error revealed after improved builtin React
-            * utility types */
-            ? ({section: {title}}) => <Text style={styles.header}>{title}</Text>
+            ? /* $FlowFixMe[prop-missing] Error revealed after improved builtin React
+               * utility types */
+              ({section: {title}}) => <Text style={styles.header}>{title}</Text>
             : undefined
         }
         {...props.exampleProps}
