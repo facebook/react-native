@@ -501,6 +501,15 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'experimentation',
       },
     },
+    disableInteractionManager: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2024-11-06',
+        description:
+          'Disables InteractionManager and replaces its scheduler with `setImmediate`.',
+        purpose: 'experimentation',
+      },
+    },
     enableAccessToHostTreeInFabric: {
       defaultValue: false,
       metadata: {
