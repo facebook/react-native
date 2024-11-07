@@ -5335,7 +5335,41 @@ declare const InteractionManager: {
   addListener: $FlowFixMe,
   setDeadline(deadline: number): void,
 };
-declare module.exports: InteractionManager;
+declare module.exports: typeof InteractionManager;
+"
+`;
+
+exports[`public API should not change unintentionally Libraries/Interaction/InteractionManagerStub.js 1`] = `
+"export type Handle = number;
+type Task =
+  | {
+      name: string,
+      run: () => void,
+    }
+  | {
+      name: string,
+      gen: () => Promise<void>,
+    }
+  | (() => void);
+declare const InteractionManagerStub: {
+  Events: {
+    interactionStart: \\"interactionStart\\",
+    interactionComplete: \\"interactionComplete\\",
+  },
+  runAfterInteractions(task: ?Task): {
+    then: <U>(
+      onFulfill?: ?(void) => ?(Promise<U> | U),
+      onReject?: ?(error: mixed) => ?(Promise<U> | U)
+    ) => Promise<U>,
+    cancel: () => void,
+    ...
+  },
+  createInteractionHandle(): Handle,
+  clearInteractionHandle(handle: Handle): void,
+  addListener(): EventSubscription,
+  setDeadline(deadline: number): void,
+};
+declare module.exports: InteractionManagerStub;
 "
 `;
 

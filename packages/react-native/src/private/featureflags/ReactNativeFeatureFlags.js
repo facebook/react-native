@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<27ae96c2bc3459bd89e52063a8ed9490>>
+ * @generated SignedSource<<141c9d17083660b8726d2780813168dd>>
  * @flow strict
  */
 
@@ -30,6 +30,7 @@ export type ReactNativeFeatureFlagsJsOnly = {
   jsOnlyTestFlag: Getter<boolean>,
   animatedShouldDebounceQueueFlush: Getter<boolean>,
   animatedShouldUseSingleOp: Getter<boolean>,
+  disableInteractionManager: Getter<boolean>,
   enableAccessToHostTreeInFabric: Getter<boolean>,
   enableAnimatedAllowlist: Getter<boolean>,
   enableAnimatedClearImmediateFix: Getter<boolean>,
@@ -117,6 +118,11 @@ export const animatedShouldDebounceQueueFlush: Getter<boolean> = createJavaScrip
  * Enables an experimental mega-operation for Animated.js that replaces many calls to native with a single call into native, to reduce JSI/JNI traffic.
  */
 export const animatedShouldUseSingleOp: Getter<boolean> = createJavaScriptFlagGetter('animatedShouldUseSingleOp', false);
+
+/**
+ * Disables InteractionManager and replaces its scheduler with `setImmediate`.
+ */
+export const disableInteractionManager: Getter<boolean> = createJavaScriptFlagGetter('disableInteractionManager', false);
 
 /**
  * Enables access to the host tree in Fabric using DOM-compatible APIs.
