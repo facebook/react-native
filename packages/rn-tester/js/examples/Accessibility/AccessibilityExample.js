@@ -1334,7 +1334,7 @@ class EnabledExamples extends React.Component<{}> {
                 test="bold text"
                 eventListener="boldTextChanged"
               />
-            </RNTesterBlock> 
+            </RNTesterBlock>
             <RNTesterBlock title="isReduceTransparencyEnabled()">
               <EnabledExample
                 test="reduce transparency"

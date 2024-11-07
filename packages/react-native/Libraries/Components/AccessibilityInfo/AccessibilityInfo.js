@@ -121,7 +121,7 @@ const AccessibilityInfo = {
         } else {
           reject(null);
         }
-      }); 
+      });
     } else {
       return new Promise((resolve, reject) => {
         if (NativeAccessibilityManagerIOS != null) {
