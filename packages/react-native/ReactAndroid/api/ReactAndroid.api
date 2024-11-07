@@ -6264,6 +6264,7 @@ public abstract interface class com/facebook/react/viewmanagers/ModalHostViewMan
 	public abstract fun setAnimationType (Landroid/view/View;Ljava/lang/String;)V
 	public abstract fun setHardwareAccelerated (Landroid/view/View;Z)V
 	public abstract fun setIdentifier (Landroid/view/View;I)V
+	public abstract fun setNavigationBarTranslucent (Landroid/view/View;Z)V
 	public abstract fun setPresentationStyle (Landroid/view/View;Ljava/lang/String;)V
 	public abstract fun setStatusBarTranslucent (Landroid/view/View;Z)V
 	public abstract fun setSupportedOrientations (Landroid/view/View;Lcom/facebook/react/bridge/ReadableArray;)V
@@ -6647,6 +6648,8 @@ public final class com/facebook/react/views/modal/ReactModalHostManager : com/fa
 	public fun setHardwareAccelerated (Lcom/facebook/react/views/modal/ReactModalHostView;Z)V
 	public synthetic fun setIdentifier (Landroid/view/View;I)V
 	public fun setIdentifier (Lcom/facebook/react/views/modal/ReactModalHostView;I)V
+	public synthetic fun setNavigationBarTranslucent (Landroid/view/View;Z)V
+	public fun setNavigationBarTranslucent (Lcom/facebook/react/views/modal/ReactModalHostView;Z)V
 	public synthetic fun setPresentationStyle (Landroid/view/View;Ljava/lang/String;)V
 	public fun setPresentationStyle (Lcom/facebook/react/views/modal/ReactModalHostView;Ljava/lang/String;)V
 	public synthetic fun setStatusBarTranslucent (Landroid/view/View;Z)V
@@ -6675,6 +6678,7 @@ public final class com/facebook/react/views/modal/ReactModalHostView : android/v
 	public fun getChildCount ()I
 	public final fun getEventDispatcher ()Lcom/facebook/react/uimanager/events/EventDispatcher;
 	public final fun getHardwareAccelerated ()Z
+	public final fun getNavigationBarTranslucent ()Z
 	public final fun getOnRequestCloseListener ()Lcom/facebook/react/views/modal/ReactModalHostView$OnRequestCloseListener;
 	public final fun getOnShowListener ()Landroid/content/DialogInterface$OnShowListener;
 	public final fun getStateWrapper ()Lcom/facebook/react/uimanager/StateWrapper;
@@ -6690,6 +6694,7 @@ public final class com/facebook/react/views/modal/ReactModalHostView : android/v
 	public final fun setEventDispatcher (Lcom/facebook/react/uimanager/events/EventDispatcher;)V
 	public final fun setHardwareAccelerated (Z)V
 	public fun setId (I)V
+	public final fun setNavigationBarTranslucent (Z)V
 	public final fun setOnRequestCloseListener (Lcom/facebook/react/views/modal/ReactModalHostView$OnRequestCloseListener;)V
 	public final fun setOnShowListener (Landroid/content/DialogInterface$OnShowListener;)V
 	public final fun setStateWrapper (Lcom/facebook/react/uimanager/StateWrapper;)V
@@ -7965,5 +7970,6 @@ public final class com/facebook/react/views/view/ViewGroupClickEvent : com/faceb
 public final class com/facebook/react/views/view/WindowUtilKt {
 	public static final fun setStatusBarTranslucency (Landroid/view/Window;Z)V
 	public static final fun setStatusBarVisibility (Landroid/view/Window;Z)V
+	public static final fun setSystemBarsTranslucency (Landroid/view/Window;Z)V
 }
 
