@@ -1555,7 +1555,7 @@ public abstract interface class com/facebook/react/bridge/UIManager : com/facebo
 	public abstract fun addUIManagerEventListener (Lcom/facebook/react/bridge/UIManagerListener;)V
 	public abstract fun dispatchCommand (IILcom/facebook/react/bridge/ReadableArray;)V
 	public abstract fun dispatchCommand (ILjava/lang/String;Lcom/facebook/react/bridge/ReadableArray;)V
-	public abstract fun getEventDispatcher ()Ljava/lang/Object;
+	public abstract fun getEventDispatcher ()Lcom/facebook/react/uimanager/events/EventDispatcher;
 	public abstract fun initialize ()V
 	public abstract fun invalidate ()V
 	public abstract fun markActiveTouchForTag (II)V
@@ -2615,7 +2615,6 @@ public class com/facebook/react/fabric/FabricUIManager : com/facebook/react/brid
 	public fun dispatchCommand (ILjava/lang/String;Lcom/facebook/react/bridge/ReadableArray;)V
 	public fun getColor (I[Ljava/lang/String;)I
 	public fun getEventDispatcher ()Lcom/facebook/react/uimanager/events/EventDispatcher;
-	public synthetic fun getEventDispatcher ()Ljava/lang/Object;
 	public fun getInspectorDataForInstance (ILandroid/view/View;)Lcom/facebook/react/bridge/ReadableMap;
 	public fun getPerformanceCounters ()Ljava/util/Map;
 	public fun getThemeData (I[F)Z
@@ -5149,7 +5148,6 @@ public class com/facebook/react/uimanager/UIManagerModule : com/facebook/react/b
 	public fun getDefaultEventTypes ()Lcom/facebook/react/bridge/WritableMap;
 	public fun getDirectEventNamesResolver ()Lcom/facebook/react/uimanager/UIManagerModule$CustomEventNamesResolver;
 	public fun getEventDispatcher ()Lcom/facebook/react/uimanager/events/EventDispatcher;
-	public synthetic fun getEventDispatcher ()Ljava/lang/Object;
 	public fun getName ()Ljava/lang/String;
 	public fun getPerformanceCounters ()Ljava/util/Map;
 	public fun getUIImplementation ()Lcom/facebook/react/uimanager/UIImplementation;
