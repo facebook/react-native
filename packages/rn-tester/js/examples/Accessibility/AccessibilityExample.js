@@ -1334,13 +1334,7 @@ class EnabledExamples extends React.Component<{}> {
                 test="bold text"
                 eventListener="boldTextChanged"
               />
-            </RNTesterBlock>
-            <RNTesterBlock title="isGrayScaleEnabled()">
-              <EnabledExample
-                test="gray scale"
-                eventListener="grayscaleChanged"
-              />
-            </RNTesterBlock>
+            </RNTesterBlock> 
             <RNTesterBlock title="isReduceTransparencyEnabled()">
               <EnabledExample
                 test="reduce transparency"
@@ -1383,6 +1377,12 @@ class EnabledExamples extends React.Component<{}> {
             eventListener="screenReaderChanged"
           />
         </RNTesterBlock>
+        <RNTesterBlock title="isGrayScaleEnabled()">
+              <EnabledExample
+                test="gray scale"
+                eventListener="grayscaleChanged"
+              />
+            </RNTesterBlock>
       </View>
     );
   }
