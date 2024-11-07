@@ -34,6 +34,9 @@ export interface Spec extends TurboModule {
     mSec: number,
     onSuccess: (recommendedTimeoutMillis: number) => void,
   ) => void;
+  +isGrayscaleEnabled?: (
+    onSuccess: (isGrayscaleEnabled: boolean) => void,
+  ) => void;
 }
 
 export default (TurboModuleRegistry.get<Spec>('AccessibilityInfo'): ?Spec);
