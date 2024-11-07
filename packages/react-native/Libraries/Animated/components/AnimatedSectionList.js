@@ -8,6 +8,7 @@
  * @format
  */
 
+import type {SectionBase} from '../../Lists/SectionList';
 import type {AnimatedComponentType} from '../createAnimatedComponent';
 
 import SectionList from '../../Lists/SectionList';
@@ -16,5 +17,6 @@ import * as React from 'react';
 
 export default (createAnimatedComponent(SectionList): AnimatedComponentType<
   React.ElementConfig<typeof SectionList>,
-  React.ElementRef<typeof SectionList>,
+  // $FlowExpectedError[unclear-type]
+  SectionList<SectionBase<any>>,
 >);
