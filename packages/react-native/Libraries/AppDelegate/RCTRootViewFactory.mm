@@ -38,17 +38,6 @@
 #import <react/renderer/runtimescheduler/RuntimeSchedulerCallInvoker.h>
 #import <react/runtime/JSRuntimeFactory.h>
 
-static NSString *const kRNConcurrentRoot = @"concurrentRoot";
-
-static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabricEnabled)
-{
-  NSMutableDictionary *mutableProps = initialProps != NULL ? [initialProps mutableCopy] : [NSMutableDictionary new];
-  // Hardcoding the Concurrent Root as it it not recommended to
-  // have the concurrentRoot turned off when Fabric is enabled.
-  mutableProps[kRNConcurrentRoot] = @(isFabricEnabled);
-  return mutableProps;
-}
-
 @implementation RCTRootViewFactoryConfiguration
 
 - (instancetype)initWithBundleURL:(NSURL *)bundleURL newArchEnabled:(BOOL)newArchEnabled
@@ -149,11 +138,9 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
 }
 
 - (UIView *)viewWithModuleName:(NSString *)moduleName
-             initialProperties:(NSDictionary *)initialProperties
+             initialProperties:(NSDictionary *)initProps
                  launchOptions:(NSDictionary *)launchOptions
 {
-  NSDictionary *initProps = updateInitialProps(initialProperties, _configuration.fabricEnabled);
-
   if (_configuration.bridgelessEnabled) {
     // Enable TurboModule interop by default in Bridgeless mode
     RCTEnableTurboModuleInterop(YES);
@@ -167,8 +154,8 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
         [[RCTSurfaceHostingProxyRootView alloc] initWithSurface:surface];
 
     surfaceHostingProxyRootView.backgroundColor = [UIColor systemBackgroundColor];
-    if (self->_configuration.customizeRootView != nil) {
-      self->_configuration.customizeRootView(surfaceHostingProxyRootView);
+    if (_configuration.customizeRootView != nil) {
+      _configuration.customizeRootView(surfaceHostingProxyRootView);
     }
     return surfaceHostingProxyRootView;
   }
@@ -182,8 +169,8 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
   } else {
     rootView = [self createRootViewWithBridge:self.bridge moduleName:moduleName initProps:initProps];
   }
-  if (self->_configuration.customizeRootView != nil) {
-    self->_configuration.customizeRootView(rootView);
+  if (_configuration.customizeRootView != nil) {
+    _configuration.customizeRootView(rootView);
   }
   return rootView;
 }
@@ -197,11 +184,9 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
                           moduleName:(NSString *)moduleName
                            initProps:(NSDictionary *)initProps
 {
-  BOOL enableFabric = self->_configuration.fabricEnabled;
+  BOOL enableFabric = _configuration.fabricEnabled;
   UIView *rootView = RCTAppSetupDefaultRootView(bridge, moduleName, initProps, enableFabric);
-
   rootView.backgroundColor = [UIColor systemBackgroundColor];
-
   return rootView;
 }
 
