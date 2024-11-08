@@ -647,13 +647,10 @@ public class TextLayoutManager {
             ? paragraphAttributes.getInt(PA_KEY_MAX_NUMBER_OF_LINES)
             : ReactConstants.UNSET;
 
-    boolean hasMaximumNumberOfLines =
-        maximumNumberOfLines != ReactConstants.UNSET && maximumNumberOfLines != 0;
-
     int calculatedLineCount =
-        hasMaximumNumberOfLines
-            ? Math.min(maximumNumberOfLines, layout.getLineCount())
-            : layout.getLineCount();
+        maximumNumberOfLines == ReactConstants.UNSET || maximumNumberOfLines == 0
+            ? layout.getLineCount()
+            : Math.min(maximumNumberOfLines, layout.getLineCount());
 
     // Instead of using `layout.getWidth()` (which may yield a significantly larger width for
     // text that is wrapping), compute width using the longest line.
@@ -661,20 +658,18 @@ public class TextLayoutManager {
     if (widthYogaMeasureMode == YogaMeasureMode.EXACTLY) {
       calculatedWidth = width;
     } else {
-      boolean endsWithNewLine = false;
       for (int lineIndex = 0; lineIndex < calculatedLineCount; lineIndex++) {
-        endsWithNewLine =
+        boolean endsWithNewLine =
             text.length() > 0 && text.charAt(layout.getLineEnd(lineIndex) - 1) == '\n';
+        if (!endsWithNewLine && lineIndex + 1 < layout.getLineCount()) {
+          calculatedWidth = width;
+          break;
+        }
         float lineWidth =
             endsWithNewLine ? layout.getLineMax(lineIndex) : layout.getLineWidth(lineIndex);
         if (lineWidth > calculatedWidth) {
           calculatedWidth = lineWidth;
         }
-      }
-      if (!endsWithNewLine
-          && hasMaximumNumberOfLines
-          && layout.getLineCount() > maximumNumberOfLines) {
-        calculatedWidth = width;
       }
       if (widthYogaMeasureMode == YogaMeasureMode.AT_MOST && calculatedWidth > width) {
         calculatedWidth = width;
