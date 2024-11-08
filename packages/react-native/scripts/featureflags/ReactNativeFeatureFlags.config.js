@@ -519,12 +519,11 @@ const definitions: FeatureFlagDefinitions = {
       },
     },
     enableAnimatedAllowlist: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
-        dateAdded: '2024-09-10',
         description:
           'Enables Animated to skip non-allowlisted props and styles.',
-        purpose: 'experimentation',
+        purpose: 'release',
       },
     },
     enableAnimatedClearImmediateFix: {
@@ -537,12 +536,11 @@ const definitions: FeatureFlagDefinitions = {
       },
     },
     enableAnimatedPropsMemo: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
-        dateAdded: '2024-09-11',
         description:
           'Enables Animated to analyze props to minimize invalidating `AnimatedProps`.',
-        purpose: 'experimentation',
+        purpose: 'release',
       },
     },
     enableOptimisedVirtualizedCells: {

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<141c9d17083660b8726d2780813168dd>>
+ * @generated SignedSource<<650ba11a0ac49b9779c6c98f57f7369f>>
  * @flow strict
  */
 
@@ -132,7 +132,7 @@ export const enableAccessToHostTreeInFabric: Getter<boolean> = createJavaScriptF
 /**
  * Enables Animated to skip non-allowlisted props and styles.
  */
-export const enableAnimatedAllowlist: Getter<boolean> = createJavaScriptFlagGetter('enableAnimatedAllowlist', false);
+export const enableAnimatedAllowlist: Getter<boolean> = createJavaScriptFlagGetter('enableAnimatedAllowlist', true);
 
 /**
  * Enables an experimental to use the proper clearIntermediate instead of calling the wrong clearTimeout and canceling another timer.
@@ -142,7 +142,7 @@ export const enableAnimatedClearImmediateFix: Getter<boolean> = createJavaScript
 /**
  * Enables Animated to analyze props to minimize invalidating `AnimatedProps`.
  */
-export const enableAnimatedPropsMemo: Getter<boolean> = createJavaScriptFlagGetter('enableAnimatedPropsMemo', false);
+export const enableAnimatedPropsMemo: Getter<boolean> = createJavaScriptFlagGetter('enableAnimatedPropsMemo', true);
 
 /**
  * Removing unnecessary rerenders Virtualized cells after any rerenders of Virualized list. Works with strict=true option
