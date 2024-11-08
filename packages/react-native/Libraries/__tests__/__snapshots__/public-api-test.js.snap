@@ -7755,37 +7755,6 @@ declare export default typeof requireNativeComponent;
 "
 `;
 
-exports[`public API should not change unintentionally Libraries/ReactPrivate/ReactNativePrivateInitializeCore.js 1`] = `""`;
-
-exports[`public API should not change unintentionally Libraries/ReactPrivate/ReactNativePrivateInterface.js 1`] = `
-"declare module.exports: {
-  get BatchedBridge(): BatchedBridge,
-  get ExceptionsManager(): ExceptionsManager,
-  get Platform(): Platform,
-  get RCTEventEmitter(): RCTEventEmitter,
-  get ReactNativeViewConfigRegistry(): ReactNativeViewConfigRegistry,
-  get TextInputState(): TextInputState,
-  get UIManager(): UIManager,
-  get deepDiffer(): deepDiffer,
-  get deepFreezeAndThrowOnMutationInDev(): deepFreezeAndThrowOnMutationInDev<
-    { ... } | Array<mixed>,
-  >,
-  get flattenStyle(): flattenStyle<DangerouslyImpreciseStyleProp>,
-  get ReactFiberErrorDialog(): ReactFiberErrorDialog,
-  get legacySendAccessibilityEvent(): legacySendAccessibilityEvent,
-  get RawEventEmitter(): RawEventEmitter,
-  get CustomEvent(): CustomEvent,
-  get createAttributePayload(): createAttributePayload,
-  get diffAttributePayloads(): diffAttributePayloads,
-  get createPublicInstance(): createPublicInstance,
-  get createPublicTextInstance(): createPublicTextInstance,
-  get getNativeTagFromPublicInstance(): getNativeTagFromPublicInstance,
-  get getNodeFromPublicInstance(): getNodeFromPublicInstance,
-  get getInternalInstanceHandleFromPublicInstance(): getInternalInstanceHandleFromPublicInstance,
-};
-"
-`;
-
 exports[`public API should not change unintentionally Libraries/Settings/NativeSettingsManager.js 1`] = `
 "export * from \\"../../src/private/specs/modules/NativeSettingsManager\\";
 declare export default typeof NativeSettingsManager;
