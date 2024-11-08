@@ -7418,12 +7418,12 @@ public abstract interface class com/facebook/react/views/text/ReactTextViewManag
 	public abstract fun onPostProcessSpannable (Landroid/text/Spannable;)V
 }
 
-public class com/facebook/react/views/text/ReactTypefaceUtils {
-	public fun <init> ()V
-	public static fun applyStyles (Landroid/graphics/Typeface;IILjava/lang/String;Landroid/content/res/AssetManager;)Landroid/graphics/Typeface;
-	public static fun parseFontStyle (Ljava/lang/String;)I
-	public static fun parseFontVariant (Lcom/facebook/react/bridge/ReadableArray;)Ljava/lang/String;
-	public static fun parseFontWeight (Ljava/lang/String;)I
+public final class com/facebook/react/views/text/ReactTypefaceUtils {
+	public static final field INSTANCE Lcom/facebook/react/views/text/ReactTypefaceUtils;
+	public static final fun applyStyles (Landroid/graphics/Typeface;IILjava/lang/String;Landroid/content/res/AssetManager;)Landroid/graphics/Typeface;
+	public static final fun parseFontStyle (Ljava/lang/String;)I
+	public static final fun parseFontVariant (Lcom/facebook/react/bridge/ReadableArray;)Ljava/lang/String;
+	public static final fun parseFontWeight (Ljava/lang/String;)I
 }
 
 public class com/facebook/react/views/text/TextAttributeProps {
