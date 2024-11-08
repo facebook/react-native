@@ -7598,6 +7598,10 @@ public final class com/facebook/react/views/text/TextTransform$Companion {
 	public final fun apply (Ljava/lang/String;Lcom/facebook/react/views/text/TextTransform;)Ljava/lang/String;
 }
 
+public final class com/facebook/react/views/text/TextTransformKt {
+	public static final fun applyTextTransform (Ljava/lang/String;Lcom/facebook/react/views/text/TextTransform;)Ljava/lang/String;
+}
+
 public class com/facebook/react/views/text/frescosupport/FrescoBasedReactTextInlineImageViewManager : com/facebook/react/uimanager/BaseViewManager {
 	public static final field REACT_CLASS Ljava/lang/String;
 	public fun <init> ()V
