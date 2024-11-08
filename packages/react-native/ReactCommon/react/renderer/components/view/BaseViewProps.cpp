@@ -567,13 +567,9 @@ Transform BaseViewProps::resolveTransform(
     transformMatrix = transform;
   } else {
     for (const auto& operation : transform.operations) {
-      if (operation.type == TransformOperationType::Arbitrary) {
-        transformMatrix = transformMatrix * transform;
-      } else {
-        transformMatrix = transformMatrix *
-            Transform::FromTransformOperation(
-                              operation, layoutMetrics.frame.size);
-      }
+      transformMatrix = transformMatrix *
+          Transform::FromTransformOperation(
+                            operation, layoutMetrics.frame.size, transform);
     }
   }
 

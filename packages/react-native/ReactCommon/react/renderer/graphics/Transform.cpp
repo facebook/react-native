@@ -169,7 +169,8 @@ Transform Transform::Rotate(Float x, Float y, Float z) {
 
 Transform Transform::FromTransformOperation(
     TransformOperation transformOperation,
-    const Size& size) {
+    const Size& size,
+    const Transform& transform) {
   if (transformOperation.type == TransformOperationType::Perspective) {
     return Transform::Perspective(transformOperation.x.resolve(0));
   }
@@ -195,6 +196,9 @@ Transform Transform::FromTransformOperation(
         transformOperation.x.resolve(0),
         transformOperation.y.resolve(0),
         transformOperation.z.resolve(0));
+  }
+  if (transformOperation.type == TransformOperationType::Arbitrary) {
+    return transform;
   }
 
   // Identity or Arbitrary
