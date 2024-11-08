@@ -5,9 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.bridge;
+package com.facebook.react.bridge
 
-import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.proguard.annotations.DoNotStrip
 
 /**
  * Exception thrown when a caller attempts to modify or use a {@link WritableNativeArray} or {@link
@@ -15,10 +15,5 @@ import com.facebook.proguard.annotations.DoNotStrip;
  * we reuse the native memory so the underlying array/map is no longer valid.
  */
 @DoNotStrip
-public class ObjectAlreadyConsumedException extends RuntimeException {
-
-  @DoNotStrip
-  public ObjectAlreadyConsumedException(String detailMessage) {
-    super(detailMessage);
-  }
-}
+internal class ObjectAlreadyConsumedException
+public @DoNotStrip constructor(detailMessage: String) : RuntimeException(detailMessage) {}
