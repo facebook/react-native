@@ -68,10 +68,11 @@ public class com/facebook/react/MemoryPressureRouter : android/content/Component
 	public fun removeMemoryPressureListener (Lcom/facebook/react/bridge/MemoryPressureListener;)V
 }
 
-public class com/facebook/react/NativeModuleRegistryBuilder {
+public final class com/facebook/react/NativeModuleRegistryBuilder {
+	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;Lcom/facebook/react/ReactInstanceManager;)V
-	public fun build ()Lcom/facebook/react/bridge/NativeModuleRegistry;
-	public fun processPackage (Lcom/facebook/react/ReactPackage;)V
+	public final fun build ()Lcom/facebook/react/bridge/NativeModuleRegistry;
+	public final fun processPackage (Lcom/facebook/react/ReactPackage;)V
 }
 
 public abstract class com/facebook/react/ReactActivity : androidx/appcompat/app/AppCompatActivity, com/facebook/react/modules/core/DefaultHardwareBackBtnHandler, com/facebook/react/modules/core/PermissionAwareActivity {
