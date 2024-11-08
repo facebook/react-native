@@ -1536,7 +1536,7 @@ public class ReactInstanceManager {
   private NativeModuleRegistry processPackages(
       ReactApplicationContext reactContext, List<ReactPackage> packages) {
     NativeModuleRegistryBuilder nativeModuleRegistryBuilder =
-        new NativeModuleRegistryBuilder(reactContext, this);
+        new NativeModuleRegistryBuilder(reactContext);
 
     ReactMarker.logMarker(PROCESS_PACKAGES_START);
 
