@@ -26,6 +26,8 @@ struct Color {
   Color(const ColorComponents& components);
   Color(std::shared_ptr<void> uiColor);
   int32_t getColor() const;
+  int32_t getUIColorHash() const;
+
   std::shared_ptr<void> getUIColor() const {
     return uiColor_;
   }
@@ -49,6 +51,7 @@ struct Color {
 
  private:
   std::shared_ptr<void> uiColor_;
+  mutable std::size_t uiColorHashValue_;
 };
 
 namespace HostPlatformColor {
@@ -104,7 +107,8 @@ template <>
 struct std::hash<facebook::react::Color> {
   size_t operator()(const facebook::react::Color& color) const {
     auto seed = size_t{0};
-    facebook::react::hash_combine(seed, color.getColor());
+//    facebook::react::hash_combine(seed, color.getColor());
+    facebook::react::hash_combine(seed, color.getUIColorHash());
     return seed;
   }
 };
