@@ -1670,7 +1670,11 @@ function InternalTextInput(props: Props): React.Node {
         focusable={tabIndex !== undefined ? !tabIndex : focusable}
         mostRecentEventCount={mostRecentEventCount}
         nativeID={id ?? props.nativeID}
-        numberOfLines={props.rows ?? props.numberOfLines ?? (props.multiline === true ? 0 : 1)}
+        numberOfLines={
+          props.rows ??
+          props.numberOfLines ??
+          (props.multiline === true ? 0 : 1)
+        }
         onBlur={_onBlur}
         onChange={_onChange}
         onFocus={_onFocus}
