@@ -28,8 +28,10 @@ runs:
         cd /tmp/RNApp/ios
         bundle install
         bundle exec pod install
-        cd ..
-        yarn ios
+        xcodebuild build \
+          -workspace RNApp.xcworkspace \
+          -scheme RNApp \
+          -sdk iphonesimulator
     - name: Setup Java for Android
       if: ${{ inputs.platform == 'android' }}
       uses: actions/setup-java@v2
