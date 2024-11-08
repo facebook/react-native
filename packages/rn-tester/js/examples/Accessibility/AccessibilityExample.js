@@ -1314,6 +1314,7 @@ function SetAccessibilityFocusExample(props: {}): React.Node {
 
   return (
     <View>
+      {/* $FlowFixMe[prop-missing] */}
       <RNTesterText ref={myRef}>
         SetAccessibilityFocus on native element. This should get focus after
         clicking the button!
