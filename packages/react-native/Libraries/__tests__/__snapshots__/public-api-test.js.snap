@@ -7381,7 +7381,6 @@ type AppParameters = {
   initialProps: $ReadOnly<{ [string]: mixed, ... }>,
   rootTag: RootTag,
   fabric?: boolean,
-  concurrentRoot?: boolean,
 };
 export type Runnable = (
   appParameters: AppParameters,
@@ -7741,7 +7740,6 @@ exports[`public API should not change unintentionally Libraries/ReactNative/rend
   isLogBox?: boolean,
   debugName?: string,
   displayMode?: ?DisplayModeType,
-  useConcurrentRoot?: boolean,
   useOffscreen?: boolean
 ): void;
 "
