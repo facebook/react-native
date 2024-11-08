@@ -154,7 +154,7 @@ const ActivityIndicator = (
 */
 
 const ActivityIndicatorWithRef: component(
-  ref: React.RefSetter<HostComponent<mixed>>,
+  ref: React.RefSetter<HostComponent<empty>>,
   ...props: Props
 ) = React.forwardRef(ActivityIndicator);
 ActivityIndicatorWithRef.displayName = 'ActivityIndicator';

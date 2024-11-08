@@ -10,8 +10,6 @@
 
 'use strict';
 
-module.exports = require('../Components/UnimplementedViews/UnimplementedView');
-
 type BackPressEventName = 'backPress' | 'hardwareBackPress';
 
 function emptyFunction(): void {}

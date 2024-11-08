@@ -286,6 +286,11 @@ export interface UnsafeAnyTypeAnnotation {
   readonly type: 'AnyTypeAnnotation',
 }
 
+export interface NativeModuleNumberLiteralTypeAnnotation {
+  readonly type: 'NumberLiteralTypeAnnotation';
+  readonly value: number;
+}
+
 export interface NativeModuleStringTypeAnnotation {
   readonly type: 'StringTypeAnnotation';
 }
@@ -320,10 +325,10 @@ export interface NativeModuleBooleanTypeAnnotation {
   readonly type: 'BooleanTypeAnnotation';
 }
 
-export type NativeModuleEnumMembers = readonly {
+export type NativeModuleEnumMember = {
   readonly name: string;
   readonly value: string | number;
-}[];
+};
 
 export type NativeModuleEnumMemberType =
   | 'NumberTypeAnnotation'
@@ -339,7 +344,7 @@ export interface NativeModuleEnumDeclarationWithMembers {
   name: string;
   type: 'EnumDeclarationWithMembers';
   memberType: NativeModuleEnumMemberType;
-  members: NativeModuleEnumMembers;
+  members: readonly NativeModuleEnumMember[];
 }
 
 export interface NativeModuleGenericObjectTypeAnnotation {
@@ -380,6 +385,7 @@ export type NativeModuleEventEmitterBaseTypeAnnotation =
   | NativeModuleFloatTypeAnnotation
   | NativeModuleInt32TypeAnnotation
   | NativeModuleNumberTypeAnnotation
+  | NativeModuleNumberLiteralTypeAnnotation
   | NativeModuleStringTypeAnnotation
   | NativeModuleStringLiteralTypeAnnotation
   | NativeModuleStringLiteralUnionTypeAnnotation
@@ -399,6 +405,7 @@ export type NativeModuleBaseTypeAnnotation =
   | NativeModuleStringLiteralTypeAnnotation
   | NativeModuleStringLiteralUnionTypeAnnotation
   | NativeModuleNumberTypeAnnotation
+  | NativeModuleNumberLiteralTypeAnnotation
   | NativeModuleInt32TypeAnnotation
   | NativeModuleDoubleTypeAnnotation
   | NativeModuleFloatTypeAnnotation

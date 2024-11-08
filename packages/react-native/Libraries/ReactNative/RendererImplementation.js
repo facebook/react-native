@@ -136,8 +136,8 @@ export function isProfilingRenderer(): boolean {
 }
 
 export function isChildPublicInstance(
-  parentInstance: ReactFabricHostComponent | HostComponent<mixed>,
-  childInstance: ReactFabricHostComponent | HostComponent<mixed>,
+  parentInstance: ReactFabricHostComponent | HostComponent<empty>,
+  childInstance: ReactFabricHostComponent | HostComponent<empty>,
 ): boolean {
   return require('../Renderer/shims/ReactNative').isChildPublicInstance(
     parentInstance,

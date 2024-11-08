@@ -22,7 +22,7 @@ import java.io.InputStream
 import java.util.concurrent.Executors
 
 @ReactModule(name = NativeImageStoreAndroidSpec.NAME)
-public class ImageStoreManager(reactContext: ReactApplicationContext) :
+internal class ImageStoreManager(reactContext: ReactApplicationContext) :
     NativeImageStoreAndroidSpec(reactContext) {
 
   /**

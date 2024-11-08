@@ -24,7 +24,7 @@ import org.junit.Test
 @OptIn(UnstableReactNativeAPI::class)
 class InteropModuleRegistryTest {
 
-  lateinit var underTest: InteropModuleRegistry
+  private lateinit var underTest: InteropModuleRegistry
 
   @Before
   fun setup() {

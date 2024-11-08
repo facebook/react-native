@@ -26,6 +26,9 @@
 ; helloworld
 <PROJECT_ROOT>/packages/helloworld/ios/Pods/
 
+; Ignore rn-tester Pods
+<PROJECT_ROOT>/packages/rn-tester/Pods/
+
 [untyped]
 .*/node_modules/@react-native-community/cli/.*/.*
 
@@ -90,4 +93,4 @@ untyped-import
 untyped-type-import
 
 [version]
-^0.250.0
+^0.251.1

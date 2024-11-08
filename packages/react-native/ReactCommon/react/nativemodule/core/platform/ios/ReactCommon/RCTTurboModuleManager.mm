@@ -475,30 +475,18 @@ typedef struct {
 
 - (BOOL)_isTurboModule:(const char *)moduleName
 {
-  if (RCTTurboModuleInteropForAllTurboModulesEnabled()) {
-    return NO;
-  }
-
   Class moduleClass = [self _getModuleClassFromName:moduleName];
   return moduleClass != nil && (isTurboModuleClass(moduleClass) && ![moduleClass isSubclassOfClass:RCTCxxModule.class]);
 }
 
 - (BOOL)_isLegacyModule:(const char *)moduleName
 {
-  if (RCTTurboModuleInteropForAllTurboModulesEnabled()) {
-    return YES;
-  }
-
   Class moduleClass = [self _getModuleClassFromName:moduleName];
   return [self _isLegacyModuleClass:moduleClass];
 }
 
 - (BOOL)_isLegacyModuleClass:(Class)moduleClass
 {
-  if (RCTTurboModuleInteropForAllTurboModulesEnabled()) {
-    return YES;
-  }
-
   return moduleClass != nil && (!isTurboModuleClass(moduleClass) || [moduleClass isSubclassOfClass:RCTCxxModule.class]);
 }
 

@@ -14,8 +14,7 @@
     "flow": "flow",
     "format-check": "prettier --list-different \"./**/*.{js,md,yml,ts,tsx}\"",
     "format": "npm run prettier && npm run clang-format",
-    "featureflags-check": "cd packages/react-native && yarn featureflags-check",
-    "featureflags-update": "cd packages/react-native && yarn featureflags-update",
+    "featureflags": "cd packages/react-native && yarn featureflags",
     "lint-ci": "./scripts/circleci/analyze_code.sh && yarn shellcheck",
     "lint-java": "node ./scripts/lint-java.js",
     "lint": "eslint .",
@@ -78,7 +77,7 @@
     "eslint-plugin-redundant-undefined": "^0.4.0",
     "eslint-plugin-relay": "^1.8.3",
     "flow-api-translator": "0.24.0",
-    "flow-bin": "^0.250.0",
+    "flow-bin": "^0.251.1",
     "glob": "^7.1.1",
     "hermes-eslint": "0.24.0",
     "hermes-transform": "0.24.0",
@@ -94,8 +93,8 @@
     "nullthrows": "^1.1.1",
     "prettier": "2.8.8",
     "prettier-plugin-hermes-parser": "0.24.0",
-    "react": "19.0.0-rc-fb9a90fa48-20240614",
-    "react-test-renderer": "19.0.0-rc-fb9a90fa48-20240614",
+    "react": "18.3.1",
+    "react-test-renderer": "18.3.1",
     "rimraf": "^3.0.2",
     "shelljs": "^0.8.5",
     "signedsource": "^1.0.0",
@@ -104,6 +103,6 @@
     "ws": "^6.2.3"
   },
   "resolutions": {
-    "react-is": "19.0.0-rc-fb9a90fa48-20240614"
+    "react-is": "18.3.1"
   }
 }

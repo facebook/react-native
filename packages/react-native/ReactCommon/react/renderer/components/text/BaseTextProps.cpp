@@ -7,11 +7,11 @@
 
 #include "BaseTextProps.h"
 
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/attributedstring/conversions.h>
 #include <react/renderer/core/graphicsConversions.h>
 #include <react/renderer/core/propsConversions.h>
 #include <react/renderer/debug/DebugStringConvertibleItem.h>
-#include <react/utils/CoreFeatures.h>
 
 namespace facebook::react {
 
@@ -230,7 +230,7 @@ BaseTextProps::BaseTextProps(
     const BaseTextProps& sourceProps,
     const RawProps& rawProps)
     : textAttributes(
-          CoreFeatures::enablePropIteratorSetter
+          ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
               ? sourceProps.textAttributes
               : convertRawProp(
                     context,

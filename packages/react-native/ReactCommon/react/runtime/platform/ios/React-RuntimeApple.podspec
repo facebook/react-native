@@ -22,7 +22,7 @@ folly_version = folly_config[:version]
 folly_dep_name = folly_config[:dep_name]
 
 boost_config = get_boost_config()
-boost_compiler_flags = boost_config[:compiler_flags] 
+boost_compiler_flags = boost_config[:compiler_flags]
 
 header_search_paths = [
   "$(PODS_ROOT)/boost",
@@ -69,6 +69,9 @@ Pod::Spec.new do |s|
   s.dependency "React-Mapbuffer"
   s.dependency "React-jserrorhandler"
   s.dependency "React-jsinspector"
+  s.dependency "React-featureflags"
+
+  add_dependency(s, "React-RCTFBReactNativeSpec")
 
   if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
     s.dependency "hermes-engine"

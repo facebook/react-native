@@ -78,7 +78,7 @@ export default function generateFiles(
 
       throw new Error(
         `Detected changes in generated files for feature flags:\n${changedFilesStr}\n\n` +
-          'Please rerun `yarn featureflags-update` and commit the changes.',
+          'Please rerun `yarn featureflags --update` and commit the changes.',
       );
     }
 

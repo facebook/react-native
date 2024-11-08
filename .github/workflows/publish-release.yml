@@ -205,9 +205,9 @@ jobs:
         with:
           github-token: ${{ secrets.REACT_NATIVE_BOT_GITHUB_TOKEN }}
           script: |
-            const {verifyPublished, isLatest} = require('./.github/workflow-scripts/publishTemplate.js')
+            const {verifyPublishedTemplate, isLatest} = require('./.github/workflow-scripts/publishTemplate.js')
             const version = "${{ github.ref_name }}"
-            await verifyPublished(version, isLatest());
+            await verifyPublishedTemplate(version, isLatest());
       - name: Update rn-diff-purge to generate upgrade-support diff
         run: |
           curl -X POST https://api.github.com/repos/react-native-community/rn-diff-purge/dispatches \

@@ -5,8 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#pragma once
+
 #include <cstdint>
-#include <vector>
+#include <forward_list>
+#include <utility>
 
 #include <yoga/enums/Display.h>
 
@@ -17,7 +20,6 @@ class Node;
 template <typename T>
 class LayoutableChildren {
  public:
-  using Backtrack = std::vector<std::pair<const T*, size_t>>;
   struct Iterator {
     using iterator_category = std::input_iterator_tag;
     using difference_type = std::ptrdiff_t;
@@ -29,10 +31,6 @@ class LayoutableChildren {
 
     Iterator(const T* node, size_t childIndex)
         : node_(node), childIndex_(childIndex) {}
-    Iterator(const T* node, size_t childIndex, Backtrack&& backtrack)
-        : node_(node),
-          childIndex_(childIndex),
-          backtrack_(std::move(backtrack)) {}
 
     T* operator*() const {
       return node_->getChild(childIndex_);
@@ -40,7 +38,6 @@ class LayoutableChildren {
 
     Iterator& operator++() {
       next();
-      currentNodeIndex_++;
       return *this;
     }
 
@@ -48,10 +45,6 @@ class LayoutableChildren {
       Iterator tmp = *this;
       ++(*this);
       return tmp;
-    }
-
-    size_t index() const {
-      return currentNodeIndex_;
     }
 
     friend bool operator==(const Iterator& a, const Iterator& b) {
@@ -67,16 +60,16 @@ class LayoutableChildren {
       if (childIndex_ + 1 >= node_->getChildCount()) {
         // if the current node has no more children, try to backtrack and
         // visit its successor
-        if (backtrack_.empty()) {
+        if (backtrack_.empty()) [[likely]] {
           // if there are no nodes to backtrack to, the last node has been
           // visited
           *this = Iterator{};
         } else {
           // pop and restore the latest backtrack entry
-          const auto back = backtrack_.back();
-          backtrack_.pop_back();
+          const auto& back = backtrack_.front();
           node_ = back.first;
           childIndex_ = back.second;
+          backtrack_.pop_front();
 
           // go to the next node
           next();
@@ -86,7 +79,10 @@ class LayoutableChildren {
         ++childIndex_;
         // skip all display: contents nodes, possibly going deeper into the
         // tree
-        skipContentsNodes();
+        if (node_->getChild(childIndex_)->style().display() ==
+            Display::Contents) [[unlikely]] {
+          skipContentsNodes();
+        }
       }
     }
 
@@ -98,7 +94,7 @@ class LayoutableChildren {
         // if it has display: contents set, it shouldn't be returned but its
         // children should in its place push the current node and child index
         // so that the current state can be restored when backtracking
-        backtrack_.push_back({node_, childIndex_});
+        backtrack_.push_front({node_, childIndex_});
         // traverse the child
         node_ = currentNode;
         childIndex_ = 0;
@@ -116,8 +112,7 @@ class LayoutableChildren {
 
     const T* node_{nullptr};
     size_t childIndex_{0};
-    size_t currentNodeIndex_{0};
-    Backtrack backtrack_;
+    std::forward_list<std::pair<const T*, size_t>> backtrack_;
 
     friend LayoutableChildren;
   };
@@ -132,7 +127,10 @@ class LayoutableChildren {
   Iterator begin() const {
     if (node_->getChildCount() > 0) {
       auto result = Iterator(node_, 0);
-      result.skipContentsNodes();
+      if (node_->getChild(0)->style().display() == Display::Contents)
+          [[unlikely]] {
+        result.skipContentsNodes();
+      }
       return result;
     } else {
       return Iterator{};

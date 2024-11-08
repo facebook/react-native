@@ -540,7 +540,7 @@ static float computeFlexBasisForChildren(
     const uint32_t generationCount) {
   float totalOuterFlexBasis = 0.0f;
   YGNodeRef singleFlexChild = nullptr;
-  const auto& children = node->getLayoutChildren();
+  auto children = node->getLayoutChildren();
   SizingMode sizingModeMainDim =
       isRow(mainAxis) ? widthSizingMode : heightSizingMode;
   // If there is only one child with flexGrow + flexShrink it means we can set
@@ -749,7 +749,7 @@ static float distributeFreeSpaceSecondPass(
           marginCross;
       const bool isLoosePercentageMeasurement =
           currentLineChild->getProcessedDimension(dimension(crossAxis))
-                  .unit() == Unit::Percent &&
+              .isPercent() &&
           sizingModeCrossDim != SizingMode::StretchFit;
       childCrossSizingMode =
           yoga::isUndefined(childCrossSize) || isLoosePercentageMeasurement
@@ -1316,6 +1316,10 @@ static void calculateLayoutImpl(
           flexColumnDirection, direction, ownerWidth),
       PhysicalEdge::Bottom);
 
+  // Clean and update all display: contents nodes with a direct path to the
+  // current node as they will not be traversed
+  cleanupContentsNodesRecursively(node);
+
   if (node->hasMeasureFunc()) {
     measureNodeWithMeasureFunc(
         node,
@@ -1366,9 +1370,6 @@ static void calculateLayoutImpl(
   // Reset layout flags, as they could have changed.
   node->setLayoutHadOverflow(false);
 
-  // Clean and update all display: contents nodes with a direct path to the
-  // current node as they will not be traversed
-  cleanupContentsNodesRecursively(node);
   // STEP 1: CALCULATE VALUES FOR REMAINDER OF ALGORITHM
   const FlexDirection mainAxis =
       resolveDirection(node->style().flexDirection(), direction);

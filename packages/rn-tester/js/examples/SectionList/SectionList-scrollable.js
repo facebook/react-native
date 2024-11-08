@@ -9,7 +9,9 @@
  */
 
 'use strict';
+
 import type {Item} from '../../components/ListExampleShared';
+import type {SectionBase} from 'react-native/Libraries/Lists/SectionList';
 
 import {
   FooterComponent,
@@ -209,7 +211,7 @@ export function SectionList_scrollable(Props: {...}): React.MixedElement {
     setData([...data.slice(0, index), item, ...data.slice(index + 1)]);
   };
 
-  const ref = React.useRef<?React.ElementRef<typeof SectionList>>(null);
+  const ref = React.useRef<?SectionList<SectionBase<any>>>(null);
   const scrollToLocation = (sectionIndex: number, itemIndex: number) => {
     // $FlowFixMe[method-unbinding] added when improving typing for this parameters
     if (ref != null && ref.current?.scrollToLocation != null) {

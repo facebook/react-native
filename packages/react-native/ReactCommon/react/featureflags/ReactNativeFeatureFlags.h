@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<42056925ce0f349d1d27090b0750f414>>
+ * @generated SignedSource<<e81b275213e8668a8cd22cd40eea70af>>
  */
 
 /**
@@ -14,7 +14,7 @@
  *   packages/react-native/scripts/featureflags/ReactNativeFeatureFlags.config.js.
  *
  * To regenerate this code, run the following script from the repo root:
- *   yarn featureflags-update
+ *   yarn featureflags --update
  */
 
 #pragma once
@@ -60,6 +60,11 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool disableEventLoopOnBridgeless();
 
   /**
+   * Prevent FabricMountingManager from reordering mountitems, which may lead to invalid state on the UI thread
+   */
+  RN_EXPORT static bool disableMountItemReorderingAndroid();
+
+  /**
    * Kill-switch to turn off support for aling-items:baseline on Fabric iOS.
    */
   RN_EXPORT static bool enableAlignItemsBaselineOnFabricIOS();
@@ -75,9 +80,9 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableBridgelessArchitecture();
 
   /**
-   * Clean yoga node when <TextInput /> does not change.
+   * Enable prop iterator setter-style construction of Props in C++ (this flag is not used in Java).
    */
-  RN_EXPORT static bool enableCleanTextInputYogaNode();
+  RN_EXPORT static bool enableCppPropsIteratorSetter();
 
   /**
    * Deletes views that were pre-allocated but never mounted on the screen.
@@ -135,6 +140,11 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableLongTaskAPI();
 
   /**
+   * Use BackgroundDrawable and BorderDrawable instead of CSSBackgroundDrawable
+   */
+  RN_EXPORT static bool enableNewBackgroundAndBorderDrawables();
+
+  /**
    * Moves execution of pre-mount items to outside the choregrapher in the main thread, so we can estimate idle time more precisely (Android only).
    */
   RN_EXPORT static bool enablePreciseSchedulingForPremountItemsOnAndroid();
@@ -153,11 +163,6 @@ class ReactNativeFeatureFlags {
    * Dispatches state updates synchronously in Fabric (e.g.: updates the scroll position in the shadow tree synchronously from the main thread).
    */
   RN_EXPORT static bool enableSynchronousStateUpdates();
-
-  /**
-   * Text preallocation optimisation where unnecessary work is removed.
-   */
-  RN_EXPORT static bool enableTextPreallocationOptimisation();
 
   /**
    * Ensures that JavaScript always has a consistent view of the state of the UI (e.g.: commits done in other threads are not immediately propagated to JS during its execution).
@@ -223,6 +228,11 @@ class ReactNativeFeatureFlags {
    * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.
    */
   RN_EXPORT static bool traceTurboModulePromiseRejectionsOnAndroid();
+
+  /**
+   * In Bridgeless mode, use the always available javascript error reporting pipeline.
+   */
+  RN_EXPORT static bool useAlwaysAvailableJSErrorHandling();
 
   /**
    * Should this application enable the Fabric Interop Layer for Android? If yes, the application will behave so that it can accept non-Fabric components and render them on Fabric. This toggle is controlling extra logic such as custom event dispatching that are needed for the Fabric Interop Layer to work correctly.

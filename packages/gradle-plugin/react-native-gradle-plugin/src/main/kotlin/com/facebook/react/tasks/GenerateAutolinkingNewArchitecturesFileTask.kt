@@ -59,15 +59,15 @@ abstract class GenerateAutolinkingNewArchitecturesFileTask : DefaultTask() {
           val cxxModuleCMakeListsPath = dep.cxxModuleCMakeListsPath
           if (libraryName != null && cmakeListsPath != null) {
             // If user provided a custom cmakeListsPath, let's honor it.
-            val nativeFolderPath = cmakeListsPath.replace("CMakeLists.txt", "")
+            val nativeFolderPath = sanitizeCmakeListsPath(cmakeListsPath)
             addDirectoryString +=
-                "add_subdirectory($nativeFolderPath ${libraryName}_autolinked_build)"
+                "add_subdirectory(\"$nativeFolderPath\" ${libraryName}_autolinked_build)"
           }
           if (cxxModuleCMakeListsPath != null) {
             // If user provided a custom cxxModuleCMakeListsPath, let's honor it.
-            val nativeFolderPath = cxxModuleCMakeListsPath.replace("CMakeLists.txt", "")
+            val nativeFolderPath = sanitizeCmakeListsPath(cxxModuleCMakeListsPath)
             addDirectoryString +=
-                "\nadd_subdirectory($nativeFolderPath ${libraryName}_cxxmodule_autolinked_build)"
+                "\nadd_subdirectory(\"$nativeFolderPath\" ${libraryName}_cxxmodule_autolinked_build)"
           }
           addDirectoryString
         }
@@ -158,6 +158,9 @@ abstract class GenerateAutolinkingNewArchitecturesFileTask : DefaultTask() {
 
     const val COMPONENT_DESCRIPTOR_FILENAME = "ComponentDescriptors.h"
     const val COMPONENT_INCLUDE_PATH = "react/renderer/components"
+
+    internal fun sanitizeCmakeListsPath(cmakeListsPath: String): String =
+        cmakeListsPath.replace("CMakeLists.txt", "").replace(" ", "\\ ")
 
     // language=cmake
     val CMAKE_TEMPLATE =

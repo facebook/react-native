@@ -18,7 +18,7 @@ import com.facebook.react.module.annotations.ReactModule
 
 /** [NativeModule] that allows JS to show dev loading view. */
 @ReactModule(name = NativeDevLoadingViewSpec.NAME)
-public class DevLoadingModule(reactContext: ReactApplicationContext) :
+internal class DevLoadingModule(reactContext: ReactApplicationContext) :
     NativeDevLoadingViewSpec(reactContext) {
 
   private val jsExceptionHandler: JSExceptionHandler? = reactContext.jsExceptionHandler

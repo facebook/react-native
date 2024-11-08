@@ -16,14 +16,14 @@ import com.facebook.react.module.annotations.ReactModule
 
 /** A module that allows JS to get/set clipboard contents. */
 @ReactModule(name = NativeClipboardSpec.NAME)
-public class ClipboardModule(context: ReactApplicationContext) : NativeClipboardSpec(context) {
+internal class ClipboardModule(context: ReactApplicationContext) : NativeClipboardSpec(context) {
 
   private val clipboardService: ClipboardManager
     get() =
         getReactApplicationContext().getSystemService(ReactApplicationContext.CLIPBOARD_SERVICE)
             as ClipboardManager
 
-  public override fun getString(promise: Promise) {
+  override fun getString(promise: Promise) {
     try {
       val clipboard = clipboardService
       val clipData = clipboard.primaryClip
@@ -38,12 +38,12 @@ public class ClipboardModule(context: ReactApplicationContext) : NativeClipboard
     }
   }
 
-  public override fun setString(text: String?) {
+  override fun setString(text: String?) {
     val clipdata: ClipData = ClipData.newPlainText(null, text)
     clipboardService.setPrimaryClip(clipdata)
   }
 
-  public companion object {
-    public const val NAME: String = NativeClipboardSpec.NAME
+  companion object {
+    const val NAME: String = NativeClipboardSpec.NAME
   }
 }

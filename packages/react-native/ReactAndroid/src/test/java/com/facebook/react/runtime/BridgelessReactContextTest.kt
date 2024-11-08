@@ -71,6 +71,7 @@ class BridgelessReactContextTest {
     assertThat(bridgelessReactContext.getFabricUIManager()).isEqualTo(fabricUiManager)
   }
 
+  @Suppress("DEPRECATION")
   @Test
   fun getCatalystInstanceTest() {
     assertThat(bridgelessReactContext.getCatalystInstance())

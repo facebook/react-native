@@ -24,6 +24,7 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import com.facebook.common.references.CloseableReference
 import com.facebook.common.util.UriUtil
+import com.facebook.drawee.backends.pipeline.Fresco
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder
 import com.facebook.drawee.controller.ControllerListener
 import com.facebook.drawee.controller.ForwardingControllerListener
@@ -40,6 +41,7 @@ import com.facebook.imagepipeline.image.ImageInfo
 import com.facebook.imagepipeline.postprocessors.IterativeBoxBlurPostProcessor
 import com.facebook.imagepipeline.request.BasePostprocessor
 import com.facebook.imagepipeline.request.ImageRequest
+import com.facebook.imagepipeline.request.ImageRequest.RequestLevel
 import com.facebook.imagepipeline.request.ImageRequestBuilder
 import com.facebook.imagepipeline.request.Postprocessor
 import com.facebook.react.bridge.ReactContext
@@ -49,6 +51,7 @@ import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.common.annotations.VisibleForTesting
 import com.facebook.react.common.build.ReactBuildConfig
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
+import com.facebook.react.modules.fresco.ImageCacheControl
 import com.facebook.react.modules.fresco.ReactNetworkImageRequest
 import com.facebook.react.uimanager.BackgroundStyleApplicator
 import com.facebook.react.uimanager.LengthPercentage
@@ -268,7 +271,8 @@ public class ReactImageView(
     } else if (sources.size() == 1) {
       // Optimize for the case where we have just one uri, case in which we don't need the sizes
       val source = sources.getMap(0)
-      var imageSource = ImageSource(context, source.getString("uri"))
+      val cacheControl = computeCacheControl(source.getString("cache"))
+      var imageSource = ImageSource(context, source.getString("uri"), cacheControl = cacheControl)
       if (Uri.EMPTY == imageSource.uri) {
         warnImageSource(source.getString("uri"))
         imageSource = getTransparentBitmapImageSource(context)
@@ -277,12 +281,14 @@ public class ReactImageView(
     } else {
       for (idx in 0 until sources.size()) {
         val source = sources.getMap(idx)
+        val cacheControl = computeCacheControl(source.getString("cache"))
         var imageSource =
             ImageSource(
                 context,
                 source.getString("uri"),
                 source.getDouble("width"),
-                source.getDouble("height"))
+                source.getDouble("height"),
+                cacheControl)
         if (Uri.EMPTY == imageSource.uri) {
           warnImageSource(source.getString("uri"))
           imageSource = getTransparentBitmapImageSource(context)
@@ -299,6 +305,23 @@ public class ReactImageView(
     this.sources.clear()
     this.sources.addAll(tmpSources)
     isDirty = true
+  }
+
+  private fun computeCacheControl(cacheControl: String?): ImageCacheControl {
+    return when (cacheControl) {
+      null,
+      "default" -> ImageCacheControl.DEFAULT
+      "reload" -> ImageCacheControl.RELOAD
+      "only-if-cached" -> ImageCacheControl.ONLY_IF_CACHED
+      else -> ImageCacheControl.DEFAULT
+    }
+  }
+
+  private fun computeRequestLevel(cacheControl: ImageCacheControl): RequestLevel {
+    return when (cacheControl) {
+      ImageCacheControl.ONLY_IF_CACHED -> RequestLevel.DISK_CACHE
+      else -> RequestLevel.FULL_FETCH
+    }
   }
 
   public fun setDefaultSource(name: String?) {
@@ -409,7 +432,10 @@ public class ReactImageView(
   }
 
   private fun maybeUpdateViewFromRequest(doResize: Boolean) {
-    val uri = this.imageSource?.uri ?: return
+    val imageSource = this.imageSource ?: return
+    val uri = imageSource.uri
+    val cacheControl = imageSource.cacheControl
+    val requestLevel = computeRequestLevel(cacheControl)
 
     val postprocessorList = mutableListOf<Postprocessor>()
     iterativeBoxBlurPostProcessor?.let { postprocessorList.add(it) }
@@ -418,19 +444,25 @@ public class ReactImageView(
 
     val resizeOptions = if (doResize) resizeOptions else null
 
+    if (cacheControl == ImageCacheControl.RELOAD) {
+      val imagePipeline = Fresco.getImagePipeline()
+      imagePipeline.evictFromCache(uri)
+    }
+
     val imageRequestBuilder =
         ImageRequestBuilder.newBuilderWithSource(uri)
             .setPostprocessor(postprocessor)
             .setResizeOptions(resizeOptions)
             .setAutoRotateEnabled(true)
             .setProgressiveRenderingEnabled(progressiveRenderingEnabled)
+            .setLowestPermittedRequestLevel(requestLevel)
 
     if (resizeMethod == ImageResizeMethod.NONE) {
       imageRequestBuilder.setDownsampleOverride(DownsampleMode.NEVER)
     }
 
     val imageRequest: ImageRequest =
-        ReactNetworkImageRequest.fromBuilderWithHeaders(imageRequestBuilder, headers)
+        ReactNetworkImageRequest.fromBuilderWithHeaders(imageRequestBuilder, headers, cacheControl)
 
     globalImageLoadListener?.onLoadAttempt(uri)
 

@@ -88,7 +88,7 @@ const PERMISSIONS = Object.freeze({
  */
 
 class PermissionsAndroid {
-  PERMISSIONS: {|
+  PERMISSIONS: $ReadOnly<{|
     ACCEPT_HANDOVER: string,
     ACCESS_BACKGROUND_LOCATION: string,
     ACCESS_COARSE_LOCATION: string,
@@ -132,12 +132,12 @@ class PermissionsAndroid {
     WRITE_CALL_LOG: string,
     WRITE_CONTACTS: string,
     WRITE_EXTERNAL_STORAGE: string,
-  |} = PERMISSIONS;
-  RESULTS: {|
+  |}> = PERMISSIONS;
+  RESULTS: $ReadOnly<{|
     DENIED: 'denied',
     GRANTED: 'granted',
     NEVER_ASK_AGAIN: 'never_ask_again',
-  |} = PERMISSION_REQUEST_RESULT;
+  |}> = PERMISSION_REQUEST_RESULT;
 
   /**
    * DEPRECATED - use check

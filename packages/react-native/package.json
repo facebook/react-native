@@ -95,12 +95,11 @@
   ],
   "scripts": {
     "prepack": "node ./scripts/prepack.js",
-    "featureflags-check": "node ./scripts/featureflags/index.js --verify-unchanged",
-    "featureflags-update": "node ./scripts/featureflags/index.js"
+    "featureflags": "node ./scripts/featureflags/index.js"
   },
   "peerDependencies": {
     "@types/react": "^18.2.6",
-    "react": "^19.0.0-rc-fb9a90fa48-20240614"
+    "react": "^18.2.0"
   },
   "peerDependenciesMeta": {
     "@types/react": {
@@ -139,7 +138,7 @@
     "react-devtools-core": "^6.0.1",
     "react-refresh": "^0.14.0",
     "regenerator-runtime": "^0.13.2",
-    "scheduler": "0.25.0-rc-fb9a90fa48-20240614",
+    "scheduler": "0.24.0-canary-efb381bbf-20230505",
     "semver": "^7.1.3",
     "stacktrace-parser": "^0.1.10",
     "whatwg-fetch": "^3.0.0",

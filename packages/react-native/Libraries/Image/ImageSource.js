@@ -66,7 +66,7 @@ export interface ImageURISource {
    * to a URL load request, no attempt is made to load the data from the originating source,
    * and the load is considered to have failed.
    *
-   * @platform ios
+   * @platform ios (for `force-cache`)
    */
   +cache?: ?('default' | 'reload' | 'force-cache' | 'only-if-cached');
 

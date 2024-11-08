@@ -15,7 +15,9 @@ import android.net.Uri;
 import android.nfc.NfcAdapter;
 import android.provider.Settings;
 import androidx.annotation.Nullable;
+import androidx.core.util.Preconditions;
 import com.facebook.fbreact.specs.NativeIntentAndroidSpec;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.Promise;
@@ -28,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** Intent module. Launch other activities or open URLs. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @ReactModule(name = NativeIntentAndroidSpec.NAME)
 public class IntentModule extends NativeIntentAndroidSpec {
 
@@ -124,7 +127,7 @@ public class IntentModule extends NativeIntentAndroidSpec {
    * @param url the URL to open
    */
   @Override
-  public void openURL(String url, Promise promise) {
+  public void openURL(@Nullable String url, Promise promise) {
     if (url == null || url.isEmpty()) {
       promise.reject(new JSApplicationIllegalArgumentException("Invalid URL: " + url));
       return;
@@ -149,7 +152,7 @@ public class IntentModule extends NativeIntentAndroidSpec {
    * @param promise a promise that is always resolved with a boolean argument
    */
   @Override
-  public void canOpenURL(String url, Promise promise) {
+  public void canOpenURL(@Nullable String url, Promise promise) {
     if (url == null || url.isEmpty()) {
       promise.reject(new JSApplicationIllegalArgumentException("Invalid URL: " + url));
       return;
@@ -160,8 +163,8 @@ public class IntentModule extends NativeIntentAndroidSpec {
       // We need Intent.FLAG_ACTIVITY_NEW_TASK since getReactApplicationContext() returns
       // the ApplicationContext instead of the Activity context.
       intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-      boolean canOpen =
-          intent.resolveActivity(getReactApplicationContext().getPackageManager()) != null;
+      PackageManager packageManager = getReactApplicationContext().getPackageManager();
+      boolean canOpen = packageManager != null && intent.resolveActivity(packageManager) != null;
       promise.resolve(canOpen);
     } catch (Exception e) {
       promise.reject(
@@ -179,7 +182,7 @@ public class IntentModule extends NativeIntentAndroidSpec {
   public void openSettings(Promise promise) {
     try {
       Intent intent = new Intent();
-      Activity currentActivity = getCurrentActivity();
+      Activity currentActivity = Preconditions.checkNotNull(getCurrentActivity());
       String selfPackageName = getReactApplicationContext().getPackageName();
 
       intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
@@ -219,7 +222,7 @@ public class IntentModule extends NativeIntentAndroidSpec {
     Intent intent = new Intent(action);
 
     PackageManager packageManager = getReactApplicationContext().getPackageManager();
-    if (intent.resolveActivity(packageManager) == null) {
+    if (packageManager == null || intent.resolveActivity(packageManager) == null) {
       promise.reject(
           new JSApplicationIllegalArgumentException(
               "Could not launch Intent with action " + action + "."));
@@ -235,6 +238,7 @@ public class IntentModule extends NativeIntentAndroidSpec {
         switch (type) {
           case String:
             {
+              // NULLSAFE_FIXME[Parameter Not Nullable]
               intent.putExtra(name, map.getString(EXTRA_MAP_KEY_FOR_VALUE));
               break;
             }
@@ -244,11 +248,13 @@ public class IntentModule extends NativeIntentAndroidSpec {
               // See: https://github.com/facebook/react-native/issues/4141
               // We might need to find a workaround if this is really an issue
               Double number = map.getDouble(EXTRA_MAP_KEY_FOR_VALUE);
+              // NULLSAFE_FIXME[Parameter Not Nullable]
               intent.putExtra(name, number);
               break;
             }
           case Boolean:
             {
+              // NULLSAFE_FIXME[Parameter Not Nullable]
               intent.putExtra(name, map.getBoolean(EXTRA_MAP_KEY_FOR_VALUE));
               break;
             }
@@ -270,8 +276,13 @@ public class IntentModule extends NativeIntentAndroidSpec {
     Activity currentActivity = getCurrentActivity();
 
     String selfPackageName = getReactApplicationContext().getPackageName();
-    ComponentName componentName =
-        intent.resolveActivity(getReactApplicationContext().getPackageManager());
+    PackageManager packageManager = getReactApplicationContext().getPackageManager();
+    ComponentName componentName = null;
+    if (packageManager == null) {
+      componentName = intent.getComponent();
+    } else {
+      componentName = intent.resolveActivity(packageManager);
+    }
     String otherPackageName = (componentName != null ? componentName.getPackageName() : "");
 
     // If there is no currentActivity or we are launching to a different package we need to set

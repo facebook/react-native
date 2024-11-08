@@ -13,7 +13,7 @@ import okhttp3.OkHttpClient
 /**
  * Helper class that provides the necessary methods for canceling queued and running OkHttp calls
  */
-public object OkHttpCallUtil {
+internal object OkHttpCallUtil {
   @JvmStatic
   public fun cancelTag(client: OkHttpClient, tag: Any) {
     // client.dispatcher is private, so we need to use reflection to access

@@ -20,10 +20,10 @@ import com.facebook.react.module.annotations.ReactModule
 
 @SuppressLint("MissingPermission")
 @ReactModule(name = NativeVibrationSpec.NAME)
-public class VibrationModule(reactContext: ReactApplicationContext) :
+internal class VibrationModule(reactContext: ReactApplicationContext) :
     NativeVibrationSpec(reactContext) {
 
-  public override fun vibrate(durationDouble: Double) {
+  override fun vibrate(durationDouble: Double) {
     val duration = durationDouble.toInt()
     val v = getVibrator() ?: return
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -33,7 +33,7 @@ public class VibrationModule(reactContext: ReactApplicationContext) :
     }
   }
 
-  public override fun vibrateByPattern(pattern: ReadableArray, repeatDouble: Double) {
+  override fun vibrateByPattern(pattern: ReadableArray, repeatDouble: Double) {
     val repeat = repeatDouble.toInt()
     val v = getVibrator() ?: return
     val patternLong = LongArray(pattern.size())
@@ -47,7 +47,7 @@ public class VibrationModule(reactContext: ReactApplicationContext) :
     }
   }
 
-  public override fun cancel() {
+  override fun cancel() {
     getVibrator()?.cancel()
   }
 
@@ -62,7 +62,7 @@ public class VibrationModule(reactContext: ReactApplicationContext) :
         getReactApplicationContext().getSystemService(Context.VIBRATOR_SERVICE) as Vibrator?
       }
 
-  public companion object {
-    public const val NAME: String = NativeVibrationSpec.NAME
+  companion object {
+    const val NAME: String = NativeVibrationSpec.NAME
   }
 }

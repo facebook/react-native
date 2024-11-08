@@ -17,33 +17,33 @@ public interface ReactSurface {
   // the API of this interface will be completed as we analyze and refactor API of ReactSurface,
   // ReactRootView, etc.
 
-  // Returns surface ID of this surface
+  /** Returns surface ID of this surface */
   public val surfaceID: Int
 
-  // Returns module name of this surface
+  /** Returns module name of this surface */
   public val moduleName: String
 
-  // Returns whether the surface is running or not
+  /** Returns whether the surface is running or not */
   public val isRunning: Boolean
 
-  // Returns React root view of this surface
+  /** Returns React root view of this surface */
   public val view: ViewGroup?
 
-  // Returns context associated with the surface
+  /** Returns context associated with the surface */
   public val context: Context
 
-  // Prerender this surface
+  /** Prerender this surface */
   public fun prerender(): TaskInterface<Void>
 
-  // Start running this surface
+  /** Start running this surface */
   public fun start(): TaskInterface<Void>
 
-  // Stop running this surface
+  /** Stop running this surface */
   public fun stop(): TaskInterface<Void>
 
-  // Clear surface
+  /** Clear surface */
   public fun clear()
 
-  // Detach surface from Host
+  /** Detach surface from Host */
   public fun detach()
 }

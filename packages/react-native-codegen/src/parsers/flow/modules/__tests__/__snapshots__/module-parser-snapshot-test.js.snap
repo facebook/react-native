@@ -227,7 +227,9 @@ exports[`RN Codegen Flow Parser can generate fixture CXX_ONLY_NATIVE_MODULE 1`] 
             'typeAnnotation': {
               'type': 'FunctionTypeAnnotation',
               'returnTypeAnnotation': {
-                'type': 'StringTypeAnnotation'
+                'name': 'Quality',
+                'type': 'EnumDeclaration',
+                'memberType': 'StringTypeAnnotation'
               },
               'params': [
                 {
@@ -971,6 +973,26 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_BASIC_PA
                   'optional': false,
                   'typeAnnotation': {
                     'type': 'NumberTypeAnnotation'
+                  }
+                }
+              ]
+            }
+          },
+          {
+            'name': 'passNumberLiteral',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'VoidTypeAnnotation'
+              },
+              'params': [
+                {
+                  'name': 'arg',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'NumberLiteralTypeAnnotation',
+                    'value': 4
                   }
                 }
               ]

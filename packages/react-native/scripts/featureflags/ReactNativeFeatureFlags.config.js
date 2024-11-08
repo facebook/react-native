@@ -17,7 +17,7 @@ import type {FeatureFlagDefinitions} from './types';
  *
  * If you modify this file, you need to update all the generated files
  * running the following script from the repo root:
- *   yarn featureflags-update
+ *   yarn featureflags --update
  */
 
 // These flags are only used in tests for the feature flags system
@@ -90,6 +90,15 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'release',
       },
     },
+    disableMountItemReorderingAndroid: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2024-10-26',
+        description:
+          'Prevent FabricMountingManager from reordering mountitems, which may lead to invalid state on the UI thread',
+        purpose: 'experimentation',
+      },
+    },
     enableAlignItemsBaselineOnFabricIOS: {
       defaultValue: true,
       metadata: {
@@ -100,12 +109,11 @@ const definitions: FeatureFlagDefinitions = {
       },
     },
     enableAndroidLineHeightCentering: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
-        dateAdded: '2024-09-11',
         description:
           'When enabled, custom line height calculation will be centered from top to bottom.',
-        purpose: 'experimentation',
+        purpose: 'release',
       },
     },
     enableBridgelessArchitecture: {
@@ -116,11 +124,12 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'release',
       },
     },
-    enableCleanTextInputYogaNode: {
+    enableCppPropsIteratorSetter: {
       defaultValue: false,
       metadata: {
-        dateAdded: '2024-04-06',
-        description: 'Clean yoga node when <TextInput /> does not change.',
+        dateAdded: '2024-09-13',
+        description:
+          'Enable prop iterator setter-style construction of Props in C++ (this flag is not used in Java).',
         purpose: 'experimentation',
       },
     },
@@ -224,6 +233,15 @@ const definitions: FeatureFlagDefinitions = {
       // We're preparing to clean up this feature flag.
       skipNativeAPI: true,
     },
+    enableNewBackgroundAndBorderDrawables: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2024-09-24',
+        description:
+          'Use BackgroundDrawable and BorderDrawable instead of CSSBackgroundDrawable',
+        purpose: 'experimentation',
+      },
+    },
     enablePreciseSchedulingForPremountItemsOnAndroid: {
       defaultValue: false,
       metadata: {
@@ -256,15 +274,6 @@ const definitions: FeatureFlagDefinitions = {
         dateAdded: '2024-04-25',
         description:
           'Dispatches state updates synchronously in Fabric (e.g.: updates the scroll position in the shadow tree synchronously from the main thread).',
-        purpose: 'experimentation',
-      },
-    },
-    enableTextPreallocationOptimisation: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-09-12',
-        description:
-          'Text preallocation optimisation where unnecessary work is removed.',
         purpose: 'experimentation',
       },
     },
@@ -381,6 +390,14 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'operational',
       },
     },
+    useAlwaysAvailableJSErrorHandling: {
+      defaultValue: false,
+      metadata: {
+        description:
+          'In Bridgeless mode, use the always available javascript error reporting pipeline.',
+        purpose: 'release',
+      },
+    },
     useFabricInterop: {
       defaultValue: false,
       metadata: {
@@ -484,6 +501,15 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'experimentation',
       },
     },
+    disableInteractionManager: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2024-11-06',
+        description:
+          'Disables InteractionManager and replaces its scheduler with `setImmediate`.',
+        purpose: 'experimentation',
+      },
+    },
     enableAccessToHostTreeInFabric: {
       defaultValue: false,
       metadata: {
@@ -493,12 +519,11 @@ const definitions: FeatureFlagDefinitions = {
       },
     },
     enableAnimatedAllowlist: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
-        dateAdded: '2024-09-10',
         description:
           'Enables Animated to skip non-allowlisted props and styles.',
-        purpose: 'experimentation',
+        purpose: 'release',
       },
     },
     enableAnimatedClearImmediateFix: {
@@ -511,12 +536,11 @@ const definitions: FeatureFlagDefinitions = {
       },
     },
     enableAnimatedPropsMemo: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
-        dateAdded: '2024-09-11',
         description:
           'Enables Animated to analyze props to minimize invalidating `AnimatedProps`.',
-        purpose: 'experimentation',
+        purpose: 'release',
       },
     },
     enableOptimisedVirtualizedCells: {
@@ -534,15 +558,6 @@ const definitions: FeatureFlagDefinitions = {
         description:
           'Function used to enable / disabled Layout Animations in React Native.',
         purpose: 'release',
-      },
-    },
-    scheduleAnimatedEndCallbackInMicrotask: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-09-27',
-        description:
-          'Changes the completion callback supplied via `Animation#start` to be scheduled in a microtask instead of synchronously executed.',
-        purpose: 'experimentation',
       },
     },
     shouldSkipStateUpdatesForLoopingAnimations: {

@@ -35,6 +35,7 @@ public interface DevSupportManager : JSExceptionHandler {
   public val lastErrorType: ErrorType?
   public val lastErrorCookie: Int
   public val currentActivity: Activity?
+  public val currentReactContext: ReactContext?
 
   public var devSupportEnabled: Boolean
 
@@ -47,8 +48,6 @@ public interface DevSupportManager : JSExceptionHandler {
   public fun destroyRootView(rootView: View?)
 
   public fun showNewJSError(message: String?, details: ReadableArray?, errorCookie: Int)
-
-  public fun updateJSError(message: String?, details: ReadableArray?, errorCookie: Int)
 
   public fun hideRedboxDialog()
 

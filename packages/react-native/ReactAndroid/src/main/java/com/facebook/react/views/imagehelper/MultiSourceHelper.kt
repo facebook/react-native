@@ -8,6 +8,7 @@
 package com.facebook.react.views.imagehelper
 
 import com.facebook.imagepipeline.core.ImagePipelineFactory
+import com.facebook.react.modules.fresco.ImageCacheControl
 
 /** Helper class for dealing with multisource images. */
 public object MultiSourceHelper {
@@ -62,7 +63,10 @@ public object MultiSourceHelper {
         best = source
       }
       if (precision < bestCachePrecision &&
+          source.cacheControl != ImageCacheControl.RELOAD &&
           (imagePipeline.isInBitmapMemoryCache(source.uri) ||
+              // TODO: T206445115 isInDiskCacheSync is a blocking operation, we should move this to
+              // a separate thread
               imagePipeline.isInDiskCacheSync(source.uri))) {
         bestCachePrecision = precision
         bestCached = source

@@ -131,6 +131,12 @@ export default class IntersectionObserver {
    * To stop observing the element, call `IntersectionObserver.unobserve()`.
    */
   observe(target: ReactNativeElement): void {
+    if (target == null) {
+      throw new TypeError(
+        "Failed to execute 'observe' on 'IntersectionObserver': parameter 1 is null or undefined.",
+      );
+    }
+
     if (!(target instanceof ReactNativeElement)) {
       throw new TypeError(
         "Failed to execute 'observe' on 'IntersectionObserver': parameter 1 is not of type 'ReactNativeElement'.",

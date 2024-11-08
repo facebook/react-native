@@ -8,6 +8,8 @@
  * @format
  */
 
+import type {SectionBase} from 'react-native/Libraries/Lists/SectionList';
+
 import * as React from 'react';
 import {
   Button,
@@ -73,7 +75,7 @@ type Props = $ReadOnly<{
 }>;
 
 const SectionListBaseExample: component(
-  ref: React.RefSetter<React.ElementRef<typeof SectionList>>,
+  ref: React.RefSetter<SectionList<SectionBase<mixed>>>,
   ...props: Props
 ) = React.forwardRef((props: Props, ref): React.Node => {
   return (

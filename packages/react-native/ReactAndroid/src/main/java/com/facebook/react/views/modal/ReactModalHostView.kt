@@ -48,6 +48,7 @@ import com.facebook.react.uimanager.events.EventDispatcher
 import com.facebook.react.views.common.ContextUtils
 import com.facebook.react.views.view.ReactViewGroup
 import com.facebook.react.views.view.setStatusBarTranslucency
+import com.facebook.react.views.view.setSystemBarsTranslucency
 import java.util.Objects
 
 /**
@@ -74,6 +75,12 @@ public class ReactModalHostView(context: ThemedReactContext) :
   public var onShowListener: DialogInterface.OnShowListener? = null
   public var onRequestCloseListener: OnRequestCloseListener? = null
   public var statusBarTranslucent: Boolean = false
+    set(value) {
+      field = value
+      createNewDialog = true
+    }
+
+  public var navigationBarTranslucent: Boolean = false
     set(value) {
       field = value
       createNewDialog = true
@@ -300,7 +307,14 @@ public class ReactModalHostView(context: ThemedReactContext) :
      * changed. This has the pleasant side-effect of us not having to preface all Modals with "top:
      * statusBarHeight", since that margin will be included in the FrameLayout.
      */
-    get() = FrameLayout(context).apply { addView(dialogRootViewGroup) }
+    get() =
+        FrameLayout(context).apply {
+          addView(dialogRootViewGroup)
+          if (!statusBarTranslucent) {
+            // this is needed to prevent content hiding behind systems bars < API 30
+            this.fitsSystemWindows = true
+          }
+        }
 
   /**
    * updateProperties will update the properties that do not require us to recreate the dialog
@@ -328,7 +342,12 @@ public class ReactModalHostView(context: ThemedReactContext) :
         }
       }
 
-      dialogWindow.setStatusBarTranslucency(statusBarTranslucent)
+      // Navigation bar cannot be translucent without status bar being translucent too
+      dialogWindow.setSystemBarsTranslucency(navigationBarTranslucent)
+
+      if (!navigationBarTranslucent) {
+        dialogWindow.setStatusBarTranslucency(statusBarTranslucent)
+      }
 
       if (transparent) {
         dialogWindow.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)

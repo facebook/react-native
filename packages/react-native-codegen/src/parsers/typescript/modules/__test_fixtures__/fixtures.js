@@ -113,6 +113,7 @@ import * as TurboModuleRegistry from '../TurboModuleRegistry';
 export interface Spec extends TurboModule {
   readonly passBool?: (arg: boolean) => void;
   readonly passNumber: (arg: number) => void;
+  readonly passNumberLiteral: (arg: 4) => void;
   readonly passString: (arg: string) => void;
   readonly passStringish: (arg: Stringish) => void;
   readonly passStringLiteral: (arg: 'A String Literal') => void;
@@ -900,7 +901,7 @@ export type CustomDeviceEvent = {
 export interface Spec extends TurboModule {
   readonly getCallback: () => () => void;
   readonly getMixed: (arg: unknown) => unknown;
-  readonly getEnums: (quality: Quality, resolution?: Resolution, stringOptions: StringOptions) => string;
+  readonly getEnums: (quality: Quality, resolution?: Resolution, stringOptions: StringOptions) => Quality;
   readonly getBinaryTreeNode: (arg: BinaryTreeNode) => BinaryTreeNode;
   readonly getGraphNode: (arg: GraphNode) => GraphNode;
   readonly getMap: (arg: {[a: string]: number | null;}) => {[b: string]: number | null;};

@@ -101,10 +101,12 @@ class FabricUIManagerBinding : public jni::HybridClass<FabricUIManagerBinding>,
       jni::alias_ref<SurfaceHandlerBinding::jhybridobject> surfaceHandler);
 
   void schedulerDidFinishTransaction(
-      const MountingCoordinator::Shared& mountingCoordinator) override;
+      const std::shared_ptr<const MountingCoordinator>& mountingCoordinator)
+      override;
 
   void schedulerShouldRenderTransactions(
-      const MountingCoordinator::Shared& mountingCoordinator) override;
+      const std::shared_ptr<const MountingCoordinator>& mountingCoordinator)
+      override;
 
   void schedulerDidRequestPreliminaryViewAllocation(
       const ShadowNode& shadowNode) override;

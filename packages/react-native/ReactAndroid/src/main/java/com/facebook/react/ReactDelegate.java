@@ -319,7 +319,11 @@ public class ReactDelegate {
   @Nullable
   public ReactRootView getReactRootView() {
     if (ReactNativeFeatureFlags.enableBridgelessArchitecture()) {
-      return (ReactRootView) mReactSurface.getView();
+      if (mReactSurface != null) {
+        return (ReactRootView) mReactSurface.getView();
+      } else {
+        return null;
+      }
     } else {
       return mReactRootView;
     }

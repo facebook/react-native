@@ -387,15 +387,6 @@ const LOG_LEVELS = {
   warn: 2,
   error: 3,
 };
-const INSPECTOR_LEVELS = [];
-INSPECTOR_LEVELS[LOG_LEVELS.trace] = 'debug';
-INSPECTOR_LEVELS[LOG_LEVELS.info] = 'log';
-INSPECTOR_LEVELS[LOG_LEVELS.warn] = 'warning';
-INSPECTOR_LEVELS[LOG_LEVELS.error] = 'error';
-
-// Strip the inner function in getNativeLogFunction(), if in dev also
-// strip method printing to originalConsole.
-const INSPECTOR_FRAMES_TO_SKIP = __DEV__ ? 2 : 1;
 
 function getNativeLogFunction(level) {
   return function () {
@@ -428,14 +419,6 @@ function getNativeLogFunction(level) {
       // but we don't (currently) want these to show a redbox
       // (Note: Logic duplicated in ExceptionsManager.js.)
       logLevel = LOG_LEVELS.warn;
-    }
-    if (global.__inspectorLog) {
-      global.__inspectorLog(
-        INSPECTOR_LEVELS[logLevel],
-        str,
-        [].slice.call(arguments),
-        INSPECTOR_FRAMES_TO_SKIP,
-      );
     }
     if (groupStack.length) {
       str = groupFormat('', str);
@@ -569,6 +552,48 @@ if (global.nativeLoggingHook) {
     groupCollapsed: consoleGroupCollapsedPolyfill,
     assert: consoleAssertPolyfill,
   };
+
+  // TODO(T206796580): This was copy-pasted from ExceptionsManager.js
+  // Delete the copy there after the c++ pipeline is rolled out everywhere.
+  if (global.RN$useAlwaysAvailableJSErrorHandling === true) {
+    let originalConsoleError = console.error;
+    console.reportErrorsAsExceptions = true;
+    function stringifySafe(arg) {
+      return inspect(arg, {depth: 10}).replaceAll(/\n\s*/g, ' ');
+    }
+    console.error = function (...args) {
+      originalConsoleError.apply(this, args);
+      if (!console.reportErrorsAsExceptions) {
+        return;
+      }
+      if (global.RN$inExceptionHandler?.()) {
+        return;
+      }
+      let error;
+
+      const firstArg = args[0];
+      if (firstArg?.stack) {
+        // RN$handleException will console.error this with high enough fidelity.
+        error = firstArg;
+      } else {
+        if (typeof firstArg === 'string' && firstArg.startsWith('Warning: ')) {
+          // React warnings use console.error so that a stack trace is shown, but
+          // we don't (currently) want these to show a redbox
+          return;
+        }
+        const message = args
+          .map(arg => (typeof arg === 'string' ? arg : stringifySafe(arg)))
+          .join(' ');
+
+        error = new Error(message);
+        error.name = 'console.error';
+      }
+
+      const isFatal = false;
+      const reportToConsole = false;
+      global.RN$handleException(error, isFatal, reportToConsole);
+    };
+  }
 
   Object.defineProperty(console, '_isPolyfilled', {
     value: true,

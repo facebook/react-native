@@ -225,6 +225,13 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
     return plain_.utf8(s);
   }
 
+  std::u16string utf16(const String& str) override {
+    return plain_.utf16(str);
+  }
+  std::u16string utf16(const PropNameID& sym) override {
+    return plain_.utf16(sym);
+  }
+
   Object createObject() override {
     return plain_.createObject();
   };
@@ -672,6 +679,15 @@ class WithRuntimeDecorator : public RuntimeDecorator<Plain, Base> {
   std::string utf8(const String& s) override {
     Around around{with_};
     return RD::utf8(s);
+  }
+
+  std::u16string utf16(const String& str) override {
+    Around around{with_};
+    return RD::utf16(str);
+  }
+  std::u16string utf16(const PropNameID& sym) override {
+    Around around{with_};
+    return RD::utf16(sym);
   }
 
   Value createValueFromJsonUtf8(const uint8_t* json, size_t length) override {

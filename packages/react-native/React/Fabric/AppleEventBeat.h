@@ -13,6 +13,8 @@
 
 namespace facebook::react {
 
+class RuntimeScheduler;
+
 /*
  * Event beat associated with JavaScript runtime.
  * The beat is called on `RuntimeExecutor`'s thread induced by the UI thread
@@ -23,7 +25,7 @@ class AppleEventBeat : public EventBeat, public RunLoopObserver::Delegate {
   AppleEventBeat(
       std::shared_ptr<OwnerBox> ownerBox,
       std::unique_ptr<const RunLoopObserver> uiRunLoopObserver,
-      RuntimeExecutor runtimeExecutor);
+      RuntimeScheduler& RuntimeScheduler);
 
 #pragma mark - RunLoopObserver::Delegate
 

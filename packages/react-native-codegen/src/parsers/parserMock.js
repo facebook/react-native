@@ -15,7 +15,7 @@ import type {
   NamedShape,
   NativeModuleAliasMap,
   NativeModuleEnumMap,
-  NativeModuleEnumMembers,
+  NativeModuleEnumMember,
   NativeModuleEnumMemberType,
   NativeModuleParamTypeAnnotation,
   Nullable,
@@ -168,7 +168,9 @@ export class MockedParser implements Parser {
     return;
   }
 
-  parseEnumMembers(typeAnnotation: $FlowFixMe): NativeModuleEnumMembers {
+  parseEnumMembers(
+    typeAnnotation: $FlowFixMe,
+  ): $ReadOnlyArray<NativeModuleEnumMember> {
     return typeAnnotation.type === 'StringTypeAnnotation'
       ? [
           {

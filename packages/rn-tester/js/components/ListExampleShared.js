@@ -71,6 +71,7 @@ class ItemComponent extends React.PureComponent<{
   onShowUnderlay?: () => void,
   onHideUnderlay?: () => void,
   textSelectable?: ?boolean,
+  testID?: ?string,
   ...
 }> {
   _onPress = () => {
@@ -94,6 +95,7 @@ class ItemComponent extends React.PureComponent<{
           ]}>
           {!item.noImage && <Image style={styles.thumb} source={imgSource} />}
           <Text
+            testID={this.props.testID}
             style={styles.text}
             selectable={textSelectable}
             numberOfLines={horizontal || fixedHeight ? 3 : undefined}>
@@ -255,6 +257,7 @@ function renderSmallSwitchOption(
   label: string,
   value: boolean,
   setValue: boolean => void,
+  testID?: string,
 ): null | React.Node {
   if (Platform.isTV) {
     return null;
@@ -263,6 +266,7 @@ function renderSmallSwitchOption(
     <View style={styles.option}>
       <RNTesterText>{label}:</RNTesterText>
       <Switch
+        testID={testID}
         style={styles.smallSwitch}
         value={value}
         onValueChange={setValue}

@@ -218,7 +218,7 @@ export default class Performance {
 
     const measure = new PerformanceMeasure(measureName, {
       startTime: computedStartTime,
-      duration: computedDuration,
+      duration: computedDuration ?? 0,
       detail: options?.detail,
     });
 

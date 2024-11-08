@@ -197,6 +197,8 @@ function translateReturnTypeToKind(
       }
     case 'NumberTypeAnnotation':
       return 'NumberKind';
+    case 'NumberLiteralTypeAnnotation':
+      return 'NumberKind';
     case 'DoubleTypeAnnotation':
       return 'NumberKind';
     case 'FloatTypeAnnotation':
@@ -280,6 +282,8 @@ function translateParamTypeToJniType(
       }
     case 'NumberTypeAnnotation':
       return !isRequired ? 'Ljava/lang/Double;' : 'D';
+    case 'NumberLiteralTypeAnnotation':
+      return !isRequired ? 'Ljava/lang/Double;' : 'D';
     case 'DoubleTypeAnnotation':
       return !isRequired ? 'Ljava/lang/Double;' : 'D';
     case 'FloatTypeAnnotation':
@@ -359,6 +363,8 @@ function translateReturnTypeToJniType(
           );
       }
     case 'NumberTypeAnnotation':
+      return nullable ? 'Ljava/lang/Double;' : 'D';
+    case 'NumberLiteralTypeAnnotation':
       return nullable ? 'Ljava/lang/Double;' : 'D';
     case 'DoubleTypeAnnotation':
       return nullable ? 'Ljava/lang/Double;' : 'D';

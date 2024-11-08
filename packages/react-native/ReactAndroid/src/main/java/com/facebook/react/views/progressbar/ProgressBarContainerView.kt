@@ -18,7 +18,7 @@ import com.facebook.react.bridge.JSApplicationIllegalArgumentException
  * Controls an enclosing [ProgressBar]. Exists so that the [ProgressBar] can be recreated if the
  * style would change.
  */
-public class ProgressBarContainerView(context: Context) : FrameLayout(context) {
+internal class ProgressBarContainerView(context: Context) : FrameLayout(context) {
 
   internal var color: Int? = null
   internal var indeterminate = true

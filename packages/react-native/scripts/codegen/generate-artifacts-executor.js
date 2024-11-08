@@ -47,7 +47,11 @@ const RNCORE_CONFIGS = {
 const CORE_LIBRARIES_WITH_OUTPUT_FOLDER = {
   rncore: RNCORE_CONFIGS,
   FBReactNativeSpec: {
-    ios: null,
+    ios: path.join(
+      REACT_NATIVE_PACKAGE_ROOT_FOLDER,
+      'React',
+      'FBReactNativeSpec',
+    ),
     android: path.join(
       REACT_NATIVE_PACKAGE_ROOT_FOLDER,
       'ReactAndroid',
@@ -451,13 +455,7 @@ function shouldSkipGenerationForRncore(schemaInfo, platform) {
   if (platform !== 'ios' || schemaInfo.library.config.name !== 'rncore') {
     return false;
   }
-  const rncoreOutputPath = path.join(
-    RNCORE_CONFIGS.ios,
-    'react',
-    'renderer',
-    'components',
-    'rncore',
-  );
+  const rncoreOutputPath = CORE_LIBRARIES_WITH_OUTPUT_FOLDER.rncore.ios;
   const rncoreAbsolutePath = path.resolve(rncoreOutputPath);
   return (
     rncoreAbsolutePath.includes('node_modules') &&
@@ -466,10 +464,38 @@ function shouldSkipGenerationForRncore(schemaInfo, platform) {
   );
 }
 
+function shouldSkipGenerationForFBReactNativeSpec(schemaInfo, platform) {
+  if (
+    platform !== 'ios' ||
+    schemaInfo.library.config.name !== 'FBReactNativeSpec'
+  ) {
+    return false;
+  }
+
+  const fbReactNativeSpecOutputPath =
+    CORE_LIBRARIES_WITH_OUTPUT_FOLDER.FBReactNativeSpec.ios;
+  const fbReactNativeSpecAbsolutePath = path.resolve(
+    fbReactNativeSpecOutputPath,
+  );
+  return (
+    fbReactNativeSpecAbsolutePath.includes('node_modules') &&
+    fs.existsSync(fbReactNativeSpecAbsolutePath) &&
+    fs.readdirSync(fbReactNativeSpecAbsolutePath).length > 0
+  );
+}
+
 function generateCode(outputPath, schemaInfo, includesGeneratedCode, platform) {
   if (shouldSkipGenerationForRncore(schemaInfo, platform)) {
     codegenLog(
       '[Codegen - rncore] Skipping iOS code generation for rncore as it has been generated already.',
+      true,
+    );
+    return;
+  }
+
+  if (shouldSkipGenerationForFBReactNativeSpec(schemaInfo, platform)) {
+    codegenLog(
+      '[Codegen - FBReactNativeSpec] Skipping iOS code generation for FBReactNativeSpec as it has been generated already.',
       true,
     );
     return;
@@ -519,11 +545,22 @@ function rootCodegenTargetNeedsThirdPartyComponentProvider(pkgJson, platform) {
   return !pkgJsonIncludesGeneratedCode(pkgJson) && platform === 'ios';
 }
 
-function dependencyNeedsThirdPartyComponentProvider(schemaInfo, platform) {
+function dependencyNeedsThirdPartyComponentProvider(
+  schemaInfo,
+  platform,
+  appCondegenConfigSpec,
+) {
   // Filter the react native core library out.
   // In the future, core library and third party library should
   // use the same way to generate/register the fabric components.
-  return !isReactNativeCoreLibrary(schemaInfo.library.config.name, platform);
+  // We also have to filter out the the components defined in the app
+  // because the RCTThirdPartyComponentProvider is generated inside Fabric,
+  // which lives in a different target from the app and it has no visibility over
+  // the symbols defined in the app.
+  return (
+    !isReactNativeCoreLibrary(schemaInfo.library.config.name, platform) &&
+    schemaInfo.library.config.name !== appCondegenConfigSpec
+  );
 }
 
 function mustGenerateNativeCode(includeLibraryPath, schemaInfo) {
@@ -604,6 +641,8 @@ function generateCustomURLHandlers(libraries, outputDir) {
     .replace(/{imageDataDecoderClassNames}/, customImageDataDecoderClasses)
     .replace(/{requestHandlersClassNames}/, customURLHandlerClasses);
 
+  fs.mkdirSync(outputDir, {recursive: true});
+
   fs.writeFileSync(
     path.join(outputDir, 'RCTModulesConformingToProtocolsProvider.mm'),
     finalMMFile,
@@ -663,6 +702,23 @@ function generateRNCoreComponentsIOS(projectRoot /*: string */) /*: void*/ {
   }
   const rncoreSchemaInfo = generateSchemaInfo(rncoreLib, ios);
   generateCode('', rncoreSchemaInfo, false, ios);
+}
+
+function generateFBReactNativeSpecIOS(projectRoot /*: string */) /*: void*/ {
+  const ios = 'ios';
+  buildCodegenIfNeeded();
+  const pkgJson = readPkgJsonInDirectory(projectRoot);
+  const fbReactNativeSpecLib = findProjectRootLibraries(
+    pkgJson,
+    projectRoot,
+  ).filter(library => library.config.name === 'FBReactNativeSpec')[0];
+  if (!fbReactNativeSpecLib) {
+    throw new Error(
+      "[Codegen] Can't find FBReactNativeSpec library. Failed to generate rncore artifacts",
+    );
+  }
+  const fbReactNativeSchemaInfo = generateSchemaInfo(fbReactNativeSpecLib, ios);
+  generateCode('', fbReactNativeSchemaInfo, false, ios);
 }
 
 // Execute
@@ -732,8 +788,12 @@ function execute(projectRoot, targetPlatform, baseOutputPath) {
       if (
         rootCodegenTargetNeedsThirdPartyComponentProvider(pkgJson, platform)
       ) {
-        const filteredSchemas = schemaInfos.filter(
-          dependencyNeedsThirdPartyComponentProvider,
+        const filteredSchemas = schemaInfos.filter(schemaInfo =>
+          dependencyNeedsThirdPartyComponentProvider(
+            schemaInfo,
+            platform,
+            pkgJson.codegenConfig?.appCondegenConfigSpec,
+          ),
         );
         const schemas = filteredSchemas.map(schemaInfo => schemaInfo.schema);
         const supportedApplePlatforms = filteredSchemas.map(
@@ -758,6 +818,7 @@ function execute(projectRoot, targetPlatform, baseOutputPath) {
 module.exports = {
   execute,
   generateRNCoreComponentsIOS,
+  generateFBReactNativeSpecIOS,
   // exported for testing purposes only:
   _extractLibrariesFromJSON: extractLibrariesFromJSON,
   _cleanupEmptyFilesAndFolders: cleanupEmptyFilesAndFolders,
