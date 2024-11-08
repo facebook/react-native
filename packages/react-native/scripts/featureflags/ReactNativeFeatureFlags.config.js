@@ -560,15 +560,6 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'release',
       },
     },
-    scheduleAnimatedEndCallbackInMicrotask: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-09-27',
-        description:
-          'Changes the completion callback supplied via `Animation#start` to be scheduled in a microtask instead of synchronously executed.',
-        purpose: 'experimentation',
-      },
-    },
     shouldSkipStateUpdatesForLoopingAnimations: {
       defaultValue: false,
       metadata: {

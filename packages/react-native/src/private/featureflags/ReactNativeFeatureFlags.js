@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<650ba11a0ac49b9779c6c98f57f7369f>>
+ * @generated SignedSource<<716c4507093099c254b57d744366bd05>>
  * @flow strict
  */
 
@@ -37,7 +37,6 @@ export type ReactNativeFeatureFlagsJsOnly = {
   enableAnimatedPropsMemo: Getter<boolean>,
   enableOptimisedVirtualizedCells: Getter<boolean>,
   isLayoutAnimationEnabled: Getter<boolean>,
-  scheduleAnimatedEndCallbackInMicrotask: Getter<boolean>,
   shouldSkipStateUpdatesForLoopingAnimations: Getter<boolean>,
   shouldUseAnimatedObjectForTransform: Getter<boolean>,
   shouldUseRemoveClippedSubviewsAsDefaultOnIOS: Getter<boolean>,
@@ -153,11 +152,6 @@ export const enableOptimisedVirtualizedCells: Getter<boolean> = createJavaScript
  * Function used to enable / disabled Layout Animations in React Native.
  */
 export const isLayoutAnimationEnabled: Getter<boolean> = createJavaScriptFlagGetter('isLayoutAnimationEnabled', true);
-
-/**
- * Changes the completion callback supplied via `Animation#start` to be scheduled in a microtask instead of synchronously executed.
- */
-export const scheduleAnimatedEndCallbackInMicrotask: Getter<boolean> = createJavaScriptFlagGetter('scheduleAnimatedEndCallbackInMicrotask', false);
 
 /**
  * If the animation is within Animated.loop, we do not send state updates to React.
