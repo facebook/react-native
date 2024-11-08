@@ -576,7 +576,7 @@ public class com/facebook/react/bridge/Arguments {
 	public static fun toList (Lcom/facebook/react/bridge/ReadableArray;)Ljava/util/ArrayList;
 }
 
-public class com/facebook/react/bridge/AssertionException : java/lang/RuntimeException {
+public final class com/facebook/react/bridge/AssertionException : java/lang/RuntimeException {
 	public fun <init> (Ljava/lang/String;)V
 }
 
@@ -833,7 +833,7 @@ public abstract interface class com/facebook/react/bridge/Inspector$RemoteConnec
 	public abstract fun onMessage (Ljava/lang/String;)V
 }
 
-public class com/facebook/react/bridge/InvalidIteratorException : java/lang/RuntimeException {
+public final class com/facebook/react/bridge/InvalidIteratorException : java/lang/RuntimeException {
 	public fun <init> (Ljava/lang/String;)V
 }
 
@@ -842,7 +842,7 @@ public class com/facebook/react/bridge/JSApplicationCausedNativeException : java
 	public fun <init> (Ljava/lang/String;Ljava/lang/Throwable;)V
 }
 
-public class com/facebook/react/bridge/JSApplicationIllegalArgumentException : com/facebook/react/bridge/JSApplicationCausedNativeException {
+public final class com/facebook/react/bridge/JSApplicationIllegalArgumentException : com/facebook/react/bridge/JSApplicationCausedNativeException {
 	public fun <init> (Ljava/lang/String;)V
 	public fun <init> (Ljava/lang/String;Ljava/lang/Throwable;)V
 }
@@ -1082,7 +1082,7 @@ public class com/facebook/react/bridge/NativeModuleRegistry {
 	public fun onBatchComplete ()V
 }
 
-public class com/facebook/react/bridge/NoSuchKeyException : java/lang/RuntimeException {
+public final class com/facebook/react/bridge/NoSuchKeyException : java/lang/RuntimeException {
 	public fun <init> (Ljava/lang/String;)V
 }
 
@@ -1090,10 +1090,6 @@ public abstract interface class com/facebook/react/bridge/NotThreadSafeBridgeIdl
 	public abstract fun onBridgeDestroyed ()V
 	public abstract fun onTransitionToBridgeBusy ()V
 	public abstract fun onTransitionToBridgeIdle ()V
-}
-
-public class com/facebook/react/bridge/ObjectAlreadyConsumedException : java/lang/RuntimeException {
-	public fun <init> (Ljava/lang/String;)V
 }
 
 public abstract interface class com/facebook/react/bridge/OnBatchCompleteListener {
@@ -1244,11 +1240,16 @@ public class com/facebook/react/bridge/ReactCxxErrorHandler {
 	public static fun setHandleErrorFunc (Ljava/lang/Object;Ljava/lang/reflect/Method;)V
 }
 
-public class com/facebook/react/bridge/ReactIgnorableMountingException : java/lang/RuntimeException {
+public final class com/facebook/react/bridge/ReactIgnorableMountingException : java/lang/RuntimeException {
+	public static final field Companion Lcom/facebook/react/bridge/ReactIgnorableMountingException$Companion;
 	public fun <init> (Ljava/lang/String;)V
 	public fun <init> (Ljava/lang/String;Ljava/lang/Throwable;)V
 	public fun <init> (Ljava/lang/Throwable;)V
-	public static fun isIgnorable (Ljava/lang/Throwable;)Z
+	public static final fun isIgnorable (Ljava/lang/Throwable;)Z
+}
+
+public final class com/facebook/react/bridge/ReactIgnorableMountingException$Companion {
+	public final fun isIgnorable (Ljava/lang/Throwable;)Z
 }
 
 public class com/facebook/react/bridge/ReactInstanceManagerInspectorTarget : java/lang/AutoCloseable {
@@ -1425,7 +1426,7 @@ public abstract interface annotation class com/facebook/react/bridge/ReactMethod
 public abstract interface class com/facebook/react/bridge/ReactModuleWithSpec {
 }
 
-public class com/facebook/react/bridge/ReactNoCrashBridgeNotAllowedSoftException : com/facebook/react/bridge/ReactNoCrashSoftException {
+public final class com/facebook/react/bridge/ReactNoCrashBridgeNotAllowedSoftException : com/facebook/react/bridge/ReactNoCrashSoftException {
 	public fun <init> (Ljava/lang/String;)V
 	public fun <init> (Ljava/lang/String;Ljava/lang/Throwable;)V
 	public fun <init> (Ljava/lang/Throwable;)V
@@ -1542,7 +1543,7 @@ public final class com/facebook/react/bridge/ReadableType : java/lang/Enum {
 	public static fun values ()[Lcom/facebook/react/bridge/ReadableType;
 }
 
-public class com/facebook/react/bridge/RetryableMountingLayerException : java/lang/RuntimeException {
+public final class com/facebook/react/bridge/RetryableMountingLayerException : java/lang/RuntimeException {
 	public fun <init> (Ljava/lang/String;)V
 	public fun <init> (Ljava/lang/String;Ljava/lang/Throwable;)V
 	public fun <init> (Ljava/lang/Throwable;)V

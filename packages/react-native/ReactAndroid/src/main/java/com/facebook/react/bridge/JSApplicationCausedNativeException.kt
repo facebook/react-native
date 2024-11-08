@@ -5,9 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.bridge;
-
-import androidx.annotation.Nullable;
+package com.facebook.react.bridge
 
 /**
  * A special RuntimeException that should be thrown by native code if it has reached an exceptional
@@ -19,25 +17,18 @@ import androidx.annotation.Nullable;
  * this catalyst instance?
  *
  * <p>Examples where this class is appropriate to throw:
- *
  * <ul>
- *   <li>JS tries to update a view with a tag that hasn't been created yet
- *   <li>JS tries to show a static image that isn't in resources
- *   <li>JS tries to use an unsupported view class
+ * <li>JS tries to update a view with a tag that hasn't been created yet
+ * <li>JS tries to show a static image that isn't in resources
+ * <li>JS tries to use an unsupported view class
  * </ul>
  *
  * <p>Examples where this class **isn't** appropriate to throw: - Failed to write to localStorage
  * because disk is full - Assertions about internal state (e.g. that
  * child.getParent().indexOf(child) != -1)
  */
-public class JSApplicationCausedNativeException extends RuntimeException {
+public open class JSApplicationCausedNativeException : RuntimeException {
+  public constructor(detailMessage: String) : super(detailMessage)
 
-  public JSApplicationCausedNativeException(String detailMessage) {
-    super(detailMessage);
-  }
-
-  public JSApplicationCausedNativeException(
-      @Nullable String detailMessage, @Nullable Throwable throwable) {
-    super(detailMessage, throwable);
-  }
+  public constructor(detailMessage: String, throwable: Throwable?) : super(detailMessage, throwable)
 }
