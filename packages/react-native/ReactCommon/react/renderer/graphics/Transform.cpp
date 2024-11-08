@@ -201,7 +201,7 @@ Transform Transform::FromTransformOperation(
     return transform;
   }
 
-  // Identity or Arbitrary
+  // Identity
   return Transform::Identity();
 }
 
