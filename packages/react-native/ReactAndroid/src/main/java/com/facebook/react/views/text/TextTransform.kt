@@ -21,35 +21,28 @@ public enum class TextTransform {
 
   public companion object {
     @JvmStatic
-    public fun apply(text: String?, textTransform: TextTransform?): String? {
-      if (text == null) {
-        return null
-      }
-      val transformed: String =
-          when (textTransform) {
-            UPPERCASE -> text.uppercase(Locale.getDefault())
-            LOWERCASE -> text.lowercase(Locale.getDefault())
-            CAPITALIZE -> capitalize(text)
-            else -> text
-          }
-      return transformed
-    }
+    public fun apply(text: String?, textTransform: TextTransform?): String? =
+        text?.applyTextTransform(textTransform)
+  }
+}
 
-    private fun capitalize(text: String): String {
+public fun String.applyTextTransform(textTransform: TextTransform?): String {
+  return when (textTransform) {
+    TextTransform.UPPERCASE -> uppercase(Locale.getDefault())
+    TextTransform.LOWERCASE -> lowercase(Locale.getDefault())
+    TextTransform.CAPITALIZE -> {
       val wordIterator = BreakIterator.getWordInstance()
-      wordIterator.setText(text)
-
-      val res = StringBuilder(text.length)
+      wordIterator.setText(this)
+      val res = StringBuilder(length)
       var start = wordIterator.first()
       var end = wordIterator.next()
       while (end != BreakIterator.DONE) {
-        res.append(text[start].uppercaseChar())
-        res.append(text.substring(start + 1, end))
+        res.append(substring(start, end).replaceFirstChar { it.uppercaseChar() })
         start = end
         end = wordIterator.next()
       }
-
-      return res.toString()
+      res.toString()
     }
+    else -> this
   }
 }
