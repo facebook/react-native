@@ -86,6 +86,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 /**
  * A ReactHost is an object that manages a single {@link ReactInstance}. A ReactHost can be
@@ -540,6 +541,25 @@ public class ReactHostImpl implements ReactHost {
   @DoNotStrip
   private void loadNetworkResource(String url, InspectorNetworkRequestListener listener) {
     InspectorNetworkHelper.loadNetworkResource(url, listener);
+  }
+
+  @NonNull
+  @Override
+  public TaskInterface<Void> destroy(
+      @NonNull String reason,
+      @Nullable Exception ex,
+      @NonNull Function1<? super Boolean, Unit> onDestroyFinished) {
+    Task<Void> task = (Task<Void>) destroy(reason, ex);
+    return task.continueWith(
+        new Continuation<Void, Void>() {
+          @Nullable
+          @Override
+          public Void then(@NonNull Task<Void> task) throws Exception {
+            boolean instanceDestroyedSuccessfully = task.isCompleted() && !task.isFaulted();
+            onDestroyFinished.invoke(instanceDestroyedSuccessfully);
+            return null;
+          }
+        });
   }
 
   /**

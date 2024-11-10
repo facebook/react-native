@@ -205,6 +205,8 @@ public abstract interface class com/facebook/react/ReactHost {
 	public abstract fun addReactInstanceEventListener (Lcom/facebook/react/ReactInstanceEventListener;)V
 	public abstract fun createSurface (Landroid/content/Context;Ljava/lang/String;Landroid/os/Bundle;)Lcom/facebook/react/interfaces/fabric/ReactSurface;
 	public abstract fun destroy (Ljava/lang/String;Ljava/lang/Exception;)Lcom/facebook/react/interfaces/TaskInterface;
+	public abstract fun destroy (Ljava/lang/String;Ljava/lang/Exception;Lkotlin/jvm/functions/Function1;)Lcom/facebook/react/interfaces/TaskInterface;
+	public static synthetic fun destroy$default (Lcom/facebook/react/ReactHost;Ljava/lang/String;Ljava/lang/Exception;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/facebook/react/interfaces/TaskInterface;
 	public abstract fun getCurrentReactContext ()Lcom/facebook/react/bridge/ReactContext;
 	public abstract fun getDevSupportManager ()Lcom/facebook/react/devsupport/interfaces/DevSupportManager;
 	public abstract fun getLifecycleState ()Lcom/facebook/react/common/LifecycleState;
@@ -3789,6 +3791,7 @@ public class com/facebook/react/runtime/ReactHostImpl : com/facebook/react/React
 	public fun addReactInstanceEventListener (Lcom/facebook/react/ReactInstanceEventListener;)V
 	public fun createSurface (Landroid/content/Context;Ljava/lang/String;Landroid/os/Bundle;)Lcom/facebook/react/interfaces/fabric/ReactSurface;
 	public fun destroy (Ljava/lang/String;Ljava/lang/Exception;)Lcom/facebook/react/interfaces/TaskInterface;
+	public fun destroy (Ljava/lang/String;Ljava/lang/Exception;Lkotlin/jvm/functions/Function1;)Lcom/facebook/react/interfaces/TaskInterface;
 	public fun getCurrentReactContext ()Lcom/facebook/react/bridge/ReactContext;
 	public fun getDevSupportManager ()Lcom/facebook/react/devsupport/interfaces/DevSupportManager;
 	public fun getLifecycleState ()Lcom/facebook/react/common/LifecycleState;
