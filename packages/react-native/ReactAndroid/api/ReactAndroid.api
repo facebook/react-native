@@ -1441,13 +1441,13 @@ public class com/facebook/react/bridge/ReactNoCrashSoftException : java/lang/Run
 	public fun <init> (Ljava/lang/Throwable;)V
 }
 
-public class com/facebook/react/bridge/ReactSoftExceptionLogger {
-	public fun <init> ()V
-	public static fun addListener (Lcom/facebook/react/bridge/ReactSoftExceptionLogger$ReactSoftExceptionListener;)V
-	public static fun clearListeners ()V
-	public static fun logSoftException (Ljava/lang/String;Ljava/lang/Throwable;)V
-	public static fun logSoftExceptionVerbose (Ljava/lang/String;Ljava/lang/Throwable;)V
-	public static fun removeListener (Lcom/facebook/react/bridge/ReactSoftExceptionLogger$ReactSoftExceptionListener;)V
+public final class com/facebook/react/bridge/ReactSoftExceptionLogger {
+	public static final field INSTANCE Lcom/facebook/react/bridge/ReactSoftExceptionLogger;
+	public static final fun addListener (Lcom/facebook/react/bridge/ReactSoftExceptionLogger$ReactSoftExceptionListener;)V
+	public static final fun clearListeners ()V
+	public static final fun logSoftException (Ljava/lang/String;Ljava/lang/Throwable;)V
+	public static final fun logSoftExceptionVerbose (Ljava/lang/String;Ljava/lang/Throwable;)V
+	public static final fun removeListener (Lcom/facebook/react/bridge/ReactSoftExceptionLogger$ReactSoftExceptionListener;)V
 }
 
 public abstract interface class com/facebook/react/bridge/ReactSoftExceptionLogger$ReactSoftExceptionListener {
