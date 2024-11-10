@@ -1121,7 +1121,7 @@ class JSI_EXPORT Function : public Object {
 class JSI_EXPORT Value {
  public:
   /// Default ctor creates an \c undefined JS value.
-  Value() : Value(UndefinedKind) {}
+  Value() noexcept : Value(UndefinedKind) {}
 
   /// Creates a \c null JS value.
   /* implicit */ Value(std::nullptr_t) : kind_(NullKind) {}
@@ -1162,7 +1162,7 @@ class JSI_EXPORT Value {
         "Value cannot be constructed directly from const char*");
   }
 
-  Value(Value&& value);
+  Value(Value&& other) noexcept;
 
   /// Copies a Symbol lvalue into a new JS value.
   Value(Runtime& runtime, const Symbol& sym) : Value(SymbolKind) {
@@ -1217,7 +1217,7 @@ class JSI_EXPORT Value {
   /// https://262.ecma-international.org/11.0/#sec-strict-equality-comparison
   static bool strictEquals(Runtime& runtime, const Value& a, const Value& b);
 
-  Value& operator=(Value&& other) {
+  Value& operator=(Value&& other) noexcept {
     this->~Value();
     new (this) Value(std::move(other));
     return *this;
