@@ -116,7 +116,26 @@ public interface ReactHost {
    *   be used to log properly the cause of destroy operation.
    * @return A task that completes when React Native gets destroyed.
    */
-  public fun destroy(reason: String, ex: Exception?): TaskInterface<Void>
+  public fun destroy(
+      reason: String,
+      ex: Exception?,
+  ): TaskInterface<Void>
+
+  /**
+   * Entrypoint to destroy the ReactInstance. If the ReactInstance is reloading, will wait until
+   * reload is finished, before destroying.
+   *
+   * @param reason describing why ReactHost is being destroyed (e.g. memmory pressure)
+   * @param ex exception that caused the trigger to destroy ReactHost (or null) This exception will
+   *   be used to log properly the cause of destroy operation.
+   * @param onDestroyFinished callback that will be called when React Native gets destroyed.
+   * @return A task that completes when React Native gets destroyed.
+   */
+  public fun destroy(
+      reason: String,
+      ex: Exception?,
+      onDestroyFinished: (instanceDestroyedSuccessfully: Boolean) -> Unit = {}
+  ): TaskInterface<Void>
 
   /**
    * Permanently destroys the ReactHost, including the ReactInstance (if any). The application MUST
