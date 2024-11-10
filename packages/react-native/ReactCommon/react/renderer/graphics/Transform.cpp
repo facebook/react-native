@@ -198,7 +198,10 @@ Transform Transform::FromTransformOperation(
         transformOperation.z.resolve(0));
   }
   if (transformOperation.type == TransformOperationType::Arbitrary) {
-    return transform;
+    auto arbitraryTransform = Transform{};
+    arbitraryTransform.operations.push_back(transformOperation);
+    arbitraryTransform.matrix = transform.matrix;
+    return arbitraryTransform;
   }
 
   // Identity
