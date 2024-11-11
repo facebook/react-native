@@ -543,6 +543,22 @@ public class ReactHostImpl implements ReactHost {
     InspectorNetworkHelper.loadNetworkResource(url, listener);
   }
 
+  /**
+   * Entrypoint to destroy the ReactInstance. If the ReactInstance is reloading, will wait until
+   * reload is finished, before destroying.
+   *
+   * <p>The destroy operation is asynchronous and the task returned by this method will complete
+   * when React Native gets destroyed. Note that the destroy operation will execute in multiple
+   * threads, in particular some of the sub-tasks will run in the UIThread. Calling {@link
+   * TaskInterface#waitForCompletion()} from the UIThread will lead into a deadlock. Use
+   * onDestroyFinished callback to be notified when React Native gets destroyed.
+   *
+   * @param reason describing why ReactHost is being destroyed (e.g. memory pressure)
+   * @param ex exception that caused the trigger to destroy ReactHost (or null) This exception will
+   *     be used to log properly the cause of destroy operation.
+   * @param onDestroyFinished callback that will be called when React Native gets destroyed.
+   * @return A task that completes when React Native gets destroyed.
+   */
   @NonNull
   @Override
   public TaskInterface<Void> destroy(
@@ -565,6 +581,11 @@ public class ReactHostImpl implements ReactHost {
   /**
    * Entrypoint to destroy the ReactInstance. If the ReactInstance is reloading, will wait until
    * reload is finished, before destroying.
+   *
+   * <p>The destroy operation is asynchronous and the task returned by this method will complete
+   * when React Native gets destroyed. Note that the destroy operation will execute in multiple
+   * threads, in particular some of the sub-tasks will run in the UIThread. Calling {@link
+   * TaskInterface#waitForCompletion()} from the UIThread will lead into a deadlock.
    *
    * @param reason {@link String} describing why ReactHost is being destroyed (e.g. memory pressure)
    * @param ex {@link Exception} exception that caused the trigger to destroy ReactHost (or null)
