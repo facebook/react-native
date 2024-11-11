@@ -3862,10 +3862,6 @@ public final class com/facebook/react/runtime/hermes/HermesInstance : com/facebo
 public final class com/facebook/react/runtime/hermes/HermesInstance$Companion {
 }
 
-public abstract interface class com/facebook/react/runtime/internal/bolts/Continuation {
-	public abstract fun then (Lcom/facebook/react/runtime/internal/bolts/Task;)Ljava/lang/Object;
-}
-
 public class com/facebook/react/runtime/internal/bolts/Task : com/facebook/react/interfaces/TaskInterface {
 	public static final field IMMEDIATE_EXECUTOR Ljava/util/concurrent/Executor;
 	public static final field UI_THREAD_EXECUTOR Ljava/util/concurrent/Executor;
