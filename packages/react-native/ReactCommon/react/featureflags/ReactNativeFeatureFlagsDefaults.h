@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2964ff45378547dd40a9b0df440f8869>>
+ * @generated SignedSource<<ec502f5beacb2119c3fb1f319a95dfc9>>
  */
 
 /**
@@ -144,10 +144,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool fixMountingCoordinatorReportedPendingTransactionsOnAndroid() override {
-    return false;
-  }
-
-  bool forceBatchingMountItemsOnAndroid() override {
     return false;
   }
 
