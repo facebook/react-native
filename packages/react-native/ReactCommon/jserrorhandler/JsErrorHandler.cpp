@@ -244,6 +244,9 @@ void JsErrorHandler::handleError(
           "handleError(): Error raised while reporting using js pipeline. Using c++ pipeline instead.",
           ex,
           error);
+
+      // Re-try reporting using the c++ pipeline
+      _hasHandledFatalError = false;
     }
   }
 
