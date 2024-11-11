@@ -492,7 +492,7 @@ function rootCodegenTargetNeedsThirdPartyComponentProvider(pkgJson, platform) {
 function dependencyNeedsThirdPartyComponentProvider(
   schemaInfo,
   platform,
-  appCondegenConfigSpec,
+  appCodegenConfigSpec,
 ) {
   // Filter the react native core library out.
   // In the future, core library and third party library should
@@ -503,7 +503,7 @@ function dependencyNeedsThirdPartyComponentProvider(
   // the symbols defined in the app.
   return (
     !isReactNativeCoreLibrary(schemaInfo.library.config.name, platform) &&
-    schemaInfo.library.config.name !== appCondegenConfigSpec
+    schemaInfo.library.config.name !== appCodegenConfigSpec
   );
 }
 
@@ -719,7 +719,7 @@ function execute(projectRoot, targetPlatform, baseOutputPath) {
           dependencyNeedsThirdPartyComponentProvider(
             schemaInfo,
             platform,
-            pkgJson.codegenConfig?.appCondegenConfigSpec,
+            pkgJson.codegenConfig?.name,
           ),
         );
         const schemas = filteredSchemas.map(schemaInfo => schemaInfo.schema);
