@@ -421,14 +421,28 @@ const PanResponder = {
     };
     const panHandlers = {
       onStartShouldSetResponder(event: PressEvent): boolean {
-        return config.onStartShouldSetPanResponder == null
-          ? false
-          : config.onStartShouldSetPanResponder(event, gestureState);
+        const shouldSet =
+          config.onStartShouldSetPanResponder == null
+            ? false
+            : config.onStartShouldSetPanResponder(event, gestureState);
+        if (!shouldSet) {
+          PanResponder._initializeGestureState(gestureState);
+        }
+        return shouldSet;
+
+        // return config.onStartShouldSetPanResponder == null
+        //   ? false
+        //   : config.onStartShouldSetPanResponder(event, gestureState);
       },
       onMoveShouldSetResponder(event: PressEvent): boolean {
-        return config.onMoveShouldSetPanResponder == null
-          ? false
-          : config.onMoveShouldSetPanResponder(event, gestureState);
+        const shouldSet =
+          config.onMoveShouldSetPanResponder == null
+            ? false
+            : config.onMoveShouldSetPanResponder(event, gestureState);
+        if (!shouldSet) {
+          PanResponder._initializeGestureState(gestureState);
+        }
+        return shouldSet;
       },
       onStartShouldSetResponderCapture(event: PressEvent): boolean {
         // TODO: Actually, we should reinitialize the state any time
@@ -438,9 +452,18 @@ const PanResponder = {
         }
         gestureState.numberActiveTouches =
           event.touchHistory.numberActiveTouches;
-        return config.onStartShouldSetPanResponderCapture != null
-          ? config.onStartShouldSetPanResponderCapture(event, gestureState)
-          : false;
+        const shouldSet =
+          config.onStartShouldSetPanResponderCapture == null
+            ? false
+            : config.onStartShouldSetPanResponderCapture(event, gestureState);
+        if (!shouldSet) {
+          PanResponder._initializeGestureState(gestureState);
+        }
+        return shouldSet;
+
+        // return config.onStartShouldSetPanResponderCapture != null
+        //   ? config.onStartShouldSetPanResponderCapture(event, gestureState)
+        //   : false;
       },
 
       onMoveShouldSetResponderCapture(event: PressEvent): boolean {
@@ -455,9 +478,13 @@ const PanResponder = {
           return false;
         }
         PanResponder._updateGestureStateOnMove(gestureState, touchHistory);
-        return config.onMoveShouldSetPanResponderCapture
+        const shouldSet = config.onMoveShouldSetPanResponderCapture
           ? config.onMoveShouldSetPanResponderCapture(event, gestureState)
           : false;
+        if (!shouldSet) {
+          PanResponder._initializeGestureState(gestureState);
+        }
+        return shouldSet;
       },
 
       onResponderGrant(event: PressEvent): boolean {
