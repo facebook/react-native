@@ -615,11 +615,14 @@ inline void fromRawValue(
       auto numbers = (std::vector<Float>)parameters;
       react_native_expect(numbers.size() == transformMatrix.matrix.size());
       auto i = 0;
+      std::array<Float, 16> matrix = {0};
       for (auto number : numbers) {
-        transformMatrix.matrix[i++] = number;
+        matrix[i++] = number;
       }
-      transformMatrix.operations.push_back(TransformOperation{
-          TransformOperationType::Arbitrary, Zero, Zero, Zero});
+      auto matrixOperation = TransformOperation{
+        TransformOperationType::Matrix, Zero, Zero, Zero};
+      matrixOperation.matrix = matrix;
+      transformMatrix.operations.push_back(matrixOperation);
     } else if (operation == "perspective") {
       transformMatrix.operations.push_back(TransformOperation{
           TransformOperationType::Perspective,

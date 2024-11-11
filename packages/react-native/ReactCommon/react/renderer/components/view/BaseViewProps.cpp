@@ -563,7 +563,7 @@ Transform BaseViewProps::resolveTransform(
 
   // transform is matrix
   if (transform.operations.size() == 1 &&
-      transform.operations[0].type == TransformOperationType::Arbitrary) {
+      transform.operations[0].type == TransformOperationType::Matrix) {
     transformMatrix = transform;
   } else {
     for (const auto& operation : transform.operations) {
