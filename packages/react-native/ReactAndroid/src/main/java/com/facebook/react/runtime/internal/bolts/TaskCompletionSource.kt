@@ -13,7 +13,7 @@ package com.facebook.react.runtime.internal.bolts
  * access to the consumer side through the getTask() method while isolating the Task's completion
  * mechanisms from the consumer.
  */
-public class TaskCompletionSource<TResult>() {
+internal class TaskCompletionSource<TResult>() {
 
   /** @return the Task associated with this TaskCompletionSource. */
   public val task: Task<TResult> = Task()
