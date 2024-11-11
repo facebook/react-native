@@ -316,7 +316,7 @@ public class ReactHostImpl implements ReactHost {
     setCurrentActivity(activity);
     ReactContext currentContext = getCurrentReactContext();
 
-    // TODO(T137233065): Enable DevSupportManager here
+    maybeEnableDevSupport(true);
     mReactLifecycleStateManager.moveToOnHostResume(currentContext, getCurrentActivity());
   }
 
@@ -354,7 +354,7 @@ public class ReactHostImpl implements ReactHost {
               + activityClass);
     }
 
-    // TODO(T137233065): Disable DevSupportManager here
+    maybeEnableDevSupport(false);
     mDefaultHardwareBackBtnHandler = null;
     mReactLifecycleStateManager.moveToOnHostPause(currentContext, currentActivity);
   }
@@ -368,7 +368,7 @@ public class ReactHostImpl implements ReactHost {
 
     ReactContext currentContext = getCurrentReactContext();
 
-    // TODO(T137233065): Disable DevSupportManager here
+    maybeEnableDevSupport(false);
     mDefaultHardwareBackBtnHandler = null;
     mReactLifecycleStateManager.moveToOnHostPause(currentContext, getCurrentActivity());
   }
@@ -380,7 +380,7 @@ public class ReactHostImpl implements ReactHost {
     final String method = "onHostDestroy()";
     log(method);
 
-    // TODO(T137233065): Disable DevSupportManager here
+    maybeEnableDevSupport(false);
     moveToHostDestroy(getCurrentReactContext());
   }
 
@@ -392,9 +392,15 @@ public class ReactHostImpl implements ReactHost {
 
     Activity currentActivity = getCurrentActivity();
 
-    // TODO(T137233065): Disable DevSupportManager here
+    maybeEnableDevSupport(false);
     if (currentActivity == activity) {
       moveToHostDestroy(getCurrentReactContext());
+    }
+  }
+
+  private void maybeEnableDevSupport(boolean enabled) {
+    if (mUseDevSupport) {
+      mDevSupportManager.setDevSupportEnabled(enabled);
     }
   }
 
