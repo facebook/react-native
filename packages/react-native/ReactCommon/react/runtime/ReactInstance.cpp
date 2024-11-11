@@ -103,6 +103,10 @@ ReactInstance::ReactInstance(
           }
         } catch (jsi::JSError& originalError) {
           jsErrorHandler->handleError(jsiRuntime, originalError, true);
+        } catch (std::exception& ex) {
+          jsi::JSError error(
+              jsiRuntime, std::string("Non-js exception: ") + ex.what());
+          jsErrorHandler->handleError(jsiRuntime, error, true);
         }
       });
     }
