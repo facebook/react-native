@@ -74,6 +74,7 @@ import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.BlackHoleEventDispatcher;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper;
+import com.facebook.react.views.view.WindowUtilKt;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -116,6 +117,7 @@ public class ReactHostImpl implements ReactHost {
   private final Set<ReactSurfaceImpl> mAttachedSurfaces = new HashSet<>();
   private final MemoryPressureRouter mMemoryPressureRouter;
   private final boolean mAllowPackagerServerAccess;
+  private final boolean mIsEdgeToEdgeEnabled;
   private final boolean mUseDevSupport;
 
   // todo: T192399917 This no longer needs to store the react instance
@@ -150,6 +152,7 @@ public class ReactHostImpl implements ReactHost {
       ReactHostDelegate delegate,
       ComponentFactory componentFactory,
       boolean allowPackagerServerAccess,
+      boolean isEdgeToEdgeEnabled,
       boolean useDevSupport) {
     this(
         context,
@@ -158,6 +161,7 @@ public class ReactHostImpl implements ReactHost {
         Executors.newSingleThreadExecutor(),
         Task.UI_THREAD_EXECUTOR,
         allowPackagerServerAccess,
+        isEdgeToEdgeEnabled,
         useDevSupport);
   }
 
@@ -168,6 +172,7 @@ public class ReactHostImpl implements ReactHost {
       Executor bgExecutor,
       Executor uiExecutor,
       boolean allowPackagerServerAccess,
+      boolean isEdgeToEdgeEnabled,
       boolean useDevSupport) {
     this(
         context,
@@ -176,6 +181,7 @@ public class ReactHostImpl implements ReactHost {
         bgExecutor,
         uiExecutor,
         allowPackagerServerAccess,
+        isEdgeToEdgeEnabled,
         useDevSupport,
         null);
   }
@@ -187,6 +193,7 @@ public class ReactHostImpl implements ReactHost {
       Executor bgExecutor,
       Executor uiExecutor,
       boolean allowPackagerServerAccess,
+      boolean isEdgeToEdgeEnabled,
       boolean useDevSupport,
       @Nullable DevSupportManagerFactory devSupportManagerFactory) {
     mContext = context;
@@ -196,6 +203,7 @@ public class ReactHostImpl implements ReactHost {
     mUIExecutor = uiExecutor;
     mMemoryPressureRouter = new MemoryPressureRouter(context);
     mAllowPackagerServerAccess = allowPackagerServerAccess;
+    mIsEdgeToEdgeEnabled = isEdgeToEdgeEnabled;
     mUseDevSupport = useDevSupport;
     if (devSupportManagerFactory == null) {
       devSupportManagerFactory = new DefaultDevSupportManagerFactory();
@@ -439,6 +447,11 @@ public class ReactHostImpl implements ReactHost {
 
   /* package */ boolean isInstanceInitialized() {
     return mReactInstance != null;
+  }
+
+  @Override
+  public boolean isEdgeToEdgeEnabled() {
+    return mIsEdgeToEdgeEnabled;
   }
 
   @ThreadConfined(UI)
@@ -823,6 +836,19 @@ public class ReactHostImpl implements ReactHost {
   @ThreadConfined(UI)
   @Override
   public void onConfigurationChanged(Context updatedContext) {
+    if (isEdgeToEdgeEnabled()) {
+      UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            Activity currentActivity = getCurrentActivity();
+            if (currentActivity != null) {
+              WindowUtilKt.enableEdgeToEdge(currentActivity.getWindow());
+            }
+          }
+        });
+    }
+
     ReactContext currentReactContext = getCurrentReactContext();
     if (currentReactContext != null) {
       if (ReactNativeFeatureFlags.enableFontScaleChangesUpdatingLayout()) {

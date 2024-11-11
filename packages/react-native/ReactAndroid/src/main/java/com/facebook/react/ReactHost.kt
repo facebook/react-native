@@ -48,6 +48,8 @@ public interface ReactHost {
   /** Routes memory pressure events to interested components */
   public val memoryPressureRouter: MemoryPressureRouter
 
+  public fun isEdgeToEdgeEnabled(): Boolean
+
   /** To be called when back button is pressed */
   public fun onBackPressed(): Boolean
 

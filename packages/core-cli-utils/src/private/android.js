@@ -22,6 +22,7 @@ type Args = $ReadOnlyArray<string>;
 
 type Config = {
   cwd: Path,
+  edgeToEdge?: boolean,
   hermes?: boolean,
   mode: AndroidBuildMode,
   name: string,
@@ -70,6 +71,9 @@ export const tasks = (
   assemble: (...gradleArgs: Args) => ({
     run: task(FIRST, 'Assemble Android App', () => {
       const args = [];
+      if (config.edgeToEdge != null) {
+        args.push(`-PedgeToEdgeEnabled=${boolToStr(config.edgeToEdge)}`);
+      }
       if (config.hermes != null) {
         args.push(`-PhermesEnabled=${boolToStr(config.hermes)}`);
       }
@@ -86,6 +90,9 @@ export const tasks = (
   build: (...gradleArgs: Args) => ({
     run: task(FIRST, 'Assembles and tests Android App', () => {
       const args = [];
+      if (config.edgeToEdge != null) {
+        args.push(`-PedgeToEdgeEnabled=${boolToStr(config.edgeToEdge)}`);
+      }
       if (config.hermes != null) {
         args.push(`-PhermesEnabled=${boolToStr(config.hermes)}`);
       }
