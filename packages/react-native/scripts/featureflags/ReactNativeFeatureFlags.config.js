@@ -322,15 +322,6 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'experimentation',
       },
     },
-    forceBatchingMountItemsOnAndroid: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-04-10',
-        description:
-          'Forces the mounting layer on Android to always batch mount items instead of dispatching them immediately. This might fix some crashes related to synchronous state updates, where some views dispatch state updates during mount.',
-        purpose: 'experimentation',
-      },
-    },
     fuseboxEnabledDebug: {
       defaultValue: true,
       metadata: {

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e81b275213e8668a8cd22cd40eea70af>>
+ * @generated SignedSource<<079c1e8cd65a004c1b26f1a2517e9042>>
  */
 
 /**
@@ -188,11 +188,6 @@ class ReactNativeFeatureFlags {
    * Fixes a limitation on Android where the mounting coordinator would report there are no pending transactions but some of them were actually not processed due to the use of the push model.
    */
   RN_EXPORT static bool fixMountingCoordinatorReportedPendingTransactionsOnAndroid();
-
-  /**
-   * Forces the mounting layer on Android to always batch mount items instead of dispatching them immediately. This might fix some crashes related to synchronous state updates, where some views dispatch state updates during mount.
-   */
-  RN_EXPORT static bool forceBatchingMountItemsOnAndroid();
 
   /**
    * Flag determining if the React Native DevTools (Fusebox) CDP backend should be enabled in debug builds. This flag is global and should not be changed across React Host lifetimes.

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5e45e15376ce8426cb5d4ddbfe599066>>
+ * @generated SignedSource<<9038e8340a349ed8f4abee66555e98d3>>
  */
 
 /**
@@ -55,7 +55,6 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool excludeYogaFromRawProps() = 0;
   virtual bool fixMappingOfEventPrioritiesBetweenFabricAndReact() = 0;
   virtual bool fixMountingCoordinatorReportedPendingTransactionsOnAndroid() = 0;
-  virtual bool forceBatchingMountItemsOnAndroid() = 0;
   virtual bool fuseboxEnabledDebug() = 0;
   virtual bool fuseboxEnabledRelease() = 0;
   virtual bool initEagerTurboModulesOnNativeModulesQueueAndroid() = 0;
