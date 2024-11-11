@@ -3895,17 +3895,6 @@ public abstract interface class com/facebook/react/runtime/internal/bolts/Task$U
 	public abstract fun unobservedException (Lcom/facebook/react/runtime/internal/bolts/Task;Lcom/facebook/react/runtime/internal/bolts/UnobservedTaskException;)V
 }
 
-public final class com/facebook/react/runtime/internal/bolts/TaskCompletionSource {
-	public fun <init> ()V
-	public final fun getTask ()Lcom/facebook/react/runtime/internal/bolts/Task;
-	public final fun setCancelled ()V
-	public final fun setError (Ljava/lang/Exception;)V
-	public final fun setResult (Ljava/lang/Object;)V
-	public final fun trySetCancelled ()Z
-	public final fun trySetError (Ljava/lang/Exception;)Z
-	public final fun trySetResult (Ljava/lang/Object;)Z
-}
-
 public final class com/facebook/react/shell/MainPackageConfig {
 	public fun <init> (Lcom/facebook/imagepipeline/core/ImagePipelineConfig;)V
 	public final fun getFrescoConfig ()Lcom/facebook/imagepipeline/core/ImagePipelineConfig;
