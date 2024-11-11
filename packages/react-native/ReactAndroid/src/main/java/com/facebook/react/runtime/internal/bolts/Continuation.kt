@@ -15,6 +15,6 @@ package com.facebook.react.runtime.internal.bolts
  *
  * @see Task
  */
-public interface Continuation<TTaskResult, TContinuationResult> {
-  @Throws(Exception::class) public fun then(task: Task<TTaskResult>): TContinuationResult?
+internal interface Continuation<TTaskResult, TContinuationResult> {
+  @Throws(Exception::class) fun then(task: Task<TTaskResult>): TContinuationResult?
 }
