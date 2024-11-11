@@ -20,6 +20,8 @@ public object ReactBuildConfig {
 
   @JvmField public val DEBUG: Boolean = BuildConfig.DEBUG
 
+  @JvmField public val IS_EDGE_TO_EDGE_ENABLED: Boolean = BuildConfig.IS_EDGE_TO_EDGE_ENABLED
+
   @JvmField public val IS_INTERNAL_BUILD: Boolean = BuildConfig.IS_INTERNAL_BUILD
 
   /**
