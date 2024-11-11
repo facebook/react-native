@@ -86,6 +86,8 @@ public abstract class ReactActivity extends AppCompatActivity
     return mDelegate.getReactDelegate();
   }
 
+  public Boolean isEdgeToEdge() { return mDelegate.isEdgeToEdgeEnabled(); }
+
   public ReactActivityDelegate getReactActivityDelegate() {
     return mDelegate;
   }
