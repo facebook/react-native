@@ -646,16 +646,37 @@ function generateRCTThirdPartyComponents(libraries, outputDir) {
     if (isReactNativeCoreLibrary(config.name) || config.type === 'modules') {
       return;
     }
+
     const libraryName = JSON.parse(
       fs.readFileSync(path.join(libraryPath, 'package.json')),
     ).name;
+    if (config.ios?.componentProvider) {
+      componentsInLibraries[libraryName] = Object.keys(
+        config.ios?.componentProvider,
+      ).map(componentName => {
+        return {
+          componentName,
+          className: config.ios?.componentProvider[componentName],
+        };
+      });
+      return;
+    }
     codegenLog(`Crawling ${libraryName} library for components`);
     // crawl all files and subdirectories for file with the ".mm" extension
     const files = findFilesWithExtension(libraryPath, '.mm');
 
-    componentsInLibraries[libraryName] = files
+    const componentsMapping = files
       .flatMap(file => findRCTComponentViewProtocolClass(file))
       .filter(Boolean);
+
+    if (componentsMapping.length !== 0) {
+      codegenLog(
+        `[DEPRECATED] ${libraryName} should add the 'ios.componentProvider' property in their codegenConfig`,
+        true,
+      );
+    }
+
+    componentsInLibraries[libraryName] = componentsMapping;
   });
 
   const thirdPartyComponentsMapping = Object.keys(componentsInLibraries)
