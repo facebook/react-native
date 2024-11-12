@@ -1406,6 +1406,21 @@ created on the mqt_native thread. ([c4a6bbc8fd](https://github.com/facebook/reac
 
 - Bump activesupport to minimum 6.1.7.5 CVE-2023-38037. ([07a159f279](https://github.com/facebook/react-native/commit/07a159f279cdcbed29c9c437dec1c0b8ac2d852f) by [@lunaleaps](https://github.com/lunaleaps))
 
+## v0.73.11
+
+### Fixed
+
+
+
+#### Android specific
+
+- Suppress path adjustment when not actually drawing a border ([c9cf6d4b60](https://github.com/facebook/react-native/commit/c9cf6d4b60b6c5f717b3e5c9f3e3720e8d588707) by [@tjzel](https://github.com/tjzel))
+
+#### iOS specific
+
+- Stop generating dSYM path in Hermes for the framework ([e992405e87](https://github.com/facebook/react-native/commit/e992405e87) by [@cipolleschi](https://github.com/cipolleschi))
+- Pin Xcodeproj to < 1.26.0 ([dfcad7c678](https://github.com/facebook/react-native/commit/dfcad7c678) by [@cipolleschi](https://github.com/cipolleschi))
+
 ## v0.73.10
 
 ### Removed
