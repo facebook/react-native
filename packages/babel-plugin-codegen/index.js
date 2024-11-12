@@ -16,17 +16,28 @@ const {basename} = require('path');
 
 try {
   FlowParser =
-    require('@react-native/codegen/src/parsers/flow/parser').FlowParser;
-  TypeScriptParser =
-    require('@react-native/codegen/src/parsers/typescript/parser').TypeScriptParser;
-  RNCodegen = require('@react-native/codegen/src/generators/RNCodegen');
-} catch (e) {
-  // Fallback to lib when source doesn't exit (e.g. when installed as a dev dependency)
-  FlowParser =
     require('@react-native/codegen/lib/parsers/flow/parser').FlowParser;
   TypeScriptParser =
     require('@react-native/codegen/lib/parsers/typescript/parser').TypeScriptParser;
   RNCodegen = require('@react-native/codegen/lib/generators/RNCodegen');
+} catch (e) {
+  try {
+    // Are we running from src?
+
+    if (!process.env.IS_BUCK_WORKER_CONTEXT) {
+      // Register Babel to allow local packages to be loaded from source.
+      // Except in buck, because the files are already transformed there.
+      require('../../scripts/build/babel-register').registerForMonorepo();
+    }
+
+    FlowParser =
+      require('@react-native/codegen/src/parsers/flow/parser').FlowParser;
+    TypeScriptParser =
+      require('@react-native/codegen/src/parsers/typescript/parser').TypeScriptParser;
+    RNCodegen = require('@react-native/codegen/src/generators/RNCodegen');
+  } catch {
+    throw e;
+  }
 }
 
 const flowParser = new FlowParser();
