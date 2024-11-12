@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1626340cbb5cc8958d6b16c9b717e91e>>
+ * @generated SignedSource<<def34bae6aeac9fbb98d2e3a89ffde32>>
  */
 
 /**
@@ -52,13 +52,6 @@ bool NativeReactNativeFeatureFlags::commonTestFlagWithoutNativeImplementation(
 bool NativeReactNativeFeatureFlags::allowRecursiveCommitsWithSynchronousMountOnAndroid(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::allowRecursiveCommitsWithSynchronousMountOnAndroid();
-}
-
-bool NativeReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop(
-    jsi::Runtime& /*runtime*/) {
-  // This flag is configured with `skipNativeAPI: true`.
-  // TODO(T204838867): Implement support for optional methods in C++ TM codegen and remove the method definition altogether.
-  return false;
 }
 
 bool NativeReactNativeFeatureFlags::completeReactInstanceCreationOnBgThreadOnAndroid(
@@ -149,13 +142,6 @@ bool NativeReactNativeFeatureFlags::enableLayoutAnimationsOnIOS(
 bool NativeReactNativeFeatureFlags::enableLongTaskAPI(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableLongTaskAPI();
-}
-
-bool NativeReactNativeFeatureFlags::enableMicrotasks(
-    jsi::Runtime& /*runtime*/) {
-  // This flag is configured with `skipNativeAPI: true`.
-  // TODO(T204838867): Implement support for optional methods in C++ TM codegen and remove the method definition altogether.
-  return false;
 }
 
 bool NativeReactNativeFeatureFlags::enableNewBackgroundAndBorderDrawables(
@@ -256,13 +242,6 @@ bool NativeReactNativeFeatureFlags::useFabricInterop(
 bool NativeReactNativeFeatureFlags::useImmediateExecutorInAndroidBridgeless(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::useImmediateExecutorInAndroidBridgeless();
-}
-
-bool NativeReactNativeFeatureFlags::useModernRuntimeScheduler(
-    jsi::Runtime& /*runtime*/) {
-  // This flag is configured with `skipNativeAPI: true`.
-  // TODO(T204838867): Implement support for optional methods in C++ TM codegen and remove the method definition altogether.
-  return false;
 }
 
 bool NativeReactNativeFeatureFlags::useNativeViewConfigsInBridgelessMode(
