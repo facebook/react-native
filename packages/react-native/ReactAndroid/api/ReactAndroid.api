@@ -7329,21 +7329,27 @@ public class com/facebook/react/views/text/ReactTextShadowNode : com/facebook/re
 	public fun setShouldNotifyOnTextLayout (Z)V
 }
 
-public class com/facebook/react/views/text/ReactTextUpdate {
+public final class com/facebook/react/views/text/ReactTextUpdate {
+	public static final field Companion Lcom/facebook/react/views/text/ReactTextUpdate$Companion;
 	public fun <init> (Landroid/text/Spannable;IZFFFFI)V
 	public fun <init> (Landroid/text/Spannable;IZFFFFIII)V
 	public fun <init> (Landroid/text/Spannable;IZIII)V
-	public static fun buildReactTextUpdateFromState (Landroid/text/Spannable;IIII)Lcom/facebook/react/views/text/ReactTextUpdate;
-	public fun containsImages ()Z
-	public fun getJsEventCounter ()I
-	public fun getJustificationMode ()I
-	public fun getPaddingBottom ()F
-	public fun getPaddingLeft ()F
-	public fun getPaddingRight ()F
-	public fun getPaddingTop ()F
-	public fun getText ()Landroid/text/Spannable;
-	public fun getTextAlign ()I
-	public fun getTextBreakStrategy ()I
+	public static final fun buildReactTextUpdateFromState (Landroid/text/Spannable;IIII)Lcom/facebook/react/views/text/ReactTextUpdate;
+	public final fun containsImages ()Z
+	public final fun getContainsImages ()Z
+	public final fun getJsEventCounter ()I
+	public final fun getJustificationMode ()I
+	public final fun getPaddingBottom ()F
+	public final fun getPaddingLeft ()F
+	public final fun getPaddingRight ()F
+	public final fun getPaddingTop ()F
+	public final fun getText ()Landroid/text/Spannable;
+	public final fun getTextAlign ()I
+	public final fun getTextBreakStrategy ()I
+}
+
+public final class com/facebook/react/views/text/ReactTextUpdate$Companion {
+	public final fun buildReactTextUpdateFromState (Landroid/text/Spannable;IIII)Lcom/facebook/react/views/text/ReactTextUpdate;
 }
 
 public class com/facebook/react/views/text/ReactTextView : androidx/appcompat/widget/AppCompatTextView, com/facebook/react/uimanager/ReactCompoundView {
