@@ -34,6 +34,14 @@
 #endif
 #import <react/nativemodule/defaults/DefaultTurboModules.h>
 
+#if __has_include(<ReactCodegen/RCTThirdPartyComponentsProvider.h>)
+#define USE_OSS_CODEGEN 1
+#import <ReactCodegen/RCTThirdPartyComponentsProvider.h>
+#else
+// Meta internal system do not generate the RCTModulesConformingToProtocolsProvider.h file
+#define USE_OSS_CODEGEN 0
+#endif
+
 using namespace facebook::react;
 
 @interface RCTAppDelegate () <RCTComponentViewFactoryComponentProvider, RCTHostDelegate>
@@ -235,7 +243,11 @@ using namespace facebook::react;
 
 - (NSDictionary<NSString *, Class<RCTComponentViewProtocol>> *)thirdPartyFabricComponents
 {
+#if USE_OSS_CODEGEN
+  return [RCTThirdPartyComponentsProvider thirdPartyFabricComponents];
+#else
   return @{};
+#endif
 }
 
 - (RCTRootViewFactory *)createRCTRootViewFactory
