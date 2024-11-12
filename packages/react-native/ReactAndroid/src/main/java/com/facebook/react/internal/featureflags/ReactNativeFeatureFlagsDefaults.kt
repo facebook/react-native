@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d2d9a8abf3e0be78bbe20c44fce1011d>>
+ * @generated SignedSource<<608eece71b01769be0df8731774f9b0a>>
  */
 
 /**
@@ -27,7 +27,7 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun allowRecursiveCommitsWithSynchronousMountOnAndroid(): Boolean = false
 
-  override fun completeReactInstanceCreationOnBgThreadOnAndroid(): Boolean = false
+  override fun completeReactInstanceCreationOnBgThreadOnAndroid(): Boolean = true
 
   override fun disableEventLoopOnBridgeless(): Boolean = false
 
@@ -101,7 +101,7 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun useFabricInterop(): Boolean = false
 
-  override fun useImmediateExecutorInAndroidBridgeless(): Boolean = false
+  override fun useImmediateExecutorInAndroidBridgeless(): Boolean = true
 
   override fun useNativeViewConfigsInBridgelessMode(): Boolean = false
 

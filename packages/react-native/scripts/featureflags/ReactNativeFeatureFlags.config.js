@@ -74,12 +74,11 @@ const definitions: FeatureFlagDefinitions = {
       skipNativeAPI: true,
     },
     completeReactInstanceCreationOnBgThreadOnAndroid: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
-        dateAdded: '2024-07-22',
         description:
           'Do not wait for a main-thread dispatch to complete init to start executing work on the JS thread on Android',
-        purpose: 'experimentation',
+        purpose: 'release',
       },
     },
     disableEventLoopOnBridgeless: {
@@ -397,12 +396,11 @@ const definitions: FeatureFlagDefinitions = {
       },
     },
     useImmediateExecutorInAndroidBridgeless: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
-        dateAdded: '2024-06-06',
         description:
           'Invoke callbacks immediately on the ReactInstance rather than going through a background thread for synchronization',
-        purpose: 'experimentation',
+        purpose: 'release',
       },
     },
     useModernRuntimeScheduler: {
