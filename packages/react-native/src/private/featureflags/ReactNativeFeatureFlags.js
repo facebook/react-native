@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<fc2fed53108032e45071d0486a5db4a7>>
+ * @generated SignedSource<<52925d6e739b527f776757807a839a3f>>
  * @flow strict
  */
 
@@ -330,7 +330,7 @@ export const fuseboxEnabledRelease: Getter<boolean> = createNativeFlagGetter('fu
 /**
  * Construct modules that requires eager init on the dedicate native modules thread
  */
-export const initEagerTurboModulesOnNativeModulesQueueAndroid: Getter<boolean> = createNativeFlagGetter('initEagerTurboModulesOnNativeModulesQueueAndroid', false);
+export const initEagerTurboModulesOnNativeModulesQueueAndroid: Getter<boolean> = createNativeFlagGetter('initEagerTurboModulesOnNativeModulesQueueAndroid', true);
 /**
  * Only enqueue Choreographer calls if there is an ongoing animation, instead of enqueueing every frame.
  */

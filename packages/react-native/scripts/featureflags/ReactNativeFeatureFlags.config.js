@@ -339,12 +339,11 @@ const definitions: FeatureFlagDefinitions = {
       },
     },
     initEagerTurboModulesOnNativeModulesQueueAndroid: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
-        dateAdded: '2024-07-11',
         description:
           'Construct modules that requires eager init on the dedicate native modules thread',
-        purpose: 'experimentation',
+        purpose: 'release',
       },
     },
     lazyAnimationCallbacks: {
