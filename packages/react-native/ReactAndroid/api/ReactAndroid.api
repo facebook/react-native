@@ -6975,6 +6975,7 @@ public final class com/facebook/react/views/scroll/ReactScrollViewHelper {
 	public static final field SNAP_ALIGNMENT_START I
 	public static final fun addLayoutChangeListener (Lcom/facebook/react/views/scroll/ReactScrollViewHelper$LayoutChangeListener;)V
 	public static final fun addScrollListener (Lcom/facebook/react/views/scroll/ReactScrollViewHelper$ScrollListener;)V
+	public static final fun dispatchMomentumEndOnAnimationEnd (Landroid/view/ViewGroup;)V
 	public static final fun emitLayoutChangeEvent (Landroid/view/ViewGroup;)V
 	public static final fun emitLayoutEvent (Landroid/view/ViewGroup;)V
 	public static final fun emitScrollBeginDragEvent (Landroid/view/ViewGroup;)V
