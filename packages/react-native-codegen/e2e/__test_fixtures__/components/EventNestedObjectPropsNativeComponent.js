@@ -23,6 +23,7 @@ type OnChangeEvent = $ReadOnly<{|
     source: {url: string, ...},
     x: Int32,
     y: Int32,
+    arrayOfObjects: $ReadOnly<{value: $ReadOnly<{ str: string }>}[]>,
     ...
   },
 |}>;
