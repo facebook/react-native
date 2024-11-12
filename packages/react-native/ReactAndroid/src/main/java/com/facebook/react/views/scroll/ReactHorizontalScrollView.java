@@ -1544,12 +1544,20 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     DEFAULT_FLING_ANIMATOR.cancel();
 
     // Update the fling animator with new values
-    DEFAULT_FLING_ANIMATOR
-        .setDuration(ReactScrollViewHelper.getDefaultScrollAnimationDuration(getContext()))
-        .setIntValues(start, end);
+    int duration = ReactScrollViewHelper.getDefaultScrollAnimationDuration(getContext());
+    DEFAULT_FLING_ANIMATOR.setDuration(duration).setIntValues(start, end);
 
     // Start the animator
     DEFAULT_FLING_ANIMATOR.start();
+
+    if (mSendMomentumEvents) {
+      int xVelocity = 0;
+      if (duration > 0) {
+        xVelocity = (end - start) / duration;
+      }
+      ReactScrollViewHelper.emitScrollMomentumBeginEvent(this, xVelocity, 0);
+      ReactScrollViewHelper.dispatchMomentumEndOnAnimationEnd(this);
+    }
   }
 
   @Override
