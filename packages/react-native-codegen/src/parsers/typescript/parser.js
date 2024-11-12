@@ -187,8 +187,11 @@ class TypeScriptParser implements Parser {
 
     let enumMembersType: ?NativeModuleEnumMemberType = null;
 
+    if (!enumInitializerType) {
+      return 'StringTypeAnnotation';
+    }
+
     switch (enumInitializerType) {
-      case undefined:
       case 'StringLiteral':
         enumMembersType = 'StringTypeAnnotation';
         break;

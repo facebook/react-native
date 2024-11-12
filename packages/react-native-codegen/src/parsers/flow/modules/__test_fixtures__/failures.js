@@ -255,6 +255,7 @@ import * as TurboModuleRegistry from '../TurboModuleRegistry';
 
 export enum SomeEnum {
   NUM = 1,
+  SUBFACTORIAL = !5,
   STR = 'str',
 }
 

@@ -196,6 +196,7 @@ import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboMo
 
 export enum SomeEnum {
   NUM = 1,
+  SUBFACTORIAL = !5,
   STR = 'str',
 }
 
