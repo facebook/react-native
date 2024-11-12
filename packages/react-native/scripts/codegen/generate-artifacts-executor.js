@@ -573,27 +573,6 @@ function mustGenerateNativeCode(includeLibraryPath, schemaInfo) {
   );
 }
 
-function createComponentProvider(schemas, supportedApplePlatforms) {
-  codegenLog('Creating component provider.', true);
-  const outputDir = path.join(
-    REACT_NATIVE_PACKAGE_ROOT_FOLDER,
-    'React',
-    'Fabric',
-  );
-  fs.mkdirSync(outputDir, {recursive: true});
-  utils.getCodegen().generateFromSchemas(
-    {
-      schemas: schemas,
-      outputDirectory: outputDir,
-      supportedApplePlatforms,
-    },
-    {
-      generators: ['providerIOS'],
-    },
-  );
-  codegenLog(`Generated provider in: ${outputDir}`);
-}
-
 function findCodegenEnabledLibraries(pkgJson, projectRoot) {
   const projectLibraries = findProjectRootLibraries(pkgJson, projectRoot);
   if (pkgJsonIncludesGeneratedCode(pkgJson)) {
@@ -785,24 +764,7 @@ function execute(projectRoot, targetPlatform, baseOutputPath) {
         platform,
       );
 
-      if (
-        rootCodegenTargetNeedsThirdPartyComponentProvider(pkgJson, platform)
-      ) {
-        const filteredSchemas = schemaInfos.filter(schemaInfo =>
-          dependencyNeedsThirdPartyComponentProvider(
-            schemaInfo,
-            platform,
-            pkgJson.codegenConfig?.name,
-          ),
-        );
-        const schemas = filteredSchemas.map(schemaInfo => schemaInfo.schema);
-        const supportedApplePlatforms = filteredSchemas.map(
-          schemaInfo => schemaInfo.supportedApplePlatforms,
-        );
-
-        createComponentProvider(schemas, supportedApplePlatforms);
-        generateCustomURLHandlers(libraries, outputPath);
-      }
+      generateCustomURLHandlers(libraries, outputPath);
 
       cleanupEmptyFilesAndFolders(outputPath);
     }
