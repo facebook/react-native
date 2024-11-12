@@ -197,14 +197,14 @@ Transform Transform::FromTransformOperation(
         transformOperation.y.resolve(0),
         transformOperation.z.resolve(0));
   }
-  if (transformOperation.type == TransformOperationType::Matrix) {
+  if (transformOperation.type == TransformOperationType::Arbitrary) {
     auto arbitraryTransform = Transform{};
     arbitraryTransform.operations.push_back(transformOperation);
     arbitraryTransform.matrix = transformOperation.matrix;
     return arbitraryTransform;
   }
 
-  // Identity or Arbitrary
+  // Identity
   return Transform::Identity();
 }
 

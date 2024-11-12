@@ -42,8 +42,7 @@ enum class TransformOperationType {
   Scale,
   Translate,
   Rotate,
-  Skew,
-  Matrix
+  Skew
 };
 
 struct TransformOperation {

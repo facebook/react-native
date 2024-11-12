@@ -561,16 +561,10 @@ Transform BaseViewProps::resolveTransform(
     return transformMatrix;
   }
 
-  // transform is matrix
-  if (transform.operations.size() == 1 &&
-      transform.operations[0].type == TransformOperationType::Matrix) {
-    transformMatrix = transform;
-  } else {
-    for (const auto& operation : transform.operations) {
-      transformMatrix = transformMatrix *
-          Transform::FromTransformOperation(
-                            operation, layoutMetrics.frame.size, transform);
-    }
+  for (const auto& operation : transform.operations) {
+    transformMatrix = transformMatrix *
+        Transform::FromTransformOperation(
+                          operation, layoutMetrics.frame.size, transform);
   }
 
   if (transformOrigin.isSet()) {
