@@ -5,9 +5,12 @@ exports[`RN Codegen Flow Parser Fails with error message EMPTY_ENUM_NATIVE_MODUL
 exports[`RN Codegen Flow Parser Fails with error message MAP_WITH_EXTRA_KEYS_NATIVE_MODULE 1`] = `"Module NativeSampleTurboModule: 'ObjectTypeAnnotation' cannot contain both an indexer and properties."`;
 
 exports[`RN Codegen Flow Parser Fails with error message MIXED_VALUES_ENUM_NATIVE_MODULE 1`] = `
-"Syntax error in path/NativeSampleTurboModule.js: 'true', 'false', 'string', 'number' or 'bigint' expected in enum member initializer (19:17)
-  SUBFACTORIAL = !5,
-  ~~~~~~~~~~~~~~~^"
+"Syntax error in path/NativeSampleTurboModule.js: cannot use string initializer in number enum (19:2)
+  STR = 'str',
+  ^~~~~~~~~~~
+note: start of enum body (17:21)
+export enum SomeEnum {
+                     ^"
 `;
 
 exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_ARRAY_WITH_NO_TYPE_FOR_CONTENT 1`] = `"Module NativeSampleTurboModule: Generic 'Array' must have type parameters."`;
@@ -21,6 +24,12 @@ exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_PRO
 exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_READ_ONLY_OBJECT_NO_TYPE_FOR_CONTENT 1`] = `"Module NativeSampleTurboModule: Generic '$ReadOnly' must have exactly one type parameter."`;
 
 exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_UNNAMED_PARAMS 1`] = `"Module NativeSampleTurboModule: All function parameters must be named."`;
+
+exports[`RN Codegen Flow Parser Fails with error message NUMERIC_VALUES_ENUM_NATIVE_MODULE 1`] = `
+"Syntax error in path/NativeSampleTurboModule.js: 'true', 'false', 'string', 'number' or 'bigint' expected in enum member initializer (20:17)
+  SUBFACTORIAL = !5,
+  ~~~~~~~~~~~~~~~^"
+`;
 
 exports[`RN Codegen Flow Parser Fails with error message TWO_NATIVE_EXTENDING_TURBO_MODULE 1`] = `"Module NativeSampleTurboModule: Every NativeModule spec file must declare exactly one NativeModule Flow interface. This file declares 2: 'Spec', and 'Spec2'. Please remove the extraneous Flow interface declarations."`;
 
