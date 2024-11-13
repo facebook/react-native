@@ -123,31 +123,19 @@ function installDependencies(options) {
 }
 
 /**
- * @param {{ verbose?: boolean }=} options
- */
-function installPods(options) {
-  const cwd = path.join(process.cwd(), macOSDir);
-  const quietFlag = options && options.verbose ? '' : '--quiet';
-  childProcess.execSync(`npx ${quietFlag} pod-install --non-interactive ${quietFlag}`, { stdio: 'inherit', cwd });
-}
-
-/**
  * @param {string} newProjectName
  */
 function printFinishMessage(newProjectName) {
   console.log(`
   ${chalk.blue(`Run instructions for ${chalk.bold('macOS')}`)}:
+    • pod install --project-directory=macos
     • npx react-native run-macos
-    ${chalk.dim('- or -')}
-    • Open ${xcworkspacePath(newProjectName)} in Xcode or run "xed -b ${macOSDir}"
     • yarn start:macos
-    • Hit the Run button
 `);
 }
 
 module.exports = {
   copyProjectTemplateAndReplace,
   installDependencies,
-  installPods,
   printFinishMessage,
 };

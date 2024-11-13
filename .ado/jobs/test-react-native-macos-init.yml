@@ -54,7 +54,7 @@ jobs:
           # We need to set the npm registry here otherwise it won't stick
           $(Build.Repository.LocalPath)/.ado/scripts/verdaccio.sh configure
           node $(Build.Repository.LocalPath)/packages/react-native-macos-init/bin.js --verbose --version latest --overwrite --prerelease
-          yarn why react-native-macos
+          pod install --project-directory=macos
         workingDirectory: $(Agent.BuildDirectory)/testcli
         displayName: Apply macOS template (new project)
 

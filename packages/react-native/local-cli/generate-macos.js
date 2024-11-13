@@ -30,8 +30,6 @@ function generateMacOS (projectDir, name, options) {
     { overwrite: options.overwrite }
   );
 
-  installPods(options);
-
   printFinishMessage(name);
 }
 
