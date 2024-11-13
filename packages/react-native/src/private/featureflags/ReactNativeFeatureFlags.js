@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ee28bd585298c2e510a11433b64c76a9>>
+ * @generated SignedSource<<09b8ae3840a5ad419c4af9f3fcc8deec>>
  * @flow strict
  */
 
@@ -199,7 +199,7 @@ export const allowRecursiveCommitsWithSynchronousMountOnAndroid: Getter<boolean>
 /**
  * Do not wait for a main-thread dispatch to complete init to start executing work on the JS thread on Android
  */
-export const completeReactInstanceCreationOnBgThreadOnAndroid: Getter<boolean> = createNativeFlagGetter('completeReactInstanceCreationOnBgThreadOnAndroid', false);
+export const completeReactInstanceCreationOnBgThreadOnAndroid: Getter<boolean> = createNativeFlagGetter('completeReactInstanceCreationOnBgThreadOnAndroid', true);
 /**
  * The bridgeless architecture enables the event loop by default. This feature flag allows us to force disabling it in specific instances.
  */
@@ -347,7 +347,7 @@ export const useFabricInterop: Getter<boolean> = createNativeFlagGetter('useFabr
 /**
  * Invoke callbacks immediately on the ReactInstance rather than going through a background thread for synchronization
  */
-export const useImmediateExecutorInAndroidBridgeless: Getter<boolean> = createNativeFlagGetter('useImmediateExecutorInAndroidBridgeless', false);
+export const useImmediateExecutorInAndroidBridgeless: Getter<boolean> = createNativeFlagGetter('useImmediateExecutorInAndroidBridgeless', true);
 /**
  * When enabled, the native view configs are used in bridgeless mode.
  */
