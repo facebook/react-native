@@ -4,7 +4,7 @@ PODS:
   - FBLazyVector (0.76.0)
   - fmt (9.1.0)
   - glog (0.3.5)
-  - MyNativeView (0.76.0):
+  - MyNativeView (0.76.1):
     - DoubleConversion
     - glog
     - RCT-Folly (= 2024.01.01.00)
@@ -25,7 +25,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - NativeCxxModuleExample (0.76.0):
+  - NativeCxxModuleExample (0.76.1):
     - DoubleConversion
     - glog
     - RCT-Folly (= 2024.01.01.00)
@@ -47,7 +47,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - Yoga
   - OCMock (3.9.4)
-  - OSSLibraryExample (0.76.0):
+  - OSSLibraryExample (0.76.1):
     - DoubleConversion
     - glog
     - RCT-Folly (= 2024.01.01.00)
@@ -1568,7 +1568,7 @@ PODS:
     - React-logger (= 0.76.0)
     - React-perflogger (= 0.76.0)
     - React-utils (= 0.76.0)
-  - ScreenshotManager (0.76.0):
+  - ScreenshotManager (0.76.1):
     - DoubleConversion
     - glog
     - RCT-Folly (= 2024.01.01.00)
@@ -1817,10 +1817,10 @@ SPEC CHECKSUMS:
   FBLazyVector: 1e632fa86491ab30b47f90255f35ecefff4b9d65
   fmt: cca1eb84179ad528ae1ba9fdf135ed1ac49e19cb
   glog: 750f96a379703a2d724d2f1fc6cb3a3eff000817
-  MyNativeView: 3b885691e3472571e06bea081e15d38beb60148f
-  NativeCxxModuleExample: 683588f8df6437a1c7e6e493b0bfd3c0f3e34320
+  MyNativeView: ef272b9f0519bdcd500e557c0a80d0379be931bf
+  NativeCxxModuleExample: ef17815949fd0ace0fef1807c15f8eb26f8b8ab3
   OCMock: 589f2c84dacb1f5aaf6e4cec1f292551fe748e74
-  OSSLibraryExample: 4360a9cb0421b7b1a152f718c97361f9edd1e408
+  OSSLibraryExample: fe6a6c2f60ca9e6b5f2de8912674bcc089650f53
   RCT-Folly: a7dc01750cc4b76a2d308fb2be04f4e3bc8dc094
   RCTDeprecation: 4c2c4a088b6f0ccfcbd53c9d5614b0238ad57909
   RCTRequired: 269d982b15937e5735d7b8bd10baebb986511eac
@@ -1879,7 +1879,7 @@ SPEC CHECKSUMS:
   ReactCodegen: 41fe4c47d6cda1f18ab7d415a1e4bb3a549cf6ae
   ReactCommon: dd2096e3907534c82ac08064120ff1ad0f4f523c
   ReactCommon-Samples: 7728a6473fb3d7ddac31b00915f98fe53538252b
-  ScreenshotManager: 48bbe2e8a0c223707dd83360ef5779eb832a1c28
+  ScreenshotManager: 8561a2a461de6fdfdcd3cd4ce4217710725ee364
   SocketRocket: 03f7111df1a343b162bf5b06ead333be808e1e0a
   Yoga: 1d8b837dcf8275ecee7c7aa97137abc8f63a1626
 

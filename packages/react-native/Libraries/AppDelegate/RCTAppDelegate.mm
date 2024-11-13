@@ -90,6 +90,7 @@
 #endif // [visionOS]
   UIViewController *rootViewController = [self createRootViewController];
   [self setRootView:rootView toRootViewController:rootViewController];
+  _window.windowScene.delegate = self;
   _window.rootViewController = rootViewController;
   [_window makeKeyAndVisible];
 #else // [macOS

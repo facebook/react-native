@@ -983,6 +983,8 @@ static RCTCursor RCTCursorFromCursor(Cursor cursor)
       _backgroundColorLayer.mask = maskLayer;
       _backgroundColorLayer.cornerRadius = 0;
     }
+
+    [_backgroundColorLayer removeAllAnimations];
   }
 
   // borders
