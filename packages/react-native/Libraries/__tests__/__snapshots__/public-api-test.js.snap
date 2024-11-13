@@ -7233,7 +7233,7 @@ exports[`public API should not change unintentionally Libraries/Pressability/Pre
 exports[`public API should not change unintentionally Libraries/Pressability/usePressability.js 1`] = `
 "declare export default function usePressability(
   config: ?PressabilityConfig
-): ?EventHandlers;
+): null | EventHandlers;
 "
 `;
 
