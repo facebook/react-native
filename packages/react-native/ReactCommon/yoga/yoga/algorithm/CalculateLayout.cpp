@@ -696,9 +696,7 @@ static float distributeFreeSpaceSecondPass(
     yoga::assertFatalWithNode(
         currentLineChild,
         yoga::isDefined(updatedMainSize),
-        ("updatedMainSize is undefined. mainAxisOwnerSize: " +
-         std::to_string(mainAxisOwnerSize))
-            .c_str());
+        "updatedMainSize is undefined.");
 
     deltaFreeSpace += updatedMainSize - childFlexBasis;
 
