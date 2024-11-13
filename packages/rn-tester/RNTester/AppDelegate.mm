@@ -149,7 +149,14 @@ static NSString *kBundlePath = @"js/RNTesterApp.ios";
 #ifndef RN_DISABLE_OSS_PLUGIN_HEADER
 - (nonnull NSDictionary<NSString *, Class<RCTComponentViewProtocol>> *)thirdPartyFabricComponents
 {
-  return @{@"RNTMyNativeView" : RNTMyNativeViewComponentView.class};
+#if USE_OSS_CODEGEN
+  return [super thirdPartyFabricComponents].mutableCopy;
+#else
+  NSMutableDictionary *dict = [super thirdPartyFabricComponents].mutableCopy;
+  dict[@"RNTMyNativeView"] = NSClassFromString(@"RNTMyNativeViewComponentView");
+  dict[@"SampleNativeComponent"] = NSClassFromString(@"RCTSampleNativeComponentComponentView");
+  return dict;
+#endif
 }
 #endif
 

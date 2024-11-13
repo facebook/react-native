@@ -7,7 +7,6 @@
 
 #include "EventQueue.h"
 
-#include <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #include "EventEmitter.h"
 #include "ShadowNodeFamily.h"
 

@@ -44,6 +44,11 @@
     "includesGeneratedCode": true,
     "android": {
       "javaPackageName": "com.reactnative.osslibraryexample"
+    },
+    "ios": {
+      "componentProvider": {
+        "SampleNativeComponent": "RCTSampleNativeComponentComponentView"
+      }
     }
   }
 }

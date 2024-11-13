@@ -600,6 +600,9 @@ static inline void RCTApplyTransformationAccordingLayoutDirection(
       offset = CGPointMake(x, y);
     }
     [_scrollView setContentOffset:offset animated:animated];
+    if (animated) {
+      [self sendScrollEventWithName:@"onMomentumScrollBegin" scrollView:_scrollView userData:nil];
+    }
   }
 }
 
@@ -622,6 +625,9 @@ static inline void RCTApplyTransformationAccordingLayoutDirection(
     // Ensure at least one scroll event will fire
     _allowNextScrollNoMatterWhat = YES;
     [_scrollView setContentOffset:offset animated:animated];
+    if (animated) {
+      [self sendScrollEventWithName:@"onMomentumScrollBegin" scrollView:_scrollView userData:nil];
+    }
   }
 }
 
