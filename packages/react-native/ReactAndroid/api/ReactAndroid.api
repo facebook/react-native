@@ -7242,7 +7242,7 @@ public abstract class com/facebook/react/views/text/ReactBaseTextShadowNode : co
 
 public final class com/facebook/react/views/text/ReactFontManager {
 	public static final field Companion Lcom/facebook/react/views/text/ReactFontManager$Companion;
-	public synthetic fun <init> (Lcom/facebook/react/views/text/ReactFontManager;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Lcom/facebook/react/common/assets/ReactFontManager;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun addCustomFont (Landroid/content/Context;Ljava/lang/String;I)V
 	public final fun addCustomFont (Ljava/lang/String;Landroid/graphics/Typeface;)V
 	public static final fun getInstance ()Lcom/facebook/react/views/text/ReactFontManager;
