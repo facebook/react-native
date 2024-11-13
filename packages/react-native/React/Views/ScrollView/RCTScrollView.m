@@ -665,7 +665,9 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
  */
 -(void)centerContentIfNeeded
 {
-  if (_scrollView.centerContent) {
+  if (_scrollView.centerContent &&
+      !CGSizeEqualToSize(self.contentSize, CGSizeZero) &&
+      !CGSizeEqualToSize(self.bounds.size, CGSizeZero)) {
     CGFloat top = 0, left = 0;
     if (self.contentSize.width < self.bounds.size.width) {
       left = (self.bounds.size.width - self.contentSize.width) * 0.5f;
