@@ -238,43 +238,48 @@ void ReactInstance::loadScript(
   auto buffer = std::make_shared<BigStringBuffer>(std::move(script));
   std::string scriptName = simpleBasename(sourceURL);
 
-  runtimeScheduler_->scheduleWork(
-      [this,
-       scriptName,
-       sourceURL,
-       buffer = std::move(buffer),
-       weakBufferedRuntimeExecuter = std::weak_ptr<BufferedRuntimeExecutor>(
-           bufferedRuntimeExecutor_)](jsi::Runtime& runtime) {
-        SystraceSection s("ReactInstance::loadScript");
-        bool hasLogger(ReactMarker::logTaggedMarkerBridgelessImpl);
-        if (hasLogger) {
-          ReactMarker::logTaggedMarkerBridgeless(
-              ReactMarker::RUN_JS_BUNDLE_START, scriptName.c_str());
-        }
+  jsMessageQueueThread_->runOnQueue([this,
+                                     weakRuntime = std::weak_ptr(runtime_),
+                                     scriptName,
+                                     sourceURL,
+                                     weakBufferedRuntimeExecuter =
+                                         std::weak_ptr<BufferedRuntimeExecutor>(
+                                             bufferedRuntimeExecutor_),
+                                     buffer = std::move(buffer)]() {
+    auto runtime = weakRuntime.lock();
+    if (!runtime) {
+      return;
+    }
+    SystraceSection s("ReactInstance::loadScript");
+    bool hasLogger(ReactMarker::logTaggedMarkerBridgelessImpl != nullptr);
+    if (hasLogger) {
+      ReactMarker::logTaggedMarkerBridgeless(
+          ReactMarker::RUN_JS_BUNDLE_START, scriptName.c_str());
+    }
 
-        runtime.evaluateJavaScript(buffer, sourceURL);
+    runtime->getRuntime().evaluateJavaScript(buffer, sourceURL);
 
-        /**
-         * TODO(T183610671): We need a safe/reliable way to enable the js
-         * pipeline from javascript. Remove this after we figure that out, or
-         * after we just remove the js pipeline.
-         */
-        if (!jsErrorHandler_->hasHandledFatalError()) {
-          jsErrorHandler_->setRuntimeReady();
-        }
+    /**
+     * TODO(T183610671): We need a safe/reliable way to enable the js
+     * pipeline from javascript. Remove this after we figure that out, or
+     * after we just remove the js pipeline.
+     */
+    if (!jsErrorHandler_->hasHandledFatalError()) {
+      jsErrorHandler_->setRuntimeReady();
+    }
 
-        if (hasLogger) {
-          ReactMarker::logTaggedMarkerBridgeless(
-              ReactMarker::RUN_JS_BUNDLE_STOP, scriptName.c_str());
-          ReactMarker::logMarkerBridgeless(
-              ReactMarker::INIT_REACT_RUNTIME_STOP);
-          ReactMarker::logMarkerBridgeless(ReactMarker::APP_STARTUP_STOP);
-        }
-        if (auto strongBufferedRuntimeExecuter =
-                weakBufferedRuntimeExecuter.lock()) {
-          strongBufferedRuntimeExecuter->flush();
-        }
-      });
+    if (hasLogger) {
+      ReactMarker::logTaggedMarkerBridgeless(
+          ReactMarker::RUN_JS_BUNDLE_STOP, scriptName.c_str());
+      ReactMarker::logMarkerBridgeless(ReactMarker::INIT_REACT_RUNTIME_STOP);
+      ReactMarker::logMarkerBridgeless(ReactMarker::APP_STARTUP_STOP);
+    }
+
+    if (auto strongBufferedRuntimeExecuter =
+            weakBufferedRuntimeExecuter.lock()) {
+      strongBufferedRuntimeExecuter->flush();
+    }
+  });
 }
 
 /*
