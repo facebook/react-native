@@ -267,6 +267,12 @@ type IOSProps = $ReadOnly<{|
   inputAccessoryViewID?: ?string,
 
   /**
+   * An optional label that overrides the default input accessory view button label.
+   * @platform ios
+   */
+  inputAccessoryViewButtonLabel?: ?string,
+
+  /**
    * Determines the color of the keyboard.
    * @platform ios
    */
