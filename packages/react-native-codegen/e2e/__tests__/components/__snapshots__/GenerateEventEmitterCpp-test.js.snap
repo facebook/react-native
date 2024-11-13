@@ -168,7 +168,7 @@ void EventNestedObjectPropsNativeComponentViewEventEmitter::onChange(OnChange $e
         auto arrayOfObjectsObject = jsi::Object(runtime);
         {
     auto value = jsi::Object(runtime);
-    value.setProperty(runtime, \\"str\\", arrayOfObjectsValue,value.str);
+    value.setProperty(runtime, \\"str\\", arrayOfObjectsValue.value.str);
     arrayOfObjectsObject.setProperty(runtime, \\"value\\", value);
   }
         arrayOfObjects.setValueAtIndex(runtime, arrayOfObjectsIndex++, arrayOfObjectsObject);
