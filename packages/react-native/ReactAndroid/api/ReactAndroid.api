@@ -605,28 +605,6 @@ public abstract class com/facebook/react/bridge/BaseJavaModule : com/facebook/re
 	public fun invalidate ()V
 }
 
-public class com/facebook/react/bridge/BridgeReactContext : com/facebook/react/bridge/ReactApplicationContext {
-	public fun <init> (Landroid/content/Context;)V
-	public fun destroy ()V
-	public fun getCatalystInstance ()Lcom/facebook/react/bridge/CatalystInstance;
-	public fun getFabricUIManager ()Lcom/facebook/react/bridge/UIManager;
-	public fun getJSCallInvokerHolder ()Lcom/facebook/react/turbomodule/core/interfaces/CallInvokerHolder;
-	public fun getJSModule (Ljava/lang/Class;)Lcom/facebook/react/bridge/JavaScriptModule;
-	public fun getNativeModule (Ljava/lang/Class;)Lcom/facebook/react/bridge/NativeModule;
-	public fun getNativeModule (Ljava/lang/String;)Lcom/facebook/react/bridge/NativeModule;
-	public fun getNativeModules ()Ljava/util/Collection;
-	public fun getSourceURL ()Ljava/lang/String;
-	public fun handleException (Ljava/lang/Exception;)V
-	public fun hasActiveCatalystInstance ()Z
-	public fun hasActiveReactInstance ()Z
-	public fun hasCatalystInstance ()Z
-	public fun hasNativeModule (Ljava/lang/Class;)Z
-	public fun hasReactInstance ()Z
-	public fun initializeWithInstance (Lcom/facebook/react/bridge/CatalystInstance;)V
-	public fun isBridgeless ()Z
-	public fun registerSegment (ILjava/lang/String;Lcom/facebook/react/bridge/Callback;)V
-}
-
 public abstract interface class com/facebook/react/bridge/BridgeReactContext$RCTDeviceEventEmitter : com/facebook/react/bridge/JavaScriptModule {
 	public abstract fun emit (Ljava/lang/String;Ljava/lang/Object;)V
 }
