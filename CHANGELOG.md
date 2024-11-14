@@ -1,5 +1,40 @@
 # Changelog
 
+## v0.76.2
+
+### Added
+
+- **TypeScript** Add CodegenTypes for TS ([20b141508b](https://github.com/facebook/react-native/commit/20b141508b30324d52080c255dd3fb318718d746) by [@cipolleschi](https://github.com/cipolleschi))
+
+### Changed
+
+- **infra** Bump CLI to 15.0.1 ([51b98c24bd](https://github.com/facebook/react-native/commit/51b98c24bdc6369ce6fabcacaf8df2d2a706eada) by [@szymonrybczak](https://github.com/szymonrybczak))
+
+#### iOS specific
+
+- **TextInput** Include existing attributes in newly typed text ([557e3447f5](https://github.com/facebook/react-native/commit/557e3447f520e40a1ec0ae344126b4f2836d2e83) by [@NickGerleman](https://github.com/NickGerleman))
+
+### Fixed
+
+- **Hermes** Update Hermes to support Intl ([94d4bfd7c8](https://github.com/facebook/react-native/commit/94d4bfd7c80ba0d55adbff656441b55d59055bcc) by [@blakef](https://github.com/blakef))
+- **infra** Skip hermes-parser under Babel for non-Flow JS code ([ff1261e7dc](https://github.com/facebook/react-native/commit/ff1261e7dc0ab7e241e1f14aa0d6fd17f2ba9328) by [@huntie](https://github.com/huntie))
+- **infra** fix `semver` not being found in pnpm setups ([0def73d1a6](https://github.com/facebook/react-native/commit/0def73d1a6e398d451585032ea1213f96d84fe9c) by [@tido64](https://github.com/tido64))
+- **Error Handling** Fix `setUpErrorHandling` to show early JS errors ([dac6d508af](https://github.com/facebook/react-native/commit/dac6d508afd0f919943d8053330d6314201319c3) by [@cipolleschi](https://github.com/cipolleschi))
+
+#### Android specific
+
+- **infra** Use absolute path when compiling appmodules.so sources ([3956955eaa](https://github.com/facebook/react-native/commit/3956955eaa3cd8c50dfe35a68a6cb8fdcac43155) by [@cortinico](https://github.com/cortinico))
+- **infra** Properly handle paths with spaces in autolinking ([1f62529dc4](https://github.com/facebook/react-native/commit/1f62529dc4583af88ef06bee04c89ce6c2ef737f) by [@cortinico](https://github.com/cortinico))
+- **Modal** Fix Regression - Modal content rendering below system bar on < API 30 when activity is edge-to-edge ([2cd48ef351](https://github.com/facebook/react-native/commit/2cd48ef351d10333a14091188bbe8e3bcd6a7a01) by [@alanleedev](https://github.com/alanleedev))
+- **runtime** Fix timers in headless tasks on bridgeless mode ([ee7b4e2763](https://github.com/facebook/react-native/commit/ee7b4e276355146be53958b402bfb2d5af2dd1bc) by [@j-piasecki](https://github.com/j-piasecki))
+
+#### iOS specific
+
+- **Codegen** Properly stop generating component registration for components defined in app. ([97a4234b6e](https://github.com/facebook/react-native/commit/97a4234b6e51b3c35c82095029ef00270ad02e29) by [@cipolleschi](https://github.com/cipolleschi))
+- **infra** Give apps access to Yoga headers ([e851e73c18](https://github.com/facebook/react-native/commit/e851e73c1806a7b7b898a67716be87f42ced491a) by [@cipolleschi](https://github.com/cipolleschi))
+- **TextInput** Fix missing emitter attributes on iOS TextInput when controlled component value specified using `value` instead of `children` ([52cdedb40e](https://github.com/facebook/react-native/commit/52cdedb40e242c9ed280b821f8493a3872ef2b54) by [@NickGerleman](https://github.com/NickGerleman))
+- **TextInput** Fix cursor moving in iOS controlled single line TextInput on Autocorrection (New Arch) ([36fd5533f6](https://github.com/facebook/react-native/commit/36fd5533f68b0f907a949db87884b58820015ba8) by [@NickGerleman](https://github.com/NickGerleman))
+
 ## v0.76.1
 
 ### Fixed
