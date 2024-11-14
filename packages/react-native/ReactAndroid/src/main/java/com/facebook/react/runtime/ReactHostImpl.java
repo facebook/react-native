@@ -541,7 +541,7 @@ public class ReactHostImpl implements ReactHost {
 
   @DoNotStrip
   private Map<String, String> getHostMetadata() {
-    return AndroidInfoHelpers.getInspectorHostMetadata(mContext);
+    return AndroidInfoHelpers.INSTANCE.getInspectorHostMetadata(mContext);
   }
 
   @DoNotStrip

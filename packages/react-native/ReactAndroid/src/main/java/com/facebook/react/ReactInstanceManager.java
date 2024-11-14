@@ -1596,7 +1596,7 @@ public class ReactInstanceManager {
     public Map<String, String> getMetadata() {
       ReactInstanceManager reactInstanceManager = mReactInstanceManagerWeak.get();
 
-      return AndroidInfoHelpers.getInspectorHostMetadata(
+      return AndroidInfoHelpers.INSTANCE.getInspectorHostMetadata(
           reactInstanceManager != null ? reactInstanceManager.mApplicationContext : null);
     }
 

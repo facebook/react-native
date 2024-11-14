@@ -215,7 +215,7 @@ public class DevServerHelper {
       protected Void doInBackground(Void... params) {
         if (InspectorFlags.getFuseboxEnabled()) {
           Map<String, String> metadata =
-              AndroidInfoHelpers.getInspectorHostMetadata(mApplicationContext);
+              AndroidInfoHelpers.INSTANCE.getInspectorHostMetadata(mApplicationContext);
 
           mInspectorPackagerConnection =
               new CxxInspectorPackagerConnection(
@@ -327,7 +327,7 @@ public class DevServerHelper {
         Locale.US,
         "http://%s/inspector/device?name=%s&app=%s&device=%s",
         mPackagerConnectionSettings.getDebugServerHost(),
-        Uri.encode(AndroidInfoHelpers.getFriendlyDeviceName()),
+        Uri.encode(AndroidInfoHelpers.INSTANCE.getFriendlyDeviceName()),
         Uri.encode(mPackageName),
         Uri.encode(getInspectorDeviceId()));
   }
@@ -360,7 +360,7 @@ public class DevServerHelper {
     if (portOffset > -1) {
       return "localhost" + host.substring(portOffset);
     } else {
-      return AndroidInfoHelpers.DEVICE_LOCALHOST;
+      return AndroidInfoHelpers.INSTANCE.DEVICE_LOCALHOST;
     }
   }
 
