@@ -71,19 +71,19 @@ class Expect {
   }
 
   toBe(expected: mixed): void {
-    const pass = this.#received !== expected;
-    if (this.#isExpectedResult(pass)) {
+    const pass = this.#received === expected;
+    if (!this.#isExpectedResult(pass)) {
       throw new Error(
-        `Expected ${String(expected)} but received ${String(this.#received)}.`,
+        `Expected${this.#maybeNotLabel()} ${String(expected)} but received ${String(this.#received)}.`,
       );
     }
   }
 
   toBeInstanceOf(expected: Class<mixed>): void {
     const pass = this.#received instanceof expected;
-    if (!pass) {
+    if (!this.#isExpectedResult(pass)) {
       throw new Error(
-        `expected ${String(this.#received)} to be an instance of ${String(expected)}`,
+        `expected ${String(this.#received)}${this.#maybeNotLabel()} to be an instance of ${String(expected)}`,
       );
     }
   }
@@ -91,9 +91,9 @@ class Expect {
   toBeCloseTo(expected: number, precision: number = 2): void {
     const pass =
       Math.abs(expected - Number(this.#received)) < Math.pow(10, -precision);
-    if (!pass) {
+    if (!this.#isExpectedResult(pass)) {
       throw new Error(
-        `expected ${String(this.#received)} to be close to ${expected}`,
+        `expected ${String(this.#received)}${this.#maybeNotLabel()} to be close to ${expected}`,
       );
     }
   }
@@ -110,13 +110,19 @@ class Expect {
     } catch {
       pass = true;
     }
-    if (!pass) {
-      throw new Error(`expected ${String(this.#received)} to throw`);
+    if (!this.#isExpectedResult(pass)) {
+      throw new Error(
+        `expected ${String(this.#received)}${this.#maybeNotLabel()} to throw`,
+      );
     }
   }
 
   #isExpectedResult(pass: boolean): boolean {
     return this.#isNot ? !pass : pass;
+  }
+
+  #maybeNotLabel(): string {
+    return this.#isNot ? ' not' : '';
   }
 }
 
