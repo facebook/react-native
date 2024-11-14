@@ -7113,14 +7113,14 @@ public final class com/facebook/react/views/scroll/ScrollEventType$Companion {
 	public final fun getJSEventName (Lcom/facebook/react/views/scroll/ScrollEventType;)Ljava/lang/String;
 }
 
-public class com/facebook/react/views/swiperefresh/ReactSwipeRefreshLayout : androidx/swiperefreshlayout/widget/SwipeRefreshLayout {
+public final class com/facebook/react/views/swiperefresh/ReactSwipeRefreshLayout : androidx/swiperefreshlayout/widget/SwipeRefreshLayout {
 	public fun <init> (Lcom/facebook/react/bridge/ReactContext;)V
 	public fun canChildScrollUp ()Z
 	public fun onInterceptTouchEvent (Landroid/view/MotionEvent;)Z
 	public fun onLayout (ZIIII)V
 	public fun onTouchEvent (Landroid/view/MotionEvent;)Z
 	public fun requestDisallowInterceptTouchEvent (Z)V
-	public fun setProgressViewOffset (F)V
+	public final fun setProgressViewOffset (F)V
 	public fun setRefreshing (Z)V
 }
 
