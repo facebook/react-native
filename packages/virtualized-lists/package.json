@@ -1,6 +1,6 @@
 {
   "name": "@react-native-mac/virtualized-lists",
-  "version": "0.76.0",
+  "version": "0.76.1",
   "description": "Virtualized lists for React Native macOS.",
   "license": "MIT",
   "repository": {

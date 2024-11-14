@@ -27,7 +27,7 @@
   "devDependencies": {
     "@babel/core": "^7.25.2",
     "@react-native/babel-preset": "0.76.1",
-    "react-native-macos": "workspace:*"
+    "react-native-macos": "0.76.1"
   },
   "peerDependencies": {
     "react": "*",
