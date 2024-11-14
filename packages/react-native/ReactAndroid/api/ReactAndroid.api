@@ -3401,6 +3401,8 @@ public final class com/facebook/react/modules/image/ImageLoaderModule$Companion 
 }
 
 public class com/facebook/react/modules/intent/IntentModule : com/facebook/fbreact/specs/NativeIntentAndroidSpec {
+	public static final field Companion Lcom/facebook/react/modules/intent/IntentModule$Companion;
+	public static final field NAME Ljava/lang/String;
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
 	public fun canOpenURL (Ljava/lang/String;Lcom/facebook/react/bridge/Promise;)V
 	public fun getInitialURL (Lcom/facebook/react/bridge/Promise;)V
@@ -3408,6 +3410,9 @@ public class com/facebook/react/modules/intent/IntentModule : com/facebook/fbrea
 	public fun openSettings (Lcom/facebook/react/bridge/Promise;)V
 	public fun openURL (Ljava/lang/String;Lcom/facebook/react/bridge/Promise;)V
 	public fun sendIntent (Ljava/lang/String;Lcom/facebook/react/bridge/ReadableArray;Lcom/facebook/react/bridge/Promise;)V
+}
+
+public final class com/facebook/react/modules/intent/IntentModule$Companion {
 }
 
 public abstract interface class com/facebook/react/modules/network/CookieJarContainer : okhttp3/CookieJar {
