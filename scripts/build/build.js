@@ -9,7 +9,7 @@
  * @oncall react_native
  */
 
-const {PACKAGES_DIR} = require('../consts');
+const {PACKAGES_DIR, RN_INTEGRATION_TESTS_RUNNER_DIR} = require('../consts');
 const {
   buildConfig,
   getBabelConfig,
@@ -365,6 +365,7 @@ module.exports = {
   getBuildPath,
   BUILD_DIR,
   PACKAGES_DIR,
+  RN_INTEGRATION_TESTS_RUNNER_DIR,
   SRC_DIR,
 };
 
