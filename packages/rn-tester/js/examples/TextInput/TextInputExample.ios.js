@@ -17,7 +17,6 @@ import type {
 import type {KeyboardType} from 'react-native/Libraries/Components/TextInput/TextInput';
 
 import ExampleTextInput from './ExampleTextInput';
-import {TextInput} from 'react-native';
 
 const TextInputSharedExamples = require('./TextInputSharedExamples.js');
 const React = require('react');
