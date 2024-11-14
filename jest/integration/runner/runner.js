@@ -127,6 +127,10 @@ module.exports = async function runTest(
   ];
   const rnTesterCommandResult = spawnSync('buck2', rnTesterCommandArgs, {
     encoding: 'utf8',
+    env: {
+      ...process.env,
+      PATH: `/usr/local/bin:${process.env.PATH ?? ''}`,
+    },
   });
 
   if (rnTesterCommandResult.status !== 0) {
@@ -138,6 +142,8 @@ module.exports = async function runTest(
         rnTesterCommandResult.stdout,
         'stderr:',
         rnTesterCommandResult.stderr,
+        'error:',
+        rnTesterCommandResult.error,
       ].join('\n'),
     );
   }
@@ -156,7 +162,9 @@ module.exports = async function runTest(
 
   const endTime = Date.now();
 
-  console.log(rnTesterParsedOutput.logs);
+  if (process.env.SANDCASTLE == null) {
+    console.log(rnTesterParsedOutput.logs);
+  }
 
   const testResults =
     nullthrows(rnTesterParsedOutput.testResult.testResults).map(testResult => ({
