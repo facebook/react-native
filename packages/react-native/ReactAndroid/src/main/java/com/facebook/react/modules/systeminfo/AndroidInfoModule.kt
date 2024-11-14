@@ -22,6 +22,7 @@ import com.facebook.react.turbomodule.core.interfaces.TurboModule
 /** Module that exposes Android Constants to JS. */
 @ReactModule(name = NativePlatformConstantsAndroidSpec.NAME)
 @SuppressLint("HardwareIds")
+@Suppress("DEPRECATION")
 public class AndroidInfoModule(reactContext: ReactApplicationContext) : NativePlatformConstantsAndroidSpec(reactContext), TurboModule {
 
   private companion object {
