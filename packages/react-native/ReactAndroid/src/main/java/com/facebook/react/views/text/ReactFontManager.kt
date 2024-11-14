@@ -10,13 +10,14 @@ package com.facebook.react.views.text
 import android.content.Context
 import android.content.res.AssetManager
 import android.graphics.Typeface
+import com.facebook.react.common.assets.ReactFontManager as ReactFontAssetManager
 
 /** Responsible for loading and caching Typeface objects. */
 @Deprecated(
     message =
         "This class is deprecated and will be deleted in the near future. Please use [com.facebook.react.common.assets.ReactFontManager] instead.")
 @Suppress("DEPRECATION")
-public class ReactFontManager private constructor(private val delegate: ReactFontManager) {
+public class ReactFontManager private constructor(private val delegate: ReactFontAssetManager) {
 
   public fun getTypeface(fontFamilyName: String, style: Int, assetManager: AssetManager): Typeface =
       delegate.getTypeface(fontFamilyName, style, assetManager)
@@ -52,7 +53,8 @@ public class ReactFontManager private constructor(private val delegate: ReactFon
 
     @JvmStatic
     public fun getInstance(): ReactFontManager {
-      return instance ?: ReactFontManager(ReactFontManager.getInstance()).also { instance = it }
+      return instance
+          ?: ReactFontManager(ReactFontAssetManager.getInstance()).also { instance = it }
     }
   }
 }

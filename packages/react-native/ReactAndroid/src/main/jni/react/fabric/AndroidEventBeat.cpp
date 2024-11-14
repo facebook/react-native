@@ -33,7 +33,7 @@ void AndroidEventBeat::tick() const {
 }
 
 void AndroidEventBeat::request() const {
-  bool alreadyRequested = isRequested_;
+  bool alreadyRequested = isEventBeatRequested_;
   EventBeat::request();
   if (!alreadyRequested) {
     // Notifies java side that an event will be dispatched (e.g. LayoutEvent)

@@ -350,6 +350,27 @@ const textInputExamples: Array<RNTesterModuleExample> = [
     },
   },
   {
+    title: 'Custom Input Accessory View Button Label',
+    render: function (): React.Node {
+      return (
+        <View>
+          <WithLabel label="Localized Label">
+            <ExampleTextInput
+              keyboardType="number-pad"
+              inputAccessoryViewButtonLabel="Presiona aquí para terminar"
+            />
+          </WithLabel>
+          <WithLabel label="Custom Label">
+            <ExampleTextInput
+              keyboardType="ascii-capable-number-pad"
+              inputAccessoryViewButtonLabel="Press here to finish"
+            />
+          </WithLabel>
+        </View>
+      );
+    },
+  },
+  {
     title: 'Nested content and `value` property',
     render: function (): React.Node {
       return (

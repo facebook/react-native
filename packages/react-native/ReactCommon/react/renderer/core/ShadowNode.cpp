@@ -365,7 +365,8 @@ std::string ShadowNode::getDebugName() const {
 std::string ShadowNode::getDebugValue() const {
   return "r" + folly::to<std::string>(revision_) + "/sr" +
       folly::to<std::string>(state_ ? state_->getRevision() : 0) +
-      (getSealed() ? "/sealed" : "");
+      (getSealed() ? "/sealed" : "") +
+      (getProps()->nativeId.empty() ? "" : "/id=" + getProps()->nativeId);
 }
 
 SharedDebugStringConvertibleList ShadowNode::getDebugChildren() const {

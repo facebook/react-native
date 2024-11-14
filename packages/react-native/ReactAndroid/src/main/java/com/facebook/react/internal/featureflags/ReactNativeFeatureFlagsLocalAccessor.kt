@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7e78a7ec91d557297f869b964cc91eac>>
+ * @generated SignedSource<<71dcfc3812f442a35ae2c24621c05605>>
  */
 
 /**
@@ -54,7 +54,6 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var excludeYogaFromRawPropsCache: Boolean? = null
   private var fixMappingOfEventPrioritiesBetweenFabricAndReactCache: Boolean? = null
   private var fixMountingCoordinatorReportedPendingTransactionsOnAndroidCache: Boolean? = null
-  private var forceBatchingMountItemsOnAndroidCache: Boolean? = null
   private var fuseboxEnabledDebugCache: Boolean? = null
   private var fuseboxEnabledReleaseCache: Boolean? = null
   private var initEagerTurboModulesOnNativeModulesQueueAndroidCache: Boolean? = null
@@ -368,16 +367,6 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.fixMountingCoordinatorReportedPendingTransactionsOnAndroid()
       accessedFeatureFlags.add("fixMountingCoordinatorReportedPendingTransactionsOnAndroid")
       fixMountingCoordinatorReportedPendingTransactionsOnAndroidCache = cached
-    }
-    return cached
-  }
-
-  override fun forceBatchingMountItemsOnAndroid(): Boolean {
-    var cached = forceBatchingMountItemsOnAndroidCache
-    if (cached == null) {
-      cached = currentProvider.forceBatchingMountItemsOnAndroid()
-      accessedFeatureFlags.add("forceBatchingMountItemsOnAndroid")
-      forceBatchingMountItemsOnAndroidCache = cached
     }
     return cached
   }

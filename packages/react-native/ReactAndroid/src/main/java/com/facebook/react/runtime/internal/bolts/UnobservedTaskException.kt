@@ -5,13 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.runtime.internal.bolts;
-
-import androidx.annotation.Nullable;
+package com.facebook.react.runtime.internal.bolts
 
 /** Used to signify that a Task's error went unobserved. */
-class UnobservedTaskException extends RuntimeException {
-  public UnobservedTaskException(@Nullable Throwable cause) {
-    super(cause);
-  }
-}
+internal class UnobservedTaskException(cause: Throwable?) : RuntimeException(cause) {}

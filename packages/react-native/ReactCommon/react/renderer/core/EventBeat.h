@@ -130,7 +130,11 @@ class EventBeat {
 
   BeatCallback beatCallback_;
   std::shared_ptr<OwnerBox> ownerBox_;
-  mutable std::atomic<bool> isRequested_{false};
+
+  /*
+   * Indicates if event beat was requested to avoid redundant requests.
+   */
+  mutable std::atomic<bool> isEventBeatRequested_{false};
 
  private:
   RuntimeScheduler& runtimeScheduler_;

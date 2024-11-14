@@ -312,6 +312,7 @@ public class ReactImageView(
       null,
       "default" -> ImageCacheControl.DEFAULT
       "reload" -> ImageCacheControl.RELOAD
+      "force-cache" -> ImageCacheControl.FORCE_CACHE
       "only-if-cached" -> ImageCacheControl.ONLY_IF_CACHED
       else -> ImageCacheControl.DEFAULT
     }

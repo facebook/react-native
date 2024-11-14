@@ -63,23 +63,12 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'experimentation',
       },
     },
-    batchRenderingUpdatesInEventLoop: {
-      defaultValue: false,
-      metadata: {
-        description:
-          'When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.',
-        purpose: 'release',
-      },
-      // We're preparing to clean up this feature flag.
-      skipNativeAPI: true,
-    },
     completeReactInstanceCreationOnBgThreadOnAndroid: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
-        dateAdded: '2024-07-22',
         description:
           'Do not wait for a main-thread dispatch to complete init to start executing work on the JS thread on Android',
-        purpose: 'experimentation',
+        purpose: 'release',
       },
     },
     disableEventLoopOnBridgeless: {
@@ -223,16 +212,6 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'release',
       },
     },
-    enableMicrotasks: {
-      defaultValue: false,
-      metadata: {
-        description:
-          'Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).',
-        purpose: 'release',
-      },
-      // We're preparing to clean up this feature flag.
-      skipNativeAPI: true,
-    },
     enableNewBackgroundAndBorderDrawables: {
       defaultValue: false,
       metadata: {
@@ -322,15 +301,6 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'experimentation',
       },
     },
-    forceBatchingMountItemsOnAndroid: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-04-10',
-        description:
-          'Forces the mounting layer on Android to always batch mount items instead of dispatching them immediately. This might fix some crashes related to synchronous state updates, where some views dispatch state updates during mount.',
-        purpose: 'experimentation',
-      },
-    },
     fuseboxEnabledDebug: {
       defaultValue: true,
       metadata: {
@@ -348,12 +318,11 @@ const definitions: FeatureFlagDefinitions = {
       },
     },
     initEagerTurboModulesOnNativeModulesQueueAndroid: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
-        dateAdded: '2024-07-11',
         description:
           'Construct modules that requires eager init on the dedicate native modules thread',
-        purpose: 'experimentation',
+        purpose: 'release',
       },
     },
     lazyAnimationCallbacks: {
@@ -407,23 +376,12 @@ const definitions: FeatureFlagDefinitions = {
       },
     },
     useImmediateExecutorInAndroidBridgeless: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
-        dateAdded: '2024-06-06',
         description:
           'Invoke callbacks immediately on the ReactInstance rather than going through a background thread for synchronization',
-        purpose: 'experimentation',
-      },
-    },
-    useModernRuntimeScheduler: {
-      defaultValue: false,
-      metadata: {
-        description:
-          'When enabled, it uses the modern fork of RuntimeScheduler that allows scheduling tasks with priorities from any thread.',
         purpose: 'release',
       },
-      // We're preparing to clean up this feature flag.
-      skipNativeAPI: true,
     },
     useNativeViewConfigsInBridgelessMode: {
       defaultValue: false,
@@ -605,12 +563,11 @@ const definitions: FeatureFlagDefinitions = {
       },
     },
     useInsertionEffectsForAnimations: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
-        dateAdded: '2024-09-12',
         description:
           'Changes construction of the animation graph to `useInsertionEffect` instead of `useLayoutEffect`.',
-        purpose: 'experimentation',
+        purpose: 'release',
       },
     },
     useRefsForTextInputState: {

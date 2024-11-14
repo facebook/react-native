@@ -11,10 +11,12 @@
 'use strict';
 
 import RNTesterText from '../../components/RNTesterText';
+import {RNTesterThemeContext} from '../../components/RNTesterTheme';
 import React, {useState} from 'react';
 import {Button, PixelRatio, StyleSheet, TextInput, View} from 'react-native';
 
 function LayoutSizeToPixel() {
+  const theme = React.useContext(RNTesterThemeContext);
   const [layoutDPSize, setLayoutDPSize] = useState<number>(0);
   const pixelSize = PixelRatio.getPixelSizeForLayoutSize(
     layoutDPSize ? layoutDPSize : 0,
@@ -33,7 +35,10 @@ function LayoutSizeToPixel() {
             Layout Size(dp):{' '}
           </RNTesterText>
           <TextInput
-            style={styles.input}
+            style={[
+              styles.input,
+              {color: theme.LabelColor, borderColor: theme.SeparatorColor},
+            ]}
             value={layoutDPSize ? layoutDPSize.toString() : ''}
             keyboardType={'numeric'}
             onChangeText={handleDPInputChange}
@@ -49,6 +54,7 @@ function LayoutSizeToPixel() {
 }
 
 function RoundToNearestPixel() {
+  const theme = React.useContext(RNTesterThemeContext);
   const [layoutDPSizeText, setLayoutDPSizeText] = useState('');
   const layoutDPSize = parseFloat(layoutDPSizeText);
 
@@ -68,7 +74,10 @@ function RoundToNearestPixel() {
             Layout Size(dp):{' '}
           </RNTesterText>
           <TextInput
-            style={styles.input}
+            style={[
+              styles.input,
+              {color: theme.LabelColor, borderColor: theme.SeparatorColor},
+            ]}
             value={layoutDPSizeText ? layoutDPSizeText.toString() : ''}
             keyboardType={'numeric'}
             onChangeText={handleDPInputChange}

@@ -18,7 +18,7 @@ import * as React from 'react';
 import {act} from 'react-test-renderer';
 
 const TextInputState = require('../../../Components/TextInput/TextInputState');
-const ReactFabric = require('../../../Renderer/shims/ReactFabric');
+const ReactFabric = require('../../../Renderer/shims/ReactFabric').default;
 const ReactNativeViewConfigRegistry = require('../../../Renderer/shims/ReactNativeViewConfigRegistry');
 const FabricUIManager = require('../../FabricUIManager');
 const nullthrows = require('nullthrows');
