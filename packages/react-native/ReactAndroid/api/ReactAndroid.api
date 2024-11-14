@@ -6916,14 +6916,21 @@ public class com/facebook/react/views/scroll/ReactScrollView : android/widget/Sc
 	public fun updateClippingRect ()V
 }
 
-public class com/facebook/react/views/scroll/ReactScrollViewCommandHelper {
+public final class com/facebook/react/views/scroll/ReactScrollViewCommandHelper {
 	public static final field COMMAND_FLASH_SCROLL_INDICATORS I
 	public static final field COMMAND_SCROLL_TO I
 	public static final field COMMAND_SCROLL_TO_END I
+	public static final field Companion Lcom/facebook/react/views/scroll/ReactScrollViewCommandHelper$Companion;
 	public fun <init> ()V
-	public static fun getCommandsMap ()Ljava/util/Map;
-	public static fun receiveCommand (Lcom/facebook/react/views/scroll/ReactScrollViewCommandHelper$ScrollCommandHandler;Ljava/lang/Object;ILcom/facebook/react/bridge/ReadableArray;)V
-	public static fun receiveCommand (Lcom/facebook/react/views/scroll/ReactScrollViewCommandHelper$ScrollCommandHandler;Ljava/lang/Object;Ljava/lang/String;Lcom/facebook/react/bridge/ReadableArray;)V
+	public static final fun getCommandsMap ()Ljava/util/Map;
+	public static final fun receiveCommand (Lcom/facebook/react/views/scroll/ReactScrollViewCommandHelper$ScrollCommandHandler;Ljava/lang/Object;ILcom/facebook/react/bridge/ReadableArray;)V
+	public static final fun receiveCommand (Lcom/facebook/react/views/scroll/ReactScrollViewCommandHelper$ScrollCommandHandler;Ljava/lang/Object;Ljava/lang/String;Lcom/facebook/react/bridge/ReadableArray;)V
+}
+
+public final class com/facebook/react/views/scroll/ReactScrollViewCommandHelper$Companion {
+	public final fun getCommandsMap ()Ljava/util/Map;
+	public final fun receiveCommand (Lcom/facebook/react/views/scroll/ReactScrollViewCommandHelper$ScrollCommandHandler;Ljava/lang/Object;ILcom/facebook/react/bridge/ReadableArray;)V
+	public final fun receiveCommand (Lcom/facebook/react/views/scroll/ReactScrollViewCommandHelper$ScrollCommandHandler;Ljava/lang/Object;Ljava/lang/String;Lcom/facebook/react/bridge/ReadableArray;)V
 }
 
 public abstract interface class com/facebook/react/views/scroll/ReactScrollViewCommandHelper$ScrollCommandHandler {
@@ -6932,14 +6939,16 @@ public abstract interface class com/facebook/react/views/scroll/ReactScrollViewC
 	public abstract fun scrollToEnd (Ljava/lang/Object;Lcom/facebook/react/views/scroll/ReactScrollViewCommandHelper$ScrollToEndCommandData;)V
 }
 
-public class com/facebook/react/views/scroll/ReactScrollViewCommandHelper$ScrollToCommandData {
+public final class com/facebook/react/views/scroll/ReactScrollViewCommandHelper$ScrollToCommandData {
 	public final field mAnimated Z
 	public final field mDestX I
 	public final field mDestY I
+	public fun <init> (IIZ)V
 }
 
-public class com/facebook/react/views/scroll/ReactScrollViewCommandHelper$ScrollToEndCommandData {
+public final class com/facebook/react/views/scroll/ReactScrollViewCommandHelper$ScrollToEndCommandData {
 	public final field mAnimated Z
+	public fun <init> (Z)V
 }
 
 public final class com/facebook/react/views/scroll/ReactScrollViewHelper {
