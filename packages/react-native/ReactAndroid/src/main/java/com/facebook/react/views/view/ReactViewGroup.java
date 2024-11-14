@@ -77,8 +77,6 @@ public class ReactViewGroup extends ViewGroup
   private static final int DEFAULT_BACKGROUND_COLOR = Color.TRANSPARENT;
   private static final LayoutParams sDefaultLayoutParam = new ViewGroup.LayoutParams(0, 0);
   private final Rect mOverflowInset = new Rect();
-  /* should only be used in {@link #updateClippingToRect} */
-  private static final Rect sHelperRect = new Rect();
 
   /**
    * This listener will be set for child views when removeClippedSubview property is enabled. When
@@ -192,7 +190,6 @@ public class ReactViewGroup extends ViewGroup
     // Set default field values
     initView();
     mOverflowInset.setEmpty();
-    sHelperRect.setEmpty();
 
     // Remove any children
     removeAllViews();
@@ -443,10 +440,9 @@ public class ReactViewGroup extends ViewGroup
     UiThreadUtil.assertOnUiThread();
 
     View child = Assertions.assertNotNull(mAllChildren)[idx];
-    sHelperRect.set(child.getLeft(), child.getTop(), child.getRight(), child.getBottom());
     boolean intersects =
         clippingRect.intersects(
-            sHelperRect.left, sHelperRect.top, sHelperRect.right, sHelperRect.bottom);
+            child.getLeft(), child.getTop(), child.getRight(), child.getBottom());
     boolean needUpdateClippingRecursive = false;
     // We never want to clip children that are being animated, as this can easily break layout :
     // when layout animation changes size and/or position of views contained inside a listview that
@@ -471,8 +467,6 @@ public class ReactViewGroup extends ViewGroup
     }
     if (needUpdateClippingRecursive) {
       if (child instanceof ReactClippingViewGroup) {
-        // we don't use {@link sHelperRect} until the end of this loop, therefore it's safe
-        // to call this method that may write to the same {@link sHelperRect} object.
         ReactClippingViewGroup clippingChild = (ReactClippingViewGroup) child;
         if (clippingChild.getRemoveClippedSubviews()) {
           clippingChild.updateClippingRect();
@@ -490,10 +484,9 @@ public class ReactViewGroup extends ViewGroup
     Assertions.assertNotNull(mAllChildren);
 
     // do fast check whether intersect state changed
-    sHelperRect.set(subview.getLeft(), subview.getTop(), subview.getRight(), subview.getBottom());
     boolean intersects =
         mClippingRect.intersects(
-            sHelperRect.left, sHelperRect.top, sHelperRect.right, sHelperRect.bottom);
+            subview.getLeft(), subview.getTop(), subview.getRight(), subview.getBottom());
 
     // If it was intersecting before, should be attached to the parent
     boolean oldIntersects = (subview.getParent() != null);
