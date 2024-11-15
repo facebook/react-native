@@ -54,18 +54,18 @@ Scheduler::Scheduler(
       weakRuntimeScheduler.has_value() &&
       "Unexpected state: RuntimeScheduler was not provided.");
 
-  auto runtimeScheduler = weakRuntimeScheduler.value().lock();
+  runtimeScheduler_ = weakRuntimeScheduler.value().lock().get();
 
   if (ReactNativeFeatureFlags::enableUIConsistency()) {
-    runtimeScheduler->setShadowTreeRevisionConsistencyManager(
+    runtimeScheduler_->setShadowTreeRevisionConsistencyManager(
         uiManager->getShadowTreeRevisionConsistencyManager());
   }
 
   if (ReactNativeFeatureFlags::enableReportEventPaintTime()) {
-    runtimeScheduler->setEventTimingDelegate(eventPerformanceLogger_.get());
+    runtimeScheduler_->setEventTimingDelegate(eventPerformanceLogger_.get());
   }
 
-  auto eventPipe = [uiManager, runtimeScheduler = runtimeScheduler.get()](
+  auto eventPipe = [uiManager](
                        jsi::Runtime& runtime,
                        const EventTarget* eventTarget,
                        const std::string& type,
@@ -79,12 +79,10 @@ Scheduler::Scheduler(
         runtime);
   };
 
-  auto eventPipeConclusion =
-      [runtimeScheduler = runtimeScheduler.get()](jsi::Runtime& runtime) {
-        if (runtimeScheduler != nullptr) {
-          runtimeScheduler->callExpiredTasks(runtime);
-        }
-      };
+  auto eventPipeConclusion = [runtimeScheduler =
+                                  runtimeScheduler_](jsi::Runtime& runtime) {
+    runtimeScheduler->callExpiredTasks(runtime);
+  };
 
   auto statePipe = [uiManager](const StateUpdate& stateUpdate) {
     uiManager->updateState(stateUpdate);
@@ -289,16 +287,10 @@ void Scheduler::uiManagerDidFinishTransaction(
     // observe each transaction to be able to mount correctly.
     delegate_->schedulerDidFinishTransaction(mountingCoordinator);
 
-    auto weakRuntimeScheduler =
-        contextContainer_->find<std::weak_ptr<RuntimeScheduler>>(
-            "RuntimeScheduler");
-    auto runtimeScheduler = weakRuntimeScheduler.has_value()
-        ? weakRuntimeScheduler.value().lock()
-        : nullptr;
-    if (runtimeScheduler && !mountSynchronously) {
+    if (!mountSynchronously) {
       auto surfaceId = mountingCoordinator->getSurfaceId();
 
-      runtimeScheduler->scheduleRenderingUpdate(
+      runtimeScheduler_->scheduleRenderingUpdate(
           surfaceId,
           [delegate = delegate_,
            mountingCoordinator = std::move(mountingCoordinator)]() {
