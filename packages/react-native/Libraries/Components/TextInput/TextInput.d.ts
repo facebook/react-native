@@ -137,6 +137,12 @@ export interface DocumentSelectionState extends EventEmitter {
  */
 export interface TextInputIOSProps {
   /**
+   * If `true`, disabled the native keyboard shortcuts.
+   * @platform ios
+   */
+  disableKeyboardShortcuts?: boolean | undefined;
+
+  /**
    * enum('never', 'while-editing', 'unless-editing', 'always')
    * When the clear button should appear on the right side of the text view
    */

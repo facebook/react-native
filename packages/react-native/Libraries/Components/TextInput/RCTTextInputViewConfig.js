@@ -161,6 +161,7 @@ const RCTTextInputViewConfig = {
       onChangeSync: true,
       onKeyPressSync: true,
     }),
+    disableKeyboardShortcuts: true,
   },
 };
 
