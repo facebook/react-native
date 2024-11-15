@@ -29,14 +29,19 @@ public object AndroidInfoHelpers {
 
   private fun isRunningOnStockEmulator(): Boolean = Build.FINGERPRINT.contains("generic") or Build.FINGERPRINT.startsWith("google/sdk_gphone")
 
+  @JvmStatic
   public fun getServerHost(port: Int): String = getServerIpAddress(port)
 
+  @JvmStatic
   public fun getServerHost(context: Context): String = getServerIpAddress(getDevServerPort(context))
 
+  @JvmStatic
   public fun getAdbReverseTcpCommand(port: Int): String = "adb reverse tcp:$port tcp:$port"
 
+  @JvmStatic
   public fun getAdbReverseTcpCommand(context: Context): String = getAdbReverseTcpCommand(getDevServerPort(context))
 
+  @JvmStatic
   public fun getFriendlyDeviceName(): String {
     return if (isRunningOnGenymotion()) {
       Build.MODEL
@@ -45,6 +50,7 @@ public object AndroidInfoHelpers {
     }
   }
 
+  @JvmStatic
   public fun getInspectorHostMetadata(applicationContext: Context?): Map<String, String?> {
     var appIdentifier: String? = null
     var appDisplayName: String? = null
