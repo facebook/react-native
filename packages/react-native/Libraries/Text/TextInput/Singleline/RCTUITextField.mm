@@ -57,8 +57,29 @@
 
 - (void)setPlaceholder:(NSString *)placeholder
 {
+  NSLog(@"setPlaceholder called with value: %@", placeholder);
+  
   [super setPlaceholder:placeholder];
   [self _updatePlaceholder];
+}
+
+- (BOOL)disableKeyboardShortcuts
+{
+  // Log the call to this method
+  NSLog(@"setDisableKeyboardShortcuts called with value: %d", self.disableKeyboardShortcuts);
+      
+  return self.disableKeyboardShortcuts;
+}
+
+- (void)setDisableKeyboardShortcuts:(BOOL)disableKeyboardShortcuts
+{
+    // Log the call to this method
+  NSLog(@"setDisableKeyboardShortcuts called with value: %d", disableKeyboardShortcuts);
+  
+  if (disableKeyboardShortcuts) {
+    self.inputAssistantItem.leadingBarButtonGroups = @[];
+    self.inputAssistantItem.trailingBarButtonGroups = @[];
+  }
 }
 
 - (void)setPlaceholderColor:(UIColor *)placeholderColor

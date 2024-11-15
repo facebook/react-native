@@ -32,6 +32,27 @@ RCT_EXPORT_MODULE()
 
 #pragma mark - Unified <TextInput> properties
 
+// Map the JS property to the custom setter method
+RCT_EXPORT_VIEW_PROPERTY(disableKeyboardShortcuts, BOOL)
+
+//// Custom setter method
+//- (void)setDisableKeyboardShortcuts:(BOOL)disable forView:(UIView *)view
+//{
+//  // Log the call to this method
+//  NSLog(@"setDisableKeyboardShortcuts called with value: %d", disable);
+//  
+//  view.inputAssistantItem.leadingBarButtonGroups = @[];
+//  view.inputAssistantItem.trailingBarButtonGroups = @[];
+//  
+////  if ([view respondsToSelector:@selector(inputAssistantItem)]) {
+////    UITextInputAssistantItem *inputAssistantItem = [view inputAssistantItem];
+////    if (disable) {
+////      inputAssistantItem.leadingBarButtonGroups = @[];
+////      inputAssistantItem.trailingBarButtonGroups = @[];
+////    }
+////  }
+//}
+
 RCT_REMAP_VIEW_PROPERTY(autoCapitalize, backedTextInputView.autocapitalizationType, UITextAutocapitalizationType)
 RCT_REMAP_VIEW_PROPERTY(autoCorrect, backedTextInputView.autocorrectionType, UITextAutocorrectionType)
 RCT_REMAP_VIEW_PROPERTY(contextMenuHidden, backedTextInputView.contextMenuHidden, BOOL)
