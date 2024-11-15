@@ -22,6 +22,7 @@ import type {IncomingMessage, ServerResponse} from 'http';
 // $FlowFixMe[cannot-resolve-module] libdef missing in RN OSS
 import type {Timeout} from 'timers';
 
+import getBaseUrlFromRequest from '../utils/getBaseUrlFromRequest';
 import Device from './Device';
 import nullthrows from 'nullthrows';
 // Import these from node:timers to get the correct Flow types.
@@ -47,7 +48,7 @@ export interface InspectorProxyQueries {
    * Returns list of page descriptions ordered by device connection order, then
    * page addition order.
    */
-  getPageDescriptions(): Array<PageDescription>;
+  getPageDescriptions(requestorRelativeBaseUrl: URL): Array<PageDescription>;
 }
 
 /**
@@ -57,8 +58,8 @@ export default class InspectorProxy implements InspectorProxyQueries {
   // Root of the project used for relative to absolute source path conversion.
   #projectRoot: string;
 
-  /** The base URL to the dev server from the developer machine. */
-  #serverBaseUrl: string;
+  // The base URL to the dev server from the dev-middleware host.
+  #serverBaseUrl: URL;
 
   // Maps device ID to Device instance.
   #devices: Map<string, Device>;
@@ -81,14 +82,14 @@ export default class InspectorProxy implements InspectorProxyQueries {
     customMessageHandler: ?CreateCustomMessageHandlerFn,
   ) {
     this.#projectRoot = projectRoot;
-    this.#serverBaseUrl = serverBaseUrl;
+    this.#serverBaseUrl = new URL(serverBaseUrl);
     this.#devices = new Map();
     this.#eventReporter = eventReporter;
     this.#experiments = experiments;
     this.#customMessageHandler = customMessageHandler;
   }
 
-  getPageDescriptions(): Array<PageDescription> {
+  getPageDescriptions(requestorRelativeBaseUrl: URL): Array<PageDescription> {
     // Build list of pages from all devices.
     let result: Array<PageDescription> = [];
     Array.from(this.#devices.entries()).forEach(([deviceId, device]) => {
@@ -96,7 +97,12 @@ export default class InspectorProxy implements InspectorProxyQueries {
         device
           .getPagesList()
           .map((page: Page) =>
-            this.#buildPageDescription(deviceId, device, page),
+            this.#buildPageDescription(
+              deviceId,
+              device,
+              page,
+              requestorRelativeBaseUrl,
+            ),
           ),
       );
     });
@@ -117,7 +123,12 @@ export default class InspectorProxy implements InspectorProxyQueries {
       pathname === PAGES_LIST_JSON_URL ||
       pathname === PAGES_LIST_JSON_URL_2
     ) {
-      this.#sendJsonResponse(response, this.getPageDescriptions());
+      this.#sendJsonResponse(
+        response,
+        this.getPageDescriptions(
+          getBaseUrlFromRequest(request) ?? this.#serverBaseUrl,
+        ),
+      );
     } else if (pathname === PAGES_LIST_JSON_VERSION_URL) {
       this.#sendJsonResponse(response, {
         Browser: 'Mobile JavaScript',
@@ -143,8 +154,9 @@ export default class InspectorProxy implements InspectorProxyQueries {
     deviceId: string,
     device: Device,
     page: Page,
+    requestorRelativeBaseUrl: URL,
   ): PageDescription {
-    const {host, protocol} = new URL(this.#serverBaseUrl);
+    const {host, protocol} = requestorRelativeBaseUrl;
     const webSocketScheme = protocol === 'https:' ? 'wss' : 'ws';
 
     const webSocketUrlWithoutProtocol = `${host}${WS_DEBUGGER_URL}?device=${deviceId}&page=${page.id}`;
