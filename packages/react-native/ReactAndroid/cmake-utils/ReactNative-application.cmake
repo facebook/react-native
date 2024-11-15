@@ -33,6 +33,7 @@ endif(CCACHE_FOUND)
 set(BUILD_DIR ${PROJECT_BUILD_DIR})
 if(CMAKE_HOST_WIN32)
         string(REPLACE "\\" "/" BUILD_DIR ${BUILD_DIR})
+        string(REPLACE "\\" "/" REACT_ANDROID_DIR ${REACT_ANDROID_DIR})
 endif()
 
 if (PROJECT_ROOT_DIR)
