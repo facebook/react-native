@@ -205,7 +205,8 @@ module.exports = async function runTest(
       .length,
     numFailingTests: testResults.filter(test => test.status === 'failed')
       .length,
-    numPendingTests: 0,
+    numPendingTests: testResults.filter(test => test.status === 'pending')
+      .length,
     numTodoTests: 0,
     skipped: false,
     testResults,

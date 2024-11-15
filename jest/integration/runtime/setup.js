@@ -37,23 +37,82 @@ const tests: Array<{
   title: string,
   ancestorTitles: Array<string>,
   implementation: () => mixed,
+  isFocused: boolean,
+  isSkipped: boolean,
   result?: TestCaseResult,
 }> = [];
 
 const ancestorTitles: Array<string> = [];
 
-global.describe = (title: string, implementation: () => mixed) => {
+const globalModifiers: Array<'focused' | 'skipped'> = [];
+
+const globalDescribe = (global.describe = (
+  title: string,
+  implementation: () => mixed,
+) => {
   ancestorTitles.push(title);
   implementation();
   ancestorTitles.pop();
+});
+
+const globalIt =
+  (global.it =
+  global.test =
+    (title: string, implementation: () => mixed) =>
+      tests.push({
+        title,
+        implementation,
+        ancestorTitles: ancestorTitles.slice(),
+        isFocused:
+          globalModifiers.length > 0 &&
+          globalModifiers[globalModifiers.length - 1] === 'focused',
+        isSkipped:
+          globalModifiers.length > 0 &&
+          globalModifiers[globalModifiers.length - 1] === 'skipped',
+      }));
+
+// $FlowExpectedError[prop-missing]
+global.fdescribe = global.describe.only = (
+  title: string,
+  implementation: () => mixed,
+) => {
+  globalModifiers.push('focused');
+  globalDescribe(title, implementation);
+  globalModifiers.pop();
 };
 
-global.it = (title: string, implementation: () => mixed) =>
-  tests.push({
-    title,
-    implementation,
-    ancestorTitles: ancestorTitles.slice(),
-  });
+// $FlowExpectedError[prop-missing]
+global.it.only =
+  global.fit =
+  // $FlowExpectedError[prop-missing]
+  global.test.only =
+    (title: string, implementation: () => mixed) => {
+      globalModifiers.push('focused');
+      globalIt(title, implementation);
+      globalModifiers.pop();
+    };
+
+// $FlowExpectedError[prop-missing]
+global.xdescribe = global.describe.skip = (
+  title: string,
+  implementation: () => mixed,
+) => {
+  globalModifiers.push('skipped');
+  globalDescribe(title, implementation);
+  globalModifiers.pop();
+};
+
+// $FlowExpectedError[prop-missing]
+global.it.skip =
+  global.xit =
+  // $FlowExpectedError[prop-missing]
+  global.test.skip =
+  global.xtest =
+    (title: string, implementation: () => mixed) => {
+      globalModifiers.push('skipped');
+      globalIt(title, implementation);
+      globalModifiers.pop();
+    };
 
 // flowlint unsafe-getters-setters:off
 
@@ -144,29 +203,40 @@ function runWithGuard(fn: () => void) {
 }
 
 function executeTests() {
+  const hasFocusedTests = tests.some(test => test.isFocused);
+
   for (const test of tests) {
-    let status;
-    let error;
-
-    const start = Date.now();
-
-    try {
-      test.implementation();
-      status = 'passed';
-    } catch (e) {
-      error = e;
-      status = 'failed';
-    }
-
-    test.result = {
+    const result: TestCaseResult = {
       title: test.title,
       fullName: [...test.ancestorTitles, test.title].join(' '),
       ancestorTitles: test.ancestorTitles,
-      status,
-      duration: Date.now() - start,
-      failureMessages: status === 'failed' && error ? [error.message] : [],
+      status: 'pending',
+      duration: 0,
+      failureMessages: [],
       numPassingAsserts: 0,
     };
+
+    test.result = result;
+
+    if (!test.isSkipped && (!hasFocusedTests || test.isFocused)) {
+      let status;
+      let error;
+
+      const start = Date.now();
+
+      try {
+        test.implementation();
+        status = 'passed';
+      } catch (e) {
+        error = e;
+        status = 'failed';
+      }
+
+      result.status = status;
+      result.duration = Date.now() - start;
+      result.failureMessages =
+        status === 'failed' && error ? [error.message] : [];
+    }
   }
 
   reportTestSuiteResult({
