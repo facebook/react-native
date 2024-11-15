@@ -903,8 +903,6 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
     // When not animated, the expected workflow in ``scrollViewDidEndScrollingAnimation`` after scrolling is not going
     // to get triggered. We will need to manually execute here.
     [self _handleFinishedScrolling:_scrollView];
-  } else if (_eventEmitter) {
-    static_cast<const ScrollViewEventEmitter &>(*_eventEmitter).onMomentumScrollBegin([self _scrollViewMetrics]);
   }
 }
 
