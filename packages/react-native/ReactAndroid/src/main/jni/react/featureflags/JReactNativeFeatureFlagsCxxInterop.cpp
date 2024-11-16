@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<62bd0386265d0fa4bdccab1faf22d25c>>
+ * @generated SignedSource<<9c1572172189f9f9ded86a9fdb1cb021>>
  */
 
 /**
@@ -126,6 +126,12 @@ class ReactNativeFeatureFlagsProviderHolder
   bool enableFabricRendererExclusively() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableFabricRendererExclusively");
+    return method(javaProvider_);
+  }
+
+  bool enableFixForViewCommandRace() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableFixForViewCommandRace");
     return method(javaProvider_);
   }
 
@@ -394,6 +400,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableFabricRendererExclusively(
   return ReactNativeFeatureFlags::enableFabricRendererExclusively();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::enableFixForViewCommandRace(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableFixForViewCommandRace();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::enableGranularShadowTreeStateReconciliation(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableGranularShadowTreeStateReconciliation();
@@ -625,6 +636,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableFabricRendererExclusively",
         JReactNativeFeatureFlagsCxxInterop::enableFabricRendererExclusively),
+      makeNativeMethod(
+        "enableFixForViewCommandRace",
+        JReactNativeFeatureFlagsCxxInterop::enableFixForViewCommandRace),
       makeNativeMethod(
         "enableGranularShadowTreeStateReconciliation",
         JReactNativeFeatureFlagsCxxInterop::enableGranularShadowTreeStateReconciliation),

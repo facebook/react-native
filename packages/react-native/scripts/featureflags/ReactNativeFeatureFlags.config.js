@@ -171,6 +171,15 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'release',
       },
     },
+    enableFixForViewCommandRace: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2024-11-14',
+        description:
+          'Synchronise the view command dispatching with mounting of new transaction',
+        purpose: 'experimentation',
+      },
+    },
     enableGranularShadowTreeStateReconciliation: {
       defaultValue: false,
       metadata: {

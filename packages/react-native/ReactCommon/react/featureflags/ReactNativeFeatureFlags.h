@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<079c1e8cd65a004c1b26f1a2517e9042>>
+ * @generated SignedSource<<b24144040cb5bd51f9910b81675ba5b2>>
  */
 
 /**
@@ -113,6 +113,11 @@ class ReactNativeFeatureFlags {
    * When the app is completely migrated to Fabric, set this flag to true to disable parts of Paper infrastructure that are not needed anymore but consume memory and CPU. Specifically, UIViewOperationQueue and EventDispatcherImpl will no longer work as they will not subscribe to ReactChoreographer for updates.
    */
   RN_EXPORT static bool enableFabricRendererExclusively();
+
+  /**
+   * Synchronise the view command dispatching with mounting of new transaction
+   */
+  RN_EXPORT static bool enableFixForViewCommandRace();
 
   /**
    * When enabled, the renderer would only fail commits when they propagate state and the last commit that updated state changed before committing.

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b2f32b87f4e87ad9588add08dcb9b0c6>>
+ * @generated SignedSource<<1adfbb1f0b9791d93ea00f39fbce5520>>
  */
 
 /**
@@ -117,6 +117,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableFabricRendererExclusively(): Boolean = accessor.enableFabricRendererExclusively()
+
+  /**
+   * Synchronise the view command dispatching with mounting of new transaction
+   */
+  @JvmStatic
+  public fun enableFixForViewCommandRace(): Boolean = accessor.enableFixForViewCommandRace()
 
   /**
    * When enabled, the renderer would only fail commits when they propagate state and the last commit that updated state changed before committing.
